@@ -29,12 +29,15 @@ To learn more about Next.js, take a look at the following resources:
 
 You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js/) - your feedback and contributions are welcome!
 
+## Sample Health Check
+
+A health check has been created to verify that your instance is running.
+
+Go to /health to see a "Page is OK!" text rendered.
+
 ## Deploy on Vercel
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
 Check out our [Next.js deployment documentation](https://nextjs.org/docs/deployment) for more details.
-
 
 ## Storybook
 
@@ -42,3 +45,16 @@ This project contains storybook installed in it, which is a tool to render UI co
 
 Page used for installation: [Storybook Getting Started](https://storybook.js.org/docs/get-started/nextjs#getting-started)
 
+## How to run Storybook
+
+In order to run storybook, just do:
+
+```bash
+npm run storybook
+```
+
+The deployer will launch an instance of storybook in [Localhost Port 6000](http://localhost:6000)
+
+### Notes
+
+Storybook has been configured to use Tailwind CSS.
