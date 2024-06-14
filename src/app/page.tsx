@@ -7,5 +7,5 @@ export default function Home() {
       <div>RootstockLabs forever!</div>
       <div>RootstockLabs forever!</div>
     </div>
-  );
+  )
 }
