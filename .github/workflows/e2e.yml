@@ -1,0 +1,16 @@
+name: Run e2e on Chrome
+
+on: pull_request
+
+jobs:
+  chrome:
+    runs-on: ubuntu-22.04
+    name: E2E on Chrome
+    steps:
+      - name: Checkout files
+        uses: actions/checkout@v4
+      - name: Run Cypress end-to-end tests
+        uses: cypress-io/github-action@v6
+        with:
+          browser: chrome
+          start: npm run dev
