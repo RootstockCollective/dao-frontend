@@ -1,0 +1,6 @@
+/* default theme */
+
+html[data-theme="default"] {
+    --color-primary: white;
+    --color-secondary: gray;
+}
