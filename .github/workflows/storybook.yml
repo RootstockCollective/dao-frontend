@@ -2,7 +2,7 @@ name: Deploy Storybook site to Pages
 
 on:
   push:
-    branches: [main]
+    branches: [main, develop]
     
 permissions: 
   contents: read
@@ -13,13 +13,28 @@ concurrency:
   group: "storybook"
   cancel-in-progress: false
   
-jobs: 
-  deploy:
+jobs:
+  build:
     runs-on: ubuntu-latest
     steps:
-      - name: build-publish
-        id: build-publish
-        uses: bitovi/github-actions-storybook-to-github-pages@v1.0.3
-        with: 
-          path: storybook-static
-          install_command: npm i
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Install dependencies
+        run: npm i
+      - name: Build storybook
+        run: npm run build-storybook
+      - name: Upload artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          # Upload storybook build output
+          path: './storybook-static'
+    
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - name: Setup Pages
+        uses: actions/configure-pages@v5
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4

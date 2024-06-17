@@ -107,3 +107,11 @@ If everything is successfully, you'll get a "All specs passed!" green message.
 A default file ```health-spec.cy.ts``` has been created to make sure that cypress is running accordingly.
 
 This can be removed in the future.
+
+
+## GitHub Workflows
+
+### End-to-end testing (e2e)
+
+This workflow uses https://github.com/cypress-io/github-action
+
