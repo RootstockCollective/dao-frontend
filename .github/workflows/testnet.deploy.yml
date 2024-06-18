@@ -2,7 +2,7 @@ name: CICD Dao Frontend
 
 on: 
   push:
-    branches: [deploy, DEVOPS-1991]
+    branches: [develop]
 
 jobs:
   build-and-deploy:
