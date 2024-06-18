@@ -1,0 +1,40 @@
+name: CICD Dao Frontend
+
+on: 
+  push:
+    branches: [deploy, DEVOPS-1991]
+
+jobs:
+  testnet_build_and_deploy:
+    runs-on: ubuntu-latest
+    environment:
+      name: testnet
+    permissions:
+      id-token: write
+      contents: read
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Install dependencies
+        run: |
+          npm install
+
+      - name: Build site
+        run: |
+          npm run build
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: ${{ secrets.ROLE_ARN }}
+          aws-region: ${{ secrets.AWS_REGION }}
+
+      - name: Deploy site to S3
+        run: |
+          aws s3 sync --sse aws:kms --sse-kms-key-id ${{ secrets.KMS_KEY_ID }} --delete --only-show-errors out/ ${{ secrets.S3_BUCKET }}
+      
+      - name: Invalidate CloudFront cache
+        run: |
+          aws cloudfront create-invalidation --distribution-id ${{ secrets.CLOUDFRONT_DISTRIBUTION }} --paths "/*"
