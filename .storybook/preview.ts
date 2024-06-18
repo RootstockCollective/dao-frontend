@@ -3,6 +3,9 @@ import "./../src/app/globals.css";
 
 const preview: Preview = {
   parameters: {
+    backgrounds: {
+      default: 'dark',
+    },
     controls: {
       matchers: {
         color: /(background|color)$/i,
