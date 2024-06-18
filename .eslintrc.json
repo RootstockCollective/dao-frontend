@@ -6,6 +6,7 @@
   "rules": {
     "semi": [2, "never"],
     "quotes": [1, "single"],
-    "object-curly-spacing": [2, "always"]
+    "object-curly-spacing": [2, "always"],
+    "eol-last": [2, "always"]
   }
 }
