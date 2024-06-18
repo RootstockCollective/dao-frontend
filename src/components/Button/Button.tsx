@@ -1,45 +1,37 @@
 import { ReactNode, FC } from 'react'
+import { ButtonTypes, ButtonVariants } from '@/components/Button/types'
 
-export enum TYPES {
-  Square = 'Square',
-  Circle = 'Circle'
-}
-
-export enum VARIANTS {
-  Square = 'Square',
-  White = 'White'
-}
+export const BUTTON_DEFAULT_CLASSES = 'px-5 py-3 border-2 border-white flex gap-x-2 items-center justify-center'
 
 interface Props {
   text: string
   onClick: () => void
   startIcon?: ReactNode
-  type?: TYPES
-  variants?: VARIANTS
+  type?: ButtonTypes
+  variants?: ButtonVariants
   fullWidth?: boolean
 }
 
-export const BUTTON_DEFAULT_CLASSES = 'px-5 py-3 border-2 border-white flex gap-x-2 items-center justify-center'
 
 export const Button: FC<Props> = ({
   text,
   onClick,
   startIcon,
-  type = TYPES.Square,
-  variants = VARIANTS.Square,
+  type = ButtonTypes.Square,
+  variants = ButtonVariants.Square,
   fullWidth = false,
                                   }) => {
   const classes = [
     BUTTON_DEFAULT_CLASSES,
     fullWidth && 'w-full',
-    type === TYPES.Circle && 'rounded-full',
-    type === TYPES.Square && 'rounded',
-    variants === VARIANTS.White && 'bg-white'
+    type === ButtonTypes.Circle && 'rounded-full',
+    type === ButtonTypes.Square && 'rounded',
+    variants === ButtonVariants.White && 'bg-white'
   ].join(' ')
   
   const textClasses = [
     'font-bold',
-    variants === VARIANTS.White && 'text-black'
+    variants === ButtonVariants.White && 'text-black'
   ].join(' ')
   
   return (

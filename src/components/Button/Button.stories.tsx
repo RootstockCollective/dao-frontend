@@ -1,7 +1,8 @@
 import type { Meta, StoryObj } from '@storybook/react'
-import { Button, VARIANTS, TYPES } from '@/components/Button'
+import { Button,  } from '@/components/Button'
 import { FaLink } from 'react-icons/fa'
 import { userEvent, within, expect, spyOn } from '@storybook/test'
+import { ButtonVariants, ButtonTypes } from '@/components/Button/types'
 
 const meta = {
   title: 'Components/Button',
@@ -34,7 +35,7 @@ export const Rounded: Story = {
     text: 'Custom Action',
     fullWidth: false,
     onClick: () => console.log('Clicked'),
-    type: TYPES.Circle
+    type: ButtonTypes.Circle
   },
 }
 
@@ -43,7 +44,7 @@ export const White: Story = {
     text: 'Custom Action',
     fullWidth: false,
     onClick: () => console.log('Clicked'),
-    variants: VARIANTS.White,
+    variants: ButtonVariants.White,
   },
 }
 
@@ -52,7 +53,7 @@ export const WhiteWithIcon: Story = {
     text: 'Custom Action',
     fullWidth: false,
     onClick: () => console.log('Clicked'),
-    variants: VARIANTS.White,
+    variants: ButtonVariants.White,
     startIcon: <FaLink fill='black' />,
   },
 }
