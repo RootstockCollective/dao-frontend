@@ -1,5 +1,6 @@
-import { ReactNode, FC } from 'react'
+import { FC, ReactNode } from 'react'
 import { ButtonTypes, ButtonVariants } from '@/components/Button/types'
+import classnames from 'classnames'
 
 export const BUTTON_DEFAULT_CLASSES = 'px-[24px] py-[20px] border-[1px] border-white flex gap-x-1 justify-center items-center relative'
 
@@ -21,19 +22,20 @@ export const Button: FC<Props> = ({
   variant = ButtonVariants.Square,
   fullWidth = false,
                                   }) => {
-  const classes = [
-    BUTTON_DEFAULT_CLASSES,
-    fullWidth && 'w-full',
-    type === ButtonTypes.Circle && 'rounded-full',
-    type === ButtonTypes.Square && 'rounded-[4px]',
-    variant === ButtonVariants.White && 'bg-white',
-    startIcon && 'pl-9',
-  ].join(' ')
+  const classes = classnames({
+    [BUTTON_DEFAULT_CLASSES]: true,
+    'w-full': fullWidth,
+    'rounded-full': type === ButtonTypes.Circle,
+    'rounded-[4px]': type === ButtonTypes.Square,
+    'bg-white': variant === ButtonVariants.White,
+    'pl-9': startIcon,
+    
+  })
   
-  const textClasses = [
-    'font-bold relative',
-    variant === ButtonVariants.White && 'text-black'
-  ].join(' ')
+  const textClasses = classnames({
+    'font-bold relative': true,
+    'text-black': variant === ButtonVariants.White
+  })
   
   return (
     <button
