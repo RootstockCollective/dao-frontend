@@ -3,7 +3,7 @@
 html[data-theme="default"] {
     --color-primary: rgba(117, 205, 255, 1);
     
-    --background: #000;
+    --background: #121212;
     --foreground: rgba(37, 37, 37, 1);
     
     --text-primary: white;
@@ -20,7 +20,10 @@ html[data-theme="default"] {
 }
 
 * {
-    background: var(--background);
     color: var(--text-primary);
     font-family: var(--font-open-sans), serif;
+}
+
+.footer {
+    background: var(--background);
 }
