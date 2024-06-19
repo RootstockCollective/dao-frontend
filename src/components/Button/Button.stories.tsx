@@ -7,6 +7,14 @@ import { ButtonVariants, ButtonTypes } from '@/components/Button/types'
 const meta = {
   title: 'Components/Button',
   component: Button,
+  argTypes: {
+    variant: {
+      options: Object.keys(ButtonVariants),
+    },
+    type: {
+      options: Object.keys(ButtonTypes),
+    },
+  }
 } satisfies Meta<typeof Button>
 
 export default meta

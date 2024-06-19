@@ -4,7 +4,7 @@ export enum ButtonTypes {
 }
 
 export enum ButtonVariants {
-  Square = 'Square',
+  Square = 'Square', // default
   White = 'White'
 }
 
