@@ -1,26 +1,26 @@
 /* default theme */
 
-html[data-theme="default"] {
-    --color-primary: rgba(117, 205, 255, 1);
-    
-    --background: #000;
-    --foreground: rgba(37, 37, 37, 1);
-    
-    --text-primary: white;
-    --text-secondary: rgba(184, 184, 184, 1);
-    
-    /* Statuses */
-    --st-success: rgba(120, 199, 0, 1);
-    --st-info: var(--color-primary);
-    --st-error: rgba(255, 145, 0, 1);
-    --st-pink: rgba(243, 108, 215, 1); /* This pink is used in progress bar */
-    
-    /* Font */
-    --font-open-sans: 'Open Sans'
+html[data-theme='default'] {
+  --color-primary: rgba(117, 205, 255, 1);
+
+  --background: #000;
+  --foreground: rgba(37, 37, 37, 1);
+
+  --text-primary: white;
+  --text-secondary: rgba(184, 184, 184, 1);
+
+  /* Statuses */
+  --st-success: rgba(120, 199, 0, 1);
+  --st-info: var(--color-primary);
+  --st-error: rgba(255, 145, 0, 1);
+  --st-pink: rgba(243, 108, 215, 1); /* This pink is used in progress bar */
+
+  /* Font */
+  --font-open-sans: 'Open Sans';
 }
 
 * {
-    background: var(--background);
-    color: var(--text-primary);
-    font-family: var(--font-open-sans), serif;
+  background: var(--background);
+  color: var(--text-primary);
+  font-family: var(--font-open-sans), serif;
 }

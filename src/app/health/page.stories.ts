@@ -3,13 +3,11 @@ import HealthCheck from '@/app/health/page'
 
 const meta = {
   title: 'Health/Main',
-  component: HealthCheck, 
+  component: HealthCheck,
 } satisfies Meta<typeof HealthCheck>
 
 export default meta
 
-type Story = StoryObj<typeof meta>;
+type Story = StoryObj<typeof meta>
 
-export const Default: Story = {
-  
-}
+export const Default: Story = {}
