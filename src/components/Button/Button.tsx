@@ -1,7 +1,7 @@
 import { ReactNode, FC } from 'react'
 import { ButtonTypes, ButtonVariants } from '@/components/Button/types'
 
-export const BUTTON_DEFAULT_CLASSES = 'px-5 py-3 border-[1px] border-white flex gap-x-1 justify-center items-center relative'
+export const BUTTON_DEFAULT_CLASSES = 'px-[24px] py-[20px] border-[1px] border-white flex gap-x-1 justify-center items-center relative'
 
 interface Props {
   text: string
@@ -25,7 +25,7 @@ export const Button: FC<Props> = ({
     BUTTON_DEFAULT_CLASSES,
     fullWidth && 'w-full',
     type === ButtonTypes.Circle && 'rounded-full',
-    type === ButtonTypes.Square && 'rounded',
+    type === ButtonTypes.Square && 'rounded-[4px]',
     variant === ButtonVariants.White && 'bg-white',
     startIcon && 'pl-9',
   ].join(' ')
