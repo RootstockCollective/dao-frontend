@@ -4,7 +4,7 @@ import './globals.css'
 
 const openSans = Open_Sans({
   variable: '--font-open-sans',
-  subsets: ['latin']
+  subsets: ['latin'],
 })
 
 export const metadata: Metadata = {
