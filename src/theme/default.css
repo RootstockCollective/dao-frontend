@@ -20,7 +20,10 @@ html[data-theme='default'] {
 }
 
 * {
-  background: var(--background);
   color: var(--text-primary);
   font-family: var(--font-open-sans), serif;
+}
+
+div {
+    background: var(--background);
 }
