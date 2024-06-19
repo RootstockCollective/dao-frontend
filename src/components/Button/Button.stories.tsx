@@ -44,7 +44,7 @@ export const White: Story = {
     text: 'Custom Action',
     fullWidth: false,
     onClick: () => console.log('Clicked'),
-    variants: ButtonVariants.White,
+    variant: ButtonVariants.White,
   },
 }
 
@@ -53,7 +53,7 @@ export const WhiteWithIcon: Story = {
     text: 'Custom Action',
     fullWidth: false,
     onClick: () => console.log('Clicked'),
-    variants: ButtonVariants.White,
+    variant: ButtonVariants.White,
     startIcon: <FaLink fill='black' />,
   },
 }

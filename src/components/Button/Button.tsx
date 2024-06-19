@@ -8,7 +8,7 @@ interface Props {
   onClick: () => void
   startIcon?: ReactNode
   type?: ButtonTypes
-  variants?: ButtonVariants
+  variant?: ButtonVariants
   fullWidth?: boolean
 }
 
@@ -18,7 +18,7 @@ export const Button: FC<Props> = ({
   onClick,
   startIcon,
   type = ButtonTypes.Square,
-  variants = ButtonVariants.Square,
+  variant = ButtonVariants.Square,
   fullWidth = false,
                                   }) => {
   const classes = [
@@ -26,12 +26,12 @@ export const Button: FC<Props> = ({
     fullWidth && 'w-full',
     type === ButtonTypes.Circle && 'rounded-full',
     type === ButtonTypes.Square && 'rounded',
-    variants === ButtonVariants.White && 'bg-white'
+    variant === ButtonVariants.White && 'bg-white'
   ].join(' ')
   
   const textClasses = [
     'font-bold',
-    variants === ButtonVariants.White && 'text-black'
+    variant === ButtonVariants.White && 'text-black'
   ].join(' ')
   
   return (
