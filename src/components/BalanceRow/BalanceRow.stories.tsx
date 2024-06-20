@@ -1,12 +1,12 @@
 import type { Meta, StoryObj } from '@storybook/react'
+import { expect, spyOn, userEvent, within } from '@storybook/test'
 import { FaBitcoin } from 'react-icons/fa'
-import { BalanceRow } from './BalanceRow'
-import { userEvent, within, expect, spyOn } from '@storybook/test'
+import { BalanceRow } from '../BalanceRow'
 
 const meta = {
   title: 'Components/BalanceRow',
-  component: BalanceRow,
-} satisfies Meta<typeof BalanceRow>
+  component: BalanceRow.Root,
+} satisfies Meta<typeof BalanceRow.Root>
 
 export default meta
 
@@ -14,42 +14,68 @@ type Story = StoryObj<typeof meta>
 
 export const WithNoActions: Story = {
   args: {
-    icon: <FaBitcoin />,
-    label: 'RBTC BALANCE:',
-    amount: '0.00000400',
+    children: (
+      <>
+        <BalanceRow.Icon icon={<FaBitcoin />} />
+        <BalanceRow.Content>
+          <BalanceRow.Label>RBTC BALANCE:</BalanceRow.Label>
+          <BalanceRow.Amount>0.00000400</BalanceRow.Amount>
+        </BalanceRow.Content>
+      </>
+    ),
   },
 }
 
 export const WithOneAction: Story = {
   args: {
-    icon: <FaBitcoin />,
-    label: 'RBTC BALANCE:',
-    amount: '0.00000400',
-    actions: [{ label: 'DISPERSE', onClick: () => console.log('DISPERSE') }],
+    children: (
+      <>
+        <BalanceRow.Icon icon={<FaBitcoin />} />
+        <BalanceRow.Content>
+          <BalanceRow.Label>RBTC BALANCE:</BalanceRow.Label>
+          <BalanceRow.Amount>0.00000400</BalanceRow.Amount>
+        </BalanceRow.Content>
+        <BalanceRow.ActionButtons>
+          <BalanceRow.ActionButton onClick={() => console.log('DISPERSE')}>DISPERSE</BalanceRow.ActionButton>
+        </BalanceRow.ActionButtons>
+      </>
+    ),
   },
 }
 
 export const WithTwoActions: Story = {
   args: {
-    icon: <FaBitcoin />,
-    label: 'RBTC BALANCE:',
-    amount: '0.00000400',
-    actions: [
-      { label: 'MINT', onClick: () => console.log('MINT') },
-      { label: 'BURN', onClick: () => console.log('BURN') },
-    ],
+    children: (
+      <>
+        <BalanceRow.Icon icon={<FaBitcoin />} />
+        <BalanceRow.Content>
+          <BalanceRow.Label>RBTC BALANCE:</BalanceRow.Label>
+          <BalanceRow.Amount>0.00000400</BalanceRow.Amount>
+        </BalanceRow.Content>
+        <BalanceRow.ActionButtons>
+          <BalanceRow.ActionButton onClick={() => console.log('MINT')}>MINT</BalanceRow.ActionButton>
+          <BalanceRow.ActionButton onClick={() => console.log('BURN')}>BURN</BalanceRow.ActionButton>
+        </BalanceRow.ActionButtons>
+      </>
+    ),
   },
 }
 
 export const Tested: Story = {
   args: {
-    icon: <FaBitcoin />,
-    label: 'RBTC BALANCE:',
-    amount: '0.00000400',
-    actions: [
-      { label: 'MINT', onClick: () => console.log('MINT') },
-      { label: 'BURN', onClick: () => console.log('BURN') },
-    ],
+    children: (
+      <>
+        <BalanceRow.Icon icon={<FaBitcoin />} />
+        <BalanceRow.Content>
+          <BalanceRow.Label>RBTC BALANCE:</BalanceRow.Label>
+          <BalanceRow.Amount>0.00000400</BalanceRow.Amount>
+        </BalanceRow.Content>
+        <BalanceRow.ActionButtons>
+          <BalanceRow.ActionButton onClick={() => console.log('MINT')}>MINT</BalanceRow.ActionButton>
+          <BalanceRow.ActionButton onClick={() => console.log('BURN')}>BURN</BalanceRow.ActionButton>
+        </BalanceRow.ActionButtons>
+      </>
+    ),
   },
   play: async ({ canvasElement }) => {
     const spy = spyOn(console, 'log')
