@@ -5,5 +5,5 @@ interface Props {
 }
 
 export const Root: FC<Props> = ({ children }) => (
-  <div className="flex items-center p-3 mb-3 bg-foreground">{children}</div>
+  <div className="flex items-center p-3 mx-1 mb-1 bg-foreground rounded-lg">{children}</div>
 )
