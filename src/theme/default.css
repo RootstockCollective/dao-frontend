@@ -17,6 +17,17 @@ html[data-theme='default'] {
 
   /* Font */
   --font-open-sans: 'Open Sans';
+  
+  label {
+    font-size: 1.4rem;
+  }
+  label.light {
+    color: rgba(113,113,113,1);
+  }
+  label.strong {
+      font-weight: bold;
+  }
+  
 }
 
 * {
