@@ -1,8 +1,6 @@
 import type { Meta, StoryObj } from '@storybook/react'
 import { Link } from './Link'
 
-import { userEvent, within, expect, spyOn } from '@storybook/test'
-
 const meta = {
   title: 'Components/Link',
   component: Link,
@@ -23,4 +21,23 @@ export const Menu: Story = {
     variant: 'menu',
     children: <p>Register RNS Domain</p>,
   },
+}
+export const DefaultInText: Story = {
+  render: () => (
+    <p>
+      This is a <Link>default Link</Link> inside a paragraph of text.
+    </p>
+  ),
+}
+export const MenuInList: Story = {
+  render: () => (
+    <ul>
+      <li>
+        <Link variant="menu">Register RNS Domain</Link>
+      </li>
+      <li>
+        <Link variant="menu">Token Bridge Dapp</Link>
+      </li>
+    </ul>
+  ),
 }

@@ -3,10 +3,6 @@
   font-family: 'Sora';
   src: url('/fonts/Sora.ttf') format('truetype');
 }
-@font-face {
-  font-family: 'Inter';
-  src: url('/fonts/Inter.ttf') format('truetype');
-}
 
 html[data-theme='default'] {
   --color-primary: rgba(117, 205, 255, 1);

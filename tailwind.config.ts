@@ -11,7 +11,6 @@ const config: Config = {
       fontFamily: {
         sans: ['var(--font-open-sans)'],
         sora: ['Sora'],
-        inter: ['Inter'],
       },
       colors: {
         primary: 'var(--color-primary)',
