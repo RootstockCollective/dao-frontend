@@ -1,4 +1,7 @@
 import { FC } from 'react'
+import { Paragraph } from '../Typography/Paragraph'
+import { Header } from '../Typography/Header'
+import { Label } from '../Typography'
 
 interface Props {
   title: string
@@ -8,8 +11,8 @@ interface Props {
 
 export const Card: FC<Props> = ({ title, content, footer }) => (
   <div className="p-4 border border-white rounded-lg border-1">
-    <div className="text-gray-400 text-sm">{title}</div>
-    <div className="text-white text-3xl font-bold mt-1">{content}</div>
-    <div className="text-gray-400 text-sm mt-1">{footer}</div>
+    <Label variant='light' textClass='text-sm'>{title}</Label>
+    <Paragraph>{content}</Paragraph>
+    <Label variant='light' textClass='text-sm'>{footer}</Label>
   </div>
 )

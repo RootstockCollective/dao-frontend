@@ -12,9 +12,15 @@ const classesByVariant: Record<LabelVariants, string> = {
 
 interface Props {
   variant?: LabelVariants
+  textClass?: string
   children: ReactNode
 }
 
-export const Label: FC<Props> = ({ variant = 'normal', children }) => (
-  <Typography tagVariant='label' className={classNames(DEFAULT_CLASSES, classesByVariant[variant])}>{children}</Typography>
+export const Label: FC<Props> = ({ variant = 'normal', textClass = '', children }) => (
+  <Typography
+    tagVariant="label"
+    className={classNames(DEFAULT_CLASSES, classesByVariant[variant], textClass)}
+  >
+    {children}
+  </Typography>
 )
