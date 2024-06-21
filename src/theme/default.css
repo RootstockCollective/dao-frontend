@@ -8,7 +8,7 @@ html[data-theme='default'] {
 
   --text-primary: white;
   --text-secondary: rgba(184, 184, 184, 1);
-
+  --text-light: rgba(113,113,113,1); /* For labels light */
   /* Statuses */
   --st-success: rgba(120, 199, 0, 1);
   --st-info: var(--color-primary);
