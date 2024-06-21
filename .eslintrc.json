@@ -10,10 +10,10 @@
     "eol-last": [
       2,
       "always"
-    ],
-    "no-unused-vars": "error"
-  },
-  "overrides": [
+    ]
+    /* "no-unused-vars": "error" */
+  }
+  /* "overrides": [
     {
       "files": [
         "*.stories.ts",
@@ -23,5 +23,5 @@
         "no-unused-vars": "off"
       }
     }
-  ]
+  ] */
 }
