@@ -4,6 +4,16 @@
 @tailwind components;
 @tailwind utilities;
 
+@layer utilities {
+  .underline-thick {
+    text-decoration-thickness: 0.5px;
+  }
+}
+
 * {
   box-sizing: border-box;
+}
+
+body {
+  @apply font-sora text-text-primary bg-background;
 }

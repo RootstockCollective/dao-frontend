@@ -5,6 +5,12 @@ const preview: Preview = {
   parameters: {
     backgrounds: {
       default: 'dark',
+      values: [
+        {
+          name: 'dark',
+          value: 'var(--background)',
+        },
+      ],
     },
     controls: {
       matchers: {
@@ -13,6 +19,6 @@ const preview: Preview = {
       },
     },
   },
-};
+}
 
 export default preview;

@@ -1,4 +1,12 @@
 /* default theme */
+@font-face {
+  font-family: 'Sora';
+  src: url('/fonts/Sora.ttf') format('truetype');
+}
+@font-face {
+  font-family: 'Inter';
+  src: url('/fonts/Inter.ttf') format('truetype');
+}
 
 html[data-theme='default'] {
   --color-primary: rgba(117, 205, 255, 1);
@@ -17,13 +25,4 @@ html[data-theme='default'] {
 
   /* Font */
   --font-open-sans: 'Open Sans';
-}
-
-* {
-  color: var(--text-primary);
-  font-family: var(--font-open-sans), serif;
-}
-
-div {
-    background: var(--background);
 }

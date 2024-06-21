@@ -10,6 +10,8 @@ const config: Config = {
     extend: {
       fontFamily: {
         sans: ['var(--font-open-sans)'],
+        sora: ['Sora'],
+        inter: ['Inter'],
       },
       colors: {
         primary: 'var(--color-primary)',
