@@ -1,27 +1,11 @@
-import { FC, AnchorHTMLAttributes } from 'react'
-import classnames from 'classnames'
-import { PiArrowUpRightLight } from 'react-icons/pi'
+import { FC } from 'react'
+import NextLink from 'next/link'
+import { ExternalLink } from './ExternalLink'
+import { LinkProps } from './types'
 
-interface LinkProps extends AnchorHTMLAttributes<HTMLAnchorElement> {
-  variant?: 'default' | 'menu'
-}
-
-export const Link: FC<LinkProps> = ({ children, variant = 'default', ...props }) => {
-  return (
-    <a
-      {...props}
-      className={classnames(
-        'inline-flex items-center gap-1.5 font-sora underline underline-offset-2 underline-thick hover:cursor-pointer w-fit',
-        {
-          'tracking-tight leading-tight text-base': variant === 'menu',
-        },
-        {
-          'leading-normal text-sm': variant === 'default',
-        },
-      )}
-    >
-      <div>{children}</div>
-      {variant === 'menu' && <PiArrowUpRightLight />}
-    </a>
-  )
+/**
+ * Base link component uses Next.js router link
+ */
+export const Link: FC<LinkProps> = props => {
+  return <ExternalLink {...props} component={NextLink} />
 }
