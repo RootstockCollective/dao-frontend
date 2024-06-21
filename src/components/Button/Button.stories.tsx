@@ -2,17 +2,13 @@ import type { Meta, StoryObj } from '@storybook/react'
 import { Button,  } from '@/components/Button'
 import { FaLink } from 'react-icons/fa'
 import { userEvent, within, expect, spyOn } from '@storybook/test'
-import { ButtonVariants, ButtonTypes } from '@/components/Button/types'
 
 const meta = {
   title: 'Components/Button',
   component: Button,
   argTypes: {
     variant: {
-      options: Object.keys(ButtonVariants),
-    },
-    type: {
-      options: Object.keys(ButtonTypes),
+      options: ['default','green'],
     },
   }
 } satisfies Meta<typeof Button>
@@ -29,7 +25,7 @@ export const Default: Story = {
   }
 }
 
-export const WithIcon: Story = {
+export const PrimaryWithIcon: Story = {
   args: {
     text: 'Connect wallet',
     fullWidth: false,
@@ -38,32 +34,29 @@ export const WithIcon: Story = {
   }
 }
 
-export const Rounded: Story = {
+export const Secondary: Story = {
   args: {
-    text: 'Custom Action',
-    fullWidth: false,
+    text: 'Delegate',
+    variant: 'secondary',
     onClick: () => console.log('Clicked'),
-    type: ButtonTypes.Circle
-  },
+  }
 }
 
-export const White: Story = {
+export const SecondaryWithIcon: Story = {
   args: {
-    text: 'Custom Action',
-    fullWidth: false,
+    text: 'Explore Communities',
+    variant: 'secondary',
     onClick: () => console.log('Clicked'),
-    variant: ButtonVariants.White,
-  },
+    startIcon: <FaLink fill='var(--color-secondary)' />,
+  }
 }
 
-export const WhiteWithIcon: Story = {
+export const Disabled: Story = {
   args: {
-    text: 'Custom Action',
-    fullWidth: false,
+    text: 'Save & Continue',
+    variant: 'disabled',
     onClick: () => console.log('Clicked'),
-    variant: ButtonVariants.White,
-    startIcon: <FaLink fill='black' />,
-  },
+  }
 }
 
 export const Tested: Story = {
@@ -76,7 +69,7 @@ export const Tested: Story = {
     const consoleLogSpy = spyOn(console, 'log')
 
     const canvas = within(canvasElement)
-    const button = canvas.getByText('CUSTOM ACTION')
+    const button = canvas.getByText('Custom Action')
     await userEvent.click(button)
 
     await expect(consoleLogSpy).toHaveBeenCalledOnce()
