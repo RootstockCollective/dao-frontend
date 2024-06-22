@@ -14,10 +14,10 @@ html[data-theme='default'] {
   --text-secondary: rgba(184, 184, 184, 1);
   --text-light: rgba(113,113,113,1); /* For labels light */
   /* Statuses */
-  --st-success: rgba(120, 199, 0, 1);
-  --st-info: var(--color-primary);
-  --st-error: rgba(255, 145, 0, 1);
-  --st-pink: rgba(243, 108, 215, 1); /* This pink is used in progress bar */
+  --st-success: rgba(34, 173, 92, 1);
+  --st-info: rgba(255, 153, 0, 1);
+  --st-error: rgba(242, 72, 34, 1);
+  --st-white: rgba(255, 255, 255, 1); /* This white is used in progress bar */
 
   /* Font */
   --font-open-sans: 'Open Sans';
