@@ -26,6 +26,8 @@ const config: Config = {
         'text-light': 'var(--text-light)',
         'disabled-primary': 'var(--disabled-primary)',
         'disabled-secondary': 'var(--disabled-secondary)',
+        'input-bg': 'var(--input-bg)',
+        'input-placeholder': 'var(--input-placeholder)',
       },
     },
   },
