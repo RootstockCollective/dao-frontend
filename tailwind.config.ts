@@ -21,7 +21,7 @@ const config: Config = {
         'st-success': 'var(--st-success)',
         'st-info': 'var(--st-info)',
         'st-error': 'var(--st-error)',
-        'st-pink': 'var(--st-pink)',
+        'st-white': 'var(--st-white)',
         'text-light': 'var(--text-light)',
       },
     },
