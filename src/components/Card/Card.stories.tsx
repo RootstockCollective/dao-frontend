@@ -33,3 +33,21 @@ export const WithoutFooter: Story = {
     footer: '',
   },
 }
+
+export const Borderless: Story = {
+  args: {
+    title: 'Total RIF Volume',
+    content: '436.26M RIF',
+    footer: '= $14,045.00',
+    borderless: true,
+  },
+}
+
+export const BorderlessWithoutFooter: Story = {
+  args: {
+    title: 'My voting power',
+    content: '436.26M RIF',
+    footer: '',
+    borderless: true,
+  },
+}
