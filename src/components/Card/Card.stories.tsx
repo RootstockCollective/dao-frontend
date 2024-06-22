@@ -23,5 +23,13 @@ export const None: Story = {
     title: 'Total RIF Volume',
     content: '-',
     footer: '-',
-  }
+  },
+}
+
+export const WithoutFooter: Story = {
+  args: {
+    title: 'Total RIF Volume',
+    content: '436.26M RIF',
+    footer: '',
+  },
 }
