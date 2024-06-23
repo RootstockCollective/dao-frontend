@@ -10,7 +10,8 @@ interface Props {
 const DEFAULT_CLASSES = 'text-[1.4rem]'
 
 const classesByVariant: Record<ParagraphVariants, string> = {
-  normal: 'font-bold text-[1.4rem]',
+  normal: 'font-bold',
+  'semibold': 'font-[600]',
   light: '',
 }
 
