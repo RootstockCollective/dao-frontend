@@ -19,7 +19,7 @@ interface TableProps extends HTMLAttributes<HTMLDivElement> {
  * you can create a custom table using the available components:
  * `Table`, `TableBody`, `TableCell`, `TableHead`, `TableRow`.
  */
-export const Table: FC<TableProps> = ({ data, className, equalColumns = true, ...props }) => {
+export const Table: FC<TableProps> = ({ data, equalColumns = true, ...props }) => {
   // calculate column width
   const header = Object.keys(data[0])
   if (header.length === 0) return <></>
