@@ -7,6 +7,7 @@
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
+    "lint:fix": "next lint --fix",
     "storybook": "storybook dev -p 6006",
     "build-storybook": "storybook build",
     "e2e-open": "start-server-and-test dev http://localhost:3000 \"cypress open --e2e\"",
@@ -14,6 +15,7 @@
   },
   "dependencies": {
     "classnames": "^2.5.1",
+    "jdenticon": "^3.3.0",
     "next": "14.2.3",
     "react": "^18",
     "react-dom": "^18",
