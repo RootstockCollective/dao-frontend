@@ -4,6 +4,7 @@ import classNames from 'classnames'
 
 interface Props {
   variant?: ParagraphVariants
+  className?: string
   children: ReactNode
 }
 
@@ -11,10 +12,12 @@ const DEFAULT_CLASSES = 'text-[1.4rem]'
 
 const classesByVariant: Record<ParagraphVariants, string> = {
   normal: 'font-bold',
-  'semibold': 'font-[600]',
+  semibold: 'font-[600]',
   light: '',
 }
 
-export const Paragraph: FC<Props> = ({ variant = 'normal', children }) => (
-  <Typography tagVariant='p' className={classNames(DEFAULT_CLASSES, classesByVariant[variant])}>{children}</Typography>
+export const Paragraph: FC<Props> = ({ variant = 'normal', className, children }) => (
+  <Typography tagVariant="p" className={classNames(DEFAULT_CLASSES, classesByVariant[variant], className)}>
+    {children}
+  </Typography>
 )
