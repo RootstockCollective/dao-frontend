@@ -2,7 +2,7 @@ import type { Meta, StoryObj } from '@storybook/react'
 import { ComparativeProgressBar } from '@/components/ComparativeProgressBar/ComparativeProgressBar'
 
 const meta = {
-  title: 'Component/ComparativeProgressBar',
+  title: 'Components/ComparativeProgressBar',
   component: ComparativeProgressBar,
 } satisfies Meta<typeof ComparativeProgressBar>
 
@@ -18,7 +18,7 @@ export const Default: Story = {
       { value: 10, color: 'var(--st-info)' }
     ]
   }
-} 
+}
 
 export const FiftyFifty: Story = {
   args: {
@@ -37,4 +37,4 @@ export const AbstainWinning: Story = {
       { value: 109, color: 'var(--text-light)' },
     ]
   }
-} 
+}
