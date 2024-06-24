@@ -1,14 +1,13 @@
 import { FC, ReactNode } from 'react'
-import { ButtonTypes, ButtonVariants } from '@/components/Button/types'
+import { ButtonVariants } from '@/components/Button/types'
 import classnames from 'classnames'
 
-export const BUTTON_DEFAULT_CLASSES = 'px-[24px] py-[20px] border-[1px] border-white flex gap-x-1 justify-center items-center relative'
+export const BUTTON_DEFAULT_CLASSES = 'px-[24px] py-[12px] flex gap-x-1 justify-center items-center relative'
 
 interface Props {
   text: string
   onClick: () => void
   startIcon?: ReactNode
-  type?: ButtonTypes
   variant?: ButtonVariants
   fullWidth?: boolean
 }
@@ -18,23 +17,23 @@ export const Button: FC<Props> = ({
   text,
   onClick,
   startIcon,
-  type = ButtonTypes.Square,
-  variant = ButtonVariants.Square,
+  variant = 'primary',
   fullWidth = false,
                                   }) => {
   const classes = classnames({
     [BUTTON_DEFAULT_CLASSES]: true,
+    'bg-primary rounded-[6px]': variant === 'primary',
+    'bg-transparent border-secondary rounded-[6px] border-[1px]': variant === 'secondary',
+    'bg-disabled-primary rounded-[6px]': variant === 'disabled',
     'w-full': fullWidth,
-    'rounded-full': type === ButtonTypes.Circle,
-    'rounded-[4px]': type === ButtonTypes.Square,
-    'bg-white': variant === ButtonVariants.White,
     'pl-9': startIcon,
     
   })
   
   const textClasses = classnames({
     'font-bold relative': true,
-    'text-black': variant === ButtonVariants.White
+    'text-secondary': variant === 'secondary',
+    'text-disabled-secondary': variant === 'disabled',
   })
   
   return (
@@ -43,7 +42,7 @@ export const Button: FC<Props> = ({
       className={classes}
       onClick={onClick}
     >
-      <span className={textClasses}><span className='absolute left-[-20px] top-[4px]'>{startIcon}</span>{text.toUpperCase()}</span>
+      <span className={textClasses}><span className='absolute left-[-20px] top-[4px]'>{startIcon}</span>{text}</span>
     </button>
   )
 }

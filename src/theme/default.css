@@ -5,14 +5,18 @@
 }
 
 html[data-theme='default'] {
-  --color-primary: rgba(117, 205, 255, 1);
-
+  --color-primary: rgba(102, 94, 246, 1);
+  --color-secondary: rgba(19, 194, 150, 1);
+  
   --background: #000;
   --foreground: rgba(37, 37, 37, 1);
 
   --text-primary: white;
   --text-secondary: rgba(184, 184, 184, 1);
   --text-light: rgba(113,113,113,1); /* For labels light */
+  
+  --disabled-primary: rgba(229, 231, 235, 1);
+  --disabled-secondary: rgba(136, 153, 168, 1);
   /* Statuses */
   --st-success: rgba(34, 173, 92, 1);
   --st-info: rgba(255, 153, 0, 1);

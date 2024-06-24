@@ -14,6 +14,7 @@ const config: Config = {
       },
       colors: {
         primary: 'var(--color-primary)',
+        secondary: 'var(--color-secondary)',
         background: 'var(--background)',
         foreground: 'var(--foreground)',
         'text-primary': 'var(--text-primary)',
@@ -23,6 +24,8 @@ const config: Config = {
         'st-error': 'var(--st-error)',
         'st-white': 'var(--st-white)',
         'text-light': 'var(--text-light)',
+        'disabled-primary': 'var(--disabled-primary)',
+        'disabled-secondary': 'var(--disabled-secondary)',
       },
     },
   },
