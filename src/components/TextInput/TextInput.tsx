@@ -64,7 +64,7 @@ export const TextInput: FC<Props> = ({
         {...inputProps}
       />
       {errorMessage && (
-        <div className='text-st-error mt-[5px]'><Paragraph variant='light'>{errorMessage}</Paragraph></div>
+        <div className='text-st-error mt-[5px]'><Paragraph variant='light' className='text-[14px]'>{errorMessage}</Paragraph></div>
       )}
     </>
   )
