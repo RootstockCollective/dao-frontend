@@ -14,13 +14,16 @@
     "e2e-test": "start-server-and-test dev http://localhost:3000 \"cypress run --e2e\""
   },
   "dependencies": {
+    "@rsksmart/rlogin": "^1.6.1",
     "classnames": "^2.5.1",
+    "ethers": "^6.13.1",
     "jdenticon": "^3.3.0",
     "next": "14.2.3",
     "react": "^18",
     "react-dom": "^18",
     "react-icons": "^5.2.1",
-    "viem": "^2.13.1"
+    "viem": "^2.13.1",
+    "zustand": "^4.5.2"
   },
   "devDependencies": {
     "@chromatic-com/storybook": "^1.5.0",
