@@ -12,6 +12,7 @@ interface Props {
   fullWidth?: boolean
   centerContent?: boolean
   className?: string
+  textClassName?: string
   buttonProps?: JSX.IntrinsicElements['button']
 }
 
@@ -23,6 +24,7 @@ export const Button: FC<Props> = ({
   fullWidth = false,
   centerContent = true,
   className = '',
+  textClassName = '',
   buttonProps = {},
 }) => {
   const classes = classnames({
@@ -43,6 +45,7 @@ export const Button: FC<Props> = ({
     'text-secondary': variant === 'secondary',
     'text-disabled-secondary': variant === 'disabled',
     'font-normal text-[rgba(255,255,255,0.8)]': variant === 'transparent',
+    [textClassName]: true,
   })
 
   return (
