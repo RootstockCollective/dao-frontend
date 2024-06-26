@@ -61,7 +61,7 @@ export const Disabled: Story = {
 
 export const TransparentOutline: Story = {
   args: {
-    text: 'Treasury',
+    children: 'Treasury',
     variant: 'transparent',
     onClick: () => console.log('Clicked'),
   }
