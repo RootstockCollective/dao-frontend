@@ -19,7 +19,7 @@ type Story = StoryObj<typeof meta>;
 
 export const Default: Story = {
   args: {
-    text: 'Custom Action',
+    children: 'Custom Action',
     fullWidth: false,
     onClick: () => console.log('Clicked'),
   }
@@ -27,7 +27,7 @@ export const Default: Story = {
 
 export const PrimaryWithIcon: Story = {
   args: {
-    text: 'Connect wallet',
+    children: 'Connect wallet',
     fullWidth: false,
     onClick: () => console.log('Clicked'),
     startIcon: <FaLink />,
@@ -36,7 +36,7 @@ export const PrimaryWithIcon: Story = {
 
 export const Secondary: Story = {
   args: {
-    text: 'Delegate',
+    children: 'Delegate',
     variant: 'secondary',
     onClick: () => console.log('Clicked'),
   }
@@ -44,7 +44,7 @@ export const Secondary: Story = {
 
 export const SecondaryWithIcon: Story = {
   args: {
-    text: 'Explore Communities',
+    children: 'Explore Communities',
     variant: 'secondary',
     onClick: () => console.log('Clicked'),
     startIcon: <FaLink fill='var(--color-secondary)' />,
@@ -53,7 +53,7 @@ export const SecondaryWithIcon: Story = {
 
 export const Disabled: Story = {
   args: {
-    text: 'Save & Continue',
+    children: 'Save & Continue',
     variant: 'disabled',
     onClick: () => console.log('Clicked'),
   }
@@ -69,7 +69,7 @@ export const TransparentOutline: Story = {
 
 export const Tested: Story = {
   args: {
-    text: 'Custom Action',
+    children: 'Custom Action',
     fullWidth: false,
     onClick: () => console.log('Clicked'),
   },

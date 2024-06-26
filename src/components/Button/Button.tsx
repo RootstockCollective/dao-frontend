@@ -5,27 +5,28 @@ import classnames from 'classnames'
 export const BUTTON_DEFAULT_CLASSES = 'px-[24px] py-[12px] flex gap-x-1 items-center relative'
 
 interface Props {
-  text: string
+  children: string
   onClick?: (e: MouseEvent<HTMLButtonElement>) => void
   startIcon?: ReactNode
   variant?: ButtonVariants
   fullWidth?: boolean
   centerContent?: boolean
   className?: string
+  textClassName?: string
   buttonProps?: JSX.IntrinsicElements['button']
 }
 
-
 export const Button: FC<Props> = ({
-  text,
+  children: text,
   onClick,
   startIcon,
   variant = 'primary',
   fullWidth = false,
   centerContent = true,
   className = '',
+  textClassName = '',
   buttonProps = {},
-                                  }) => {
+}) => {
   const classes = classnames({
     [BUTTON_DEFAULT_CLASSES]: true,
     'bg-primary rounded-[6px]': variant === 'primary',
@@ -44,16 +45,15 @@ export const Button: FC<Props> = ({
     'text-secondary': variant === 'secondary',
     'text-disabled-secondary': variant === 'disabled',
     'font-normal text-[rgba(255,255,255,0.8)]': variant === 'transparent',
+    [textClassName]: true,
   })
-  
+
   return (
-    <button
-      type='button'
-      className={classes}
-      onClick={onClick}
-      {...buttonProps}
-    >
-      <span className={textClasses}><span className='absolute left-[-20px] top-[4px]'>{startIcon}</span>{text}</span>
+    <button type="button" className={classes} onClick={onClick} {...buttonProps}>
+      <span className={textClasses}>
+        <span className="absolute left-[-20px] top-[4px]">{startIcon}</span>
+        {text}
+      </span>
     </button>
   )
 }
