@@ -29,8 +29,8 @@ export const Login = () => {
           <Button
             onClick={() => disconnect()}
             variant="secondary"
-            className="border-red-600"
-            textClassName="text-red-600"
+            className="border-orange-600"
+            textClassName="text-orange-600"
             startIcon={<FaLink />}
           >
             Disconnect
