@@ -1,5 +1,3 @@
-import { MouseEvent } from 'react'
-
 export type SidebarButtonType = 'communities' | 'treasury' | 'proposals' | 'user'
 
 export interface SidebarButtonsProps {
