@@ -9,39 +9,47 @@ export const SidebarButtons = ({ onClick, activeButton = 'communities' }: Sideba
   <div>
     <Button
       startIcon={<IoPeople />}
-      onClick={onClick}
+      onClick={() => onClick?.('communities')}
       fullWidth
       centerContent={false}
-      className='mb-[32px]'
+      className="mb-[32px]"
       buttonProps={{ id: 'Button_Communities', name: 'communities' }}
       variant={activeButton === 'communities' ? 'primary' : 'transparent'}
-    >Communities</Button>
+    >
+      Communities
+    </Button>
     <Button
       startIcon={<GrLineChart />}
-      onClick={onClick}
+      onClick={() => onClick?.('treasury')}
       fullWidth
       variant={activeButton === 'treasury' ? 'primary' : 'transparent'}
       centerContent={false}
-      className='mb-[32px]'
+      className="mb-[32px]"
       buttonProps={{ id: 'Button_Treasury', name: 'treasury' }}
-    >Treasury</Button>
+    >
+      Treasury
+    </Button>
     <Button
       startIcon={<RiContactsBookLine />}
-      onClick={onClick}
+      onClick={() => onClick?.('proposals')}
       fullWidth
       variant={activeButton === 'proposals' ? 'primary' : 'transparent'}
       centerContent={false}
-      className='mb-[32px]'
+      className="mb-[32px]"
       buttonProps={{ id: 'Button_Proposals', name: 'proposals' }}
-    >Proposals</Button>
+    >
+      Proposals
+    </Button>
     <Button
       startIcon={<MdPersonOutline />}
-      onClick={onClick}
+      onClick={() => onClick?.('user')}
       fullWidth
       variant={activeButton === 'user' ? 'primary' : 'transparent'}
       centerContent={false}
-      className='mb-[32px]'
+      className="mb-[32px]"
       buttonProps={{ id: 'Button_User', name: 'user' }}
-    >User</Button>
+    >
+      User
+    </Button>
   </div>
 )
