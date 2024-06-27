@@ -23,7 +23,7 @@ export const Login = () => {
 
   return (
     <div className={classNames(BACKGROUND_CLASSES, 'flex flex-col justify-center items-center h-screen')}>
-      <Logo className="mb-8" />
+      <Logo className="mb-8" textClassName="text-6xl" />
       <div className="flex space-x-4">
         {isConnected ? (
           <Button
