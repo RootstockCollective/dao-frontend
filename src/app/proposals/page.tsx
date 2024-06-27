@@ -109,7 +109,7 @@ const latestProposalsData = [
       />
     ),
     Status: (
-      <Button className="px-1 w-[85px] h-[26px] bg-green-600" textClassName="font-semibold text-sm">
+      <Button className="px-0 w-[85px] h-[26px] bg-green-600" textClassName="font-semibold text-sm">
         Success
       </Button>
     ),
@@ -127,7 +127,7 @@ const latestProposalsData = [
       />
     ),
     Status: (
-      <Button className="px-1 w-[85px] h-[26px] bg-red-600" textClassName="font-semibold text-sm">
+      <Button className="px-0 w-[85px] h-[26px] bg-red-600" textClassName="font-semibold text-sm">
         Rejected
       </Button>
     ),
@@ -146,7 +146,7 @@ const latestProposalsData = [
       />
     ),
     Status: (
-      <Button className="px-1 w-[85px] h-[26px] bg-yellow-600" textClassName="font-semibold text-sm">
+      <Button className="px-0 w-[85px] h-[26px] bg-yellow-600" textClassName="font-semibold text-sm">
         In progress
       </Button>
     ),
@@ -164,7 +164,7 @@ const latestProposalsData = [
       />
     ),
     Status: (
-      <Button className="px-1 w-[85px] h-[26px] bg-white" textClassName="font-semibold text-sm text-black">
+      <Button className="px-0 w-[85px] h-[26px] bg-white" textClassName="font-semibold text-sm text-black">
         Canceled
       </Button>
     ),
