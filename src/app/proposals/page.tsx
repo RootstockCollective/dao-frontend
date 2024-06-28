@@ -3,8 +3,10 @@ import { Button } from '@/components/Button'
 import { ComparativeProgressBar } from '@/components/ComparativeProgressBar/ComparativeProgressBar'
 import { MainContainer } from '@/components/MainContainer/MainContainer'
 import { MetricsCard } from '@/components/MetricsCard'
+import { Popover } from '@/components/Popover'
 import { Table } from '@/components/Table'
 import { Header } from '@/components/Typography'
+import { FaRegQuestionCircle } from 'react-icons/fa'
 import { FaPlus } from 'react-icons/fa6'
 
 export default function Proposals() {
@@ -35,9 +37,28 @@ const HeaderSection = () => (
   </div>
 )
 
+const PopoverContent = () => (
+  <>
+    <p className="font-bold mb-1">How is my voting power calculated?</p>
+    <p>
+      Your voting power is calculated as the number of tokens (votes) that have been delegated to you before
+      the proposal became active. You can delegate your votes to yourself, or to someone else. Others can also
+      delegate their votes to you.
+    </p>
+  </>
+)
+
+const VotingPowerPopover = () => (
+  <Popover content={<PopoverContent />}>
+    <span className="flex flex-row">
+      <p>My voting power</p>
+      <FaRegQuestionCircle className="ml-1" />
+    </span>
+  </Popover>
+)
 const MetricsSection = () => (
   <>
-    <MetricsCard borderless title="My voting power" amount="230" />
+    <MetricsCard borderless title={<VotingPowerPopover />} amount="230" />
     <div className="flex flex-row gap-x-6">
       <MetricsCard title="Votes" amount="235,23m" />
       <MetricsCard title="Total voting power delegated" amount="230" />

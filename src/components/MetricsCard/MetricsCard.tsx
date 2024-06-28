@@ -1,4 +1,4 @@
-import { FC } from 'react'
+import { FC, ReactNode } from 'react'
 import { Label } from '../Typography'
 import classNames from 'classnames'
 import { Paragraph } from '../Typography/Paragraph'
@@ -7,7 +7,7 @@ interface MetricsCardProps {
   /**
    * The title of the card, usually indicating the type of balance.
    */
-  title: string
+  title: ReactNode
   /**
    * The amount in tokens, e.g., `136.26 RIF`.
    */
