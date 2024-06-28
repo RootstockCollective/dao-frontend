@@ -1,3 +1,13 @@
+import { twMerge } from 'tailwind-merge'
+import { clsx, ClassValue } from 'clsx'
+
+/**
+ * Merges Tailwind and clsx classes in order to avoid classes conflicts.
+ * This is useful when you want to override default classes and/or add conditional classes.
+ * https://www.youtube.com/watch?v=re2JFITR7TI
+ */
+export const cn = (...inputs: ClassValue[]) => twMerge(clsx(inputs))
+
 /**
  * Shortens the address by keeping the first and last `amount` characters
  * @param address - The address to shorten

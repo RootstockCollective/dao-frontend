@@ -1,7 +1,7 @@
 'use client'
 import { Header } from '@/components/Header'
 import { StatefulSidebar } from '@/components/MainContainer/StatefulSidebar'
-import { shortAddress } from '@/utils'
+import { shortAddress } from '@/lib/utils'
 import { useRouter } from 'next/navigation'
 import { FC, ReactNode } from 'react'
 import { useAccount, useDisconnect } from 'wagmi'
