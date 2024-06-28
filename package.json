@@ -15,7 +15,6 @@
   },
   "dependencies": {
     "@tanstack/react-query": "^5.48.0",
-    "classnames": "^2.5.1",
     "clsx": "^2.1.1",
     "ethers": "^6.13.1",
     "jdenticon": "^3.3.0",
