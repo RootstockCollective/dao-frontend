@@ -1,7 +1,7 @@
 import { AccountAddress } from '@/components/Header/AccountAddress'
 
 interface Props {
-  address: string,
+  address: string | undefined
   shortAddress: string
   onLogoutClick?: () => void
 }
