@@ -1,6 +1,6 @@
+import { cn } from '@/lib/utils'
 import { FC, ReactNode } from 'react'
 import { Label } from '../Typography'
-import classNames from 'classnames'
 import { Paragraph } from '../Typography/Paragraph'
 
 interface MetricsCardProps {
@@ -32,7 +32,7 @@ const DEFAULT_CLASSES =
 export const MetricsCard: FC<MetricsCardProps> = ({ title, amount, fiatAmount, borderless = false }) => {
   const borderClasses = borderless ? '' : 'border border-white border-opacity-40 rounded-lg'
   return (
-    <div className={classNames(DEFAULT_CLASSES, borderClasses)}>
+    <div className={cn(DEFAULT_CLASSES, borderClasses)}>
       <Label className="text-sm text-[14px] tracking-wider">{title}</Label>
       <Paragraph variant="semibold" className="text-[2rem] leading-[2.5rem]">
         {amount}

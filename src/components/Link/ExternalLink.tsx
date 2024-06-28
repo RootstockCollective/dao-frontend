@@ -1,5 +1,5 @@
+import { cn } from '@/lib/utils'
 import { FC } from 'react'
-import classnames from 'classnames'
 import { PiArrowUpRightLight } from 'react-icons/pi'
 import { ExternalLinkProps } from './types'
 
@@ -18,14 +18,10 @@ export const ExternalLink: FC<ExternalLinkProps> = ({
   return (
     <Component
       {...props}
-      className={classnames(
+      className={cn(
         'inline-flex items-center gap-1.5 font-sora underline underline-offset-2 underline-thick hover:cursor-pointer w-fit',
-        {
-          'tracking-tight leading-tight text-base': variant === 'menu',
-        },
-        {
-          'leading-normal text-sm': variant === 'default',
-        },
+        { 'tracking-tight leading-tight text-base': variant === 'menu' },
+        { 'leading-normal text-sm': variant === 'default' },
         // combines hardcoded styles with classes coming from props
         className,
       )}

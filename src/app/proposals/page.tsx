@@ -4,6 +4,7 @@ import { ComparativeProgressBar } from '@/components/ComparativeProgressBar/Comp
 import { MainContainer } from '@/components/MainContainer/MainContainer'
 import { MetricsCard } from '@/components/MetricsCard'
 import { Popover } from '@/components/Popover'
+import { Status } from '@/components/Status'
 import { Table } from '@/components/Table'
 import { Header } from '@/components/Typography'
 import { FaRegQuestionCircle } from 'react-icons/fa'
@@ -129,11 +130,7 @@ const latestProposalsData = [
         ]}
       />
     ),
-    Status: (
-      <Button className="px-0 w-[85px] h-[26px] bg-green-600" textClassName="font-semibold text-sm">
-        Success
-      </Button>
-    ),
+    Status: <Status severity="success" />,
   },
   {
     'Proposal name': 'Crypto ipsum bitcoin',
@@ -147,11 +144,7 @@ const latestProposalsData = [
         ]}
       />
     ),
-    Status: (
-      <Button className="px-0 w-[85px] h-[26px] bg-red-600" textClassName="font-semibold text-sm">
-        Rejected
-      </Button>
-    ),
+    Status: <Status severity="rejected" />,
   },
   {
     'Proposal name': 'Crypto ipsum bitcoin',
@@ -166,11 +159,7 @@ const latestProposalsData = [
         ]}
       />
     ),
-    Status: (
-      <Button className="px-0 w-[85px] h-[26px] bg-yellow-600" textClassName="font-semibold text-sm">
-        In progress
-      </Button>
-    ),
+    Status: <Status severity="in-progress" />,
   },
   {
     'Proposal name': 'Crypto ipsum bitcoin',
@@ -184,11 +173,7 @@ const latestProposalsData = [
         ]}
       />
     ),
-    Status: (
-      <Button className="px-0 w-[85px] h-[26px] bg-white" textClassName="font-semibold text-sm text-black">
-        Canceled
-      </Button>
-    ),
+    Status: <Status severity="canceled" />,
   },
 ]
 

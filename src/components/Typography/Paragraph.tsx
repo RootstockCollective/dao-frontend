@@ -1,6 +1,6 @@
 import { ParagraphVariants, Typography } from '@/components/Typography'
+import { cn } from '@/lib/utils'
 import { FC, ReactNode } from 'react'
-import classNames from 'classnames'
 
 interface Props {
   variant?: ParagraphVariants
@@ -17,7 +17,7 @@ const classesByVariant: Record<ParagraphVariants, string> = {
 }
 
 export const Paragraph: FC<Props> = ({ variant = 'normal', className, children }) => (
-  <Typography tagVariant="p" className={classNames(DEFAULT_CLASSES, classesByVariant[variant], className)}>
+  <Typography tagVariant="p" className={cn(DEFAULT_CLASSES, classesByVariant[variant], className)}>
     {children}
   </Typography>
 )

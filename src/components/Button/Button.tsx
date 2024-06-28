@@ -1,7 +1,6 @@
-import { FC, ReactNode, MouseEvent, JSX } from 'react'
 import { ButtonVariants } from '@/components/Button/types'
-import classnames from 'classnames'
 import { cn } from '@/lib/utils'
+import { FC, JSX, MouseEvent, ReactNode } from 'react'
 
 export const BUTTON_DEFAULT_CLASSES = 'px-[24px] py-[12px] flex gap-x-1 items-center relative'
 
