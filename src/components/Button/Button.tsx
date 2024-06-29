@@ -1,6 +1,6 @@
-import { FC, ReactNode, MouseEvent, JSX } from 'react'
 import { ButtonVariants } from '@/components/Button/types'
-import classnames from 'classnames'
+import { cn } from '@/lib/utils'
+import { FC, JSX, MouseEvent, ReactNode } from 'react'
 
 export const BUTTON_DEFAULT_CLASSES = 'px-[24px] py-[12px] flex gap-x-1 items-center relative'
 
@@ -27,7 +27,7 @@ export const Button: FC<Props> = ({
   textClassName = '',
   buttonProps = {},
 }) => {
-  const classes = classnames({
+  const classes = cn({
     [BUTTON_DEFAULT_CLASSES]: true,
     'bg-primary rounded-[6px]': variant === 'primary',
     'bg-transparent border-secondary rounded-[6px] border-[1px]': variant === 'secondary',
@@ -40,7 +40,7 @@ export const Button: FC<Props> = ({
     [className]: true,
   })
 
-  const textClasses = classnames({
+  const textClasses = cn({
     'font-bold relative': true,
     'text-secondary': variant === 'secondary',
     'text-disabled-secondary': variant === 'disabled',

@@ -10,12 +10,8 @@ interface Props {
 export const AccountAddress = ({ address, shortAddress, onLogoutClick }: Props) => {
   return (
     <div className="flex justify-between items-center text-base">
-      {address && (
-        <div className="mr-2 rounded-full bg-white">
-          <Jdenticon size="24" value={address} />
-        </div>
-      )}
-      {shortAddress && <div className="mr-2 underline underline-offset-1">{shortAddress}</div>}
+      <div className="mr-2 rounded-full bg-white">{address && <Jdenticon size="24" value={address} />}</div>
+      <div className="mr-2 underline underline-offset-1">{shortAddress}</div>
       <FaPowerOff onClick={onLogoutClick} id="logOut" data-testid="Logout_Icon" />
     </div>
   )

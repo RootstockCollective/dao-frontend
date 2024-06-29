@@ -61,4 +61,3 @@ export const MenuInList: Story = {
     </ul>
   ),
 }
-

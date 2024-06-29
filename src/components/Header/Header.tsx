@@ -8,8 +8,8 @@ interface Props {
 
 export const Header = ({ address, shortAddress, onLogoutClick }: Props) => {
   return (
-    <header className="m-2">
-      <div className="flex justify-end p-4">
+    <header className="container my-8">
+      <div className="flex justify-end">
         <AccountAddress address={address} shortAddress={shortAddress} onLogoutClick={onLogoutClick} />
       </div>
     </header>

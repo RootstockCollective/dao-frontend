@@ -1,26 +1,31 @@
 import { StatusSeverity } from '@/components/Status/types'
-import { FC, JSX } from 'react'
 import { Paragraph } from '@/components/Typography/Paragraph'
-import classNames from 'classnames'
+import { cn } from '@/lib/utils'
+import { FC, JSX } from 'react'
 
-interface Status {
+type Props = JSX.IntrinsicElements['div'] & {
   severity: StatusSeverity
-  label: string
 }
 
-const DEFAULT_CLASSES = 'inline-block text-black rounded-[4px] px-[16px] py-[3px]'
+const DEFAULT_CLASSES = 'inline-block text-white text-center rounded-[4px] px-1 py-[3px] w-[86px] h-[26px]'
 
-export const Status: FC<Status & JSX.IntrinsicElements['div']> = ({ severity = 'success', label, ...rest }) => {
-  const classes = classNames({
+export const Status: FC<Props> = ({ severity = 'success', ...rest }) => {
+  const classes = cn({
     [DEFAULT_CLASSES]: true,
     'bg-st-success': severity === 'success',
     'bg-st-info': severity === 'in-progress',
     'bg-st-error': severity === 'rejected',
-    'bg-st-white': severity === 'cancelled'
+    'bg-st-white': severity === 'canceled',
+    'text-black': severity === 'canceled',
   })
+
+  let label = severity.charAt(0).toUpperCase() + severity.slice(1)
+  label = label.replace('-', ' ')
   return (
     <div className={classes} {...rest}>
-      <Paragraph variant='semibold'>{label}</Paragraph>
+      <Paragraph variant="semibold" className="text-[12px]">
+        {label}
+      </Paragraph>
     </div>
   )
 }

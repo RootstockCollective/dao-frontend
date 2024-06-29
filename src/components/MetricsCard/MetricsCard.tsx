@@ -1,13 +1,13 @@
-import { FC } from 'react'
+import { cn } from '@/lib/utils'
+import { FC, ReactNode } from 'react'
 import { Label } from '../Typography'
-import classNames from 'classnames'
 import { Paragraph } from '../Typography/Paragraph'
 
 interface MetricsCardProps {
   /**
    * The title of the card, usually indicating the type of balance.
    */
-  title: string
+  title: ReactNode
   /**
    * The amount in tokens, e.g., `136.26 RIF`.
    */
@@ -23,7 +23,8 @@ interface MetricsCardProps {
   borderless?: boolean
 }
 
-const DEFAULT_CLASSES = 'h-[7.5rem] pt-[12px] px-[16px] pb-[21px] flex flex-col justify-between'
+const DEFAULT_CLASSES =
+  'h-[7.5rem] w-[16.8125rem] pt-[12px] px-[16px] pb-[21px] flex flex-col justify-between'
 
 /**
  * Card for displaying balance and corresponding (fiat) value.
@@ -31,7 +32,7 @@ const DEFAULT_CLASSES = 'h-[7.5rem] pt-[12px] px-[16px] pb-[21px] flex flex-col 
 export const MetricsCard: FC<MetricsCardProps> = ({ title, amount, fiatAmount, borderless = false }) => {
   const borderClasses = borderless ? '' : 'border border-white border-opacity-40 rounded-lg'
   return (
-    <div className={classNames(DEFAULT_CLASSES, borderClasses)}>
+    <div className={cn(DEFAULT_CLASSES, borderClasses)}>
       <Label className="text-sm text-[14px] tracking-wider">{title}</Label>
       <Paragraph variant="semibold" className="text-[2rem] leading-[2.5rem]">
         {amount}

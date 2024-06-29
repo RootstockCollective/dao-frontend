@@ -1,11 +1,10 @@
+import { Label, Paragraph } from '@/components/Typography'
+import { cn } from '@/lib/utils'
 import { FC, JSX } from 'react'
-import classNames from 'classnames'
-import { Label } from '@/components/Typography'
-import { Paragraph } from '@/components/Typography/Paragraph'
 
 const DEFAULT_CLASSES = `
-px-[20px] py-[12px] 
-text-black bg-input-bg 
+px-[20px] py-[12px]
+text-black bg-input-bg
 text-text-primary
 rounded-[6px]
 border-[1px]
@@ -36,26 +35,26 @@ export const TextInput: FC<Props> = ({
   label,
   labelWrapperProps = {},
   inputProps = {},
-  errorMessage
+  errorMessage,
 }) => {
   const handleOnChange = (e: { target: { value: string } }) => onChange(e.target.value)
-  
-  const classes = classNames({
+
+  const classes = cn({
     [DEFAULT_CLASSES]: true,
     'w-full': fullWidth,
-    'border-st-error': errorMessage
+    'border-st-error': errorMessage,
   })
   return (
     <>
       {label && (
-        <div className='pb-[10px]' {...labelWrapperProps}>
+        <div className="pb-[10px]" {...labelWrapperProps}>
           <Label>{label}</Label>
         </div>
       )}
       <input
         className={classes}
         placeholder={placeholder}
-        type='text'
+        type="text"
         value={value}
         defaultValue={defaultValue}
         onChange={handleOnChange}
@@ -64,7 +63,11 @@ export const TextInput: FC<Props> = ({
         {...inputProps}
       />
       {errorMessage && (
-        <div className='text-st-error mt-[5px]'><Paragraph variant='light' className='text-[14px]'>{errorMessage}</Paragraph></div>
+        <div className="text-st-error mt-[5px]">
+          <Paragraph variant="light" className="text-[14px]">
+            {errorMessage}
+          </Paragraph>
+        </div>
       )}
     </>
   )
