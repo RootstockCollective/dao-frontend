@@ -1,4 +1,5 @@
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/Accordion'
+import { AccordionHeader } from '@radix-ui/react-accordion'
 import { Meta, StoryObj } from '@storybook/react'
 
 const meta = {
@@ -13,6 +14,7 @@ type Story = StoryObj<typeof meta>
 const AccordionTemplate = () => (
   <>
     <AccordionItem value="item-1">
+      <AccordionHeader>this is a header</AccordionHeader>
       <AccordionTrigger>Is it accessible?</AccordionTrigger>
       <AccordionContent>Yes. It adheres to the WAI-ARIA design pattern.</AccordionContent>
     </AccordionItem>
