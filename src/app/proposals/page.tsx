@@ -7,6 +7,7 @@ import { Popover } from '@/components/Popover'
 import { Status } from '@/components/Status'
 import { Table } from '@/components/Table'
 import { Header } from '@/components/Typography'
+import { useRouter } from 'next/navigation'
 import { FaRegQuestionCircle } from 'react-icons/fa'
 import { FaPlus } from 'react-icons/fa6'
 
@@ -26,17 +27,22 @@ export default function Proposals() {
   )
 }
 
-const HeaderSection = () => (
-  <div className="flex flex-row justify-between container pl-4">
-    <Header variant="h2" className="font-semibold">
-      My Governance
-    </Header>
-    <div className="flex flex-row gap-x-6">
-      <Button startIcon={<FaPlus />}>Create Proposal</Button>
-      <Button variant="secondary">Delegate</Button>
+const HeaderSection = () => {
+  const router = useRouter()
+  return (
+    <div className="flex flex-row justify-between container pl-4">
+      <Header variant="h2" className="font-semibold">
+        My Governance
+      </Header>
+      <div className="flex flex-row gap-x-6">
+        <Button startIcon={<FaPlus />} onClick={() => router.push('/proposals/create')}>
+          Create Proposal
+        </Button>
+        <Button variant="secondary">Delegate</Button>
+      </div>
     </div>
-  </div>
-)
+  )
+}
 
 const PopoverContent = () => (
   <>
