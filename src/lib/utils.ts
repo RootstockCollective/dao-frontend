@@ -1,5 +1,6 @@
 import { twMerge } from 'tailwind-merge'
 import { clsx, ClassValue } from 'clsx'
+import axios from 'axios'
 
 /**
  * Merges Tailwind and clsx classes in order to avoid classes conflicts.
@@ -21,3 +22,7 @@ export const shortAddress = (address: string | undefined, amount = 5): string =>
   }
   return `${address.slice(0, amount + 1)}...${address.slice(-amount)}`
 }
+
+export const axiosInstance = axios.create({
+  baseURL: process.env.NEXT_PUBLIC_RIF_WALLET_SERVICES
+})

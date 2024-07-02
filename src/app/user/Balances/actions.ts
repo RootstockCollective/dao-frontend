@@ -1,25 +1,23 @@
-// Balances
-
-// TODO use fetch(`https://rif-wallet-services.testnet.rifcomputing.net/address/${address}/tokens?chainId=31`) 
 import { GetAddressTokenResult, GetPricesResult } from '@/app/user/types'
+import { axiosInstance } from '@/lib/utils'
+import { fetchAddressTokensEndpoint, fetchPricesEndpoint } from '@/lib/endpoints'
+import { tokenContractsSymbolMap } from '@/lib/contracts'
 
-export const fetchAddressTokens = (address: string, chainId = 31) => fetch(
-  `http://localhost:3007/address/${address}/tokens?chainId=${chainId}`
+export const fetchAddressTokens = (address: string, chainId = 31) => axiosInstance.get<GetAddressTokenResult>(
+  fetchAddressTokensEndpoint
+    .replace('{{chainId}}', chainId.toString())
+    .replace('{{address}}', address)
 )
-  .then((data) => data.json() as Promise<GetAddressTokenResult>)
+  .then(({ data }) => data)
 
 // Prices
 
-// TODO add more contracts (RBTC, stRIF, etc...)
-const tokenContractsSymbolMap: Record<string, string> = {
-  '0x2acc95758f8b5f583470ba265eb685a8f45fc9d5': 'RIF',
-  '0x19f64674d8a5b4e652319f5e239efd3bc969a1fe': 'tRIF'
-}
-export const fetchPrices = () => fetch(
-  `http://localhost:3007/price?addresses=${Object.keys(tokenContractsSymbolMap).join(',')}&convert=USD`
+export const fetchPrices = () => axiosInstance.get<GetPricesResult>(
+  fetchPricesEndpoint
+  .replace('{{addresses}}', Object.keys(tokenContractsSymbolMap).join(','))
+  .replace('{{convert}}', 'USD')
 )
-  .then((data) => data.json() as Promise<GetPricesResult>)
-  .then((prices) => {
+  .then(({ data: prices }) => {
     const pricesReturn: GetPricesResult = {}
     for (const contract in prices) {
       if (contract in tokenContractsSymbolMap) {
