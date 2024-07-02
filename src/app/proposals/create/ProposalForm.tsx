@@ -1,6 +1,7 @@
 'use client'
 import { AccordionTrigger } from '@/components/Accordion'
 import { TextInput } from '@/components/TextInput'
+import { Textarea } from '@/components/Textarea'
 import { Header, Paragraph } from '@/components/Typography'
 import { AccordionContent } from '@radix-ui/react-accordion'
 
@@ -24,6 +25,14 @@ export const ProposalForm = () => {
           placeholder="name your proposal"
           onChange={() => {}}
           name="proposalName"
+          fullWidth
+          className="mb-6"
+        />
+        <Textarea
+          label="Description"
+          placeholder="Enter a description..."
+          onChange={() => {}}
+          name="description"
           fullWidth
           className="mb-6"
         />

@@ -24,11 +24,11 @@ interface Props {
   defaultValue?: string
   label?: string
   labelWrapperProps?: JSX.IntrinsicElements['div']
-  inputProps?: JSX.IntrinsicElements['input']
+  inputProps?: JSX.IntrinsicElements['textarea']
   errorMessage?: string
   className?: string
 }
-export const TextInput: FC<Props> = ({
+export const Textarea: FC<Props> = ({
   onChange,
   name,
   fullWidth = false,
@@ -55,15 +55,15 @@ export const TextInput: FC<Props> = ({
           <Label>{label}</Label>
         </div>
       )}
-      <input
+      <textarea
         className={classes}
         placeholder={placeholder}
-        type="text"
         value={value}
         defaultValue={defaultValue}
         onChange={handleOnChange}
         name={name}
         data-testid={name}
+        rows={10}
         {...inputProps}
       />
       {errorMessage && (
