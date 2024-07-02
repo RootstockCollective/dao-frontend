@@ -36,7 +36,7 @@ export default function CreateProposal() {
 
   return (
     <MainContainer>
-      <HeaderSection />
+      <HeaderSection disabled={!isProposalCompleted || !isActionsCompleted} />
       <Accordion
         type="single"
         collapsible
@@ -75,10 +75,7 @@ export default function CreateProposal() {
               className="mb-6 mx-1"
             />
             <div className="flex justify-center mb-6">
-              <Button
-                variant={isProposalCompleted ? 'primary' : 'disabled'}
-                onClick={handleProposalCompleted}
-              >
+              <Button disabled={!isProposalCompleted} onClick={handleProposalCompleted}>
                 Save & Continue
               </Button>
             </div>
@@ -116,7 +113,7 @@ export default function CreateProposal() {
               className="mb-6 mx-1"
             />
             <div className="flex justify-center mb-6">
-              <Button variant={isActionsCompleted ? 'primary' : 'disabled'} onClick={handleActionsCompleted}>
+              <Button disabled={!isActionsCompleted} onClick={handleActionsCompleted}>
                 Save & Continue
               </Button>
             </div>
@@ -127,13 +124,15 @@ export default function CreateProposal() {
   )
 }
 
-const HeaderSection = () => (
+const HeaderSection = ({ disabled = true }) => (
   <div className="flex flex-row justify-between container pl-4">
     <Header variant="h2" className="font-semibold font-[18px]">
       Create proposal
     </Header>
     <div className="flex flex-row gap-x-6">
-      <Button startIcon={<GoRocket />}>Publish</Button>
+      <Button startIcon={<GoRocket />} disabled={disabled}>
+        Publish
+      </Button>
     </div>
   </div>
 )
