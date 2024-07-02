@@ -29,8 +29,7 @@ const AccordionTemplate = () => (
   </>
 )
 
-export const SingleAndCollapsible: Story = {
-  args: {},
+export const SingleAndCollapsible: Omit<Story, 'args'> = {
   render: () => (
     <Accordion type="single" collapsible>
       <AccordionTemplate />
@@ -38,8 +37,7 @@ export const SingleAndCollapsible: Story = {
   ),
 }
 
-export const SingleAndNonCollapsible: Story = {
-  args: {},
+export const SingleAndNonCollapsible: Omit<Story, 'args'> = {
   render: () => (
     <Accordion type="single">
       <AccordionTemplate />
@@ -47,8 +45,7 @@ export const SingleAndNonCollapsible: Story = {
   ),
 }
 
-export const Multiple: Story = {
-  args: {},
+export const Multiple: Omit<Story, 'args'> = {
   render: () => (
     <Accordion type="multiple">
       <AccordionTemplate />

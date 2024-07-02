@@ -1,6 +1,6 @@
 import { Label, Paragraph } from '@/components/Typography'
 import { cn } from '@/lib/utils'
-import { FC, InputHTMLAttributes, JSX } from 'react'
+import { FC, JSX } from 'react'
 
 const DEFAULT_CLASSES = `
 px-[20px] py-[12px]
@@ -25,6 +25,7 @@ interface Props {
   label?: string
   labelWrapperProps?: JSX.IntrinsicElements['div']
   inputProps?: JSX.IntrinsicElements['input']
+  hint?: string
   errorMessage?: string
   className?: string
 }
@@ -38,6 +39,7 @@ export const TextInput: FC<Props> = ({
   label,
   labelWrapperProps = {},
   inputProps = {},
+  hint,
   errorMessage,
   className,
 }) => {
@@ -52,7 +54,7 @@ export const TextInput: FC<Props> = ({
     <div className={className}>
       {label && (
         <div className="pb-[10px]" {...labelWrapperProps}>
-          <Label>{label}</Label>
+          <Label variant="semibold">{label}</Label>
         </div>
       )}
       <input
@@ -66,9 +68,16 @@ export const TextInput: FC<Props> = ({
         data-testid={name}
         {...inputProps}
       />
-      {errorMessage && (
-        <div className="text-st-error mt-[5px]">
+      {hint && !errorMessage && (
+        <div className="text-st-hint mt-[5px]">
           <Paragraph variant="light" className="text-[14px]">
+            {hint}
+          </Paragraph>
+        </div>
+      )}
+      {errorMessage && (
+        <div className="mt-[5px]">
+          <Paragraph variant="error" className="text-[14px]">
             {errorMessage}
           </Paragraph>
         </div>

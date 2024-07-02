@@ -7,7 +7,7 @@ const DEFAULT_CLASSES = 'text-[1rem]'
 const classesByVariant: Record<LabelVariants, string> = {
   normal: 'font-light',
   light: 'text-text-light',
-  strong: 'font-bold',
+  semibold: 'font-[600]',
 }
 
 interface Props {

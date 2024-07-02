@@ -15,10 +15,9 @@ export const Default: Story = {
   args: {
     onChange: (val: string) => console.log(val),
     placeholder: 'test',
-    name: 'test'
-  }
+    name: 'test',
+  },
 }
-
 
 export const WithLabel: Story = {
   args: {
@@ -27,7 +26,7 @@ export const WithLabel: Story = {
     name: 'Proposal name',
     label: 'Proposal name',
     fullWidth: true,
-  }
+  },
 }
 
 export const WithError: Story = {
@@ -37,11 +36,22 @@ export const WithError: Story = {
     name: 'Proposal name',
     label: 'Proposal name',
     fullWidth: true,
-    errorMessage: 'This is an error message'
-  }
+    errorMessage: 'This is an error message',
+  },
 }
 
-export const UnControlledInputTest: Story = {
+export const WithHint: Story = {
+  args: {
+    onChange: (val: string) => console.log(val),
+    placeholder: 'name your proposal',
+    name: 'Proposal name',
+    label: 'Proposal name',
+    fullWidth: true,
+    hint: 'This is a hint',
+  },
+}
+
+export const UncontrolledInputTest: Story = {
   args: {
     onChange: (val: string) => console.log(val),
     placeholder: 'name your proposal',
@@ -55,7 +65,7 @@ export const UnControlledInputTest: Story = {
 
     await userEvent.type(input, 'Hello')
     await expect(input).toHaveValue('Hello')
-  }
+  },
 }
 
 export const ControlledInputTest: Story = {
@@ -73,5 +83,5 @@ export const ControlledInputTest: Story = {
 
     await userEvent.type(input, 'Hello')
     await expect(input).toHaveValue('Start')
-  }
+  },
 }
