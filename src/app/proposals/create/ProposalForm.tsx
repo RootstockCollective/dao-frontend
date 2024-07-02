@@ -1,5 +1,6 @@
 'use client'
 import { AccordionTrigger } from '@/components/Accordion'
+import { Button } from '@/components/Button'
 import { TextInput } from '@/components/TextInput'
 import { Textarea } from '@/components/Textarea'
 import { Header, Paragraph } from '@/components/Typography'
@@ -19,7 +20,7 @@ export const ProposalForm = () => {
           )}
         </div>
       </AccordionTrigger>
-      <AccordionContent className="pb-6">
+      <AccordionContent>
         <TextInput
           label="Proposal name"
           placeholder="name your proposal"
@@ -36,6 +37,9 @@ export const ProposalForm = () => {
           fullWidth
           className="mb-6"
         />
+        <div className="flex justify-center mb-6">
+          <Button variant="disabled">Save & Continue</Button>
+        </div>
       </AccordionContent>
     </>
   )
