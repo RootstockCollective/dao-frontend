@@ -18,21 +18,9 @@ export default function CreateProposal() {
   const isProposalCompleted = proposalName && description
   const isActionsCompleted = toAddress && amount
 
-  const handleProposalCompleted = () => {
-    if (!isActionsCompleted) {
-      setActiveStep('actions')
-    } else {
-      setActiveStep('')
-    }
-  }
+  const handleProposalCompleted = () => setActiveStep(isActionsCompleted ? '' : 'actions')
 
-  const handleActionsCompleted = () => {
-    if (!isProposalCompleted) {
-      setActiveStep('proposal')
-    } else {
-      setActiveStep('')
-    }
-  }
+  const handleActionsCompleted = () => setActiveStep(isProposalCompleted ? '' : 'proposal')
 
   return (
     <MainContainer>
