@@ -1,4 +1,6 @@
+'use client'
 import { AccordionTrigger } from '@/components/Accordion'
+import { TextInput } from '@/components/TextInput'
 import { Header, Paragraph } from '@/components/Typography'
 import { AccordionContent } from '@radix-ui/react-accordion'
 
@@ -16,7 +18,16 @@ export const ProposalForm = () => {
           )}
         </div>
       </AccordionTrigger>
-      <AccordionContent></AccordionContent>
+      <AccordionContent className="pb-6">
+        <TextInput
+          label="Proposal name"
+          placeholder="name your proposal"
+          onChange={() => {}}
+          name="proposalName"
+          fullWidth
+          className="mb-6"
+        />
+      </AccordionContent>
     </>
   )
 }

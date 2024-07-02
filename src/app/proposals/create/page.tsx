@@ -1,3 +1,4 @@
+'use client'
 import { Accordion, AccordionItem } from '@/components/Accordion'
 import { Button } from '@/components/Button'
 import { MainContainer } from '@/components/MainContainer/MainContainer'
@@ -10,16 +11,14 @@ export default function CreateProposal() {
   return (
     <MainContainer>
       <HeaderSection />
-      <div className="pl-4 container">
-        <Accordion type="single">
-          <AccordionItem value="Proposal">
-            <ProposalForm />
-          </AccordionItem>
-          <AccordionItem value="Action">
-            <ActionsForm />
-          </AccordionItem>
-        </Accordion>
-      </div>
+      <Accordion type="single" defaultValue="proposal" className="pl-4 container">
+        <AccordionItem value="proposal">
+          <ProposalForm />
+        </AccordionItem>
+        <AccordionItem value="action">
+          <ActionsForm />
+        </AccordionItem>
+      </Accordion>
     </MainContainer>
   )
 }

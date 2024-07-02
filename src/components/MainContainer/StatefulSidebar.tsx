@@ -6,11 +6,7 @@ import { usePathname, useRouter } from 'next/navigation'
 export const StatefulSidebar = () => {
   const router = useRouter()
   const pathname = usePathname().substring(1) as SidebarButtonType
-  const onSidebarNavigate = (activeButton: SidebarButtonType) => {
-    if (activeButton === 'proposals' || activeButton === 'treasury') {
-      router.push(`/${activeButton}`)
-    }
-  }
+  const onSidebarNavigate = (activeButton: SidebarButtonType) => router.push(`/${activeButton}`)
 
   return <LeftSidebar onSidebarButtonClick={onSidebarNavigate} activeButton={pathname} />
 }

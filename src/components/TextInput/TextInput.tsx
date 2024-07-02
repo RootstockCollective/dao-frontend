@@ -1,6 +1,6 @@
 import { Label, Paragraph } from '@/components/Typography'
 import { cn } from '@/lib/utils'
-import { FC, JSX } from 'react'
+import { FC, InputHTMLAttributes, JSX } from 'react'
 
 const DEFAULT_CLASSES = `
 px-[20px] py-[12px]
@@ -24,6 +24,7 @@ interface Props {
   labelWrapperProps?: JSX.IntrinsicElements['div']
   inputProps?: JSX.IntrinsicElements['input']
   errorMessage?: string
+  className?: string
 }
 export const TextInput: FC<Props> = ({
   onChange,
@@ -36,6 +37,7 @@ export const TextInput: FC<Props> = ({
   labelWrapperProps = {},
   inputProps = {},
   errorMessage,
+  className,
 }) => {
   const handleOnChange = (e: { target: { value: string } }) => onChange(e.target.value)
 
@@ -45,7 +47,7 @@ export const TextInput: FC<Props> = ({
     'border-st-error': errorMessage,
   })
   return (
-    <>
+    <div className={className}>
       {label && (
         <div className="pb-[10px]" {...labelWrapperProps}>
           <Label>{label}</Label>
@@ -69,6 +71,6 @@ export const TextInput: FC<Props> = ({
           </Paragraph>
         </div>
       )}
-    </>
+    </div>
   )
 }

@@ -1,3 +1,4 @@
+'use client'
 import { AccordionTrigger } from '@/components/Accordion'
 import { Header, Paragraph } from '@/components/Typography'
 import { AccordionContent } from '@radix-ui/react-accordion'
