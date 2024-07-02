@@ -5,5 +5,5 @@ interface Props {
 }
 export const RenderTokenPrice = ({ symbol }: Props) => {
   const { prices } = useBalancesContext()
-  return <p>= $ {prices[symbol.toLowerCase()].price ?? 1}</p>
+  return <p>= $ {prices[symbol.toLowerCase()].price ?? 0}</p>
 }
