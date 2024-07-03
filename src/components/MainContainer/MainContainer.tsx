@@ -30,7 +30,14 @@ export const MainContainer: FC<Props> = ({ children }) => {
         {isConnected && (
           <>
             <Header address={address} shortAddress={shortAddress(address)} onLogoutClick={modal.openModal} />
-            {modal.isModalOpened && <DisconnectWalletModal onClose={modal.closeModal} onConfirm={handleDisconnect} onCancel={modal.closeModal} />}
+            {modal.isModalOpened && (
+              <DisconnectWalletModal
+                onClose={modal.closeModal}
+                onConfirm={handleDisconnect}
+                onCancel={modal.closeModal}
+                address={address}
+              />
+            )}
           </>
         )}
         {children}
