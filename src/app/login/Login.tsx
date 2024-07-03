@@ -4,6 +4,7 @@ import { Logo } from '@/components/Header/Logo'
 import { cn } from '@/lib/utils'
 import { FaLink, FaUsers } from 'react-icons/fa6'
 import { useAccount, useConnect, useDisconnect } from 'wagmi'
+import { useRouter } from 'next/navigation'
 
 const BACKGROUND_CLASSES = 'bg-[url(../../public/images/login-bg.svg)] bg-cover'
 
@@ -12,9 +13,11 @@ export const Login = () => {
   const { disconnect } = useDisconnect()
   const { connectors, connect } = useConnect()
 
+  const router = useRouter()
+  
   const handleConnectWallet = () => {
     if (connectors.length) {
-      connect({ connector: connectors[connectors.length - 1] })
+      connect({ connector: connectors[connectors.length - 1] }, { onSuccess: () => router.push('/user') })
     }
   }
   const handleExploreCommunities = () => {
