@@ -24,5 +24,5 @@ export const shortAddress = (address: string | undefined, amount = 5): string =>
 }
 
 export const axiosInstance = axios.create({
-  baseURL: process.env.NEXT_PUBLIC_RIF_WALLET_SERVICES
+  baseURL: process.env.NEXT_PUBLIC_RIF_WALLET_SERVICES,
 })

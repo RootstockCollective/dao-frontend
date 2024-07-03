@@ -9,10 +9,10 @@ export const useGetAddressBalances = (): TokenBalanceRecord => {
   const rif = useMemo(() => getTokenBalance('RIF', query.data ?? []), [query.data])
   const rbtc = useMemo(() => getTokenBalance('rBTC', query.data ?? []), [query.data])
   // TODO get stRIF
-  const strif = useMemo(() => ({ balance: '0', symbol: 'stRIF' }), [query.data])
+  const strif = useMemo(() => ({ balance: '0', symbol: 'stRIF' }), [])
   return {
     rif,
     rbtc,
-    strif
+    strif,
   }
 }

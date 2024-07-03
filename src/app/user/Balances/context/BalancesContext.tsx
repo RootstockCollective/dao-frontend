@@ -4,8 +4,8 @@ import { useGetSpecificPrices } from '@/app/user/Balances/hooks/useGetSpecificPr
 import { GetPricesResult, TokenBalanceRecord } from '@/app/user/types'
 
 interface BalancesContextValue {
-  balances: TokenBalanceRecord,
-  prices: GetPricesResult,
+  balances: TokenBalanceRecord
+  prices: GetPricesResult
 }
 
 export const BalancesContext = createContext<BalancesContextValue>({
@@ -21,16 +21,15 @@ export const BalancesProvider: FC<BalancesProviderProps> = ({ children }) => {
   const balances = useGetAddressBalances()
   const prices = useGetSpecificPrices()
 
-  const valueOfContext = useMemo(() => ({
-    balances,
-    prices
-  }), [balances, prices])
-
-  return (
-    <BalancesContext.Provider value={valueOfContext}>
-      {children}
-    </BalancesContext.Provider>
+  const valueOfContext = useMemo(
+    () => ({
+      balances,
+      prices,
+    }),
+    [balances, prices],
   )
+
+  return <BalancesContext.Provider value={valueOfContext}>{children}</BalancesContext.Provider>
 }
 
 export const useBalancesContext = () => useContext(BalancesContext)

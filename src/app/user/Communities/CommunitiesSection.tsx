@@ -14,13 +14,15 @@ const communities: CommunityCardProps[] = []
 
 export const CommunitiesSection = () => (
   <div>
-    <Header variant='h2' className='mb-[32px]'>Communities (0)</Header>
-    {communities.length === 0 && (
-      <JoinACommunity />
-    )}
+    <Header variant="h2" className="mb-[32px]">
+      Communities (0)
+    </Header>
+    {communities.length === 0 && <JoinACommunity />}
     {communities.length > 1 && (
-      <div className='grid grid-cols-4 gap-[16px]'>
-        {communities.map(community => <CommunityCard key={community.title} {...community} />)}
+      <div className="grid grid-cols-4 gap-[16px]">
+        {communities.map(community => (
+          <CommunityCard key={community.title} {...community} />
+        ))}
       </div>
     )}
   </div>

@@ -18,10 +18,7 @@ export const ComparativeProgressBar: FC<Props> = ({ values }) => {
       {values.map(({ value, color }, index) => {
         const percentage = (value / total) * 100
         return (
-          <div
-            key={index}
-            style={{ width: `${percentage}%`, height: '6px', backgroundColor: color }}
-          ></div>
+          <div key={index} style={{ width: `${percentage}%`, height: '6px', backgroundColor: color }}></div>
         )
       })}
     </div>

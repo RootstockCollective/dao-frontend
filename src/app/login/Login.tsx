@@ -14,7 +14,7 @@ export const Login = () => {
   const { connectors, connect } = useConnect()
 
   const router = useRouter()
-  
+
   const handleConnectWallet = () => {
     if (connectors.length) {
       connect({ connector: connectors[connectors.length - 1] }, { onSuccess: () => router.push('/user') })
