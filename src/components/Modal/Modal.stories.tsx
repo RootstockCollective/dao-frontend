@@ -4,8 +4,8 @@ import { DisconnectWalletModal } from '@/app/login/DisconnectWalletModal'
 
 const meta = {
   component: Modal,
-  title: 'Components/Modal'
-}satisfies Meta<typeof Modal>
+  title: 'Components/Modal',
+} satisfies Meta<typeof Modal>
 
 export default meta
 
@@ -18,9 +18,9 @@ export const Default: Story = {
     width: 500,
   },
   render: () => (
-    <DisconnectWalletModal 
-      onCancel={() => console.log('test')} 
-      onClose={() => console.log('test')} 
+    <DisconnectWalletModal
+      onCancel={() => console.log('test')}
+      onClose={() => console.log('test')}
       onConfirm={() => console.log('Confirmed')}
     />
   ),

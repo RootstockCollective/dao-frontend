@@ -8,33 +8,32 @@ const data = [
   {
     token: 'Rootstock Infrastructure Framework',
     symbol: 'RIF',
-    tokenPrice: <RenderTokenPrice symbol='RIF' />,
-    totalBalance: <RenderTotalBalance symbol='RIF' />,
+    tokenPrice: <RenderTokenPrice symbol="RIF" />,
+    totalBalance: <RenderTotalBalance symbol="RIF" />,
     actions: <p>Stake</p>,
   },
   {
     token: 'Rootstock Infrastructure Framework',
     symbol: 'stRIF',
-    tokenPrice: <RenderTokenPrice symbol='stRIF' />,
-    totalBalance: <RenderTotalBalance symbol='stRIF' />,
+    tokenPrice: <RenderTokenPrice symbol="stRIF" />,
+    totalBalance: <RenderTotalBalance symbol="stRIF" />,
     actions: <p>Unstake</p>,
   },
   {
     token: 'Rootstock Bitcoin',
     symbol: 'rBTC',
-    tokenPrice: <RenderTokenPrice symbol='RBTC' />,
-    totalBalance: <RenderTotalBalance symbol='RBTC' />,
+    tokenPrice: <RenderTokenPrice symbol="RBTC" />,
+    totalBalance: <RenderTotalBalance symbol="RBTC" />,
     actions: '',
   },
 ]
 
 export const BalancesSection = () => {
   return (
-    <div className='mb-[32px]'>
-      <Header
-        variant='h2'
-        className='mb-[32px]'
-      >Balances</Header>
+    <div className="mb-[32px]">
+      <Header variant="h2" className="mb-[32px]">
+        Balances
+      </Header>
       <BalancesProvider>
         <Table data={data} />
       </BalancesProvider>

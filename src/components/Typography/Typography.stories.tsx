@@ -40,7 +40,7 @@ export const ParagraphLight: Omit<Story, 'args'> = {
 }
 
 export const ParagraphSemibold: Omit<Story, 'args'> = {
-  render: () => <Paragraph variant="semibold">This is a bold paragraph.</Paragraph>,
+  render: () => <Paragraph variant="semibold">This is a semi bold paragraph.</Paragraph>,
 }
 
 export const ParagraphError: Omit<Story, 'args'> = {

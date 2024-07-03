@@ -15,9 +15,9 @@ export const Default: Story = {
     values: [
       { value: 10, color: 'var(--st-success)' },
       { value: 10, color: 'var(--st-error)' },
-      { value: 10, color: 'var(--st-info)' }
-    ]
-  }
+      { value: 10, color: 'var(--st-info)' },
+    ],
+  },
 }
 
 export const FiftyFifty: Story = {
@@ -25,8 +25,8 @@ export const FiftyFifty: Story = {
     values: [
       { value: 50, color: 'var(--st-success)' },
       { value: 50, color: 'var(--st-error)' },
-    ]
-  }
+    ],
+  },
 }
 
 export const AbstainWinning: Story = {
@@ -35,6 +35,6 @@ export const AbstainWinning: Story = {
       { value: 10, color: 'var(--st-success)' },
       { value: 10, color: 'var(--st-error)' },
       { value: 109, color: 'var(--text-light)' },
-    ]
-  }
+    ],
+  },
 }
