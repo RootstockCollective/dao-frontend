@@ -28,6 +28,7 @@ const config: Config = {
         'disabled-secondary': 'var(--disabled-secondary)',
         'input-bg': 'var(--input-bg)',
         'input-placeholder': 'var(--input-placeholder)',
+        'link': 'var(--link)',
       },
       keyframes: {
         'accordion-down': {
