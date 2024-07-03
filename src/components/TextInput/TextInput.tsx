@@ -21,7 +21,6 @@ interface Props {
   fullWidth?: boolean
   value?: string
   placeholder?: string
-  defaultValue?: string
   label?: string
   labelWrapperProps?: JSX.IntrinsicElements['div']
   inputProps?: JSX.IntrinsicElements['input']
@@ -34,7 +33,6 @@ export const TextInput: FC<Props> = ({
   name,
   fullWidth = false,
   value,
-  defaultValue = '',
   placeholder,
   label,
   labelWrapperProps = {},
@@ -62,7 +60,6 @@ export const TextInput: FC<Props> = ({
         placeholder={placeholder}
         type="text"
         value={value}
-        defaultValue={defaultValue}
         onChange={handleOnChange}
         name={name}
         data-testid={name}

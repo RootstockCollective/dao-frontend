@@ -21,7 +21,6 @@ interface Props {
   fullWidth?: boolean
   value?: string
   placeholder?: string
-  defaultValue?: string
   label?: string
   labelWrapperProps?: JSX.IntrinsicElements['div']
   inputProps?: JSX.IntrinsicElements['textarea']
@@ -33,7 +32,6 @@ export const Textarea: FC<Props> = ({
   name,
   fullWidth = false,
   value,
-  defaultValue = '',
   placeholder,
   label,
   labelWrapperProps = {},
@@ -59,7 +57,6 @@ export const Textarea: FC<Props> = ({
         className={classes}
         placeholder={placeholder}
         value={value}
-        defaultValue={defaultValue}
         onChange={handleOnChange}
         name={name}
         data-testid={name}

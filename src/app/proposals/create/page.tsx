@@ -25,6 +25,7 @@ export default function CreateProposal() {
   return (
     <MainContainer>
       <HeaderSection disabled={!isProposalCompleted || !isActionsCompleted} />
+      {/* TODO: add an error alert when submiting form */}
       <Accordion
         type="single"
         collapsible
