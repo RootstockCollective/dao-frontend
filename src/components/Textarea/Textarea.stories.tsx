@@ -1,11 +1,11 @@
 import { Meta, StoryObj } from '@storybook/react'
-import { TextInput } from '@/components/TextInput/TextInput'
+import { Textarea } from '@/components/Textarea'
 import { userEvent, within, expect } from '@storybook/test'
 
 const meta = {
-  title: 'Components/TextInput',
-  component: TextInput,
-} satisfies Meta<typeof TextInput>
+  title: 'Components/Textarea',
+  component: Textarea,
+} satisfies Meta<typeof Textarea>
 
 export default meta
 
@@ -22,9 +22,9 @@ export const Default: Story = {
 export const WithLabel: Story = {
   args: {
     onChange: (val: string) => console.log(val),
-    placeholder: 'name your proposal',
-    name: 'Proposal name',
-    label: 'Proposal name',
+    placeholder: 'Enter a description...',
+    name: 'Description',
+    label: 'Description',
     fullWidth: true,
   },
 }
@@ -32,36 +32,25 @@ export const WithLabel: Story = {
 export const WithError: Story = {
   args: {
     onChange: (val: string) => console.log(val),
-    placeholder: 'name your proposal',
-    name: 'Proposal name',
-    label: 'Proposal name',
+    placeholder: 'Enter a description...',
+    name: 'Description',
+    label: 'Description',
     fullWidth: true,
     errorMessage: 'This is an error message',
   },
 }
 
-export const WithHint: Story = {
+export const UnControlledInputTest: Story = {
   args: {
     onChange: (val: string) => console.log(val),
-    placeholder: 'name your proposal',
-    name: 'Proposal name',
-    label: 'Proposal name',
-    fullWidth: true,
-    hint: 'This is a hint',
-  },
-}
-
-export const UncontrolledInputTest: Story = {
-  args: {
-    onChange: (val: string) => console.log(val),
-    placeholder: 'name your proposal',
-    name: 'proposal',
-    label: 'Proposal name',
+    placeholder: 'Enter a description...',
+    name: 'description',
+    label: 'Description',
     fullWidth: true,
   },
   play: async ({ canvasElement }) => {
     const canvas = within(canvasElement)
-    const input = canvas.getByTestId('proposal')
+    const input = canvas.getByTestId('description')
 
     await userEvent.type(input, 'Hello')
     await expect(input).toHaveValue('Hello')
@@ -71,15 +60,15 @@ export const UncontrolledInputTest: Story = {
 export const ControlledInputTest: Story = {
   args: {
     onChange: (val: string) => console.log(val),
-    placeholder: 'name your proposal',
-    name: 'proposal',
-    label: 'Proposal name',
+    placeholder: 'Enter a description...',
+    name: 'description',
+    label: 'Description',
     fullWidth: true,
     value: 'Start',
   },
   play: async ({ canvasElement }) => {
     const canvas = within(canvasElement)
-    const input = canvas.getByTestId('proposal')
+    const input = canvas.getByTestId('description')
 
     await userEvent.type(input, 'Hello')
     await expect(input).toHaveValue('Start')

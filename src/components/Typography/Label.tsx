@@ -2,12 +2,12 @@ import { LabelVariants, Typography } from '@/components/Typography'
 import { cn } from '@/lib/utils'
 import { FC, ReactNode } from 'react'
 
-const DEFAULT_CLASSES = 'text-[1.4rem]'
+const DEFAULT_CLASSES = 'text-[1rem]'
 
 const classesByVariant: Record<LabelVariants, string> = {
   normal: 'font-light',
   light: 'text-text-light',
-  strong: 'font-bold',
+  semibold: 'font-[600]',
 }
 
 interface Props {

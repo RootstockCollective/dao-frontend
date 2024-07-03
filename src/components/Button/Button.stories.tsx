@@ -1,5 +1,5 @@
 import type { Meta, StoryObj } from '@storybook/react'
-import { Button,  } from '@/components/Button'
+import { Button } from '@/components/Button'
 import { FaLink } from 'react-icons/fa'
 import { userEvent, within, expect, spyOn } from '@storybook/test'
 
@@ -8,21 +8,21 @@ const meta = {
   component: Button,
   argTypes: {
     variant: {
-      options: ['default','green'],
+      options: ['default', 'green'],
     },
-  }
+  },
 } satisfies Meta<typeof Button>
 
 export default meta
 
-type Story = StoryObj<typeof meta>;
+type Story = StoryObj<typeof meta>
 
 export const Default: Story = {
   args: {
     children: 'Custom Action',
     fullWidth: false,
     onClick: () => console.log('Clicked'),
-  }
+  },
 }
 
 export const PrimaryWithIcon: Story = {
@@ -31,7 +31,7 @@ export const PrimaryWithIcon: Story = {
     fullWidth: false,
     onClick: () => console.log('Clicked'),
     startIcon: <FaLink />,
-  }
+  },
 }
 
 export const Secondary: Story = {
@@ -39,7 +39,7 @@ export const Secondary: Story = {
     children: 'Delegate',
     variant: 'secondary',
     onClick: () => console.log('Clicked'),
-  }
+  },
 }
 
 export const SecondaryWithIcon: Story = {
@@ -47,16 +47,16 @@ export const SecondaryWithIcon: Story = {
     children: 'Explore Communities',
     variant: 'secondary',
     onClick: () => console.log('Clicked'),
-    startIcon: <FaLink fill='var(--color-secondary)' />,
-  }
+    startIcon: <FaLink fill="var(--color-secondary)" />,
+  },
 }
 
 export const Disabled: Story = {
   args: {
     children: 'Save & Continue',
-    variant: 'disabled',
+    disabled: true,
     onClick: () => console.log('Clicked'),
-  }
+  },
 }
 
 export const TransparentOutline: Story = {
@@ -64,7 +64,7 @@ export const TransparentOutline: Story = {
     children: 'Treasury',
     variant: 'transparent',
     onClick: () => console.log('Clicked'),
-  }
+  },
 }
 
 export const Tested: Story = {
@@ -84,5 +84,5 @@ export const Tested: Story = {
     await expect(consoleLogSpy).toHaveBeenCalledWith('Clicked')
 
     consoleLogSpy.mockRestore()
-  }
+  },
 }

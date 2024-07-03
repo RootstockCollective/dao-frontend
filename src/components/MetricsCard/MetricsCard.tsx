@@ -33,7 +33,7 @@ export const MetricsCard: FC<MetricsCardProps> = ({ title, amount, fiatAmount, b
   const borderClasses = borderless ? '' : 'border border-white border-opacity-40 rounded-lg'
   return (
     <div className={cn(DEFAULT_CLASSES, borderClasses)}>
-      <Label className="text-sm text-[14px] tracking-wider">{title}</Label>
+      <Label className="text-[14px] tracking-wider">{title}</Label>
       <Paragraph variant="semibold" className="text-[2rem] leading-[2.5rem]">
         {amount}
       </Paragraph>

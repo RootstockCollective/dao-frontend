@@ -21,30 +21,30 @@ const meta = {
 
 export default meta
 
-type Story = StoryObj<typeof meta>;
+type Story = StoryObj<typeof meta>
 
 export const H1: Omit<Story, 'args'> = {
-  render: () => (
-    <Header variant='h1'>TREASURY</Header>
-  ),
+  render: () => <Header variant="h1">TREASURY</Header>,
 }
 
 export const H2: Omit<Story, 'args'> = {
-  render: () => (
-    <Header variant='h2'>Heading 2</Header>
-  ),
+  render: () => <Header variant="h2">Heading 2</Header>,
 }
 
 export const ParagraphNormal: Omit<Story, 'args'> = {
-  render: () => (
-    <Paragraph>This is a normal paragraph.</Paragraph>
-  ),
+  render: () => <Paragraph>This is a normal paragraph.</Paragraph>,
 }
 
 export const ParagraphLight: Omit<Story, 'args'> = {
-  render: () => (
-    <Paragraph variant='light'>This is a light paragraph.</Paragraph>
-  ),
+  render: () => <Paragraph variant="light">This is a light paragraph.</Paragraph>,
+}
+
+export const ParagraphSemibold: Omit<Story, 'args'> = {
+  render: () => <Paragraph variant="semibold">This is a bold paragraph.</Paragraph>,
+}
+
+export const ParagraphError: Omit<Story, 'args'> = {
+  render: () => <Paragraph variant="error">This is a text with error</Paragraph>,
 }
 
 export const Span: Story = {
@@ -55,19 +55,13 @@ export const Span: Story = {
 }
 
 export const LabelNormal: Omit<Story, 'args'> = {
-  render: () => (
-    <Label>This is a label</Label>
-  ),
+  render: () => <Label>This is a label</Label>,
 }
 
-export const StrongLabel: Omit<Story, 'args'> = {
-  render: () => (
-    <Label variant='strong'>This is a strong label.</Label>
-  ),
+export const SemiboldLabel: Omit<Story, 'args'> = {
+  render: () => <Label variant="semibold">This is a semibold label.</Label>,
 }
 
-export const LighterLabel: Omit<Story, 'args'> = {
-  render: () => (
-    <Label variant='light'>This is a lighter label.</Label>
-  ),
+export const LightLabel: Omit<Story, 'args'> = {
+  render: () => <Label variant="light">This is a light label.</Label>,
 }
