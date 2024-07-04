@@ -11,13 +11,14 @@ interface Props {
 const DEFAULT_CLASSES = 'text-[1.4rem]'
 
 const classesByVariant: Record<ParagraphVariants, string> = {
-  normal: 'font-bold',
+  normal: '',
+  bold: 'font-bold',
   semibold: 'font-[600]',
   light: 'opacity-60',
   error: 'text-st-error',
 }
 
-export const Paragraph: FC<Props> = ({ variant = 'normal', className, children }) => (
+export const Paragraph: FC<Props> = ({ variant = 'bold', className, children }) => (
   <Typography tagVariant="p" className={cn(DEFAULT_CLASSES, classesByVariant[variant], className)}>
     {children}
   </Typography>

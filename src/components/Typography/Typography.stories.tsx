@@ -1,5 +1,5 @@
 import type { Meta, StoryObj } from '@storybook/react'
-import { Typography, Label } from '@/components/Typography'
+import { Typography } from '@/components/Typography'
 import { Paragraph } from '@/components/Typography/Paragraph'
 import { Header } from '@/components/Typography/Header'
 
@@ -52,16 +52,4 @@ export const Span: Story = {
     tagVariant: 'span',
     children: 'This is a span.',
   },
-}
-
-export const LabelNormal: Omit<Story, 'args'> = {
-  render: () => <Label>This is a label</Label>,
-}
-
-export const SemiboldLabel: Omit<Story, 'args'> = {
-  render: () => <Label variant="semibold">This is a semibold label.</Label>,
-}
-
-export const LightLabel: Omit<Story, 'args'> = {
-  render: () => <Label variant="light">This is a light label.</Label>,
 }

@@ -1,12 +1,25 @@
 'use client'
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/Accordion'
 import { Button } from '@/components/Button'
+import {
+  Form,
+  FormControl,
+  FormDescription,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from '@/components/Form'
 import { MainContainer } from '@/components/MainContainer/MainContainer'
 import { TextInput } from '@/components/TextInput'
 import { Textarea } from '@/components/Textarea'
 import { Header, Paragraph } from '@/components/Typography'
 import { useState } from 'react'
 import { GoRocket } from 'react-icons/go'
+import { useForm } from 'react-hook-form'
+import { Input } from '@/components/Input'
+import { z } from 'zod'
+import { zodResolver } from '@hookform/resolvers/zod'
 
 export default function CreateProposal() {
   const [activeStep, setActiveStep] = useState('proposal')
@@ -14,6 +27,20 @@ export default function CreateProposal() {
   const [description, setDescription] = useState('')
   const [toAddress, setToAddress] = useState('')
   const [amount, setAmount] = useState('')
+
+  const formSchema = z.object({
+    username: z.string().min(3),
+  })
+  const form = useForm<z.infer<typeof formSchema>>({
+    resolver: zodResolver(formSchema),
+    defaultValues: {
+      username: '',
+    },
+  })
+
+  const onSubmit = (data: z.infer<typeof formSchema>) => {
+    console.log(data)
+  }
 
   const isProposalCompleted = proposalName && description
   const isActionsCompleted = toAddress && amount
@@ -26,6 +53,22 @@ export default function CreateProposal() {
     <MainContainer>
       <HeaderSection disabled={!isProposalCompleted || !isActionsCompleted} />
       {/* TODO: add an error alert when submiting form */}
+      <Form {...form}>
+        <FormField
+          control={form.control}
+          name="username"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Username</FormLabel>
+              <FormControl>
+                <Input placeholder="shadcn" {...field} />
+              </FormControl>
+              <FormDescription>This is your public display name.</FormDescription>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+      </Form>
       <Accordion
         type="single"
         collapsible
