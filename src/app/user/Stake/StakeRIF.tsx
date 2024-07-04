@@ -21,9 +21,12 @@ export const StakeRIF = ({
   totalBalance,
   totalBalanceConverted,
 }: Props) => {
-  const onUserAmountInput = useCallback((value: string) => {
-    onAmountChange(value)
-  }, [])
+  const onUserAmountInput = useCallback(
+    (value: string) => {
+      onAmountChange(value)
+    },
+    [onAmountChange],
+  )
 
   const onPercentageButtonClick = useCallback(
     (percentageClicked: number) => onPercentageClicked(percentageClicked),
