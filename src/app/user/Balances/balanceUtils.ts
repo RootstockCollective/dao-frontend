@@ -19,6 +19,9 @@ export const getTokenBalance = (
     balance: '0',
     symbol: symbol as string,
   }
+  if (!Array.isArray(arrayToSearch)) {
+    return resultToReturn
+  }
 
   for (let equivalentSymbol of equivalentSymbols) {
     const tokenData = arrayToSearch.find(

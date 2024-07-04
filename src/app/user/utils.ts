@@ -10,3 +10,9 @@ export const useGetAddressTokens = () => {
     queryKey: ['tokens'],
   })
 }
+
+export const isValidNumber = (value: string) => {
+  // Regular expression to check if the input is a number with one allowed decimal
+  const regex = /^\d*\.?\d{0,2}$/
+  return regex.test(value)
+}

@@ -3,6 +3,8 @@ import { Table } from '@/components/Table'
 import { RenderTokenPrice } from '@/app/user/Balances/RenderTokenPrice'
 import { RenderTotalBalance } from '@/app/user/Balances/RenderTotalBalance'
 import { BalancesProvider } from '@/app/user/Balances/context/BalancesContext'
+import { StakingModal } from '@/app/user/Stake/StakingSteps'
+import { StakeRIFCell } from '@/app/user/Balances/StakeRIFCell'
 
 const data = [
   {
@@ -10,14 +12,14 @@ const data = [
     symbol: 'RIF',
     tokenPrice: <RenderTokenPrice symbol="RIF" />,
     totalBalance: <RenderTotalBalance symbol="RIF" />,
-    actions: <p>Stake</p>,
+    actions: <StakeRIFCell />,
   },
   {
     token: 'Rootstock Infrastructure Framework',
     symbol: 'stRIF',
     tokenPrice: <RenderTokenPrice symbol="stRIF" />,
     totalBalance: <RenderTotalBalance symbol="stRIF" />,
-    actions: <p>Unstake</p>,
+    actions: <p className="text-link underline">Unstake</p>,
   },
   {
     token: 'Rootstock Bitcoin',
@@ -35,6 +37,7 @@ export const BalancesSection = () => {
         Balances
       </Header>
       <BalancesProvider>
+        <StakingModal />
         <Table data={data} />
       </BalancesProvider>
     </div>
