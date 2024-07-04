@@ -24,12 +24,11 @@ const FormSchema = z.object({
   proposalName: z.string().min(3),
   description: z.string().min(3),
   toAddress: z.string().length(42),
-  amount: z.string(),
+  amount: z.string().min(1),
 })
 
 export default function CreateProposal() {
   const [activeStep, setActiveStep] = useState('proposal')
-  const [description, setDescription] = useState('')
 
   const form = useForm<z.infer<typeof FormSchema>>({
     resolver: zodResolver(FormSchema),
@@ -41,28 +40,38 @@ export default function CreateProposal() {
     },
   })
 
+  const {
+    control,
+    handleSubmit,
+    watch,
+    formState: { touchedFields, errors },
+  } = form
+  const isProposalNameValid = !errors.proposalName && touchedFields.proposalName
+  const isDescriptionValid = !errors.description && touchedFields.description
+  const isToAddressValid = !errors.toAddress && touchedFields.toAddress
+  const isAmountValid = !errors.amount && touchedFields.amount
+  const isProposalCompleted = isProposalNameValid && isDescriptionValid
+  const isActionsCompleted = isToAddressValid && isAmountValid
+
   const onSubmit = (data: z.infer<typeof FormSchema>) => {
     console.log(data)
   }
-
-  const isProposalCompleted = false
-  const isActionsCompleted = false
 
   const handleProposalCompleted = () => setActiveStep(isActionsCompleted ? '' : 'actions')
 
   const handleActionsCompleted = () => setActiveStep(isProposalCompleted ? '' : 'proposal')
 
   useEffect(() => {
-    const sub = form.watch((value, { name, type }) => {
+    const sub = watch((value, { name, type }) => {
       console.log(value, name, type)
     })
     return () => sub.unsubscribe()
-  }, [form, form.watch])
+  }, [watch])
 
   return (
     <MainContainer>
       <Form {...form}>
-        <form onSubmit={form.handleSubmit(onSubmit)}>
+        <form onSubmit={handleSubmit(onSubmit)}>
           <HeaderSection disabled={!isProposalCompleted || !isActionsCompleted} />
           {/* TODO: add an error alert when submiting form */}
           <Accordion
@@ -85,7 +94,7 @@ export default function CreateProposal() {
               </AccordionTrigger>
               <AccordionContent>
                 <FormField
-                  control={form.control}
+                  control={control}
                   name="proposalName"
                   render={({ field }) => (
                     <FormItem className="mb-6 mx-1">
@@ -97,14 +106,18 @@ export default function CreateProposal() {
                     </FormItem>
                   )}
                 />
-                <Textarea
-                  label="Description"
-                  placeholder="Enter a description..."
-                  value={description}
-                  onChange={setDescription}
+                <FormField
+                  control={control}
                   name="description"
-                  fullWidth
-                  className="mb-6 mx-1"
+                  render={({ field }) => (
+                    <FormItem className="mb-6 mx-1">
+                      <FormLabel>Description</FormLabel>
+                      <FormControl>
+                        <Textarea placeholder="Enter a description..." {...field} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
                 />
                 <div className="flex justify-center mb-6">
                   <Button disabled={!isProposalCompleted} onClick={handleProposalCompleted}>
@@ -126,7 +139,7 @@ export default function CreateProposal() {
               </AccordionTrigger>
               <AccordionContent>
                 <FormField
-                  control={form.control}
+                  control={control}
                   name="toAddress"
                   render={({ field }) => (
                     <FormItem className="mb-6 mx-1">
@@ -140,7 +153,7 @@ export default function CreateProposal() {
                   )}
                 />
                 <FormField
-                  control={form.control}
+                  control={control}
                   name="amount"
                   render={({ field }) => (
                     <FormItem className="mb-6 mx-1">
@@ -174,7 +187,7 @@ const HeaderSection = ({ disabled = true }) => (
       Create proposal
     </Header>
     <div className="flex flex-row gap-x-6">
-      <Button startIcon={<GoRocket />} buttonProps={{ type: 'submit' }}>
+      <Button startIcon={<GoRocket />} disabled={disabled} buttonProps={{ type: 'submit' }}>
         Publish
       </Button>
     </div>
