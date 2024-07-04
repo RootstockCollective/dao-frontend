@@ -29,7 +29,7 @@ export const StepOne = ({ onGoNext }: StepProps) => {
       amount={amount}
       onAmountChange={onAmountChange}
       onPercentageClicked={onPercentageClicked}
-      onGoNext={onGoNext ? onGoNext : () => {}}
+      onGoNext={onGoNext || (() => {})}
       shouldEnableGoNext={shouldEnableGoNext}
       totalBalance={RIFTotalBalance.toString()}
       totalBalanceConverted={'$ USD ' + RIFTotalBalanceConverted.toString()}
