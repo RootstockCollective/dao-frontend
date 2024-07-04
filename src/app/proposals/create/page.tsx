@@ -12,11 +12,13 @@ import {
 } from '@/components/Form'
 import { Input } from '@/components/Input'
 import { MainContainer } from '@/components/MainContainer/MainContainer'
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/Select'
 import { Textarea } from '@/components/Textarea'
 import { Header, Paragraph } from '@/components/Typography'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useEffect, useState } from 'react'
 import { useForm } from 'react-hook-form'
+import { FaBitcoin } from 'react-icons/fa6'
 import { GoRocket } from 'react-icons/go'
 import { z } from 'zod'
 
@@ -24,6 +26,7 @@ const FormSchema = z.object({
   proposalName: z.string().min(3),
   description: z.string().min(3),
   toAddress: z.string().length(42),
+  tokenSymbol: z.string(),
   amount: z.string().min(1),
 })
 
@@ -54,6 +57,7 @@ export default function CreateProposal() {
   const isActionsCompleted = isToAddressValid && isAmountValid
 
   const onSubmit = (data: z.infer<typeof FormSchema>) => {
+    // TODO: connect to contract
     console.log(data)
   }
 
@@ -73,7 +77,7 @@ export default function CreateProposal() {
       <Form {...form}>
         <form onSubmit={handleSubmit(onSubmit)}>
           <HeaderSection disabled={!isProposalCompleted || !isActionsCompleted} />
-          {/* TODO: add an error alert when submiting form */}
+          {/* TODO: add an error alert when submiting form if exists */}
           <Accordion
             type="single"
             collapsible
@@ -152,20 +156,56 @@ export default function CreateProposal() {
                     </FormItem>
                   )}
                 />
-                <FormField
-                  control={control}
-                  name="amount"
-                  render={({ field }) => (
-                    <FormItem className="mb-6 mx-1">
-                      <FormLabel>Amount</FormLabel>
-                      <FormControl>
-                        <Input placeholder="0.00" type="number" className="w-auto" {...field} />
-                      </FormControl>
-                      <FormDescription>= $ USD 0.00</FormDescription>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
+                <div className="flex flex-row">
+                  <FormField
+                    control={control}
+                    name="tokenSymbol"
+                    render={({ field }) => (
+                      <FormItem className="mb-6 mx-1">
+                        <FormLabel>Change Asset</FormLabel>
+                        <FormControl>
+                          <Select onValueChange={field.onChange} defaultValue={field.value}>
+                            <FormControl>
+                              <SelectTrigger>
+                                <SelectValue placeholder="Select an asset" />
+                              </SelectTrigger>
+                            </FormControl>
+                            <SelectContent>
+                              <SelectItem value="RBTC">
+                                <div className="flex items-center">
+                                  {/* TODO: token icon */}
+                                  <FaBitcoin className="mr-2" />
+                                  RBTC
+                                </div>
+                              </SelectItem>
+                              <SelectItem value="stRIF">
+                                <div className="flex items-center">
+                                  <FaBitcoin className="mr-2" />
+                                  stRIF
+                                </div>
+                              </SelectItem>
+                            </SelectContent>
+                          </Select>
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  <FormField
+                    control={control}
+                    name="amount"
+                    render={({ field }) => (
+                      <FormItem className="mb-6 mx-1">
+                        <FormLabel>Amount</FormLabel>
+                        <FormControl>
+                          <Input placeholder="0.00" type="number" className="w-64" {...field} />
+                        </FormControl>
+                        <FormDescription>= $ USD 0.00</FormDescription>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                </div>
 
                 <div className="flex justify-center mb-6">
                   <Button disabled={!isActionsCompleted} onClick={handleActionsCompleted}>

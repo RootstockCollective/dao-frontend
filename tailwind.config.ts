@@ -28,7 +28,7 @@ const config: Config = {
         'disabled-secondary': 'var(--disabled-secondary)',
         'input-bg': 'var(--input-bg)',
         'input-placeholder': 'var(--input-placeholder)',
-        'link': 'var(--link)',
+        link: 'var(--link)',
       },
       keyframes: {
         'accordion-down': {
@@ -46,7 +46,7 @@ const config: Config = {
       },
     },
   },
-  plugins: [],
+  plugins: [require('tailwindcss-animate')],
 }
 
 export default config

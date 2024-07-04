@@ -7,7 +7,8 @@ export interface TextareaProps extends React.TextareaHTMLAttributes<HTMLTextArea
 
 const DEFAULT_CLASSES = `
 flex w-full
-px-[20px] py-[12px]
+p-[12px]
+justify-between
 text-black bg-input-bg
 text-text-primary
 rounded-md
