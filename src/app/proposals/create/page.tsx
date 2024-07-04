@@ -65,6 +65,7 @@ export default function CreateProposal() {
 
   const handleActionsCompleted = () => setActiveStep(isProposalCompleted ? '' : 'proposal')
 
+  // remove later, just for debugging
   useEffect(() => {
     const sub = watch((value, { name, type }) => {
       console.log(value, name, type)
@@ -77,7 +78,7 @@ export default function CreateProposal() {
       <Form {...form}>
         <form onSubmit={handleSubmit(onSubmit)}>
           <HeaderSection disabled={!isProposalCompleted || !isActionsCompleted} />
-          {/* TODO: add an error alert when submiting form if exists */}
+          {/* TODO: add an error alert when submiting form */}
           <Accordion
             type="single"
             collapsible

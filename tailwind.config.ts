@@ -29,6 +29,14 @@ const config: Config = {
         'input-bg': 'var(--input-bg)',
         'input-placeholder': 'var(--input-placeholder)',
         link: 'var(--link)',
+        popover: {
+          DEFAULT: 'var(--background)',
+          foreground: 'var(--text-primary)',
+        },
+        accent: {
+          DEFAULT: 'var(--input-bg)',
+          foreground: 'var(--text-primary)',
+        },
       },
       keyframes: {
         'accordion-down': {
