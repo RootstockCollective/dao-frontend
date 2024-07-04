@@ -3,7 +3,5 @@ import { StepProps } from '@/app/user/Stake/types'
 
 export const StepThree = ({ onCloseModal }: StepProps) => {
   // TODO get TX info and render
-  return (
-    <StakeStatus onReturnToBalances={onCloseModal ? onCloseModal : () => {}} />
-  )
+  return <StakeStatus onReturnToBalances={onCloseModal ? onCloseModal : () => {}} />
 }

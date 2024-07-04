@@ -22,7 +22,7 @@ export const getTokenBalance = (
   if (!Array.isArray(arrayToSearch)) {
     return resultToReturn
   }
-  
+
   for (let equivalentSymbol of equivalentSymbols) {
     const tokenData = arrayToSearch.find(
       token => token.symbol.toLowerCase() === equivalentSymbol.toLowerCase(),

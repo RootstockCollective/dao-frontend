@@ -6,7 +6,6 @@ interface Props {
   value: string
 }
 export const StakeInput = ({ onChange, value }: Props) => {
-  
   const handleChange = (value: string) => {
     if (isValidNumber(value)) {
       onChange(value)
@@ -14,11 +13,11 @@ export const StakeInput = ({ onChange, value }: Props) => {
   }
   return (
     <TextInput
-      label='Amount to stake'
-      placeholder='RIF Amount'
+      label="Amount to stake"
+      placeholder="RIF Amount"
       onChange={handleChange}
       value={value}
-      name='test'
+      name="amount-stake"
       fullWidth
     />
   )

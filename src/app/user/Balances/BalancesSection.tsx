@@ -10,16 +10,16 @@ const data = [
   {
     token: 'Rootstock Infrastructure Framework',
     symbol: 'RIF',
-    tokenPrice: <RenderTokenPrice symbol='RIF' />,
-    totalBalance: <RenderTotalBalance symbol='RIF' />,
+    tokenPrice: <RenderTokenPrice symbol="RIF" />,
+    totalBalance: <RenderTotalBalance symbol="RIF" />,
     actions: <StakeRIFCell />,
   },
   {
     token: 'Rootstock Infrastructure Framework',
     symbol: 'stRIF',
-    tokenPrice: <RenderTokenPrice symbol='stRIF' />,
-    totalBalance: <RenderTotalBalance symbol='stRIF' />,
-    actions: <p className='text-link underline'>Unstake</p>,
+    tokenPrice: <RenderTokenPrice symbol="stRIF" />,
+    totalBalance: <RenderTotalBalance symbol="stRIF" />,
+    actions: <p className="text-link underline">Unstake</p>,
   },
   {
     token: 'Rootstock Bitcoin',

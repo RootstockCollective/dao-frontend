@@ -3,9 +3,9 @@ import { ReactNode } from 'react'
 export interface StakePreviewBalanceProps {
   topLeftText: string
   amountToSend: string
-  amountToSendConverted: string,
-  balance: string,
-  tokenName: string,
+  amountToSendConverted: string
+  balance: string
+  tokenName: string
   tokenSymbol: string | ReactNode
 }
 

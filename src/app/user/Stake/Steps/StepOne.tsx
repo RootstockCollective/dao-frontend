@@ -6,9 +6,12 @@ import { StepProps } from '@/app/user/Stake/types'
 export const StepOne = ({ onGoNext }: StepProps) => {
   const { amount, onAmountChange, balances, prices } = useStakingContext()
   const RIFTotalBalance = useMemo(() => Number(balances.rif?.balance) ?? 0, [balances])
-  
-  const RIFTotalBalanceConverted = useMemo(() => (prices.rif.price ?? 0) * RIFTotalBalance, [prices, RIFTotalBalance])
-  
+
+  const RIFTotalBalanceConverted = useMemo(
+    () => (prices.rif.price ?? 0) * RIFTotalBalance,
+    [prices, RIFTotalBalance],
+  )
+
   const onPercentageClicked = (percentage: number) => {
     onAmountChange((RIFTotalBalance * (percentage / 100)).toString())
   }
@@ -18,11 +21,7 @@ export const StepOne = ({ onGoNext }: StepProps) => {
       return false
     }
 
-    if (Number(amount) > RIFTotalBalance) {
-      return false
-    }
-
-    return true
+    return Number(amount) <= RIFTotalBalance
   }, [amount, RIFTotalBalance])
 
   return (
