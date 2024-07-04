@@ -3,26 +3,29 @@ import { StepProps } from '@/app/user/Stake/types'
 import { useStakingContext } from '@/app/user/Stake/StakingContext'
 import { useMemo } from 'react'
 
-const TEST_TO = {
-  amountToSend: '0.44',
-  amountToSendConverted: 'USD 40.20',
-  balance: '2,323.00',
-  tokenName: 'stRIF',
-  tokenSymbol: 'stRIF',
-}
-
 export const StepTwo = ({ onGoNext, onCloseModal }: StepProps) => {
-  const { amount, prices, balances } = useStakingContext()
+  const { amount, prices, balances, symbolUsed } = useStakingContext()
   // We always assume we're staking RIF (RIF to STRIF)
   const from = useMemo(
     () => ({
-      amountToSend: amount,
-      amountToSendConverted: (prices['rif'].price * Number(amount) ?? 0).toString(),
+      amount,
+      amountConvertedToCurrency: '$ USD ' + (prices['rif'].price * Number(amount) ?? 0).toString(),
       balance: balances.rif.balance ?? 0,
-      tokenName: 'RIF',
-      tokenSymbol: 'RIF',
+      tokenName: symbolUsed,
+      tokenSymbol: symbolUsed,
     }),
-    [amount, balances.rif.balance, prices],
+    [amount, balances.rif.balance, prices, symbolUsed],
+  )
+
+  const to = useMemo(
+    () => ({
+      amount, // TODO: Multiply token amount by equivalency price (e.g., 1 RIF * 2 stRIF = 2 stRIF)
+      amountConvertedToCurrency: '$ USD ' + (prices['strif'].price * Number(amount) ?? 0).toString(),
+      balance: balances.strif.balance ?? 0,
+      tokenName: 'stRIF',
+      tokenSymbol: 'stRIF',
+    }),
+    [amount, balances.strif.balance, prices],
   )
 
   const onConfirm = () => {
@@ -38,7 +41,7 @@ export const StepTwo = ({ onGoNext, onCloseModal }: StepProps) => {
       onConfirm={onConfirm}
       onCancel={onCloseModal ? onCloseModal : () => {}}
       from={from}
-      to={TEST_TO}
+      to={to}
     />
   )
 }

@@ -3,8 +3,8 @@ import { StakePreviewBalanceProps } from '@/app/user/Stake/types'
 
 export const StakePreviewBalance = ({
   topLeftText,
-  amountToSend,
-  amountToSendConverted,
+  amount,
+  amountConvertedToCurrency,
   balance,
   tokenName,
   tokenSymbol,
@@ -13,8 +13,8 @@ export const StakePreviewBalance = ({
     <div>
       <Paragraph variant="light">{topLeftText}</Paragraph>
       <div className="flex mt-[8px] gap-4">
-        <Paragraph>{amountToSend}</Paragraph>
-        <Label variant="light">= {amountToSendConverted}</Label>
+        <Paragraph>{amount}</Paragraph>
+        <Label variant="light">= {amountConvertedToCurrency}</Label>
       </div>
     </div>
     <div>

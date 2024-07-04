@@ -1,5 +1,5 @@
 import { BigNumberish, ethers } from 'ethers'
-import { GetAddressTokenResult, TokenBalance } from '@/app/user/types'
+import { GetAddressTokenResult, TokenBalance, TokenBalanceRecord } from '@/app/user/types'
 
 export const formatBalanceToHuman = (balance: BigNumberish, decimal = 18) =>
   ethers.formatUnits(balance, decimal)
@@ -7,10 +7,13 @@ export const formatBalanceToHuman = (balance: BigNumberish, decimal = 18) =>
 const symbolsToGetFromArray = {
   RIF: { equivalentSymbols: ['tRIF', 'RIF'] },
   rBTC: { equivalentSymbols: ['rBTC'] },
+  stRIF: { equivalentSymbols: ['stRIF'] },
 }
 
+export type SymbolsEquivalentKeys = keyof typeof symbolsToGetFromArray
+
 export const getTokenBalance = (
-  symbol: keyof typeof symbolsToGetFromArray,
+  symbol: SymbolsEquivalentKeys,
   arrayToSearch: GetAddressTokenResult,
 ): TokenBalance => {
   const { equivalentSymbols } = symbolsToGetFromArray[symbol]
@@ -34,4 +37,14 @@ export const getTokenBalance = (
     }
   }
   return resultToReturn
+}
+
+export const getActualUsedSymbol = (symbol: SymbolsEquivalentKeys, mapToSearch: TokenBalanceRecord) => {
+  for (let equivalentSymbol of symbolsToGetFromArray[symbol].equivalentSymbols) {
+    const token = mapToSearch[equivalentSymbol.toLowerCase()]
+    if (token) {
+      return token.symbol
+    }
+  }
+  return symbol
 }

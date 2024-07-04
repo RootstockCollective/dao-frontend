@@ -1,12 +1,14 @@
 import { createContext, FC, ReactNode, useCallback, useContext, useMemo, useState } from 'react'
 import { useBalancesContext } from '@/app/user/Balances/context/BalancesContext'
 import { GetPricesResult, TokenBalanceRecord } from '@/app/user/types'
+import { getActualUsedSymbol } from '@/app/user/Balances/balanceUtils'
 
 interface StakingContextProps {
   balances: TokenBalanceRecord
   prices: GetPricesResult
   amount: string
   onAmountChange: (amount: string) => void
+  symbolUsed: string
 }
 
 const StakingContext = createContext<StakingContextProps>({
@@ -14,6 +16,7 @@ const StakingContext = createContext<StakingContextProps>({
   prices: {},
   amount: '0',
   onAmountChange: () => {},
+  symbolUsed: '',
 })
 
 interface Props {
@@ -31,14 +34,17 @@ export const StakingProvider: FC<Props> = ({ children }) => {
     [],
   )
 
+  const symbolUsed = useMemo(() => getActualUsedSymbol('RIF', balances), [balances])
+
   const data = useMemo(
     () => ({
       balances,
       prices,
       amount: stakeData.amount,
       onAmountChange,
+      symbolUsed,
     }),
-    [balances, prices, stakeData.amount, onAmountChange],
+    [balances, prices, stakeData.amount, onAmountChange, symbolUsed],
   )
 
   return <StakingContext.Provider value={data}>{children}</StakingContext.Provider>

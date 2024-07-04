@@ -4,7 +4,7 @@ import { StakeRIF } from '@/app/user/Stake/StakeRIF'
 import { StepProps } from '@/app/user/Stake/types'
 
 export const StepOne = ({ onGoNext }: StepProps) => {
-  const { amount, onAmountChange, balances, prices } = useStakingContext()
+  const { amount, onAmountChange, balances, prices, symbolUsed } = useStakingContext()
   const RIFTotalBalance = useMemo(() => Number(balances.rif?.balance) ?? 0, [balances])
 
   const RIFTotalBalanceConverted = useMemo(
@@ -33,6 +33,7 @@ export const StepOne = ({ onGoNext }: StepProps) => {
       shouldEnableGoNext={shouldEnableGoNext}
       totalBalance={RIFTotalBalance.toString()}
       totalBalanceConverted={'$ USD ' + RIFTotalBalanceConverted.toString()}
+      symbolUsed={symbolUsed}
     />
   )
 }

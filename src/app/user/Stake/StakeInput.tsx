@@ -4,8 +4,10 @@ import { isValidNumber } from '@/app/user/utils'
 interface Props {
   onChange: (value: string) => void
   value: string
+  symbol?: string
 }
-export const StakeInput = ({ onChange, value }: Props) => {
+
+export const StakeInput = ({ onChange, value, symbol = 'RIF' }: Props) => {
   const handleChange = (value: string) => {
     if (isValidNumber(value)) {
       onChange(value)
@@ -14,7 +16,7 @@ export const StakeInput = ({ onChange, value }: Props) => {
   return (
     <TextInput
       label="Amount to stake"
-      placeholder="RIF Amount"
+      placeholder={`${symbol} Amount`}
       onChange={handleChange}
       value={value}
       name="amount-stake"
