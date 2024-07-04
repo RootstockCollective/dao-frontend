@@ -21,6 +21,10 @@ jobs:
         run: |
           npm install
 
+      - name: Carry over .env
+        run: |
+          mv -f .env.testnet .env.local
+          
       - name: Build site
         run: |
           npm run build
