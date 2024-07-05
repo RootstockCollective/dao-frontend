@@ -15,7 +15,7 @@ export default function Proposals() {
   return (
     <MainContainer>
       <HeaderSection />
-      <div className="pl-4 w-[60%] grid grid-rows-1 gap-[32px] mb-[100px]">
+      <div className="pl-4 grid grid-rows-1 gap-[32px] mb-[100px]">
         <MetricsSection />
         <div className="grid grid-cols-2 gap-x-6">
           <DelegatedTable />

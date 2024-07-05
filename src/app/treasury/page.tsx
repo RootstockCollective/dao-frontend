@@ -7,7 +7,7 @@ import { Table } from '@/components/Table'
 export default function Treasury() {
   return (
     <MainContainer>
-      <div className="pl-[24px] w-[60%] grid grid-rows-1 gap-[32px] mb-[100px]">
+      <div className="pl-[24px] grid grid-rows-1 gap-[32px] mb-[100px]">
         <TreasurySection />
         <TotalTokenHoldingsSection />
         <Distribution />

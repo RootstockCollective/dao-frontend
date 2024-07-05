@@ -53,6 +53,9 @@ const config: Config = {
         'accordion-up': 'accordion-up 0.2s ease-out',
       },
     },
+    container: {
+      center: true,
+    },
   },
   plugins: [require('tailwindcss-animate')],
 }
