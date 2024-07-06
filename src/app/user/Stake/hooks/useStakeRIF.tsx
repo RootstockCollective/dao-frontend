@@ -8,8 +8,13 @@ import { Button } from '@/components/Button'
 import { Paragraph } from '@/components/Typography'
 import { goToExplorerWithTxHash } from '@/lib/utils'
 import { useBalancesContext } from '@/app/user/Balances/context/BalancesContext'
+import { ActionHookToUse } from '@/app/user/Stake/StakingContext'
 
-export const useStakeRIF = (amount: string, tokenToSendContract: string, tokenToReceiveContract: string) => {
+export const useStakeRIF: ActionHookToUse = (
+  amount: string,
+  tokenToSendContract: string,
+  tokenToReceiveContract: string,
+) => {
   const { address } = useAccount()
   const { stakeModalData, onUpdateStakeModalData } = useBalancesContext()
 

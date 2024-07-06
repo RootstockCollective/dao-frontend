@@ -2,16 +2,16 @@ import { StakePreview } from '@/app/user/Stake/StakePreview'
 import { StepProps } from '@/app/user/Stake/types'
 import { useStakingContext } from '@/app/user/Stake/StakingContext'
 import { useMemo } from 'react'
-import { useStakeRIF } from '@/app/user/Stake/hooks/useStakeRIF'
 
 export const StepTwo = ({ onGoNext, onCloseModal }: StepProps) => {
-  const { amount, setStakeTxHash, tokenToSend, tokenToReceive, amountDataToReceive } = useStakingContext()
-  // @TODO must conditionally use the hook that corresponds on the action that will be executed (stake/unstake)
+  const { amount, setStakeTxHash, tokenToSend, tokenToReceive, amountDataToReceive, actionToUse } =
+    useStakingContext()
+
   const {
     shouldEnableConfirm,
     onConfirm: onConfirmAction,
     customFooter,
-  } = useStakeRIF(amount, tokenToSend.contract, tokenToReceive.contract)
+  } = actionToUse(amount, tokenToSend.contract, tokenToReceive.contract)
 
   const from = useMemo(
     () => ({
