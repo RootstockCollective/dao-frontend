@@ -51,7 +51,7 @@ export const StakeStatus = ({
             <Paragraph variant="light">
               {amountReceived} {symbol}
             </Paragraph>
-            <Label variant="light">= {amountReceivedCurrency}</Label>
+            <Label>= {amountReceivedCurrency}</Label>
           </div>
         </div>
         <div className="flex flex-row justify-between">

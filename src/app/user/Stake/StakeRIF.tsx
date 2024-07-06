@@ -37,7 +37,7 @@ export const StakeRIF = ({
         <Header>Stake RIF</Header>
         {/* @TODO make this dynamic */}
         <StakeInput onChange={onUserAmountInput} value={amount} symbol={symbol} />
-        <Label variant="light">
+        <Label>
           Available: {totalBalance} {symbol} = {totalBalanceConverted}
         </Label>
         {/* Percentage button */}

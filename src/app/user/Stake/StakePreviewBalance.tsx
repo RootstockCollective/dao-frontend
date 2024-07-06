@@ -15,16 +15,12 @@ export const StakePreviewBalance = ({
         <Paragraph>
           {amount} {tokenSymbol}
         </Paragraph>
-        <Label variant="light" className="text-nowrap">
-          = {amountConvertedToCurrency}
-        </Label>
+        <Label className="text-nowrap">= {amountConvertedToCurrency}</Label>
       </div>
     </div>
     <div>
       {/* Balance and Token */}
-      <Label variant="light" className="text-nowrap">
-        Balance: {balance}
-      </Label>
+      <Label className="text-nowrap">Balance: {balance}</Label>
       <div className="text-right mt-[8px]">{/* @TODO ICON {tokenSymbol} */}</div>
     </div>
   </div>
