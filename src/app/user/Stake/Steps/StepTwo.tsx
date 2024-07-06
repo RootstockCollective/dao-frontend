@@ -2,43 +2,62 @@ import { StakePreview } from '@/app/user/Stake/StakePreview'
 import { StepProps } from '@/app/user/Stake/types'
 import { useStakingContext } from '@/app/user/Stake/StakingContext'
 import { useMemo } from 'react'
-
-const TEST_TO = {
-  amountToSend: '0.44',
-  amountToSendConverted: 'USD 40.20',
-  balance: '2,323.00',
-  tokenName: 'stRIF',
-  tokenSymbol: 'stRIF',
-}
+import { useStakeRIF } from '@/app/user/Stake/hooks/useStakeRIF'
 
 export const StepTwo = ({ onGoNext, onCloseModal }: StepProps) => {
-  const { amount, prices, balances } = useStakingContext()
-  // We always assume we're staking RIF (RIF to STRIF)
+  const { amount, setStakeTxHash, tokenToSend, tokenToReceive, amountDataToReceive } = useStakingContext()
+  // @TODO must conditionally use the hook that corresponds on the action that will be executed (stake/unstake)
+  const {
+    shouldEnableConfirm,
+    onConfirm: onConfirmAction,
+    customFooter,
+  } = useStakeRIF(amount, tokenToSend.contract, tokenToReceive.contract)
+
   const from = useMemo(
     () => ({
-      amountToSend: amount,
-      amountToSendConverted: (prices['rif'].price * Number(amount) ?? 0).toString(),
-      balance: balances.rif.balance ?? 0,
-      tokenName: 'RIF',
-      tokenSymbol: 'RIF',
+      amount,
+      amountConvertedToCurrency: '$ USD ' + (Number(tokenToSend.price) * Number(amount) ?? 0).toString(),
+      balance: tokenToSend.balance,
+      tokenSymbol: tokenToSend.symbol,
     }),
-    [amount, balances.rif.balance, prices],
+    [amount, tokenToSend.balance, tokenToSend.price, tokenToSend.symbol],
   )
 
-  const onConfirm = () => {
-    // @TODO use sendTransaction, wait for user to confirm transaction, then go to next
-    // If user didn't confirm transaction then go back
-    if (true) {
-      // TODO set TX id and status in Context
+  const to = useMemo(
+    () => ({
+      amount: amountDataToReceive.amountToReceive.toString(),
+      amountConvertedToCurrency: '$ USD ' + amountDataToReceive.amountToReceiveConvertedToCurrency.toString(),
+      balance: tokenToReceive.balance,
+      tokenSymbol: tokenToReceive.symbol,
+    }),
+    [
+      amountDataToReceive.amountToReceive,
+      amountDataToReceive.amountToReceiveConvertedToCurrency,
+      tokenToReceive.balance,
+      tokenToReceive.symbol,
+    ],
+  )
+
+  const onConfirm = async () => {
+    try {
+      const txHash = await onConfirmAction()
+      if (setStakeTxHash) {
+        setStakeTxHash(txHash)
+      }
       onGoNext?.()
+    } catch (errorConfirming) {
+      console.log(errorConfirming) // @TODO implement error handling
     }
   }
+
   return (
     <StakePreview
       onConfirm={onConfirm}
       onCancel={onCloseModal ? onCloseModal : () => {}}
       from={from}
-      to={TEST_TO}
+      to={to}
+      disableConfirm={!shouldEnableConfirm}
+      customComponentBeforeFooter={customFooter}
     />
   )
 }

@@ -4,16 +4,15 @@ import { StakeRIF } from '@/app/user/Stake/StakeRIF'
 import { StepProps } from '@/app/user/Stake/types'
 
 export const StepOne = ({ onGoNext }: StepProps) => {
-  const { amount, onAmountChange, balances, prices } = useStakingContext()
-  const RIFTotalBalance = useMemo(() => Number(balances.rif?.balance) ?? 0, [balances])
+  const { amount, onAmountChange, tokenToSend } = useStakingContext()
 
-  const RIFTotalBalanceConverted = useMemo(
-    () => (prices.rif.price ?? 0) * RIFTotalBalance,
-    [prices, RIFTotalBalance],
+  const balanceToCurrency = useMemo(
+    () => Number(tokenToSend.price) * Number(tokenToSend.balance),
+    [tokenToSend],
   )
 
   const onPercentageClicked = (percentage: number) => {
-    onAmountChange((RIFTotalBalance * (percentage / 100)).toString())
+    onAmountChange((Number(tokenToSend.balance) * (percentage / 100)).toString())
   }
 
   const shouldEnableGoNext = useMemo(() => {
@@ -21,8 +20,8 @@ export const StepOne = ({ onGoNext }: StepProps) => {
       return false
     }
 
-    return Number(amount) <= RIFTotalBalance
-  }, [amount, RIFTotalBalance])
+    return Number(amount) <= Number(tokenToSend.balance)
+  }, [amount, tokenToSend.balance])
 
   return (
     <StakeRIF
@@ -31,8 +30,9 @@ export const StepOne = ({ onGoNext }: StepProps) => {
       onPercentageClicked={onPercentageClicked}
       onGoNext={onGoNext || (() => {})}
       shouldEnableGoNext={shouldEnableGoNext}
-      totalBalance={RIFTotalBalance.toString()}
-      totalBalanceConverted={'$ USD ' + RIFTotalBalanceConverted.toString()}
+      totalBalance={tokenToSend.balance}
+      totalBalanceConverted={'$ USD ' + balanceToCurrency.toString()}
+      symbol={tokenToSend.symbol}
     />
   )
 }
