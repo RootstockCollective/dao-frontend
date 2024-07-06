@@ -28,7 +28,15 @@ const config: Config = {
         'disabled-secondary': 'var(--disabled-secondary)',
         'input-bg': 'var(--input-bg)',
         'input-placeholder': 'var(--input-placeholder)',
-        'link': 'var(--link)',
+        link: 'var(--link)',
+        popover: {
+          DEFAULT: 'var(--background)',
+          foreground: 'var(--text-primary)',
+        },
+        accent: {
+          DEFAULT: 'var(--input-bg)',
+          foreground: 'var(--text-primary)',
+        },
       },
       keyframes: {
         'accordion-down': {
@@ -45,8 +53,11 @@ const config: Config = {
         'accordion-up': 'accordion-up 0.2s ease-out',
       },
     },
+    container: {
+      center: true,
+    },
   },
-  plugins: [],
+  plugins: [require('tailwindcss-animate')],
 }
 
 export default config

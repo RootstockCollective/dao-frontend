@@ -3,7 +3,7 @@ import * as React from 'react'
 import { cn } from '@/lib/utils'
 import { useFormField } from '../Form'
 
-export interface TextareaProps extends React.TextareaHTMLAttributes<HTMLTextAreaElement> {}
+export interface InputProps extends React.InputHTMLAttributes<HTMLInputElement> {}
 
 const DEFAULT_CLASSES = `
 flex w-full
@@ -21,18 +21,18 @@ focus-visible:ring-white focus-visible:ring-opacity-50
 disabled:cursor-not-allowed disabled:opacity-50
 `
 
-const Textarea = React.forwardRef<HTMLTextAreaElement, TextareaProps>(({ className, ...props }, ref) => {
+const Input = React.forwardRef<HTMLInputElement, InputProps>(({ className, type, ...props }, ref) => {
   const { error, formItemId } = useFormField()
   return (
-    <textarea
+    <input
       id={formItemId}
       className={cn(DEFAULT_CLASSES, error && 'border-st-error focus-visible:ring-0', className)}
       ref={ref}
-      rows={10}
+      type={type}
       {...props}
     />
   )
 })
-Textarea.displayName = 'Textarea'
+Input.displayName = 'Input'
 
-export { Textarea }
+export { Input }

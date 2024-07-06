@@ -1,23 +1,21 @@
-import { LabelVariants, Typography } from '@/components/Typography'
+'use client'
+
+import * as React from 'react'
+import * as LabelPrimitive from '@radix-ui/react-label'
+import { cva, type VariantProps } from 'class-variance-authority'
+
 import { cn } from '@/lib/utils'
-import { FC, ReactNode } from 'react'
 
-const DEFAULT_CLASSES = 'text-[1rem]'
-
-const classesByVariant: Record<LabelVariants, string> = {
-  normal: 'font-light',
-  light: 'text-text-light',
-  semibold: 'font-[600]',
-}
-
-interface Props {
-  variant?: LabelVariants
-  className?: string
-  children: ReactNode
-}
-
-export const Label: FC<Props> = ({ variant = 'normal', className, children }) => (
-  <Typography tagVariant="label" className={cn(DEFAULT_CLASSES, classesByVariant[variant], className)}>
-    {children}
-  </Typography>
+const labelVariants = cva(
+  'text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70',
 )
+
+const Label = React.forwardRef<
+  React.ElementRef<typeof LabelPrimitive.Root>,
+  React.ComponentPropsWithoutRef<typeof LabelPrimitive.Root> & VariantProps<typeof labelVariants>
+>(({ className, ...props }, ref) => (
+  <LabelPrimitive.Root ref={ref} className={cn(labelVariants(), className)} {...props} />
+))
+Label.displayName = LabelPrimitive.Root.displayName
+
+export { Label }

@@ -32,7 +32,7 @@ export const MainContainer: FC<Props> = ({ children }) => {
   }, [])
 
   return (
-    <div className="flex">
+    <div className="flex container">
       <StatefulSidebar />
       <div className="flex-auto">
         {isConnected && hasMounted && (

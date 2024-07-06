@@ -7,14 +7,14 @@
 html[data-theme='default'] {
   --color-primary: rgba(102, 94, 246, 1);
   --color-secondary: rgba(19, 194, 150, 1);
-  
+
   --background: #000;
   --foreground: rgba(37, 37, 37, 1);
 
   --text-primary: white;
   --text-secondary: rgba(184, 184, 184, 1);
-  --text-light: rgba(113,113,113,1); /* For labels light */
-  
+  --text-light: rgba(113, 113, 113, 1); /* For labels light */
+
   --disabled-primary: rgba(229, 231, 235, 1);
   --disabled-secondary: rgba(136, 153, 168, 1);
   /* Statuses */
@@ -25,12 +25,11 @@ html[data-theme='default'] {
 
   /* Font */
   --font-open-sans: 'Open Sans';
-  
+
   /* Input */
-  --input-bg: rgba(85,85,85,0.2);
-  --input-placeholder: rgba(156,163,175,1);
-  
+  --input-bg: rgba(85, 85, 85, 0.2);
+  --input-placeholder: rgba(156, 163, 175, 1);
+
   /* Links (a tag) */
-  --link: rgba(143,154,255,1)
-  
+  --link: rgba(143, 154, 255, 1);
 }
