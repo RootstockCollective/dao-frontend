@@ -2,6 +2,8 @@ import { Header, Label, Paragraph } from '@/components/Typography'
 import { Button } from '@/components/Button'
 import { LuBadgeCheck } from 'react-icons/lu'
 import { goToExplorerWithTxHash } from '@/lib/utils'
+import { useMemo } from 'react'
+import moment from 'moment'
 
 interface Props {
   onReturnToBalances: () => void
@@ -9,7 +11,6 @@ interface Props {
   amountReceived: string
   symbol: string
   amountReceivedCurrency: string
-  date: string
 }
 
 // TODO define RSK explorer testnet
@@ -19,10 +20,9 @@ export const StakeStatus = ({
   amountReceived,
   amountReceivedCurrency,
   symbol,
-  date,
 }: Props) => {
   const onViewOnExplorer = () => goToExplorerWithTxHash(hash)
-
+  const date = useMemo(() => moment().format('YYYY-MM-DD h:mm A'), [])
   return (
     <div className="px-[50px] py-[20px] flex justify-center flex-col">
       <div className="flex justify-center mt-[63px]">

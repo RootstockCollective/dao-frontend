@@ -13,7 +13,6 @@ export const StepThree = ({ onCloseModal }: StepProps) => {
       symbol={tokenToReceive.symbol}
       amountReceived={amountDataToReceive.amountToReceive}
       amountReceivedCurrency={amountDataToReceive.amountToReceiveConvertedToCurrency}
-      date={new Date().toISOString()}
     />
   )
 }
