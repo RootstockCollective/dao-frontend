@@ -4,6 +4,7 @@ import { LuBadgeCheck } from 'react-icons/lu'
 import { goToExplorerWithTxHash } from '@/lib/utils'
 import { useMemo } from 'react'
 import moment from 'moment'
+import { ActionBeingExecuted, textsDependingOnAction } from '@/app/user/Stake/Steps/stepsUtils'
 
 interface Props {
   onReturnToBalances: () => void
@@ -11,6 +12,7 @@ interface Props {
   amountReceived: string
   symbol: string
   amountReceivedCurrency: string
+  actionName: ActionBeingExecuted
 }
 
 // TODO define RSK explorer testnet
@@ -20,6 +22,7 @@ export const StakeStatus = ({
   amountReceived,
   amountReceivedCurrency,
   symbol,
+  actionName,
 }: Props) => {
   const onViewOnExplorer = () => goToExplorerWithTxHash(hash)
   const date = useMemo(() => moment().format('YYYY-MM-DD h:mm A'), [])
@@ -38,10 +41,9 @@ export const StakeStatus = ({
           <LuBadgeCheck size={48} color="#665EF6" />
         </div>
       </div>
-      <Header className="mt-[62px] text-center">Stake successful!</Header> {/*@TODO get stake status here?*/}
+      <Header className="mt-[62px] text-center">{textsDependingOnAction[actionName].inProcess}</Header>{' '}
       <Paragraph className="text-center" variant="light">
-        Congratulations! Real-Time APR rewards will start <br />
-        accumulating in your stRIF balance every minute!
+        {textsDependingOnAction[actionName].description}
       </Paragraph>
       {/* Preview box */}
       <div className="flex flex-col mt-[54px]">

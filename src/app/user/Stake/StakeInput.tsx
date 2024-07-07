@@ -5,9 +5,10 @@ interface Props {
   onChange: (value: string) => void
   value: string
   symbol?: string
+  labelText: string
 }
 
-export const StakeInput = ({ onChange, value, symbol = 'RIF' }: Props) => {
+export const StakeInput = ({ onChange, value, symbol = 'RIF', labelText }: Props) => {
   const handleChange = (value: string) => {
     if (isValidNumber(value)) {
       onChange(value)
@@ -15,7 +16,7 @@ export const StakeInput = ({ onChange, value, symbol = 'RIF' }: Props) => {
   }
   return (
     <TextInput
-      label="Amount to stake"
+      label={labelText}
       placeholder={`${symbol} Amount`}
       onChange={handleChange}
       value={value}

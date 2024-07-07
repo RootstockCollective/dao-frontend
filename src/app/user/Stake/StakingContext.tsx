@@ -3,6 +3,7 @@ import { useBalancesContext } from '@/app/user/Balances/context/BalancesContext'
 import { GetPricesResult, TokenBalanceRecord } from '@/app/user/types'
 import { StakingToken } from '@/app/user/Stake/types'
 import { Hash } from 'viem'
+import { ActionBeingExecuted } from '@/app/user/Stake/Steps/stepsUtils'
 
 export type ActionHookToUse = (
   amount: string,
@@ -28,6 +29,7 @@ interface StakingContextProps {
     amountToReceiveConvertedToCurrency: string
   }
   actionToUse: ActionHookToUse
+  actionName: ActionBeingExecuted
 }
 
 const StakingContext = createContext<StakingContextProps>({
@@ -43,6 +45,7 @@ const StakingContext = createContext<StakingContextProps>({
     amountToReceiveConvertedToCurrency: '',
   },
   actionToUse: () => ({ shouldEnableConfirm: false, onConfirm: async () => '0x0', customFooter: null }),
+  actionName: 'STAKE',
 })
 
 interface Props {
@@ -50,9 +53,16 @@ interface Props {
   tokenToSend: StakingToken
   tokenToReceive: StakingToken
   actionToUse: ActionHookToUse
+  actionName: ActionBeingExecuted
 }
 
-export const StakingProvider: FC<Props> = ({ tokenToSend, tokenToReceive, actionToUse, children }) => {
+export const StakingProvider: FC<Props> = ({
+  tokenToSend,
+  tokenToReceive,
+  actionToUse,
+  children,
+  actionName,
+}) => {
   const { balances, prices } = useBalancesContext()
   const [stakeData, setStakeData] = useState({
     amount: '',
@@ -87,6 +97,7 @@ export const StakingProvider: FC<Props> = ({ tokenToSend, tokenToReceive, action
       tokenToReceive,
       amountDataToReceive,
       actionToUse,
+      actionName,
     }),
     [
       balances,
@@ -98,6 +109,7 @@ export const StakingProvider: FC<Props> = ({ tokenToSend, tokenToReceive, action
       tokenToReceive,
       amountDataToReceive,
       actionToUse,
+      actionName,
     ],
   )
 

@@ -4,8 +4,15 @@ import { useStakingContext } from '@/app/user/Stake/StakingContext'
 import { useMemo } from 'react'
 
 export const StepTwo = ({ onGoNext, onCloseModal }: StepProps) => {
-  const { amount, setStakeTxHash, tokenToSend, tokenToReceive, amountDataToReceive, actionToUse } =
-    useStakingContext()
+  const {
+    amount,
+    setStakeTxHash,
+    tokenToSend,
+    tokenToReceive,
+    amountDataToReceive,
+    actionToUse,
+    actionName,
+  } = useStakingContext()
 
   const {
     shouldEnableConfirm,
@@ -58,6 +65,7 @@ export const StepTwo = ({ onGoNext, onCloseModal }: StepProps) => {
       to={to}
       disableConfirm={!shouldEnableConfirm}
       customComponentBeforeFooter={customFooter}
+      actionName={actionName}
     />
   )
 }

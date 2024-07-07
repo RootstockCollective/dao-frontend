@@ -42,7 +42,12 @@ const StakingSteps = ({ onCloseModal }: StakingStepsProps) => {
     [balances.stRIF.balance, balances.stRIF.symbol, prices.stRIF.price],
   )
   return (
-    <StakingProvider tokenToSend={tokenToSend} tokenToReceive={tokenToReceive} actionToUse={useStakeRIF}>
+    <StakingProvider
+      tokenToSend={tokenToSend}
+      tokenToReceive={tokenToReceive}
+      actionToUse={useStakeRIF}
+      actionName="STAKE"
+    >
       <Modal {...currentStep.modalProps} onClose={onCloseModal}>
         <StepComponent {...stepsFunctions} />
       </Modal>

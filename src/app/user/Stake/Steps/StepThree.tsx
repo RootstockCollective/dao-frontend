@@ -4,7 +4,7 @@ import { useStakingContext } from '@/app/user/Stake/StakingContext'
 
 export const StepThree = ({ onCloseModal }: StepProps) => {
   // TODO get TX current status and pass to StakeStatus
-  const { stakeTxHash, amountDataToReceive, tokenToReceive } = useStakingContext()
+  const { stakeTxHash, amountDataToReceive, tokenToReceive, actionName } = useStakingContext()
   if (!stakeTxHash) return null
   return (
     <StakeStatus
@@ -13,6 +13,7 @@ export const StepThree = ({ onCloseModal }: StepProps) => {
       symbol={tokenToReceive.symbol}
       amountReceived={amountDataToReceive.amountToReceive}
       amountReceivedCurrency={amountDataToReceive.amountToReceiveConvertedToCurrency}
+      actionName={actionName}
     />
   )
 }
