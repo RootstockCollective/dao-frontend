@@ -6,13 +6,12 @@ import {
   BreadcrumbPage,
   BreadcrumbSeparator,
 } from '@/components/Breadcrumb'
+import { Button } from '@/components/Button'
 import { MainContainer } from '@/components/MainContainer/MainContainer'
 import { MetricsCard } from '@/components/MetricsCard'
-import { Popover } from '@/components/Popover'
 import { Header, Paragraph } from '@/components/Typography'
-import { truncate } from '@/lib/utils'
+import { shortAddress } from '@/lib/utils'
 import { FC } from 'react'
-import { FaRegQuestionCircle } from 'react-icons/fa'
 
 const getProposalData = async (id: string): Promise<any> => {
   return new Promise(resolve => {
@@ -32,8 +31,10 @@ const getProposalData = async (id: string): Promise<any> => {
       actions: {
         tokenSymbol: 'RIF',
         amount: 234,
-        toAddress: '0x333...444',
+        toAddress: '0xa2193A393aa0c94A4d52893496F02B56C61c36A1',
       },
+      threshold: 59,
+      snapshotBlock: 20149901,
     })
   })
 }
@@ -54,7 +55,76 @@ export default async function ProposalView({ params }: { params: { id: string } 
           </Paragraph>
           <Paragraph className="text-sm text-primary ml-4">{params.id}</Paragraph>
         </div>
-        <MetricsSection />
+        <div className="flex flex-row justify-between">
+          <div className="flex flex-row gap-x-6">
+            <MetricsCard title="Threshold" amount={`${proposal.threshold} votes`} />
+            <MetricsCard title="Snapshot" amount={proposal.snapshotBlock} fiatAmount="Taken at block" />
+          </div>
+          <div>
+            {/* TODO: vote on chain */}
+            <Button onClick={() => console.log('clicked')}>Vote on chain</Button>
+          </div>
+        </div>
+        <div className="flex flex-row gap-x-6">
+          <div className="basis-2/3">
+            <Header variant="h1" className="text-[24px] mb-6">
+              Description
+            </Header>
+            <Paragraph variant="normal" className="text-[16px] text-justify">
+              {proposal.description}
+            </Paragraph>
+          </div>
+          <div className="basis-1/3 flex flex-col gap-y-2">
+            <Header variant="h1" className="text-[24px]">
+              Votes
+            </Header>
+            <div className="flex flex-row justify-between border border-white border-opacity-40 rounded-lg px-[16px] py-[11px]">
+              <Paragraph variant="semibold" className="text-[16px] text-st-success">
+                {proposal.votes.for}
+              </Paragraph>
+              <Paragraph variant="semibold" className="text-[16px] text-st-success">
+                For
+              </Paragraph>
+            </div>
+            <div className="flex flex-row justify-between border border-white border-opacity-40 rounded-lg px-[16px] py-[11px]">
+              <Paragraph variant="semibold" className="text-[16px] text-st-error">
+                {proposal.votes.against}
+              </Paragraph>
+              <Paragraph variant="semibold" className="text-[16px] text-st-error">
+                Against
+              </Paragraph>
+            </div>
+            <div className="flex flex-row justify-between border border-white border-opacity-40 rounded-lg px-[16px] py-[11px]">
+              <Paragraph variant="semibold" className="text-[16px] text-text-light">
+                {proposal.votes.abstain}
+              </Paragraph>
+              <Paragraph variant="semibold" className="text-[16px] text-text-light">
+                Abstain
+              </Paragraph>
+            </div>
+            <Header variant="h1" className="text-[24px]">
+              Actions
+            </Header>
+            <div className="flex flex-row justify-between border border-white border-opacity-40 rounded-lg px-[16px] py-[11px]">
+              <div className="flex flex-col">
+                <Paragraph variant="semibold" className="text-[16px]">
+                  Transfer
+                </Paragraph>
+                <Paragraph variant="semibold" className="text-[16px]">
+                  To
+                </Paragraph>
+              </div>
+              <div>
+                <Paragraph variant="semibold" className="text-[16px]">
+                  {proposal.actions.amount} {proposal.actions.tokenSymbol}
+                </Paragraph>
+                <Paragraph variant="semibold" className="text-[16px]">
+                  {shortAddress(proposal.actions.toAddress)}
+                </Paragraph>
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
     </MainContainer>
   )
@@ -79,33 +149,3 @@ const BreadcrumbSection: FC<{ title: string }> = ({ title }) => {
     </Breadcrumb>
   )
 }
-
-const PopoverContent = () => (
-  <>
-    <p className="font-bold mb-1">How is my voting power calculated?</p>
-    <p>
-      Your voting power is calculated as the number of tokens (votes) that have been delegated to you before
-      the proposal became active. You can delegate your votes to yourself, or to someone else. Others can also
-      delegate their votes to you.
-    </p>
-  </>
-)
-
-const VotingPowerPopover = () => (
-  <Popover content={<PopoverContent />}>
-    <span className="flex flex-row">
-      <p>My voting power</p>
-      <FaRegQuestionCircle className="ml-1" />
-    </span>
-  </Popover>
-)
-const MetricsSection = () => (
-  <>
-    <MetricsCard borderless title={<VotingPowerPopover />} amount="230" />
-    <div className="flex flex-row gap-x-6">
-      <MetricsCard title="Votes" amount="235,23m" />
-      <MetricsCard title="Total voting power delegated" amount="230" />
-      <MetricsCard title="Proposals created" amount="12" />
-    </div>
-  </>
-)
