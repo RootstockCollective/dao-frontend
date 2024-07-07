@@ -1,5 +1,6 @@
 import { FC, ReactNode } from 'react'
 import { cn } from '@/lib/utils'
+import { FaTimes } from 'react-icons/fa'
 
 interface Props {
   children: ReactNode
@@ -15,10 +16,16 @@ export const Modal: FC<Props> = ({ children, onClose, width }) => {
       ></div>
       <div
         className={cn(
-          'bg-background rounded-lg shadow-xl overflow-hidden transform transition-all border-[1px] border-white',
+          'max-w-xl bg-background rounded-lg shadow-xl overflow-hidden transform transition-all border-[1px] border-white',
         )}
         style={{ minWidth: width }}
       >
+        <button
+          onClick={onClose}
+          className="absolute top-4 right-4 text-white text-[24px] bg-background rounded-full p-2"
+        >
+          <FaTimes />
+        </button>
         {children}
       </div>
     </div>
