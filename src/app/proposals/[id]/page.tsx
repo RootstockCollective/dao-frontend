@@ -9,6 +9,7 @@ import {
 import { MainContainer } from '@/components/MainContainer/MainContainer'
 import { MetricsCard } from '@/components/MetricsCard'
 import { Popover } from '@/components/Popover'
+import { Header, Paragraph } from '@/components/Typography'
 import { truncate } from '@/lib/utils'
 import { FC } from 'react'
 import { FaRegQuestionCircle } from 'react-icons/fa'
@@ -43,6 +44,16 @@ export default async function ProposalView({ params }: { params: { id: string } 
     <MainContainer>
       <div className="pl-4 grid grid-rows-1 gap-[32px] mb-[100px]">
         <BreadcrumbSection title={proposal.title} />
+        <Header className="text-2xl">{proposal.title}</Header>
+        <div className="flex flex-row">
+          <Paragraph className="text-sm text-gray-500">
+            Proposed by: <span className="text-primary">{proposal.proposedBy}</span>
+          </Paragraph>
+          <Paragraph className="text-sm text-gray-500 ml-4">
+            Created: <span className="text-primary">{proposal.created.toDateString()}</span>
+          </Paragraph>
+          <Paragraph className="text-sm text-primary ml-4">{params.id}</Paragraph>
+        </div>
         <MetricsSection />
       </div>
     </MainContainer>
