@@ -7,6 +7,7 @@ import { Popover } from '@/components/Popover'
 import { Status } from '@/components/Status'
 import { Table } from '@/components/Table'
 import { Header } from '@/components/Typography'
+import { AppRouterInstance } from 'next/dist/shared/lib/app-router-context.shared-runtime'
 import { useRouter } from 'next/navigation'
 import { FaRegQuestionCircle } from 'react-icons/fa'
 import { FaPlus } from 'react-icons/fa6'
@@ -122,9 +123,9 @@ const ReceivedDelegationTable = () => (
   </div>
 )
 
-const latestProposalsData = [
+const latestProposalsData = (router: AppRouterInstance) => [
   {
-    'Proposal name': 'Crypto ipsum bitcoin',
+    'Proposal name': <button onClick={() => router.push('/proposals/1')}>Crypto ipsum bitcoin</button>,
     'Current votes': '59 votes',
     Starts: 'June 22, 2024',
     Sentiment: (
@@ -139,7 +140,7 @@ const latestProposalsData = [
     Status: <Status severity="success" />,
   },
   {
-    'Proposal name': 'Crypto ipsum bitcoin',
+    'Proposal name': <button onClick={() => router.push('/proposals/2')}>Crypto ipsum bitcoin</button>,
     'Current votes': '120 votes',
     Starts: 'June 22, 2024',
     Sentiment: (
@@ -153,7 +154,7 @@ const latestProposalsData = [
     Status: <Status severity="rejected" />,
   },
   {
-    'Proposal name': 'Crypto ipsum bitcoin',
+    'Proposal name': <button onClick={() => router.push('/proposals/3')}>Crypto ipsum bitcoin</button>,
     'Current votes': '1,230 votes',
     Starts: 'June 22, 2024',
     Sentiment: (
@@ -168,7 +169,7 @@ const latestProposalsData = [
     Status: <Status severity="in-progress" />,
   },
   {
-    'Proposal name': 'Crypto ipsum bitcoin',
+    'Proposal name': <button onClick={() => router.push('/proposals/4')}>Crypto ipsum bitcoin</button>,
     'Current votes': '1,232,323 votes',
     Starts: 'June 22, 2024',
     Sentiment: (
@@ -183,11 +184,14 @@ const latestProposalsData = [
   },
 ]
 
-const LatestProposalsTable = () => (
-  <div>
-    <Header variant="h2" className="mb-4">
-      Latest Proposals
-    </Header>
-    <Table data={latestProposalsData} />
-  </div>
-)
+const LatestProposalsTable = () => {
+  const router = useRouter()
+  return (
+    <div>
+      <Header variant="h2" className="mb-4">
+        Latest Proposals
+      </Header>
+      <Table data={latestProposalsData(router)} />
+    </div>
+  )
+}
