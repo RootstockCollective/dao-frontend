@@ -26,3 +26,17 @@ export const shortAddress = (address: string | undefined, amount = 5): string =>
 export const axiosInstance = axios.create({
   baseURL: process.env.NEXT_PUBLIC_RIF_WALLET_SERVICES,
 })
+
+/**
+ * Truncates a string to a given length
+ * @param str - The string to truncate
+ * @param length - The length to truncate the string to
+ * @returns The truncated string
+ * @example truncate('Hello, world!', 5) // 'Hello...'
+ */
+export const truncate = (str: string, length: number): string => {
+  if (str.length <= length) {
+    return str
+  }
+  return str.slice(0, length) + '...'
+}

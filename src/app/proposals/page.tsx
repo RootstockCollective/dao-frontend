@@ -125,7 +125,7 @@ const ReceivedDelegationTable = () => (
 
 const latestProposalsData = (router: AppRouterInstance) => [
   {
-    'Proposal name': <button onClick={() => router.push('/proposals/1')}>Crypto ipsum bitcoin</button>,
+    'Proposal name': <button onClick={() => router.push('/proposals/ID409')}>Crypto ipsum bitcoin</button>,
     'Current votes': '59 votes',
     Starts: 'June 22, 2024',
     Sentiment: (
@@ -140,7 +140,7 @@ const latestProposalsData = (router: AppRouterInstance) => [
     Status: <Status severity="success" />,
   },
   {
-    'Proposal name': <button onClick={() => router.push('/proposals/2')}>Crypto ipsum bitcoin</button>,
+    'Proposal name': <button onClick={() => router.push('/proposals/ID410')}>Crypto ipsum bitcoin</button>,
     'Current votes': '120 votes',
     Starts: 'June 22, 2024',
     Sentiment: (
@@ -154,7 +154,7 @@ const latestProposalsData = (router: AppRouterInstance) => [
     Status: <Status severity="rejected" />,
   },
   {
-    'Proposal name': <button onClick={() => router.push('/proposals/3')}>Crypto ipsum bitcoin</button>,
+    'Proposal name': <button onClick={() => router.push('/proposals/ID411')}>Crypto ipsum bitcoin</button>,
     'Current votes': '1,230 votes',
     Starts: 'June 22, 2024',
     Sentiment: (
@@ -169,7 +169,7 @@ const latestProposalsData = (router: AppRouterInstance) => [
     Status: <Status severity="in-progress" />,
   },
   {
-    'Proposal name': <button onClick={() => router.push('/proposals/4')}>Crypto ipsum bitcoin</button>,
+    'Proposal name': <button onClick={() => router.push('/proposals/ID412')}>Crypto ipsum bitcoin</button>,
     'Current votes': '1,232,323 votes',
     Starts: 'June 22, 2024',
     Sentiment: (
