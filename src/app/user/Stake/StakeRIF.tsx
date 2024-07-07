@@ -37,7 +37,7 @@ export const StakeRIF = ({
   return (
     <div>
       <div className="px-[50px] py-[20px]">
-        <Header>{textsDependingOnAction[actionName].modalTitle}</Header>
+        <Header className="text-center">{textsDependingOnAction[actionName].modalTitle}</Header>
         <StakeInput
           onChange={onUserAmountInput}
           value={amount}
