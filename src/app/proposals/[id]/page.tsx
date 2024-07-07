@@ -59,7 +59,7 @@ export default function ProposalView({ params }: { params: { id: string } }) {
                 Proposed by: <span className="text-primary">{proposal.proposedBy}</span>
               </Paragraph>
               <Paragraph className="text-sm text-gray-500 ml-4">
-                Created: <span className="text-primary">{proposal.created.toDateString()}</span>
+                Created at: <span className="text-primary">{proposal.created.toDateString()}</span>
               </Paragraph>
               <Paragraph className="text-sm text-primary ml-4">{params.id}</Paragraph>
             </div>
