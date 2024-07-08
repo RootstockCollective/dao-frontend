@@ -11,7 +11,7 @@ import {
 } from 'react-hook-form'
 
 import { cn } from '@/lib/utils'
-import { Label } from '../Typography'
+import { LabelForm } from './Label'
 
 const Form = FormProvider
 
@@ -85,7 +85,7 @@ const FormLabel = React.forwardRef<
 >(({ className, ...props }, ref) => {
   const { formItemId } = useFormField()
 
-  return <Label ref={ref} className={className} htmlFor={formItemId} {...props} />
+  return <LabelForm ref={ref} className={className} htmlFor={formItemId} {...props} />
 })
 FormLabel.displayName = 'FormLabel'
 

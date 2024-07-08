@@ -1,4 +1,5 @@
 'use client'
+import { useModal } from '@/app/user/Balances/hooks/useModal'
 import {
   Breadcrumb,
   BreadcrumbItem,
@@ -13,6 +14,8 @@ import { MetricsCard } from '@/components/MetricsCard'
 import { Header, Paragraph } from '@/components/Typography'
 import { shortAddress } from '@/lib/utils'
 import { FC, useEffect, useState } from 'react'
+import { VoteProposalModal } from './VoteProposalModal'
+import { useAccount } from 'wagmi'
 
 const getProposalData = async (id: string): Promise<any> => {
   return new Promise(resolve => {
@@ -42,6 +45,11 @@ const getProposalData = async (id: string): Promise<any> => {
 
 export default function ProposalView({ params }: { params: { id: string } }) {
   const [proposal, setProposal] = useState<any>(null)
+  const votingModal = useModal()
+  const { address } = useAccount()
+
+  // TODO: get voting power from the user
+  const votingPower = 2353
 
   useEffect(() => {
     getProposalData(params.id).then(data => setProposal(data))
@@ -69,8 +77,16 @@ export default function ProposalView({ params }: { params: { id: string } }) {
                 <MetricsCard title="Snapshot" amount={proposal.snapshotBlock} fiatAmount="Taken at block" />
               </div>
               <div>
-                {/* TODO: vote on chain */}
-                <Button onClick={() => console.log('clicked')}>Vote on chain</Button>
+                <Button onClick={votingModal.openModal}>Vote on chain</Button>
+                {votingModal.isModalOpened && address && (
+                  <VoteProposalModal
+                    onSubmit={() => console.log('Vote confirmed')}
+                    onClose={votingModal.closeModal}
+                    proposal={proposal}
+                    address={address}
+                    votingPower={votingPower}
+                  />
+                )}
               </div>
             </div>
             <div className="flex flex-row gap-x-6">
@@ -78,7 +94,7 @@ export default function ProposalView({ params }: { params: { id: string } }) {
                 <Header variant="h1" className="text-[24px] mb-6">
                   Description
                 </Header>
-                <Paragraph variant="normal" className="text-[16px] text-justify">
+                <Paragraph variant="normal" className="text-[16px] text-justify font-light">
                   {proposal.description}
                 </Paragraph>
               </div>
