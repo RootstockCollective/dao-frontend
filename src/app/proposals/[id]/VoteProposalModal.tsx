@@ -7,10 +7,10 @@ import { FC, useState } from 'react'
 import { FaUser } from 'react-icons/fa'
 import { FaCopy } from 'react-icons/fa6'
 
-export type Voting = 'for' | 'against' | 'abstain'
+export type Vote = 'for' | 'against' | 'abstain'
 
 interface Props {
-  onSubmit: (voting: Voting) => void
+  onSubmit: (voting: Vote) => void
   onClose: () => void
   proposal: any
   address: string
@@ -18,7 +18,7 @@ interface Props {
 }
 
 export const VoteProposalModal: FC<Props> = ({ onClose, onSubmit, proposal, address, votingPower }) => {
-  const [voting, setVoting] = useState<Voting | null>(null)
+  const [voting, setVoting] = useState<Vote | null>(null)
   const handleSubmit = (e: any) => {
     e.preventDefault()
     if (voting) {
@@ -27,7 +27,7 @@ export const VoteProposalModal: FC<Props> = ({ onClose, onSubmit, proposal, addr
   }
   return (
     <Modal onClose={onClose} width={756}>
-      <div className="px-[50px] pt-[42px] pb-[84px] flex justify-center flex-col">
+      <div className="px-[50px] pt-[21px] pb-[42px] flex justify-center flex-col">
         <Paragraph className="text-bold text-[24px] text-center mb-4">Voting</Paragraph>
         <Header variant="h1" className="font-semibold">
           {proposal.title}
@@ -46,7 +46,7 @@ export const VoteProposalModal: FC<Props> = ({ onClose, onSubmit, proposal, addr
         <Label variant="semibold" className="mt-4">
           Wallet
         </Label>
-        <div className="p-[15px] bg-input-bg flex gap-2 items-center justify-between w-[50%] rounded-[6px]">
+        <div className="p-[15px] bg-input-bg flex gap-2 items-center justify-between w-1/2 rounded-[6px]">
           <FaUser /> {/* @TODO insert provider image */}
           <Typography tagVariant="span" className="flex-1">
             {shortAddress(address, 10)}
@@ -66,71 +66,69 @@ export const VoteProposalModal: FC<Props> = ({ onClose, onSubmit, proposal, addr
           readonly
         />
 
-        <form onSubmit={onSubmit} className="mt-4">
-          <Label variant="semibold">Vote</Label>
-          <div className="flex gap-4 mt-2">
-            {voting === 'for' ? (
-              <Button
-                variant="primary"
-                className="w-1/3 border border-white bg-st-success bg-opacity-10"
-                textClassName="text-white"
-                onClick={() => setVoting(null)}
-              >
-                For
-              </Button>
-            ) : (
-              <Button variant="secondary" className="w-1/3" onClick={() => setVoting('for')}>
-                For
-              </Button>
-            )}
-
-            {voting === 'against' ? (
-              <Button
-                variant="primary"
-                className="w-1/3 border border-white bg-st-error bg-opacity-10"
-                textClassName="text-white"
-                onClick={() => setVoting(null)}
-              >
-                Against
-              </Button>
-            ) : (
-              <Button
-                variant="secondary"
-                className="w-1/3 border-st-error"
-                textClassName="text-st-error"
-                onClick={() => setVoting('against')}
-              >
-                Against
-              </Button>
-            )}
-
-            {voting === 'abstain' ? (
-              <Button
-                variant="primary"
-                className="w-1/3 border border-white bg-gray-600"
-                textClassName="text-white"
-                onClick={() => setVoting(null)}
-              >
-                Abstain
-              </Button>
-            ) : (
-              <Button
-                variant="secondary"
-                className="w-1/3 border-gray-500"
-                textClassName="text-gray-500"
-                onClick={() => setVoting('abstain')}
-              >
-                Abstain
-              </Button>
-            )}
-          </div>
-
-          <div className="w-full flex justify-center mt-8 gap-6">
-            <Button onClick={handleSubmit} buttonProps={{ type: 'submit' }} disabled={!voting}>
-              Submit
+        <Label variant="semibold">Vote</Label>
+        <div className="flex gap-4 mt-2">
+          {voting === 'for' ? (
+            <Button
+              variant="primary"
+              className="w-1/3 border border-white bg-st-success bg-opacity-10"
+              textClassName="text-white"
+              onClick={() => setVoting(null)}
+            >
+              For
             </Button>
-          </div>
-        </form>
+          ) : (
+            <Button variant="secondary" className="w-1/3" onClick={() => setVoting('for')}>
+              For
+            </Button>
+          )}
+
+          {voting === 'against' ? (
+            <Button
+              variant="primary"
+              className="w-1/3 border border-white bg-st-error bg-opacity-10"
+              textClassName="text-white"
+              onClick={() => setVoting(null)}
+            >
+              Against
+            </Button>
+          ) : (
+            <Button
+              variant="secondary"
+              className="w-1/3 border-st-error"
+              textClassName="text-st-error"
+              onClick={() => setVoting('against')}
+            >
+              Against
+            </Button>
+          )}
+
+          {voting === 'abstain' ? (
+            <Button
+              variant="primary"
+              className="w-1/3 border border-white bg-gray-600"
+              textClassName="text-white"
+              onClick={() => setVoting(null)}
+            >
+              Abstain
+            </Button>
+          ) : (
+            <Button
+              variant="secondary"
+              className="w-1/3 border-gray-500"
+              textClassName="text-gray-500"
+              onClick={() => setVoting('abstain')}
+            >
+              Abstain
+            </Button>
+          )}
+        </div>
+
+        <div className="flex justify-center mt-8">
+          <Button onClick={handleSubmit} disabled={!voting}>
+            Submit
+          </Button>
+        </div>
       </div>
     </Modal>
   )

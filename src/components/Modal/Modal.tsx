@@ -5,7 +5,7 @@ import { FaTimes } from 'react-icons/fa'
 interface Props {
   children: ReactNode
   onClose: () => void
-  width: number
+  width?: number
 }
 export const Modal: FC<Props> = ({ children, onClose, width }) => {
   return (

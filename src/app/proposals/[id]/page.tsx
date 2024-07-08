@@ -14,8 +14,9 @@ import { MetricsCard } from '@/components/MetricsCard'
 import { Header, Paragraph } from '@/components/Typography'
 import { shortAddress } from '@/lib/utils'
 import { FC, useEffect, useState } from 'react'
-import { VoteProposalModal } from './VoteProposalModal'
+import { VoteProposalModal, Vote } from './VoteProposalModal'
 import { useAccount } from 'wagmi'
+import { VoteSubmittedModal } from './VoteSubmittedModal'
 
 const getProposalData = async (id: string): Promise<any> => {
   return new Promise(resolve => {
@@ -45,11 +46,20 @@ const getProposalData = async (id: string): Promise<any> => {
 
 export default function ProposalView({ params }: { params: { id: string } }) {
   const [proposal, setProposal] = useState<any>(null)
-  const votingModal = useModal()
+  const [vote, setVote] = useState<Vote | null>('for')
   const { address } = useAccount()
+  const votingModal = useModal()
+  const submittedModal = useModal()
 
   // TODO: get voting power from the user
   const votingPower = 2353
+
+  const handleVoting = (vote: Vote) => {
+    votingModal.closeModal()
+    // TODO: submit vote to the contract
+    setVote(vote)
+    submittedModal.openModal()
+  }
 
   useEffect(() => {
     getProposalData(params.id).then(data => setProposal(data))
@@ -80,17 +90,20 @@ export default function ProposalView({ params }: { params: { id: string } }) {
                 <Button onClick={votingModal.openModal}>Vote on chain</Button>
                 {votingModal.isModalOpened && address && (
                   <VoteProposalModal
-                    onSubmit={() => console.log('Vote confirmed')}
+                    onSubmit={handleVoting}
                     onClose={votingModal.closeModal}
                     proposal={proposal}
                     address={address}
                     votingPower={votingPower}
                   />
                 )}
+                {submittedModal.isModalOpened && vote && (
+                  <VoteSubmittedModal proposal={proposal} vote={vote} onClose={submittedModal.closeModal} />
+                )}
               </div>
             </div>
-            <div className="flex flex-row gap-x-6">
-              <div className="basis-2/3">
+            <div className="flex flex-row gap-x-12">
+              <div className="w-2/3">
                 <Header variant="h1" className="text-[24px] mb-6">
                   Description
                 </Header>
@@ -98,7 +111,7 @@ export default function ProposalView({ params }: { params: { id: string } }) {
                   {proposal.description}
                 </Paragraph>
               </div>
-              <div className="basis-1/3 flex flex-col gap-y-2">
+              <div className="w-1/3 flex flex-col gap-y-2">
                 <Header variant="h1" className="text-[24px]">
                   Votes
                 </Header>
