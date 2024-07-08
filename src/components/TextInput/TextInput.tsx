@@ -49,7 +49,7 @@ export const TextInput: FC<Props> = ({
     [DEFAULT_CLASSES]: true,
     'w-full': fullWidth,
     'border-st-error': errorMessage,
-    'text-text-secondary': readonly,
+    'text-text-secondary focus-visible:ring-0': readonly,
   })
   return (
     <div className={className}>
