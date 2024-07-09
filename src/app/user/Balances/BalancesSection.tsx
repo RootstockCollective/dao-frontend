@@ -20,7 +20,7 @@ const data = [
   {
     token: 'Rootstock Infrastructure Framework',
     symbol: <RenderTokenSymbol symbol="stRIF" />,
-    tokenPrice: <RenderTokenPrice symbol="stRIF" />,
+    tokenPrice: <p>-</p>,
     totalBalance: <RenderTotalBalance symbol="stRIF" />,
     actions: <UnStakeRIFCell />,
   },

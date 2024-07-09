@@ -19,7 +19,7 @@ export const useGetSpecificPrices = (): GetPricesResult => {
     () => ({
       RIF: getDefaultPriceObject('RIF', query.data),
       rBTC: getDefaultPriceObject('rBTC', query.data),
-      stRIF: getDefaultPriceObject('stRIF', query.data),
+      stRIF: getDefaultPriceObject('RIF', query.data), // stRIF price is the same as RIF
     }),
     [query.data],
   )
