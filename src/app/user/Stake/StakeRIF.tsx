@@ -11,7 +11,9 @@ interface Props {
   shouldEnableGoNext: boolean
   totalBalance: string
   totalBalanceConverted: string
+  symbol: string
 }
+
 export const StakeRIF = ({
   amount,
   onAmountChange,
@@ -20,13 +22,9 @@ export const StakeRIF = ({
   shouldEnableGoNext,
   totalBalance,
   totalBalanceConverted,
+  symbol = 'RIF',
 }: Props) => {
-  const onUserAmountInput = useCallback(
-    (value: string) => {
-      onAmountChange(value)
-    },
-    [onAmountChange],
-  )
+  const onUserAmountInput = useCallback((value: string) => onAmountChange(value), [onAmountChange])
 
   const onPercentageButtonClick = useCallback(
     (percentageClicked: number) => onPercentageClicked(percentageClicked),
@@ -38,9 +36,9 @@ export const StakeRIF = ({
       <div className="px-[50px] py-[20px]">
         <Header>Stake RIF</Header>
         {/* @TODO make this dynamic */}
-        <StakeInput onChange={onUserAmountInput} value={amount} />
-        <Label variant="light">
-          Available: {totalBalance} RIF = {totalBalanceConverted}
+        <StakeInput onChange={onUserAmountInput} value={amount} symbol={symbol} />
+        <Label>
+          Available: {totalBalance} {symbol} = {totalBalanceConverted}
         </Label>
         {/* Percentage button */}
         <div className="flex justify-end gap-2 pt-1">

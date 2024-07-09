@@ -5,5 +5,6 @@ export const useFetchPrices = () => {
   return useQuery({
     queryFn: fetchPrices,
     queryKey: ['prices'],
+    refetchInterval: 5000,
   })
 }

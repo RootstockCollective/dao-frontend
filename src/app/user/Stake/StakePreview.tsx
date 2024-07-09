@@ -3,15 +3,25 @@ import { Button } from '@/components/Button'
 import { TbFileSearch } from 'react-icons/tb'
 import { StakePreviewBalance } from './StakePreviewBalance'
 import { StakePreviewBalanceProps } from '@/app/user/Stake/types'
+import { ReactNode } from 'react'
 
 interface StakePreviewProps {
   from: Omit<StakePreviewBalanceProps, 'topLeftText'>
   to: Omit<StakePreviewBalanceProps, 'topLeftText'>
   onConfirm: () => void
   onCancel: () => void
+  customComponentBeforeFooter?: ReactNode
+  disableConfirm?: boolean
 }
 
-export const StakePreview = ({ from, to, onConfirm, onCancel }: StakePreviewProps) => {
+export const StakePreview = ({
+  from,
+  to,
+  onConfirm,
+  onCancel,
+  customComponentBeforeFooter,
+  disableConfirm = true,
+}: StakePreviewProps) => {
   return (
     <div className="px-[50px] py-[20px] flex justify-center flex-col">
       <div className="flex justify-center mt-[63px]">
@@ -40,12 +50,15 @@ export const StakePreview = ({ from, to, onConfirm, onCancel }: StakePreviewProp
           <StakePreviewBalance topLeftText="To" {...to} />
         </div>
       </div>
+      {customComponentBeforeFooter}
       {/* Stake Actions */}
       <div className="flex justify-center pt-10 gap-4">
         <Button variant="secondary" onClick={onCancel}>
           Cancel
         </Button>
-        <Button onClick={onConfirm}>Confirm</Button>
+        <Button onClick={!disableConfirm ? onConfirm : undefined} disabled={disableConfirm}>
+          Confirm
+        </Button>
       </div>
     </div>
   )
