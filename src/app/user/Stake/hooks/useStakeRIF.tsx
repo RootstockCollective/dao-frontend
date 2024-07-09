@@ -131,7 +131,7 @@ function CustomStakingRIFFooter({
     case isAllowanceNeeded && !isAllowanceTxPending:
       return (
         <div className="flex flex-col mt-2 gap-2 items-center">
-          <Paragraph>You need to request allowance for StRIF to be able to stake.</Paragraph>
+          <Paragraph>You need to request allowance for stRIF to be able to stake.</Paragraph>
           <Button onClick={onRequestAllowance}>Request allowance</Button>
         </div>
       )

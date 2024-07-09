@@ -25,7 +25,7 @@ export const steps = [
 
 export const textsDependingOnAction = {
   STAKE: {
-    modalTitle: 'Stake RIF',
+    modalTitle: 'Stake ',
     inputLabel: 'Amount to stake',
     confirmButtonText: 'Stake',
     preview: 'Stake preview',
@@ -38,7 +38,7 @@ export const textsDependingOnAction = {
     ),
   },
   UNSTAKE: {
-    modalTitle: 'Unstake RIF',
+    modalTitle: 'Unstake ',
     inputLabel: 'Amount to unstake',
     confirmButtonText: 'Unstake',
     preview: 'Unstake preview',
