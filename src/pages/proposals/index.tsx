@@ -57,10 +57,10 @@ const PopoverContent = () => (
 
 const VotingPowerPopover = () => (
   <Popover content={<PopoverContent />}>
-    <span className="flex flex-row">
+    <button className="flex flex-row">
       <p>My voting power</p>
       <FaRegQuestionCircle className="ml-1" />
-    </span>
+    </button>
   </Popover>
 )
 const MetricsSection = () => (
