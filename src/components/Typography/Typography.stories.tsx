@@ -1,5 +1,5 @@
 import type { Meta, StoryObj } from '@storybook/react'
-import { Typography } from '@/components/Typography'
+import { Span, Typography } from '@/components/Typography'
 import { Paragraph } from '@/components/Typography/Paragraph'
 import { Header } from '@/components/Typography/Header'
 
@@ -47,9 +47,14 @@ export const ParagraphError: Omit<Story, 'args'> = {
   render: () => <Paragraph variant="error">This is a text with error</Paragraph>,
 }
 
-export const Span: Story = {
-  args: {
-    tagVariant: 'span',
-    children: 'This is a span.',
-  },
+export const SpanDefault: Omit<Story, 'args'> = {
+  render: () => <Span>Test</Span>,
+}
+
+export const SpanLight: Omit<Story, 'args'> = {
+  render: () => <Span variant="light">Light</Span>,
+}
+
+export const SpanSmall: Omit<Story, 'args'> = {
+  render: () => <Span size="small">Small</Span>,
 }

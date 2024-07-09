@@ -2,6 +2,18 @@ import { createContext, FC, ReactNode, useCallback, useContext, useMemo, useStat
 import { useBalancesContext } from '@/app/user/Balances/context/BalancesContext'
 import { GetPricesResult, TokenBalanceRecord } from '@/app/user/types'
 import { StakingToken } from '@/app/user/Stake/types'
+import { Hash } from 'viem'
+import { ActionBeingExecuted } from '@/app/user/Stake/Steps/stepsUtils'
+
+export type ActionHookToUse = (
+  amount: string,
+  tokenToSendContract: string,
+  tokenToReceiveContract: string,
+) => {
+  shouldEnableConfirm: boolean
+  onConfirm: () => Promise<Hash>
+  customFooter: ReactNode
+}
 
 interface StakingContextProps {
   balances: TokenBalanceRecord
@@ -16,6 +28,8 @@ interface StakingContextProps {
     amountToReceive: string
     amountToReceiveConvertedToCurrency: string
   }
+  actionToUse: ActionHookToUse
+  actionName: ActionBeingExecuted
 }
 
 const StakingContext = createContext<StakingContextProps>({
@@ -30,15 +44,25 @@ const StakingContext = createContext<StakingContextProps>({
     amountToReceive: '',
     amountToReceiveConvertedToCurrency: '',
   },
+  actionToUse: () => ({ shouldEnableConfirm: false, onConfirm: async () => '0x0', customFooter: null }),
+  actionName: 'STAKE',
 })
 
 interface Props {
   children: ReactNode
   tokenToSend: StakingToken
   tokenToReceive: StakingToken
+  actionToUse: ActionHookToUse
+  actionName: ActionBeingExecuted
 }
 
-export const StakingProvider: FC<Props> = ({ tokenToSend, tokenToReceive, children }) => {
+export const StakingProvider: FC<Props> = ({
+  tokenToSend,
+  tokenToReceive,
+  actionToUse,
+  children,
+  actionName,
+}) => {
   const { balances, prices } = useBalancesContext()
   const [stakeData, setStakeData] = useState({
     amount: '',
@@ -72,6 +96,8 @@ export const StakingProvider: FC<Props> = ({ tokenToSend, tokenToReceive, childr
       tokenToSend,
       tokenToReceive,
       amountDataToReceive,
+      actionToUse,
+      actionName,
     }),
     [
       balances,
@@ -82,6 +108,8 @@ export const StakingProvider: FC<Props> = ({ tokenToSend, tokenToReceive, childr
       tokenToSend,
       tokenToReceive,
       amountDataToReceive,
+      actionToUse,
+      actionName,
     ],
   )
 

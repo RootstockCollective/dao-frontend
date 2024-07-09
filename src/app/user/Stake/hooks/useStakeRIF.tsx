@@ -8,8 +8,13 @@ import { Button } from '@/components/Button'
 import { Paragraph } from '@/components/Typography'
 import { goToExplorerWithTxHash } from '@/lib/utils'
 import { useBalancesContext } from '@/app/user/Balances/context/BalancesContext'
+import { ActionHookToUse } from '@/app/user/Stake/StakingContext'
 
-export const useStakeRIF = (amount: string, tokenToSendContract: string, tokenToReceiveContract: string) => {
+export const useStakeRIF: ActionHookToUse = (
+  amount: string,
+  tokenToSendContract: string,
+  tokenToReceiveContract: string,
+) => {
   const { address } = useAccount()
   const { stakeModalData, onUpdateStakeModalData } = useBalancesContext()
 
@@ -126,7 +131,7 @@ function CustomStakingRIFFooter({
     case isAllowanceNeeded && !isAllowanceTxPending:
       return (
         <div className="flex flex-col mt-2 gap-2 items-center">
-          <Paragraph>You need to request allowance for StRIF to be able to stake.</Paragraph>
+          <Paragraph>You need to request allowance for stRIF to be able to stake.</Paragraph>
           <Button onClick={onRequestAllowance}>Request allowance</Button>
         </div>
       )

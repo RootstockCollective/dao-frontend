@@ -2,6 +2,7 @@ import { Header, Label } from '@/components/Typography'
 import { StakeInput } from '@/app/user/Stake/StakeInput'
 import { Button } from '@/components/Button'
 import { useCallback, useMemo } from 'react'
+import { ActionBeingExecuted, textsDependingOnAction } from '@/app/user/Stake/Steps/stepsUtils'
 
 interface Props {
   amount: string
@@ -12,6 +13,7 @@ interface Props {
   totalBalance: string
   totalBalanceConverted: string
   symbol: string
+  actionName: ActionBeingExecuted
 }
 
 export const StakeRIF = ({
@@ -22,6 +24,7 @@ export const StakeRIF = ({
   shouldEnableGoNext,
   totalBalance,
   totalBalanceConverted,
+  actionName,
   symbol = 'RIF',
 }: Props) => {
   const onUserAmountInput = useCallback((value: string) => onAmountChange(value), [onAmountChange])
@@ -34,9 +37,16 @@ export const StakeRIF = ({
   return (
     <div>
       <div className="px-[50px] py-[20px]">
-        <Header>Stake RIF</Header>
-        {/* @TODO make this dynamic */}
-        <StakeInput onChange={onUserAmountInput} value={amount} symbol={symbol} />
+        <Header className="text-center">
+          {textsDependingOnAction[actionName].modalTitle}
+          {symbol}
+        </Header>
+        <StakeInput
+          onChange={onUserAmountInput}
+          value={amount}
+          symbol={symbol}
+          labelText={textsDependingOnAction[actionName].inputLabel}
+        />
         <Label>
           Available: {totalBalance} {symbol} = {totalBalanceConverted}
         </Label>
@@ -71,9 +81,8 @@ export const StakeRIF = ({
         {/* Stake */}
         <div className="flex justify-center pt-10">
           <Button onClick={shouldEnableGoNext ? onGoNext : undefined} disabled={!shouldEnableGoNext}>
-            Stake
+            {textsDependingOnAction[actionName].confirmButtonText}
           </Button>
-          {/* @TODO make this dynamic Stake/Unstake*/}
         </div>
       </div>
     </div>
