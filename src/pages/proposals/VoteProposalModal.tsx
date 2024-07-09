@@ -66,7 +66,9 @@ export const VoteProposalModal: FC<Props> = ({ onClose, onSubmit, proposal, addr
           readonly
         />
 
-        <Label variant="semibold">Vote</Label>
+        <Label variant="semibold" className="mt-4">
+          Vote
+        </Label>
         <div className="flex gap-4 mt-2">
           {voting === 'for' ? (
             <Button
@@ -115,8 +117,8 @@ export const VoteProposalModal: FC<Props> = ({ onClose, onSubmit, proposal, addr
           ) : (
             <Button
               variant="secondary"
-              className="w-1/3 border-gray-500"
-              textClassName="text-gray-500"
+              className="w-1/3 border-gray-600"
+              textClassName="text-gray-600"
               onClick={() => setVoting('abstain')}
             >
               Abstain

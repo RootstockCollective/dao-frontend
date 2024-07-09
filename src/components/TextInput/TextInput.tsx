@@ -55,7 +55,7 @@ export const TextInput: FC<Props> = ({
     <div className={className}>
       {label && (
         <div className="pb-[10px]" {...labelWrapperProps}>
-          <Label>{label}</Label>
+          <Label variant="semibold">{label}</Label>
         </div>
       )}
       <input
