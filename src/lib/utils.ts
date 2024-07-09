@@ -40,3 +40,13 @@ export const truncate = (str: string, length: number): string => {
   }
   return str.slice(0, length) + '...'
 }
+
+export const explorerURL = process.env.NEXT_PUBLIC_EXPLORER
+
+export const isValidNumber = (value: string) => {
+  // Regular expression to check if the input is a number with one allowed decimal
+  const regex = /^\d*\.?\d{0,2}$/
+  return regex.test(value)
+}
+
+export const goToExplorerWithTxHash = (hash: string) => window.open(`${explorerURL}/tx/${hash}`, '_blank')

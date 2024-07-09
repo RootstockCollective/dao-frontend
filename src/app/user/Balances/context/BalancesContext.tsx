@@ -1,14 +1,19 @@
-import { createContext, FC, ReactNode, useContext, useMemo } from 'react'
+import { createContext, FC, ReactNode, useCallback, useContext, useMemo, useState } from 'react'
 import { useGetAddressBalances } from '@/app/user/Balances/hooks/useGetAddressBalances'
 import { useGetSpecificPrices } from '@/app/user/Balances/hooks/useGetSpecificPrices'
 import { GetPricesResult, TokenBalanceRecord } from '@/app/user/types'
 import { useModal } from '@/app/user/Balances/hooks/useModal'
+import { Hash } from 'viem'
 
 interface BalancesContextValue {
   balances: TokenBalanceRecord
   prices: GetPricesResult
   stakeModal: ReturnType<typeof useModal>
   unstakeModal: ReturnType<typeof useModal>
+  stakeModalData?: {
+    savedAllowanceTxHash?: Hash
+  }
+  onUpdateStakeModalData?: (prop: string, value: string | Hash) => void
 }
 
 const DEFAULT_STAKE_MODAL_PROPERTIES = {
@@ -35,14 +40,22 @@ export const BalancesProvider: FC<BalancesProviderProps> = ({ children }) => {
   const stakeModal = useModal()
   const unstakeModal = useModal()
 
+  const [stakeModalData, setStakeModalData] = useState({})
+
+  const onUpdateStakeModalData = useCallback((field: string, value: string | Hash) => {
+    setStakeModalData(prevState => ({ ...prevState, [field]: value }))
+  }, [])
+
   const valueOfContext = useMemo(
     () => ({
       balances,
       prices,
       stakeModal,
       unstakeModal,
+      stakeModalData,
+      onUpdateStakeModalData,
     }),
-    [balances, prices, stakeModal, unstakeModal],
+    [balances, prices, stakeModal, unstakeModal, stakeModalData, onUpdateStakeModalData],
   )
 
   return <BalancesContext.Provider value={valueOfContext}>{children}</BalancesContext.Provider>

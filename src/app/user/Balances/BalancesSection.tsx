@@ -5,27 +5,30 @@ import { RenderTotalBalance } from '@/app/user/Balances/RenderTotalBalance'
 import { BalancesProvider } from '@/app/user/Balances/context/BalancesContext'
 import { StakingModal } from '@/app/user/Stake/StakingSteps'
 import { StakeRIFCell } from '@/app/user/Balances/StakeRIFCell'
+import { RenderTokenSymbol } from '@/app/user/Balances/RenderTokenSymbol'
+import { UnStakeRIFCell } from '@/app/user/Balances/UnStakeRIFCell'
+import { UnStakingModal } from '@/app/user/Stake/UnStakingSteps'
 
 const data = [
   {
     token: 'Rootstock Infrastructure Framework',
-    symbol: 'RIF',
+    symbol: <RenderTokenSymbol symbol="RIF" />,
     tokenPrice: <RenderTokenPrice symbol="RIF" />,
     totalBalance: <RenderTotalBalance symbol="RIF" />,
     actions: <StakeRIFCell />,
   },
   {
     token: 'Rootstock Infrastructure Framework',
-    symbol: 'stRIF',
-    tokenPrice: <RenderTokenPrice symbol="stRIF" />,
+    symbol: <RenderTokenSymbol symbol="stRIF" />,
+    tokenPrice: <p>-</p>,
     totalBalance: <RenderTotalBalance symbol="stRIF" />,
-    actions: <p className="text-link underline">Unstake</p>,
+    actions: <UnStakeRIFCell />,
   },
   {
     token: 'Rootstock Bitcoin',
-    symbol: 'rBTC',
-    tokenPrice: <RenderTokenPrice symbol="RBTC" />,
-    totalBalance: <RenderTotalBalance symbol="RBTC" />,
+    symbol: <RenderTokenSymbol symbol="rBTC" />,
+    tokenPrice: <RenderTokenPrice symbol="rBTC" />,
+    totalBalance: <RenderTotalBalance symbol="rBTC" />,
     actions: '',
   },
 ]
@@ -38,6 +41,7 @@ export const BalancesSection = () => {
       </Header>
       <BalancesProvider>
         <StakingModal />
+        <UnStakingModal />
         <Table data={data} />
       </BalancesProvider>
     </div>

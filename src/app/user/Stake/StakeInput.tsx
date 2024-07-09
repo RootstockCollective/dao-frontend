@@ -1,11 +1,14 @@
 import { TextInput } from '@/components/TextInput/TextInput'
-import { isValidNumber } from '@/app/user/utils'
+import { isValidNumber } from '@/lib/utils'
 
 interface Props {
   onChange: (value: string) => void
   value: string
+  symbol?: string
+  labelText: string
 }
-export const StakeInput = ({ onChange, value }: Props) => {
+
+export const StakeInput = ({ onChange, value, symbol = 'RIF', labelText }: Props) => {
   const handleChange = (value: string) => {
     if (isValidNumber(value)) {
       onChange(value)
@@ -13,8 +16,8 @@ export const StakeInput = ({ onChange, value }: Props) => {
   }
   return (
     <TextInput
-      label="Amount to stake"
-      placeholder="RIF Amount"
+      label={labelText}
+      placeholder={`${symbol} Amount`}
       onChange={handleChange}
       value={value}
       name="amount-stake"

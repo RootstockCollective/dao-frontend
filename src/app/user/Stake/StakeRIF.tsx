@@ -2,6 +2,7 @@ import { Header, Label } from '@/components/Typography'
 import { StakeInput } from '@/app/user/Stake/StakeInput'
 import { Button } from '@/components/Button'
 import { useCallback, useMemo } from 'react'
+import { ActionBeingExecuted, textsDependingOnAction } from '@/app/user/Stake/Steps/stepsUtils'
 
 interface Props {
   amount: string
@@ -11,7 +12,10 @@ interface Props {
   shouldEnableGoNext: boolean
   totalBalance: string
   totalBalanceConverted: string
+  symbol: string
+  actionName: ActionBeingExecuted
 }
+
 export const StakeRIF = ({
   amount,
   onAmountChange,
@@ -20,13 +24,10 @@ export const StakeRIF = ({
   shouldEnableGoNext,
   totalBalance,
   totalBalanceConverted,
+  actionName,
+  symbol = 'RIF',
 }: Props) => {
-  const onUserAmountInput = useCallback(
-    (value: string) => {
-      onAmountChange(value)
-    },
-    [onAmountChange],
-  )
+  const onUserAmountInput = useCallback((value: string) => onAmountChange(value), [onAmountChange])
 
   const onPercentageButtonClick = useCallback(
     (percentageClicked: number) => onPercentageClicked(percentageClicked),
@@ -36,11 +37,18 @@ export const StakeRIF = ({
   return (
     <div>
       <div className="px-[50px] py-[20px]">
-        <Header>Stake RIF</Header>
-        {/* @TODO make this dynamic */}
-        <StakeInput onChange={onUserAmountInput} value={amount} />
-        <Label variant="light">
-          Available: {totalBalance} RIF = {totalBalanceConverted}
+        <Header className="text-center">
+          {textsDependingOnAction[actionName].modalTitle}
+          {symbol}
+        </Header>
+        <StakeInput
+          onChange={onUserAmountInput}
+          value={amount}
+          symbol={symbol}
+          labelText={textsDependingOnAction[actionName].inputLabel}
+        />
+        <Label>
+          Available: {totalBalance} {symbol} = {totalBalanceConverted}
         </Label>
         {/* Percentage button */}
         <div className="flex justify-end gap-2 pt-1">
@@ -73,9 +81,8 @@ export const StakeRIF = ({
         {/* Stake */}
         <div className="flex justify-center pt-10">
           <Button onClick={shouldEnableGoNext ? onGoNext : undefined} disabled={!shouldEnableGoNext}>
-            Stake
+            {textsDependingOnAction[actionName].confirmButtonText}
           </Button>
-          {/* @TODO make this dynamic Stake/Unstake*/}
         </div>
       </div>
     </div>

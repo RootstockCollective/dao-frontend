@@ -1,4 +1,4 @@
-import { useGetAddressTokens } from '@/app/user/utils'
+import { useGetAddressTokens } from '@/app/user/Balances/hooks/useGetAddressTokens'
 import { useMemo } from 'react'
 import { getTokenBalance } from '@/app/user/Balances/balanceUtils'
 import { TokenBalanceRecord } from '@/app/user/types'
@@ -6,13 +6,12 @@ import { TokenBalanceRecord } from '@/app/user/types'
 export const useGetAddressBalances = (): TokenBalanceRecord => {
   const query = useGetAddressTokens()
 
-  const rif = useMemo(() => getTokenBalance('RIF', query.data ?? []), [query.data])
-  const rbtc = useMemo(() => getTokenBalance('rBTC', query.data ?? []), [query.data])
-  // TODO get stRIF
-  const strif = useMemo(() => ({ balance: '0', symbol: 'stRIF' }), [])
-  return {
-    rif,
-    rbtc,
-    strif,
-  }
+  return useMemo(
+    () => ({
+      RIF: getTokenBalance('RIF', query.data),
+      rBTC: getTokenBalance('rBTC', query.data),
+      stRIF: getTokenBalance('stRIF', query.data),
+    }),
+    [query.data],
+  )
 }

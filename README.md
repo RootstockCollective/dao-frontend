@@ -46,7 +46,10 @@ Go to /health to see a "Page is OK!" text rendered.
 ## Deployments
 
 Storybook GitHub pages (can vary): https://vigilant-guacamole-p8v5w3k.pages.github.io/
-Main APP url: https://frontend.testnet.dao.rif.technology/health
+
+Main APP URL: https://frontend.testnet.dao.rif.technology
+
+Backend URL: https://dao-backend.testnet.rifcomputing.net/api-docs
 
 ## Storybook
 
