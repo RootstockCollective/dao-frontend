@@ -17,6 +17,7 @@ import { FC, useEffect, useState } from 'react'
 import { VoteProposalModal, Vote } from './VoteProposalModal'
 import { useAccount } from 'wagmi'
 import { VoteSubmittedModal } from './VoteSubmittedModal'
+import { useRouter } from 'next/router'
 
 const getProposalData = async (id: string): Promise<any> => {
   return new Promise(resolve => {
@@ -45,6 +46,10 @@ const getProposalData = async (id: string): Promise<any> => {
 }
 
 export default function ProposalView({ params }: { params: { id: string } }) {
+  const {
+    query: { id },
+  } = useRouter()
+
   const [proposal, setProposal] = useState<any>(null)
   const [vote, setVote] = useState<Vote | null>('for')
   const { address } = useAccount()
@@ -62,9 +67,12 @@ export default function ProposalView({ params }: { params: { id: string } }) {
   }
 
   useEffect(() => {
-    getProposalData(params.id).then(data => setProposal(data))
-  }, [params.id])
+    if (id) {
+      getProposalData(id as string).then(data => setProposal(data))
+    }
+  }, [id])
 
+  if (!id) return null
   return (
     <MainContainer>
       <div className="pl-4 grid grid-rows-1 gap-[32px] mb-[100px]">
@@ -79,7 +87,7 @@ export default function ProposalView({ params }: { params: { id: string } }) {
               <Paragraph className="text-sm text-gray-500 ml-4">
                 Created at: <span className="text-primary">{proposal.created.toDateString()}</span>
               </Paragraph>
-              <Paragraph className="text-sm text-primary ml-4">{params.id}</Paragraph>
+              <Paragraph className="text-sm text-primary ml-4">{id}</Paragraph>
             </div>
             <div className="flex flex-row justify-between">
               <div className="flex flex-row gap-x-6">

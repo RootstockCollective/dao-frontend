@@ -8,7 +8,7 @@ import { Status } from '@/components/Status'
 import { Table } from '@/components/Table'
 import { Header } from '@/components/Typography'
 import { AppRouterInstance } from 'next/dist/shared/lib/app-router-context.shared-runtime'
-import { useRouter } from 'next/navigation'
+import { NextRouter, useRouter } from 'next/router'
 import { FaRegQuestionCircle } from 'react-icons/fa'
 import { FaPlus } from 'react-icons/fa6'
 
@@ -123,7 +123,7 @@ const ReceivedDelegationTable = () => (
   </div>
 )
 
-const latestProposalsData = (router: AppRouterInstance) => [
+const latestProposalsData = (router: NextRouter) => [
   {
     'Proposal name': <button onClick={() => router.push('/proposals/ID409')}>Crypto ipsum bitcoin</button>,
     'Current votes': '59 votes',
