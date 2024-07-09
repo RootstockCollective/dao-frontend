@@ -46,8 +46,8 @@ const HeaderSection = () => {
 
 const PopoverContent = () => (
   <>
-    <p className="font-bold mb-1">How is my voting power calculated?</p>
-    <p>
+    <p className="text-[12px] font-bold mb-1">How is my voting power calculated?</p>
+    <p className="text-[12px]">
       Your voting power is calculated as the number of tokens (votes) that have been delegated to you before
       the proposal became active. You can delegate your votes to yourself, or to someone else. Others can also
       delegate their votes to you.
