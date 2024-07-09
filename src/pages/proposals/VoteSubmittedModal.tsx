@@ -2,6 +2,7 @@ import { Button } from '@/components/Button'
 import { Modal } from '@/components/Modal/Modal'
 import { Header, Paragraph } from '@/components/Typography'
 import { FC } from 'react'
+import { LuBadgeCheck } from 'react-icons/lu'
 
 export type Vote = 'for' | 'against' | 'abstain'
 
@@ -14,6 +15,20 @@ interface Props {
 export const VoteSubmittedModal: FC<Props> = ({ onClose, proposal, vote }) => (
   <Modal onClose={onClose}>
     <div className="px-[50px] pt-[21px] pb-[42px] flex justify-center flex-col">
+      <div className="flex justify-center mt-6">
+        <div
+          style={{
+            boxShadow: '0px 0px 16.4px 0px rgba(123,87,252,0.68)',
+            padding: 17,
+            borderRadius: '30%',
+            backgroundColor: 'white',
+            width: 80,
+          }}
+        >
+          <LuBadgeCheck size={48} color="#665EF6" />
+        </div>
+      </div>
+
       <Header variant="h1" className="font-semibold text-center mt-6">
         Vote submitted
       </Header>
