@@ -18,3 +18,19 @@ const contracts = {
 export type SupportedTokens = keyof typeof testnet | keyof typeof mainnet
 // @ts-ignore
 export const currentEnvContracts = contracts[process.env.NEXT_PUBLIC_ENV] as typeof testnet
+
+const testnetNft = {
+  RDEA: '0xa3076bcaCc7112B7fa7c5A87CF32275296d85D64',
+}
+
+const mainnetNft = {
+  // TODO
+  RDEA: '',
+}
+
+const contractsNFT = {
+  testnet,
+  mainnet,
+}
+// @ts-ignore
+export const currentEnvNFTContracts = contractsNFT[process.env.NEXT_PUBLIC_ENV] as typeof testnetNft
