@@ -1,28 +1,21 @@
 import { Button } from '@/components/Button'
 import { Footer } from '@/components/Footer'
+import { ConnectButton } from '@/components/Header'
 import { Logo } from '@/components/Header/Logo'
 import { cn } from '@/lib/utils'
-import { FaLink, FaUsers } from 'react-icons/fa6'
-import { useAccount, useConnect, useDisconnect } from 'wagmi'
 import { useRouter } from 'next/navigation'
+import { FaLink, FaUsers } from 'react-icons/fa6'
+import { useAccount, useDisconnect } from 'wagmi'
 
 const BACKGROUND_CLASSES = 'bg-[url(../../public/images/login-bg.svg)] bg-cover'
 
 export const Login = () => {
   const { isConnected, address } = useAccount()
   const { disconnect } = useDisconnect()
-  const { connectors, connect } = useConnect()
 
   const router = useRouter()
 
-  const handleConnectWallet = () => {
-    if (connectors.length) {
-      connect({ connector: connectors[connectors.length - 1] }, { onSuccess: () => router.push('/user') })
-    }
-  }
-  const handleExploreCommunities = () => {
-    router.push('/user')
-  }
+  const handleExploreCommunities = () => router.push('/communities')
 
   return (
     <div className={cn(BACKGROUND_CLASSES, 'flex flex-col justify-center items-center h-screen')}>
@@ -39,9 +32,7 @@ export const Login = () => {
             Disconnect
           </Button>
         ) : (
-          <Button onClick={handleConnectWallet} variant="primary" startIcon={<FaLink />}>
-            Connect wallet
-          </Button>
+          <ConnectButton />
         )}
 
         <Button onClick={handleExploreCommunities} variant="secondary" startIcon={<FaUsers />}>

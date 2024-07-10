@@ -1,5 +1,5 @@
 'use client'
-import { Header } from '@/components/Header'
+import { ConnectButton, Header } from '@/components/Header'
 import { StatefulSidebar } from '@/components/MainContainer/StatefulSidebar'
 import { shortAddress } from '@/lib/utils'
 import { useRouter } from 'next/navigation'
@@ -7,6 +7,9 @@ import { FC, ReactNode, useEffect, useState } from 'react'
 import { useAccount, useDisconnect } from 'wagmi'
 import { useModal } from '@/app/user/Balances/hooks/useModal'
 import { DisconnectWalletModal } from '@/app/login/DisconnectWalletModal'
+import { FaLink } from 'react-icons/fa6'
+import { Button } from '../Button'
+import { AccountAddress } from '../Header/AccountAddress'
 
 interface Props {
   children: ReactNode
@@ -35,9 +38,19 @@ export const MainContainer: FC<Props> = ({ children }) => {
     <div className="flex container">
       <StatefulSidebar />
       <div className="flex-auto">
-        {isConnected && hasMounted && (
+        {hasMounted && (
           <>
-            <Header address={address} shortAddress={shortAddress(address)} onLogoutClick={modal.openModal} />
+            <Header>
+              {isConnected ? (
+                <AccountAddress
+                  address={address}
+                  shortAddress={shortAddress(address)}
+                  onLogoutClick={modal.openModal}
+                />
+              ) : (
+                <ConnectButton />
+              )}
+            </Header>
             {modal.isModalOpened && (
               <DisconnectWalletModal
                 onClose={modal.closeModal}
