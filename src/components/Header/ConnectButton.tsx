@@ -1,14 +1,20 @@
+import { FC } from 'react'
 import { FaLink } from 'react-icons/fa6'
-import { Button } from '../Button'
 import { useConnect } from 'wagmi'
-import { useRouter } from 'next/navigation'
+import { Button } from '../Button'
 
-export const ConnectButton = () => {
-  const { connectors, connect } = useConnect()
-  const router = useRouter()
+interface Props {
+  onSuccess?: () => void
+}
+
+export const ConnectButton: FC<Props> = ({ onSuccess }) => {
+  const { connectors, connect } = useConnect({
+    mutation: { onSuccess },
+  })
+
   const handleConnectWallet = () => {
     if (connectors.length) {
-      connect({ connector: connectors[connectors.length - 1] }, { onSuccess: () => router.push('/user') })
+      connect({ connector: connectors[connectors.length - 1] })
     }
   }
   return (

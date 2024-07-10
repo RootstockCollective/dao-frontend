@@ -1,14 +1,12 @@
 'use client'
+import { DisconnectWalletModal } from '@/app/login/DisconnectWalletModal'
+import { useModal } from '@/app/user/Balances/hooks/useModal'
 import { ConnectButton, Header } from '@/components/Header'
 import { StatefulSidebar } from '@/components/MainContainer/StatefulSidebar'
 import { shortAddress } from '@/lib/utils'
 import { useRouter } from 'next/navigation'
 import { FC, ReactNode, useEffect, useState } from 'react'
 import { useAccount, useDisconnect } from 'wagmi'
-import { useModal } from '@/app/user/Balances/hooks/useModal'
-import { DisconnectWalletModal } from '@/app/login/DisconnectWalletModal'
-import { FaLink } from 'react-icons/fa6'
-import { Button } from '../Button'
 import { AccountAddress } from '../Header/AccountAddress'
 
 interface Props {

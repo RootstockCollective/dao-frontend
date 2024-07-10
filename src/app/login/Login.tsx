@@ -32,7 +32,7 @@ export const Login = () => {
             Disconnect
           </Button>
         ) : (
-          <ConnectButton />
+          <ConnectButton onSuccess={() => router.push('/user')} />
         )}
 
         <Button onClick={handleExploreCommunities} variant="secondary" startIcon={<FaUsers />}>
