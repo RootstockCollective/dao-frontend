@@ -41,6 +41,7 @@ export const Button: FC<Props> = ({
     'pl-9': startIcon,
     'justify-start': !centerContent,
     'justify-center': centerContent,
+    'cursor-not-allowed': disabled,
     [className]: true,
   })
 
@@ -53,7 +54,7 @@ export const Button: FC<Props> = ({
   })
 
   return (
-    <button type="button" className={classes} onClick={onClick} {...buttonProps}>
+    <button type="button" className={classes} onClick={e => !disabled && onClick?.(e)} {...buttonProps}>
       <span className={textClasses}>
         <span className="absolute left-[-20px] top-[4px]">{startIcon}</span>
         {text}

@@ -7,7 +7,7 @@ import { Popover } from '@/components/Popover'
 import { Status } from '@/components/Status'
 import { Table } from '@/components/Table'
 import { Header } from '@/components/Typography'
-import { useRouter } from 'next/navigation'
+import { NextRouter, useRouter } from 'next/router'
 import { FaRegQuestionCircle } from 'react-icons/fa'
 import { FaPlus } from 'react-icons/fa6'
 
@@ -46,8 +46,8 @@ const HeaderSection = () => {
 
 const PopoverContent = () => (
   <>
-    <p className="font-bold mb-1">How is my voting power calculated?</p>
-    <p>
+    <p className="text-[12px] font-bold mb-1">How is my voting power calculated?</p>
+    <p className="text-[12px]">
       Your voting power is calculated as the number of tokens (votes) that have been delegated to you before
       the proposal became active. You can delegate your votes to yourself, or to someone else. Others can also
       delegate their votes to you.
@@ -57,10 +57,10 @@ const PopoverContent = () => (
 
 const VotingPowerPopover = () => (
   <Popover content={<PopoverContent />}>
-    <span className="flex flex-row">
+    <button className="flex flex-row">
       <p>My voting power</p>
       <FaRegQuestionCircle className="ml-1" />
-    </span>
+    </button>
   </Popover>
 )
 const MetricsSection = () => (
@@ -122,9 +122,9 @@ const ReceivedDelegationTable = () => (
   </div>
 )
 
-const latestProposalsData = [
+const latestProposalsData = (router: NextRouter) => [
   {
-    'Proposal name': 'Crypto ipsum bitcoin',
+    'Proposal name': <button onClick={() => router.push('/proposals/ID409')}>Crypto ipsum bitcoin</button>,
     'Current votes': '59 votes',
     Starts: 'June 22, 2024',
     Sentiment: (
@@ -139,7 +139,7 @@ const latestProposalsData = [
     Status: <Status severity="success" />,
   },
   {
-    'Proposal name': 'Crypto ipsum bitcoin',
+    'Proposal name': <button onClick={() => router.push('/proposals/ID410')}>Crypto ipsum bitcoin</button>,
     'Current votes': '120 votes',
     Starts: 'June 22, 2024',
     Sentiment: (
@@ -153,7 +153,7 @@ const latestProposalsData = [
     Status: <Status severity="rejected" />,
   },
   {
-    'Proposal name': 'Crypto ipsum bitcoin',
+    'Proposal name': <button onClick={() => router.push('/proposals/ID411')}>Crypto ipsum bitcoin</button>,
     'Current votes': '1,230 votes',
     Starts: 'June 22, 2024',
     Sentiment: (
@@ -168,7 +168,7 @@ const latestProposalsData = [
     Status: <Status severity="in-progress" />,
   },
   {
-    'Proposal name': 'Crypto ipsum bitcoin',
+    'Proposal name': <button onClick={() => router.push('/proposals/ID412')}>Crypto ipsum bitcoin</button>,
     'Current votes': '1,232,323 votes',
     Starts: 'June 22, 2024',
     Sentiment: (
@@ -183,11 +183,14 @@ const latestProposalsData = [
   },
 ]
 
-const LatestProposalsTable = () => (
-  <div>
-    <Header variant="h2" className="mb-4">
-      Latest Proposals
-    </Header>
-    <Table data={latestProposalsData} />
-  </div>
-)
+const LatestProposalsTable = () => {
+  const router = useRouter()
+  return (
+    <div>
+      <Header variant="h2" className="mb-4">
+        Latest Proposals
+      </Header>
+      <Table data={latestProposalsData(router)} />
+    </div>
+  )
+}

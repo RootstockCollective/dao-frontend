@@ -34,6 +34,7 @@ export default function CreateProposal() {
   const [activeStep, setActiveStep] = useState('proposal')
 
   const form = useForm<z.infer<typeof FormSchema>>({
+    mode: 'onTouched',
     resolver: zodResolver(FormSchema),
     defaultValues: {
       proposalName: '',
@@ -47,7 +48,7 @@ export default function CreateProposal() {
     control,
     handleSubmit,
     watch,
-    formState: { touchedFields, errors },
+    formState: { touchedFields, errors, isValid, isDirty },
   } = form
   const isProposalNameValid = !errors.proposalName && touchedFields.proposalName
   const isDescriptionValid = !errors.description && touchedFields.description
@@ -77,7 +78,7 @@ export default function CreateProposal() {
     <MainContainer>
       <Form {...form}>
         <form onSubmit={handleSubmit(onSubmit)}>
-          <HeaderSection disabled={!isProposalCompleted || !isActionsCompleted} />
+          <HeaderSection disabled={!isDirty || !isValid} />
           {/* TODO: add an error alert when submiting form */}
           <Accordion
             type="single"
@@ -199,7 +200,7 @@ export default function CreateProposal() {
                       <FormItem className="mb-6 mx-1">
                         <FormLabel>Amount</FormLabel>
                         <FormControl>
-                          <Input placeholder="0.00" type="number" className="w-64" {...field} />
+                          <Input placeholder="0.00" type="number" className="w-64" min={0} {...field} />
                         </FormControl>
                         <FormDescription>= $ USD 0.00</FormDescription>
                         <FormMessage />

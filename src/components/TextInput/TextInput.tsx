@@ -21,6 +21,7 @@ interface Props {
   fullWidth?: boolean
   value?: string
   placeholder?: string
+  readonly?: boolean
   label?: string
   labelWrapperProps?: JSX.IntrinsicElements['div']
   inputProps?: JSX.IntrinsicElements['input']
@@ -34,6 +35,7 @@ export const TextInput: FC<Props> = ({
   fullWidth = false,
   value,
   placeholder,
+  readonly = false,
   label,
   labelWrapperProps = {},
   inputProps = {},
@@ -47,12 +49,13 @@ export const TextInput: FC<Props> = ({
     [DEFAULT_CLASSES]: true,
     'w-full': fullWidth,
     'border-st-error': errorMessage,
+    'text-text-secondary focus-visible:ring-0': readonly,
   })
   return (
     <div className={className}>
       {label && (
         <div className="pb-[10px]" {...labelWrapperProps}>
-          <Label>{label}</Label>
+          <Label variant="semibold">{label}</Label>
         </div>
       )}
       <input
@@ -63,6 +66,7 @@ export const TextInput: FC<Props> = ({
         onChange={handleOnChange}
         name={name}
         data-testid={name}
+        readOnly={readonly}
         {...inputProps}
       />
       {hint && !errorMessage && (

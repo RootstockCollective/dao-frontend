@@ -2,6 +2,7 @@ import type { Meta, StoryObj } from '@storybook/react'
 import { Span, Typography } from '@/components/Typography'
 import { Paragraph } from '@/components/Typography/Paragraph'
 import { Header } from '@/components/Typography/Header'
+import { Label } from './Label'
 
 const meta = {
   title: 'Components/Typography',
@@ -45,6 +46,18 @@ export const ParagraphSemibold: Omit<Story, 'args'> = {
 
 export const ParagraphError: Omit<Story, 'args'> = {
   render: () => <Paragraph variant="error">This is a text with error</Paragraph>,
+}
+
+export const LabelNormal: Omit<Story, 'args'> = {
+  render: () => <Label>This is a label</Label>,
+}
+
+export const SemiboldLabel: Omit<Story, 'args'> = {
+  render: () => <Label variant="semibold">This is a semibold label.</Label>,
+}
+
+export const LightLabel: Omit<Story, 'args'> = {
+  render: () => <Label variant="light">This is a light label.</Label>,
 }
 
 export const SpanDefault: Omit<Story, 'args'> = {

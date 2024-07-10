@@ -14,7 +14,7 @@ export const SidebarButtons = ({ onClick, activeButton = 'communities' }: Sideba
       centerContent={false}
       className="mb-[32px]"
       buttonProps={{ id: 'Button_Communities', name: 'communities' }}
-      variant={activeButton === 'communities' ? 'primary' : 'transparent'}
+      variant={activeButton.startsWith('communities') ? 'primary' : 'transparent'}
     >
       Communities
     </Button>
@@ -22,7 +22,7 @@ export const SidebarButtons = ({ onClick, activeButton = 'communities' }: Sideba
       startIcon={<GrLineChart />}
       onClick={() => onClick?.('treasury')}
       fullWidth
-      variant={activeButton === 'treasury' ? 'primary' : 'transparent'}
+      variant={activeButton.startsWith('treasury') ? 'primary' : 'transparent'}
       centerContent={false}
       className="mb-[32px]"
       buttonProps={{ id: 'Button_Treasury', name: 'treasury' }}
@@ -33,7 +33,7 @@ export const SidebarButtons = ({ onClick, activeButton = 'communities' }: Sideba
       startIcon={<RiContactsBookLine />}
       onClick={() => onClick?.('proposals')}
       fullWidth
-      variant={activeButton === 'proposals' ? 'primary' : 'transparent'}
+      variant={activeButton.startsWith('proposals') ? 'primary' : 'transparent'}
       centerContent={false}
       className="mb-[32px]"
       buttonProps={{ id: 'Button_Proposals', name: 'proposals' }}
@@ -44,7 +44,7 @@ export const SidebarButtons = ({ onClick, activeButton = 'communities' }: Sideba
       startIcon={<MdPersonOutline />}
       onClick={() => onClick?.('user')}
       fullWidth
-      variant={activeButton === 'user' ? 'primary' : 'transparent'}
+      variant={activeButton.startsWith('user') ? 'primary' : 'transparent'}
       centerContent={false}
       className="mb-[32px]"
       buttonProps={{ id: 'Button_User', name: 'user' }}

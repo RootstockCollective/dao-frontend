@@ -21,7 +21,7 @@ export const Login = () => {
     }
   }
   const handleExploreCommunities = () => {
-    // TODO: Navigate to communities page
+    router.push('/user')
   }
 
   return (

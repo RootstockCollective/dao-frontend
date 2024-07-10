@@ -19,5 +19,5 @@ export const config = createConfig({
   client({ chain }) {
     return createClient({ chain, transport: http() })
   },
-  connectors: [metaMask()],
+  connectors: [metaMask({ dappMetadata: { name: 'RootstockCollective' } })],
 })
