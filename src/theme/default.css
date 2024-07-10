@@ -25,7 +25,8 @@ html[data-theme='default'] {
 
   /* Font */
   --font-open-sans: 'Open Sans';
-
+  --font-sora: 'Sora';
+  
   /* Input */
   --input-bg: rgba(85, 85, 85, 0.2);
   --input-placeholder: rgba(156, 163, 175, 1);
