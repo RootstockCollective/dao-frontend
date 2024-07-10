@@ -20,6 +20,7 @@ export const Login = () => {
       connect({ connector: connectors[connectors.length - 1] }, { onSuccess: () => router.push('/user') })
     }
   }
+
   const handleExploreCommunities = () => {
     router.push('/user')
   }
