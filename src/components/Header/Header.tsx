@@ -1,17 +1,13 @@
-import { AccountAddress } from '@/components/Header/AccountAddress'
+import { ReactNode } from 'react'
 
 interface Props {
-  address: string | undefined
-  shortAddress: string
-  onLogoutClick?: () => void
+  children: ReactNode
 }
 
-export const Header = ({ address, shortAddress, onLogoutClick }: Props) => {
+export const Header = ({ children }: Props) => {
   return (
     <header className="container my-8">
-      <div className="flex justify-end">
-        <AccountAddress address={address} shortAddress={shortAddress} onLogoutClick={onLogoutClick} />
-      </div>
+      <div className="flex justify-end">{children}</div>
     </header>
   )
 }
