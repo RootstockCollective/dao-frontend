@@ -7,7 +7,7 @@ import { Popover } from '@/components/Popover'
 import { ProtectedContent } from '@/components/ProtectedContent/ProtectedContent'
 import { Status } from '@/components/Status'
 import { Table } from '@/components/Table'
-import { Header } from '@/components/Typography'
+import { Header, Paragraph } from '@/components/Typography'
 import { AppRouterInstance } from 'next/dist/shared/lib/app-router-context.shared-runtime'
 import { useRouter } from 'next/navigation'
 import { FaRegQuestionCircle } from 'react-icons/fa'
@@ -35,9 +35,7 @@ const HeaderSection = () => {
   const router = useRouter()
   return (
     <div className="flex flex-row justify-between container pl-4">
-      <Header variant="h2" className="font-semibold">
-        My Governance
-      </Header>
+      <Paragraph className="font-semibold text-[18px]">My Governance</Paragraph>
       <div className="flex flex-row gap-x-6">
         <Button startIcon={<FaPlus />} onClick={() => router.push('/proposals/create')}>
           Create Proposal
