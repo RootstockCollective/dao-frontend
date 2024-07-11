@@ -1,20 +1,17 @@
 'use client'
 import { MainContainer } from '@/components/MainContainer/MainContainer'
 import { MetricsCard } from '@/components/MetricsCard'
-import { ProtectedContent } from '@/components/ProtectedContent/ProtectedContent'
 import { Table } from '@/components/Table'
 import { Header, Paragraph } from '@/components/Typography'
 
 export default function Treasury() {
   return (
     <MainContainer>
-      <ProtectedContent>
-        <div className="pl-[24px] grid grid-rows-1 gap-[32px] mb-[100px]">
-          <TreasurySection />
-          <TotalTokenHoldingsSection />
-          <Distribution />
-        </div>
-      </ProtectedContent>
+      <div className="pl-[24px] grid grid-rows-1 gap-[32px] mb-[100px]">
+        <TreasurySection />
+        <TotalTokenHoldingsSection />
+        <Distribution />
+      </div>
     </MainContainer>
   )
 }

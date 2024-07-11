@@ -16,7 +16,7 @@ export default function Page() {
   } = useRouter()
   if (!address) return null
   return (
-    <MainContainer>
+    <MainContainer notProtected>
       <NFTContextProvider nftAddress={address as string}>
         <div className="flex justify-between pl-[16px] gap-[16px]">
           {/* 50%: NFT INFO*/}
