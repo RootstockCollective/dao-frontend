@@ -1,5 +1,6 @@
+'use client'
 import { createContext, ReactNode, useContext, useMemo } from 'react'
-import { useFetchNFTsOwned } from '@/pages/communities/nft/hooks/useFetchNFTsOwned'
+import { useFetchNFTsOwned } from '@/app/providers/hooks/useFetchNFTsOwned'
 import { useAccount } from 'wagmi'
 
 interface NFTContextProps {}

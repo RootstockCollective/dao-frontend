@@ -8,7 +8,7 @@ import { FaDiscord, FaLink } from 'react-icons/fa'
 import { Paragraph, Span } from '@/components/Typography'
 import { ReactNode } from 'react'
 import { Button } from '@/components/Button'
-import { NFTContextProvider } from '@/pages/communities/nft/NFTContext'
+import { NFTContextProvider } from '@/app/providers'
 
 export default function Page() {
   const {
