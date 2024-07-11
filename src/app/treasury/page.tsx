@@ -1,29 +1,24 @@
 'use client'
 import { MainContainer } from '@/components/MainContainer/MainContainer'
 import { MetricsCard } from '@/components/MetricsCard'
-import { ProtectedContent } from '@/components/ProtectedContent/ProtectedContent'
 import { Table } from '@/components/Table'
-import { Header } from '@/components/Typography'
+import { Header, Paragraph } from '@/components/Typography'
 
 export default function Treasury() {
   return (
     <MainContainer>
-      <ProtectedContent>
-        <div className="pl-[24px] grid grid-rows-1 gap-[32px] mb-[100px]">
-          <TreasurySection />
-          <TotalTokenHoldingsSection />
-          <Distribution />
-        </div>
-      </ProtectedContent>
+      <div className="pl-[24px] grid grid-rows-1 gap-[32px] mb-[100px]">
+        <TreasurySection />
+        <TotalTokenHoldingsSection />
+        <Distribution />
+      </div>
     </MainContainer>
   )
 }
 
 const TreasurySection = () => (
   <div>
-    <Header variant="h2" className="mb-[17px]">
-      Treasury
-    </Header>
+    <Paragraph className="font-semibold text-[18px]">Treasury</Paragraph>
     <div className="grid grid-cols-3 gap-[24px]">
       <MetricsCard title="Treasury RIF Holdings" amount="936.26m RIF" fiatAmount="= $ USD 14,045.00" />
       <MetricsCard title="Total RIF Volume" amount="936.26m RIF" fiatAmount="= $ USD 14,045.00" />

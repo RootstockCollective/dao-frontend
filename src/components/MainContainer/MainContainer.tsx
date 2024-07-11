@@ -1,5 +1,4 @@
 'use client'
-import { DisconnectWalletModal } from '@/app/login/DisconnectWalletModal'
 import { useModal } from '@/app/user/Balances/hooks/useModal'
 import { ConnectButton, Header } from '@/components/Header'
 import { StatefulSidebar } from '@/components/MainContainer/StatefulSidebar'
@@ -8,12 +7,15 @@ import { useRouter } from 'next/navigation'
 import { FC, ReactNode, useEffect, useState } from 'react'
 import { useAccount, useDisconnect } from 'wagmi'
 import { AccountAddress } from '../Header/AccountAddress'
+import { DisconnectWalletModal } from '../Modal/DisconnectWalletModal'
+import { ProtectedContent } from '../ProtectedContent/ProtectedContent'
 
 interface Props {
   children: ReactNode
+  notProtected?: boolean
 }
 
-export const MainContainer: FC<Props> = ({ children }) => {
+export const MainContainer: FC<Props> = ({ children, notProtected = false }) => {
   const { isConnected, address } = useAccount()
   const { disconnect } = useDisconnect()
   const router = useRouter()
@@ -59,7 +61,7 @@ export const MainContainer: FC<Props> = ({ children }) => {
             )}
           </>
         )}
-        {children}
+        {notProtected ? children : <ProtectedContent>{children}</ProtectedContent>}
       </div>
     </div>
   )

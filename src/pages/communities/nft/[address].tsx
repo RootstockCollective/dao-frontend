@@ -8,7 +8,7 @@ import { FaDiscord, FaLink } from 'react-icons/fa'
 import { Paragraph, Span } from '@/components/Typography'
 import { ReactNode } from 'react'
 import { Button } from '@/components/Button'
-import { NFTContextProvider } from '@/pages/communities/nft/NFTContext'
+import { NFTContextProvider } from '@/app/providers'
 
 export default function Page() {
   const {
@@ -16,7 +16,7 @@ export default function Page() {
   } = useRouter()
   if (!address) return null
   return (
-    <MainContainer>
+    <MainContainer notProtected>
       <NFTContextProvider nftAddress={address as string}>
         <div className="flex justify-between pl-[16px] gap-[16px]">
           {/* 50%: NFT INFO*/}

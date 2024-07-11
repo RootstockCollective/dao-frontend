@@ -1,6 +1,6 @@
 import type { Meta, StoryObj } from '@storybook/react'
 import { Modal } from '@/components/Modal/Modal'
-import { DisconnectWalletModal } from '@/app/login/DisconnectWalletModal'
+import { DisconnectWalletModal } from './DisconnectWalletModal'
 
 const meta = {
   component: Modal,

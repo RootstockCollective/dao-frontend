@@ -17,7 +17,7 @@ const firstCommunity = {
 
 export default function Communities() {
   return (
-    <MainContainer>
+    <MainContainer notProtected>
       <div className="ml-[24px]">
         <Image
           src="/images/communities-header.svg"

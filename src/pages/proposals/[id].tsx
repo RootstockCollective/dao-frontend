@@ -14,9 +14,9 @@ import { MetricsCard } from '@/components/MetricsCard'
 import { Header, Paragraph } from '@/components/Typography'
 import { shortAddress } from '@/lib/utils'
 import { FC, useEffect, useState } from 'react'
-import { VoteProposalModal, Vote } from './VoteProposalModal'
+import { VoteProposalModal, Vote } from '../../components/Modal/VoteProposalModal'
 import { useAccount } from 'wagmi'
-import { VoteSubmittedModal } from './VoteSubmittedModal'
+import { VoteSubmittedModal } from '../../components/Modal/VoteSubmittedModal'
 import { useRouter } from 'next/router'
 
 const getProposalData = async (id: string): Promise<any> => {
