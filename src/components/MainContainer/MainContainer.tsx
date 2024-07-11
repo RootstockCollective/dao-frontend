@@ -1,5 +1,5 @@
 'use client'
-import { DisconnectWalletModal } from '@/app/login/DisconnectWalletModal'
+import { DisconnectWalletModal } from '@/components/Modal/DisconnectWalletModal'
 import { useModal } from '@/app/user/Balances/hooks/useModal'
 import { ConnectButton, Header } from '@/components/Header'
 import { StatefulSidebar } from '@/components/MainContainer/StatefulSidebar'

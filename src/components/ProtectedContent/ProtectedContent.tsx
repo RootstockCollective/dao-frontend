@@ -1,6 +1,6 @@
-import { ConnectWalletModal } from '@/app/login/ConnectWalletModal'
 import { FC, ReactNode, useEffect, useState } from 'react'
 import { useAccount } from 'wagmi'
+import { ConnectWalletModal } from '../Modal/ConnectWalletModal'
 
 interface Props {
   children: ReactNode
