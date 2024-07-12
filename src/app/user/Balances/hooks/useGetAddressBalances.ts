@@ -2,9 +2,12 @@ import { useGetAddressTokens } from '@/app/user/Balances/hooks/useGetAddressToke
 import { useMemo } from 'react'
 import { getTokenBalance } from '@/app/user/Balances/balanceUtils'
 import { TokenBalanceRecord } from '@/app/user/types'
+import { useAccount } from 'wagmi'
 
 export const useGetAddressBalances = (): TokenBalanceRecord => {
-  const query = useGetAddressTokens()
+  const { address, chainId } = useAccount()
+
+  const query = useGetAddressTokens(address as string, chainId as number)
 
   return useMemo(
     () => ({
