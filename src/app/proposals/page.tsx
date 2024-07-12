@@ -7,10 +7,18 @@ import { Popover } from '@/components/Popover'
 import { Status } from '@/components/Status'
 import { Table } from '@/components/Table'
 import { Header, Paragraph } from '@/components/Typography'
+import { GovernorAbi } from '@/lib/abis/Governor'
+import { RIFTokenAbi } from '@/lib/abis/RIFTokenAbi'
+import { StRIFTokenAbi } from '@/lib/abis/StRIFTokenAbi'
+import { currentEnvContracts, GovernorAddress } from '@/lib/contracts'
 import { AppRouterInstance } from 'next/dist/shared/lib/app-router-context.shared-runtime'
 import { useRouter } from 'next/navigation'
 import { FaRegQuestionCircle } from 'react-icons/fa'
 import { FaPlus } from 'react-icons/fa6'
+import { Address, formatUnits } from 'viem'
+import { getBalance } from 'viem/actions'
+import { useAccount, useBalance, useReadContract, useReadContracts } from 'wagmi'
+import { useVotingPower } from './hooks/useVotingPower'
 
 export default function Proposals() {
   return (
@@ -62,16 +70,19 @@ const VotingPowerPopover = () => (
     </button>
   </Popover>
 )
-const MetricsSection = () => (
-  <>
-    <MetricsCard borderless title={<VotingPowerPopover />} amount="230" />
-    <div className="flex flex-row gap-x-6">
-      <MetricsCard title="Votes" amount="235,23m" />
-      <MetricsCard title="Total voting power delegated" amount="230" />
-      <MetricsCard title="Proposals created" amount="12" />
-    </div>
-  </>
-)
+const MetricsSection = () => {
+  const votingPower = useVotingPower() || '-'
+  return (
+    <>
+      <MetricsCard borderless title={<VotingPowerPopover />} amount={votingPower} />
+      <div className="flex flex-row gap-x-6">
+        <MetricsCard title="Votes" amount="-" />
+        <MetricsCard title="Total voting power delegated" amount="230" />
+        <MetricsCard title="Proposals created" amount="-" />
+      </div>
+    </>
+  )
+}
 
 const delegatedTableData = [
   {
