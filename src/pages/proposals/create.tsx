@@ -1,4 +1,5 @@
 'use client'
+import { useVotingPower } from '@/app/proposals/hooks/useVotingPower'
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/Accordion'
 import { Button } from '@/components/Button'
 import {
@@ -16,6 +17,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Textarea } from '@/components/Textarea'
 import { Header, Paragraph } from '@/components/Typography'
 import { zodResolver } from '@hookform/resolvers/zod'
+import { useRouter } from 'next/navigation'
 import { useEffect, useState } from 'react'
 import { useForm } from 'react-hook-form'
 import { FaBitcoin } from 'react-icons/fa6'
@@ -31,6 +33,9 @@ const FormSchema = z.object({
 })
 
 export default function CreateProposal() {
+  const { isLoading: isVotingPowerLoading, canCreateProposal } = useVotingPower()
+  const router = useRouter()
+
   const [activeStep, setActiveStep] = useState('proposal')
 
   const form = useForm<z.infer<typeof FormSchema>>({
@@ -73,6 +78,16 @@ export default function CreateProposal() {
     })
     return () => sub.unsubscribe()
   }, [watch])
+
+  useEffect(() => {
+    if (!isVotingPowerLoading && !canCreateProposal) {
+      router.push('/proposals')
+    }
+  }, [canCreateProposal, isVotingPowerLoading, router])
+
+  if (isVotingPowerLoading || !canCreateProposal) {
+    return null
+  }
 
   return (
     <MainContainer>

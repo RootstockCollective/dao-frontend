@@ -27,6 +27,7 @@ export const useVotingPower = () => {
 
   if (isLoading) {
     return {
+      isLoading: true,
       votingPower: '-',
       canCreateProposal: false,
     }
@@ -34,6 +35,7 @@ export const useVotingPower = () => {
 
   const [balance, decimals, threshold] = data as [bigint, number, bigint]
   return {
+    isLoading: false,
     votingPower: formatUnits(balance, decimals),
     canCreateProposal: balance >= threshold,
   }
