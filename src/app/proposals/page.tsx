@@ -11,14 +11,23 @@ import { AppRouterInstance } from 'next/dist/shared/lib/app-router-context.share
 import { useRouter } from 'next/navigation'
 import { FaRegQuestionCircle } from 'react-icons/fa'
 import { FaPlus } from 'react-icons/fa6'
-import { useVotingPower } from './hooks/useVotingPower'
+import { useStRIFBalance } from './hooks/useStRIFBalance'
+
+import { formatUnits } from 'viem'
+import { useGovernorThreshold } from './hooks/useGovernorThreshold'
 
 export default function Proposals() {
+  const { balance, decimals, isLoading: isStRIFLoading } = useStRIFBalance()
+  const { threshold, isLoading: isGovernorLoading } = useGovernorThreshold()
+
+  const votingPower = isStRIFLoading ? '-' : formatUnits(balance, decimals)
+  const createProposalDisabled = isGovernorLoading || isStRIFLoading || balance < (threshold as bigint)
+
   return (
     <MainContainer>
-      <HeaderSection />
+      <HeaderSection createProposalDisabled={createProposalDisabled} />
       <div className="pl-4 grid grid-rows-1 gap-[32px] mb-[100px]">
-        <MetricsSection />
+        <MetricsSection votingPower={votingPower} />
         {/* <div className="grid grid-cols-2 gap-x-6">
           <DelegatedTable />
           <ReceivedDelegationTable />
@@ -29,13 +38,18 @@ export default function Proposals() {
   )
 }
 
-const HeaderSection = () => {
+const HeaderSection = ({ createProposalDisabled = true }) => {
   const router = useRouter()
+
   return (
     <div className="flex flex-row justify-between container pl-4">
       <Paragraph className="font-semibold text-[18px]">My Governance</Paragraph>
       <div className="flex flex-row gap-x-6">
-        <Button startIcon={<FaPlus />} onClick={() => router.push('/proposals/create')}>
+        <Button
+          startIcon={<FaPlus />}
+          onClick={() => router.push('/proposals/create')}
+          disabled={createProposalDisabled}
+        >
           Create Proposal
         </Button>
         <Button variant="secondary">Delegate</Button>
@@ -63,19 +77,17 @@ const VotingPowerPopover = () => (
     </button>
   </Popover>
 )
-const MetricsSection = () => {
-  const votingPower = useVotingPower() || '-'
-  return (
-    <>
-      <MetricsCard borderless title={<VotingPowerPopover />} amount={votingPower} />
-      <div className="flex flex-row gap-x-6">
-        <MetricsCard title="Votes" amount="-" />
-        {/* <MetricsCard title="Total voting power delegated" amount="230" /> */}
-        <MetricsCard title="Proposals created" amount="-" />
-      </div>
-    </>
-  )
-}
+
+const MetricsSection = ({ votingPower = '-' }) => (
+  <>
+    <MetricsCard borderless title={<VotingPowerPopover />} amount={votingPower} />
+    <div className="flex flex-row gap-x-6">
+      <MetricsCard title="Votes" amount="-" />
+      {/* <MetricsCard title="Total voting power delegated" amount="230" /> */}
+      <MetricsCard title="Proposals created" amount="-" />
+    </div>
+  </>
+)
 
 const delegatedTableData = [
   {

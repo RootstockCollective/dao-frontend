@@ -1,12 +1,12 @@
 import { StRIFTokenAbi } from '@/lib/abis/StRIFTokenAbi'
 import { currentEnvContracts } from '@/lib/contracts'
-import { Address, formatUnits } from 'viem'
+import { Address } from 'viem'
 import { useAccount, useReadContracts } from 'wagmi'
 
-export const useVotingPower = (): string => {
+export const useStRIFBalance = () => {
   const { address } = useAccount()
 
-  const result = useReadContracts({
+  const { data, isLoading } = useReadContracts({
     allowFailure: false,
     contracts: [
       {
@@ -23,10 +23,18 @@ export const useVotingPower = (): string => {
     ],
   })
 
-  if (result.isLoading) {
-    return ''
+  if (isLoading) {
+    return {
+      isLoading: true,
+      balance: BigInt(0),
+      decimals: 0,
+    }
   }
 
-  const [balance, decimals] = result.data as [bigint, number]
-  return formatUnits(balance, decimals)
+  const [balance, decimals] = data as [bigint, number]
+  return {
+    isLoading: false,
+    balance,
+    decimals,
+  }
 }
