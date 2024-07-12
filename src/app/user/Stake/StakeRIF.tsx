@@ -80,7 +80,13 @@ export const StakeRIF = ({
         {/* @TODO if we're unstaking we should have a component here - check design */}
         {/* Stake */}
         <div className="flex justify-center pt-10">
-          <Button onClick={shouldEnableGoNext ? onGoNext : undefined} disabled={!shouldEnableGoNext}>
+          <Button
+            onClick={shouldEnableGoNext ? onGoNext : undefined}
+            disabled={!shouldEnableGoNext}
+            buttonProps={{
+              'data-testid': 'StakeRIF',
+            }}
+          >
             {textsDependingOnAction[actionName].confirmButtonText}
           </Button>
         </div>
@@ -108,6 +114,9 @@ const PercentageButton = ({ amount, percentage, totalAmountAllowed, onClick }: P
     <Button
       variant={isActive ? 'secondary-full' : 'secondary'}
       onClick={onPercentageButtonClick}
+      buttonProps={{
+        'data-testid': `Percentage${percentage}`,
+      }}
     >{`${percentage}%`}</Button>
   )
 }

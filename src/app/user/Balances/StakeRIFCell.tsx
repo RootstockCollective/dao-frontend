@@ -4,7 +4,11 @@ export const StakeRIFCell = () => {
   const { stakeModal } = useBalancesContext()
 
   return (
-    <p onClick={stakeModal.openModal} className="text-link underline cursor-pointer">
+    <p
+      onClick={stakeModal.openModal}
+      className="text-link underline cursor-pointer"
+      data-testid={'StakeRIFParagraph'}
+    >
       Stake
     </p>
   )

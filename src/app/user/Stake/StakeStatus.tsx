@@ -63,10 +63,16 @@ export const StakeStatus = ({
       </div>
       {/* Stake Actions */}
       <div className="flex justify-center pt-10 gap-4">
-        <Button variant="secondary" onClick={onViewOnExplorer}>
+        <Button
+          variant="secondary"
+          onClick={onViewOnExplorer}
+          buttonProps={{ 'data-testid': 'GoToExplorer' }}
+        >
           View on explorer
         </Button>
-        <Button onClick={onReturnToBalances}>Return to balances</Button>
+        <Button onClick={onReturnToBalances} buttonProps={{ 'data-testid': 'ReturnToBalances' }}>
+          Return to balances
+        </Button>
       </div>
     </div>
   )

@@ -132,7 +132,9 @@ function CustomStakingRIFFooter({
       return (
         <div className="flex flex-col mt-2 gap-2 items-center">
           <Paragraph>You need to request allowance for stRIF to be able to stake.</Paragraph>
-          <Button onClick={onRequestAllowance}>Request allowance</Button>
+          <Button onClick={onRequestAllowance} buttonProps={{ 'data-testid': 'Allowance' }}>
+            Request allowance
+          </Button>
         </div>
       )
     case isAllowanceNeeded && isAllowanceTxPending && !!hash:
@@ -140,7 +142,12 @@ function CustomStakingRIFFooter({
         <div className="flex flex-col mt-2 gap-2 items-center">
           <Paragraph>Allowance TX is in process.</Paragraph>
           <Paragraph>Wait for Allowance TX to be mined.</Paragraph>
-          <Button onClick={() => goToExplorerWithTxHash(hash)}>Click here to go to the explorer</Button>
+          <Button
+            onClick={() => goToExplorerWithTxHash(hash)}
+            buttonProps={{ 'data-testid': 'GoToExplorer' }}
+          >
+            Click here to go to the explorer
+          </Button>
         </div>
       )
     default:
