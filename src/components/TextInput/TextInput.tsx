@@ -52,7 +52,7 @@ export const TextInput: FC<Props> = ({
     'text-text-secondary focus-visible:ring-0': readonly,
   })
   return (
-    <div className={className}>
+    <div className={className} data-testid={`Input_Container_${name}`}>
       {label && (
         <div className="pb-[10px]" {...labelWrapperProps}>
           <Label variant="semibold">{label}</Label>
@@ -65,7 +65,7 @@ export const TextInput: FC<Props> = ({
         value={value}
         onChange={handleOnChange}
         name={name}
-        data-testid={name}
+        data-testid={`Input_${name}`}
         readOnly={readonly}
         {...inputProps}
       />

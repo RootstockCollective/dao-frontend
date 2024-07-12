@@ -51,10 +51,14 @@ export const StakePreview = ({
       {customComponentBeforeFooter}
       {/* Stake Actions */}
       <div className="flex justify-center pt-10 gap-4">
-        <Button variant="secondary" onClick={onCancel}>
+        <Button variant="secondary" onClick={onCancel} buttonProps={{ 'data-testid': 'Cancel' }}>
           Cancel
         </Button>
-        <Button onClick={!disableConfirm ? onConfirm : undefined} disabled={disableConfirm}>
+        <Button
+          onClick={!disableConfirm ? onConfirm : undefined}
+          disabled={disableConfirm}
+          buttonProps={{ 'data-testid': 'Confirm' }}
+        >
           Confirm
         </Button>
       </div>
