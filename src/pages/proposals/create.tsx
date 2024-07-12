@@ -16,25 +16,35 @@ import { MainContainer } from '@/components/MainContainer/MainContainer'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/Select'
 import { Textarea } from '@/components/Textarea'
 import { Header, Paragraph } from '@/components/Typography'
+import { GovernorAbi } from '@/lib/abis/Governor'
+import { StRIFTokenAbi } from '@/lib/abis/StRIFTokenAbi'
+import { currentEnvContracts, GovernorAddress } from '@/lib/contracts'
+import { cn } from '@/lib/utils'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useRouter } from 'next/navigation'
 import { useEffect, useState } from 'react'
 import { useForm } from 'react-hook-form'
 import { FaBitcoin } from 'react-icons/fa6'
 import { GoRocket } from 'react-icons/go'
+import { Address, encodeFunctionData, zeroAddress } from 'viem'
+import { useWriteContract } from 'wagmi'
 import { z } from 'zod'
+
+const ADDRESS_REGEX = /^0x[a-fA-F0-9]{40}$/
 
 const FormSchema = z.object({
   proposalName: z.string().min(3),
   description: z.string().min(3),
-  toAddress: z.string().length(42),
-  tokenSymbol: z.string(),
+  toAddress: z.string().refine(value => ADDRESS_REGEX.test(value), 'Please enter an address'),
+  tokenAddress: z.string().length(42),
   amount: z.string().min(1),
 })
 
 export default function CreateProposal() {
-  const { isLoading: isVotingPowerLoading, canCreateProposal } = useVotingPower()
   const router = useRouter()
+  const { isLoading: isVotingPowerLoading, canCreateProposal } = useVotingPower()
+  const { writeContract: propose, data: txHash } = useWriteContract()
+  const [message, setMessage] = useState('')
 
   const [activeStep, setActiveStep] = useState('proposal')
 
@@ -63,8 +73,39 @@ export default function CreateProposal() {
   const isActionsCompleted = isToAddressValid && isAmountValid
 
   const onSubmit = (data: z.infer<typeof FormSchema>) => {
-    // TODO: connect to contract
-    console.log(data)
+    const { proposalName, description, toAddress, tokenAddress, amount } = data
+    console.log('PUBLISHING')
+
+    const calldata = encodeFunctionData({
+      abi: StRIFTokenAbi,
+      functionName: 'transfer',
+      args: [toAddress as Address, BigInt(amount)],
+    })
+
+    const proposal = [[tokenAddress], [0n], [calldata]]
+
+    propose(
+      {
+        abi: GovernorAbi,
+        address: GovernorAddress,
+        functionName: 'propose',
+        args: [...proposal, `${proposalName};${description}`],
+      },
+      {
+        onSuccess: txHash => {
+          console.log('SUCCESS', txHash)
+          setMessage(
+            'Proposal successfully created. Your proposal has been published successfully! It is now visible to the community for review and feedback. Thank you for your contribution.',
+          )
+        },
+        onError: err => {
+          console.log('ERROR', err)
+          setMessage(
+            'Error publishing. An unexpected error occurred while trying to publish your proposal. Please try again later. If the issue persists, contact support for assistance.',
+          )
+        },
+      },
+    )
   }
 
   const handleProposalCompleted = () => setActiveStep(isActionsCompleted ? '' : 'actions')
@@ -91,6 +132,16 @@ export default function CreateProposal() {
 
   return (
     <MainContainer>
+      {message && (
+        <div
+          className={cn(
+            'bg-st-success bg-opacity-10 border border-st-success text-st-white rounded-md p-4 mb-4',
+            message.includes('Error') ? 'bg-st-error border-st-error' : '',
+          )}
+        >
+          {message}
+        </div>
+      )}
       <Form {...form}>
         <form onSubmit={handleSubmit(onSubmit)}>
           <HeaderSection disabled={!isDirty || !isValid} />
@@ -121,7 +172,7 @@ export default function CreateProposal() {
                     <FormItem className="mb-6 mx-1">
                       <FormLabel>Proposal name</FormLabel>
                       <FormControl>
-                        <Input placeholder="name your proposal" {...field} />
+                        <Input placeholder="Name your proposal" {...field} />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
@@ -176,7 +227,7 @@ export default function CreateProposal() {
                 <div className="flex flex-row">
                   <FormField
                     control={control}
-                    name="tokenSymbol"
+                    name="tokenAddress"
                     render={({ field }) => (
                       <FormItem className="mb-6 mx-1">
                         <FormLabel>Change Asset</FormLabel>
@@ -188,14 +239,14 @@ export default function CreateProposal() {
                               </SelectTrigger>
                             </FormControl>
                             <SelectContent>
-                              <SelectItem value="RBTC">
+                              <SelectItem value={zeroAddress}>
                                 <div className="flex items-center">
                                   {/* TODO: token icon */}
                                   <FaBitcoin className="mr-2" />
                                   RBTC
                                 </div>
                               </SelectItem>
-                              <SelectItem value="stRIF">
+                              <SelectItem value={currentEnvContracts.stRIF as Address}>
                                 <div className="flex items-center">
                                   <FaBitcoin className="mr-2" />
                                   stRIF
