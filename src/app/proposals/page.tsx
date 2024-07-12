@@ -11,21 +11,13 @@ import { AppRouterInstance } from 'next/dist/shared/lib/app-router-context.share
 import { useRouter } from 'next/navigation'
 import { FaRegQuestionCircle } from 'react-icons/fa'
 import { FaPlus } from 'react-icons/fa6'
-import { useStRIFBalance } from './hooks/useStRIFBalance'
-
-import { formatUnits } from 'viem'
-import { useGovernorThreshold } from './hooks/useGovernorThreshold'
+import { useVotingPower } from './hooks/useVotingPower'
 
 export default function Proposals() {
-  const { balance, decimals, isLoading: isStRIFLoading } = useStRIFBalance()
-  const { threshold, isLoading: isGovernorLoading } = useGovernorThreshold()
-
-  const votingPower = isStRIFLoading ? '-' : formatUnits(balance, decimals)
-  const createProposalDisabled = isGovernorLoading || isStRIFLoading || balance < (threshold as bigint)
-
+  const { votingPower, canCreateProposal } = useVotingPower()
   return (
     <MainContainer>
-      <HeaderSection createProposalDisabled={createProposalDisabled} />
+      <HeaderSection createProposalDisabled={!canCreateProposal} />
       <div className="pl-4 grid grid-rows-1 gap-[32px] mb-[100px]">
         <MetricsSection votingPower={votingPower} />
         {/* <div className="grid grid-cols-2 gap-x-6">
@@ -52,7 +44,9 @@ const HeaderSection = ({ createProposalDisabled = true }) => {
         >
           Create Proposal
         </Button>
-        <Button variant="secondary">Delegate</Button>
+        <Button variant="secondary" disabled>
+          Delegate
+        </Button>
       </div>
     </div>
   )

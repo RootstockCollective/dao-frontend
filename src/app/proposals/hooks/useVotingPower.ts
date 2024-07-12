@@ -1,9 +1,10 @@
+import { GovernorAbi } from '@/lib/abis/Governor'
 import { StRIFTokenAbi } from '@/lib/abis/StRIFTokenAbi'
-import { currentEnvContracts } from '@/lib/contracts'
-import { Address } from 'viem'
+import { currentEnvContracts, GovernorAddress } from '@/lib/contracts'
+import { Address, formatUnits } from 'viem'
 import { useAccount, useReadContracts } from 'wagmi'
 
-export const useStRIFBalance = () => {
+export const useVotingPower = () => {
   const { address } = useAccount()
 
   const { data, isLoading } = useReadContracts({
@@ -20,21 +21,20 @@ export const useStRIFBalance = () => {
         address: currentEnvContracts.stRIF as Address,
         functionName: 'decimals',
       },
+      { abi: GovernorAbi, address: GovernorAddress, functionName: 'proposalThreshold' },
     ],
   })
 
   if (isLoading) {
     return {
-      isLoading: true,
-      balance: BigInt(0),
-      decimals: 0,
+      votingPower: '-',
+      canCreateProposal: false,
     }
   }
 
-  const [balance, decimals] = data as [bigint, number]
+  const [balance, decimals, threshold] = data as [bigint, number, bigint]
   return {
-    isLoading: false,
-    balance,
-    decimals,
+    votingPower: formatUnits(balance, decimals),
+    canCreateProposal: balance >= threshold,
   }
 }
