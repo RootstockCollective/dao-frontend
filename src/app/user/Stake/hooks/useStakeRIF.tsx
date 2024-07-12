@@ -30,7 +30,6 @@ export const useStakeRIF: ActionHookToUse = (
     },
   })
   const isAllowanceEnough = useMemo(() => {
-    console.log({ allowanceBalance, amount })
     return !!(allowanceBalance && allowanceBalance >= parseEther(amount))
   }, [amount, allowanceBalance])
 
