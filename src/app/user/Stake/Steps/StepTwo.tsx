@@ -23,7 +23,7 @@ export const StepTwo = ({ onGoNext, onCloseModal }: StepProps) => {
   const from = useMemo(
     () => ({
       amount,
-      amountConvertedToCurrency: '$ USD ' + (Number(tokenToSend.price) * Number(amount) ?? 0).toString(),
+      amountConvertedToCurrency: 'USD ' + (Number(tokenToSend.price) * Number(amount) ?? 0).toString(),
       balance: tokenToSend.balance,
       tokenSymbol: tokenToSend.symbol,
     }),
@@ -33,7 +33,7 @@ export const StepTwo = ({ onGoNext, onCloseModal }: StepProps) => {
   const to = useMemo(
     () => ({
       amount: amountDataToReceive.amountToReceive.toString(),
-      amountConvertedToCurrency: '$ USD ' + amountDataToReceive.amountToReceiveConvertedToCurrency.toString(),
+      amountConvertedToCurrency: 'USD ' + amountDataToReceive.amountToReceiveConvertedToCurrency.toString(),
       balance: tokenToReceive.balance,
       tokenSymbol: tokenToReceive.symbol,
     }),

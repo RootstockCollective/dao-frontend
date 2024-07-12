@@ -31,7 +31,7 @@ export const StepOne = ({ onGoNext }: StepProps) => {
       onGoNext={onGoNext || (() => {})}
       shouldEnableGoNext={shouldEnableGoNext}
       totalBalance={tokenToSend.balance}
-      totalBalanceConverted={'$ USD ' + balanceToCurrency.toString()}
+      totalBalanceConverted={'USD ' + balanceToCurrency.toString()}
       symbol={tokenToSend.symbol}
       actionName={actionName}
     />
