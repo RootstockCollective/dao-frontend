@@ -7,17 +7,10 @@ import { Popover } from '@/components/Popover'
 import { Status } from '@/components/Status'
 import { Table } from '@/components/Table'
 import { Header, Paragraph } from '@/components/Typography'
-import { GovernorAbi } from '@/lib/abis/Governor'
-import { RIFTokenAbi } from '@/lib/abis/RIFTokenAbi'
-import { StRIFTokenAbi } from '@/lib/abis/StRIFTokenAbi'
-import { currentEnvContracts, GovernorAddress } from '@/lib/contracts'
 import { AppRouterInstance } from 'next/dist/shared/lib/app-router-context.shared-runtime'
 import { useRouter } from 'next/navigation'
 import { FaRegQuestionCircle } from 'react-icons/fa'
 import { FaPlus } from 'react-icons/fa6'
-import { Address, formatUnits } from 'viem'
-import { getBalance } from 'viem/actions'
-import { useAccount, useBalance, useReadContract, useReadContracts } from 'wagmi'
 import { useVotingPower } from './hooks/useVotingPower'
 
 export default function Proposals() {
@@ -26,10 +19,10 @@ export default function Proposals() {
       <HeaderSection />
       <div className="pl-4 grid grid-rows-1 gap-[32px] mb-[100px]">
         <MetricsSection />
-        <div className="grid grid-cols-2 gap-x-6">
+        {/* <div className="grid grid-cols-2 gap-x-6">
           <DelegatedTable />
           <ReceivedDelegationTable />
-        </div>
+        </div> */}
         <LatestProposalsTable />
       </div>
     </MainContainer>
@@ -77,7 +70,7 @@ const MetricsSection = () => {
       <MetricsCard borderless title={<VotingPowerPopover />} amount={votingPower} />
       <div className="flex flex-row gap-x-6">
         <MetricsCard title="Votes" amount="-" />
-        <MetricsCard title="Total voting power delegated" amount="230" />
+        {/* <MetricsCard title="Total voting power delegated" amount="230" /> */}
         <MetricsCard title="Proposals created" amount="-" />
       </div>
     </>
@@ -193,6 +186,16 @@ const latestProposalsData = (router: AppRouterInstance) => [
   },
 ]
 
+const noneData = [
+  {
+    'Proposal Name': '',
+    'Current Votes': '',
+    Starts: '',
+    Sentiment: '',
+    Status: '',
+  },
+]
+
 const LatestProposalsTable = () => {
   const router = useRouter()
   return (
@@ -200,7 +203,8 @@ const LatestProposalsTable = () => {
       <Header variant="h2" className="mb-4">
         Latest Proposals
       </Header>
-      <Table data={latestProposalsData(router)} />
+      {/* <Table data={latestProposalsData(router)} /> */}
+      <Table data={noneData} />
     </div>
   )
 }
