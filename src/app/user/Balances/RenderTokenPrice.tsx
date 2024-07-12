@@ -7,5 +7,5 @@ interface Props {
 
 export const RenderTokenPrice = ({ symbol }: Props) => {
   const { prices } = useBalancesContext()
-  return <p>= $ {prices[symbol]?.price ?? 0}</p>
+  return <p className="text-nowrap">USD {prices[symbol]?.price ?? 0}</p>
 }

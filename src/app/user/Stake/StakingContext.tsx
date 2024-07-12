@@ -81,7 +81,7 @@ export const StakingProvider: FC<Props> = ({
     const amountToReceiveConvertedToCurrency = amountToReceive * Number(tokenToReceive.price) || 0
     return {
       amountToReceive: amountToReceive.toString(),
-      amountToReceiveConvertedToCurrency: amountToReceiveConvertedToCurrency.toString(),
+      amountToReceiveConvertedToCurrency: `USD ${amountToReceiveConvertedToCurrency}`,
     }
   }, [stakeData.amount, tokenToSend.price, tokenToReceive.price])
 

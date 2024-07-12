@@ -14,7 +14,7 @@ interface Props {
   disabled?: boolean
   className?: string
   textClassName?: string
-  buttonProps?: JSX.IntrinsicElements['button'] & { 'data-testid': string }
+  buttonProps?: JSX.IntrinsicElements['button'] & { 'data-testid'?: string }
 }
 
 const DEFAULT_DATA_TESTID = 'Button'
@@ -61,7 +61,7 @@ export const Button: FC<Props> = ({
       className={classes}
       onClick={e => !disabled && onClick?.(e)}
       {...buttonProps}
-      data-testid={`${DEFAULT_DATA_TESTID}${buttonProps['data-testid']}`}
+      data-testid={`${DEFAULT_DATA_TESTID}${buttonProps['data-testid']}${buttonProps.id}`}
     >
       <span className={textClasses}>
         <span className="absolute left-[-20px] top-[4px]">{startIcon}</span>
