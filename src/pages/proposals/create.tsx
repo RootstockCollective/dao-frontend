@@ -62,7 +62,6 @@ export default function CreateProposal() {
   const {
     control,
     handleSubmit,
-    watch,
     formState: { touchedFields, errors, isValid, isDirty },
   } = form
   const isProposalNameValid = !errors.proposalName && touchedFields.proposalName
@@ -111,14 +110,6 @@ export default function CreateProposal() {
   const handleProposalCompleted = () => setActiveStep(isActionsCompleted ? '' : 'actions')
 
   const handleActionsCompleted = () => setActiveStep(isProposalCompleted ? '' : 'proposal')
-
-  // remove later, just for debugging
-  useEffect(() => {
-    const sub = watch((value, { name, type }) => {
-      console.log(value, name, type)
-    })
-    return () => sub.unsubscribe()
-  }, [watch])
 
   useEffect(() => {
     if (!isVotingPowerLoading && !canCreateProposal) {
