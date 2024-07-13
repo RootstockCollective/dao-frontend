@@ -11,15 +11,22 @@ import { AppRouterInstance } from 'next/dist/shared/lib/app-router-context.share
 import { useRouter } from 'next/navigation'
 import { FaRegQuestionCircle } from 'react-icons/fa'
 import { FaPlus } from 'react-icons/fa6'
+import { useProposal } from './hooks/useProposal'
 import { useVotingPower } from './hooks/useVotingPower'
 
 export default function Proposals() {
   const { votingPower, canCreateProposal } = useVotingPower()
+  const { proposalCount } = useProposal()
   return (
     <MainContainer>
       <HeaderSection createProposalDisabled={!canCreateProposal} />
       <div className="pl-4 grid grid-rows-1 gap-[32px] mb-[100px]">
-        <MetricsSection votingPower={votingPower} />
+        <MetricsCard borderless title={<VotingPowerPopover />} amount={votingPower} />
+        <div className="flex flex-row gap-x-6">
+          <MetricsCard title="Votes" amount="-" />
+          {/* <MetricsCard title="Total voting power delegated" amount="230" /> */}
+          <MetricsCard title="Proposals created" amount={proposalCount.toString()} />
+        </div>
         {/* <div className="grid grid-cols-2 gap-x-6">
           <DelegatedTable />
           <ReceivedDelegationTable />
@@ -70,17 +77,6 @@ const VotingPowerPopover = () => (
       <FaRegQuestionCircle className="ml-1" />
     </button>
   </Popover>
-)
-
-const MetricsSection = ({ votingPower = '-' }) => (
-  <>
-    <MetricsCard borderless title={<VotingPowerPopover />} amount={votingPower} />
-    <div className="flex flex-row gap-x-6">
-      <MetricsCard title="Votes" amount="-" />
-      {/* <MetricsCard title="Total voting power delegated" amount="230" /> */}
-      <MetricsCard title="Proposals created" amount="-" />
-    </div>
-  </>
 )
 
 const delegatedTableData = [
