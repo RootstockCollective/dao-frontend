@@ -1,51 +1,49 @@
-import { useProposal } from '@/app/proposals/hooks/useProposal'
 import { GovernorAddress } from '@/lib/contracts'
-import { GovernorAbi } from '@/lib/abis/Governor'
-import { useReadContracts } from 'wagmi'
 import { useMemo } from 'react'
+import { axiosInstance } from '@/lib/utils'
+import { fetchProposalsCreatedByGovernorAddress } from '@/lib/endpoints'
+import { useQuery } from '@tanstack/react-query'
+import { parseEventLogs } from 'viem'
+import { GovernorAbi } from '@/lib/abis/Governor'
 
-const fetchProposalByIndexContractConfig = (index: bigint) => ({
-  abi: GovernorAbi,
-  address: GovernorAddress,
-  functionName: 'proposalDetailsAt',
-  args: [index],
+const fetchProposalCreated = () =>
+  axiosInstance.get(fetchProposalsCreatedByGovernorAddress.replace('{{address}}', GovernorAddress))
+
+interface EventArgumentsParameter {
+  args: {
+    description: string
+    proposalId: bigint
+    voteStart: bigint
+    voteEnd: bigint
+  }
+  timeStamp: string
+}
+const getEventArguments = ({ args: { description, proposalId }, timeStamp }: EventArgumentsParameter) => ({
+  name: description.split(';')[0],
+  proposalId: proposalId.toString(),
+  Starts: new Date(parseInt(timeStamp, 16) * 1000).toISOString().split('T')[0],
+  Sentiment: '',
 })
 
-type ItemReturned = [bigint, [string], [bigint], [string], string]
-
-const mapProposalArrayToObject = (item?: ItemReturned) => {
-  if (!item) return {}
-  return {
-    proposalId: item[0],
-    targets: item[1],
-    values: item[2],
-    calldatas: item[3],
-    descriptionHash: item[4],
-  }
-}
-
 export const useFetchLatestProposals = () => {
-  const { primitiveProposalCount } = useProposal()
-
-  const contractsToUse = useMemo(() => {
-    let arrayToReturn: ReturnType<typeof fetchProposalByIndexContractConfig>[] = []
-    const currentProposalCount = primitiveProposalCount as bigint
-    if (currentProposalCount > 0) {
-      const breakCounterOn = currentProposalCount - BigInt(5)
-      let currentCounter = currentProposalCount
-      while (currentCounter > breakCounterOn && currentCounter > 0) {
-        currentCounter -= BigInt(1)
-        arrayToReturn.push(fetchProposalByIndexContractConfig(currentCounter))
-      }
-    }
-    return arrayToReturn
-  }, [primitiveProposalCount])
-  const { data: latestProposalsData, isLoading } = useReadContracts({
-    contracts: contractsToUse,
+  const query = useQuery({
+    queryFn: fetchProposalCreated,
+    queryKey: ['proposalsCreated'],
   })
-  const latestProposals = useMemo(
-    () => latestProposalsData?.map(({ result }) => mapProposalArrayToObject(result)),
-    [latestProposalsData],
-  )
-  return { latestProposals, isLoading }
+
+  const latestProposals = useMemo(() => {
+    if (query.data?.data) {
+      const eventsParsed = parseEventLogs({
+        abi: GovernorAbi,
+        logs: query.data.data,
+        eventName: 'ProposalCreated',
+      })
+      console.log(40, eventsParsed)
+      // @ts-ignore
+      return eventsParsed.map(getEventArguments)
+    }
+    return []
+  }, [query.data])
+
+  return { latestProposals }
 }

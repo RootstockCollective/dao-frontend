@@ -4,16 +4,19 @@ import { ComparativeProgressBar } from '@/components/ComparativeProgressBar/Comp
 import { MainContainer } from '@/components/MainContainer/MainContainer'
 import { MetricsCard } from '@/components/MetricsCard'
 import { Popover } from '@/components/Popover'
-import { Status } from '@/components/Status'
 import { Table } from '@/components/Table'
 import { Header, Paragraph } from '@/components/Typography'
-import { AppRouterInstance } from 'next/dist/shared/lib/app-router-context.shared-runtime'
 import { useRouter } from 'next/navigation'
 import { FaRegQuestionCircle } from 'react-icons/fa'
 import { FaPlus } from 'react-icons/fa6'
 import { useProposal } from './hooks/useProposal'
 import { useVotingPower } from './hooks/useVotingPower'
 import { useFetchLatestProposals } from '@/app/proposals/hooks/useFetchLatestProposals'
+import { Link } from '@/components/Link'
+import { useReadContract } from 'wagmi'
+import { GovernorAbi } from '@/lib/abis/Governor'
+import { GovernorAddress } from '@/lib/contracts'
+import { useMemo } from 'react'
 
 export default function Proposals() {
   const { votingPower, canCreateProposal } = useVotingPower()
@@ -80,136 +83,87 @@ const VotingPowerPopover = () => (
   </Popover>
 )
 
-const delegatedTableData = [
-  {
-    'Amount delegated': '0.00239 stRIF',
-    Address: '0x333...444',
-  },
-  {
-    'Amount delegated': '0.0009 stRIF',
-    Address: '0x333...444',
-  },
-  {
-    'Amount delegated': '0.00019 stRIF',
-    Address: '0x333...444',
-  },
-]
+interface ProposalNameColumnProps {
+  name: string
+  proposalId: string
+}
 
-const DelegatedTable = () => (
-  <div>
-    <Header variant="h2" className="mb-4">
-      Delegated to
-    </Header>
-    <Table data={delegatedTableData} />
-  </div>
+const ProposalNameColumn = ({ name, proposalId }: ProposalNameColumnProps) => (
+  <Link href={`/proposals/${proposalId}`} target="_blank">
+    {name}
+  </Link>
 )
 
-const receivedDelegationData = [
-  {
-    'Amount delegated': '0.322239 stRIF',
-    Address: '0x333...444',
-  },
-  {
-    'Amount delegated': '0.00001 stRIF',
-    Address: '0x333...444',
-  },
-  {
-    'Amount delegated': '1.230023 stRIF',
-    Address: '0x333...444',
-  },
-]
+const useGetVotes = (proposalId: string) => {
+  const { data } = useReadContract({
+    address: GovernorAddress,
+    abi: GovernorAbi,
+    functionName: 'proposalVotes',
+    args: [BigInt(proposalId)],
+  })
 
-const ReceivedDelegationTable = () => (
-  <div>
-    <Header variant="h2" className="mb-4">
-      Received Delegations
-    </Header>
-    <Table data={receivedDelegationData} />
-  </div>
-)
+  return data
+}
 
-const latestProposalsData = (router: AppRouterInstance) => [
-  {
-    'Proposal name': <button onClick={() => router.push('/proposals/ID409')}>Crypto ipsum bitcoin</button>,
-    'Current votes': '59 votes',
-    Starts: 'June 22, 2024',
-    Sentiment: (
-      <ComparativeProgressBar
-        values={[
-          { value: 10, color: 'var(--st-success)' },
-          { value: 10, color: 'var(--st-error)' },
-          { value: 10, color: 'var(--st-info)' },
-        ]}
-      />
-    ),
-    Status: <Status severity="success" />,
-  },
-  {
-    'Proposal name': <button onClick={() => router.push('/proposals/ID410')}>Crypto ipsum bitcoin</button>,
-    'Current votes': '120 votes',
-    Starts: 'June 22, 2024',
-    Sentiment: (
-      <ComparativeProgressBar
-        values={[
-          { value: 50, color: 'var(--st-success)' },
-          { value: 50, color: 'var(--st-error)' },
-        ]}
-      />
-    ),
-    Status: <Status severity="rejected" />,
-  },
-  {
-    'Proposal name': <button onClick={() => router.push('/proposals/ID411')}>Crypto ipsum bitcoin</button>,
-    'Current votes': '1,230 votes',
-    Starts: 'June 22, 2024',
-    Sentiment: (
-      <ComparativeProgressBar
-        values={[
-          { value: 10, color: 'var(--st-success)' },
-          { value: 10, color: 'var(--st-error)' },
-          { value: 109, color: 'var(--text-light)' },
-        ]}
-      />
-    ),
-    Status: <Status severity="in-progress" />,
-  },
-  {
-    'Proposal name': <button onClick={() => router.push('/proposals/ID412')}>Crypto ipsum bitcoin</button>,
-    'Current votes': '1,232,323 votes',
-    Starts: 'June 22, 2024',
-    Sentiment: (
-      <ComparativeProgressBar
-        values={[
-          { value: 10, color: 'var(--st-success)' },
-          { value: 10, color: 'var(--st-error)' },
-        ]}
-      />
-    ),
-    Status: <Status severity="canceled" />,
-  },
-]
+const VotesColumn = ({ proposalId }: Omit<ProposalNameColumnProps, 'name'>) => {
+  const data = useGetVotes(proposalId)
 
-const noneData = [
-  {
-    'Proposal Name': '',
-    'Current Votes': '',
-    Starts: '',
-    Sentiment: '',
-    Status: '',
-  },
-]
+  const votes = useMemo(() => {
+    if (data && data.length === 3) {
+      return data.reduce((prev, next) => {
+        return next + prev
+      }, 0n)
+    }
+    return 0n
+  }, [data])
+
+  return <p>{votes.toString()}</p>
+}
+
+const SentimentColumn = ({ proposalId }: Omit<ProposalNameColumnProps, 'name'>) => {
+  const data = useGetVotes(proposalId)
+
+  /*
+  * [
+      { value: 10, color: 'var(--st-success)' },
+      { value: 10, color: 'var(--st-error)' },
+      { value: 10, color: 'var(--st-info)' },
+    ]*/
+  const sentimentValues = useMemo(() => {
+    if (data && data.length === 3) {
+      const [forVotes, againstVotes, abstainVotes] = data
+      return [
+        { value: Number(forVotes), color: 'var(--st-success)' },
+        { value: Number(againstVotes), color: 'var(--st-error)' },
+        { value: Number(abstainVotes), color: 'var(--st-info)' },
+      ]
+    }
+    return [{ value: 0, color: 'var(--st-info)' }]
+  }, [data])
+
+  return <ComparativeProgressBar values={sentimentValues} />
+}
+
+const latestProposalsTransformer = (
+  proposals: ReturnType<typeof useFetchLatestProposals>['latestProposals'],
+) =>
+  proposals.map(proposal => ({
+    'Proposal Name': <ProposalNameColumn {...proposal} />,
+    'Current Votes': <VotesColumn {...proposal} />,
+    Starts: proposal.Starts,
+    Sentiment: <SentimentColumn {...proposal} />,
+  }))
 
 const LatestProposalsTable = () => {
-  const router = useRouter()
-  const latestProposals = useFetchLatestProposals()
-  console.log(205, latestProposals)
+  const { latestProposals } = useFetchLatestProposals()
+
   return (
     <div>
       <Header variant="h2" className="mb-4">
         Latest Proposals
       </Header>
       {/* <Table data={latestProposalsData(router)} /> */}
-      <Table data={noneData} />
+      {latestProposals.length > 0 && <Table data={latestProposalsTransformer(latestProposals)} />}
     </div>
   )
 }
