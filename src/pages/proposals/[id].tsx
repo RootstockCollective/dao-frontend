@@ -22,6 +22,7 @@ import { VoteSubmittedModal } from '../../components/Modal/VoteSubmittedModal'
 import { useVotingPower } from '@/app/proposals/hooks/useVotingPower'
 import { shortAddress } from '@/lib/utils'
 import { getEventArguments } from '@/app/proposals/shared/utils'
+import { useGetProposalVotes } from '@/app/proposals/hooks/useGetProposalVotes'
 
 const getProposalData = async (id: string): Promise<any> => {
   return new Promise(resolve => {
@@ -53,16 +54,8 @@ export default function ProposalView() {
   const {
     query: { id },
   } = useRouter()
-
-  const [vote, setVote] = useState<Vote | null>('for')
-  const [errorVoting, setErrorVoting] = useState('')
-  const { address } = useAccount()
-  const votingModal = useModal()
-  const submittedModal = useModal()
-
   const { latestProposals } = useFetchLatestProposals()
 
-  const { votingPower } = useVotingPower()
   const proposal = useMemo(() => {
     const proposal = latestProposals.find(proposal => proposal.args.proposalId.toString() === id)
     if (!proposal) {
@@ -72,7 +65,23 @@ export default function ProposalView() {
     return getEventArguments(proposal)
   }, [latestProposals])
 
-  const { onVote } = useVoteOnProposal(id as string)
+  return <MainContainer>{proposal && <PageWithProposal {...proposal} />}</MainContainer>
+}
+
+type PageWithProposal = ReturnType<typeof getEventArguments>
+
+const PageWithProposal = ({ proposalId, name, description, proposer, Starts }: PageWithProposal) => {
+  const [vote, setVote] = useState<Vote | null>('for')
+  const [errorVoting, setErrorVoting] = useState('')
+  const { address } = useAccount()
+  const votingModal = useModal()
+  const submittedModal = useModal()
+
+  const [againstVote, forVote, abstainVote] = useGetProposalVotes(proposalId)
+
+  const { votingPower } = useVotingPower()
+
+  const { onVote } = useVoteOnProposal(proposalId as string)
 
   const handleVoting = async (vote: Vote) => {
     try {
@@ -85,110 +94,103 @@ export default function ProposalView() {
       setErrorVoting((err as Error).toString())
     }
   }
-
   return (
-    <MainContainer>
-      {proposal && (
-        <div className="pl-4 grid grid-rows-1 gap-[32px] mb-[100px]">
-          {proposal && (
-            <>
-              <BreadcrumbSection title={proposal.name} />
-              <Header className="text-2xl">{proposal.name}</Header>
-              <div className="flex flex-row">
-                <Paragraph className="text-sm text-gray-500">
-                  Proposed by: <span className="text-primary">{shortAddress(proposal.proposer, 10)}</span>
-                </Paragraph>
-                <Paragraph className="text-sm text-gray-500 ml-4">
-                  Created at: <span className="text-primary">{proposal.Starts}</span>
-                </Paragraph>
-              </div>
-              <div className="flex flex-row justify-between">
-                <div className="flex flex-row gap-x-6">
-                  <MetricsCard title="Threshold" amount={`${proposal.threshold} votes`} />
-                  <MetricsCard title="Snapshot" amount={proposal.snapshotBlock} fiatAmount="Taken at block" />
-                </div>
-                <div>
-                  <Button onClick={votingModal.openModal}>Vote on chain</Button>
-                  {votingModal.isModalOpened && address && (
-                    <VoteProposalModal
-                      onSubmit={handleVoting}
-                      onClose={votingModal.closeModal}
-                      proposal={proposal}
-                      address={address}
-                      votingPower={votingPower}
-                      errorMessage={errorVoting}
-                    />
-                  )}
-                  {submittedModal.isModalOpened && vote && (
-                    <VoteSubmittedModal proposal={proposal} vote={vote} onClose={submittedModal.closeModal} />
-                  )}
-                </div>
-              </div>
-              <div className="flex flex-row gap-x-12">
-                <div className="w-2/3">
-                  <Header variant="h1" className="text-[24px] mb-6">
-                    Description
-                  </Header>
-                  <Paragraph variant="normal" className="text-[16px] text-justify font-light">
-                    {proposal.description}
-                  </Paragraph>
-                </div>
-                <div className="w-1/3 flex flex-col gap-y-2">
-                  <Header variant="h1" className="text-[24px]">
-                    Votes
-                  </Header>
-                  <div className="flex flex-row justify-between border border-white border-opacity-40 rounded-lg px-[16px] py-[11px]">
-                    <Paragraph variant="semibold" className="text-[16px] text-st-success">
-                      {/* {proposal.votes.for} */}0
-                    </Paragraph>
-                    <Paragraph variant="semibold" className="text-[16px] text-st-success">
-                      For
-                    </Paragraph>
-                  </div>
-                  <div className="flex flex-row justify-between border border-white border-opacity-40 rounded-lg px-[16px] py-[11px]">
-                    <Paragraph variant="semibold" className="text-[16px] text-st-error">
-                      {/* {proposal.votes.against} */}0
-                    </Paragraph>
-                    <Paragraph variant="semibold" className="text-[16px] text-st-error">
-                      Against
-                    </Paragraph>
-                  </div>
-                  <div className="flex flex-row justify-between border border-white border-opacity-40 rounded-lg px-[16px] py-[11px]">
-                    <Paragraph variant="semibold" className="text-[16px] text-text-light">
-                      {/* {proposal.votes.abstain} */}0
-                    </Paragraph>
-                    <Paragraph variant="semibold" className="text-[16px] text-text-light">
-                      Abstain
-                    </Paragraph>
-                  </div>
-                  <Header variant="h1" className="text-[24px]">
-                    Actions
-                  </Header>
-                  <div className="flex flex-row justify-between border border-white border-opacity-40 rounded-lg px-[16px] py-[11px]">
-                    <div className="flex flex-col">
-                      <Paragraph variant="semibold" className="text-[16px]">
-                        Transfer
-                      </Paragraph>
-                      <Paragraph variant="semibold" className="text-[16px]">
-                        To
-                      </Paragraph>
-                    </div>
-                    <div>
-                      {/* <Paragraph variant="semibold" className="text-[16px]">
+    <div className="pl-4 grid grid-rows-1 gap-[32px] mb-[100px]">
+      <BreadcrumbSection title={name} />
+      <Header className="text-2xl">{name}</Header>
+      <div className="flex flex-row">
+        <Paragraph className="text-sm text-gray-500">
+          Proposed by: <span className="text-primary">{shortAddress(proposer, 10)}</span>
+        </Paragraph>
+        <Paragraph className="text-sm text-gray-500 ml-4">
+          Created at: <span className="text-primary">{Starts}</span>
+        </Paragraph>
+      </div>
+      <div className="flex flex-row justify-between">
+        <div className="flex flex-row gap-x-6">
+          <MetricsCard title="Threshold" amount={`${1} votes`} />
+          {/* @TODO get threshold */}
+          <MetricsCard title="Snapshot" amount={'1'} fiatAmount="Taken at block" />{' '}
+          {/* @TODO get snapshotBlock */}
+        </div>
+        <div>
+          <Button onClick={votingModal.openModal}>Vote on chain</Button>
+          {votingModal.isModalOpened && address && (
+            <VoteProposalModal
+              onSubmit={handleVoting}
+              onClose={votingModal.closeModal}
+              proposal={proposal}
+              address={address}
+              votingPower={votingPower}
+              errorMessage={errorVoting}
+            />
+          )}
+          {submittedModal.isModalOpened && vote && (
+            <VoteSubmittedModal proposal={proposal} vote={vote} onClose={submittedModal.closeModal} />
+          )}
+        </div>
+      </div>
+      <div className="flex flex-row gap-x-12">
+        <div className="w-2/3">
+          <Header variant="h1" className="text-[24px] mb-6">
+            Description
+          </Header>
+          <Paragraph variant="normal" className="text-[16px] text-justify font-light">
+            {description}
+          </Paragraph>
+        </div>
+        <div className="w-1/3 flex flex-col gap-y-2">
+          <Header variant="h1" className="text-[24px]">
+            Votes
+          </Header>
+          <div className="flex flex-row justify-between border border-white border-opacity-40 rounded-lg px-[16px] py-[11px]">
+            <Paragraph variant="semibold" className="text-[16px] text-st-success">
+              {forVote.toString()}
+            </Paragraph>
+            <Paragraph variant="semibold" className="text-[16px] text-st-success">
+              For
+            </Paragraph>
+          </div>
+          <div className="flex flex-row justify-between border border-white border-opacity-40 rounded-lg px-[16px] py-[11px]">
+            <Paragraph variant="semibold" className="text-[16px] text-st-error">
+              {againstVote.toString()}
+            </Paragraph>
+            <Paragraph variant="semibold" className="text-[16px] text-st-error">
+              Against
+            </Paragraph>
+          </div>
+          <div className="flex flex-row justify-between border border-white border-opacity-40 rounded-lg px-[16px] py-[11px]">
+            <Paragraph variant="semibold" className="text-[16px] text-text-light">
+              {abstainVote.toString()}
+            </Paragraph>
+            <Paragraph variant="semibold" className="text-[16px] text-text-light">
+              Abstain
+            </Paragraph>
+          </div>
+          <Header variant="h1" className="text-[24px]">
+            Actions
+          </Header>
+          <div className="flex flex-row justify-between border border-white border-opacity-40 rounded-lg px-[16px] py-[11px]">
+            <div className="flex flex-col">
+              <Paragraph variant="semibold" className="text-[16px]">
+                Transfer
+              </Paragraph>
+              <Paragraph variant="semibold" className="text-[16px]">
+                To
+              </Paragraph>
+            </div>
+            <div>
+              {/* <Paragraph variant="semibold" className="text-[16px]">
                       {proposal.actions.amount} {proposal.actions.tokenSymbol}
                     </Paragraph>
                     <Paragraph variant="semibold" className="text-[16px]">
                       {shortAddress(proposal.actions.toAddress)}
                     </Paragraph> */}
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </>
-          )}
+            </div>
+          </div>
         </div>
-      )}
-    </MainContainer>
+      </div>
+    </div>
   )
 }
 
