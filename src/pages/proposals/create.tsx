@@ -16,21 +16,17 @@ import { MainContainer } from '@/components/MainContainer/MainContainer'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/Select'
 import { Textarea } from '@/components/Textarea'
 import { Header, Paragraph } from '@/components/Typography'
-import { config } from '@/config'
-import { GovernorAbi } from '@/lib/abis/Governor'
-import { StRIFTokenAbi } from '@/lib/abis/StRIFTokenAbi'
-import { currentEnvContracts, GovernorAddress } from '@/lib/contracts'
+import { currentEnvContracts } from '@/lib/contracts'
 import { cn } from '@/lib/utils'
 import { zodResolver } from '@hookform/resolvers/zod'
-import { readContract, writeContract } from '@wagmi/core'
-import { solidityPackedKeccak256 } from 'ethers'
 import { useRouter } from 'next/navigation'
 import { useEffect, useState } from 'react'
 import { useForm } from 'react-hook-form'
 import { FaBitcoin } from 'react-icons/fa6'
 import { GoRocket } from 'react-icons/go'
-import { Address, encodeFunctionData, zeroAddress } from 'viem'
+import { Address, zeroAddress } from 'viem'
 import { z } from 'zod'
+import { useCreateProposal } from '@/app/proposals/hooks/useCreateProposal'
 
 const ADDRESS_REGEX = /^0x[a-fA-F0-9]{40}$/
 
@@ -71,46 +67,21 @@ export default function CreateProposal() {
   const isAmountValid = !errors.amount && touchedFields.amount
   const isProposalCompleted = isProposalNameValid && isDescriptionValid
   const isActionsCompleted = isToAddressValid && isAmountValid
-
+  const { onCreateProposal } = useCreateProposal()
   const onSubmit = async (data: z.infer<typeof FormSchema>) => {
     const { proposalName, description, toAddress, tokenAddress, amount } = data
-    console.log('PUBLISHING')
     const proposalDescription = `${proposalName};${description}`
 
-    const generateDescriptionHash = (description: string) =>
-      solidityPackedKeccak256(['string'], [description])
-
-    const calldata = encodeFunctionData({
-      abi: StRIFTokenAbi,
-      functionName: 'transfer',
-      args: [toAddress as Address, BigInt(amount)],
-    })
-
-    const proposalId = await readContract(config, {
-      abi: GovernorAbi,
-      address: GovernorAddress,
-      functionName: 'hashProposal',
-      args: [[tokenAddress], [0n], [calldata], generateDescriptionHash(proposalDescription)],
-    })
-
-    console.log('PROPOSAL ID', proposalId)
-
-    // const calldata = encodeFunctionData({
-    //   abi: StRIFTokenAbi,
-    //   functionName: 'symbol',
-    // })
-
-    writeContract(config, {
-      abi: GovernorAbi,
-      address: GovernorAddress,
-      functionName: 'propose',
-      args: [[tokenAddress], [0n], [calldata], proposalDescription],
-    })
-      .then((txHash: string) => {
+    onCreateProposal(toAddress as Address, amount, proposalDescription)
+      .then((txHash: Awaited<ReturnType<typeof onCreateProposal>>) => {
         console.log('SUCCESS', txHash)
         setMessage(
-          'Proposal successfully created. Your proposal has been published successfully! It is now visible to the community for review and feedback. Thank you for your contribution.',
+          'Proposal transaction sent. Your proposal is in process. It will be visible when the transaction is confirmed.',
         )
+        // @TODO Wait for TX to be confirmed then send this message
+        // setMessage(
+        //   'Proposal successfully created. Your proposal has been published successfully! It is now visible to the community for review and feedback. Thank you for your contribution.',
+        // )
       })
       .catch(err => {
         console.log('ERROR', err)
