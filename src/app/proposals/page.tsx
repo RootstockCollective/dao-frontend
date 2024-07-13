@@ -9,7 +9,6 @@ import { Header, Paragraph } from '@/components/Typography'
 import { useRouter } from 'next/navigation'
 import { FaRegQuestionCircle } from 'react-icons/fa'
 import { FaPlus } from 'react-icons/fa6'
-import { useProposal } from './hooks/useProposal'
 import { useVotingPower } from './hooks/useVotingPower'
 import { Link } from '@/components/Link'
 import { useMemo } from 'react'
@@ -19,7 +18,8 @@ import { useGetProposalVotes } from '@/app/proposals/hooks/useGetProposalVotes'
 
 export default function Proposals() {
   const { votingPower, canCreateProposal } = useVotingPower()
-  const { proposalCount } = useProposal()
+
+  const { latestProposals } = useFetchLatestProposals()
   return (
     <MainContainer>
       <HeaderSection createProposalDisabled={!canCreateProposal} />
@@ -29,13 +29,13 @@ export default function Proposals() {
           {/*<MetricsCard title="Votes" amount="-" />*/}
           {/* @TODO ask product/design what this is */}
           {/* <MetricsCard title="Total voting power delegated" amount="230" /> */}
-          <MetricsCard title="Proposals created" amount={proposalCount.toString()} />
+          <MetricsCard title="Proposals created" amount={latestProposals.length.toString()} />
         </div>
         {/* <div className="grid grid-cols-2 gap-x-6">
           <DelegatedTable />
           <ReceivedDelegationTable />
         </div> */}
-        <LatestProposalsTable />
+        <LatestProposalsTable latestProposals={latestProposals} />
       </div>
     </MainContainer>
   )
@@ -133,8 +133,10 @@ const latestProposalsTransformer = (proposals: ReturnType<typeof getEventArgumen
     Sentiment: <SentimentColumn {...proposal} />,
   }))
 
-const LatestProposalsTable = () => {
-  const { latestProposals } = useFetchLatestProposals()
+interface LatestProposalsTableProps {
+  latestProposals: ReturnType<typeof useFetchLatestProposals>['latestProposals']
+}
+const LatestProposalsTable = ({ latestProposals }: LatestProposalsTableProps) => {
   // @ts-ignore
   const latestProposalsMapped = latestProposals.map(getEventArguments)
 
