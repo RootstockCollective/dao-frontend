@@ -12,12 +12,10 @@ import { FaPlus } from 'react-icons/fa6'
 import { useProposal } from './hooks/useProposal'
 import { useVotingPower } from './hooks/useVotingPower'
 import { Link } from '@/components/Link'
-import { useReadContract } from 'wagmi'
-import { GovernorAbi } from '@/lib/abis/Governor'
-import { GovernorAddress } from '@/lib/contracts'
 import { useMemo } from 'react'
 import { useFetchLatestProposals } from '@/app/proposals/hooks/useFetchLatestProposals'
 import { getEventArguments } from '@/app/proposals/shared/utils'
+import { useGetProposalVotes } from '@/app/proposals/hooks/useGetProposalVotes'
 
 export default function Proposals() {
   const { votingPower, canCreateProposal } = useVotingPower()
@@ -95,19 +93,8 @@ const ProposalNameColumn = ({ name, proposalId }: ProposalNameColumnProps) => (
   </Link>
 )
 
-const useGetVotes = (proposalId: string) => {
-  const { data } = useReadContract({
-    address: GovernorAddress,
-    abi: GovernorAbi,
-    functionName: 'proposalVotes',
-    args: [BigInt(proposalId)],
-  })
-
-  return data
-}
-
 const VotesColumn = ({ proposalId }: Omit<ProposalNameColumnProps, 'name'>) => {
-  const data = useGetVotes(proposalId)
+  const data = useGetProposalVotes(proposalId)
 
   const votes = useMemo(() => {
     if (data?.length === 3) {
@@ -120,7 +107,7 @@ const VotesColumn = ({ proposalId }: Omit<ProposalNameColumnProps, 'name'>) => {
 }
 
 const SentimentColumn = ({ proposalId }: Omit<ProposalNameColumnProps, 'name'>) => {
-  const data = useGetVotes(proposalId)
+  const data = useGetProposalVotes(proposalId)
 
   const sentimentValues = useMemo(() => {
     if (data?.length === 3) {
