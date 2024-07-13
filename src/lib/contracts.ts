@@ -29,8 +29,24 @@ const mainnetNft = {
 }
 
 const contractsNFT = {
-  testnet,
-  mainnet,
+  testnet: testnetNft,
+  mainnet: mainnetNft,
 }
 // @ts-ignore
 export const currentEnvNFTContracts = contractsNFT[process.env.NEXT_PUBLIC_ENV] as typeof testnetNft
+
+const treasuryContractsTestnet = [
+  {
+    name: 'Bucket 1',
+    address: '0xf5b9Ccfe0F695195C4F2E2b5A99b9b5d79EB8089',
+  },
+]
+
+const contractsTreasury = {
+  testnet: treasuryContractsTestnet,
+}
+
+export const currentEnvTreasuryContracts = contractsTreasury[
+  // @ts-ignore
+  process.env.NEXT_PUBLIC_ENV
+] as typeof treasuryContractsTestnet
