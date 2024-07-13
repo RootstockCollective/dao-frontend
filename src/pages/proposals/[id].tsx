@@ -114,11 +114,8 @@ const PageWithProposal = (proposal: PageWithProposal) => {
       <div className="flex flex-row justify-between">
         <div className="flex flex-row gap-x-6">
           <MetricsCard title="Threshold" amount={`${threshold?.toString()}`} />
-          <MetricsCard
-            title="Snapshot"
-            amount={snapshot?.toString() || '-'}
-            fiatAmount="Taken at block"
-          />{' '}
+          <MetricsCard title="Snapshot" amount={snapshot?.toString() || '-'} fiatAmount="Taken at block" />
+          <MetricsCard title="State" amount={proposalStateHuman} />
         </div>
         <div>
           <Button onClick={votingModal.openModal} disabled={!isProposalActive || didUserVoteAlready}>

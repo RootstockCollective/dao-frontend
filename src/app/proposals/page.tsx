@@ -26,7 +26,8 @@ export default function Proposals() {
       <div className="pl-4 grid grid-rows-1 gap-[32px] mb-[100px]">
         <MetricsCard borderless title={<VotingPowerPopover />} amount={votingPower} />
         <div className="flex flex-row gap-x-6">
-          <MetricsCard title="Votes" amount="-" />
+          {/*<MetricsCard title="Votes" amount="-" />*/}
+          {/* @TODO ask product/design what this is */}
           {/* <MetricsCard title="Total voting power delegated" amount="230" /> */}
           <MetricsCard title="Proposals created" amount={proposalCount.toString()} />
         </div>
@@ -98,7 +99,7 @@ const VotesColumn = ({ proposalId }: Omit<ProposalNameColumnProps, 'name'>) => {
 
   const votes = useMemo(() => {
     if (data?.length === 3) {
-      return data.reduce((prev, next) => next + prev, 0n)
+      return data.reduce((prev, next) => Number(next) + prev, 0)
     }
     return 0n
   }, [data])
