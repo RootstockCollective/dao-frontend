@@ -16,18 +16,20 @@ import { MainContainer } from '@/components/MainContainer/MainContainer'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/Select'
 import { Textarea } from '@/components/Textarea'
 import { Header, Paragraph } from '@/components/Typography'
+import { config } from '@/config'
 import { GovernorAbi } from '@/lib/abis/Governor'
 import { StRIFTokenAbi } from '@/lib/abis/StRIFTokenAbi'
 import { currentEnvContracts, GovernorAddress } from '@/lib/contracts'
 import { cn } from '@/lib/utils'
 import { zodResolver } from '@hookform/resolvers/zod'
+import { readContract, writeContract } from '@wagmi/core'
+import { solidityPackedKeccak256 } from 'ethers'
 import { useRouter } from 'next/navigation'
 import { useEffect, useState } from 'react'
 import { useForm } from 'react-hook-form'
 import { FaBitcoin } from 'react-icons/fa6'
 import { GoRocket } from 'react-icons/go'
 import { Address, encodeFunctionData, zeroAddress } from 'viem'
-import { useWriteContract } from 'wagmi'
 import { z } from 'zod'
 
 const ADDRESS_REGEX = /^0x[a-fA-F0-9]{40}$/
@@ -43,7 +45,6 @@ const FormSchema = z.object({
 export default function CreateProposal() {
   const router = useRouter()
   const { isLoading: isVotingPowerLoading, canCreateProposal } = useVotingPower()
-  const { writeContract: propose, data: txHash } = useWriteContract()
   const [message, setMessage] = useState('')
 
   const [activeStep, setActiveStep] = useState('proposal')
@@ -71,9 +72,13 @@ export default function CreateProposal() {
   const isProposalCompleted = isProposalNameValid && isDescriptionValid
   const isActionsCompleted = isToAddressValid && isAmountValid
 
-  const onSubmit = (data: z.infer<typeof FormSchema>) => {
+  const onSubmit = async (data: z.infer<typeof FormSchema>) => {
     const { proposalName, description, toAddress, tokenAddress, amount } = data
     console.log('PUBLISHING')
+    const proposalDescription = `${proposalName};${description}`
+
+    const generateDescriptionHash = (description: string) =>
+      solidityPackedKeccak256(['string'], [description])
 
     const calldata = encodeFunctionData({
       abi: StRIFTokenAbi,
@@ -81,30 +86,38 @@ export default function CreateProposal() {
       args: [toAddress as Address, BigInt(amount)],
     })
 
-    const proposal = [[tokenAddress], [0n], [calldata]]
+    const proposalId = await readContract(config, {
+      abi: GovernorAbi,
+      address: GovernorAddress,
+      functionName: 'hashProposal',
+      args: [[tokenAddress], [0n], [calldata], generateDescriptionHash(proposalDescription)],
+    })
 
-    propose(
-      {
-        abi: GovernorAbi,
-        address: GovernorAddress,
-        functionName: 'propose',
-        args: [...proposal, `${proposalName};${description}`],
-      },
-      {
-        onSuccess: txHash => {
-          console.log('SUCCESS', txHash)
-          setMessage(
-            'Proposal successfully created. Your proposal has been published successfully! It is now visible to the community for review and feedback. Thank you for your contribution.',
-          )
-        },
-        onError: err => {
-          console.log('ERROR', err)
-          setMessage(
-            'Error publishing. An unexpected error occurred while trying to publish your proposal. Please try again later. If the issue persists, contact support for assistance.',
-          )
-        },
-      },
-    )
+    console.log('PROPOSAL ID', proposalId)
+
+    // const calldata = encodeFunctionData({
+    //   abi: StRIFTokenAbi,
+    //   functionName: 'symbol',
+    // })
+
+    writeContract(config, {
+      abi: GovernorAbi,
+      address: GovernorAddress,
+      functionName: 'propose',
+      args: [[tokenAddress], [0n], [calldata], proposalDescription],
+    })
+      .then((txHash: string) => {
+        console.log('SUCCESS', txHash)
+        setMessage(
+          'Proposal successfully created. Your proposal has been published successfully! It is now visible to the community for review and feedback. Thank you for your contribution.',
+        )
+      })
+      .catch(err => {
+        console.log('ERROR', err)
+        setMessage(
+          'Error publishing. An unexpected error occurred while trying to publish your proposal. Please try again later. If the issue persists, contact support for assistance.',
+        )
+      })
   }
 
   const handleProposalCompleted = () => setActiveStep(isActionsCompleted ? '' : 'actions')
