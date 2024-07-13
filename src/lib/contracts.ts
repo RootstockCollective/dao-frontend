@@ -67,4 +67,4 @@ const governorContracts = {
 
 // @ts-ignore
 export const GovernorAddress = (governorContracts[process.env.NEXT_PUBLIC_ENV] as typeof testnetGovernor)
-  .value as Address
+  ?.value as Address
