@@ -71,7 +71,8 @@ export default function ProposalView() {
 
 type PageWithProposal = ReturnType<typeof getEventArguments>
 
-const PageWithProposal = ({ proposalId, name, description, proposer, Starts }: PageWithProposal) => {
+const PageWithProposal = (proposal: PageWithProposal) => {
+  const { proposalId, name, description, proposer, Starts } = proposal
   const [vote, setVote] = useState<Vote | null>('for')
   const [errorVoting, setErrorVoting] = useState('')
   const { address } = useAccount()
@@ -83,7 +84,9 @@ const PageWithProposal = ({ proposalId, name, description, proposer, Starts }: P
 
   const { votingPower, threshold } = useVotingPower()
 
-  const { onVote, isProposalActive, didUserVoteAlready } = useVoteOnProposal(proposalId as string)
+  const { onVote, isProposalActive, didUserVoteAlready, proposalStateHuman } = useVoteOnProposal(
+    proposalId as string,
+  )
 
   const handleVoting = async (vote: Vote) => {
     try {

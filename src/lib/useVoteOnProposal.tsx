@@ -10,10 +10,22 @@ const DEFAULT_DAO = {
 }
 
 const VOTES_MAP: Record<Vote, number> = {
-  for: 0,
-  against: 1,
+  against: 0,
+  for: 1,
   abstain: 2,
 }
+
+enum ProposalState {
+  Pending,
+  Active,
+  Canceled,
+  Defeated,
+  Succeeded,
+  Queued,
+  Expired,
+  Executed,
+}
+
 const testProposalId = '25743196385636847333978035955512523618122196623340267139740330247040763887661'
 
 export const useVoteOnProposal = (proposalId: string = testProposalId) => {
@@ -43,7 +55,7 @@ export const useVoteOnProposal = (proposalId: string = testProposalId) => {
     if (!isProposalActive) {
       return Promise.reject('The proposal is not active.')
     }
-    if (!didUserVoteAlready) {
+    if (didUserVoteAlready) {
       return Promise.reject('The user already voted.')
     }
     return writeContractAsync({
@@ -57,5 +69,7 @@ export const useVoteOnProposal = (proposalId: string = testProposalId) => {
     onVote,
     isProposalActive,
     didUserVoteAlready,
+    proposalState,
+    proposalStateHuman: proposalState ? ProposalState[proposalState] : '',
   }
 }
