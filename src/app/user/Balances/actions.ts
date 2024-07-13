@@ -4,8 +4,9 @@ import {
   fetchAddressTokensEndpoint,
   fetchNFTsOwnedByAddressAndNftAddress,
   fetchPricesEndpoint,
+  fetchProposalsCreatedByGovernorAddress,
 } from '@/lib/endpoints'
-import { currentEnvContracts } from '@/lib/contracts'
+import { currentEnvContracts, GovernorAddress } from '@/lib/contracts'
 
 export const fetchAddressTokens = (address: string, chainId = 31) =>
   axiosInstance
@@ -79,3 +80,6 @@ export const fetchNftsOwnedByAddressAndNFTAddress = (address: string, nftAddress
     )
     .then(({ data }) => data)
     .catch(error => console.log(error))
+
+export const fetchProposalCreated = () =>
+  axiosInstance.get(fetchProposalsCreatedByGovernorAddress.replace('{{address}}', GovernorAddress))

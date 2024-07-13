@@ -2,7 +2,7 @@ import { Button } from '@/components/Button'
 import { Modal } from '@/components/Modal/Modal'
 import { TextInput } from '@/components/TextInput'
 import { Header, Label, Paragraph, Typography } from '@/components/Typography'
-import { shortAddress } from '@/lib/utils'
+import { shortAddress, truncateMiddle } from '@/lib/utils'
 import { FC, useState } from 'react'
 import { FaUser } from 'react-icons/fa'
 import { FaCopy } from 'react-icons/fa6'
@@ -14,10 +14,18 @@ interface Props {
   onClose: () => void
   proposal: any
   address: string
-  votingPower: number
+  votingPower: string
+  errorMessage?: string
 }
 
-export const VoteProposalModal: FC<Props> = ({ onClose, onSubmit, proposal, address, votingPower }) => {
+export const VoteProposalModal: FC<Props> = ({
+  onClose,
+  onSubmit,
+  proposal,
+  address,
+  votingPower,
+  errorMessage,
+}) => {
   const [voting, setVoting] = useState<Vote | null>(null)
   const handleSubmit = (e: any) => {
     e.preventDefault()
@@ -34,13 +42,14 @@ export const VoteProposalModal: FC<Props> = ({ onClose, onSubmit, proposal, addr
         </Header>
         <div className="flex flex-row mt-4">
           <Paragraph className="text-sm text-gray-500 font-normal">
-            Proposed by: <span className="text-primary font-semibold">{proposal.proposedBy}</span>
+            Proposed by: <span className="text-primary font-semibold">{shortAddress(proposal.proposer)}</span>
           </Paragraph>
           <Paragraph className="text-sm text-gray-500 font-normal ml-4">
-            Created at: <span className="text-primary font-semibold">{proposal.created.toDateString()}</span>
+            Created at: <span className="text-primary font-semibold">{proposal.Starts}</span>
           </Paragraph>
           <Paragraph className="text-sm text-gray-500 ml-4 font-normal">
-            Proposal ID: <span className="text-primary font-semibold">{proposal.id}</span>
+            Proposal ID:{' '}
+            <span className="text-primary font-semibold">{truncateMiddle(proposal.proposalId)}</span>
           </Paragraph>
         </div>
         <Label variant="semibold" className="mt-4">
@@ -60,7 +69,7 @@ export const VoteProposalModal: FC<Props> = ({ onClose, onSubmit, proposal, addr
           label="Voting Power"
           name="votingPower"
           onChange={() => {}}
-          value={votingPower.toString()}
+          value={votingPower}
           className="mt-4"
           fullWidth
           readonly
@@ -125,7 +134,7 @@ export const VoteProposalModal: FC<Props> = ({ onClose, onSubmit, proposal, addr
             </Button>
           )}
         </div>
-
+        {errorMessage && <Label className="bg-st-error mt-2 p-4">Error: {errorMessage}</Label>}
         <div className="flex justify-center mt-8">
           <Button onClick={handleSubmit} disabled={!voting}>
             Submit

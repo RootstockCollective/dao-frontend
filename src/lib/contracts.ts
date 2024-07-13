@@ -1,6 +1,8 @@
+import { Address } from 'viem'
+
 const testnet = {
   RIF: '0x19f64674d8a5b4e652319f5e239efd3bc969a1fe', // tRIF
-  stRIF: '0xB063c975D63A0fD4e64bd704068a339111060dE0',
+  stRIF: '0xAF17f7A0124E9F360ffA484b13566b041C0f5023',
   rBTC: '0x0000000000000000000000000000000000000000',
 }
 
@@ -50,3 +52,19 @@ export const currentEnvTreasuryContracts = contractsTreasury[
   // @ts-ignore
   process.env.NEXT_PUBLIC_ENV
 ] as typeof treasuryContractsTestnet
+
+const testnetGovernor = {
+  value: '0x00ca74491D9493bFe5451246C8c72849Ba4A7F9D',
+}
+const mainnetGovernor = {
+  value: '',
+}
+
+const governorContracts = {
+  testnet: testnetGovernor,
+  mainnet: mainnetGovernor,
+}
+
+// @ts-ignore
+export const GovernorAddress = (governorContracts[process.env.NEXT_PUBLIC_ENV] as typeof testnetGovernor)
+  ?.value as Address

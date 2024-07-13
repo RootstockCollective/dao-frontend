@@ -36,7 +36,7 @@ export const Button: FC<Props> = ({
     'bg-primary rounded-[6px]': variant === 'primary',
     'bg-transparent border-secondary rounded-[6px] border-[1px]': variant === 'secondary',
     'bg-secondary border-secondary rounded-[6px] border-[1px]': variant === 'secondary-full',
-    'bg-disabled-primary rounded-[6px]': disabled,
+    'bg-disabled-primary rounded-[6px] border-0': disabled,
     'border-0': variant === 'transparent',
     'border-[1px] border-white rounded-[6px]': variant === 'white',
     'w-full': fullWidth,
