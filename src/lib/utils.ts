@@ -41,6 +41,21 @@ export const truncate = (str: string, length: number): string => {
   return str.slice(0, length) + '...'
 }
 
+/**
+ * Truncates a string by keeping the first `start` characters and the last `end` characters
+ * @param str - The string to truncate
+ * @param start - The amount of characters to keep from the start
+ * @param end - The amount of characters to keep from the end
+ * @returns The truncated string
+ * @example truncateMiddle('Hello, world!', 5, 5) // 'Hello...world!'
+ */
+export const truncateMiddle = (str: string, start = 10, end = 10): string => {
+  if (str.length <= start + end) {
+    return str
+  }
+  return str.slice(0, start) + '...' + str.slice(-end)
+}
+
 export const explorerURL = process.env.NEXT_PUBLIC_EXPLORER
 
 export const isValidNumber = (value: string) => {

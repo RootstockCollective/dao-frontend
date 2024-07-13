@@ -15,11 +15,17 @@ interface EventArgumentsParameter {
     proposalId: bigint
     voteStart: bigint
     voteEnd: bigint
+    proposer: string
   }
   timeStamp: string
 }
-const getEventArguments = ({ args: { description, proposalId }, timeStamp }: EventArgumentsParameter) => ({
+const getEventArguments = ({
+  args: { description, proposalId, proposer },
+  timeStamp,
+}: EventArgumentsParameter) => ({
   name: description.split(';')[0],
+  proposer,
+  description: description.split(';')[1],
   proposalId: proposalId.toString(),
   Starts: new Date(parseInt(timeStamp, 16) * 1000).toISOString().split('T')[0],
   Sentiment: '',

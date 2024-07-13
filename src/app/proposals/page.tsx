@@ -109,10 +109,8 @@ const VotesColumn = ({ proposalId }: Omit<ProposalNameColumnProps, 'name'>) => {
   const data = useGetVotes(proposalId)
 
   const votes = useMemo(() => {
-    if (data && data.length === 3) {
-      return data.reduce((prev, next) => {
-        return next + prev
-      }, 0n)
+    if (data?.length === 3) {
+      return data.reduce((prev, next) => next + prev, 0n)
     }
     return 0n
   }, [data])
@@ -130,7 +128,7 @@ const SentimentColumn = ({ proposalId }: Omit<ProposalNameColumnProps, 'name'>) 
       { value: 10, color: 'var(--st-info)' },
     ]*/
   const sentimentValues = useMemo(() => {
-    if (data && data.length === 3) {
+    if (data?.length === 3) {
       const [forVotes, againstVotes, abstainVotes] = data
       return [
         { value: Number(forVotes), color: 'var(--st-success)' },
@@ -162,7 +160,6 @@ const LatestProposalsTable = () => {
       <Header variant="h2" className="mb-4">
         Latest Proposals
       </Header>
-      {/* <Table data={latestProposalsData(router)} /> */}
       {latestProposals.length > 0 && <Table data={latestProposalsTransformer(latestProposals)} />}
     </div>
   )
