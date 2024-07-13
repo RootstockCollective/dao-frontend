@@ -79,7 +79,7 @@ const PageWithProposal = (proposal: PageWithProposal) => {
   const votingModal = useModal()
   const submittedModal = useModal()
 
-  const [againstVote, forVote, abstainVote] = useGetProposalVotes(proposalId)
+  const [againstVote, forVote, abstainVote] = useGetProposalVotes(proposalId, true)
   const snapshot = useGetProposalSnapshot(proposalId)
 
   const { votingPower, threshold } = useVotingPower()

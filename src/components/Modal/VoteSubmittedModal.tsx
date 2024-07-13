@@ -3,6 +3,7 @@ import { Modal } from '@/components/Modal/Modal'
 import { Header, Paragraph } from '@/components/Typography'
 import { FC } from 'react'
 import { LuBadgeCheck } from 'react-icons/lu'
+import { truncateMiddle } from '@/lib/utils'
 
 export type Vote = 'for' | 'against' | 'abstain'
 
@@ -39,11 +40,11 @@ export const VoteSubmittedModal: FC<Props> = ({ onClose, proposal, vote }) => (
       <div className="mt-8">
         <div className="flex justify-between items-center mb-2">
           <span className="w-1/3 text-sm">Proposal</span>
-          <span className="w-2/3 text-sm truncate">{proposal.title}</span>
+          <span className="w-2/3 text-sm truncate">{proposal.name}</span>
         </div>
         <div className="flex justify-between items-center mb-2">
           <span className="text-sm">Proposal ID</span>
-          <span className="text-sm">{proposal.id}</span>
+          <span className="text-sm">{truncateMiddle(proposal.proposalId)}</span>
         </div>
         <div className="flex justify-between items-center">
           <span className="text-sm">Vote</span>
