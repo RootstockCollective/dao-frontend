@@ -55,9 +55,9 @@ const HeaderSection = ({ createProposalDisabled = true }) => {
         >
           Create Proposal
         </Button>
-        <Button variant="secondary" disabled>
-          Delegate
-        </Button>
+        {/*<Button variant="secondary" disabled>*/}
+        {/*  Delegate*/}
+        {/*</Button>*/}
       </div>
     </div>
   )
