@@ -15,9 +15,17 @@ interface Props {
   proposal: any
   address: string
   votingPower: number
+  errorMessage?: string
 }
 
-export const VoteProposalModal: FC<Props> = ({ onClose, onSubmit, proposal, address, votingPower }) => {
+export const VoteProposalModal: FC<Props> = ({
+  onClose,
+  onSubmit,
+  proposal,
+  address,
+  votingPower,
+  errorMessage,
+}) => {
   const [voting, setVoting] = useState<Vote | null>(null)
   const handleSubmit = (e: any) => {
     e.preventDefault()
@@ -125,7 +133,7 @@ export const VoteProposalModal: FC<Props> = ({ onClose, onSubmit, proposal, addr
             </Button>
           )}
         </div>
-
+        {errorMessage && <Label className="bg-st-error mt-2 p-4">Error: {errorMessage}</Label>}
         <div className="flex justify-center mt-8">
           <Button onClick={handleSubmit} disabled={!voting}>
             Submit

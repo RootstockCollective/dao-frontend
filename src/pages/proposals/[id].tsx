@@ -18,6 +18,7 @@ import { VoteProposalModal, Vote } from '../../components/Modal/VoteProposalModa
 import { useAccount } from 'wagmi'
 import { VoteSubmittedModal } from '../../components/Modal/VoteSubmittedModal'
 import { useRouter } from 'next/router'
+import { useVoteOnProposal } from '@/lib/useVoteOnProposal'
 
 const getProposalData = async (id: string): Promise<any> => {
   return new Promise(resolve => {
@@ -52,6 +53,7 @@ export default function ProposalView({ params }: { params: { id: string } }) {
 
   const [proposal, setProposal] = useState<any>(null)
   const [vote, setVote] = useState<Vote | null>('for')
+  const [errorVoting, setErrorVoting] = useState('')
   const { address } = useAccount()
   const votingModal = useModal()
   const submittedModal = useModal()
@@ -59,11 +61,18 @@ export default function ProposalView({ params }: { params: { id: string } }) {
   // TODO: get voting power from the user
   const votingPower = 2353
 
-  const handleVoting = (vote: Vote) => {
-    votingModal.closeModal()
-    // TODO: submit vote to the contract
-    setVote(vote)
-    submittedModal.openModal()
+  const { onVote } = useVoteOnProposal(id as string)
+
+  const handleVoting = async (vote: Vote) => {
+    try {
+      setErrorVoting('')
+      const tx = await onVote(vote)
+      votingModal.closeModal()
+      setVote(vote)
+      submittedModal.openModal()
+    } catch (err) {
+      setErrorVoting((err as Error).toString())
+    }
   }
 
   useEffect(() => {
@@ -102,6 +111,7 @@ export default function ProposalView({ params }: { params: { id: string } }) {
                     proposal={proposal}
                     address={address}
                     votingPower={votingPower}
+                    errorMessage={errorVoting}
                   />
                 )}
                 {submittedModal.isModalOpened && vote && (
