@@ -1,4 +1,5 @@
 'use client'
+import { useCreateProposal } from '@/app/proposals/hooks/useCreateProposal'
 import { useVotingPower } from '@/app/proposals/hooks/useVotingPower'
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/Accordion'
 import { Button } from '@/components/Button'
@@ -24,9 +25,8 @@ import { useEffect, useState } from 'react'
 import { useForm } from 'react-hook-form'
 import { FaBitcoin } from 'react-icons/fa6'
 import { GoRocket } from 'react-icons/go'
-import { Address, zeroAddress } from 'viem'
+import { Address } from 'viem'
 import { z } from 'zod'
-import { useCreateProposal } from '@/app/proposals/hooks/useCreateProposal'
 
 const ADDRESS_REGEX = /^0x[a-fA-F0-9]{40}$/
 
@@ -41,6 +41,7 @@ const FormSchema = z.object({
 export default function CreateProposal() {
   const router = useRouter()
   const { isLoading: isVotingPowerLoading, canCreateProposal } = useVotingPower()
+  const { onCreateProposal } = useCreateProposal()
   const [message, setMessage] = useState('')
 
   const [activeStep, setActiveStep] = useState('proposal')
@@ -52,6 +53,7 @@ export default function CreateProposal() {
       proposalName: '',
       description: '',
       toAddress: '',
+      tokenAddress: currentEnvContracts.stRIF as Address,
       amount: undefined,
     },
   })
@@ -67,7 +69,7 @@ export default function CreateProposal() {
   const isAmountValid = !errors.amount && touchedFields.amount
   const isProposalCompleted = isProposalNameValid && isDescriptionValid
   const isActionsCompleted = isToAddressValid && isAmountValid
-  const { onCreateProposal } = useCreateProposal()
+
   const onSubmit = async (data: z.infer<typeof FormSchema>) => {
     const { proposalName, description, toAddress, tokenAddress, amount } = data
     const proposalDescription = `${proposalName};${description}`
@@ -214,13 +216,13 @@ export default function CreateProposal() {
                               </SelectTrigger>
                             </FormControl>
                             <SelectContent>
-                              <SelectItem value={zeroAddress}>
+                              {/* <SelectItem value={zeroAddress}>
                                 <div className="flex items-center">
-                                  {/* TODO: token icon */}
+                                  TODO: token icon
                                   <FaBitcoin className="mr-2" />
                                   RBTC
                                 </div>
-                              </SelectItem>
+                              </SelectItem> */}
                               <SelectItem value={currentEnvContracts.stRIF as Address}>
                                 <div className="flex items-center">
                                   <FaBitcoin className="mr-2" />
