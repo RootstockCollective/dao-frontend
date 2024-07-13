@@ -93,9 +93,21 @@ export default function CreateProposal() {
       })
   }
 
-  const handleProposalCompleted = () => setActiveStep(isActionsCompleted ? '' : 'actions')
+  const handleProposalCompleted = () => {
+    if (isActionsCompleted && isProposalCompleted) {
+      handleSubmit(onSubmit)()
+    } else {
+      setActiveStep(isActionsCompleted ? '' : 'actions')
+    }
+  }
 
-  const handleActionsCompleted = () => setActiveStep(isProposalCompleted ? '' : 'proposal')
+  const handleActionsCompleted = () => {
+    if (isActionsCompleted && isProposalCompleted) {
+      handleSubmit(onSubmit)()
+    } else {
+      setActiveStep(isProposalCompleted ? '' : 'proposal')
+    }
+  }
 
   useEffect(() => {
     if (!isVotingPowerLoading && !canCreateProposal) {
