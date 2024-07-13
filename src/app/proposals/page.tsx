@@ -17,6 +17,7 @@ import { GovernorAbi } from '@/lib/abis/Governor'
 import { GovernorAddress } from '@/lib/contracts'
 import { useMemo } from 'react'
 import { useFetchLatestProposals } from '@/app/proposals/hooks/useFetchLatestProposals'
+import { getEventArguments } from '@/app/proposals/shared/utils'
 
 export default function Proposals() {
   const { votingPower, canCreateProposal } = useVotingPower()
@@ -143,28 +144,6 @@ const latestProposalsTransformer = (proposals: ReturnType<typeof getEventArgumen
     Starts: proposal.Starts,
     Sentiment: <SentimentColumn {...proposal} />,
   }))
-
-interface EventArgumentsParameter {
-  args: {
-    description: string
-    proposalId: bigint
-    voteStart: bigint
-    voteEnd: bigint
-    proposer: string
-  }
-  timeStamp: string
-}
-
-const getEventArguments = ({
-  args: { description, proposalId, proposer },
-  timeStamp,
-}: EventArgumentsParameter) => ({
-  name: description.split(';')[0],
-  proposer,
-  description: description.split(';')[1],
-  proposalId: proposalId.toString(),
-  Starts: new Date(parseInt(timeStamp, 16) * 1000).toISOString().split('T')[0],
-})
 
 const LatestProposalsTable = () => {
   const { latestProposals } = useFetchLatestProposals()

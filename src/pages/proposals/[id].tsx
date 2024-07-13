@@ -15,12 +15,13 @@ import { MetricsCard } from '@/components/MetricsCard'
 import { Header, Paragraph } from '@/components/Typography'
 import { useRouter } from 'next/router'
 import { useVoteOnProposal } from '@/lib/useVoteOnProposal'
-import { FC, useState } from 'react'
+import { FC, useMemo, useState } from 'react'
 import { useAccount } from 'wagmi'
 import { Vote, VoteProposalModal } from '../../components/Modal/VoteProposalModal'
 import { VoteSubmittedModal } from '../../components/Modal/VoteSubmittedModal'
 import { useVotingPower } from '@/app/proposals/hooks/useVotingPower'
 import { shortAddress } from '@/lib/utils'
+import { getEventArguments } from '@/app/proposals/shared/utils'
 
 const getProposalData = async (id: string): Promise<any> => {
   return new Promise(resolve => {
@@ -60,8 +61,16 @@ export default function ProposalView() {
   const submittedModal = useModal()
 
   const { latestProposals } = useFetchLatestProposals()
+
   const { votingPower } = useVotingPower()
-  const proposal = latestProposals.find(p => p.proposalId === id)
+  const proposal = useMemo(() => {
+    const proposal = latestProposals.find(proposal => proposal.args.proposalId.toString() === id)
+    if (!proposal) {
+      return null
+    }
+    // @ts-ignore
+    return getEventArguments(proposal)
+  }, [latestProposals])
 
   const { onVote } = useVoteOnProposal(id as string)
 
