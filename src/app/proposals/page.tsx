@@ -11,12 +11,12 @@ import { FaRegQuestionCircle } from 'react-icons/fa'
 import { FaPlus } from 'react-icons/fa6'
 import { useProposal } from './hooks/useProposal'
 import { useVotingPower } from './hooks/useVotingPower'
-import { useFetchLatestProposals } from '@/app/proposals/hooks/useFetchLatestProposals'
 import { Link } from '@/components/Link'
 import { useReadContract } from 'wagmi'
 import { GovernorAbi } from '@/lib/abis/Governor'
 import { GovernorAddress } from '@/lib/contracts'
 import { useMemo } from 'react'
+import { useFetchLatestProposals } from '@/app/proposals/hooks/useFetchLatestProposals'
 
 export default function Proposals() {
   const { votingPower, canCreateProposal } = useVotingPower()
@@ -121,12 +121,6 @@ const VotesColumn = ({ proposalId }: Omit<ProposalNameColumnProps, 'name'>) => {
 const SentimentColumn = ({ proposalId }: Omit<ProposalNameColumnProps, 'name'>) => {
   const data = useGetVotes(proposalId)
 
-  /*
-  * [
-      { value: 10, color: 'var(--st-success)' },
-      { value: 10, color: 'var(--st-error)' },
-      { value: 10, color: 'var(--st-info)' },
-    ]*/
   const sentimentValues = useMemo(() => {
     if (data?.length === 3) {
       const [forVotes, againstVotes, abstainVotes] = data
@@ -142,9 +136,7 @@ const SentimentColumn = ({ proposalId }: Omit<ProposalNameColumnProps, 'name'>) 
   return <ComparativeProgressBar values={sentimentValues} />
 }
 
-const latestProposalsTransformer = (
-  proposals: ReturnType<typeof useFetchLatestProposals>['latestProposals'],
-) =>
+const latestProposalsTransformer = (proposals: ReturnType<typeof getEventArguments>[]) =>
   proposals.map(proposal => ({
     'Proposal Name': <ProposalNameColumn {...proposal} />,
     'Current Votes': <VotesColumn {...proposal} />,
@@ -152,15 +144,39 @@ const latestProposalsTransformer = (
     Sentiment: <SentimentColumn {...proposal} />,
   }))
 
+interface EventArgumentsParameter {
+  args: {
+    description: string
+    proposalId: bigint
+    voteStart: bigint
+    voteEnd: bigint
+    proposer: string
+  }
+  timeStamp: string
+}
+
+const getEventArguments = ({
+  args: { description, proposalId, proposer },
+  timeStamp,
+}: EventArgumentsParameter) => ({
+  name: description.split(';')[0],
+  proposer,
+  description: description.split(';')[1],
+  proposalId: proposalId.toString(),
+  Starts: new Date(parseInt(timeStamp, 16) * 1000).toISOString().split('T')[0],
+})
+
 const LatestProposalsTable = () => {
   const { latestProposals } = useFetchLatestProposals()
+  // @ts-ignore
+  const latestProposalsMapped = latestProposals.map(getEventArguments)
 
   return (
     <div>
       <Header variant="h2" className="mb-4">
         Latest Proposals
       </Header>
-      {latestProposals.length > 0 && <Table data={latestProposalsTransformer(latestProposals)} />}
+      {latestProposals.length > 0 && <Table data={latestProposalsTransformer(latestProposalsMapped)} />}
     </div>
   )
 }
