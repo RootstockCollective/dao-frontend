@@ -25,32 +25,6 @@ import { getEventArguments } from '@/app/proposals/shared/utils'
 import { useGetProposalVotes } from '@/app/proposals/hooks/useGetProposalVotes'
 import { useGetProposalSnapshot } from '@/app/proposals/hooks/useGetProposalSnapshot'
 
-const getProposalData = async (id: string): Promise<any> => {
-  return new Promise(resolve => {
-    resolve({
-      id,
-      title:
-        'Amazing and surprisingly long proposal name that have not sense at all, but we can do whatever we want because we are awesome, LFG!!!! 🚀',
-      description:
-        'Crypto ipsum bitcoin ethereum dogecoin litecoin. Aave ren livepeer WAX USD hedera solana revain dogecoin ICON. Uniswap serum klaytn PancakeSwap monero hedera. TerraUSD arweave litecoin fantom dash EOS digibyte digibyte. Kadena ren polygon aave XRP amp decred gala livepeer enjin. Bancor ICON decred livepeer zcash horizen bancor arweave. Kava ipsum binance zcash siacoin velas. Maker harmony helium horizen waves ICON decentraland. Aave dash vechain helium stacks terraUSD. Loopring monero zcash uniswap secret. Secret enjin serum solana WAX holo polygon. Zcash gala secret holo ethereum decentraland. Horizen ethereum BitTorrent helium filecoin uniswap. Avalanche polygon binance PancakeSwap binance stellar chiliz ipsum tether waves. USD decred revain EOS bitcoin ethereum solana compound. PancakeSwap avalanche telcoin solana polygon golem arweave stacks. Hedera. ',
-      proposedBy: 'Cryptodude.rsk',
-      created: new Date(),
-      votes: {
-        for: 123000,
-        against: 12,
-        abstain: 0,
-      },
-      actions: {
-        tokenSymbol: 'RIF',
-        amount: 234,
-        toAddress: '0xa2193A393aa0c94A4d52893496F02B56C61c36A1',
-      },
-      threshold: 59,
-      snapshotBlock: 20149901,
-    })
-  })
-}
-
 export default function ProposalView() {
   const {
     query: { id },
@@ -64,7 +38,7 @@ export default function ProposalView() {
     }
     // @ts-ignore
     return getEventArguments(proposal)
-  }, [latestProposals])
+  }, [id, latestProposals])
 
   return <MainContainer>{proposal && <PageWithProposal {...proposal} />}</MainContainer>
 }
@@ -84,9 +58,7 @@ const PageWithProposal = (proposal: PageWithProposal) => {
 
   const { votingPower, threshold } = useVotingPower()
 
-  const { onVote, isProposalActive, didUserVoteAlready, proposalStateHuman } = useVoteOnProposal(
-    proposalId as string,
-  )
+  const { onVote, isProposalActive, didUserVoteAlready, proposalStateHuman } = useVoteOnProposal(proposalId)
 
   const handleVoting = async (vote: Vote) => {
     try {

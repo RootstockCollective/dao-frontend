@@ -26,9 +26,7 @@ enum ProposalState {
   Executed,
 }
 
-const testProposalId = '25743196385636847333978035955512523618122196623340267139740330247040763887661'
-
-export const useVoteOnProposal = (proposalId: string = testProposalId) => {
+export const useVoteOnProposal = (proposalId: string) => {
   const { address } = useAccount()
 
   // First read the proposal to see if it's active
