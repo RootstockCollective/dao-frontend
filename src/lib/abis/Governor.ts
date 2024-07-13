@@ -1941,4 +1941,4 @@ export const GovernorAbi = [
     stateMutability: 'payable',
     type: 'receive',
   },
-]
+] as const

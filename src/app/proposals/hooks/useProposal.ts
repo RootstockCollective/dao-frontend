@@ -11,5 +11,6 @@ export const useProposal = () => {
 
   return {
     proposalCount: isLoading ? '-' : (proposalCount as bigint).toString(),
+    primitiveProposalCount: proposalCount,
   }
 }

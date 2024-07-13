@@ -13,6 +13,7 @@ import { FaRegQuestionCircle } from 'react-icons/fa'
 import { FaPlus } from 'react-icons/fa6'
 import { useProposal } from './hooks/useProposal'
 import { useVotingPower } from './hooks/useVotingPower'
+import { useFetchLatestProposals } from '@/app/proposals/hooks/useFetchLatestProposals'
 
 export default function Proposals() {
   const { votingPower, canCreateProposal } = useVotingPower()
@@ -200,6 +201,8 @@ const noneData = [
 
 const LatestProposalsTable = () => {
   const router = useRouter()
+  const latestProposals = useFetchLatestProposals()
+  console.log(205, latestProposals)
   return (
     <div>
       <Header variant="h2" className="mb-4">
