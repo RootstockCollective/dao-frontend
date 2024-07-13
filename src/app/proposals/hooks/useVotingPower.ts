@@ -30,6 +30,7 @@ export const useVotingPower = () => {
       isLoading: true,
       votingPower: '-',
       canCreateProposal: false,
+      threshold: undefined,
     }
   }
 
@@ -38,5 +39,6 @@ export const useVotingPower = () => {
     isLoading: false,
     votingPower: formatUnits(balance, decimals),
     canCreateProposal: balance >= threshold,
+    threshold: formatUnits(threshold, decimals),
   }
 }

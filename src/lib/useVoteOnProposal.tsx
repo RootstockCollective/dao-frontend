@@ -55,5 +55,7 @@ export const useVoteOnProposal = (proposalId: string = testProposalId) => {
 
   return {
     onVote,
+    isProposalActive,
+    didUserVoteAlready,
   }
 }

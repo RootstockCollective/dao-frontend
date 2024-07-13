@@ -23,6 +23,7 @@ import { useVotingPower } from '@/app/proposals/hooks/useVotingPower'
 import { shortAddress } from '@/lib/utils'
 import { getEventArguments } from '@/app/proposals/shared/utils'
 import { useGetProposalVotes } from '@/app/proposals/hooks/useGetProposalVotes'
+import { useGetProposalSnapshot } from '@/app/proposals/hooks/useGetProposalSnapshot'
 
 const getProposalData = async (id: string): Promise<any> => {
   return new Promise(resolve => {
@@ -78,10 +79,11 @@ const PageWithProposal = ({ proposalId, name, description, proposer, Starts }: P
   const submittedModal = useModal()
 
   const [againstVote, forVote, abstainVote] = useGetProposalVotes(proposalId)
+  const snapshot = useGetProposalSnapshot(proposalId)
 
-  const { votingPower } = useVotingPower()
+  const { votingPower, threshold } = useVotingPower()
 
-  const { onVote } = useVoteOnProposal(proposalId as string)
+  const { onVote, isProposalActive, didUserVoteAlready } = useVoteOnProposal(proposalId as string)
 
   const handleVoting = async (vote: Vote) => {
     try {
@@ -108,13 +110,17 @@ const PageWithProposal = ({ proposalId, name, description, proposer, Starts }: P
       </div>
       <div className="flex flex-row justify-between">
         <div className="flex flex-row gap-x-6">
-          <MetricsCard title="Threshold" amount={`${1} votes`} />
-          {/* @TODO get threshold */}
-          <MetricsCard title="Snapshot" amount={'1'} fiatAmount="Taken at block" />{' '}
-          {/* @TODO get snapshotBlock */}
+          <MetricsCard title="Threshold" amount={`${threshold?.toString()}`} />
+          <MetricsCard
+            title="Snapshot"
+            amount={snapshot?.toString() || '-'}
+            fiatAmount="Taken at block"
+          />{' '}
         </div>
         <div>
-          <Button onClick={votingModal.openModal}>Vote on chain</Button>
+          <Button onClick={votingModal.openModal} disabled={!isProposalActive || didUserVoteAlready}>
+            Vote on chain
+          </Button>
           {votingModal.isModalOpened && address && (
             <VoteProposalModal
               onSubmit={handleVoting}
