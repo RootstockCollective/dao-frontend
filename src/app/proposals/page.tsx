@@ -111,7 +111,7 @@ const SentimentColumn = ({ proposalId }: Omit<ProposalNameColumnProps, 'name'>) 
 
   const sentimentValues = useMemo(() => {
     if (data?.length === 3) {
-      const [forVotes, againstVotes, abstainVotes] = data
+      const [againstVotes, forVotes, abstainVotes] = data
       return [
         { value: Number(forVotes), color: 'var(--st-success)' },
         { value: Number(againstVotes), color: 'var(--st-error)' },
