@@ -43,7 +43,7 @@ export const useCreateProposal = () => {
     const { proposal, proposalToRunHash } = createProposalForStRifTransfer(calldata, description)
     return await propose({
       ...DEFAULT_DAO_CONFIG,
-      functionName: 'propose',
+      functionName: 'propose', // @ts-ignore
       args: proposal,
     })
   }
