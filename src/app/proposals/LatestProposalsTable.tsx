@@ -13,7 +13,7 @@ interface ProposalNameColumnProps {
 }
 
 const ProposalNameColumn = ({ name, proposalId }: ProposalNameColumnProps) => (
-  <Link href={`/proposals/${proposalId}`} target="_blank">
+  <Link href={`/proposals/id/${proposalId}`} target="_blank">
     {name}
   </Link>
 )
