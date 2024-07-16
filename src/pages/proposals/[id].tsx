@@ -13,19 +13,22 @@ import { Button } from '@/components/Button'
 import { MainContainer } from '@/components/MainContainer/MainContainer'
 import { MetricsCard } from '@/components/MetricsCard'
 import { Header, Paragraph } from '@/components/Typography'
+import { useRouter } from 'next/router'
 import { useVoteOnProposal } from '@/lib/useVoteOnProposal'
 import { FC, useMemo, useState } from 'react'
 import { useAccount } from 'wagmi'
-import { Vote, VoteProposalModal } from '../../../components/Modal/VoteProposalModal'
-import { VoteSubmittedModal } from '../../../components/Modal/VoteSubmittedModal'
+import { Vote, VoteProposalModal } from '../../components/Modal/VoteProposalModal'
+import { VoteSubmittedModal } from '../../components/Modal/VoteSubmittedModal'
 import { useVotingPower } from '@/app/proposals/hooks/useVotingPower'
 import { shortAddress } from '@/lib/utils'
-import { getEventArguments, getLastStringFromPathname } from '@/app/proposals/shared/utils'
+import { getEventArguments } from '@/app/proposals/shared/utils'
 import { useGetProposalVotes } from '@/app/proposals/hooks/useGetProposalVotes'
 import { useGetProposalSnapshot } from '@/app/proposals/hooks/useGetProposalSnapshot'
 
 export default function ProposalView() {
-  const id = getLastStringFromPathname()
+  const {
+    query: { id },
+  } = useRouter()
   const { latestProposals } = useFetchLatestProposals()
 
   const proposal = useMemo(() => {

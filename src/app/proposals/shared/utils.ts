@@ -19,10 +19,3 @@ export const getEventArguments = ({
   proposalId: proposalId.toString(),
   Starts: new Date(parseInt(timeStamp, 16) * 1000).toISOString().split('T')[0],
 })
-
-export const getLastStringFromPathname = () => {
-  if (typeof window !== 'undefined') {
-    return window.location.pathname.split('/').pop()
-  }
-  return undefined
-}
