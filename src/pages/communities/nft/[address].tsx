@@ -1,3 +1,4 @@
+import { useRouter } from 'next/router'
 import { MainContainer } from '@/components/MainContainer/MainContainer'
 import { firstNft } from '@/app/communities/communityUtils'
 import Image from 'next/image'
@@ -8,15 +9,15 @@ import { Paragraph, Span } from '@/components/Typography'
 import { ReactNode } from 'react'
 import { Button } from '@/components/Button'
 import { NFTContextProvider } from '@/app/providers'
-import { getLastStringFromPathname } from '@/app/proposals/shared/utils'
 
 export default function Page() {
-  const id = getLastStringFromPathname()
-
-  if (!id) return null
+  const {
+    query: { address },
+  } = useRouter()
+  if (!address) return null
   return (
     <MainContainer notProtected>
-      <NFTContextProvider nftAddress={id as string}>
+      <NFTContextProvider nftAddress={address as string}>
         <div className="flex justify-between pl-[16px] gap-[16px]">
           {/* 50%: NFT INFO*/}
           <div className="flex-1">
