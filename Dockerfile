@@ -15,7 +15,8 @@ RUN npm install --verbose
 
 # Copy the rest of the application code
 COPY . .
-
+# Testing deployment
+COPY .env.testnet .env.local
 # Disable telemetry
 ENV NEXT_TELEMETRY_DISABLED 1
 # Build the Next.js application
