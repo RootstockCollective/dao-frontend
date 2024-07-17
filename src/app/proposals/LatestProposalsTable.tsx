@@ -26,7 +26,7 @@ const VotesColumn = ({ proposalId }: Omit<ProposalNameColumnProps, 'name'>) => {
   return <p>{votes.toString()}</p>
 }
 
-const PopoverSentiment = ({ votes, position }: { votes: string[]; position: 'top' | 'bottom' }) => {
+const PopoverSentiment = ({ votes }: { votes: string[] }) => {
   const [againstVotes, forVotes, abstainVotes] = votes
   return (
     <div className="text-black">
@@ -77,10 +77,9 @@ const SentimentColumn = ({
   }, [data])
 
   const position = index === 0 ? 'bottom' : 'top'
-
   return (
     <Popover
-      content={<PopoverSentiment votes={data} position={position} />}
+      content={<PopoverSentiment votes={data} />}
       trigger="hover"
       background="light"
       position={position}
