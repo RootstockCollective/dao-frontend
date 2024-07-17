@@ -1,5 +1,5 @@
 import { getEventArguments } from '@/app/proposals/shared/utils'
-import { Header } from '@/components/Typography'
+import { Header, Paragraph } from '@/components/Typography'
 import { Table } from '@/components/Table'
 import { useFetchLatestProposals } from '@/app/proposals/hooks/useFetchLatestProposals'
 import { Link } from '@/components/Link'
@@ -22,42 +22,50 @@ const ProposalNameColumn = ({ name, proposalId }: ProposalNameColumnProps) => (
 
 const VotesColumn = ({ proposalId }: Omit<ProposalNameColumnProps, 'name'>) => {
   const data = useGetProposalVotes(proposalId)
-
-  const votes = useMemo(() => {
-    if (data?.length === 3) {
-      return data.reduce((prev, next) => Number(next) + prev, 0)
-    }
-    return 0n
-  }, [data])
-
+  const votes = data.reduce((prev, next) => Number(next) + prev, 0)
   return <p>{votes.toString()}</p>
 }
 
-const PopoverSentiment = () => (
-  <>
-    <p className="text-[12px] font-bold mb-1">Sentiment</p>
-    <p className="text-[12px]">For: Votes in favor of the proposal</p>
-    <p className="text-[12px]">Against: Votes against the proposal</p>
-    <p className="text-[12px]">Abstain: Votes that abstain from voting</p>
-  </>
-)
+const PopoverSentiment = ({ votes }: { votes: string[] }) => {
+  const [againstVotes, forVotes, abstainVotes] = votes
+  return (
+    <div className="text-black">
+      <Paragraph variant="semibold" className="text-[12px] font-bold mb-1">
+        Sentiment
+      </Paragraph>
+      <Paragraph variant="semibold" className="text-[12px]">
+        For: {forVotes}
+      </Paragraph>
+      <Paragraph variant="semibold" className="text-[12px]">
+        Against: {againstVotes}
+      </Paragraph>
+      <Paragraph variant="semibold" className="text-[12px]">
+        Abstain: {abstainVotes}
+      </Paragraph>
+    </div>
+  )
+}
 
 const SentimentColumn = ({ proposalId }: Omit<ProposalNameColumnProps, 'name'>) => {
   const data = useGetProposalVotes(proposalId)
 
   const sentimentValues = useMemo(() => {
-    if (data?.length === 3) {
-      const [againstVotes, forVotes, abstainVotes] = data
-      return [
-        { value: Number(forVotes), color: 'var(--st-success)' },
-        { value: Number(againstVotes), color: 'var(--st-error)' },
-        { value: Number(abstainVotes), color: 'var(--st-info)' },
-      ]
-    }
-    return [{ value: 0, color: 'var(--st-info)' }]
+    const [againstVotes, forVotes, abstainVotes] = data
+    return [
+      { value: Number(forVotes), color: 'var(--st-success)' },
+      { value: Number(againstVotes), color: 'var(--st-error)' },
+      { value: Number(abstainVotes), color: 'var(--st-info)' },
+    ]
   }, [data])
+
   return (
-    <Popover content={data && <PopoverSentiment />} trigger="hover">
+    <Popover
+      content={<PopoverSentiment votes={data} />}
+      trigger="hover"
+      background="light"
+      position="top"
+      size="small"
+    >
       <ComparativeProgressBar values={sentimentValues} />
     </Popover>
   )
