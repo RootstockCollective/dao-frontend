@@ -12,7 +12,7 @@ env:
   ECS_SERVICE: dao-frontend-testnet
   ECS_CLUSTER: dao-frontend-testnet
   ECS_TASK_DEFINITION: dao-frontend-testnet
-  CONTAINER_NAME: rif-dao-frontend
+  CONTAINER_NAME: dao-frontend-testnet
 
   PROFILE: testnet
 

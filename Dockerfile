@@ -1,10 +1,6 @@
 # Use the official Node.js 18 image as a base
 FROM node:18-alpine AS builder
 
-# Set the environment variable
-ARG arg_env
-ENV NODE_ENV="$arg_env"
-
 # Set the working directory
 WORKDIR /app
 
@@ -19,7 +15,8 @@ RUN npm install --verbose
 
 # Copy the rest of the application code
 COPY . .
-
+# Testing deployment
+COPY .env.testnet .env.local
 # Disable telemetry
 ENV NEXT_TELEMETRY_DISABLED 1
 # Build the Next.js application
