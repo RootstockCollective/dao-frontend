@@ -1,6 +1,10 @@
 # Use the official Node.js 18 image as a base
 FROM node:18-alpine AS builder
 
+# Set the environment variable
+ARG arg_env
+ENV NODE_ENV="$arg_env"
+
 # Set the working directory
 WORKDIR /app
 
