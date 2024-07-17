@@ -5,11 +5,17 @@ import { FC, JSX } from 'react'
 
 type Props = JSX.IntrinsicElements['div'] & {
   severity: StatusSeverity
+  label?: string
 }
 
 const DEFAULT_CLASSES = 'inline-block text-white text-center rounded-[4px] px-1 py-[3px] w-[86px] h-[26px]'
 
-export const Status: FC<Props> = ({ severity = 'success', ...rest }) => {
+const parseDefaultLabel = (severity: string) => {
+  const label = severity.charAt(0).toUpperCase() + severity.slice(1)
+  return label.replace('-', ' ')
+}
+
+export const Status: FC<Props> = ({ severity = 'success', label, ...rest }) => {
   const classes = cn({
     [DEFAULT_CLASSES]: true,
     'bg-st-success': severity === 'success',
@@ -19,12 +25,12 @@ export const Status: FC<Props> = ({ severity = 'success', ...rest }) => {
     'text-black': severity === 'canceled',
   })
 
-  let label = severity.charAt(0).toUpperCase() + severity.slice(1)
-  label = label.replace('-', ' ')
+  let labelToUse = !label ? parseDefaultLabel(severity) : label
+
   return (
     <div className={classes} {...rest}>
       <Paragraph variant="semibold" className="text-[12px]">
-        {label}
+        {labelToUse}
       </Paragraph>
     </div>
   )
