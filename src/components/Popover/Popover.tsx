@@ -55,7 +55,7 @@ export const Popover = ({
       <div
         hidden={!show}
         className={cn(
-          'min-w-fit h-fit absolute z-50 transition-all',
+          'absolute z-50 transition-all',
           position === 'top' && 'bottom-full',
           position === 'bottom' && 'top-full',
           size === 'small' && 'w-48',

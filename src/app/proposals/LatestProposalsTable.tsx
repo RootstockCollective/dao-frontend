@@ -46,7 +46,10 @@ const PopoverSentiment = ({ votes }: { votes: string[] }) => {
   )
 }
 
-const SentimentColumn = ({ proposalId }: Omit<ProposalNameColumnProps, 'name'>) => {
+const SentimentColumn = ({
+  proposalId,
+  index,
+}: Omit<ProposalNameColumnProps, 'name'> & { index: number }) => {
   const data = useGetProposalVotes(proposalId)
 
   const sentimentValues = useMemo(() => {
@@ -63,7 +66,7 @@ const SentimentColumn = ({ proposalId }: Omit<ProposalNameColumnProps, 'name'>) 
       content={<PopoverSentiment votes={data} />}
       trigger="hover"
       background="light"
-      position="top"
+      position={index === 0 ? 'bottom' : 'top'}
       size="small"
     >
       <ComparativeProgressBar values={sentimentValues} />
@@ -76,11 +79,11 @@ interface LatestProposalsTableProps {
 }
 
 const latestProposalsTransformer = (proposals: ReturnType<typeof getEventArguments>[]) =>
-  proposals.map(proposal => ({
+  proposals.map((proposal, i) => ({
     'Proposal Name': <ProposalNameColumn {...proposal} />,
     'Current Votes': <VotesColumn {...proposal} />,
     Starts: proposal.Starts,
-    Sentiment: <SentimentColumn {...proposal} />,
+    Sentiment: <SentimentColumn {...proposal} index={i} />,
     Status: <StatusColumn {...proposal} />,
   }))
 
