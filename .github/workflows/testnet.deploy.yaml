@@ -4,7 +4,6 @@ on:
   push:
     branches:
       - develop
-      - DEVOPS/frontend-ecs-cd
 
 env:
   AWS_REGION: us-east-1                
