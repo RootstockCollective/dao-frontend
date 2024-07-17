@@ -7,6 +7,7 @@ import { useGetProposalVotes } from '@/app/proposals/hooks/useGetProposalVotes'
 import { useMemo } from 'react'
 import { ComparativeProgressBar } from '@/components/ComparativeProgressBar/ComparativeProgressBar'
 import { StatusColumn } from '@/app/proposals/StatusColumn'
+import { Popover } from '@/components/Popover'
 
 interface ProposalNameColumnProps {
   name: string
@@ -32,6 +33,15 @@ const VotesColumn = ({ proposalId }: Omit<ProposalNameColumnProps, 'name'>) => {
   return <p>{votes.toString()}</p>
 }
 
+const PopoverSentiment = () => (
+  <>
+    <p className="text-[12px] font-bold mb-1">Sentiment</p>
+    <p className="text-[12px]">For: Votes in favor of the proposal</p>
+    <p className="text-[12px]">Against: Votes against the proposal</p>
+    <p className="text-[12px]">Abstain: Votes that abstain from voting</p>
+  </>
+)
+
 const SentimentColumn = ({ proposalId }: Omit<ProposalNameColumnProps, 'name'>) => {
   const data = useGetProposalVotes(proposalId)
 
@@ -46,8 +56,11 @@ const SentimentColumn = ({ proposalId }: Omit<ProposalNameColumnProps, 'name'>) 
     }
     return [{ value: 0, color: 'var(--st-info)' }]
   }, [data])
-
-  return <ComparativeProgressBar values={sentimentValues} />
+  return (
+    <Popover content={data && <PopoverSentiment />} trigger="hover">
+      <ComparativeProgressBar values={sentimentValues} />
+    </Popover>
+  )
 }
 
 interface LatestProposalsTableProps {
