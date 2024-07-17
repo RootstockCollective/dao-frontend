@@ -1,13 +1,13 @@
-import { getEventArguments } from '@/app/proposals/shared/utils'
-import { Header, Paragraph } from '@/components/Typography'
-import { Table } from '@/components/Table'
 import { useFetchLatestProposals } from '@/app/proposals/hooks/useFetchLatestProposals'
-import { Link } from '@/components/Link'
 import { useGetProposalVotes } from '@/app/proposals/hooks/useGetProposalVotes'
-import { useMemo } from 'react'
+import { getEventArguments } from '@/app/proposals/shared/utils'
 import { ComparativeProgressBar } from '@/components/ComparativeProgressBar/ComparativeProgressBar'
 import { StatusColumn } from '@/app/proposals/StatusColumn'
+import { Link } from '@/components/Link'
 import { Popover } from '@/components/Popover'
+import { Table } from '@/components/Table'
+import { Header, Paragraph } from '@/components/Typography'
+import { useMemo } from 'react'
 
 interface ProposalNameColumnProps {
   name: string
@@ -26,34 +26,34 @@ const VotesColumn = ({ proposalId }: Omit<ProposalNameColumnProps, 'name'>) => {
   return <p>{votes.toString()}</p>
 }
 
-const PopoverSentiment = ({ votes }: { votes: string[] }) => {
+const PopoverSentiment = ({ votes, position }: { votes: string[]; position: 'top' | 'bottom' }) => {
   const [againstVotes, forVotes, abstainVotes] = votes
   return (
     <div className="text-black">
-      <Paragraph variant="semibold" className="text-[12px] font-bold mb-1">
+      <Paragraph variant="semibold" className="text-[12px] font-bold">
         Votes for
       </Paragraph>
       <div className="flex flex-row">
-        <Paragraph variant="semibold" className="text-[12px] w-1/3 text-st-success">
+        <Paragraph variant="semibold" className="text-[12px] w-1/2 text-st-success">
           For
         </Paragraph>
-        <Paragraph variant="semibold" className="text-[12px] w-2/3">
+        <Paragraph variant="semibold" className="text-[12px] w-1/2">
           {forVotes}
         </Paragraph>
       </div>
       <div className="flex flex-row">
-        <Paragraph variant="semibold" className="text-[12px] w-1/3 text-st-error">
+        <Paragraph variant="semibold" className="text-[12px] w-1/2 text-st-error">
           Against
         </Paragraph>
-        <Paragraph variant="semibold" className="text-[12px] w-2/3">
+        <Paragraph variant="semibold" className="text-[12px] w-1/2">
           {againstVotes}
         </Paragraph>
       </div>
       <div className="flex flex-row">
-        <Paragraph variant="semibold" className="text-[12px] w-1/3 text-st-info">
+        <Paragraph variant="semibold" className="text-[12px] w-1/2 text-st-info">
           Abstain
         </Paragraph>
-        <Paragraph variant="semibold" className="text-[12px] w-2/3">
+        <Paragraph variant="semibold" className="text-[12px] w-1/2">
           {abstainVotes}
         </Paragraph>
       </div>
@@ -76,13 +76,16 @@ const SentimentColumn = ({
     ]
   }, [data])
 
+  const position = index === 0 ? 'bottom' : 'top'
+
   return (
     <Popover
-      content={<PopoverSentiment votes={data} />}
+      content={<PopoverSentiment votes={data} position={position} />}
       trigger="hover"
       background="light"
-      position={index === 0 ? 'bottom' : 'top'}
+      position={position}
       size="small"
+      hasCaret={true}
     >
       <ComparativeProgressBar values={sentimentValues} />
     </Popover>
