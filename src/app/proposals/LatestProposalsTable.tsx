@@ -31,17 +31,32 @@ const PopoverSentiment = ({ votes }: { votes: string[] }) => {
   return (
     <div className="text-black">
       <Paragraph variant="semibold" className="text-[12px] font-bold mb-1">
-        Sentiment
+        Votes for
       </Paragraph>
-      <Paragraph variant="semibold" className="text-[12px]">
-        For: {forVotes}
-      </Paragraph>
-      <Paragraph variant="semibold" className="text-[12px]">
-        Against: {againstVotes}
-      </Paragraph>
-      <Paragraph variant="semibold" className="text-[12px]">
-        Abstain: {abstainVotes}
-      </Paragraph>
+      <div className="flex flex-row">
+        <Paragraph variant="semibold" className="text-[12px] w-1/3 text-st-success">
+          For
+        </Paragraph>
+        <Paragraph variant="semibold" className="text-[12px] w-2/3">
+          {forVotes}
+        </Paragraph>
+      </div>
+      <div className="flex flex-row">
+        <Paragraph variant="semibold" className="text-[12px] w-1/3 text-st-error">
+          Against
+        </Paragraph>
+        <Paragraph variant="semibold" className="text-[12px] w-2/3">
+          {againstVotes}
+        </Paragraph>
+      </div>
+      <div className="flex flex-row">
+        <Paragraph variant="semibold" className="text-[12px] w-1/3 text-st-info">
+          Abstain
+        </Paragraph>
+        <Paragraph variant="semibold" className="text-[12px] w-2/3">
+          {abstainVotes}
+        </Paragraph>
+      </div>
     </div>
   )
 }
