@@ -6,6 +6,7 @@ import { Link } from '@/components/Link'
 import { useGetProposalVotes } from '@/app/proposals/hooks/useGetProposalVotes'
 import { useMemo } from 'react'
 import { ComparativeProgressBar } from '@/components/ComparativeProgressBar/ComparativeProgressBar'
+import { StatusColumn } from '@/app/proposals/StatusColumn'
 
 interface ProposalNameColumnProps {
   name: string
@@ -59,6 +60,7 @@ const latestProposalsTransformer = (proposals: ReturnType<typeof getEventArgumen
     'Current Votes': <VotesColumn {...proposal} />,
     Starts: proposal.Starts,
     Sentiment: <SentimentColumn {...proposal} />,
+    Status: <StatusColumn {...proposal} />,
   }))
 
 export const LatestProposalsTable = ({ latestProposals }: LatestProposalsTableProps) => {
