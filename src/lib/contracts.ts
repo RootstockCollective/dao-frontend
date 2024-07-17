@@ -22,12 +22,14 @@ export type SupportedTokens = keyof typeof testnet | keyof typeof mainnet
 export const currentEnvContracts = contracts[process.env.NEXT_PUBLIC_ENV] as typeof testnet
 
 const testnetNft = {
-  RDEA: '0xa3076bcaCc7112B7fa7c5A87CF32275296d85D64',
+  RDEA: '0xa3076bcaCc7112B7fa7c5A87CF32275296d85D64' as Address, // RIF DAO Early Adopters
+  EA: '0xf24761C1B57b14EeA270B1485294D93494164246' as Address, // Early Adopters
 }
 
 const mainnetNft = {
   // TODO
   RDEA: '',
+  EA: '',
 }
 
 const contractsNFT = {

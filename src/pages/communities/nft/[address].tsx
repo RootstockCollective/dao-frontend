@@ -1,19 +1,23 @@
-import { useRouter } from 'next/router'
-import { MainContainer } from '@/components/MainContainer/MainContainer'
 import { firstNft } from '@/app/communities/communityUtils'
-import Image from 'next/image'
+import { NFTContextProvider } from '@/app/providers'
+import { Button } from '@/components/Button'
 import { Chip } from '@/components/Chip/Chip'
+import { MainContainer } from '@/components/MainContainer/MainContainer'
+import { Paragraph, Span } from '@/components/Typography'
+import Image from 'next/image'
+import { useRouter } from 'next/router'
+import { ReactNode } from 'react'
 import { BsTwitterX } from 'react-icons/bs'
 import { FaDiscord, FaLink } from 'react-icons/fa'
-import { Paragraph, Span } from '@/components/Typography'
-import { ReactNode } from 'react'
-import { Button } from '@/components/Button'
-import { NFTContextProvider } from '@/app/providers'
+import { useCidsAvailable } from './hooks/useCidsAvailable'
 
 export default function Page() {
   const {
     query: { address },
   } = useRouter()
+
+  const { cidsAvailable } = useCidsAvailable()
+
   if (!address) return null
   return (
     <MainContainer notProtected>
@@ -84,7 +88,7 @@ export default function Page() {
                 />
                 <div>
                   <Paragraph className="text-[18px]">Early Adopter #1203</Paragraph>
-                  <NFTHandler />
+                  <NFTHandler disabled={!cidsAvailable} />
                   <Span className="inline-block text-[14px] tracking-wide">
                     Crypto ipsum bitcoin ethereum dogecoin litecoin. Hedera USD kadena chainlink arweave hive
                     binance. Shiba-inu terra ICON IOTA ICON livepeer velas uniswap. Kadena kusama IOTA
@@ -116,20 +120,20 @@ function DivWithBorderTop({ firstParagraph, secondParagraph }: DivWithBorderTopP
 
 interface NFTHandlerProps {
   isOwned?: boolean
+  disabled?: boolean
 }
 
-function NFTHandler({ isOwned = false }: NFTHandlerProps) {
+function NFTHandler({ isOwned = false, disabled = false }: NFTHandlerProps) {
   if (isOwned) {
     return (
       <Span className="my-[16px] inline-block">
         Owned by <span>0x33...444</span>
       </Span>
     )
-  } else {
-    return (
-      <Button variant="secondary-full" className="my-[16px]">
-        Claim it!
-      </Button>
-    )
   }
+  return (
+    <Button variant="secondary-full" className="my-[16px]" disabled={disabled}>
+      Claim it!
+    </Button>
+  )
 }
