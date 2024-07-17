@@ -6,21 +6,51 @@ import { MainContainer } from '@/components/MainContainer/MainContainer'
 import { Paragraph, Span } from '@/components/Typography'
 import Image from 'next/image'
 import { useRouter } from 'next/router'
-import { ReactNode } from 'react'
+import { ReactNode, useState } from 'react'
 import { BsTwitterX } from 'react-icons/bs'
 import { FaDiscord, FaLink } from 'react-icons/fa'
 import { useCidsAvailable } from './hooks/useCidsAvailable'
+import { useMintNFT } from './hooks/useMintNFT'
+import { cn } from '@/lib/utils'
 
 export default function Page() {
   const {
     query: { address },
   } = useRouter()
+  const [message, setMessage] = useState('')
 
   const { cidsAvailable } = useCidsAvailable()
+  const { onMintNFT } = useMintNFT()
+
+  const handleMinting = () => {
+    onMintNFT()
+      .then(txHash => {
+        console.log('SUCCESS', txHash)
+        setMessage(
+          'Request transaction sent. Your claim is in process. It will be visible when the transaction is confirmed.',
+        )
+      })
+      .catch(err => {
+        console.error('ERROR', err)
+        setMessage(
+          'Error claiming reward. An unexpected error occurred while trying to claim your reward. Please try again later. If the issue persists, contact support for assistance.',
+        )
+      })
+  }
 
   if (!address) return null
   return (
     <MainContainer notProtected>
+      {message && (
+        <div
+          className={cn(
+            'bg-st-success bg-opacity-10 border border-st-success text-st-white rounded-md p-4 mb-4',
+            message.includes('Error') ? 'bg-st-error border-st-error' : '',
+          )}
+        >
+          {message}
+        </div>
+      )}
       <NFTContextProvider nftAddress={address as string}>
         <div className="flex justify-between pl-[16px] gap-[16px]">
           {/* 50%: NFT INFO*/}
@@ -88,7 +118,7 @@ export default function Page() {
                 />
                 <div>
                   <Paragraph className="text-[18px]">Early Adopter #1203</Paragraph>
-                  <NFTHandler disabled={!cidsAvailable} />
+                  <NFTHandler disabled={!cidsAvailable} onMint={handleMinting} />
                   <Span className="inline-block text-[14px] tracking-wide">
                     Crypto ipsum bitcoin ethereum dogecoin litecoin. Hedera USD kadena chainlink arweave hive
                     binance. Shiba-inu terra ICON IOTA ICON livepeer velas uniswap. Kadena kusama IOTA
@@ -119,11 +149,12 @@ function DivWithBorderTop({ firstParagraph, secondParagraph }: DivWithBorderTopP
 }
 
 interface NFTHandlerProps {
+  onMint: () => void
   isOwned?: boolean
   disabled?: boolean
 }
 
-function NFTHandler({ isOwned = false, disabled = false }: NFTHandlerProps) {
+function NFTHandler({ onMint, isOwned = false, disabled = false }: NFTHandlerProps) {
   if (isOwned) {
     return (
       <Span className="my-[16px] inline-block">
@@ -132,7 +163,7 @@ function NFTHandler({ isOwned = false, disabled = false }: NFTHandlerProps) {
     )
   }
   return (
-    <Button variant="secondary-full" className="my-[16px]" disabled={disabled}>
+    <Button variant="secondary-full" className="my-[16px]" disabled={disabled} onClick={onMint}>
       Claim it!
     </Button>
   )
