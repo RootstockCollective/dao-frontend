@@ -15,10 +15,19 @@ RUN npm install --verbose
 
 # Copy the rest of the application code
 COPY . .
-# Testing deployment
-COPY .env.testnet .env.local
+
 # Disable telemetry
 ENV NEXT_TELEMETRY_DISABLED 1
+
+# Set the build argument 
+ARG arg_env
+
+# Rename environment files based on arg_env
+RUN if [ "$arg_env" = "testnet" ]; then \
+      mv .env.testnet .env.local; \
+    elif [ "$arg_env" = "mainnet" ]; then \
+      mv .env.prod .env.local; \
+    fi
 # Build the Next.js application
 RUN npm run build
 
@@ -38,11 +47,6 @@ RUN npm install --production
 
 # Expose the port that Next.js will run on
 EXPOSE 3000
-
-# Set the environment variable
-ARG arg_env
-ENV NODE_ENV="$arg_env"
-
 
 # Start the Next.js application
 CMD ["npm", "start"]
