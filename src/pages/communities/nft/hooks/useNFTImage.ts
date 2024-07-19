@@ -2,13 +2,13 @@ import { fetchIpfsUri } from '@/app/user/Balances/actions'
 import { EarlyAdoptersNFTAbi } from '@/lib/abis/EarlyAdoptersNFTAbi'
 import { currentEnvNFTContracts } from '@/lib/contracts'
 import { useEffect, useState } from 'react'
-import { useAccount, useReadContract } from 'wagmi'
+import { useAccount, useReadContract, useReadContracts } from 'wagmi'
 
 export interface NFTImageProps {
   imageUrl: string
   alt: string
   description: string
-  id: number
+  tokenId: bigint
   owned: boolean
 }
 
@@ -19,27 +19,38 @@ export const useNFTImage = () => {
     imageUrl: '',
     alt: '',
     description: '',
-    id: 0,
+    tokenId: 0n,
     owned: false,
   })
 
-  const { data: nftUri, isLoading: tokenUriLoading } = useReadContract({
-    abi: EarlyAdoptersNFTAbi,
-    address: currentEnvNFTContracts.EA,
-    functionName: 'tokenUriByOwner',
-    args: [address!],
+  const { data, isLoading: isLoadingNftData } = useReadContracts({
+    allowFailure: false,
+    contracts: [
+      {
+        abi: EarlyAdoptersNFTAbi,
+        address: currentEnvNFTContracts.EA,
+        functionName: 'tokenUriByOwner',
+        args: [address!],
+      },
+      {
+        abi: EarlyAdoptersNFTAbi,
+        address: currentEnvNFTContracts.EA,
+        functionName: 'tokenIdByOwner',
+        args: [address!],
+      },
+    ],
   })
 
   useEffect(() => {
-    if (nftUri && !tokenUriLoading) {
+    if (!isLoadingNftData) {
+      const [nftUri, tokenId] = data as [string, bigint]
+
       fetchIpfsUri(nftUri as string)
         .then(async ({ name: alt, image, description }) => {
           try {
             const response = await fetchIpfsUri(image, 'blob')
             const url = URL.createObjectURL(response)
-            // TODO: get id
-            const id = 1
-            setResult({ imageUrl: url, alt, description: description, id, owned: true })
+            setResult({ imageUrl: url, alt, description: description, tokenId, owned: true })
             setIsLoading(false)
           } catch (e) {
             setIsLoading(false)
@@ -47,7 +58,7 @@ export const useNFTImage = () => {
         })
         .catch(() => setIsLoading(false))
     }
-  }, [nftUri, isLoading, tokenUriLoading])
+  }, [isLoading, isLoadingNftData, data])
 
   return { result, isLoading }
 }

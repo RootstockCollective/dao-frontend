@@ -27,7 +27,7 @@ export default function Page() {
   // const nft = useNFTContext()
 
   const { isLoading: loadingNftImage, result } = useNFTImage()
-  const { imageUrl, alt, description, id, owned } = result
+  const { imageUrl, alt, description, tokenId, owned } = result
 
   const handleMinting = () => {
     onMintNFT()
@@ -134,7 +134,7 @@ export default function Page() {
 
                 {owned ? (
                   <div>
-                    <Paragraph className="text-[18px]">Early Adopter #{id}</Paragraph>
+                    <Paragraph className="text-[18px]">Early Adopter #{tokenId.toString()}</Paragraph>
                     <Span className="my-[16px] inline-block text-st-success">Owned</Span>
                     <Span className="inline-block text-[14px] tracking-wide">{description}</Span>
                   </div>
