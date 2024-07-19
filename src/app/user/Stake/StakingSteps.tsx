@@ -5,7 +5,7 @@ import { Modal } from '@/components/Modal/Modal'
 import { useBalancesContext } from '@/app/user/Balances/context/BalancesContext'
 import { StakingToken } from '@/app/user/Stake/types'
 import { currentEnvContracts } from '@/lib/contracts'
-import { steps } from './Steps/stepsUtils'
+import { stakingSteps } from './Steps/stepsUtils'
 import { useStakeRIF } from '@/app/user/Stake/hooks/useStakeRIF'
 
 interface StakingStepsProps {
@@ -16,7 +16,7 @@ const StakingSteps = ({ onCloseModal }: StakingStepsProps) => {
   const { step, onGoNext, onGoBack } = useSteps()
   const { balances, prices } = useBalancesContext()
 
-  const currentStep = useMemo(() => steps[step], [step])
+  const currentStep = useMemo(() => stakingSteps[step], [step])
 
   const StepComponent = currentStep.stepComponent
 

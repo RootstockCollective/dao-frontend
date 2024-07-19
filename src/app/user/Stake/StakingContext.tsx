@@ -15,6 +15,13 @@ export type ActionHookToUse = (
   customFooter: ReactNode
 }
 
+type StakePreviewToken = {
+  amount: string
+  amountConvertedToCurrency: string
+  balance: string
+  tokenSymbol: string
+}
+
 interface StakingContextProps {
   balances: TokenBalanceRecord
   prices: GetPricesResult
@@ -30,6 +37,15 @@ interface StakingContextProps {
   }
   actionToUse: ActionHookToUse
   actionName: ActionBeingExecuted
+  stakePreviewFrom: StakePreviewToken
+  stakePreviewTo: StakePreviewToken
+}
+
+const DEFAULT_STAKE_PREVIEW_TOKEN = {
+  amount: '0',
+  balance: '0',
+  tokenSymbol: '0',
+  amountConvertedToCurrency: '0',
 }
 
 const StakingContext = createContext<StakingContextProps>({
@@ -46,6 +62,8 @@ const StakingContext = createContext<StakingContextProps>({
   },
   actionToUse: () => ({ shouldEnableConfirm: false, onConfirm: async () => '0x0', customFooter: null }),
   actionName: 'STAKE',
+  stakePreviewFrom: { ...DEFAULT_STAKE_PREVIEW_TOKEN },
+  stakePreviewTo: { ...DEFAULT_STAKE_PREVIEW_TOKEN },
 })
 
 interface Props {
@@ -85,6 +103,32 @@ export const StakingProvider: FC<Props> = ({
     }
   }, [stakeData.amount, tokenToSend.price, tokenToReceive.price])
 
+  const stakePreviewFrom = useMemo(
+    () => ({
+      amount: stakeData.amount,
+      amountConvertedToCurrency:
+        'USD ' + (Number(tokenToSend.price) * Number(stakeData.amount) ?? 0).toString(),
+      balance: tokenToSend.balance,
+      tokenSymbol: tokenToSend.symbol,
+    }),
+    [stakeData.amount, tokenToSend.balance, tokenToSend.price, tokenToSend.symbol],
+  )
+
+  const stakePreviewTo = useMemo(
+    () => ({
+      amount: amountDataToReceive.amountToReceive.toString(),
+      amountConvertedToCurrency: amountDataToReceive.amountToReceiveConvertedToCurrency.toString(),
+      balance: tokenToReceive.balance,
+      tokenSymbol: tokenToReceive.symbol,
+    }),
+    [
+      amountDataToReceive.amountToReceive,
+      amountDataToReceive.amountToReceiveConvertedToCurrency,
+      tokenToReceive.balance,
+      tokenToReceive.symbol,
+    ],
+  )
+
   const data = useMemo(
     () => ({
       balances,
@@ -98,6 +142,8 @@ export const StakingProvider: FC<Props> = ({
       amountDataToReceive,
       actionToUse,
       actionName,
+      stakePreviewFrom,
+      stakePreviewTo,
     }),
     [
       balances,
@@ -110,6 +156,8 @@ export const StakingProvider: FC<Props> = ({
       amountDataToReceive,
       actionToUse,
       actionName,
+      stakePreviewFrom,
+      stakePreviewTo,
     ],
   )
 
