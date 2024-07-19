@@ -20,10 +20,11 @@ import { useAccount } from 'wagmi'
 import { Vote, VoteProposalModal } from '../../components/Modal/VoteProposalModal'
 import { VoteSubmittedModal } from '../../components/Modal/VoteSubmittedModal'
 import { useVotingPower } from '@/app/proposals/hooks/useVotingPower'
-import { shortAddress } from '@/lib/utils'
+import { shortAddress, truncateMiddle } from '@/lib/utils'
 import { getEventArguments } from '@/app/proposals/shared/utils'
 import { useGetProposalVotes } from '@/app/proposals/hooks/useGetProposalVotes'
 import { useGetProposalSnapshot } from '@/app/proposals/hooks/useGetProposalSnapshot'
+import { formatUnits } from 'viem'
 
 export default function ProposalView() {
   const {
@@ -148,14 +149,24 @@ const PageWithProposal = (proposal: PageWithProposal) => {
           <Header variant="h1" className="text-[24px]">
             Actions
           </Header>
-          <div className="flex flex-row justify-between border border-white border-opacity-40 rounded-lg px-[16px] py-[11px]">
+          <div className="border border-white border-opacity-40 rounded-lg px-[16px] py-[11px]">
             <div className="flex flex-col">
-              <Paragraph variant="semibold" className="text-[16px]">
-                Transfer
-              </Paragraph>
-              <Paragraph variant="semibold" className="text-[16px]">
-                To
-              </Paragraph>
+              <div className="flex justify-between">
+                <Paragraph variant="semibold" className="text-[16px]">
+                  Transfer
+                </Paragraph>
+                <Paragraph variant="semibold" className="text-[16px]">
+                  {formatUnits(proposal.transferToValue, 18)}
+                </Paragraph>
+              </div>
+              <div className="flex justify-between">
+                <Paragraph variant="semibold" className="text-[16px]">
+                  To
+                </Paragraph>
+                <Paragraph variant="semibold" className="text-[16px]">
+                  {truncateMiddle(proposal.transferTo)}
+                </Paragraph>
+              </div>
             </div>
             <div>
               {/* <Paragraph variant="semibold" className="text-[16px]">
