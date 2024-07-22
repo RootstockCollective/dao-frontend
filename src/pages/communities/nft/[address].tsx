@@ -39,10 +39,12 @@ export default function Page() {
         )
       })
       .catch(err => {
-        console.error('ERROR', err)
-        setMessage(
-          'Error claiming reward. An unexpected error occurred while trying to claim your reward. Please try again later. If the issue persists, contact support for assistance.',
-        )
+        if (err.cause.name !== 'UserRejectedRequestError') {
+          console.error('ERROR', err)
+          setMessage(
+            'Error claiming reward. An unexpected error occurred while trying to claim your reward. Please try again later. If the issue persists, contact support for assistance.',
+          )
+        }
       })
   }
 
