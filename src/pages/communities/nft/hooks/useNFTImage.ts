@@ -14,7 +14,7 @@ export interface NFTImageProps {
   owned: boolean
 }
 
-export const useNFTImage = (nftAddress: Address) => {
+export const useNFTImage = (nftAddress: Address | undefined) => {
   const { address } = useAccount()
   const [isLoadingContractData, setIsLoadingContract] = useState(!!address)
   const [nftUri, setNftUri] = useState('')

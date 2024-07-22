@@ -40,7 +40,7 @@ const contractsNFT = {
 // @ts-ignore
 export const currentEnvNFTContracts = contractsNFT[process.env.NEXT_PUBLIC_ENV] as typeof testnetNft
 
-export const abiContractsMap = {
+export const abiContractsMap: { [key: string]: any } = {
   [currentEnvNFTContracts?.EA.toLowerCase()]: EarlyAdoptersNFTAbi,
 }
 

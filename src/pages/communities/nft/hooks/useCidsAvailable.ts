@@ -1,11 +1,11 @@
-import { EarlyAdoptersNFTAbi } from '@/lib/abis/EarlyAdoptersNFTAbi'
-import { currentEnvNFTContracts } from '@/lib/contracts'
+import { abiContractsMap } from '@/lib/contracts'
+import { Address } from 'viem'
 import { useReadContract } from 'wagmi'
 
-export const useCidsAvailable = () => {
+export const useCidsAvailable = (nftAddress: Address | undefined) => {
   const { data } = useReadContract({
-    abi: EarlyAdoptersNFTAbi,
-    address: currentEnvNFTContracts.EA,
+    abi: abiContractsMap[nftAddress?.toLowerCase() as string],
+    address: nftAddress,
     functionName: 'cidsAvailable',
   })
 

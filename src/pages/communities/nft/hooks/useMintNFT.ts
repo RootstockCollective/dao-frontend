@@ -1,10 +1,10 @@
-import { EarlyAdoptersNFTAbi } from '@/lib/abis/EarlyAdoptersNFTAbi'
-import { currentEnvNFTContracts } from '@/lib/contracts'
+import { abiContractsMap } from '@/lib/contracts'
+import { Address } from 'viem'
 import { useWriteContract } from 'wagmi'
 import { useCidsAvailable } from './useCidsAvailable'
 
-export const useMintNFT = () => {
-  const { cidsAvailable } = useCidsAvailable()
+export const useMintNFT = (nftAddress: Address | undefined) => {
+  const { cidsAvailable } = useCidsAvailable(nftAddress)
   const { writeContractAsync: mint } = useWriteContract()
 
   const onMintNFT = async () => {
@@ -13,8 +13,8 @@ export const useMintNFT = () => {
     }
 
     return await mint({
-      abi: EarlyAdoptersNFTAbi,
-      address: currentEnvNFTContracts.EA,
+      abi: abiContractsMap[nftAddress?.toLowerCase() as string],
+      address: nftAddress || '0x0',
       functionName: 'mint',
       args: [],
     })

@@ -1,5 +1,4 @@
 import { firstNft } from '@/app/communities/communityUtils'
-import { NFTContextProvider } from '@/app/providers'
 import { Button } from '@/components/Button'
 import { Chip } from '@/components/Chip/Chip'
 import { MainContainer } from '@/components/MainContainer/MainContainer'
@@ -10,25 +9,28 @@ import { useRouter } from 'next/router'
 import { ReactNode, useState } from 'react'
 import { BsTwitterX } from 'react-icons/bs'
 import { FaDiscord, FaLink } from 'react-icons/fa'
+import { Address } from 'viem'
+import { useAccount } from 'wagmi'
 import { useCidsAvailable } from './hooks/useCidsAvailable'
 import { useMintNFT } from './hooks/useMintNFT'
 import { useNFTImage } from './hooks/useNFTImage'
 import { DEFAULT_NFT_BASE64 } from './images/defaultNFT'
-import { Address } from 'viem'
 
 export default function Page() {
   const {
     query: { address: nftAddress },
   } = useRouter()
 
-  const { cidsAvailable } = useCidsAvailable()
-  const { onMintNFT } = useMintNFT()
+  const { address } = useAccount()
+  const { cidsAvailable } = useCidsAvailable(nftAddress as Address)
+  const { onMintNFT } = useMintNFT(nftAddress as Address)
   const [message, setMessage] = useState('')
 
   const { isLoadingImage: loadingNftImage, data: nftData } = useNFTImage(nftAddress as Address)
   const { imageUrl, alt, description, tokenId, owned } = nftData
 
   const handleMinting = () => {
+    if (!address) return
     onMintNFT()
       .then(txHash => {
         console.log('SUCCESS', txHash)
@@ -143,7 +145,7 @@ export default function Page() {
                     variant="secondary-full"
                     className="my-[16px]"
                     onClick={handleMinting}
-                    disabled={!cidsAvailable}
+                    disabled={!cidsAvailable || !address}
                   >
                     Claim it!
                   </Button>
