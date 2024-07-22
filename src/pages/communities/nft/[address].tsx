@@ -14,6 +14,7 @@ import { useCidsAvailable } from './hooks/useCidsAvailable'
 import { useMintNFT } from './hooks/useMintNFT'
 import { useNFTImage } from './hooks/useNFTImage'
 import { DEFAULT_NFT_BASE64 } from './images/defaultNFT'
+import { Address } from 'viem'
 
 export default function Page() {
   const {
@@ -24,10 +25,8 @@ export default function Page() {
   const { onMintNFT } = useMintNFT()
   const [message, setMessage] = useState('')
 
-  // const nft = useNFTContext()
-
-  const { isLoading: loadingNftImage, result } = useNFTImage()
-  const { imageUrl, alt, description, tokenId, owned } = result
+  const { isLoadingImage: loadingNftImage, data: nftData } = useNFTImage(nftAddress as Address)
+  const { imageUrl, alt, description, tokenId, owned } = nftData
 
   const handleMinting = () => {
     onMintNFT()

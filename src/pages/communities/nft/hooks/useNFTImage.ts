@@ -1,8 +1,10 @@
+import { readContracts } from '@wagmi/core'
 import { fetchIpfsUri } from '@/app/user/Balances/actions'
-import { EarlyAdoptersNFTAbi } from '@/lib/abis/EarlyAdoptersNFTAbi'
-import { currentEnvNFTContracts } from '@/lib/contracts'
+import { getAbiByAddress } from '@/lib/contracts'
 import { useEffect, useState } from 'react'
-import { useAccount, useReadContract, useReadContracts } from 'wagmi'
+import { Address } from 'viem'
+import { useAccount, useReadContracts } from 'wagmi'
+import { config } from '@/config'
 
 export interface NFTImageProps {
   imageUrl: string
@@ -12,10 +14,13 @@ export interface NFTImageProps {
   owned: boolean
 }
 
-export const useNFTImage = () => {
+export const useNFTImage = (nftAddress: Address) => {
   const { address } = useAccount()
-  const [isLoading, setIsLoading] = useState(true)
-  const [result, setResult] = useState<NFTImageProps>({
+  const [isLoadingContractData, setIsLoadingContract] = useState(true)
+  const [nftUri, setNftUri] = useState('')
+
+  const [isLoadingImage, setIsLoadingImage] = useState(true)
+  const [data, setData] = useState<NFTImageProps>({
     imageUrl: '',
     alt: '',
     description: '',
@@ -23,42 +28,54 @@ export const useNFTImage = () => {
     owned: false,
   })
 
-  const { data, isLoading: isLoadingNftData } = useReadContracts({
-    allowFailure: false,
-    contracts: [
-      {
-        abi: EarlyAdoptersNFTAbi,
-        address: currentEnvNFTContracts.EA,
-        functionName: 'tokenUriByOwner',
-        args: [address!],
-      },
-      {
-        abi: EarlyAdoptersNFTAbi,
-        address: currentEnvNFTContracts.EA,
-        functionName: 'tokenIdByOwner',
-        args: [address!],
-      },
-    ],
-  })
+  useEffect(() => {
+    if (isLoadingContractData && nftAddress && address) {
+      const defaultNftConfig = {
+        abi: getAbiByAddress(nftAddress) as any,
+        address: nftAddress,
+      } as const
+
+      ;(async () => {
+        const contractData = await readContracts(config, {
+          allowFailure: false,
+          contracts: [
+            {
+              ...defaultNftConfig,
+              functionName: 'tokenUriByOwner',
+              args: [address!],
+            },
+            {
+              ...defaultNftConfig,
+              functionName: 'tokenIdByOwner',
+              args: [address!],
+            },
+          ],
+        })
+
+        const [nftUri, tokenId] = contractData as [string, bigint]
+        setData({ ...data, tokenId, owned: true })
+        setNftUri(nftUri)
+        setIsLoadingContract(false)
+      })()
+    }
+  }, [isLoadingContractData, nftAddress, address, data])
 
   useEffect(() => {
-    if (!isLoadingNftData) {
-      const [nftUri, tokenId] = data as [string, bigint]
-
+    if (nftUri && isLoadingImage) {
       fetchIpfsUri(nftUri as string)
         .then(async ({ name: alt, image, description }) => {
           try {
             const response = await fetchIpfsUri(image, 'blob')
             const url = URL.createObjectURL(response)
-            setResult({ imageUrl: url, alt, description: description, tokenId, owned: true })
-            setIsLoading(false)
+            setData({ ...data, imageUrl: url, alt, description })
+            setIsLoadingImage(false)
           } catch (e) {
-            setIsLoading(false)
+            setIsLoadingImage(false)
           }
         })
-        .catch(() => setIsLoading(false))
+        .catch(() => setIsLoadingImage(false))
     }
-  }, [isLoading, isLoadingNftData, data])
+  }, [isLoadingImage, nftUri, data])
 
-  return { result, isLoading }
+  return { data, isLoadingImage }
 }

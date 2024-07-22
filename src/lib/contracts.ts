@@ -1,4 +1,5 @@
 import { Address } from 'viem'
+import { EarlyAdoptersNFTAbi } from './abis/EarlyAdoptersNFTAbi'
 
 const testnet = {
   RIF: '0x19f64674d8a5b4e652319f5e239efd3bc969a1fe', // tRIF
@@ -38,6 +39,14 @@ const contractsNFT = {
 }
 // @ts-ignore
 export const currentEnvNFTContracts = contractsNFT[process.env.NEXT_PUBLIC_ENV] as typeof testnetNft
+
+export const abiMap = {
+  [currentEnvNFTContracts.EA.toLowerCase()]: EarlyAdoptersNFTAbi,
+}
+
+export const getAbiByAddress = (address: Address) => {
+  return abiMap[address.toLowerCase()]
+}
 
 const treasuryContractsTestnet = [
   {
