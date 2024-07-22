@@ -14,7 +14,7 @@ import { useAccount } from 'wagmi'
 import { useCidsAvailable } from '@/shared/hooks/useCidsAvailable'
 import { useMintNFT } from '@/shared/hooks/useMintNFT'
 import { useNFTImage } from '@/shared/hooks/useNFTImage'
-import { DEFAULT_NFT_BASE64 } from './images/defaultNFT'
+import { DEFAULT_NFT_BASE64 } from '@/shared/defaultNFT'
 
 export default function Page() {
   const {
