@@ -138,13 +138,6 @@ export default function Page() {
                 </div>
               ) : (
                 <div>
-                  {/* <Paragraph className="text-[18px]">Early Adopter #1203</Paragraph>
-                  <NFTHandler disabled={!cidsAvailable} onMint={handleMinting} />
-                  <Span className="inline-block text-[14px] tracking-wide">
-                    Crypto ipsum bitcoin ethereum dogecoin litecoin. Hedera USD kadena chainlink arweave hive
-                    binance. Shiba-inu terra ICON IOTA ICON livepeer velas uniswap. Kadena kusama IOTA
-                    horizen.
-                  </Span> */}
                   <Paragraph className="text-[18px]">Early Adopter</Paragraph>
                   <Button
                     variant="secondary-full"

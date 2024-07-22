@@ -1,10 +1,10 @@
-import { readContracts } from '@wagmi/core'
 import { fetchIpfsUri } from '@/app/user/Balances/actions'
-import { getAbiByAddress } from '@/lib/contracts'
+import { config } from '@/config'
+import { abiContractsMap } from '@/lib/contracts'
+import { readContracts } from '@wagmi/core'
 import { useEffect, useState } from 'react'
 import { Address } from 'viem'
-import { useAccount, useReadContracts } from 'wagmi'
-import { config } from '@/config'
+import { useAccount } from 'wagmi'
 
 export interface NFTImageProps {
   imageUrl: string
@@ -32,7 +32,7 @@ export const useNFTImage = (nftAddress: Address) => {
   useEffect(() => {
     if (isLoadingContractData && nftAddress && address) {
       const defaultNftConfig = {
-        abi: getAbiByAddress(nftAddress) as any,
+        abi: abiContractsMap[nftAddress.toLowerCase()] as any,
         address: nftAddress,
       } as const
 
