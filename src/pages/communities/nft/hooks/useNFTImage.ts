@@ -36,28 +36,28 @@ export const useNFTImage = (nftAddress: Address | undefined) => {
         address: nftAddress,
       } as const
 
-      ;(async () => {
-        const contractData = await readContracts(config, {
-          allowFailure: false,
-          contracts: [
-            {
-              ...defaultNftConfig,
-              functionName: 'tokenUriByOwner',
-              args: [address!],
-            },
-            {
-              ...defaultNftConfig,
-              functionName: 'tokenIdByOwner',
-              args: [address!],
-            },
-          ],
+      readContracts(config, {
+        allowFailure: false,
+        contracts: [
+          {
+            ...defaultNftConfig,
+            functionName: 'tokenUriByOwner',
+            args: [address!],
+          },
+          {
+            ...defaultNftConfig,
+            functionName: 'tokenIdByOwner',
+            args: [address!],
+          },
+        ],
+      })
+        .then(contractData => {
+          const [nftUri, tokenId] = contractData as [string, bigint]
+          setData({ ...data, tokenId, owned: true })
+          setNftUri(nftUri)
+          setIsLoadingContract(false)
         })
-
-        const [nftUri, tokenId] = contractData as [string, bigint]
-        setData({ ...data, tokenId, owned: true })
-        setNftUri(nftUri)
-        setIsLoadingContract(false)
-      })()
+        .catch(() => setIsLoadingContract(false))
     }
   }, [isLoadingContractData, nftAddress, address, data])
 
