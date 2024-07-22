@@ -13,7 +13,6 @@ interface NFTContextProviderProps {
 export const NFTContextProvider = ({ nftAddress, children }: NFTContextProviderProps) => {
   const { address } = useAccount()
   const data = useFetchNFTsOwned(address as string, nftAddress)
-  console.log(16, data)
   const value = useMemo(() => ({ ...data }), [data])
   return <NFTContext.Provider value={value}>{children}</NFTContext.Provider>
 }

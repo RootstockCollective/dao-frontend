@@ -1,9 +1,9 @@
 import { useVotingPower } from '@/app/proposals/hooks/useVotingPower'
-import { Address, encodeFunctionData, parseEther } from 'viem'
+import { GovernorAbi } from '@/lib/abis/Governor'
 import { StRIFTokenAbi } from '@/lib/abis/StRIFTokenAbi'
 import { currentEnvContracts, GovernorAddress } from '@/lib/contracts'
 import { solidityPackedKeccak256 } from 'ethers'
-import { GovernorAbi } from '@/lib/abis/Governor'
+import { Address, encodeFunctionData, parseEther } from 'viem'
 import { useWriteContract } from 'wagmi'
 
 const DEFAULT_DAO_CONFIG = {
@@ -37,10 +37,12 @@ export const useCreateProposal = () => {
   const { writeContractAsync: propose } = useWriteContract()
 
   const onCreateProposal = async (address: Address, amount: string, description: string) => {
-    if (!canCreateProposal) return null
+    if (!canCreateProposal) {
+      throw new Error('You do not have enough voting power to create a proposal')
+    }
 
     const calldata = encodeTransferData(address, amount)
-    const { proposal, proposalToRunHash } = createProposalForStRifTransfer(calldata, description)
+    const { proposal } = createProposalForStRifTransfer(calldata, description)
     return await propose({
       ...DEFAULT_DAO_CONFIG,
       functionName: 'propose', // @ts-ignore
