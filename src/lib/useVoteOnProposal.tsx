@@ -39,13 +39,11 @@ export const useVoteOnProposal = (proposalId: string) => {
   const isProposalActive = proposalState === 1
 
   // Second check if the user has already voted
-  const { data: alreadyVoted } = useReadContract({
+  const { data: hasVoted } = useReadContract({
     ...DEFAULT_DAO,
     functionName: 'hasVoted',
     args: [BigInt(proposalId), address as Address],
   })
-
-  const didUserVoteAlready = alreadyVoted
 
   // If everything passed ok - user can vote
   const { writeContractAsync } = useWriteContract()
@@ -53,7 +51,7 @@ export const useVoteOnProposal = (proposalId: string) => {
     if (!isProposalActive) {
       return Promise.reject('The proposal is not active.')
     }
-    if (didUserVoteAlready) {
+    if (hasVoted) {
       return Promise.reject('The user already voted.')
     }
     return writeContractAsync({
@@ -66,7 +64,7 @@ export const useVoteOnProposal = (proposalId: string) => {
   return {
     onVote,
     isProposalActive,
-    didUserVoteAlready,
+    didUserVoteAlready: !!hasVoted,
     proposalState,
     proposalStateHuman: proposalState ? ProposalState[proposalState] : '',
   }

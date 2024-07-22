@@ -1,5 +1,9 @@
 'use client'
 import { useFetchLatestProposals } from '@/app/proposals/hooks/useFetchLatestProposals'
+import { useGetProposalSnapshot } from '@/app/proposals/hooks/useGetProposalSnapshot'
+import { useGetProposalVotes } from '@/app/proposals/hooks/useGetProposalVotes'
+import { useVotingPower } from '@/app/proposals/hooks/useVotingPower'
+import { getEventArguments } from '@/app/proposals/shared/utils'
 import { useModal } from '@/app/user/Balances/hooks/useModal'
 import {
   Breadcrumb,
@@ -12,19 +16,16 @@ import {
 import { Button } from '@/components/Button'
 import { MainContainer } from '@/components/MainContainer/MainContainer'
 import { MetricsCard } from '@/components/MetricsCard'
+import { Popover } from '@/components/Popover'
 import { Header, Paragraph } from '@/components/Typography'
-import { useRouter } from 'next/router'
 import { useVoteOnProposal } from '@/lib/useVoteOnProposal'
+import { shortAddress, truncateMiddle } from '@/lib/utils'
+import { useRouter } from 'next/router'
 import { FC, useMemo, useState } from 'react'
+import { formatUnits } from 'viem'
 import { useAccount } from 'wagmi'
 import { Vote, VoteProposalModal } from '../../components/Modal/VoteProposalModal'
 import { VoteSubmittedModal } from '../../components/Modal/VoteSubmittedModal'
-import { useVotingPower } from '@/app/proposals/hooks/useVotingPower'
-import { shortAddress, truncateMiddle } from '@/lib/utils'
-import { getEventArguments } from '@/app/proposals/shared/utils'
-import { useGetProposalVotes } from '@/app/proposals/hooks/useGetProposalVotes'
-import { useGetProposalSnapshot } from '@/app/proposals/hooks/useGetProposalSnapshot'
-import { formatUnits } from 'viem'
 
 export default function ProposalView() {
   const {
@@ -56,10 +57,10 @@ const PageWithProposal = (proposal: PageWithProposal) => {
 
   const [againstVote, forVote, abstainVote] = useGetProposalVotes(proposalId, true)
   const snapshot = useGetProposalSnapshot(proposalId)
-
-  const { votingPower, threshold } = useVotingPower()
-
+  const { votingPower, threshold, canCreateProposal } = useVotingPower()
   const { onVote, isProposalActive, didUserVoteAlready, proposalStateHuman } = useVoteOnProposal(proposalId)
+
+  const cannotCastVote = !isProposalActive || didUserVoteAlready || !canCreateProposal
 
   const handleVoting = async (vote: Vote) => {
     try {
@@ -72,6 +73,7 @@ const PageWithProposal = (proposal: PageWithProposal) => {
       setErrorVoting((err as Error).toString())
     }
   }
+
   return (
     <div className="pl-4 grid grid-rows-1 gap-[32px] mb-[100px]">
       <BreadcrumbSection title={name} />
@@ -91,9 +93,17 @@ const PageWithProposal = (proposal: PageWithProposal) => {
           <MetricsCard title="State" amount={proposalStateHuman} />
         </div>
         <div>
-          <Button onClick={votingModal.openModal} disabled={!isProposalActive || didUserVoteAlready}>
-            Vote on chain
-          </Button>
+          {cannotCastVote ? (
+            <Popover
+              content={cannotCastVoteReason(!isProposalActive, didUserVoteAlready, !canCreateProposal)}
+              size="small"
+              trigger="hover"
+            >
+              <Button disabled>Vote on chain</Button>
+            </Popover>
+          ) : (
+            <Button onClick={votingModal.openModal}>Vote on chain</Button>
+          )}
           {votingModal.isModalOpened && address && (
             <VoteProposalModal
               onSubmit={handleVoting}
@@ -202,3 +212,23 @@ const BreadcrumbSection: FC<{ title: string }> = ({ title }) => {
     </Breadcrumb>
   )
 }
+
+const cannotCastVoteReason = (
+  isProposalInactive: boolean,
+  didUserVoteAlready: boolean,
+  notEnoughVotingPower: boolean,
+) => (
+  <div className="text-[12px] font-bold mb-1">
+    {isProposalInactive ? (
+      <p>This proposal is not active</p>
+    ) : (
+      <>
+        {didUserVoteAlready ? (
+          <p>You already voted on this proposal</p>
+        ) : (
+          notEnoughVotingPower && <p>You don&apos;t have enough voting power to vote on this proposal</p>
+        )}
+      </>
+    )}
+  </div>
+)
