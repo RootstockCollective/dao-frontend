@@ -16,10 +16,10 @@ export interface NFTImageProps {
 
 export const useNFTImage = (nftAddress: Address) => {
   const { address } = useAccount()
-  const [isLoadingContractData, setIsLoadingContract] = useState(true)
+  const [isLoadingContractData, setIsLoadingContract] = useState(!!address)
   const [nftUri, setNftUri] = useState('')
 
-  const [isLoadingImage, setIsLoadingImage] = useState(true)
+  const [isLoadingImage, setIsLoadingImage] = useState(!!address)
   const [data, setData] = useState<NFTImageProps>({
     imageUrl: '',
     alt: '',
@@ -28,6 +28,7 @@ export const useNFTImage = (nftAddress: Address) => {
     owned: false,
   })
 
+  // load contract data and get NFT URI and tokenId by owner
   useEffect(() => {
     if (isLoadingContractData && nftAddress && address) {
       const defaultNftConfig = {
@@ -60,22 +61,19 @@ export const useNFTImage = (nftAddress: Address) => {
     }
   }, [isLoadingContractData, nftAddress, address, data])
 
+  // load NFT image and metadata
   useEffect(() => {
-    if (nftUri && isLoadingImage) {
-      fetchIpfsUri(nftUri as string)
-        .then(async ({ name: alt, image, description }) => {
-          try {
-            const response = await fetchIpfsUri(image, 'blob')
-            const url = URL.createObjectURL(response)
-            setData({ ...data, imageUrl: url, alt, description })
-            setIsLoadingImage(false)
-          } catch (e) {
-            setIsLoadingImage(false)
-          }
+    if (!isLoadingContractData && isLoadingImage) {
+      setIsLoadingImage(false)
+      if (nftUri) {
+        fetchIpfsUri(nftUri as string).then(async ({ name: alt, image, description }) => {
+          const response = await fetchIpfsUri(image, 'blob')
+          const url = URL.createObjectURL(response)
+          setData({ ...data, imageUrl: url, alt, description })
         })
-        .catch(() => setIsLoadingImage(false))
+      }
     }
-  }, [isLoadingImage, nftUri, data])
+  }, [isLoadingContractData, isLoadingImage, nftUri, data])
 
   return { data, isLoadingImage }
 }
