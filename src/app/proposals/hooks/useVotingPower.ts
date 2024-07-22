@@ -25,9 +25,9 @@ export const useVotingPower = () => {
     ],
   })
 
-  if (isLoading) {
+  if (isLoading || !data) {
     return {
-      isLoading: true,
+      isLoading,
       votingPower: '-',
       canCreateProposal: false,
       threshold: undefined,
