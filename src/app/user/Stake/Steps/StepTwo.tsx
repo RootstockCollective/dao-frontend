@@ -1,7 +1,7 @@
 import { StakePreview } from '@/app/user/Stake/StakePreview'
 import { StepProps } from '@/app/user/Stake/types'
 import { useStakingContext } from '@/app/user/Stake/StakingContext'
-import { useMemo } from 'react'
+import { textsDependingOnAction } from '@/app/user/Stake/Steps/stepsUtils'
 
 export const StepTwo = ({ onGoNext, onCloseModal }: StepProps) => {
   const {
@@ -9,41 +9,13 @@ export const StepTwo = ({ onGoNext, onCloseModal }: StepProps) => {
     setStakeTxHash,
     tokenToSend,
     tokenToReceive,
-    amountDataToReceive,
     actionToUse,
     actionName,
+    stakePreviewFrom: from,
+    stakePreviewTo: to,
   } = useStakingContext()
 
-  const {
-    shouldEnableConfirm,
-    onConfirm: onConfirmAction,
-    customFooter,
-  } = actionToUse(amount, tokenToSend.contract, tokenToReceive.contract)
-
-  const from = useMemo(
-    () => ({
-      amount,
-      amountConvertedToCurrency: 'USD ' + (Number(tokenToSend.price) * Number(amount) ?? 0).toString(),
-      balance: tokenToSend.balance,
-      tokenSymbol: tokenToSend.symbol,
-    }),
-    [amount, tokenToSend.balance, tokenToSend.price, tokenToSend.symbol],
-  )
-
-  const to = useMemo(
-    () => ({
-      amount: amountDataToReceive.amountToReceive.toString(),
-      amountConvertedToCurrency: amountDataToReceive.amountToReceiveConvertedToCurrency.toString(),
-      balance: tokenToReceive.balance,
-      tokenSymbol: tokenToReceive.symbol,
-    }),
-    [
-      amountDataToReceive.amountToReceive,
-      amountDataToReceive.amountToReceiveConvertedToCurrency,
-      tokenToReceive.balance,
-      tokenToReceive.symbol,
-    ],
-  )
+  const { onConfirm: onConfirmAction } = actionToUse(amount, tokenToSend.contract, tokenToReceive.contract)
 
   const onConfirm = async () => {
     try {
@@ -61,11 +33,11 @@ export const StepTwo = ({ onGoNext, onCloseModal }: StepProps) => {
     <StakePreview
       onConfirm={onConfirm}
       onCancel={onCloseModal ? onCloseModal : () => {}}
+      disableConfirm={false}
       from={from}
       to={to}
-      disableConfirm={!shouldEnableConfirm}
-      customComponentBeforeFooter={customFooter}
-      actionName={actionName}
+      actionName={textsDependingOnAction[actionName].preview}
+      actionText={textsDependingOnAction[actionName].previewText}
     />
   )
 }

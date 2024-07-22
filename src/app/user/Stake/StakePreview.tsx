@@ -4,14 +4,14 @@ import { TbFileSearch } from 'react-icons/tb'
 import { StakePreviewBalance } from './StakePreviewBalance'
 import { StakePreviewBalanceProps } from '@/app/user/Stake/types'
 import { ReactNode } from 'react'
-import { ActionBeingExecuted, textsDependingOnAction } from '@/app/user/Stake/Steps/stepsUtils'
 
 interface StakePreviewProps {
   from: Omit<StakePreviewBalanceProps, 'topLeftText'>
   to: Omit<StakePreviewBalanceProps, 'topLeftText'>
   onConfirm: () => void
   onCancel: () => void
-  actionName: ActionBeingExecuted
+  actionName: string
+  actionText: string
   customComponentBeforeFooter?: ReactNode
   disableConfirm?: boolean
 }
@@ -24,6 +24,7 @@ export const StakePreview = ({
   customComponentBeforeFooter,
   disableConfirm = true,
   actionName,
+  actionText,
 }: StakePreviewProps) => {
   return (
     <div className="px-[50px] py-[20px] flex justify-center flex-col">
@@ -40,8 +41,8 @@ export const StakePreview = ({
           <TbFileSearch size={48} color="#665EF6" />
         </div>
       </div>
-      <Paragraph className="mt-[62px] text-center">{textsDependingOnAction[actionName].preview}</Paragraph>{' '}
-      <Span className="text-center">Preview your stake and make sure everything is correct!</Span>
+      <Paragraph className="mt-[62px] text-center">{actionName}</Paragraph>{' '}
+      <Span className="text-center">{actionText}</Span>
       <div className="flex justify-center">
         <div className="bg-input-bg rounded-[6px] mt-[32px] w-full max-w-[500px]">
           <StakePreviewBalance topLeftText="From" {...from} />
