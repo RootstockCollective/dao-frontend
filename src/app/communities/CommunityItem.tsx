@@ -1,8 +1,7 @@
-import Image from 'next/image'
-import { firstNft } from '@/app/communities/communityUtils'
-import { Paragraph, Span } from '@/components/Typography'
-import { BsArrowUpRight } from 'react-icons/bs'
 import { Button } from '@/components/Button'
+import { Paragraph, Span } from '@/components/Typography'
+import Image from 'next/image'
+import { BsArrowUpRight } from 'react-icons/bs'
 import { VscChevronUp } from 'react-icons/vsc'
 
 interface CommunityItemProps {

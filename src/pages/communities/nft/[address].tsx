@@ -11,10 +11,10 @@ import { BsTwitterX } from 'react-icons/bs'
 import { FaDiscord, FaLink } from 'react-icons/fa'
 import { Address } from 'viem'
 import { useAccount } from 'wagmi'
-import { useCidsAvailable } from './hooks/useCidsAvailable'
-import { useMintNFT } from './hooks/useMintNFT'
-import { useNFTImage } from './hooks/useNFTImage'
-import { DEFAULT_NFT_BASE64 } from './images/defaultNFT'
+import { useCidsAvailable } from '@/shared/hooks/useCidsAvailable'
+import { useMintNFT } from '@/shared/hooks/useMintNFT'
+import { useNFTImage } from '@/shared/hooks/useNFTImage'
+import { DEFAULT_NFT_BASE64 } from '@/shared/defaultNFT'
 
 export default function Page() {
   const {
