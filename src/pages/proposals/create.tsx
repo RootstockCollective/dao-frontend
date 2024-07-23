@@ -31,11 +31,11 @@ import { z } from 'zod'
 const ADDRESS_REGEX = /^0x[a-fA-F0-9]{40}$/
 
 const FormSchema = z.object({
-  proposalName: z.string().min(3),
-  description: z.string().min(3),
+  proposalName: z.string().min(3).max(100),
+  description: z.string().min(3).max(3000),
   toAddress: z.string().refine(value => ADDRESS_REGEX.test(value), 'Please enter an address'),
   tokenAddress: z.string().length(42),
-  amount: z.string().min(1),
+  amount: z.coerce.number().gt(0),
 })
 
 export default function CreateProposal() {
@@ -161,7 +161,7 @@ export default function CreateProposal() {
                     <FormItem className="mb-6 mx-1">
                       <FormLabel>Proposal name</FormLabel>
                       <FormControl>
-                        <Input placeholder="Name your proposal" {...field} />
+                        <Input placeholder="Name your proposal" {...field} maxLength={100} />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
@@ -174,7 +174,7 @@ export default function CreateProposal() {
                     <FormItem className="mb-6 mx-1">
                       <FormLabel>Description</FormLabel>
                       <FormControl>
-                        <Textarea placeholder="Enter a description..." {...field} />
+                        <Textarea placeholder="Enter a description..." {...field} maxLength={3000} />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
