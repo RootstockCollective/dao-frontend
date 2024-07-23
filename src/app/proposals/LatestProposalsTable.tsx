@@ -1,12 +1,12 @@
 import { useFetchLatestProposals } from '@/app/proposals/hooks/useFetchLatestProposals'
 import { useGetProposalVotes } from '@/app/proposals/hooks/useGetProposalVotes'
 import { getEventArguments } from '@/app/proposals/shared/utils'
-import { ComparativeProgressBar } from '@/components/ComparativeProgressBar/ComparativeProgressBar'
 import { StatusColumn } from '@/app/proposals/StatusColumn'
-import { Link } from '@/components/Link'
+import { ComparativeProgressBar } from '@/components/ComparativeProgressBar/ComparativeProgressBar'
 import { Popover } from '@/components/Popover'
 import { Table } from '@/components/Table'
 import { Header, Paragraph } from '@/components/Typography'
+import { useRouter } from 'next/navigation'
 import { useMemo } from 'react'
 
 interface ProposalNameColumnProps {
@@ -14,9 +14,14 @@ interface ProposalNameColumnProps {
   proposalId: string
 }
 
-const ProposalNameColumn = ({ name, proposalId }: ProposalNameColumnProps) => (
-  <Link href={`/proposals/${proposalId}`}>{name}</Link>
-)
+const ProposalNameColumn = ({ name, proposalId }: ProposalNameColumnProps) => {
+  const router = useRouter()
+  return (
+    <button onClick={() => router.push(`/proposals/${proposalId}`)}>
+      <span className="underline">{name}</span>
+    </button>
+  )
+}
 
 const VotesColumn = ({ proposalId }: Omit<ProposalNameColumnProps, 'name'>) => {
   const data = useGetProposalVotes(proposalId)

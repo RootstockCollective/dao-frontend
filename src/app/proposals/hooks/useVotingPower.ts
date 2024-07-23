@@ -30,7 +30,7 @@ export const useVotingPower = () => {
       isLoading,
       votingPower: '-',
       canCreateProposal: false,
-      threshold: undefined,
+      threshold: '',
     }
   }
 
