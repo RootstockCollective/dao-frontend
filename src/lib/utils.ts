@@ -65,3 +65,37 @@ export const isValidNumber = (value: string) => {
 }
 
 export const goToExplorerWithTxHash = (hash: string) => window.open(`${explorerURL}/tx/${hash}`, '_blank')
+
+/**
+ * Sanitizes a number to a string representation
+ * @param num - The number to sanitize
+ * @returns The sanitized string representation of the number
+ */
+export const sanitizeInputNumber = (num: number) => {
+  // If the number is not in scientific notation, return its standard string representation
+  if (!/\d+\.?\d*e[+-]*\d+/i.test(num.toString())) {
+    return num.toString()
+  }
+
+  // Convert the number to a string in standard form with a maximum of 18 decimal places
+  // and remove trailing zeros
+  let str = num.toFixed(18).replace(/\.?0+$/, '')
+
+  // If the number is very small and gets converted to "0" after toFixed, handle it separately
+  if (str === '0') {
+    // Find the exponent to estimate the number of zeros
+    const match = num.toString().match(/e-(\d+)/)
+    const zeros = match ? parseInt(match[1], 10) - 1 : 0
+
+    // Construct the string representation manually for very small numbers
+    str =
+      '0.' +
+      '0'.repeat(zeros) +
+      num
+        .toString()
+        .replace(/.*e-?\d+$/, '')
+        .replace('.', '')
+  }
+
+  return str
+}

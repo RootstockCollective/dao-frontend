@@ -18,7 +18,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Textarea } from '@/components/Textarea'
 import { Header, Paragraph } from '@/components/Typography'
 import { currentEnvContracts } from '@/lib/contracts'
-import { cn } from '@/lib/utils'
+import { cn, sanitizeInputNumber } from '@/lib/utils'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useRouter } from 'next/navigation'
 import { useEffect, useState } from 'react'
@@ -33,9 +33,19 @@ const ADDRESS_REGEX = /^0x[a-fA-F0-9]{40}$/
 const FormSchema = z.object({
   proposalName: z.string().min(3).max(100),
   description: z.string().min(3).max(3000),
-  toAddress: z.string().refine(value => ADDRESS_REGEX.test(value), 'Please enter an address'),
+  toAddress: z.string().refine(value => ADDRESS_REGEX.test(value), 'Please enter a valid address'),
   tokenAddress: z.string().length(42),
-  amount: z.coerce.number().gt(0),
+  amount: z.union([z.string().transform(v => v.replace(/[^0-9.-]+/g, '')), z.number()]).pipe(
+    z.coerce
+      .number()
+      .positive()
+      .max(999999999)
+      .refine(value => {
+        const valueStr = sanitizeInputNumber(value)
+        const decimals = valueStr.split('.')[1]
+        return !decimals || decimals.length <= 8
+      }, 'Amount must have up to 8 decimals'),
+  ),
 })
 
 export default function CreateProposal() {
@@ -74,7 +84,7 @@ export default function CreateProposal() {
     const { proposalName, description, toAddress, tokenAddress, amount } = data
     const proposalDescription = `${proposalName};${description}`
 
-    onCreateProposal(toAddress as Address, amount, proposalDescription)
+    onCreateProposal(toAddress as Address, amount.toString(), proposalDescription)
       .then((txHash: Awaited<ReturnType<typeof onCreateProposal>>) => {
         console.log('SUCCESS', txHash)
         setMessage(
@@ -255,7 +265,14 @@ export default function CreateProposal() {
                       <FormItem className="mb-6 mx-1">
                         <FormLabel>Amount</FormLabel>
                         <FormControl>
-                          <Input placeholder="0.00" type="number" className="w-64" min={0} {...field} />
+                          <Input
+                            placeholder="0.00"
+                            type="number"
+                            className="w-64"
+                            min={0}
+                            max={999999999}
+                            {...field}
+                          />
                         </FormControl>
                         <FormDescription>= $ USD 0.00</FormDescription>
                         <FormMessage />
