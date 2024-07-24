@@ -3,6 +3,7 @@ import { useCreateProposal } from '@/app/proposals/hooks/useCreateProposal'
 import { useVotingPower } from '@/app/proposals/hooks/useVotingPower'
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/Accordion'
 import { Button } from '@/components/Button'
+import Image from 'next/image'
 import {
   Form,
   FormControl,
@@ -23,7 +24,6 @@ import { zodResolver } from '@hookform/resolvers/zod'
 import { useRouter } from 'next/navigation'
 import { useEffect, useState } from 'react'
 import { useForm } from 'react-hook-form'
-import { FaBitcoin } from 'react-icons/fa6'
 import { GoRocket } from 'react-icons/go'
 import { Address } from 'viem'
 import { z } from 'zod'
@@ -237,7 +237,7 @@ export default function CreateProposal() {
                               </SelectItem> */}
                               <SelectItem value={currentEnvContracts.stRIF as Address}>
                                 <div className="flex items-center">
-                                  <FaBitcoin className="mr-2" />
+                                  <Image src="/images/rif-logo.png" alt="stRIF Logo" width={20} height={20} />
                                   stRIF
                                 </div>
                               </SelectItem>
