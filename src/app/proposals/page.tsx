@@ -9,12 +9,12 @@ import { HeaderSection } from '@/app/proposals/HeaderSection'
 import { LatestProposalsTable } from '@/app/proposals/LatestProposalsTable'
 
 export default function Proposals() {
-  const { votingPower, canCreateProposal } = useVotingPower()
+  const { votingPower, canCreateProposal, threshold } = useVotingPower()
 
   const { latestProposals } = useFetchLatestProposals()
   return (
     <MainContainer>
-      <HeaderSection createProposalDisabled={!canCreateProposal} />
+      <HeaderSection createProposalDisabled={!canCreateProposal} threshold={threshold} />
       <div className="pl-4 grid grid-rows-1 gap-[32px] mb-[100px]">
         <MetricsCard borderless title={<VotingPowerPopover />} amount={votingPower} />
         <div className="flex flex-row gap-x-6">
