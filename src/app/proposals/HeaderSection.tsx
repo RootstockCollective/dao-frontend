@@ -4,13 +4,11 @@ import { Button } from '@/components/Button'
 import { FaPlus } from 'react-icons/fa6'
 import { Popover } from '@/components/Popover'
 
-export const HeaderSection = ({ createProposalDisabled = true, threshold = '' }) => {
-  const router = useRouter()
-
-  return (
-    <div className="flex flex-row justify-between container pl-4">
-      <Paragraph className="font-semibold text-[18px]">My Governance</Paragraph>
-      <div className="flex flex-row gap-x-6">
+export const HeaderSection = ({ createProposalDisabled = true, threshold = '' }) => (
+  <div className="flex flex-row justify-between container pl-4">
+    <Paragraph className="font-semibold text-[18px]">My Governance</Paragraph>
+    <div className="flex flex-row gap-x-6">
+      {createProposalDisabled ? (
         <Popover
           content={
             <Paragraph variant="normal" className="text-sm">
@@ -21,18 +19,23 @@ export const HeaderSection = ({ createProposalDisabled = true, threshold = '' })
           background="dark"
           size="small"
         >
-          <Button
-            startIcon={<FaPlus />}
-            onClick={() => router.push('/proposals/create')}
-            disabled={createProposalDisabled}
-          >
-            Create Proposal
-          </Button>
+          <CreateProposalButton disabled />
         </Popover>
-        {/*<Button variant="secondary" disabled>*/}
-        {/*  Delegate*/}
-        {/*</Button>*/}
-      </div>
+      ) : (
+        <CreateProposalButton />
+      )}
+      {/*<Button variant="secondary" disabled>*/}
+      {/*  Delegate*/}
+      {/*</Button>*/}
     </div>
+  </div>
+)
+
+const CreateProposalButton = ({ disabled = false }) => {
+  const router = useRouter()
+  return (
+    <Button startIcon={<FaPlus />} onClick={() => router.push('/proposals/create')} disabled={disabled}>
+      Create Proposal
+    </Button>
   )
 }
