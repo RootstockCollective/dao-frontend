@@ -49,6 +49,14 @@ const treasuryContractsTestnet = [
     name: 'Bucket 1',
     address: '0xf5b9Ccfe0F695195C4F2E2b5A99b9b5d79EB8089',
   },
+  {
+    name: 'Bucket 2',
+    address: '0x8D90a8F30FBc93d9Bb62758502bbcb640E59d0f4',
+  },
+  {
+    name: 'Bucket 3',
+    address: '0x1E6406DDcF3c9Ab882686d4c9D80D184E7F3BF02',
+  },
 ]
 
 const contractsTreasury = {
