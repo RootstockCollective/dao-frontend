@@ -87,7 +87,7 @@ const TreasuryContextProvider = ({ children }: Props) => {
 
   const valueToUse = useMemo(
     () => ({ buckets: [bucketOne, bucketTwo, bucketThree], bucketsTotal }),
-    [bucketOne, bucketsTotal],
+    [bucketOne, bucketThree, bucketTwo, bucketsTotal],
   )
   return <TreasuryContext.Provider value={valueToUse}>{children}</TreasuryContext.Provider>
 }
