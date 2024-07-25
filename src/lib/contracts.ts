@@ -5,12 +5,14 @@ const testnet = {
   RIF: '0x19f64674d8a5b4e652319f5e239efd3bc969a1fe', // tRIF
   stRIF: '0xAF17f7A0124E9F360ffA484b13566b041C0f5023',
   rBTC: '0x0000000000000000000000000000000000000000',
+  multicall: '0xcA11bde05977b3631167028862bE2a173976CA11',
 }
 
 const mainnet = {
   RIF: '0x2acc95758f8b5f583470ba265eb685a8f45fc9d5',
   stRIF: '', // @TODO get DAO mainnet
   rBTC: '0x0000000000000000000000000000000000000000',
+  multicall: '',
 }
 
 const contracts = {
@@ -51,11 +53,11 @@ const treasuryContractsTestnet = [
   },
   {
     name: 'Bucket 2',
-    address: '0x8D90a8F30FBc93d9Bb62758502bbcb640E59d0f4',
+    address: '0x8d90a8f30fBC93D9BB62758502bBCB640e59d0f4',
   },
   {
     name: 'Bucket 3',
-    address: '0x1E6406DDcF3c9Ab882686d4c9D80D184E7F3BF02',
+    address: '0x1E6406ddcf3c9Ab882686d4c9d80d184e7f3bF02',
   },
 ]
 
