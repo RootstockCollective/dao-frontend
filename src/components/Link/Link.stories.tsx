@@ -55,7 +55,7 @@ export const MenuInList: Story = {
       </li>
       <li>
         <Link variant="menu" href="/home">
-          <Typography tagVariant="p">Token Bridge Dapp</Typography>
+          <Typography tagVariant="p">Token Bridge dApp</Typography>
         </Link>
       </li>
     </ul>

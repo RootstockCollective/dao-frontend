@@ -9,10 +9,10 @@ export const UsefulLinks = () => (
       Register RNS Domain
     </Link>
     <Link href={currentLinks.tokenBridge} variant="menu" className="mb-[16px] text-[16px]" target="_blank">
-      Token Bridge Dapp
+      Token Bridge dApp
     </Link>
     <Link href={currentLinks.flyover} variant="menu" className="mb-[16px] text-[16px]" target="_blank">
-      Flyover Dapp
+      Flyover dApp
     </Link>
     <Link href={currentLinks.readMore} variant="menu" className="mb-[16px] text-[16px]" target="_blank">
       Read more about RIF
