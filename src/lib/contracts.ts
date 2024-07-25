@@ -51,11 +51,11 @@ const treasuryContractsTestnet = [
   },
   {
     name: 'Bucket 2',
-    address: '0x8D90a8F30FBc93d9Bb62758502bbcb640E59d0f4',
+    address: '0x8d90a8f30fBC93D9BB62758502bBCB640e59d0f4',
   },
   {
     name: 'Bucket 3',
-    address: '0x1E6406DDcF3c9Ab882686d4c9D80D184E7F3BF02',
+    address: '0x1E6406ddcf3c9Ab882686d4c9d80d184e7f3bF02',
   },
 ]
 
