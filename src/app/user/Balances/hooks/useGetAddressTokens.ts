@@ -23,24 +23,21 @@ const buildTokenBalanceObject = (symbol: keyof typeof currentEnvContracts, token
 
 export const useGetAddressTokens = (address: string, chainId: number) => {
   const { data: RBTC } = useBalance({ address: address as Address, chainId })
-  const { data: RIF } = useReadContracts({
+  const { data } = useReadContracts({
     contracts: [
       getTokenFunction(currentEnvContracts.RIF, address, 'balanceOf'),
       getTokenFunction(currentEnvContracts.RIF, address, 'symbol'),
-    ],
-    query: {
-      refetchInterval: 10000,
-    },
-  })
-  const { data: stRIF } = useReadContracts({
-    contracts: [
       getTokenFunction(currentEnvContracts.stRIF, address, 'balanceOf'),
       getTokenFunction(currentEnvContracts.stRIF, address, 'symbol'),
     ],
+    multicallAddress: currentEnvContracts.multicall as Address,
     query: {
-      refetchInterval: 10000,
+      refetchInterval: 5000,
     },
   })
+
+  const RIF = data && ([data[0], data[1]] as TokenData)
+  const stRIF = data && ([data[2], data[3]] as TokenData)
   return {
     data: [
       buildTokenBalanceObject('stRIF', stRIF as TokenData),

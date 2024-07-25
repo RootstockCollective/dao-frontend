@@ -5,12 +5,14 @@ const testnet = {
   RIF: '0x19f64674d8a5b4e652319f5e239efd3bc969a1fe', // tRIF
   stRIF: '0xAF17f7A0124E9F360ffA484b13566b041C0f5023',
   rBTC: '0x0000000000000000000000000000000000000000',
+  multicall: '0xcA11bde05977b3631167028862bE2a173976CA11',
 }
 
 const mainnet = {
   RIF: '0x2acc95758f8b5f583470ba265eb685a8f45fc9d5',
   stRIF: '', // @TODO get DAO mainnet
   rBTC: '0x0000000000000000000000000000000000000000',
+  multicall: '',
 }
 
 const contracts = {
