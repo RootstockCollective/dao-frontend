@@ -9,11 +9,11 @@ export const RenderTotalBalance = ({ symbol }: Props) => {
   const { balances, prices } = useBalancesContext()
   const token = balances[symbol]
   return (
-    <div>
+    <>
       <p>
         {token.balance} {token.symbol}
       </p>
-      <p>= $ {prices[symbol].price * Number(token.balance) ?? 0}</p>
-    </div>
+      {prices[symbol] && <p>= ${prices[symbol].price * Number(token.balance) ?? 0}</p>}
+    </>
   )
 }

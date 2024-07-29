@@ -14,5 +14,8 @@ const CONTEXT_TO_USE = {
 
 export const RenderTokenPrice = ({ symbol, contextToUse = 'balances' }: Props) => {
   const { prices } = CONTEXT_TO_USE[contextToUse]()
+  if (!prices[symbol]) {
+    return <p>—</p>
+  }
   return <p className="text-nowrap">USD {prices[symbol]?.price ?? 0}</p>
 }
