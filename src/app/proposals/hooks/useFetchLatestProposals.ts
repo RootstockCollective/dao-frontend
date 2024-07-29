@@ -5,21 +5,27 @@ import { GovernorAbi } from '@/lib/abis/Governor'
 import { fetchProposalCreated } from '@/app/user/Balances/actions'
 
 export const useFetchLatestProposals = () => {
-  const query = useQuery({
+  const { data } = useQuery({
     queryFn: fetchProposalCreated,
     queryKey: ['proposalsCreated'],
   })
 
   const latestProposals = useMemo(() => {
-    if (query.data?.data) {
-      return parseEventLogs({
+    if (data?.data) {
+      const proposals = parseEventLogs({
         abi: GovernorAbi,
-        logs: query.data.data,
+        logs: data.data,
         eventName: 'ProposalCreated',
       })
+
+      // remove duplicates
+      return proposals.filter(
+        (proposal, index, self) =>
+          self.findIndex(p => p.args.proposalId === proposal.args.proposalId) === index,
+      )
     }
     return []
-  }, [query.data])
+  }, [data])
 
   return { latestProposals }
 }
