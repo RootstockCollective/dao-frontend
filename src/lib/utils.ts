@@ -100,9 +100,25 @@ export const sanitizeInputNumber = (num: number) => {
   return str
 }
 
+/**
+ * Formats a number as a currency
+ * @param value - The number to format
+ * @param currency - The currency to format the number as (default: 'USD')
+ * @returns The formatted currency string
+ * @example formatCurrency(123456.789) // '$123,456.79'
+ * @example formatCurrency(123456.789, 'EUR') // '€123,456.79'
+ * @example formatCurrency(0.0001) // '<$0.00'
+ * @example formatCurrency(0) // '$0.00'
+ */
 export const formatCurrency = (value: number, currency = 'USD'): string => {
+  if (0 < value && value < 0.01) {
+    return '<$0.01'
+  }
+
   return new Intl.NumberFormat('en-US', {
     style: 'currency',
-    currency,
+    currency: 'USD',
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2,
   }).format(value)
 }
