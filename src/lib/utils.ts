@@ -117,8 +117,34 @@ export const formatCurrency = (value: number, currency = 'USD'): string => {
 
   return new Intl.NumberFormat('en-US', {
     style: 'currency',
-    currency: 'USD',
+    currency,
     minimumFractionDigits: 2,
     maximumFractionDigits: 2,
   }).format(value)
+}
+
+/**
+ * Formats avoiding scientific notation
+ * @param n - The number to format
+ * @returns The formatted number
+ * @example toFixed(1e-7) // '0.0000001'
+ * @example toFixed(1.123456789e-7) // '0.0000001123456789'
+ * @example toFixed(1.1e+10) // '11000000000'
+ * @example toFixed(1.1e20) // '110000000000000000000'
+ */
+export const toFixed = (n: number) => {
+  if (Math.abs(n) < 1.0) {
+    const e = parseInt(n.toString().split('e-')[1])
+    if (e) {
+      return Number(n).toFixed(e)
+    }
+  } else {
+    let e = parseInt(n.toString().split('+')[1])
+    if (e > 20) {
+      e -= 20
+      n /= Math.pow(10, e)
+      return n + new Array(e + 1).join('0')
+    }
+  }
+  return n.toString()
 }
