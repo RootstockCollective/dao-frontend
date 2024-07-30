@@ -12,8 +12,6 @@ export const StepAllowance = ({ onGoNext = () => {}, onCloseModal = () => {} }: 
     stakePreviewTo: to,
   } = useStakingContext()
 
-  console.log('from', JSON.stringify(from) )
-
   const { shouldEnableConfirm, customFooter } = useStakeRIF(
     amount,
     tokenToSend.contract,
