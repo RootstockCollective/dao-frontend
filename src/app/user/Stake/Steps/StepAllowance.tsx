@@ -3,7 +3,7 @@ import { StakePreview } from '@/app/user/Stake/StakePreview'
 import { StepProps } from '@/app/user/Stake/types'
 import { useStakeRIF } from '@/app/user/Stake/hooks/useStakeRIF'
 
-export const StepAllowance = ({ onGoNext, onCloseModal }: StepProps) => {
+export const StepAllowance = ({ onGoNext = () => {}, onCloseModal = () => {} }: StepProps) => {
   const {
     amount,
     tokenToSend,
@@ -11,6 +11,8 @@ export const StepAllowance = ({ onGoNext, onCloseModal }: StepProps) => {
     stakePreviewFrom: from,
     stakePreviewTo: to,
   } = useStakingContext()
+
+  console.log('from', JSON.stringify(from) )
 
   const { shouldEnableConfirm, customFooter } = useStakeRIF(
     amount,
@@ -21,11 +23,10 @@ export const StepAllowance = ({ onGoNext, onCloseModal }: StepProps) => {
   const actionText = !shouldEnableConfirm
     ? 'You need to request allowance before staking.'
     : 'You have enough allowance to stake.'
-  const onGoNextStep = () => onGoNext?.()
   return (
     <StakePreview
-      onConfirm={onGoNextStep}
-      onCancel={onCloseModal ? onCloseModal : () => {}}
+      onConfirm={onGoNext}
+      onCancel={onCloseModal}
       disableConfirm={!shouldEnableConfirm}
       from={from}
       to={to}
