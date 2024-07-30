@@ -1,5 +1,5 @@
-import { Span } from '@/components/Typography'
 import { StakePreviewBalanceProps } from '@/app/user/Stake/types'
+import { Span } from '@/components/Typography'
 
 export const StakePreviewBalance = ({
   topLeftText,
@@ -15,8 +15,8 @@ export const StakePreviewBalance = ({
         <Span className="font-bold text-nowrap">
           {amount.substring(0, 10)} {tokenSymbol}
         </Span>
-        <Span variant="light" size="small" className="text-nowrap">
-          = {amountConvertedToCurrency.substring(0, 20)}
+        <Span variant="light" size="small" className="text-nowrap pt-1">
+          = {amountConvertedToCurrency}
         </Span>
       </div>
     </div>

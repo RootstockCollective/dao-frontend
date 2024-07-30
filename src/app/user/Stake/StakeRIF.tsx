@@ -48,7 +48,7 @@ export const StakeRIF = ({
           labelText={textsDependingOnAction[actionName].inputLabel}
         />
         <Label>
-          Available: {totalBalance} {symbol} = {totalBalanceConverted}
+          Available: {totalBalance} {symbol} {totalBalanceConverted && `= ${totalBalanceConverted}`}
         </Label>
         {/* Percentage button */}
         <div className="flex justify-end gap-2 pt-1">

@@ -27,9 +27,9 @@ const StakingSteps = ({ onCloseModal }: StakingStepsProps) => {
       balance: balances.RIF.balance,
       symbol: balances.RIF.symbol,
       contract: currentEnvContracts.RIF,
-      price: prices.RIF.price.toString(),
+      price: prices.RIF?.price.toString(),
     }),
-    [balances.RIF.balance, balances.RIF.symbol, prices.RIF.price],
+    [balances.RIF.balance, balances.RIF.symbol, prices.RIF?.price],
   )
 
   const tokenToReceive: StakingToken = useMemo(
@@ -37,9 +37,9 @@ const StakingSteps = ({ onCloseModal }: StakingStepsProps) => {
       balance: balances.stRIF.balance,
       symbol: balances.stRIF.symbol,
       contract: currentEnvContracts.stRIF,
-      price: prices.stRIF.price.toString(),
+      price: prices.stRIF?.price.toString(),
     }),
-    [balances.stRIF.balance, balances.stRIF.symbol, prices.stRIF.price],
+    [balances.stRIF.balance, balances.stRIF.symbol, prices.stRIF?.price],
   )
   return (
     <StakingProvider
