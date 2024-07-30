@@ -19,7 +19,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Textarea } from '@/components/Textarea'
 import { Header, Paragraph } from '@/components/Typography'
 import { currentEnvContracts } from '@/lib/contracts'
-import { cn, sanitizeInputNumber } from '@/lib/utils'
+import { sanitizeInputNumber } from '@/lib/utils'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useRouter } from 'next/navigation'
 import { useEffect, useState } from 'react'
@@ -27,6 +27,8 @@ import { useForm } from 'react-hook-form'
 import { GoRocket } from 'react-icons/go'
 import { Address } from 'viem'
 import { z } from 'zod'
+import { Alert } from '@/components/Alert/Alert'
+import { TRANSACTION_SENT_MESSAGES } from '@/app/proposals/shared/utils'
 
 const ADDRESS_REGEX = /^0x[a-fA-F0-9]{40}$/
 
@@ -52,7 +54,9 @@ export default function CreateProposal() {
   const router = useRouter()
   const { isLoading: isVotingPowerLoading, canCreateProposal } = useVotingPower()
   const { onCreateProposal } = useCreateProposal()
-  const [message, setMessage] = useState('')
+  const [message, setMessage] = useState<
+    (typeof TRANSACTION_SENT_MESSAGES)[keyof typeof TRANSACTION_SENT_MESSAGES] | null
+  >(null)
 
   const [activeStep, setActiveStep] = useState('proposal')
 
@@ -86,20 +90,10 @@ export default function CreateProposal() {
 
     onCreateProposal(toAddress as Address, amount.toString(), proposalDescription)
       .then((txHash: Awaited<ReturnType<typeof onCreateProposal>>) => {
-        console.log('SUCCESS', txHash)
-        setMessage(
-          'Proposal transaction sent. Your proposal is in process. It will be visible when the transaction is confirmed.',
-        )
-        // @TODO Wait for TX to be confirmed then send this message
-        // setMessage(
-        //   'Proposal successfully created. Your proposal has been published successfully! It is now visible to the community for review and feedback. Thank you for your contribution.',
-        // )
+        router.push(`/proposals?txHash=${txHash}`)
       })
       .catch(err => {
-        console.log('ERROR', err)
-        setMessage(
-          'Error publishing. An unexpected error occurred while trying to publish your proposal. Please try again later. If the issue persists, contact support for assistance.',
-        )
+        setMessage(TRANSACTION_SENT_MESSAGES.error)
       })
   }
 
@@ -119,6 +113,8 @@ export default function CreateProposal() {
     }
   }
 
+  const onDismissMessage = () => setMessage(null)
+
   useEffect(() => {
     if (!isVotingPowerLoading && !canCreateProposal) {
       router.push('/proposals')
@@ -132,13 +128,8 @@ export default function CreateProposal() {
   return (
     <MainContainer>
       {message && (
-        <div
-          className={cn(
-            'bg-st-success bg-opacity-10 border border-st-success text-st-white rounded-md p-4 mb-4',
-            message.includes('Error') ? 'bg-st-error border-st-error' : '',
-          )}
-        >
-          {message}
+        <div className="mb-4">
+          <Alert {...message} onDismiss={onDismissMessage} />
         </div>
       )}
       <Form {...form}>
@@ -192,7 +183,7 @@ export default function CreateProposal() {
                 />
                 <div className="flex justify-center mb-6">
                   <Button disabled={!isProposalCompleted} onClick={handleProposalCompleted}>
-                    Save & Continue
+                    Continue
                   </Button>
                 </div>
               </AccordionContent>
@@ -283,7 +274,7 @@ export default function CreateProposal() {
 
                 <div className="flex justify-center mb-6">
                   <Button disabled={!isActionsCompleted} onClick={handleActionsCompleted}>
-                    Save & Continue
+                    Publish
                   </Button>
                 </div>
               </AccordionContent>

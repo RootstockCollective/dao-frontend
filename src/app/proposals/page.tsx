@@ -7,13 +7,16 @@ import { useVotingPower } from './hooks/useVotingPower'
 import { useFetchLatestProposals } from '@/app/proposals/hooks/useFetchLatestProposals'
 import { HeaderSection } from '@/app/proposals/HeaderSection'
 import { LatestProposalsTable } from '@/app/proposals/LatestProposalsTable'
+import { ProposalStatusAlert } from './ProposalStatusAlert'
 
 export default function Proposals() {
   const { votingPower, canCreateProposal, threshold } = useVotingPower()
 
   const { latestProposals } = useFetchLatestProposals()
+
   return (
     <MainContainer>
+      <ProposalStatusAlert />
       <HeaderSection createProposalDisabled={!canCreateProposal} threshold={threshold} />
       <div className="pl-4 grid grid-rows-1 gap-[32px] mb-[100px]">
         <MetricsCard borderless title={<VotingPowerPopover />} amount={votingPower} />
