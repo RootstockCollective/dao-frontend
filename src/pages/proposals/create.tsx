@@ -97,21 +97,9 @@ export default function CreateProposal() {
       })
   }
 
-  const handleProposalCompleted = () => {
-    if (isActionsCompleted && isProposalCompleted) {
-      handleSubmit(onSubmit)()
-    } else {
-      setActiveStep(isActionsCompleted ? '' : 'actions')
-    }
-  }
+  const handleProposalCompleted = () => setActiveStep('actions')
 
-  const handleActionsCompleted = () => {
-    if (isActionsCompleted && isProposalCompleted) {
-      handleSubmit(onSubmit)()
-    } else {
-      setActiveStep(isProposalCompleted ? '' : 'proposal')
-    }
-  }
+  const handleActionsCompleted = () => handleSubmit(onSubmit)()
 
   const onDismissMessage = () => setMessage(null)
 
@@ -273,7 +261,10 @@ export default function CreateProposal() {
                 </div>
 
                 <div className="flex justify-center mb-6">
-                  <Button disabled={!isActionsCompleted} onClick={handleActionsCompleted}>
+                  <Button
+                    disabled={!isActionsCompleted || !isProposalCompleted}
+                    onClick={handleActionsCompleted}
+                  >
                     Publish
                   </Button>
                 </div>
