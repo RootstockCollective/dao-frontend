@@ -13,7 +13,7 @@ export const StakePreviewBalance = ({
       <Span size="small">{topLeftText}</Span>
       <div className="flex mt-[8px] gap-3 items-center">
         <Span className="font-bold text-nowrap">
-          {amount.substring(0, 10)} {tokenSymbol}
+          {amount} {tokenSymbol}
         </Span>
         <Span variant="light" size="small" className="text-nowrap pt-1">
           = {amountConvertedToCurrency}
@@ -23,7 +23,7 @@ export const StakePreviewBalance = ({
     <div>
       {/* Balance and Token */}
       <Span size="small" variant="light">
-        Balance: {balance.substring(0, 10)}
+        Balance: {balance}
       </Span>
       <div className="text-right mt-[8px]">{/* @TODO ICON {tokenSymbol} */}</div>
     </div>

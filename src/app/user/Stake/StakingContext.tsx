@@ -4,7 +4,7 @@ import { GetPricesResult, TokenBalanceRecord } from '@/app/user/types'
 import { StakingToken } from '@/app/user/Stake/types'
 import { Hash } from 'viem'
 import { ActionBeingExecuted } from '@/app/user/Stake/Steps/stepsUtils'
-import { formatCurrency } from '@/lib/utils'
+import { formatCurrency, toFixed } from '@/lib/utils'
 
 export type ActionHookToUse = (
   amount: string,
@@ -106,7 +106,7 @@ export const StakingProvider: FC<Props> = ({
 
   const stakePreviewFrom = useMemo(
     () => ({
-      amount: stakeData.amount,
+      amount: toFixed(Number(stakeData.amount)),
       amountConvertedToCurrency:
         'USD ' + formatCurrency(Number(tokenToSend.price) * Number(stakeData.amount) ?? 0),
       balance: tokenToSend.balance,
@@ -117,7 +117,7 @@ export const StakingProvider: FC<Props> = ({
 
   const stakePreviewTo = useMemo(
     () => ({
-      amount: amountDataToReceive.amountToReceive,
+      amount: toFixed(Number(amountDataToReceive.amountToReceive)),
       amountConvertedToCurrency: amountDataToReceive.amountToReceiveConvertedToCurrency,
       balance: tokenToReceive.balance,
       tokenSymbol: tokenToReceive.symbol,
