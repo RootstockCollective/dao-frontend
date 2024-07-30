@@ -28,7 +28,7 @@ export const Alert = ({ severity, title, content, onDismiss }: AlertProps) => {
           {content}
         </Paragraph>
         {onDismiss && (
-          <div onClick={onDismiss} className='cursor-pointer'>
+          <div onClick={onDismiss} className="cursor-pointer">
             <Paragraph variant="light" className="text-[14px]">
               Dismiss
             </Paragraph>
@@ -36,7 +36,7 @@ export const Alert = ({ severity, title, content, onDismiss }: AlertProps) => {
         )}
       </div>
       {/* X */}
-      {onDismiss && <MdClose size={20} className='cursor-pointer' />}
+      {onDismiss && <MdClose size={20} className="cursor-pointer" />}
     </div>
   )
 }
