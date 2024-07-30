@@ -1,5 +1,6 @@
 import { useBalancesContext } from '@/app/user/Balances/context/BalancesContext'
 import { SupportedTokens } from '@/lib/contracts'
+import { formatCurrency } from '@/lib/utils'
 import { usePricesContext } from '@/shared/context/PricesContext'
 
 interface Props {
@@ -17,5 +18,5 @@ export const RenderTokenPrice = ({ symbol, contextToUse = 'balances' }: Props) =
   if (!prices[symbol]) {
     return <p>—</p>
   }
-  return <p className="text-nowrap">USD {prices[symbol]?.price ?? 0}</p>
+  return <p className="text-nowrap">{formatCurrency(prices[symbol]?.price ?? 0)}</p>
 }
