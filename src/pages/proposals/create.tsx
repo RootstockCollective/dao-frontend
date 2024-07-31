@@ -123,7 +123,6 @@ export default function CreateProposal() {
       <Form {...form}>
         <form onSubmit={handleSubmit(onSubmit)}>
           <HeaderSection disabled={!isDirty || !isValid} />
-          {/* TODO: add an error alert when submiting form */}
           <Accordion
             type="single"
             collapsible
