@@ -26,6 +26,7 @@ import { formatUnits } from 'viem'
 import { useAccount } from 'wagmi'
 import { Vote, VoteProposalModal } from '../../components/Modal/VoteProposalModal'
 import { VoteSubmittedModal } from '../../components/Modal/VoteSubmittedModal'
+import { useVotingPowerAtSnapshot } from '@/app/proposals/hooks/useVotingPowerAtSnapshot'
 
 export default function ProposalView() {
   const {
@@ -57,7 +58,10 @@ const PageWithProposal = (proposal: PageWithProposal) => {
 
   const [againstVote, forVote, abstainVote] = useGetProposalVotes(proposalId, true)
   const snapshot = useGetProposalSnapshot(proposalId)
-  const { votingPower, threshold, canCreateProposal } = useVotingPower()
+
+  const { votingPowerAtSnapshot } = useVotingPowerAtSnapshot(snapshot as bigint)
+
+  const { threshold, canCreateProposal } = useVotingPower()
   const { onVote, isProposalActive, didUserVoteAlready, proposalStateHuman } = useVoteOnProposal(proposalId)
 
   const cannotCastVote = !isProposalActive || didUserVoteAlready || !canCreateProposal
@@ -110,7 +114,7 @@ const PageWithProposal = (proposal: PageWithProposal) => {
               onClose={votingModal.closeModal}
               proposal={proposal}
               address={address}
-              votingPower={votingPower}
+              votingPower={votingPowerAtSnapshot}
               errorMessage={errorVoting}
             />
           )}
