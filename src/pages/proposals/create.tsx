@@ -37,7 +37,7 @@ const FormSchema = z.object({
   description: z.string().min(3).max(3000),
   toAddress: z.string().refine(value => ADDRESS_REGEX.test(value), 'Please enter a valid address'),
   tokenAddress: z.string().length(42),
-  amount: z.coerce.number().positive('Required').max(MAX_AMOUNT),
+  amount: z.coerce.number().positive('Required').min(1).max(MAX_AMOUNT),
 })
 
 export default function CreateProposal() {
