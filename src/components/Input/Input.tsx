@@ -3,9 +3,9 @@ import * as React from 'react'
 import { cn } from '@/lib/utils'
 import { useFormField } from '../Form'
 
-export interface InputProps extends React.InputHTMLAttributes<HTMLInputElement> {}
+interface InputProps extends React.InputHTMLAttributes<HTMLInputElement> {}
 
-const DEFAULT_CLASSES = `
+export const INPUT_DEFAULT_CLASSES = `
 flex w-full
 p-[12px]
 justify-between
@@ -26,7 +26,7 @@ const Input = React.forwardRef<HTMLInputElement, InputProps>(({ className, type,
   return (
     <input
       id={formItemId}
-      className={cn(DEFAULT_CLASSES, error && 'border-st-error focus-visible:ring-0', className)}
+      className={cn(INPUT_DEFAULT_CLASSES, error && 'border-st-error focus-visible:ring-0', className)}
       ref={ref}
       type={type}
       {...props}
