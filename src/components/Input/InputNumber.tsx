@@ -17,7 +17,6 @@ const InputNumber = React.forwardRef<HTMLInputElement, InputNumberProps>(
         id={formItemId}
         className={cn(INPUT_DEFAULT_CLASSES, error && 'border-st-error focus-visible:ring-0', className)}
         getInputRef={ref}
-        thousandSeparator=","
         decimalSeparator="."
         prefix={prefix}
         decimalScale={decimalScale}
