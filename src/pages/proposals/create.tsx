@@ -67,7 +67,7 @@ export default function CreateProposal() {
       proposalName: '',
       description: '',
       toAddress: '',
-      tokenAddress: currentEnvContracts.stRIF as Address,
+      tokenAddress: currentEnvContracts.RIF as Address,
       amount: undefined,
     },
   })
@@ -224,10 +224,16 @@ export default function CreateProposal() {
                                   RBTC
                                 </div>
                               </SelectItem> */}
-                              <SelectItem value={currentEnvContracts.stRIF as Address}>
+                              <SelectItem value={currentEnvContracts.RIF as Address}>
                                 <div className="flex items-center">
-                                  <Image src="/images/rif-logo.png" alt="stRIF Logo" width={20} height={20} />
-                                  stRIF
+                                  <Image
+                                    src="/images/rif-logo.png"
+                                    alt="stRIF Logo"
+                                    width={20}
+                                    height={20}
+                                    className="mr-1"
+                                  />
+                                  RIF
                                 </div>
                               </SelectItem>
                             </SelectContent>
