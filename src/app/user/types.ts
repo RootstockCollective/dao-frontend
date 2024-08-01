@@ -27,4 +27,4 @@ export type Price = {
   lastUpdated: string
 }
 
-export type GetPricesResult = Record<string, Price>
+export type GetPricesResult = Record<string, Price | null>
