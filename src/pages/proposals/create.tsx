@@ -2,6 +2,8 @@
 import { useCreateProposal } from '@/app/proposals/hooks/useCreateProposal'
 import { useVotingPower } from '@/app/proposals/hooks/useVotingPower'
 import { TRANSACTION_SENT_MESSAGES } from '@/app/proposals/shared/utils'
+import { useBalancesContext } from '@/app/user/Balances/context/BalancesContext'
+import { useGetSpecificPrices } from '@/app/user/Balances/hooks/useGetSpecificPrices'
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/Accordion'
 import { Alert } from '@/components/Alert/Alert'
 import { Button } from '@/components/Button'
@@ -20,10 +22,12 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Textarea } from '@/components/Textarea'
 import { Header, Paragraph } from '@/components/Typography'
 import { currentEnvContracts } from '@/lib/contracts'
+import { formatCurrency } from '@/lib/utils'
+import { usePricesContext } from '@/shared/context/PricesContext'
 import { zodResolver } from '@hookform/resolvers/zod'
 import Image from 'next/image'
 import { useRouter } from 'next/navigation'
-import { useEffect, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { useForm } from 'react-hook-form'
 import { GoRocket } from 'react-icons/go'
 import { Address } from 'viem'
@@ -42,6 +46,7 @@ const FormSchema = z.object({
 
 export default function CreateProposal() {
   const router = useRouter()
+  const prices = useGetSpecificPrices()
   const { isLoading: isVotingPowerLoading, canCreateProposal } = useVotingPower()
   const { onCreateProposal } = useCreateProposal()
   const [message, setMessage] = useState<
@@ -69,6 +74,8 @@ export default function CreateProposal() {
     watch,
   } = form
 
+  const pricesMap = useMemo(() => ({ [currentEnvContracts.RIF]: prices.RIF }), [prices])
+
   const isProposalNameValid = !errors.proposalName && touchedFields.proposalName
   const isDescriptionValid = !errors.description && touchedFields.description
   const isToAddressValid = !errors.toAddress && touchedFields.toAddress
@@ -76,6 +83,8 @@ export default function CreateProposal() {
   const isProposalCompleted = isProposalNameValid && isDescriptionValid
   const isActionsCompleted = isToAddressValid && isAmountValid
   const amountValue = watch('amount')
+  const tokenAddress = watch('tokenAddress')
+  const amountUsd = pricesMap[tokenAddress] ? amountValue * pricesMap[tokenAddress]?.price : 0
 
   const onSubmit = async (data: z.infer<typeof FormSchema>) => {
     const { proposalName, description, toAddress, tokenAddress, amount } = data
@@ -244,7 +253,9 @@ export default function CreateProposal() {
                         <FormControl>
                           <InputNumber placeholder="0.00" className="w-64" max={MAX_AMOUNT} {...field} />
                         </FormControl>
-                        {amountValue?.toString() && <FormDescription>= USD $0.00</FormDescription>}
+                        {amountValue?.toString() && (
+                          <FormDescription>= USD {formatCurrency(amountUsd)}</FormDescription>
+                        )}
                         <FormMessage />
                       </FormItem>
                     )}
