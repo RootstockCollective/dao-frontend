@@ -123,15 +123,16 @@ export const formatCurrency = (value: number, currency = 'USD'): string => {
 }
 
 /**
- * Formats avoiding scientific notation
+ * Formats avoiding scientific notation and trailing zeros
  * @param n - The number to format
+ * @param decimalPlaces - The number of decimal places to keep (default: 8)
  * @returns The formatted number
  * @example toFixed(1e-7) // '0.0000001'
  * @example toFixed(1.123456789e-7) // '0.0000001123456789'
  * @example toFixed(1.1e+10) // '11000000000'
  * @example toFixed(1.1e20) // '110000000000000000000'
  */
-export const toFixed = (n: number) => {
+export const toFixed = (n: number, decimalPlaces = 8) => {
   if (Math.abs(n) < 1.0) {
     const e = parseInt(n.toString().split('e-')[1])
     if (e) {
@@ -145,5 +146,5 @@ export const toFixed = (n: number) => {
       return n + new Array(e + 1).join('0')
     }
   }
-  return n.toString()
+  return n.toFixed(decimalPlaces).replace(/\.?0+$/, '')
 }

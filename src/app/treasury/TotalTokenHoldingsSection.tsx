@@ -20,7 +20,7 @@ const tableData = [
   {
     token: 'Staked Rootstock Infrastructure Framework',
     symbol: 'stRIF',
-    price: '-',
+    price: '—',
     holdings: <TokenHoldingsStRIF />,
   },
 ]
