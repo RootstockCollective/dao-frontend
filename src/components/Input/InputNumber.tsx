@@ -1,15 +1,15 @@
 import { cn } from '@/lib/utils'
 import React from 'react'
-import { NumericFormat } from 'react-number-format'
+import { InputAttributes, NumericFormat, NumericFormatProps } from 'react-number-format'
 import { useFormField } from '../Form'
 import { INPUT_DEFAULT_CLASSES } from './Input'
 
-interface InputNumberProps extends React.InputHTMLAttributes<HTMLInputElement> {
+interface InputNumberProps extends NumericFormatProps<InputAttributes> {
   prefix?: string
   decimalScale?: number
 }
 
-const InputNumber = React.forwardRef<HTMLInputElement, InputNumberProps>(
+const InputNumber = React.forwardRef<NumericFormatProps<InputAttributes>, InputNumberProps>(
   ({ prefix, decimalScale = 8, className, type, max = Number.MAX_SAFE_INTEGER, ...props }, ref) => {
     const { error, formItemId } = useFormField()
     return (

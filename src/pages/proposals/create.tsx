@@ -251,7 +251,13 @@ export default function CreateProposal() {
                       <FormItem className="mb-6 mx-1">
                         <FormLabel>Amount</FormLabel>
                         <FormControl>
-                          <InputNumber placeholder="0.00" className="w-64" max={MAX_AMOUNT} {...field} />
+                          <InputNumber
+                            placeholder="0.00"
+                            className="w-64"
+                            max={MAX_AMOUNT}
+                            autoComplete="off"
+                            {...field}
+                          />
                         </FormControl>
                         {amountValue?.toString() && (
                           <FormDescription>= USD {formatCurrency(amountUsd)}</FormDescription>
