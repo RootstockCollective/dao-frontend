@@ -4,10 +4,11 @@ import { useGetTreasuryBucketBalance } from '@/app/treasury/hooks/useGetTreasury
 import { currentEnvTreasuryContracts } from '@/lib/contracts'
 import { Address } from 'viem'
 import { GetPricesResult } from '@/app/user/types'
+import { formatCurrency } from '@/lib/utils'
 
 type BucketItem = {
   amount: string
-  fiatAmount: number
+  fiatAmount: string
 }
 
 type Bucket = {
@@ -50,11 +51,11 @@ const getBucketBalance = (
 ) => ({
   RIF: {
     amount: bucketBalance.RIF.balance,
-    fiatAmount: Number(bucketBalance.RIF.balance) * prices.RIF.price,
+    fiatAmount: formatCurrency(Number(bucketBalance.RIF.balance) * (prices.RIF?.price ?? 0)),
   },
   rBTC: {
     amount: bucketBalance.rBTC.balance,
-    fiatAmount: Number(bucketBalance.rBTC.balance) * prices.rBTC.price,
+    fiatAmount: formatCurrency(Number(bucketBalance.rBTC.balance) * (prices.rBTC?.price ?? 0)),
   },
 })
 
