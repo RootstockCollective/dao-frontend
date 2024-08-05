@@ -1,9 +1,12 @@
 'use client'
 import { useCreateProposal } from '@/app/proposals/hooks/useCreateProposal'
 import { useVotingPower } from '@/app/proposals/hooks/useVotingPower'
+import { TRANSACTION_SENT_MESSAGES } from '@/app/proposals/shared/utils'
+import { useBalancesContext } from '@/app/user/Balances/context/BalancesContext'
+import { useGetSpecificPrices } from '@/app/user/Balances/hooks/useGetSpecificPrices'
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/Accordion'
+import { Alert } from '@/components/Alert/Alert'
 import { Button } from '@/components/Button'
-import Image from 'next/image'
 import {
   Form,
   FormControl,
@@ -13,45 +16,37 @@ import {
   FormLabel,
   FormMessage,
 } from '@/components/Form'
-import { Input } from '@/components/Input'
+import { Input, InputNumber } from '@/components/Input'
 import { MainContainer } from '@/components/MainContainer/MainContainer'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/Select'
 import { Textarea } from '@/components/Textarea'
 import { Header, Paragraph } from '@/components/Typography'
 import { currentEnvContracts } from '@/lib/contracts'
-import { sanitizeInputNumber } from '@/lib/utils'
+import { formatCurrency } from '@/lib/utils'
+import { usePricesContext } from '@/shared/context/PricesContext'
 import { zodResolver } from '@hookform/resolvers/zod'
+import Image from 'next/image'
 import { useRouter } from 'next/navigation'
-import { useEffect, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { useForm } from 'react-hook-form'
 import { GoRocket } from 'react-icons/go'
 import { Address } from 'viem'
 import { z } from 'zod'
-import { Alert } from '@/components/Alert/Alert'
-import { TRANSACTION_SENT_MESSAGES } from '@/app/proposals/shared/utils'
 
 const ADDRESS_REGEX = /^0x[a-fA-F0-9]{40}$/
+const MAX_AMOUNT = 999999999
 
 const FormSchema = z.object({
   proposalName: z.string().min(3).max(100),
   description: z.string().min(3).max(3000),
   toAddress: z.string().refine(value => ADDRESS_REGEX.test(value), 'Please enter a valid address'),
   tokenAddress: z.string().length(42),
-  amount: z.union([z.string().transform(v => v.replace(/[^0-9.-]+/g, '')), z.number()]).pipe(
-    z.coerce
-      .number()
-      .positive()
-      .max(999999999)
-      .refine(value => {
-        const valueStr = sanitizeInputNumber(value)
-        const decimals = valueStr.split('.')[1]
-        return !decimals || decimals.length <= 8
-      }, 'Amount must have up to 8 decimals'),
-  ),
+  amount: z.coerce.number().positive('Required').min(1).max(MAX_AMOUNT),
 })
 
 export default function CreateProposal() {
   const router = useRouter()
+  const prices = useGetSpecificPrices()
   const { isLoading: isVotingPowerLoading, canCreateProposal } = useVotingPower()
   const { onCreateProposal } = useCreateProposal()
   const [message, setMessage] = useState<
@@ -76,13 +71,20 @@ export default function CreateProposal() {
     control,
     handleSubmit,
     formState: { touchedFields, errors, isValid, isDirty },
+    watch,
   } = form
+
+  const pricesMap = useMemo(() => ({ [currentEnvContracts.RIF]: prices.RIF }), [prices])
+
   const isProposalNameValid = !errors.proposalName && touchedFields.proposalName
   const isDescriptionValid = !errors.description && touchedFields.description
   const isToAddressValid = !errors.toAddress && touchedFields.toAddress
   const isAmountValid = !errors.amount && touchedFields.amount
   const isProposalCompleted = isProposalNameValid && isDescriptionValid
   const isActionsCompleted = isToAddressValid && isAmountValid
+  const amountValue = watch('amount')
+  const tokenAddress = watch('tokenAddress')
+  const amountUsd = pricesMap[tokenAddress] ? amountValue * pricesMap[tokenAddress]?.price : 0
 
   const onSubmit = async (data: z.infer<typeof FormSchema>) => {
     const { proposalName, description, toAddress, tokenAddress, amount } = data
@@ -249,16 +251,17 @@ export default function CreateProposal() {
                       <FormItem className="mb-6 mx-1">
                         <FormLabel>Amount</FormLabel>
                         <FormControl>
-                          <Input
+                          <InputNumber
                             placeholder="0.00"
-                            type="number"
                             className="w-64"
-                            min={0}
-                            max={999999999}
+                            max={MAX_AMOUNT}
+                            autoComplete="off"
                             {...field}
                           />
                         </FormControl>
-                        <FormDescription>= $ USD 0.00</FormDescription>
+                        {amountValue?.toString() && (
+                          <FormDescription>= USD {formatCurrency(amountUsd)}</FormDescription>
+                        )}
                         <FormMessage />
                       </FormItem>
                     )}
