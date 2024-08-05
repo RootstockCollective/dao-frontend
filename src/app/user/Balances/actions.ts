@@ -84,6 +84,8 @@ export const fetchNftsOwnedByAddressAndNFTAddress = (address: string, nftAddress
 export const fetchProposalCreated = () =>
   axiosInstance.get(fetchProposalsCreatedByGovernorAddress.replace('{{address}}', GovernorAddress))
 
+export const fetchProposalsCreatedCached = () => axiosInstance.get('/proposals/api', { baseURL: '/' })
+
 export const fetchIpfsUri = async (uri: string, responseType: 'json' | 'blob' = 'json') => {
   uri = uri.replace('ipfs://', 'https://ipfs.io/ipfs/')
   const { data } = await axiosInstance.get(uri, { responseType })

@@ -2,12 +2,13 @@ import { useMemo } from 'react'
 import { useQuery } from '@tanstack/react-query'
 import { parseEventLogs } from 'viem'
 import { GovernorAbi } from '@/lib/abis/Governor'
-import { fetchProposalCreated } from '@/app/user/Balances/actions'
+import { fetchProposalsCreatedCached } from '@/app/user/Balances/actions'
 
 export const useFetchLatestProposals = () => {
   const { data } = useQuery({
-    queryFn: fetchProposalCreated,
+    queryFn: fetchProposalsCreatedCached,
     queryKey: ['proposalsCreated'],
+    refetchInterval: 2000,
   })
 
   const latestProposals = useMemo(() => {
