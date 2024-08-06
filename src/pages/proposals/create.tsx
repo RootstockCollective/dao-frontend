@@ -12,14 +12,14 @@ import {
   FormDescription,
   FormField,
   FormInput,
+  FormInputNumber,
   FormItem,
   FormLabel,
   FormMessage,
+  FormTextarea,
 } from '@/components/Form'
-import { FormInputNumber } from '@/components/Form'
 import { MainContainer } from '@/components/MainContainer/MainContainer'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/Select'
-import { Textarea } from '@/components/Textarea'
 import { Header, Paragraph } from '@/components/Typography'
 import { tokenContracts } from '@/lib/contracts'
 import { formatCurrency } from '@/lib/utils'
@@ -163,7 +163,7 @@ export default function CreateProposal() {
                     <FormItem className="mb-6 mx-1">
                       <FormLabel>Description</FormLabel>
                       <FormControl>
-                        <Textarea placeholder="Enter a description..." {...field} maxLength={3000} />
+                        <FormTextarea placeholder="Enter a description..." {...field} maxLength={3000} />
                       </FormControl>
                       <FormMessage />
                     </FormItem>

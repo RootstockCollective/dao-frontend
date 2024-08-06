@@ -1,4 +1,4 @@
-import { TextInput } from '@/components/TextInput/TextInput'
+import { TextInput } from '@/components/Input'
 import { isValidNumber } from '@/lib/utils'
 
 interface Props {

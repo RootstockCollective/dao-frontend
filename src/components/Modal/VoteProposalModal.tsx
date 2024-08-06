@@ -1,6 +1,6 @@
 import { Button } from '@/components/Button'
 import { Modal } from '@/components/Modal/Modal'
-import { TextInput } from '@/components/TextInput'
+import { TextInput } from '@/components/Input'
 import { Header, Label, Paragraph, Typography } from '@/components/Typography'
 import { shortAddress, truncateMiddle } from '@/lib/utils'
 import { FC, useState } from 'react'

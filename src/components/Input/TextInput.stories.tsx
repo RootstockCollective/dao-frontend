@@ -1,5 +1,5 @@
 import { Meta, StoryObj } from '@storybook/react'
-import { TextInput } from '@/components/TextInput/TextInput'
+import { TextInput } from '@/components/Input/TextInput'
 import { userEvent, within, expect } from '@storybook/test'
 
 const meta = {
