@@ -1,6 +1,6 @@
 import { useAccount, useReadContract, useWriteContract, useWaitForTransactionReceipt } from 'wagmi'
 import { RIFTokenAbi } from '@/lib/abis/RIFTokenAbi'
-import { currentEnvContracts } from '@/lib/contracts'
+import { tokenContracts } from '@/lib/contracts'
 import { Address, parseEther } from 'viem'
 import { useCallback, useMemo } from 'react'
 import { StRIFTokenAbi } from '@/lib/abis/StRIFTokenAbi'
@@ -22,7 +22,7 @@ export const useStakeRIF: ActionHookToUse = (
 
   const { data: allowanceBalance, isLoading: isAllowanceReadLoading } = useReadContract({
     abi: RIFTokenAbi,
-    address: currentEnvContracts.RIF as Address,
+    address: tokenContracts.RIF,
     functionName: 'allowance',
     args: [address!, tokenToReceiveContract as Address],
     query: {

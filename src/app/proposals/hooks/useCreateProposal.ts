@@ -1,7 +1,7 @@
 import { useVotingPower } from '@/app/proposals/hooks/useVotingPower'
 import { GovernorAbi } from '@/lib/abis/Governor'
 import { StRIFTokenAbi } from '@/lib/abis/StRIFTokenAbi'
-import { currentEnvContracts, GovernorAddress } from '@/lib/contracts'
+import { tokenContracts, GovernorAddress } from '@/lib/contracts'
 import { solidityPackedKeccak256 } from 'ethers'
 import { Address, encodeFunctionData, parseEther } from 'viem'
 import { useWriteContract } from 'wagmi'
@@ -23,7 +23,7 @@ const createProposalForStRifTransfer = (
   calldata: ReturnType<typeof encodeFunctionData>,
   description: string,
 ) => {
-  const proposal = [[currentEnvContracts.stRIF as Address], [0n], [calldata], description]
+  const proposal = [[tokenContracts.stRIF], [0n], [calldata], description]
   const descriptionHash = solidityPackedKeccak256(['string'], [description])
   const proposalToRunHash = [...proposal.slice(3), descriptionHash]
   return {

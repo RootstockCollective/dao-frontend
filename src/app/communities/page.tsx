@@ -3,7 +3,7 @@ import { MainContainer } from '@/components/MainContainer/MainContainer'
 import Image from 'next/image'
 import { CommunityItem } from '@/app/communities/CommunityItem'
 import { firstNft } from '@/app/communities/communityUtils'
-import { currentEnvNFTContracts } from '@/lib/contracts'
+import { nftContracts } from '@/lib/contracts'
 
 // @TODO remove and dynamically fetch the community
 const firstCommunity = {
@@ -12,7 +12,7 @@ const firstCommunity = {
   subtitle: 'DeFi',
   description: `Crypto ipsum bitcoin ethereum dogecoin litecoin. Hedera USD kadena chainlink arweave hive binance.
       Shiba-inu terra ICON IOTA ICON livepeer velas uniswap. Kadena kusama IOTA horizen.`,
-  nftAddress: currentEnvNFTContracts.EA,
+  nftAddress: nftContracts.EA,
   numberOfMembers: 0,
 }
 

@@ -3,7 +3,7 @@ import { useBalancesContext } from '@/app/user/Balances/context/BalancesContext'
 import { useMemo } from 'react'
 import { steps } from '@/app/user/Stake/Steps/stepsUtils'
 import { StakingToken } from '@/app/user/Stake/types'
-import { currentEnvContracts } from '@/lib/contracts'
+import { tokenContracts } from '@/lib/contracts'
 import { StakingProvider } from '@/app/user/Stake/StakingContext'
 import { Modal } from '@/components/Modal/Modal'
 import { useUnstakeStRIF } from '@/app/user/Stake/hooks/useUnstakeStRIF'
@@ -26,7 +26,7 @@ const UnStakingSteps = ({ onCloseModal }: StakingStepsProps) => {
     () => ({
       balance: balances.stRIF.balance,
       symbol: balances.stRIF.symbol,
-      contract: currentEnvContracts.stRIF,
+      contract: tokenContracts.stRIF,
       price: prices.stRIF?.price.toString(),
     }),
     [balances.stRIF.balance, balances.stRIF.symbol, prices.stRIF?.price],
@@ -36,7 +36,7 @@ const UnStakingSteps = ({ onCloseModal }: StakingStepsProps) => {
     () => ({
       balance: balances.RIF.balance,
       symbol: balances.RIF.symbol,
-      contract: currentEnvContracts.RIF,
+      contract: tokenContracts.RIF,
       price: prices.RIF?.price.toString(),
     }),
     [balances.RIF.balance, balances.RIF.symbol, prices.RIF?.price],

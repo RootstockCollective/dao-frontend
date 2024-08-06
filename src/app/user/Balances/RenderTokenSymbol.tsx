@@ -1,5 +1,5 @@
 import { useBalancesContext } from '@/app/user/Balances/context/BalancesContext'
-import { currentEnvContracts, SupportedTokens } from '@/lib/contracts'
+import { tokenContracts, SupportedTokens } from '@/lib/contracts'
 import { useWalletClient } from 'wagmi'
 
 interface Props {
@@ -15,7 +15,7 @@ export const RenderTokenSymbol = ({ symbol }: Props) => {
       walletClient.watchAsset({
         type: 'ERC20',
         options: {
-          address: currentEnvContracts[symbol],
+          address: tokenContracts[symbol],
           decimals: 18,
           symbol: balances[symbol].symbol,
         },

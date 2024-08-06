@@ -1,13 +1,13 @@
-import { useReadContract } from 'wagmi'
 import { StRIFTokenAbi } from '@/lib/abis/StRIFTokenAbi'
-import { currentEnvContracts } from '@/lib/contracts'
-import { Address, formatEther, parseEther } from 'viem'
+import { tokenContracts } from '@/lib/contracts'
 import { useMemo } from 'react'
+import { formatEther } from 'viem'
+import { useReadContract } from 'wagmi'
 
 export const TokenHoldingsStRIF = () => {
   const { data } = useReadContract({
     abi: StRIFTokenAbi,
-    address: currentEnvContracts.stRIF as Address,
+    address: tokenContracts.stRIF,
     functionName: 'totalSupply',
   })
 

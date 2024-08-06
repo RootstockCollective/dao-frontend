@@ -1,7 +1,7 @@
 import { createContext, ReactNode, useContext, useMemo } from 'react'
 import { usePricesContext, withPricesContextProvider } from '@/shared/context/PricesContext'
 import { useGetTreasuryBucketBalance } from '@/app/treasury/hooks/useGetTreasuryBucketBalance'
-import { currentEnvTreasuryContracts } from '@/lib/contracts'
+import { treasuryContracts } from '@/lib/contracts'
 import { Address } from 'viem'
 import { GetPricesResult } from '@/app/user/types'
 import { formatCurrency } from '@/lib/utils'
@@ -62,9 +62,9 @@ const getBucketBalance = (
 const TreasuryContextProvider = ({ children }: Props) => {
   const { prices } = usePricesContext()
 
-  const bucketOneBalance = useGetTreasuryBucketBalance(currentEnvTreasuryContracts[0].address as Address)
-  const bucketTwoBalance = useGetTreasuryBucketBalance(currentEnvTreasuryContracts[1].address as Address)
-  const bucketThreeBalance = useGetTreasuryBucketBalance(currentEnvTreasuryContracts[2].address as Address)
+  const bucketOneBalance = useGetTreasuryBucketBalance(treasuryContracts[0].address)
+  const bucketTwoBalance = useGetTreasuryBucketBalance(treasuryContracts[1].address)
+  const bucketThreeBalance = useGetTreasuryBucketBalance(treasuryContracts[2].address)
 
   const bucketOne: Bucket = useMemo(
     () => getBucketBalance(bucketOneBalance, prices),

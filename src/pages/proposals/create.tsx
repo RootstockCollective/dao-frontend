@@ -21,7 +21,7 @@ import { MainContainer } from '@/components/MainContainer/MainContainer'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/Select'
 import { Textarea } from '@/components/Textarea'
 import { Header, Paragraph } from '@/components/Typography'
-import { currentEnvContracts } from '@/lib/contracts'
+import { tokenContracts } from '@/lib/contracts'
 import { formatCurrency } from '@/lib/utils'
 import { zodResolver } from '@hookform/resolvers/zod'
 import Image from 'next/image'
@@ -61,7 +61,7 @@ export default function CreateProposal() {
       proposalName: '',
       description: '',
       toAddress: '',
-      tokenAddress: currentEnvContracts.RIF as Address,
+      tokenAddress: tokenContracts.RIF,
       amount: undefined,
     },
   })
@@ -73,7 +73,7 @@ export default function CreateProposal() {
     watch,
   } = form
 
-  const pricesMap = useMemo(() => ({ [currentEnvContracts.RIF]: prices.RIF }), [prices])
+  const pricesMap = useMemo(() => ({ [tokenContracts.RIF]: prices.RIF }), [prices])
 
   const isProposalNameValid = !errors.proposalName && touchedFields.proposalName
   const isDescriptionValid = !errors.description && touchedFields.description
@@ -224,7 +224,7 @@ export default function CreateProposal() {
                                   RBTC
                                 </div>
                               </SelectItem> */}
-                              <SelectItem value={currentEnvContracts.RIF as Address}>
+                              <SelectItem value={tokenContracts.RIF as Address}>
                                 <div className="flex items-center">
                                   <Image
                                     src="/images/rif-logo.png"

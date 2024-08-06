@@ -6,7 +6,7 @@ import {
   fetchPricesEndpoint,
   fetchProposalsCreatedByGovernorAddress,
 } from '@/lib/endpoints'
-import { currentEnvContracts, GovernorAddress } from '@/lib/contracts'
+import { tokenContracts, GovernorAddress } from '@/lib/contracts'
 
 export const fetchAddressTokens = (address: string, chainId = 31) =>
   axiosInstance
@@ -21,15 +21,15 @@ export const fetchPrices = () =>
   axiosInstance
     .get<GetPricesResult>(
       fetchPricesEndpoint
-        .replace('{{addresses}}', Object.values(currentEnvContracts).join(','))
+        .replace('{{addresses}}', Object.values(tokenContracts).join(','))
         .replace('{{convert}}', 'USD'),
     )
     .then(({ data: prices }) => {
       const pricesReturn: GetPricesResult = {}
       for (const contract in prices) {
-        const contractFromEnv = (
-          Object.keys(currentEnvContracts) as Array<keyof typeof currentEnvContracts>
-        ).find(contractName => currentEnvContracts[contractName] === contract)
+        const contractFromEnv = (Object.keys(tokenContracts) as Array<keyof typeof tokenContracts>).find(
+          contractName => tokenContracts[contractName] === contract,
+        )
         if (contractFromEnv) {
           pricesReturn[contractFromEnv] = prices[contract]
         }

@@ -4,6 +4,7 @@ import { EarlyAdoptersNFTAbi } from './abis/EarlyAdoptersNFTAbi'
 import {
   BUCKET1_ADDRESS,
   BUCKET2_ADDRESS,
+  BUCKET3_ADDRESS,
   EA_NFT_ADDRESS,
   GOVERNOR_ADDRESS,
   MULTICALL_ADDRESS,
@@ -11,23 +12,22 @@ import {
   STRIF_ADDRESS,
 } from './constants'
 
-const currentEnvContracts = {
+const tokenContracts = {
   RIF: RIF_ADDRESS,
   stRIF: STRIF_ADDRESS,
   RBTC: ZeroAddress as Address,
-  multicall: MULTICALL_ADDRESS,
 }
-export type SupportedTokens = keyof typeof currentEnvContracts
+export type SupportedTokens = keyof typeof tokenContracts
 
-const currentEnvNFTContracts = {
+const nftContracts = {
   EA: EA_NFT_ADDRESS, // Early Adopters
 }
 
 const abiContractsMap: { [key: string]: any } = {
-  [currentEnvNFTContracts?.EA.toLowerCase()]: EarlyAdoptersNFTAbi,
+  [nftContracts?.EA.toLowerCase()]: EarlyAdoptersNFTAbi,
 }
 
-const currentEnvTreasuryContracts = [
+const treasuryContracts = [
   {
     name: 'Bucket 1',
     address: BUCKET1_ADDRESS,
@@ -38,16 +38,11 @@ const currentEnvTreasuryContracts = [
   },
   {
     name: 'Bucket 3',
-    address: 'BUCKET3_ADDRESS',
+    address: BUCKET3_ADDRESS,
   },
 ]
 
 const GovernorAddress = GOVERNOR_ADDRESS
+const MulticallAddress = MULTICALL_ADDRESS
 
-export {
-  currentEnvContracts,
-  currentEnvNFTContracts,
-  abiContractsMap,
-  currentEnvTreasuryContracts,
-  GovernorAddress,
-}
+export { tokenContracts, nftContracts, abiContractsMap, treasuryContracts, GovernorAddress, MulticallAddress }
