@@ -18,6 +18,7 @@ import {
   FormMessage,
   FormTextarea,
 } from '@/components/Form'
+import { MAX_INPUT_NUMBER_AMOUNT } from '@/components/Input/InputNumber'
 import { MainContainer } from '@/components/MainContainer/MainContainer'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/Select'
 import { Header, Paragraph } from '@/components/Typography'
@@ -39,7 +40,7 @@ const FormSchema = z.object({
   description: z.string().min(3).max(3000),
   toAddress: z.string().refine(value => ADDRESS_REGEX.test(value), 'Please enter a valid address'),
   tokenAddress: z.string().length(42),
-  amount: z.coerce.number().positive('Required field').min(1).max(MAX_AMOUNT),
+  amount: z.coerce.number().positive('Required field').min(1).max(MAX_INPUT_NUMBER_AMOUNT),
 })
 
 export default function CreateProposal() {
