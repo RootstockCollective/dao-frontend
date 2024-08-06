@@ -9,6 +9,7 @@ import { useAccount, useDisconnect } from 'wagmi'
 import { AccountAddress } from '../Header/AccountAddress'
 import { DisconnectWalletModal } from '../Modal/DisconnectWalletModal'
 import { ProtectedContent } from '../ProtectedContent/ProtectedContent'
+import { Footer } from '@/components/Footer'
 
 interface Props {
   children: ReactNode
@@ -35,34 +36,37 @@ export const MainContainer: FC<Props> = ({ children, notProtected = false }) => 
   }, [])
 
   return (
-    <div className="flex container">
-      <StatefulSidebar />
-      <div className="flex-auto">
-        {hasMounted && (
-          <>
-            <Header>
-              {isConnected ? (
-                <AccountAddress
+    <>
+      <div className="flex container">
+        <StatefulSidebar />
+        <div className="flex-auto">
+          {hasMounted && (
+            <>
+              <Header>
+                {isConnected ? (
+                  <AccountAddress
+                    address={address}
+                    shortAddress={shortAddress(address)}
+                    onLogoutClick={modal.openModal}
+                  />
+                ) : (
+                  <ConnectButton />
+                )}
+              </Header>
+              {modal.isModalOpened && (
+                <DisconnectWalletModal
+                  onClose={modal.closeModal}
+                  onConfirm={handleDisconnect}
+                  onCancel={modal.closeModal}
                   address={address}
-                  shortAddress={shortAddress(address)}
-                  onLogoutClick={modal.openModal}
                 />
-              ) : (
-                <ConnectButton />
               )}
-            </Header>
-            {modal.isModalOpened && (
-              <DisconnectWalletModal
-                onClose={modal.closeModal}
-                onConfirm={handleDisconnect}
-                onCancel={modal.closeModal}
-                address={address}
-              />
-            )}
-          </>
-        )}
-        {notProtected ? children : <ProtectedContent>{children}</ProtectedContent>}
+            </>
+          )}
+          {notProtected ? children : <ProtectedContent>{children}</ProtectedContent>}
+        </div>
       </div>
-    </div>
+      <Footer variant="container" />
+    </>
   )
 }

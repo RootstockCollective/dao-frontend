@@ -5,7 +5,7 @@ import { LeftSidebarProps } from '@/components/LeftSidebar/types'
 
 export const LeftSidebar = ({ activeButton = 'communities', onSidebarButtonClick }: LeftSidebarProps) => {
   return (
-    <div className="min-h-screen w-[327px] border border-input-bg px-[32px]">
+    <div className="min-h-screen w-[327px] border border-input-bg px-[32px] border-b-0">
       <Logo className="mb-[56px] mt-[47px]" />
       {/* Sidebar stateful */}
       <SidebarButtons onClick={onSidebarButtonClick} activeButton={activeButton} />
