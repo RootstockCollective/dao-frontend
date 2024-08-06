@@ -62,7 +62,14 @@ const PageWithProposal = (proposal: PageWithProposal) => {
   const { votingPowerAtSnapshot } = useVotingPowerAtSnapshot(snapshot as bigint)
 
   const { threshold, canCreateProposal } = useVotingPower()
-  const { onVote, isProposalActive, didUserVoteAlready, proposalStateHuman } = useVoteOnProposal(proposalId)
+  const {
+    onVote,
+    isProposalActive,
+    didUserVoteAlready,
+    proposalStateHuman,
+    proposalNeedsQueuing,
+    onQueueProposal,
+  } = useVoteOnProposal(proposalId)
 
   const cannotCastVote = !isProposalActive || didUserVoteAlready || !canCreateProposal
 
@@ -107,6 +114,11 @@ const PageWithProposal = (proposal: PageWithProposal) => {
             </Popover>
           ) : (
             <Button onClick={votingModal.openModal}>Vote on chain</Button>
+          )}
+          {proposalNeedsQueuing && ['Succeeded', 'Queued'].includes(proposalStateHuman) && (
+            <Button onClick={onQueueProposal} className="mt-2" disabled={proposalStateHuman === 'Queued'}>
+              Put on Queue
+            </Button>
           )}
           {votingModal.isModalOpened && address && (
             <VoteProposalModal

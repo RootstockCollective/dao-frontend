@@ -29,11 +29,21 @@ enum ProposalState {
 export const useVoteOnProposal = (proposalId: string) => {
   const { address } = useAccount()
 
+  // Check if proposal needs queuing
+  const { data: proposalNeedsQueuing } = useReadContract({
+    ...DEFAULT_DAO,
+    functionName: 'proposalNeedsQueuing',
+    args: [BigInt(proposalId)],
+  })
+
   // First read the proposal to see if it's active
   const { data: proposalState } = useReadContract({
     ...DEFAULT_DAO,
     functionName: 'state',
     args: [BigInt(proposalId)],
+    query: {
+      refetchInterval: 5000,
+    },
   })
 
   const isProposalActive = proposalState === 1
@@ -61,11 +71,21 @@ export const useVoteOnProposal = (proposalId: string) => {
     })
   }
 
+  const onQueueProposal = async () => {
+    return writeContractAsync({
+      ...DEFAULT_DAO,
+      functionName: 'queue',
+      args: [BigInt(proposalId)],
+    })
+  }
+
   return {
     onVote,
     isProposalActive,
     didUserVoteAlready: !!hasVoted,
     proposalState,
-    proposalStateHuman: proposalState ? ProposalState[proposalState] : '',
+    proposalStateHuman: proposalState !== undefined ? ProposalState[proposalState] : '',
+    proposalNeedsQueuing,
+    onQueueProposal,
   }
 }
