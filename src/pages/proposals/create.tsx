@@ -2,7 +2,6 @@
 import { useCreateProposal } from '@/app/proposals/hooks/useCreateProposal'
 import { useVotingPower } from '@/app/proposals/hooks/useVotingPower'
 import { TRANSACTION_SENT_MESSAGES } from '@/app/proposals/shared/utils'
-import { useBalancesContext } from '@/app/user/Balances/context/BalancesContext'
 import { useGetSpecificPrices } from '@/app/user/Balances/hooks/useGetSpecificPrices'
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/Accordion'
 import { Alert } from '@/components/Alert/Alert'
@@ -12,11 +11,12 @@ import {
   FormControl,
   FormDescription,
   FormField,
+  FormInput,
   FormItem,
   FormLabel,
   FormMessage,
 } from '@/components/Form'
-import { Input, InputNumber } from '@/components/Input'
+import { FormInputNumber } from '@/components/Form'
 import { MainContainer } from '@/components/MainContainer/MainContainer'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/Select'
 import { Textarea } from '@/components/Textarea'
@@ -40,7 +40,7 @@ const FormSchema = z.object({
   description: z.string().min(3).max(3000),
   toAddress: z.string().refine(value => ADDRESS_REGEX.test(value), 'Please enter a valid address'),
   tokenAddress: z.string().length(42),
-  amount: z.coerce.number().positive('Required').min(1).max(MAX_AMOUNT),
+  amount: z.coerce.number().positive('Required field').min(1).max(MAX_AMOUNT),
 })
 
 export default function CreateProposal() {
@@ -150,7 +150,7 @@ export default function CreateProposal() {
                     <FormItem className="mb-6 mx-1">
                       <FormLabel>Proposal name</FormLabel>
                       <FormControl>
-                        <Input placeholder="Name your proposal" {...field} maxLength={100} />
+                        <FormInput placeholder="Name your proposal" {...field} maxLength={100} />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
@@ -195,7 +195,7 @@ export default function CreateProposal() {
                     <FormItem className="mb-6 mx-1">
                       <FormLabel>Transfer to</FormLabel>
                       <FormControl>
-                        <Input placeholder="0x123...456" {...field} />
+                        <FormInput placeholder="0x123...456" {...field} />
                       </FormControl>
                       <FormDescription>Write or paste the wallet address of the recipient</FormDescription>
                       <FormMessage />
@@ -250,7 +250,7 @@ export default function CreateProposal() {
                       <FormItem className="mb-6 mx-1">
                         <FormLabel>Amount</FormLabel>
                         <FormControl>
-                          <InputNumber
+                          <FormInputNumber
                             placeholder="0.00"
                             className="w-64"
                             max={MAX_AMOUNT}

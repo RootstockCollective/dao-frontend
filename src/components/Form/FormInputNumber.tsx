@@ -1,21 +1,21 @@
 import { cn } from '@/lib/utils'
 import React from 'react'
 import { InputAttributes, NumericFormat, NumericFormatProps } from 'react-number-format'
-import { useFormField } from '../Form'
-import { INPUT_DEFAULT_CLASSES } from './Input'
+import { useFormField } from '.'
+import { FORM_INPUT_DEFAULT_CLASSES } from './FormInput'
 
-interface InputNumberProps extends NumericFormatProps<InputAttributes> {
+interface FormInputNumber extends NumericFormatProps<InputAttributes> {
   prefix?: string
   decimalScale?: number
 }
 
-const InputNumber = React.forwardRef<NumericFormatProps<InputAttributes>, InputNumberProps>(
+const FormInputNumber = React.forwardRef<NumericFormatProps<InputAttributes>, FormInputNumber>(
   ({ prefix, decimalScale = 8, className, type, max = Number.MAX_SAFE_INTEGER, ...props }, ref) => {
     const { error, formItemId } = useFormField()
     return (
       <NumericFormat
         id={formItemId}
-        className={cn(INPUT_DEFAULT_CLASSES, error && 'border-st-error focus-visible:ring-0', className)}
+        className={cn(FORM_INPUT_DEFAULT_CLASSES, error && 'border-st-error focus-visible:ring-0', className)}
         getInputRef={ref}
         decimalSeparator="."
         prefix={prefix}
@@ -28,6 +28,6 @@ const InputNumber = React.forwardRef<NumericFormatProps<InputAttributes>, InputN
   },
 )
 
-InputNumber.displayName = 'InputNumber'
+FormInputNumber.displayName = 'FormInputNumber'
 
-export { InputNumber }
+export { FormInputNumber }

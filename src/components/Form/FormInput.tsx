@@ -1,11 +1,11 @@
 import * as React from 'react'
 
 import { cn } from '@/lib/utils'
-import { useFormField } from '../Form'
+import { useFormField } from '.'
 
-interface InputProps extends React.InputHTMLAttributes<HTMLInputElement> {}
+interface FormInputProps extends React.InputHTMLAttributes<HTMLInputElement> {}
 
-export const INPUT_DEFAULT_CLASSES = `
+export const FORM_INPUT_DEFAULT_CLASSES = `
 flex w-full
 p-[12px]
 justify-between
@@ -21,18 +21,18 @@ focus-visible:ring-white focus-visible:ring-opacity-50
 disabled:cursor-not-allowed disabled:opacity-50
 `
 
-const Input = React.forwardRef<HTMLInputElement, InputProps>(({ className, type, ...props }, ref) => {
+const FormInput = React.forwardRef<HTMLInputElement, FormInputProps>(({ className, type, ...props }, ref) => {
   const { error, formItemId } = useFormField()
   return (
     <input
       id={formItemId}
-      className={cn(INPUT_DEFAULT_CLASSES, error && 'border-st-error focus-visible:ring-0', className)}
+      className={cn(FORM_INPUT_DEFAULT_CLASSES, error && 'border-st-error focus-visible:ring-0', className)}
       ref={ref}
       type={type}
       {...props}
     />
   )
 })
-Input.displayName = 'Input'
+FormInput.displayName = 'FormInput'
 
-export { Input }
+export { FormInput }
