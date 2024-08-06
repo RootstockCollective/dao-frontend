@@ -13,9 +13,9 @@ const tableData = [
   },
   {
     token: 'Rootstock Bitcoin',
-    symbol: 'rBTC',
-    price: <RenderTokenPrice symbol="rBTC" contextToUse="prices" />,
-    holdings: <TokenHoldings symbol="rBTC" />,
+    symbol: 'RBTC',
+    price: <RenderTokenPrice symbol="RBTC" contextToUse="prices" />,
+    holdings: <TokenHoldings symbol="RBTC" />,
   },
   {
     token: 'Staked Rootstock Infrastructure Framework',

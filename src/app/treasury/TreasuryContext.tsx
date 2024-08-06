@@ -13,7 +13,7 @@ type BucketItem = {
 
 type Bucket = {
   RIF: BucketItem
-  rBTC: BucketItem
+  RBTC: BucketItem
 }
 
 interface TreasuryContextProps {
@@ -24,19 +24,19 @@ interface TreasuryContextProps {
 const getAllBucketsHoldings = (buckets: Bucket[]) => {
   const totalBalance = {
     RIF: 0,
-    rBTC: 0,
+    RBTC: 0,
   }
 
   buckets.forEach(bucket => {
     totalBalance.RIF += Number(bucket.RIF.amount)
-    totalBalance.rBTC += Number(bucket.rBTC.amount)
+    totalBalance.RBTC += Number(bucket.RBTC.amount)
   })
   return totalBalance
 }
 
 const TreasuryContext = createContext<TreasuryContextProps>({
   buckets: [],
-  bucketsTotal: { RIF: 0, rBTC: 0 },
+  bucketsTotal: { RIF: 0, RBTC: 0 },
 })
 
 interface Props {
@@ -53,9 +53,9 @@ const getBucketBalance = (
     amount: bucketBalance.RIF.balance,
     fiatAmount: formatCurrency(Number(bucketBalance.RIF.balance) * (prices.RIF?.price ?? 0)),
   },
-  rBTC: {
-    amount: bucketBalance.rBTC.balance,
-    fiatAmount: formatCurrency(Number(bucketBalance.rBTC.balance) * (prices.rBTC?.price ?? 0)),
+  RBTC: {
+    amount: bucketBalance.RBTC.balance,
+    fiatAmount: formatCurrency(Number(bucketBalance.RBTC.balance) * (prices.RBTC?.price ?? 0)),
   },
 })
 

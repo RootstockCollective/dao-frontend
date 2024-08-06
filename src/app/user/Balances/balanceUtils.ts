@@ -7,7 +7,7 @@ export const formatBalanceToHuman = (balance: BigNumberish, decimal = 18) =>
 
 const symbolsToGetFromArray = {
   RIF: { equivalentSymbols: ['tRIF', 'RIF'], currentContract: currentEnvContracts.RIF },
-  rBTC: { equivalentSymbols: ['rBTC', 'tRBTC'], currentContract: currentEnvContracts.RBTC },
+  RBTC: { equivalentSymbols: ['RBTC', 'tRBTC'], currentContract: currentEnvContracts.RBTC },
   stRIF: { equivalentSymbols: ['stRIF'], currentContract: currentEnvContracts.stRIF },
 }
 

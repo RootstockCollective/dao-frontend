@@ -12,7 +12,7 @@ export const useGetAddressBalances = (): TokenBalanceRecord => {
   return useMemo(
     () => ({
       RIF: getTokenBalance('RIF', query.data),
-      rBTC: getTokenBalance('rBTC', query.data),
+      RBTC: getTokenBalance('RBTC', query.data),
       stRIF: getTokenBalance('stRIF', query.data),
     }),
     [query.data],

@@ -25,19 +25,19 @@ export const TreasurySection = () => {
           fiatAmount={`= USD ${bucketThree.RIF.fiatAmount}`}
         />
         <MetricsCard
-          title="Treasury 1 rBTC Holdings"
-          amount={bucketOne.rBTC.amount}
-          fiatAmount={`= USD ${bucketOne.rBTC.fiatAmount}`}
+          title="Treasury 1 RBTC Holdings"
+          amount={bucketOne.RBTC.amount}
+          fiatAmount={`= USD ${bucketOne.RBTC.fiatAmount}`}
         />
         <MetricsCard
-          title="Treasury 2 rBTC Holdings"
-          amount={bucketTwo.rBTC.amount}
-          fiatAmount={`= USD ${bucketTwo.rBTC.fiatAmount}`}
+          title="Treasury 2 RBTC Holdings"
+          amount={bucketTwo.RBTC.amount}
+          fiatAmount={`= USD ${bucketTwo.RBTC.fiatAmount}`}
         />
         <MetricsCard
-          title="Treasury 3 rBTC Holdings"
-          amount={bucketThree.rBTC.amount}
-          fiatAmount={`= USD ${bucketThree.rBTC.fiatAmount}`}
+          title="Treasury 3 RBTC Holdings"
+          amount={bucketThree.RBTC.amount}
+          fiatAmount={`= USD ${bucketThree.RBTC.fiatAmount}`}
         />
       </div>
     </div>

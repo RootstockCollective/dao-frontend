@@ -43,7 +43,7 @@ export const useGetAddressTokens = (address: string, chainId: number) => {
       buildTokenBalanceObject('stRIF', stRIF as TokenData),
       buildTokenBalanceObject('RIF', RIF as TokenData),
       {
-        symbol: RBTC?.symbol || 'rBTC',
+        symbol: RBTC?.symbol || 'RBTC',
         balance: RBTC?.value.toString() || '0',
         contractAddress: ZeroAddress,
       },
