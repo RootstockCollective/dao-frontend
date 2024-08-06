@@ -1,11 +1,11 @@
 import { Meta, StoryObj } from '@storybook/react'
-import { TextInput } from '@/components/Input/TextInput'
+import { Input } from '@/components/Input/Input'
 import { userEvent, within, expect } from '@storybook/test'
 
 const meta = {
-  title: 'Components/TextInput',
-  component: TextInput,
-} satisfies Meta<typeof TextInput>
+  title: 'Components/Input',
+  component: Input,
+} satisfies Meta<typeof Input>
 
 export default meta
 
@@ -48,6 +48,17 @@ export const WithHint: Story = {
     label: 'Proposal name',
     fullWidth: true,
     hint: 'This is a hint',
+  },
+}
+
+export const NumericInput: Story = {
+  args: {
+    onChange: (val: string) => console.log(val),
+    placeholder: 'name your proposal',
+    name: 'Proposal name',
+    label: 'Proposal name',
+    fullWidth: true,
+    type: 'number',
   },
 }
 

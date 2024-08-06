@@ -33,7 +33,6 @@ import { Address } from 'viem'
 import { z } from 'zod'
 
 const ADDRESS_REGEX = /^0x[a-fA-F0-9]{40}$/
-const MAX_AMOUNT = 999999999
 
 const FormSchema = z.object({
   proposalName: z.string().min(3).max(100),
@@ -253,7 +252,6 @@ export default function CreateProposal() {
                           <FormInputNumber
                             placeholder="0.00"
                             className="w-64"
-                            max={MAX_AMOUNT}
                             autoComplete="off"
                             {...field}
                           />

@@ -1,6 +1,6 @@
 import { Button } from '@/components/Button'
 import { Modal } from '@/components/Modal/Modal'
-import { TextInput } from '@/components/Input'
+import { Input } from '@/components/Input'
 import { Header, Label, Paragraph, Typography } from '@/components/Typography'
 import { shortAddress, truncateMiddle } from '@/lib/utils'
 import { FC, useState } from 'react'
@@ -65,10 +65,9 @@ export const VoteProposalModal: FC<Props> = ({
           </button>
         </div>
 
-        <TextInput
+        <Input
           label="Voting Power"
           name="votingPower"
-          onChange={() => {}}
           value={votingPower}
           className="mt-4"
           fullWidth

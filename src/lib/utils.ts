@@ -57,11 +57,7 @@ export const truncateMiddle = (str: string, start = 10, end = 10): string => {
   return str.slice(0, start) + '...' + str.slice(-end)
 }
 
-export const isValidNumber = (value: string) => {
-  // Regular expression to check if the input is a number with one allowed decimal
-  const regex = /^\d*\.?\d{0,18}$/
-  return regex.test(value)
-}
+export const explorerURL = process.env.NEXT_PUBLIC_EXPLORER
 
 export const goToExplorerWithTxHash = (hash: string) => window.open(`${EXPLORER_URL}/tx/${hash}`, '_blank')
 

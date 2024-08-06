@@ -1,6 +1,8 @@
 import { Label, Paragraph } from '@/components/Typography'
 import { cn } from '@/lib/utils'
 import { FC, JSX } from 'react'
+import { InputAttributes, NumericFormatProps } from 'react-number-format'
+import { InputNumber } from './InputNumber'
 
 const DEFAULT_CLASSES = `
 px-[20px] py-[12px]
@@ -16,7 +18,6 @@ focus-visible:ring-white focus-visible:ring-opacity-50
 `
 
 interface Props {
-  onChange: (value: string) => void
   name: string
   fullWidth?: boolean
   value?: string
@@ -24,13 +25,14 @@ interface Props {
   readonly?: boolean
   label?: string
   labelWrapperProps?: JSX.IntrinsicElements['div']
-  inputProps?: JSX.IntrinsicElements['input']
+  inputProps?: JSX.IntrinsicElements['input'] & NumericFormatProps<InputAttributes>
   hint?: string
   errorMessage?: string
   className?: string
+  type?: 'text' | 'number'
+  onChange?: (value: string) => void
 }
-export const TextInput: FC<Props> = ({
-  onChange,
+export const Input: FC<Props> = ({
   name,
   fullWidth = false,
   value,
@@ -42,6 +44,8 @@ export const TextInput: FC<Props> = ({
   hint,
   errorMessage,
   className,
+  type = 'text',
+  onChange = () => {},
 }) => {
   const handleOnChange = (e: { target: { value: string } }) => onChange(e.target.value)
 
@@ -58,17 +62,30 @@ export const TextInput: FC<Props> = ({
           <Label variant="semibold">{label}</Label>
         </div>
       )}
-      <input
-        className={classes}
-        placeholder={placeholder}
-        type="text"
-        value={value}
-        onChange={handleOnChange}
-        name={name}
-        data-testid={`Input_${name}`}
-        readOnly={readonly}
-        {...inputProps}
-      />
+      {type === 'number' ? (
+        <InputNumber
+          className={classes}
+          placeholder={placeholder}
+          value={value}
+          onValueChange={({ value }) => onChange(value)}
+          name={name}
+          data-testid={`Input_${name}`}
+          readOnly={readonly}
+          {...inputProps}
+        />
+      ) : (
+        <input
+          className={classes}
+          placeholder={placeholder}
+          type="text"
+          value={value}
+          onChange={handleOnChange}
+          name={name}
+          data-testid={`Input_${name}`}
+          readOnly={readonly}
+          {...inputProps}
+        />
+      )}
       {hint && !errorMessage && (
         <div className="text-st-hint mt-[5px]">
           <Paragraph variant="light" className="text-[14px]">
