@@ -36,11 +36,21 @@ import { z } from 'zod'
 const ADDRESS_REGEX = /^0x[a-fA-F0-9]{40}$/
 
 const FormSchema = z.object({
-  proposalName: z.string().min(3).max(100),
-  description: z.string().min(3).max(3000),
+  proposalName: z
+    .string()
+    .max(100)
+    .refine(s => s.trim().replace(/\s+/g, ' ').length >= 5, 'Field must contain at least 5 characters'),
+  description: z
+    .string()
+    .max(3000)
+    .refine(s => s.trim().replace(/\s+/g, ' ').length >= 10, 'Field must contain at least 10 characters'),
   toAddress: z.string().refine(value => ADDRESS_REGEX.test(value), 'Please enter a valid address'),
   tokenAddress: z.string().length(42),
-  amount: z.coerce.number().positive('Required field').min(1).max(MAX_INPUT_NUMBER_AMOUNT),
+  amount: z.coerce
+    .number({ invalid_type_error: 'Required field' })
+    .positive('Required field')
+    .min(1, 'Amount must be greater or equal to 1')
+    .max(MAX_INPUT_NUMBER_AMOUNT),
 })
 
 export default function CreateProposal() {
