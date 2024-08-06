@@ -14,7 +14,7 @@ const VARIANTS = {
   login: DEFAULT_LOGIN_CLASS,
 }
 
-export const Footer = ({ brand = 'Rootstock Labs', variant = 'login' }: Props) => {
+export const Footer = ({ brand = 'RootstockCollective', variant = 'login' }: Props) => {
   const year = new Date().getFullYear()
   return (
     <footer className={`bottom-4 w-full flex justify-around text-sm ${VARIANTS[variant]}`}>
