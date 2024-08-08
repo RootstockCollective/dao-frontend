@@ -31,6 +31,7 @@ export const StepAllowance = ({ onGoNext = () => {}, onCloseModal = () => {} }: 
       actionName="Allowance"
       actionText={actionText}
       customComponentBeforeFooter={customFooter}
+      confirmButtonText="Continue"
     />
   )
 }
