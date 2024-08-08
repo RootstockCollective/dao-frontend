@@ -1,3 +1,5 @@
+import { ENV } from '@/lib/constants'
+
 const testnet = {
   registerRns: 'https://testnet.manager.rns.rifos.org/',
   tokenBridge: 'https://testnet.tokenbridge.rsk.co/',
@@ -17,4 +19,4 @@ const environments = {
   mainnet,
 }
 // @ts-ignore
-export const currentLinks = environments[process.env.NEXT_PUBLIC_ENV] as typeof testnet
+export const currentLinks = environments[ENV] as typeof testnet

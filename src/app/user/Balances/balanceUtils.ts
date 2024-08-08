@@ -1,14 +1,14 @@
 import { BigNumberish, ethers } from 'ethers'
 import { GetAddressTokenResult, TokenBalance } from '@/app/user/types'
-import { currentEnvContracts } from '@/lib/contracts'
+import { tokenContracts } from '@/lib/contracts'
 
 export const formatBalanceToHuman = (balance: BigNumberish, decimal = 18) =>
   ethers.formatUnits(balance, decimal)
 
 const symbolsToGetFromArray = {
-  RIF: { equivalentSymbols: ['tRIF', 'RIF'], currentContract: currentEnvContracts.RIF },
-  rBTC: { equivalentSymbols: ['rBTC', 'tRBTC'], currentContract: currentEnvContracts.rBTC },
-  stRIF: { equivalentSymbols: ['stRIF'], currentContract: currentEnvContracts.stRIF },
+  RIF: { equivalentSymbols: ['tRIF', 'RIF'], currentContract: tokenContracts.RIF },
+  RBTC: { equivalentSymbols: ['RBTC', 'tRBTC'], currentContract: tokenContracts.RBTC },
+  stRIF: { equivalentSymbols: ['stRIF'], currentContract: tokenContracts.stRIF },
 }
 
 export type SymbolsEquivalentKeys = keyof typeof symbolsToGetFromArray

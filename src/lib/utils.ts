@@ -1,6 +1,7 @@
-import { twMerge } from 'tailwind-merge'
-import { clsx, ClassValue } from 'clsx'
 import axios from 'axios'
+import { ClassValue, clsx } from 'clsx'
+import { twMerge } from 'tailwind-merge'
+import { EXPLORER_URL, RIF_WALLET_SERVICES_URL } from './constants'
 
 /**
  * Merges Tailwind and clsx classes in order to avoid classes conflicts.
@@ -24,7 +25,7 @@ export const shortAddress = (address: string | undefined, amount = 5): string =>
 }
 
 export const axiosInstance = axios.create({
-  baseURL: process.env.NEXT_PUBLIC_RIF_WALLET_SERVICES,
+  baseURL: RIF_WALLET_SERVICES_URL,
 })
 
 /**
@@ -56,15 +57,13 @@ export const truncateMiddle = (str: string, start = 10, end = 10): string => {
   return str.slice(0, start) + '...' + str.slice(-end)
 }
 
-export const explorerURL = process.env.NEXT_PUBLIC_EXPLORER
-
 export const isValidNumber = (value: string) => {
   // Regular expression to check if the input is a number with one allowed decimal
   const regex = /^\d*\.?\d{0,18}$/
   return regex.test(value)
 }
 
-export const goToExplorerWithTxHash = (hash: string) => window.open(`${explorerURL}/tx/${hash}`, '_blank')
+export const goToExplorerWithTxHash = (hash: string) => window.open(`${EXPLORER_URL}/tx/${hash}`, '_blank')
 
 /**
  * Sanitizes a number to a string representation

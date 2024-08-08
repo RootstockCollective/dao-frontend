@@ -26,9 +26,9 @@ const data = [
   },
   {
     token: 'Rootstock Bitcoin',
-    symbol: <RenderTokenSymbol symbol="rBTC" />,
-    'Token Price': <RenderTokenPrice symbol="rBTC" />,
-    'Total Balance': <RenderTotalBalance symbol="rBTC" />,
+    symbol: <RenderTokenSymbol symbol="RBTC" />,
+    'Token Price': <RenderTokenPrice symbol="RBTC" />,
+    'Total Balance': <RenderTotalBalance symbol="RBTC" />,
     actions: '',
   },
 ]
