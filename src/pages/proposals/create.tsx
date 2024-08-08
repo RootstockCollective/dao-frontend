@@ -2,7 +2,6 @@
 import { useCreateProposal } from '@/app/proposals/hooks/useCreateProposal'
 import { useVotingPower } from '@/app/proposals/hooks/useVotingPower'
 import { TRANSACTION_SENT_MESSAGES } from '@/app/proposals/shared/utils'
-import { useBalancesContext } from '@/app/user/Balances/context/BalancesContext'
 import { useGetSpecificPrices } from '@/app/user/Balances/hooks/useGetSpecificPrices'
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/Accordion'
 import { Alert } from '@/components/Alert/Alert'
@@ -12,14 +11,16 @@ import {
   FormControl,
   FormDescription,
   FormField,
+  FormInput,
+  FormInputNumber,
   FormItem,
   FormLabel,
   FormMessage,
+  FormTextarea,
 } from '@/components/Form'
-import { Input, InputNumber } from '@/components/Input'
+import { MAX_INPUT_NUMBER_AMOUNT } from '@/components/Input/InputNumber'
 import { MainContainer } from '@/components/MainContainer/MainContainer'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/Select'
-import { Textarea } from '@/components/Textarea'
 import { Header, Paragraph } from '@/components/Typography'
 import { tokenContracts } from '@/lib/contracts'
 import { formatCurrency } from '@/lib/utils'
@@ -33,14 +34,23 @@ import { Address } from 'viem'
 import { z } from 'zod'
 
 const ADDRESS_REGEX = /^0x[a-fA-F0-9]{40}$/
-const MAX_AMOUNT = 999999999
 
 const FormSchema = z.object({
-  proposalName: z.string().min(3).max(100),
-  description: z.string().min(3).max(3000),
+  proposalName: z
+    .string()
+    .max(100)
+    .refine(s => s.trim().replace(/\s+/g, ' ').length >= 5, 'Field must contain at least 5 characters'),
+  description: z
+    .string()
+    .max(3000)
+    .refine(s => s.trim().replace(/\s+/g, ' ').length >= 10, 'Field must contain at least 10 characters'),
   toAddress: z.string().refine(value => ADDRESS_REGEX.test(value), 'Please enter a valid address'),
   tokenAddress: z.string().length(42),
-  amount: z.coerce.number().positive('Required').min(1).max(MAX_AMOUNT),
+  amount: z.coerce
+    .number({ invalid_type_error: 'Required field' })
+    .positive('Required field')
+    .min(1, 'Amount must be greater or equal to 1')
+    .max(MAX_INPUT_NUMBER_AMOUNT),
 })
 
 export default function CreateProposal() {
@@ -150,7 +160,7 @@ export default function CreateProposal() {
                     <FormItem className="mb-6 mx-1">
                       <FormLabel>Proposal name</FormLabel>
                       <FormControl>
-                        <Input placeholder="Name your proposal" {...field} maxLength={100} />
+                        <FormInput placeholder="Name your proposal" {...field} maxLength={100} />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
@@ -163,7 +173,7 @@ export default function CreateProposal() {
                     <FormItem className="mb-6 mx-1">
                       <FormLabel>Description</FormLabel>
                       <FormControl>
-                        <Textarea placeholder="Enter a description..." {...field} maxLength={3000} />
+                        <FormTextarea placeholder="Enter a description..." {...field} maxLength={3000} />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
@@ -195,7 +205,7 @@ export default function CreateProposal() {
                     <FormItem className="mb-6 mx-1">
                       <FormLabel>Transfer to</FormLabel>
                       <FormControl>
-                        <Input placeholder="0x123...456" {...field} />
+                        <FormInput placeholder="0x123...456" {...field} />
                       </FormControl>
                       <FormDescription>Write or paste the wallet address of the recipient</FormDescription>
                       <FormMessage />
@@ -250,10 +260,9 @@ export default function CreateProposal() {
                       <FormItem className="mb-6 mx-1">
                         <FormLabel>Amount</FormLabel>
                         <FormControl>
-                          <InputNumber
+                          <FormInputNumber
                             placeholder="0.00"
                             className="w-64"
-                            max={MAX_AMOUNT}
                             autoComplete="off"
                             {...field}
                           />

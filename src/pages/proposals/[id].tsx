@@ -19,7 +19,7 @@ import { MetricsCard } from '@/components/MetricsCard'
 import { Popover } from '@/components/Popover'
 import { Header, Paragraph } from '@/components/Typography'
 import { useVoteOnProposal } from '@/lib/useVoteOnProposal'
-import { shortAddress, truncateMiddle } from '@/lib/utils'
+import { shortAddress, toFixed, truncateMiddle } from '@/lib/utils'
 import { useRouter } from 'next/router'
 import { FC, useMemo, useState } from 'react'
 import { formatUnits } from 'viem'
@@ -181,15 +181,15 @@ const PageWithProposal = (proposal: PageWithProposal) => {
                 <Paragraph variant="semibold" className="text-[16px]">
                   Transfer
                 </Paragraph>
-                <Paragraph variant="semibold" className="text-[16px]">
-                  {formatUnits(proposal.transferToValue, 18)}
+                <Paragraph variant="normal" className="text-[16px]">
+                  {toFixed(formatUnits(proposal.transferToValue, 18))}
                 </Paragraph>
               </div>
               <div className="flex justify-between">
                 <Paragraph variant="semibold" className="text-[16px]">
                   To
                 </Paragraph>
-                <Paragraph variant="semibold" className="text-[16px]">
+                <Paragraph variant="normal" className="text-[16px]">
                   {truncateMiddle(proposal.transferTo)}
                 </Paragraph>
               </div>

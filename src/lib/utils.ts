@@ -57,11 +57,7 @@ export const truncateMiddle = (str: string, start = 10, end = 10): string => {
   return str.slice(0, start) + '...' + str.slice(-end)
 }
 
-export const isValidNumber = (value: string) => {
-  // Regular expression to check if the input is a number with one allowed decimal
-  const regex = /^\d*\.?\d{0,18}$/
-  return regex.test(value)
-}
+export const explorerURL = process.env.NEXT_PUBLIC_EXPLORER
 
 export const goToExplorerWithTxHash = (hash: string) => window.open(`${EXPLORER_URL}/tx/${hash}`, '_blank')
 
@@ -123,15 +119,17 @@ export const formatCurrency = (value: number, currency = 'USD'): string => {
 }
 
 /**
- * Formats avoiding scientific notation
- * @param n - The number to format
+ * Formats avoiding scientific notation and trailing zeros
+ * @param num - The number to format
+ * @param decimalPlaces - The number of decimal places to keep (default: 8)
  * @returns The formatted number
  * @example toFixed(1e-7) // '0.0000001'
  * @example toFixed(1.123456789e-7) // '0.0000001123456789'
  * @example toFixed(1.1e+10) // '11000000000'
  * @example toFixed(1.1e20) // '110000000000000000000'
  */
-export const toFixed = (n: number) => {
+export const toFixed = (num: number | string, decimalPlaces = 8) => {
+  let n = Number(num)
   if (Math.abs(n) < 1.0) {
     const e = parseInt(n.toString().split('e-')[1])
     if (e) {
@@ -145,5 +143,5 @@ export const toFixed = (n: number) => {
       return n + new Array(e + 1).join('0')
     }
   }
-  return n.toString()
+  return n.toFixed(decimalPlaces).replace(/\.?0+$/, '')
 }

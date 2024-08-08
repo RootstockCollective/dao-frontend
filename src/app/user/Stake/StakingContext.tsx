@@ -106,7 +106,7 @@ export const StakingProvider: FC<Props> = ({
 
   const stakePreviewFrom = useMemo(
     () => ({
-      amount: toFixed(Number(stakeData.amount)),
+      amount: toFixed(stakeData.amount),
       amountConvertedToCurrency:
         'USD ' + formatCurrency(Number(tokenToSend.price) * Number(stakeData.amount) ?? 0),
       balance: tokenToSend.balance,
@@ -117,7 +117,7 @@ export const StakingProvider: FC<Props> = ({
 
   const stakePreviewTo = useMemo(
     () => ({
-      amount: toFixed(Number(amountDataToReceive.amountToReceive)),
+      amount: toFixed(amountDataToReceive.amountToReceive),
       amountConvertedToCurrency: amountDataToReceive.amountToReceiveConvertedToCurrency,
       balance: tokenToReceive.balance,
       tokenSymbol: tokenToReceive.symbol,

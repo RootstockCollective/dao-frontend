@@ -1,5 +1,6 @@
 import { StRIFTokenAbi } from '@/lib/abis/StRIFTokenAbi'
 import { tokenContracts } from '@/lib/contracts'
+import { toFixed } from '@/lib/utils'
 import { useMemo } from 'react'
 import { formatEther } from 'viem'
 import { useReadContract } from 'wagmi'
@@ -11,7 +12,7 @@ export const TokenHoldingsStRIF = () => {
     functionName: 'totalSupply',
   })
 
-  const balance = useMemo(() => formatEther(data ?? 0n), [data])
+  const balance = useMemo(() => Number(formatEther(data ?? 0n)), [data])
 
-  return <p>{balance} stRIF</p>
+  return <p>{toFixed(balance)} stRIF</p>
 }

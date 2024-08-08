@@ -7,7 +7,7 @@ export const TreasurySection = () => {
   const [bucketOne, bucketTwo, bucketThree] = buckets
   return (
     <div>
-      <Paragraph className="font-semibold text-[18px]">Treasury</Paragraph>
+      <Paragraph className="font-semibold text-[18px] mb-[17px]">Treasury</Paragraph>
       <div className="grid grid-cols-3 gap-[24px]">
         <MetricsCard
           title="Treasury 1 RIF Holdings"
