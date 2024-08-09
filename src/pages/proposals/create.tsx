@@ -63,6 +63,7 @@ export default function CreateProposal() {
   >(null)
 
   const [activeStep, setActiveStep] = useState('proposal')
+  const [isPublishing, setIsPublishing] = useState(false)
 
   const form = useForm<z.infer<typeof FormSchema>>({
     mode: 'onTouched',
@@ -99,11 +100,14 @@ export default function CreateProposal() {
     const { proposalName, description, toAddress, tokenAddress, amount } = data
     const proposalDescription = `${proposalName};${description}`
 
+    setIsPublishing(true)
     onCreateProposal(toAddress as Address, amount.toString(), proposalDescription)
       .then((txHash: Awaited<ReturnType<typeof onCreateProposal>>) => {
+        setIsPublishing(false)
         router.push(`/proposals?txHash=${txHash}`)
       })
       .catch(err => {
+        setIsPublishing(false)
         setMessage(TRANSACTION_SENT_MESSAGES.error)
       })
   }
@@ -133,7 +137,7 @@ export default function CreateProposal() {
       )}
       <Form {...form}>
         <form onSubmit={handleSubmit(onSubmit)}>
-          <HeaderSection disabled={!isDirty || !isValid} />
+          <HeaderSection disabled={!isDirty || !isValid || isPublishing} loading={isPublishing} />
           <Accordion
             type="single"
             collapsible
@@ -278,8 +282,9 @@ export default function CreateProposal() {
 
                 <div className="flex justify-center mb-6">
                   <Button
-                    disabled={!isActionsCompleted || !isProposalCompleted}
+                    disabled={!isValid || isPublishing}
                     onClick={handleActionsCompleted}
+                    loading={isPublishing}
                   >
                     Publish
                   </Button>
@@ -293,13 +298,13 @@ export default function CreateProposal() {
   )
 }
 
-const HeaderSection = ({ disabled = true }) => (
+const HeaderSection = ({ disabled = true, loading = false }) => (
   <div className="flex flex-row justify-between container pl-4">
     <Header variant="h2" className="font-semibold font-[18px]">
       Create proposal
     </Header>
     <div className="flex flex-row gap-x-6">
-      <Button startIcon={<GoRocket />} disabled={disabled} buttonProps={{ type: 'submit' }}>
+      <Button startIcon={<GoRocket />} disabled={disabled} buttonProps={{ type: 'submit' }} loading={loading}>
         Publish
       </Button>
     </div>
