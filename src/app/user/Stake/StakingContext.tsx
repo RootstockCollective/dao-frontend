@@ -14,7 +14,7 @@ export type ActionHookToUse = (
   shouldEnableConfirm: boolean
   onConfirm: () => Promise<Hash>
   customFooter: ReactNode
-  isStaking: boolean
+  isPending: boolean
 }
 
 type StakePreviewToken = {

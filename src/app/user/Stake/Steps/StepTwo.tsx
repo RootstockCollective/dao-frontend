@@ -15,7 +15,7 @@ export const StepTwo = ({ onGoNext, onCloseModal = () => {} }: StepProps) => {
     stakePreviewTo: to,
   } = useStakingContext()
 
-  const { onConfirm: onConfirmAction, isStaking } = actionToUse(
+  const { onConfirm: onConfirmAction, isPending } = actionToUse(
     amount,
     tokenToSend.contract,
     tokenToReceive.contract,
@@ -40,7 +40,7 @@ export const StepTwo = ({ onGoNext, onCloseModal = () => {} }: StepProps) => {
       to={to}
       actionName={textsDependingOnAction[actionName].preview}
       actionText={textsDependingOnAction[actionName].previewText}
-      loading={isStaking}
+      loading={isPending}
     />
   )
 }
