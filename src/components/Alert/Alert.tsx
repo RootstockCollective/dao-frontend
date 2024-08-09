@@ -4,7 +4,7 @@ import { Paragraph } from '@/components/Typography'
 import { MdClose } from 'react-icons/md'
 
 interface AlertProps {
-  severity: 'error' | 'success' | 'info'
+  severity: 'error' | 'success' | 'info' | 'warning'
   title: string
   content: string
   onDismiss?: () => void
@@ -14,6 +14,7 @@ const IconToUse = {
   error: <BsExclamationCircle size={20} color="rgba(217,45,32,1)" />,
   info: <BsExclamationCircle size={20} color="cyan" />,
   success: <CiCircleCheck size={20} color="rgba(7,148,85,1)" />,
+  warning: <BsExclamationCircle size={20} color="rgba(255,193,7,1)" />,
 }
 
 export const Alert = ({ severity, title, content, onDismiss }: AlertProps) => {

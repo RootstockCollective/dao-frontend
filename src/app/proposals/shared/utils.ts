@@ -65,4 +65,9 @@ export const TRANSACTION_SENT_MESSAGES = {
       'Proposal successfully created. Your proposal has been published successfully! It is now visible to the community for review and feedback. Thank you for your contribution.',
     severity: 'success',
   },
+  canceled: {
+    title: 'Transaction canceled',
+    content: 'Proposal creation canceled. Your proposal has been canceled.',
+    severity: 'warning',
+  },
 } as const

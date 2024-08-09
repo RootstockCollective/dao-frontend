@@ -108,7 +108,11 @@ export default function CreateProposal() {
       })
       .catch(err => {
         setIsPublishing(false)
-        setMessage(TRANSACTION_SENT_MESSAGES.error)
+        if (err?.cause?.code === 4001) {
+          setMessage(TRANSACTION_SENT_MESSAGES.canceled)
+        } else {
+          setMessage(TRANSACTION_SENT_MESSAGES.error)
+        }
       })
   }
 
