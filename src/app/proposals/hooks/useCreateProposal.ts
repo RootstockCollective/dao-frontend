@@ -34,7 +34,7 @@ const createProposalForRIFTransfer = (
 export const useCreateProposal = () => {
   const { canCreateProposal } = useVotingPower()
 
-  const { writeContractAsync: propose } = useWriteContract()
+  const { writeContractAsync: propose, isPending: isPublishing } = useWriteContract()
 
   const onCreateProposal = async (address: Address, amount: string, description: string) => {
     if (!canCreateProposal) {
@@ -49,5 +49,5 @@ export const useCreateProposal = () => {
       args: proposal,
     })
   }
-  return { onCreateProposal }
+  return { onCreateProposal, isPublishing }
 }

@@ -5,7 +5,7 @@ import { useCidsAvailable } from './useCidsAvailable'
 
 export const useMintNFT = (nftAddress: Address | undefined) => {
   const { cidsAvailable } = useCidsAvailable(nftAddress)
-  const { writeContractAsync: mint } = useWriteContract()
+  const { writeContractAsync: mint, isPending } = useWriteContract()
 
   const onMintNFT = async () => {
     if (!cidsAvailable) {
@@ -20,5 +20,5 @@ export const useMintNFT = (nftAddress: Address | undefined) => {
     })
   }
 
-  return { onMintNFT }
+  return { onMintNFT, isPending }
 }

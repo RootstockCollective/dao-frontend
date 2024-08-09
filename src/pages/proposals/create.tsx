@@ -57,13 +57,12 @@ export default function CreateProposal() {
   const router = useRouter()
   const prices = useGetSpecificPrices()
   const { isLoading: isVotingPowerLoading, canCreateProposal } = useVotingPower()
-  const { onCreateProposal } = useCreateProposal()
+  const { onCreateProposal, isPublishing } = useCreateProposal()
   const [message, setMessage] = useState<
     (typeof TRANSACTION_SENT_MESSAGES)[keyof typeof TRANSACTION_SENT_MESSAGES] | null
   >(null)
 
   const [activeStep, setActiveStep] = useState('proposal')
-  const [isPublishing, setIsPublishing] = useState(false)
 
   const form = useForm<z.infer<typeof FormSchema>>({
     mode: 'onTouched',
@@ -100,14 +99,11 @@ export default function CreateProposal() {
     const { proposalName, description, toAddress, tokenAddress, amount } = data
     const proposalDescription = `${proposalName};${description}`
 
-    setIsPublishing(true)
     onCreateProposal(toAddress as Address, amount.toString(), proposalDescription)
       .then((txHash: Awaited<ReturnType<typeof onCreateProposal>>) => {
-        setIsPublishing(false)
         router.push(`/proposals?txHash=${txHash}`)
       })
       .catch(err => {
-        setIsPublishing(false)
         if (err?.cause?.code === 4001) {
           setMessage(TRANSACTION_SENT_MESSAGES.canceled)
         } else {
