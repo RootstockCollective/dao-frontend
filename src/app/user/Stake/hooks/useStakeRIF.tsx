@@ -65,7 +65,7 @@ export const useStakeRIF: ActionHookToUse = (
       ),
     [amount, onUpdateStakeModalData, requestAllowance, tokenToReceiveContract, tokenToSendContract],
   )
-  const { writeContractAsync: stake } = useWriteContract()
+  const { writeContractAsync: stake, isPending: isStaking } = useWriteContract()
 
   const onRequestStake = () =>
     stake({
@@ -103,6 +103,7 @@ export const useStakeRIF: ActionHookToUse = (
     shouldEnableConfirm,
     onConfirm: onRequestStake,
     customFooter,
+    isStaking,
   }
 }
 
