@@ -1,7 +1,8 @@
-import { useAccount, useReadContract } from 'wagmi'
+import { useAccount, useReadContracts } from 'wagmi'
 import { GovernorAbi } from '@/lib/abis/Governor'
 import { GovernorAddress } from '@/lib/contracts'
 import { Address, formatUnits } from 'viem'
+import { MULTICALL_ADDRESS } from '@/lib/constants'
 
 /**
  * Snapshot = blockNumber
@@ -9,12 +10,35 @@ import { Address, formatUnits } from 'viem'
  */
 export const useVotingPowerAtSnapshot = (blockNumber: bigint) => {
   const { address } = useAccount()
-  const { data: votingPowerAtSnapshot } = useReadContract({
-    abi: GovernorAbi,
-    address: GovernorAddress,
-    functionName: 'getVotes',
-    args: [address as Address, blockNumber],
+  const { data, isLoading } = useReadContracts({
+    allowFailure: false,
+    contracts: [
+      {
+        abi: GovernorAbi,
+        address: GovernorAddress,
+        functionName: 'getVotes',
+        args: [address as Address, blockNumber],
+      },
+      {
+        abi: GovernorAbi,
+        address: GovernorAddress,
+        functionName: 'proposalThreshold',
+      },
+    ],
+    multicallAddress: MULTICALL_ADDRESS,
   })
 
-  return { votingPowerAtSnapshot: votingPowerAtSnapshot ? formatUnits(votingPowerAtSnapshot, 18) : '' }
+  if (isLoading || !data) {
+    return {
+      votingPowerAtSnapshot: '',
+      canUserVote: false,
+    }
+  }
+
+  const [votingPowerAtSnapshot, threshold] = data
+
+  return {
+    votingPowerAtSnapshot: votingPowerAtSnapshot ? formatUnits(votingPowerAtSnapshot, 18) : '',
+    doesUserHasEnoughThreshold: votingPowerAtSnapshot >= threshold,
+  }
 }

@@ -59,7 +59,7 @@ const PageWithProposal = (proposal: PageWithProposal) => {
   const [againstVote, forVote, abstainVote] = useGetProposalVotes(proposalId, true)
   const snapshot = useGetProposalSnapshot(proposalId)
 
-  const { votingPowerAtSnapshot } = useVotingPowerAtSnapshot(snapshot as bigint)
+  const { votingPowerAtSnapshot, doesUserHasEnoughThreshold } = useVotingPowerAtSnapshot(snapshot as bigint)
 
   const { threshold, canCreateProposal } = useVotingPower()
   const {
@@ -106,7 +106,11 @@ const PageWithProposal = (proposal: PageWithProposal) => {
         <div>
           {cannotCastVote ? (
             <Popover
-              content={cannotCastVoteReason(!isProposalActive, didUserVoteAlready, !canCreateProposal)}
+              content={cannotCastVoteReason(
+                !isProposalActive,
+                didUserVoteAlready,
+                !doesUserHasEnoughThreshold,
+              )}
               size="small"
               trigger="hover"
             >
