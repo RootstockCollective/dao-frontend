@@ -1,10 +1,10 @@
 import { useVotingPower } from '@/app/proposals/hooks/useVotingPower'
 import { GovernorAbi } from '@/lib/abis/Governor'
-import { StRIFTokenAbi } from '@/lib/abis/StRIFTokenAbi'
 import { tokenContracts, GovernorAddress } from '@/lib/contracts'
 import { solidityPackedKeccak256 } from 'ethers'
 import { Address, encodeFunctionData, parseEther } from 'viem'
 import { useWriteContract } from 'wagmi'
+import { RIFTokenAbi } from '@/lib/abis/RIFTokenAbi'
 
 const DEFAULT_DAO_CONFIG = {
   abi: GovernorAbi,
@@ -13,17 +13,17 @@ const DEFAULT_DAO_CONFIG = {
 
 const encodeTransferData = (address: Address, amountToTransfer: string) => {
   return encodeFunctionData({
-    abi: StRIFTokenAbi,
+    abi: RIFTokenAbi,
     functionName: 'transfer',
     args: [address, parseEther(amountToTransfer)],
   })
 }
 
-const createProposalForStRifTransfer = (
+const createProposalForRIFTransfer = (
   calldata: ReturnType<typeof encodeFunctionData>,
   description: string,
 ) => {
-  const proposal = [[tokenContracts.stRIF], [0n], [calldata], description]
+  const proposal = [[tokenContracts.RIF], [0n], [calldata], description]
   const descriptionHash = solidityPackedKeccak256(['string'], [description])
   const proposalToRunHash = [...proposal.slice(3), descriptionHash]
   return {
@@ -42,7 +42,7 @@ export const useCreateProposal = () => {
     }
 
     const calldata = encodeTransferData(address, amount)
-    const { proposal } = createProposalForStRifTransfer(calldata, description)
+    const { proposal } = createProposalForRIFTransfer(calldata, description)
     return await propose({
       ...DEFAULT_DAO_CONFIG,
       functionName: 'propose', // @ts-ignore
