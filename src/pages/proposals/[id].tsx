@@ -186,7 +186,7 @@ const PageWithProposal = (proposal: PageWithProposal) => {
                   Transfer
                 </Paragraph>
                 <Paragraph variant="normal" className="text-[16px]">
-                  {toFixed(formatUnits(proposal.transferToValue, 18))}
+                  {toFixed(formatUnits(proposal.transferToValue || 0n, 18))}
                 </Paragraph>
               </div>
               <div className="flex justify-between">
@@ -194,7 +194,7 @@ const PageWithProposal = (proposal: PageWithProposal) => {
                   To
                 </Paragraph>
                 <Paragraph variant="normal" className="text-[16px]">
-                  {truncateMiddle(proposal.transferTo)}
+                  {truncateMiddle(proposal.transferTo || '')}
                 </Paragraph>
               </div>
             </div>

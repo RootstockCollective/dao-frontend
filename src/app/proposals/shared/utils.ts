@@ -1,3 +1,6 @@
+import { RIFTokenAbi } from '@/lib/abis/RIFTokenAbi'
+import { decodeFunctionData, Hash } from 'viem'
+
 export interface EventArgumentsParameter {
   args: {
     description: string
@@ -7,22 +10,41 @@ export interface EventArgumentsParameter {
     proposer: string
     targets: string[]
     values: bigint[]
+    calldatas: string[]
   }
   timeStamp: string
 }
 
+const decodeERC20FunctionData = (data: `0x${string}`) =>
+  decodeFunctionData({
+    abi: RIFTokenAbi,
+    data,
+  })
+
 export const getEventArguments = ({
-  args: { description, proposalId, proposer, targets, values },
+  args: { description, proposalId, proposer, calldatas },
   timeStamp,
-}: EventArgumentsParameter) => ({
-  name: description.split(';')[0],
-  proposer,
-  description: description.split(';')[1],
-  proposalId: proposalId.toString(),
-  Starts: new Date(parseInt(timeStamp, 16) * 1000).toISOString().split('T')[0],
-  transferTo: targets[0] ?? '',
-  transferToValue: values[0] ?? '',
-})
+}: EventArgumentsParameter) => {
+  // Parse transfer event from calldata[0]
+  const erc20CallData = calldatas[0]
+  let transferTo, transferToValue
+  if (erc20CallData) {
+    const decodedFunctionData = decodeERC20FunctionData(erc20CallData as Hash)
+    if (decodedFunctionData?.functionName === 'transfer') {
+      transferTo = decodedFunctionData.args[0]
+      transferToValue = decodedFunctionData.args[1]
+    }
+  }
+  return {
+    name: description.split(';')[0],
+    proposer,
+    description: description.split(';')[1],
+    proposalId: proposalId.toString(),
+    Starts: new Date(parseInt(timeStamp, 16) * 1000).toISOString().split('T')[0],
+    transferTo,
+    transferToValue,
+  }
+}
 
 export const TRANSACTION_SENT_MESSAGES = {
   error: {
