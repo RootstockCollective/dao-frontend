@@ -71,7 +71,7 @@ const PageWithProposal = (proposal: PageWithProposal) => {
     onQueueProposal,
   } = useVoteOnProposal(proposalId)
 
-  const cannotCastVote = !isProposalActive || didUserVoteAlready || !canCreateProposal
+  const cannotCastVote = !isProposalActive || didUserVoteAlready || !doesUserHasEnoughThreshold
 
   const handleVoting = async (vote: Vote) => {
     try {
