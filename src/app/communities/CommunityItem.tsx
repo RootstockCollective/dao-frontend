@@ -32,7 +32,9 @@ export const CommunityItem = ({
       </div>
       <div>
         <BsArrowUpRight
-          onClick={() => window.open(`/communities/nft/${nftAddress}`, '_blank')}
+          onClick={() => {
+            window.location.href = `/communities/nft/${nftAddress}`
+          }}
           className="cursor-pointer"
         />
       </div>
