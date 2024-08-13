@@ -27,6 +27,7 @@ import { useAccount } from 'wagmi'
 import { Vote, VoteProposalModal } from '../../components/Modal/VoteProposalModal'
 import { VoteSubmittedModal } from '../../components/Modal/VoteSubmittedModal'
 import { useVotingPowerAtSnapshot } from '@/app/proposals/hooks/useVotingPowerAtSnapshot'
+import { useExecuteProposal } from '@/lib/useExecuteProposal'
 
 export default function ProposalView() {
   const {
@@ -61,7 +62,7 @@ const PageWithProposal = (proposal: PageWithProposal) => {
 
   const { votingPowerAtSnapshot, doesUserHasEnoughThreshold } = useVotingPowerAtSnapshot(snapshot as bigint)
 
-  const { threshold, canCreateProposal } = useVotingPower()
+  const { threshold } = useVotingPower()
   const {
     onVote,
     isProposalActive,
@@ -70,6 +71,9 @@ const PageWithProposal = (proposal: PageWithProposal) => {
     proposalNeedsQueuing,
     onQueueProposal,
   } = useVoteOnProposal(proposalId)
+
+  const { onExecuteProposal, canProposalBeExecuted, proposalEtaHumanDate, isTxHashFromExecuteLoading } =
+    useExecuteProposal(proposalId)
 
   const cannotCastVote = !isProposalActive || didUserVoteAlready || !doesUserHasEnoughThreshold
 
@@ -124,6 +128,31 @@ const PageWithProposal = (proposal: PageWithProposal) => {
               Put on Queue
             </Button>
           )}
+          {proposalStateHuman === 'Queued' && (
+            <Popover
+              size="small"
+              trigger="hover"
+              content={
+                !canProposalBeExecuted ? (
+                  <p className="text-[12px] font-bold mb-1">
+                    The proposal is not ready to be executed yet. It should be ready on:{' '}
+                    {proposalEtaHumanDate}
+                  </p>
+                ) : (
+                  <p className="text-[12px] font-bold mb-1">The proposal can be executed.</p>
+                )
+              }
+            >
+              <Button
+                onClick={onExecuteProposal}
+                className="mt-2"
+                disabled={!canProposalBeExecuted || isTxHashFromExecuteLoading}
+              >
+                Execute
+              </Button>
+            </Popover>
+          )}
+          {isTxHashFromExecuteLoading && <p>Pending transaction confirmation to complete execution.</p>}
           {votingModal.isModalOpened && address && (
             <VoteProposalModal
               onSubmit={handleVoting}
