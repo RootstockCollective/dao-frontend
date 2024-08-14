@@ -1,6 +1,7 @@
 import { FC, ReactNode, useEffect, useState } from 'react'
 import { useAccount } from 'wagmi'
 import { ConnectWalletModal } from '../Modal/ConnectWalletModal'
+import { LoadingSpinner } from '../LoadingSpinner'
 
 interface Props {
   children: ReactNode
@@ -19,7 +20,7 @@ export const ProtectedContent: FC<Props> = ({ children }) => {
   return (
     <>
       {!hasMounted || isConnecting ? (
-        <div>Loading...</div>
+        <LoadingSpinner />
       ) : (
         <>{isConnected ? children : <ConnectWalletModal />}</>
       )}

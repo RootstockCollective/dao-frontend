@@ -6,7 +6,7 @@ import { Address, parseEther } from 'viem'
 export const useUnstakeStRIF: ActionHookToUse = (amount, tokenToSendContract) => {
   const { address } = useAccount()
 
-  const { writeContractAsync: unstake } = useWriteContract()
+  const { writeContractAsync: unstake, isPending } = useWriteContract()
 
   const onRequestUnstake = () =>
     unstake({
@@ -19,5 +19,6 @@ export const useUnstakeStRIF: ActionHookToUse = (amount, tokenToSendContract) =>
     shouldEnableConfirm: true,
     customFooter: null,
     onConfirm: onRequestUnstake,
+    isPending,
   }
 }

@@ -1,6 +1,7 @@
 import { ButtonVariants } from '@/components/Button/types'
 import { cn } from '@/lib/utils'
 import { FC, JSX, MouseEvent, ReactNode } from 'react'
+import { FaSpinner } from 'react-icons/fa6'
 
 export const BUTTON_DEFAULT_CLASSES = 'px-[24px] py-[12px] flex gap-x-1 items-center relative'
 
@@ -15,6 +16,7 @@ interface Props {
   className?: string
   textClassName?: string
   buttonProps?: JSX.IntrinsicElements['button'] & { 'data-testid'?: string }
+  loading?: boolean
 }
 
 const DEFAULT_DATA_TESTID = 'Button'
@@ -30,7 +32,9 @@ export const Button: FC<Props> = ({
   className = '',
   textClassName = '',
   buttonProps = {},
+  loading = false,
 }) => {
+  startIcon = loading ? <FaSpinner className="animate-spin" /> : startIcon
   const classes = cn({
     [BUTTON_DEFAULT_CLASSES]: true,
     'bg-primary rounded-[6px]': variant === 'primary',

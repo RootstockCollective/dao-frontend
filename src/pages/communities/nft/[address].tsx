@@ -23,7 +23,7 @@ export default function Page() {
 
   const { address } = useAccount()
   const { cidsAvailable } = useCidsAvailable(nftAddress as Address)
-  const { onMintNFT } = useMintNFT(nftAddress as Address)
+  const { onMintNFT, isPending: isClaiming } = useMintNFT(nftAddress as Address)
   const [message, setMessage] = useState('')
 
   const { isLoadingImage: loadingNftImage, data: nftData } = useNFTImage(nftAddress as Address)
@@ -147,7 +147,8 @@ export default function Page() {
                     variant="secondary-full"
                     className="my-[16px]"
                     onClick={handleMinting}
-                    disabled={!cidsAvailable || !address}
+                    disabled={!cidsAvailable || !address || isClaiming}
+                    loading={isClaiming}
                   >
                     Claim it!
                   </Button>

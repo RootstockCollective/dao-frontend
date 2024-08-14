@@ -33,7 +33,11 @@ export const useStakeRIF: ActionHookToUse = (
     return !!(allowanceBalance && allowanceBalance >= parseEther(amount))
   }, [amount, allowanceBalance])
 
-  const { writeContractAsync: requestAllowance, data: allowanceTxHash } = useWriteContract()
+  const {
+    writeContractAsync: requestAllowance,
+    data: allowanceTxHash,
+    isPending: isRequestingAllowance,
+  } = useWriteContract()
 
   const allowanceHashUsed = useMemo(
     () => allowanceTxHash || previousAllowanceHash,
@@ -55,13 +59,13 @@ export const useStakeRIF: ActionHookToUse = (
         },
         {
           onSuccess: txHash => {
-            if (onUpdateStakeModalData) onUpdateStakeModalData('savedAllowanceTxHash', txHash)
+            onUpdateStakeModalData?.('savedAllowanceTxHash', txHash)
           },
         },
       ),
     [amount, onUpdateStakeModalData, requestAllowance, tokenToReceiveContract, tokenToSendContract],
   )
-  const { writeContractAsync: stake } = useWriteContract()
+  const { writeContractAsync: stake, isPending } = useWriteContract()
 
   const onRequestStake = () =>
     stake({
@@ -83,6 +87,7 @@ export const useStakeRIF: ActionHookToUse = (
         hash={allowanceHashUsed}
         isAllowanceTxPending={allowanceHashUsed && requestAllowanceTxStatus === 'pending'}
         isAllowanceReadLoading={isAllowanceReadLoading}
+        loading={isRequestingAllowance}
       />
     ),
     [
@@ -91,12 +96,14 @@ export const useStakeRIF: ActionHookToUse = (
       allowanceHashUsed,
       requestAllowanceTxStatus,
       isAllowanceReadLoading,
+      isRequestingAllowance,
     ],
   )
   return {
     shouldEnableConfirm,
     onConfirm: onRequestStake,
     customFooter,
+    isPending,
   }
 }
 
@@ -106,6 +113,7 @@ interface CustomStakingRIFFooterProps {
   isAllowanceTxPending?: boolean
   hash?: string
   isAllowanceReadLoading?: boolean
+  loading?: boolean
 }
 /**
  * We will have this component to render info to the user in case they are lacking a validation
@@ -117,8 +125,9 @@ function CustomStakingRIFFooter({
   isAllowanceNeeded,
   onRequestAllowance,
   hash,
-  isAllowanceTxPending,
+  isAllowanceTxPending = false,
   isAllowanceReadLoading = false,
+  loading = false,
 }: CustomStakingRIFFooterProps) {
   switch (true) {
     case isAllowanceReadLoading:
@@ -131,7 +140,12 @@ function CustomStakingRIFFooter({
       return (
         <div className="flex flex-col mt-2 gap-2 items-center">
           <Paragraph>You need to request allowance for stRIF to be able to stake.</Paragraph>
-          <Button onClick={onRequestAllowance} buttonProps={{ 'data-testid': 'Allowance' }}>
+          <Button
+            onClick={onRequestAllowance}
+            buttonProps={{ 'data-testid': 'Allowance' }}
+            loading={loading}
+            disabled={loading}
+          >
             Request allowance
           </Button>
         </div>
