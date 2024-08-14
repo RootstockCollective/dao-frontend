@@ -1,6 +1,13 @@
 import { Address } from 'viem'
 import { EarlyAdoptersNFTAbi } from './abis/EarlyAdoptersNFTAbi'
 
+const regtest = {
+  RIF: process.env.REGTEST_RIF || '0x19f64674d8a5b4e652319f5e239efd3bc969a1fe', // tRIF
+  stRIF: process.env.REGTEST_STRIF || '0xAF17f7A0124E9F360ffA484b13566b041C0f5023',
+  rBTC: '0x0000000000000000000000000000000000000000',
+  multicall: process.env.REGTEST_MULTICALL || '0xcA11bde05977b3631167028862bE2a173976CA11',
+}
+
 const testnet = {
   RIF: '0x19f64674d8a5b4e652319f5e239efd3bc969a1fe', // tRIF
   stRIF: '0xAF17f7A0124E9F360ffA484b13566b041C0f5023',
@@ -16,6 +23,7 @@ const mainnet = {
 }
 
 const contracts = {
+  regtest,
   testnet,
   mainnet,
 }
@@ -23,6 +31,11 @@ const contracts = {
 export type SupportedTokens = keyof typeof testnet | keyof typeof mainnet
 // @ts-ignore
 export const currentEnvContracts = contracts[process.env.NEXT_PUBLIC_ENV] as typeof testnet
+
+const regtestNft = {
+  RDEA: process.env.REGTEST_RDEA || '0xa3076bcaCc7112B7fa7c5A87CF32275296d85D64' as Address, // RIF DAO Early Adopters
+  EA: process.env.REGTEST_EA || '0xf24761C1B57b14EeA270B1485294D93494164246' as Address, // Early Adopters
+}
 
 const testnetNft = {
   RDEA: '0xa3076bcaCc7112B7fa7c5A87CF32275296d85D64' as Address, // RIF DAO Early Adopters
@@ -36,6 +49,7 @@ const mainnetNft = {
 }
 
 const contractsNFT = {
+  regtest: regtestNft,
   testnet: testnetNft,
   mainnet: mainnetNft,
 }
@@ -45,6 +59,12 @@ export const currentEnvNFTContracts = contractsNFT[process.env.NEXT_PUBLIC_ENV] 
 export const abiContractsMap: { [key: string]: any } = {
   [currentEnvNFTContracts?.EA.toLowerCase()]: EarlyAdoptersNFTAbi,
 }
+
+const regtestTreasuryContractsConfig = process.env.REGTEST_TREASURY_CONTRACTS;
+const treasuryContractsRegtest = regtestTreasuryContractsConfig && regtestTreasuryContractsConfig.split(',').map((contract: string, i) => ({
+  name: `Bucket ${i + 1}`,
+  address: contract,
+}));
 
 const treasuryContractsTestnet = [
   {
@@ -62,6 +82,7 @@ const treasuryContractsTestnet = [
 ]
 
 const contractsTreasury = {
+  regtest: treasuryContractsRegtest,
   testnet: treasuryContractsTestnet,
 }
 
@@ -69,6 +90,11 @@ export const currentEnvTreasuryContracts = contractsTreasury[
   // @ts-ignore
   process.env.NEXT_PUBLIC_ENV
 ] as typeof treasuryContractsTestnet
+
+// TODO: config
+const regtestGovernor = {
+  value: '0x00ca74491D9493bFe5451246C8c72849Ba4A7F9D',
+}
 
 const testnetGovernor = {
   value: '0x00ca74491D9493bFe5451246C8c72849Ba4A7F9D',
@@ -78,6 +104,7 @@ const mainnetGovernor = {
 }
 
 const governorContracts = {
+  regtest: regtestGovernor,
   testnet: testnetGovernor,
   mainnet: mainnetGovernor,
 }

@@ -3,19 +3,19 @@ import { rootstockTestnet } from 'viem/chains'
 import { createConfig, http } from 'wagmi'
 import { metaMask } from 'wagmi/connectors'
 
-const rskLocalhost = defineChain({
-  id: 1337,
-  name: 'RSK Localhost',
-  nativeCurrency: { name: 'RBTC', symbol: 'RBTC', decimals: 18 },
+const rskRegtest = defineChain({
+  id: 33,
+  name: 'RSK Regtest',
+  nativeCurrency: { name: 'tRBTC', symbol: 'tRBTC', decimals: 18 },
   rpcUrls: {
     default: {
-      http: ['http://localhost:8545'],
+      http: [process.env.REGTEST_URL || 'http://localhost:4444'],
     },
   },
 })
 
 export const config = createConfig({
-  chains: [rootstockTestnet, rskLocalhost],
+  chains: [rskRegtest, rootstockTestnet],
   client({ chain }) {
     return createClient({ chain, transport: http() })
   },

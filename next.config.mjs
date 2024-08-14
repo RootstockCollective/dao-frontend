@@ -1,35 +1,76 @@
-/** @type {import('next').NextConfig} */
+import { createRequire } from 'module';
 import { createProxyMiddleware } from 'http-proxy-middleware'
+import { config } from 'dotenv';
 
-const nextConfig = {
-  output: 'standalone',
-  rewrites: () => [
+// Load the environment variables based on the profile
+config({
+  path: process.env.PROFILE ? `.env.${process.env.PROFILE}` : '.env',
+});
+
+// Load the endpoints defined in the src/lib/endpoints.ts file
+const require = createRequire(import.meta.url);
+require('ts-node').register({
+  compilerOptions: {
+    module: 'commonjs',
+  },
+});
+const endpoints = require('./src/lib/endpoints.ts');
+
+// Define the proxy configurations
+const corsBypassProxyConfig = () => ({
+  target: process.env.NEXT_PUBLIC_PROXY_DESTINATION,
+  changeOrigin: true,
+  onProxyReq: proxyReq => {
+    proxyReq.removeHeader('Origin')
+    proxyReq.removeHeader('Referer')
+    proxyReq.removeHeader('User-Agent')
+    proxyReq.setHeader('User-Agent', 'Mozilla/5.0 (compatible; AcmeBot/1.0)')
+  },
+  onProxyRes: proxyRes => {
+    proxyRes.headers['Access-Control-Allow-Origin'] =
+      window?.location?.host || 'http://localhost:3000'
+  },
+});
+
+// Define the proxy configurations based on the network
+const proxyConfigs = {
+  "testnet": corsBypassProxyConfig,
+  "regtest": undefined,
+}
+
+// Define the rewrites based on the network
+const rewrites = {
+  "testnet": () => [
     {
       source: `${process.env.NEXT_PUBLIC_RIF_WALLET_SERVICES}/:path*`,
       destination: `${process.env.NEXT_PUBLIC_PROXY_DESTINATION}/:path*`,
     },
   ],
+  "regtest": () => Object.entries(endpoints).map(([key, endpoint]) => ({
+      source: `${process.env.NEXT_PUBLIC_RIF_WALLET_SERVICES}${endpoint}`.replace(/\{\{([^\}]+)\}\}/g, ':$1').split('?')[0],
+      destination: `/api/mocks/${key}?path=:path*`,
+    })),
+}
+
+// Define the proxy paths
+const proxyPaths = ['/mock', '/cors_bypass'];
+
+// Define the network
+const network = process.env.NEXT_PUBLIC_ENV;
+
+// Define the next configuration
+/** @type {import('next').NextConfig} */
+const nextConfig = {
+  output: 'standalone',
+  rewrites: rewrites[network],
   webpack: (config, { isServer }) => {
     if (!isServer) {
       config.devServer = {
         ...config.devServer,
         before: app => {
           app.use(
-            '/cors_bypass',
-            createProxyMiddleware({
-              target: process.env.NEXT_PUBLIC_PROXY_DESTINATION,
-              changeOrigin: true,
-              onProxyReq: proxyReq => {
-                proxyReq.removeHeader('Origin')
-                proxyReq.removeHeader('Referer')
-                proxyReq.removeHeader('User-Agent')
-                proxyReq.setHeader('User-Agent', 'Mozilla/5.0 (compatible; AcmeBot/1.0)')
-              },
-              onProxyRes: proxyRes => {
-                proxyRes.headers['Access-Control-Allow-Origin'] =
-                  window?.location?.host || 'http://localhost:3000'
-              },
-            }),
+            proxyPaths[network],
+            createProxyMiddleware(proxyConfigs[network]),
           )
         },
       }

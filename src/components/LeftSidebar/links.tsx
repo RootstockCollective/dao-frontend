@@ -1,3 +1,10 @@
+const regtest = {
+  registerRns: '',
+  tokenBridge: '',
+  flyover: '',
+  readMore: '',
+}
+
 const testnet = {
   registerRns: 'https://testnet.manager.rns.rifos.org/',
   tokenBridge: 'https://testnet.tokenbridge.rsk.co/',
@@ -13,6 +20,7 @@ const mainnet = {
 }
 
 const environments = {
+  regtest,
   testnet,
   mainnet,
 }

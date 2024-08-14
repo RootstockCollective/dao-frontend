@@ -61,9 +61,9 @@ const getBucketBalance = (
 const TreasuryContextProvider = ({ children }: Props) => {
   const { prices } = usePricesContext()
 
-  const bucketOneBalance = useGetTreasuryBucketBalance(currentEnvTreasuryContracts[0].address as Address)
-  const bucketTwoBalance = useGetTreasuryBucketBalance(currentEnvTreasuryContracts[1].address as Address)
-  const bucketThreeBalance = useGetTreasuryBucketBalance(currentEnvTreasuryContracts[2].address as Address)
+  const bucketOneBalance = useGetTreasuryBucketBalance(currentEnvTreasuryContracts?.at(0)?.address as Address)
+  const bucketTwoBalance = useGetTreasuryBucketBalance(currentEnvTreasuryContracts?.at(1)?.address as Address)
+  const bucketThreeBalance = useGetTreasuryBucketBalance(currentEnvTreasuryContracts?.at(2)?.address as Address)
 
   const bucketOne: Bucket = useMemo(
     () => getBucketBalance(bucketOneBalance, prices),
