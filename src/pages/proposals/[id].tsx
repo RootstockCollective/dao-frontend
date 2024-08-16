@@ -18,7 +18,7 @@ import { MainContainer } from '@/components/MainContainer/MainContainer'
 import { MetricsCard } from '@/components/MetricsCard'
 import { Popover } from '@/components/Popover'
 import { Header, Paragraph } from '@/components/Typography'
-import { useVoteOnProposal } from '@/lib/useVoteOnProposal'
+import { useVoteOnProposal } from '@/shared/hooks/useVoteOnProposal'
 import { shortAddress, toFixed, truncateMiddle } from '@/lib/utils'
 import { useRouter } from 'next/router'
 import { FC, useMemo, useState } from 'react'
@@ -27,7 +27,8 @@ import { useAccount } from 'wagmi'
 import { Vote, VoteProposalModal } from '../../components/Modal/VoteProposalModal'
 import { VoteSubmittedModal } from '../../components/Modal/VoteSubmittedModal'
 import { useVotingPowerAtSnapshot } from '@/app/proposals/hooks/useVotingPowerAtSnapshot'
-import { useExecuteProposal } from '@/lib/useExecuteProposal'
+import { useExecuteProposal } from '@/shared/hooks/useExecuteProposal'
+import { useQueueProposal } from '@/shared/hooks/useQueueProposal'
 
 export default function ProposalView() {
   const {
@@ -63,14 +64,9 @@ const PageWithProposal = (proposal: PageWithProposal) => {
   const { votingPowerAtSnapshot, doesUserHasEnoughThreshold } = useVotingPowerAtSnapshot(snapshot as bigint)
 
   const { threshold } = useVotingPower()
-  const {
-    onVote,
-    isProposalActive,
-    didUserVoteAlready,
-    proposalStateHuman,
-    proposalNeedsQueuing,
-    onQueueProposal,
-  } = useVoteOnProposal(proposalId)
+  const { onVote, isProposalActive, didUserVoteAlready, proposalStateHuman, isVoting } =
+    useVoteOnProposal(proposalId)
+  const { onQueueProposal, proposalNeedsQueuing, isQueuing } = useQueueProposal(proposalId)
 
   const { onExecuteProposal, canProposalBeExecuted, proposalEtaHumanDate, isTxHashFromExecuteLoading } =
     useExecuteProposal(proposalId)
@@ -121,10 +117,17 @@ const PageWithProposal = (proposal: PageWithProposal) => {
               <Button disabled>Vote on chain</Button>
             </Popover>
           ) : (
-            <Button onClick={votingModal.openModal}>Vote on chain</Button>
+            <Button onClick={votingModal.openModal} loading={isVoting}>
+              Vote on chain
+            </Button>
           )}
           {proposalNeedsQueuing && ['Succeeded', 'Queued'].includes(proposalStateHuman) && (
-            <Button onClick={onQueueProposal} className="mt-2" disabled={proposalStateHuman === 'Queued'}>
+            <Button
+              onClick={onQueueProposal}
+              className="mt-2"
+              disabled={proposalStateHuman === 'Queued'}
+              loading={isQueuing}
+            >
               Put on Queue
             </Button>
           )}
