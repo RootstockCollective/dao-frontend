@@ -5,7 +5,6 @@ import { useEffect, useState, useMemo } from 'react'
 import { Address } from 'viem'
 import { useAccount } from 'wagmi'
 import { NftMeta } from '../types'
-import { DEFAULT_NFT_BASE64 } from '../defaultNFT'
 
 interface MetaReturnType {
   /**
