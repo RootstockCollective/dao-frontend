@@ -182,24 +182,24 @@ export const EarlyAdoptersNFTAbi = [
     type: 'error',
   },
   {
-    inputs: [
-      {
-        internalType: 'uint256',
-        name: 'amount',
-        type: 'uint256',
-      },
-      {
-        internalType: 'uint256',
-        name: 'maxAmount',
-        type: 'uint256',
-      },
-    ],
-    name: 'InvalidCidsAmount',
+    inputs: [],
+    name: 'InvalidInitialization',
     type: 'error',
   },
   {
-    inputs: [],
-    name: 'InvalidInitialization',
+    inputs: [
+      {
+        internalType: 'uint256',
+        name: 'invalidMaxSupply',
+        type: 'uint256',
+      },
+      {
+        internalType: 'uint256',
+        name: 'maxSupply',
+        type: 'uint256',
+      },
+    ],
+    name: 'InvalidMaxSupply',
     type: 'error',
   },
   {
@@ -208,8 +208,14 @@ export const EarlyAdoptersNFTAbi = [
     type: 'error',
   },
   {
-    inputs: [],
-    name: 'OutOfCids',
+    inputs: [
+      {
+        internalType: 'uint256',
+        name: 'maxSupply',
+        type: 'uint256',
+      },
+    ],
+    name: 'OutOfTokens',
     type: 'error',
   },
   {
@@ -302,18 +308,12 @@ export const EarlyAdoptersNFTAbi = [
     inputs: [
       {
         indexed: false,
-        internalType: 'uint256',
-        name: 'numCids',
-        type: 'uint256',
-      },
-      {
-        indexed: false,
-        internalType: 'uint256',
-        name: 'totalCids',
-        type: 'uint256',
+        internalType: 'uint64',
+        name: 'version',
+        type: 'uint64',
       },
     ],
-    name: 'CidsLoaded',
+    name: 'Initialized',
     type: 'event',
   },
   {
@@ -321,12 +321,18 @@ export const EarlyAdoptersNFTAbi = [
     inputs: [
       {
         indexed: false,
-        internalType: 'uint64',
-        name: 'version',
-        type: 'uint64',
+        internalType: 'uint256',
+        name: 'newNumFiles',
+        type: 'uint256',
+      },
+      {
+        indexed: false,
+        internalType: 'string',
+        name: 'newIpfs',
+        type: 'string',
       },
     ],
-    name: 'Initialized',
+    name: 'IpfsFolderChanged',
     type: 'event',
   },
   {
@@ -457,19 +463,6 @@ export const EarlyAdoptersNFTAbi = [
   },
   {
     inputs: [],
-    name: 'CIDS_LOADER_ROLE',
-    outputs: [
-      {
-        internalType: 'bytes32',
-        name: '',
-        type: 'bytes32',
-      },
-    ],
-    stateMutability: 'view',
-    type: 'function',
-  },
-  {
-    inputs: [],
     name: 'DEFAULT_ADMIN_ROLE',
     outputs: [
       {
@@ -545,16 +538,23 @@ export const EarlyAdoptersNFTAbi = [
     type: 'function',
   },
   {
-    inputs: [],
-    name: 'cidsAvailable',
-    outputs: [
+    inputs: [
       {
         internalType: 'uint256',
-        name: '',
+        name: 'tokenId',
         type: 'uint256',
       },
     ],
-    stateMutability: 'view',
+    name: 'burn',
+    outputs: [],
+    stateMutability: 'nonpayable',
+    type: 'function',
+  },
+  {
+    inputs: [],
+    name: 'burn',
+    outputs: [],
+    stateMutability: 'nonpayable',
     type: 'function',
   },
   {
@@ -650,9 +650,14 @@ export const EarlyAdoptersNFTAbi = [
         type: 'address',
       },
       {
-        internalType: 'address',
-        name: 'cidsLoader',
-        type: 'address',
+        internalType: 'uint256',
+        name: 'numFiles',
+        type: 'uint256',
+      },
+      {
+        internalType: 'string',
+        name: 'ipfsCid',
+        type: 'string',
       },
     ],
     name: 'initialize',
@@ -682,19 +687,6 @@ export const EarlyAdoptersNFTAbi = [
       },
     ],
     stateMutability: 'view',
-    type: 'function',
-  },
-  {
-    inputs: [
-      {
-        internalType: 'string[]',
-        name: 'ipfsCIDs',
-        type: 'string[]',
-      },
-    ],
-    name: 'loadCids',
-    outputs: [],
-    stateMutability: 'nonpayable',
     type: 'function',
   },
   {
@@ -857,6 +849,24 @@ export const EarlyAdoptersNFTAbi = [
   {
     inputs: [
       {
+        internalType: 'uint256',
+        name: 'newMaxSupply',
+        type: 'uint256',
+      },
+      {
+        internalType: 'string',
+        name: 'newIpfsCid',
+        type: 'string',
+      },
+    ],
+    name: 'setIpfsFolder',
+    outputs: [],
+    stateMutability: 'nonpayable',
+    type: 'function',
+  },
+  {
+    inputs: [
+      {
         internalType: 'bytes4',
         name: 'interfaceId',
         type: 'bytes4',
@@ -988,6 +998,19 @@ export const EarlyAdoptersNFTAbi = [
   },
   {
     inputs: [],
+    name: 'tokensAvailable',
+    outputs: [
+      {
+        internalType: 'uint256',
+        name: '',
+        type: 'uint256',
+      },
+    ],
+    stateMutability: 'view',
+    type: 'function',
+  },
+  {
+    inputs: [],
     name: 'totalSupply',
     outputs: [
       {
@@ -1040,4 +1063,4 @@ export const EarlyAdoptersNFTAbi = [
     stateMutability: 'payable',
     type: 'function',
   },
-]
+] as const
