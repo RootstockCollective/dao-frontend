@@ -1,5 +1,6 @@
 import { StakePreviewBalanceProps } from '@/app/user/Stake/types'
 import { Span } from '@/components/Typography'
+import { toFixed } from '@/lib/utils'
 
 export const StakePreviewBalance = ({
   topLeftText,
@@ -23,7 +24,7 @@ export const StakePreviewBalance = ({
     <div>
       {/* Balance and Token */}
       <Span size="small" variant="light">
-        Balance: {balance}
+        Balance: {toFixed(balance)}
       </Span>
       <div className="text-right mt-[8px]">{/* @TODO ICON {tokenSymbol} */}</div>
     </div>
