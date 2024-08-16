@@ -20,13 +20,12 @@ export const useQueueProposal = (proposalId: string) => {
 
   const { writeContractAsync: queue, isPending: isQueuing } = useWriteContract()
 
-  const onQueueProposal = async () => {
-    return queue({
+  const onQueueProposal = () =>
+    queue({
       ...DEFAULT_DAO,
       functionName: 'queue',
       args: [BigInt(proposalId)],
     })
-  }
 
   return {
     proposalNeedsQueuing,

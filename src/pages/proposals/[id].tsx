@@ -85,6 +85,19 @@ const PageWithProposal = (proposal: PageWithProposal) => {
     }
   }
 
+  const handleQueuingProposal = async () => {
+    onQueueProposal()
+      .then(() => {
+        // TODO: show success message
+      })
+      .catch(err => {
+        if (err?.cause?.code !== 4001) {
+          // TODO: show error message
+          console.error(err)
+        }
+      })
+  }
+
   return (
     <div className="pl-4 grid grid-rows-1 gap-[32px] mb-[100px]">
       <BreadcrumbSection title={name} />
@@ -123,9 +136,9 @@ const PageWithProposal = (proposal: PageWithProposal) => {
           )}
           {proposalNeedsQueuing && ['Succeeded', 'Queued'].includes(proposalStateHuman) && (
             <Button
-              onClick={onQueueProposal}
+              onClick={handleQueuingProposal}
               className="mt-2"
-              disabled={proposalStateHuman === 'Queued'}
+              disabled={proposalStateHuman === 'Queued' || isQueuing}
               loading={isQueuing}
             >
               Put on Queue
