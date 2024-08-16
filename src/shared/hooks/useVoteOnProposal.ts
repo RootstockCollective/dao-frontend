@@ -1,8 +1,8 @@
+import { Vote } from '@/components/Modal/VoteProposalModal'
+import { GovernorAbi } from '@/lib/abis/Governor'
+import { GovernorAddress } from '@/lib/contracts'
 import { Address } from 'viem'
 import { useAccount, useReadContract, useWriteContract } from 'wagmi'
-import { GovernorAbi } from '@/lib/abis/Governor'
-import { Vote } from '@/components/Modal/VoteProposalModal'
-import { GovernorAddress } from '@/lib/contracts'
 
 const DEFAULT_DAO = {
   address: GovernorAddress as Address,
@@ -29,13 +29,6 @@ enum ProposalState {
 export const useVoteOnProposal = (proposalId: string) => {
   const { address } = useAccount()
 
-  // Check if proposal needs queuing
-  const { data: proposalNeedsQueuing } = useReadContract({
-    ...DEFAULT_DAO,
-    functionName: 'proposalNeedsQueuing',
-    args: [BigInt(proposalId)],
-  })
-
   // First read the proposal to see if it's active
   const { data: proposalState } = useReadContract({
     ...DEFAULT_DAO,
@@ -56,7 +49,7 @@ export const useVoteOnProposal = (proposalId: string) => {
   })
 
   // If everything passed ok - user can vote
-  const { writeContractAsync } = useWriteContract()
+  const { writeContractAsync, isPending: isVoting } = useWriteContract()
   const onVote = async (vote: Vote) => {
     if (!isProposalActive) {
       return Promise.reject('The proposal is not active.')
@@ -71,21 +64,12 @@ export const useVoteOnProposal = (proposalId: string) => {
     })
   }
 
-  const onQueueProposal = async () => {
-    return writeContractAsync({
-      ...DEFAULT_DAO,
-      functionName: 'queue',
-      args: [BigInt(proposalId)],
-    })
-  }
-
   return {
     onVote,
     isProposalActive,
     didUserVoteAlready: !!hasVoted,
     proposalState,
     proposalStateHuman: proposalState !== undefined ? ProposalState[proposalState] : '',
-    proposalNeedsQueuing,
-    onQueueProposal,
+    isVoting,
   }
 }

@@ -1,8 +1,8 @@
-import { useStakingContext } from '@/app/user/Stake/StakingContext'
-import { useMemo } from 'react'
 import { StakeRIF } from '@/app/user/Stake/StakeRIF'
+import { useStakingContext } from '@/app/user/Stake/StakingContext'
 import { StepProps } from '@/app/user/Stake/types'
-import { formatCurrency } from '@/lib/utils'
+import { formatCurrency, toFixed } from '@/lib/utils'
+import { useMemo } from 'react'
 
 export const StepOne = ({ onGoNext = () => {} }: StepProps) => {
   const { amount, onAmountChange, tokenToSend, actionName } = useStakingContext()
@@ -31,7 +31,7 @@ export const StepOne = ({ onGoNext = () => {} }: StepProps) => {
       onPercentageClicked={onPercentageClicked}
       onGoNext={onGoNext}
       shouldEnableGoNext={shouldEnableGoNext}
-      totalBalance={tokenToSend.balance}
+      totalBalance={toFixed(tokenToSend.balance)}
       totalBalanceConverted={balanceToCurrency ? 'USD ' + formatCurrency(balanceToCurrency) : ''}
       symbol={tokenToSend.symbol}
       actionName={actionName}

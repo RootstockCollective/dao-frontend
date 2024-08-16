@@ -2,7 +2,7 @@ import { Button } from '@/components/Button'
 import { Modal } from '@/components/Modal/Modal'
 import { Input } from '@/components/Input'
 import { Header, Label, Paragraph, Typography } from '@/components/Typography'
-import { shortAddress, truncateMiddle } from '@/lib/utils'
+import { shortAddress, toFixed, truncateMiddle } from '@/lib/utils'
 import { FC, useState } from 'react'
 import { FaUser } from 'react-icons/fa'
 import { FaCopy } from 'react-icons/fa6'
@@ -68,7 +68,7 @@ export const VoteProposalModal: FC<Props> = ({
         <Input
           label="Voting Power"
           name="votingPower"
-          value={votingPower}
+          value={toFixed(votingPower)}
           className="mt-4"
           fullWidth
           readonly
