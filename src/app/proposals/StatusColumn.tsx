@@ -1,4 +1,4 @@
-import { useVoteOnProposal } from '@/lib/useVoteOnProposal'
+import { useVoteOnProposal } from '@/shared/hooks/useVoteOnProposal'
 import { Status } from '@/components/Status'
 import { StatusSeverity } from '@/components/Status/types'
 
