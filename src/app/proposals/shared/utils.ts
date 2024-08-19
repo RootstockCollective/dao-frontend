@@ -71,7 +71,7 @@ export const TRANSACTION_SENT_MESSAGES = {
   },
   canceled: {
     title: 'Transaction canceled',
-    content: 'Proposal creation canceled. Your proposal has been canceled.',
+    content: 'You canceled the transaction.',
     severity: 'warning',
   },
 } as const

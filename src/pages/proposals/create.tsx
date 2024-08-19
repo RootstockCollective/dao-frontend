@@ -2,6 +2,7 @@
 import { useCreateProposal } from '@/app/proposals/hooks/useCreateProposal'
 import { useVotingPower } from '@/app/proposals/hooks/useVotingPower'
 import { TRANSACTION_SENT_MESSAGES } from '@/app/proposals/shared/utils'
+import { useAlertContext } from '@/app/providers/AlertProvider'
 import { useGetSpecificPrices } from '@/app/user/Balances/hooks/useGetSpecificPrices'
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/Accordion'
 import { Alert } from '@/components/Alert/Alert'
@@ -58,9 +59,7 @@ export default function CreateProposal() {
   const prices = useGetSpecificPrices()
   const { isLoading: isVotingPowerLoading, canCreateProposal } = useVotingPower()
   const { onCreateProposal, isPublishing } = useCreateProposal()
-  const [message, setMessage] = useState<
-    (typeof TRANSACTION_SENT_MESSAGES)[keyof typeof TRANSACTION_SENT_MESSAGES] | null
-  >(null)
+  const { setMessage } = useAlertContext()
 
   const [activeStep, setActiveStep] = useState('proposal')
 
@@ -117,8 +116,6 @@ export default function CreateProposal() {
 
   const handleProposalCompleted = () => setActiveStep('actions')
 
-  const onDismissMessage = () => setMessage(null)
-
   useEffect(() => {
     if (!isVotingPowerLoading && !canCreateProposal) {
       router.push('/proposals')
@@ -131,11 +128,6 @@ export default function CreateProposal() {
 
   return (
     <MainContainer>
-      {message && (
-        <div className="mb-4">
-          <Alert {...message} onDismiss={onDismissMessage} />
-        </div>
-      )}
       <Form {...form}>
         <form onSubmit={handleSubmit(onSubmit)}>
           <HeaderSection disabled={!isDirty || !isValid || isPublishing} loading={isPublishing} />

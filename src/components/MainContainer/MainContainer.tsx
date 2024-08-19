@@ -1,15 +1,17 @@
 'use client'
+import { useAlertContext } from '@/app/providers'
 import { useModal } from '@/app/user/Balances/hooks/useModal'
+import { Footer } from '@/components/Footer'
 import { ConnectButton, Header } from '@/components/Header'
 import { StatefulSidebar } from '@/components/MainContainer/StatefulSidebar'
 import { shortAddress } from '@/lib/utils'
 import { useRouter } from 'next/navigation'
 import { FC, ReactNode, useEffect, useState } from 'react'
 import { useAccount, useDisconnect } from 'wagmi'
+import { Alert } from '../Alert'
 import { AccountAddress } from '../Header/AccountAddress'
 import { DisconnectWalletModal } from '../Modal/DisconnectWalletModal'
 import { ProtectedContent } from '../ProtectedContent/ProtectedContent'
-import { Footer } from '@/components/Footer'
 
 interface Props {
   children: ReactNode
@@ -21,6 +23,7 @@ export const MainContainer: FC<Props> = ({ children, notProtected = false }) => 
   const { disconnect } = useDisconnect()
   const router = useRouter()
   const modal = useModal()
+  const { message, setMessage } = useAlertContext()
 
   const [hasMounted, setHasMounted] = useState(false)
 
@@ -62,6 +65,11 @@ export const MainContainer: FC<Props> = ({ children, notProtected = false }) => 
                 />
               )}
             </>
+          )}
+          {message && (
+            <div className="mb-4">
+              <Alert {...message} onDismiss={() => setMessage(null)} />
+            </div>
           )}
           {notProtected ? children : <ProtectedContent>{children}</ProtectedContent>}
         </div>

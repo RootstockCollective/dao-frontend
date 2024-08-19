@@ -3,7 +3,7 @@ import { CiCircleCheck } from 'react-icons/ci'
 import { Paragraph } from '@/components/Typography'
 import { MdClose } from 'react-icons/md'
 
-interface AlertProps {
+export interface AlertProps {
   severity: 'error' | 'success' | 'info' | 'warning'
   title: string
   content: string
