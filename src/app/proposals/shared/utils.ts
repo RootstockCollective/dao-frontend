@@ -75,3 +75,17 @@ export const TRANSACTION_SENT_MESSAGES = {
     severity: 'warning',
   },
 } as const
+
+export const STAKING_MESSAGES = {
+  error: {
+    title: 'Error staking',
+    content:
+      'Error staking. An unexpected error occurred while trying to stake. Please try again later. If the issue persists, contact support for assistance.',
+    severity: 'error',
+  },
+  pending: {
+    title: 'Staking in process',
+    content: 'Your transaction is in progress. It will be visible when the transaction is confirmed.',
+    severity: 'info',
+  },
+} as const
