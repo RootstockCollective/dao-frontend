@@ -23,8 +23,8 @@ const nftContracts = {
   EA: EA_NFT_ADDRESS, // Early Adopters
 }
 
-const abiContractsMap: { [key: string]: any } = {
-  [nftContracts.EA?.toLowerCase()]: EarlyAdoptersNFTAbi,
+const abiContractsMap = {
+  [nftContracts.EA]: EarlyAdoptersNFTAbi,
 }
 
 const treasuryContracts = [

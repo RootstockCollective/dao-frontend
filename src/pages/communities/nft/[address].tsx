@@ -11,23 +11,20 @@ import { BsTwitterX } from 'react-icons/bs'
 import { FaDiscord, FaLink } from 'react-icons/fa'
 import { Address } from 'viem'
 import { useAccount } from 'wagmi'
-import { useCidsAvailable } from '@/shared/hooks/useCidsAvailable'
+import { useCommunity } from '@/shared/hooks/useCommunity'
 import { useMintNFT } from '@/shared/hooks/useMintNFT'
-import { useNFTImage } from '@/shared/hooks/useNFTImage'
+import { useNftMeta } from '@/shared/hooks/useNFTMeta'
 import { DEFAULT_NFT_BASE64 } from '@/shared/defaultNFT'
 
 export default function Page() {
-  const {
-    query: { address: nftAddress },
-  } = useRouter()
-
+  const router = useRouter()
+  const nftAddress = router.query.address as Address | undefined
   const { address } = useAccount()
-  const { cidsAvailable } = useCidsAvailable(nftAddress as Address)
-  const { onMintNFT, isPending: isClaiming } = useMintNFT(nftAddress as Address)
+  const { tokensAvailable, isMember, tokenId } = useCommunity(nftAddress)
+  const { onMintNFT, isPending: isClaiming } = useMintNFT(nftAddress)
   const [message, setMessage] = useState('')
 
-  const { isLoadingImage: loadingNftImage, data: nftData } = useNFTImage(nftAddress as Address)
-  const { imageUrl, alt, description, tokenId, owned } = nftData
+  const { isLoadingNftImage, meta } = useNftMeta(nftAddress)
 
   const handleMinting = () => {
     if (!address) return
@@ -118,27 +115,21 @@ export default function Page() {
           <div>
             <Span className="mb-[24px] font-bold inline-block">Membership NFT</Span>
             <div className="grid grid-cols-[40%_60%] gap-[24px]">
-              {!loadingNftImage && (
-                <>
-                  {imageUrl ? (
-                    <Image alt={alt} src={imageUrl} className="w-full self-center" width={0} height={0} />
-                  ) : (
-                    <Image
-                      alt="NFT"
-                      src={DEFAULT_NFT_BASE64}
-                      className="w-full self-center"
-                      width={0}
-                      height={0}
-                    />
-                  )}
-                </>
+              {!isLoadingNftImage && (
+                <Image
+                  alt={meta?.name ?? 'NFT'}
+                  src={meta?.image ?? DEFAULT_NFT_BASE64}
+                  className="w-full self-center"
+                  width={0}
+                  height={0}
+                />
               )}
 
-              {owned ? (
+              {isMember ? (
                 <div>
-                  <Paragraph className="text-[18px]">Early Adopter #{tokenId.toString()}</Paragraph>
+                  <Paragraph className="text-[18px]">Early Adopter #{tokenId}</Paragraph>
                   <Span className="my-[16px] inline-block text-st-success">Owned</Span>
-                  <Span className="inline-block text-[14px] tracking-wide">{description}</Span>
+                  <Span className="inline-block text-[14px] tracking-wide">{meta?.description}</Span>
                 </div>
               ) : (
                 <div>
@@ -147,7 +138,7 @@ export default function Page() {
                     variant="secondary-full"
                     className="my-[16px]"
                     onClick={handleMinting}
-                    disabled={!cidsAvailable || !address || isClaiming}
+                    disabled={!tokensAvailable || !address || isClaiming}
                     loading={isClaiming}
                   >
                     Claim it!
