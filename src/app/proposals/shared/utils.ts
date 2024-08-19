@@ -78,14 +78,20 @@ export const TRANSACTION_SENT_MESSAGES = {
 
 export const STAKING_MESSAGES = {
   error: {
-    title: 'Error staking',
+    title: 'Error on staking',
     content:
-      'Error staking. An unexpected error occurred while trying to stake. Please try again later. If the issue persists, contact support for assistance.',
+      'An unexpected error occurred while trying to stake. Please try again later. If the issue persists, contact support for assistance.',
     severity: 'error',
   },
   pending: {
     title: 'Staking in process',
     content: 'Your transaction is in progress. It will be visible when the transaction is confirmed.',
     severity: 'info',
+  },
+  success: {
+    title: 'Stake successful',
+    content:
+      'Stake successful. Your stake has been successfully completed! You will start receiving rewards in your stRIF balance.',
+    severity: 'success',
   },
 } as const
