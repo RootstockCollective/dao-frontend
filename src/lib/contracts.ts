@@ -10,6 +10,7 @@ import {
   MULTICALL_ADDRESS,
   RIF_ADDRESS,
   STRIF_ADDRESS,
+  TREASURY_ADDRESS,
 } from './constants'
 
 const tokenContracts = {
@@ -45,4 +46,14 @@ const treasuryContracts = [
 const GovernorAddress = GOVERNOR_ADDRESS
 const MulticallAddress = MULTICALL_ADDRESS
 
-export { tokenContracts, nftContracts, abiContractsMap, treasuryContracts, GovernorAddress, MulticallAddress }
+const TreasuryAddress = TREASURY_ADDRESS
+
+export {
+  tokenContracts,
+  nftContracts,
+  abiContractsMap,
+  treasuryContracts,
+  GovernorAddress,
+  MulticallAddress,
+  TreasuryAddress,
+}
