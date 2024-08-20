@@ -30,11 +30,7 @@ export const ProposalStatusAlert = () => {
   }, [proposalCreatedTxStatus])
 
   if (message && !isDismissed) {
-    return (
-      <div className="mb-4">
-        <Alert {...message} onDismiss={onDismiss} />
-      </div>
-    )
+    return <Alert {...message} onDismiss={onDismiss} />
   }
 
   return null

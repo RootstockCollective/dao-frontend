@@ -19,7 +19,7 @@ const IconToUse = {
 
 export const Alert = ({ severity, title, content, onDismiss }: AlertProps) => {
   return (
-    <div className="relative flex border-white border-2 p-[16px] rounded-[12px] gap-[16px] bg-input-bg">
+    <div className="relative flex border-white border-2 p-[16px] rounded-[12px] gap-[16px] bg-input-bg mb-4">
       {/* Icon */}
       {IconToUse[severity]}
       {/* Main content */}

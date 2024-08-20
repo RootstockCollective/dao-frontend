@@ -8,7 +8,7 @@ import { Popover } from '@/components/Popover'
 import { toFixed } from '@/lib/utils'
 import { FaRegQuestionCircle } from 'react-icons/fa'
 import { useVotingPower } from './hooks/useVotingPower'
-import { ProposalStatusAlert } from './ProposalStatusAlert'
+import { TxStatusMessage } from '@/components/TxStatusMessage/TxStatusMessage'
 
 export default function Proposals() {
   const { votingPower, canCreateProposal, threshold } = useVotingPower()
@@ -17,7 +17,7 @@ export default function Proposals() {
 
   return (
     <MainContainer>
-      <ProposalStatusAlert />
+      <TxStatusMessage messageType="proposal" />
       <HeaderSection createProposalDisabled={!canCreateProposal} threshold={threshold} />
       <div className="pl-4 grid grid-rows-1 gap-[32px] mb-[100px]">
         <MetricsCard borderless title={<VotingPowerPopover />} amount={toFixed(votingPower)} />

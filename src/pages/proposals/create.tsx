@@ -5,7 +5,6 @@ import { TRANSACTION_SENT_MESSAGES } from '@/app/proposals/shared/utils'
 import { useAlertContext } from '@/app/providers/AlertProvider'
 import { useGetSpecificPrices } from '@/app/user/Balances/hooks/useGetSpecificPrices'
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/Accordion'
-import { Alert } from '@/components/Alert/Alert'
 import { Button } from '@/components/Button'
 import {
   Form,
