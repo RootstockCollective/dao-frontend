@@ -19,10 +19,9 @@ import { MetricsCard } from '@/components/MetricsCard'
 import { Popover } from '@/components/Popover'
 import { Header, Paragraph } from '@/components/Typography'
 import { useVoteOnProposal } from '@/shared/hooks/useVoteOnProposal'
-import { shortAddress, toFixed, truncateMiddle } from '@/lib/utils'
+import { shortAddress } from '@/lib/utils'
 import { useRouter } from 'next/router'
 import { FC, useMemo, useState } from 'react'
-import { formatUnits } from 'viem'
 import { useAccount } from 'wagmi'
 import { Vote, VoteProposalModal } from '../../components/Modal/VoteProposalModal'
 import { VoteSubmittedModal } from '../../components/Modal/VoteSubmittedModal'
@@ -98,6 +97,7 @@ const PageWithProposal = (proposal: PageWithProposal) => {
       })
   }
 
+  // @ts-ignore
   return (
     <div className="pl-4 grid grid-rows-1 gap-[32px] mb-[100px]">
       <BreadcrumbSection title={name} />
@@ -226,22 +226,24 @@ const PageWithProposal = (proposal: PageWithProposal) => {
           </Header>
           <div className="border border-white border-opacity-40 rounded-lg px-[16px] py-[11px]">
             <div className="flex flex-col">
-              <div className="flex justify-between">
-                <Paragraph variant="semibold" className="text-[16px]">
-                  Transfer
-                </Paragraph>
-                <Paragraph variant="normal" className="text-[16px]">
-                  {toFixed(formatUnits(proposal.transferToValue || 0n, 18))}
-                </Paragraph>
-              </div>
-              <div className="flex justify-between">
-                <Paragraph variant="semibold" className="text-[16px]">
-                  To
-                </Paragraph>
-                <Paragraph variant="normal" className="text-[16px]">
-                  {truncateMiddle(proposal.transferTo || '')}
-                </Paragraph>
-              </div>
+              {/*<div className="flex justify-between">*/}
+              {/*  <Paragraph variant="semibold" className="text-[16px]">*/}
+              {/*    Transfer*/}
+              {/*  </Paragraph>*/}
+              {/*  <Paragraph variant="normal" className="text-[16px]">*/}
+              {/*    {toFixed(formatUnits(0 || 0n, 18))}*/}
+              {/*  </Paragraph>*/}
+              {/*</div>*/}
+              {/*<div className="flex justify-between">*/}
+              {/*  <Paragraph variant="semibold" className="text-[16px]">*/}
+              {/*    To*/}
+              {/*  </Paragraph>*/}
+              {/*  <Paragraph variant="normal" className="text-[16px]">*/}
+              {/*    {truncateMiddle('123' || '')}*/}
+              {/*  </Paragraph>*/}
+              {/*</div>*/}
+              {/* @ts-ignore */}
+              <CalldataRows calldatasParsed={proposal.calldatasParsed} />
             </div>
             <div>
               {/* <Paragraph variant="semibold" className="text-[16px]">
@@ -295,5 +297,40 @@ const cannotCastVoteReason = (
         )}
       </>
     )}
+  </div>
+)
+
+interface CalldataRows {
+  calldatasParsed: CalldataDisplayProps[]
+}
+
+const CalldataRows = ({ calldatasParsed }: CalldataRows) => {
+  return calldatasParsed.map((callData, index) => <CalldataDisplay key={index} {...callData} />)
+}
+
+interface CalldataDisplayProps {
+  functionName: string
+  args: Record<number, string>
+  inputs: { name: string }[]
+}
+
+const CalldataDisplay = ({ functionName, args, inputs }: CalldataDisplayProps) => (
+  <div>
+    <Paragraph variant="semibold" className="text-[16px]">
+      Function: {functionName}
+    </Paragraph>
+
+    <Paragraph variant="semibold" className="text-[16px] mt-2">
+      Arguments:
+    </Paragraph>
+    <ul>
+      {inputs.map((input, index) => (
+        <li key={index} className="my-2">
+          <Paragraph variant="semibold" className="text-[16px] break-words">
+            {input.name}: {args[index].toString()}
+          </Paragraph>
+        </li>
+      ))}
+    </ul>
   </div>
 )

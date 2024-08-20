@@ -30,7 +30,7 @@ import { useRouter } from 'next/navigation'
 import { useEffect, useMemo, useState } from 'react'
 import { useForm } from 'react-hook-form'
 import { GoRocket } from 'react-icons/go'
-import { Address } from 'viem'
+import { Address, zeroAddress } from 'viem'
 import { z } from 'zod'
 
 const ADDRESS_REGEX = /^0x[a-fA-F0-9]{40}$/
@@ -83,7 +83,10 @@ export default function CreateProposal() {
     watch,
   } = form
 
-  const pricesMap = useMemo(() => ({ [tokenContracts.RIF]: prices.RIF }), [prices])
+  const pricesMap = useMemo(
+    () => ({ [tokenContracts.RIF]: prices.RIF, [tokenContracts.RBTC]: prices.RBTC }),
+    [prices],
+  )
 
   const isProposalNameValid = !errors.proposalName && touchedFields.proposalName
   const isDescriptionValid = !errors.description && touchedFields.description
@@ -99,7 +102,7 @@ export default function CreateProposal() {
     const { proposalName, description, toAddress, tokenAddress, amount } = data
     const proposalDescription = `${proposalName};${description}`
 
-    onCreateProposal(toAddress as Address, amount.toString(), proposalDescription)
+    onCreateProposal(toAddress as Address, amount.toString(), proposalDescription, tokenAddress)
       .then((txHash: Awaited<ReturnType<typeof onCreateProposal>>) => {
         router.push(`/proposals?txHash=${txHash}`)
       })
@@ -231,13 +234,13 @@ export default function CreateProposal() {
                               </SelectTrigger>
                             </FormControl>
                             <SelectContent>
-                              {/* <SelectItem value={zeroAddress}>
+                              <SelectItem value={zeroAddress}>
                                 <div className="flex items-center">
-                                  TODO: token icon
-                                  <FaBitcoin className="mr-2" />
+                                  {/*TODO: token icon*/}
+                                  {/*<FaBitcoin className="mr-2" />*/}
                                   RBTC
                                 </div>
-                              </SelectItem> */}
+                              </SelectItem>
                               <SelectItem value={tokenContracts.RIF as Address}>
                                 <div className="flex items-center">
                                   <Image

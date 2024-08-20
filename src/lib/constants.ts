@@ -12,3 +12,5 @@ export const MULTICALL_ADDRESS = process.env.NEXT_PUBLIC_MULTICALL_ADDRESS as Ad
 export const BUCKET1_ADDRESS = process.env.NEXT_PUBLIC_BUCKET1_ADDRESS as Address
 export const BUCKET2_ADDRESS = process.env.NEXT_PUBLIC_BUCKET2_ADDRESS as Address
 export const BUCKET3_ADDRESS = process.env.NEXT_PUBLIC_BUCKET3_ADDRESS as Address
+
+export const TREASURY_ADDRESS = process.env.NEXT_PUBLIC_TREASURY_ADDRESS as Address
