@@ -28,6 +28,7 @@ import { VoteSubmittedModal } from '../../components/Modal/VoteSubmittedModal'
 import { useVotingPowerAtSnapshot } from '@/app/proposals/hooks/useVotingPowerAtSnapshot'
 import { useExecuteProposal } from '@/shared/hooks/useExecuteProposal'
 import { useQueueProposal } from '@/shared/hooks/useQueueProposal'
+import { useGetProposalDeadline } from '@/app/proposals/hooks/useGetProposalDeadline'
 
 export default function ProposalView() {
   const {
@@ -59,6 +60,8 @@ const PageWithProposal = (proposal: PageWithProposal) => {
 
   const [againstVote, forVote, abstainVote] = useGetProposalVotes(proposalId, true)
   const snapshot = useGetProposalSnapshot(proposalId)
+
+  const { blocksUntilClosure } = useGetProposalDeadline(proposalId)
 
   const { votingPowerAtSnapshot, doesUserHasEnoughThreshold } = useVotingPowerAtSnapshot(snapshot as bigint)
 
@@ -109,6 +112,11 @@ const PageWithProposal = (proposal: PageWithProposal) => {
         <Paragraph className="text-sm text-gray-500 ml-4">
           Created at: <span className="text-primary">{Starts}</span>
         </Paragraph>
+        {blocksUntilClosure !== null && proposalStateHuman === 'Active' && (
+          <Paragraph className="text-sm text-gray-500 ml-4">
+            Blocks until closure: <span className="text-primary">{blocksUntilClosure.toString()}</span>
+          </Paragraph>
+        )}
       </div>
       <div className="flex flex-row justify-between">
         <div className="flex flex-row gap-x-6">
