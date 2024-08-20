@@ -43,4 +43,23 @@ export const TX_MESSAGES = {
       severity: 'success',
     },
   },
+  unstaking: {
+    error: {
+      title: 'Error on unstaking',
+      content:
+        'An unexpected error occurred while trying to unstake. Please try again later. If the issue persists, contact support for assistance.',
+      severity: 'error',
+    },
+    pending: {
+      title: 'Unstaking in process',
+      content: 'Your transaction is in progress. It will be visible when the transaction is confirmed.',
+      severity: 'info',
+    },
+    success: {
+      title: 'Unstake successful',
+      content:
+        'Unstake successful. Your unstake has been successfully completed! You received your RIF back in your wallet.',
+      severity: 'success',
+    },
+  },
 } as const

@@ -27,7 +27,6 @@ export const StepTwo = ({ onGoNext, onCloseModal = () => {} }: StepProps) => {
   const onConfirm = async () => {
     try {
       const txHash = await onConfirmAction()
-      setMessage(STAKING_MESSAGES.pending)
       setStakeTxHash?.(txHash)
       onGoNext?.()
     } catch (err: any) {
