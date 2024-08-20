@@ -127,9 +127,13 @@ export const formatCurrency = (value: number, currency = 'USD'): string => {
  * @example toFixed(1.123456789e-7) // '0.0000001123456789'
  * @example toFixed(1.1e+10) // '11000000000'
  * @example toFixed(1.1e20) // '110000000000000000000'
+ * @example toFixed('-') // '-'
  */
 export const toFixed = (num: number | string, decimalPlaces = 8) => {
   let n = Number(num)
+  if (isNaN(n)) {
+    return num?.toString()
+  }
   if (Math.abs(n) < 1.0) {
     const e = parseInt(n.toString().split('e-')[1])
     if (e) {
