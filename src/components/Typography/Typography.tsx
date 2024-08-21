@@ -26,7 +26,7 @@ export const Typography: FC<Props & CSSProperties> = ({
   const classes = classesByTag[tagVariant]
 
   return (
-    <Component className={cn([classes, className])} style={{ ...styles }}>
+    <Component className={cn(['font-sora', classes, className])} style={{ ...styles }}>
       {children}
     </Component>
   )
