@@ -1,7 +1,7 @@
 import { Header, Label } from '@/components/Typography'
 import { StakeInput } from '@/app/user/Stake/StakeInput'
 import { Button } from '@/components/Button'
-import { useCallback, useMemo } from 'react'
+import { useMemo } from 'react'
 import { ActionBeingExecuted, textsDependingOnAction } from '@/app/user/Stake/Steps/stepsUtils'
 
 interface Props {

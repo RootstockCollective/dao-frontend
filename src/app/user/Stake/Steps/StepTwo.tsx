@@ -1,7 +1,9 @@
+import { useAlertContext } from '@/app/providers'
 import { StakePreview } from '@/app/user/Stake/StakePreview'
-import { StepProps } from '@/app/user/Stake/types'
 import { useStakingContext } from '@/app/user/Stake/StakingContext'
 import { textsDependingOnAction } from '@/app/user/Stake/Steps/stepsUtils'
+import { StepProps } from '@/app/user/Stake/types'
+import { TX_MESSAGES } from '@/shared/txMessages'
 
 export const StepTwo = ({ onGoNext, onCloseModal = () => {} }: StepProps) => {
   const {
@@ -14,6 +16,7 @@ export const StepTwo = ({ onGoNext, onCloseModal = () => {} }: StepProps) => {
     stakePreviewFrom: from,
     stakePreviewTo: to,
   } = useStakingContext()
+  const { setMessage } = useAlertContext()
 
   const { onConfirm: onConfirmAction, isPending } = actionToUse(
     amount,
@@ -26,8 +29,10 @@ export const StepTwo = ({ onGoNext, onCloseModal = () => {} }: StepProps) => {
       const txHash = await onConfirmAction()
       setStakeTxHash?.(txHash)
       onGoNext?.()
-    } catch (errorConfirming) {
-      console.log(errorConfirming) // @TODO implement error handling
+    } catch (err: any) {
+      if (err?.cause?.code !== 4001) {
+        setMessage(TX_MESSAGES.staking.error)
+      }
     }
   }
 

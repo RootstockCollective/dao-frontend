@@ -3,7 +3,7 @@ import { CiCircleCheck } from 'react-icons/ci'
 import { Paragraph } from '@/components/Typography'
 import { MdClose } from 'react-icons/md'
 
-interface AlertProps {
+export interface AlertProps {
   severity: 'error' | 'success' | 'info' | 'warning'
   title: string
   content: string
@@ -19,7 +19,7 @@ const IconToUse = {
 
 export const Alert = ({ severity, title, content, onDismiss }: AlertProps) => {
   return (
-    <div className="relative flex border-white border-2 p-[16px] rounded-[12px] gap-[16px] bg-input-bg">
+    <div className="relative flex border-gray-300 border p-[16px] rounded-[12px] gap-[16px] bg-input-bg mb-4 ml-4">
       {/* Icon */}
       {IconToUse[severity]}
       {/* Main content */}

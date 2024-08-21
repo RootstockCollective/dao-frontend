@@ -1,15 +1,17 @@
 'use client'
+import { useAlertContext } from '@/app/providers'
 import { useModal } from '@/app/user/Balances/hooks/useModal'
+import { Footer } from '@/components/Footer'
 import { ConnectButton, Header } from '@/components/Header'
 import { StatefulSidebar } from '@/components/MainContainer/StatefulSidebar'
 import { shortAddress } from '@/lib/utils'
-import { useRouter } from 'next/navigation'
+import { usePathname, useRouter } from 'next/navigation'
 import { FC, ReactNode, useEffect, useState } from 'react'
 import { useAccount, useDisconnect } from 'wagmi'
+import { Alert } from '../Alert'
 import { AccountAddress } from '../Header/AccountAddress'
 import { DisconnectWalletModal } from '../Modal/DisconnectWalletModal'
 import { ProtectedContent } from '../ProtectedContent/ProtectedContent'
-import { Footer } from '@/components/Footer'
 
 interface Props {
   children: ReactNode
@@ -19,8 +21,10 @@ interface Props {
 export const MainContainer: FC<Props> = ({ children, notProtected = false }) => {
   const { isConnected, address } = useAccount()
   const { disconnect } = useDisconnect()
+  const { message, setMessage } = useAlertContext()
   const router = useRouter()
   const modal = useModal()
+  const pathname = usePathname()
 
   const [hasMounted, setHasMounted] = useState(false)
 
@@ -28,6 +32,11 @@ export const MainContainer: FC<Props> = ({ children, notProtected = false }) => 
     router.push('/')
     disconnect()
   }
+
+  useEffect(() => {
+    // Clear message on route change
+    setMessage(null)
+  }, [pathname, setMessage])
 
   useEffect(() => {
     // This is to prevent Hydration error on client side
@@ -63,6 +72,7 @@ export const MainContainer: FC<Props> = ({ children, notProtected = false }) => 
               )}
             </>
           )}
+          {message && <Alert {...message} onDismiss={() => setMessage(null)} />}
           {notProtected ? children : <ProtectedContent>{children}</ProtectedContent>}
         </div>
       </div>

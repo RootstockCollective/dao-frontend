@@ -49,29 +49,3 @@ export const getEventArguments = ({
     calldatasParsed,
   }
 }
-
-export const TRANSACTION_SENT_MESSAGES = {
-  error: {
-    title: 'Error publishing',
-    content:
-      'Error publishing. An unexpected error occurred while trying to publish your proposal. Please try again later. If the issue persists, contact support for assistance.',
-    severity: 'error',
-  },
-  pending: {
-    title: 'Transaction sent',
-    content:
-      'Proposal transaction sent. Your proposal is in process. It will be visible when the transaction is confirmed.',
-    severity: 'info',
-  },
-  success: {
-    title: 'Proposal successfully created',
-    content:
-      'Proposal successfully created. Your proposal has been published successfully! It is now visible to the community for review and feedback. Thank you for your contribution.',
-    severity: 'success',
-  },
-  canceled: {
-    title: 'Transaction canceled',
-    content: 'Proposal creation canceled. Your proposal has been canceled.',
-    severity: 'warning',
-  },
-} as const

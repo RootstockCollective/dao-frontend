@@ -71,5 +71,5 @@ export const useCommunity = (nftAddress?: Address): CommunityData => {
       isMember: (balanceOf?.result ?? 0n) > 0n,
       tokenId: typeof tokenIdByOwner?.result === 'bigint' ? Number(tokenIdByOwner.result) : undefined,
     }
-  }, [nftAddress, address, data])
+  }, [data])
 }
