@@ -1,9 +1,9 @@
-import { STAKING_MESSAGES } from '@/app/proposals/shared/utils'
 import { useAlertContext } from '@/app/providers'
 import { StakePreview } from '@/app/user/Stake/StakePreview'
 import { useStakingContext } from '@/app/user/Stake/StakingContext'
 import { textsDependingOnAction } from '@/app/user/Stake/Steps/stepsUtils'
 import { StepProps } from '@/app/user/Stake/types'
+import { TX_MESSAGES } from '@/shared/txMessages'
 
 export const StepTwo = ({ onGoNext, onCloseModal = () => {} }: StepProps) => {
   const {
@@ -31,7 +31,7 @@ export const StepTwo = ({ onGoNext, onCloseModal = () => {} }: StepProps) => {
       onGoNext?.()
     } catch (err: any) {
       if (err?.cause?.code !== 4001) {
-        setMessage(STAKING_MESSAGES.error)
+        setMessage(TX_MESSAGES.staking.error)
       }
     }
   }
