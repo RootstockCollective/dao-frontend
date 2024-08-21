@@ -13,9 +13,13 @@ function fetchProposals() {
   fetchProposalCreated()
     .then(({ data }) => {
       console.log(14, 'Finished fetching proposals...')
-      cachedProposals.data = data
+      if (Array.isArray(data) && data.length > 0) {
+        cachedProposals.data = data as []
+        cachedProposals.error = ''
+      } else {
+        cachedProposals.error = JSON.stringify(data)
+      }
       cachedProposals.lastUpdated = Date.now()
-      cachedProposals.error = ''
     })
     .catch(err => {
       cachedProposals.error = err.toString()
