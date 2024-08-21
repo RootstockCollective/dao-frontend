@@ -125,30 +125,29 @@ const PageWithProposal = (proposal: PageWithProposal) => {
           <MetricsCard title="State" amount={proposalStateHuman} />
         </div>
         <div>
-          {cannotCastVote ? (
-            <Popover
-              content={cannotCastVoteReason(
-                !isProposalActive,
-                didUserVoteAlready,
-                !doesUserHasEnoughThreshold,
+          {proposalStateHuman === 'Active' && (
+            <>
+              {cannotCastVote ? (
+                <Popover
+                  content={cannotCastVoteReason(
+                    !isProposalActive,
+                    didUserVoteAlready,
+                    !doesUserHasEnoughThreshold,
+                  )}
+                  size="small"
+                  trigger="hover"
+                >
+                  <Button disabled>Vote on chain</Button>
+                </Popover>
+              ) : (
+                <Button onClick={votingModal.openModal} loading={isVoting}>
+                  Vote on chain
+                </Button>
               )}
-              size="small"
-              trigger="hover"
-            >
-              <Button disabled>Vote on chain</Button>
-            </Popover>
-          ) : (
-            <Button onClick={votingModal.openModal} loading={isVoting}>
-              Vote on chain
-            </Button>
+            </>
           )}
-          {proposalNeedsQueuing && ['Succeeded', 'Queued'].includes(proposalStateHuman) && (
-            <Button
-              onClick={handleQueuingProposal}
-              className="mt-2"
-              disabled={proposalStateHuman === 'Queued' || isQueuing}
-              loading={isQueuing}
-            >
+          {proposalNeedsQueuing && proposalStateHuman === 'Succeeded' && (
+            <Button onClick={handleQueuingProposal} className="mt-2" disabled={isQueuing} loading={isQueuing}>
               Put on Queue
             </Button>
           )}
