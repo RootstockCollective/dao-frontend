@@ -117,8 +117,6 @@ export default function CreateProposal() {
 
   const handleProposalCompleted = () => setActiveStep('actions')
 
-  const handleActionsCompleted = () => handleSubmit(onSubmit)()
-
   const onDismissMessage = () => setMessage(null)
 
   useEffect(() => {
@@ -150,7 +148,7 @@ export default function CreateProposal() {
           >
             <AccordionItem value="proposal">
               <AccordionTrigger>
-                <div className="flex justify-between inline-block align-middle w-full">
+                <div className="flex justify-between align-middle w-full">
                   <Header variant="h1" className="text-[24px]">
                     Proposal
                   </Header>
@@ -195,7 +193,7 @@ export default function CreateProposal() {
             </AccordionItem>
             <AccordionItem value="actions">
               <AccordionTrigger>
-                <div className="flex justify-between inline-block align-middle w-full">
+                <div className="flex justify-between align-middle w-full">
                   <Header variant="h1" className="text-[24px]">
                     Actions
                   </Header>
@@ -282,16 +280,6 @@ export default function CreateProposal() {
                     )}
                   />
                 </div>
-
-                <div className="flex justify-center mb-6">
-                  <Button
-                    disabled={!isValid || isPublishing}
-                    onClick={handleActionsCompleted}
-                    loading={isPublishing}
-                  >
-                    Publish
-                  </Button>
-                </div>
               </AccordionContent>
             </AccordionItem>
           </Accordion>
@@ -303,7 +291,7 @@ export default function CreateProposal() {
 
 const HeaderSection = ({ disabled = true, loading = false }) => (
   <div className="flex flex-row justify-between container pl-4">
-    <Header variant="h2" className="font-semibold font-[18px]">
+    <Header variant="h2" className="font-semibold">
       Create proposal
     </Header>
     <div className="flex flex-row gap-x-6">

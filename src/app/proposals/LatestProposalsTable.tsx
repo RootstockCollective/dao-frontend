@@ -19,7 +19,7 @@ const ProposalNameColumn = ({ name, proposalId }: ProposalNameColumnProps) => {
   const router = useRouter()
   return (
     <button onClick={() => router.push(`/proposals/${proposalId}`)}>
-      <span className="underline">{name}</span>
+      <span className="underline text-left">{name.slice(0, 20)}</span>
     </button>
   )
 }
