@@ -23,8 +23,8 @@ export const ConnectWalletModal = () => {
         </div>
         <Paragraph className="text-[24px] mt-8">Sign in to view more</Paragraph>
         <Paragraph variant="light" className="text-[16px] text-center">
-          This section is accessible to holders/builders/ <br />
-          connect your wallet to have access.
+          This section is accessible to holders/builders. <br />
+          Connect your wallet to have access.
         </Paragraph>
 
         <div className="w-full flex justify-center mt-8 gap-6">
