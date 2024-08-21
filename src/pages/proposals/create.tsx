@@ -100,15 +100,19 @@ export default function CreateProposal() {
     const { proposalName, description, toAddress, tokenAddress, amount } = data
     const proposalDescription = `${proposalName};${description}`
 
-    onCreateProposal(toAddress as Address, amount.toString(), proposalDescription, tokenAddress)
-      .then((txHash: Awaited<ReturnType<typeof onCreateProposal>>) => {
-        router.push(`/proposals?txHash=${txHash}`)
-      })
-      .catch(err => {
-        if (err?.cause?.code !== 4001) {
-          setMessage(TX_MESSAGES.proposal.error)
-        }
-      })
+    try {
+      const txHash = await onCreateProposal(
+        toAddress as Address,
+        amount.toString(),
+        proposalDescription,
+        tokenAddress,
+      )
+      router.push(`/proposals?txHash=${txHash}`)
+    } catch (err: any) {
+      if (err?.cause?.code !== 4001) {
+        setMessage(TX_MESSAGES.proposal.error)
+      }
+    }
   }
 
   const handleProposalCompleted = () => setActiveStep('actions')

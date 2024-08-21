@@ -83,7 +83,7 @@ const PageWithProposal = (proposal: PageWithProposal) => {
   const handleVoting = async (vote: Vote) => {
     try {
       setErrorVoting('')
-      const tx = await onVote(vote)
+      await onVote(vote)
       votingModal.closeModal()
       setVote(vote)
       submittedModal.openModal()
@@ -93,24 +93,19 @@ const PageWithProposal = (proposal: PageWithProposal) => {
   }
 
   const handleQueuingProposal = async () => {
-    onQueueProposal()
-      .then(txHash => {
-        setMessage(TX_MESSAGES.queuing.pending)
-        waitForTransactionReceipt(config, {
-          hash: txHash,
-        })
-          .then(() => setMessage(TX_MESSAGES.queuing.success))
-          .catch(err => {
-            console.error(err)
-            setMessage(TX_MESSAGES.queuing.error)
-          })
+    try {
+      const txHash = await onQueueProposal()
+      setMessage(TX_MESSAGES.queuing.pending)
+      await waitForTransactionReceipt(config, {
+        hash: txHash,
       })
-      .catch(err => {
-        if (err?.cause?.code !== 4001) {
-          console.error(err)
-          setMessage(TX_MESSAGES.queuing.error)
-        }
-      })
+      setMessage(TX_MESSAGES.queuing.success)
+    } catch (err: any) {
+      if (err?.cause?.code !== 4001) {
+        console.error(err)
+        setMessage(TX_MESSAGES.queuing.error)
+      }
+    }
   }
 
   // @ts-ignore
