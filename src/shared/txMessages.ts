@@ -57,4 +57,22 @@ export const TX_MESSAGES = {
       severity: 'success',
     },
   },
+  queuing: {
+    error: {
+      title: 'Error on queuing',
+      content:
+        'An unexpected error occurred while trying to queue. Please try again later. If the issue persists, contact support for assistance.',
+      severity: 'error',
+    },
+    pending: {
+      title: 'Queuing in process',
+      content: 'Your transaction is in progress. It will be visible when the transaction is confirmed.',
+      severity: 'info',
+    },
+    success: {
+      title: 'Queuing successful',
+      content: 'Queuing successful. The proposal has been queued successfully!',
+      severity: 'success',
+    },
+  },
 } as const

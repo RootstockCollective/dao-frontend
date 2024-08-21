@@ -9,8 +9,6 @@ const DEFAULT_DAO = {
 }
 
 export const useQueueProposal = (proposalId: string) => {
-  const { address } = useAccount()
-
   // Check if proposal needs queuing
   const { data: proposalNeedsQueuing } = useReadContract({
     ...DEFAULT_DAO,

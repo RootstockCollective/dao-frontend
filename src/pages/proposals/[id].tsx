@@ -29,6 +29,10 @@ import { useVotingPowerAtSnapshot } from '@/app/proposals/hooks/useVotingPowerAt
 import { useExecuteProposal } from '@/shared/hooks/useExecuteProposal'
 import { useQueueProposal } from '@/shared/hooks/useQueueProposal'
 import { useGetProposalDeadline } from '@/app/proposals/hooks/useGetProposalDeadline'
+import { waitForTransactionReceipt } from '@wagmi/core'
+import { config } from '@/config'
+import { useAlertContext } from '@/app/providers'
+import { TX_MESSAGES } from '@/shared/txMessages'
 
 export default function ProposalView() {
   const {
@@ -57,6 +61,7 @@ const PageWithProposal = (proposal: PageWithProposal) => {
   const { address } = useAccount()
   const votingModal = useModal()
   const submittedModal = useModal()
+  const { setMessage } = useAlertContext()
 
   const [againstVote, forVote, abstainVote] = useGetProposalVotes(proposalId, true)
   const snapshot = useGetProposalSnapshot(proposalId)
@@ -89,13 +94,21 @@ const PageWithProposal = (proposal: PageWithProposal) => {
 
   const handleQueuingProposal = async () => {
     onQueueProposal()
-      .then(() => {
-        // TODO: show success message
+      .then(txHash => {
+        setMessage(TX_MESSAGES.queuing.pending)
+        waitForTransactionReceipt(config, {
+          hash: txHash,
+        })
+          .then(() => setMessage(TX_MESSAGES.queuing.success))
+          .catch(err => {
+            console.error(err)
+            setMessage(TX_MESSAGES.queuing.error)
+          })
       })
       .catch(err => {
         if (err?.cause?.code !== 4001) {
-          // TODO: show error message
           console.error(err)
+          setMessage(TX_MESSAGES.queuing.error)
         }
       })
   }
