@@ -1,7 +1,6 @@
 'use client'
 import { useCreateProposal } from '@/app/proposals/hooks/useCreateProposal'
 import { useVotingPower } from '@/app/proposals/hooks/useVotingPower'
-import { TRANSACTION_SENT_MESSAGES } from '@/app/proposals/shared/utils'
 import { useAlertContext } from '@/app/providers/AlertProvider'
 import { useGetSpecificPrices } from '@/app/user/Balances/hooks/useGetSpecificPrices'
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/Accordion'
@@ -24,6 +23,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Header, Paragraph } from '@/components/Typography'
 import { tokenContracts } from '@/lib/contracts'
 import { formatCurrency } from '@/lib/utils'
+import { TX_MESSAGES } from '@/shared/txMessages'
 import { zodResolver } from '@hookform/resolvers/zod'
 import Image from 'next/image'
 import { useRouter } from 'next/navigation'
@@ -105,10 +105,8 @@ export default function CreateProposal() {
         router.push(`/proposals?txHash=${txHash}`)
       })
       .catch(err => {
-        if (err?.cause?.code === 4001) {
-          setMessage(TRANSACTION_SENT_MESSAGES.canceled)
-        } else {
-          setMessage(TRANSACTION_SENT_MESSAGES.error)
+        if (err?.cause?.code !== 4001) {
+          setMessage(TX_MESSAGES.proposal.error)
         }
       })
   }
