@@ -14,7 +14,9 @@ export const RenderTotalBalance = ({ symbol }: Props) => {
       <p>
         {toFixed(token.balance)} {token.symbol}
       </p>
-      {prices[symbol] && <p>= {formatCurrency(prices[symbol].price * Number(token.balance) ?? 0)}</p>}
+      {prices[symbol] && (
+        <p className="text-zinc-500">= {formatCurrency(prices[symbol].price * Number(token.balance) ?? 0)}</p>
+      )}
     </>
   )
 }
