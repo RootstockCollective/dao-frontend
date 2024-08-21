@@ -16,7 +16,7 @@ export const JoinACommunity = () => (
       >
         <LuUsers size={48} color="#665EF6" />
       </div>
-      <Header className="mt-[42px] mb-[8px]">Join a Community</Header>
+      <Header className="mt-[42px] mb-[8px] text-[24px]">Join a Community</Header>
       <Paragraph variant="normal" className="text-center pb-[40px] text-[16px]">
         You&apos;re not currently part of any communities. Join a community to connect with like-minded
         individuals, participate in discussions, and gain access to exclusive content.
