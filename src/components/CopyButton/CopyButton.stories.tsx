@@ -1,5 +1,6 @@
+import { FC } from 'react'
 import { Meta, StoryObj } from '@storybook/react'
-import { CopyButton } from './CopyButton'
+import { CopyButton, CopyButtonProps } from './CopyButton'
 import { shortAddress } from '@/lib/utils'
 import { BsCopy } from 'react-icons/bs'
 import { action } from '@storybook/addon-actions'
@@ -16,12 +17,24 @@ type Story = StoryObj<typeof meta>
 
 const address = '0xB62BD53308fb2834b3114a5f725D0382CBe9f008'
 
+/**
+ * Demonstrates the CopyButton surrounded by components from left and right
+ */
+const Surrounding: FC<CopyButtonProps> = args => (
+  <div className="flex gap-4">
+    <span className="border">Leading</span>
+    <CopyButton {...args} />
+    <span className="border">Trailing</span>
+  </div>
+)
+
 export const Default: Story = {
   args: {
     copyText: address,
     onCopySuccess: action('onCopySuccess'),
     onCopyFailure: action('onCopyFailure'),
   },
+  render: args => <Surrounding {...args} />,
 }
 export const CustomText: Story = {
   args: {
@@ -30,6 +43,7 @@ export const CustomText: Story = {
     onCopySuccess: action('onCopySuccess'),
     onCopyFailure: action('onCopyFailure'),
   },
+  render: args => <Surrounding {...args} />,
 }
 export const CustomStyledText: Story = {
   args: {
@@ -38,6 +52,7 @@ export const CustomStyledText: Story = {
     onCopySuccess: action('onCopySuccess'),
     onCopyFailure: action('onCopyFailure'),
   },
+  render: args => <Surrounding {...args} />,
 }
 export const NoIcon: Story = {
   args: {
@@ -47,6 +62,7 @@ export const NoIcon: Story = {
     onCopySuccess: action('onCopySuccess'),
     onCopyFailure: action('onCopyFailure'),
   },
+  render: args => <Surrounding {...args} />,
 }
 export const CustomIcon: Story = {
   args: {
@@ -56,6 +72,7 @@ export const CustomIcon: Story = {
     onCopySuccess: action('onCopySuccess'),
     onCopyFailure: action('onCopyFailure'),
   },
+  render: args => <Surrounding {...args} />,
 }
 export const CustomSuccessMessage: Story = {
   args: {
@@ -65,6 +82,7 @@ export const CustomSuccessMessage: Story = {
     onCopySuccess: action('onCopySuccess'),
     onCopyFailure: action('onCopyFailure'),
   },
+  render: args => <Surrounding {...args} />,
 }
 export const DefaultError: Story = {
   args: {
@@ -73,6 +91,7 @@ export const DefaultError: Story = {
     onCopySuccess: action('onCopySuccess'),
     onCopyFailure: action('onCopyFailure'),
   },
+  render: args => <Surrounding {...args} />,
   play: async () => {
     spyOn(navigator.clipboard, 'writeText').mockImplementation(() => {
       return Promise.reject(new Error('Clipboard error'))
@@ -87,6 +106,7 @@ export const CustomError: Story = {
     onCopySuccess: action('onCopySuccess'),
     onCopyFailure: action('onCopyFailure'),
   },
+  render: args => <Surrounding {...args} />,
   play: async () => {
     spyOn(navigator.clipboard, 'writeText').mockImplementation(() => {
       return Promise.reject(new Error('Clipboard error'))

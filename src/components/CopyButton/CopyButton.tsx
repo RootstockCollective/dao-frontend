@@ -1,8 +1,8 @@
-import { FC, useState, useEffect, ReactNode, ReactElement, cloneElement } from 'react'
+import { FC, useState, useEffect, ReactNode, ReactElement, cloneElement, useRef } from 'react'
 import { BiCopy } from 'react-icons/bi'
 import { cn } from '@/lib/utils'
 
-interface CopyButtonProps {
+export interface CopyButtonProps {
   /**
    * Text to be copied to the clipboard.
    */
@@ -52,6 +52,8 @@ export const CopyButton: FC<CopyButtonProps> = ({
   onCopyFailure = () => {},
   onCopySuccess = () => {},
 }) => {
+  const ref = useRef<HTMLDivElement>(null)
+  const [minWidth, setMinWidth] = useState<number>()
   const [status, setStatus] = useState<CopyStatus>(CopyStatus.Idle)
 
   const copyToClipboard = async () => {
@@ -66,6 +68,12 @@ export const CopyButton: FC<CopyButtonProps> = ({
     }
   }
 
+  // Effect to set the minimum width based on the component's width in Idle state
+  useEffect(() => {
+    if (status !== CopyStatus.Idle || !ref.current) return
+    setMinWidth(ref.current.getBoundingClientRect().width)
+  }, [status])
+
   // Reset the button state back to idle after a timeout
   useEffect(() => {
     if (status === CopyStatus.Idle) return
@@ -73,7 +81,7 @@ export const CopyButton: FC<CopyButtonProps> = ({
     return () => clearTimeout(timeOut)
   }, [status])
 
-  // button text and classes for different status values
+  // Determine the text and classes based on the current status
   const { text: statusText, className: statusClasses } = {
     [CopyStatus.Success]: { text: successLabel, className: 'text-st-success' },
     [CopyStatus.Error]: { text: errorLabel, className: 'text-st-error' },
@@ -81,7 +89,12 @@ export const CopyButton: FC<CopyButtonProps> = ({
   }[status]
 
   return (
-    <div className="flex gap-2 items-center justify-end cursor-pointer font-normal" onClick={copyToClipboard}>
+    <div
+      ref={ref}
+      className="flex gap-2 items-center justify-end cursor-pointer font-normal"
+      style={{ minWidth }}
+      onClick={copyToClipboard}
+    >
       <span className={statusClasses}>{statusText}</span>
       {icon && cloneElement(icon, { className: cn(icon.props.className, statusClasses) })}
     </div>
