@@ -2,6 +2,7 @@ import { ButtonVariants } from '@/components/Button/types'
 import { cn } from '@/lib/utils'
 import { FC, JSX, MouseEvent, ReactNode } from 'react'
 import { FaSpinner } from 'react-icons/fa6'
+import { Span } from '../Typography'
 
 export const BUTTON_DEFAULT_CLASSES = 'px-[24px] py-[12px] flex gap-x-1 items-center relative'
 
@@ -40,11 +41,11 @@ export const Button: FC<Props> = ({
   const classes = cn({
     [BUTTON_DEFAULT_CLASSES]: true,
     'bg-primary rounded-[6px]': variant === 'primary',
-    'bg-transparent border-secondary rounded-[6px] border-[1px]': variant === 'secondary',
-    'bg-secondary border-secondary rounded-[6px] border-[1px]': variant === 'secondary-full',
+    'bg-transparent border-secondary rounded-[6px] border': variant === 'secondary',
+    'bg-secondary border-secondary rounded-[6px] border': variant === 'secondary-full',
     'bg-disabled-primary rounded-[6px] border-0': disabled,
     'border-0': variant === 'transparent',
-    'border-[1px] border-white rounded-[6px]': variant === 'white',
+    'border border-white rounded-[6px]': variant === 'white',
     'w-full': fullWidth,
     'pl-9': startIcon,
     'justify-start': !centerContent,
@@ -71,7 +72,7 @@ export const Button: FC<Props> = ({
     >
       <span className={textClasses}>
         <span className={cn('absolute left-[-20px] top-[4px]', startIconClasses)}>{startIcon}</span>
-        {text}
+        <Span>{text}</Span>
       </span>
     </button>
   )

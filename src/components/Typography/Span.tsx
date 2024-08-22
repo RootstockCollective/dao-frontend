@@ -10,7 +10,7 @@ interface Props {
 }
 
 const variants = {
-  normal: 'text-white',
+  normal: '',
   light: 'text-[rgba(255,255,255,0.6)]',
 }
 
@@ -19,10 +19,7 @@ const sizeVariant = {
   small: 'text-[12px]',
 }
 export const Span = ({ children, className, variant = 'normal', size = 'normal' }: Props) => (
-  <Typography
-    tagVariant={'span'}
-    className={cn('text-[16px]', variants[variant], sizeVariant[size], className)}
-  >
+  <Typography tagVariant="span" className={cn(variants[variant], sizeVariant[size], className)}>
     {children}
   </Typography>
 )
