@@ -1,7 +1,7 @@
 import { GovernorAbi } from '@/lib/abis/Governor'
 import { GovernorAddress } from '@/lib/contracts'
 import { Address } from 'viem'
-import { useAccount, useReadContract, useWriteContract } from 'wagmi'
+import { useReadContract, useWaitForTransactionReceipt, useWriteContract } from 'wagmi'
 
 const DEFAULT_DAO = {
   address: GovernorAddress as Address,
@@ -16,8 +16,9 @@ export const useQueueProposal = (proposalId: string) => {
     args: [BigInt(proposalId)],
   })
 
-  const { writeContractAsync: queue, isPending: isQueuing } = useWriteContract()
+  const { writeContractAsync: queue, isPending: isQueuing, data: queueTxHash } = useWriteContract()
 
+  const { isLoading: isTxHashFromQueueLoading } = useWaitForTransactionReceipt({ hash: queueTxHash })
   const onQueueProposal = () =>
     queue({
       ...DEFAULT_DAO,
@@ -29,5 +30,6 @@ export const useQueueProposal = (proposalId: string) => {
     proposalNeedsQueuing,
     onQueueProposal,
     isQueuing,
+    isTxHashFromQueueLoading,
   }
 }
