@@ -13,7 +13,7 @@ interface StakingStepsProps {
 }
 
 const StakingSteps = ({ onCloseModal }: StakingStepsProps) => {
-  const { step, onGoNext, onGoBack } = useSteps()
+  const { step, onGoNext, onGoBack } = useSteps(4)
   const { balances, prices } = useBalancesContext()
 
   const currentStep = useMemo(() => stakingSteps[step], [step])

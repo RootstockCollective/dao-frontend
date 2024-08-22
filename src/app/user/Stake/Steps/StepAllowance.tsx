@@ -2,7 +2,7 @@ import { useStakingContext } from '@/app/user/Stake/StakingContext'
 import { StakePreview } from '@/app/user/Stake/StakePreview'
 import { StepProps } from '@/app/user/Stake/types'
 import { useStakeRIF } from '@/app/user/Stake/hooks/useStakeRIF'
-import { useEffect } from 'react'
+import { useEffect, useRef, useState } from 'react'
 
 export const StepAllowance = ({ onGoNext = () => {}, onCloseModal = () => {} }: StepProps) => {
   const {
@@ -19,8 +19,11 @@ export const StepAllowance = ({ onGoNext = () => {}, onCloseModal = () => {} }: 
     tokenToReceive.contract,
   )
 
+  const hasCalledOnGoNextRef = useRef(false)
   useEffect(() => {
-    if (isAllowanceEnough) {
+    if (isAllowanceEnough && !hasCalledOnGoNextRef.current) {
+      // prevent calling onGoNext multiple times, it's only happening locally.
+      hasCalledOnGoNextRef.current = true
       onGoNext()
     }
   }, [isAllowanceEnough, onGoNext])
