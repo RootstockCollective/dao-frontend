@@ -1,12 +1,14 @@
 import { useBalancesContext } from '@/app/user/Balances/context/BalancesContext'
+import { cn } from '@/lib/utils'
 
 export const StakeRIFCell = () => {
-  const { stakeModal } = useBalancesContext()
-
+  const { stakeModal, balances } = useBalancesContext()
+  const { balance } = balances['RIF']
+  const hasEnoughBalance = Number(balance) > 0
   return (
     <p
-      onClick={stakeModal.openModal}
-      className="text-link underline cursor-pointer"
+      onClick={hasEnoughBalance ? stakeModal.openModal : undefined}
+      className={cn('underline', hasEnoughBalance ? 'text-link cursor-pointer' : 'text-zinc-500')}
       data-testid={'StakeRIFParagraph'}
     >
       Stake
