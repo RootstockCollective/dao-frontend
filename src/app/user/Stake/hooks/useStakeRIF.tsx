@@ -75,10 +75,6 @@ export const useStakeRIF: ActionHookToUse = (
       args: [address!, parseEther(amount)],
     })
 
-  const shouldEnableConfirm = useMemo(() => {
-    // Only enable when allowance is enough
-    return isAllowanceEnough
-  }, [isAllowanceEnough])
   const customFooter = useMemo(
     () => (
       <CustomStakingRIFFooter
@@ -100,7 +96,7 @@ export const useStakeRIF: ActionHookToUse = (
     ],
   )
   return {
-    shouldEnableConfirm,
+    isAllowanceEnough,
     onConfirm: onRequestStake,
     customFooter,
     isPending,

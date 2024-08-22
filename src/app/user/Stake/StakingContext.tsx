@@ -11,7 +11,7 @@ export type ActionHookToUse = (
   tokenToSendContract: string,
   tokenToReceiveContract: string,
 ) => {
-  shouldEnableConfirm: boolean
+  isAllowanceEnough: boolean
   onConfirm: () => Promise<Hash>
   customFooter: ReactNode
   isPending: boolean
@@ -63,7 +63,7 @@ const StakingContext = createContext<StakingContextProps>({
     amountToReceiveConvertedToCurrency: '',
   },
   actionToUse: () => ({
-    shouldEnableConfirm: false,
+    isAllowanceEnough: false,
     onConfirm: async () => '0x0',
     customFooter: null,
     isPending: false,

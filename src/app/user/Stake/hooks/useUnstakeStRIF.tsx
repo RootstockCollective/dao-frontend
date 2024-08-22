@@ -16,7 +16,7 @@ export const useUnstakeStRIF: ActionHookToUse = (amount, tokenToSendContract) =>
       args: [address as Address, parseEther(amount)],
     })
   return {
-    shouldEnableConfirm: true,
+    isAllowanceEnough: true,
     customFooter: null,
     onConfirm: onRequestUnstake,
     isPending,
