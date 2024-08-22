@@ -73,7 +73,8 @@ const PageWithProposal = (proposal: PageWithProposal) => {
   const { threshold } = useVotingPower()
   const { onVote, isProposalActive, didUserVoteAlready, proposalStateHuman, isVoting } =
     useVoteOnProposal(proposalId)
-  const { onQueueProposal, proposalNeedsQueuing, isQueuing } = useQueueProposal(proposalId)
+  const { onQueueProposal, proposalNeedsQueuing, isQueuing, isTxHashFromQueueLoading } =
+    useQueueProposal(proposalId)
 
   const { onExecuteProposal, canProposalBeExecuted, proposalEtaHumanDate, isTxHashFromExecuteLoading } =
     useExecuteProposal(proposalId)
@@ -155,7 +156,12 @@ const PageWithProposal = (proposal: PageWithProposal) => {
             </>
           )}
           {proposalNeedsQueuing && proposalStateHuman === 'Succeeded' && (
-            <Button onClick={handleQueuingProposal} className="mt-2" disabled={isQueuing} loading={isQueuing}>
+            <Button
+              onClick={handleQueuingProposal}
+              className="mt-2"
+              disabled={isQueuing || isTxHashFromQueueLoading}
+              loading={isQueuing}
+            >
               Put on Queue
             </Button>
           )}
