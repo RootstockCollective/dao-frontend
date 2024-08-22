@@ -32,26 +32,42 @@ import { useForm } from 'react-hook-form'
 import { GoRocket } from 'react-icons/go'
 import { Address, zeroAddress } from 'viem'
 import { z } from 'zod'
+import { rbtcIconSrc } from '@/shared/rbtcIconSrc'
 
 const ADDRESS_REGEX = /^0x[a-fA-F0-9]{40}$/
 
-const FormSchema = z.object({
-  proposalName: z
-    .string()
-    .max(100)
-    .refine(s => s.trim().replace(/\s+/g, ' ').length >= 5, 'Field must contain at least 5 characters'),
-  description: z
-    .string()
-    .max(3000)
-    .refine(s => s.trim().replace(/\s+/g, ' ').length >= 10, 'Field must contain at least 10 characters'),
-  toAddress: z.string().refine(value => ADDRESS_REGEX.test(value), 'Please enter a valid address'),
-  tokenAddress: z.string().length(42),
-  amount: z.coerce
-    .number({ invalid_type_error: 'Required field' })
-    .positive('Required field')
-    .min(1, 'Amount must be greater or equal to 1')
-    .max(MAX_INPUT_NUMBER_AMOUNT),
-})
+const FormSchema = z
+  .object({
+    proposalName: z
+      .string()
+      .max(100)
+      .refine(s => s.trim().replace(/\s+/g, ' ').length >= 5, 'Field must contain at least 5 characters'),
+    description: z
+      .string()
+      .max(3000)
+      .refine(s => s.trim().replace(/\s+/g, ' ').length >= 10, 'Field must contain at least 10 characters'),
+    toAddress: z.string().refine(value => ADDRESS_REGEX.test(value), 'Please enter a valid address'),
+    tokenAddress: z.string().length(42),
+    amount: z.coerce
+      .number({ invalid_type_error: 'Required field' })
+      .positive('Required field')
+      .max(MAX_INPUT_NUMBER_AMOUNT),
+  })
+  .refine(
+    data => {
+      if (data.tokenAddress !== zeroAddress) {
+        // Do not allow decimals
+        if (Number(data.amount) < 1) {
+          return false
+        }
+      }
+      return true
+    },
+    {
+      message: 'Amount must be greater or equal to 1 for ERC20',
+      path: ['amount'],
+    },
+  )
 
 export default function CreateProposal() {
   const router = useRouter()
@@ -79,6 +95,7 @@ export default function CreateProposal() {
     handleSubmit,
     formState: { touchedFields, errors, isValid, isDirty },
     watch,
+    trigger,
   } = form
 
   const pricesMap = useMemo(
@@ -218,7 +235,15 @@ export default function CreateProposal() {
                       <FormItem className="mb-6 mx-1">
                         <FormLabel>Change Asset</FormLabel>
                         <FormControl>
-                          <Select onValueChange={field.onChange} defaultValue={field.value}>
+                          <Select
+                            onValueChange={(...args) => {
+                              field.onChange(...args)
+                              if (touchedFields.amount) {
+                                trigger('amount')
+                              }
+                            }}
+                            defaultValue={field.value}
+                          >
                             <FormControl>
                               <SelectTrigger>
                                 <SelectValue placeholder="Select an asset" />
@@ -227,8 +252,13 @@ export default function CreateProposal() {
                             <SelectContent>
                               <SelectItem value={zeroAddress}>
                                 <div className="flex items-center">
-                                  {/*TODO: token icon*/}
-                                  {/*<FaBitcoin className="mr-2" />*/}
+                                  <Image
+                                    src={`data:image/svg+xml;base64,${rbtcIconSrc}`}
+                                    alt="rBTC Logo"
+                                    className="mr-1"
+                                    width={20}
+                                    height={20}
+                                  />
                                   RBTC
                                 </div>
                               </SelectItem>
