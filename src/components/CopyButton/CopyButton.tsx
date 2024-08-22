@@ -1,4 +1,4 @@
-import { FC, useState, useEffect, ReactNode, ReactElement, cloneElement, useRef } from 'react'
+import { FC, useState, useEffect, ReactNode, ReactElement, useRef } from 'react'
 import { BiCopy } from 'react-icons/bi'
 import { cn } from '@/lib/utils'
 
@@ -85,18 +85,18 @@ export const CopyButton: FC<CopyButtonProps> = ({
   const { text: statusText, className: statusClasses } = {
     [CopyStatus.Success]: { text: successLabel, className: 'text-st-success' },
     [CopyStatus.Error]: { text: errorLabel, className: 'text-st-error' },
-    [CopyStatus.Idle]: { text: label ?? copyText, className: '' },
+    [CopyStatus.Idle]: { text: label ?? copyText, className: 'cursor-pointer' },
   }[status]
 
   return (
     <div
       ref={ref}
-      className="flex gap-2 items-center justify-end cursor-pointer font-normal"
+      className={cn('flex gap-2 items-center justify-end font-normal', statusClasses)}
       style={{ minWidth }}
       onClick={copyToClipboard}
     >
-      <span className={statusClasses}>{statusText}</span>
-      {icon && cloneElement(icon, { className: cn(icon.props.className, statusClasses) })}
+      {statusText}
+      {icon}
     </div>
   )
 }
