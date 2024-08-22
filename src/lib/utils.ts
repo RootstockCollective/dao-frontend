@@ -21,7 +21,7 @@ export const shortAddress = (address: string | undefined, amount = 5): string =>
   if (!address) {
     return ''
   }
-  return `${address.slice(0, amount + 1)}...${address.slice(-amount)}`
+  return `${address.slice(0, amount + 1)}…${address.slice(-amount)}`
 }
 
 export const axiosInstance = axios.create({
@@ -39,7 +39,7 @@ export const truncate = (str: string, length: number): string => {
   if (str.length <= length) {
     return str
   }
-  return str.slice(0, length) + '...'
+  return str.slice(0, length) + '…'
 }
 
 /**
@@ -54,7 +54,7 @@ export const truncateMiddle = (str: string, start = 10, end = 10): string => {
   if (str.length <= start + end) {
     return str
   }
-  return str.slice(0, start) + '...' + str.slice(-end)
+  return str.slice(0, start) + '…' + str.slice(-end)
 }
 
 export const explorerURL = process.env.NEXT_PUBLIC_EXPLORER
