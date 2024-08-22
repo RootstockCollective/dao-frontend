@@ -15,6 +15,7 @@ export type ActionHookToUse = (
   onConfirm: () => Promise<Hash>
   customFooter: ReactNode
   isPending: boolean
+  isAllowanceReadLoading?: boolean
 }
 
 type StakePreviewToken = {
@@ -67,6 +68,7 @@ const StakingContext = createContext<StakingContextProps>({
     onConfirm: async () => '0x0',
     customFooter: null,
     isPending: false,
+    isAllowanceReadLoading: false,
   }),
   actionName: 'STAKE',
   stakePreviewFrom: { ...DEFAULT_STAKE_PREVIEW_TOKEN },

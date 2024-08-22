@@ -99,6 +99,7 @@ export const useStakeRIF: ActionHookToUse = (
     isAllowanceEnough,
     onConfirm: onRequestStake,
     customFooter,
+    isAllowanceReadLoading,
     isPending,
   }
 }
@@ -129,7 +130,9 @@ function CustomStakingRIFFooter({
     case isAllowanceReadLoading:
       return (
         <div className="flex justify-center">
-          <Paragraph>Fetching current allowance...</Paragraph>
+          <Paragraph variant="semibold" className="text-sm">
+            Fetching current allowance...
+          </Paragraph>
         </div>
       )
     case isAllowanceNeeded && !isAllowanceTxPending:
