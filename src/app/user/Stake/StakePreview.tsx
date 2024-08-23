@@ -1,4 +1,4 @@
-import { Span, Paragraph } from '@/components/Typography'
+import { Span, Paragraph, Header } from '@/components/Typography'
 import { Button } from '@/components/Button'
 import { TbFileSearch } from 'react-icons/tb'
 import { StakePreviewBalance } from './StakePreviewBalance'
@@ -45,7 +45,7 @@ export const StakePreview = ({
           <TbFileSearch size={48} color="#665EF6" />
         </div>
       </div>
-      <Paragraph className="mt-[62px] text-center">{actionName}</Paragraph>{' '}
+      <Header className="mt-[62px] text-center">{actionName}</Header>
       <Span className="text-center">{actionText}</Span>
       <div className="flex justify-center">
         <div className="bg-input-bg rounded-[6px] mt-[32px] w-full max-w-[500px]">
