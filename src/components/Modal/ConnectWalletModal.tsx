@@ -13,7 +13,7 @@ export const ConnectWalletModal = () => {
       <div className="px-[42px] py-[50px] flex justify-center flex-col items-center">
         <Image src="/images/connect-wallet-icon.svg" width={120} height={120} alt="Lock" />
         <Paragraph className="text-[24px] mt-4">Sign in to view more</Paragraph>
-        <Paragraph variant="light" className="text-[16px] text-center">
+        <Paragraph variant="normal" className="text-[16px] text-center">
           This section is accessible to holders/builders. <br />
           Connect your wallet to have access.
         </Paragraph>
