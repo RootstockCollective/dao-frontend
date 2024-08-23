@@ -46,7 +46,7 @@ export const MainContainer: FC<Props> = ({ children, notProtected = false }) => 
 
   return (
     <>
-      <div className="flex mr-2">
+      <div className="flex mr-[16px]">
         <StatefulSidebar />
         <div className="flex-auto">
           {hasMounted && (
