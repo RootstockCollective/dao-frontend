@@ -53,9 +53,9 @@ export const StakePreview = ({
           <StakePreviewBalance topLeftText="To" {...to} />
         </div>
       </div>
-      {customComponentBeforeFooter}
+      <div className="my-4">{customComponentBeforeFooter}</div>
       {/* Stake Actions */}
-      <div className="flex justify-center pt-10 gap-4">
+      <div className="flex justify-center pt-4 gap-4">
         <Button variant="secondary" onClick={onCancel} buttonProps={{ 'data-testid': 'Cancel' }}>
           Cancel
         </Button>

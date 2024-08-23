@@ -41,9 +41,9 @@ export const StepAllowance = ({ onGoNext = () => {}, onCloseModal = () => {} }: 
   const hasCalledOnGoNextRef = useRef(false)
   useEffect(() => {
     if (isAllowanceEnough && !hasCalledOnGoNextRef.current) {
+      onGoNext()
       // prevent calling onGoNext multiple times.
       hasCalledOnGoNextRef.current = true
-      onGoNext()
     }
   }, [isAllowanceEnough, onGoNext])
 
