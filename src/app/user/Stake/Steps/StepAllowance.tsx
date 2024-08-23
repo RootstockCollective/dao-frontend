@@ -1,7 +1,9 @@
-import { useStakingContext } from '@/app/user/Stake/StakingContext'
-import { StakePreview } from '@/app/user/Stake/StakePreview'
-import { StepProps } from '@/app/user/Stake/types'
 import { useStakeRIF } from '@/app/user/Stake/hooks/useStakeRIF'
+import { StakePreview } from '@/app/user/Stake/StakePreview'
+import { useStakingContext } from '@/app/user/Stake/StakingContext'
+import { StepProps } from '@/app/user/Stake/types'
+import { config } from '@/config'
+import { waitForTransactionReceipt } from '@wagmi/core'
 import { useEffect, useRef, useState } from 'react'
 
 export const StepAllowance = ({ onGoNext = () => {}, onCloseModal = () => {} }: StepProps) => {
@@ -21,6 +23,21 @@ export const StepAllowance = ({ onGoNext = () => {}, onCloseModal = () => {} }: 
     isRequestingAllowance,
   } = useStakeRIF(amount, tokenToSend.contract, tokenToReceive.contract)
 
+  const [isAllowanceRequestPending, setIsAllowanceRequestPending] = useState(false)
+
+  const handleRequestAllowance = async () => {
+    try {
+      setIsAllowanceRequestPending(true)
+      const txHash = await onRequestAllowance()
+      await waitForTransactionReceipt(config, {
+        hash: txHash,
+      })
+    } catch (err) {
+      console.error('Error requesting allowance', err)
+    }
+    setIsAllowanceRequestPending(false)
+  }
+
   const hasCalledOnGoNextRef = useRef(false)
   useEffect(() => {
     if (isAllowanceEnough && !hasCalledOnGoNextRef.current) {
@@ -32,16 +49,16 @@ export const StepAllowance = ({ onGoNext = () => {}, onCloseModal = () => {} }: 
 
   return (
     <StakePreview
-      onConfirm={onRequestAllowance}
+      onConfirm={handleRequestAllowance}
       onCancel={onCloseModal}
       from={from}
       to={to}
-      disableConfirm={isAllowanceReadLoading || isRequestingAllowance}
+      disableConfirm={isAllowanceReadLoading || isRequestingAllowance || isAllowanceRequestPending}
       actionName="Allowance"
       actionText="You need to request allowance before staking."
       customComponentBeforeFooter={customFooter}
       confirmButtonText="Request allowance"
-      loading={isRequestingAllowance}
+      loading={isRequestingAllowance || isAllowanceRequestPending}
     />
   )
 }
