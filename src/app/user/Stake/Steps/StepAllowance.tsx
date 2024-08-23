@@ -13,11 +13,13 @@ export const StepAllowance = ({ onGoNext = () => {}, onCloseModal = () => {} }: 
     stakePreviewTo: to,
   } = useStakingContext()
 
-  const { isAllowanceEnough, isAllowanceReadLoading, customFooter } = useStakeRIF(
-    amount,
-    tokenToSend.contract,
-    tokenToReceive.contract,
-  )
+  const {
+    isAllowanceEnough,
+    isAllowanceReadLoading,
+    customFooter,
+    onRequestAllowance,
+    isRequestingAllowance,
+  } = useStakeRIF(amount, tokenToSend.contract, tokenToReceive.contract)
 
   const hasCalledOnGoNextRef = useRef(false)
   useEffect(() => {
@@ -30,15 +32,16 @@ export const StepAllowance = ({ onGoNext = () => {}, onCloseModal = () => {} }: 
 
   return (
     <StakePreview
-      onConfirm={onGoNext}
+      onConfirm={onRequestAllowance}
       onCancel={onCloseModal}
       from={from}
       to={to}
-      disableConfirm={isAllowanceReadLoading}
+      disableConfirm={isAllowanceReadLoading || isRequestingAllowance}
       actionName="Allowance"
       actionText="You need to request allowance before staking."
       customComponentBeforeFooter={customFooter}
-      confirmButtonText="Continue"
+      confirmButtonText="Request allowance"
+      loading={isRequestingAllowance}
     />
   )
 }

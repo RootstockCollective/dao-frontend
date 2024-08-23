@@ -79,21 +79,12 @@ export const useStakeRIF: ActionHookToUse = (
     () => (
       <CustomStakingRIFFooter
         isAllowanceNeeded={!isAllowanceEnough}
-        onRequestAllowance={onRequestAllowance}
         hash={allowanceHashUsed}
         isAllowanceTxPending={allowanceHashUsed && requestAllowanceTxStatus === 'pending'}
         isAllowanceReadLoading={isAllowanceReadLoading}
-        loading={isRequestingAllowance}
       />
     ),
-    [
-      isAllowanceEnough,
-      onRequestAllowance,
-      allowanceHashUsed,
-      requestAllowanceTxStatus,
-      isAllowanceReadLoading,
-      isRequestingAllowance,
-    ],
+    [isAllowanceEnough, allowanceHashUsed, requestAllowanceTxStatus, isAllowanceReadLoading],
   )
   return {
     isAllowanceEnough,
@@ -101,16 +92,16 @@ export const useStakeRIF: ActionHookToUse = (
     customFooter,
     isAllowanceReadLoading,
     isPending,
+    onRequestAllowance,
+    isRequestingAllowance,
   }
 }
 
 interface CustomStakingRIFFooterProps {
   isAllowanceNeeded: boolean
-  onRequestAllowance: () => void
   isAllowanceTxPending?: boolean
   hash?: string
   isAllowanceReadLoading?: boolean
-  loading?: boolean
 }
 /**
  * We will have this component to render info to the user in case they are lacking a validation
@@ -120,11 +111,9 @@ interface CustomStakingRIFFooterProps {
  */
 function CustomStakingRIFFooter({
   isAllowanceNeeded,
-  onRequestAllowance,
   hash,
   isAllowanceTxPending = false,
   isAllowanceReadLoading = false,
-  loading = false,
 }: CustomStakingRIFFooterProps) {
   switch (true) {
     case isAllowanceReadLoading:
@@ -141,14 +130,6 @@ function CustomStakingRIFFooter({
           <Paragraph variant="semibold" className="text-sm">
             You need to request allowance for stRIF to be able to stake.
           </Paragraph>
-          <Button
-            onClick={onRequestAllowance}
-            buttonProps={{ 'data-testid': 'Allowance' }}
-            loading={loading}
-            disabled={loading}
-          >
-            Request allowance
-          </Button>
         </div>
       )
     case isAllowanceNeeded && isAllowanceTxPending && !!hash:
