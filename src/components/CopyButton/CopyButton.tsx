@@ -80,10 +80,10 @@ export const CopyButton: FC<CopyButtonProps> = ({
   }, [status])
 
   // Determine the text and classes based on the current status
-  const { text: statusText, className: statusClasses } = {
-    [CopyStatus.Success]: { text: successLabel, className: 'text-st-success' },
-    [CopyStatus.Error]: { text: errorLabel, className: 'text-st-error' },
-    [CopyStatus.Idle]: { text: children ?? copyText, className: 'cursor-pointer' },
+  const { content, className: statusClasses } = {
+    [CopyStatus.Success]: { content: successLabel, className: 'text-st-success' },
+    [CopyStatus.Error]: { content: errorLabel, className: 'text-st-error' },
+    [CopyStatus.Idle]: { content: children ?? copyText, className: 'cursor-pointer' },
   }[status]
 
   return (
@@ -94,7 +94,7 @@ export const CopyButton: FC<CopyButtonProps> = ({
       style={{ minWidth }}
       onClick={copyToClipboard}
     >
-      {statusText}
+      {content}
       {icon}
     </div>
   )
