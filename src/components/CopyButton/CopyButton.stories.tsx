@@ -39,7 +39,7 @@ export const Default: Story = {
 export const CustomText: Story = {
   args: {
     copyText: address,
-    label: shortAddress(address),
+    children: shortAddress(address),
     onCopySuccess: action('onCopySuccess'),
     onCopyFailure: action('onCopyFailure'),
   },
@@ -48,7 +48,7 @@ export const CustomText: Story = {
 export const CustomStyledText: Story = {
   args: {
     copyText: address,
-    label: <span className="underline">{shortAddress(address)}</span>,
+    children: <span className="underline">{shortAddress(address)}</span>,
     onCopySuccess: action('onCopySuccess'),
     onCopyFailure: action('onCopyFailure'),
   },
@@ -57,7 +57,7 @@ export const CustomStyledText: Story = {
 export const NoIcon: Story = {
   args: {
     copyText: address,
-    label: shortAddress(address),
+    children: shortAddress(address),
     icon: null,
     onCopySuccess: action('onCopySuccess'),
     onCopyFailure: action('onCopyFailure'),
@@ -67,7 +67,7 @@ export const NoIcon: Story = {
 export const CustomIcon: Story = {
   args: {
     copyText: address,
-    label: shortAddress(address),
+    children: shortAddress(address),
     icon: <BsCopy />,
     onCopySuccess: action('onCopySuccess'),
     onCopyFailure: action('onCopyFailure'),
@@ -77,7 +77,7 @@ export const CustomIcon: Story = {
 export const CustomSuccessMessage: Story = {
   args: {
     copyText: address,
-    label: shortAddress(address),
+    children: shortAddress(address),
     successLabel: <span className="underline">Congrats!</span>,
     onCopySuccess: action('onCopySuccess'),
     onCopyFailure: action('onCopyFailure'),
@@ -87,7 +87,7 @@ export const CustomSuccessMessage: Story = {
 export const DefaultError: Story = {
   args: {
     copyText: address,
-    label: shortAddress(address),
+    children: shortAddress(address),
     onCopySuccess: action('onCopySuccess'),
     onCopyFailure: action('onCopyFailure'),
   },
@@ -101,7 +101,7 @@ export const DefaultError: Story = {
 export const CustomError: Story = {
   args: {
     copyText: address,
-    label: shortAddress(address),
+    children: shortAddress(address),
     errorLabel: <span className="font-extrabold">Catastrophe</span>,
     onCopySuccess: action('onCopySuccess'),
     onCopyFailure: action('onCopyFailure'),

@@ -1,16 +1,12 @@
-import { FC, useState, useEffect, ReactNode, ReactElement, useRef } from 'react'
+import { FC, useState, useEffect, ReactNode, ReactElement, useRef, HTMLAttributes } from 'react'
 import { BiCopy } from 'react-icons/bi'
 import { cn } from '@/lib/utils'
 
-export interface CopyButtonProps {
+export interface CopyButtonProps extends HTMLAttributes<HTMLDivElement> {
   /**
    * Text to be copied to the clipboard.
    */
   copyText: string
-  /**
-   * Component to display next to the button instead of plain text.
-   */
-  label?: ReactNode
   /**
    * Custom message to show upon successfully copying text
    */
@@ -45,12 +41,14 @@ enum CopyStatus {
  */
 export const CopyButton: FC<CopyButtonProps> = ({
   copyText,
-  label,
   successLabel = 'Copied!',
   errorLabel = 'Error',
   icon = <BiCopy className="w-[24px] h-[24px] rotate-180" />,
   onCopyFailure = () => {},
   onCopySuccess = () => {},
+  className,
+  children,
+  ...props
 }) => {
   const ref = useRef<HTMLDivElement>(null)
   const [minWidth, setMinWidth] = useState<number>()
@@ -85,13 +83,14 @@ export const CopyButton: FC<CopyButtonProps> = ({
   const { text: statusText, className: statusClasses } = {
     [CopyStatus.Success]: { text: successLabel, className: 'text-st-success' },
     [CopyStatus.Error]: { text: errorLabel, className: 'text-st-error' },
-    [CopyStatus.Idle]: { text: label ?? copyText, className: 'cursor-pointer' },
+    [CopyStatus.Idle]: { text: children ?? copyText, className: 'cursor-pointer' },
   }[status]
 
   return (
     <div
+      {...props}
       ref={ref}
-      className={cn('flex gap-2 items-center justify-end font-normal', statusClasses)}
+      className={cn(className, 'flex gap-2 items-center justify-end font-normal', statusClasses)}
       style={{ minWidth }}
       onClick={copyToClipboard}
     >
