@@ -9,7 +9,7 @@ export default function Treasury() {
   return (
     <MainContainer>
       <TreasuryContextProviderWithPrices>
-        <div className="pl-[24px] grid grid-rows-1 gap-[32px] mb-[100px]">
+        <div className="grid grid-rows-1 gap-[32px]">
           <TreasurySection />
           <TotalTokenHoldingsSection />
           <MetricsSection />

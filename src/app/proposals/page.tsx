@@ -19,7 +19,7 @@ export default function Proposals() {
     <MainContainer>
       <TxStatusMessage messageType="proposal" />
       <HeaderSection createProposalDisabled={!canCreateProposal} threshold={threshold} />
-      <div className="pl-4 grid grid-rows-1 gap-[32px] mb-[100px]">
+      <div className="grid grid-rows-1 gap-[32px] mb-[100px]">
         <MetricsCard borderless title={<VotingPowerPopover />} amount={toFixed(votingPower)} />
         <div className="flex flex-row gap-x-6">
           {/*<MetricsCard title="Votes" amount="-" />*/}
