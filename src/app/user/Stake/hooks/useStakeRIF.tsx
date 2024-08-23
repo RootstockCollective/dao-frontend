@@ -82,6 +82,7 @@ export const useStakeRIF: ActionHookToUse = (
         hash={allowanceHashUsed}
         isAllowanceTxPending={allowanceHashUsed && requestAllowanceTxStatus === 'pending'}
         isAllowanceReadLoading={isAllowanceReadLoading}
+        isAllowanceTxFailed={allowanceHashUsed && requestAllowanceTxStatus === 'error'}
       />
     ),
     [isAllowanceEnough, allowanceHashUsed, requestAllowanceTxStatus, isAllowanceReadLoading],
@@ -102,6 +103,7 @@ interface CustomStakingRIFFooterProps {
   isAllowanceTxPending?: boolean
   hash?: string
   isAllowanceReadLoading?: boolean
+  isAllowanceTxFailed?: boolean
 }
 /**
  * We will have this component to render info to the user in case they are lacking a validation
@@ -114,8 +116,26 @@ function CustomStakingRIFFooter({
   hash,
   isAllowanceTxPending = false,
   isAllowanceReadLoading = false,
+  isAllowanceTxFailed = false,
 }: CustomStakingRIFFooterProps) {
   switch (true) {
+    case isAllowanceTxFailed && !!hash:
+      return (
+        <div className="flex flex-col mt-2 gap-2 items-center">
+          <Paragraph variant="semibold" className="text-sm text-st-error">
+            Allowance TX failed.
+          </Paragraph>
+          <Paragraph variant="semibold" className="text-sm">
+            Please try again. If the issue persists, contact support for assistance.
+          </Paragraph>
+          <Button
+            onClick={() => goToExplorerWithTxHash(hash)}
+            buttonProps={{ 'data-testid': 'GoToExplorer' }}
+          >
+            Click here to go to the explorer
+          </Button>
+        </div>
+      )
     case isAllowanceReadLoading:
       return (
         <div className="flex justify-center mt-2">
