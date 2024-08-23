@@ -26,6 +26,9 @@ export const StepAllowance = ({ onGoNext = () => {}, onCloseModal = () => {} }: 
   const [isAllowanceRequestPending, setIsAllowanceRequestPending] = useState(false)
 
   const handleRequestAllowance = async () => {
+    if (!onRequestAllowance) {
+      return
+    }
     try {
       setIsAllowanceRequestPending(true)
       const txHash = await onRequestAllowance()

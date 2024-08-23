@@ -16,7 +16,7 @@ export type ActionHookToUse = (
   customFooter: ReactNode
   isPending: boolean
   isAllowanceReadLoading?: boolean
-  onRequestAllowance: () => Promise<Hash>
+  onRequestAllowance?: () => Promise<Hash>
   isRequestingAllowance?: boolean
 }
 
