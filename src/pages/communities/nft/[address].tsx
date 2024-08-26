@@ -3,7 +3,7 @@ import { Button } from '@/components/Button'
 import { Chip } from '@/components/Chip/Chip'
 import { MainContainer } from '@/components/MainContainer/MainContainer'
 import { Paragraph, Span } from '@/components/Typography'
-import { cn } from '@/lib/utils'
+import { cn, truncateMiddle } from '@/lib/utils'
 import Image from 'next/image'
 import { useRouter } from 'next/router'
 import { ReactNode, useState } from 'react'
@@ -15,6 +15,8 @@ import { useCommunity } from '@/shared/hooks/useCommunity'
 import { useMintNFT } from '@/shared/hooks/useMintNFT'
 import { useNftMeta } from '@/shared/hooks/useNFTMeta'
 import { DEFAULT_NFT_BASE64 } from '@/shared/defaultNFT'
+import { useFetchNftInfo } from '@/app/providers/hooks/useFetchNftInfo'
+import { CopyButton } from '@/components/CopyButton'
 
 export default function Page() {
   const router = useRouter()
@@ -23,6 +25,11 @@ export default function Page() {
   const { tokensAvailable, isMember, tokenId } = useCommunity(nftAddress)
   const { onMintNFT, isPending: isClaiming } = useMintNFT(nftAddress)
   const [message, setMessage] = useState('')
+
+  const { data: nftInfo } = useFetchNftInfo(nftAddress || '')
+
+  const nftHolders = nftInfo?.data.holders || '-'
+  const nftName = nftInfo?.data.name || '-'
 
   const { isLoadingNftImage, meta } = useNftMeta(nftAddress)
 
@@ -65,11 +72,11 @@ export default function Page() {
             <Image src={firstNft.imageSrc} width={45} height={23} alt="Early" />
             <div>Early Adopters</div>
           </div>
-          <div>
+          <div className="mb-[24px]">
             Crypto ipsum bitcoin ethereum dogecoin litecoin. Hedera USD kadena chainlink arweave hive binance.
             Shiba-inu terra ICON IOTA ICON livepeer velas uniswap. Kadena kusama IOTA horizen.
           </div>
-          <div className="flex gap-[8px] mt-[16px] mb-[24px]">
+          <div className="flex gap-[8px] mt-[16px] mb-[24px] hidden">
             {/* Chips with community links */}
             <Chip className="bg-white text-black">
               <BsTwitterX />
@@ -87,17 +94,12 @@ export default function Page() {
           {/* pioneer, holders, followers */}
           <div>
             <DivWithBorderTop
-              firstParagraph={'Pioneer'}
+              firstParagraph={nftName}
               secondParagraph={
-                <></>
-                // <div className="flex gap-2 items-center">
-                //   <span>Address here</span>
-                //   <BiCopy />
-                // </div>
+                <CopyButton copyText={address as string}>{truncateMiddle(nftAddress as string)}</CopyButton>
               }
             />
-            <DivWithBorderTop firstParagraph={'Holders'} secondParagraph={'494,466'} />
-            <DivWithBorderTop firstParagraph={'Followers'} secondParagraph={'90,636'} />
+            <DivWithBorderTop firstParagraph="Holders" secondParagraph={nftHolders} />
           </div>
         </div>
         {/* 50%: NFT Image and Membership*/}
@@ -114,7 +116,7 @@ export default function Page() {
           </div>
           <div>
             <Span className="mb-[24px] font-bold inline-block">Membership NFT</Span>
-            <div className="grid grid-cols-[40%_60%] gap-[24px]">
+            <div className="grid grid-cols-[40%_60%]">
               {!isLoadingNftImage && (
                 <Image
                   alt={meta?.name ?? 'NFT'}
@@ -124,32 +126,33 @@ export default function Page() {
                   height={0}
                 />
               )}
-
-              {isMember ? (
-                <div>
-                  <Paragraph className="text-[18px]">Early Adopter #{tokenId}</Paragraph>
-                  <Span className="my-[16px] inline-block text-st-success">Owned</Span>
-                  <Span className="inline-block text-[14px] tracking-wide">{meta?.description}</Span>
-                </div>
-              ) : (
-                <div>
-                  <Paragraph className="text-[18px]">Early Adopter</Paragraph>
-                  <Button
-                    variant="secondary-full"
-                    className="my-[16px]"
-                    onClick={handleMinting}
-                    disabled={!tokensAvailable || !address || isClaiming}
-                    loading={isClaiming}
-                  >
-                    Claim it!
-                  </Button>
-                  <Span className="inline-block text-[14px] tracking-wide">
-                    Crypto ipsum bitcoin ethereum dogecoin litecoin. Hedera USD kadena chainlink arweave hive
-                    binance. Shiba-inu terra ICON IOTA ICON livepeer velas uniswap. Kadena kusama IOTA
-                    horizen.
-                  </Span>
-                </div>
-              )}
+              <div className="pl-[24px]">
+                {isMember ? (
+                  <div>
+                    <Paragraph className="text-[18px]">Early Adopter #{tokenId}</Paragraph>
+                    <Span className="my-[16px] inline-block text-st-success">Owned</Span>
+                    <Span className="inline-block text-[14px] tracking-wide">{meta?.description}</Span>
+                  </div>
+                ) : (
+                  <div>
+                    <Paragraph className="text-[18px]">Early Adopter</Paragraph>
+                    <Button
+                      variant="secondary-full"
+                      className="my-[16px]"
+                      onClick={handleMinting}
+                      disabled={!tokensAvailable || !address || isClaiming}
+                      loading={isClaiming}
+                    >
+                      Claim it!
+                    </Button>
+                    <Span className="inline-block text-[14px] tracking-wide">
+                      Crypto ipsum bitcoin ethereum dogecoin litecoin. Hedera USD kadena chainlink weave hive
+                      binance. Shiba-inu terra ICON IOTA ICON livepeer velas uniswap. Kadena kusama IOTA
+                      horizen.
+                    </Span>
+                  </div>
+                )}
+              </div>
             </div>
           </div>
         </div>
