@@ -2,8 +2,8 @@ import { firstNft } from '@/app/communities/communityUtils'
 import { Button } from '@/components/Button'
 import { Chip } from '@/components/Chip/Chip'
 import { MainContainer } from '@/components/MainContainer/MainContainer'
-import { Paragraph, Span } from '@/components/Typography'
-import { cn, truncateMiddle } from '@/lib/utils'
+import { Paragraph, Span, Typography } from '@/components/Typography'
+import { cn, truncateMiddle, shortAddress } from '@/lib/utils'
 import Image from 'next/image'
 import { useRouter } from 'next/router'
 import { ReactNode, useState } from 'react'
@@ -14,24 +14,17 @@ import { useAccount } from 'wagmi'
 import { useCommunity } from '@/shared/hooks/useCommunity'
 import { useMintNFT } from '@/shared/hooks/useMintNFT'
 import { useNftMeta } from '@/shared/hooks/useNFTMeta'
-import { DEFAULT_NFT_BASE64 } from '@/shared/defaultNFT'
-import { useFetchNftInfo } from '@/app/providers/hooks/useFetchNftInfo'
 import { CopyButton } from '@/components/CopyButton'
 
 export default function Page() {
   const router = useRouter()
   const nftAddress = router.query.address as Address | undefined
   const { address } = useAccount()
-  const { tokensAvailable, isMember, tokenId } = useCommunity(nftAddress)
+  const { tokensAvailable, isMember, tokenId, membersCount, nftName } = useCommunity(nftAddress)
   const { onMintNFT, isPending: isClaiming } = useMintNFT(nftAddress)
   const [message, setMessage] = useState('')
 
-  const { data: nftInfo } = useFetchNftInfo(nftAddress || '')
-
-  const nftHolders = nftInfo?.data.holders || '-'
-  const nftName = nftInfo?.data.name || '-'
-
-  const { isLoadingNftImage, meta } = useNftMeta(nftAddress)
+  const { meta } = useNftMeta(nftAddress)
 
   const handleMinting = () => {
     if (!address) return
@@ -65,17 +58,25 @@ export default function Page() {
           {message}
         </div>
       )}
-      <div className="flex justify-between pl-[16px] gap-[16px]">
+      <div className="flex flex-col xl:flex-row justify-between pl-4 gap-8">
         {/* 50%: NFT INFO*/}
         <div className="flex-1">
           <div className="flex items-center gap-2 mb-2">
             <Image src={firstNft.imageSrc} width={45} height={23} alt="Early" />
             <div>Early Adopters</div>
           </div>
-          <div className="mb-[24px]">
-            Crypto ipsum bitcoin ethereum dogecoin litecoin. Hedera USD kadena chainlink arweave hive binance.
-            Shiba-inu terra ICON IOTA ICON livepeer velas uniswap. Kadena kusama IOTA horizen.
+          <div className="mb-[24px] font-light">
+            The Early Adopters collection features a vibrant array of digital pioneers, each uniquely crafted
+            to embody the spirit of innovation and community in the blockchain world. From governance and
+            protocol architects to visionary explorers and collaborative creators, these NFTs represent the
+            diverse talents and passions driving the decentralized revolution. Whether blazing new trails as
+            blockchain pioneers, nurturing the ecosystem as open-source champions, or guiding the community as
+            decentralized thinkers, each character in this collection is a testament to the boundless
+            creativity and dedication of those building the future of Bitcoin and beyond. Join the journey
+            with these extraordinary individuals as they carve out a new digital frontier, one block at a
+            time.
           </div>
+          {/* Hidden until we get social media data */}
           <div className="flex gap-[8px] mt-[16px] mb-[24px] hidden">
             {/* Chips with community links */}
             <Chip className="bg-white text-black">
@@ -94,65 +95,65 @@ export default function Page() {
           {/* pioneer, holders, followers */}
           <div>
             <DivWithBorderTop
-              firstParagraph={nftName}
+              firstParagraph={`${nftName} NFT`}
               secondParagraph={
                 <CopyButton copyText={address as string}>{truncateMiddle(nftAddress as string)}</CopyButton>
               }
             />
-            <DivWithBorderTop firstParagraph="Holders" secondParagraph={nftHolders} />
+            <DivWithBorderTop firstParagraph="Holders" secondParagraph={membersCount} />
           </div>
         </div>
         {/* 50%: NFT Image and Membership*/}
         <div className="flex-1">
-          <div className="flex justify-end">
-            {/* @TODO Define what we will do here because user is not supposed to burn the NFT */}
-            {/*<Button*/}
-            {/*  variant="transparent"*/}
-            {/*  className="border-[1px] border-st-error"*/}
-            {/*  textClassName="text-st-error"*/}
-            {/*>*/}
-            {/*  Leave Community*/}
-            {/*</Button>*/}
-          </div>
           <div>
-            <Span className="mb-[24px] font-bold inline-block">Membership NFT</Span>
-            <div className="grid grid-cols-[40%_60%]">
-              {!isLoadingNftImage && (
-                <Image
-                  alt={meta?.name ?? 'NFT'}
-                  src={meta?.image ?? DEFAULT_NFT_BASE64}
-                  className="w-full self-center"
-                  width={0}
-                  height={0}
-                />
+            <Span className="mb-6 font-bold inline-block">Membership NFT</Span>
+            <div className="flex gap-6">
+              <Image
+                alt={meta?.name ?? 'NFT'}
+                src={meta?.image ?? '/images/Early-Adopters-Collection-Cover.png'}
+                className="w-full self-center max-w-56 rounded-md"
+                width={500}
+                height={500}
+              />
+              {isMember ? (
+                <div>
+                  <Paragraph variant="semibold" className="text-[18px]">
+                    Early Adopter #{tokenId}
+                  </Paragraph>
+
+                  {/* `Owned by 0x00000` colored with 2 colors */}
+                  <div className="my-[16px] font-light">
+                    <Typography tagVariant="span">Owned{address && ' by '}</Typography>
+                    {address && (
+                      <Typography tagVariant="span" className="text-primary">
+                        {shortAddress(address, 3)}
+                      </Typography>
+                    )}
+                  </div>
+
+                  <Span className="inline-block text-[14px] tracking-wide font-light">
+                    {meta?.description}
+                  </Span>
+                </div>
+              ) : (
+                <div>
+                  <Paragraph className="text-[18px]">Early Adopter</Paragraph>
+                  <Button
+                    variant="secondary-full"
+                    className="my-[16px]"
+                    onClick={handleMinting}
+                    disabled={!tokensAvailable || !address || isClaiming}
+                    loading={isClaiming}
+                  >
+                    Claim it!
+                  </Button>
+                  <Span className="inline-block text-[14px] tracking-wide hidden">
+                    Crypto ipsum bitcoin ethereum dogecoin litecoin. Hedera USD kadena chainlink weave hive
+                    binance. Shiba-inu terra ICON IOTA ICON livepeer velas uniswap. Kadena kusama IOTA
+                    horizen.
+                  </Span>
+                </div>
               )}
-              <div className="pl-[24px]">
-                {isMember ? (
-                  <div>
-                    <Paragraph className="text-[18px]">Early Adopter #{tokenId}</Paragraph>
-                    <Span className="my-[16px] inline-block text-st-success">Owned</Span>
-                    <Span className="inline-block text-[14px] tracking-wide">{meta?.description}</Span>
-                  </div>
-                ) : (
-                  <div>
-                    <Paragraph className="text-[18px]">Early Adopter</Paragraph>
-                    <Button
-                      variant="secondary-full"
-                      className="my-[16px]"
-                      onClick={handleMinting}
-                      disabled={!tokensAvailable || !address || isClaiming}
-                      loading={isClaiming}
-                    >
-                      Claim it!
-                    </Button>
-                    <Span className="inline-block text-[14px] tracking-wide">
-                      Crypto ipsum bitcoin ethereum dogecoin litecoin. Hedera USD kadena chainlink weave hive
-                      binance. Shiba-inu terra ICON IOTA ICON livepeer velas uniswap. Kadena kusama IOTA
-                      horizen.
-                    </Span>
-                  </div>
-                )}
-              </div>
             </div>
           </div>
         </div>

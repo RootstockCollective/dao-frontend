@@ -23,6 +23,10 @@ interface CommunityData {
    * Serial number of the token minted for the user
    */
   tokenId: number | undefined
+  /**
+   * NFT smart contract name
+   */
+  nftName: string | undefined
 }
 
 /**
@@ -59,17 +63,23 @@ export const useCommunity = (nftAddress?: Address): CommunityData => {
             functionName: 'tokenIdByOwner',
             args: [address],
           },
+          {
+            ...contract,
+            functionName: 'name',
+          },
         ],
       },
   )
 
-  return useMemo<CommunityData>(() => {
-    const [membersCount, tokensAvailable, balanceOf, tokenIdByOwner] = data ?? []
-    return {
+  return useMemo(() => {
+    const [membersCount, tokensAvailable, balanceOf, tokenIdByOwner, nftName] = data ?? []
+    const communityData: CommunityData = {
       tokensAvailable: Number(tokensAvailable?.result ?? 0n),
       membersCount: Number(membersCount?.result ?? 0n),
       isMember: (balanceOf?.result ?? 0n) > 0n,
       tokenId: typeof tokenIdByOwner?.result === 'bigint' ? Number(tokenIdByOwner.result) : undefined,
+      nftName: nftName?.result,
     }
+    return communityData
   }, [data])
 }
