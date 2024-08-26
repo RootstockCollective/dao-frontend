@@ -20,9 +20,14 @@ export const useFetchLatestProposals = () => {
       })
 
       // remove duplicates
-      return proposals.filter(
-        (proposal, index, self) =>
-          self.findIndex(p => p.args.proposalId === proposal.args.proposalId) === index,
+      return (
+        proposals
+          .filter(
+            (proposal, index, self) =>
+              self.findIndex(p => p.args.proposalId === proposal.args.proposalId) === index,
+          )
+          // @ts-ignore
+          .sort((a, b) => b.timeStamp - a.timeStamp)
       )
     }
     return []
