@@ -5,7 +5,7 @@ import { FaPlus } from 'react-icons/fa6'
 import { Popover } from '@/components/Popover'
 
 export const HeaderSection = ({ createProposalDisabled = true, threshold = '' }) => (
-  <div className="flex flex-row justify-between container pl-4">
+  <div className="flex flex-row justify-between container">
     <Paragraph className="font-semibold text-[18px]">My Governance</Paragraph>
     <div className="flex flex-row gap-x-6">
       {createProposalDisabled ? (

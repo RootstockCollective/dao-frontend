@@ -43,30 +43,15 @@ export const StakeRIF = ({
     </Label>
     {/* Percentage button */}
     <div className="flex justify-end gap-2 pt-1">
-      <PercentageButton
-        percentage={10}
-        onClick={onPercentageClicked}
-        totalAmountAllowed={totalBalance}
-        amount={amount}
-      />
-      <PercentageButton
-        percentage={20}
-        onClick={onPercentageClicked}
-        totalAmountAllowed={totalBalance}
-        amount={amount}
-      />
-      <PercentageButton
-        percentage={50}
-        onClick={onPercentageClicked}
-        totalAmountAllowed={totalBalance}
-        amount={amount}
-      />
-      <PercentageButton
-        percentage={100}
-        onClick={onPercentageClicked}
-        totalAmountAllowed={totalBalance}
-        amount={amount}
-      />
+      {[10, 20, 50, 100].map((percentage: number, i) => (
+        <PercentageButton
+          key={i}
+          percentage={percentage}
+          onClick={onPercentageClicked}
+          totalAmountAllowed={totalBalance}
+          amount={amount}
+        />
+      ))}
     </div>
     {/* @TODO if we're unstaking we should have a component here - check design */}
     {/* Stake */}

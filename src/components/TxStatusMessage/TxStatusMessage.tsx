@@ -31,14 +31,13 @@ export const TxStatusMessage = ({ messageType }: Props) => {
   if (txHash && txStatus) {
     message = TX_MESSAGES[txType][txStatus]
   }
-
   const onDismiss = () => setIsDismissed(true)
 
   useEffect(() => {
-    if (txStatus === 'success') {
+    if (txStatus === 'success' || txHash) {
       setIsDismissed(false)
     }
-  }, [txStatus])
+  }, [txStatus, txHash])
 
   // check if the tx is an unstaking tx
   useEffect(() => {
