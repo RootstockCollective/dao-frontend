@@ -39,8 +39,7 @@ export const Login = () => {
           <>
             {isConnected ? (
               <div className="flex flex-col items-center">
-                <p>You are connected.</p>
-                <p>Redirecting to /user</p>
+                <p>Redirecting...</p>
                 <LoadingSpinner />
               </div>
             ) : (
