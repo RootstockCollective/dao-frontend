@@ -26,6 +26,9 @@ export const useVotingPowerAtSnapshot = (blockNumber: bigint) => {
       },
     ],
     multicallAddress: MULTICALL_ADDRESS,
+    query: {
+      refetchInterval: 5000,
+    },
   })
 
   if (isLoading || !data) {

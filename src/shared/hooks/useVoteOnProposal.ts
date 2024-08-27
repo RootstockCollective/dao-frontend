@@ -46,6 +46,9 @@ export const useVoteOnProposal = (proposalId: string) => {
     ...DEFAULT_DAO,
     functionName: 'hasVoted',
     args: [BigInt(proposalId), address as Address],
+    query: {
+      refetchInterval: 5000,
+    },
   })
 
   // If everything passed ok - user can vote
