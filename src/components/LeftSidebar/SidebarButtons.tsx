@@ -3,12 +3,12 @@ import { SidebarButtonsProps } from '@/components/LeftSidebar/types'
 import Image from 'next/image'
 
 const ImageAsIcon = ({ src, alt }: { src: string; alt: string }) => (
-  <Image src={src} alt={alt} width={20} height={20} className="pr-1" />
+  <Image src={src} alt={alt} width={20} height={20} />
 )
 
 const DEFAULT_BUTTON_CLASSNAME = 'mb-[32px] pl-11'
 
-const START_ICON_CLASSES = 'left-[-26px]'
+const START_ICON_CLASSES = 'left-[-28px] top-[2px]'
 
 export const SidebarButtons = ({ onClick, activeButton = 'communities' }: SidebarButtonsProps) => (
   <div>
