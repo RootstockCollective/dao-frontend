@@ -9,11 +9,11 @@ import { toFixed } from '@/lib/utils'
 import { FaRegQuestionCircle } from 'react-icons/fa'
 import { useVotingPower } from './hooks/useVotingPower'
 import { TxStatusMessage } from '@/components/TxStatusMessage/TxStatusMessage'
+import { LoadingSpinner } from '@/components/LoadingSpinner'
 
 export default function Proposals() {
   const { votingPower, canCreateProposal, threshold } = useVotingPower()
-
-  const { latestProposals } = useFetchLatestProposals()
+  const { latestProposals, isLoading: isLoadingProposals } = useFetchLatestProposals()
 
   return (
     <MainContainer>
@@ -31,7 +31,7 @@ export default function Proposals() {
           <DelegatedTable />
           <ReceivedDelegationTable />
         </div> */}
-        <LatestProposalsTable latestProposals={latestProposals} />
+        {isLoadingProposals ? <LoadingSpinner /> : <LatestProposalsTable latestProposals={latestProposals} />}
       </div>
     </MainContainer>
   )

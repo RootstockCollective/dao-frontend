@@ -5,7 +5,7 @@ import { GovernorAbi } from '@/lib/abis/Governor'
 import { fetchProposalsCreatedCached } from '@/app/user/Balances/actions'
 
 export const useFetchLatestProposals = () => {
-  const { data } = useQuery({
+  const { data, isLoading } = useQuery({
     queryFn: fetchProposalsCreatedCached,
     queryKey: ['proposalsCreated'],
     refetchInterval: 2000,
@@ -33,5 +33,5 @@ export const useFetchLatestProposals = () => {
     return []
   }, [data])
 
-  return { latestProposals }
+  return { latestProposals, isLoading }
 }
