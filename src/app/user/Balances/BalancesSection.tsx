@@ -18,7 +18,7 @@ const data = [
     actions: <StakeRIFCell />,
   },
   {
-    token: 'Rootstock Infrastructure Framework',
+    token: 'Staked Rootstock Infrastructure Framework',
     symbol: <RenderTokenSymbol symbol="stRIF" />,
     'Token Price': <RenderTokenPrice symbol="stRIF" />,
     'Total Balance': <RenderTotalBalance symbol="stRIF" />,
