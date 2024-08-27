@@ -88,8 +88,10 @@ const PageWithProposal = (proposal: PageWithProposal) => {
       votingModal.closeModal()
       setVote(vote)
       submittedModal.openModal()
-    } catch (err) {
-      setErrorVoting((err as Error).toString())
+    } catch (err: any) {
+      if (err?.cause?.code !== 4001) {
+        setErrorVoting((err as Error).toString())
+      }
     }
   }
 
