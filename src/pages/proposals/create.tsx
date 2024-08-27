@@ -68,6 +68,20 @@ const FormSchema = z
       path: ['amount'],
     },
   )
+  .refine(
+    data => {
+      if (data.tokenAddress === zeroAddress) {
+        if (Number(data.amount) < 0.000001) {
+          return false
+        }
+      }
+      return true
+    },
+    {
+      message: 'The minimum amount is 0.000001',
+      path: ['amount'],
+    },
+  )
 
 export default function CreateProposal() {
   const router = useRouter()
