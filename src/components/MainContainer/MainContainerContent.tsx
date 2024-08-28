@@ -17,7 +17,7 @@ export const MainContainerContent: FC<Props> = ({ notProtected, setMessage, chil
   const { switchChain } = useSwitchChain()
   const pathname = usePathname()
 
-  const handleSwithNetwork = useCallback(() => {
+  const handleSwitchNetwork = useCallback(() => {
     console.log('changing network...')
     switchChain({ chainId: supportedChainId })
   }, [switchChain])
@@ -40,26 +40,22 @@ export const MainContainerContent: FC<Props> = ({ notProtected, setMessage, chil
         content: (
           <Paragraph variant="light" className="font-[600] text-[14px] text-white opacity-80 mb-[12px]">
             Please switch to RSK {networkName}.{' '}
-            <Span className="underline cursor-pointer text-[14px]" onClick={handleSwithNetwork}>
+            <Span className="underline cursor-pointer text-[14px]" onClick={handleSwitchNetwork}>
               Switch network
             </Span>
           </Paragraph>
         ),
         severity: 'error',
-        onDismiss: null,
+        onDismiss: null, // force not showing dismiss button
       })
     } else {
       setMessage(null)
     }
-  }, [chainId, handleSwithNetwork, setMessage, wrongNetwork])
+  }, [chainId, handleSwitchNetwork, setMessage, wrongNetwork])
 
   if (isConnected && wrongNetwork) {
     return null
   }
 
-  if (notProtected) {
-    return <>{children}</>
-  }
-
-  return <ProtectedContent>{children}</ProtectedContent>
+  return <>{notProtected ? children : <ProtectedContent>{children}</ProtectedContent>}</>
 }
