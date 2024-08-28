@@ -3,34 +3,83 @@ import { Button } from '@/components/Button'
 import { Chip } from '@/components/Chip/Chip'
 import { MainContainer } from '@/components/MainContainer/MainContainer'
 import { Paragraph, Span, Typography } from '@/components/Typography'
-import { cn, truncateMiddle, shortAddress } from '@/lib/utils'
+import { cn, truncateMiddle } from '@/lib/utils'
 import Image from 'next/image'
 import { useRouter } from 'next/router'
-import { ReactNode, useState } from 'react'
+import { ReactNode, useState, useEffect } from 'react'
 import { BsTwitterX } from 'react-icons/bs'
 import { FaDiscord, FaLink } from 'react-icons/fa'
 import { Address } from 'viem'
 import { useAccount } from 'wagmi'
 import { useCommunity } from '@/shared/hooks/useCommunity'
-import { useMintNFT } from '@/shared/hooks/useMintNFT'
-import { useNftMeta } from '@/shared/hooks/useNFTMeta'
 import { CopyButton } from '@/components/CopyButton'
 
+/**
+ * Name of the local storage variable with information about whether the token was added to the wallet
+ */
+const IS_IN_WALLET = 'isInWallet'
+/**
+ * Type representing localStorage and state variable for tracking if an NFT token is added to the wallet
+ * The structure of the variable is the following:
+ * ```json
+ * {
+ *   "0x123456...123456": {
+ *     1: true,
+ *     2: true
+ *   }
+ * }
+ * ```
+ */
+type IsInWallet = Record<Address, Record<number, boolean>>
+
+/**
+ * Early Adopter community page
+ */
 export default function Page() {
   const router = useRouter()
   const nftAddress = router.query.address as Address | undefined
   const { address } = useAccount()
-  const { tokensAvailable, isMember, tokenId, membersCount, nftName } = useCommunity(nftAddress)
-  const { onMintNFT, isPending: isClaiming } = useMintNFT(nftAddress)
-  const [message, setMessage] = useState('')
+  const {
+    tokensAvailable,
+    isMember,
+    tokenId,
+    membersCount,
+    nftName,
+    nftSymbol,
+    mint: { onMintNFT, isPending: isClaiming },
+    nftMeta,
+  } = useCommunity(nftAddress)
 
-  const { meta } = useNftMeta(nftAddress)
+  const [message, setMessage] = useState('')
+  // reset message after few seconds
+  useEffect(() => {
+    if (!message) return
+    const timeout = setTimeout(() => setMessage(''), 5000)
+    return () => clearTimeout(timeout)
+  }, [message])
+  // read from local storage if the NFT was added to the wallet
+  const [isNftInWallet, setIsNftInWallet] = useState<IsInWallet>(() => {
+    // prevent from server execution
+    if (typeof window !== 'undefined') {
+      const storedValue = window.localStorage.getItem(IS_IN_WALLET)
+      return storedValue !== null ? JSON.parse(storedValue) : {}
+    } else {
+      return {}
+    }
+  })
+
+  // synchronize local storage variable
+  useEffect(() => {
+    // prevent from server execution
+    if (typeof window !== 'undefined') {
+      window.localStorage.setItem(IS_IN_WALLET, JSON.stringify(isNftInWallet))
+    }
+  }, [isNftInWallet])
 
   const handleMinting = () => {
     if (!address) return
     onMintNFT()
       .then(txHash => {
-        console.log('SUCCESS', txHash)
         setMessage(
           'Request transaction sent. Your claim is in process. It will be visible when the transaction is confirmed.',
         )
@@ -43,6 +92,40 @@ export default function Page() {
           )
         }
       })
+  }
+
+  /**
+   * Adds NFT to wallet collection
+   */
+  const addToWallet = async () => {
+    try {
+      if (typeof window === 'undefined' || !window.ethereum) throw new Error('Wallet is not installed')
+      if (!nftAddress || !tokenId) throw new Error('Unknown NFT')
+      // connect wallet in case it was disconnected
+      await window.ethereum.request({
+        method: 'eth_requestAccounts',
+      })
+      const wasAdded = await window.ethereum.request({
+        method: 'wallet_watchAsset',
+        params: {
+          type: 'ERC721',
+          options: {
+            address: nftAddress,
+            symbol: nftSymbol,
+            image: nftMeta?.image,
+            tokenId: String(tokenId),
+          },
+        },
+      })
+      if (!wasAdded) throw new Error('Unable to add NFT to wallet')
+      setIsNftInWallet(old => ({ ...old, [nftAddress]: { ...old[nftAddress], [tokenId]: true } }))
+      setMessage(`NFT#${tokenId} was added to wallet`)
+    } catch (error) {
+      // don't show error message if user has closed the wallet prompt
+      if ((error as { message?: string }).message?.includes('User rejected the request')) return
+      console.error('ERROR', error)
+      setMessage(`Error adding NFT#${tokenId} to wallet`)
+    }
   }
 
   if (!nftAddress) return null
@@ -95,9 +178,11 @@ export default function Page() {
           {/* pioneer, holders, followers */}
           <div>
             <DivWithBorderTop
-              firstParagraph={`${nftName} NFT`}
+              firstParagraph={`${nftName ?? ''} NFT`}
               secondParagraph={
-                <CopyButton copyText={address as string}>{truncateMiddle(nftAddress as string)}</CopyButton>
+                <CopyButton copyText={address as string}>
+                  {truncateMiddle(nftAddress as string, 4, 4)}
+                </CopyButton>
               }
             />
             <DivWithBorderTop firstParagraph="Holders" secondParagraph={membersCount} />
@@ -109,13 +194,13 @@ export default function Page() {
             <Span className="mb-6 font-bold inline-block">Membership NFT</Span>
             <div className="flex gap-6">
               <Image
-                alt={meta?.name ?? 'NFT'}
-                src={meta?.image ?? '/images/Early-Adopters-Collection-Cover.png'}
+                alt={nftMeta?.name ?? 'NFT'}
+                src={nftMeta?.image || '/images/Early-Adopters-Collection-Cover.png'}
                 className="w-full self-center max-w-56 rounded-md"
                 width={500}
                 height={500}
               />
-              {isMember ? (
+              {isMember && tokenId ? (
                 <div>
                   <Paragraph variant="semibold" className="text-[18px]">
                     Early Adopter #{tokenId}
@@ -126,13 +211,20 @@ export default function Page() {
                     <Typography tagVariant="span">Owned{address && ' by '}</Typography>
                     {address && (
                       <Typography tagVariant="span" className="text-primary">
-                        {shortAddress(address, 3)}
+                        {truncateMiddle(address, 4, 3)}
                       </Typography>
                     )}
                   </div>
 
+                  {/* `Add to wallet button` */}
+                  {!isNftInWallet?.[nftAddress]?.[tokenId] && (
+                    <Button onClick={addToWallet} className="mb-4">
+                      Add to wallet
+                    </Button>
+                  )}
+
                   <Span className="inline-block text-[14px] tracking-wide font-light">
-                    {meta?.description}
+                    {nftMeta?.description}
                   </Span>
                 </div>
               ) : (
