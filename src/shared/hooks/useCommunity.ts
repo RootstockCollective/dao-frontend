@@ -3,8 +3,7 @@ import { abiContractsMap } from '@/lib/contracts'
 import { Address } from 'viem'
 import { useReadContracts, useAccount, useWaitForTransactionReceipt, useWriteContract } from 'wagmi'
 import { fetchIpfsUri } from '@/app/user/Balances/actions'
-import { NftMeta } from '../types'
-import { CommunityData } from './types'
+import { NftMeta, CommunityData } from '../types'
 
 /**
  * Hook for loading NFT metadata from IPFS
@@ -51,13 +50,25 @@ export const useContractData = (nftAddress?: Address) => {
       },
   )
 
-  return { data, refetch }
+  return useMemo(() => {
+    const [membersCount, tokensAvailable, balanceOf, tokenIdByOwner, nftName, symbol, nftUri] = data ?? []
+    return {
+      refetch,
+      membersCount: Number(membersCount?.result ?? 0n),
+      tokensAvailable: Number(tokensAvailable?.result ?? 0n),
+      isMember: (balanceOf?.result ?? 0n) > 0n,
+      tokenId: typeof tokenIdByOwner?.result === 'bigint' ? Number(tokenIdByOwner.result) : undefined,
+      nftName: nftName?.result,
+      nftSymbol: symbol?.result,
+      nftUri: nftUri?.result,
+    }
+  }, [data, refetch])
 }
 
 /**
  * Hook for executing and watching NFT mint transaction
  */
-const useMintNFT = (nftAddress?: Address, tokensAvailable?: bigint) => {
+const useMintNFT = (nftAddress?: Address, tokensAvailable?: number) => {
   const { writeContractAsync: mint, isPending, data: hash } = useWriteContract()
   const { isLoading, isSuccess } = useWaitForTransactionReceipt({ hash })
 
@@ -72,37 +83,34 @@ const useMintNFT = (nftAddress?: Address, tokensAvailable?: bigint) => {
     })
   }, [mint, nftAddress, tokensAvailable])
 
-  return { onMintNFT, isPending: isLoading || isPending, isSuccess }
+  return useMemo(
+    () => ({ onMintNFT, isPending: isLoading || isPending, isSuccess }),
+    [isLoading, isPending, isSuccess, onMintNFT],
+  )
 }
 
 /**
  * Hook returning all information about Early Adopters community
  */
 export const useCommunity = (nftAddress?: Address): CommunityData => {
-  const { data, refetch } = useContractData(nftAddress)
-  const { onMintNFT, isPending, isSuccess } = useMintNFT(nftAddress, data?.[1]?.result)
-  const nftMeta = useNftMeta(data?.[6]?.result)
+  const { refetch, ...data } = useContractData(nftAddress)
+  const { onMintNFT, isPending, isSuccess } = useMintNFT(nftAddress, data.tokensAvailable)
+  const nftMeta = useNftMeta(data.nftUri)
 
   useEffect(() => {
-    if (isSuccess) {
-      refetch()
-    }
+    if (isSuccess) refetch()
   }, [isSuccess, refetch])
 
-  return useMemo(() => {
-    const [membersCount, tokensAvailable, balanceOf, tokenIdByOwner, nftName, symbol] = data ?? []
-    return {
-      tokensAvailable: Number(tokensAvailable?.result ?? 0n),
-      membersCount: Number(membersCount?.result ?? 0n),
-      isMember: (balanceOf?.result ?? 0n) > 0n,
-      tokenId: typeof tokenIdByOwner?.result === 'bigint' ? Number(tokenIdByOwner.result) : undefined,
-      nftName: nftName?.result,
-      nftSymbol: symbol?.result,
-      mint: {
-        onMintNFT,
-        isPending,
-      },
-      nftMeta,
-    }
-  }, [data, isPending, nftMeta, onMintNFT])
+  return useMemo(
+    () =>
+      ({
+        ...data,
+        mint: {
+          onMintNFT,
+          isPending,
+        },
+        nftMeta,
+      }) satisfies CommunityData,
+    [data, isPending, nftMeta, onMintNFT],
+  )
 }
