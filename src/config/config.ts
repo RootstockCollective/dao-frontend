@@ -1,5 +1,6 @@
+import { ENV } from '@/lib/constants'
 import { createClient, defineChain } from 'viem'
-import { rootstockTestnet } from 'viem/chains'
+import { rootstockTestnet, rootstock } from 'viem/chains'
 import { createConfig, http } from 'wagmi'
 import { metaMask } from 'wagmi/connectors'
 
@@ -21,3 +22,9 @@ export const config = createConfig({
   },
   connectors: [metaMask({ dappMetadata: { name: 'RootstockCollective' } })],
 })
+
+export const supportedChainId = {
+  mainnet: rootstock.id,
+  testnet: rootstockTestnet.id,
+  localhost: rskLocalhost.id,
+}[ENV]!

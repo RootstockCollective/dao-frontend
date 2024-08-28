@@ -12,6 +12,7 @@ import { Alert } from '../Alert'
 import { AccountAddress } from '../Header/AccountAddress'
 import { DisconnectWalletModal } from '../Modal/DisconnectWalletModal'
 import { ProtectedContent } from '../ProtectedContent/ProtectedContent'
+import { MainContainerContent } from './MainContainerContent'
 
 interface Props {
   children: ReactNode
@@ -24,7 +25,6 @@ export const MainContainer: FC<Props> = ({ children, notProtected = false }) => 
   const { message, setMessage } = useAlertContext()
   const router = useRouter()
   const modal = useModal()
-  const pathname = usePathname()
 
   const [hasMounted, setHasMounted] = useState(false)
 
@@ -32,11 +32,6 @@ export const MainContainer: FC<Props> = ({ children, notProtected = false }) => 
     router.push('/')
     disconnect()
   }
-
-  useEffect(() => {
-    // Clear message on route change
-    setMessage(null)
-  }, [pathname, setMessage])
 
   useEffect(() => {
     // This is to prevent Hydration error on client side
@@ -72,8 +67,12 @@ export const MainContainer: FC<Props> = ({ children, notProtected = false }) => 
               )}
             </>
           )}
-          {message && <Alert {...message} onDismiss={() => setMessage(null)} />}
-          {notProtected ? children : <ProtectedContent>{children}</ProtectedContent>}
+          {message && (
+            <Alert {...message} onDismiss={message.onDismiss === null ? null : () => setMessage(null)} />
+          )}
+          <MainContainerContent notProtected={notProtected} setMessage={setMessage}>
+            {children}
+          </MainContainerContent>
         </div>
       </div>
       <Footer variant="container" />
