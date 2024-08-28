@@ -7,6 +7,7 @@ interface Props {
   children: ReactNode
   size?: 'normal' | 'small'
   variant?: 'normal' | 'light'
+  onClick?: () => void
 }
 
 const variants = {
@@ -18,8 +19,12 @@ const sizeVariant = {
   normal: 'text-[16px]',
   small: 'text-[12px]',
 }
-export const Span = ({ children, className, variant = 'normal', size = 'normal' }: Props) => (
-  <Typography tagVariant="span" className={cn(variants[variant], sizeVariant[size], className)}>
+export const Span = ({ children, className, variant = 'normal', size = 'normal', onClick }: Props) => (
+  <Typography
+    tagVariant="span"
+    className={cn(variants[variant], sizeVariant[size], className)}
+    onClick={onClick}
+  >
     {children}
   </Typography>
 )

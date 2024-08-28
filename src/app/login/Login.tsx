@@ -30,7 +30,8 @@ export const Login = () => {
     if (isConnected) {
       router.push('/user')
     }
-  }, [isConnected])
+  }, [isConnected, router])
+
   return (
     <div className={cn(BACKGROUND_CLASSES, 'flex flex-col justify-center items-center h-screen')}>
       <Logo className="mb-8" textClassName="text-6xl" />

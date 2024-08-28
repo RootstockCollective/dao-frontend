@@ -2,12 +2,13 @@ import { BsExclamationCircle } from 'react-icons/bs'
 import { CiCircleCheck } from 'react-icons/ci'
 import { Paragraph } from '@/components/Typography'
 import { MdClose } from 'react-icons/md'
+import { ReactNode } from 'react'
 
 export interface AlertProps {
   severity: 'error' | 'success' | 'info' | 'warning'
   title: string
-  content: string
-  onDismiss?: () => void
+  content: string | ReactNode
+  onDismiss?: (() => void) | null
 }
 
 const IconToUse = {
@@ -25,9 +26,13 @@ export const Alert = ({ severity, title, content, onDismiss }: AlertProps) => {
       {/* Main content */}
       <div className="flex-1">
         <Paragraph className="leading-5 mb-[6px] text-[16px]">{title}</Paragraph>
-        <Paragraph variant="light" className="font-[600] text-[14px] text-white opacity-80 mb-[12px]">
-          {content}
-        </Paragraph>
+        {typeof content === 'string' ? (
+          <Paragraph variant="light" className="font-[600] text-[14px] text-white opacity-80 mb-[12px]">
+            {content}
+          </Paragraph>
+        ) : (
+          content
+        )}
         {onDismiss && (
           <div onClick={onDismiss} className="cursor-pointer">
             <Paragraph variant="light" className="text-[14px]">

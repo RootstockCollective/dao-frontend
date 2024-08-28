@@ -72,7 +72,9 @@ export const MainContainer: FC<Props> = ({ children, notProtected = false }) => 
               )}
             </>
           )}
-          {message && <Alert {...message} onDismiss={() => setMessage(null)} />}
+          {message && (
+            <Alert {...message} onDismiss={message.onDismiss === null ? null : () => setMessage(null)} />
+          )}
           {notProtected ? children : <ProtectedContent>{children}</ProtectedContent>}
         </div>
       </div>
