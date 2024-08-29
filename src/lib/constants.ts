@@ -15,3 +15,5 @@ export const BUCKET3_ADDRESS = process.env.NEXT_PUBLIC_BUCKET3_ADDRESS as Addres
 export const BUCKET4_ADDRESS = process.env.NEXT_PUBLIC_BUCKET4_ADDRESS as Address
 
 export const TREASURY_ADDRESS = process.env.NEXT_PUBLIC_TREASURY_ADDRESS as Address
+
+export const BUILD_ID = process.env.NEXT_PUBLIC_BUILD_ID as string

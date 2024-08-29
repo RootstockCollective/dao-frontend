@@ -1,3 +1,5 @@
+import { BUILD_ID } from '@/lib/constants'
+import { truncate } from '@/lib/utils'
 import { FaGithub, FaSlack, FaXTwitter } from 'react-icons/fa6'
 
 interface Props {
@@ -24,6 +26,12 @@ export const Footer = ({ brand = 'RootstockCollective', variant = 'login' }: Pro
         </p>
         <span className="text-[0.5rem] text-white opacity-50">
           Copyright © {year} {brand}. All rights reserved.
+        </span>
+        <span className="text-[0.5rem] text-white opacity-50">
+          Build ID: {' '}
+            <a href={`https://github.com/rsksmart/dao-frontend/commit${BUILD_ID}'}`} className="hover:underline me-4 md:me-6" target="_blank">
+              {truncate(BUILD_ID, 7)}
+            </a>
         </span>
       </div>
       <div className="flex justify-center items-center flex-row">
