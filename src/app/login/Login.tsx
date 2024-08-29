@@ -5,14 +5,14 @@ import { Logo } from '@/components/Header/Logo'
 import { cn } from '@/lib/utils'
 import { useRouter } from 'next/navigation'
 import { useEffect, useState } from 'react'
-import { FaLink, FaUsers } from 'react-icons/fa6'
-import { useAccount, useDisconnect } from 'wagmi'
+import { FaUsers } from 'react-icons/fa6'
+import { useAccount } from 'wagmi'
+import { LoadingSpinner } from '@/components/LoadingSpinner'
 
 const BACKGROUND_CLASSES = 'bg-[url(../../public/images/login-bg.svg)] bg-cover'
 
 export const Login = () => {
   const { isConnected, address } = useAccount()
-  const { disconnect } = useDisconnect()
   const [hasMounted, setHasMounted] = useState(false)
 
   const router = useRouter()
@@ -25,6 +25,12 @@ export const Login = () => {
     setHasMounted(true)
   }, [])
 
+  useEffect(() => {
+    // Redirect the user to /user if connected
+    if (isConnected) {
+      router.push('/user')
+    }
+  }, [isConnected])
   return (
     <div className={cn(BACKGROUND_CLASSES, 'flex flex-col justify-center items-center h-screen')}>
       <Logo className="mb-8" textClassName="text-6xl" />
@@ -32,22 +38,18 @@ export const Login = () => {
         {hasMounted && (
           <>
             {isConnected ? (
-              <Button
-                onClick={() => disconnect()}
-                variant="secondary"
-                className="border-red-600"
-                textClassName="text-red-600"
-                startIcon={<FaLink />}
-              >
-                Disconnect
-              </Button>
+              <div className="flex flex-col items-center">
+                <p>Redirecting...</p>
+                <LoadingSpinner />
+              </div>
             ) : (
-              <ConnectButton onSuccess={() => router.push('/user')} />
+              <>
+                <ConnectButton onSuccess={() => router.push('/user')} />
+                <Button onClick={handleExploreCommunities} variant="secondary" startIcon={<FaUsers />}>
+                  Explore Communities
+                </Button>
+              </>
             )}
-
-            <Button onClick={handleExploreCommunities} variant="secondary" startIcon={<FaUsers />}>
-              Explore Communities
-            </Button>
           </>
         )}
       </div>

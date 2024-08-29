@@ -4,15 +4,20 @@ import { GetPricesResult, TokenBalanceRecord } from '@/app/user/types'
 import { StakingToken } from '@/app/user/Stake/types'
 import { Hash } from 'viem'
 import { ActionBeingExecuted } from '@/app/user/Stake/Steps/stepsUtils'
+import { formatCurrency, toFixed } from '@/lib/utils'
 
 export type ActionHookToUse = (
   amount: string,
   tokenToSendContract: string,
   tokenToReceiveContract: string,
 ) => {
-  shouldEnableConfirm: boolean
+  isAllowanceEnough: boolean
   onConfirm: () => Promise<Hash>
   customFooter: ReactNode
+  isPending: boolean
+  isAllowanceReadLoading?: boolean
+  onRequestAllowance?: () => Promise<Hash>
+  isRequestingAllowance?: boolean
 }
 
 type StakePreviewToken = {
@@ -45,7 +50,7 @@ const DEFAULT_STAKE_PREVIEW_TOKEN = {
   amount: '0',
   balance: '0',
   tokenSymbol: '0',
-  amountConvertedToCurrency: '0',
+  amountConvertedToCurrency: formatCurrency(0),
 }
 
 const StakingContext = createContext<StakingContextProps>({
@@ -60,7 +65,14 @@ const StakingContext = createContext<StakingContextProps>({
     amountToReceive: '',
     amountToReceiveConvertedToCurrency: '',
   },
-  actionToUse: () => ({ shouldEnableConfirm: false, onConfirm: async () => '0x0', customFooter: null }),
+  actionToUse: () => ({
+    isAllowanceEnough: false,
+    onConfirm: async () => '0x0',
+    customFooter: null,
+    isPending: false,
+    isAllowanceReadLoading: false,
+    onRequestAllowance: async () => '0x0',
+  }),
   actionName: 'STAKE',
   stakePreviewFrom: { ...DEFAULT_STAKE_PREVIEW_TOKEN },
   stakePreviewTo: { ...DEFAULT_STAKE_PREVIEW_TOKEN },
@@ -99,15 +111,15 @@ export const StakingProvider: FC<Props> = ({
     const amountToReceiveConvertedToCurrency = amountToReceive * Number(tokenToReceive.price) || 0
     return {
       amountToReceive: amountToReceive.toString(),
-      amountToReceiveConvertedToCurrency: `USD ${amountToReceiveConvertedToCurrency}`,
+      amountToReceiveConvertedToCurrency: `USD ${formatCurrency(amountToReceiveConvertedToCurrency)}`,
     }
   }, [stakeData.amount, tokenToSend.price, tokenToReceive.price])
 
   const stakePreviewFrom = useMemo(
     () => ({
-      amount: stakeData.amount,
+      amount: toFixed(stakeData.amount),
       amountConvertedToCurrency:
-        'USD ' + (Number(tokenToSend.price) * Number(stakeData.amount) ?? 0).toString(),
+        'USD ' + formatCurrency(Number(tokenToSend.price) * Number(stakeData.amount) ?? 0),
       balance: tokenToSend.balance,
       tokenSymbol: tokenToSend.symbol,
     }),
@@ -116,8 +128,8 @@ export const StakingProvider: FC<Props> = ({
 
   const stakePreviewTo = useMemo(
     () => ({
-      amount: amountDataToReceive.amountToReceive.toString(),
-      amountConvertedToCurrency: amountDataToReceive.amountToReceiveConvertedToCurrency.toString(),
+      amount: toFixed(amountDataToReceive.amountToReceive),
+      amountConvertedToCurrency: amountDataToReceive.amountToReceiveConvertedToCurrency,
       balance: tokenToReceive.balance,
       tokenSymbol: tokenToReceive.symbol,
     }),

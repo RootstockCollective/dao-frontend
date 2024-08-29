@@ -1,4 +1,4 @@
-import { Header, Label, Paragraph } from '@/components/Typography'
+import { Header, Label, Paragraph, Span } from '@/components/Typography'
 import { Button } from '@/components/Button'
 import { LuBadgeCheck } from 'react-icons/lu'
 import { goToExplorerWithTxHash } from '@/lib/utils'
@@ -41,24 +41,25 @@ export const StakeStatus = ({
           <LuBadgeCheck size={48} color="#665EF6" />
         </div>
       </div>
-      <Header className="mt-[62px] text-center">{textsDependingOnAction[actionName].inProcess}</Header>{' '}
-      <Paragraph className="text-center" variant="light">
-        {textsDependingOnAction[actionName].description}
-      </Paragraph>
+      <Header className="mt-[62px] text-center">{textsDependingOnAction[actionName].inProcess}</Header>
+      <Span className="text-center">{textsDependingOnAction[actionName].description}</Span>
       {/* Preview box */}
-      <div className="flex flex-col mt-[54px]">
+      <div className="flex flex-col mt-[54px] px-6">
         <div className="flex flex-row justify-between mb-[24px]">
-          <Paragraph variant="light">Amount</Paragraph>
+          <Span>Amount</Span>
           <div>
-            <Paragraph variant="light">
+            <Span>
               {amountReceived} {symbol}
-            </Paragraph>
-            <Label>= {amountReceivedCurrency}</Label>
+            </Span>
+            <br />
+            <Label variant="light" className="text-[14px]">
+              = {amountReceivedCurrency}
+            </Label>
           </div>
         </div>
         <div className="flex flex-row justify-between">
-          <Paragraph variant="light">Date</Paragraph>
-          <Paragraph variant="light">{date}</Paragraph>
+          <Span>Date</Span>
+          <Span>{date}</Span>
         </div>
       </div>
       {/* Stake Actions */}

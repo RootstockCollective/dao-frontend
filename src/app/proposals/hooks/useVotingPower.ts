@@ -1,6 +1,6 @@
 import { GovernorAbi } from '@/lib/abis/Governor'
 import { StRIFTokenAbi } from '@/lib/abis/StRIFTokenAbi'
-import { currentEnvContracts, GovernorAddress } from '@/lib/contracts'
+import { tokenContracts, GovernorAddress } from '@/lib/contracts'
 import { Address, formatUnits } from 'viem'
 import { useAccount, useReadContracts } from 'wagmi'
 
@@ -12,13 +12,13 @@ export const useVotingPower = () => {
     contracts: [
       {
         abi: StRIFTokenAbi,
-        address: currentEnvContracts.stRIF as Address,
+        address: tokenContracts.stRIF,
         functionName: 'balanceOf',
         args: [address!],
       },
       {
         abi: StRIFTokenAbi,
-        address: currentEnvContracts.stRIF as Address,
+        address: tokenContracts.stRIF,
         functionName: 'decimals',
       },
       { abi: GovernorAbi, address: GovernorAddress, functionName: 'proposalThreshold' },

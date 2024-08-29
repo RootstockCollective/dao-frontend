@@ -6,6 +6,7 @@ import { ComparativeProgressBar } from '@/components/ComparativeProgressBar/Comp
 import { Popover } from '@/components/Popover'
 import { Table } from '@/components/Table'
 import { Header, Paragraph } from '@/components/Typography'
+import { toFixed } from '@/lib/utils'
 import { useRouter } from 'next/navigation'
 import { useMemo } from 'react'
 
@@ -18,7 +19,7 @@ const ProposalNameColumn = ({ name, proposalId }: ProposalNameColumnProps) => {
   const router = useRouter()
   return (
     <button onClick={() => router.push(`/proposals/${proposalId}`)}>
-      <span className="underline">{name}</span>
+      <span className="underline text-left">{name.slice(0, 20)}</span>
     </button>
   )
 }
@@ -26,7 +27,7 @@ const ProposalNameColumn = ({ name, proposalId }: ProposalNameColumnProps) => {
 const VotesColumn = ({ proposalId }: Omit<ProposalNameColumnProps, 'name'>) => {
   const data = useGetProposalVotes(proposalId)
   const votes = data.reduce((prev, next) => Number(next) + prev, 0)
-  return <p>{votes.toString()}</p>
+  return <p>{toFixed(votes)}</p>
 }
 
 const PopoverSentiment = ({ votes }: { votes: string[] }) => {

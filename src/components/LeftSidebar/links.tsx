@@ -1,3 +1,5 @@
+import { ENV } from '@/lib/constants'
+
 const regtest = {
   registerRns: '',
   tokenBridge: '',
@@ -25,4 +27,4 @@ const environments = {
   mainnet,
 }
 // @ts-ignore
-export const currentLinks = environments[process.env.NEXT_PUBLIC_ENV] as typeof testnet
+export const currentLinks = environments[ENV] as typeof testnet

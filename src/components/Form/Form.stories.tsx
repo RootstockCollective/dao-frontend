@@ -1,11 +1,11 @@
 import { Meta, StoryObj } from '@storybook/react'
 import { useForm } from 'react-hook-form'
 import { FaBitcoin } from 'react-icons/fa6'
-import { Input } from '../Input'
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../Select'
-import { Textarea } from '../Textarea'
-import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from './Form'
 import { Button } from '../Button'
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../Select'
+import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from './Form'
+import { FormInput } from './FormInput'
+import { FormTextarea } from './FormTextarea'
 
 const meta = {
   title: 'Components/Form',
@@ -28,7 +28,7 @@ export const Default: Omit<Story, 'args'> = {
             <FormItem>
               <FormLabel>Proposal name</FormLabel>
               <FormControl>
-                <Input placeholder="name your proposal" {...field} />
+                <FormInput placeholder="name your proposal" {...field} />
               </FormControl>
             </FormItem>
           )}
@@ -40,7 +40,7 @@ export const Default: Omit<Story, 'args'> = {
             <FormItem className="mb-6 mx-1">
               <FormLabel>Description</FormLabel>
               <FormControl>
-                <Textarea placeholder="Enter a description..." {...field} />
+                <FormTextarea placeholder="Enter a description..." {...field} />
               </FormControl>
               <FormMessage />
             </FormItem>
@@ -53,7 +53,7 @@ export const Default: Omit<Story, 'args'> = {
             <FormItem className="mb-6 mx-1">
               <FormLabel>Transfer to</FormLabel>
               <FormControl>
-                <Input placeholder="0x123...456" {...field} />
+                <FormInput placeholder="0x123...456" {...field} />
               </FormControl>
               <FormDescription>Write or paste the wallet address of the recipient</FormDescription>
               <FormMessage />
@@ -102,7 +102,7 @@ export const Default: Omit<Story, 'args'> = {
               <FormItem className="mb-6 mx-1">
                 <FormLabel>Amount</FormLabel>
                 <FormControl>
-                  <Input placeholder="0.00" type="number" className="w-64" {...field} />
+                  <FormInput placeholder="0.00" type="number" className="w-64" {...field} />
                 </FormControl>
                 <FormDescription>= $ USD 0.00</FormDescription>
                 <FormMessage />

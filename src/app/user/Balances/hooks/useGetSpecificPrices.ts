@@ -3,12 +3,13 @@ import { useFetchPrices } from '@/app/user/Balances/hooks/useFetchPrices'
 import { GetPricesResult } from '@/app/user/types'
 
 const getDefaultPriceObject = (symbol: string, data?: GetPricesResult) => {
-  let returnResult = { price: 1, lastUpdated: '' }
-  if (data && symbol in data) {
-    returnResult.price = data[symbol].price
-    returnResult.lastUpdated = data[symbol].lastUpdated
+  if (data && data[symbol]) {
+    return {
+      price: data[symbol].price,
+      lastUpdated: data[symbol].lastUpdated,
+    }
   }
-  return returnResult
+  return null
 }
 
 // TODO get RBTC and stRIF prices
@@ -18,7 +19,7 @@ export const useGetSpecificPrices = (): GetPricesResult => {
   return useMemo(
     () => ({
       RIF: getDefaultPriceObject('RIF', query.data),
-      rBTC: getDefaultPriceObject('rBTC', query.data),
+      RBTC: getDefaultPriceObject('RBTC', query.data),
       stRIF: getDefaultPriceObject('RIF', query.data), // stRIF price is the same as RIF
     }),
     [query.data],

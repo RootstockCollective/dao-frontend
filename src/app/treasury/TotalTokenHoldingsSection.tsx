@@ -2,7 +2,6 @@ import { Header } from '@/components/Typography'
 import { Table } from '@/components/Table'
 import { RenderTokenPrice } from '@/app/user/Balances/RenderTokenPrice'
 import { TokenHoldings } from '@/app/treasury/TokenHoldings'
-import { TokenHoldingsStRIF } from '@/app/treasury/TokenHoldingsStRIF'
 
 const tableData = [
   {
@@ -13,15 +12,9 @@ const tableData = [
   },
   {
     token: 'Rootstock Bitcoin',
-    symbol: 'rBTC',
-    price: <RenderTokenPrice symbol="rBTC" contextToUse="prices" />,
-    holdings: <TokenHoldings symbol="rBTC" />,
-  },
-  {
-    token: 'Staked Rootstock Infrastructure Framework',
-    symbol: 'stRIF',
-    price: '-',
-    holdings: <TokenHoldingsStRIF />,
+    symbol: 'RBTC',
+    price: <RenderTokenPrice symbol="RBTC" contextToUse="prices" />,
+    holdings: <TokenHoldings symbol="RBTC" />,
   },
 ]
 

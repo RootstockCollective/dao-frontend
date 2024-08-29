@@ -5,8 +5,10 @@ import {
   fetchNFTsOwnedByAddressAndNftAddress,
   fetchPricesEndpoint,
   fetchProposalsCreatedByGovernorAddress,
+  getNftInfo,
 } from '@/lib/endpoints'
-import { currentEnvContracts, GovernorAddress } from '@/lib/contracts'
+import { tokenContracts, GovernorAddress } from '@/lib/contracts'
+import { NftMeta } from '@/shared/types'
 
 export const fetchAddressTokens = (address: string, chainId = 31) =>
   axiosInstance
@@ -21,15 +23,15 @@ export const fetchPrices = () =>
   axiosInstance
     .get<GetPricesResult>(
       fetchPricesEndpoint
-        .replace('{{addresses}}', Object.values(currentEnvContracts).join(','))
+        .replace('{{addresses}}', Object.values(tokenContracts).join(','))
         .replace('{{convert}}', 'USD'),
     )
     .then(({ data: prices }) => {
       const pricesReturn: GetPricesResult = {}
       for (const contract in prices) {
-        const contractFromEnv = (
-          Object.keys(currentEnvContracts) as Array<keyof typeof currentEnvContracts>
-        ).find(contractName => currentEnvContracts[contractName] === contract)
+        const contractFromEnv = (Object.keys(tokenContracts) as Array<keyof typeof tokenContracts>).find(
+          contractName => tokenContracts[contractName] === contract,
+        )
         if (contractFromEnv) {
           pricesReturn[contractFromEnv] = prices[contract]
         }
@@ -84,8 +86,18 @@ export const fetchNftsOwnedByAddressAndNFTAddress = (address: string, nftAddress
 export const fetchProposalCreated = () =>
   axiosInstance.get(fetchProposalsCreatedByGovernorAddress.replace('{{address}}', GovernorAddress))
 
-export const fetchIpfsUri = async (uri: string, responseType: 'json' | 'blob' = 'json') => {
+export const fetchProposalsCreatedCached = () => axiosInstance.get('/proposals/api', { baseURL: '/' })
+
+export function fetchIpfsUri(uri: string, responseType?: 'json'): Promise<NftMeta>
+export function fetchIpfsUri(uri: string, responseType?: 'blob'): Promise<Blob>
+export async function fetchIpfsUri(
+  uri: string,
+  responseType: 'json' | 'blob' = 'json',
+): Promise<NftMeta | Blob> {
   uri = uri.replace('ipfs://', 'https://ipfs.io/ipfs/')
   const { data } = await axiosInstance.get(uri, { responseType })
   return data
 }
+
+export const fetchNftInfo = (address: string) =>
+  axiosInstance.get(getNftInfo.replace('{{nftAddress}}', address))

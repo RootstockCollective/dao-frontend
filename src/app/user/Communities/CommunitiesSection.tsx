@@ -14,7 +14,7 @@ const communities: CommunityCardProps[] = []
 
 export const CommunitiesSection = () => (
   <div>
-    <Header variant="h2" className="mb-[32px]">
+    <Header variant="h2" className="mb-[32px] font-bold">
       Communities (0)
     </Header>
     {communities.length === 0 && <JoinACommunity />}

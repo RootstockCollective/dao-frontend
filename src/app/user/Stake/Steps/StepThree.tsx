@@ -1,14 +1,20 @@
 import { StakeStatus } from '@/app/user/Stake/StakeStatus'
 import { StepProps } from '@/app/user/Stake/types'
 import { useStakingContext } from '@/app/user/Stake/StakingContext'
+import { useRouter } from 'next/navigation'
 
-export const StepThree = ({ onCloseModal }: StepProps) => {
-  // TODO get TX current status and pass to StakeStatus
+export const StepThree = ({ onCloseModal = () => {} }: StepProps) => {
   const { stakeTxHash, amountDataToReceive, tokenToReceive, actionName } = useStakingContext()
+  const router = useRouter()
   if (!stakeTxHash) return null
+
+  const handleCloseModal = () => {
+    router.push(`/user?txHash=${stakeTxHash}`)
+    onCloseModal()
+  }
   return (
     <StakeStatus
-      onReturnToBalances={onCloseModal || (() => {})}
+      onReturnToBalances={handleCloseModal}
       hash={stakeTxHash}
       symbol={tokenToReceive.symbol}
       amountReceived={amountDataToReceive.amountToReceive}

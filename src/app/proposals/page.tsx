@@ -1,22 +1,26 @@
 'use client'
+import { HeaderSection } from '@/app/proposals/HeaderSection'
+import { useFetchLatestProposals } from '@/app/proposals/hooks/useFetchLatestProposals'
+import { LatestProposalsTable } from '@/app/proposals/LatestProposalsTable'
 import { MainContainer } from '@/components/MainContainer/MainContainer'
 import { MetricsCard } from '@/components/MetricsCard'
 import { Popover } from '@/components/Popover'
+import { toFixed } from '@/lib/utils'
 import { FaRegQuestionCircle } from 'react-icons/fa'
 import { useVotingPower } from './hooks/useVotingPower'
-import { useFetchLatestProposals } from '@/app/proposals/hooks/useFetchLatestProposals'
-import { HeaderSection } from '@/app/proposals/HeaderSection'
-import { LatestProposalsTable } from '@/app/proposals/LatestProposalsTable'
+import { TxStatusMessage } from '@/components/TxStatusMessage/TxStatusMessage'
 
 export default function Proposals() {
   const { votingPower, canCreateProposal, threshold } = useVotingPower()
 
   const { latestProposals } = useFetchLatestProposals()
+
   return (
     <MainContainer>
+      <TxStatusMessage messageType="proposal" />
       <HeaderSection createProposalDisabled={!canCreateProposal} threshold={threshold} />
-      <div className="pl-4 grid grid-rows-1 gap-[32px] mb-[100px]">
-        <MetricsCard borderless title={<VotingPowerPopover />} amount={votingPower} />
+      <div className="grid grid-rows-1 gap-[32px] mb-[100px]">
+        <MetricsCard borderless title={<VotingPowerPopover />} amount={toFixed(votingPower)} />
         <div className="flex flex-row gap-x-6">
           {/*<MetricsCard title="Votes" amount="-" />*/}
           {/* @TODO ask product/design what this is */}

@@ -18,14 +18,21 @@ import { MainContainer } from '@/components/MainContainer/MainContainer'
 import { MetricsCard } from '@/components/MetricsCard'
 import { Popover } from '@/components/Popover'
 import { Header, Paragraph } from '@/components/Typography'
-import { useVoteOnProposal } from '@/lib/useVoteOnProposal'
-import { shortAddress, truncateMiddle } from '@/lib/utils'
+import { useVoteOnProposal } from '@/shared/hooks/useVoteOnProposal'
+import { shortAddress } from '@/lib/utils'
 import { useRouter } from 'next/router'
 import { FC, useMemo, useState } from 'react'
-import { formatUnits } from 'viem'
 import { useAccount } from 'wagmi'
 import { Vote, VoteProposalModal } from '../../components/Modal/VoteProposalModal'
 import { VoteSubmittedModal } from '../../components/Modal/VoteSubmittedModal'
+import { useVotingPowerAtSnapshot } from '@/app/proposals/hooks/useVotingPowerAtSnapshot'
+import { useExecuteProposal } from '@/shared/hooks/useExecuteProposal'
+import { useQueueProposal } from '@/shared/hooks/useQueueProposal'
+import { useGetProposalDeadline } from '@/app/proposals/hooks/useGetProposalDeadline'
+import { waitForTransactionReceipt } from '@wagmi/core'
+import { config } from '@/config'
+import { useAlertContext } from '@/app/providers'
+import { TX_MESSAGES } from '@/shared/txMessages'
 
 export default function ProposalView() {
   const {
@@ -54,26 +61,57 @@ const PageWithProposal = (proposal: PageWithProposal) => {
   const { address } = useAccount()
   const votingModal = useModal()
   const submittedModal = useModal()
+  const { setMessage } = useAlertContext()
 
   const [againstVote, forVote, abstainVote] = useGetProposalVotes(proposalId, true)
   const snapshot = useGetProposalSnapshot(proposalId)
-  const { votingPower, threshold, canCreateProposal } = useVotingPower()
-  const { onVote, isProposalActive, didUserVoteAlready, proposalStateHuman } = useVoteOnProposal(proposalId)
 
-  const cannotCastVote = !isProposalActive || didUserVoteAlready || !canCreateProposal
+  const { blocksUntilClosure } = useGetProposalDeadline(proposalId)
+
+  const { votingPowerAtSnapshot, doesUserHasEnoughThreshold } = useVotingPowerAtSnapshot(snapshot as bigint)
+
+  const { threshold } = useVotingPower()
+  const { onVote, isProposalActive, didUserVoteAlready, proposalStateHuman, isVoting } =
+    useVoteOnProposal(proposalId)
+  const { onQueueProposal, proposalNeedsQueuing, isQueuing, isTxHashFromQueueLoading } =
+    useQueueProposal(proposalId)
+
+  const { onExecuteProposal, canProposalBeExecuted, proposalEtaHumanDate, isTxHashFromExecuteLoading } =
+    useExecuteProposal(proposalId)
+
+  const cannotCastVote = !isProposalActive || didUserVoteAlready || !doesUserHasEnoughThreshold
 
   const handleVoting = async (vote: Vote) => {
     try {
       setErrorVoting('')
-      const tx = await onVote(vote)
+      await onVote(vote)
       votingModal.closeModal()
       setVote(vote)
       submittedModal.openModal()
-    } catch (err) {
-      setErrorVoting((err as Error).toString())
+    } catch (err: any) {
+      if (err?.cause?.code !== 4001) {
+        setErrorVoting((err as Error).toString())
+      }
     }
   }
 
+  const handleQueuingProposal = async () => {
+    try {
+      const txHash = await onQueueProposal()
+      setMessage(TX_MESSAGES.queuing.pending)
+      await waitForTransactionReceipt(config, {
+        hash: txHash,
+      })
+      setMessage(TX_MESSAGES.queuing.success)
+    } catch (err: any) {
+      if (err?.cause?.code !== 4001) {
+        console.error(err)
+        setMessage(TX_MESSAGES.queuing.error)
+      }
+    }
+  }
+
+  // @ts-ignore
   return (
     <div className="pl-4 grid grid-rows-1 gap-[32px] mb-[100px]">
       <BreadcrumbSection title={name} />
@@ -85,6 +123,11 @@ const PageWithProposal = (proposal: PageWithProposal) => {
         <Paragraph className="text-sm text-gray-500 ml-4">
           Created at: <span className="text-primary">{Starts}</span>
         </Paragraph>
+        {blocksUntilClosure !== null && proposalStateHuman === 'Active' && (
+          <Paragraph className="text-sm text-gray-500 ml-4">
+            Blocks until closure: <span className="text-primary">{blocksUntilClosure.toString()}</span>
+          </Paragraph>
+        )}
       </div>
       <div className="flex flex-row justify-between">
         <div className="flex flex-row gap-x-6">
@@ -93,24 +136,69 @@ const PageWithProposal = (proposal: PageWithProposal) => {
           <MetricsCard title="State" amount={proposalStateHuman} />
         </div>
         <div>
-          {cannotCastVote ? (
+          {proposalStateHuman === 'Active' && (
+            <>
+              {cannotCastVote ? (
+                <Popover
+                  content={cannotCastVoteReason(
+                    !isProposalActive,
+                    didUserVoteAlready,
+                    !doesUserHasEnoughThreshold,
+                  )}
+                  size="small"
+                  trigger="hover"
+                >
+                  <Button disabled>Vote on chain</Button>
+                </Popover>
+              ) : (
+                <Button onClick={votingModal.openModal} loading={isVoting}>
+                  Vote on chain
+                </Button>
+              )}
+            </>
+          )}
+          {proposalNeedsQueuing && proposalStateHuman === 'Succeeded' && (
+            <Button
+              onClick={handleQueuingProposal}
+              className="mt-2"
+              disabled={isQueuing || isTxHashFromQueueLoading}
+              loading={isQueuing}
+            >
+              Put on Queue
+            </Button>
+          )}
+          {proposalStateHuman === 'Queued' && (
             <Popover
-              content={cannotCastVoteReason(!isProposalActive, didUserVoteAlready, !canCreateProposal)}
               size="small"
               trigger="hover"
+              content={
+                !canProposalBeExecuted ? (
+                  <p className="text-[12px] font-bold mb-1">
+                    The proposal is not ready to be executed yet. It should be ready on:{' '}
+                    {proposalEtaHumanDate}
+                  </p>
+                ) : (
+                  <p className="text-[12px] font-bold mb-1">The proposal can be executed.</p>
+                )
+              }
             >
-              <Button disabled>Vote on chain</Button>
+              <Button
+                onClick={onExecuteProposal}
+                className="mt-2"
+                disabled={!canProposalBeExecuted || isTxHashFromExecuteLoading}
+              >
+                Execute
+              </Button>
             </Popover>
-          ) : (
-            <Button onClick={votingModal.openModal}>Vote on chain</Button>
           )}
+          {isTxHashFromExecuteLoading && <p>Pending transaction confirmation to complete execution.</p>}
           {votingModal.isModalOpened && address && (
             <VoteProposalModal
               onSubmit={handleVoting}
               onClose={votingModal.closeModal}
               proposal={proposal}
               address={address}
-              votingPower={votingPower}
+              votingPower={votingPowerAtSnapshot}
               errorMessage={errorVoting}
             />
           )}
@@ -161,22 +249,24 @@ const PageWithProposal = (proposal: PageWithProposal) => {
           </Header>
           <div className="border border-white border-opacity-40 rounded-lg px-[16px] py-[11px]">
             <div className="flex flex-col">
-              <div className="flex justify-between">
-                <Paragraph variant="semibold" className="text-[16px]">
-                  Transfer
-                </Paragraph>
-                <Paragraph variant="semibold" className="text-[16px]">
-                  {formatUnits(proposal.transferToValue, 18)}
-                </Paragraph>
-              </div>
-              <div className="flex justify-between">
-                <Paragraph variant="semibold" className="text-[16px]">
-                  To
-                </Paragraph>
-                <Paragraph variant="semibold" className="text-[16px]">
-                  {truncateMiddle(proposal.transferTo)}
-                </Paragraph>
-              </div>
+              {/*<div className="flex justify-between">*/}
+              {/*  <Paragraph variant="semibold" className="text-[16px]">*/}
+              {/*    Transfer*/}
+              {/*  </Paragraph>*/}
+              {/*  <Paragraph variant="normal" className="text-[16px]">*/}
+              {/*    {toFixed(formatUnits(0 || 0n, 18))}*/}
+              {/*  </Paragraph>*/}
+              {/*</div>*/}
+              {/*<div className="flex justify-between">*/}
+              {/*  <Paragraph variant="semibold" className="text-[16px]">*/}
+              {/*    To*/}
+              {/*  </Paragraph>*/}
+              {/*  <Paragraph variant="normal" className="text-[16px]">*/}
+              {/*    {truncateMiddle('123' || '')}*/}
+              {/*  </Paragraph>*/}
+              {/*</div>*/}
+              {/* @ts-ignore */}
+              <CalldataRows calldatasParsed={proposal.calldatasParsed} />
             </div>
             <div>
               {/* <Paragraph variant="semibold" className="text-[16px]">
@@ -230,5 +320,40 @@ const cannotCastVoteReason = (
         )}
       </>
     )}
+  </div>
+)
+
+interface CalldataRows {
+  calldatasParsed: CalldataDisplayProps[]
+}
+
+const CalldataRows = ({ calldatasParsed }: CalldataRows) => {
+  return calldatasParsed.map((callData, index) => <CalldataDisplay key={index} {...callData} />)
+}
+
+interface CalldataDisplayProps {
+  functionName: string
+  args: Record<number, string>
+  inputs: { name: string }[]
+}
+
+const CalldataDisplay = ({ functionName, args, inputs }: CalldataDisplayProps) => (
+  <div>
+    <Paragraph variant="semibold" className="text-[16px]">
+      Function: {functionName}
+    </Paragraph>
+
+    <Paragraph variant="semibold" className="text-[16px] mt-2">
+      Arguments:
+    </Paragraph>
+    <ul>
+      {inputs.map((input, index) => (
+        <li key={index} className="my-2">
+          <Paragraph variant="semibold" className="text-[16px] break-words">
+            {input.name}: {args[index].toString()}
+          </Paragraph>
+        </li>
+      ))}
+    </ul>
   </div>
 )

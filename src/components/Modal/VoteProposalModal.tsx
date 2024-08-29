@@ -1,8 +1,8 @@
 import { Button } from '@/components/Button'
 import { Modal } from '@/components/Modal/Modal'
-import { TextInput } from '@/components/TextInput'
-import { Header, Label, Paragraph, Typography } from '@/components/Typography'
-import { shortAddress, truncateMiddle } from '@/lib/utils'
+import { Input } from '@/components/Input'
+import { Header, Label, Paragraph, Span, Typography } from '@/components/Typography'
+import { shortAddress, toFixed, truncateMiddle } from '@/lib/utils'
 import { FC, useState } from 'react'
 import { FaUser } from 'react-icons/fa'
 import { FaCopy } from 'react-icons/fa6'
@@ -40,16 +40,21 @@ export const VoteProposalModal: FC<Props> = ({
         <Header variant="h1" className="font-semibold">
           {proposal.title}
         </Header>
-        <div className="flex flex-row mt-4">
+        <div className="flex flex-row justify-between mt-4">
           <Paragraph className="text-sm text-gray-500 font-normal">
-            Proposed by: <span className="text-primary font-semibold">{shortAddress(proposal.proposer)}</span>
+            Proposed by:
+            <br />
+            <Span className="text-primary font-semibold">{shortAddress(proposal.proposer)}</Span>
           </Paragraph>
           <Paragraph className="text-sm text-gray-500 font-normal ml-4">
-            Created at: <span className="text-primary font-semibold">{proposal.Starts}</span>
+            Created at:
+            <br />
+            <Span className="text-primary font-semibold">{proposal.Starts}</Span>
           </Paragraph>
           <Paragraph className="text-sm text-gray-500 ml-4 font-normal">
-            Proposal ID:{' '}
-            <span className="text-primary font-semibold">{truncateMiddle(proposal.proposalId)}</span>
+            Proposal ID:
+            <br />
+            <Span className="text-primary font-semibold">{truncateMiddle(proposal.proposalId)}</Span>
           </Paragraph>
         </div>
         <Label variant="semibold" className="mt-4">
@@ -65,11 +70,10 @@ export const VoteProposalModal: FC<Props> = ({
           </button>
         </div>
 
-        <TextInput
+        <Input
           label="Voting Power"
           name="votingPower"
-          onChange={() => {}}
-          value={votingPower}
+          value={toFixed(votingPower)}
           className="mt-4"
           fullWidth
           readonly

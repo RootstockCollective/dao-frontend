@@ -16,7 +16,7 @@ export const Modal: FC<Props> = ({ children, onClose, width }) => {
       ></div>
       <div
         className={cn(
-          'max-w-xl bg-background rounded-lg shadow-xl overflow-hidden transform transition-all border-[1px] border-white',
+          'max-w-xl bg-background rounded-lg shadow-xl overflow-hidden transform transition-all border border-zinc-600',
         )}
         style={{ minWidth: width }}
       >

@@ -32,7 +32,9 @@ export const CommunityItem = ({
       </div>
       <div>
         <BsArrowUpRight
-          onClick={() => window.open(`/communities/nft/${nftAddress}`, '_blank')}
+          onClick={() => {
+            window.location.href = `/communities/nft/${nftAddress}`
+          }}
           className="cursor-pointer"
         />
       </div>
@@ -42,10 +44,10 @@ export const CommunityItem = ({
     </Paragraph>
     <div />
     {/* Divider */}
-    <div className="flex justify-end">
-      <Button variant="white" startIcon={<VscChevronUp />}>
-        {numberOfMembers.toString()}
-      </Button>
-    </div>
+    {/*<div className="flex justify-end">*/}
+    {/*  <Button variant="white" startIcon={<VscChevronUp />}>*/}
+    {/*    {numberOfMembers.toString()}*/}
+    {/*  </Button>*/}
+    {/*</div>*/}
   </div>
 )

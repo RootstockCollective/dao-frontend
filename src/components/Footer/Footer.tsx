@@ -2,12 +2,22 @@ import { FaGithub, FaSlack, FaXTwitter } from 'react-icons/fa6'
 
 interface Props {
   brand?: string
+  variant?: 'login' | 'container'
 }
 
-export const Footer = ({ brand = 'Rootstock Labs' }: Props) => {
+const DEFAULT_CONTAINER_CLASS = 'my-4'
+
+const DEFAULT_LOGIN_CLASS = 'absolute'
+
+const VARIANTS = {
+  container: DEFAULT_CONTAINER_CLASS,
+  login: DEFAULT_LOGIN_CLASS,
+}
+
+export const Footer = ({ brand = 'RootstockCollective', variant = 'login' }: Props) => {
   const year = new Date().getFullYear()
   return (
-    <footer className="absolute bottom-4 w-full flex justify-around text-sm">
+    <footer className={`bottom-4 w-full flex justify-around text-sm ${VARIANTS[variant]}`}>
       <div className="flex flex-col">
         <p className="text-xs text-white">
           Built by <span className="text-sm">{brand}</span>

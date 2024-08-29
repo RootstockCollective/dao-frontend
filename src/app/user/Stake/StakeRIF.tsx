@@ -1,7 +1,7 @@
 import { Header, Label } from '@/components/Typography'
 import { StakeInput } from '@/app/user/Stake/StakeInput'
 import { Button } from '@/components/Button'
-import { useCallback, useMemo } from 'react'
+import { useMemo } from 'react'
 import { ActionBeingExecuted, textsDependingOnAction } from '@/app/user/Stake/Steps/stepsUtils'
 
 interface Props {
@@ -26,74 +26,48 @@ export const StakeRIF = ({
   totalBalanceConverted,
   actionName,
   symbol = 'RIF',
-}: Props) => {
-  const onUserAmountInput = useCallback((value: string) => onAmountChange(value), [onAmountChange])
-
-  const onPercentageButtonClick = useCallback(
-    (percentageClicked: number) => onPercentageClicked(percentageClicked),
-    [onPercentageClicked],
-  )
-
-  return (
-    <div>
-      <div className="px-[50px] py-[20px]">
-        <Header className="text-center">
-          {textsDependingOnAction[actionName].modalTitle}
-          {symbol}
-        </Header>
-        <StakeInput
-          onChange={onUserAmountInput}
-          value={amount}
-          symbol={symbol}
-          labelText={textsDependingOnAction[actionName].inputLabel}
+}: Props) => (
+  <div className="px-[50px] py-[20px]">
+    <Header className="text-center">
+      {textsDependingOnAction[actionName].modalTitle}
+      {symbol}
+    </Header>
+    <StakeInput
+      onChange={onAmountChange}
+      value={amount}
+      symbol={symbol}
+      labelText={textsDependingOnAction[actionName].inputLabel}
+    />
+    <Label>
+      Available: {totalBalance} {symbol} {totalBalanceConverted && `= ${totalBalanceConverted}`}
+    </Label>
+    {/* Percentage button */}
+    <div className="flex justify-end gap-2 pt-1">
+      {[10, 20, 50, 100].map((percentage: number, i) => (
+        <PercentageButton
+          key={i}
+          percentage={percentage}
+          onClick={onPercentageClicked}
+          totalAmountAllowed={totalBalance}
+          amount={amount}
         />
-        <Label>
-          Available: {totalBalance} {symbol} = {totalBalanceConverted}
-        </Label>
-        {/* Percentage button */}
-        <div className="flex justify-end gap-2 pt-1">
-          <PercentageButton
-            percentage={10}
-            onClick={onPercentageButtonClick}
-            totalAmountAllowed={totalBalance}
-            amount={amount}
-          />
-          <PercentageButton
-            percentage={20}
-            onClick={onPercentageButtonClick}
-            totalAmountAllowed={totalBalance}
-            amount={amount}
-          />
-          <PercentageButton
-            percentage={50}
-            onClick={onPercentageButtonClick}
-            totalAmountAllowed={totalBalance}
-            amount={amount}
-          />
-          <PercentageButton
-            percentage={100}
-            onClick={onPercentageButtonClick}
-            totalAmountAllowed={totalBalance}
-            amount={amount}
-          />
-        </div>
-        {/* @TODO if we're unstaking we should have a component here - check design */}
-        {/* Stake */}
-        <div className="flex justify-center pt-10">
-          <Button
-            onClick={shouldEnableGoNext ? onGoNext : undefined}
-            disabled={!shouldEnableGoNext}
-            buttonProps={{
-              'data-testid': 'StakeRIF',
-            }}
-          >
-            {textsDependingOnAction[actionName].confirmButtonText}
-          </Button>
-        </div>
-      </div>
+      ))}
     </div>
-  )
-}
+    {/* @TODO if we're unstaking we should have a component here - check design */}
+    {/* Stake */}
+    <div className="flex justify-center pt-10">
+      <Button
+        onClick={shouldEnableGoNext ? onGoNext : undefined}
+        disabled={!shouldEnableGoNext}
+        buttonProps={{
+          'data-testid': 'StakeRIF',
+        }}
+      >
+        {textsDependingOnAction[actionName].confirmButtonText}
+      </Button>
+    </div>
+  </div>
+)
 
 interface PercentageButtonProps {
   amount: string
@@ -103,7 +77,7 @@ interface PercentageButtonProps {
 }
 
 const PercentageButton = ({ amount, percentage, totalAmountAllowed, onClick }: PercentageButtonProps) => {
-  const onPercentageButtonClick = () => onClick(percentage)
+  const onPercentageClicked = () => onClick(percentage)
 
   const isActive = useMemo(() => {
     const totalAmountAllowedPercentage = Number(totalAmountAllowed) * (percentage / 100)
@@ -113,7 +87,7 @@ const PercentageButton = ({ amount, percentage, totalAmountAllowed, onClick }: P
   return (
     <Button
       variant={isActive ? 'secondary-full' : 'secondary'}
-      onClick={onPercentageButtonClick}
+      onClick={onPercentageClicked}
       buttonProps={{
         'data-testid': `Percentage${percentage}`,
       }}

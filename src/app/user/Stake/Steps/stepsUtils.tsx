@@ -30,7 +30,8 @@ export const textsDependingOnAction = {
     inputLabel: 'Amount to stake',
     confirmButtonText: 'Stake',
     preview: 'Stake preview',
-    previewText: 'Preview your stake and make sure everything is correct!',
+    previewText:
+      'You have enough allowance to stake. Preview your stake and make sure everything is correct!',
     inProcess: 'Stake in process',
     description: (
       <>

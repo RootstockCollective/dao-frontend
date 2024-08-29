@@ -1,58 +1,94 @@
 'use client'
 import { useCreateProposal } from '@/app/proposals/hooks/useCreateProposal'
 import { useVotingPower } from '@/app/proposals/hooks/useVotingPower'
+import { useAlertContext } from '@/app/providers/AlertProvider'
+import { useGetSpecificPrices } from '@/app/user/Balances/hooks/useGetSpecificPrices'
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/Accordion'
 import { Button } from '@/components/Button'
-import Image from 'next/image'
 import {
   Form,
   FormControl,
   FormDescription,
   FormField,
+  FormInput,
+  FormInputNumber,
   FormItem,
   FormLabel,
   FormMessage,
+  FormTextarea,
 } from '@/components/Form'
-import { Input } from '@/components/Input'
+import { MAX_INPUT_NUMBER_AMOUNT } from '@/components/Input/InputNumber'
 import { MainContainer } from '@/components/MainContainer/MainContainer'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/Select'
-import { Textarea } from '@/components/Textarea'
 import { Header, Paragraph } from '@/components/Typography'
-import { currentEnvContracts } from '@/lib/contracts'
-import { cn, sanitizeInputNumber } from '@/lib/utils'
+import { tokenContracts } from '@/lib/contracts'
+import { formatCurrency } from '@/lib/utils'
+import { TX_MESSAGES } from '@/shared/txMessages'
 import { zodResolver } from '@hookform/resolvers/zod'
+import Image from 'next/image'
 import { useRouter } from 'next/navigation'
-import { useEffect, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { useForm } from 'react-hook-form'
 import { GoRocket } from 'react-icons/go'
-import { Address } from 'viem'
+import { Address, zeroAddress } from 'viem'
 import { z } from 'zod'
+import { rbtcIconSrc } from '@/shared/rbtcIconSrc'
 
 const ADDRESS_REGEX = /^0x[a-fA-F0-9]{40}$/
 
-const FormSchema = z.object({
-  proposalName: z.string().min(3).max(100),
-  description: z.string().min(3).max(3000),
-  toAddress: z.string().refine(value => ADDRESS_REGEX.test(value), 'Please enter a valid address'),
-  tokenAddress: z.string().length(42),
-  amount: z.union([z.string().transform(v => v.replace(/[^0-9.-]+/g, '')), z.number()]).pipe(
-    z.coerce
-      .number()
-      .positive()
-      .max(999999999)
-      .refine(value => {
-        const valueStr = sanitizeInputNumber(value)
-        const decimals = valueStr.split('.')[1]
-        return !decimals || decimals.length <= 8
-      }, 'Amount must have up to 8 decimals'),
-  ),
-})
+const FormSchema = z
+  .object({
+    proposalName: z
+      .string()
+      .max(100)
+      .refine(s => s.trim().replace(/\s+/g, ' ').length >= 5, 'Field must contain at least 5 characters'),
+    description: z
+      .string()
+      .max(3000)
+      .refine(s => s.trim().replace(/\s+/g, ' ').length >= 10, 'Field must contain at least 10 characters'),
+    toAddress: z.string().refine(value => ADDRESS_REGEX.test(value), 'Please enter a valid address'),
+    tokenAddress: z.string().length(42),
+    amount: z.coerce
+      .number({ invalid_type_error: 'Required field' })
+      .positive('Required field')
+      .max(MAX_INPUT_NUMBER_AMOUNT),
+  })
+  .refine(
+    data => {
+      if (data.tokenAddress !== zeroAddress) {
+        // Do not allow decimals
+        if (Number(data.amount) < 1) {
+          return false
+        }
+      }
+      return true
+    },
+    {
+      message: 'Amount must be greater or equal to 1 for ERC20',
+      path: ['amount'],
+    },
+  )
+  .refine(
+    data => {
+      if (data.tokenAddress === zeroAddress) {
+        if (Number(data.amount) < 0.000001) {
+          return false
+        }
+      }
+      return true
+    },
+    {
+      message: 'The minimum amount is 0.000001',
+      path: ['amount'],
+    },
+  )
 
 export default function CreateProposal() {
   const router = useRouter()
+  const prices = useGetSpecificPrices()
   const { isLoading: isVotingPowerLoading, canCreateProposal } = useVotingPower()
-  const { onCreateProposal } = useCreateProposal()
-  const [message, setMessage] = useState('')
+  const { onCreateProposal, isPublishing } = useCreateProposal()
+  const { setMessage } = useAlertContext()
 
   const [activeStep, setActiveStep] = useState('proposal')
 
@@ -63,7 +99,7 @@ export default function CreateProposal() {
       proposalName: '',
       description: '',
       toAddress: '',
-      tokenAddress: currentEnvContracts.stRIF as Address,
+      tokenAddress: tokenContracts.RIF,
       amount: undefined,
     },
   })
@@ -72,52 +108,45 @@ export default function CreateProposal() {
     control,
     handleSubmit,
     formState: { touchedFields, errors, isValid, isDirty },
+    watch,
+    trigger,
   } = form
+
+  const pricesMap = useMemo(
+    () => ({ [tokenContracts.RIF]: prices.RIF, [tokenContracts.RBTC]: prices.RBTC }),
+    [prices],
+  )
+
   const isProposalNameValid = !errors.proposalName && touchedFields.proposalName
   const isDescriptionValid = !errors.description && touchedFields.description
   const isToAddressValid = !errors.toAddress && touchedFields.toAddress
   const isAmountValid = !errors.amount && touchedFields.amount
   const isProposalCompleted = isProposalNameValid && isDescriptionValid
   const isActionsCompleted = isToAddressValid && isAmountValid
+  const amountValue = watch('amount')
+  const tokenAddress = watch('tokenAddress')
+  const amountUsd = pricesMap[tokenAddress] ? amountValue * pricesMap[tokenAddress]?.price : 0
 
   const onSubmit = async (data: z.infer<typeof FormSchema>) => {
     const { proposalName, description, toAddress, tokenAddress, amount } = data
     const proposalDescription = `${proposalName};${description}`
 
-    onCreateProposal(toAddress as Address, amount.toString(), proposalDescription)
-      .then((txHash: Awaited<ReturnType<typeof onCreateProposal>>) => {
-        console.log('SUCCESS', txHash)
-        setMessage(
-          'Proposal transaction sent. Your proposal is in process. It will be visible when the transaction is confirmed.',
-        )
-        // @TODO Wait for TX to be confirmed then send this message
-        // setMessage(
-        //   'Proposal successfully created. Your proposal has been published successfully! It is now visible to the community for review and feedback. Thank you for your contribution.',
-        // )
-      })
-      .catch(err => {
-        console.log('ERROR', err)
-        setMessage(
-          'Error publishing. An unexpected error occurred while trying to publish your proposal. Please try again later. If the issue persists, contact support for assistance.',
-        )
-      })
-  }
-
-  const handleProposalCompleted = () => {
-    if (isActionsCompleted && isProposalCompleted) {
-      handleSubmit(onSubmit)()
-    } else {
-      setActiveStep(isActionsCompleted ? '' : 'actions')
+    try {
+      const txHash = await onCreateProposal(
+        toAddress as Address,
+        amount.toString(),
+        proposalDescription,
+        tokenAddress,
+      )
+      router.push(`/proposals?txHash=${txHash}`)
+    } catch (err: any) {
+      if (err?.cause?.code !== 4001) {
+        setMessage(TX_MESSAGES.proposal.error)
+      }
     }
   }
 
-  const handleActionsCompleted = () => {
-    if (isActionsCompleted && isProposalCompleted) {
-      handleSubmit(onSubmit)()
-    } else {
-      setActiveStep(isProposalCompleted ? '' : 'proposal')
-    }
-  }
+  const handleProposalCompleted = () => setActiveStep('actions')
 
   useEffect(() => {
     if (!isVotingPowerLoading && !canCreateProposal) {
@@ -131,20 +160,9 @@ export default function CreateProposal() {
 
   return (
     <MainContainer>
-      {message && (
-        <div
-          className={cn(
-            'bg-st-success bg-opacity-10 border border-st-success text-st-white rounded-md p-4 mb-4',
-            message.includes('Error') ? 'bg-st-error border-st-error' : '',
-          )}
-        >
-          {message}
-        </div>
-      )}
       <Form {...form}>
         <form onSubmit={handleSubmit(onSubmit)}>
-          <HeaderSection disabled={!isDirty || !isValid} />
-          {/* TODO: add an error alert when submiting form */}
+          <HeaderSection disabled={!isDirty || !isValid || isPublishing} loading={isPublishing} />
           <Accordion
             type="single"
             collapsible
@@ -154,7 +172,7 @@ export default function CreateProposal() {
           >
             <AccordionItem value="proposal">
               <AccordionTrigger>
-                <div className="flex justify-between inline-block align-middle w-full">
+                <div className="flex justify-between align-middle w-full">
                   <Header variant="h1" className="text-[24px]">
                     Proposal
                   </Header>
@@ -171,7 +189,7 @@ export default function CreateProposal() {
                     <FormItem className="mb-6 mx-1">
                       <FormLabel>Proposal name</FormLabel>
                       <FormControl>
-                        <Input placeholder="Name your proposal" {...field} maxLength={100} />
+                        <FormInput placeholder="Name your proposal" {...field} maxLength={100} />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
@@ -184,7 +202,7 @@ export default function CreateProposal() {
                     <FormItem className="mb-6 mx-1">
                       <FormLabel>Description</FormLabel>
                       <FormControl>
-                        <Textarea placeholder="Enter a description..." {...field} maxLength={3000} />
+                        <FormTextarea placeholder="Enter a description..." {...field} maxLength={3000} />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
@@ -192,14 +210,14 @@ export default function CreateProposal() {
                 />
                 <div className="flex justify-center mb-6">
                   <Button disabled={!isProposalCompleted} onClick={handleProposalCompleted}>
-                    Save & Continue
+                    Continue
                   </Button>
                 </div>
               </AccordionContent>
             </AccordionItem>
             <AccordionItem value="actions">
               <AccordionTrigger>
-                <div className="flex justify-between inline-block align-middle w-full">
+                <div className="flex justify-between align-middle w-full">
                   <Header variant="h1" className="text-[24px]">
                     Actions
                   </Header>
@@ -216,7 +234,7 @@ export default function CreateProposal() {
                     <FormItem className="mb-6 mx-1">
                       <FormLabel>Transfer to</FormLabel>
                       <FormControl>
-                        <Input placeholder="0x123...456" {...field} />
+                        <FormInput placeholder="0x123...456" {...field} />
                       </FormControl>
                       <FormDescription>Write or paste the wallet address of the recipient</FormDescription>
                       <FormMessage />
@@ -231,24 +249,43 @@ export default function CreateProposal() {
                       <FormItem className="mb-6 mx-1">
                         <FormLabel>Change Asset</FormLabel>
                         <FormControl>
-                          <Select onValueChange={field.onChange} defaultValue={field.value}>
+                          <Select
+                            onValueChange={(...args) => {
+                              field.onChange(...args)
+                              if (touchedFields.amount) {
+                                trigger('amount')
+                              }
+                            }}
+                            defaultValue={field.value}
+                          >
                             <FormControl>
                               <SelectTrigger>
                                 <SelectValue placeholder="Select an asset" />
                               </SelectTrigger>
                             </FormControl>
                             <SelectContent>
-                              {/* <SelectItem value={zeroAddress}>
+                              <SelectItem value={zeroAddress}>
                                 <div className="flex items-center">
-                                  TODO: token icon
-                                  <FaBitcoin className="mr-2" />
+                                  <Image
+                                    src={`data:image/svg+xml;base64,${rbtcIconSrc}`}
+                                    alt="rBTC Logo"
+                                    className="mr-1"
+                                    width={20}
+                                    height={20}
+                                  />
                                   RBTC
                                 </div>
-                              </SelectItem> */}
-                              <SelectItem value={currentEnvContracts.stRIF as Address}>
+                              </SelectItem>
+                              <SelectItem value={tokenContracts.RIF as Address}>
                                 <div className="flex items-center">
-                                  <Image src="/images/rif-logo.png" alt="stRIF Logo" width={20} height={20} />
-                                  stRIF
+                                  <Image
+                                    src="/images/rif-logo.png"
+                                    alt="stRIF Logo"
+                                    width={20}
+                                    height={20}
+                                    className="mr-1"
+                                  />
+                                  RIF
                                 </div>
                               </SelectItem>
                             </SelectContent>
@@ -265,26 +302,20 @@ export default function CreateProposal() {
                       <FormItem className="mb-6 mx-1">
                         <FormLabel>Amount</FormLabel>
                         <FormControl>
-                          <Input
+                          <FormInputNumber
                             placeholder="0.00"
-                            type="number"
                             className="w-64"
-                            min={0}
-                            max={999999999}
+                            autoComplete="off"
                             {...field}
                           />
                         </FormControl>
-                        <FormDescription>= $ USD 0.00</FormDescription>
+                        {amountValue?.toString() && (
+                          <FormDescription>= USD {formatCurrency(amountUsd)}</FormDescription>
+                        )}
                         <FormMessage />
                       </FormItem>
                     )}
                   />
-                </div>
-
-                <div className="flex justify-center mb-6">
-                  <Button disabled={!isActionsCompleted} onClick={handleActionsCompleted}>
-                    Save & Continue
-                  </Button>
                 </div>
               </AccordionContent>
             </AccordionItem>
@@ -295,13 +326,13 @@ export default function CreateProposal() {
   )
 }
 
-const HeaderSection = ({ disabled = true }) => (
+const HeaderSection = ({ disabled = true, loading = false }) => (
   <div className="flex flex-row justify-between container pl-4">
-    <Header variant="h2" className="font-semibold font-[18px]">
+    <Header variant="h2" className="font-semibold">
       Create proposal
     </Header>
     <div className="flex flex-row gap-x-6">
-      <Button startIcon={<GoRocket />} disabled={disabled} buttonProps={{ type: 'submit' }}>
+      <Button startIcon={<GoRocket />} disabled={disabled} buttonProps={{ type: 'submit' }} loading={loading}>
         Publish
       </Button>
     </div>

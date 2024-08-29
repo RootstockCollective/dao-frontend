@@ -1,9 +1,12 @@
-import { useStakingContext } from '@/app/user/Stake/StakingContext'
-import { StakePreview } from '@/app/user/Stake/StakePreview'
-import { StepProps } from '@/app/user/Stake/types'
 import { useStakeRIF } from '@/app/user/Stake/hooks/useStakeRIF'
+import { StakePreview } from '@/app/user/Stake/StakePreview'
+import { useStakingContext } from '@/app/user/Stake/StakingContext'
+import { StepProps } from '@/app/user/Stake/types'
+import { config } from '@/config'
+import { waitForTransactionReceipt } from '@wagmi/core'
+import { useEffect, useRef, useState } from 'react'
 
-export const StepAllowance = ({ onGoNext, onCloseModal }: StepProps) => {
+export const StepAllowance = ({ onGoNext = () => {}, onCloseModal = () => {} }: StepProps) => {
   const {
     amount,
     tokenToSend,
@@ -12,26 +15,53 @@ export const StepAllowance = ({ onGoNext, onCloseModal }: StepProps) => {
     stakePreviewTo: to,
   } = useStakingContext()
 
-  const { shouldEnableConfirm, customFooter } = useStakeRIF(
-    amount,
-    tokenToSend.contract,
-    tokenToReceive.contract,
-  )
+  const {
+    isAllowanceEnough,
+    isAllowanceReadLoading,
+    customFooter,
+    onRequestAllowance,
+    isRequestingAllowance,
+  } = useStakeRIF(amount, tokenToSend.contract, tokenToReceive.contract)
 
-  const actionText = !shouldEnableConfirm
-    ? 'You need to request allowance before staking.'
-    : 'You have enough allowance to stake.'
-  const onGoNextStep = () => onGoNext?.()
+  const [isAllowanceRequestPending, setIsAllowanceRequestPending] = useState(false)
+
+  const handleRequestAllowance = async () => {
+    if (!onRequestAllowance) {
+      return
+    }
+    try {
+      setIsAllowanceRequestPending(true)
+      const txHash = await onRequestAllowance()
+      await waitForTransactionReceipt(config, {
+        hash: txHash,
+      })
+    } catch (err) {
+      console.error('Error requesting allowance', err)
+    }
+    setIsAllowanceRequestPending(false)
+  }
+
+  const hasCalledOnGoNextRef = useRef(false)
+  useEffect(() => {
+    if (isAllowanceEnough && !hasCalledOnGoNextRef.current) {
+      onGoNext()
+      // prevent calling onGoNext multiple times.
+      hasCalledOnGoNextRef.current = true
+    }
+  }, [isAllowanceEnough, onGoNext])
+
   return (
     <StakePreview
-      onConfirm={onGoNextStep}
-      onCancel={onCloseModal ? onCloseModal : () => {}}
-      disableConfirm={!shouldEnableConfirm}
+      onConfirm={handleRequestAllowance}
+      onCancel={onCloseModal}
       from={from}
       to={to}
+      disableConfirm={isAllowanceReadLoading || isRequestingAllowance || isAllowanceRequestPending}
       actionName="Allowance"
-      actionText={actionText}
+      actionText="You need to request allowance before staking."
       customComponentBeforeFooter={customFooter}
+      confirmButtonText="Request allowance"
+      loading={isRequestingAllowance || isAllowanceRequestPending}
     />
   )
 }

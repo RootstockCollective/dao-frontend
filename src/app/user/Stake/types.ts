@@ -10,7 +10,7 @@ export interface StakePreviewBalanceProps {
 }
 
 export type StakingToken = TokenBalance & {
-  price: string
+  price: string | undefined
   contract: string
 }
 

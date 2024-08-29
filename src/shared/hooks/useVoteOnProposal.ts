@@ -1,8 +1,8 @@
+import { Vote } from '@/components/Modal/VoteProposalModal'
+import { GovernorAbi } from '@/lib/abis/Governor'
+import { GovernorAddress } from '@/lib/contracts'
 import { Address } from 'viem'
 import { useAccount, useReadContract, useWriteContract } from 'wagmi'
-import { GovernorAbi } from '@/lib/abis/Governor'
-import { Vote } from '@/components/Modal/VoteProposalModal'
-import { GovernorAddress } from '@/lib/contracts'
 
 const DEFAULT_DAO = {
   address: GovernorAddress as Address,
@@ -34,6 +34,9 @@ export const useVoteOnProposal = (proposalId: string) => {
     ...DEFAULT_DAO,
     functionName: 'state',
     args: [BigInt(proposalId)],
+    query: {
+      refetchInterval: 5000,
+    },
   })
 
   const isProposalActive = proposalState === 1
@@ -43,10 +46,13 @@ export const useVoteOnProposal = (proposalId: string) => {
     ...DEFAULT_DAO,
     functionName: 'hasVoted',
     args: [BigInt(proposalId), address as Address],
+    query: {
+      refetchInterval: 5000,
+    },
   })
 
   // If everything passed ok - user can vote
-  const { writeContractAsync } = useWriteContract()
+  const { writeContractAsync, isPending: isVoting } = useWriteContract()
   const onVote = async (vote: Vote) => {
     if (!isProposalActive) {
       return Promise.reject('The proposal is not active.')
@@ -66,6 +72,7 @@ export const useVoteOnProposal = (proposalId: string) => {
     isProposalActive,
     didUserVoteAlready: !!hasVoted,
     proposalState,
-    proposalStateHuman: proposalState ? ProposalState[proposalState] : '',
+    proposalStateHuman: proposalState !== undefined ? ProposalState[proposalState] : '',
+    isVoting,
   }
 }
