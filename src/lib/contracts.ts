@@ -5,6 +5,7 @@ import {
   BUCKET1_ADDRESS,
   BUCKET2_ADDRESS,
   BUCKET3_ADDRESS,
+  BUCKET4_ADDRESS,
   EA_NFT_ADDRESS,
   GOVERNOR_ADDRESS,
   MULTICALL_ADDRESS,
@@ -30,16 +31,20 @@ const abiContractsMap = {
 
 const treasuryContracts = [
   {
-    name: 'Bucket 1',
+    name: 'Growth',
     address: BUCKET1_ADDRESS,
   },
   {
-    name: 'Bucket 2',
+    name: 'Grants - Active',
     address: BUCKET2_ADDRESS,
   },
   {
-    name: 'Bucket 3',
+    name: 'Grants',
     address: BUCKET3_ADDRESS,
+  },
+  {
+    name: 'General',
+    address: BUCKET4_ADDRESS,
   },
 ]
 
