@@ -1,5 +1,4 @@
-import { BUILD_ID } from '@/lib/constants'
-import { truncate } from '@/lib/utils'
+import { BUILD_ID, GITHUB_ORG } from '@/lib/constants'
 import { FaGithub, FaSlack, FaXTwitter } from 'react-icons/fa6'
 
 interface Props {
@@ -29,7 +28,7 @@ export const Footer = ({ brand = 'RootstockCollective', variant = 'login' }: Pro
         </span>
         <span className="text-[0.5rem] text-white opacity-50">
           <a
-            href={`https://github.com/rsksmart/dao-frontend/commit${BUILD_ID}'}`}
+            href={`https://github.com/${GITHUB_ORG}/dao-frontend/commit/${BUILD_ID}`}
             className="hover:underline me-4 md:me-6"
             target="_blank"
           >
@@ -56,7 +55,7 @@ export const Footer = ({ brand = 'RootstockCollective', variant = 'login' }: Pro
         <a href="#">
           <FaXTwitter className="mr-4" size={'1.5em'} />
         </a>
-        <a href="#">
+        <a href={`https://github.com/${GITHUB_ORG}`}>
           <FaGithub className="mr-4" size={'1.5em'} />
         </a>
         <a href="#">
