@@ -6,6 +6,7 @@ import { shortAddress, toFixed, truncateMiddle } from '@/lib/utils'
 import { FC, useState } from 'react'
 import { FaUser } from 'react-icons/fa'
 import { FaCopy } from 'react-icons/fa6'
+import { Address } from 'viem'
 
 export type Vote = 'for' | 'against' | 'abstain'
 
@@ -13,7 +14,7 @@ interface Props {
   onSubmit: (voting: Vote) => void
   onClose: () => void
   proposal: any
-  address: string
+  address: Address
   votingPower: string
   isVoting?: boolean
   errorMessage?: string

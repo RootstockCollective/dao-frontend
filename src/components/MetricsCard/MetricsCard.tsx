@@ -1,6 +1,10 @@
-import { cn } from '@/lib/utils'
+import { cn, shortAddress } from '@/lib/utils'
 import { FC, ReactNode } from 'react'
 import { Paragraph } from '../Typography/Paragraph'
+import { Address } from 'viem'
+import { BoxIcon } from 'lucide-react'
+import { Span } from '../Typography'
+import { EXPLORER_URL } from '@/lib/constants'
 
 interface MetricsCardProps {
   /**
@@ -20,6 +24,11 @@ interface MetricsCardProps {
    * Whether the card should have a border or not.
    */
   borderless?: boolean
+
+  /**
+   * The address of the contract to link to.
+   */
+  contractAddress?: Address
 }
 
 const DEFAULT_CLASSES = 'h-[7.5rem] w-full pt-[12px] px-[16px] pb-[21px] flex flex-col justify-between'
@@ -27,7 +36,13 @@ const DEFAULT_CLASSES = 'h-[7.5rem] w-full pt-[12px] px-[16px] pb-[21px] flex fl
 /**
  * Card for displaying balance and corresponding (fiat) value.
  */
-export const MetricsCard: FC<MetricsCardProps> = ({ title, amount, fiatAmount, borderless = false }) => {
+export const MetricsCard: FC<MetricsCardProps> = ({
+  title,
+  amount,
+  fiatAmount,
+  borderless = false,
+  contractAddress,
+}) => {
   const borderClasses = borderless ? '' : 'border border-white border-opacity-40 rounded-lg'
   return (
     <div className={cn(DEFAULT_CLASSES, borderClasses)}>
@@ -44,6 +59,14 @@ export const MetricsCard: FC<MetricsCardProps> = ({ title, amount, fiatAmount, b
       <Paragraph variant="normal" className="text-[13px] text-white text-opacity-80 leading-4">
         {fiatAmount}
       </Paragraph>
+      {contractAddress && (
+        <a href={`${EXPLORER_URL}/address/${contractAddress}`} target="_blank">
+          <BoxIcon size={20} className="inline-block mr-1" />
+          <Span className="underline" size="small">
+            {shortAddress(contractAddress)}
+          </Span>
+        </a>
+      )}
     </div>
   )
 }
