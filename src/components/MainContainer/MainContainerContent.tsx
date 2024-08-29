@@ -18,11 +18,10 @@ export const MainContainerContent: FC<Props> = ({ notProtected, setMessage, chil
   const pathname = usePathname()
 
   const handleSwitchNetwork = useCallback(() => {
-    console.log('changing network...')
     switchChain({ chainId: supportedChainId })
   }, [switchChain])
 
-  const wrongNetwork = chainId !== supportedChainId
+  const wrongNetwork = chainId && chainId !== supportedChainId
 
   useEffect(() => {
     // Clear message on route change if not on wrong network
