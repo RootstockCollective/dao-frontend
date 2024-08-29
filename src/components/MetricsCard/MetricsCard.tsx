@@ -22,8 +22,7 @@ interface MetricsCardProps {
   borderless?: boolean
 }
 
-const DEFAULT_CLASSES =
-  'h-[7.5rem] w-[16.8125rem] pt-[12px] px-[16px] pb-[21px] flex flex-col justify-between'
+const DEFAULT_CLASSES = 'h-[7.5rem] w-full pt-[12px] px-[16px] pb-[21px] flex flex-col justify-between'
 
 /**
  * Card for displaying balance and corresponding (fiat) value.

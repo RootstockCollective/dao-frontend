@@ -9,7 +9,7 @@ export const TreasurySection = () => {
   return (
     <div>
       <Paragraph className="font-semibold text-[18px] mb-[17px]">Treasury</Paragraph>
-      <div className="grid grid-cols-4 gap-[24px]">
+      <div className="grid grid-cols-2 xl:grid-cols-4 gap-[24px]">
         {/* RIF Holdings */}
         {treasuryContracts.map((contract, index) => (
           <MetricsCard

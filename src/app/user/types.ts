@@ -3,6 +3,7 @@ export interface CommunityCardProps {
   title: string
   description: string
   members: string
+  link: string
 }
 
 export type AddressToken = {
