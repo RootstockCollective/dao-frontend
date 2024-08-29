@@ -79,7 +79,24 @@ const PageWithProposal = (proposal: PageWithProposal) => {
   const { onExecuteProposal, canProposalBeExecuted, proposalEtaHumanDate, isTxHashFromExecuteLoading } =
     useExecuteProposal(proposalId)
 
-  const cannotCastVote = !isProposalActive || didUserVoteAlready || !doesUserHasEnoughThreshold
+  const cannotCastVote = !isProposalActive || didUserVoteAlready || !doesUserHasEnoughThreshold || isVoting
+
+  const cannotCastVoteReason = useMemo(() => {
+    if (!isProposalActive) {
+      return 'This proposal is not active'
+    }
+    if (didUserVoteAlready) {
+      return 'You already voted on this proposal'
+    }
+    if (!doesUserHasEnoughThreshold) {
+      /* eslint-disable quotes */
+      return "You don't have enough voting power to vote on this proposal"
+    }
+    if (isVoting) {
+      return 'Your vote is being processed'
+    }
+    return ''
+  }, [isProposalActive, didUserVoteAlready, doesUserHasEnoughThreshold, isVoting])
 
   const handleVoting = async (vote: Vote) => {
     try {
@@ -155,11 +172,11 @@ const PageWithProposal = (proposal: PageWithProposal) => {
             <>
               {cannotCastVote ? (
                 <Popover
-                  content={cannotCastVoteReason(
-                    !isProposalActive,
-                    didUserVoteAlready,
-                    !doesUserHasEnoughThreshold,
-                  )}
+                  content={
+                    <div className="text-[12px] font-bold mb-1">
+                      <p>{cannotCastVoteReason}</p>
+                    </div>
+                  }
                   size="small"
                   trigger="hover"
                 >
@@ -316,26 +333,6 @@ const BreadcrumbSection: FC<{ title: string }> = ({ title }) => {
     </Breadcrumb>
   )
 }
-
-const cannotCastVoteReason = (
-  isProposalInactive: boolean,
-  didUserVoteAlready: boolean,
-  notEnoughVotingPower: boolean,
-) => (
-  <div className="text-[12px] font-bold mb-1">
-    {isProposalInactive ? (
-      <p>This proposal is not active</p>
-    ) : (
-      <>
-        {didUserVoteAlready ? (
-          <p>You already voted on this proposal</p>
-        ) : (
-          notEnoughVotingPower && <p>You don&apos;t have enough voting power to vote on this proposal</p>
-        )}
-      </>
-    )}
-  </div>
-)
 
 interface CalldataRows {
   calldatasParsed: CalldataDisplayProps[]
