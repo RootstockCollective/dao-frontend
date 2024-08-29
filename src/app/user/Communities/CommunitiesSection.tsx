@@ -86,6 +86,7 @@ const NftInfo = ({
       <CommunityCard
         img={data.nftMeta.image}
         title={data.nftName}
+        link={`/communities/nft/${nftAddress}`}
         description={firstCommunity.description}
         members={data.membersCount.toString()}
       />
