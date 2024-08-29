@@ -75,4 +75,22 @@ export const TX_MESSAGES = {
       severity: 'success',
     },
   },
+  voting: {
+    error: {
+      title: 'Error on voting',
+      content:
+        'An unexpected error occurred while trying to vote. Please try again later. If the issue persists, contact support for assistance.',
+      severity: 'error',
+    },
+    pending: {
+      title: 'Voting in process',
+      content: 'Your transaction is in progress. It will be visible when the transaction is confirmed.',
+      severity: 'info',
+    },
+    success: {
+      title: 'Voting successful',
+      content: 'Voting successful. Your vote has been successfully cast!',
+      severity: 'success',
+    },
+  },
 } as const
