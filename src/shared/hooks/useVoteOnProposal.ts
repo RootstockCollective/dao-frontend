@@ -52,15 +52,15 @@ export const useVoteOnProposal = (proposalId: string) => {
   })
 
   // If everything passed ok - user can vote
-  const { writeContractAsync, isPending: isVoting } = useWriteContract()
-  const onVote = async (vote: Vote) => {
+  const { writeContractAsync: castVote, isPending: isVoting } = useWriteContract()
+  const onVote = (vote: Vote) => {
     if (!isProposalActive) {
       return Promise.reject('The proposal is not active.')
     }
     if (hasVoted) {
       return Promise.reject('The user already voted.')
     }
-    return writeContractAsync({
+    return castVote({
       ...DEFAULT_DAO,
       functionName: 'castVote',
       args: [BigInt(proposalId), VOTES_MAP[vote]],

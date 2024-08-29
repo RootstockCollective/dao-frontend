@@ -151,9 +151,7 @@ const PageWithProposal = (proposal: PageWithProposal) => {
                   <Button disabled>Vote on chain</Button>
                 </Popover>
               ) : (
-                <Button onClick={votingModal.openModal} loading={isVoting}>
-                  Vote on chain
-                </Button>
+                <Button onClick={votingModal.openModal}>Vote on chain</Button>
               )}
             </>
           )}
@@ -199,6 +197,7 @@ const PageWithProposal = (proposal: PageWithProposal) => {
               proposal={proposal}
               address={address}
               votingPower={votingPowerAtSnapshot}
+              isVoting={isVoting}
               errorMessage={errorVoting}
             />
           )}
