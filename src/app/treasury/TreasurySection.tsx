@@ -17,6 +17,7 @@ export const TreasurySection = () => {
             title={`${contract.name} RIF Holdings`}
             amount={toFixed(buckets[index].RIF.amount)}
             fiatAmount={`= USD ${buckets[index].RIF.fiatAmount}`}
+            contractAddress={contract.address}
           />
         ))}
         {/* RBTC Holdings */}

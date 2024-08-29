@@ -1,5 +1,5 @@
 import { RIFTokenAbi } from '@/lib/abis/RIFTokenAbi'
-import { decodeFunctionData, Hash } from 'viem'
+import { Address, decodeFunctionData, Hash } from 'viem'
 import { DAOTreasuryAbi } from '@/lib/abis/DAOTreasuryAbi'
 
 export interface EventArgumentsParameter {
@@ -8,7 +8,7 @@ export interface EventArgumentsParameter {
     proposalId: bigint
     voteStart: bigint
     voteEnd: bigint
-    proposer: string
+    proposer: Address
     targets: string[]
     values: bigint[]
     calldatas: string[]

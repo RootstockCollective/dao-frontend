@@ -4,12 +4,13 @@ import { Modal } from '@/components/Modal/Modal'
 import { FC } from 'react'
 import { FaUser } from 'react-icons/fa'
 import { shortAddress } from '@/lib/utils'
+import { Address } from 'viem'
 
 interface Props {
   onClose: () => void
   onConfirm: () => void
   onCancel: () => void
-  address?: string
+  address?: Address
 }
 export const DisconnectWalletModal: FC<Props> = ({ onClose, onConfirm, onCancel, address }) => (
   <Modal onClose={onClose} width={756}>
