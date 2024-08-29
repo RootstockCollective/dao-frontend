@@ -67,4 +67,5 @@ export interface CommunityData {
    * NFT Metadata
    */
   nftMeta: NftMeta | undefined
+  isLoading: boolean
 }

@@ -35,7 +35,7 @@ export const useContractData = (nftAddress?: Address) => {
   }
 
   // load data from the contract view functions
-  const { data, refetch } = useReadContracts(
+  const { data, refetch, isLoading } = useReadContracts(
     address &&
       nftAddress && {
         contracts: [
@@ -61,8 +61,9 @@ export const useContractData = (nftAddress?: Address) => {
       nftName: nftName?.result,
       nftSymbol: symbol?.result,
       nftUri: nftUri?.result,
+      isLoading,
     }
-  }, [data, refetch])
+  }, [data, refetch, isLoading])
 }
 
 /**
