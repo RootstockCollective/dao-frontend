@@ -2,16 +2,15 @@ import { ZeroAddress } from 'ethers'
 import { Address } from 'viem'
 import { EarlyAdoptersNFTAbi } from './abis/EarlyAdoptersNFTAbi'
 import {
-  BUCKET1_ADDRESS,
-  BUCKET2_ADDRESS,
-  BUCKET3_ADDRESS,
-  BUCKET4_ADDRESS,
   EA_NFT_ADDRESS,
+  GENERAL_BUCKET_ADDRESS,
   GOVERNOR_ADDRESS,
+  GRANTS_ACTIVE_BUCKET_ADDRESS,
+  GRANTS_BUCKET_ADDRESS,
+  GROWTH_BUCKET_ADDRESS,
   MULTICALL_ADDRESS,
   RIF_ADDRESS,
   STRIF_ADDRESS,
-  TREASURY_ADDRESS,
 } from './constants'
 
 const tokenContracts = {
@@ -30,34 +29,22 @@ const abiContractsMap = {
 }
 
 const treasuryContracts = [
-  {
-    name: 'Growth',
-    address: BUCKET1_ADDRESS,
-  },
-  {
-    name: 'Grants - Active',
-    address: BUCKET2_ADDRESS,
-  },
-  {
-    name: 'Grants',
-    address: BUCKET3_ADDRESS,
-  },
-  {
-    name: 'General',
-    address: BUCKET4_ADDRESS,
-  },
+  { name: 'Growth', address: GROWTH_BUCKET_ADDRESS },
+  { name: 'Grants - Active', address: GRANTS_ACTIVE_BUCKET_ADDRESS },
+  { name: 'Grants', address: GRANTS_BUCKET_ADDRESS },
+  { name: 'General', address: GENERAL_BUCKET_ADDRESS },
 ]
 
 const GovernorAddress = GOVERNOR_ADDRESS
 const MulticallAddress = MULTICALL_ADDRESS
-const TreasuryAddress = TREASURY_ADDRESS
+const TreasuryAddress = GENERAL_BUCKET_ADDRESS
 
 export {
-  tokenContracts,
-  nftContracts,
   abiContractsMap,
-  treasuryContracts,
   GovernorAddress,
   MulticallAddress,
+  nftContracts,
+  tokenContracts,
   TreasuryAddress,
+  treasuryContracts,
 }
