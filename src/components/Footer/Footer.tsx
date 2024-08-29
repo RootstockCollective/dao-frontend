@@ -28,13 +28,13 @@ export const Footer = ({ brand = 'RootstockCollective', variant = 'login' }: Pro
           Copyright © {year} {brand}. All rights reserved.
         </span>
         <span className="text-[0.5rem] text-white opacity-50">
-          Build ID:
           <a
             href={`https://github.com/rsksmart/dao-frontend/commit${BUILD_ID}'}`}
             className="hover:underline me-4 md:me-6"
             target="_blank"
           >
-            {truncate(BUILD_ID, 7)}
+            Build ID:
+            {BUILD_ID ? BUILD_ID.slice(0, 7) : ""}
           </a>
         </span>
       </div>
