@@ -31,7 +31,8 @@ export const Footer = ({ brand = 'RootstockCollective', variant = 'login' }: Pro
           Build ID:
           <a
             href={`https://github.com/rsksmart/dao-frontend/commit${BUILD_ID}'}`}
-            className="hover:underline me-4 md:me-6" target="_blank"
+            className="hover:underline me-4 md:me-6"
+            target="_blank"
           >
             {truncate(BUILD_ID, 7)}
           </a>
