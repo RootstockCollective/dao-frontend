@@ -34,7 +34,7 @@ export const Footer = ({ brand = 'RootstockCollective', variant = 'login' }: Pro
             target="_blank"
           >
             Build ID:
-            {BUILD_ID ? BUILD_ID.slice(0, 7) : ""}
+            {BUILD_ID ? BUILD_ID.slice(0, 7) : ''}
           </a>
         </span>
       </div>
