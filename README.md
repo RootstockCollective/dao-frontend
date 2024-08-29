@@ -84,6 +84,29 @@ The deployer will launch an instance of storybook in [Localhost Port 6000](http:
 
 Storybook has been configured to use Tailwind CSS.
 
+## Unit testing
+
+## Unit testing
+
+The repository is configured to use [Jest as the Testing Framework](https://jestjs.io/). Please refer to the [Next.js official guide](https://nextjs.org/docs/app/building-your-application/testing/jest) for information on how to integrate Jest.
+
+To run the unit tests, use the following command:
+
+```bash
+npm run test
+```
+
+This will execute all the unit tests in the project.
+
+To run the unit tests in watch mode, which automatically re-runs the tests whenever a file changes, use the following command:
+
+```bash
+npm run test:watch
+```
+
+This is useful during development when you want to continuously run the tests as you make changes to your code.
+
+
 ## E2E Testing with Cypress
 
 Cypress is a tool to help you execute tests on a functional website.
