@@ -1,4 +1,4 @@
-export type SidebarButtonType = 'communities' | 'treasury' | 'proposals' | 'user'
+export type SidebarButtonType = 'communities' | 'treasury' | 'proposals' | 'user' | 'bim'
 
 export interface SidebarButtonsProps {
   activeButton?: SidebarButtonType

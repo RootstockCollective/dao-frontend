@@ -60,5 +60,17 @@ export const SidebarButtons = ({ onClick, activeButton = 'communities' }: Sideba
     >
       User
     </Button>
+    <Button
+      startIcon={<ImageAsIcon src="/images/sidemenu/bim.svg" alt="Builders Incentives" />}
+      onClick={() => onClick?.('bim')}
+      fullWidth
+      variant={activeButton.startsWith('bim') ? 'primary' : 'transparent'}
+      centerContent={false}
+      className={DEFAULT_BUTTON_CLASSNAME}
+      buttonProps={{ id: 'Button_Bim', name: 'bim' }}
+      startIconClasses={START_ICON_CLASSES}
+    >
+      Builders Incentives
+    </Button>
   </div>
 )
