@@ -15,6 +15,7 @@ interface Props {
   proposal: any
   address: string
   votingPower: string
+  isVoting?: boolean
   errorMessage?: string
 }
 
@@ -24,13 +25,14 @@ export const VoteProposalModal: FC<Props> = ({
   proposal,
   address,
   votingPower,
+  isVoting,
   errorMessage,
 }) => {
-  const [voting, setVoting] = useState<Vote | null>(null)
+  const [vote, setVoting] = useState<Vote | null>(null)
   const handleSubmit = (e: any) => {
     e.preventDefault()
-    if (voting) {
-      onSubmit(voting)
+    if (vote) {
+      onSubmit(vote)
     }
   }
   return (
@@ -83,7 +85,7 @@ export const VoteProposalModal: FC<Props> = ({
           Vote
         </Label>
         <div className="flex gap-4 mt-2">
-          {voting === 'for' ? (
+          {vote === 'for' ? (
             <Button
               variant="primary"
               className="w-1/3 border border-white bg-st-success bg-opacity-10"
@@ -98,7 +100,7 @@ export const VoteProposalModal: FC<Props> = ({
             </Button>
           )}
 
-          {voting === 'against' ? (
+          {vote === 'against' ? (
             <Button
               variant="primary"
               className="w-1/3 border border-white bg-st-error bg-opacity-10"
@@ -118,7 +120,7 @@ export const VoteProposalModal: FC<Props> = ({
             </Button>
           )}
 
-          {voting === 'abstain' ? (
+          {vote === 'abstain' ? (
             <Button
               variant="primary"
               className="w-1/3 border border-white bg-gray-600"
@@ -140,7 +142,7 @@ export const VoteProposalModal: FC<Props> = ({
         </div>
         {errorMessage && <Label className="bg-st-error mt-2 p-4">Error: {errorMessage}</Label>}
         <div className="flex justify-center mt-8">
-          <Button onClick={handleSubmit} disabled={!voting}>
+          <Button onClick={handleSubmit} disabled={!vote || isVoting} loading={isVoting}>
             Submit
           </Button>
         </div>

@@ -79,24 +79,50 @@ const PageWithProposal = (proposal: PageWithProposal) => {
   const { onExecuteProposal, canProposalBeExecuted, proposalEtaHumanDate, isTxHashFromExecuteLoading } =
     useExecuteProposal(proposalId)
 
-  const cannotCastVote = !isProposalActive || didUserVoteAlready || !doesUserHasEnoughThreshold
+  const cannotCastVote = !isProposalActive || didUserVoteAlready || !doesUserHasEnoughThreshold || isVoting
+
+  const cannotCastVoteReason = useMemo(() => {
+    if (!isProposalActive) {
+      return 'This proposal is not active'
+    }
+    if (didUserVoteAlready) {
+      return 'You already voted on this proposal'
+    }
+    if (!doesUserHasEnoughThreshold) {
+      /* eslint-disable quotes */
+      return "You don't have enough voting power to vote on this proposal"
+    }
+    if (isVoting) {
+      return 'Your vote is being processed'
+    }
+    return ''
+  }, [isProposalActive, didUserVoteAlready, doesUserHasEnoughThreshold, isVoting])
 
   const handleVoting = async (vote: Vote) => {
     try {
       setErrorVoting('')
-      await onVote(vote)
+      setMessage(null)
+      const txHash = await onVote(vote)
+      setMessage(TX_MESSAGES.voting.pending)
       votingModal.closeModal()
       setVote(vote)
       submittedModal.openModal()
+      await waitForTransactionReceipt(config, {
+        hash: txHash,
+      })
+      setMessage(TX_MESSAGES.voting.success)
     } catch (err: any) {
       if (err?.cause?.code !== 4001) {
-        setErrorVoting((err as Error).toString())
+        console.error(err)
+        setErrorVoting(err.shortMessage || err.toString())
+        setMessage(TX_MESSAGES.voting.error)
       }
     }
   }
 
   const handleQueuingProposal = async () => {
     try {
+      setMessage(null)
       const txHash = await onQueueProposal()
       setMessage(TX_MESSAGES.queuing.pending)
       await waitForTransactionReceipt(config, {
@@ -109,6 +135,12 @@ const PageWithProposal = (proposal: PageWithProposal) => {
         setMessage(TX_MESSAGES.queuing.error)
       }
     }
+  }
+
+  const openModal = () => {
+    setErrorVoting('')
+    setMessage(null)
+    votingModal.openModal()
   }
 
   // @ts-ignore
@@ -140,20 +172,18 @@ const PageWithProposal = (proposal: PageWithProposal) => {
             <>
               {cannotCastVote ? (
                 <Popover
-                  content={cannotCastVoteReason(
-                    !isProposalActive,
-                    didUserVoteAlready,
-                    !doesUserHasEnoughThreshold,
-                  )}
+                  content={
+                    <div className="text-[12px] font-bold mb-1">
+                      <p>{cannotCastVoteReason}</p>
+                    </div>
+                  }
                   size="small"
                   trigger="hover"
                 >
                   <Button disabled>Vote on chain</Button>
                 </Popover>
               ) : (
-                <Button onClick={votingModal.openModal} loading={isVoting}>
-                  Vote on chain
-                </Button>
+                <Button onClick={openModal}>Vote on chain</Button>
               )}
             </>
           )}
@@ -199,6 +229,7 @@ const PageWithProposal = (proposal: PageWithProposal) => {
               proposal={proposal}
               address={address}
               votingPower={votingPowerAtSnapshot}
+              isVoting={isVoting}
               errorMessage={errorVoting}
             />
           )}
@@ -302,26 +333,6 @@ const BreadcrumbSection: FC<{ title: string }> = ({ title }) => {
     </Breadcrumb>
   )
 }
-
-const cannotCastVoteReason = (
-  isProposalInactive: boolean,
-  didUserVoteAlready: boolean,
-  notEnoughVotingPower: boolean,
-) => (
-  <div className="text-[12px] font-bold mb-1">
-    {isProposalInactive ? (
-      <p>This proposal is not active</p>
-    ) : (
-      <>
-        {didUserVoteAlready ? (
-          <p>You already voted on this proposal</p>
-        ) : (
-          notEnoughVotingPower && <p>You don&apos;t have enough voting power to vote on this proposal</p>
-        )}
-      </>
-    )}
-  </div>
-)
 
 interface CalldataRows {
   calldatasParsed: CalldataDisplayProps[]

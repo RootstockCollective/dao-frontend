@@ -50,7 +50,6 @@ const treasuryContracts = [
 
 const GovernorAddress = GOVERNOR_ADDRESS
 const MulticallAddress = MULTICALL_ADDRESS
-
 const TreasuryAddress = TREASURY_ADDRESS
 
 export {
