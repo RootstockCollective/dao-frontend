@@ -215,7 +215,7 @@ export default function CreateProposal() {
                 </div>
               </AccordionContent>
             </AccordionItem>
-            <AccordionItem value="actions">
+            <AccordionItem value="actions" className="border-0">
               <AccordionTrigger>
                 <div className="flex justify-between align-middle w-full">
                   <Header variant="h1" className="text-[24px]">
