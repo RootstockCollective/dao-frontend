@@ -29,9 +29,9 @@ const abiContractsMap = {
 }
 
 const treasuryContracts = [
-  { name: 'Growth', address: GROWTH_BUCKET_ADDRESS },
-  { name: 'Grants - Active', address: GRANTS_ACTIVE_BUCKET_ADDRESS },
   { name: 'Grants', address: GRANTS_BUCKET_ADDRESS },
+  { name: 'Grants - Active', address: GRANTS_ACTIVE_BUCKET_ADDRESS },
+  { name: 'Growth', address: GROWTH_BUCKET_ADDRESS },
   { name: 'General', address: GENERAL_BUCKET_ADDRESS },
 ]
 
