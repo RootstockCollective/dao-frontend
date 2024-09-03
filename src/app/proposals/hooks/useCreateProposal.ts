@@ -1,23 +1,14 @@
 import { useVotingPower } from '@/app/proposals/hooks/useVotingPower'
+import { DAOTreasuryAbi } from '@/lib/abis/DAOTreasuryAbi'
 import { GovernorAbi } from '@/lib/abis/Governor'
-import { tokenContracts, GovernorAddress, TreasuryAddress } from '@/lib/contracts'
+import { GovernorAddress, tokenContracts, TreasuryAddress } from '@/lib/contracts'
 import { solidityPackedKeccak256 } from 'ethers'
 import { Address, encodeFunctionData, parseEther, zeroAddress } from 'viem'
 import { useWriteContract } from 'wagmi'
-import { RIFTokenAbi } from '@/lib/abis/RIFTokenAbi'
-import { DAOTreasuryAbi } from '@/lib/abis/DAOTreasuryAbi'
 
 const DEFAULT_DAO_CONFIG = {
   abi: GovernorAbi,
   address: GovernorAddress,
-}
-
-const encodeTransferData = (address: Address, amountToTransfer: string) => {
-  return encodeFunctionData({
-    abi: RIFTokenAbi,
-    functionName: 'transfer',
-    args: [address, parseEther(amountToTransfer)],
-  })
 }
 
 const encodeTreasuryERC20Transfer = (address: Address, amountToTransfer: string) => {
@@ -50,12 +41,7 @@ export const useCreateProposal = () => {
 
   const { writeContractAsync: propose, isPending: isPublishing } = useWriteContract()
 
-  const onCreateProposal = async (
-    address: Address,
-    amount: string,
-    description: string,
-    tokenAddress: string,
-  ) => {
+  const onCreateProposal = (address: Address, amount: string, description: string, tokenAddress: string) => {
     if (!canCreateProposal) {
       throw new Error('You do not have enough voting power to create a proposal')
     }
@@ -66,7 +52,7 @@ export const useCreateProposal = () => {
       calldata = encodeTreasuryERC20Transfer(address, amount)
     }
     const { proposal } = createProposal([calldata], description)
-    return await propose({
+    return propose({
       ...DEFAULT_DAO_CONFIG,
       functionName: 'propose', // @ts-ignore
       args: proposal,
