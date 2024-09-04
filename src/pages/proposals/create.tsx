@@ -54,7 +54,7 @@ const FormSchema = z
       .max(MAX_INPUT_NUMBER_AMOUNT),
   })
   .refine(data => data.tokenAddress === zeroAddress || Number(data.amount) >= 1, {
-    message: 'The minimum amount for ERC20 tokens is 1',
+    message: 'The minimum amount for ERC20 tokens is 1.0',
     path: ['amount'],
   })
   .refine(data => data.tokenAddress !== zeroAddress || Number(data.amount) >= 0.000001, {
