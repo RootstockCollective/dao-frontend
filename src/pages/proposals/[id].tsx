@@ -3,7 +3,7 @@ import { useFetchLatestProposals } from '@/app/proposals/hooks/useFetchLatestPro
 import { useGetProposalSnapshot } from '@/app/proposals/hooks/useGetProposalSnapshot'
 import { useGetProposalVotes } from '@/app/proposals/hooks/useGetProposalVotes'
 import { useVotingPower } from '@/app/proposals/hooks/useVotingPower'
-import { getEventArguments } from '@/app/proposals/shared/utils'
+import { actionFormatterMap, getEventArguments } from '@/app/proposals/shared/utils'
 import { useModal } from '@/app/user/Balances/hooks/useModal'
 import {
   Breadcrumb,
@@ -17,7 +17,7 @@ import { Button } from '@/components/Button'
 import { MainContainer } from '@/components/MainContainer/MainContainer'
 import { MetricsCard } from '@/components/MetricsCard'
 import { Popover } from '@/components/Popover'
-import { Header, Paragraph } from '@/components/Typography'
+import { Header, Paragraph, Span } from '@/components/Typography'
 import { useVoteOnProposal } from '@/shared/hooks/useVoteOnProposal'
 import { shortAddress } from '@/lib/utils'
 import { useRouter } from 'next/router'
@@ -369,20 +369,23 @@ interface CalldataDisplayProps {
 const CalldataDisplay = ({ functionName, args, inputs }: CalldataDisplayProps) => (
   <div>
     <Paragraph variant="semibold" className="text-[16px]">
-      Function: {functionName}
+      Function: <Span className="font-normal">{functionName}</Span>
     </Paragraph>
 
     <Paragraph variant="semibold" className="text-[16px] mt-2">
       Arguments:
     </Paragraph>
     <ul>
-      {inputs.map((input, index) => (
-        <li key={index} className="my-2">
-          <Paragraph variant="semibold" className="text-[16px] break-words">
-            {input.name}: {args[index].toString()}
-          </Paragraph>
-        </li>
-      ))}
+      {inputs.map((input, index) => {
+        const formatter = actionFormatterMap[input.name as keyof typeof actionFormatterMap]
+        return (
+          <li key={index} className="my-2">
+            <Paragraph variant="semibold" className="text-[16px] break-words">
+              {input.name}: <Span className="font-normal">{formatter?.(args[index] as never)}</Span>
+            </Paragraph>
+          </li>
+        )
+      })}
     </ul>
   </div>
 )
