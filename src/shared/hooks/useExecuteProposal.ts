@@ -27,37 +27,18 @@ export const useExecuteProposal = (proposalId: string) => {
   })
   const currentTime = getCurrentTimeInMsAsBigInt()
 
-  const { writeContractAsync, data } = useWriteContract()
-  const { isLoading: isTxHashFromExecuteLoading } = useWaitForTransactionReceipt({ hash: data })
+  const { writeContractAsync: execute, data } = useWriteContract()
+  const { isLoading: isExecuting } = useWaitForTransactionReceipt({ hash: data })
 
-  const onExecuteProposal = async () => {
+  const onExecuteProposal = () => {
     if (proposalEta && getCurrentTimeInMsAsBigInt() >= proposalEta) {
-      return writeContractAsync({
-        // abi: [
-        //   {
-        //     inputs: [
-        //       {
-        //         internalType: 'uint256',
-        //         name: 'proposalId',
-        //         type: 'uint256',
-        //       },
-        //     ],
-        //     name: 'execute',
-        //     outputs: [],
-        //     stateMutability: 'payable',
-        //     type: 'function',
-        //   },
-        // ],
+      return execute({
         ...DAO_DEFAULT_PARAMS,
         functionName: 'execute',
         args: [BigInt(proposalId)],
-      }).catch(error => {
-        // @TODO when there is an error, use decodeErrorResult to get the error
-        // What is recommended is to iterate over each ABI and then see if any return result
-        console.log(42, error)
-        throw new Error(error)
       })
     }
+    return null
   }
 
   const proposalEtaHumanDate = getBigIntTimestampAsHuman(proposalEta)
@@ -66,6 +47,6 @@ export const useExecuteProposal = (proposalId: string) => {
     canProposalBeExecuted: proposalEta && currentTime >= proposalEta,
     proposalEta,
     proposalEtaHumanDate,
-    isTxHashFromExecuteLoading,
+    isExecuting,
   }
 }
