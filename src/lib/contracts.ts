@@ -11,6 +11,7 @@ import {
   RIF_ADDRESS,
   STRIF_ADDRESS,
   TREASURY_ADDRESS,
+  SIMPLIFIED_REWARD_DISTRIBUTOR_ADDRESS,
 } from './constants'
 
 const tokenContracts = {
@@ -48,6 +49,8 @@ const MulticallAddress = MULTICALL_ADDRESS
 
 const TreasuryAddress = TREASURY_ADDRESS
 
+const SimplifiedRewardDistributorAddress = SIMPLIFIED_REWARD_DISTRIBUTOR_ADDRESS || ZeroAddress
+
 export {
   tokenContracts,
   nftContracts,
@@ -56,4 +59,5 @@ export {
   GovernorAddress,
   MulticallAddress,
   TreasuryAddress,
+  SimplifiedRewardDistributorAddress,
 }

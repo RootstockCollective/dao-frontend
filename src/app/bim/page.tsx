@@ -1,14 +1,13 @@
 'use client'
 
 import { MainContainer } from '@/components/MainContainer/MainContainer'
+import { MetricsSection } from '@/app/bim/MetricsSection'
 
 export default function BuildersIncentiveMarket() {
   return (
     <MainContainer>
-      <div className="pl-[24px] pr-[10px] mb-[100px] w-full">
-        <div>
-          <h3>Metrics REPLACE ME</h3>
-        </div>
+      <div className="grid grid-rows-1 gap-[32px]">
+        <MetricsSection />
         <div>
           <h3>Whitelist REPLACE ME</h3>
         </div>
