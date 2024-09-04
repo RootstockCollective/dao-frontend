@@ -76,7 +76,7 @@ const PageWithProposal = (proposal: PageWithProposal) => {
   const { onQueueProposal, proposalNeedsQueuing, isQueuing, isTxHashFromQueueLoading } =
     useQueueProposal(proposalId)
 
-  const { onExecuteProposal, canProposalBeExecuted, proposalEtaHumanDate, isTxHashFromExecuteLoading } =
+  const { onExecuteProposal, canProposalBeExecuted, proposalEtaHumanDate, isExecuting } =
     useExecuteProposal(proposalId)
 
   const cannotCastVote = !isProposalActive || didUserVoteAlready || !doesUserHasEnoughThreshold || isVoting
@@ -133,6 +133,24 @@ const PageWithProposal = (proposal: PageWithProposal) => {
       if (err?.cause?.code !== 4001) {
         console.error(err)
         setMessage(TX_MESSAGES.queuing.error)
+      }
+    }
+  }
+
+  const handleVotingExecution = async () => {
+    try {
+      setMessage(null)
+      const txHash = await onExecuteProposal()
+      if (!txHash) return
+      setMessage(TX_MESSAGES.execution.pending)
+      await waitForTransactionReceipt(config, {
+        hash: txHash,
+      })
+      setMessage(TX_MESSAGES.execution.success)
+    } catch (err: any) {
+      if (err?.cause?.code !== 4001) {
+        console.error(err)
+        setMessage(TX_MESSAGES.execution.error)
       }
     }
   }
@@ -213,15 +231,15 @@ const PageWithProposal = (proposal: PageWithProposal) => {
               }
             >
               <Button
-                onClick={onExecuteProposal}
+                onClick={handleVotingExecution}
                 className="mt-2"
-                disabled={!canProposalBeExecuted || isTxHashFromExecuteLoading}
+                disabled={!canProposalBeExecuted || isExecuting}
               >
                 Execute
               </Button>
             </Popover>
           )}
-          {isTxHashFromExecuteLoading && <p>Pending transaction confirmation to complete execution.</p>}
+          {isExecuting && <p>Pending transaction confirmation to complete execution.</p>}
           {votingModal.isModalOpened && address && (
             <VoteProposalModal
               onSubmit={handleVoting}

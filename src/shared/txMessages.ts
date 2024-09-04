@@ -93,4 +93,22 @@ export const TX_MESSAGES = {
       severity: 'success',
     },
   },
+  execution: {
+    error: {
+      title: 'Error on execution',
+      content:
+        'An unexpected error occurred while trying to execute the actions of the proposal. Please try again later. If the issue persists, contact support for assistance.',
+      severity: 'error',
+    },
+    pending: {
+      title: 'Execution in process',
+      content: 'Your transaction is in progress. It will be visible when the transaction is confirmed.',
+      severity: 'info',
+    },
+    success: {
+      title: 'Execution successful',
+      content: 'Execution successful. The proposal has been executed successfully!',
+      severity: 'success',
+    },
+  },
 } as const
