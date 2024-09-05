@@ -180,7 +180,7 @@ export default function Page() {
             <DivWithBorderTop
               firstParagraph={`${nftName ?? ''} NFT`}
               secondParagraph={
-                <CopyButton copyText={address as string}>
+                <CopyButton copyText={nftAddress as string}>
                   {truncateMiddle(nftAddress as string, 4, 4)}
                 </CopyButton>
               }
