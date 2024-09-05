@@ -6,7 +6,7 @@ import { Paragraph, Span, Typography } from '@/components/Typography'
 import { cn, truncateMiddle } from '@/lib/utils'
 import Image from 'next/image'
 import { useRouter } from 'next/router'
-import { ReactNode, useState, useEffect } from 'react'
+import { ReactNode, useState, useEffect, useRef } from 'react'
 import { BsTwitterX } from 'react-icons/bs'
 import { FaDiscord, FaLink } from 'react-icons/fa'
 import { Address } from 'viem'
@@ -93,35 +93,59 @@ export default function Page() {
         }
       })
   }
-
+  const [isAddedToWallet, setIsAddedToWallet] = useState(false)
+  // counts how many time `addToWallet` was called before throwing the final error
+  const attemptCount = useRef(0)
   /**
    * Adds NFT to wallet collection
    */
   const addToWallet = async () => {
+    setIsAddedToWallet(true)
     try {
       if (typeof window === 'undefined' || !window.ethereum) throw new Error('Wallet is not installed')
       if (!nftAddress || !tokenId) throw new Error('Unknown NFT')
       if (!isConnected) throw new Error('Provider is not connected')
-      const wasAdded = await window.ethereum.request({
-        method: 'wallet_watchAsset',
-        params: {
-          type: 'ERC721',
-          options: {
-            address: nftAddress,
-            symbol: nftSymbol,
-            image: nftMeta?.image,
-            tokenId: String(tokenId),
+      let wasAdded = false
+      try {
+        wasAdded = await window.ethereum.request({
+          method: 'wallet_watchAsset',
+          params: {
+            type: 'ERC721',
+            options: {
+              address: nftAddress,
+              symbol: nftSymbol,
+              image: nftMeta?.image,
+              tokenId: String(tokenId),
+            },
           },
-        },
-      })
+        })
+      } catch (error) {
+        /* 
+        Calling the function again after a short timeout if specific error was thrown.
+        This is done because the NFT is not recognized by the wallet within the first few seconds after minting
+        */
+        if ((error as { message?: string })?.message?.includes('Unable to verify ownership')) {
+          if (attemptCount.current < 10) {
+            attemptCount.current += 1
+            return setTimeout(addToWallet, 3000)
+          }
+          throw new Error('Unable to verify NFT ownership')
+        }
+        // rethrowing if the error was different
+        throw error
+      }
       if (!wasAdded) throw new Error('Unable to add NFT to wallet')
       setIsNftInWallet(old => ({ ...old, [nftAddress]: { ...old[nftAddress], [tokenId]: true } }))
       setMessage(`NFT#${tokenId} was added to wallet`)
+      setIsAddedToWallet(false)
+      attemptCount.current = 0
     } catch (error) {
       // don't show error message if user has closed the wallet prompt
       if ((error as { message?: string }).message?.includes('User rejected the request')) return
       console.error('ERROR', error)
       setMessage(`Error adding NFT#${tokenId} to wallet`)
+      setIsAddedToWallet(false)
+      attemptCount.current = 0
     }
   }
 
@@ -215,7 +239,12 @@ export default function Page() {
 
                   {/* `Add to wallet button` */}
                   {!isNftInWallet?.[nftAddress]?.[tokenId] && (
-                    <Button onClick={addToWallet} className="mb-4">
+                    <Button
+                      onClick={addToWallet}
+                      className="mb-4"
+                      disabled={isAddedToWallet}
+                      loading={isAddedToWallet}
+                    >
                       Add to wallet
                     </Button>
                   )}
