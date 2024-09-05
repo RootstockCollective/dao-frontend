@@ -1,7 +1,8 @@
 import { ENV } from '@/lib/constants'
+import { headers } from 'next/headers'
 import { defineChain } from 'viem'
 import { rootstockTestnet, rootstock } from 'viem/chains'
-import { createConfig, http, cookieStorage, createStorage } from 'wagmi'
+import { createConfig, http, cookieStorage, createStorage, cookieToInitialState } from 'wagmi'
 import { injected } from 'wagmi/connectors'
 
 const rskLocalhost = defineChain({
@@ -30,6 +31,10 @@ export const getConfig = () =>
     },
     connectors: [injected()],
   })
+
+// https://wagmi.sh/react/guides/ssr#_2-hydrate-the-cookie
+const WAGMI_STATE_COOKIE = 'wagmi-state'
+export const wagmiInitialState = cookieToInitialState(getConfig(), headers().get(WAGMI_STATE_COOKIE))
 
 export const supportedChainId = {
   mainnet: rootstock.id,
