@@ -93,7 +93,7 @@ export default function Page() {
         }
       })
   }
-
+  const [isAddedToWallet, setIsAddedToWallet] = useState(false)
   /**
    * Adds NFT to wallet collection
    */
@@ -215,7 +215,12 @@ export default function Page() {
 
                   {/* `Add to wallet button` */}
                   {!isNftInWallet?.[nftAddress]?.[tokenId] && (
-                    <Button onClick={addToWallet} className="mb-4">
+                    <Button
+                      onClick={addToWallet}
+                      className="mb-4"
+                      disabled={isAddedToWallet}
+                      loading={isAddedToWallet}
+                    >
                       Add to wallet
                     </Button>
                   )}
@@ -259,8 +264,9 @@ interface DivWithBorderTopProps {
 function DivWithBorderTop({ firstParagraph, secondParagraph }: DivWithBorderTopProps) {
   return (
     <div className="flex justify-between py-[24px] border-t-2 border-t-[rgba(255,255,255,0.4)]">
-      <Paragraph>{firstParagraph}</Paragraph>
-      <Paragraph>{secondParagraph}</Paragraph>
+      {/* Avoid wrapping react element with a paragraph  */}
+      {typeof firstParagraph === 'object' ? firstParagraph : <Paragraph>{firstParagraph}</Paragraph>}
+      {typeof secondParagraph === 'object' ? secondParagraph : <Paragraph>{secondParagraph}</Paragraph>}
     </div>
   )
 }
