@@ -259,8 +259,9 @@ interface DivWithBorderTopProps {
 function DivWithBorderTop({ firstParagraph, secondParagraph }: DivWithBorderTopProps) {
   return (
     <div className="flex justify-between py-[24px] border-t-2 border-t-[rgba(255,255,255,0.4)]">
-      <Paragraph>{firstParagraph}</Paragraph>
-      <Paragraph>{secondParagraph}</Paragraph>
+      {/* Avoid wrapping react element with a paragraph  */}
+      {typeof firstParagraph === 'object' ? firstParagraph : <Paragraph>{firstParagraph}</Paragraph>}
+      {typeof secondParagraph === 'object' ? secondParagraph : <Paragraph>{secondParagraph}</Paragraph>}
     </div>
   )
 }
