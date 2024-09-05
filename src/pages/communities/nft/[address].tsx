@@ -10,7 +10,7 @@ import { ReactNode, useState, useEffect } from 'react'
 import { BsTwitterX } from 'react-icons/bs'
 import { FaDiscord, FaLink } from 'react-icons/fa'
 import { Address } from 'viem'
-import { useAccount, useConnect } from 'wagmi'
+import { useAccount } from 'wagmi'
 import { useCommunity } from '@/shared/hooks/useCommunity'
 import { CopyButton } from '@/components/CopyButton'
 
