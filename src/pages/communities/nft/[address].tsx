@@ -93,7 +93,7 @@ export default function Page() {
         }
       })
   }
-  const [isAddedToWallet, setIsAddedToWallet] = useState(false)
+
   /**
    * Adds NFT to wallet collection
    */
@@ -215,12 +215,7 @@ export default function Page() {
 
                   {/* `Add to wallet button` */}
                   {!isNftInWallet?.[nftAddress]?.[tokenId] && (
-                    <Button
-                      onClick={addToWallet}
-                      className="mb-4"
-                      disabled={isAddedToWallet}
-                      loading={isAddedToWallet}
-                    >
+                    <Button onClick={addToWallet} className="mb-4">
                       Add to wallet
                     </Button>
                   )}
