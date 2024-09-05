@@ -1,6 +1,9 @@
 import { RIFTokenAbi } from '@/lib/abis/RIFTokenAbi'
 import { Address, decodeFunctionData, Hash } from 'viem'
 import { DAOTreasuryAbi } from '@/lib/abis/DAOTreasuryAbi'
+import { ZeroAddress } from 'ethers'
+import { RIF_ADDRESS } from '@/lib/constants'
+import { formatBalanceToHuman } from '@/app/user/Balances/balanceUtils'
 
 export interface EventArgumentsParameter {
   args: {
@@ -48,4 +51,14 @@ export const getEventArguments = ({
     Starts: new Date(parseInt(timeStamp, 16) * 1000).toISOString().split('T')[0],
     calldatasParsed,
   }
+}
+
+export const actionFormatterMap = {
+  token: (tokenAddress: Address) =>
+    ({
+      [ZeroAddress]: 'RBTC',
+      [RIF_ADDRESS.toLowerCase()]: 'RIF',
+    })[tokenAddress.toLowerCase()] || tokenAddress.toString(),
+  to: (address: Address) => address.toString(),
+  amount: (amount: bigint) => formatBalanceToHuman(amount),
 }

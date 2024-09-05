@@ -53,35 +53,14 @@ const FormSchema = z
       .positive('Required field')
       .max(MAX_INPUT_NUMBER_AMOUNT),
   })
-  .refine(
-    data => {
-      if (data.tokenAddress !== zeroAddress) {
-        // Do not allow decimals
-        if (Number(data.amount) < 1) {
-          return false
-        }
-      }
-      return true
-    },
-    {
-      message: 'Amount must be greater or equal to 1 for ERC20',
-      path: ['amount'],
-    },
-  )
-  .refine(
-    data => {
-      if (data.tokenAddress === zeroAddress) {
-        if (Number(data.amount) < 0.000001) {
-          return false
-        }
-      }
-      return true
-    },
-    {
-      message: 'The minimum amount is 0.000001',
-      path: ['amount'],
-    },
-  )
+  .refine(data => data.tokenAddress === zeroAddress || Number(data.amount) >= 1, {
+    message: 'The minimum amount for ERC20 tokens is 1.0',
+    path: ['amount'],
+  })
+  .refine(data => data.tokenAddress !== zeroAddress || Number(data.amount) >= 0.000001, {
+    message: 'The minimum amount for RBTC is 0.000001',
+    path: ['amount'],
+  })
 
 export default function CreateProposal() {
   const router = useRouter()
