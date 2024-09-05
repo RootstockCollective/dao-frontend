@@ -31,7 +31,7 @@ interface MetricsCardProps {
   contractAddress?: Address
 }
 
-const DEFAULT_CLASSES = 'h-[7.5rem] w-full pt-[12px] px-[16px] pb-[21px] flex flex-col justify-between'
+const DEFAULT_CLASSES = 'h-[7.5rem] w-full py-[8px] px-[16px] flex flex-col'
 
 /**
  * Card for displaying balance and corresponding (fiat) value.
@@ -47,15 +47,22 @@ export const MetricsCard: FC<MetricsCardProps> = ({
   return (
     <div className={cn(DEFAULT_CLASSES, borderClasses)}>
       {typeof title === 'string' ? (
-        <Paragraph variant="normal" className="text-[14px] tracking-wider">
-          {title}
-        </Paragraph>
+        <div>
+          <Paragraph
+            variant="normal"
+            className="text-[14px] tracking-wider overflow-hidden whitespace-nowrap text-ellipsis"
+          >
+            {title}
+          </Paragraph>
+        </div>
       ) : (
         title
       )}
-      <Paragraph variant="semibold" className="text-[2rem] leading-[2.5rem]">
-        {amount}
-      </Paragraph>
+      <div className="h-12 flex items-center">
+        <Paragraph variant="semibold" className="text-[2rem] leading-none">
+          {amount}
+        </Paragraph>
+      </div>
       <Paragraph variant="normal" className="text-[13px] text-white text-opacity-80 leading-4">
         {fiatAmount}
       </Paragraph>
