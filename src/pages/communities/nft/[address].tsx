@@ -38,7 +38,7 @@ type IsInWallet = Record<Address, Record<number, boolean>>
 export default function Page() {
   const router = useRouter()
   const nftAddress = router.query.address as Address | undefined
-  const { address } = useAccount()
+  const { address, isConnected } = useAccount()
   const {
     tokensAvailable,
     isMember,
@@ -101,10 +101,7 @@ export default function Page() {
     try {
       if (typeof window === 'undefined' || !window.ethereum) throw new Error('Wallet is not installed')
       if (!nftAddress || !tokenId) throw new Error('Unknown NFT')
-      // connect wallet in case it was disconnected
-      await window.ethereum.request({
-        method: 'eth_requestAccounts',
-      })
+      if (!isConnected) throw new Error('Provider is not connected')
       const wasAdded = await window.ethereum.request({
         method: 'wallet_watchAsset',
         params: {
