@@ -7,7 +7,7 @@ export const useFetchLatestProposals = () => {
   const { data, isLoading } = useQuery({
     queryFn: fetchProposalsCreatedCached,
     queryKey: ['proposalsCreated'],
-    staleTime: 60000, // 60 seconds
+    staleTime: 60000 * 5, // keep the cache for 5 minutes before mark is as stale
     retry: 10,
     retryDelay: attemptIndex => Math.min(1000 * 2 ** attemptIndex, 30000), // Exponential backoff
     select: ({ data }) =>

@@ -34,9 +34,6 @@ export const useVoteOnProposal = (proposalId: string) => {
     ...DEFAULT_DAO,
     functionName: 'state',
     args: [BigInt(proposalId)],
-    query: {
-      refetchInterval: 5000,
-    },
   })
 
   const isProposalActive = proposalState === 1
@@ -46,9 +43,6 @@ export const useVoteOnProposal = (proposalId: string) => {
     ...DEFAULT_DAO,
     functionName: 'hasVoted',
     args: [BigInt(proposalId), address as Address],
-    query: {
-      refetchInterval: 5000,
-    },
   })
 
   // If everything passed ok - user can vote

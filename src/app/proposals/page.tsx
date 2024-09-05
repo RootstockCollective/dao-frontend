@@ -27,15 +27,8 @@ export default function Proposals() {
         ) : (
           <>
             <div className="flex flex-row gap-x-6">
-              {/*<MetricsCard title="Votes" amount="-" />*/}
-              {/* @TODO ask product/design what this is */}
-              {/* <MetricsCard title="Total voting power delegated" amount="230" /> */}
               <MetricsCard title="Proposals created" amount={latestProposals.length.toString()} />
             </div>
-            {/* <div className="grid grid-cols-2 gap-x-6">
-          <DelegatedTable />
-          <ReceivedDelegationTable />
-        </div> */}
             <LatestProposalsTable latestProposals={latestProposals} />
           </>
         )}
