@@ -50,7 +50,7 @@ export const MetricsCard: FC<MetricsCardProps> = ({
         <div>
           <Paragraph
             variant="normal"
-            className="text-[14px] tracking-wider overflow-hidden whitespace-nowrap text-ellipsis"
+            className="text-[14px] tracking-wide overflow-hidden whitespace-nowrap text-ellipsis"
           >
             {title}
           </Paragraph>
