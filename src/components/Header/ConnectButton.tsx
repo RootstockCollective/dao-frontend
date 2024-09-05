@@ -13,9 +13,9 @@ export const ConnectButton: FC<Props> = ({ onSuccess }) => {
   })
 
   const handleConnectWallet = () => {
-    if (connectors.length) {
-      connect({ connector: connectors[connectors.length - 1] })
-    }
+    const [wallet] = connectors
+    if (wallet) return connect({ connector: wallet })
+    console.error('Cannot connect to wallet')
   }
   return (
     <Button onClick={handleConnectWallet} variant="primary" startIcon={<FaLink />}>

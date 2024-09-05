@@ -2,7 +2,7 @@ import { useStakeRIF } from '@/app/user/Stake/hooks/useStakeRIF'
 import { StakePreview } from '@/app/user/Stake/StakePreview'
 import { useStakingContext } from '@/app/user/Stake/StakingContext'
 import { StepProps } from '@/app/user/Stake/types'
-import { config } from '@/config'
+import { getConfig } from '@/config'
 import { waitForTransactionReceipt } from '@wagmi/core'
 import { useEffect, useRef, useState } from 'react'
 
@@ -32,7 +32,7 @@ export const StepAllowance = ({ onGoNext = () => {}, onCloseModal = () => {} }: 
     try {
       setIsAllowanceRequestPending(true)
       const txHash = await onRequestAllowance()
-      await waitForTransactionReceipt(config, {
+      await waitForTransactionReceipt(getConfig(), {
         hash: txHash,
       })
     } catch (err) {

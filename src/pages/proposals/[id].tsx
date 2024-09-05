@@ -30,7 +30,7 @@ import { useExecuteProposal } from '@/shared/hooks/useExecuteProposal'
 import { useQueueProposal } from '@/shared/hooks/useQueueProposal'
 import { useGetProposalDeadline } from '@/app/proposals/hooks/useGetProposalDeadline'
 import { waitForTransactionReceipt } from '@wagmi/core'
-import { config } from '@/config'
+import { getConfig } from '@/config'
 import { useAlertContext } from '@/app/providers'
 import { TX_MESSAGES } from '@/shared/txMessages'
 
@@ -107,7 +107,7 @@ const PageWithProposal = (proposal: PageWithProposal) => {
       votingModal.closeModal()
       setVote(vote)
       submittedModal.openModal()
-      await waitForTransactionReceipt(config, {
+      await waitForTransactionReceipt(getConfig(), {
         hash: txHash,
       })
       setMessage(TX_MESSAGES.voting.success)
@@ -125,7 +125,7 @@ const PageWithProposal = (proposal: PageWithProposal) => {
       setMessage(null)
       const txHash = await onQueueProposal()
       setMessage(TX_MESSAGES.queuing.pending)
-      await waitForTransactionReceipt(config, {
+      await waitForTransactionReceipt(getConfig(), {
         hash: txHash,
       })
       setMessage(TX_MESSAGES.queuing.success)
@@ -143,7 +143,7 @@ const PageWithProposal = (proposal: PageWithProposal) => {
       const txHash = await onExecuteProposal()
       if (!txHash) return
       setMessage(TX_MESSAGES.execution.pending)
-      await waitForTransactionReceipt(config, {
+      await waitForTransactionReceipt(getConfig(), {
         hash: txHash,
       })
       setMessage(TX_MESSAGES.execution.success)

@@ -10,7 +10,7 @@ import { ReactNode, useState, useEffect } from 'react'
 import { BsTwitterX } from 'react-icons/bs'
 import { FaDiscord, FaLink } from 'react-icons/fa'
 import { Address } from 'viem'
-import { useAccount } from 'wagmi'
+import { useAccount, useConnect } from 'wagmi'
 import { useCommunity } from '@/shared/hooks/useCommunity'
 import { CopyButton } from '@/components/CopyButton'
 
@@ -38,7 +38,7 @@ type IsInWallet = Record<Address, Record<number, boolean>>
 export default function Page() {
   const router = useRouter()
   const nftAddress = router.query.address as Address | undefined
-  const { address } = useAccount()
+  const { address, isConnected } = useAccount()
   const {
     tokensAvailable,
     isMember,
@@ -101,10 +101,7 @@ export default function Page() {
     try {
       if (typeof window === 'undefined' || !window.ethereum) throw new Error('Wallet is not installed')
       if (!nftAddress || !tokenId) throw new Error('Unknown NFT')
-      // connect wallet in case it was disconnected
-      await window.ethereum.request({
-        method: 'eth_requestAccounts',
-      })
+      if (!isConnected) throw new Error('Provider is not connected')
       const wasAdded = await window.ethereum.request({
         method: 'wallet_watchAsset',
         params: {
@@ -262,8 +259,9 @@ interface DivWithBorderTopProps {
 function DivWithBorderTop({ firstParagraph, secondParagraph }: DivWithBorderTopProps) {
   return (
     <div className="flex justify-between py-[24px] border-t-2 border-t-[rgba(255,255,255,0.4)]">
-      <Paragraph>{firstParagraph}</Paragraph>
-      <Paragraph>{secondParagraph}</Paragraph>
+      {/* Avoid wrapping react element with a paragraph  */}
+      {typeof firstParagraph === 'object' ? firstParagraph : <Paragraph>{firstParagraph}</Paragraph>}
+      {typeof secondParagraph === 'object' ? secondParagraph : <Paragraph>{secondParagraph}</Paragraph>}
     </div>
   )
 }
