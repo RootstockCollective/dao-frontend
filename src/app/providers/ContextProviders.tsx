@@ -6,7 +6,7 @@ import { WagmiProvider, State } from 'wagmi'
 import { AlertProvider } from './AlertProvider'
 
 interface Props extends PropsWithChildren {
-  initialState: State | undefined
+  initialState?: State | undefined
 }
 
 export const ContextProviders = ({ children, initialState }: Props) => {
