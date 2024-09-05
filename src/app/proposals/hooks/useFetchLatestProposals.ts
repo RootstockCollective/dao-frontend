@@ -1,14 +1,16 @@
-import { useMemo } from 'react'
-import { useQuery } from '@tanstack/react-query'
-import { parseEventLogs } from 'viem'
-import { GovernorAbi } from '@/lib/abis/Governor'
 import { fetchProposalsCreatedCached } from '@/app/user/Balances/actions'
+import { GovernorAbi } from '@/lib/abis/Governor'
+import { useQuery } from '@tanstack/react-query'
+import { useMemo } from 'react'
+import { parseEventLogs } from 'viem'
 
 export const useFetchLatestProposals = () => {
-  const { data } = useQuery({
+  const { data, isLoading } = useQuery({
     queryFn: fetchProposalsCreatedCached,
     queryKey: ['proposalsCreated'],
-    refetchInterval: 2000,
+    staleTime: 60000,
+    retry: 10,
+    retryDelay: attemptIndex => Math.min(1000 * 2 ** attemptIndex, 30000), // Exponential backoff
   })
 
   const latestProposals = useMemo(() => {
@@ -33,5 +35,5 @@ export const useFetchLatestProposals = () => {
     return []
   }, [data])
 
-  return { latestProposals }
+  return { latestProposals, isLoading }
 }

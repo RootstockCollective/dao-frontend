@@ -34,12 +34,13 @@ import { config } from '@/config'
 import { useAlertContext } from '@/app/providers'
 import { TX_MESSAGES } from '@/shared/txMessages'
 import { CopyButton } from '@/components/CopyButton'
+import { LoadingSpinner } from '@/components/LoadingSpinner'
 
 export default function ProposalView() {
   const {
     query: { id },
   } = useRouter()
-  const { latestProposals } = useFetchLatestProposals()
+  const { latestProposals, isLoading } = useFetchLatestProposals()
 
   const proposal = useMemo(() => {
     const proposal = latestProposals.find(proposal => proposal.args.proposalId.toString() === id)
@@ -50,7 +51,11 @@ export default function ProposalView() {
     return getEventArguments(proposal)
   }, [id, latestProposals])
 
-  return <MainContainer>{proposal && <PageWithProposal {...proposal} />}</MainContainer>
+  return (
+    <MainContainer>
+      {proposal && !isLoading ? <PageWithProposal {...proposal} /> : <LoadingSpinner />}
+    </MainContainer>
+  )
 }
 
 type PageWithProposal = ReturnType<typeof getEventArguments>
