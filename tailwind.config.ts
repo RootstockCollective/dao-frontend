@@ -1,3 +1,4 @@
+import { ADDRESS_ANIMATION_DURATION } from './src/lib/constants'
 import type { Config } from 'tailwindcss'
 
 const config: Config = {
@@ -47,10 +48,43 @@ const config: Config = {
           from: { height: 'var(--radix-accordion-content-height)' },
           to: { height: '0' },
         },
+        'fade-out-slide-out': {
+          from: {
+            opacity: '1',
+            transform: 'translateY(0)',
+            position: 'absolute',
+          },
+          to: {
+            opacity: '0',
+            transform: 'translateY(-100%)',
+            position: 'absolute',
+          },
+        },
+        'fade-in-slide-in': {
+          from: {
+            opacity: '0',
+            transform: 'translate(-100%, 100%)',
+          },
+          to: {
+            opacity: '1',
+            transform: 'translate(0, 0)',
+          },
+        },
+        'translate-x': {
+          from: {
+            transform: 'translateX(100px)',
+          },
+          to: {
+            transform: 'translateX(0)',
+          },
+        },
       },
       animation: {
         'accordion-down': 'accordion-down 0.2s ease-out',
         'accordion-up': 'accordion-up 0.2s ease-out',
+        'translate-x': `translate-x ${ADDRESS_ANIMATION_DURATION}ms`,
+        'fade-out-slide-out': `fade-out-slide-out ${ADDRESS_ANIMATION_DURATION}ms`,
+        'fade-in-slide-in': `fade-in-slide-in ${ADDRESS_ANIMATION_DURATION}ms`,
       },
     },
     container: {
