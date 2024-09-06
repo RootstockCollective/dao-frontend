@@ -53,11 +53,13 @@ export default function Page() {
   } = useCommunity(nftAddress)
   const { stRifBalance } = useStRif()
 
-  const [message, setMessage] = useState('')
+  const [message, setMessage] = useState<{ text: string; severity?: 'info' | 'warning' | 'error' } | null>(
+    null,
+  )
   // reset message after few seconds
   useEffect(() => {
     if (!message) return
-    const timeout = setTimeout(() => setMessage(''), 5000)
+    const timeout = setTimeout(() => setMessage(null), 8000)
     return () => clearTimeout(timeout)
   }, [message])
   // read from local storage if the NFT was added to the wallet
@@ -81,24 +83,26 @@ export default function Page() {
 
   const handleMinting = () => {
     if (!address) return
-    console.log('🚀 ~ handleMinting ~ stRifBalance:', stRifBalance)
+    // check if user's StRif Balance is more than required threshold to get a reward NFT
     if (stRifBalance < (stRifThreshold ?? 0n))
-      return setMessage(
-        `To get the Early Adopters community NFT you need to own at least ${formatEther(stRifThreshold!)} StRIFs`,
-      )
+      return setMessage({
+        text: `To get the Early Adopters community NFT you need to own at least ${formatEther(stRifThreshold!)} StRIFs`,
+        severity: 'warning',
+      })
 
     onMintNFT()
       .then(txHash => {
-        setMessage(
-          'Request transaction sent. Your claim is in process. It will be visible when the transaction is confirmed.',
-        )
+        setMessage({
+          text: 'Request transaction sent. Your claim is in process. It will be visible when the transaction is confirmed.',
+        })
       })
       .catch(err => {
         if (err.cause.name !== 'UserRejectedRequestError') {
           console.error('ERROR', err)
-          setMessage(
-            'Error claiming reward. An unexpected error occurred while trying to claim your reward. Please try again later. If the issue persists, contact support for assistance.',
-          )
+          setMessage({
+            text: 'Error claiming reward. An unexpected error occurred while trying to claim your reward. Please try again later. If the issue persists, contact support for assistance.',
+            severity: 'error',
+          })
         }
       })
   }
@@ -147,14 +151,14 @@ export default function Page() {
       }
       if (!wasAdded) throw new Error('Unable to add NFT to wallet')
       setIsNftInWallet(old => ({ ...old, [nftAddress]: { ...old[nftAddress], [tokenId]: true } }))
-      setMessage(`NFT#${tokenId} was added to wallet`)
+      setMessage({ text: `NFT#${tokenId} was added to wallet` })
       setIsAddedToWallet(false)
       attemptCount.current = 0
     } catch (error) {
       // don't show error message if user has closed the wallet prompt
       if ((error as { message?: string }).message?.includes('User rejected the request')) return
       console.error('ERROR', error)
-      setMessage(`Error adding NFT#${tokenId} to wallet`)
+      setMessage({ text: `Error adding NFT#${tokenId} to wallet`, severity: 'error' })
       setIsAddedToWallet(false)
       attemptCount.current = 0
     }
@@ -166,11 +170,15 @@ export default function Page() {
       {message && (
         <div
           className={cn(
-            'bg-st-success bg-opacity-10 border border-st-success text-st-white rounded-md p-4 mb-4',
-            message.includes('Error') ? 'bg-st-error border-st-error' : '',
+            'bg-opacity-10 border text-st-white rounded-md p-4 mb-4',
+            message?.severity === 'error'
+              ? 'bg-st-error border-st-error'
+              : message?.severity === 'warning'
+                ? 'bg-st-info border-st-info text-black'
+                : 'bg-st-success border-st-success',
           )}
         >
-          {message}
+          {message.text}
         </div>
       )}
       <div className="flex flex-col xl:flex-row justify-between pl-4 gap-8">
