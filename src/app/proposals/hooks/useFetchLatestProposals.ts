@@ -4,7 +4,7 @@ import { useQuery } from '@tanstack/react-query'
 import { parseEventLogs } from 'viem'
 
 export const useFetchLatestProposals = () => {
-  const { data, isLoading } = useQuery({
+  const { data, isLoading, refetch } = useQuery({
     queryFn: fetchProposalsCreatedCached,
     queryKey: ['proposalsCreated'],
     staleTime: 60000 * 5, // keep the cache for 5 minutes before mark is as stale
@@ -24,5 +24,5 @@ export const useFetchLatestProposals = () => {
         .sort((a, b) => b.timeStamp - a.timeStamp),
   })
 
-  return { latestProposals: data || [], isLoading }
+  return { latestProposals: data || [], isLoading, refetch }
 }

@@ -13,12 +13,11 @@ import { LoadingSpinner } from '@/components/LoadingSpinner'
 
 export default function Proposals() {
   const { votingPower, canCreateProposal, threshold } = useVotingPower()
-
-  const { latestProposals, isLoading: isFetching } = useFetchLatestProposals()
+  const { latestProposals, isLoading: isFetching, refetch } = useFetchLatestProposals()
 
   return (
     <MainContainer>
-      <TxStatusMessage messageType="proposal" />
+      <TxStatusMessage messageType="proposal" onStatusChange={() => refetch()} />
       <HeaderSection createProposalDisabled={!canCreateProposal} threshold={threshold} />
       <div className="grid grid-rows-1 gap-[32px] mb-[100px]">
         <MetricsCard borderless title={<VotingPowerPopover />} amount={toFixed(votingPower)} />

@@ -12,6 +12,7 @@ type TxMessage =
 
 interface Props {
   messageType: 'proposal' | 'staking' | 'unstaking'
+  onStatusChange?: (status: 'pending' | 'success' | 'error') => void
 }
 
 /**
@@ -19,7 +20,7 @@ interface Props {
  * If it exists, then it'll show the appropriate alert message
  * @constructor
  */
-export const TxStatusMessage = ({ messageType }: Props) => {
+export const TxStatusMessage = ({ messageType, onStatusChange }: Props) => {
   const searchParams = useSearchParams()
   const txHash = searchParams?.get('txHash')
   const { status: txStatus } = useWaitForTransactionReceipt({ hash: txHash as Address })
@@ -32,6 +33,10 @@ export const TxStatusMessage = ({ messageType }: Props) => {
     message = TX_MESSAGES[txType][txStatus]
   }
   const onDismiss = () => setIsDismissed(true)
+
+  useEffect(() => {
+    onStatusChange?.(txStatus)
+  }, [onStatusChange, txStatus])
 
   useEffect(() => {
     if (txStatus === 'success' || txHash) {
