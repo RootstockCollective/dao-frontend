@@ -1,4 +1,3 @@
-import { useFetchLatestProposals } from '@/app/proposals/hooks/useFetchLatestProposals'
 import { useGetProposalVotes } from '@/app/proposals/hooks/useGetProposalVotes'
 import { getEventArguments } from '@/app/proposals/shared/utils'
 import { StatusColumn } from '@/app/proposals/StatusColumn'
@@ -9,6 +8,7 @@ import { Header, Paragraph } from '@/components/Typography'
 import { toFixed } from '@/lib/utils'
 import { useRouter } from 'next/navigation'
 import { useMemo } from 'react'
+import { useProposalsContext } from './context/ProposalsContext'
 
 interface ProposalNameColumnProps {
   name: string
@@ -96,7 +96,7 @@ const SentimentColumn = ({
 }
 
 interface LatestProposalsTableProps {
-  latestProposals: ReturnType<typeof useFetchLatestProposals>['latestProposals']
+  latestProposals: ReturnType<typeof useProposalsContext>['latestProposals']
 }
 
 const latestProposalsTransformer = (proposals: ReturnType<typeof getEventArguments>[]) =>

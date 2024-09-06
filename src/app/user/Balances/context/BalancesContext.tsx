@@ -1,9 +1,8 @@
-import { createContext, FC, ReactNode, useCallback, useContext, useMemo, useState } from 'react'
 import { useGetAddressBalances } from '@/app/user/Balances/hooks/useGetAddressBalances'
 import { useGetSpecificPrices } from '@/app/user/Balances/hooks/useGetSpecificPrices'
-import { GetPricesResult, TokenBalanceRecord } from '@/app/user/types'
 import { useModal } from '@/app/user/Balances/hooks/useModal'
-import { Hash } from 'viem'
+import { GetPricesResult, TokenBalanceRecord } from '@/app/user/types'
+import { createContext, FC, ReactNode, useContext, useMemo } from 'react'
 
 interface BalancesContextValue {
   balances: TokenBalanceRecord

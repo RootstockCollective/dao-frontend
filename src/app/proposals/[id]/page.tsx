@@ -1,9 +1,11 @@
 'use client'
-import { useFetchLatestProposals } from '@/app/proposals/hooks/useFetchLatestProposals'
+import { useGetProposalDeadline } from '@/app/proposals/hooks/useGetProposalDeadline'
 import { useGetProposalSnapshot } from '@/app/proposals/hooks/useGetProposalSnapshot'
 import { useGetProposalVotes } from '@/app/proposals/hooks/useGetProposalVotes'
 import { useVotingPower } from '@/app/proposals/hooks/useVotingPower'
+import { useVotingPowerAtSnapshot } from '@/app/proposals/hooks/useVotingPowerAtSnapshot'
 import { actionFormatterMap, getEventArguments } from '@/app/proposals/shared/utils'
+import { useAlertContext } from '@/app/providers'
 import { useModal } from '@/app/user/Balances/hooks/useModal'
 import {
   Breadcrumb,
@@ -14,46 +16,41 @@ import {
   BreadcrumbSeparator,
 } from '@/components/Breadcrumb'
 import { Button } from '@/components/Button'
-import { MainContainer } from '@/components/MainContainer/MainContainer'
-import { MetricsCard } from '@/components/MetricsCard'
-import { Popover } from '@/components/Popover'
-import { Header, Paragraph, Span } from '@/components/Typography'
-import { useVoteOnProposal } from '@/shared/hooks/useVoteOnProposal'
-import { truncateMiddle } from '@/lib/utils'
-import { useRouter } from 'next/router'
-import { FC, useMemo, useState } from 'react'
-import { useAccount } from 'wagmi'
-import { Vote, VoteProposalModal } from '../../components/Modal/VoteProposalModal'
-import { VoteSubmittedModal } from '../../components/Modal/VoteSubmittedModal'
-import { useVotingPowerAtSnapshot } from '@/app/proposals/hooks/useVotingPowerAtSnapshot'
-import { useExecuteProposal } from '@/shared/hooks/useExecuteProposal'
-import { useQueueProposal } from '@/shared/hooks/useQueueProposal'
-import { useGetProposalDeadline } from '@/app/proposals/hooks/useGetProposalDeadline'
-import { waitForTransactionReceipt } from '@wagmi/core'
-import { config } from '@/config'
-import { useAlertContext } from '@/app/providers'
-import { TX_MESSAGES } from '@/shared/txMessages'
 import { CopyButton } from '@/components/CopyButton'
 import { LoadingSpinner } from '@/components/LoadingSpinner'
+import { MainContainer } from '@/components/MainContainer/MainContainer'
+import { MetricsCard } from '@/components/MetricsCard'
+import { Vote, VoteProposalModal } from '@/components/Modal/VoteProposalModal'
+import { VoteSubmittedModal } from '@/components/Modal/VoteSubmittedModal'
+import { Popover } from '@/components/Popover'
+import { Header, Paragraph, Span } from '@/components/Typography'
+import { config } from '@/config'
+import { truncateMiddle } from '@/lib/utils'
+import { useExecuteProposal } from '@/shared/hooks/useExecuteProposal'
+import { useQueueProposal } from '@/shared/hooks/useQueueProposal'
+import { useVoteOnProposal } from '@/shared/hooks/useVoteOnProposal'
+import { TX_MESSAGES } from '@/shared/txMessages'
+import { waitForTransactionReceipt } from '@wagmi/core'
+import { FC, useMemo, useState } from 'react'
+import { useAccount } from 'wagmi'
+import { useProposalsContext } from '../context/ProposalsContext'
 
-export default function ProposalView() {
-  const {
-    query: { id },
-  } = useRouter()
-  const { latestProposals, isLoading } = useFetchLatestProposals()
+interface Props {
+  params: { id: string }
+}
+
+export default function ProposalView({ params: { id } }: Props) {
+  const { latestProposals, isFetching } = useProposalsContext()
 
   const proposal = useMemo(() => {
     const proposal = latestProposals.find(proposal => proposal.args.proposalId.toString() === id)
-    if (!proposal) {
-      return null
-    }
     // @ts-ignore
-    return getEventArguments(proposal)
+    return proposal ? getEventArguments(proposal) : null
   }, [id, latestProposals])
 
   return (
     <MainContainer>
-      {proposal && !isLoading ? <PageWithProposal {...proposal} /> : <LoadingSpinner />}
+      {proposal && !isFetching ? <PageWithProposal {...proposal} /> : <LoadingSpinner />}
     </MainContainer>
   )
 }

@@ -1,19 +1,19 @@
 'use client'
 import { HeaderSection } from '@/app/proposals/HeaderSection'
-import { useFetchLatestProposals } from '@/app/proposals/hooks/useFetchLatestProposals'
 import { LatestProposalsTable } from '@/app/proposals/LatestProposalsTable'
+import { LoadingSpinner } from '@/components/LoadingSpinner'
 import { MainContainer } from '@/components/MainContainer/MainContainer'
 import { MetricsCard } from '@/components/MetricsCard'
 import { Popover } from '@/components/Popover'
+import { TxStatusMessage } from '@/components/TxStatusMessage/TxStatusMessage'
 import { toFixed } from '@/lib/utils'
 import { FaRegQuestionCircle } from 'react-icons/fa'
+import { useProposalsContext } from './context/ProposalsContext'
 import { useVotingPower } from './hooks/useVotingPower'
-import { TxStatusMessage } from '@/components/TxStatusMessage/TxStatusMessage'
-import { LoadingSpinner } from '@/components/LoadingSpinner'
 
 export default function Proposals() {
   const { votingPower, canCreateProposal, threshold } = useVotingPower()
-  const { latestProposals, isLoading: isFetching, refetch } = useFetchLatestProposals()
+  const { latestProposals, isFetching, refetch } = useProposalsContext()
 
   return (
     <MainContainer>
