@@ -722,6 +722,19 @@ export const GovernorAbi = [
     type: 'function',
   },
   {
+    inputs: [],
+    name: 'actualVersion',
+    outputs: [
+      {
+        internalType: 'uint64',
+        name: '',
+        type: 'uint64',
+      },
+    ],
+    stateMutability: 'view',
+    type: 'function',
+  },
+  {
     inputs: [
       {
         internalType: 'uint256',
@@ -1039,6 +1052,40 @@ export const GovernorAbi = [
   {
     inputs: [
       {
+        internalType: 'uint256',
+        name: 'proposalId',
+        type: 'uint256',
+      },
+    ],
+    name: 'getStateAndVotes',
+    outputs: [
+      {
+        internalType: 'uint256',
+        name: 'againstVotes',
+        type: 'uint256',
+      },
+      {
+        internalType: 'uint256',
+        name: 'forVotes',
+        type: 'uint256',
+      },
+      {
+        internalType: 'uint256',
+        name: 'abstainVotes',
+        type: 'uint256',
+      },
+      {
+        internalType: 'enum IGovernor.ProposalState',
+        name: 'proposalState',
+        type: 'uint8',
+      },
+    ],
+    stateMutability: 'view',
+    type: 'function',
+  },
+  {
+    inputs: [
+      {
         internalType: 'address',
         name: 'account',
         type: 'address',
@@ -1084,6 +1131,19 @@ export const GovernorAbi = [
         internalType: 'uint256',
         name: '',
         type: 'uint256',
+      },
+    ],
+    stateMutability: 'view',
+    type: 'function',
+  },
+  {
+    inputs: [],
+    name: 'guardian',
+    outputs: [
+      {
+        internalType: 'address',
+        name: '',
+        type: 'address',
       },
     ],
     stateMutability: 'view',
@@ -1734,6 +1794,19 @@ export const GovernorAbi = [
   {
     inputs: [],
     name: 'renounceOwnership',
+    outputs: [],
+    stateMutability: 'nonpayable',
+    type: 'function',
+  },
+  {
+    inputs: [
+      {
+        internalType: 'address',
+        name: '_guardian',
+        type: 'address',
+      },
+    ],
+    name: 'setGuardian',
     outputs: [],
     stateMutability: 'nonpayable',
     type: 'function',
