@@ -46,12 +46,22 @@ export const useContractData = (nftAddress?: Address) => {
           { ...contract, functionName: 'name' },
           { ...contract, functionName: 'symbol' },
           { ...contract, functionName: 'tokenUriByOwner', args: [address] },
+          { ...contract, functionName: 'stRifThreshold' },
         ],
       },
   )
 
   return useMemo(() => {
-    const [membersCount, tokensAvailable, balanceOf, tokenIdByOwner, nftName, symbol, nftUri] = data ?? []
+    const [
+      membersCount,
+      tokensAvailable,
+      balanceOf,
+      tokenIdByOwner,
+      nftName,
+      symbol,
+      nftUri,
+      stRifThreshold,
+    ] = data ?? []
     return {
       refetch,
       membersCount: Number(membersCount?.result ?? 0n),
@@ -62,6 +72,7 @@ export const useContractData = (nftAddress?: Address) => {
       nftSymbol: symbol?.result,
       nftUri: nftUri?.result,
       isLoading,
+      stRifThreshold: stRifThreshold?.result,
     }
   }, [data, refetch, isLoading])
 }

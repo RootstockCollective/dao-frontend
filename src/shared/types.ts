@@ -67,5 +67,9 @@ export interface CommunityData {
    * NFT Metadata
    */
   nftMeta: NftMeta | undefined
+  /**
+   * Necessary amount of StRIFs to get a reward NFT
+   */
+  stRifThreshold: bigint | undefined
   isLoading: boolean
 }

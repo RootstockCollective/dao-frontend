@@ -9,11 +9,11 @@ import { useRouter } from 'next/router'
 import { ReactNode, useState, useEffect, useRef } from 'react'
 import { BsTwitterX } from 'react-icons/bs'
 import { FaDiscord, FaLink } from 'react-icons/fa'
-import { Address } from 'viem'
+import { Address, formatEther } from 'viem'
 import { useAccount } from 'wagmi'
 import { useCommunity } from '@/shared/hooks/useCommunity'
+import { useStRif } from '@/shared/hooks/useStRIf'
 import { CopyButton } from '@/components/CopyButton'
-import { useGetAddressBalances } from '@/app/user/Balances/hooks/useGetAddressBalances'
 
 /**
  * Name of the local storage variable with information about whether the token was added to the wallet
@@ -49,8 +49,9 @@ export default function Page() {
     nftSymbol,
     mint: { onMintNFT, isPending: isClaiming },
     nftMeta,
+    stRifThreshold,
   } = useCommunity(nftAddress)
-  const { stRIF } = useGetAddressBalances()
+  const { stRifBalance } = useStRif()
 
   const [message, setMessage] = useState('')
   // reset message after few seconds
@@ -80,6 +81,12 @@ export default function Page() {
 
   const handleMinting = () => {
     if (!address) return
+    console.log('🚀 ~ handleMinting ~ stRifBalance:', stRifBalance)
+    if (stRifBalance < (stRifThreshold ?? 0n))
+      return setMessage(
+        `To get the Early Adopters community NFT you need to own at least ${formatEther(stRifThreshold!)} StRIFs`,
+      )
+
     onMintNFT()
       .then(txHash => {
         setMessage(
@@ -95,6 +102,8 @@ export default function Page() {
         }
       })
   }
+
+  // is NFT currently being added to wallet
   const [isAddedToWallet, setIsAddedToWallet] = useState(false)
   // counts how many time `addToWallet` was called before throwing the final error
   const attemptCount = useRef(0)
@@ -106,9 +115,7 @@ export default function Page() {
     try {
       if (typeof window === 'undefined' || !window.ethereum) throw new Error('Wallet is not installed')
       if (!nftAddress || !tokenId) throw new Error('Unknown NFT')
-      if (!isConnected || !address) throw new Error('Provider is not connected')
-      // TODO: read the minimum StRif amount for getting reward NFT
-      if (BigInt(stRIF.balance) < 50n * 10n ** 18n) throw new Error('')
+      if (!isConnected) throw new Error('Provider is not connected')
       let wasAdded = false
       try {
         wasAdded = await window.ethereum.request({
