@@ -13,6 +13,7 @@ import { Address } from 'viem'
 import { useAccount } from 'wagmi'
 import { useCommunity } from '@/shared/hooks/useCommunity'
 import { CopyButton } from '@/components/CopyButton'
+import { useGetAddressBalances } from '@/app/user/Balances/hooks/useGetAddressBalances'
 
 /**
  * Name of the local storage variable with information about whether the token was added to the wallet
@@ -49,6 +50,7 @@ export default function Page() {
     mint: { onMintNFT, isPending: isClaiming },
     nftMeta,
   } = useCommunity(nftAddress)
+  const { stRIF } = useGetAddressBalances()
 
   const [message, setMessage] = useState('')
   // reset message after few seconds
@@ -104,7 +106,9 @@ export default function Page() {
     try {
       if (typeof window === 'undefined' || !window.ethereum) throw new Error('Wallet is not installed')
       if (!nftAddress || !tokenId) throw new Error('Unknown NFT')
-      if (!isConnected) throw new Error('Provider is not connected')
+      if (!isConnected || !address) throw new Error('Provider is not connected')
+      // TODO: read the minimum StRif amount for getting reward NFT
+      if (BigInt(stRIF.balance) < 50n * 10n ** 18n) throw new Error('')
       let wasAdded = false
       try {
         wasAdded = await window.ethereum.request({
