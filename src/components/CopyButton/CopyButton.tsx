@@ -90,7 +90,7 @@ export const CopyButton: FC<CopyButtonProps> = ({
     <div
       {...props}
       ref={ref}
-      className={cn(className, 'flex gap-2 items-center justify-end font-normal', statusClasses)}
+      className={cn('flex gap-2 items-center justify-end font-normal', className, statusClasses)}
       style={{ minWidth }}
       onClick={copyToClipboard}
     >

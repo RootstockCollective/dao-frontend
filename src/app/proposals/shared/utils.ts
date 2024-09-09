@@ -4,6 +4,7 @@ import { DAOTreasuryAbi } from '@/lib/abis/DAOTreasuryAbi'
 import { ZeroAddress } from 'ethers'
 import { RIF_ADDRESS } from '@/lib/constants'
 import { formatBalanceToHuman } from '@/app/user/Balances/balanceUtils'
+import moment from 'moment'
 
 export interface EventArgumentsParameter {
   args: {
@@ -48,7 +49,7 @@ export const getEventArguments = ({
     proposer,
     description: description.split(';')[1],
     proposalId: proposalId.toString(),
-    Starts: new Date(parseInt(timeStamp, 16) * 1000).toISOString().split('T')[0],
+    Starts: moment(parseInt(timeStamp, 16) * 1000),
     calldatasParsed,
   }
 }
