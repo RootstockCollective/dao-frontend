@@ -10,6 +10,11 @@ interface TableProps extends HTMLAttributes<HTMLDivElement> {
    * Optional flag to make all column widths equal
    */
   equalColumns?: boolean
+
+  /**
+   * Header classes
+   */
+  headerClassName?: string
 }
 
 /**
@@ -19,7 +24,7 @@ interface TableProps extends HTMLAttributes<HTMLDivElement> {
  * you can create a custom table using the available components:
  * `Table`, `TableBody`, `TableCell`, `TableHead`, `TableRow`.
  */
-export const Table: FC<TableProps> = ({ data, equalColumns = true, ...props }) => {
+export const Table: FC<TableProps> = ({ data, equalColumns = true, headerClassName, ...props }) => {
   // calculate column width
   const header = Object.keys(data[0])
   if (header.length === 0) return <></>
@@ -29,7 +34,7 @@ export const Table: FC<TableProps> = ({ data, equalColumns = true, ...props }) =
       <TableHead>
         <TableRow>
           {header.map(headTitle => (
-            <TableCell style={{ width }} key={headTitle}>
+            <TableCell style={{ width }} key={headTitle} className={headerClassName}>
               {headTitle}
             </TableCell>
           ))}

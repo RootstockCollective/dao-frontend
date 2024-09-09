@@ -1,9 +1,11 @@
 'use client'
 
-import { MainContainer } from '@/components/MainContainer/MainContainer'
+import { LeaderBoard } from '@/app/bim/leaderboard/LeaderBoard'
+import { LeaderBoardContextProviderWithPrices } from '@/app/bim/leaderboard/LeaderBoardContext'
 import { MetricsSection } from '@/app/bim/MetricsSection'
-import { WhitelistSection } from '@/app/bim/whitelist/WhitelistSection'
 import { WhitelistContextProvider } from '@/app/bim/whitelist/WhitelistContext'
+import { WhitelistSection } from '@/app/bim/whitelist/WhitelistSection'
+import { MainContainer } from '@/components/MainContainer/MainContainer'
 
 export default function BuildersIncentiveMarket() {
   return (
@@ -13,9 +15,9 @@ export default function BuildersIncentiveMarket() {
         <WhitelistContextProvider>
           <WhitelistSection />
         </WhitelistContextProvider>
-        <div>
-          <h3>Rewards leaderboard REPLACE ME</h3>
-        </div>
+        <LeaderBoardContextProviderWithPrices>
+          <LeaderBoard />
+        </LeaderBoardContextProviderWithPrices>
       </div>
     </MainContainer>
   )

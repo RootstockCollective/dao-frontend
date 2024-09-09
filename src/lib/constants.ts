@@ -23,3 +23,7 @@ export const FIRST_EPOCH_START_DATE_ISO = process.env.NEXT_PUBLIC_FIRST_EPOCH_ST
 export const WHITELISTED_BUILDERS_URL = process.env.NEXT_PUBLIC_WHITELISTED_BUILDERS_URL
 
 export const ADDRESS_ANIMATION_DURATION = 800
+
+export const RIF = 'RIF'
+export const USD = 'USD'
+export const USD_SYMBOL = '$'
