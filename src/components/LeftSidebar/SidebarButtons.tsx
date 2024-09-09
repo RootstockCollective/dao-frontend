@@ -13,16 +13,16 @@ const START_ICON_CLASSES = 'left-[-28px] top-[2px]'
 export const SidebarButtons = ({ onClick, activeButton = 'communities' }: SidebarButtonsProps) => (
   <div>
     <Button
-      startIcon={<ImageAsIcon src="/images/sidemenu/communities.svg" alt="Communities" />}
-      onClick={() => onClick?.('communities')}
+      startIcon={<ImageAsIcon src="/images/sidemenu/user.svg" alt="User" />}
+      onClick={() => onClick?.('user')}
       fullWidth
+      variant={activeButton.startsWith('user') ? 'primary' : 'transparent'}
       centerContent={false}
       className={DEFAULT_BUTTON_CLASSNAME}
-      buttonProps={{ id: 'Button_Communities', name: 'communities' }}
-      variant={activeButton.startsWith('communities') ? 'primary' : 'transparent'}
+      buttonProps={{ id: 'Button_User', name: 'user' }}
       startIconClasses={START_ICON_CLASSES}
     >
-      Communities
+      My Collective
     </Button>
     <Button
       startIcon={<ImageAsIcon src="/images/sidemenu/treasury.svg" alt="Treasury" />}
@@ -49,16 +49,16 @@ export const SidebarButtons = ({ onClick, activeButton = 'communities' }: Sideba
       Proposals
     </Button>
     <Button
-      startIcon={<ImageAsIcon src="/images/sidemenu/user.svg" alt="User" />}
-      onClick={() => onClick?.('user')}
+      startIcon={<ImageAsIcon src="/images/sidemenu/communities.svg" alt="Communities" />}
+      onClick={() => onClick?.('communities')}
       fullWidth
-      variant={activeButton.startsWith('user') ? 'primary' : 'transparent'}
       centerContent={false}
       className={DEFAULT_BUTTON_CLASSNAME}
-      buttonProps={{ id: 'Button_User', name: 'user' }}
+      buttonProps={{ id: 'Button_Communities', name: 'communities' }}
+      variant={activeButton.startsWith('communities') ? 'primary' : 'transparent'}
       startIconClasses={START_ICON_CLASSES}
     >
-      User
+      Communities
     </Button>
   </div>
 )
