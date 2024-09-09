@@ -110,6 +110,11 @@ export default function Page() {
   const [isAddedToWallet, setIsAddedToWallet] = useState(false)
   // counts how many time `addToWallet` was called before throwing the final error
   const attemptCount = useRef(0)
+  // reset variables responsible for adding-to-wallet UX effects
+  const resetAddToWallet = () => {
+    setIsAddedToWallet(false)
+    attemptCount.current = 0
+  }
   /**
    * Adds NFT to wallet collection
    */
@@ -151,15 +156,14 @@ export default function Page() {
       if (!wasAdded) throw new Error('Unable to add NFT to wallet')
       setIsNftInWallet(old => ({ ...old, [nftAddress]: { ...old[nftAddress], [tokenId]: true } }))
       setMessage({ text: `NFT#${tokenId} was added to wallet` })
-      setIsAddedToWallet(false)
-      attemptCount.current = 0
+      resetAddToWallet()
     } catch (error) {
       // don't show error message if user has closed the wallet prompt
-      if ((error as { message?: string }).message?.includes('User rejected the request')) return
+      if ((error as { message?: string }).message?.includes('User rejected the request'))
+        return resetAddToWallet()
       console.error('ERROR', error)
       setMessage({ text: `Error adding NFT#${tokenId} to wallet`, severity: 'error' })
-      setIsAddedToWallet(false)
-      attemptCount.current = 0
+      resetAddToWallet()
     }
   }
 
