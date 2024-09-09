@@ -37,7 +37,7 @@ const treasuryContracts = [
 
 const GovernorAddress = GOVERNOR_ADDRESS
 const MulticallAddress = MULTICALL_ADDRESS
-const TreasuryAddress = GENERAL_BUCKET_ADDRESS
+const TreasuryAddress = GRANTS_ACTIVE_BUCKET_ADDRESS
 
 export {
   abiContractsMap,
