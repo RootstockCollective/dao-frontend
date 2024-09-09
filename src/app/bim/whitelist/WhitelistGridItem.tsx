@@ -24,9 +24,12 @@ export const WhitelistGridItem: FC<WhitelistGridItemProps> = ({
   address,
   joiningData,
 }) => {
+  //TODO: pending to check the colors
   const badgeBgColor = {
     Whitelisted: 'bg-[#22AD5C]',
-    'In progress': 'bg-amber-500',
+    'In progress': 'bg-[#F59E0B]',
+    'KYC Approved': 'bg-[#637381]',
+    'KYC Under Review': 'bg-[#808080]',
   }[status]
   const Header = (
     <>

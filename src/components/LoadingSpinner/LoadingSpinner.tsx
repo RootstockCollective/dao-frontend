@@ -1,6 +1,7 @@
 import { cn } from '@/lib/utils'
 import Lottie from 'lottie-react'
-import loadingAnimation from '@/public/loading.json'
+// TODO: import loadingAnimation from 'path/to/loading.json' since the test fails
+import loadingAnimation from '../../../public/loading.json'
 
 export const LoadingSpinner = ({ className = '' }) => (
   <div className={cn('flex justify-center', className)}>

@@ -1,4 +1,4 @@
-export type BuilderStatus = 'Whitelisted' | 'In progress'
+export type BuilderStatus = 'Whitelisted' | 'In progress' | 'KYC Under Review' | 'KYC Approved'
 
 export interface BuilderOffChainInfo {
   name: string

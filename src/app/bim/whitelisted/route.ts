@@ -5,14 +5,14 @@ export async function GET() {
     {
       name: 'Builder 1',
       joiningData: '2024-06-01',
-      status: 'Whitelisted',
+      status: 'KYC Under Review',
       proposalDescription: 'Lorem ipsum dolor sit amet',
       address: '0x1234567890',
     },
     {
       name: 'Builder 2',
       joiningData: '2022-01-02',
-      status: 'In progress',
+      status: 'KYC Approved',
       proposalDescription: 'Lorem ipsum dolor sit amet',
       address: '0x2345678901',
     },

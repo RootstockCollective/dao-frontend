@@ -12,6 +12,7 @@ import { Alert } from '../Alert'
 import { AccountAddress } from '../Header/AccountAddress'
 import { DisconnectWalletModal } from '../Modal/DisconnectWalletModal'
 import { ProtectedContent } from '../ProtectedContent/ProtectedContent'
+import { BecomeABuilderButton } from '@/app/bim/BecomeABuilderButton'
 
 interface Props {
   children: ReactNode
@@ -53,11 +54,14 @@ export const MainContainer: FC<Props> = ({ children, notProtected = false }) => 
             <>
               <Header>
                 {isConnected ? (
-                  <AccountAddress
-                    address={address}
-                    shortAddress={shortAddress(address)}
-                    onLogoutClick={modal.openModal}
-                  />
+                  <div className="flex flex-row justify-end gap-4">
+                    <BecomeABuilderButton address={address} />
+                    <AccountAddress
+                      address={address}
+                      shortAddress={shortAddress(address)}
+                      onLogoutClick={modal.openModal}
+                    />
+                  </div>
                 ) : (
                   <ConnectButton />
                 )}
