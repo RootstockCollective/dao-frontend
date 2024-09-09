@@ -1,7 +1,7 @@
 import { nftContracts } from '@/lib/contracts'
 
 export const firstCommunity = {
-  leftImageSrc: '/images/nft-dog.png',
+  leftImageSrc: '/images/ea-nft-dog.png',
   title: 'Early Adopters',
   subtitle: 'DeFi',
   description:

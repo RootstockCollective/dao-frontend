@@ -185,7 +185,7 @@ export default function Page() {
         <div className="flex-1">
           <div className="flex items-center gap-3 mb-2">
             <div className="rounded-xl overflow-hidden">
-              <Image src="/images/nft-dog.png" width={50} height={50} alt="Early Adopters" />
+              <Image src="/images/ea-nft-dog.png" width={50} height={50} alt="Early Adopters" />
             </div>
             <div className="font-semibold">Early Adopters</div>
           </div>
@@ -242,8 +242,8 @@ export default function Page() {
             <Span className="mb-6 font-bold inline-block">Membership NFT</Span>
             <div className="flex gap-6">
               <Image
-                alt={nftMeta?.name ?? 'NFT'}
-                src={nftMeta?.image || '/images/Early-Adopters-Collection-Cover.png'}
+                alt={nftMeta?.name ?? 'Early Adopters NFT'}
+                src={nftMeta?.image || '/images/ea-nft-cover.png'}
                 className="w-full self-center max-w-56 rounded-md"
                 width={500}
                 height={500}
