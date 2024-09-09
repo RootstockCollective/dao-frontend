@@ -39,16 +39,16 @@ export const Footer = ({ brand = 'RootstockCollective', variant = 'login' }: Pro
       </div>
       <div className="flex justify-center items-center flex-row">
         <a href="#" className="hover:underline me-4 md:me-6">
-          About Rootstock Labs
+          About RootstockCollective
         </a>
         <a href="#" className="hover:underline me-4 md:me-6">
-          Help
+          FAQs
         </a>
         <a href="#" className="hover:underline me-4 md:me-6">
-          Terms & Conditions
+          Whitepaper
         </a>
         <a href="#" className="hover:underline">
-          Documentation
+          Discource
         </a>
       </div>
       <div className="flex items-center">
