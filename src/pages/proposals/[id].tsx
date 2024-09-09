@@ -19,7 +19,7 @@ import { MetricsCard } from '@/components/MetricsCard'
 import { Popover } from '@/components/Popover'
 import { Header, Paragraph, Span } from '@/components/Typography'
 import { useVoteOnProposal } from '@/shared/hooks/useVoteOnProposal'
-import { shortAddress } from '@/lib/utils'
+import { truncateMiddle } from '@/lib/utils'
 import { useRouter } from 'next/router'
 import { FC, useMemo, useState } from 'react'
 import { useAccount } from 'wagmi'
@@ -33,6 +33,7 @@ import { waitForTransactionReceipt } from '@wagmi/core'
 import { config } from '@/config'
 import { useAlertContext } from '@/app/providers'
 import { TX_MESSAGES } from '@/shared/txMessages'
+import { CopyButton } from '@/components/CopyButton'
 
 export default function ProposalView() {
   const {
@@ -166,15 +167,20 @@ const PageWithProposal = (proposal: PageWithProposal) => {
     <div className="pl-4 grid grid-rows-1 gap-[32px] mb-[100px]">
       <BreadcrumbSection title={name} />
       <Header className="text-2xl">{name}</Header>
-      <div className="flex flex-row">
-        <Paragraph className="text-sm text-gray-500">
-          Proposed by: <span className="text-primary">{shortAddress(proposer, 10)}</span>
-        </Paragraph>
-        <Paragraph className="text-sm text-gray-500 ml-4">
-          Created at: <span className="text-primary">{Starts}</span>
-        </Paragraph>
+
+      <div className="flex flex-row gap-4 items-baseline">
+        <div className="flex flex-row items-baseline gap-1">
+          <Paragraph className="text-sm text-gray-500">Proposed by: </Paragraph>
+          <CopyButton icon={null} copyText={proposer} className="text-primary font-semibold">
+            {truncateMiddle(proposer, 3, 3)}
+          </CopyButton>
+        </div>
+        <Paragraph className="text-sm text-gray-500">Created {Starts.fromNow()}</Paragraph>
+        <CopyButton icon={null} copyText={proposalId} className="font-semibold text-primary">
+          ID {truncateMiddle(proposalId, 3, 3)}
+        </CopyButton>
         {blocksUntilClosure !== null && proposalStateHuman === 'Active' && (
-          <Paragraph className="text-sm text-gray-500 ml-4">
+          <Paragraph className="text-sm text-gray-500">
             Blocks until closure: <span className="text-primary">{blocksUntilClosure.toString()}</span>
           </Paragraph>
         )}
