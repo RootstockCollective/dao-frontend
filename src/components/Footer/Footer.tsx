@@ -48,7 +48,7 @@ export const Footer = ({ brand = 'RootstockCollective', variant = 'login' }: Pro
           Whitepaper
         </a>
         <a href="#" className="hover:underline">
-          Discource
+          Discourse
         </a>
       </div>
       <div className="flex items-center">
