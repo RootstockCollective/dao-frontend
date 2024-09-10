@@ -9,7 +9,7 @@ import { FaUsers } from 'react-icons/fa6'
 import { useAccount } from 'wagmi'
 import { LoadingSpinner } from '@/components/LoadingSpinner'
 
-const BACKGROUND_CLASSES = 'bg-[url(../../public/images/login-bg.svg)] bg-cover'
+const BACKGROUND_CLASSES = 'bg-[url(../../public/images/login-bg.svg)] bg-auto bg-no-repeat bg-right'
 
 export const Login = () => {
   const { isConnected, address } = useAccount()
