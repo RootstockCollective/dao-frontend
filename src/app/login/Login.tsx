@@ -55,7 +55,7 @@ export const Login = () => {
         <div className="mt-2 text-center">{address}</div>
       </div>
       <div className="flex-1"></div>
-      <Footer />
+      {hasMounted && <Footer />}
     </div>
   )
 }
