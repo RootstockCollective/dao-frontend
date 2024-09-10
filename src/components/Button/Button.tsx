@@ -43,9 +43,10 @@ export const Button: FC<Props> = ({
     'bg-primary rounded-[6px]': variant === 'primary',
     'bg-transparent border-secondary rounded-[6px] border': variant === 'secondary',
     'bg-secondary border-secondary rounded-[6px] border': variant === 'secondary-full',
+    'bg-white rounded-[6px] border': variant === 'white',
     'bg-disabled-primary rounded-[6px] border-0': disabled,
-    'border-0': variant === 'transparent',
-    'border border-white rounded-[6px]': variant === 'white',
+    'border-0': variant === 'borderless',
+    'border border-white rounded-[6px]': variant === 'outlined',
     'w-full': fullWidth,
     'pl-9': startIcon,
     'justify-start': !centerContent,
@@ -58,7 +59,8 @@ export const Button: FC<Props> = ({
     'font-bold relative': true,
     'text-secondary': variant === 'secondary',
     'text-disabled-secondary': disabled,
-    'font-normal text-[rgba(255,255,255,0.8)]': variant === 'transparent',
+    'font-normal text-[rgba(255,255,255,0.8)]': variant === 'borderless',
+    'text-black': variant === 'white',
     [textClassName]: true,
   })
 

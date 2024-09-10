@@ -1,5 +1,4 @@
 import { FC } from 'react'
-import { FaLink } from 'react-icons/fa6'
 import { useConnect } from 'wagmi'
 import { Button } from '../Button'
 
@@ -18,7 +17,7 @@ export const ConnectButton: FC<Props> = ({ onSuccess }) => {
     }
   }
   return (
-    <Button onClick={handleConnectWallet} variant="primary" startIcon={<FaLink />}>
+    <Button onClick={handleConnectWallet} variant="white">
       Connect wallet
     </Button>
   )

@@ -40,7 +40,7 @@ export const CommunityItem = ({
       <div />
       {/* Divider */}
       {/*<div className="flex justify-end">*/}
-      {/*  <Button variant="white" startIcon={<VscChevronUp />}>*/}
+      {/*  <Button variant="outlined" startIcon={<VscChevronUp />}>*/}
       {/*    {numberOfMembers.toString()}*/}
       {/*  </Button>*/}
       {/*</div>*/}
