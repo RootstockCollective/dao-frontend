@@ -8,6 +8,7 @@ import { useEffect, useState } from 'react'
 import { FaUsers } from 'react-icons/fa6'
 import { useAccount } from 'wagmi'
 import { LoadingSpinner } from '@/components/LoadingSpinner'
+import { Headline } from '@/components/Typography'
 
 const BACKGROUND_CLASSES = 'bg-[url(../../public/images/login-bg.svg)] bg-auto bg-no-repeat bg-right'
 
@@ -34,7 +35,7 @@ export const Login = () => {
 
   return (
     <div className={cn(BACKGROUND_CLASSES, 'flex flex-col justify-center items-center h-screen')}>
-      <Logo className="mb-8" textClassName="text-6xl" />
+      <Headline>GET STARTED</Headline>
       <div className="flex space-x-4">
         {hasMounted && (
           <>

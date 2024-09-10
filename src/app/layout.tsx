@@ -1,12 +1,7 @@
 import type { Metadata } from 'next'
-import { Open_Sans } from 'next/font/google'
 import './globals.css'
 import { ContextProviders } from './providers'
-
-const openSans = Open_Sans({
-  variable: '--font-open-sans',
-  subsets: ['latin'],
-})
+import { kkTopo, openSans } from '@/styles/fonts'
 
 export const metadata: Metadata = {
   title: 'DAO',
@@ -20,7 +15,7 @@ interface Props {
 export default function RootLayout({ children }: Readonly<Props>) {
   return (
     <html lang="en" data-theme="default">
-      <body className={`${openSans.variable} font-sans`}>
+      <body className={`${openSans.variable} ${kkTopo.variable} font-sans`}>
         <ContextProviders>{children}</ContextProviders>
       </body>
     </html>
