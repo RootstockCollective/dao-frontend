@@ -1,14 +1,12 @@
 import { Button } from '@/components/Button'
 import { Footer } from '@/components/Footer'
 import { ConnectButton } from '@/components/Header'
-import { Logo } from '@/components/Header/Logo'
+import { Headline } from '@/components/Typography'
 import { cn } from '@/lib/utils'
+import Image from 'next/image'
 import { useRouter } from 'next/navigation'
 import { useEffect, useState } from 'react'
-import { FaUsers } from 'react-icons/fa6'
 import { useAccount } from 'wagmi'
-import { LoadingSpinner } from '@/components/LoadingSpinner'
-import { Headline, Paragraph } from '@/components/Typography'
 
 const BACKGROUND_CLASSES = 'bg-[url(../../public/images/login-bg.svg)] bg-auto bg-no-repeat bg-right'
 
@@ -35,6 +33,7 @@ export const Login = () => {
 
   return (
     <div className={cn(BACKGROUND_CLASSES, 'flex flex-row h-screen justify-center items-center')}>
+      <Header />
       <div className="flex-1">
         <Headline>GET STARTED</Headline>
         <div className="flex space-x-4 justify-center items-center">
@@ -60,3 +59,15 @@ export const Login = () => {
     </div>
   )
 }
+
+const Header = () => (
+  <header className="absolute top-9 left-8">
+    <Image
+      src="/images/wordmark.svg"
+      alt="Logo"
+      width={0}
+      height={0}
+      style={{ width: '96px', height: 'auto' }}
+    />
+  </header>
+)

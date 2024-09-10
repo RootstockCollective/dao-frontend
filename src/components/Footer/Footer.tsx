@@ -51,17 +51,21 @@ export const Footer = ({ brand = 'RootstockCollective', variant = 'login' }: Pro
           Discourse
         </a>
       </div>
-      <div className="flex items-center">
-        <a href="https://x.com/rootstockcoll">
-          <FaXTwitter className="mr-4" size={'1.5em'} />
-        </a>
-        <a href={`https://github.com/${GITHUB_ORG}`}>
-          <FaGithub className="mr-4" size={'1.5em'} />
-        </a>
-        <a href="#">
-          <FaSlack size={'1.5em'} />
-        </a>
-      </div>
+      {variant === 'container' ? (
+        <div className="flex-1 items-center">
+          <a href="https://x.com/rootstockcoll">
+            <FaXTwitter className="mr-4" size={'1.5em'} />
+          </a>
+          <a href={`https://github.com/${GITHUB_ORG}`}>
+            <FaGithub className="mr-4" size={'1.5em'} />
+          </a>
+          <a href="#">
+            <FaSlack size={'1.5em'} />
+          </a>
+        </div>
+      ) : (
+        <div></div>
+      )}
     </footer>
   )
 }
