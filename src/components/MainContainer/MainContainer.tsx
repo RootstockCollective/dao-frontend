@@ -43,39 +43,41 @@ export const MainContainer: FC<Props> = ({ children, notProtected = false }) => 
     <>
       <div className="flex">
         <StatefulSidebar />
-        <div className="flex-auto px-[24px] mb-[100px]">
-          {hasMounted && (
-            <>
-              <Header>
-                {isConnected ? (
-                  <AccountAddress
+        <div className="flex-auto flex-col">
+          <main className="px-[24px] mb-[100px]">
+            {hasMounted && (
+              <>
+                <Header>
+                  {isConnected ? (
+                    <AccountAddress
+                      address={address}
+                      shortAddress={shortAddress(address)}
+                      onLogoutClick={modal.openModal}
+                    />
+                  ) : (
+                    <ConnectButton />
+                  )}
+                </Header>
+                {modal.isModalOpened && (
+                  <DisconnectWalletModal
+                    onClose={modal.closeModal}
+                    onConfirm={handleDisconnect}
+                    onCancel={modal.closeModal}
                     address={address}
-                    shortAddress={shortAddress(address)}
-                    onLogoutClick={modal.openModal}
                   />
-                ) : (
-                  <ConnectButton />
                 )}
-              </Header>
-              {modal.isModalOpened && (
-                <DisconnectWalletModal
-                  onClose={modal.closeModal}
-                  onConfirm={handleDisconnect}
-                  onCancel={modal.closeModal}
-                  address={address}
-                />
-              )}
-            </>
-          )}
-          {message && (
-            <Alert {...message} onDismiss={message.onDismiss === null ? null : () => setMessage(null)} />
-          )}
-          <MainContainerContent notProtected={notProtected} setMessage={setMessage}>
-            {children}
-          </MainContainerContent>
+              </>
+            )}
+            {message && (
+              <Alert {...message} onDismiss={message.onDismiss === null ? null : () => setMessage(null)} />
+            )}
+            <MainContainerContent notProtected={notProtected} setMessage={setMessage}>
+              {children}
+            </MainContainerContent>
+          </main>
+          <Footer variant="container" />
         </div>
       </div>
-      <Footer variant="container" />
     </>
   )
 }

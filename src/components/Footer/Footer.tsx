@@ -7,7 +7,7 @@ interface Props {
   variant?: 'login' | 'container'
 }
 
-const DEFAULT_CONTAINER_CLASS = 'my-4'
+const DEFAULT_CONTAINER_CLASS = 'm-5'
 
 const DEFAULT_LOGIN_CLASS = 'absolute left-8 w-2/5 '
 
@@ -19,7 +19,7 @@ const VARIANTS = {
 export const Footer = ({ brand = 'RootstockCollective', variant = 'login' }: Props) => {
   const year = new Date().getFullYear()
   return (
-    <footer className={cn('bottom-4 flex justify-around text-sm opacity-60', VARIANTS[variant])}>
+    <footer className={cn('bottom-4 flex justify-between text-sm opacity-60', VARIANTS[variant])}>
       <div className="flex flex-col">
         <p className="text-sm text-white">About RootstockCollective</p>
         <span className="text-[0.5rem] text-white">Built by {brand}</span>
@@ -38,19 +38,25 @@ export const Footer = ({ brand = 'RootstockCollective', variant = 'login' }: Pro
         </span>
       </div>
       {variant === 'container' && (
-        <div className="flex justify-center items-center flex-row">
-          <a href="#" className="hover:underline me-4 md:me-6">
-            FAQs
-          </a>
-          <a href="https://wiki.rootstockcollective.xyz" className="hover:underline me-4 md:me-6">
-            Whitepaper
-          </a>
-          <a href="#" className="hover:underline">
-            Discourse
-          </a>
-        </div>
+        <>
+          <div className="flex items-start">
+            <a href="#" className="hover:underline me-4 md:me-6">
+              FAQs
+            </a>
+          </div>
+          <div className="flex items-start">
+            <a href="https://wiki.rootstockcollective.xyz" className="hover:underline me-4 md:me-6">
+              Whitepaper
+            </a>
+          </div>
+          <div className="flex items-start">
+            <a href="#" className="hover:underline">
+              Discourse
+            </a>
+          </div>
+        </>
       )}
-      <div className="flex flex-1 items-start justify-end">
+      <div className="flex items-start justify-end">
         <a href="https://x.com/rootstockcoll">
           <FaXTwitter className="mr-4" size={'1.5em'} />
         </a>
