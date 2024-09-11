@@ -43,7 +43,7 @@ export const Login = () => {
               {isConnected ? (
                 <p>Redirecting...</p>
               ) : showDisclaimer ? (
-                <Disclaimer onAgree={() => router.push('/user')} />
+                <Disclaimer onConnect={() => router.push('/user')} />
               ) : (
                 <GetStarted
                   onNext={() => setShowDisclaimer(true)}

@@ -3,10 +3,10 @@ import { Paragraph } from '@/components/Typography'
 import { FC } from 'react'
 
 interface Props {
-  onAgree: () => void
+  onConnect: () => void
 }
 
-export const Disclaimer: FC<Props> = ({ onAgree }) => (
+export const Disclaimer: FC<Props> = ({ onConnect }) => (
   <div className="flex flex-col items-center mt-12 ">
     <Paragraph size="large" className="text-center">
       The RootstockCollective has taken actions in order to prevent access to any person located in the
@@ -17,7 +17,9 @@ export const Disclaimer: FC<Props> = ({ onAgree }) => (
       RootstockCollective dApp.
     </Paragraph>
     <div className="mt-12">
-      <ConnectButton onSuccess={onAgree}>Agree</ConnectButton>
+      <ConnectButton onSuccess={onConnect} variant="white">
+        Agree
+      </ConnectButton>
     </div>
   </div>
 )
