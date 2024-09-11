@@ -8,7 +8,7 @@ export const StakeRIFCell = () => {
   return (
     <p
       onClick={hasEnoughBalance ? stakeModal.openModal : undefined}
-      className={cn('underline', hasEnoughBalance ? 'text-link cursor-pointer' : 'text-zinc-500')}
+      className={cn('underline', hasEnoughBalance ? 'text-primary cursor-pointer' : 'text-zinc-500')}
       data-testid={'StakeRIFParagraph'}
     >
       Stake

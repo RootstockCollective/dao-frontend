@@ -38,7 +38,16 @@ const tryDecode = (data: string) => {
   }
   throw new Error('No ABI found to decode this proposal data.')
 }
-
+/**
+ * Function to parse proposal data into usable data
+ * Note: Do not edit anything from this. This is being used across the app.
+ * If you have to edit it, be sure that you track all usages and replace accordingly.
+ * @param description
+ * @param proposalId
+ * @param proposer
+ * @param calldatas
+ * @param timeStamp
+ */
 export const getEventArguments = ({
   args: { description, proposalId, proposer, calldatas },
   timeStamp,

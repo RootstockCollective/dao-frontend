@@ -52,7 +52,7 @@ export const VoteProposalModal: FC<Props> = ({
           <Paragraph className="text-sm text-gray-500 font-normal ml-4">
             Created at:
             <br />
-            <Span className="text-primary font-semibold">{proposal.Starts}</Span>
+            <Span className="text-primary font-semibold">{proposal.Starts.format('YYYY-MM-DD')}</Span>
           </Paragraph>
           <Paragraph className="text-sm text-gray-500 ml-4 font-normal">
             Proposal ID:
