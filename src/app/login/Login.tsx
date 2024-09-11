@@ -8,7 +8,7 @@ import { useAccount } from 'wagmi'
 import { Disclaimer } from './Disclaimer'
 import { GetStarted } from './GetStarted'
 
-const BACKGROUND_CLASSES = 'bg-[url(../../public/images/login-bg.svg)] bg-cover bg-no-repeat bg-right'
+const BG_IMG_CLASSES = 'bg-[url(../../public/images/login-bg.svg)] bg-cover bg-no-repeat bg-right'
 
 export const Login = () => {
   const { isConnected, address } = useAccount()
@@ -33,7 +33,7 @@ export const Login = () => {
   }, [isConnected, router])
 
   return (
-    <div className={cn(BACKGROUND_CLASSES, 'flex flex-row h-screen justify-center items-center')}>
+    <div className={cn(BG_IMG_CLASSES, 'flex flex-row h-screen justify-center items-center bg-black')}>
       <Header />
       <div className="flex-1 ml-20 mr-14">
         <Headline>{showDisclaimer ? 'DISCLAIMER' : 'GET STARTED'}</Headline>
