@@ -1,18 +1,19 @@
-import { Button } from '@/components/Button'
 import { Footer } from '@/components/Footer'
-import { ConnectButton } from '@/components/Header'
 import { Headline } from '@/components/Typography'
 import { cn } from '@/lib/utils'
 import Image from 'next/image'
 import { useRouter } from 'next/navigation'
 import { useEffect, useState } from 'react'
 import { useAccount } from 'wagmi'
+import { Disclaimer } from './Disclaimer'
+import { GetStarted } from './GetStarted'
 
 const BACKGROUND_CLASSES = 'bg-[url(../../public/images/login-bg.svg)] bg-auto bg-no-repeat bg-right'
 
 export const Login = () => {
   const { isConnected, address } = useAccount()
   const [hasMounted, setHasMounted] = useState(false)
+  const [showDisclaimer, setShowDisclaimer] = useState(false)
 
   const router = useRouter()
 
@@ -35,19 +36,19 @@ export const Login = () => {
     <div className={cn(BACKGROUND_CLASSES, 'flex flex-row h-screen justify-center items-center')}>
       <Header />
       <div className="flex-1">
-        <Headline>GET STARTED</Headline>
+        <Headline>{showDisclaimer ? 'DISCLAIMER' : 'GET STARTED'}</Headline>
         <div className="flex space-x-4 justify-center items-center">
           {hasMounted && (
             <>
               {isConnected ? (
                 <p>Redirecting...</p>
+              ) : showDisclaimer ? (
+                <Disclaimer />
               ) : (
-                <>
-                  <ConnectButton onSuccess={() => router.push('/user')} />
-                  <Button onClick={handleExploreCommunities} variant="outlined">
-                    Explore Communities
-                  </Button>
-                </>
+                <GetStarted
+                  onNext={() => setShowDisclaimer(true)}
+                  onExploreCommunities={handleExploreCommunities}
+                />
               )}
             </>
           )}

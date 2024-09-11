@@ -4,6 +4,22 @@
   src: url('/fonts/Sora.ttf') format('truetype');
 }
 
+@font-face {
+  font-family: 'KK-Topo';
+  src: url('/fonts/KK-Topo-Regular.otf') format('truetype');
+}
+
+@font-face {
+  font-family: 'Rootstock-Sans';
+  src: url('/fonts/Rootstock-Sans-Body.otf') format('truetype');
+}
+
+@font-face {
+  font-family: 'Rootstock-Sans';
+  src: url('/fonts/Rootstock-Sans-Headline.otf') format('truetype');
+  font-weight: bold;
+}
+
 html[data-theme='default'] {
   --color-primary: rgba(229, 107, 26, 1);
   --color-secondary: rgba(19, 194, 150, 1);
