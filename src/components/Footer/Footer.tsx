@@ -52,7 +52,7 @@ export const Footer = ({ brand = 'RootstockCollective', variant = 'login' }: Pro
         </a>
       </div>
       <div className="flex items-center">
-        <a href="#">
+        <a href="https://x.com/rootstockcoll">
           <FaXTwitter className="mr-4" size={'1.5em'} />
         </a>
         <a href={`https://github.com/${GITHUB_ORG}`}>
