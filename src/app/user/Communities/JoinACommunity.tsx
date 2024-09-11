@@ -17,7 +17,7 @@ export const JoinACommunity = () => {
             backgroundColor: 'white',
           }}
         >
-          <LuUsers size={48} color="#665EF6" />
+          <LuUsers size={48} color="var(--color-primary)" />
         </div>
         <Header className="mt-[42px] mb-[8px] text-[24px]">Join a Community</Header>
         <Paragraph variant="normal" className="text-center pb-[40px] text-[16px]">

@@ -38,7 +38,7 @@ export const StakeStatus = ({
             width: 80,
           }}
         >
-          <LuBadgeCheck size={48} color="#665EF6" />
+          <LuBadgeCheck size={48} color="var(--color-primary)" />
         </div>
       </div>
       <Header className="mt-[62px] text-center">{textsDependingOnAction[actionName].inProcess}</Header>
