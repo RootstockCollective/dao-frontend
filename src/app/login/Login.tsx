@@ -35,7 +35,7 @@ export const Login = () => {
   return (
     <div className={cn(BACKGROUND_CLASSES, 'flex flex-row h-screen justify-center items-center')}>
       <Header />
-      <div className="flex-1">
+      <div className="flex-1 ml-20 mr-14">
         <Headline>{showDisclaimer ? 'DISCLAIMER' : 'GET STARTED'}</Headline>
         <div className="flex space-x-4 justify-center items-center">
           {hasMounted && (
@@ -43,7 +43,7 @@ export const Login = () => {
               {isConnected ? (
                 <p>Redirecting...</p>
               ) : showDisclaimer ? (
-                <Disclaimer />
+                <Disclaimer onAgree={() => router.push('/user')} />
               ) : (
                 <GetStarted
                   onNext={() => setShowDisclaimer(true)}

@@ -4,9 +4,10 @@ import { Button } from '../Button'
 
 interface Props {
   onSuccess?: () => void
+  children: string
 }
 
-export const ConnectButton: FC<Props> = ({ onSuccess }) => {
+export const ConnectButton: FC<Props> = ({ onSuccess, children }) => {
   const { connectors, connect } = useConnect({
     mutation: { onSuccess },
   })
@@ -18,7 +19,7 @@ export const ConnectButton: FC<Props> = ({ onSuccess }) => {
   }
   return (
     <Button onClick={handleConnectWallet} variant="white">
-      Connect wallet
+      {children}
     </Button>
   )
 }
