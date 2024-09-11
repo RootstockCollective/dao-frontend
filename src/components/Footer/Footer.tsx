@@ -44,7 +44,7 @@ export const Footer = ({ brand = 'RootstockCollective', variant = 'login' }: Pro
         <a href="#" className="hover:underline me-4 md:me-6">
           FAQs
         </a>
-        <a href="#" className="hover:underline me-4 md:me-6">
+        <a href="https://wiki.rootstockcollective.xyz" className="hover:underline me-4 md:me-6">
           Whitepaper
         </a>
         <a href="#" className="hover:underline">
