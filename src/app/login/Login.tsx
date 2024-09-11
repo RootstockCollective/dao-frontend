@@ -8,7 +8,7 @@ import { useAccount } from 'wagmi'
 import { Disclaimer } from './Disclaimer'
 import { GetStarted } from './GetStarted'
 
-const BACKGROUND_CLASSES = 'bg-[url(../../public/images/login-bg.svg)] bg-auto bg-no-repeat bg-right'
+const BACKGROUND_CLASSES = 'bg-[url(../../public/images/login-bg.svg)] bg-cover bg-no-repeat bg-right'
 
 export const Login = () => {
   const { isConnected, address } = useAccount()
