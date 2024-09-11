@@ -29,7 +29,7 @@ export const DisconnectWalletModal: FC<Props> = ({ onClose, onConfirm, onCancel,
       </div>
       <div className="w-full flex justify-center mt-2 gap-6">
         <Button onClick={onConfirm}>Disconnect</Button>
-        <Button variant="white" onClick={onCancel}>
+        <Button variant="outlined" onClick={onCancel}>
           Cancel
         </Button>
       </div>

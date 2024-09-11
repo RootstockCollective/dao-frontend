@@ -16,7 +16,7 @@ export const SidebarButtons = ({ onClick, activeButton = 'communities' }: Sideba
       startIcon={<ImageAsIcon src="/images/sidemenu/user.svg" alt="User" />}
       onClick={() => onClick?.('user')}
       fullWidth
-      variant={activeButton.startsWith('user') ? 'primary' : 'transparent'}
+      variant={activeButton.startsWith('user') ? 'primary' : 'borderless'}
       centerContent={false}
       className={DEFAULT_BUTTON_CLASSNAME}
       buttonProps={{ id: 'Button_User', name: 'user' }}
@@ -28,7 +28,7 @@ export const SidebarButtons = ({ onClick, activeButton = 'communities' }: Sideba
       startIcon={<ImageAsIcon src="/images/sidemenu/treasury.svg" alt="Treasury" />}
       onClick={() => onClick?.('treasury')}
       fullWidth
-      variant={activeButton.startsWith('treasury') ? 'primary' : 'transparent'}
+      variant={activeButton.startsWith('treasury') ? 'primary' : 'borderless'}
       centerContent={false}
       className={DEFAULT_BUTTON_CLASSNAME}
       buttonProps={{ id: 'Button_Treasury', name: 'treasury' }}
@@ -40,7 +40,7 @@ export const SidebarButtons = ({ onClick, activeButton = 'communities' }: Sideba
       startIcon={<ImageAsIcon src="/images/sidemenu/proposals.svg" alt="Proposals" />}
       onClick={() => onClick?.('proposals')}
       fullWidth
-      variant={activeButton.startsWith('proposals') ? 'primary' : 'transparent'}
+      variant={activeButton.startsWith('proposals') ? 'primary' : 'borderless'}
       centerContent={false}
       className={DEFAULT_BUTTON_CLASSNAME}
       buttonProps={{ id: 'Button_Proposals', name: 'proposals' }}
@@ -55,7 +55,7 @@ export const SidebarButtons = ({ onClick, activeButton = 'communities' }: Sideba
       centerContent={false}
       className={DEFAULT_BUTTON_CLASSNAME}
       buttonProps={{ id: 'Button_Communities', name: 'communities' }}
-      variant={activeButton.startsWith('communities') ? 'primary' : 'transparent'}
+      variant={activeButton.startsWith('communities') ? 'primary' : 'borderless'}
       startIconClasses={START_ICON_CLASSES}
     >
       Communities

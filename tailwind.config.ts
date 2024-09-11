@@ -11,6 +11,8 @@ const config: Config = {
       fontFamily: {
         sans: ['var(--font-open-sans)'],
         sora: ['Sora'],
+        'kk-topo': ['KK-Topo'],
+        'rootstock-sans': ['Rootstock-Sans'],
       },
       colors: {
         primary: 'var(--color-primary)',

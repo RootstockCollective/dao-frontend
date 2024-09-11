@@ -1,12 +1,14 @@
-import { cn } from '@/lib/utils'
+import Image from 'next/image'
 
-export const Logo = ({ className = '', textClassName = '' }) => {
+export const Logo = ({ className = '' }) => {
   return (
-    <div className={className}>
-      <h1 className={cn('text-2xl font-bold', textClassName)}>
-        Rootstock
-        <span className="text-primary">Collective</span>
-      </h1>
-    </div>
+    <Image
+      src="/images/logo.svg"
+      alt="Logo"
+      width={0}
+      height={0}
+      style={{ width: '254px', height: 'auto' }}
+      className={className}
+    />
   )
 }

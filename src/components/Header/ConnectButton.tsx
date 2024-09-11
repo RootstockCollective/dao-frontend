@@ -1,13 +1,14 @@
 import { FC } from 'react'
-import { FaLink } from 'react-icons/fa6'
 import { useConnect } from 'wagmi'
 import { Button } from '../Button'
 
 interface Props {
   onSuccess?: () => void
+  variant?: 'primary' | 'white'
+  children?: string
 }
 
-export const ConnectButton: FC<Props> = ({ onSuccess }) => {
+export const ConnectButton: FC<Props> = ({ onSuccess, children = 'Connect wallet', variant = 'primary' }) => {
   const { connectors, connect } = useConnect({
     mutation: { onSuccess },
   })
@@ -18,8 +19,8 @@ export const ConnectButton: FC<Props> = ({ onSuccess }) => {
     }
   }
   return (
-    <Button onClick={handleConnectWallet} variant="primary" startIcon={<FaLink />}>
-      Connect wallet
+    <Button onClick={handleConnectWallet} variant={variant}>
+      {children}
     </Button>
   )
 }

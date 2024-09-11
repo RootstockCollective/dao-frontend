@@ -59,10 +59,10 @@ export const Disabled: Story = {
   },
 }
 
-export const TransparentOutline: Story = {
+export const Borderless: Story = {
   args: {
     children: 'Treasury',
-    variant: 'transparent',
+    variant: 'borderless',
     onClick: () => console.log('Clicked'),
   },
 }
