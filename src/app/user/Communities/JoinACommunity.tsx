@@ -3,6 +3,7 @@ import { Button } from '@/components/Button'
 import { Header } from '@/components/Typography'
 import { LuUsers } from 'react-icons/lu'
 import { useRouter } from 'next/navigation'
+import { SHARED_MODAL_BOX_SHADOW_STYLE } from '@/lib/utils'
 
 export const JoinACommunity = () => {
   const router = useRouter()
@@ -11,7 +12,7 @@ export const JoinACommunity = () => {
       <div className="w-[506px] flex align-middle items-center flex-col">
         <div
           style={{
-            boxShadow: '0px 0px 16.4px 0px rgba(123,87,252,0.68)',
+            boxShadow: SHARED_MODAL_BOX_SHADOW_STYLE,
             padding: 17,
             borderRadius: '30%',
             backgroundColor: 'white',

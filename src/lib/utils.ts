@@ -150,3 +150,5 @@ export const toFixed = (num: number | string, decimalPlaces = 8) => {
   }
   return n.toFixed(decimalPlaces).replace(/\.?0+$/, '')
 }
+
+export const SHARED_MODAL_BOX_SHADOW_STYLE = '0px 0px 16.4px 0px rgba(229,107,26,0.68)'

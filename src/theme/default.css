@@ -8,7 +8,7 @@ html[data-theme='default'] {
   --color-primary: rgba(229, 107, 26, 1);
   --color-secondary: rgba(19, 194, 150, 1);
 
-  --background: #000;
+  --background: #1A1A1A;
   --foreground: rgba(37, 37, 37, 1);
 
   --text-primary: white;
