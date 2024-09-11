@@ -25,7 +25,9 @@ export default function Proposals() {
           {/*<MetricsCard title="Votes" amount="-" />*/}
           {/* @TODO ask product/design what this is */}
           {/* <MetricsCard title="Total voting power delegated" amount="230" /> */}
-          <MetricsCard title="Proposals created" amount={latestProposals.length.toString()} />
+          <div className="w-52">
+            <MetricsCard title="Proposals created" amount={latestProposals.length.toString()} />
+          </div>
         </div>
         {/* <div className="grid grid-cols-2 gap-x-6">
           <DelegatedTable />
