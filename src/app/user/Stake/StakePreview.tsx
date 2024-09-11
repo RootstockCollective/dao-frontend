@@ -1,9 +1,10 @@
-import { Span, Paragraph, Header } from '@/components/Typography'
+import { Span, Header } from '@/components/Typography'
 import { Button } from '@/components/Button'
 import { TbFileSearch } from 'react-icons/tb'
 import { StakePreviewBalance } from './StakePreviewBalance'
 import { StakePreviewBalanceProps } from '@/app/user/Stake/types'
 import { ReactNode } from 'react'
+import { SHARED_MODAL_BOX_SHADOW_STYLE } from '@/lib/utils'
 
 interface StakePreviewProps {
   from: Omit<StakePreviewBalanceProps, 'topLeftText'>
@@ -35,7 +36,7 @@ export const StakePreview = ({
       <div className="flex justify-center mt-[63px]">
         <div
           style={{
-            boxShadow: '0px 0px 16.4px 0px rgba(123,87,252,0.68)',
+            boxShadow: SHARED_MODAL_BOX_SHADOW_STYLE,
             padding: 17,
             borderRadius: '30%',
             backgroundColor: 'white',

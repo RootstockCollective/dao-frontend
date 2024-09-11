@@ -3,7 +3,7 @@ import { Modal } from '@/components/Modal/Modal'
 import { Header, Paragraph } from '@/components/Typography'
 import { FC } from 'react'
 import { LuBadgeCheck } from 'react-icons/lu'
-import { cn, truncateMiddle } from '@/lib/utils'
+import { cn, SHARED_MODAL_BOX_SHADOW_STYLE, truncateMiddle } from '@/lib/utils'
 
 export type Vote = 'for' | 'against' | 'abstain'
 
@@ -25,7 +25,7 @@ export const VoteSubmittedModal: FC<Props> = ({ onClose, proposal, vote }) => {
         <div className="flex justify-center mt-6">
           <div
             style={{
-              boxShadow: '0px 0px 16.4px 0px rgba(123,87,252,0.68)',
+              boxShadow: SHARED_MODAL_BOX_SHADOW_STYLE,
               padding: 17,
               borderRadius: '30%',
               backgroundColor: 'white',
