@@ -288,7 +288,7 @@ export default function Page() {
                 <div>
                   <Paragraph className="text-[18px]">Early Adopter</Paragraph>
                   <Button
-                    variant="secondary-full"
+                    variant="primary"
                     className="my-[16px]"
                     onClick={handleMinting}
                     disabled={!tokensAvailable || !address || isClaiming}
