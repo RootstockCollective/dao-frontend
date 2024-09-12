@@ -7,7 +7,7 @@ on:
 
 env:
   AWS_REGION: us-east-1
-  ECR_REPOSITORY: dao-frontend
+  ECR_REPOSITORY: dao-frontend-mainnet
   ECS_CLUSTER: dao-frontend
   ECS_SERVICE: dao-frontend-mainnet
   ECS_TASK_DEFINITION: dao-frontend-mainnet
