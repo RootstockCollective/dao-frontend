@@ -9,8 +9,8 @@ const openSans = Open_Sans({
 })
 
 export const metadata: Metadata = {
-  title: 'DAO',
-  description: 'DAO dApp',
+  title: 'RootstockCollective',
+  description: 'RootstockCollective DAO dApp',
 }
 
 interface Props {
