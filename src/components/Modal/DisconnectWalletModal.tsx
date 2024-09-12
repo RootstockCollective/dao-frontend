@@ -15,7 +15,9 @@ interface Props {
 export const DisconnectWalletModal: FC<Props> = ({ onClose, onConfirm, onCancel, address }) => (
   <Modal onClose={onClose} width={756}>
     <div className="px-[50px] pt-[42px] pb-[84px] flex justify-center flex-col items-center">
-      <Paragraph className="text-[24px]">Disconnect wallet</Paragraph>
+      <Paragraph className="text-[24px]" fontFamily="kk-topo">
+        DISCONNECT WALLET
+      </Paragraph>
       <Paragraph variant="normal" className="text-[16px] text-center">
         Are you sure you want to disconnect your wallet? <br />
         You won&apos;t be able to interact with the dApp.

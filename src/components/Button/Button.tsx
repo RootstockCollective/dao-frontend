@@ -57,7 +57,7 @@ export const Button: FC<Props> = ({
 
   const textClasses = cn({
     'font-bold relative': true,
-    'text-secondary': variant === 'secondary',
+    'text-white': variant === 'secondary',
     'text-disabled-secondary': disabled,
     'font-normal text-[rgba(255,255,255,0.8)]': variant === 'borderless',
     'text-black': variant === 'white',
