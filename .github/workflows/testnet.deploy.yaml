@@ -6,10 +6,10 @@ on:
       - develop
 
 env:
-  AWS_REGION: us-east-1                
-  ECR_REPOSITORY: rif-dao-frontend
+  AWS_REGION: us-east-1
+  ECR_REPOSITORY: dao-frontend
+  ECS_CLUSTER: dao-frontend
   ECS_SERVICE: dao-frontend-testnet
-  ECS_CLUSTER: dao-frontend-testnet
   ECS_TASK_DEFINITION: dao-frontend-testnet
   CONTAINER_NAME: dao-frontend-testnet
 
@@ -19,8 +19,9 @@ jobs:
   deploy:
     name: Deploy
     runs-on: ubuntu-latest
-    environment:
-      name: testnet
+    # NOTYET we need a non-free plan
+    #environment:
+    #  name: testnet
     permissions:
       id-token: write
       contents: read
@@ -32,7 +33,7 @@ jobs:
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v4
         with:
-          role-to-assume: ${{ secrets.ROLE_ECS_ARN }}
+          role-to-assume: ${{ secrets.AWS_LOGIN_TESTNET_ROLE_ARN }}
           aws-region: ${{ env.AWS_REGION }}
 
       - name: Login to Amazon ECR
@@ -51,7 +52,7 @@ jobs:
           docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG --build-arg arg_env="$PROFILE" --build-arg NEXT_PUBLIC_BUILD_ID=${{ github.sha }} --no-cache .
           docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
           echo "::set-output name=image::$ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG"
-      
+
       - name: Download task definition
         run: aws ecs describe-task-definition --task-definition ${{ env.ECS_TASK_DEFINITION }} --query taskDefinition > task-definition.json
 
