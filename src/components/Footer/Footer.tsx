@@ -1,4 +1,4 @@
-import { BUILD_ID, GITHUB_ORG } from '@/lib/constants'
+import { BUILD_ID, ENV, GITHUB_ORG } from '@/lib/constants'
 import { cn } from '@/lib/utils'
 import { FaGithub, FaSlack, FaXTwitter } from 'react-icons/fa6'
 
@@ -30,7 +30,7 @@ export const Footer = ({ brand = 'RootstockCollective', variant = 'login' }: Pro
             target="_blank"
           >
             Build ID:
-            {BUILD_ID ? BUILD_ID.slice(0, 7) : ''}
+            {BUILD_ID ? BUILD_ID.slice(0, 7) : ''} ({ENV})
           </a>
         </span>
         <span className="text-[0.5rem] text-white">
