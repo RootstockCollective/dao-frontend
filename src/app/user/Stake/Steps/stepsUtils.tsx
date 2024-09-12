@@ -26,10 +26,10 @@ export const steps = [
 
 export const textsDependingOnAction = {
   STAKE: {
-    modalTitle: 'Stake ',
+    modalTitle: 'STAKE ',
     inputLabel: 'Amount to stake',
     confirmButtonText: 'Stake',
-    preview: 'Stake preview',
+    preview: 'STAKE PREVIEW',
     previewText:
       'You have enough allowance to stake. Preview your stake and make sure everything is correct!',
     inProcess: 'Stake in process',
@@ -41,10 +41,10 @@ export const textsDependingOnAction = {
     ),
   },
   UNSTAKE: {
-    modalTitle: 'Unstake ',
+    modalTitle: 'UNSTAKE ',
     inputLabel: 'Amount to unstake',
     confirmButtonText: 'Unstake',
-    preview: 'Unstake preview',
+    preview: 'UNSTAKE PREVIEW',
     previewText: 'Preview your unstake and make sure everything is correct!',
     inProcess: 'Unstake in process',
     description: 'Your tokens will arrive soon.',

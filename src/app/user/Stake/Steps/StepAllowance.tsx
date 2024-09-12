@@ -57,7 +57,7 @@ export const StepAllowance = ({ onGoNext = () => {}, onCloseModal = () => {} }: 
       from={from}
       to={to}
       disableConfirm={isAllowanceReadLoading || isRequestingAllowance || isAllowanceRequestPending}
-      actionName="Allowance"
+      actionName="ALLOWANCE"
       actionText="You need to request allowance before staking."
       customComponentBeforeFooter={customFooter}
       confirmButtonText="Request allowance"

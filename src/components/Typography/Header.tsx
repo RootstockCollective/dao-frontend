@@ -12,10 +12,15 @@ interface Props {
   variant?: HeaderVariants
   children: ReactNode
   className?: string
+  fontFamily?: 'sora' | 'kk-topo' | 'rootstock-sans'
 }
 
-export const Header: FC<Props> = ({ variant = 'h1', children, className }) => (
-  <Typography tagVariant={variant} className={cn(classesByVariant[variant], className)}>
+export const Header: FC<Props> = ({ variant = 'h1', children, className, fontFamily = 'rootstock-sans' }) => (
+  <Typography
+    tagVariant={variant}
+    className={cn(classesByVariant[variant], className)}
+    fontFamily={fontFamily}
+  >
     {children}
   </Typography>
 )

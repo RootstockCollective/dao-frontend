@@ -4,9 +4,10 @@ import { FC, ReactNode } from 'react'
 
 interface Props {
   variant?: ParagraphVariants
+  children: ReactNode
   size?: SizeVariants
   className?: string
-  children: ReactNode
+  fontFamily?: 'sora' | 'kk-topo' | 'rootstock-sans'
 }
 
 const DEFAULT_CLASSES = 'text-[1.4rem]'
@@ -25,10 +26,17 @@ const classesBySize: Record<SizeVariants, string> = {
   large: 'text-[18px]',
 }
 
-export const Paragraph: FC<Props> = ({ variant = 'normal', size = 'medium', className, children }) => (
+export const Paragraph: FC<Props> = ({
+  variant = 'normal',
+  size = 'medium',
+  className,
+  children,
+  fontFamily = 'rootstock-sans',
+}) => (
   <Typography
     tagVariant="p"
     className={cn(DEFAULT_CLASSES, classesByVariant[variant], classesBySize[size], className)}
+    fontFamily={fontFamily}
   >
     {children}
   </Typography>
