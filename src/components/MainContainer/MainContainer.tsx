@@ -43,7 +43,7 @@ export const MainContainer: FC<Props> = ({ children, notProtected = false }) => 
     <>
       <div className="flex">
         <StatefulSidebar />
-        <div className="flex-auto flex-col">
+        <div className="flex flex-auto flex-col justify-between">
           <main className="px-[24px] mb-[100px]">
             {hasMounted && (
               <>
