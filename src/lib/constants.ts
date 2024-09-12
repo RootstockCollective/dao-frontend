@@ -1,6 +1,6 @@
 import { Address } from 'viem'
 
-export const GITHUB_ORG = 'rsksmart'
+export const GITHUB_ORG = 'RootstockCollective'
 export const ENV = process.env.NEXT_PUBLIC_ENV as string
 export const RIF_WALLET_SERVICES_URL = process.env.NEXT_PUBLIC_RIF_WALLET_SERVICES
 export const EXPLORER_URL = process.env.NEXT_PUBLIC_EXPLORER
