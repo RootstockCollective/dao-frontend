@@ -2,7 +2,6 @@ import { useAccount, useReadContracts } from 'wagmi'
 import { GovernorAbi } from '@/lib/abis/Governor'
 import { GovernorAddress } from '@/lib/contracts'
 import { Address, formatUnits } from 'viem'
-import { MULTICALL_ADDRESS } from '@/lib/constants'
 
 /**
  * Snapshot = blockNumber
@@ -25,7 +24,6 @@ export const useVotingPowerAtSnapshot = (blockNumber: bigint) => {
         functionName: 'proposalThreshold',
       },
     ],
-    multicallAddress: MULTICALL_ADDRESS,
     query: {
       refetchInterval: 5000,
     },
