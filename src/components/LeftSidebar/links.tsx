@@ -3,15 +3,15 @@ import { ENV } from '@/lib/constants'
 const testnet = {
   registerRns: 'https://testnet.manager.rns.rifos.org/',
   tokenBridge: 'https://testnet.tokenbridge.rsk.co/',
-  flyover: 'https://dapp.testnet.flyover.rif.technology/',
-  readMore: 'https://dev.rootstock.io/',
+  rif: 'https://www.coingecko.com/en/coins/rsk-infrastructure-framework/',
+  rbtc: 'https://rootstock.io/rbtc/#get-rbtc/',
 }
 
 const mainnet = {
   registerRns: 'https://manager.rns.rifos.org/',
   tokenBridge: 'https://tokenbridge.rsk.co/',
-  flyover: 'https://dapp.flyover.rif.technology/',
-  readMore: 'https://dev.rootstock.io/',
+  rif: 'https://www.coingecko.com/en/coins/rsk-infrastructure-framework/',
+  rbtc: 'https://rootstock.io/rbtc/#get-rbtc/',
 }
 
 const environments = {
