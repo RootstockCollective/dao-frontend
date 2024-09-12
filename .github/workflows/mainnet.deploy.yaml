@@ -13,7 +13,7 @@ env:
   ECS_TASK_DEFINITION: dao-frontend-mainnet
   CONTAINER_NAME: dao-frontend-mainnet
 
-  PROFILE: testnet
+  PROFILE: mainnet
 
 jobs:
   deploy:
