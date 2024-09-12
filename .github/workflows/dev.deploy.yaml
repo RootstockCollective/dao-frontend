@@ -1,4 +1,4 @@
-name: Deploy to Amazon ECS (Testnet)
+name: Deploy to Amazon ECS (dev)
 
 on:
   push:
@@ -9,9 +9,9 @@ env:
   AWS_REGION: us-east-1
   ECR_REPOSITORY: dao-frontend
   ECS_CLUSTER: dao-frontend
-  ECS_SERVICE: dao-frontend-testnet
-  ECS_TASK_DEFINITION: dao-frontend-testnet
-  CONTAINER_NAME: dao-frontend-testnet
+  ECS_SERVICE: dao-frontend-dev
+  ECS_TASK_DEFINITION: dao-frontend-dev
+  CONTAINER_NAME: dao-frontend-dev
 
   PROFILE: testnet
 
@@ -21,7 +21,7 @@ jobs:
     runs-on: ubuntu-latest
     # NOTYET we need a non-free plan
     #environment:
-    #  name: testnet
+    #  name: dev
     permissions:
       id-token: write
       contents: read
@@ -33,7 +33,7 @@ jobs:
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v4
         with:
-          role-to-assume: ${{ secrets.AWS_LOGIN_TESTNET_ROLE_ARN }}
+          role-to-assume: ${{ secrets.AWS_LOGIN_DEV_ROLE_ARN }}
           aws-region: ${{ env.AWS_REGION }}
 
       - name: Login to Amazon ECR
