@@ -40,7 +40,7 @@ export const Footer = ({ variant = 'login' }: Props) => (
           </a>
         </div>
         <div className="flex items-start">
-          <a href="#" className="hover:underline">
+          <a href="https://gov.rootstockcollective.xyz" className="hover:underline">
             Discourse
           </a>
         </div>
@@ -52,9 +52,6 @@ export const Footer = ({ variant = 'login' }: Props) => (
       </a>
       <a href={`https://github.com/${GITHUB_ORG}`}>
         <FaGithub className="mr-4" size={'1.5em'} />
-      </a>
-      <a href="#">
-        <FaSlack size={'1.5em'} />
       </a>
     </div>
   </footer>
