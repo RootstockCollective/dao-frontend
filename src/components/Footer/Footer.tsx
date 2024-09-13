@@ -1,6 +1,6 @@
 import { BUILD_ID, ENV, GITHUB_ORG } from '@/lib/constants'
 import { cn } from '@/lib/utils'
-import { FaGithub, FaSlack, FaXTwitter } from 'react-icons/fa6'
+import { FaGithub, FaTelegram, FaXTwitter } from 'react-icons/fa6'
 
 interface Props {
   brand?: string
@@ -52,6 +52,9 @@ export const Footer = ({ variant = 'login' }: Props) => (
       </a>
       <a href={`https://github.com/${GITHUB_ORG}`}>
         <FaGithub className="mr-4" size={'1.5em'} />
+      </a>
+      <a href="https://t.me/rootstockcollective">
+        <FaTelegram className="mr-4" size={'1.5em'} />
       </a>
     </div>
   </footer>

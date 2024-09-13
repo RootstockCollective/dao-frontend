@@ -5,9 +5,9 @@ export const CopyrightInfo = () => {
   const brand = 'RootstockCollective'
   return (
     <div className="flex flex-col">
-      <Paragraph>Built by {brand}</Paragraph>
-      <Paragraph className="leading-[100%]">
-        Copyright © {year} {brand}. All rights reserved.
+      <Paragraph className="font-normal text-[14px]">Built by {brand}</Paragraph>
+      <Paragraph className="leading-[100%] font-normal text-[14px]">
+        Copyright © {year}. All rights reserved.
       </Paragraph>
     </div>
   )

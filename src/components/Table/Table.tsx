@@ -29,7 +29,7 @@ export const Table: FC<TableProps> = ({ data, equalColumns = true, ...props }) =
       <TableHead>
         <TableRow>
           {header.map(headTitle => (
-            <TableCell style={{ width }} key={headTitle}>
+            <TableCell style={{ width, fontWeight: 'bold', fontSize: '14px' }} key={headTitle}>
               {headTitle}
             </TableCell>
           ))}
@@ -37,7 +37,7 @@ export const Table: FC<TableProps> = ({ data, equalColumns = true, ...props }) =
       </TableHead>
       <TableBody>
         {data.map((record, i) => (
-          <TableRow key={i}>
+          <TableRow key={i} className="text-[14px] border-hidden" style={{ borderTopStyle: 'solid' }}>
             {Object.values(record).map((val, j) => (
               <TableCell style={{ width }} key={j}>
                 {val}

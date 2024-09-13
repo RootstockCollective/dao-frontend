@@ -10,7 +10,7 @@ interface Props {
 
 export const Disclaimer: FC<Props> = ({ onConnect, onCancel }) => (
   <div className="flex flex-col items-center mt-12 w-3/4">
-    <Paragraph size="large" className="text-center font-rootstock-sans">
+    <Paragraph size="large" className="font-rootstock-sans">
       The RootstockCollective has taken actions in order to prevent access to any person located in the
       prohibited jurisdictions, as mentioned in the Terms of Use, including any person located in the United
       States of America. Please note that interaction with the dApp by any person or entity considered a
