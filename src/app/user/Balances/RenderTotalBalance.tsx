@@ -1,4 +1,5 @@
 import { useBalancesContext } from '@/app/user/Balances/context/BalancesContext'
+import { Paragraph } from '@/components/Typography'
 import { SupportedTokens } from '@/lib/contracts'
 import { formatCurrency, toFixed } from '@/lib/utils'
 
@@ -11,13 +12,13 @@ export const RenderTotalBalance = ({ symbol }: Props) => {
   const token = balances[symbol]
   return (
     <>
-      <p>
+      <Paragraph size="small">
         {toFixed(token.balance)} {token.symbol}
-      </p>
+      </Paragraph>
       {prices[symbol] && (
-        <p className="text-zinc-500">
+        <Paragraph size="small" className="text-zinc-500">
           = USD {formatCurrency(prices[symbol].price * Number(token.balance) ?? 0)}
-        </p>
+        </Paragraph>
       )}
     </>
   )
