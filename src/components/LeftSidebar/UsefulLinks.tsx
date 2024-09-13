@@ -18,6 +18,14 @@ export const UsefulLinks = () => (
       <Link href={currentLinks.registerRns} variant="menu" className="mb-[16px] text-[16px]" target="_blank">
         Get RNS Domain
       </Link>
+      <Link
+        href={currentLinks.tokenResources}
+        variant="menu"
+        className="mb-[16px] text-[16px]"
+        target="_blank"
+      >
+        Token Resources
+      </Link>
     </div>
   </div>
 )
