@@ -5,6 +5,7 @@ import { useMemo } from 'react'
 import { formatEther } from 'viem'
 import { useReadContract } from 'wagmi'
 import { usePricesContext } from '@/shared/context/PricesContext'
+import { Paragraph } from '@/components/Typography'
 
 export const TokenHoldingsStRIF = () => {
   const { data } = useReadContract({
@@ -18,9 +19,11 @@ export const TokenHoldingsStRIF = () => {
   const symbol = 'stRIF'
   return (
     <>
-      <p>{toFixed(balance)} stRIF</p>
+      <Paragraph size="small">{toFixed(balance)} stRIF</Paragraph>
       {prices[symbol] && (
-        <p className="text-zinc-500">= USD {formatCurrency(prices[symbol].price * Number(balance) ?? 0)}</p>
+        <Paragraph size="small" className="text-zinc-500">
+          = USD {formatCurrency(prices[symbol].price * Number(balance) ?? 0)}
+        </Paragraph>
       )}
     </>
   )

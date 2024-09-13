@@ -1,4 +1,5 @@
 import { TreasurySymbolsSupported, useTreasuryContext } from '@/app/treasury/TreasuryContext'
+import { Paragraph } from '@/components/Typography'
 import { formatCurrency, toFixed } from '@/lib/utils'
 import { usePricesContext } from '@/shared/context/PricesContext'
 
@@ -12,13 +13,13 @@ export const TokenHoldings = ({ symbol }: TokenHoldingsProps) => {
 
   return (
     <>
-      <p>
+      <Paragraph size="small">
         {toFixed(bucketsTotal[symbol])} {symbol}
-      </p>
+      </Paragraph>
       {prices[symbol] && (
-        <p className="text-zinc-500">
+        <Paragraph size="small" className="text-zinc-500">
           = USD {formatCurrency(prices[symbol].price * Number(bucketsTotal[symbol]) ?? 0)}
-        </p>
+        </Paragraph>
       )}
     </>
   )
