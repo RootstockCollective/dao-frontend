@@ -231,6 +231,8 @@ const PageWithProposal = (proposal: PageWithProposal) => {
                     The proposal is not ready to be executed yet. It should be ready on:{' '}
                     {proposalEtaHumanDate}
                   </p>
+                ) : isExecuting ? (
+                  <p className="text-[12px] font-bold mb-1">The proposal is being executed.</p>
                 ) : (
                   <p className="text-[12px] font-bold mb-1">The proposal can be executed.</p>
                 )
