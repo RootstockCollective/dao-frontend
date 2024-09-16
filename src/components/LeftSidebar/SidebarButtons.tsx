@@ -11,12 +11,12 @@ const DEFAULT_BUTTON_CLASSNAME = 'mb-[32px] pl-11'
 const START_ICON_CLASSES = 'left-[-28px] top-[2px]'
 
 export const SidebarButtons = ({ onClick, activeButton = 'communities' }: SidebarButtonsProps) => (
-  <div>
+  <>
     <Button
       startIcon={<ImageAsIcon src="/images/sidemenu/user.svg" alt="User" />}
       onClick={() => onClick?.('user')}
       fullWidth
-      variant={activeButton.startsWith('user') ? 'primary' : 'borderless'}
+      variant={!activeButton || activeButton.startsWith('user') ? 'primary' : 'borderless'}
       centerContent={false}
       className={DEFAULT_BUTTON_CLASSNAME}
       buttonProps={{ id: 'Button_User', name: 'user' }}
@@ -60,5 +60,5 @@ export const SidebarButtons = ({ onClick, activeButton = 'communities' }: Sideba
     >
       Communities
     </Button>
-  </div>
+  </>
 )
