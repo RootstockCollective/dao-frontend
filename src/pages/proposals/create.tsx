@@ -33,8 +33,11 @@ import { GoRocket } from 'react-icons/go'
 import { Address, zeroAddress } from 'viem'
 import { z } from 'zod'
 import { rbtcIconSrc } from '@/shared/rbtcIconSrc'
+import { ENV } from '@/lib/constants'
 
 const ADDRESS_REGEX = /^0x[a-fA-F0-9]{40}$/
+const rifMinimumAmount = ENV !== 'mainnet' ? 10 : 1
+const rbtcMinimumAmount = ENV !== 'mainnet' ? 0.0001 : 0.000001
 
 const FormSchema = z
   .object({
@@ -53,12 +56,12 @@ const FormSchema = z
       .positive('Required field')
       .max(MAX_INPUT_NUMBER_AMOUNT),
   })
-  .refine(data => data.tokenAddress === zeroAddress || Number(data.amount) >= 1, {
-    message: 'The minimum amount for ERC20 tokens is 1.0',
+  .refine(data => data.tokenAddress === zeroAddress || Number(data.amount) >= rifMinimumAmount, {
+    message: `The minimum amount for ERC20 tokens is ${rifMinimumAmount}.0`,
     path: ['amount'],
   })
-  .refine(data => data.tokenAddress !== zeroAddress || Number(data.amount) >= 0.000001, {
-    message: 'The minimum amount for RBTC is 0.000001',
+  .refine(data => data.tokenAddress !== zeroAddress || Number(data.amount) >= rbtcMinimumAmount, {
+    message: `The minimum amount for RBTC is ${rbtcMinimumAmount}`,
     path: ['amount'],
   })
 
