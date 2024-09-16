@@ -343,10 +343,6 @@ const BreadcrumbSection: FC<{ title: string }> = ({ title }) => {
     <Breadcrumb className="pb-4 border-b">
       <BreadcrumbList>
         <BreadcrumbItem>
-          <BreadcrumbLink href="/">Home</BreadcrumbLink>
-        </BreadcrumbItem>
-        <BreadcrumbSeparator />
-        <BreadcrumbItem>
           <BreadcrumbLink href="/proposals">Proposals</BreadcrumbLink>
         </BreadcrumbItem>
         <BreadcrumbSeparator />
