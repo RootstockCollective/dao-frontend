@@ -30,30 +30,38 @@ export const Footer = ({ variant = 'login' }: Props) => (
     {variant === 'container' && (
       <>
         <div className="flex items-start">
-          <a href="#" className="hover:underline me-4 md:me-6">
+          <a
+            href="https://wiki.rootstockcollective.xyz/RootstockCollective-FAQ-1031ca6b0b02808c95d3dcb5a0074f4b"
+            className="hover:underline me-4 md:me-6"
+            target="_blank"
+          >
             FAQs
           </a>
         </div>
         <div className="flex items-start">
-          <a href="https://wiki.rootstockcollective.xyz" className="hover:underline me-4 md:me-6">
+          <a
+            href="https://wiki.rootstockcollective.xyz"
+            className="hover:underline me-4 md:me-6"
+            target="_blank"
+          >
             Whitepaper
           </a>
         </div>
         <div className="flex items-start">
-          <a href="https://gov.rootstockcollective.xyz" className="hover:underline">
+          <a href="https://gov.rootstockcollective.xyz" className="hover:underline" target="_blank">
             Discourse
           </a>
         </div>
       </>
     )}
     <div className="flex items-start justify-end">
-      <a href="https://x.com/rootstockcoll">
+      <a href="https://x.com/rootstockcoll" target="_blank">
         <FaXTwitter className="mr-4" size={'1.5em'} />
       </a>
-      <a href={`https://github.com/${GITHUB_ORG}`}>
+      <a href={`https://github.com/${GITHUB_ORG}`} target="_blank">
         <FaGithub className="mr-4" size={'1.5em'} />
       </a>
-      <a href="https://t.me/rootstockcollective">
+      <a href="https://t.me/rootstockcollective" target="_blank">
         <FaTelegram className="mr-4" size={'1.5em'} />
       </a>
     </div>
