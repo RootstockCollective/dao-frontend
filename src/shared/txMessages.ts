@@ -33,8 +33,7 @@ export const TX_MESSAGES = {
     },
     success: {
       title: 'Stake successful',
-      content:
-        'Stake successful. Your stake has been successfully completed! You will start receiving rewards in your stRIF balance.',
+      content: 'Stake successful. Your stake has been successfully completed!',
       severity: 'success',
     },
   },
