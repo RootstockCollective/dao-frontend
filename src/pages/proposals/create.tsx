@@ -36,8 +36,8 @@ import { rbtcIconSrc } from '@/shared/rbtcIconSrc'
 import { ENV } from '@/lib/constants'
 
 const ADDRESS_REGEX = /^0x[a-fA-F0-9]{40}$/
-const rifMinimumAmount = ENV !== 'mainnet' ? 10 : 1
-const rbtcMinimumAmount = ENV !== 'mainnet' ? 0.0001 : 0.000001
+const rifMinimumAmount = ENV === 'mainnet' ? 10 : 1
+const rbtcMinimumAmount = ENV === 'mainnet' ? 0.0001 : 0.000001
 
 const FormSchema = z
   .object({
