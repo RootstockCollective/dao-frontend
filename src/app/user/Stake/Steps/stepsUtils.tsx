@@ -33,7 +33,7 @@ export const textsDependingOnAction = {
     previewText:
       'You have enough allowance to stake. Preview your stake and make sure everything is correct!',
     inProcess: 'STAKE IN PROCESS',
-    description: <>Congratulations and thank you for staking your RIF in the Collective.</>,
+    description: 'Congratulations and thank you for staking your RIF in the Collective.',
   },
   UNSTAKE: {
     modalTitle: 'UNSTAKE ',
