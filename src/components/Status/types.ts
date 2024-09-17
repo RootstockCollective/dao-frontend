@@ -1,1 +1,1 @@
-export type StatusSeverity = 'success' | 'rejected' | 'in-progress' | 'canceled'
+export type StatusSeverity = 'success' | 'rejected' | 'in-progress' | 'canceled' | 'queue'

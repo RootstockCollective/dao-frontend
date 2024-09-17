@@ -1,6 +1,7 @@
 import { StakePreviewBalanceProps } from '@/app/user/Stake/types'
 import { Span } from '@/components/Typography'
 import { toFixed } from '@/lib/utils'
+import Image from 'next/image'
 
 export const StakePreviewBalance = ({
   topLeftText,
@@ -26,7 +27,17 @@ export const StakePreviewBalance = ({
       <Span size="small" variant="light">
         Balance: {toFixed(balance)}
       </Span>
-      <div className="text-right mt-[8px]">{/* @TODO ICON {tokenSymbol} */}</div>
+      <div className="text-right mt-[8px] flex justify-end items-center">
+        {/* Maybe in the future make it dynamic - for now it's ok */}
+        <Image
+          src="/images/rif-logo.png"
+          alt="stRIF Logo"
+          width={0}
+          height={0}
+          className="mr-[8px] w-[16px] h-[16px]"
+        />
+        <strong>{tokenSymbol}</strong>
+      </div>
     </div>
   </div>
 )
