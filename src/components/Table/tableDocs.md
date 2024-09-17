@@ -3,14 +3,14 @@ A ready-to-use table assembled from a set of consistently styled table component
 ## Usage
 
 ```jsx
-import { Table } from './Table';
+import { Table } from './Table'
 
 const data = [
   { name: 'Alice', age: 30 },
   { name: 'Bob', age: 25 },
-];
+]
 
-<Table data={data} />;
+<Table data={data} />
 ```
 
 ## Props

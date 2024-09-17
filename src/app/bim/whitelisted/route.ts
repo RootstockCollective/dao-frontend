@@ -23,7 +23,6 @@ export async function GET() {
       proposalDescription: 'Lorem ipsum dolor sit amet',
       address: '0x3456789012345678901234567890123456789012',
     },
-
     {
       name: 'Builder 4',
       joiningData: '2022-01-04',
