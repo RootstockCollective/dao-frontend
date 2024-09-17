@@ -22,6 +22,7 @@ export const Status: FC<Props> = ({ severity = 'success', label, ...rest }) => {
     'bg-st-info': severity === 'in-progress',
     'bg-st-error': severity === 'rejected',
     'bg-st-white': severity === 'canceled',
+    'bg-st-queue': severity === 'queue',
     'text-black': severity === 'canceled',
   })
 

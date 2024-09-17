@@ -38,6 +38,7 @@ html[data-theme='default'] {
   --st-info: rgba(255, 153, 0, 1);
   --st-error: rgba(242, 72, 34, 1);
   --st-white: rgba(255, 255, 255, 1); /* This white is used in progress bar */
+  --st-queue: rgba(102, 94, 246, 1);
 
   /* Font */
   --font-open-sans: 'Open Sans';

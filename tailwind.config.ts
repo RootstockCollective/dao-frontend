@@ -25,6 +25,7 @@ const config: Config = {
         'st-info': 'var(--st-info)',
         'st-error': 'var(--st-error)',
         'st-white': 'var(--st-white)',
+        'st-queue': 'var(--st-queue)',
         'text-light': 'var(--text-light)',
         'disabled-primary': 'var(--disabled-primary)',
         'disabled-secondary': 'var(--disabled-secondary)',

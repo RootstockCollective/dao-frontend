@@ -8,7 +8,7 @@ const StatusByProposalState = {
   Canceled: 'canceled',
   Defeated: 'rejected',
   Succeeded: 'success',
-  Queued: 'in-progress',
+  Queued: 'queue',
   Expired: 'rejected',
   Executed: 'success',
   undefined: null,
