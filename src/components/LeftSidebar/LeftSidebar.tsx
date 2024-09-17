@@ -6,7 +6,7 @@ import { CopyrightInfo } from './CopyrightInfo'
 
 export const LeftSidebar = ({ activeButton = 'communities', onSidebarButtonClick }: LeftSidebarProps) => {
   return (
-    <aside className="min-h-screen w-[327px] min-w-[234px] border border-input-bg px-8 border-b-0 flex flex-col justify-between whitespace-nowrap">
+    <aside className="min-h-screen w-[327px] border border-input-bg px-8 border-b-0 flex flex-col justify-between whitespace-nowrap">
       <div>
         <Logo className="mb-[56px] mt-[47px]" />
         <SidebarButtons onClick={onSidebarButtonClick} activeButton={activeButton} />
