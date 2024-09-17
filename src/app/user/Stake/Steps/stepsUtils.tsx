@@ -33,12 +33,7 @@ export const textsDependingOnAction = {
     previewText:
       'You have enough allowance to stake. Preview your stake and make sure everything is correct!',
     inProcess: 'Stake in process',
-    description: (
-      <>
-        Congratulations! Real-Time APR rewards will start <br />
-        accumulating in your stRIF balance every minute!
-      </>
-    ),
+    description: <>Congratulations and thank you for staking your RIF in the Collective.</>,
   },
   UNSTAKE: {
     modalTitle: 'UNSTAKE ',
