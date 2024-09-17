@@ -5,6 +5,7 @@ import { FC } from 'react'
 import { FaUser } from 'react-icons/fa'
 import { shortAddress } from '@/lib/utils'
 import { Address } from 'viem'
+import Image from 'next/image'
 
 interface Props {
   onClose: () => void
@@ -23,7 +24,14 @@ export const DisconnectWalletModal: FC<Props> = ({ onClose, onConfirm, onCancel,
         You won&apos;t be able to interact with the dApp.
       </Paragraph>
       <div className="my-[32px] p-[15px] bg-input-bg flex gap-2 items-center justify-between min-w-[377px] rounded-[6px]">
-        <FaUser /> {/* @TODO insert provider image */}
+        {/* @TODO insert provider image */}
+        <Image
+          src="/images/metamask.svg"
+          alt="metamask"
+          width={0}
+          height={0}
+          style={{ width: '22px', height: 'auto' }}
+        />
         <Typography tagVariant="span" className="flex-1">
           {shortAddress(address, 8)}
         </Typography>
