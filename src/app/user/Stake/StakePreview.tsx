@@ -46,7 +46,7 @@ export const StakePreview = ({
           <TbFileSearch size={48} color="var(--color-primary)" />
         </div>
       </div>
-      <Header className="mt-[62px] text-center" fontFamily="kk-topo">
+      <Header className="mt-[62px] text-center font-normal" fontFamily="kk-topo">
         {actionName}
       </Header>
       <Span className="text-center">{actionText}</Span>
