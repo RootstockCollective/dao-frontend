@@ -155,8 +155,8 @@ export default function CreateProposal() {
             <AccordionItem value="proposal">
               <AccordionTrigger>
                 <div className="flex justify-between align-middle w-full">
-                  <Header variant="h1" className="text-[24px]">
-                    Proposal
+                  <Header variant="h1" className="text-[24px]" fontFamily="kk-topo">
+                    PROPOSAL
                   </Header>
                   {isProposalCompleted && (
                     <Paragraph className="self-center mr-6 text-md text-st-success">Completed</Paragraph>
@@ -200,8 +200,8 @@ export default function CreateProposal() {
             <AccordionItem value="actions" className="border-0">
               <AccordionTrigger>
                 <div className="flex justify-between align-middle w-full">
-                  <Header variant="h1" className="text-[24px]">
-                    Actions
+                  <Header variant="h1" className="text-[24px]" fontFamily="kk-topo">
+                    ACTIONS
                   </Header>
                   {isActionsCompleted && (
                     <Paragraph className="self-center mr-6 text-md text-st-success">Completed</Paragraph>

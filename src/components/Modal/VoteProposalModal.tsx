@@ -4,9 +4,9 @@ import { Input } from '@/components/Input'
 import { Header, Label, Paragraph, Span, Typography } from '@/components/Typography'
 import { shortAddress, toFixed, truncateMiddle } from '@/lib/utils'
 import { FC, useState } from 'react'
-import { FaUser } from 'react-icons/fa'
 import { FaCopy } from 'react-icons/fa6'
 import { Address } from 'viem'
+import Image from 'next/image'
 
 export type Vote = 'for' | 'against' | 'abstain'
 
@@ -39,7 +39,7 @@ export const VoteProposalModal: FC<Props> = ({
   return (
     <Modal onClose={onClose} width={756}>
       <div className="px-[50px] pt-[21px] pb-[42px] flex justify-center flex-col">
-        <Paragraph className="text-bold text-[24px] text-center mb-4">Voting</Paragraph>
+        <Paragraph className="text-bold text-[24px] text-center mb-4">VOTING</Paragraph>
         <Header variant="h1" className="font-semibold">
           {proposal.title}
         </Header>
@@ -64,7 +64,14 @@ export const VoteProposalModal: FC<Props> = ({
           Wallet
         </Label>
         <div className="p-[15px] bg-input-bg flex gap-2 items-center justify-between w-1/2 rounded-[6px]">
-          <FaUser /> {/* @TODO insert provider image */}
+          {/* @TODO insert provider image */}
+          <Image
+            src="/images/metamask.svg"
+            alt="metamask"
+            width={0}
+            height={0}
+            style={{ width: '22px', height: 'auto' }}
+          />
           <Typography tagVariant="span" className="flex-1">
             {shortAddress(address, 10)}
           </Typography>
