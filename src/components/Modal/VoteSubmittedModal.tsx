@@ -37,7 +37,7 @@ export const VoteSubmittedModal: FC<Props> = ({ onClose, proposal, vote }) => {
         </div>
 
         <Header variant="h1" className="font-semibold text-center mt-6">
-          Vote submitted
+          VOTE SUBMITTED
         </Header>
         <Paragraph variant="light" className="text-[14px] text-center mt-4">
           Your vote has been submitted successfully! Thank you for <br /> participating in the decision-making

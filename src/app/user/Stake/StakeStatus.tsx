@@ -41,7 +41,9 @@ export const StakeStatus = ({
           <LuBadgeCheck size={48} color="var(--color-primary)" />
         </div>
       </div>
-      <Header className="mt-[62px] text-center">{textsDependingOnAction[actionName].inProcess}</Header>
+      <Header className="mt-[62px] text-center" fontFamily="kk-topo">
+        {textsDependingOnAction[actionName].inProcess}
+      </Header>
       <Span className="text-center">{textsDependingOnAction[actionName].description}</Span>
       {/* Preview box */}
       <div className="flex flex-col mt-[54px] px-6">

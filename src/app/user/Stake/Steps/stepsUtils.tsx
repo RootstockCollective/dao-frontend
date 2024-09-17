@@ -32,7 +32,7 @@ export const textsDependingOnAction = {
     preview: 'STAKE PREVIEW',
     previewText:
       'You have enough allowance to stake. Preview your stake and make sure everything is correct!',
-    inProcess: 'Stake in process',
+    inProcess: 'STAKE IN PROCESS',
     description: <>Congratulations and thank you for staking your RIF in the Collective.</>,
   },
   UNSTAKE: {
@@ -41,7 +41,7 @@ export const textsDependingOnAction = {
     confirmButtonText: 'Unstake',
     preview: 'UNSTAKE PREVIEW',
     previewText: 'Preview your unstake and make sure everything is correct!',
-    inProcess: 'Unstake in process',
+    inProcess: 'UNSTAKE IN PROCESS',
     description: 'Your tokens will arrive soon.',
   },
 }
