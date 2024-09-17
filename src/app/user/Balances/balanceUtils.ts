@@ -30,8 +30,8 @@ export const getTokenBalance = (
   for (let equivalentSymbol of equivalentSymbols) {
     const tokenData = arrayToSearch.find(
       token =>
-        token.symbol.toLowerCase() === equivalentSymbol.toLowerCase() &&
-        token.contractAddress.toLowerCase() === currentContract.toLowerCase(),
+        token.symbol?.toLowerCase() === equivalentSymbol.toLowerCase() &&
+        token.contractAddress?.toLowerCase() === currentContract.toLowerCase(),
     )
     if (tokenData) {
       resultToReturn.balance = formatBalanceToHuman(tokenData.balance)
