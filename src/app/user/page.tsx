@@ -3,13 +3,23 @@ import { BalancesSection } from '@/app/user/Balances/BalancesSection'
 import { CommunitiesSection } from '@/app/user/Communities/CommunitiesSection'
 import { MainContainer } from '@/components/MainContainer/MainContainer'
 import { TxStatusMessage } from '@/components/TxStatusMessage'
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/Tabs'
 
 export default function User() {
   return (
     <MainContainer>
-      <TxStatusMessage messageType="staking" />
-      <BalancesSection />
-      <CommunitiesSection />
+      <Tabs defaultValue="holdings">
+        <TabsList className="pb-[25px]">
+          <TabsTrigger value="holdings">My Holdings</TabsTrigger>
+          <TabsTrigger value="rewards">My Rewards</TabsTrigger>
+        </TabsList>
+        <TabsContent value="holdings">
+          <TxStatusMessage messageType="staking" />
+          <BalancesSection />
+          <CommunitiesSection />
+        </TabsContent>
+        <TabsContent value="rewards">My Rewards</TabsContent>
+      </Tabs>
     </MainContainer>
   )
 }
