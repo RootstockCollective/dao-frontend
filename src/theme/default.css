@@ -1,26 +1,53 @@
 /* default theme */
-
-html[data-theme="default"] {
-    --color-primary: rgba(117, 205, 255, 1);
-    
-    --background: #000;
-    --foreground: rgba(37, 37, 37, 1);
-    
-    --text-primary: white;
-    --text-secondary: rgba(184, 184, 184, 1);
-    
-    /* Statuses */
-    --st-success: rgba(120, 199, 0, 1);
-    --st-info: var(--color-primary);
-    --st-error: rgba(255, 145, 0, 1);
-    --st-pink: rgba(243, 108, 215, 1); /* This pink is used in progress bar */
-    
-    /* Font */
-    --font-open-sans: 'Open Sans'
+@font-face {
+  font-family: 'Sora';
+  src: url('/fonts/Sora.ttf') format('truetype');
 }
 
-* {
-    background: var(--background);
-    color: var(--text-primary);
-    font-family: var(--font-open-sans), serif;
+@font-face {
+  font-family: 'KK-Topo';
+  src: url('/fonts/KK-Topo-Regular.otf') format('truetype');
+}
+
+@font-face {
+  font-family: 'Rootstock-Sans';
+  src: url('/fonts/Rootstock-Sans-Body.otf') format('truetype');
+}
+
+@font-face {
+  font-family: 'Rootstock-Sans';
+  src: url('/fonts/Rootstock-Sans-Headline.otf') format('truetype');
+  font-weight: bold;
+}
+
+html[data-theme='default'] {
+  --color-primary: rgba(229, 107, 26, 1);
+  --color-secondary: rgba(45,45,45, 1);
+
+  --background: #1A1A1A;
+  --foreground: rgba(37, 37, 37, 1);
+
+  --text-primary: white;
+  --text-secondary: rgba(184, 184, 184, 1);
+  --text-light: rgba(113, 113, 113, 1); /* For labels light */
+
+  --disabled-primary: rgba(229, 231, 235, 1);
+  --disabled-secondary: rgba(136, 153, 168, 1);
+  /* Statuses */
+  --st-success: rgba(34, 173, 92, 1);
+  --st-info: rgba(255, 153, 0, 1);
+  --st-error: rgba(242, 72, 34, 1);
+  --st-white: rgba(255, 255, 255, 1); /* This white is used in progress bar */
+  --st-queue: rgba(102, 94, 246, 1);
+
+  /* Font */
+  --font-open-sans: 'Open Sans';
+  --font-sora: 'Sora';
+
+  /* Input */
+  --input-bg: rgba(85, 85, 85, 0.2);
+  --input-placeholder: rgba(156, 163, 175, 1);
+
+  /* Links (a tag) */
+  --link: rgba(143, 154, 255, 1);
 }

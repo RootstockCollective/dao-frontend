@@ -3,6 +3,15 @@ import "./../src/app/globals.css";
 
 const preview: Preview = {
   parameters: {
+    backgrounds: {
+      default: 'dark',
+      values: [
+        {
+          name: 'dark',
+          value: 'var(--background)',
+        },
+      ],
+    },
     controls: {
       matchers: {
         color: /(background|color)$/i,
@@ -10,6 +19,8 @@ const preview: Preview = {
       },
     },
   },
-};
+
+  tags: ['autodocs']
+}
 
 export default preview;

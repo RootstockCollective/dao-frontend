@@ -1,9 +1,19 @@
-@import "../theme/default.css";
+@import '../theme/default.css';
 
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
+@layer utilities {
+  .underline-thick {
+    text-decoration-thickness: 0.5px;
+  }
+}
+
 * {
-    box-sizing: border-box;
+  box-sizing: border-box;
+}
+
+body {
+  @apply text-text-primary bg-background;
 }

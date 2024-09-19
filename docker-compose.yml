@@ -1,0 +1,10 @@
+services:
+  web:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      args:
+        arg_env: testnet
+    ports:
+      - "3010:3000"
+    command: npm start

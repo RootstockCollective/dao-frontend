@@ -43,9 +43,13 @@ A health check has been created to verify that your instance is running.
 
 Go to /health to see a "Page is OK!" text rendered.
 
-## Deploy on Vercel
+## Deployments
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/deployment) for more details.
+Storybook GitHub pages (can vary): https://vigilant-guacamole-p8v5w3k.pages.github.io/
+
+Main APP URL: https://frontend.testnet.dao.rif.technology
+
+Backend URL: https://dao-backend.testnet.rifcomputing.net/api-docs
 
 ## Storybook
 
