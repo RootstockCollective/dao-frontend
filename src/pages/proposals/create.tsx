@@ -27,7 +27,7 @@ import { formatCurrency } from '@/lib/utils'
 import { rbtcIconSrc } from '@/shared/rbtcIconSrc'
 import { TX_MESSAGES } from '@/shared/txMessages'
 import { zodResolver } from '@hookform/resolvers/zod'
-import { isAddress, isValidChecksumAddress } from '@rsksmart/rsk-utils'
+import { isAddress, isValidChecksumAddress, toChecksumAddress } from '@rsksmart/rsk-utils'
 import Image from 'next/image'
 import { useRouter } from 'next/navigation'
 import { useEffect, useMemo, useState } from 'react'
@@ -95,6 +95,7 @@ export default function CreateProposal() {
     formState: { touchedFields, errors, isValid, isDirty },
     watch,
     trigger,
+    setValue,
   } = form
 
   const pricesMap = useMemo(
@@ -222,7 +223,23 @@ export default function CreateProposal() {
                         <FormInput placeholder="0x123...456" {...field} />
                       </FormControl>
                       <FormDescription>Write or paste the wallet address of the recipient</FormDescription>
-                      <FormMessage />
+                      <FormMessage>
+                        {errors.toAddress?.message === 'Invalid checksum' ? (
+                          <>
+                            Please check that the address is correct before continuing. If the address is
+                            correct, use the button below to convert your address to a valid checksum address.{' '}
+                            <span
+                              className="text-white underline cursor-pointer"
+                              onClick={() => {
+                                setValue('toAddress', toChecksumAddress(field.value))
+                                trigger('toAddress')
+                              }}
+                            >
+                              Fix address.
+                            </span>
+                          </>
+                        ) : undefined}
+                      </FormMessage>
                     </FormItem>
                   )}
                 />
