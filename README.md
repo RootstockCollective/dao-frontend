@@ -22,18 +22,20 @@ pnpm dev
 bun dev
 ```
 
+Choose environment using the PROFILE environment variable, such as:
+
+```bash
+export PROFILE=testnet
+```
+
+the value has to correspond to one of the `.env.` file endings
+
 > [!NOTE]
 > ‼️ **<span style="color:red;">Warning: DO NOT USE IN PRODUCTION!</span>**
 >
 > To avoid **CORS errors** when running against testnet from localhost we can proxy the calls to the RIF Wallet Services via a local loop that strips the CORS headers on the way out and adds the expected response ones on the way in.
-> This can be achieved by:
->
-> ```bash
-> cp .env.testnet.local .env
-> ```
->
-> before running `npm run dev`
-
+> This can be achieved by setting the `testnet.local` `PROFILE`:
+> `PROFILE=testnet.local npm run dev`
 
 Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
 
@@ -105,7 +107,6 @@ npm run test:watch
 ```
 
 This is useful during development when you want to continuously run the tests as you make changes to your code.
-
 
 ## E2E Testing with Cypress
 

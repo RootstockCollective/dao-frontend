@@ -1,10 +1,10 @@
-export const fetchAddressTokensEndpoint = '/address/{{address}}/tokens?chainId={{chainId}}'
+export const fetchAddressTokensEndpoint = process.env.NEXT_PUBLIC_API_RWS_TOKEN_BY_ADDRESS || ''
 
-export const fetchPricesEndpoint = '/price?addresses={{addresses}}&convert={{convert}}'
+export const fetchPricesEndpoint = process.env.NEXT_PUBLIC_API_RWS_PRICES_BY_ADDRESS || ''
 
-export const fetchNFTsOwnedByAddressAndNftAddress = '/address/{{address}}/nfts/{{nftAddress}}'
+export const fetchNFTsOwnedByAddressAndNftAddress = process.env.NEXT_PUBLIC_API_RWS_NFT_BY_ADDRESS || ''
 
 export const fetchProposalsCreatedByGovernorAddress =
-  '/address/{{address}}/eventsByTopic0?topic0=0x7d84a6263ae0d98d3329bd7b46bb4e8d6f98cd35a7adb45c274c8b7fd5ebd5e0'
+  process.env.NEXT_PUBLIC_API_RWS_EVENTS_PROPOSALS_BY_ADDRESS || ''
 
-export const getNftInfo = '/nfts/{{nftAddress}}'
+export const getNftInfo = process.env.NEXT_PUBLIC_API_RWS_NFT_INFO || ''

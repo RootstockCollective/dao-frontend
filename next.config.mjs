@@ -4,7 +4,7 @@ import { config } from 'dotenv'
 
 // Load the environment variables based on the profile
 config({
-  path: process.env.PROFILE ? `.env.${process.env.PROFILE}` : '.env',
+  path: ['apis.conf', process.env.PROFILE ? `.env.${process.env.PROFILE}` : '.env'],
 })
 
 // Load the endpoints defined in the src/lib/endpoints.ts file
@@ -14,7 +14,6 @@ require('ts-node').register({
     module: 'commonjs',
   },
 })
-const endpoints = require('./src/lib/endpoints.ts')
 
 // Define the proxy configurations
 const corsBypassProxyConfig = () => ({
@@ -41,6 +40,9 @@ const proxyConfigs = {
 // hence for rewrites, we need to extract the pathname only.
 const rifWalletServicesURL = new URL(process.env.NEXT_PUBLIC_RIF_WALLET_SERVICES || 'http://localhost:3000')
 
+const endpointsPrefix = 'NEXT_PUBLIC_API_RWS_'
+const endpointsEnvVars = Object.entries(process.env).filter(([key]) => key.startsWith(endpointsPrefix))
+
 // Define the rewrites based on the network
 const rewrites = {
   testnet: () => [
@@ -50,9 +52,9 @@ const rewrites = {
     },
   ],
   regtest: () =>
-    Object.entries(endpoints).map(([key, endpoint]) => ({
+    Object.entries(endpointsEnvVars).map(([key, endpoint]) => ({
       source: `${rifWalletServicesURL.pathname}${endpoint}`.replace(/\{\{([^\}]+)\}\}/g, ':$1').split('?')[0],
-      destination: `/api/mocks/${key}?path=:path*`,
+      destination: `/api/mocks/${key.replace(endpointsPrefix, '').toLowerCase()}?path=:path*`,
     })),
 }
 
