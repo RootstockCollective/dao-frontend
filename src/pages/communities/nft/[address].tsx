@@ -32,6 +32,11 @@ const IS_IN_WALLET = 'isInWallet'
  */
 type IsInWallet = Record<Address, Record<number, boolean>>
 
+interface MessageProps {
+  text: ReactNode
+  severity?: 'info' | 'warning' | 'error'
+}
+
 /**
  * Early Adopter community page
  */
@@ -52,13 +57,11 @@ export default function Page() {
   } = useCommunity(nftAddress)
   const { stRifBalance } = useStRif()
 
-  const [message, setMessage] = useState<{ text: string; severity?: 'info' | 'warning' | 'error' } | null>(
-    null,
-  )
+  const [message, setMessage] = useState<MessageProps | null>(null)
   // reset message after few seconds
   useEffect(() => {
     if (!message) return
-    const timeout = setTimeout(() => setMessage(null), 8000)
+    const timeout = setTimeout(() => setMessage(null), 15000)
     return () => clearTimeout(timeout)
   }, [message])
   // read from local storage if the NFT was added to the wallet
@@ -85,7 +88,15 @@ export default function Page() {
     // check if user's stRIF Balance is more than required threshold to get a reward NFT
     if (stRifBalance < (stRifThreshold ?? 0n))
       return setMessage({
-        text: `To get the Early Adopters community NFT you need to own at least ${formatEther(stRifThreshold!)} stRIFs`,
+        text: (
+          <>
+            To get the Early Adopters community NFT you need to own at least ${formatEther(stRifThreshold!)}{' '}
+            stRIFs.{' '}
+            <span className="underline cursor-pointer" onClick={() => router.push('/user?action=stake')}>
+              Stake RIF tokens now.
+            </span>
+          </>
+        ),
         severity: 'warning',
       })
 
