@@ -21,10 +21,13 @@ import { MAX_INPUT_NUMBER_AMOUNT } from '@/components/Input/InputNumber'
 import { MainContainer } from '@/components/MainContainer/MainContainer'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/Select'
 import { Header, Paragraph } from '@/components/Typography'
+import { ENV } from '@/lib/constants'
 import { tokenContracts } from '@/lib/contracts'
 import { formatCurrency } from '@/lib/utils'
+import { rbtcIconSrc } from '@/shared/rbtcIconSrc'
 import { TX_MESSAGES } from '@/shared/txMessages'
 import { zodResolver } from '@hookform/resolvers/zod'
+import { isAddress, isValidChecksumAddress, toChecksumAddress } from '@rsksmart/rsk-utils'
 import Image from 'next/image'
 import { useRouter } from 'next/navigation'
 import { useEffect, useMemo, useState } from 'react'
@@ -32,10 +35,7 @@ import { useForm } from 'react-hook-form'
 import { GoRocket } from 'react-icons/go'
 import { Address, zeroAddress } from 'viem'
 import { z } from 'zod'
-import { rbtcIconSrc } from '@/shared/rbtcIconSrc'
-import { ENV } from '@/lib/constants'
 
-const ADDRESS_REGEX = /^0x[a-fA-F0-9]{40}$/
 const rifMinimumAmount = ENV === 'mainnet' ? 10 : 1
 const rbtcMinimumAmount = ENV === 'mainnet' ? 0.0001 : 0.000001
 
@@ -49,7 +49,10 @@ const FormSchema = z
       .string()
       .max(3000)
       .refine(s => s.trim().replace(/\s+/g, ' ').length >= 10, 'Field must contain at least 10 characters'),
-    toAddress: z.string().refine(value => ADDRESS_REGEX.test(value), 'Please enter a valid address'),
+    toAddress: z
+      .string()
+      .refine(value => isAddress(value), 'Please enter a valid address')
+      .refine(value => isValidChecksumAddress(value) || value === value.toLowerCase(), 'Invalid checksum'),
     tokenAddress: z.string().length(42),
     amount: z.coerce
       .number({ invalid_type_error: 'Required field' })
@@ -92,6 +95,7 @@ export default function CreateProposal() {
     formState: { touchedFields, errors, isValid, isDirty },
     watch,
     trigger,
+    setValue,
   } = form
 
   const pricesMap = useMemo(
@@ -219,7 +223,23 @@ export default function CreateProposal() {
                         <FormInput placeholder="0x123...456" {...field} />
                       </FormControl>
                       <FormDescription>Write or paste the wallet address of the recipient</FormDescription>
-                      <FormMessage />
+                      <FormMessage>
+                        {errors.toAddress?.message === 'Invalid checksum' ? (
+                          <>
+                            Please check that the address is correct before continuing. If the address is
+                            correct, use the button below to convert your address to a valid checksum address.{' '}
+                            <span
+                              className="text-white underline cursor-pointer"
+                              onClick={() => {
+                                setValue('toAddress', toChecksumAddress(field.value))
+                                trigger('toAddress')
+                              }}
+                            >
+                              Fix address.
+                            </span>
+                          </>
+                        ) : undefined}
+                      </FormMessage>
                     </FormItem>
                   )}
                 />
