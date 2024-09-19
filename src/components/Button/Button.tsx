@@ -70,7 +70,7 @@ export const Button: FC<Props> = ({
       className={classes}
       onClick={e => !disabled && onClick?.(e)}
       {...buttonProps}
-      data-testid={`${DEFAULT_DATA_TESTID}${buttonProps['data-testid']}${buttonProps.id}`}
+      data-testid={`${DEFAULT_DATA_TESTID}${buttonProps['data-testid'] || ''}${buttonProps.id || ''}`}
     >
       <span className={textClasses}>
         <span className={cn('absolute left-[-20px] top-[4px]', startIconClasses)}>{startIcon}</span>
