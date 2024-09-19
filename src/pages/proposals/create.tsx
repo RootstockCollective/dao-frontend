@@ -21,10 +21,13 @@ import { MAX_INPUT_NUMBER_AMOUNT } from '@/components/Input/InputNumber'
 import { MainContainer } from '@/components/MainContainer/MainContainer'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/Select'
 import { Header, Paragraph } from '@/components/Typography'
+import { ENV } from '@/lib/constants'
 import { tokenContracts } from '@/lib/contracts'
 import { formatCurrency } from '@/lib/utils'
+import { rbtcIconSrc } from '@/shared/rbtcIconSrc'
 import { TX_MESSAGES } from '@/shared/txMessages'
 import { zodResolver } from '@hookform/resolvers/zod'
+import { isAddress, isValidChecksumAddress } from '@rsksmart/rsk-utils'
 import Image from 'next/image'
 import { useRouter } from 'next/navigation'
 import { useEffect, useMemo, useState } from 'react'
@@ -32,13 +35,9 @@ import { useForm } from 'react-hook-form'
 import { GoRocket } from 'react-icons/go'
 import { Address, zeroAddress } from 'viem'
 import { z } from 'zod'
-import { rbtcIconSrc } from '@/shared/rbtcIconSrc'
-import { ENV } from '@/lib/constants'
 
 const rifMinimumAmount = ENV === 'mainnet' ? 10 : 1
 const rbtcMinimumAmount = ENV === 'mainnet' ? 0.0001 : 0.000001
-import { isAddress, isValidChecksumAddress } from '@rsksmart/rsk-utils'
-import { CHAIN_ID } from '@/lib/constants'
 
 const FormSchema = z
   .object({
@@ -53,7 +52,7 @@ const FormSchema = z
     toAddress: z
       .string()
       .refine(value => isAddress(value), 'Please enter a valid address')
-      .refine(value => isValidChecksumAddress(value, CHAIN_ID as never as number), 'Invalid checksum'),
+      .refine(value => isValidChecksumAddress(value) || value === value.toLowerCase(), 'Invalid checksum'),
     tokenAddress: z.string().length(42),
     amount: z.coerce
       .number({ invalid_type_error: 'Required field' })
