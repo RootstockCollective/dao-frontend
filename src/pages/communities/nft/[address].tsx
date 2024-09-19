@@ -82,10 +82,10 @@ export default function Page() {
 
   const handleMinting = () => {
     if (!address) return
-    // check if user's StRif Balance is more than required threshold to get a reward NFT
+    // check if user's stRIF Balance is more than required threshold to get a reward NFT
     if (stRifBalance < (stRifThreshold ?? 0n))
       return setMessage({
-        text: `To get the Early Adopters community NFT you need to own at least ${formatEther(stRifThreshold!)} StRIFs`,
+        text: `To get the Early Adopters community NFT you need to own at least ${formatEther(stRifThreshold!)} stRIFs`,
         severity: 'warning',
       })
 
@@ -139,7 +139,7 @@ export default function Page() {
           },
         })
       } catch (error) {
-        /* 
+        /*
         Calling the function again after a short timeout if specific error was thrown.
         This is done because the NFT is not recognized by the wallet within the first few seconds after minting
         */
