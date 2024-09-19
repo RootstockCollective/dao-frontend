@@ -14,6 +14,7 @@ interface StakePreviewProps {
   actionName: string
   actionText: string
   confirmButtonText?: string
+  confirmButtonDataTestId?: string
   customComponentBeforeFooter?: ReactNode
   disableConfirm?: boolean
   loading?: boolean
@@ -29,6 +30,7 @@ export const StakePreview = ({
   actionName,
   actionText,
   confirmButtonText = 'Confirm',
+  confirmButtonDataTestId,
   loading = false,
 }: StakePreviewProps) => {
   return (
@@ -66,7 +68,7 @@ export const StakePreview = ({
           onClick={onConfirm}
           disabled={disableConfirm || loading}
           loading={loading}
-          buttonProps={{ 'data-testid': 'Confirm' }}
+          buttonProps={{ 'data-testid': confirmButtonDataTestId || confirmButtonText }}
         >
           {confirmButtonText}
         </Button>

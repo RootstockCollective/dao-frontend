@@ -61,6 +61,7 @@ export const StepAllowance = ({ onGoNext = () => {}, onCloseModal = () => {} }: 
       actionText="You need to request allowance before staking."
       customComponentBeforeFooter={customFooter}
       confirmButtonText="Request allowance"
+      confirmButtonDataTestId="Allowance"
       loading={isRequestingAllowance || isAllowanceRequestPending}
     />
   )
