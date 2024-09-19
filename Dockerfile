@@ -23,11 +23,8 @@ ENV NEXT_TELEMETRY_DISABLED 1
 ARG arg_env
 
 # Rename environment files based on arg_env
-RUN if [ "$arg_env" = "testnet" ]; then \
-      mv .env.testnet .env.local; \
-    elif [ "$arg_env" = "mainnet" ]; then \
-      mv .env.prod .env.local; \
-    fi
+RUN mv ".env.$arg_env" .env.local
+
 # Build the Next.js application
 RUN npm run build
 

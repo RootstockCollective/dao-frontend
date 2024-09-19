@@ -1,16 +1,15 @@
-name: Deploy to Amazon ECS (TESTNET)
+name: Deploy to Amazon ECS (QA)
 
 on:
-  push:
-    branches:
-      - develop
+  pull_request_review:
+    types: [submitted]
 
 env:
-  AWS_REGION: us-east-1                
-  ECR_REPOSITORY: bim-dao-frontend-testnet
+  AWS_REGION: us-east-1
+  ECR_REPOSITORY: bim-dao-frontend-qa
   ECS_SERVICE: bim-dao-frontend
-  ECS_CLUSTER: bim-dao-frontend-testnet
-  ECS_TASK_DEFINITION: bim-dao-frontend-testnet
+  ECS_CLUSTER: bim-dao-frontend-qa
+  ECS_TASK_DEFINITION: bim-dao-frontend-qa
   CONTAINER_NAME: bim-dao-frontend
 
   PROFILE: testnet.local
@@ -19,8 +18,9 @@ jobs:
   deploy:
     name: Deploy
     runs-on: ubuntu-latest
+    if: github.event.review.state == 'approved'
     environment:
-      name: TESTNET
+      name: QA
     permissions:
       id-token: write
       contents: read
@@ -51,7 +51,7 @@ jobs:
           docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG --build-arg arg_env="$PROFILE" --no-cache .
           docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
           echo "::set-output name=image::$ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG"
-      
+
       - name: Download task definition
         run: aws ecs describe-task-definition --task-definition ${{ env.ECS_TASK_DEFINITION }} --query taskDefinition > task-definition.json
 
