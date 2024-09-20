@@ -2,7 +2,6 @@
 import { useFetchLatestProposals } from '@/app/proposals/hooks/useFetchLatestProposals'
 import { useGetProposalSnapshot } from '@/app/proposals/hooks/useGetProposalSnapshot'
 import { useGetProposalVotes } from '@/app/proposals/hooks/useGetProposalVotes'
-import { useVotingPower } from '@/app/proposals/hooks/useVotingPower'
 import { actionFormatterMap, getEventArguments } from '@/app/proposals/shared/utils'
 import { useModal } from '@/app/user/Balances/hooks/useModal'
 import {
@@ -71,7 +70,6 @@ const PageWithProposal = (proposal: PageWithProposal) => {
 
   const { votingPowerAtSnapshot, doesUserHasEnoughThreshold } = useVotingPowerAtSnapshot(snapshot as bigint)
 
-  const { threshold } = useVotingPower()
   const { onVote, isProposalActive, didUserVoteAlready, proposalStateHuman, isVoting } =
     useVoteOnProposal(proposalId)
   const { onQueueProposal, proposalNeedsQueuing, isQueuing, isTxHashFromQueueLoading } =
@@ -187,7 +185,6 @@ const PageWithProposal = (proposal: PageWithProposal) => {
       </div>
       <div className="flex flex-row justify-between">
         <div className="flex flex-row gap-x-6">
-          <MetricsCard title="Threshold" amount={`${threshold?.toString()}`} />
           <MetricsCard title="Snapshot" amount={snapshot?.toString() || '-'} fiatAmount="Taken at block" />
           <MetricsCard title="State" amount={proposalStateHuman} />
         </div>
