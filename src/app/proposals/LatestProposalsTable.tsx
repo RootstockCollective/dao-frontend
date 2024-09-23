@@ -104,7 +104,7 @@ const latestProposalsTransformer = (proposals: ReturnType<typeof getEventArgumen
     'Proposal Name': <ProposalNameColumn {...proposal} />,
     'Current Votes': <VotesColumn {...proposal} />,
     Starts: proposal.Starts.format('YYYY-MM-DD'),
-    Sentiment: <SentimentColumn {...proposal} index={i} />,
+    Sentiment: <SentimentColumn {...proposal} index={i} key={`${proposal.proposalId}_${i}`} />,
     Status: <StatusColumn {...proposal} />,
   }))
 
