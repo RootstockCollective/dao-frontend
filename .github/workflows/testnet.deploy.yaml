@@ -18,9 +18,10 @@ jobs:
   deploy:
     name: Deploy
     runs-on: ubuntu-latest
-    # NOTYET we need a non-free plan
-    #environment:
-    #  name: testnet
+    environment:
+      name: testnet
+      url: https://testnet.app.rootstockcollective.xyz
+
     permissions:
       id-token: write
       contents: read
