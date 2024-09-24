@@ -22,7 +22,13 @@ export interface EventArgumentsParameter {
 
 const abis = [DAOTreasuryAbi, RIFTokenAbi]
 
-const tryDecode = (data: string) => {
+type DecodedData = {
+  functionName: ReturnType<typeof decodeFunctionData>['functionName']
+  args: ReturnType<typeof decodeFunctionData>['args']
+  inputs: unknown | unknown[]
+}
+
+const tryDecode = (data: string): DecodedData => {
   for (const abi of abis) {
     try {
       const { functionName, args } = decodeFunctionData({ data: data as Hash, abi })
@@ -38,6 +44,7 @@ const tryDecode = (data: string) => {
   }
   throw new Error('No ABI found to decode this proposal data.')
 }
+
 /**
  * Function to parse proposal data into usable data
  * Note: Do not edit anything from this. This is being used across the app.
@@ -52,7 +59,23 @@ export const getEventArguments = ({
   args: { description, proposalId, proposer, calldatas },
   timeStamp,
 }: EventArgumentsParameter) => {
-  const calldatasParsed = calldatas.map(tryDecode)
+  const calldatasParsed = calldatas.reduce<DecodedData[]>((acc, cd) => {
+    try {
+      const decodedData = tryDecode(cd)
+      acc = [...acc, decodedData]
+    } catch (err) {
+      // TODO:: decide whether it is necessary to throw error (if so then also perhaps the function name `tryDecode` is misleading).
+      // Only logging this error due to the fact that anyone can submit any proposal directly via contract call.
+      console.error(err)
+      console.error('🐛 proposer:', proposer)
+      console.error('🐛 proposalId:', proposalId)
+      console.error('🐛 description:', description)
+      console.error('🐛 calldatas:', calldatas)
+    }
+
+    return acc
+  }, [])
+
   return {
     name: description.split(';')[0],
     proposer,
