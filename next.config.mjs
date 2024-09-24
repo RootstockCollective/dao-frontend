@@ -7,14 +7,6 @@ config({
   path: ['apis.conf', process.env.PROFILE ? `.env.${process.env.PROFILE}` : '.env'],
 })
 
-// Load the endpoints defined in the src/lib/endpoints.ts file
-const require = createRequire(import.meta.url)
-require('ts-node').register({
-  compilerOptions: {
-    module: 'commonjs',
-  },
-})
-
 // Define the proxy configurations
 const corsBypassProxyConfig = () => ({
   target: process.env.NEXT_PUBLIC_PROXY_DESTINATION,
@@ -52,7 +44,7 @@ const rewrites = {
     },
   ],
   regtest: () =>
-    Object.entries(endpointsEnvVars).map(([key, endpoint]) => ({
+    endpointsEnvVars.map(([key, endpoint]) => ({
       source: `${rifWalletServicesURL.pathname}${endpoint}`.replace(/\{\{([^\}]+)\}\}/g, ':$1').split('?')[0],
       destination: `/api/mocks/${key.replace(endpointsPrefix, '').toLowerCase()}?path=:path*`,
     })),
