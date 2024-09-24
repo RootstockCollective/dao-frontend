@@ -28,5 +28,5 @@ export const config = createConfig({
 export const supportedChainId = {
   mainnet: rootstock.id,
   testnet: rootstockTestnet.id,
-  localhost: rskRegtest.id,
+  regtest: rskRegtest.id,
 }[ENV]!
