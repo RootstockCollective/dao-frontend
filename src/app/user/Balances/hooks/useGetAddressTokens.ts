@@ -5,12 +5,16 @@ import { tokenContracts, MulticallAddress } from '@/lib/contracts'
 import { ZeroAddress } from 'ethers'
 import { AddressToken } from '@/app/user/types'
 
-const getTokenFunction = (tokenAddress: string, userAddress: string, functionName: 'balanceOf' | 'symbol') =>
+const getTokenFunction = (
+  tokenAddress: Address,
+  userAddress: Address,
+  functionName: 'balanceOf' | 'symbol',
+) =>
   ({
     abi: RIFTokenAbi,
-    address: tokenAddress as Address,
+    address: tokenAddress,
     functionName,
-    args: functionName === 'balanceOf' ? ([userAddress as Address] as [Address]) : ([] as []),
+    args: functionName === 'balanceOf' ? ([userAddress.toLowerCase()] as [Address]) : ([] as []),
   }) as const
 
 type TokenData = [{ result: string | bigint }, { result: string | bigint }]

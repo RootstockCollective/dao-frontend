@@ -1,9 +1,11 @@
 import { StRIFTokenAbi } from '@/lib/abis/StRIFTokenAbi'
 import { tokenContracts } from '@/lib/contracts'
-import { toFixed } from '@/lib/utils'
+import { formatCurrency, toFixed } from '@/lib/utils'
 import { useMemo } from 'react'
 import { formatEther } from 'viem'
 import { useReadContract } from 'wagmi'
+import { usePricesContext } from '@/shared/context/PricesContext'
+import { Paragraph } from '@/components/Typography'
 
 export const TokenHoldingsStRIF = () => {
   const { data } = useReadContract({
@@ -13,6 +15,16 @@ export const TokenHoldingsStRIF = () => {
   })
 
   const balance = useMemo(() => Number(formatEther(data ?? 0n)), [data])
-
-  return <p>{toFixed(balance)} stRIF</p>
+  const { prices } = usePricesContext()
+  const symbol = 'stRIF'
+  return (
+    <>
+      <Paragraph size="small">{toFixed(balance)} stRIF</Paragraph>
+      {prices[symbol] && (
+        <Paragraph size="small" className="text-zinc-500">
+          = USD {formatCurrency(prices[symbol].price * Number(balance) ?? 0)}
+        </Paragraph>
+      )}
+    </>
+  )
 }

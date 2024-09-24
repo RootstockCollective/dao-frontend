@@ -1,6 +1,10 @@
 import { RIFTokenAbi } from '@/lib/abis/RIFTokenAbi'
-import { decodeFunctionData, Hash } from 'viem'
+import { Address, decodeFunctionData, Hash } from 'viem'
 import { DAOTreasuryAbi } from '@/lib/abis/DAOTreasuryAbi'
+import { ZeroAddress } from 'ethers'
+import { RIF_ADDRESS } from '@/lib/constants'
+import { formatBalanceToHuman } from '@/app/user/Balances/balanceUtils'
+import moment from 'moment'
 
 export interface EventArgumentsParameter {
   args: {
@@ -8,7 +12,7 @@ export interface EventArgumentsParameter {
     proposalId: bigint
     voteStart: bigint
     voteEnd: bigint
-    proposer: string
+    proposer: Address
     targets: string[]
     values: bigint[]
     calldatas: string[]
@@ -34,7 +38,16 @@ const tryDecode = (data: string) => {
   }
   throw new Error('No ABI found to decode this proposal data.')
 }
-
+/**
+ * Function to parse proposal data into usable data
+ * Note: Do not edit anything from this. This is being used across the app.
+ * If you have to edit it, be sure that you track all usages and replace accordingly.
+ * @param description
+ * @param proposalId
+ * @param proposer
+ * @param calldatas
+ * @param timeStamp
+ */
 export const getEventArguments = ({
   args: { description, proposalId, proposer, calldatas },
   timeStamp,
@@ -45,7 +58,17 @@ export const getEventArguments = ({
     proposer,
     description: description.split(';')[1],
     proposalId: proposalId.toString(),
-    Starts: new Date(parseInt(timeStamp, 16) * 1000).toISOString().split('T')[0],
+    Starts: moment(parseInt(timeStamp, 16) * 1000),
     calldatasParsed,
   }
+}
+
+export const actionFormatterMap = {
+  token: (tokenAddress: Address) =>
+    ({
+      [ZeroAddress]: 'RBTC',
+      [RIF_ADDRESS.toLowerCase()]: 'RIF',
+    })[tokenAddress.toLowerCase()] || tokenAddress.toString(),
+  to: (address: Address) => address.toString(),
+  amount: (amount: bigint) => formatBalanceToHuman(amount),
 }

@@ -21,9 +21,13 @@ ENV NEXT_TELEMETRY_DISABLED 1
 
 # Set the build argument 
 ARG arg_env
+ARG NEXT_PUBLIC_BUILD_ID
 
 # Rename environment files based on arg_env
 RUN mv ".env.$arg_env" .env.local
+
+# Export the NEXT_PUBLIC_BUILD_ID as an environment variable
+ENV NEXT_PUBLIC_BUILD_ID=${NEXT_PUBLIC_BUILD_ID}
 
 # Build the Next.js application
 RUN npm run build

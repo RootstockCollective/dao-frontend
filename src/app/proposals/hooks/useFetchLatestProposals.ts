@@ -1,10 +1,10 @@
-import { fetchProposalsCreatedCached } from '@/app/user/Balances/actions'
-import { GovernorAbi } from '@/lib/abis/Governor'
-import { SimplifiedRewardDistributorAbi } from '@/lib/abis/SimplifiedRewardDistributorAbi'
-import { useQuery, UseQueryResult } from '@tanstack/react-query'
-import { Interface } from 'ethers'
 import { useMemo } from 'react'
+import { useQuery, UseQueryResult } from '@tanstack/react-query'
 import { parseEventLogs } from 'viem'
+import { GovernorAbi } from '@/lib/abis/Governor'
+import { fetchProposalsCreatedCached } from '@/app/user/Balances/actions'
+import { Interface } from 'ethers'
+import { SimplifiedRewardDistributorAbi } from '@/lib/abis/SimplifiedRewardDistributorAbi'
 
 export const useFetchLatestProposals = () => {
   const { data } = useQuery({

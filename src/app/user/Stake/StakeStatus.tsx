@@ -1,7 +1,7 @@
-import { Header, Label, Paragraph, Span } from '@/components/Typography'
+import { Header, Label, Span } from '@/components/Typography'
 import { Button } from '@/components/Button'
 import { LuBadgeCheck } from 'react-icons/lu'
-import { goToExplorerWithTxHash } from '@/lib/utils'
+import { goToExplorerWithTxHash, SHARED_MODAL_BOX_SHADOW_STYLE } from '@/lib/utils'
 import { useMemo } from 'react'
 import moment from 'moment'
 import { ActionBeingExecuted, textsDependingOnAction } from '@/app/user/Stake/Steps/stepsUtils'
@@ -31,17 +31,19 @@ export const StakeStatus = ({
       <div className="flex justify-center mt-[63px]">
         <div
           style={{
-            boxShadow: '0px 0px 16.4px 0px rgba(123,87,252,0.68)',
+            boxShadow: SHARED_MODAL_BOX_SHADOW_STYLE,
             padding: 17,
             borderRadius: '30%',
             backgroundColor: 'white',
             width: 80,
           }}
         >
-          <LuBadgeCheck size={48} color="#665EF6" />
+          <LuBadgeCheck size={48} color="var(--color-primary)" />
         </div>
       </div>
-      <Header className="mt-[62px] text-center">{textsDependingOnAction[actionName].inProcess}</Header>
+      <Header className="mt-[62px] text-center font-normal" fontFamily="kk-topo">
+        {textsDependingOnAction[actionName].inProcess}
+      </Header>
       <Span className="text-center">{textsDependingOnAction[actionName].description}</Span>
       {/* Preview box */}
       <div className="flex flex-col mt-[54px] px-6">

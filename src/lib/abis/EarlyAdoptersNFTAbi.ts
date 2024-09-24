@@ -39,6 +39,33 @@ export const EarlyAdoptersNFTAbi = [
   {
     inputs: [
       {
+        internalType: 'uint256',
+        name: 'balance',
+        type: 'uint256',
+      },
+      {
+        internalType: 'uint256',
+        name: 'requiredBalance',
+        type: 'uint256',
+      },
+    ],
+    name: 'BelowStRifThreshold',
+    type: 'error',
+  },
+  {
+    inputs: [
+      {
+        internalType: 'uint256',
+        name: 'tokensLeft',
+        type: 'uint256',
+      },
+    ],
+    name: 'DistributionActive',
+    type: 'error',
+  },
+  {
+    inputs: [
+      {
         internalType: 'address',
         name: 'implementation',
         type: 'address',
@@ -650,6 +677,16 @@ export const EarlyAdoptersNFTAbi = [
         type: 'address',
       },
       {
+        internalType: 'contract IERC20',
+        name: 'stRif',
+        type: 'address',
+      },
+      {
+        internalType: 'uint256',
+        name: 'minStRifBalance',
+        type: 'uint256',
+      },
+      {
         internalType: 'uint256',
         name: 'numFiles',
         type: 'uint256',
@@ -679,6 +716,25 @@ export const EarlyAdoptersNFTAbi = [
       },
     ],
     name: 'isApprovedForAll',
+    outputs: [
+      {
+        internalType: 'bool',
+        name: '',
+        type: 'bool',
+      },
+    ],
+    stateMutability: 'view',
+    type: 'function',
+  },
+  {
+    inputs: [
+      {
+        internalType: 'address',
+        name: 'owner',
+        type: 'address',
+      },
+    ],
+    name: 'isMember',
     outputs: [
       {
         internalType: 'bool',
@@ -862,6 +918,32 @@ export const EarlyAdoptersNFTAbi = [
     name: 'setIpfsFolder',
     outputs: [],
     stateMutability: 'nonpayable',
+    type: 'function',
+  },
+  {
+    inputs: [
+      {
+        internalType: 'uint256',
+        name: 'newThreshold',
+        type: 'uint256',
+      },
+    ],
+    name: 'setStRifThreshold',
+    outputs: [],
+    stateMutability: 'nonpayable',
+    type: 'function',
+  },
+  {
+    inputs: [],
+    name: 'stRifThreshold',
+    outputs: [
+      {
+        internalType: 'uint256',
+        name: '',
+        type: 'uint256',
+      },
+    ],
+    stateMutability: 'view',
     type: 'function',
   },
   {

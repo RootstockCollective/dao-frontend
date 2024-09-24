@@ -1,19 +1,19 @@
-import { Button } from '@/components/Button'
 import { Footer } from '@/components/Footer'
-import { ConnectButton } from '@/components/Header'
-import { Logo } from '@/components/Header/Logo'
+import { Headline } from '@/components/Typography'
 import { cn } from '@/lib/utils'
+import Image from 'next/image'
 import { useRouter } from 'next/navigation'
 import { useEffect, useState } from 'react'
-import { FaUsers } from 'react-icons/fa6'
 import { useAccount } from 'wagmi'
-import { LoadingSpinner } from '@/components/LoadingSpinner'
+import { Disclaimer } from './Disclaimer'
+import { GetStarted } from './GetStarted'
 
-const BACKGROUND_CLASSES = 'bg-[url(../../public/images/login-bg.svg)] bg-cover'
+const BG_IMG_CLASSES = 'bg-[url(../../public/images/login-bg.svg)] bg-cover bg-no-repeat bg-right'
 
 export const Login = () => {
   const { isConnected, address } = useAccount()
   const [hasMounted, setHasMounted] = useState(false)
+  const [showDisclaimer, setShowDisclaimer] = useState(false)
 
   const router = useRouter()
 
@@ -30,31 +30,48 @@ export const Login = () => {
     if (isConnected) {
       router.push('/user')
     }
-  }, [isConnected])
+  }, [isConnected, router])
+
   return (
-    <div className={cn(BACKGROUND_CLASSES, 'flex flex-col justify-center items-center h-screen')}>
-      <Logo className="mb-8" textClassName="text-6xl" />
-      <div className="flex space-x-4">
-        {hasMounted && (
-          <>
-            {isConnected ? (
-              <div className="flex flex-col items-center">
+    <div className={cn(BG_IMG_CLASSES, 'flex flex-row h-screen justify-center items-center bg-black')}>
+      <Header />
+      <div className="flex-1 ml-20 mr-14">
+        <Headline>{showDisclaimer ? 'DISCLAIMER' : 'GET STARTED'}</Headline>
+        <div className="flex space-x-4 justify-center items-center">
+          {hasMounted && (
+            <>
+              {isConnected ? (
                 <p>Redirecting...</p>
-                <LoadingSpinner />
-              </div>
-            ) : (
-              <>
-                <ConnectButton onSuccess={() => router.push('/user')} />
-                <Button onClick={handleExploreCommunities} variant="secondary" startIcon={<FaUsers />}>
-                  Explore Communities
-                </Button>
-              </>
-            )}
-          </>
-        )}
+              ) : showDisclaimer ? (
+                <Disclaimer
+                  onConnect={() => router.push('/user')}
+                  onCancel={() => setShowDisclaimer(false)}
+                />
+              ) : (
+                <GetStarted
+                  onNext={() => setShowDisclaimer(true)}
+                  onExploreCommunities={handleExploreCommunities}
+                />
+              )}
+            </>
+          )}
+        </div>
+        <div className="mt-2 text-center">{address}</div>
       </div>
-      <div className="mt-2">{address}</div>
-      <Footer />
+      <div className="flex-1"></div>
+      {hasMounted && <Footer />}
     </div>
   )
 }
+
+const Header = () => (
+  <header className="absolute top-9 left-8">
+    <Image
+      src="/images/wordmark.svg"
+      alt="Logo"
+      width={0}
+      height={0}
+      style={{ width: '96px', height: 'auto' }}
+    />
+  </header>
+)

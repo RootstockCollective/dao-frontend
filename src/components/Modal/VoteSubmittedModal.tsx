@@ -3,7 +3,7 @@ import { Modal } from '@/components/Modal/Modal'
 import { Header, Paragraph } from '@/components/Typography'
 import { FC } from 'react'
 import { LuBadgeCheck } from 'react-icons/lu'
-import { cn, truncateMiddle } from '@/lib/utils'
+import { cn, SHARED_MODAL_BOX_SHADOW_STYLE, truncateMiddle } from '@/lib/utils'
 
 export type Vote = 'for' | 'against' | 'abstain'
 
@@ -25,19 +25,19 @@ export const VoteSubmittedModal: FC<Props> = ({ onClose, proposal, vote }) => {
         <div className="flex justify-center mt-6">
           <div
             style={{
-              boxShadow: '0px 0px 16.4px 0px rgba(123,87,252,0.68)',
+              boxShadow: SHARED_MODAL_BOX_SHADOW_STYLE,
               padding: 17,
               borderRadius: '30%',
               backgroundColor: 'white',
               width: 80,
             }}
           >
-            <LuBadgeCheck size={48} color="#665EF6" />
+            <LuBadgeCheck size={48} color="var(--color-primary)" />
           </div>
         </div>
 
         <Header variant="h1" className="font-semibold text-center mt-6">
-          Vote submitted
+          VOTE SUBMITTED
         </Header>
         <Paragraph variant="light" className="text-[14px] text-center mt-4">
           Your vote has been submitted successfully! Thank you for <br /> participating in the decision-making

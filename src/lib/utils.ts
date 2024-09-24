@@ -2,6 +2,7 @@ import axios from 'axios'
 import { ClassValue, clsx } from 'clsx'
 import { twMerge } from 'tailwind-merge'
 import { EXPLORER_URL, RIF_WALLET_SERVICES_URL } from './constants'
+import { Address } from 'viem'
 
 /**
  * Merges Tailwind and clsx classes in order to avoid classes conflicts.
@@ -17,7 +18,7 @@ export const cn = (...inputs: ClassValue[]) => twMerge(clsx(inputs))
  * @returns The shortened address
  * @example shortAddress('0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266') // '0xf39F...92266'
  */
-export const shortAddress = (address: string | undefined, amount = 5): string => {
+export const shortAddress = (address: Address | undefined, amount = 5): string => {
   if (!address) {
     return ''
   }
@@ -149,3 +150,5 @@ export const toFixed = (num: number | string, decimalPlaces = 8) => {
   }
   return n.toFixed(decimalPlaces).replace(/\.?0+$/, '')
 }
+
+export const SHARED_MODAL_BOX_SHADOW_STYLE = '0px 0px 16.4px 0px rgba(229,107,26,0.68)'

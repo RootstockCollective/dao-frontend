@@ -21,10 +21,12 @@ import { MAX_INPUT_NUMBER_AMOUNT } from '@/components/Input/InputNumber'
 import { MainContainer } from '@/components/MainContainer/MainContainer'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/Select'
 import { Header, Paragraph } from '@/components/Typography'
+import { ENV } from '@/lib/constants'
 import { tokenContracts } from '@/lib/contracts'
 import { formatCurrency } from '@/lib/utils'
 import { TX_MESSAGES } from '@/shared/txMessages'
 import { zodResolver } from '@hookform/resolvers/zod'
+import { isAddress, isValidChecksumAddress, toChecksumAddress } from '@rsksmart/rsk-utils'
 import Image from 'next/image'
 import { useRouter } from 'next/navigation'
 import { useEffect, useMemo, useState } from 'react'
@@ -34,7 +36,8 @@ import { Address, zeroAddress } from 'viem'
 import { z } from 'zod'
 import { rbtcIconSrc } from '@/shared/rbtcIconSrc'
 
-const ADDRESS_REGEX = /^0x[a-fA-F0-9]{40}$/
+const rifMinimumAmount = ENV === 'mainnet' ? 10 : 1
+const rbtcMinimumAmount = ENV === 'mainnet' ? 0.0001 : 0.000001
 
 const FormSchema = z
   .object({
@@ -46,42 +49,24 @@ const FormSchema = z
       .string()
       .max(3000)
       .refine(s => s.trim().replace(/\s+/g, ' ').length >= 10, 'Field must contain at least 10 characters'),
-    toAddress: z.string().refine(value => ADDRESS_REGEX.test(value), 'Please enter a valid address'),
+    toAddress: z
+      .string()
+      .refine(value => isAddress(value), 'Please enter a valid address')
+      .refine(value => isValidChecksumAddress(value) || value === value.toLowerCase(), 'Invalid checksum'),
     tokenAddress: z.string().length(42),
     amount: z.coerce
       .number({ invalid_type_error: 'Required field' })
       .positive('Required field')
       .max(MAX_INPUT_NUMBER_AMOUNT),
   })
-  .refine(
-    data => {
-      if (data.tokenAddress !== zeroAddress) {
-        // Do not allow decimals
-        if (Number(data.amount) < 1) {
-          return false
-        }
-      }
-      return true
-    },
-    {
-      message: 'Amount must be greater or equal to 1 for ERC20',
-      path: ['amount'],
-    },
-  )
-  .refine(
-    data => {
-      if (data.tokenAddress === zeroAddress) {
-        if (Number(data.amount) < 0.000001) {
-          return false
-        }
-      }
-      return true
-    },
-    {
-      message: 'The minimum amount is 0.000001',
-      path: ['amount'],
-    },
-  )
+  .refine(data => data.tokenAddress === zeroAddress || Number(data.amount) >= rifMinimumAmount, {
+    message: `The minimum amount for ERC20 tokens is ${rifMinimumAmount}.0`,
+    path: ['amount'],
+  })
+  .refine(data => data.tokenAddress !== zeroAddress || Number(data.amount) >= rbtcMinimumAmount, {
+    message: `The minimum amount for RBTC is ${rbtcMinimumAmount}`,
+    path: ['amount'],
+  })
 
 export default function CreateProposal() {
   const router = useRouter()
@@ -110,6 +95,7 @@ export default function CreateProposal() {
     formState: { touchedFields, errors, isValid, isDirty },
     watch,
     trigger,
+    setValue,
   } = form
 
   const pricesMap = useMemo(
@@ -173,8 +159,8 @@ export default function CreateProposal() {
             <AccordionItem value="proposal">
               <AccordionTrigger>
                 <div className="flex justify-between align-middle w-full">
-                  <Header variant="h1" className="text-[24px]">
-                    Proposal
+                  <Header variant="h1" className="text-[24px]" fontFamily="kk-topo">
+                    PROPOSAL
                   </Header>
                   {isProposalCompleted && (
                     <Paragraph className="self-center mr-6 text-md text-st-success">Completed</Paragraph>
@@ -215,11 +201,11 @@ export default function CreateProposal() {
                 </div>
               </AccordionContent>
             </AccordionItem>
-            <AccordionItem value="actions">
+            <AccordionItem value="actions" className="border-0">
               <AccordionTrigger>
                 <div className="flex justify-between align-middle w-full">
-                  <Header variant="h1" className="text-[24px]">
-                    Actions
+                  <Header variant="h1" className="text-[24px]" fontFamily="kk-topo">
+                    ACTIONS
                   </Header>
                   {isActionsCompleted && (
                     <Paragraph className="self-center mr-6 text-md text-st-success">Completed</Paragraph>
@@ -237,7 +223,23 @@ export default function CreateProposal() {
                         <FormInput placeholder="0x123...456" {...field} />
                       </FormControl>
                       <FormDescription>Write or paste the wallet address of the recipient</FormDescription>
-                      <FormMessage />
+                      <FormMessage>
+                        {errors.toAddress?.message === 'Invalid checksum' ? (
+                          <>
+                            Please check that the address is correct before continuing. If the address is
+                            correct, use the button below to convert your address to a valid checksum address.{' '}
+                            <span
+                              className="text-white underline cursor-pointer"
+                              onClick={() => {
+                                setValue('toAddress', toChecksumAddress(field.value))
+                                trigger('toAddress')
+                              }}
+                            >
+                              Fix address.
+                            </span>
+                          </>
+                        ) : undefined}
+                      </FormMessage>
                     </FormItem>
                   )}
                 />

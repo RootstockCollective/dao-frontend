@@ -2,7 +2,6 @@ import { createContext, ReactNode, useContext, useMemo } from 'react'
 import { usePricesContext, withPricesContextProvider } from '@/shared/context/PricesContext'
 import { useGetTreasuryBucketBalance } from '@/app/treasury/hooks/useGetTreasuryBucketBalance'
 import { treasuryContracts } from '@/lib/contracts'
-import { Address } from 'viem'
 import { GetPricesResult } from '@/app/user/types'
 import { formatCurrency } from '@/lib/utils'
 
@@ -62,34 +61,25 @@ const getBucketBalance = (
 const TreasuryContextProvider = ({ children }: Props) => {
   const { prices } = usePricesContext()
 
-  const bucketOneBalance = useGetTreasuryBucketBalance(treasuryContracts?.at(0)?.address as Address)
-  const bucketTwoBalance = useGetTreasuryBucketBalance(treasuryContracts?.at(1)?.address as Address)
-  const bucketThreeBalance = useGetTreasuryBucketBalance(treasuryContracts?.at(2)?.address as Address)
+  const bucketOneBalance = useGetTreasuryBucketBalance(treasuryContracts[0].address)
+  const bucketTwoBalance = useGetTreasuryBucketBalance(treasuryContracts[1].address)
+  const bucketThreeBalance = useGetTreasuryBucketBalance(treasuryContracts[2].address)
+  const bucketFourBalance = useGetTreasuryBucketBalance(treasuryContracts[3].address)
 
-  const bucketOne: Bucket = useMemo(
-    () => getBucketBalance(bucketOneBalance, prices),
-    [bucketOneBalance, prices],
+  // Create the buckets array
+  const buckets = useMemo(
+    () => [
+      getBucketBalance(bucketOneBalance, prices),
+      getBucketBalance(bucketTwoBalance, prices),
+      getBucketBalance(bucketThreeBalance, prices),
+      getBucketBalance(bucketFourBalance, prices),
+    ],
+    [bucketOneBalance, bucketTwoBalance, bucketThreeBalance, bucketFourBalance, prices],
   )
 
-  const bucketTwo: Bucket = useMemo(
-    () => getBucketBalance(bucketTwoBalance, prices),
-    [bucketTwoBalance, prices],
-  )
+  const bucketsTotal = useMemo(() => getAllBucketsHoldings(buckets), [buckets])
 
-  const bucketThree: Bucket = useMemo(
-    () => getBucketBalance(bucketThreeBalance, prices),
-    [bucketThreeBalance, prices],
-  )
-
-  const bucketsTotal = useMemo(
-    () => getAllBucketsHoldings([bucketOne, bucketTwo, bucketThree]),
-    [bucketOne, bucketThree, bucketTwo],
-  )
-
-  const valueToUse = useMemo(
-    () => ({ buckets: [bucketOne, bucketTwo, bucketThree], bucketsTotal }),
-    [bucketOne, bucketThree, bucketTwo, bucketsTotal],
-  )
+  const valueToUse = useMemo(() => ({ buckets, bucketsTotal }), [buckets, bucketsTotal])
   return <TreasuryContext.Provider value={valueToUse}>{children}</TreasuryContext.Provider>
 }
 

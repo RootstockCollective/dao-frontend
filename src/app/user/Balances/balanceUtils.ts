@@ -8,7 +8,7 @@ export const formatBalanceToHuman = (balance: BigNumberish, decimal = 18) =>
 const symbolsToGetFromArray = {
   RIF: { equivalentSymbols: ['tRIF', 'RIF'], currentContract: tokenContracts.RIF },
   RBTC: { equivalentSymbols: ['RBTC', 'tRBTC'], currentContract: tokenContracts.RBTC },
-  stRIF: { equivalentSymbols: ['stRIF'], currentContract: tokenContracts.stRIF },
+  stRIF: { equivalentSymbols: ['stRIF', 'FIRts'], currentContract: tokenContracts.stRIF },
 }
 
 export type SymbolsEquivalentKeys = keyof typeof symbolsToGetFromArray

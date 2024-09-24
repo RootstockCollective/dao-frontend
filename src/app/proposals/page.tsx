@@ -5,14 +5,15 @@ import { LatestProposalsTable } from '@/app/proposals/LatestProposalsTable'
 import { MainContainer } from '@/components/MainContainer/MainContainer'
 import { MetricsCard } from '@/components/MetricsCard'
 import { Popover } from '@/components/Popover'
+import { TxStatusMessage } from '@/components/TxStatusMessage/TxStatusMessage'
+import { Paragraph, Span } from '@/components/Typography'
 import { toFixed } from '@/lib/utils'
+import { useRouter } from 'next/navigation'
 import { FaRegQuestionCircle } from 'react-icons/fa'
 import { useVotingPower } from './hooks/useVotingPower'
-import { TxStatusMessage } from '@/components/TxStatusMessage/TxStatusMessage'
 
 export default function Proposals() {
   const { votingPower, canCreateProposal, threshold } = useVotingPower()
-
   const { latestProposals } = useFetchLatestProposals()
 
   return (
@@ -25,7 +26,9 @@ export default function Proposals() {
           {/*<MetricsCard title="Votes" amount="-" />*/}
           {/* @TODO ask product/design what this is */}
           {/* <MetricsCard title="Total voting power delegated" amount="230" /> */}
-          <MetricsCard title="Proposals created" amount={latestProposals.length.toString()} />
+          <div className="w-52">
+            <MetricsCard title="Proposals created" amount={latestProposals.length.toString()} />
+          </div>
         </div>
         {/* <div className="grid grid-cols-2 gap-x-6">
           <DelegatedTable />
@@ -37,21 +40,32 @@ export default function Proposals() {
   )
 }
 
-const PopoverContent = () => (
-  <>
-    <p className="text-[12px] font-bold mb-1">How is my voting power calculated?</p>
-    <p className="text-[12px]">
-      Your voting power is calculated as the number of tokens (votes) that have been delegated to you before
-      the proposal became active. You can delegate your votes to yourself, or to someone else. Others can also
-      delegate their votes to you.
-    </p>
-  </>
-)
+const PopoverContent = () => {
+  const router = useRouter()
+  return (
+    <>
+      <Paragraph size="small" className="font-bold mb-1">
+        How is my voting power calculated?
+      </Paragraph>
+      <Paragraph size="small">
+        Your voting power is determined by the amount of stRIF (staked RIF) you hold. To increase your voting
+        power,{' '}
+        <Span
+          className="text-primary text-[14px] hover:underline cursor-pointer"
+          onClick={() => router.push('/user?action=stake')}
+        >
+          stake RIF tokens now
+        </Span>
+        .
+      </Paragraph>
+    </>
+  )
+}
 
 const VotingPowerPopover = () => (
   <Popover content={<PopoverContent />}>
     <button className="flex flex-row">
-      <p>My voting power</p>
+      <Paragraph>My voting power</Paragraph>
       <FaRegQuestionCircle className="ml-1" />
     </button>
   </Popover>

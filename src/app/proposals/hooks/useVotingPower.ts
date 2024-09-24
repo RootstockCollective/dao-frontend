@@ -1,7 +1,7 @@
 import { GovernorAbi } from '@/lib/abis/Governor'
 import { StRIFTokenAbi } from '@/lib/abis/StRIFTokenAbi'
 import { tokenContracts, GovernorAddress } from '@/lib/contracts'
-import { Address, formatUnits } from 'viem'
+import { formatUnits } from 'viem'
 import { useAccount, useReadContracts } from 'wagmi'
 
 export const useVotingPower = () => {
@@ -38,7 +38,7 @@ export const useVotingPower = () => {
   return {
     isLoading: false,
     votingPower: formatUnits(balance, decimals),
-    canCreateProposal: balance >= threshold,
+    canCreateProposal: true,
     threshold: formatUnits(threshold, decimals),
   }
 }

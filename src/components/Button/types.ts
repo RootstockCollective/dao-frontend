@@ -1,1 +1,1 @@
-export type ButtonVariants = 'primary' | 'secondary' | 'secondary-full' | 'transparent' | 'white'
+export type ButtonVariants = 'primary' | 'secondary' | 'secondary-full' | 'borderless' | 'outlined' | 'white'

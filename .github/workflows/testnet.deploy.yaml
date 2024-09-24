@@ -3,10 +3,10 @@ name: Deploy to Amazon ECS (TESTNET)
 on:
   push:
     branches:
-      - develop
+      - main
 
 env:
-  AWS_REGION: us-east-1                
+  AWS_REGION: us-east-1
   ECR_REPOSITORY: bim-dao-frontend-testnet
   ECS_SERVICE: bim-dao-frontend
   ECS_CLUSTER: bim-dao-frontend-testnet
@@ -32,7 +32,7 @@ jobs:
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v4
         with:
-          role-to-assume: ${{ secrets.ROLE_ECS_ARN }}
+          role-to-assume: ${{ secrets.AWS_LOGIN_TESTNET_ROLE_ARN }}
           aws-region: ${{ env.AWS_REGION }}
 
       - name: Login to Amazon ECR
@@ -48,10 +48,10 @@ jobs:
           # Build a docker container and
           # push it to ECR so that it can
           # be deployed to ECS.
-          docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG --build-arg arg_env="$PROFILE" --no-cache .
+          docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG --build-arg arg_env="$PROFILE" --build-arg NEXT_PUBLIC_BUILD_ID=${{ github.sha }} --no-cache .
           docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
           echo "::set-output name=image::$ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG"
-      
+
       - name: Download task definition
         run: aws ecs describe-task-definition --task-definition ${{ env.ECS_TASK_DEFINITION }} --query taskDefinition > task-definition.json
 

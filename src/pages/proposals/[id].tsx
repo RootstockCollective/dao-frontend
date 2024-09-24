@@ -2,8 +2,7 @@
 import { useFetchLatestProposals } from '@/app/proposals/hooks/useFetchLatestProposals'
 import { useGetProposalSnapshot } from '@/app/proposals/hooks/useGetProposalSnapshot'
 import { useGetProposalVotes } from '@/app/proposals/hooks/useGetProposalVotes'
-import { useVotingPower } from '@/app/proposals/hooks/useVotingPower'
-import { getEventArguments } from '@/app/proposals/shared/utils'
+import { actionFormatterMap, getEventArguments } from '@/app/proposals/shared/utils'
 import { useModal } from '@/app/user/Balances/hooks/useModal'
 import {
   Breadcrumb,
@@ -17,9 +16,9 @@ import { Button } from '@/components/Button'
 import { MainContainer } from '@/components/MainContainer/MainContainer'
 import { MetricsCard } from '@/components/MetricsCard'
 import { Popover } from '@/components/Popover'
-import { Header, Paragraph } from '@/components/Typography'
+import { Header, Paragraph, Span } from '@/components/Typography'
 import { useVoteOnProposal } from '@/shared/hooks/useVoteOnProposal'
-import { shortAddress } from '@/lib/utils'
+import { truncateMiddle } from '@/lib/utils'
 import { useRouter } from 'next/router'
 import { FC, useMemo, useState } from 'react'
 import { useAccount } from 'wagmi'
@@ -33,6 +32,7 @@ import { waitForTransactionReceipt } from '@wagmi/core'
 import { config } from '@/config'
 import { useAlertContext } from '@/app/providers'
 import { TX_MESSAGES } from '@/shared/txMessages'
+import { CopyButton } from '@/components/CopyButton'
 
 export default function ProposalView() {
   const {
@@ -70,33 +70,58 @@ const PageWithProposal = (proposal: PageWithProposal) => {
 
   const { votingPowerAtSnapshot, doesUserHasEnoughThreshold } = useVotingPowerAtSnapshot(snapshot as bigint)
 
-  const { threshold } = useVotingPower()
   const { onVote, isProposalActive, didUserVoteAlready, proposalStateHuman, isVoting } =
     useVoteOnProposal(proposalId)
   const { onQueueProposal, proposalNeedsQueuing, isQueuing, isTxHashFromQueueLoading } =
     useQueueProposal(proposalId)
 
-  const { onExecuteProposal, canProposalBeExecuted, proposalEtaHumanDate, isTxHashFromExecuteLoading } =
+  const { onExecuteProposal, canProposalBeExecuted, proposalEtaHumanDate, isExecuting } =
     useExecuteProposal(proposalId)
 
-  const cannotCastVote = !isProposalActive || didUserVoteAlready || !doesUserHasEnoughThreshold
+  const cannotCastVote = !isProposalActive || didUserVoteAlready || !doesUserHasEnoughThreshold || isVoting
+
+  const cannotCastVoteReason = useMemo(() => {
+    if (!isProposalActive) {
+      return 'This proposal is not active'
+    }
+    if (didUserVoteAlready) {
+      return 'You already voted on this proposal'
+    }
+    if (!doesUserHasEnoughThreshold) {
+      /* eslint-disable quotes */
+      return "You don't have enough voting power to vote on this proposal"
+    }
+    if (isVoting) {
+      return 'Your vote is being processed'
+    }
+    return ''
+  }, [isProposalActive, didUserVoteAlready, doesUserHasEnoughThreshold, isVoting])
 
   const handleVoting = async (vote: Vote) => {
     try {
       setErrorVoting('')
-      await onVote(vote)
+      setMessage(null)
+      const txHash = await onVote(vote)
+      setMessage(TX_MESSAGES.voting.pending)
       votingModal.closeModal()
       setVote(vote)
       submittedModal.openModal()
+      await waitForTransactionReceipt(config, {
+        hash: txHash,
+      })
+      setMessage(TX_MESSAGES.voting.success)
     } catch (err: any) {
       if (err?.cause?.code !== 4001) {
-        setErrorVoting((err as Error).toString())
+        console.error(err)
+        setErrorVoting(err.shortMessage || err.toString())
+        setMessage(TX_MESSAGES.voting.error)
       }
     }
   }
 
   const handleQueuingProposal = async () => {
     try {
+      setMessage(null)
       const txHash = await onQueueProposal()
       setMessage(TX_MESSAGES.queuing.pending)
       await waitForTransactionReceipt(config, {
@@ -111,27 +136,55 @@ const PageWithProposal = (proposal: PageWithProposal) => {
     }
   }
 
+  const handleVotingExecution = async () => {
+    try {
+      setMessage(null)
+      const txHash = await onExecuteProposal()
+      if (!txHash) return
+      setMessage(TX_MESSAGES.execution.pending)
+      await waitForTransactionReceipt(config, {
+        hash: txHash,
+      })
+      setMessage(TX_MESSAGES.execution.success)
+    } catch (err: any) {
+      if (err?.cause?.code !== 4001) {
+        console.error(err)
+        setMessage(TX_MESSAGES.execution.error)
+      }
+    }
+  }
+
+  const openModal = () => {
+    setErrorVoting('')
+    setMessage(null)
+    votingModal.openModal()
+  }
+
   // @ts-ignore
   return (
     <div className="pl-4 grid grid-rows-1 gap-[32px] mb-[100px]">
       <BreadcrumbSection title={name} />
       <Header className="text-2xl">{name}</Header>
-      <div className="flex flex-row">
-        <Paragraph className="text-sm text-gray-500">
-          Proposed by: <span className="text-primary">{shortAddress(proposer, 10)}</span>
-        </Paragraph>
-        <Paragraph className="text-sm text-gray-500 ml-4">
-          Created at: <span className="text-primary">{Starts}</span>
-        </Paragraph>
+
+      <div className="flex flex-row gap-4 items-baseline">
+        <div className="flex flex-row items-baseline gap-1">
+          <Paragraph className="text-sm text-gray-500">Proposed by: </Paragraph>
+          <CopyButton icon={null} copyText={proposer} className="text-primary font-semibold">
+            {truncateMiddle(proposer, 3, 3)}
+          </CopyButton>
+        </div>
+        <Paragraph className="text-sm text-gray-500">Created {Starts.fromNow()}</Paragraph>
+        <CopyButton icon={null} copyText={proposalId} className="font-semibold text-primary">
+          ID {truncateMiddle(proposalId, 3, 3)}
+        </CopyButton>
         {blocksUntilClosure !== null && proposalStateHuman === 'Active' && (
-          <Paragraph className="text-sm text-gray-500 ml-4">
+          <Paragraph className="text-sm text-gray-500">
             Blocks until closure: <span className="text-primary">{blocksUntilClosure.toString()}</span>
           </Paragraph>
         )}
       </div>
       <div className="flex flex-row justify-between">
         <div className="flex flex-row gap-x-6">
-          <MetricsCard title="Threshold" amount={`${threshold?.toString()}`} />
           <MetricsCard title="Snapshot" amount={snapshot?.toString() || '-'} fiatAmount="Taken at block" />
           <MetricsCard title="State" amount={proposalStateHuman} />
         </div>
@@ -140,20 +193,18 @@ const PageWithProposal = (proposal: PageWithProposal) => {
             <>
               {cannotCastVote ? (
                 <Popover
-                  content={cannotCastVoteReason(
-                    !isProposalActive,
-                    didUserVoteAlready,
-                    !doesUserHasEnoughThreshold,
-                  )}
+                  content={
+                    <div className="text-[12px] font-bold mb-1">
+                      <p>{cannotCastVoteReason}</p>
+                    </div>
+                  }
                   size="small"
                   trigger="hover"
                 >
                   <Button disabled>Vote on chain</Button>
                 </Popover>
               ) : (
-                <Button onClick={votingModal.openModal} loading={isVoting}>
-                  Vote on chain
-                </Button>
+                <Button onClick={openModal}>Vote on chain</Button>
               )}
             </>
           )}
@@ -177,21 +228,23 @@ const PageWithProposal = (proposal: PageWithProposal) => {
                     The proposal is not ready to be executed yet. It should be ready on:{' '}
                     {proposalEtaHumanDate}
                   </p>
+                ) : isExecuting ? (
+                  <p className="text-[12px] font-bold mb-1">The proposal is being executed.</p>
                 ) : (
                   <p className="text-[12px] font-bold mb-1">The proposal can be executed.</p>
                 )
               }
             >
               <Button
-                onClick={onExecuteProposal}
+                onClick={handleVotingExecution}
                 className="mt-2"
-                disabled={!canProposalBeExecuted || isTxHashFromExecuteLoading}
+                disabled={!canProposalBeExecuted || isExecuting}
               >
                 Execute
               </Button>
             </Popover>
           )}
-          {isTxHashFromExecuteLoading && <p>Pending transaction confirmation to complete execution.</p>}
+          {isExecuting && <p>Pending transaction confirmation to complete execution.</p>}
           {votingModal.isModalOpened && address && (
             <VoteProposalModal
               onSubmit={handleVoting}
@@ -199,6 +252,7 @@ const PageWithProposal = (proposal: PageWithProposal) => {
               proposal={proposal}
               address={address}
               votingPower={votingPowerAtSnapshot}
+              isVoting={isVoting}
               errorMessage={errorVoting}
             />
           )}
@@ -288,10 +342,6 @@ const BreadcrumbSection: FC<{ title: string }> = ({ title }) => {
     <Breadcrumb className="pb-4 border-b">
       <BreadcrumbList>
         <BreadcrumbItem>
-          <BreadcrumbLink href="/">Home</BreadcrumbLink>
-        </BreadcrumbItem>
-        <BreadcrumbSeparator />
-        <BreadcrumbItem>
           <BreadcrumbLink href="/proposals">Proposals</BreadcrumbLink>
         </BreadcrumbItem>
         <BreadcrumbSeparator />
@@ -303,31 +353,11 @@ const BreadcrumbSection: FC<{ title: string }> = ({ title }) => {
   )
 }
 
-const cannotCastVoteReason = (
-  isProposalInactive: boolean,
-  didUserVoteAlready: boolean,
-  notEnoughVotingPower: boolean,
-) => (
-  <div className="text-[12px] font-bold mb-1">
-    {isProposalInactive ? (
-      <p>This proposal is not active</p>
-    ) : (
-      <>
-        {didUserVoteAlready ? (
-          <p>You already voted on this proposal</p>
-        ) : (
-          notEnoughVotingPower && <p>You don&apos;t have enough voting power to vote on this proposal</p>
-        )}
-      </>
-    )}
-  </div>
-)
-
-interface CalldataRows {
+interface CalldataRowsData {
   calldatasParsed: CalldataDisplayProps[]
 }
 
-const CalldataRows = ({ calldatasParsed }: CalldataRows) => {
+const CalldataRows = ({ calldatasParsed }: CalldataRowsData) => {
   return calldatasParsed.map((callData, index) => <CalldataDisplay key={index} {...callData} />)
 }
 
@@ -340,20 +370,23 @@ interface CalldataDisplayProps {
 const CalldataDisplay = ({ functionName, args, inputs }: CalldataDisplayProps) => (
   <div>
     <Paragraph variant="semibold" className="text-[16px]">
-      Function: {functionName}
+      Function: <Span className="font-normal">{functionName}</Span>
     </Paragraph>
 
     <Paragraph variant="semibold" className="text-[16px] mt-2">
       Arguments:
     </Paragraph>
     <ul>
-      {inputs.map((input, index) => (
-        <li key={index} className="my-2">
-          <Paragraph variant="semibold" className="text-[16px] break-words">
-            {input.name}: {args[index].toString()}
-          </Paragraph>
-        </li>
-      ))}
+      {inputs.map((input, index) => {
+        const formatter = actionFormatterMap[input.name as keyof typeof actionFormatterMap]
+        return (
+          <li key={index} className="my-2">
+            <Paragraph variant="semibold" className="text-[16px] break-words">
+              {input.name}: <Span className="font-normal">{formatter?.(args[index] as never)}</Span>
+            </Paragraph>
+          </li>
+        )
+      })}
     </ul>
   </div>
 )

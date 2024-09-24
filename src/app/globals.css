@@ -15,5 +15,5 @@
 }
 
 body {
-  @apply font-sora text-text-primary bg-background;
+  @apply text-text-primary bg-background;
 }

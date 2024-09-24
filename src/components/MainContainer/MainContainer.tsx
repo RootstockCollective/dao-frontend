@@ -13,6 +13,7 @@ import { AccountAddress } from '../Header/AccountAddress'
 import { DisconnectWalletModal } from '../Modal/DisconnectWalletModal'
 import { ProtectedContent } from '../ProtectedContent/ProtectedContent'
 import { BecomeABuilderButton } from '@/app/bim/BecomeABuilderButton'
+import { MainContainerContent } from './MainContainerContent'
 
 interface Props {
   children: ReactNode
@@ -49,38 +50,44 @@ export const MainContainer: FC<Props> = ({ children, notProtected = false }) => 
     <>
       <div className="flex">
         <StatefulSidebar />
-        <div className="flex-auto px-[24px] mb-[100px]">
-          {hasMounted && (
-            <>
-              <Header>
-                {isConnected ? (
-                  <div className="flex flex-row justify-end gap-4">
-                    <BecomeABuilderButton address={address} />
-                    <AccountAddress
-                      address={address}
-                      shortAddress={shortAddress(address)}
-                      onLogoutClick={modal.openModal}
-                    />
-                  </div>
-                ) : (
-                  <ConnectButton />
+        <div className="flex flex-1 flex-col justify-between">
+          <main className="px-[24px] mb-[100px]">
+            {hasMounted && (
+              <>
+                <Header>
+                  {isConnected ? (
+                    <div className="flex flex-row justify-end gap-4">
+                      <BecomeABuilderButton address={address} />
+                      <AccountAddress
+                        address={address}
+                        shortAddress={shortAddress(address)}
+                        onLogoutClick={modal.openModal}
+                      />
+                    </div>
+                  ) : (
+                    <ConnectButton />
+                  )}
+                </Header>
+                {modal.isModalOpened && (
+                  <DisconnectWalletModal
+                    onClose={modal.closeModal}
+                    onConfirm={handleDisconnect}
+                    onCancel={modal.closeModal}
+                    address={address}
+                  />
                 )}
-              </Header>
-              {modal.isModalOpened && (
-                <DisconnectWalletModal
-                  onClose={modal.closeModal}
-                  onConfirm={handleDisconnect}
-                  onCancel={modal.closeModal}
-                  address={address}
-                />
-              )}
-            </>
-          )}
-          {message && <Alert {...message} onDismiss={() => setMessage(null)} />}
-          {notProtected ? children : <ProtectedContent>{children}</ProtectedContent>}
+              </>
+            )}
+            {message && (
+              <Alert {...message} onDismiss={message.onDismiss === null ? null : () => setMessage(null)} />
+            )}
+            <MainContainerContent notProtected={notProtected} setMessage={setMessage}>
+              {children}
+            </MainContainerContent>
+          </main>
+          <Footer variant="container" />
         </div>
       </div>
-      <Footer variant="container" />
     </>
   )
 }

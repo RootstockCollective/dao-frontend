@@ -4,8 +4,9 @@ import { Input } from '@/components/Input'
 import { Header, Label, Paragraph, Span, Typography } from '@/components/Typography'
 import { shortAddress, toFixed, truncateMiddle } from '@/lib/utils'
 import { FC, useState } from 'react'
-import { FaUser } from 'react-icons/fa'
 import { FaCopy } from 'react-icons/fa6'
+import { Address } from 'viem'
+import Image from 'next/image'
 
 export type Vote = 'for' | 'against' | 'abstain'
 
@@ -13,8 +14,9 @@ interface Props {
   onSubmit: (voting: Vote) => void
   onClose: () => void
   proposal: any
-  address: string
+  address: Address
   votingPower: string
+  isVoting?: boolean
   errorMessage?: string
 }
 
@@ -24,19 +26,20 @@ export const VoteProposalModal: FC<Props> = ({
   proposal,
   address,
   votingPower,
+  isVoting,
   errorMessage,
 }) => {
-  const [voting, setVoting] = useState<Vote | null>(null)
+  const [vote, setVoting] = useState<Vote | null>(null)
   const handleSubmit = (e: any) => {
     e.preventDefault()
-    if (voting) {
-      onSubmit(voting)
+    if (vote) {
+      onSubmit(vote)
     }
   }
   return (
     <Modal onClose={onClose} width={756}>
       <div className="px-[50px] pt-[21px] pb-[42px] flex justify-center flex-col">
-        <Paragraph className="text-bold text-[24px] text-center mb-4">Voting</Paragraph>
+        <Paragraph className="text-bold text-[24px] text-center mb-4">VOTING</Paragraph>
         <Header variant="h1" className="font-semibold">
           {proposal.title}
         </Header>
@@ -49,7 +52,7 @@ export const VoteProposalModal: FC<Props> = ({
           <Paragraph className="text-sm text-gray-500 font-normal ml-4">
             Created at:
             <br />
-            <Span className="text-primary font-semibold">{proposal.Starts}</Span>
+            <Span className="text-primary font-semibold">{proposal.Starts.format('YYYY-MM-DD')}</Span>
           </Paragraph>
           <Paragraph className="text-sm text-gray-500 ml-4 font-normal">
             Proposal ID:
@@ -61,7 +64,14 @@ export const VoteProposalModal: FC<Props> = ({
           Wallet
         </Label>
         <div className="p-[15px] bg-input-bg flex gap-2 items-center justify-between w-1/2 rounded-[6px]">
-          <FaUser /> {/* @TODO insert provider image */}
+          {/* @TODO insert provider image */}
+          <Image
+            src="/images/metamask.svg"
+            alt="metamask"
+            width={0}
+            height={0}
+            style={{ width: '22px', height: 'auto' }}
+          />
           <Typography tagVariant="span" className="flex-1">
             {shortAddress(address, 10)}
           </Typography>
@@ -83,7 +93,7 @@ export const VoteProposalModal: FC<Props> = ({
           Vote
         </Label>
         <div className="flex gap-4 mt-2">
-          {voting === 'for' ? (
+          {vote === 'for' ? (
             <Button
               variant="primary"
               className="w-1/3 border border-white bg-st-success bg-opacity-10"
@@ -98,7 +108,7 @@ export const VoteProposalModal: FC<Props> = ({
             </Button>
           )}
 
-          {voting === 'against' ? (
+          {vote === 'against' ? (
             <Button
               variant="primary"
               className="w-1/3 border border-white bg-st-error bg-opacity-10"
@@ -118,7 +128,7 @@ export const VoteProposalModal: FC<Props> = ({
             </Button>
           )}
 
-          {voting === 'abstain' ? (
+          {vote === 'abstain' ? (
             <Button
               variant="primary"
               className="w-1/3 border border-white bg-gray-600"
@@ -140,7 +150,7 @@ export const VoteProposalModal: FC<Props> = ({
         </div>
         {errorMessage && <Label className="bg-st-error mt-2 p-4">Error: {errorMessage}</Label>}
         <div className="flex justify-center mt-8">
-          <Button onClick={handleSubmit} disabled={!voting}>
+          <Button onClick={handleSubmit} disabled={!vote || isVoting} loading={isVoting}>
             Submit
           </Button>
         </div>

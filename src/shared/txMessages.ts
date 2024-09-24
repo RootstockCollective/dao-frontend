@@ -33,8 +33,7 @@ export const TX_MESSAGES = {
     },
     success: {
       title: 'Stake successful',
-      content:
-        'Stake successful. Your stake has been successfully completed! You will start receiving rewards in your stRIF balance.',
+      content: 'Stake successful. Your stake has been successfully completed!',
       severity: 'success',
     },
   },
@@ -72,6 +71,42 @@ export const TX_MESSAGES = {
     success: {
       title: 'Queuing successful',
       content: 'Queuing successful. The proposal has been queued successfully!',
+      severity: 'success',
+    },
+  },
+  voting: {
+    error: {
+      title: 'Error on voting',
+      content:
+        'An unexpected error occurred while trying to vote. Please try again later. If the issue persists, contact support for assistance.',
+      severity: 'error',
+    },
+    pending: {
+      title: 'Voting in process',
+      content: 'Your transaction is in progress. It will be visible when the transaction is confirmed.',
+      severity: 'info',
+    },
+    success: {
+      title: 'Voting successful',
+      content: 'Voting successful. Your vote has been successfully cast!',
+      severity: 'success',
+    },
+  },
+  execution: {
+    error: {
+      title: 'Error on execution',
+      content:
+        'An unexpected error occurred while trying to execute the actions of the proposal. Please try again later. If the issue persists, contact support for assistance.',
+      severity: 'error',
+    },
+    pending: {
+      title: 'Execution in process',
+      content: 'Your transaction is in progress. It will be visible when the transaction is confirmed.',
+      severity: 'info',
+    },
+    success: {
+      title: 'Execution successful',
+      content: 'Execution successful. The proposal has been executed successfully!',
       severity: 'success',
     },
   },

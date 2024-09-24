@@ -28,7 +28,7 @@ export const StakeRIF = ({
   symbol = 'RIF',
 }: Props) => (
   <div className="px-[50px] py-[20px]">
-    <Header className="text-center">
+    <Header className="text-center font-normal" fontFamily="kk-topo">
       {textsDependingOnAction[actionName].modalTitle}
       {symbol}
     </Header>

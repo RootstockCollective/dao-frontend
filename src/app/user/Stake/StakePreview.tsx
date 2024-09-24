@@ -1,9 +1,10 @@
-import { Span, Paragraph, Header } from '@/components/Typography'
+import { Span, Header } from '@/components/Typography'
 import { Button } from '@/components/Button'
 import { TbFileSearch } from 'react-icons/tb'
 import { StakePreviewBalance } from './StakePreviewBalance'
 import { StakePreviewBalanceProps } from '@/app/user/Stake/types'
 import { ReactNode } from 'react'
+import { SHARED_MODAL_BOX_SHADOW_STYLE } from '@/lib/utils'
 
 interface StakePreviewProps {
   from: Omit<StakePreviewBalanceProps, 'topLeftText'>
@@ -11,8 +12,9 @@ interface StakePreviewProps {
   onConfirm: () => void
   onCancel: () => void
   actionName: string
-  actionText: string
+  actionText: string | ReactNode
   confirmButtonText?: string
+  confirmButtonDataTestId?: string
   customComponentBeforeFooter?: ReactNode
   disableConfirm?: boolean
   loading?: boolean
@@ -28,6 +30,7 @@ export const StakePreview = ({
   actionName,
   actionText,
   confirmButtonText = 'Confirm',
+  confirmButtonDataTestId,
   loading = false,
 }: StakePreviewProps) => {
   return (
@@ -35,17 +38,19 @@ export const StakePreview = ({
       <div className="flex justify-center mt-[63px]">
         <div
           style={{
-            boxShadow: '0px 0px 16.4px 0px rgba(123,87,252,0.68)',
+            boxShadow: SHARED_MODAL_BOX_SHADOW_STYLE,
             padding: 17,
             borderRadius: '30%',
             backgroundColor: 'white',
             width: 80,
           }}
         >
-          <TbFileSearch size={48} color="#665EF6" />
+          <TbFileSearch size={48} color="var(--color-primary)" />
         </div>
       </div>
-      <Header className="mt-[62px] text-center">{actionName}</Header>
+      <Header className="mt-[62px] text-center font-normal" fontFamily="kk-topo">
+        {actionName}
+      </Header>
       <Span className="text-center">{actionText}</Span>
       <div className="flex justify-center">
         <div className="bg-input-bg rounded-[6px] mt-[32px] w-full max-w-[500px]">
@@ -63,7 +68,7 @@ export const StakePreview = ({
           onClick={onConfirm}
           disabled={disableConfirm || loading}
           loading={loading}
-          buttonProps={{ 'data-testid': 'Confirm' }}
+          buttonProps={{ 'data-testid': confirmButtonDataTestId || confirmButtonText }}
         >
           {confirmButtonText}
         </Button>

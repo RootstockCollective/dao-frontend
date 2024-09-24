@@ -1,5 +1,6 @@
 import { FC, HTMLAttributes, ReactNode } from 'react'
 import { TableHead, TableRow, TableCell, TableBody, TableCore } from './components'
+import { Span } from '../Typography'
 
 interface TableProps extends HTMLAttributes<HTMLDivElement> {
   /**
@@ -34,7 +35,11 @@ export const Table: FC<TableProps> = ({ data, equalColumns = true, headerClassNa
       <TableHead>
         <TableRow>
           {header.map(headTitle => (
-            <TableCell style={{ width }} key={headTitle} className={headerClassName}>
+            <TableCell
+              style={{ width, fontWeight: 'bold', fontSize: '14px' }}
+              key={headTitle}
+              className={headerClassName}
+            >
               {headTitle}
             </TableCell>
           ))}
@@ -42,10 +47,10 @@ export const Table: FC<TableProps> = ({ data, equalColumns = true, headerClassNa
       </TableHead>
       <TableBody>
         {data.map((record, i) => (
-          <TableRow key={i}>
+          <TableRow key={i} className="text-[14px] border-hidden" style={{ borderTopStyle: 'solid' }}>
             {Object.values(record).map((val, j) => (
               <TableCell style={{ width }} key={j}>
-                {val}
+                <Span className="text-[14px]">{val}</Span>
               </TableCell>
             ))}
           </TableRow>

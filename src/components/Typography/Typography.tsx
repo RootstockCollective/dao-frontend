@@ -14,19 +14,24 @@ interface Props {
   tagVariant: TypographyTagVariants
   children: ReactNode
   className?: string
+  fontFamily?: 'sora' | 'kk-topo' | 'rootstock-sans'
+  onClick?: () => void
 }
 
 export const Typography: FC<Props & CSSProperties> = ({
   tagVariant = 'p',
   children,
   className,
+  fontFamily = 'rootstock-sans',
+  onClick,
   ...styles
 }) => {
   const Component = tagVariant
   const classes = classesByTag[tagVariant]
+  const fontFamilyClass = fontFamily ? `font-${fontFamily}` : ''
 
   return (
-    <Component className={cn(['font-sora', classes, className])} style={{ ...styles }}>
+    <Component className={cn([fontFamilyClass, classes, className])} style={{ ...styles }} onClick={onClick}>
       {children}
     </Component>
   )

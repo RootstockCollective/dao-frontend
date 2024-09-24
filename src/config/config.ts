@@ -1,7 +1,8 @@
-import { createClient, defineChain } from 'viem'
-import { rootstockTestnet } from 'viem/chains'
+import { ENV } from '@/lib/constants'
+import { defineChain } from 'viem'
+import { rootstockTestnet, rootstock } from 'viem/chains'
 import { createConfig, http } from 'wagmi'
-import { metaMask } from 'wagmi/connectors'
+import { injected } from 'wagmi/connectors'
 
 const rskRegtest = defineChain({
   id: 33,
@@ -15,9 +16,17 @@ const rskRegtest = defineChain({
 })
 
 export const config = createConfig({
-  chains: [rskRegtest, rootstockTestnet],
-  client({ chain }) {
-    return createClient({ chain, transport: http() })
+  chains: [rskRegtest, rootstockTestnet, rootstock],
+  transports: {
+    [rootstock.id]: http(),
+    [rootstockTestnet.id]: http(),
+    [rskRegtest.id]: http(),
+    connectors: [injected()],
   },
-  connectors: [metaMask({ dappMetadata: { name: 'RootstockCollective' } })],
 })
+
+export const supportedChainId = {
+  mainnet: rootstock.id,
+  testnet: rootstockTestnet.id,
+  localhost: rskRegtest.id,
+}[ENV]!
