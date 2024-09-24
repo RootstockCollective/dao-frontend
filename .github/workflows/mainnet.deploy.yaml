@@ -1,9 +1,8 @@
 name: Deploy to Amazon ECS (Mainnet)
 
 on:
-  push:
-    branches:
-      - main
+  release:
+    types: [released]
 
 env:
   AWS_REGION: us-east-1
