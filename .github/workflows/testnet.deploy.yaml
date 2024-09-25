@@ -1,9 +1,8 @@
 name: Deploy to Amazon ECS (Testnet)
 
 on:
-  push:
-    branches:
-      - main
+  release:
+    types: [released]
 
 env:
   AWS_REGION: us-east-1
@@ -19,9 +18,10 @@ jobs:
   deploy:
     name: Deploy
     runs-on: ubuntu-latest
-    # NOTYET we need a non-free plan
-    #environment:
-    #  name: testnet
+    environment:
+      name: testnet
+      url: https://testnet.app.rootstockcollective.xyz
+
     permissions:
       id-token: write
       contents: read
