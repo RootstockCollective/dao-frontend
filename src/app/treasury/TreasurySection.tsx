@@ -18,6 +18,7 @@ export const TreasurySection = () => {
             amount={toFixed(buckets[index].RIF.amount)}
             fiatAmount={`= USD ${buckets[index].RIF.fiatAmount}`}
             contractAddress={contract.address}
+            data-testid={`${contract.name}-RIF`}
           />
         ))}
         {/* RBTC Holdings */}
@@ -27,6 +28,7 @@ export const TreasurySection = () => {
             title={`${contract.name} RBTC Holdings`}
             amount={toFixed(buckets[index].RBTC.amount)}
             fiatAmount={`= USD ${buckets[index].RBTC.fiatAmount}`}
+            data-testid={`${contract.name}-RBTC`}
           />
         ))}
       </div>

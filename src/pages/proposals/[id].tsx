@@ -195,16 +195,20 @@ const PageWithProposal = (proposal: PageWithProposal) => {
                 <Popover
                   content={
                     <div className="text-[12px] font-bold mb-1">
-                      <p>{cannotCastVoteReason}</p>
+                      <p data-testid="ParagraphCannotCastVote">{cannotCastVoteReason}</p>
                     </div>
                   }
                   size="small"
                   trigger="hover"
                 >
-                  <Button disabled>Vote on chain</Button>
+                  <Button disabled data-testid="VoteOnChain">
+                    Vote on chain
+                  </Button>
                 </Popover>
               ) : (
-                <Button onClick={openModal}>Vote on chain</Button>
+                <Button onClick={openModal} data-testid="VoteOnChain">
+                  Vote on chain
+                </Button>
               )}
             </>
           )}
@@ -214,6 +218,7 @@ const PageWithProposal = (proposal: PageWithProposal) => {
               className="mt-2"
               disabled={isQueuing || isTxHashFromQueueLoading}
               loading={isQueuing}
+              data-testid="PutOnQueue"
             >
               Put on Queue
             </Button>
@@ -239,6 +244,7 @@ const PageWithProposal = (proposal: PageWithProposal) => {
                 onClick={handleVotingExecution}
                 className="mt-2"
                 disabled={!canProposalBeExecuted || isExecuting}
+                data-testid="Execute"
               >
                 Execute
               </Button>

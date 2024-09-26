@@ -175,7 +175,12 @@ export default function CreateProposal() {
                     <FormItem className="mb-6 mx-1">
                       <FormLabel>Proposal name</FormLabel>
                       <FormControl>
-                        <FormInput placeholder="Name your proposal" {...field} maxLength={100} />
+                        <FormInput
+                          placeholder="Name your proposal"
+                          {...field}
+                          maxLength={100}
+                          data-testid="InputName"
+                        />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
@@ -188,14 +193,23 @@ export default function CreateProposal() {
                     <FormItem className="mb-6 mx-1">
                       <FormLabel>Description</FormLabel>
                       <FormControl>
-                        <FormTextarea placeholder="Enter a description..." {...field} maxLength={3000} />
+                        <FormTextarea
+                          placeholder="Enter a description..."
+                          {...field}
+                          maxLength={3000}
+                          data-testid="InputDescription"
+                        />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
                   )}
                 />
                 <div className="flex justify-center mb-6">
-                  <Button disabled={!isProposalCompleted} onClick={handleProposalCompleted}>
+                  <Button
+                    disabled={!isProposalCompleted}
+                    onClick={handleProposalCompleted}
+                    data-testid="Continue"
+                  >
                     Continue
                   </Button>
                 </div>
@@ -220,7 +234,7 @@ export default function CreateProposal() {
                     <FormItem className="mb-6 mx-1">
                       <FormLabel>Transfer to</FormLabel>
                       <FormControl>
-                        <FormInput placeholder="0x123...456" {...field} />
+                        <FormInput placeholder="0x123...456" {...field} data-testid="InputTransfer" />
                       </FormControl>
                       <FormDescription>Write or paste the wallet address of the recipient</FormDescription>
                       <FormMessage>
@@ -259,6 +273,7 @@ export default function CreateProposal() {
                               }
                             }}
                             defaultValue={field.value}
+                            data-testid="InputAsset"
                           >
                             <FormControl>
                               <SelectTrigger>
@@ -308,6 +323,7 @@ export default function CreateProposal() {
                             placeholder="0.00"
                             className="w-64"
                             autoComplete="off"
+                            data-testid="InputAmount"
                             {...field}
                           />
                         </FormControl>
@@ -334,7 +350,13 @@ const HeaderSection = ({ disabled = true, loading = false }) => (
       Create proposal
     </Header>
     <div className="flex flex-row gap-x-6">
-      <Button startIcon={<GoRocket />} disabled={disabled} buttonProps={{ type: 'submit' }} loading={loading}>
+      <Button
+        startIcon={<GoRocket />}
+        disabled={disabled}
+        buttonProps={{ type: 'submit' }}
+        loading={loading}
+        data-testid="Publish"
+      >
         Publish
       </Button>
     </div>

@@ -59,7 +59,9 @@ export const VoteSubmittedModal: FC<Props> = ({ onClose, proposal, vote }) => {
         </div>
 
         <div className="w-full flex justify-center mt-8">
-          <Button onClick={onClose}>Return to proposal</Button>
+          <Button onClick={onClose} data-testid="ReturnToProposal">
+            Return to proposal
+          </Button>
         </div>
       </div>
     </Modal>
