@@ -7,7 +7,7 @@ import { ComparativeProgressBar } from '@/components/ComparativeProgressBar/Comp
 const PopoverSentiment = ({ votes }: { votes: string[] }) => {
   const [againstVotes, forVotes, abstainVotes] = votes
   return (
-    <div className="text-black">
+    <div className="text-black overflow-hidden">
       <Paragraph variant="semibold" className="text-[12px] font-bold">
         Votes for
       </Paragraph>
