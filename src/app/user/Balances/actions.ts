@@ -84,8 +84,12 @@ export const fetchNftsOwnedByAddressAndNFTAddress = (address: string, nftAddress
     .then(({ data }) => data)
     .catch(error => console.log(error))
 
-export const fetchProposalCreated = () =>
-  axiosInstance.get(fetchProposalsCreatedByGovernorAddress.replace('{{address}}', GovernorAddress))
+export const fetchProposalCreated = (fromBlock = 0) =>
+  axiosInstance.get(
+    fetchProposalsCreatedByGovernorAddress
+      .replace('{{address}}', GovernorAddress)
+      .replace('{{fromBlock}}', fromBlock.toString()),
+  )
 
 export const fetchProposalsCreatedCached = () => axiosInstance.get('/proposals/api', { baseURL: '/' })
 
