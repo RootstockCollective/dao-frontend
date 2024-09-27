@@ -9,6 +9,7 @@ export interface AlertProps {
   title: string
   content: string | ReactNode
   onDismiss?: (() => void) | null
+  'data-testid'?: string
 }
 
 const IconToUse = {
@@ -18,9 +19,12 @@ const IconToUse = {
   warning: <BsExclamationCircle size={20} color="rgba(255,193,7,1)" />,
 }
 
-export const Alert = ({ severity, title, content, onDismiss }: AlertProps) => {
+export const Alert = ({ severity, title, content, onDismiss, 'data-testid': dataTestId }: AlertProps) => {
   return (
-    <div className="container relative flex border border-gray-300 p-[16px] rounded-[12px] gap-[16px] bg-input-bg mb-4">
+    <div
+      className="container relative flex border border-gray-300 p-[16px] rounded-[12px] gap-[16px] bg-input-bg mb-4"
+      data-testid={`Alert${dataTestId || ''}`}
+    >
       {/* Icon */}
       {IconToUse[severity]}
       {/* Main content */}

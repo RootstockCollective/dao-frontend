@@ -117,7 +117,15 @@ export const LatestProposalsTable = ({ latestProposals }: LatestProposalsTablePr
       <Header variant="h2" className="mb-4">
         Latest Proposals
       </Header>
-      {latestProposals.length > 0 && <Table data={latestProposalsTransformer(latestProposalsMapped)} />}
+      {latestProposals.length > 0 && (
+        <Table
+          data={latestProposalsTransformer(latestProposalsMapped)}
+          data-testid="TableProposals"
+          tbodyProps={{
+            'data-testid': 'TableProposalsTbody',
+          }}
+        />
+      )}
     </div>
   )
 }

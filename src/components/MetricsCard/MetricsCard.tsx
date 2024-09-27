@@ -29,6 +29,7 @@ interface MetricsCardProps {
    * The address of the contract to link to.
    */
   contractAddress?: Address
+  'data-testid'?: string
 }
 
 const DEFAULT_CLASSES = 'h-[7.5rem] w-full py-[8px] px-[16px] flex flex-col'
@@ -42,10 +43,11 @@ export const MetricsCard: FC<MetricsCardProps> = ({
   fiatAmount,
   borderless = false,
   contractAddress,
+  'data-testid': dataTestId,
 }) => {
   const borderClasses = borderless ? '' : 'border border-white border-opacity-40 rounded-lg'
   return (
-    <div className={cn(DEFAULT_CLASSES, borderClasses)}>
+    <div className={cn(DEFAULT_CLASSES, borderClasses)} data-testid={dataTestId || 'MetricsCard'}>
       {typeof title === 'string' ? (
         <div>
           <Paragraph
@@ -59,11 +61,15 @@ export const MetricsCard: FC<MetricsCardProps> = ({
         title
       )}
       <div className="h-12 flex items-center">
-        <Paragraph variant="semibold" className="text-[2rem] leading-none">
+        <Paragraph variant="semibold" className="text-[2rem] leading-none" data-testid="Amount">
           {amount}
         </Paragraph>
       </div>
-      <Paragraph variant="normal" className="text-[13px] text-white text-opacity-80 leading-4">
+      <Paragraph
+        variant="normal"
+        className="text-[13px] text-white text-opacity-80 leading-4"
+        data-testid="FiatAmount"
+      >
         {fiatAmount}
       </Paragraph>
       {contractAddress && (

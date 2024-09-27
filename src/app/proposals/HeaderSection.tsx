@@ -34,7 +34,12 @@ export const HeaderSection = ({ createProposalDisabled = true, threshold = '' })
 const CreateProposalButton = ({ disabled = false }) => {
   const router = useRouter()
   return (
-    <Button startIcon={<FaPlus />} onClick={() => router.push('/proposals/create')} disabled={disabled}>
+    <Button
+      startIcon={<FaPlus />}
+      onClick={() => router.push('/proposals/create')}
+      disabled={disabled}
+      data-testid="CreateProposal"
+    >
       Create Proposal
     </Button>
   )

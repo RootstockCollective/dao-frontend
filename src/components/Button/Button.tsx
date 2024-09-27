@@ -19,6 +19,7 @@ interface Props {
   buttonProps?: JSX.IntrinsicElements['button'] & { 'data-testid'?: string }
   loading?: boolean
   startIconClasses?: string
+  'data-testid'?: string
 }
 
 const DEFAULT_DATA_TESTID = 'Button'
@@ -36,6 +37,7 @@ export const Button: FC<Props> = ({
   buttonProps = {},
   loading = false,
   startIconClasses,
+  'data-testid': dataTestId,
 }) => {
   startIcon = loading ? <FaSpinner className="animate-spin" /> : startIcon
   const classes = cn({
@@ -70,7 +72,7 @@ export const Button: FC<Props> = ({
       className={classes}
       onClick={e => !disabled && onClick?.(e)}
       {...buttonProps}
-      data-testid={`${DEFAULT_DATA_TESTID}${buttonProps['data-testid'] || ''}${buttonProps.id || ''}`}
+      data-testid={`${DEFAULT_DATA_TESTID}${dataTestId || buttonProps['data-testid'] || ''}${buttonProps.id || ''}`}
     >
       <span className={textClasses}>
         <span className={cn('absolute left-[-20px] top-[4px]', startIconClasses)}>{startIcon}</span>
