@@ -12,7 +12,7 @@ env:
   ECS_TASK_DEFINITION: bim-dao-frontend-qa
   CONTAINER_NAME: bim-dao-frontend
 
-  PROFILE: testnet.local
+  PROFILE: testnet.qa
 
 jobs:
   deploy:
