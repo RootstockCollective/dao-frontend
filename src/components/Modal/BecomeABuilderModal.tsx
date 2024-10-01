@@ -6,6 +6,8 @@ import { Button } from '@/components/Button'
 import { BsCardText } from 'react-icons/bs'
 import { RiPassportLine } from 'react-icons/ri'
 import { BuilderStatus } from '@/app/bim/types'
+import { useRouter } from 'next/navigation'
+import { SupportedActionAbiName, SupportedProposalActionName } from '@/app/proposals/shared/supportedABIs'
 
 interface BecomeABuilderModalProps {
   onClose: () => void
@@ -44,6 +46,11 @@ const steps: Array<Step> = [
 ]
 
 export const BecomeABuilderModal: FC<BecomeABuilderModalProps> = ({ onClose, builderStatus }) => {
+  const router = useRouter()
+
+  const contractName: SupportedActionAbiName = 'SimplifiedRewardDistributorAbi'
+  const action: SupportedProposalActionName = 'whitelistBuilder'
+
   return (
     <Modal onClose={onClose} width={1016}>
       <div className="px-[50px] pt-[21px] pb-[42px] flex flex-col justify-center">
@@ -64,7 +71,11 @@ export const BecomeABuilderModal: FC<BecomeABuilderModalProps> = ({ onClose, bui
           <div className="flex flex-col items-center gap-4">
             <BsCardText size={48} />
             Create a <br /> proposal
-            <Button disabled={builderStatus !== 'KYC Approved'}>Submit proposal</Button>
+            <Button
+              onClick={() => router.push(`/proposals/create?contract=${contractName}&action=${action}`)}
+            >
+              Submit proposal
+            </Button>
           </div>
         </div>
       </div>

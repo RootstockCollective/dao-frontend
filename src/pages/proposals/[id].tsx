@@ -1,9 +1,24 @@
 'use client'
 import { useFetchLatestProposals } from '@/app/proposals/hooks/useFetchLatestProposals'
+import { useGetProposalDeadline } from '@/app/proposals/hooks/useGetProposalDeadline'
 import { useGetProposalSnapshot } from '@/app/proposals/hooks/useGetProposalSnapshot'
 import { useGetProposalVotes } from '@/app/proposals/hooks/useGetProposalVotes'
-import { actionFormatterMap, getEventArguments } from '@/app/proposals/shared/utils'
+import { useVotingPowerAtSnapshot } from '@/app/proposals/hooks/useVotingPowerAtSnapshot'
+import {
+  ActionComposerMap,
+  ActionInputNameFormatMap,
+  FunctionName,
+  InputNameFormatMap,
+  InputParameterName,
+  InputParameterTypeByFnByName,
+  InputValueComponent,
+  InputValueComposerMap,
+} from '@/app/proposals/shared/supportedABIs'
+import { DecodedData, getEventArguments } from '@/app/proposals/shared/utils'
+import { useAlertContext } from '@/app/providers'
+import { formatBalanceToHuman } from '@/app/user/Balances/balanceUtils'
 import { useModal } from '@/app/user/Balances/hooks/useModal'
+import { Address as AddressComponent } from '@/components/Address'
 import {
   Breadcrumb,
   BreadcrumbItem,
@@ -13,26 +28,24 @@ import {
   BreadcrumbSeparator,
 } from '@/components/Breadcrumb'
 import { Button } from '@/components/Button'
+import { CopyButton } from '@/components/CopyButton'
 import { MainContainer } from '@/components/MainContainer/MainContainer'
 import { MetricsCard } from '@/components/MetricsCard'
 import { Popover } from '@/components/Popover'
 import { Header, Paragraph, Span } from '@/components/Typography'
-import { useVoteOnProposal } from '@/shared/hooks/useVoteOnProposal'
+import { config } from '@/config'
+import { RIF, RIF_ADDRESS } from '@/lib/constants'
 import { truncateMiddle } from '@/lib/utils'
+import { useExecuteProposal } from '@/shared/hooks/useExecuteProposal'
+import { useQueueProposal } from '@/shared/hooks/useQueueProposal'
+import { useVoteOnProposal } from '@/shared/hooks/useVoteOnProposal'
+import { TX_MESSAGES } from '@/shared/txMessages'
+import { waitForTransactionReceipt } from '@wagmi/core'
 import { useRouter } from 'next/router'
 import { FC, useMemo, useState } from 'react'
 import { useAccount } from 'wagmi'
 import { Vote, VoteProposalModal } from '../../components/Modal/VoteProposalModal'
 import { VoteSubmittedModal } from '../../components/Modal/VoteSubmittedModal'
-import { useVotingPowerAtSnapshot } from '@/app/proposals/hooks/useVotingPowerAtSnapshot'
-import { useExecuteProposal } from '@/shared/hooks/useExecuteProposal'
-import { useQueueProposal } from '@/shared/hooks/useQueueProposal'
-import { useGetProposalDeadline } from '@/app/proposals/hooks/useGetProposalDeadline'
-import { waitForTransactionReceipt } from '@wagmi/core'
-import { config } from '@/config'
-import { useAlertContext } from '@/app/providers'
-import { TX_MESSAGES } from '@/shared/txMessages'
-import { CopyButton } from '@/components/CopyButton'
 
 export default function ProposalView() {
   const {
@@ -354,20 +367,14 @@ const BreadcrumbSection: FC<{ title: string }> = ({ title }) => {
 }
 
 interface CalldataRowsData {
-  calldatasParsed: CalldataDisplayProps[]
+  calldatasParsed: DecodedData[]
 }
 
 const CalldataRows = ({ calldatasParsed }: CalldataRowsData) => {
   return calldatasParsed.map((callData, index) => <CalldataDisplay key={index} {...callData} />)
 }
 
-interface CalldataDisplayProps {
-  functionName: string
-  args: Record<number, string>
-  inputs: { name: string }[]
-}
-
-const CalldataDisplay = ({ functionName, args, inputs }: CalldataDisplayProps) => (
+const CalldataDisplay = ({ functionName, args, inputs }: DecodedData) => (
   <div>
     <Paragraph variant="semibold" className="text-[16px]">
       Function: <Span className="font-normal">{functionName}</Span>
@@ -378,11 +385,33 @@ const CalldataDisplay = ({ functionName, args, inputs }: CalldataDisplayProps) =
     </Paragraph>
     <ul>
       {inputs.map((input, index) => {
-        const formatter = actionFormatterMap[input.name as keyof typeof actionFormatterMap]
+        const inputName = input.name
+        const functionInputNames =
+          actionInputNameFormatMap[functionName] ||
+          ({} as InputNameFormatMap<typeof functionName, typeof inputName>)
+        const formattedInputName = (functionInputNames[inputName as never] || inputName) as string
+
+        const inputValue = args[index] as InputParameterTypeByFnByName<typeof functionName, typeof inputName>
+        const inputValueComposerMap = (actionComponentMap[functionName] || {}) as InputValueComposerMap<
+          typeof functionName,
+          typeof inputName
+        >
+        const InputComponent = inputValueComposerMap[
+          inputName as keyof typeof inputValueComposerMap
+        ] as InputValueComponent<InputParameterTypeByFnByName<typeof functionName, typeof inputName>>
+
         return (
           <li key={index} className="my-2">
             <Paragraph variant="semibold" className="text-[16px] break-words">
-              {input.name}: <Span className="font-normal">{formatter?.(args[index] as never)}</Span>
+              {formattedInputName}:{' '}
+              {InputComponent && (
+                <InputComponent
+                  value={inputValue}
+                  htmlProps={{
+                    className: 'font-normal',
+                  }}
+                />
+              )}
             </Paragraph>
           </li>
         )
@@ -390,3 +419,42 @@ const CalldataDisplay = ({ functionName, args, inputs }: CalldataDisplayProps) =
     </ul>
   </div>
 )
+
+export const actionInputNameFormatMap: Partial<
+  ActionInputNameFormatMap<FunctionName[number], InputParameterName>
+> = {
+  whitelistBuilder: {
+    builder_: 'Address to be whitelisted',
+    rewardReceiver_: 'Address to receive rewards',
+  },
+}
+
+const AddressInputComponent: InputValueComponent<'address'> = ({ value, htmlProps }) => (
+  <AddressComponent {...htmlProps} address={value.toString()} />
+)
+
+const BigIntInputComponent: InputValueComponent<'bigint'> = ({ value, htmlProps }) => (
+  <Span {...(htmlProps as any)}>{formatBalanceToHuman(value)}</Span>
+)
+
+const ERC20InputComponent: InputValueComponent<'bigint'> = ({ value, htmlProps }) => (
+  <Span {...(htmlProps as any)}>
+    {value.toLowerCase() === RIF_ADDRESS.toLowerCase() ? RIF : 'Unknown ERC20'}
+  </Span>
+)
+
+export const actionComponentMap: Partial<ActionComposerMap> = {
+  whitelistBuilder: {
+    builder_: AddressInputComponent,
+    rewardReceiver_: AddressInputComponent,
+  },
+  withdraw: {
+    to: AddressInputComponent,
+    amount: BigIntInputComponent,
+  },
+  withdrawERC20: {
+    token: ERC20InputComponent,
+    to: AddressInputComponent,
+    amount: BigIntInputComponent,
+  },
+}

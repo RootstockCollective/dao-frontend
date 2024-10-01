@@ -347,4 +347,4 @@ export const SimplifiedRewardDistributorAbi = [
       },
     ],
   },
-]
+] as const

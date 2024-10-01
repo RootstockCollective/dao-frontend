@@ -3,6 +3,7 @@ import { Paragraph } from '@/components/Typography'
 import { Button } from '@/components/Button'
 import { FaPlus } from 'react-icons/fa6'
 import { Popover } from '@/components/Popover'
+import { SupportedActionAbiName, SupportedProposalActionName } from '@/app/proposals/shared/supportedABIs'
 
 export const HeaderSection = ({ createProposalDisabled = true, threshold = '' }) => (
   <div className="flex flex-row justify-between container">
@@ -33,8 +34,15 @@ export const HeaderSection = ({ createProposalDisabled = true, threshold = '' })
 
 const CreateProposalButton = ({ disabled = false }) => {
   const router = useRouter()
+  const contract: SupportedActionAbiName = 'DAOTreasuryAbi'
+  const action: SupportedProposalActionName = 'withdraw'
+
   return (
-    <Button startIcon={<FaPlus />} onClick={() => router.push('/proposals/create')} disabled={disabled}>
+    <Button
+      startIcon={<FaPlus />}
+      onClick={() => router.push(`/proposals/create?contract=${contract}&action=${action}`)}
+      disabled={disabled}
+    >
       Create Proposal
     </Button>
   )

@@ -1,10 +1,12 @@
-import { RIFTokenAbi } from '@/lib/abis/RIFTokenAbi'
-import { Address, decodeFunctionData, Hash } from 'viem'
-import { DAOTreasuryAbi } from '@/lib/abis/DAOTreasuryAbi'
-import { ZeroAddress } from 'ethers'
-import { RIF_ADDRESS } from '@/lib/constants'
-import { formatBalanceToHuman } from '@/app/user/Balances/balanceUtils'
 import moment from 'moment'
+import { Address, decodeFunctionData, DecodeFunctionDataReturnType, Hash } from 'viem'
+import {
+  SupportedActionAbi,
+  abis,
+  FunctionEntry,
+  FunctionInputs,
+  SupportedProposalActionName,
+} from '@/app/proposals/shared/supportedABIs'
 
 export interface EventArgumentsParameter {
   args: {
@@ -20,23 +22,26 @@ export interface EventArgumentsParameter {
   timeStamp: string
 }
 
-const abis = [DAOTreasuryAbi, RIFTokenAbi]
+type DecodedFunctionData = DecodeFunctionDataReturnType<SupportedActionAbi>
 
-type DecodedData = {
-  functionName: ReturnType<typeof decodeFunctionData>['functionName']
-  args: ReturnType<typeof decodeFunctionData>['args']
-  inputs: unknown | unknown[]
+export type DecodedData = {
+  functionName: DecodedFunctionData['functionName'] & SupportedProposalActionName
+  args: DecodedFunctionData['args']
+  inputs: FunctionInputs
 }
 
 const tryDecode = (data: string): DecodedData => {
   for (const abi of abis) {
     try {
       const { functionName, args } = decodeFunctionData({ data: data as Hash, abi })
-      const functionDefinition = abi.find(item => 'name' in item && item.name === functionName) || {}
+
+      const functionDefinition =
+        abi.find(item => 'name' in item && item.name === functionName) || ({} as FunctionEntry)
+
       return {
-        functionName,
+        functionName: functionName as SupportedProposalActionName,
         args,
-        inputs: 'inputs' in functionDefinition ? functionDefinition.inputs : [],
+        inputs: ('inputs' in functionDefinition ? functionDefinition.inputs : []) as FunctionInputs,
       }
     } catch (_) {
       continue
@@ -83,14 +88,4 @@ export const getEventArguments = ({
     Starts: moment(parseInt(timeStamp, 16) * 1000),
     calldatasParsed,
   }
-}
-
-export const actionFormatterMap = {
-  token: (tokenAddress: Address) =>
-    ({
-      [ZeroAddress]: 'RBTC',
-      [RIF_ADDRESS.toLowerCase()]: 'RIF',
-    })[tokenAddress.toLowerCase()] || tokenAddress.toString(),
-  to: (address: Address) => address.toString(),
-  amount: (amount: bigint) => formatBalanceToHuman(amount),
 }
