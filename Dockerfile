@@ -26,6 +26,8 @@ ARG NEXT_PUBLIC_BUILD_ID
 # Rename environment files based on arg_env
 RUN if [ "$arg_env" = "testnet" ]; then \
       mv .env.testnet .env.local; \
+    elif [ "$arg_env" = "dev" ]; then \
+      mv .env.dev .env.local; \
     elif [ "$arg_env" = "mainnet" ]; then \
       mv .env.prod .env.local; \
     fi
