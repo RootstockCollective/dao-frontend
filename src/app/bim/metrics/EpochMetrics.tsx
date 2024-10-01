@@ -1,8 +1,8 @@
 import { MetricsCard } from '@/components/MetricsCard'
-import { useGetEpochCycle } from '@/app/bim/hooks/useGetEpochCycle'
+import { getEpochCycle } from '@/app/bim/utils/getEpochCycle'
 
 export const EpochMetrics = () => {
-  const { remainingDays, epochDuration, epochEndTimestamp } = useGetEpochCycle()
+  const { remainingDays, epochDuration, epochEndTimestamp } = getEpochCycle()
   const remainingDaysString: string =
     remainingDays.as('day') > 1
       ? `${Math.floor(remainingDays.as('day'))} days`

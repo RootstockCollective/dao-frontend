@@ -1,7 +1,6 @@
 'use client'
 
 import { LeaderBoard } from '@/app/bim/leaderboard/LeaderBoard'
-import { LeaderBoardContextProviderWithPrices } from '@/app/bim/leaderboard/LeaderBoardContext'
 import { MetricsSection } from '@/app/bim/MetricsSection'
 import { WhitelistContextProvider } from '@/app/bim/whitelist/WhitelistContext'
 import { WhitelistSection } from '@/app/bim/whitelist/WhitelistSection'
@@ -15,9 +14,7 @@ export default function BuildersIncentiveMarket() {
         <WhitelistContextProvider>
           <WhitelistSection />
         </WhitelistContextProvider>
-        <LeaderBoardContextProviderWithPrices>
-          <LeaderBoard />
-        </LeaderBoardContextProviderWithPrices>
+        <LeaderBoard />
       </div>
     </MainContainer>
   )

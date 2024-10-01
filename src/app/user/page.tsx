@@ -4,6 +4,7 @@ import { CommunitiesSection } from '@/app/user/Communities/CommunitiesSection'
 import { MainContainer } from '@/components/MainContainer/MainContainer'
 import { TxStatusMessage } from '@/components/TxStatusMessage'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/Tabs'
+import { Rewards } from '@/app/bim/Rewards'
 
 export default function User() {
   return (
@@ -18,7 +19,9 @@ export default function User() {
           <BalancesSection />
           <CommunitiesSection />
         </TabsContent>
-        <TabsContent value="rewards">My Rewards</TabsContent>
+        <TabsContent value="rewards">
+          <Rewards />
+        </TabsContent>
       </Tabs>
     </MainContainer>
   )

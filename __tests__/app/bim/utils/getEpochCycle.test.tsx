@@ -1,5 +1,5 @@
 import { describe, test, expect } from '@jest/globals'
-import { getEpochDurationInDays, getEpochEndTimestamp, daysToMillis } from '@/app/bim/hooks/useGetEpochCycle'
+import { getEpochDurationInDays, getEpochEndTimestamp, daysToMillis } from '@/app/bim/utils/getEpochCycle'
 import { DateTime, Duration } from 'luxon'
 
 describe('getEpochDurationInDays', () => {

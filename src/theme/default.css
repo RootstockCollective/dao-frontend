@@ -22,9 +22,9 @@
 
 html[data-theme='default'] {
   --color-primary: rgba(229, 107, 26, 1);
-  --color-secondary: rgba(45,45,45, 1);
+  --color-secondary: rgba(45, 45, 45, 1);
 
-  --background: #1A1A1A;
+  --background: #1a1a1a;
   --foreground: rgba(37, 37, 37, 1);
 
   --text-primary: white;

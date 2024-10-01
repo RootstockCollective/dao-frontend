@@ -25,9 +25,13 @@ const buildTokenBalanceObject = (symbol: keyof typeof tokenContracts, tokenData?
   balance: tokenData?.[0]?.result ? tokenData[0].result.toString() : '0',
 })
 
-export const useGetAddressTokens = (address: Address, chainId: number) => {
-  const { data: RBTC } = useBalance({ address, chainId })
-  const { data } = useReadContracts({
+export const useGetAddressTokens = (address: Address, chainId?: number) => {
+  const { data: rbtc, isLoading: rbtcLoading, error: rbtcError } = useBalance({ address, chainId })
+  const {
+    data: contracts,
+    isLoading: contractsLoading,
+    error: contractsError,
+  } = useReadContracts({
     contracts: [
       getTokenFunction(tokenContracts.RIF, address, 'balanceOf'),
       getTokenFunction(tokenContracts.RIF, address, 'symbol'),
@@ -40,17 +44,19 @@ export const useGetAddressTokens = (address: Address, chainId: number) => {
     },
   })
 
-  const RIF = data && ([data[0], data[1]] as TokenData)
-  const stRIF = data && ([data[2], data[3]] as TokenData)
+  const RIF = contracts && ([contracts[0], contracts[1]] as TokenData)
+  const stRIF = contracts && ([contracts[2], contracts[3]] as TokenData)
   return {
     data: [
       buildTokenBalanceObject('stRIF', stRIF as TokenData),
       buildTokenBalanceObject('RIF', RIF as TokenData),
       {
-        symbol: RBTC?.symbol || 'RBTC',
-        balance: RBTC?.value.toString() || '0',
+        symbol: rbtc?.symbol || 'RBTC',
+        balance: rbtc?.value.toString() || '0',
         contractAddress: ZeroAddress,
       },
     ] as AddressToken[],
+    isLoading: rbtcLoading || contractsLoading,
+    error: rbtcError ?? contractsError,
   }
 }

@@ -14,7 +14,7 @@ const days = +(EPOCH_DURATION_IN_DAYS || '14')
 const durationInMillis = daysToMillis(days)
 const startDate = DateTime.fromISO(FIRST_EPOCH_START_DATE_ISO || '1970-01-01T00:00:00Z')
 
-export const useGetEpochCycle = () => {
+export const getEpochCycle = () => {
   const now = DateTime.now()
   const epochDuration = getEpochDurationInDays(durationInMillis)
 

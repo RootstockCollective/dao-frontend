@@ -12,7 +12,7 @@ type FetchWhitelistedBuildersFilter = {
 const lowerCaseCompare = (a: string, b: string) => a.toLowerCase().includes(b.toLowerCase())
 
 export const useFetchWhitelistedBuilders = ({ builderName, status }: FetchWhitelistedBuildersFilter) => {
-  const [data, setData] = useState([] as BuilderOffChainInfo[])
+  const [data, setData] = useState<BuilderOffChainInfo[]>([])
   const {
     data: remoteData,
     isLoading,

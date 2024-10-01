@@ -1,350 +1,425 @@
 export const SimplifiedRewardDistributorAbi = [
   {
+    inputs: [],
+    stateMutability: 'nonpayable',
     type: 'constructor',
-    inputs: [],
-    stateMutability: 'nonpayable',
   },
   {
-    type: 'receive',
-    stateMutability: 'payable',
-  },
-  {
-    type: 'function',
-    name: 'UPGRADE_INTERFACE_VERSION',
-    inputs: [],
-    outputs: [
-      {
-        name: '',
-        type: 'string',
-        internalType: 'string',
-      },
-    ],
-    stateMutability: 'view',
-  },
-  {
-    type: 'function',
-    name: 'builderRewardReceiver',
     inputs: [
       {
-        name: 'builder',
-        type: 'address',
         internalType: 'address',
-      },
-    ],
-    outputs: [
-      {
-        name: 'rewardReceiver',
-        type: 'address',
-        internalType: 'address payable',
-      },
-    ],
-    stateMutability: 'view',
-  },
-  {
-    type: 'function',
-    name: 'changeExecutor',
-    inputs: [],
-    outputs: [
-      {
-        name: '',
-        type: 'address',
-        internalType: 'contract ChangeExecutor',
-      },
-    ],
-    stateMutability: 'view',
-  },
-  {
-    type: 'function',
-    name: 'distribute',
-    inputs: [],
-    outputs: [],
-    stateMutability: 'payable',
-  },
-  {
-    type: 'function',
-    name: 'distributeCoinbase',
-    inputs: [],
-    outputs: [],
-    stateMutability: 'payable',
-  },
-  {
-    type: 'function',
-    name: 'distributeRewardToken',
-    inputs: [],
-    outputs: [],
-    stateMutability: 'nonpayable',
-  },
-  {
-    type: 'function',
-    name: 'getWhitelistedBuilder',
-    inputs: [
-      {
-        name: 'index_',
-        type: 'uint256',
-        internalType: 'uint256',
-      },
-    ],
-    outputs: [
-      {
-        name: '',
-        type: 'address',
-        internalType: 'address',
-      },
-    ],
-    stateMutability: 'view',
-  },
-  {
-    type: 'function',
-    name: 'getWhitelistedBuildersLength',
-    inputs: [],
-    outputs: [
-      {
-        name: '',
-        type: 'uint256',
-        internalType: 'uint256',
-      },
-    ],
-    stateMutability: 'view',
-  },
-  {
-    type: 'function',
-    name: 'governor',
-    inputs: [],
-    outputs: [
-      {
-        name: '',
-        type: 'address',
-        internalType: 'address',
-      },
-    ],
-    stateMutability: 'view',
-  },
-  {
-    type: 'function',
-    name: 'initialize',
-    inputs: [
-      {
-        name: 'changeExecutor_',
-        type: 'address',
-        internalType: 'address',
-      },
-      {
-        name: 'rewardToken_',
-        type: 'address',
-        internalType: 'address',
-      },
-    ],
-    outputs: [],
-    stateMutability: 'nonpayable',
-  },
-  {
-    type: 'function',
-    name: 'isWhitelisted',
-    inputs: [
-      {
-        name: 'builder_',
-        type: 'address',
-        internalType: 'address',
-      },
-    ],
-    outputs: [
-      {
-        name: '',
-        type: 'bool',
-        internalType: 'bool',
-      },
-    ],
-    stateMutability: 'view',
-  },
-  {
-    type: 'function',
-    name: 'proxiableUUID',
-    inputs: [],
-    outputs: [
-      {
-        name: '',
-        type: 'bytes32',
-        internalType: 'bytes32',
-      },
-    ],
-    stateMutability: 'view',
-  },
-  {
-    type: 'function',
-    name: 'removeWhitelistedBuilder',
-    inputs: [
-      {
-        name: 'builder_',
-        type: 'address',
-        internalType: 'address',
-      },
-    ],
-    outputs: [],
-    stateMutability: 'nonpayable',
-  },
-  {
-    type: 'function',
-    name: 'rewardToken',
-    inputs: [],
-    outputs: [
-      {
-        name: '',
-        type: 'address',
-        internalType: 'contract IERC20',
-      },
-    ],
-    stateMutability: 'view',
-  },
-  {
-    type: 'function',
-    name: 'upgradeToAndCall',
-    inputs: [
-      {
-        name: 'newImplementation',
-        type: 'address',
-        internalType: 'address',
-      },
-      {
-        name: 'data',
-        type: 'bytes',
-        internalType: 'bytes',
-      },
-    ],
-    outputs: [],
-    stateMutability: 'payable',
-  },
-  {
-    type: 'function',
-    name: 'whitelistBuilder',
-    inputs: [
-      {
-        name: 'builder_',
-        type: 'address',
-        internalType: 'address',
-      },
-      {
-        name: 'rewardReceiver_',
-        type: 'address',
-        internalType: 'address payable',
-      },
-    ],
-    outputs: [],
-    stateMutability: 'nonpayable',
-  },
-  {
-    type: 'event',
-    name: 'Initialized',
-    inputs: [
-      {
-        name: 'version',
-        type: 'uint64',
-        indexed: false,
-        internalType: 'uint64',
-      },
-    ],
-    anonymous: false,
-  },
-  {
-    type: 'event',
-    name: 'Upgraded',
-    inputs: [
-      {
-        name: 'implementation',
-        type: 'address',
-        indexed: true,
-        internalType: 'address',
-      },
-    ],
-    anonymous: false,
-  },
-  {
-    type: 'error',
-    name: 'AddressEmptyCode',
-    inputs: [
-      {
         name: 'target',
         type: 'address',
-        internalType: 'address',
       },
     ],
+    name: 'AddressEmptyCode',
+    type: 'error',
   },
   {
-    type: 'error',
-    name: 'AddressInsufficientBalance',
     inputs: [
       {
+        internalType: 'address',
         name: 'account',
         type: 'address',
-        internalType: 'address',
       },
     ],
+    name: 'AddressInsufficientBalance',
+    type: 'error',
   },
   {
-    type: 'error',
-    name: 'ERC1967InvalidImplementation',
     inputs: [
       {
+        internalType: 'address',
         name: 'implementation',
         type: 'address',
-        internalType: 'address',
       },
     ],
+    name: 'ERC1967InvalidImplementation',
+    type: 'error',
   },
   {
-    type: 'error',
+    inputs: [],
     name: 'ERC1967NonPayable',
-    inputs: [],
+    type: 'error',
   },
   {
-    type: 'error',
+    inputs: [],
     name: 'FailedInnerCall',
-    inputs: [],
+    type: 'error',
   },
   {
-    type: 'error',
+    inputs: [],
     name: 'InvalidInitialization',
-    inputs: [],
+    type: 'error',
   },
   {
+    inputs: [],
+    name: 'NotGovernor',
     type: 'error',
+  },
+  {
+    inputs: [],
     name: 'NotGovernorOrAuthorizedChanger',
-    inputs: [],
+    type: 'error',
   },
   {
-    type: 'error',
+    inputs: [],
     name: 'NotInitializing',
-    inputs: [],
+    type: 'error',
   },
   {
-    type: 'error',
+    inputs: [],
     name: 'ReentrancyGuardReentrantCall',
-    inputs: [],
+    type: 'error',
   },
   {
-    type: 'error',
-    name: 'SafeERC20FailedOperation',
     inputs: [
       {
+        internalType: 'address',
         name: 'token',
         type: 'address',
-        internalType: 'address',
       },
     ],
+    name: 'SafeERC20FailedOperation',
+    type: 'error',
   },
   {
-    type: 'error',
-    name: 'UUPSUnauthorizedCallContext',
     inputs: [],
+    name: 'UUPSUnauthorizedCallContext',
+    type: 'error',
   },
   {
-    type: 'error',
-    name: 'UUPSUnsupportedProxiableUUID',
     inputs: [
       {
+        internalType: 'bytes32',
         name: 'slot',
         type: 'bytes32',
-        internalType: 'bytes32',
       },
     ],
+    name: 'UUPSUnsupportedProxiableUUID',
+    type: 'error',
+  },
+  {
+    anonymous: false,
+    inputs: [
+      {
+        indexed: false,
+        internalType: 'uint64',
+        name: 'version',
+        type: 'uint64',
+      },
+    ],
+    name: 'Initialized',
+    type: 'event',
+  },
+  {
+    anonymous: false,
+    inputs: [
+      {
+        indexed: true,
+        internalType: 'address',
+        name: 'rewardToken_',
+        type: 'address',
+      },
+      {
+        indexed: true,
+        internalType: 'address',
+        name: 'builder_',
+        type: 'address',
+      },
+      {
+        indexed: true,
+        internalType: 'address',
+        name: 'rewardReceiver_',
+        type: 'address',
+      },
+      {
+        indexed: false,
+        internalType: 'uint256',
+        name: 'amount_',
+        type: 'uint256',
+      },
+    ],
+    name: 'RewardDistributed',
+    type: 'event',
+  },
+  {
+    anonymous: false,
+    inputs: [
+      {
+        indexed: true,
+        internalType: 'address',
+        name: 'builder_',
+        type: 'address',
+      },
+    ],
+    name: 'Unwhitelisted',
+    type: 'event',
+  },
+  {
+    anonymous: false,
+    inputs: [
+      {
+        indexed: true,
+        internalType: 'address',
+        name: 'implementation',
+        type: 'address',
+      },
+    ],
+    name: 'Upgraded',
+    type: 'event',
+  },
+  {
+    anonymous: false,
+    inputs: [
+      {
+        indexed: true,
+        internalType: 'address',
+        name: 'builder_',
+        type: 'address',
+      },
+    ],
+    name: 'Whitelisted',
+    type: 'event',
+  },
+  {
+    inputs: [],
+    name: 'UPGRADE_INTERFACE_VERSION',
+    outputs: [
+      {
+        internalType: 'string',
+        name: '',
+        type: 'string',
+      },
+    ],
+    stateMutability: 'view',
+    type: 'function',
+  },
+  {
+    inputs: [
+      {
+        internalType: 'address',
+        name: 'builder',
+        type: 'address',
+      },
+    ],
+    name: 'builderRewardReceiver',
+    outputs: [
+      {
+        internalType: 'address payable',
+        name: 'rewardReceiver',
+        type: 'address',
+      },
+    ],
+    stateMutability: 'view',
+    type: 'function',
+  },
+  {
+    inputs: [],
+    name: 'changeExecutor',
+    outputs: [
+      {
+        internalType: 'contract IChangeExecutor',
+        name: '',
+        type: 'address',
+      },
+    ],
+    stateMutability: 'view',
+    type: 'function',
+  },
+  {
+    inputs: [],
+    name: 'distribute',
+    outputs: [],
+    stateMutability: 'payable',
+    type: 'function',
+  },
+  {
+    inputs: [],
+    name: 'distributeCoinbase',
+    outputs: [],
+    stateMutability: 'payable',
+    type: 'function',
+  },
+  {
+    inputs: [],
+    name: 'distributeRewardToken',
+    outputs: [],
+    stateMutability: 'nonpayable',
+    type: 'function',
+  },
+  {
+    inputs: [
+      {
+        internalType: 'uint256',
+        name: 'index_',
+        type: 'uint256',
+      },
+    ],
+    name: 'getWhitelistedBuilder',
+    outputs: [
+      {
+        internalType: 'address',
+        name: '',
+        type: 'address',
+      },
+    ],
+    stateMutability: 'view',
+    type: 'function',
+  },
+  {
+    inputs: [],
+    name: 'getWhitelistedBuildersArray',
+    outputs: [
+      {
+        internalType: 'address[]',
+        name: '',
+        type: 'address[]',
+      },
+    ],
+    stateMutability: 'view',
+    type: 'function',
+  },
+  {
+    inputs: [],
+    name: 'getWhitelistedBuildersLength',
+    outputs: [
+      {
+        internalType: 'uint256',
+        name: '',
+        type: 'uint256',
+      },
+    ],
+    stateMutability: 'view',
+    type: 'function',
+  },
+  {
+    inputs: [],
+    name: 'governor',
+    outputs: [
+      {
+        internalType: 'address',
+        name: '',
+        type: 'address',
+      },
+    ],
+    stateMutability: 'view',
+    type: 'function',
+  },
+  {
+    inputs: [
+      {
+        internalType: 'address',
+        name: 'changeExecutor_',
+        type: 'address',
+      },
+      {
+        internalType: 'address',
+        name: 'rewardToken_',
+        type: 'address',
+      },
+    ],
+    name: 'initialize',
+    outputs: [],
+    stateMutability: 'nonpayable',
+    type: 'function',
+  },
+  {
+    inputs: [
+      {
+        internalType: 'address',
+        name: 'builder_',
+        type: 'address',
+      },
+    ],
+    name: 'isWhitelisted',
+    outputs: [
+      {
+        internalType: 'bool',
+        name: '',
+        type: 'bool',
+      },
+    ],
+    stateMutability: 'view',
+    type: 'function',
+  },
+  {
+    inputs: [],
+    name: 'proxiableUUID',
+    outputs: [
+      {
+        internalType: 'bytes32',
+        name: '',
+        type: 'bytes32',
+      },
+    ],
+    stateMutability: 'view',
+    type: 'function',
+  },
+  {
+    inputs: [
+      {
+        internalType: 'address',
+        name: 'builder_',
+        type: 'address',
+      },
+    ],
+    name: 'removeWhitelistedBuilder',
+    outputs: [],
+    stateMutability: 'nonpayable',
+    type: 'function',
+  },
+  {
+    inputs: [],
+    name: 'rewardToken',
+    outputs: [
+      {
+        internalType: 'contract IERC20',
+        name: '',
+        type: 'address',
+      },
+    ],
+    stateMutability: 'view',
+    type: 'function',
+  },
+  {
+    inputs: [
+      {
+        internalType: 'address',
+        name: 'newImplementation',
+        type: 'address',
+      },
+      {
+        internalType: 'bytes',
+        name: 'data',
+        type: 'bytes',
+      },
+    ],
+    name: 'upgradeToAndCall',
+    outputs: [],
+    stateMutability: 'payable',
+    type: 'function',
+  },
+  {
+    inputs: [
+      {
+        internalType: 'address',
+        name: 'builder_',
+        type: 'address',
+      },
+      {
+        internalType: 'address payable',
+        name: 'rewardReceiver_',
+        type: 'address',
+      },
+    ],
+    name: 'whitelistBuilder',
+    outputs: [],
+    stateMutability: 'nonpayable',
+    type: 'function',
+  },
+  {
+    stateMutability: 'payable',
+    type: 'receive',
   },
 ] as const
