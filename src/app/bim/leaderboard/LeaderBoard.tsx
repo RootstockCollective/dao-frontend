@@ -78,8 +78,8 @@ const LeaderBoardTable = () => {
 
   const tableData = data.map(({ name, lastEpochReward, projectedReward, performance }) => ({
     'Builder name': <BuilderNameCell builderName={name} />,
-    'Last Epoch Reward': <RewardCell reward={lastEpochReward} />,
-    'Projected Reward': <RewardCell reward={projectedReward} />,
+    'Last Epoch Reward': <LazyRewardCell reward={lastEpochReward} />,
+    'Projected Reward': <LazyRewardCell reward={projectedReward} />,
 
     /*
      * TODO: performance appearance should change according to the previous performance,

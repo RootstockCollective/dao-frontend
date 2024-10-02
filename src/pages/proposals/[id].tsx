@@ -1,5 +1,5 @@
 'use client'
-import { useFetchLatestProposals } from '@/app/proposals/hooks/useFetchLatestProposals'
+import { useFetchAllProposals } from '@/app/proposals/hooks/useFetchLatestProposals'
 import { useGetProposalDeadline } from '@/app/proposals/hooks/useGetProposalDeadline'
 import { useGetProposalSnapshot } from '@/app/proposals/hooks/useGetProposalSnapshot'
 import { useGetProposalVotes } from '@/app/proposals/hooks/useGetProposalVotes'
@@ -51,7 +51,7 @@ export default function ProposalView() {
   const {
     query: { id },
   } = useRouter()
-  const { latestProposals } = useFetchLatestProposals()
+  const { latestProposals } = useFetchAllProposals()
 
   const proposal = useMemo(() => {
     const proposal = latestProposals.find(proposal => proposal.args.proposalId.toString() === id)

@@ -18,7 +18,7 @@ export const getLastRewardValid = (rewardDistributedLogs: EventLog, rewardToken?
 
   const { epochStartTimestamp, epochEndTimestamp } = getPreviousEpochCycle()
   // @ts-ignore
-  if (lastLog.timeStamp < epochStartTimestamp || lastLog.timeStamp > epochEndTimestamp) {
+  if (lastLog.timeStamp < epochStartTimestamp.second || lastLog.timeStamp > epochEndTimestamp.second) {
     return 0n
   }
 

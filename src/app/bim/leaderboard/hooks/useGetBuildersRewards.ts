@@ -1,18 +1,14 @@
-import { BuilderOffChainInfo } from '@/app/bim/types'
+import { BuilderInfo } from '@/app/bim/types'
 import { formatBalanceToHuman } from '@/app/user/Balances/balanceUtils'
 import { useGetRewardDistributedLogs } from '@/app/bim/hooks/useGetRewardDistributedLogs'
-import { useGetWhitelistedBuilders } from '@/app/bim/hooks/userGetWhitelistedBuilders'
 import { usePricesContext } from '@/shared/context/PricesContext'
 import { useGetTokenProjectedReward } from '@/app/bim/hooks/useGetTokenProjectedReward'
 import { Address, isAddressEqual } from 'viem'
 import { getLastRewardValid } from '@/app/bim/utils/getLastRewardValid'
+import { useGetBuilders } from '@/app/bim/hooks/useGetBuilders'
 
 export const useGetBuildersRewards = (rewardToken: Address, currency = 'USD', currencySymbol = '$') => {
-  const {
-    data: whitelisted,
-    isLoading: whitelistedLoading,
-    error: whitelistedError,
-  } = useGetWhitelistedBuilders()
+  const { data: builders, isLoading: buildersLoading, error: buildersError } = useGetBuilders()
   const {
     data: rewardDistributedLogs,
     isLoading: logsLoading,
@@ -20,15 +16,14 @@ export const useGetBuildersRewards = (rewardToken: Address, currency = 'USD', cu
   } = useGetRewardDistributedLogs(rewardToken)
   const { prices } = usePricesContext()
 
-  const whitelistedBuilders = whitelisted?.data || []
   const { data: token, isLoading: tokenLoading, error: tokenError } = useGetTokenProjectedReward(rewardToken)
   const projectedRewardInHuman = Number(formatBalanceToHuman(token.projectedReward))
 
-  const isLoading = whitelistedLoading || logsLoading || tokenLoading
-  const error = whitelistedError ?? logsError ?? tokenError
+  const isLoading = buildersLoading || logsLoading || tokenLoading
+  const error = buildersError ?? logsError ?? tokenError
 
   return {
-    data: whitelistedBuilders.map((builder: BuilderOffChainInfo) => {
+    data: builders.map((builder: BuilderInfo) => {
       const builderEvents = rewardDistributedLogs.filter(event =>
         isAddressEqual(event.args.builder_, builder.address as Address),
       )

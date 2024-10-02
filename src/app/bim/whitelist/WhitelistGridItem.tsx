@@ -3,9 +3,9 @@ import { Badge } from '@/components/Badge'
 import { Paragraph, Span } from '@/components/Typography'
 import { DateTime } from 'luxon'
 import { FC, ReactNode } from 'react'
-import { BuilderOffChainInfo } from '@/app/bim/types'
+import { BuilderInfo } from '@/app/bim/types'
 
-type WhitelistGridItemProps = BuilderOffChainInfo
+type WhitelistGridItemProps = BuilderInfo
 
 const Card = ({ header, body }: { header: ReactNode; body: ReactNode }) => {
   return (
@@ -17,13 +17,7 @@ const Card = ({ header, body }: { header: ReactNode; body: ReactNode }) => {
 }
 
 // TODO: this content can be moved to a different component and become a generic card
-export const WhitelistGridItem: FC<WhitelistGridItemProps> = ({
-  name,
-  status,
-  proposalDescription,
-  address,
-  joiningData,
-}) => {
+export const WhitelistGridItem: FC<WhitelistGridItemProps> = ({ name, status, proposals, address }) => {
   //TODO: pending to check the colors
   const badgeBgColor = {
     Whitelisted: 'bg-[#22AD5C]',
@@ -31,13 +25,15 @@ export const WhitelistGridItem: FC<WhitelistGridItemProps> = ({
     'KYC Approved': 'bg-[#637381]',
     'KYC Under Review': 'bg-[#808080]',
   }[status]
+
+  const lastProposal = proposals[proposals.length - 1]
   const Header = (
     <>
       <div className="flex-1">
         <Span className="text-base font-semibold">{name}</Span>
         <Paragraph className="text-sm font-light">
           {' '}
-          Joined {DateTime.fromISO(joiningData).toFormat('MMMM dd, yyyy')}
+          Joined {DateTime.fromSeconds(+lastProposal.timeStamp).toFormat('MMMM dd, yyyy')}
         </Paragraph>
       </div>
       {/* TODO: #22AD5C to be added in the theme */}
@@ -47,7 +43,7 @@ export const WhitelistGridItem: FC<WhitelistGridItemProps> = ({
   const Body = (
     <>
       <Span className="text-base font-semibold">Proposal</Span>
-      <Paragraph className="text-sm font-light py-1.5">{proposalDescription}</Paragraph>
+      <Paragraph className="text-sm font-light py-1.5">{lastProposal.args.description}</Paragraph>
       <Address address={address} />
     </>
   )

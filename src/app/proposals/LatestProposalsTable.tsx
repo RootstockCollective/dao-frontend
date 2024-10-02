@@ -1,4 +1,4 @@
-import { useFetchLatestProposals } from '@/app/proposals/hooks/useFetchLatestProposals'
+import { useFetchAllProposals } from '@/app/proposals/hooks/useFetchLatestProposals'
 import { useGetProposalVotes } from '@/app/proposals/hooks/useGetProposalVotes'
 import { getEventArguments } from '@/app/proposals/shared/utils'
 import { StatusColumn } from '@/app/proposals/StatusColumn'
@@ -96,7 +96,7 @@ const SentimentColumn = ({
 }
 
 interface LatestProposalsTableProps {
-  latestProposals: ReturnType<typeof useFetchLatestProposals>['latestProposals']
+  latestProposals: ReturnType<typeof useFetchAllProposals>['latestProposals']
 }
 
 const latestProposalsTransformer = (proposals: ReturnType<typeof getEventArguments>[]) =>

@@ -1,11 +1,15 @@
+import {
+  ProposalQueryResult,
+  useFetchCreateBuilderProposals,
+} from '@/app/proposals/hooks/useFetchLatestProposals'
+import { fetchProposalsCreatedCached } from '@/app/user/Balances/actions'
 import { SimplifiedRewardDistributorAbi } from '@/lib/abis/SimplifiedRewardDistributorAbi'
 import { expect } from '@jest/globals'
-import { QueryClient, QueryClientProvider, UseQueryResult } from '@tanstack/react-query'
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { renderHook, waitFor } from '@testing-library/react'
 import { Interface } from 'ethers/abi'
 import { parseEventLogs } from 'viem'
-import { fetchProposalsCreatedCached } from '@/app/user/Balances/actions'
-import { useFetchLatestBIMProposals } from '@/app/proposals/hooks/useFetchLatestProposals'
+import { ADDRESS_PADDED_BYTES } from '@/app/proposals/shared/utils'
 
 jest.mock('@/app/user/Balances/actions', () => ({
   fetchProposalsCreatedCached: jest.fn(),
@@ -42,7 +46,7 @@ const renderHookWithQueryClient = <P, R>(hook: (initialProps: P) => R) => {
   })
 }
 
-const renderAndWaitForHook = async <P, R>(hook: (initialProps: P) => UseQueryResult<R>) => {
+const renderAndWaitForHook = async <P, R>(hook: (initialProps: P) => ProposalQueryResult<R>) => {
   const { result } = renderHookWithQueryClient(hook)
 
   await waitFor(() => {
@@ -55,7 +59,7 @@ const renderAndWaitForHook = async <P, R>(hook: (initialProps: P) => UseQueryRes
 const mocFetchProposalsCreatedCached = fetchProposalsCreatedCached as jest.Mock
 const mockParseEventLogs = parseEventLogs as jest.Mock
 
-describe('useFetchLatestBIMProposals', () => {
+describe('useFetchCreateBuilderProposals', () => {
   let queryClient: QueryClient
 
   beforeEach(() => {
@@ -67,7 +71,7 @@ describe('useFetchLatestBIMProposals', () => {
     mocFetchProposalsCreatedCached.mockReturnValue({ data: null })
     const expectedValue = {}
 
-    const actualValue = await renderAndWaitForHook(() => useFetchLatestBIMProposals())
+    const actualValue = await renderAndWaitForHook(() => useFetchCreateBuilderProposals())
 
     expect(actualValue).toEqual(expectedValue)
   })
@@ -78,7 +82,9 @@ describe('useFetchLatestBIMProposals', () => {
         {
           args: {
             proposalId: 1,
-            calldatas: [`${BIM_WHITELIST_FUNCTION_SELECTOR}${builder_1.slice(2)}12345678890098765`],
+            calldatas: [
+              `${BIM_WHITELIST_FUNCTION_SELECTOR}${ADDRESS_PADDED_BYTES}${builder_1.slice(2)}12345678890098765`,
+            ],
           },
           timeStamp: 2000,
         },
@@ -94,7 +100,7 @@ describe('useFetchLatestBIMProposals', () => {
     mocFetchProposalsCreatedCached.mockReturnValue(mockProposalData)
     mockParseEventLogs.mockReturnValue(mockProposalData.data)
 
-    let actualValue = await renderAndWaitForHook(() => useFetchLatestBIMProposals())
+    let actualValue = await renderAndWaitForHook(() => useFetchCreateBuilderProposals())
 
     expect(actualValue).toEqual(expectedValue)
   })
@@ -115,7 +121,7 @@ describe('useFetchLatestBIMProposals', () => {
     mockParseEventLogs.mockReturnValue(mockDataWithoutCalldatas.data)
     const expectedValue = {}
 
-    let actualValue = await renderAndWaitForHook(() => useFetchLatestBIMProposals())
+    let actualValue = await renderAndWaitForHook(() => useFetchCreateBuilderProposals())
 
     expect(actualValue).toEqual(expectedValue)
   })
@@ -136,7 +142,7 @@ describe('useFetchLatestBIMProposals', () => {
     mockParseEventLogs.mockReturnValue(mockDataWithoutCalldatas.data)
     const expectedValue = {}
 
-    let actualValue = await renderAndWaitForHook(() => useFetchLatestBIMProposals())
+    let actualValue = await renderAndWaitForHook(() => useFetchCreateBuilderProposals())
 
     expect(actualValue).toEqual(expectedValue)
   })
@@ -147,28 +153,36 @@ describe('useFetchLatestBIMProposals', () => {
         {
           args: {
             proposalId: 1,
-            calldatas: [`${BIM_WHITELIST_FUNCTION_SELECTOR}${builder_1.slice(2)}12345678890098765`],
+            calldatas: [
+              `${BIM_WHITELIST_FUNCTION_SELECTOR}000000000000000000000000${builder_1.slice(2)}12345678890098765`,
+            ],
           },
           timeStamp: 1500,
         },
         {
           args: {
             proposalId: 3,
-            calldatas: [`${BIM_WHITELIST_FUNCTION_SELECTOR}${builder_1.slice(2)}12345678890098765`],
+            calldatas: [
+              `${BIM_WHITELIST_FUNCTION_SELECTOR}${ADDRESS_PADDED_BYTES}${builder_1.slice(2)}12345678890098765`,
+            ],
           },
           timeStamp: 3000,
         },
         {
           args: {
             proposalId: 1,
-            calldatas: [`${BIM_WHITELIST_FUNCTION_SELECTOR}${builder_1.slice(2)}12345678890098765`],
+            calldatas: [
+              `${BIM_WHITELIST_FUNCTION_SELECTOR}${ADDRESS_PADDED_BYTES}${builder_1.slice(2)}12345678890098765`,
+            ],
           },
           timeStamp: 1500,
         },
         {
           args: {
             proposalId: 2,
-            calldatas: [`${BIM_WHITELIST_FUNCTION_SELECTOR}${builder_1.slice(2)}12345678890098765`],
+            calldatas: [
+              `${BIM_WHITELIST_FUNCTION_SELECTOR}${ADDRESS_PADDED_BYTES}${builder_1.slice(2)}12345678890098765`,
+            ],
           },
           timeStamp: 2000,
         },
@@ -185,7 +199,7 @@ describe('useFetchLatestBIMProposals', () => {
       },
     }
 
-    let actualValue = await renderAndWaitForHook(() => useFetchLatestBIMProposals())
+    let actualValue = await renderAndWaitForHook(() => useFetchCreateBuilderProposals())
 
     expect(actualValue).toEqual(expectedValue)
   })
@@ -196,14 +210,18 @@ describe('useFetchLatestBIMProposals', () => {
         {
           args: {
             proposalId: 1,
-            calldatas: [`${BIM_WHITELIST_FUNCTION_SELECTOR}${builder_1.slice(2)}12345678890098765`],
+            calldatas: [
+              `${BIM_WHITELIST_FUNCTION_SELECTOR}${ADDRESS_PADDED_BYTES}${builder_1.slice(2)}12345678890098765`,
+            ],
           },
           timeStamp: 1500,
         },
         {
           args: {
             proposalId: 2,
-            calldatas: [`${BIM_WHITELIST_FUNCTION_SELECTOR}${builder_1.slice(2)}12345678890098765`],
+            calldatas: [
+              `${BIM_WHITELIST_FUNCTION_SELECTOR}${ADDRESS_PADDED_BYTES}${builder_1.slice(2)}12345678890098765`,
+            ],
           },
           timeStamp: 2000,
         },
@@ -219,7 +237,7 @@ describe('useFetchLatestBIMProposals', () => {
       },
     }
 
-    let actualValue = await renderAndWaitForHook(() => useFetchLatestBIMProposals())
+    let actualValue = await renderAndWaitForHook(() => useFetchCreateBuilderProposals())
 
     expect(actualValue).toEqual(expectedValue)
   })
@@ -230,14 +248,18 @@ describe('useFetchLatestBIMProposals', () => {
         {
           args: {
             proposalId: 1,
-            calldatas: [`${BIM_WHITELIST_FUNCTION_SELECTOR}${builder_1.slice(2)}12345678890098765`],
+            calldatas: [
+              `${BIM_WHITELIST_FUNCTION_SELECTOR}${ADDRESS_PADDED_BYTES}${builder_1.slice(2)}12345678890098765`,
+            ],
           },
           timeStamp: 1500,
         },
         {
           args: {
             proposalId: 2,
-            calldatas: [`${BIM_WHITELIST_FUNCTION_SELECTOR}${builder_2.slice(2)}12345678890098765`],
+            calldatas: [
+              `${BIM_WHITELIST_FUNCTION_SELECTOR}${ADDRESS_PADDED_BYTES}${builder_2.slice(2)}12345678890098765`,
+            ],
           },
           timeStamp: 2000,
         },
@@ -255,7 +277,7 @@ describe('useFetchLatestBIMProposals', () => {
       },
     }
 
-    let actualValue = await renderAndWaitForHook(() => useFetchLatestBIMProposals())
+    let actualValue = await renderAndWaitForHook(() => useFetchCreateBuilderProposals())
 
     expect(actualValue).toEqual(expectedValue)
   })

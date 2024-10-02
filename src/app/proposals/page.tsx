@@ -1,6 +1,6 @@
 'use client'
 import { HeaderSection } from '@/app/proposals/HeaderSection'
-import { useFetchLatestProposals } from '@/app/proposals/hooks/useFetchLatestProposals'
+import { useFetchAllProposals } from '@/app/proposals/hooks/useFetchLatestProposals'
 import { LatestProposalsTable } from '@/app/proposals/LatestProposalsTable'
 import { MainContainer } from '@/components/MainContainer/MainContainer'
 import { MetricsCard } from '@/components/MetricsCard'
@@ -11,10 +11,11 @@ import { toFixed } from '@/lib/utils'
 import { useRouter } from 'next/navigation'
 import { FaRegQuestionCircle } from 'react-icons/fa'
 import { useVotingPower } from './hooks/useVotingPower'
+import React from 'react'
 
 export default function Proposals() {
   const { votingPower, canCreateProposal, threshold } = useVotingPower()
-  const { latestProposals } = useFetchLatestProposals()
+  const { latestProposals } = useFetchAllProposals()
 
   return (
     <MainContainer>

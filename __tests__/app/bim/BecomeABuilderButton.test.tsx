@@ -1,51 +1,44 @@
-import { render } from '@testing-library/react'
+import { render, waitFor } from '@testing-library/react'
 import { BecomeABuilderButton } from '@/app/bim/BecomeABuilderButton'
-import { BuilderOffChainInfo } from '@/app/bim/types'
-import { useFetchWhitelistedBuilders } from '@/app/bim/whitelist/hooks/useFetchWhitelistedBuilders'
+import { BuilderInfo } from '@/app/bim/types'
 import { expect, describe, it } from '@jest/globals'
+import { useGetBuilders } from '@/app/bim/hooks/useGetBuilders'
+import { CreateBuilderProposalEventLog } from '@/app/proposals/hooks/useFetchLatestProposals'
 
-jest.mock('@/app/bim/whitelist/hooks/useFetchWhitelistedBuilders', () => {
+jest.mock('@/app/bim/hooks/useGetBuilders', () => {
   return {
-    useFetchWhitelistedBuilders: jest.fn(),
+    useGetBuilders: jest.fn(),
   }
 })
 
 describe('BecomeABuilderButton', () => {
-  let builderAddress = '0x1234567890'
-  let data: BuilderOffChainInfo[]
+  let builderAddress = '0xCD2a3d9F938E13CD947Ec05AbC7FE734Df8DD826'
+  let data: BuilderInfo[]
+
+  type CreateBuilderProposalEventLogArgs = CreateBuilderProposalEventLog['args']
 
   beforeEach(() => {
     data = [
       {
         name: 'Builder 1',
-        joiningData: '2024-06-01',
-        status: 'KYC Under Review',
-        proposalDescription: 'Lorem ipsum dolor sit amet',
-        address: '0x1234567890',
+        status: 'In progress',
+        address: '0xCD2a3d9F938E13CD947Ec05AbC7FE734Df8DD826',
+        proposals: [{
+          args: { 
+            description: 'description',
+          } as CreateBuilderProposalEventLogArgs, 
+          timeStamp: 1723309061,
+        } as CreateBuilderProposalEventLog],
       },
     ]
-    jest.mocked(useFetchWhitelistedBuilders).mockReturnValue({
+    jest.mocked(useGetBuilders).mockReturnValue({
       data,
       isLoading: false,
       error: null,
     })
   })
 
-  it('should render KYCUnderReviewComponent', async () => {
-    const { findByText } = render(<BecomeABuilderButton address={builderAddress} />)
-
-    expect(await findByText('KYC Under Review')).toBeVisible()
-  })
-
-  it('should render KYCApprovedComponent', async () => {
-    data[0].status = 'KYC Approved'
-    const { findByText } = render(<BecomeABuilderButton address={builderAddress} />)
-
-    expect(await findByText('Create whitelist proposal')).toBeVisible()
-  })
-
   it('should render InProgressComponent', async () => {
-    data[0].status = 'In progress'
     const { findByText } = render(<BecomeABuilderButton address={builderAddress} />)
 
     expect(await findByText('Waiting for approval')).toBeVisible()
@@ -59,13 +52,15 @@ describe('BecomeABuilderButton', () => {
   })
 
   it('should render NotFoundComponent', async () => {
-    const { findByText } = render(<BecomeABuilderButton address="0x987654321" />)
+    const { findByText } = render(
+      <BecomeABuilderButton address="0xCD2a3d9F938E13CD947Ec05AbC7FE734Df8DD827" />,
+    )
 
     expect(await findByText('Become a builder')).toBeVisible()
   })
 
   it('should render error message', async () => {
-    jest.mocked(useFetchWhitelistedBuilders).mockReturnValue({
+    jest.mocked(useGetBuilders).mockReturnValue({
       data,
       isLoading: false,
       error: new Error('Error while loading data, please try again.'),
@@ -76,17 +71,17 @@ describe('BecomeABuilderButton', () => {
   })
 
   it('should render loading message', async () => {
-    jest.mocked(useFetchWhitelistedBuilders).mockReturnValue({
+    jest.mocked(useGetBuilders).mockReturnValue({
       data,
       isLoading: true,
       error: null,
     })
     const { queryByText } = render(<BecomeABuilderButton address={builderAddress} />)
 
-    expect(await queryByText('KYC Under Review')).not.toBeInTheDocument()
-    expect(await queryByText('Create whitelist proposal')).not.toBeInTheDocument()
-    expect(await queryByText('Waiting for approval')).not.toBeInTheDocument()
-    expect(await queryByText('Whitelisted')).not.toBeInTheDocument()
-    expect(await queryByText('Become a builder')).not.toBeInTheDocument()
+    await waitFor(async () => {
+      expect(await queryByText('Waiting for approval')).not.toBeInTheDocument()
+      expect(await queryByText('Whitelisted')).not.toBeInTheDocument()
+      expect(await queryByText('Become a builder')).not.toBeInTheDocument()
+    })
   })
 })

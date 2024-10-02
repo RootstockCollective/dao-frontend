@@ -1,17 +1,22 @@
-import { useMemo } from 'react'
-import { useQuery, UseQueryResult } from '@tanstack/react-query'
-import { parseEventLogs } from 'viem'
-import { GovernorAbi } from '@/lib/abis/Governor'
 import { fetchProposalsCreatedCached } from '@/app/user/Balances/actions'
-import { Interface } from 'ethers'
+import { GovernorAbi } from '@/lib/abis/Governor'
 import { SimplifiedRewardDistributorAbi } from '@/lib/abis/SimplifiedRewardDistributorAbi'
+import { useQuery, UseQueryResult } from '@tanstack/react-query'
+import { Interface } from 'ethers'
+import { useMemo } from 'react'
+import { parseEventLogs } from 'viem'
+import { ADDRESS_PADDED_BYTES } from '@/app/proposals/shared/utils'
 
-export const useFetchLatestProposals = () => {
-  const { data } = useQuery({
+const useFetchLatestProposals = () => {
+  return useQuery({
     queryFn: fetchProposalsCreatedCached,
     queryKey: ['proposalsCreated'],
-    refetchInterval: 2000,
+    refetchInterval: 30_000,
   })
+}
+
+export const useFetchAllProposals = () => {
+  const { data } = useFetchLatestProposals()
 
   const latestProposals = useMemo(() => {
     if (data?.data) {
@@ -49,9 +54,10 @@ if (!BIM_WHITELIST_FUNCTION_SELECTOR) {
 type ElementType<T> = T extends (infer U)[] ? U : never
 
 type EventLog = ElementType<ReturnType<typeof parseEventLogs<typeof GovernorAbi, true, 'ProposalCreated'>>>
+export type CreateBuilderProposalEventLog = EventLog & { timeStamp: number }
 
 export type BimProposalCachedEvent = {
-  event: EventLog
+  event: CreateBuilderProposalEventLog
   builder: string
 }
 
@@ -60,59 +66,58 @@ export type BimProposalMap = Record<
   Record<string, BimProposalCachedEvent['event']>
 >
 
-export const useFetchLatestBIMProposals = (): UseQueryResult<BimProposalMap> => {
-  const queryResult = useQuery({
-    queryFn: async () => {
-      const fetchedData = await fetchProposalsCreatedCached()
+export type ProposalQueryResult<Data> = Omit<Partial<UseQueryResult<Data>>, 'isLoading'> & {
+  isLoading: boolean
+}
 
-      if (!fetchedData?.data) {
-        return {} as BimProposalMap
-      }
+export const useFetchCreateBuilderProposals = (): ProposalQueryResult<BimProposalMap> => {
+  const { data: fetchedData, isLoading, error } = useFetchLatestProposals()
 
-      const events = parseEventLogs({
-        abi: GovernorAbi,
-        logs: fetchedData.data,
-        eventName: 'ProposalCreated',
-      })
+  const latestProposals = useMemo(() => {
+    if (!fetchedData?.data) {
+      return {} as BimProposalMap
+    }
 
-      // deduplicate
-      const eventsMap = new Map(events.map(eventItem => [eventItem.args.proposalId, eventItem])).values()
+    const events = parseEventLogs({
+      abi: GovernorAbi,
+      logs: fetchedData.data,
+      eventName: 'ProposalCreated',
+    }) as CreateBuilderProposalEventLog[]
 
-      // why can't we use block number instead of timestamp which is not supported by the type?
-      const sortedEvents = Array.from(eventsMap).sort(
-        (a, b) =>
-          (b as unknown as { timeStamp: number }).timeStamp -
-          (a as unknown as { timeStamp: number }).timeStamp,
+    // deduplicate
+    const eventsMap = new Map(events.map(eventItem => [eventItem.args.proposalId, eventItem])).values()
+
+    // why can't we use block number instead of timestamp which is not supported by the type?
+    const sortedEvents = Array.from(eventsMap).sort(({ timeStamp: a }, { timeStamp: b }) => b - a)
+    const bimProposalMap = sortedEvents.reduce<BimProposalMap>((acc, event) => {
+      const bimEventCalldatas = event.args.calldatas.find(calldata =>
+        calldata.startsWith(BIM_WHITELIST_FUNCTION_SELECTOR),
       )
 
-      const bimProposalMap = sortedEvents.reduce<BimProposalMap>((acc, event) => {
-        const bimEventCalldatas = event.args.calldatas.find(calldata =>
-          calldata.startsWith(BIM_WHITELIST_FUNCTION_SELECTOR),
-        )
+      if (bimEventCalldatas) {
+        const addressStart = BIM_WHITELIST_FUNCTION_SELECTOR.length + ADDRESS_PADDED_BYTES.length
+        const addressEnd = addressStart + 40
+        const builder = `0x${bimEventCalldatas.slice(addressStart, addressEnd)}`
+        const existingBuilder = acc[builder] || {}
 
-        if (bimEventCalldatas) {
-          const addressStart = BIM_WHITELIST_FUNCTION_SELECTOR.length
-          const addressEnd = addressStart + 40
-          const builder = `0x${bimEventCalldatas.slice(addressStart, addressEnd)}`
-          const existingBuilder = acc[builder] || {}
-
-          acc = {
-            ...acc,
-            [builder]: {
-              ...existingBuilder,
-              [event.args.proposalId.toString()]: event,
-            },
-          }
+        acc = {
+          ...acc,
+          [builder]: {
+            ...existingBuilder,
+            [event.args.proposalId.toString()]: event,
+          },
         }
+      }
 
-        return acc
-      }, {})
+      return acc
+    }, {})
 
-      return bimProposalMap
-    },
-    queryKey: ['bimProposalCreated'],
-    refetchInterval: 30_000,
-  })
+    return bimProposalMap
+  }, [fetchedData])
 
-  return queryResult as UseQueryResult<BimProposalMap>
+  return {
+    data: latestProposals,
+    isLoading: isLoading,
+    error: error,
+  }
 }

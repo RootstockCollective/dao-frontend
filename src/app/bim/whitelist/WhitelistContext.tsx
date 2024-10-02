@@ -1,6 +1,6 @@
-import { BuilderStatus, BuilderOffChainInfo } from '@/app/bim/types'
+import { BuilderStatus, BuilderInfo } from '@/app/bim/types'
 import { createContext, Dispatch, FC, ReactNode, SetStateAction, useContext, useState } from 'react'
-import { useFetchWhitelistedBuilders } from '@/app/bim/whitelist/hooks/useFetchWhitelistedBuilders'
+import { useGetFilteredBuilders } from '@/app/bim/whitelist/hooks/useGetFilteredBuilders'
 
 export type BuilderStatusFilter = 'all' | BuilderStatus
 
@@ -10,9 +10,9 @@ type StateWithUpdate<T> = {
 }
 
 interface WhitelistContextValue {
-  builders: BuilderOffChainInfo[]
+  builders: BuilderInfo[]
   isLoading: boolean
-  error: Error | null
+  error?: Error | null
   search: StateWithUpdate<string>
   filterBy: StateWithUpdate<BuilderStatusFilter>
 }
@@ -40,7 +40,7 @@ interface WhitelistProviderProps {
 export const WhitelistContextProvider: FC<WhitelistProviderProps> = ({ children }) => {
   const [search, setSearch] = useState('')
   const [filterBy, setFilterBy] = useState<BuilderStatusFilter>(initialFilterByValue)
-  const { data, isLoading, error } = useFetchWhitelistedBuilders({ builderName: search, status: filterBy })
+  const { data, isLoading, error } = useGetFilteredBuilders({ builderName: search, status: filterBy })
 
   const valueOfContext: WhitelistContextValue = {
     builders: data,

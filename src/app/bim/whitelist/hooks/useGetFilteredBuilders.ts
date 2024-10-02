@@ -1,8 +1,7 @@
-import { useQuery } from '@tanstack/react-query'
-import { fetchWhitelistedBuilders } from '@/app/bim/actions'
 import { useEffect, useState } from 'react'
-import { BuilderOffChainInfo } from '@/app/bim/types'
+import { BuilderInfo } from '@/app/bim/types'
 import { BuilderStatusFilter } from '@/app/bim/whitelist/WhitelistContext'
+import { useGetBuilders } from '@/app/bim/hooks/useGetBuilders'
 
 type FetchWhitelistedBuildersFilter = {
   builderName: string
@@ -11,20 +10,12 @@ type FetchWhitelistedBuildersFilter = {
 
 const lowerCaseCompare = (a: string, b: string) => a.toLowerCase().includes(b.toLowerCase())
 
-export const useFetchWhitelistedBuilders = ({ builderName, status }: FetchWhitelistedBuildersFilter) => {
-  const [data, setData] = useState<BuilderOffChainInfo[]>([])
-  const {
-    data: remoteData,
-    isLoading,
-    error,
-  } = useQuery({
-    queryFn: fetchWhitelistedBuilders,
-    queryKey: ['whitelistedBuilders'],
-    refetchInterval: 10_000,
-  })
+export const useGetFilteredBuilders = ({ builderName, status }: FetchWhitelistedBuildersFilter) => {
+  const [data, setData] = useState<BuilderInfo[]>([])
+  const { data: builders, isLoading, error } = useGetBuilders()
 
   useEffect(() => {
-    let filteredData = remoteData?.data || []
+    let filteredData = builders
 
     if (builderName) {
       filteredData = filteredData.filter(
@@ -37,7 +28,7 @@ export const useFetchWhitelistedBuilders = ({ builderName, status }: FetchWhitel
     }
 
     setData(filteredData)
-  }, [remoteData, builderName, status])
+  }, [builders, builderName, status])
 
   return {
     data,

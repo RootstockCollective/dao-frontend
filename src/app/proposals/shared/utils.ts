@@ -7,6 +7,9 @@ import {
   FunctionInputs,
   SupportedProposalActionName,
 } from '@/app/proposals/shared/supportedABIs'
+import { ZeroAddress } from 'ethers'
+import { RIF_ADDRESS } from '@/lib/constants'
+import { formatBalanceToHuman } from '@/app/user/Balances/balanceUtils'
 
 export interface EventArgumentsParameter {
   args: {
@@ -89,3 +92,16 @@ export const getEventArguments = ({
     calldatasParsed,
   }
 }
+
+export const actionFormatterMap = {
+  token: (tokenAddress: Address) =>
+    ({
+      [ZeroAddress]: 'RBTC',
+      [RIF_ADDRESS.toLowerCase()]: 'RIF',
+    })[tokenAddress.toLowerCase()] || tokenAddress.toString(),
+  to: (address: Address) => address.toString(),
+  amount: (amount: bigint) => formatBalanceToHuman(amount),
+}
+
+// each parameter uses 32 bytes in the calldata but we only need the address which is 20 bytes
+export const ADDRESS_PADDED_BYTES = '000000000000000000000000'

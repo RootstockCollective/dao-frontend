@@ -1,7 +1,7 @@
 import { FC } from 'react'
 import { cn } from '@/lib/utils'
 import { Modal } from '@/components/Modal/Modal'
-import { Header, Paragraph, Typography } from '@/components/Typography'
+import { Header, Typography } from '@/components/Typography'
 import { Button } from '@/components/Button'
 import { BsCardText } from 'react-icons/bs'
 import { RiPassportLine } from 'react-icons/ri'

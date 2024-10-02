@@ -1,9 +1,10 @@
-export type BuilderStatus = 'Whitelisted' | 'In progress' | 'KYC Under Review' | 'KYC Approved'
+import { CreateBuilderProposalEventLog } from '@/app/proposals/hooks/useFetchLatestProposals'
 
-export interface BuilderOffChainInfo {
+export type BuilderStatus = 'Whitelisted' | 'In progress'
+
+export interface BuilderInfo {
   name: string
-  status: BuilderStatus
-  proposalDescription: string
   address: string
-  joiningData: string
+  status: BuilderStatus
+  proposals: CreateBuilderProposalEventLog[]
 }
