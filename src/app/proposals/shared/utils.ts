@@ -18,6 +18,7 @@ export interface EventArgumentsParameter {
     calldatas: string[]
   }
   timeStamp: string
+  blockNumber: string
 }
 
 const abis = [DAOTreasuryAbi, RIFTokenAbi]
@@ -54,10 +55,12 @@ const tryDecode = (data: string): DecodedData => {
  * @param proposer
  * @param calldatas
  * @param timeStamp
+ * @param blockNumber
  */
 export const getEventArguments = ({
   args: { description, proposalId, proposer, calldatas },
   timeStamp,
+  blockNumber,
 }: EventArgumentsParameter) => {
   const calldatasParsed = calldatas.reduce<DecodedData[]>((acc, cd) => {
     try {
@@ -83,6 +86,7 @@ export const getEventArguments = ({
     proposalId: proposalId.toString(),
     Starts: moment(parseInt(timeStamp, 16) * 1000),
     calldatasParsed,
+    blockNumber,
   }
 }
 
