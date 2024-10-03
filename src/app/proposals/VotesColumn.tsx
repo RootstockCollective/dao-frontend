@@ -34,7 +34,7 @@ export const VotesColumn = () => {
   return (
     <>
       <p className={colorClass}>
-        {toFixed(votes)} ({percentage.toFixed(2)}%)
+        {toFixed(votes)} ({Math.floor(percentage)}%)
       </p>
       <p>Quorum: {Math.floor(Number(quorum))}</p>
     </>
