@@ -53,14 +53,12 @@ export const Table: FC<TableProps> = ({ data, equalColumns = true, tbodyProps, t
       </TableHead>
       <TableBody {...tbodyProps}>
         {data.map((record, i) => (
-          <TableRow
-            key={i}
-            className="text-[14px] border-hidden text-[rgba(255,255,255,0.6)]" // @TODO this color here move it
-            style={{ borderTopStyle: 'solid' }}
-          >
+          <TableRow key={i} className="text-[14px] border-hidden" style={{ borderTopStyle: 'solid' }}>
             {Object.values(record).map((val, j) => (
               <TableCell style={{ width }} key={j}>
-                <Span className="text-[14px]">{val}</Span>
+                <Span className="text-[14px]" variant="light">
+                  {val}
+                </Span>
               </TableCell>
             ))}
           </TableRow>
