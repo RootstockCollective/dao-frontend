@@ -2,7 +2,7 @@ import { useFetchLatestProposals } from '@/app/proposals/hooks/useFetchLatestPro
 import { getEventArguments } from '@/app/proposals/shared/utils'
 import { StatusColumn } from '@/app/proposals/StatusColumn'
 import { Table } from '@/components/Table'
-import { Header } from '@/components/Typography'
+import { HeaderTitle } from '@/components/Typography'
 import { SharedProposalsTableContextProvider } from '@/app/proposals/SharedProposalsTableContext'
 import { ProposalsContextProvider } from '@/app/proposals/ProposalsContext'
 import { SentimentColumn } from '@/app/proposals/SentimentColumn'
@@ -24,9 +24,9 @@ const latestProposalsTransformer = (proposals: ReturnType<typeof getEventArgumen
       </ProposalsContextProvider>
     )
     return {
-      'Proposal Name': withContext(<ProposalNameColumn />),
-      'Current Votes': withContext(<VotesColumn />),
-      Starts: proposal.Starts.format('YYYY-MM-DD'),
+      Proposal: withContext(<ProposalNameColumn />),
+      Votes: withContext(<VotesColumn />),
+      Date: proposal.Starts.format('MM-DD-YYYY'),
       'Time Remaining': withContext(<TimeRemainingColumn />),
       Sentiment: withContext(<SentimentColumn key={`${proposal.proposalId}_${i}`} />),
       Status: withContext(<StatusColumn />),
@@ -42,9 +42,7 @@ const LatestProposalsTable = ({ latestProposals }: LatestProposalsTableProps) =>
 
   return (
     <div>
-      <Header variant="h2" className="mb-4">
-        Latest Proposals
-      </Header>
+      <HeaderTitle className="mb-4">Latest Proposals</HeaderTitle>
       {latestProposals.length > 0 && (
         <SharedProposalsTableContextProvider>
           <Table
