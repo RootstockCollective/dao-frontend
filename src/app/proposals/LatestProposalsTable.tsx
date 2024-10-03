@@ -8,7 +8,7 @@ import { ProposalsContextProvider } from '@/app/proposals/ProposalsContext'
 import { SentimentColumn } from '@/app/proposals/SentimentColumn'
 import { VotesColumn } from '@/app/proposals/VotesColumn'
 import { ProposalNameColumn } from '@/app/proposals/ProposalNameColumn'
-import { ReactNode, useMemo } from 'react'
+import { ReactNode, useMemo, memo } from 'react'
 import { TimeRemainingColumn } from '@/app/proposals/TimeRemainingColumn'
 
 interface LatestProposalsTableProps {
@@ -33,7 +33,7 @@ const latestProposalsTransformer = (proposals: ReturnType<typeof getEventArgumen
     }
   })
 
-export const LatestProposalsTable = ({ latestProposals }: LatestProposalsTableProps) => {
+const LatestProposalsTable = ({ latestProposals }: LatestProposalsTableProps) => {
   const latestProposalsMapped = useMemo(
     // @ts-ignore
     () => latestProposals.map(getEventArguments),
@@ -60,3 +60,5 @@ export const LatestProposalsTable = ({ latestProposals }: LatestProposalsTablePr
     </div>
   )
 }
+
+export const LatestProposalsTableMemoized = memo(LatestProposalsTable)

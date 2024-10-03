@@ -1,7 +1,7 @@
 'use client'
 import { HeaderSection } from '@/app/proposals/HeaderSection'
 import { useFetchLatestProposals } from '@/app/proposals/hooks/useFetchLatestProposals'
-import { LatestProposalsTable } from '@/app/proposals/LatestProposalsTable'
+import { LatestProposalsTableMemoized } from '@/app/proposals/LatestProposalsTable'
 import { MainContainer } from '@/components/MainContainer/MainContainer'
 import { MetricsCard } from '@/components/MetricsCard'
 import { Popover } from '@/components/Popover'
@@ -11,11 +11,13 @@ import { toFixed } from '@/lib/utils'
 import { useRouter } from 'next/navigation'
 import { FaRegQuestionCircle } from 'react-icons/fa'
 import { useVotingPower } from './hooks/useVotingPower'
+import { useMemo } from 'react'
 
 export default function Proposals() {
   const { votingPower, canCreateProposal, threshold } = useVotingPower()
   const { latestProposals } = useFetchLatestProposals()
 
+  const memoizedProposals = useMemo(() => latestProposals, [latestProposals.length])
   return (
     <MainContainer>
       <TxStatusMessage messageType="proposal" />
@@ -34,7 +36,7 @@ export default function Proposals() {
           <DelegatedTable />
           <ReceivedDelegationTable />
         </div> */}
-        <LatestProposalsTable latestProposals={latestProposals} />
+        <LatestProposalsTableMemoized latestProposals={memoizedProposals} />
       </div>
     </MainContainer>
   )
