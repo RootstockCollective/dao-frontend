@@ -1,4 +1,4 @@
-import { Paragraph } from '@/components/Typography'
+import { HeaderTitle } from '@/components/Typography'
 import { Table } from '@/components/Table'
 import { TokenHoldingsStRIF } from '@/app/treasury/TokenHoldingsStRIF'
 
@@ -12,7 +12,7 @@ const tableData = [
 ]
 export const MetricsSection = () => (
   <div>
-    <Paragraph className="font-semibold text-[18px] mb-[17px]">Metrics</Paragraph>
+    <HeaderTitle className="mb-4">Metrics</HeaderTitle>
     <Table data={tableData} />
   </div>
 )
