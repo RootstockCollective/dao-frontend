@@ -1,5 +1,5 @@
-import { CreateProposalHeaderSection } from '@/app/proposals/create/CreateProposalHeaderSection'
-import { useCreateBuilderWhitelistProposal } from '@/app/proposals/hooks/useCreateBuilderWhitelistProposal'
+import { useRemoveBuilderProposal } from '@/app/proposals/hooks/useRemoveBuilderProposal'
+import { useVotingPower } from '@/app/proposals/hooks/useVotingPower'
 import { useAlertContext } from '@/app/providers/AlertProvider'
 import {
   Form,
@@ -13,12 +13,12 @@ import {
 } from '@/components/Form'
 import { TX_MESSAGES } from '@/shared/txMessages'
 import { zodResolver } from '@hookform/resolvers/zod'
-import { useRouter } from 'next/navigation'
-import { FC } from 'react'
+import { useRouter, useSearchParams } from 'next/navigation'
+import { FC, useEffect } from 'react'
 import { useForm } from 'react-hook-form'
 import { Address, isAddress } from 'viem'
 import { z } from 'zod'
-import { useVotingPowerRedirect } from '../hooks/useVotingPowerRedirect'
+import { CreateProposalHeaderSection } from './CreateProposalHeaderSection'
 
 const FormSchema = z.object({
   proposalName: z
@@ -26,20 +26,19 @@ const FormSchema = z.object({
     .max(100)
     .refine(s => s.trim().replace(/\s+/g, ' ').length >= 5, 'Field must contain at least 5 characters'),
   builderAddress: z.string().refine(value => isAddress(value), 'Please enter a valid address'),
-  receiverAddress: z
-    .string()
-    .refine(value => isAddress(value) || value === '', 'Please enter a valid address'),
   description: z
     .string()
     .max(3000)
     .refine(s => s.trim().replace(/\s+/g, ' ').length >= 10, 'Field must contain at least 10 characters'),
 })
 
-export const CreateBuilderProposalForm: FC = () => {
+export const RemoveBuilderProposalForm: FC = () => {
   const router = useRouter()
-  useVotingPowerRedirect()
+  const params = useSearchParams()
+  const proposalId = params?.get('proposalId') ?? ''
+  const { isLoading: isVotingPowerLoading, canCreateProposal } = useVotingPower()
   const { setMessage } = useAlertContext()
-  const { onCreateBuilderWhitelistProposal, isPublishing, error } = useCreateBuilderWhitelistProposal()
+  const { onRemoveBuilderProposal, isPublishing, error } = useRemoveBuilderProposal()
   if (error) {
     setMessage(TX_MESSAGES.proposal.error)
     console.error('🐛 Error writing to contract:', error)
@@ -49,10 +48,9 @@ export const CreateBuilderProposalForm: FC = () => {
     mode: 'onTouched',
     resolver: zodResolver(FormSchema),
     defaultValues: {
-      proposalName: '',
-      builderAddress: '' as Address,
-      receiverAddress: '',
-      description: '',
+      proposalName: params?.get('proposalName') ?? ('' as string),
+      builderAddress: (params?.get('builderAddress') ?? '') as Address,
+      description: params?.get('description') ?? ('' as string),
     },
   })
 
@@ -63,21 +61,27 @@ export const CreateBuilderProposalForm: FC = () => {
   } = form
 
   const onSubmit = async (data: z.infer<typeof FormSchema>) => {
-    const { proposalName, description, builderAddress, receiverAddress } = data
+    const { proposalName, description, builderAddress } = data
     const proposalDescription = `${proposalName};${description}`
 
     try {
-      const txHash = await onCreateBuilderWhitelistProposal(
-        builderAddress as Address,
-        (receiverAddress || builderAddress) as Address,
-        proposalDescription,
-      )
+      const txHash = await onRemoveBuilderProposal(builderAddress as Address, proposalDescription)
       router.push(`/proposals?txHash=${txHash}`)
     } catch (err: any) {
       if (err?.cause?.code !== 4001) {
         setMessage(TX_MESSAGES.proposal.error)
       }
     }
+  }
+
+  useEffect(() => {
+    if (!isVotingPowerLoading && !canCreateProposal) {
+      router.push(`/proposals/${proposalId}`)
+    }
+  }, [canCreateProposal, isVotingPowerLoading, proposalId, router])
+
+  if (isVotingPowerLoading || !canCreateProposal) {
+    return null
   }
 
   return (
@@ -112,25 +116,16 @@ export const CreateBuilderProposalForm: FC = () => {
         />
         <FormField
           control={control}
-          name="receiverAddress"
-          render={({ field }) => (
-            <FormItem className="mb-6 mx-1">
-              <FormLabel>Receiver address (optional)</FormLabel>
-              <FormControl>
-                <FormInput placeholder="Write or paste the receiver address" {...field} maxLength={100} />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-        <FormField
-          control={control}
           name="description"
           render={({ field }) => (
             <FormItem className="mb-6 mx-1">
               <FormLabel>Description</FormLabel>
               <FormControl>
-                <FormTextarea placeholder="Enter a description..." {...field} maxLength={3000} />
+                <FormTextarea
+                  placeholder="Enter the reason for de-whitelisting and any supporting evidence..."
+                  {...field}
+                  maxLength={3000}
+                />
               </FormControl>
               <FormMessage />
             </FormItem>

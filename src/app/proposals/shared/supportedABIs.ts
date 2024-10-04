@@ -7,7 +7,12 @@ import { AbiFunction, AbiParameterToPrimitiveType } from 'viem'
 export const abiNames = ['DAOTreasuryAbi', 'RIFTokenAbi', 'SimplifiedRewardDistributorAbi'] as const
 export const abis = [DAOTreasuryAbi, RIFTokenAbi, SimplifiedRewardDistributorAbi] as const
 
-export const supportedProposalActions = ['withdraw', 'withdrawERC20', 'whitelistBuilder'] as const
+export const supportedProposalActions = [
+  'withdraw',
+  'withdrawERC20',
+  'whitelistBuilder',
+  'removeWhitelistedBuilder',
+] as const
 
 export type SupportedActionAbiName = (typeof abiNames)[number]
 

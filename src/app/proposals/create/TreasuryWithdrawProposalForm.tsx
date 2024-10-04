@@ -67,7 +67,7 @@ const FormSchema = z
     path: ['amount'],
   })
 
-export const TreasuryProposalForm = () => {
+export const TreasuryWithdrawProposalForm = () => {
   const router = useRouter()
   const prices = useGetSpecificPrices()
   const { isLoading: isVotingPowerLoading, canCreateProposal } = useVotingPower()

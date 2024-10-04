@@ -1,13 +1,10 @@
+import { createProposal } from '@/app/proposals/hooks/proposalUtils'
 import { useVotingPower } from '@/app/proposals/hooks/useVotingPower'
+import { DAOTreasuryAbi } from '@/lib/abis/DAOTreasuryAbi'
 import { GovernorAbi } from '@/lib/abis/Governor'
-import { GovernorAddress, TreasuryAddress } from '@/lib/contracts'
-import { Address, zeroAddress } from 'viem'
+import { GovernorAddress, tokenContracts, TreasuryAddress } from '@/lib/contracts'
+import { Address, encodeFunctionData, parseEther, zeroAddress } from 'viem'
 import { useWriteContract } from 'wagmi'
-import {
-  createProposal,
-  encodeTreasuryERC20Transfer,
-  encodeTreasuryTransfer,
-} from '@/app/proposals/hooks/proposalUtils'
 
 const DEFAULT_DAO_CONFIG = {
   abi: GovernorAbi,
@@ -41,4 +38,20 @@ export const useCreateTreasuryTransferProposal = () => {
     })
   }
   return { onCreateTreasuryTransferProposal, isPublishing }
+}
+
+export const encodeTreasuryERC20Transfer = (address: Address, amountToTransfer: string) => {
+  return encodeFunctionData({
+    abi: DAOTreasuryAbi,
+    functionName: 'withdrawERC20',
+    args: [tokenContracts.RIF, address, parseEther(amountToTransfer)],
+  })
+}
+
+export const encodeTreasuryTransfer = (address: Address, amountToTransfer: string) => {
+  return encodeFunctionData({
+    abi: DAOTreasuryAbi,
+    functionName: 'withdraw',
+    args: [address, parseEther(amountToTransfer)],
+  })
 }

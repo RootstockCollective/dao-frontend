@@ -1,5 +1,6 @@
 import { CreateBuilderProposalForm } from '@/app/proposals/create/CreateBuilderProposalForm'
-import { TreasuryProposalForm } from '@/app/proposals/create/TreasuryProposalForm'
+import { RemoveBuilderProposalForm } from '@/app/proposals/create/RemoveBuilderProposalForm'
+import { TreasuryWithdrawProposalForm } from '@/app/proposals/create/TreasuryWithdrawProposalForm'
 import { SupportedActionAbiName, SupportedProposalActionName } from '@/app/proposals/shared/supportedABIs'
 import { MainContainer } from '@/components/MainContainer/MainContainer'
 import { ReadonlyURLSearchParams, useSearchParams } from 'next/navigation'
@@ -13,11 +14,12 @@ export type ProposalFormByType = {
 
 const componentByType: Partial<ProposalFormByType> = {
   DAOTreasuryAbi: {
-    withdraw: TreasuryProposalForm,
-    withdrawERC20: TreasuryProposalForm,
+    withdraw: TreasuryWithdrawProposalForm,
+    withdrawERC20: TreasuryWithdrawProposalForm,
   },
   SimplifiedRewardDistributorAbi: {
     whitelistBuilder: CreateBuilderProposalForm,
+    removeWhitelistedBuilder: RemoveBuilderProposalForm,
   },
 }
 
@@ -37,7 +39,7 @@ export default function CreateProposal() {
 
     return (
       <MainContainer>
-        <TreasuryProposalForm />
+        <TreasuryWithdrawProposalForm />
       </MainContainer>
     )
   }

@@ -61,10 +61,9 @@ export type BimProposalCachedEvent = {
   builder: string
 }
 
-export type BimProposalMap = Record<
-  BimProposalCachedEvent['builder'],
-  Record<string, BimProposalCachedEvent['event']>
->
+export type BimEventByIdMap = Record<string, BimProposalCachedEvent['event']>
+
+export type BimProposalMap = Record<BimProposalCachedEvent['builder'], BimEventByIdMap>
 
 export type ProposalQueryResult<Data> = Omit<Partial<UseQueryResult<Data>>, 'isLoading'> & {
   isLoading: boolean

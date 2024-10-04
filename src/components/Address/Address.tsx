@@ -72,7 +72,7 @@ export const Address: React.FC<AddressProps> = ({ address }) => {
   const feedbackClass = `text-sm ${feedback.color} animate-fade-in-slide-in`
 
   return (
-    <div className="flex items-center">
+    <span className="flex items-center">
       <Span className={addressClass}>
         {address.substring(0, 6)}...{address.substring(address.length - 4)}
       </Span>
@@ -81,6 +81,6 @@ export const Address: React.FC<AddressProps> = ({ address }) => {
         <CopySvg color={copyColor} />
       </span>
       {animationShown && <span className={feedbackClass}>{feedback.text}</span>}
-    </div>
+    </span>
   )
 }

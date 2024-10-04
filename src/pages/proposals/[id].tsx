@@ -3,6 +3,7 @@ import { useFetchAllProposals } from '@/app/proposals/hooks/useFetchLatestPropos
 import { useGetProposalDeadline } from '@/app/proposals/hooks/useGetProposalDeadline'
 import { useGetProposalSnapshot } from '@/app/proposals/hooks/useGetProposalSnapshot'
 import { useGetProposalVotes } from '@/app/proposals/hooks/useGetProposalVotes'
+import { useVotingPower } from '@/app/proposals/hooks/useVotingPower'
 import { useVotingPowerAtSnapshot } from '@/app/proposals/hooks/useVotingPowerAtSnapshot'
 import {
   ActionComposerMap,
@@ -13,6 +14,7 @@ import {
   InputParameterTypeByFnByName,
   InputValueComponent,
   InputValueComposerMap,
+  SupportedProposalActionName,
 } from '@/app/proposals/shared/supportedABIs'
 import { DecodedData, getEventArguments } from '@/app/proposals/shared/utils'
 import { useAlertContext } from '@/app/providers'
@@ -38,14 +40,17 @@ import { RIF, RIF_ADDRESS } from '@/lib/constants'
 import { truncateMiddle } from '@/lib/utils'
 import { useExecuteProposal } from '@/shared/hooks/useExecuteProposal'
 import { useQueueProposal } from '@/shared/hooks/useQueueProposal'
-import { useVoteOnProposal } from '@/shared/hooks/useVoteOnProposal'
+import { ProposalState, useVoteOnProposal } from '@/shared/hooks/useVoteOnProposal'
 import { TX_MESSAGES } from '@/shared/txMessages'
 import { waitForTransactionReceipt } from '@wagmi/core'
 import { useRouter } from 'next/router'
 import { FC, useMemo, useState } from 'react'
+import { FaMinus } from 'react-icons/fa6'
+import { getAddress } from 'viem'
 import { useAccount } from 'wagmi'
-import { Vote, VoteProposalModal } from '../../components/Modal/VoteProposalModal'
-import { VoteSubmittedModal } from '../../components/Modal/VoteSubmittedModal'
+import { Vote, VoteProposalModal } from '@/components/Modal/VoteProposalModal'
+import { VoteSubmittedModal } from '@/components/Modal/VoteSubmittedModal'
+import React from 'react'
 
 export default function ProposalView() {
   const {
@@ -65,9 +70,9 @@ export default function ProposalView() {
   return <MainContainer>{proposal && <PageWithProposal {...proposal} />}</MainContainer>
 }
 
-type PageWithProposal = ReturnType<typeof getEventArguments>
+type ParsedProposal = ReturnType<typeof getEventArguments>
 
-const PageWithProposal = (proposal: PageWithProposal) => {
+const PageWithProposal = (proposal: ParsedProposal) => {
   const { proposalId, name, description, proposer, Starts } = proposal
   const [vote, setVote] = useState<Vote | null>('for')
   const [errorVoting, setErrorVoting] = useState('')
@@ -82,8 +87,9 @@ const PageWithProposal = (proposal: PageWithProposal) => {
   const { blocksUntilClosure } = useGetProposalDeadline(proposalId)
 
   const { votingPowerAtSnapshot, doesUserHasEnoughThreshold } = useVotingPowerAtSnapshot(snapshot as bigint)
+  const { canCreateProposal } = useVotingPower()
 
-  const { onVote, isProposalActive, didUserVoteAlready, proposalStateHuman, isVoting } =
+  const { onVote, isProposalActive, didUserVoteAlready, proposalState, proposalStateHuman, isVoting } =
     useVoteOnProposal(proposalId)
   const { onQueueProposal, proposalNeedsQueuing, isQueuing, isTxHashFromQueueLoading } =
     useQueueProposal(proposalId)
@@ -173,11 +179,22 @@ const PageWithProposal = (proposal: PageWithProposal) => {
     votingModal.openModal()
   }
 
+  const proposalType: SupportedProposalActionName = proposal.calldatasParsed[0]?.functionName
+
   // @ts-ignore
   return (
     <div className="pl-4 grid grid-rows-1 gap-[32px] mb-[100px]">
       <BreadcrumbSection title={name} />
-      <Header className="text-2xl">{name}</Header>
+      <div className="flex items-center justify-between">
+        <Header className="text-2xl ">{name}</Header>
+        {proposalType === 'whitelistBuilder' && (
+          <DewhitelistButton
+            proposal={proposal}
+            canCreateProposal={canCreateProposal}
+            proposalState={proposalState as ProposalState}
+          />
+        )}
+      </div>
 
       <div className="flex flex-row gap-4 items-baseline">
         <div className="flex flex-row items-baseline gap-1">
@@ -190,7 +207,7 @@ const PageWithProposal = (proposal: PageWithProposal) => {
         <CopyButton icon={null} copyText={proposalId} className="font-semibold text-primary">
           ID {truncateMiddle(proposalId, 3, 3)}
         </CopyButton>
-        {blocksUntilClosure !== null && proposalStateHuman === 'Active' && (
+        {blocksUntilClosure !== null && proposalState === ProposalState.Active && (
           <Paragraph className="text-sm text-gray-500">
             Blocks until closure: <span className="text-primary">{blocksUntilClosure.toString()}</span>
           </Paragraph>
@@ -202,7 +219,7 @@ const PageWithProposal = (proposal: PageWithProposal) => {
           <MetricsCard title="State" amount={proposalStateHuman} />
         </div>
         <div>
-          {proposalStateHuman === 'Active' && (
+          {proposalState === ProposalState.Active && (
             <>
               {cannotCastVote ? (
                 <Popover
@@ -221,7 +238,7 @@ const PageWithProposal = (proposal: PageWithProposal) => {
               )}
             </>
           )}
-          {proposalNeedsQueuing && proposalStateHuman === 'Succeeded' && (
+          {proposalNeedsQueuing && proposalState === ProposalState.Succeeded && (
             <Button
               onClick={handleQueuingProposal}
               className="mt-2"
@@ -231,7 +248,7 @@ const PageWithProposal = (proposal: PageWithProposal) => {
               Put on Queue
             </Button>
           )}
-          {proposalStateHuman === 'Queued' && (
+          {proposalState === ProposalState.Queued && (
             <Popover
               size="small"
               trigger="hover"
@@ -420,12 +437,52 @@ const CalldataDisplay = ({ functionName, args, inputs }: DecodedData) => (
   </div>
 )
 
+type DewhitelistButton = {
+  proposal: ParsedProposal
+  canCreateProposal: boolean
+  proposalState: ProposalState
+}
+
+const DewhitelistButton: FC<DewhitelistButton> = ({
+  proposal: { calldatasParsed, proposalId },
+  canCreateProposal,
+  proposalState,
+}) => {
+  const router = useRouter()
+  const rewardDistributorContract = 'SimplifiedRewardDistributorAbi'
+  const removeWhitelistedBuilderAction = 'removeWhitelistedBuilder'
+  const builderAddress = getAddress(calldatasParsed[0]?.args[0]?.toString() || '')
+  const isProposalExecuted = proposalState === ProposalState.Executed
+  const isButtonEnabled = builderAddress && isProposalExecuted
+
+  return (
+    <>
+      {isButtonEnabled && (
+        <Button
+          startIcon={<FaMinus />}
+          onClick={() =>
+            router.push(
+              `/proposals/create?contract=${rewardDistributorContract}&action=${removeWhitelistedBuilderAction}&builderAddress=${builderAddress}&proposalId=${proposalId}`,
+            )
+          }
+          disabled={!canCreateProposal}
+        >
+          De-whitelist
+        </Button>
+      )}
+    </>
+  )
+}
+
 export const actionInputNameFormatMap: Partial<
   ActionInputNameFormatMap<FunctionName[number], InputParameterName>
 > = {
   whitelistBuilder: {
     builder_: 'Address to be whitelisted',
     rewardReceiver_: 'Address to receive rewards',
+  },
+  removeWhitelistedBuilder: {
+    builder_: 'Address to be removed',
   },
 }
 
@@ -447,6 +504,9 @@ export const actionComponentMap: Partial<ActionComposerMap> = {
   whitelistBuilder: {
     builder_: AddressInputComponent,
     rewardReceiver_: AddressInputComponent,
+  },
+  removeWhitelistedBuilder: {
+    builder_: AddressInputComponent,
   },
   withdraw: {
     to: AddressInputComponent,
