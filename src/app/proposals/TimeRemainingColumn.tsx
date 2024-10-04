@@ -16,9 +16,12 @@ const convertToTimeRemaining = (seconds: number) => {
 export const TimeRemainingColumn = () => {
   const { latestBlockNumber } = useSharedProposalsTableContext()
   const { proposalId, blockNumber } = useProposalContext()
-  const { blocksUntilClosure } = useGetProposalDeadline(proposalId, latestBlockNumber || BigInt(1))
+  const { blocksUntilClosure, proposalDeadlineBlock } = useGetProposalDeadline(
+    proposalId,
+    latestBlockNumber || BigInt(1),
+  )
 
-  const votingWindowBlocks = BigInt(latestBlockNumber || 1) - BigInt(blockNumber)
+  const votingWindowBlocks = BigInt(proposalDeadlineBlock || 1) - BigInt(blockNumber)
   const ratio = Number(blocksUntilClosure) / Number(votingWindowBlocks)
 
   let colorClass
