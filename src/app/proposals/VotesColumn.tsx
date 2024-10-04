@@ -31,12 +31,14 @@ export const VotesColumn = () => {
   } else if (percentage >= 50) {
     colorClass = 'text-st-info'
   }
+  const quorumToShow = Math.floor(Number(quorum))
+  const percentageToShow = Math.floor(percentage)
   return (
     <>
       <p className={colorClass}>
-        {toFixed(votes)} ({Math.floor(percentage)}%)
+        {toFixed(votes)} ({isNaN(percentageToShow) ? '-' : percentageToShow}%)
       </p>
-      <p>Quorum: {Math.floor(Number(quorum))}</p>
+      <p>Quorum: {isNaN(quorumToShow) ? '-' : quorumToShow}</p>
     </>
   )
 }
