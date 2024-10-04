@@ -3,6 +3,7 @@ import { cn } from '@/lib/utils'
 import { FC, JSX, MouseEvent, ReactNode } from 'react'
 import { FaSpinner } from 'react-icons/fa6'
 import { Span } from '../Typography'
+import { DivWithGradient } from '@/components/Button/DivWithGradient'
 
 export const BUTTON_DEFAULT_CLASSES = 'px-[24px] py-[12px] flex gap-x-1 items-center relative'
 
@@ -78,6 +79,7 @@ export const Button: FC<Props> = ({
         <span className={cn('absolute left-[-20px] top-[4px]', startIconClasses)}>{startIcon}</span>
         <Span>{text}</Span>
       </span>
+      {variant === 'sidebar-active' && <DivWithGradient />}
     </button>
   )
 }

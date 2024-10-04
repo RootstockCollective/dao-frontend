@@ -1,1 +1,8 @@
-export type ButtonVariants = 'primary' | 'secondary' | 'secondary-full' | 'borderless' | 'outlined' | 'white'
+export type ButtonVariants =
+  | 'primary'
+  | 'secondary'
+  | 'secondary-full'
+  | 'borderless'
+  | 'outlined'
+  | 'white'
+  | 'sidebar-active'
