@@ -76,8 +76,8 @@ const LeaderBoardTable = () => {
   const { data: rifData, isLoading: rifLoading } = useGetBuildersRewards(tokenContracts.RIF)
   const data = rifData.concat(rbtcData)
 
-  const tableData = data.map(({ name, lastEpochReward, projectedReward, performance }) => ({
-    'Builder name': <BuilderNameCell builderName={name} />,
+  const tableData = data.map(({ address, lastEpochReward, projectedReward, performance }) => ({
+    'Builder name': <BuilderNameCell builderName={address} />,
     'Last Epoch Reward': <LazyRewardCell reward={lastEpochReward} />,
     'Projected Reward': <LazyRewardCell reward={projectedReward} />,
 

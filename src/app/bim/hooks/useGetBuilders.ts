@@ -18,7 +18,6 @@ export const useGetBuilders = () => {
 
   const data = useMemo(() => {
     return Object.entries(buildersProposalsMap ?? {}).map<BuilderInfo>(([builder, proposals]) => ({
-      name: 'Builder',
       address: builder,
       status: whitelistedBuilders?.some(whitelistedBuilder =>
         isAddressEqual(whitelistedBuilder, builder as Address),

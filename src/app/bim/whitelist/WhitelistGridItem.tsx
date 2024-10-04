@@ -1,11 +1,11 @@
 import { Address } from '@/components/Address'
 import { Badge } from '@/components/Badge'
 import { Paragraph, Span } from '@/components/Typography'
-import { DateTime } from 'luxon'
 import { FC, ReactNode } from 'react'
-import { BuilderInfo } from '@/app/bim/types'
+import { BuilderProposal } from './hooks/useGetFilteredBuilders'
+import { useRouter } from 'next/navigation'
 
-type WhitelistGridItemProps = BuilderInfo
+type WhitelistGridItemProps = BuilderProposal
 
 const Card = ({ header, body }: { header: ReactNode; body: ReactNode }) => {
   return (
@@ -17,7 +17,14 @@ const Card = ({ header, body }: { header: ReactNode; body: ReactNode }) => {
 }
 
 // TODO: this content can be moved to a different component and become a generic card
-export const WhitelistGridItem: FC<WhitelistGridItemProps> = ({ name, status, proposals, address }) => {
+export const WhitelistGridItem: FC<WhitelistGridItemProps> = ({
+  name,
+  status,
+  address,
+  joiningDate,
+  proposalId,
+  proposalDescription,
+}) => {
   //TODO: pending to check the colors
   const badgeBgColor = {
     Whitelisted: 'bg-[#22AD5C]',
@@ -26,24 +33,23 @@ export const WhitelistGridItem: FC<WhitelistGridItemProps> = ({ name, status, pr
     'KYC Under Review': 'bg-[#808080]',
   }[status]
 
-  const lastProposal = proposals[proposals.length - 1]
+  const router = useRouter()
   const Header = (
     <>
       <div className="flex-1">
         <Span className="text-base font-semibold">{name}</Span>
-        <Paragraph className="text-sm font-light">
-          {' '}
-          Joined {DateTime.fromSeconds(+lastProposal.timeStamp).toFormat('MMMM dd, yyyy')}
-        </Paragraph>
+        <Paragraph className="text-sm font-light"> Joined {joiningDate}</Paragraph>
       </div>
       {/* TODO: #22AD5C to be added in the theme */}
-      <Badge status={status} bgColor={badgeBgColor} />
+      <button onClick={() => router.push(`/proposals/${proposalId}`)}>
+        <Badge status={status} bgColor={badgeBgColor} />
+      </button>
     </>
   )
   const Body = (
     <>
       <Span className="text-base font-semibold">Proposal</Span>
-      <Paragraph className="text-sm font-light py-1.5">{lastProposal.args.description}</Paragraph>
+      <Paragraph className="text-sm font-light py-1.5">{proposalDescription}</Paragraph>
       <Address address={address} />
     </>
   )

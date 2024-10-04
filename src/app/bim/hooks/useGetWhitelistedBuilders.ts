@@ -10,6 +10,7 @@ export const useGetWhitelistedBuilders = () => {
     query: {
       // 30 seconds, it's the mean time required for a block to be included in RSKJ
       refetchInterval: 30_000,
+      initialData: [],
     },
   })
 

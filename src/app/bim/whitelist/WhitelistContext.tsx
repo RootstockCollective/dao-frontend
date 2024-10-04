@@ -1,6 +1,6 @@
-import { BuilderStatus, BuilderInfo } from '@/app/bim/types'
+import { BuilderStatus } from '@/app/bim/types'
 import { createContext, Dispatch, FC, ReactNode, SetStateAction, useContext, useState } from 'react'
-import { useGetFilteredBuilders } from '@/app/bim/whitelist/hooks/useGetFilteredBuilders'
+import { BuilderProposal, useGetFilteredBuilders } from '@/app/bim/whitelist/hooks/useGetFilteredBuilders'
 
 export type BuilderStatusFilter = 'all' | BuilderStatus
 
@@ -10,7 +10,7 @@ type StateWithUpdate<T> = {
 }
 
 interface WhitelistContextValue {
-  builders: BuilderInfo[]
+  builders: BuilderProposal[]
   isLoading: boolean
   error?: Error | null
   search: StateWithUpdate<string>

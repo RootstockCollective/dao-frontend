@@ -1,9 +1,9 @@
 import { FC } from 'react'
-import { BuilderInfo } from '@/app/bim/types'
 import { WhitelistGridItem } from '@/app/bim/whitelist/WhitelistGridItem'
+import { BuilderProposal } from '@/app/bim/whitelist/hooks/useGetFilteredBuilders'
 
 interface WhitelistGridProps {
-  items: BuilderInfo[]
+  items: BuilderProposal[]
 }
 
 export const WhitelistGrid: FC<WhitelistGridProps> = ({ items }) => {

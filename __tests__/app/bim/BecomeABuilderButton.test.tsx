@@ -20,7 +20,6 @@ describe('BecomeABuilderButton', () => {
   beforeEach(() => {
     data = [
       {
-        name: 'Builder 1',
         status: 'In progress',
         address: '0xCD2a3d9F938E13CD947Ec05AbC7FE734Df8DD826',
         proposals: [{

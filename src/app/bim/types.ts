@@ -3,7 +3,6 @@ import { CreateBuilderProposalEventLog } from '@/app/proposals/hooks/useFetchLat
 export type BuilderStatus = 'Whitelisted' | 'In progress'
 
 export interface BuilderInfo {
-  name: string
   address: string
   status: BuilderStatus
   proposals: CreateBuilderProposalEventLog[]

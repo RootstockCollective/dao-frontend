@@ -113,7 +113,7 @@ export const useFetchCreateBuilderProposals = (): ProposalQueryResult<BimProposa
     }, {})
 
     return bimProposalMap
-  }, [fetchedData])
+  }, [fetchedData?.data])
 
   return {
     data: latestProposals,

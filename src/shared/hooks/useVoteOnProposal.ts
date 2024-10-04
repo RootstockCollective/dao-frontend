@@ -15,7 +15,7 @@ const VOTES_MAP: Record<Vote, number> = {
   abstain: 2,
 }
 
-enum ProposalState {
+export enum ProposalState {
   Pending,
   Active,
   Canceled,
