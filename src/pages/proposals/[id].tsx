@@ -272,7 +272,7 @@ const PageWithProposal = (proposal: PageWithProposal) => {
           <Header variant="h1" className="text-[24px] mb-6">
             Description
           </Header>
-          <Paragraph variant="normal" className="text-[16px] text-justify font-light">
+          <Paragraph variant="normal" className="text-[16px] text-justify font-light whitespace-pre-wrap">
             {description}
           </Paragraph>
         </div>
