@@ -54,6 +54,7 @@ const LatestProposalsTable = ({ latestProposals }: LatestProposalsTableProps) =>
             tbodyProps={{
               'data-testid': 'TableProposalsTbody',
             }}
+            className="overflow-visible"
           />
         </SharedProposalsTableContextProvider>
       )}
