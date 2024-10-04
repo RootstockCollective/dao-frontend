@@ -8,21 +8,22 @@ import { Address } from 'viem'
 import { Header } from '@/components/Typography'
 import { tokenContracts } from '@/lib/contracts'
 import { getLastRewardValid } from '@/app/bim/utils/getLastRewardValid'
+import { FC } from 'react'
 
-export const Rewards = () => {
-  const { address } = useAccount()
+type RewardsProps = {
+  builder: Address
+}
 
+export const Rewards: FC<RewardsProps> = ({ builder }) => {
   return (
     <>
       <Header variant="h2" className="mb-8">
         As a Builder
       </Header>
-      {address && (
-        <>
-          <Reward builder={address} rewardToken={tokenContracts.RBTC} />
-          <Reward builder={address} rewardToken={tokenContracts.RIF} />
-        </>
-      )}
+      <>
+        <Reward builder={builder} rewardToken={tokenContracts.RBTC} />
+        <Reward builder={builder} rewardToken={tokenContracts.RIF} />
+      </>
     </>
   )
 }
