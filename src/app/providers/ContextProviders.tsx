@@ -4,6 +4,7 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { ReactNode } from 'react'
 import { WagmiProvider } from 'wagmi'
 import { AlertProvider } from './AlertProvider'
+import ErrorBoundary from '@/components/ErrorPage/ErrorBoundary'
 
 interface Props {
   children: ReactNode
@@ -12,10 +13,12 @@ interface Props {
 export const ContextProviders = ({ children }: Props) => {
   const queryClient = new QueryClient()
   return (
-    <WagmiProvider config={config}>
-      <QueryClientProvider client={queryClient}>
-        <AlertProvider>{children}</AlertProvider>
-      </QueryClientProvider>
-    </WagmiProvider>
+    <ErrorBoundary>
+      <WagmiProvider config={config}>
+        <QueryClientProvider client={queryClient}>
+          <AlertProvider>{children}</AlertProvider>
+        </QueryClientProvider>
+      </WagmiProvider>
+    </ErrorBoundary>
   )
 }
