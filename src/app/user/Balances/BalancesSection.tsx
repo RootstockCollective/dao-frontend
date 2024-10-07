@@ -1,4 +1,4 @@
-import { Header } from '@/components/Typography'
+import { HeaderTitle } from '@/components/Typography'
 import { Table } from '@/components/Table'
 import { RenderTokenPrice } from '@/app/user/Balances/RenderTokenPrice'
 import { RenderTotalBalance } from '@/app/user/Balances/RenderTotalBalance'
@@ -36,9 +36,7 @@ const data = [
 export const BalancesSection = () => {
   return (
     <div className="mb-[32px]">
-      <Header variant="h2" className="mb-[32px]">
-        Balances
-      </Header>
+      <HeaderTitle className="mb-[24px]">Balances</HeaderTitle>
       <BalancesProvider>
         <StakingModal />
         <UnStakingModal />
