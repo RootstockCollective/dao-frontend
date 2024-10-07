@@ -13,13 +13,23 @@ const convertToTimeRemaining = (seconds: number) => {
   return `${days}d ${hours}h ${minutes}m ${remainingSeconds}s`
 }
 
+/**
+ * This helps to render the right hook due to how Wagmi works...
+ * If the status is not active, there is no point in fetching the status of the vote
+ */
+const HOOK_TO_USE = {
+  dummy: (proposalId: string, number: bigint) => ({
+    blocksUntilClosure: 0,
+    proposalDeadlineBlock: undefined,
+  }),
+  real: useGetProposalDeadline,
+}
+
 export const TimeRemainingColumn = () => {
   const { latestBlockNumber } = useSharedProposalsTableContext()
-  const { proposalId, blockNumber } = useProposalContext()
-  const { blocksUntilClosure, proposalDeadlineBlock } = useGetProposalDeadline(
-    proposalId,
-    latestBlockNumber || BigInt(1),
-  )
+  const { proposalId, blockNumber, proposalStateHuman } = useProposalContext()
+  const hookToUse = HOOK_TO_USE[proposalStateHuman === 'Active' ? 'real' : 'dummy']
+  const { blocksUntilClosure, proposalDeadlineBlock } = hookToUse(proposalId, latestBlockNumber || BigInt(1))
 
   const votingWindowBlocks = BigInt(proposalDeadlineBlock || 1) - BigInt(blockNumber)
   const ratio = Number(blocksUntilClosure) / Number(votingWindowBlocks)
