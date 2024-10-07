@@ -25,7 +25,7 @@ const latestProposalsTransformer = (proposals: ReturnType<typeof getEventArgumen
     )
     return {
       Proposal: withContext(<ProposalNameColumn />),
-      Votes: withContext(<VotesColumn />),
+      'Quorum Votes': withContext(<VotesColumn />),
       Date: proposal.Starts.format('MM-DD-YYYY'),
       'Time Remaining': withContext(<TimeRemainingColumn />),
       Sentiment: withContext(<SentimentColumn key={`${proposal.proposalId}_${i}`} />),

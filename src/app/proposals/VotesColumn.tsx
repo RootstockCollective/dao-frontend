@@ -5,9 +5,12 @@ import { GovernorAbi } from '@/lib/abis/Governor'
 import { GOVERNOR_ADDRESS } from '@/lib/constants'
 import { formatBalanceToHuman } from '@/app/user/Balances/balanceUtils'
 
+const sumVotes = (votes: string[]) => votes.reduce((prev, next) => Number(next) + prev, 0)
+
 export const VotesColumn = () => {
   const { proposalVotes, blockNumber } = useProposalContext()
-  const votes = proposalVotes.reduce((prev, next) => Number(next) + prev, 0)
+  const [, forVote, abstainVote] = proposalVotes
+  const votes = sumVotes([forVote, abstainVote])
 
   const { data: quorumAtSnapshot } = useReadContract({
     abi: GovernorAbi,
