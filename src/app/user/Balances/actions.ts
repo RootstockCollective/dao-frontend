@@ -84,8 +84,21 @@ export const fetchNftsOwnedByAddressAndNFTAddress = (address: string, nftAddress
     .then(({ data }) => data)
     .catch(error => console.log(error))
 
+export interface BackendEventByTopic0ResponseValue {
+  address: string
+  blockNumber: string
+  data: string
+  gasPrice: string
+  gasUsed: string
+  logIndex: string
+  timeStamp: string
+  topics: Array<null | string>
+  transactionHash: string
+  transactionIndex: string
+}
+
 export const fetchProposalCreated = (fromBlock = 0) =>
-  axiosInstance.get(
+  axiosInstance.get<BackendEventByTopic0ResponseValue[]>(
     fetchProposalsCreatedByGovernorAddress
       .replace('{{address}}', GovernorAddress)
       .replace('{{fromBlock}}', fromBlock.toString()),
