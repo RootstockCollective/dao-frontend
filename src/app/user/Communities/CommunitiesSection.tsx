@@ -1,4 +1,4 @@
-import { Header } from '@/components/Typography'
+import { HeaderTitle } from '@/components/Typography'
 import { CommunityCard } from '@/app/user/Communities/CommunityCard'
 import { JoinACommunity } from '@/app/user/Communities/JoinACommunity'
 import { useEffect, useRef, useState } from 'react'
@@ -45,14 +45,14 @@ const UserCommunities = ({ nftAddresses }: { nftAddresses: string[] }) => {
 
   return (
     <>
-      <Header variant="h2" className="mb-[32px] font-bold">
+      <HeaderTitle className="mb-[24px] font-bold">
         Communities ({nftsOwned}){' '}
         {isLoadingNfts && (
           <span>
             <FaSpinner className="animate-spin inline-block" />
           </span>
         )}
-      </Header>
+      </HeaderTitle>
       {nftsInfo.map((nftInfo, index) => (
         <NftInfo
           key={nftInfo.address}
