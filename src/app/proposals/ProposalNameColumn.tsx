@@ -8,7 +8,7 @@ export const ProposalNameColumn = () => {
   return (
     <button onClick={() => router.push(`/proposals/${proposalId}`)}>
       <Span className="underline text-left overflow-hidden whitespace-nowrap text-white">
-        {name.slice(0, 20)}
+        {name.slice(0, 50)}
       </Span>
     </button>
   )
