@@ -20,8 +20,11 @@ export const CommunityItem = ({
   description,
   numberOfMembers,
 }: CommunityItemProps) => (
-  <div className="rounded-[8px] bg-input-bg p-[16px] w-[324px]">
-    <Link href={`/communities/nft/${nftAddress}`}>
+  <div className="rounded-[8px] bg-input-bg p-[16px] w-[330px] h-[201px]">
+    <Link
+      href={nftAddress ? `/communities/nft/${nftAddress}` : '/communities'}
+      className="flex flex-col h-full"
+    >
       <div className="flex mb-[22px] items-center">
         <div className="rounded-full overflow-hidden">
           <Image src={leftImageSrc} alt={title} width={50} height={50} />
@@ -32,12 +35,13 @@ export const CommunityItem = ({
             {subtitle}
           </Span>
         </div>
-        <BsArrowUpRight />
+        {nftAddress && <BsArrowUpRight />}
       </div>
       <Paragraph variant="normal" className="mb-[8px] text-[14px]">
         {description}
       </Paragraph>
-      <div />
+      <div className="flex-1" />
+      {!nftAddress && <Image src="/images/text-coming-soon.svg" alt={title} width={121} height={121} />}
     </Link>
   </div>
 )
