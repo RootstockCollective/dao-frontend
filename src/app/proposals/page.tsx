@@ -23,13 +23,18 @@ export default function Proposals() {
       <TxStatusMessage messageType="proposal" />
       <HeaderSection createProposalDisabled={!canCreateProposal} threshold={threshold} />
       <div className="grid grid-rows-1 gap-[32px] mb-[100px]">
-        <MetricsCard borderless title={<VotingPowerPopover />} amount={toFixed(votingPower)} />
+        <div>
+          <VotingPowerPopover />
+          <Paragraph className="text-[48px] text-primary tracking-[-0.96px]" fontFamily="kk-topo">
+            {toFixed(votingPower)}
+          </Paragraph>
+        </div>
         <div className="flex flex-row gap-x-6">
           {/*<MetricsCard title="Votes" amount="-" />*/}
           {/* @TODO ask product/design what this is */}
           {/* <MetricsCard title="Total voting power delegated" amount="230" /> */}
-          <div className="w-52">
-            <MetricsCard title="Proposals created" amount={latestProposals.length.toString()} />
+          <div className="w-[272px]">
+            <MetricsCard title="Proposals created" amount={latestProposals.length.toString()} borderless />
           </div>
         </div>
         {/* <div className="grid grid-cols-2 gap-x-6">
@@ -67,8 +72,8 @@ const PopoverContent = () => {
 const VotingPowerPopover = () => (
   <Popover content={<PopoverContent />}>
     <button className="flex flex-row">
-      <Paragraph>My voting power</Paragraph>
-      <FaRegQuestionCircle className="ml-1" />
+      <Paragraph className="text[16px] font-[700]">My Voting Power</Paragraph>
+      <FaRegQuestionCircle className="ml-1 self-center" />
     </button>
   </Popover>
 )

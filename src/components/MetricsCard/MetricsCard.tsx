@@ -32,7 +32,7 @@ interface MetricsCardProps {
   'data-testid'?: string
 }
 
-const DEFAULT_CLASSES = 'h-[7.5rem] w-full py-[8px] px-[16px] flex flex-col'
+const DEFAULT_CLASSES = 'h-min-[79px] w-full py-[12px] px-[12px] flex flex-col bg-foreground'
 
 /**
  * Card for displaying balance and corresponding (fiat) value.
@@ -52,7 +52,8 @@ export const MetricsCard: FC<MetricsCardProps> = ({
         <div>
           <Paragraph
             variant="normal"
-            className="text-[14px] tracking-wide overflow-hidden whitespace-nowrap text-ellipsis"
+            className="text-[16px] tracking-wide overflow-hidden whitespace-nowrap text-ellipsis"
+            fontFamily="rootstock-sans"
           >
             {title}
           </Paragraph>
@@ -61,17 +62,19 @@ export const MetricsCard: FC<MetricsCardProps> = ({
         title
       )}
       <div className="h-12 flex items-center">
-        <Paragraph variant="semibold" className="text-[2rem] leading-none" data-testid="Amount">
+        <Paragraph variant="semibold" className="text-[24px] leading-none text-primary" data-testid="Amount">
           {amount}
         </Paragraph>
       </div>
-      <Paragraph
-        variant="normal"
-        className="text-[13px] text-white text-opacity-80 leading-4"
-        data-testid="FiatAmount"
-      >
-        {fiatAmount}
-      </Paragraph>
+      {fiatAmount && (
+        <Paragraph
+          variant="normal"
+          className="text-[13px] text-white text-opacity-80 leading-4"
+          data-testid="FiatAmount"
+        >
+          {fiatAmount}
+        </Paragraph>
+      )}
       {contractAddress && (
         <a href={`${EXPLORER_URL}/address/${contractAddress}`} target="_blank">
           <BoxIcon size={20} className="inline-block mr-1" />

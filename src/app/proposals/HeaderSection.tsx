@@ -1,12 +1,11 @@
 import { useRouter } from 'next/navigation'
-import { Paragraph } from '@/components/Typography'
+import { Paragraph, HeaderTitle } from '@/components/Typography'
 import { Button } from '@/components/Button'
-import { FaPlus } from 'react-icons/fa6'
 import { Popover } from '@/components/Popover'
 
 export const HeaderSection = ({ createProposalDisabled = true, threshold = '' }) => (
   <div className="flex flex-row justify-between container">
-    <Paragraph className="font-semibold text-[18px]">My Governance</Paragraph>
+    <HeaderTitle>My Governance</HeaderTitle>
     <div className="flex flex-row gap-x-6">
       {createProposalDisabled ? (
         <Popover
@@ -34,12 +33,7 @@ export const HeaderSection = ({ createProposalDisabled = true, threshold = '' })
 const CreateProposalButton = ({ disabled = false }) => {
   const router = useRouter()
   return (
-    <Button
-      startIcon={<FaPlus />}
-      onClick={() => router.push('/proposals/create')}
-      disabled={disabled}
-      data-testid="CreateProposal"
-    >
+    <Button onClick={() => router.push('/proposals/create')} disabled={disabled} data-testid="CreateProposal">
       Create Proposal
     </Button>
   )

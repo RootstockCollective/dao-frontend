@@ -19,7 +19,9 @@ interface Props {
   'data-testid'?: string
 }
 
-export const Typography: FC<Props & CSSProperties> = ({
+export type TypographyProps = Props & CSSProperties
+
+export const Typography: FC<TypographyProps> = ({
   tagVariant = 'p',
   children,
   className,

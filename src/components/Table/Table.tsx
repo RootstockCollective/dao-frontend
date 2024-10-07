@@ -36,7 +36,16 @@ export const Table: FC<TableProps> = ({ data, equalColumns = true, tbodyProps, t
       <TableHead {...theadProps}>
         <TableRow>
           {header.map(headTitle => (
-            <TableCell style={{ width, fontWeight: 'bold', fontSize: '14px' }} key={headTitle}>
+            <TableCell
+              style={{
+                width,
+                fontWeight: 700,
+                fontSize: '16px',
+                borderBottom: '1px solid #2D2D2D',
+                fontFamily: 'rootstock-sans',
+              }}
+              key={headTitle}
+            >
               {headTitle}
             </TableCell>
           ))}
@@ -47,7 +56,9 @@ export const Table: FC<TableProps> = ({ data, equalColumns = true, tbodyProps, t
           <TableRow key={i} className="text-[14px] border-hidden" style={{ borderTopStyle: 'solid' }}>
             {Object.values(record).map((val, j) => (
               <TableCell style={{ width }} key={j}>
-                <Span className="text-[14px]">{val}</Span>
+                <Span className="text-[14px]" variant="light">
+                  {val}
+                </Span>
               </TableCell>
             ))}
           </TableRow>
