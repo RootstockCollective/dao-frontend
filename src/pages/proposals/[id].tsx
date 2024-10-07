@@ -40,7 +40,7 @@ import { RIF, RIF_ADDRESS } from '@/lib/constants'
 import { truncateMiddle } from '@/lib/utils'
 import { useExecuteProposal } from '@/shared/hooks/useExecuteProposal'
 import { useQueueProposal } from '@/shared/hooks/useQueueProposal'
-import { ProposalState, useVoteOnProposal } from '@/shared/hooks/useVoteOnProposal'
+import { useVoteOnProposal } from '@/shared/hooks/useVoteOnProposal'
 import { TX_MESSAGES } from '@/shared/txMessages'
 import { waitForTransactionReceipt } from '@wagmi/core'
 import { useRouter } from 'next/router'
@@ -51,6 +51,7 @@ import { useAccount } from 'wagmi'
 import { Vote, VoteProposalModal } from '@/components/Modal/VoteProposalModal'
 import { VoteSubmittedModal } from '@/components/Modal/VoteSubmittedModal'
 import React from 'react'
+import { ProposalState } from '@/shared/types'
 
 export default function ProposalView() {
   const {

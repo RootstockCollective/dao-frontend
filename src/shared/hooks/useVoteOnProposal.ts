@@ -3,6 +3,7 @@ import { GovernorAbi } from '@/lib/abis/Governor'
 import { GovernorAddress } from '@/lib/contracts'
 import { Address } from 'viem'
 import { useAccount, useReadContract, useWriteContract } from 'wagmi'
+import { ProposalState } from '@/shared/types'
 
 const DEFAULT_DAO = {
   address: GovernorAddress as Address,
@@ -13,17 +14,6 @@ const VOTES_MAP: Record<Vote, number> = {
   against: 0,
   for: 1,
   abstain: 2,
-}
-
-export enum ProposalState {
-  Pending,
-  Active,
-  Canceled,
-  Defeated,
-  Succeeded,
-  Queued,
-  Expired,
-  Executed,
 }
 
 export const useVoteOnProposal = (proposalId: string) => {

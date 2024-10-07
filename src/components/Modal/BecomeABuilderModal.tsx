@@ -11,7 +11,6 @@ import { SupportedActionAbiName, SupportedProposalActionName } from '@/app/propo
 
 interface BecomeABuilderModalProps {
   onClose: () => void
-  builderStatus: BuilderStatus | 'Not found'
 }
 
 // TODO: check if this is a hardcoded list or if it should be dynamic
@@ -45,7 +44,7 @@ const steps: Array<Step> = [
   },
 ]
 
-export const BecomeABuilderModal: FC<BecomeABuilderModalProps> = ({ onClose, builderStatus }) => {
+export const BecomeABuilderModal: FC<BecomeABuilderModalProps> = ({ onClose }) => {
   const router = useRouter()
 
   const contractName: SupportedActionAbiName = 'SimplifiedRewardDistributorAbi'
@@ -66,7 +65,7 @@ export const BecomeABuilderModal: FC<BecomeABuilderModalProps> = ({ onClose, bui
           <div className="flex flex-col items-center gap-4">
             <RiPassportLine size={48} />
             Verify your <br /> profile persona
-            <Button disabled={builderStatus !== 'Not found'}>Start KYC</Button>
+            <Button>Start KYC</Button>
           </div>
           <div className="flex flex-col items-center gap-4">
             <BsCardText size={48} />

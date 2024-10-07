@@ -1,8 +1,7 @@
 import { useEffect, useMemo, useState } from 'react'
-import { BuilderStatus } from '@/app/bim/types'
+import { BuilderStatus, invalidProposalStates } from '@/app/bim/types'
 import { BuilderStatusFilter } from '@/app/bim/whitelist/WhitelistContext'
 import { useGetBuilders } from '@/app/bim/hooks/useGetBuilders'
-import { ProposalState } from '@/shared/hooks/useVoteOnProposal'
 import { DateTime } from 'luxon'
 import { useGetProposalsState } from '@/app/bim/whitelist/hooks/useGetProposalsState'
 
@@ -40,9 +39,7 @@ export const useGetFilteredBuilders = ({
       const proposal = proposals.find(({ args: { proposalId } }) => {
         const state = proposalsStateMap[proposalId.toString()]
 
-        const invalidStates = [ProposalState.Canceled, ProposalState.Defeated, ProposalState.Expired]
-
-        return !invalidStates.includes(state)
+        return !invalidProposalStates.includes(state)
       })
 
       if (proposal) {

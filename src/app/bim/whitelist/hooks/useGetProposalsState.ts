@@ -1,10 +1,10 @@
-import { ProposalState } from '@/shared/hooks/useVoteOnProposal'
 import { useReadContracts } from 'wagmi'
 import { GovernorAddress } from '@/lib/contracts'
 import { GovernorAbi } from '@/lib/abis/Governor'
 import { Address } from 'viem'
 import { CreateBuilderProposalEventLog } from '@/app/proposals/hooks/useFetchLatestProposals'
 import { useMemo } from 'react'
+import { ProposalState } from '@/shared/types'
 
 type ProposalsStateMap = Record<string, ProposalState>
 

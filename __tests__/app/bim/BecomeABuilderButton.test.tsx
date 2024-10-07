@@ -3,7 +3,9 @@ import { BecomeABuilderButton } from '@/app/bim/BecomeABuilderButton'
 import { BuilderInfo } from '@/app/bim/types'
 import { expect, describe, it } from '@jest/globals'
 import { useGetBuilders } from '@/app/bim/hooks/useGetBuilders'
+import { useGetProposalsState } from '@/app/bim/whitelist/hooks/useGetProposalsState'
 import { CreateBuilderProposalEventLog } from '@/app/proposals/hooks/useFetchLatestProposals'
+import { ProposalState } from '@/shared/types'
 
 jest.mock('@/app/bim/hooks/useGetBuilders', () => {
   return {
@@ -11,19 +13,28 @@ jest.mock('@/app/bim/hooks/useGetBuilders', () => {
   }
 })
 
+jest.mock('@/app/bim/whitelist/hooks/useGetProposalsState', () => {
+  return {
+    useGetProposalsState: jest.fn(),
+  }
+})
+
 describe('BecomeABuilderButton', () => {
-  let builderAddress = '0xCD2a3d9F938E13CD947Ec05AbC7FE734Df8DD826'
-  let data: BuilderInfo[]
+  const builderAddress = '0xCD2a3d9F938E13CD947Ec05AbC7FE734Df8DD826'
+  const proposalId = 1n
+  let buildersData: BuilderInfo[]
+  let proposalsStateMapData: Record<string, ProposalState>;
 
   type CreateBuilderProposalEventLogArgs = CreateBuilderProposalEventLog['args']
 
   beforeEach(() => {
-    data = [
+    buildersData = [
       {
         status: 'In progress',
         address: '0xCD2a3d9F938E13CD947Ec05AbC7FE734Df8DD826',
         proposals: [{
           args: { 
+            proposalId,
             description: 'description',
           } as CreateBuilderProposalEventLogArgs, 
           timeStamp: 1723309061,
@@ -31,26 +42,34 @@ describe('BecomeABuilderButton', () => {
       },
     ]
     jest.mocked(useGetBuilders).mockReturnValue({
-      data,
+      data: buildersData,
+      isLoading: false,
+      error: null,
+    })
+    proposalsStateMapData =  {
+      [proposalId.toString()]: ProposalState.Pending,
+    }
+    jest.mocked(useGetProposalsState).mockReturnValue({
+      data: proposalsStateMapData,
       isLoading: false,
       error: null,
     })
   })
 
-  it('should render InProgressComponent', async () => {
+  it('should render if builder is in progress', async () => {
     const { findByText } = render(<BecomeABuilderButton address={builderAddress} />)
 
     expect(await findByText('Waiting for approval')).toBeVisible()
   })
 
-  it('should render WhitelistedComponent', async () => {
-    data[0].status = 'Whitelisted'
+  it('should render if builder is whitelisted', async () => {
+    buildersData[0].status = 'Whitelisted'
     const { findByText } = render(<BecomeABuilderButton address={builderAddress} />)
 
     expect(await findByText('Whitelisted')).toBeVisible()
   })
 
-  it('should render NotFoundComponent', async () => {
+  it('should render not found if builder does not have a proposal', async () => {
     const { findByText } = render(
       <BecomeABuilderButton address="0xCD2a3d9F938E13CD947Ec05AbC7FE734Df8DD827" />,
     )
@@ -58,20 +77,52 @@ describe('BecomeABuilderButton', () => {
     expect(await findByText('Become a builder')).toBeVisible()
   })
 
-  it('should render error message', async () => {
+  it('should render not found if builder have a proposal in a invalid state', async () => {
+    jest.mocked(useGetProposalsState).mockReturnValue({
+      data: {
+        [proposalId.toString()]: ProposalState.Canceled,
+      },
+      isLoading: false,
+      error: null,
+    })
+    const { findByText } = render(
+      <BecomeABuilderButton address={builderAddress} />,
+    )
+
+    expect(await findByText('Become a builder')).toBeVisible()
+  })
+
+  it('should render error message if fails while getting the builders', async () => {
     jest.mocked(useGetBuilders).mockReturnValue({
-      data,
+      data: buildersData,
       isLoading: false,
       error: new Error('Error while loading data, please try again.'),
     })
     const { findByText } = render(<BecomeABuilderButton address={builderAddress} />)
 
-    expect(await findByText('Error while loading data, please try again.')).toBeVisible
+    expect(await findByText('Error loading builders.')).toBeVisible
   })
+
+  it('should render error message if fails while getting the proposals states', async () => {
+    jest.mocked(useGetProposalsState).mockReturnValue({
+      data: proposalsStateMapData,
+      isLoading: false,
+      error: {
+        name: 'Error',
+        message: 'Error while loading data, please try again.',
+        stack: '',
+        cause: null,
+      },
+    })
+    const { findByText } = render(<BecomeABuilderButton address={builderAddress} />)
+
+    expect(await findByText('Error loading proposals state.')).toBeVisible
+  })
+
 
   it('should render loading message', async () => {
     jest.mocked(useGetBuilders).mockReturnValue({
-      data,
+      data: buildersData,
       isLoading: true,
       error: null,
     })

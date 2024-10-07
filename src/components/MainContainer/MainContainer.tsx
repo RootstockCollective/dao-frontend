@@ -57,7 +57,7 @@ export const MainContainer: FC<Props> = ({ children, notProtected = false }) => 
                 <Header>
                   {isConnected ? (
                     <div className="flex flex-row justify-end gap-4">
-                      <BecomeABuilderButton address={address} />
+                      <BecomeABuilderButton address={address!} />
                       <AccountAddress
                         address={address}
                         shortAddress={shortAddress(address)}
