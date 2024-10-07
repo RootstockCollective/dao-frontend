@@ -67,16 +67,12 @@ export const MetricsCard: FC<MetricsCardProps> = ({
         </Paragraph>
       </div>
       {fiatAmount && (
-        <Paragraph
-          variant="normal"
-          className="text-[13px] text-white text-opacity-80 leading-4"
-          data-testid="FiatAmount"
-        >
+        <Span variant="light" className="text-[13px] text-opacity-80 leading-4" data-testid="FiatAmount">
           {fiatAmount}
-        </Paragraph>
+        </Span>
       )}
       {contractAddress && (
-        <a href={`${EXPLORER_URL}/address/${contractAddress}`} target="_blank">
+        <a href={`${EXPLORER_URL}/address/${contractAddress}`} target="_blank" className="mt-2">
           <BoxIcon size={20} className="inline-block mr-1" />
           <Span className="underline" size="small">
             {shortAddress(contractAddress)}
