@@ -1,12 +1,17 @@
-import { fetchProposalCreated } from '@/app/user/Balances/actions'
+import { BackendEventByTopic0ResponseValue, fetchProposalCreated } from '@/app/user/Balances/actions'
 import { NextRequest } from 'next/server'
 
 let cachedProposals = {
   lastUpdated: Date.now(),
-  data: [],
+  data: [] as BackendEventByTopic0ResponseValue[],
   isFetching: false,
   error: '',
   lastFromBlock: 0,
+}
+
+const shouldAddRowToDataArray = (newTransaction: { blockNumber: string }) => {
+  const indexFound = cachedProposals.data.findIndex(i => i.blockNumber === newTransaction.blockNumber)
+  return indexFound === -1
 }
 
 function fetchProposals() {
@@ -16,7 +21,10 @@ function fetchProposals() {
     .then(({ data }) => {
       console.log(14, 'Finished fetching proposals...')
       if (Array.isArray(data) && data.length > 0) {
-        cachedProposals.data = data as []
+        const dataToBeAdded = data.filter(shouldAddRowToDataArray)
+        if (dataToBeAdded.length > 0) {
+          cachedProposals.data.push(...dataToBeAdded)
+        }
         cachedProposals.error = ''
         cachedProposals.lastFromBlock = Number(data[data.length - 1].blockNumber) + 1 // Update lastFromBlock based on last proposal
       } else {
