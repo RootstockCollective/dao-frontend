@@ -1,6 +1,7 @@
 import { ADDRESS_ANIMATION_DURATION } from '@/lib/constants'
 import { useEffect, useState } from 'react'
 import { Span } from '@/components/Typography'
+import { isAddress } from 'viem'
 
 export interface AddressProps {
   address: string
@@ -68,14 +69,19 @@ export const Address: React.FC<AddressProps> = ({ address }) => {
 
   const copyColor = animationShown ? copyColorValue : 'white'
   const addressClass = `text-sm ${animationShown ? 'animate-fade-out-slide-out' : ''}`
+  const aliasClass = `text-sm line-clamp-1 ${animationShown ? 'animate-fade-out-slide-out' : ''}`
   const copyButtonClass = `px-2 hover:cursor-pointer ${animationShown ? 'animate-translate-x' : ''}`
   const feedbackClass = `text-sm ${feedback.color} animate-fade-in-slide-in`
 
   return (
     <span className="flex items-center">
-      <Span className={addressClass}>
-        {address.substring(0, 6)}...{address.substring(address.length - 4)}
-      </Span>
+      {isAddress(address) ? (
+        <Span className={addressClass}>
+          {address.substring(0, 6)}...{address.substring(address.length - 4)}
+        </Span>
+      ) : (
+        <Span className={aliasClass}>{address}</Span>
+      )}
 
       <span className={copyButtonClass} onClick={onClick}>
         <CopySvg color={copyColor} />

@@ -1,8 +1,8 @@
 import { Address } from '@/components/Address'
 import { Badge } from '@/components/Badge'
-import { Paragraph, Span } from '@/components/Typography'
+import { Paragraph, Span, Typography } from '@/components/Typography'
 import { FC, ReactNode } from 'react'
-import { BuilderProposal } from './hooks/useGetFilteredBuilders'
+import { BuilderProposal } from '@/app/bim/whitelist/hooks/useGetFilteredBuilders'
 import { useRouter } from 'next/navigation'
 
 type WhitelistGridItemProps = BuilderProposal
@@ -23,7 +23,6 @@ export const WhitelistGridItem: FC<WhitelistGridItemProps> = ({
   address,
   joiningDate,
   proposalId,
-  proposalDescription,
 }) => {
   //TODO: pending to check the colors
   const badgeBgColor = {
@@ -35,23 +34,24 @@ export const WhitelistGridItem: FC<WhitelistGridItemProps> = ({
 
   const router = useRouter()
   const Header = (
-    <>
-      <div className="flex-1">
-        <Span className="text-base font-semibold">{name}</Span>
+    <div className="flex flex-row w-full">
+      <div className="flex-1 w-3/5">
+        <Typography tagVariant="label" className="font-semibold">
+          <Address address={address} />
+        </Typography>
         <Paragraph className="text-sm font-light"> Joined {joiningDate}</Paragraph>
       </div>
-      {/* TODO: #22AD5C to be added in the theme */}
-      <button onClick={() => router.push(`/proposals/${proposalId}`)}>
+      <div className="w-2/5 text-end">
+        {/* TODO: #22AD5C to be added in the theme */}
         <Badge status={status} bgColor={badgeBgColor} />
-      </button>
-    </>
+      </div>
+    </div>
   )
   const Body = (
-    <>
+    <div onClick={() => router.push(`/proposals/${proposalId}`)} className="cursor-pointer">
       <Span className="text-base font-semibold">Proposal</Span>
-      <Paragraph className="text-sm font-light py-1.5">{proposalDescription}</Paragraph>
-      <Address address={address} />
-    </>
+      <Span className="text-base line-clamp-1 text-wrap">{name}</Span>
+    </div>
   )
   return <Card header={Header} body={Body} />
 }

@@ -7,7 +7,8 @@ import { useGetBuilders } from '@/app/bim/hooks/useGetBuilders'
 import { Address, isAddressEqual } from 'viem'
 import { useGetProposalsState } from '@/app/bim/whitelist/hooks/useGetProposalsState'
 import { FC } from 'react'
-import { BuilderInfo, invalidProposalStates } from '@/app/bim/types'
+import { BuilderInfo } from '@/app/bim/types'
+import { getMostAdvancedProposal } from '@/app/bim/utils/getMostAdvancedProposal'
 
 type BecomeABuilderButtonProps = {
   address: Address
@@ -28,11 +29,12 @@ const NotFound = () => {
 }
 
 const ProposalNotFound: FC<ProposalNotFoundProps> = ({ builder }) => {
+  const { status, proposals } = builder
   const {
     data: proposalsStateMap,
     isLoading: proposalsStateMapLoading,
     error: proposalsStateMapError,
-  } = useGetProposalsState(builder.proposals)
+  } = useGetProposalsState(proposals)
 
   if (proposalsStateMapLoading) {
     return <LoadingSpinner className={'justify-end w-1/4'} />
@@ -40,11 +42,7 @@ const ProposalNotFound: FC<ProposalNotFoundProps> = ({ builder }) => {
 
   if (proposalsStateMapError) return <div>Error loading proposals state.</div>
 
-  const proposal = builder.proposals.find(({ args: { proposalId } }) => {
-    const state = proposalsStateMap[proposalId.toString()]
-
-    return !invalidProposalStates.includes(state)
-  })
+  const proposal = getMostAdvancedProposal(builder, proposalsStateMap)
 
   if (!proposal) {
     return <NotFound />
@@ -58,7 +56,7 @@ const ProposalNotFound: FC<ProposalNotFoundProps> = ({ builder }) => {
   return {
     'In progress': InProgressComponent,
     Whitelisted: WhitelistedComponent,
-  }[builder.status]
+  }[status]
 }
 
 export const BecomeABuilderButton = ({ address }: BecomeABuilderButtonProps) => {

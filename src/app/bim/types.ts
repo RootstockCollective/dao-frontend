@@ -5,10 +5,10 @@ export const builderStatusOptions = ['Whitelisted', 'In progress'] as const
 
 export type BuilderStatus = (typeof builderStatusOptions)[number]
 
-export interface BuilderInfo {
+export type BuilderInfo = {
   address: string
   status: BuilderStatus
   proposals: CreateBuilderProposalEventLog[]
 }
 
-export const invalidProposalStates = [ProposalState.Canceled, ProposalState.Defeated, ProposalState.Expired]
+export type ProposalsStateMap = Record<string, ProposalState>

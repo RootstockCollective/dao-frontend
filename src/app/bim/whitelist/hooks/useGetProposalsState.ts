@@ -5,8 +5,7 @@ import { Address } from 'viem'
 import { CreateBuilderProposalEventLog } from '@/app/proposals/hooks/useFetchLatestProposals'
 import { useMemo } from 'react'
 import { ProposalState } from '@/shared/types'
-
-type ProposalsStateMap = Record<string, ProposalState>
+import { ProposalsStateMap } from '@/app/bim/types'
 
 export const useGetProposalsState = (proposals: CreateBuilderProposalEventLog[]) => {
   const contractCalls = proposals.map(({ args: { proposalId } }) => {

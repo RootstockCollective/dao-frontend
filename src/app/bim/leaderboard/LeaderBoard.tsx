@@ -2,7 +2,7 @@ import { LoadingSpinner } from '@/components/LoadingSpinner'
 import { Table } from '@/components/Table'
 import { Label, Paragraph, Typography } from '@/components/Typography'
 import { formatCurrency } from '@/lib/utils'
-import { Address as AddressComponent } from '@/components/Address'
+import { Address } from '@/components/Address'
 import { PricesContextProvider } from '@/shared/context/PricesContext'
 import { useGetBuildersRewards } from '@/app/bim/leaderboard/hooks/useGetBuildersRewards'
 import { memo } from 'react'
@@ -63,7 +63,7 @@ const isAddress = (builderName: string) => builderName.startsWith('0x') && build
 
 const BuilderNameCell = ({ builderName }: { builderName: string }) => {
   return isAddress(builderName) ? (
-    <AddressComponent address={builderName} />
+    <Address address={builderName} />
   ) : (
     <Typography tagVariant="label" className="font-semibold text-sm">
       {builderName}

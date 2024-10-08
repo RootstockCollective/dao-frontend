@@ -1,9 +1,10 @@
 import { useEffect, useMemo, useState } from 'react'
-import { BuilderStatus, invalidProposalStates } from '@/app/bim/types'
+import { BuilderStatus } from '@/app/bim/types'
 import { BuilderStatusFilter } from '@/app/bim/whitelist/WhitelistContext'
 import { useGetBuilders } from '@/app/bim/hooks/useGetBuilders'
 import { DateTime } from 'luxon'
 import { useGetProposalsState } from '@/app/bim/whitelist/hooks/useGetProposalsState'
+import { getMostAdvancedProposal } from '@/app/bim/utils/getMostAdvancedProposal'
 
 type FetchWhitelistedBuildersFilter = {
   builderName: string
@@ -35,12 +36,9 @@ export const useGetFilteredBuilders = ({
   } = useGetProposalsState(buildersProposals)
 
   const filteredBuilders = useMemo(() => {
-    return builders.reduce<BuilderProposal[]>((acc, { address, proposals, status }) => {
-      const proposal = proposals.find(({ args: { proposalId } }) => {
-        const state = proposalsStateMap[proposalId.toString()]
-
-        return !invalidProposalStates.includes(state)
-      })
+    return builders.reduce<BuilderProposal[]>((acc, builder) => {
+      const { status, address } = builder
+      const proposal = getMostAdvancedProposal(builder, proposalsStateMap)
 
       if (proposal) {
         const {
