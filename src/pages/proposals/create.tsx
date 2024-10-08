@@ -27,13 +27,12 @@ import { formatCurrency } from '@/lib/utils'
 import { rbtcIconSrc } from '@/shared/rbtcIconSrc'
 import { TX_MESSAGES } from '@/shared/txMessages'
 import { zodResolver } from '@hookform/resolvers/zod'
-import { isAddress, isValidChecksumAddress, toChecksumAddress } from '@/lib/addresses'
 import Image from 'next/image'
 import { useRouter } from 'next/navigation'
 import { useEffect, useMemo, useState } from 'react'
 import { useForm } from 'react-hook-form'
 import { GoRocket } from 'react-icons/go'
-import { Address, zeroAddress } from 'viem'
+import { Address, getAddress, isAddress, zeroAddress } from 'viem'
 import { z } from 'zod'
 
 const rifMinimumAmount = ENV === 'mainnet' ? 10 : 1
@@ -54,7 +53,7 @@ const FormSchema = z
       .string()
       .refine(value => isAddress(value), 'Please enter a valid address')
       .refine(
-        value => isValidChecksumAddress(value, chainId) || value === value.toLowerCase(),
+        value => value !== getAddress(value, chainId) || value === value.toLowerCase(),
         'Invalid checksum',
       ),
     tokenAddress: z.string().length(42),
@@ -249,7 +248,7 @@ export default function CreateProposal() {
                             <span
                               className="text-white underline cursor-pointer"
                               onClick={() => {
-                                setValue('toAddress', toChecksumAddress(field.value, chainId))
+                                setValue('toAddress', getAddress(field.value, chainId))
                                 trigger('toAddress')
                               }}
                             >
