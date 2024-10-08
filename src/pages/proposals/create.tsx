@@ -38,6 +38,7 @@ import { z } from 'zod'
 
 const rifMinimumAmount = ENV === 'mainnet' ? 10 : 1
 const rbtcMinimumAmount = ENV === 'mainnet' ? 0.0001 : 0.000001
+const chainId = ENV === 'mainnet' ? 30 : 31
 
 const FormSchema = z
   .object({
@@ -52,7 +53,10 @@ const FormSchema = z
     toAddress: z
       .string()
       .refine(value => isAddress(value), 'Please enter a valid address')
-      .refine(value => isValidChecksumAddress(value) || value === value.toLowerCase(), 'Invalid checksum'),
+      .refine(
+        value => isValidChecksumAddress(value, chainId) || value === value.toLowerCase(),
+        'Invalid checksum',
+      ),
     tokenAddress: z.string().length(42),
     amount: z.coerce
       .number({ invalid_type_error: 'Required field' })
@@ -245,7 +249,7 @@ export default function CreateProposal() {
                             <span
                               className="text-white underline cursor-pointer"
                               onClick={() => {
-                                setValue('toAddress', toChecksumAddress(field.value))
+                                setValue('toAddress', toChecksumAddress(field.value, chainId))
                                 trigger('toAddress')
                               }}
                             >
