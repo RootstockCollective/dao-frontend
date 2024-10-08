@@ -27,17 +27,17 @@ import { formatCurrency } from '@/lib/utils'
 import { rbtcIconSrc } from '@/shared/rbtcIconSrc'
 import { TX_MESSAGES } from '@/shared/txMessages'
 import { zodResolver } from '@hookform/resolvers/zod'
+import { isAddress, isValidChecksumAddress, toChecksumAddress } from '@rsksmart/rsk-utils'
 import Image from 'next/image'
 import { useRouter } from 'next/navigation'
 import { useEffect, useMemo, useState } from 'react'
 import { useForm } from 'react-hook-form'
 import { GoRocket } from 'react-icons/go'
-import { Address, getAddress, isAddress, zeroAddress } from 'viem'
+import { Address, zeroAddress } from 'viem'
 import { z } from 'zod'
 
 const rifMinimumAmount = ENV === 'mainnet' ? 10 : 1
 const rbtcMinimumAmount = ENV === 'mainnet' ? 0.0001 : 0.000001
-const chainId = ENV === 'mainnet' ? 30 : 31
 
 const FormSchema = z
   .object({
@@ -52,10 +52,7 @@ const FormSchema = z
     toAddress: z
       .string()
       .refine(value => isAddress(value), 'Please enter a valid address')
-      .refine(
-        value => value !== getAddress(value, chainId) || value === value.toLowerCase(),
-        'Invalid checksum',
-      ),
+      .refine(value => isValidChecksumAddress(value) || value === value.toLowerCase(), 'Invalid checksum'),
     tokenAddress: z.string().length(42),
     amount: z.coerce
       .number({ invalid_type_error: 'Required field' })
@@ -86,7 +83,6 @@ export default function CreateProposal() {
     defaultValues: {
       proposalName: '',
       description: '',
-      //@ts-ignore: a default value of empty is okay at the start
       toAddress: '',
       tokenAddress: tokenContracts.RIF,
       amount: undefined,
@@ -249,7 +245,7 @@ export default function CreateProposal() {
                             <span
                               className="text-white underline cursor-pointer"
                               onClick={() => {
-                                setValue('toAddress', getAddress(field.value, chainId))
+                                setValue('toAddress', toChecksumAddress(field.value))
                                 trigger('toAddress')
                               }}
                             >

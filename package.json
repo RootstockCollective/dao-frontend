@@ -20,6 +20,7 @@
     "@radix-ui/react-label": "^2.1.0",
     "@radix-ui/react-select": "^2.1.1",
     "@radix-ui/react-slot": "^1.1.0",
+    "@rsksmart/rsk-utils": "^1.1.0",
     "@tanstack/react-query": "^5.48.0",
     "axios": "^1.7.4",
     "class-variance-authority": "^0.7.0",
