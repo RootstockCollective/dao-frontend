@@ -86,6 +86,7 @@ export default function CreateProposal() {
     defaultValues: {
       proposalName: '',
       description: '',
+      //@ts-ignore: a default value of empty is okay at the start
       toAddress: '',
       tokenAddress: tokenContracts.RIF,
       amount: undefined,
