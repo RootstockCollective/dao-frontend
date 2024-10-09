@@ -116,7 +116,7 @@ export const StakingProvider: FC<Props> = ({
       }
     }
     const stakeAmount = new Decimal(stakeData.amount || 0)
-    const amountToReceive = stakeAmount.times(sendTokenPrice).div(receiveTokenPrice)
+    const amountToReceive = stakeAmount.mul(sendTokenPrice).div(receiveTokenPrice)
     const amountToReceiveConvertedToCurrency = amountToReceive.mul(receiveTokenPrice)
     return {
       amountToReceive: amountToReceive.toString(),
