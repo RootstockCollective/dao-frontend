@@ -129,4 +129,3 @@ This can be removed in the future.
 ### End-to-end testing (e2e)
 
 This workflow uses https://github.com/cypress-io/github-action
-
