@@ -1,8 +1,9 @@
 name: Deploy to Amazon ECS (QA)
 
 on:
-  pull_request_review:
-    types: [submitted]
+  workflow_dispatch: # Manually triggered from GitHub Actions tab
+  pull_request:
+    types: [labeled] # Triggered by a label in a PR
 
 env:
   AWS_REGION: us-east-1
@@ -18,7 +19,8 @@ jobs:
   deploy:
     name: Deploy
     runs-on: ubuntu-latest
-    if: github.event.review.state == 'approved'
+    if: |
+      github.event_name == 'workflow_dispatch' || github.event.label.name == 'deploy to QA'
     environment:
       name: QA
     permissions:
