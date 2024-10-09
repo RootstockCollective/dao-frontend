@@ -17,7 +17,7 @@ export const useGetTokenProjectedReward = (rewardToken: Address) => {
 
   const length = wlBuildersLength ?? 0n
 
-  const addressToken = tokens.find(({ contractAddress }) =>
+  const token = tokens.find(({ contractAddress }) =>
     isAddressEqual(contractAddress as Address, rewardToken),
   ) || {
     name: '',
@@ -32,8 +32,8 @@ export const useGetTokenProjectedReward = (rewardToken: Address) => {
 
   return {
     data: {
-      ...addressToken,
-      projectedReward: !length ? 0n : BigInt(addressToken.balance) / length,
+      ...token,
+      projectedReward: !length ? 0n : BigInt(token.balance) / length,
     },
     isLoading,
     error,

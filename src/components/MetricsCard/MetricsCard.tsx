@@ -5,6 +5,7 @@ import { Address } from 'viem'
 import { BoxIcon } from 'lucide-react'
 import { Span } from '../Typography'
 import { EXPLORER_URL } from '@/lib/constants'
+import { withSpinner } from '../LoadingSpinner/LoadingSpinner'
 
 interface MetricsCardProps {
   /**
@@ -77,3 +78,5 @@ export const MetricsCard: FC<MetricsCardProps> = ({
     </div>
   )
 }
+
+export const MetricsCardWithSpinner = withSpinner(MetricsCard)

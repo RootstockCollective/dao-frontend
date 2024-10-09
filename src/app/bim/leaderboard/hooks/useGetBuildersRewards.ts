@@ -5,6 +5,7 @@ import { useGetTokenProjectedReward } from '@/app/bim/hooks/useGetTokenProjected
 import { Address, isAddressEqual } from 'viem'
 import { getLastRewardValid } from '@/app/bim/utils/getLastRewardValid'
 import { useGetWhitelistedBuilders } from '@/app/bim/hooks/useGetWhitelistedBuilders'
+import { getShare } from '@/app/bim/utils/getShare'
 
 export const useGetBuildersRewards = (rewardToken: Address, currency = 'USD', currencySymbol = '$') => {
   const {
@@ -18,9 +19,13 @@ export const useGetBuildersRewards = (rewardToken: Address, currency = 'USD', cu
     isLoading: logsLoading,
     error: logsError,
   } = useGetRewardDistributedLogs(rewardToken)
+
   const { prices } = usePricesContext()
 
   const { data: token, isLoading: tokenLoading, error: tokenError } = useGetTokenProjectedReward(rewardToken)
+  const tokenSymbol = token.symbol ?? ''
+  const tokenBalance = BigInt(token.balance)
+
   const projectedRewardInHuman = Number(formatBalanceToHuman(token.projectedReward))
 
   const isLoading = whitelistedBuildersLoading || logsLoading || tokenLoading
@@ -35,33 +40,31 @@ export const useGetBuildersRewards = (rewardToken: Address, currency = 'USD', cu
       const lastReward = getLastRewardValid(builderEvents)
       const lastRewardInHuman = Number(formatBalanceToHuman(lastReward))
 
-      const price = prices[token.symbol]?.price ?? 0
+      const price = prices[tokenSymbol]?.price ?? 0
 
       return {
         address: builder,
         lastEpochReward: {
           onChain: {
             value: lastRewardInHuman,
-            symbol: token.symbol,
+            symbol: tokenSymbol,
           },
           fiat: {
             value: price * lastRewardInHuman,
             currency,
-            symbol: currencySymbol,
           },
         },
         projectedReward: {
           onChain: {
             value: projectedRewardInHuman,
-            symbol: token.symbol,
+            symbol: tokenSymbol,
           },
           fiat: {
             value: price * projectedRewardInHuman,
             currency,
-            symbol: currencySymbol,
           },
         },
-        performance: !lastRewardInHuman ? 0 : projectedRewardInHuman / lastRewardInHuman,
+        share: `${getShare(token)}%`,
       }
     }),
     isLoading,

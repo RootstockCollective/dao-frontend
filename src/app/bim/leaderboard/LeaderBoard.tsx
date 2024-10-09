@@ -13,7 +13,8 @@ type Currency = {
   symbol?: string
 }
 
-type FiatCurrency = Currency & {
+type FiatCurrency = {
+  value: number
   currency: string
 }
 
@@ -29,7 +30,7 @@ type RewardCellProps = {
 export const RewardCell = ({
   reward: {
     onChain: { value: onChainValue, symbol: onChainSymbol },
-    fiat: { value: fiatValue, symbol: fiatSymbol, currency: fiatCurrency },
+    fiat: { value: fiatValue, currency },
   },
 }: RewardCellProps) => (
   <>
@@ -38,7 +39,7 @@ export const RewardCell = ({
     </Label>
     <br />
     <Label className="font-normal text-sm text-white text-opacity-60">
-      {`= ${fiatSymbol} ${fiatCurrency} ${formatCurrency(fiatValue)}`}
+      {`= ${currency} ${formatCurrency(fiatValue, currency)}`}
     </Label>
   </>
 )
@@ -76,16 +77,16 @@ const LeaderBoardTable = () => {
   const { data: rifData, isLoading: rifLoading } = useGetBuildersRewards(tokenContracts.RIF)
   const data = rifData.concat(rbtcData)
 
-  const tableData = data.map(({ address, lastEpochReward, projectedReward, performance }) => ({
+  const tableData = data.map(({ address, lastEpochReward, projectedReward, share }) => ({
     'Builder name': <BuilderNameCell builderName={address} />,
     'Last Epoch Reward': <LazyRewardCell reward={lastEpochReward} />,
     'Projected Reward': <LazyRewardCell reward={projectedReward} />,
 
     /*
-     * TODO: performance appearance should change according to the previous performance,
+     * TODO: share appearance should change according to the previous share,
      * but for the MVP it will always be the same
      */
-    'Performance %': <Label className="font-semibold text-sm">{performance}</Label>,
+    'Share %': <Label className="font-semibold text-sm">{share}</Label>,
   }))
 
   const isLoading = rbtcLoading || rifLoading
