@@ -1,6 +1,6 @@
 import { expect, describe, it, vi } from 'vitest'
 import { render, screen, fireEvent } from '@testing-library/react'
-import { ActionHookToUse, StakingProvider, useStakingContext } from './StakingContext'
+import { StakingProvider, useStakingContext } from './StakingContext'
 import { StakingToken } from './types'
 
 const TestComponent = ({ stakeAmount, id }: { stakeAmount: string; id: number }) => {
@@ -35,6 +35,7 @@ describe('StakingProvider', () => {
   it('Amount to receive is a whole number if the stake amount is also a whole number and the token prices are equal', () => {
     const failingCases: string[] = []
 
+    // running the test 500 times
     for (let i = 0; i < 500; i++) {
       // stake amount is a whole number
       const stakeAmount = i.toString()
@@ -54,7 +55,8 @@ describe('StakingProvider', () => {
       fireEvent.click(screen.getByTestId(`setAmountButton-${i}`))
       const amountToReceive = screen.getByTestId(`amountToReceive-${i}`)
       // if amount to receive is not a whole number
-      if (amountToReceive.textContent?.includes('.')) {
+      // or if the amount to receive is not equal to the stake amount
+      if (amountToReceive.textContent?.includes('.') || stakeAmount !== amountToReceive.textContent) {
         failingCases.push(price)
       }
     }
