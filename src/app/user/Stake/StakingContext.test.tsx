@@ -33,9 +33,9 @@ const actionName = 'STAKE'
 
 describe('StakingProvider', () => {
   it('Amount to receive is a whole number if the stake amount is also a whole number and the token prices are equal', () => {
-    const failingCases: string[] = []
+    let allTestsPass = true
 
-    // running the test 500 times
+    // running the test 500 times with different stake amounts and token prices
     for (let i = 0; i < 500; i++) {
       // stake amount is a whole number
       const stakeAmount = i.toString()
@@ -57,9 +57,10 @@ describe('StakingProvider', () => {
       // if amount to receive is not a whole number
       // or if the amount to receive is not equal to the stake amount
       if (amountToReceive.textContent?.includes('.') || stakeAmount !== amountToReceive.textContent) {
-        failingCases.push(price)
+        allTestsPass = false
+        break
       }
     }
-    expect(failingCases.length).toBe(0)
+    expect(allTestsPass).toBe(true)
   })
 })
