@@ -1,4 +1,5 @@
 import { createContext, FC, ReactNode, useCallback, useContext, useMemo, useState } from 'react'
+import Decimal from 'decimal.js'
 import { useBalancesContext } from '@/app/user/Balances/context/BalancesContext'
 import { GetPricesResult, TokenBalanceRecord } from '@/app/user/types'
 import { StakingToken } from '@/app/user/Stake/types'
@@ -106,12 +107,20 @@ export const StakingProvider: FC<Props> = ({
   const [stakeTxHash, setStakeTxHash] = useState('')
 
   const amountDataToReceive = useMemo(() => {
-    const amountToReceive =
-      (Number(stakeData.amount) * Number(tokenToSend.price)) / Number(tokenToReceive.price)
-    const amountToReceiveConvertedToCurrency = amountToReceive * Number(tokenToReceive.price) || 0
+    const receiveTokenPrice = new Decimal(tokenToReceive.price || 0)
+    const sendTokenPrice = new Decimal(tokenToSend.price || 0)
+    if (receiveTokenPrice.eq(0) || sendTokenPrice.eq(0)) {
+      return {
+        amountToReceive: '0',
+        amountToReceiveConvertedToCurrency: 'USD 0',
+      }
+    }
+    const stakeAmount = new Decimal(stakeData.amount || 0)
+    const amountToReceive = stakeAmount.mul(sendTokenPrice).div(receiveTokenPrice)
+    const amountToReceiveConvertedToCurrency = amountToReceive.mul(receiveTokenPrice)
     return {
       amountToReceive: amountToReceive.toString(),
-      amountToReceiveConvertedToCurrency: `USD ${formatCurrency(amountToReceiveConvertedToCurrency)}`,
+      amountToReceiveConvertedToCurrency: `USD ${formatCurrency(amountToReceiveConvertedToCurrency.toNumber())}`,
     }
   }, [stakeData.amount, tokenToSend.price, tokenToReceive.price])
 
@@ -119,7 +128,7 @@ export const StakingProvider: FC<Props> = ({
     () => ({
       amount: toFixed(stakeData.amount),
       amountConvertedToCurrency:
-        'USD ' + formatCurrency(Number(tokenToSend.price) * Number(stakeData.amount) ?? 0),
+        'USD ' + formatCurrency(Number(tokenToSend.price) * Number(stakeData.amount) || 0),
       balance: tokenToSend.balance,
       tokenSymbol: tokenToSend.symbol,
     }),
