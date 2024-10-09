@@ -7,11 +7,11 @@ on:
 
 env:
   AWS_REGION: us-east-1
-  ECR_REPOSITORY: dao-frontend-dev
-  ECS_CLUSTER: dao-frontend
-  ECS_SERVICE: dao-frontend-dev
-  ECS_TASK_DEFINITION: dao-frontend-dev
-  CONTAINER_NAME: dao-frontend-dev
+  ECR_REPOSITORY: rscoll-dev-dao-dev
+  ECS_CLUSTER: rscoll-dev
+  ECS_SERVICE: rscoll-dev-dao-dev
+  ECS_TASK_DEFINITION: rscoll-dev-dao-dev
+  CONTAINER_NAME: rscoll-dev-dao-dev
 
   PROFILE: dev
 
