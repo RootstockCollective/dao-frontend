@@ -13,7 +13,7 @@ env:
   ECS_TASK_DEFINITION: rscoll-dev-dao-staging
   CONTAINER_NAME: rscoll-dev-dao-staging
 
-  PROFILE: XXX FIXME
+  PROFILE: qa
 
 jobs:
   deploy:
