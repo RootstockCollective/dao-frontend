@@ -28,6 +28,8 @@ RUN if [ "$arg_env" = "testnet" ]; then \
       mv .env.testnet .env.local; \
     elif [ "$arg_env" = "dev" ]; then \
       mv .env.dev .env.local; \
+    elif [ "$arg_env" = "qa" ]; then \
+          mv .env.qa .env.local; \
     elif [ "$arg_env" = "mainnet" ]; then \
       mv .env.prod .env.local; \
     fi

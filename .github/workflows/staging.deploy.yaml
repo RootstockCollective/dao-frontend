@@ -1,4 +1,4 @@
-name: Deploy to Amazon ECS (dev)
+name: Deploy to Amazon ECS (staging)
 
 on:
   push:
@@ -7,20 +7,20 @@ on:
 
 env:
   AWS_REGION: us-east-1
-  ECR_REPOSITORY: rscoll-dev-dao-dev
+  ECR_REPOSITORY: rscoll-dev-dao-staging
   ECS_CLUSTER: rscoll-dev
-  ECS_SERVICE: rscoll-dev-dao-dev
-  ECS_TASK_DEFINITION: rscoll-dev-dao-dev
-  CONTAINER_NAME: rscoll-dev-dao-dev
+  ECS_SERVICE: rscoll-dev-dao-staging
+  ECS_TASK_DEFINITION: rscoll-dev-dao-staging
+  CONTAINER_NAME: rscoll-dev-dao-staging
 
-  PROFILE: dev
+  PROFILE: qa
 
 jobs:
   deploy:
     name: Deploy
     runs-on: ubuntu-latest
     environment:
-      name: dev
+      name: staging
 
     permissions:
       id-token: write
@@ -33,7 +33,7 @@ jobs:
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v4
         with:
-          role-to-assume: ${{ secrets.AWS_LOGIN_DEV_ROLE_ARN }}
+          role-to-assume: ${{ secrets.AWS_LOGIN_STAGING_ROLE_ARN }}
           aws-region: ${{ env.AWS_REGION }}
 
       - name: Login to Amazon ECR
