@@ -8,7 +8,7 @@ export const useFetchLatestProposals = () => {
   const { data } = useQuery({
     queryFn: fetchProposalsCreatedCached,
     queryKey: ['proposalsCreated'],
-    refetchInterval: 2000,
+    refetchInterval: 10000,
   })
 
   const latestProposals = useMemo(() => {
