@@ -21,8 +21,8 @@ export const config = createConfig({
     [rootstock.id]: http(),
     [rootstockTestnet.id]: http(),
     [rskRegtest.id]: http(),
-    connectors: [injected()],
   },
+  connectors: [injected()],
 })
 
 export const supportedChainId = {

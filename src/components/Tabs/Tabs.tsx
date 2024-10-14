@@ -3,7 +3,8 @@
 import * as TabsPrimitive from '@radix-ui/react-tabs'
 
 import { cn } from '@/lib/utils'
-import { ComponentPropsWithoutRef, ElementRef, forwardRef } from 'react'
+import { ComponentPropsWithoutRef, ElementRef, forwardRef, ReactNode } from 'react'
+import { Typography } from '@/components/Typography'
 
 const Tabs = TabsPrimitive.Root
 
@@ -30,4 +31,15 @@ TabsTrigger.displayName = TabsPrimitive.Trigger.displayName
 
 const TabsContent = TabsPrimitive.Content
 
-export { Tabs, TabsList, TabsTrigger, TabsContent }
+type TabTitleProps = {
+  children: ReactNode
+}
+
+// TODO: To be aligned with the design once we have access to dev mode
+const TabTitle = ({ children }: TabTitleProps) => (
+  <Typography tagVariant="h2" fontFamily="kk-topo">
+    {children}
+  </Typography>
+)
+
+export { Tabs, TabsList, TabsTrigger, TabsContent, TabTitle }

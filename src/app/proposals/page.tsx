@@ -1,7 +1,7 @@
 'use client'
 import { HeaderSection } from '@/app/proposals/HeaderSection'
 import { useFetchAllProposals } from '@/app/proposals/hooks/useFetchLatestProposals'
-import { LatestProposalsTable } from '@/app/proposals/LatestProposalsTable'
+import { LatestProposalsTableMemoized } from '@/app/proposals/LatestProposalsTable'
 import { MainContainer } from '@/components/MainContainer/MainContainer'
 import { MetricsCard } from '@/components/MetricsCard'
 import { Popover } from '@/components/Popover'
@@ -11,31 +11,37 @@ import { toFixed } from '@/lib/utils'
 import { useRouter } from 'next/navigation'
 import { FaRegQuestionCircle } from 'react-icons/fa'
 import { useVotingPower } from './hooks/useVotingPower'
-import React from 'react'
+import { useMemo } from 'react'
 
 export default function Proposals() {
   const { votingPower, canCreateProposal, threshold } = useVotingPower()
   const { latestProposals } = useFetchAllProposals()
 
+  const memoizedProposals = useMemo(() => latestProposals, [latestProposals.length])
   return (
     <MainContainer>
       <TxStatusMessage messageType="proposal" />
       <HeaderSection createProposalDisabled={!canCreateProposal} threshold={threshold} />
       <div className="grid grid-rows-1 gap-[32px] mb-[100px]">
-        <MetricsCard borderless title={<VotingPowerPopover />} amount={toFixed(votingPower)} />
+        <div>
+          <VotingPowerPopover />
+          <Paragraph className="text-[48px] text-primary tracking-[-0.96px]" fontFamily="kk-topo">
+            {toFixed(votingPower)}
+          </Paragraph>
+        </div>
         <div className="flex flex-row gap-x-6">
           {/*<MetricsCard title="Votes" amount="-" />*/}
           {/* @TODO ask product/design what this is */}
           {/* <MetricsCard title="Total voting power delegated" amount="230" /> */}
-          <div className="w-52">
-            <MetricsCard title="Proposals created" amount={latestProposals.length.toString()} />
+          <div className="w-[272px]">
+            <MetricsCard title="Proposals created" amount={latestProposals.length.toString()} borderless />
           </div>
         </div>
         {/* <div className="grid grid-cols-2 gap-x-6">
           <DelegatedTable />
           <ReceivedDelegationTable />
         </div> */}
-        <LatestProposalsTable latestProposals={latestProposals} />
+        <LatestProposalsTableMemoized latestProposals={memoizedProposals} />
       </div>
     </MainContainer>
   )
@@ -66,8 +72,8 @@ const PopoverContent = () => {
 const VotingPowerPopover = () => (
   <Popover content={<PopoverContent />}>
     <button className="flex flex-row">
-      <Paragraph>My voting power</Paragraph>
-      <FaRegQuestionCircle className="ml-1" />
+      <Paragraph className="text[16px] font-[700]">My Voting Power</Paragraph>
+      <FaRegQuestionCircle className="ml-1 self-center" />
     </button>
   </Popover>
 )

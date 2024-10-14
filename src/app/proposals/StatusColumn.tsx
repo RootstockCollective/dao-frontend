@@ -1,6 +1,6 @@
-import { useVoteOnProposal } from '@/shared/hooks/useVoteOnProposal'
 import { Status } from '@/components/Status'
 import { StatusSeverity } from '@/components/Status/types'
+import { useProposalContext } from '@/app/proposals/ProposalsContext'
 
 const StatusByProposalState = {
   Pending: 'in-progress',
@@ -14,8 +14,8 @@ const StatusByProposalState = {
   undefined: null,
 }
 
-export const StatusColumn = ({ proposalId }: { proposalId: string }) => {
-  const { proposalStateHuman } = useVoteOnProposal(proposalId)
+export const StatusColumn = () => {
+  const { proposalStateHuman } = useProposalContext()
   const statusMap = StatusByProposalState[
     proposalStateHuman as keyof typeof StatusByProposalState
   ] as StatusSeverity

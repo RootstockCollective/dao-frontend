@@ -226,25 +226,30 @@ const PageWithProposal = (proposal: ParsedProposal) => {
                 <Popover
                   content={
                     <div className="text-[12px] font-bold mb-1">
-                      <p>{cannotCastVoteReason}</p>
+                      <p data-testid="ParagraphCannotCastVote">{cannotCastVoteReason}</p>
                     </div>
                   }
                   size="small"
                   trigger="hover"
                 >
-                  <Button disabled>Vote on chain</Button>
+                  <Button disabled data-testid="VoteOnChain">
+                    Vote on chain
+                  </Button>
                 </Popover>
               ) : (
-                <Button onClick={openModal}>Vote on chain</Button>
+                <Button onClick={openModal} data-testid="VoteOnChain">
+                  Vote on chain
+                </Button>
               )}
             </>
           )}
-          {proposalNeedsQueuing && proposalState === ProposalState.Succeeded && (
+          {proposalNeedsQueuing && proposalStateHuman === 'Succeeded' && (
             <Button
               onClick={handleQueuingProposal}
               className="mt-2"
               disabled={isQueuing || isTxHashFromQueueLoading}
               loading={isQueuing}
+              data-testid="PutOnQueue"
             >
               Put on Queue
             </Button>
@@ -270,6 +275,7 @@ const PageWithProposal = (proposal: ParsedProposal) => {
                 onClick={handleVotingExecution}
                 className="mt-2"
                 disabled={!canProposalBeExecuted || isExecuting}
+                data-testid="Execute"
               >
                 Execute
               </Button>
@@ -297,7 +303,7 @@ const PageWithProposal = (proposal: ParsedProposal) => {
           <Header variant="h1" className="text-[24px] mb-6">
             Description
           </Header>
-          <Paragraph variant="normal" className="text-[16px] text-justify font-light">
+          <Paragraph variant="normal" className="text-[16px] text-justify font-light whitespace-pre-wrap">
             {description}
           </Paragraph>
         </div>

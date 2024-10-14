@@ -99,11 +99,12 @@ export const VoteProposalModal: FC<Props> = ({
               className="w-1/3 border border-white bg-st-success bg-opacity-10"
               textClassName="text-white"
               onClick={() => setVoting(null)}
+              data-testid="For"
             >
               For
             </Button>
           ) : (
-            <Button variant="secondary" className="w-1/3" onClick={() => setVoting('for')}>
+            <Button variant="secondary" className="w-1/3" onClick={() => setVoting('for')} data-testid="For">
               For
             </Button>
           )}
@@ -114,6 +115,7 @@ export const VoteProposalModal: FC<Props> = ({
               className="w-1/3 border border-white bg-st-error bg-opacity-10"
               textClassName="text-white"
               onClick={() => setVoting(null)}
+              data-testid="Against"
             >
               Against
             </Button>
@@ -123,6 +125,7 @@ export const VoteProposalModal: FC<Props> = ({
               className="w-1/3 border-st-error"
               textClassName="text-st-error"
               onClick={() => setVoting('against')}
+              data-testid="Against"
             >
               Against
             </Button>
@@ -134,6 +137,7 @@ export const VoteProposalModal: FC<Props> = ({
               className="w-1/3 border border-white bg-gray-600"
               textClassName="text-white"
               onClick={() => setVoting(null)}
+              data-testid="Abstain"
             >
               Abstain
             </Button>
@@ -143,6 +147,7 @@ export const VoteProposalModal: FC<Props> = ({
               className="w-1/3 border-gray-600"
               textClassName="text-gray-600"
               onClick={() => setVoting('abstain')}
+              data-testid="Abstain"
             >
               Abstain
             </Button>

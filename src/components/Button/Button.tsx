@@ -3,6 +3,7 @@ import { cn } from '@/lib/utils'
 import { FC, JSX, MouseEvent, ReactNode } from 'react'
 import { FaSpinner } from 'react-icons/fa6'
 import { Span } from '../Typography'
+import { DivWithGradient } from '@/components/Button/DivWithGradient'
 
 export const BUTTON_DEFAULT_CLASSES = 'px-[24px] py-[12px] flex gap-x-1 items-center relative'
 
@@ -19,6 +20,7 @@ interface Props {
   buttonProps?: JSX.IntrinsicElements['button'] & { 'data-testid'?: string }
   loading?: boolean
   startIconClasses?: string
+  'data-testid'?: string
 }
 
 const DEFAULT_DATA_TESTID = 'Button'
@@ -36,6 +38,7 @@ export const Button: FC<Props> = ({
   buttonProps = {},
   loading = false,
   startIconClasses,
+  'data-testid': dataTestId,
 }) => {
   startIcon = loading ? <FaSpinner className="animate-spin" /> : startIcon
   const classes = cn({
@@ -70,12 +73,13 @@ export const Button: FC<Props> = ({
       className={classes}
       onClick={e => !disabled && onClick?.(e)}
       {...buttonProps}
-      data-testid={`${DEFAULT_DATA_TESTID}${buttonProps['data-testid'] || ''}${buttonProps.id || ''}`}
+      data-testid={`${DEFAULT_DATA_TESTID}${dataTestId || buttonProps['data-testid'] || ''}${buttonProps.id || ''}`}
     >
       <span className={textClasses}>
         <span className={cn('absolute left-[-20px] top-[4px]', startIconClasses)}>{startIcon}</span>
         <Span>{text}</Span>
       </span>
+      {variant === 'sidebar-active' && <DivWithGradient />}
     </button>
   )
 }

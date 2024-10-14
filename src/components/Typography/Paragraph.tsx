@@ -8,6 +8,7 @@ interface Props {
   size?: SizeVariants
   className?: string
   fontFamily?: 'sora' | 'kk-topo' | 'rootstock-sans'
+  'data-testid'?: string
 }
 
 const DEFAULT_CLASSES = 'text-[1.4rem]'
@@ -32,11 +33,13 @@ export const Paragraph: FC<Props> = ({
   className,
   children,
   fontFamily = 'rootstock-sans',
+  'data-testid': dataTestId,
 }) => (
   <Typography
     tagVariant="p"
     className={cn(DEFAULT_CLASSES, classesByVariant[variant], classesBySize[size], className)}
     fontFamily={fontFamily}
+    data-testid={`Paragraph${dataTestId || ''}`}
   >
     {children}
   </Typography>

@@ -3,7 +3,7 @@ import { GovernorAbi } from '@/lib/abis/Governor'
 import { GovernorAddress } from '@/lib/contracts'
 import { Address } from 'viem'
 import { useAccount, useReadContract, useWriteContract } from 'wagmi'
-import { ProposalState } from '@/shared/types'
+import { useProposalState } from '@/shared/hooks/useProposalState'
 
 const DEFAULT_DAO = {
   address: GovernorAddress as Address,
@@ -16,18 +16,11 @@ const VOTES_MAP: Record<Vote, number> = {
   abstain: 2,
 }
 
-export const useVoteOnProposal = (proposalId: string) => {
+export const useVoteOnProposal = (proposalId: string, shouldRefetch = true) => {
   const { address } = useAccount()
 
   // First read the proposal to see if it's active
-  const { data: proposalState } = useReadContract({
-    ...DEFAULT_DAO,
-    functionName: 'state',
-    args: [BigInt(proposalId)],
-    query: {
-      refetchInterval: 5000,
-    },
-  })
+  const { proposalState, proposalStateHuman } = useProposalState(proposalId)
 
   const isProposalActive = proposalState === 1
 
@@ -37,7 +30,7 @@ export const useVoteOnProposal = (proposalId: string) => {
     functionName: 'hasVoted',
     args: [BigInt(proposalId), address as Address],
     query: {
-      refetchInterval: 5000,
+      ...(shouldRefetch && { refetchInterval: 5000 }),
     },
   })
 
@@ -62,7 +55,7 @@ export const useVoteOnProposal = (proposalId: string) => {
     isProposalActive,
     didUserVoteAlready: !!hasVoted,
     proposalState,
-    proposalStateHuman: proposalState !== undefined ? ProposalState[proposalState] : '',
+    proposalStateHuman,
     isVoting,
   }
 }

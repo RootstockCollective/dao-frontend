@@ -117,6 +117,13 @@ export const Input: FC<Props> = ({
           </Paragraph>
         </div>
       )}
+      {hint && !errorMessage && (
+        <div className="text-st-hint mt-[5px]">
+          <Paragraph variant="light" className="text-[14px]">
+            {hint}
+          </Paragraph>
+        </div>
+      )}
       {errorMessage && (
         <div className="mt-[5px]">
           <Paragraph variant="error" className="text-[14px]">

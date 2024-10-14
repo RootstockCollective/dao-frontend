@@ -11,9 +11,8 @@ import { useAccount, useDisconnect } from 'wagmi'
 import { Alert } from '../Alert'
 import { AccountAddress } from '../Header/AccountAddress'
 import { DisconnectWalletModal } from '../Modal/DisconnectWalletModal'
-import { ProtectedContent } from '../ProtectedContent/ProtectedContent'
-import { BecomeABuilderButton } from '@/app/bim/BecomeABuilderButton'
 import { MainContainerContent } from './MainContainerContent'
+import { GradientHeader } from '@/components/GradientHeader/GradientHeader'
 
 interface Props {
   children: ReactNode
@@ -46,38 +45,40 @@ export const MainContainer: FC<Props> = ({ children, notProtected = false }) => 
     setHasMounted(true)
   }, [])
 
+  const ConnectedComponent = () => (
+    <>
+      {hasMounted && (
+        <>
+          <Header>
+            {isConnected ? (
+              <AccountAddress
+                address={address}
+                shortAddress={shortAddress(address)}
+                onLogoutClick={modal.openModal}
+              />
+            ) : (
+              <ConnectButton />
+            )}
+          </Header>
+          {modal.isModalOpened && (
+            <DisconnectWalletModal
+              onClose={modal.closeModal}
+              onConfirm={handleDisconnect}
+              onCancel={modal.closeModal}
+              address={address}
+            />
+          )}
+        </>
+      )}
+    </>
+  )
   return (
     <>
+      <GradientHeader />
       <div className="flex">
-        <StatefulSidebar />
+        <StatefulSidebar ConnectedComponent={<ConnectedComponent />} />
         <div className="flex flex-1 flex-col justify-between">
-          <main className="px-[24px] mb-[100px]">
-            {hasMounted && (
-              <>
-                <Header>
-                  {isConnected ? (
-                    <div className="flex flex-row justify-end gap-4">
-                      <BecomeABuilderButton address={address!} />
-                      <AccountAddress
-                        address={address}
-                        shortAddress={shortAddress(address)}
-                        onLogoutClick={modal.openModal}
-                      />
-                    </div>
-                  ) : (
-                    <ConnectButton />
-                  )}
-                </Header>
-                {modal.isModalOpened && (
-                  <DisconnectWalletModal
-                    onClose={modal.closeModal}
-                    onConfirm={handleDisconnect}
-                    onCancel={modal.closeModal}
-                    address={address}
-                  />
-                )}
-              </>
-            )}
+          <main className="px-[32px] py-[34px] mb-[100px]">
             {message && (
               <Alert {...message} onDismiss={message.onDismiss === null ? null : () => setMessage(null)} />
             )}

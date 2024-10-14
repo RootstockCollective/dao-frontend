@@ -3,18 +3,25 @@ import { BalancesSection } from '@/app/user/Balances/BalancesSection'
 import { CommunitiesSection } from '@/app/user/Communities/CommunitiesSection'
 import { MainContainer } from '@/components/MainContainer/MainContainer'
 import { TxStatusMessage } from '@/components/TxStatusMessage'
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/Tabs'
+import { Tabs, TabsContent, TabsList, TabsTrigger, TabTitle } from '@/components/Tabs'
 import { Rewards } from '@/app/bim/Rewards'
 import { useAccount } from 'wagmi'
+import { WithBuilderButton } from '@/app/bim/WithBuilderButton'
 import { useGetIsWhitelistedBuilder } from '@/app/bim/hooks/useGetIsWhitelistedBuilder'
 
-const MyHoldings = () => (
+type MyHoldingsProps = {
+  showBuilderButton?: boolean
+}
+
+const MyHoldings = ({ showBuilderButton = false }: MyHoldingsProps) => (
   <>
     <TxStatusMessage messageType="staking" />
-    <BalancesSection />
+    <BalancesSection showBuilderButton={showBuilderButton} />
     <CommunitiesSection />
   </>
 )
+
+const TabsListWithButton = WithBuilderButton(TabsList)
 
 export default function User() {
   const { address } = useAccount()
@@ -25,19 +32,23 @@ export default function User() {
     <MainContainer>
       {isWhitelistedBuilder ? (
         <Tabs defaultValue="holdings">
-          <TabsList className="pb-[25px]">
-            <TabsTrigger value="holdings">My Holdings</TabsTrigger>
-            <TabsTrigger value="rewards">My Rewards</TabsTrigger>
-          </TabsList>
+          <TabsListWithButton>
+            <TabsTrigger value="holdings">
+              <TabTitle>My Holdings</TabTitle>
+            </TabsTrigger>
+            <TabsTrigger value="rewards">
+              <TabTitle>My Rewards</TabTitle>
+            </TabsTrigger>
+          </TabsListWithButton>
           <TabsContent value="holdings">
-            <MyHoldings />
+            <MyHoldings showBuilderButton={false} />
           </TabsContent>
           <TabsContent value="rewards">
             <Rewards builder={address!} />
           </TabsContent>
         </Tabs>
       ) : (
-        <MyHoldings />
+        <MyHoldings showBuilderButton={true} />
       )}
     </MainContainer>
   )

@@ -62,6 +62,11 @@ const nextConfig = {
   output: 'standalone',
   rewrites: rewrites[network],
   webpack: (config, { isServer }) => {
+    config.optimization.splitChunks = {
+      chunks: 'all',
+      maxInitialRequests: 2, // Limit the number of requests on initial page load
+      maxAsyncRequests: 2, // Limit the number of requests when loading dynamically imported modules
+    }
     if (!isServer) {
       config.devServer = {
         ...config.devServer,
