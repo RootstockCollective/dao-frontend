@@ -16,20 +16,27 @@ interface BecomeABuilderModalProps {
 // TODO: check if this is a hardcoded list or if it should be dynamic
 const steps: Array<Step> = [
   {
-    description: 'Submit your proposal:',
+    description: 'Submit your KYC application:',
     steps: [
       {
-        description:
-          'Provide a detailed description of your project, its goal, and how it will contribute to the Rootstock ecosystem.',
+        description: 'Submit your KYC application to the RootstockCollective Foundation for approval.',
       },
     ],
   },
   {
-    description: 'Community vote:',
+    description: 'Publish your proposal in Discourse:',
     steps: [
       {
         description:
-          'You proposal will be reviewed and voted on by the DAO community. A majority vote in favor is required for approval.',
+          'Provide a detailed description of your project, its goal, and how it contributes to the Rootstock ecosystem.',
+      },
+    ],
+  },
+  {
+    description: 'Submit your Proposal on-chain for a Community vote:',
+    steps: [
+      {
+        description: 'Once your proposal is submitted, it will be reviewed and voted on by the community.',
       },
     ],
   },
@@ -38,7 +45,7 @@ const steps: Array<Step> = [
     steps: [
       {
         description:
-          'If approved, you will be added to the Builder whitelist and can start working on your project.',
+          'If your KYC and proposals are approved, you will be added to the Builder whitelist and eligible to start receiving rewards.',
       },
     ],
   },
@@ -49,6 +56,8 @@ export const BecomeABuilderModal: FC<BecomeABuilderModalProps> = ({ onClose }) =
 
   const contractName: SupportedActionAbiName = 'SimplifiedRewardDistributorAbi'
   const action: SupportedProposalActionName = 'whitelistBuilder'
+  const formLink =
+    'https://docs.google.com/forms/d/e/1FAIpQLScVB-A_SPncWpSV_4mSdeMxBKtiYvJDvPK_TKSddzPnuC9lqQ/viewform'
 
   return (
     <Modal onClose={onClose} width={1016}>
@@ -65,7 +74,7 @@ export const BecomeABuilderModal: FC<BecomeABuilderModalProps> = ({ onClose }) =
           <div className="flex flex-col items-center gap-4">
             <RiPassportLine size={48} />
             Verify your <br /> profile persona
-            <Button>Start KYC</Button>
+            <Button onClick={() => window.open(formLink, '_blank')}>Start KYC</Button>
           </div>
           <div className="flex flex-col items-center gap-4">
             <BsCardText size={48} />
