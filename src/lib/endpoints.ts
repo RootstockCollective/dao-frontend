@@ -18,3 +18,5 @@ export const fetchProposalsCreatedByGovernorAddress =
 
 export const getNftInfo =
   process.env.NEXT_PUBLIC_API_RWS_NFT_INFO || `/nfts/{{nftAddress}}?chainId=${CHAIN_ID}`
+
+export const getTokenHoldersOfAddress = '/address/{{address}}/holders'
