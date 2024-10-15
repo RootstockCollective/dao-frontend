@@ -1,14 +1,16 @@
 import { useGetRewardDistributedLogs } from './hooks/useGetRewardDistributedLogs'
 import { useGetTokenProjectedReward } from '@/app/bim/hooks/useGetTokenProjectedReward'
+import { getLastRewardValid } from '@/app/bim/utils/getLastRewardValid'
 import { formatBalanceToHuman } from '@/app/user/Balances/balanceUtils'
 import { Address } from 'viem'
 import { Header } from '@/components/Typography'
 import { tokenContracts } from '@/lib/contracts'
-import { getLastRewardValid } from '@/app/bim/utils/getLastRewardValid'
 import { PricesContextProvider, usePricesContext } from '@/shared/context/PricesContext'
 import { formatCurrency } from '@/lib/utils'
 import { getShare } from '@/app/bim/utils/getShare'
 import { MetricsCardWithSpinner } from '@/components/MetricsCard/MetricsCard'
+import { useEffect } from 'react'
+import { useAlertContext } from '@/app/providers'
 
 type RewardsProps = {
   builder: Address
@@ -35,11 +37,13 @@ type RewardProps = {
 }
 
 const Reward = ({ rewardToken, builder, currency = 'USD' }: RewardProps) => {
-  const { data: rewardDistributedLogs, isLoading: logsLoading } = useGetRewardDistributedLogs(
-    rewardToken,
-    builder,
-  )
-  const { data: token, isLoading: tokenLoading } = useGetTokenProjectedReward(rewardToken)
+  const { setMessage: setErrorMessage } = useAlertContext()
+  const {
+    data: rewardDistributedLogs,
+    isLoading: logsLoading,
+    error: rewardsError,
+  } = useGetRewardDistributedLogs(rewardToken, builder)
+  const { data: token, isLoading: tokenLoading, error: tokenError } = useGetTokenProjectedReward(rewardToken)
   const tokenSymbol = token.symbol ?? ''
 
   const { prices } = usePricesContext()
@@ -74,6 +78,26 @@ const Reward = ({ rewardToken, builder, currency = 'USD' }: RewardProps) => {
   ]
 
   const isLoading = logsLoading || tokenLoading
+
+  useEffect(() => {
+    if (rewardsError) {
+      setErrorMessage({
+        severity: 'error',
+        title: 'Error loading rewards',
+        content: rewardsError.message,
+      })
+      console.error('🐛 rewardsError:', rewardsError)
+    }
+
+    if (tokenError) {
+      setErrorMessage({
+        severity: 'error',
+        title: 'Error loading tokens',
+        content: tokenError.message,
+      })
+      console.error('🐛 tokenError:', tokenError)
+    }
+  }, [rewardsError, tokenError, setErrorMessage])
 
   return (
     <div className="mb-[32px]">

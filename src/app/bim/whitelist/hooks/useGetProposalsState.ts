@@ -5,7 +5,7 @@ import { Address } from 'viem'
 import { CreateBuilderProposalEventLog } from '@/app/proposals/hooks/useFetchLatestProposals'
 import { useMemo } from 'react'
 import { ProposalState } from '@/shared/types'
-import { ProposalsStateMap } from '@/app/bim/types'
+import { ProposalsToState } from '@/app/bim/types'
 
 export const useGetProposalsState = (proposals: CreateBuilderProposalEventLog[]) => {
   const contractCalls = proposals.map(({ args: { proposalId } }) => {
@@ -28,12 +28,12 @@ export const useGetProposalsState = (proposals: CreateBuilderProposalEventLog[])
     },
   })
 
-  const proposalsStateMap = useMemo(() => {
+  const proposalsToStates = useMemo(() => {
     if (!states) {
-      return {} as ProposalsStateMap
+      return {} as ProposalsToState
     }
 
-    return contractCalls.reduce<ProposalsStateMap>((acc, contract, index) => {
+    return contractCalls.reduce<ProposalsToState>((acc, contract, index) => {
       const [proposalId] = contract.args
       const state = (states[index].result as ProposalState) || ProposalState.Pending // Fallback to Pending if state is undefined
       acc[proposalId.toString()] = state
@@ -43,7 +43,7 @@ export const useGetProposalsState = (proposals: CreateBuilderProposalEventLog[])
   }, [states]) // The states dependency is a contract call result, so it's not necessary to include it in the deps array
 
   return {
-    data: proposalsStateMap,
+    data: proposalsToStates,
     isLoading,
     error,
   }

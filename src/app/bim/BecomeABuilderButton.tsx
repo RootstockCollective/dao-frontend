@@ -1,24 +1,23 @@
-import { Button } from '@/components/Button'
-import { Badge } from '@/components/Badge'
-import { LoadingSpinner } from '@/components/LoadingSpinner'
-import { useModal } from '@/app/user/Balances/hooks/useModal'
-import { BecomeABuilderModal } from '@/components/Modal/BecomeABuilderModal'
-import { useGetBuilders } from '@/app/bim/hooks/useGetBuilders'
-import { Address, isAddressEqual } from 'viem'
-import { useGetProposalsState } from '@/app/bim/whitelist/hooks/useGetProposalsState'
-import { FC } from 'react'
+import { useGetBuilderByAddress } from '@/app/bim/hooks/useGetBuilders'
 import { BuilderInfo } from '@/app/bim/types'
 import { getMostAdvancedProposal } from '@/app/bim/utils/getMostAdvancedProposal'
+import { useGetProposalsState } from '@/app/bim/whitelist/hooks/useGetProposalsState'
+import { useAlertContext } from '@/app/providers/AlertProvider'
+import { useModal } from '@/app/user/Balances/hooks/useModal'
+import { Badge } from '@/components/Badge'
+import { Button } from '@/components/Button'
+import { LoadingSpinner } from '@/components/LoadingSpinner'
+import { BecomeABuilderModal } from '@/components/Modal/BecomeABuilderModal'
+import { FC, useEffect } from 'react'
+import { CreateBuilderProposalEventLog } from '../proposals/hooks/useFetchLatestProposals'
+import { useAccount } from 'wagmi'
+import { Address, zeroAddress } from 'viem'
 
-type BecomeABuilderButtonProps = {
-  address: Address
+type StatusBadgeProps = {
+  builderStatus?: BuilderInfo['status']
 }
 
-type ProposalNotFoundProps = {
-  builder: BuilderInfo
-}
-
-const NotFound = () => {
+const BuilderRegistrationButton = () => {
   const modal = useModal()
   return (
     <>
@@ -28,51 +27,65 @@ const NotFound = () => {
   )
 }
 
-const ProposalNotFound: FC<ProposalNotFoundProps> = ({ builder }) => {
-  const { status, proposals } = builder
-  const {
-    data: proposalsStateMap,
-    isLoading: proposalsStateMapLoading,
-    error: proposalsStateMapError,
-  } = useGetProposalsState(proposals)
-
-  if (proposalsStateMapLoading) {
-    return <LoadingSpinner className={'justify-end w-1/4'} />
-  }
-
-  if (proposalsStateMapError) return <div>Error loading proposals state.</div>
-
-  const proposal = getMostAdvancedProposal(builder, proposalsStateMap)
-
-  if (!proposal) {
-    return <NotFound />
-  }
-
-  // TODO: pending to check the colors and if this badge colors are the same from the whitelist section
-  // TODO: check the height and width of the badge
+const StatusBadge: FC<StatusBadgeProps> = ({ builderStatus }) => {
   const InProgressComponent = <Badge status="Waiting for approval" bgColor="bg-[#637381]" />
   const WhitelistedComponent = <Badge status="Whitelisted" bgColor="bg-[#22AD5C]" />
 
   return {
     'In progress': InProgressComponent,
     Whitelisted: WhitelistedComponent,
-  }[status]
+    undefined: BuilderRegistrationButton,
+  }[builderStatus as BuilderInfo['status']]
 }
 
-export const BecomeABuilderButton = ({ address }: BecomeABuilderButtonProps) => {
-  const { data: builders, isLoading: buildersLoading, error: buildersError } = useGetBuilders()
+export const BecomeABuilderButton = ({ address }: { address: Address }) => {
+  const { setMessage: setErrorMessage } = useAlertContext()
+  const {
+    data: builder,
+    isLoading: builderLoading,
+    error: builderLoadingError,
+  } = useGetBuilderByAddress(address)
 
-  if (buildersLoading) {
+  const {
+    data: builderProposalEvents,
+    isLoading: builderProposalEventsLoading,
+    error: builderProposalEventsError,
+  } = useGetProposalsState(builder?.proposals ?? [])
+
+  useEffect(() => {
+    if (builderLoadingError) {
+      setErrorMessage({
+        severity: 'error',
+        title: `Error loading builder with address ${address}`,
+        content: builderLoadingError.message,
+      })
+      console.error('🐛 builderLoadingError:', builderLoadingError)
+    }
+  }, [builderLoadingError, address, setErrorMessage])
+
+  useEffect(() => {
+    if (builderProposalEventsError) {
+      setErrorMessage({
+        severity: 'error',
+        title: 'Error loading builder proposal events',
+        content: builderProposalEventsError.message,
+      })
+      console.error('🐛 builderProposalEventsError:', builderProposalEventsError)
+    }
+  }, [builderProposalEventsError, address, setErrorMessage])
+
+  if (builderLoading || builderProposalEventsLoading) {
     return <LoadingSpinner className={'justify-end w-1/4'} />
   }
 
-  if (buildersError) return <div>Error loading builders.</div>
-
-  const builder = builders.find(builder => isAddressEqual(builder.address as Address, address as Address))
-
   if (!builder) {
-    return <NotFound />
+    return <BuilderRegistrationButton />
+  }
+  const proposalEvent = getMostAdvancedProposal(builder, builderProposalEvents)
+
+  if (!proposalEvent) {
+    return <BuilderRegistrationButton />
   }
 
-  return <ProposalNotFound builder={builder} />
+  return <StatusBadge builderStatus={builder.status} />
 }

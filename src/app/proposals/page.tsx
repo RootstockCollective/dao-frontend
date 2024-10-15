@@ -17,7 +17,7 @@ export default function Proposals() {
   const { votingPower, canCreateProposal, threshold } = useVotingPower()
   const { latestProposals } = useFetchAllProposals()
 
-  const memoizedProposals = useMemo(() => latestProposals, [latestProposals.length])
+  const memoizedProposals = useMemo(() => latestProposals, [latestProposals])
   return (
     <MainContainer>
       <TxStatusMessage messageType="proposal" />

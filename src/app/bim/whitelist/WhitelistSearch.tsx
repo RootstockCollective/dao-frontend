@@ -2,9 +2,23 @@ import { Input } from '@/components/Input'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/Select'
 import { Label } from '@/components/Typography'
 import { BuilderStatusFilter, useWhitelistContext } from '@/app/bim/whitelist/WhitelistContext'
+import { useAlertContext } from '@/app/providers'
+import { useEffect } from 'react'
 
 export const WhitelistSearch = () => {
-  const { search, filterBy } = useWhitelistContext()
+  const { search, filterBy, error: whitelistError } = useWhitelistContext()
+  const { setMessage: setErrorMessage } = useAlertContext()
+
+  useEffect(() => {
+    if (whitelistError) {
+      setErrorMessage({
+        severity: 'error',
+        title: 'Error loading proposals state',
+        content: whitelistError.message,
+      })
+      console.error('🐛 whitelistError:', whitelistError)
+    }
+  }, [whitelistError, setErrorMessage])
 
   // TODO: are there other statuses to be considered?
   const statuses = [

@@ -1,12 +1,13 @@
+import { useGetBuildersRewards } from '@/app/bim/leaderboard/hooks/useGetBuildersRewards'
+import { useAlertContext } from '@/app/providers'
+import { Address } from '@/components/Address'
 import { LoadingSpinner } from '@/components/LoadingSpinner'
 import { Table } from '@/components/Table'
 import { Label, Paragraph, Typography } from '@/components/Typography'
-import { formatCurrency } from '@/lib/utils'
-import { Address } from '@/components/Address'
-import { PricesContextProvider } from '@/shared/context/PricesContext'
-import { useGetBuildersRewards } from '@/app/bim/leaderboard/hooks/useGetBuildersRewards'
-import { memo } from 'react'
 import { tokenContracts } from '@/lib/contracts'
+import { formatCurrency } from '@/lib/utils'
+import { PricesContextProvider } from '@/shared/context/PricesContext'
+import { memo, useEffect } from 'react'
 
 type Currency = {
   value: number
@@ -73,8 +74,18 @@ const BuilderNameCell = ({ builderName }: { builderName: string }) => {
 }
 
 const LeaderBoardTable = () => {
-  const { data: rbtcData, isLoading: rbtcLoading } = useGetBuildersRewards(tokenContracts.RBTC)
-  const { data: rifData, isLoading: rifLoading } = useGetBuildersRewards(tokenContracts.RIF)
+  const {
+    data: rbtcData,
+    isLoading: rbtcLoading,
+    error: rbtcRewardsError,
+  } = useGetBuildersRewards(tokenContracts.RBTC)
+  const {
+    data: rifData,
+    isLoading: rifLoading,
+    error: rifRewardsError,
+  } = useGetBuildersRewards(tokenContracts.RIF)
+  const { setMessage: setErrorMessage } = useAlertContext()
+
   const data = rifData.concat(rbtcData)
 
   const tableData = data.map(({ address, lastEpochReward, projectedReward, share }) => ({
@@ -90,6 +101,28 @@ const LeaderBoardTable = () => {
   }))
 
   const isLoading = rbtcLoading || rifLoading
+
+  useEffect(() => {
+    if (rbtcRewardsError) {
+      setErrorMessage({
+        severity: 'error',
+        title: 'Error loading RBTC rewards',
+        content: rbtcRewardsError.message,
+      })
+      console.error('🐛 rbtcRewardsError:', rbtcRewardsError)
+    }
+  }, [rbtcRewardsError, setErrorMessage])
+
+  useEffect(() => {
+    if (rifRewardsError) {
+      setErrorMessage({
+        severity: 'error',
+        title: 'Error loading RIF rewards',
+        content: rifRewardsError.message,
+      })
+      console.error('🐛 rifRewardsError:', rifRewardsError)
+    }
+  }, [rifRewardsError, setErrorMessage])
 
   return (
     <>

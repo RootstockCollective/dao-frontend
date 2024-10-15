@@ -1,10 +1,55 @@
-import { useGetWhitelistedBuilders } from '@/app/bim/hooks/useGetWhitelistedBuilders'
+import { useGetIsWhitelistedBuilder, useGetWhitelistedBuilders } from '@/app/bim/hooks'
 import { BuilderInfo } from '@/app/bim/types'
 import { useFetchCreateBuilderProposals } from '@/app/proposals/hooks/useFetchLatestProposals'
 import { useMemo } from 'react'
-import { Address, isAddressEqual } from 'viem'
+import { Address, getAddress, isAddressEqual } from 'viem'
 
-export const useGetBuilders = () => {
+export type BuilderLoader = {
+  data?: BuilderInfo
+  isLoading: boolean
+  error: Error | null
+}
+
+export type BuildersLoader = Omit<BuilderLoader, 'data'> & {
+  data: BuilderInfo[]
+}
+
+export const useGetBuilderByAddress = (address: Address): BuilderLoader => {
+  const {
+    data: buildersProposalsMap,
+    isLoading: builderProposalsMapLoading,
+    error: builderProposalsMapError,
+  } = useFetchCreateBuilderProposals()
+
+  const {
+    data: isWhitelistedBuilder,
+    isLoading: isWhitelistedBuilderLoading,
+    error: isWhitelistedBuilderError,
+  } = useGetIsWhitelistedBuilder(address)
+
+  const data = useMemo(() => {
+    if (buildersProposalsMap) {
+      const proposals = buildersProposalsMap?.[address] ?? {}
+
+      return {
+        address,
+        status: isWhitelistedBuilder ? 'Whitelisted' : 'In progress',
+        proposals: Object.values(proposals),
+      } as BuilderInfo
+    }
+  }, [buildersProposalsMap, address, isWhitelistedBuilder])
+
+  const isLoading = builderProposalsMapLoading || isWhitelistedBuilderLoading
+  const error = builderProposalsMapError ?? isWhitelistedBuilderError
+
+  return {
+    data,
+    isLoading,
+    error,
+  }
+}
+
+export const useGetBuilders = (): BuildersLoader => {
   const {
     data: buildersProposalsMap,
     isLoading: builderProposalsMapLoading,
@@ -18,9 +63,9 @@ export const useGetBuilders = () => {
 
   const data = useMemo(() => {
     return Object.entries(buildersProposalsMap ?? {}).map<BuilderInfo>(([builder, proposals]) => ({
-      address: builder,
+      address: getAddress(builder),
       status: whitelistedBuilders?.some(whitelistedBuilder =>
-        isAddressEqual(whitelistedBuilder, builder as Address),
+        isAddressEqual(whitelistedBuilder, getAddress(builder)),
       )
         ? 'Whitelisted'
         : 'In progress',

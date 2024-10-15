@@ -4,7 +4,7 @@ import { SimplifiedRewardDistributorAbi } from '@/lib/abis/SimplifiedRewardDistr
 import { useQuery, UseQueryResult } from '@tanstack/react-query'
 import { Interface } from 'ethers'
 import { useMemo } from 'react'
-import { parseEventLogs } from 'viem'
+import { getAddress, parseEventLogs } from 'viem'
 import { ADDRESS_PADDED_BYTES } from '@/app/proposals/shared/utils'
 
 const useFetchLatestProposals = () => {
@@ -63,18 +63,18 @@ export type BimProposalCachedEvent = {
 
 export type BimEventByIdMap = Record<string, BimProposalCachedEvent['event']>
 
-export type BimProposalMap = Record<BimProposalCachedEvent['builder'], BimEventByIdMap>
+export type ProposalsPerBuilder = Record<BimProposalCachedEvent['builder'], BimEventByIdMap>
 
 export type ProposalQueryResult<Data> = Omit<Partial<UseQueryResult<Data>>, 'isLoading'> & {
   isLoading: boolean
 }
 
-export const useFetchCreateBuilderProposals = (): ProposalQueryResult<BimProposalMap> => {
+export const useFetchCreateBuilderProposals = (): ProposalQueryResult<ProposalsPerBuilder> => {
   const { data: fetchedData, isLoading, error } = useFetchLatestProposals()
 
   const latestProposals = useMemo(() => {
     if (!fetchedData?.data) {
-      return {} as BimProposalMap
+      return {} as ProposalsPerBuilder
     }
 
     const events = parseEventLogs({
@@ -88,7 +88,7 @@ export const useFetchCreateBuilderProposals = (): ProposalQueryResult<BimProposa
 
     // why can't we use block number instead of timestamp which is not supported by the type?
     const sortedEvents = Array.from(eventsMap).sort(({ timeStamp: a }, { timeStamp: b }) => b - a)
-    const bimProposalMap = sortedEvents.reduce<BimProposalMap>((acc, event) => {
+    const bimProposalMap = sortedEvents.reduce<ProposalsPerBuilder>((acc, event) => {
       const bimEventCalldatas = event.args.calldatas.find(calldata =>
         calldata.startsWith(BIM_WHITELIST_FUNCTION_SELECTOR),
       )
@@ -96,7 +96,14 @@ export const useFetchCreateBuilderProposals = (): ProposalQueryResult<BimProposa
       if (bimEventCalldatas) {
         const addressStart = BIM_WHITELIST_FUNCTION_SELECTOR.length + ADDRESS_PADDED_BYTES.length
         const addressEnd = addressStart + 40
-        const builder = `0x${bimEventCalldatas.slice(addressStart, addressEnd)}`
+        const addressSlice = `0x${bimEventCalldatas.slice(addressStart, addressEnd)}`
+        let builder
+        try {
+          builder = getAddress(addressSlice)
+        } catch (e) {
+          console.error('useFetchCreateBuilderProposal:: Failed to parse builder address', e)
+          return acc
+        }
         const existingBuilder = acc[builder] || {}
 
         acc = {

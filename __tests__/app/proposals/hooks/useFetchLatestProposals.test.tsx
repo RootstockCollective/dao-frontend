@@ -8,7 +8,7 @@ import { expect } from '@jest/globals'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { renderHook, waitFor } from '@testing-library/react'
 import { Interface } from 'ethers/abi'
-import { parseEventLogs } from 'viem'
+import { getAddress, parseEventLogs } from 'viem'
 import { ADDRESS_PADDED_BYTES } from '@/app/proposals/shared/utils'
 
 jest.mock('@/app/user/Balances/actions', () => ({
@@ -17,6 +17,7 @@ jest.mock('@/app/user/Balances/actions', () => ({
 
 jest.mock('viem', () => ({
   parseEventLogs: jest.fn(),
+  getAddress: jest.fn().mockImplementation((address: string) => address),
 }))
 
 const BIM_WHITELIST_FUNCTION = 'whitelistBuilder' // TODO: refactor

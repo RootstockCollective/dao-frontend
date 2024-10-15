@@ -1,12 +1,12 @@
 import { ProposalState } from '@/shared/types'
-import { BuilderInfo, ProposalsStateMap } from '@/app/bim/types'
+import { BuilderInfo, ProposalsToState } from '@/app/bim/types'
 
 const inactiveProposalsStates = [ProposalState.Canceled, ProposalState.Defeated, ProposalState.Expired]
 const isActive = (state: ProposalState) => !inactiveProposalsStates.includes(state)
 
 export const getMostAdvancedProposal = (
   { status, proposals }: BuilderInfo,
-  proposalsStateMap: ProposalsStateMap,
+  proposalsStateMap: ProposalsToState,
 ) => {
   return proposals
     .sort(({ timeStamp: a }, { timeStamp: b }) => b - a)
