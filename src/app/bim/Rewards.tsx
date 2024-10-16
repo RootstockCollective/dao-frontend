@@ -3,7 +3,7 @@ import { useGetTokenProjectedReward } from '@/app/bim/hooks/useGetTokenProjected
 import { getLastRewardValid } from '@/app/bim/utils/getLastRewardValid'
 import { formatBalanceToHuman } from '@/app/user/Balances/balanceUtils'
 import { Address } from 'viem'
-import { Header } from '@/components/Typography'
+import { HeaderTitle } from '@/components/Typography'
 import { tokenContracts } from '@/lib/contracts'
 import { PricesContextProvider, usePricesContext } from '@/shared/context/PricesContext'
 import { formatCurrency } from '@/lib/utils'
@@ -19,9 +19,7 @@ type RewardsProps = {
 export const Rewards = ({ builder }: RewardsProps) => {
   return (
     <>
-      <Header variant="h2" className="mb-8">
-        As a Builder
-      </Header>
+      <HeaderTitle className="mb-8 font-normal">As a Builder</HeaderTitle>
       <PricesContextProvider>
         <Reward builder={builder} rewardToken={tokenContracts.RBTC} />
         <Reward builder={builder} rewardToken={tokenContracts.RIF} />
@@ -71,9 +69,9 @@ const Reward = ({ rewardToken, builder, currency = 'USD' }: RewardProps) => {
   const share = `${getShare(token)}%`
 
   const metricsData = [
-    { title: 'Total Rewards', ...totalRewardsMetrics },
-    { title: 'Last Epoch Rewards', ...lastRewardMetrics },
-    { title: 'Projected Rewards', ...projectedRewardsMetrics },
+    { title: 'Total rewards', ...totalRewardsMetrics },
+    { title: 'Last cycle rewards', ...lastRewardMetrics },
+    { title: 'Projected rewards', ...projectedRewardsMetrics },
     { title: 'Share', amount: share, fiat: '' },
   ]
 
@@ -101,7 +99,7 @@ const Reward = ({ rewardToken, builder, currency = 'USD' }: RewardProps) => {
 
   return (
     <div className="mb-[32px]">
-      <div className="grid grid-cols-4 gap-[8px]">
+      <div className="grid grid-cols-4 gap-[16px] ">
         {metricsData.map(({ title, amount, fiat }, index) => (
           <MetricsCardWithSpinner
             key={index}
@@ -109,6 +107,7 @@ const Reward = ({ rewardToken, builder, currency = 'USD' }: RewardProps) => {
             amount={amount}
             fiatAmount={fiat}
             isLoading={isLoading}
+            borderless
           />
         ))}
       </div>

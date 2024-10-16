@@ -16,16 +16,20 @@ const TabsList = forwardRef<
 ))
 TabsList.displayName = TabsPrimitive.TabsList.displayName
 
-const active =
-  'data-[state=active]:px-[16px] data-[state=active]:py-[8px] data-[state=active]:rounded-md data-[state=active]:bg-primary'
-const inactive =
-  'data-[state=inactive]:px-[16px] data-[state=inactive]:py-[8px] data-[state=inactive]:font-light'
-
 const TabsTrigger = forwardRef<
   ElementRef<typeof TabsPrimitive.Trigger>,
   ComponentPropsWithoutRef<typeof TabsPrimitive.Trigger>
 >(({ className, ...props }, ref) => (
-  <TabsPrimitive.Trigger ref={ref} className={cn(active, inactive, className)} {...props} />
+  <TabsPrimitive.Trigger
+    ref={ref}
+    className={cn(
+      'data-[state=active]:rounded-md data-[state=active]:bg-primary',
+      'data-[state=inactive]:font-light data-[state=inactive]:text-disabled-primary',
+      'px-[16px] py-[8px]',
+      className,
+    )}
+    {...props}
+  />
 ))
 TabsTrigger.displayName = TabsPrimitive.Trigger.displayName
 
@@ -37,7 +41,7 @@ type TabTitleProps = {
 
 // TODO: To be aligned with the design once we have access to dev mode
 const TabTitle = ({ children }: TabTitleProps) => (
-  <Typography tagVariant="h2" fontFamily="kk-topo">
+  <Typography tagVariant="label" fontFamily="rootstock-sans" fontWeight={700}>
     {children}
   </Typography>
 )

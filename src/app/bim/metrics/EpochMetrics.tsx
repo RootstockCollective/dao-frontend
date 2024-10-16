@@ -17,6 +17,7 @@ export const EpochMetrics = () => {
       title="Current epoch cycle"
       amount={remainingDaysString}
       fiatAmount={`out of ${epochDuration} days. Ends ${epochEndTimestamp.toFormat('EEE, dd MMM')}`}
+      borderless
     />
   )
 }

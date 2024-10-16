@@ -19,5 +19,11 @@ export const WhitelistedBuildersLengthMetrics = () => {
   }, [whitelistedBuildersError, setErrorMessage])
 
   /* TODO: MetricsCard should support loading and error status */
-  return <MetricsCard title="Total whitelisted builders" amount={Number(wlBuildersLength || 0n).toFixed()} />
+  return (
+    <MetricsCard
+      title="Total whitelisted builders"
+      amount={Number(wlBuildersLength || 0n).toFixed()}
+      borderless
+    />
+  )
 }
