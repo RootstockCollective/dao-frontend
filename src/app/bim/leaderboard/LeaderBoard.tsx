@@ -3,7 +3,7 @@ import { useAlertContext } from '@/app/providers'
 import { Address } from '@/components/Address'
 import { LoadingSpinner } from '@/components/LoadingSpinner'
 import { Table } from '@/components/Table'
-import { Label, Paragraph, Typography } from '@/components/Typography'
+import { HeaderTitle, Label, Paragraph, Typography } from '@/components/Typography'
 import { tokenContracts } from '@/lib/contracts'
 import { formatCurrency } from '@/lib/utils'
 import { PricesContextProvider } from '@/shared/context/PricesContext'
@@ -138,7 +138,7 @@ const LeaderBoardTable = () => {
 export const LeaderBoard = () => {
   return (
     <>
-      <Paragraph className="font-semibold text-[18px]">Rewards leaderboard</Paragraph>
+      <HeaderTitle>Rewards leaderboard</HeaderTitle>
       <PricesContextProvider>
         <LeaderBoardTable />
       </PricesContextProvider>

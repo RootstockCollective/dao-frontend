@@ -1,6 +1,6 @@
 import { WhitelistGrid } from '@/app/bim/whitelist/WhitelistGrid'
 import { WhitelistSearch } from '@/app/bim/whitelist/WhitelistSearch'
-import { Paragraph } from '@/components/Typography'
+import { HeaderTitle } from '@/components/Typography'
 import { useWhitelistContext } from '@/app/bim/whitelist/WhitelistContext'
 import { LoadingSpinner } from '@/components/LoadingSpinner'
 import { useAlertContext } from '@/app/providers/AlertProvider'
@@ -23,7 +23,7 @@ export const WhitelistSection = () => {
 
   return (
     <div>
-      <Paragraph className="font-semibold text-[18px]">Whitelist</Paragraph>
+      <HeaderTitle>Whitelist</HeaderTitle>
       <WhitelistSearch />
 
       {/* TODO: We should show an empty table (not considered in the design yet) on error */}
