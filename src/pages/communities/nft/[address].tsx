@@ -13,6 +13,7 @@ import { useAccount } from 'wagmi'
 import { useCommunity } from '@/shared/hooks/useCommunity'
 import { useStRif } from '@/shared/hooks/useStRIf'
 import { CopyButton } from '@/components/CopyButton'
+import { NftHoldersSection } from '@/app/communities/NftHoldersSection'
 
 /**
  * Name of the local storage variable with information about whether the token was added to the wallet
@@ -324,6 +325,8 @@ export default function Page() {
           </div>
         </div>
       </div>
+      {/* Holders list */}
+      <NftHoldersSection address={nftAddress} />
     </MainContainer>
   )
 }

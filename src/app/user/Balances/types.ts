@@ -53,3 +53,19 @@ export interface ServerResponseV2<T> {
   next_page_params: NextPageParams | null
   error?: string
 }
+
+export type NftHolderItem = {
+  owner: string
+  ens_domain_name: null
+  id: string
+  image_url: string
+  metadata: Metadata
+}
+
+export type Metadata = {
+  creator: string
+  description: string
+  external_url: string
+  image: string
+  name: string
+}
