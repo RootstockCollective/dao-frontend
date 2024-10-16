@@ -1,9 +1,10 @@
+import { bimStatusColorClasses } from '@/app/bim/BecomeABuilderButton'
+import { BuilderProposal } from '@/app/bim/whitelist/hooks/useGetFilteredBuilders'
 import { Address } from '@/components/Address'
 import { Badge } from '@/components/Badge'
 import { Paragraph, Span, Typography } from '@/components/Typography'
-import { FC, ReactNode } from 'react'
-import { BuilderProposal } from '@/app/bim/whitelist/hooks/useGetFilteredBuilders'
 import { useRouter } from 'next/navigation'
+import { FC, ReactNode } from 'react'
 
 type WhitelistGridItemProps = BuilderProposal
 
@@ -24,26 +25,17 @@ export const WhitelistGridItem: FC<WhitelistGridItemProps> = ({
   joiningDate,
   proposalId,
 }) => {
-  //TODO: pending to check the colors
-  const badgeBgColor = {
-    Whitelisted: 'bg-[#22AD5C]',
-    'In progress': 'bg-[#F59E0B]',
-    'KYC Approved': 'bg-[#637381]',
-    'KYC Under Review': 'bg-[#808080]',
-  }[status]
-
   const router = useRouter()
   const Header = (
     <div className="flex flex-row w-full">
-      <div className="flex-1 w-3/5">
+      <div className="flex-1">
         <Typography tagVariant="label" className="font-semibold">
           <Address address={address} />
         </Typography>
         <Paragraph className="text-sm font-light"> Joined {joiningDate}</Paragraph>
       </div>
-      <div className="w-2/5 text-end">
-        {/* TODO: #22AD5C to be added in the theme */}
-        <Badge status={status} bgColor={badgeBgColor} />
+      <div className="flex justify-center items-center">
+        <Badge content={status} className={`${bimStatusColorClasses[status]} py-1 px-2`} />
       </div>
     </div>
   )

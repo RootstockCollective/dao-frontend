@@ -8,10 +8,8 @@ import { Badge } from '@/components/Badge'
 import { Button } from '@/components/Button'
 import { LoadingSpinner } from '@/components/LoadingSpinner'
 import { BecomeABuilderModal } from '@/components/Modal/BecomeABuilderModal'
-import { FC, useEffect } from 'react'
-import { CreateBuilderProposalEventLog } from '../proposals/hooks/useFetchLatestProposals'
-import { useAccount } from 'wagmi'
-import { Address, zeroAddress } from 'viem'
+import { FC, HtmlHTMLAttributes, useEffect } from 'react'
+import { Address } from 'viem'
 
 type StatusBadgeProps = {
   builderStatus?: BuilderInfo['status']
@@ -27,9 +25,21 @@ const BuilderRegistrationButton = () => {
   )
 }
 
+export const bimStatusColorClasses: Record<
+  BuilderInfo['status'],
+  HtmlHTMLAttributes<HTMLSpanElement>['className']
+> = {
+  Whitelisted: 'bg-[#DBFEE5] text-secondary',
+  'In progress': 'bg-[#4B5CF0] color-text-primary',
+} as const
+
 const StatusBadge: FC<StatusBadgeProps> = ({ builderStatus }) => {
-  const InProgressComponent = <Badge status="Waiting for approval" bgColor="bg-[#637381]" />
-  const WhitelistedComponent = <Badge status="Whitelisted" bgColor="bg-[#22AD5C]" />
+  const InProgressComponent = (
+    <Badge content="In Progress" className={`${bimStatusColorClasses['In progress']} py-2 px-1`} />
+  )
+  const WhitelistedComponent = (
+    <Badge content="You are a Builder" className={`${bimStatusColorClasses['Whitelisted']} py-2 px-1`} />
+  )
 
   return {
     'In progress': InProgressComponent,

@@ -81,7 +81,7 @@ describe('BecomeABuilderButton', () => {
   test('should render if builder is in progress', async () => {
     const { findByText } = renderWithAlertProvider(<BecomeABuilderButton address={builderAddress} />)
 
-    expect(await findByText('Waiting for approval')).toBeVisible()
+    expect(await findByText('In Progress')).toBeVisible()
   })
 
   test('should render if builder is whitelisted', async () => {
@@ -95,7 +95,7 @@ describe('BecomeABuilderButton', () => {
     })
     const { findByText } = renderWithAlertProvider(<BecomeABuilderButton address={builderAddress} />)
 
-    expect(await findByText('Whitelisted')).toBeVisible()
+    expect(await findByText('You are a Builder')).toBeVisible()
   })
 
   test('should render registration button if builder does not have a proposal', async () => {
@@ -166,7 +166,7 @@ describe('BecomeABuilderButton', () => {
     const { queryByText } = renderWithAlertProvider(<BecomeABuilderButton address={builderAddress} />)
 
     await waitFor(() => {
-      expect(queryByText('Waiting for approval')).not.toBeInTheDocument()
+      expect(queryByText('In Progress')).not.toBeInTheDocument()
       expect(queryByText('Whitelisted')).not.toBeInTheDocument()
       expect(queryByText('Become a builder')).not.toBeInTheDocument()
     })

@@ -1,7 +1,14 @@
 import { Span } from '@/components/Typography'
+import { HtmlHTMLAttributes } from 'react'
 
-export type BadgeProps = { status: string; bgColor: string }
+export type BadgeProps = { content: string; className: HtmlHTMLAttributes<HTMLSpanElement>['className'] }
 
-export const Badge = ({ status, bgColor }: BadgeProps) => {
-  return <Span className={`rounded-md px-4 pt-1 pb-1 text-xs ${bgColor}`}>{status}</Span>
+export const Badge = ({ content, className }: BadgeProps) => {
+  return (
+    <Span
+      className={`rounded-sm font-bold min-h-fit justify-center flex text-center gap-1 text-[14px] leading-none ${className}`}
+    >
+      {content}
+    </Span>
+  )
 }
