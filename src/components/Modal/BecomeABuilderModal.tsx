@@ -15,27 +15,29 @@ type DisclaimerProps = {
 
 const Disclaimer: FC<DisclaimerProps> = ({ onAccept, onDecline }) => {
   return (
-    <>
+    <div className="flex flex-col items-center gap-y-2 py-[100px]">
       {/* TODO: we need to change it when we have access in dev mode to the design */}
-      <Header variant="h1" className="font-bold text-center py-[50px]">
+      <Header variant="h1" fontFamily="kk-topo" className="text-5xl font-bold text-center uppercase">
         Disclaimer
       </Header>
 
-      <div className="flex flex-row pb-[50px] justify-center">
-        <Typography tagVariant="span" className="text-[16px] font-light w-9/12">
-          By submitting your request to become a whitelisted Builder in the Collective Rewards Program, you
-          hereby acknowledge and agree to be bound to the terms of the Collective Rewards Program and to
-          submit your KYC information to the RootstockCollective Foundation. You accept that the information
-          submitted will be treated pursuant to the Privacy Policy.
-        </Typography>
+      <div className="w-[672px]">
+        <div className="flex flex-row pb-[50px] justify-center">
+          <Typography tagVariant="span" className="text-[16px] font-light text-center">
+            By submitting your request to become a whitelisted Builder in the Collective Rewards Program, you
+            hereby acknowledge and agree to be bound to the terms of the Collective Rewards Program and to
+            submit your KYC information to the RootstockCollective Foundation. You accept that the information
+            submitted will be treated pursuant to the Privacy Policy.
+          </Typography>
+        </div>
+        <div className="flex flex-row justify-center items-center text-center gap-x-10">
+          <Button onClick={onAccept}>I Agree</Button>
+          <Button variant="secondary" onClick={onDecline}>
+            I Disagree
+          </Button>
+        </div>
       </div>
-      <div className="flex flex-row justify-center items-center text-center gap-x-20">
-        <Button onClick={onAccept}>I agree</Button>
-        <Button variant="secondary" onClick={onDecline}>
-          I Disagree
-        </Button>
-      </div>
-    </>
+    </div>
   )
 }
 
@@ -84,8 +86,8 @@ type BecomeABuilderProps = {
 
 const BecomeABuilder: FC<BecomeABuilderProps> = ({ onStartKYC, onSubmitProposal }) => {
   return (
-    <>
-      <Header variant="h1" className="font-bold text-center py-[50px]">
+    <div className="flex flex-col items-center gap-y-2 py-[50px]">
+      <Header variant="h1" fontFamily="kk-topo" className="text-5xl font-bold text-center uppercase">
         How to become a builder
       </Header>
 
@@ -106,7 +108,7 @@ const BecomeABuilder: FC<BecomeABuilderProps> = ({ onStartKYC, onSubmitProposal 
           <Button onClick={onSubmitProposal}>Submit proposal</Button>
         </div>
       </div>
-    </>
+    </div>
   )
 }
 
@@ -124,18 +126,14 @@ export const BecomeABuilderModal: FC<BecomeABuilderModalProps> = ({ onClose }) =
 
   return (
     <Modal onClose={onClose} width={1016}>
-      <div className="px-[50px] pt-[21px] pb-[42px] flex flex-col justify-center">
-        {isDisclaimerAccepted ? (
-          <BecomeABuilder
-            onSubmitProposal={() =>
-              router.push(`/proposals/create?contract=${contractName}&action=${action}`)
-            }
-            onStartKYC={() => window.open(formLink, '_blank')}
-          />
-        ) : (
-          <Disclaimer onAccept={() => setIsDisclaimerAccepted(true)} onDecline={onClose} />
-        )}
-      </div>
+      {isDisclaimerAccepted ? (
+        <BecomeABuilder
+          onSubmitProposal={() => router.push(`/proposals/create?contract=${contractName}&action=${action}`)}
+          onStartKYC={() => window.open(formLink, '_blank')}
+        />
+      ) : (
+        <Disclaimer onAccept={() => setIsDisclaimerAccepted(true)} onDecline={onClose} />
+      )}
     </Modal>
   )
 }
