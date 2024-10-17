@@ -77,7 +77,7 @@ export const Button: FC<Props> = ({
     >
       <span className={textClasses}>
         <span className={cn('absolute left-[-20px] top-[4px]', startIconClasses)}>{startIcon}</span>
-        <Span>{text}</Span>
+        <Span className={textClassName}>{text}</Span>
       </span>
       {variant === 'sidebar-active' && <DivWithGradient />}
     </button>

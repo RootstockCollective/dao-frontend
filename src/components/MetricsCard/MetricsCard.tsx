@@ -5,7 +5,7 @@ import { Address } from 'viem'
 import { BoxIcon } from 'lucide-react'
 import { Span, Typography } from '../Typography'
 import { EXPLORER_URL } from '@/lib/constants'
-import { withSpinner } from '../LoadingSpinner/withLoadingSpinner'
+import { withSpinner } from '@/components/LoadingSpinner/withLoadingSpinner'
 
 interface MetricsCardProps {
   /**

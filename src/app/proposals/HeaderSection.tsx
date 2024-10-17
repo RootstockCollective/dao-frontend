@@ -1,8 +1,8 @@
-import { useRouter } from 'next/navigation'
 import { Paragraph, HeaderTitle } from '@/components/Typography'
 import { Button } from '@/components/Button'
 import { Popover } from '@/components/Popover'
-import { SupportedActionAbiName, SupportedProposalActionName } from '@/app/proposals/shared/supportedABIs'
+import { useModal } from '@/app/user/Balances/hooks/useModal'
+import { ProposalSelectionModal } from '@/components/Modal/ProposalSelectionModal'
 
 export const HeaderSection = ({ createProposalDisabled = true, threshold = '' }) => (
   <div className="flex flex-row justify-between container">
@@ -32,17 +32,14 @@ export const HeaderSection = ({ createProposalDisabled = true, threshold = '' })
 )
 
 const CreateProposalButton = ({ disabled = false }) => {
-  const router = useRouter()
-  const contract: SupportedActionAbiName = 'DAOTreasuryAbi'
-  const action: SupportedProposalActionName = 'withdraw'
+  const modal = useModal()
 
   return (
-    <Button
-      onClick={() => router.push(`/proposals/create?contract=${contract}&action=${action}`)}
-      disabled={disabled}
-      data-testid="CreateProposal"
-    >
-      Create Proposal
-    </Button>
+    <>
+      <Button onClick={modal.openModal} disabled={disabled} data-testid="CreateProposal">
+        Create Proposal
+      </Button>
+      {modal.isModalOpened && <ProposalSelectionModal onClose={modal.closeModal} />}
+    </>
   )
 }

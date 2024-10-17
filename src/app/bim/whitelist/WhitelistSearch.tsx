@@ -43,7 +43,7 @@ export const WhitelistSearch = () => {
 
       <div className="flex flex-row items-center pl-4">
         <Label className="text-white text-right pr-3 w-24">Filter by</Label>
-        <div className="">
+        <div>
           <Select onValueChange={onValueChange} defaultValue={'all'}>
             <SelectTrigger className="w-36">
               <SelectValue placeholder="Select an asset" />
