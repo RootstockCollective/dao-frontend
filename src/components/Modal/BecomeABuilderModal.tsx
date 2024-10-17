@@ -24,10 +24,10 @@ const Disclaimer: FC<DisclaimerProps> = ({ onAccept, onDecline }) => {
       <div className="w-[672px]">
         <div className="flex flex-row pb-[50px] justify-center">
           <Typography tagVariant="span" className="text-[16px] font-light text-center">
-            By submitting your request to become a whitelisted Builder in the Collective Rewards Program, you
-            hereby acknowledge and agree to be bound to the terms of the Collective Rewards Program and to
-            submit your KYC information to the RootstockCollective Foundation. You accept that the information
-            submitted will be treated pursuant to the Privacy Policy.
+            By submitting your request to become a whitelisted Builder in the Collective Rewards, you hereby
+            acknowledge and agree to be bound to the terms of the Collective Rewards and to submit your KYC
+            information to the RootstockCollective Foundation. You accept that the information submitted will
+            be treated pursuant to the Privacy Policy.
           </Typography>
         </div>
         <div className="flex flex-row justify-center items-center text-center gap-x-10">
