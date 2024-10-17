@@ -4,6 +4,7 @@ import { TreasuryContextProviderWithPrices } from '@/app/treasury/TreasuryContex
 import { TreasurySection } from '@/app/treasury/TreasurySection'
 import { TotalTokenHoldingsSection } from '@/app/treasury/TotalTokenHoldingsSection'
 import { MetricsSection } from '@/app/treasury/MetricsSection'
+import { HoldersSection } from '@/app/treasury/HoldersSection'
 
 export default function Treasury() {
   return (
@@ -13,6 +14,7 @@ export default function Treasury() {
           <TreasurySection />
           <TotalTokenHoldingsSection />
           <MetricsSection />
+          <HoldersSection />
         </div>
       </TreasuryContextProviderWithPrices>
     </MainContainer>
