@@ -92,7 +92,11 @@ export default function Page() {
           <>
             To get the Early Adopters community NFT you need to own at least ${formatEther(stRifThreshold!)}{' '}
             stRIFs.{' '}
-            <span className="underline cursor-pointer" onClick={() => router.push('/user?action=stake')}>
+            <span
+              className="underline cursor-pointer"
+              onClick={() => router.push('/user?action=stake')}
+              data-testid="stakeRifLink"
+            >
               Stake RIF tokens now.
             </span>
           </>
@@ -183,6 +187,7 @@ export default function Page() {
     <MainContainer notProtected>
       {message && (
         <div
+          data-testid="alertMessage"
           className={cn(
             'bg-opacity-10 border text-st-white rounded-md p-4 mb-4',
             message?.severity === 'error'
