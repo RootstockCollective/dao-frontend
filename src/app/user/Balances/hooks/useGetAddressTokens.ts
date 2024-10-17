@@ -17,13 +17,17 @@ const getTokenFunction = (
     args: functionName === 'balanceOf' ? ([userAddress.toLowerCase()] as [Address]) : ([] as []),
   }) as const
 
-type TokenData = [{ result: string | bigint }, { result: string | bigint }]
+type TokenData = { result: string | bigint; error?: object }
+type TokenDataArr = [TokenData, TokenData]
 
-const buildTokenBalanceObject = (symbol: keyof typeof tokenContracts, tokenData?: TokenData) => ({
-  symbol: tokenData ? tokenData?.[1]?.result : symbol,
-  contractAddress: tokenContracts[symbol],
-  balance: tokenData?.[0]?.result ? tokenData[0].result.toString() : '0',
-})
+const buildTokenBalanceObject = (symbol: keyof typeof tokenContracts, tokenDataArr?: TokenDataArr) => {
+  const [balanceData, symbolData] = tokenDataArr ?? []
+  return {
+    symbol: symbolData?.result && !symbolData?.error ? symbolData.result : symbol,
+    contractAddress: tokenContracts[symbol],
+    balance: balanceData?.result && !balanceData?.error ? balanceData.result.toString() : '0',
+  }
+}
 
 export const useGetAddressTokens = (address: Address, chainId: number) => {
   const { data: RBTC } = useBalance({ address, chainId })
@@ -40,12 +44,12 @@ export const useGetAddressTokens = (address: Address, chainId: number) => {
     },
   })
 
-  const RIF = data && ([data[0], data[1]] as TokenData)
-  const stRIF = data && ([data[2], data[3]] as TokenData)
+  const RIF = data && ([data[0], data[1]] as TokenDataArr)
+  const stRIF = data && ([data[2], data[3]] as TokenDataArr)
   return {
     data: [
-      buildTokenBalanceObject('stRIF', stRIF as TokenData),
-      buildTokenBalanceObject('RIF', RIF as TokenData),
+      buildTokenBalanceObject('stRIF', stRIF),
+      buildTokenBalanceObject('RIF', RIF),
       {
         symbol: RBTC?.symbol || 'RBTC',
         balance: RBTC?.value.toString() || '0',
