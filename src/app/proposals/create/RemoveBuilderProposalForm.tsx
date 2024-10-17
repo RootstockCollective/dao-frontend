@@ -14,22 +14,27 @@ import {
 import { TX_MESSAGES } from '@/shared/txMessages'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useRouter, useSearchParams } from 'next/navigation'
-import { FC, useEffect } from 'react'
+import { FC, useEffect, useState } from 'react'
 import { useForm } from 'react-hook-form'
 import { Address, isAddress } from 'viem'
 import { z } from 'zod'
-import { CreateProposalHeaderSection } from './CreateProposalHeaderSection'
+import { CreateProposalHeaderSection } from '@/app/proposals/create/CreateProposalHeaderSection'
+import { Accordion, AccordionItem, AccordionTrigger, AccordionContent } from '@/components/Accordion'
+import { Header, Paragraph } from '@/components/Typography'
+import { Button } from '@/components/Button'
 
 const FormSchema = z.object({
   proposalName: z
     .string()
     .max(100)
     .refine(s => s.trim().replace(/\s+/g, ' ').length >= 5, 'Field must contain at least 5 characters'),
-  builderAddress: z.string().refine(value => isAddress(value), 'Please enter a valid address'),
   description: z
     .string()
     .max(3000)
     .refine(s => s.trim().replace(/\s+/g, ' ').length >= 10, 'Field must contain at least 10 characters'),
+  builderAddress: z
+    .string()
+    .refine(value => isAddress(value), 'Write or paste the address to be de-whitelisted'),
 })
 
 export const RemoveBuilderProposalForm: FC = () => {
@@ -44,6 +49,8 @@ export const RemoveBuilderProposalForm: FC = () => {
     console.error('🐛 Error writing to contract:', error)
   }
 
+  const [activeStep, setActiveStep] = useState('proposal')
+
   const form = useForm<z.infer<typeof FormSchema>>({
     mode: 'onTouched',
     resolver: zodResolver(FormSchema),
@@ -57,8 +64,16 @@ export const RemoveBuilderProposalForm: FC = () => {
   const {
     control,
     handleSubmit,
-    formState: { isValid, isDirty },
+    formState: { touchedFields, errors, isValid, isDirty },
   } = form
+
+  const isProposalNameValid = !errors.proposalName && touchedFields.proposalName
+  const isDescriptionValid = !errors.description && touchedFields.description
+  const isProposalCompleted = isProposalNameValid && isDescriptionValid
+  const isBuilderAddressValid = !errors.builderAddress && touchedFields.builderAddress
+  const isActionsCompleted = isBuilderAddressValid
+
+  const handleProposalCompleted = () => setActiveStep('actions')
 
   const onSubmit = async (data: z.infer<typeof FormSchema>) => {
     const { proposalName, description, builderAddress } = data
@@ -88,49 +103,90 @@ export const RemoveBuilderProposalForm: FC = () => {
     <Form {...form}>
       <form onSubmit={handleSubmit(onSubmit)}>
         <CreateProposalHeaderSection disabled={!isDirty || !isValid || isPublishing} loading={isPublishing} />
-        <FormField
-          control={control}
-          name="proposalName"
-          render={({ field }) => (
-            <FormItem className="mb-6 mx-1">
-              <FormLabel>Proposal name</FormLabel>
-              <FormControl>
-                <FormInput placeholder="Name your proposal" {...field} maxLength={100} />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-        <FormField
-          control={control}
-          name="builderAddress"
-          render={({ field }) => (
-            <FormItem className="mb-6 mx-1">
-              <FormLabel>Builder address</FormLabel>
-              <FormControl>
-                <FormInput placeholder="Write or paste the builder address" {...field} maxLength={100} />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-        <FormField
-          control={control}
-          name="description"
-          render={({ field }) => (
-            <FormItem className="mb-6 mx-1">
-              <FormLabel>Description</FormLabel>
-              <FormControl>
-                <FormTextarea
-                  placeholder="Enter the reason for de-whitelisting and any supporting evidence..."
-                  {...field}
-                  maxLength={3000}
-                />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
+        <Accordion
+          type="single"
+          collapsible
+          value={activeStep}
+          onValueChange={setActiveStep}
+          className="pl-4 container"
+        >
+          <AccordionItem value="proposal">
+            <AccordionTrigger>
+              <div className="flex justify-between align-middle w-full">
+                <Header variant="h1" className="text-[24px] font-[400]" fontFamily="kk-topo">
+                  PROPOSAL
+                </Header>
+                {isProposalCompleted && (
+                  <Paragraph className="self-center mr-6 text-md text-st-success">Completed</Paragraph>
+                )}
+              </div>
+            </AccordionTrigger>
+            <AccordionContent>
+              <FormField
+                control={control}
+                name="proposalName"
+                render={({ field }) => (
+                  <FormItem className="mb-6 mx-1">
+                    <FormLabel>Proposal name</FormLabel>
+                    <FormControl>
+                      <FormInput placeholder="Name your proposal" {...field} maxLength={100} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={control}
+                name="description"
+                render={({ field }) => (
+                  <FormItem className="mb-6 mx-1">
+                    <FormLabel>Description</FormLabel>
+                    <FormControl>
+                      <FormTextarea
+                        placeholder="Enter the reason for de-whitelisting and any supporting evidence..."
+                        {...field}
+                        maxLength={3000}
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <div className="flex justify-center mb-6">
+                <Button disabled={!isProposalCompleted} onClick={handleProposalCompleted}>
+                  Continue
+                </Button>
+              </div>
+            </AccordionContent>
+          </AccordionItem>
+          <AccordionItem value="actions" className="border-0">
+            <AccordionTrigger>
+              <div className="flex justify-between align-middle w-full">
+                <Header variant="h1" className="text-[24px] font-[400]" fontFamily="kk-topo">
+                  ACTIONS
+                </Header>
+                {isActionsCompleted && (
+                  <Paragraph className="self-center mr-6 text-md text-st-success">Completed</Paragraph>
+                )}
+              </div>
+            </AccordionTrigger>
+            <AccordionContent>
+              <FormField
+                control={control}
+                name="builderAddress"
+                render={({ field }) => (
+                  <FormItem className="mb-6 mx-1">
+                    <FormLabel>Address to de-whitelisted</FormLabel>
+                    <FormControl>
+                      <FormInput placeholder="0x..." {...field} maxLength={100} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            </AccordionContent>
+          </AccordionItem>
+        </Accordion>
       </form>
     </Form>
   )

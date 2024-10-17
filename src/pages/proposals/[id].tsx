@@ -427,7 +427,7 @@ const CalldataDisplay = ({ functionName, args, inputs }: DecodedData) => (
         return (
           <li key={index} className="my-2">
             <Paragraph variant="semibold" className="text-[16px] break-words">
-              {formattedInputName}:{' '}
+              {formattedInputName}{' '}
               {InputComponent && (
                 <InputComponent
                   value={inputValue}

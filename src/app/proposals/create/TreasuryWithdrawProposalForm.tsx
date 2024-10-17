@@ -28,7 +28,7 @@ import {
   FormInputNumber,
   Form,
 } from '@/components/Form'
-import { Accordion, AccordionItem, AccordionTrigger, AccordionContent } from '@radix-ui/react-accordion'
+import { Accordion, AccordionItem, AccordionTrigger, AccordionContent } from '@/components/Accordion'
 import { useVotingPower } from '@/app/proposals/hooks/useVotingPower'
 import { useCreateTreasuryTransferProposal } from '@/app/proposals/hooks/useCreateTreasuryTransferProposal'
 import React from 'react'
