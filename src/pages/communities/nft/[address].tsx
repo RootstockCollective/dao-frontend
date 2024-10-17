@@ -309,6 +309,7 @@ export default function Page() {
                     onClick={handleMinting}
                     disabled={!tokensAvailable || !address || isClaiming}
                     loading={isClaiming}
+                    data-testid="claimButton"
                   >
                     Claim it!
                   </Button>
