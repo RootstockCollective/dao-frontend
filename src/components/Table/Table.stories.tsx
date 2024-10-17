@@ -1,19 +1,10 @@
 import type { Meta, StoryObj } from '@storybook/react'
 import { Table } from './Table'
 import { tableSampleData } from './tableSampleData'
-import tableDocs from './tableDocs.md'
 
 const meta = {
   title: 'Components/Table',
   component: Table,
-  parameters: {
-    docs: {
-      description: {
-        // docs in MD format
-        component: tableDocs,
-      },
-    },
-  },
 } satisfies Meta<typeof Table>
 
 export default meta

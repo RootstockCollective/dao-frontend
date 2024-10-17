@@ -33,6 +33,8 @@ interface MetricsCardProps {
   'data-testid'?: string
 }
 
+const DEFAULT_CLASSES = 'h-min-[79px] w-full py-[12px] px-[12px] flex flex-col bg-foreground'
+
 /**
  * Card for displaying balance and corresponding (fiat) value.
  */
@@ -46,10 +48,7 @@ export const MetricsCard: FC<MetricsCardProps> = ({
 }) => {
   const borderClasses = borderless ? '' : 'border border-white border-opacity-40 rounded-lg'
   return (
-    <div
-      className={cn('h-min-[95px] w-full py-[12px] px-[12px] flex flex-col bg-foreground', borderClasses)}
-      data-testid={dataTestId || 'MetricsCard'}
-    >
+    <div className={cn(DEFAULT_CLASSES, borderClasses)} data-testid={dataTestId || 'MetricsCard'}>
       {typeof title === 'string' ? (
         <div>
           <Typography

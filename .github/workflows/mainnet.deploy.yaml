@@ -1,28 +1,27 @@
-name: Deploy to Amazon ECS (QA)
+name: Deploy to Amazon ECS (Mainnet)
 
 on:
-  workflow_dispatch: # Manually triggered from GitHub Actions tab
-  pull_request:
-    types: [labeled] # Triggered by a label in a PR
+  release:
+    types: [released]
 
 env:
   AWS_REGION: us-east-1
-  ECR_REPOSITORY: bim-dao-frontend-qa
-  ECS_SERVICE: bim-dao-frontend
-  ECS_CLUSTER: bim-dao-frontend-qa
-  ECS_TASK_DEFINITION: bim-dao-frontend-qa
-  CONTAINER_NAME: bim-dao-frontend
+  ECR_REPOSITORY: dao-frontend-mainnet
+  ECS_CLUSTER: dao-frontend
+  ECS_SERVICE: dao-frontend-mainnet
+  ECS_TASK_DEFINITION: dao-frontend-mainnet
+  CONTAINER_NAME: dao-frontend-mainnet
 
-  PROFILE: testnet.qa
+  PROFILE: mainnet
 
 jobs:
   deploy:
     name: Deploy
     runs-on: ubuntu-latest
-    if: |
-      github.event_name == 'workflow_dispatch' || github.event.label.name == 'deploy to QA'
     environment:
-      name: QA
+      name: mainnet
+      url: https://app.rootstockcollective.xyz
+
     permissions:
       id-token: write
       contents: read
@@ -34,12 +33,12 @@ jobs:
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v4
         with:
-          role-to-assume: ${{ secrets.AWS_LOGIN_TESTNET_ROLE_ARN }}
+          role-to-assume: ${{ secrets.AWS_LOGIN_MAINNET_ROLE_ARN }}
           aws-region: ${{ env.AWS_REGION }}
 
       - name: Login to Amazon ECR
         id: login-ecr
-        uses: aws-actions/amazon-ecr-login@v2
+        uses: aws-actions/amazon-ecr-login@v1
 
       - name: Build, tag, and push image to Amazon ECR
         id: build-image
