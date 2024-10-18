@@ -6,7 +6,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { useRouter } from 'next/navigation'
 import { SupportedActionAbiName, SupportedProposalActionName } from '@/app/proposals/shared/supportedABIs'
 
-const proposalTypesOptions = ['Whitelist', 'De-whitelisting', 'Treasury'] as const
+const proposalTypesOptions = ['Whitelist', 'De-whitelist', 'Standard'] as const
 
 type ProposalType = (typeof proposalTypesOptions)[number]
 
@@ -19,19 +19,19 @@ type ProposalTypeDetails = {
 const typesMap: Record<ProposalType, ProposalTypeDetails> = {
   Whitelist: {
     description:
-      'This proposal adds a new member or address to the Rootstock Collective’s approved list, granting them special privileges or access. It is essential for trusted participation.',
+      'Propose a vote to add a Builder to the RootstockCollective’s approved list, giving them access to the Collective Rewards.',
     contract: 'SimplifiedRewardDistributorAbi',
     action: 'whitelistBuilder',
   },
-  'De-whitelisting': {
+  'De-whitelist': {
     description:
-      'This proposal removes a member or address from the Rootstock Collective’s approved list, revoking their special privileges or access due to inactivity or other concerns.',
+      'Propose a vote to remove a Builder from the RootstockCollective’s approved list, revoking their access to the Collective Rewards.',
     contract: 'SimplifiedRewardDistributorAbi',
     action: 'removeWhitelistedBuilder',
   },
-  Treasury: {
+  Standard: {
     description:
-      'A request for funds from the Rootstock Collective’s treasury to support specific projects or initiatives that align with community goals. Approval directs funds towards growth and development.',
+      'Propose a vote to request funds from the RootstockCollective’s treasury to support projects or initiatives aligned with community goals.',
     contract: 'DAOTreasuryAbi',
     action: 'withdraw',
   },
