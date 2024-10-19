@@ -3,7 +3,7 @@ import { SimplifiedRewardDistributorAbi } from '@/lib/abis/SimplifiedRewardDistr
 import { GovernorAddress, SimplifiedRewardDistributorAddress } from '@/lib/contracts'
 import { Address, encodeFunctionData, getAddress } from 'viem'
 import { useWriteContract } from 'wagmi'
-import { createProposal } from './proposalUtils'
+import { createProposal, encodeGovernorRelayCallData } from './proposalUtils'
 import { useVotingPower } from './useVotingPower'
 
 export const useCreateBuilderWhitelistProposal = () => {
@@ -19,8 +19,9 @@ export const useCreateBuilderWhitelistProposal = () => {
       throw new Error('You do not have enough voting power to create a proposal')
     }
     const calldata = encodeWhitelistBuilderCalldata(builderAddress, receiverAddress)
+    const relayCallData = encodeGovernorRelayCallData(SimplifiedRewardDistributorAddress, calldata)
 
-    const { proposal } = createProposal([SimplifiedRewardDistributorAddress], [0n], [calldata], description)
+    const { proposal } = createProposal([GovernorAddress], [0n], [relayCallData], description)
 
     return await propose({
       abi: GovernorAbi,

@@ -7,6 +7,7 @@ import {
   FunctionInputs,
   SupportedProposalActionName,
 } from '@/app/proposals/shared/supportedABIs'
+import { GovernorAbi } from '@/lib/abis/Governor'
 import { ZeroAddress } from 'ethers'
 import { RIF_ADDRESS } from '@/lib/constants'
 import { formatBalanceToHuman } from '@/app/user/Balances/balanceUtils'
@@ -35,16 +36,20 @@ export type DecodedData = {
 }
 
 const tryDecode = (data: string): DecodedData => {
-  for (const abi of abis) {
+  for (const abi of [...abis, GovernorAbi]) {
     try {
       const { functionName, args } = decodeFunctionData({ data: data as Hash, abi })
+
+      if (functionName === 'relay') {
+        return tryDecode(args[2])
+      }
 
       const functionDefinition =
         abi.find(item => 'name' in item && item.name === functionName) || ({} as FunctionEntry)
 
       return {
         functionName: functionName as SupportedProposalActionName,
-        args,
+        args: args as DecodedFunctionData['args'],
         inputs: ('inputs' in functionDefinition ? functionDefinition.inputs : []) as FunctionInputs,
       }
     } catch (_) {
@@ -108,4 +113,6 @@ export const actionFormatterMap = {
 }
 
 // each parameter uses 32 bytes in the calldata but we only need the address which is 20 bytes
-export const ADDRESS_PADDED_BYTES = '000000000000000000000000'
+export const ADDRESS_PADDING_LENGTH = 24
+
+export const RELAY_PARAMETER_PADDING_LENGTH = 256

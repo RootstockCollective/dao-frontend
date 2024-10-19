@@ -1,5 +1,6 @@
+import { GovernorAbi } from '@/lib/abis/Governor'
 import { solidityPackedKeccak256 } from 'ethers'
-import { Abi, Address, encodeFunctionData } from 'viem'
+import { Abi, Address, encodeFunctionData, EncodeFunctionDataReturnType } from 'viem'
 
 export const createProposal = <T extends Abi>(
   targetAddresses: Address[],
@@ -14,4 +15,12 @@ export const createProposal = <T extends Abi>(
     proposal,
     proposalToRunHash,
   }
+}
+
+export const encodeGovernorRelayCallData = (target: Address, calldata: EncodeFunctionDataReturnType) => {
+  return encodeFunctionData({
+    abi: GovernorAbi,
+    functionName: 'relay',
+    args: [target, 0n, calldata],
+  })
 }

@@ -4,7 +4,7 @@ import { SimplifiedRewardDistributorAbi } from '@/lib/abis/SimplifiedRewardDistr
 import { GovernorAddress, SimplifiedRewardDistributorAddress } from '@/lib/contracts'
 import { Address, encodeFunctionData } from 'viem'
 import { useVotingPower } from './useVotingPower'
-import { createProposal } from './proposalUtils'
+import { createProposal, encodeGovernorRelayCallData } from './proposalUtils'
 
 export const useRemoveBuilderProposal = () => {
   const { canCreateProposal } = useVotingPower()
@@ -15,8 +15,9 @@ export const useRemoveBuilderProposal = () => {
       throw new Error('You do not have enough voting power to create a proposal')
     }
     const calldata = encodeRemoveBuilderCalldata(builderAddress)
+    const relayCallData = encodeGovernorRelayCallData(SimplifiedRewardDistributorAddress, calldata)
 
-    const { proposal } = createProposal([SimplifiedRewardDistributorAddress], [0n], [calldata], description)
+    const { proposal } = createProposal([GovernorAddress], [0n], [relayCallData], description)
 
     return await propose({
       abi: GovernorAbi,

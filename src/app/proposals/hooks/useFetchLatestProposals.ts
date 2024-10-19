@@ -5,7 +5,7 @@ import { useQuery, UseQueryResult } from '@tanstack/react-query'
 import { Interface } from 'ethers'
 import { useMemo } from 'react'
 import { getAddress, parseEventLogs } from 'viem'
-import { ADDRESS_PADDED_BYTES } from '@/app/proposals/shared/utils'
+import { ADDRESS_PADDING_LENGTH, RELAY_PARAMETER_PADDING_LENGTH } from '@/app/proposals/shared/utils'
 
 const useFetchLatestProposals = () => {
   return useQuery({
@@ -41,6 +41,12 @@ export const useFetchAllProposals = () => {
   }, [data])
 
   return { latestProposals }
+}
+
+const RELAY_FUNCTION = 'relay'
+const RELAY_FUNCTION_SELECTOR = new Interface(GovernorAbi).getFunction(RELAY_FUNCTION)?.selector
+if (!RELAY_FUNCTION_SELECTOR) {
+  throw new Error(`Function ${RELAY_FUNCTION} not found in GovernorAbi.`)
 }
 
 const BIM_WHITELIST_FUNCTION = 'whitelistBuilder' // TODO: refactor
@@ -87,14 +93,20 @@ export const useFetchCreateBuilderProposals = (): ProposalQueryResult<ProposalsP
     const eventsMap = new Map(events.map(eventItem => [eventItem.args.proposalId, eventItem])).values()
 
     // why can't we use block number instead of timestamp which is not supported by the type?
-    const sortedEvents = Array.from(eventsMap).sort(({ timeStamp: a }, { timeStamp: b }) => b - a)
-    const bimProposalMap = sortedEvents.reduce<ProposalsPerBuilder>((acc, event) => {
+    const sortedAndRelayFilteredEvents = Array.from(eventsMap)
+      .sort(({ timeStamp: a }, { timeStamp: b }) => b - a)
+      .filter(({ args: { calldatas } }) =>
+        calldatas.find(calldata => calldata.startsWith(RELAY_FUNCTION_SELECTOR)),
+      )
+    const bimProposalMap = sortedAndRelayFilteredEvents.reduce<ProposalsPerBuilder>((acc, event) => {
+      const bimWhitelistFunctionHash = BIM_WHITELIST_FUNCTION_SELECTOR.slice(2)
+      const relayPadding = RELAY_FUNCTION_SELECTOR.length + RELAY_PARAMETER_PADDING_LENGTH
       const bimEventCalldatas = event.args.calldatas.find(calldata =>
-        calldata.startsWith(BIM_WHITELIST_FUNCTION_SELECTOR),
+        calldata.startsWith(bimWhitelistFunctionHash, relayPadding),
       )
 
       if (bimEventCalldatas) {
-        const addressStart = BIM_WHITELIST_FUNCTION_SELECTOR.length + ADDRESS_PADDED_BYTES.length
+        const addressStart = relayPadding + bimWhitelistFunctionHash.length + ADDRESS_PADDING_LENGTH
         const addressEnd = addressStart + 40
         const addressSlice = `0x${bimEventCalldatas.slice(addressStart, addressEnd)}`
         let builder
