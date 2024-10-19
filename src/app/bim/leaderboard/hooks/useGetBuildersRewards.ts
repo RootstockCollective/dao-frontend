@@ -7,7 +7,7 @@ import { getLastRewardValid } from '@/app/bim/utils/getLastRewardValid'
 import { useGetWhitelistedBuilders } from '@/app/bim/hooks/useGetWhitelistedBuilders'
 import { getShare } from '@/app/bim/utils/getShare'
 
-export const useGetBuildersRewards = (rewardToken: Address, currency = 'USD', currencySymbol = '$') => {
+export const useGetBuildersRewards = (rewardToken: Address, currency = 'USD') => {
   const {
     data: whitelistedBuilders,
     isLoading: whitelistedBuildersLoading,
@@ -24,7 +24,6 @@ export const useGetBuildersRewards = (rewardToken: Address, currency = 'USD', cu
 
   const { data: token, isLoading: tokenLoading, error: tokenError } = useGetTokenProjectedReward(rewardToken)
   const tokenSymbol = token.symbol ?? ''
-  const tokenBalance = BigInt(token.balance)
 
   const projectedRewardInHuman = Number(formatBalanceToHuman(token.projectedReward))
 
@@ -45,23 +44,23 @@ export const useGetBuildersRewards = (rewardToken: Address, currency = 'USD', cu
       return {
         address: builder,
         lastEpochReward: {
-          onChain: {
+          crypto: {
             value: lastRewardInHuman,
             symbol: tokenSymbol,
           },
           fiat: {
             value: price * lastRewardInHuman,
-            currency,
+            symbol: currency,
           },
         },
         projectedReward: {
-          onChain: {
+          crypto: {
             value: projectedRewardInHuman,
             symbol: tokenSymbol,
           },
           fiat: {
             value: price * projectedRewardInHuman,
-            currency,
+            symbol: currency,
           },
         },
         share: `${getShare(token)}%`,
