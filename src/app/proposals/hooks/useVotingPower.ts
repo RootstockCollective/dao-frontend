@@ -38,7 +38,7 @@ export const useVotingPower = () => {
   return {
     isLoading: false,
     votingPower: formatUnits(balance, decimals),
-    canCreateProposal: true,
+    canCreateProposal: balance >= threshold,
     threshold: formatUnits(threshold, decimals),
   }
 }

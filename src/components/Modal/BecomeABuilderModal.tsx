@@ -1,12 +1,14 @@
 import { FC, useState } from 'react'
 import { cn } from '@/lib/utils'
 import { Modal } from '@/components/Modal/Modal'
-import { Header, Typography } from '@/components/Typography'
+import { Header, Paragraph, Typography } from '@/components/Typography'
 import { Button } from '@/components/Button'
 import { BsCardText } from 'react-icons/bs'
 import { RiPassportLine } from 'react-icons/ri'
 import { useRouter } from 'next/navigation'
 import { SupportedActionAbiName, SupportedProposalActionName } from '@/app/proposals/shared/supportedABIs'
+import { useVotingPower } from '@/app/proposals/hooks/useVotingPower'
+import { Popover } from '../Popover'
 
 type DisclaimerProps = {
   onAccept: () => void
@@ -85,6 +87,8 @@ type BecomeABuilderProps = {
 }
 
 const BecomeABuilder: FC<BecomeABuilderProps> = ({ onStartKYC, onSubmitProposal }) => {
+  const { canCreateProposal, threshold } = useVotingPower()
+
   return (
     <div className="flex flex-col items-center gap-y-2 py-[50px]">
       <Header variant="h1" fontFamily="kk-topo" className="text-5xl font-bold text-center uppercase">
@@ -105,7 +109,26 @@ const BecomeABuilder: FC<BecomeABuilderProps> = ({ onStartKYC, onSubmitProposal 
         <div className="flex flex-col items-center gap-4">
           <BsCardText size={48} />
           Create a <br /> proposal
-          <Button onClick={onSubmitProposal}>Submit proposal</Button>
+          {!canCreateProposal ? (
+            <Popover
+              content={
+                <Paragraph variant="normal" className="text-sm">
+                  Almost there! You need {threshold} stRIF to create a proposal. Stake more RIF to get
+                  started.
+                </Paragraph>
+              }
+              trigger="hover"
+              background="dark"
+              size="small"
+              position="right"
+            >
+              <Button onClick={onSubmitProposal} disabled>
+                Submit proposal
+              </Button>
+            </Popover>
+          ) : (
+            <Button onClick={onSubmitProposal}>Submit proposal</Button>
+          )}
         </div>
       </div>
     </div>

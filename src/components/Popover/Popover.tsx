@@ -7,7 +7,7 @@ interface Props {
   content: ReactNode
   trigger?: 'click' | 'hover'
   background?: 'dark' | 'light'
-  position?: 'top' | 'bottom'
+  position?: 'top' | 'bottom' | 'right' | 'left'
   size?: 'small' | 'medium'
   hasCaret?: boolean
 }
@@ -60,6 +60,8 @@ export const Popover = ({
           'absolute z-50 transition-all',
           position === 'top' && 'bottom-full',
           position === 'bottom' && 'top-full',
+          position === 'right' && 'left-full bottom-full',
+          position === 'left' && 'right-full bottom-full',
           size === 'small' && 'w-36',
           size === 'medium' && 'w-96',
         )}
@@ -79,7 +81,7 @@ export const Popover = ({
   )
 }
 
-const PopoverCaret = ({ position }: { position: 'top' | 'bottom' }) => (
+const PopoverCaret = ({ position }: { position: 'top' | 'bottom' | 'right' | 'left' }) => (
   <>
     {position === 'top' && (
       <div className="absolute inset-x-0 flex justify-center" style={{ bottom: '2px' }}>
@@ -89,6 +91,16 @@ const PopoverCaret = ({ position }: { position: 'top' | 'bottom' }) => (
     {position === 'bottom' && (
       <div className="absolute inset-x-0 flex justify-center" style={{ top: '-8px' }}>
         <div className="w-0 h-0 border-b-8 border-b-white border-x-8 border-x-transparent"></div>
+      </div>
+    )}
+    {position === 'right' && (
+      <div className="absolute top-1/2 bottom-1/2 flex justify-center" style={{ left: '-8px' }}>
+        <div className="w-0 h-0 border-r-8 border-r-white border-y-8 border-y-transparent"></div>
+      </div>
+    )}
+    {position === 'left' && (
+      <div className="absolute top-1/2 bottom-1/2 flex justify-center" style={{ right: '-8px' }}>
+        <div className="w-0 h-0 border-l-8 border-l-white border-y-8 border-y-transparent"></div>
       </div>
     )}
   </>
