@@ -22,8 +22,13 @@ import { useVotingPowerRedirect } from '@/app/proposals/hooks/useVotingPowerRedi
 import { Accordion, AccordionItem, AccordionTrigger, AccordionContent } from '@/components/Accordion'
 import { Header, Paragraph } from '@/components/Typography'
 import { Button } from '@/components/Button'
+import { DISPLAY_NAME_SEPARATOR } from '../shared/utils'
 
 const FormSchema = z.object({
+  builderName: z
+    .string()
+    .max(100)
+    .refine(s => s.trim().replace(/\s+/g, ' ').length >= 5, 'Field must contain at least 5 characters'),
   proposalName: z
     .string()
     .max(100)
@@ -54,6 +59,7 @@ export const CreateBuilderProposalForm: FC = () => {
     mode: 'onTouched',
     resolver: zodResolver(FormSchema),
     defaultValues: {
+      builderName: '',
       proposalName: '',
       builderAddress: '' as Address,
       receiverAddress: '',
@@ -67,9 +73,11 @@ export const CreateBuilderProposalForm: FC = () => {
     formState: { touchedFields, errors, isValid, isDirty },
   } = form
 
+  const isBuilderNameValid = !errors.builderName && touchedFields.builderName
   const isProposalNameValid = !errors.proposalName && touchedFields.proposalName
   const isDescriptionValid = !errors.description && touchedFields.description
-  const isProposalCompleted = isProposalNameValid && isDescriptionValid
+  const isProposalCompleted = isBuilderNameValid && isProposalNameValid && isDescriptionValid
+
   const isBuilderAddressValid = !errors.builderAddress && touchedFields.builderAddress
   const isReceiverAddressValid = !errors.receiverAddress && touchedFields.receiverAddress
   const isActionsCompleted = isBuilderAddressValid && isReceiverAddressValid
@@ -77,8 +85,8 @@ export const CreateBuilderProposalForm: FC = () => {
   const handleProposalCompleted = () => setActiveStep('actions')
 
   const onSubmit = async (data: z.infer<typeof FormSchema>) => {
-    const { proposalName, description, builderAddress, receiverAddress } = data
-    const proposalDescription = `${proposalName};${description}`
+    const { builderName, proposalName, description, builderAddress, receiverAddress } = data
+    const proposalDescription = `${proposalName}${DISPLAY_NAME_SEPARATOR}${builderName};${description}`
 
     try {
       const txHash = await onCreateBuilderWhitelistProposal(
@@ -119,12 +127,25 @@ export const CreateBuilderProposalForm: FC = () => {
             <AccordionContent>
               <FormField
                 control={control}
+                name="builderName"
+                render={({ field }) => (
+                  <FormItem className="mb-6 mx-1">
+                    <FormLabel>Builder name</FormLabel>
+                    <FormControl>
+                      <FormInput placeholder="Write your builder/protocol name" {...field} maxLength={100} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={control}
                 name="proposalName"
                 render={({ field }) => (
                   <FormItem className="mb-6 mx-1">
                     <FormLabel>Proposal name</FormLabel>
                     <FormControl>
-                      <FormInput placeholder="Name your proposal" {...field} maxLength={100} />
+                      <FormInput placeholder="Write proposal name" {...field} maxLength={100} />
                     </FormControl>
                     <FormMessage />
                   </FormItem>

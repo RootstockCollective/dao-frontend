@@ -16,11 +16,11 @@ import {
   InputValueComposerMap,
   SupportedProposalActionName,
 } from '@/app/proposals/shared/supportedABIs'
-import { DecodedData, getEventArguments } from '@/app/proposals/shared/utils'
+import { DecodedData, getEventArguments, splitCombinedName } from '@/app/proposals/shared/utils'
 import { useAlertContext } from '@/app/providers'
 import { formatBalanceToHuman } from '@/app/user/Balances/balanceUtils'
 import { useModal } from '@/app/user/Balances/hooks/useModal'
-import { Address as AddressComponent } from '@/components/Address'
+import { AddressOrAlias as AddressComponent } from '@/components/Address'
 import {
   Breadcrumb,
   BreadcrumbItem,
@@ -182,12 +182,14 @@ const PageWithProposal = (proposal: ParsedProposal) => {
 
   const proposalType: SupportedProposalActionName = proposal.calldatasParsed[0]?.functionName
 
+  const { proposalName, builderName } = splitCombinedName(name)
+
   // @ts-ignore
   return (
     <div className="pl-4 grid grid-rows-1 gap-[32px] mb-[100px]">
-      <BreadcrumbSection title={name} />
+      <BreadcrumbSection title={proposalName} />
       <div className="flex items-center justify-between">
-        <Header className="text-2xl ">{name}</Header>
+        <Header className="text-2xl ">{proposalName}</Header>
         {proposalType === 'whitelistBuilder' && (
           <DewhitelistButton
             proposal={proposal}
@@ -200,14 +202,34 @@ const PageWithProposal = (proposal: ParsedProposal) => {
       <div className="flex flex-row gap-4 items-baseline">
         <div className="flex flex-row items-baseline gap-1">
           <Paragraph className="text-sm text-gray-500">Proposed by: </Paragraph>
-          <CopyButton icon={null} copyText={proposer} className="text-primary font-semibold">
-            {truncateMiddle(proposer, 3, 3)}
-          </CopyButton>
+          <Popover
+            content={
+              <div className="text-[12px] font-bold mb-1">
+                <p data-testid="addressTooltip">{proposer}</p>
+              </div>
+            }
+            size="small"
+            trigger="hover"
+          >
+            <CopyButton icon={null} copyText={proposer} className="text-primary font-semibold">
+              {builderName || truncateMiddle(proposer, 3, 3)}
+            </CopyButton>
+          </Popover>
         </div>
         <Paragraph className="text-sm text-gray-500">Created {Starts.fromNow()}</Paragraph>
-        <CopyButton icon={null} copyText={proposalId} className="font-semibold text-primary">
-          ID {truncateMiddle(proposalId, 3, 3)}
-        </CopyButton>
+        <Popover
+          content={
+            <div className="text-[12px] font-bold mb-1">
+              <p data-testid="proposalIDTooltip">{proposalId}</p>
+            </div>
+          }
+          size="small"
+          trigger="hover"
+        >
+          <CopyButton icon={null} copyText={proposalId} className="font-semibold text-primary">
+            ID {truncateMiddle(proposalId, 3, 3)}
+          </CopyButton>
+        </Popover>
         {blocksUntilClosure !== null && proposalState === ProposalState.Active && (
           <Paragraph className="text-sm text-gray-500">
             Blocks until closure: <span className="text-primary">{blocksUntilClosure.toString()}</span>
@@ -494,7 +516,7 @@ export const actionInputNameFormatMap: Partial<
 }
 
 const AddressInputComponent: InputValueComponent<'address'> = ({ value, htmlProps }) => (
-  <AddressComponent {...htmlProps} address={value.toString()} />
+  <AddressComponent {...htmlProps} addressOrAlias={value.toString()} />
 )
 
 const BigIntInputComponent: InputValueComponent<'bigint'> = ({ value, htmlProps }) => (

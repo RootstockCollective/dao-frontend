@@ -4,7 +4,7 @@ import { Span } from '@/components/Typography'
 import { isAddress } from 'viem'
 
 export interface AddressProps {
-  address: string
+  addressOrAlias: string
 }
 
 const CopySvg = ({ color = 'white' }) => {
@@ -30,7 +30,7 @@ const CopySvg = ({ color = 'white' }) => {
 
 type CopyStatus = 'success' | 'error'
 
-export const Address: React.FC<AddressProps> = ({ address }) => {
+export const AddressOrAlias: React.FC<AddressProps> = ({ addressOrAlias }) => {
   const [animationShown, setAnimationShown] = useState(false)
   const [copied, setCopied] = useState('success' as CopyStatus)
   const onClick = async () => {
@@ -39,7 +39,7 @@ export const Address: React.FC<AddressProps> = ({ address }) => {
     }
 
     try {
-      await navigator.clipboard.writeText(address)
+      await navigator.clipboard.writeText(addressOrAlias)
       setCopied('success')
     } catch (error) {
       console.error(error instanceof Error ? error.message : 'Cannot copy contents to the clipboard')
@@ -66,21 +66,20 @@ export const Address: React.FC<AddressProps> = ({ address }) => {
     success: '#22AD5C',
     error: '#FF0000',
   }[copied]
-
   const copyColor = animationShown ? copyColorValue : 'white'
-  const addressClass = `text-sm ${animationShown ? 'animate-fade-out-slide-out' : ''}`
+  const addressClass = `font-normal text-base leading-none text-text-primary ${animationShown ? 'animate-fade-out-slide-out' : ''}`
   const aliasClass = `text-sm line-clamp-1 ${animationShown ? 'animate-fade-out-slide-out' : ''}`
   const copyButtonClass = `px-2 hover:cursor-pointer ${animationShown ? 'animate-translate-x' : ''}`
   const feedbackClass = `text-sm ${feedback.color} animate-fade-in-slide-in`
 
   return (
     <span className="flex items-center">
-      {isAddress(address) ? (
+      {isAddress(addressOrAlias) ? (
         <Span className={addressClass}>
-          {address.substring(0, 6)}...{address.substring(address.length - 4)}
+          {addressOrAlias.substring(0, 6)}...{addressOrAlias.substring(addressOrAlias.length - 4)}
         </Span>
       ) : (
-        <Span className={aliasClass}>{address}</Span>
+        <Span className={aliasClass}>{addressOrAlias}</Span>
       )}
 
       <span className={copyButtonClass} onClick={onClick}>

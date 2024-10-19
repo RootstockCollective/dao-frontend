@@ -69,7 +69,7 @@ export const Popover = ({
       >
         <div
           className={cn(
-            'rounded bg-zinc-900 p-2 shadow-[10px_30px_150px_rgba(46,38,92,0.25)] mb-[10px]',
+            'rounded bg-zinc-900 p-2 shadow-[10px_30px_150px_rgba(46,38,92,0.25)] mb-[10px] min-w-min',
             background === 'light' && 'bg-white',
           )}
         >

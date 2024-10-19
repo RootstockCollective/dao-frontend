@@ -1,6 +1,6 @@
 import { useGetBuildersRewards } from '@/app/bim/leaderboard/hooks/useGetBuildersRewards'
 import { useAlertContext } from '@/app/providers'
-import { Address } from '@/components/Address'
+import { AddressOrAlias } from '@/components/Address'
 import { LoadingSpinner } from '@/components/LoadingSpinner'
 import { Table } from '@/components/Table'
 import { HeaderTitle, Label, Paragraph, Typography } from '@/components/Typography'
@@ -8,6 +8,7 @@ import { tokenContracts } from '@/lib/contracts'
 import { formatCurrency } from '@/lib/utils'
 import { PricesContextProvider } from '@/shared/context/PricesContext'
 import { memo, useEffect } from 'react'
+import { isAddress } from 'viem'
 
 type Currency = {
   value: number
@@ -61,18 +62,6 @@ export const LazyRewardCell = memo(
   ) => prevValue === nextValue,
 )
 
-const isAddress = (builderName: string) => builderName.startsWith('0x') && builderName.length === 42
-
-const BuilderNameCell = ({ builderName }: { builderName: string }) => {
-  return isAddress(builderName) ? (
-    <Address address={builderName} />
-  ) : (
-    <Typography tagVariant="label" className="font-semibold text-sm">
-      {builderName}
-    </Typography>
-  )
-}
-
 const LeaderBoardTable = () => {
   const {
     data: rbtcData,
@@ -89,7 +78,7 @@ const LeaderBoardTable = () => {
   const data = rifData.concat(rbtcData)
 
   const tableData = data.map(({ address, lastEpochReward, projectedReward, share }) => ({
-    'Builder name': <BuilderNameCell builderName={address} />,
+    'Builder name': <AddressOrAlias addressOrAlias={address} />,
     'Last Epoch Reward': <LazyRewardCell reward={lastEpochReward} />,
     'Projected Reward': <LazyRewardCell reward={projectedReward} />,
 

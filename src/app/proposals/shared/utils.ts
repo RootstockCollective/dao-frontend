@@ -112,6 +112,12 @@ export const actionFormatterMap = {
   amount: (amount: bigint) => formatBalanceToHuman(amount),
 }
 
+export const DISPLAY_NAME_SEPARATOR = 'D15PL4Y_N4M3:'
+export const splitCombinedName = (name: string) => {
+  const [proposalName, builderName] = name.split(DISPLAY_NAME_SEPARATOR)
+  return { proposalName, builderName }
+}
+
 // each parameter uses 32 bytes in the calldata but we only need the address which is 20 bytes
 export const ADDRESS_PADDING_LENGTH = 24
 

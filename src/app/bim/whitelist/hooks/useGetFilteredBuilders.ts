@@ -5,6 +5,7 @@ import { useGetBuilders } from '@/app/bim/hooks/useGetBuilders'
 import { DateTime } from 'luxon'
 import { useGetProposalsState } from '@/app/bim/whitelist/hooks/useGetProposalsState'
 import { getMostAdvancedProposal } from '@/app/bim/utils/getMostAdvancedProposal'
+import { splitCombinedName } from '@/app/proposals/shared/utils'
 
 type FetchWhitelistedBuildersFilter = {
   builderName: string
@@ -12,18 +13,19 @@ type FetchWhitelistedBuildersFilter = {
 }
 
 export type BuilderProposal = {
-  name: string
+  displayName: string
   status: BuilderStatus
   address: string
   proposalId: bigint
+  proposalName: string
   proposalDescription: string
   joiningDate: string
 }
 
-const lowerCaseCompare = (a: string, b: string) => a.toLowerCase().includes(b.toLowerCase())
+const lowerCaseCompare = (a: string, b: string) => a?.toLowerCase().includes(b?.toLowerCase())
 
 export const useGetFilteredBuilders = ({
-  builderName,
+  builderName: filterBuilderName,
   status: filterStatus,
 }: FetchWhitelistedBuildersFilter) => {
   const [data, setData] = useState<BuilderProposal[]>([])
@@ -47,7 +49,16 @@ export const useGetFilteredBuilders = ({
         } = proposal
         const joiningDate = DateTime.fromSeconds(+timeStamp).toFormat('MMMM dd, yyyy')
         const [name, proposalDescription] = description.split(';')
-        acc.push({ name, status, address, proposalId, proposalDescription, joiningDate })
+        const { proposalName, builderName } = splitCombinedName(name)
+        acc.push({
+          displayName: builderName,
+          status,
+          address,
+          proposalId,
+          proposalName,
+          proposalDescription,
+          joiningDate,
+        })
       }
 
       return acc
@@ -57,9 +68,12 @@ export const useGetFilteredBuilders = ({
   useEffect(() => {
     let filteredData = filteredBuilders
 
-    if (builderName) {
+    if (filterBuilderName) {
       filteredData = filteredData.filter(
-        ({ name, address }) => lowerCaseCompare(name, builderName) || lowerCaseCompare(address, builderName),
+        ({ displayName: builderName, address }) =>
+          // TODO: Here we filter by both name and address,
+          // but the address is not displayed in the UI when the Builder name is present.
+          lowerCaseCompare(builderName, filterBuilderName) || lowerCaseCompare(address, filterBuilderName),
       )
     }
 
@@ -68,7 +82,7 @@ export const useGetFilteredBuilders = ({
     }
 
     setData(filteredData)
-  }, [filteredBuilders, builderName, filterStatus])
+  }, [filteredBuilders, filterBuilderName, filterStatus])
 
   const isLoading = buildersLoading || proposalsStateMapLoading
   const error = buildersError ?? proposalsStateMapError

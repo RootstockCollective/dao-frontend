@@ -1,7 +1,8 @@
 import { bimStatusColorClasses } from '@/app/bim/BecomeABuilderButton'
 import { BuilderProposal } from '@/app/bim/whitelist/hooks/useGetFilteredBuilders'
-import { Address } from '@/components/Address'
+import { AddressOrAlias } from '@/components/Address'
 import { Badge } from '@/components/Badge'
+import { Popover } from '@/components/Popover'
 import { Paragraph, Span, Typography } from '@/components/Typography'
 import { useRouter } from 'next/navigation'
 import { FC, ReactNode } from 'react'
@@ -19,19 +20,33 @@ const Card = ({ header, body }: { header: ReactNode; body: ReactNode }) => {
 
 // TODO: this content can be moved to a different component and become a generic card
 export const WhitelistGridItem: FC<WhitelistGridItemProps> = ({
-  name,
-  status,
+  displayName,
   address,
+  status,
   joiningDate,
   proposalId,
+  proposalName,
 }) => {
   const router = useRouter()
   const Header = (
     <div className="flex flex-row w-full">
-      <div className="flex-1">
-        <Typography tagVariant="label" className="font-semibold">
-          <Address address={address} />
-        </Typography>
+      <div className="flex-1 min-w-0">
+        {/* TODO: To be reviewed, it's weird that we show the address in the tooltip
+            and then we copy the builder name, since the builder name it's generally easier to remember
+         */}
+        <Popover
+          content={
+            <div className="text-[12px] font-bold mb-1">
+              <p data-testid="builderAddressTooltip">{address}</p>
+            </div>
+          }
+          size="small"
+          trigger="hover"
+        >
+          <Typography tagVariant="label" className="font-semibold line-clamp-1 text-wrap">
+            <AddressOrAlias addressOrAlias={displayName || address} />
+          </Typography>
+        </Popover>
         <Paragraph className="text-sm font-light"> Joined {joiningDate}</Paragraph>
       </div>
       <div className="flex justify-center items-center">
@@ -40,10 +55,20 @@ export const WhitelistGridItem: FC<WhitelistGridItemProps> = ({
     </div>
   )
   const Body = (
-    <div onClick={() => router.push(`/proposals/${proposalId}`)} className="cursor-pointer">
-      <Span className="text-base font-semibold">Proposal</Span>
-      <Span className="text-base line-clamp-1 text-wrap">{name}</Span>
-    </div>
+    <Popover
+      content={
+        <div className="text-[12px] font-bold mb-1">
+          <p data-testid="ProposalIDTooltip">{proposalId}</p>
+        </div>
+      }
+      size="small"
+      trigger="hover"
+    >
+      <div onClick={() => router.push(`/proposals/${proposalId}`)} className="cursor-pointer">
+        <Span className="text-base font-semibold">Proposal</Span>
+        <Span className="text-base line-clamp-1 text-wrap">{proposalName}</Span>
+      </div>
+    </Popover>
   )
   return <Card header={Header} body={Body} />
 }
