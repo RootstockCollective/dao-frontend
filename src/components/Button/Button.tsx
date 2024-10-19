@@ -59,9 +59,10 @@ export const Button: FC<Props> = ({
   })
 
   const textClasses = cn({
+    'font-rootstock-sans': true,
     'font-bold relative': true,
     'text-white': variant === 'secondary',
-    'text-disabled-secondary': disabled,
+    'text-secondary': disabled,
     'font-normal text-[rgba(255,255,255,0.8)]': variant === 'borderless',
     'text-black': variant === 'white',
     [textClassName]: true,

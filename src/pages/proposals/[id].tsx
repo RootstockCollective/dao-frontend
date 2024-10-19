@@ -34,7 +34,7 @@ import { CopyButton } from '@/components/CopyButton'
 import { MainContainer } from '@/components/MainContainer/MainContainer'
 import { MetricsCard } from '@/components/MetricsCard'
 import { Popover } from '@/components/Popover'
-import { Header, Paragraph, Span } from '@/components/Typography'
+import { Header, Paragraph, Span, Typography } from '@/components/Typography'
 import { config } from '@/config'
 import { RIF, RIF_ADDRESS } from '@/lib/constants'
 import { truncateMiddle } from '@/lib/utils'
@@ -422,9 +422,12 @@ const CalldataRows = ({ calldatasParsed }: CalldataRowsData) => {
 
 const CalldataDisplay = ({ functionName, args, inputs }: DecodedData) => (
   <div>
-    <Paragraph variant="semibold" className="text-[16px]">
-      Function: <Span className="font-normal">{functionName}</Span>
-    </Paragraph>
+    <span className="flex justify-between">
+      <Paragraph variant="semibold" className="text-[16px] text-left">
+        Function:
+      </Paragraph>
+      <Span className="font-normal text-left">{functionName}</Span>
+    </span>
 
     <Paragraph variant="semibold" className="text-[16px] mt-2">
       Arguments:
@@ -447,18 +450,18 @@ const CalldataDisplay = ({ functionName, args, inputs }: DecodedData) => (
         ] as InputValueComponent<InputParameterTypeByFnByName<typeof functionName, typeof inputName>>
 
         return (
-          <li key={index} className="my-2">
-            <Paragraph variant="semibold" className="text-[16px] break-words">
-              {formattedInputName}{' '}
-              {InputComponent && (
-                <InputComponent
-                  value={inputValue}
-                  htmlProps={{
-                    className: 'font-normal',
-                  }}
-                />
-              )}
-            </Paragraph>
+          <li key={index} className="my-2 flex justify-between">
+            <Typography tagVariant="span" className="font-semibold text-[16px] text-left">
+              {formattedInputName}
+            </Typography>
+            {InputComponent && (
+              <InputComponent
+                value={inputValue}
+                htmlProps={{
+                  className: 'font-normal text-right',
+                }}
+              />
+            )}
           </li>
         )
       })}
