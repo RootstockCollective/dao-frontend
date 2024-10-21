@@ -3,8 +3,13 @@ import { GovernorAbi } from '@/lib/abis/Governor'
 import { GovernorAddress } from '@/lib/contracts'
 
 // Dummy hook that simply returns the value passed to it
-const useDummyBlockNumber = (blockNumber?: bigint) => {
-  return { data: blockNumber }
+const dummyHook = (blockNumber?: bigint) => ({ data: blockNumber })
+
+const useLatestBlockNumber = (passedLatestBlockNumber: bigint | undefined) => {
+  // Call the appropriate hook based on passedLatestBlockNumber
+  const hookToUse = passedLatestBlockNumber ? dummyHook : useBlockNumber
+  const { data } = hookToUse(passedLatestBlockNumber)
+  return data
 }
 
 export const useGetProposalDeadline = (proposalId: string, passedLatestBlockNumber?: bigint) => {
@@ -14,9 +19,7 @@ export const useGetProposalDeadline = (proposalId: string, passedLatestBlockNumb
     functionName: 'proposalDeadline',
     args: [BigInt(proposalId)],
   })
-  // Call the appropriate hook based on passedLatestBlockNumber
-  const hookToUse = passedLatestBlockNumber ? useDummyBlockNumber : useBlockNumber
-  const { data: latestBlockNumber } = hookToUse(passedLatestBlockNumber)
+  const latestBlockNumber = useLatestBlockNumber(passedLatestBlockNumber)
 
   let blocksUntilClosure = null
   if (proposalDeadlineBlock && latestBlockNumber) {

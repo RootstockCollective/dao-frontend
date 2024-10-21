@@ -17,24 +17,29 @@ const convertToTimeRemaining = (seconds: number) => {
  * This helps to render the right hook due to how Wagmi works...
  * If the status is not active, there is no point in fetching the status of the vote
  */
-const HOOK_TO_USE = {
-  dummy: (proposalId: string, number: bigint) => ({
-    blocksUntilClosure: 0,
-    proposalDeadlineBlock: undefined,
-  }),
-  real: useGetProposalDeadline,
+const dummyHook = () => ({
+  blocksUntilClosure: 0,
+  proposalDeadlineBlock: undefined,
+})
+
+const useProposalDeadline = (proposalId: string, latestBlockNumber: bigint, proposalStateHuman: string) => {
+  const hookToUse = proposalStateHuman === 'Active' ? useGetProposalDeadline : dummyHook
+  return hookToUse(proposalId, latestBlockNumber)
 }
 
 export const TimeRemainingColumn = () => {
   const { latestBlockNumber } = useSharedProposalsTableContext()
   const { proposalId, blockNumber, proposalStateHuman } = useProposalContext()
-  const hookToUse = HOOK_TO_USE[proposalStateHuman === 'Active' ? 'real' : 'dummy']
-  const { blocksUntilClosure, proposalDeadlineBlock } = hookToUse(proposalId, latestBlockNumber || BigInt(1))
+  const { blocksUntilClosure = 0n, proposalDeadlineBlock } = useProposalDeadline(
+    proposalId,
+    latestBlockNumber || BigInt(1),
+    proposalStateHuman,
+  )
 
   const votingWindowBlocks = BigInt(proposalDeadlineBlock || 1) - BigInt(blockNumber)
   const ratio = Number(blocksUntilClosure) / Number(votingWindowBlocks)
 
-  let colorClass
+  let colorClass = ''
   // Determine the text color based on the ratio
   if (ratio > 0.66) {
     colorClass = 'text-st-success'
