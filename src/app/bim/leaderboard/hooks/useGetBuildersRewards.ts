@@ -63,7 +63,7 @@ export const useGetBuildersRewards = (rewardToken: Address, rewardTokenSymbol?: 
             symbol: currency,
           },
         },
-        share: `${getShare(token)}%`,
+        share: getShare(token),
       }
     }),
     isLoading,

@@ -8,6 +8,7 @@ import { tokenContracts } from '@/lib/contracts'
 import { cn, formatCurrency, toFixed } from '@/lib/utils'
 import { PricesContextProvider } from '@/shared/context/PricesContext'
 import { FC, memo, useEffect } from 'react'
+import { Jdenticon } from '@/components/Header/Jdenticon'
 
 type Currency = {
   value: number
@@ -23,7 +24,7 @@ type TableData = {
   [address: string]: {
     lastEpochReward: Reward[]
     projectedReward: Reward[]
-    share: string
+    share: bigint
   }
 }
 
@@ -55,7 +56,10 @@ export const LazyRewardCell = memo(RewardCell, ({ rewards: prevReward }, { rewar
 export const BuilderNameCell = ({ builderName }: { builderName: string }) => {
   return (
     <TableCell className={cn(tableHeaders[0], 'border-solid')}>
-      <AddressOrAlias addressOrAlias={builderName} />
+      <div className="flex flex-row">
+        <Jdenticon className="rounded-full bg-white mr-1" value={builderName} size="30" />
+        <AddressOrAlias addressOrAlias={builderName} />
+      </div>
     </TableCell>
   )
 }
@@ -76,18 +80,17 @@ const ProjectedRewardCell = ({ rewards }: { rewards: Reward[] }) => {
   )
 }
 
-const ShareCell = ({ share }: { share: string }) => {
+const ShareCell = ({ share }: { share: bigint }) => {
   return (
     <TableCell className={cn(tableHeaders[3], 'border-solid text-center')}>
-      <Label className={cn(tableBodyCellClasses, getShareTextColour(share))}>{share}</Label>
+      <Label className={cn(tableBodyCellClasses, getShareTextColour(share))}>{share.toString()}%</Label>
     </TableCell>
   )
 }
 
-const getShareTextColour = (share: string) => {
-  const shareValue = parseInt(share)
-  if (shareValue >= 50) return 'text-[#1BC47D]'
-  if (shareValue >= 20) return 'text-[#E56B1A]'
+const getShareTextColour = (share: bigint) => {
+  if (share >= 50n) return 'text-[#1BC47D]'
+  if (share >= 20n) return 'text-[#E56B1A]'
   return 'text-[#F24822]'
 }
 
@@ -115,10 +118,11 @@ const LeaderBoardTable = () => {
 
   const data = [...rbtcData, ...rifData]
   const tableData = data.reduce<TableData>((acc, { address, lastEpochReward, projectedReward, share }) => {
+    const currentShare = acc[address]?.share ?? 0n
     acc[address] = {
       lastEpochReward: [...(acc[address]?.lastEpochReward ?? []), lastEpochReward],
       projectedReward: [...(acc[address]?.projectedReward ?? []), projectedReward],
-      share,
+      share: share > currentShare ? share : currentShare,
     }
 
     return acc

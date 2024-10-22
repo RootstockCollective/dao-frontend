@@ -6,6 +6,7 @@ import { Popover } from '@/components/Popover'
 import { Paragraph, Span, Typography } from '@/components/Typography'
 import { useRouter } from 'next/navigation'
 import { FC, ReactNode } from 'react'
+import { Jdenticon } from '@/components/Header/Jdenticon'
 
 type WhitelistGridItemProps = BuilderProposal
 
@@ -30,6 +31,7 @@ export const WhitelistGridItem: FC<WhitelistGridItemProps> = ({
   const router = useRouter()
   const Header = (
     <div className="flex flex-row w-full">
+      <Jdenticon className="rounded-md bg-white mr-2" value={address} size="34" />
       <div className="flex-1 min-w-0">
         {/* TODO: To be reviewed, it's weird that we show the address in the tooltip
             and then we copy the builder name, since the builder name it's generally easier to remember
@@ -55,20 +57,10 @@ export const WhitelistGridItem: FC<WhitelistGridItemProps> = ({
     </div>
   )
   const Body = (
-    <Popover
-      content={
-        <div className="text-[12px] font-bold mb-1">
-          <p data-testid="ProposalIDTooltip">{proposalId}</p>
-        </div>
-      }
-      size="small"
-      trigger="hover"
-    >
-      <div onClick={() => router.push(`/proposals/${proposalId}`)} className="cursor-pointer">
-        <Span className="text-base font-semibold">Proposal</Span>
-        <Span className="text-base line-clamp-1 text-wrap">{proposalName}</Span>
-      </div>
-    </Popover>
+    <div onClick={() => router.push(`/proposals/${proposalId}`)} className="cursor-pointer">
+      <Span className="text-base font-semibold">Proposal</Span>
+      <Span className="text-base line-clamp-1 text-wrap">{proposalName}</Span>
+    </div>
   )
   return <Card header={Header} body={Body} />
 }
