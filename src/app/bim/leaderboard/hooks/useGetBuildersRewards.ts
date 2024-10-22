@@ -3,11 +3,11 @@ import { useGetRewardDistributedLogs } from '@/app/bim/hooks/useGetRewardDistrib
 import { usePricesContext } from '@/shared/context/PricesContext'
 import { useGetTokenProjectedReward } from '@/app/bim/hooks/useGetTokenProjectedReward'
 import { Address, isAddressEqual } from 'viem'
-import { getLastRewardValid } from '@/app/bim/utils/getLastRewardValid'
+import { getLastCycleRewards } from '@/app/bim/utils/getLastCycleRewards'
 import { useGetWhitelistedBuilders } from '@/app/bim/hooks/useGetWhitelistedBuilders'
 import { getShare } from '@/app/bim/utils/getShare'
 
-export const useGetBuildersRewards = (rewardToken: Address, currency = 'USD') => {
+export const useGetBuildersRewards = (rewardToken: Address, rewardTokenSymbol?: string, currency = 'USD') => {
   const {
     data: whitelistedBuilders,
     isLoading: whitelistedBuildersLoading,
@@ -23,7 +23,7 @@ export const useGetBuildersRewards = (rewardToken: Address, currency = 'USD') =>
   const { prices } = usePricesContext()
 
   const { data: token, isLoading: tokenLoading, error: tokenError } = useGetTokenProjectedReward(rewardToken)
-  const tokenSymbol = token.symbol ?? ''
+  const tokenSymbol = rewardTokenSymbol ?? token.symbol ?? ''
 
   const projectedRewardInHuman = Number(formatBalanceToHuman(token.projectedReward))
 
@@ -36,8 +36,8 @@ export const useGetBuildersRewards = (rewardToken: Address, currency = 'USD') =>
       const builderEvents = rewardDistributedLogs.filter(event =>
         isAddressEqual(event.args.builder_, builder),
       )
-      const lastReward = getLastRewardValid(builderEvents)
-      const lastRewardInHuman = Number(formatBalanceToHuman(lastReward))
+      const lastCycleRewards = getLastCycleRewards(builderEvents)
+      const lastCycleRewardsInHuman = Number(formatBalanceToHuman(lastCycleRewards))
 
       const price = prices[tokenSymbol]?.price ?? 0
 
@@ -45,11 +45,11 @@ export const useGetBuildersRewards = (rewardToken: Address, currency = 'USD') =>
         address: builder,
         lastEpochReward: {
           crypto: {
-            value: lastRewardInHuman,
+            value: lastCycleRewardsInHuman,
             symbol: tokenSymbol,
           },
           fiat: {
-            value: price * lastRewardInHuman,
+            value: price * lastCycleRewardsInHuman,
             symbol: currency,
           },
         },

@@ -1,12 +1,12 @@
 import { useGetRewardDistributedLogs } from './hooks/useGetRewardDistributedLogs'
 import { useGetTokenProjectedReward } from '@/app/bim/hooks/useGetTokenProjectedReward'
-import { getLastRewardValid } from '@/app/bim/utils/getLastRewardValid'
+import { getLastCycleRewards } from '@/app/bim/utils/getLastCycleRewards'
 import { formatBalanceToHuman } from '@/app/user/Balances/balanceUtils'
 import { Address } from 'viem'
 import { HeaderTitle } from '@/components/Typography'
 import { tokenContracts } from '@/lib/contracts'
 import { PricesContextProvider, usePricesContext } from '@/shared/context/PricesContext'
-import { formatCurrency } from '@/lib/utils'
+import { formatCurrency, toFixed } from '@/lib/utils'
 import { getShare } from '@/app/bim/utils/getShare'
 import { MetricsCardWithSpinner } from '@/components/MetricsCard/MetricsCard'
 import { useEffect } from 'react'
@@ -21,8 +21,8 @@ export const Rewards = ({ builder }: RewardsProps) => {
     <>
       <HeaderTitle className="mb-8 font-normal">As a Builder</HeaderTitle>
       <PricesContextProvider>
-        <Reward builder={builder} rewardToken={tokenContracts.RBTC} />
-        <Reward builder={builder} rewardToken={tokenContracts.RIF} />
+        <Reward builder={builder} rewardToken={tokenContracts.RBTC} rewardTokenSymbol="RBTC" />
+        <Reward builder={builder} rewardToken={tokenContracts.RIF} rewardTokenSymbol="RIF" />
       </PricesContextProvider>
     </>
   )
@@ -30,11 +30,12 @@ export const Rewards = ({ builder }: RewardsProps) => {
 
 type RewardProps = {
   rewardToken: Address
+  rewardTokenSymbol?: string
   builder: Address
   currency?: string
 }
 
-const Reward = ({ rewardToken, builder, currency = 'USD' }: RewardProps) => {
+const Reward = ({ rewardToken, rewardTokenSymbol, builder, currency = 'USD' }: RewardProps) => {
   const { setMessage: setErrorMessage } = useAlertContext()
   const {
     data: rewardDistributedLogs,
@@ -42,13 +43,13 @@ const Reward = ({ rewardToken, builder, currency = 'USD' }: RewardProps) => {
     error: rewardsError,
   } = useGetRewardDistributedLogs(rewardToken, builder)
   const { data: token, isLoading: tokenLoading, error: tokenError } = useGetTokenProjectedReward(rewardToken)
-  const tokenSymbol = token.symbol ?? ''
+  const tokenSymbol = rewardTokenSymbol ?? token.symbol ?? ''
 
   const { prices } = usePricesContext()
   const price = prices[tokenSymbol]?.price ?? 0
 
-  const lastReward = getLastRewardValid(rewardDistributedLogs)
-  const lastRewardInHuman = Number(formatBalanceToHuman(lastReward))
+  const lastCycleRewards = getLastCycleRewards(rewardDistributedLogs)
+  const lastCycleRewardsInHuman = Number(formatBalanceToHuman(lastCycleRewards))
 
   const totalRewards = rewardDistributedLogs.reduce((acc, event) => {
     const amount = event.args.amount_ ?? 0n
@@ -59,18 +60,18 @@ const Reward = ({ rewardToken, builder, currency = 'USD' }: RewardProps) => {
   const projectedRewardInHuman = Number(formatBalanceToHuman(token?.projectedReward))
 
   const formatMetrics = (amount: number, symbol: string) => ({
-    amount: `${amount} ${symbol}`,
+    amount: `${toFixed(amount)} ${symbol}`,
     fiat: `= ${currency} ${formatCurrency(amount * price, currency)}`,
   })
 
   const totalRewardsMetrics = formatMetrics(totalRewardsInHuman, tokenSymbol)
-  const lastRewardMetrics = formatMetrics(lastRewardInHuman, tokenSymbol)
+  const lastCycleRewardsMetrics = formatMetrics(lastCycleRewardsInHuman, tokenSymbol)
   const projectedRewardsMetrics = formatMetrics(projectedRewardInHuman, tokenSymbol)
   const share = `${getShare(token)}%`
 
   const metricsData = [
     { title: 'Total rewards', ...totalRewardsMetrics },
-    { title: 'Last cycle rewards', ...lastRewardMetrics },
+    { title: 'Last cycle rewards', ...lastCycleRewardsMetrics },
     { title: 'Projected rewards', ...projectedRewardsMetrics },
     { title: 'Share', amount: share, fiat: '' },
   ]

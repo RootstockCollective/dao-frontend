@@ -5,10 +5,9 @@ import { LoadingSpinner } from '@/components/LoadingSpinner'
 import { TableBody, TableCell, TableCore, TableHead, TableRow } from '@/components/Table'
 import { HeaderTitle, Label, Paragraph, Typography } from '@/components/Typography'
 import { tokenContracts } from '@/lib/contracts'
-import { cn, formatCurrency } from '@/lib/utils'
+import { cn, formatCurrency, toFixed } from '@/lib/utils'
 import { PricesContextProvider } from '@/shared/context/PricesContext'
 import { FC, memo, useEffect } from 'react'
-import { isAddress } from 'viem'
 
 type Currency = {
   value: number
@@ -38,7 +37,7 @@ export const RewardCell: FC<RewardCellProps> = ({ rewards }) => (
       rewards.map(({ crypto: { value, symbol }, fiat: { value: fiatValue, symbol: fiatSymbol } }) => (
         <div key={value + symbol}>
           <Label className="font-normal text-sm leading-none text-text-primary font-rootstock-sans">
-            {value} {symbol}
+            {toFixed(value)} {symbol}
           </Label>
           <br />
           <Label className="font-normal text-sm leading-none text-disabled-primary font-rootstock-sans">
@@ -106,12 +105,12 @@ const LeaderBoardTable = () => {
     data: rbtcData,
     isLoading: rbtcLoading,
     error: rbtcRewardsError,
-  } = useGetBuildersRewards(tokenContracts.RBTC)
+  } = useGetBuildersRewards(tokenContracts.RBTC, 'RBTC')
   const {
     data: rifData,
     isLoading: rifLoading,
     error: rifRewardsError,
-  } = useGetBuildersRewards(tokenContracts.RIF)
+  } = useGetBuildersRewards(tokenContracts.RIF, 'RIF')
   const { setMessage: setErrorMessage } = useAlertContext()
 
   const data = [...rbtcData, ...rifData]
