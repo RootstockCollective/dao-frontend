@@ -39,7 +39,7 @@ export const VotesColumn = () => {
   return (
     <>
       <p className={colorClass}>
-        {toFixed(votes)} ({isNaN(percentageToShow) ? '-' : percentageToShow}%)
+        {Math.ceil(votes)} ({isNaN(percentageToShow) ? '-' : percentageToShow}%)
       </p>
       <p>Quorum: {isNaN(quorumToShow) ? '-' : quorumToShow}</p>
     </>

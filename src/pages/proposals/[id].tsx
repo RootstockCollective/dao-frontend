@@ -282,7 +282,7 @@ const PageWithProposal = (proposal: PageWithProposal) => {
           </Header>
           <div className="flex flex-row justify-between border border-white border-opacity-40 rounded-lg px-[16px] py-[11px]">
             <Paragraph variant="semibold" className="text-[16px] text-st-success">
-              {forVote.toString()}
+              {Math.ceil(Number(forVote)).toString()}
             </Paragraph>
             <Paragraph variant="semibold" className="text-[16px] text-st-success">
               For
@@ -290,7 +290,7 @@ const PageWithProposal = (proposal: PageWithProposal) => {
           </div>
           <div className="flex flex-row justify-between border border-white border-opacity-40 rounded-lg px-[16px] py-[11px]">
             <Paragraph variant="semibold" className="text-[16px] text-st-error">
-              {againstVote.toString()}
+              {Math.ceil(Number(againstVote)).toString()}
             </Paragraph>
             <Paragraph variant="semibold" className="text-[16px] text-st-error">
               Against
@@ -298,7 +298,7 @@ const PageWithProposal = (proposal: PageWithProposal) => {
           </div>
           <div className="flex flex-row justify-between border border-white border-opacity-40 rounded-lg px-[16px] py-[11px]">
             <Paragraph variant="semibold" className="text-[16px] text-text-light">
-              {abstainVote.toString()}
+              {Math.ceil(Number(abstainVote)).toString()}
             </Paragraph>
             <Paragraph variant="semibold" className="text-[16px] text-text-light">
               Abstain
