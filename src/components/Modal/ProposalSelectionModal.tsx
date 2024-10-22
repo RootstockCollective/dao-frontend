@@ -6,7 +6,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { useRouter } from 'next/navigation'
 import { SupportedActionAbiName, SupportedProposalActionName } from '@/app/proposals/shared/supportedABIs'
 
-const proposalTypesOptions = ['Whitelist', 'De-whitelist', 'Standard'] as const
+const proposalTypesOptions = ['Standard', 'Builder Activation', 'Builder Deactivation'] as const
 
 type ProposalType = (typeof proposalTypesOptions)[number]
 
@@ -17,21 +17,21 @@ type ProposalTypeDetails = {
 }
 
 const typesMap: Record<ProposalType, ProposalTypeDetails> = {
-  Whitelist: {
+  'Builder Activation': {
     description:
-      'Propose a vote to add a Builder to the RootstockCollective’s approved list, giving them access to the Collective Rewards.',
+      'Ask the community to vote on adding a Builder to the RootstockCollective’s whitelist, granting them access to the Collective Rewards.',
     contract: 'SimplifiedRewardDistributorAbi',
     action: 'whitelistBuilder',
   },
-  'De-whitelist': {
+  'Builder Deactivation': {
     description:
-      'Propose a vote to remove a Builder from the RootstockCollective’s approved list, revoking their access to the Collective Rewards.',
+      'Ask the community to vote on removing a Builder from the RootstockCollective’s whitelist, revoking their access to the Collective Rewards.',
     contract: 'SimplifiedRewardDistributorAbi',
     action: 'removeWhitelistedBuilder',
   },
   Standard: {
     description:
-      'Propose a vote to request funds from the RootstockCollective’s treasury to support projects or initiatives aligned with community goals.',
+      'Ask the community to vote on a request for allocation of funds from the RootstockCollective treasury for a Grant, a Growth Initiative, or other governing parameter aligned with community goals.',
     contract: 'DAOTreasuryAbi',
     action: 'withdraw',
   },
@@ -63,7 +63,7 @@ export const ProposalSelectionModal: FC<ProposalSelectionModalProps> = ({ onClos
               {proposalTypesOptions.map(type => (
                 <div key={type}>
                   <Typography tagVariant="span" className="text-[16px] font-bold leading-none">
-                    {type} proposal:
+                    {type}:
                   </Typography>
                   &nbsp;
                   <Typography tagVariant="span" className="text-[16px] font-normal" lineHeight="120%">
@@ -85,7 +85,7 @@ export const ProposalSelectionModal: FC<ProposalSelectionModalProps> = ({ onClos
                       key={value}
                       value={value}
                     >
-                      {value} proposal
+                      {value}
                     </SelectItem>
                   ))}
                 </SelectContent>
