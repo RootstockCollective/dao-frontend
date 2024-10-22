@@ -84,14 +84,13 @@ const useMintNFT = (nftAddress?: Address, tokensAvailable?: number) => {
   const { writeContractAsync: mint, isPending, data: hash } = useWriteContract()
   const { isLoading, isSuccess } = useWaitForTransactionReceipt({ hash })
 
-  const onMintNFT = useCallback(async () => {
+  const onMintNFT = useCallback(() => {
     if (!nftAddress) throw new Error('Unknown NFT address')
     if (!tokensAvailable) throw new Error('No NFTs available to mint')
-    return await mint({
+    return mint({
       abi: abiContractsMap[nftAddress],
-      address: nftAddress || '0x0',
+      address: nftAddress,
       functionName: 'mint',
-      args: [],
     })
   }, [mint, nftAddress, tokensAvailable])
 
