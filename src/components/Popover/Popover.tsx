@@ -1,8 +1,8 @@
 'use client'
 import { cn } from '@/lib/utils'
-import { ReactNode, useEffect, useRef, useState } from 'react'
+import { HTMLAttributes, ReactNode, useEffect, useRef, useState } from 'react'
 
-interface Props {
+interface Props extends Omit<HTMLAttributes<HTMLDivElement>, 'children' | 'content'> {
   children: ReactNode
   content: ReactNode
   trigger?: 'click' | 'hover'
@@ -20,6 +20,7 @@ export const Popover = ({
   position = 'bottom',
   size = 'medium',
   hasCaret = false,
+  className,
 }: Props) => {
   const [show, setShow] = useState(false)
   const wrapperRef = useRef<any>(null)
@@ -52,7 +53,12 @@ export const Popover = ({
   }, [show, wrapperRef])
 
   return (
-    <div ref={wrapperRef} onMouseEnter={handleMouseOver} onMouseLeave={handleMouseLeft} className="relative">
+    <div
+      ref={wrapperRef}
+      onMouseEnter={handleMouseOver}
+      onMouseLeave={handleMouseLeft}
+      className={cn('relative', className)}
+    >
       <div onClick={() => setShow(!show)}>{children}</div>
       <div
         hidden={!show}
