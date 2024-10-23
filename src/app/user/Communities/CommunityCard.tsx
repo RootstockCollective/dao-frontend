@@ -16,7 +16,7 @@ export const CommunityCard: FC<CommunityCardProps> = ({ img, title, description,
         height={300}
       />
       {/* community title */}
-      <Paragraph className="text-[18px] mb-[5px] px-[14px] uppercase" fontFamily="kk-topo">
+      <Paragraph className="text-[18px] mb-[5px] px-[14px] uppercase break-words" fontFamily="kk-topo">
         {title}
       </Paragraph>
       {/* description */}
