@@ -49,12 +49,12 @@ if (!RELAY_FUNCTION_SELECTOR) {
   throw new Error(`Function ${RELAY_FUNCTION} not found in GovernorAbi.`)
 }
 
-const BIM_WHITELIST_FUNCTION = 'whitelistBuilder' // TODO: refactor
-const BIM_WHITELIST_FUNCTION_SELECTOR = new Interface(SimplifiedRewardDistributorAbi).getFunction(
-  BIM_WHITELIST_FUNCTION,
+const CR_WHITELIST_FUNCTION = 'whitelistBuilder' // TODO: refactor
+const CR_WHITELIST_FUNCTION_SELECTOR = new Interface(SimplifiedRewardDistributorAbi).getFunction(
+  CR_WHITELIST_FUNCTION,
 )?.selector
-if (!BIM_WHITELIST_FUNCTION_SELECTOR) {
-  throw new Error(`Function ${BIM_WHITELIST_FUNCTION} not found in SimplifiedRewardDistributorAbi.`)
+if (!CR_WHITELIST_FUNCTION_SELECTOR) {
+  throw new Error(`Function ${CR_WHITELIST_FUNCTION} not found in SimplifiedRewardDistributorAbi.`)
 }
 
 type ElementType<T> = T extends (infer U)[] ? U : never
@@ -62,14 +62,14 @@ type ElementType<T> = T extends (infer U)[] ? U : never
 type EventLog = ElementType<ReturnType<typeof parseEventLogs<typeof GovernorAbi, true, 'ProposalCreated'>>>
 export type CreateBuilderProposalEventLog = EventLog & { timeStamp: number }
 
-export type BimProposalCachedEvent = {
+export type CrProposalCachedEvent = {
   event: CreateBuilderProposalEventLog
   builder: string
 }
 
-export type BimEventByIdMap = Record<string, BimProposalCachedEvent['event']>
+export type CrEventByIdMap = Record<string, CrProposalCachedEvent['event']>
 
-export type ProposalsPerBuilder = Record<BimProposalCachedEvent['builder'], BimEventByIdMap>
+export type ProposalsPerBuilder = Record<CrProposalCachedEvent['builder'], CrEventByIdMap>
 
 export type ProposalQueryResult<Data> = Omit<Partial<UseQueryResult<Data>>, 'isLoading'> & {
   isLoading: boolean
@@ -98,17 +98,17 @@ export const useFetchCreateBuilderProposals = (): ProposalQueryResult<ProposalsP
       .filter(({ args: { calldatas } }) =>
         calldatas.find(calldata => calldata.startsWith(RELAY_FUNCTION_SELECTOR)),
       )
-    const bimProposalMap = sortedAndRelayFilteredEvents.reduce<ProposalsPerBuilder>((acc, event) => {
-      const bimWhitelistFunctionHash = BIM_WHITELIST_FUNCTION_SELECTOR.slice(2)
+    const crProposalMap = sortedAndRelayFilteredEvents.reduce<ProposalsPerBuilder>((acc, event) => {
+      const crWhitelistFunctionHash = CR_WHITELIST_FUNCTION_SELECTOR.slice(2)
       const relayPadding = RELAY_FUNCTION_SELECTOR.length + RELAY_PARAMETER_PADDING_LENGTH
-      const bimEventCalldatas = event.args.calldatas.find(calldata =>
-        calldata.startsWith(bimWhitelistFunctionHash, relayPadding),
+      const crEventCalldatas = event.args.calldatas.find(calldata =>
+        calldata.startsWith(crWhitelistFunctionHash, relayPadding),
       )
 
-      if (bimEventCalldatas) {
-        const addressStart = relayPadding + bimWhitelistFunctionHash.length + ADDRESS_PADDING_LENGTH
+      if (crEventCalldatas) {
+        const addressStart = relayPadding + crWhitelistFunctionHash.length + ADDRESS_PADDING_LENGTH
         const addressEnd = addressStart + 40
-        const addressSlice = `0x${bimEventCalldatas.slice(addressStart, addressEnd)}`
+        const addressSlice = `0x${crEventCalldatas.slice(addressStart, addressEnd)}`
         let builder
         try {
           builder = getAddress(addressSlice)
@@ -130,7 +130,7 @@ export const useFetchCreateBuilderProposals = (): ProposalQueryResult<ProposalsP
       return acc
     }, {})
 
-    return bimProposalMap
+    return crProposalMap
   }, [fetchedData?.data])
 
   return {

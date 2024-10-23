@@ -21,9 +21,9 @@ jest.mock('viem', () => ({
   getAddress: jest.fn().mockImplementation((address: string) => address),
 }))
 
-const BIM_WHITELIST_FUNCTION = 'whitelistBuilder' // TODO: refactor
-const BIM_WHITELIST_FUNCTION_SELECTOR = new Interface(SimplifiedRewardDistributorAbi).getFunction(
-  BIM_WHITELIST_FUNCTION,
+const CR_WHITELIST_FUNCTION = 'whitelistBuilder' // TODO: refactor
+const CR_WHITELIST_FUNCTION_SELECTOR = new Interface(SimplifiedRewardDistributorAbi).getFunction(
+  CR_WHITELIST_FUNCTION,
 )?.selector
 
 const builder_1 = '0xCD2a3d9F938E13CD947Ec05AbC7FE734Df8DD826'
@@ -60,7 +60,8 @@ const renderAndWaitForHook = async <P, R>(hook: (initialProps: P) => ProposalQue
 
 const RELAY_FUNCTION = 'relay'
 const RELAY_FUNCTION_SELECTOR = new Interface(GovernorAbi).getFunction(RELAY_FUNCTION)?.selector
-const relayWrapper = (bytes: string) => `${RELAY_FUNCTION_SELECTOR}${createPadding(RELAY_PARAMETER_PADDING_LENGTH)}${bytes.slice(2)}${createPadding(56)}`
+const relayWrapper = (bytes: string) =>
+  `${RELAY_FUNCTION_SELECTOR}${createPadding(RELAY_PARAMETER_PADDING_LENGTH)}${bytes.slice(2)}${createPadding(56)}`
 
 const createPadding = (length: number) => '0'.repeat(length)
 
@@ -91,7 +92,9 @@ describe('useFetchCreateBuilderProposals', () => {
           args: {
             proposalId: 1,
             calldatas: [
-              relayWrapper(`${BIM_WHITELIST_FUNCTION_SELECTOR}${createPadding(ADDRESS_PADDING_LENGTH)}${builder_1.slice(2)}12345678890098765`),
+              relayWrapper(
+                `${CR_WHITELIST_FUNCTION_SELECTOR}${createPadding(ADDRESS_PADDING_LENGTH)}${builder_1.slice(2)}12345678890098765`,
+              ),
             ],
           },
           timeStamp: 2000,
@@ -162,7 +165,9 @@ describe('useFetchCreateBuilderProposals', () => {
           args: {
             proposalId: 1,
             calldatas: [
-              relayWrapper(`${BIM_WHITELIST_FUNCTION_SELECTOR}000000000000000000000000${builder_1.slice(2)}12345678890098765`),
+              relayWrapper(
+                `${CR_WHITELIST_FUNCTION_SELECTOR}000000000000000000000000${builder_1.slice(2)}12345678890098765`,
+              ),
             ],
           },
           timeStamp: 1500,
@@ -171,7 +176,9 @@ describe('useFetchCreateBuilderProposals', () => {
           args: {
             proposalId: 3,
             calldatas: [
-              relayWrapper(`${BIM_WHITELIST_FUNCTION_SELECTOR}${createPadding(ADDRESS_PADDING_LENGTH)}${builder_1.slice(2)}12345678890098765`),
+              relayWrapper(
+                `${CR_WHITELIST_FUNCTION_SELECTOR}${createPadding(ADDRESS_PADDING_LENGTH)}${builder_1.slice(2)}12345678890098765`,
+              ),
             ],
           },
           timeStamp: 3000,
@@ -180,7 +187,9 @@ describe('useFetchCreateBuilderProposals', () => {
           args: {
             proposalId: 1,
             calldatas: [
-              relayWrapper(`${BIM_WHITELIST_FUNCTION_SELECTOR}${createPadding(ADDRESS_PADDING_LENGTH)}${builder_1.slice(2)}12345678890098765`),
+              relayWrapper(
+                `${CR_WHITELIST_FUNCTION_SELECTOR}${createPadding(ADDRESS_PADDING_LENGTH)}${builder_1.slice(2)}12345678890098765`,
+              ),
             ],
           },
           timeStamp: 1500,
@@ -189,7 +198,9 @@ describe('useFetchCreateBuilderProposals', () => {
           args: {
             proposalId: 2,
             calldatas: [
-              relayWrapper(`${BIM_WHITELIST_FUNCTION_SELECTOR}${createPadding(ADDRESS_PADDING_LENGTH)}${builder_1.slice(2)}12345678890098765`),
+              relayWrapper(
+                `${CR_WHITELIST_FUNCTION_SELECTOR}${createPadding(ADDRESS_PADDING_LENGTH)}${builder_1.slice(2)}12345678890098765`,
+              ),
             ],
           },
           timeStamp: 2000,
@@ -219,7 +230,9 @@ describe('useFetchCreateBuilderProposals', () => {
           args: {
             proposalId: 1,
             calldatas: [
-              relayWrapper(`${BIM_WHITELIST_FUNCTION_SELECTOR}${createPadding(ADDRESS_PADDING_LENGTH)}${builder_1.slice(2)}12345678890098765`),
+              relayWrapper(
+                `${CR_WHITELIST_FUNCTION_SELECTOR}${createPadding(ADDRESS_PADDING_LENGTH)}${builder_1.slice(2)}12345678890098765`,
+              ),
             ],
           },
           timeStamp: 1500,
@@ -228,7 +241,9 @@ describe('useFetchCreateBuilderProposals', () => {
           args: {
             proposalId: 2,
             calldatas: [
-              relayWrapper(`${BIM_WHITELIST_FUNCTION_SELECTOR}${createPadding(ADDRESS_PADDING_LENGTH)}${builder_1.slice(2)}12345678890098765`),
+              relayWrapper(
+                `${CR_WHITELIST_FUNCTION_SELECTOR}${createPadding(ADDRESS_PADDING_LENGTH)}${builder_1.slice(2)}12345678890098765`,
+              ),
             ],
           },
           timeStamp: 2000,
@@ -257,7 +272,9 @@ describe('useFetchCreateBuilderProposals', () => {
           args: {
             proposalId: 1,
             calldatas: [
-              relayWrapper(`${BIM_WHITELIST_FUNCTION_SELECTOR}${createPadding(ADDRESS_PADDING_LENGTH)}${builder_1.slice(2)}12345678890098765`),
+              relayWrapper(
+                `${CR_WHITELIST_FUNCTION_SELECTOR}${createPadding(ADDRESS_PADDING_LENGTH)}${builder_1.slice(2)}12345678890098765`,
+              ),
             ],
           },
           timeStamp: 1500,
@@ -266,7 +283,9 @@ describe('useFetchCreateBuilderProposals', () => {
           args: {
             proposalId: 2,
             calldatas: [
-              relayWrapper(`${BIM_WHITELIST_FUNCTION_SELECTOR}${createPadding(ADDRESS_PADDING_LENGTH)}${builder_2.slice(2)}12345678890098765`),
+              relayWrapper(
+                `${CR_WHITELIST_FUNCTION_SELECTOR}${createPadding(ADDRESS_PADDING_LENGTH)}${builder_2.slice(2)}12345678890098765`,
+              ),
             ],
           },
           timeStamp: 2000,

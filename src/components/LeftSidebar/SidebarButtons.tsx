@@ -55,10 +55,10 @@ export const SidebarButtons = ({ onClick, activeButton = 'communities' }: Sideba
       text="Communities"
     />
     <SidebarButton
-      onClick={() => onClick?.('bim')}
-      isActive={activeButton.startsWith('bim')}
-      buttonProps={{ id: 'Button_Bim', name: 'bim' }}
-      text="Builders Incentives"
+      onClick={() => onClick?.('collective-rewards')}
+      isActive={activeButton.startsWith('collective-rewards')}
+      buttonProps={{ id: 'Button_CollectiveRewards', name: 'collective-rewards' }}
+      text="Collective Rewards"
     />
   </>
 )

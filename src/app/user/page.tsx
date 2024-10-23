@@ -4,10 +4,11 @@ import { CommunitiesSection } from '@/app/user/Communities/CommunitiesSection'
 import { MainContainer } from '@/components/MainContainer/MainContainer'
 import { TxStatusMessage } from '@/components/TxStatusMessage'
 import { Tabs, TabsContent, TabsList, TabsTrigger, TabTitle } from '@/components/Tabs'
-import { Rewards } from '@/app/bim/Rewards'
+import { Rewards } from '@/app/collective-rewards/Rewards'
 import { useAccount } from 'wagmi'
-import { WithBuilderButton } from '@/app/bim/WithBuilderButton'
-import { useGetIsWhitelistedBuilder } from '@/app/bim/hooks/useGetIsWhitelistedBuilder'
+import { WithBuilderButton } from '@/app/collective-rewards/WithBuilderButton'
+import { useGetIsWhitelistedBuilder } from '@/app/collective-rewards/hooks/useGetIsWhitelistedBuilder'
+import { getAddress } from 'viem'
 
 type MyHoldingsProps = {
   showBuilderButton?: boolean

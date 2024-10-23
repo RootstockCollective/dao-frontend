@@ -15,7 +15,6 @@ type DisclaimerProps = {
 const Disclaimer: FC<DisclaimerProps> = ({ onAccept, onDecline }) => {
   return (
     <div className="flex flex-col items-center gap-y-2 py-[100px]">
-      {/* TODO: we need to change it when we have access in dev mode to the design */}
       <Header variant="h1" fontFamily="kk-topo" className="text-5xl font-bold text-center uppercase">
         Disclaimer
       </Header>

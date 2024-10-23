@@ -1,6 +1,6 @@
 import { ReactNode } from 'react'
 
-export type SidebarButtonType = 'communities' | 'treasury' | 'proposals' | 'user' | 'bim'
+export type SidebarButtonType = 'communities' | 'treasury' | 'proposals' | 'user' | 'collective-rewards'
 
 export interface SidebarButtonsProps {
   activeButton?: SidebarButtonType
