@@ -1,7 +1,9 @@
-import { useGetAddressTokens } from '@/app/user/Balances/hooks/useGetAddressTokens'
-import { SimplifiedRewardDistributorAddress } from '@/lib/contracts'
-import { Address, isAddressEqual } from 'viem'
 import { useGetWhitelistedBuildersLength } from '@/app/collective-rewards/hooks/useGetWhitelistedBuildersLength'
+import { axiosInstance } from '@/lib/utils'
+import { useQuery } from '@tanstack/react-query'
+import { Address } from 'viem'
+
+const ENV_DATA_URL = process.env.NEXT_PUBLIC_ENV_DATA_URL ?? ''
 
 export const useGetTokenProjectedReward = (rewardToken: Address) => {
   const {
@@ -9,33 +11,51 @@ export const useGetTokenProjectedReward = (rewardToken: Address) => {
     isLoading: wlBuildersLengthLoading,
     error: wlBuildersLengthError,
   } = useGetWhitelistedBuildersLength()
+
   const {
-    data: tokens,
-    isLoading: tokensLoading,
-    error: tokensError,
-  } = useGetAddressTokens(SimplifiedRewardDistributorAddress)
+    data: totalRewardPerCycleFile,
+    isLoading: isLoadingtotalRewardPerCycleFile,
+    error: totalRewardPerCycleFileError,
+  } = useQuery({
+    queryFn: async () => {
+      const { data } = await axiosInstance.get(ENV_DATA_URL)
+      return data
+    },
+    queryKey: ['totalRewardPerCycleFile'],
+    refetchInterval: 30_000,
+    initialData: {
+      [rewardToken]: 0,
+    },
+  })
 
-  const length = wlBuildersLength ?? 0n
+  const builderCount = wlBuildersLength ?? 0n
 
-  const token = tokens.find(({ contractAddress }) =>
-    isAddressEqual(contractAddress as Address, rewardToken),
-  ) || {
-    name: '',
-    decimals: 18,
-    symbol: '',
-    balance: '0',
-    contractAddress: '',
+  const totalRewardPerCycle =
+    (!!totalRewardPerCycleFile['totalRewardPerCycle'] &&
+      BigInt(totalRewardPerCycleFile['totalRewardPerCycle'][rewardToken])) ||
+    0n
+
+  if (!totalRewardPerCycle || !builderCount) {
+    return {
+      data: {
+        projectedReward: 0n,
+        share: 0n,
+      },
+      isLoading: false,
+      error: totalRewardPerCycleFileError ?? wlBuildersLengthError,
+    }
   }
 
-  const isLoading = wlBuildersLengthLoading || tokensLoading
-  const error = wlBuildersLengthError ?? tokensError
+  const projectedReward = totalRewardPerCycle / builderCount
+  const share = 100n / builderCount
+  const isLoading = isLoadingtotalRewardPerCycleFile || wlBuildersLengthLoading
 
   return {
     data: {
-      ...token,
-      projectedReward: !length ? 0n : BigInt(token.balance) / length,
+      projectedReward,
+      share,
     },
     isLoading,
-    error,
+    error: totalRewardPerCycleFileError ?? wlBuildersLengthError,
   }
 }

@@ -5,7 +5,6 @@ import { useGetTokenProjectedReward } from '@/app/collective-rewards/hooks/useGe
 import { Address, isAddressEqual } from 'viem'
 import { getLastCycleRewards } from '@/app/collective-rewards/utils/getLastCycleRewards'
 import { useGetWhitelistedBuilders } from '@/app/collective-rewards/hooks/useGetWhitelistedBuilders'
-import { getShare } from '@/app/collective-rewards/utils/getShare'
 
 export const useGetBuildersRewards = (rewardToken: Address, rewardTokenSymbol?: string, currency = 'USD') => {
   const {
@@ -22,10 +21,14 @@ export const useGetBuildersRewards = (rewardToken: Address, rewardTokenSymbol?: 
 
   const { prices } = usePricesContext()
 
-  const { data: token, isLoading: tokenLoading, error: tokenError } = useGetTokenProjectedReward(rewardToken)
-  const tokenSymbol = rewardTokenSymbol ?? token.symbol ?? ''
+  const {
+    data: { share, projectedReward },
+    isLoading: tokenLoading,
+    error: tokenError,
+  } = useGetTokenProjectedReward(rewardToken)
+  const tokenSymbol = rewardTokenSymbol ?? ''
 
-  const projectedRewardInHuman = Number(formatBalanceToHuman(token.projectedReward))
+  const projectedRewardInHuman = Number(formatBalanceToHuman(projectedReward))
 
   const isLoading = whitelistedBuildersLoading || logsLoading || tokenLoading
   const error = whitelistedBuildersError ?? logsError ?? tokenError
@@ -63,7 +66,7 @@ export const useGetBuildersRewards = (rewardToken: Address, rewardTokenSymbol?: 
             symbol: currency,
           },
         },
-        share: getShare(token),
+        share,
       }
     }),
     isLoading,
