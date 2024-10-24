@@ -6,3 +6,5 @@ export type ButtonVariants =
   | 'outlined'
   | 'white'
   | 'sidebar-active'
+  | 'pagination'
+  | 'pagination-active'

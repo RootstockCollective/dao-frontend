@@ -5,10 +5,14 @@ import { FaSpinner } from 'react-icons/fa6'
 import { Span } from '../Typography'
 import { DivWithGradient } from '@/components/Button/DivWithGradient'
 
-export const BUTTON_DEFAULT_CLASSES = 'px-[24px] py-[12px] flex gap-x-1 items-center relative'
+export const BUTTON_DEFAULT_CLASSES = 'px-[24px] py-[12px] flex gap-x-1 items-center relative rounded-[6px]'
+
+const DEFAULT_PAGINATION_CLASSES = 'w-[32px] h-[32px] p-0'
+
+const DEFAULT_PAGINATION_ACTIVE_CLASSES = [DEFAULT_PAGINATION_CLASSES, 'bg-primary text-black'].join(' ')
 
 interface Props {
-  children: string
+  children: ReactNode
   onClick?: (e: MouseEvent<HTMLButtonElement>) => void
   startIcon?: ReactNode
   variant?: ButtonVariants
@@ -55,6 +59,8 @@ export const Button: FC<Props> = ({
     'justify-start': !centerContent,
     'justify-center': centerContent,
     'cursor-not-allowed': disabled,
+    [DEFAULT_PAGINATION_CLASSES]: variant === 'pagination',
+    [DEFAULT_PAGINATION_ACTIVE_CLASSES]: variant === 'pagination-active',
     [className]: true,
   })
 

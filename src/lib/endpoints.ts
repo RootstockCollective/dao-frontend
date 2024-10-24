@@ -10,3 +10,5 @@ const PROPOSAL_CREATED_EVENT = '0x7d84a6263ae0d98d3329bd7b46bb4e8d6f98cd35a7adb4
 export const fetchProposalsCreatedByGovernorAddress = `/address/{{address}}/eventsByTopic0?topic0=${PROPOSAL_CREATED_EVENT}&chainId=${CHAIN_ID}&fromBlock={{fromBlock}}`
 
 export const getNftInfo = `/nfts/{{nftAddress}}?chainId=${CHAIN_ID}`
+
+export const getTokenHoldersOfAddress = `/address/{{address}}/holders?chainId=${CHAIN_ID}`

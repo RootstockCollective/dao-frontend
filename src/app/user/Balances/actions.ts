@@ -6,10 +6,12 @@ import {
   fetchPricesEndpoint,
   fetchProposalsCreatedByGovernorAddress,
   getNftInfo,
+  getTokenHoldersOfAddress,
 } from '@/lib/endpoints'
 import { tokenContracts, GovernorAddress } from '@/lib/contracts'
 import { NftMeta } from '@/shared/types'
 import { ipfsGateways } from '@/config'
+import { NextPageParams, ServerResponseV2, TokenHoldersResponse } from '@/app/user/Balances/types'
 
 export const fetchAddressTokens = (address: string, chainId = 31) =>
   axiosInstance
@@ -123,3 +125,14 @@ export async function fetchIpfsUri(
 
 export const fetchNftInfo = (address: string) =>
   axiosInstance.get(getNftInfo.replace('{{nftAddress}}', address))
+
+export const fetchTokenHoldersOfAddress = async (address: string, nextParams: NextPageParams | null) => {
+  const { data } = await axiosInstance.get<ServerResponseV2<TokenHoldersResponse>>(
+    getTokenHoldersOfAddress.replace('{{address}}', address),
+    { params: nextParams },
+  )
+  if (data.error) {
+    throw new Error(data.error)
+  }
+  return data
+}
