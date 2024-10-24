@@ -51,4 +51,5 @@ export interface NextPageParams {
 export interface ServerResponseV2<T> {
   items: T[]
   next_page_params: NextPageParams | null
+  error?: string
 }

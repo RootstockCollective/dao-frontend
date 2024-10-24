@@ -6,8 +6,6 @@ import { useFetchTokenHolders } from '@/app/treasury/hooks/useFetchTokenHolders'
 import { formatBalanceToHuman } from '@/app/user/Balances/balanceUtils'
 import Image from 'next/image'
 import { LoadingSpinner } from '@/components/LoadingSpinner'
-import { Button } from '@/components/Button'
-import { ReactNode } from 'react'
 
 interface HolderColumnProps {
   address: string
@@ -31,31 +29,19 @@ const HolderColumn = ({ address, rns }: HolderColumnProps) => {
 
 export const HoldersSection = () => {
   // Fetch st rif holders
-  const { data, isLoading, hasNextPage, isFetchingNextPage, fetchNextPage } =
-    useFetchTokenHolders(STRIF_ADDRESS)
+  const { currentResults, paginationElement, isLoading } = useFetchTokenHolders(STRIF_ADDRESS)
 
-  const holders = data?.pages?.reduce<{ holder: ReactNode; quantity: string }[]>((prev, currentPage) => {
-    currentPage.items.forEach(({ address, value }) => {
-      prev.push({
-        holder: <HolderColumn address={address.hash} rns={address.ens_domain_name} />,
-        quantity: `${formatBalanceToHuman(value)} stRIF`,
-      })
-    })
-    return prev
-  }, [])
+  const holders = currentResults.map(({ address, value }) => ({
+    holder: <HolderColumn address={address.hash} rns={address.ens_domain_name} />,
+    quantity: `${formatBalanceToHuman(value)} stRIF`,
+  }))
 
   return (
     <div>
       <HeaderTitle className="mb-4">Holders</HeaderTitle>
       {holders && holders?.length > 0 && <Table data={holders} />}
+      {paginationElement}
       {isLoading && <LoadingSpinner />}
-      {isFetchingNextPage ? (
-        <LoadingSpinner className="w-52" />
-      ) : hasNextPage ? (
-        <Button variant="secondary" onClick={() => fetchNextPage()}>
-          Load more
-        </Button>
-      ) : null}
     </div>
   )
 }

@@ -126,9 +126,13 @@ export async function fetchIpfsUri(
 export const fetchNftInfo = (address: string) =>
   axiosInstance.get(getNftInfo.replace('{{nftAddress}}', address))
 
-export const fetchTokenHoldersOfAddress = (address: string, nextParams: NextPageParams | null) =>
-  axiosInstance
-    .get<
-      ServerResponseV2<TokenHoldersResponse>
-    >(getTokenHoldersOfAddress.replace('{{address}}', address), { params: nextParams })
-    .then(res => res.data)
+export const fetchTokenHoldersOfAddress = async (address: string, nextParams: NextPageParams | null) => {
+  const { data } = await axiosInstance.get<ServerResponseV2<TokenHoldersResponse>>(
+    getTokenHoldersOfAddress.replace('{{address}}', address),
+    { params: nextParams },
+  )
+  if (data.error) {
+    throw new Error(data.error)
+  }
+  return data
+}
