@@ -33,7 +33,7 @@ import { useCreateTreasuryTransferProposal } from '@/app/proposals/hooks/useCrea
 import React from 'react'
 import { useForm } from 'react-hook-form'
 import { CreateProposalHeaderSection } from '@/app/proposals/create/CreateProposalHeaderSection'
-import { isAddress } from '@/app/proposals/shared/utils'
+import { isAddressRegex } from '@/app/proposals/shared/utils'
 
 const rifMinimumAmount = ENV === 'mainnet' ? 10 : 1
 const rbtcMinimumAmount = ENV === 'mainnet' ? 0.0001 : 0.000001
@@ -48,7 +48,7 @@ const FormSchema = z
       .string()
       .max(3000)
       .refine(s => s.trim().replace(/\s+/g, ' ').length >= 10, 'Field must contain at least 10 characters'),
-    toAddress: z.string().refine(value => isAddress(value), 'Please enter a valid address'),
+    toAddress: z.string().refine(value => isAddressRegex(value), 'Please enter a valid address'),
     tokenAddress: z.string().length(42),
     amount: z.coerce
       .number({ invalid_type_error: 'Required field' })

@@ -51,7 +51,7 @@ const Reward = ({ rewardToken, rewardTokenSymbol, builder, currency = 'USD' }: R
   const { prices } = usePricesContext()
   const price = prices[tokenSymbol]?.price ?? 0
 
-  const lastCycleRewards = getLastCycleRewards(rewardDistributedLogs)
+  const lastCycleRewards = getLastCycleRewards(rewardDistributedLogs, rewardToken)
   const lastCycleRewardsInHuman = Number(formatBalanceToHuman(lastCycleRewards))
 
   const totalRewards = rewardDistributedLogs.reduce((acc, event) => {

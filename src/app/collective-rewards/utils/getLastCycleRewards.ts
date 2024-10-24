@@ -1,6 +1,7 @@
 import { Address, isAddressEqual, parseEventLogs } from 'viem'
 import { SimplifiedRewardDistributorAbi } from '@/lib/abis/SimplifiedRewardDistributorAbi'
 import { getPreviousCycle } from '@/app/collective-rewards/utils/getLastCycle'
+import { resolveCollectiveRewardToken } from '@/app/collective-rewards/utils/getCoinBaseAddress'
 
 type EventLog = ReturnType<
   typeof parseEventLogs<typeof SimplifiedRewardDistributorAbi, true, 'RewardDistributed'>
@@ -19,9 +20,9 @@ export const getLastCycleRewards = (rewardDistributedLogs: EventLog, rewardToken
 
     // Check the conditions
     if (
-      (rewardToken && !isAddressEqual(rewardToken_, rewardToken)) ||
-      timeStamp < cycleStartTimestamp.second ||
-      timeStamp > cycleEndTimestamp.second
+      (rewardToken && !isAddressEqual(rewardToken_, resolveCollectiveRewardToken(rewardToken))) ||
+      timeStamp < cycleStartTimestamp.toSeconds() ||
+      timeStamp > cycleEndTimestamp.toSeconds()
     ) {
       return acc // Skip invalid events
     }

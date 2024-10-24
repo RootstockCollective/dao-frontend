@@ -2,12 +2,9 @@ import { useQuery } from '@tanstack/react-query'
 import { fetchRewardDistributedLogs } from '@/app/collective-rewards/actions'
 import { Address, isAddressEqual, parseEventLogs } from 'viem'
 import { SimplifiedRewardDistributorAbi } from '@/lib/abis/SimplifiedRewardDistributorAbi'
-import { ZeroAddress } from 'ethers'
-import { getCoinBaseAddress } from '../utils/getCoinBaseAddress'
+import { resolveCollectiveRewardToken } from '@/app/collective-rewards/utils/getCoinBaseAddress'
 
 export const useGetRewardDistributedLogs = (rewardToken?: Address, builder?: Address) => {
-  const resolvedRewardToken = rewardToken === ZeroAddress ? getCoinBaseAddress() : rewardToken
-
   const { data, error, isLoading } = useQuery({
     queryFn: async () => {
       const { data } = await fetchRewardDistributedLogs()
@@ -19,9 +16,9 @@ export const useGetRewardDistributedLogs = (rewardToken?: Address, builder?: Add
       })
 
       let filteredEvents = events
-      if (resolvedRewardToken) {
+      if (rewardToken) {
         filteredEvents = filteredEvents.filter(({ args }) =>
-          isAddressEqual(args.rewardToken_, resolvedRewardToken),
+          isAddressEqual(args.rewardToken_, resolveCollectiveRewardToken(rewardToken)),
         )
       }
       if (builder) {

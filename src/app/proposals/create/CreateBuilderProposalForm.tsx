@@ -22,7 +22,7 @@ import { useVotingPowerRedirect } from '@/app/proposals/hooks/useVotingPowerRedi
 import { Accordion, AccordionItem, AccordionTrigger, AccordionContent } from '@/components/Accordion'
 import { Header, Paragraph } from '@/components/Typography'
 import { Button } from '@/components/Button'
-import { isAddress, DISPLAY_NAME_SEPARATOR } from '@/app/proposals/shared/utils'
+import { isAddressRegex, DISPLAY_NAME_SEPARATOR } from '@/app/proposals/shared/utils'
 
 const FormSchema = z.object({
   builderName: z
@@ -37,10 +37,10 @@ const FormSchema = z.object({
     .string()
     .max(3000)
     .refine(s => s.trim().replace(/\s+/g, ' ').length >= 10, 'Field must contain at least 10 characters'),
-  builderAddress: z.string().refine(value => isAddress(value), 'Please enter a valid address'),
+  builderAddress: z.string().refine(value => isAddressRegex(value), 'Please enter a valid address'),
   receiverAddress: z
     .string()
-    .refine(value => isAddress(value) || value === '', 'Please enter a valid address'),
+    .refine(value => isAddressRegex(value) || value === '', 'Please enter a valid address'),
 })
 
 export const CreateBuilderProposalForm: FC = () => {

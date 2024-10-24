@@ -22,7 +22,7 @@ import { CreateProposalHeaderSection } from '@/app/proposals/create/CreatePropos
 import { Accordion, AccordionItem, AccordionTrigger, AccordionContent } from '@/components/Accordion'
 import { Header, Paragraph } from '@/components/Typography'
 import { Button } from '@/components/Button'
-import { isAddress } from '@/app/proposals/shared/utils'
+import { isAddressRegex } from '@/app/proposals/shared/utils'
 
 const FormSchema = z.object({
   proposalName: z
@@ -35,7 +35,7 @@ const FormSchema = z.object({
     .refine(s => s.trim().replace(/\s+/g, ' ').length >= 10, 'Field must contain at least 10 characters'),
   builderAddress: z
     .string()
-    .refine(value => isAddress(value), 'Write or paste the address to be de-whitelisted'),
+    .refine(value => isAddressRegex(value), 'Write or paste the address to be de-whitelisted'),
 })
 
 export const RemoveBuilderProposalForm: FC = () => {
