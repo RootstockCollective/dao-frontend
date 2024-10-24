@@ -33,6 +33,6 @@ const encodeRemoveBuilderCalldata = (builderAddress: Address) => {
   return encodeFunctionData({
     abi: SimplifiedRewardDistributorAbi,
     functionName: 'removeWhitelistedBuilder',
-    args: [builderAddress],
+    args: [builderAddress.toLocaleLowerCase() as Address],
   })
 }

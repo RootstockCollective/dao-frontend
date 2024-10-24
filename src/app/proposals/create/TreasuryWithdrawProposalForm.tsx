@@ -8,7 +8,7 @@ import { zodResolver } from '@hookform/resolvers/zod'
 import Image from 'next/image'
 import { useRouter } from 'next/navigation'
 import { useEffect, useMemo, useState } from 'react'
-import { Address, isAddress, zeroAddress, checksumAddress } from 'viem'
+import { Address, zeroAddress } from 'viem'
 import { z } from 'zod'
 import { rbtcIconSrc } from '@/shared/rbtcIconSrc'
 import { MAX_INPUT_NUMBER_AMOUNT } from '@/components/Input/InputNumber'
@@ -33,8 +33,8 @@ import { useCreateTreasuryTransferProposal } from '@/app/proposals/hooks/useCrea
 import React from 'react'
 import { useForm } from 'react-hook-form'
 import { CreateProposalHeaderSection } from '@/app/proposals/create/CreateProposalHeaderSection'
+import { isAddress } from '@/app/proposals/shared/utils'
 
-const ADDRESS_REGEX = /^0x[a-fA-F0-9]{40}$/
 const rifMinimumAmount = ENV === 'mainnet' ? 10 : 1
 const rbtcMinimumAmount = ENV === 'mainnet' ? 0.0001 : 0.000001
 
@@ -48,10 +48,7 @@ const FormSchema = z
       .string()
       .max(3000)
       .refine(s => s.trim().replace(/\s+/g, ' ').length >= 10, 'Field must contain at least 10 characters'),
-    toAddress: z
-      .string()
-      .refine(value => ADDRESS_REGEX.test(value), 'Please enter a valid address')
-      .refine(value => isAddress(value), 'Invalid checksum'),
+    toAddress: z.string().refine(value => isAddress(value), 'Please enter a valid address'),
     tokenAddress: z.string().length(42),
     amount: z.coerce
       .number({ invalid_type_error: 'Required field' })
@@ -221,23 +218,7 @@ export const TreasuryWithdrawProposalForm = () => {
                       <FormInput placeholder="0x123...456" {...field} />
                     </FormControl>
                     <FormDescription>Write or paste the wallet address of the recipient</FormDescription>
-                    <FormMessage>
-                      {errors.toAddress?.message === 'Invalid checksum' ? (
-                        <>
-                          Please check that the address is correct before continuing. If the address is
-                          correct, use the button below to convert your address to a valid checksum address.{' '}
-                          <span
-                            className="text-white underline cursor-pointer"
-                            onClick={() => {
-                              setValue('toAddress', checksumAddress(field.value))
-                              trigger('toAddress')
-                            }}
-                          >
-                            Fix address.
-                          </span>
-                        </>
-                      ) : undefined}
-                    </FormMessage>
+                    <FormMessage />
                   </FormItem>
                 )}
               />

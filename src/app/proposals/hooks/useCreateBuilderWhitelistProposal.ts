@@ -37,6 +37,6 @@ export const encodeWhitelistBuilderCalldata = (builderAddress: Address, receiver
   return encodeFunctionData({
     abi: SimplifiedRewardDistributorAbi,
     functionName: 'whitelistBuilder',
-    args: [getAddress(builderAddress), getAddress(receiverAddress)],
+    args: [builderAddress.toLocaleLowerCase() as Address, receiverAddress.toLocaleLowerCase() as Address],
   })
 }

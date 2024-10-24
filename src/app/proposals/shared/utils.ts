@@ -122,3 +122,5 @@ export const splitCombinedName = (name: string) => {
 export const ADDRESS_PADDING_LENGTH = 24
 
 export const RELAY_PARAMETER_PADDING_LENGTH = 256
+
+export const isAddress = (value: string) => /^0x[a-fA-F0-9]{40}$/.test(value)

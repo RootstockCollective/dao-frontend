@@ -16,13 +16,13 @@ import { zodResolver } from '@hookform/resolvers/zod'
 import { useRouter } from 'next/navigation'
 import { FC, useState } from 'react'
 import { useForm } from 'react-hook-form'
-import { Address, isAddress } from 'viem'
+import { Address } from 'viem'
 import { z } from 'zod'
 import { useVotingPowerRedirect } from '@/app/proposals/hooks/useVotingPowerRedirect'
 import { Accordion, AccordionItem, AccordionTrigger, AccordionContent } from '@/components/Accordion'
 import { Header, Paragraph } from '@/components/Typography'
 import { Button } from '@/components/Button'
-import { DISPLAY_NAME_SEPARATOR } from '../shared/utils'
+import { isAddress, DISPLAY_NAME_SEPARATOR } from '@/app/proposals/shared/utils'
 
 const FormSchema = z.object({
   builderName: z

@@ -16,12 +16,13 @@ import { zodResolver } from '@hookform/resolvers/zod'
 import { useRouter, useSearchParams } from 'next/navigation'
 import { FC, useEffect, useState } from 'react'
 import { useForm } from 'react-hook-form'
-import { Address, isAddress } from 'viem'
+import { Address } from 'viem'
 import { z } from 'zod'
 import { CreateProposalHeaderSection } from '@/app/proposals/create/CreateProposalHeaderSection'
 import { Accordion, AccordionItem, AccordionTrigger, AccordionContent } from '@/components/Accordion'
 import { Header, Paragraph } from '@/components/Typography'
 import { Button } from '@/components/Button'
+import { isAddress } from '@/app/proposals/shared/utils'
 
 const FormSchema = z.object({
   proposalName: z
