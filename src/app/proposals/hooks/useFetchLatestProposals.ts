@@ -1,15 +1,22 @@
-import { useMemo } from 'react'
-import { useQuery } from '@tanstack/react-query'
-import { parseEventLogs } from 'viem'
-import { GovernorAbi } from '@/lib/abis/Governor'
 import { fetchProposalsCreatedCached } from '@/app/user/Balances/actions'
+import { GovernorAbi } from '@/lib/abis/Governor'
+import { SimplifiedRewardDistributorAbi } from '@/lib/abis/SimplifiedRewardDistributorAbi'
+import { useQuery, UseQueryResult } from '@tanstack/react-query'
+import { Interface } from 'ethers'
+import { useMemo } from 'react'
+import { getAddress, parseEventLogs } from 'viem'
+import { ADDRESS_PADDING_LENGTH, RELAY_PARAMETER_PADDING_LENGTH } from '@/app/proposals/shared/utils'
 
-export const useFetchLatestProposals = () => {
-  const { data } = useQuery({
+const useFetchLatestProposals = () => {
+  return useQuery({
     queryFn: fetchProposalsCreatedCached,
     queryKey: ['proposalsCreated'],
-    refetchInterval: 10000,
+    refetchInterval: 30_000,
   })
+}
+
+export const useFetchAllProposals = () => {
+  const { data } = useFetchLatestProposals()
 
   const latestProposals = useMemo(() => {
     if (data?.data) {
@@ -34,4 +41,101 @@ export const useFetchLatestProposals = () => {
   }, [data])
 
   return { latestProposals }
+}
+
+const RELAY_FUNCTION = 'relay'
+const RELAY_FUNCTION_SELECTOR = new Interface(GovernorAbi).getFunction(RELAY_FUNCTION)?.selector
+if (!RELAY_FUNCTION_SELECTOR) {
+  throw new Error(`Function ${RELAY_FUNCTION} not found in GovernorAbi.`)
+}
+
+const CR_WHITELIST_FUNCTION = 'whitelistBuilder' // TODO: refactor
+const CR_WHITELIST_FUNCTION_SELECTOR = new Interface(SimplifiedRewardDistributorAbi).getFunction(
+  CR_WHITELIST_FUNCTION,
+)?.selector
+if (!CR_WHITELIST_FUNCTION_SELECTOR) {
+  throw new Error(`Function ${CR_WHITELIST_FUNCTION} not found in SimplifiedRewardDistributorAbi.`)
+}
+
+type ElementType<T> = T extends (infer U)[] ? U : never
+
+type EventLog = ElementType<ReturnType<typeof parseEventLogs<typeof GovernorAbi, true, 'ProposalCreated'>>>
+export type CreateBuilderProposalEventLog = EventLog & { timeStamp: number }
+
+export type CrProposalCachedEvent = {
+  event: CreateBuilderProposalEventLog
+  builder: string
+}
+
+export type CrEventByIdMap = Record<string, CrProposalCachedEvent['event']>
+
+export type ProposalsPerBuilder = Record<CrProposalCachedEvent['builder'], CrEventByIdMap>
+
+export type ProposalQueryResult<Data> = Omit<Partial<UseQueryResult<Data>>, 'isLoading'> & {
+  isLoading: boolean
+}
+
+export const useFetchCreateBuilderProposals = (): ProposalQueryResult<ProposalsPerBuilder> => {
+  const { data: fetchedData, isLoading, error } = useFetchLatestProposals()
+
+  const latestProposals = useMemo(() => {
+    if (!fetchedData?.data) {
+      return {} as ProposalsPerBuilder
+    }
+
+    const events = parseEventLogs({
+      abi: GovernorAbi,
+      logs: fetchedData.data,
+      eventName: 'ProposalCreated',
+    }) as CreateBuilderProposalEventLog[]
+
+    // deduplicate
+    const eventsMap = new Map(events.map(eventItem => [eventItem.args.proposalId, eventItem])).values()
+
+    // why can't we use block number instead of timestamp which is not supported by the type?
+    const sortedAndRelayFilteredEvents = Array.from(eventsMap)
+      .sort(({ timeStamp: a }, { timeStamp: b }) => b - a)
+      .filter(({ args: { calldatas } }) =>
+        calldatas.find(calldata => calldata.startsWith(RELAY_FUNCTION_SELECTOR)),
+      )
+    const crProposalMap = sortedAndRelayFilteredEvents.reduce<ProposalsPerBuilder>((acc, event) => {
+      const crWhitelistFunctionHash = CR_WHITELIST_FUNCTION_SELECTOR.slice(2)
+      const relayPadding = RELAY_FUNCTION_SELECTOR.length + RELAY_PARAMETER_PADDING_LENGTH
+      const crEventCalldatas = event.args.calldatas.find(calldata =>
+        calldata.startsWith(crWhitelistFunctionHash, relayPadding),
+      )
+
+      if (crEventCalldatas) {
+        const addressStart = relayPadding + crWhitelistFunctionHash.length + ADDRESS_PADDING_LENGTH
+        const addressEnd = addressStart + 40
+        const addressSlice = `0x${crEventCalldatas.slice(addressStart, addressEnd)}`
+        let builder
+        try {
+          builder = getAddress(addressSlice)
+        } catch (e) {
+          console.error('useFetchCreateBuilderProposal:: Failed to parse builder address', e)
+          return acc
+        }
+        const existingBuilder = acc[builder] || {}
+
+        acc = {
+          ...acc,
+          [builder]: {
+            ...existingBuilder,
+            [event.args.proposalId.toString()]: event,
+          },
+        }
+      }
+
+      return acc
+    }, {})
+
+    return crProposalMap
+  }, [fetchedData?.data])
+
+  return {
+    data: latestProposals,
+    isLoading: isLoading,
+    error: error,
+  }
 }

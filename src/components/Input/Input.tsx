@@ -3,6 +3,7 @@ import { cn } from '@/lib/utils'
 import { FC, JSX } from 'react'
 import { InputAttributes, NumericFormatProps } from 'react-number-format'
 import { InputNumber } from './InputNumber'
+import { BsSearch } from 'react-icons/bs'
 
 const DEFAULT_CLASSES = `
 px-[20px] py-[12px]
@@ -17,6 +18,7 @@ focus-visible:ring-1 focus-visible:ring-ring
 focus-visible:ring-white focus-visible:ring-opacity-50
 `
 
+export type InputType = 'text' | 'number' | 'search'
 interface Props {
   name: string
   fullWidth?: boolean
@@ -29,7 +31,7 @@ interface Props {
   hint?: string
   errorMessage?: string
   className?: string
-  type?: 'text' | 'number'
+  type?: InputType
   onChange?: (value: string) => void
 }
 export const Input: FC<Props> = ({
@@ -54,26 +56,38 @@ export const Input: FC<Props> = ({
     'w-full': fullWidth,
     'border-st-error': errorMessage,
     'text-text-secondary focus-visible:ring-0': readonly,
+    'pl-12': type === 'search',
   })
-  return (
-    <div className={className} data-testid={`Input_Container_${name}`}>
-      {label && (
-        <div className="pb-[10px]" {...labelWrapperProps}>
-          <Label variant="semibold">{label}</Label>
-        </div>
-      )}
-      {type === 'number' ? (
-        <InputNumber
-          className={classes}
-          placeholder={placeholder}
-          value={value}
-          onValueChange={({ value }) => onChange(value)}
-          name={name}
-          data-testid={`Input_${name}`}
-          readOnly={readonly}
-          {...inputProps}
-        />
-      ) : (
+
+  const input = {
+    number: (
+      <InputNumber
+        className={classes}
+        placeholder={placeholder}
+        value={value}
+        onValueChange={({ value }) => onChange(value)}
+        name={name}
+        data-testid={`Input_${name}`}
+        readOnly={readonly}
+        {...inputProps}
+      />
+    ),
+    text: (
+      <input
+        className={classes}
+        placeholder={placeholder}
+        type="text"
+        value={value}
+        onChange={handleOnChange}
+        name={name}
+        data-testid={`Input_${name}`}
+        readOnly={readonly}
+        {...inputProps}
+      />
+    ),
+    search: (
+      <>
+        <BsSearch className="absolute translate-y-4 translate-x-4" />
         <input
           className={classes}
           placeholder={placeholder}
@@ -85,6 +99,23 @@ export const Input: FC<Props> = ({
           readOnly={readonly}
           {...inputProps}
         />
+      </>
+    ),
+  }[type]
+  return (
+    <div className={className} data-testid={`Input_Container_${name}`}>
+      {label && (
+        <div className="pb-[10px]" {...labelWrapperProps}>
+          <Label variant="semibold">{label}</Label>
+        </div>
+      )}
+      {input}
+      {hint && !errorMessage && (
+        <div className="text-st-hint mt-[5px]">
+          <Paragraph variant="light" className="text-[14px]">
+            {hint}
+          </Paragraph>
+        </div>
       )}
       {hint && !errorMessage && (
         <div className="text-st-hint mt-[5px]">

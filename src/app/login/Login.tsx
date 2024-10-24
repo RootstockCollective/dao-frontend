@@ -1,6 +1,7 @@
 import { Footer } from '@/components/Footer'
 import { Headline } from '@/components/Typography'
 import { cn } from '@/lib/utils'
+import Image from 'next/image'
 import { useRouter } from 'next/navigation'
 import { useEffect, useState } from 'react'
 import { useAccount } from 'wagmi'
@@ -62,3 +63,15 @@ export const Login = () => {
     </div>
   )
 }
+
+const Header = () => (
+  <header className="absolute top-9 left-8">
+    <Image
+      src="/images/wordmark.svg"
+      alt="Logo"
+      width={0}
+      height={0}
+      style={{ width: '96px', height: 'auto' }}
+    />
+  </header>
+)

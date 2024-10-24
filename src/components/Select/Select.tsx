@@ -21,6 +21,7 @@ focus:outline-none
 focus-visible:ring-1 focus-visible:ring-ring
 focus-visible:ring-white focus-visible:ring-opacity-50
 disabled:cursor-not-allowed disabled:opacity-50
+font-rootstock-sans
 `
 
 const Select = SelectPrimitive.Root
@@ -122,6 +123,7 @@ const SelectItem = React.forwardRef<
     ref={ref}
     className={cn(
       'relative flex w-full cursor-default select-none items-center rounded-sm py-1.5 pl-2 pr-8 text-sm outline-none focus:bg-accent focus:text-accent-foreground data-[disabled]:pointer-events-none data-[disabled]:opacity-50',
+      'data-[highlighted]:bg-[#FFF] data-[selected]:bg-[#FFF] data-[highlighted]:bg-gradient-to-t data-[highlighted]:text-black',
       className,
     )}
     {...props}

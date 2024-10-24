@@ -1,5 +1,13 @@
 import { ENV } from '@/lib/constants'
 
+const regtest = {
+  registerRns: '',
+  tokenBridge: '',
+  rif: '',
+  rbtc: '',
+  tokenResources: '',
+}
+
 const testnet = {
   registerRns: 'https://testnet.manager.rns.rifos.org/',
   tokenBridge: 'https://testnet.tokenbridge.rsk.co/',
@@ -17,6 +25,7 @@ const mainnet = {
 }
 
 const environments = {
+  regtest,
   testnet,
   mainnet,
 }

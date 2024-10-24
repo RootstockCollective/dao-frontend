@@ -1,5 +1,5 @@
-import { useFetchLatestProposals } from '@/app/proposals/hooks/useFetchLatestProposals'
-import { getEventArguments } from '@/app/proposals/shared/utils'
+import { useFetchAllProposals } from '@/app/proposals/hooks/useFetchLatestProposals'
+import { EventArgumentsParameter, getEventArguments } from '@/app/proposals/shared/utils'
 import { StatusColumn } from '@/app/proposals/StatusColumn'
 import { Table } from '@/components/Table'
 import { HeaderTitle } from '@/components/Typography'
@@ -12,7 +12,7 @@ import { ReactNode, useMemo, memo } from 'react'
 import { TimeRemainingColumn } from '@/app/proposals/TimeRemainingColumn'
 
 interface LatestProposalsTableProps {
-  latestProposals: ReturnType<typeof useFetchLatestProposals>['latestProposals']
+  latestProposals: ReturnType<typeof useFetchAllProposals>['latestProposals']
 }
 
 const latestProposalsTransformer = (proposals: ReturnType<typeof getEventArguments>[]) =>
@@ -35,9 +35,8 @@ const latestProposalsTransformer = (proposals: ReturnType<typeof getEventArgumen
 
 const LatestProposalsTable = ({ latestProposals }: LatestProposalsTableProps) => {
   const latestProposalsMapped = useMemo(
-    // @ts-ignore
-    () => latestProposals.map(getEventArguments),
-    [latestProposals.length],
+    () => latestProposals.map(proposal => getEventArguments(proposal as unknown as EventArgumentsParameter)),
+    [latestProposals],
   )
 
   return (

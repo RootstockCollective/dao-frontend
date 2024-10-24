@@ -17,6 +17,10 @@ interface TableProps extends HTMLAttributes<HTMLDivElement> {
   equalColumns?: boolean
   theadProps?: SharedProps
   tbodyProps?: SharedProps
+  /**
+   * Header classes
+   */
+  headerClassName?: string
 }
 
 /**
@@ -26,7 +30,14 @@ interface TableProps extends HTMLAttributes<HTMLDivElement> {
  * you can create a custom table using the available components:
  * `Table`, `TableBody`, `TableCell`, `TableHead`, `TableRow`.
  */
-export const Table: FC<TableProps> = ({ data, equalColumns = true, tbodyProps, theadProps, ...props }) => {
+export const Table: FC<TableProps> = ({
+  data,
+  equalColumns = true,
+  tbodyProps,
+  theadProps,
+  headerClassName,
+  ...props
+}) => {
   // calculate column width
   const header = Object.keys(data[0])
   if (header.length === 0) return <></>
@@ -45,6 +56,7 @@ export const Table: FC<TableProps> = ({ data, equalColumns = true, tbodyProps, t
                 fontFamily: 'rootstock-sans',
               }}
               key={headTitle}
+              className={headerClassName}
             >
               {headTitle}
             </TableCell>

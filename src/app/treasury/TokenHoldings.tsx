@@ -18,7 +18,7 @@ export const TokenHoldings = ({ symbol }: TokenHoldingsProps) => {
       </Paragraph>
       {prices[symbol] && (
         <Paragraph size="small" className="text-zinc-500">
-          = USD {formatCurrency(prices[symbol].price * Number(bucketsTotal[symbol]) ?? 0)}
+          = USD {formatCurrency(prices[symbol].price * Number(bucketsTotal[symbol])) ?? 0}
         </Paragraph>
       )}
     </>
