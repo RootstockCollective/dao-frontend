@@ -1,10 +1,16 @@
-import { RIFTokenAbi } from '@/lib/abis/RIFTokenAbi'
-import { Address, decodeFunctionData, Hash } from 'viem'
-import { DAOTreasuryAbi } from '@/lib/abis/DAOTreasuryAbi'
+import moment from 'moment'
+import { Address, decodeFunctionData, DecodeFunctionDataReturnType, Hash } from 'viem'
+import {
+  SupportedActionAbi,
+  abis,
+  FunctionEntry,
+  FunctionInputs,
+  SupportedProposalActionName,
+} from '@/app/proposals/shared/supportedABIs'
+import { GovernorAbi } from '@/lib/abis/Governor'
 import { ZeroAddress } from 'ethers'
 import { RIF_ADDRESS } from '@/lib/constants'
 import { formatBalanceToHuman } from '@/app/user/Balances/balanceUtils'
-import moment from 'moment'
 
 export interface EventArgumentsParameter {
   args: {
@@ -21,23 +27,30 @@ export interface EventArgumentsParameter {
   blockNumber: string
 }
 
-const abis = [DAOTreasuryAbi, RIFTokenAbi]
+type DecodedFunctionData = DecodeFunctionDataReturnType<SupportedActionAbi>
 
-type DecodedData = {
-  functionName: ReturnType<typeof decodeFunctionData>['functionName']
-  args: ReturnType<typeof decodeFunctionData>['args']
-  inputs: unknown | unknown[]
+export type DecodedData = {
+  functionName: DecodedFunctionData['functionName'] & SupportedProposalActionName
+  args: DecodedFunctionData['args']
+  inputs: FunctionInputs
 }
 
 const tryDecode = (data: string): DecodedData => {
-  for (const abi of abis) {
+  for (const abi of [...abis, GovernorAbi]) {
     try {
       const { functionName, args } = decodeFunctionData({ data: data as Hash, abi })
-      const functionDefinition = abi.find(item => 'name' in item && item.name === functionName) || {}
+
+      if (functionName === 'relay') {
+        return tryDecode(args[2])
+      }
+
+      const functionDefinition =
+        abi.find(item => 'name' in item && item.name === functionName) || ({} as FunctionEntry)
+
       return {
-        functionName,
-        args,
-        inputs: 'inputs' in functionDefinition ? functionDefinition.inputs : [],
+        functionName: functionName as SupportedProposalActionName,
+        args: args as DecodedFunctionData['args'],
+        inputs: ('inputs' in functionDefinition ? functionDefinition.inputs : []) as FunctionInputs,
       }
     } catch (_) {
       continue
@@ -45,7 +58,6 @@ const tryDecode = (data: string): DecodedData => {
   }
   throw new Error('No ABI found to decode this proposal data.')
 }
-
 /**
  * Function to parse proposal data into usable data
  * Note: Do not edit anything from this. This is being used across the app.
@@ -99,3 +111,14 @@ export const actionFormatterMap = {
   to: (address: Address) => address.toString(),
   amount: (amount: bigint) => formatBalanceToHuman(amount),
 }
+
+export const DISPLAY_NAME_SEPARATOR = 'D15PL4Y_N4M3:'
+export const splitCombinedName = (name: string) => {
+  const [proposalName, builderName] = name.split(DISPLAY_NAME_SEPARATOR)
+  return { proposalName, builderName }
+}
+
+// each parameter uses 32 bytes in the calldata but we only need the address which is 20 bytes
+export const ADDRESS_PADDING_LENGTH = 24
+
+export const RELAY_PARAMETER_PADDING_LENGTH = 256

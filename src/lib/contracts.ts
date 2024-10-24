@@ -11,6 +11,7 @@ import {
   MULTICALL_ADDRESS,
   RIF_ADDRESS,
   STRIF_ADDRESS,
+  SIMPLIFIED_REWARD_DISTRIBUTOR_ADDRESS,
 } from './constants'
 
 const tokenContracts = {
@@ -39,6 +40,8 @@ const GovernorAddress = GOVERNOR_ADDRESS
 const MulticallAddress = MULTICALL_ADDRESS
 const TreasuryAddress = GRANTS_ACTIVE_BUCKET_ADDRESS
 
+const SimplifiedRewardDistributorAddress = SIMPLIFIED_REWARD_DISTRIBUTOR_ADDRESS || ZeroAddress
+
 export {
   abiContractsMap,
   GovernorAddress,
@@ -47,4 +50,5 @@ export {
   tokenContracts,
   TreasuryAddress,
   treasuryContracts,
+  SimplifiedRewardDistributorAddress,
 }

@@ -33,6 +33,21 @@ pnpm dev
 bun dev
 ```
 
+Choose environment using the PROFILE environment variable, such as:
+
+```bash
+export PROFILE=testnet
+```
+
+the value has to correspond to one of the `.env.` file endings
+
+> [!NOTE]
+> ‼️ **<span style="color:red;">Warning: DO NOT USE IN PRODUCTION!</span>**
+>
+> To avoid **CORS errors** when running against testnet from localhost we can proxy the calls to the RIF Wallet Services via a local loop that strips the CORS headers on the way out and adds the expected response ones on the way in.
+> This can be achieved by setting the `testnet.local` `PROFILE`:
+> `PROFILE=testnet.local npm run dev`
+
 Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
 
 You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
@@ -82,6 +97,27 @@ The deployer will launch an instance of storybook in [Localhost Port 6000](http:
 
 Storybook has been configured to use Tailwind CSS.
 
+## Unit testing
+
+## Unit testing
+
+The repository is configured to use [Jest as the Testing Framework](https://jestjs.io/). Please refer to the [Next.js official guide](https://nextjs.org/docs/app/building-your-application/testing/jest) for information on how to integrate Jest.
+
+To run the unit tests, use the following command:
+
+```bash
+npm run test
+```
+
+This will execute all the unit tests in the project.
+
+To run the unit tests in watch mode, which automatically re-runs the tests whenever a file changes, use the following command:
+
+```bash
+npm run test:watch
+```
+
+This is useful during development when you want to continuously run the tests as you make changes to your code.
 
 ## E2E Testing with Cypress
 
@@ -89,7 +125,7 @@ Cypress is a tool to help you execute tests on a functional website.
 
 It has been installed as the default test suite for all of our end-to-end test necessities.
 
-The default baseUrl that it'll use is ```http://localhost:3000```, this can change in the future.
+The default baseUrl that it'll use is `http://localhost:3000`, this can change in the future.
 
 ### Open cypress together with Next.js
 
@@ -99,10 +135,9 @@ You can open both instances at the same using the following command:
 npm run e2e-open
 ```
 
-This should start up Next.js server using ```npm run dev``` and then ```npm run cypress open --e2e```
+This should start up Next.js server using `npm run dev` and then `npm run cypress open --e2e`
 
 This command will open cypress and will allow you to choose the desired browser for testing purposes.
-
 
 ### Run cypress tests
 
@@ -112,17 +147,15 @@ You can run the tests using:
 npm run e2e-test
 ```
 
-This will start Next.js, and cypress, and will then automatically execute the *.cy files in the project.
+This will start Next.js, and cypress, and will then automatically execute the \*.cy files in the project.
 
 If everything is successfully, you'll get a "All specs passed!" green message.
 
-
 ### Default file
 
-A default file ```health-spec.cy.ts``` has been created to make sure that cypress is running accordingly.
+A default file `health-spec.cy.ts` has been created to make sure that cypress is running accordingly.
 
 This can be removed in the future.
-
 
 ## GitHub Workflows
 

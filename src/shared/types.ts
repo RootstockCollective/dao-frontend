@@ -73,3 +73,14 @@ export interface CommunityData {
   stRifThreshold: bigint | undefined
   isLoading: boolean
 }
+
+export enum ProposalState {
+  Pending,
+  Active,
+  Canceled,
+  Defeated,
+  Succeeded,
+  Queued,
+  Expired,
+  Executed,
+}
