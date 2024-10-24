@@ -1,7 +1,7 @@
 import { useBlockNumber, useReadContract } from 'wagmi'
 import { GovernorAbi } from '@/lib/abis/Governor'
 import { GovernorAddress } from '@/lib/contracts'
-import { useEffect } from 'react'
+import { useEffect, useRef } from 'react'
 
 export const useGetProposalDeadline = (
   proposalId: string,
@@ -23,25 +23,43 @@ export const useGetProposalDeadline = (
     },
   })
 
+  // Store the fetch functions in refs
+  const fetchProposalDeadlineBlockRef = useRef(fetchProposalDeadlineBlock)
+  const fetchLatestBlockNumberRef = useRef(fetchLatestBlockNumber)
+  const hasRunDeadlineBlockFetch = useRef(false)
+  const hasRunLatestBlockFetch = useRef(false)
+
+  // Keep refs updated
+  useEffect(() => {
+    fetchProposalDeadlineBlockRef.current = fetchProposalDeadlineBlock
+    fetchLatestBlockNumberRef.current = fetchLatestBlockNumber
+  }, [fetchProposalDeadlineBlock, fetchLatestBlockNumber])
+
   /**
-   * When the fetchOnMount changes, fetch deadline block and latest block number
+   * When the fetchOnMount changes, fetch deadline block and latest block number ONCE
    */
   useEffect(() => {
     if (fetchOnMount) {
-      fetchProposalDeadlineBlock()
-      if (!passedLatestBlockNumber) {
-        fetchLatestBlockNumber()
+      if (!hasRunDeadlineBlockFetch.current) {
+        fetchProposalDeadlineBlockRef.current()
+        hasRunDeadlineBlockFetch.current = true
+      }
+      if (!passedLatestBlockNumber && !hasRunLatestBlockFetch.current) {
+        fetchLatestBlockNumberRef.current()
+        hasRunLatestBlockFetch.current = true
       }
     }
-  }, [fetchOnMount])
+  }, [fetchOnMount, passedLatestBlockNumber])
+
   /**
-   * Hook to fetch latest block number if passedLatestBlockNumber is undefined
+   * Hook to fetch latest block number if passedLatestBlockNumber is undefined ONCE
    */
   useEffect(() => {
-    if (!passedLatestBlockNumber && fetchOnMount) {
-      fetchLatestBlockNumber()
+    if (!passedLatestBlockNumber && fetchOnMount && !hasRunLatestBlockFetch.current) {
+      fetchLatestBlockNumberRef.current()
+      hasRunLatestBlockFetch.current = true
     }
-  }, [passedLatestBlockNumber])
+  }, [passedLatestBlockNumber, fetchOnMount])
 
   const latestBlockNumberToUse = passedLatestBlockNumber || latestBlockNumber
 
