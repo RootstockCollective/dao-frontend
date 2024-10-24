@@ -5,11 +5,10 @@ import { tokenContracts } from '@/lib/contracts'
 import { formatCurrency } from '@/lib/utils'
 import { TX_MESSAGES } from '@/shared/txMessages'
 import { zodResolver } from '@hookform/resolvers/zod'
-import { isAddress, isValidChecksumAddress, toChecksumAddress } from '@rsksmart/rsk-utils'
 import Image from 'next/image'
 import { useRouter } from 'next/navigation'
 import { useEffect, useMemo, useState } from 'react'
-import { Address, zeroAddress } from 'viem'
+import { Address, isAddress, zeroAddress, checksumAddress } from 'viem'
 import { z } from 'zod'
 import { rbtcIconSrc } from '@/shared/rbtcIconSrc'
 import { MAX_INPUT_NUMBER_AMOUNT } from '@/components/Input/InputNumber'
@@ -35,6 +34,7 @@ import React from 'react'
 import { useForm } from 'react-hook-form'
 import { CreateProposalHeaderSection } from '@/app/proposals/create/CreateProposalHeaderSection'
 
+const ADDRESS_REGEX = /^0x[a-fA-F0-9]{40}$/
 const rifMinimumAmount = ENV === 'mainnet' ? 10 : 1
 const rbtcMinimumAmount = ENV === 'mainnet' ? 0.0001 : 0.000001
 
@@ -50,8 +50,8 @@ const FormSchema = z
       .refine(s => s.trim().replace(/\s+/g, ' ').length >= 10, 'Field must contain at least 10 characters'),
     toAddress: z
       .string()
-      .refine(value => isAddress(value), 'Please enter a valid address')
-      .refine(value => isValidChecksumAddress(value) || value === value.toLowerCase(), 'Invalid checksum'),
+      .refine(value => ADDRESS_REGEX.test(value), 'Please enter a valid address')
+      .refine(value => isAddress(value), 'Invalid checksum'),
     tokenAddress: z.string().length(42),
     amount: z.coerce
       .number({ invalid_type_error: 'Required field' })
@@ -82,7 +82,7 @@ export const TreasuryWithdrawProposalForm = () => {
     defaultValues: {
       proposalName: '',
       description: '',
-      toAddress: '',
+      toAddress: '' as Address,
       tokenAddress: tokenContracts.RIF,
       amount: undefined,
     },
@@ -229,7 +229,7 @@ export const TreasuryWithdrawProposalForm = () => {
                           <span
                             className="text-white underline cursor-pointer"
                             onClick={() => {
-                              setValue('toAddress', toChecksumAddress(field.value))
+                              setValue('toAddress', checksumAddress(field.value))
                               trigger('toAddress')
                             }}
                           >
