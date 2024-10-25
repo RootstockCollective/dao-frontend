@@ -23,7 +23,7 @@ ENV NEXT_TELEMETRY_DISABLED 1
 ARG arg_env
 ARG NEXT_PUBLIC_BUILD_ID
 
-# Rename environment files based on arg_env
+# Rename environment files based on arg_env TODO: This is silly to do just for the sake of one file name (.env.prod) if we could replace this monster with `mv ".env.$arg_env". .env.local`. Furthermore, PROFILE var should work just as well ;)
 RUN if [ "$arg_env" = "testnet" ]; then \
       mv .env.testnet .env.local; \
     elif [ "$arg_env" = "dev" ]; then \
@@ -32,6 +32,10 @@ RUN if [ "$arg_env" = "testnet" ]; then \
           mv .env.qa .env.local; \
     elif [ "$arg_env" = "mainnet" ]; then \
       mv .env.prod .env.local; \
+    elif [ "$arg_env" = "testnet.qa"]; then \
+      mv .env.testnet.qa .env.local
+    elif [ "$arg_env" = "testnet.staging"]; then \
+      mv .env.testnet.staging .env.local
     fi
 
 # Export the NEXT_PUBLIC_BUILD_ID as an environment variable

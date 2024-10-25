@@ -1,4 +1,4 @@
-name: Deploy to Amazon ECS (QA)
+name: Deploy to Amazon ECS (CR QA)
 
 on:
   workflow_dispatch: # Manually triggered from GitHub Actions tab

@@ -1,4 +1,4 @@
-name: Deploy to Amazon ECS (STAGING)
+name: Deploy to Amazon ECS (CR STAGING)
 
 on:
   push:
