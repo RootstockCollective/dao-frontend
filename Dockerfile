@@ -33,9 +33,9 @@ RUN if [ "$arg_env" = "testnet" ]; then \
     elif [ "$arg_env" = "mainnet" ]; then \
       mv .env.prod .env.local; \
     elif [ "$arg_env" = "testnet.qa" ]; then \
-      mv .env.testnet.qa .env.local \
+      mv .env.testnet.qa .env.local; \
     elif [ "$arg_env" = "testnet.staging" ]; then \
-      mv .env.testnet.staging .env.local \
+      mv .env.testnet.staging .env.local; \
     fi
 
 # Export the NEXT_PUBLIC_BUILD_ID as an environment variable
