@@ -7,10 +7,11 @@ First, be sure that you are using Node Version 18+
 Then
 
 update .env file with the correct data from respective files:
+
 ```
 .dev
 .testnet
-.prod 
+.prod
 ```
 
 the chosen set of variables depends on the targeted contract versions you planning to work with. `.dev` - same as the `.testnet` versions of the contract with an exception being reduced wait times of votingDelay, votingPeriod and timelockMinDelay for automation purposes. `.testnet` and `.mainnet` versions are aligned on time but target respective chains(chainIds) 31 and 30.
@@ -96,8 +97,6 @@ The deployer will launch an instance of storybook in [Localhost Port 6000](http:
 ### Notes
 
 Storybook has been configured to use Tailwind CSS.
-
-## Unit testing
 
 ## Unit testing
 
