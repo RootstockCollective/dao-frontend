@@ -63,15 +63,3 @@ export const Login = () => {
     </div>
   )
 }
-
-const Header = () => (
-  <header className="absolute top-9 left-8">
-    <Image
-      src="/images/wordmark.svg"
-      alt="Logo"
-      width={0}
-      height={0}
-      style={{ width: '96px', height: 'auto' }}
-    />
-  </header>
-)

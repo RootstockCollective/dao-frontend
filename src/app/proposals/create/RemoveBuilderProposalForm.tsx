@@ -45,10 +45,6 @@ export const RemoveBuilderProposalForm: FC = () => {
   const { isLoading: isVotingPowerLoading, canCreateProposal } = useVotingPower()
   const { setMessage } = useAlertContext()
   const { onRemoveBuilderProposal, isPublishing, error } = useRemoveBuilderProposal()
-  if (error) {
-    setMessage(TX_MESSAGES.proposal.error)
-    console.error('🐛 Error writing to contract:', error)
-  }
 
   const [activeStep, setActiveStep] = useState('proposal')
 
@@ -89,6 +85,13 @@ export const RemoveBuilderProposalForm: FC = () => {
       }
     }
   }
+
+  useEffect(() => {
+    if (error) {
+      setMessage(TX_MESSAGES.proposal.error)
+      console.error('🐛 Error writing to contract:', error)
+    }
+  }, [error, setMessage])
 
   useEffect(() => {
     if (!isVotingPowerLoading && !canCreateProposal) {
