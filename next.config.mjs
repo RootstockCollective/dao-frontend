@@ -37,7 +37,8 @@ const endpointsEnvVars = Object.entries(process.env).filter(([key]) => key.start
 
 // Define the rewrites based on the network
 const rewrites = {
-  testnet: () => [
+  //TODO: Disabling it for the DAO repo, since it was used in the fork only
+  testnet_cr: () => [
     {
       source: `${rifWalletServicesURL.pathname}/:path*`,
       destination: `${process.env.NEXT_PUBLIC_PROXY_DESTINATION}/:path*`,
