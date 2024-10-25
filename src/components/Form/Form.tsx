@@ -11,7 +11,6 @@ import {
 } from 'react-hook-form'
 
 import { cn } from '@/lib/utils'
-import { cva } from 'class-variance-authority'
 
 const Form = FormProvider
 
@@ -79,9 +78,6 @@ const FormItem = React.forwardRef<HTMLDivElement, React.HTMLAttributes<HTMLDivEl
 )
 FormItem.displayName = 'FormItem'
 
-const labelVariants = cva(
-  'text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70',
-)
 const FormLabel = React.forwardRef<
   React.ElementRef<typeof LabelPrimitive.Root>,
   React.ComponentPropsWithoutRef<typeof LabelPrimitive.Root>
@@ -90,7 +86,10 @@ const FormLabel = React.forwardRef<
   return (
     <LabelPrimitive.Root
       ref={ref}
-      className={cn(labelVariants(), className)}
+      className={cn(
+        'text-base font-bold leading-none font-rootstock-sans peer-disabled:cursor-not-allowed peer-disabled:opacity-70',
+        className,
+      )}
       htmlFor={formItemId}
       {...props}
     />
@@ -130,7 +129,7 @@ FormDescription.displayName = 'FormDescription'
 const FormMessage = React.forwardRef<HTMLParagraphElement, React.HTMLAttributes<HTMLParagraphElement>>(
   ({ className, children, ...props }, ref) => {
     const { error, formMessageId } = useFormField()
-    const body = error ? String(error?.message) : children
+    const body = children || String(error?.message || '')
 
     if (!body) {
       return null

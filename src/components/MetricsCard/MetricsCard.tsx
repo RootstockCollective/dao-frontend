@@ -3,8 +3,9 @@ import { FC, ReactNode } from 'react'
 import { Paragraph } from '../Typography/Paragraph'
 import { Address } from 'viem'
 import { BoxIcon } from 'lucide-react'
-import { Span } from '../Typography'
+import { Span, Typography } from '../Typography'
 import { EXPLORER_URL } from '@/lib/constants'
+import { withSpinner } from '@/components/LoadingSpinner/withLoadingSpinner'
 
 interface MetricsCardProps {
   /**
@@ -50,26 +51,38 @@ export const MetricsCard: FC<MetricsCardProps> = ({
     <div className={cn(DEFAULT_CLASSES, borderClasses)} data-testid={dataTestId || 'MetricsCard'}>
       {typeof title === 'string' ? (
         <div>
-          <Paragraph
-            variant="normal"
-            className="text-[16px] tracking-wide overflow-hidden whitespace-nowrap text-ellipsis"
-            fontFamily="rootstock-sans"
+          <Typography
+            tagVariant="label"
+            className="text-[16px] font-normal tracking-wide overflow-hidden whitespace-nowrap text-ellipsis"
           >
             {title}
-          </Paragraph>
+          </Typography>
         </div>
       ) : (
         title
       )}
-      <div className="h-12 flex items-center">
-        <Paragraph variant="semibold" className="text-[24px] leading-none text-primary" data-testid="Amount">
+      <div className="flex items-center">
+        <Typography
+          tagVariant="h2"
+          paddingBottom="2px"
+          paddingTop="10px"
+          lineHeight="28.8px"
+          fontFamily="kk-topo"
+          className="text-[24px] text-primary font-normal"
+          data-testid="Amount"
+        >
           {amount}
-        </Paragraph>
+        </Typography>
       </div>
       {fiatAmount && (
-        <Span variant="light" className="text-[13px] text-opacity-80 leading-4" data-testid="FiatAmount">
+        <Typography
+          tagVariant="label"
+          className="text-[14px] font-rootstock-sans text-disabled-primary"
+          lineHeight="14px"
+          data-testid="FiatAmount"
+        >
           {fiatAmount}
-        </Span>
+        </Typography>
       )}
       {contractAddress && (
         <a href={`${EXPLORER_URL}/address/${contractAddress}`} target="_blank" className="mt-2">
@@ -82,3 +95,5 @@ export const MetricsCard: FC<MetricsCardProps> = ({
     </div>
   )
 }
+
+export const MetricsCardWithSpinner = withSpinner(MetricsCard)
