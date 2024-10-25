@@ -34,7 +34,7 @@ RUN if [ "$arg_env" = "testnet" ]; then \
       mv .env.prod .env.local; \
     elif [ "$arg_env" = "testnet.qa" ]; then \
       mv .env.testnet.qa .env.local \
-    elif [ "$arg_env" = "testnet.staging"]; then \
+    elif [ "$arg_env" = "testnet.staging" ]; then \
       mv .env.testnet.staging .env.local \
     fi
 
