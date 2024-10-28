@@ -11,8 +11,15 @@ interface UseSimplePaginationResult<T> {
 export function usePaginationUi<T>(
   paginationResult: UsePaginatedQueryResult<T>,
 ): UseSimplePaginationResult<T> {
-  const { currentResults, totalPages, tablePage, nextTablePage, previousTablePage, isLoading } =
-    paginationResult
+  const {
+    currentResults,
+    totalPages,
+    tablePage,
+    nextTablePage,
+    previousTablePage,
+    isLoading,
+    goToTablePage,
+  } = paginationResult
 
   const paginationElement = useMemo(() => {
     const getPageNumbers = () => {
@@ -38,9 +45,7 @@ export function usePaginationUi<T>(
         {getPageNumbers().map(pageNumber => (
           <PaginationButton
             key={pageNumber}
-            onClick={() =>
-              tablePage !== pageNumber && (pageNumber > tablePage ? nextTablePage() : previousTablePage())
-            }
+            onClick={() => goToTablePage(pageNumber)}
             disabled={isLoading}
             text={pageNumber + 1}
             isActive={pageNumber === tablePage}
@@ -53,7 +58,7 @@ export function usePaginationUi<T>(
         />
       </div>
     )
-  }, [tablePage, totalPages, isLoading, nextTablePage, previousTablePage])
+  }, [tablePage, totalPages, isLoading, nextTablePage, previousTablePage, goToTablePage])
 
   return {
     paginationElement,

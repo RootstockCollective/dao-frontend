@@ -24,6 +24,7 @@ export interface UsePaginatedQueryResult<T>
   previousTablePage: () => void
   isFirstFetch: boolean
   hasMorePages: boolean
+  goToTablePage: (pageNumber: number) => void
 }
 
 export function usePagination<T>({
@@ -73,6 +74,8 @@ export function usePagination<T>({
     }
   }, [tablePage])
 
+  const goToTablePage = useCallback((pageNumber: number) => setTablePage(pageNumber), [])
+
   const hasMorePages = useMemo(() => {
     if (!data || data.pages.length === 0) return true
     const lastPage = data.pages[data.pages.length - 1]
@@ -105,6 +108,7 @@ export function usePagination<T>({
     fetchNextPage,
     hasNextPage,
     isFetchingNextPage,
+    goToTablePage,
     ...restQueryResult,
   }
 }
