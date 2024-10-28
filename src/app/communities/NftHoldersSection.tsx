@@ -125,7 +125,7 @@ const ViewIconHandler = ({
 export const NftHoldersSection = ({ address }: HoldersSectionProps) => {
   const { currentResults, paginationElement, isLoading } = useFetchNftHolders(address)
 
-  const [view, setView] = useState<ViewState>('images')
+  const [view, setView] = useState<ViewState>('table')
 
   const onChangeView = (selectedView: ViewState) => {
     setView(selectedView)
