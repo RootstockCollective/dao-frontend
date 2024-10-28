@@ -5,6 +5,7 @@ import { ReactNode } from 'react'
 import { WagmiProvider } from 'wagmi'
 import { AlertProvider } from './AlertProvider'
 import ErrorBoundary from '@/components/ErrorPage/ErrorBoundary'
+import { FeatureFlagProvider } from '@/shared/context/FeatureFlagContext'
 
 interface Props {
   children: ReactNode
@@ -16,7 +17,9 @@ export const ContextProviders = ({ children }: Props) => {
     <ErrorBoundary>
       <WagmiProvider config={config}>
         <QueryClientProvider client={queryClient}>
-          <AlertProvider>{children}</AlertProvider>
+          <FeatureFlagProvider>
+            <AlertProvider>{children}</AlertProvider>
+          </FeatureFlagProvider>
         </QueryClientProvider>
       </WagmiProvider>
     </ErrorBoundary>
