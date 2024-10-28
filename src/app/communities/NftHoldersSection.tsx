@@ -4,11 +4,11 @@ import { HeaderTitle, Paragraph, Span } from '@/components/Typography'
 import { Table } from '@/components/Table'
 import { LoadingSpinner } from '@/components/LoadingSpinner'
 import { EXPLORER_URL } from '@/lib/constants'
-import { RxExternalLink, RxViewGrid } from 'react-icons/rx'
-import Image from 'next/image'
+import { RxExternalLink } from 'react-icons/rx'
 import { truncateMiddle } from '@/lib/utils'
 import { useState } from 'react'
-import { FaTable } from 'react-icons/fa'
+import { TableIcon } from '@/app/communities/TableIcon'
+import { SquareIcon } from '@/app/communities/SquareIcon'
 
 interface HolderColumnProps {
   address: string
@@ -111,13 +111,13 @@ const ViewIconHandler = ({
       className={`w-[46px] h-[46px] flex items-center justify-center ${view === 'table' ? 'bg-white' : ''}`}
       onClick={() => onChangeView('table')}
     >
-      <FaTable size={24} color={view === 'table' ? 'black' : 'white'} />
+      <TableIcon color={view === 'table' ? 'black' : 'white'} />
     </div>
     <div
       className={`w-[46px] h-[46px] flex items-center justify-center ${view === 'images' ? 'bg-white' : ''}`}
       onClick={() => onChangeView('images')}
     >
-      <RxViewGrid size={24} color={view === 'images' ? 'black' : 'white'} />
+      <SquareIcon color={view === 'images' ? 'black' : 'white'} />
     </div>
   </span>
 )
