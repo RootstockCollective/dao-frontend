@@ -57,9 +57,9 @@ export const LazyRewardCell = memo(RewardCell, ({ rewards: prevReward }, { rewar
 export const BuilderNameCell = ({ builderName }: { builderName: string }) => {
   return (
     <TableCell className={cn(tableHeaders[0], 'border-solid')}>
-      <div className="flex flex-row">
-        <Jdenticon className="rounded-full bg-white mr-1" value={builderName} size="30" />
-        <AddressOrAlias addressOrAlias={builderName} />
+      <div className="flex flex-row gap-x-1">
+        <Jdenticon className="rounded-md bg-white" value={builderName} size="24" />
+        <AddressOrAlias addressOrAlias={builderName} className="text-sm" />
       </div>
     </TableCell>
   )

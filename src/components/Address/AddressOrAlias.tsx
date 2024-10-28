@@ -3,14 +3,16 @@ import { isAddress } from 'viem'
 import { Span } from '@/components/Typography'
 import { CopySvg } from '@/components/CopySvg'
 import { ADDRESS_ANIMATION_DURATION } from '@/lib/constants'
+import { cn } from '@/lib/utils'
 
 export interface AddressProps {
   addressOrAlias: string
+  className?: string
 }
 
 type CopyStatus = 'success' | 'error'
 
-export const AddressOrAlias: React.FC<AddressProps> = ({ addressOrAlias }) => {
+export const AddressOrAlias: React.FC<AddressProps> = ({ addressOrAlias, className = '' }) => {
   const [animationShown, setAnimationShown] = useState(false)
   const [copied, setCopied] = useState('success' as CopyStatus)
   const onClick = async () => {
@@ -55,11 +57,11 @@ export const AddressOrAlias: React.FC<AddressProps> = ({ addressOrAlias }) => {
   return (
     <span className="flex items-center">
       {isAddress(addressOrAlias) ? (
-        <Span className={addressClass}>
+        <Span className={cn(addressClass, className)}>
           {addressOrAlias.substring(0, 6)}...{addressOrAlias.substring(addressOrAlias.length - 4)}
         </Span>
       ) : (
-        <Span className={aliasClass}>{addressOrAlias}</Span>
+        <Span className={cn(aliasClass, className)}>{addressOrAlias}</Span>
       )}
 
       <span className={copyButtonClass} onClick={onClick}>
