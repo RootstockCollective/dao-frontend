@@ -15,4 +15,4 @@ export const fetchRewardDistributedLogs = (fromBlock = 0) => {
 }
 
 export const fetchRewardDistributedCached = () =>
-  axiosInstance.get('/collective-rewards/api', { baseURL: '/' })
+  axiosInstance.get('/reward-distributed/api', { baseURL: '/' })
