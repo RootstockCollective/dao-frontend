@@ -6,6 +6,7 @@ import { useFetchTokenHolders } from '@/app/treasury/hooks/useFetchTokenHolders'
 import { formatBalanceToHuman } from '@/app/user/Balances/balanceUtils'
 import Image from 'next/image'
 import { LoadingSpinner } from '@/components/LoadingSpinner'
+import { Jdenticon } from '@/components/Header/Jdenticon'
 
 interface HolderColumnProps {
   address: string
@@ -18,7 +19,7 @@ const HolderColumn = ({ address, rns }: HolderColumnProps) => {
       target="_blank"
       className="mt-2 flex items-center gap-1.5 text-white"
     >
-      <Image src="/images/treasury/holders.png" width={24} height={24} alt="Holders Image" />
+      <Jdenticon className="rounded-full bg-white mr-1" value={address} size="30" />
       <Span className="underline text-left overflow-hidden whitespace-nowrap text-[14px]">
         {rns || address}
       </Span>
