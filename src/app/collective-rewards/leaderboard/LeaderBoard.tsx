@@ -153,41 +153,43 @@ const LeaderBoardTable = () => {
     }
   }, [rifRewardsError, setErrorMessage])
 
+  if (isLoading) {
+    return <LoadingSpinner />
+  }
+
+  if (!tableDataLength) {
+    return <EmptyLeaderboard />
+  }
+
   return (
-    <>
-      {isLoading && <LoadingSpinner />}
-      {!isLoading && tableDataLength === 0 && <Paragraph>No data available</Paragraph>}
-      {!isLoading && tableDataLength > 0 && (
-        <TableCore>
-          <TableHead>
-            <TableRow>
-              {tableHeaders.map(header => (
-                <TableCell
-                  key={header.label}
-                  className={cn(
-                    'font-rootstock-sans font-bold text-base leading-none border-b border-solid border-[#2D2D2D]',
-                    header.width,
-                    header.text_position,
-                  )}
-                >
-                  {header.label}
-                </TableCell>
-              ))}
-            </TableRow>
-          </TableHead>
-          <TableBody>
-            {Object.entries(tableData).map(([address, { lastCycleReward, projectedReward, share }]) => (
-              <TableRow key={address + share} className="text-[14px] border-hidden">
-                <BuilderNameCell builderName={address} />
-                <LastCycleRewardCell rewards={lastCycleReward} />
-                <ProjectedRewardCell rewards={projectedReward} />
-                <ShareCell share={share} />
-              </TableRow>
-            ))}
-          </TableBody>
-        </TableCore>
-      )}
-    </>
+    <TableCore>
+      <TableHead>
+        <TableRow>
+          {tableHeaders.map(header => (
+            <TableCell
+              key={header.label}
+              className={cn(
+                'font-rootstock-sans font-bold text-base leading-none border-b border-solid border-[#2D2D2D]',
+                header.width,
+                header.text_position,
+              )}
+            >
+              {header.label}
+            </TableCell>
+          ))}
+        </TableRow>
+      </TableHead>
+      <TableBody>
+        {Object.entries(tableData).map(([address, { lastCycleReward, projectedReward, share }]) => (
+          <TableRow key={address + share} className="text-[14px] border-hidden">
+            <BuilderNameCell builderName={address} />
+            <LastCycleRewardCell rewards={lastCycleReward} />
+            <ProjectedRewardCell rewards={projectedReward} />
+            <ShareCell share={share} />
+          </TableRow>
+        ))}
+      </TableBody>
+    </TableCore>
   )
 }
 
@@ -201,3 +203,15 @@ export const LeaderBoard = () => {
     </>
   )
 }
+
+const EmptyLeaderboard = () => (
+  <div className="relative w-full">
+    <img className="w-full h-fll object-cover" alt="no builders yet" src="/images/joining-without-text.png" />
+    <Typography
+      tagVariant="h1"
+      className="uppercase font-kk-topo text-[48px] leading-tight font-normal absolute inset-0 flex items-center justify-center tracking-[-0.96px]"
+    >
+      Builders are joining soon...
+    </Typography>
+  </div>
+)
