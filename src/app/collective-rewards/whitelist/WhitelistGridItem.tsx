@@ -1,5 +1,4 @@
 import { crStatusColorClasses } from '@/app/collective-rewards/BecomeABuilderButton'
-import { BuilderProposal } from '@/app/collective-rewards/whitelist/hooks/useGetFilteredBuilders'
 import { AddressOrAlias } from '@/components/Address'
 import { Badge } from '@/components/Badge'
 import { Popover } from '@/components/Popover'
@@ -7,6 +6,7 @@ import { Paragraph, Span, Typography } from '@/components/Typography'
 import { useRouter } from 'next/navigation'
 import { FC, ReactNode } from 'react'
 import { Jdenticon } from '@/components/Header/Jdenticon'
+import { BuilderProposal } from '@/app/collective-rewards/BuilderContext'
 
 type WhitelistGridItemProps = BuilderProposal
 
@@ -21,7 +21,7 @@ const Card = ({ header, body }: { header: ReactNode; body: ReactNode }) => {
 
 // TODO: this content can be moved to a different component and become a generic card
 export const WhitelistGridItem: FC<WhitelistGridItemProps> = ({
-  displayName,
+  builderName,
   address,
   status,
   joiningDate,
@@ -46,7 +46,7 @@ export const WhitelistGridItem: FC<WhitelistGridItemProps> = ({
           trigger="hover"
         >
           <Typography tagVariant="label" className="font-semibold line-clamp-1 text-wrap">
-            <AddressOrAlias addressOrAlias={displayName || address} />
+            <AddressOrAlias addressOrAlias={builderName || address} />
           </Typography>
         </Popover>
         <Paragraph className="text-sm font-light"> Joined {joiningDate}</Paragraph>

@@ -1,25 +1,10 @@
-import { useEffect, useMemo, useState } from 'react'
-import { BuilderStatus } from '@/app/collective-rewards/types'
+import { useEffect, useState } from 'react'
 import { BuilderStatusFilter } from '@/app/collective-rewards/whitelist/WhitelistContext'
-import { useGetBuilders } from '@/app/collective-rewards/hooks/useGetBuilders'
-import { DateTime } from 'luxon'
-import { useGetProposalsState } from '@/app/collective-rewards/whitelist/hooks/useGetProposalsState'
-import { getMostAdvancedProposal } from '@/app/collective-rewards/utils/getMostAdvancedProposal'
-import { splitCombinedName } from '@/app/proposals/shared/utils'
+import { BuilderProposal, useBuilderContext } from '@/app/collective-rewards/BuilderContext'
 
 type FetchWhitelistedBuildersFilter = {
   builderName: string
   status: BuilderStatusFilter
-}
-
-export type BuilderProposal = {
-  displayName: string
-  status: BuilderStatus
-  address: string
-  proposalId: bigint
-  proposalName: string
-  proposalDescription: string
-  joiningDate: string
 }
 
 const lowerCaseCompare = (a: string, b: string) => a?.toLowerCase().includes(b?.toLowerCase())
@@ -29,48 +14,14 @@ export const useGetFilteredBuilders = ({
   status: filterStatus,
 }: FetchWhitelistedBuildersFilter) => {
   const [data, setData] = useState<BuilderProposal[]>([])
-  const { data: builders, isLoading: buildersLoading, error: buildersError } = useGetBuilders()
-  const buildersProposals = builders.flatMap(({ proposals }) => proposals)
-  const {
-    data: proposalsStateMap,
-    isLoading: proposalsStateMapLoading,
-    error: proposalsStateMapError,
-  } = useGetProposalsState(buildersProposals)
-
-  const filteredBuilders = useMemo(() => {
-    return builders.reduce<BuilderProposal[]>((acc, builder) => {
-      const { status, address } = builder
-      const proposal = getMostAdvancedProposal(builder, proposalsStateMap)
-
-      if (proposal) {
-        const {
-          args: { proposalId, description },
-          timeStamp,
-        } = proposal
-        const joiningDate = DateTime.fromSeconds(+timeStamp).toFormat('MMMM dd, yyyy')
-        const [name, proposalDescription] = description.split(';')
-        const { proposalName, builderName } = splitCombinedName(name)
-        acc.push({
-          displayName: builderName,
-          status,
-          address,
-          proposalId,
-          proposalName,
-          proposalDescription,
-          joiningDate,
-        })
-      }
-
-      return acc
-    }, [])
-  }, [builders, proposalsStateMap])
+  const { data: builders, isLoading, error } = useBuilderContext()
 
   useEffect(() => {
-    let filteredData = filteredBuilders
+    let filteredBuilders = builders
 
     if (filterBuilderName) {
-      filteredData = filteredData.filter(
-        ({ displayName: builderName, address }) =>
+      filteredBuilders = filteredBuilders.filter(
+        ({ builderName, address }) =>
           // TODO: Here we filter by both name and address,
           // but the address is not displayed in the UI when the Builder name is present.
           lowerCaseCompare(builderName, filterBuilderName) || lowerCaseCompare(address, filterBuilderName),
@@ -78,14 +29,10 @@ export const useGetFilteredBuilders = ({
     }
 
     if (filterStatus !== 'all') {
-      filteredData = filteredData.filter(builder => builder.status === filterStatus)
+      filteredBuilders = filteredBuilders.filter(builder => builder.status === filterStatus)
     }
-
-    setData(filteredData)
-  }, [filteredBuilders, filterBuilderName, filterStatus])
-
-  const isLoading = buildersLoading || proposalsStateMapLoading
-  const error = buildersError ?? proposalsStateMapError
+    setData(filteredBuilders)
+  }, [builders, filterBuilderName, filterStatus])
 
   return {
     data,

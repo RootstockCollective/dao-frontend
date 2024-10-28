@@ -1,9 +1,7 @@
 import { BuilderStatus } from '@/app/collective-rewards/types'
 import { createContext, Dispatch, FC, ReactNode, SetStateAction, useContext, useState } from 'react'
-import {
-  BuilderProposal,
-  useGetFilteredBuilders,
-} from '@/app/collective-rewards/whitelist/hooks/useGetFilteredBuilders'
+import { useGetFilteredBuilders } from '@/app/collective-rewards/whitelist/hooks/useGetFilteredBuilders'
+import { BuilderProposal, withBuilderContextProvider } from '@/app/collective-rewards/BuilderContext'
 
 export type BuilderStatusFilter = 'all' | BuilderStatus
 
@@ -40,7 +38,7 @@ interface WhitelistProviderProps {
   children: ReactNode
 }
 
-export const WhitelistContextProvider: FC<WhitelistProviderProps> = ({ children }) => {
+const WhitelistContextProvider: FC<WhitelistProviderProps> = ({ children }) => {
   const [search, setSearch] = useState('')
   const [filterBy, setFilterBy] = useState<BuilderStatusFilter>(initialFilterByValue)
   const { data, isLoading, error } = useGetFilteredBuilders({ builderName: search, status: filterBy })
@@ -57,3 +55,5 @@ export const WhitelistContextProvider: FC<WhitelistProviderProps> = ({ children 
 }
 
 export const useWhitelistContext = () => useContext(WhitelistContext)
+
+export const WhitelistContextProviderWithBuilders = withBuilderContextProvider(WhitelistContextProvider)

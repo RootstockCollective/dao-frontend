@@ -3,12 +3,12 @@ import { useAlertContext } from '@/app/providers'
 import { AddressOrAlias } from '@/components/Address'
 import { LoadingSpinner } from '@/components/LoadingSpinner'
 import { TableBody, TableCell, TableCore, TableHead, TableRow } from '@/components/Table'
-import { HeaderTitle, Label, Paragraph, Typography } from '@/components/Typography'
+import { HeaderTitle, Label, Paragraph } from '@/components/Typography'
 import { tokenContracts } from '@/lib/contracts'
 import { cn, formatCurrency, toFixed } from '@/lib/utils'
-import { PricesContextProvider } from '@/shared/context/PricesContext'
 import { FC, memo, useEffect } from 'react'
 import { Jdenticon } from '@/components/Header/Jdenticon'
+import { BuilderContextProviderWithPrices } from '@/app/collective-rewards/BuilderContext'
 
 type Currency = {
   value: number
@@ -22,6 +22,7 @@ export type Reward = {
 
 type TableData = {
   [address: string]: {
+    displayName: string
     lastCycleReward: Reward[]
     projectedReward: Reward[]
     share: bigint
@@ -33,10 +34,10 @@ type RewardCellProps = {
 }
 
 export const RewardCell: FC<RewardCellProps> = ({ rewards }) => (
-  <div className="flex flex-nowrap flex-row gap-[50px]">
+  <div className="flex flex-nowrap flex-row gap-1">
     {rewards &&
       rewards.map(({ crypto: { value, symbol }, fiat: { value: fiatValue, symbol: fiatSymbol } }) => (
-        <div key={value + symbol}>
+        <div key={value + symbol} className="flex-1">
           <Label className="font-normal text-sm leading-none text-text-primary font-rootstock-sans">
             {toFixed(value)} {symbol}
           </Label>
@@ -117,16 +118,20 @@ const LeaderBoardTable = () => {
   const { setMessage: setErrorMessage } = useAlertContext()
 
   const data = [...rbtcData, ...rifData]
-  const tableData = data.reduce<TableData>((acc, { address, lastCycleReward, projectedReward, share }) => {
-    const currentShare = acc[address]?.share ?? 0n
-    acc[address] = {
-      lastCycleReward: [...(acc[address]?.lastCycleReward ?? []), lastCycleReward],
-      projectedReward: [...(acc[address]?.projectedReward ?? []), projectedReward],
-      share: share > currentShare ? share : currentShare,
-    }
+  const tableData = data.reduce<TableData>(
+    (acc, { address, builderName, lastCycleReward, projectedReward, share }) => {
+      const currentShare = acc[address]?.share ?? 0n
+      acc[address] = {
+        displayName: builderName || address,
+        lastCycleReward: [...(acc[address]?.lastCycleReward ?? []), lastCycleReward],
+        projectedReward: [...(acc[address]?.projectedReward ?? []), projectedReward],
+        share: share > currentShare ? share : currentShare,
+      }
 
-    return acc
-  }, {})
+      return acc
+    },
+    {},
+  )
   const tableDataLength = Object.keys(tableData).length
 
   const isLoading = rbtcLoading || rifLoading
@@ -180,14 +185,16 @@ const LeaderBoardTable = () => {
         </TableRow>
       </TableHead>
       <TableBody>
-        {Object.entries(tableData).map(([address, { lastCycleReward, projectedReward, share }]) => (
-          <TableRow key={address + share} className="text-[14px] border-hidden">
-            <BuilderNameCell builderName={address} />
-            <LastCycleRewardCell rewards={lastCycleReward} />
-            <ProjectedRewardCell rewards={projectedReward} />
-            <ShareCell share={share} />
-          </TableRow>
-        ))}
+        {Object.entries(tableData).map(
+          ([address, { displayName, lastCycleReward, projectedReward, share }]) => (
+            <TableRow key={address + share} className="text-[14px] border-hidden">
+              <BuilderNameCell builderName={displayName} />
+              <LastCycleRewardCell rewards={lastCycleReward} />
+              <ProjectedRewardCell rewards={projectedReward} />
+              <ShareCell share={share} />
+            </TableRow>
+          ),
+        )}
       </TableBody>
     </TableCore>
   )
@@ -197,9 +204,9 @@ export const LeaderBoard = () => {
   return (
     <>
       <HeaderTitle>Rewards leaderboard</HeaderTitle>
-      <PricesContextProvider>
+      <BuilderContextProviderWithPrices>
         <LeaderBoardTable />
-      </PricesContextProvider>
+      </BuilderContextProviderWithPrices>
     </>
   )
 }
