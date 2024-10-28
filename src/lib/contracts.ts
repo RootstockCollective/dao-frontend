@@ -34,6 +34,7 @@ const treasuryContracts = [
   { name: 'Grants - Active', address: GRANTS_ACTIVE_BUCKET_ADDRESS },
   { name: 'Growth', address: GROWTH_BUCKET_ADDRESS },
   { name: 'General', address: GENERAL_BUCKET_ADDRESS },
+  { name: 'Growth - Rewards', address: SIMPLIFIED_REWARD_DISTRIBUTOR_ADDRESS },
 ]
 
 const GovernorAddress = GOVERNOR_ADDRESS
