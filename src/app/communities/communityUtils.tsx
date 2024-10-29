@@ -1,4 +1,15 @@
 import { nftContracts } from '@/lib/contracts'
+import { ReactNode } from 'react'
+
+interface CommunityItem {
+  leftImageSrc: string
+  title: string
+  subtitle: string
+  description: string
+  nftAddress: string
+  numberOfMembers: number
+  longDescription?: ReactNode
+}
 
 export const firstCommunity = {
   leftImageSrc: '/images/ea-nft-dog.png',
@@ -8,6 +19,25 @@ export const firstCommunity = {
     'The Early Adopters collection features a vibrant array of digital pioneers, each uniquely crafted to embody the spirit of innovation and community in the blockchain world.',
   nftAddress: nftContracts.EA,
   numberOfMembers: 0,
+  longDescription: (
+    <>
+      <p className="mb-4">
+        The Early Adopters collection features a vibrant array of digital pioneers, each uniquely crafted to
+        embody the spirit of innovation and community in the blockchain world. From governance and protocol
+        architects to visionary explorers and collaborative creators, these NFTs represent the diverse talents
+        and passions driving the decentralized revolution.
+      </p>
+      <p className="mb-4">
+        Whether blazing new trails as blockchain pioneers, nurturing the ecosystem as open-source champions,
+        or guiding the community as decentralized thinkers, each character in this collection is a testament
+        to the boundless creativity and dedication of those building the future of Bitcoin and beyond.
+      </p>
+      <p>
+        Join the journey with these extraordinary individuals as they carve out a new digital frontier, one
+        block at a time.
+      </p>
+    </>
+  ),
 }
 
 export const ogFounders = {
@@ -47,9 +77,7 @@ export const communitiesToRender = [
   ogFoundersExternalContributors,
 ]
 
-type CommunityType = typeof firstCommunity
-
-export const communitiesMapByContract = communitiesToRender.reduce<Record<string, CommunityType>>(
+export const communitiesMapByContract = communitiesToRender.reduce<Record<string, CommunityItem>>(
   (prev, currentValue) => {
     prev[currentValue.nftAddress] = currentValue
     return prev
