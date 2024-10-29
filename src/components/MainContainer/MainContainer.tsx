@@ -35,9 +35,11 @@ export const MainContainer: FC<Props> = ({ children, notProtected = false }) => 
   }
 
   useEffect(() => {
-    // Clear message on route change
-    setMessage(null)
-  }, [pathname, setMessage])
+    // Clear message on route change unless it is Unsupported network
+    if (message && message.title !== 'Unsupported network') {
+      setMessage(null)
+    }
+  }, [pathname, message, setMessage])
 
   useEffect(() => {
     // This is to prevent Hydration error on client side
