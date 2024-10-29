@@ -9,7 +9,12 @@ export const BUILD_ID = process.env.NEXT_PUBLIC_BUILD_ID as string
 export const RIF_ADDRESS = process.env.NEXT_PUBLIC_RIF_ADDRESS as Address
 export const STRIF_ADDRESS = process.env.NEXT_PUBLIC_STRIF_ADDRESS as Address
 export const GOVERNOR_ADDRESS = process.env.NEXT_PUBLIC_GOVERNOR_ADDRESS as Address
+// NFTs
 export const EA_NFT_ADDRESS = process.env.NEXT_PUBLIC_EA_NFT_ADDRESS?.toLowerCase() as Address
+export const OG_FOUNDERS_NFT_ADDRESS = process.env.NEXT_PUBLIC_OG_FOUNDERS?.toLowerCase() as Address
+export const OG_PARTNERS_NFT_ADDRESS = process.env.NEXT_PUBLIC_OG_PARTNERS?.toLowerCase() as Address
+export const OG_CONTRIBUTORS_NFT_ADDRESS = process.env.NEXT_PUBLIC_OG_CONTRIBUTORS?.toLowerCase() as Address
+// NFTs end
 export const MULTICALL_ADDRESS = process.env.NEXT_PUBLIC_MULTICALL_ADDRESS as Address
 export const GRANTS_BUCKET_ADDRESS = process.env.NEXT_PUBLIC_GRANTS_BUCKET_ADDRESS as Address
 export const GRANTS_ACTIVE_BUCKET_ADDRESS = process.env.NEXT_PUBLIC_GRANTS_ACTIVE_BUCKET_ADDRESS as Address

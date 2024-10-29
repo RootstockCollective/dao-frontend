@@ -12,6 +12,9 @@ import {
   RIF_ADDRESS,
   STRIF_ADDRESS,
   SIMPLIFIED_REWARD_DISTRIBUTOR_ADDRESS,
+  OG_FOUNDERS_NFT_ADDRESS,
+  OG_PARTNERS_NFT_ADDRESS,
+  OG_CONTRIBUTORS_NFT_ADDRESS,
 } from './constants'
 
 const tokenContracts = {
@@ -23,6 +26,9 @@ export type SupportedTokens = keyof typeof tokenContracts
 
 const nftContracts = {
   EA: EA_NFT_ADDRESS, // Early Adopters
+  OG_FOUNDERS: OG_FOUNDERS_NFT_ADDRESS, // Early Adopters
+  OG_PARTNERS: OG_PARTNERS_NFT_ADDRESS, // Early Adopters
+  OG_CONTRIBUTORS: OG_CONTRIBUTORS_NFT_ADDRESS, // Early Adopters
 }
 
 const abiContractsMap = {

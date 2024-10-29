@@ -15,7 +15,7 @@ export const ogFounders = {
   title: 'OG Founders',
   subtitle: 'N/A',
   description: 'A new community is coming, stay tuned!',
-  nftAddress: '',
+  nftAddress: nftContracts.OG_FOUNDERS,
   numberOfMembers: 0,
 }
 
@@ -24,7 +24,7 @@ export const ogFoundersEcosystemPartners = {
   title: 'OG Founders - Ecosystem Partners',
   subtitle: 'N/A',
   description: 'A new community is coming, stay tuned!',
-  nftAddress: '',
+  nftAddress: nftContracts.OG_PARTNERS,
   numberOfMembers: 0,
 }
 
@@ -33,7 +33,7 @@ export const ogFoundersExternalContributors = {
   title: 'OG Founders - External Contributors',
   subtitle: 'N/A',
   description: 'A new community is coming, stay tuned!',
-  nftAddress: '',
+  nftAddress: nftContracts.OG_CONTRIBUTORS,
   numberOfMembers: 0,
 }
 
