@@ -292,16 +292,18 @@ export default function Page() {
               ) : (
                 <div>
                   <Paragraph className="text-[18px]">{nftInfo.title}</Paragraph>
-                  <Button
-                    variant="primary"
-                    className="my-[16px]"
-                    onClick={handleMinting}
-                    disabled={!tokensAvailable || !address || isClaiming}
-                    loading={isClaiming}
-                    data-testid="claimButton"
-                  >
-                    Claim it!
-                  </Button>
+                  {nftInfo.isMintable && (
+                    <Button
+                      variant="primary"
+                      className="my-[16px]"
+                      onClick={handleMinting}
+                      disabled={!tokensAvailable || !address || isClaiming}
+                      loading={isClaiming}
+                      data-testid="claimButton"
+                    >
+                      Claim it!
+                    </Button>
+                  )}
                   <Span className="text-[14px] tracking-wide hidden">
                     Crypto ipsum bitcoin ethereum dogecoin litecoin. Hedera USD kadena chainlink weave hive
                     binance. Shiba-inu terra ICON IOTA ICON livepeer velas uniswap. Kadena kusama IOTA

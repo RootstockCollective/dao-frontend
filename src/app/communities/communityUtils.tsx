@@ -9,6 +9,7 @@ interface CommunityItem {
   nftAddress: string
   numberOfMembers: number
   longDescription?: ReactNode
+  isMintable?: boolean
 }
 
 export const firstCommunity = {
