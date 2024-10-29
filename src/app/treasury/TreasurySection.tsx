@@ -27,7 +27,12 @@ export const TreasurySection = () => {
           <MetricsCard
             key={`${contract.name}-RBTC`}
             title={`${contract.name} RBTC`}
-            amount={`${buckets[index]?.RBTC?.amount ? toFixed(buckets[index].RBTC.amount) : 0}`}
+            // If the amount is less than 1e-7, show 0, this is because,
+            // toFixed may not be correctly formatting it to a clean
+            // output due to limitations in JavaScript's handling of floating-point numbers
+            amount={`${
+              Number(buckets[index]?.RBTC?.amount) < 1e-7 ? 0 : toFixed(Number(buckets[index]?.RBTC?.amount))
+            }`}
             fiatAmount={`= USD ${buckets[index]?.RBTC?.fiatAmount ? buckets[index].RBTC.fiatAmount : 0}`}
             data-testid={`${contract.name}-RBTC`}
             borderless
