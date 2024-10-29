@@ -1,7 +1,7 @@
 import { Button } from '@/components/Button'
 import { SidebarButtonsProps } from '@/components/LeftSidebar/types'
 
-const DEFAULT_BUTTON_CLASSNAME = 'mb-[32px] pl-11 md:mb-[15px]'
+const DEFAULT_BUTTON_CLASSNAME = 'mb-[32px] pl-11'
 
 const START_ICON_CLASSES = 'left-[-28px] top-[2px]'
 
