@@ -31,8 +31,13 @@ const nftContracts = {
   OG_CONTRIBUTORS: OG_CONTRIBUTORS_NFT_ADDRESS, // Early Adopters
 }
 
+export const DEFAULT_NFT_CONTRACT_ABI = EarlyAdoptersNFTAbi
+
 const abiContractsMap = {
   [nftContracts.EA]: EarlyAdoptersNFTAbi,
+  [nftContracts.OG_FOUNDERS]: EarlyAdoptersNFTAbi,
+  [nftContracts.OG_CONTRIBUTORS]: EarlyAdoptersNFTAbi,
+  [nftContracts.OG_PARTNERS]: EarlyAdoptersNFTAbi,
 }
 
 const treasuryContracts = [

@@ -1,5 +1,5 @@
 import { useMemo, useCallback, useEffect, useState } from 'react'
-import { abiContractsMap } from '@/lib/contracts'
+import { abiContractsMap, DEFAULT_NFT_CONTRACT_ABI } from '@/lib/contracts'
 import { Address } from 'viem'
 import { useReadContracts, useAccount, useWaitForTransactionReceipt, useWriteContract } from 'wagmi'
 import { fetchIpfsUri } from '@/app/user/Balances/actions'
@@ -30,7 +30,7 @@ export const useContractData = (nftAddress?: Address) => {
   const { address } = useAccount()
   const contract = {
     // verifying `nftAddress` later in `useReadContracts` params
-    abi: abiContractsMap[nftAddress!],
+    abi: abiContractsMap[nftAddress!] || DEFAULT_NFT_CONTRACT_ABI,
     address: nftAddress,
   }
 
@@ -88,7 +88,7 @@ const useMintNFT = (nftAddress?: Address, tokensAvailable?: number) => {
     if (!nftAddress) throw new Error('Unknown NFT address')
     if (!tokensAvailable) throw new Error('No NFTs available to mint')
     return await mint({
-      abi: abiContractsMap[nftAddress],
+      abi: abiContractsMap[nftAddress] || DEFAULT_NFT_CONTRACT_ABI,
       address: nftAddress || '0x0',
       functionName: 'mint',
       args: [],
