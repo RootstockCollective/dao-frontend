@@ -12,7 +12,7 @@ export const LeftSidebar = ({
       <div className="mt-[42px]">
         <SidebarButtons onClick={onSidebarButtonClick} activeButton={activeButton} />
       </div>
-      <div className="mb-4">
+      <div className="mb-4 bottom-0 left-0 sticky">
         <UsefulLinks />
         {ConnectedComponent && ConnectedComponent}
       </div>
