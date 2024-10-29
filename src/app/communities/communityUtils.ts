@@ -11,7 +11,7 @@ export const firstCommunity = {
 }
 
 export const ogFounders = {
-  leftImageSrc: '/images/nft-coming-soon.png',
+  leftImageSrc: '/images/nfts/og-founders-thumb.png',
   title: 'OG Founders',
   subtitle: 'DeFi',
   description:
@@ -21,7 +21,7 @@ export const ogFounders = {
 }
 
 export const ogFoundersEcosystemPartners = {
-  leftImageSrc: '/images/nft-coming-soon.png',
+  leftImageSrc: '/images/nfts/og-partners-thumb.jpg',
   title: 'OG Founders - Ecosystem Partners',
   subtitle: 'DeFi',
   description:
@@ -31,7 +31,7 @@ export const ogFoundersEcosystemPartners = {
 }
 
 export const ogFoundersExternalContributors = {
-  leftImageSrc: '/images/nft-coming-soon.png',
+  leftImageSrc: '/images/nfts/og-contributors-thumb.jpg',
   title: 'OG Founders - External Contributors',
   subtitle: 'DeFi',
   description:
