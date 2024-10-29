@@ -15,7 +15,7 @@ export const TreasurySection = () => {
           <MetricsCard
             key={`${contract.name}-RIF`}
             title={`${contract.name} RIF`}
-            amount={`${buckets[index]?.RIF?.amount ? toFixed(buckets[index].RIF.amount) : 0} RIF`}
+            amount={`${buckets[index]?.RIF?.amount ? Math.ceil(Number(buckets[index].RIF.amount)) : 0} RIF`}
             fiatAmount={`= USD ${buckets[index]?.RIF?.fiatAmount ? buckets[index].RIF.fiatAmount : 0}`}
             contractAddress={contract.address}
             data-testid={`${contract.name}-RIF`}
