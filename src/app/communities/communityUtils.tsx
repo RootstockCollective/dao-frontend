@@ -58,7 +58,7 @@ export const ogFounders = {
 
 export const ogFoundersEcosystemPartners = {
   leftImageSrc: '/images/nfts/og-partners-thumb.jpg',
-  title: 'OG Founders - Ecosystem Partners',
+  title: 'OG Partners',
   subtitle: 'DeFi',
   description:
     'In the magical realm of Rootstock, a new chapter unfolds as the elves of the RootstockCollective embark on an extraordinary journey. Equipped with the OG Badge, these visionary elves invite their esteemed external partners to join them in exploring and innovating within the Rootstock ecosystem.',
@@ -70,7 +70,7 @@ export const ogFoundersEcosystemPartners = {
 
 export const ogFoundersExternalContributors = {
   leftImageSrc: '/images/nfts/og-contributors-thumb.jpg',
-  title: 'OG Founders - External Contributors',
+  title: 'OG Contributors',
   subtitle: 'DeFi',
   description:
     'In the enchanting realm of Rootstock, a thrilling new chapter unfolds as the elves of the RootstockCollective embark on an extraordinary journey. These visionary elves, recognized for their remarkable contributions, are bestowed with the prestigious OG Badge—a symbol of honor that grants them special powers.',
