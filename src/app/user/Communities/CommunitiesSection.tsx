@@ -3,11 +3,10 @@ import { CommunityCard } from '@/app/user/Communities/CommunityCard'
 import { JoinACommunity } from '@/app/user/Communities/JoinACommunity'
 import { useEffect, useRef, useState } from 'react'
 import { useCommunity } from '@/shared/hooks/useCommunity'
-import { EA_NFT_ADDRESS } from '@/lib/constants'
-import { firstCommunity } from '@/app/communities/communityUtils'
+import { communitiesMapByContract } from '@/app/communities/communityUtils'
 import { FaSpinner } from 'react-icons/fa6'
 
-const communities: string[] = [EA_NFT_ADDRESS]
+const communities: string[] = Object.keys(communitiesMapByContract)
 
 export const CommunitiesSection = () => (
   <div>
@@ -87,7 +86,7 @@ const NftInfo = ({
         img={data.nftMeta.image}
         title={data.nftName}
         link={`/communities/nft/${nftAddress}`}
-        description={firstCommunity.description}
+        description={data.nftMeta.description}
         members={data.membersCount.toString()}
       />
     )
