@@ -14,6 +14,7 @@ import { useCommunity } from '@/shared/hooks/useCommunity'
 import { useStRif } from '@/shared/hooks/useStRIf'
 import { CopyButton } from '@/components/CopyButton'
 import { NftHoldersSection } from '@/app/communities/NftHoldersSection'
+import { communitiesMapByContract } from '@/app/communities/communityUtils'
 
 /**
  * Name of the local storage variable with information about whether the token was added to the wallet
@@ -57,6 +58,8 @@ export default function Page() {
     stRifThreshold,
   } = useCommunity(nftAddress)
   const { stRifBalance } = useStRif()
+
+  const nftInfo = communitiesMapByContract[nftAddress || '']
 
   const [message, setMessage] = useState<MessageProps | null>(null)
   // reset message after few seconds
@@ -208,28 +211,13 @@ export default function Page() {
             <div className="rounded-xl overflow-hidden">
               <Image src="/images/ea-nft-dog.png" width={50} height={50} alt="Early Adopters" />
             </div>
-            <div className="font-semibold">Early Adopters</div>
+            <div className="font-semibold">{nftInfo.title}</div>
           </div>
           <div className="mb-[24px] font-extralight">
-            <p className="mb-4">
-              The Early Adopters collection features a vibrant array of digital pioneers, each uniquely
-              crafted to embody the spirit of innovation and community in the blockchain world. From
-              governance and protocol architects to visionary explorers and collaborative creators, these NFTs
-              represent the diverse talents and passions driving the decentralized revolution.
-            </p>
-            <p className="mb-4">
-              Whether blazing new trails as blockchain pioneers, nurturing the ecosystem as open-source
-              champions, or guiding the community as decentralized thinkers, each character in this collection
-              is a testament to the boundless creativity and dedication of those building the future of
-              Bitcoin and beyond.
-            </p>
-            <p>
-              Join the journey with these extraordinary individuals as they carve out a new digital frontier,
-              one block at a time.
-            </p>
+            <p>{nftInfo.description}</p>
           </div>
           {/* Hidden until we get social media data */}
-          <div className="flex gap-[8px] mt-[16px] mb-[24px] hidden">
+          <div className="gap-[8px] mt-[16px] mb-[24px] hidden">
             {/* Chips with community links */}
             <Chip className="bg-white text-black">
               <BsTwitterX />
@@ -272,7 +260,7 @@ export default function Page() {
               {isMember && tokenId ? (
                 <div>
                   <Paragraph variant="semibold" className="text-[18px]">
-                    Early Adopter #{tokenId}
+                    {nftInfo.title} #{tokenId}
                   </Paragraph>
 
                   {/* `Owned by 0x00000` colored with 2 colors */}
@@ -303,7 +291,7 @@ export default function Page() {
                 </div>
               ) : (
                 <div>
-                  <Paragraph className="text-[18px]">Early Adopter</Paragraph>
+                  <Paragraph className="text-[18px]">{nftInfo.title}</Paragraph>
                   <Button
                     variant="primary"
                     className="my-[16px]"
@@ -314,7 +302,7 @@ export default function Page() {
                   >
                     Claim it!
                   </Button>
-                  <Span className="inline-block text-[14px] tracking-wide hidden">
+                  <Span className="text-[14px] tracking-wide hidden">
                     Crypto ipsum bitcoin ethereum dogecoin litecoin. Hedera USD kadena chainlink weave hive
                     binance. Shiba-inu terra ICON IOTA ICON livepeer velas uniswap. Kadena kusama IOTA
                     horizen.

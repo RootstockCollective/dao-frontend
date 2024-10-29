@@ -46,3 +46,13 @@ export const communitiesToRender = [
   ogFoundersEcosystemPartners,
   ogFoundersExternalContributors,
 ]
+
+type CommunityType = typeof firstCommunity
+
+export const communitiesMapByContract = communitiesToRender.reduce<Record<string, CommunityType>>(
+  (prev, currentValue) => {
+    prev[currentValue.nftAddress] = currentValue
+    return prev
+  },
+  {},
+)
