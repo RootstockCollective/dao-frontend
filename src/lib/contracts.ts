@@ -29,13 +29,13 @@ const abiContractsMap = {
   [nftContracts.EA]: EarlyAdoptersNFTAbi,
 }
 
-const treasuryContracts = [
-  { name: 'Grants', address: GRANTS_BUCKET_ADDRESS },
-  { name: 'Grants - Active', address: GRANTS_ACTIVE_BUCKET_ADDRESS },
-  { name: 'Growth', address: GROWTH_BUCKET_ADDRESS },
-  { name: 'Growth - Rewards', address: SIMPLIFIED_REWARD_DISTRIBUTOR_ADDRESS },
-  { name: 'General', address: GENERAL_BUCKET_ADDRESS },
-]
+const treasuryContracts = {
+  GRANTS: { name: 'Grants', address: GRANTS_BUCKET_ADDRESS },
+  GRANTS_ACTIVE: { name: 'Grants - Active', address: GRANTS_ACTIVE_BUCKET_ADDRESS },
+  GROWTH: { name: 'Growth', address: GROWTH_BUCKET_ADDRESS },
+  GROWTH_REWARDS: { name: 'Growth - Rewards', address: SIMPLIFIED_REWARD_DISTRIBUTOR_ADDRESS },
+  GENERAL: { name: 'General', address: GENERAL_BUCKET_ADDRESS },
+}
 
 const GovernorAddress = GOVERNOR_ADDRESS
 const MulticallAddress = MULTICALL_ADDRESS
