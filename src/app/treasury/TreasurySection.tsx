@@ -29,7 +29,6 @@ export const TreasurySection = () => {
             title={`${contract.name} RBTC`}
             amount={`${buckets[index]?.RBTC?.amount ? toFixed(buckets[index].RBTC.amount) : 0}`}
             fiatAmount={`= USD ${buckets[index]?.RBTC?.fiatAmount ? buckets[index].RBTC.fiatAmount : 0}`}
-            contractAddress={contract.address}
             data-testid={`${contract.name}-RBTC`}
             borderless
           />
