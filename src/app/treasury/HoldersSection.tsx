@@ -4,9 +4,9 @@ import { EXPLORER_URL, STRIF_ADDRESS } from '@/lib/constants'
 import { RxExternalLink } from 'react-icons/rx'
 import { useFetchTokenHolders } from '@/app/treasury/hooks/useFetchTokenHolders'
 import { formatBalanceToHuman } from '@/app/user/Balances/balanceUtils'
-import Image from 'next/image'
 import { LoadingSpinner } from '@/components/LoadingSpinner'
 import { Jdenticon } from '@/components/Header/Jdenticon'
+import { ErrorMessageAlert } from '@/components/ErrorMessageAlert/ErrorMessageAlert'
 
 interface HolderColumnProps {
   address: string
@@ -30,7 +30,7 @@ const HolderColumn = ({ address, rns }: HolderColumnProps) => {
 
 export const HoldersSection = () => {
   // Fetch st rif holders
-  const { currentResults, paginationElement, isLoading } = useFetchTokenHolders(STRIF_ADDRESS)
+  const { currentResults, paginationElement, isLoading, isError } = useFetchTokenHolders(STRIF_ADDRESS)
 
   const holders = currentResults.map(({ address, value }) => ({
     holder: <HolderColumn address={address.hash} rns={address.ens_domain_name} />,
@@ -40,8 +40,15 @@ export const HoldersSection = () => {
   return (
     <div>
       <HeaderTitle className="mb-4">Holders</HeaderTitle>
-      {holders && holders?.length > 0 && <Table data={holders} />}
-      {paginationElement}
+      {isError && (
+        <ErrorMessageAlert message="An error occurred loading Token Holders. Please try again shortly." />
+      )}
+      {!isError && holders && holders?.length > 0 && (
+        <>
+          <Table data={holders} />
+          {paginationElement}
+        </>
+      )}
       {isLoading && <LoadingSpinner />}
     </div>
   )

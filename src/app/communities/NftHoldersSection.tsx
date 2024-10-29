@@ -9,6 +9,7 @@ import { truncateMiddle } from '@/lib/utils'
 import { useState } from 'react'
 import { TableIcon } from '@/app/communities/TableIcon'
 import { SquareIcon } from '@/app/communities/SquareIcon'
+import { ErrorMessageAlert } from '@/components/ErrorMessageAlert/ErrorMessageAlert'
 
 interface HolderColumnProps {
   address: string
@@ -123,7 +124,7 @@ const ViewIconHandler = ({
 )
 
 export const NftHoldersSection = ({ address }: HoldersSectionProps) => {
-  const { currentResults, paginationElement, isLoading } = useFetchNftHolders(address)
+  const { currentResults, paginationElement, isLoading, isError } = useFetchNftHolders(address)
 
   const [view, setView] = useState<ViewState>('table')
 
@@ -142,12 +143,19 @@ export const NftHoldersSection = ({ address }: HoldersSectionProps) => {
         Holders
         <ViewIconHandler view={view} onChangeView={onChangeView} />
       </HeaderTitle>
-      {view === 'table' && holders && holders?.length > 0 && <Table data={holders} />}
-      {view === 'images' && currentResults && currentResults?.length > 0 && (
-        <CardView nfts={currentResults} />
+      {isError && (
+        <ErrorMessageAlert message="An error occurred loading NFT Holders. Please try again shortly." />
+      )}
+      {!isError && (
+        <>
+          {view === 'table' && holders && holders?.length > 0 && <Table data={holders} />}
+          {view === 'images' && currentResults && currentResults?.length > 0 && (
+            <CardView nfts={currentResults} />
+          )}
+          <div className="mt-6">{paginationElement}</div>
+        </>
       )}
       {isLoading && <LoadingSpinner />}
-      <div className="mt-6">{paginationElement}</div>
     </div>
   )
 }
