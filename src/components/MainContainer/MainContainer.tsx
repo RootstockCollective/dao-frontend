@@ -79,7 +79,7 @@ export const MainContainer: FC<Props> = ({ children, notProtected = false }) => 
       <GradientHeader />
       <div className="flex">
         <StatefulSidebar ConnectedComponent={<ConnectedComponent />} />
-        <div className="flex flex-1 flex-col justify-between">
+        <div className="flex flex-1 flex-col justify-between overflow-y-auto h-screen">
           <main className="px-[32px] py-[34px] mb-[100px]">
             {message && (
               <Alert {...message} onDismiss={message.onDismiss === null ? null : () => setMessage(null)} />
