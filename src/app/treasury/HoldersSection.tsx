@@ -34,7 +34,7 @@ export const HoldersSection = () => {
 
   const holders = currentResults.map(({ address, value }) => ({
     holder: <HolderColumn address={address.hash} rns={address.ens_domain_name} />,
-    quantity: `${formatBalanceToHuman(value)} stRIF`,
+    quantity: `${Math.ceil(Number(value))} stRIF`,
   }))
 
   return (
