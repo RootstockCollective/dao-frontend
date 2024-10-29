@@ -8,8 +8,8 @@ export const LeftSidebar = ({
   ConnectedComponent,
 }: LeftSidebarProps) => {
   return (
-    <aside className="h-screen top-0 left-0 w-[300px] border border-input-bg px-6 border-b-0 flex flex-col justify-between whitespace-nowrap bg-foreground">
-      <div className="mt-[42px]">
+    <aside className="h-screen fixed top-0 left-0 w-[300px] border border-input-bg px-6 border-b-0 flex flex-col justify-between whitespace-nowrap bg-foreground">
+      <div className="mt-[48px]">
         <SidebarButtons onClick={onSidebarButtonClick} activeButton={activeButton} />
       </div>
       <div className="mb-4">
