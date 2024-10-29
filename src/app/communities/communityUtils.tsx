@@ -8,6 +8,7 @@ interface CommunityItem {
   description: string
   nftAddress: string
   numberOfMembers: number
+  cover: string
   longDescription?: ReactNode
   isMintable?: boolean
 }
@@ -20,6 +21,7 @@ export const firstCommunity = {
     'The Early Adopters collection features a vibrant array of digital pioneers, each uniquely crafted to embody the spirit of innovation and community in the blockchain world.',
   nftAddress: nftContracts.EA,
   numberOfMembers: 0,
+  cover: '/images/nfts/ea-nft-cover.png',
   isMintable: true,
   longDescription: (
     <>
@@ -50,6 +52,7 @@ export const ogFounders = {
     'In the magical realm of Rootstock, a select group of visionary elves, known as the Founders, received the prestigious OG Badge. This badge was a testament to their foresight and pioneering spirit, marking them as the true architects of their era.',
   nftAddress: nftContracts.OG_FOUNDERS,
   numberOfMembers: 0,
+  cover: '/images/nfts/founders-cover.png',
   isMintable: true,
 }
 
@@ -61,6 +64,7 @@ export const ogFoundersEcosystemPartners = {
     'In the magical realm of Rootstock, a new chapter unfolds as the elves of the RootstockCollective embark on an extraordinary journey. Equipped with the OG Badge, these visionary elves invite their esteemed external partners to join them in exploring and innovating within the Rootstock ecosystem.',
   nftAddress: nftContracts.OG_PARTNERS,
   numberOfMembers: 0,
+  cover: '/images/nfts/partners-cover.png',
   isMintable: false,
 }
 
@@ -72,6 +76,7 @@ export const ogFoundersExternalContributors = {
     'In the enchanting realm of Rootstock, a thrilling new chapter unfolds as the elves of the RootstockCollective embark on an extraordinary journey. These visionary elves, recognized for their remarkable contributions, are bestowed with the prestigious OG Badge—a symbol of honor that grants them special powers.',
   nftAddress: nftContracts.OG_CONTRIBUTORS,
   numberOfMembers: 0,
+  cover: '/images/nfts/contributors-cover.png',
   isMintable: false,
 }
 

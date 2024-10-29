@@ -252,7 +252,7 @@ export default function Page() {
             <div className="flex gap-6">
               <Image
                 alt={nftMeta?.name ?? 'Early Adopters NFT'}
-                src={nftMeta?.image || '/images/ea-nft-cover.png'}
+                src={nftMeta?.image || nftInfo.cover}
                 className="w-full self-center max-w-56 rounded-md"
                 width={500}
                 height={500}
