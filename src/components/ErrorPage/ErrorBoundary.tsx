@@ -6,6 +6,7 @@ import { Headline, Paragraph } from '@/components/Typography'
 import { HeaderText } from '@/components/HeaderText/HeaderText'
 import { Button } from '@/components/Button'
 import { ErrorThrowerContextProvider } from '@/components/ErrorPage/ErrorThrowerContext'
+import { checkForCommonErrors, commonErrors } from './commonErrors'
 
 interface Props {
   children?: ReactNode
@@ -37,7 +38,7 @@ class ErrorBoundary extends Component<Props, State> {
       // You can render any custom fallback UI
       let errorString = 'An unknown error occurred.'
       if (this.state.error instanceof Error) {
-        errorString = this.state.error.toString()
+        errorString = checkForCommonErrors(this.state.error)
       }
       return (
         <div
