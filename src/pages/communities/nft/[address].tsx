@@ -209,7 +209,7 @@ export default function Page() {
         <div className="flex-1">
           <div className="flex items-center gap-3 mb-2">
             <div className="rounded-xl overflow-hidden">
-              <Image src="/images/ea-nft-dog.png" width={50} height={50} alt="Early Adopters" />
+              <Image src={nftInfo.leftImageSrc} width={50} height={50} alt="Early Adopters" />
             </div>
             <div className="font-semibold">{nftInfo.title}</div>
           </div>
