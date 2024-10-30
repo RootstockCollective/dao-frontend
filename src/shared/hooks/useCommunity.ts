@@ -42,39 +42,36 @@ export const useContractData = (nftAddress?: Address) => {
           { ...contract, functionName: 'totalSupply' },
           { ...contract, functionName: 'tokensAvailable' },
           { ...contract, functionName: 'balanceOf', args: [address] },
-          { ...contract, functionName: 'tokenIdByOwner', args: [address] },
           { ...contract, functionName: 'name' },
           { ...contract, functionName: 'symbol' },
-          { ...contract, functionName: 'tokenUriByOwner', args: [address] },
           { ...contract, functionName: 'stRifThreshold' },
+          { ...contract, functionName: 'tokenOfOwnerByIndex', args: [address, BigInt(0)] }, // Only one token per address is assumed
         ],
       },
   )
+  const { data: URI } = useReadContracts(
+    address && nftAddress && data?.[6].result
+      ? {
+          contracts: [{ ...contract, functionName: 'tokenURI', args: [data[6].result] }],
+        }
+      : {},
+  )
 
   return useMemo(() => {
-    const [
-      membersCount,
-      tokensAvailable,
-      balanceOf,
-      tokenIdByOwner,
-      nftName,
-      symbol,
-      nftUri,
-      stRifThreshold,
-    ] = data ?? []
+    const [membersCount, tokensAvailable, balanceOf, nftName, symbol, stRifThreshold, tokenId] = data ?? []
     return {
       refetch,
       membersCount: Number(membersCount?.result ?? 0n),
       tokensAvailable: Number(tokensAvailable?.result ?? 0n),
       isMember: (balanceOf?.result ?? 0n) > 0n,
-      tokenId: typeof tokenIdByOwner?.result === 'bigint' ? Number(tokenIdByOwner.result) : undefined,
+      tokenId: typeof tokenId?.result === 'bigint' ? Number(tokenId.result) : undefined,
       nftName: nftName?.result,
       nftSymbol: symbol?.result,
-      nftUri: nftUri?.result,
+      nftUri: URI?.[0].result,
       isLoading,
       stRifThreshold: stRifThreshold?.result,
     }
-  }, [data, refetch, isLoading])
+  }, [data, refetch, isLoading, URI])
 }
 
 /**
