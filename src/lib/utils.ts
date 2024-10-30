@@ -1,7 +1,7 @@
 import axios from 'axios'
 import { ClassValue, clsx } from 'clsx'
 import { twMerge } from 'tailwind-merge'
-import { EXPLORER_URL, RIF_WALLET_SERVICES_URL } from './constants'
+import { CHAIN_ID, EXPLORER_URL, RIF_WALLET_SERVICES_URL } from './constants'
 import { Address } from 'viem'
 
 /**
@@ -27,6 +27,9 @@ export const shortAddress = (address: Address | undefined, amount = 5): string =
 
 export const axiosInstance = axios.create({
   baseURL: RIF_WALLET_SERVICES_URL,
+  params: {
+    chainId: CHAIN_ID,
+  },
 })
 
 /**
