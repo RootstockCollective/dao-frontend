@@ -18,11 +18,6 @@ export const useVotingPowerAtSnapshot = (blockNumber: bigint) => {
         functionName: 'getVotes',
         args: [address as Address, blockNumber],
       },
-      {
-        abi: GovernorAbi,
-        address: GovernorAddress,
-        functionName: 'proposalThreshold',
-      },
     ],
     query: {
       refetchInterval: 5000,
@@ -36,10 +31,10 @@ export const useVotingPowerAtSnapshot = (blockNumber: bigint) => {
     }
   }
 
-  const [votingPowerAtSnapshot, threshold] = data
+  const [votingPowerAtSnapshot] = data
 
   return {
     votingPowerAtSnapshot: votingPowerAtSnapshot ? formatUnits(votingPowerAtSnapshot, 18) : '',
-    doesUserHasEnoughThreshold: votingPowerAtSnapshot >= threshold,
+    doesUserHasEnoughThreshold: votingPowerAtSnapshot > 0,
   }
 }

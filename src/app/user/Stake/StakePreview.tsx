@@ -12,7 +12,7 @@ interface StakePreviewProps {
   onConfirm: () => void
   onCancel: () => void
   actionName: string
-  actionText: string
+  actionText: string | ReactNode
   confirmButtonText?: string
   confirmButtonDataTestId?: string
   customComponentBeforeFooter?: ReactNode

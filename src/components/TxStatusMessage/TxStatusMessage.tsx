@@ -53,7 +53,7 @@ export const TxStatusMessage = ({ messageType }: Props) => {
   }, [messageType, txData])
 
   if (message && !isDismissed) {
-    return <Alert {...message} onDismiss={onDismiss} />
+    return <Alert {...message} onDismiss={onDismiss} data-testid={messageType} />
   }
 
   return null

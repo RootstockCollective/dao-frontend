@@ -2,6 +2,10 @@ import { FC, HTMLAttributes, ReactNode } from 'react'
 import { TableHead, TableRow, TableCell, TableBody, TableCore } from './components'
 import { Span } from '../Typography'
 
+interface SharedProps {
+  'data-testid'?: string
+}
+
 interface TableProps extends HTMLAttributes<HTMLDivElement> {
   /**
    * Array of objects to be displayed in the table, with values of any type React can render.
@@ -11,6 +15,12 @@ interface TableProps extends HTMLAttributes<HTMLDivElement> {
    * Optional flag to make all column widths equal
    */
   equalColumns?: boolean
+  theadProps?: SharedProps
+  tbodyProps?: SharedProps
+  /**
+   * Header classes
+   */
+  headerClassName?: string
 }
 
 /**
@@ -20,28 +30,47 @@ interface TableProps extends HTMLAttributes<HTMLDivElement> {
  * you can create a custom table using the available components:
  * `Table`, `TableBody`, `TableCell`, `TableHead`, `TableRow`.
  */
-export const Table: FC<TableProps> = ({ data, equalColumns = true, ...props }) => {
+export const Table: FC<TableProps> = ({
+  data,
+  equalColumns = true,
+  tbodyProps,
+  theadProps,
+  headerClassName,
+  ...props
+}) => {
   // calculate column width
   const header = Object.keys(data[0])
   if (header.length === 0) return <></>
   const width = equalColumns ? Math.round(100 / header.length) + '%' : 'inherit'
   return (
     <TableCore {...props}>
-      <TableHead>
+      <TableHead {...theadProps}>
         <TableRow>
           {header.map(headTitle => (
-            <TableCell style={{ width, fontWeight: 'bold', fontSize: '14px' }} key={headTitle}>
+            <TableCell
+              style={{
+                width,
+                fontWeight: 700,
+                fontSize: '16px',
+                borderBottom: '1px solid #2D2D2D',
+                fontFamily: 'rootstock-sans',
+              }}
+              key={headTitle}
+              className={headerClassName}
+            >
               {headTitle}
             </TableCell>
           ))}
         </TableRow>
       </TableHead>
-      <TableBody>
+      <TableBody {...tbodyProps}>
         {data.map((record, i) => (
           <TableRow key={i} className="text-[14px] border-hidden" style={{ borderTopStyle: 'solid' }}>
             {Object.values(record).map((val, j) => (
               <TableCell style={{ width }} key={j}>
-                <Span className="text-[14px]">{val}</Span>
+                <Span className="text-[14px]" variant="light">
+                  {val}
+                </Span>
               </TableCell>
             ))}
           </TableRow>

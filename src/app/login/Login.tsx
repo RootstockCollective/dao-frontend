@@ -7,8 +7,8 @@ import { useEffect, useState } from 'react'
 import { useAccount } from 'wagmi'
 import { Disclaimer } from './Disclaimer'
 import { GetStarted } from './GetStarted'
-
-const BG_IMG_CLASSES = 'bg-[url(../../public/images/login-bg.svg)] bg-cover bg-no-repeat bg-right'
+import { BG_IMG_CLASSES } from '@/shared/utils'
+import { HeaderText } from '@/components/HeaderText/HeaderText'
 
 export const Login = () => {
   const { isConnected, address } = useAccount()
@@ -34,7 +34,7 @@ export const Login = () => {
 
   return (
     <div className={cn(BG_IMG_CLASSES, 'flex flex-row h-screen justify-center items-center bg-black')}>
-      <Header />
+      <HeaderText />
       <div className="flex-1 ml-20 mr-14">
         <Headline>{showDisclaimer ? 'DISCLAIMER' : 'GET STARTED'}</Headline>
         <div className="flex space-x-4 justify-center items-center">
@@ -63,15 +63,3 @@ export const Login = () => {
     </div>
   )
 }
-
-const Header = () => (
-  <header className="absolute top-9 left-8">
-    <Image
-      src="/images/wordmark.svg"
-      alt="Logo"
-      width={0}
-      height={0}
-      style={{ width: '96px', height: 'auto' }}
-    />
-  </header>
-)

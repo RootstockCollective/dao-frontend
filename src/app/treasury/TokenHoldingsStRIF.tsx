@@ -19,10 +19,10 @@ export const TokenHoldingsStRIF = () => {
   const symbol = 'stRIF'
   return (
     <>
-      <Paragraph size="small">{toFixed(balance)} stRIF</Paragraph>
+      <Paragraph size="small">{Math.ceil(Number(balance))} stRIF</Paragraph>
       {prices[symbol] && (
         <Paragraph size="small" className="text-zinc-500">
-          = USD {formatCurrency(prices[symbol].price * Number(balance) ?? 0)}
+          = USD {formatCurrency(prices[symbol].price * Number(balance)) ?? 0}
         </Paragraph>
       )}
     </>

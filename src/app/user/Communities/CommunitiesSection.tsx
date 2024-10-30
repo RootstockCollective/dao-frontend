@@ -1,13 +1,12 @@
-import { Header } from '@/components/Typography'
+import { HeaderTitle } from '@/components/Typography'
 import { CommunityCard } from '@/app/user/Communities/CommunityCard'
 import { JoinACommunity } from '@/app/user/Communities/JoinACommunity'
 import { useEffect, useRef, useState } from 'react'
 import { useCommunity } from '@/shared/hooks/useCommunity'
-import { EA_NFT_ADDRESS } from '@/lib/constants'
-import { firstCommunity } from '@/app/communities/communityUtils'
+import { communitiesMapByContract } from '@/app/communities/communityUtils'
 import { FaSpinner } from 'react-icons/fa6'
 
-const communities: string[] = [EA_NFT_ADDRESS]
+const communities: string[] = Object.keys(communitiesMapByContract)
 
 export const CommunitiesSection = () => (
   <div>
@@ -45,21 +44,23 @@ const UserCommunities = ({ nftAddresses }: { nftAddresses: string[] }) => {
 
   return (
     <>
-      <Header variant="h2" className="mb-[32px] font-bold">
+      <HeaderTitle className="mb-[24px] font-bold">
         Communities ({nftsOwned}){' '}
         {isLoadingNfts && (
           <span>
             <FaSpinner className="animate-spin inline-block" />
           </span>
         )}
-      </Header>
-      {nftsInfo.map((nftInfo, index) => (
-        <NftInfo
-          key={nftInfo.address}
-          nftAddress={nftInfo.address}
-          onFinishedLoading={onNftFinishedLoading(index)}
-        />
-      ))}
+      </HeaderTitle>
+      <div className="flex flex-wrap gap-[24px]">
+        {nftsInfo.map((nftInfo, index) => (
+          <NftInfo
+            key={nftInfo.address}
+            nftAddress={nftInfo.address}
+            onFinishedLoading={onNftFinishedLoading(index)}
+          />
+        ))}
+      </div>
       {!isLoadingNfts && nftsOwned === 0 && <JoinACommunity />}
     </>
   )
@@ -81,13 +82,13 @@ const NftInfo = ({
     }
   }, [data, onFinishedLoading])
 
-  if (data.nftMeta?.image && data.nftName && data.membersCount) {
+  if (data.nftName && data.isMember) {
     return (
       <CommunityCard
-        img={data.nftMeta.image}
+        img={data.nftMeta?.image || ''}
         title={data.nftName}
         link={`/communities/nft/${nftAddress}`}
-        description={firstCommunity.description}
+        description={data.nftMeta?.description || ''}
         members={data.membersCount.toString()}
       />
     )

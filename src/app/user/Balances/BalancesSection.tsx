@@ -1,4 +1,4 @@
-import { Header } from '@/components/Typography'
+import { HeaderTitle } from '@/components/Typography'
 import { Table } from '@/components/Table'
 import { RenderTokenPrice } from '@/app/user/Balances/RenderTokenPrice'
 import { RenderTotalBalance } from '@/app/user/Balances/RenderTotalBalance'
@@ -8,6 +8,7 @@ import { StakeRIFCell } from '@/app/user/Balances/StakeRIFCell'
 import { RenderTokenSymbol } from '@/app/user/Balances/RenderTokenSymbol'
 import { UnStakeRIFCell } from '@/app/user/Balances/UnStakeRIFCell'
 import { UnStakingModal } from '@/app/user/Stake/UnStakingSteps'
+import { WithBuilderButton } from '@/app/collective-rewards/WithBuilderButton'
 
 const data = [
   {
@@ -33,12 +34,20 @@ const data = [
   },
 ]
 
-export const BalancesSection = () => {
+const HeaderWithBuilderButton = WithBuilderButton(HeaderTitle)
+
+type BalancesSectionProps = {
+  showBuilderButton?: boolean
+}
+
+export const BalancesSection = ({ showBuilderButton = false }: BalancesSectionProps) => {
   return (
     <div className="mb-[32px]">
-      <Header variant="h2" className="mb-[32px]">
-        Balances
-      </Header>
+      {showBuilderButton ? (
+        <HeaderWithBuilderButton>Balances</HeaderWithBuilderButton>
+      ) : (
+        <HeaderTitle className="mb-6">Balances</HeaderTitle>
+      )}
       <BalancesProvider>
         <StakingModal />
         <UnStakingModal />

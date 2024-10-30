@@ -22,16 +22,16 @@
 
 html[data-theme='default'] {
   --color-primary: rgba(229, 107, 26, 1);
-  --color-secondary: rgba(45,45,45, 1);
+  --color-secondary: rgba(45, 45, 45, 1);
 
-  --background: #1A1A1A;
-  --foreground: rgba(37, 37, 37, 1);
+  --background: rgba(13, 13, 13, 1);
+  --foreground: rgba(26, 26, 26, 1);
 
   --text-primary: white;
   --text-secondary: rgba(184, 184, 184, 1);
   --text-light: rgba(113, 113, 113, 1); /* For labels light */
 
-  --disabled-primary: rgba(229, 231, 235, 1);
+  --disabled-primary: rgba(255, 255, 255, 0.6);
   --disabled-secondary: rgba(136, 153, 168, 1);
   /* Statuses */
   --st-success: rgba(34, 173, 92, 1);

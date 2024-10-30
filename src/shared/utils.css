@@ -1,0 +1,6 @@
+.background-logo {
+  background: url('/images/login-bg.svg');
+  background-size: cover;
+  background-repeat: no-repeat;
+  background-position: right;
+}

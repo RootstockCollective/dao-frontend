@@ -1,4 +1,4 @@
-import { Paragraph } from '@/components/Typography'
+import { HeaderTitle } from '@/components/Typography'
 import { Table } from '@/components/Table'
 import { RenderTokenPrice } from '@/app/user/Balances/RenderTokenPrice'
 import { TokenHoldings } from '@/app/treasury/TokenHoldings'
@@ -20,7 +20,7 @@ const tableData = [
 
 export const TotalTokenHoldingsSection = () => (
   <div>
-    <Paragraph className="font-semibold text-[18px] mb-[17px]">Total token holdings</Paragraph>
+    <HeaderTitle className="mb-4">Total token holdings</HeaderTitle>
     <Table data={tableData} />
   </div>
 )

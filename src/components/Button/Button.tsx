@@ -3,11 +3,16 @@ import { cn } from '@/lib/utils'
 import { FC, JSX, MouseEvent, ReactNode } from 'react'
 import { FaSpinner } from 'react-icons/fa6'
 import { Span } from '../Typography'
+import { DivWithGradient } from '@/components/Button/DivWithGradient'
 
-export const BUTTON_DEFAULT_CLASSES = 'px-[24px] py-[12px] flex gap-x-1 items-center relative'
+export const BUTTON_DEFAULT_CLASSES = 'px-[24px] py-[12px] flex gap-x-1 items-center relative rounded-[6px]'
+
+const DEFAULT_PAGINATION_CLASSES = 'w-[32px] h-[32px] p-0'
+
+const DEFAULT_PAGINATION_ACTIVE_CLASSES = [DEFAULT_PAGINATION_CLASSES, 'bg-primary text-black'].join(' ')
 
 interface Props {
-  children: string
+  children: ReactNode
   onClick?: (e: MouseEvent<HTMLButtonElement>) => void
   startIcon?: ReactNode
   variant?: ButtonVariants
@@ -19,6 +24,7 @@ interface Props {
   buttonProps?: JSX.IntrinsicElements['button'] & { 'data-testid'?: string }
   loading?: boolean
   startIconClasses?: string
+  'data-testid'?: string
 }
 
 const DEFAULT_DATA_TESTID = 'Button'
@@ -36,6 +42,7 @@ export const Button: FC<Props> = ({
   buttonProps = {},
   loading = false,
   startIconClasses,
+  'data-testid': dataTestId,
 }) => {
   startIcon = loading ? <FaSpinner className="animate-spin" /> : startIcon
   const classes = cn({
@@ -52,13 +59,16 @@ export const Button: FC<Props> = ({
     'justify-start': !centerContent,
     'justify-center': centerContent,
     'cursor-not-allowed': disabled,
+    [DEFAULT_PAGINATION_CLASSES]: variant === 'pagination',
+    [DEFAULT_PAGINATION_ACTIVE_CLASSES]: variant === 'pagination-active',
     [className]: true,
   })
 
   const textClasses = cn({
+    'font-rootstock-sans': true,
     'font-bold relative': true,
     'text-white': variant === 'secondary',
-    'text-disabled-secondary': disabled,
+    'text-secondary': disabled,
     'font-normal text-[rgba(255,255,255,0.8)]': variant === 'borderless',
     'text-black': variant === 'white',
     [textClassName]: true,
@@ -70,12 +80,13 @@ export const Button: FC<Props> = ({
       className={classes}
       onClick={e => !disabled && onClick?.(e)}
       {...buttonProps}
-      data-testid={`${DEFAULT_DATA_TESTID}${buttonProps['data-testid'] || ''}${buttonProps.id || ''}`}
+      data-testid={`${DEFAULT_DATA_TESTID}${dataTestId || buttonProps['data-testid'] || ''}${buttonProps.id || ''}`}
     >
       <span className={textClasses}>
         <span className={cn('absolute left-[-20px] top-[4px]', startIconClasses)}>{startIcon}</span>
-        <Span>{text}</Span>
+        <Span className={textClassName}>{text}</Span>
       </span>
+      {variant === 'sidebar-active' && <DivWithGradient />}
     </button>
   )
 }

@@ -1,4 +1,6 @@
-export type SidebarButtonType = 'communities' | 'treasury' | 'proposals' | 'user'
+import { ReactNode } from 'react'
+
+export type SidebarButtonType = 'communities' | 'treasury' | 'proposals' | 'user' | 'collective-rewards'
 
 export interface SidebarButtonsProps {
   activeButton?: SidebarButtonType
@@ -8,4 +10,5 @@ export interface SidebarButtonsProps {
 export interface LeftSidebarProps {
   activeButton?: SidebarButtonType
   onSidebarButtonClick?: (activeButton: SidebarButtonType) => void
+  ConnectedComponent?: ReactNode
 }

@@ -5,7 +5,7 @@ import { currentLinks } from '@/components/LeftSidebar/links'
 export const UsefulLinks = () => (
   <div className="mt-[4rem]">
     <Paragraph className="mb-[24px] text-[16px]">Useful links</Paragraph>
-    <div className="flex flex-col">
+    <div className="flex flex-col pl-[16px]">
       <Link href={currentLinks.rif} variant="menu" className="mb-[16px] text-[16px]" target="_blank">
         RIF
       </Link>

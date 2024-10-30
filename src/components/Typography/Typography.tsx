@@ -16,14 +16,18 @@ interface Props {
   className?: string
   fontFamily?: 'sora' | 'kk-topo' | 'rootstock-sans'
   onClick?: () => void
+  'data-testid'?: string
 }
 
-export const Typography: FC<Props & CSSProperties> = ({
+export type TypographyProps = Props & CSSProperties
+
+export const Typography: FC<TypographyProps> = ({
   tagVariant = 'p',
   children,
   className,
   fontFamily = 'rootstock-sans',
   onClick,
+  'data-testid': dataTestId,
   ...styles
 }) => {
   const Component = tagVariant
@@ -31,7 +35,12 @@ export const Typography: FC<Props & CSSProperties> = ({
   const fontFamilyClass = fontFamily ? `font-${fontFamily}` : ''
 
   return (
-    <Component className={cn([fontFamilyClass, classes, className])} style={{ ...styles }} onClick={onClick}>
+    <Component
+      className={cn([fontFamilyClass, classes, className])}
+      style={{ ...styles }}
+      onClick={onClick}
+      data-testid={`Typography${dataTestId || ''}`}
+    >
       {children}
     </Component>
   )
