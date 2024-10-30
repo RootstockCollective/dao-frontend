@@ -52,13 +52,15 @@ const UserCommunities = ({ nftAddresses }: { nftAddresses: string[] }) => {
           </span>
         )}
       </HeaderTitle>
-      {nftsInfo.map((nftInfo, index) => (
-        <NftInfo
-          key={nftInfo.address}
-          nftAddress={nftInfo.address}
-          onFinishedLoading={onNftFinishedLoading(index)}
-        />
-      ))}
+      <div className="flex flex-wrap gap-[24px]">
+        {nftsInfo.map((nftInfo, index) => (
+          <NftInfo
+            key={nftInfo.address}
+            nftAddress={nftInfo.address}
+            onFinishedLoading={onNftFinishedLoading(index)}
+          />
+        ))}
+      </div>
       {!isLoadingNfts && nftsOwned === 0 && <JoinACommunity />}
     </>
   )
@@ -80,13 +82,13 @@ const NftInfo = ({
     }
   }, [data, onFinishedLoading])
 
-  if (data.nftMeta?.image && data.nftName && data.membersCount) {
+  if (data.nftName && data.isMember) {
     return (
       <CommunityCard
-        img={data.nftMeta.image}
+        img={data.nftMeta?.image || ''}
         title={data.nftName}
         link={`/communities/nft/${nftAddress}`}
-        description={data.nftMeta.description}
+        description={data.nftMeta?.description || ''}
         members={data.membersCount.toString()}
       />
     )

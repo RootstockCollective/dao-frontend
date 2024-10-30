@@ -60,7 +60,9 @@ export default function Page() {
   const { stRifBalance } = useStRif()
 
   const nftInfo = communitiesMapByContract[nftAddress || '']
-
+  if (nftInfo === undefined) {
+    console.warn(`The current NFT address is not registered: ${nftAddress} - Please check the config.`)
+  }
   const [message, setMessage] = useState<MessageProps | null>(null)
   // reset message after few seconds
   useEffect(() => {
@@ -209,12 +211,14 @@ export default function Page() {
         <div className="flex-1">
           <div className="flex items-center gap-3 mb-2">
             <div className="rounded-xl overflow-hidden">
-              <Image src={nftInfo.leftImageSrc} width={50} height={50} alt="Early Adopters" />
+              {nftInfo?.leftImageSrc && (
+                <Image src={nftInfo.leftImageSrc} width={50} height={50} alt="Early Adopters" />
+              )}
             </div>
-            <div className="font-semibold">{nftInfo.title}</div>
+            <div className="font-semibold">{nftInfo?.title}</div>
           </div>
           <div className="mb-[24px] font-extralight">
-            <p>{nftInfo.longDescription || nftInfo.description}</p>
+            <p>{nftInfo?.longDescription || nftInfo?.description}</p>
           </div>
           {/* Hidden until we get social media data */}
           <div className="gap-[8px] mt-[16px] mb-[24px] hidden">
@@ -252,7 +256,7 @@ export default function Page() {
             <div className="flex gap-6">
               <Image
                 alt={nftMeta?.name ?? 'Early Adopters NFT'}
-                src={nftMeta?.image || nftInfo.cover}
+                src={nftMeta?.image || nftInfo?.cover}
                 className="w-full self-center max-w-56 rounded-md"
                 width={500}
                 height={500}
@@ -260,7 +264,7 @@ export default function Page() {
               {isMember && tokenId ? (
                 <div>
                   <Paragraph variant="semibold" className="text-[18px]">
-                    {nftInfo.title} #{tokenId}
+                    {nftInfo?.title} #{tokenId}
                   </Paragraph>
 
                   {/* `Owned by 0x00000` colored with 2 colors */}
@@ -291,8 +295,8 @@ export default function Page() {
                 </div>
               ) : (
                 <div>
-                  <Paragraph className="text-[18px]">{nftInfo.title}</Paragraph>
-                  {nftInfo.isMintable && (
+                  <Paragraph className="text-[18px]">{nftInfo?.title}</Paragraph>
+                  {nftInfo?.isMintable && (
                     <Button
                       variant="primary"
                       className="my-[16px]"
