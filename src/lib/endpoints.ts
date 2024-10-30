@@ -22,3 +22,6 @@ export const getNftInfo =
 export const getTokenHoldersOfAddress = `/address/{{address}}/holders?chainId=${CHAIN_ID}`
 
 export const getNftHolders = `/nfts/{{address}}/holders?chainId=${CHAIN_ID}`
+
+const REWARD_DISTRIBUTED_EVENT = '0x57ea5c7c295b52ef3b06c69661d59c8a6d9c602ac5355cfe5e54e303c139f270'
+export const fetchRewardDistributedLogsByAddress = `address/{{address}}/eventsByTopic0?topic0=${REWARD_DISTRIBUTED_EVENT}&chainId=${CHAIN_ID}&fromBlock={{fromBlock}}`
