@@ -20,7 +20,7 @@ jobs:
     name: Deploy
     runs-on: ubuntu-latest
     environment:
-      name: STAGING
+      name: CR-STAGING
     permissions:
       id-token: write
       contents: read

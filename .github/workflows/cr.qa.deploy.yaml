@@ -22,7 +22,7 @@ jobs:
     if: |
       github.event_name == 'workflow_dispatch' || github.event.label.name == 'deploy to QA'
     environment:
-      name: QA
+      name: CR-QA
     permissions:
       id-token: write
       contents: read
