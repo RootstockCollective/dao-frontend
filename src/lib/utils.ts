@@ -32,6 +32,38 @@ export const axiosInstance = axios.create({
   },
 })
 
+axiosInstance.interceptors.request.use(
+  config => {
+    try {
+      const fullUrl = config.baseURL + (config.url || '')
+      const doesBaseUrlHasChainId = fullUrl.includes('chainId')
+      if (doesBaseUrlHasChainId) {
+        // Parse the full URL (baseURL + request URL)
+        const url = new URL(fullUrl)
+
+        // Get existing URL parameters
+        const existingChainId = url.searchParams.get('chainId')
+
+        // If there are params in the request config
+        if (config.params) {
+          // If chainId exists in both URL and params, remove it from params
+          if (existingChainId && 'chainId' in config.params) {
+            const { chainId, ...otherParams } = config.params
+            config.params = otherParams
+          }
+        }
+      }
+      return config
+    } catch (error) {
+      console.error('Error in axios interceptor:', error)
+      return config
+    }
+  },
+  error => {
+    return Promise.reject(error)
+  },
+)
+
 /**
  * Truncates a string to a given length
  * @param str - The string to truncate
