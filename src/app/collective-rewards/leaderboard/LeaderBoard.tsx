@@ -38,6 +38,7 @@ export const RewardCell: FC<RewardCellProps> = ({ rewards }) => (
     {rewards &&
       rewards.map(({ crypto: { value, symbol }, fiat: { value: fiatValue, symbol: fiatSymbol } }) => (
         <div key={value + symbol} className="flex-1">
+          {/* TODO: if the value is very small, should we show it in Gwei/wei? */}
           <Label className="font-normal text-sm leading-none text-text-primary font-rootstock-sans">
             {toFixed(value)} {symbol}
           </Label>
