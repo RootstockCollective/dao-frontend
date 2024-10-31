@@ -49,13 +49,9 @@ const StatusBadge: FC<StatusBadgeProps> = ({ builderStatus }) => {
 export const BecomeABuilderHandler = ({ address }: { address: Address }) => {
   const { setMessage: setErrorMessage } = useAlertContext()
 
-  const {
-    useGetBuilderByAddress,
-    isLoading: builderLoading,
-    error: builderLoadingError,
-  } = useBuilderContext()
+  const { getBuilderByAddress, isLoading: builderLoading, error: builderLoadingError } = useBuilderContext()
 
-  const builder = useGetBuilderByAddress(address)
+  const builder = getBuilderByAddress(address)
 
   useEffect(() => {
     if (builderLoadingError) {

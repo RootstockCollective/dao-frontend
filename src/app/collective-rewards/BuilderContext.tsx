@@ -24,14 +24,14 @@ type BuilderContextValue = {
   data: BuilderProposal[]
   isLoading: boolean
   error: Error | null
-  useGetBuilderByAddress: (address: Address) => BuilderProposal | undefined
+  getBuilderByAddress: (address: Address) => BuilderProposal | undefined
 }
 
 export const BuilderContext = createContext<BuilderContextValue>({
   data: [],
   isLoading: false,
   error: null,
-  useGetBuilderByAddress: () => ({}) as BuilderProposal,
+  getBuilderByAddress: () => ({}) as BuilderProposal,
 })
 
 interface BuilderProviderProps {
@@ -78,7 +78,7 @@ export const BuilderContextProvider: FC<BuilderProviderProps> = ({ children }) =
   const isLoading = buildersLoading || proposalsStateMapLoading
   const error = buildersError ?? proposalsStateMapError
 
-  const useGetBuilderByAddress = (address: Address): BuilderProposal | undefined => {
+  const getBuilderByAddress = (address: Address): BuilderProposal | undefined => {
     return filteredBuilders[address]
   }
 
@@ -86,7 +86,7 @@ export const BuilderContextProvider: FC<BuilderProviderProps> = ({ children }) =
     data: Object.values(filteredBuilders),
     isLoading,
     error,
-    useGetBuilderByAddress,
+    getBuilderByAddress,
   }
 
   return <BuilderContext.Provider value={valueOfContext}>{children}</BuilderContext.Provider>
