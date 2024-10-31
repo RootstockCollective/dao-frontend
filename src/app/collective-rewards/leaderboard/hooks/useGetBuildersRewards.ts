@@ -4,23 +4,16 @@ import { usePricesContext } from '@/shared/context/PricesContext'
 import { useGetTokenProjectedReward } from '@/app/collective-rewards/hooks/useGetTokenProjectedReward'
 import { Address, isAddressEqual } from 'viem'
 import { getLastCycleRewards } from '@/app/collective-rewards/utils/getLastCycleRewards'
-import { useGetWhitelistedBuilders } from '@/app/collective-rewards/hooks/useGetWhitelistedBuilders'
+import { useBuilderContext } from '@/app/collective-rewards/BuilderContext'
 
 export const useGetBuildersRewards = (rewardToken: Address, rewardTokenSymbol?: string, currency = 'USD') => {
-  const {
-    data: whitelistedBuilders,
-    isLoading: whitelistedBuildersLoading,
-    error: whitelistedBuildersError,
-  } = useGetWhitelistedBuilders()
+  const { data: builders, isLoading: buildersLoading, error: buildersError } = useBuilderContext()
 
   const {
     data: rewardDistributedLogs,
     isLoading: logsLoading,
     error: logsError,
   } = useGetRewardDistributedLogs(rewardToken)
-
-  const { prices } = usePricesContext()
-
   const {
     data: { share, projectedReward },
     isLoading: tokenLoading,
@@ -30,14 +23,16 @@ export const useGetBuildersRewards = (rewardToken: Address, rewardTokenSymbol?: 
 
   const projectedRewardInHuman = Number(formatBalanceToHuman(projectedReward))
 
-  const isLoading = whitelistedBuildersLoading || logsLoading || tokenLoading
-  const error = whitelistedBuildersError ?? logsError ?? tokenError
-  const builders = whitelistedBuilders ?? []
+  const isLoading = buildersLoading || logsLoading || tokenLoading
+  const error = buildersError ?? logsError ?? tokenError
+  const whitelistedBuilders = builders.filter(builder => builder.status === 'Whitelisted')
+
+  const { prices } = usePricesContext()
 
   return {
-    data: builders.map(builder => {
+    data: whitelistedBuilders.map(({ address, builderName }) => {
       const builderEvents = rewardDistributedLogs.filter(event =>
-        isAddressEqual(event.args.builder_, builder),
+        isAddressEqual(event.args.builder_, address),
       )
       const lastCycleRewards = getLastCycleRewards(builderEvents)
       const lastCycleRewardsInHuman = Number(formatBalanceToHuman(lastCycleRewards))
@@ -45,7 +40,8 @@ export const useGetBuildersRewards = (rewardToken: Address, rewardTokenSymbol?: 
       const price = prices[tokenSymbol]?.price ?? 0
 
       return {
-        address: builder,
+        address,
+        builderName,
         lastCycleReward: {
           crypto: {
             value: lastCycleRewardsInHuman,

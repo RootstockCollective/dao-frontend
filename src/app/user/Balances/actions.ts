@@ -18,6 +18,7 @@ import {
   ServerResponseV2,
   TokenHoldersResponse,
 } from '@/app/user/Balances/types'
+import { BackendEventByTopic0ResponseValue } from '@/shared/utils'
 
 export const fetchAddressTokens = (address: string, chainId = 31) =>
   axiosInstance
@@ -91,19 +92,6 @@ export const fetchNftsOwnedByAddressAndNFTAddress = (address: string, nftAddress
     )
     .then(({ data }) => data)
     .catch(error => console.log(error))
-
-export interface BackendEventByTopic0ResponseValue {
-  address: string
-  blockNumber: string
-  data: string
-  gasPrice: string
-  gasUsed: string
-  logIndex: string
-  timeStamp: string
-  topics: Array<null | string>
-  transactionHash: string
-  transactionIndex: string
-}
 
 export const fetchProposalCreated = (fromBlock = 0) =>
   axiosInstance.get<BackendEventByTopic0ResponseValue[]>(

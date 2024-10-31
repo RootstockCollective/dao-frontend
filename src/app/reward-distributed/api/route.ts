@@ -1,8 +1,8 @@
-import { fetchProposalCreated } from '@/app/user/Balances/actions'
 import { NextRequest } from 'next/server'
+import { fetchRewardDistributedLogs } from '@/app/collective-rewards/actions'
 import { BackendEventByTopic0ResponseValue, CachedData, handleCachedGetRequest } from '@/shared/utils'
 
-let cachedProposals: CachedData = {
+let cachedRewardDistributedLogs: CachedData = {
   lastUpdated: Date.now(),
   data: [] as BackendEventByTopic0ResponseValue[],
   isFetching: false,
@@ -11,5 +11,5 @@ let cachedProposals: CachedData = {
 }
 
 export async function GET(request: NextRequest) {
-  return handleCachedGetRequest(cachedProposals, request, fetchProposalCreated)
+  return handleCachedGetRequest(cachedRewardDistributedLogs, request, fetchRewardDistributedLogs)
 }

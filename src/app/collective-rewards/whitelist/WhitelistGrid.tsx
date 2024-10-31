@@ -1,6 +1,6 @@
 import { FC } from 'react'
 import { WhitelistGridItem } from '@/app/collective-rewards/whitelist/WhitelistGridItem'
-import { BuilderProposal } from '@/app/collective-rewards/whitelist/hooks/useGetFilteredBuilders'
+import { BuilderProposal } from '@/app/collective-rewards/BuilderContext'
 
 interface WhitelistGridProps {
   items: BuilderProposal[]

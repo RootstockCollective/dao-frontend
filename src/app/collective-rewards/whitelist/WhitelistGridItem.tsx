@@ -1,5 +1,4 @@
 import { crStatusColorClasses } from '@/app/collective-rewards/BecomeABuilderButton'
-import { BuilderProposal } from '@/app/collective-rewards/whitelist/hooks/useGetFilteredBuilders'
 import { AddressOrAlias } from '@/components/Address'
 import { Badge } from '@/components/Badge'
 import { Popover } from '@/components/Popover'
@@ -7,6 +6,7 @@ import { Paragraph, Span, Typography } from '@/components/Typography'
 import { useRouter } from 'next/navigation'
 import { FC, ReactNode } from 'react'
 import { Jdenticon } from '@/components/Header/Jdenticon'
+import { BuilderProposal } from '@/app/collective-rewards/BuilderContext'
 
 type WhitelistGridItemProps = BuilderProposal
 
@@ -21,7 +21,7 @@ const Card = ({ header, body }: { header: ReactNode; body: ReactNode }) => {
 
 // TODO: this content can be moved to a different component and become a generic card
 export const WhitelistGridItem: FC<WhitelistGridItemProps> = ({
-  displayName,
+  builderName,
   address,
   status,
   joiningDate,
@@ -30,8 +30,8 @@ export const WhitelistGridItem: FC<WhitelistGridItemProps> = ({
 }) => {
   const router = useRouter()
   const Header = (
-    <div className="flex flex-row w-full">
-      <Jdenticon className="rounded-md bg-white mr-2" value={address} size="34" />
+    <div className="flex flex-row w-full items-center gap-x-3">
+      <Jdenticon className="rounded-md bg-white" value={address} size="32" />
       <div className="flex-1 min-w-0">
         {/* TODO: To be reviewed, it's weird that we show the address in the tooltip
             and then we copy the builder name, since the builder name it's generally easier to remember
@@ -46,7 +46,7 @@ export const WhitelistGridItem: FC<WhitelistGridItemProps> = ({
           trigger="hover"
         >
           <Typography tagVariant="label" className="font-semibold line-clamp-1 text-wrap">
-            <AddressOrAlias addressOrAlias={displayName || address} />
+            <AddressOrAlias addressOrAlias={builderName || address} className="text-base font-bold" />
           </Typography>
         </Popover>
         <Paragraph className="text-sm font-light"> Joined {joiningDate}</Paragraph>
@@ -59,7 +59,7 @@ export const WhitelistGridItem: FC<WhitelistGridItemProps> = ({
   const Body = (
     <div onClick={() => router.push(`/proposals/${proposalId}`)} className="cursor-pointer">
       <Span className="text-base font-semibold">Proposal</Span>
-      <Span className="text-base line-clamp-1 text-wrap">{proposalName}</Span>
+      <Span className="text-sm line-clamp-1 text-wrap">{proposalName}</Span>
     </div>
   )
   return <Card header={Header} body={Body} />

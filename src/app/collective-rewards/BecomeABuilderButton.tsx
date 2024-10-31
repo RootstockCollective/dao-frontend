@@ -1,7 +1,4 @@
-import { useGetBuilderByAddress } from '@/app/collective-rewards/hooks/useGetBuilders'
 import { BuilderInfo } from '@/app/collective-rewards/types'
-import { getMostAdvancedProposal } from '@/app/collective-rewards/utils/getMostAdvancedProposal'
-import { useGetProposalsState } from '@/app/collective-rewards/whitelist/hooks/useGetProposalsState'
 import { useAlertContext } from '@/app/providers/AlertProvider'
 import { useModal } from '@/app/user/Balances/hooks/useModal'
 import { Badge } from '@/components/Badge'
@@ -10,6 +7,7 @@ import { LoadingSpinner } from '@/components/LoadingSpinner'
 import { BecomeABuilderModal } from '@/components/Modal/BecomeABuilderModal'
 import { FC, HtmlHTMLAttributes, useEffect } from 'react'
 import { Address } from 'viem'
+import { BuilderContextProvider, useBuilderContext } from '@/app/collective-rewards/BuilderContext'
 
 type StatusBadgeProps = {
   builderStatus?: BuilderInfo['status']
@@ -48,19 +46,12 @@ const StatusBadge: FC<StatusBadgeProps> = ({ builderStatus }) => {
   }[builderStatus as BuilderInfo['status']]
 }
 
-export const BecomeABuilderButton = ({ address }: { address: Address }) => {
+export const BecomeABuilderHandler = ({ address }: { address: Address }) => {
   const { setMessage: setErrorMessage } = useAlertContext()
-  const {
-    data: builder,
-    isLoading: builderLoading,
-    error: builderLoadingError,
-  } = useGetBuilderByAddress(address)
 
-  const {
-    data: builderProposalEvents,
-    isLoading: builderProposalEventsLoading,
-    error: builderProposalEventsError,
-  } = useGetProposalsState(builder?.proposals ?? [])
+  const { getBuilderByAddress, isLoading: builderLoading, error: builderLoadingError } = useBuilderContext()
+
+  const builder = getBuilderByAddress(address)
 
   useEffect(() => {
     if (builderLoadingError) {
@@ -73,29 +64,21 @@ export const BecomeABuilderButton = ({ address }: { address: Address }) => {
     }
   }, [builderLoadingError, address, setErrorMessage])
 
-  useEffect(() => {
-    if (builderProposalEventsError) {
-      setErrorMessage({
-        severity: 'error',
-        title: 'Error loading builder proposal events',
-        content: builderProposalEventsError.message,
-      })
-      console.error('🐛 builderProposalEventsError:', builderProposalEventsError)
-    }
-  }, [builderProposalEventsError, address, setErrorMessage])
-
-  if (builderLoading || builderProposalEventsLoading) {
+  if (builderLoading) {
     return <LoadingSpinner className={'justify-end w-1/4'} />
   }
 
   if (!builder) {
     return <BuilderRegistrationButton />
   }
-  const proposalEvent = getMostAdvancedProposal(builder, builderProposalEvents)
-
-  if (!proposalEvent) {
-    return <BuilderRegistrationButton />
-  }
 
   return <StatusBadge builderStatus={builder.status} />
+}
+
+export const BecomeABuilderButton = ({ address }: { address: Address }) => {
+  return (
+    <BuilderContextProvider>
+      <BecomeABuilderHandler address={address} />
+    </BuilderContextProvider>
+  )
 }
