@@ -7,8 +7,8 @@ on:
 
 env:
   AWS_REGION: us-east-1
-  ECR_REPOSITORY: rscoll-dev-bim-staging
-  ECS_SERVICE: rscoll-dev-bim-staging
+  ECR_REPOSITORY: rscoll-dev-bim-qa
+  ECS_SERVICE: rscoll-dev-bim-qa
   ECS_CLUSTER: rscoll-dev
   ECS_TASK_DEFINITION: rscoll-dev-bim-qa
   CONTAINER_NAME: rscoll-dev-bim-qa
