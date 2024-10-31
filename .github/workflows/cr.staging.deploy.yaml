@@ -7,11 +7,11 @@ on:
 
 env:
   AWS_REGION: us-east-1
-  ECR_REPOSITORY: bim-dao-frontend-testnet
-  ECS_SERVICE: bim-dao-frontend
-  ECS_CLUSTER: bim-dao-frontend-testnet
-  ECS_TASK_DEFINITION: bim-dao-frontend-testnet
-  CONTAINER_NAME: bim-dao-frontend
+  ECR_REPOSITORY: rscoll-dev-bim-staging
+  ECS_SERVICE: rscoll-dev-bim-staging
+  ECS_CLUSTER: rscoll-dev
+  ECS_TASK_DEFINITION: rscoll-dev-bim-staging
+  CONTAINER_NAME: rscoll-dev-bim-staging
 
   PROFILE: testnet.staging
 
@@ -20,7 +20,7 @@ jobs:
     name: Deploy
     runs-on: ubuntu-latest
     environment:
-      name: TESTNET
+      name: CR-STAGING
     permissions:
       id-token: write
       contents: read
@@ -34,7 +34,7 @@ jobs:
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v4
         with:
-          role-to-assume: ${{ secrets.AWS_LOGIN_TESTNET_ROLE_ARN }}
+          role-to-assume: ${{ secrets.AWS_LOGIN_STAGING_ROLE_ARN }}
           aws-region: ${{ env.AWS_REGION }}
 
       - name: Login to Amazon ECR
