@@ -1,4 +1,4 @@
-import { describe, test, expect } from '@jest/globals'
+import { describe, test, expect } from 'vitest'
 import { ProposalState } from '@/shared/types'
 import { getMostAdvancedProposal } from '@/app/collective-rewards/utils/getMostAdvancedProposal'
 import { CreateBuilderProposalEventLog } from '@/app/proposals/hooks/useFetchLatestProposals'

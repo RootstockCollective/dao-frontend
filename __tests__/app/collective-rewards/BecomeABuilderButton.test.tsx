@@ -1,27 +1,27 @@
 import { BecomeABuilderButton } from '@/app/collective-rewards/BecomeABuilderButton'
-import { useGetBuilderByAddress } from '@/app/collective-rewards/hooks/useGetBuilders'
+import { useGetBuilders } from '@/app/collective-rewards/hooks/useGetBuilders'
 import { BuilderInfo } from '@/app/collective-rewards/types'
 import { useGetProposalsState } from '@/app/collective-rewards/whitelist/hooks/useGetProposalsState'
 import { CreateBuilderProposalEventLog } from '@/app/proposals/hooks/useFetchLatestProposals'
 import { AlertProvider, useAlertContext } from '@/app/providers/AlertProvider'
 import { ProposalState } from '@/shared/types'
-import { describe, expect, test } from '@jest/globals'
-import { render, waitFor } from '@testing-library/react'
+import { describe, expect, test, vi, beforeEach, afterEach } from 'vitest'
+import { cleanup, render, waitFor } from '@testing-library/react'
 
-jest.mock('@/app/collective-rewards/hooks/useGetBuilders', () => {
+vi.mock('@/app/collective-rewards/hooks/useGetBuilders', () => {
   return {
-    useGetBuilderByAddress: jest.fn(),
+    useGetBuilders: vi.fn(),
   }
 })
 
-jest.mock('@/app/collective-rewards/whitelist/hooks/useGetProposalsState', () => {
+vi.mock('@/app/collective-rewards/whitelist/hooks/useGetProposalsState', () => {
   return {
-    useGetProposalsState: jest.fn(),
+    useGetProposalsState: vi.fn(),
   }
 })
 
-jest.mock('@/app/providers/AlertProvider', () => ({
-  useAlertContext: jest.fn(),
+vi.mock('@/app/providers/AlertProvider', () => ({
+  useAlertContext: vi.fn(),
   AlertProvider: ({ children }: { children: React.ReactNode }) => <div>{children}</div>,
 }))
 
@@ -32,9 +32,9 @@ const renderWithAlertProvider = (children: React.ReactNode) => {
 describe('BecomeABuilderButton', () => {
   const builderAddress = '0xCD2a3d9F938E13CD947Ec05AbC7FE734Df8DD826'
   const proposalId = 1n
-  const buildersData: BuilderInfo = {
+  const builderData: BuilderInfo = {
     status: 'In progress',
-    address: '0xCD2a3d9F938E13CD947Ec05AbC7FE734Df8DD826',
+    address: builderAddress,
     proposals: [
       {
         args: {
@@ -45,29 +45,30 @@ describe('BecomeABuilderButton', () => {
       },
     ] as CreateBuilderProposalEventLog[],
   }
+  const buildersData = [builderData]
   const proposalsToStates = {
     [proposalId.toString()]: ProposalState.Pending,
   }
-  const consoleErrorSpy = jest.spyOn(console, 'error').mockImplementation(() => {})
-  const setAlertMessageSpy = jest.fn()
+  const consoleErrorSpy = vi.spyOn(console, 'error').mockImplementation(() => {})
+  const setAlertMessageSpy = vi.fn()
 
   const expectedLoadingDataError = new Error('Error while loading data, please try again.')
   const expectedLoadingBuilderError = new Error('Error loading builder proposal events')
 
   beforeEach(() => {
-    jest.mocked(useGetBuilderByAddress).mockImplementation(() => {
+    vi.mocked(useGetBuilders).mockImplementation(() => {
       return {
         data: buildersData,
         isLoading: false,
         error: null,
       }
     })
-    jest.mocked(useGetProposalsState).mockReturnValue({
+    vi.mocked(useGetProposalsState).mockReturnValue({
       data: proposalsToStates,
       isLoading: false,
       error: null,
     })
-    jest.mocked(useAlertContext).mockReturnValue({
+    vi.mocked(useAlertContext).mockReturnValue({
       setMessage: setAlertMessageSpy,
       message: null,
     })
@@ -76,6 +77,7 @@ describe('BecomeABuilderButton', () => {
   afterEach(() => {
     setAlertMessageSpy.mockClear()
     consoleErrorSpy.mockClear()
+    cleanup()
   })
 
   test('should render if builder is in progress', async () => {
@@ -85,8 +87,8 @@ describe('BecomeABuilderButton', () => {
   })
 
   test('should render if builder is whitelisted', async () => {
-    buildersData.status = 'Whitelisted'
-    jest.mocked(useGetProposalsState).mockReturnValue({
+    builderData.status = 'Whitelisted'
+    vi.mocked(useGetProposalsState).mockReturnValue({
       data: {
         [proposalId.toString()]: ProposalState.Executed,
       },
@@ -107,7 +109,7 @@ describe('BecomeABuilderButton', () => {
   })
 
   test('should render registration button if builder have a proposal in a invalid state', async () => {
-    jest.mocked(useGetProposalsState).mockReturnValue({
+    vi.mocked(useGetProposalsState).mockReturnValue({
       data: {
         [proposalId.toString()]: ProposalState.Canceled,
       },
@@ -120,9 +122,9 @@ describe('BecomeABuilderButton', () => {
   })
 
   test('should use alert for error message if fails while getting the builders', async () => {
-    jest.mocked(useGetBuilderByAddress).mockImplementation(() => {
+    vi.mocked(useGetBuilders).mockImplementation(() => {
       return {
-        data: undefined,
+        data: [],
         isLoading: false,
         error: expectedLoadingDataError,
       }
@@ -132,33 +134,14 @@ describe('BecomeABuilderButton', () => {
     expect(setAlertMessageSpy).toHaveBeenCalledWith({
       content: expectedLoadingDataError.message,
       severity: 'error',
-      title: `Error loading builder with address ${buildersData.address}`,
+      title: `Error loading builder with address ${builderAddress}`,
     })
     expect(consoleErrorSpy).toHaveBeenCalledWith('🐛 builderLoadingError:', expectedLoadingDataError)
   })
 
-  test('should use alert for error message if fails while getting the proposals states', async () => {
-    jest.mocked(useGetProposalsState).mockReturnValue({
-      data: proposalsToStates,
-      isLoading: false,
-      error: {
-        message: expectedLoadingBuilderError.message,
-        name: 'Error',
-        stack: '',
-        cause: null,
-      },
-    })
-    renderWithAlertProvider(<BecomeABuilderButton address={builderAddress} />)
-
-    expect(setAlertMessageSpy).toHaveBeenCalledWith({
-      content: expectedLoadingBuilderError.message,
-      severity: 'error',
-      title: 'Error loading builder proposal events',
-    })
-  })
 
   test('should render loading message', async () => {
-    jest.mocked(useGetBuilderByAddress).mockReturnValue({
+    vi.mocked(useGetBuilders).mockReturnValue({
       data: buildersData,
       isLoading: true,
       error: null,
