@@ -139,7 +139,6 @@ describe('BecomeABuilderButton', () => {
     expect(consoleErrorSpy).toHaveBeenCalledWith('🐛 builderLoadingError:', expectedLoadingDataError)
   })
 
-
   test('should render loading message', async () => {
     vi.mocked(useGetBuilders).mockReturnValue({
       data: buildersData,
