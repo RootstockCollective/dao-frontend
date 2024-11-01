@@ -23,6 +23,7 @@ import { Accordion, AccordionItem, AccordionTrigger, AccordionContent } from '@/
 import { Header, Paragraph } from '@/components/Typography'
 import { Button } from '@/components/Button'
 import { isAddressRegex } from '@/app/proposals/shared/utils'
+import { isBaseError, isUserRejectedTxError } from '@/components/ErrorPage/commonErrors'
 
 const FormSchema = z.object({
   proposalName: z
@@ -44,7 +45,7 @@ export const RemoveBuilderProposalForm: FC = () => {
   const proposalId = params?.get('proposalId') ?? ''
   const { isLoading: isVotingPowerLoading, canCreateProposal } = useVotingPower()
   const { setMessage } = useAlertContext()
-  const { onRemoveBuilderProposal, isPublishing, error } = useRemoveBuilderProposal()
+  const { onRemoveBuilderProposal, isPublishing } = useRemoveBuilderProposal()
 
   const [activeStep, setActiveStep] = useState('proposal')
 
@@ -79,19 +80,16 @@ export const RemoveBuilderProposalForm: FC = () => {
     try {
       const txHash = await onRemoveBuilderProposal(builderAddress as Address, proposalDescription)
       router.push(`/proposals?txHash=${txHash}`)
-    } catch (err: any) {
-      if (err?.cause?.code !== 4001) {
+    } catch (error: any) {
+      if (isUserRejectedTxError(error)) return
+      if (isBaseError(error)) {
+        setMessage({ ...TX_MESSAGES.proposal.error, content: error.message })
+      } else {
         setMessage(TX_MESSAGES.proposal.error)
+        console.error('🐛 Error writing to contract:', error)
       }
     }
   }
-
-  useEffect(() => {
-    if (error) {
-      setMessage(TX_MESSAGES.proposal.error)
-      console.error('🐛 Error writing to contract:', error)
-    }
-  }, [error, setMessage])
 
   useEffect(() => {
     if (!isVotingPowerLoading && !canCreateProposal) {
