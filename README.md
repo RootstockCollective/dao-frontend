@@ -55,6 +55,24 @@ You can start editing the page by modifying `app/page.tsx`. The page auto-update
 
 This project uses [`next/font`](https://nextjs.org/docs/basic-features/font-optimization) to automatically optimize and load Inter, a custom Google Font.
 
+## Environments
+The following table describes the different environments files, which team is interacts with it and where each one is deployed. 
+
+All environment files are prefixed with a `.env`.
+
+| Environment      | Team     | Deploy URL                                       | Notes                 |
+| ---------------- | -------- | ------------------------------------------------ | --------------------- |
+| .prod            | DAO - CR | https://app.rootstockcollective.xyz              | -                     |
+| .dev             | DAO - CR | https://dev.app.rootstockcollective.xyz          | Needs VPN             |
+| .testnet         | DAO      | https://testnet.app.rootstockcollective.xyz      | -                     |
+| .qa              | DAO      |  -                                               | -                     |
+| .regtest         | CR       |  http://localhost:3000                           | -                     |
+| .testnet.local   | CR       |  http://localhost:3000                           | -                     |
+| .testnet.qa      | CR       | https://frontend.qa.bim.dao.rif.technology       | -                     |
+| .testnet.staging | CR       | https://frontend.testnet.bim.dao.rif.technology  | -                     |
+
+CR: Collective Rewards
+
 ## Learn More
 
 To learn more about Next.js, take a look at the following resources:
