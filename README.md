@@ -56,22 +56,22 @@ You can start editing the page by modifying `app/page.tsx`. The page auto-update
 This project uses [`next/font`](https://nextjs.org/docs/basic-features/font-optimization) to automatically optimize and load Inter, a custom Google Font.
 
 ## Environments
-The following table describes the different environments files that the teams interact with it and where they are deployed.  
+
+The following table describes the different environments files that the teams interact with it and where they are deployed.
 
 All environment files are prefixed with a `.env`.
 
-| Environment      | Team     | Deploy URL                                       | Notes                 |
-| ---------------- | -------- | ------------------------------------------------ | --------------------- |
-| .prod            | DAO - CR | https://app.rootstockcollective.xyz              | -                     |
-| .dev             | DAO - CR | https://dev.app.rootstockcollective.xyz          | Requires VPN          |
-| .testnet         | DAO      | https://testnet.app.rootstockcollective.xyz      | -                     |
-| .qa              | DAO      | -                                                | -                     |
-| .regtest         | CR       | http://localhost:3000                            | -                     |
-| .testnet.local   | CR       | http://localhost:3000                            | -                     |
-| .testnet.qa      | CR       | https://frontend.qa.bim.dao.rif.technology       | -                     |
-| .testnet.staging | CR       | https://frontend.testnet.bim.dao.rif.technology  | -                     |
+| Environment      | Team     | Deploy URL                                      | Configuration                                                                                                                                                                                      | Notes        |
+| ---------------- | -------- | ----------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------ |
+| .prod            | DAO - CR | https://app.rootstockcollective.xyz             | [DAO](https://github.com/RootstockCollective/dao-contracts-private/blob/develop/params/mainnet.json) <br> [CR](https://github.com/RootstockCollective/collective-rewards-sc/blob/main/.env.30.mvp) | -            |
+| .dev             | DAO - CR | https://dev.app.rootstockcollective.xyz         | [DAO](https://github.com/RootstockCollective/dao-contracts-private/blob/develop/params/dev.json)                                                                                                   | Requires VPN |
+| .testnet         | DAO      | https://testnet.app.rootstockcollective.xyz     | [DAO](https://github.com/RootstockCollective/dao-contracts-private/blob/develop/params/testnet.json)                                                                                               | -            |
+| .qa              | DAO      | -                                               | -                                                                                                                                                                                                  | -            |
+| .testnet.local   | CR       | http://localhost:3000                           | [CR](https://github.com/RootstockCollective/collective-rewards-sc/blob/main/.env.31.staging.mvp)                                                                                                   | -            |
+| .testnet.qa      | CR       | https://frontend.qa.bim.dao.rif.technology      | [CR](https://github.com/RootstockCollective/collective-rewards-sc/blob/main/.env.31.qa.dapp)                                                                                                       | -            |
+| .testnet.staging | CR       | https://frontend.testnet.bim.dao.rif.technology | [CR](https://github.com/RootstockCollective/collective-rewards-sc/blob/main/.env.31.staging.mvp)                                                                                                   | -            |
 
-**CR**:  Rootstock Collective Rewards squad
+**CR**: Rootstock Collective Rewards squad <br>
 **DAO**: Rootstock DAO squad
 
 ## Learn More
