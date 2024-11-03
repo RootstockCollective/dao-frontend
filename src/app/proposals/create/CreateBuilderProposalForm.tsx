@@ -23,6 +23,7 @@ import { Accordion, AccordionItem, AccordionTrigger, AccordionContent } from '@/
 import { Header, Paragraph } from '@/components/Typography'
 import { Button } from '@/components/Button'
 import { isAddressRegex, DISPLAY_NAME_SEPARATOR } from '@/app/proposals/shared/utils'
+import { isBaseError, isUserRejectedTxError } from '@/components/ErrorPage/commonErrors'
 
 const FormSchema = z.object({
   builderName: z
@@ -95,8 +96,8 @@ export const CreateBuilderProposalForm: FC = () => {
         proposalDescription,
       )
       router.push(`/proposals?txHash=${txHash}`)
-    } catch (err: any) {
-      if (err?.cause?.code !== 4001) {
+    } catch (error: any) {
+      if (isUserRejectedTxError(error)) return
         setMessage(TX_MESSAGES.proposal.error)
       }
     }

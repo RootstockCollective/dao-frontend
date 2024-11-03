@@ -3,6 +3,7 @@ import { StakePreview } from '@/app/user/Stake/StakePreview'
 import { useStakingContext } from '@/app/user/Stake/StakingContext'
 import { textsDependingOnAction } from '@/app/user/Stake/Steps/stepsUtils'
 import { StepProps } from '@/app/user/Stake/types'
+import { isUserRejectedTxError } from '@/components/ErrorPage/commonErrors'
 import { TX_MESSAGES } from '@/shared/txMessages'
 
 export const StepTwo = ({ onGoNext, onCloseModal = () => {} }: StepProps) => {
@@ -30,7 +31,7 @@ export const StepTwo = ({ onGoNext, onCloseModal = () => {} }: StepProps) => {
       setStakeTxHash?.(txHash)
       onGoNext?.()
     } catch (err: any) {
-      if (err?.cause?.code !== 4001) {
+      if (!isUserRejectedTxError(err)) {
         setMessage(TX_MESSAGES.staking.error)
       }
     }

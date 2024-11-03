@@ -52,6 +52,7 @@ import { Vote, VoteProposalModal } from '@/components/Modal/VoteProposalModal'
 import { VoteSubmittedModal } from '@/components/Modal/VoteSubmittedModal'
 import React from 'react'
 import { ProposalState } from '@/shared/types'
+import { isUserRejectedTxError } from '@/components/ErrorPage/commonErrors'
 
 export default function ProposalView() {
   const {
@@ -131,7 +132,7 @@ const PageWithProposal = (proposal: ParsedProposal) => {
       })
       setMessage(TX_MESSAGES.voting.success)
     } catch (err: any) {
-      if (err?.cause?.code !== 4001) {
+      if (!isUserRejectedTxError(err)) {
         console.error(err)
         setErrorVoting(err.shortMessage || err.toString())
         setMessage(TX_MESSAGES.voting.error)
@@ -149,7 +150,7 @@ const PageWithProposal = (proposal: ParsedProposal) => {
       })
       setMessage(TX_MESSAGES.queuing.success)
     } catch (err: any) {
-      if (err?.cause?.code !== 4001) {
+      if (!isUserRejectedTxError(err)) {
         console.error(err)
         setMessage(TX_MESSAGES.queuing.error)
       }
@@ -167,7 +168,7 @@ const PageWithProposal = (proposal: ParsedProposal) => {
       })
       setMessage(TX_MESSAGES.execution.success)
     } catch (err: any) {
-      if (err?.cause?.code !== 4001) {
+      if (!isUserRejectedTxError(err)) {
         console.error(err)
         setMessage(TX_MESSAGES.execution.error)
       }
