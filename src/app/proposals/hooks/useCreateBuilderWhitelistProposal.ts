@@ -5,6 +5,8 @@ import { Address, encodeFunctionData, getAddress } from 'viem'
 import { useWriteContract } from 'wagmi'
 import { createProposal, encodeGovernorRelayCallData } from './proposalUtils'
 import { useVotingPower } from './useVotingPower'
+import { AddressAlreadyWhitelistedError, NoVotingPowerError } from '@/app/proposals/shared/errors'
+import { getIsWhitelistedBuilder } from '@/app/collective-rewards/utils/getIsWhitelistedBuilder'
 
 export const useCreateBuilderWhitelistProposal = () => {
   const { canCreateProposal } = useVotingPower()
@@ -17,6 +19,10 @@ export const useCreateBuilderWhitelistProposal = () => {
   ) => {
     if (!canCreateProposal) {
       throw new Error('You do not have enough voting power to create a proposal')
+    }
+    const isWhitelisted = await getIsWhitelistedBuilder(builderAddress)
+    if (isWhitelisted) {
+      throw AddressAlreadyWhitelistedError
     }
     const calldata = encodeWhitelistBuilderCalldata(builderAddress, receiverAddress)
     const relayCallData = encodeGovernorRelayCallData(SimplifiedRewardDistributorAddress, calldata)

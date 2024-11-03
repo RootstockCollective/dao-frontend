@@ -8,3 +8,7 @@ export const AddressNotWhitelistedError = new BaseError(
   'AddressNotWhitelistedError',
   'The submitted address is not whitelisted',
 )
+export const AddressAlreadyWhitelistedError = new BaseError(
+  'AddressAlreadyWhitelistedError',
+  'The submitted address is already whitelisted',
+)
