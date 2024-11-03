@@ -1,5 +1,6 @@
 import { createProposal } from '@/app/proposals/hooks/proposalUtils'
 import { useVotingPower } from '@/app/proposals/hooks/useVotingPower'
+import { NoVotingPowerError } from '@/app/proposals/shared/errors'
 import { DAOTreasuryAbi } from '@/lib/abis/DAOTreasuryAbi'
 import { GovernorAbi } from '@/lib/abis/Governor'
 import { GovernorAddress, tokenContracts, TreasuryAddress } from '@/lib/contracts'
@@ -22,7 +23,7 @@ export const useCreateTreasuryTransferProposal = () => {
     tokenAddress: string,
   ) => {
     if (!canCreateProposal) {
-      throw new Error('You do not have enough voting power to create a proposal')
+      throw NoVotingPowerError
     }
     let calldata
     if (tokenAddress === zeroAddress) {

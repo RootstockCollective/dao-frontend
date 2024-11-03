@@ -10,7 +10,7 @@ import { getIsWhitelistedBuilder } from '@/app/collective-rewards/utils/getIsWhi
 
 export const useCreateBuilderWhitelistProposal = () => {
   const { canCreateProposal } = useVotingPower()
-  const { writeContractAsync: propose, isPending: isPublishing, error } = useWriteContract()
+  const { writeContractAsync: propose, isPending: isPublishing, error: transactionError } = useWriteContract()
 
   const onCreateBuilderWhitelistProposal = async (
     builderAddress: Address,
@@ -18,7 +18,7 @@ export const useCreateBuilderWhitelistProposal = () => {
     description: string,
   ) => {
     if (!canCreateProposal) {
-      throw new Error('You do not have enough voting power to create a proposal')
+      throw NoVotingPowerError
     }
     const isWhitelisted = await getIsWhitelistedBuilder(builderAddress)
     if (isWhitelisted) {
@@ -36,7 +36,7 @@ export const useCreateBuilderWhitelistProposal = () => {
       args: proposal,
     })
   }
-  return { onCreateBuilderWhitelistProposal, isPublishing, error }
+  return { onCreateBuilderWhitelistProposal, isPublishing, transactionError }
 }
 
 export const encodeWhitelistBuilderCalldata = (builderAddress: Address, receiverAddress: Address) => {

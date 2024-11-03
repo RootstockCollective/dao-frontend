@@ -124,7 +124,11 @@ export const TreasuryWithdrawProposalForm = () => {
       router.push(`/proposals?txHash=${txHash}`)
     } catch (err: any) {
       if (isUserRejectedTxError(err)) return
+      if (isBaseError(err)) {
+        setMessage({ ...TX_MESSAGES.proposal.error, content: err.message })
+      } else {
         setMessage(TX_MESSAGES.proposal.error)
+        console.error('🐛 Error writing to contract:', err)
       }
     }
   }
