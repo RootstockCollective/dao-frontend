@@ -1,6 +1,6 @@
 import { useGetWhitelistedBuildersLength } from '@/app/collective-rewards/hooks/useGetWhitelistedBuildersLength'
-import { axiosInstance } from '@/lib/utils'
 import { useQuery } from '@tanstack/react-query'
+import axios from 'axios'
 import { Address } from 'viem'
 
 const ENV_DATA_URL = process.env.NEXT_PUBLIC_ENV_DATA_URL ?? ''
@@ -18,7 +18,7 @@ export const useGetTokenProjectedReward = (rewardToken: Address) => {
     error: totalRewardPerCycleFileError,
   } = useQuery({
     queryFn: async () => {
-      const { data } = await axiosInstance.get(ENV_DATA_URL)
+      const { data } = await axios.get(ENV_DATA_URL)
       return data
     },
     queryKey: ['totalRewardPerCycleFile'],
