@@ -7,7 +7,10 @@ import { Tabs, TabsContent, TabsList, TabsTrigger, TabTitle } from '@/components
 import { Rewards } from '@/app/collective-rewards/Rewards'
 import { useAccount } from 'wagmi'
 import { WithBuilderButton } from '@/app/collective-rewards/WithBuilderButton'
-import { useGetIsWhitelistedBuilder } from '@/app/collective-rewards/hooks/useGetIsWhitelistedBuilder'
+import {
+  useGetIsWhitelistedBuilder,
+  useGetIsWhitelistedBuilderV2,
+} from '@/app/collective-rewards/hooks/useGetIsWhitelistedBuilder'
 import { getAddress } from 'viem'
 
 type MyHoldingsProps = {
@@ -27,7 +30,7 @@ const TabsListWithButton = WithBuilderButton(TabsList)
 export default function User() {
   const { address } = useAccount()
 
-  const { data: isWhitelistedBuilder } = useGetIsWhitelistedBuilder(address!)
+  const { data: isWhitelistedBuilder } = useGetIsWhitelistedBuilderV2(address!)
 
   return (
     <MainContainer>

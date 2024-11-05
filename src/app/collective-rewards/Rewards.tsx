@@ -1,28 +1,50 @@
-import { useGetRewardDistributedLogs } from './hooks/useGetRewardDistributedLogs'
+import { useGetRewardDistributedLogs } from '@/app/collective-rewards/hooks/useGetRewardDistributedLogs'
 import { useGetTokenProjectedReward } from '@/app/collective-rewards/hooks/useGetTokenProjectedReward'
 import { getLastCycleRewards } from '@/app/collective-rewards/utils/getLastCycleRewards'
 import { formatBalanceToHuman } from '@/app/user/Balances/balanceUtils'
 import { Address } from 'viem'
-import { HeaderTitle } from '@/components/Typography'
+import { HeaderTitle, Paragraph } from '@/components/Typography'
 import { tokenContracts } from '@/lib/contracts'
 import { PricesContextProvider, usePricesContext } from '@/shared/context/PricesContext'
 import { formatCurrency, toFixed } from '@/lib/utils'
 import { MetricsCardWithSpinner } from '@/components/MetricsCard/MetricsCard'
-import { useEffect } from 'react'
+import { FC, useEffect } from 'react'
 import { useAlertContext } from '@/app/providers'
+import { Button } from '@/components/Button'
+import { useClaimAllRewards, useClaimStateReporting } from '@/app/collective-rewards/hooks/useClaimAllRewards'
+import { Popover } from '@/components/Popover'
 
-type RewardsProps = {
-  builder: Address
-}
+export const Rewards: FC<{ builder: Address }> = ({ builder }) => {
+  const { isClaimFunctionReady, claimAllRewards, ...claimTx } = useClaimAllRewards(builder)
 
-export const Rewards = ({ builder }: RewardsProps) => {
+  useClaimStateReporting({ ...claimTx })
+
   return (
     <>
-      <HeaderTitle className="mb-8 font-normal">As a Builder</HeaderTitle>
+      <HeaderTitle className="mb-8 font-normal">Builder Dashboard</HeaderTitle>
       <PricesContextProvider>
         <Reward builder={builder} rewardToken={tokenContracts.RBTC} rewardTokenSymbol="RBTC" />
         <Reward builder={builder} rewardToken={tokenContracts.RIF} rewardTokenSymbol="RIF" />
       </PricesContextProvider>
+
+      <Popover
+        disabled={isClaimFunctionReady}
+        content={
+          <Paragraph variant="normal" className="text-sm">
+            Wait a moment, please. Preparing the claim functionality.
+          </Paragraph>
+        }
+        trigger="hover"
+        background="dark"
+        size="small"
+        position="bottom"
+        className="z-[100]"
+      >
+        <Button onClick={claimAllRewards} disabled={!isClaimFunctionReady} variant="primary">
+          {/* TODO: adapt size once metrics are in place */}
+          Claim all
+        </Button>
+      </Popover>
     </>
   )
 }

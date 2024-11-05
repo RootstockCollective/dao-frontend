@@ -5,6 +5,7 @@ import { HTMLAttributes, ReactNode, useEffect, useRef, useState } from 'react'
 interface Props extends Omit<HTMLAttributes<HTMLDivElement>, 'children' | 'content'> {
   children: ReactNode
   content: ReactNode
+  disabled?: boolean
   trigger?: 'click' | 'hover'
   background?: 'dark' | 'light'
   position?: 'top' | 'bottom' | 'right' | 'left'
@@ -15,6 +16,7 @@ interface Props extends Omit<HTMLAttributes<HTMLDivElement>, 'children' | 'conte
 export const Popover = ({
   children,
   content,
+  disabled = false,
   trigger = 'click',
   background = 'dark',
   position = 'bottom',
@@ -51,6 +53,10 @@ export const Popover = ({
       }
     }
   }, [show, wrapperRef])
+
+  if (disabled) {
+    return <>{children}</>
+  }
 
   return (
     <div
