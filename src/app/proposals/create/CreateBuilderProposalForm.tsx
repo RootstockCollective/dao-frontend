@@ -14,7 +14,7 @@ import {
 import { TX_MESSAGES } from '@/shared/txMessages'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useRouter } from 'next/navigation'
-import { FC, useState } from 'react'
+import { FC, useEffect, useState } from 'react'
 import { useForm } from 'react-hook-form'
 import { Address } from 'viem'
 import { z } from 'zod'
@@ -23,6 +23,7 @@ import { Accordion, AccordionItem, AccordionTrigger, AccordionContent } from '@/
 import { Header, Paragraph } from '@/components/Typography'
 import { Button } from '@/components/Button'
 import { isAddressRegex, DISPLAY_NAME_SEPARATOR } from '@/app/proposals/shared/utils'
+import { isBaseError, isUserRejectedTxError } from '@/components/ErrorPage/commonErrors'
 
 const FormSchema = z.object({
   builderName: z
@@ -47,11 +48,7 @@ export const CreateBuilderProposalForm: FC = () => {
   const router = useRouter()
   useVotingPowerRedirect()
   const { setMessage } = useAlertContext()
-  const { onCreateBuilderWhitelistProposal, isPublishing, error } = useCreateBuilderWhitelistProposal()
-  if (error) {
-    setMessage(TX_MESSAGES.proposal.error)
-    console.error('🐛 Error writing to contract:', error)
-  }
+  const { onCreateBuilderWhitelistProposal, isPublishing } = useCreateBuilderWhitelistProposal()
 
   const [activeStep, setActiveStep] = useState('proposal')
 
@@ -95,9 +92,13 @@ export const CreateBuilderProposalForm: FC = () => {
         proposalDescription,
       )
       router.push(`/proposals?txHash=${txHash}`)
-    } catch (err: any) {
-      if (err?.cause?.code !== 4001) {
+    } catch (error: any) {
+      if (isUserRejectedTxError(error)) return
+      if (isBaseError(error)) {
+        setMessage({ ...TX_MESSAGES.proposal.error, content: error.message })
+      } else {
         setMessage(TX_MESSAGES.proposal.error)
+        console.error('🐛 Error writing to contract:', error)
       }
     }
   }

@@ -1,18 +1,24 @@
-import { useWriteContract } from 'wagmi'
+import { AddressNotWhitelistedError, NoVotingPowerError } from '@/app/proposals/shared/errors'
 import { GovernorAbi } from '@/lib/abis/Governor'
 import { SimplifiedRewardDistributorAbi } from '@/lib/abis/SimplifiedRewardDistributorAbi'
 import { GovernorAddress, SimplifiedRewardDistributorAddress } from '@/lib/contracts'
 import { Address, encodeFunctionData } from 'viem'
-import { useVotingPower } from './useVotingPower'
+import { useWriteContract } from 'wagmi'
 import { createProposal, encodeGovernorRelayCallData } from './proposalUtils'
+import { useVotingPower } from './useVotingPower'
+import { getIsWhitelistedBuilder } from '@/app/collective-rewards/utils/getIsWhitelistedBuilder'
 
 export const useRemoveBuilderProposal = () => {
   const { canCreateProposal } = useVotingPower()
-  const { writeContractAsync: propose, isPending: isPublishing, error } = useWriteContract()
+  const { writeContractAsync: propose, isPending: isPublishing, error: transactionError } = useWriteContract()
 
   const onRemoveBuilderProposal = async (builderAddress: Address, description: string) => {
     if (!canCreateProposal) {
-      throw new Error('You do not have enough voting power to create a proposal')
+      throw NoVotingPowerError
+    }
+    const isWhitelisted = await getIsWhitelistedBuilder(builderAddress)
+    if (!isWhitelisted) {
+      throw AddressNotWhitelistedError
     }
     const calldata = encodeRemoveBuilderCalldata(builderAddress)
     const relayCallData = encodeGovernorRelayCallData(SimplifiedRewardDistributorAddress, calldata)
@@ -26,7 +32,7 @@ export const useRemoveBuilderProposal = () => {
       args: proposal,
     })
   }
-  return { onRemoveBuilderProposal, isPublishing, error }
+  return { onRemoveBuilderProposal, isPublishing, transactionError }
 }
 
 const encodeRemoveBuilderCalldata = (builderAddress: Address) => {

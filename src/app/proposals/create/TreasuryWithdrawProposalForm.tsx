@@ -34,6 +34,7 @@ import React from 'react'
 import { useForm } from 'react-hook-form'
 import { CreateProposalHeaderSection } from '@/app/proposals/create/CreateProposalHeaderSection'
 import { isAddressRegex } from '@/app/proposals/shared/utils'
+import { isBaseError, isUserRejectedTxError } from '@/components/ErrorPage/commonErrors'
 
 const rifMinimumAmount = ENV === 'mainnet' ? 10 : 1
 const rbtcMinimumAmount = ENV === 'mainnet' ? 0.0001 : 0.000001
@@ -122,8 +123,12 @@ export const TreasuryWithdrawProposalForm = () => {
       )
       router.push(`/proposals?txHash=${txHash}`)
     } catch (err: any) {
-      if (err?.cause?.code !== 4001) {
+      if (isUserRejectedTxError(err)) return
+      if (isBaseError(err)) {
+        setMessage({ ...TX_MESSAGES.proposal.error, content: err.message })
+      } else {
         setMessage(TX_MESSAGES.proposal.error)
+        console.error('🐛 Error writing to contract:', err)
       }
     }
   }
