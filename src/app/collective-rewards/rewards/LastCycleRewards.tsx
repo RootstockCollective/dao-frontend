@@ -5,7 +5,7 @@ import {
   MetricsCard,
   MetricsCardTitle,
   TokenMetricsCardRow,
-  useGetNotifyRewardLogs,
+  useGetGaugeNotifyRewardLogs,
 } from '@/app/collective-rewards/rewards'
 import { useHandleErrors } from '@/app/collective-rewards/utils'
 import { formatBalanceToHuman } from '@/app/user/Balances/balanceUtils'
@@ -29,7 +29,11 @@ const TokenRewardsMetrics: FC<TokenRewardsMetricsProps> = ({
   currency = 'USD',
 }) => {
   const { data: cycle, isLoading: cycleLoading, error: cycleError } = useCycleContext()
-  const { data: rewardsPerToken, isLoading: logsLoading, error: rewardsError } = useGetNotifyRewardLogs(gauge)
+  const {
+    data: rewardsPerToken,
+    isLoading: logsLoading,
+    error: rewardsError,
+  } = useGetGaugeNotifyRewardLogs(gauge)
 
   const error = cycleError ?? rewardsError
   useHandleErrors({ error, title: 'Error loading last cycle rewards' })

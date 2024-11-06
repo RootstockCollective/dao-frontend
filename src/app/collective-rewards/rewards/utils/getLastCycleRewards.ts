@@ -1,13 +1,13 @@
-import { NotifyRewardEventLog } from '@/app/collective-rewards/rewards'
+import { GaugeNotifyRewardEventLog } from '@/app/collective-rewards/rewards'
 import { Cycle } from '@/app/collective-rewards/metrics/context/CycleContext'
 
-type Log = NotifyRewardEventLog[number]
+type Log = GaugeNotifyRewardEventLog[number]
 type CycleRewards = {
   builderAmount: bigint
   backersAmount: bigint
 }
 
-export const getLastCycleRewards = (cycle: Cycle, notifyRewardLogs?: NotifyRewardEventLog) => {
+export const getLastCycleRewards = (cycle: Cycle, notifyRewardLogs?: GaugeNotifyRewardEventLog) => {
   const { cycleDuration, endDistributionWindow, cycleStart } = cycle
   const distributionWindow = endDistributionWindow.diff(cycleStart)
   const lastCycleStart = cycleStart.minus({ millisecond: +cycleDuration })

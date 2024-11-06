@@ -9,7 +9,7 @@ import { withBuilderButton, useGetBuilderToGauge } from '@/app/collective-reward
 import { TxStatusMessage } from '@/components/TxStatusMessage'
 import { zeroAddress } from 'viem'
 import { useHandleErrors } from '@/app/collective-rewards/utils'
-import { DelegationSection } from './Delegation'
+import { DelegationSection } from '@/app/user/Delegation'
 
 type MyHoldingsProps = {
   showBuilderButton?: boolean

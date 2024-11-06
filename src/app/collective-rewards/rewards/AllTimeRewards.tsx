@@ -2,7 +2,6 @@ import {
   formatMetrics,
   MetricsCard,
   MetricsCardTitle,
-  MetricsCardWithSpinner,
   TokenMetricsCardRow,
   useGetBuilderRewards,
   useGetBuilderRewardsClaimedLogs,
