@@ -61,11 +61,11 @@ const getBucketBalance = (
 const TreasuryContextProvider = ({ children }: Props) => {
   const { prices } = usePricesContext()
 
-  const bucketOneBalance = useGetTreasuryBucketBalance(treasuryContracts["GRANTS"].address)
-  const bucketTwoBalance = useGetTreasuryBucketBalance(treasuryContracts["GRANTS_ACTIVE"].address)
-  const bucketThreeBalance = useGetTreasuryBucketBalance(treasuryContracts["GROWTH"].address)
-  const bucketFourBalance = useGetTreasuryBucketBalance(treasuryContracts["GROWTH_REWARDS"].address)
-  const bucketFiveBalance = useGetTreasuryBucketBalance(treasuryContracts["GENERAL"].address)
+  const bucketOneBalance = useGetTreasuryBucketBalance(treasuryContracts['GRANTS'].address)
+  const bucketTwoBalance = useGetTreasuryBucketBalance(treasuryContracts['GRANTS_ACTIVE'].address)
+  const bucketThreeBalance = useGetTreasuryBucketBalance(treasuryContracts['GROWTH'].address)
+  const bucketFourBalance = useGetTreasuryBucketBalance(treasuryContracts['GROWTH_REWARDS'].address)
+  const bucketFiveBalance = useGetTreasuryBucketBalance(treasuryContracts['GENERAL'].address)
 
   // Create the buckets array
   const buckets = useMemo(
