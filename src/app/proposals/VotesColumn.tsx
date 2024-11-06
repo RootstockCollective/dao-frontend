@@ -39,7 +39,7 @@ export const VotesColumn = () => {
   return (
     <>
       <p className={colorClass}>
-        {Math.ceil(votes)} ({isNaN(percentageToShow) ? '-' : percentageToShow}%)
+        {Math.floor(votes)} ({isNaN(percentageToShow) ? '-' : percentageToShow}%)
       </p>
       <p>Quorum: {isNaN(quorumToShow) ? '-' : quorumToShow}</p>
     </>
