@@ -25,3 +25,6 @@ export const getNftHolders = `/nfts/{{address}}/holders?chainId=${CHAIN_ID}`
 
 const REWARD_DISTRIBUTED_EVENT = '0x57ea5c7c295b52ef3b06c69661d59c8a6d9c602ac5355cfe5e54e303c139f270'
 export const fetchRewardDistributedLogsByAddress = `/address/{{address}}/eventsByTopic0?topic0=${REWARD_DISTRIBUTED_EVENT}&chainId=${CHAIN_ID}&fromBlock={{fromBlock}}`
+
+const NOTIFY_REWARD_EVENT = '0x3c0f5c48b0ffa2c570c1a0f4fbf7b0f8982213afff9eb42cd258ead865cf3c9d'
+export const fetchNotifyRewardLogsByAddress = `/address/{{address}}/eventsByTopic0?topic0=${NOTIFY_REWARD_EVENT}&chainId=${CHAIN_ID}&fromBlock={{fromBlock}}`
