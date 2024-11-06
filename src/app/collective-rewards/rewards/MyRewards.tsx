@@ -7,6 +7,7 @@ import {
   useClaimStateReporting,
   LastCycleRewards,
   ClaimableRewards,
+  AllTimeRewards,
 } from '@/app/collective-rewards/rewards'
 import { CycleContextProvider } from '@/app/collective-rewards/metrics'
 import { PricesContextProvider } from '@/shared/context/PricesContext'
@@ -48,7 +49,7 @@ export const Rewards: FC<{ builder: Address; gauge: Address }> = ({ builder, gau
               <ClaimableRewards builder={builder} gauge={gauge} data={data} />
               <LastCycleRewards gauge={gauge} data={data} />
               <div>Estimated Rewards</div>
-              <div>All time rewards</div>
+              <AllTimeRewards gauge={gauge} data={data} />
               <div>All time share</div>
               <Popover
                 disabled={isClaimFunctionReady}

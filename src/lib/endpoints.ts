@@ -28,3 +28,6 @@ export const fetchRewardDistributedLogsByAddress = `/address/{{address}}/eventsB
 
 const NOTIFY_REWARD_EVENT = '0x3c0f5c48b0ffa2c570c1a0f4fbf7b0f8982213afff9eb42cd258ead865cf3c9d'
 export const fetchNotifyRewardLogsByAddress = `/address/{{address}}/eventsByTopic0?topic0=${NOTIFY_REWARD_EVENT}&chainId=${CHAIN_ID}&fromBlock={{fromBlock}}`
+
+const BUILDER_REWARDS_CLAIMED_EVENT = 'c309438e69ba53ef6afef64839bd1ab1acc4a9a8fd28c8e0356075ca66f72c1b'
+export const fetchBuilderRewardsClaimedLogsByAddress = `/address/{{address}}/eventsByTopic0?topic0=${BUILDER_REWARDS_CLAIMED_EVENT}&chainId=${CHAIN_ID}&fromBlock={{fromBlock}}`

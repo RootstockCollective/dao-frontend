@@ -4,7 +4,6 @@ import {
   getLastCycleRewards,
   MetricsCard,
   MetricsCardTitle,
-  MetricsCardWithSpinner,
   TokenMetricsCardRow,
   useGetNotifyRewardLogs,
 } from '@/app/collective-rewards/rewards'
@@ -12,10 +11,10 @@ import { useHandleErrors } from '@/app/collective-rewards/utils'
 import { formatBalanceToHuman } from '@/app/user/Balances/balanceUtils'
 import { withSpinner } from '@/components/LoadingSpinner/withLoadingSpinner'
 import { usePricesContext } from '@/shared/context/PricesContext'
-import { FC, useEffect, useState } from 'react'
+import { FC } from 'react'
 import { Address } from 'viem'
 
-type TokenRewardsProps = {
+type TokenRewardsMetricsProps = {
   gauge: Address
   currency?: string
   token: {
@@ -24,7 +23,7 @@ type TokenRewardsProps = {
   }
 }
 
-const TokenRewardsMetrics: FC<TokenRewardsProps> = ({
+const TokenRewardsMetrics: FC<TokenRewardsMetricsProps> = ({
   gauge,
   token: { symbol, address },
   currency = 'USD',
