@@ -7,7 +7,7 @@ export type Cycle = {
   cycleEndTimestamp: DateTime<true>
 }
 
-export const daysToMillis = (days: number) => 1000 * 60 * 60 * 24 * days
+export const daysToMillis = (days: number) => Duration.fromObject({ days }).toMillis()
 
 // FIXME: parsing to be reviewed
 const days = +(CYCLE_DURATION_IN_DAYS || '14')
@@ -32,7 +32,7 @@ export const getCycleEndTimestamp = (
   now: DateTime<true> = DateTime.now(),
 ) =>
   /* It must reflect the cycle start/end defined in the smart contracts
-   * https://github.com/rsksmart/builder-incentives-sc/blob/main/src/libraries/CycleLib.sol
+   * https://github.com/RootstockCollective/collective-rewards-sc/blob/bd4110f4954b69d1f286eb5248d4406b7e287d68/src/libraries/UtilsLib.sol#L67
    *
    * cycle start  = now - ( (now - beginning) % duration)
    * cycle end  = cycle start + duration

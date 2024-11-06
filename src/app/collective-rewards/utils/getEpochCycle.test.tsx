@@ -1,4 +1,4 @@
-import { describe, test, expect } from '@jest/globals'
+import { describe, test, expect } from 'vitest'
 import {
   getCycleDurationInDays,
   getCycleEndTimestamp,
@@ -15,37 +15,51 @@ describe('getCycleDurationInDays', () => {
 
 describe('getCycleEndTimestamp', () => {
   const now = DateTime.now()
+  /*
+   * All math is done in milliseconds, to avoid calendar math.
+   * See calendar vs time math https://moment.github.io/luxon/#/math?id=calendar-math-vs-time-math
+   */
   test.each([
     {
       startDate: now.toMillis(),
       cycleDurationInMillis: daysToMillis(7),
-      expectedCycleEndTimestamp: now.plus({ days: 7 }),
+      expectedCycleEndTimestamp: now.plus({ milliseconds: daysToMillis(7) }),
       now,
     },
     {
-      startDate: now.minus(Duration.fromObject({ days: 6 })).toMillis(),
+      startDate: now.minus(Duration.fromObject({ milliseconds: daysToMillis(6) })).toMillis(),
       cycleDurationInMillis: daysToMillis(7),
-      expectedCycleEndTimestamp: now.plus({ days: 1 }),
+      expectedCycleEndTimestamp: now.plus({ milliseconds: daysToMillis(1) }),
       now,
     },
     {
-      startDate: now.minus(Duration.fromObject({ days: 8 })).toMillis(),
+      startDate: now.minus(Duration.fromObject({ milliseconds: daysToMillis(8) })).toMillis(),
       cycleDurationInMillis: daysToMillis(7),
-      expectedCycleEndTimestamp: now.plus({ days: 6 }),
+      expectedCycleEndTimestamp: now.plus({ milliseconds: daysToMillis(6) }),
       now,
     },
     {
       startDate: now
-        .minus(Duration.fromObject({ days: 6, hours: 23, minutes: 59, seconds: 59, milliseconds: 999 }))
+        .minus(
+          Duration.fromMillis(
+            Duration.fromObject({
+              days: 6,
+              hours: 23,
+              minutes: 59,
+              seconds: 59,
+              milliseconds: 999,
+            }).toMillis(),
+          ),
+        )
         .toMillis(),
       cycleDurationInMillis: daysToMillis(7),
       expectedCycleEndTimestamp: now.plus(Duration.fromObject({ milliseconds: 1 })),
       now,
     },
     {
-      startDate: now.minus(Duration.fromObject({ days: 23 })).toMillis(),
+      startDate: now.minus(Duration.fromObject({ milliseconds: daysToMillis(23) })).toMillis(),
       cycleDurationInMillis: daysToMillis(7),
-      expectedCycleEndTimestamp: now.plus(Duration.fromObject({ days: 5 })),
+      expectedCycleEndTimestamp: now.plus(Duration.fromObject({ milliseconds: daysToMillis(5) })),
       now,
     },
   ])(

@@ -4,7 +4,7 @@ import {
 } from '@/app/proposals/hooks/useFetchLatestProposals'
 import { fetchProposalsCreatedCached } from '@/app/user/Balances/actions'
 import { SimplifiedRewardDistributorAbi } from '@/lib/abis/SimplifiedRewardDistributorAbi'
-import { expect } from '@jest/globals'
+import { expect, vi, Mock, describe, beforeEach, it } from 'vitest'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { renderHook, waitFor } from '@testing-library/react'
 import { Interface } from 'ethers/abi'
@@ -12,13 +12,13 @@ import { parseEventLogs } from 'viem'
 import { ADDRESS_PADDING_LENGTH, RELAY_PARAMETER_PADDING_LENGTH } from '@/app/proposals/shared/utils'
 import { GovernorAbi } from '@/lib/abis/Governor'
 
-jest.mock('@/app/user/Balances/actions', () => ({
-  fetchProposalsCreatedCached: jest.fn(),
+vi.mock('@/app/user/Balances/actions', () => ({
+  fetchProposalsCreatedCached: vi.fn(),
 }))
 
-jest.mock('viem', () => ({
-  parseEventLogs: jest.fn(),
-  getAddress: jest.fn().mockImplementation((address: string) => address),
+vi.mock('viem', () => ({
+  parseEventLogs: vi.fn(),
+  getAddress: vi.fn().mockImplementation((address: string) => address),
 }))
 
 const CR_WHITELIST_FUNCTION = 'whitelistBuilder' // TODO: refactor
@@ -65,14 +65,14 @@ const relayWrapper = (bytes: string) =>
 
 const createPadding = (length: number) => '0'.repeat(length)
 
-const mocFetchProposalsCreatedCached = fetchProposalsCreatedCached as jest.Mock
-const mockParseEventLogs = parseEventLogs as jest.Mock
+const mocFetchProposalsCreatedCached = fetchProposalsCreatedCached as Mock
+const mockParseEventLogs = parseEventLogs as Mock
 
 describe('useFetchCreateBuilderProposals', () => {
   let queryClient: QueryClient
 
   beforeEach(() => {
-    jest.clearAllMocks()
+    vi.clearAllMocks()
     queryClient = createTestQueryClient()
   })
 
