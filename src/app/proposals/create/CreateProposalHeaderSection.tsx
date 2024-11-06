@@ -8,7 +8,13 @@ export const CreateProposalHeaderSection = ({ disabled = true, loading = false }
       Create proposal
     </Header>
     <div className="flex flex-row gap-x-6">
-      <Button startIcon={<GoRocket />} disabled={disabled} buttonProps={{ type: 'submit' }} loading={loading}>
+      <Button
+        startIcon={<GoRocket />}
+        disabled={disabled}
+        buttonProps={{ type: 'submit' }}
+        loading={loading}
+        data-testid="Publish"
+      >
         Publish
       </Button>
     </div>

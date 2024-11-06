@@ -92,7 +92,6 @@ export const TreasuryWithdrawProposalForm = () => {
     formState: { touchedFields, errors, isValid, isDirty },
     watch,
     trigger,
-    setValue,
   } = form
 
   const pricesMap = useMemo(
@@ -175,7 +174,12 @@ export const TreasuryWithdrawProposalForm = () => {
                   <FormItem className="mb-6 mx-1">
                     <FormLabel>Proposal name</FormLabel>
                     <FormControl>
-                      <FormInput placeholder="Name your proposal" {...field} maxLength={100} />
+                      <FormInput
+                        placeholder="Name your proposal"
+                        {...field}
+                        maxLength={100}
+                        data-testid="InputName"
+                      />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -188,14 +192,23 @@ export const TreasuryWithdrawProposalForm = () => {
                   <FormItem className="mb-6 mx-1">
                     <FormLabel>Description</FormLabel>
                     <FormControl>
-                      <FormTextarea placeholder="Enter a description..." {...field} maxLength={3000} />
+                      <FormTextarea
+                        placeholder="Enter a description..."
+                        {...field}
+                        maxLength={3000}
+                        data-testid="InputDescription"
+                      />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
                 )}
               />
               <div className="flex justify-center mb-6">
-                <Button disabled={!isProposalCompleted} onClick={handleProposalCompleted}>
+                <Button
+                  disabled={!isProposalCompleted}
+                  onClick={handleProposalCompleted}
+                  data-testid="Continue"
+                >
                   Continue
                 </Button>
               </div>
@@ -220,7 +233,7 @@ export const TreasuryWithdrawProposalForm = () => {
                   <FormItem className="mb-6 mx-1">
                     <FormLabel>Transfer to</FormLabel>
                     <FormControl>
-                      <FormInput placeholder="0x123...456" {...field} />
+                      <FormInput placeholder="0x123...456" {...field} data-testid="InputTransfer" />
                     </FormControl>
                     <FormDescription>Write or paste the wallet address of the recipient</FormDescription>
                     <FormMessage />
@@ -245,7 +258,7 @@ export const TreasuryWithdrawProposalForm = () => {
                           defaultValue={field.value}
                         >
                           <FormControl>
-                            <SelectTrigger>
+                            <SelectTrigger data-testid="InputAsset">
                               <SelectValue placeholder="Select an asset" />
                             </SelectTrigger>
                           </FormControl>
@@ -288,7 +301,13 @@ export const TreasuryWithdrawProposalForm = () => {
                     <FormItem className="mb-6 mx-1">
                       <FormLabel>Amount</FormLabel>
                       <FormControl>
-                        <FormInputNumber placeholder="0.00" className="w-64" autoComplete="off" {...field} />
+                        <FormInputNumber
+                          placeholder="0.00"
+                          className="w-64"
+                          autoComplete="off"
+                          {...field}
+                          data-testid="InputAmount"
+                        />
                       </FormControl>
                       {amountValue?.toString() && (
                         <FormDescription>= USD {formatCurrency(amountUsd)}</FormDescription>
