@@ -2,8 +2,7 @@ import { Address, zeroAddress } from 'viem'
 import { useWaitForTransactionReceipt, useWriteContract } from 'wagmi'
 import { GaugeAbi } from '@/lib/abis/v2/GaugeAbi'
 import { createZeroAddressError } from '@/shared/errors/zeroAddressError'
-import { useEffect, useMemo } from 'react'
-import { useAlertContext } from '@/app/providers'
+import { useMemo } from 'react'
 import { useGetBuilderToGauge } from '@/app/collective-rewards/user'
 
 export const useClaimBuilderRewards = (builder: Address) => {
@@ -70,55 +69,4 @@ export const useClaimBuilderRewards = (builder: Address) => {
     isSuccess,
     receipt: data,
   }
-}
-
-export const useClaimStateReporting = ({
-  error,
-  isPendingTx,
-  isLoadingReceipt,
-  isSuccess,
-  receipt,
-}: Omit<ReturnType<typeof useClaimBuilderRewards>, 'isClaimFunctionReady' | 'claimRewards'>) => {
-  const { setMessage } = useAlertContext()
-
-  useEffect(() => {
-    if (error) {
-      setMessage({
-        severity: 'error',
-        title: 'Error claiming rewards',
-        content: error.message,
-      })
-      console.error('🐛 claimError:', error)
-    }
-  }, [error, setMessage])
-
-  useEffect(() => {
-    if (isPendingTx) {
-      setMessage({
-        severity: 'info',
-        content: 'Confirm transaction execution in your wallet',
-        title: 'Claiming builder rewards',
-      })
-    }
-  }, [isPendingTx, setMessage])
-
-  useEffect(() => {
-    if (isLoadingReceipt) {
-      setMessage({
-        severity: 'info',
-        content: 'Waiting for transaction confirmation. See status details in your wallet.',
-        title: 'Claiming builder rewards',
-      })
-    }
-  }, [isLoadingReceipt, setMessage])
-
-  useEffect(() => {
-    if (isSuccess && receipt) {
-      setMessage({
-        severity: 'success',
-        title: 'Claiming builder rewards',
-        content: `Successfully claimed in tx: ${receipt.transactionHash}`,
-      })
-    }
-  }, [isSuccess, receipt, setMessage])
 }

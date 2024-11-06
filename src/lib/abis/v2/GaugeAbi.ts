@@ -171,7 +171,55 @@ export const GaugeAbi = [
   },
   {
     type: 'function',
+    name: 'claimedBackerRewards',
+    inputs: [
+      {
+        name: 'rewardToken_',
+        type: 'address',
+        internalType: 'address',
+      },
+      {
+        name: 'backer_',
+        type: 'address',
+        internalType: 'address',
+      },
+    ],
+    outputs: [
+      {
+        name: '',
+        type: 'uint256',
+        internalType: 'uint256',
+      },
+    ],
+    stateMutability: 'view',
+  },
+  {
+    type: 'function',
     name: 'earned',
+    inputs: [
+      {
+        name: 'rewardToken_',
+        type: 'address',
+        internalType: 'address',
+      },
+      {
+        name: 'backer_',
+        type: 'address',
+        internalType: 'address',
+      },
+    ],
+    outputs: [
+      {
+        name: '',
+        type: 'uint256',
+        internalType: 'uint256',
+      },
+    ],
+    stateMutability: 'view',
+  },
+  {
+    type: 'function',
+    name: 'estimatedBackerRewards',
     inputs: [
       {
         name: 'rewardToken_',

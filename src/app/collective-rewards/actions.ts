@@ -2,6 +2,7 @@ import { Address } from 'viem'
 import { BackersManagerAddress, SimplifiedRewardDistributorAddress } from '@/lib/contracts'
 import { axiosInstance } from '@/lib/utils'
 import {
+  fetchBackerRewardsClaimedLogsByAddress,
   fetchBuilderRewardsClaimedLogsByAddress,
   fetchGaugeNotifyRewardLogsByAddress,
   fetchNotifyRewardLogsByAddress,
@@ -38,6 +39,14 @@ export const fetchGaugeNotifyRewardLogs = (gaugeAddress: Address, fromBlock = 0)
 export const fetchBuilderRewardsClaimed = (gaugeAddress: Address, fromBlock = 0) => {
   return axiosInstance.get(
     fetchBuilderRewardsClaimedLogsByAddress
+      .replace('{{address}}', gaugeAddress)
+      .replace('{{fromBlock}}', fromBlock.toString()),
+  )
+}
+
+export const fetchBackerRewardsClaimed = (gaugeAddress: Address, fromBlock = 0) => {
+  return axiosInstance.get(
+    fetchBackerRewardsClaimedLogsByAddress
       .replace('{{address}}', gaugeAddress)
       .replace('{{fromBlock}}', fromBlock.toString()),
   )

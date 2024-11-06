@@ -88,4 +88,22 @@ export const MetricsCardTitle: FC<{ title: string; 'data-testid': string }> = ({
   </Typography>
 )
 
+type MetricsCardContentProps = {
+  children: ReactNode
+}
+
+export const MetricsCardContent: FC<MetricsCardContentProps> = ({ children }) => (
+  <Typography
+    tagVariant="h2"
+    paddingBottom="2px"
+    paddingTop="10px"
+    lineHeight="28.8px"
+    fontFamily="kk-topo"
+    className="text-[48px] text-primary font-normal"
+    data-testid="Content"
+  >
+    {children}
+  </Typography>
+)
+
 export const MetricsCardWithSpinner = withSpinner(MetricsCard)

@@ -6,6 +6,8 @@ import {
   MetricsCardTitle,
   TokenMetricsCardRow,
   useGetGaugeNotifyRewardLogs,
+  RewardDetails,
+  Token,
 } from '@/app/collective-rewards/rewards'
 import { useHandleErrors } from '@/app/collective-rewards/utils'
 import { formatBalanceToHuman } from '@/app/user/Balances/balanceUtils'
@@ -17,10 +19,7 @@ import { Address } from 'viem'
 type TokenRewardsMetricsProps = {
   gauge: Address
   currency?: string
-  token: {
-    symbol: string
-    address: Address
-  }
+  token: Token
 }
 
 const TokenRewardsMetrics: FC<TokenRewardsMetricsProps> = ({
@@ -52,18 +51,9 @@ const TokenRewardsMetrics: FC<TokenRewardsMetricsProps> = ({
   })
 }
 
-type LastCycleRewardsProps = {
-  gauge: Address
-  data: {
-    [token: string]: {
-      symbol: string
-      address: Address
-    }
-  }
-  currency?: string
-}
+type LastCycleRewardsProps = Omit<RewardDetails, 'builder'>
 
-export const LastCycleRewards: FC<LastCycleRewardsProps> = ({ data: { rif, rbtc }, ...rest }) => {
+export const LastCycleRewards: FC<LastCycleRewardsProps> = ({ tokens: { rif, rbtc }, ...rest }) => {
   return (
     <MetricsCard borderless>
       <MetricsCardTitle title="Last cycle rewards" data-testid="LastCycleRewards" />

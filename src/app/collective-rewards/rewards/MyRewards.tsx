@@ -3,35 +3,32 @@ import { Address, getAddress } from 'viem'
 import {
   RewardsSection,
   RewardsSectionHeader,
-  useClaimBuilderRewards,
-  useClaimStateReporting,
-  LastCycleRewards,
-  ClaimableRewards,
-  AllTimeRewards,
-  EstimatedRewards,
-  AllTimeShare,
+  BuilderRewards,
+  BackerRewards,
+  RewardDetails,
 } from '@/app/collective-rewards/rewards'
-import { CycleContextProvider } from '@/app/collective-rewards/metrics'
-import { PricesContextProvider } from '@/shared/context/PricesContext'
 import { getCoinbaseAddress } from '@/app/collective-rewards/utils'
 import { tokenContracts } from '@/lib/contracts'
-import { Popover } from '@/components/Popover'
-import { Button } from '@/components/Button'
-import { Paragraph } from '@/components/Typography'
+import { useGetGaugesArray, useGetHaltedGaugesArray } from '@/app/collective-rewards/user'
 
 export const Rewards: FC<{ builder: Address; gauge: Address }> = ({ builder, gauge }) => {
-  const { isClaimFunctionReady, claimRewards, ...claimTx } = useClaimBuilderRewards(builder)
+  const { data: rewardGauges } = useGetGaugesArray()
+  const { data: haltedGauges } = useGetHaltedGaugesArray()
+  const gauges = [...(rewardGauges ?? []), ...(haltedGauges ?? [])]
 
-  useClaimStateReporting({ ...claimTx })
-
-  const data = {
-    rif: {
-      address: getAddress(tokenContracts.RIF),
-      symbol: 'RIF',
-    },
-    rbtc: {
-      address: getCoinbaseAddress(),
-      symbol: 'RBTC',
+  const data: RewardDetails = {
+    builder,
+    gauge,
+    gauges,
+    tokens: {
+      rif: {
+        address: getAddress(tokenContracts.RIF),
+        symbol: 'RIF',
+      },
+      rbtc: {
+        address: getCoinbaseAddress(),
+        symbol: 'RBTC',
+      },
     },
   }
 
@@ -45,37 +42,11 @@ export const Rewards: FC<{ builder: Address; gauge: Address }> = ({ builder, gau
           title="Builder Rewards"
           subtext="Monitor the rewards you are getting from your Collective Rewards."
         />
-        <div className="grid grid-cols-5 gap-[16px]">
-          <CycleContextProvider>
-            <PricesContextProvider>
-              <ClaimableRewards builder={builder} gauge={gauge} data={data} />
-              <LastCycleRewards gauge={gauge} data={data} />
-              <EstimatedRewards gauge={gauge} data={data} />
-              <AllTimeRewards gauge={gauge} data={data} />
-              <AllTimeShare gauge={gauge} data={data} />
-              <Popover
-                disabled={isClaimFunctionReady}
-                content={
-                  <Paragraph variant="normal" className="text-sm">
-                    Wait a moment, please. Preparing the claim functionality.
-                  </Paragraph>
-                }
-                trigger="hover"
-                background="dark"
-                size="small"
-                position="bottom"
-                className="z-[100]"
-              >
-                <Button onClick={() => claimRewards()} disabled={!isClaimFunctionReady} variant="primary">
-                  Claim all
-                </Button>
-              </Popover>
-            </PricesContextProvider>
-          </CycleContextProvider>
-        </div>
+        <BuilderRewards {...data} />
       </RewardsSection>
       <RewardsSection>
         <RewardsSectionHeader title="Backer Rewards" subtext="Monitor your rewards balances and claim." />
+        <BackerRewards {...data} />
       </RewardsSection>
     </div>
   )

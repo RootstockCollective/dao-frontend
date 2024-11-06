@@ -1,20 +1,22 @@
-import {
-  formatMetrics,
-  MetricsCard,
-  MetricsCardTitle,
-  TokenMetricsCardRow,
-  useClaimBuilderRewards,
-  useClaimStateReporting,
-  useGetBuilderRewards,
-} from '@/app/collective-rewards/rewards'
-import { useHandleErrors } from '@/app/collective-rewards/utils'
-import { formatBalanceToHuman } from '@/app/user/Balances/balanceUtils'
-import { Button, ButtonProps } from '@/components/Button'
-import { withSpinner } from '@/components/LoadingSpinner/withLoadingSpinner'
-import { Popover } from '@/components/Popover'
-import { usePricesContext } from '@/shared/context/PricesContext'
 import { FC } from 'react'
 import { Address } from 'viem'
+import { usePricesContext } from '@/shared/context/PricesContext'
+import {
+  formatMetrics,
+  useClaimStateReporting,
+  MetricsCard,
+  TokenMetricsCardRow,
+  MetricsCardTitle,
+  useClaimBackerRewards,
+  RewardDetails,
+  Token,
+  useBackerRewardsContext,
+} from '@/app/collective-rewards/rewards'
+import { formatBalanceToHuman } from '@/app/user/Balances/balanceUtils'
+import { Popover } from '@/components/Popover'
+import { useHandleErrors } from '@/app/collective-rewards/utils'
+import { Button, ButtonProps } from '@/components/Button'
+import { withSpinner } from '@/components/LoadingSpinner/withLoadingSpinner'
 
 const ClaimYourRewardsSvg = () => (
   <svg width="20" height="21" viewBox="0 0 20 21" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -28,7 +30,7 @@ const ClaimYourRewardsSvg = () => (
   </svg>
 )
 
-const ClaimYourRewardsButton: FC<Required<Pick<ButtonProps, 'onClick' | 'disabled'>>> = buttonProps => (
+const ClaimYourRewardsButton: FC<Required<Pick<ButtonProps, 'onClick'>>> = buttonProps => (
   <div className="self-start justify-self-end pt-[10px]">
     <Popover
       content={
@@ -47,66 +49,47 @@ const ClaimYourRewardsButton: FC<Required<Pick<ButtonProps, 'onClick' | 'disable
   </div>
 )
 
-type Token = {
-  symbol: string
-  address: Address
-}
-
 type TokenRewardsMetricsProps = {
-  builder: Address
-  gauge: Address
+  gauges: Address[]
   token: Token
   currency?: string
 }
 
 const TokenRewardsMetrics: FC<TokenRewardsMetricsProps> = ({
-  builder,
-  gauge,
+  gauges,
   token: { address, symbol },
   currency = 'USD',
 }) => {
   const { prices } = usePricesContext()
-
-  const {
-    data: rewards,
-    isLoading: rewardsLoading,
-    error: rewardsError,
-  } = useGetBuilderRewards(address, gauge)
-  useHandleErrors({ error: rewardsError, title: 'Error loading rewards' })
+  const { data, isLoading, error } = useBackerRewardsContext()
+  const { earned } = data[address]
+  const earnedRewards = Object.values(earned).reduce((acc, earned) => acc + earned, 0n)
+  useHandleErrors({ error, title: 'Error loading rewards' })
 
   const tokenPrice = prices[symbol]?.price ?? 0
 
   const { amount, fiatAmount } = formatMetrics(
-    Number(formatBalanceToHuman(rewards ?? 0n)),
+    Number(formatBalanceToHuman(earnedRewards)),
     tokenPrice,
     symbol,
     currency,
   )
 
-  const { isClaimFunctionReady, claimRewards, ...claimTx } = useClaimBuilderRewards(builder)
+  const { claimRewards, ...claimTx } = useClaimBackerRewards(gauges, address)
 
-  useClaimStateReporting({ ...claimTx, error: rewardsError ?? claimTx.error })
+  useClaimStateReporting({ ...claimTx, error: claimTx.error })
 
   return withSpinner(TokenMetricsCardRow)({
     amount,
     fiatAmount,
-    isLoading: rewardsLoading,
-    children: (
-      <ClaimYourRewardsButton onClick={() => claimRewards(address)} disabled={!isClaimFunctionReady} />
-    ),
+    isLoading,
+    children: <ClaimYourRewardsButton onClick={() => claimRewards()} />,
   })
 }
 
-type ClaimableRewardsProps = {
-  builder: Address
-  gauge: Address
-  currency?: string
-  data: {
-    [token: string]: Token
-  }
-}
+type ClaimableRewardsProps = Omit<RewardDetails, 'gauge'>
 
-export const ClaimableRewards: FC<ClaimableRewardsProps> = ({ data: { rif, rbtc }, ...rest }) => {
+export const ClaimableRewards: FC<ClaimableRewardsProps> = ({ tokens: { rif, rbtc }, ...rest }) => {
   return (
     <MetricsCard borderless>
       <MetricsCardTitle title="Claimable rewards" data-testid="ClaimableRewards" />
