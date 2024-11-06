@@ -1,4 +1,5 @@
-export * from './useClaimAllRewards'
+export * from './useClaimBuilderRewards'
+export * from './useGetBuilderRewards'
 export * from './useGetRewardDistributedLogs'
 export * from './useGetTokenProjectedReward'
 export * from './useGetNotifyRewardLogs'

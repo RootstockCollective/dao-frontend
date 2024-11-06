@@ -6,7 +6,7 @@ import { useEffect, useMemo } from 'react'
 import { useAlertContext } from '@/app/providers'
 import { useGetBuilderToGauge } from '@/app/collective-rewards/user'
 
-export const useClaimAllRewards = (builder: Address) => {
+export const useClaimBuilderRewards = (builder: Address, rewardToken?: Address) => {
   const { writeContractAsync, error: executionError, data: hash, isPending } = useWriteContract()
   const {
     data: gauge,
@@ -52,18 +52,18 @@ export const useClaimAllRewards = (builder: Address) => {
     }
   }, [gauge, gaugeError, builder, executionError, receiptError, isFetched])
 
-  const claimAllRewards = () => {
+  const claimBuilderReward = () => {
     return writeContractAsync({
       abi: GaugeAbi,
       address: gauge as Address,
       functionName: 'claimBuilderReward',
-      args: [],
+      args: rewardToken ? [rewardToken] : [],
     })
   }
 
   return {
     isClaimFunctionReady,
-    claimAllRewards: () => isClaimFunctionReady && claimAllRewards(),
+    claimRewards: () => isClaimFunctionReady && claimBuilderReward(),
     error,
     isPendingTx: isPending,
     isLoadingReceipt: isLoading,
@@ -78,7 +78,7 @@ export const useClaimStateReporting = ({
   isLoadingReceipt,
   isSuccess,
   receipt,
-}: Omit<ReturnType<typeof useClaimAllRewards>, 'isClaimFunctionReady' | 'claimAllRewards'>) => {
+}: Omit<ReturnType<typeof useClaimBuilderRewards>, 'isClaimFunctionReady' | 'claimRewards'>) => {
   const { setMessage } = useAlertContext()
 
   useEffect(() => {
