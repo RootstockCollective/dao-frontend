@@ -62,7 +62,7 @@ export default function Page() {
 
   const nftInfo = communitiesMapByContract[nftAddress || '']
   if (nftInfo === undefined && nftAddress !== undefined) {
-    console.warn(`The current NFT address is not registered: ${nftAddress} - Please check the config.`)
+    console.warn('The current NFT address is not registered. Please check the config.')
   }
   const [message, setMessage] = useState<MessageProps | null>(null)
   // reset message after few seconds
