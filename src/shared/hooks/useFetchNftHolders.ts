@@ -8,7 +8,7 @@ export const useFetchNftHolders = (address: Address) => {
     queryKey: ['nft_holders'],
     queryFn: ({ pageParam }) => fetchNftHoldersOfAddress(address, pageParam),
     initialPageParam: null,
-    resultsPerTablePage: 10,
+    resultsPerTablePage: 12,
     hasMorePagesProperty: 'next_page_params',
     getNextPageParam: lastPage => lastPage.next_page_params,
   })
