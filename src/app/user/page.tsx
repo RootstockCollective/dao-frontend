@@ -6,12 +6,8 @@ import { TxStatusMessage } from '@/components/TxStatusMessage'
 import { Tabs, TabsContent, TabsList, TabsTrigger, TabTitle } from '@/components/Tabs'
 import { Rewards } from '@/app/collective-rewards/Rewards'
 import { useAccount } from 'wagmi'
-import { WithBuilderButton } from '@/app/collective-rewards/WithBuilderButton'
-import {
-  useGetIsWhitelistedBuilder,
-  useGetIsWhitelistedBuilderV2,
-} from '@/app/collective-rewards/hooks/useGetIsWhitelistedBuilder'
-import { getAddress } from 'viem'
+import { withBuilderButton } from '@/app/collective-rewards/withBuilderButton'
+import { useGetIsWhitelistedBuilderV2 } from '@/app/collective-rewards/hooks/useGetIsWhitelistedBuilder'
 
 type MyHoldingsProps = {
   showBuilderButton?: boolean
@@ -25,7 +21,7 @@ const MyHoldings = ({ showBuilderButton = false }: MyHoldingsProps) => (
   </>
 )
 
-const TabsListWithButton = WithBuilderButton(TabsList)
+const TabsListWithButton = withBuilderButton(TabsList)
 
 export default function User() {
   const { address } = useAccount()

@@ -1,5 +1,5 @@
 import { crStatusColorClasses } from '@/app/collective-rewards/BecomeABuilderButton'
-import { AddressOrAlias } from '@/components/Address'
+import { AddressOrAliasWithCopy } from '@/components/Address'
 import { Badge } from '@/components/Badge'
 import { Popover } from '@/components/Popover'
 import { Paragraph, Span, Typography } from '@/components/Typography'
@@ -7,6 +7,8 @@ import { useRouter } from 'next/navigation'
 import { FC, ReactNode } from 'react'
 import { Jdenticon } from '@/components/Header/Jdenticon'
 import { BuilderProposal } from '@/app/collective-rewards/BuilderContext'
+import { Address, isAddress } from 'viem'
+import { shortAddress } from '@/lib/utils'
 
 type WhitelistGridItemProps = BuilderProposal
 
@@ -29,6 +31,7 @@ export const WhitelistGridItem: FC<WhitelistGridItemProps> = ({
   proposalName,
 }) => {
   const router = useRouter()
+  const shortenAddress = shortAddress(address as Address)
   const Header = (
     <div className="flex flex-row w-full items-center gap-x-3">
       <Jdenticon className="rounded-md bg-white" value={address} size="32" />
@@ -39,14 +42,20 @@ export const WhitelistGridItem: FC<WhitelistGridItemProps> = ({
         <Popover
           content={
             <div className="text-[12px] font-bold mb-1">
-              <p data-testid="builderAddressTooltip">{address}</p>
+              <p data-testid="builderAddressTooltip">{shortenAddress}</p>
             </div>
           }
           size="small"
           trigger="hover"
+          disabled={!builderName || isAddress(builderName)}
         >
-          <Typography tagVariant="label" className="font-semibold line-clamp-1 text-wrap">
-            <AddressOrAlias addressOrAlias={builderName || address} className="text-base font-bold" />
+          <Typography tagVariant="label" className="font-semibold line-clamp-1 text-wrap min-h-6">
+            <AddressOrAliasWithCopy
+              addressOrAlias={builderName || address}
+              clipboard={address}
+              clipboardAnimationText={shortenAddress}
+              className="text-base font-bold"
+            />
           </Typography>
         </Popover>
         <Paragraph className="text-sm font-light"> Joined {joiningDate}</Paragraph>
