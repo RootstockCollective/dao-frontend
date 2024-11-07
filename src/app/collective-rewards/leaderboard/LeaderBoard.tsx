@@ -1,6 +1,6 @@
 import { useGetBuildersRewards } from '@/app/collective-rewards/leaderboard/hooks/useGetBuildersRewards'
 import { useAlertContext } from '@/app/providers'
-import { AddressOrAlias, reduceAddress } from '@/components/Address'
+import { AddressOrAliasWithCopy } from '@/components/Address'
 import { LoadingSpinner } from '@/components/LoadingSpinner'
 import { TableBody, TableCell, TableCore, TableHead, TableRow } from '@/components/Table'
 import { HeaderTitle, Label, Typography } from '@/components/Typography'
@@ -10,6 +10,8 @@ import { FC, memo, useEffect } from 'react'
 import { Jdenticon } from '@/components/Header/Jdenticon'
 import { BuilderContextProviderWithPrices } from '@/app/collective-rewards/BuilderContext'
 import { Popover } from '@/components/Popover'
+import { shortAddress } from '@/lib/utils'
+import { Address } from 'viem'
 
 type Currency = {
   value: number
@@ -23,7 +25,7 @@ export type Reward = {
 
 type TableData = {
   [address: string]: {
-    displayName: string
+    builderName: string
     lastCycleReward: Reward[]
     projectedReward: Reward[]
     share: bigint
@@ -64,14 +66,19 @@ export const BuilderNameCell = ({ builderName, address }: { builderName: string;
         <Popover
           content={
             <div className="text-[12px] font-bold mb-1">
-              <p data-testid="builderAddressTooltip">{reduceAddress(address)}</p>
+              <p data-testid="builderAddressTooltip">{shortAddress(address as Address)}</p>
             </div>
           }
           size="small"
           trigger="hover"
+          disabled={!builderName}
         >
           <Typography tagVariant="label" className="font-semibold line-clamp-1 text-wrap">
-            <AddressOrAlias addressOrAlias={builderName} clipboard={address} className="text-sm" />
+            <AddressOrAliasWithCopy
+              addressOrAlias={builderName || address}
+              clipboard={address}
+              className="text-sm"
+            />
           </Typography>
         </Popover>
       </div>
@@ -136,7 +143,7 @@ const LeaderBoardTable = () => {
     (acc, { address, builderName, lastCycleReward, projectedReward, share }) => {
       const currentShare = acc[address]?.share ?? 0n
       acc[address] = {
-        displayName: builderName || address,
+        builderName,
         lastCycleReward: [...(acc[address]?.lastCycleReward ?? []), lastCycleReward],
         projectedReward: [...(acc[address]?.projectedReward ?? []), projectedReward],
         share: share > currentShare ? share : currentShare,
@@ -200,9 +207,9 @@ const LeaderBoardTable = () => {
       </TableHead>
       <TableBody>
         {Object.entries(tableData).map(
-          ([address, { displayName, lastCycleReward, projectedReward, share }]) => (
+          ([address, { builderName, lastCycleReward, projectedReward, share }]) => (
             <TableRow key={address + share} className="text-[14px] border-hidden">
-              <BuilderNameCell builderName={displayName} address={address} />
+              <BuilderNameCell builderName={builderName} address={address} />
               <LastCycleRewardCell rewards={lastCycleReward} />
               <ProjectedRewardCell rewards={projectedReward} />
               <ShareCell share={share} />
