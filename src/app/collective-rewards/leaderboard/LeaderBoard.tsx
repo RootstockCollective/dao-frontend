@@ -11,7 +11,7 @@ import { Jdenticon } from '@/components/Header/Jdenticon'
 import { BuilderContextProviderWithPrices } from '@/app/collective-rewards/BuilderContext'
 import { Popover } from '@/components/Popover'
 import { shortAddress } from '@/lib/utils'
-import { Address } from 'viem'
+import { Address, isAddress } from 'viem'
 
 type Currency = {
   value: number
@@ -59,6 +59,7 @@ export const LazyRewardCell = memo(RewardCell, ({ rewards: prevReward }, { rewar
 )
 
 export const BuilderNameCell = ({ builderName, address }: { builderName: string; address: string }) => {
+  const shortenAddress = shortAddress(address as Address)
   return (
     <TableCell className={cn(tableHeaders[0], 'border-solid')}>
       <div className="flex flex-row gap-x-1">
@@ -66,17 +67,18 @@ export const BuilderNameCell = ({ builderName, address }: { builderName: string;
         <Popover
           content={
             <div className="text-[12px] font-bold mb-1">
-              <p data-testid="builderAddressTooltip">{shortAddress(address as Address)}</p>
+              <p data-testid="builderAddressTooltip">{shortenAddress}</p>
             </div>
           }
           size="small"
           trigger="hover"
-          disabled={!builderName}
+          disabled={!builderName || isAddress(builderName)}
         >
-          <Typography tagVariant="label" className="font-semibold line-clamp-1 text-wrap">
+          <Typography tagVariant="label" className="font-semibold line-clamp-1 text-wrap min-w-28">
             <AddressOrAliasWithCopy
               addressOrAlias={builderName || address}
               clipboard={address}
+              clipboardAnimationText={shortenAddress}
               className="text-sm"
             />
           </Typography>

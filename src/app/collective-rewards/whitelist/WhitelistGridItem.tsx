@@ -7,7 +7,7 @@ import { useRouter } from 'next/navigation'
 import { FC, ReactNode } from 'react'
 import { Jdenticon } from '@/components/Header/Jdenticon'
 import { BuilderProposal } from '@/app/collective-rewards/BuilderContext'
-import { Address } from 'viem'
+import { Address, isAddress } from 'viem'
 import { shortAddress } from '@/lib/utils'
 
 type WhitelistGridItemProps = BuilderProposal
@@ -31,6 +31,7 @@ export const WhitelistGridItem: FC<WhitelistGridItemProps> = ({
   proposalName,
 }) => {
   const router = useRouter()
+  const shortenAddress = shortAddress(address as Address)
   const Header = (
     <div className="flex flex-row w-full items-center gap-x-3">
       <Jdenticon className="rounded-md bg-white" value={address} size="32" />
@@ -41,17 +42,18 @@ export const WhitelistGridItem: FC<WhitelistGridItemProps> = ({
         <Popover
           content={
             <div className="text-[12px] font-bold mb-1">
-              <p data-testid="builderAddressTooltip">{shortAddress(address as Address)}</p>
+              <p data-testid="builderAddressTooltip">{shortenAddress}</p>
             </div>
           }
           size="small"
           trigger="hover"
-          disabled={!builderName}
+          disabled={!builderName || isAddress(builderName)}
         >
-          <Typography tagVariant="label" className="font-semibold line-clamp-1 text-wrap">
+          <Typography tagVariant="label" className="font-semibold line-clamp-1 text-wrap min-h-6">
             <AddressOrAliasWithCopy
               addressOrAlias={builderName || address}
               clipboard={address}
+              clipboardAnimationText={shortenAddress}
               className="text-base font-bold"
             />
           </Typography>

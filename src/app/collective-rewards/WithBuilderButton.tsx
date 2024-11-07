@@ -2,7 +2,7 @@ import { ComponentType, FC } from 'react'
 import { BecomeABuilderButton } from '@/app/collective-rewards/BecomeABuilderButton'
 import { useAccount } from 'wagmi'
 
-export const WithBuilderButton = <P extends {}>(Component: ComponentType<P>): FC<P> => {
+export const withBuilderButton = <P extends {}>(Component: ComponentType<P>): FC<P> => {
   const WrappedComponent = ({ ...props }: P) => {
     const { address } = useAccount()
     return (

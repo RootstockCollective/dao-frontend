@@ -1,17 +1,16 @@
 import { ComponentType, FC, useEffect, useState } from 'react'
 import { CopySvg } from '@/components/CopySvg'
 import { ADDRESS_ANIMATION_DURATION } from '@/lib/constants'
-import { shortAddress } from '../../lib/utils'
-import { Address, isAddress } from 'viem'
 
 type WithCopyProps = {
   clipboard: string
+  clipboardAnimationText?: string
 }
 
 type CopyStatus = 'success' | 'error'
 
 export const withCopy = <P extends {}>(Component: ComponentType<P>): FC<P & WithCopyProps> => {
-  const WrappedComponent = ({ clipboard, ...props }: WithCopyProps) => {
+  const WrappedComponent = ({ clipboard, clipboardAnimationText, ...props }: WithCopyProps) => {
     const [animationShown, setAnimationShown] = useState(false)
     const [copied, setCopied] = useState('success' as CopyStatus)
     const onClick = async () => {
@@ -52,13 +51,14 @@ export const withCopy = <P extends {}>(Component: ComponentType<P>): FC<P & With
     const copyButtonClass = `px-2 hover:cursor-pointer ${animationShown ? 'animate-translate-x' : ''}`
     const feedbackClass = `text-sm ${feedback.color} animate-fade-in-slide-in`
     const animationClass = `${animationShown ? 'animate-fade-out-slide-out' : 'hidden'}`
+    const temp = `${animationShown ? 'hidden' : ''}`
 
     return (
       <span className="flex items-center">
-        <Component {...(props as P)} />
-        <span className={animationClass}>
-          {isAddress(clipboard) ? shortAddress(clipboard as Address) : clipboard}
-        </span>
+        <div className={temp}>
+          <Component {...(props as P)} />
+        </div>
+        <span className={animationClass}>{clipboardAnimationText ?? clipboard}</span>
         <span className={copyButtonClass} onClick={onClick}>
           <CopySvg color={copyColor} />
         </span>

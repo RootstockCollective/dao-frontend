@@ -1,9 +1,9 @@
 import { HeaderTitle } from '@/components/Typography'
 import { CycleMetrics } from '@/app/collective-rewards/metrics/CycleMetrics'
 import { WhitelistedBuildersLengthMetrics } from '@/app/collective-rewards/metrics/WhitelistedBuildersLengthMetrics'
-import { WithBuilderButton } from '@/app/collective-rewards/WithBuilderButton'
+import { withBuilderButton } from '@/app/collective-rewards/withBuilderButton'
 
-const HeaderWithBuilderButton = WithBuilderButton(HeaderTitle)
+const HeaderWithBuilderButton = withBuilderButton(HeaderTitle)
 
 export const MetricsSection = () => {
   return (
