@@ -1,7 +1,6 @@
+import { withBuilderButton } from '@/app/collective-rewards/builders'
 import { HeaderTitle } from '@/components/Typography'
-import { CycleMetrics } from '@/app/collective-rewards/metrics/CycleMetrics'
-import { WhitelistedBuildersLengthMetrics } from '@/app/collective-rewards/metrics/WhitelistedBuildersLengthMetrics'
-import { withBuilderButton } from '@/app/collective-rewards/withBuilderButton'
+import { CycleMetrics, WhitelistedBuildersLengthMetrics } from './components'
 
 const HeaderWithBuilderButton = withBuilderButton(HeaderTitle)
 

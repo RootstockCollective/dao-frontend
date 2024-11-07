@@ -1,10 +1,9 @@
 import { formatBalanceToHuman } from '@/app/user/Balances/balanceUtils'
-import { useGetRewardDistributedLogs } from '@/app/collective-rewards/hooks/useGetRewardDistributedLogs'
 import { usePricesContext } from '@/shared/context/PricesContext'
-import { useGetTokenProjectedReward } from '@/app/collective-rewards/hooks/useGetTokenProjectedReward'
+import { useGetTokenProjectedReward, useGetRewardDistributedLogs } from '@/app/collective-rewards/rewards'
 import { Address, isAddressEqual } from 'viem'
 import { getLastCycleRewards } from '@/app/collective-rewards/utils/getLastCycleRewards'
-import { useBuilderContext } from '@/app/collective-rewards/BuilderContext'
+import { useBuilderContext } from '@/app/collective-rewards/builders'
 
 export const useGetBuildersRewards = (rewardToken: Address, rewardTokenSymbol?: string, currency = 'USD') => {
   const { data: builders, isLoading: buildersLoading, error: buildersError } = useBuilderContext()

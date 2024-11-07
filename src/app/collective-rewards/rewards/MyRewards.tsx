@@ -1,18 +1,21 @@
-import { useGetRewardDistributedLogs } from '@/app/collective-rewards/hooks/useGetRewardDistributedLogs'
-import { useGetTokenProjectedReward } from '@/app/collective-rewards/hooks/useGetTokenProjectedReward'
 import { getLastCycleRewards } from '@/app/collective-rewards/utils/getLastCycleRewards'
+import { useAlertContext } from '@/app/providers'
 import { formatBalanceToHuman } from '@/app/user/Balances/balanceUtils'
-import { Address } from 'viem'
+import { Button } from '@/components/Button'
+import { MetricsCardWithSpinner } from '@/components/MetricsCard/MetricsCard'
+import { Popover } from '@/components/Popover'
 import { HeaderTitle, Paragraph } from '@/components/Typography'
 import { tokenContracts } from '@/lib/contracts'
-import { PricesContextProvider, usePricesContext } from '@/shared/context/PricesContext'
 import { formatCurrency, toFixed } from '@/lib/utils'
-import { MetricsCardWithSpinner } from '@/components/MetricsCard/MetricsCard'
+import { PricesContextProvider, usePricesContext } from '@/shared/context/PricesContext'
 import { FC, useEffect } from 'react'
-import { useAlertContext } from '@/app/providers'
-import { Button } from '@/components/Button'
-import { useClaimAllRewards, useClaimStateReporting } from '@/app/collective-rewards/hooks/useClaimAllRewards'
-import { Popover } from '@/components/Popover'
+import { Address } from 'viem'
+import {
+  useClaimAllRewards,
+  useClaimStateReporting,
+  useGetRewardDistributedLogs,
+  useGetTokenProjectedReward,
+} from './hooks'
 
 export const Rewards: FC<{ builder: Address }> = ({ builder }) => {
   const { isClaimFunctionReady, claimAllRewards, ...claimTx } = useClaimAllRewards(builder)

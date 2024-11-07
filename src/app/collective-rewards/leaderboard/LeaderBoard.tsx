@@ -1,17 +1,16 @@
-import { useGetBuildersRewards } from '@/app/collective-rewards/leaderboard/hooks/useGetBuildersRewards'
+import { useGetBuildersRewards } from './hooks'
 import { useAlertContext } from '@/app/providers'
 import { AddressOrAliasWithCopy } from '@/components/Address'
 import { LoadingSpinner } from '@/components/LoadingSpinner'
 import { TableBody, TableCell, TableCore, TableHead, TableRow } from '@/components/Table'
 import { HeaderTitle, Label, Typography } from '@/components/Typography'
 import { tokenContracts } from '@/lib/contracts'
-import { cn, formatCurrency, toFixed } from '@/lib/utils'
+import { cn, formatCurrency, shortAddress, toFixed } from '@/lib/utils'
 import { FC, memo, useEffect } from 'react'
 import { Jdenticon } from '@/components/Header/Jdenticon'
-import { BuilderContextProviderWithPrices } from '@/app/collective-rewards/BuilderContext'
-import { Popover } from '@/components/Popover'
-import { shortAddress } from '@/lib/utils'
+import { BuilderContextProviderWithPrices } from '@/app/collective-rewards/builders'
 import { Address, isAddress } from 'viem'
+import { Popover } from '@/components/Popover'
 
 type Currency = {
   value: number
