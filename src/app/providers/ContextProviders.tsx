@@ -5,7 +5,6 @@ import { ReactNode } from 'react'
 import { WagmiProvider } from 'wagmi'
 import { AlertProvider } from './AlertProvider'
 import ErrorBoundary from '@/components/ErrorPage/ErrorBoundary'
-import { FeatureFlagProvider } from '@/shared/context/FeatureFlagContext'
 
 interface Props {
   children: ReactNode
