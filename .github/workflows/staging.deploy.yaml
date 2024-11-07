@@ -13,6 +13,10 @@ env:
   ECS_TASK_DEFINITION: rscoll-dev-dao-staging
   CONTAINER_NAME: rscoll-dev-dao-staging
 
+  # The .env file that is used to build the docker image 
+  # is retrieved using PROFILE, so be sure there is a `.env.<PROFILE>` file
+  # that matches with the profile set
+  # Example: PROFILE=testnet => .env.testnet
   PROFILE: qa
 
 jobs:

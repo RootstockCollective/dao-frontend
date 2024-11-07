@@ -13,6 +13,10 @@ env:
   ECS_TASK_DEFINITION: rscoll-dev-bim-qa
   CONTAINER_NAME: rscoll-dev-bim-qa
 
+  # The .env file that is used to build the docker image 
+  # is retrieved using PROFILE, so be sure there is a `.env.<PROFILE>` file
+  # that matches with the profile set
+  # Example: PROFILE=testnet => .env.testnet
   PROFILE: testnet.qa
 
 jobs:
