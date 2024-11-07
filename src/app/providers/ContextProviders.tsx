@@ -17,9 +17,7 @@ export const ContextProviders = ({ children }: Props) => {
     <ErrorBoundary>
       <WagmiProvider config={config}>
         <QueryClientProvider client={queryClient}>
-          <FeatureFlagProvider>
-            <AlertProvider>{children}</AlertProvider>
-          </FeatureFlagProvider>
+          <AlertProvider>{children}</AlertProvider>
         </QueryClientProvider>
       </WagmiProvider>
     </ErrorBoundary>
