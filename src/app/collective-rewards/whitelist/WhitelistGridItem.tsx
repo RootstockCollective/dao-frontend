@@ -1,5 +1,5 @@
 import { crStatusColorClasses } from '@/app/collective-rewards/BecomeABuilderButton'
-import { AddressOrAlias } from '@/components/Address'
+import { AddressOrAlias, reduceAddress } from '@/components/Address'
 import { Badge } from '@/components/Badge'
 import { Popover } from '@/components/Popover'
 import { Paragraph, Span, Typography } from '@/components/Typography'
@@ -39,14 +39,18 @@ export const WhitelistGridItem: FC<WhitelistGridItemProps> = ({
         <Popover
           content={
             <div className="text-[12px] font-bold mb-1">
-              <p data-testid="builderAddressTooltip">{address}</p>
+              <p data-testid="builderAddressTooltip">{reduceAddress(address)}</p>
             </div>
           }
           size="small"
           trigger="hover"
         >
           <Typography tagVariant="label" className="font-semibold line-clamp-1 text-wrap">
-            <AddressOrAlias addressOrAlias={builderName || address} className="text-base font-bold" />
+            <AddressOrAlias
+              addressOrAlias={builderName || address}
+              clipboard={address}
+              className="text-base font-bold"
+            />
           </Typography>
         </Popover>
         <Paragraph className="text-sm font-light"> Joined {joiningDate}</Paragraph>

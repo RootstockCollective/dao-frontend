@@ -7,12 +7,15 @@ import { cn } from '@/lib/utils'
 
 export interface AddressProps {
   addressOrAlias: string
+  clipboard?: string
   className?: string
 }
 
 type CopyStatus = 'success' | 'error'
 
-export const AddressOrAlias: React.FC<AddressProps> = ({ addressOrAlias, className = '' }) => {
+export const reduceAddress = (address: string): string => `${address.slice(0, 6)}...${address.slice(-4)}`
+
+export const AddressOrAlias: React.FC<AddressProps> = ({ addressOrAlias, clipboard, className = '' }) => {
   const [animationShown, setAnimationShown] = useState(false)
   const [copied, setCopied] = useState('success' as CopyStatus)
   const onClick = async () => {
@@ -21,7 +24,7 @@ export const AddressOrAlias: React.FC<AddressProps> = ({ addressOrAlias, classNa
     }
 
     try {
-      await navigator.clipboard.writeText(addressOrAlias)
+      await navigator.clipboard.writeText(clipboard ?? addressOrAlias)
       setCopied('success')
     } catch (error) {
       console.error(error instanceof Error ? error.message : 'Cannot copy contents to the clipboard')
@@ -57,9 +60,7 @@ export const AddressOrAlias: React.FC<AddressProps> = ({ addressOrAlias, classNa
   return (
     <span className="flex items-center">
       {isAddress(addressOrAlias) ? (
-        <Span className={cn(addressClass, className)}>
-          {addressOrAlias.substring(0, 6)}...{addressOrAlias.substring(addressOrAlias.length - 4)}
-        </Span>
+        <Span className={cn(addressClass, className)}>{reduceAddress(addressOrAlias)}</Span>
       ) : (
         <Span className={cn(aliasClass, className)}>{addressOrAlias}</Span>
       )}

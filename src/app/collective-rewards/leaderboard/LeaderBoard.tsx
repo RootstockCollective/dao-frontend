@@ -1,6 +1,6 @@
 import { useGetBuildersRewards } from '@/app/collective-rewards/leaderboard/hooks/useGetBuildersRewards'
 import { useAlertContext } from '@/app/providers'
-import { AddressOrAlias } from '@/components/Address'
+import { AddressOrAlias, reduceAddress } from '@/components/Address'
 import { LoadingSpinner } from '@/components/LoadingSpinner'
 import { TableBody, TableCell, TableCore, TableHead, TableRow } from '@/components/Table'
 import { HeaderTitle, Label, Typography } from '@/components/Typography'
@@ -9,6 +9,7 @@ import { cn, formatCurrency, toFixed } from '@/lib/utils'
 import { FC, memo, useEffect } from 'react'
 import { Jdenticon } from '@/components/Header/Jdenticon'
 import { BuilderContextProviderWithPrices } from '@/app/collective-rewards/BuilderContext'
+import { Popover } from '@/components/Popover'
 
 type Currency = {
   value: number
@@ -55,12 +56,24 @@ export const LazyRewardCell = memo(RewardCell, ({ rewards: prevReward }, { rewar
   prevReward.every((reward, key) => reward.fiat.value === nextReward[key].fiat.value),
 )
 
-export const BuilderNameCell = ({ builderName }: { builderName: string }) => {
+export const BuilderNameCell = ({ builderName, address }: { builderName: string; address: string }) => {
   return (
     <TableCell className={cn(tableHeaders[0], 'border-solid')}>
       <div className="flex flex-row gap-x-1">
         <Jdenticon className="rounded-md bg-white" value={builderName} size="24" />
-        <AddressOrAlias addressOrAlias={builderName} className="text-sm" />
+        <Popover
+          content={
+            <div className="text-[12px] font-bold mb-1">
+              <p data-testid="builderAddressTooltip">{reduceAddress(address)}</p>
+            </div>
+          }
+          size="small"
+          trigger="hover"
+        >
+          <Typography tagVariant="label" className="font-semibold line-clamp-1 text-wrap">
+            <AddressOrAlias addressOrAlias={builderName} clipboard={address} className="text-sm" />
+          </Typography>
+        </Popover>
       </div>
     </TableCell>
   )
@@ -189,7 +202,7 @@ const LeaderBoardTable = () => {
         {Object.entries(tableData).map(
           ([address, { displayName, lastCycleReward, projectedReward, share }]) => (
             <TableRow key={address + share} className="text-[14px] border-hidden">
-              <BuilderNameCell builderName={displayName} />
+              <BuilderNameCell builderName={displayName} address={address} />
               <LastCycleRewardCell rewards={lastCycleReward} />
               <ProjectedRewardCell rewards={projectedReward} />
               <ShareCell share={share} />
