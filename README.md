@@ -11,7 +11,7 @@ update .env file with the correct data from respective files:
 ```
 .dev
 .testnet
-.prod
+.mainnet
 ```
 
 the chosen set of variables depends on the targeted contract versions you planning to work with. `.dev` - same as the `.testnet` versions of the contract with an exception being reduced wait times of votingDelay, votingPeriod and timelockMinDelay for automation purposes. `.testnet` and `.mainnet` versions are aligned on time but target respective chains(chainIds) 31 and 30.
@@ -63,7 +63,7 @@ All environment files are prefixed with a `.env`.
 
 | Environment      | Team     | Deploy URL                                      | Configuration                                                                                                                                                                              | Notes        |
 | ---------------- | -------- | ----------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ | ------------ |
-| .prod            | DAO - CR | https://app.rootstockcollective.xyz             | [DAO](https://github.com/RootstockCollective/dao-contracts/blob/develop/params/mainnet.json) <br> [CR](https://github.com/RootstockCollective/collective-rewards-sc/blob/main/.env.30.mvp) | -            |
+| .mainnet            | DAO - CR | https://app.rootstockcollective.xyz             | [DAO](https://github.com/RootstockCollective/dao-contracts/blob/develop/params/mainnet.json) <br> [CR](https://github.com/RootstockCollective/collective-rewards-sc/blob/main/.env.30.mvp) | -            |
 | .dev             | DAO - CR | https://dev.app.rootstockcollective.xyz         | [DAO](https://github.com/RootstockCollective/dao-contracts/blob/develop/params/dev.json)                                                                                                   | Requires VPN |
 | .testnet         | DAO      | https://testnet.app.rootstockcollective.xyz     | [DAO](https://github.com/RootstockCollective/dao-contracts/blob/develop/params/testnet.json)                                                                                               | -            |
 | .qa              | DAO      | -                                               | -                                                                                                                                                                                          | -            |

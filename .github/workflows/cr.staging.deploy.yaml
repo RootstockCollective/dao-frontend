@@ -13,6 +13,10 @@ env:
   ECS_TASK_DEFINITION: rscoll-dev-bim-staging
   CONTAINER_NAME: rscoll-dev-bim-staging
 
+  # The .env file that is used to build the docker image 
+  # is retrieved using PROFILE, so be sure there is a `.env.<PROFILE>` file
+  # that matches with the profile set
+  # Example: PROFILE=testnet => .env.testnet
   PROFILE: testnet.staging
 
 jobs:
@@ -50,7 +54,7 @@ jobs:
           # Build a docker container and
           # push it to ECR so that it can
           # be deployed to ECS.
-          docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG --build-arg arg_env="$PROFILE" --build-arg NEXT_PUBLIC_BUILD_ID=${{ github.sha }} --no-cache .
+          docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG --build-arg PROFILE="$PROFILE" --build-arg NEXT_PUBLIC_BUILD_ID=${{ github.sha }} --no-cache .
           docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
           echo "::set-output name=image::$ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG"
 

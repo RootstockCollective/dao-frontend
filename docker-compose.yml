@@ -4,7 +4,7 @@ services:
       context: .
       dockerfile: Dockerfile
       args:
-        arg_env: dev
+        PROFILE: dev
     ports:
       - '3010:3000'
     command: npm start
