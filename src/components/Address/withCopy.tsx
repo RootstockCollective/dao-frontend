@@ -67,7 +67,7 @@ export const withCopy = <P extends {}>(Component: ComponentType<P>): FC<P & With
     )
   }
 
-  WrappedComponent.displayName = `WithSpinner(${Component.displayName || Component.name})`
+  WrappedComponent.displayName = `WithCopy(${Component.displayName || Component.name})`
 
   return WrappedComponent
 }
