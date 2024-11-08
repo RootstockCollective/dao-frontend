@@ -2,7 +2,7 @@ import { getIsWhitelistedBuilder } from '@/app/collective-rewards/utils/getIsWhi
 import { AddressNotWhitelistedError, NoVotingPowerError } from '@/app/proposals/shared/errors'
 import { GovernorAbi } from '@/lib/abis/Governor'
 import { BuilderRegistryAbi } from '@/lib/abis/v2/BuilderRegistryAbi'
-import { GovernorAddress, SponsorsManagerAddress } from '@/lib/contracts'
+import { GovernorAddress, BackersManagerAddress } from '@/lib/contracts'
 import { Address, encodeFunctionData } from 'viem'
 import { useWriteContract } from 'wagmi'
 import { createProposal, encodeGovernorRelayCallData } from './proposalUtils'
@@ -21,7 +21,7 @@ export const useRemoveBuilderProposal = () => {
       throw AddressNotWhitelistedError
     }
     const calldata = encodeRemoveBuilderCalldata(builderAddress)
-    const relayCallData = encodeGovernorRelayCallData(SponsorsManagerAddress, calldata)
+    const relayCallData = encodeGovernorRelayCallData(BackersManagerAddress, calldata)
 
     const { proposal } = createProposal([GovernorAddress], [0n], [relayCallData], description)
 
