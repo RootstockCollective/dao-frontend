@@ -1,5 +1,5 @@
 import { useQuery } from '@tanstack/react-query'
-import { fetchRewardDistributedCached, fetchRewardDistributedLogs } from '@/app/collective-rewards/actions'
+import { fetchRewardDistributedCached } from '@/app/collective-rewards/actions'
 import { Address, isAddressEqual, parseEventLogs } from 'viem'
 import { SimplifiedRewardDistributorAbi } from '@/lib/abis/SimplifiedRewardDistributorAbi'
 import { resolveCollectiveRewardToken } from '@/app/collective-rewards/utils/getCoinBaseAddress'

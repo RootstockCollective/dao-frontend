@@ -1,5 +1,5 @@
 import { ComponentType, FC } from 'react'
-import { BecomeABuilderButton } from '@/app/collective-rewards/BecomeABuilderButton'
+import { BecomeABuilderButton } from './BecomeABuilderButton'
 import { useAccount } from 'wagmi'
 
 export const withBuilderButton = <P extends {}>(Component: ComponentType<P>): FC<P> => {

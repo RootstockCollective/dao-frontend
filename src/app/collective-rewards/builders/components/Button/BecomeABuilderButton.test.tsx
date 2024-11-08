@@ -1,5 +1,5 @@
-import { BecomeABuilderButton } from '@/app/collective-rewards/BecomeABuilderButton'
-import { useGetBuilders } from '@/app/collective-rewards/hooks/useGetBuilders'
+import { BecomeABuilderButton } from './BecomeABuilderButton'
+import { useGetBuilders } from '@/app/collective-rewards/builders/hooks/useGetBuilders'
 import { BuilderInfo } from '@/app/collective-rewards/types'
 import { useGetProposalsState } from '@/app/collective-rewards/whitelist/hooks/useGetProposalsState'
 import { CreateBuilderProposalEventLog } from '@/app/proposals/hooks/useFetchLatestProposals'
@@ -8,7 +8,7 @@ import { ProposalState } from '@/shared/types'
 import { describe, expect, test, vi, beforeEach, afterEach } from 'vitest'
 import { cleanup, render, waitFor } from '@testing-library/react'
 
-vi.mock('@/app/collective-rewards/hooks/useGetBuilders', () => {
+vi.mock('@/app/collective-rewards/builders/hooks/useGetBuilders', () => {
   return {
     useGetBuilders: vi.fn(),
   }

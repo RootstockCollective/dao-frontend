@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
-import { BuilderStatusFilter } from '@/app/collective-rewards/whitelist/WhitelistContext'
-import { BuilderProposal, useBuilderContext } from '@/app/collective-rewards/BuilderContext'
+import { BuilderStatusFilter } from '@/app/collective-rewards/whitelist'
+import { BuilderProposal, useBuilderContext } from '@/app/collective-rewards/builders'
 
 type FetchWhitelistedBuildersFilter = {
   builderName: string

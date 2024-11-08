@@ -1,14 +1,13 @@
-import { crStatusColorClasses } from '@/app/collective-rewards/BecomeABuilderButton'
-import { AddressOrAliasWithCopy } from '@/components/Address'
+import { crStatusColorClasses, BuilderProposal } from '@/app/collective-rewards/builders'
+import { AddressOrAlias, AddressOrAliasWithCopy } from '@/components/Address'
 import { Badge } from '@/components/Badge'
 import { Popover } from '@/components/Popover'
 import { Paragraph, Span, Typography } from '@/components/Typography'
 import { useRouter } from 'next/navigation'
 import { FC, ReactNode } from 'react'
 import { Jdenticon } from '@/components/Header/Jdenticon'
-import { BuilderProposal } from '@/app/collective-rewards/BuilderContext'
-import { Address, isAddress } from 'viem'
 import { shortAddress } from '@/lib/utils'
+import { isAddress, Address } from 'viem'
 
 type WhitelistGridItemProps = BuilderProposal
 

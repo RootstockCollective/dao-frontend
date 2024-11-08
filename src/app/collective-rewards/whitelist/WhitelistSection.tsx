@@ -1,10 +1,9 @@
-import { WhitelistGrid } from '@/app/collective-rewards/whitelist/WhitelistGrid'
-import { WhitelistSearch } from '@/app/collective-rewards/whitelist/WhitelistSearch'
-import { HeaderTitle } from '@/components/Typography'
-import { useWhitelistContext } from '@/app/collective-rewards/whitelist/WhitelistContext'
-import { LoadingSpinner } from '@/components/LoadingSpinner'
 import { useAlertContext } from '@/app/providers/AlertProvider'
+import { LoadingSpinner } from '@/components/LoadingSpinner'
+import { HeaderTitle } from '@/components/Typography'
 import { useEffect } from 'react'
+import { WhitelistGrid, WhitelistSearch } from './components'
+import { useWhitelistContext } from './context'
 
 export const WhitelistSection = () => {
   const { builders, isLoading, error: whitelistError } = useWhitelistContext()

@@ -1,4 +1,4 @@
-import { useGetWhitelistedBuildersLength } from '@/app/collective-rewards/hooks/useGetWhitelistedBuildersLength'
+import { useGetWhitelistedBuildersLength } from '@/app/collective-rewards/builders'
 import { useQuery } from '@tanstack/react-query'
 import axios from 'axios'
 import { Address } from 'viem'

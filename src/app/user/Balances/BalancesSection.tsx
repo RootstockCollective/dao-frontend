@@ -8,7 +8,7 @@ import { StakeRIFCell } from '@/app/user/Balances/StakeRIFCell'
 import { RenderTokenSymbol } from '@/app/user/Balances/RenderTokenSymbol'
 import { UnStakeRIFCell } from '@/app/user/Balances/UnStakeRIFCell'
 import { UnStakingModal } from '@/app/user/Stake/UnStakingSteps'
-import { withBuilderButton } from '@/app/collective-rewards/withBuilderButton'
+import { withBuilderButton } from '@/app/collective-rewards/builders'
 
 const data = [
   {

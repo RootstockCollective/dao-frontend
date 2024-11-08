@@ -1,13 +1,12 @@
 'use client'
+import { useGetIsWhitelistedBuilderV2, withBuilderButton } from '@/app/collective-rewards/builders'
+import { Rewards } from '@/app/collective-rewards/rewards/MyRewards'
 import { BalancesSection } from '@/app/user/Balances/BalancesSection'
 import { CommunitiesSection } from '@/app/user/Communities/CommunitiesSection'
 import { MainContainer } from '@/components/MainContainer/MainContainer'
-import { TxStatusMessage } from '@/components/TxStatusMessage'
 import { Tabs, TabsContent, TabsList, TabsTrigger, TabTitle } from '@/components/Tabs'
-import { Rewards } from '@/app/collective-rewards/Rewards'
+import { TxStatusMessage } from '@/components/TxStatusMessage'
 import { useAccount } from 'wagmi'
-import { withBuilderButton } from '@/app/collective-rewards/withBuilderButton'
-import { useGetIsWhitelistedBuilderV2 } from '@/app/collective-rewards/hooks/useGetIsWhitelistedBuilder'
 
 type MyHoldingsProps = {
   showBuilderButton?: boolean

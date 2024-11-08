@@ -1,8 +1,8 @@
+import { BuilderStatusFilter, useWhitelistContext } from '@/app/collective-rewards/whitelist'
+import { useAlertContext } from '@/app/providers'
 import { Input } from '@/components/Input'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/Select'
 import { Label } from '@/components/Typography'
-import { BuilderStatusFilter, useWhitelistContext } from '@/app/collective-rewards/whitelist/WhitelistContext'
-import { useAlertContext } from '@/app/providers'
 import { useEffect } from 'react'
 
 export const WhitelistSearch = () => {

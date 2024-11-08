@@ -1,5 +1,5 @@
 import { MetricsCard } from '@/components/MetricsCard'
-import { useGetWhitelistedBuildersLength } from '@/app/collective-rewards/hooks/useGetWhitelistedBuildersLength'
+import { useGetWhitelistedBuildersLength } from '@/app/collective-rewards/builders/hooks/useGetWhitelistedBuildersLength'
 import { useAlertContext } from '@/app/providers'
 import { useEffect } from 'react'
 

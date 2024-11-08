@@ -1,9 +1,8 @@
 'use client'
 
-import { LeaderBoard } from '@/app/collective-rewards/leaderboard/LeaderBoard'
-import { MetricsSection } from '@/app/collective-rewards/MetricsSection'
-import { WhitelistContextProviderWithBuilders } from '@/app/collective-rewards/whitelist/WhitelistContext'
-import { WhitelistSection } from '@/app/collective-rewards/whitelist/WhitelistSection'
+import { LeaderBoard } from '@/app/collective-rewards/leaderboard'
+import { MetricsSection } from '@/app/collective-rewards/metrics'
+import { WhitelistContextProviderWithBuilders, WhitelistSection } from '@/app/collective-rewards/whitelist'
 import { MainContainer } from '@/components/MainContainer/MainContainer'
 
 export default function BuildersIncentiveMarket() {
