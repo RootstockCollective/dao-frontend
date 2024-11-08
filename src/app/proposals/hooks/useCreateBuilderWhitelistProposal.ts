@@ -2,7 +2,7 @@ import { getBuilderGauge } from '@/app/collective-rewards/utils/getBuilderGauge'
 import { AddressAlreadyWhitelistedError, NoVotingPowerError } from '@/app/proposals/shared/errors'
 import { GovernorAbi } from '@/lib/abis/Governor'
 import { BuilderRegistryAbi } from '@/lib/abis/v2/BuilderRegistryAbi'
-import { GovernorAddress, SimplifiedRewardDistributorAddress } from '@/lib/contracts'
+import { GovernorAddress, SponsorsManagerAddress } from '@/lib/contracts'
 import { Address, encodeFunctionData, zeroAddress } from 'viem'
 import { useWriteContract } from 'wagmi'
 import { createProposal, encodeGovernorRelayCallData } from './proposalUtils'
@@ -22,7 +22,7 @@ export const useCreateBuilderWhitelistProposal = () => {
       throw AddressAlreadyWhitelistedError
     }
     const calldata = encodeWhitelistBuilderCalldata(builderAddress)
-    const relayCallData = encodeGovernorRelayCallData(SimplifiedRewardDistributorAddress, calldata)
+    const relayCallData = encodeGovernorRelayCallData(SponsorsManagerAddress, calldata)
 
     const { proposal } = createProposal([GovernorAddress], [0n], [relayCallData], description)
 
