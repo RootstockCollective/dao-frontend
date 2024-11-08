@@ -15,7 +15,7 @@ import {
   OG_FOUNDERS_NFT_ADDRESS,
   OG_PARTNERS_NFT_ADDRESS,
   OG_CONTRIBUTORS_NFT_ADDRESS,
-  SPONSORS_MANAGER_ADDRESS,
+  BACKERS_MANAGER_ADDRESS,
   REWARD_DISTRIBUTOR_ADDRESS,
 } from './constants'
 
@@ -55,7 +55,7 @@ const MulticallAddress = MULTICALL_ADDRESS
 const TreasuryAddress = GRANTS_ACTIVE_BUCKET_ADDRESS
 
 const SimplifiedRewardDistributorAddress = SIMPLIFIED_REWARD_DISTRIBUTOR_ADDRESS || ZeroAddress
-const SponsorsManagerAddress = SPONSORS_MANAGER_ADDRESS || ZeroAddress
+const BackersManagerAddress = BACKERS_MANAGER_ADDRESS || ZeroAddress
 const RewardDistributor = REWARD_DISTRIBUTOR_ADDRESS || ZeroAddress
 
 export {
@@ -67,6 +67,6 @@ export {
   TreasuryAddress,
   treasuryContracts,
   SimplifiedRewardDistributorAddress,
-  SponsorsManagerAddress,
+  BackersManagerAddress,
   RewardDistributor,
 }

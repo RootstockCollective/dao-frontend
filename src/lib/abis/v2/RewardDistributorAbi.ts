@@ -1,329 +1,301 @@
 export const RewardDistributorAbi = [
   {
+    type: 'constructor',
     inputs: [],
     stateMutability: 'nonpayable',
-    type: 'constructor',
   },
   {
-    inputs: [
-      {
-        internalType: 'address',
-        name: 'target',
-        type: 'address',
-      },
-    ],
-    name: 'AddressEmptyCode',
-    type: 'error',
+    type: 'receive',
+    stateMutability: 'payable',
   },
   {
-    inputs: [],
-    name: 'BIMAddressesAlreadyInitialized',
-    type: 'error',
-  },
-  {
-    inputs: [
-      {
-        internalType: 'address',
-        name: 'implementation',
-        type: 'address',
-      },
-    ],
-    name: 'ERC1967InvalidImplementation',
-    type: 'error',
-  },
-  {
-    inputs: [],
-    name: 'ERC1967NonPayable',
-    type: 'error',
-  },
-  {
-    inputs: [],
-    name: 'FailedInnerCall',
-    type: 'error',
-  },
-  {
-    inputs: [],
-    name: 'InvalidInitialization',
-    type: 'error',
-  },
-  {
-    inputs: [],
-    name: 'NotFoundationTreasury',
-    type: 'error',
-  },
-  {
-    inputs: [],
-    name: 'NotGovernor',
-    type: 'error',
-  },
-  {
-    inputs: [],
-    name: 'NotGovernorOrAuthorizedChanger',
-    type: 'error',
-  },
-  {
-    inputs: [],
-    name: 'NotInitializing',
-    type: 'error',
-  },
-  {
-    inputs: [],
-    name: 'UUPSUnauthorizedCallContext',
-    type: 'error',
-  },
-  {
-    inputs: [
-      {
-        internalType: 'bytes32',
-        name: 'slot',
-        type: 'bytes32',
-      },
-    ],
-    name: 'UUPSUnsupportedProxiableUUID',
-    type: 'error',
-  },
-  {
-    anonymous: false,
-    inputs: [
-      {
-        indexed: false,
-        internalType: 'uint64',
-        name: 'version',
-        type: 'uint64',
-      },
-    ],
-    name: 'Initialized',
-    type: 'event',
-  },
-  {
-    anonymous: false,
-    inputs: [
-      {
-        indexed: true,
-        internalType: 'address',
-        name: 'implementation',
-        type: 'address',
-      },
-    ],
-    name: 'Upgraded',
-    type: 'event',
-  },
-  {
-    inputs: [],
+    type: 'function',
     name: 'UPGRADE_INTERFACE_VERSION',
+    inputs: [],
     outputs: [
       {
-        internalType: 'string',
         name: '',
         type: 'string',
+        internalType: 'string',
       },
     ],
     stateMutability: 'view',
-    type: 'function',
   },
   {
+    type: 'function',
+    name: 'backersManager',
     inputs: [],
-    name: 'changeExecutor',
     outputs: [
       {
-        internalType: 'contract IChangeExecutorRootstockCollective',
         name: '',
         type: 'address',
+        internalType: 'contract BackersManagerRootstockCollective',
       },
     ],
     stateMutability: 'view',
-    type: 'function',
   },
   {
-    inputs: [],
+    type: 'function',
     name: 'foundationTreasury',
-    outputs: [
-      {
-        internalType: 'address',
-        name: '',
-        type: 'address',
-      },
-    ],
-    stateMutability: 'view',
-    type: 'function',
-  },
-  {
     inputs: [],
-    name: 'governor',
     outputs: [
       {
-        internalType: 'address',
         name: '',
         type: 'address',
+        internalType: 'address',
       },
     ],
     stateMutability: 'view',
-    type: 'function',
   },
   {
-    inputs: [
+    type: 'function',
+    name: 'governanceManager',
+    inputs: [],
+    outputs: [
       {
-        internalType: 'address',
-        name: 'changeExecutor_',
+        name: '',
         type: 'address',
-      },
-      {
-        internalType: 'address',
-        name: 'foundationTreasury_',
-        type: 'address',
+        internalType: 'contract IGovernanceManagerRootstockCollective',
       },
     ],
+    stateMutability: 'view',
+  },
+  {
+    type: 'function',
     name: 'initialize',
-    outputs: [],
-    stateMutability: 'nonpayable',
-    type: 'function',
-  },
-  {
     inputs: [
       {
-        internalType: 'address',
-        name: 'sponsorsManager_',
+        name: 'governanceManager_',
         type: 'address',
+        internalType: 'contract IGovernanceManagerRootstockCollective',
       },
     ],
-    name: 'initializeBIMAddresses',
     outputs: [],
     stateMutability: 'nonpayable',
-    type: 'function',
   },
   {
-    inputs: [],
+    type: 'function',
+    name: 'initializeCollectiveRewardsAddresses',
+    inputs: [
+      {
+        name: 'backersManager_',
+        type: 'address',
+        internalType: 'address',
+      },
+    ],
+    outputs: [],
+    stateMutability: 'nonpayable',
+  },
+  {
+    type: 'function',
     name: 'proxiableUUID',
+    inputs: [],
     outputs: [
       {
-        internalType: 'bytes32',
         name: '',
         type: 'bytes32',
+        internalType: 'bytes32',
       },
     ],
     stateMutability: 'view',
-    type: 'function',
   },
   {
+    type: 'function',
+    name: 'rewardCoinbaseAmountPerCycle',
     inputs: [
       {
-        internalType: 'uint256',
-        name: 'epochTimestampStart',
+        name: 'cycleTimestampStart',
         type: 'uint256',
+        internalType: 'uint256',
       },
     ],
-    name: 'rewardCoinbaseAmountPerEpoch',
     outputs: [
       {
-        internalType: 'uint256',
         name: 'amount',
         type: 'uint256',
+        internalType: 'uint256',
       },
     ],
     stateMutability: 'view',
-    type: 'function',
   },
   {
-    inputs: [],
+    type: 'function',
     name: 'rewardToken',
+    inputs: [],
     outputs: [
       {
-        internalType: 'contract IERC20',
         name: '',
         type: 'address',
+        internalType: 'contract IERC20',
       },
     ],
     stateMutability: 'view',
-    type: 'function',
   },
   {
+    type: 'function',
+    name: 'rewardTokenAmountPerCycle',
     inputs: [
       {
-        internalType: 'uint256',
-        name: 'epochTimestampStart',
+        name: 'cycleTimestampStart',
         type: 'uint256',
+        internalType: 'uint256',
       },
     ],
-    name: 'rewardTokenAmountPerEpoch',
     outputs: [
       {
-        internalType: 'uint256',
         name: 'amount',
         type: 'uint256',
+        internalType: 'uint256',
       },
     ],
     stateMutability: 'view',
-    type: 'function',
   },
   {
-    inputs: [
-      {
-        internalType: 'uint256',
-        name: 'amountERC20_',
-        type: 'uint256',
-      },
-      {
-        internalType: 'uint256',
-        name: 'amountCoinbase_',
-        type: 'uint256',
-      },
-    ],
+    type: 'function',
     name: 'sendRewards',
-    outputs: [],
-    stateMutability: 'payable',
-    type: 'function',
-  },
-  {
     inputs: [
       {
-        internalType: 'uint256',
         name: 'amountERC20_',
         type: 'uint256',
+        internalType: 'uint256',
       },
       {
-        internalType: 'uint256',
         name: 'amountCoinbase_',
         type: 'uint256',
+        internalType: 'uint256',
       },
     ],
-    name: 'sendRewardsAndStartDistribution',
     outputs: [],
     stateMutability: 'payable',
-    type: 'function',
   },
   {
-    inputs: [],
-    name: 'sponsorsManager',
-    outputs: [
-      {
-        internalType: 'contract SponsorsManager',
-        name: '',
-        type: 'address',
-      },
-    ],
-    stateMutability: 'view',
     type: 'function',
-  },
-  {
+    name: 'sendRewardsAndStartDistribution',
     inputs: [
       {
-        internalType: 'address',
+        name: 'amountERC20_',
+        type: 'uint256',
+        internalType: 'uint256',
+      },
+      {
+        name: 'amountCoinbase_',
+        type: 'uint256',
+        internalType: 'uint256',
+      },
+    ],
+    outputs: [],
+    stateMutability: 'payable',
+  },
+  {
+    type: 'function',
+    name: 'upgradeToAndCall',
+    inputs: [
+      {
         name: 'newImplementation',
         type: 'address',
+        internalType: 'address',
       },
       {
-        internalType: 'bytes',
         name: 'data',
         type: 'bytes',
+        internalType: 'bytes',
       },
     ],
-    name: 'upgradeToAndCall',
     outputs: [],
     stateMutability: 'payable',
-    type: 'function',
   },
   {
-    stateMutability: 'payable',
-    type: 'receive',
+    type: 'event',
+    name: 'Initialized',
+    inputs: [
+      {
+        name: 'version',
+        type: 'uint64',
+        indexed: false,
+        internalType: 'uint64',
+      },
+    ],
+    anonymous: false,
+  },
+  {
+    type: 'event',
+    name: 'Upgraded',
+    inputs: [
+      {
+        name: 'implementation',
+        type: 'address',
+        indexed: true,
+        internalType: 'address',
+      },
+    ],
+    anonymous: false,
+  },
+  {
+    type: 'error',
+    name: 'AddressEmptyCode',
+    inputs: [
+      {
+        name: 'target',
+        type: 'address',
+        internalType: 'address',
+      },
+    ],
+  },
+  {
+    type: 'error',
+    name: 'CollectiveRewardsAddressesAlreadyInitialized',
+    inputs: [],
+  },
+  {
+    type: 'error',
+    name: 'ERC1967InvalidImplementation',
+    inputs: [
+      {
+        name: 'implementation',
+        type: 'address',
+        internalType: 'address',
+      },
+    ],
+  },
+  {
+    type: 'error',
+    name: 'ERC1967NonPayable',
+    inputs: [],
+  },
+  {
+    type: 'error',
+    name: 'FailedInnerCall',
+    inputs: [],
+  },
+  {
+    type: 'error',
+    name: 'InvalidInitialization',
+    inputs: [],
+  },
+  {
+    type: 'error',
+    name: 'NotFoundationTreasury',
+    inputs: [],
+  },
+  {
+    type: 'error',
+    name: 'NotInitializing',
+    inputs: [],
+  },
+  {
+    type: 'error',
+    name: 'UUPSUnauthorizedCallContext',
+    inputs: [],
+  },
+  {
+    type: 'error',
+    name: 'UUPSUnsupportedProxiableUUID',
+    inputs: [
+      {
+        name: 'slot',
+        type: 'bytes32',
+        internalType: 'bytes32',
+      },
+    ],
   },
 ] as const

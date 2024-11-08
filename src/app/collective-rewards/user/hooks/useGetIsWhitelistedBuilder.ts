@@ -1,7 +1,7 @@
 import { SimplifiedRewardDistributorAbi } from '@/lib/abis/SimplifiedRewardDistributorAbi'
 import { BuilderRegistryAbi } from '@/lib/abis/v2/BuilderRegistryAbi'
 import { AVERAGE_BLOCKTIME } from '@/lib/constants'
-import { SimplifiedRewardDistributorAddress, SponsorsManagerAddress } from '@/lib/contracts'
+import { SimplifiedRewardDistributorAddress, BackersManagerAddress } from '@/lib/contracts'
 import { Address } from 'viem'
 import { useReadContract } from 'wagmi'
 
@@ -28,7 +28,7 @@ export const useGetIsWhitelistedBuilder = (builder: Address) => {
 export const useGetIsWhitelistedBuilderV2 = (builder: Address) => {
   const { data, isLoading, error } = useReadContract({
     abi: BuilderRegistryAbi,
-    address: SponsorsManagerAddress,
+    address: BackersManagerAddress,
     functionName: 'isBuilderOperational',
     args: [builder],
     query: {

@@ -1,4 +1,9 @@
-export const BuilderRegistryAbi = [
+export const BackersManagerAbi = [
+  {
+    type: 'constructor',
+    inputs: [],
+    stateMutability: 'nonpayable',
+  },
   {
     type: 'function',
     name: 'UPGRADE_INTERFACE_VERSION',
@@ -37,6 +42,42 @@ export const BuilderRegistryAbi = [
   },
   {
     type: 'function',
+    name: 'allocate',
+    inputs: [
+      {
+        name: 'gauge_',
+        type: 'address',
+        internalType: 'contract GaugeRootstockCollective',
+      },
+      {
+        name: 'allocation_',
+        type: 'uint256',
+        internalType: 'uint256',
+      },
+    ],
+    outputs: [],
+    stateMutability: 'nonpayable',
+  },
+  {
+    type: 'function',
+    name: 'allocateBatch',
+    inputs: [
+      {
+        name: 'gauges_',
+        type: 'address[]',
+        internalType: 'contract GaugeRootstockCollective[]',
+      },
+      {
+        name: 'allocations_',
+        type: 'uint256[]',
+        internalType: 'uint256[]',
+      },
+    ],
+    outputs: [],
+    stateMutability: 'nonpayable',
+  },
+  {
+    type: 'function',
     name: 'approveBuilderKYC',
     inputs: [
       {
@@ -47,6 +88,25 @@ export const BuilderRegistryAbi = [
     ],
     outputs: [],
     stateMutability: 'nonpayable',
+  },
+  {
+    type: 'function',
+    name: 'backerTotalAllocation',
+    inputs: [
+      {
+        name: 'backer',
+        type: 'address',
+        internalType: 'address',
+      },
+    ],
+    outputs: [
+      {
+        name: 'allocation',
+        type: 'uint256',
+        internalType: 'uint256',
+      },
+    ],
+    stateMutability: 'view',
   },
   {
     type: 'function',
@@ -166,6 +226,61 @@ export const BuilderRegistryAbi = [
   },
   {
     type: 'function',
+    name: 'canWithdraw',
+    inputs: [
+      {
+        name: 'targetAddress_',
+        type: 'address',
+        internalType: 'address',
+      },
+      {
+        name: 'value_',
+        type: 'uint256',
+        internalType: 'uint256',
+      },
+    ],
+    outputs: [
+      {
+        name: '',
+        type: 'bool',
+        internalType: 'bool',
+      },
+    ],
+    stateMutability: 'view',
+  },
+  {
+    type: 'function',
+    name: 'claimBackerRewards',
+    inputs: [
+      {
+        name: 'gauges_',
+        type: 'address[]',
+        internalType: 'contract GaugeRootstockCollective[]',
+      },
+    ],
+    outputs: [],
+    stateMutability: 'nonpayable',
+  },
+  {
+    type: 'function',
+    name: 'claimBackerRewards',
+    inputs: [
+      {
+        name: 'rewardToken_',
+        type: 'address',
+        internalType: 'address',
+      },
+      {
+        name: 'gauges_',
+        type: 'address[]',
+        internalType: 'contract GaugeRootstockCollective[]',
+      },
+    ],
+    outputs: [],
+    stateMutability: 'nonpayable',
+  },
+  {
+    type: 'function',
     name: 'cycleData',
     inputs: [],
     outputs: [
@@ -246,6 +361,19 @@ export const BuilderRegistryAbi = [
       },
     ],
     outputs: [],
+    stateMutability: 'nonpayable',
+  },
+  {
+    type: 'function',
+    name: 'distribute',
+    inputs: [],
+    outputs: [
+      {
+        name: 'finished_',
+        type: 'bool',
+        internalType: 'bool',
+      },
+    ],
     stateMutability: 'nonpayable',
   },
   {
@@ -434,6 +562,67 @@ export const BuilderRegistryAbi = [
   },
   {
     type: 'function',
+    name: 'indexLastGaugeDistributed',
+    inputs: [],
+    outputs: [
+      {
+        name: '',
+        type: 'uint256',
+        internalType: 'uint256',
+      },
+    ],
+    stateMutability: 'view',
+  },
+  {
+    type: 'function',
+    name: 'initialize',
+    inputs: [
+      {
+        name: 'governanceManager_',
+        type: 'address',
+        internalType: 'contract IGovernanceManagerRootstockCollective',
+      },
+      {
+        name: 'rewardToken_',
+        type: 'address',
+        internalType: 'address',
+      },
+      {
+        name: 'stakingToken_',
+        type: 'address',
+        internalType: 'address',
+      },
+      {
+        name: 'gaugeFactory_',
+        type: 'address',
+        internalType: 'address',
+      },
+      {
+        name: 'rewardDistributor_',
+        type: 'address',
+        internalType: 'address',
+      },
+      {
+        name: 'cycleDuration_',
+        type: 'uint32',
+        internalType: 'uint32',
+      },
+      {
+        name: 'cycleStartOffset_',
+        type: 'uint24',
+        internalType: 'uint24',
+      },
+      {
+        name: 'rewardPercentageCooldown_',
+        type: 'uint128',
+        internalType: 'uint128',
+      },
+    ],
+    outputs: [],
+    stateMutability: 'nonpayable',
+  },
+  {
+    type: 'function',
     name: 'isBuilderOperational',
     inputs: [
       {
@@ -529,6 +718,32 @@ export const BuilderRegistryAbi = [
   },
   {
     type: 'function',
+    name: 'notifyRewardAmount',
+    inputs: [
+      {
+        name: 'amount_',
+        type: 'uint256',
+        internalType: 'uint256',
+      },
+    ],
+    outputs: [],
+    stateMutability: 'payable',
+  },
+  {
+    type: 'function',
+    name: 'onDistributionPeriod',
+    inputs: [],
+    outputs: [
+      {
+        name: '',
+        type: 'bool',
+        internalType: 'bool',
+      },
+    ],
+    stateMutability: 'view',
+  },
+  {
+    type: 'function',
     name: 'pauseBuilder',
     inputs: [
       {
@@ -544,6 +759,19 @@ export const BuilderRegistryAbi = [
     ],
     outputs: [],
     stateMutability: 'nonpayable',
+  },
+  {
+    type: 'function',
+    name: 'periodFinish',
+    inputs: [],
+    outputs: [
+      {
+        name: '',
+        type: 'uint256',
+        internalType: 'uint256',
+      },
+    ],
+    stateMutability: 'view',
   },
   {
     type: 'function',
@@ -619,6 +847,45 @@ export const BuilderRegistryAbi = [
   },
   {
     type: 'function',
+    name: 'rewardToken',
+    inputs: [],
+    outputs: [
+      {
+        name: '',
+        type: 'address',
+        internalType: 'address',
+      },
+    ],
+    stateMutability: 'view',
+  },
+  {
+    type: 'function',
+    name: 'rewardsCoinbase',
+    inputs: [],
+    outputs: [
+      {
+        name: '',
+        type: 'uint256',
+        internalType: 'uint256',
+      },
+    ],
+    stateMutability: 'view',
+  },
+  {
+    type: 'function',
+    name: 'rewardsERC20',
+    inputs: [],
+    outputs: [
+      {
+        name: '',
+        type: 'uint256',
+        internalType: 'uint256',
+      },
+    ],
+    stateMutability: 'view',
+  },
+  {
+    type: 'function',
     name: 'setBuilderRewardPercentage',
     inputs: [
       {
@@ -650,10 +917,36 @@ export const BuilderRegistryAbi = [
   },
   {
     type: 'function',
+    name: 'stakingToken',
+    inputs: [],
+    outputs: [
+      {
+        name: '',
+        type: 'address',
+        internalType: 'contract IERC20',
+      },
+    ],
+    stateMutability: 'view',
+  },
+  {
+    type: 'function',
+    name: 'startDistribution',
+    inputs: [],
+    outputs: [
+      {
+        name: 'finished_',
+        type: 'bool',
+        internalType: 'bool',
+      },
+    ],
+    stateMutability: 'nonpayable',
+  },
+  {
+    type: 'function',
     name: 'supportsInterface',
     inputs: [
       {
-        name: 'interfaceId',
+        name: 'interfaceId_',
         type: 'bytes4',
         internalType: 'bytes4',
       },
@@ -669,6 +962,19 @@ export const BuilderRegistryAbi = [
   },
   {
     type: 'function',
+    name: 'tempTotalPotentialReward',
+    inputs: [],
+    outputs: [
+      {
+        name: '',
+        type: 'uint256',
+        internalType: 'uint256',
+      },
+    ],
+    stateMutability: 'view',
+  },
+  {
+    type: 'function',
     name: 'timeUntilNextCycle',
     inputs: [
       {
@@ -677,6 +983,19 @@ export const BuilderRegistryAbi = [
         internalType: 'uint256',
       },
     ],
+    outputs: [
+      {
+        name: '',
+        type: 'uint256',
+        internalType: 'uint256',
+      },
+    ],
+    stateMutability: 'view',
+  },
+  {
+    type: 'function',
+    name: 'totalPotentialReward',
+    inputs: [],
     outputs: [
       {
         name: '',
@@ -865,6 +1184,31 @@ export const BuilderRegistryAbi = [
   },
   {
     type: 'event',
+    name: 'NewAllocation',
+    inputs: [
+      {
+        name: 'backer_',
+        type: 'address',
+        indexed: true,
+        internalType: 'address',
+      },
+      {
+        name: 'gauge_',
+        type: 'address',
+        indexed: true,
+        internalType: 'address',
+      },
+      {
+        name: 'allocation_',
+        type: 'uint256',
+        indexed: false,
+        internalType: 'uint256',
+      },
+    ],
+    anonymous: false,
+  },
+  {
+    type: 'event',
     name: 'NewCycleDurationScheduled',
     inputs: [
       {
@@ -875,6 +1219,31 @@ export const BuilderRegistryAbi = [
       },
       {
         name: 'cooldownEndTime_',
+        type: 'uint256',
+        indexed: false,
+        internalType: 'uint256',
+      },
+    ],
+    anonymous: false,
+  },
+  {
+    type: 'event',
+    name: 'NotifyReward',
+    inputs: [
+      {
+        name: 'rewardToken_',
+        type: 'address',
+        indexed: true,
+        internalType: 'address',
+      },
+      {
+        name: 'sender_',
+        type: 'address',
+        indexed: true,
+        internalType: 'address',
+      },
+      {
+        name: 'amount_',
         type: 'uint256',
         indexed: false,
         internalType: 'uint256',
@@ -941,6 +1310,45 @@ export const BuilderRegistryAbi = [
   },
   {
     type: 'event',
+    name: 'RewardDistributed',
+    inputs: [
+      {
+        name: 'sender_',
+        type: 'address',
+        indexed: true,
+        internalType: 'address',
+      },
+    ],
+    anonymous: false,
+  },
+  {
+    type: 'event',
+    name: 'RewardDistributionFinished',
+    inputs: [
+      {
+        name: 'sender_',
+        type: 'address',
+        indexed: true,
+        internalType: 'address',
+      },
+    ],
+    anonymous: false,
+  },
+  {
+    type: 'event',
+    name: 'RewardDistributionStarted',
+    inputs: [
+      {
+        name: 'sender_',
+        type: 'address',
+        indexed: true,
+        internalType: 'address',
+      },
+    ],
+    anonymous: false,
+  },
+  {
+    type: 'event',
     name: 'Unpaused',
     inputs: [
       {
@@ -991,6 +1399,17 @@ export const BuilderRegistryAbi = [
   },
   {
     type: 'error',
+    name: 'AddressInsufficientBalance',
+    inputs: [
+      {
+        name: 'account',
+        type: 'address',
+        internalType: 'address',
+      },
+    ],
+  },
+  {
+    type: 'error',
     name: 'AlreadyActivated',
     inputs: [],
   },
@@ -1007,6 +1426,11 @@ export const BuilderRegistryAbi = [
   {
     type: 'error',
     name: 'AlreadyWhitelisted',
+    inputs: [],
+  },
+  {
+    type: 'error',
+    name: 'BeforeDistribution',
     inputs: [],
   },
   {
@@ -1037,6 +1461,11 @@ export const BuilderRegistryAbi = [
   {
     type: 'error',
     name: 'CycleDurationsAreNotMultiples',
+    inputs: [],
+  },
+  {
+    type: 'error',
+    name: 'DistributionPeriodDidNotStart',
     inputs: [],
   },
   {
@@ -1087,6 +1516,16 @@ export const BuilderRegistryAbi = [
   },
   {
     type: 'error',
+    name: 'NotEnoughStaking',
+    inputs: [],
+  },
+  {
+    type: 'error',
+    name: 'NotInDistributionPeriod',
+    inputs: [],
+  },
+  {
+    type: 'error',
     name: 'NotInitializing',
     inputs: [],
   },
@@ -1117,6 +1556,27 @@ export const BuilderRegistryAbi = [
   },
   {
     type: 'error',
+    name: 'OnlyInDistributionWindow',
+    inputs: [],
+  },
+  {
+    type: 'error',
+    name: 'PositiveAllocationOnHaltedGauge',
+    inputs: [],
+  },
+  {
+    type: 'error',
+    name: 'SafeERC20FailedOperation',
+    inputs: [
+      {
+        name: 'token',
+        type: 'address',
+        internalType: 'address',
+      },
+    ],
+  },
+  {
+    type: 'error',
     name: 'UUPSUnauthorizedCallContext',
     inputs: [],
   },
@@ -1130,5 +1590,10 @@ export const BuilderRegistryAbi = [
         internalType: 'bytes32',
       },
     ],
+  },
+  {
+    type: 'error',
+    name: 'UnequalLengths',
+    inputs: [],
   },
 ] as const
