@@ -1,5 +1,5 @@
 import { BuilderRegistryAbi } from '@/lib/abis/v2/BuilderRegistryAbi'
-import { SponsorsManagerAddress } from '@/lib/contracts'
+import { BackersManagerAddress } from '@/lib/contracts'
 import { Address, zeroAddress } from 'viem'
 import { useReadContract, useWaitForTransactionReceipt, useWriteContract } from 'wagmi'
 import { GaugeAbi } from '@/lib/abis/v2/GaugeAbi'
@@ -10,7 +10,7 @@ import { useAlertContext } from '@/app/providers'
 export const useGetGauge = (builder: Address) =>
   useReadContract({
     abi: BuilderRegistryAbi,
-    address: SponsorsManagerAddress,
+    address: BackersManagerAddress,
     functionName: 'builderToGauge',
     args: [builder as Address],
   })

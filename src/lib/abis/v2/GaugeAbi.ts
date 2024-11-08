@@ -9,7 +9,7 @@ export const GaugeAbi = [
     name: 'allocate',
     inputs: [
       {
-        name: 'sponsor_',
+        name: 'backer_',
         type: 'address',
         internalType: 'address',
       },
@@ -19,7 +19,7 @@ export const GaugeAbi = [
         internalType: 'uint256',
       },
       {
-        name: 'timeUntilNextEpoch_',
+        name: 'timeUntilNextCycle_',
         type: 'uint256',
         internalType: 'uint256',
       },
@@ -48,7 +48,7 @@ export const GaugeAbi = [
     name: 'allocationOf',
     inputs: [
       {
-        name: 'sponsor',
+        name: 'backer',
         type: 'address',
         internalType: 'address',
       },
@@ -58,6 +58,43 @@ export const GaugeAbi = [
         name: 'allocation',
         type: 'uint256',
         internalType: 'uint256',
+      },
+    ],
+    stateMutability: 'view',
+  },
+  {
+    type: 'function',
+    name: 'backerRewardPerTokenPaid',
+    inputs: [
+      {
+        name: 'rewardToken_',
+        type: 'address',
+        internalType: 'address',
+      },
+      {
+        name: 'backer_',
+        type: 'address',
+        internalType: 'address',
+      },
+    ],
+    outputs: [
+      {
+        name: '',
+        type: 'uint256',
+        internalType: 'uint256',
+      },
+    ],
+    stateMutability: 'view',
+  },
+  {
+    type: 'function',
+    name: 'backersManager',
+    inputs: [],
+    outputs: [
+      {
+        name: '',
+        type: 'address',
+        internalType: 'contract IBackersManagerRootstockCollective',
       },
     ],
     stateMutability: 'view',
@@ -83,6 +120,37 @@ export const GaugeAbi = [
   },
   {
     type: 'function',
+    name: 'claimBackerReward',
+    inputs: [
+      {
+        name: 'backer_',
+        type: 'address',
+        internalType: 'address',
+      },
+    ],
+    outputs: [],
+    stateMutability: 'nonpayable',
+  },
+  {
+    type: 'function',
+    name: 'claimBackerReward',
+    inputs: [
+      {
+        name: 'rewardToken_',
+        type: 'address',
+        internalType: 'address',
+      },
+      {
+        name: 'backer_',
+        type: 'address',
+        internalType: 'address',
+      },
+    ],
+    outputs: [],
+    stateMutability: 'nonpayable',
+  },
+  {
+    type: 'function',
     name: 'claimBuilderReward',
     inputs: [],
     outputs: [],
@@ -103,37 +171,6 @@ export const GaugeAbi = [
   },
   {
     type: 'function',
-    name: 'claimSponsorReward',
-    inputs: [
-      {
-        name: 'rewardToken_',
-        type: 'address',
-        internalType: 'address',
-      },
-      {
-        name: 'sponsor_',
-        type: 'address',
-        internalType: 'address',
-      },
-    ],
-    outputs: [],
-    stateMutability: 'nonpayable',
-  },
-  {
-    type: 'function',
-    name: 'claimSponsorReward',
-    inputs: [
-      {
-        name: 'sponsor_',
-        type: 'address',
-        internalType: 'address',
-      },
-    ],
-    outputs: [],
-    stateMutability: 'nonpayable',
-  },
-  {
-    type: 'function',
     name: 'earned',
     inputs: [
       {
@@ -142,7 +179,7 @@ export const GaugeAbi = [
         internalType: 'address',
       },
       {
-        name: 'sponsor_',
+        name: 'backer_',
         type: 'address',
         internalType: 'address',
       },
@@ -186,7 +223,7 @@ export const GaugeAbi = [
         internalType: 'address',
       },
       {
-        name: 'sponsorsManager_',
+        name: 'backersManager_',
         type: 'address',
         internalType: 'address',
       },
@@ -268,7 +305,7 @@ export const GaugeAbi = [
         internalType: 'uint256',
       },
       {
-        name: 'builderKickback_',
+        name: 'builderRewardPercentage_',
         type: 'uint256',
         internalType: 'uint256',
       },
@@ -278,12 +315,12 @@ export const GaugeAbi = [
         internalType: 'uint256',
       },
       {
-        name: 'epochStart_',
+        name: 'cycleStart_',
         type: 'uint256',
         internalType: 'uint256',
       },
       {
-        name: 'epochDuration_',
+        name: 'cycleDuration_',
         type: 'uint256',
         internalType: 'uint256',
       },
@@ -448,7 +485,7 @@ export const GaugeAbi = [
         internalType: 'address',
       },
       {
-        name: 'sponsor_',
+        name: 'backer_',
         type: 'address',
         internalType: 'address',
       },
@@ -458,43 +495,6 @@ export const GaugeAbi = [
         name: '',
         type: 'uint256',
         internalType: 'uint256',
-      },
-    ],
-    stateMutability: 'view',
-  },
-  {
-    type: 'function',
-    name: 'sponsorRewardPerTokenPaid',
-    inputs: [
-      {
-        name: 'rewardToken_',
-        type: 'address',
-        internalType: 'address',
-      },
-      {
-        name: 'sponsor_',
-        type: 'address',
-        internalType: 'address',
-      },
-    ],
-    outputs: [
-      {
-        name: '',
-        type: 'uint256',
-        internalType: 'uint256',
-      },
-    ],
-    stateMutability: 'view',
-  },
-  {
-    type: 'function',
-    name: 'sponsorsManager',
-    inputs: [],
-    outputs: [
-      {
-        name: '',
-        type: 'address',
-        internalType: 'contract ISponsorsManager',
       },
     ],
     stateMutability: 'view',
@@ -511,6 +511,31 @@ export const GaugeAbi = [
       },
     ],
     stateMutability: 'view',
+  },
+  {
+    type: 'event',
+    name: 'BackerRewardsClaimed',
+    inputs: [
+      {
+        name: 'rewardToken_',
+        type: 'address',
+        indexed: true,
+        internalType: 'address',
+      },
+      {
+        name: 'backer_',
+        type: 'address',
+        indexed: true,
+        internalType: 'address',
+      },
+      {
+        name: 'amount_',
+        type: 'uint256',
+        indexed: false,
+        internalType: 'uint256',
+      },
+    ],
+    anonymous: false,
   },
   {
     type: 'event',
@@ -555,7 +580,7 @@ export const GaugeAbi = [
     name: 'NewAllocation',
     inputs: [
       {
-        name: 'sponsor_',
+        name: 'backer_',
         type: 'address',
         indexed: true,
         internalType: 'address',
@@ -586,32 +611,7 @@ export const GaugeAbi = [
         internalType: 'uint256',
       },
       {
-        name: 'sponsorsAmount_',
-        type: 'uint256',
-        indexed: false,
-        internalType: 'uint256',
-      },
-    ],
-    anonymous: false,
-  },
-  {
-    type: 'event',
-    name: 'SponsorRewardsClaimed',
-    inputs: [
-      {
-        name: 'rewardToken_',
-        type: 'address',
-        indexed: true,
-        internalType: 'address',
-      },
-      {
-        name: 'sponsor_',
-        type: 'address',
-        indexed: true,
-        internalType: 'address',
-      },
-      {
-        name: 'amount_',
+        name: 'backersAmount_',
         type: 'uint256',
         indexed: false,
         internalType: 'uint256',
@@ -673,12 +673,12 @@ export const GaugeAbi = [
   },
   {
     type: 'error',
-    name: 'NotInitializing',
+    name: 'NotBackersManager',
     inputs: [],
   },
   {
     type: 'error',
-    name: 'NotSponsorsManager',
+    name: 'NotInitializing',
     inputs: [],
   },
   {
