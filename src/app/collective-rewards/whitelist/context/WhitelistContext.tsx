@@ -1,4 +1,4 @@
-import { BuilderProposal, withBuilderContextProvider } from '@/app/collective-rewards/builders'
+import { BuilderProposal, withBuilderContextProvider } from '@/app/collective-rewards/user'
 import { BuilderStatus } from '@/app/collective-rewards/types'
 import { useGetFilteredBuilders } from '@/app/collective-rewards/whitelist'
 import { createContext, Dispatch, FC, ReactNode, SetStateAction, useContext, useState } from 'react'

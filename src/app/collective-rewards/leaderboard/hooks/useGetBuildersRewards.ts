@@ -3,7 +3,7 @@ import { usePricesContext } from '@/shared/context/PricesContext'
 import { useGetTokenProjectedReward, useGetRewardDistributedLogs } from '@/app/collective-rewards/rewards'
 import { Address, isAddressEqual } from 'viem'
 import { getLastCycleRewards } from '@/app/collective-rewards/utils/getLastCycleRewards'
-import { useBuilderContext } from '@/app/collective-rewards/builders'
+import { useBuilderContext } from '@/app/collective-rewards/user'
 
 export const useGetBuildersRewards = (rewardToken: Address, rewardTokenSymbol?: string, currency = 'USD') => {
   const { data: builders, isLoading: buildersLoading, error: buildersError } = useBuilderContext()
