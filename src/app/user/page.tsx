@@ -1,5 +1,5 @@
 'use client'
-import { useGetIsWhitelistedBuilderV2, withBuilderButton } from '@/app/collective-rewards/builders'
+import { useGetIsWhitelistedBuilderV2, withBuilderButton } from '@/app/collective-rewards/user'
 import { Rewards } from '@/app/collective-rewards/rewards/MyRewards'
 import { BalancesSection } from '@/app/user/Balances/BalancesSection'
 import { CommunitiesSection } from '@/app/user/Communities/CommunitiesSection'

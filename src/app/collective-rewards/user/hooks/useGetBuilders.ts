@@ -1,7 +1,4 @@
-import {
-  useGetIsWhitelistedBuilder,
-  useGetWhitelistedBuilders,
-} from '@/app/collective-rewards/builders/hooks'
+import { useGetIsWhitelistedBuilder, useGetWhitelistedBuilders } from '@/app/collective-rewards/user/hooks'
 import { BuilderInfo } from '@/app/collective-rewards/types'
 import { useFetchCreateBuilderProposals } from '@/app/proposals/hooks/useFetchLatestProposals'
 import { useMemo } from 'react'

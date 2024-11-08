@@ -7,7 +7,7 @@ import { LoadingSpinner } from '@/components/LoadingSpinner'
 import { BecomeABuilderModal } from '@/components/Modal/BecomeABuilderModal'
 import { FC, HtmlHTMLAttributes, useEffect } from 'react'
 import { Address } from 'viem'
-import { BuilderContextProvider, useBuilderContext } from '@/app/collective-rewards/builders'
+import { BuilderContextProvider, useBuilderContext } from '@/app/collective-rewards/user'
 
 type StatusBadgeProps = {
   builderStatus?: BuilderInfo['status']

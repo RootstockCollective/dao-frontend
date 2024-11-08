@@ -1,4 +1,4 @@
-import { crStatusColorClasses, BuilderProposal } from '@/app/collective-rewards/builders'
+import { crStatusColorClasses, BuilderProposal } from '@/app/collective-rewards/user'
 import { AddressOrAlias, AddressOrAliasWithCopy } from '@/components/Address'
 import { Badge } from '@/components/Badge'
 import { Popover } from '@/components/Popover'

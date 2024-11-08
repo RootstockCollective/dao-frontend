@@ -1,4 +1,4 @@
-import { withBuilderButton } from '@/app/collective-rewards/builders'
+import { withBuilderButton } from '@/app/collective-rewards/user'
 import { HeaderTitle } from '@/components/Typography'
 import { CycleMetrics, WhitelistedBuildersLengthMetrics } from './components'
 

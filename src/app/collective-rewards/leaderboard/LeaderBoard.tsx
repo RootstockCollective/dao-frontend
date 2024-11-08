@@ -8,7 +8,7 @@ import { tokenContracts } from '@/lib/contracts'
 import { cn, formatCurrency, shortAddress, toFixed } from '@/lib/utils'
 import { FC, memo, useEffect } from 'react'
 import { Jdenticon } from '@/components/Header/Jdenticon'
-import { BuilderContextProviderWithPrices } from '@/app/collective-rewards/builders'
+import { BuilderContextProviderWithPrices } from '@/app/collective-rewards/user'
 import { Address, isAddress } from 'viem'
 import { Popover } from '@/components/Popover'
 
