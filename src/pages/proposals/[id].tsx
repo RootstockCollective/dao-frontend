@@ -482,8 +482,8 @@ const DewhitelistButton: FC<DewhitelistButton> = ({
   proposalState,
 }) => {
   const router = useRouter()
-  const rewardDistributorContract = 'SimplifiedRewardDistributorAbi'
-  const removeWhitelistedBuilderAction = 'removeWhitelistedBuilder'
+  const builderRegistryContract = 'BuilderRegistryAbi'
+  const dewhitelistBuilderAction = 'dewhitelistBuilder'
   const builderAddress = getAddress(calldatasParsed[0]?.args[0]?.toString() || '')
   const isProposalExecuted = proposalState === ProposalState.Executed
   const isButtonEnabled = builderAddress && isProposalExecuted
@@ -495,7 +495,7 @@ const DewhitelistButton: FC<DewhitelistButton> = ({
           startIcon={<FaMinus />}
           onClick={() =>
             router.push(
-              `/proposals/create?contract=${rewardDistributorContract}&action=${removeWhitelistedBuilderAction}&builderAddress=${builderAddress}&proposalId=${proposalId}`,
+              `/proposals/create?contract=${builderRegistryContract}&action=${dewhitelistBuilderAction}&builderAddress=${builderAddress}&proposalId=${proposalId}`,
             )
           }
           disabled={!canCreateProposal}
