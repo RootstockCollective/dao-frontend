@@ -1,13 +1,14 @@
 import { BuilderInfo } from '@/app/collective-rewards/types'
+import { BuilderContextProvider, useBuilderContext } from '@/app/collective-rewards/user'
 import { useAlertContext } from '@/app/providers/AlertProvider'
 import { useModal } from '@/app/user/Balances/hooks/useModal'
 import { Badge } from '@/components/Badge'
 import { Button } from '@/components/Button'
 import { LoadingSpinner } from '@/components/LoadingSpinner'
 import { BecomeABuilderModal } from '@/components/Modal/BecomeABuilderModal'
+import { Typography } from '@/components/Typography'
 import { FC, HtmlHTMLAttributes, useEffect } from 'react'
 import { Address } from 'viem'
-import { BuilderContextProvider, useBuilderContext } from '@/app/collective-rewards/user'
 
 type StatusBadgeProps = {
   builderStatus?: BuilderInfo['status']
@@ -36,7 +37,9 @@ const StatusBadge: FC<StatusBadgeProps> = ({ builderStatus }) => {
     <Badge content="In Progress" className={`${crStatusColorClasses['In progress']} py-2 px-1`} />
   )
   const WhitelistedComponent = (
-    <Badge content="You are a Builder" className={`${crStatusColorClasses['Whitelisted']} py-2 px-1`} />
+    <Typography tagVariant="h2" className={'font-kk-topo text-2xl/7 font-normal uppercase py-2 px-1'}>
+      You are a Builder
+    </Typography>
   )
 
   return {
