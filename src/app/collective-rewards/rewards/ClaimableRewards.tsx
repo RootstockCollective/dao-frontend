@@ -1,19 +1,19 @@
-import { FC, useEffect, useState } from 'react'
-import { Address } from 'viem'
-import { usePricesContext } from '@/shared/context/PricesContext'
 import {
   formatMetrics,
-  useClaimBuilderRewards,
-  useGetBuilderRewards,
-  useClaimStateReporting,
-  MetricsCardWithSpinner,
-  TokenMetricsCardRow,
+  MetricsCard,
   MetricsCardTitle,
+  TokenMetricsCardRow,
+  useClaimBuilderRewards,
+  useClaimStateReporting,
+  useGetBuilderRewards,
 } from '@/app/collective-rewards/rewards'
-import { formatBalanceToHuman } from '@/app/user/Balances/balanceUtils'
-import { Popover } from '@/components/Popover'
 import { useHandleErrors } from '@/app/collective-rewards/utils'
-import { Button } from '@/components/Button'
+import { formatBalanceToHuman } from '@/app/user/Balances/balanceUtils'
+import { withSpinner } from '@/components/LoadingSpinner/withLoadingSpinner'
+import { Popover } from '@/components/Popover'
+import { usePricesContext } from '@/shared/context/PricesContext'
+import { FC } from 'react'
+import { Address } from 'viem'
 
 const ClaimYourRewardsSvg = () => (
   <svg width="20" height="21" viewBox="0 0 20 21" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -37,14 +37,12 @@ type RewardsTokenMetricsProps = {
   gauge: Address
   token: Token
   currency?: string
-  setState: (state: { isLoading: boolean }) => void
 }
 
 const RewardsTokenMetrics: FC<RewardsTokenMetricsProps> = ({
   builder,
   gauge,
   token: { address, symbol },
-  setState,
   currency = 'USD',
 }) => {
   const { prices } = usePricesContext()
@@ -54,7 +52,7 @@ const RewardsTokenMetrics: FC<RewardsTokenMetricsProps> = ({
     isLoading: isLoadingRewards,
     error: rewardsError,
   } = useGetBuilderRewards(address, gauge)
-  useHandleErrors([{ error: rewardsError, title: 'Error loading rewards' }])
+  useHandleErrors({ error: rewardsError, title: 'Error loading rewards' })
 
   const tokenPrice = prices[symbol]?.price ?? 0
 
@@ -69,28 +67,29 @@ const RewardsTokenMetrics: FC<RewardsTokenMetricsProps> = ({
 
   useClaimStateReporting({ ...claimTx, error: rewardsError ?? claimTx.error })
 
-  useEffect(() => {
-    setState({ isLoading: isLoadingRewards })
-  }, [isLoadingRewards, setState])
-
-  return (
-    <TokenMetricsCardRow amount={rewardMetrics.amount} fiatAmount={rewardMetrics.fiatAmount}>
-      <Popover
-        content={
-          <div className="text-[12px] font-bold mb-1">
-            <p data-testid="builderAddressTooltip">Claim your rewards</p>
-          </div>
-        }
-        size="small"
-        position="top"
-        trigger="hover"
-      >
-        <Button variant="borderless" onClick={claimRewards} disabled={!isClaimFunctionReady}>
-          <ClaimYourRewardsSvg />
-        </Button>
-      </Popover>
-    </TokenMetricsCardRow>
-  )
+  return withSpinner(TokenMetricsCardRow)({
+    amount: rewardMetrics.amount,
+    fiatAmount: rewardMetrics.fiatAmount,
+    isLoading: isLoadingRewards,
+    children: (
+      <div className="self-start justify-self-end pt-[10px]">
+        <Popover
+          content={
+            <div className="text-[12px] font-bold mb-1">
+              <p data-testid="builderAddressTooltip">Claim your rewards</p>
+            </div>
+          }
+          size="small"
+          position="top"
+          trigger="hover"
+        >
+          <button onClick={claimRewards} disabled={!isClaimFunctionReady}>
+            <ClaimYourRewardsSvg />
+          </button>
+        </Popover>
+      </div>
+    ),
+  })
 }
 
 type ClaimableRewardsProps = {
@@ -103,14 +102,11 @@ type ClaimableRewardsProps = {
 }
 
 export const ClaimableRewards: FC<ClaimableRewardsProps> = ({ data, ...rest }) => {
-  const [{ isLoading: isLoadingRif }, setRifState] = useState({ isLoading: false })
-  const [{ isLoading: isLoadingRbtc }, setRbtcState] = useState({ isLoading: false })
-
   return (
-    <MetricsCardWithSpinner isLoading={isLoadingRif || isLoadingRbtc} borderless>
+    <MetricsCard borderless>
       <MetricsCardTitle title="Claimable rewards" data-testid="ClaimableRewards" />
-      <RewardsTokenMetrics {...rest} token={data.rif} setState={() => setRifState} />
-      <RewardsTokenMetrics {...rest} token={data.rbtc} setState={() => setRbtcState} />
-    </MetricsCardWithSpinner>
+      <RewardsTokenMetrics {...rest} token={data.rif} />
+      <RewardsTokenMetrics {...rest} token={data.rbtc} />
+    </MetricsCard>
   )
 }
