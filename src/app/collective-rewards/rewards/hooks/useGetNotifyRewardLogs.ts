@@ -2,6 +2,7 @@ import { useQuery } from '@tanstack/react-query'
 import { fetchNotifyRewardLogs } from '@/app/collective-rewards/actions'
 import { Address, getAddress, parseEventLogs } from 'viem'
 import { GaugeAbi } from '@/lib/abis/v2/GaugeAbi'
+import { AVERAGE_BLOCKTIME } from '@/lib/constants'
 
 export type NotifyRewardEventLog = ReturnType<typeof parseEventLogs<typeof GaugeAbi, true, 'NotifyReward'>>
 
@@ -20,16 +21,13 @@ export const useGetNotifyRewardLogs = (gauge?: Address) => {
 
       return events.reduce<NotifyRewardsPerToken>((acc, log) => {
         const rewardToken = getAddress(log.args.rewardToken_)
-        const existingRewardToken = acc[rewardToken] || []
-        existingRewardToken.push(log)
-
-        acc[rewardToken] = existingRewardToken
+        acc[rewardToken] = [...(acc[rewardToken] || []), log]
 
         return acc
       }, {})
     },
     queryKey: ['notifyRewardLogs'],
-    refetchInterval: 30_000,
+    refetchInterval: AVERAGE_BLOCKTIME,
     initialData: {},
   })
 

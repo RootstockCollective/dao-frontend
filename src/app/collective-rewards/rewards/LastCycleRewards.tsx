@@ -41,10 +41,9 @@ export const LastCycleRewards: FC<LastCycleRewardsProps> = ({
   const { data: cycle, isLoading: cycleLoading, error: cycleError } = useCycleContext()
   const { data: rewardsPerToken, isLoading: logsLoading, error: rewardsError } = useGetNotifyRewardLogs(gauge)
 
-  useHandleErrors([
-    { error: cycleError, title: 'Error loading cycle' },
-    { error: rewardsError, title: 'Error loading rewards' },
-  ])
+  const error = cycleError ?? rewardsError
+
+  useHandleErrors([{ error: error, title: 'Error loading last cycle rewards' }])
 
   const rifRewardsMetrics = useGetRewardMetrics(cycle, rewardsPerToken[rif.address], rif.symbol, currency)
   const rbtcRewardsMetrics = useGetRewardMetrics(cycle, rewardsPerToken[rbtc.address], rbtc.symbol, currency)

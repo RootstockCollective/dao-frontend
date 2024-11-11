@@ -6,10 +6,9 @@ import { MainContainer } from '@/components/MainContainer/MainContainer'
 import { Tabs, TabsContent, TabsList, TabsTrigger, TabTitle } from '@/components/Tabs'
 import { useAccount } from 'wagmi'
 import { withBuilderButton, useGetBuilderToGauge } from '@/app/collective-rewards/user'
-import { useAlertContext } from '@/app/providers'
-import { useEffect } from 'react'
 import { TxStatusMessage } from '@/components/TxStatusMessage'
 import { zeroAddress } from 'viem'
+import { useHandleErrors } from '@/app/collective-rewards/utils'
 
 type MyHoldingsProps = {
   showBuilderButton?: boolean
@@ -26,20 +25,10 @@ const MyHoldings = ({ showBuilderButton = false }: MyHoldingsProps) => (
 const TabsListWithButton = withBuilderButton(TabsList)
 
 export default function User() {
-  const { setMessage } = useAlertContext()
   const { address } = useAccount()
   const { data: gauge, error: gaugeError } = useGetBuilderToGauge(address!)
 
-  useEffect(() => {
-    if (gaugeError) {
-      setMessage({
-        severity: 'error',
-        title: 'Error loading gauge',
-        content: gaugeError.message,
-      })
-      console.error('🐛 gaugeError:', gaugeError)
-    }
-  }, [gaugeError, setMessage])
+  useHandleErrors([{ error: gaugeError, title: 'Error loading gauge' }])
 
   return (
     <MainContainer>

@@ -1,6 +1,7 @@
 import { CycleTimeKeeperAbi } from '@/lib/abis/v2/CycleTimeKeeperAbi'
 import { BackersManagerAddress } from '@/lib/contracts'
 import { useReadContract } from 'wagmi'
+import { AVERAGE_BLOCKTIME } from '@/lib/constants'
 
 export const useGetCycleStart = (timestamp: bigint) => {
   const { data, isLoading, error } = useReadContract({
@@ -9,7 +10,7 @@ export const useGetCycleStart = (timestamp: bigint) => {
     functionName: 'cycleStart',
     args: [timestamp],
     query: {
-      refetchInterval: 30_000,
+      refetchInterval: AVERAGE_BLOCKTIME,
     },
   })
 

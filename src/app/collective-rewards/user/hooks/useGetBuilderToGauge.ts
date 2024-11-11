@@ -2,6 +2,7 @@ import { BuilderRegistryAbi } from '@/lib/abis/v2/BuilderRegistryAbi'
 import { BackersManagerAddress } from '@/lib/contracts'
 import { Address } from 'viem'
 import { useReadContract } from 'wagmi'
+import { AVERAGE_BLOCKTIME } from '@/lib/constants'
 
 export const useGetBuilderToGauge = (builder: Address) => {
   return useReadContract({
@@ -10,7 +11,7 @@ export const useGetBuilderToGauge = (builder: Address) => {
     functionName: 'builderToGauge',
     args: [builder],
     query: {
-      refetchInterval: 30_000,
+      refetchInterval: AVERAGE_BLOCKTIME,
     },
   })
 }
