@@ -1,4 +1,4 @@
-import { FC } from 'react'
+import { FC, useEffect, useState } from 'react'
 import { Address } from 'viem'
 import { usePricesContext } from '@/shared/context/PricesContext'
 import {
@@ -7,24 +7,13 @@ import {
   useGetBuilderRewards,
   useClaimStateReporting,
   MetricsCardWithSpinner,
+  TokenMetricsCardRow,
+  MetricsCardTitle,
 } from '@/app/collective-rewards/rewards'
 import { formatBalanceToHuman } from '@/app/user/Balances/balanceUtils'
 import { Popover } from '@/components/Popover'
 import { useHandleErrors } from '@/app/collective-rewards/utils'
-
-type Token = {
-  symbol: string
-  address: Address
-}
-
-type ClaimableRewardsProps = {
-  builder: Address
-  gauge: Address
-  currency?: string
-  data: {
-    [token: string]: Token
-  }
-}
+import { Button } from '@/components/Button'
 
 const ClaimYourRewardsSvg = () => (
   <svg width="20" height="21" viewBox="0 0 20 21" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -38,87 +27,90 @@ const ClaimYourRewardsSvg = () => (
   </svg>
 )
 
-const getAction = (onClick: () => void, disabled: boolean) => (
-  <Popover
-    content={
-      <div className="text-[12px] font-bold mb-1">
-        <p data-testid="builderAddressTooltip">Claim your rewards</p>
-      </div>
-    }
-    size="small"
-    position="top"
-    trigger="hover"
-  >
-    <button onClick={onClick} disabled={disabled}>
-      <ClaimYourRewardsSvg />
-    </button>
-  </Popover>
-)
+type Token = {
+  symbol: string
+  address: Address
+}
 
-const useGetRewardMetrics = (
-  builder: Address,
-  gauge: Address,
-  tokenAddress: Address,
-  symbol: string,
-  currency: string,
-) => {
-  const { data: rewards, isLoading, error } = useGetBuilderRewards(tokenAddress, gauge)
+type RewardsTokenMetricsProps = {
+  builder: Address
+  gauge: Address
+  token: Token
+  currency?: string
+  setState: (state: { isLoading: boolean }) => void
+}
+
+const RewardsTokenMetrics: FC<RewardsTokenMetricsProps> = ({
+  builder,
+  gauge,
+  token: { address, symbol },
+  setState,
+  currency = 'USD',
+}) => {
   const { prices } = usePricesContext()
 
-  const price = prices[symbol]?.price ?? 0
-  const rewardsInHuman = Number(formatBalanceToHuman(rewards ?? 0n))
-  const rewardMetrics = formatMetrics(rewardsInHuman, price, symbol, currency)
+  const {
+    data: rewards,
+    isLoading: isLoadingRewards,
+    error: rewardsError,
+  } = useGetBuilderRewards(address, gauge)
+  useHandleErrors([{ error: rewardsError, title: 'Error loading rewards' }])
 
-  const { isClaimFunctionReady, claimRewards, ...claimTx } = useClaimBuilderRewards(builder, tokenAddress)
-  useClaimStateReporting({ ...claimTx })
+  const tokenPrice = prices[symbol]?.price ?? 0
 
-  const action = getAction(claimRewards, !isClaimFunctionReady)
+  const rewardMetrics = formatMetrics(
+    Number(formatBalanceToHuman(rewards ?? 0n)),
+    tokenPrice,
+    symbol,
+    currency,
+  )
 
-  return {
-    data: {
-      ...rewardMetrics,
-      action,
-    },
-    error,
-    isLoading,
+  const { isClaimFunctionReady, claimRewards, ...claimTx } = useClaimBuilderRewards(builder, address)
+
+  useClaimStateReporting({ ...claimTx, error: rewardsError ?? claimTx.error })
+
+  useEffect(() => {
+    setState({ isLoading: isLoadingRewards })
+  }, [isLoadingRewards, setState])
+
+  return (
+    <TokenMetricsCardRow amount={rewardMetrics.amount} fiatAmount={rewardMetrics.fiatAmount}>
+      <Popover
+        content={
+          <div className="text-[12px] font-bold mb-1">
+            <p data-testid="builderAddressTooltip">Claim your rewards</p>
+          </div>
+        }
+        size="small"
+        position="top"
+        trigger="hover"
+      >
+        <Button variant="borderless" onClick={claimRewards} disabled={!isClaimFunctionReady}>
+          <ClaimYourRewardsSvg />
+        </Button>
+      </Popover>
+    </TokenMetricsCardRow>
+  )
+}
+
+type ClaimableRewardsProps = {
+  builder: Address
+  gauge: Address
+  currency?: string
+  data: {
+    [token: string]: Token
   }
 }
 
-export const ClaimableRewards: FC<ClaimableRewardsProps> = ({
-  builder,
-  gauge,
-  data: { rif, rbtc },
-  currency = 'USD',
-}) => {
-  const {
-    data: rifRewardsMetrics,
-    isLoading: rifLoading,
-    error: rifError,
-  } = useGetRewardMetrics(builder, gauge, rif.address, rif.symbol, currency)
-  const {
-    data: rbtcRewardsMetrics,
-    isLoading: rbtcLoading,
-    error: rbtcError,
-  } = useGetRewardMetrics(builder, gauge, rbtc.address, rbtc.symbol, currency)
-
-  useHandleErrors([
-    { error: rifError, title: 'Error loading builder rif rewards' },
-    { error: rbtcError, title: 'Error loading builder rbtc rewards' },
-  ])
-
-  const isLoading = rifLoading || rbtcLoading
+export const ClaimableRewards: FC<ClaimableRewardsProps> = ({ data, ...rest }) => {
+  const [{ isLoading: isLoadingRif }, setRifState] = useState({ isLoading: false })
+  const [{ isLoading: isLoadingRbtc }, setRbtcState] = useState({ isLoading: false })
 
   return (
-    <div>
-      <MetricsCardWithSpinner
-        title="Claimable rewards"
-        data={{
-          rif: rifRewardsMetrics,
-          rbtc: rbtcRewardsMetrics,
-        }}
-        isLoading={isLoading}
-        borderless
-      />
-    </div>
+    <MetricsCardWithSpinner isLoading={isLoadingRif || isLoadingRbtc} borderless>
+      <MetricsCardTitle title="Claimable rewards" data-testid="ClaimableRewards" />
+      <RewardsTokenMetrics {...rest} token={data.rif} setState={() => setRifState} />
+      <RewardsTokenMetrics {...rest} token={data.rbtc} setState={() => setRbtcState} />
+    </MetricsCardWithSpinner>
   )
 }
