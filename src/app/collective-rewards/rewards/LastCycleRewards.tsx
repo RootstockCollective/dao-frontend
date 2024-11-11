@@ -22,6 +22,7 @@ type TokenRewardsProps = {
     symbol: string
     address: Address
   }
+  currency?: string
 }
 
 const TokenRewardsMetrics: FC<TokenRewardsProps> = ({
