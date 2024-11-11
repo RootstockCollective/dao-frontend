@@ -7,7 +7,6 @@ import { Typography } from '@/components/Typography'
 type MetricsCardRow = {
   amount: string
   fiatAmount?: string
-  action?: JSX.Element
   children?: ReactNode
 }
 

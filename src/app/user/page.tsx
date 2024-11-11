@@ -26,9 +26,9 @@ const TabsListWithButton = withBuilderButton(TabsList)
 
 export default function User() {
   const { address } = useAccount()
-  const { data: gauge, error: gaugeError } = useGetBuilderToGauge(address!)
+  const { data: gauge, error } = useGetBuilderToGauge(address!)
 
-  useHandleErrors([{ error: gaugeError, title: 'Error loading gauge' }])
+  useHandleErrors({ error, title: 'Error loading gauge' })
 
   return (
     <MainContainer>

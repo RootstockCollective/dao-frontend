@@ -1,19 +1,18 @@
 import { useEffect } from 'react'
 import { useAlertContext } from '@/app/providers'
 
-export const useHandleErrors = (errors: { error: Error | null; title: string }[]) => {
+type ErrorHandler = (params: { error: Error | null; title: string }) => void
+export const useHandleErrors: ErrorHandler = ({ error, title }) => {
   const { setMessage } = useAlertContext()
 
   useEffect(() => {
-    errors.forEach(({ error, title }) => {
-      if (error) {
-        setMessage({
-          severity: 'error',
-          title,
-          content: error.message,
-        })
-        console.error(`🐛 ${title}:`, error)
-      }
-    })
-  }, [errors, setMessage])
+    if (error) {
+      setMessage({
+        severity: 'error',
+        title,
+        content: error.message,
+      })
+      console.error(`🐛 ${title}:`, error)
+    }
+  }, [error, title, setMessage])
 }
