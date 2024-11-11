@@ -8,10 +8,10 @@ export type NotifyRewardEventLog = ReturnType<typeof parseEventLogs<typeof Gauge
 
 export type NotifyRewardsPerToken = Record<Address, NotifyRewardEventLog>
 
-export const useGetNotifyRewardLogs = (gauge?: Address) => {
+export const useGetNotifyRewardLogs = (gauge: Address) => {
   const { data, error, isLoading } = useQuery({
     queryFn: async () => {
-      const { data } = await fetchNotifyRewardLogs(gauge!)
+      const { data } = await fetchNotifyRewardLogs(gauge)
 
       const events = parseEventLogs({
         abi: GaugeAbi,
