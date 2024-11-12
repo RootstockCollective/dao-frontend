@@ -3,9 +3,10 @@ import { Address, getAddress } from 'viem'
 import {
   RewardsSection,
   RewardsSectionHeader,
-  useClaimAllRewards,
+  useClaimBuilderRewards,
   useClaimStateReporting,
   LastCycleRewards,
+  ClaimableRewards,
 } from '@/app/collective-rewards/rewards'
 import { CycleContextProvider } from '@/app/collective-rewards/metrics'
 import { PricesContextProvider } from '@/shared/context/PricesContext'
@@ -16,7 +17,7 @@ import { Button } from '@/components/Button'
 import { Paragraph } from '@/components/Typography'
 
 export const Rewards: FC<{ builder: Address; gauge: Address }> = ({ builder, gauge }) => {
-  const { isClaimFunctionReady, claimAllRewards, ...claimTx } = useClaimAllRewards(builder)
+  const { isClaimFunctionReady, claimRewards, ...claimTx } = useClaimBuilderRewards(builder)
 
   useClaimStateReporting({ ...claimTx })
 
@@ -44,7 +45,7 @@ export const Rewards: FC<{ builder: Address; gauge: Address }> = ({ builder, gau
         <div className="grid grid-cols-5 gap-[16px]">
           <CycleContextProvider>
             <PricesContextProvider>
-              <div>Claimable Rewards</div>
+              <ClaimableRewards builder={builder} gauge={gauge} data={data} />
               <LastCycleRewards gauge={gauge} data={data} />
               <div>Estimated Rewards</div>
               <div>All time rewards</div>
@@ -62,7 +63,7 @@ export const Rewards: FC<{ builder: Address; gauge: Address }> = ({ builder, gau
                 position="bottom"
                 className="z-[100]"
               >
-                <Button onClick={claimAllRewards} disabled={!isClaimFunctionReady} variant="primary">
+                <Button onClick={() => claimRewards()} disabled={!isClaimFunctionReady} variant="primary">
                   Claim all
                 </Button>
               </Popover>
