@@ -32,13 +32,16 @@ export const DelegationSection = () => {
     setAction(action)
   }
 
-  const { isSuccess } = useWaitForTransactionReceipt({ hash })
+  const { isSuccess, isError } = useWaitForTransactionReceipt({ hash })
 
   useEffect(() => {
     if (isSuccess) {
       setGlobalMessage(TX_MESSAGES[action].success)
     }
-  }, [action, isSuccess, setGlobalMessage])
+    if (isError) {
+      setGlobalMessage(TX_MESSAGES[action].error)
+    }
+  }, [action, isError, isSuccess, setGlobalMessage])
 
   const isValidDelegatee = delegateeAddress !== address && delegateeAddress !== ZeroAddress
   const delegatee = {

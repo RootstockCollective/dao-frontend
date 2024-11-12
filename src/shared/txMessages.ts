@@ -122,7 +122,7 @@ export const TX_MESSAGES = {
       severity: 'success',
     },
     error: {
-      title: 'Error on execution',
+      title: 'Error on delegation',
       content:
         'An unexpected error occurred while trying to execute the delegation. Please try again later. If the issue persists, contact support for assistance.',
       severity: 'error',
@@ -140,7 +140,7 @@ export const TX_MESSAGES = {
       severity: 'success',
     },
     error: {
-      title: 'Error on execution',
+      title: 'Error on reclaiming',
       content:
         'An unexpected error occurred while trying to execute the reclaiming. Please try again later. If the issue persists, contact support for assistance.',
       severity: 'error',
