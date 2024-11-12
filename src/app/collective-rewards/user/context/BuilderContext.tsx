@@ -1,6 +1,10 @@
 import { createContext, FC, ReactNode, useContext, useMemo } from 'react'
 import { Address } from 'viem'
-import { BuilderStatus } from '@/app/collective-rewards/types'
+import {
+  BuilderStatus,
+  BuilderStatusProposalCreatedMVP,
+  BuilderStatusShown,
+} from '@/app/collective-rewards/types'
 import { useGetProposalsState } from '@/app/collective-rewards/whitelist/hooks/useGetProposalsState'
 import { useGetBuilders } from '@/app/collective-rewards/user'
 import { getMostAdvancedProposal } from '@/app/collective-rewards/utils/getMostAdvancedProposal'
@@ -10,7 +14,7 @@ import { withPricesContextProvider } from '@/shared/context/PricesContext'
 
 export type BuilderProposal = {
   builderName: string
-  status: BuilderStatus
+  status: BuilderStatusShown
   address: Address
   proposalId: bigint
   proposalName: string
@@ -37,6 +41,11 @@ export const BuilderContext = createContext<BuilderContextValue>({
 interface BuilderProviderProps {
   children: ReactNode
 }
+const getBuilderStatus = (status: BuilderStatus) => {
+  // we show all the v1 builders with "In progress" because, they're filtered out later on, if the proposal is executed
+  if (BuilderStatusProposalCreatedMVP === status) return 'In progress'
+  return status
+}
 
 export const BuilderContextProvider: FC<BuilderProviderProps> = ({ children }) => {
   const { data: builders, isLoading: buildersLoading, error: buildersError } = useGetBuilders()
@@ -62,7 +71,7 @@ export const BuilderContextProvider: FC<BuilderProviderProps> = ({ children }) =
         const { proposalName, builderName } = splitCombinedName(name)
         acc[address] = {
           builderName,
-          status,
+          status: getBuilderStatus(status),
           address,
           proposalId,
           proposalName,

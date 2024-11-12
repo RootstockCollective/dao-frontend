@@ -4,6 +4,7 @@ import { useGetTokenProjectedReward, useGetRewardDistributedLogs } from '@/app/c
 import { Address, isAddressEqual } from 'viem'
 import { getLastCycleRewards } from '@/app/collective-rewards/utils/getLastCycleRewards'
 import { useBuilderContext } from '@/app/collective-rewards/user'
+import { BuilderStatusActive } from '@/app/collective-rewards/types'
 
 export const useGetBuildersRewards = (rewardToken: Address, rewardTokenSymbol?: string, currency = 'USD') => {
   const { data: builders, isLoading: buildersLoading, error: buildersError } = useBuilderContext()
@@ -24,7 +25,7 @@ export const useGetBuildersRewards = (rewardToken: Address, rewardTokenSymbol?: 
 
   const isLoading = buildersLoading || logsLoading || tokenLoading
   const error = buildersError ?? logsError ?? tokenError
-  const whitelistedBuilders = builders.filter(builder => builder.status === 'Whitelisted')
+  const whitelistedBuilders = builders.filter(builder => builder.status === BuilderStatusActive)
 
   const { prices } = usePricesContext()
 

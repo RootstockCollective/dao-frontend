@@ -2,9 +2,17 @@ import { CreateBuilderProposalEventLog } from '@/app/proposals/hooks/useFetchLat
 import { ProposalState } from '@/shared/types'
 import { Address } from 'viem'
 
-export const builderStatusOptions = ['Whitelisted', 'In progress'] as const
+export const BuilderStatusActive = 'Active'
+export const BuilderStatusInProgress = 'In progress'
+export const BuilderStatusProposalCreatedMVP = 'In progress - mvp'
+export const builderStatusOptions = [
+  BuilderStatusActive,
+  BuilderStatusInProgress,
+  BuilderStatusProposalCreatedMVP,
+] as const
 
 export type BuilderStatus = (typeof builderStatusOptions)[number]
+export type BuilderStatusShown = Exclude<BuilderInfo['status'], 'In progress - mvp'>
 
 export type BuilderInfo = {
   address: Address

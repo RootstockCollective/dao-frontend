@@ -1,5 +1,5 @@
 import { crStatusColorClasses, BuilderProposal } from '@/app/collective-rewards/user'
-import { AddressOrAlias, AddressOrAliasWithCopy } from '@/components/Address'
+import { AddressOrAliasWithCopy } from '@/components/Address'
 import { Badge } from '@/components/Badge'
 import { Popover } from '@/components/Popover'
 import { Paragraph, Span, Typography } from '@/components/Typography'
@@ -8,8 +8,9 @@ import { FC, ReactNode } from 'react'
 import { Jdenticon } from '@/components/Header/Jdenticon'
 import { shortAddress } from '@/lib/utils'
 import { isAddress, Address } from 'viem'
+import { BuilderStatusActive, BuilderStatusShown } from '@/app/collective-rewards/types'
 
-type WhitelistGridItemProps = BuilderProposal
+type WhitelistGridItemProps = BuilderProposal & { status: BuilderStatusShown }
 
 const Card = ({ header, body }: { header: ReactNode; body: ReactNode }) => {
   return (
@@ -32,7 +33,7 @@ export const WhitelistGridItem: FC<WhitelistGridItemProps> = ({
   const router = useRouter()
   const shortenAddress = shortAddress(address as Address)
   const Header = (
-    <div className="flex flex-row w-full items-center gap-x-3">
+    <div className="flex flex-row w-full items-center gap-x-3 min-h-11">
       <Jdenticon className="rounded-md bg-white" value={address} size="32" />
       <div className="flex-1 min-w-0">
         {/* TODO: To be reviewed, it's weird that we show the address in the tooltip
@@ -57,7 +58,9 @@ export const WhitelistGridItem: FC<WhitelistGridItemProps> = ({
             />
           </Typography>
         </Popover>
-        <Paragraph className="text-sm font-light"> Joined {joiningDate}</Paragraph>
+        {status === BuilderStatusActive && (
+          <Paragraph className="text-sm font-light"> Joined {joiningDate}</Paragraph>
+        )}
       </div>
       <div className="flex justify-center items-center">
         <Badge content={status} className={`${crStatusColorClasses[status]} py-1 px-2`} />

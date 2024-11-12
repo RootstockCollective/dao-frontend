@@ -1,8 +1,19 @@
-import { useGetIsWhitelistedBuilder, useGetWhitelistedBuilders } from '@/app/collective-rewards/user/hooks'
-import { BuilderInfo } from '@/app/collective-rewards/types'
+import {
+  BuilderInfo,
+  BuilderStatus,
+  BuilderStatusActive,
+  BuilderStatusInProgress,
+  BuilderStatusProposalCreatedMVP,
+} from '@/app/collective-rewards/types'
 import { useFetchCreateBuilderProposals } from '@/app/proposals/hooks/useFetchLatestProposals'
+import { BuilderRegistryAbi } from '@/lib/abis/v2/BuilderRegistryAbi'
+import { AVERAGE_BLOCKTIME } from '@/lib/constants'
+import { BackersManagerAddress } from '@/lib/contracts'
 import { useMemo } from 'react'
-import { Address, getAddress, isAddressEqual } from 'viem'
+import { Address, getAddress } from 'viem'
+import { useReadContracts } from 'wagmi'
+import { useGetGaugesArray } from '@/app/collective-rewards/user/hooks/useGetGaugesArray'
+import { BuilderStateStruct } from '@/app/collective-rewards/utils/getBuilderGauge'
 
 export type BuilderLoader = {
   data?: BuilderInfo
@@ -14,67 +25,110 @@ export type BuildersLoader = Omit<BuilderLoader, 'data'> & {
   data: BuilderInfo[]
 }
 
-export const useGetBuilderByAddress = (address: Address): BuilderLoader => {
-  const {
-    data: buildersProposalsMap,
-    isLoading: builderProposalsMapLoading,
-    error: builderProposalsMapError,
-  } = useFetchCreateBuilderProposals()
+type BuilderStatusMap = Record<Address, BuilderStatus>
 
-  const {
-    data: isWhitelistedBuilder,
-    isLoading: isWhitelistedBuilderLoading,
-    error: isWhitelistedBuilderError,
-  } = useGetIsWhitelistedBuilder(address)
+const EXCLUDED_BUILDER_STATUS = 'X'
+type BuilderStatusWithExcluded = BuilderStatus | 'X'
 
-  const data = useMemo(() => {
-    if (buildersProposalsMap) {
-      const proposals = buildersProposalsMap?.[address] ?? {}
+const getCombinedBuilderStatus = (builderState: BuilderStateStruct): BuilderStatusWithExcluded => {
+  // Destructure the relevant elements from builderState
+  // TODO: we may need to review the logic
+  const [activated, kycApproved, communityApproved, , revoked] = builderState
 
-      return {
-        address,
-        status: isWhitelistedBuilder ? 'Whitelisted' : 'In progress',
-        proposals: Object.values(proposals),
-      } as BuilderInfo
-    }
-  }, [buildersProposalsMap, address, isWhitelistedBuilder])
-
-  const isLoading = builderProposalsMapLoading || isWhitelistedBuilderLoading
-  const error = builderProposalsMapError ?? isWhitelistedBuilderError
-
-  return {
-    data,
-    isLoading,
-    error,
+  if (revoked) {
+    return BuilderStatusActive
   }
+
+  if (activated && kycApproved && communityApproved) {
+    return BuilderStatusActive
+  }
+
+  if (kycApproved || communityApproved) {
+    return BuilderStatusInProgress
+  }
+
+  // Default case: used to filter out builders
+  return EXCLUDED_BUILDER_STATUS
 }
 
 export const useGetBuilders = (): BuildersLoader => {
+  /*
+   * get Gauges
+   * for each Gauge
+   *    get Builder from Gauge
+   *    get Builder state
+   *    ignore the builder if paused or revoked (to be confirmed)
+   */
+  // get the gauges
+  const { data: gauges, isLoading: gaugesLoading, error: gaugesError } = useGetGaugesArray('active')
+  // get the builders for each gauge
+  const gaugeToBuilderCalls = gauges?.map(
+    gauge =>
+      ({
+        address: BackersManagerAddress,
+        abi: BuilderRegistryAbi,
+        functionName: 'gaugeToBuilder',
+        args: [gauge],
+      }) as const,
+  )
+  const {
+    data: buildersResult,
+    isLoading: buildersLoading,
+    error: buildersError,
+  } = useReadContracts<Address[]>({
+    contracts: gaugeToBuilderCalls,
+    query: {
+      refetchInterval: AVERAGE_BLOCKTIME,
+    },
+  })
+  const builders = buildersResult?.map(builder => builder.result) as Address[]
+
+  // get the builder state for each builder
+  const builderStatesCalls = builders?.map(
+    builder =>
+      ({
+        address: BackersManagerAddress,
+        abi: BuilderRegistryAbi,
+        functionName: 'builderState',
+        args: [builder],
+      }) as const,
+  )
+  const {
+    data: builderStatesResult,
+    isLoading: builderStatesLoading,
+    error: builderStatesError,
+  } = useReadContracts({ contracts: builderStatesCalls, query: { refetchInterval: AVERAGE_BLOCKTIME } })
+  const builderStates = builderStatesResult?.map(({ result }) => result as BuilderStateStruct)
+
+  const builderStatusMap = builders?.reduce<BuilderStatusMap>((acc, builder, index) => {
+    const builderState = (builderStates?.[index] ?? []) as BuilderStateStruct
+    const status = getCombinedBuilderStatus(builderState)
+    if (status !== EXCLUDED_BUILDER_STATUS) {
+      acc[builder] = status as BuilderStatus
+    }
+
+    return acc
+  }, {})
+
   const {
     data: buildersProposalsMap,
     isLoading: builderProposalsMapLoading,
     error: builderProposalsMapError,
   } = useFetchCreateBuilderProposals()
-  const {
-    data: whitelistedBuilders,
-    isLoading: whitelistedBuildersLoading,
-    error: whitelistedBuildersError,
-  } = useGetWhitelistedBuilders()
 
   const data = useMemo(() => {
     return Object.entries(buildersProposalsMap ?? {}).map<BuilderInfo>(([builder, proposals]) => ({
       address: getAddress(builder),
-      status: whitelistedBuilders?.some(whitelistedBuilder =>
-        isAddressEqual(whitelistedBuilder, getAddress(builder)),
-      )
-        ? 'Whitelisted'
-        : 'In progress',
+      status:
+        builderStatusMap && builder in builderStatusMap
+          ? builderStatusMap[builder as Address] // V2
+          : BuilderStatusProposalCreatedMVP, // MVP
       proposals: Object.values(proposals),
     }))
-  }, [whitelistedBuilders, buildersProposalsMap])
+  }, [builderStatusMap, buildersProposalsMap])
 
-  const isLoading = builderProposalsMapLoading || whitelistedBuildersLoading
-  const error = builderProposalsMapError ?? whitelistedBuildersError
+  const isLoading = builderProposalsMapLoading || builderStatesLoading || buildersLoading || gaugesLoading
+  const error = builderProposalsMapError ?? builderStatesError ?? buildersError ?? gaugesError
 
   return {
     data,

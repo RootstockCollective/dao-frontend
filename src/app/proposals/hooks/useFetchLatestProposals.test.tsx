@@ -2,29 +2,29 @@ import {
   ProposalQueryResult,
   useFetchCreateBuilderProposals,
 } from '@/app/proposals/hooks/useFetchLatestProposals'
+import { ADDRESS_PADDING_LENGTH, RELAY_PARAMETER_PADDING_LENGTH } from '@/app/proposals/shared/utils'
 import { fetchProposalsCreatedCached } from '@/app/user/Balances/actions'
+import { GovernorAbi } from '@/lib/abis/Governor'
 import { SimplifiedRewardDistributorAbi } from '@/lib/abis/SimplifiedRewardDistributorAbi'
-import { expect, vi, Mock, describe, beforeEach, it } from 'vitest'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { renderHook, waitFor } from '@testing-library/react'
 import { Interface } from 'ethers/abi'
 import { parseEventLogs } from 'viem'
-import { ADDRESS_PADDING_LENGTH, RELAY_PARAMETER_PADDING_LENGTH } from '@/app/proposals/shared/utils'
-import { GovernorAbi } from '@/lib/abis/Governor'
+import { Mock, beforeEach, describe, expect, it, vi } from 'vitest'
 
 vi.mock('@/app/user/Balances/actions', () => ({
   fetchProposalsCreatedCached: vi.fn(),
-}))
-
-vi.mock('viem', () => ({
-  parseEventLogs: vi.fn(),
-  getAddress: vi.fn().mockImplementation((address: string) => address),
 }))
 
 const CR_WHITELIST_FUNCTION = 'whitelistBuilder' // TODO: refactor
 const CR_WHITELIST_FUNCTION_SELECTOR = new Interface(SimplifiedRewardDistributorAbi).getFunction(
   CR_WHITELIST_FUNCTION,
 )?.selector
+
+vi.mock('viem', () => ({
+  parseEventLogs: vi.fn(),
+  getAddress: vi.fn().mockImplementation((address: string) => address),
+}))
 
 const builder_1 = '0xCD2a3d9F938E13CD947Ec05AbC7FE734Df8DD826'
 const builder_2 = '0x45418b3cc0CF56847A8A3C3004961c572E259142'

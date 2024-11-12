@@ -1,8 +1,14 @@
+import {
+  BuilderInfo,
+  BuilderStatus,
+  BuilderStatusActive,
+  ProposalsToState,
+} from '@/app/collective-rewards/types'
 import { ProposalState } from '@/shared/types'
-import { BuilderInfo, ProposalsToState } from '@/app/collective-rewards/types'
 
 const inactiveProposalsStates = [ProposalState.Canceled, ProposalState.Defeated, ProposalState.Expired]
 const isActive = (state: ProposalState) => !inactiveProposalsStates.includes(state)
+const isBuilderActive = (builderStatus: BuilderStatus) => BuilderStatusActive === builderStatus
 
 export const getMostAdvancedProposal = (
   { status, proposals }: BuilderInfo,
@@ -14,7 +20,7 @@ export const getMostAdvancedProposal = (
       const state = proposalsStateMap[proposalId.toString()]
 
       const isExecuted = ProposalState.Executed === state
-      if (status === 'Whitelisted') {
+      if (isBuilderActive(status)) {
         return isExecuted
       }
 

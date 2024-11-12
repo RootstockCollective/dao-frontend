@@ -1,9 +1,11 @@
 import { useAlertContext } from '@/app/providers/AlertProvider'
 import { LoadingSpinner } from '@/components/LoadingSpinner'
 import { HeaderTitle } from '@/components/Typography'
-import { useEffect } from 'react'
+import React, { useEffect } from 'react'
 import { WhitelistGrid, WhitelistSearch } from './components'
 import { useWhitelistContext } from './context'
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/Collapsible'
+import { withSpinner } from '@/components/LoadingSpinner/withLoadingSpinner'
 
 export const WhitelistSection = () => {
   const { builders, isLoading, error: whitelistError } = useWhitelistContext()
@@ -21,13 +23,18 @@ export const WhitelistSection = () => {
   }, [whitelistError, setErrorMessage])
 
   return (
-    <div>
-      <HeaderTitle>Whitelist</HeaderTitle>
-      <WhitelistSearch />
+    <>
+      <Collapsible defaultOpen>
+        <CollapsibleTrigger>
+          <HeaderTitle>Activated Builders</HeaderTitle>
+        </CollapsibleTrigger>
 
-      {/* TODO: We should show an empty table (not considered in the design yet) on error */}
-      {isLoading && <LoadingSpinner />}
-      {!isLoading && <WhitelistGrid items={builders} />}
-    </div>
+        <CollapsibleContent>
+          <WhitelistSearch />
+
+          {withSpinner(WhitelistGrid)({ isLoading, items: builders })}
+        </CollapsibleContent>
+      </Collapsible>
+    </>
   )
 }

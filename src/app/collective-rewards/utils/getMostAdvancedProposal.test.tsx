@@ -9,7 +9,7 @@ describe('getValidProposal', () => {
       const proposal = getMostAdvancedProposal(
         {
           address: '0x01',
-          status: 'Whitelisted',
+          status: 'Active',
           proposals: [
             {
               timeStamp: 1,
@@ -39,7 +39,7 @@ describe('getValidProposal', () => {
       const proposal = getMostAdvancedProposal(
         {
           address: '0x01',
-          status: 'Whitelisted',
+          status: 'Active',
           proposals: [
             {
               timeStamp: 1,

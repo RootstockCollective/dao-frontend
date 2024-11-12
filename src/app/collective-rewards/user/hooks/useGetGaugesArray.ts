@@ -23,7 +23,7 @@ export const useGetGaugesArray = (type: GaugeType) => {
     error: gaugesLengthError,
   } = useGetGaugesLength(type)
 
-  const length = gaugesLength ? Number(gaugesLength) : 0
+  const length = Number(gaugesLength) ?? 0
 
   const contractCalls = Array.from({ length }, (_, index) => {
     return {
