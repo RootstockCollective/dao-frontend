@@ -6,6 +6,7 @@ import { CreateBuilderProposalEventLog } from '@/app/proposals/hooks/useFetchLat
 import { useMemo } from 'react'
 import { ProposalState } from '@/shared/types'
 import { ProposalsToState } from '@/app/collective-rewards/types'
+import { AVERAGE_BLOCKTIME } from '@/lib/constants'
 
 export const useGetProposalsState = (proposals: CreateBuilderProposalEventLog[]) => {
   const contractCalls = proposals.map(({ args: { proposalId } }) => {
@@ -24,7 +25,7 @@ export const useGetProposalsState = (proposals: CreateBuilderProposalEventLog[])
   } = useReadContracts<ProposalState[]>({
     contracts: contractCalls,
     query: {
-      refetchInterval: 30_000,
+      refetchInterval: AVERAGE_BLOCKTIME,
     },
   })
 

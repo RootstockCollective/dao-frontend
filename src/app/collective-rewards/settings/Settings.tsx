@@ -1,3 +1,5 @@
+'use client'
+
 import { useRouter, useSearchParams } from 'next/navigation'
 import { FC, ReactNode } from 'react'
 import { BuilderSettings } from './builder/BuilderSettings'

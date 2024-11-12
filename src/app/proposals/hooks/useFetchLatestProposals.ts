@@ -2,16 +2,18 @@ import { fetchProposalsCreatedCached } from '@/app/user/Balances/actions'
 import { GovernorAbi } from '@/lib/abis/Governor'
 import { SimplifiedRewardDistributorAbi } from '@/lib/abis/SimplifiedRewardDistributorAbi'
 import { useQuery, UseQueryResult } from '@tanstack/react-query'
-import { Interface } from 'ethers'
+import { Interface, InterfaceAbi } from 'ethers'
 import { useMemo } from 'react'
 import { getAddress, parseEventLogs } from 'viem'
 import { ADDRESS_PADDING_LENGTH, RELAY_PARAMETER_PADDING_LENGTH } from '@/app/proposals/shared/utils'
+import { BuilderRegistryAbi } from '@/lib/abis/v2/BuilderRegistryAbi'
+import { AVERAGE_BLOCKTIME } from '@/lib/constants'
 
 const useFetchLatestProposals = () => {
   return useQuery({
     queryFn: fetchProposalsCreatedCached,
     queryKey: ['proposalsCreated'],
-    refetchInterval: 30_000,
+    refetchInterval: AVERAGE_BLOCKTIME,
   })
 }
 
@@ -43,19 +45,29 @@ export const useFetchAllProposals = () => {
   return { latestProposals }
 }
 
-const RELAY_FUNCTION = 'relay'
-const RELAY_FUNCTION_SELECTOR = new Interface(GovernorAbi).getFunction(RELAY_FUNCTION)?.selector
-if (!RELAY_FUNCTION_SELECTOR) {
-  throw new Error(`Function ${RELAY_FUNCTION} not found in GovernorAbi.`)
+type FunctionSelectorArgs = {
+  functionName: string
+  abi: InterfaceAbi
 }
 
-const CR_WHITELIST_FUNCTION = 'whitelistBuilder' // TODO: refactor
-const CR_WHITELIST_FUNCTION_SELECTOR = new Interface(SimplifiedRewardDistributorAbi).getFunction(
-  CR_WHITELIST_FUNCTION,
-)?.selector
-if (!CR_WHITELIST_FUNCTION_SELECTOR) {
-  throw new Error(`Function ${CR_WHITELIST_FUNCTION} not found in SimplifiedRewardDistributorAbi.`)
+const toFunctionSelector = ({ functionName, abi }: FunctionSelectorArgs) => {
+  const selector = new Interface(abi).getFunction(functionName)?.selector
+  if (!selector) {
+    throw new Error(`Function ${functionName} not found in abi.`)
+  }
+  return selector
 }
+
+const RELAY_FUNCTION_SELECTOR = toFunctionSelector({ abi: GovernorAbi, functionName: 'relay' })
+const CR_WHITELIST_FUNCTION_SELECTOR_MVP = toFunctionSelector({
+  abi: BuilderRegistryAbi,
+  functionName: 'whitelistBuilder',
+})
+
+const CR_WHITELIST_FUNCTION_SELECTOR_V2 = toFunctionSelector({
+  abi: SimplifiedRewardDistributorAbi,
+  functionName: 'whitelistBuilder',
+})
 
 type ElementType<T> = T extends (infer U)[] ? U : never
 
@@ -99,14 +111,19 @@ export const useFetchCreateBuilderProposals = (): ProposalQueryResult<ProposalsP
         calldatas.find(calldata => calldata.startsWith(RELAY_FUNCTION_SELECTOR)),
       )
     const crProposalMap = sortedAndRelayFilteredEvents.reduce<ProposalsPerBuilder>((acc, event) => {
-      const crWhitelistFunctionHash = CR_WHITELIST_FUNCTION_SELECTOR.slice(2)
+      const crWhitelistFunctionHashMVP = CR_WHITELIST_FUNCTION_SELECTOR_MVP.slice(2)
+      const crWhitelistFunctionHashV2 = CR_WHITELIST_FUNCTION_SELECTOR_V2.slice(2)
+      // both MVP and V2 have the same length
+      const whitelistFnLength = crWhitelistFunctionHashV2.length
       const relayPadding = RELAY_FUNCTION_SELECTOR.length + RELAY_PARAMETER_PADDING_LENGTH
-      const crEventCalldatas = event.args.calldatas.find(calldata =>
-        calldata.startsWith(crWhitelistFunctionHash, relayPadding),
+      const crEventCalldatas = event.args.calldatas.find(
+        calldata =>
+          calldata.startsWith(crWhitelistFunctionHashMVP, relayPadding) ||
+          calldata.startsWith(crWhitelistFunctionHashV2, relayPadding),
       )
 
       if (crEventCalldatas) {
-        const addressStart = relayPadding + crWhitelistFunctionHash.length + ADDRESS_PADDING_LENGTH
+        const addressStart = relayPadding + whitelistFnLength + ADDRESS_PADDING_LENGTH
         const addressEnd = addressStart + 40
         const addressSlice = `0x${crEventCalldatas.slice(addressStart, addressEnd)}`
         let builder

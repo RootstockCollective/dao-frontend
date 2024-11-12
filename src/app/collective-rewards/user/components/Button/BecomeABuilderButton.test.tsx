@@ -53,7 +53,6 @@ describe('BecomeABuilderButton', () => {
   const setAlertMessageSpy = vi.fn()
 
   const expectedLoadingDataError = new Error('Error while loading data, please try again.')
-  const expectedLoadingBuilderError = new Error('Error loading builder proposal events')
 
   beforeEach(() => {
     vi.mocked(useGetBuilders).mockImplementation(() => {
@@ -87,7 +86,7 @@ describe('BecomeABuilderButton', () => {
   })
 
   test('should render if builder is whitelisted', async () => {
-    builderData.status = 'Whitelisted'
+    builderData.status = 'Active'
     vi.mocked(useGetProposalsState).mockReturnValue({
       data: {
         [proposalId.toString()]: ProposalState.Executed,

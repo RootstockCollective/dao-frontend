@@ -1,4 +1,4 @@
-import { BuilderInfo } from '@/app/collective-rewards/types'
+import { BuilderInfo, BuilderStatusShown } from '@/app/collective-rewards/types'
 import { BuilderContextProvider, useBuilderContext } from '@/app/collective-rewards/user'
 import { useAlertContext } from '@/app/providers/AlertProvider'
 import { useModal } from '@/app/user/Balances/hooks/useModal'
@@ -25,10 +25,10 @@ const BuilderRegistrationButton = () => {
 }
 
 export const crStatusColorClasses: Record<
-  BuilderInfo['status'],
+  BuilderStatusShown,
   HtmlHTMLAttributes<HTMLSpanElement>['className']
 > = {
-  Whitelisted: 'bg-[#DBFEE5] text-secondary',
+  Active: 'bg-[#DBFEE5] text-secondary',
   'In progress': 'bg-[#4B5CF0] color-text-primary',
 } as const
 
@@ -44,9 +44,9 @@ const StatusBadge: FC<StatusBadgeProps> = ({ builderStatus }) => {
 
   return {
     'In progress': InProgressComponent,
-    Whitelisted: WhitelistedComponent,
+    Active: WhitelistedComponent,
     undefined: BuilderRegistrationButton,
-  }[builderStatus as BuilderInfo['status']]
+  }[builderStatus as BuilderStatusShown]
 }
 
 export const BecomeABuilderHandler = ({ address }: { address: Address }) => {
