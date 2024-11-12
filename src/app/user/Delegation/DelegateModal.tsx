@@ -59,7 +59,7 @@ export const DelegateModal = ({ onClose, onDelegateTxStarted }: DelegateModalPro
         <Paragraph className="mb-[16px]">
           This action lets you delegate all of your voting power to the selected address.
           <br />
-          You can easily change or remove this delegation if needed
+          You can easily change or remove this delegation if needed.
         </Paragraph>
         {/* Input Container */}
         <div className="mb-14">

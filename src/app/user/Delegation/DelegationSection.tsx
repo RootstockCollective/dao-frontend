@@ -30,24 +30,19 @@ export const DelegationSection = () => {
   const { isSuccess } = useWaitForTransactionReceipt({ hash })
 
   useEffect(() => {
-    console.log(24, { isSuccess })
     if (isSuccess) {
       setGlobalMessage(TX_MESSAGES.delegation.success)
     }
   }, [isSuccess, setGlobalMessage])
-  
-  if (!delegateeAddress || delegateeAddress === address) {
-    return null
-  }
 
   const delegatee = {
-    'Voting Power Delegated': <HolderColumn address={delegateeAddress} />,
+    'Voting Power Delegated': <HolderColumn address={delegateeAddress || ''} />,
     Amount: <RenderTotalBalance symbol="stRIF" />,
   }
   return (
     <>
       {/* Header Components*/}
-      <div className="flex flex-row justify-between">
+      <div className="flex flex-row justify-between mb-6">
         <HeaderTitle>DELEGATION</HeaderTitle>
         <Button onClick={() => setIsDelegateModalOpened(true)}>Delegate</Button>
       </div>
