@@ -1,5 +1,13 @@
+'use client'
 import { HolderColumn } from '@/app/communities/HolderColumn'
 import { Table } from '@/components/Table'
+import { Button } from '@/components/Button'
+import { DelegateModal } from '@/app/user/Delegation/DelegateModal'
+import { useEffect, useState } from 'react'
+import { useWaitForTransactionReceipt } from 'wagmi'
+import { Hash } from 'viem'
+import { useAlertContext } from '@/app/providers'
+import { TX_MESSAGES } from '@/shared/txMessages'
 import { HeaderTitle } from '@/components/Typography'
 import { useAccount } from 'wagmi'
 import { RenderTotalBalance } from '../Balances/RenderTotalBalance'
@@ -10,6 +18,24 @@ export const DelegationSection = () => {
   const { address } = useAccount()
   const { delegateeAddress } = useGetDelegates(address)
 
+  const [isDelegateModalOpened, setIsDelegateModalOpened] = useState(false)
+  const [hash, setHash] = useState<Hash | undefined>(undefined)
+
+  const { setMessage: setGlobalMessage } = useAlertContext()
+
+  const onDelegateTxStarted = (hash: string) => {
+    setHash(hash as Hash)
+  }
+
+  const { isSuccess } = useWaitForTransactionReceipt({ hash })
+
+  useEffect(() => {
+    console.log(24, { isSuccess })
+    if (isSuccess) {
+      setGlobalMessage(TX_MESSAGES.delegation.success)
+    }
+  }, [isSuccess, setGlobalMessage])
+  
   if (!delegateeAddress || delegateeAddress === address) {
     return null
   }
@@ -20,10 +46,20 @@ export const DelegationSection = () => {
   }
   return (
     <>
-      <HeaderTitle className="mb-6">Delegation</HeaderTitle>
+      {/* Header Components*/}
+      <div className="flex flex-row justify-between">
+        <HeaderTitle>DELEGATION</HeaderTitle>
+        <Button onClick={() => setIsDelegateModalOpened(true)}>Delegate</Button>
+      </div>
       <BalancesProvider>
         <Table data={[delegatee]} />
       </BalancesProvider>
+      {isDelegateModalOpened && (
+        <DelegateModal
+          onClose={() => setIsDelegateModalOpened(false)}
+          onDelegateTxStarted={onDelegateTxStarted}
+        />
+      )}
     </>
   )
 }
