@@ -52,14 +52,14 @@ type Token = {
   address: Address
 }
 
-type RewardsTokenMetricsProps = {
+type TokenRewardsMetricsProps = {
   builder: Address
   gauge: Address
   token: Token
   currency?: string
 }
 
-const RewardsTokenMetrics: FC<RewardsTokenMetricsProps> = ({
+const TokenRewardsMetrics: FC<TokenRewardsMetricsProps> = ({
   builder,
   gauge,
   token: { address, symbol },
@@ -69,7 +69,7 @@ const RewardsTokenMetrics: FC<RewardsTokenMetricsProps> = ({
 
   const {
     data: rewards,
-    isLoading: isLoadingRewards,
+    isLoading: rewardsLoading,
     error: rewardsError,
   } = useGetBuilderRewards(address, gauge)
   useHandleErrors({ error: rewardsError, title: 'Error loading rewards' })
@@ -90,7 +90,7 @@ const RewardsTokenMetrics: FC<RewardsTokenMetricsProps> = ({
   return withSpinner(TokenMetricsCardRow)({
     amount,
     fiatAmount,
-    isLoading: isLoadingRewards,
+    isLoading: rewardsLoading,
     children: (
       <ClaimYourRewardsButton onClick={() => claimRewards(address)} disabled={!isClaimFunctionReady} />
     ),
@@ -106,12 +106,12 @@ type ClaimableRewardsProps = {
   }
 }
 
-export const ClaimableRewards: FC<ClaimableRewardsProps> = ({ data, ...rest }) => {
+export const ClaimableRewards: FC<ClaimableRewardsProps> = ({ data: { rif, rbtc }, ...rest }) => {
   return (
     <MetricsCard borderless>
       <MetricsCardTitle title="Claimable rewards" data-testid="ClaimableRewards" />
-      <RewardsTokenMetrics {...rest} token={data.rif} />
-      <RewardsTokenMetrics {...rest} token={data.rbtc} />
+      <TokenRewardsMetrics {...rest} token={rif} />
+      <TokenRewardsMetrics {...rest} token={rbtc} />
     </MetricsCard>
   )
 }
