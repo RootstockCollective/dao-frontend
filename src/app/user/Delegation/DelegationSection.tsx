@@ -36,11 +36,13 @@ export const DelegationSection = () => {
   }, [isSuccess, setGlobalMessage])
 
   const delegatee = {
-    'Voting Power Delegated': <HolderColumn address={delegateeAddress || ''} />,
-    Amount: <RenderTotalBalance symbol="stRIF" />,
+    'Voting Power Delegated':
+      delegateeAddress !== address ? <HolderColumn address={delegateeAddress || ''} /> : '-',
+    Amount: delegateeAddress !== address ? <RenderTotalBalance symbol="stRIF" /> : '-',
   }
+
   return (
-    <>
+    <div className="mb-6">
       {/* Header Components*/}
       <div className="flex flex-row justify-between mb-6">
         <HeaderTitle>DELEGATION</HeaderTitle>
@@ -55,6 +57,6 @@ export const DelegationSection = () => {
           onDelegateTxStarted={onDelegateTxStarted}
         />
       )}
-    </>
+    </div>
   )
 }
