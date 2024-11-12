@@ -11,7 +11,6 @@ export const useGetBuilderRewards = (rewardToken: Address, gauge: Address) => {
     args: [rewardToken],
     query: {
       refetchInterval: AVERAGE_BLOCKTIME,
-      enabled: !!gauge,
     },
   })
 

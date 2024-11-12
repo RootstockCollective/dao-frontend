@@ -9,6 +9,7 @@ import {
 } from '@/app/collective-rewards/rewards'
 import { useHandleErrors } from '@/app/collective-rewards/utils'
 import { formatBalanceToHuman } from '@/app/user/Balances/balanceUtils'
+import { Button, ButtonProps } from '@/components/Button'
 import { withSpinner } from '@/components/LoadingSpinner/withLoadingSpinner'
 import { Popover } from '@/components/Popover'
 import { usePricesContext } from '@/shared/context/PricesContext'
@@ -25,6 +26,25 @@ const ClaimYourRewardsSvg = () => (
       strokeLinejoin="round"
     />
   </svg>
+)
+
+const ClaimYourRewardsButton: FC<Required<Pick<ButtonProps, 'onClick' | 'disabled'>>> = buttonProps => (
+  <div className="self-start justify-self-end pt-[10px]">
+    <Popover
+      content={
+        <div className="text-[12px] font-bold mb-1">
+          <p data-testid="builderAddressTooltip">Claim your rewards</p>
+        </div>
+      }
+      size="small"
+      position="top"
+      trigger="hover"
+    >
+      <Button {...buttonProps} variant="borderless" className="px-1 py-1">
+        <ClaimYourRewardsSvg />
+      </Button>
+    </Popover>
+  </div>
 )
 
 type Token = {
@@ -56,7 +76,7 @@ const RewardsTokenMetrics: FC<RewardsTokenMetricsProps> = ({
 
   const tokenPrice = prices[symbol]?.price ?? 0
 
-  const rewardMetrics = formatMetrics(
+  const { amount, fiatAmount } = formatMetrics(
     Number(formatBalanceToHuman(rewards ?? 0n)),
     tokenPrice,
     symbol,
@@ -68,27 +88,10 @@ const RewardsTokenMetrics: FC<RewardsTokenMetricsProps> = ({
   useClaimStateReporting({ ...claimTx, error: rewardsError ?? claimTx.error })
 
   return withSpinner(TokenMetricsCardRow)({
-    amount: rewardMetrics.amount,
-    fiatAmount: rewardMetrics.fiatAmount,
+    amount,
+    fiatAmount,
     isLoading: isLoadingRewards,
-    children: (
-      <div className="self-start justify-self-end pt-[10px]">
-        <Popover
-          content={
-            <div className="text-[12px] font-bold mb-1">
-              <p data-testid="builderAddressTooltip">Claim your rewards</p>
-            </div>
-          }
-          size="small"
-          position="top"
-          trigger="hover"
-        >
-          <button onClick={claimRewards} disabled={!isClaimFunctionReady}>
-            <ClaimYourRewardsSvg />
-          </button>
-        </Popover>
-      </div>
-    ),
+    children: <ClaimYourRewardsButton onClick={claimRewards} disabled={!isClaimFunctionReady} />,
   })
 }
 

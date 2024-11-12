@@ -12,7 +12,6 @@ interface Props extends Omit<HTMLAttributes<HTMLDivElement>, 'children' | 'conte
   size?: 'small' | 'medium'
   hasCaret?: boolean
 }
-
 export const Popover = ({
   children,
   content,
