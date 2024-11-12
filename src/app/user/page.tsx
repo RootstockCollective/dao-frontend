@@ -1,12 +1,14 @@
 'use client'
-import { useGetIsWhitelistedBuilderV2, withBuilderButton } from '@/app/collective-rewards/user'
 import { Rewards } from '@/app/collective-rewards/rewards/MyRewards'
 import { BalancesSection } from '@/app/user/Balances/BalancesSection'
 import { CommunitiesSection } from '@/app/user/Communities/CommunitiesSection'
 import { MainContainer } from '@/components/MainContainer/MainContainer'
 import { Tabs, TabsContent, TabsList, TabsTrigger, TabTitle } from '@/components/Tabs'
-import { TxStatusMessage } from '@/components/TxStatusMessage'
 import { useAccount } from 'wagmi'
+import { withBuilderButton, useGetBuilderToGauge } from '@/app/collective-rewards/user'
+import { TxStatusMessage } from '@/components/TxStatusMessage'
+import { zeroAddress } from 'viem'
+import { useHandleErrors } from '@/app/collective-rewards/utils'
 
 type MyHoldingsProps = {
   showBuilderButton?: boolean
@@ -24,12 +26,13 @@ const TabsListWithButton = withBuilderButton(TabsList)
 
 export default function User() {
   const { address } = useAccount()
+  const { data: gauge, error } = useGetBuilderToGauge(address!)
 
-  const { data: isWhitelistedBuilder } = useGetIsWhitelistedBuilderV2(address!)
+  useHandleErrors({ error, title: 'Error loading gauge' })
 
   return (
     <MainContainer>
-      {isWhitelistedBuilder ? (
+      {gauge && gauge !== zeroAddress ? (
         <Tabs defaultValue="holdings">
           <TabsListWithButton>
             <TabsTrigger value="holdings">
@@ -43,7 +46,7 @@ export default function User() {
             <MyHoldings showBuilderButton={false} />
           </TabsContent>
           <TabsContent value="rewards">
-            <Rewards builder={address!} />
+            <Rewards builder={address!} gauge={gauge} />
           </TabsContent>
         </Tabs>
       ) : (

@@ -3,6 +3,7 @@ import { fetchRewardDistributedCached } from '@/app/collective-rewards/actions'
 import { Address, isAddressEqual, parseEventLogs } from 'viem'
 import { SimplifiedRewardDistributorAbi } from '@/lib/abis/SimplifiedRewardDistributorAbi'
 import { resolveCollectiveRewardToken } from '@/app/collective-rewards/utils/getCoinBaseAddress'
+import { AVERAGE_BLOCKTIME } from '@/lib/constants'
 
 export const useGetRewardDistributedLogs = (rewardToken?: Address, builder?: Address) => {
   const { data, error, isLoading } = useQuery({
@@ -29,7 +30,7 @@ export const useGetRewardDistributedLogs = (rewardToken?: Address, builder?: Add
 
       return filteredEvents
     },
-    refetchInterval: 30_000,
+    refetchInterval: AVERAGE_BLOCKTIME,
     initialData: [],
   })
 

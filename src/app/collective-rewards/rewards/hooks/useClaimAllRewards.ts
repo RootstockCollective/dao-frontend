@@ -1,23 +1,19 @@
-import { BuilderRegistryAbi } from '@/lib/abis/v2/BuilderRegistryAbi'
-import { BackersManagerAddress } from '@/lib/contracts'
 import { Address, zeroAddress } from 'viem'
-import { useReadContract, useWaitForTransactionReceipt, useWriteContract } from 'wagmi'
+import { useWaitForTransactionReceipt, useWriteContract } from 'wagmi'
 import { GaugeAbi } from '@/lib/abis/v2/GaugeAbi'
 import { createZeroAddressError } from '@/shared/errors/zeroAddressError'
 import { useEffect, useMemo } from 'react'
 import { useAlertContext } from '@/app/providers'
-
-export const useGetGauge = (builder: Address) =>
-  useReadContract({
-    abi: BuilderRegistryAbi,
-    address: BackersManagerAddress,
-    functionName: 'builderToGauge',
-    args: [builder as Address],
-  })
+import { useGetBuilderToGauge } from '@/app/collective-rewards/user'
 
 export const useClaimAllRewards = (builder: Address) => {
   const { writeContractAsync, error: executionError, data: hash, isPending } = useWriteContract()
-  const { data: gauge, isPending: isGaugePending, error: gaugeError, isFetched } = useGetGauge(builder)
+  const {
+    data: gauge,
+    isPending: isGaugePending,
+    error: gaugeError,
+    isFetched,
+  } = useGetBuilderToGauge(builder)
 
   const { isLoading, isSuccess, data, error: receiptError } = useWaitForTransactionReceipt({ hash })
 

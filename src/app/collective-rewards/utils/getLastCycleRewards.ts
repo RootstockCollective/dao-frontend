@@ -1,6 +1,6 @@
 import { Address, isAddressEqual, parseEventLogs } from 'viem'
 import { SimplifiedRewardDistributorAbi } from '@/lib/abis/SimplifiedRewardDistributorAbi'
-import { getPreviousCycle } from '@/app/collective-rewards/utils/getLastCycle'
+import { getPreviousCycle } from '@/app/collective-rewards/utils/getPreviousCycle'
 import { resolveCollectiveRewardToken } from '@/app/collective-rewards/utils/getCoinBaseAddress'
 
 type EventLog = ReturnType<
