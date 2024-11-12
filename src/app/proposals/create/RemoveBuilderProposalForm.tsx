@@ -178,7 +178,7 @@ export const RemoveBuilderProposalForm: FC = () => {
                 name="builderAddress"
                 render={({ field }) => (
                   <FormItem className="mb-6 mx-1">
-                    <FormLabel>Address to de-whitelisted</FormLabel>
+                    <FormLabel>Address to be de-whitelisted</FormLabel>
                     <FormControl>
                       <FormInput placeholder="0x..." {...field} maxLength={100} />
                     </FormControl>
