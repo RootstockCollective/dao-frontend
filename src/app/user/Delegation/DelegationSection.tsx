@@ -10,7 +10,7 @@ export const DelegationSection = () => {
   const { address } = useAccount()
   const { delegateeAddress } = useDelegate(address)
 
-  if (!delegateeAddress) {
+  if (!delegateeAddress || address === delegateeAddress) {
     return null
   }
 
