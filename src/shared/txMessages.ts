@@ -121,5 +121,11 @@ export const TX_MESSAGES = {
       content: 'Voting power successfully delegated!',
       severity: 'success',
     },
+    error: {
+      title: 'Error on execution',
+      content:
+        'An unexpected error occurred while trying to execute the delegation. Please try again later. If the issue persists, contact support for assistance.',
+      severity: 'error',
+    },
   },
 } as const
