@@ -13,13 +13,16 @@ import { useAccount } from 'wagmi'
 import { RenderTotalBalance } from '../Balances/RenderTotalBalance'
 import { BalancesProvider } from '../Balances/context/BalancesContext'
 import { useGetDelegates } from './hooks/useGetDelegates'
-import { ZeroAddress } from 'ethers'
 import { ReclaimCell } from './ReclaimCell'
 import { DelegationAction } from './type'
+import { useGetAddressBalances } from '../Balances/hooks/useGetAddressBalances'
 
 export const DelegationSection = () => {
   const { address } = useAccount()
   const { delegateeAddress } = useGetDelegates(address)
+  const {
+    stRIF: { balance: stRIFBalance },
+  } = useGetAddressBalances()
 
   const [isDelegateModalOpened, setIsDelegateModalOpened] = useState(false)
   const [hash, setHash] = useState<Hash | undefined>(undefined)
@@ -43,7 +46,7 @@ export const DelegationSection = () => {
     }
   }, [action, isError, isSuccess, setGlobalMessage])
 
-  const isValidDelegatee = delegateeAddress !== address && delegateeAddress !== ZeroAddress
+  const isValidDelegatee = delegateeAddress !== address && Number(stRIFBalance) > 0
   const delegatee = {
     'Voting Power Delegated': isValidDelegatee ? <HolderColumn address={delegateeAddress || ''} /> : '-',
     Amount: isValidDelegatee ? <RenderTotalBalance symbol="stRIF" /> : '-',
