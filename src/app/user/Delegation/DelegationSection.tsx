@@ -4,11 +4,11 @@ import { HeaderTitle } from '@/components/Typography'
 import { useAccount } from 'wagmi'
 import { RenderTotalBalance } from '../Balances/RenderTotalBalance'
 import { BalancesProvider } from '../Balances/context/BalancesContext'
-import { useDelegate } from './hooks/useDelegate'
+import { useGetDelegates } from './hooks/useGetDelegates'
 
 export const DelegationSection = () => {
   const { address } = useAccount()
-  const { delegateeAddress } = useDelegate(address)
+  const { delegateeAddress } = useGetDelegates(address)
 
   if (!delegateeAddress || delegateeAddress === address) {
     return null

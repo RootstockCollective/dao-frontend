@@ -8,7 +8,7 @@ const stRifContract = {
   address: tokenContracts.stRIF,
 }
 
-export const useDelegate = (address: Address | undefined) => {
+export const useGetDelegates = (address: Address | undefined) => {
   const { data: delegateeAddress } = useReadContract(
     address && {
       ...stRifContract,
