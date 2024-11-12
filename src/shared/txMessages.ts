@@ -110,4 +110,16 @@ export const TX_MESSAGES = {
       severity: 'success',
     },
   },
+  delegation: {
+    pending: {
+      title: 'Delegation in process',
+      content: 'Your transaction is in progress. It will be visible when the transaction is confirmed.',
+      severity: 'info',
+    },
+    success: {
+      title: 'Delegation successful',
+      content: 'Voting power successfully delegated!',
+      severity: 'success',
+    },
+  },
 } as const
