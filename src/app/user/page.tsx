@@ -9,6 +9,7 @@ import { withBuilderButton, useGetBuilderToGauge } from '@/app/collective-reward
 import { TxStatusMessage } from '@/components/TxStatusMessage'
 import { zeroAddress } from 'viem'
 import { useHandleErrors } from '@/app/collective-rewards/utils'
+import { DelegationSection } from './Delegation'
 
 type MyHoldingsProps = {
   showBuilderButton?: boolean
@@ -18,6 +19,7 @@ const MyHoldings = ({ showBuilderButton = false }: MyHoldingsProps) => (
   <>
     <TxStatusMessage messageType="staking" />
     <BalancesSection showBuilderButton={showBuilderButton} />
+    <DelegationSection />
     <CommunitiesSection />
   </>
 )

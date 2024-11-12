@@ -10,27 +10,7 @@ import { useState } from 'react'
 import { TableIcon } from '@/app/communities/TableIcon'
 import { SquareIcon } from '@/app/communities/SquareIcon'
 import { ErrorMessageAlert } from '@/components/ErrorMessageAlert/ErrorMessageAlert'
-
-interface HolderColumnProps {
-  address: string
-  rns?: string
-  image?: string
-}
-const HolderColumn = ({ address, rns, image }: HolderColumnProps) => {
-  return (
-    <a
-      href={`${EXPLORER_URL}/address/${address}`}
-      target="_blank"
-      className="flex items-center gap-1.5 text-white"
-    >
-      <img src={image || '/images/treasury/holders.png'} width={24} height={24} alt="Holders Image" />
-      <Span className="underline text-left overflow-hidden whitespace-nowrap text-[14px]">
-        {rns || address}
-      </Span>
-      <RxExternalLink size={18} />
-    </a>
-  )
-}
+import { HolderColumn } from './HolderColumn'
 
 interface IdNumberColumnProps {
   id: string
