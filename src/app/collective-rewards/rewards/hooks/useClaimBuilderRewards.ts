@@ -6,7 +6,7 @@ import { useEffect, useMemo } from 'react'
 import { useAlertContext } from '@/app/providers'
 import { useGetBuilderToGauge } from '@/app/collective-rewards/user'
 
-export const useClaimBuilderRewards = (builder: Address, rewardToken?: Address) => {
+export const useClaimBuilderRewards = (builder: Address) => {
   const { writeContractAsync, error: executionError, data: hash, isPending } = useWriteContract()
   const {
     data: gauge,
@@ -52,7 +52,7 @@ export const useClaimBuilderRewards = (builder: Address, rewardToken?: Address) 
     }
   }, [gauge, gaugeError, builder, executionError, receiptError, isFetched])
 
-  const claimBuilderReward = () => {
+  const claimBuilderReward = (rewardToken?: Address) => {
     return writeContractAsync({
       abi: GaugeAbi,
       address: gauge as Address,
@@ -63,7 +63,7 @@ export const useClaimBuilderRewards = (builder: Address, rewardToken?: Address) 
 
   return {
     isClaimFunctionReady,
-    claimRewards: () => isClaimFunctionReady && claimBuilderReward(),
+    claimRewards: (rewardToken?: Address) => isClaimFunctionReady && claimBuilderReward(rewardToken),
     error,
     isPendingTx: isPending,
     isLoadingReceipt: isLoading,

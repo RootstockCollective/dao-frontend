@@ -63,7 +63,7 @@ export const Rewards: FC<{ builder: Address; gauge: Address }> = ({ builder, gau
                 position="bottom"
                 className="z-[100]"
               >
-                <Button onClick={claimRewards} disabled={!isClaimFunctionReady} variant="primary">
+                <Button onClick={() => claimRewards()} disabled={!isClaimFunctionReady} variant="primary">
                   Claim all
                 </Button>
               </Popover>

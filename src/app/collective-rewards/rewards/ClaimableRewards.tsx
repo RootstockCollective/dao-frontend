@@ -83,7 +83,7 @@ const RewardsTokenMetrics: FC<RewardsTokenMetricsProps> = ({
     currency,
   )
 
-  const { isClaimFunctionReady, claimRewards, ...claimTx } = useClaimBuilderRewards(builder, address)
+  const { isClaimFunctionReady, claimRewards, ...claimTx } = useClaimBuilderRewards(builder)
 
   useClaimStateReporting({ ...claimTx, error: rewardsError ?? claimTx.error })
 
@@ -91,7 +91,9 @@ const RewardsTokenMetrics: FC<RewardsTokenMetricsProps> = ({
     amount,
     fiatAmount,
     isLoading: isLoadingRewards,
-    children: <ClaimYourRewardsButton onClick={claimRewards} disabled={!isClaimFunctionReady} />,
+    children: (
+      <ClaimYourRewardsButton onClick={() => claimRewards(address)} disabled={!isClaimFunctionReady} />
+    ),
   })
 }
 
