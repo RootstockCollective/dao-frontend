@@ -14,6 +14,9 @@ export const useGetDelegates = (address: Address | undefined) => {
       ...stRifContract,
       functionName: 'delegates',
       args: [address],
+      query: {
+        refetchInterval: 5000,
+      },
     },
   )
 
