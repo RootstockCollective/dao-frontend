@@ -281,6 +281,7 @@ const PageWithProposal = (proposal: ParsedProposal) => {
             <Popover
               size="small"
               trigger="hover"
+              disabled={isExecuting}
               content={
                 !canProposalBeExecuted ? (
                   <p className="text-[12px] font-bold mb-1">
@@ -290,13 +291,15 @@ const PageWithProposal = (proposal: ParsedProposal) => {
                 ) : isExecuting ? (
                   <p className="text-[12px] font-bold mb-1">The proposal is being executed.</p>
                 ) : (
-                  <p className="text-[12px] font-bold mb-1">The proposal can be executed.</p>
+                  <p className="text-[12px] font-bold mb-1">
+                    The proposal <br /> can be executed.
+                  </p>
                 )
               }
             >
               <Button
                 onClick={handleVotingExecution}
-                className="mt-2"
+                className="mt-2 ml-auto"
                 disabled={!canProposalBeExecuted || isExecuting}
                 data-testid="Execute"
               >
@@ -304,7 +307,12 @@ const PageWithProposal = (proposal: ParsedProposal) => {
               </Button>
             </Popover>
           )}
-          {isExecuting && <p>Pending transaction confirmation to complete execution.</p>}
+          {isExecuting && (
+            <Span variant="light" className="inline-block mt-2">
+              Pending transaction confirmation <br />
+              to complete execution.
+            </Span>
+          )}
           {votingModal.isModalOpened && address && (
             <VoteProposalModal
               onSubmit={handleVoting}
