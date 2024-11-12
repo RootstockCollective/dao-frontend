@@ -8,10 +8,11 @@ import {
   LastCycleRewards,
   ClaimableRewards,
   AllTimeRewards,
+  EstimatedRewards,
 } from '@/app/collective-rewards/rewards'
 import { CycleContextProvider } from '@/app/collective-rewards/metrics'
 import { PricesContextProvider } from '@/shared/context/PricesContext'
-import { getCoinBaseAddress } from '@/app/collective-rewards/utils'
+import { getCoinbaseAddress } from '@/app/collective-rewards/utils'
 import { tokenContracts } from '@/lib/contracts'
 import { Popover } from '@/components/Popover'
 import { Button } from '@/components/Button'
@@ -28,7 +29,7 @@ export const Rewards: FC<{ builder: Address; gauge: Address }> = ({ builder, gau
       symbol: 'RIF',
     },
     rbtc: {
-      address: getCoinBaseAddress(),
+      address: getCoinbaseAddress(),
       symbol: 'RBTC',
     },
   }
@@ -48,7 +49,7 @@ export const Rewards: FC<{ builder: Address; gauge: Address }> = ({ builder, gau
             <PricesContextProvider>
               <ClaimableRewards builder={builder} gauge={gauge} data={data} />
               <LastCycleRewards gauge={gauge} data={data} />
-              <div>Estimated Rewards</div>
+              <EstimatedRewards gauge={gauge} data={data} />
               <AllTimeRewards gauge={gauge} data={data} />
               <div>All time share</div>
               <Popover

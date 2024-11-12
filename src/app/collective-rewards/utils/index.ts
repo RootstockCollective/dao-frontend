@@ -1,2 +1,2 @@
 export * from './handleErrors'
-export * from './getCoinBaseAddress'
+export * from './getCoinbaseAddress'

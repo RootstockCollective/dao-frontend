@@ -2,7 +2,7 @@ import { useQuery } from '@tanstack/react-query'
 import { fetchRewardDistributedCached } from '@/app/collective-rewards/actions'
 import { Address, isAddressEqual, parseEventLogs } from 'viem'
 import { SimplifiedRewardDistributorAbi } from '@/lib/abis/SimplifiedRewardDistributorAbi'
-import { resolveCollectiveRewardToken } from '@/app/collective-rewards/utils/getCoinBaseAddress'
+import { resolveCollectiveRewardToken } from '@/app/collective-rewards/utils/getCoinbaseAddress'
 import { AVERAGE_BLOCKTIME } from '@/lib/constants'
 
 export const useGetRewardDistributedLogs = (rewardToken?: Address, builder?: Address) => {
