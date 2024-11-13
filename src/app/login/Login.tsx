@@ -28,7 +28,7 @@ export const Login = () => {
   useEffect(() => {
     // Redirect the user to /user if connected
     if (isConnected) {
-      router.push('/user')
+      router.push('/user?tab=holdings')
     }
   }, [isConnected, router])
 
@@ -44,7 +44,7 @@ export const Login = () => {
                 <p>Redirecting...</p>
               ) : showDisclaimer ? (
                 <Disclaimer
-                  onConnect={() => router.push('/user')}
+                  onConnect={() => router.push('/user?tab=holdings')}
                   onCancel={() => setShowDisclaimer(false)}
                 />
               ) : (

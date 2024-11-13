@@ -4,7 +4,7 @@ import { useReadContract } from 'wagmi'
 import { AVERAGE_BLOCKTIME } from '@/lib/constants'
 
 export const useGetBuilderRewards = (rewardToken: Address, gauge: Address) => {
-  const { data, isLoading, error } = useReadContract({
+  return useReadContract({
     address: gauge,
     abi: GaugeAbi,
     functionName: 'builderRewards',
@@ -13,10 +13,4 @@ export const useGetBuilderRewards = (rewardToken: Address, gauge: Address) => {
       refetchInterval: AVERAGE_BLOCKTIME,
     },
   })
-
-  return {
-    data,
-    isLoading,
-    error,
-  }
 }
