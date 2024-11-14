@@ -33,21 +33,20 @@ export const Rewards: FC<{ builder: Address; gauge: Address }> = ({ builder, gau
   }
 
   return (
-    <div
-      id="my_rewards_container"
-      className="flex flex-col flex-shrink-0 items-start self-stretch gap-[46px]"
-    >
-      <RewardsSection>
-        <RewardsSectionHeader
-          title="Builder Rewards"
-          subtext="Monitor the rewards you are getting from your Collective Rewards."
-        />
-        <BuilderRewards {...data} />
-      </RewardsSection>
+    <>
+      <div className="pb-[46px]">
+        <RewardsSection>
+          <RewardsSectionHeader
+            title="Builder Rewards"
+            subtext="Monitor the rewards you are getting from your Collective Rewards."
+          />
+          <BuilderRewards {...data} />
+        </RewardsSection>
+      </div>
       <RewardsSection>
         <RewardsSectionHeader title="Backer Rewards" subtext="Monitor your rewards balances and claim." />
         <BackerRewards {...data} />
       </RewardsSection>
-    </div>
+    </>
   )
 }

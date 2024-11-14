@@ -1,20 +1,20 @@
-import { FC } from 'react'
-import { Address } from 'viem'
+import { CycleContextProvider } from '@/app/collective-rewards/metrics'
 import {
+  BuilderAllTimeRewards,
+  BuilderAllTimeShare,
+  BuilderClaimableRewards,
+  BuilderEstimatedRewards,
+  BuilderLastCycleRewards,
+  RewardDetails,
   useClaimBuilderRewards,
   useClaimStateReporting,
-  BuilderLastCycleRewards,
-  BuilderClaimableRewards,
-  BuilderAllTimeRewards,
-  BuilderEstimatedRewards,
-  BuilderAllTimeShare,
-  RewardDetails,
 } from '@/app/collective-rewards/rewards'
-import { CycleContextProvider } from '@/app/collective-rewards/metrics'
-import { PricesContextProvider } from '@/shared/context/PricesContext'
-import { Popover } from '@/components/Popover'
+import { MetricContainer } from '@/app/collective-rewards/rewards/components/MetricContainer'
 import { Button } from '@/components/Button'
+import { Popover } from '@/components/Popover'
 import { Paragraph } from '@/components/Typography'
+import { PricesContextProvider } from '@/shared/context/PricesContext'
+import { FC } from 'react'
 
 type RewardsProps = RewardDetails
 
@@ -24,38 +24,50 @@ export const Rewards: FC<RewardsProps> = ({ builder, ...rest }) => {
   useClaimStateReporting({ ...claimTx })
 
   return (
-    <div className="grid grid-cols-5 gap-[16px]">
-      <CycleContextProvider>
-        <PricesContextProvider>
-          <BuilderClaimableRewards builder={builder} {...rest} />
-          <BuilderLastCycleRewards {...rest} />
-          <BuilderEstimatedRewards builder={builder} {...rest} />
-          <BuilderAllTimeRewards {...rest} />
-          <BuilderAllTimeShare {...rest} />
-          <Popover
-            disabled={isClaimFunctionReady}
-            content={
-              <Paragraph variant="normal" className="text-sm">
-                Wait a moment, please. Preparing the claim functionality.
-              </Paragraph>
-            }
-            trigger="hover"
-            background="dark"
-            size="small"
-            position="bottom"
-            className="z-[100]"
-          >
-            <Button
-              className="w-full"
-              onClick={() => claimRewards()}
-              disabled={!isClaimFunctionReady}
-              variant="primary"
+    <CycleContextProvider>
+      <PricesContextProvider>
+        <div className="flex justify-center gap-4 w-full">
+          <MetricContainer className="flex-1 flex flex-col items-start gap-2">
+            <div className="min-h-[190px] w-full">
+              <BuilderClaimableRewards builder={builder} {...rest} />
+            </div>
+            <Popover
+              disabled={isClaimFunctionReady}
+              content={
+                <Paragraph variant="normal" className="text-sm">
+                  Wait a moment, please. Preparing the claim functionality.
+                </Paragraph>
+              }
+              trigger="hover"
+              background="dark"
+              size="small"
+              position="bottom"
+              className="z-[100]"
             >
-              Claim all
-            </Button>
-          </Popover>
-        </PricesContextProvider>
-      </CycleContextProvider>
-    </div>
+              <Button
+                className="w-full"
+                onClick={() => claimRewards()}
+                disabled={!isClaimFunctionReady}
+                variant="primary"
+              >
+                Claim all
+              </Button>
+            </Popover>
+          </MetricContainer>
+          <MetricContainer>
+            <BuilderLastCycleRewards {...rest} />
+          </MetricContainer>
+          <MetricContainer>
+            <BuilderEstimatedRewards builder={builder} {...rest} />
+          </MetricContainer>
+          <MetricContainer>
+            <BuilderAllTimeRewards {...rest} />
+          </MetricContainer>
+          <MetricContainer>
+            <BuilderAllTimeShare {...rest} />
+          </MetricContainer>
+        </div>
+      </PricesContextProvider>
+    </CycleContextProvider>
   )
 }

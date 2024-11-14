@@ -28,7 +28,7 @@ type MetricsCardProps = {
   children?: ReactNode
 }
 
-const DEFAULT_CLASSES = 'h-min-[79px] w-full py-[12px] px-[12px] flex flex-col bg-foreground'
+const DEFAULT_CLASSES = 'flex-1 py-[12px] px-[12px] flex flex-col bg-foreground h-[190px] w-full'
 
 export const TokenMetricsCardRow: FC<MetricsCardRow> = ({ amount, fiatAmount, children }) => (
   <div className="flex flex-row w-full items-center">
