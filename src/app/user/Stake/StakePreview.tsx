@@ -35,19 +35,6 @@ export const StakePreview = ({
 }: StakePreviewProps) => {
   return (
     <div className="px-[50px] py-[20px] flex justify-center flex-col">
-      <div className="flex justify-center mt-[63px]">
-        <div
-          style={{
-            boxShadow: SHARED_MODAL_BOX_SHADOW_STYLE,
-            padding: 17,
-            borderRadius: '30%',
-            backgroundColor: 'white',
-            width: 80,
-          }}
-        >
-          <TbFileSearch size={48} color="var(--color-primary)" />
-        </div>
-      </div>
       <Header className="mt-[62px] text-center font-normal" fontFamily="kk-topo">
         {actionName}
       </Header>
