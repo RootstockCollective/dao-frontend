@@ -15,14 +15,12 @@ import { BalancesProvider } from '../Balances/context/BalancesContext'
 import { useGetDelegates } from './hooks/useGetDelegates'
 import { ReclaimCell } from './ReclaimCell'
 import { DelegationAction } from './type'
-import { useGetAddressBalances } from '../Balances/hooks/useGetAddressBalances'
+import { useGetExternalDelegatedAmount } from '@/shared/hooks/useGetExternalDelegatedAmount'
+import { TokenValue } from '@/app/user/Delegation/TokenValue'
 
 export const DelegationSection = () => {
   const { address } = useAccount()
   const { delegateeAddress } = useGetDelegates(address)
-  const {
-    stRIF: { balance: stRIFBalance },
-  } = useGetAddressBalances()
 
   const [isDelegateModalOpened, setIsDelegateModalOpened] = useState(false)
   const [hash, setHash] = useState<Hash | undefined>(undefined)
@@ -46,11 +44,18 @@ export const DelegationSection = () => {
     }
   }, [action, isError, isSuccess, setGlobalMessage])
 
-  const isValidDelegatee = delegateeAddress !== address && Number(stRIFBalance) > 0
+  const isValidDelegatee = delegateeAddress !== address
   const delegatee = {
     'Voting Power Delegated': isValidDelegatee ? <HolderColumn address={delegateeAddress || ''} /> : '-',
     Amount: isValidDelegatee ? <RenderTotalBalance symbol="stRIF" /> : '-',
     Actions: isValidDelegatee ? <ReclaimCell onDelegateTxStarted={onDelegateTxStarted} /> : '-',
+  }
+
+  const { amount: amountDelegatedToMe, isLoading: isExternalDelegatedAmountLoading } =
+    useGetExternalDelegatedAmount(address)
+
+  const delegatedToMe = {
+    'Voting Power Received': <TokenValue symbol="stRIF" amount={amountDelegatedToMe} shouldFormatBalance />,
   }
 
   return (
@@ -63,6 +68,7 @@ export const DelegationSection = () => {
         </Button>
       </div>
       <BalancesProvider>
+        {!isExternalDelegatedAmountLoading && <Table data={[delegatedToMe]} />}
         <Table data={[delegatee]} />
       </BalancesProvider>
       {isDelegateModalOpened && (
