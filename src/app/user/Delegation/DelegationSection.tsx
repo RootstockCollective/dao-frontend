@@ -16,6 +16,8 @@ import { useGetDelegates } from './hooks/useGetDelegates'
 import { ReclaimCell } from './ReclaimCell'
 import { DelegationAction } from './type'
 import { useGetAddressBalances } from '../Balances/hooks/useGetAddressBalances'
+import { useGetExternalDelegatedAmount } from '@/shared/hooks/useGetExternalDelegatedAmount'
+import { TokenValue } from '@/app/user/Delegation/TokenValue'
 
 export const DelegationSection = () => {
   const { address } = useAccount()
@@ -53,6 +55,13 @@ export const DelegationSection = () => {
     Actions: isValidDelegatee ? <ReclaimCell onDelegateTxStarted={onDelegateTxStarted} /> : '-',
   }
 
+  const { amount: amountDelegatedToMe, isLoading: isExternalDelegatedAmountLoading } =
+    useGetExternalDelegatedAmount(address)
+
+  const delegatedToMe = {
+    'Voting Power Received': <TokenValue symbol="stRIF" amount={amountDelegatedToMe} shouldFormatBalance />,
+  }
+
   return (
     <div className="mb-6">
       {/* Header Components*/}
@@ -63,6 +72,7 @@ export const DelegationSection = () => {
         </Button>
       </div>
       <BalancesProvider>
+        {!isExternalDelegatedAmountLoading && <Table data={[delegatedToMe]} />}
         <Table data={[delegatee]} />
       </BalancesProvider>
       {isDelegateModalOpened && (
