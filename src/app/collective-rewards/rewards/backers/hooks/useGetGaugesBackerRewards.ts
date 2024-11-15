@@ -6,12 +6,9 @@ import { useMemo } from 'react'
 import { AbiFunction } from 'viem'
 
 type FunctionEntry = Extract<(typeof GaugeAbi)[number], AbiFunction>
-type FunctionName = Extract<
-  FunctionEntry['name'],
-  'earned' | 'claimedBackerRewards' | 'estimatedBackerRewards'
->
+type FunctionName = Extract<FunctionEntry['name'], 'earned' | 'estimatedBackerRewards'>
 
-export const useGetBackerRewards = (
+export const useGetGaugesBackerRewards = (
   backer: Address,
   rewardToken: Address,
   gauges: Address[],

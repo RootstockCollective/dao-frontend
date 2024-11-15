@@ -1,22 +1,27 @@
-import { useReadContract, useReadContracts } from 'wagmi'
+import { useReadContracts } from 'wagmi'
 import { AVERAGE_BLOCKTIME } from '@/lib/constants'
 import { BuilderRegistryAbi } from '@/lib/abis/v2/BuilderRegistryAbi'
 import { BackersManagerAddress } from '@/lib/contracts'
-import { Address } from 'viem'
+import { AbiFunction, Address } from 'viem'
+import { useGetGaugesLength } from '@/app/collective-rewards/user'
 
-export const useGetGaugesArray = () => {
+const gaugeTypeOptions = ['active', 'halted'] as const
+export type GaugeType = (typeof gaugeTypeOptions)[number]
+
+type FunctionEntry = Extract<(typeof BuilderRegistryAbi)[number], AbiFunction>
+type FunctionName = Extract<FunctionEntry['name'], 'getGaugeAt' | 'getHaltedGaugeAt'>
+
+const gaugeType: Record<GaugeType, FunctionName> = {
+  active: 'getGaugeAt',
+  halted: 'getHaltedGaugeAt',
+}
+
+export const useGetGaugesArray = (type: GaugeType) => {
   const {
     data: gaugesLength,
     isLoading: gaugesLengthLoading,
     error: gaugesLengthError,
-  } = useReadContract({
-    address: BackersManagerAddress,
-    abi: BuilderRegistryAbi,
-    functionName: 'getGaugesLength',
-    query: {
-      refetchInterval: AVERAGE_BLOCKTIME,
-    },
-  })
+  } = useGetGaugesLength(type)
 
   const length = gaugesLength ? Number(gaugesLength) : 0
 
@@ -24,7 +29,7 @@ export const useGetGaugesArray = () => {
     return {
       address: BackersManagerAddress,
       abi: BuilderRegistryAbi,
-      functionName: 'getGaugeAt',
+      functionName: gaugeType[type],
       args: [index],
     } as const
   })

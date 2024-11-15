@@ -44,7 +44,7 @@ export const AllTimeShare: FC<AllTimeShareProps> = ({ gauges, tokens: { rif } })
 
   useHandleErrors({ error, title: 'Error loading all time share' })
 
-  let isLoading: boolean = notifyRewardLoading || backerRewardsLoading
+  const isLoading = notifyRewardLoading || backerRewardsLoading
 
   const totalRewards = earnedRewards + claimedRewards
   const amount = !notifyRewards ? '0%' : `${(totalRewards * 100n) / notifyRewards}%`

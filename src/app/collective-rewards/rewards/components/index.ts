@@ -1,2 +1,4 @@
 export * from './Section'
-export * from './Metrics'
+export * from './MetricsCard'
+export * from './MetricContainer'
+export * from './ClaimYouRewardButton'

@@ -33,7 +33,7 @@ export const AllTimeShare: FC<AllTimeShareProps> = ({ gauge, gauges, tokens: { r
 
   useHandleErrors({ error, title: 'Error loading all time share' })
 
-  let isLoading: boolean = notifyRewardLoading || builderRewardsPerTokenLoading || claimableRewardsLoading
+  const isLoading = notifyRewardLoading || builderRewardsPerTokenLoading || claimableRewardsLoading
 
   const builderClaimedRewards =
     builderRewardsPerToken[rif.address]?.reduce((acc, event) => {

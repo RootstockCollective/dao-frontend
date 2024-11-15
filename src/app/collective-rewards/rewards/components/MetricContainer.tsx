@@ -1,6 +1,5 @@
 import { cn } from '@/lib/utils'
-import { ComponentType, FC, ReactNode } from 'react'
-import { useAccount } from 'wagmi'
+import { ReactNode } from 'react'
 
 interface MetricsElementProps {
   children: ReactNode

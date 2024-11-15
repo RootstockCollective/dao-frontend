@@ -30,23 +30,16 @@ const TokenRewardsMetrics: FC<TokenRewardsMetricsProps> = ({
   const { data, isLoading, error } = useBackerRewardsContext()
   const { earned, claimed, estimated } = data[address]
 
-  const calculateTotalRewards = (rewardType: Rewards) => {
-    switch (rewardType) {
-      case 'earned':
-        return Object.values(earned).reduce((acc, value) => acc + value, 0n)
-      case 'claimed':
-        return Object.values(claimed).reduce(
-          (acc, value) => acc + value.reduce((acc, value) => acc + value.args.amount_, 0n),
-          0n,
-        )
-      case 'estimated':
-        return Object.values(estimated).reduce((acc, value) => acc + value, 0n)
-      default:
-        return 0n
-    }
+  const calculateTotalRewards = {
+    earned: Object.values(earned).reduce((acc, earned) => acc + earned, 0n),
+    claimed: Object.values(claimed).reduce(
+      (acc, value) => acc + value.reduce((acc, value) => acc + value.args.amount_, 0n),
+      0n,
+    ),
+    estimated: Object.values(estimated).reduce((acc, estimated) => acc + estimated, 0n),
   }
 
-  const totalRewards = rewards.reduce((acc, rewardType) => acc + calculateTotalRewards(rewardType), 0n)
+  const totalRewards = rewards.reduce((acc, rewardType) => acc + calculateTotalRewards[rewardType], 0n)
 
   useHandleErrors({ error: error, title: 'Error loading all time rewards' })
 

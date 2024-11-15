@@ -1,9 +1,9 @@
 import { createContext, FC, ReactNode, useContext } from 'react'
 import {
-  useGetBackerRewards,
   Token,
   BackerRewardsClaimedEventLog,
   useGetGaugesBackerRewardsClaimed,
+  useGetGaugesBackerRewards,
 } from '@/app/collective-rewards/rewards'
 import { Address } from 'viem'
 
@@ -41,7 +41,7 @@ const useGetTokenRewards = (backer: Address, token: Token, gauges: Address[]) =>
     data: earned,
     isLoading: earnedLoading,
     error: earnedError,
-  } = useGetBackerRewards(backer, token.address, gauges, 'earned')
+  } = useGetGaugesBackerRewards(backer, token.address, gauges, 'earned')
   const {
     data: claimed,
     isLoading: claimedLoading,
@@ -51,7 +51,7 @@ const useGetTokenRewards = (backer: Address, token: Token, gauges: Address[]) =>
     data: estimated,
     isLoading: estimatedLoading,
     error: estimatedError,
-  } = useGetBackerRewards(backer, token.address, gauges, 'estimatedBackerRewards')
+  } = useGetGaugesBackerRewards(backer, token.address, gauges, 'estimatedBackerRewards')
 
   const isLoading = earnedLoading || claimedLoading || estimatedLoading
   const error = earnedError ?? claimedError ?? estimatedError

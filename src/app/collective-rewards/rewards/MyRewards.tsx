@@ -9,11 +9,11 @@ import {
 } from '@/app/collective-rewards/rewards'
 import { getCoinbaseAddress } from '@/app/collective-rewards/utils'
 import { tokenContracts } from '@/lib/contracts'
-import { useGetGaugesArray, useGetHaltedGaugesArray } from '@/app/collective-rewards/user'
+import { useGetGaugesArray } from '@/app/collective-rewards/user'
 
 export const Rewards: FC<{ builder: Address; gauge: Address }> = ({ builder, gauge }) => {
-  const { data: rewardGauges } = useGetGaugesArray()
-  const { data: haltedGauges } = useGetHaltedGaugesArray()
+  const { data: rewardGauges } = useGetGaugesArray('active')
+  const { data: haltedGauges } = useGetGaugesArray('halted')
   const gauges = [...(rewardGauges ?? []), ...(haltedGauges ?? [])]
 
   const data: RewardDetails = {
