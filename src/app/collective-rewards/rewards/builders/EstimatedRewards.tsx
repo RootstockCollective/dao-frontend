@@ -5,34 +5,33 @@ import {
   TokenMetricsCardRow,
   useGetRewardShares,
   useGetTotalPotentialReward,
+  useGetPerTokenRewards,
+  useGetRewardPercentageToApply,
+  RewardDetails,
+  Token,
 } from '@/app/collective-rewards/rewards'
 import { useHandleErrors } from '@/app/collective-rewards/utils'
 import { formatBalanceToHuman } from '@/app/user/Balances/balanceUtils'
 import { usePricesContext } from '@/shared/context/PricesContext'
 import { FC, useEffect, useState } from 'react'
-import { Address } from 'viem'
-import { useGetPerTokenRewards } from './hooks/useGetPerTokenRewards'
+import { Address, parseUnits } from 'viem'
 import { withSpinner } from '@/components/LoadingSpinner/withLoadingSpinner'
 
-type Token = {
-  symbol: string
-  address: Address
-}
-
 type TokenRewardsProps = {
+  builder: Address
   gauge: Address
   currency?: string
   token: Token & { id: 'rif' | 'rbtc' }
 }
 
-const TokenRewards: FC<TokenRewardsProps> = ({ gauge, token: { id, symbol }, currency = 'USD' }) => {
+const TokenRewards: FC<TokenRewardsProps> = ({ builder, gauge, token: { id, symbol }, currency = 'USD' }) => {
   const { [id]: tokenRewards } = useGetPerTokenRewards()
   const [rewards, setRewards] = useState<bigint>(0n)
   const [rewardsError, setRewardsError] = useState<Error | null>(null)
   const [isRewardsLoading, setIsRewardsLoading] = useState(true)
 
   useEffect(() => {
-    if (tokenRewards && symbol in tokenRewards) {
+    if (tokenRewards && tokenRewards.data) {
       setRewards(tokenRewards.data ?? 0n)
     }
     if (tokenRewards && tokenRewards.error) {
@@ -53,34 +52,40 @@ const TokenRewards: FC<TokenRewardsProps> = ({ gauge, token: { id, symbol }, cur
     isLoading: rewardSharesLoading,
     error: rewardSharesError,
   } = useGetRewardShares(gauge)
+  const {
+    data: rewardPercentage,
+    isLoading: rewardPercentageLoading,
+    error: rewardPercentageError,
+  } = useGetRewardPercentageToApply(builder)
 
-  const error = rewardsError ?? totalPotentialRewardsError ?? rewardSharesError
+  const error = rewardsError ?? totalPotentialRewardsError ?? rewardSharesError ?? rewardPercentageError
   useHandleErrors({ error, title: 'Error loading estimated rewards' })
 
   const { prices } = usePricesContext()
 
+  const precision = parseUnits('1', 18)
+  const rewardsAmount = rewardPercentage ? (rewards * rewardPercentage) / precision : 0n
+
   const estimatedRewards =
-    rewards && rewardShares && totalPotentialRewards ? (rewards * rewardShares) / totalPotentialRewards : 0n
+    rewardShares && totalPotentialRewards ? (rewardShares * rewardsAmount) / totalPotentialRewards : 0n
   const estimatedRewardsInHuman = Number(formatBalanceToHuman(estimatedRewards))
   const price = prices[symbol]?.price ?? 0
   const { amount, fiatAmount } = formatMetrics(estimatedRewardsInHuman, price, symbol, currency)
 
-  return withSpinner(TokenMetricsCardRow)({
+  return withSpinner(
+    TokenMetricsCardRow,
+    'min-h-0 grow-0',
+  )({
     amount,
     fiatAmount,
-    isLoading: isRewardsLoading || totalPotentialRewardsLoading || rewardSharesLoading,
+    isLoading:
+      isRewardsLoading || totalPotentialRewardsLoading || rewardSharesLoading || rewardPercentageLoading,
   })
 }
 
-type EstimatedRewardsProps = {
-  gauge: Address
-  currency?: string
-  data: {
-    [token: string]: Token
-  }
-}
+type EstimatedRewardsProps = RewardDetails
 
-export const EstimatedRewards: FC<EstimatedRewardsProps> = ({ data: { rif, rbtc }, ...rest }) => {
+export const EstimatedRewards: FC<EstimatedRewardsProps> = ({ tokens: { rif, rbtc }, ...rest }) => {
   return (
     <MetricsCard borderless>
       <MetricsCardTitle title="Estimated rewards" data-testid="EstimatedRewards" />

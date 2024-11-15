@@ -1,7 +1,7 @@
 import { BackersManagerAbi } from '@/lib/abis/v2/BackersManagerAbi'
 import { AVERAGE_BLOCKTIME } from '@/lib/constants'
 import { BackersManagerAddress } from '@/lib/contracts'
-import { useReadContract, UseReadContractReturnType } from 'wagmi'
+import { useReadContract } from 'wagmi'
 
 export const useGetRewardsCoinbase = () => {
   return useReadContract({

@@ -5,6 +5,8 @@ import {
   TokenMetricsCardRow,
   useGetBuilderRewards,
   useGetBuilderRewardsClaimedLogs,
+  RewardDetails,
+  Token,
 } from '@/app/collective-rewards/rewards'
 import { useHandleErrors } from '@/app/collective-rewards/utils'
 import { formatBalanceToHuman } from '@/app/user/Balances/balanceUtils'
@@ -13,18 +15,10 @@ import { usePricesContext } from '@/shared/context/PricesContext'
 import { FC } from 'react'
 import { Address } from 'viem'
 
-type Token = {
-  symbol: string
-  address: Address
-}
-
 type TokenRewardsMetricsProps = {
   gauge: Address
   currency?: string
-  token: {
-    symbol: string
-    address: Address
-  }
+  token: Token
 }
 
 const TokenRewardsMetrics: FC<TokenRewardsMetricsProps> = ({
@@ -33,9 +27,9 @@ const TokenRewardsMetrics: FC<TokenRewardsMetricsProps> = ({
   currency = 'USD',
 }) => {
   const {
-    data: rewardsPerToken,
-    isLoading: logsLoading,
-    error: rewardsError,
+    data: builderRewardsPerToken,
+    isLoading: builderRewardsPerTokenLoading,
+    error: builderRewardsPerTokenError,
   } = useGetBuilderRewardsClaimedLogs(gauge)
   const {
     data: claimableRewards,
@@ -43,13 +37,13 @@ const TokenRewardsMetrics: FC<TokenRewardsMetricsProps> = ({
     error: claimableRewardsError,
   } = useGetBuilderRewards(address, gauge)
 
-  const error = rewardsError ?? claimableRewardsError
+  const error = builderRewardsPerTokenError ?? claimableRewardsError
   useHandleErrors({ error, title: 'Error loading all time rewards' })
 
   const { prices } = usePricesContext()
 
   const totalClaimedRewards =
-    rewardsPerToken[address]?.reduce((acc, event) => {
+    builderRewardsPerToken[address]?.reduce((acc, event) => {
       const amount = event.args.amount_ ?? 0n
       return acc + amount
     }, 0n) ?? 0n
@@ -60,22 +54,19 @@ const TokenRewardsMetrics: FC<TokenRewardsMetricsProps> = ({
 
   const { amount, fiatAmount } = formatMetrics(totalRewardsInHuman, price, symbol, currency)
 
-  return withSpinner(TokenMetricsCardRow)({
+  return withSpinner(
+    TokenMetricsCardRow,
+    'min-h-0 grow-0',
+  )({
     amount,
     fiatAmount,
-    isLoading: logsLoading || claimableRewardsLoading,
+    isLoading: builderRewardsPerTokenLoading || claimableRewardsLoading,
   })
 }
 
-type AllTimeRewardsProps = {
-  gauge: Address
-  currency?: string
-  data: {
-    [token: string]: Token
-  }
-}
+type AllTimeRewardsProps = Omit<RewardDetails, 'builder'>
 
-export const AllTimeRewards: FC<AllTimeRewardsProps> = ({ data: { rif, rbtc }, ...rest }) => {
+export const AllTimeRewards: FC<AllTimeRewardsProps> = ({ tokens: { rif, rbtc }, ...rest }) => {
   return (
     <MetricsCard borderless>
       <MetricsCardTitle title="All time rewards" data-testid="AllTimeRewards" />

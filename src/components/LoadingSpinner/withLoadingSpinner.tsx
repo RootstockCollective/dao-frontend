@@ -5,9 +5,12 @@ type WithLoadingProps = {
   isLoading: boolean
 }
 
-export const withSpinner = <P extends {}>(Component: ComponentType<P>): FC<P & WithLoadingProps> => {
+export const withSpinner = <P extends {}>(
+  Component: ComponentType<P>,
+  className = '',
+): FC<P & WithLoadingProps> => {
   const WrappedComponent = ({ isLoading, ...props }: WithLoadingProps) => (
-    <>{isLoading ? <LoadingSpinner /> : <Component {...(props as P)} />}</>
+    <>{isLoading ? <LoadingSpinner className={className} /> : <Component {...(props as P)} />}</>
   )
 
   WrappedComponent.displayName = `WithSpinner(${Component.displayName || Component.name})`
