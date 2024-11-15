@@ -71,9 +71,12 @@ export type SetBackerRewardsForBuilder = {
 export const useSetBackerRewardsForBuilder = (): SetBackerRewardsForBuilder => {
   const { writeContractAsync, data, isPending, isSuccess, error: writeError, ...rest } = useWriteContract()
   const { data: receipt, isLoading, error: receiptError } = useWaitForTransactionReceipt({ hash: data! })
+
+  const error = writeError || receiptError
+
   useAwaitedTxReporting({
     hash: data,
-    error: writeError || receiptError,
+    error,
     isPendingTx: isPending,
     isLoadingReceipt: isLoading,
     isSuccess,
@@ -94,7 +97,7 @@ export const useSetBackerRewardsForBuilder = (): SetBackerRewardsForBuilder => {
     data,
     isPending: isPending || isLoading,
     isSuccess: isSuccess && !!receipt,
-    error: writeError || receiptError,
+    error,
     setNewReward,
     ...rest,
   }

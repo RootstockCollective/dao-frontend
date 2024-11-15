@@ -6,7 +6,6 @@ import {
 } from '@/app/collective-rewards/rewards/backers'
 import {
   RewardDetails,
-  useClaimStateReporting,
   BackerRewardsCard,
   BackerRewardsContextProvider,
 } from '@/app/collective-rewards/rewards'
@@ -20,9 +19,7 @@ import { MetricContainer } from '@/app/collective-rewards/rewards/components/Met
 type RewardsProps = RewardDetails
 
 export const Rewards: FC<RewardsProps> = ({ builder, gauges, tokens }) => {
-  const { claimRewards, ...claimTx } = useClaimBackerRewards(gauges)
-
-  useClaimStateReporting({ ...claimTx })
+  const { claimRewards } = useClaimBackerRewards(gauges)
 
   return (
     <div className="flex gap-4 w-full">

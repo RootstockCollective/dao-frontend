@@ -7,7 +7,6 @@ import {
   BuilderLastCycleRewards,
   RewardDetails,
   useClaimBuilderRewards,
-  useClaimStateReporting,
 } from '@/app/collective-rewards/rewards'
 import { MetricContainer } from '@/app/collective-rewards/rewards/components/MetricContainer'
 import { Button } from '@/components/Button'
@@ -19,9 +18,7 @@ import { FC } from 'react'
 type RewardsProps = RewardDetails
 
 export const Rewards: FC<RewardsProps> = ({ builder, ...rest }) => {
-  const { isClaimFunctionReady, claimRewards, ...claimTx } = useClaimBuilderRewards(builder)
-
-  useClaimStateReporting({ ...claimTx })
+  const { isClaimFunctionReady, claimRewards } = useClaimBuilderRewards(builder)
 
   return (
     <CycleContextProvider>

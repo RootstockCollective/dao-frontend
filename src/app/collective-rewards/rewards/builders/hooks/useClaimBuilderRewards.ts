@@ -22,37 +22,15 @@ export const useClaimBuilderRewards = (builder: Address) => {
     [isGaugePending, gaugeError, gauge],
   )
 
-  const error = useMemo(() => {
-    if (gaugeError) {
-      return {
-        ...gaugeError,
-        shortMessage: `Failed getting gauge for builder ${builder} (${gaugeError.message})`,
-      } as typeof gaugeError
-    }
+  const fetchedError =
+    isFetched && gauge === zeroAddress
+      ? {
+          ...createZeroAddressError('Gauge', { builder }),
+          shortMessage: `${builder} is not a valid builder`,
+        }
+      : null
 
-    if (executionError) {
-      return {
-        ...executionError,
-        shortMessage: `Failed claim execution (${executionError.message})`,
-      } as typeof executionError
-    }
-
-    if (receiptError) {
-      return {
-        ...receiptError,
-        shortMessage: `Failed to get claim execution receipt (${receiptError.message})`,
-      } as typeof receiptError
-    }
-
-    if (isFetched && gauge === zeroAddress) {
-      return {
-        ...createZeroAddressError('Gauge', { builder }),
-        shortMessage: `${builder} is not a valid builder`,
-      }
-    }
-
-    return null
-  }, [gauge, gaugeError, builder, executionError, receiptError, isFetched])
+  const error = executionError || receiptError || fetchedError
 
   const claimBuilderReward = (rewardToken?: Address) => {
     return writeContractAsync({
