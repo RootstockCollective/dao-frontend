@@ -84,7 +84,10 @@ const TokenRewardsMetrics: FC<TokenRewardsMetricsProps> = ({
 
   useClaimStateReporting({ ...claimTx, error: rewardsError ?? claimTx.error })
 
-  return withSpinner(TokenMetricsCardRow)({
+  return withSpinner(
+    TokenMetricsCardRow,
+    'min-h-0 grow-0',
+  )({
     amount,
     fiatAmount,
     isLoading: rewardsLoading,
