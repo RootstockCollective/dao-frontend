@@ -10,11 +10,11 @@ import {
   RewardDetails,
   Token,
 } from '@/app/collective-rewards/rewards'
-import { useHandleErrors } from '@/app/collective-rewards/utils'
+import { useHandleErrors, applyPrecision } from '@/app/collective-rewards/utils'
 import { formatBalanceToHuman } from '@/app/user/Balances/balanceUtils'
 import { usePricesContext } from '@/shared/context/PricesContext'
 import { FC, useEffect, useState } from 'react'
-import { Address, parseUnits } from 'viem'
+import { Address } from 'viem'
 import { withSpinner } from '@/components/LoadingSpinner/withLoadingSpinner'
 
 type TokenRewardsProps = {
@@ -63,8 +63,7 @@ const TokenRewards: FC<TokenRewardsProps> = ({ builder, gauge, token: { id, symb
 
   const { prices } = usePricesContext()
 
-  const precision = parseUnits('1', 18)
-  const rewardsAmount = rewardPercentage ? (rewards * rewardPercentage) / precision : 0n
+  const rewardsAmount = rewardPercentage ? applyPrecision(rewards * rewardPercentage) : 0n
 
   const estimatedRewards =
     rewardShares && totalPotentialRewards ? (rewardShares * rewardsAmount) / totalPotentialRewards : 0n

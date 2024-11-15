@@ -1,6 +1,7 @@
 import { createContext, FC, ReactNode, useContext } from 'react'
-import { DateTime } from 'luxon'
+import { DateTime, Duration } from 'luxon'
 import {
+  useGetCycleNext,
   useGetCycleStart,
   useGetCycleStartAndDuration,
   useGetEndDistributionWindow,
@@ -8,7 +9,8 @@ import {
 
 export type Cycle = {
   cycleStart: DateTime
-  cycleDuration: DateTime
+  cycleDuration: Duration
+  cycleNext: DateTime
   fistCycleStart: DateTime
   endDistributionWindow: DateTime
 }
@@ -47,14 +49,17 @@ export const CycleContextProvider: FC<CycleProviderProps> = ({ children }) => {
     isLoading: endDistributionWindowLoading,
     error: endDistributionWindowError,
   } = useGetEndDistributionWindow(timestamp)
+  const { data: cycleNext, isLoading: cycleNextLoading, error: cycleNextError } = useGetCycleNext(timestamp)
 
-  const isLoading = cycleStartAndDurationLoading || cycleStartLoading || endDistributionWindowLoading
-  const error = cycleStartAndDurationError ?? cycleStartError ?? endDistributionWindowError
+  const isLoading =
+    cycleStartAndDurationLoading || cycleStartLoading || endDistributionWindowLoading || cycleNextLoading
+  const error = cycleStartAndDurationError ?? cycleStartError ?? endDistributionWindowError ?? cycleNextError
 
   const valueOfContext: CycleContextValue = {
     data: {
       cycleStart: DateTime.fromSeconds(Number(cycleStart ?? 0n)),
-      cycleDuration: DateTime.fromSeconds(Number(cycleDuration ?? 0n)),
+      cycleNext: DateTime.fromSeconds(Number(cycleNext ?? 0n)),
+      cycleDuration: Duration.fromObject({ seconds: Number(cycleDuration ?? 0n) }),
       fistCycleStart: DateTime.fromSeconds(Number(fistCycleStart ?? 0n)),
       endDistributionWindow: DateTime.fromSeconds(Number(endDistributionWindow ?? 0n)),
     },

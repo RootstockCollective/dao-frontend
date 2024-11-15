@@ -3,7 +3,7 @@ import { withSpinner } from '@/components/LoadingSpinner/withLoadingSpinner'
 import { Typography } from '@/components/Typography'
 import { cn } from '@/lib/utils'
 import { DateTime } from 'luxon'
-import { FC, HTMLAttributes, ReactNode, useEffect } from 'react'
+import { FC, HTMLAttributes, ReactNode } from 'react'
 import { weiToPercentage } from '../utils'
 import { useBuilderSettingsContext } from './context'
 
