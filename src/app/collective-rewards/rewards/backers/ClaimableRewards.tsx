@@ -3,7 +3,6 @@ import { Address } from 'viem'
 import { usePricesContext } from '@/shared/context/PricesContext'
 import {
   formatMetrics,
-  useClaimStateReporting,
   MetricsCard,
   TokenMetricsCardRow,
   MetricsCardTitle,
@@ -43,9 +42,7 @@ const TokenRewardsMetrics: FC<TokenRewardsMetricsProps> = ({
     currency,
   )
 
-  const { claimRewards, ...claimTx } = useClaimBackerRewards(gauges, address)
-
-  useClaimStateReporting({ ...claimTx, error: claimTx.error })
+  const { claimRewards } = useClaimBackerRewards(gauges, address)
 
   return withSpinner(TokenMetricsCardRow)({
     amount,

@@ -1,9 +1,10 @@
-import { Address, zeroAddress } from 'viem'
-import { useWaitForTransactionReceipt, useWriteContract } from 'wagmi'
+import { useAwaitedTxReporting } from '@/app/collective-rewards/shared/hooks'
+import { useGetBuilderToGauge } from '@/app/collective-rewards/user'
 import { GaugeAbi } from '@/lib/abis/v2/GaugeAbi'
 import { createZeroAddressError } from '@/shared/errors/zeroAddressError'
 import { useMemo } from 'react'
-import { useGetBuilderToGauge } from '@/app/collective-rewards/user'
+import { Address, zeroAddress } from 'viem'
+import { useWaitForTransactionReceipt, useWriteContract } from 'wagmi'
 
 export const useClaimBuilderRewards = (builder: Address) => {
   const { writeContractAsync, error: executionError, data: hash, isPending } = useWriteContract()
@@ -21,35 +22,15 @@ export const useClaimBuilderRewards = (builder: Address) => {
     [isGaugePending, gaugeError, gauge],
   )
 
-  const error = useMemo(() => {
-    if (gaugeError) {
-      return {
-        ...gaugeError,
-        shortMessage: `Failed getting gauge for builder ${builder} (${gaugeError.message})`,
-      }
-    }
+  const fetchedError =
+    isFetched && gauge === zeroAddress
+      ? {
+          ...createZeroAddressError('Gauge', { builder }),
+          shortMessage: `${builder} is not a valid builder`,
+        }
+      : null
 
-    if (executionError) {
-      return {
-        ...executionError,
-        shortMessage: `Failed claim execution (${executionError.message})`,
-      }
-    }
-
-    if (receiptError) {
-      return {
-        ...receiptError,
-        shortMessage: `Failed to get claim execution receipt (${receiptError.message})`,
-      }
-    }
-
-    if (isFetched && gauge === zeroAddress) {
-      return {
-        ...createZeroAddressError('Gauge', { builder }),
-        shortMessage: `${builder} is not a valid builder`,
-      }
-    }
-  }, [gauge, gaugeError, builder, executionError, receiptError, isFetched])
+  const error = executionError || receiptError || fetchedError
 
   const claimBuilderReward = (rewardToken?: Address) => {
     return writeContractAsync({
@@ -59,6 +40,16 @@ export const useClaimBuilderRewards = (builder: Address) => {
       args: rewardToken ? [rewardToken] : [],
     })
   }
+
+  useAwaitedTxReporting({
+    hash,
+    error,
+    isPendingTx: isPending,
+    isLoadingReceipt: isLoading,
+    isSuccess,
+    receipt: data,
+    title: 'Claiming builder rewards',
+  })
 
   return {
     isClaimFunctionReady,

@@ -4,7 +4,6 @@ import {
   MetricsCardTitle,
   TokenMetricsCardRow,
   useClaimBuilderRewards,
-  useClaimStateReporting,
   useGetBuilderRewards,
   Token,
   RewardDetails,
@@ -48,9 +47,7 @@ const TokenRewardsMetrics: FC<TokenRewardsMetricsProps> = ({
     currency,
   )
 
-  const { isClaimFunctionReady, claimRewards, ...claimTx } = useClaimBuilderRewards(builder)
-
-  useClaimStateReporting({ ...claimTx, error: rewardsError ?? claimTx.error })
+  const { isClaimFunctionReady, claimRewards } = useClaimBuilderRewards(builder)
 
   return withSpinner(
     TokenMetricsCardRow,

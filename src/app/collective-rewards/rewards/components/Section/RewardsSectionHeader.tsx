@@ -1,13 +1,14 @@
-import { Button } from '@/components/Button'
-import { ConfigSvg } from '@/components/ConfigSvg'
+import { ButtonProps } from '@/components/Button'
 import { HeaderTitle, Typography } from '@/components/Typography'
 import { FC } from 'react'
+import { SettingsButton } from '@/app/collective-rewards/rewards'
 
 export type RewardsSectionHeader = {
   title: string
   subtext: string
+  onSettingsOpen: ButtonProps['onClick']
 }
-export const RewardsSectionHeader: FC<RewardsSectionHeader> = ({ title, subtext }) => (
+export const RewardsSectionHeader: FC<RewardsSectionHeader> = ({ title, subtext, onSettingsOpen }) => (
   <div className="flex justify-between w-full items-center gap-2.5">
     <div className="flex flex-col items-start w-full">
       <HeaderTitle className="uppercase text-2xl leading-7 font-normal">{title}</HeaderTitle>
@@ -15,8 +16,6 @@ export const RewardsSectionHeader: FC<RewardsSectionHeader> = ({ title, subtext 
         {subtext}
       </Typography>
     </div>
-    <Button variant="outlined" className="flex w-[54px] self-stretch border-[#2D2D2D]">
-      <ConfigSvg />
-    </Button>
+    <SettingsButton onClick={onSettingsOpen} />
   </div>
 )

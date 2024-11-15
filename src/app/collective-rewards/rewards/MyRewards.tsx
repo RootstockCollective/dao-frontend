@@ -1,17 +1,19 @@
-import { FC } from 'react'
-import { Address, getAddress } from 'viem'
 import {
+  BackerRewards,
+  BuilderRewards,
+  RewardDetails,
   RewardsSection,
   RewardsSectionHeader,
-  BuilderRewards,
-  BackerRewards,
-  RewardDetails,
 } from '@/app/collective-rewards/rewards'
+import { useGetGaugesArray } from '@/app/collective-rewards/user'
 import { getCoinbaseAddress } from '@/app/collective-rewards/utils'
 import { tokenContracts } from '@/lib/contracts'
-import { useGetGaugesArray } from '@/app/collective-rewards/user'
+import { useRouter } from 'next/navigation'
+import { FC } from 'react'
+import { Address, getAddress } from 'viem'
 
 export const Rewards: FC<{ builder: Address; gauge: Address }> = ({ builder, gauge }) => {
+  const router = useRouter()
   const { data: rewardGauges } = useGetGaugesArray('active')
   const { data: haltedGauges } = useGetGaugesArray('halted')
   const gauges = [...(rewardGauges ?? []), ...(haltedGauges ?? [])]
@@ -37,6 +39,9 @@ export const Rewards: FC<{ builder: Address; gauge: Address }> = ({ builder, gau
       <div className="pb-[46px]">
         <RewardsSection>
           <RewardsSectionHeader
+            onSettingsOpen={() => {
+              router.push('/user/settings?type=builder')
+            }}
             title="Builder Rewards"
             subtext="Monitor the rewards you are getting from your Collective Rewards."
           />
@@ -44,7 +49,13 @@ export const Rewards: FC<{ builder: Address; gauge: Address }> = ({ builder, gau
         </RewardsSection>
       </div>
       <RewardsSection>
-        <RewardsSectionHeader title="Backer Rewards" subtext="Monitor your rewards balances and claim." />
+        <RewardsSectionHeader
+          onSettingsOpen={() => {
+            console.error('Not implemented')
+          }}
+          title="Backer Rewards"
+          subtext="Monitor your rewards balances and claim."
+        />
         <BackerRewards {...data} />
       </RewardsSection>
     </>
