@@ -9,6 +9,7 @@ import { MainContainer } from '@/components/MainContainer/MainContainer'
 import { Tabs, TabsContent, TabsList, TabsTrigger, TabTitle } from '@/components/Tabs'
 import { TxStatusMessage } from '@/components/TxStatusMessage'
 import { useSearchParams } from 'next/navigation'
+import { Suspense } from 'react'
 import { zeroAddress } from 'viem'
 import { useAccount } from 'wagmi'
 
@@ -46,7 +47,7 @@ const tabs: Tabs = {
   },
 }
 
-export default function User() {
+function User() {
   const { address } = useAccount()
   const { data: gauge, error } = useGetBuilderToGauge(address!)
   const searchParams = useSearchParams()
@@ -78,5 +79,13 @@ export default function User() {
         <MyHoldings showBuilderButton={true} />
       )}
     </MainContainer>
+  )
+}
+
+export default function UserPage() {
+  return (
+    <Suspense fallback={<div>Loading...</div>}>
+      <User />
+    </Suspense>
   )
 }
