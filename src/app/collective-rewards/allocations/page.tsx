@@ -55,7 +55,7 @@ const MetricsLoader = () => {
   const unallocatedAmount = 0n
 
   const unallocatedAmountValue = `${unallocatedAmount} ${stRIFBalance.symbol}`
-  // TODO: the isLoading state could be shared for the 3 components or 
+  // TODO: the isLoading state could be shared for the 3 components or
   return (
     <>
       <Balance value={balanceValue} />
