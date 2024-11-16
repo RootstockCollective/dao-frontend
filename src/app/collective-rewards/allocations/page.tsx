@@ -1,12 +1,14 @@
 'use client'
 
-import { getTokenBalance } from '@/app/user/Balances/balanceUtils'
+import { formatBalanceToHuman, getTokenBalance } from '@/app/user/Balances/balanceUtils'
 import { useGetAddressTokens } from '@/app/user/Balances/hooks/useGetAddressTokens'
 import { MainContainer } from '@/components/MainContainer/MainContainer'
 import { HeaderTitle, Paragraph } from '@/components/Typography'
 import { useAccount } from 'wagmi'
 import { useHandleErrors } from '../utils'
 import { useBackerTotalAllocation } from './useBackerTotalAllocation'
+import { withSpinner } from '@/components/LoadingSpinner/withLoadingSpinner'
+import { ethers } from 'ethers'
 
 type ValueProps = {
   value: string
@@ -16,6 +18,7 @@ type MetricsProps = ValueProps & {
   name: string
 }
 
+// TODO: to specify a minimum width for the metrics
 const Metric = ({ name, value }: MetricsProps) => {
   return (
     <div className="flex flex-col items-start gap-[10px]">
@@ -26,41 +29,55 @@ const Metric = ({ name, value }: MetricsProps) => {
 }
 
 const Balance = ({ value }: ValueProps) => {
-  // TODO: manage the isLoading and error states
   return <Metric name="Balance" value={value} />
 }
+const BalanceWithSpinner = withSpinner(Balance)
 
 const AllocatedAmount = ({ value }: ValueProps) => {
-  // TODO: manage the isLoading state
   return <Metric name="Allocated amount" value={value} />
 }
+const AllocatedAmountWithSpinner = withSpinner(AllocatedAmount)
 
 const UnallocatedAmount = ({ value }: ValueProps) => {
   return <Metric name="Unallocated amount" value={value} />
 }
+const UnallocatedAmountWithSpinner = withSpinner(UnallocatedAmount)
 
 const MetricsLoader = () => {
-  // TODO: I'm not sure if we need all of these or we could just call the token balance
   const { address, chainId } = useAccount()
-  const query = useGetAddressTokens(address!, chainId as number)
-  const stRIFBalance = getTokenBalance('stRIF', query.data)
+  let {
+    data,
+    isLoading: balanceLoading,
+    error: balanceError,
+  } = useGetAddressTokens(address!, chainId as number)
+  const stRIFBalance = getTokenBalance('stRIF', data)
   const balanceValue = `${stRIFBalance.balance} ${stRIFBalance.symbol}`
+  balanceLoading = false
 
-  // TODO: fetch allocated amount
-  const { data: allocatedAmount, isLoading, error } = useBackerTotalAllocation(address!)
-  useHandleErrors({ error, title: 'Failed to fetch allocated amount' })
+  let {
+    data: allocatedAmount,
+    isLoading: allocatedAmountLoading,
+    error: allocatedAmountError,
+  } = useBackerTotalAllocation(address!)
   const allocatedAmountValue = `${allocatedAmount} ${stRIFBalance.symbol}`
+  allocatedAmountLoading = false
 
-  // TODO: unallocated amount to be calculated
-  const unallocatedAmount = 0n
+  useHandleErrors({
+    error: balanceError ?? allocatedAmountError,
+    title: 'Failed to fetch balance and allocated amount',
+  })
+
+  const unformattedUnit = stRIFBalance.balance
+  const formattedUnit = ethers.parseEther(unformattedUnit)
+  const unallocatedAmount = formatBalanceToHuman(formattedUnit - (allocatedAmount || 0n))
 
   const unallocatedAmountValue = `${unallocatedAmount} ${stRIFBalance.symbol}`
-  // TODO: the isLoading state could be shared for the 3 components or
+  const unallocatedAmountLoading = balanceLoading || allocatedAmountLoading
   return (
     <>
-      <Balance value={balanceValue} />
-      <AllocatedAmount value={allocatedAmountValue} />
-      <UnallocatedAmount value={unallocatedAmountValue} />
+      <BalanceWithSpinner value={balanceValue} isLoading={balanceLoading} />
+      <AllocatedAmountWithSpinner value={allocatedAmountValue} isLoading={allocatedAmountLoading} />
+      <UnallocatedAmountWithSpinner value={unallocatedAmountValue} isLoading={unallocatedAmountLoading} />
     </>
   )
 }
