@@ -28,6 +28,10 @@ const Metric = ({ name, value }: MetricsProps) => {
   )
 }
 
+const Column = ({ children }: { children: React.ReactNode }) => {
+  return <div className="flex flex-col items-start gap-[10px] min-w-[200px] max-w-[20%]">{children}</div>
+}
+
 const Balance = ({ value }: ValueProps) => {
   return <Metric name="Balance" value={value} />
 }
@@ -61,6 +65,7 @@ const MetricsLoader = () => {
   } = useBackerTotalAllocation(address!)
   const allocatedAmountValue = `${allocatedAmount} ${stRIFBalance.symbol}`
   allocatedAmountLoading = false
+  allocatedAmount = 0n
 
   useHandleErrors({
     error: balanceError ?? allocatedAmountError,
@@ -75,9 +80,15 @@ const MetricsLoader = () => {
   const unallocatedAmountLoading = balanceLoading || allocatedAmountLoading
   return (
     <>
-      <BalanceWithSpinner value={balanceValue} isLoading={balanceLoading} />
-      <AllocatedAmountWithSpinner value={allocatedAmountValue} isLoading={allocatedAmountLoading} />
-      <UnallocatedAmountWithSpinner value={unallocatedAmountValue} isLoading={unallocatedAmountLoading} />
+      <Column>
+        <BalanceWithSpinner value={balanceValue} isLoading={balanceLoading} />
+      </Column>
+      <Column>
+        <AllocatedAmountWithSpinner value={allocatedAmountValue} isLoading={allocatedAmountLoading} />
+      </Column>
+      <Column>
+        <UnallocatedAmountWithSpinner value={unallocatedAmountValue} isLoading={unallocatedAmountLoading} />
+      </Column>
     </>
   )
 }
@@ -94,7 +105,7 @@ export default function BuildersIncentiveMarket() {
           </Paragraph>
         </div>
         <div className="flex flex-col items-start gap-6 self-stretch">
-          <div className="flex items-start gap-6 max-w-[750px]">
+          <div className="flex items-start gap-6 w-full">
             <MetricsLoader />
           </div>
           <div>TODO: placeholder</div>
