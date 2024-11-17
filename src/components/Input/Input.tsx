@@ -33,6 +33,7 @@ interface Props {
   className?: string
   type?: InputType
   onChange?: (value: string) => void
+  labelProps?: JSX.IntrinsicElements['div']
 }
 export const Input: FC<Props> = ({
   name,
@@ -48,6 +49,7 @@ export const Input: FC<Props> = ({
   className,
   type = 'text',
   onChange = () => {},
+  labelProps = {},
 }) => {
   const handleOnChange = (e: { target: { value: string } }) => onChange(e.target.value)
 
@@ -106,7 +108,9 @@ export const Input: FC<Props> = ({
     <div className={className} data-testid={`Input_Container_${name}`}>
       {label && (
         <div className="pb-[10px]" {...labelWrapperProps}>
-          <Label variant="semibold">{label}</Label>
+          <Label variant="semibold" {...labelProps}>
+            {label}
+          </Label>
         </div>
       )}
       {input}

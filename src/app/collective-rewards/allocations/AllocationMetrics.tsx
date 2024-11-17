@@ -47,7 +47,7 @@ const UnallocatedAmount = ({ value }: ValueProps) => {
 const UnallocatedAmountWithSpinner = withSpinner(UnallocatedAmount)
 
 export const AllocationMetrics = () => {
-  // TODO: we can move this logic to a custom hook
+  // TODO: we can move this logic to a custom hook or to a context
   const { address, chainId } = useAccount()
   let {
     data,
