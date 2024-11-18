@@ -1,12 +1,12 @@
 import { useGaugesGetFunction } from '@/app/collective-rewards/hooks'
 import { Address } from 'viem'
-import { useHandleErrors } from '@/app/collective-rewards/utils'
-import { MetricsCardWithSpinner } from '@/components/MetricsCard/MetricsCard'
 import { FC } from 'react'
 import { usePricesContext } from '@/shared/context/PricesContext'
-import { Token } from '@/app/collective-rewards/rewards'
 import { formatCurrency } from '@/lib/utils'
 import { formatBalanceToHuman } from '@/app/user/Balances/balanceUtils'
+import { MetricsCard, MetricsCardTitle, TokenMetricsCardRow, Token } from '@/app/collective-rewards/rewards'
+import { withSpinner } from '@/components/LoadingSpinner/withLoadingSpinner'
+import { useHandleErrors } from '@/app/collective-rewards/utils'
 
 type TotalAllocationsProps = {
   gauges: Address[]
@@ -30,12 +30,22 @@ export const TotalAllocationsMetrics: FC<TotalAllocationsProps> = ({
   const fiatAmount = `= ${currency} ${formatCurrency(totalAllocationsInHuman * price, currency)}`
 
   return (
-    <MetricsCardWithSpinner
-      title="Total allocations"
-      amount={`${totalAllocationsInHuman} STRIF`}
-      fiatAmount={fiatAmount}
-      isLoading={isLoading}
-      borderless
-    />
+    <MetricsCard borderless>
+      <MetricsCardTitle
+        title="Total allocations"
+        data-testid="TotalAllocations"
+        tooltip={{
+          text: 'Total stRIF allocation from Backers to Builders',
+        }}
+      />
+      {withSpinner(
+        TokenMetricsCardRow,
+        'min-h-0 grow-0',
+      )({
+        amount: `${totalAllocationsInHuman} STRIF`,
+        fiatAmount,
+        isLoading,
+      })}
+    </MetricsCard>
   )
 }

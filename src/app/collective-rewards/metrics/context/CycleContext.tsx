@@ -1,4 +1,4 @@
-import { createContext, FC, ReactNode, useContext } from 'react'
+import { createContext, FC, ReactNode, useContext, useEffect, useMemo, useState } from 'react'
 import { DateTime, Duration } from 'luxon'
 import {
   useGetCycleNext,
@@ -32,37 +32,56 @@ type CycleProviderProps = {
 }
 
 export const CycleContextProvider: FC<CycleProviderProps> = ({ children }) => {
-  const timestamp = BigInt(DateTime.now().toUnixInteger())
+  const [timestamp, setTimestamp] = useState(BigInt(DateTime.now().toUnixInteger()))
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setTimestamp(BigInt(DateTime.now().toUnixInteger()))
+    }, 30000) // Update every 30 seconds
+
+    return () => clearInterval(interval) // Cleanup interval on component unmount
+  }, [])
+
   const {
     data: cycleStartAndDuration,
     isLoading: cycleStartAndDurationLoading,
     error: cycleStartAndDurationError,
   } = useGetCycleStartAndDuration()
-  const [fistCycleStart, cycleDuration] = cycleStartAndDuration || []
+
+  const [firstCycleStart, cycleDuration] = cycleStartAndDuration || []
+
   const {
     data: cycleStart,
     isLoading: cycleStartLoading,
     error: cycleStartError,
   } = useGetCycleStart(timestamp)
+
   const {
     data: endDistributionWindow,
     isLoading: endDistributionWindowLoading,
     error: endDistributionWindowError,
   } = useGetEndDistributionWindow(timestamp)
+
   const { data: cycleNext, isLoading: cycleNextLoading, error: cycleNextError } = useGetCycleNext(timestamp)
 
   const isLoading =
     cycleStartAndDurationLoading || cycleStartLoading || endDistributionWindowLoading || cycleNextLoading
-  const error = cycleStartAndDurationError ?? cycleStartError ?? endDistributionWindowError ?? cycleNextError
+
+  const error = cycleStartAndDurationError || cycleStartError || endDistributionWindowError || cycleNextError
+
+  const data = useMemo(
+    () => ({
+      cycleStart: DateTime.fromSeconds(Number(cycleStart ?? BigInt(0))),
+      cycleNext: DateTime.fromSeconds(Number(cycleNext ?? BigInt(0))),
+      cycleDuration: Duration.fromObject({ seconds: Number(cycleDuration ?? BigInt(0)) }),
+      fistCycleStart: DateTime.fromSeconds(Number(firstCycleStart ?? BigInt(0))),
+      endDistributionWindow: DateTime.fromSeconds(Number(endDistributionWindow ?? BigInt(0))),
+    }),
+    [firstCycleStart, cycleDuration, cycleStart, endDistributionWindow, cycleNext],
+  )
 
   const valueOfContext: CycleContextValue = {
-    data: {
-      cycleStart: DateTime.fromSeconds(Number(cycleStart ?? 0n)),
-      cycleNext: DateTime.fromSeconds(Number(cycleNext ?? 0n)),
-      cycleDuration: Duration.fromObject({ seconds: Number(cycleDuration ?? 0n) }),
-      fistCycleStart: DateTime.fromSeconds(Number(fistCycleStart ?? 0n)),
-      endDistributionWindow: DateTime.fromSeconds(Number(endDistributionWindow ?? 0n)),
-    },
+    data,
     isLoading,
     error,
   }

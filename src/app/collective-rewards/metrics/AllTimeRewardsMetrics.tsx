@@ -65,7 +65,13 @@ type AllTimeRewardsProps = {
 export const AllTimeRewardsMetrics: FC<AllTimeRewardsProps> = ({ gauges, tokens: { rif, rbtc } }) => {
   return (
     <MetricsCard borderless>
-      <MetricsCardTitle title="All time rewards" data-testid="AllTimeRewards" />
+      <MetricsCardTitle
+        title="All time rewards"
+        data-testid="AllTimeRewards"
+        tooltip={{
+          text: 'Total of Builders and Backers rewards paid/claimed/received',
+        }}
+      />
       <TokenRewardsMetrics gauges={gauges} token={rif} />
       <TokenRewardsMetrics gauges={gauges} token={rbtc} />
     </MetricsCard>

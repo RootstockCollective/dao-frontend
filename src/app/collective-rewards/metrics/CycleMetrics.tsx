@@ -1,7 +1,9 @@
-import { MetricsCard } from '@/components/MetricsCard'
 import { useCycleContext } from '@/app/collective-rewards/metrics'
 import { Duration, DateTime } from 'luxon'
 import { useEffect, useState } from 'react'
+import { MetricsCard, MetricsCardTitle, TokenMetricsCardRow } from '@/app/collective-rewards/rewards'
+import { withSpinner } from '@/components/LoadingSpinner/withLoadingSpinner'
+import { useHandleErrors } from '@/app/collective-rewards/utils'
 
 let timeout: NodeJS.Timeout
 
@@ -9,7 +11,11 @@ export const CycleMetrics = () => {
   const [timeRemaining, setTimeRemaining] = useState<Duration>(Duration.fromObject({ minutes: 0 }))
   let {
     data: { cycleDuration, cycleNext },
+    isLoading,
+    error,
   } = useCycleContext()
+
+  useHandleErrors({ error, title: 'Error loading cycle metrics' })
 
   const duration =
     cycleDuration.as('days') < 1 ? cycleDuration.shiftTo('hours') : cycleDuration.shiftTo('days')
@@ -19,12 +25,10 @@ export const CycleMetrics = () => {
       timeout = setTimeout(() => {
         setTimeRemaining(state => state.minus({ minutes: 1 }))
       }, 60000) // every minute
-    } else {
-      clearTimeout(timeout)
     }
 
     return () => clearTimeout(timeout)
-  }, [timeRemaining.minutes])
+  }, [timeRemaining])
 
   useEffect(() => {
     const now = DateTime.now()
@@ -38,11 +42,16 @@ export const CycleMetrics = () => {
   }, [cycleNext])
 
   return (
-    <MetricsCard
-      title="Current cycle"
-      amount={`${timeRemaining?.toHuman()}`}
-      fiatAmount={`out of ${duration.toHuman()}. Ends ${cycleNext.toFormat('EEE, dd MMM')}`}
-      borderless
-    />
+    <MetricsCard borderless>
+      <MetricsCardTitle title="Current cycle" data-testid="CurrentCycle" />
+      {withSpinner(
+        TokenMetricsCardRow,
+        'min-h-0 grow-0',
+      )({
+        amount: `${timeRemaining.toHuman()}`,
+        fiatAmount: `out of ${duration.toHuman()}. Ends ${cycleNext.toFormat('EEE, dd MMM')}`,
+        isLoading,
+      })}
+    </MetricsCard>
   )
 }

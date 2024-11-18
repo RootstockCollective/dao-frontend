@@ -10,7 +10,7 @@ type CycleRewards = {
 export const getLastCycleRewards = (cycle: Cycle, notifyRewardLogs?: GaugeNotifyRewardEventLog) => {
   const { cycleDuration, endDistributionWindow, cycleStart } = cycle
   const distributionWindow = endDistributionWindow.diff(cycleStart)
-  const lastCycleStart = cycleStart.minus({ millisecond: +cycleDuration.as('millisecond') })
+  const lastCycleStart = cycleStart.minus({ millisecond: cycleDuration.as('millisecond') })
   const lastCycleAfterDistribution = lastCycleStart.plus({ millisecond: +distributionWindow })
 
   if (!notifyRewardLogs) {

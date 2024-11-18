@@ -2,7 +2,7 @@
 import { cn } from '@/lib/utils'
 import { HTMLAttributes, ReactNode, useEffect, useRef, useState } from 'react'
 
-interface Props extends Omit<HTMLAttributes<HTMLDivElement>, 'children' | 'content'> {
+export interface PopoverProps extends Omit<HTMLAttributes<HTMLDivElement>, 'children' | 'content'> {
   children: ReactNode
   content: ReactNode
   disabled?: boolean
@@ -22,7 +22,7 @@ export const Popover = ({
   size = 'medium',
   hasCaret = false,
   className,
-}: Props) => {
+}: PopoverProps) => {
   const [show, setShow] = useState(false)
   const wrapperRef = useRef<any>(null)
 

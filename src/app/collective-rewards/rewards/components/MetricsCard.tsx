@@ -3,6 +3,7 @@ import { FC, HTMLAttributes, ReactNode } from 'react'
 import { Address } from 'viem'
 import { withSpinner } from '@/components/LoadingSpinner/withLoadingSpinner'
 import { Typography } from '@/components/Typography'
+import { Tooltip, TooltipProps } from './Tooltip'
 
 type MetricsCardRow = {
   amount: string
@@ -81,17 +82,27 @@ export const MetricsCard: FC<MetricsCardProps> = ({
   )
 }
 
-export const MetricsCardTitle: FC<{ title: string; 'data-testid': string }> = ({
+type MetricsCardTitleProps = {
+  title: string
+  'data-testid': string
+  tooltip?: TooltipProps
+}
+
+export const MetricsCardTitle: FC<MetricsCardTitleProps> = ({
   title,
   'data-testid': dataTestId,
+  tooltip,
 }) => (
-  <Typography
-    tagVariant="label"
-    className="text-[16px] font-normal tracking-wide overflow-hidden whitespace-nowrap text-ellipsis"
-    data-testid={`${dataTestId}_MetricsCardTitle`}
-  >
-    {title}
-  </Typography>
+  <div className="flex gap-1">
+    <Typography
+      tagVariant="label"
+      className="text-[16px] font-normal tracking-wide overflow-hidden whitespace-nowrap text-ellipsis"
+      data-testid={`${dataTestId}_MetricsCardTitle`}
+    >
+      {title}
+    </Typography>
+    {tooltip && <Tooltip {...tooltip} />}
+  </div>
 )
 
 type MetricsCardContentProps = {

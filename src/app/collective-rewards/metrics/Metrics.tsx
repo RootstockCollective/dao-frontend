@@ -38,7 +38,6 @@ export const Metrics = () => {
             <div className="flex gap-4 h-min w-3/4">
               <CycleMetrics />
               <TotalActiveBuildersMetrics />
-
               <TotalAllocationsMetrics gauges={gauges} token={tokens.rif} />
             </div>
             <div className="w-1/4">

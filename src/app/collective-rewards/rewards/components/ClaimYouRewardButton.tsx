@@ -19,7 +19,7 @@ export const ClaimYourRewardsButton: FC<Pick<ButtonProps, 'onClick' | 'disabled'
     <Popover
       content={
         <div className="text-[12px] font-bold mb-1">
-          <p data-testid="builderAddressTooltip">Claim your rewards</p>
+          <p data-testid="claimYouRewardsButtonTooltip">Claim your rewards</p>
         </div>
       }
       size="small"
