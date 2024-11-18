@@ -14,7 +14,11 @@ export default function BuildersIncentiveMarket() {
         </div>
         <div className="flex flex-col items-start gap-6 self-stretch">
           <AllocationMetrics />
-          <AllocationAmount />
+          <AllocationAmount
+            // TODO: balance set only to make the percentage buttons work
+            balance={50000000000000000000n}
+            // errorMessage="Builder allocations exceeds amount to allocate"
+          />
         </div>
       </div>
     </MainContainer>
