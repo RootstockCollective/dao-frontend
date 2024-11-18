@@ -1,4 +1,3 @@
-import { BuilderStatus } from '@/app/collective-rewards/allocations/types'
 import { BuilderInfo, BuilderStatusShown } from '@/app/collective-rewards/types'
 import { BuilderContextProvider, useBuilderContext } from '@/app/collective-rewards/user'
 import { useAlertContext } from '@/app/providers/AlertProvider'
@@ -25,7 +24,10 @@ const BuilderRegistrationButton = () => {
   )
 }
 
-export const crStatusColorClasses: Record<BuilderStatus, HtmlHTMLAttributes<HTMLSpanElement>['className']> = {
+export const crStatusColorClasses: Record<
+  BuilderStatusShown,
+  HtmlHTMLAttributes<HTMLSpanElement>['className']
+> = {
   Active: 'bg-[#DBFEE5] text-secondary',
   'In progress': 'bg-[#4B5CF0] color-text-primary',
   Paused: 'bg-[#F9E1FF] text-secondary',
@@ -45,6 +47,8 @@ const StatusBadge: FC<StatusBadgeProps> = ({ builderStatus }) => {
   return {
     'In progress': InProgressComponent,
     Active: WhitelistedComponent,
+    Paused: InProgressComponent, // TODO: Change to PausedComponent
+    Deactivated: InProgressComponent, // TODO: Change to DeactivatedComponent
     undefined: BuilderRegistrationButton,
   }[builderStatus as BuilderStatusShown]
 }
@@ -79,9 +83,5 @@ export const BecomeABuilderHandler = ({ address }: { address: Address }) => {
 }
 
 export const BecomeABuilderButton = ({ address }: { address: Address }) => {
-  return (
-    <BuilderContextProvider>
-      <BecomeABuilderHandler address={address} />
-    </BuilderContextProvider>
-  )
+  return <BecomeABuilderHandler address={address} />
 }

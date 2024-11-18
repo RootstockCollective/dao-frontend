@@ -52,7 +52,6 @@ const getCombinedBuilderStatus = (builderState: BuilderStateStruct): BuilderStat
   // Default case: used to filter out builders
   return EXCLUDED_BUILDER_STATUS
 }
-
 export const useGetBuilders = (): BuildersLoader => {
   /*
    * get Gauges
@@ -144,6 +143,7 @@ export const useGetBuilders = (): BuildersLoader => {
   } = useFetchCreateBuilderProposals()
 
   const data = useMemo(() => {
+    // we need to add the kickback and the joining date
     return Object.entries(buildersProposalsMap ?? {}).map<BuilderInfo>(([builder, proposals]) => ({
       address: getAddress(builder),
       status:

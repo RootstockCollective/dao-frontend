@@ -48,7 +48,7 @@ export const Rewards: FC<{ builder: Address }> = ({ builder }) => {
       <RewardsSection>
         <RewardsSectionHeader
           onSettingsOpen={() => {
-            console.error('Not implemented')
+            router.push('/collective-rewards/allocations')
           }}
           title="Backer Rewards"
           subtext="Monitor your rewards balances and claim."

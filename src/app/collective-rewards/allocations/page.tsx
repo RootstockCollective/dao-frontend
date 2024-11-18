@@ -1,77 +1,36 @@
 'use client'
 
+import { Button } from '@/components/Button'
 import { MainContainer } from '@/components/MainContainer/MainContainer'
 import { Typography } from '@/components/Typography'
-import { AllocationAmount } from './AllocationAmount'
-import { AllocationMetrics } from './AllocationMetrics'
-import { BuilderAllocation } from './BuilderAllocation'
-import { Header } from './Header'
-import { BuilderAllocationProps } from './types'
-import { useState } from 'react'
-
-const ALLOCATION_EXCEED_AMOUNT_ERROR = 'Builder allocations exceeds amount to allocate'
+import { useRouter } from 'next/navigation'
+import { useContext } from 'react'
+import { Builder } from '../types'
+import {
+  AllocationAmount,
+  AllocationMetrics,
+  BuilderAllocation,
+  BuilderAllocationProps,
+  Header,
+} from './components'
+import { AllocationsContext } from './context'
 
 export default function Allocations() {
-  /* TODO: Error message is set when
-   * - the cumulative amount exceeds the allocation amount (ALLOCATION_EXCEED_AMOUNT_ERROR)
-   */
-  const [errorMessage, setErrorMessage] = useState<string>('')
-  const builders: BuilderAllocationProps[] = [
-    {
-      builderName: 'Builder 1',
-      address: '0x1234567890abcdef1234567890abcdef12345678',
-      status: 'Active',
-      joiningDate: '2021-10-01',
-      allocationLeft: 50000000000000000000n,
-      backerRewards: 10,
-      currentAllocation: 70,
-    },
-    {
-      builderName: 'Builder 2',
-      address: '0x1234567890abcdef1234567890abcdef12345678',
-      status: 'Active',
-      joiningDate: '2021-10-01',
-      allocationLeft: 50000000000000000000n,
-      backerRewards: 8,
-      currentAllocation: 50,
-    },
-    {
-      builderName: 'Builder 3',
-      address: '0x1234567890abcdef1234567890abcdef12345678',
-      status: 'Deactivated',
-      joiningDate: '2021-10-01',
-      allocationLeft: 50000000000000000000n,
-      backerRewards: 100,
-      currentAllocation: 20,
-    },
-    {
-      builderName: 'Builder 4',
-      address: '0x1234567890abcdef1234567890abcdef12345678',
-      status: 'Paused',
-      joiningDate: '2021-10-01',
-      allocationLeft: 50000000000000000000n,
-      backerRewards: 99,
-      currentAllocation: 100,
-    },
-    {
-      builderName: 'Builder 5',
-      address: '0x1234567890abcdef1234567890abcdef12345678',
-      status: 'Deactivated',
-      joiningDate: '2021-10-01',
-      allocationLeft: 50000000000000000000n,
-      backerRewards: 99,
-      currentAllocation: 100,
-    },
-    {
-      builderName: 'Builder 6',
-      address: '0x1234567890abcdef1234567890abcdef12345678',
-      status: 'Active',
-      joiningDate: '2021-10-01',
-      allocationLeft: 50000000000000000000n,
-      backerRewards: 99,
-      currentAllocation: 100,
-    },
-  ]
+  const router = useRouter()
+  const {
+    state: { allocations, getBuilder },
+    actions: { resetAllocations },
+  } = useContext(AllocationsContext)
+
+  const saveAllocations = () => {
+    // TODO: save current allocations
+  }
+
+  const cancel = () => {
+    resetAllocations()
+    router.back()
+  }
+
   return (
     <MainContainer>
       <div className="grid grid-rows-1 gap-[32px]">
@@ -80,20 +39,45 @@ export default function Allocations() {
         </div>
         <div className="flex flex-col items-start gap-6 self-stretch">
           <AllocationMetrics />
-          <AllocationAmount
-            // TODO: balance set only to make the percentage buttons work
-            balance={50000000000000000000n}
-            errorMessage={errorMessage}
-          />
+          <AllocationAmount />
         </div>
         <div className="flex flex-col items-start gap-4 self-stretch">
           <Typography tagVariant="h2" className="text-lg font-bold leading-[18px]">
             Selected Builders
           </Typography>
           <div className="flex items-start content-start flex-wrap gap-4">
-            {builders.map((builder, index) => (
-              <BuilderAllocation key={index} {...builder} />
-            ))}
+            {Object.entries(allocations).map(([key, currentAllocation]) => {
+              const index = Number(key)
+              const builderInfo = getBuilder(index) as Builder
+              const builder: BuilderAllocationProps = {
+                ...builderInfo,
+                index,
+                currentAllocation,
+              }
+              return <BuilderAllocation key={index} {...builder} />
+            })}
+          </div>
+          <div className="flex items-center self-stretch justify-between gap-4">
+            <div className="flex gap-4">
+              {/* TODO: review disabled statuses */}
+              <Button variant="primary" onClick={() => saveAllocations()}>
+                {' '}
+                Save allocations
+              </Button>
+              <Button variant="secondary" onClick={() => cancel()}>
+                {' '}
+                Cancel{' '}
+              </Button>
+            </div>
+
+            <Button
+              variant="borderless"
+              onClick={() => resetAllocations()}
+              textClassName="font-bold text-[18px] text-primary"
+            >
+              {' '}
+              Reset allocations
+            </Button>
           </div>
         </div>
       </div>

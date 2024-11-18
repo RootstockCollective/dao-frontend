@@ -13,6 +13,7 @@ import { DateTime } from 'luxon'
 import { splitCombinedName } from '@/app/proposals/shared/utils'
 import { withPricesContextProvider } from '@/shared/context/PricesContext'
 
+// TODO: rename BuilderProposal and perhaps rewrite the type to Modify<BuilderInfo, {proposal: ParsedProposal}>
 export type BuilderProposal = {
   builderName: string
   status: BuilderStatusShown
@@ -59,7 +60,7 @@ export const BuilderContextProvider: FC<BuilderProviderProps> = ({ children }) =
     error: proposalsStateMapError,
   } = useGetProposalsState(buildersProposals)
 
-  const filteredBuilders = useMemo(() => {
+  const builderWithProposal = useMemo(() => {
     return builders.reduce<ProposalByBuilder>((acc, builder) => {
       const { status, address, gauge, stateDetails } = builder
       const proposal = getMostAdvancedProposal(builder, proposalsStateMap)
@@ -93,11 +94,11 @@ export const BuilderContextProvider: FC<BuilderProviderProps> = ({ children }) =
   const error = buildersError ?? proposalsStateMapError
 
   const getBuilderByAddress = (address: Address): BuilderProposal | undefined => {
-    return filteredBuilders[address]
+    return builderWithProposal[address]
   }
 
   const valueOfContext: BuilderContextValue = {
-    data: Object.values(filteredBuilders),
+    data: Object.values(builderWithProposal),
     isLoading,
     error,
     getBuilderByAddress,

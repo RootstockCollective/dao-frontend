@@ -21,6 +21,7 @@ import {
 } from '@/app/collective-rewards/shared'
 import { getAddress } from 'viem'
 import { tokenContracts } from '@/lib/contracts'
+import { useRouter } from 'next/navigation'
 
 enum RewardsColumnKeyEnum {
   builder = 'builder',
@@ -180,9 +181,10 @@ const BuildersLeaderBoardTable: FC<BuildersLeaderBoardTableProps> = ({ tokens, c
 }
 
 export const BuildersLeaderBoard = () => {
+  const router = useRouter()
+
   const onManageAllocations = () => {
-    // TODO: fill the allocation context if necessary and change the route
-    console.log('Manage allocations')
+    router.push('collective-rewards/allocations')
   }
 
   // TODO: check where to store this information

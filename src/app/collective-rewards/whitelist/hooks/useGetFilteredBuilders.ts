@@ -4,7 +4,7 @@ import { BuilderStatusFilter } from '@/app/collective-rewards/whitelist'
 import { useMemo } from 'react'
 
 type FetchWhitelistedBuildersFilter = {
-  builderName: string
+  builderName?: string
   status: BuilderStatusFilter
   stateFlags?: Partial<Record<keyof BuilderStateDetails, boolean>>
 }
@@ -12,7 +12,7 @@ type FetchWhitelistedBuildersFilter = {
 const lowerCaseCompare = (a: string, b: string) => a?.toLowerCase().includes(b?.toLowerCase())
 
 export const useGetFilteredBuilders = ({
-  builderName: filterBuilderName,
+  builderName: filterBuilderName = '',
   status: filterStatus,
   stateFlags,
 }: FetchWhitelistedBuildersFilter) => {

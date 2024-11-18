@@ -38,7 +38,7 @@ interface WhitelistProviderProps {
   children: ReactNode
 }
 
-const WhitelistContextProvider: FC<WhitelistProviderProps> = ({ children }) => {
+export const WhitelistContextProvider: FC<WhitelistProviderProps> = ({ children }) => {
   const [search, setSearch] = useState('')
   const [filterBy, setFilterBy] = useState<BuilderStatusFilter>(initialFilterByValue)
   const { data, isLoading, error } = useGetFilteredBuilders({ builderName: search, status: filterBy })

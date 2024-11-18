@@ -3,10 +3,14 @@ import { ProposalState } from '@/shared/types'
 import { Address } from 'viem'
 
 export const BuilderStatusActive = 'Active'
+export const BuilderStatusPaused = 'Paused'
+export const BuilderStatusDeactivated = 'Deactivated'
 export const BuilderStatusInProgress = 'In progress'
 export const BuilderStatusProposalCreatedMVP = 'In progress - mvp'
 export const builderStatusOptions = [
   BuilderStatusActive,
+  BuilderStatusPaused,
+  BuilderStatusDeactivated,
   BuilderStatusInProgress,
   BuilderStatusProposalCreatedMVP,
 ] as const
@@ -28,6 +32,16 @@ export type BuilderInfo = {
   stateDetails: BuilderStateDetails
   proposals: CreateBuilderProposalEventLog[]
   gauge: Address
+}
+
+// TODO: refactor BuilderInfo & BuilderProposal
+export type Builder = {
+  address: Address
+  status: BuilderStatus
+  gauge: Address
+  kickback: number
+  builderName: string
+  joiningDate: string
 }
 
 export type ProposalsToState = Record<string, ProposalState>
