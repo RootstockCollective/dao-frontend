@@ -20,6 +20,7 @@ export type BuilderProposal = {
   proposalName: string
   proposalDescription: string
   joiningDate: string
+  gauge: Address
 }
 
 type ProposalByBuilder = Record<Address, BuilderProposal>
@@ -77,6 +78,7 @@ export const BuilderContextProvider: FC<BuilderProviderProps> = ({ children }) =
           proposalName,
           proposalDescription,
           joiningDate,
+          gauge: builder.gauge,
         }
       }
 

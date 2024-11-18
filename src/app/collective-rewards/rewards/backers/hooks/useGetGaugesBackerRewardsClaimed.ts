@@ -11,6 +11,8 @@ export const useGetGaugesBackerRewardsClaimed = (
   gauges: Address[],
   rewardToken?: Address,
   backer?: Address,
+  fromTimestamp?: number,
+  toTimestamp?: number,
 ) => {
   const { data: eventsData, isLoading, error } = useGetGaugesEvents(gauges, 'BackerRewardsClaimed')
 
@@ -22,6 +24,18 @@ export const useGetGaugesBackerRewardsClaimed = (
       }
       if (rewardToken) {
         events = events.filter(event => isAddressEqual(event.args.rewardToken_, rewardToken))
+      }
+      if (fromTimestamp) {
+        events = events.filter(event => {
+          // @ts-ignore
+          return event.timestamp >= fromTimestamp
+        })
+      }
+      if (toTimestamp) {
+        events = events.filter(event => {
+          // @ts-ignore
+          return event.timestamp <= toTimestamp
+        })
       }
 
       if (events.length > 0) {

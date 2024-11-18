@@ -1,68 +1,144 @@
+import { useGetBackersClaimedRewardsAmount } from '@/app/collective-rewards/rewards/backers/hooks/useGetBackersClaimedRewardsAmount'
+import {
+  useGetBuildersRewardPercentage,
+  useGetGaugesBackerRewardsClaimed,
+  useGetGaugesRewardShares,
+  useGetRewardsCoinbase,
+  useGetRewardsERC20,
+  useGetTotalAllocations,
+} from '@/app/collective-rewards/rewards'
+import { getPreviousCycle } from '@/app/collective-rewards/utils/getPreviousCycle'
+import { useGetFilteredBuilders } from '@/app/collective-rewards/whitelist'
 import { formatBalanceToHuman } from '@/app/user/Balances/balanceUtils'
+import { RBTC, RIF, USD } from '@/lib/constants'
 import { usePricesContext } from '@/shared/context/PricesContext'
-import { useGetTokenProjectedReward, useGetRewardDistributedLogs } from '@/app/collective-rewards/rewards'
-import { Address, isAddressEqual } from 'viem'
-import { getLastCycleRewards } from '@/app/collective-rewards/utils/getLastCycleRewards'
-import { useBuilderContext } from '@/app/collective-rewards/user'
-import { BuilderStatusActive } from '@/app/collective-rewards/types'
 
-export const useGetBuildersRewards = (rewardToken: Address, rewardTokenSymbol?: string, currency = 'USD') => {
-  const { data: builders, isLoading: buildersLoading, error: buildersError } = useBuilderContext()
+export const useGetBuildersRewards = () => {
+  const {
+    data: whitelistedBuilders,
+    isLoading: whitelistedBuildersLoading,
+    error: whitelistedBuildersError,
+  } = useGetFilteredBuilders({ builderName: '', status: 'Active' })
+
+  const buildersAddress = whitelistedBuilders?.map(({ address }) => address)
+  const {
+    data: buildersRewardsPercentage,
+    isLoading: rewardsPercentageLoading,
+    error: rewardsPercentageError,
+  } = useGetBuildersRewardPercentage(buildersAddress)
+
+  const gauges = whitelistedBuilders?.map(({ gauge }) => gauge)
+  const {
+    data: { allocationsPercentage },
+    isLoading: allocationsLoading,
+    error: allocationsError,
+  } = useGetTotalAllocations(gauges)
 
   const {
-    data: rewardDistributedLogs,
+    data: rewardShares,
+    isLoading: rewardSharesLoading,
+    error: rewardSharesError,
+  } = useGetGaugesRewardShares(gauges)
+
+  const {
+    data: rewardsERC20,
+    isLoading: rewardsERC20Loading,
+    error: rewardsERC20Error,
+  } = useGetRewardsERC20()
+
+  const {
+    data: rewardsCoinbase,
+    isLoading: rewardsCoinbaseLoading,
+    error: rewardsCoinbaseError,
+  } = useGetRewardsCoinbase()
+
+  const { cycleStartTimestamp, cycleEndTimestamp } = getPreviousCycle()
+  const {
+    data: backersClaimedEventsLastCycle,
     isLoading: logsLoading,
     error: logsError,
-  } = useGetRewardDistributedLogs(rewardToken)
-  const {
-    data: { share, projectedReward },
-    isLoading: tokenLoading,
-    error: tokenError,
-  } = useGetTokenProjectedReward(rewardToken)
-  const tokenSymbol = rewardTokenSymbol ?? ''
+  } = useGetGaugesBackerRewardsClaimed(
+    gauges,
+    undefined,
+    undefined,
+    cycleStartTimestamp.toSeconds(),
+    cycleEndTimestamp.toSeconds(),
+  )
 
-  const projectedRewardInHuman = Number(formatBalanceToHuman(projectedReward))
+  const backersClaimedAmounts = useGetBackersClaimedRewardsAmount(gauges, backersClaimedEventsLastCycle)
 
-  const isLoading = buildersLoading || logsLoading || tokenLoading
-  const error = buildersError ?? logsError ?? tokenError
-  const whitelistedBuilders = builders.filter(builder => builder.status === BuilderStatusActive)
+  const isLoading =
+    rewardSharesLoading ||
+    whitelistedBuildersLoading ||
+    allocationsLoading ||
+    logsLoading ||
+    rewardsPercentageLoading ||
+    rewardsERC20Loading ||
+    rewardsCoinbaseLoading
+
+  const error =
+    rewardSharesError ??
+    whitelistedBuildersError ??
+    allocationsError ??
+    logsError ??
+    rewardsPercentageError ??
+    rewardsERC20Error ??
+    rewardsCoinbaseError
 
   const { prices } = usePricesContext()
 
-  return {
-    data: whitelistedBuilders.map(({ address, builderName }) => {
-      const builderEvents = rewardDistributedLogs.filter(event =>
-        isAddressEqual(event.args.builder_, address),
-      )
-      const lastCycleRewards = getLastCycleRewards(builderEvents)
-      const lastCycleRewardsInHuman = Number(formatBalanceToHuman(lastCycleRewards))
+  const priceRif = prices[RIF]?.price ?? 0
+  const priceRbtc = prices[RBTC]?.price ?? 0
 
-      const price = prices[tokenSymbol]?.price ?? 0
+  return {
+    data: whitelistedBuilders.map(({ address, builderName }, i) => {
+      const projectedRif = rewardShares && rewardsERC20 ? rewardShares[i] * rewardsERC20 : 0n
+      const projectedRifInHuman = Number(formatBalanceToHuman(projectedRif))
+
+      const projectedRbtc = rewardShares && rewardsCoinbase ? rewardShares[i] * rewardsCoinbase : 0n
+      const projectedRbtcInHuman = Number(formatBalanceToHuman(projectedRbtc))
+
+      const share = allocationsPercentage?.[i] ?? 0n
+      const rewardPercentage = buildersRewardsPercentage?.[i] ?? null
+      const gauge = gauges[i]
 
       return {
         address,
         builderName,
+        share,
+        rewardPercentage,
         lastCycleReward: {
-          crypto: {
-            value: lastCycleRewardsInHuman,
-            symbol: tokenSymbol,
+          RIF: {
+            crypto: { value: backersClaimedAmounts[gauge].RIF, symbol: RIF },
+            fiat: {
+              value: priceRif * backersClaimedAmounts[gauge].RIF,
+              symbol: USD,
+            },
           },
-          fiat: {
-            value: price * lastCycleRewardsInHuman,
-            symbol: currency,
+          RBTC: {
+            crypto: { value: backersClaimedAmounts[gauge].RBTC, symbol: RBTC },
+            fiat: {
+              value: priceRbtc * backersClaimedAmounts[gauge].RBTC,
+              symbol: USD,
+            },
           },
         },
         projectedReward: {
-          crypto: {
-            value: projectedRewardInHuman,
-            symbol: tokenSymbol,
+          RIF: {
+            crypto: { value: projectedRifInHuman, symbol: RIF },
+            fiat: {
+              value: priceRif * projectedRifInHuman,
+              symbol: USD,
+            },
           },
-          fiat: {
-            value: price * projectedRewardInHuman,
-            symbol: currency,
+          RBTC: {
+            crypto: { value: projectedRbtcInHuman, symbol: RBTC },
+            fiat: {
+              value: priceRbtc * projectedRbtcInHuman,
+              symbol: USD,
+            },
           },
         },
-        share,
       }
     }),
     isLoading,

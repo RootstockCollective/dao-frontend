@@ -14,7 +14,7 @@ export const useGetTotalPotentialReward = () => {
   })
 
   return {
-    data,
+    data: data || 0n,
     isLoading,
     error,
   }
