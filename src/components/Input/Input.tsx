@@ -28,7 +28,7 @@ interface Props {
   label?: string
   labelWrapperProps?: JSX.IntrinsicElements['div']
   inputProps?: JSX.IntrinsicElements['input'] & NumericFormatProps<InputAttributes>
-  hint?: string
+  hint?: string | JSX.Element
   errorMessage?: string
   className?: string
   type?: InputType
