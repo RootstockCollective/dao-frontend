@@ -1,4 +1,8 @@
-import { BuilderStatusShown } from '@/app/collective-rewards/types'
+import {
+  BuilderStatusActive,
+  BuilderStatusInProgress,
+  BuilderStatusShown,
+} from '@/app/collective-rewards/types'
 import { BuilderStatusFilter, useWhitelistContext } from '@/app/collective-rewards/whitelist'
 import { useAlertContext } from '@/app/providers'
 import { Input } from '@/components/Input'
@@ -14,8 +18,8 @@ type SelectOption = {
 // TODO: are there other statuses to be considered?
 const statuses: SelectOption[] = [
   { value: 'all', label: 'All' },
-  { value: 'Active', label: 'Activated' },
-  { value: 'In progress', label: 'In progress' },
+  { value: BuilderStatusActive, label: 'Activated' },
+  { value: BuilderStatusInProgress, label: 'In progress' },
 ]
 
 export const WhitelistSearch = () => {
