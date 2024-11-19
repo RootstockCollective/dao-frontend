@@ -22,7 +22,7 @@ export const BuilderAllocation = (builder: BuilderAllocationProps) => {
      */
   }
   return (
-    <div className="flex flex-col py-4 px-2 gap-6 shrink-0 bg-foreground max-w-[calc(25%-1rem)]">
+    <div className="flex flex-col py-4 px-2 gap-6 shrink-0 bg-foreground min-w-[calc(25%-1rem)] max-w-[calc(25%-1rem)]">
       <BuilderAllocationHeader {...builder} />
       <Label className="font-bold">Backer rewards {builder.backerRewards}% </Label>
       <Input type="number" name={`allocation-${builder.address}`} hint={hint} onChange={onInputChange} />
