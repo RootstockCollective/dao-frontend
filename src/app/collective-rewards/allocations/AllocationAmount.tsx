@@ -3,8 +3,10 @@
 import { formatBalanceToHuman } from '@/app/user/Balances/balanceUtils'
 import { Button, ButtonProps } from '@/components/Button'
 import { Input } from '@/components/Input'
+import { Link } from '@/components/Link'
 import { cn } from '@/lib/utils'
 import { useState } from 'react'
+import { StakeHint } from './StakeHint'
 
 const PercentageButton = ({ children, variant, ...rest }: ButtonProps) => (
   <Button
@@ -23,6 +25,10 @@ type AllocationAmountProps = {
 }
 
 export const AllocationAmount = ({ balance, errorMessage, onPercentageSet }: AllocationAmountProps) => {
+  // TODO: hint is shown only when the allocated amount exceeds the balance
+  // const hint = <StakeHint />
+  const hint = undefined
+
   const [activeButton, setActiveButton] = useState<number | null>(null)
   const [allocatedAmount, setAllocatedAmount] = useState('0')
   const onChange = (value: string) => {
@@ -48,6 +54,7 @@ export const AllocationAmount = ({ balance, errorMessage, onPercentageSet }: All
           onChange={onChange}
           value={allocatedAmount.toString()}
           errorMessage={errorMessage}
+          hint={hint}
         />
       </div>
       <div className="flex items-center gap-3">
