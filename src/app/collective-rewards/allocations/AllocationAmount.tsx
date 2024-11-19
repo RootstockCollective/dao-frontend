@@ -3,10 +3,8 @@
 import { formatBalanceToHuman } from '@/app/user/Balances/balanceUtils'
 import { Button, ButtonProps } from '@/components/Button'
 import { Input } from '@/components/Input'
-import { Link } from '@/components/Link'
 import { cn } from '@/lib/utils'
 import { useState } from 'react'
-import { StakeHint } from './StakeHint'
 
 const PercentageButton = ({ children, variant, ...rest }: ButtonProps) => (
   <Button

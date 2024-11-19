@@ -1,4 +1,4 @@
-import { HeaderTitle, Label, Paragraph, Typography } from '@/components/Typography'
+import { HeaderTitle, Paragraph } from '@/components/Typography'
 
 export const Header = () => {
   return (

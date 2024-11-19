@@ -2,13 +2,12 @@
 
 import { formatBalanceToHuman, getTokenBalance } from '@/app/user/Balances/balanceUtils'
 import { useGetAddressTokens } from '@/app/user/Balances/hooks/useGetAddressTokens'
-import { MainContainer } from '@/components/MainContainer/MainContainer'
-import { HeaderTitle, Paragraph } from '@/components/Typography'
+import { withSpinner } from '@/components/LoadingSpinner/withLoadingSpinner'
+import { Paragraph } from '@/components/Typography'
+import { ethers } from 'ethers'
 import { useAccount } from 'wagmi'
 import { useHandleErrors } from '../utils'
 import { useBackerTotalAllocation } from './useBackerTotalAllocation'
-import { withSpinner } from '@/components/LoadingSpinner/withLoadingSpinner'
-import { ethers } from 'ethers'
 
 type ValueProps = {
   value: string

@@ -1,11 +1,10 @@
+import { formatBalanceToHuman } from '@/app/user/Balances/balanceUtils'
 import { Input } from '@/components/Input'
 import { Slider } from '@/components/Slider'
 import { Label } from '@/components/Typography'
+import { useState } from 'react'
 import { BuilderAllocationHeader } from './BuilderAllocationHeader'
 import { BuilderAllocationProps } from './types'
-import { formatBalanceToHuman } from '@/app/user/Balances/balanceUtils'
-import { useState } from 'react'
-import { StakeHint } from './StakeHint'
 
 export const BuilderAllocation = (builder: BuilderAllocationProps) => {
   const [sliderValue, setSliderValue] = useState<number>(builder.currentAllocation)
