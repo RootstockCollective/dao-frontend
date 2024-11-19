@@ -55,8 +55,9 @@ const PopoverContent = () => {
         How is my voting power calculated?
       </Paragraph>
       <Paragraph size="small">
-        Your voting power is determined by the amount of stRIF (staked RIF) you hold. To increase your voting
-        power,{' '}
+        Your voting power is determined by the amount of stRIF (staked RIF) you hold, whether you have
+        delegated this voting power to someone else, and also by someone else who may have delegated their
+        voting power to you. <br /> <br /> To increase your voting power,{' '}
         <Span
           className="text-primary text-[14px] hover:underline cursor-pointer"
           onClick={() => router.push('/user?action=stake')}
