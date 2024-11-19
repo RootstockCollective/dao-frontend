@@ -47,11 +47,6 @@ export const Footer = ({ variant = 'login' }: Props) => (
             Whitepaper
           </a>
         </div>
-        <div className="flex items-start">
-          <a href="https://gov.rootstockcollective.xyz" className="hover:underline" target="_blank">
-            Discourse
-          </a>
-        </div>
       </>
     )}
     <div className="flex items-start justify-end">
