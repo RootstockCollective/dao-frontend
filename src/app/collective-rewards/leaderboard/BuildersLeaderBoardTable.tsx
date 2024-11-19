@@ -18,8 +18,8 @@ import { FaRegQuestionCircle } from 'react-icons/fa'
 import { FaArrowDown, FaArrowUp } from 'react-icons/fa6'
 import { Address, isAddress } from 'viem'
 import { useGetBuildersRewards } from './hooks'
-import { BuilderRewardPercentage } from '@/app/collective-rewards/rewards'
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/Collapsible'
+import { BuilderRewardPercentage } from '@/app/collective-rewards/rewards/utils/getPercentageData'
 
 type Currency = {
   value: number
