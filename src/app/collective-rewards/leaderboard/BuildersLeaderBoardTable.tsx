@@ -19,6 +19,7 @@ import { FaArrowDown, FaArrowUp } from 'react-icons/fa6'
 import { Address, isAddress } from 'viem'
 import { useGetBuildersRewards } from './hooks'
 import { BuilderRewardPercentage } from '@/app/collective-rewards/rewards'
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/Collapsible'
 
 type Currency = {
   value: number
@@ -46,7 +47,7 @@ export const RewardCell: FC<RewardCellProps> = ({ rewards }) => (
         <div key={value + symbol} className="flex-1">
           {/* TODO: if the value is very small, should we show it in Gwei/wei? */}
 
-          <div className="flex items-center">
+          <div className="flex items-center gap-1">
             <Label className="font-normal text-sm leading-none text-text-primary font-rootstock-sans">
               {toFixed(value)}
             </Label>
@@ -160,7 +161,12 @@ const ProjectedRewardCell = ({ rewards }: { rewards: Reward[] }) => {
   )
 }
 
-const ShareCell = ({ share }: { share: bigint }) => {
+type ShareProps = {
+  // a percentage without decimals
+  share: bigint
+}
+
+const ShareCell = ({ share }: ShareProps) => {
   return (
     <TableCell className={cn(tableHeaders[4], 'border-solid text-center border-b-0 items-center')}>
       <div className="flex flex-row gap-2 items-center">
@@ -170,11 +176,18 @@ const ShareCell = ({ share }: { share: bigint }) => {
     </TableCell>
   )
 }
-
 const ActionCell = () => {
+  /* TODO: manage the button status 
+    - disabled when the backer cannot vote on the Builder
+    - variant=primary when the builder is selected and text changed to "Selected"
+    - variant=secondary by default and text is "Select"
+  */
+  /* TODO: add the onClick event
+   *  - it needs to interact with the allocation context to add the builder to the selected builders
+   */
   return (
     <TableCell className={cn(tableHeaders[5], 'border-solid align-center')}>
-      <Button disabled={true}>Select</Button>
+      <Button variant="secondary" /* disabled={true} */>Select</Button>
     </TableCell>
   )
 }
@@ -183,8 +196,10 @@ const tableHeaders = [
   { label: 'Builder', width: 'w-[14%]' },
   { label: 'Backer Rewards %', width: 'w-[10%]' },
   { label: 'Last Cycle Rewards', width: 'w-[22%]' },
-  { label: 'Estimated Backers Rewards', width: 'w-[22%]' },
+  { label: 'Est. Backers Rewards', width: 'w-[22%]' },
+  // eslint-disable-next-line quotes
   { label: 'Total Allocations', width: 'w-[18%]', tooltip: "The Builder's share of the total allocations" },
+  // TODO: text-center isn't applied
   { label: 'Actions', width: 'w-[14%]', text_position: 'text-center' },
 ]
 
@@ -253,7 +268,7 @@ const BuildersLeaderBoardTable = () => {
             .slice(currentPage * buildersPerPage, (currentPage + 1) * buildersPerPage)
             .map(
               ([, { address, builderName, lastCycleReward, projectedReward, share, rewardPercentage }]) => (
-                <TableRow key={address + share} className="text-[14px] border-hidden">
+                <TableRow key={address} className="text-[14px] border-hidden">
                   <BuilderNameCell builderName={builderName} address={address} />
                   <BackerRewardsPercentage rewardPercentage={rewardPercentage} />
                   <LastCycleRewardCell rewards={[lastCycleReward.RBTC, lastCycleReward.RIF]} />
@@ -271,12 +286,29 @@ const BuildersLeaderBoardTable = () => {
 }
 
 export const BuildersLeaderBoard = () => {
+  const onManageAllocations = () => {
+    // TODO: fill the allocation context if necessary and change the route
+    console.log('Manage allocations')
+  }
   return (
     <>
-      <HeaderTitle>Rewards leaderboard</HeaderTitle>
-      <BuilderContextProviderWithPrices>
-        <BuildersLeaderBoardTable />
-      </BuilderContextProviderWithPrices>
+      <Collapsible defaultOpen>
+        <CollapsibleTrigger>
+          <div className="flex items-center justify-between w-full">
+            <HeaderTitle className="">Rewards leaderboard</HeaderTitle>
+            <Button variant="primary" onClick={onManageAllocations}>
+              Manage Allocations
+            </Button>
+          </div>
+        </CollapsibleTrigger>
+        <CollapsibleContent>
+          <BuilderContextProviderWithPrices>
+            <div className="pt-6">
+              <BuildersLeaderBoardTable />
+            </div>
+          </BuilderContextProviderWithPrices>
+        </CollapsibleContent>
+      </Collapsible>
     </>
   )
 }
