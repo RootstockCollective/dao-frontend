@@ -84,7 +84,7 @@ export const useGetBuilders = (): BuildersLoader => {
   })
   const builders = buildersResult?.map(builder => builder.result) as Address[]
 
-  let builderToGauge = builders?.reduce(
+  const builderToGauge = builders?.reduce(
     (acc, builder, index) => {
       acc[builder] = gauges![index]
       return acc

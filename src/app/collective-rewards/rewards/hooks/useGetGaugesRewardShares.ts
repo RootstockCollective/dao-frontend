@@ -1,6 +1,6 @@
 import { GaugeAbi } from '@/lib/abis/v2/GaugeAbi'
 import { AVERAGE_BLOCKTIME } from '@/lib/constants'
-import { useMemo } from 'react'
+import { useEffect, useMemo } from 'react'
 import { Address } from 'viem'
 import { useReadContracts } from 'wagmi'
 
@@ -28,6 +28,7 @@ export const useGetGaugesRewardShares = (gauges: Address[]) => {
       refetchInterval: AVERAGE_BLOCKTIME,
     },
   })
+
   const rewardShares = useMemo(
     () => rewardSharesResult?.map(share => share.result as bigint),
     [rewardSharesResult],

@@ -59,7 +59,7 @@ export const BuilderContextProvider: FC<BuilderProviderProps> = ({ children }) =
 
   const filteredBuilders = useMemo(() => {
     return builders.reduce<ProposalByBuilder>((acc, builder) => {
-      const { status, address } = builder
+      const { status, address, gauge } = builder
       const proposal = getMostAdvancedProposal(builder, proposalsStateMap)
 
       if (proposal) {
@@ -78,7 +78,7 @@ export const BuilderContextProvider: FC<BuilderProviderProps> = ({ children }) =
           proposalName,
           proposalDescription,
           joiningDate,
-          gauge: builder.gauge,
+          gauge,
         }
       }
 

@@ -1,11 +1,14 @@
+import { CycleContextProvider } from '@/app/collective-rewards/metrics'
+import { BuilderRewardPercentage, useGetBuildersRewards } from '@/app/collective-rewards/rewards'
 import { BuilderContextProviderWithPrices } from '@/app/collective-rewards/user'
-import { useAlertContext } from '@/app/providers'
+import { useHandleErrors } from '@/app/collective-rewards/utils'
 import { AddressOrAliasWithCopy } from '@/components/Address'
 import { Button } from '@/components/Button'
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/Collapsible'
 import { Jdenticon } from '@/components/Header/Jdenticon'
 import { LoadingSpinner } from '@/components/LoadingSpinner'
 import { Popover } from '@/components/Popover'
-import ProgressBar from '@/components/ProgressBar'
+import { ProgressBar } from '@/components/ProgressBar/ProgressBar'
 import { TableBody, TableCell, TableCore, TableHead, TableRow } from '@/components/Table'
 import { HeaderTitle, Label, Typography } from '@/components/Typography'
 import { RBTC, RIF } from '@/lib/constants'
@@ -13,15 +16,12 @@ import { cn, formatCurrency, shortAddress, toFixed } from '@/lib/utils'
 import { useBasicPaginationUi } from '@/shared/hooks/usePaginationUi'
 import { rbtcIconSrc } from '@/shared/rbtcIconSrc'
 import Image from 'next/image'
-import { FC, memo, useEffect, useMemo, useState } from 'react'
+import { FC, memo, useMemo, useState } from 'react'
 import { FaRegQuestionCircle } from 'react-icons/fa'
 import { FaArrowDown, FaArrowUp } from 'react-icons/fa6'
+import { LiaSortUpSolid } from 'react-icons/lia'
 import { RiArrowUpSFill } from 'react-icons/ri'
 import { Address, isAddress } from 'viem'
-import { useGetBuildersRewards } from './hooks'
-import { LiaSortUpSolid } from 'react-icons/lia'
-import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/Collapsible'
-import { BuilderRewardPercentage } from '@/app/collective-rewards/rewards/utils/getPercentageData'
 
 type Currency = {
   value: number
@@ -42,8 +42,13 @@ export function getFormattedCurrency(value: number, symbol: string) {
   return `${formattedCurrency.substring(0, 1)}${symbol} ${formattedCurrency.substring(1)}`
 }
 
+export const rbtcIcon = (
+  <Image src={`data:image/svg+xml;base64,${rbtcIconSrc}`} alt="rBTC Logo" width={16} height={16} />
+)
+export const rifIcon = <Image src={'/images/rif-logo.png'} alt="RIF Logo" width={16} height={16} />
+
 export const RewardCell: FC<RewardCellProps> = ({ rewards }) => (
-  <div className="flex flex-nowrap flex-row gap-1">
+  <div className="flex flex-nowrap flex-row gap-2 whitespace-nowrap">
     {rewards &&
       rewards.map(({ crypto: { value, symbol }, fiat: { value: fiatValue, symbol: fiatSymbol } }) => (
         <div key={value + symbol} className="flex-1">
@@ -51,16 +56,8 @@ export const RewardCell: FC<RewardCellProps> = ({ rewards }) => (
 
           <Label className="flex items-center gap-1 font-normal text-sm leading-none text-text-primary font-rootstock-sans">
             {toFixed(value)}
-            {symbol === RBTC && (
-              <Image
-                src={`data:image/svg+xml;base64,${rbtcIconSrc}`}
-                alt="rBTC Logo"
-                objectPosition="center"
-                width={17}
-                height={17}
-              />
-            )}
-            {symbol === RIF && <Image src={'/images/rif-logo.png'} alt="RIF Logo" width={15} height={15} />}
+            {symbol === RBTC && rbtcIcon}
+            {symbol === RIF && rifIcon}
           </Label>
           <Label className="font-normal text-sm leading-none text-disabled-primary font-rootstock-sans">
             {`= ${getFormattedCurrency(fiatValue, fiatSymbol)}`}
@@ -151,7 +148,7 @@ export const LastCycleRewardCell = ({ rewards }: { rewards: Reward[] }) => {
   )
 }
 
-const ProjectedRewardCell = ({ rewards }: { rewards: Reward[] }) => {
+const EstimatedRewardCell = ({ rewards }: { rewards: Reward[] }) => {
   return (
     <TableCell className={cn(tableHeaders[3].className, 'border-solid')}>
       <LazyRewardCell rewards={rewards} />
@@ -161,15 +158,15 @@ const ProjectedRewardCell = ({ rewards }: { rewards: Reward[] }) => {
 
 type ShareProps = {
   // a percentage without decimals
-  share: bigint
+  totalAllocationPercentage: bigint
 }
 
-const ShareCell = ({ share }: ShareProps) => {
+const ShareCell = ({ totalAllocationPercentage }: ShareProps) => {
   return (
     <TableCell className={cn(tableHeaders[4].className, 'border-solid text-center border-b-0 items-center')}>
       <div className="flex flex-row gap-2 items-center">
-        <ProgressBar progress={Number(share)} color="#1bc47d" />
-        <Label>{share.toString()}%</Label>
+        <ProgressBar progress={Number(totalAllocationPercentage)} color="#1bc47d" />
+        <Label>{totalAllocationPercentage.toString()}%</Label>
       </div>
     </TableCell>
   )
@@ -192,25 +189,25 @@ const ActionCell = () => {
 
 enum RewardsColumnKeyEnum {
   builder = 'builder',
-  lastCycleReward = 'lastCycleReward',
-  projectedReward = 'projectedReward',
+  lastCycleRewards = 'lastCycleRewards',
+  estimatedRewards = 'estimatedRewards',
   rewardPercentage = 'rewardPercentage',
-  share = 'share',
+  totalAllocationPercentage = 'totalAllocationPercentage',
 }
 const tableHeaders = [
   { label: 'Builder', className: 'w-[14%]', key: RewardsColumnKeyEnum.builder },
   { label: 'Backer Rewards %', className: 'w-[10%]', key: RewardsColumnKeyEnum.rewardPercentage },
-  { label: 'Last Cycle Rewards', className: 'w-[22%]', key: RewardsColumnKeyEnum.lastCycleReward },
-  { label: 'Est. Backers Rewards', className: 'w-[22%]', key: RewardsColumnKeyEnum.projectedReward },
+  { label: 'Last Cycle Rewards', className: 'w-[22%]', key: RewardsColumnKeyEnum.lastCycleRewards },
+  { label: 'Est. Backers Rewards', className: 'w-[22%]', key: RewardsColumnKeyEnum.estimatedRewards },
   {
     label: 'Total Allocations',
     className: 'w-[18%]',
     // eslint-disable-next-line quotes
     tooltip: "The Builder's share of the total allocations",
-    key: RewardsColumnKeyEnum.share,
+    key: RewardsColumnKeyEnum.totalAllocationPercentage,
   },
   // TODO: text-center isn't applied
-  { label: 'Actions', className: 'w-[14%] text-center' },
+  { label: 'Actions', className: 'w-[14%]' },
 ]
 
 type ISortConfig = {
@@ -220,9 +217,8 @@ type ISortConfig = {
 
 const BuildersLeaderBoardTable = () => {
   const { data: rewardsData, isLoading, error: rewardsError } = useGetBuildersRewards()
-  const { setMessage: setErrorMessage } = useAlertContext()
   const [sortConfig, setSortConfig] = useState<ISortConfig>({
-    key: RewardsColumnKeyEnum.builder,
+    key: RewardsColumnKeyEnum.totalAllocationPercentage,
     direction: 'asc',
   })
 
@@ -232,16 +228,7 @@ const BuildersLeaderBoardTable = () => {
   const maxPages = useMemo(() => Math.ceil(tableDataLength / buildersPerPage), [tableDataLength])
   const { paginationUi, currentPage } = useBasicPaginationUi(maxPages)
 
-  useEffect(() => {
-    if (rewardsError) {
-      setErrorMessage({
-        severity: 'error',
-        title: 'Error loading RBTC rewards',
-        content: rewardsError.message,
-      })
-      console.error('🐛 rewardsError:', rewardsError)
-    }
-  }, [rewardsError, setErrorMessage])
+  useHandleErrors({ error: rewardsError, title: 'Error loading builder rewards' })
 
   type IRewardData = (typeof rewardsData)[number]
   const sortedRewardsData = useMemo(
@@ -253,26 +240,26 @@ const BuildersLeaderBoardTable = () => {
         let aValue: number | string
         let bValue: number | string
         switch (key) {
-          case 'builder':
+          case RewardsColumnKeyEnum.builder:
             aValue = a.builderName || a.address
             bValue = b.builderName || b.address
             break
-          case 'share':
-            aValue = Number(a.share)
-            bValue = Number(b.share)
+          case RewardsColumnKeyEnum.totalAllocationPercentage:
+            aValue = Number(a.totalAllocationPercentage)
+            bValue = Number(b.totalAllocationPercentage)
             break
-          case 'rewardPercentage':
+          case RewardsColumnKeyEnum.rewardPercentage:
             if (!a.rewardPercentage || !b.rewardPercentage) return 0
             aValue = a.rewardPercentage.current
             bValue = b.rewardPercentage.current
             break
-          case 'lastCycleReward':
+          case RewardsColumnKeyEnum.lastCycleRewards:
             aValue = a.lastCycleReward.RIF.crypto.value + a.lastCycleReward.RBTC.crypto.value
             bValue = b.lastCycleReward.RIF.crypto.value + b.lastCycleReward.RBTC.crypto.value
             break
-          case 'projectedReward':
-            aValue = a.projectedReward.RIF.crypto.value + a.projectedReward.RBTC.crypto.value
-            bValue = b.projectedReward.RIF.crypto.value + b.projectedReward.RBTC.crypto.value
+          case RewardsColumnKeyEnum.estimatedRewards:
+            aValue = a.estimatedReward.RIF.crypto.value + a.estimatedReward.RBTC.crypto.value
+            bValue = b.estimatedReward.RIF.crypto.value + b.estimatedReward.RBTC.crypto.value
             break
           default:
             return 0
@@ -337,7 +324,7 @@ const BuildersLeaderBoardTable = () => {
                   {header.tooltip && (
                     <Popover
                       content={header.tooltip}
-                      className="font-normal text-sm"
+                      className="font-normal text-sm flex items-center"
                       size="small"
                       trigger="hover"
                     >
@@ -364,13 +351,20 @@ const BuildersLeaderBoardTable = () => {
         </TableHead>
         <TableBody>
           {Object.values(paginatedRewardsData).map(
-            ({ address, builderName, lastCycleReward, projectedReward, share, rewardPercentage }) => (
+            ({
+              address,
+              builderName,
+              lastCycleReward,
+              estimatedReward,
+              totalAllocationPercentage,
+              rewardPercentage,
+            }) => (
               <TableRow key={address} className="text-[14px] border-hidden">
                 <BuilderNameCell builderName={builderName} address={address} />
                 <BackerRewardsPercentage rewardPercentage={rewardPercentage} />
                 <LastCycleRewardCell rewards={[lastCycleReward.RBTC, lastCycleReward.RIF]} />
-                <ProjectedRewardCell rewards={[projectedReward.RBTC, projectedReward.RIF]} />
-                <ShareCell share={share} />
+                <EstimatedRewardCell rewards={[estimatedReward.RBTC, estimatedReward.RIF]} />
+                <ShareCell totalAllocationPercentage={totalAllocationPercentage} />
                 <ActionCell />
               </TableRow>
             ),
@@ -399,11 +393,13 @@ export const BuildersLeaderBoard = () => {
           </div>
         </CollapsibleTrigger>
         <CollapsibleContent>
-          <BuilderContextProviderWithPrices>
-            <div className="pt-6">
-              <BuildersLeaderBoardTable />
-            </div>
-          </BuilderContextProviderWithPrices>
+          <CycleContextProvider>
+            <BuilderContextProviderWithPrices>
+              <div className="pt-6">
+                <BuildersLeaderBoardTable />
+              </div>
+            </BuilderContextProviderWithPrices>
+          </CycleContextProvider>
         </CollapsibleContent>
       </Collapsible>
     </>

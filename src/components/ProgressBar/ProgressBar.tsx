@@ -5,7 +5,7 @@ type Props = {
   color?: string
 }
 
-const ProgressBar: React.FC<Props> = ({ progress, color }) => {
+export const ProgressBar: React.FC<Props> = ({ progress, color }) => {
   return (
     <div className="w-full bg-gray-200 rounded-full h-2 dark:bg-gray-700">
       <div
@@ -15,5 +15,3 @@ const ProgressBar: React.FC<Props> = ({ progress, color }) => {
     </div>
   )
 }
-
-export default ProgressBar

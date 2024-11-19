@@ -1,11 +1,10 @@
+import { getPercentageData } from '@/app/collective-rewards/rewards/utils'
 import { BackersManagerAbi } from '@/lib/abis/v2/BackersManagerAbi'
 import { AVERAGE_BLOCKTIME } from '@/lib/constants'
 import { BackersManagerAddress } from '@/lib/contracts'
 import { useMemo } from 'react'
 import { Address } from 'viem'
 import { useReadContracts } from 'wagmi'
-import { BuilderRewardPercentage, getPercentageData } from '../utils/getPercentageData'
-import { toPercentage } from '../utils/toPercentage'
 
 export const useGetBuildersRewardPercentage = (builders: Address[]) => {
   const rewardPercentageCalls = useMemo(
