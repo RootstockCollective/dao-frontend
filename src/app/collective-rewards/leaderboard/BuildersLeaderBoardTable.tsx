@@ -13,11 +13,13 @@ import { cn, formatCurrency, shortAddress, toFixed } from '@/lib/utils'
 import { useBasicPaginationUi } from '@/shared/hooks/usePaginationUi'
 import { rbtcIconSrc } from '@/shared/rbtcIconSrc'
 import Image from 'next/image'
-import { FC, memo, useEffect, useMemo } from 'react'
+import { FC, memo, useEffect, useMemo, useState } from 'react'
 import { FaRegQuestionCircle } from 'react-icons/fa'
 import { FaArrowDown, FaArrowUp } from 'react-icons/fa6'
+import { RiArrowUpSFill } from 'react-icons/ri'
 import { Address, isAddress } from 'viem'
 import { useGetBuildersRewards } from './hooks'
+import { LiaSortUpSolid } from 'react-icons/lia'
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/Collapsible'
 import { BuilderRewardPercentage } from '@/app/collective-rewards/rewards/utils/getPercentageData'
 
@@ -136,8 +138,8 @@ export const BackerRewardsPercentage = ({
     return null
   }, [rewardPercentage])
   return (
-    <TableCell className={cn(tableHeaders[1], 'justify-center items-center gap-2 border-b-0')}>
-      <div className="flex flex-row gap-x-1">
+    <TableCell className={cn(tableHeaders[1], 'border-b-0')}>
+      <div className="flex flex-row gap-x-1 font-rootstock-sans justify-center gap-2 ">
         <div>{rewardPercentage?.current}</div>
         {renderDelta}
       </div>
@@ -192,20 +194,41 @@ const ActionCell = () => {
   )
 }
 
+enum RewardsColumnKeyEnum {
+  builder = 'builder',
+  lastCycleReward = 'lastCycleReward',
+  projectedReward = 'projectedReward',
+  rewardPercentage = 'rewardPercentage',
+  share = 'share',
+}
 const tableHeaders = [
-  { label: 'Builder', width: 'w-[14%]' },
-  { label: 'Backer Rewards %', width: 'w-[10%]' },
-  { label: 'Last Cycle Rewards', width: 'w-[22%]' },
-  { label: 'Est. Backers Rewards', width: 'w-[22%]' },
-  // eslint-disable-next-line quotes
-  { label: 'Total Allocations', width: 'w-[18%]', tooltip: "The Builder's share of the total allocations" },
+  { label: 'Builder', width: 'w-[12%]', key: RewardsColumnKeyEnum.builder },
+  { label: 'Backer Rewards %', width: 'w-[12%]', key: RewardsColumnKeyEnum.rewardPercentage },
+  { label: 'Last Cycle Rewards', width: 'w-[22%]', key: RewardsColumnKeyEnum.lastCycleReward },
+  { label: 'Est. Backers Rewards', width: 'w-[22%]', key: RewardsColumnKeyEnum.projectedReward },
+  {
+    label: 'Total Allocations',
+    width: 'w-[18%]',
+    // eslint-disable-next-line quotes
+    tooltip: "The Builder's share of the total allocations",
+    key: RewardsColumnKeyEnum.share,
+  },
   // TODO: text-center isn't applied
   { label: 'Actions', width: 'w-[14%]', text_position: 'text-center' },
 ]
 
+type ISortConfig = {
+  key: RewardsColumnKeyEnum
+  direction: 'asc' | 'desc'
+}
+
 const BuildersLeaderBoardTable = () => {
   const { data: rewardsData, isLoading, error: rewardsError } = useGetBuildersRewards()
   const { setMessage: setErrorMessage } = useAlertContext()
+  const [sortConfig, setSortConfig] = useState<ISortConfig>({
+    key: RewardsColumnKeyEnum.builder,
+    direction: 'asc',
+  })
 
   // pagination
   const buildersPerPage = 10
@@ -224,12 +247,81 @@ const BuildersLeaderBoardTable = () => {
     }
   }, [rewardsError, setErrorMessage])
 
+  type IRewardData = (typeof rewardsData)[number]
+  const sortedRewardsData = useMemo(
+    () =>
+      Object.values(rewardsData).toSorted((a: IRewardData, b: IRewardData) => {
+        const { key, direction } = sortConfig
+        if (!key) return 0
+
+        let aValue: number | string
+        let bValue: number | string
+        switch (key) {
+          case 'builder':
+            aValue = a.builderName || a.address
+            bValue = b.builderName || b.address
+            break
+          case 'share':
+            aValue = Number(a.share)
+            bValue = Number(b.share)
+            break
+          case 'rewardPercentage':
+            if (!a.rewardPercentage || !b.rewardPercentage) return 0
+            aValue = a.rewardPercentage.current
+            bValue = b.rewardPercentage.current
+            break
+          case 'lastCycleReward':
+            aValue = a.lastCycleReward.RIF.crypto.value + a.lastCycleReward.RBTC.crypto.value
+            bValue = b.lastCycleReward.RIF.crypto.value + b.lastCycleReward.RBTC.crypto.value
+            break
+          case 'projectedReward':
+            aValue = a.projectedReward.RIF.crypto.value + a.projectedReward.RBTC.crypto.value
+            bValue = b.projectedReward.RIF.crypto.value + b.projectedReward.RBTC.crypto.value
+            break
+          default:
+            return 0
+        }
+
+        if (typeof aValue === 'string' && typeof bValue === 'string') {
+          return direction === 'asc'
+            ? a.builderName.localeCompare(b.builderName)
+            : b.builderName.localeCompare(a.builderName)
+        }
+
+        if (typeof aValue === 'number' && typeof bValue === 'number') {
+          return direction === 'asc' ? aValue - bValue : bValue - aValue
+        }
+
+        return 0
+      }),
+    [rewardsData, sortConfig],
+  )
+
+  const paginatedRewardsData = useMemo(
+    () => sortedRewardsData.slice(currentPage * buildersPerPage, (currentPage + 1) * buildersPerPage),
+    [currentPage, sortedRewardsData],
+  )
+
   if (isLoading) {
     return <LoadingSpinner />
   }
 
   if (!tableDataLength) {
     return <EmptyLeaderboard />
+  }
+
+  const handleSort = (key: RewardsColumnKeyEnum) => {
+    setSortConfig(prevSortConfig => {
+      if (prevSortConfig?.key === key) {
+        // Toggle direction if the same column is clicked
+        return {
+          key,
+          direction: prevSortConfig.direction === 'asc' ? 'desc' : 'asc',
+        }
+      }
+      // Set initial sort direction to ascending
+      return { key, direction: 'asc' }
+    })
   }
 
   return (
@@ -258,26 +350,36 @@ const BuildersLeaderBoardTable = () => {
                     </Popover>
                   )}
                   {header.label}
+                  {header.key && (
+                    <button
+                      className={`"text-xs text-white flex items-center ml-1" transition-transform duration-300 ${sortConfig?.key === header.key && sortConfig?.direction === 'asc' ? 'rotate-180' : 'rotate-0'}`}
+                      onClick={() => handleSort(header.key)}
+                    >
+                      {sortConfig?.key === header.key ? (
+                        <RiArrowUpSFill className="stroke-2" />
+                      ) : (
+                        <LiaSortUpSolid />
+                      )}
+                    </button>
+                  )}
                 </div>
               </TableCell>
             ))}
           </TableRow>
         </TableHead>
         <TableBody>
-          {Object.entries(rewardsData)
-            .slice(currentPage * buildersPerPage, (currentPage + 1) * buildersPerPage)
-            .map(
-              ([, { address, builderName, lastCycleReward, projectedReward, share, rewardPercentage }]) => (
-                <TableRow key={address} className="text-[14px] border-hidden">
-                  <BuilderNameCell builderName={builderName} address={address} />
-                  <BackerRewardsPercentage rewardPercentage={rewardPercentage} />
-                  <LastCycleRewardCell rewards={[lastCycleReward.RBTC, lastCycleReward.RIF]} />
-                  <ProjectedRewardCell rewards={[projectedReward.RBTC, projectedReward.RIF]} />
-                  <ShareCell share={share} />
-                  <ActionCell />
-                </TableRow>
-              ),
-            )}
+          {Object.values(paginatedRewardsData).map(
+            ({ address, builderName, lastCycleReward, projectedReward, share, rewardPercentage }) => (
+              <TableRow key={address} className="text-[14px] border-hidden">
+                <BuilderNameCell builderName={builderName} address={address} />
+                <BackerRewardsPercentage rewardPercentage={rewardPercentage} />
+                <LastCycleRewardCell rewards={[lastCycleReward.RBTC, lastCycleReward.RIF]} />
+                <ProjectedRewardCell rewards={[projectedReward.RBTC, projectedReward.RIF]} />
+                <ShareCell share={share} />
+                <ActionCell />
+              </TableRow>
+            ),
+          )}
         </TableBody>
       </TableCore>
       <div className="flex justify-center">{paginationUi}</div>
