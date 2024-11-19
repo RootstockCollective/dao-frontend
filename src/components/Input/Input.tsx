@@ -3,7 +3,7 @@ import { cn } from '@/lib/utils'
 import { FC, JSX } from 'react'
 import { InputAttributes, NumericFormatProps } from 'react-number-format'
 import { InputNumber } from './InputNumber'
-import { BsSearch } from 'react-icons/bs'
+import { BsSearch, BsXCircle } from 'react-icons/bs'
 
 const DEFAULT_CLASSES = `
 px-[20px] py-[12px]
@@ -34,6 +34,10 @@ interface Props {
   type?: InputType
   onChange?: (value: string) => void
   labelProps?: JSX.IntrinsicElements['div']
+  /**
+   * Adds a "clear" button to the search field. The provided function is called when the button is clicked.
+   */
+  onClear?: () => void
 }
 export const Input: FC<Props> = ({
   name,
@@ -50,6 +54,7 @@ export const Input: FC<Props> = ({
   type = 'text',
   onChange = () => {},
   labelProps = {},
+  onClear,
 }) => {
   const handleOnChange = (e: { target: { value: string } }) => onChange(e.target.value)
 
@@ -88,7 +93,7 @@ export const Input: FC<Props> = ({
       />
     ),
     search: (
-      <>
+      <div className="relative">
         <BsSearch className="absolute translate-y-4 translate-x-4" />
         <input
           className={classes}
@@ -99,9 +104,16 @@ export const Input: FC<Props> = ({
           name={name}
           data-testid={`Input_${name}`}
           readOnly={readonly}
+          autoComplete="off"
           {...inputProps}
         />
-      </>
+        {/* Small clear button at the right of the search field */}
+        {onClear && (
+          <button onClick={onClear} className="absolute right-4 bottom-1/2 translate-y-1/2 cursor-pointer">
+            <BsXCircle />
+          </button>
+        )}
+      </div>
     ),
   }[type]
   return (
