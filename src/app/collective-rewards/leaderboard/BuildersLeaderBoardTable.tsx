@@ -49,23 +49,19 @@ export const RewardCell: FC<RewardCellProps> = ({ rewards }) => (
         <div key={value + symbol} className="flex-1">
           {/* TODO: if the value is very small, should we show it in Gwei/wei? */}
 
-          <div className="flex items-center gap-1">
-            <Label className="font-normal text-sm leading-none text-text-primary font-rootstock-sans">
-              {toFixed(value)}
-            </Label>
+          <Label className="flex items-center gap-1 font-normal text-sm leading-none text-text-primary font-rootstock-sans">
+            {toFixed(value)}
             {symbol === RBTC && (
               <Image
                 src={`data:image/svg+xml;base64,${rbtcIconSrc}`}
                 alt="rBTC Logo"
-                className="ml-1"
-                width={18}
-                height={18}
+                objectPosition="center"
+                width={17}
+                height={17}
               />
             )}
-            {symbol === RIF && (
-              <Image src={'/images/rif-logo.png'} alt="RIF Logo" className="ml-1" width={18} height={18} />
-            )}
-          </div>
+            {symbol === RIF && <Image src={'/images/rif-logo.png'} alt="RIF Logo" width={15} height={15} />}
+          </Label>
           <Label className="font-normal text-sm leading-none text-disabled-primary font-rootstock-sans">
             {`= ${getFormattedCurrency(fiatValue, fiatSymbol)}`}
           </Label>
@@ -81,7 +77,7 @@ export const LazyRewardCell = memo(RewardCell, ({ rewards: prevReward }, { rewar
 export const BuilderNameCell = ({ builderName, address }: { builderName: string; address: string }) => {
   const shortenAddress = shortAddress(address as Address)
   return (
-    <TableCell className={cn(tableHeaders[0], 'border-solid')}>
+    <TableCell className={cn(tableHeaders[0].className, 'border-solid')}>
       <div className="flex flex-row gap-x-1">
         <Jdenticon className="rounded-md bg-white" value={builderName} size="24" />
         <Popover
@@ -94,7 +90,7 @@ export const BuilderNameCell = ({ builderName, address }: { builderName: string;
           trigger="hover"
           disabled={!builderName || isAddress(builderName)}
         >
-          <Typography tagVariant="label" className="font-semibold line-clamp-1 text-wrap min-w-28">
+          <Typography tagVariant="label" className="font-semibold line-clamp-1 text-wrap">
             <AddressOrAliasWithCopy
               addressOrAlias={builderName || address}
               clipboard={address}
@@ -138,7 +134,7 @@ export const BackerRewardsPercentage = ({
     return null
   }, [rewardPercentage])
   return (
-    <TableCell className={cn(tableHeaders[1], 'border-b-0')}>
+    <TableCell className={cn(tableHeaders[1].className, 'border-b-0')}>
       <div className="flex flex-row gap-x-1 font-rootstock-sans justify-center gap-2 ">
         <div>{rewardPercentage?.current}</div>
         {renderDelta}
@@ -149,7 +145,7 @@ export const BackerRewardsPercentage = ({
 
 export const LastCycleRewardCell = ({ rewards }: { rewards: Reward[] }) => {
   return (
-    <TableCell className={cn(tableHeaders[2], 'border-solid')}>
+    <TableCell className={cn(tableHeaders[2].className, 'border-solid')}>
       <LazyRewardCell rewards={rewards} />
     </TableCell>
   )
@@ -157,7 +153,7 @@ export const LastCycleRewardCell = ({ rewards }: { rewards: Reward[] }) => {
 
 const ProjectedRewardCell = ({ rewards }: { rewards: Reward[] }) => {
   return (
-    <TableCell className={cn(tableHeaders[3], 'border-solid')}>
+    <TableCell className={cn(tableHeaders[3].className, 'border-solid')}>
       <LazyRewardCell rewards={rewards} />
     </TableCell>
   )
@@ -170,7 +166,7 @@ type ShareProps = {
 
 const ShareCell = ({ share }: ShareProps) => {
   return (
-    <TableCell className={cn(tableHeaders[4], 'border-solid text-center border-b-0 items-center')}>
+    <TableCell className={cn(tableHeaders[4].className, 'border-solid text-center border-b-0 items-center')}>
       <div className="flex flex-row gap-2 items-center">
         <ProgressBar progress={Number(share)} color="#1bc47d" />
         <Label>{share.toString()}%</Label>
@@ -188,7 +184,7 @@ const ActionCell = () => {
    *  - it needs to interact with the allocation context to add the builder to the selected builders
    */
   return (
-    <TableCell className={cn(tableHeaders[5], 'border-solid align-center')}>
+    <TableCell className={cn(tableHeaders[5].className, 'border-solid align-center')}>
       <Button variant="secondary" /* disabled={true} */>Select</Button>
     </TableCell>
   )
@@ -202,19 +198,18 @@ enum RewardsColumnKeyEnum {
   share = 'share',
 }
 const tableHeaders = [
-  { label: 'Builder', width: 'w-[12%]', key: RewardsColumnKeyEnum.builder },
-  { label: 'Backer Rewards %', width: 'w-[12%]', key: RewardsColumnKeyEnum.rewardPercentage },
-  { label: 'Last Cycle Rewards', width: 'w-[22%]', key: RewardsColumnKeyEnum.lastCycleReward },
-  { label: 'Est. Backers Rewards', width: 'w-[22%]', key: RewardsColumnKeyEnum.projectedReward },
+  { label: 'Builder', className: 'w-[14%]', key: RewardsColumnKeyEnum.builder },
+  { label: 'Backer Rewards %', className: 'w-[10%]', key: RewardsColumnKeyEnum.rewardPercentage },
+  { label: 'Last Cycle Rewards', className: 'w-[22%]', key: RewardsColumnKeyEnum.lastCycleReward },
+  { label: 'Est. Backers Rewards', className: 'w-[22%]', key: RewardsColumnKeyEnum.projectedReward },
   {
     label: 'Total Allocations',
-    width: 'w-[18%]',
-    // eslint-disable-next-line quotes
-    tooltip: "The Builder's share of the total allocations",
+    className: 'w-[18%]',
+    tooltip: `The Builder's share of the total allocations`,
     key: RewardsColumnKeyEnum.share,
   },
   // TODO: text-center isn't applied
-  { label: 'Actions', width: 'w-[14%]', text_position: 'text-center' },
+  { label: 'Actions', className: 'w-[14%] text-center'},
 ]
 
 type ISortConfig = {
@@ -326,7 +321,7 @@ const BuildersLeaderBoardTable = () => {
 
   return (
     <div className="flex flex-col gap-5">
-      <TableCore>
+      <TableCore className="table-fixed">
         <TableHead>
           <TableRow>
             {tableHeaders.map(header => (
@@ -334,8 +329,7 @@ const BuildersLeaderBoardTable = () => {
                 key={header.label}
                 className={cn(
                   'font-rootstock-sans font-bold text-base leading-none border-b border-solid border-[#2D2D2D]',
-                  header.width,
-                  header.text_position,
+                  header.className,
                 )}
               >
                 <div className="flex flex-row">
@@ -352,7 +346,7 @@ const BuildersLeaderBoardTable = () => {
                   {header.label}
                   {header.key && (
                     <button
-                      className={`"text-xs text-white flex items-center ml-1" transition-transform duration-300 ${sortConfig?.key === header.key && sortConfig?.direction === 'asc' ? 'rotate-180' : 'rotate-0'}`}
+                      className={`text-xs text-white flex items-center ml-1 transition-transform duration-300 ${sortConfig?.key === header.key && sortConfig?.direction === 'asc' ? 'rotate-180' : 'rotate-0'}`}
                       onClick={() => handleSort(header.key)}
                     >
                       {sortConfig?.key === header.key ? (
