@@ -187,3 +187,34 @@ export const toFixed = (num: number | string, decimalPlaces = 8) => {
 }
 
 export const SHARED_MODAL_BOX_SHADOW_STYLE = '0px 0px 16.4px 0px rgba(229,107,26,0.68)'
+
+/**
+ * Creates a debounced version of a function that delays its execution until after a specified wait time
+ * has elapsed since the last time it was called.
+ * @param func - The function to debounce
+ * @param {number} wait - The number of milliseconds to delay execution
+ * @param {boolean} [immediate=false] - If true,  function executes immediately on the first call, then waits for the delay before allowing subsequent calls
+ */
+export function debounce<T extends (...args: any[]) => void>(
+  func: T,
+  wait: number,
+  immediate: boolean = false,
+): (...args: Parameters<T>) => void {
+  let timeout: NodeJS.Timeout | null = null
+
+  return function (this: any, ...args: Parameters<T>): void {
+    const context = this
+
+    const later = () => {
+      timeout = null
+      if (!immediate) func.apply(context, args)
+    }
+
+    const callNow = immediate && !timeout
+
+    if (timeout) clearTimeout(timeout)
+    timeout = setTimeout(later, wait)
+
+    if (callNow) func.apply(context, args)
+  }
+}

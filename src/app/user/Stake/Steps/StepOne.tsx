@@ -1,8 +1,9 @@
+import { useRef } from 'react'
 import { StakeRIF } from '@/app/user/Stake/StakeRIF'
 import { useStakingContext } from '@/app/user/Stake/StakingContext'
 import { StepProps } from '@/app/user/Stake/types'
-import { formatCurrency, toFixed } from '@/lib/utils'
-import { useEffect, useMemo } from 'react'
+import { debounce, formatCurrency, toFixed } from '@/lib/utils'
+import { useEffect, useMemo, useState } from 'react'
 import { useCanAccountUnstakeAmount } from '@/shared/hooks/useCanAccountUnstakeAmount'
 
 export const StepOne = ({ onGoNext = () => {} }: StepProps) => {
@@ -10,6 +11,14 @@ export const StepOne = ({ onGoNext = () => {} }: StepProps) => {
 
   const { isCanAccountWithdrawLoading, canAccountWithdraw, refetchCanAccountWithdraw } =
     useCanAccountUnstakeAmount(BigInt(amount))
+  // Tracks the most recent amount that completed validation via the withdrawal check API.
+  const [lastAmountFetched, setLastAmountFetched] = useState('')
+
+  const debounceRefetchCanAccountWithdraw = useRef(
+    debounce((amountToUpdate: string) => {
+      refetchCanAccountWithdraw().then(() => setLastAmountFetched(amountToUpdate))
+    }, 1000),
+  ).current
 
   const balanceToCurrency = useMemo(
     () => Number(tokenToSend.price) * Number(tokenToSend.balance),
@@ -20,8 +29,10 @@ export const StepOne = ({ onGoNext = () => {} }: StepProps) => {
     onAmountChange((Number(tokenToSend.balance) * (percentage / 100)).toString())
   }
 
-  const shouldShowCannotWithdraw =
-    actionName === 'UNSTAKE' && !isCanAccountWithdrawLoading && !canAccountWithdraw
+  const shouldShowCannotWithdraw = useMemo(
+    () => actionName === 'UNSTAKE' && !isCanAccountWithdrawLoading && canAccountWithdraw === false,
+    [actionName, canAccountWithdraw, isCanAccountWithdrawLoading],
+  )
 
   const shouldEnableGoNext = useMemo(() => {
     if (Number(amount) <= 0) {
@@ -29,6 +40,10 @@ export const StepOne = ({ onGoNext = () => {} }: StepProps) => {
     }
     // Extra unstake validation
     if (actionName === 'UNSTAKE') {
+      // Checks if the last amount we checked is the one that is currently introduced in the Input
+      if (lastAmountFetched !== amount) {
+        return false
+      }
       if (isCanAccountWithdrawLoading) {
         return false
       }
@@ -38,14 +53,21 @@ export const StepOne = ({ onGoNext = () => {} }: StepProps) => {
     }
 
     return Number(amount) <= Number(tokenToSend.balance)
-  }, [actionName, amount, isCanAccountWithdrawLoading, shouldShowCannotWithdraw, tokenToSend.balance])
+  }, [
+    actionName,
+    amount,
+    isCanAccountWithdrawLoading,
+    lastAmountFetched,
+    shouldShowCannotWithdraw,
+    tokenToSend.balance,
+  ])
 
   useEffect(() => {
     // Run extra validation when UNSTAKE
     if (actionName === 'UNSTAKE') {
-      refetchCanAccountWithdraw()
+      debounceRefetchCanAccountWithdraw(amount)
     }
-  }, [actionName, amount, refetchCanAccountWithdraw])
+  }, [actionName, amount, debounceRefetchCanAccountWithdraw])
 
   return (
     <StakeRIF
