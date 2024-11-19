@@ -5,17 +5,17 @@ import { useQuery } from '@tanstack/react-query'
 import { readContract } from 'wagmi/actions'
 import { config } from '@/config'
 
-export const useGetEndDistributionWindow = (timestamp: bigint) => {
+export const useGetCycleNext = (timestamp: bigint) => {
   const { data, isLoading, error } = useQuery({
     queryFn: async () => {
       return readContract(config, {
         address: BackersManagerAddress,
         abi: CycleTimeKeeperAbi,
-        functionName: 'endDistributionWindow',
+        functionName: 'cycleNext',
         args: [timestamp],
       })
     },
-    queryKey: ['endDistributionWindow'],
+    queryKey: ['cycleNext'],
     refetchInterval: AVERAGE_BLOCKTIME,
     initialData: 0n,
   })

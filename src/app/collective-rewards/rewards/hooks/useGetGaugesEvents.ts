@@ -24,14 +24,11 @@ const eventFetchers: Record<EventName, Function> = {
 export const useGetGaugesEvents = <T extends EventName>(gauges: Address[], eventName: T) => {
   const { data, isLoading, error } = useQuery({
     queryFn: async () => {
-      const values = await Promise.allSettled(gauges.map(gauge => eventFetchers[eventName](gauge)))
-      return values.reduce<Record<Address, GaugeEventLog<T>>>((acc, result, index) => {
-        if (result.status !== 'fulfilled') {
-          throw new Error('Error fetching gauge logs')
-        }
+      const values = await Promise.all(gauges.map(gauge => eventFetchers[eventName](gauge)))
+      return values.reduce<Record<Address, GaugeEventLog<T>>>((acc, { data }, index) => {
         const events = parseEventLogs({
           abi: GaugeAbi,
-          logs: result.value.data,
+          logs: data,
           eventName,
         })
 
@@ -39,7 +36,7 @@ export const useGetGaugesEvents = <T extends EventName>(gauges: Address[], event
         return acc
       }, {})
     },
-    queryKey: ['useGetDistributedRewards', eventName],
+    queryKey: ['useGetGaugesEvents', eventName],
     refetchInterval: AVERAGE_BLOCKTIME,
     initialData: {},
   })
