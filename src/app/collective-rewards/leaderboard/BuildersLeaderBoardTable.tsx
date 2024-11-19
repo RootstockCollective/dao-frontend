@@ -346,7 +346,7 @@ const BuildersLeaderBoardTable = () => {
                   {header.label}
                   {header.key && (
                     <button
-                      className={`text-xs text-white flex items-center ml-1 transition-transform duration-300 ${sortConfig?.key === header.key && sortConfig?.direction === 'asc' ? 'rotate-180' : 'rotate-0'}`}
+                      className={`text-xs text-white flex items-center ml-1 transition-transform duration-300 ${sortConfig?.key === header.key && sortConfig?.direction === 'asc' ? 'rotate-0' : 'rotate-180'}`}
                       onClick={() => handleSort(header.key)}
                     >
                       {sortConfig?.key === header.key ? (
