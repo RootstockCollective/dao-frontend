@@ -135,7 +135,7 @@ export const useGetBuilders = (): BuildersLoader => {
       proposals: Object.values(proposals),
       gauge: builderToGauge?.[builder as Address],
     }))
-  }, [builderStatusMap, buildersProposalsMap])
+  }, [builderStatusMap, buildersProposalsMap, builderToGauge])
 
   const isLoading = builderProposalsMapLoading || builderStatesLoading || buildersLoading || gaugesLoading
   const error = builderProposalsMapError ?? builderStatesError ?? buildersError ?? gaugesError

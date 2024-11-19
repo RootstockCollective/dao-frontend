@@ -43,7 +43,7 @@ export const useGetGaugesBackerRewardsClaimed = (
       }
       return acc
     }, {})
-  }, [eventsData, rewardToken, backer])
+  }, [eventsData, rewardToken, backer, fromTimestamp, toTimestamp])
 
   return {
     data,

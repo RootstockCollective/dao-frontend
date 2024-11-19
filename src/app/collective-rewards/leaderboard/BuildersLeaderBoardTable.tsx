@@ -205,11 +205,12 @@ const tableHeaders = [
   {
     label: 'Total Allocations',
     className: 'w-[18%]',
-    tooltip: `The Builder's share of the total allocations`,
+    // eslint-disable-next-line quotes
+    tooltip: "The Builder's share of the total allocations",
     key: RewardsColumnKeyEnum.share,
   },
   // TODO: text-center isn't applied
-  { label: 'Actions', className: 'w-[14%] text-center'},
+  { label: 'Actions', className: 'w-[14%] text-center' },
 ]
 
 type ISortConfig = {
