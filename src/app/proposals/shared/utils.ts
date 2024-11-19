@@ -35,7 +35,7 @@ export type DecodedData = {
   inputs: FunctionInputs
 }
 
-const tryDecode = (data: string): DecodedData => {
+const tryDecode = (data: string): DecodedData | undefined => {
   for (const abi of [...abis, GovernorAbi]) {
     try {
       const { functionName, args } = decodeFunctionData({ data: data as Hash, abi })
@@ -56,7 +56,7 @@ const tryDecode = (data: string): DecodedData => {
       continue
     }
   }
-  throw new Error('No ABI found to decode this proposal data.')
+  return undefined
 }
 /**
  * Function to parse proposal data into usable data
@@ -77,7 +77,7 @@ export const getEventArguments = ({
   const calldatasParsed = calldatas.reduce<DecodedData[]>((acc, cd) => {
     try {
       const decodedData = tryDecode(cd)
-      acc = [...acc, decodedData]
+      acc = [...acc, ...(decodedData ? [decodedData] : [])]
     } catch (err) {
       // TODO:: decide whether it is necessary to throw error (if so then also perhaps the function name `tryDecode` is misleading).
       // Only logging this error due to the fact that anyone can submit any proposal directly via contract call.
