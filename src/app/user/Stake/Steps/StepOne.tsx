@@ -10,7 +10,7 @@ export const StepOne = ({ onGoNext = () => {} }: StepProps) => {
   const { amount, onAmountChange, tokenToSend, actionName } = useStakingContext()
 
   const { isCanAccountWithdrawLoading, canAccountWithdraw, refetchCanAccountWithdraw } =
-    useCanAccountUnstakeAmount(BigInt(amount))
+    useCanAccountUnstakeAmount(BigInt(Math.ceil(Number(amount)))) // Ceiling to avoid crashing when using decimals
   // Tracks the most recent amount that completed validation via the withdrawal check API.
   const [lastAmountFetched, setLastAmountFetched] = useState('')
 
