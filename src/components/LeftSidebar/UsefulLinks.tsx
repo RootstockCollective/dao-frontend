@@ -9,6 +9,9 @@ export const UsefulLinks = () => (
       <Link href={currentLinks.rif} variant="menu" className="mb-[16px] text-[16px]" target="_blank">
         RIF
       </Link>
+      <Link href={currentLinks.forum} variant="menu" className="mb-[16px] text-[16px]" target="_blank">
+        Forum
+      </Link>
       <Link href={currentLinks.rbtc} variant="menu" className="mb-[16px] text-[16px]" target="_blank">
         Get RBTC
       </Link>
