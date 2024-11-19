@@ -1,9 +1,26 @@
+import {
+  BuilderStatusActive,
+  BuilderStatusInProgress,
+  BuilderStatusShown,
+} from '@/app/collective-rewards/types'
 import { BuilderStatusFilter, useWhitelistContext } from '@/app/collective-rewards/whitelist'
 import { useAlertContext } from '@/app/providers'
 import { Input } from '@/components/Input'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/Select'
 import { Label } from '@/components/Typography'
 import { useEffect } from 'react'
+
+type SelectOption = {
+  value: BuilderStatusShown | 'all'
+  label: string
+}
+
+// TODO: are there other statuses to be considered?
+const statuses: SelectOption[] = [
+  { value: 'all', label: 'All' },
+  { value: BuilderStatusActive, label: 'Activated' },
+  { value: BuilderStatusInProgress, label: 'In progress' },
+]
 
 export const WhitelistSearch = () => {
   const { search, filterBy, error: whitelistError } = useWhitelistContext()
@@ -19,13 +36,6 @@ export const WhitelistSearch = () => {
       console.error('🐛 whitelistError:', whitelistError)
     }
   }, [whitelistError, setErrorMessage])
-
-  // TODO: are there other statuses to be considered?
-  const statuses = [
-    { value: 'all', label: 'All' },
-    { value: 'Whitelisted', label: 'Whitelisted' },
-    { value: 'In progress', label: 'In progress' },
-  ]
 
   const onValueChange = (value: string) => filterBy.onChange(value as BuilderStatusFilter)
 
