@@ -1,1 +1,1 @@
-export * from './useGetGaugesFunction'
+export * from './useGaugesGetFunction'
