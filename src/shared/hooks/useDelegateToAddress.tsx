@@ -11,7 +11,7 @@ export const useDelegateToAddress = () => {
       abi: StRIFTokenAbi,
       address: STRIF_ADDRESS,
       functionName: 'delegate',
-      args: [addressToDelegate as Address],
+      args: [addressToDelegate.toLowerCase() as Address],
     })
   }
 
