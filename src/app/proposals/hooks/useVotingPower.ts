@@ -22,6 +22,12 @@ export const useVotingPower = () => {
         functionName: 'decimals',
       },
       { abi: GovernorAbi, address: GovernorAddress, functionName: 'proposalThreshold' },
+      {
+        abi: StRIFTokenAbi,
+        address: tokenContracts.stRIF,
+        functionName: 'getVotes',
+        args: [address!],
+      },
     ],
   })
 
@@ -34,11 +40,12 @@ export const useVotingPower = () => {
     }
   }
 
-  const [balance, decimals, threshold] = data as [bigint, number, bigint]
+  const [balance, decimals, threshold, totalVotingPower] = data as [bigint, number, bigint, bigint]
   return {
     isLoading: false,
     votingPower: formatUnits(balance, decimals),
     canCreateProposal: balance >= threshold,
     threshold: formatUnits(threshold, decimals),
+    totalVotingPower: formatUnits(totalVotingPower, decimals),
   }
 }
