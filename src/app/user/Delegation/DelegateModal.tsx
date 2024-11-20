@@ -19,7 +19,7 @@ export const DelegateModal = ({ onClose, onDelegateTxStarted }: DelegateModalPro
   const [error, setError] = useState('')
   // Global Alert
   const { setMessage: setGlobalMessage } = useAlertContext()
-  const onAddressChange = (value: string) => setAddressToDelegateTo(value)
+  const onAddressChange = (value: string) => setAddressToDelegateTo(value.toLowerCase())
 
   const { onDelegate, isPending } = useDelegateToAddress()
 
