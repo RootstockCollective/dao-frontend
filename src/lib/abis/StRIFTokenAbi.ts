@@ -32,6 +32,28 @@ export const StRIFTokenAbi = [
     type: 'error',
   },
   {
+    inputs: [
+      {
+        internalType: 'string',
+        name: 'reason',
+        type: 'string',
+      },
+    ],
+    name: 'CollectiveRewardsErrored',
+    type: 'error',
+  },
+  {
+    inputs: [
+      {
+        internalType: 'bytes',
+        name: 'reason',
+        type: 'bytes',
+      },
+    ],
+    name: 'CollectiveRewardsErroredBytes',
+    type: 'error',
+  },
+  {
     inputs: [],
     name: 'ECDSAInvalidSignature',
     type: 'error',
@@ -291,6 +313,39 @@ export const StRIFTokenAbi = [
   {
     inputs: [
       {
+        internalType: 'bool',
+        name: 'canWithdraw',
+        type: 'bool',
+      },
+    ],
+    name: 'STRIFStakedInCollectiveRewardsCanWithdraw',
+    type: 'error',
+  },
+  {
+    inputs: [
+      {
+        internalType: 'bool',
+        name: '_supports',
+        type: 'bool',
+      },
+    ],
+    name: 'STRIFSupportsERC165',
+    type: 'error',
+  },
+  {
+    inputs: [
+      {
+        internalType: 'bool',
+        name: '_supports',
+        type: 'bool',
+      },
+    ],
+    name: 'STRIFSupportsICollectiveRewardsCheck',
+    type: 'error',
+  },
+  {
+    inputs: [
+      {
         internalType: 'uint8',
         name: 'bits',
         type: 'uint8',
@@ -365,6 +420,19 @@ export const StRIFTokenAbi = [
       },
     ],
     name: 'Approval',
+    type: 'event',
+  },
+  {
+    anonymous: false,
+    inputs: [
+      {
+        indexed: false,
+        internalType: 'address',
+        name: 'collectiveRewardsAddress',
+        type: 'address',
+      },
+    ],
+    name: 'CollectiveRewardsAddressHasBeenChanged',
     type: 'event',
   },
   {
@@ -453,6 +521,19 @@ export const StRIFTokenAbi = [
       },
     ],
     name: 'OwnershipTransferred',
+    type: 'event',
+  },
+  {
+    anonymous: false,
+    inputs: [
+      {
+        indexed: false,
+        internalType: 'bool',
+        name: 'shouldBeSkipped',
+        type: 'bool',
+      },
+    ],
+    name: 'STRIFCollectiveRewardsErrorSkipChangedTo',
     type: 'event',
   },
   {
@@ -643,6 +724,19 @@ export const StRIFTokenAbi = [
         internalType: 'uint48',
         name: '',
         type: 'uint48',
+      },
+    ],
+    stateMutability: 'view',
+    type: 'function',
+  },
+  {
+    inputs: [],
+    name: 'collectiveRewardsCheck',
+    outputs: [
+      {
+        internalType: 'address',
+        name: '',
+        type: 'address',
       },
     ],
     stateMutability: 'view',
@@ -881,7 +975,7 @@ export const StRIFTokenAbi = [
   {
     inputs: [
       {
-        internalType: 'address',
+        internalType: 'contract IERC20',
         name: 'rifToken',
         type: 'address',
       },
@@ -892,6 +986,13 @@ export const StRIFTokenAbi = [
       },
     ],
     name: 'initialize',
+    outputs: [],
+    stateMutability: 'nonpayable',
+    type: 'function',
+  },
+  {
+    inputs: [],
+    name: 'initializeV2',
     outputs: [],
     stateMutability: 'nonpayable',
     type: 'function',
@@ -1019,6 +1120,32 @@ export const StRIFTokenAbi = [
   {
     inputs: [],
     name: 'renounceOwnership',
+    outputs: [],
+    stateMutability: 'nonpayable',
+    type: 'function',
+  },
+  {
+    inputs: [
+      {
+        internalType: 'address',
+        name: 'collectiveRewardsAddress',
+        type: 'address',
+      },
+    ],
+    name: 'setCollectiveRewardsAddress',
+    outputs: [],
+    stateMutability: 'nonpayable',
+    type: 'function',
+  },
+  {
+    inputs: [
+      {
+        internalType: 'bool',
+        name: 'shouldBeSkipped',
+        type: 'bool',
+      },
+    ],
+    name: 'setCollectiveRewardsErrorSkipFlag',
     outputs: [],
     stateMutability: 'nonpayable',
     type: 'function',
@@ -1185,6 +1312,19 @@ export const StRIFTokenAbi = [
     name: 'upgradeToAndCall',
     outputs: [],
     stateMutability: 'payable',
+    type: 'function',
+  },
+  {
+    inputs: [],
+    name: 'version',
+    outputs: [
+      {
+        internalType: 'uint64',
+        name: '',
+        type: 'uint64',
+      },
+    ],
+    stateMutability: 'pure',
     type: 'function',
   },
   {
