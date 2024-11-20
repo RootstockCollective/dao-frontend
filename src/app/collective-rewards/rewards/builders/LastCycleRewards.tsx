@@ -6,8 +6,8 @@ import {
   MetricsCardTitle,
   TokenMetricsCardRow,
   useGetGaugeNotifyRewardLogs,
-  RewardDetails,
   Token,
+  BuilderRewardDetails,
 } from '@/app/collective-rewards/rewards'
 import { useHandleErrors } from '@/app/collective-rewards/utils'
 import { formatBalanceToHuman } from '@/app/user/Balances/balanceUtils'
@@ -54,7 +54,7 @@ const TokenRewardsMetrics: FC<TokenRewardsMetricsProps> = ({
   })
 }
 
-type LastCycleRewardsProps = Omit<RewardDetails, 'builder'>
+type LastCycleRewardsProps = Omit<BuilderRewardDetails, 'builder'>
 
 export const LastCycleRewards: FC<LastCycleRewardsProps> = ({ tokens: { rif, rbtc }, ...rest }) => {
   return (

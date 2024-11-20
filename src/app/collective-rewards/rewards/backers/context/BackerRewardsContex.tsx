@@ -3,11 +3,11 @@ import {
   Token,
   BackerRewardsClaimedEventLog,
   useGetGaugesBackerRewardsClaimed,
-  useGetGaugesBackerRewards,
 } from '@/app/collective-rewards/rewards'
 import { Address } from 'viem'
+import { useGaugesGetFunction } from '@/app/collective-rewards//shared'
 
-type TokenRewards = {
+export type TokenRewards = {
   earned: Record<Address, bigint>
   claimed: Record<Address, BackerRewardsClaimedEventLog>
   estimated: Record<Address, bigint>
@@ -19,12 +19,18 @@ type BackerRewardsContextValue = {
   }
   isLoading: boolean
   error: Error | null
+  getRewardByGauge: <Type extends bigint | BackerRewardsClaimedEventLog>(
+    rewardToken: Address,
+    gauge: Address,
+    type: keyof TokenRewards,
+  ) => Type | undefined
 }
 
 export const BackerRewardsContext = createContext<BackerRewardsContextValue>({
   data: {},
   isLoading: false,
   error: null,
+  getRewardByGauge: () => undefined,
 })
 
 type BackerRewardsProviderProps = {
@@ -41,20 +47,21 @@ const useGetTokenRewards = (backer: Address, token: Token, gauges: Address[]) =>
     data: earned,
     isLoading: earnedLoading,
     error: earnedError,
-  } = useGetGaugesBackerRewards(backer, token.address, gauges, 'earned')
+  } = useGaugesGetFunction(gauges, 'earned', [token.address, backer])
+  // TODO: change from to estimatedBackerRewards once the contracts are updated
+  const {
+    data: estimated,
+    isLoading: estimatedLoading,
+    error: estimatedError,
+  } = useGaugesGetFunction(gauges, 'earned', [token.address, backer])
   const {
     data: claimed,
     isLoading: claimedLoading,
     error: claimedError,
   } = useGetGaugesBackerRewardsClaimed(gauges, token.address, backer)
-  const {
-    data: estimated,
-    isLoading: estimatedLoading,
-    error: estimatedError,
-  } = useGetGaugesBackerRewards(backer, token.address, gauges, 'estimatedBackerRewards')
 
-  const isLoading = earnedLoading || claimedLoading || estimatedLoading
-  const error = earnedError ?? claimedError ?? estimatedError
+  const isLoading = earnedLoading || estimatedLoading || claimedLoading
+  const error = earnedError ?? estimatedError ?? claimedError
 
   return {
     data: {
@@ -83,13 +90,20 @@ export const BackerRewardsContextProvider: FC<BackerRewardsProviderProps> = ({
   const isLoading = rifLoading || rbtcLoading
   const error = rifError ?? rbtcError
 
+  const data: { [token: string]: TokenRewards } = {
+    [rif.address]: rifRewards,
+    [rbtc.address]: rbtcRewards,
+  }
+
+  const getRewardByGauge = <Type,>(rewardToken: Address, gauge: Address, type: keyof TokenRewards) => {
+    return data[rewardToken][type][gauge] as Type
+  }
+
   const valueOfContext: BackerRewardsContextValue = {
-    data: {
-      [rif.address]: rifRewards,
-      [rbtc.address]: rbtcRewards,
-    },
+    data,
     isLoading,
     error,
+    getRewardByGauge,
   }
 
   return <BackerRewardsContext.Provider value={valueOfContext}>{children}</BackerRewardsContext.Provider>

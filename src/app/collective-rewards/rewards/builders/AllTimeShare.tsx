@@ -5,12 +5,12 @@ import {
   MetricsCardTitle,
   MetricsCardContent,
   useGetBuilderRewardsClaimedLogs,
-  RewardDetails,
   useGetGaugesNotifyReward,
+  BuilderRewardDetails,
 } from '@/app/collective-rewards/rewards'
 import { useHandleErrors } from '@/app/collective-rewards/utils'
 
-type AllTimeShareProps = Omit<RewardDetails, 'builder'>
+type AllTimeShareProps = Omit<BuilderRewardDetails, 'builder'>
 
 export const AllTimeShare: FC<AllTimeShareProps> = ({ gauge, gauges, tokens: { rif } }) => {
   const {

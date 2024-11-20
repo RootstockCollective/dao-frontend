@@ -5,22 +5,26 @@ import {
   RewardsSection,
   RewardsSectionHeader,
 } from '@/app/collective-rewards/rewards'
-import { useGetGaugesArray } from '@/app/collective-rewards/user'
-import { getCoinbaseAddress } from '@/app/collective-rewards/utils'
+import { useGetBuilderToGauge, useGetGaugesArray } from '@/app/collective-rewards/user'
+import { getCoinbaseAddress, useHandleErrors } from '@/app/collective-rewards/utils'
 import { tokenContracts } from '@/lib/contracts'
-import { useRouter } from 'next/navigation'
 import { FC } from 'react'
-import { Address, getAddress } from 'viem'
+import { Address, getAddress, zeroAddress } from 'viem'
+import { BackerRewardsTable } from './backers/BackerRewardsTable'
 
-export const Rewards: FC<{ builder: Address; gauge: Address }> = ({ builder, gauge }) => {
-  const router = useRouter()
-  const { data: rewardGauges } = useGetGaugesArray('active')
-  const { data: haltedGauges } = useGetGaugesArray('halted')
+export const Rewards: FC<{ builder: Address }> = ({ builder }) => {
+  const { data: rewardGauges, error: rewardGaugesError } = useGetGaugesArray('active')
+  const { data: haltedGauges, error: haltedGaugesError } = useGetGaugesArray('halted')
+  const { data: gauge, error: gaugeError } = useGetBuilderToGauge(builder)
   const gauges = [...(rewardGauges ?? []), ...(haltedGauges ?? [])]
 
+  const error = rewardGaugesError ?? haltedGaugesError ?? gaugeError
+
+  useHandleErrors({ error, title: 'Error loading gauge(s)' })
+
+  // TODO: check where to store this information
   const data: RewardDetails = {
     builder,
-    gauge,
     gauges,
     tokens: {
       rif: {
@@ -36,18 +40,11 @@ export const Rewards: FC<{ builder: Address; gauge: Address }> = ({ builder, gau
 
   return (
     <>
-      <div className="pb-[46px]">
-        <RewardsSection>
-          <RewardsSectionHeader
-            onSettingsOpen={() => {
-              router.push('/user/settings?type=builder')
-            }}
-            title="Builder Rewards"
-            subtext="Monitor the rewards you are getting from your Collective Rewards."
-          />
-          <BuilderRewards {...data} />
-        </RewardsSection>
-      </div>
+      {gauge && gauge !== zeroAddress && (
+        <div className="pb-[46px]">
+          <BuilderRewards gauge={gauge} {...data} />
+        </div>
+      )}
       <RewardsSection>
         <RewardsSectionHeader
           onSettingsOpen={() => {
@@ -57,6 +54,7 @@ export const Rewards: FC<{ builder: Address; gauge: Address }> = ({ builder, gau
           subtext="Monitor your rewards balances and claim."
         />
         <BackerRewards {...data} />
+        <BackerRewardsTable {...data} />
       </RewardsSection>
     </>
   )

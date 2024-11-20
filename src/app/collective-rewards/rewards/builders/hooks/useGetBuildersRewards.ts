@@ -1,20 +1,21 @@
 import { useCycleContext } from '@/app/collective-rewards/metrics'
 import {
   getNotifyRewardAmount,
+  Token,
   useGetBuildersRewardPercentage,
   useGetGaugesNotifyReward,
-  useGetGaugesRewardShares,
   useGetRewardsCoinbase,
   useGetRewardsERC20,
-  useGetTotalAllocations,
   useGetTotalPotentialReward,
+  RifSvg,
+  RbtcSvg,
 } from '@/app/collective-rewards/rewards'
 import { useGetFilteredBuilders } from '@/app/collective-rewards/whitelist'
 import { formatBalanceToHuman } from '@/app/user/Balances/balanceUtils'
-import { RBTC, RIF, USD } from '@/lib/constants'
 import { usePricesContext } from '@/shared/context/PricesContext'
+import { useGaugesGetFunction } from '@/app/collective-rewards/shared'
 
-export const useGetBuildersRewards = () => {
+export const useGetBuildersRewards = ({ rif, rbtc }: { [token: string]: Token }, currency = 'USD') => {
   const {
     data: activeBuilders,
     isLoading: activeBuildersLoading,
@@ -29,23 +30,24 @@ export const useGetBuildersRewards = () => {
 
   const buildersAddress = activeBuilders?.map(({ address }) => address)
   const {
-    data: buildersRewardsPercentage,
-    isLoading: rewardsPercentageLoading,
-    error: rewardsPercentageError,
+    data: buildersRewardsPct,
+    isLoading: buildersRewardsPctLoading,
+    error: buildersRewardsPctError,
   } = useGetBuildersRewardPercentage(buildersAddress)
 
   const gauges = activeBuilders?.map(({ gauge }) => gauge)
   const {
-    data: { allocationsPercentage },
-    isLoading: allocationsLoading,
-    error: allocationsError,
-  } = useGetTotalAllocations(gauges)
+    data: totalAllocation,
+    isLoading: totalAllocationLoading,
+    error: totalAllocationError,
+  } = useGaugesGetFunction(gauges, 'totalAllocation')
+  const sumTotalAllocation = Object.values(totalAllocation ?? {}).reduce((acc, value) => acc + value, 0n)
 
   const {
     data: rewardShares,
     isLoading: rewardSharesLoading,
     error: rewardSharesError,
-  } = useGetGaugesRewardShares(gauges)
+  } = useGaugesGetFunction(gauges, 'rewardShares')
 
   const {
     data: rewardsERC20,
@@ -75,15 +77,15 @@ export const useGetBuildersRewards = () => {
     lastCycleAfterDistribution.toSeconds(),
     endDistributionWindow.toSeconds(),
   )
-
-  const buildersRewardsAmount = getNotifyRewardAmount(gauges, notifyRewardEventLastCycle)
+  const rifBuildersRewardsAmount = getNotifyRewardAmount(notifyRewardEventLastCycle, rif, 'builderAmount_')
+  const rbtcBuildersRewardsAmount = getNotifyRewardAmount(notifyRewardEventLastCycle, rbtc, 'builderAmount_')
 
   const isLoading =
     rewardSharesLoading ||
     activeBuildersLoading ||
-    allocationsLoading ||
+    totalAllocationLoading ||
     logsLoading ||
-    rewardsPercentageLoading ||
+    buildersRewardsPctLoading ||
     rewardsERC20Loading ||
     rewardsCoinbaseLoading ||
     cycleLoading ||
@@ -92,9 +94,9 @@ export const useGetBuildersRewards = () => {
   const error =
     rewardSharesError ??
     activeBuildersError ??
-    allocationsError ??
+    totalAllocationError ??
     logsError ??
-    rewardsPercentageError ??
+    buildersRewardsPctError ??
     rewardsERC20Error ??
     rewardsCoinbaseError ??
     cycleError ??
@@ -102,13 +104,13 @@ export const useGetBuildersRewards = () => {
 
   const { prices } = usePricesContext()
 
-  const priceRif = prices[RIF]?.price ?? 0
-  const priceRbtc = prices[RBTC]?.price ?? 0
+  const rifPrice = prices[rif.symbol]?.price ?? 0
+  const rbtcPrice = prices[rbtc.symbol]?.price ?? 0
 
   return {
-    data: activeBuilders.map(({ address, builderName }, i) => {
-      const builderRewardShares = rewardShares ? rewardShares[i] : 0n
-      const rewardPercentage = buildersRewardsPercentage?.[i] ?? null
+    data: activeBuilders.map(({ address, builderName, gauge }) => {
+      const builderRewardShares = rewardShares[gauge] ?? 0n
+      const rewardPercentage = buildersRewardsPct[address] ?? null
       const currentRewardPercentage = rewardPercentage?.current ?? 0
 
       // calculate rif estimated rewards
@@ -127,8 +129,11 @@ export const useGetBuildersRewards = () => {
       const estimatedRbtcInHuman =
         Number(formatBalanceToHuman(rewardsAmountRbtc)) * (currentRewardPercentage / 100)
 
-      const totalAllocationPercentage = allocationsPercentage?.[i] ?? 0n
-      const builderRewardsAmount = buildersRewardsAmount[gauges[i]]
+      const totalAllocationPercentage = sumTotalAllocation
+        ? (totalAllocation[gauge] * 100n) / sumTotalAllocation
+        : 0n
+      const rifBuilderRewardsAmount = Number(formatBalanceToHuman(rifBuildersRewardsAmount[gauge] ?? 0n))
+      const rbtcBuilderRewardsAmount = Number(formatBalanceToHuman(rbtcBuildersRewardsAmount[gauge] ?? 0n))
 
       return {
         address,
@@ -137,34 +142,38 @@ export const useGetBuildersRewards = () => {
         rewardPercentage,
         lastCycleReward: {
           RIF: {
-            crypto: { value: builderRewardsAmount.RIF, symbol: RIF },
+            crypto: { value: rifBuilderRewardsAmount, symbol: rif.symbol },
             fiat: {
-              value: priceRif * builderRewardsAmount.RIF,
-              symbol: USD,
+              value: rifPrice * rifBuilderRewardsAmount,
+              symbol: currency,
             },
+            logo: RifSvg(),
           },
           RBTC: {
-            crypto: { value: builderRewardsAmount.RBTC, symbol: RBTC },
+            crypto: { value: rbtcBuilderRewardsAmount, symbol: rbtc.symbol },
             fiat: {
-              value: priceRbtc * builderRewardsAmount.RBTC,
-              symbol: USD,
+              value: rbtcPrice * rbtcBuilderRewardsAmount,
+              symbol: currency,
             },
+            logo: RbtcSvg(),
           },
         },
         estimatedReward: {
           RIF: {
-            crypto: { value: estimatedRifInHuman, symbol: RIF },
+            crypto: { value: estimatedRifInHuman, symbol: rif.symbol },
             fiat: {
-              value: priceRif * estimatedRifInHuman,
-              symbol: USD,
+              value: rifPrice * estimatedRifInHuman,
+              symbol: currency,
             },
+            logo: RifSvg(),
           },
           RBTC: {
-            crypto: { value: estimatedRbtcInHuman, symbol: RBTC },
+            crypto: { value: estimatedRbtcInHuman, symbol: rbtc.symbol },
             fiat: {
-              value: priceRbtc * estimatedRbtcInHuman,
-              symbol: USD,
+              value: rbtcPrice * estimatedRbtcInHuman,
+              symbol: currency,
             },
+            logo: RbtcSvg(),
           },
         },
       }

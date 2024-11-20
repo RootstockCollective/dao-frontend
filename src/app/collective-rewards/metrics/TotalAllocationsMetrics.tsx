@@ -1,4 +1,4 @@
-import { useGaugesGetFunction } from '@/app/collective-rewards/hooks'
+import { useGaugesGetFunction } from '@/app/collective-rewards/shared/hooks'
 import { Address } from 'viem'
 import { FC } from 'react'
 import { usePricesContext } from '@/shared/context/PricesContext'
@@ -20,7 +20,7 @@ export const TotalAllocationsMetrics: FC<TotalAllocationsProps> = ({
   currency = 'USD',
 }) => {
   const { prices } = usePricesContext()
-  const { data, isLoading, error } = useGaugesGetFunction<bigint>(gauges, 'totalAllocation', [])
+  const { data, isLoading, error } = useGaugesGetFunction(gauges, 'totalAllocation')
   useHandleErrors({ error, title: 'Error loading total allocations' })
 
   const price = prices[symbol]?.price ?? 0

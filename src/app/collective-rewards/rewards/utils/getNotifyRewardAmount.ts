@@ -1,44 +1,18 @@
-import {
-  BackerRewardsClaimedEventLog,
-  GaugeNotifyRewardEventLog,
-  NotifyRewardEventLog,
-} from '@/app/collective-rewards/rewards'
-import { formatBalanceToHuman } from '@/app/user/Balances/balanceUtils'
-import { RBTC, RIF } from '@/lib/constants'
-import { tokenContracts } from '@/lib/contracts'
-import { Address, getAddress, isAddressEqual } from 'viem'
+import { GaugeNotifyRewardEventLog, Token } from '@/app/collective-rewards/rewards'
+import { Address, isAddressEqual } from 'viem'
 
-interface BuilderClaimedRewards {
-  [RIF]: number
-  [RBTC]: number
-}
 export const getNotifyRewardAmount = (
-  gauges: Address[],
   notifyRewardEvents: Record<Address, GaugeNotifyRewardEventLog>,
+  token: Token,
+  type: 'builderAmount_' | 'backersAmount_',
 ) => {
-  const buildersClaimedRifLastCycle: Record<Address, BuilderClaimedRewards> = {}
-  for (const gauge of gauges) {
-    const gaugeClaimedEvents = notifyRewardEvents[gauge] ?? []
-    // Calculate total amount of RIF claimed by the backer
-    const gaugeRifClaimedTotal: bigint = gaugeClaimedEvents.reduce(
-      (acc, value) =>
-        isAddressEqual(value.args.rewardToken_, getAddress(tokenContracts.RIF))
-          ? acc + value.args.builderAmount_
-          : acc,
+  return Object.keys(notifyRewardEvents).reduce<Record<Address, bigint>>((acc, key) => {
+    const event = notifyRewardEvents[key as Address]
+    acc[key as Address] = event.reduce(
+      (acc, { args }) => (isAddressEqual(args.rewardToken_, token.address) ? acc + args[type] : acc),
       0n,
     )
-    // Calculate total amount of RBTC claimed by the backer
-    const gaugeRbtcClaimedTotal: bigint = gaugeClaimedEvents.reduce(
-      (acc, value) =>
-        isAddressEqual(value.args.rewardToken_, getAddress(tokenContracts.RBTC))
-          ? acc + value.args.builderAmount_
-          : acc,
-      0n,
-    )
-    buildersClaimedRifLastCycle[gauge] = {
-      RIF: Number(formatBalanceToHuman(gaugeRifClaimedTotal)),
-      RBTC: Number(formatBalanceToHuman(gaugeRbtcClaimedTotal)),
-    }
-  }
-  return buildersClaimedRifLastCycle
+
+    return acc
+  }, {})
 }

@@ -26,8 +26,9 @@ const TabsTrigger = forwardRef<
   const searchParams = useSearchParams()
 
   const updateSearchParam = (tab: string) => {
-    const currentParams = searchParams ? searchParams + '&' : ''
-    const updatedUrl = `${pathname}?${currentParams}tab=${tab}`
+    const params = new URLSearchParams(searchParams?.toString())
+    params.set('tab', tab)
+    const updatedUrl = `${pathname}?${params.toString()}`
     router.push(updatedUrl)
   }
   return (

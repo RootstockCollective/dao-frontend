@@ -1,26 +1,13 @@
-import { useAlertContext } from '@/app/providers/AlertProvider'
-import { LoadingSpinner } from '@/components/LoadingSpinner'
 import { HeaderTitle } from '@/components/Typography'
-import React, { useEffect } from 'react'
 import { WhitelistGrid, WhitelistSearch } from './components'
 import { useWhitelistContext } from './context'
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/Collapsible'
 import { withSpinner } from '@/components/LoadingSpinner/withLoadingSpinner'
+import { useHandleErrors } from '@/app/collective-rewards/utils'
 
 export const WhitelistSection = () => {
   const { builders, isLoading, error: whitelistError } = useWhitelistContext()
-  const { setMessage: setErrorMessage } = useAlertContext()
-
-  useEffect(() => {
-    if (whitelistError) {
-      setErrorMessage({
-        severity: 'error',
-        title: 'Error loading proposals state',
-        content: whitelistError.message,
-      })
-      console.error('🐛 whitelistError:', whitelistError)
-    }
-  }, [whitelistError, setErrorMessage])
+  useHandleErrors({ error: whitelistError, title: 'Error loading proposals state' })
 
   return (
     <>
