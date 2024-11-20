@@ -14,7 +14,7 @@ import { useVotingPower } from './hooks/useVotingPower'
 import { useMemo } from 'react'
 
 export default function Proposals() {
-  const { votingPower, canCreateProposal, threshold } = useVotingPower()
+  const { canCreateProposal, threshold, totalVotingPower } = useVotingPower()
   const { latestProposals } = useFetchAllProposals()
 
   const memoizedProposals = useMemo(() => latestProposals, [latestProposals])
@@ -26,7 +26,7 @@ export default function Proposals() {
         <div>
           <VotingPowerPopover />
           <Paragraph className="text-[48px] text-primary tracking-[-0.96px]" fontFamily="kk-topo">
-            {toFixed(votingPower)}
+            {totalVotingPower}
           </Paragraph>
         </div>
         <div className="flex flex-row gap-x-6">
