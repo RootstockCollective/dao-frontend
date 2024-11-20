@@ -187,12 +187,3 @@ export const toFixed = (num: number | string, decimalPlaces = 8) => {
 }
 
 export const SHARED_MODAL_BOX_SHADOW_STYLE = '0px 0px 16.4px 0px rgba(229,107,26,0.68)'
-
-export const isMobileOrTablet = (): boolean => {
-  if (typeof window === 'undefined') {
-    return false // Ensure the check only happens on the client side
-  }
-
-  const userAgent = navigator.userAgent || navigator.vendor
-  return /android|iphone|ipad|ipod|blackberry|windows phone|mobile/i.test(userAgent)
-}
