@@ -2,7 +2,7 @@ import { useFetchAllProposals } from '@/app/proposals/hooks/useFetchLatestPropos
 import { EventArgumentsParameter, getEventArguments } from '@/app/proposals/shared/utils'
 import { StatusColumn } from '@/app/proposals/StatusColumn'
 import { Table } from '@/components/Table'
-import { HeaderTitle } from '@/components/Typography'
+import { HeaderTitle, Typography } from '@/components/Typography'
 import { SharedProposalsTableContextProvider } from '@/app/proposals/SharedProposalsTableContext'
 import { ProposalsContextProvider } from '@/app/proposals/ProposalsContext'
 import { SentimentColumn } from '@/app/proposals/SentimentColumn'
@@ -64,7 +64,7 @@ const LatestProposalsTable = ({ latestProposals }: LatestProposalsTableProps) =>
     <div>
       <HeaderTitle className="mb-4">Latest Proposals</HeaderTitle>
       <DebounceSearch placeholder="Search a proposal" onSearchSubmit={onSearchSubmit} />
-      {latestProposalsMapped.length > 0 && (
+      {latestProposalsMapped.length > 0 ? (
         <SharedProposalsTableContextProvider>
           <Table
             key={latestProposalsMapped.length}
@@ -76,6 +76,8 @@ const LatestProposalsTable = ({ latestProposals }: LatestProposalsTableProps) =>
             className="overflow-visible"
           />
         </SharedProposalsTableContextProvider>
+      ) : (
+        <Typography tagVariant="p">No proposals found &#x1F622;</Typography>
       )}
     </div>
   )
