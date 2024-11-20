@@ -9,8 +9,7 @@ import { Disclaimer } from './Disclaimer'
 import { GetStarted } from './GetStarted'
 import { BG_IMG_CLASSES } from '@/shared/utils'
 import { HeaderText } from '@/components/HeaderText/HeaderText'
-import { DeviceWarning } from '@/components/DeviceWarning' // Importing the DeviceWarning component
-
+import { DeviceWarning } from '@/components/DeviceWarning'
 export const Login = () => {
   const { isConnected, address } = useAccount()
   const [hasMounted, setHasMounted] = useState(false)
@@ -27,7 +26,7 @@ export const Login = () => {
 
     // Check if the device is mobile
     const handleResize = () => {
-      setIsMobile(window.innerWidth < 640) // Tailwind's sm breakpoint (default: 640px)
+      setIsMobile(window.innerWidth < 640) // Tailwind's sm breakpoint
     }
 
     handleResize() // Set initial value
