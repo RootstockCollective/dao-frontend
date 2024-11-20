@@ -1,6 +1,6 @@
 'use client'
 
-import { LeaderBoard } from '@/app/collective-rewards/leaderboard'
+import { BuildersLeaderBoard } from '@/app/collective-rewards/leaderboard'
 import { Metrics } from '@/app/collective-rewards/metrics'
 import { WhitelistContextProviderWithBuilders, WhitelistSection } from '@/app/collective-rewards/whitelist'
 import { MainContainer } from '@/components/MainContainer/MainContainer'
@@ -13,7 +13,7 @@ export default function BuildersIncentiveMarket() {
         <WhitelistContextProviderWithBuilders>
           <WhitelistSection />
         </WhitelistContextProviderWithBuilders>
-        <LeaderBoard />
+        <BuildersLeaderBoard />
       </div>
     </MainContainer>
   )

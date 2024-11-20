@@ -61,6 +61,7 @@ export const useGetBuilders = (): BuildersLoader => {
    */
   // get the gauges
   const { data: gauges, isLoading: gaugesLoading, error: gaugesError } = useGetGaugesArray('active')
+
   // get the builders for each gauge
   const gaugeToBuilderCalls = gauges?.map(
     gauge =>
@@ -82,6 +83,14 @@ export const useGetBuilders = (): BuildersLoader => {
     },
   })
   const builders = buildersResult?.map(builder => builder.result) as Address[]
+
+  const builderToGauge = builders?.reduce(
+    (acc, builder, index) => {
+      acc[builder] = gauges![index]
+      return acc
+    },
+    {} as Record<Address, Address>,
+  )
 
   // get the builder state for each builder
   const builderStatesCalls = builders?.map(
@@ -124,8 +133,9 @@ export const useGetBuilders = (): BuildersLoader => {
           ? builderStatusMap[builder as Address] // V2
           : BuilderStatusProposalCreatedMVP, // MVP
       proposals: Object.values(proposals),
+      gauge: builderToGauge?.[builder as Address],
     }))
-  }, [builderStatusMap, buildersProposalsMap])
+  }, [builderStatusMap, buildersProposalsMap, builderToGauge])
 
   const isLoading = builderProposalsMapLoading || builderStatesLoading || buildersLoading || gaugesLoading
   const error = builderProposalsMapError ?? builderStatesError ?? buildersError ?? gaugesError

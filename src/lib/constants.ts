@@ -34,4 +34,5 @@ export const AVERAGE_BLOCKTIME = 30_000
 
 export const RIF = 'RIF'
 export const USD = 'USD'
+export const RBTC = 'RBTC'
 export const USD_SYMBOL = '$'

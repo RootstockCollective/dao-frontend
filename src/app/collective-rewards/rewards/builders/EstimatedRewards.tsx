@@ -65,6 +65,8 @@ const TokenRewards: FC<TokenRewardsProps> = ({ builder, gauge, token: { id, symb
 
   const rewardsAmount = rewardPercentage ? applyPrecision(rewards * rewardPercentage) : 0n
 
+  // rewardsAmountGauge = rewardsAmount * rewardShares / totalPotentialRewards
+  // rewardsAmountBuilder = rewardsAmount * (1 - rewardPercentage) / totalPotentialRewards
   const estimatedRewards =
     rewardShares && totalPotentialRewards ? (rewardShares * rewardsAmount) / totalPotentialRewards : 0n
   const estimatedRewardsInHuman = Number(formatBalanceToHuman(estimatedRewards))
