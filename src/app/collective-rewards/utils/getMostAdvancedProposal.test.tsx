@@ -24,6 +24,7 @@ describe('getValidProposal', () => {
               },
             },
           ] as CreateBuilderProposalEventLog[],
+          gauge: '0x01',
         },
         {
           1: ProposalState.Executed,
@@ -48,6 +49,7 @@ describe('getValidProposal', () => {
               },
             },
           ] as CreateBuilderProposalEventLog[],
+          gauge: '0x01',
         },
         {
           1: ProposalState.Active,
@@ -78,6 +80,7 @@ describe('getValidProposal', () => {
               },
             },
           ] as CreateBuilderProposalEventLog[],
+          gauge: '0x01',
         },
         {
           1: ProposalState.Active,
@@ -108,6 +111,7 @@ describe('getValidProposal', () => {
               },
             },
           ] as CreateBuilderProposalEventLog[],
+          gauge: '0x01',
         },
         {
           1: ProposalState.Canceled,

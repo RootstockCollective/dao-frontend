@@ -13,7 +13,7 @@ const CollapsibleTrigger = React.forwardRef<
   const iconBaseCn = 'h-6 w-6 shrink-0'
   return (
     <div className="flex">
-      <div className="flex items-center justify-center gap-[10px]">
+      <div className="flex gap-[10px] w-full">
         <CollapsiblePrimitive.Trigger ref={ref} className={cn('transition-all group', className)} {...props}>
           <SlArrowUp className={cn(iconBaseCn, 'group-data-[state=open]:hidden')} />
           <SlArrowDown className={cn(iconBaseCn, 'group-data-[state=closed]:hidden')} />

@@ -31,6 +31,7 @@ export const useGetFilteredBuilders = ({
     if (filterStatus !== 'all') {
       filteredBuilders = filteredBuilders.filter(builder => builder.status === filterStatus)
     }
+
     setData(filteredBuilders)
   }, [builders, filterBuilderName, filterStatus])
 

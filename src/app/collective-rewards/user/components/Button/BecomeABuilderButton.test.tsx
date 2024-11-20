@@ -44,6 +44,7 @@ describe('BecomeABuilderButton', () => {
         timeStamp: 1723309061,
       },
     ] as CreateBuilderProposalEventLog[],
+    gauge: '0x01',
   }
   const buildersData = [builderData]
   const proposalsToStates = {

@@ -18,6 +18,7 @@ export type BuilderInfo = {
   address: Address
   status: BuilderStatus
   proposals: CreateBuilderProposalEventLog[]
+  gauge: Address
 }
 
 export type ProposalsToState = Record<string, ProposalState>
