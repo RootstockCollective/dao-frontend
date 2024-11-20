@@ -9,7 +9,7 @@ import { useFetchCreateBuilderProposals } from '@/app/proposals/hooks/useFetchLa
 import { BuilderRegistryAbi } from '@/lib/abis/v2/BuilderRegistryAbi'
 import { AVERAGE_BLOCKTIME } from '@/lib/constants'
 import { BackersManagerAddress } from '@/lib/contracts'
-import { useEffect, useMemo } from 'react'
+import { useMemo } from 'react'
 import { Address, getAddress } from 'viem'
 import { useReadContracts } from 'wagmi'
 import { useGetGaugesArray } from '@/app/collective-rewards/user/hooks/useGetGaugesArray'

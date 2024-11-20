@@ -1,4 +1,8 @@
-import { BackerRewardsClaimedEventLog } from '@/app/collective-rewards/rewards'
+import {
+  BackerRewardsClaimedEventLog,
+  GaugeNotifyRewardEventLog,
+  NotifyRewardEventLog,
+} from '@/app/collective-rewards/rewards'
 import { formatBalanceToHuman } from '@/app/user/Balances/balanceUtils'
 import { RBTC, RIF } from '@/lib/constants'
 import { tokenContracts } from '@/lib/contracts'
@@ -8,18 +12,18 @@ interface BuilderClaimedRewards {
   [RIF]: number
   [RBTC]: number
 }
-export const getBackersClaimedRewardsAmount = (
+export const getNotifyRewardAmount = (
   gauges: Address[],
-  backersClaimedEvents: Record<Address, BackerRewardsClaimedEventLog>,
+  notifyRewardEvents: Record<Address, GaugeNotifyRewardEventLog>,
 ) => {
   const buildersClaimedRifLastCycle: Record<Address, BuilderClaimedRewards> = {}
   for (const gauge of gauges) {
-    const gaugeClaimedEvents = backersClaimedEvents[gauge] ?? []
+    const gaugeClaimedEvents = notifyRewardEvents[gauge] ?? []
     // Calculate total amount of RIF claimed by the backer
     const gaugeRifClaimedTotal: bigint = gaugeClaimedEvents.reduce(
       (acc, value) =>
         isAddressEqual(value.args.rewardToken_, getAddress(tokenContracts.RIF))
-          ? acc + value.args.amount_
+          ? acc + value.args.builderAmount_
           : acc,
       0n,
     )
@@ -27,7 +31,7 @@ export const getBackersClaimedRewardsAmount = (
     const gaugeRbtcClaimedTotal: bigint = gaugeClaimedEvents.reduce(
       (acc, value) =>
         isAddressEqual(value.args.rewardToken_, getAddress(tokenContracts.RBTC))
-          ? acc + value.args.amount_
+          ? acc + value.args.builderAmount_
           : acc,
       0n,
     )

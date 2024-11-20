@@ -1,8 +1,8 @@
 import { useCycleContext } from '@/app/collective-rewards/metrics'
 import {
-  getBackersClaimedRewardsAmount,
+  getNotifyRewardAmount,
   useGetBuildersRewardPercentage,
-  useGetGaugesBackerRewardsClaimed,
+  useGetGaugesNotifyReward,
   useGetGaugesRewardShares,
   useGetRewardsCoinbase,
   useGetRewardsERC20,
@@ -60,22 +60,23 @@ export const useGetBuildersRewards = () => {
   } = useGetRewardsCoinbase()
 
   const { data: cycle, isLoading: cycleLoading, error: cycleError } = useCycleContext()
-  const { cycleDuration, cycleStart } = cycle
-  const lastCycleStart = cycleStart?.minus({ millisecond: +cycleDuration })
+  const { cycleDuration, cycleStart, endDistributionWindow } = cycle
+  const distributionWindow = endDistributionWindow.diff(cycleStart)
+  const lastCycleStart = cycleStart.minus({ millisecond: cycleDuration.as('millisecond') })
+  const lastCycleAfterDistribution = lastCycleStart.plus({ millisecond: +distributionWindow })
 
   const {
-    data: backersClaimedEventsLastCycle,
+    data: notifyRewardEventLastCycle,
     isLoading: logsLoading,
     error: logsError,
-  } = useGetGaugesBackerRewardsClaimed(
+  } = useGetGaugesNotifyReward(
     gauges,
     undefined,
-    undefined,
-    lastCycleStart?.toSeconds() || undefined,
-    lastCycleStart?.toSeconds() + cycleDuration?.toSeconds() || undefined,
+    lastCycleAfterDistribution.toSeconds(),
+    endDistributionWindow.toSeconds(),
   )
 
-  const backersClaimedAmounts = getBackersClaimedRewardsAmount(gauges, backersClaimedEventsLastCycle)
+  const buildersRewardsAmount = getNotifyRewardAmount(gauges, notifyRewardEventLastCycle)
 
   const isLoading =
     rewardSharesLoading ||
@@ -127,7 +128,7 @@ export const useGetBuildersRewards = () => {
         Number(formatBalanceToHuman(rewardsAmountRbtc)) * (currentRewardPercentage / 100)
 
       const totalAllocationPercentage = allocationsPercentage?.[i] ?? 0n
-      const backerClaimedAmount = backersClaimedAmounts[gauges[i]]
+      const builderRewardsAmount = buildersRewardsAmount[gauges[i]]
 
       return {
         address,
@@ -136,16 +137,16 @@ export const useGetBuildersRewards = () => {
         rewardPercentage,
         lastCycleReward: {
           RIF: {
-            crypto: { value: backerClaimedAmount.RIF, symbol: RIF },
+            crypto: { value: builderRewardsAmount.RIF, symbol: RIF },
             fiat: {
-              value: priceRif * backerClaimedAmount.RIF,
+              value: priceRif * builderRewardsAmount.RIF,
               symbol: USD,
             },
           },
           RBTC: {
-            crypto: { value: backerClaimedAmount.RBTC, symbol: RBTC },
+            crypto: { value: builderRewardsAmount.RBTC, symbol: RBTC },
             fiat: {
-              value: priceRbtc * backerClaimedAmount.RBTC,
+              value: priceRbtc * builderRewardsAmount.RBTC,
               symbol: USD,
             },
           },

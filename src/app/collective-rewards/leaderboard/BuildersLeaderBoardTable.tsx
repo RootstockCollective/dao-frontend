@@ -156,12 +156,12 @@ const EstimatedRewardCell = ({ rewards }: { rewards: Reward[] }) => {
   )
 }
 
-type ShareProps = {
+type TotalAllocationCellProps = {
   // a percentage without decimals
   totalAllocationPercentage: bigint
 }
 
-const ShareCell = ({ totalAllocationPercentage }: ShareProps) => {
+const TotalAllocationCell = ({ totalAllocationPercentage }: TotalAllocationCellProps) => {
   return (
     <TableCell className={cn(tableHeaders[4].className, 'border-solid text-center border-b-0 items-center')}>
       <div className="flex flex-row gap-2 items-center">
@@ -364,7 +364,7 @@ const BuildersLeaderBoardTable = () => {
                 <BackerRewardsPercentage rewardPercentage={rewardPercentage} />
                 <LastCycleRewardCell rewards={[lastCycleReward.RBTC, lastCycleReward.RIF]} />
                 <EstimatedRewardCell rewards={[estimatedReward.RBTC, estimatedReward.RIF]} />
-                <ShareCell totalAllocationPercentage={totalAllocationPercentage} />
+                <TotalAllocationCell totalAllocationPercentage={totalAllocationPercentage} />
                 <ActionCell />
               </TableRow>
             ),
