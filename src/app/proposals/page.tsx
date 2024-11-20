@@ -12,10 +12,21 @@ import { useRouter } from 'next/navigation'
 import { FaRegQuestionCircle } from 'react-icons/fa'
 import { useVotingPower } from './hooks/useVotingPower'
 import { useMemo } from 'react'
+import { useVotingPowerAtSnapshot } from '@/app/proposals/hooks/useVotingPowerAtSnapshot'
+import { useBlockNumber } from 'wagmi'
 
 export default function Proposals() {
-  const { votingPower, canCreateProposal, threshold } = useVotingPower()
+  const { canCreateProposal, threshold } = useVotingPower()
   const { latestProposals } = useFetchAllProposals()
+
+  const { data: latestBlockNumber } = useBlockNumber({
+    query: {
+      enabled: true,
+    },
+  })
+  // to search latest for functions require block in the past
+  const blockNumberToUse = latestBlockNumber ? latestBlockNumber - BigInt(1) : undefined
+  const { votingPowerAtSnapshot } = useVotingPowerAtSnapshot(blockNumberToUse as bigint)
 
   const memoizedProposals = useMemo(() => latestProposals, [latestProposals])
   return (
@@ -26,7 +37,7 @@ export default function Proposals() {
         <div>
           <VotingPowerPopover />
           <Paragraph className="text-[48px] text-primary tracking-[-0.96px]" fontFamily="kk-topo">
-            {toFixed(votingPower)}
+            {toFixed(votingPowerAtSnapshot)}
           </Paragraph>
         </div>
         <div className="flex flex-row gap-x-6">
