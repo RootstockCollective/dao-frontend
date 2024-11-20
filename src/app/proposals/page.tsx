@@ -26,7 +26,7 @@ export default function Proposals() {
         <div>
           <VotingPowerPopover />
           <Paragraph className="text-[48px] text-primary tracking-[-0.96px]" fontFamily="kk-topo">
-            {toFixed(Number(totalVotingPower))}
+            {totalVotingPower}
           </Paragraph>
         </div>
         <div className="flex flex-row gap-x-6">
