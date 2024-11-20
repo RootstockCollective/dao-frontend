@@ -1,6 +1,9 @@
+'use client'
+
 import { FC, ReactNode } from 'react'
 import Image from 'next/image'
 import { cn } from '@/lib/utils'
+import { createPortal } from 'react-dom'
 
 interface Props {
   className?: string
@@ -9,7 +12,7 @@ interface Props {
   width?: number
 }
 export const Modal: FC<Props> = ({ children, onClose, width, className }) => {
-  return (
+  return createPortal(
     <div className="fixed inset-0 flex items-center justify-center z-50 rounded-[8px]">
       <div
         className="fixed inset-0 backdrop-filter backdrop-blur-2xl transition-opacity"
@@ -27,6 +30,7 @@ export const Modal: FC<Props> = ({ children, onClose, width, className }) => {
         </button>
         {children}
       </div>
-    </div>
+    </div>,
+    document.body,
   )
 }
