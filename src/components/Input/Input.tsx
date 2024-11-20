@@ -4,6 +4,7 @@ import { FC, JSX } from 'react'
 import { InputAttributes, NumericFormatProps } from 'react-number-format'
 import { InputNumber } from './InputNumber'
 import { BsSearch, BsXCircle } from 'react-icons/bs'
+import { FaSpinner } from 'react-icons/fa6'
 
 const DEFAULT_CLASSES = `
 px-[20px] py-[12px]
@@ -38,6 +39,10 @@ interface Props {
    * Adds a "clear" button to the search field. The provided function is called when the button is clicked.
    */
   onClear?: () => void
+  /**
+   * Loading prop triggers rolling spinner inside the search field
+   */
+  loading?: boolean
 }
 export const Input: FC<Props> = ({
   name,
@@ -55,6 +60,7 @@ export const Input: FC<Props> = ({
   onChange = () => {},
   labelProps = {},
   onClear,
+  loading = false,
 }) => {
   const handleOnChange = (e: { target: { value: string } }) => onChange(e.target.value)
 
@@ -94,7 +100,9 @@ export const Input: FC<Props> = ({
     ),
     search: (
       <div className="relative">
-        <BsSearch className="absolute translate-y-4 translate-x-4" />
+        <div className="absolute translate-y-4 translate-x-4">
+          {loading ? <FaSpinner className="animate-spin" /> : <BsSearch />}
+        </div>
         <input
           className={classes}
           placeholder={placeholder}
