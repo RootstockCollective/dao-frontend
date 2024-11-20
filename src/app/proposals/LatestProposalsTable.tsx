@@ -11,6 +11,7 @@ import { ProposalNameColumn } from '@/app/proposals/ProposalNameColumn'
 import { ReactNode, useMemo, memo, useState } from 'react'
 import { TimeRemainingColumn } from '@/app/proposals/TimeRemainingColumn'
 import { DebounceSearch } from '../../components/DebounceSearch/DebounceSearch'
+import { Typography } from '@/components/Typography'
 
 interface LatestProposalsTableProps {
   latestProposals: ReturnType<typeof useFetchAllProposals>['latestProposals']
@@ -64,7 +65,7 @@ const LatestProposalsTable = ({ latestProposals }: LatestProposalsTableProps) =>
     <div>
       <HeaderTitle className="mb-4">Latest Proposals</HeaderTitle>
       <DebounceSearch placeholder="Search a proposal" onSearchSubmit={onSearchSubmit} />
-      {latestProposalsMapped.length > 0 && (
+      {latestProposalsMapped.length > 0 ? (
         <SharedProposalsTableContextProvider>
           <Table
             key={latestProposalsMapped.length}
@@ -76,6 +77,8 @@ const LatestProposalsTable = ({ latestProposals }: LatestProposalsTableProps) =>
             className="overflow-visible"
           />
         </SharedProposalsTableContextProvider>
+      ) : (
+        <Typography tagVariant="p">No proposals found &#x1F622;</Typography>
       )}
     </div>
   )
