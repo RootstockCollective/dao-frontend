@@ -1,4 +1,4 @@
-import { Header, Label } from '@/components/Typography'
+import { Header, Label, Paragraph } from '@/components/Typography'
 import { StakeInput } from '@/app/user/Stake/StakeInput'
 import { Button } from '@/components/Button'
 import { useMemo } from 'react'
@@ -14,6 +14,7 @@ interface Props {
   totalBalanceConverted: string
   symbol: string
   actionName: ActionBeingExecuted
+  shouldShowCannotWithdraw?: boolean
 }
 
 export const StakeRIF = ({
@@ -26,6 +27,7 @@ export const StakeRIF = ({
   totalBalanceConverted,
   actionName,
   symbol = 'RIF',
+  shouldShowCannotWithdraw = false,
 }: Props) => (
   <div className="px-[50px] py-[20px]">
     <Header className="text-center font-normal" fontFamily="kk-topo">
@@ -53,7 +55,14 @@ export const StakeRIF = ({
         />
       ))}
     </div>
-    {/* @TODO if we're unstaking we should have a component here - check design */}
+    {/* Cannot withdraw paragraph */}
+    {shouldShowCannotWithdraw && (
+      <Paragraph size="small" className="mt-2">
+        It appears you have votes allocated in the Collective Rewards! You can unstake your stRIF anytime.
+        However, please note that you must first de-allocate the same amount of stRIF from the Collective
+        Rewards
+      </Paragraph>
+    )}
     {/* Stake */}
     <div className="flex justify-center pt-10">
       <Button
