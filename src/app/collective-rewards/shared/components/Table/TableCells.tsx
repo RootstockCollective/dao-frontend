@@ -5,12 +5,13 @@ import { TableCell } from '@/components/Table'
 import { Label, Typography } from '@/components/Typography'
 import { cn, formatCurrency, shortAddress, toFixed } from '@/lib/utils'
 import { FC, memo, useMemo } from 'react'
-import { FaArrowDown, FaArrowUp } from 'react-icons/fa6'
+import { FaArrowDown, FaArrowUp, FaCircle } from 'react-icons/fa6'
 import { Address, isAddress } from 'viem'
 import { BuilderRewardPercentage } from '@/app/collective-rewards/rewards'
 import { TableHeader } from '@/app/collective-rewards/shared'
 import { ProgressBar } from '@/components/ProgressBar'
 import { Button } from '@/components/Button'
+import { BuilderStateDetails } from '@/app/collective-rewards/types'
 
 type Currency = {
   value: number
@@ -64,17 +65,40 @@ type BuilderCellProps = {
   tableHeader: TableHeader
   builderName: string
   address: Address
+  stateDetails: BuilderStateDetails
+}
+
+const BuilderStatusFlag = ({ stateDetails }: { stateDetails: BuilderStateDetails }) => {
+  const isDeactivated = !stateDetails.kycApproved || !stateDetails.communityApproved
+  const isPaused = stateDetails.paused
+
+  const color = isDeactivated ? '#932309' : isPaused ? '#F9E1FF' : 'transparent'
+  const content = isDeactivated ? 'Status: Deactivated' : isPaused ? 'Status: Paused' : ''
+
+  return (
+    <Popover
+      disabled={!isDeactivated && !isPaused}
+      content={content}
+      className="font-normal text-sm flex items-center"
+      size="small"
+      trigger="hover"
+    >
+      <FaCircle color={color} />
+    </Popover>
+  )
 }
 
 export const BuilderNameCell: FC<BuilderCellProps> = ({
   tableHeader: { className },
   builderName,
   address,
+  stateDetails,
 }) => {
   const shortenAddress = shortAddress(address)
   return (
     <TableCell className={cn(className, 'border-solid')}>
       <div className="flex flex-row gap-x-1">
+        <BuilderStatusFlag stateDetails={stateDetails} />
         <Jdenticon className="rounded-md bg-white" value={builderName} size="24" />
         <Popover
           content={

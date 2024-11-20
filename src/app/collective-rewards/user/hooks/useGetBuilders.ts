@@ -1,10 +1,13 @@
 import {
   BuilderInfo,
+  BuilderStateDetails,
   BuilderStatus,
   BuilderStatusActive,
   BuilderStatusInProgress,
   BuilderStatusProposalCreatedMVP,
 } from '@/app/collective-rewards/types'
+import { useGetGaugesArray } from '@/app/collective-rewards/user/hooks/useGetGaugesArray'
+import { BuilderStateStruct } from '@/app/collective-rewards/utils/getBuilderGauge'
 import { useFetchCreateBuilderProposals } from '@/app/proposals/hooks/useFetchLatestProposals'
 import { BuilderRegistryAbi } from '@/lib/abis/v2/BuilderRegistryAbi'
 import { AVERAGE_BLOCKTIME } from '@/lib/constants'
@@ -12,8 +15,6 @@ import { BackersManagerAddress } from '@/lib/contracts'
 import { useMemo } from 'react'
 import { Address, getAddress } from 'viem'
 import { useReadContracts } from 'wagmi'
-import { useGetGaugesArray } from '@/app/collective-rewards/user/hooks/useGetGaugesArray'
-import { BuilderStateStruct } from '@/app/collective-rewards/utils'
 
 export type BuilderLoader = {
   data?: BuilderInfo
@@ -26,6 +27,7 @@ export type BuildersLoader = Omit<BuilderLoader, 'data'> & {
 }
 
 type BuilderStatusMap = Record<Address, BuilderStatus>
+type BuilderStateDetailsMap = Record<Address, BuilderStateDetails>
 
 const EXCLUDED_BUILDER_STATUS = 'X'
 type BuilderStatusWithExcluded = BuilderStatus | 'X'
@@ -109,6 +111,13 @@ export const useGetBuilders = (): BuildersLoader => {
   } = useReadContracts({ contracts: builderStatesCalls, query: { refetchInterval: AVERAGE_BLOCKTIME } })
   const builderStates = builderStatesResult?.map(({ result }) => result as BuilderStateStruct)
 
+  const builderStateDetails = builders?.reduce<BuilderStateDetailsMap>((acc, builder, index) => {
+    const builderState = (builderStates?.[index] ?? []) as BuilderStateStruct
+    const [activated, kycApproved, communityApproved, paused, revoked] = builderState
+    acc[builder] = { activated, kycApproved, communityApproved, paused, revoked }
+    return acc
+  }, {})
+
   const builderStatusMap = builders?.reduce<BuilderStatusMap>((acc, builder, index) => {
     const builderState = (builderStates?.[index] ?? []) as BuilderStateStruct
     const status = getCombinedBuilderStatus(builderState)
@@ -132,10 +141,11 @@ export const useGetBuilders = (): BuildersLoader => {
         builderStatusMap && builder in builderStatusMap
           ? builderStatusMap[builder as Address] // V2
           : BuilderStatusProposalCreatedMVP, // MVP
+      stateDetails: builderStateDetails?.[builder as Address],
       proposals: Object.values(proposals),
       gauge: builderToGauge?.[builder as Address],
     }))
-  }, [builderStatusMap, buildersProposalsMap, builderToGauge])
+  }, [builderStatusMap, buildersProposalsMap, builderToGauge, builderStateDetails])
 
   const isLoading = builderProposalsMapLoading || builderStatesLoading || buildersLoading || gaugesLoading
   const error = builderProposalsMapError ?? builderStatesError ?? buildersError ?? gaugesError

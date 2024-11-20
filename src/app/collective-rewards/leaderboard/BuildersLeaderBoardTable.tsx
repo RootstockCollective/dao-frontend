@@ -1,5 +1,5 @@
 import { CycleContextProvider } from '@/app/collective-rewards/metrics'
-import { Token, useGetBuildersRewards } from '@/app/collective-rewards/rewards'
+import { Token } from '@/app/collective-rewards/rewards'
 import { BuilderContextProviderWithPrices } from '@/app/collective-rewards/user'
 import { getCoinbaseAddress, useHandleErrors } from '@/app/collective-rewards/utils'
 import { Button } from '@/components/Button'
@@ -21,6 +21,7 @@ import {
 } from '@/app/collective-rewards/shared'
 import { getAddress } from 'viem'
 import { tokenContracts } from '@/lib/contracts'
+import { useGetBuildersRewards } from './hooks/useGetBuildersRewards'
 
 enum RewardsColumnKeyEnum {
   builder = 'builder',
@@ -38,7 +39,7 @@ const tableHeaders: TableHeader[] = [
   { label: 'Est. Backers Rewards', className: 'w-[22%]', sortKey: RewardsColumnKeyEnum.estimatedRewards },
   {
     label: 'Total Allocations',
-    className: 'w-[18%]',
+    className: 'w-[16%]',
     // eslint-disable-next-line quotes
     tooltip: "The Builder's share of the total allocations",
     sortKey: RewardsColumnKeyEnum.totalAllocationPercentage,
@@ -145,13 +146,19 @@ const BuildersLeaderBoardTable: FC<BuildersLeaderBoardTableProps> = ({ tokens, c
             ({
               address,
               builderName,
+              stateDetails,
               lastCycleReward,
               estimatedReward,
               totalAllocationPercentage,
               rewardPercentage,
             }) => (
               <TableRow key={address} className="text-[14px] border-hidden">
-                <BuilderNameCell tableHeader={tableHeaders[0]} builderName={builderName} address={address} />
+                <BuilderNameCell
+                  tableHeader={tableHeaders[0]}
+                  builderName={builderName}
+                  address={address}
+                  stateDetails={stateDetails}
+                />
                 <BackerRewardsPercentage tableHeader={tableHeaders[1]} percentage={rewardPercentage} />
                 <LazyRewardCell
                   tableHeader={tableHeaders[2]}
