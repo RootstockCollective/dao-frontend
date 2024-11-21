@@ -111,8 +111,17 @@ export const useGetBuilders = (): BuildersLoader => {
   } = useReadContracts({ contracts: builderStatesCalls, query: { refetchInterval: AVERAGE_BLOCKTIME } })
   const builderStates = builderStatesResult?.map(({ result }) => result as BuilderStateStruct)
 
+  // TODO: how to validate builders from mvp
   const builderStateDetails = builders?.reduce<BuilderStateDetailsMap>((acc, builder, index) => {
-    const builderState = (builderStates?.[index] ?? []) as BuilderStateStruct
+    const builderState = (builderStates?.[index] ?? [
+      false,
+      false,
+      false,
+      false,
+      false,
+      '',
+      '',
+    ]) as BuilderStateStruct
     const [activated, kycApproved, communityApproved, paused, revoked] = builderState
     acc[builder] = { activated, kycApproved, communityApproved, paused, revoked }
     return acc

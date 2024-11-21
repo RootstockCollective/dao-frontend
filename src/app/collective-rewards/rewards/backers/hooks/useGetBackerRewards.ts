@@ -68,7 +68,7 @@ export const useGetBackerRewards = (
   const rifPrice = prices[rif.symbol]?.price ?? 0
   const rbtcPrice = prices[rbtc.symbol]?.price ?? 0
 
-  const data = builders.map(({ address, builderName, gauge }) => {
+  const data = builders.map(({ address, builderName, gauge, stateDetails }) => {
     const builderTotalAllocation = totalAllocation[gauge]
     const backerAllocationOf = allocationOf[gauge]
     const totalAllocationPercentage = builderTotalAllocation
@@ -82,6 +82,7 @@ export const useGetBackerRewards = (
     return {
       address,
       builderName,
+      stateDetails,
       rewardPercentage,
       estimatedRewards: {
         rif: {

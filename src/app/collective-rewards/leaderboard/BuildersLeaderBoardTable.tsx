@@ -1,5 +1,5 @@
 import { CycleContextProvider } from '@/app/collective-rewards/metrics'
-import { Token } from '@/app/collective-rewards/rewards'
+import { Token, useGetBuildersRewards } from '@/app/collective-rewards/rewards'
 import { BuilderContextProviderWithPrices } from '@/app/collective-rewards/user'
 import { getCoinbaseAddress, useHandleErrors } from '@/app/collective-rewards/utils'
 import { Button } from '@/components/Button'
@@ -21,7 +21,6 @@ import {
 } from '@/app/collective-rewards/shared'
 import { getAddress } from 'viem'
 import { tokenContracts } from '@/lib/contracts'
-import { useGetBuildersRewards } from './hooks/useGetBuildersRewards'
 
 enum RewardsColumnKeyEnum {
   builder = 'builder',

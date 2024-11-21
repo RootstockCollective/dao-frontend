@@ -61,16 +61,14 @@ export const LazyRewardCell = memo(RewardCell, ({ rewards: prevReward }, { rewar
   prevReward.every((reward, key) => reward.fiat.value === nextReward[key].fiat.value),
 )
 
-type BuilderCellProps = {
-  tableHeader: TableHeader
-  builderName: string
-  address: Address
-  stateDetails: BuilderStateDetails
+type BuilderStatusFlagProps = {
+  stateDetails?: BuilderStateDetails
 }
 
-const BuilderStatusFlag = ({ stateDetails }: { stateDetails: BuilderStateDetails }) => {
-  const isDeactivated = !stateDetails.kycApproved || !stateDetails.communityApproved
-  const isPaused = stateDetails.paused
+const BuilderStatusFlag: FC<BuilderStatusFlagProps> = ({ stateDetails }) => {
+  //TODO: check what to do here with the states for the MVP
+  const isDeactivated = stateDetails && (!stateDetails.kycApproved || !stateDetails.communityApproved)
+  const isPaused = stateDetails && stateDetails.paused
 
   const color = isDeactivated ? '#932309' : isPaused ? '#F9E1FF' : 'transparent'
   const content = isDeactivated ? 'Status: Deactivated' : isPaused ? 'Status: Paused' : ''
@@ -87,6 +85,12 @@ const BuilderStatusFlag = ({ stateDetails }: { stateDetails: BuilderStateDetails
     </Popover>
   )
 }
+
+type BuilderCellProps = {
+  tableHeader: TableHeader
+  builderName: string
+  address: Address
+} & BuilderStatusFlagProps
 
 export const BuilderNameCell: FC<BuilderCellProps> = ({
   tableHeader: { className },
