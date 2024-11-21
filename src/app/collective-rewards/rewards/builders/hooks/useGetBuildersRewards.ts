@@ -20,7 +20,7 @@ export const useGetBuildersRewards = ({ rif, rbtc }: { [token: string]: Token },
     data: activeBuilders,
     isLoading: activeBuildersLoading,
     error: activeBuildersError,
-  } = useGetFilteredBuilders({ builderName: '', status: 'Active', stateFlags: { activated: true } })
+  } = useGetFilteredBuilders({ builderName: '', status: 'all' })
 
   const {
     data: totalPotentialRewards,

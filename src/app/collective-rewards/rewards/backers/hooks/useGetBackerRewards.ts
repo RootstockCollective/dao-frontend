@@ -37,6 +37,7 @@ export const useGetBackerRewards = (
   // TODO: check which gauges are we going to use
   // TODO: check which builders are we going to use
   const { data: builders, isLoading: buildersLoading, error: buildersError } = useBuilderContext()
+  builders.filter(({ address }) => address === builder)
   const buildersAddress = builders?.map(({ address }) => address)
   const {
     data: buildersRewardsPct,

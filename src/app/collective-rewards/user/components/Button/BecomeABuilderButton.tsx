@@ -25,16 +25,9 @@ const BuilderRegistrationButton = () => {
   )
 }
 
-export const crStatusColorClasses: Record<BuilderStatus, HtmlHTMLAttributes<HTMLSpanElement>['className']> = {
-  Active: 'bg-[#DBFEE5] text-secondary',
-  'In progress': 'bg-[#4B5CF0] color-text-primary',
-  Paused: 'bg-[#F9E1FF] text-secondary',
-  Deactivated: 'bg-[#932309] color-text-primary',
-} as const
-
 const StatusBadge: FC<StatusBadgeProps> = ({ builderStatus }) => {
   const InProgressComponent = (
-    <Badge content="In Progress" className={`${crStatusColorClasses['In progress']} py-2 px-1`} />
+    <Badge content="In Progress" className="bg-[#4B5CF0] color-text-primary py-2 px-1" />
   )
   const WhitelistedComponent = (
     <Typography tagVariant="h2" className={'font-kk-topo text-2xl/7 font-normal uppercase py-2 px-1'}>
@@ -75,7 +68,7 @@ export const BecomeABuilderHandler = ({ address }: { address: Address }) => {
     return <BuilderRegistrationButton />
   }
 
-  return <StatusBadge builderStatus={builder.status} />
+  return <StatusBadge builderStatus={builder.stateFlags} />
 }
 
 export const BecomeABuilderButton = ({ address }: { address: Address }) => {

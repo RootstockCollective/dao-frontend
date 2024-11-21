@@ -1,15 +1,14 @@
-import { useReadContracts } from 'wagmi'
-import { GovernorAddress } from '@/lib/contracts'
-import { GovernorAbi } from '@/lib/abis/Governor'
-import { Address } from 'viem'
-import { CreateBuilderProposalEventLog } from '@/app/proposals/hooks/useFetchLatestProposals'
-import { useMemo } from 'react'
-import { ProposalState } from '@/shared/types'
 import { ProposalsToState } from '@/app/collective-rewards/types'
+import { GovernorAbi } from '@/lib/abis/Governor'
 import { AVERAGE_BLOCKTIME } from '@/lib/constants'
+import { GovernorAddress } from '@/lib/contracts'
+import { ProposalState } from '@/shared/types'
+import { useMemo } from 'react'
+import { Address } from 'viem'
+import { useReadContracts } from 'wagmi'
 
-export const useGetProposalsState = (proposals: CreateBuilderProposalEventLog[]) => {
-  const contractCalls = proposals.map(({ args: { proposalId } }) => {
+export const useGetProposalsState = (proposalIds: bigint[]) => {
+  const contractCalls = proposalIds.map(proposalId => {
     return {
       address: GovernorAddress as Address,
       abi: GovernorAbi,
@@ -40,8 +39,7 @@ export const useGetProposalsState = (proposals: CreateBuilderProposalEventLog[])
       acc[proposalId.toString()] = state
       return acc
     }, {})
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [states]) // The states dependency is a contract call result, so it's not necessary to include it in the deps array
+  }, [states, proposalIds, contractCalls])
 
   return {
     data: proposalsToStates,

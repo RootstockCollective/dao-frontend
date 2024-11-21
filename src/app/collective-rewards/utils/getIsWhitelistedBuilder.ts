@@ -1,7 +1,7 @@
 import { Address } from 'viem'
-import { getBuilderState } from '@/app/collective-rewards/utils'
+import { getBuilderStatus } from '@/app/collective-rewards/utils'
 
 export const getIsWhitelistedBuilder = async (builderAddress: Address): Promise<boolean> => {
-  const builderState = await getBuilderState(builderAddress)
+  const builderState = await getBuilderStatus(builderAddress)
   return builderState.whitelisted
 }

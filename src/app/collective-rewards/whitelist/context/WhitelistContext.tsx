@@ -1,9 +1,9 @@
-import { BuilderProposal, withBuilderContextProvider } from '@/app/collective-rewards/user'
-import { BuilderStatus } from '@/app/collective-rewards/types'
+import { withBuilderContextProvider } from '@/app/collective-rewards/user'
+import { Builder, BuilderStateFlags } from '@/app/collective-rewards/types'
 import { useGetFilteredBuilders } from '@/app/collective-rewards/whitelist'
 import { createContext, Dispatch, FC, ReactNode, SetStateAction, useContext, useState } from 'react'
 
-export type BuilderStatusFilter = 'all' | BuilderStatus
+export type BuilderStatusFilter = 'all' | 'active' | 'inProgress'
 
 type StateWithUpdate<T> = {
   value: T
@@ -11,7 +11,7 @@ type StateWithUpdate<T> = {
 }
 
 interface WhitelistContextValue {
-  builders: BuilderProposal[]
+  builders: Builder[]
   isLoading: boolean
   error?: Error | null
   search: StateWithUpdate<string>
@@ -36,12 +36,17 @@ export const WhitelistContext = createContext<WhitelistContextValue>({
 
 interface WhitelistProviderProps {
   children: ReactNode
+  stateFlags: BuilderStateFlags
 }
 
 const WhitelistContextProvider: FC<WhitelistProviderProps> = ({ children }) => {
   const [search, setSearch] = useState('')
   const [filterBy, setFilterBy] = useState<BuilderStatusFilter>(initialFilterByValue)
-  const { data, isLoading, error } = useGetFilteredBuilders({ builderName: search, status: filterBy })
+  const { data, isLoading, error } = useGetFilteredBuilders({
+    builderName: search,
+    status: filterBy,
+    stateFlags: { activated },
+  })
 
   const valueOfContext: WhitelistContextValue = {
     builders: data,

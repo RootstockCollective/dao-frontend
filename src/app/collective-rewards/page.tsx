@@ -10,7 +10,7 @@ export default function CollectiveRewards() {
     <MainContainer>
       <div className="grid grid-rows-1 gap-[32px]">
         <Metrics />
-        <WhitelistContextProviderWithBuilders>
+        <WhitelistContextProviderWithBuilders stateFlags={activated,}>
           <WhitelistSection />
         </WhitelistContextProviderWithBuilders>
         <BuildersLeaderBoard />
