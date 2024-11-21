@@ -1,2 +1,2 @@
-export * from './rbtc'
-export * from './rif'
+export * from './RbtcSvg'
+export * from './RifSvg'
