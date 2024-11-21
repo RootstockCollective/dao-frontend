@@ -5,8 +5,8 @@ import {
   TokenMetricsCardRow,
   useGetBuilderRewards,
   useGetBuilderRewardsClaimedLogs,
-  RewardDetails,
   Token,
+  BuilderRewardDetails,
 } from '@/app/collective-rewards/rewards'
 import { useHandleErrors } from '@/app/collective-rewards/utils'
 import { formatBalanceToHuman } from '@/app/user/Balances/balanceUtils'
@@ -64,7 +64,7 @@ const TokenRewardsMetrics: FC<TokenRewardsMetricsProps> = ({
   })
 }
 
-type AllTimeRewardsProps = Omit<RewardDetails, 'builder'>
+type AllTimeRewardsProps = Omit<BuilderRewardDetails, 'builder'>
 
 export const AllTimeRewards: FC<AllTimeRewardsProps> = ({ tokens: { rif, rbtc }, ...rest }) => {
   return (

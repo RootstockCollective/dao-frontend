@@ -1,7 +1,6 @@
 'use client'
 import { Rewards } from '@/app/collective-rewards/rewards/MyRewards'
-import { useGetBuilderToGauge, withBuilderButton } from '@/app/collective-rewards/user'
-import { useHandleErrors } from '@/app/collective-rewards/utils'
+import { withBuilderButton } from '@/app/collective-rewards/user'
 import { BalancesSection } from '@/app/user/Balances/BalancesSection'
 import { CommunitiesSection } from '@/app/user/Communities/CommunitiesSection'
 import { DelegationSection } from '@/app/user/Delegation'
@@ -10,17 +9,12 @@ import { Tabs, TabsContent, TabsList, TabsTrigger, TabTitle } from '@/components
 import { TxStatusMessage } from '@/components/TxStatusMessage'
 import { useSearchParams } from 'next/navigation'
 import { Suspense } from 'react'
-import { zeroAddress } from 'viem'
 import { useAccount } from 'wagmi'
 
-type MyHoldingsProps = {
-  showBuilderButton?: boolean
-}
-
-const MyHoldings = ({ showBuilderButton = false }: MyHoldingsProps) => (
+const MyHoldings = () => (
   <>
     <TxStatusMessage messageType="staking" />
-    <BalancesSection showBuilderButton={showBuilderButton} />
+    <BalancesSection />
     <DelegationSection />
     <CommunitiesSection />
   </>
@@ -49,35 +43,28 @@ const tabs: Tabs = {
 
 function User() {
   const { address } = useAccount()
-  const { data: gauge, error } = useGetBuilderToGauge(address!)
   const searchParams = useSearchParams()
   const tabFromParams = searchParams?.get('tab') as TabValue
   const defaultTabValue = tabs[tabFromParams]?.value ?? 'holdings'
 
-  useHandleErrors({ error, title: 'Error loading gauge' })
-
   return (
     <MainContainer>
-      {gauge && gauge !== zeroAddress ? (
-        <Tabs defaultValue={defaultTabValue}>
-          <TabsListWithButton>
-            <TabsTrigger value={tabs.holdings.value}>
-              <TabTitle>{tabs.holdings.title}</TabTitle>
-            </TabsTrigger>
-            <TabsTrigger value={tabs.rewards.value}>
-              <TabTitle>{tabs.rewards.title}</TabTitle>
-            </TabsTrigger>
-          </TabsListWithButton>
-          <TabsContent value={tabs.holdings.value}>
-            <MyHoldings showBuilderButton={false} />
-          </TabsContent>
-          <TabsContent value={tabs.rewards.value}>
-            <Rewards builder={address!} gauge={gauge} />
-          </TabsContent>
-        </Tabs>
-      ) : (
-        <MyHoldings showBuilderButton={true} />
-      )}
+      <Tabs defaultValue={defaultTabValue}>
+        <TabsListWithButton>
+          <TabsTrigger value={tabs.holdings.value}>
+            <TabTitle>{tabs.holdings.title}</TabTitle>
+          </TabsTrigger>
+          <TabsTrigger value={tabs.rewards.value}>
+            <TabTitle>{tabs.rewards.title}</TabTitle>
+          </TabsTrigger>
+        </TabsListWithButton>
+        <TabsContent value={tabs.holdings.value}>
+          <MyHoldings />
+        </TabsContent>
+        <TabsContent value={tabs.rewards.value}>
+          <Rewards builder={address!} />
+        </TabsContent>
+      </Tabs>
     </MainContainer>
   )
 }

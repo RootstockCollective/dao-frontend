@@ -6,7 +6,7 @@ import { withSpinner } from '@/components/LoadingSpinner/withLoadingSpinner'
 import { Paragraph } from '@/components/Typography'
 import { ethers } from 'ethers'
 import { useAccount } from 'wagmi'
-import { useHandleErrors } from '../utils'
+import { useHandleErrors } from '@/app/collective-rewards/utils'
 import { useBackerTotalAllocation } from './useBackerTotalAllocation'
 
 type ValueProps = {

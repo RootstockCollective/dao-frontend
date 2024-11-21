@@ -13,7 +13,7 @@ import { useMemo } from 'react'
 import { Address, getAddress } from 'viem'
 import { useReadContracts } from 'wagmi'
 import { useGetGaugesArray } from '@/app/collective-rewards/user/hooks/useGetGaugesArray'
-import { BuilderStateStruct } from '@/app/collective-rewards/utils/getBuilderGauge'
+import { BuilderStateStruct } from '@/app/collective-rewards/utils'
 
 export type BuilderLoader = {
   data?: BuilderInfo

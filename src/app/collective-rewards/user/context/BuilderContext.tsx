@@ -7,7 +7,7 @@ import {
 } from '@/app/collective-rewards/types'
 import { useGetProposalsState } from '@/app/collective-rewards/whitelist/hooks/useGetProposalsState'
 import { useGetBuilders } from '@/app/collective-rewards/user'
-import { getMostAdvancedProposal } from '@/app/collective-rewards/utils/getMostAdvancedProposal'
+import { getMostAdvancedProposal } from '@/app/collective-rewards/utils'
 import { DateTime } from 'luxon'
 import { splitCombinedName } from '@/app/proposals/shared/utils'
 import { withPricesContextProvider } from '@/shared/context/PricesContext'

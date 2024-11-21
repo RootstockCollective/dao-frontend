@@ -7,8 +7,8 @@ import {
   useGetTotalPotentialReward,
   useGetPerTokenRewards,
   useGetRewardPercentageToApply,
-  RewardDetails,
   Token,
+  BuilderRewardDetails,
 } from '@/app/collective-rewards/rewards'
 import { useHandleErrors, applyPrecision } from '@/app/collective-rewards/utils'
 import { formatBalanceToHuman } from '@/app/user/Balances/balanceUtils'
@@ -63,12 +63,9 @@ const TokenRewards: FC<TokenRewardsProps> = ({ builder, gauge, token: { id, symb
 
   const { prices } = usePricesContext()
 
-  const rewardsAmount = rewardPercentage ? applyPrecision(rewards * rewardPercentage) : 0n
-
-  // rewardsAmountGauge = rewardsAmount * rewardShares / totalPotentialRewards
-  // rewardsAmountBuilder = rewardsAmount * (1 - rewardPercentage) / totalPotentialRewards
-  const estimatedRewards =
-    rewardShares && totalPotentialRewards ? (rewardShares * rewardsAmount) / totalPotentialRewards : 0n
+  const rewardsAmount =
+    rewardShares && totalPotentialRewards ? rewards * (rewardShares / totalPotentialRewards) : 0n
+  const estimatedRewards = rewardPercentage ? applyPrecision(rewardsAmount * rewardPercentage) : 0n
   const estimatedRewardsInHuman = Number(formatBalanceToHuman(estimatedRewards))
   const price = prices[symbol]?.price ?? 0
   const { amount, fiatAmount } = formatMetrics(estimatedRewardsInHuman, price, symbol, currency)
@@ -84,7 +81,7 @@ const TokenRewards: FC<TokenRewardsProps> = ({ builder, gauge, token: { id, symb
   })
 }
 
-type EstimatedRewardsProps = RewardDetails
+type EstimatedRewardsProps = BuilderRewardDetails
 
 export const EstimatedRewards: FC<EstimatedRewardsProps> = ({ tokens: { rif, rbtc }, ...rest }) => {
   return (

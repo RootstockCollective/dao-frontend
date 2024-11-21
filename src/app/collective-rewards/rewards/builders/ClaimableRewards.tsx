@@ -6,8 +6,8 @@ import {
   useClaimBuilderRewards,
   useGetBuilderRewards,
   Token,
-  RewardDetails,
   ClaimYourRewardsButton,
+  BuilderRewardDetails,
 } from '@/app/collective-rewards/rewards'
 import { useHandleErrors } from '@/app/collective-rewards/utils'
 import { formatBalanceToHuman } from '@/app/user/Balances/balanceUtils'
@@ -62,7 +62,7 @@ const TokenRewardsMetrics: FC<TokenRewardsMetricsProps> = ({
   })
 }
 
-type ClaimableRewardsProps = RewardDetails
+type ClaimableRewardsProps = BuilderRewardDetails
 
 export const ClaimableRewards: FC<ClaimableRewardsProps> = ({ tokens: { rif, rbtc }, ...rest }) => {
   return (

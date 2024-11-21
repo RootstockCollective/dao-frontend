@@ -1,6 +1,6 @@
-import { toPercentage } from './toPercentage'
+import { toPercentage } from '@/app/collective-rewards/rewards'
 
-export interface BuilderRewardPercentage {
+export type BuilderRewardPercentage = {
   current: number
   next: number
   cooldownEndTime: bigint

@@ -1,4 +1,4 @@
-import { getPercentageData } from '@/app/collective-rewards/rewards/utils'
+import { BuilderRewardPercentage, getPercentageData } from '@/app/collective-rewards/rewards/utils'
 import { BackersManagerAbi } from '@/lib/abis/v2/BackersManagerAbi'
 import { AVERAGE_BLOCKTIME } from '@/lib/constants'
 import { BackersManagerAddress } from '@/lib/contracts'
@@ -7,39 +7,46 @@ import { Address } from 'viem'
 import { useReadContracts } from 'wagmi'
 
 export const useGetBuildersRewardPercentage = (builders: Address[]) => {
-  const rewardPercentageCalls = useMemo(
-    () =>
-      builders?.map(
-        builder =>
-          ({
-            address: BackersManagerAddress,
-            abi: BackersManagerAbi,
-            functionName: 'builderRewardPercentage',
-            args: [builder],
-          }) as const,
-      ),
-    [builders],
+  const contractCalls = builders?.map(
+    builder =>
+      ({
+        address: BackersManagerAddress,
+        abi: BackersManagerAbi,
+        functionName: 'builderRewardPercentage',
+        args: [builder],
+      }) as const,
   )
+
   const {
-    data: rewardSharesResult,
+    data: contractResults,
     isLoading,
     error,
-  } = useReadContracts<[bigint, bigint, bigint][]>({
-    contracts: rewardPercentageCalls,
+  } = useReadContracts({
+    contracts: contractCalls,
     query: {
       refetchInterval: AVERAGE_BLOCKTIME,
     },
   })
-  const rewardPercentage = useMemo(
+
+  type ReturnType = BuilderRewardPercentage
+  const buildersMap = useMemo(
     () =>
-      rewardSharesResult
-        ?.map(share => share.result as [bigint, bigint, bigint])
-        .map(([previous, next, cooldownEndTime]) => getPercentageData(previous, next, cooldownEndTime)),
-    [rewardSharesResult],
+      builders.reduce<Record<Address, ReturnType>>((acc, gauge, index) => {
+        if (!contractResults) {
+          return {} as Record<Address, ReturnType>
+        }
+
+        const [current, next, cooldownEndTime] = contractResults[index].result as [bigint, bigint, bigint]
+        const result = getPercentageData(current, next, cooldownEndTime)
+        acc[gauge] = result
+
+        return acc
+      }, {}),
+    [builders, contractResults],
   )
 
   return {
-    data: rewardPercentage,
+    data: buildersMap,
     isLoading,
     error,
   }

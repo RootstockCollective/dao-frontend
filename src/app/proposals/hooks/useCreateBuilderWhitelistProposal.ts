@@ -1,4 +1,4 @@
-import { getBuilderGauge } from '@/app/collective-rewards/utils/getBuilderGauge'
+import { getBuilderGauge } from '@/app/collective-rewards/utils'
 import { AddressAlreadyWhitelistedError, NoVotingPowerError } from '@/app/proposals/shared/errors'
 import { GovernorAbi } from '@/lib/abis/Governor'
 import { BuilderRegistryAbi } from '@/lib/abis/v2/BuilderRegistryAbi'

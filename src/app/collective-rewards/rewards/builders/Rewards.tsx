@@ -14,8 +14,9 @@ import { Popover } from '@/components/Popover'
 import { Paragraph } from '@/components/Typography'
 import { PricesContextProvider } from '@/shared/context/PricesContext'
 import { FC } from 'react'
+import { Address } from 'viem'
 
-type RewardsProps = RewardDetails
+type RewardsProps = RewardDetails & { gauge: Address }
 
 export const Rewards: FC<RewardsProps> = ({ builder, ...rest }) => {
   const { isClaimFunctionReady, claimRewards } = useClaimBuilderRewards(builder)

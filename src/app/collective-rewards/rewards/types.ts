@@ -7,10 +7,11 @@ export type Token = {
 
 export type RewardDetails = {
   builder: Address
-  gauge: Address
   gauges: Address[]
   currency?: string
   tokens: {
     [token: string]: Token
   }
 }
+
+export type BuilderRewardDetails = RewardDetails & { gauge: Address }

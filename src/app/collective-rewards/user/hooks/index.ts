@@ -1,7 +1,4 @@
 export * from './useGetBuilders'
-export * from './useGetIsWhitelistedBuilder'
-export * from './useGetWhitelistedBuilders'
-export * from './useGetWhitelistedBuildersLength'
 export * from './useGetBuilderToGauge'
 export * from './useGetGaugesArray'
 export * from './useGetGaugesLength'
