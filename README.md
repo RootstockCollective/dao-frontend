@@ -180,3 +180,57 @@ This can be removed in the future.
 ### End-to-end testing (e2e)
 
 This workflow uses https://github.com/cypress-io/github-action
+
+## How to run the dApp locally
+
+### Prerequisites
+
+You need to have the repository https://github.com/RootstockCollective/dao-backend-services running locally.
+
+### Steps
+
+#### Setup frontend
+
+* ```npm i```
+* Create .env.local file
+* Carry over what is in .env.dev to .env.local
+* Replace NEXT_PUBLIC_RIF_WALLET_SERVICES env var with your localhost url:port, like:
+NEXT_PUBLIC_RIF_WALLET_SERVICES=http://localhost:3001
+* npm run dev
+
+#### Setup backend
+
+You need to have the repository https://github.com/RootstockCollective/dao-backend-services running locally.
+
+```npm i```
+
+For mac:
+```bash
+EXPORT PROFILE=dao
+```
+For windows
+```shell
+SET PROFILE=dao
+```
+
+Find a file named httpsApi.ts and find the line where the app.use(cors()) is being called and replace the condition with a "true"
+```javascript
+this.app.use(cors({
+      origin: (origin, callback) => {
+        if (true) { // <--
+          callback(null, true)
+        } else {
+          callback(new Error('Not allowed by cors'))
+        }
+      }
+    }))
+```
+```shell
+npm start
+```
+
+Optional:
+
+In order to get the prices, you need a coin market cap api key.
+After you get it, set it in the .env.dao
+COIN_MARKET_CAP_KEY=your_key
