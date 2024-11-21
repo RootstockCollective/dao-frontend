@@ -57,14 +57,8 @@ export const StepAllowance = ({ onGoNext = () => {}, onCloseModal = () => {} }: 
       from={from}
       to={to}
       disableConfirm={isAllowanceReadLoading || isRequestingAllowance || isAllowanceRequestPending}
-      actionName="ALLOWANCE"
-      actionText={
-        <>
-          Please allow us permission to use your RIF tokens to proceed with staking.
-          <br />
-          This is a necessary step to ensure everything runs smoothly. Thank you!
-        </>
-      }
+      actionName="ALLOWANCE REQUEST"
+      actionText="You need to request allowance for stRIF to be able to stake"
       customComponentBeforeFooter={customFooter}
       confirmButtonText="Request allowance"
       confirmButtonDataTestId="Allowance"

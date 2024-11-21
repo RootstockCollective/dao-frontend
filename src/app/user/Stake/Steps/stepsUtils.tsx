@@ -30,14 +30,13 @@ export const textsDependingOnAction = {
     inputLabel: 'Amount to stake',
     confirmButtonText: 'Stake',
     preview: 'STAKE PREVIEW',
-    previewText:
-      'You have enough allowance to stake. Preview your stake and make sure everything is correct!',
+    previewText: 'Preview your stake and make sure everything is correct!',
     inProcess: 'STAKE IN PROCESS',
-    description: 'Congratulations and thank you for staking your RIF in the Collective.',
+    description: 'Congratulations and thank you for staking your RIF in the Collective',
   },
   UNSTAKE: {
     modalTitle: 'UNSTAKE ',
-    inputLabel: 'Amount to unstake',
+    inputLabel: 'Unstake amount',
     confirmButtonText: 'Unstake',
     preview: 'UNSTAKE PREVIEW',
     previewText: 'Preview your unstake and make sure everything is correct!',
