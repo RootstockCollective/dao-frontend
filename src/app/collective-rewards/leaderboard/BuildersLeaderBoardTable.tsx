@@ -38,7 +38,7 @@ const tableHeaders: TableHeader[] = [
   { label: 'Est. Backers Rewards', className: 'w-[22%]', sortKey: RewardsColumnKeyEnum.estimatedRewards },
   {
     label: 'Total Allocations',
-    className: 'w-[18%]',
+    className: 'w-[16%]',
     // eslint-disable-next-line quotes
     tooltip: "The Builder's share of the total allocations",
     sortKey: RewardsColumnKeyEnum.totalAllocationPercentage,
@@ -145,13 +145,19 @@ const BuildersLeaderBoardTable: FC<BuildersLeaderBoardTableProps> = ({ tokens, c
             ({
               address,
               builderName,
+              stateDetails,
               lastCycleReward,
               estimatedReward,
               totalAllocationPercentage,
               rewardPercentage,
             }) => (
               <TableRow key={address} className="text-[14px] border-hidden">
-                <BuilderNameCell tableHeader={tableHeaders[0]} builderName={builderName} address={address} />
+                <BuilderNameCell
+                  tableHeader={tableHeaders[0]}
+                  builderName={builderName}
+                  address={address}
+                  stateDetails={stateDetails}
+                />
                 <BackerRewardsPercentage tableHeader={tableHeaders[1]} percentage={rewardPercentage} />
                 <LazyRewardCell
                   tableHeader={tableHeaders[2]}

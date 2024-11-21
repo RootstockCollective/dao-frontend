@@ -2,6 +2,7 @@ import { describe, test, expect } from 'vitest'
 import { ProposalState } from '@/shared/types'
 import { getMostAdvancedProposal } from '@/app/collective-rewards/utils'
 import { CreateBuilderProposalEventLog } from '@/app/proposals/hooks/useFetchLatestProposals'
+import { BuilderStateDetails } from '@/app/collective-rewards/types'
 
 describe('getValidProposal', () => {
   describe('whitelisted builder', () => {
@@ -25,6 +26,7 @@ describe('getValidProposal', () => {
             },
           ] as CreateBuilderProposalEventLog[],
           gauge: '0x01',
+          stateDetails: {} as BuilderStateDetails,
         },
         {
           1: ProposalState.Executed,
@@ -50,6 +52,7 @@ describe('getValidProposal', () => {
             },
           ] as CreateBuilderProposalEventLog[],
           gauge: '0x01',
+          stateDetails: {} as BuilderStateDetails,
         },
         {
           1: ProposalState.Active,
@@ -81,6 +84,7 @@ describe('getValidProposal', () => {
             },
           ] as CreateBuilderProposalEventLog[],
           gauge: '0x01',
+          stateDetails: {} as BuilderStateDetails,
         },
         {
           1: ProposalState.Active,
@@ -112,6 +116,7 @@ describe('getValidProposal', () => {
             },
           ] as CreateBuilderProposalEventLog[],
           gauge: '0x01',
+          stateDetails: {} as BuilderStateDetails,
         },
         {
           1: ProposalState.Canceled,

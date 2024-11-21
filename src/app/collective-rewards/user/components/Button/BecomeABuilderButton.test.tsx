@@ -1,6 +1,6 @@
 import { BecomeABuilderButton } from './BecomeABuilderButton'
 import { useGetBuilders } from '@/app/collective-rewards/user/hooks/useGetBuilders'
-import { BuilderInfo } from '@/app/collective-rewards/types'
+import { BuilderInfo, BuilderStateDetails } from '@/app/collective-rewards/types'
 import { useGetProposalsState } from '@/app/collective-rewards/whitelist/hooks/useGetProposalsState'
 import { CreateBuilderProposalEventLog } from '@/app/proposals/hooks/useFetchLatestProposals'
 import { AlertProvider, useAlertContext } from '@/app/providers/AlertProvider'
@@ -45,6 +45,7 @@ describe('BecomeABuilderButton', () => {
       },
     ] as CreateBuilderProposalEventLog[],
     gauge: '0x01',
+    stateDetails: {} as BuilderStateDetails,
   }
   const buildersData = [builderData]
   const proposalsToStates = {

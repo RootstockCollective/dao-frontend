@@ -5,7 +5,7 @@ import { Metrics } from '@/app/collective-rewards/metrics'
 import { WhitelistContextProviderWithBuilders, WhitelistSection } from '@/app/collective-rewards/whitelist'
 import { MainContainer } from '@/components/MainContainer/MainContainer'
 
-export default function BuildersIncentiveMarket() {
+export default function CollectiveRewards() {
   return (
     <MainContainer>
       <div className="grid grid-rows-1 gap-[32px]">

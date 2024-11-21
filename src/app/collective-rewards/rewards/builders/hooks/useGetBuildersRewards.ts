@@ -20,7 +20,7 @@ export const useGetBuildersRewards = ({ rif, rbtc }: { [token: string]: Token },
     data: activeBuilders,
     isLoading: activeBuildersLoading,
     error: activeBuildersError,
-  } = useGetFilteredBuilders({ builderName: '', status: 'Active' })
+  } = useGetFilteredBuilders({ builderName: '', status: 'Active', stateFlags: { activated: true } })
 
   const {
     data: totalPotentialRewards,
@@ -34,6 +34,12 @@ export const useGetBuildersRewards = ({ rif, rbtc }: { [token: string]: Token },
     isLoading: buildersRewardsPctLoading,
     error: buildersRewardsPctError,
   } = useGetBuildersRewardPercentage(buildersAddress)
+
+  // TODO: validate what do to here
+  // Leaderboard only shows active builders or inactive builders that the backer allocated to
+  /* const activeOrAllocatedBuilders = activeBuilders?.filter(
+      (builder, i) => builder.status === 'Active' || (allBackerAllocations && allBackerAllocations?.[i] > 0n),
+    ) */
 
   const gauges = activeBuilders?.map(({ gauge }) => gauge)
   const {
@@ -108,7 +114,7 @@ export const useGetBuildersRewards = ({ rif, rbtc }: { [token: string]: Token },
   const rbtcPrice = prices[rbtc.symbol]?.price ?? 0
 
   return {
-    data: activeBuilders.map(({ address, builderName, gauge }) => {
+    data: activeBuilders.map(({ address, builderName, gauge, stateDetails }) => {
       const builderRewardShares = rewardShares[gauge] ?? 0n
       const rewardPercentage = buildersRewardsPct[address] ?? null
       const currentRewardPercentage = rewardPercentage?.current ?? 0
@@ -138,6 +144,7 @@ export const useGetBuildersRewards = ({ rif, rbtc }: { [token: string]: Token },
       return {
         address,
         builderName,
+        stateDetails,
         totalAllocationPercentage,
         rewardPercentage,
         lastCycleReward: {

@@ -1,10 +1,12 @@
-import { useEffect, useState } from 'react'
+import { BuilderStateDetails } from '@/app/collective-rewards/types'
+import { useBuilderContext } from '@/app/collective-rewards/user'
 import { BuilderStatusFilter } from '@/app/collective-rewards/whitelist'
-import { BuilderProposal, useBuilderContext } from '@/app/collective-rewards/user'
+import { useMemo } from 'react'
 
 type FetchWhitelistedBuildersFilter = {
   builderName: string
   status: BuilderStatusFilter
+  stateFlags?: Partial<Record<keyof BuilderStateDetails, boolean>>
 }
 
 const lowerCaseCompare = (a: string, b: string) => a?.toLowerCase().includes(b?.toLowerCase())
@@ -12,11 +14,11 @@ const lowerCaseCompare = (a: string, b: string) => a?.toLowerCase().includes(b?.
 export const useGetFilteredBuilders = ({
   builderName: filterBuilderName,
   status: filterStatus,
+  stateFlags,
 }: FetchWhitelistedBuildersFilter) => {
-  const [data, setData] = useState<BuilderProposal[]>([])
   const { data: builders, isLoading, error } = useBuilderContext()
 
-  useEffect(() => {
+  const data = useMemo(() => {
     let filteredBuilders = builders
 
     if (filterBuilderName) {
@@ -28,12 +30,19 @@ export const useGetFilteredBuilders = ({
       )
     }
 
+    if (stateFlags) {
+      for (const key in stateFlags) {
+        const stateKey = key as keyof BuilderStateDetails
+        if (stateFlags[stateKey]) {
+          filteredBuilders = filteredBuilders.filter(builder => builder.stateDetails?.[stateKey])
+        }
+      }
+    }
     if (filterStatus !== 'all') {
       filteredBuilders = filteredBuilders.filter(builder => builder.status === filterStatus)
     }
-
-    setData(filteredBuilders)
-  }, [builders, filterBuilderName, filterStatus])
+    return filteredBuilders
+  }, [builders, filterBuilderName, filterStatus, stateFlags])
 
   return {
     data,

@@ -14,9 +14,18 @@ export const builderStatusOptions = [
 export type BuilderStatus = (typeof builderStatusOptions)[number]
 export type BuilderStatusShown = Exclude<BuilderInfo['status'], 'In progress - mvp'>
 
+export type BuilderStateDetails = {
+  activated: boolean
+  kycApproved: boolean
+  communityApproved: boolean
+  paused: boolean
+  revoked: boolean
+}
+
 export type BuilderInfo = {
   address: Address
   status: BuilderStatus
+  stateDetails: BuilderStateDetails
   proposals: CreateBuilderProposalEventLog[]
   gauge: Address
 }

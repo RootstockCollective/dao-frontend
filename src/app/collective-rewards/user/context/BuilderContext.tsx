@@ -1,6 +1,7 @@
 import { createContext, FC, ReactNode, useContext, useMemo } from 'react'
 import { Address } from 'viem'
 import {
+  BuilderStateDetails,
   BuilderStatus,
   BuilderStatusProposalCreatedMVP,
   BuilderStatusShown,
@@ -15,6 +16,7 @@ import { withPricesContextProvider } from '@/shared/context/PricesContext'
 export type BuilderProposal = {
   builderName: string
   status: BuilderStatusShown
+  stateDetails: BuilderStateDetails
   address: Address
   proposalId: bigint
   proposalName: string
@@ -59,7 +61,7 @@ export const BuilderContextProvider: FC<BuilderProviderProps> = ({ children }) =
 
   const filteredBuilders = useMemo(() => {
     return builders.reduce<ProposalByBuilder>((acc, builder) => {
-      const { status, address, gauge } = builder
+      const { status, address, gauge, stateDetails } = builder
       const proposal = getMostAdvancedProposal(builder, proposalsStateMap)
 
       if (proposal) {
@@ -73,6 +75,7 @@ export const BuilderContextProvider: FC<BuilderProviderProps> = ({ children }) =
         acc[address] = {
           builderName,
           status: getBuilderStatus(status),
+          stateDetails,
           address,
           proposalId,
           proposalName,
