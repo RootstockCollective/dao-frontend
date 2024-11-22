@@ -61,13 +61,13 @@ const toFunctionSelector = ({ functionName, abi }: FunctionSelectorArgs) => {
 const RELAY_FUNCTION_SELECTOR = toFunctionSelector({ abi: GovernorAbi, functionName: 'relay' })
 const CR_WHITELIST_FUNCTION_SELECTOR_MVP = toFunctionSelector({
   abi: SimplifiedRewardDistributorAbi,
-  functionName: 'whitelistBuilder',
+  functionName: 'whitelistBuilder', // v1
 })
 
 // TODO: this is a temporary value until we have the new contracts deployed
 const CR_WHITELIST_FUNCTION_SELECTOR_V2 = toFunctionSelector({
   abi: BuilderRegistryAbi,
-  functionName: 'whitelistBuilder',
+  functionName: 'communityApproveBuilder',
 })
 
 type ElementType<T> = T extends (infer U)[] ? U : never

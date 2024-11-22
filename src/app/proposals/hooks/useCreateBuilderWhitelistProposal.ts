@@ -39,7 +39,7 @@ export const useCreateBuilderWhitelistProposal = () => {
 export const encodeWhitelistBuilderCalldata = (builderAddress: Address) => {
   return encodeFunctionData({
     abi: BuilderRegistryAbi,
-    functionName: 'whitelistBuilder',
+    functionName: 'communityApproveBuilder',
     args: [builderAddress.toLocaleLowerCase() as Address],
   })
 }

@@ -23,10 +23,11 @@ export const abis = [
 export const supportedProposalActions = [
   'withdraw',
   'withdrawERC20',
-  'whitelistBuilder',
+  'communityApproveBuilder',
   'dewhitelistBuilder',
   // CR MVP: To keep compatibility with the MVP logs
   'removeWhitelistedBuilder',
+  'whitelistBuilder',
 ] as const
 
 export type SupportedActionAbiName = (typeof abiNames)[number]

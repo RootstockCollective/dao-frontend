@@ -155,7 +155,7 @@ export const useGetBuilders: UseGetBuilders = () => {
     proposalsByBuilderError ?? builderStatesError ?? buildersError ?? gaugesError ?? proposalsStateMapError
 
   return {
-    data: mockData, // FIXME: remove mock data after testing
+    data,
     isLoading,
     error,
   }

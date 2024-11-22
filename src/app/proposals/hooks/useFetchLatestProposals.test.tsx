@@ -16,7 +16,7 @@ vi.mock('@/app/user/Balances/actions', () => ({
   fetchProposalsCreatedCached: vi.fn(),
 }))
 
-const CR_WHITELIST_FUNCTION = 'whitelistBuilder' // TODO: refactor
+const CR_WHITELIST_FUNCTION = 'whitelistBuilder' // v1
 const CR_WHITELIST_FUNCTION_SELECTOR = new Interface(SimplifiedRewardDistributorAbi).getFunction(
   CR_WHITELIST_FUNCTION,
 )?.selector
