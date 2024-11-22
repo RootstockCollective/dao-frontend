@@ -208,7 +208,10 @@ export const ActionCell: FC<ActionCellProps> = ({ tableHeader: { className }, bu
     toggleSelectedBuilder(builderIndex)
   }
 
-  const builderIndex = useMemo(() => getBuilderIndexByAddress(builderAddress), [builderAddress])
+  const builderIndex = useMemo(
+    () => getBuilderIndexByAddress(builderAddress),
+    [builderAddress, getBuilderIndexByAddress],
+  )
 
   const isBuilderOperational = useMemo(() => {
     const builder = builderIndex ? getBuilder(builderIndex) : null
@@ -222,7 +225,7 @@ export const ActionCell: FC<ActionCellProps> = ({ tableHeader: { className }, bu
       builder.stateFlags.communityApproved &&
       !builder.stateFlags.paused
     )
-  }, [builderIndex])
+  }, [builderIndex, getBuilder])
 
   useEffect(() => {
     if (!builderIndex) {
@@ -231,15 +234,11 @@ export const ActionCell: FC<ActionCellProps> = ({ tableHeader: { className }, bu
     }
     const isSelected = selections.includes(builderIndex)
     setSelected(isSelected)
-  }, [builderAddress, selections])
+  }, [builderAddress, selections, builderIndex])
 
   return (
     <TableCell className={cn(className, 'border-solid align-center')}>
-      <Button
-        variant={selected ? 'primary' : 'secondary'}
-        disabled={!isBuilderOperational}
-        onClick={selectBuilder}
-      >
+      <Button variant="secondary" disabled={!isBuilderOperational} onClick={selectBuilder}>
         {selected ? 'Selected' : 'Select'}
       </Button>
     </TableCell>

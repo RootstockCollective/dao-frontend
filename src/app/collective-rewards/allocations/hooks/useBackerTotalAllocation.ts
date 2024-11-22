@@ -2,6 +2,7 @@ import { BackersManagerAbi } from '@/lib/abis/v2/BackersManagerAbi'
 import { GaugeAbi } from '@/lib/abis/v2/GaugeAbi'
 import { AVERAGE_BLOCKTIME } from '@/lib/constants'
 import { BackersManagerAddress } from '@/lib/contracts'
+import { useMemo } from 'react'
 import { Address } from 'viem'
 import { useReadContract, useReadContracts } from 'wagmi'
 
@@ -24,11 +25,15 @@ export const useBackerTotalAllocation = (backer: Address) => {
   }
 }
 
-export const useGetAllAllocationOf = (backer: Address, gauges: Address[]) => {
-  const { data, isLoading, error } = useReadContracts({
-    contracts: gauges.map(gauge => ({
+export const useGetAllAllocationOf = (backer: Address, gaugeAddresses: Address[]) => {
+  const {
+    data: gauges,
+    isLoading,
+    error,
+  } = useReadContracts({
+    contracts: gaugeAddresses.map(gaugeAddress => ({
       abi: GaugeAbi,
-      address: gauge,
+      address: gaugeAddress,
       functionName: 'allocationOf',
       args: [backer],
     })),
@@ -37,8 +42,10 @@ export const useGetAllAllocationOf = (backer: Address, gauges: Address[]) => {
     },
   })
 
+  const data = useMemo(() => gauges?.map(({ result }) => result as bigint), [gauges])
+
   return {
-    data: data?.map(({ result }) => result as bigint),
+    data,
     isLoading,
     error,
   }

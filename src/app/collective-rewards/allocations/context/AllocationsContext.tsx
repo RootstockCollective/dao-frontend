@@ -9,6 +9,7 @@ import { createContext, FC, ReactNode, useEffect, useMemo, useState, useCallback
 import { Address, zeroAddress } from 'viem'
 import { useAccount } from 'wagmi'
 import { createActions } from './allocationsActions'
+import { withBuilderContextProvider } from '../../user'
 export type Allocations = Record<number, bigint>
 export interface Backer {
   totalAllocation: bigint
@@ -94,7 +95,6 @@ export const AllocationsContextProvider: FC<{ children: ReactNode }> = ({ childr
     isLoading: isLoadingBuilders,
     error: buildersError,
   } = useActivatedBuildersWithGauge()
-
   console.log('### builders', builders)
 
   const {

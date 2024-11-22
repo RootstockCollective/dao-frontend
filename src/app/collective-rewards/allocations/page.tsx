@@ -4,7 +4,7 @@ import { Button } from '@/components/Button'
 import { MainContainer } from '@/components/MainContainer/MainContainer'
 import { Typography } from '@/components/Typography'
 import { useRouter } from 'next/navigation'
-import { useContext } from 'react'
+import { useContext, useEffect } from 'react'
 import { Builder } from '../types'
 import {
   AllocationAmount,
@@ -13,14 +13,21 @@ import {
   BuilderAllocationProps,
   Header,
 } from './components'
-import { AllocationsContext } from './context'
+import { AllocationsContext, AllocationsContextProvider } from './context'
+import { BuilderContextProviderWithPrices } from '../user'
+import { useActivatedBuildersWithGauge } from './hooks'
 
 export default function Allocations() {
+  const { data: builders } = useActivatedBuildersWithGauge()
   const router = useRouter()
   const {
     state: { allocations, getBuilder },
     actions: { resetAllocations },
   } = useContext(AllocationsContext)
+
+  useEffect(() => {
+    console.log(builders)
+  }, [builders])
 
   const saveAllocations = () => {
     // TODO: save current allocations
@@ -32,7 +39,6 @@ export default function Allocations() {
   }
 
   return (
-    // TODO: this needs to be removed elsewhere
     <MainContainer>
       <div className="grid grid-rows-1 gap-[32px]">
         <div className="flex flex-col justify-center items-start self-stretch gap-2">
