@@ -64,9 +64,10 @@ const CR_WHITELIST_FUNCTION_SELECTOR_MVP = toFunctionSelector({
   functionName: 'whitelistBuilder',
 })
 
+// TODO: this is a temporary value until we have the new contracts deployed
 const CR_WHITELIST_FUNCTION_SELECTOR_V2 = toFunctionSelector({
   abi: BuilderRegistryAbi,
-  functionName: 'communityApproveBuilder',
+  functionName: 'whitelistBuilder',
 })
 
 type ElementType<T> = T extends (infer U)[] ? U : never
@@ -79,9 +80,7 @@ export type CrProposalCachedEvent = {
   builder: string
 }
 
-export type CrEventByIdMap = Record<string, CrProposalCachedEvent['event']>
-
-export type ProposalsPerBuilder = Record<CrProposalCachedEvent['builder'], CrEventByIdMap>
+export type ProposalsPerBuilder = Record<CrProposalCachedEvent['builder'], CreateBuilderProposalEventLog[]>
 
 export type ProposalQueryResult<Data> = Omit<Partial<UseQueryResult<Data>>, 'isLoading'> & {
   isLoading: boolean
@@ -133,14 +132,11 @@ export const useFetchCreateBuilderProposals = (): ProposalQueryResult<ProposalsP
           console.error('useFetchCreateBuilderProposal:: Failed to parse builder address', e)
           return acc
         }
-        const existingBuilder = acc[builder] || {}
+        const existingBuilder = acc[builder] || []
 
         acc = {
           ...acc,
-          [builder]: {
-            ...existingBuilder,
-            [event.args.proposalId.toString()]: event,
-          },
+          [builder]: [...existingBuilder, event],
         }
       }
 

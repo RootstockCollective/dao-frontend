@@ -2,7 +2,7 @@ import { Builder, BuilderStateFlags } from '@/app/collective-rewards/types'
 import { useGetGaugesArray } from '@/app/collective-rewards/user/hooks/useGetGaugesArray'
 import { getMostAdvancedProposal } from '@/app/collective-rewards/utils'
 import { RawBuilderState } from '@/app/collective-rewards/utils/getBuilderGauge'
-import { useGetProposalsState } from '@/app/collective-rewards/whitelist'
+import { useGetProposalsState } from '@/app/collective-rewards/user'
 import { useFetchCreateBuilderProposals } from '@/app/proposals/hooks/useFetchLatestProposals'
 import { splitCombinedName } from '@/app/proposals/shared/utils'
 import { BuilderRegistryAbi } from '@/lib/abis/v2/BuilderRegistryAbi'
@@ -54,13 +54,10 @@ export const useGetBuilders: UseGetBuilders = () => {
   })
   const builders = buildersResult?.map(builder => builder.result) as Address[]
 
-  const builderToGauge = builders?.reduce(
-    (acc, builder, index) => {
-      acc[builder] = gauges![index]
-      return acc
-    },
-    {} as Record<Address, Address>,
-  )
+  const builderToGauge = builders?.reduce<Record<Address, Address>>((acc, builder, index) => {
+    acc[builder] = gauges![index]
+    return acc
+  }, {})
 
   // get the builder state for each builder
   const builderStatesCalls = builders?.map(
@@ -103,12 +100,8 @@ export const useGetBuilders: UseGetBuilders = () => {
     error: proposalsByBuilderError,
   } = useFetchCreateBuilderProposals()
 
-  const proposalIds = Object.values(proposalsByBuilder ?? {}).flatMap(
-    ({
-      proposals: {
-        args: { proposalId },
-      },
-    }) => proposalId,
+  const proposalIds = Object.values(proposalsByBuilder ?? {}).flatMap(events =>
+    events.map(({ args }) => args.proposalId),
   )
 
   const {
@@ -121,7 +114,7 @@ export const useGetBuilders: UseGetBuilders = () => {
     return Object.entries(proposalsByBuilder ?? {}).reduce<Record<Address, Builder>>(
       (acc, [key, proposalsEvent]) => {
         const address = getAddress(key)
-        const proposal = getMostAdvancedProposal(statusByBuilder[address], proposalsStateMap, proposalsEvent)
+        const proposal = getMostAdvancedProposal(proposalsEvent, proposalsStateMap, statusByBuilder[address])
 
         if (proposal) {
           const {
@@ -137,11 +130,11 @@ export const useGetBuilders: UseGetBuilders = () => {
               name: proposalName,
               description: proposalDescription,
               date: joiningDate,
-              builderName,
             },
             stateFlags: statusByBuilder[address],
-            gauge: builderToGauge[address],
+            gauge: builderToGauge && builderToGauge[address],
             address,
+            builderName,
           }
         }
 
@@ -151,8 +144,14 @@ export const useGetBuilders: UseGetBuilders = () => {
     )
   }, [proposalsByBuilder, builderToGauge, statusByBuilder, proposalsStateMap])
 
-  const isLoading = isLoadingProposalsByBuilder || builderStatesLoading || buildersLoading || gaugesLoading
-  const error = proposalsByBuilderError ?? builderStatesError ?? buildersError ?? gaugesError
+  const isLoading =
+    isLoadingProposalsByBuilder ||
+    builderStatesLoading ||
+    buildersLoading ||
+    gaugesLoading ||
+    proposalsStateMapLoading
+  const error =
+    proposalsByBuilderError ?? builderStatesError ?? buildersError ?? gaugesError ?? proposalsStateMapError
 
   return {
     data,

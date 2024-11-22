@@ -127,7 +127,7 @@ const RewardsTable: FC<BackerRewardsTable> = ({ builder, gauges, tokens }) => {
             ({
               address,
               builderName,
-              stateDetails,
+              stateFlags,
               rewardPercentage,
               estimatedRewards,
               totalAllocationPercentage,
@@ -139,7 +139,7 @@ const RewardsTable: FC<BackerRewardsTable> = ({ builder, gauges, tokens }) => {
                   tableHeader={tableHeaders[0]}
                   builderName={builderName}
                   address={address}
-                  stateDetails={stateDetails}
+                  stateFlags={stateFlags}
                 />
                 <BackerRewardsPercentage tableHeader={tableHeaders[1]} percentage={rewardPercentage} />
                 <LazyRewardCell

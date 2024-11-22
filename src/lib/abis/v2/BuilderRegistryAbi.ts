@@ -211,7 +211,7 @@ export const BuilderRegistryAbi = [
   },
   {
     type: 'function',
-    name: 'communityApproveBuilder',
+    name: 'whitelistBuilder',
     inputs: [
       {
         name: 'builder_',

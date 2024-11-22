@@ -103,9 +103,7 @@ describe('useFetchCreateBuilderProposals', () => {
     }
 
     const expectedValue = {
-      [builder_1]: {
-        [mockProposalData.data[0].args.proposalId.toString()]: mockProposalData.data[0],
-      },
+      [builder_1]: mockProposalData.data,
     }
 
     mocFetchProposalsCreatedCached.mockReturnValue(mockProposalData)
@@ -211,11 +209,7 @@ describe('useFetchCreateBuilderProposals', () => {
     mockParseEventLogs.mockReturnValue(mockData.data)
 
     const expectedValue = {
-      [builder_1]: {
-        [mockData.data[0].args.proposalId.toString()]: mockData.data[0],
-        [mockData.data[1].args.proposalId.toString()]: mockData.data[1],
-        [mockData.data[3].args.proposalId.toString()]: mockData.data[3], // a Record does not preserve order so we can not guarantee the order of the proposals unless we use a Map.
-      },
+      [builder_1]: [mockData.data[1], mockData.data[3], mockData.data[0]],
     }
 
     let actualValue = await renderAndWaitForHook(() => useFetchCreateBuilderProposals())
@@ -254,10 +248,7 @@ describe('useFetchCreateBuilderProposals', () => {
     mockParseEventLogs.mockReturnValue(mockData.data)
 
     const expectedValue = {
-      [builder_1]: {
-        [mockData.data[0].args.proposalId.toString()]: mockData.data[0],
-        [mockData.data[1].args.proposalId.toString()]: mockData.data[1],
-      },
+      [builder_1]: [mockData.data[1], mockData.data[0]],
     }
 
     let actualValue = await renderAndWaitForHook(() => useFetchCreateBuilderProposals())
@@ -296,12 +287,8 @@ describe('useFetchCreateBuilderProposals', () => {
     mockParseEventLogs.mockReturnValue(mockData.data)
 
     const expectedValue = {
-      [builder_1]: {
-        [mockData.data[0].args.proposalId.toString()]: mockData.data[0],
-      },
-      [builder_2]: {
-        [mockData.data[1].args.proposalId.toString()]: mockData.data[1],
-      },
+      [builder_1]: [mockData.data[0]],
+      [builder_2]: [mockData.data[1]],
     }
 
     let actualValue = await renderAndWaitForHook(() => useFetchCreateBuilderProposals())

@@ -39,7 +39,7 @@ export const useGetProposalsState = (proposalIds: bigint[]) => {
       acc[proposalId.toString()] = state
       return acc
     }, {})
-  }, [states, proposalIds, contractCalls])
+  }, [states, contractCalls])
 
   return {
     data: proposalsToStates,

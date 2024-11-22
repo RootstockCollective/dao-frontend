@@ -1,20 +1,13 @@
 import { ProposalState } from '@/shared/types'
-import {
-  AbiFunction,
-  AbiParameter,
-  AbiStateMutability,
-  Address,
-  ContractFunctionReturnType,
-  GetAbiItemReturnType,
-} from 'viem'
+import { AbiFunction, Address } from 'viem'
 import { BuilderRegistryAbi } from '@/lib/abis/v2/BuilderRegistryAbi'
-import { StructFragment } from 'ethers'
 
 export type Builder = {
   proposal: BuilderProposal
   stateFlags?: BuilderStateFlags
   gauge?: Address
   address: Address
+  builderName: string
 }
 
 type BuilderFunctionOutputs = Extract<
@@ -25,7 +18,7 @@ type BuilderFunctionOutputs = Extract<
 >['outputs']
 
 export type BuilderStateFlags = {
-  [key in Exclude<BuilderFunctionOutputs[number]['name'], 'pausedReason'>]: boolean
+  [key in Exclude<BuilderFunctionOutputs[number]['name'], 'pausedReason' | 'reserved'>]: boolean
 }
 
 export type BuilderProposal = {
@@ -33,11 +26,10 @@ export type BuilderProposal = {
   name: string
   description: string
   date: string
-  builderName: string
 }
 
 export type ProposalByBuilder = Record<Address, BuilderProposal>
 
 export type ProposalsToState = Record<string, ProposalState>
 
-export type BuilderState = 'active' | 'inProgress' | 'paused' | 'deactivated'
+export type BuilderState = 'active' | 'inProgress'

@@ -5,24 +5,13 @@ import { TableCell } from '@/components/Table'
 import { Label, Typography } from '@/components/Typography'
 import { cn, formatCurrency, shortAddress, toFixed } from '@/lib/utils'
 import { FC, memo, useMemo } from 'react'
-import { FaArrowDown, FaArrowUp, FaCircle } from 'react-icons/fa6'
+import { FaArrowDown, FaArrowUp, FaCircle } from 'react-icons/fa'
 import { Address, isAddress } from 'viem'
-import { BuilderRewardPercentage } from '@/app/collective-rewards/rewards'
+import { BuilderRewardPercentage, Reward } from '@/app/collective-rewards/rewards'
 import { TableHeader } from '@/app/collective-rewards/shared'
 import { ProgressBar } from '@/components/ProgressBar'
 import { Button } from '@/components/Button'
-import { BuilderStateDetails } from '@/app/collective-rewards/types'
-
-type Currency = {
-  value: number
-  symbol: string
-}
-
-export type Reward = {
-  crypto: Currency
-  fiat: Currency
-  logo?: JSX.Element
-}
+import { BuilderStateFlags } from '@/app/collective-rewards/types'
 
 export function getFormattedCurrency(value: number, symbol: string) {
   const formattedCurrency = formatCurrency(value, symbol)
@@ -62,13 +51,12 @@ export const LazyRewardCell = memo(RewardCell, ({ rewards: prevReward }, { rewar
 )
 
 type BuilderStatusFlagProps = {
-  stateDetails?: BuilderStateDetails
+  stateFlags: BuilderStateFlags
 }
 
-const BuilderStatusFlag: FC<BuilderStatusFlagProps> = ({ stateDetails }) => {
-  //TODO: check what to do here with the states for the MVP
-  const isDeactivated = stateDetails && (!stateDetails.kycApproved || !stateDetails.communityApproved)
-  const isPaused = stateDetails && stateDetails.paused
+const BuilderStatusFlag: FC<BuilderStatusFlagProps> = ({ stateFlags }) => {
+  const isDeactivated = !stateFlags.kycApproved || !stateFlags.communityApproved
+  const isPaused = stateFlags.paused
 
   const color = isDeactivated ? '#932309' : isPaused ? '#F9E1FF' : 'transparent'
   const content = isDeactivated ? 'Status: Deactivated' : isPaused ? 'Status: Paused' : ''
@@ -81,7 +69,7 @@ const BuilderStatusFlag: FC<BuilderStatusFlagProps> = ({ stateDetails }) => {
       size="small"
       trigger="hover"
     >
-      <FaCircle color={color} />
+      <FaCircle color={color} size={8} />
     </Popover>
   )
 }
@@ -96,13 +84,13 @@ export const BuilderNameCell: FC<BuilderCellProps> = ({
   tableHeader: { className },
   builderName,
   address,
-  stateDetails,
+  stateFlags,
 }) => {
   const shortenAddress = shortAddress(address)
   return (
     <TableCell className={cn(className, 'border-solid')}>
       <div className="flex flex-row gap-x-1">
-        <BuilderStatusFlag stateDetails={stateDetails} />
+        <BuilderStatusFlag stateFlags={stateFlags} />
         <Jdenticon className="rounded-md bg-white" value={builderName} size="24" />
         <Popover
           content={
