@@ -19,18 +19,14 @@ type BackerRewardsContextValue = {
   }
   isLoading: boolean
   error: Error | null
-  getRewardByGauge: <Type extends bigint | BackerRewardsClaimedEventLog>(
-    rewardToken: Address,
-    gauge: Address,
-    type: keyof TokenBackerRewards,
-  ) => Type | undefined
+  canClaim: (rewardToken?: Address) => boolean
 }
 
 export const BackerRewardsContext = createContext<BackerRewardsContextValue>({
   data: {},
   isLoading: false,
   error: null,
-  getRewardByGauge: () => undefined,
+  canClaim: () => false,
 })
 
 type BackerRewardsProviderProps = {
@@ -95,15 +91,26 @@ export const BackerRewardsContextProvider: FC<BackerRewardsProviderProps> = ({
     [rbtc.address]: rbtcRewards,
   }
 
-  const getRewardByGauge = <Type,>(rewardToken: Address, gauge: Address, type: keyof TokenBackerRewards) => {
-    return data[rewardToken][type][gauge] as Type
+  const canClaim = (rewardToken?: Address) => {
+    const calculateTotalEarned = (rewards: Record<Address, bigint>) =>
+      Object.values(rewards).reduce((acc, earned) => acc + earned, 0n)
+
+    if (!rewardToken) {
+      const rifEarned = calculateTotalEarned(rifRewards.earned)
+      const rbtcEarned = calculateTotalEarned(rbtcRewards.earned)
+
+      return rifEarned > 0n || rbtcEarned > 0n
+    }
+
+    const { earned } = data[rewardToken]
+    return calculateTotalEarned(earned) > 0n
   }
 
   const valueOfContext: BackerRewardsContextValue = {
     data,
     isLoading,
     error,
-    getRewardByGauge,
+    canClaim,
   }
 
   return <BackerRewardsContext.Provider value={valueOfContext}>{children}</BackerRewardsContext.Provider>

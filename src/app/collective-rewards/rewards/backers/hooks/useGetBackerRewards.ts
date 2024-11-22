@@ -6,12 +6,12 @@ import {
   RifSvg,
   RbtcSvg,
 } from '@/app/collective-rewards/rewards'
-import { useGaugesGetFunction } from '@/app/collective-rewards//shared'
+import { useGaugesGetFunction } from '@/app/collective-rewards/shared'
 import { Address } from 'viem'
 import { usePricesContext } from '@/shared/context/PricesContext'
 import { formatBalanceToHuman } from '@/app/user/Balances/balanceUtils'
-import { useGetBuildersByState } from '../../../user/hooks/useGetBuildersByState'
-import { Builder } from '../../../types'
+import { useGetBuildersByState } from '@/app/collective-rewards//user'
+import { Builder } from '@/app/collective-rewards/types'
 
 const tokenRewardsMetrics = (tokenRewards: TokenBackerRewards, gauge: Address) => {
   const estimatedRewards = Number(formatBalanceToHuman(tokenRewards.estimated[gauge] ?? 0n))

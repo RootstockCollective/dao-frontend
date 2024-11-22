@@ -2,16 +2,21 @@ import { Address } from 'viem'
 import { useWaitForTransactionReceipt, useWriteContract } from 'wagmi'
 import { BackersManagerAbi } from '@/lib/abis/v2/BackersManagerAbi'
 import { BackersManagerAddress } from '@/lib/contracts'
-import { useAwaitedTxReporting } from '../../../shared/hooks'
+import { useAwaitedTxReporting } from '@/app/collective-rewards/shared'
+import { useBackerRewardsContext } from '../context'
+import { useMemo } from 'react'
 
-export const useClaimBackerRewards = (gauges: Address[], rewardToken?: Address) => {
+export const useClaimBackerRewards = (gauges: Address[]) => {
   const { writeContractAsync, error: executionError, data: hash, isPending } = useWriteContract()
+  const { canClaim, isLoading: canClaimLoading, error: canClaimError } = useBackerRewardsContext()
 
   const { isLoading, isSuccess, data, error: receiptError } = useWaitForTransactionReceipt({ hash })
 
-  const error = executionError || receiptError
+  const isClaimFunctionReady = !canClaimLoading && !canClaimError && canClaim()
 
-  const claimBackerReward = () => {
+  const error = executionError || receiptError || canClaimError
+
+  const claimBackerReward = (rewardToken?: Address) => {
     return writeContractAsync({
       abi: BackersManagerAbi,
       address: BackersManagerAddress,
@@ -31,7 +36,8 @@ export const useClaimBackerRewards = (gauges: Address[], rewardToken?: Address) 
   })
 
   return {
-    claimRewards: () => claimBackerReward(),
+    isClaimFunctionReady,
+    claimRewards: (rewardToken?: Address) => isClaimFunctionReady && claimBackerReward(rewardToken),
     error,
     isPendingTx: isPending,
     isLoadingReceipt: isLoading,
