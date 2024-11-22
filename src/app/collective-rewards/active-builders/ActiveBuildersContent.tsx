@@ -11,19 +11,16 @@ export const isActive = (stateFlags?: BuilderStateFlags) => {
   return activeFlags.some(flag => stateFlags?.[flag])
 }
 
-export type BuilderWithStatus = Builder & { builderStatus: 'active' | 'inProgress' }
-
 export const ActiveBuildersContent = () => {
   const { data: builders, isLoading, error } = useGetBuildersByState(undefined, true)
   useHandleErrors({ error, title: 'Error loading builders' })
 
-  const buildersWithStatus = builders.map(builder => {
-    const builderStatus = isActive(builder.stateFlags) ? 'active' : 'inProgress'
-    return {
-      ...builder,
-      builderStatus,
-    }
-  })
+  const filterFunction = (builder: Builder, status: string) => {
+    if (status === 'all') return true
+    if (status === 'active') return isActive(builder.stateFlags)
+    if (status === 'inProgress') return !isActive(builder.stateFlags)
+    return false
+  }
 
   const status = [
     { label: 'All', value: 'all' },
@@ -33,7 +30,7 @@ export const ActiveBuildersContent = () => {
 
   return (
     <>
-      <SearchContextProvider builders={buildersWithStatus}>
+      <SearchContextProvider builders={builders} filterFunction={filterFunction}>
         <Search status={status} />
         {withSpinner(ActiveBuildersGrid)({ isLoading })}
       </SearchContextProvider>

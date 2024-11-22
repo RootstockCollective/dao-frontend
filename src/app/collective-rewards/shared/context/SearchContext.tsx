@@ -1,18 +1,28 @@
-import { createContext, Dispatch, FC, ReactNode, SetStateAction, useContext, useMemo, useState } from 'react'
+import {
+  Context,
+  createContext,
+  Dispatch,
+  ReactNode,
+  SetStateAction,
+  useContext,
+  useMemo,
+  useState,
+} from 'react'
 
 type StateWithUpdate<T> = {
   value: T
   onChange: Dispatch<SetStateAction<T>>
 }
 
-type SearchContextValue = {
-  getValues: <T>() => T[]
+type SearchContextValue<Type> = {
+  data: Type[]
   search: StateWithUpdate<string>
   filterBy: StateWithUpdate<string>
 }
 
-export const SearchContext = createContext<SearchContextValue>({
-  getValues: () => [],
+type SearchValue = { builderName: string; address: string }
+export const SearchContext = createContext<SearchContextValue<SearchValue>>({
+  data: [],
   search: {
     value: '',
     onChange: () => {},
@@ -23,14 +33,18 @@ export const SearchContext = createContext<SearchContextValue>({
   },
 })
 
-type SearchValue = { builderName: string; address: string; builderStatus?: string }
-type SearchProviderProps = {
+type SearchProviderProps<T> = {
   children: ReactNode
-  builders: SearchValue[]
+  builders: T[]
+  filterFunction?: (param: T, status: string) => boolean
 }
 
 const lowerCaseCompare = (a: string, b: string) => a?.toLowerCase().includes(b?.toLowerCase())
-export const SearchContextProvider: FC<SearchProviderProps> = ({ children, builders }) => {
+export const SearchContextProvider = <T extends SearchValue>({
+  children,
+  builders,
+  filterFunction,
+}: SearchProviderProps<T>) => {
   const [search, setSearch] = useState('')
   const [filterBy, setFilterBy] = useState('all')
 
@@ -46,17 +60,15 @@ export const SearchContextProvider: FC<SearchProviderProps> = ({ children, build
       )
     }
 
-    if (filterBy !== 'all') {
-      filteredBuilders = filteredBuilders.filter(builder => builder.builderStatus === filterBy)
+    if (filterBy !== 'all' && filterFunction) {
+      filteredBuilders = filteredBuilders.filter(builder => filterFunction(builder, filterBy))
     }
 
     return filteredBuilders
   }, [builders, search, filterBy])
 
-  const getValues = <T,>() => data as T[]
-
-  const valueOfContext: SearchContextValue = {
-    getValues,
+  const valueOfContext: SearchContextValue<T> = {
+    data,
     search: { value: search, onChange: setSearch },
     filterBy: { value: filterBy, onChange: setFilterBy },
   }
@@ -64,4 +76,5 @@ export const SearchContextProvider: FC<SearchProviderProps> = ({ children, build
   return <SearchContext.Provider value={valueOfContext}>{children}</SearchContext.Provider>
 }
 
-export const useSearchContext = () => useContext(SearchContext)
+export const useSearchContext = <T extends SearchValue>() =>
+  useContext(SearchContext as unknown as Context<SearchContextValue<T>>)
