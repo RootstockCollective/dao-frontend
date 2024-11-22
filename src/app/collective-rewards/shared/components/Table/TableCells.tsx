@@ -4,7 +4,7 @@ import { Popover } from '@/components/Popover'
 import { TableCell } from '@/components/Table'
 import { Label, Typography } from '@/components/Typography'
 import { cn, formatCurrency, shortAddress, toFixed } from '@/lib/utils'
-import { FC, memo, useMemo } from 'react'
+import { FC, memo, useContext, useEffect, useMemo, useState } from 'react'
 import { FaArrowDown, FaArrowUp, FaCircle } from 'react-icons/fa'
 import { Address, isAddress } from 'viem'
 import { BuilderRewardPercentage, Reward } from '@/app/collective-rewards/rewards'
@@ -12,6 +12,7 @@ import { TableHeader } from '@/app/collective-rewards/shared'
 import { ProgressBar } from '@/components/ProgressBar'
 import { Button } from '@/components/Button'
 import { BuilderStateFlags } from '@/app/collective-rewards/types'
+import { AllocationsContext } from '@/app/collective-rewards/allocations/context'
 
 export function getFormattedCurrency(value: number, symbol: string) {
   const formattedCurrency = formatCurrency(value, symbol)
@@ -181,20 +182,66 @@ export const TotalAllocationCell: FC<TotalAllocationCellProps> = ({
 
 type ActionCellProps = {
   tableHeader: TableHeader
+  builderAddress: Address
 }
 
-export const ActionCell: FC<ActionCellProps> = ({ tableHeader: { className } }) => {
+export const ActionCell: FC<ActionCellProps> = ({ tableHeader: { className }, builderAddress }) => {
+  const [selected, setSelected] = useState(false)
+  const {
+    state: { selections, getBuilderIndexByAddress, getBuilder },
+    actions: { toggleSelectedBuilder },
+  } = useContext(AllocationsContext)
   /* TODO: manage the button status 
     - disabled when the backer cannot vote on the Builder
-    - variant=primary when the builder is selected and text changed to "Selected"
-    - variant=secondary by default and text is "Select"
+    - ✅variant=primary when the builder is selected and text changed to "Selected"
+    - ✅variant=secondary by default and text is "Select"
   */
   /* TODO: add the onClick event
    *  - it needs to interact with the allocation context to add the builder to the selected builders
    */
+
+  const selectBuilder = () => {
+    if (!builderIndex) {
+      console.log('Builder not found in selection') // TODO: handle this case better
+      return
+    }
+    toggleSelectedBuilder(builderIndex)
+  }
+
+  const builderIndex = useMemo(() => getBuilderIndexByAddress(builderAddress), [builderAddress])
+
+  const isBuilderOperational = useMemo(() => {
+    const builder = builderIndex ? getBuilder(builderIndex) : null
+    if (!builder) {
+      console.log('Builder not found in selection') // TODO: handle this case better
+      return
+    }
+    return (
+      builder.stateFlags &&
+      builder.stateFlags.kycApproved &&
+      builder.stateFlags.communityApproved &&
+      !builder.stateFlags.paused
+    )
+  }, [builderIndex])
+
+  useEffect(() => {
+    if (!builderIndex) {
+      console.log('Builder not found in selection') // TODO: handle this case better
+      return
+    }
+    const isSelected = selections.includes(builderIndex)
+    setSelected(isSelected)
+  }, [builderAddress, selections])
+
   return (
     <TableCell className={cn(className, 'border-solid align-center')}>
-      <Button variant="secondary" /* disabled={true} */>Select</Button>
+      <Button
+        variant={selected ? 'primary' : 'secondary'}
+        disabled={!isBuilderOperational}
+        onClick={selectBuilder}
+      >
+        {selected ? 'Selected' : 'Select'}
+      </Button>
     </TableCell>
   )
 }

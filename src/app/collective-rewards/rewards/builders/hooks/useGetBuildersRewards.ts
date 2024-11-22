@@ -57,7 +57,10 @@ export const useGetBuildersRewards = ({ rif, rbtc }: { [token: string]: Token },
     isLoading: totalAllocationLoading,
     error: totalAllocationError,
   } = useGaugesGetFunction(gauges, 'totalAllocation')
-  const sumTotalAllocation = Object.values(totalAllocation ?? {}).reduce((acc, value) => acc + value, 0n)
+  const sumTotalAllocation = Object.values(totalAllocation ?? {}).reduce(
+    (acc, value) => acc + (value ?? 0n),
+    0n,
+  )
 
   const {
     data: rewardShares,

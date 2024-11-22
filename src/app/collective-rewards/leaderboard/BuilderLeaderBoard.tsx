@@ -25,9 +25,7 @@ export const BuildersLeaderBoard = () => {
         </CollapsibleTrigger>
         <CollapsibleContent>
           <CycleContextProvider>
-            <BuilderContextProviderWithPrices>
-              <BuildersLeaderBoardContent />
-            </BuilderContextProviderWithPrices>
+            <BuildersLeaderBoardContent />
           </CycleContextProvider>
         </CollapsibleContent>
       </Collapsible>

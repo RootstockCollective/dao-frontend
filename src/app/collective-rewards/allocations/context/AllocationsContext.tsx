@@ -5,9 +5,8 @@ import {
   useGetVotingPower,
 } from '@/app/collective-rewards/allocations/hooks'
 import { Builder } from '@/app/collective-rewards/types'
-import { useBuilderContext, withBuilderContextProvider } from '@/app/collective-rewards/user'
-import { createContext, FC, ReactNode, useEffect, useMemo, useState } from 'react'
-import { zeroAddress } from 'viem'
+import { createContext, FC, ReactNode, useEffect, useMemo, useState, useCallback } from 'react'
+import { Address, zeroAddress } from 'viem'
 import { useAccount } from 'wagmi'
 import { createActions } from './allocationsActions'
 export type Allocations = Record<number, bigint>
@@ -24,6 +23,7 @@ type AllocationsContextValue = {
   isContextLoading: boolean
   contextError: Error | null
   getBuilder: (index: number) => Builder | null
+  getBuilderIndexByAddress: (address: Address) => number | null
 }
 export type AllocationsActions = {
   toggleSelectedBuilder: (builderIndex: number) => void
@@ -60,6 +60,7 @@ const DEFAULT_CONTEXT: AllocationsContext = {
     isContextLoading: true,
     contextError: null,
     getBuilder: () => null,
+    getBuilderIndexByAddress: () => null,
   },
   actions: {
     toggleSelectedBuilder: () => {},
@@ -111,37 +112,41 @@ export const AllocationsContextProvider: FC<{ children: ReactNode }> = ({ childr
     error: totalAllocationError,
   } = useBackerTotalAllocation(backerAddress ?? zeroAddress)
   const { data: votingPower, isLoading: isVotingPowerLoading, error: votingPowerError } = useGetVotingPower()
+
+  // Cache builder lookup functions
+  const getBuilder = useCallback(
+    (index: number) => (index >= 0 && index < builders.length ? builders[index] : null),
+    [builders],
+  )
+
+  const getBuilderIndexByAddress = useCallback(
+    (address: Address) => builders.findIndex(builder => builder.address === address) ?? null,
+    [builders],
+  )
+
+  // Consolidate state updates
   useEffect(() => {
-    if (isContextLoading) {
-      return
-    }
-    if (!backerAddress || !allAllocations) {
-      return
-    }
-    const [allocations, newCumulativeAllocation] = createInitialAllocations(allAllocations, selections)
-    setAllocations(allocations)
-    setBacker(prevBacker => ({
-      ...prevBacker,
-      allocationCount: builders.length,
-      cumulativeAllocation: newCumulativeAllocation,
-    }))
-  }, [allAllocations, backerAddress, selections, isContextLoading, builders.length])
-  useEffect(() => {
-    if (totalAllocation) {
-      setBacker(prevBacker => ({
-        ...prevBacker,
-        totalAllocation,
+    if (!isContextLoading && backerAddress && allAllocations) {
+      const [newAllocations, newCumulativeAllocation] = createInitialAllocations(allAllocations, selections)
+      setAllocations(newAllocations)
+      setBacker(prev => ({
+        ...prev,
+        allocationCount: builders.length,
+        cumulativeAllocation: newCumulativeAllocation,
+        totalAllocation: totalAllocation ?? prev.totalAllocation,
+        balance: votingPower ?? prev.balance,
       }))
     }
-  }, [totalAllocation])
-  useEffect(() => {
-    if (votingPower) {
-      setBacker(prevBacker => ({
-        ...prevBacker,
-        balance: votingPower,
-      }))
-    }
-  }, [votingPower])
+  }, [
+    allAllocations,
+    backerAddress,
+    selections,
+    isContextLoading,
+    builders.length,
+    totalAllocation,
+    votingPower,
+  ])
+
   useEffect(() => {
     setContextError(buildersError ?? allAllocationsError ?? totalAllocationError ?? votingPowerError)
   }, [allAllocationsError, buildersError, totalAllocationError, votingPowerError])
@@ -171,41 +176,45 @@ export const AllocationsContextProvider: FC<{ children: ReactNode }> = ({ childr
       allocations: initialAllocations,
     }
   }, [allAllocations, builders, totalAllocation, votingPower, isContextLoading, selections])
-  const state: AllocationsContextValue = {
-    selections,
-    allocations,
-    backer,
-    isContextLoading,
-    contextError,
-    getBuilder: (index: number) => (index >= 0 && index < builders.length ? builders[index] : null),
-  }
+  const state: AllocationsContextValue = useMemo(
+    () => ({
+      selections,
+      allocations,
+      backer,
+      isContextLoading,
+      contextError,
+      getBuilder,
+      getBuilderIndexByAddress,
+    }),
+    [selections, allocations, backer, isContextLoading, contextError, getBuilder, getBuilderIndexByAddress],
+  )
+
   const actions: AllocationsActions = useMemo(
     () => createActions(setSelections, setAllocations, setBacker, initialState),
     [initialState],
   )
-  return (
-    <AllocationsContext.Provider
-      value={{
-        initialState,
-        state,
-        actions,
-      }}
-    >
-      {children}
-    </AllocationsContext.Provider>
+
+  // Cache the context value
+  const contextValue = useMemo(
+    () => ({
+      initialState,
+      state,
+      actions,
+    }),
+    [initialState, state, actions],
   )
+
+  return <AllocationsContext.Provider value={contextValue}>{children}</AllocationsContext.Provider>
 }
 function createInitialAllocations(allAllocations: bigint[], selections: number[]): [Allocations, bigint] {
   return allAllocations.reduce(
     (acc, allocation, index) => {
       if (allocation || selections.includes(index)) {
         acc[0][index] = allocation
-        acc[1] += allocation
+        acc[1] += allocation ?? BigInt(0)
       }
       return acc
     },
     [{} as Allocations, BigInt(0)],
   )
 }
-
-export const AllocationsContextProviderWithBuilders = withBuilderContextProvider(AllocationsContextProvider)

@@ -171,9 +171,7 @@ export const BackerRewardsTable: FC<BackerRewardsTable> = ({ builder, tokens, ga
     <>
       <BackerRewardsContextProvider backer={builder} gauges={gauges} tokens={tokens}>
         <CycleContextProvider>
-          <BuilderContextProviderWithPrices>
-            <RewardsTable builder={builder} tokens={tokens} gauges={gauges} />
-          </BuilderContextProviderWithPrices>
+          <RewardsTable builder={builder} tokens={tokens} gauges={gauges} />
         </CycleContextProvider>
       </BackerRewardsContextProvider>
     </>

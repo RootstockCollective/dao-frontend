@@ -67,9 +67,5 @@ export const BecomeABuilderHandler = ({ address }: { address: Address }) => {
 }
 
 export const BecomeABuilderButton = ({ address }: { address: Address }) => {
-  return (
-    <BuilderContextProvider>
-      <BecomeABuilderHandler address={address} />
-    </BuilderContextProvider>
-  )
+  return <BecomeABuilderHandler address={address} />
 }
