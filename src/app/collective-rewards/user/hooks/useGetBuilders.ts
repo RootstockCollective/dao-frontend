@@ -143,7 +143,7 @@ export const useGetBuilders: UseGetBuilders = () => {
       },
       {},
     )
-  }, [proposalsByBuilder, builderToGauge, proposalsStateMap])
+  }, [proposalsByBuilder, builderToGauge, proposalsStateMap, builderStatesResult, builders])
 
   const isLoading =
     isLoadingProposalsByBuilder ||
@@ -179,6 +179,11 @@ const mockData: Record<Address, Builder> = {
       description: 'Building awesome DeFi tools',
       date: 'January 15, 2024',
     },
+    backerRewardPercentage: {
+      next: 0n,
+      previous: 0n,
+      cooldown: 0n,
+    },
   },
   '0x70997970C51812dc3A010C7d01b50e0d17dc79C8': {
     address: '0x70997970C51812dc3A010C7d01b50e0d17dc79C8',
@@ -196,6 +201,11 @@ const mockData: Record<Address, Builder> = {
       name: 'Innovation Protocol',
       description: 'Creating innovative blockchain solutions',
       date: 'February 1, 2024',
+    },
+    backerRewardPercentage: {
+      next: 0n,
+      previous: 0n,
+      cooldown: 0n,
     },
   },
   '0x3C44CdDdB6a900fa2b585dd299e03d12FA4293BC': {
@@ -215,6 +225,11 @@ const mockData: Record<Address, Builder> = {
       description: 'Building core web3 infrastructure',
       date: 'February 10, 2024',
     },
+    backerRewardPercentage: {
+      next: 0n,
+      previous: 0n,
+      cooldown: 0n,
+    },
   },
   '0x90F79bf6EB2c4f870365E785982E1f101E93b906': {
     address: '0x90F79bf6EB2c4f870365E785982E1f101E93b906',
@@ -232,6 +247,11 @@ const mockData: Record<Address, Builder> = {
       name: 'DeFi Protocol',
       description: 'Creating new DeFi primitives',
       date: 'February 15, 2024',
+    },
+    backerRewardPercentage: {
+      next: 0n,
+      previous: 0n,
+      cooldown: 0n,
     },
   },
   '0x15d34AAf54267DB7D7c367839AAf71A00a2C6A65': {
@@ -251,6 +271,11 @@ const mockData: Record<Address, Builder> = {
       description: 'Building secure smart contract templates',
       date: 'February 20, 2024',
     },
+    backerRewardPercentage: {
+      next: 0n,
+      previous: 0n,
+      cooldown: 0n,
+    },
   },
   '0x9965507D1a55bcC2695C58ba16FB37d819B0A4dc': {
     address: '0x9965507D1a55bcC2695C58ba16FB37d819B0A4dc',
@@ -268,6 +293,11 @@ const mockData: Record<Address, Builder> = {
       name: 'DAO Tools',
       description: 'Creating comprehensive DAO tooling',
       date: 'March 1, 2024',
+    },
+    backerRewardPercentage: {
+      next: 0n,
+      previous: 0n,
+      cooldown: 0n,
     },
   },
   '0x976EA74026E726554dB657fA54763abd0C3a0aa9': {
@@ -287,6 +317,11 @@ const mockData: Record<Address, Builder> = {
       description: 'Developing essential blockchain tools',
       date: 'March 5, 2024',
     },
+    backerRewardPercentage: {
+      next: 0n,
+      previous: 0n,
+      cooldown: 0n,
+    },
   },
   '0x14dC79964da2C08b23698B3D3cc7Ca32193d9955': {
     address: '0x14dC79964da2C08b23698B3D3cc7Ca32193d9955',
@@ -305,5 +340,19 @@ const mockData: Record<Address, Builder> = {
       description: 'Building security audit tools',
       date: 'March 10, 2024',
     },
+    backerRewardPercentage: {
+      next: 0n,
+      previous: 0n,
+      cooldown: 0n,
+    },
   },
 }
+const getRandomRewardPercentage = () => BigInt(Math.floor(Math.random() * 1000000000000000001))
+
+Object.values(mockData).forEach(builder => {
+  builder.backerRewardPercentage = {
+    next: getRandomRewardPercentage(),
+    previous: getRandomRewardPercentage(),
+    cooldown: getRandomRewardPercentage(),
+  }
+})

@@ -25,18 +25,19 @@ export const useBuildersWithBackerRewardPercentage = (builders: Builder[]) => {
       refetchInterval: AVERAGE_BLOCKTIME,
     },
   })
-  const backerRewardPercentages = backerRewardPercentageResults?.map(({ result }) => {
-    if (result === undefined) return undefined
-
-    const [previous, next, cooldown] = result as RawBackerRewardPercentage
-    return {
-      previous,
-      next,
-      cooldown,
-    } as BackerRewardPercentage
-  })
 
   const data = useMemo(() => {
+    const backerRewardPercentages = backerRewardPercentageResults?.map(({ result }) => {
+      if (result === undefined) return undefined
+
+      const [previous, next, cooldown] = result as RawBackerRewardPercentage
+      return {
+        previous,
+        next,
+        cooldown,
+      } as BackerRewardPercentage
+    })
+
     if (!backerRewardPercentages) return undefined
 
     return backerRewardPercentages?.map((backerRewardPercentage, index) => ({
@@ -45,11 +46,11 @@ export const useBuildersWithBackerRewardPercentage = (builders: Builder[]) => {
         ...backerRewardPercentage,
       },
     }))
-  }, [backerRewardPercentages, builders])
+  }, [builders, backerRewardPercentageResults])
 
   return {
     data,
-    backerRewardPercentageLoading,
-    backerRewardPercentageError,
+    isLoading: backerRewardPercentageLoading,
+    error: backerRewardPercentageError,
   }
 }

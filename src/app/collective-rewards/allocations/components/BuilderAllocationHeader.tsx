@@ -28,11 +28,11 @@ export const BuilderAllocationHeader: FC<BuilderAllocationHeaderProps> = ({
         <Typography tagVariant="label" className="font-semibold line-clamp-1 text-wrap text-base leading-4">
           <AddressOrAlias addressOrAlias={builderName || address} className="text-base font-bold leading-4" />
         </Typography>
-        {state.paused && (
-          <Badge content="Paused" className="bg-[#F9E1FF] text-secondary py-1 px-1 text-[12px]" />
-        )}
         {gauge && !state.communityApproved && (
           <Badge content="Deactivated" className="bg-[#932309] color-text-primary py-1 px-1 text-[12px]" />
+        )}
+        {state.paused && state.communityApproved && (
+          <Badge content="Paused" className="bg-[#F9E1FF] text-secondary py-1 px-1 text-[12px]" />
         )}
         {isBuilderActive(state) && <Paragraph className="text-sm font-light"> Joined {date}</Paragraph>}
       </div>

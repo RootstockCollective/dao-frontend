@@ -7,6 +7,7 @@ import { useContext } from 'react'
 import { formatEther, parseEther } from 'viem'
 import { BuilderAllocationHeader, BuilderAllocationHeaderProps } from './BuilderAllocationHeader'
 import { formatBalanceToHuman } from '@/app/user/Balances/balanceUtils'
+import { weiToPercentage } from '../../settings'
 
 export type BuilderAllocationProps = BuilderAllocationHeaderProps &
   Pick<Builder, 'backerRewardPercentage'> & {
@@ -35,14 +36,14 @@ export const BuilderAllocation = (builder: BuilderAllocationProps) => {
     <div className="flex flex-col py-4 px-2 gap-6 shrink-0 bg-foreground min-w-[calc(25%-1rem)] max-w-[calc(25%-1rem)] rounded-[8px]">
       <BuilderAllocationHeader {...builder} />
       <Label className="font-bold">
-        Backer rewards {formatBalanceToHuman(backerRewardPercentage!.previous, 2)}%{' '}
+        Backer rewards {weiToPercentage(backerRewardPercentage?.previous ?? 0n)}%{' '}
       </Label>
       <Input
         type="number"
         name={`allocation-${address}`}
-        hint={`Allocation left ${allocationLeft > 0 ? formatEther(allocationLeft) : '0'} stRIF`}
+        hint={`Allocation left ${allocationLeft > 0 ? formatBalanceToHuman(allocationLeft) : '0'} stRIF`}
         onChange={onInputChange}
-        value={formatEther(currentAllocation)}
+        value={formatBalanceToHuman(currentAllocation || 0n)}
       />
       <Slider
         value={[Number(currentAllocation)]}

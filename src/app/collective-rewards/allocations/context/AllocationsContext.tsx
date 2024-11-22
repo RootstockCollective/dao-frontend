@@ -9,7 +9,7 @@ import { createContext, FC, ReactNode, useEffect, useMemo, useState, useCallback
 import { Address, zeroAddress } from 'viem'
 import { useAccount } from 'wagmi'
 import { createActions } from './allocationsActions'
-import { withBuilderContextProvider } from '../../user'
+import { useBuildersWithBackerRewardPercentage } from '../hooks/useBuildersWithBackerRewardPercentage'
 export type Allocations = Record<number, bigint>
 export interface Backer {
   totalAllocation: bigint
@@ -95,7 +95,12 @@ export const AllocationsContextProvider: FC<{ children: ReactNode }> = ({ childr
     isLoading: isLoadingBuilders,
     error: buildersError,
   } = useActivatedBuildersWithGauge()
-  console.log('### builders', builders)
+
+  const {
+    data: buildersWithBackerRewards,
+    isLoading: buildersWithBackerRewardsLoading,
+    error: buildersWithBackerRewardsError,
+  } = useBuildersWithBackerRewardPercentage(builders)
 
   const {
     data: allAllocations,
@@ -104,7 +109,7 @@ export const AllocationsContextProvider: FC<{ children: ReactNode }> = ({ childr
   } = useGetAllAllocationOf(
     backerAddress ?? zeroAddress,
     // gauge is always defined here
-    builders.map(builder => builder.gauge!),
+    buildersWithBackerRewards?.map(builder => builder.gauge ?? zeroAddress) || [],
   )
   const {
     data: totalAllocation,
@@ -148,13 +153,35 @@ export const AllocationsContextProvider: FC<{ children: ReactNode }> = ({ childr
   ])
 
   useEffect(() => {
-    setContextError(buildersError ?? allAllocationsError ?? totalAllocationError ?? votingPowerError)
-  }, [allAllocationsError, buildersError, totalAllocationError, votingPowerError])
+    setContextError(
+      buildersError ??
+        allAllocationsError ??
+        totalAllocationError ??
+        votingPowerError ??
+        buildersWithBackerRewardsError,
+    )
+  }, [
+    allAllocationsError,
+    buildersError,
+    totalAllocationError,
+    votingPowerError,
+    buildersWithBackerRewardsError,
+  ])
   useEffect(() => {
     setIsContextLoading(
-      isLoadingBuilders || isAllAllocationsLoading || isTotalAllocationLoading || isVotingPowerLoading,
+      isLoadingBuilders ||
+        isAllAllocationsLoading ||
+        isTotalAllocationLoading ||
+        isVotingPowerLoading ||
+        buildersWithBackerRewardsLoading,
     )
-  }, [isLoadingBuilders, isAllAllocationsLoading, isTotalAllocationLoading, isVotingPowerLoading])
+  }, [
+    isLoadingBuilders,
+    isAllAllocationsLoading,
+    isTotalAllocationLoading,
+    isVotingPowerLoading,
+    buildersWithBackerRewardsLoading,
+  ])
   const initialState: InitialState = useMemo(() => {
     if (isContextLoading) {
       return {

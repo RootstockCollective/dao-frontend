@@ -238,7 +238,12 @@ export const ActionCell: FC<ActionCellProps> = ({ tableHeader: { className }, bu
 
   return (
     <TableCell className={cn(className, 'border-solid align-center')}>
-      <Button variant="secondary" disabled={!isBuilderOperational} onClick={selectBuilder}>
+      <Button
+        variant={selected ? 'white' : 'secondary'}
+        disabled={!isBuilderOperational}
+        onClick={selectBuilder}
+        className="white text-c"
+      >
         {selected ? 'Selected' : 'Select'}
       </Button>
     </TableCell>

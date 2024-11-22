@@ -3,9 +3,15 @@
 import { Button } from '@/components/Button'
 import { MainContainer } from '@/components/MainContainer/MainContainer'
 import { Typography } from '@/components/Typography'
+import { BackersManagerAbi } from '@/lib/abis/v2/BackersManagerAbi'
+import { BackersManagerAddress } from '@/lib/contracts'
 import { useRouter } from 'next/navigation'
-import { useContext, useEffect } from 'react'
+import { useContext } from 'react'
+import { Address, zeroAddress } from 'viem'
+import { useWaitForTransactionReceipt, useWriteContract } from 'wagmi'
+import { useAwaitedTxReporting } from '../shared'
 import { Builder } from '../types'
+import { useHandleErrors } from '../utils'
 import {
   AllocationAmount,
   AllocationMetrics,
@@ -13,25 +19,50 @@ import {
   BuilderAllocationProps,
   Header,
 } from './components'
-import { AllocationsContext, AllocationsContextProvider } from './context'
-import { BuilderContextProviderWithPrices } from '../user'
-import { useActivatedBuildersWithGauge } from './hooks'
+import { AllocationsContext } from './context'
 
 export default function Allocations() {
-  const { data: builders } = useActivatedBuildersWithGauge()
+  const { writeContractAsync, error: executionError, data: hash, isPending } = useWriteContract()
+  const { isLoading, isSuccess, data, error: receiptError } = useWaitForTransactionReceipt({ hash })
+
+  const error = executionError || receiptError
+
+  useAwaitedTxReporting({
+    hash,
+    error,
+    isPendingTx: isPending,
+    isLoadingReceipt: isLoading,
+    isSuccess,
+    receipt: data,
+    title: 'Save allocations',
+  })
+
   const router = useRouter()
   const {
     state: { allocations, getBuilder },
     actions: { resetAllocations },
   } = useContext(AllocationsContext)
 
-  useEffect(() => {
-    console.log(builders)
-  }, [builders])
-
   const saveAllocations = () => {
-    // TODO: save current allocations
+    const [gauges, allocs] = Object.entries(allocations).reduce<[Address[], bigint[]]>(
+      (acc, [index, allocation]) => {
+        acc[0] = [...acc[0], getBuilder(Number(index))?.gauge ?? zeroAddress]
+        acc[1] = [...acc[1], allocation]
+
+        return acc
+      },
+      [[], []],
+    )
+
+    return writeContractAsync({
+      abi: BackersManagerAbi,
+      address: BackersManagerAddress,
+      functionName: 'allocateBatch',
+      args: [gauges, allocs],
+    })
   }
+
+  useHandleErrors({ error: executionError, title: 'Error saving allocations' })
 
   const cancel = () => {
     resetAllocations()
