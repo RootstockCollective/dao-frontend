@@ -6,15 +6,13 @@ export function weiToPercentage(weiValue: bigint, decimalsLimit: number = 18): s
   if (decimalsLimit === 0) {
     return whole.toString()
   }
-  
+
   const remainder = scaledWei % WeiPerEther
   // Scale to 18 decimal places
   const decimals = remainder.toString().padStart(decimalsLimit, '0')
   const formattedDecimals = decimals.replace(/0+$/, '')
 
-  return formattedDecimals
-    ? `${whole}.${formattedDecimals.slice(0, decimalsLimit)}`
-    : whole.toString()
+  return formattedDecimals ? `${whole}.${formattedDecimals.slice(0, decimalsLimit)}` : whole.toString()
 }
 
 export function percentageToWei(percentage: string): bigint {
