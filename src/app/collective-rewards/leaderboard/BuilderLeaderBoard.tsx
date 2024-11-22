@@ -4,11 +4,12 @@ import { Button } from '@/components/Button'
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/Collapsible'
 import { HeaderTitle } from '@/components/Typography'
 import { BuildersLeaderBoardContent } from '@/app/collective-rewards/leaderboard'
+import { useRouter } from 'next/navigation'
 
 export const BuildersLeaderBoard = () => {
+  const router = useRouter()
   const onManageAllocations = () => {
-    // TODO: fill the allocation context if necessary and change the route
-    console.log('Manage allocations')
+    router.push('/collective-rewards/allocations')
   }
 
   return (

@@ -8,6 +8,8 @@ export type Builder = {
   gauge?: Address
   address: Address
   builderName: string
+  // TODO: do we want to keep it here?
+  backerRewardPercentage?: BackerRewardPercentage
 }
 
 type BuilderFunctionOutputs = Extract<
@@ -26,6 +28,12 @@ export type BuilderProposal = {
   name: string
   description: string
   date: string
+}
+
+export type BackerRewardPercentage = {
+  previous: bigint
+  next: bigint
+  cooldown: bigint
 }
 
 export type ProposalByBuilder = Record<Address, BuilderProposal>

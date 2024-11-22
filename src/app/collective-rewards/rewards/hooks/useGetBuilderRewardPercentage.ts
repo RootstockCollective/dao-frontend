@@ -11,7 +11,7 @@ export const useGetBuilderRewardPercentage = (builder: Address) => {
   const { data, isLoading, error } = useReadContract({
     address: BackersManagerAddress,
     abi: BackersManagerAbi,
-    functionName: 'builderRewardPercentage',
+    functionName: 'backerRewardPercentage',
     args: [builder],
     query: {
       refetchInterval: AVERAGE_BLOCKTIME,

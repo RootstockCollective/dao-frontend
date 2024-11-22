@@ -11,8 +11,10 @@ import { tokenContracts } from '@/lib/contracts'
 import { FC } from 'react'
 import { Address, getAddress, zeroAddress } from 'viem'
 import { BackerRewardsTable } from './backers/BackerRewardsTable'
+import { useRouter } from 'next/navigation'
 
 export const Rewards: FC<{ builder: Address }> = ({ builder }) => {
+  const router = useRouter()
   const { data: rewardGauges, error: rewardGaugesError } = useGetGaugesArray('active')
   const { data: haltedGauges, error: haltedGaugesError } = useGetGaugesArray('halted')
   const { data: gauge, error: gaugeError } = useGetBuilderToGauge(builder)
@@ -48,7 +50,7 @@ export const Rewards: FC<{ builder: Address }> = ({ builder }) => {
       <RewardsSection>
         <RewardsSectionHeader
           onSettingsOpen={() => {
-            console.error('Not implemented')
+            router.push('/collective-rewards/allocations')
           }}
           title="Backer Rewards"
           subtext="Monitor your rewards balances and claim."

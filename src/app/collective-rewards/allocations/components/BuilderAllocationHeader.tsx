@@ -3,10 +3,10 @@ import { Badge } from '@/components/Badge'
 import { Jdenticon } from '@/components/Header/Jdenticon'
 import { Paragraph, Typography } from '@/components/Typography'
 import { FC } from 'react'
-import { Builder, BuilderProposal, BuilderStateFlags } from '../types'
+import { Builder, BuilderProposal, BuilderStateFlags } from '../../types'
 
-export type BuilderAllocationHeaderProps = Pick<Builder, 'address' | 'stateFlags' | 'gauge'> &
-  Pick<BuilderProposal, 'name' | 'date'>
+export type BuilderAllocationHeaderProps = Pick<Builder, 'builderName' | 'address' | 'stateFlags' | 'gauge'> &
+  Pick<BuilderProposal, 'date'>
 
 const isBuilderActive = ({ communityApproved, kycApproved, paused }: BuilderStateFlags) => {
   return communityApproved && kycApproved && !paused
@@ -14,7 +14,7 @@ const isBuilderActive = ({ communityApproved, kycApproved, paused }: BuilderStat
 
 export const BuilderAllocationHeader: FC<BuilderAllocationHeaderProps> = ({
   address,
-  name,
+  builderName,
   stateFlags,
   date,
   gauge,
@@ -26,7 +26,7 @@ export const BuilderAllocationHeader: FC<BuilderAllocationHeaderProps> = ({
       <Jdenticon className="rounded-md bg-white" value={address} size="46" />
       <div className="flex flex-col items-start gap-2">
         <Typography tagVariant="label" className="font-semibold line-clamp-1 text-wrap text-base leading-4">
-          <AddressOrAlias addressOrAlias={name || address} className="text-base font-bold leading-4" />
+          <AddressOrAlias addressOrAlias={builderName || address} className="text-base font-bold leading-4" />
         </Typography>
         {state.paused && (
           <Badge content="Paused" className="bg-[#F9E1FF] text-secondary py-1 px-1 text-[12px]" />

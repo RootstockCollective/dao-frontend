@@ -1,5 +1,6 @@
 import { BuilderRewardPercentage, getPercentageData } from '@/app/collective-rewards/rewards/utils'
 import { BackersManagerAbi } from '@/lib/abis/v2/BackersManagerAbi'
+import { BuilderRegistryAbi } from '@/lib/abis/v2/BuilderRegistryAbi'
 import { AVERAGE_BLOCKTIME } from '@/lib/constants'
 import { BackersManagerAddress } from '@/lib/contracts'
 import { useMemo } from 'react'
@@ -11,8 +12,8 @@ export const useGetBuildersRewardPercentage = (builders: Address[]) => {
     builder =>
       ({
         address: BackersManagerAddress,
-        abi: BackersManagerAbi,
-        functionName: 'builderRewardPercentage',
+        abi: BuilderRegistryAbi,
+        functionName: 'backerRewardPercentage',
         args: [builder],
       }) as const,
   )
