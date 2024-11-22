@@ -99,10 +99,11 @@ export const StakingProvider: FC<Props> = ({
     amount: '',
   })
 
-  const onAmountChange = useCallback(
-    (amount: string) => setStakeData(prevState => ({ ...prevState, amount })),
-    [],
-  )
+  const onAmountChange = useCallback((amount: string) => {
+    if (amount !== '.') {
+      setStakeData(prevState => ({ ...prevState, amount }))
+    }
+  }, [])
 
   const [stakeTxHash, setStakeTxHash] = useState('')
 
