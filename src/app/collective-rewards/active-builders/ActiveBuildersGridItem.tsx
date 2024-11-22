@@ -1,4 +1,3 @@
-import { crStatusColorClasses, BuilderProposal } from '@/app/collective-rewards/user'
 import { AddressOrAliasWithCopy } from '@/components/Address'
 import { Badge } from '@/components/Badge'
 import { Popover } from '@/components/Popover'
@@ -8,9 +7,10 @@ import { FC, ReactNode } from 'react'
 import { Jdenticon } from '@/components/Header/Jdenticon'
 import { shortAddress } from '@/lib/utils'
 import { isAddress, Address } from 'viem'
-import { BuilderStatusActive, BuilderStatusShown } from '@/app/collective-rewards/types'
+import { crStatusColorClasses } from '@/app/collective-rewards/utils'
+import { BuilderWithStatus } from '@/app/collective-rewards/active-builders'
 
-type WhitelistGridItemProps = BuilderProposal & { status: BuilderStatusShown }
+type ActiveBuildersGridItemProps = BuilderWithStatus
 
 const Card = ({ header, body }: { header: ReactNode; body: ReactNode }) => {
   return (
@@ -21,14 +21,17 @@ const Card = ({ header, body }: { header: ReactNode; body: ReactNode }) => {
   )
 }
 
+const builderStatusMap = {
+  active: 'Active',
+  inProgress: 'In Progress',
+}
+
 // TODO: this content can be moved to a different component and become a generic card
-export const WhitelistGridItem: FC<WhitelistGridItemProps> = ({
-  builderName,
+export const ActiveBuildersGridItem: FC<ActiveBuildersGridItemProps> = ({
   address,
-  status,
-  joiningDate,
-  proposalId,
-  proposalName,
+  builderName,
+  builderStatus,
+  proposal: { id: proposalId, date: joiningDate, name: proposalName },
 }) => {
   const router = useRouter()
   const shortenAddress = shortAddress(address as Address)
@@ -58,12 +61,15 @@ export const WhitelistGridItem: FC<WhitelistGridItemProps> = ({
             />
           </Typography>
         </Popover>
-        {status === BuilderStatusActive && (
+        {builderStatus === 'active' && (
           <Paragraph className="text-sm font-light"> Joined {joiningDate}</Paragraph>
         )}
       </div>
       <div className="flex justify-center items-center">
-        <Badge content={status} className={`${crStatusColorClasses[status]} py-1 px-2`} />
+        <Badge
+          content={builderStatusMap[builderStatus]}
+          className={`${crStatusColorClasses[builderStatus]} py-1 px-2`}
+        />
       </div>
     </div>
   )

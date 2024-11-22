@@ -1,10 +1,12 @@
 'use client'
 
-import { formatBalanceToHuman } from '@/app/user/Balances/balanceUtils'
 import { Button, ButtonProps } from '@/components/Button'
 import { Input } from '@/components/Input'
 import { cn } from '@/lib/utils'
-import { useState } from 'react'
+import { useContext, useState } from 'react'
+import { AllocationsContext } from '@/app/collective-rewards/allocations/context'
+import { formatEther, parseEther } from 'viem'
+import { StakeHint } from './StakeHint'
 
 const PercentageButton = ({ children, variant, ...rest }: ButtonProps) => (
   <Button
@@ -16,29 +18,30 @@ const PercentageButton = ({ children, variant, ...rest }: ButtonProps) => (
   </Button>
 )
 
-type AllocationAmountProps = {
-  balance: bigint
-  errorMessage?: string
-  onPercentageSet?: (percentage: number) => void
-}
+const ALLOCATION_EXCEED_AMOUNT_ERROR = 'Builder allocations exceeds amount to allocate'
 
-export const AllocationAmount = ({ balance, errorMessage, onPercentageSet }: AllocationAmountProps) => {
-  // TODO: hint is shown only when the allocated amount exceeds the balance
-  // const hint = <StakeHint />
-  const hint = undefined
+export const AllocationAmount = () => {
+  const {
+    state: {
+      backer: { balance, totalAllocation, cumulativeAllocation, allocationCount },
+    },
+    actions: { updateAllocations, updateTotalAllocation },
+  } = useContext(AllocationsContext)
 
   const [activeButton, setActiveButton] = useState<number | null>(null)
-  const [allocatedAmount, setAllocatedAmount] = useState('0')
-  const onChange = (value: string) => {
-    setAllocatedAmount(value)
+  const onPercentageButtonClicked = (percentage: number, index: number) => {
+    const newTotalAllocation = (BigInt(balance ?? 0n) * BigInt(percentage)) / BigInt(100)
+    updateTotalAllocation(newTotalAllocation)
+    setActiveButton(index)
+    const allocationValue = allocationCount > 0 ? newTotalAllocation / BigInt(allocationCount) : 0n
+
+    updateAllocations(Array(allocationCount).fill(allocationValue))
   }
 
-  const onPercentageButtonClicked = (percentage: number, index: number) => {
-    const percentageAmount = (BigInt(balance ?? 0n) * BigInt(percentage)) / BigInt(100)
-    setAllocatedAmount(formatBalanceToHuman(percentageAmount))
-    onPercentageSet?.(percentage)
-    setActiveButton(index)
+  const handleOnChange = (value: string) => {
+    updateTotalAllocation(parseEther(value))
   }
+
   return (
     <div className="flex flex-col items-end gap-4 min-w-[694px] min-h-[130px]">
       <div className="flex flex-col items-center gap-[10px] self-stretch">
@@ -49,10 +52,14 @@ export const AllocationAmount = ({ balance, errorMessage, onPercentageSet }: All
           labelProps={{ className: 'text-base leading-4 font-normal' }}
           name="allocated-amount"
           fullWidth
-          onChange={onChange}
-          value={allocatedAmount.toString()}
-          errorMessage={errorMessage}
-          hint={hint}
+          onChange={handleOnChange}
+          value={formatEther(totalAllocation)}
+          errorMessage={
+            cumulativeAllocation > totalAllocation && cumulativeAllocation < balance
+              ? ALLOCATION_EXCEED_AMOUNT_ERROR
+              : ''
+          }
+          hint={Number(totalAllocation - cumulativeAllocation) < 0 ? <StakeHint /> : undefined}
         />
       </div>
       <div className="flex items-center gap-3">

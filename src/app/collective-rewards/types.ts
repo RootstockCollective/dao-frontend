@@ -1,24 +1,43 @@
-import { CreateBuilderProposalEventLog } from '@/app/proposals/hooks/useFetchLatestProposals'
 import { ProposalState } from '@/shared/types'
-import { Address } from 'viem'
+import { AbiFunction, Address } from 'viem'
+import { BuilderRegistryAbi } from '@/lib/abis/v2/BuilderRegistryAbi'
 
-export const BuilderStatusActive = 'Active'
-export const BuilderStatusInProgress = 'In progress'
-export const BuilderStatusProposalCreatedMVP = 'In progress - mvp'
-export const builderStatusOptions = [
-  BuilderStatusActive,
-  BuilderStatusInProgress,
-  BuilderStatusProposalCreatedMVP,
-] as const
-
-export type BuilderStatus = (typeof builderStatusOptions)[number]
-export type BuilderStatusShown = Exclude<BuilderInfo['status'], 'In progress - mvp'>
-
-export type BuilderInfo = {
+export type Builder = {
+  proposal: BuilderProposal
+  stateFlags?: BuilderStateFlags
+  gauge?: Address
   address: Address
-  status: BuilderStatus
-  proposals: CreateBuilderProposalEventLog[]
-  gauge: Address
+  builderName: string
+  // TODO: do we want to keep it here?
+  backerRewardPercentage?: BackerRewardPercentage
 }
 
+type BuilderFunctionOutputs = Extract<
+  Extract<(typeof BuilderRegistryAbi)[number], AbiFunction>,
+  {
+    name: 'builderState'
+  }
+>['outputs']
+
+export type BuilderStateFlags = {
+  [key in Exclude<BuilderFunctionOutputs[number]['name'], 'pausedReason' | 'reserved'>]: boolean
+}
+
+export type BuilderProposal = {
+  id: bigint
+  name: string
+  description: string
+  date: string
+}
+
+export type BackerRewardPercentage = {
+  previous: bigint
+  next: bigint
+  cooldown: bigint
+}
+
+export type ProposalByBuilder = Record<Address, BuilderProposal>
+
 export type ProposalsToState = Record<string, ProposalState>
+
+export type BuilderState = 'active' | 'inProgress'

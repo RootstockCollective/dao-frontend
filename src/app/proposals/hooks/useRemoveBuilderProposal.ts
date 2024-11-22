@@ -1,4 +1,3 @@
-import { getIsWhitelistedBuilder } from '@/app/collective-rewards/utils'
 import { AddressNotWhitelistedError, NoVotingPowerError } from '@/app/proposals/shared/errors'
 import { GovernorAbi } from '@/lib/abis/Governor'
 import { BuilderRegistryAbi } from '@/lib/abis/v2/BuilderRegistryAbi'
@@ -7,19 +6,24 @@ import { Address, encodeFunctionData } from 'viem'
 import { useWriteContract } from 'wagmi'
 import { createProposal, encodeGovernorRelayCallData } from './proposalUtils'
 import { useVotingPower } from './useVotingPower'
+import { useBuilderContext } from '@/app/collective-rewards/user'
+import { Builder } from '@/app/collective-rewards/types'
 
 export const useRemoveBuilderProposal = () => {
   const { canCreateProposal } = useVotingPower()
   const { writeContractAsync: propose, isPending: isPublishing, error: transactionError } = useWriteContract()
+  const { getBuilderByAddress } = useBuilderContext()
 
   const onRemoveBuilderProposal = async (builderAddress: Address, description: string) => {
     if (!canCreateProposal) {
       throw NoVotingPowerError
     }
-    const isWhitelisted = await getIsWhitelistedBuilder(builderAddress)
-    if (!isWhitelisted) {
+
+    const { stateFlags } = getBuilderByAddress(builderAddress) as Builder
+    if (stateFlags && !stateFlags.communityApproved) {
       throw AddressNotWhitelistedError
     }
+
     const calldata = encodeRemoveBuilderCalldata(builderAddress)
     const relayCallData = encodeGovernorRelayCallData(BackersManagerAddress, calldata)
 

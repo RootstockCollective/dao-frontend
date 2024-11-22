@@ -1,15 +1,18 @@
 import { WeiPerEther } from 'ethers'
 
-export function weiToPercentage(weiValue: bigint): string {
+export function weiToPercentage(weiValue: bigint, decimalsLimit: number = 18): string {
   const scaledWei = weiValue * 100n
   const whole = scaledWei / WeiPerEther
+  if (decimalsLimit === 0) {
+    return whole.toString()
+  }
+
   const remainder = scaledWei % WeiPerEther
-
   // Scale to 18 decimal places
-  const decimal = remainder.toString().padStart(18, '0')
-  const formattedDecimal = decimal.replace(/0+$/, '')
+  const decimals = remainder.toString().padStart(decimalsLimit, '0')
+  const formattedDecimals = decimals.replace(/0+$/, '')
 
-  return formattedDecimal ? `${whole}.${formattedDecimal}` : whole.toString()
+  return formattedDecimals ? `${whole}.${formattedDecimals.slice(0, decimalsLimit)}` : whole.toString()
 }
 
 export function percentageToWei(percentage: string): bigint {

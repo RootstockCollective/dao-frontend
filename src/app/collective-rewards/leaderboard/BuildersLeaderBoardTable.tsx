@@ -1,14 +1,7 @@
-import { CycleContextProvider } from '@/app/collective-rewards/metrics'
-import { Token, useGetBuildersRewards } from '@/app/collective-rewards/rewards'
-import { BuilderContextProviderWithPrices } from '@/app/collective-rewards/user'
-import { getCoinbaseAddress, useHandleErrors } from '@/app/collective-rewards/utils'
-import { Button } from '@/components/Button'
-import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/Collapsible'
-import { LoadingSpinner } from '@/components/LoadingSpinner'
+import { BuildersRewards } from '@/app/collective-rewards/rewards'
 import { TableBody, TableCore, TableHead, TableRow } from '@/components/Table'
-import { HeaderTitle, Typography } from '@/components/Typography'
 import { useBasicPaginationUi } from '@/shared/hooks/usePaginationUi'
-import { FC, useMemo, useState } from 'react'
+import { FC, useContext, useEffect, useMemo, useState } from 'react'
 import {
   ISortConfig,
   TableHeader,
@@ -18,9 +11,10 @@ import {
   BuilderNameCell,
   LazyRewardCell,
   TotalAllocationCell,
+  useSearchContext,
 } from '@/app/collective-rewards/shared'
-import { getAddress } from 'viem'
-import { tokenContracts } from '@/lib/contracts'
+import { PaginatedDataContext } from '../context/PaginatedDataContext'
+import { Pagination } from '../shared/components/Pagination'
 
 enum RewardsColumnKeyEnum {
   builder = 'builder',
@@ -38,7 +32,7 @@ const tableHeaders: TableHeader[] = [
   { label: 'Est. Backers Rewards', className: 'w-[22%]', sortKey: RewardsColumnKeyEnum.estimatedRewards },
   {
     label: 'Total Allocations',
-    className: 'w-[18%]',
+    className: 'w-[16%]',
     // eslint-disable-next-line quotes
     tooltip: "The Builder's share of the total allocations",
     sortKey: RewardsColumnKeyEnum.totalAllocationPercentage,
@@ -47,13 +41,9 @@ const tableHeaders: TableHeader[] = [
   { label: 'Actions', className: 'w-[14%]' },
 ]
 
-type BuildersLeaderBoardTableProps = {
-  tokens: { [token: string]: Token }
-  currency?: string
-}
-const BuildersLeaderBoardTable: FC<BuildersLeaderBoardTableProps> = ({ tokens, currency }) => {
-  const { data: rewardsData, isLoading, error: rewardsError } = useGetBuildersRewards(tokens, currency)
-  useHandleErrors({ error: rewardsError, title: 'Error loading builder rewards' })
+export const BuildersLeaderBoardTable: FC = () => {
+  const { getValues } = useSearchContext()
+  const rewardsData = getValues<BuildersRewards>()
 
   const [sortConfig, setSortConfig] = useState<ISortConfig>({
     key: RewardsColumnKeyEnum.totalAllocationPercentage,
@@ -117,14 +107,6 @@ const BuildersLeaderBoardTable: FC<BuildersLeaderBoardTableProps> = ({ tokens, c
     })
   }
 
-  if (isLoading) {
-    return <LoadingSpinner />
-  }
-
-  if (!tableDataLength) {
-    return <EmptyLeaderboard />
-  }
-
   return (
     <div className="flex flex-col gap-5 w-full">
       <TableCore className="table-fixed">
@@ -145,24 +127,30 @@ const BuildersLeaderBoardTable: FC<BuildersLeaderBoardTableProps> = ({ tokens, c
             ({
               address,
               builderName,
+              stateFlags,
               lastCycleReward,
               estimatedReward,
               totalAllocationPercentage,
               rewardPercentage,
             }) => (
               <TableRow key={address} className="text-[14px] border-hidden">
-                <BuilderNameCell tableHeader={tableHeaders[0]} builderName={builderName} address={address} />
+                <BuilderNameCell
+                  tableHeader={tableHeaders[0]}
+                  builderName={builderName}
+                  address={address}
+                  stateFlags={stateFlags}
+                />
                 <BackerRewardsPercentage tableHeader={tableHeaders[1]} percentage={rewardPercentage} />
                 <LazyRewardCell
                   tableHeader={tableHeaders[2]}
-                  rewards={[lastCycleReward.RBTC, lastCycleReward.RIF]}
+                  rewards={[lastCycleReward.rbtc, lastCycleReward.rif]}
                 />
                 <LazyRewardCell
                   tableHeader={tableHeaders[3]}
-                  rewards={[estimatedReward.RBTC, estimatedReward.RIF]}
+                  rewards={[estimatedReward.rbtc, estimatedReward.rif]}
                 />
                 <TotalAllocationCell tableHeader={tableHeaders[4]} percentage={totalAllocationPercentage} />
-                <ActionCell tableHeader={tableHeaders[5]} />
+                <ActionCell tableHeader={tableHeaders[5]} builderAddress={address} />
               </TableRow>
             ),
           )}
@@ -172,58 +160,3 @@ const BuildersLeaderBoardTable: FC<BuildersLeaderBoardTableProps> = ({ tokens, c
     </div>
   )
 }
-
-export const BuildersLeaderBoard = () => {
-  const onManageAllocations = () => {
-    // TODO: fill the allocation context if necessary and change the route
-    console.log('Manage allocations')
-  }
-
-  // TODO: check where to store this information
-  const tokens = {
-    rif: {
-      address: getAddress(tokenContracts.RIF),
-      symbol: 'RIF',
-    },
-    rbtc: {
-      address: getCoinbaseAddress(),
-      symbol: 'RBTC',
-    },
-  }
-
-  return (
-    <>
-      <Collapsible defaultOpen>
-        <CollapsibleTrigger>
-          <div className="flex items-center justify-between w-full">
-            <HeaderTitle className="">Rewards leaderboard</HeaderTitle>
-            <Button variant="primary" onClick={onManageAllocations}>
-              Manage Allocations
-            </Button>
-          </div>
-        </CollapsibleTrigger>
-        <CollapsibleContent>
-          <CycleContextProvider>
-            <BuilderContextProviderWithPrices>
-              <div className="pt-6">
-                <BuildersLeaderBoardTable tokens={tokens} />
-              </div>
-            </BuilderContextProviderWithPrices>
-          </CycleContextProvider>
-        </CollapsibleContent>
-      </Collapsible>
-    </>
-  )
-}
-
-const EmptyLeaderboard = () => (
-  <div className="relative w-full">
-    <img className="w-full h-fll object-cover" alt="no builders yet" src="/images/joining-without-text.png" />
-    <Typography
-      tagVariant="h1"
-      className="uppercase font-kk-topo text-[48px] leading-tight font-normal absolute inset-0 flex items-center justify-center tracking-[-0.96px]"
-    >
-      Builders are joining soon...
-    </Typography>
-  </div>
-)

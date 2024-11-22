@@ -34,7 +34,7 @@ export const useGetBackerRewardsForBuilder = (builder: Address): BackerRewardRes
   const { data, ...rest } = useReadContract({
     abi: BuilderRegistryAbi,
     address: BackersManagerAddress,
-    functionName: 'builderRewardPercentage',
+    functionName: 'backerRewardPercentage',
     args: [builder as Address],
     query: {
       refetchInterval: AVERAGE_BLOCKTIME,
@@ -88,7 +88,7 @@ export const useSetBackerRewardsForBuilder = (): SetBackerRewardsForBuilder => {
     return await writeContractAsync({
       abi: BuilderRegistryAbi,
       address: BackersManagerAddress,
-      functionName: 'setBuilderRewardPercentage',
+      functionName: 'setBackerRewardPercentage',
       args: [newReward],
     })
   }

@@ -171,30 +171,6 @@ export const GaugeAbi = [
   },
   {
     type: 'function',
-    name: 'claimedBackerRewards',
-    inputs: [
-      {
-        name: 'rewardToken_',
-        type: 'address',
-        internalType: 'address',
-      },
-      {
-        name: 'backer_',
-        type: 'address',
-        internalType: 'address',
-      },
-    ],
-    outputs: [
-      {
-        name: '',
-        type: 'uint256',
-        internalType: 'uint256',
-      },
-    ],
-    stateMutability: 'view',
-  },
-  {
-    type: 'function',
     name: 'earned',
     inputs: [
       {
@@ -353,7 +329,7 @@ export const GaugeAbi = [
         internalType: 'uint256',
       },
       {
-        name: 'builderRewardPercentage_',
+        name: 'backerRewardPercentage_',
         type: 'uint256',
         internalType: 'uint256',
       },
@@ -722,6 +698,11 @@ export const GaugeAbi = [
   {
     type: 'error',
     name: 'NotBackersManager',
+    inputs: [],
+  },
+  {
+    type: 'error',
+    name: 'NotEnoughAmount',
     inputs: [],
   },
   {

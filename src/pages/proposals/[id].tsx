@@ -191,7 +191,7 @@ const PageWithProposal = (proposal: ParsedProposal) => {
       <BreadcrumbSection title={proposalName} />
       <div className="flex items-center justify-between">
         <Header className="text-2xl ">{proposalName}</Header>
-        {proposalType === 'whitelistBuilder' && (
+        {(proposalType === 'communityApproveBuilder' || proposalType === 'whitelistBuilder') && (
           <DewhitelistButton
             proposal={proposal}
             canCreateProposal={canCreateProposal}

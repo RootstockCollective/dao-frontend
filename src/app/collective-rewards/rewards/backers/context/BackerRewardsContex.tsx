@@ -7,7 +7,7 @@ import {
 import { Address } from 'viem'
 import { useGaugesGetFunction } from '@/app/collective-rewards//shared'
 
-export type TokenRewards = {
+export type TokenBackerRewards = {
   earned: Record<Address, bigint>
   claimed: Record<Address, BackerRewardsClaimedEventLog>
   estimated: Record<Address, bigint>
@@ -15,14 +15,14 @@ export type TokenRewards = {
 
 type BackerRewardsContextValue = {
   data: {
-    [token: string]: TokenRewards
+    [token: string]: TokenBackerRewards
   }
   isLoading: boolean
   error: Error | null
   getRewardByGauge: <Type extends bigint | BackerRewardsClaimedEventLog>(
     rewardToken: Address,
     gauge: Address,
-    type: keyof TokenRewards,
+    type: keyof TokenBackerRewards,
   ) => Type | undefined
 }
 
@@ -90,12 +90,12 @@ export const BackerRewardsContextProvider: FC<BackerRewardsProviderProps> = ({
   const isLoading = rifLoading || rbtcLoading
   const error = rifError ?? rbtcError
 
-  const data: { [token: string]: TokenRewards } = {
+  const data: { [token: string]: TokenBackerRewards } = {
     [rif.address]: rifRewards,
     [rbtc.address]: rbtcRewards,
   }
 
-  const getRewardByGauge = <Type,>(rewardToken: Address, gauge: Address, type: keyof TokenRewards) => {
+  const getRewardByGauge = <Type,>(rewardToken: Address, gauge: Address, type: keyof TokenBackerRewards) => {
     return data[rewardToken][type][gauge] as Type
   }
 

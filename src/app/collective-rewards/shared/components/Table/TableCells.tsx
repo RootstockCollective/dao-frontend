@@ -4,24 +4,15 @@ import { Popover } from '@/components/Popover'
 import { TableCell } from '@/components/Table'
 import { Label, Typography } from '@/components/Typography'
 import { cn, formatCurrency, shortAddress, toFixed } from '@/lib/utils'
-import { FC, memo, useMemo } from 'react'
-import { FaArrowDown, FaArrowUp } from 'react-icons/fa6'
+import { FC, memo, useContext, useEffect, useMemo, useState } from 'react'
+import { FaArrowDown, FaArrowUp, FaCircle } from 'react-icons/fa'
 import { Address, isAddress } from 'viem'
-import { BuilderRewardPercentage } from '@/app/collective-rewards/rewards'
+import { BuilderRewardPercentage, Reward } from '@/app/collective-rewards/rewards'
 import { TableHeader } from '@/app/collective-rewards/shared'
 import { ProgressBar } from '@/components/ProgressBar'
 import { Button } from '@/components/Button'
-
-type Currency = {
-  value: number
-  symbol: string
-}
-
-export type Reward = {
-  crypto: Currency
-  fiat: Currency
-  logo?: JSX.Element
-}
+import { BuilderStateFlags } from '@/app/collective-rewards/types'
+import { AllocationsContext } from '@/app/collective-rewards/allocations/context'
 
 export function getFormattedCurrency(value: number, symbol: string) {
   const formattedCurrency = formatCurrency(value, symbol)
@@ -60,21 +51,47 @@ export const LazyRewardCell = memo(RewardCell, ({ rewards: prevReward }, { rewar
   prevReward.every((reward, key) => reward.fiat.value === nextReward[key].fiat.value),
 )
 
+type BuilderStatusFlagProps = {
+  stateFlags: BuilderStateFlags
+}
+
+const BuilderStatusFlag: FC<BuilderStatusFlagProps> = ({ stateFlags }) => {
+  const isDeactivated = !stateFlags.kycApproved || !stateFlags.communityApproved
+  const isPaused = stateFlags.paused
+
+  const color = isDeactivated ? '#932309' : isPaused ? '#F9E1FF' : 'transparent'
+  const content = isDeactivated ? 'Status: Deactivated' : isPaused ? 'Status: Paused' : ''
+
+  return (
+    <Popover
+      disabled={!isDeactivated && !isPaused}
+      content={content}
+      className="font-normal text-sm flex items-center"
+      size="small"
+      trigger="hover"
+    >
+      <FaCircle color={color} size={8} />
+    </Popover>
+  )
+}
+
 type BuilderCellProps = {
   tableHeader: TableHeader
   builderName: string
   address: Address
-}
+} & BuilderStatusFlagProps
 
 export const BuilderNameCell: FC<BuilderCellProps> = ({
   tableHeader: { className },
   builderName,
   address,
+  stateFlags,
 }) => {
   const shortenAddress = shortAddress(address)
   return (
     <TableCell className={cn(className, 'border-solid')}>
       <div className="flex flex-row gap-x-1">
+        <BuilderStatusFlag stateFlags={stateFlags} />
         <Jdenticon className="rounded-md bg-white" value={builderName} size="24" />
         <Popover
           content={
@@ -165,20 +182,70 @@ export const TotalAllocationCell: FC<TotalAllocationCellProps> = ({
 
 type ActionCellProps = {
   tableHeader: TableHeader
+  builderAddress: Address
 }
 
-export const ActionCell: FC<ActionCellProps> = ({ tableHeader: { className } }) => {
+export const ActionCell: FC<ActionCellProps> = ({ tableHeader: { className }, builderAddress }) => {
+  const [selected, setSelected] = useState(false)
+  const {
+    state: { selections, getBuilderIndexByAddress, getBuilder },
+    actions: { toggleSelectedBuilder },
+  } = useContext(AllocationsContext)
   /* TODO: manage the button status 
     - disabled when the backer cannot vote on the Builder
-    - variant=primary when the builder is selected and text changed to "Selected"
-    - variant=secondary by default and text is "Select"
+    - ✅variant=primary when the builder is selected and text changed to "Selected"
+    - ✅variant=secondary by default and text is "Select"
   */
   /* TODO: add the onClick event
    *  - it needs to interact with the allocation context to add the builder to the selected builders
    */
+
+  const selectBuilder = () => {
+    if (!builderIndex) {
+      console.log('Builder not found in selection') // TODO: handle this case better
+      return
+    }
+    toggleSelectedBuilder(builderIndex)
+  }
+
+  const builderIndex = useMemo(
+    () => getBuilderIndexByAddress(builderAddress),
+    [builderAddress, getBuilderIndexByAddress],
+  )
+
+  const isBuilderOperational = useMemo(() => {
+    const builder = builderIndex ? getBuilder(builderIndex) : null
+    if (!builder) {
+      console.log('Builder not found in selection') // TODO: handle this case better
+      return
+    }
+    return (
+      builder.stateFlags &&
+      builder.stateFlags.kycApproved &&
+      builder.stateFlags.communityApproved &&
+      !builder.stateFlags.paused
+    )
+  }, [builderIndex, getBuilder])
+
+  useEffect(() => {
+    if (!builderIndex) {
+      console.log('Builder not found in selection') // TODO: handle this case better
+      return
+    }
+    const isSelected = selections.includes(builderIndex)
+    setSelected(isSelected)
+  }, [builderAddress, selections, builderIndex])
+
   return (
     <TableCell className={cn(className, 'border-solid align-center')}>
-      <Button variant="secondary" /* disabled={true} */>Select</Button>
+      <Button
+        variant={selected ? 'white' : 'secondary'}
+        disabled={!isBuilderOperational}
+        onClick={selectBuilder}
+        className="white text-c"
+      >
+        {selected ? 'Selected' : 'Select'}
+      </Button>
     </TableCell>
   )
 }
