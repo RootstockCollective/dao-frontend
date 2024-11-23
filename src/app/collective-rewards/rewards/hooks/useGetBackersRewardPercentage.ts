@@ -7,7 +7,7 @@ import { useMemo } from 'react'
 import { Address } from 'viem'
 import { useReadContracts } from 'wagmi'
 
-export const useGetBuildersRewardPercentage = (builders: Address[]) => {
+export const useGetBackersRewardPercentage = (builders: Address[]) => {
   const contractCalls = builders?.map(
     builder =>
       ({

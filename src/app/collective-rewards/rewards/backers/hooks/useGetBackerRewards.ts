@@ -2,7 +2,7 @@ import {
   Token,
   TokenBackerRewards,
   useBackerRewardsContext,
-  useGetBuildersRewardPercentage,
+  useGetBackersRewardPercentage,
   RifSvg,
   RbtcSvg,
   BuilderRewardPercentage,
@@ -58,7 +58,7 @@ export const useGetBackerRewards = (
     data: buildersRewardsPct,
     isLoading: buildersRewardsPctLoading,
     error: buildersRewardsPctError,
-  } = useGetBuildersRewardPercentage(buildersAddress)
+  } = useGetBackersRewardPercentage(buildersAddress)
   const {
     data: totalAllocation,
     isLoading: totalAllocationLoading,

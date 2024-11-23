@@ -6,7 +6,7 @@ import { useEffect, useState } from 'react'
 import { Address } from 'viem'
 import { useReadContract } from 'wagmi'
 
-export const useGetBuilderRewardPercentage = (builder: Address) => {
+export const useGetBackerRewardPercentage = (builder: Address) => {
   const [rewardPercentageData, setRewardPercentageData] = useState<BuilderRewardPercentage>()
   const { data, isLoading, error } = useReadContract({
     address: BackersManagerAddress,

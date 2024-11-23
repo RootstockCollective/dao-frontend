@@ -2,7 +2,7 @@ import { useCycleContext } from '@/app/collective-rewards/metrics'
 import {
   getNotifyRewardAmount,
   Token,
-  useGetBuildersRewardPercentage,
+  useGetBackersRewardPercentage,
   useGetGaugesNotifyReward,
   useGetRewardsCoinbase,
   useGetRewardsERC20,
@@ -42,6 +42,7 @@ export const useGetBuildersRewards = ({ rif, rbtc }: { [token: string]: Token },
     error: searchError,
   } = useGetBuildersByState<Required<Builder>>()
 
+  // from the builders list, filter out the builders that are not kycApproved or revoked and have no allocation
   const filteredBuilders = builders.filter(({ address, stateFlags }) => {
     if (!stateFlags.kycApproved || stateFlags.revoked) {
       const allocation = allocations[getBuilderIndexByAddress(address)]
@@ -57,13 +58,15 @@ export const useGetBuildersRewards = ({ rif, rbtc }: { [token: string]: Token },
     error: totalPotentialRewardsError,
   } = useGetTotalPotentialReward()
 
-  const buildersAddress = builders.map(({ address }) => address)
+  // get the backer reward percentage for each builder we want to show
+  const buildersAddress = filteredBuilders.map(({ address }) => address)
   const {
-    data: buildersRewardsPct,
-    isLoading: buildersRewardsPctLoading,
-    error: buildersRewardsPctError,
-  } = useGetBuildersRewardPercentage(buildersAddress)
+    data: backersRewardsPct,
+    isLoading: backersRewardsPctLoading,
+    error: backersRewardsPctError,
+  } = useGetBackersRewardPercentage(buildersAddress)
 
+  // get the total allocation for all the builders
   const gauges = builders.map(({ gauge }) => gauge)
   const {
     data: totalAllocation,
@@ -117,7 +120,7 @@ export const useGetBuildersRewards = ({ rif, rbtc }: { [token: string]: Token },
     searchLoading ||
     totalAllocationLoading ||
     logsLoading ||
-    buildersRewardsPctLoading ||
+    backersRewardsPctLoading ||
     rewardsERC20Loading ||
     rewardsCoinbaseLoading ||
     cycleLoading ||
@@ -128,7 +131,7 @@ export const useGetBuildersRewards = ({ rif, rbtc }: { [token: string]: Token },
     searchError ??
     totalAllocationError ??
     logsError ??
-    buildersRewardsPctError ??
+    backersRewardsPctError ??
     rewardsERC20Error ??
     rewardsCoinbaseError ??
     cycleError ??
@@ -141,7 +144,7 @@ export const useGetBuildersRewards = ({ rif, rbtc }: { [token: string]: Token },
 
   const data: BuildersRewards[] = filteredBuilders.map(({ address, builderName, gauge, stateFlags }) => {
     const builderRewardShares = rewardShares[gauge] ?? 0n
-    const rewardPercentage = buildersRewardsPct[address] ?? null
+    const rewardPercentage = backersRewardsPct[address] ?? null
     const currentRewardPercentage = rewardPercentage?.current ?? 0
 
     // calculate rif estimated rewards
