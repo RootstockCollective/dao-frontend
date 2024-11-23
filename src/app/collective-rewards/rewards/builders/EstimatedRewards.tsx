@@ -86,7 +86,14 @@ type EstimatedRewardsProps = BuilderRewardDetails
 export const EstimatedRewards: FC<EstimatedRewardsProps> = ({ tokens: { rif, rbtc }, ...rest }) => {
   return (
     <MetricsCard borderless>
-      <MetricsCardTitle title="Estimated rewards" data-testid="EstimatedRewards" />
+      <MetricsCardTitle
+        title="Estimated rewards"
+        data-testid="EstimatedRewards"
+        tooltip={{
+          text: 'The information displayed is dynamic and may vary based on total rewards available and user activity. This data is provided for informational purposes only. Please note that the final reward amount will be determined at the end of the cycle.',
+          popoverProps: { size: 'medium' },
+        }}
+      />
       <TokenRewards {...rest} token={{ ...rif, id: 'rif' }} />
       <TokenRewards {...rest} token={{ ...rbtc, id: 'rbtc' }} />
     </MetricsCard>

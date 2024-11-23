@@ -69,7 +69,14 @@ type AllTimeRewardsProps = Omit<BuilderRewardDetails, 'builder'>
 export const AllTimeRewards: FC<AllTimeRewardsProps> = ({ tokens: { rif, rbtc }, ...rest }) => {
   return (
     <MetricsCard borderless>
-      <MetricsCardTitle title="All time rewards" data-testid="AllTimeRewards" />
+      <MetricsCardTitle
+        title="All time rewards"
+        data-testid="AllTimeRewards"
+        tooltip={{
+          text: 'The information displayed is dynamic and may vary based on total rewards available and user activity. This data is provided for informational purposes only. Please note that the final reward amount will be determined at the end of the cycle.',
+          popoverProps: { size: 'medium' },
+        }}
+      />
       <TokenRewardsMetrics {...rest} token={rif} />
       <TokenRewardsMetrics {...rest} token={rbtc} />
     </MetricsCard>
