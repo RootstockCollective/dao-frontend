@@ -33,7 +33,7 @@ export const BuilderAllocation = (builder: BuilderAllocationProps) => {
   }
 
   return (
-    <div className="flex flex-col py-4 px-2 gap-6 shrink-0 bg-foreground rounded-[8px] min-w-[calc(25%-1rem)] max-w-[25%]">
+    <div className="flex flex-col py-4 px-2 gap-6 shrink-0 bg-foreground rounded-[8px] min-w-[calc(25%-2rem)] max-w-[25%-1rem]">
       <BuilderAllocationHeader {...builder} />
       <Label className="font-bold">
         Backer rewards {weiToPercentage(backerRewardPercentage?.previous ?? 0n, 0)}%{' '}
