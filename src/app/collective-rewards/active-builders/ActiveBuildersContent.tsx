@@ -11,16 +11,16 @@ export const isActive = (stateFlags?: BuilderStateFlags) => {
   return activeFlags.some(flag => stateFlags?.[flag])
 }
 
+const filterFunction = (builder: Builder, status: string) => {
+  if (status === 'all') return true
+  if (status === 'active') return isActive(builder.stateFlags)
+  if (status === 'inProgress') return !isActive(builder.stateFlags)
+  return false
+}
+
 export const ActiveBuildersContent = () => {
   const { data: builders, isLoading, error } = useGetBuildersByState(undefined, true)
   useHandleErrors({ error, title: 'Error loading builders' })
-
-  const filterFunction = (builder: Builder, status: string) => {
-    if (status === 'all') return true
-    if (status === 'active') return isActive(builder.stateFlags)
-    if (status === 'inProgress') return !isActive(builder.stateFlags)
-    return false
-  }
 
   const status = [
     { label: 'All', value: 'all' },

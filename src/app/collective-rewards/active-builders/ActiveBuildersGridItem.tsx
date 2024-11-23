@@ -3,12 +3,11 @@ import { Badge } from '@/components/Badge'
 import { Popover } from '@/components/Popover'
 import { Paragraph, Span, Typography } from '@/components/Typography'
 import { useRouter } from 'next/navigation'
-import { FC, ReactNode } from 'react'
+import { FC, HtmlHTMLAttributes, ReactNode } from 'react'
 import { Jdenticon } from '@/components/Header/Jdenticon'
 import { shortAddress } from '@/lib/utils'
 import { isAddress, Address } from 'viem'
-import { crStatusColorClasses } from '@/app/collective-rewards/utils'
-import { Builder } from '@/app/collective-rewards/types'
+import { Builder, BuilderState } from '@/app/collective-rewards/types'
 import { isActive } from '@/app/collective-rewards/active-builders'
 
 type ActiveBuildersGridItemProps = Builder
@@ -26,6 +25,11 @@ const builderStatusMap = {
   active: 'Active',
   inProgress: 'In Progress',
 }
+
+const crStatusColorClasses: Record<BuilderState, HtmlHTMLAttributes<HTMLSpanElement>['className']> = {
+  active: 'bg-[#DBFEE5] text-secondary',
+  inProgress: 'bg-[#4B5CF0] color-text-primary',
+} as const
 
 // TODO: this content can be moved to a different component and become a generic card
 export const ActiveBuildersGridItem: FC<ActiveBuildersGridItemProps> = ({
