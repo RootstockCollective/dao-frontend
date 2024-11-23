@@ -4,7 +4,7 @@ import { Input } from '@/components/Input'
 import { Slider } from '@/components/Slider'
 import { Label } from '@/components/Typography'
 import { useContext } from 'react'
-import { formatEther, parseEther } from 'viem'
+import { parseEther } from 'viem'
 import { BuilderAllocationHeader, BuilderAllocationHeaderProps } from './BuilderAllocationHeader'
 import { formatBalanceToHuman } from '@/app/user/Balances/balanceUtils'
 import { weiToPercentage } from '../../settings'
@@ -33,7 +33,7 @@ export const BuilderAllocation = (builder: BuilderAllocationProps) => {
   }
 
   return (
-    <div className="flex flex-col py-4 px-2 gap-6 shrink-0 bg-foreground rounded-[8px]">
+    <div className="flex flex-col py-4 px-2 gap-6 shrink-0 bg-foreground rounded-[8px] min-w-[calc(25%-1rem)] max-w-[25%]">
       <BuilderAllocationHeader {...builder} />
       <Label className="font-bold">
         Backer rewards {weiToPercentage(backerRewardPercentage?.previous ?? 0n, 0)}%{' '}
