@@ -4,7 +4,6 @@ import { BackersManagerAbi } from '@/lib/abis/v2/BackersManagerAbi'
 import { BackersManagerAddress } from '@/lib/contracts'
 import { useAwaitedTxReporting } from '@/app/collective-rewards/shared'
 import { useBackerRewardsContext } from '../context'
-import { useMemo } from 'react'
 
 export const useClaimBackerRewards = (gauges: Address[]) => {
   const { writeContractAsync, error: executionError, data: hash, isPending } = useWriteContract()

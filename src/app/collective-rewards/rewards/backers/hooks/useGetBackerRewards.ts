@@ -48,8 +48,6 @@ export const useGetBackerRewards = (
   { rif, rbtc }: { [token: string]: Token },
   currency = 'USD',
 ) => {
-  // TODO: check which gauges are we going to use
-  // TODO: check which builders are we going to use
   const {
     data: builders,
     isLoading: buildersLoading,
