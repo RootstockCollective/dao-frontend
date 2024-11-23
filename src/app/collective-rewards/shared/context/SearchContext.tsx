@@ -65,7 +65,7 @@ export const SearchContextProvider = <T extends SearchValue>({
     }
 
     return filteredBuilders
-  }, [builders, search, filterBy])
+  }, [builders, search, filterBy, filterFunction])
 
   const valueOfContext: SearchContextValue<T> = {
     data,
