@@ -89,7 +89,7 @@ export default function Allocations() {
           <Typography tagVariant="h2" className="text-lg font-bold leading-[18px]">
             Selected Builders
           </Typography>
-          <div className="flex items-start content-start flex-wrap gap-4">
+          <div className="flex items-start content-start flex-wrap gap-4 w-full">
             {Object.entries(allocations).map(([key, currentAllocation]) => {
               const index = Number(key)
               const builderInfo = getBuilder(index) as Builder
