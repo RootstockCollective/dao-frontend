@@ -1,12 +1,15 @@
 import { useMemo } from 'react'
-import { BuilderStateFlags } from '@/app/collective-rewards/types'
+import { Builder, BuilderStateFlags } from '@/app/collective-rewards/types'
 import { useBuilderContext } from '@/app/collective-rewards/user'
 
 export type BuilderStateFlagsKeys = keyof BuilderStateFlags
 export type BuilderStateFlagsArray = Array<BuilderStateFlagsKeys>
-export const useGetBuildersByState = (stateFlags?: BuilderStateFlagsArray, includeV1 = false) => {
+export const useGetBuildersByState = <T extends Builder>(
+  stateFlags?: BuilderStateFlagsArray,
+  includeV1 = false,
+) => {
   const { data: builders, isLoading, error } = useBuilderContext()
-  let data = useMemo(() => {
+  const data = useMemo(() => {
     if (!builders) return []
 
     return builders.filter(({ stateFlags: builderStateFlags }) => {
@@ -16,7 +19,7 @@ export const useGetBuildersByState = (stateFlags?: BuilderStateFlagsArray, inclu
 
       return stateFlags.some(value => builderStateFlags[value])
     })
-  }, [builders, stateFlags, includeV1])
+  }, [builders, stateFlags, includeV1]) as T[]
 
   return {
     data,

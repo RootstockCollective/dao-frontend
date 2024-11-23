@@ -5,13 +5,26 @@ import {
   useGetBuildersRewardPercentage,
   RifSvg,
   RbtcSvg,
+  BuilderRewardPercentage,
+  TokenRewards,
 } from '@/app/collective-rewards/rewards'
 import { useGaugesGetFunction } from '@/app/collective-rewards/shared'
 import { Address } from 'viem'
 import { usePricesContext } from '@/shared/context/PricesContext'
 import { formatBalanceToHuman } from '@/app/user/Balances/balanceUtils'
 import { useGetBuildersByState } from '@/app/collective-rewards//user'
-import { Builder } from '@/app/collective-rewards/types'
+import { Builder, BuilderStateFlags } from '@/app/collective-rewards/types'
+
+export type BackerRewards = {
+  address: Address
+  builderName: string
+  stateFlags: BuilderStateFlags
+  totalAllocationPercentage: bigint
+  rewardPercentage: BuilderRewardPercentage
+  estimatedRewards: TokenRewards
+  claimableRewards: TokenRewards
+  allTimeRewards: TokenRewards
+}
 
 const tokenRewardsMetrics = (tokenRewards: TokenBackerRewards, gauge: Address) => {
   const estimatedRewards = Number(formatBalanceToHuman(tokenRewards.estimated[gauge] ?? 0n))
@@ -37,10 +50,12 @@ export const useGetBackerRewards = (
 ) => {
   // TODO: check which gauges are we going to use
   // TODO: check which builders are we going to use
-  const { data: builders, isLoading: buildersLoading, error: buildersError } = useGetBuildersByState()
-  const buildersV2 = builders as Required<Builder>[]
-  buildersV2.filter(({ address }) => address === builder)
-  const buildersAddress = buildersV2.map(({ address }) => address)
+  const {
+    data: builders,
+    isLoading: buildersLoading,
+    error: buildersError,
+  } = useGetBuildersByState<Required<Builder>>()
+  const buildersAddress = builders.map(({ address }) => address)
   const {
     data: buildersRewardsPct,
     isLoading: buildersRewardsPctLoading,
@@ -71,7 +86,7 @@ export const useGetBackerRewards = (
   const rifPrice = prices[rif.symbol]?.price ?? 0
   const rbtcPrice = prices[rbtc.symbol]?.price ?? 0
 
-  const data = buildersV2.map(({ address, builderName, gauge, stateFlags }) => {
+  const data: BackerRewards[] = builders.map(({ address, builderName, gauge, stateFlags }) => {
     const builderTotalAllocation = totalAllocation[gauge] ?? 0n
     const backerAllocationOf = allocationOf[gauge] ?? 0n
     const totalAllocationPercentage = builderTotalAllocation
@@ -86,6 +101,7 @@ export const useGetBackerRewards = (
       address,
       builderName,
       stateFlags,
+      totalAllocationPercentage,
       rewardPercentage,
       estimatedRewards: {
         rif: {
@@ -111,7 +127,6 @@ export const useGetBackerRewards = (
           logo: RbtcSvg(),
         },
       },
-      totalAllocationPercentage,
       claimableRewards: {
         rif: {
           crypto: {

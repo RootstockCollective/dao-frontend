@@ -111,7 +111,7 @@ const RewardsTable: FC<BackerRewardsTable> = ({ builder, gauges, tokens }) => {
     <div className="flex flex-col gap-5 w-full">
       <TableCore className="table-fixed">
         <TableHead>
-          <TableRow>
+          <TableRow className="min-h-0">
             {tableHeaders.map(header => (
               <TableHeaderCell
                 key={header.label}

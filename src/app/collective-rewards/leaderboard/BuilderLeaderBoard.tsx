@@ -1,5 +1,4 @@
 import { CycleContextProvider } from '@/app/collective-rewards/metrics'
-import { BuilderContextProviderWithPrices } from '@/app/collective-rewards/user'
 import { Button } from '@/components/Button'
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/Collapsible'
 import { HeaderTitle } from '@/components/Typography'
