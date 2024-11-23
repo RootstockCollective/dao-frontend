@@ -64,7 +64,6 @@ const CR_WHITELIST_FUNCTION_SELECTOR_MVP = toFunctionSelector({
   functionName: 'whitelistBuilder', // v1
 })
 
-// TODO: this is a temporary value until we have the new contracts deployed
 const CR_WHITELIST_FUNCTION_SELECTOR_V2 = toFunctionSelector({
   abi: BuilderRegistryAbi,
   functionName: 'communityApproveBuilder',

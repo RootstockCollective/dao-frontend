@@ -522,6 +522,9 @@ export const actionInputNameFormatMap: Partial<
     builder_: 'Address to be whitelisted',
     rewardReceiver_: 'Address to receive rewards',
   },
+  communityApproveBuilder: {
+    builder_: 'Address to be whitelisted',
+  },
   removeWhitelistedBuilder: {
     builder_: 'Address to be removed',
   },
@@ -547,6 +550,9 @@ export const actionComponentMap: Partial<ActionComposerMap> = {
     rewardReceiver_: AddressInputComponent,
   },
   removeWhitelistedBuilder: {
+    builder_: AddressInputComponent,
+  },
+  communityApproveBuilder: {
     builder_: AddressInputComponent,
   },
   withdraw: {

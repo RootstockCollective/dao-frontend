@@ -44,7 +44,16 @@ export const Rewards: FC<{ builder: Address }> = ({ builder }) => {
     <>
       {gauge && gauge !== zeroAddress && (
         <div className="pb-[46px]">
-          <BuilderRewards gauge={gauge} {...data} />
+          <RewardsSection>
+            <RewardsSectionHeader
+              onSettingsOpen={() => {
+                router.push('/user/settings?type=builder')
+              }}
+              title="Builder Rewards"
+              subtext="Monitor the rewards you are getting from your Collective Rewards."
+            />
+            <BuilderRewards gauge={gauge} {...data} />
+          </RewardsSection>
         </div>
       )}
       <RewardsSection>

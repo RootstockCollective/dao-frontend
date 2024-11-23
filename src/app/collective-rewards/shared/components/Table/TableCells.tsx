@@ -92,7 +92,7 @@ export const BuilderNameCell: FC<BuilderCellProps> = ({
     <TableCell className={cn(className, 'border-solid')}>
       <div className="flex flex-row gap-x-1">
         <BuilderStatusFlag stateFlags={stateFlags} />
-        <Jdenticon className="rounded-md bg-white" value={builderName} size="24" />
+        <Jdenticon className="rounded-md bg-white min-w-6" value={builderName} size="24" />
         <Popover
           content={
             <div className="text-[12px] font-bold mb-1">
@@ -201,7 +201,7 @@ export const ActionCell: FC<ActionCellProps> = ({ tableHeader: { className }, bu
    */
 
   const selectBuilder = () => {
-    if (!builderIndex) {
+    if (builderIndex < 0) {
       console.log('Builder not found in selection') // TODO: handle this case better
       return
     }
@@ -214,7 +214,7 @@ export const ActionCell: FC<ActionCellProps> = ({ tableHeader: { className }, bu
   )
 
   const isBuilderOperational = useMemo(() => {
-    const builder = builderIndex ? getBuilder(builderIndex) : null
+    const builder = builderIndex >= 0 ? getBuilder(builderIndex) : null
     if (!builder) {
       console.log('Builder not found in selection') // TODO: handle this case better
       return
@@ -228,7 +228,7 @@ export const ActionCell: FC<ActionCellProps> = ({ tableHeader: { className }, bu
   }, [builderIndex, getBuilder])
 
   useEffect(() => {
-    if (!builderIndex) {
+    if (builderIndex < 0) {
       console.log('Builder not found in selection') // TODO: handle this case better
       return
     }

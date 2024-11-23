@@ -24,7 +24,7 @@ type AllocationsContextValue = {
   isContextLoading: boolean
   contextError: Error | null
   getBuilder: (index: number) => Builder | null
-  getBuilderIndexByAddress: (address: Address) => number | null
+  getBuilderIndexByAddress: (address: Address) => number
 }
 export type AllocationsActions = {
   toggleSelectedBuilder: (builderIndex: number) => void
@@ -61,7 +61,7 @@ const DEFAULT_CONTEXT: AllocationsContext = {
     isContextLoading: true,
     contextError: null,
     getBuilder: () => null,
-    getBuilderIndexByAddress: () => null,
+    getBuilderIndexByAddress: () => -1,
   },
   actions: {
     toggleSelectedBuilder: () => {},

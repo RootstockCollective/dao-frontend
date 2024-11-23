@@ -8,7 +8,7 @@ import { tokenContracts } from '@/lib/contracts'
 import { BuildersLeaderBoardTable } from '@/app/collective-rewards/leaderboard'
 
 const EmptyLeaderboard = () => (
-  <div className="relative w-full">
+  <div className="relative w-full py-6">
     <img className="w-full h-fll object-cover" alt="no builders yet" src="/images/joining-without-text.png" />
     <Typography
       tagVariant="h1"

@@ -11,15 +11,13 @@ import {
 } from '@/app/collective-rewards/rewards'
 import { CycleContextProvider } from '@/app/collective-rewards/metrics'
 import { PricesContextProvider } from '@/shared/context/PricesContext'
-import { Popover } from '@/components/Popover'
 import { Button } from '@/components/Button'
-import { Paragraph } from '@/components/Typography'
 import { MetricContainer } from '@/app/collective-rewards/rewards/components/MetricContainer'
 
 type RewardsProps = RewardDetails
 
 export const Rewards: FC<RewardsProps> = ({ builder, gauges, tokens }) => {
-  const { claimRewards } = useClaimBackerRewards(gauges)
+  const { claimRewards, isClaimFunctionReady } = useClaimBackerRewards(gauges)
 
   return (
     <div className="flex gap-4 w-full">
@@ -30,23 +28,14 @@ export const Rewards: FC<RewardsProps> = ({ builder, gauges, tokens }) => {
               <div className="min-h-[190px] w-full">
                 <BackerClaimableRewards builder={builder} gauges={gauges} tokens={tokens} />
               </div>
-              <Popover
-                content={
-                  <Paragraph variant="normal" className="text-sm">
-                    Wait a moment, please. Preparing the claim functionality.
-                  </Paragraph>
-                }
-                trigger="hover"
-                background="dark"
-                size="small"
-                position="bottom"
-                className="z-[100]"
-                disabled={true}
+              <Button
+                className="w-full"
+                onClick={() => claimRewards()}
+                disabled={!isClaimFunctionReady}
+                variant="primary"
               >
-                <Button className="w-full" onClick={() => claimRewards()} variant="primary">
-                  Claim all
-                </Button>
-              </Popover>
+                Claim all
+              </Button>
             </MetricContainer>
             <MetricContainer>
               <BackerRewardsCard
