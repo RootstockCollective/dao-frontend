@@ -11,7 +11,7 @@ import { BuilderState, BuilderStateFlags } from '@/app/collective-rewards/types'
 import { useHandleErrors } from '@/app/collective-rewards/utils'
 
 type StatusBadgeProps = {
-  builderStatus?: BuilderState
+  builderState?: BuilderState
 }
 
 const BuilderRegistrationButton = () => {
@@ -24,7 +24,7 @@ const BuilderRegistrationButton = () => {
   )
 }
 
-const StatusBadge: FC<StatusBadgeProps> = ({ builderStatus }) => {
+const StatusBadge: FC<StatusBadgeProps> = ({ builderState }) => {
   const InProgressComponent = (
     <Badge content="In Progress" className="bg-[#4B5CF0] color-text-primary py-2 px-1" />
   )
@@ -38,7 +38,7 @@ const StatusBadge: FC<StatusBadgeProps> = ({ builderStatus }) => {
     inProgress: InProgressComponent,
     active: WhitelistedComponent,
     undefined: BuilderRegistrationButton,
-  }[builderStatus as BuilderState]
+  }[builderState as BuilderState]
 }
 
 const getBuilderState = (builderStateFlags?: BuilderStateFlags): BuilderState => {
@@ -51,7 +51,7 @@ export const BecomeABuilderHandler = ({ address }: { address: Address }) => {
   const { getBuilderByAddress, isLoading: builderLoading, error: builderLoadingError } = useBuilderContext()
 
   const builder = getBuilderByAddress(address)
-  const builderStatus = getBuilderState(builder?.stateFlags)
+  const builderState = getBuilderState(builder?.stateFlags)
 
   useHandleErrors({ error: builderLoadingError, title: `Error loading builder with address ${address}` })
 
@@ -63,7 +63,7 @@ export const BecomeABuilderHandler = ({ address }: { address: Address }) => {
     return <BuilderRegistrationButton />
   }
 
-  return <StatusBadge builderStatus={builderStatus} />
+  return <StatusBadge builderState={builderState} />
 }
 
 export const BecomeABuilderButton = ({ address }: { address: Address }) => {

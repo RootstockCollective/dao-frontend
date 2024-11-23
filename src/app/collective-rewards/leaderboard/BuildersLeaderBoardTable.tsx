@@ -1,7 +1,7 @@
 import { BuildersRewards } from '@/app/collective-rewards/rewards'
 import { TableBody, TableCore, TableHead, TableRow } from '@/components/Table'
 import { useBasicPaginationUi } from '@/shared/hooks/usePaginationUi'
-import { FC, useContext, useEffect, useMemo, useState } from 'react'
+import { FC, useMemo, useState } from 'react'
 import {
   ISortConfig,
   TableHeader,
@@ -13,8 +13,6 @@ import {
   TotalAllocationCell,
   useSearchContext,
 } from '@/app/collective-rewards/shared'
-import { PaginatedDataContext } from '../context/PaginatedDataContext'
-import { Pagination } from '../shared/components/Pagination'
 
 enum RewardsColumnKeyEnum {
   builder = 'builder',
@@ -42,8 +40,7 @@ const tableHeaders: TableHeader[] = [
 ]
 
 export const BuildersLeaderBoardTable: FC = () => {
-  const { getValues } = useSearchContext()
-  const rewardsData = getValues<BuildersRewards>()
+  const { data: rewardsData } = useSearchContext<BuildersRewards>()
 
   const [sortConfig, setSortConfig] = useState<ISortConfig>({
     key: RewardsColumnKeyEnum.totalAllocationPercentage,

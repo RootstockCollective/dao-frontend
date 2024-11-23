@@ -6,7 +6,6 @@ import {
   RifSvg,
   RbtcSvg,
 } from '@/app/collective-rewards/rewards'
-import { useBuilderContext } from '@/app/collective-rewards/user'
 import { useGaugesGetFunction } from '@/app/collective-rewards//shared'
 import { Address } from 'viem'
 import { usePricesContext } from '@/shared/context/PricesContext'
@@ -73,8 +72,8 @@ export const useGetBackerRewards = (
   const rbtcPrice = prices[rbtc.symbol]?.price ?? 0
 
   const data = buildersV2.map(({ address, builderName, gauge, stateFlags }) => {
-    const builderTotalAllocation = totalAllocation[gauge]
-    const backerAllocationOf = allocationOf[gauge]
+    const builderTotalAllocation = totalAllocation[gauge] ?? 0n
+    const backerAllocationOf = allocationOf[gauge] ?? 0n
     const totalAllocationPercentage = builderTotalAllocation
       ? (backerAllocationOf * 100n) / builderTotalAllocation
       : 0n

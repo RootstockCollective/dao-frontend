@@ -3,14 +3,14 @@ import { Badge } from '@/components/Badge'
 import { Popover } from '@/components/Popover'
 import { Paragraph, Span, Typography } from '@/components/Typography'
 import { useRouter } from 'next/navigation'
-import { FC, ReactNode } from 'react'
+import { FC, HtmlHTMLAttributes, ReactNode } from 'react'
 import { Jdenticon } from '@/components/Header/Jdenticon'
 import { shortAddress } from '@/lib/utils'
 import { isAddress, Address } from 'viem'
-import { crStatusColorClasses } from '@/app/collective-rewards/utils'
-import { BuilderWithStatus } from '@/app/collective-rewards/active-builders'
+import { Builder, BuilderState } from '@/app/collective-rewards/types'
+import { isActive } from '@/app/collective-rewards/active-builders'
 
-type ActiveBuildersGridItemProps = BuilderWithStatus
+type ActiveBuildersGridItemProps = Builder
 
 const Card = ({ header, body }: { header: ReactNode; body: ReactNode }) => {
   return (
@@ -26,15 +26,21 @@ const builderStatusMap = {
   inProgress: 'In Progress',
 }
 
+const crStatusColorClasses: Record<BuilderState, HtmlHTMLAttributes<HTMLSpanElement>['className']> = {
+  active: 'bg-[#DBFEE5] text-secondary',
+  inProgress: 'bg-[#4B5CF0] color-text-primary',
+} as const
+
 // TODO: this content can be moved to a different component and become a generic card
 export const ActiveBuildersGridItem: FC<ActiveBuildersGridItemProps> = ({
   address,
   builderName,
-  builderStatus,
+  stateFlags,
   proposal: { id: proposalId, date: joiningDate, name: proposalName },
 }) => {
   const router = useRouter()
   const shortenAddress = shortAddress(address as Address)
+  const builderState = isActive(stateFlags) ? 'active' : 'inProgress'
   const Header = (
     <div className="flex flex-row w-full items-center gap-x-3 min-h-11">
       <Jdenticon className="rounded-md bg-white" value={address} size="32" />
@@ -61,14 +67,14 @@ export const ActiveBuildersGridItem: FC<ActiveBuildersGridItemProps> = ({
             />
           </Typography>
         </Popover>
-        {builderStatus === 'active' && (
+        {builderState === 'active' && (
           <Paragraph className="text-sm font-light"> Joined {joiningDate}</Paragraph>
         )}
       </div>
       <div className="flex justify-center items-center">
         <Badge
-          content={builderStatusMap[builderStatus]}
-          className={`${crStatusColorClasses[builderStatus]} py-1 px-2`}
+          content={builderStatusMap[builderState]}
+          className={`${crStatusColorClasses[builderState]} py-1 px-2`}
         />
       </div>
     </div>
