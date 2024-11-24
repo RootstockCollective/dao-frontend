@@ -1,6 +1,6 @@
 import { Builder, BuilderStateFlags } from '@/app/collective-rewards/types'
 import { useGetGaugesArray } from '@/app/collective-rewards/user/hooks/useGetGaugesArray'
-import { getMostAdvancedProposal } from '@/app/collective-rewards/utils'
+import { getMostAdvancedProposal, removeBrackets } from '@/app/collective-rewards/utils'
 import { RawBuilderState } from '@/app/collective-rewards/utils/getBuilderGauge'
 import { useGetProposalsState } from '@/app/collective-rewards/user'
 import { useFetchCreateBuilderProposals } from '@/app/proposals/hooks/useFetchLatestProposals'
@@ -135,7 +135,7 @@ export const useGetBuilders: UseGetBuilders = () => {
             stateFlags: statusByBuilder[address],
             gauge: builderToGauge && builderToGauge[address],
             address,
-            builderName,
+            builderName: removeBrackets(builderName),
           }
         }
 

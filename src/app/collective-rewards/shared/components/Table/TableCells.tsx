@@ -93,25 +93,27 @@ export const BuilderNameCell: FC<BuilderCellProps> = ({
       <div className="flex flex-row gap-x-1">
         <BuilderStatusFlag stateFlags={stateFlags} />
         <Jdenticon className="rounded-md bg-white min-w-6" value={builderName} size="24" />
-        <Popover
-          content={
-            <div className="text-[12px] font-bold mb-1">
-              <p data-testid="builderAddressTooltip">{shortenAddress}</p>
-            </div>
-          }
-          size="small"
-          trigger="hover"
-          disabled={!builderName || isAddress(builderName)}
-        >
-          <Typography tagVariant="label" className="font-semibold line-clamp-1 text-wrap min-w-28">
-            <AddressOrAliasWithCopy
-              addressOrAlias={builderName || address}
-              clipboard={address}
-              clipboardAnimationText={shortenAddress}
-              className="text-sm"
-            />
-          </Typography>
-        </Popover>
+        <div className="w-32">
+          <Popover
+            content={
+              <div className="text-[12px] font-bold mb-1">
+                <p data-testid="builderAddressTooltip">{shortenAddress}</p>
+              </div>
+            }
+            size="small"
+            trigger="hover"
+            disabled={!builderName || isAddress(builderName)}
+          >
+            <Typography tagVariant="label" className="font-semibold line-clamp-1 text-wrap min-w-28">
+              <AddressOrAliasWithCopy
+                addressOrAlias={builderName || address}
+                clipboard={address}
+                clipboardAnimationText={shortenAddress}
+                className="text-sm"
+              />
+            </Typography>
+          </Popover>
+        </div>
       </div>
     </TableCell>
   )
