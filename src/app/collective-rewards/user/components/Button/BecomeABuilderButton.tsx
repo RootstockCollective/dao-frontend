@@ -47,7 +47,7 @@ const getBuilderState = (builderStateFlags?: BuilderStateFlags): BuilderState =>
   return activated && communityApproved ? 'active' : 'inProgress'
 }
 
-export const BecomeABuilderHandler = ({ address }: { address: Address }) => {
+export const BecomeABuilderButton = ({ address }: { address: Address }) => {
   const { getBuilderByAddress, isLoading: builderLoading, error: builderLoadingError } = useBuilderContext()
 
   const builder = getBuilderByAddress(address)
@@ -64,8 +64,4 @@ export const BecomeABuilderHandler = ({ address }: { address: Address }) => {
   }
 
   return <StatusBadge builderState={builderState} />
-}
-
-export const BecomeABuilderButton = ({ address }: { address: Address }) => {
-  return <BecomeABuilderHandler address={address} />
 }
