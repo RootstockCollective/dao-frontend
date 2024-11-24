@@ -1,5 +1,6 @@
 import { toPercentage } from '@/app/collective-rewards/rewards'
 
+// TODO: this is a duplicate of BackerRewardPercentage
 export type BuilderRewardPercentage = {
   current: number
   next: number
