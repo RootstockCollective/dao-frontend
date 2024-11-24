@@ -69,7 +69,11 @@ export const AllocationAmount = ({ resetTriggered }: AllocationAmountProps) => {
               ? ALLOCATION_EXCEED_AMOUNT_ERROR
               : ''
           }
-          hint={Number(totalAllocation - cumulativeAllocation) < 0 ? <StakeHint /> : undefined}
+          hint={
+            Number(totalAllocation - cumulativeAllocation) < 0 || totalAllocation > balance ? (
+              <StakeHint />
+            ) : undefined
+          }
         />
       </div>
       <div className="flex items-center gap-3">
