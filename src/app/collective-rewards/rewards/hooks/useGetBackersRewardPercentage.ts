@@ -37,7 +37,11 @@ export const useGetBackersRewardPercentage = (builders: Address[]) => {
           return {} as Record<Address, ReturnType>
         }
 
-        const [current, next, cooldownEndTime] = contractResults[index].result as [bigint, bigint, bigint]
+        const [current, next, cooldownEndTime] = (contractResults[index].result || [0n, 0n, 0n]) as [
+          bigint,
+          bigint,
+          bigint,
+        ]
         const result = getPercentageData(current, next, cooldownEndTime)
         acc[gauge] = result
 
