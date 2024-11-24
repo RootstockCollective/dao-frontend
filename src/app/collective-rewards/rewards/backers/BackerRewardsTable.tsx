@@ -124,7 +124,7 @@ const RewardsTable: FC<BackerRewardsTable> = ({ builder, gauges, tokens }) => {
         <>
           <TableCore className="table-fixed">
             <TableHead>
-              <TableRow className="min-h-0">
+              <TableRow className="min-h-0 normal-case">
                 {tableHeaders.map(header => (
                   <TableHeaderCell
                     key={header.label}
