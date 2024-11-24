@@ -136,7 +136,7 @@ export const AllocationsContextProvider: FC<{ children: ReactNode }> = ({ childr
       setAllocations(newAllocations)
       setBacker(prev => ({
         ...prev,
-        allocationCount: builders.length,
+        allocationCount: Object.entries(newAllocations).length,
         cumulativeAllocation: newCumulativeAllocation,
         totalAllocation: totalAllocation ?? prev.totalAllocation,
         balance: votingPower ?? prev.balance,
@@ -197,14 +197,15 @@ export const AllocationsContextProvider: FC<{ children: ReactNode }> = ({ childr
       backer: {
         balance: votingPower ?? BigInt(0),
         totalAllocation: totalAllocation ?? BigInt(0),
-        allocationCount: builders.length,
+        allocationCount: Object.entries(initialAllocations).length,
         cumulativeAllocation: initialCumulativeAllocations,
       },
       allocations: initialAllocations,
     }
-  }, [allAllocations, builders, totalAllocation, votingPower, isContextLoading, selections])
-  const state: AllocationsContextValue = useMemo(
-    () => ({
+  }, [allAllocations, totalAllocation, votingPower, isContextLoading, selections])
+
+  const state: AllocationsContextValue = useMemo(() => {
+    return {
       selections,
       allocations,
       backer,
@@ -212,9 +213,8 @@ export const AllocationsContextProvider: FC<{ children: ReactNode }> = ({ childr
       contextError,
       getBuilder,
       getBuilderIndexByAddress,
-    }),
-    [selections, allocations, backer, isContextLoading, contextError, getBuilder, getBuilderIndexByAddress],
-  )
+    }
+  }, [selections, allocations, backer, isContextLoading, contextError, getBuilder, getBuilderIndexByAddress])
 
   const actions: AllocationsActions = useMemo(
     () => createActions(setSelections, setAllocations, setBacker, initialState),

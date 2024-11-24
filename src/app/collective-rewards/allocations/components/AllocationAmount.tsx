@@ -3,7 +3,7 @@
 import { Button, ButtonProps } from '@/components/Button'
 import { Input } from '@/components/Input'
 import { cn } from '@/lib/utils'
-import { useContext, useState } from 'react'
+import { useContext, useEffect, useState } from 'react'
 import { AllocationsContext } from '@/app/collective-rewards/allocations/context'
 import { formatEther, parseEther } from 'viem'
 import { StakeHint } from './StakeHint'
@@ -20,7 +20,11 @@ const PercentageButton = ({ children, variant, ...rest }: ButtonProps) => (
 
 const ALLOCATION_EXCEED_AMOUNT_ERROR = 'Builder allocations exceeds amount to allocate'
 
-export const AllocationAmount = () => {
+type AllocationAmountProps = {
+  resetTriggered: boolean
+}
+
+export const AllocationAmount = ({ resetTriggered }: AllocationAmountProps) => {
   const {
     state: {
       backer: { balance, totalAllocation, cumulativeAllocation, allocationCount },
@@ -28,11 +32,17 @@ export const AllocationAmount = () => {
     actions: { updateAllocations, updateTotalAllocation },
   } = useContext(AllocationsContext)
 
-  const [activeButton, setActiveButton] = useState<number | null>(null)
+  const [activeButtonIndex, setActiveButtonIndex] = useState<number | null>(null)
+
+  useEffect(() => {
+    setActiveButtonIndex(-1)
+  }, [resetTriggered])
+
   const onPercentageButtonClicked = (percentage: number, index: number) => {
     const newTotalAllocation = (BigInt(balance ?? 0n) * BigInt(percentage)) / BigInt(100)
     updateTotalAllocation(newTotalAllocation)
-    setActiveButton(index)
+    setActiveButtonIndex(index)
+    if (allocationCount === 0) return
     const allocationValue = allocationCount > 0 ? newTotalAllocation / BigInt(allocationCount) : 0n
 
     updateAllocations(Array(allocationCount).fill(allocationValue))
@@ -67,7 +77,7 @@ export const AllocationAmount = () => {
           <PercentageButton
             key={i}
             onClick={() => onPercentageButtonClicked(percentage, i)}
-            variant={i === activeButton ? 'primary' : 'secondary'}
+            variant={i === activeButtonIndex ? 'primary' : 'secondary'}
           >
             {' '}
             {percentage}%
