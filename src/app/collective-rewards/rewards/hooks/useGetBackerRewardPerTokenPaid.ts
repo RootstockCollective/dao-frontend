@@ -5,18 +5,22 @@ import { useMemo } from 'react'
 import { Address } from 'viem'
 import { useReadContracts } from 'wagmi'
 
-export const useGetBackerRewardPerTokenPaid = (backer: Address) => {
+const COINBASE_ADDRESS = '0xf7ab6cfaebbadfe8b5494022c4c6db776bd63b6b'
+
+export const useGetBackerRewardPerTokenPaid = (backer: Address, token: Address = COINBASE_ADDRESS) => {
   const { data: builders, isLoading: isBuildersLoading, error: buildersError } = useBuilderContext()
 
-  const backerRewardPerTokenPaidCalls = builders.map(
-    ({ gauge }) =>
-      ({
-        address: gauge,
-        abi: GaugeAbi,
-        functionName: 'backerRewardPerTokenPaid',
-        args: [backer],
-      }) as const,
-  )
+  const backerRewardPerTokenPaidCalls = builders
+    .filter(({ gauge }) => !!gauge)
+    .map(
+      ({ gauge }) =>
+        ({
+          address: gauge,
+          abi: GaugeAbi,
+          functionName: 'backerRewardPerTokenPaid',
+          args: [token, backer],
+        }) as const,
+    )
 
   const {
     data: backerRewardPerTokenPaidResults,
