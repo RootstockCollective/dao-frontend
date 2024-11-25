@@ -6,7 +6,7 @@ import { Typography } from '@/components/Typography'
 import { BackersManagerAbi } from '@/lib/abis/v2/BackersManagerAbi'
 import { BackersManagerAddress } from '@/lib/contracts'
 import { useRouter } from 'next/navigation'
-import { useContext } from 'react'
+import { useCallback, useContext, useState } from 'react'
 import { Address, zeroAddress } from 'viem'
 import { useWaitForTransactionReceipt, useWriteContract } from 'wagmi'
 import { useAwaitedTxReporting } from '../shared'
@@ -24,6 +24,7 @@ import { AllocationsContext } from './context'
 export default function Allocations() {
   const { writeContractAsync, error: executionError, data: hash, isPending } = useWriteContract()
   const { isLoading, isSuccess, data, error: receiptError } = useWaitForTransactionReceipt({ hash })
+  const [resetCounter, setResetCounter] = useState(0)
 
   const error = executionError || receiptError
 
@@ -62,6 +63,11 @@ export default function Allocations() {
     })
   }
 
+  const onReset = useCallback(() => {
+    resetAllocations()
+    setResetCounter(prev => prev + 1)
+  }, [resetAllocations])
+
   useHandleErrors({ error: executionError, title: 'Error saving allocations' })
 
   const cancel = () => {
@@ -77,13 +83,13 @@ export default function Allocations() {
         </div>
         <div className="flex flex-col items-start gap-6 self-stretch">
           <AllocationMetrics />
-          <AllocationAmount />
+          <AllocationAmount key={resetCounter} />
         </div>
         <div className="flex flex-col items-start gap-4 self-stretch">
           <Typography tagVariant="h2" className="text-lg font-bold leading-[18px]">
             Selected Builders
           </Typography>
-          <div className="flex items-start content-start flex-wrap gap-4">
+          <div className="flex items-start content-start flex-wrap gap-4 w-full">
             {Object.entries(allocations).map(([key, currentAllocation]) => {
               const index = Number(key)
               const builderInfo = getBuilder(index) as Builder
@@ -111,7 +117,7 @@ export default function Allocations() {
 
             <Button
               variant="borderless"
-              onClick={() => resetAllocations()}
+              onClick={() => onReset()}
               textClassName="font-bold text-[18px] text-primary"
             >
               {' '}

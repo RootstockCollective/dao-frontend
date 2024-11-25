@@ -3,7 +3,7 @@
 import { Button, ButtonProps } from '@/components/Button'
 import { Input } from '@/components/Input'
 import { cn } from '@/lib/utils'
-import { useContext, useState } from 'react'
+import { useContext, useEffect, useState } from 'react'
 import { AllocationsContext } from '@/app/collective-rewards/allocations/context'
 import { formatEther, parseEther } from 'viem'
 import { StakeHint } from './StakeHint'
@@ -28,11 +28,12 @@ export const AllocationAmount = () => {
     actions: { updateAllocations, updateTotalAllocation },
   } = useContext(AllocationsContext)
 
-  const [activeButton, setActiveButton] = useState<number | null>(null)
+  const [activeButtonIndex, setActiveButtonIndex] = useState<number | null>(null)
   const onPercentageButtonClicked = (percentage: number, index: number) => {
     const newTotalAllocation = (BigInt(balance ?? 0n) * BigInt(percentage)) / BigInt(100)
     updateTotalAllocation(newTotalAllocation)
-    setActiveButton(index)
+    setActiveButtonIndex(index)
+    if (allocationCount === 0) return
     const allocationValue = allocationCount > 0 ? newTotalAllocation / BigInt(allocationCount) : 0n
 
     updateAllocations(Array(allocationCount).fill(allocationValue))
@@ -59,7 +60,11 @@ export const AllocationAmount = () => {
               ? ALLOCATION_EXCEED_AMOUNT_ERROR
               : ''
           }
-          hint={Number(totalAllocation - cumulativeAllocation) < 0 ? <StakeHint /> : undefined}
+          hint={
+            Number(totalAllocation - cumulativeAllocation) < 0 || totalAllocation > balance ? (
+              <StakeHint />
+            ) : undefined
+          }
         />
       </div>
       <div className="flex items-center gap-3">
@@ -67,7 +72,7 @@ export const AllocationAmount = () => {
           <PercentageButton
             key={i}
             onClick={() => onPercentageButtonClicked(percentage, i)}
-            variant={i === activeButton ? 'primary' : 'secondary'}
+            variant={i === activeButtonIndex ? 'primary' : 'secondary'}
           >
             {' '}
             {percentage}%
