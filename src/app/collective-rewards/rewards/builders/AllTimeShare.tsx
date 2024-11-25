@@ -61,8 +61,7 @@ export const AllTimeShare: FC<AllTimeShareProps> = ({ gauge, gauges, tokens: { r
           title="All time share"
           data-testid="AllTimeShare"
           tooltip={{
-            // eslint-disable-next-line quotes
-            text: "Total sum of your rewards, share from all the Builders' rewards",
+            text: 'Your share of all Builders’ rewards',
             popoverProps: { size: 'medium', position: 'left' },
           }}
         />

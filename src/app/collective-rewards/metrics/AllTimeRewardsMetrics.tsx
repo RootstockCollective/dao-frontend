@@ -69,7 +69,7 @@ export const AllTimeRewardsMetrics: FC<AllTimeRewardsProps> = ({ gauges, tokens:
         title="All time rewards"
         data-testid="AllTimeRewards"
         tooltip={{
-          text: 'Total of Builders and Backers rewards paid/claimed/received',
+          text: 'Total rewards distributed to Builders and Backers',
         }}
       />
       <TokenRewardsMetrics gauges={gauges} token={rif} />

@@ -60,7 +60,7 @@ export const Rewards: FC<RewardsProps> = ({ builder, gauges, tokens }) => {
                 tokens={tokens}
                 rewards={['earned', 'claimed']}
                 tooltip={{
-                  text: 'Total sum of your rewards: received and claimable',
+                  text: 'Total of your received and claimable rewards',
                   popoverProps: { size: 'medium' },
                 }}
               />
