@@ -145,7 +145,7 @@ export const AllocationsContextProvider: FC<{ children: ReactNode }> = ({ childr
       cumulativeAllocation <= balance &&
       amountToAllocate <= balance
     )
-  }, [backer])
+  }, [backer, totalOnchainAllocation])
 
   /**
    * Reactive state updates
@@ -243,7 +243,16 @@ export const AllocationsContextProvider: FC<{ children: ReactNode }> = ({ childr
       getBuilderIndexByAddress,
       isValidState,
     }
-  }, [selections, allocations, backer, isContextLoading, contextError, getBuilder, getBuilderIndexByAddress])
+  }, [
+    selections,
+    allocations,
+    backer,
+    isContextLoading,
+    contextError,
+    getBuilder,
+    getBuilderIndexByAddress,
+    isValidState,
+  ])
 
   const actions: AllocationsActions = useMemo(
     () => createActions(setSelections, setAllocations, setBacker, initialState),

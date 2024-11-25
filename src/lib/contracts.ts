@@ -55,7 +55,7 @@ const MulticallAddress = MULTICALL_ADDRESS
 const TreasuryAddress = GRANTS_ACTIVE_BUCKET_ADDRESS
 
 const BackersManagerAddress = BACKERS_MANAGER_ADDRESS || ZeroAddress
-const RewardDistributor = REWARD_DISTRIBUTOR_ADDRESS || ZeroAddress
+const RewardDistributorAddress = REWARD_DISTRIBUTOR_ADDRESS || ZeroAddress
 
 export {
   abiContractsMap,
@@ -66,5 +66,5 @@ export {
   TreasuryAddress,
   treasuryContracts,
   BackersManagerAddress,
-  RewardDistributor,
+  RewardDistributorAddress,
 }

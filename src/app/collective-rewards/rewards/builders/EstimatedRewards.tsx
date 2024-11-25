@@ -6,16 +6,17 @@ import {
   useGetRewardShares,
   useGetTotalPotentialReward,
   useGetPerTokenRewards,
-  useGetRewardPercentageToApply,
   Token,
   BuilderRewardDetails,
+  useGetBackerRewardPercentage,
 } from '@/app/collective-rewards/rewards'
-import { useHandleErrors, applyPrecision } from '@/app/collective-rewards/utils'
+import { useHandleErrors } from '@/app/collective-rewards/utils'
 import { formatBalanceToHuman } from '@/app/user/Balances/balanceUtils'
 import { usePricesContext } from '@/shared/context/PricesContext'
 import { FC, useEffect, useState } from 'react'
 import { Address } from 'viem'
 import { withSpinner } from '@/components/LoadingSpinner/withLoadingSpinner'
+import { useCycleContext } from '@/app/collective-rewards/metrics/context/CycleContext'
 
 type TokenRewardsProps = {
   builder: Address
@@ -53,20 +54,29 @@ const TokenRewards: FC<TokenRewardsProps> = ({ builder, gauge, token: { id, symb
     error: rewardSharesError,
   } = useGetRewardShares(gauge)
   const {
-    data: rewardPercentage,
-    isLoading: rewardPercentageLoading,
-    error: rewardPercentageError,
-  } = useGetRewardPercentageToApply(builder)
+    data: { cycleNext },
+    isLoading: cycleLoading,
+    error: cycleError,
+  } = useCycleContext()
+  const {
+    data: backerRewardsPct,
+    isLoading: backerRewardsPctLoading,
+    error: backerRewardsPctError,
+  } = useGetBackerRewardPercentage(builder, cycleNext.toSeconds())
 
-  const error = rewardsError ?? totalPotentialRewardsError ?? rewardSharesError ?? rewardPercentageError
+  const rewardPercentageToApply = backerRewardsPct?.current ?? 0
+
+  const error =
+    rewardsError ?? totalPotentialRewardsError ?? rewardSharesError ?? backerRewardsPctError ?? cycleError
   useHandleErrors({ error, title: 'Error loading estimated rewards' })
 
   const { prices } = usePricesContext()
 
   const rewardsAmount =
-    rewardShares && totalPotentialRewards ? rewards * (rewardShares / totalPotentialRewards) : 0n
-  const estimatedRewards = rewardPercentage ? applyPrecision(rewardsAmount * rewardPercentage) : 0n
-  const estimatedRewardsInHuman = Number(formatBalanceToHuman(estimatedRewards))
+    rewardShares && totalPotentialRewards ? (rewards * rewardShares) / totalPotentialRewards : 0n
+  // The complement of the reward percentage is applied to the estimated rewards since are from the builder's perspective
+  const estimatedRewardsInHuman =
+    Number(formatBalanceToHuman(rewardsAmount)) * (1 - rewardPercentageToApply / 100)
   const price = prices[symbol]?.price ?? 0
   const { amount, fiatAmount } = formatMetrics(estimatedRewardsInHuman, price, symbol, currency)
 
@@ -77,7 +87,11 @@ const TokenRewards: FC<TokenRewardsProps> = ({ builder, gauge, token: { id, symb
     amount,
     fiatAmount,
     isLoading:
-      isRewardsLoading || totalPotentialRewardsLoading || rewardSharesLoading || rewardPercentageLoading,
+      isRewardsLoading ||
+      totalPotentialRewardsLoading ||
+      rewardSharesLoading ||
+      backerRewardsPctLoading ||
+      cycleLoading,
   })
 }
 

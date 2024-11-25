@@ -7,8 +7,14 @@ export type BuilderRewardPercentage = {
   cooldownEndTime: bigint
 }
 
-export const getPercentageData = (previous: bigint, next: bigint, cooldownEndTime: bigint) => {
-  const currentTimestamp = Math.floor(Date.now() / 1000)
+// TODO: get the percentage in bigint
+export const getPercentageData = (
+  previous: bigint,
+  next: bigint,
+  cooldownEndTime: bigint,
+  timestampInSeconds?: number,
+) => {
+  const currentTimestamp = timestampInSeconds ?? Math.floor(Date.now() / 1000)
   const previousPercentage = toPercentage(previous)
   const nextPercentage = toPercentage(next)
   let currentPercentage = currentTimestamp < cooldownEndTime ? previousPercentage : nextPercentage

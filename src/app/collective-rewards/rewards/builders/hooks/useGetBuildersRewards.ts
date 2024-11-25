@@ -18,8 +18,20 @@ import { useGaugesGetFunction } from '@/app/collective-rewards/shared'
 import { Builder, BuilderStateFlags } from '@/app/collective-rewards/types'
 import { useGetBuildersByState } from '@/app/collective-rewards/user'
 import { Address } from 'viem'
-import { AllocationsContext } from '@/app/collective-rewards/allocations/context'
-import { useContext } from 'react'
+import { Allocations, AllocationsContext } from '@/app/collective-rewards/allocations/context'
+import { useContext, useMemo } from 'react'
+
+type RequiredBuilder = Required<Builder>
+
+// from the builders list, filter out the builders that are not kycApproved or are revoked or have no allocation
+const isBuilderShown = (
+  { stateFlags: { kycApproved, revoked } }: RequiredBuilder,
+  allocations: Allocations,
+  index: number,
+) => {
+  const allocation = allocations[index]
+  return (kycApproved && !revoked) || (allocation && allocation > 0n)
+}
 
 export type BuildersRewards = {
   address: Address
@@ -36,35 +48,18 @@ export const useGetBuildersRewards = ({ rif, rbtc }: { [token: string]: Token },
     initialState: { allocations },
     state: { getBuilderIndexByAddress },
   } = useContext(AllocationsContext)
-  let {
+  const { data: cycle, isLoading: cycleLoading, error: cycleError } = useCycleContext()
+  const {
     data: builders,
     isLoading: searchLoading,
     error: searchError,
-  } = useGetBuildersByState<Required<Builder>>()
-
-  // from the builders list, filter out the builders that are not kycApproved or revoked and have no allocation
-  const filteredBuilders = builders.filter(({ address, stateFlags }) => {
-    if (!stateFlags.kycApproved || stateFlags.revoked) {
-      const allocation = allocations[getBuilderIndexByAddress(address)]
-      if (!allocation || allocation === 0n) return false
-    }
-
-    return true
-  })
+  } = useGetBuildersByState<RequiredBuilder>()
 
   const {
     data: totalPotentialRewards,
     isLoading: totalPotentialRewardsLoading,
     error: totalPotentialRewardsError,
   } = useGetTotalPotentialReward()
-
-  // get the backer reward percentage for each builder we want to show
-  const buildersAddress = filteredBuilders.map(({ address }) => address)
-  const {
-    data: backersRewardsPct,
-    isLoading: backersRewardsPctLoading,
-    error: backersRewardsPctError,
-  } = useGetBackersRewardPercentage(buildersAddress)
 
   // get the total allocation for all the builders
   const gauges = builders.map(({ gauge }) => gauge)
@@ -73,6 +68,7 @@ export const useGetBuildersRewards = ({ rif, rbtc }: { [token: string]: Token },
     isLoading: totalAllocationLoading,
     error: totalAllocationError,
   } = useGaugesGetFunction(gauges, 'totalAllocation')
+
   const sumTotalAllocation = Object.values(totalAllocation ?? {}).reduce(
     (acc, value) => acc + (value ?? 0n),
     0n,
@@ -96,11 +92,10 @@ export const useGetBuildersRewards = ({ rif, rbtc }: { [token: string]: Token },
     error: rewardsCoinbaseError,
   } = useGetRewardsCoinbase()
 
-  const { data: cycle, isLoading: cycleLoading, error: cycleError } = useCycleContext()
-  const { cycleDuration, cycleStart, endDistributionWindow } = cycle
+  const { cycleDuration, cycleStart, endDistributionWindow, cycleNext } = cycle
   const distributionWindow = endDistributionWindow.diff(cycleStart)
-  const lastCycleStart = cycleStart.minus({ millisecond: cycleDuration.as('millisecond') })
-  const lastCycleAfterDistribution = lastCycleStart.plus({ millisecond: +distributionWindow })
+  const lastCycleStart = cycleStart.minus({ seconds: cycleDuration.as('seconds') })
+  const lastCycleAfterDistribution = lastCycleStart.plus({ seconds: distributionWindow.as('seconds') })
 
   const {
     data: notifyRewardEventLastCycle,
@@ -114,6 +109,14 @@ export const useGetBuildersRewards = ({ rif, rbtc }: { [token: string]: Token },
   )
   const rifBuildersRewardsAmount = getNotifyRewardAmount(notifyRewardEventLastCycle, rif, 'builderAmount_')
   const rbtcBuildersRewardsAmount = getNotifyRewardAmount(notifyRewardEventLastCycle, rbtc, 'builderAmount_')
+
+  // get the backer reward percentage for each builder we want to show
+  const buildersAddress = builders.map(({ address }) => address)
+  const {
+    data: backersRewardsPct,
+    isLoading: backersRewardsPctLoading,
+    error: backersRewardsPctError,
+  } = useGetBackersRewardPercentage(buildersAddress, cycleNext.toSeconds())
 
   const isLoading =
     rewardSharesLoading ||
@@ -142,77 +145,100 @@ export const useGetBuildersRewards = ({ rif, rbtc }: { [token: string]: Token },
   const rifPrice = prices[rif.symbol]?.price ?? 0
   const rbtcPrice = prices[rbtc.symbol]?.price ?? 0
 
-  const data: BuildersRewards[] = filteredBuilders.map(({ address, builderName, gauge, stateFlags }) => {
-    const builderRewardShares = rewardShares[gauge] ?? 0n
-    const rewardPercentage = backersRewardsPct[address] ?? null
-    const currentRewardPercentage = rewardPercentage?.current ?? 0
+  const data = useMemo(() => {
+    return builders.reduce<BuildersRewards[]>((acc, builder) => {
+      const { address, builderName, gauge, stateFlags } = builder
 
-    // calculate rif estimated rewards
-    const rewardRif = rewardsERC20 ?? 0n
-    const rewardsAmountRif = totalPotentialRewards
-      ? rewardRif * (builderRewardShares / totalPotentialRewards)
-      : 0n
-    const estimatedRifInHuman =
-      Number(formatBalanceToHuman(rewardsAmountRif)) * (currentRewardPercentage / 100)
+      const isShown = isBuilderShown(builder, allocations, getBuilderIndexByAddress(address))
+      if (!isShown) return acc
 
-    // calculate rbtc estimated rewards
-    const rewardRbtc = rewardsCoinbase ?? 0n
-    const rewardsAmountRbtc = totalPotentialRewards
-      ? rewardRbtc * (builderRewardShares / totalPotentialRewards)
-      : 0n
-    const estimatedRbtcInHuman =
-      Number(formatBalanceToHuman(rewardsAmountRbtc)) * (currentRewardPercentage / 100)
+      const builderRewardShares = rewardShares[gauge] ?? 0n
+      const rewardPercentage = backersRewardsPct[address] ?? null
+      const rewardPercentageToApply = rewardPercentage?.current ?? 0
 
-    const totalAllocationPercentage = sumTotalAllocation
-      ? (totalAllocation[gauge] * 100n) / sumTotalAllocation
-      : 0n
-    const rifBuilderRewardsAmount = Number(formatBalanceToHuman(rifBuildersRewardsAmount[gauge] ?? 0n))
-    const rbtcBuilderRewardsAmount = Number(formatBalanceToHuman(rbtcBuildersRewardsAmount[gauge] ?? 0n))
+      // calculate rif estimated rewards
+      const rewardRif = rewardsERC20 ?? 0n
+      const rewardsAmountRif = totalPotentialRewards
+        ? (rewardRif * builderRewardShares) / totalPotentialRewards
+        : 0n
+      const estimatedRifInHuman =
+        Number(formatBalanceToHuman(rewardsAmountRif)) * (rewardPercentageToApply / 100)
 
-    return {
-      address,
-      builderName,
-      stateFlags,
-      totalAllocationPercentage,
-      rewardPercentage,
-      lastCycleReward: {
-        rif: {
-          crypto: { value: rifBuilderRewardsAmount, symbol: rif.symbol },
-          fiat: {
-            value: rifPrice * rifBuilderRewardsAmount,
-            symbol: currency,
+      // calculate rbtc estimated rewards
+      const rewardRbtc = rewardsCoinbase ?? 0n
+      const rewardsAmountRbtc = totalPotentialRewards
+        ? (rewardRbtc * builderRewardShares) / totalPotentialRewards
+        : 0n
+      const estimatedRbtcInHuman =
+        Number(formatBalanceToHuman(rewardsAmountRbtc)) * (rewardPercentageToApply / 100)
+
+      const totalAllocationPercentage = sumTotalAllocation
+        ? (totalAllocation[gauge] * 100n) / sumTotalAllocation
+        : 0n
+
+      const rifBuilderRewardsAmount = Number(formatBalanceToHuman(rifBuildersRewardsAmount[gauge] ?? 0n))
+      const rbtcBuilderRewardsAmount = Number(formatBalanceToHuman(rbtcBuildersRewardsAmount[gauge] ?? 0n))
+
+      return [
+        ...acc,
+        {
+          address,
+          builderName,
+          stateFlags,
+          totalAllocationPercentage,
+          rewardPercentage,
+          lastCycleReward: {
+            rif: {
+              crypto: { value: rifBuilderRewardsAmount, symbol: rif.symbol },
+              fiat: {
+                value: rifPrice * rifBuilderRewardsAmount,
+                symbol: currency,
+              },
+              logo: RifSvg(),
+            },
+            rbtc: {
+              crypto: { value: rbtcBuilderRewardsAmount, symbol: rbtc.symbol },
+              fiat: {
+                value: rbtcPrice * rbtcBuilderRewardsAmount,
+                symbol: currency,
+              },
+              logo: RbtcSvg(),
+            },
           },
-          logo: RifSvg(),
-        },
-        rbtc: {
-          crypto: { value: rbtcBuilderRewardsAmount, symbol: rbtc.symbol },
-          fiat: {
-            value: rbtcPrice * rbtcBuilderRewardsAmount,
-            symbol: currency,
+          estimatedReward: {
+            rif: {
+              crypto: { value: estimatedRifInHuman, symbol: rif.symbol },
+              fiat: {
+                value: rifPrice * estimatedRifInHuman,
+                symbol: currency,
+              },
+              logo: RifSvg(),
+            },
+            rbtc: {
+              crypto: { value: estimatedRbtcInHuman, symbol: rbtc.symbol },
+              fiat: {
+                value: rbtcPrice * estimatedRbtcInHuman,
+                symbol: currency,
+              },
+              logo: RbtcSvg(),
+            },
           },
-          logo: RbtcSvg(),
         },
-      },
-      estimatedReward: {
-        rif: {
-          crypto: { value: estimatedRifInHuman, symbol: rif.symbol },
-          fiat: {
-            value: rifPrice * estimatedRifInHuman,
-            symbol: currency,
-          },
-          logo: RifSvg(),
-        },
-        rbtc: {
-          crypto: { value: estimatedRbtcInHuman, symbol: rbtc.symbol },
-          fiat: {
-            value: rbtcPrice * estimatedRbtcInHuman,
-            symbol: currency,
-          },
-          logo: RbtcSvg(),
-        },
-      },
-    }
-  })
+      ]
+    }, [])
+  }, [
+    builders,
+    allocations,
+    rewardShares,
+    totalPotentialRewards,
+    backersRewardsPct,
+    sumTotalAllocation,
+    rifBuildersRewardsAmount,
+    rbtcBuildersRewardsAmount,
+    rifPrice,
+    rbtcPrice,
+    currency,
+  ])
 
   return {
     data,

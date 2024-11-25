@@ -1,13 +1,13 @@
-import { BackersManagerAbi } from '@/lib/abis/v2/BackersManagerAbi'
+import { RewardDistributorAbi } from '@/lib/abis/v2/RewardDistributorAbi'
 import { AVERAGE_BLOCKTIME } from '@/lib/constants'
-import { BackersManagerAddress } from '@/lib/contracts'
+import { RewardDistributorAddress } from '@/lib/contracts'
 import { useReadContract } from 'wagmi'
 
 export const useGetRewardsERC20 = () => {
   return useReadContract({
-    address: BackersManagerAddress,
-    abi: BackersManagerAbi,
-    functionName: 'rewardsERC20',
+    address: RewardDistributorAddress,
+    abi: RewardDistributorAbi,
+    functionName: 'defaultRewardTokenAmount',
     query: {
       refetchInterval: AVERAGE_BLOCKTIME,
     },
