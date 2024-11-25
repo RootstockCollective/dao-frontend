@@ -1,11 +1,19 @@
 import { BackersManagerAbi } from '@/lib/abis/v2/BackersManagerAbi'
 import { BackersManagerAddress } from '@/lib/contracts'
 import { Address } from 'viem'
-import { useReadContract } from 'wagmi'
+import { useReadContract, UseReadContractReturnType } from 'wagmi'
 import { AVERAGE_BLOCKTIME } from '@/lib/constants'
+import { Modify } from '@/shared/utility'
 
-export const useGetRewardPercentageToApply = (builder: Address) => {
-  const { data, isLoading, error } = useReadContract({
+export type RewardPercentageToApply = Modify<
+  UseReadContractReturnType,
+  {
+    data?: bigint
+  }
+>
+
+export const useGetRewardPercentageToApply = (builder: Address): RewardPercentageToApply => {
+  const response = useReadContract({
     address: BackersManagerAddress,
     abi: BackersManagerAbi,
     functionName: 'getRewardPercentageToApply',
@@ -16,8 +24,7 @@ export const useGetRewardPercentageToApply = (builder: Address) => {
   })
 
   return {
-    data,
-    isLoading,
-    error,
+    ...response,
+    data: response.data ? BigInt(response.data) : undefined,
   }
 }
