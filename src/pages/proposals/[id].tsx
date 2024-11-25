@@ -44,10 +44,10 @@ import { useVoteOnProposal } from '@/shared/hooks/useVoteOnProposal'
 import { TX_MESSAGES } from '@/shared/txMessages'
 import { waitForTransactionReceipt } from '@wagmi/core'
 import { useRouter } from 'next/router'
-import { FC, useMemo, useState } from 'react'
+import { FC, useEffect, useMemo, useState } from 'react'
 import { FaMinus } from 'react-icons/fa6'
 import { getAddress } from 'viem'
-import { useAccount } from 'wagmi'
+import { type BaseError, useAccount } from 'wagmi'
 import { Vote, VoteProposalModal } from '@/components/Modal/VoteProposalModal'
 import { VoteSubmittedModal } from '@/components/Modal/VoteSubmittedModal'
 import React from 'react'
@@ -91,15 +91,31 @@ const PageWithProposal = (proposal: ParsedProposal) => {
   const { votingPowerAtSnapshot, doesUserHasEnoughThreshold } = useVotingPowerAtSnapshot(snapshot as bigint)
   const { canCreateProposal } = useVotingPower()
 
-  const { onVote, isProposalActive, didUserVoteAlready, proposalState, proposalStateHuman, isVoting } =
-    useVoteOnProposal(proposalId)
+  const {
+    onVote,
+    isProposalActive,
+    didUserVoteAlready,
+    proposalState,
+    proposalStateHuman,
+    isVoting,
+    isWaitingVotingReceipt,
+    setVotingTxHash,
+    isVotingConfirmed,
+    isVotingFailed,
+    votingError,
+  } = useVoteOnProposal(proposalId)
   const { onQueueProposal, proposalNeedsQueuing, isQueuing, isTxHashFromQueueLoading } =
     useQueueProposal(proposalId)
 
   const { onExecuteProposal, canProposalBeExecuted, proposalEtaHumanDate, isExecuting } =
     useExecuteProposal(proposalId)
 
-  const cannotCastVote = !isProposalActive || didUserVoteAlready || !doesUserHasEnoughThreshold || isVoting
+  const cannotCastVote =
+    !isProposalActive ||
+    didUserVoteAlready ||
+    !doesUserHasEnoughThreshold ||
+    isVoting ||
+    isWaitingVotingReceipt
 
   const cannotCastVoteReason = useMemo(() => {
     if (!isProposalActive) {
@@ -115,8 +131,23 @@ const PageWithProposal = (proposal: ParsedProposal) => {
     if (isVoting) {
       return 'Your vote is being processed'
     }
+    if (isWaitingVotingReceipt) {
+      return 'Your vote is being confirmed'
+    }
     return ''
-  }, [isProposalActive, didUserVoteAlready, doesUserHasEnoughThreshold, isVoting])
+  }, [isProposalActive, didUserVoteAlready, doesUserHasEnoughThreshold, isVoting, isWaitingVotingReceipt])
+
+  useEffect(() => {
+    if (isVotingConfirmed) {
+      setMessage(TX_MESSAGES.voting.success)
+    }
+    if (isVotingFailed) {
+      console.error(votingError)
+      const err = votingError as BaseError
+      setErrorVoting(err.shortMessage || err.toString())
+      setMessage(TX_MESSAGES.voting.error)
+    }
+  }, [isVotingConfirmed, isVotingFailed, setMessage, votingError])
 
   const handleVoting = async (vote: Vote) => {
     try {
@@ -127,10 +158,7 @@ const PageWithProposal = (proposal: ParsedProposal) => {
       votingModal.closeModal()
       setVote(vote)
       submittedModal.openModal()
-      await waitForTransactionReceipt(config, {
-        hash: txHash,
-      })
-      setMessage(TX_MESSAGES.voting.success)
+      setVotingTxHash(txHash)
     } catch (err: any) {
       if (!isUserRejectedTxError(err)) {
         console.error(err)
