@@ -7,8 +7,8 @@ import { Search } from '@/app/collective-rewards/shared'
 import { Builder, BuilderStateFlags } from '@/app/collective-rewards/types'
 
 export const isActive = (stateFlags?: BuilderStateFlags) => {
-  const activeFlags: BuilderStateFlagsArray = ['activated', 'communityApproved']
-  return activeFlags.some(flag => stateFlags?.[flag])
+  const activeFlags: BuilderStateFlagsArray = ['kycApproved', 'communityApproved']
+  return activeFlags.every(flag => stateFlags?.[flag])
 }
 
 const filterFunction = (builder: Builder, status: string) => {
