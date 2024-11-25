@@ -2,8 +2,9 @@ import { Vote } from '@/components/Modal/VoteProposalModal'
 import { GovernorAbi } from '@/lib/abis/Governor'
 import { GovernorAddress } from '@/lib/contracts'
 import { Address } from 'viem'
-import { useAccount, useReadContract, useWriteContract } from 'wagmi'
+import { useAccount, useReadContract, useWaitForTransactionReceipt, useWriteContract } from 'wagmi'
 import { useProposalState } from '@/shared/hooks/useProposalState'
+import { useState } from 'react'
 
 const DEFAULT_DAO = {
   address: GovernorAddress as Address,
@@ -18,6 +19,7 @@ const VOTES_MAP: Record<Vote, number> = {
 
 export const useVoteOnProposal = (proposalId: string, shouldRefetch = true) => {
   const { address } = useAccount()
+  const [txHash, setTxHash] = useState<`0x${string}` | undefined>(undefined)
 
   // First read the proposal to see if it's active
   const { proposalState, proposalStateHuman } = useProposalState(proposalId)
@@ -50,6 +52,16 @@ export const useVoteOnProposal = (proposalId: string, shouldRefetch = true) => {
     })
   }
 
+  // Wait for transaction receipt
+  const {
+    isLoading: isWaitingVotingReceipt,
+    isSuccess: isVotingConfirmed,
+    isError: isVotingFailed,
+    error: votingError,
+  } = useWaitForTransactionReceipt({
+    hash: txHash,
+  })
+
   return {
     onVote,
     isProposalActive,
@@ -57,5 +69,10 @@ export const useVoteOnProposal = (proposalId: string, shouldRefetch = true) => {
     proposalState,
     proposalStateHuman,
     isVoting,
+    isWaitingVotingReceipt,
+    setVotingTxHash: setTxHash,
+    isVotingConfirmed,
+    isVotingFailed,
+    votingError,
   }
 }
