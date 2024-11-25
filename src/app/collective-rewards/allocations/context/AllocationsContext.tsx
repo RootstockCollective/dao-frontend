@@ -142,8 +142,8 @@ export const AllocationsContextProvider: FC<{ children: ReactNode }> = ({ childr
 
     return (
       totalOnchainAllocation !== amountToAllocate &&
-      cumulativeAllocation < balance &&
-      amountToAllocate < balance
+      cumulativeAllocation <= balance &&
+      amountToAllocate <= balance
     )
   }, [backer])
 
