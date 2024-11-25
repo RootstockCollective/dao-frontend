@@ -31,8 +31,7 @@ const tableHeaders: TableHeader[] = [
   {
     label: 'Total Allocations',
     className: 'w-[16%]',
-    // eslint-disable-next-line quotes
-    tooltip: "The Builder's share of the total allocations",
+    tooltip: 'The Builder’s share of the total stRIF allocations',
     sortKey: RewardsColumnKeyEnum.totalAllocationPercentage,
   },
   // TODO: text-center isn't applied
@@ -108,7 +107,7 @@ export const BuildersLeaderBoardTable: FC = () => {
     <div className="flex flex-col gap-5 w-full">
       <TableCore className="table-fixed">
         <TableHead>
-          <TableRow>
+          <TableRow className="normal-case">
             {tableHeaders.map(header => (
               <TableHeaderCell
                 key={header.label}

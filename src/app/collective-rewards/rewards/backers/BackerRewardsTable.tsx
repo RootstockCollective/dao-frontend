@@ -37,6 +37,7 @@ const tableHeaders: TableHeader[] = [
     label: 'Total Allocations',
     className: 'w-[18%]',
     sortKey: RewardsColumnKeyEnum.totalAllocationPercentage,
+    tooltip: 'Your share of the total allocations for each Builder',
   },
   { label: 'Claimable Rewards', className: 'w-[20%]', sortKey: RewardsColumnKeyEnum.claimableRewards },
   { label: 'All Time Rewards', className: 'w-[20%]', sortKey: RewardsColumnKeyEnum.allTimeRewards },
@@ -111,7 +112,7 @@ const RewardsTable: FC<BackerRewardsTable> = ({ builder, gauges, tokens }) => {
     <div className="flex flex-col gap-5 w-full">
       <TableCore className="table-fixed">
         <TableHead>
-          <TableRow className="min-h-0">
+          <TableRow className="min-h-0 normal-case">
             {tableHeaders.map(header => (
               <TableHeaderCell
                 key={header.label}

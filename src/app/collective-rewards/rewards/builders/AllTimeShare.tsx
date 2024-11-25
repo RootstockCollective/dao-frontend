@@ -57,7 +57,14 @@ export const AllTimeShare: FC<AllTimeShareProps> = ({ gauge, gauges, tokens: { r
   return (
     <MetricsCardWithSpinner isLoading={isLoading} borderless>
       <div className="flex flex-col gap-y-[10px]">
-        <MetricsCardTitle title="All time share" data-testid="AllTimeShare" />
+        <MetricsCardTitle
+          title="All time share"
+          data-testid="AllTimeShare"
+          tooltip={{
+            text: 'Your share of all Builders’ rewards',
+            popoverProps: { size: 'medium', position: 'left' },
+          }}
+        />
         <MetricsCardContent>{amount}</MetricsCardContent>
       </div>
     </MetricsCardWithSpinner>

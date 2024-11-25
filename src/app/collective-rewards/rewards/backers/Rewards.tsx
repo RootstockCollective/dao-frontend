@@ -45,6 +45,10 @@ export const Rewards: FC<RewardsProps> = ({ builder, gauges, tokens }) => {
                 gauges={gauges}
                 tokens={tokens}
                 rewards={['estimated']}
+                tooltip={{
+                  text: 'The information displayed is dynamic and may vary based on total rewards available and user activity. This data is provided for informational purposes only. Please note that the final reward amount will be determined at the end of the cycle.',
+                  popoverProps: { size: 'medium' },
+                }}
               />
             </MetricContainer>
             <MetricContainer>
@@ -55,6 +59,10 @@ export const Rewards: FC<RewardsProps> = ({ builder, gauges, tokens }) => {
                 gauges={gauges}
                 tokens={tokens}
                 rewards={['earned', 'claimed']}
+                tooltip={{
+                  text: 'Total of your received and claimable rewards',
+                  popoverProps: { size: 'medium' },
+                }}
               />
             </MetricContainer>
             <MetricContainer>

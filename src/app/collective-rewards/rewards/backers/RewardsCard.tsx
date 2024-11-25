@@ -6,6 +6,7 @@ import {
   Token,
   RewardDetails,
   useBackerRewardsContext,
+  TooltipProps,
 } from '@/app/collective-rewards/rewards'
 import { useHandleErrors } from '@/app/collective-rewards/utils'
 import { formatBalanceToHuman } from '@/app/user/Balances/balanceUtils'
@@ -64,17 +65,19 @@ type RewardsCardProps = Omit<RewardDetails, 'gauge'> & {
   title: string
   'data-testid': string
   rewards: Rewards[]
+  tooltip?: TooltipProps
 }
 
 export const RewardsCard: FC<RewardsCardProps> = ({
   title,
   'data-testid': dataTestId,
   tokens: { rif, rbtc },
+  tooltip,
   ...rest
 }) => {
   return (
     <MetricsCard borderless>
-      <MetricsCardTitle title={title} data-testid={dataTestId} />
+      <MetricsCardTitle title={title} data-testid={dataTestId} tooltip={tooltip} />
       <TokenRewardsMetrics {...rest} token={rif} />
       <TokenRewardsMetrics {...rest} token={rbtc} />
     </MetricsCard>
