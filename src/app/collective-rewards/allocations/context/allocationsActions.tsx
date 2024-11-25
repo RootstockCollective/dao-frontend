@@ -39,10 +39,10 @@ export const createActions = (
       cumulativeAllocation: newCumulativeAllocation,
     }))
   },
-  updateTotalAllocation: (value: bigint) => {
+  updateAmountToAllocate: (value: bigint) => {
     setBacker(prevBacker => ({
       ...prevBacker,
-      totalAllocation: value,
+      amountToAllocate: value,
     }))
   },
   resetAllocations: () => {

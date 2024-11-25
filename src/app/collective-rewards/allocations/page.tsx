@@ -40,7 +40,7 @@ export default function Allocations() {
 
   const router = useRouter()
   const {
-    state: { allocations, getBuilder },
+    state: { allocations, getBuilder, isValidState },
     actions: { resetAllocations },
   } = useContext(AllocationsContext)
 
@@ -105,7 +105,7 @@ export default function Allocations() {
           <div className="flex items-center self-stretch justify-between gap-4">
             <div className="flex gap-4">
               {/* TODO: review disabled statuses */}
-              <Button variant="primary" onClick={() => saveAllocations()}>
+              <Button disabled={!isValidState()} variant="primary" onClick={() => saveAllocations()}>
                 {' '}
                 Save allocations
               </Button>
