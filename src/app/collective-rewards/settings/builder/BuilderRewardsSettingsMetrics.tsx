@@ -3,7 +3,7 @@ import { withSpinner } from '@/components/LoadingSpinner/withLoadingSpinner'
 import { Typography } from '@/components/Typography'
 import { cn } from '@/lib/utils'
 import { DateTime } from 'luxon'
-import { FC, HTMLAttributes, ReactNode } from 'react'
+import { FC, HTMLAttributes, ReactNode, useMemo } from 'react'
 import { weiToPercentage } from '../utils'
 import { useBuilderSettingsContext } from './context'
 
@@ -40,8 +40,14 @@ export const RewardsSettingsCard: FC<{
 
 export const BuilderRewardsSettingsMetrics: FC = () => {
   const {
-    current: { data, isLoading },
+    current: { data, isLoading: currentBackerRewardLoading },
+    rewardPercentageToApply: { data: rewardPercentageToApply, isLoading: rewardPercentageToApplyLoading },
   } = useBuilderSettingsContext()
+
+  const isLoading = useMemo(
+    () => currentBackerRewardLoading || rewardPercentageToApplyLoading,
+    [currentBackerRewardLoading, rewardPercentageToApplyLoading],
+  )
 
   const timeRemaining: string | undefined = getDateTimeRemaining(data?.cooldownEndTime)
 
@@ -52,7 +58,7 @@ export const BuilderRewardsSettingsMetrics: FC = () => {
           tagVariant: 'h2',
           className: 'text-2xl leading-[120%] uppercase text-primary font-normal',
           isLoading: isLoading,
-          children: `${weiToPercentage(data?.previous ?? 0n)}%`,
+          children: `${weiToPercentage(rewardPercentageToApply ?? 0n)}%`,
         })}
       </RewardsSettingsCard>
 
