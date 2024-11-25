@@ -26,7 +26,7 @@ export const useIsBuilderOrBacker = (address: Address) => {
 
   const data = useMemo(() => {
     return (
-      (gauge && gauge !== zeroAddress) ||
+      gauge !== zeroAddress ||
       (backerTotalAllocation && backerTotalAllocation > 0n) ||
       backerRewardPerTokenPaid > 0n
     )
