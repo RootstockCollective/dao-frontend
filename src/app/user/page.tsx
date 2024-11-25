@@ -9,12 +9,19 @@ import { Tabs, TabsContent, TabsList, TabsTrigger, TabTitle } from '@/components
 import { TxStatusMessage } from '@/components/TxStatusMessage'
 import { useSearchParams } from 'next/navigation'
 import { Suspense } from 'react'
+import { zeroAddress } from 'viem'
 import { useAccount } from 'wagmi'
+import { useIsBuilderOrBacker } from '../collective-rewards/rewards/hooks/useIsBuilderOrBacker'
+import { useHandleErrors } from '../collective-rewards/utils'
 
-const MyHoldings = () => (
+type MyHoldingsProps = {
+  showBuilderButton?: boolean
+}
+
+const MyHoldings = ({ showBuilderButton = false }: MyHoldingsProps) => (
   <>
     <TxStatusMessage messageType="staking" />
-    <BalancesSection />
+    <BalancesSection showBuilderButton={showBuilderButton} />
     <DelegationSection />
     <CommunitiesSection />
   </>
@@ -47,24 +54,36 @@ function User() {
   const tabFromParams = searchParams?.get('tab') as TabValue
   const defaultTabValue = tabs[tabFromParams]?.value ?? 'holdings'
 
+  const { data: isBuilderOrBacker, isLoading, error } = useIsBuilderOrBacker(address ?? zeroAddress)
+
+  useHandleErrors({
+    error,
+    title: 'Error fetching user data',
+  })
+
   return (
     <MainContainer>
-      <Tabs defaultValue={defaultTabValue}>
-        <TabsListWithButton>
-          <TabsTrigger value={tabs.holdings.value}>
-            <TabTitle>{tabs.holdings.title}</TabTitle>
-          </TabsTrigger>
-          <TabsTrigger value={tabs.rewards.value}>
-            <TabTitle>{tabs.rewards.title}</TabTitle>
-          </TabsTrigger>
-        </TabsListWithButton>
-        <TabsContent value={tabs.holdings.value}>
-          <MyHoldings />
-        </TabsContent>
-        <TabsContent value={tabs.rewards.value}>
-          <Rewards builder={address!} />
-        </TabsContent>
-      </Tabs>
+      {/* We don't show the tab if it's loading */}
+      {!isLoading && isBuilderOrBacker ? (
+        <Tabs defaultValue={defaultTabValue}>
+          <TabsListWithButton>
+            <TabsTrigger value={tabs.holdings.value}>
+              <TabTitle>{tabs.holdings.title}</TabTitle>
+            </TabsTrigger>
+            <TabsTrigger value={tabs.rewards.value}>
+              <TabTitle>{tabs.rewards.title}</TabTitle>
+            </TabsTrigger>
+          </TabsListWithButton>
+          <TabsContent value={tabs.holdings.value}>
+            <MyHoldings />
+          </TabsContent>
+          <TabsContent value={tabs.rewards.value}>
+            <Rewards builder={address!} />
+          </TabsContent>
+        </Tabs>
+      ) : (
+        <MyHoldings showBuilderButton={true} />
+      )}
     </MainContainer>
   )
 }
