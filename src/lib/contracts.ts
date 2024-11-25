@@ -11,7 +11,6 @@ import {
   MULTICALL_ADDRESS,
   RIF_ADDRESS,
   STRIF_ADDRESS,
-  SIMPLIFIED_REWARD_DISTRIBUTOR_ADDRESS,
   OG_FOUNDERS_NFT_ADDRESS,
   OG_PARTNERS_NFT_ADDRESS,
   OG_CONTRIBUTORS_NFT_ADDRESS,
@@ -46,7 +45,7 @@ const treasuryContracts = {
   GRANTS: { name: 'Grants', address: GRANTS_BUCKET_ADDRESS },
   GRANTS_ACTIVE: { name: 'Grants - Active', address: GRANTS_ACTIVE_BUCKET_ADDRESS },
   GROWTH: { name: 'Growth', address: GROWTH_BUCKET_ADDRESS },
-  GROWTH_REWARDS: { name: 'Growth - Rewards', address: SIMPLIFIED_REWARD_DISTRIBUTOR_ADDRESS },
+  GROWTH_REWARDS: { name: 'Growth - Rewards', address: REWARD_DISTRIBUTOR_ADDRESS },
   GENERAL: { name: 'General', address: GENERAL_BUCKET_ADDRESS },
 }
 
