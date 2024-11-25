@@ -92,7 +92,7 @@ export const useGetBackerRewards = (
   const rbtcPrice = prices[rbtc.symbol]?.price ?? 0
 
   const data = useMemo(() => {
-    return builders.reduce((acc, { address, builderName, gauge, stateFlags }) => {
+    return builders.reduce<BackerRewards[]>((acc, { address, builderName, gauge, stateFlags }) => {
       const builderTotalAllocation = totalAllocation[gauge] ?? 0n
       const backerAllocationOf = allocationOf[gauge] ?? 0n
       const totalAllocationPercentage = builderTotalAllocation
@@ -191,11 +191,11 @@ export const useGetBackerRewards = (
                 logo: RbtcSvg(),
               },
             },
-          } as BackerRewards,
+          },
         ]
       }
       return acc
-    }, [] as BackerRewards[])
+    }, [])
   }, [
     builders,
     totalAllocation,

@@ -6,7 +6,7 @@ import { useEffect, useState } from 'react'
 import { Address } from 'viem'
 import { useReadContract } from 'wagmi'
 
-export const useGetBackerRewardPercentage = (builder: Address) => {
+export const useGetBackerRewardPercentage = (builder: Address, timestampInSeconds?: number) => {
   const [rewardPercentageData, setRewardPercentageData] = useState<BuilderRewardPercentage>()
   const { data, isLoading, error } = useReadContract({
     address: BackersManagerAddress,
@@ -23,13 +23,13 @@ export const useGetBackerRewardPercentage = (builder: Address) => {
 
     const [previous, next, cooldownEndTime] = data
 
-    const percentageData = getPercentageData(previous, next, cooldownEndTime)
+    const percentageData = getPercentageData(previous, next, cooldownEndTime, timestampInSeconds)
 
     setRewardPercentageData(percentageData)
-  }, [data])
+  }, [data, timestampInSeconds])
 
   return {
-    rewardPercentageData,
+    data: rewardPercentageData,
     isLoading,
     error,
   }

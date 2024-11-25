@@ -1,13 +1,13 @@
-import { BackersManagerAbi } from '@/lib/abis/v2/BackersManagerAbi'
+import { RewardDistributorAbi } from '@/lib/abis/v2/RewardDistributorAbi'
 import { AVERAGE_BLOCKTIME } from '@/lib/constants'
-import { BackersManagerAddress } from '@/lib/contracts'
+import { RewardDistributorAddress } from '@/lib/contracts'
 import { useReadContract } from 'wagmi'
 
 export const useGetRewardsCoinbase = () => {
   return useReadContract({
-    address: BackersManagerAddress,
-    abi: BackersManagerAbi,
-    functionName: 'rewardsCoinbase',
+    address: RewardDistributorAddress,
+    abi: RewardDistributorAbi,
+    functionName: 'defaultRewardCoinbaseAmount',
     query: {
       refetchInterval: AVERAGE_BLOCKTIME,
     },

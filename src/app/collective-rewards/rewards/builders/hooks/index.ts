@@ -1,5 +1,5 @@
 export * from './useClaimBuilderRewards'
 export * from './useGetBuilderRewards'
 export * from './useGetBuilderRewardsClaimedLogs'
-export * from './useGetRewardPercentageToApply'
 export * from './useGetBuildersRewards'
+export * from './useGetRewardPercentageToApply'
