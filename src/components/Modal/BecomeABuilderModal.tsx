@@ -79,8 +79,8 @@ const ActionButton: FC<ActionButtonProps> = ({ content, ...props }) => (
 const BecomeABuilder: FC = () => {
   const { canCreateProposal, threshold } = useVotingPower()
   const router = useRouter()
-  const contractName: SupportedActionAbiName = 'SimplifiedRewardDistributorAbi'
-  const action: SupportedProposalActionName = 'whitelistBuilder'
+  const contractName: SupportedActionAbiName = 'BuilderRegistryAbi'
+  const action: SupportedProposalActionName = 'communityApproveBuilder'
 
   const submitProposal = () => router.push(`/proposals/create?contract=${contractName}&action=${action}`)
 

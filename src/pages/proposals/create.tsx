@@ -18,7 +18,7 @@ const componentByType: Partial<ProposalFormByType> = {
     withdrawERC20: TreasuryWithdrawProposalForm,
   },
   BuilderRegistryAbi: {
-    whitelistBuilder: CreateBuilderProposalForm,
+    communityApproveBuilder: CreateBuilderProposalForm,
     dewhitelistBuilder: RemoveBuilderProposalForm,
   },
 }
