@@ -20,11 +20,7 @@ const PercentageButton = ({ children, variant, ...rest }: ButtonProps) => (
 
 const ALLOCATION_EXCEED_AMOUNT_ERROR = 'Builder allocations exceeds amount to allocate'
 
-type AllocationAmountProps = {
-  resetTriggered: boolean
-}
-
-export const AllocationAmount = ({ resetTriggered }: AllocationAmountProps) => {
+export const AllocationAmount = () => {
   const {
     state: {
       backer: { balance, totalAllocation, cumulativeAllocation, allocationCount },
@@ -33,11 +29,6 @@ export const AllocationAmount = ({ resetTriggered }: AllocationAmountProps) => {
   } = useContext(AllocationsContext)
 
   const [activeButtonIndex, setActiveButtonIndex] = useState<number | null>(null)
-
-  useEffect(() => {
-    setActiveButtonIndex(-1)
-  }, [resetTriggered])
-
   const onPercentageButtonClicked = (percentage: number, index: number) => {
     const newTotalAllocation = (BigInt(balance ?? 0n) * BigInt(percentage)) / BigInt(100)
     updateTotalAllocation(newTotalAllocation)

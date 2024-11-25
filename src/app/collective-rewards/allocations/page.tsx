@@ -24,7 +24,7 @@ import { AllocationsContext } from './context'
 export default function Allocations() {
   const { writeContractAsync, error: executionError, data: hash, isPending } = useWriteContract()
   const { isLoading, isSuccess, data, error: receiptError } = useWaitForTransactionReceipt({ hash })
-  const [resetTrigger, setResetTrigger] = useState(false)
+  const [resetCounter, setResetCounter] = useState(0)
 
   const error = executionError || receiptError
 
@@ -65,7 +65,7 @@ export default function Allocations() {
 
   const onReset = useCallback(() => {
     resetAllocations()
-    setResetTrigger(prev => !prev)
+    setResetCounter(prev => prev + 1)
   }, [resetAllocations])
 
   useHandleErrors({ error: executionError, title: 'Error saving allocations' })
@@ -83,7 +83,7 @@ export default function Allocations() {
         </div>
         <div className="flex flex-col items-start gap-6 self-stretch">
           <AllocationMetrics />
-          <AllocationAmount resetTriggered={resetTrigger} />
+          <AllocationAmount key={resetCounter} />
         </div>
         <div className="flex flex-col items-start gap-4 self-stretch">
           <Typography tagVariant="h2" className="text-lg font-bold leading-[18px]">
