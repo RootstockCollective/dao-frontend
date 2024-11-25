@@ -19,6 +19,7 @@ import { useHandleErrors } from '@/app/collective-rewards/utils'
 import { LoadingSpinner } from '@/components/LoadingSpinner'
 import { useBasicPaginationUi } from '@/shared/hooks/usePaginationUi'
 import { CycleContextProvider } from '@/app/collective-rewards/metrics'
+import Link from 'next/link'
 
 enum RewardsColumnKeyEnum {
   builder = 'builder',
@@ -110,58 +111,73 @@ const RewardsTable: FC<BackerRewardsTable> = ({ builder, gauges, tokens }) => {
 
   return (
     <div className="flex flex-col gap-5 w-full">
-      <TableCore className="table-fixed">
-        <TableHead>
-          <TableRow className="min-h-0 normal-case">
-            {tableHeaders.map(header => (
-              <TableHeaderCell
-                key={header.label}
-                tableHeader={header}
-                onSort={() => handleSort(header.sortKey)}
-                sortConfig={sortConfig}
-              />
-            ))}
-          </TableRow>
-        </TableHead>
-        <TableBody>
-          {Object.values(paginatedRewardsData).map(
-            ({
-              address,
-              builderName,
-              stateFlags,
-              rewardPercentage,
-              estimatedRewards,
-              totalAllocationPercentage,
-              claimableRewards,
-              allTimeRewards,
-            }) => (
-              <TableRow key={address} className="text-[14px] border-hidden">
-                <BuilderNameCell
-                  tableHeader={tableHeaders[0]}
-                  builderName={builderName}
-                  address={address}
-                  stateFlags={stateFlags}
-                />
-                <BackerRewardsPercentage tableHeader={tableHeaders[1]} percentage={rewardPercentage} />
-                <LazyRewardCell
-                  tableHeader={tableHeaders[2]}
-                  rewards={[estimatedRewards.rbtc, estimatedRewards.rif]}
-                />
-                <TotalAllocationCell tableHeader={tableHeaders[3]} percentage={totalAllocationPercentage} />
-                <LazyRewardCell
-                  tableHeader={tableHeaders[4]}
-                  rewards={[claimableRewards.rbtc, claimableRewards.rif]}
-                />
-                <LazyRewardCell
-                  tableHeader={tableHeaders[5]}
-                  rewards={[allTimeRewards.rbtc, allTimeRewards.rif]}
-                />
+      {Object.values(paginatedRewardsData).length === 0 ? (
+        <div className="text-center font-kk-topo">
+          Have your say! Start voting now to shape the RootstockCollective community. Click{' '}
+          <Link href={'/collective-rewards'} className="text-[#E56B1A]">
+            here
+          </Link>{' '}
+          to begin!
+        </div>
+      ) : (
+        <>
+          <TableCore className="table-fixed">
+            <TableHead>
+              <TableRow className="min-h-0 normal-case">
+                {tableHeaders.map(header => (
+                  <TableHeaderCell
+                    key={header.label}
+                    tableHeader={header}
+                    onSort={() => handleSort(header.sortKey)}
+                    sortConfig={sortConfig}
+                  />
+                ))}
               </TableRow>
-            ),
-          )}
-        </TableBody>
-      </TableCore>
-      <div className="flex justify-center">{paginationUi}</div>
+            </TableHead>
+            <TableBody>
+              {Object.values(paginatedRewardsData).map(
+                ({
+                  address,
+                  builderName,
+                  stateFlags,
+                  rewardPercentage,
+                  estimatedRewards,
+                  totalAllocationPercentage,
+                  claimableRewards,
+                  allTimeRewards,
+                }) => (
+                  <TableRow key={address} className="text-[14px] border-hidden">
+                    <BuilderNameCell
+                      tableHeader={tableHeaders[0]}
+                      builderName={builderName}
+                      address={address}
+                      stateFlags={stateFlags}
+                    />
+                    <BackerRewardsPercentage tableHeader={tableHeaders[1]} percentage={rewardPercentage} />
+                    <LazyRewardCell
+                      tableHeader={tableHeaders[2]}
+                      rewards={[estimatedRewards.rbtc, estimatedRewards.rif]}
+                    />
+                    <TotalAllocationCell
+                      tableHeader={tableHeaders[3]}
+                      percentage={totalAllocationPercentage}
+                    />
+                    <LazyRewardCell
+                      tableHeader={tableHeaders[4]}
+                      rewards={[claimableRewards.rbtc, claimableRewards.rif]}
+                    />
+                    <LazyRewardCell
+                      tableHeader={tableHeaders[5]}
+                      rewards={[allTimeRewards.rbtc, allTimeRewards.rif]}
+                    />
+                  </TableRow>
+                ),
+              )}
+            </TableBody>
+          </TableCore>
+          <div className="flex justify-center">{paginationUi}</div>
+        </>
+      )}
     </div>
   )
 }
