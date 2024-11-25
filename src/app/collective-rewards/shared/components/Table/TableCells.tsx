@@ -244,7 +244,7 @@ export const ActionCell: FC<ActionCellProps> = ({ tableHeader: { className }, bu
         variant={selected ? 'white' : 'secondary'}
         disabled={!isBuilderOperational}
         onClick={selectBuilder}
-        className="white text-c"
+        className="white text-center"
       >
         {selected ? 'Selected' : 'Select'}
       </Button>

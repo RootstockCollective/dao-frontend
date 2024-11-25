@@ -7,7 +7,8 @@ import { useContext } from 'react'
 import { parseEther } from 'viem'
 import { BuilderAllocationHeader, BuilderAllocationHeaderProps } from './BuilderAllocationHeader'
 import { formatBalanceToHuman } from '@/app/user/Balances/balanceUtils'
-import { weiToPercentage } from '../../settings'
+import { weiToPercentage } from '@/app/collective-rewards/settings'
+import { formatOnchainFraction } from '@/app/collective-rewards/rewards'
 
 export type BuilderAllocationProps = BuilderAllocationHeaderProps &
   Pick<Builder, 'backerRewardPercentage'> & {
@@ -41,9 +42,9 @@ export const BuilderAllocation = (builder: BuilderAllocationProps) => {
       <Input
         type="number"
         name={`allocation-${address}`}
-        hint={`Allocation left ${allocationLeft > 0 ? formatBalanceToHuman(allocationLeft) : '0'} stRIF`}
+        hint={`Allocation left ${allocationLeft > 0 ? formatOnchainFraction(allocationLeft) : '0'} stRIF`}
         onChange={onInputChange}
-        value={formatBalanceToHuman(currentAllocation || 0n)}
+        value={formatOnchainFraction(currentAllocation || 0n)}
       />
       <Slider
         value={[Number(currentAllocation)]}

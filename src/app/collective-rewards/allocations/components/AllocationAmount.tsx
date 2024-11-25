@@ -1,11 +1,12 @@
 'use client'
 
+import { AllocationsContext } from '@/app/collective-rewards/allocations/context'
+import { formatOnchainFraction } from '@/app/collective-rewards/rewards'
 import { Button, ButtonProps } from '@/components/Button'
 import { Input } from '@/components/Input'
 import { cn } from '@/lib/utils'
-import { useContext, useEffect, useState } from 'react'
-import { AllocationsContext } from '@/app/collective-rewards/allocations/context'
-import { formatEther, parseEther } from 'viem'
+import { useContext, useState } from 'react'
+import { parseEther } from 'viem'
 import { StakeHint } from './StakeHint'
 
 const PercentageButton = ({ children, variant, ...rest }: ButtonProps) => (
@@ -53,7 +54,7 @@ export const AllocationAmount = () => {
           name="allocated-amount"
           fullWidth
           onChange={handleOnChange}
-          value={formatEther(amountToAllocate)}
+          value={formatOnchainFraction(amountToAllocate)}
           errorMessage={
             cumulativeAllocation > amountToAllocate && cumulativeAllocation < balance
               ? ALLOCATION_EXCEED_AMOUNT_ERROR
