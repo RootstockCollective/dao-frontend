@@ -44,12 +44,11 @@ const useGetTokenRewards = (backer: Address, token: Token, gauges: Address[]) =>
     isLoading: earnedLoading,
     error: earnedError,
   } = useGaugesGetFunction(gauges, 'earned', [token.address, backer])
-  // TODO: change from to estimatedBackerRewards once the contracts are updated
   const {
     data: estimated,
     isLoading: estimatedLoading,
     error: estimatedError,
-  } = useGaugesGetFunction(gauges, 'earned', [token.address, backer])
+  } = useGaugesGetFunction(gauges, 'estimatedBackerRewards', [token.address, backer])
   const {
     data: claimed,
     isLoading: claimedLoading,
