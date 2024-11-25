@@ -93,6 +93,10 @@ export default function Allocations() {
             {Object.entries(allocations).map(([key, currentAllocation]) => {
               const index = Number(key)
               const builderInfo = getBuilder(index) as Builder
+              if (!builderInfo) {
+                return null
+              }
+
               const builder: BuilderAllocationProps = {
                 ...builderInfo,
                 index,

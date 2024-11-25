@@ -25,21 +25,21 @@ export const AllocationAmount = () => {
     state: {
       backer: { balance, amountToAllocate, cumulativeAllocation, allocationsCount },
     },
-    actions: { updateAllocations, updateAmountToAllocate: updateTotalAllocation },
+    actions: { updateAllocations, updateAmountToAllocate },
   } = useContext(AllocationsContext)
 
   const [activeButtonIndex, setActiveButtonIndex] = useState<number | null>(null)
   const onPercentageButtonClicked = (percentage: number, index: number) => {
     const newAmountToAllocate = (BigInt(balance ?? 0n) * BigInt(percentage)) / BigInt(100)
-    updateTotalAllocation(newAmountToAllocate)
+    updateAmountToAllocate(newAmountToAllocate)
     setActiveButtonIndex(index)
     if (allocationsCount === 0) return
 
-    updateAllocations(Array(allocationsCount).fill(BigInt(allocationsCount)))
+    updateAllocations(Array(allocationsCount).fill(newAmountToAllocate / BigInt(allocationsCount)))
   }
 
   const handleOnChange = (value: string) => {
-    updateTotalAllocation(parseEther(value))
+    updateAmountToAllocate(parseEther(value))
   }
 
   return (
