@@ -12,6 +12,25 @@ import { FC } from 'react'
 import { Address, getAddress, zeroAddress } from 'viem'
 import { BackerRewardsTable } from './backers/BackerRewardsTable'
 import { useRouter } from 'next/navigation'
+import { Link } from '@/components/Link'
+
+const SubText = () => {
+  return (
+    <>
+      Track and claim the rewards you earn from Collective Rewards. For more information check the{' '}
+      <Link
+        className="text-[#E56B1A]"
+        href={
+          'https://wiki.rootstockcollective.xyz/2c6e3b87b49f4c1e9225b713e1b49538?v=819168fca4964319896c19e8299a8ea0'
+        }
+        target="_blank"
+      >
+        Whitepaper
+      </Link>{' '}
+      .
+    </>
+  )
+}
 
 export const Rewards: FC<{ builder: Address }> = ({ builder }) => {
   const router = useRouter()
@@ -50,7 +69,7 @@ export const Rewards: FC<{ builder: Address }> = ({ builder }) => {
                 router.push('/user/settings?type=builder')
               }}
               title="Builder Rewards"
-              subtext="Monitor the rewards you are getting from your Collective Rewards."
+              subtext={<SubText />}
             />
             <BuilderRewards gauge={gauge} {...data} />
           </RewardsSection>
@@ -62,7 +81,7 @@ export const Rewards: FC<{ builder: Address }> = ({ builder }) => {
             router.push('/collective-rewards/allocations')
           }}
           title="Backer Rewards"
-          subtext="Monitor your rewards balances and claim."
+          subtext={<SubText />}
         />
         <BackerRewards {...data} />
         <BackerRewardsTable {...data} />

@@ -1,11 +1,11 @@
 import { ButtonProps } from '@/components/Button'
 import { HeaderTitle, Typography } from '@/components/Typography'
-import { FC } from 'react'
+import { FC, ReactNode } from 'react'
 import { SettingsButton } from '@/app/collective-rewards/rewards'
 
 export type RewardsSectionHeader = {
   title: string
-  subtext: string
+  subtext: ReactNode
   onSettingsOpen: ButtonProps['onClick']
 }
 export const RewardsSectionHeader: FC<RewardsSectionHeader> = ({ title, subtext, onSettingsOpen }) => (
