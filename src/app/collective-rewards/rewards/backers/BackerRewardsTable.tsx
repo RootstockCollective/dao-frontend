@@ -37,8 +37,7 @@ const tableHeaders: TableHeader[] = [
     label: 'Total Allocations',
     className: 'w-[18%]',
     sortKey: RewardsColumnKeyEnum.totalAllocationPercentage,
-    // eslint-disable-next-line quotes
-    tooltip: "Your allocations as a share % of the total Backer's allocations for the Builder",
+    tooltip: 'Your share of the total allocations for each Builder',
   },
   { label: 'Claimable Rewards', className: 'w-[20%]', sortKey: RewardsColumnKeyEnum.claimableRewards },
   { label: 'All Time Rewards', className: 'w-[20%]', sortKey: RewardsColumnKeyEnum.allTimeRewards },

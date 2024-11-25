@@ -73,7 +73,7 @@ export const AllTimeRewards: FC<AllTimeRewardsProps> = ({ tokens: { rif, rbtc },
         title="All time rewards"
         data-testid="AllTimeRewards"
         tooltip={{
-          text: 'Total sum of your rewards: received and claimable',
+          text: 'Total of your received and claimable rewards',
           popoverProps: { size: 'medium' },
         }}
       />
