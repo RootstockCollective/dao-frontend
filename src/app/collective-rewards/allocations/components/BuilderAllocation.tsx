@@ -18,11 +18,11 @@ export type BuilderAllocationProps = BuilderAllocationHeaderProps &
 export const BuilderAllocation = (builder: BuilderAllocationProps) => {
   const {
     state: {
-      backer: { totalAllocation, cumulativeAllocation },
+      backer: { amountToAllocate, cumulativeAllocation },
     },
     actions: { updateAllocation },
   } = useContext(AllocationsContext)
-  const allocationLeft = totalAllocation - cumulativeAllocation
+  const allocationLeft = amountToAllocate - cumulativeAllocation
   const { currentAllocation, backerRewardPercentage, address } = builder
   const onInputChange = (value: string) => {
     updateAllocation(builder.index, parseEther(value))
@@ -47,7 +47,7 @@ export const BuilderAllocation = (builder: BuilderAllocationProps) => {
       />
       <Slider
         value={[Number(currentAllocation)]}
-        max={Number(totalAllocation)}
+        max={Number(amountToAllocate)}
         onValueChange={onSliderValueChange}
       />
     </div>

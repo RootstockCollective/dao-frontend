@@ -23,20 +23,19 @@ const ALLOCATION_EXCEED_AMOUNT_ERROR = 'Builder allocations exceeds amount to al
 export const AllocationAmount = () => {
   const {
     state: {
-      backer: { balance, totalAllocation, cumulativeAllocation, allocationCount },
+      backer: { balance, amountToAllocate, cumulativeAllocation, allocationsCount },
     },
-    actions: { updateAllocations, updateTotalAllocation },
+    actions: { updateAllocations, updateAmountToAllocate: updateTotalAllocation },
   } = useContext(AllocationsContext)
 
   const [activeButtonIndex, setActiveButtonIndex] = useState<number | null>(null)
   const onPercentageButtonClicked = (percentage: number, index: number) => {
-    const newTotalAllocation = (BigInt(balance ?? 0n) * BigInt(percentage)) / BigInt(100)
-    updateTotalAllocation(newTotalAllocation)
+    const newAmountToAllocate = (BigInt(balance ?? 0n) * BigInt(percentage)) / BigInt(100)
+    updateTotalAllocation(newAmountToAllocate)
     setActiveButtonIndex(index)
-    if (allocationCount === 0) return
-    const allocationValue = allocationCount > 0 ? newTotalAllocation / BigInt(allocationCount) : 0n
+    if (allocationsCount === 0) return
 
-    updateAllocations(Array(allocationCount).fill(allocationValue))
+    updateAllocations(Array(allocationsCount).fill(BigInt(allocationsCount)))
   }
 
   const handleOnChange = (value: string) => {
@@ -54,14 +53,14 @@ export const AllocationAmount = () => {
           name="allocated-amount"
           fullWidth
           onChange={handleOnChange}
-          value={formatEther(totalAllocation)}
+          value={formatEther(amountToAllocate)}
           errorMessage={
-            cumulativeAllocation > totalAllocation && cumulativeAllocation < balance
+            cumulativeAllocation > amountToAllocate && cumulativeAllocation < balance
               ? ALLOCATION_EXCEED_AMOUNT_ERROR
               : ''
           }
           hint={
-            Number(totalAllocation - cumulativeAllocation) < 0 || totalAllocation > balance ? (
+            Number(amountToAllocate - cumulativeAllocation) < 0 || amountToAllocate > balance ? (
               <StakeHint />
             ) : undefined
           }

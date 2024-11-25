@@ -12,9 +12,9 @@ import { createActions } from './allocationsActions'
 import { useBuildersWithBackerRewardPercentage } from '../hooks/useBuildersWithBackerRewardPercentage'
 export type Allocations = Record<number, bigint>
 export interface Backer {
-  totalAllocation: bigint
+  amountToAllocate: bigint
   balance: bigint
-  allocationCount: number
+  allocationsCount: number
   cumulativeAllocation: bigint
 }
 type AllocationsContextValue = {
@@ -25,12 +25,13 @@ type AllocationsContextValue = {
   contextError: Error | null
   getBuilder: (index: number) => Builder | null
   getBuilderIndexByAddress: (address: Address) => number
+  isValidState: () => boolean
 }
 export type AllocationsActions = {
   toggleSelectedBuilder: (builderIndex: number) => void
   updateAllocation: (builderIndex: number, value: bigint) => void
   updateAllocations: (values: bigint[]) => void
-  updateTotalAllocation: (value: bigint) => void
+  updateAmountToAllocate: (value: bigint) => void
   resetAllocations: () => void
 }
 export type InitialState = Pick<AllocationsContextValue, 'backer' | 'allocations'>
@@ -43,8 +44,8 @@ const DEFAULT_CONTEXT: AllocationsContext = {
   initialState: {
     backer: {
       balance: BigInt(0),
-      totalAllocation: BigInt(0),
-      allocationCount: 0,
+      amountToAllocate: BigInt(0),
+      allocationsCount: 0,
       cumulativeAllocation: BigInt(0),
     },
     allocations: {},
@@ -54,20 +55,21 @@ const DEFAULT_CONTEXT: AllocationsContext = {
     allocations: {},
     backer: {
       balance: BigInt(0),
-      totalAllocation: BigInt(0),
-      allocationCount: 0,
+      amountToAllocate: BigInt(0),
+      allocationsCount: 0,
       cumulativeAllocation: BigInt(0),
     },
     isContextLoading: true,
     contextError: null,
     getBuilder: () => null,
     getBuilderIndexByAddress: () => -1,
+    isValidState: () => false,
   },
   actions: {
     toggleSelectedBuilder: () => {},
     updateAllocation: () => {},
     updateAllocations: () => {},
-    updateTotalAllocation: () => {},
+    updateAmountToAllocate: () => {},
     resetAllocations: () => {},
   },
 }
@@ -90,6 +92,10 @@ export const AllocationsContextProvider: FC<{ children: ReactNode }> = ({ childr
   const [isContextLoading, setIsContextLoading] = useState(DEFAULT_CONTEXT.state.isContextLoading)
   const [contextError, setContextError] = useState<Error | null>(DEFAULT_CONTEXT.state.contextError)
   const [backer, setBacker] = useState<Backer>(DEFAULT_CONTEXT.state.backer)
+
+  /**
+   * Fetch data from the blockchain
+   */
   const {
     data: builders,
     isLoading: isLoadingBuilders,
@@ -112,13 +118,15 @@ export const AllocationsContextProvider: FC<{ children: ReactNode }> = ({ childr
     buildersWithBackerRewards?.map(builder => builder.gauge ?? zeroAddress) || [],
   )
   const {
-    data: totalAllocation,
+    data: totalOnchainAllocation,
     isLoading: isTotalAllocationLoading,
     error: totalAllocationError,
   } = useBackerTotalAllocation(backerAddress ?? zeroAddress)
   const { data: votingPower, isLoading: isVotingPowerLoading, error: votingPowerError } = useGetVotingPower()
 
-  // Cache builder lookup functions
+  /**
+   * Retrieval functions
+   */
   const getBuilder = useCallback(
     (index: number) => (index >= 0 && index < builders.length ? builders[index] : null),
     [builders],
@@ -129,16 +137,31 @@ export const AllocationsContextProvider: FC<{ children: ReactNode }> = ({ childr
     [builders],
   )
 
-  // Consolidate state updates
+  const isValidState = useCallback(() => {
+    const { balance, cumulativeAllocation, amountToAllocate } = backer
+
+    return (
+      totalOnchainAllocation !== amountToAllocate &&
+      cumulativeAllocation < balance &&
+      amountToAllocate < balance
+    )
+  }, [backer])
+
+  /**
+   * Reactive state updates
+   */
   useEffect(() => {
     if (!isContextLoading && backerAddress && allAllocations) {
-      const [newAllocations, newCumulativeAllocation] = createInitialAllocations(allAllocations, selections)
+      const [newAllocations, newCumulativeAllocation, allocationsCount] = createInitialAllocations(
+        allAllocations,
+        selections,
+      )
       setAllocations(newAllocations)
       setBacker(prev => ({
         ...prev,
-        allocationCount: Object.entries(newAllocations).length,
+        allocationsCount,
         cumulativeAllocation: newCumulativeAllocation,
-        totalAllocation: totalAllocation ?? prev.totalAllocation,
+        amountToAllocate: totalOnchainAllocation ?? prev.amountToAllocate,
         balance: votingPower ?? prev.balance,
       }))
     }
@@ -148,7 +171,7 @@ export const AllocationsContextProvider: FC<{ children: ReactNode }> = ({ childr
     selections,
     isContextLoading,
     builders.length,
-    totalAllocation,
+    totalOnchainAllocation,
     votingPower,
   ])
 
@@ -182,6 +205,10 @@ export const AllocationsContextProvider: FC<{ children: ReactNode }> = ({ childr
     isVotingPowerLoading,
     buildersWithBackerRewardsLoading,
   ])
+
+  /**
+   * Memoize states
+   */
   const initialState: InitialState = useMemo(() => {
     if (isContextLoading) {
       return {
@@ -189,20 +216,21 @@ export const AllocationsContextProvider: FC<{ children: ReactNode }> = ({ childr
         allocations: DEFAULT_CONTEXT.initialState.allocations,
       }
     }
-    const [initialAllocations, initialCumulativeAllocations] = createInitialAllocations(
+    const [initialAllocations, initialCumulativeAllocations, allocationsCount] = createInitialAllocations(
       allAllocations || [],
       selections,
     )
     return {
       backer: {
+        allocationsCount,
         balance: votingPower ?? BigInt(0),
-        totalAllocation: totalAllocation ?? BigInt(0),
+        amountToAllocate: totalOnchainAllocation ?? BigInt(0),
         allocationCount: Object.entries(initialAllocations).length,
         cumulativeAllocation: initialCumulativeAllocations,
       },
       allocations: initialAllocations,
     }
-  }, [allAllocations, totalAllocation, votingPower, isContextLoading, selections])
+  }, [allAllocations, totalOnchainAllocation, votingPower, isContextLoading, selections])
 
   const state: AllocationsContextValue = useMemo(() => {
     return {
@@ -213,6 +241,7 @@ export const AllocationsContextProvider: FC<{ children: ReactNode }> = ({ childr
       contextError,
       getBuilder,
       getBuilderIndexByAddress,
+      isValidState,
     }
   }, [selections, allocations, backer, isContextLoading, contextError, getBuilder, getBuilderIndexByAddress])
 
@@ -233,15 +262,20 @@ export const AllocationsContextProvider: FC<{ children: ReactNode }> = ({ childr
 
   return <AllocationsContext.Provider value={contextValue}>{children}</AllocationsContext.Provider>
 }
-function createInitialAllocations(allAllocations: bigint[], selections: number[]): [Allocations, bigint] {
+
+function createInitialAllocations(
+  allAllocations: bigint[],
+  selections: number[],
+): [Allocations, bigint, number] {
   return allAllocations.reduce(
     (acc, allocation, index) => {
       if (allocation || selections.includes(index)) {
         acc[0][index] = allocation
         acc[1] += allocation ?? BigInt(0)
+        acc[2] += 1
       }
       return acc
     },
-    [{} as Allocations, BigInt(0)],
+    [{} as Allocations, BigInt(0), 0],
   )
 }

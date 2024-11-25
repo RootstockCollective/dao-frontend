@@ -41,15 +41,15 @@ const UnallocatedAmount = ({ value }: ValueProps) => {
 export const AllocationMetrics = () => {
   const {
     initialState: {
-      backer: { totalAllocation, balance },
+      backer: { amountToAllocate, balance },
     },
   } = useContext(AllocationsContext)
 
   const balanceValue = `${formatEther(balance)} stRIF`
 
-  const allocatedAmountValue = `${formatEther(totalAllocation)} stRIF`
+  const allocatedAmountValue = `${formatEther(amountToAllocate)} stRIF`
 
-  const unallocatedAmount = formatEther(balance - totalAllocation)
+  const unallocatedAmount = formatEther(balance - amountToAllocate)
 
   const unallocatedAmountValue = `${unallocatedAmount} stRIF`
   return (
