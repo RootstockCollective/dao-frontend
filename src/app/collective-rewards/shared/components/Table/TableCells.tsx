@@ -188,9 +188,8 @@ type ActionCellProps = {
 }
 
 export const ActionCell: FC<ActionCellProps> = ({ tableHeader: { className }, builderAddress }) => {
-  const [selected, setSelected] = useState(false)
   const {
-    state: { selections, getBuilderIndexByAddress, getBuilder },
+    state: { selections, allocations, getBuilderIndexByAddress, getBuilder },
     actions: { toggleSelectedBuilder },
   } = useContext(AllocationsContext)
   /* TODO: manage the button status 
@@ -201,14 +200,6 @@ export const ActionCell: FC<ActionCellProps> = ({ tableHeader: { className }, bu
   /* TODO: add the onClick event
    *  - it needs to interact with the allocation context to add the builder to the selected builders
    */
-
-  const selectBuilder = () => {
-    if (builderIndex < 0) {
-      console.log('Builder not found in selection') // TODO: handle this case better
-      return
-    }
-    toggleSelectedBuilder(builderIndex)
-  }
 
   const builderIndex = useMemo(
     () => getBuilderIndexByAddress(builderAddress),
@@ -229,24 +220,26 @@ export const ActionCell: FC<ActionCellProps> = ({ tableHeader: { className }, bu
     )
   }, [builderIndex, getBuilder])
 
-  useEffect(() => {
-    if (builderIndex < 0) {
-      console.log('Builder not found in selection') // TODO: handle this case better
-      return
-    }
-    const isSelected = selections.includes(builderIndex)
-    setSelected(isSelected)
-  }, [builderAddress, selections, builderIndex])
+  const isBuilderSelected = useMemo(() => {
+    const isInSelections = selections.includes(builderIndex)
+    const isInAllocs = allocations[builderIndex] > 0n
+
+    return isInSelections || isInAllocs
+  }, [builderIndex, selections])
+
+  const selectBuilder = () => {
+    toggleSelectedBuilder(builderIndex)
+  }
 
   return (
     <TableCell className={cn(className, 'border-solid align-center')}>
       <Button
-        variant={selected ? 'white' : 'secondary'}
+        variant={isBuilderSelected ? 'white' : 'secondary'}
         disabled={!isBuilderOperational}
         onClick={selectBuilder}
         className="white text-c"
       >
-        {selected ? 'Selected' : 'Select'}
+        {isBuilderSelected ? 'Selected' : 'Select'}
       </Button>
     </TableCell>
   )
