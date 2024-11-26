@@ -184,7 +184,6 @@ const PageWithProposal = (proposal: ParsedProposal) => {
   const proposalType: SupportedProposalActionName = proposal.calldatasParsed[0]?.functionName
 
   const { proposalName, builderName } = splitCombinedName(name)
-  console.log(proposal.calldatasParsed)
   // @ts-ignore
   return (
     <div className="pl-4 grid grid-rows-1 gap-[32px] mb-[100px]">
@@ -449,7 +448,6 @@ const CalldataDisplay = ({ functionName, args, inputs }: DecodedData) => (
           ({} as InputNameFormatMap<typeof functionName, typeof inputName>)
         const formattedInputName = (functionInputNames[inputName as never] || inputName) as string
 
-        console.log('### inputs.map', functionName, inputName, input, args[index])
         const inputValue = args[index] as InputParameterTypeByFnByName<typeof functionName, typeof inputName>
         const inputValueComposerMap = (actionComponentMap[functionName] || {}) as InputValueComposerMap<
           typeof functionName,
@@ -459,7 +457,6 @@ const CalldataDisplay = ({ functionName, args, inputs }: DecodedData) => (
           inputName as keyof typeof inputValueComposerMap
         ] as InputValueComponent<InputParameterTypeByFnByName<typeof functionName, typeof inputName>>
 
-        console.log('### inputs', formattedInputName, inputValue)
         return (
           <li key={index} className="my-2 flex justify-between">
             <Typography tagVariant="span" className="font-semibold text-[16px] text-left">
