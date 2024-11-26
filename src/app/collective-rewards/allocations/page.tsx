@@ -61,15 +61,6 @@ export default function Allocations() {
       [[], [], []] as [Address[], bigint[], Address[]],
     )
 
-    console.log(`😈 -------------------------------------------------------------------------😈`)
-    console.log(
-      `😈 ~ file: page.tsx:64 ~ saveAllocations ~ gauges, allocs, builders:`,
-      gauges,
-      allocs,
-      builders,
-    )
-    console.log(`😈 -------------------------------------------------------------------------😈`)
-
     return writeContractAsync({
       abi: BackersManagerAbi,
       address: BackersManagerAddress,
