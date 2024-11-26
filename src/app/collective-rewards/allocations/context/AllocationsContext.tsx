@@ -156,12 +156,11 @@ export const AllocationsContextProvider: FC<{ children: ReactNode }> = ({ childr
   const isValidState = useCallback(() => {
     const { balance, cumulativeAllocation, amountToAllocate } = backer
 
-    return (
-      totalOnchainAllocation !== amountToAllocate &&
-      cumulativeAllocation <= balance &&
-      amountToAllocate <= balance
-    )
-  }, [backer, totalOnchainAllocation])
+    console.log('### isValidState', { balance, cumulativeAllocation, amountToAllocate })
+    // TODO: verify that the initial state has changed compared to what we want to save
+
+    return cumulativeAllocation <= balance && amountToAllocate <= balance
+  }, [backer])
 
   /**
    * Reactive state updates
@@ -173,6 +172,7 @@ export const AllocationsContextProvider: FC<{ children: ReactNode }> = ({ childr
         rawBuilders,
         selections,
       )
+      console.log('### newCumulativeAllocation', newCumulativeAllocation)
       console.log('### newAllocations', newAllocations)
       setAllocations(newAllocations)
       setBacker(prev => ({

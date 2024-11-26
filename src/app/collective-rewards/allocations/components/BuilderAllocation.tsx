@@ -1,4 +1,6 @@
 import { AllocationsContext } from '@/app/collective-rewards/allocations/context'
+import { formatOnchainFraction } from '@/app/collective-rewards/rewards'
+import { weiToPercentage } from '@/app/collective-rewards/settings'
 import { Builder } from '@/app/collective-rewards/types'
 import { Input } from '@/components/Input'
 import { Slider } from '@/components/Slider'
@@ -6,9 +8,6 @@ import { Label } from '@/components/Typography'
 import { useContext } from 'react'
 import { parseEther } from 'viem'
 import { BuilderAllocationHeader, BuilderAllocationHeaderProps } from './BuilderAllocationHeader'
-import { formatBalanceToHuman } from '@/app/user/Balances/balanceUtils'
-import { weiToPercentage } from '@/app/collective-rewards/settings'
-import { formatOnchainFraction } from '@/app/collective-rewards/rewards'
 
 export type BuilderAllocationProps = BuilderAllocationHeaderProps &
   Pick<Builder, 'backerRewardPercentage'> & {
@@ -24,12 +23,13 @@ export const BuilderAllocation = (builder: BuilderAllocationProps) => {
   } = useContext(AllocationsContext)
   const allocationLeft = amountToAllocate - cumulativeAllocation
   const { currentAllocation, backerRewardPercentage, address } = builder
+
   const onInputChange = (value: string) => {
     updateAllocation(address, parseEther(value))
   }
 
-  const onSliderValueChange = (value: number[]) => {
-    updateAllocation(address, BigInt(value[0]))
+  const onSliderValueChange = ([value]: number[]) => {
+    updateAllocation(address, BigInt(value))
   }
 
   return (

@@ -8,30 +8,25 @@ export const createActions = (
   initialState: InitialState,
 ): AllocationsActions => ({
   toggleSelectedBuilder: (builderAddress: Address) => {
-    setSelections(prevSelections => {
-      console.log(`😈 ---------------------------------------------------------------------😈`)
-      console.log(`😈 ~ file: allocationsActions.tsx:59 ~ prevSelections:`, prevSelections)
-      console.log(`😈 ~ file: allocationsActions.tsx:59 ~ builderAddress:`, builderAddress)
-      console.log(
-        `😈 ~ file: allocationsActions.tsx:59 ~ prevSelections[builderAddress]:`,
-        prevSelections[builderAddress],
-      )
-      console.log(`😈 ---------------------------------------------------------------------😈`)
-
-      return {
-        ...prevSelections,
-        [builderAddress]: !prevSelections[builderAddress],
-      }
-    })
+    setSelections(prevSelections => ({
+      ...prevSelections,
+      [builderAddress]: !prevSelections[builderAddress],
+    }))
   },
   updateAllocation: (builderAddress: Address, value: bigint) => {
     setAllocations(prevAllocations => {
-      const newAllocations = { ...prevAllocations, [builderAddress]: value }
-      setBacker(prevBacker => ({
-        ...prevBacker,
-        cumulativeAllocation:
-          prevBacker.cumulativeAllocation + value - (prevAllocations[builderAddress] ?? BigInt(0)),
-      }))
+      const newAllocations: Allocations = { ...prevAllocations, [builderAddress]: value }
+      const newCumulativeAllocation = Object.values(newAllocations).reduce<bigint>(
+        (acc, value) => acc + value,
+        0n,
+      )
+      setBacker(prevBacker => {
+        const ret = {
+          ...prevBacker,
+          cumulativeAllocation: newCumulativeAllocation,
+        }
+        return ret
+      })
       return newAllocations
     })
   },
