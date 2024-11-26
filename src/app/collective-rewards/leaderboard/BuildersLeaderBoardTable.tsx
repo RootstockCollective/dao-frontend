@@ -60,13 +60,13 @@ export const BuildersLeaderBoardTable: FC = () => {
       rewardPercentage: (a: IRewardData, b: IRewardData) =>
         Number(a.rewardPercentage.current - b.rewardPercentage.current),
       lastCycleRewards: (a: IRewardData, b: IRewardData) => {
-        const aValue = a.lastCycleReward.RIF.crypto.value + a.lastCycleReward.RBTC.crypto.value
-        const bValue = b.lastCycleReward.RIF.crypto.value + b.lastCycleReward.RBTC.crypto.value
+        const aValue = a.lastCycleReward.rif.crypto.value + a.lastCycleReward.rbtc.crypto.value
+        const bValue = b.lastCycleReward.rif.crypto.value + b.lastCycleReward.rbtc.crypto.value
         return aValue - bValue
       },
       estimatedRewards: (a: IRewardData, b: IRewardData) => {
-        const aValue = a.estimatedReward.RIF.crypto.value + a.estimatedReward.RBTC.crypto.value
-        const bValue = b.estimatedReward.RIF.crypto.value + b.estimatedReward.RBTC.crypto.value
+        const aValue = a.estimatedReward.rif.crypto.value + a.estimatedReward.rbtc.crypto.value
+        const bValue = b.estimatedReward.rif.crypto.value + b.estimatedReward.rbtc.crypto.value
         return aValue - bValue
       },
       totalAllocationPercentage: (a: IRewardData, b: IRewardData) =>
