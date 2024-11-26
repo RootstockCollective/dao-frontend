@@ -3,7 +3,7 @@ import {
   MetricsCard,
   MetricsCardTitle,
   TokenMetricsCardRow,
-  useClaimBuilderRewards,
+  useClaimBuilderRewardsPerToken,
   useGetBuilderRewards,
   Token,
   ClaimYourRewardsButton,
@@ -46,7 +46,7 @@ const TokenRewardsMetrics: FC<TokenRewardsMetricsProps> = ({
     currency,
   )
 
-  const { isClaimable, claimRewards } = useClaimBuilderRewards(gauge, address)
+  const { isClaimable, claimRewards } = useClaimBuilderRewardsPerToken(gauge, address)
 
   return withSpinner(
     TokenMetricsCardRow,

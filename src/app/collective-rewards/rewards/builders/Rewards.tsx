@@ -21,10 +21,10 @@ const RewardsContent: FC<RewardsProps> = props => {
     gauge,
     tokens: { rif, rbtc },
   } = props
-  const { isClaimable: rifClaimable, claimRewards } = useClaimBuilderRewards(gauge, rif.address)
-  const { isClaimable: rbtcClaimable } = useClaimBuilderRewards(gauge, rbtc.address)
-
-  const isClaimable = rifClaimable && rbtcClaimable
+  const { isClaimable, claimRewards } = useClaimBuilderRewards(gauge, {
+    rif: rif.address,
+    rbtc: rbtc.address,
+  })
 
   return (
     <div className="flex justify-center gap-4 w-full">
