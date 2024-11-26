@@ -43,7 +43,7 @@ export const BuildersLeaderBoardTable: FC = () => {
 
   const [sortConfig, setSortConfig] = useState<ISortConfig>({
     key: RewardsColumnKeyEnum.totalAllocationPercentage,
-    direction: 'asc',
+    direction: 'desc',
   })
 
   // pagination
