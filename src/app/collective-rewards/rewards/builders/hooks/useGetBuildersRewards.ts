@@ -25,11 +25,10 @@ type RequiredBuilder = Required<Builder>
 
 // from the builders list, filter out the builders that are not kycApproved or are revoked or have no allocation
 const isBuilderShown = (
-  { stateFlags: { kycApproved, revoked } }: RequiredBuilder,
+  { stateFlags: { kycApproved, revoked }, address }: RequiredBuilder,
   allocations: Allocations,
-  index: number,
 ) => {
-  const allocation = allocations[index]
+  const allocation = allocations[address]
   return (kycApproved && !revoked) || (allocation && allocation > 0n)
 }
 
@@ -46,7 +45,6 @@ export type BuildersRewards = {
 export const useGetBuildersRewards = ({ rif, rbtc }: { [token: string]: Token }, currency = 'USD') => {
   const {
     initialState: { allocations },
-    state: { getBuilderIndexByAddress },
   } = useContext(AllocationsContext)
   const { data: cycle, isLoading: cycleLoading, error: cycleError } = useCycleContext()
   const {
@@ -149,7 +147,7 @@ export const useGetBuildersRewards = ({ rif, rbtc }: { [token: string]: Token },
     return builders.reduce<BuildersRewards[]>((acc, builder) => {
       const { address, builderName, gauge, stateFlags } = builder
 
-      const isShown = isBuilderShown(builder, allocations, getBuilderIndexByAddress(address))
+      const isShown = isBuilderShown(builder, allocations)
       if (!isShown) return acc
 
       const builderRewardShares = rewardShares[gauge] ?? 0n
@@ -238,7 +236,6 @@ export const useGetBuildersRewards = ({ rif, rbtc }: { [token: string]: Token },
     rifPrice,
     rbtcPrice,
     currency,
-    getBuilderIndexByAddress,
     rif,
     rbtc,
     rewardsERC20,

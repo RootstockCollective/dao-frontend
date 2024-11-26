@@ -12,7 +12,6 @@ import { formatOnchainFraction } from '@/app/collective-rewards/rewards'
 
 export type BuilderAllocationProps = BuilderAllocationHeaderProps &
   Pick<Builder, 'backerRewardPercentage'> & {
-    index: number
     currentAllocation: bigint
   }
 
@@ -26,11 +25,11 @@ export const BuilderAllocation = (builder: BuilderAllocationProps) => {
   const allocationLeft = amountToAllocate - cumulativeAllocation
   const { currentAllocation, backerRewardPercentage, address } = builder
   const onInputChange = (value: string) => {
-    updateAllocation(builder.index, parseEther(value))
+    updateAllocation(address, parseEther(value))
   }
 
   const onSliderValueChange = (value: number[]) => {
-    updateAllocation(builder.index, BigInt(value[0]))
+    updateAllocation(address, BigInt(value[0]))
   }
 
   return (

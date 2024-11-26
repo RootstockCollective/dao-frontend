@@ -47,8 +47,8 @@ export default function Allocations() {
 
   const saveAllocations = () => {
     const [gauges, allocs] = Object.entries(allocations).reduce<[Address[], bigint[]]>(
-      (acc, [index, allocation]) => {
-        acc[0] = [...acc[0], getBuilder(Number(index))?.gauge ?? zeroAddress]
+      (acc, [key, allocation]) => {
+        acc[0] = [...acc[0], getBuilder(key as Address)?.gauge ?? zeroAddress]
         acc[1] = [...acc[1], allocation]
 
         return acc
@@ -92,19 +92,18 @@ export default function Allocations() {
           </Typography>
           <div className="flex items-start content-start flex-wrap gap-4 w-full">
             {Object.entries(allocations).map(([key, currentAllocation]) => {
-              const index = Number(key)
-              const builderInfo = getBuilder(index) as Builder
+              const builderAddress = key as Address
+              const builderInfo = getBuilder(builderAddress) as Builder
               if (!builderInfo) {
                 return null
               }
 
               const builder: BuilderAllocationProps = {
                 ...builderInfo,
-                index,
                 currentAllocation,
                 date: builderInfo.proposal.date,
               }
-              return <BuilderAllocation key={index} {...builder} />
+              return <BuilderAllocation key={builderAddress} {...builder} />
             })}
           </div>
           <div className="flex items-center self-stretch justify-between gap-4">

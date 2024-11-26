@@ -1,12 +1,12 @@
 'use client'
 
-import { AllocationsContext } from '@/app/collective-rewards/allocations/context'
+import { Allocations, AllocationsContext } from '@/app/collective-rewards/allocations/context'
 import { formatOnchainFraction } from '@/app/collective-rewards/rewards'
 import { Button, ButtonProps } from '@/components/Button'
 import { Input } from '@/components/Input'
 import { cn } from '@/lib/utils'
 import { useContext, useState } from 'react'
-import { parseEther } from 'viem'
+import { Address, parseEther } from 'viem'
 import { StakeHint } from './StakeHint'
 
 const PercentageButton = ({ children, variant, ...rest }: ButtonProps) => (
@@ -24,19 +24,28 @@ const ALLOCATION_EXCEED_AMOUNT_ERROR = 'Builder allocations exceeds amount to al
 export const AllocationAmount = () => {
   const {
     state: {
+      allocations,
       backer: { balance, amountToAllocate, cumulativeAllocation, allocationsCount },
     },
     actions: { updateAllocations, updateAmountToAllocate },
   } = useContext(AllocationsContext)
 
   const [activeButtonIndex, setActiveButtonIndex] = useState<number | null>(null)
+
   const onPercentageButtonClicked = (percentage: number, index: number) => {
     const newAmountToAllocate = (BigInt(balance ?? 0n) * BigInt(percentage)) / BigInt(100)
+
     updateAmountToAllocate(newAmountToAllocate)
     setActiveButtonIndex(index)
     if (allocationsCount === 0) return
+    const newAllocations = Object.keys(allocations).reduce((acc, key) => {
+      const builderAddress = key as Address
+      const newAllocation = newAmountToAllocate / BigInt(allocationsCount)
+      acc[builderAddress] = newAllocation
 
-    updateAllocations(Array(allocationsCount).fill(newAmountToAllocate / BigInt(allocationsCount)))
+      return acc
+    }, {} as Allocations)
+    updateAllocations(newAllocations)
   }
 
   const handleOnChange = (value: string) => {

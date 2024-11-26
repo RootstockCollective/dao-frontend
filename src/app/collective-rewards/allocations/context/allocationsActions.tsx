@@ -1,42 +1,56 @@
 import { Dispatch, SetStateAction } from 'react'
-import { Allocations, AllocationsActions, Backer, InitialState } from './AllocationsContext'
+import { Allocations, AllocationsActions, Backer, InitialState, Selections } from './AllocationsContext'
+import { Address } from 'viem'
 export const createActions = (
-  setSelections: Dispatch<SetStateAction<number[]>>,
-  setAllocations: Dispatch<SetStateAction<Record<number, bigint>>>,
+  setSelections: Dispatch<SetStateAction<Selections>>,
+  setAllocations: Dispatch<SetStateAction<Allocations>>,
   setBacker: Dispatch<SetStateAction<Backer>>,
   initialState: InitialState,
 ): AllocationsActions => ({
-  toggleSelectedBuilder: (builderIndex: number) => {
-    setSelections(prevSelections =>
-      prevSelections.includes(builderIndex)
-        ? prevSelections.filter(index => index !== builderIndex)
-        : [...prevSelections, builderIndex],
-    )
+  toggleSelectedBuilder: (builderAddress: Address) => {
+    setSelections(prevSelections => {
+      console.log(`😈 ---------------------------------------------------------------------😈`)
+      console.log(`😈 ~ file: allocationsActions.tsx:59 ~ prevSelections:`, prevSelections)
+      console.log(`😈 ~ file: allocationsActions.tsx:59 ~ builderAddress:`, builderAddress)
+      console.log(
+        `😈 ~ file: allocationsActions.tsx:59 ~ prevSelections[builderAddress]:`,
+        prevSelections[builderAddress],
+      )
+      console.log(`😈 ---------------------------------------------------------------------😈`)
+
+      return {
+        ...prevSelections,
+        [builderAddress]: !prevSelections[builderAddress],
+      }
+    })
   },
-  updateAllocation: (builderIndex: number, value: bigint) => {
+  updateAllocation: (builderAddress: Address, value: bigint) => {
     setAllocations(prevAllocations => {
-      const newAllocations = { ...prevAllocations, [builderIndex]: value }
+      const newAllocations = { ...prevAllocations, [builderAddress]: value }
       setBacker(prevBacker => ({
         ...prevBacker,
         cumulativeAllocation:
-          prevBacker.cumulativeAllocation + value - (prevAllocations[builderIndex] ?? BigInt(0)),
+          prevBacker.cumulativeAllocation + value - (prevAllocations[builderAddress] ?? BigInt(0)),
       }))
       return newAllocations
     })
   },
-  updateAllocations: (values: bigint[]) => {
-    const [newAllocations, newCumulativeAllocation] = values.reduce(
-      (acc, value, index) => {
-        acc[0][index] = value
-        acc[1] += value
+  updateAllocations: (newAllocation: Allocations) => {
+    const [cumulativeAllocation, allocationCount] = Object.values(newAllocation).reduce(
+      (acc, value) => {
+        acc[0] += value ?? BigInt(0) // cumulative allocation
+        acc[1] += 1 // allocations count
+
         return acc
       },
-      [{} as Allocations, BigInt(0)],
+      [BigInt(0), 0],
     )
-    setAllocations(newAllocations)
+
+    setAllocations(newAllocation)
     setBacker(prevBacker => ({
       ...prevBacker,
-      cumulativeAllocation: newCumulativeAllocation,
+      cumulativeAllocation,
+      allocationCount,
     }))
   },
   updateAmountToAllocate: (value: bigint) => {
