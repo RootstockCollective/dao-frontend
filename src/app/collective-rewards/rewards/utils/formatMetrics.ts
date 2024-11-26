@@ -8,5 +8,5 @@ export const formatMetrics = (amount: number, price: number, symbol: string, cur
 
 export const formatOnchainFraction = (amount: bigint, displayDecimals = 2, decimals = 18) => {
   const formattedAmount = formatUnits(amount, decimals)
-  return `${toFixed(Number(formattedAmount), displayDecimals)}`
+  return formattedAmount.slice(0, formattedAmount.indexOf('.') + displayDecimals + 1)
 }
