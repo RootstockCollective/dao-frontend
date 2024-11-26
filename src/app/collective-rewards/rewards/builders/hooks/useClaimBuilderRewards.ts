@@ -1,36 +1,22 @@
 import { useAwaitedTxReporting } from '@/app/collective-rewards/shared/hooks'
-import { useGetBuilderToGauge } from '@/app/collective-rewards/user'
 import { GaugeAbi } from '@/lib/abis/v2/GaugeAbi'
-import { createZeroAddressError } from '@/shared/errors/zeroAddressError'
-import { useMemo } from 'react'
-import { Address, zeroAddress } from 'viem'
+import { Address } from 'viem'
 import { useWaitForTransactionReceipt, useWriteContract } from 'wagmi'
+import { useGetBuilderRewards } from '@/app/collective-rewards/rewards'
 
-export const useClaimBuilderRewards = (builder: Address) => {
+export const useClaimBuilderRewards = (gauge: Address, rewardToken: Address) => {
   const { writeContractAsync, error: executionError, data: hash, isPending } = useWriteContract()
   const {
-    data: gauge,
-    isPending: isGaugePending,
-    error: gaugeError,
-    isFetched,
-  } = useGetBuilderToGauge(builder)
+    data: rewards,
+    isLoading: rewardsLoading,
+    error: rewardsError,
+  } = useGetBuilderRewards(rewardToken, gauge)
 
   const { isLoading, isSuccess, data, error: receiptError } = useWaitForTransactionReceipt({ hash })
 
-  const isClaimFunctionReady = useMemo(
-    () => !isGaugePending && !gaugeError && !!gauge,
-    [isGaugePending, gaugeError, gauge],
-  )
+  const isClaimable = !rewardsLoading && rewards !== 0n
 
-  const fetchedError =
-    isFetched && gauge === zeroAddress
-      ? {
-          ...createZeroAddressError('Gauge', { builder }),
-          shortMessage: `${builder} is not a valid builder`,
-        }
-      : null
-
-  const error = executionError || receiptError || fetchedError
+  const error = executionError ?? rewardsError ?? receiptError
 
   const claimBuilderReward = (rewardToken?: Address) => {
     return writeContractAsync({
@@ -52,8 +38,8 @@ export const useClaimBuilderRewards = (builder: Address) => {
   })
 
   return {
-    isClaimFunctionReady,
-    claimRewards: (rewardToken?: Address) => isClaimFunctionReady && claimBuilderReward(rewardToken),
+    isClaimable,
+    claimRewards: (rewardToken?: Address) => isClaimable && claimBuilderReward(rewardToken),
     error,
     isPendingTx: isPending,
     isLoadingReceipt: isLoading,

@@ -24,7 +24,6 @@ type TokenRewardsMetricsProps = {
 }
 
 const TokenRewardsMetrics: FC<TokenRewardsMetricsProps> = ({
-  builder,
   gauge,
   token: { address, symbol },
   currency = 'USD',
@@ -47,7 +46,7 @@ const TokenRewardsMetrics: FC<TokenRewardsMetricsProps> = ({
     currency,
   )
 
-  const { isClaimFunctionReady, claimRewards } = useClaimBuilderRewards(builder)
+  const { isClaimable, claimRewards } = useClaimBuilderRewards(gauge, address)
 
   return withSpinner(
     TokenMetricsCardRow,
@@ -56,9 +55,7 @@ const TokenRewardsMetrics: FC<TokenRewardsMetricsProps> = ({
     amount,
     fiatAmount,
     isLoading: rewardsLoading,
-    children: (
-      <ClaimYourRewardsButton onClick={() => claimRewards(address)} disabled={!isClaimFunctionReady} />
-    ),
+    children: <ClaimYourRewardsButton onClick={() => claimRewards(address)} disabled={!isClaimable} />,
   })
 }
 

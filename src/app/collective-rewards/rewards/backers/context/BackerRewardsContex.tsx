@@ -98,7 +98,7 @@ export const BackerRewardsContextProvider: FC<BackerRewardsProviderProps> = ({
       const rifEarned = calculateTotalEarned(rifRewards.earned)
       const rbtcEarned = calculateTotalEarned(rbtcRewards.earned)
 
-      return rifEarned > 0n || rbtcEarned > 0n
+      return rifEarned > 0n && rbtcEarned > 0n
     }
 
     const { earned } = data[rewardToken]

@@ -42,13 +42,15 @@ const TokenRewardsMetrics: FC<TokenRewardsMetricsProps> = ({
     currency,
   )
 
-  const { claimRewards } = useClaimBackerRewards(gauges)
+  const { claimRewards, isClaimable } = useClaimBackerRewards(address)
 
   return withSpinner(TokenMetricsCardRow)({
     amount,
     fiatAmount,
     isLoading,
-    children: <ClaimYourRewardsButton onClick={() => claimRewards(address)} />,
+    children: (
+      <ClaimYourRewardsButton onClick={() => claimRewards(gauges, address)} disabled={!isClaimable} />
+    ),
   })
 }
 
