@@ -35,7 +35,7 @@ export default function Allocations() {
     isLoadingReceipt: isLoading,
     isSuccess,
     receipt: data,
-    title: 'Save allocations',
+    title: 'Saving allocations',
   })
 
   const router = useRouter()

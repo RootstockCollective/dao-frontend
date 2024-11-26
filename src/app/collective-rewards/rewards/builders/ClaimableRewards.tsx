@@ -55,7 +55,7 @@ const TokenRewardsMetrics: FC<TokenRewardsMetricsProps> = ({
     amount,
     fiatAmount,
     isLoading: rewardsLoading,
-    children: <ClaimYourRewardsButton onClick={() => claimRewards(address)} disabled={!isClaimable} />,
+    children: <ClaimYourRewardsButton onClick={() => claimRewards()} disabled={!isClaimable} />,
   })
 }
 

@@ -11,7 +11,7 @@ const useClaimBuilderReward = (gauge: Address, rewardToken?: Address) => {
 
   const error = executionError ?? receiptError
 
-  const claimBuilderReward = (rewardToken?: Address) => {
+  const claimBuilderReward = () => {
     return writeContractAsync({
       abi: GaugeAbi,
       address: gauge as Address,
@@ -31,7 +31,7 @@ const useClaimBuilderReward = (gauge: Address, rewardToken?: Address) => {
   })
 
   return {
-    claimRewards: (rewardToken?: Address) => claimBuilderReward(rewardToken),
+    claimRewards: () => claimBuilderReward(),
     error,
     isPendingTx: isPending,
     isLoadingReceipt: isLoading,
@@ -45,7 +45,7 @@ export const useClaimBuilderRewards = (gauge: Address, { rif, rbtc }: { rif: Add
   const { isClaimable: rifClaimable, error: claimRifError } = useClaimBuilderRewardsPerToken(gauge, rif)
   const { isClaimable: rbtcClaimable, error: claimRbtcError } = useClaimBuilderRewardsPerToken(gauge, rbtc)
 
-  const isClaimable = rifClaimable && rbtcClaimable
+  const isClaimable = rifClaimable || rbtcClaimable
   const error = claimBuilderRewardError ?? claimRifError ?? claimRbtcError
 
   return {

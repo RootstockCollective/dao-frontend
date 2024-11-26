@@ -15,7 +15,7 @@ export const useClaimBackerRewards = (rewardToken?: Address) => {
 
   const error = executionError || receiptError || canClaimError
 
-  const claimBackerReward = (gauges: Address[], rewardToken?: Address) => {
+  const claimBackerReward = (gauges: Address[]) => {
     return writeContractAsync({
       abi: BackersManagerAbi,
       address: BackersManagerAddress,
@@ -36,8 +36,7 @@ export const useClaimBackerRewards = (rewardToken?: Address) => {
 
   return {
     isClaimable,
-    claimRewards: (gauges: Address[], rewardToken?: Address) =>
-      isClaimable && claimBackerReward(gauges, rewardToken),
+    claimRewards: (gauges: Address[]) => isClaimable && claimBackerReward(gauges),
     error,
     isPendingTx: isPending,
     isLoadingReceipt: isLoading,

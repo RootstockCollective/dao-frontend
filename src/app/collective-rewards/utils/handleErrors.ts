@@ -1,8 +1,8 @@
 import { useEffect } from 'react'
 import { useAlertContext } from '@/app/providers'
 
-type ErrorHandler = (params: { error?: Error | null; title: string }) => void
-export const useHandleErrors: ErrorHandler = ({ error, title }) => {
+type ErrorHandler = (params: { error?: Error | null; title: string; content?: string }) => void
+export const useHandleErrors: ErrorHandler = ({ error, title, content }) => {
   const { setMessage } = useAlertContext()
 
   useEffect(() => {
@@ -10,9 +10,9 @@ export const useHandleErrors: ErrorHandler = ({ error, title }) => {
       setMessage({
         severity: 'error',
         title,
-        content: error.message,
+        content: content ?? `Error ${title.toLowerCase()}`,
       })
       console.error(`🐛 ${title}:`, error)
     }
-  }, [error, title, setMessage])
+  }, [error, title, content, setMessage])
 }
