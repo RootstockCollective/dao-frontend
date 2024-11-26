@@ -28,6 +28,7 @@ const useClaimBuilderReward = (gauge: Address, rewardToken?: Address) => {
     isSuccess,
     receipt: data,
     title: 'Claiming builder rewards',
+    errorContent: 'Error claiming builder rewards',
   })
 
   return {

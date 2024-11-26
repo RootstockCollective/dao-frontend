@@ -32,6 +32,7 @@ export const useClaimBackerRewards = (rewardToken?: Address) => {
     isSuccess,
     receipt: data,
     title: 'Claiming backer rewards',
+    errorContent: 'Error claiming backer rewards',
   })
 
   return {

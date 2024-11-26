@@ -10,7 +10,7 @@ export const useHandleErrors: ErrorHandler = ({ error, title, content }) => {
       setMessage({
         severity: 'error',
         title,
-        content: content ?? `Error ${title.toLowerCase()}`,
+        content: content ?? error.message,
       })
       console.error(`🐛 ${title}:`, error)
     }
