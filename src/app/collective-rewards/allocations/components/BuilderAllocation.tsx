@@ -46,8 +46,8 @@ export const BuilderAllocation = (builder: BuilderAllocationProps) => {
         value={formatOnchainFraction(currentAllocation || 0n)}
       />
       <Slider
-        value={[Number(currentAllocation)]}
-        max={Number(amountToAllocate)}
+        value={[Number(currentAllocation || 0n)]}
+        max={Number(amountToAllocate || 0n) === 0 ? 1 : Number(amountToAllocate || 0n)}
         onValueChange={onSliderValueChange}
       />
     </div>

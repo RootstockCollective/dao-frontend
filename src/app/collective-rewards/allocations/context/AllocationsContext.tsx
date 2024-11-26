@@ -155,9 +155,7 @@ export const AllocationsContextProvider: FC<{ children: ReactNode }> = ({ childr
 
   const isValidState = useCallback(() => {
     const { balance, cumulativeAllocation, amountToAllocate } = backer
-
-    console.log('### isValidState', { balance, cumulativeAllocation, amountToAllocate })
-    // TODO: verify that the initial state has changed compared to what we want to save
+    // FIXME: verify that the initial state has changed compared to what we want to save
 
     return cumulativeAllocation <= balance && amountToAllocate <= balance
   }, [backer])
@@ -172,8 +170,6 @@ export const AllocationsContextProvider: FC<{ children: ReactNode }> = ({ childr
         rawBuilders,
         selections,
       )
-      console.log('### newCumulativeAllocation', newCumulativeAllocation)
-      console.log('### newAllocations', newAllocations)
       setAllocations(newAllocations)
       setBacker(prev => ({
         ...prev,
@@ -237,8 +233,9 @@ export const AllocationsContextProvider: FC<{ children: ReactNode }> = ({ childr
     const [initialAllocations, initialCumulativeAllocations, allocationsCount] = createInitialAllocations(
       rawAllocations || [],
       rawBuilders || [],
-      {},
+      selections || {},
     )
+
     return {
       backer: {
         allocationsCount,
@@ -249,7 +246,7 @@ export const AllocationsContextProvider: FC<{ children: ReactNode }> = ({ childr
       },
       allocations: initialAllocations,
     }
-  }, [rawAllocations, rawBuilders, totalOnchainAllocation, votingPower, isContextLoading])
+  }, [rawAllocations, rawBuilders, totalOnchainAllocation, selections, votingPower, isContextLoading])
 
   const state: State = useMemo(() => {
     return {
