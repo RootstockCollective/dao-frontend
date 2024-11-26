@@ -528,7 +528,7 @@ export const actionInputNameFormatMap: Partial<
     builder_: 'Address to be removed',
   },
   dewhitelistBuilder: {
-    builder_: 'Address to be removed',
+    builder_: 'Address to be de-whitelisted',
   },
 }
 
