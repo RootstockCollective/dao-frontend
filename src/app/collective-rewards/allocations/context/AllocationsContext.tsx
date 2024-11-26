@@ -173,6 +173,7 @@ export const AllocationsContextProvider: FC<{ children: ReactNode }> = ({ childr
         rawBuilders,
         selections,
       )
+      console.log('### newAllocations', newAllocations)
       setAllocations(newAllocations)
       setBacker(prev => ({
         ...prev,

@@ -46,15 +46,29 @@ export default function Allocations() {
   } = useContext(AllocationsContext)
 
   const saveAllocations = () => {
-    const [gauges, allocs] = Object.entries(allocations).reduce<[Address[], bigint[]]>(
-      (acc, [key, allocation]) => {
-        acc[0] = [...acc[0], getBuilder(key as Address)?.gauge ?? zeroAddress]
-        acc[1] = [...acc[1], allocation]
+    const [gauges, allocs, builders] = Object.entries(allocations).reduce(
+      (acc, [key, value]) => {
+        const builderAddress = key as Address
+        const gauge = getBuilder(builderAddress)?.gauge
+        if (gauge) {
+          acc[0] = [...acc[0], gauge]
+          acc[1] = [...acc[1], value]
+          acc[2] = [...acc[2], builderAddress]
+        }
 
         return acc
       },
-      [[], []],
+      [[], [], []] as [Address[], bigint[], Address[]],
     )
+
+    console.log(`😈 -------------------------------------------------------------------------😈`)
+    console.log(
+      `😈 ~ file: page.tsx:64 ~ saveAllocations ~ gauges, allocs, builders:`,
+      gauges,
+      allocs,
+      builders,
+    )
+    console.log(`😈 -------------------------------------------------------------------------😈`)
 
     return writeContractAsync({
       abi: BackersManagerAbi,

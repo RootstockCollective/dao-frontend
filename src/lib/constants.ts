@@ -30,7 +30,7 @@ export const CYCLE_DURATION_IN_DAYS = process.env.NEXT_PUBLIC_CYCLE_DURATION_IN_
 export const FIRST_CYCLE_START_DATE_ISO = process.env.NEXT_PUBLIC_FIRST_CYCLE_START_DATE_ISO
 
 export const ADDRESS_ANIMATION_DURATION = 800
-export const AVERAGE_BLOCKTIME = 30_000
+export const AVERAGE_BLOCKTIME = 10_000
 
 export const RIF = 'RIF'
 export const USD = 'USD'

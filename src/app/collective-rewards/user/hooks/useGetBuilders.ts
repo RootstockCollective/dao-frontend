@@ -52,15 +52,15 @@ export const useGetBuilders: UseGetBuilders = () => {
       refetchInterval: AVERAGE_BLOCKTIME,
     },
   })
-  const builders = buildersResult?.map(builder => builder.result) as Address[]
+  const builders = useMemo(() => buildersResult?.map(builder => builder.result) as Address[], [buildersResult])
 
-  const builderToGauge = builders?.reduce<Record<Address, Address>>((acc, builder, index) => {
+  const builderToGauge = useMemo(() => builders?.reduce<Record<Address, Address>>((acc, builder, index) => {
     acc[builder] = gauges![index]
     return acc
-  }, {})
+  }, {}), [builders, gauges])
 
   // get the builder state for each builder
-  const builderStatesCalls = builders?.map(
+  const builderStatesCalls = useMemo(() => builders?.map(
     builder =>
       ({
         address: BackersManagerAddress,
@@ -68,7 +68,7 @@ export const useGetBuilders: UseGetBuilders = () => {
         functionName: 'builderState',
         args: [builder],
       }) as const,
-  )
+  ), [builders])
   const {
     data: builderStatesResult,
     isLoading: builderStatesLoading,
@@ -82,9 +82,8 @@ export const useGetBuilders: UseGetBuilders = () => {
     error: proposalsByBuilderError,
   } = useFetchCreateBuilderProposals()
 
-  const proposalIds = Object.values(proposalsByBuilder ?? {}).flatMap(events =>
-    events.map(({ args }) => args.proposalId),
-  )
+  const proposalIds = useMemo(() => Object.values(proposalsByBuilder ?? {}).flatMap(events =>
+    events.map(({ args }) => args.proposalId)),[proposalsByBuilder])
 
   const {
     data: proposalsStateMap,
@@ -94,6 +93,11 @@ export const useGetBuilders: UseGetBuilders = () => {
 
   const data: Record<Address, Builder> = useMemo(() => {
     const builderStates = builderStatesResult?.map(({ result }) => result as RawBuilderState)
+
+    console.log(`😈 ----------------------------------------------------------------------------------------------------------😈`)
+    console.log(`😈 ~ file: useGetBuilders.ts:98 ~ constdata:Record<Address,Builder>=useMemo ~ builderStates:`, builderStates)
+    console.log(`😈 ----------------------------------------------------------------------------------------------------------😈`)
+
 
     const statusByBuilder =
       builders?.reduce<Record<Address, BuilderStateFlags>>((acc, builder, index) => {
@@ -143,7 +147,7 @@ export const useGetBuilders: UseGetBuilders = () => {
       },
       {},
     )
-  }, [proposalsByBuilder, builderToGauge, proposalsStateMap, builderStatesResult, builders])
+  }, [proposalsByBuilder, builderToGauge, builderStatesResult, proposalsStateMap, builders])
 
   const isLoading =
     isLoadingProposalsByBuilder ||
