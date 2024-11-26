@@ -184,7 +184,6 @@ const PageWithProposal = (proposal: ParsedProposal) => {
   const proposalType: SupportedProposalActionName = proposal.calldatasParsed[0]?.functionName
 
   const { proposalName, builderName } = splitCombinedName(name)
-
   // @ts-ignore
   return (
     <div className="pl-4 grid grid-rows-1 gap-[32px] mb-[100px]">
@@ -528,6 +527,9 @@ export const actionInputNameFormatMap: Partial<
   removeWhitelistedBuilder: {
     builder_: 'Address to be removed',
   },
+  dewhitelistBuilder: {
+    builder_: 'Address to be de-whitelisted',
+  },
 }
 
 const AddressInputComponent: InputValueComponent<'address'> = ({ value, htmlProps }) => (
@@ -550,6 +552,9 @@ export const actionComponentMap: Partial<ActionComposerMap> = {
     rewardReceiver_: AddressInputComponent,
   },
   removeWhitelistedBuilder: {
+    builder_: AddressInputComponent,
+  },
+  dewhitelistBuilder: {
     builder_: AddressInputComponent,
   },
   communityApproveBuilder: {
