@@ -81,7 +81,8 @@ export const useSetBackerRewardsForBuilder = (): SetBackerRewardsForBuilder => {
     isLoadingReceipt: isLoading,
     isSuccess,
     receipt,
-    title: 'Setting new builder rewards percantage',
+    title: 'Setting new builder rewards percentage',
+    errorContent: 'Error setting new builder rewards percentage',
   })
 
   const setNewReward = async (newReward: bigint) => {

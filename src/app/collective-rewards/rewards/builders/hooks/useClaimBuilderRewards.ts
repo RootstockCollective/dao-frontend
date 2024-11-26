@@ -1,38 +1,17 @@
 import { useAwaitedTxReporting } from '@/app/collective-rewards/shared/hooks'
-import { useGetBuilderToGauge } from '@/app/collective-rewards/user'
 import { GaugeAbi } from '@/lib/abis/v2/GaugeAbi'
-import { createZeroAddressError } from '@/shared/errors/zeroAddressError'
-import { useMemo } from 'react'
-import { Address, zeroAddress } from 'viem'
+import { Address } from 'viem'
 import { useWaitForTransactionReceipt, useWriteContract } from 'wagmi'
+import { useGetBuilderRewards } from '@/app/collective-rewards/rewards'
 
-export const useClaimBuilderRewards = (builder: Address) => {
+const useClaimBuilderReward = (gauge: Address, rewardToken?: Address) => {
   const { writeContractAsync, error: executionError, data: hash, isPending } = useWriteContract()
-  const {
-    data: gauge,
-    isPending: isGaugePending,
-    error: gaugeError,
-    isFetched,
-  } = useGetBuilderToGauge(builder)
 
   const { isLoading, isSuccess, data, error: receiptError } = useWaitForTransactionReceipt({ hash })
 
-  const isClaimFunctionReady = useMemo(
-    () => !isGaugePending && !gaugeError && !!gauge,
-    [isGaugePending, gaugeError, gauge],
-  )
+  const error = executionError ?? receiptError
 
-  const fetchedError =
-    isFetched && gauge === zeroAddress
-      ? {
-          ...createZeroAddressError('Gauge', { builder }),
-          shortMessage: `${builder} is not a valid builder`,
-        }
-      : null
-
-  const error = executionError || receiptError || fetchedError
-
-  const claimBuilderReward = (rewardToken?: Address) => {
+  const claimBuilderReward = () => {
     return writeContractAsync({
       abi: GaugeAbi,
       address: gauge as Address,
@@ -49,15 +28,44 @@ export const useClaimBuilderRewards = (builder: Address) => {
     isSuccess,
     receipt: data,
     title: 'Claiming builder rewards',
+    errorContent: 'Error claiming builder rewards',
   })
 
   return {
-    isClaimFunctionReady,
-    claimRewards: (rewardToken?: Address) => isClaimFunctionReady && claimBuilderReward(rewardToken),
+    claimRewards: () => claimBuilderReward(),
     error,
     isPendingTx: isPending,
     isLoadingReceipt: isLoading,
     isSuccess,
     receipt: data,
+  }
+}
+
+export const useClaimBuilderRewards = (gauge: Address, { rif, rbtc }: { rif: Address; rbtc: Address }) => {
+  const { error: claimBuilderRewardError, ...rest } = useClaimBuilderReward(gauge)
+  const { isClaimable: rifClaimable, error: claimRifError } = useClaimBuilderRewardsPerToken(gauge, rif)
+  const { isClaimable: rbtcClaimable, error: claimRbtcError } = useClaimBuilderRewardsPerToken(gauge, rbtc)
+
+  const isClaimable = rifClaimable || rbtcClaimable
+  const error = claimBuilderRewardError ?? claimRifError ?? claimRbtcError
+
+  return {
+    ...rest,
+    isClaimable,
+    error,
+  }
+}
+
+export const useClaimBuilderRewardsPerToken = (gauge: Address, rewardToken: Address) => {
+  const { error: claimBuilderRewardError, ...rest } = useClaimBuilderReward(gauge, rewardToken)
+  const { data: rewards, isLoading, error: getBuilderRewardsError } = useGetBuilderRewards(rewardToken, gauge)
+
+  const isClaimable = !isLoading && rewards !== 0n
+  const error = claimBuilderRewardError ?? getBuilderRewardsError
+
+  return {
+    ...rest,
+    isClaimable,
+    error,
   }
 }

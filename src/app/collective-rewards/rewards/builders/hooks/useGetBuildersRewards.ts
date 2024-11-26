@@ -238,6 +238,12 @@ export const useGetBuildersRewards = ({ rif, rbtc }: { [token: string]: Token },
     rifPrice,
     rbtcPrice,
     currency,
+    getBuilderIndexByAddress,
+    rif,
+    rbtc,
+    rewardsERC20,
+    rewardsCoinbase,
+    totalAllocation,
   ])
 
   return {
