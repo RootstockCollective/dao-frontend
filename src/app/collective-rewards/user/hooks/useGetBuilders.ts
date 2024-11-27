@@ -52,22 +52,33 @@ export const useGetBuilders: UseGetBuilders = () => {
       refetchInterval: AVERAGE_BLOCKTIME,
     },
   })
-  const builders = buildersResult?.map(builder => builder.result) as Address[]
+  const builders = useMemo(
+    () => buildersResult?.map(builder => builder.result) as Address[],
+    [buildersResult],
+  )
 
-  const builderToGauge = builders?.reduce<Record<Address, Address>>((acc, builder, index) => {
-    acc[builder] = gauges![index]
-    return acc
-  }, {})
+  const builderToGauge = useMemo(
+    () =>
+      builders?.reduce<Record<Address, Address>>((acc, builder, index) => {
+        acc[builder] = gauges![index]
+        return acc
+      }, {}),
+    [builders, gauges],
+  )
 
   // get the builder state for each builder
-  const builderStatesCalls = builders?.map(
-    builder =>
-      ({
-        address: BackersManagerAddress,
-        abi: BuilderRegistryAbi,
-        functionName: 'builderState',
-        args: [builder],
-      }) as const,
+  const builderStatesCalls = useMemo(
+    () =>
+      builders?.map(
+        builder =>
+          ({
+            address: BackersManagerAddress,
+            abi: BuilderRegistryAbi,
+            functionName: 'builderState',
+            args: [builder],
+          }) as const,
+      ),
+    [builders],
   )
   const {
     data: builderStatesResult,
@@ -82,8 +93,10 @@ export const useGetBuilders: UseGetBuilders = () => {
     error: proposalsByBuilderError,
   } = useFetchCreateBuilderProposals()
 
-  const proposalIds = Object.values(proposalsByBuilder ?? {}).flatMap(events =>
-    events.map(({ args }) => args.proposalId),
+  const proposalIds = useMemo(
+    () =>
+      Object.values(proposalsByBuilder ?? {}).flatMap(events => events.map(({ args }) => args.proposalId)),
+    [proposalsByBuilder],
   )
 
   const {
@@ -143,7 +156,7 @@ export const useGetBuilders: UseGetBuilders = () => {
       },
       {},
     )
-  }, [proposalsByBuilder, builderToGauge, proposalsStateMap, builderStatesResult, builders])
+  }, [proposalsByBuilder, builderToGauge, builderStatesResult, proposalsStateMap, builders])
 
   const isLoading =
     isLoadingProposalsByBuilder ||

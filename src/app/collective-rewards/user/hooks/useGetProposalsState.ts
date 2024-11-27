@@ -8,14 +8,18 @@ import { Address } from 'viem'
 import { useReadContracts } from 'wagmi'
 
 export const useGetProposalsState = (proposalIds: bigint[]) => {
-  const contractCalls = proposalIds.map(proposalId => {
-    return {
-      address: GovernorAddress as Address,
-      abi: GovernorAbi,
-      functionName: 'state',
-      args: [proposalId],
-    } as const
-  })
+  const contractCalls = useMemo(
+    () =>
+      proposalIds.map(proposalId => {
+        return {
+          address: GovernorAddress as Address,
+          abi: GovernorAbi,
+          functionName: 'state',
+          args: [proposalId],
+        } as const
+      }),
+    [proposalIds],
+  )
 
   const {
     data: states,

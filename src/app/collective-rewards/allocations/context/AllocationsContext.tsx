@@ -10,36 +10,52 @@ import { Address, zeroAddress } from 'viem'
 import { useAccount } from 'wagmi'
 import { createActions } from './allocationsActions'
 import { useBuildersWithBackerRewardPercentage } from '../hooks/useBuildersWithBackerRewardPercentage'
-export type Allocations = Record<number, bigint>
+
+export type Allocations = {
+  [K: Address]: bigint
+}
+
+export type Builders = {
+  [K: Address]: Builder
+}
+
+export type Selections = {
+  [K: Address]: boolean
+}
+
 export interface Backer {
   amountToAllocate: bigint
   balance: bigint
   allocationsCount: number
   cumulativeAllocation: bigint
 }
-type AllocationsContextValue = {
-  selections: number[]
+
+type State = {
+  selections: Selections
   allocations: Allocations
   backer: Backer
   isContextLoading: boolean
   contextError: Error | null
-  getBuilder: (index: number) => Builder | null
-  getBuilderIndexByAddress: (address: Address) => number
+  getBuilder: (address: Address) => Builder | null
   isValidState: () => boolean
 }
+
 export type AllocationsActions = {
-  toggleSelectedBuilder: (builderIndex: number) => void
-  updateAllocation: (builderIndex: number, value: bigint) => void
-  updateAllocations: (values: bigint[]) => void
+  toggleSelectedBuilder: (address: Address) => void
+  updateAllocation: (address: Address, value: bigint) => void
+  updateAllocations: (newAllocations: Allocations) => void
   updateAmountToAllocate: (value: bigint) => void
   resetAllocations: () => void
 }
-export type InitialState = Pick<AllocationsContextValue, 'backer' | 'allocations'>
+
+export type InitialState = Pick<State, 'backer' | 'allocations'>
+
 type AllocationsContext = {
   initialState: InitialState
-  state: AllocationsContextValue
+  state: State
   actions: AllocationsActions
 }
+
 const DEFAULT_CONTEXT: AllocationsContext = {
   initialState: {
     backer: {
@@ -51,7 +67,7 @@ const DEFAULT_CONTEXT: AllocationsContext = {
     allocations: {},
   },
   state: {
-    selections: [],
+    selections: {},
     allocations: {},
     backer: {
       balance: BigInt(0),
@@ -62,7 +78,6 @@ const DEFAULT_CONTEXT: AllocationsContext = {
     isContextLoading: true,
     contextError: null,
     getBuilder: () => null,
-    getBuilderIndexByAddress: () => -1,
     isValidState: () => false,
   },
   actions: {
@@ -77,18 +92,11 @@ export const AllocationsContext = createContext<AllocationsContext>(DEFAULT_CONT
 export const AllocationsContextProvider: FC<{ children: ReactNode }> = ({ children }) => {
   const { address: backerAddress } = useAccount()
   /**
-   * Selections are the indexes of the builders that the backer has selected
+   * Context states
    */
-  const [selections, setSelections] = useState<number[]>(DEFAULT_CONTEXT.state.selections)
-  /**
-   * Allocations are the amounts that the backer has allocated to each builder either in the current session or in the past
-   * The key is the index of the builder
-   * The value is the amount allocated
-   */
+  const [selections, setSelections] = useState<Selections>(DEFAULT_CONTEXT.state.selections)
   const [allocations, setAllocations] = useState<Allocations>(DEFAULT_CONTEXT.state.allocations)
-  /**
-   * Cumulative allocation is the total amount that the backer has allocated to all builders in current session
-   */
+
   const [isContextLoading, setIsContextLoading] = useState(DEFAULT_CONTEXT.state.isContextLoading)
   const [contextError, setContextError] = useState<Error | null>(DEFAULT_CONTEXT.state.contextError)
   const [backer, setBacker] = useState<Backer>(DEFAULT_CONTEXT.state.backer)
@@ -97,7 +105,7 @@ export const AllocationsContextProvider: FC<{ children: ReactNode }> = ({ childr
    * Fetch data from the blockchain
    */
   const {
-    data: builders,
+    data: rawBuilders,
     isLoading: isLoadingBuilders,
     error: buildersError,
   } = useActivatedBuildersWithGauge()
@@ -106,12 +114,12 @@ export const AllocationsContextProvider: FC<{ children: ReactNode }> = ({ childr
     data: buildersWithBackerRewards,
     isLoading: buildersWithBackerRewardsLoading,
     error: buildersWithBackerRewardsError,
-  } = useBuildersWithBackerRewardPercentage(builders)
+  } = useBuildersWithBackerRewardPercentage(rawBuilders)
 
   const {
-    data: allAllocations,
-    isLoading: isAllAllocationsLoading,
-    error: allAllocationsError,
+    data: rawAllocations,
+    isLoading: isRawAllocationsLoading,
+    error: allRawAllocationsError,
   } = useGetAllAllocationOf(
     backerAddress ?? zeroAddress,
     // gauge is always defined here
@@ -124,36 +132,42 @@ export const AllocationsContextProvider: FC<{ children: ReactNode }> = ({ childr
   } = useBackerTotalAllocation(backerAddress ?? zeroAddress)
   const { data: votingPower, isLoading: isVotingPowerLoading, error: votingPowerError } = useGetVotingPower()
 
+  const builders: Builders = useMemo(() => {
+    if (!rawBuilders || !buildersWithBackerRewards) return {}
+    return rawBuilders.reduce((acc, builder, index) => {
+      acc[builder.address] = {
+        ...builder,
+        ...buildersWithBackerRewards[index],
+        backerRewardPercentage: {
+          previous: buildersWithBackerRewards[index].backerRewardPercentage.previous ?? BigInt(0),
+          next: buildersWithBackerRewards[index].backerRewardPercentage.next ?? BigInt(0),
+          cooldown: buildersWithBackerRewards[index].backerRewardPercentage.cooldown ?? BigInt(0),
+        },
+      }
+      return acc
+    }, {} as Builders)
+  }, [rawBuilders, buildersWithBackerRewards])
+
   /**
    * Retrieval functions
    */
-  const getBuilder = useCallback(
-    (index: number) => (index >= 0 && index < builders.length ? builders[index] : null),
-    [builders],
-  )
-
-  const getBuilderIndexByAddress = useCallback(
-    (address: Address) => builders.findIndex(builder => builder.address === address) ?? null,
-    [builders],
-  )
+  const getBuilder = useCallback((address: Address) => builders[address], [builders])
 
   const isValidState = useCallback(() => {
     const { balance, cumulativeAllocation, amountToAllocate } = backer
+    // FIXME: verify that the initial state has changed compared to what we want to save
 
-    return (
-      totalOnchainAllocation !== amountToAllocate &&
-      cumulativeAllocation <= balance &&
-      amountToAllocate <= balance
-    )
-  }, [backer, totalOnchainAllocation])
+    return cumulativeAllocation <= balance && amountToAllocate <= balance
+  }, [backer])
 
   /**
    * Reactive state updates
    */
   useEffect(() => {
-    if (!isContextLoading && backerAddress && allAllocations) {
+    if (!isContextLoading && backerAddress && rawAllocations) {
       const [newAllocations, newCumulativeAllocation, allocationsCount] = createInitialAllocations(
-        allAllocations,
+        rawAllocations,
+        rawBuilders,
         selections,
       )
       setAllocations(newAllocations)
@@ -166,11 +180,11 @@ export const AllocationsContextProvider: FC<{ children: ReactNode }> = ({ childr
       }))
     }
   }, [
-    allAllocations,
+    rawAllocations,
     backerAddress,
     selections,
     isContextLoading,
-    builders.length,
+    rawBuilders,
     totalOnchainAllocation,
     votingPower,
   ])
@@ -178,13 +192,13 @@ export const AllocationsContextProvider: FC<{ children: ReactNode }> = ({ childr
   useEffect(() => {
     setContextError(
       buildersError ??
-        allAllocationsError ??
+        allRawAllocationsError ??
         totalAllocationError ??
         votingPowerError ??
         buildersWithBackerRewardsError,
     )
   }, [
-    allAllocationsError,
+    allRawAllocationsError,
     buildersError,
     totalAllocationError,
     votingPowerError,
@@ -193,14 +207,14 @@ export const AllocationsContextProvider: FC<{ children: ReactNode }> = ({ childr
   useEffect(() => {
     setIsContextLoading(
       isLoadingBuilders ||
-        isAllAllocationsLoading ||
+        isRawAllocationsLoading ||
         isTotalAllocationLoading ||
         isVotingPowerLoading ||
         buildersWithBackerRewardsLoading,
     )
   }, [
     isLoadingBuilders,
-    isAllAllocationsLoading,
+    isRawAllocationsLoading,
     isTotalAllocationLoading,
     isVotingPowerLoading,
     buildersWithBackerRewardsLoading,
@@ -217,9 +231,11 @@ export const AllocationsContextProvider: FC<{ children: ReactNode }> = ({ childr
       }
     }
     const [initialAllocations, initialCumulativeAllocations, allocationsCount] = createInitialAllocations(
-      allAllocations || [],
-      selections,
+      rawAllocations || [],
+      rawBuilders || [],
+      selections || {},
     )
+
     return {
       backer: {
         allocationsCount,
@@ -230,9 +246,9 @@ export const AllocationsContextProvider: FC<{ children: ReactNode }> = ({ childr
       },
       allocations: initialAllocations,
     }
-  }, [allAllocations, totalOnchainAllocation, votingPower, isContextLoading, selections])
+  }, [rawAllocations, rawBuilders, totalOnchainAllocation, selections, votingPower, isContextLoading])
 
-  const state: AllocationsContextValue = useMemo(() => {
+  const state: State = useMemo(() => {
     return {
       selections,
       allocations,
@@ -240,19 +256,9 @@ export const AllocationsContextProvider: FC<{ children: ReactNode }> = ({ childr
       isContextLoading,
       contextError,
       getBuilder,
-      getBuilderIndexByAddress,
       isValidState,
     }
-  }, [
-    selections,
-    allocations,
-    backer,
-    isContextLoading,
-    contextError,
-    getBuilder,
-    getBuilderIndexByAddress,
-    isValidState,
-  ])
+  }, [selections, allocations, backer, isContextLoading, contextError, getBuilder, isValidState])
 
   const actions: AllocationsActions = useMemo(
     () => createActions(setSelections, setAllocations, setBacker, initialState),
@@ -273,15 +279,17 @@ export const AllocationsContextProvider: FC<{ children: ReactNode }> = ({ childr
 }
 
 function createInitialAllocations(
-  allAllocations: bigint[],
-  selections: number[],
+  rawAllocations: bigint[],
+  rawBuilders: Builder[],
+  selections: State['selections'],
 ): [Allocations, bigint, number] {
-  return allAllocations.reduce(
+  return rawAllocations.reduce(
     (acc, allocation, index) => {
-      if (allocation || selections.includes(index)) {
-        acc[0][index] = allocation
-        acc[1] += allocation ?? BigInt(0)
-        acc[2] += 1
+      const builderAddress = rawBuilders[index].address
+      if (allocation > 0n || selections[builderAddress]) {
+        acc[0][builderAddress] = allocation
+        acc[1] += allocation ?? BigInt(0) // cumulative allocation
+        acc[2] += 1 // allocations count
       }
       return acc
     },

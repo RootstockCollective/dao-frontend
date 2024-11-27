@@ -46,14 +46,18 @@ export default function Allocations() {
   } = useContext(AllocationsContext)
 
   const saveAllocations = () => {
-    const [gauges, allocs] = Object.entries(allocations).reduce<[Address[], bigint[]]>(
-      (acc, [index, allocation]) => {
-        acc[0] = [...acc[0], getBuilder(Number(index))?.gauge ?? zeroAddress]
-        acc[1] = [...acc[1], allocation]
+    const [gauges, allocs] = Object.entries(allocations).reduce(
+      (acc, [key, value]) => {
+        const builderAddress = key as Address
+        const gauge = getBuilder(builderAddress)?.gauge
+        if (gauge) {
+          acc[0] = [...acc[0], gauge]
+          acc[1] = [...acc[1], value]
+        }
 
         return acc
       },
-      [[], []],
+      [[], [], []] as [Address[], bigint[], Address[]],
     )
 
     return writeContractAsync({
@@ -92,19 +96,18 @@ export default function Allocations() {
           </Typography>
           <div className="flex items-start content-start flex-wrap gap-4 w-full">
             {Object.entries(allocations).map(([key, currentAllocation]) => {
-              const index = Number(key)
-              const builderInfo = getBuilder(index) as Builder
+              const builderAddress = key as Address
+              const builderInfo = getBuilder(builderAddress) as Builder
               if (!builderInfo) {
                 return null
               }
 
               const builder: BuilderAllocationProps = {
                 ...builderInfo,
-                index,
                 currentAllocation,
                 date: builderInfo.proposal.date,
               }
-              return <BuilderAllocation key={index} {...builder} />
+              return <BuilderAllocation key={builderAddress} {...builder} />
             })}
           </div>
           <div className="flex items-center self-stretch justify-between gap-4">

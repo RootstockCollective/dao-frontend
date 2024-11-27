@@ -4,6 +4,7 @@ import { BuilderRegistryAbi } from '@/lib/abis/v2/BuilderRegistryAbi'
 import { BackersManagerAddress } from '@/lib/contracts'
 import { AbiFunction, Address } from 'viem'
 import { useGetGaugesLength } from '@/app/collective-rewards/user'
+import { useMemo } from 'react'
 
 const gaugeTypeOptions = ['active', 'halted'] as const
 export type GaugeType = (typeof gaugeTypeOptions)[number]
@@ -45,7 +46,7 @@ export const useGetGaugesArray = (type: GaugeType) => {
     },
   })
 
-  const gauges = gaugesAddress?.map(gauge => gauge.result as Address)
+  const gauges = useMemo(() => gaugesAddress?.map(gauge => gauge.result as Address), [gaugesAddress])
   const isLoading = gaugesLengthLoading || gaugesAddressLoading
   const error = gaugesLengthError ?? gaugesAddressError
 

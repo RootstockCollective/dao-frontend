@@ -188,35 +188,21 @@ type ActionCellProps = {
 }
 
 export const ActionCell: FC<ActionCellProps> = ({ tableHeader: { className }, builderAddress }) => {
-  const [selected, setSelected] = useState(false)
   const {
-    state: { selections, getBuilderIndexByAddress, getBuilder },
+    state: { selections, allocations, getBuilder },
     actions: { toggleSelectedBuilder },
   } = useContext(AllocationsContext)
-  /* TODO: manage the button status 
-    - disabled when the backer cannot vote on the Builder
-    - ✅variant=primary when the builder is selected and text changed to "Selected"
-    - ✅variant=secondary by default and text is "Select"
-  */
-  /* TODO: add the onClick event
-   *  - it needs to interact with the allocation context to add the builder to the selected builders
-   */
 
-  const selectBuilder = () => {
-    if (builderIndex < 0) {
-      console.log('Builder not found in selection') // TODO: handle this case better
-      return
-    }
-    toggleSelectedBuilder(builderIndex)
-  }
+  const builder = useMemo(() => getBuilder(builderAddress), [builderAddress, getBuilder])
 
-  const builderIndex = useMemo(
-    () => getBuilderIndexByAddress(builderAddress),
-    [builderAddress, getBuilderIndexByAddress],
+  const isPreallocated = useMemo(() => allocations[builderAddress] > 0n, [allocations, builderAddress])
+
+  const isSelected = useMemo(
+    () => selections[builderAddress] || isPreallocated,
+    [selections, builderAddress, isPreallocated],
   )
 
   const isBuilderOperational = useMemo(() => {
-    const builder = builderIndex >= 0 ? getBuilder(builderIndex) : null
     if (!builder) {
       console.log('Builder not found in selection') // TODO: handle this case better
       return
@@ -227,26 +213,21 @@ export const ActionCell: FC<ActionCellProps> = ({ tableHeader: { className }, bu
       builder.stateFlags.communityApproved &&
       !builder.stateFlags.paused
     )
-  }, [builderIndex, getBuilder])
+  }, [builder])
 
-  useEffect(() => {
-    if (builderIndex < 0) {
-      console.log('Builder not found in selection') // TODO: handle this case better
-      return
-    }
-    const isSelected = selections.includes(builderIndex)
-    setSelected(isSelected)
-  }, [builderAddress, selections, builderIndex])
+  const selectBuilder = () => {
+    toggleSelectedBuilder(builder?.address as Address)
+  }
 
   return (
     <TableCell className={cn(className, 'border-solid align-center')}>
       <Button
-        variant={selected ? 'white' : 'secondary'}
-        disabled={!isBuilderOperational}
+        variant={isSelected ? 'white' : 'secondary'}
+        disabled={!isBuilderOperational || isPreallocated}
         onClick={selectBuilder}
         className="white text-center"
       >
-        {selected ? 'Selected' : 'Select'}
+        {isSelected ? 'Selected' : 'Select'}
       </Button>
     </TableCell>
   )

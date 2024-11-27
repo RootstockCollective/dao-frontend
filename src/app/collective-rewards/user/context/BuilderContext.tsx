@@ -1,7 +1,7 @@
 import { Builder, BuilderStateFlags } from '@/app/collective-rewards/types'
 import { useGetBuilders } from '@/app/collective-rewards/user'
 import { withPricesContextProvider } from '@/shared/context/PricesContext'
-import { createContext, FC, ReactNode, useContext } from 'react'
+import { createContext, FC, ReactNode, useCallback, useContext, useMemo } from 'react'
 import { Address } from 'viem'
 
 type BuilderContextValue = {
@@ -28,16 +28,20 @@ export const BuilderContextProvider: FC<BuilderProviderProps> = ({ children }) =
   const isLoading = buildersLoading
   const error = buildersError
 
-  const getBuilderByAddress = (address: Address): Builder | undefined => {
-    return builders[address]
-  }
+  const getBuilderByAddress = useCallback(
+    (address: Address): Builder | undefined => builders[address],
+    [builders],
+  )
 
-  const valueOfContext: BuilderContextValue = {
-    data: Object.values(builders),
-    isLoading,
-    error,
-    getBuilderByAddress,
-  }
+  const valueOfContext: BuilderContextValue = useMemo(
+    () => ({
+      data: Object.values(builders),
+      isLoading,
+      error,
+      getBuilderByAddress,
+    }),
+    [builders, isLoading, error, getBuilderByAddress],
+  )
 
   return <BuilderContext.Provider value={valueOfContext}>{children}</BuilderContext.Provider>
 }
