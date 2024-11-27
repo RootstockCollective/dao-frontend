@@ -8,11 +8,13 @@ import {
 import { createContext, FC, ReactNode, useContext } from 'react'
 import { Address } from 'viem'
 import { useAccount } from 'wagmi'
+import { useGetIsBuilderOperational } from '@/app/collective-rewards/settings'
 
 type BackerRewardsPercentageContext = {
   update: SetBackerRewardsForBuilder
   current: BackerRewardResponse
   rewardPercentageToApply: RewardPercentageToApply
+  isBuilderOperational?: boolean
 }
 
 const BuilderSettingsContext = createContext<BackerRewardsPercentageContext>(
@@ -26,11 +28,13 @@ export const BuilderSettingsProvider: FC<{ children: ReactNode }> = ({ children 
   const current = useGetBackerRewardsForBuilder(address as Address)
   const update = useSetBackerRewardsForBuilder()
   const rewardPercentageToApply = useGetRewardPercentageToApply(address as Address)
+  const { data: isBuilderOperational } = useGetIsBuilderOperational(address as Address)
 
   const contextValue: BackerRewardsPercentageContext = {
     update,
     current,
     rewardPercentageToApply,
+    isBuilderOperational,
   }
 
   return <BuilderSettingsContext.Provider value={contextValue}>{children}</BuilderSettingsContext.Provider>

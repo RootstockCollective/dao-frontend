@@ -7,8 +7,9 @@ import { FC, useEffect, useState } from 'react'
 import { useForm } from 'react-hook-form'
 import { GoRocket } from 'react-icons/go'
 import { z } from 'zod'
-import { percentageToWei } from '../utils'
+import { percentageToWei } from '@/app/collective-rewards/settings/utils'
 import { useBuilderSettingsContext } from './context'
+import { Popover } from '@/components/Popover'
 
 const formSchema = z.object({
   reward: z
@@ -39,9 +40,10 @@ const formSchema = z.object({
 export const BuilderRewardsSettingsForm: FC = () => {
   const router = useRouter()
   const [backButtonName, setBackButtonName] = useState('Cancel')
-  const {
+  let {
     current: { refetch, isLoading: isCurrentRewardsLoading },
     update: { isSuccess, setNewReward, isPending },
+    isBuilderOperational,
   } = useBuilderSettingsContext()
 
   const form = useForm<z.infer<typeof formSchema>>({
@@ -84,7 +86,12 @@ export const BuilderRewardsSettingsForm: FC = () => {
                 {isCurrentRewardsLoading ? (
                   <LoadingSpinner />
                 ) : (
-                  <FormInput placeholder="0 ... 100 %" inputMode="decimal" {...field} />
+                  <FormInput
+                    placeholder="0 ... 100 %"
+                    inputMode="decimal"
+                    {...field}
+                    disabled={!isBuilderOperational}
+                  />
                 )}
               </FormControl>
               <FormMessage />
@@ -92,14 +99,28 @@ export const BuilderRewardsSettingsForm: FC = () => {
           )}
         ></FormField>
         <div className="flex flex-row justify-start gap-4">
-          <Button
-            startIcon={<GoRocket />}
-            disabled={!isDirty || !isValid}
-            buttonProps={{ type: 'submit' }}
-            loading={isPending}
+          <Popover
+            content={
+              <div className="text-[12px] font-bold mb-1">
+                <p data-testid="adjustBackerRewardPctTooltip">
+                  You need to be operational to adjust your backer reward %
+                </p>
+              </div>
+            }
+            size="small"
+            position="top"
+            trigger="hover"
+            disabled={isBuilderOperational}
           >
-            Save changes
-          </Button>
+            <Button
+              startIcon={<GoRocket />}
+              disabled={!isDirty || !isValid || !isBuilderOperational}
+              buttonProps={{ type: 'submit' }}
+              loading={isPending}
+            >
+              Save changes
+            </Button>
+          </Popover>
           <Button
             variant="secondary"
             onClick={() => {
