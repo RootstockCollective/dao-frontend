@@ -16,6 +16,7 @@ import { CopyButton } from '@/components/CopyButton'
 import { NftHoldersSection } from '@/app/communities/NftHoldersSection'
 import { communitiesMapByContract } from '@/app/communities/communityUtils'
 import { isUserRejectedTxError } from '@/components/ErrorPage/commonErrors'
+import { useBalancesContext } from '@/app/user/Balances/context/BalancesContext'
 
 /**
  * Name of the local storage variable with information about whether the token was added to the wallet
@@ -188,6 +189,10 @@ export default function Page() {
     }
   }
 
+  const { balances } = useBalancesContext()
+  const { balance } = balances['RIF']
+  const hasEnoughBalance = Number(balance) > 0
+
   if (!nftAddress) return null
   return (
     <MainContainer notProtected>
@@ -301,7 +306,7 @@ export default function Page() {
                       variant="primary"
                       className="my-[16px]"
                       onClick={handleMinting}
-                      disabled={!tokensAvailable || !address || isClaiming}
+                      disabled={!tokensAvailable || !address || isClaiming || !hasEnoughBalance}
                       loading={isClaiming}
                       data-testid="claimButton"
                     >
