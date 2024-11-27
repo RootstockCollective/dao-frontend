@@ -34,3 +34,6 @@ export const fetchBuilderRewardsClaimedLogsByAddress = `/address/{{address}}/eve
 
 const BACKER_REWARDS_CLAIMED_EVENT = '0x72421f1eeaa316f3b67618996c0df193d45328d3645bb1866b6beb11a0c8230e'
 export const fetchBackerRewardsClaimedLogsByAddress = `/address/{{address}}/eventsByTopic0?topic0=${BACKER_REWARDS_CLAIMED_EVENT}&chainId=${CHAIN_ID}&fromBlock={{fromBlock}}`
+
+const REWARD_DISTRIBUTION_FINISHED = '0x2e0a637781c44a621d21ae02c97a62860799594e47e453e0491eb348ebf83bff'
+export const fetchRewardDistributionFinishedLogsByAddress = `/address/{{address}}/eventsByTopic0?topic0=${REWARD_DISTRIBUTION_FINISHED}&chainId=${CHAIN_ID}&fromBlock={{fromBlock}}`
