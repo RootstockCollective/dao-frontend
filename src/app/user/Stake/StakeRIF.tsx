@@ -3,6 +3,7 @@ import { StakeInput } from '@/app/user/Stake/StakeInput'
 import { Button } from '@/components/Button'
 import { useMemo } from 'react'
 import { ActionBeingExecuted, textsDependingOnAction } from '@/app/user/Stake/Steps/stepsUtils'
+import { toFixed } from '@/lib/utils'
 
 interface Props {
   amount: string
@@ -89,8 +90,8 @@ const PercentageButton = ({ amount, percentage, totalAmountAllowed, onClick }: P
   const onPercentageClicked = () => onClick(percentage)
 
   const isActive = useMemo(() => {
-    const totalAmountAllowedPercentage = Number(totalAmountAllowed) * (percentage / 100)
-    return Number(amount) === totalAmountAllowedPercentage
+    const totalAmountAllowedPercentage = Number(toFixed(Number(totalAmountAllowed))) * (percentage / 100)
+    return toFixed(Number(amount)) === toFixed(totalAmountAllowedPercentage)
   }, [amount, totalAmountAllowed, percentage])
 
   return (
