@@ -7,11 +7,10 @@ import { BackersManagerAbi } from '@/lib/abis/v2/BackersManagerAbi'
 import { BackersManagerAddress } from '@/lib/contracts'
 import { useRouter } from 'next/navigation'
 import { useCallback, useContext, useState } from 'react'
-import { Address, zeroAddress } from 'viem'
+import { Address } from 'viem'
 import { useWaitForTransactionReceipt, useWriteContract } from 'wagmi'
 import { useAwaitedTxReporting } from '../shared'
 import { Builder } from '../types'
-import { useHandleErrors } from '../utils'
 import {
   AllocationAmount,
   AllocationMetrics,
@@ -72,8 +71,6 @@ export default function Allocations() {
     resetAllocations()
     setResetCounter(prev => prev + 1)
   }, [resetAllocations])
-
-  useHandleErrors({ error: executionError, title: 'Error saving allocations' })
 
   const cancel = () => {
     resetAllocations()
