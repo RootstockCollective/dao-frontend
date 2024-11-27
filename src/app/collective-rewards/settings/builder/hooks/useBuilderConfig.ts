@@ -1,7 +1,10 @@
+import { useAwaitedTxReporting } from '@/app/collective-rewards/shared/hooks'
 import { BuilderRegistryAbi } from '@/lib/abis/v2/BuilderRegistryAbi'
+import { AVERAGE_BLOCKTIME } from '@/lib/constants'
 import { BackersManagerAddress } from '@/lib/contracts'
 import { Modify } from '@/shared/utility'
 import { DateTime } from 'luxon'
+import { useEffect, useState } from 'react'
 import { Address } from 'viem'
 import {
   useReadContract,
@@ -11,9 +14,6 @@ import {
   useWriteContract,
   UseWriteContractReturnType,
 } from 'wagmi'
-import { useAwaitedTxReporting } from '../../../shared/hooks'
-import { useEffect, useState } from 'react'
-import { AVERAGE_BLOCKTIME } from '@/lib/constants'
 
 export type BackerReward = {
   previous: bigint
@@ -81,8 +81,8 @@ export const useSetBackerRewardsForBuilder = (): SetBackerRewardsForBuilder => {
     isLoadingReceipt: isLoading,
     isSuccess,
     receipt,
-    title: 'Setting new builder rewards percentage',
-    errorContent: 'Error setting new builder rewards percentage',
+    title: 'Setting new backer rewards percentage',
+    errorContent: 'Error setting new backer rewards percentage',
   })
 
   const setNewReward = async (newReward: bigint) => {
