@@ -40,7 +40,7 @@ const formSchema = z.object({
 export const BuilderRewardsSettingsForm: FC = () => {
   const router = useRouter()
   const [backButtonName, setBackButtonName] = useState('Cancel')
-  let {
+  const {
     current: { refetch, isLoading: isCurrentRewardsLoading },
     update: { isSuccess, setNewReward, isPending },
     isBuilderOperational,

@@ -207,17 +207,12 @@ export const ActionCell: FC<ActionCellProps> = ({ tableHeader: { className }, bu
     [selections, builderAddress, isPreallocated],
   )
 
-  const isBuilderOperational = useMemo(() => {
+  const isOperational = useMemo(() => {
     if (!builder) {
       console.log('Builder not found in selection') // TODO: handle this case better
       return
     }
-    return (
-      builder.stateFlags &&
-      builder.stateFlags.kycApproved &&
-      builder.stateFlags.communityApproved &&
-      !builder.stateFlags.paused
-    )
+    return isBuilderOperational(builder.stateFlags)
   }, [builder])
 
   const selectBuilder = () => {
@@ -228,7 +223,7 @@ export const ActionCell: FC<ActionCellProps> = ({ tableHeader: { className }, bu
     <TableCell className={cn(className, 'border-solid align-center')}>
       <Button
         variant={isSelected ? 'white' : 'secondary'}
-        disabled={!isBuilderOperational || isPreallocated}
+        disabled={!isOperational || isPreallocated}
         onClick={selectBuilder}
         className="white text-center"
       >
