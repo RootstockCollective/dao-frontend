@@ -20,6 +20,7 @@ export const DelegateModal = ({ onClose, onDelegateTxStarted }: DelegateModalPro
   const [domainValidationStatus, setDomainValidationStatus] = useState<
     'validating' | 'valid' | 'invalid' | ''
   >('')
+  const [isInputValid, setIsInputValid] = useState(false)
 
   // Global Alert
   const { setMessage: setGlobalMessage } = useAlertContext()
@@ -45,8 +46,18 @@ export const DelegateModal = ({ onClose, onDelegateTxStarted }: DelegateModalPro
   const onAddressChange = (value: string) => {
     setAddressToDelegateTo(value.toLowerCase())
     setError('')
+    // Trigger RNS domain validation
     debouncedValidateRnsDomain(value)
+    // Check if it's a valid address immediately
+    if (isAddressRegex(value)) {
+      setDomainValidationStatus('valid') // Treat valid addresses as valid immediately
+    }
   }
+
+  useEffect(() => {
+    // Update input validity state based on address or domain validation
+    setIsInputValid(isAddressRegex(addressToDelegateTo) || domainValidationStatus === 'valid')
+  }, [addressToDelegateTo, domainValidationStatus])
 
   const onDelegateClick = async () => {
     setError('')
@@ -110,7 +121,7 @@ export const DelegateModal = ({ onClose, onDelegateTxStarted }: DelegateModalPro
         </div>
         {/* Button */}
         <div className="flex flex-row justify-center gap-4">
-          <Button onClick={onDelegateClick} disabled={isPending || !addressToDelegateTo}>
+          <Button onClick={onDelegateClick} disabled={isPending || !isInputValid}>
             Delegate
           </Button>
           <Button variant="secondary" onClick={onClose}>
