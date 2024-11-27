@@ -135,7 +135,12 @@ export const AllocationsContextProvider: FC<{ children: ReactNode }> = ({ childr
     return rawBuilders.reduce((acc, builder, index) => {
       acc[builder.address] = {
         ...builder,
-        ...backerRewards[index],
+        backerRewardPercentage: {
+          active: backerRewards[index]?.active ?? BigInt(0),
+          previous: backerRewards[index]?.previous ?? BigInt(0),
+          next: backerRewards[index]?.next ?? BigInt(0),
+          cooldown: backerRewards[index]?.cooldown ?? BigInt(0),
+        },
       }
       return acc
     }, {} as Builders)
