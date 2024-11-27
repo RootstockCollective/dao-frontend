@@ -2,12 +2,12 @@ import { Modal } from '@/components/Modal/Modal'
 import { HeaderTitle, Paragraph } from '@/components/Typography'
 import { Button } from '@/components/Button'
 import { Input } from '@/components/Input'
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useDelegateToAddress } from '@/shared/hooks/useDelegateToAddress'
 import { isAddressRegex, isChecksumValid } from '@/app/proposals/shared/utils'
 import { useAlertContext } from '@/app/providers'
 import { TX_MESSAGES } from '@/shared/txMessages'
-import { CHAIN_ID } from '@/lib/constants'
+import { debounce } from 'lodash'
 
 interface DelegateModalProps {
   onClose: () => void
@@ -15,33 +15,49 @@ interface DelegateModalProps {
 }
 
 export const DelegateModal = ({ onClose, onDelegateTxStarted }: DelegateModalProps) => {
-  // NOTE: this might use RNS in the future
   const [addressToDelegateTo, setAddressToDelegateTo] = useState('')
   const [error, setError] = useState('')
+  const [domainValidationStatus, setDomainValidationStatus] = useState<
+    'validating' | 'valid' | 'invalid' | ''
+  >('')
+
   // Global Alert
   const { setMessage: setGlobalMessage } = useAlertContext()
-  const onAddressChange = (value: string) => {
-    setAddressToDelegateTo(value)
-    setError('')
+  const { onDelegate, isPending } = useDelegateToAddress()
+
+  // Debounced RNS domain validation
+  const validateRnsDomain = async (domain: string) => {
+    try {
+      setDomainValidationStatus('validating')
+      // Simulate RNS domain validation logic here
+      const isValidDomain = await mockRnsDomainValidation(domain)
+      setDomainValidationStatus(isValidDomain ? 'valid' : 'invalid')
+    } catch {
+      setDomainValidationStatus('invalid')
+    }
   }
 
-  const { onDelegate, isPending } = useDelegateToAddress()
+  const debouncedValidateRnsDomain = debounce((domain: string) => {
+    if (domain.endsWith('.rsk')) validateRnsDomain(domain)
+    else setDomainValidationStatus('')
+  }, 500)
+
+  const onAddressChange = (value: string) => {
+    setAddressToDelegateTo(value.toLowerCase())
+    setError('')
+    debouncedValidateRnsDomain(value)
+  }
 
   const onDelegateClick = async () => {
     setError('')
-    // Validate address is valid
-    const isValid = isAddressRegex(addressToDelegateTo)
+    // Validate address or RNS domain
+    const isValid = isAddressRegex(addressToDelegateTo) || domainValidationStatus === 'valid'
 
     if (!isValid) {
-      setError('Please insert a valid address.')
-      return
-    }
-    if (!isChecksumValid(addressToDelegateTo, CHAIN_ID)) {
-      setError('Address has invalid checksum.')
+      setError('Please insert a valid address or RNS domain.')
       return
     }
 
-    // If address is valid
     const onDelegatePromise = onDelegate(addressToDelegateTo)
 
     onDelegatePromise.then(txHash => {
@@ -73,7 +89,7 @@ export const DelegateModal = ({ onClose, onDelegateTxStarted }: DelegateModalPro
         {/* Input Container */}
         <div className="mb-14">
           <Input
-            label="Address"
+            label="Address or RNS Domain"
             name="address"
             value={addressToDelegateTo}
             onChange={onAddressChange}
@@ -82,6 +98,15 @@ export const DelegateModal = ({ onClose, onDelegateTxStarted }: DelegateModalPro
             labelWrapperProps={{ className: 'text-left mb-[10px]' }}
           />
           {error && <p className="text-st-error">{error}</p>}
+          {!error && domainValidationStatus && (
+            <p className={`text-${domainValidationStatus === 'valid' ? 'green' : 'st-error'}`}>
+              {domainValidationStatus === 'validating'
+                ? 'Validating domain...'
+                : domainValidationStatus === 'valid'
+                  ? 'Valid domain.'
+                  : 'Invalid domain.'}
+            </p>
+          )}
         </div>
         {/* Button */}
         <div className="flex flex-row justify-center gap-4">
@@ -95,4 +120,10 @@ export const DelegateModal = ({ onClose, onDelegateTxStarted }: DelegateModalPro
       </div>
     </Modal>
   )
+}
+
+// Mock function for RNS domain validation (replace with actual validation logic)
+const mockRnsDomainValidation = async (domain: string): Promise<boolean> => {
+  // Simulate API call with a delay
+  return new Promise(resolve => setTimeout(() => resolve(domain === 'valid.rsk'), 1000))
 }
