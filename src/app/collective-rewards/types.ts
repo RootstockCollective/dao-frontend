@@ -9,7 +9,7 @@ export type Builder = {
   address: Address
   builderName: string
   // TODO: do we want to keep it here?
-  backerRewardPercentage?: BackerRewardPercentage
+  backerRewardPercentage?: BackerRewardsConfig
 }
 
 type BuilderFunctionOutputs = Extract<
@@ -30,10 +30,11 @@ export type BuilderProposal = {
   date: string
 }
 
-export type BackerRewardPercentage = {
+export type BackerRewardsConfig = {
   previous: bigint
   next: bigint
   cooldown: bigint
+  active: bigint
 }
 
 export type ProposalByBuilder = Record<Address, BuilderProposal>

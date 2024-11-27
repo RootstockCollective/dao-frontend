@@ -32,6 +32,7 @@ const isBuilderShown = (
   return (kycApproved && !revoked) || (allocation && allocation > 0n)
 }
 
+// FIXME: remove and use Builder and/or combination of existing types
 export type BuildersRewards = {
   address: Address
   builderName: string
