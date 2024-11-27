@@ -31,4 +31,34 @@ describe('formatOnchainFraction', () => {
     const result = formatOnchainFraction(amount)
     expect(result).toBe('0')
   })
+
+  it('should handle numbers without decimals', () => {
+    const amount = BigInt('9000000000000000000')
+    const result = formatOnchainFraction(amount)
+    expect(result).toBe('9')
+  })
+
+  it('should handle numbers without decimals and more than 1 character', () => {
+    const amount = BigInt('90000000000000000000')
+    const result = formatOnchainFraction(amount)
+    expect(result).toBe('90')
+  })
+
+  it('should handle numbers with decimals and 3 characters', () => {
+    const amount = BigInt('900561000000000000000')
+    const result = formatOnchainFraction(amount)
+    expect(result).toBe('900.56')
+  })
+
+  it('should handle numbers with decimals and 3 characters', () => {
+    const amount = BigInt('9000127000000000000000')
+    const result = formatOnchainFraction(amount)
+    expect(result).toBe('9000.12')
+  })
+
+  it('should handle very big numbers', () => {
+    const amount = BigInt('987654321123456789012300000000000000')
+    const result = formatOnchainFraction(amount)
+    expect(result).toBe('987654321123456789.01')
+  })
 })
