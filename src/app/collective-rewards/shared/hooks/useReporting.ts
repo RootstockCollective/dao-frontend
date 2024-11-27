@@ -26,6 +26,7 @@ export type UseAwaitedTxReportingProps = Merge<
   }
 > & {
   title: string
+  errorContent?: string
 }
 
 export const useAwaitedTxReporting = ({
@@ -36,9 +37,10 @@ export const useAwaitedTxReporting = ({
   isSuccess,
   receipt,
   title,
+  errorContent,
 }: UseAwaitedTxReportingProps) => {
   const { setMessage } = useAlertContext()
-  useHandleErrors({ error, title })
+  useHandleErrors({ error, title, content: errorContent })
 
   useEffect(() => {
     if (isPendingTx) {

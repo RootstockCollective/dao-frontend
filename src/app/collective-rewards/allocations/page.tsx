@@ -7,11 +7,10 @@ import { BackersManagerAbi } from '@/lib/abis/v2/BackersManagerAbi'
 import { BackersManagerAddress } from '@/lib/contracts'
 import { useRouter } from 'next/navigation'
 import { useCallback, useContext, useState } from 'react'
-import { Address, zeroAddress } from 'viem'
+import { Address } from 'viem'
 import { useWaitForTransactionReceipt, useWriteContract } from 'wagmi'
 import { useAwaitedTxReporting } from '../shared'
 import { Builder } from '../types'
-import { useHandleErrors } from '../utils'
 import {
   AllocationAmount,
   AllocationMetrics,
@@ -35,7 +34,8 @@ export default function Allocations() {
     isLoadingReceipt: isLoading,
     isSuccess,
     receipt: data,
-    title: 'Save allocations',
+    title: 'Saving allocations',
+    errorContent: 'Error saving allocations',
   })
 
   const router = useRouter()
@@ -45,14 +45,18 @@ export default function Allocations() {
   } = useContext(AllocationsContext)
 
   const saveAllocations = () => {
-    const [gauges, allocs] = Object.entries(allocations).reduce<[Address[], bigint[]]>(
-      (acc, [index, allocation]) => {
-        acc[0] = [...acc[0], getBuilder(Number(index))?.gauge ?? zeroAddress]
-        acc[1] = [...acc[1], allocation]
+    const [gauges, allocs] = Object.entries(allocations).reduce(
+      (acc, [key, value]) => {
+        const builderAddress = key as Address
+        const gauge = getBuilder(builderAddress)?.gauge
+        if (gauge) {
+          acc[0] = [...acc[0], gauge]
+          acc[1] = [...acc[1], value]
+        }
 
         return acc
       },
-      [[], []],
+      [[], [], []] as [Address[], bigint[], Address[]],
     )
 
     return writeContractAsync({
@@ -67,8 +71,6 @@ export default function Allocations() {
     resetAllocations()
     setResetCounter(prev => prev + 1)
   }, [resetAllocations])
-
-  useHandleErrors({ error: executionError, title: 'Error saving allocations' })
 
   const cancel = () => {
     resetAllocations()
@@ -91,19 +93,18 @@ export default function Allocations() {
           </Typography>
           <div className="flex items-start content-start flex-wrap gap-4 w-full">
             {Object.entries(allocations).map(([key, currentAllocation]) => {
-              const index = Number(key)
-              const builderInfo = getBuilder(index) as Builder
+              const builderAddress = key as Address
+              const builderInfo = getBuilder(builderAddress) as Builder
               if (!builderInfo) {
                 return null
               }
 
               const builder: BuilderAllocationProps = {
                 ...builderInfo,
-                index,
                 currentAllocation,
                 date: builderInfo.proposal.date,
               }
-              return <BuilderAllocation key={index} {...builder} />
+              return <BuilderAllocation key={builderAddress} {...builder} />
             })}
           </div>
           <div className="flex items-center self-stretch justify-between gap-4">

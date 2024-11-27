@@ -14,7 +14,7 @@ const getTokenFunction = (
     abi: RIFTokenAbi,
     address: tokenAddress,
     functionName,
-    args: functionName === 'balanceOf' ? ([userAddress.toLowerCase()] as [Address]) : ([] as []),
+    args: functionName === 'balanceOf' ? ([userAddress?.toLowerCase()] as [Address]) : ([] as []),
   }) as const
 
 type TokenData = { result: string | bigint; error?: object }[]

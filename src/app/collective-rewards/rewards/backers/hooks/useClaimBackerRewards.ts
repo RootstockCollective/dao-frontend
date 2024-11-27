@@ -3,19 +3,19 @@ import { useWaitForTransactionReceipt, useWriteContract } from 'wagmi'
 import { BackersManagerAbi } from '@/lib/abis/v2/BackersManagerAbi'
 import { BackersManagerAddress } from '@/lib/contracts'
 import { useAwaitedTxReporting } from '@/app/collective-rewards/shared'
-import { useBackerRewardsContext } from '../context'
+import { useBackerRewardsContext } from '@/app/collective-rewards/rewards'
 
-export const useClaimBackerRewards = (gauges: Address[]) => {
+export const useClaimBackerRewards = (rewardToken?: Address) => {
   const { writeContractAsync, error: executionError, data: hash, isPending } = useWriteContract()
   const { canClaim, isLoading: canClaimLoading, error: canClaimError } = useBackerRewardsContext()
 
   const { isLoading, isSuccess, data, error: receiptError } = useWaitForTransactionReceipt({ hash })
 
-  const isClaimFunctionReady = !canClaimLoading && !canClaimError && canClaim()
+  const isClaimable = !canClaimLoading && canClaim(rewardToken)
 
   const error = executionError || receiptError || canClaimError
 
-  const claimBackerReward = (rewardToken?: Address) => {
+  const claimBackerReward = (gauges: Address[]) => {
     return writeContractAsync({
       abi: BackersManagerAbi,
       address: BackersManagerAddress,
@@ -32,11 +32,12 @@ export const useClaimBackerRewards = (gauges: Address[]) => {
     isSuccess,
     receipt: data,
     title: 'Claiming backer rewards',
+    errorContent: 'Error claiming backer rewards',
   })
 
   return {
-    isClaimFunctionReady,
-    claimRewards: (rewardToken?: Address) => isClaimFunctionReady && claimBackerReward(rewardToken),
+    isClaimable,
+    claimRewards: (gauges: Address[]) => isClaimable && claimBackerReward(gauges),
     error,
     isPendingTx: isPending,
     isLoadingReceipt: isLoading,

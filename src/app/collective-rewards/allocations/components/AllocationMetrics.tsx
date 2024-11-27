@@ -1,9 +1,9 @@
 'use client'
 
+import { AllocationsContext } from '@/app/collective-rewards/allocations/context'
+import { formatOnchainFraction } from '@/app/collective-rewards/rewards'
 import { Paragraph } from '@/components/Typography'
 import { useContext } from 'react'
-import { formatEther } from 'viem'
-import { AllocationsContext } from '@/app/collective-rewards/allocations/context'
 
 type ValueProps = {
   value: string
@@ -45,11 +45,11 @@ export const AllocationMetrics = () => {
     },
   } = useContext(AllocationsContext)
 
-  const balanceValue = `${formatEther(balance)} stRIF`
+  const balanceValue = `${formatOnchainFraction(balance)} stRIF`
 
-  const allocatedAmountValue = `${formatEther(amountToAllocate)} stRIF`
+  const allocatedAmountValue = `${formatOnchainFraction(amountToAllocate)} stRIF`
 
-  const unallocatedAmount = formatEther(balance - amountToAllocate)
+  const unallocatedAmount = formatOnchainFraction(balance - amountToAllocate)
 
   const unallocatedAmountValue = `${unallocatedAmount} stRIF`
   return (
