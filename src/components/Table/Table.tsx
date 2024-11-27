@@ -20,16 +20,6 @@ type TableData<T extends Record<string, any> = Record<string, any>> = T
 
 /**
  * Props for the Table component.
- *
- * @template T - The type of data used in the table.
- *
- * @property {T[]} data - The data to be displayed in the table.
- * @property {boolean} [equalColumns] - Whether the columns should have equal width.
- * @property {SharedProps} [theadProps] - Additional props for the table header.
- * @property {SharedProps} [tbodyProps] - Additional props for the table body.
- * @property {string} [headerClassName] - Additional class name for the table header.
- * @property {Object.<keyof T, (value: T[keyof T], row: T) => ReactNode>} [renderers] - Custom renderers for table cells.
- * @property {Object.<keyof T, false | SortingFnOption<T>>} [sortingOptions] - Sorting options for each column.
  */
 interface TableProps<T extends TableData> extends HTMLAttributes<HTMLDivElement> {
   data: T[]
@@ -49,6 +39,10 @@ interface TableProps<T extends TableData> extends HTMLAttributes<HTMLDivElement>
    * ```
    */
   renderers?: { [K in keyof T]?: (value: T[K], row: T) => ReactNode }
+  /**
+   * Flag indicating whether sorting can be applied for the whole table. `false` by default
+   */
+  isSortable?: boolean
   /**
    * Custom sorting function for table column. `false` excludes column from sorting
    *
@@ -72,6 +66,7 @@ export const Table = <T extends TableData>({
   theadProps,
   headerClassName,
   renderers = {},
+  isSortable = false,
   sortingOptions,
   ...props
 }: TableProps<T>) => {
@@ -87,11 +82,11 @@ export const Table = <T extends TableData>({
             const func = renderers[key]
             return func ? func(value, row) : value
           },
-          enableSorting: sortingOptions?.[key] !== false,
+          enableSorting: isSortable && sortingOptions?.[key] !== false,
           sortingFn: sortingOptions?.[key] || 'auto',
         }),
       ),
-    [columnHelper, data, renderers, sortingOptions],
+    [columnHelper, data, isSortable, renderers, sortingOptions],
   )
 
   const [sorting, setSorting] = useState<SortingState>([])
