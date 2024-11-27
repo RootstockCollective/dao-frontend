@@ -11,6 +11,7 @@ import {
   RbtcSvg,
   BuilderRewardPercentage,
   TokenRewards,
+  useGetLastCycleRewardsTimestamps,
 } from '@/app/collective-rewards/rewards'
 import { formatBalanceToHuman } from '@/app/user/Balances/balanceUtils'
 import { usePricesContext } from '@/shared/context/PricesContext'
@@ -91,23 +92,27 @@ export const useGetBuildersRewards = ({ rif, rbtc }: { [token: string]: Token },
     error: rewardsCoinbaseError,
   } = useGetRewardsCoinbase()
 
-  const { cycleDuration, cycleStart, endDistributionWindow, cycleNext } = cycle
-  const distributionWindow = endDistributionWindow.diff(cycleStart)
-  const lastCycleStart = cycleStart.minus({ seconds: cycleDuration.as('seconds') })
-  const lastCycleAfterDistribution = lastCycleStart.plus({ seconds: distributionWindow.as('seconds') })
+  const {
+    data: { fromTimestamp, toTimestamp },
+    isLoading: lastCycleRewardsLoading,
+    error: lastCycleRewardsError,
+  } = useGetLastCycleRewardsTimestamps(cycle)
 
   const {
     data: notifyRewardEventLastCycle,
     isLoading: logsLoading,
     error: logsError,
-  } = useGetGaugesNotifyReward(
-    gauges,
-    undefined,
-    lastCycleAfterDistribution.toSeconds(),
-    endDistributionWindow.toSeconds(),
+  } = useGetGaugesNotifyReward(gauges, undefined, fromTimestamp, toTimestamp)
+  const rifBuildersRewardsAmount = getNotifyRewardAmount(
+    notifyRewardEventLastCycle,
+    rif.address,
+    'builderAmount_',
   )
-  const rifBuildersRewardsAmount = getNotifyRewardAmount(notifyRewardEventLastCycle, rif, 'builderAmount_')
-  const rbtcBuildersRewardsAmount = getNotifyRewardAmount(notifyRewardEventLastCycle, rbtc, 'builderAmount_')
+  const rbtcBuildersRewardsAmount = getNotifyRewardAmount(
+    notifyRewardEventLastCycle,
+    rbtc.address,
+    'builderAmount_',
+  )
 
   // get the backer reward percentage for each builder we want to show
   const buildersAddress = builders.map(({ address }) => address)
@@ -115,7 +120,7 @@ export const useGetBuildersRewards = ({ rif, rbtc }: { [token: string]: Token },
     data: backersRewardsPct,
     isLoading: backersRewardsPctLoading,
     error: backersRewardsPctError,
-  } = useGetBackersRewardPercentage(buildersAddress, cycleNext.toSeconds())
+  } = useGetBackersRewardPercentage(buildersAddress, cycle.cycleNext.toSeconds())
 
   const isLoading =
     rewardSharesLoading ||
@@ -126,7 +131,8 @@ export const useGetBuildersRewards = ({ rif, rbtc }: { [token: string]: Token },
     rewardsERC20Loading ||
     rewardsCoinbaseLoading ||
     cycleLoading ||
-    totalPotentialRewardsLoading
+    totalPotentialRewardsLoading ||
+    lastCycleRewardsLoading
 
   const error =
     rewardSharesError ??
@@ -137,7 +143,8 @@ export const useGetBuildersRewards = ({ rif, rbtc }: { [token: string]: Token },
     rewardsERC20Error ??
     rewardsCoinbaseError ??
     cycleError ??
-    totalPotentialRewardsError
+    totalPotentialRewardsError ??
+    lastCycleRewardsError
 
   const { prices } = usePricesContext()
 
