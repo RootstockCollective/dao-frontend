@@ -4,9 +4,11 @@ import { Button } from '@/components/Button'
 import { Input } from '@/components/Input'
 import { useState } from 'react'
 import { useDelegateToAddress } from '@/shared/hooks/useDelegateToAddress'
-import { isAddressRegex } from '@/app/proposals/shared/utils'
+import { isAddressRegex, isChecksumValid } from '@/app/proposals/shared/utils'
 import { useAlertContext } from '@/app/providers'
 import { TX_MESSAGES } from '@/shared/txMessages'
+import { isAddress } from 'viem'
+import { CHAIN_ID } from '@/lib/constants'
 
 interface DelegateModalProps {
   onClose: () => void
@@ -19,7 +21,7 @@ export const DelegateModal = ({ onClose, onDelegateTxStarted }: DelegateModalPro
   const [error, setError] = useState('')
   // Global Alert
   const { setMessage: setGlobalMessage } = useAlertContext()
-  const onAddressChange = (value: string) => setAddressToDelegateTo(value.toLowerCase())
+  const onAddressChange = (value: string) => setAddressToDelegateTo(value)
 
   const { onDelegate, isPending } = useDelegateToAddress()
 
@@ -32,6 +34,11 @@ export const DelegateModal = ({ onClose, onDelegateTxStarted }: DelegateModalPro
       setError('Please insert a valid address.')
       return
     }
+    if (!isChecksumValid(addressToDelegateTo, CHAIN_ID)) {
+      setError('Address has invalid checksum.')
+      return
+    }
+
     // If address is valid
     const onDelegatePromise = onDelegate(addressToDelegateTo)
 
