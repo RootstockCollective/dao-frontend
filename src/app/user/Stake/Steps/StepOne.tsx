@@ -1,24 +1,71 @@
-import { StakeRIF } from '@/app/user/Stake/StakeRIF'
-import { useStakingContext } from '@/app/user/Stake/StakingContext'
-import { StepProps } from '@/app/user/Stake/types'
 import { formatCurrency, toFixed } from '@/lib/utils'
-import { useMemo } from 'react'
 import { useCanAccountUnstakeAmount } from '@/shared/hooks/useCanAccountUnstakeAmount'
+import { useMemo, useCallback } from 'react'
+import { StakeRIF } from '../StakeRIF'
+import { useStakingContext } from '../StakingContext'
+import { StepProps } from '../types'
 
 export const StepOne = ({ onGoNext = () => {} }: StepProps) => {
   const { amount, onAmountChange, tokenToSend, actionName } = useStakingContext()
-  // For now, we can only unstake stRIF - but this might change in the future... so tokenToSend.balance must be handled on each case
   const { isCanAccountWithdrawLoading, canAccountWithdraw, backerTotalAllocation } =
-    useCanAccountUnstakeAmount(Number(amount).toString(), tokenToSend.balance) // Ceil'ing to avoid crashing when using decimals
+    useCanAccountUnstakeAmount(Number(amount).toString(), tokenToSend.balance)
 
   const balanceToCurrency = useMemo(
     () => Number(tokenToSend.price) * Number(tokenToSend.balance),
     [tokenToSend],
   )
 
-  const onPercentageClicked = (percentage: number) => {
-    onAmountChange((Number(tokenToSend.balance) * (percentage / 100)).toString())
-  }
+  const onPercentageClicked = useCallback(
+    (percentage: number) => {
+      const balance = tokenToSend.balance
+      // Ensure precise calculation
+      const preciseAmount = Number(balance) * (percentage / 100)
+      const newAmount = preciseAmount.toFixed(8)
+
+      console.log('Percentage clicked:', {
+        percentage,
+        balance,
+        preciseAmount,
+        newAmount,
+      })
+
+      // Keep working state update logic
+      Promise.resolve().then(() => {
+        onAmountChange(newAmount)
+      })
+    },
+    [tokenToSend.balance, onAmountChange],
+  )
+
+  const shouldEnableGoNext = useMemo(() => {
+    console.log('Validating amount:', {
+      amount,
+      balance: tokenToSend.balance,
+      actionName,
+      canAccountWithdraw,
+    })
+
+    if (!amount || Number(amount) <= 0) {
+      console.log('Invalid amount')
+      return false
+    }
+
+    const amountNum = Number(amount).toFixed(8)
+    const balanceNum = Number(tokenToSend.balance).toFixed(8)
+
+    if (Number(amountNum) > Number(balanceNum)) {
+      console.log('Amount exceeds balance')
+      return false
+    }
+
+    if (actionName === 'UNSTAKE' && !canAccountWithdraw) {
+      console.log('Cannot withdraw')
+      return false
+    }
+
+    console.log('Validation passed')
+    return true
+  }, [amount, tokenToSend.balance, actionName, canAccountWithdraw])
 
   const shouldShowCannotWithdraw = useMemo(
     () =>
@@ -29,24 +76,6 @@ export const StepOne = ({ onGoNext = () => {} }: StepProps) => {
     [actionName, backerTotalAllocation, canAccountWithdraw, isCanAccountWithdrawLoading],
   )
 
-  const shouldEnableGoNext = useMemo(() => {
-    if (Number(amount) <= 0) {
-      return false
-    }
-    // Extra unstake validation
-    if (actionName === 'UNSTAKE') {
-      // Checks if the last amount we checked is the one that is currently introduced in the Input
-      if (isCanAccountWithdrawLoading) {
-        return false
-      }
-      if (shouldShowCannotWithdraw) {
-        return false
-      }
-    }
-
-    return Number(amount) <= Number(tokenToSend.balance)
-  }, [actionName, amount, isCanAccountWithdrawLoading, shouldShowCannotWithdraw, tokenToSend.balance])
-
   return (
     <StakeRIF
       amount={amount}
@@ -54,11 +83,11 @@ export const StepOne = ({ onGoNext = () => {} }: StepProps) => {
       onPercentageClicked={onPercentageClicked}
       onGoNext={onGoNext}
       shouldEnableGoNext={shouldEnableGoNext}
-      totalBalance={toFixed(tokenToSend.balance)}
-      totalBalanceConverted={balanceToCurrency ? 'USD ' + formatCurrency(balanceToCurrency) : ''}
-      symbol={tokenToSend.symbol}
+      totalBalance={tokenToSend.balance}
+      totalBalanceConverted={formatCurrency(balanceToCurrency)}
       actionName={actionName}
       shouldShowCannotWithdraw={shouldShowCannotWithdraw}
+      symbol={''}
     />
   )
 }
