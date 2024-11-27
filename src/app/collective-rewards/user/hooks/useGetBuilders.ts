@@ -30,7 +30,7 @@ export const useGetBuilders: UseGetBuilders = () => {
    *    ignore the builder if paused or revoked (to be confirmed)
    */
   // get the gauges
-  const { data: gauges, isLoading: gaugesLoading, error: gaugesError } = useGetGaugesArray('active')
+  const { data: gauges, isLoading: gaugesLoading, error: gaugesError } = useGetGaugesArray()
 
   // get the builders for each gauge
   const gaugeToBuilderCalls = gauges?.map(

@@ -17,23 +17,19 @@ const gaugeType: Record<GaugeType, FunctionName> = {
   halted: 'getHaltedGaugeAt',
 }
 
-export const useGetGaugesArray = (type: GaugeType) => {
-  const {
-    data: gaugesLength,
-    isLoading: gaugesLengthLoading,
-    error: gaugesLengthError,
-  } = useGetGaugesLength(type)
+export const useGetGaugesArray = (type?: GaugeType) => {
+  const { data: activeCalls, isLoading: isLoadingActive, error: errorActive } = useGetContractCalls('active')
+  const { data: haltedCalls, isLoading: isLoadingHalted, error: errorHalted } = useGetContractCalls('halted')
 
-  const length = Number(gaugesLength) ?? 0
-
-  const contractCalls = Array.from({ length }, (_, index) => {
-    return {
-      address: BackersManagerAddress,
-      abi: BuilderRegistryAbi,
-      functionName: gaugeType[type],
-      args: [index],
-    } as const
-  })
+  const contractCalls = useMemo(() => {
+    if (!type) {
+      return [...(activeCalls || []), ...(haltedCalls || [])]
+    } else if (type === 'active') {
+      return activeCalls || []
+    } else {
+      return haltedCalls || []
+    }
+  }, [type, activeCalls, haltedCalls])
 
   const {
     data: gaugesAddress,
@@ -47,12 +43,29 @@ export const useGetGaugesArray = (type: GaugeType) => {
   })
 
   const gauges = useMemo(() => gaugesAddress?.map(gauge => gauge.result as Address), [gaugesAddress])
-  const isLoading = gaugesLengthLoading || gaugesAddressLoading
-  const error = gaugesLengthError ?? gaugesAddressError
+  const isLoading = isLoadingActive || isLoadingHalted || gaugesAddressLoading
+  const error = errorActive ?? errorHalted ?? gaugesAddressError
 
   return {
     data: gauges,
     isLoading,
     error,
   }
+}
+
+const useGetContractCalls = (type: GaugeType) => {
+  const { data: gaugesLength, isLoading, error } = useGetGaugesLength(type)
+
+  const length = Number(gaugesLength) ?? 0
+
+  const data = Array.from({ length }, (_, index) => {
+    return {
+      address: BackersManagerAddress,
+      abi: BuilderRegistryAbi,
+      functionName: gaugeType[type],
+      args: [index],
+    } as const
+  })
+
+  return { data, isLoading, error }
 }

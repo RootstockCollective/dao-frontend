@@ -34,19 +34,17 @@ const SubText = () => {
 
 export const Rewards: FC<{ builder: Address }> = ({ builder }) => {
   const router = useRouter()
-  const { data: rewardGauges, error: rewardGaugesError } = useGetGaugesArray('active')
-  const { data: haltedGauges, error: haltedGaugesError } = useGetGaugesArray('halted')
+  const { data: gauges, error: gaugesError } = useGetGaugesArray()
   const { data: gauge, error: gaugeError } = useGetBuilderToGauge(builder)
-  const gauges = [...(rewardGauges ?? []), ...(haltedGauges ?? [])]
 
-  const error = rewardGaugesError ?? haltedGaugesError ?? gaugeError
+  const error = gaugesError ?? gaugeError
 
   useHandleErrors({ error, title: 'Error loading gauge(s)' })
 
   // TODO: check where to store this information
   const data: RewardDetails = {
     builder,
-    gauges,
+    gauges: gauges || [],
     tokens: {
       rif: {
         address: getAddress(tokenContracts.RIF),
