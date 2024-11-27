@@ -9,7 +9,7 @@ import { createContext, FC, ReactNode, useEffect, useMemo, useState, useCallback
 import { Address, zeroAddress } from 'viem'
 import { useAccount } from 'wagmi'
 import { createActions } from './allocationsActions'
-import { useBuildersWithBackerRewardPercentage } from '../hooks/useBuildersWithBackerRewardPercentage'
+import { useGetBackerRewards } from '../hooks/useBuildersWithBackerRewardPercentage'
 
 export type Allocations = {
   [K: Address]: bigint
@@ -104,6 +104,8 @@ export const AllocationsContextProvider: FC<{ children: ReactNode }> = ({ childr
   /**
    * Fetch data from the blockchain
    */
+  const { data: votingPower, isLoading: isVotingPowerLoading, error: votingPowerError } = useGetVotingPower()
+
   const {
     data: rawBuilders,
     isLoading: isLoadingBuilders,
@@ -111,42 +113,33 @@ export const AllocationsContextProvider: FC<{ children: ReactNode }> = ({ childr
   } = useActivatedBuildersWithGauge()
 
   const {
-    data: buildersWithBackerRewards,
-    isLoading: buildersWithBackerRewardsLoading,
-    error: buildersWithBackerRewardsError,
-  } = useBuildersWithBackerRewardPercentage(rawBuilders)
+    data: backerRewards,
+    isLoading: backerRewardsLoading,
+    error: backerRewardsError,
+  } = useGetBackerRewards(rawBuilders)
 
   const {
     data: rawAllocations,
     isLoading: isRawAllocationsLoading,
     error: allRawAllocationsError,
-  } = useGetAllAllocationOf(
-    backerAddress ?? zeroAddress,
-    // gauge is always defined here
-    buildersWithBackerRewards?.map(builder => builder.gauge ?? zeroAddress) || [],
-  )
+  } = useGetAllAllocationOf(rawBuilders, backerAddress)
+
   const {
     data: totalOnchainAllocation,
     isLoading: isTotalAllocationLoading,
     error: totalAllocationError,
-  } = useBackerTotalAllocation(backerAddress ?? zeroAddress)
-  const { data: votingPower, isLoading: isVotingPowerLoading, error: votingPowerError } = useGetVotingPower()
+  } = useBackerTotalAllocation(backerAddress)
 
   const builders: Builders = useMemo(() => {
-    if (!rawBuilders || !buildersWithBackerRewards) return {}
+    if (!rawBuilders || !backerRewards) return {}
     return rawBuilders.reduce((acc, builder, index) => {
       acc[builder.address] = {
         ...builder,
-        ...buildersWithBackerRewards[index],
-        backerRewardPercentage: {
-          previous: buildersWithBackerRewards[index].backerRewardPercentage.previous ?? BigInt(0),
-          next: buildersWithBackerRewards[index].backerRewardPercentage.next ?? BigInt(0),
-          cooldown: buildersWithBackerRewards[index].backerRewardPercentage.cooldown ?? BigInt(0),
-        },
+        ...backerRewards[index],
       }
       return acc
     }, {} as Builders)
-  }, [rawBuilders, buildersWithBackerRewards])
+  }, [rawBuilders, backerRewards])
 
   /**
    * Retrieval functions
@@ -195,29 +188,23 @@ export const AllocationsContextProvider: FC<{ children: ReactNode }> = ({ childr
         allRawAllocationsError ??
         totalAllocationError ??
         votingPowerError ??
-        buildersWithBackerRewardsError,
+        backerRewardsError,
     )
-  }, [
-    allRawAllocationsError,
-    buildersError,
-    totalAllocationError,
-    votingPowerError,
-    buildersWithBackerRewardsError,
-  ])
+  }, [allRawAllocationsError, buildersError, totalAllocationError, votingPowerError, backerRewardsError])
   useEffect(() => {
     setIsContextLoading(
       isLoadingBuilders ||
         isRawAllocationsLoading ||
         isTotalAllocationLoading ||
         isVotingPowerLoading ||
-        buildersWithBackerRewardsLoading,
+        backerRewardsLoading,
     )
   }, [
     isLoadingBuilders,
     isRawAllocationsLoading,
     isTotalAllocationLoading,
     isVotingPowerLoading,
-    buildersWithBackerRewardsLoading,
+    backerRewardsLoading,
   ])
 
   /**
