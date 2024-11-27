@@ -17,6 +17,9 @@ export const ConnectButton: FC<Props> = ({ onSuccess, children = 'Connect wallet
 
   const handleConnectWallet = () => {
     if (connectors.length) {
+      // set connectAsync({connector: connectors[0]}) to get walletConnect
+      // for testing/showcasing purposes only
+      //TODO: create a valid logic for using either one of two or more in the future
       connectAsync({ connector: connectors[connectors.length - 1] }).catch(err => {
         triggerError(err.toString())
       })

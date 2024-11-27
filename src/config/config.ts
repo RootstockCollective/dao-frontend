@@ -2,7 +2,7 @@ import { ENV } from '@/lib/constants'
 import { defineChain } from 'viem'
 import { rootstockTestnet, rootstock } from 'viem/chains'
 import { createConfig, http } from 'wagmi'
-import { injected } from 'wagmi/connectors'
+import { walletConnect } from 'wagmi/connectors'
 
 const rskRegtest = defineChain({
   id: 33,
@@ -22,7 +22,17 @@ export const config = createConfig({
     [rootstockTestnet.id]: http(),
     [rskRegtest.id]: http(),
   },
-  connectors: [injected()],
+  connectors: [
+    walletConnect({
+      // test project ID, we need to create our own and verify domains
+      projectId: process.env.NEXT_PUBLIC_REOWN_PROJECT_ID as string,
+      qrModalOptions: { 
+        themeMode: 'dark', 
+      },
+      showQrModal: true, 
+    })
+    // injected() will be added by default 
+  ],
 })
 
 export const supportedChainId = {
