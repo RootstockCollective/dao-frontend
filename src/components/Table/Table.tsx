@@ -1,76 +1,148 @@
-import { FC, HTMLAttributes, ReactNode } from 'react'
+import {
+  useReactTable,
+  createColumnHelper,
+  getCoreRowModel,
+  getSortedRowModel,
+  SortingState,
+  flexRender,
+  SortingFnOption,
+} from '@tanstack/react-table'
+import { HTMLAttributes, ReactNode, useMemo, useState } from 'react'
 import { TableHead, TableRow, TableCell, TableBody, TableCore } from './components'
-import { Span } from '../Typography'
+import { SortIndicator } from './components/SortIndicator'
+import { cn } from '@/lib/utils'
 
 interface SharedProps {
   'data-testid'?: string
 }
 
-interface TableProps extends HTMLAttributes<HTMLDivElement> {
-  /**
-   * Array of objects to be displayed in the table, with values of any type React can render.
-   */
-  data: Record<string, ReactNode>[]
-  /**
-   * Optional flag to make all column widths equal
-   */
+type TableData<T extends Record<string, any> = Record<string, any>> = T
+
+/**
+ * Props for the Table component.
+ *
+ * @template T - The type of data used in the table.
+ *
+ * @property {T[]} data - The data to be displayed in the table.
+ * @property {boolean} [equalColumns] - Whether the columns should have equal width.
+ * @property {SharedProps} [theadProps] - Additional props for the table header.
+ * @property {SharedProps} [tbodyProps] - Additional props for the table body.
+ * @property {string} [headerClassName] - Additional class name for the table header.
+ * @property {Object.<keyof T, (value: T[keyof T], row: T) => ReactNode>} [renderers] - Custom renderers for table cells.
+ * @property {Object.<keyof T, false | SortingFnOption<T>>} [sortingOptions] - Sorting options for each column.
+ */
+interface TableProps<T extends TableData> extends HTMLAttributes<HTMLDivElement> {
+  data: T[]
   equalColumns?: boolean
   theadProps?: SharedProps
   tbodyProps?: SharedProps
-  /**
-   * Header classes
-   */
   headerClassName?: string
+  /**
+   * Custom renderers for table column cells.
+   *
+   * *Example how to render `name` column:*
+   *
+   * ```tsx
+   *  renderers: {
+   *    name: (value: string, row: ITable) => <p>{value} - {row.symbol}</p>
+   *  }
+   * ```
+   */
+  renderers?: { [K in keyof T]?: (value: T[K], row: T) => ReactNode }
+  /**
+   * Custom sorting function for table column. `false` excludes column from sorting
+   *
+   * *Example:*
+   *
+   * ```tsx
+   *  sortingOptions: {
+   *    name: (a: number, b: number) => Math.sin(a) - Math.abs(b)
+   *  }
+   * ```
+   */
+  sortingOptions?: {
+    [K in keyof T]?: false | SortingFnOption<T>
+  }
 }
 
-/**
- * A table assembled from individual table components.
- * In most cases, this will suffice for displaying any type of data.
- * If you have unique data that doesn't fit into the `data` prop,
- * you can create a custom table using the available components:
- * `Table`, `TableBody`, `TableCell`, `TableHead`, `TableRow`.
- */
-export const Table: FC<TableProps> = ({
+export const Table = <T extends TableData>({
   data,
   equalColumns = true,
   tbodyProps,
   theadProps,
   headerClassName,
+  renderers = {},
+  sortingOptions,
   ...props
-}) => {
-  // calculate column width
-  const header = Object.keys(data[0])
-  if (header.length === 0) return <></>
-  const width = equalColumns ? Math.round(100 / header.length) + '%' : 'inherit'
+}: TableProps<T>) => {
+  const columnHelper = createColumnHelper<T>()
+  const columns = useMemo(
+    () =>
+      (Object.keys(data[0]) as Array<keyof T>).map(key =>
+        columnHelper.accessor(row => row[key], {
+          header: key as string,
+          cell: info => {
+            const value = info.getValue() as T[keyof T]
+            const row = info.row.original as T
+            const func = renderers[key]
+            return func ? func(value, row) : value
+          },
+          enableSorting: sortingOptions?.[key] !== false,
+          sortingFn: sortingOptions?.[key] || 'auto',
+        }),
+      ),
+    [columnHelper, data, renderers, sortingOptions],
+  )
+
+  const [sorting, setSorting] = useState<SortingState>([])
+  const table = useReactTable({
+    data,
+    columns,
+    state: {
+      sorting,
+    },
+    onSortingChange: setSorting,
+    getCoreRowModel: getCoreRowModel(),
+    getSortedRowModel: getSortedRowModel(),
+  })
+
+  const width = equalColumns ? Math.round(100 / columns.length) + '%' : 'inherit'
+
   return (
     <TableCore {...props}>
       <TableHead {...theadProps}>
         <TableRow>
-          {header.map(headTitle => (
-            <TableCell
-              style={{
-                width,
-                fontWeight: 700,
-                fontSize: '16px',
-                borderBottom: '1px solid #2D2D2D',
-                fontFamily: 'rootstock-sans',
-              }}
-              key={headTitle}
-              className={headerClassName}
-            >
-              {headTitle}
-            </TableCell>
-          ))}
+          {table.getHeaderGroups().map(headerGroup =>
+            headerGroup.headers.map(header => (
+              <TableCell
+                onClick={() => header.column.toggleSorting()}
+                key={header.id}
+                className={cn(
+                  headerClassName,
+                  `w-[${width}px]`,
+                  'font-bold font-rootstock-sans text-[1rem]',
+                  'border-b border-solid border-[#888888]',
+                )}
+              >
+                <SortIndicator
+                  sortEnabled={header.column.getCanSort()}
+                  sortDirection={header.column.getIsSorted()}
+                >
+                  {header.isPlaceholder
+                    ? null
+                    : flexRender(header.column.columnDef.header, header.getContext())}
+                </SortIndicator>
+              </TableCell>
+            )),
+          )}
         </TableRow>
       </TableHead>
       <TableBody {...tbodyProps}>
-        {data.map((record, i) => (
-          <TableRow key={i} className="text-[14px] border-hidden" style={{ borderTopStyle: 'solid' }}>
-            {Object.values(record).map((val, j) => (
-              <TableCell style={{ width }} key={j}>
-                <Span className="text-[14px]" variant="light">
-                  {val}
-                </Span>
+        {table.getRowModel().rows.map(row => (
+          <TableRow key={row.id} className="text-[14px] border-hidden" style={{ borderTopStyle: 'solid' }}>
+            {row.getVisibleCells().map(cell => (
+              <TableCell key={cell.id} style={{ width }}>
+                {flexRender(cell.column.columnDef.cell, cell.getContext())}
               </TableCell>
             ))}
           </TableRow>
