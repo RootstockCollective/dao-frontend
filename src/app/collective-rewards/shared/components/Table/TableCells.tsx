@@ -90,7 +90,7 @@ export const BuilderNameCell: FC<BuilderCellProps> = ({
   const shortenAddress = shortAddress(address)
   return (
     <TableCell className={cn(className, 'border-solid')}>
-      <div className="flex flex-row gap-x-1">
+      <div className="flex flex-row gap-x-1 items-center">
         <BuilderStatusFlag stateFlags={stateFlags} />
         <Jdenticon className="rounded-md bg-white min-w-6" value={builderName} size="24" />
         <div className="w-32">
