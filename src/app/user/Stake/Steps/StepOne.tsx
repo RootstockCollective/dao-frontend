@@ -7,6 +7,7 @@ import { StepProps } from '../types'
 
 export const StepOne = ({ onGoNext = () => {} }: StepProps) => {
   const { amount, onAmountChange, tokenToSend, actionName } = useStakingContext()
+
   const { isCanAccountWithdrawLoading, canAccountWithdraw, backerTotalAllocation } =
     useCanAccountUnstakeAmount(Number(amount).toString(), tokenToSend.balance)
 
@@ -15,21 +16,29 @@ export const StepOne = ({ onGoNext = () => {} }: StepProps) => {
     [tokenToSend],
   )
 
+  const handleAmountChange = useCallback(
+    (value: string) => {
+      // Handle empty or decimal point inputs
+      if (!value || value === '.') {
+        onAmountChange('0')
+        return
+      }
+
+      // Validate numeric input with up to 8 decimal places
+      const regex = /^\d*\.?\d{0,8}$/
+      if (regex.test(value)) {
+        onAmountChange(value)
+      }
+    },
+    [onAmountChange],
+  )
+
   const onPercentageClicked = useCallback(
     (percentage: number) => {
       const balance = tokenToSend.balance
-      // Ensure precise calculation
       const preciseAmount = Number(balance) * (percentage / 100)
       const newAmount = preciseAmount.toFixed(8)
 
-      console.log('Percentage clicked:', {
-        percentage,
-        balance,
-        preciseAmount,
-        newAmount,
-      })
-
-      // Keep working state update logic
       Promise.resolve().then(() => {
         onAmountChange(newAmount)
       })
@@ -38,32 +47,14 @@ export const StepOne = ({ onGoNext = () => {} }: StepProps) => {
   )
 
   const shouldEnableGoNext = useMemo(() => {
-    console.log('Validating amount:', {
-      amount,
-      balance: tokenToSend.balance,
-      actionName,
-      canAccountWithdraw,
-    })
-
-    if (!amount || Number(amount) <= 0) {
-      console.log('Invalid amount')
-      return false
-    }
+    if (!amount || Number(amount) <= 0) return false
 
     const amountNum = Number(amount).toFixed(8)
     const balanceNum = Number(tokenToSend.balance).toFixed(8)
 
-    if (Number(amountNum) > Number(balanceNum)) {
-      console.log('Amount exceeds balance')
-      return false
-    }
+    if (Number(amountNum) > Number(balanceNum)) return false
+    if (actionName === 'UNSTAKE' && !canAccountWithdraw) return false
 
-    if (actionName === 'UNSTAKE' && !canAccountWithdraw) {
-      console.log('Cannot withdraw')
-      return false
-    }
-
-    console.log('Validation passed')
     return true
   }, [amount, tokenToSend.balance, actionName, canAccountWithdraw])
 
@@ -79,7 +70,7 @@ export const StepOne = ({ onGoNext = () => {} }: StepProps) => {
   return (
     <StakeRIF
       amount={amount}
-      onAmountChange={onAmountChange}
+      onAmountChange={handleAmountChange}
       onPercentageClicked={onPercentageClicked}
       onGoNext={onGoNext}
       shouldEnableGoNext={shouldEnableGoNext}
@@ -87,7 +78,7 @@ export const StepOne = ({ onGoNext = () => {} }: StepProps) => {
       totalBalanceConverted={formatCurrency(balanceToCurrency)}
       actionName={actionName}
       shouldShowCannotWithdraw={shouldShowCannotWithdraw}
-      symbol={''}
+      symbol={tokenToSend.symbol}
     />
   )
 }
