@@ -56,8 +56,8 @@ type BuilderStatusFlagProps = {
   stateFlags: BuilderStateFlags
 }
 const getStatusColor = (isOperational: boolean, builderInactiveState: string) => {
-  if(isOperational) return 'transparent'
-  if(builderInactiveState === 'Paused') return '#F9E1FF'
+  if (isOperational) return 'transparent'
+  if (builderInactiveState === 'Paused') return '#F9E1FF'
   return '#932309'
 }
 const BuilderStatusFlag: FC<BuilderStatusFlagProps> = ({ stateFlags }) => {
