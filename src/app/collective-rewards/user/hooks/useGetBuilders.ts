@@ -158,8 +158,6 @@ export const useGetBuilders: UseGetBuilders = () => {
     )
   }, [proposalsByBuilder, builderToGauge, builderStatesResult, proposalsStateMap, builders])
 
-  console.log('🚀 ~ constdata:Record<Address,Builder>=useMemo ~ data:', data)
-
   const isLoading =
     isLoadingProposalsByBuilder ||
     builderStatesLoading ||

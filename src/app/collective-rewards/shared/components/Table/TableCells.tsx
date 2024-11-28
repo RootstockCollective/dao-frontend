@@ -55,12 +55,16 @@ export const LazyRewardCell = memo(RewardCell, ({ rewards: prevReward }, { rewar
 type BuilderStatusFlagProps = {
   stateFlags: BuilderStateFlags
 }
-
+const getStatusColor = (isOperational: boolean, builderInactiveState: string) => {
+  if(isOperational) return 'transparent'
+  if(builderInactiveState === 'Paused') return '#F9E1FF'
+  return '#932309'
+}
 const BuilderStatusFlag: FC<BuilderStatusFlagProps> = ({ stateFlags }) => {
   const isOperational = isBuilderOperational(stateFlags)
   const builderInactiveState = getBuilderInactiveState(stateFlags)
 
-  const color = isOperational ? 'transparent' : builderInactiveState === 'Paused' ? '#F9E1FF' : '#932309'
+  const color = getStatusColor(isOperational, builderInactiveState)
   const content = builderInactiveState
 
   return (

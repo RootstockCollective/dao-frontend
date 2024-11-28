@@ -14,7 +14,7 @@ const isBuilderActive = ({ communityApproved, kycApproved, paused, revoked }: Bu
 }
 
 const haltedClass = 'bg-[#932309] color-text-primary py-1 px-1 text-[12px]'
-const BuilderStateBadges = {
+const haltedStateBadges = {
   Paused: <Badge content="Paused" className="bg-[#F9E1FF] text-secondary py-1 px-1 text-[12px]" />,
   Deactivated: <Badge content="Deactivated" className={haltedClass} />,
   KYCRevoked: <Badge content="KYC Revoked" className={haltedClass} />,
@@ -40,7 +40,7 @@ export const BuilderAllocationHeader: FC<BuilderAllocationHeaderProps> = ({
         {gauge && isBuilderActive(state) ? (
           <Paragraph className="text-sm font-light"> Joined {date}</Paragraph>
         ) : (
-          BuilderStateBadges[getBuilderInactiveState(state)]
+          haltedStateBadges[getBuilderInactiveState(state)]
         )}
       </div>
     </div>

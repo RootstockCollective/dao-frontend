@@ -5,8 +5,8 @@ export const isBuilderOperational = (stateFlags?: BuilderStateFlags) => {
 }
 
 const inactiveStates = ['Deactivated', 'KYCRevoked', 'Revoked', 'Paused'] as const
-type InactiveStates = (typeof inactiveStates)[number]
-export const getBuilderInactiveState = (state: BuilderStateFlags): InactiveStates => {
+type InactiveState = (typeof inactiveStates)[number]
+export const getBuilderInactiveState = (state: BuilderStateFlags): InactiveState => {
   if (!state.communityApproved) return 'Deactivated'
   if (!state.kycApproved) return 'KYCRevoked'
   if (state.revoked) return 'Revoked'
