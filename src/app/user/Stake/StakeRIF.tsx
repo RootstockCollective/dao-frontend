@@ -96,13 +96,19 @@ const PercentageButton = ({ amount, percentage, totalAmountAllowed, onClick }: P
     if (!amount || !totalAmountAllowed) return false
 
     try {
-      // More precise calculation using string operations
-      const totalAmount = parseFloat(totalAmountAllowed)
-      const expectedAmount = ((totalAmount * percentage) / 100).toFixed(8)
-      const currentAmount = parseFloat(amount).toFixed(8)
+      const totalAmount = Number(totalAmountAllowed)
+      const currentAmount = Number(amount)
 
-      // Compare the strings directly instead of floating point numbers
-      return currentAmount === expectedAmount
+      // Calculate raw value for comparison (not display)
+      const rawExpectedAmount = (totalAmount * percentage) / 100
+
+      if (percentage === 100) {
+        // For 100%, compare raw values
+        return Math.abs(currentAmount - totalAmount) < 1e-8
+      }
+
+      // For other percentages, compare raw values with small epsilon
+      return Math.abs(currentAmount - rawExpectedAmount) < 1e-8
     } catch (error) {
       console.error('Error calculating percentage button state:', error)
       return false

@@ -18,13 +18,11 @@ export const StepOne = ({ onGoNext = () => {} }: StepProps) => {
 
   const handleAmountChange = useCallback(
     (value: string) => {
-      // Handle empty or decimal point inputs
       if (!value || value === '.') {
         onAmountChange('0')
         return
       }
 
-      // Validate numeric input with up to 8 decimal places
       const regex = /^\d*\.?\d{0,8}$/
       if (regex.test(value)) {
         onAmountChange(value)
@@ -36,12 +34,19 @@ export const StepOne = ({ onGoNext = () => {} }: StepProps) => {
   const onPercentageClicked = useCallback(
     (percentage: number) => {
       const balance = tokenToSend.balance
-      const preciseAmount = Number(balance) * (percentage / 100)
-      const newAmount = preciseAmount.toFixed(8)
 
-      Promise.resolve().then(() => {
-        onAmountChange(newAmount)
-      })
+      if (percentage === 100) {
+        // For 100%, use exact balance
+        requestAnimationFrame(() => {
+          onAmountChange(balance)
+        })
+        return
+      }
+
+      // For other percentages, calculate with precision
+      const rawAmount = Number(balance) * (percentage / 100)
+      const displayAmount = rawAmount.toFixed(8)
+      onAmountChange(displayAmount)
     },
     [tokenToSend.balance, onAmountChange],
   )
@@ -49,10 +54,11 @@ export const StepOne = ({ onGoNext = () => {} }: StepProps) => {
   const shouldEnableGoNext = useMemo(() => {
     if (!amount || Number(amount) <= 0) return false
 
-    const amountNum = Number(amount).toFixed(8)
-    const balanceNum = Number(tokenToSend.balance).toFixed(8)
+    // Compare with precision for validation
+    const rawAmount = Number(amount)
+    const rawBalance = Number(tokenToSend.balance)
 
-    if (Number(amountNum) > Number(balanceNum)) return false
+    if (rawAmount > rawBalance) return false
     if (actionName === 'UNSTAKE' && !canAccountWithdraw) return false
 
     return true
