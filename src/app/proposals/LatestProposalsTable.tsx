@@ -67,6 +67,7 @@ const LatestProposalsTable = ({ latestProposals }: LatestProposalsTableProps) =>
       {latestProposalsMapped.length > 0 ? (
         <SharedProposalsTableContextProvider>
           <Table
+            isSortable
             key={latestProposalsMapped.length}
             data={latestProposalsMapped}
             data-testid="TableProposals"

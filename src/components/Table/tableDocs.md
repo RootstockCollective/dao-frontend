@@ -10,7 +10,7 @@ const data = [
   { name: 'Bob', age: 25 },
 ]
 
-<Table data={data} />
+<Table isSortable data={data} />
 ```
 
 ## Props
@@ -20,6 +20,7 @@ const data = [
 - `theadProps` (object, optional): Additional props for the table header.
 - `tbodyProps` (object, optional): Additional props for the table body.
 - `headerClassName` (string, optional): Additional class name for the table header.
+- `isSortable` (boolean, optional): Flag indicating whether sorting can be applied to the table. `false` by default
 - `renderers` (object, optional): Custom renderers for table column cells. Example:
   ```tsx
   renderers: {

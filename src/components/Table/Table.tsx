@@ -40,7 +40,7 @@ interface TableProps<T extends TableData> extends HTMLAttributes<HTMLDivElement>
    */
   renderers?: { [K in keyof T]?: (value: T[K], row: T) => ReactNode }
   /**
-   * Flag indicating whether sorting can be applied for the whole table. `false` by default
+   * Flag indicating whether sorting can be applied to the table. `false` by default
    */
   isSortable?: boolean
   /**
@@ -75,7 +75,7 @@ export const Table = <T extends TableData>({
     () =>
       (Object.keys(data[0]) as Array<keyof T>).map(key =>
         columnHelper.accessor(row => row[key], {
-          header: key as string,
+          header: String(key),
           cell: info => {
             const value = info.getValue() as T[keyof T]
             const row = info.row.original as T
@@ -110,7 +110,7 @@ export const Table = <T extends TableData>({
           {table.getHeaderGroups().map(headerGroup =>
             headerGroup.headers.map(header => (
               <TableCell
-                onClick={() => header.column.toggleSorting()}
+                onClick={header.column.getCanSort() ? () => header.column.toggleSorting() : undefined}
                 key={header.id}
                 className={cn(
                   headerClassName,
