@@ -10,16 +10,19 @@ interface SortIndicatorProps extends PropsWithChildren {
 
 export function SortIndicator({ children, sortDirection, sortEnabled = true }: SortIndicatorProps) {
   return (
-    <div className={cn('flex gap-1 w-fit', sortEnabled && 'cursor-pointer')}>
-      {children}
-      {sortEnabled &&
-        (sortDirection === 'asc' ? (
-          <TbSortAscending />
-        ) : sortDirection === 'desc' ? (
-          <TbSortDescending />
-        ) : (
-          <TbArrowsSort className="text-gray-500" />
-        ))}
+    <div className={cn('flex gap-1', sortEnabled && 'cursor-pointer')}>
+      {sortEnabled && (
+        <div className="flex items-center">
+          {sortDirection === 'asc' ? (
+            <TbSortAscending />
+          ) : sortDirection === 'desc' ? (
+            <TbSortDescending />
+          ) : (
+            <TbArrowsSort className="text-gray-500" />
+          )}
+        </div>
+      )}
+      <div>{children}</div>
     </div>
   )
 }

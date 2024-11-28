@@ -17,6 +17,7 @@ export const Default: Story = {
   args: {
     data: tableSampleData,
     renderers: columnRenderingFuncs,
+    isSortable: true,
     sortingOptions: {
       // don't sort `stake` column
       stake: false,
@@ -33,6 +34,7 @@ const simpleData = [
 // The simple data example for display in the table
 export const SimpleTable: Story = {
   args: {
+    isSortable: true,
     data: simpleData,
   },
 }
@@ -48,7 +50,10 @@ const alphabetData = [
 export const AlphabetTable: Story = {
   args: {
     data: alphabetData,
+    // enable sorting for the whole table
+    isSortable: true,
     sortingOptions: {
+      // disable sorting in B column
       B: false,
     },
     renderers: {

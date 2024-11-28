@@ -2,8 +2,8 @@ import { Typography } from '../Typography'
 import { Link } from '../Link'
 
 type TableDataType = {
-  name: string
-  symbol: string
+  'Super Long Name Title': string
+  'Super Long Symbol Description': string
   price: number
   holdings: number
   stake: boolean
@@ -11,29 +11,29 @@ type TableDataType = {
 // sample table data incorporating various data types
 export const tableSampleData: TableDataType[] = [
   {
-    name: 'd. Rootstock Infrastructure Framework',
-    symbol: 'RIF',
+    'Super Long Name Title': 'd. Rootstock Infrastructure Framework',
+    'Super Long Symbol Description': 'RIF',
     price: 0.5,
     holdings: 100_023_258,
     stake: true,
   },
   {
-    name: 'b. Rootstock Bitcoin',
-    symbol: 'RBTC',
+    'Super Long Name Title': 'b. Rootstock Bitcoin',
+    'Super Long Symbol Description': 'RBTC',
     price: 64_000,
     holdings: 30_023_230,
     stake: false,
   },
   {
-    name: 'c. Rootstock Tether USD',
-    symbol: 'rUSDT',
+    'Super Long Name Title': 'c. Rootstock Tether USD',
+    'Super Long Symbol Description': 'rUSDT',
     price: 1,
     holdings: 50_023_230,
     stake: true,
   },
   {
-    name: 'a. Rootstock USDC',
-    symbol: 'rUSDC',
+    'Super Long Name Title': 'a. Rootstock USDC',
+    'Super Long Symbol Description': 'rUSDC',
     price: 1.01,
     holdings: 36_456_745,
     stake: false,
