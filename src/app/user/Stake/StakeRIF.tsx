@@ -49,7 +49,11 @@ export const StakeRIF = ({
         <PercentageButton
           key={i}
           percentage={percentage}
-          onClick={onPercentageClicked}
+          onClick={value => {
+            const calculatedAmount = (parseFloat(totalBalance) * (value / 100)).toFixed(8)
+            onAmountChange(calculatedAmount) // Update input value
+            onPercentageClicked(value) // Notify parent
+          }}
           totalAmountAllowed={totalBalance}
           amount={amount}
         />
@@ -89,8 +93,20 @@ const PercentageButton = ({ amount, percentage, totalAmountAllowed, onClick }: P
   const onPercentageClicked = () => onClick(percentage)
 
   const isActive = useMemo(() => {
-    const totalAmountAllowedPercentage = Number(totalAmountAllowed) * (percentage / 100)
-    return Number(amount) === totalAmountAllowedPercentage
+    if (!amount || !totalAmountAllowed) return false
+
+    try {
+      // More precise calculation using string operations
+      const totalAmount = parseFloat(totalAmountAllowed)
+      const expectedAmount = ((totalAmount * percentage) / 100).toFixed(8)
+      const currentAmount = parseFloat(amount).toFixed(8)
+
+      // Compare the strings directly instead of floating point numbers
+      return currentAmount === expectedAmount
+    } catch (error) {
+      console.error('Error calculating percentage button state:', error)
+      return false
+    }
   }, [amount, totalAmountAllowed, percentage])
 
   return (
@@ -100,6 +116,8 @@ const PercentageButton = ({ amount, percentage, totalAmountAllowed, onClick }: P
       buttonProps={{
         'data-testid': `Percentage${percentage}`,
       }}
-    >{`${percentage}%`}</Button>
+    >
+      {`${percentage}%`}
+    </Button>
   )
 }

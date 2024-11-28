@@ -1,24 +1,62 @@
-import { StakeRIF } from '@/app/user/Stake/StakeRIF'
-import { useStakingContext } from '@/app/user/Stake/StakingContext'
-import { StepProps } from '@/app/user/Stake/types'
 import { formatCurrency, toFixed } from '@/lib/utils'
-import { useMemo } from 'react'
 import { useCanAccountUnstakeAmount } from '@/shared/hooks/useCanAccountUnstakeAmount'
+import { useMemo, useCallback } from 'react'
+import { StakeRIF } from '../StakeRIF'
+import { useStakingContext } from '../StakingContext'
+import { StepProps } from '../types'
 
 export const StepOne = ({ onGoNext = () => {} }: StepProps) => {
   const { amount, onAmountChange, tokenToSend, actionName } = useStakingContext()
-  // For now, we can only unstake stRIF - but this might change in the future... so tokenToSend.balance must be handled on each case
+
   const { isCanAccountWithdrawLoading, canAccountWithdraw, backerTotalAllocation } =
-    useCanAccountUnstakeAmount(Number(amount).toString(), tokenToSend.balance) // Ceil'ing to avoid crashing when using decimals
+    useCanAccountUnstakeAmount(Number(amount).toString(), tokenToSend.balance)
 
   const balanceToCurrency = useMemo(
     () => Number(tokenToSend.price) * Number(tokenToSend.balance),
     [tokenToSend],
   )
 
-  const onPercentageClicked = (percentage: number) => {
-    onAmountChange((Number(tokenToSend.balance) * (percentage / 100)).toString())
-  }
+  const handleAmountChange = useCallback(
+    (value: string) => {
+      // Handle empty or decimal point inputs
+      if (!value || value === '.') {
+        onAmountChange('0')
+        return
+      }
+
+      // Validate numeric input with up to 8 decimal places
+      const regex = /^\d*\.?\d{0,8}$/
+      if (regex.test(value)) {
+        onAmountChange(value)
+      }
+    },
+    [onAmountChange],
+  )
+
+  const onPercentageClicked = useCallback(
+    (percentage: number) => {
+      const balance = tokenToSend.balance
+      const preciseAmount = Number(balance) * (percentage / 100)
+      const newAmount = preciseAmount.toFixed(8)
+
+      Promise.resolve().then(() => {
+        onAmountChange(newAmount)
+      })
+    },
+    [tokenToSend.balance, onAmountChange],
+  )
+
+  const shouldEnableGoNext = useMemo(() => {
+    if (!amount || Number(amount) <= 0) return false
+
+    const amountNum = Number(amount).toFixed(8)
+    const balanceNum = Number(tokenToSend.balance).toFixed(8)
+
+    if (Number(amountNum) > Number(balanceNum)) return false
+    if (actionName === 'UNSTAKE' && !canAccountWithdraw) return false
+
+    return true
+  }, [amount, tokenToSend.balance, actionName, canAccountWithdraw])
 
   const shouldShowCannotWithdraw = useMemo(
     () =>
@@ -29,36 +67,18 @@ export const StepOne = ({ onGoNext = () => {} }: StepProps) => {
     [actionName, backerTotalAllocation, canAccountWithdraw, isCanAccountWithdrawLoading],
   )
 
-  const shouldEnableGoNext = useMemo(() => {
-    if (Number(amount) <= 0) {
-      return false
-    }
-    // Extra unstake validation
-    if (actionName === 'UNSTAKE') {
-      // Checks if the last amount we checked is the one that is currently introduced in the Input
-      if (isCanAccountWithdrawLoading) {
-        return false
-      }
-      if (shouldShowCannotWithdraw) {
-        return false
-      }
-    }
-
-    return Number(amount) <= Number(tokenToSend.balance)
-  }, [actionName, amount, isCanAccountWithdrawLoading, shouldShowCannotWithdraw, tokenToSend.balance])
-
   return (
     <StakeRIF
       amount={amount}
-      onAmountChange={onAmountChange}
+      onAmountChange={handleAmountChange}
       onPercentageClicked={onPercentageClicked}
       onGoNext={onGoNext}
       shouldEnableGoNext={shouldEnableGoNext}
-      totalBalance={toFixed(tokenToSend.balance)}
-      totalBalanceConverted={balanceToCurrency ? 'USD ' + formatCurrency(balanceToCurrency) : ''}
-      symbol={tokenToSend.symbol}
+      totalBalance={tokenToSend.balance}
+      totalBalanceConverted={formatCurrency(balanceToCurrency)}
       actionName={actionName}
       shouldShowCannotWithdraw={shouldShowCannotWithdraw}
+      symbol={tokenToSend.symbol}
     />
   )
 }
