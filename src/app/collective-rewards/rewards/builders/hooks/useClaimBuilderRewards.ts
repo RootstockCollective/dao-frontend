@@ -3,15 +3,14 @@ import { GaugeAbi } from '@/lib/abis/v2/GaugeAbi'
 import { Address } from 'viem'
 import { useWaitForTransactionReceipt, useWriteContract } from 'wagmi'
 import { useGetBuilderRewards } from '@/app/collective-rewards/rewards'
-import { useBuilderContext } from '../../../user'
+import { useBuilderContext } from '@/app/collective-rewards/user'
 
 const useClaimBuilderReward = (builder: Address, gauge: Address, rewardToken?: Address) => {
   const { writeContractAsync, error: executionError, data: hash, isPending } = useWriteContract()
   const { getBuilderByAddress } = useBuilderContext()
 
   const claimingBuilder = getBuilderByAddress(builder)
-  console.log('🚀 ~ useClaimBuilderReward ~ claimingBuilder:', claimingBuilder)
-  const isPaused = !!claimingBuilder?.stateFlags?.paused
+  const isPaused = claimingBuilder?.stateFlags?.paused ?? false
 
   const { isLoading, isSuccess, data, error: receiptError } = useWaitForTransactionReceipt({ hash })
 

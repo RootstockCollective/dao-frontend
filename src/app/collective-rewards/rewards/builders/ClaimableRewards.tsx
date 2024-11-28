@@ -15,7 +15,6 @@ import { withSpinner } from '@/components/LoadingSpinner/withLoadingSpinner'
 import { usePricesContext } from '@/shared/context/PricesContext'
 import { FC } from 'react'
 import { Address } from 'viem'
-import { Popover } from '../../../../components/Popover'
 
 type TokenRewardsMetricsProps = {
   builder: Address
@@ -49,6 +48,7 @@ const TokenRewardsMetrics: FC<TokenRewardsMetricsProps> = ({
   )
 
   const { isClaimable, claimRewards, isPaused } = useClaimBuilderRewardsPerToken(builder, gauge, address)
+  const content = isPaused ? 'You cannot be paused to claim rewards' : undefined
 
   return withSpinner(
     TokenMetricsCardRow,
@@ -58,19 +58,11 @@ const TokenRewardsMetrics: FC<TokenRewardsMetricsProps> = ({
     fiatAmount,
     isLoading: rewardsLoading,
     children: (
-      <Popover
-        content={
-          <div className="text-[12px] font-bold mb-1">
-            <p data-testid="adjustBackerRewardPctTooltip">You cannot be paused to claim rewards</p>
-          </div>
-        }
-        size="small"
-        position="top"
-        trigger="hover"
-        disabled={!isPaused}
-      >
-        <ClaimYourRewardsButton onClick={() => claimRewards()} disabled={!isClaimable || isPaused} />
-      </Popover>
+      <ClaimYourRewardsButton
+        onClick={() => claimRewards()}
+        disabled={!isClaimable || isPaused}
+        content={content}
+      />
     ),
   })
 }

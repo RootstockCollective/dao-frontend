@@ -13,7 +13,7 @@ import { Button } from '@/components/Button'
 import { PricesContextProvider } from '@/shared/context/PricesContext'
 import { FC } from 'react'
 import { Address } from 'viem'
-import { Popover } from '../../../../components/Popover'
+import { Popover } from '@/components/Popover'
 
 type RewardsProps = RewardDetails & { gauge: Address }
 
@@ -40,6 +40,7 @@ const RewardsContent: FC<RewardsProps> = props => {
               <p data-testid="adjustBackerRewardPctTooltip">You cannot be paused to claim rewards</p>
             </div>
           }
+          className="w-full"
           size="small"
           position="top"
           trigger="hover"
