@@ -17,19 +17,11 @@ const gaugeType: Record<GaugeType, FunctionName> = {
   halted: 'getHaltedGaugeAt',
 }
 
-export const useGetGaugesArray = (type?: GaugeType) => {
+export const useGetGaugesArray = () => {
   const { data: activeCalls, isLoading: isLoadingActive, error: errorActive } = useGetContractCalls('active')
   const { data: haltedCalls, isLoading: isLoadingHalted, error: errorHalted } = useGetContractCalls('halted')
 
-  const contractCalls = useMemo(() => {
-    if (!type) {
-      return [...(activeCalls || []), ...(haltedCalls || [])]
-    } else if (type === 'active') {
-      return activeCalls || []
-    } else {
-      return haltedCalls || []
-    }
-  }, [type, activeCalls, haltedCalls])
+  const contractCalls = [...activeCalls, ...haltedCalls]
 
   const {
     data: gaugesAddress,
@@ -50,6 +42,35 @@ export const useGetGaugesArray = (type?: GaugeType) => {
     data: gauges,
     isLoading,
     error,
+  }
+}
+
+export const useGetGaugesArrayByType = (type: GaugeType) => {
+  const {
+    data: calls,
+    isLoading: contractCallsLoading,
+    error: contractCallsError,
+  } = useGetContractCalls(type)
+
+  const {
+    data: gaugesAddress,
+    isLoading: gaugesAddressLoading,
+    error: gaugesAddressError,
+  } = useReadContracts<Address[]>({
+    contracts: calls,
+    query: {
+      refetchInterval: AVERAGE_BLOCKTIME,
+    },
+  })
+
+  const gauges = useMemo(() => gaugesAddress?.map(gauge => gauge.result as Address), [gaugesAddress])
+  const isLoading = contractCallsLoading || gaugesAddressLoading
+  const error = contractCallsError ?? gaugesAddressError
+
+  return {
+    data: gauges,
+    isLoading: isLoading || gaugesAddressLoading,
+    error: error ?? gaugesAddressError,
   }
 }
 

@@ -3,13 +3,22 @@ import { Badge } from '@/components/Badge'
 import { Jdenticon } from '@/components/Header/Jdenticon'
 import { Paragraph, Typography } from '@/components/Typography'
 import { FC } from 'react'
-import { Builder, BuilderProposal, BuilderStateFlags } from '../../types'
+import { Builder, BuilderProposal, BuilderStateFlags } from '@/app/collective-rewards/types'
+import { getBuilderInactiveState } from '@/app/collective-rewards/utils'
 
 export type BuilderAllocationHeaderProps = Pick<Builder, 'builderName' | 'address' | 'stateFlags' | 'gauge'> &
   Pick<BuilderProposal, 'date'>
 
-const isBuilderActive = ({ communityApproved, kycApproved, paused }: BuilderStateFlags) => {
-  return communityApproved && kycApproved && !paused
+const isBuilderActive = ({ communityApproved, kycApproved, paused, revoked }: BuilderStateFlags) => {
+  return communityApproved && kycApproved && !paused && !revoked
+}
+
+const haltedClass = 'bg-[#932309] color-text-primary py-1 px-1 text-[12px]'
+const BuilderStateBadges = {
+  Paused: <Badge content="Paused" className="bg-[#F9E1FF] text-secondary py-1 px-1 text-[12px]" />,
+  Deactivated: <Badge content="Deactivated" className={haltedClass} />,
+  KYCRevoked: <Badge content="KYC Revoked" className={haltedClass} />,
+  Revoked: <Badge content="Revoked" className={haltedClass} />,
 }
 
 export const BuilderAllocationHeader: FC<BuilderAllocationHeaderProps> = ({
@@ -28,13 +37,11 @@ export const BuilderAllocationHeader: FC<BuilderAllocationHeaderProps> = ({
         <Typography tagVariant="label" className="font-semibold line-clamp-1 text-wrap text-base leading-4">
           <AddressOrAlias addressOrAlias={builderName || address} className="text-base font-bold leading-4" />
         </Typography>
-        {gauge && !state.communityApproved && (
-          <Badge content="Deactivated" className="bg-[#932309] color-text-primary py-1 px-1 text-[12px]" />
+        {gauge && isBuilderActive(state) ? (
+          <Paragraph className="text-sm font-light"> Joined {date}</Paragraph>
+        ) : (
+          BuilderStateBadges[getBuilderInactiveState(state)]
         )}
-        {state.paused && state.communityApproved && (
-          <Badge content="Paused" className="bg-[#F9E1FF] text-secondary py-1 px-1 text-[12px]" />
-        )}
-        {isBuilderActive(state) && <Paragraph className="text-sm font-light"> Joined {date}</Paragraph>}
       </div>
     </div>
   )

@@ -13,6 +13,7 @@ import { ProgressBar } from '@/components/ProgressBar'
 import { Button } from '@/components/Button'
 import { BuilderStateFlags } from '@/app/collective-rewards/types'
 import { AllocationsContext } from '@/app/collective-rewards/allocations/context'
+import { getBuilderInactiveState, isBuilderOperational } from '@/app/collective-rewards/utils'
 
 export function getFormattedCurrency(value: number, symbol: string) {
   const formattedCurrency = formatCurrency(value, symbol)
@@ -56,15 +57,15 @@ type BuilderStatusFlagProps = {
 }
 
 const BuilderStatusFlag: FC<BuilderStatusFlagProps> = ({ stateFlags }) => {
-  const isDeactivated = !stateFlags.kycApproved || !stateFlags.communityApproved
-  const isPaused = stateFlags.paused
+  const isOperational = isBuilderOperational(stateFlags)
+  const builderInactiveState = getBuilderInactiveState(stateFlags)
 
-  const color = isDeactivated ? '#932309' : isPaused ? '#F9E1FF' : 'transparent'
-  const content = isDeactivated ? 'Status: Deactivated' : isPaused ? 'Status: Paused' : ''
+  const color = isOperational ? 'transparent' : builderInactiveState === 'Paused' ? '#F9E1FF' : '#932309'
+  const content = builderInactiveState
 
   return (
     <Popover
-      disabled={!isDeactivated && !isPaused}
+      disabled={isOperational}
       content={content}
       className="font-normal text-sm flex items-center"
       size="small"
