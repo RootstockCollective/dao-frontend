@@ -15,6 +15,7 @@ import { useStRif } from '@/shared/hooks/useStRIf'
 import { CopyButton } from '@/components/CopyButton'
 import { NftHoldersSection } from '@/app/communities/NftHoldersSection'
 import { communitiesMapByContract } from '@/app/communities/communityUtils'
+import { isUserRejectedTxError } from '@/components/ErrorPage/commonErrors'
 
 /**
  * Name of the local storage variable with information about whether the token was added to the wallet
@@ -61,7 +62,7 @@ export default function Page() {
 
   const nftInfo = communitiesMapByContract[nftAddress || '']
   if (nftInfo === undefined && nftAddress !== undefined) {
-    console.warn(`The current NFT address is not registered: ${nftAddress} - Please check the config.`)
+    console.warn('The current NFT address is not registered. Please check the config.')
   }
   const [message, setMessage] = useState<MessageProps | null>(null)
   // reset message after few seconds
@@ -180,8 +181,7 @@ export default function Page() {
       resetAddToWallet()
     } catch (error) {
       // don't show error message if user has closed the wallet prompt
-      if ((error as { message?: string }).message?.includes('User rejected the request'))
-        return resetAddToWallet()
+      if (isUserRejectedTxError(error)) return resetAddToWallet()
       console.error('ERROR', error)
       setMessage({ text: `Error adding NFT#${tokenId} to wallet`, severity: 'error' })
       resetAddToWallet()

@@ -11,7 +11,7 @@ update .env file with the correct data from respective files:
 ```
 .dev
 .testnet
-.prod
+.mainnet
 ```
 
 the chosen set of variables depends on the targeted contract versions you planning to work with. `.dev` - same as the `.testnet` versions of the contract with an exception being reduced wait times of votingDelay, votingPeriod and timelockMinDelay for automation purposes. `.testnet` and `.mainnet` versions are aligned on time but target respective chains(chainIds) 31 and 30.
@@ -54,6 +54,25 @@ Open [http://localhost:3000](http://localhost:3000) with your browser to see the
 You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
 
 This project uses [`next/font`](https://nextjs.org/docs/basic-features/font-optimization) to automatically optimize and load Inter, a custom Google Font.
+
+## Environments
+
+The following table describes the different environments files that the teams interact with it and where they are deployed.
+
+All environment files are prefixed with a `.env`.
+
+| Environment      | Team     | Deploy URL                                      | Configuration                                                                                                                                                                              | Notes        |
+| ---------------- | -------- | ----------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ | ------------ |
+| .mainnet            | DAO - CR | https://app.rootstockcollective.xyz             | [DAO](https://github.com/RootstockCollective/dao-contracts/blob/develop/params/mainnet.json) <br> [CR](https://github.com/RootstockCollective/collective-rewards-sc/blob/main/.env.30.mvp) | -            |
+| .dev             | DAO - CR | https://dev.app.rootstockcollective.xyz         | [DAO](https://github.com/RootstockCollective/dao-contracts/blob/develop/params/dev.json)                                                                                                   | Requires VPN |
+| .testnet         | DAO      | https://testnet.app.rootstockcollective.xyz     | [DAO](https://github.com/RootstockCollective/dao-contracts/blob/develop/params/testnet.json)                                                                                               | -            |
+| .qa              | DAO      | -                                               | -                                                                                                                                                                                          | -            |
+| .testnet.local   | CR       | http://localhost:3000                           | [CR](https://github.com/RootstockCollective/collective-rewards-sc/blob/main/.env.31.staging.mvp)                                                                                           | -            |
+| .testnet.qa      | CR       | https://frontend.qa.bim.dao.rif.technology      | [CR](https://github.com/RootstockCollective/collective-rewards-sc/blob/main/.env.31.qa.dapp)                                                                                               | -            |
+| .testnet.staging | CR       | https://frontend.testnet.bim.dao.rif.technology | [CR](https://github.com/RootstockCollective/collective-rewards-sc/blob/main/.env.31.staging.mvp)                                                                                           | -            |
+
+**CR**: Rootstock Collective Rewards squad <br>
+**DAO**: Rootstock DAO squad
 
 ## Learn More
 

@@ -1,7 +1,7 @@
 import axios from 'axios'
 import { ClassValue, clsx } from 'clsx'
 import { twMerge } from 'tailwind-merge'
-import { EXPLORER_URL, RIF_WALLET_SERVICES_URL } from './constants'
+import { CHAIN_ID, EXPLORER_URL, RIF_WALLET_SERVICES_URL } from './constants'
 import { Address } from 'viem'
 
 /**
@@ -27,7 +27,42 @@ export const shortAddress = (address: Address | undefined, amount = 5): string =
 
 export const axiosInstance = axios.create({
   baseURL: RIF_WALLET_SERVICES_URL,
+  params: {
+    chainId: CHAIN_ID,
+  },
 })
+
+axiosInstance.interceptors.request.use(
+  config => {
+    try {
+      const fullUrl = config.baseURL + (config.url || '')
+      const doesBaseUrlHasChainId = fullUrl.includes('chainId')
+      if (doesBaseUrlHasChainId) {
+        // Parse the full URL (baseURL + request URL)
+        const url = new URL(fullUrl)
+
+        // Get existing URL parameters
+        const existingChainId = url.searchParams.get('chainId')
+
+        // If there are params in the request config
+        if (config.params) {
+          // If chainId exists in both URL and params, remove it from params
+          if (existingChainId && 'chainId' in config.params) {
+            const { chainId, ...otherParams } = config.params
+            config.params = otherParams
+          }
+        }
+      }
+      return config
+    } catch (error) {
+      console.error('Error in axios interceptor:', error)
+      return config
+    }
+  },
+  error => {
+    return Promise.reject(error)
+  },
+)
 
 /**
  * Truncates a string to a given length
@@ -152,3 +187,34 @@ export const toFixed = (num: number | string, decimalPlaces = 8) => {
 }
 
 export const SHARED_MODAL_BOX_SHADOW_STYLE = '0px 0px 16.4px 0px rgba(229,107,26,0.68)'
+
+/**
+ * Creates a debounced version of a function that delays its execution until after a specified wait time
+ * has elapsed since the last time it was called.
+ * @param func - The function to debounce
+ * @param {number} wait - The number of milliseconds to delay execution
+ * @param {boolean} [immediate=false] - If true,  function executes immediately on the first call, then waits for the delay before allowing subsequent calls
+ */
+export function debounce<T extends (...args: any[]) => void>(
+  func: T,
+  wait: number,
+  immediate: boolean = false,
+): (...args: Parameters<T>) => void {
+  let timeout: NodeJS.Timeout | null = null
+
+  return function (this: any, ...args: Parameters<T>): void {
+    const context = this
+
+    const later = () => {
+      timeout = null
+      if (!immediate) func.apply(context, args)
+    }
+
+    const callNow = immediate && !timeout
+
+    if (timeout) clearTimeout(timeout)
+    timeout = setTimeout(later, wait)
+
+    if (callNow) func.apply(context, args)
+  }
+}

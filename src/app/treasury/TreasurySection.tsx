@@ -11,11 +11,13 @@ export const TreasurySection = () => {
       <HeaderTitle className="mb-4">Treasury</HeaderTitle>
       <div className="grid grid-cols-2 xl:grid-cols-5 gap-[24px]">
         {/* RIF Holdings */}
-        {treasuryContracts.map((contract, index) => (
+        {Object.values(treasuryContracts).map((contract, index) => (
           <MetricsCard
             key={`${contract.name}-RIF`}
             title={`${contract.name} RIF`}
+            // Show the RIF amount, rounded up to the nearest whole number. If not available, show 0 RIF.
             amount={`${buckets[index]?.RIF?.amount ? Math.ceil(Number(buckets[index].RIF.amount)) : 0} RIF`}
+            // Display the fiat amount in USD, or show 0 if not available
             fiatAmount={`= USD ${buckets[index]?.RIF?.fiatAmount ? buckets[index].RIF.fiatAmount : 0}`}
             contractAddress={contract.address}
             data-testid={`${contract.name}-RIF`}
@@ -23,13 +25,13 @@ export const TreasurySection = () => {
           />
         ))}
         {/* RBTC Holdings */}
-        {treasuryContracts.map((contract, index) => (
+        {Object.values(treasuryContracts).map((contract, index) => (
           <MetricsCard
             key={`${contract.name}-RBTC`}
             title={`${contract.name} RBTC`}
-            // If the amount is less than 1e-7, show 0, this is because,
-            // toFixed may not be correctly formatting it to a clean
-            // output due to limitations in JavaScript's handling of floating-point numbers
+            // If the amount is less than 1e-7, show 0. This is because
+            // toFixed may not correctly format it to a clean output due to
+            // limitations in JavaScript's handling of floating-point numbers
             amount={`${
               Number(buckets[index]?.RBTC?.amount) < 1e-7 ? 0 : toFixed(Number(buckets[index]?.RBTC?.amount))
             }`}

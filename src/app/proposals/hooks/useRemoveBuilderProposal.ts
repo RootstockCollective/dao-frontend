@@ -1,21 +1,31 @@
-import { useWriteContract } from 'wagmi'
+import { AddressNotWhitelistedError, NoVotingPowerError } from '@/app/proposals/shared/errors'
 import { GovernorAbi } from '@/lib/abis/Governor'
-import { SimplifiedRewardDistributorAbi } from '@/lib/abis/SimplifiedRewardDistributorAbi'
-import { GovernorAddress, SimplifiedRewardDistributorAddress } from '@/lib/contracts'
+import { BuilderRegistryAbi } from '@/lib/abis/v2/BuilderRegistryAbi'
+import { GovernorAddress, BackersManagerAddress } from '@/lib/contracts'
 import { Address, encodeFunctionData } from 'viem'
-import { useVotingPower } from './useVotingPower'
+import { useWriteContract } from 'wagmi'
 import { createProposal, encodeGovernorRelayCallData } from './proposalUtils'
+import { useVotingPower } from './useVotingPower'
+import { useBuilderContext } from '@/app/collective-rewards/user'
+import { Builder } from '@/app/collective-rewards/types'
 
 export const useRemoveBuilderProposal = () => {
   const { canCreateProposal } = useVotingPower()
-  const { writeContractAsync: propose, isPending: isPublishing, error } = useWriteContract()
+  const { writeContractAsync: propose, isPending: isPublishing, error: transactionError } = useWriteContract()
+  const { getBuilderByAddress } = useBuilderContext()
 
   const onRemoveBuilderProposal = async (builderAddress: Address, description: string) => {
     if (!canCreateProposal) {
-      throw new Error('You do not have enough voting power to create a proposal')
+      throw NoVotingPowerError
     }
+
+    const { stateFlags } = getBuilderByAddress(builderAddress) as Builder
+    if (stateFlags && !stateFlags.communityApproved) {
+      throw AddressNotWhitelistedError
+    }
+
     const calldata = encodeRemoveBuilderCalldata(builderAddress)
-    const relayCallData = encodeGovernorRelayCallData(SimplifiedRewardDistributorAddress, calldata)
+    const relayCallData = encodeGovernorRelayCallData(BackersManagerAddress, calldata)
 
     const { proposal } = createProposal([GovernorAddress], [0n], [relayCallData], description)
 
@@ -26,13 +36,13 @@ export const useRemoveBuilderProposal = () => {
       args: proposal,
     })
   }
-  return { onRemoveBuilderProposal, isPublishing, error }
+  return { onRemoveBuilderProposal, isPublishing, transactionError }
 }
 
 const encodeRemoveBuilderCalldata = (builderAddress: Address) => {
   return encodeFunctionData({
-    abi: SimplifiedRewardDistributorAbi,
-    functionName: 'removeWhitelistedBuilder',
+    abi: BuilderRegistryAbi,
+    functionName: 'dewhitelistBuilder',
     args: [builderAddress.toLocaleLowerCase() as Address],
   })
 }

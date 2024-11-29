@@ -34,6 +34,7 @@ import React from 'react'
 import { useForm } from 'react-hook-form'
 import { CreateProposalHeaderSection } from '@/app/proposals/create/CreateProposalHeaderSection'
 import { isAddressRegex } from '@/app/proposals/shared/utils'
+import { isBaseError, isUserRejectedTxError } from '@/components/ErrorPage/commonErrors'
 
 const rifMinimumAmount = ENV === 'mainnet' ? 10 : 1
 const rbtcMinimumAmount = ENV === 'mainnet' ? 0.0001 : 0.000001
@@ -91,7 +92,6 @@ export const TreasuryWithdrawProposalForm = () => {
     formState: { touchedFields, errors, isValid, isDirty },
     watch,
     trigger,
-    setValue,
   } = form
 
   const pricesMap = useMemo(
@@ -122,8 +122,12 @@ export const TreasuryWithdrawProposalForm = () => {
       )
       router.push(`/proposals?txHash=${txHash}`)
     } catch (err: any) {
-      if (err?.cause?.code !== 4001) {
+      if (isUserRejectedTxError(err)) return
+      if (isBaseError(err)) {
+        setMessage({ ...TX_MESSAGES.proposal.error, content: err.message })
+      } else {
         setMessage(TX_MESSAGES.proposal.error)
+        console.error('🐛 Error writing to contract:', err)
       }
     }
   }
@@ -170,7 +174,12 @@ export const TreasuryWithdrawProposalForm = () => {
                   <FormItem className="mb-6 mx-1">
                     <FormLabel>Proposal name</FormLabel>
                     <FormControl>
-                      <FormInput placeholder="Name your proposal" {...field} maxLength={100} />
+                      <FormInput
+                        placeholder="Name your proposal"
+                        {...field}
+                        maxLength={100}
+                        data-testid="InputName"
+                      />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -183,14 +192,23 @@ export const TreasuryWithdrawProposalForm = () => {
                   <FormItem className="mb-6 mx-1">
                     <FormLabel>Description</FormLabel>
                     <FormControl>
-                      <FormTextarea placeholder="Enter a description..." {...field} maxLength={3000} />
+                      <FormTextarea
+                        placeholder="Enter a description..."
+                        {...field}
+                        maxLength={3000}
+                        data-testid="InputDescription"
+                      />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
                 )}
               />
               <div className="flex justify-center mb-6">
-                <Button disabled={!isProposalCompleted} onClick={handleProposalCompleted}>
+                <Button
+                  disabled={!isProposalCompleted}
+                  onClick={handleProposalCompleted}
+                  data-testid="Continue"
+                >
                   Continue
                 </Button>
               </div>
@@ -215,7 +233,7 @@ export const TreasuryWithdrawProposalForm = () => {
                   <FormItem className="mb-6 mx-1">
                     <FormLabel>Transfer to</FormLabel>
                     <FormControl>
-                      <FormInput placeholder="0x123...456" {...field} />
+                      <FormInput placeholder="0x123...456" {...field} data-testid="InputTransfer" />
                     </FormControl>
                     <FormDescription>Write or paste the wallet address of the recipient</FormDescription>
                     <FormMessage />
@@ -240,7 +258,7 @@ export const TreasuryWithdrawProposalForm = () => {
                           defaultValue={field.value}
                         >
                           <FormControl>
-                            <SelectTrigger>
+                            <SelectTrigger data-testid="InputAsset">
                               <SelectValue placeholder="Select an asset" />
                             </SelectTrigger>
                           </FormControl>
@@ -283,7 +301,13 @@ export const TreasuryWithdrawProposalForm = () => {
                     <FormItem className="mb-6 mx-1">
                       <FormLabel>Amount</FormLabel>
                       <FormControl>
-                        <FormInputNumber placeholder="0.00" className="w-64" autoComplete="off" {...field} />
+                        <FormInputNumber
+                          placeholder="0.00"
+                          className="w-64"
+                          autoComplete="off"
+                          {...field}
+                          data-testid="InputAmount"
+                        />
                       </FormControl>
                       {amountValue?.toString() && (
                         <FormDescription>= USD {formatCurrency(amountUsd)}</FormDescription>

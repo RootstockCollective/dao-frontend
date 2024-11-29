@@ -7,12 +7,16 @@ on:
 
 env:
   AWS_REGION: us-east-1
-  ECR_REPOSITORY: bim-dao-frontend-qa
-  ECS_SERVICE: bim-dao-frontend
-  ECS_CLUSTER: bim-dao-frontend-qa
-  ECS_TASK_DEFINITION: bim-dao-frontend-qa
-  CONTAINER_NAME: bim-dao-frontend
+  ECR_REPOSITORY: rscoll-dev-bim-qa
+  ECS_SERVICE: rscoll-dev-bim-qa
+  ECS_CLUSTER: rscoll-dev
+  ECS_TASK_DEFINITION: rscoll-dev-bim-qa
+  CONTAINER_NAME: rscoll-dev-bim-qa
 
+  # The .env file that is used to build the docker image 
+  # is retrieved using PROFILE, so be sure there is a `.env.<PROFILE>` file
+  # that matches with the profile set
+  # Example: PROFILE=testnet => .env.testnet
   PROFILE: testnet.qa
 
 jobs:
@@ -22,7 +26,7 @@ jobs:
     if: |
       github.event_name == 'workflow_dispatch' || github.event.label.name == 'deploy to QA'
     environment:
-      name: QA
+      name: CR-QA
     permissions:
       id-token: write
       contents: read
@@ -34,7 +38,7 @@ jobs:
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v4
         with:
-          role-to-assume: ${{ secrets.ROLE_ECS_ARN }}
+          role-to-assume: ${{ secrets.AWS_LOGIN_QA_ROLE_ARN }}
           aws-region: ${{ env.AWS_REGION }}
 
       - name: Login to Amazon ECR
@@ -50,7 +54,7 @@ jobs:
           # Build a docker container and
           # push it to ECR so that it can
           # be deployed to ECS.
-          docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG --build-arg arg_env="$PROFILE" --build-arg NEXT_PUBLIC_BUILD_ID=${{ github.sha }} --no-cache .
+          docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG --build-arg PROFILE="$PROFILE" --build-arg NEXT_PUBLIC_BUILD_ID=${{ github.sha }} --no-cache .
           docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
           echo "::set-output name=image::$ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG"
 

@@ -2,26 +2,27 @@
 import { cn } from '@/lib/utils'
 import { HTMLAttributes, ReactNode, useEffect, useRef, useState } from 'react'
 
-interface Props extends Omit<HTMLAttributes<HTMLDivElement>, 'children' | 'content'> {
+export interface PopoverProps extends Omit<HTMLAttributes<HTMLDivElement>, 'children' | 'content'> {
   children: ReactNode
   content: ReactNode
+  disabled?: boolean
   trigger?: 'click' | 'hover'
   background?: 'dark' | 'light'
   position?: 'top' | 'bottom' | 'right' | 'left'
   size?: 'small' | 'medium'
   hasCaret?: boolean
 }
-
 export const Popover = ({
   children,
   content,
+  disabled = false,
   trigger = 'click',
   background = 'dark',
   position = 'bottom',
   size = 'medium',
   hasCaret = false,
   className,
-}: Props) => {
+}: PopoverProps) => {
   const [show, setShow] = useState(false)
   const wrapperRef = useRef<any>(null)
 
@@ -51,6 +52,10 @@ export const Popover = ({
       }
     }
   }, [show, wrapperRef])
+
+  if (disabled) {
+    return <>{children}</>
+  }
 
   return (
     <div

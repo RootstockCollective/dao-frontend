@@ -52,6 +52,7 @@ import { Vote, VoteProposalModal } from '@/components/Modal/VoteProposalModal'
 import { VoteSubmittedModal } from '@/components/Modal/VoteSubmittedModal'
 import React from 'react'
 import { ProposalState } from '@/shared/types'
+import { isUserRejectedTxError } from '@/components/ErrorPage/commonErrors'
 
 export default function ProposalView() {
   const {
@@ -131,7 +132,7 @@ const PageWithProposal = (proposal: ParsedProposal) => {
       })
       setMessage(TX_MESSAGES.voting.success)
     } catch (err: any) {
-      if (err?.cause?.code !== 4001) {
+      if (!isUserRejectedTxError(err)) {
         console.error(err)
         setErrorVoting(err.shortMessage || err.toString())
         setMessage(TX_MESSAGES.voting.error)
@@ -149,7 +150,7 @@ const PageWithProposal = (proposal: ParsedProposal) => {
       })
       setMessage(TX_MESSAGES.queuing.success)
     } catch (err: any) {
-      if (err?.cause?.code !== 4001) {
+      if (!isUserRejectedTxError(err)) {
         console.error(err)
         setMessage(TX_MESSAGES.queuing.error)
       }
@@ -167,7 +168,7 @@ const PageWithProposal = (proposal: ParsedProposal) => {
       })
       setMessage(TX_MESSAGES.execution.success)
     } catch (err: any) {
-      if (err?.cause?.code !== 4001) {
+      if (!isUserRejectedTxError(err)) {
         console.error(err)
         setMessage(TX_MESSAGES.execution.error)
       }
@@ -183,14 +184,13 @@ const PageWithProposal = (proposal: ParsedProposal) => {
   const proposalType: SupportedProposalActionName = proposal.calldatasParsed[0]?.functionName
 
   const { proposalName, builderName } = splitCombinedName(name)
-
   // @ts-ignore
   return (
     <div className="pl-4 grid grid-rows-1 gap-[32px] mb-[100px]">
       <BreadcrumbSection title={proposalName} />
       <div className="flex items-center justify-between">
         <Header className="text-2xl ">{proposalName}</Header>
-        {proposalType === 'whitelistBuilder' && (
+        {(proposalType === 'communityApproveBuilder' || proposalType === 'whitelistBuilder') && (
           <DewhitelistButton
             proposal={proposal}
             canCreateProposal={canCreateProposal}
@@ -280,6 +280,7 @@ const PageWithProposal = (proposal: ParsedProposal) => {
             <Popover
               size="small"
               trigger="hover"
+              disabled={isExecuting}
               content={
                 !canProposalBeExecuted ? (
                   <p className="text-[12px] font-bold mb-1">
@@ -289,13 +290,15 @@ const PageWithProposal = (proposal: ParsedProposal) => {
                 ) : isExecuting ? (
                   <p className="text-[12px] font-bold mb-1">The proposal is being executed.</p>
                 ) : (
-                  <p className="text-[12px] font-bold mb-1">The proposal can be executed.</p>
+                  <p className="text-[12px] font-bold mb-1">
+                    The proposal <br /> can be executed.
+                  </p>
                 )
               }
             >
               <Button
                 onClick={handleVotingExecution}
-                className="mt-2"
+                className="mt-2 ml-auto"
                 disabled={!canProposalBeExecuted || isExecuting}
                 data-testid="Execute"
               >
@@ -303,7 +306,12 @@ const PageWithProposal = (proposal: ParsedProposal) => {
               </Button>
             </Popover>
           )}
-          {isExecuting && <p>Pending transaction confirmation to complete execution.</p>}
+          {isExecuting && (
+            <Span variant="light" className="inline-block mt-2">
+              Pending transaction confirmation <br />
+              to complete execution.
+            </Span>
+          )}
           {votingModal.isModalOpened && address && (
             <VoteProposalModal
               onSubmit={handleVoting}
@@ -481,8 +489,8 @@ const DewhitelistButton: FC<DewhitelistButton> = ({
   proposalState,
 }) => {
   const router = useRouter()
-  const rewardDistributorContract = 'SimplifiedRewardDistributorAbi'
-  const removeWhitelistedBuilderAction = 'removeWhitelistedBuilder'
+  const builderRegistryContract = 'BuilderRegistryAbi'
+  const dewhitelistBuilderAction = 'dewhitelistBuilder'
   const builderAddress = getAddress(calldatasParsed[0]?.args[0]?.toString() || '')
   const isProposalExecuted = proposalState === ProposalState.Executed
   const isButtonEnabled = builderAddress && isProposalExecuted
@@ -494,7 +502,7 @@ const DewhitelistButton: FC<DewhitelistButton> = ({
           startIcon={<FaMinus />}
           onClick={() =>
             router.push(
-              `/proposals/create?contract=${rewardDistributorContract}&action=${removeWhitelistedBuilderAction}&builderAddress=${builderAddress}&proposalId=${proposalId}`,
+              `/proposals/create?contract=${builderRegistryContract}&action=${dewhitelistBuilderAction}&builderAddress=${builderAddress}&proposalId=${proposalId}`,
             )
           }
           disabled={!canCreateProposal}
@@ -513,8 +521,14 @@ export const actionInputNameFormatMap: Partial<
     builder_: 'Address to be whitelisted',
     rewardReceiver_: 'Address to receive rewards',
   },
+  communityApproveBuilder: {
+    builder_: 'Address to be whitelisted',
+  },
   removeWhitelistedBuilder: {
     builder_: 'Address to be removed',
+  },
+  dewhitelistBuilder: {
+    builder_: 'Address to be de-whitelisted',
   },
 }
 
@@ -538,6 +552,12 @@ export const actionComponentMap: Partial<ActionComposerMap> = {
     rewardReceiver_: AddressInputComponent,
   },
   removeWhitelistedBuilder: {
+    builder_: AddressInputComponent,
+  },
+  dewhitelistBuilder: {
+    builder_: AddressInputComponent,
+  },
+  communityApproveBuilder: {
     builder_: AddressInputComponent,
   },
   withdraw: {

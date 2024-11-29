@@ -1,13 +1,41 @@
-import { encodeEventTopics } from 'viem'
-import { SimplifiedRewardDistributorAbi } from '@/lib/abis/SimplifiedRewardDistributorAbi'
-import { SimplifiedRewardDistributorAddress } from '@/lib/contracts'
+import { Address } from 'viem'
+import { BackersManagerAddress } from '@/lib/contracts'
 import { axiosInstance } from '@/lib/utils'
+import {
+  fetchBackerRewardsClaimedLogsByAddress,
+  fetchBuilderRewardsClaimedLogsByAddress,
+  fetchGaugeNotifyRewardLogsByAddress,
+  fetchNotifyRewardLogsByAddress,
+} from '@/lib/endpoints'
 
-export const fetchRewardDistributedLogs = () => {
-  const topic = encodeEventTopics({
-    abi: SimplifiedRewardDistributorAbi,
-    eventName: 'RewardDistributed',
-  })[0]
+export const fetchNotifyRewardLogs = (fromBlock = 0) => {
+  return axiosInstance.get(
+    fetchNotifyRewardLogsByAddress
+      .replace('{{address}}', BackersManagerAddress)
+      .replace('{{fromBlock}}', fromBlock.toString()),
+  )
+}
 
-  return axiosInstance.get(`address/${SimplifiedRewardDistributorAddress}/eventsByTopic0?topic0=${topic}`)
+export const fetchGaugeNotifyRewardLogs = (gaugeAddress: Address, fromBlock = 0) => {
+  return axiosInstance.get(
+    fetchGaugeNotifyRewardLogsByAddress
+      .replace('{{address}}', gaugeAddress)
+      .replace('{{fromBlock}}', fromBlock.toString()),
+  )
+}
+
+export const fetchBuilderRewardsClaimed = (gaugeAddress: Address, fromBlock = 0) => {
+  return axiosInstance.get(
+    fetchBuilderRewardsClaimedLogsByAddress
+      .replace('{{address}}', gaugeAddress)
+      .replace('{{fromBlock}}', fromBlock.toString()),
+  )
+}
+
+export const fetchBackerRewardsClaimed = (gaugeAddress: Address, fromBlock = 0) => {
+  return axiosInstance.get(
+    fetchBackerRewardsClaimedLogsByAddress
+      .replace('{{address}}', gaugeAddress)
+      .replace('{{fromBlock}}', fromBlock.toString()),
+  )
 }

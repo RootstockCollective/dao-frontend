@@ -1,25 +1,28 @@
+import { getBuilderGauge } from '@/app/collective-rewards/utils'
+import { AddressAlreadyWhitelistedError, NoVotingPowerError } from '@/app/proposals/shared/errors'
 import { GovernorAbi } from '@/lib/abis/Governor'
-import { SimplifiedRewardDistributorAbi } from '@/lib/abis/SimplifiedRewardDistributorAbi'
-import { GovernorAddress, SimplifiedRewardDistributorAddress } from '@/lib/contracts'
-import { Address, encodeFunctionData, getAddress } from 'viem'
+import { BuilderRegistryAbi } from '@/lib/abis/v2/BuilderRegistryAbi'
+import { GovernorAddress, BackersManagerAddress } from '@/lib/contracts'
+import { Address, encodeFunctionData, zeroAddress } from 'viem'
 import { useWriteContract } from 'wagmi'
 import { createProposal, encodeGovernorRelayCallData } from './proposalUtils'
 import { useVotingPower } from './useVotingPower'
 
 export const useCreateBuilderWhitelistProposal = () => {
   const { canCreateProposal } = useVotingPower()
-  const { writeContractAsync: propose, isPending: isPublishing, error } = useWriteContract()
+  const { writeContractAsync: propose, isPending: isPublishing, error: transactionError } = useWriteContract()
 
-  const onCreateBuilderWhitelistProposal = async (
-    builderAddress: Address,
-    receiverAddress: Address,
-    description: string,
-  ) => {
+  const onCreateBuilderWhitelistProposal = async (builderAddress: Address, description: string) => {
     if (!canCreateProposal) {
-      throw new Error('You do not have enough voting power to create a proposal')
+      throw NoVotingPowerError
     }
-    const calldata = encodeWhitelistBuilderCalldata(builderAddress, receiverAddress)
-    const relayCallData = encodeGovernorRelayCallData(SimplifiedRewardDistributorAddress, calldata)
+    const builderGauge = await getBuilderGauge(builderAddress)
+    if (builderGauge !== zeroAddress) {
+      // TODO: maybe we can use a different error here
+      throw AddressAlreadyWhitelistedError
+    }
+    const calldata = encodeWhitelistBuilderCalldata(builderAddress)
+    const relayCallData = encodeGovernorRelayCallData(BackersManagerAddress, calldata)
 
     const { proposal } = createProposal([GovernorAddress], [0n], [relayCallData], description)
 
@@ -30,13 +33,13 @@ export const useCreateBuilderWhitelistProposal = () => {
       args: proposal,
     })
   }
-  return { onCreateBuilderWhitelistProposal, isPublishing, error }
+  return { onCreateBuilderWhitelistProposal, isPublishing, transactionError }
 }
 
-export const encodeWhitelistBuilderCalldata = (builderAddress: Address, receiverAddress: Address) => {
+export const encodeWhitelistBuilderCalldata = (builderAddress: Address) => {
   return encodeFunctionData({
-    abi: SimplifiedRewardDistributorAbi,
-    functionName: 'whitelistBuilder',
-    args: [builderAddress.toLocaleLowerCase() as Address, receiverAddress.toLocaleLowerCase() as Address],
+    abi: BuilderRegistryAbi,
+    functionName: 'communityApproveBuilder',
+    args: [builderAddress.toLocaleLowerCase() as Address],
   })
 }

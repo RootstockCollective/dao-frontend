@@ -3,7 +3,8 @@ import { cn } from '@/lib/utils'
 import { FC, JSX } from 'react'
 import { InputAttributes, NumericFormatProps } from 'react-number-format'
 import { InputNumber } from './InputNumber'
-import { BsSearch } from 'react-icons/bs'
+import { BsSearch, BsXCircle } from 'react-icons/bs'
+import { FaSpinner } from 'react-icons/fa6'
 
 const DEFAULT_CLASSES = `
 px-[20px] py-[12px]
@@ -28,11 +29,20 @@ interface Props {
   label?: string
   labelWrapperProps?: JSX.IntrinsicElements['div']
   inputProps?: JSX.IntrinsicElements['input'] & NumericFormatProps<InputAttributes>
-  hint?: string
+  hint?: string | JSX.Element
   errorMessage?: string
   className?: string
   type?: InputType
   onChange?: (value: string) => void
+  labelProps?: JSX.IntrinsicElements['div']
+  /**
+   * Adds a "clear" button to the search field. The provided function is called when the button is clicked.
+   */
+  onClear?: () => void
+  /**
+   * Loading prop triggers rolling spinner inside the search field
+   */
+  loading?: boolean
 }
 export const Input: FC<Props> = ({
   name,
@@ -48,6 +58,9 @@ export const Input: FC<Props> = ({
   className,
   type = 'text',
   onChange = () => {},
+  labelProps = {},
+  onClear,
+  loading = false,
 }) => {
   const handleOnChange = (e: { target: { value: string } }) => onChange(e.target.value)
 
@@ -86,8 +99,10 @@ export const Input: FC<Props> = ({
       />
     ),
     search: (
-      <>
-        <BsSearch className="absolute translate-y-4 translate-x-4" />
+      <div className="relative">
+        <div className="absolute translate-y-4 translate-x-4">
+          {loading ? <FaSpinner className="animate-spin" /> : <BsSearch />}
+        </div>
         <input
           className={classes}
           placeholder={placeholder}
@@ -97,26 +112,28 @@ export const Input: FC<Props> = ({
           name={name}
           data-testid={`Input_${name}`}
           readOnly={readonly}
+          autoComplete="off"
           {...inputProps}
         />
-      </>
+        {/* Small clear button at the right of the search field */}
+        {onClear && (
+          <button onClick={onClear} className="absolute right-4 bottom-1/2 translate-y-1/2 cursor-pointer">
+            <BsXCircle />
+          </button>
+        )}
+      </div>
     ),
   }[type]
   return (
     <div className={className} data-testid={`Input_Container_${name}`}>
       {label && (
         <div className="pb-[10px]" {...labelWrapperProps}>
-          <Label variant="semibold">{label}</Label>
+          <Label variant="semibold" {...labelProps}>
+            {label}
+          </Label>
         </div>
       )}
       {input}
-      {hint && !errorMessage && (
-        <div className="text-st-hint mt-[5px]">
-          <Paragraph variant="light" className="text-[14px]">
-            {hint}
-          </Paragraph>
-        </div>
-      )}
       {hint && !errorMessage && (
         <div className="text-st-hint mt-[5px]">
           <Paragraph variant="light" className="text-[14px]">

@@ -110,4 +110,40 @@ export const TX_MESSAGES = {
       severity: 'success',
     },
   },
+  delegation: {
+    pending: {
+      title: 'Delegation in process',
+      content: 'Your transaction is in progress. It will be visible when the transaction is confirmed.',
+      severity: 'info',
+    },
+    success: {
+      title: 'Delegation successful',
+      content: 'Voting power successfully delegated!',
+      severity: 'success',
+    },
+    error: {
+      title: 'Error on delegation',
+      content:
+        'An unexpected error occurred while trying to execute the delegation. Please try again later. If the issue persists, contact support for assistance.',
+      severity: 'error',
+    },
+  },
+  reclaiming: {
+    pending: {
+      title: 'Reclaiming in process',
+      content: 'Your transaction is in progress. It will be visible when the transaction is confirmed.',
+      severity: 'info',
+    },
+    success: {
+      title: 'Reclaiming successful',
+      content: 'Voting power successfully reclaimed!',
+      severity: 'success',
+    },
+    error: {
+      title: 'Error on reclaiming',
+      content:
+        'An unexpected error occurred while trying to execute the reclaiming. Please try again later. If the issue persists, contact support for assistance.',
+      severity: 'error',
+    },
+  },
 } as const

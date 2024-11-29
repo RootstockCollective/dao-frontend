@@ -28,19 +28,6 @@ export const StakeStatus = ({
   const date = useMemo(() => moment().format('YYYY-MM-DD h:mm A'), [])
   return (
     <div className="px-[50px] py-[20px] flex justify-center flex-col">
-      <div className="flex justify-center mt-[63px]">
-        <div
-          style={{
-            boxShadow: SHARED_MODAL_BOX_SHADOW_STYLE,
-            padding: 17,
-            borderRadius: '30%',
-            backgroundColor: 'white',
-            width: 80,
-          }}
-        >
-          <LuBadgeCheck size={48} color="var(--color-primary)" />
-        </div>
-      </div>
       <Header className="mt-[62px] text-center font-normal" fontFamily="kk-topo">
         {textsDependingOnAction[actionName].inProcess}
       </Header>
@@ -74,7 +61,7 @@ export const StakeStatus = ({
           View on explorer
         </Button>
         <Button onClick={onReturnToBalances} buttonProps={{ 'data-testid': 'ReturnToBalances' }}>
-          Return to balances
+          Go to balances
         </Button>
       </div>
     </div>

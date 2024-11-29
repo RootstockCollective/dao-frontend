@@ -26,6 +26,7 @@ interface Props {
   startIconClasses?: string
   'data-testid'?: string
 }
+export type ButtonProps = Props
 
 const DEFAULT_DATA_TESTID = 'Button'
 

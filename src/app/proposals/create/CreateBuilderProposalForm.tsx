@@ -14,7 +14,7 @@ import {
 import { TX_MESSAGES } from '@/shared/txMessages'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useRouter } from 'next/navigation'
-import { FC, useState } from 'react'
+import { FC, useEffect, useState } from 'react'
 import { useForm } from 'react-hook-form'
 import { Address } from 'viem'
 import { z } from 'zod'
@@ -23,6 +23,7 @@ import { Accordion, AccordionItem, AccordionTrigger, AccordionContent } from '@/
 import { Header, Paragraph } from '@/components/Typography'
 import { Button } from '@/components/Button'
 import { isAddressRegex, DISPLAY_NAME_SEPARATOR } from '@/app/proposals/shared/utils'
+import { isBaseError, isUserRejectedTxError } from '@/components/ErrorPage/commonErrors'
 
 const FormSchema = z.object({
   builderName: z
@@ -38,20 +39,13 @@ const FormSchema = z.object({
     .max(3000)
     .refine(s => s.trim().replace(/\s+/g, ' ').length >= 10, 'Field must contain at least 10 characters'),
   builderAddress: z.string().refine(value => isAddressRegex(value), 'Please enter a valid address'),
-  receiverAddress: z
-    .string()
-    .refine(value => isAddressRegex(value) || value === '', 'Please enter a valid address'),
 })
 
 export const CreateBuilderProposalForm: FC = () => {
   const router = useRouter()
   useVotingPowerRedirect()
   const { setMessage } = useAlertContext()
-  const { onCreateBuilderWhitelistProposal, isPublishing, error } = useCreateBuilderWhitelistProposal()
-  if (error) {
-    setMessage(TX_MESSAGES.proposal.error)
-    console.error('🐛 Error writing to contract:', error)
-  }
+  const { onCreateBuilderWhitelistProposal, isPublishing } = useCreateBuilderWhitelistProposal()
 
   const [activeStep, setActiveStep] = useState('proposal')
 
@@ -62,7 +56,6 @@ export const CreateBuilderProposalForm: FC = () => {
       builderName: '',
       proposalName: '',
       builderAddress: '' as Address,
-      receiverAddress: '',
       description: '',
     },
   })
@@ -79,25 +72,24 @@ export const CreateBuilderProposalForm: FC = () => {
   const isProposalCompleted = isBuilderNameValid && isProposalNameValid && isDescriptionValid
 
   const isBuilderAddressValid = !errors.builderAddress && touchedFields.builderAddress
-  const isReceiverAddressValid = !errors.receiverAddress && touchedFields.receiverAddress
-  const isActionsCompleted = isBuilderAddressValid && isReceiverAddressValid
+  const isActionsCompleted = isBuilderAddressValid
 
   const handleProposalCompleted = () => setActiveStep('actions')
 
   const onSubmit = async (data: z.infer<typeof FormSchema>) => {
-    const { builderName, proposalName, description, builderAddress, receiverAddress } = data
+    const { builderName, proposalName, description, builderAddress } = data
     const proposalDescription = `${proposalName}${DISPLAY_NAME_SEPARATOR}${builderName};${description}`
 
     try {
-      const txHash = await onCreateBuilderWhitelistProposal(
-        builderAddress as Address,
-        (receiverAddress || builderAddress) as Address,
-        proposalDescription,
-      )
+      const txHash = await onCreateBuilderWhitelistProposal(builderAddress as Address, proposalDescription)
       router.push(`/proposals?txHash=${txHash}`)
-    } catch (err: any) {
-      if (err?.cause?.code !== 4001) {
+    } catch (error: any) {
+      if (isUserRejectedTxError(error)) return
+      if (isBaseError(error)) {
+        setMessage({ ...TX_MESSAGES.proposal.error, content: error.message })
+      } else {
         setMessage(TX_MESSAGES.proposal.error)
+        console.error('🐛 Error writing to contract:', error)
       }
     }
   }
@@ -192,23 +184,6 @@ export const CreateBuilderProposalForm: FC = () => {
                     <FormControl>
                       <FormInput
                         placeholder="Write or paste the builder address"
-                        {...field}
-                        maxLength={100}
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-              <FormField
-                control={control}
-                name="receiverAddress"
-                render={({ field }) => (
-                  <FormItem className="mb-6 mx-1">
-                    <FormLabel>Receiver address (optional)</FormLabel>
-                    <FormControl>
-                      <FormInput
-                        placeholder="Write or paste the receiver address"
                         {...field}
                         maxLength={100}
                       />

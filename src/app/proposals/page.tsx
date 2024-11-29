@@ -14,7 +14,7 @@ import { useVotingPower } from './hooks/useVotingPower'
 import { useMemo } from 'react'
 
 export default function Proposals() {
-  const { votingPower, canCreateProposal, threshold } = useVotingPower()
+  const { canCreateProposal, threshold, totalVotingPower } = useVotingPower()
   const { latestProposals } = useFetchAllProposals()
 
   const memoizedProposals = useMemo(() => latestProposals, [latestProposals])
@@ -26,7 +26,7 @@ export default function Proposals() {
         <div>
           <VotingPowerPopover />
           <Paragraph className="text-[48px] text-primary tracking-[-0.96px]" fontFamily="kk-topo">
-            {toFixed(votingPower)}
+            {totalVotingPower}
           </Paragraph>
         </div>
         <div className="flex flex-row gap-x-6">
@@ -55,8 +55,9 @@ const PopoverContent = () => {
         How is my voting power calculated?
       </Paragraph>
       <Paragraph size="small">
-        Your voting power is determined by the amount of stRIF (staked RIF) you hold. To increase your voting
-        power,{' '}
+        Your voting power is determined by the amount of stRIF (staked RIF) you hold, whether you have
+        delegated this voting power to someone else, and also by someone else who may have delegated their
+        voting power to you. <br /> <br /> To increase your voting power,{' '}
         <Span
           className="text-primary text-[14px] hover:underline cursor-pointer"
           onClick={() => router.push('/user?action=stake')}

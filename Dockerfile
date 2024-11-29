@@ -20,23 +20,11 @@ COPY . .
 ENV NEXT_TELEMETRY_DISABLED 1
 
 # Set the build argument 
-ARG arg_env
+ARG PROFILE
 ARG NEXT_PUBLIC_BUILD_ID
 
-# Rename environment files based on arg_env TODO: This is silly to do just for the sake of one file name (.env.prod) if we could replace this monster with `mv ".env.$arg_env". .env.local`. Furthermore, PROFILE var should work just as well ;)
-RUN if [ "$arg_env" = "testnet" ]; then \
-      mv .env.testnet .env.local; \
-    elif [ "$arg_env" = "dev" ]; then \
-      mv .env.dev .env.local; \
-    elif [ "$arg_env" = "qa" ]; then \
-          mv .env.qa .env.local; \
-    elif [ "$arg_env" = "mainnet" ]; then \
-      mv .env.prod .env.local; \
-    elif [ "$arg_env" = "testnet.qa" ]; then \
-      mv .env.testnet.qa .env.local; \
-    elif [ "$arg_env" = "testnet.staging" ]; then \
-      mv .env.testnet.staging .env.local; \
-    fi
+# Rename environment files based on PROFILE 
+RUN cp .env.${PROFILE} .env.local
 
 # Export the NEXT_PUBLIC_BUILD_ID as an environment variable
 ENV NEXT_PUBLIC_BUILD_ID=${NEXT_PUBLIC_BUILD_ID}

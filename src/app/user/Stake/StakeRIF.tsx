@@ -1,4 +1,4 @@
-import { Header, Label } from '@/components/Typography'
+import { Header, Label, Paragraph } from '@/components/Typography'
 import { StakeInput } from '@/app/user/Stake/StakeInput'
 import { Button } from '@/components/Button'
 import { useMemo } from 'react'
@@ -14,6 +14,7 @@ interface Props {
   totalBalanceConverted: string
   symbol: string
   actionName: ActionBeingExecuted
+  shouldShowCannotWithdraw?: boolean
 }
 
 export const StakeRIF = ({
@@ -26,6 +27,7 @@ export const StakeRIF = ({
   totalBalanceConverted,
   actionName,
   symbol = 'RIF',
+  shouldShowCannotWithdraw = false,
 }: Props) => (
   <div className="px-[50px] py-[20px]">
     <Header className="text-center font-normal" fontFamily="kk-topo">
@@ -47,13 +49,24 @@ export const StakeRIF = ({
         <PercentageButton
           key={i}
           percentage={percentage}
-          onClick={onPercentageClicked}
+          onClick={value => {
+            const calculatedAmount = (parseFloat(totalBalance) * (value / 100)).toFixed(8)
+            onAmountChange(calculatedAmount) // Update input value
+            onPercentageClicked(value) // Notify parent
+          }}
           totalAmountAllowed={totalBalance}
           amount={amount}
         />
       ))}
     </div>
-    {/* @TODO if we're unstaking we should have a component here - check design */}
+    {/* Cannot withdraw paragraph */}
+    {shouldShowCannotWithdraw && (
+      <Paragraph size="small" className="mt-2">
+        It appears you have votes allocated in the Collective Rewards! You can unstake your stRIF anytime.
+        However, please note that you must first de-allocate the same amount of stRIF from the Collective
+        Rewards
+      </Paragraph>
+    )}
     {/* Stake */}
     <div className="flex justify-center pt-10">
       <Button
@@ -80,8 +93,26 @@ const PercentageButton = ({ amount, percentage, totalAmountAllowed, onClick }: P
   const onPercentageClicked = () => onClick(percentage)
 
   const isActive = useMemo(() => {
-    const totalAmountAllowedPercentage = Number(totalAmountAllowed) * (percentage / 100)
-    return Number(amount) === totalAmountAllowedPercentage
+    if (!amount || !totalAmountAllowed) return false
+
+    try {
+      const totalAmount = Number(totalAmountAllowed)
+      const currentAmount = Number(amount)
+
+      // Calculate raw value for comparison (not display)
+      const rawExpectedAmount = (totalAmount * percentage) / 100
+
+      if (percentage === 100) {
+        // For 100%, compare raw values
+        return Math.abs(currentAmount - totalAmount) < 1e-8
+      }
+
+      // For other percentages, compare raw values with small epsilon
+      return Math.abs(currentAmount - rawExpectedAmount) < 1e-8
+    } catch (error) {
+      console.error('Error calculating percentage button state:', error)
+      return false
+    }
   }, [amount, totalAmountAllowed, percentage])
 
   return (
@@ -91,6 +122,8 @@ const PercentageButton = ({ amount, percentage, totalAmountAllowed, onClick }: P
       buttonProps={{
         'data-testid': `Percentage${percentage}`,
       }}
-    >{`${percentage}%`}</Button>
+    >
+      {`${percentage}%`}
+    </Button>
   )
 }

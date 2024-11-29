@@ -51,6 +51,14 @@ const config: Config = {
           from: { height: 'var(--radix-accordion-content-height)' },
           to: { height: '0' },
         },
+        'collapsible-down': {
+          from: { height: '0', opacity: '0' },
+          to: { height: 'var(--radix-collapsible-content-height)', opacity: '1' },
+        },
+        'collapsible-up': {
+          from: { height: 'var(--radix-collapsible-content-height)', opacity: '1' },
+          to: { height: '0', opacity: '0' },
+        },
         'fade-out-slide-out': {
           from: {
             opacity: '1',
@@ -85,6 +93,8 @@ const config: Config = {
       animation: {
         'accordion-down': 'accordion-down 0.2s ease-out',
         'accordion-up': 'accordion-up 0.2s ease-out',
+        'collapsible-down': 'collapsible-down 0.2s ease-out',
+        'collapsible-up': 'collapsible-up 0.2s ease-out',
         'translate-x': `translate-x ${ADDRESS_ANIMATION_DURATION}ms`,
         'fade-out-slide-out': `fade-out-slide-out ${ADDRESS_ANIMATION_DURATION}ms`,
         'fade-in-slide-in': `fade-in-slide-in ${ADDRESS_ANIMATION_DURATION}ms`,

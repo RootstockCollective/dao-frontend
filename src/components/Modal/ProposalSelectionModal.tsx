@@ -20,14 +20,14 @@ const typesMap: Record<ProposalType, ProposalTypeDetails> = {
   'Builder Activation': {
     description:
       'Ask the community to vote on adding a Builder to the RootstockCollective’s whitelist, granting them access to the Collective Rewards.',
-    contract: 'SimplifiedRewardDistributorAbi',
-    action: 'whitelistBuilder',
+    contract: 'BuilderRegistryAbi',
+    action: 'communityApproveBuilder',
   },
   'Builder Deactivation': {
     description:
       'Ask the community to vote on removing a Builder from the RootstockCollective’s whitelist, revoking their access to the Collective Rewards.',
-    contract: 'SimplifiedRewardDistributorAbi',
-    action: 'removeWhitelistedBuilder',
+    contract: 'BuilderRegistryAbi',
+    action: 'dewhitelistBuilder',
   },
   Standard: {
     description:

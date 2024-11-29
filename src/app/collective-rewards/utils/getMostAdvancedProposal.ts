@@ -1,23 +1,29 @@
+import { BuilderStateFlags, ProposalsToState } from '@/app/collective-rewards/types'
+import { CreateBuilderProposalEventLog } from '@/app/proposals/hooks/useFetchLatestProposals'
 import { ProposalState } from '@/shared/types'
-import { BuilderInfo, ProposalsToState } from '@/app/collective-rewards/types'
 
 const inactiveProposalsStates = [ProposalState.Canceled, ProposalState.Defeated, ProposalState.Expired]
 const isActive = (state: ProposalState) => !inactiveProposalsStates.includes(state)
+const isBuilderActive = (status?: BuilderStateFlags) =>
+  !status || status.activated || status.communityApproved
 
 export const getMostAdvancedProposal = (
-  { status, proposals }: BuilderInfo,
+  proposalsEvent: CreateBuilderProposalEventLog[],
   proposalsStateMap: ProposalsToState,
-) => {
-  return proposals
-    .sort(({ timeStamp: a }, { timeStamp: b }) => b - a)
+  status?: BuilderStateFlags,
+): CreateBuilderProposalEventLog | undefined => {
+  return proposalsEvent
+    .sort(
+      ({ timeStamp: a, args: { proposalId: pA } }, { timeStamp: b, args: { proposalId: pB } }) =>
+        proposalsStateMap[pB.toString()] - proposalsStateMap[pA.toString()] || b - a,
+    )
     .find(({ args: { proposalId } }) => {
       const state = proposalsStateMap[proposalId.toString()]
 
-      const isExecuted = ProposalState.Executed === state
-      if (status === 'Whitelisted') {
-        return isExecuted
+      if (state === ProposalState.Executed) {
+        return isBuilderActive(status)
       }
 
-      return !isExecuted && isActive(state)
+      return isActive(state)
     })
 }

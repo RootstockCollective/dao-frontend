@@ -18,6 +18,7 @@ import {
   ServerResponseV2,
   TokenHoldersResponse,
 } from '@/app/user/Balances/types'
+import { BackendEventByTopic0ResponseValue } from '@/shared/utils'
 
 export const fetchAddressTokens = (address: string, chainId = 31) =>
   axiosInstance
@@ -92,19 +93,6 @@ export const fetchNftsOwnedByAddressAndNFTAddress = (address: string, nftAddress
     .then(({ data }) => data)
     .catch(error => console.log(error))
 
-export interface BackendEventByTopic0ResponseValue {
-  address: string
-  blockNumber: string
-  data: string
-  gasPrice: string
-  gasUsed: string
-  logIndex: string
-  timeStamp: string
-  topics: Array<null | string>
-  transactionHash: string
-  transactionIndex: string
-}
-
 export const fetchProposalCreated = (fromBlock = 0) =>
   axiosInstance.get<BackendEventByTopic0ResponseValue[]>(
     fetchProposalsCreatedByGovernorAddress
@@ -132,10 +120,10 @@ export async function fetchIpfsUri(
 export const fetchNftInfo = (address: string) =>
   axiosInstance.get(getNftInfo.replace('{{nftAddress}}', address))
 
-export const fetchNftHoldersOfAddress = async (address: string, params: NextPageParams | null) => {
+export const fetchNftHoldersOfAddress = async (address: string, nextParams: NextPageParams | null) => {
   const { data } = await axiosInstance.get<ServerResponseV2<NftHolderItem>>(
     getNftHolders.replace('{{address}}', address),
-    { params },
+    { params: { nextPageParams: nextParams } },
   )
   if (data.error) {
     throw new Error(data.error)
@@ -146,7 +134,7 @@ export const fetchNftHoldersOfAddress = async (address: string, params: NextPage
 export const fetchTokenHoldersOfAddress = async (address: string, nextParams: NextPageParams | null) => {
   const { data } = await axiosInstance.get<ServerResponseV2<TokenHoldersResponse>>(
     getTokenHoldersOfAddress.replace('{{address}}', address),
-    { params: nextParams },
+    { params: { nextPageParams: nextParams } },
   )
   if (data.error) {
     throw new Error(data.error)

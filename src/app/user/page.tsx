@@ -1,14 +1,18 @@
 'use client'
+import { Rewards } from '@/app/collective-rewards/rewards/MyRewards'
+import { withBuilderButton } from '@/app/collective-rewards/user'
 import { BalancesSection } from '@/app/user/Balances/BalancesSection'
 import { CommunitiesSection } from '@/app/user/Communities/CommunitiesSection'
+import { DelegationSection } from '@/app/user/Delegation'
 import { MainContainer } from '@/components/MainContainer/MainContainer'
-import { TxStatusMessage } from '@/components/TxStatusMessage'
 import { Tabs, TabsContent, TabsList, TabsTrigger, TabTitle } from '@/components/Tabs'
-import { Rewards } from '@/app/collective-rewards/Rewards'
+import { TxStatusMessage } from '@/components/TxStatusMessage'
+import { useSearchParams } from 'next/navigation'
+import { Suspense } from 'react'
+import { zeroAddress } from 'viem'
 import { useAccount } from 'wagmi'
-import { WithBuilderButton } from '@/app/collective-rewards/WithBuilderButton'
-import { useGetIsWhitelistedBuilder } from '@/app/collective-rewards/hooks/useGetIsWhitelistedBuilder'
-import { getAddress } from 'viem'
+import { useIsBuilderOrBacker } from '../collective-rewards/rewards/hooks/useIsBuilderOrBacker'
+import { useHandleErrors } from '../collective-rewards/utils'
 
 type MyHoldingsProps = {
   showBuilderButton?: boolean
@@ -18,33 +22,62 @@ const MyHoldings = ({ showBuilderButton = false }: MyHoldingsProps) => (
   <>
     <TxStatusMessage messageType="staking" />
     <BalancesSection showBuilderButton={showBuilderButton} />
+    <DelegationSection />
     <CommunitiesSection />
   </>
 )
 
-const TabsListWithButton = WithBuilderButton(TabsList)
+const TabsListWithButton = withBuilderButton(TabsList)
 
-export default function User() {
+const values = ['holdings', 'rewards'] as const
+type TabValue = (typeof values)[number]
+type Tabs = {
+  [key in TabValue]: {
+    value: key
+    title: string
+  }
+}
+const tabs: Tabs = {
+  holdings: {
+    value: 'holdings',
+    title: 'My Holdings',
+  },
+  rewards: {
+    value: 'rewards',
+    title: 'My Rewards',
+  },
+}
+
+function User() {
   const { address } = useAccount()
+  const searchParams = useSearchParams()
+  const tabFromParams = searchParams?.get('tab') as TabValue
+  const defaultTabValue = tabs[tabFromParams]?.value ?? 'holdings'
 
-  const { data: isWhitelistedBuilder } = useGetIsWhitelistedBuilder(address!)
+  const { data: isBuilderOrBacker, isLoading, error } = useIsBuilderOrBacker(address ?? zeroAddress)
+
+  useHandleErrors({
+    error,
+    title: 'Error fetching user data',
+  })
 
   return (
     <MainContainer>
-      {isWhitelistedBuilder ? (
-        <Tabs defaultValue="holdings">
+      {/* We don't show the tab if it's loading */}
+      {!isLoading && isBuilderOrBacker ? (
+        <Tabs defaultValue={defaultTabValue}>
           <TabsListWithButton>
-            <TabsTrigger value="holdings">
-              <TabTitle>My Holdings</TabTitle>
+            <TabsTrigger value={tabs.holdings.value}>
+              <TabTitle>{tabs.holdings.title}</TabTitle>
             </TabsTrigger>
-            <TabsTrigger value="rewards">
-              <TabTitle>My Rewards</TabTitle>
+            <TabsTrigger value={tabs.rewards.value}>
+              <TabTitle>{tabs.rewards.title}</TabTitle>
             </TabsTrigger>
           </TabsListWithButton>
-          <TabsContent value="holdings">
-            <MyHoldings showBuilderButton={false} />
+          <TabsContent value={tabs.holdings.value}>
+            <MyHoldings />
           </TabsContent>
-          <TabsContent value="rewards">
+          <TabsContent value={tabs.rewards.value}>
             <Rewards builder={address!} />
           </TabsContent>
         </Tabs>
@@ -52,5 +85,13 @@ export default function User() {
         <MyHoldings showBuilderButton={true} />
       )}
     </MainContainer>
+  )
+}
+
+export default function UserPage() {
+  return (
+    <Suspense fallback={<div>Loading...</div>}>
+      <User />
+    </Suspense>
   )
 }
