@@ -1,13 +1,17 @@
+import { BuildersLeaderBoardContent } from '@/app/collective-rewards/leaderboard'
 import { CycleContextProvider } from '@/app/collective-rewards/metrics'
+import { useReadBackersManager } from '@/app/collective-rewards/shared'
 import { Button } from '@/components/Button'
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/Collapsible'
+import { Popover } from '@/components/Popover'
 import { HeaderTitle } from '@/components/Typography'
-import { BuildersLeaderBoardContent } from '@/app/collective-rewards/leaderboard'
 import { useRouter } from 'next/navigation'
 import { useCanManageAllocations } from '@/app/collective-rewards/allocations/hooks'
 
 export const BuildersLeaderBoard = () => {
   const router = useRouter()
+  const { data: isInDistributionPeriod } = useReadBackersManager('onDistributionPeriod')
+
   const onManageAllocations = () => {
     router.push('/collective-rewards/allocations')
   }
@@ -20,9 +24,24 @@ export const BuildersLeaderBoard = () => {
         <CollapsibleTrigger>
           <div className="flex items-center justify-between w-full">
             <HeaderTitle className="">Rewards leaderboard</HeaderTitle>
-            <Button variant="primary" onClick={onManageAllocations} disabled={!canManageAllocations}>
-              Manage Allocations
-            </Button>
+
+            <Popover
+              content={
+                <>
+                  <p>Distribution in progress.</p>
+                </>
+              }
+              trigger="hover"
+              disabled={!isInDistributionPeriod}
+            >
+              <Button
+                variant="primary"
+                onClick={onManageAllocations}
+                disabled={!!isInDistributionPeriod || !canManageAllocations}
+              >
+                Manage Allocations
+              </Button>
+            </Popover>
           </div>
         </CollapsibleTrigger>
         <CollapsibleContent>
