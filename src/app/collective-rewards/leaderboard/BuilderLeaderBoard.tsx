@@ -1,14 +1,18 @@
+import { useCanManageAllocations } from '@/app/collective-rewards/allocations/hooks'
+import { BuildersLeaderBoardContent } from '@/app/collective-rewards/leaderboard'
 import { CycleContextProvider } from '@/app/collective-rewards/metrics'
+import { useReadBackersManager } from '@/app/collective-rewards/shared'
 import { Button } from '@/components/Button'
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/Collapsible'
-import { HeaderTitle, Paragraph } from '@/components/Typography'
-import { BuildersLeaderBoardContent } from '@/app/collective-rewards/leaderboard'
+import { Popover } from '@/components/Popover'
+import { HeaderTitle, Paragraph, Typography } from '@/components/Typography'
 import { useRouter } from 'next/navigation'
-import { useCanManageAllocations } from '@/app/collective-rewards/allocations/hooks'
 import { CRWhitepaperLink } from '../shared'
 
 export const BuildersLeaderBoard = () => {
   const router = useRouter()
+  const { data: isInDistributionPeriod } = useReadBackersManager('onDistributionPeriod')
+
   const onManageAllocations = () => {
     router.push('/collective-rewards/allocations')
   }
@@ -28,9 +32,34 @@ export const BuildersLeaderBoard = () => {
                 <CRWhitepaperLink />.
               </Paragraph>
             </div>
-            <Button variant="primary" onClick={onManageAllocations} disabled={!canManageAllocations}>
-              Manage Allocations
-            </Button>
+
+            <Popover
+              content={
+                <div className="flex flex-col">
+                  <Typography
+                    tagVariant="h2"
+                    fontFamily="kk-topo"
+                    className="self-end text-[20.44px] text-primary font-normal uppercase"
+                  >
+                    Rewards distribution is in progress.
+                  </Typography>
+                  <Typography tagVariant="p" fontFamily="rootstock-sans" className="self-end">
+                    Manage Allocation will be available shortly, please check back soon
+                  </Typography>
+                </div>
+              }
+              trigger="hover"
+              disabled={!isInDistributionPeriod}
+              contentContainerClassName="top-full -left-[87%]"
+            >
+              <Button
+                variant="primary"
+                onClick={onManageAllocations}
+                disabled={!!isInDistributionPeriod || !canManageAllocations}
+              >
+                Manage Allocations
+              </Button>
+            </Popover>
           </div>
         </CollapsibleTrigger>
         <CollapsibleContent>
