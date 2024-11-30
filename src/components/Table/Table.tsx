@@ -1,13 +1,5 @@
-import {
-  useReactTable,
-  createColumnHelper,
-  getCoreRowModel,
-  getSortedRowModel,
-  SortingState,
-  flexRender,
-  SortingFnOption,
-} from '@tanstack/react-table'
-import { HTMLAttributes, ReactNode, useMemo, useState } from 'react'
+import { flexRender, type Table as ReactTable } from '@tanstack/react-table'
+import { type HTMLAttributes } from 'react'
 import { TableHead, TableRow, TableCell, TableBody, TableCore } from './components'
 import { SortIndicator } from './components/SortIndicator'
 import { cn } from '@/lib/utils'
@@ -16,92 +8,23 @@ interface SharedProps {
   'data-testid'?: string
 }
 
-type TableData<T extends Record<string, any> = Record<string, any>> = T
-
-/**
- * Props for the Table component.
- */
-interface TableProps<T extends TableData> extends HTMLAttributes<HTMLDivElement> {
-  data: T[]
+interface TableProps<T> extends HTMLAttributes<HTMLDivElement> {
   equalColumns?: boolean
   theadProps?: SharedProps
   tbodyProps?: SharedProps
   headerClassName?: string
-  /**
-   * Custom renderers for table column cells.
-   *
-   * *Example how to render `name` column:*
-   *
-   * ```tsx
-   *  renderers: {
-   *    name: (value: string, row: ITable) => <p>{value} - {row.symbol}</p>
-   *  }
-   * ```
-   */
-  renderers?: { [K in keyof T]?: (value: T[K], row: T) => ReactNode }
-  /**
-   * Flag indicating whether sorting can be applied to the table. `false` by default
-   */
-  isSortable?: boolean
-  /**
-   * Custom sorting function for table column. `false` excludes column from sorting
-   *
-   * *Example:*
-   *
-   * ```tsx
-   *  sortingOptions: {
-   *    name: (a: number, b: number) => Math.sin(a) - Math.abs(b)
-   *  }
-   * ```
-   */
-  sortingOptions?: {
-    [K in keyof T]?: false | SortingFnOption<T>
-  }
+  table: ReactTable<T>
 }
 
-export const Table = <T extends TableData>({
-  data,
+export function Table<T>({
   equalColumns = true,
   tbodyProps,
   theadProps,
   headerClassName,
-  renderers = {},
-  isSortable = false,
-  sortingOptions,
+  table,
   ...props
-}: TableProps<T>) => {
-  const columnHelper = createColumnHelper<T>()
-  const columns = useMemo(
-    () =>
-      (Object.keys(data[0]) as Array<keyof T>).map(key =>
-        columnHelper.accessor(row => row[key], {
-          header: String(key),
-          cell: info => {
-            const value = info.getValue() as T[keyof T]
-            const row = info.row.original as T
-            const func = renderers[key]
-            return func ? func(value, row) : value
-          },
-          enableSorting: isSortable && sortingOptions?.[key] !== false,
-          sortingFn: sortingOptions?.[key] || 'auto',
-        }),
-      ),
-    [columnHelper, data, isSortable, renderers, sortingOptions],
-  )
-
-  const [sorting, setSorting] = useState<SortingState>([])
-  const table = useReactTable({
-    data,
-    columns,
-    state: {
-      sorting,
-    },
-    onSortingChange: setSorting,
-    getCoreRowModel: getCoreRowModel(),
-    getSortedRowModel: getSortedRowModel(),
-  })
-
-  const width = equalColumns ? Math.round(100 / columns.length) + '%' : 'inherit'
+}: TableProps<T>) {
+  const width = equalColumns ? Math.round(100 / table.options.data.length) + '%' : 'inherit'
 
   return (
     <TableCore {...props}>
@@ -110,7 +33,13 @@ export const Table = <T extends TableData>({
           {table.getHeaderGroups().map(headerGroup =>
             headerGroup.headers.map(header => (
               <TableCell
-                onClick={header.column.getCanSort() ? () => header.column.toggleSorting() : undefined}
+                onClick={
+                  header.column.getCanSort()
+                    ? () => {
+                        header.column.toggleSorting()
+                      }
+                    : undefined
+                }
                 key={header.id}
                 className={cn(
                   headerClassName,
