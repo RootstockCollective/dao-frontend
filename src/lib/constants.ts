@@ -36,3 +36,5 @@ export const RIF = 'RIF'
 export const USD = 'USD'
 export const RBTC = 'RBTC'
 export const USD_SYMBOL = '$'
+
+export const DEFAULT_NUMBER_OF_SECONDS_PER_BLOCK = 30

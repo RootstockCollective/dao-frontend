@@ -1,5 +1,5 @@
-import { SortDirection } from '@tanstack/react-table'
-import { PropsWithChildren } from 'react'
+import { type SortDirection } from '@tanstack/react-table'
+import { type PropsWithChildren } from 'react'
 import { TbArrowsSort, TbSortAscending, TbSortDescending } from 'react-icons/tb'
 import { cn } from '@/lib/utils'
 
