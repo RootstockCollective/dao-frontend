@@ -8,57 +8,31 @@ import {
 } from '@tanstack/react-table'
 import { type LatestProposalResponse } from './hooks/useFetchLatestProposals'
 import { type EventArgumentsParameter, getEventArguments } from '@/app/proposals/shared/utils'
-/* import { StatusColumn } from '@/app/proposals/StatusColumn' */
+import { StatusColumn } from '@/app/proposals/StatusColumn'
 import { Table } from '@/components/Table'
 import { HeaderTitle, Typography } from '@/components/Typography'
-// import { SentimentColumn } from '@/app/proposals/SentimentColumn'
+import { SentimentColumn } from '@/app/proposals/SentimentColumn'
 import { ProposalNameColumn } from '@/app/proposals/ProposalNameColumn'
-// import { TimeRemainingColumn } from '@/app/proposals/TimeRemainingColumn'
 import { VotesColumn } from './VotesColumn'
 import { DebounceSearch } from '../../components/DebounceSearch/DebounceSearch'
 import { useVotesColumn } from './hooks/useVotesColumn'
 import { useTimeRemainingColumn } from './hooks/useTimeRemainingColumn'
+import { useProposalStates } from './hooks/useProposalStates'
 
 interface LatestProposalsTableProps {
-  latestProposals: LatestProposalResponse[]
+  proposals: LatestProposalResponse[]
 }
 
-/* const latestProposalsTransformer = (proposals: Array<ReturnType<typeof getEventArguments>>) =>
-  proposals.map((proposal, i) => {
-    const rawData: Record<string, any> = {}
-    // Create the withContext function to wrap components in ProposalsProvider
-    const withContext = (component: ReactElement) => (
-      <ProposalsContextProvider {...proposal} index={i}>
-        {cloneElement(component, {
-          onRender: (value: any) => {
-            const componentName = (component.type as any).name
-            if (componentName) {
-              rawData[componentName] = value
-            }
-          },
-        })}
-      </ProposalsContextProvider>
-    )
-    return {
-      // raw: rawData,
-      Proposal: withContext(<ProposalNameColumn />),
-      // 'Quorum Votes': withContext(<VotesColumn />),
-      Date: proposal.Starts.format('MM-DD-YYYY'),
-      'Time Remaining': withContext(<TimeRemainingColumn />),
-      Sentiment: withContext(<SentimentColumn key={`${proposal.proposalId}_${i}`} />),
-      Status: withContext(<StatusColumn />),
-    }
-  }) */
-
-const LatestProposalsTable = ({ latestProposals: proposals }: LatestProposalsTableProps) => {
+const LatestProposalsTable = ({ proposals }: LatestProposalsTableProps) => {
   const [searchedProposal, setSearchedProposal] = useState('')
   const [sorting, setSorting] = useState<SortingState>([])
 
   // Table columns data
   const votesColumn = useVotesColumn({ proposals })
   const timeData = useTimeRemainingColumn({ proposals })
+  const states = useProposalStates({ proposals })
 
-  // collect all table columns data into one object before passing to the Table
+  // join all table columns data into one object before passing to the Table
   const proposalData = useMemo(() => {
     if (proposals?.length === 0) return []
     const proposalsWithEventArgs = proposals
@@ -67,6 +41,7 @@ const LatestProposalsTable = ({ latestProposals: proposals }: LatestProposalsTab
         ...proposal,
         ...votesColumn[i],
         ...timeData[i],
+        ...states[i],
       }))
 
     const searchResultsProposals = proposalsWithEventArgs?.filter(({ name }) => {
@@ -79,33 +54,33 @@ const LatestProposalsTable = ({ latestProposals: proposals }: LatestProposalsTab
     })
 
     return searchResultsProposals ?? []
-  }, [proposals, searchedProposal, timeData, votesColumn])
+  }, [proposals, searchedProposal, timeData, votesColumn, states])
 
   const onSearchSubmit = (searchValue: string) => {
     setSearchedProposal(searchValue)
   }
 
   // Table columns definition
-  const columnHelper = createColumnHelper<(typeof proposalData)[number]>()
+  const { accessor } = createColumnHelper<(typeof proposalData)[number]>()
   const columns = [
-    columnHelper.accessor(row => row.name, {
+    accessor('name', {
       id: 'name',
       header: 'Proposal',
       cell: info => (
         <ProposalNameColumn name={info.row.original.name} proposalId={info.row.original.proposalId} />
       ),
     }),
-    columnHelper.accessor(row => row.votes.percentageToShow, {
+    accessor('votes.percentageToShow', {
       id: 'votes',
       header: 'Quorum Votes',
       cell: info => <VotesColumn column={info.row.original.votes} />,
     }),
-    columnHelper.accessor(row => row.Starts.toDate(), {
+    accessor(row => row.Starts.unix(), {
       id: 'date',
       header: 'Date',
       cell: info => <Typography tagVariant="p">{info.row.original.Starts.format('MM-DD-YYYY')}</Typography>,
     }),
-    columnHelper.accessor(row => row.time.timeRemainingSec, {
+    accessor('time.timeRemainingSec', {
       id: 'timeRemaining',
       header: 'Time Remaining',
       cell: info => (
@@ -113,6 +88,38 @@ const LatestProposalsTable = ({ latestProposals: proposals }: LatestProposalsTab
           {info.row.original.time.timeRemainingMsg}
         </Typography>
       ),
+    }),
+    accessor(row => row.votes, {
+      id: 'sentiment',
+      header: 'Sentiment',
+      cell: info => (
+        <SentimentColumn
+          index={info.row.index}
+          againstVotes={info.row.original.votes?.againstVotes}
+          forVotes={info.row.original.votes?.forVotes}
+          abstainVotes={info.row.original.votes?.abstainVotes}
+        />
+      ),
+      sortingFn: (rowA, rowB) => {
+        const getDominantVoteType = (votesData: typeof rowA.original.votes) => {
+          const { againstVotes, forVotes, abstainVotes } = votesData
+          const maxCount = Math.max(againstVotes, forVotes, abstainVotes)
+          if (maxCount === forVotes) return { type: 'for', count: maxCount, priority: 1 }
+          if (maxCount === againstVotes) return { type: 'against', count: maxCount, priority: 2 }
+          else return { type: 'abstain', count: maxCount, priority: 3 }
+        }
+        const dominantA = getDominantVoteType(rowA.original.votes)
+        const dominantB = getDominantVoteType(rowB.original.votes)
+        if (dominantA.type === dominantB.type) {
+          return dominantB.count - dominantA.count
+        }
+        return dominantA.priority - dominantB.priority
+      },
+    }),
+    accessor('proposalState', {
+      id: 'status',
+      header: 'Status',
+      cell: info => <StatusColumn proposalState={info.row.original.proposalState} />,
     }),
   ]
   const table = useReactTable({

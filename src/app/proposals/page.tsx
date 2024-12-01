@@ -7,7 +7,6 @@ import { MetricsCard } from '@/components/MetricsCard'
 import { Popover } from '@/components/Popover'
 import { TxStatusMessage } from '@/components/TxStatusMessage/TxStatusMessage'
 import { Paragraph, Span } from '@/components/Typography'
-import { toFixed } from '@/lib/utils'
 import { useRouter } from 'next/navigation'
 import { FaRegQuestionCircle } from 'react-icons/fa'
 import { useVotingPower } from './hooks/useVotingPower'
@@ -30,7 +29,7 @@ export default function Proposals() {
           </Paragraph>
         </div>
         <div className="flex flex-row gap-x-6">
-          {/*<MetricsCard title="Votes" amount="-" />*/}
+          {/* <MetricsCard title="Votes" amount="-" /> */}
           {/* @TODO ask product/design what this is */}
           {/* <MetricsCard title="Total voting power delegated" amount="230" /> */}
           <div className="w-[272px]">
@@ -41,7 +40,7 @@ export default function Proposals() {
           <DelegatedTable />
           <ReceivedDelegationTable />
         </div> */}
-        <LatestProposalsTableMemoized latestProposals={memoizedProposals} />
+        <LatestProposalsTableMemoized proposals={memoizedProposals} />
       </div>
     </MainContainer>
   )
@@ -60,7 +59,9 @@ const PopoverContent = () => {
         voting power to you. <br /> <br /> To increase your voting power,{' '}
         <Span
           className="text-primary text-[14px] hover:underline cursor-pointer"
-          onClick={() => router.push('/user?action=stake')}
+          onClick={() => {
+            router.push('/user?action=stake')
+          }}
         >
           stake RIF tokens now
         </Span>

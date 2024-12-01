@@ -1,11 +1,14 @@
 import { Paragraph } from '@/components/Typography'
-import { useProposalContext } from '@/app/proposals/ProposalsContext'
 import { useMemo } from 'react'
 import { Popover } from '@/components/Popover'
 import { ComparativeProgressBar } from '@/components/ComparativeProgressBar/ComparativeProgressBar'
 
-const PopoverSentiment = ({ votes }: { votes: string[] }) => {
-  const [againstVotes, forVotes, abstainVotes] = votes
+interface PopoverSentimentProps {
+  againstVotes?: number
+  forVotes?: number
+  abstainVotes?: number
+}
+const PopoverSentiment = ({ forVotes = 0, againstVotes = 0, abstainVotes = 0 }: PopoverSentimentProps) => {
   return (
     <div className="text-black overflow-hidden">
       <Paragraph variant="semibold" className="text-[12px] font-bold">
@@ -39,22 +42,33 @@ const PopoverSentiment = ({ votes }: { votes: string[] }) => {
   )
 }
 
-export const SentimentColumn = () => {
-  const { proposalVotes: data, index } = useProposalContext()
+interface SentimentColumnProps {
+  againstVotes?: number
+  forVotes?: number
+  abstainVotes?: number
+  index?: number
+}
 
+export const SentimentColumn = ({
+  againstVotes = 0,
+  forVotes = 0,
+  abstainVotes = 0,
+  index = 0,
+}: SentimentColumnProps) => {
   const sentimentValues = useMemo(() => {
-    const [againstVotes, forVotes, abstainVotes] = data
     return [
       { value: Number(forVotes), color: 'var(--st-success)' },
       { value: Number(againstVotes), color: 'var(--st-error)' },
       { value: Number(abstainVotes), color: 'var(--st-info)' },
     ]
-  }, [data])
+  }, [abstainVotes, againstVotes, forVotes])
 
   const position = index === 0 ? 'bottom' : 'top'
   return (
     <Popover
-      content={<PopoverSentiment votes={data} />}
+      content={
+        <PopoverSentiment againstVotes={againstVotes} forVotes={forVotes} abstainVotes={abstainVotes} />
+      }
       trigger="hover"
       background="light"
       position={position}
