@@ -5,7 +5,7 @@ import { governor } from '@/lib/contracts'
 import { DEFAULT_NUMBER_OF_SECONDS_PER_BLOCK } from '@/lib/constants'
 
 interface Props {
-  proposals: LatestProposalResponse[]
+  proposals?: LatestProposalResponse[]
 }
 
 const convertToTimeRemaining = (seconds: number) => {
@@ -35,7 +35,7 @@ export function useTimeRemainingColumn({ proposals }: Props) {
   const { data: latestBlockNumber } = useBlockNumber()
 
   const { data: proposalDeadLines } = useReadContracts({
-    contracts: proposals.map(proposal => ({
+    contracts: proposals?.map(proposal => ({
       ...governor,
       functionName: 'proposalDeadline',
       args: [BigInt(proposal.args.proposalId)],
@@ -44,7 +44,7 @@ export function useTimeRemainingColumn({ proposals }: Props) {
 
   return useMemo(
     () =>
-      proposals.map((proposal, i) => {
+      proposals?.map((proposal, i) => {
         const deadlineBlock = BigInt(proposalDeadLines?.[i]?.result ?? 0n)
         const blocksUntilClosure = BigInt(deadlineBlock ?? 1n) - BigInt(latestBlockNumber ?? 1n)
         const creationBlock = BigInt(proposal.blockNumber)
@@ -60,7 +60,7 @@ export function useTimeRemainingColumn({ proposals }: Props) {
             timeRemainingSec,
           },
         }
-      }),
+      }) ?? [],
     [latestBlockNumber, proposalDeadLines, proposals],
   )
 }

@@ -6,7 +6,7 @@ interface VotesColumnProps {
 
 export const VotesColumn = ({ column }: VotesColumnProps) => {
   if (typeof column === 'undefined') return <></>
-  const { colorClass, percentageToShow, quorumToShow, votes } = column
+  const { colorClass, percentageToShow, quorumToShow, quorumVotes: votes } = column
   return (
     <>
       <p className={colorClass}>

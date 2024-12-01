@@ -1,6 +1,5 @@
 import { Status } from '@/components/Status'
-import { StatusSeverity } from '@/components/Status/types'
-import { useProposalContext } from '@/app/proposals/ProposalsContext'
+import { type StatusSeverity } from '@/components/Status/types'
 
 const StatusByProposalState = {
   Pending: 'in-progress',
@@ -14,13 +13,16 @@ const StatusByProposalState = {
   undefined: null,
 }
 
-export const StatusColumn = () => {
-  const { proposalStateHuman } = useProposalContext()
+interface StatusColumnProps {
+  proposalState?: string
+}
+
+export const StatusColumn = ({ proposalState }: StatusColumnProps) => {
   const statusMap = StatusByProposalState[
-    proposalStateHuman as keyof typeof StatusByProposalState
+    proposalState as keyof typeof StatusByProposalState
   ] as StatusSeverity
-  if (!proposalStateHuman) {
+  if (typeof proposalState === 'undefined') {
     return null
   }
-  return <Status severity={statusMap} label={proposalStateHuman} />
+  return <Status severity={statusMap} label={proposalState} />
 }
