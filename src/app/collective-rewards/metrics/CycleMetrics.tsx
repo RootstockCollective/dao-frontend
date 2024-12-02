@@ -20,24 +20,28 @@ export const CycleMetrics = () => {
   const duration =
     cycleDuration.as('days') < 1 ? cycleDuration.shiftTo('hours') : cycleDuration.shiftTo('days')
 
-  useEffect(() => {
-    if (timeRemaining.as('minutes') > 0) {
-      timeout = setTimeout(() => {
-        setTimeRemaining(state => state.minus({ minutes: 1 }))
-      }, 60000) // every minute
-    }
+  // useEffect(() => {
+  //   if (timeRemaining.as('minutes') > 0) {
+  //     timeout = setTimeout(() => {
+  //       setTimeRemaining(state => {
+  //         console.log('cycleNext', state.toHuman())
+  //         return state.minus({ minutes: 1 })
+  //       })
+  //     }, 60000) // every minute
+  //   }
 
-    return () => clearTimeout(timeout)
-  }, [timeRemaining])
+  //   return () => clearTimeout(timeout)
+  // }, [timeRemaining])
 
   useEffect(() => {
     const now = DateTime.now()
-    let diff = cycleNext.diff(now, ['days']).mapUnits(unit => Math.floor(unit))
 
+    let diff = cycleNext.diff(now, ['days']).mapUnits(unit => Math.floor(unit))
     if (diff.as('days') < 1) {
       diff = cycleNext.diff(now, ['hours', 'minutes']).mapUnits(unit => Math.floor(unit))
     }
 
+    console.log('cycleNext', diff.toHuman(), diff.days, diff.hours, diff.minutes, diff.as('minutes'))
     setTimeRemaining(diff)
   }, [cycleNext])
 
