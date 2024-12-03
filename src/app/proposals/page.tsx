@@ -29,7 +29,7 @@ export default function Proposals() {
           </Paragraph>
         </div>
         <div className="flex flex-row gap-x-6">
-          {/* <MetricsCard title="Votes" amount="-" /> */}
+          {/*<MetricsCard title="Votes" amount="-" />*/}
           {/* @TODO ask product/design what this is */}
           {/* <MetricsCard title="Total voting power delegated" amount="230" /> */}
           <div className="w-[272px]">
@@ -59,9 +59,7 @@ const PopoverContent = () => {
         voting power to you. <br /> <br /> To increase your voting power,{' '}
         <Span
           className="text-primary text-[14px] hover:underline cursor-pointer"
-          onClick={() => {
-            router.push('/user?action=stake')
-          }}
+          onClick={() => router.push('/user?action=stake')}
         >
           stake RIF tokens now
         </Span>
