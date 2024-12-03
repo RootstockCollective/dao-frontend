@@ -1,17 +1,13 @@
 import { AddressOrAlias } from '@/components/Address'
 import { Badge } from '@/components/Badge'
 import { Jdenticon } from '@/components/Header/Jdenticon'
-import { Paragraph, Typography } from '@/components/Typography'
+import { Typography } from '@/components/Typography'
 import { FC } from 'react'
 import { Builder, BuilderProposal, BuilderStateFlags } from '@/app/collective-rewards/types'
-import { getBuilderInactiveState } from '@/app/collective-rewards/utils'
+import { getBuilderInactiveState, isBuilderActive } from '@/app/collective-rewards/utils'
 
 export type BuilderAllocationHeaderProps = Pick<Builder, 'builderName' | 'address' | 'stateFlags' | 'gauge'> &
   Pick<BuilderProposal, 'date'>
-
-const isBuilderActive = ({ communityApproved, kycApproved, paused, revoked }: BuilderStateFlags) => {
-  return communityApproved && kycApproved && !paused && !revoked
-}
 
 const haltedClass = 'bg-[#932309] color-text-primary py-1 px-1 text-[12px]'
 const haltedStateBadges = {
@@ -25,8 +21,6 @@ export const BuilderAllocationHeader: FC<BuilderAllocationHeaderProps> = ({
   address,
   builderName,
   stateFlags,
-  date,
-  gauge,
 }) => {
   const state = stateFlags as BuilderStateFlags
 
@@ -37,8 +31,8 @@ export const BuilderAllocationHeader: FC<BuilderAllocationHeaderProps> = ({
         <Typography tagVariant="label" className="font-semibold line-clamp-1 text-wrap text-base leading-4">
           <AddressOrAlias addressOrAlias={builderName || address} className="text-base font-bold leading-4" />
         </Typography>
-        {gauge && isBuilderActive(state) ? (
-          <Paragraph className="text-sm font-light"> Joined {date}</Paragraph>
+        {isBuilderActive(state) ? (
+          <Badge content="Active" className="bg-[#DBFEE5] text-secondary py-1 px-1 text-[12px]" />
         ) : (
           haltedStateBadges[getBuilderInactiveState(state)]
         )}

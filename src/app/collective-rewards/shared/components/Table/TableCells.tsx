@@ -13,7 +13,7 @@ import { ProgressBar } from '@/components/ProgressBar'
 import { Button } from '@/components/Button'
 import { BuilderStateFlags } from '@/app/collective-rewards/types'
 import { AllocationsContext } from '@/app/collective-rewards/allocations/context'
-import { getBuilderInactiveState, isBuilderOperational } from '@/app/collective-rewards/utils'
+import { getBuilderInactiveState, isBuilderActive } from '@/app/collective-rewards/utils'
 
 export function getFormattedCurrency(value: number, symbol: string) {
   const formattedCurrency = formatCurrency(value, symbol)
@@ -55,21 +55,22 @@ export const LazyRewardCell = memo(RewardCell, ({ rewards: prevReward }, { rewar
 type BuilderStatusFlagProps = {
   stateFlags: BuilderStateFlags
 }
-const getStatusColor = (isOperational: boolean, builderInactiveState: string) => {
-  if (isOperational) return 'transparent'
+const getStatusColor = (isActive: boolean, builderInactiveState: string) => {
+  if (isActive) return 'transparent'
   if (builderInactiveState === 'Paused') return '#F9E1FF'
   return '#932309'
 }
-const BuilderStatusFlag: FC<BuilderStatusFlagProps> = ({ stateFlags }) => {
-  const isOperational = isBuilderOperational(stateFlags)
-  const builderInactiveState = getBuilderInactiveState(stateFlags)
 
-  const color = getStatusColor(isOperational, builderInactiveState)
+const BuilderStatusFlag: FC<BuilderStatusFlagProps> = ({ stateFlags }) => {
+  const builderInactiveState = getBuilderInactiveState(stateFlags)
+  const isActive = isBuilderActive(stateFlags)
+
+  const color = getStatusColor(isActive, builderInactiveState)
   const content = builderInactiveState
 
   return (
     <Popover
-      disabled={isOperational}
+      disabled={isActive}
       content={content}
       className="font-normal text-sm flex items-center"
       size="small"

@@ -45,9 +45,6 @@ export const ActiveBuildersGridItem: FC<ActiveBuildersGridItemProps> = ({
     <div className="flex flex-row w-full items-center gap-x-3 min-h-11">
       <Jdenticon className="rounded-md bg-white" value={address} size="32" />
       <div className="flex-1 min-w-0">
-        {/* TODO: To be reviewed, it's weird that we show the address in the tooltip
-            and then we copy the builder name, since the builder name it's generally easier to remember
-         */}
         <Popover
           content={
             <div className="text-[12px] font-bold mb-1">
@@ -67,9 +64,6 @@ export const ActiveBuildersGridItem: FC<ActiveBuildersGridItemProps> = ({
             />
           </Typography>
         </Popover>
-        {builderState === 'active' && (
-          <Paragraph className="text-sm font-light"> Joined {joiningDate}</Paragraph>
-        )}
       </div>
       <div className="flex justify-center items-center">
         <Badge
@@ -83,6 +77,7 @@ export const ActiveBuildersGridItem: FC<ActiveBuildersGridItemProps> = ({
     <div onClick={() => router.push(`/proposals/${proposalId}`)} className="cursor-pointer">
       <Span className="text-base font-semibold">Proposal</Span>
       <Span className="text-sm line-clamp-1 text-wrap">{proposalName}</Span>
+      <Span className="text-sm"> Created on {joiningDate}</Span>
     </div>
   )
   return <Card header={Header} body={Body} />
