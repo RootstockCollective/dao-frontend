@@ -1,8 +1,8 @@
 import { fetchProposalsCreatedCached } from '@/app/user/Balances/actions'
 import { GovernorAbi } from '@/lib/abis/Governor'
 import { SimplifiedRewardDistributorAbi } from '@/lib/abis/SimplifiedRewardDistributorAbi'
-import { useQuery, type UseQueryResult } from '@tanstack/react-query'
-import { Interface, type InterfaceAbi } from 'ethers'
+import { useQuery, UseQueryResult } from '@tanstack/react-query'
+import { Interface, InterfaceAbi } from 'ethers'
 import { useMemo } from 'react'
 import { getAddress, parseEventLogs } from 'viem'
 import { ADDRESS_PADDING_LENGTH, RELAY_PARAMETER_PADDING_LENGTH } from '@/app/proposals/shared/utils'
@@ -35,7 +35,7 @@ export const useFetchAllProposals = () => {
             (proposal, index, self) =>
               self.findIndex(p => p.args.proposalId === proposal.args.proposalId) === index,
           )
-          // @ts-expect-error
+          // @ts-ignore
           .sort((a, b) => b.timeStamp - a.timeStamp)
       )
     }
@@ -44,10 +44,9 @@ export const useFetchAllProposals = () => {
 
   return { latestProposals }
 }
-
 export type LatestProposalResponse = ReturnType<typeof useFetchAllProposals>['latestProposals'][number]
 
-interface FunctionSelectorArgs {
+type FunctionSelectorArgs = {
   functionName: string
   abi: InterfaceAbi
 }
@@ -71,12 +70,12 @@ const CR_WHITELIST_FUNCTION_SELECTOR_V2 = toFunctionSelector({
   functionName: 'communityApproveBuilder',
 })
 
-type ElementType<T> = T extends Array<infer U> ? U : never
+type ElementType<T> = T extends (infer U)[] ? U : never
 
 type EventLog = ElementType<ReturnType<typeof parseEventLogs<typeof GovernorAbi, true, 'ProposalCreated'>>>
 export type CreateBuilderProposalEventLog = EventLog & { timeStamp: number }
 
-export interface CrProposalCachedEvent {
+export type CrProposalCachedEvent = {
   event: CreateBuilderProposalEventLog
   builder: string
 }
@@ -149,7 +148,7 @@ export const useFetchCreateBuilderProposals = (): ProposalQueryResult<ProposalsP
 
   return {
     data: latestProposals,
-    isLoading,
-    error,
+    isLoading: isLoading,
+    error: error,
   }
 }
