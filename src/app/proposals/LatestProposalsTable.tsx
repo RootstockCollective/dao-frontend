@@ -7,61 +7,47 @@ import {
   useReactTable,
 } from '@tanstack/react-table'
 import { type LatestProposalResponse } from './hooks/useFetchLatestProposals'
-import { type EventArgumentsParameter, getEventArguments } from '@/app/proposals/shared/utils'
-import { StatusColumn } from '@/app/proposals/StatusColumn'
-import { Table } from '@/components/Table'
+import { StatusColumn } from '@/app/proposals/table-columns/StatusColumn'
+import { StatefulTable } from '@/components/Table'
 import { HeaderTitle, Typography } from '@/components/Typography'
-import { SentimentColumn } from '@/app/proposals/SentimentColumn'
-import { ProposalNameColumn } from '@/app/proposals/ProposalNameColumn'
-import { VotesColumn } from './VotesColumn'
+import { SentimentColumn } from '@/app/proposals/table-columns/SentimentColumn'
+import { ProposalNameColumn } from '@/app/proposals/table-columns/ProposalNameColumn'
+import { VotesColumn } from './table-columns/VotesColumn'
+import { TimeColumn } from './table-columns/TimeColumn'
 import { DebounceSearch } from '../../components/DebounceSearch/DebounceSearch'
-import { useVotesColumn } from './hooks/useVotesColumn'
-import { useTimeRemainingColumn } from './hooks/useTimeRemainingColumn'
-import { useProposalStates } from './hooks/useProposalStates'
+import { useProposalListData } from './hooks/useProposalListData'
 
 interface LatestProposalsTableProps {
   proposals: LatestProposalResponse[]
 }
 
 const LatestProposalsTable = ({ proposals }: LatestProposalsTableProps) => {
+  // search textfield
   const [searchedProposal, setSearchedProposal] = useState('')
+  // React-table sorting state
   const [sorting, setSorting] = useState<SortingState>([])
-
-  // Table columns data
-  const votesColumn = useVotesColumn({ proposals })
-  const timeData = useTimeRemainingColumn({ proposals })
-  const states = useProposalStates({ proposals })
-
-  // join all table columns data into one object before passing to the Table
-  const proposalData = useMemo(() => {
-    if (proposals?.length === 0) return []
-    const proposalsWithEventArgs = proposals
-      ?.map(proposal => getEventArguments(proposal as unknown as EventArgumentsParameter))
-      .map((proposal, i) => ({
-        ...proposal,
-        ...votesColumn[i],
-        ...timeData[i],
-        ...states[i],
-      }))
-
-    const searchResultsProposals = proposalsWithEventArgs?.filter(({ name }) => {
-      try {
-        const proposalName = String(name).toLowerCase()
-        return proposalName.includes(searchedProposal.toLowerCase())
-      } catch (e) {
-        return false
-      }
-    })
-
-    return searchResultsProposals ?? []
-  }, [proposals, searchedProposal, timeData, votesColumn, states])
+  // query all proposals parameters at the Governor after receiving proposal list
+  const proposalListData = useProposalListData({ proposals })
+  // filter all proposals after user typed text in the search field
+  const filteredProposalList = useMemo(
+    () =>
+      proposalListData.filter(({ name }) => {
+        try {
+          const proposalName = String(name).toLowerCase()
+          return proposalName.includes(searchedProposal.toLowerCase())
+        } catch (e) {
+          return false
+        }
+      }),
+    [proposalListData, searchedProposal],
+  )
 
   const onSearchSubmit = (searchValue: string) => {
     setSearchedProposal(searchValue)
   }
-
+  // Table data definition helper
+  const { accessor } = createColumnHelper<(typeof proposalListData)[number]>()
   // Table columns definition
-  const { accessor } = createColumnHelper<(typeof proposalData)[number]>()
   const columns = [
     accessor('name', {
       id: 'name',
@@ -70,24 +56,38 @@ const LatestProposalsTable = ({ proposals }: LatestProposalsTableProps) => {
         <ProposalNameColumn name={info.row.original.name} proposalId={info.row.original.proposalId} />
       ),
     }),
-    accessor('votes.percentageToShow', {
+    accessor('votes.quorum', {
       id: 'votes',
       header: 'Quorum Votes',
-      cell: info => <VotesColumn column={info.row.original.votes} />,
+      cell: info => {
+        const { forVotes, abstainVotes } = info.row.original.votes
+        return (
+          <VotesColumn
+            forVotes={forVotes}
+            abstainVotes={abstainVotes}
+            quorumAtSnapshot={info.row.original.quorumAtSnapshot}
+          />
+        )
+      },
     }),
     accessor(row => row.Starts.unix(), {
       id: 'date',
       header: 'Date',
       cell: info => <Typography tagVariant="p">{info.row.original.Starts.format('MM-DD-YYYY')}</Typography>,
     }),
-    accessor('time.timeRemainingSec', {
+    accessor('blocksUntilClosure', {
       id: 'timeRemaining',
       header: 'Time Remaining',
-      cell: info => (
-        <Typography tagVariant="p" className={info.row.original.time.colorClass}>
-          {info.row.original.time.timeRemainingMsg}
-        </Typography>
-      ),
+      cell: info => {
+        const { blocksUntilClosure, proposalDeadline, blockNumber } = info.row.original
+        return (
+          <TimeColumn
+            blocksUntilClosure={blocksUntilClosure}
+            proposalDeadline={proposalDeadline}
+            proposalBlockNumber={Number(blockNumber)}
+          />
+        )
+      },
     }),
     accessor(row => row.votes, {
       id: 'sentiment',
@@ -122,9 +122,10 @@ const LatestProposalsTable = ({ proposals }: LatestProposalsTableProps) => {
       cell: info => <StatusColumn proposalState={info.row.original.proposalState} />,
     }),
   ]
+  // create table data model which is passed to the Table UI component
   const table = useReactTable({
     columns,
-    data: proposalData,
+    data: filteredProposalList,
     state: {
       sorting,
     },
@@ -137,8 +138,9 @@ const LatestProposalsTable = ({ proposals }: LatestProposalsTableProps) => {
     <div>
       <HeaderTitle className="mb-4">Latest Proposals</HeaderTitle>
       <DebounceSearch placeholder="Search a proposal" onSearchSubmit={onSearchSubmit} />
-      {proposalData.length > 0 ? (
-        <Table
+      {filteredProposalList.length > 0 ? (
+        <StatefulTable
+          equalColumns
           table={table}
           data-testid="TableProposals"
           tbodyProps={{

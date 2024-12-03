@@ -1,7 +1,6 @@
 import type { Meta, StoryObj } from '@storybook/react'
 import { Table } from './Table'
-import { tableSampleData, columnRenderingFuncs } from './tableSampleData'
-import { ReactNode } from 'react'
+import { tableSampleData } from './tableSampleData'
 
 const meta = {
   title: 'Components/Table',
@@ -16,12 +15,6 @@ type Story = StoryObj<typeof meta>
 export const Default: Story = {
   args: {
     data: tableSampleData,
-    renderers: columnRenderingFuncs,
-    isSortable: true,
-    sortingOptions: {
-      // don't sort `stake` column
-      stake: false,
-    },
     equalColumns: true,
   },
 }
@@ -34,35 +27,6 @@ const simpleData = [
 // The simple data example for display in the table
 export const SimpleTable: Story = {
   args: {
-    isSortable: true,
     data: simpleData,
-  },
-}
-
-// Alphabet ordered data
-const alphabetData = [
-  { A: 'y', B: 'в', C: 16, P: 0.1 },
-  { A: 'a', B: 'ц', C: 3, P: 2.0 },
-  { A: 'n', B: 'н', C: 0, P: 100 },
-  { A: 'w', B: 'т', C: 266, P: 30 },
-]
-
-export const AlphabetTable: Story = {
-  args: {
-    data: alphabetData,
-    // enable sorting for the whole table
-    isSortable: true,
-    sortingOptions: {
-      // disable sorting in B column
-      B: false,
-    },
-    renderers: {
-      // each cell in the `P` column is rendered as a paragraph with styling
-      P: val => (
-        <p style={{ fontWeight: 800, fontStyle: 'italic', textDecoration: 'underline' }}>
-          $ {val as ReactNode}
-        </p>
-      ),
-    },
   },
 }

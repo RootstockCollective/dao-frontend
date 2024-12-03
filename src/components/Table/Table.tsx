@@ -1,72 +1,76 @@
-import { flexRender, type Table as ReactTable } from '@tanstack/react-table'
-import { type HTMLAttributes } from 'react'
+import { FC, HTMLAttributes, ReactNode } from 'react'
 import { TableHead, TableRow, TableCell, TableBody, TableCore } from './components'
-import { SortIndicator } from './components/SortIndicator'
-import { cn } from '@/lib/utils'
+import { Span } from '../Typography'
 
 interface SharedProps {
   'data-testid'?: string
 }
 
-interface TableProps<T> extends HTMLAttributes<HTMLDivElement> {
+interface TableProps extends HTMLAttributes<HTMLDivElement> {
+  /**
+   * Array of objects to be displayed in the table, with values of any type React can render.
+   */
+  data: Record<string, ReactNode>[]
+  /**
+   * Optional flag to make all column widths equal
+   */
   equalColumns?: boolean
   theadProps?: SharedProps
   tbodyProps?: SharedProps
+  /**
+   * Header classes
+   */
   headerClassName?: string
-  table: ReactTable<T>
 }
 
-export function Table<T>({
+/**
+ * A table assembled from individual table components.
+ * In most cases, this will suffice for displaying any type of data.
+ * If you have unique data that doesn't fit into the `data` prop,
+ * you can create a custom table using the available components:
+ * `Table`, `TableBody`, `TableCell`, `TableHead`, `TableRow`.
+ */
+export const Table: FC<TableProps> = ({
+  data,
   equalColumns = true,
   tbodyProps,
   theadProps,
   headerClassName,
-  table,
   ...props
-}: TableProps<T>) {
-  const width = equalColumns ? Math.round(100 / table.options.data.length) + '%' : 'inherit'
-
+}) => {
+  // calculate column width
+  const header = Object.keys(data[0])
+  if (header.length === 0) return <></>
+  const width = equalColumns ? Math.round(100 / header.length) + '%' : 'inherit'
   return (
     <TableCore {...props}>
       <TableHead {...theadProps}>
         <TableRow>
-          {table.getHeaderGroups().map(headerGroup =>
-            headerGroup.headers.map(header => (
-              <TableCell
-                onClick={
-                  header.column.getCanSort()
-                    ? () => {
-                        header.column.toggleSorting()
-                      }
-                    : undefined
-                }
-                key={header.id}
-                className={cn(
-                  headerClassName,
-                  `w-[${width}px]`,
-                  'font-bold font-rootstock-sans text-[1rem]',
-                  'border-b border-solid border-[#888888]',
-                )}
-              >
-                <SortIndicator
-                  sortEnabled={header.column.getCanSort()}
-                  sortDirection={header.column.getIsSorted()}
-                >
-                  {header.isPlaceholder
-                    ? null
-                    : flexRender(header.column.columnDef.header, header.getContext())}
-                </SortIndicator>
-              </TableCell>
-            )),
-          )}
+          {header.map(headTitle => (
+            <TableCell
+              style={{
+                width,
+                fontWeight: 700,
+                fontSize: '16px',
+                borderBottom: '1px solid #2D2D2D',
+                fontFamily: 'rootstock-sans',
+              }}
+              key={headTitle}
+              className={headerClassName}
+            >
+              {headTitle}
+            </TableCell>
+          ))}
         </TableRow>
       </TableHead>
       <TableBody {...tbodyProps}>
-        {table.getRowModel().rows.map(row => (
-          <TableRow key={row.id} className="text-[14px] border-hidden" style={{ borderTopStyle: 'solid' }}>
-            {row.getVisibleCells().map(cell => (
-              <TableCell key={cell.id} style={{ width }}>
-                {flexRender(cell.column.columnDef.cell, cell.getContext())}
+        {data.map((record, i) => (
+          <TableRow key={i} className="text-[14px] border-hidden" style={{ borderTopStyle: 'solid' }}>
+            {Object.values(record).map((val, j) => (
+              <TableCell style={{ width }} key={j}>
+                <Span className="text-[14px]" variant="light">
+                  {val}
+                </Span>
               </TableCell>
             ))}
           </TableRow>

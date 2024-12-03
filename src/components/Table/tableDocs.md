@@ -1,4 +1,4 @@
-A ready-to-use table assembled from a set of consistently styled table components. In most cases, it will be sufficient for displaying any type of data. If you have some unique data that doesn’t fit into the `data` prop, you can create your own table using the provided components: `Table`, `TableBody`, `TableCell`, `TableHead`, `TableRow`.
+A ready-to-use table assembled from a set of consistently styled table components. In most cases, it will be sufficient for displaying any type of data. If you have some unique data that doesn’t fit into the \`data\` prop, you can create your own table using the provided components: `Table`, `TableBody`, `TableCell`, `TableHead`, `TableRow`.
 
 ## Usage
 
@@ -10,30 +10,13 @@ const data = [
   { name: 'Bob', age: 25 },
 ]
 
-<Table isSortable data={data} />
+<Table data={data} />
 ```
 
 ## Props
 
 - `data` (array): Array of objects to be displayed in the table, with values of any type React can render.
 - `equalColumns` (boolean, optional): Flag to make all column widths equal.
-- `theadProps` (object, optional): Additional props for the table header.
-- `tbodyProps` (object, optional): Additional props for the table body.
-- `headerClassName` (string, optional): Additional class name for the table header.
-- `isSortable` (boolean, optional): Flag indicating whether sorting can be applied to the table. `false` by default
-- `renderers` (object, optional): Custom renderers for table column cells. Example:
-  ```tsx
-  renderers: {
-    name: (value: string, row: ITable) => <p>{value} - {row.symbol}</p>
-  }
-  ```
-- `sortingOptions` (object, optional): Custom sorting function for table columns. `false` excludes column from sorting. Example:
-  ```tsx
-  sortingOptions: {
-    name: (a: number, b: number) => Math.sin(a) - Math.abs(b)
-  }
-  ```
-
 
 ## Best Practices
 
