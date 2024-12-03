@@ -32,7 +32,7 @@ interface Props {
  */
 export function useProposalListData({ proposals }: Props) {
   const { data: latestBlockNumber } = useBlockNumber()
-  // reading votes cast for all proposals
+
   const { data: proposalVotes } = useReadContracts({
     contracts: proposals?.map(proposal => ({
       ...governor,
@@ -41,7 +41,6 @@ export function useProposalListData({ proposals }: Props) {
     })),
   }) as { data?: Array<{ result: bigint[] }> }
 
-  // reading quorums for each proposal snapshot
   const { data: quorum } = useReadContracts({
     contracts: proposals?.map(proposal => ({
       ...governor,
@@ -58,7 +57,6 @@ export function useProposalListData({ proposals }: Props) {
     })),
   }) as { data?: Array<{ result: string }> }
 
-  // reading votes cast for all proposals
   const { data: state } = useReadContracts({
     contracts: proposals?.map(proposal => ({
       ...governor,
@@ -70,9 +68,7 @@ export function useProposalListData({ proposals }: Props) {
   return useMemo(
     () =>
       proposals?.map((proposal, i) => {
-        const votes = proposalVotes?.[i]?.result
-          ?.map(vote => formatEther(vote))
-          .map(num => Math.round(Number(num)))
+        const votes = proposalVotes?.[i]?.result?.map(vote => Math.round(+formatEther(vote)))
         const againstVotes = votes?.at(0) ?? 0
         const forVotes = votes?.at(1) ?? 0
         const abstainVotes = votes?.at(2) ?? 0
