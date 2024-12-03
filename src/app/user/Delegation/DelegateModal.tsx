@@ -33,7 +33,7 @@ export const DelegateModal = ({ onClose, onDelegateTxStarted }: DelegateModalPro
     try {
       setDomainValidationStatus('validating')
       const resolvedAddress = await resolveRnsDomain(domain)
-      
+
       if (resolvedAddress) {
         setAddressToDelegateTo(resolvedAddress)
         setDomainValidationStatus('valid')
@@ -41,7 +41,7 @@ export const DelegateModal = ({ onClose, onDelegateTxStarted }: DelegateModalPro
         setValidRnsAddress(domain)
         return true
       }
-      
+
       setDomainValidationStatus('invalid')
       setIsInputValid(false)
       return false
@@ -124,7 +124,9 @@ export const DelegateModal = ({ onClose, onDelegateTxStarted }: DelegateModalPro
           />
           {error && <p className="text-st-error">{error}</p>}
           {!error && domainValidationStatus && (
-            <p className={domainValidationStatus === 'valid' ? 'text-green-400' : 'text-st-error'}>              {domainValidationStatus === 'validating'
+            <p className={domainValidationStatus === 'valid' ? 'text-green-400' : 'text-st-error'}>
+              {' '}
+              {domainValidationStatus === 'validating'
                 ? 'Validating domain...'
                 : domainValidationStatus === 'valid'
                   ? `Valid domain: ${validRnsAddress}`
@@ -145,4 +147,3 @@ export const DelegateModal = ({ onClose, onDelegateTxStarted }: DelegateModalPro
     </Modal>
   )
 }
-
