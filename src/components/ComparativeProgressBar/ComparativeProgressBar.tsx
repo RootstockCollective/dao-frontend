@@ -1,7 +1,7 @@
-import { type JSX, type FC } from 'react'
+import { JSX, FC } from 'react'
 const DEFAULT_CLASSES = 'rounded-[6px] bg-white h-[6px] rounded-[20px] relative flex overflow-hidden'
 
-interface Value {
+type Value = {
   value: number
   color: JSX.IntrinsicElements['div']['color']
 }
