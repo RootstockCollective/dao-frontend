@@ -8,6 +8,7 @@ import { isAddressRegex, isChecksumValid } from '@/app/proposals/shared/utils'
 import { useAlertContext } from '@/app/providers'
 import { TX_MESSAGES } from '@/shared/txMessages'
 import { debounce } from 'lodash'
+import { resolveRnsDomain } from '@/lib/rns'
 
 interface DelegateModalProps {
   onClose: () => void
@@ -16,6 +17,7 @@ interface DelegateModalProps {
 
 export const DelegateModal = ({ onClose, onDelegateTxStarted }: DelegateModalProps) => {
   const [addressToDelegateTo, setAddressToDelegateTo] = useState('')
+  const [validRnsAddress, setValidRnsAddress] = useState('')
   const [error, setError] = useState('')
   const [domainValidationStatus, setDomainValidationStatus] = useState<
     'validating' | 'valid' | 'invalid' | ''
@@ -30,11 +32,23 @@ export const DelegateModal = ({ onClose, onDelegateTxStarted }: DelegateModalPro
   const validateRnsDomain = async (domain: string) => {
     try {
       setDomainValidationStatus('validating')
-      // Simulate RNS domain validation logic here
-      const isValidDomain = await mockRnsDomainValidation(domain)
-      setDomainValidationStatus(isValidDomain ? 'valid' : 'invalid')
+      const resolvedAddress = await resolveRnsDomain(domain)
+      
+      if (resolvedAddress) {
+        setAddressToDelegateTo(resolvedAddress)
+        setDomainValidationStatus('valid')
+        setIsInputValid(true)
+        setValidRnsAddress(domain)
+        return true
+      }
+      
+      setDomainValidationStatus('invalid')
+      setIsInputValid(false)
+      return false
     } catch {
       setDomainValidationStatus('invalid')
+      setIsInputValid(false)
+      return false
     }
   }
 
@@ -110,11 +124,10 @@ export const DelegateModal = ({ onClose, onDelegateTxStarted }: DelegateModalPro
           />
           {error && <p className="text-st-error">{error}</p>}
           {!error && domainValidationStatus && (
-            <p className={`text-${domainValidationStatus === 'valid' ? 'green' : 'st-error'}`}>
-              {domainValidationStatus === 'validating'
+            <p className={domainValidationStatus === 'valid' ? 'text-green-400' : 'text-st-error'}>              {domainValidationStatus === 'validating'
                 ? 'Validating domain...'
                 : domainValidationStatus === 'valid'
-                  ? 'Valid domain.'
+                  ? `Valid domain: ${validRnsAddress}`
                   : 'Invalid domain.'}
             </p>
           )}
@@ -133,8 +146,3 @@ export const DelegateModal = ({ onClose, onDelegateTxStarted }: DelegateModalPro
   )
 }
 
-// Mock function for RNS domain validation (replace with actual validation logic)
-const mockRnsDomainValidation = async (domain: string): Promise<boolean> => {
-  // Simulate API call with a delay
-  return new Promise(resolve => setTimeout(() => resolve(domain === 'valid.rsk'), 1000))
-}

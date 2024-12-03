@@ -36,3 +36,7 @@ export const RIF = 'RIF'
 export const USD = 'USD'
 export const RBTC = 'RBTC'
 export const USD_SYMBOL = '$'
+
+export const RNS_REGISTRY_ADDRESS = process.env.NEXT_PUBLIC_RNS_REGISTRY_ADDRESS as Address
+
+export const NODE_URL = process.env.NEXT_PUBLIC_NODE_URL
