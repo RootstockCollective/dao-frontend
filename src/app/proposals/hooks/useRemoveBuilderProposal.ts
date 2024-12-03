@@ -4,10 +4,9 @@ import { BuilderRegistryAbi } from '@/lib/abis/v2/BuilderRegistryAbi'
 import { GovernorAddress, BackersManagerAddress } from '@/lib/contracts'
 import { Address, encodeFunctionData } from 'viem'
 import { useWriteContract } from 'wagmi'
-import { createProposal, encodeGovernorRelayCallData } from './proposalUtils'
-import { useVotingPower } from './useVotingPower'
+import { createProposal, encodeGovernorRelayCallData } from '@/app/proposals/hooks/proposalUtils'
+import { useVotingPower } from '@/app/proposals/hooks/useVotingPower'
 import { useBuilderContext } from '@/app/collective-rewards/user'
-import { Builder } from '@/app/collective-rewards/types'
 
 export const useRemoveBuilderProposal = () => {
   const { canCreateProposal } = useVotingPower()
@@ -19,8 +18,8 @@ export const useRemoveBuilderProposal = () => {
       throw NoVotingPowerError
     }
 
-    const { stateFlags } = getBuilderByAddress(builderAddress) as Builder
-    if (stateFlags && !stateFlags.communityApproved) {
+    const { stateFlags } = getBuilderByAddress(builderAddress) || {}
+    if (!stateFlags || !stateFlags.communityApproved) {
       throw AddressNotWhitelistedError
     }
 
