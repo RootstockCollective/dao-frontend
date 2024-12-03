@@ -1,61 +1,54 @@
 import { Typography } from '../Typography'
 import { Link } from '../Link'
 
-type TableDataType = {
-  'Super Long Name Title': string
-  'Super Long Symbol Description': string
-  price: number
-  holdings: number
-  stake: boolean
-}
 // sample table data incorporating various data types
-export const tableSampleData: TableDataType[] = [
+const tableSource = [
   {
-    'Super Long Name Title': 'd. Rootstock Infrastructure Framework',
-    'Super Long Symbol Description': 'RIF',
+    name: 'Rootstock Infrastructure Framework',
+    symbol: 'RIF',
     price: 0.5,
-    holdings: 100_023_258,
+    holdings: 100_023_258n,
     stake: true,
   },
   {
-    'Super Long Name Title': 'b. Rootstock Bitcoin',
-    'Super Long Symbol Description': 'RBTC',
+    name: 'Rootstock Bitcoin',
+    symbol: 'RBTC',
     price: 64_000,
-    holdings: 30_023_230,
+    holdings: 30_023_230n,
     stake: false,
   },
   {
-    'Super Long Name Title': 'c. Rootstock Tether USD',
-    'Super Long Symbol Description': 'rUSDT',
+    name: 'Rootstock Tether USD',
+    symbol: 'rUSDT',
     price: 1,
-    holdings: 50_023_230,
+    holdings: 50_023_230n,
     stake: true,
   },
   {
-    'Super Long Name Title': 'a. Rootstock USDC',
-    'Super Long Symbol Description': 'rUSDC',
+    name: 'Rootstock USDC',
+    symbol: 'rUSDC',
     price: 1.01,
-    holdings: 36_456_745,
+    holdings: 36_456_745n,
     stake: false,
   },
 ]
-
-// rendering functions for the last 3 table columns
-export const columnRenderingFuncs = {
-  price: (val: number) => (
+// it may be necessary to preprocess the data before rendering it in the table
+export const tableSampleData = tableSource.map(el => ({
+  ...el,
+  price: (
     <Typography tagVariant="p">
-      {val.toLocaleString('en-US', { style: 'currency', currency: 'USD' })}
+      {el.price.toLocaleString('en-US', { style: 'currency', currency: 'USD' })}
     </Typography>
   ),
-  holdings: (val: number, row: Record<string, string>) => (
+  holdings: (
     <Typography
       tagVariant="p"
       className="whitespace-nowrap"
-    >{`${val.toLocaleString('en-US', { minimumFractionDigits: 2 })} ${row.symbol}`}</Typography>
+    >{`${el.holdings.toLocaleString('en-US', { minimumFractionDigits: 2 })} ${el.symbol}`}</Typography>
   ),
-  stake: (val: boolean) => (
-    <Link className="text-[#8F9AFF]" href={`/${val ? 'stake' : 'unstake'}`}>
-      {val ? 'Stake' : 'Unstake'}
+  stake: (
+    <Link className="text-[#8F9AFF]" href={`/${el.stake ? 'stake' : 'unstake'}`}>
+      {el.stake ? 'Stake' : 'Unstake'}
     </Link>
   ),
-}
+}))

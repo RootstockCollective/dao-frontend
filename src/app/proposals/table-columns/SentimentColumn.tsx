@@ -19,7 +19,7 @@ const PopoverSentiment = ({ forVotes = 0, againstVotes = 0, abstainVotes = 0 }: 
           For
         </Paragraph>
         <Paragraph variant="semibold" className="text-[12px] w-1/2">
-          {Math.ceil(Number(forVotes))}
+          {forVotes}
         </Paragraph>
       </div>
       <div className="flex flex-row">
@@ -27,7 +27,7 @@ const PopoverSentiment = ({ forVotes = 0, againstVotes = 0, abstainVotes = 0 }: 
           Against
         </Paragraph>
         <Paragraph variant="semibold" className="text-[12px] w-1/2">
-          {Math.ceil(Number(againstVotes))}
+          {againstVotes}
         </Paragraph>
       </div>
       <div className="flex flex-row">
@@ -35,7 +35,7 @@ const PopoverSentiment = ({ forVotes = 0, againstVotes = 0, abstainVotes = 0 }: 
           Abstain
         </Paragraph>
         <Paragraph variant="semibold" className="text-[12px] w-1/2">
-          {Math.ceil(Number(abstainVotes))}
+          {abstainVotes}
         </Paragraph>
       </div>
     </div>
