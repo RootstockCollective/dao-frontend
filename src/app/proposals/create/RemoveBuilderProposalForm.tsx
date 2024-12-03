@@ -51,11 +51,11 @@ export const RemoveBuilderProposalForm: FC = () => {
 
   const [activeStep, setActiveStep] = useState('proposal')
 
-  const UpdatedFormSchema = FormSchema.refine(
+  const updatedFormSchema = FormSchema.refine(
     ({ builderAddress }) => {
       if (!isAddressRegex(builderAddress)) return false
-      const { stateFlags } = getBuilderByAddress(getAddress(builderAddress)) || {}
-      return !(!stateFlags || !stateFlags.communityApproved)
+      const builder = getBuilderByAddress(getAddress(builderAddress))
+      return builder?.stateFlags?.communityApproved ?? false
     },
     {
       message: 'The address is not whitelisted',
@@ -63,9 +63,9 @@ export const RemoveBuilderProposalForm: FC = () => {
     },
   )
 
-  const form = useForm<z.infer<typeof UpdatedFormSchema>>({
+  const form = useForm<z.infer<typeof updatedFormSchema>>({
     mode: 'onTouched',
-    resolver: zodResolver(UpdatedFormSchema),
+    resolver: zodResolver(updatedFormSchema),
     defaultValues: {
       proposalName: params?.get('proposalName') ?? ('' as string),
       builderAddress: (params?.get('builderAddress') ?? '') as Address,
@@ -87,7 +87,7 @@ export const RemoveBuilderProposalForm: FC = () => {
 
   const handleProposalCompleted = () => setActiveStep('actions')
 
-  const onSubmit = async (data: z.infer<typeof UpdatedFormSchema>) => {
+  const onSubmit = async (data: z.infer<typeof updatedFormSchema>) => {
     const { proposalName, description, builderAddress } = data
     const proposalDescription = `${proposalName};${description}`
 
