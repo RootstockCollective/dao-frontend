@@ -188,6 +188,8 @@ export default function Page() {
     }
   }
 
+  const hasEnoughBalance = stRifBalance > (stRifThreshold ?? 0n)
+
   if (!nftAddress) return null
   return (
     <MainContainer notProtected>
@@ -301,7 +303,7 @@ export default function Page() {
                       variant="primary"
                       className="my-[16px]"
                       onClick={handleMinting}
-                      disabled={!tokensAvailable || !address || isClaiming}
+                      disabled={!tokensAvailable || !address || isClaiming || !hasEnoughBalance}
                       loading={isClaiming}
                       data-testid="claimButton"
                     >
