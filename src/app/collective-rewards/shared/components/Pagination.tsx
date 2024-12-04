@@ -1,5 +1,5 @@
 import { FC, useContext } from 'react'
-import { PaginatedDataContext } from '@/app/collective-rewards/context/PaginatedDataContext'
+import { PaginatedDataContext } from '@/app/collective-rewards/shared'
 import { PaginationButton } from './PaginationButton'
 import { ChevronLeft, ChevronRight } from 'lucide-react'
 
