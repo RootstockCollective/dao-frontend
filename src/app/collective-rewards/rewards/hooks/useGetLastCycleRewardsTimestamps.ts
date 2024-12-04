@@ -5,7 +5,7 @@ import {
 } from '@/app/collective-rewards/rewards'
 
 type Log = RewardDistributionFinishedEventLog[number] & { timeStamp: number }
-export const useGetLastCycleRewardsTimestamps = ({ cycleStart, cycleDuration, cycleNext }: Cycle) => {
+export const useGetLastCycleRewardsTimestamps = ({ cycleStart, cycleDuration }: Cycle) => {
   const {
     data: rewardDistributionFinished,
     isLoading: rewardDistributionFinishedLoading,
