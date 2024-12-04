@@ -24,6 +24,7 @@ type TokenRewardsMetricsProps = {
 }
 
 const TokenRewardsMetrics: FC<TokenRewardsMetricsProps> = ({
+  builder,
   gauge,
   token: { address, symbol },
   currency = 'USD',
@@ -46,7 +47,8 @@ const TokenRewardsMetrics: FC<TokenRewardsMetricsProps> = ({
     currency,
   )
 
-  const { isClaimable, claimRewards } = useClaimBuilderRewardsPerToken(gauge, address)
+  const { isClaimable, claimRewards, isPaused } = useClaimBuilderRewardsPerToken(builder, gauge, address)
+  const content = isPaused ? 'You cannot be paused to claim rewards' : undefined
 
   return withSpinner(
     TokenMetricsCardRow,
@@ -55,7 +57,13 @@ const TokenRewardsMetrics: FC<TokenRewardsMetricsProps> = ({
     amount,
     fiatAmount,
     isLoading: rewardsLoading,
-    children: <ClaimYourRewardsButton onClick={() => claimRewards()} disabled={!isClaimable} />,
+    children: (
+      <ClaimYourRewardsButton
+        onClick={() => claimRewards()}
+        disabled={!isClaimable || isPaused}
+        content={content}
+      />
+    ),
   })
 }
 

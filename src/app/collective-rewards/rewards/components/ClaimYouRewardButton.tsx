@@ -14,12 +14,15 @@ const ClaimYourRewardsSvg = () => (
   </svg>
 )
 
-export const ClaimYourRewardsButton: FC<Pick<ButtonProps, 'onClick' | 'disabled'>> = buttonProps => (
+export const ClaimYourRewardsButton: FC<Pick<ButtonProps, 'onClick' | 'disabled'> & { content?: string }> = ({
+  content,
+  ...buttonProps
+}) => (
   <div className="self-start justify-self-end pt-[10px]">
     <Popover
       content={
         <div className="text-[12px] font-bold mb-1">
-          <p data-testid="claimYouRewardsButtonTooltip">Claim your rewards</p>
+          <p data-testid="claimYouRewardsButtonTooltip">{content ?? 'Claim your rewards'}</p>
         </div>
       }
       size="small"

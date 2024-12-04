@@ -3,9 +3,14 @@ import { GaugeAbi } from '@/lib/abis/v2/GaugeAbi'
 import { Address } from 'viem'
 import { useWaitForTransactionReceipt, useWriteContract } from 'wagmi'
 import { useGetBuilderRewards } from '@/app/collective-rewards/rewards'
+import { useBuilderContext } from '@/app/collective-rewards/user'
 
-const useClaimBuilderReward = (gauge: Address, rewardToken?: Address) => {
+const useClaimBuilderReward = (builder: Address, gauge: Address, rewardToken?: Address) => {
   const { writeContractAsync, error: executionError, data: hash, isPending } = useWriteContract()
+  const { getBuilderByAddress } = useBuilderContext()
+
+  const claimingBuilder = getBuilderByAddress(builder)
+  const isPaused = claimingBuilder?.stateFlags?.paused ?? false
 
   const { isLoading, isSuccess, data, error: receiptError } = useWaitForTransactionReceipt({ hash })
 
@@ -33,6 +38,7 @@ const useClaimBuilderReward = (gauge: Address, rewardToken?: Address) => {
 
   return {
     claimRewards: () => claimBuilderReward(),
+    isPaused,
     error,
     isPendingTx: isPending,
     isLoadingReceipt: isLoading,
@@ -41,10 +47,22 @@ const useClaimBuilderReward = (gauge: Address, rewardToken?: Address) => {
   }
 }
 
-export const useClaimBuilderRewards = (gauge: Address, { rif, rbtc }: { rif: Address; rbtc: Address }) => {
-  const { error: claimBuilderRewardError, ...rest } = useClaimBuilderReward(gauge)
-  const { isClaimable: rifClaimable, error: claimRifError } = useClaimBuilderRewardsPerToken(gauge, rif)
-  const { isClaimable: rbtcClaimable, error: claimRbtcError } = useClaimBuilderRewardsPerToken(gauge, rbtc)
+export const useClaimBuilderRewards = (
+  builder: Address,
+  gauge: Address,
+  { rif, rbtc }: { rif: Address; rbtc: Address },
+) => {
+  const { error: claimBuilderRewardError, ...rest } = useClaimBuilderReward(builder, gauge)
+  const { isClaimable: rifClaimable, error: claimRifError } = useClaimBuilderRewardsPerToken(
+    builder,
+    gauge,
+    rif,
+  )
+  const { isClaimable: rbtcClaimable, error: claimRbtcError } = useClaimBuilderRewardsPerToken(
+    builder,
+    gauge,
+    rbtc,
+  )
 
   const isClaimable = rifClaimable || rbtcClaimable
   const error = claimBuilderRewardError ?? claimRifError ?? claimRbtcError
@@ -56,8 +74,8 @@ export const useClaimBuilderRewards = (gauge: Address, { rif, rbtc }: { rif: Add
   }
 }
 
-export const useClaimBuilderRewardsPerToken = (gauge: Address, rewardToken: Address) => {
-  const { error: claimBuilderRewardError, ...rest } = useClaimBuilderReward(gauge, rewardToken)
+export const useClaimBuilderRewardsPerToken = (builder: Address, gauge: Address, rewardToken: Address) => {
+  const { error: claimBuilderRewardError, ...rest } = useClaimBuilderReward(builder, gauge, rewardToken)
   const { data: rewards, isLoading, error: getBuilderRewardsError } = useGetBuilderRewards(rewardToken, gauge)
 
   const isClaimable = !isLoading && rewards !== 0n
