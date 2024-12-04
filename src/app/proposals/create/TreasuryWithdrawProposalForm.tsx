@@ -1,6 +1,6 @@
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/Select'
 import { Header, Paragraph } from '@/components/Typography'
-import { ENV } from '@/lib/constants'
+import { CHAIN_ID, ENV } from '@/lib/constants'
 import { tokenContracts } from '@/lib/contracts'
 import { formatCurrency } from '@/lib/utils'
 import { TX_MESSAGES } from '@/shared/txMessages'
@@ -33,7 +33,7 @@ import { useCreateTreasuryTransferProposal } from '@/app/proposals/hooks/useCrea
 import React from 'react'
 import { useForm } from 'react-hook-form'
 import { CreateProposalHeaderSection } from '@/app/proposals/create/CreateProposalHeaderSection'
-import { isAddressRegex } from '@/app/proposals/shared/utils'
+import { isAddressRegex, isChecksumValid } from '@/app/proposals/shared/utils'
 import { isBaseError, isUserRejectedTxError } from '@/components/ErrorPage/commonErrors'
 
 const rifMinimumAmount = ENV === 'mainnet' ? 10 : 1
@@ -49,7 +49,10 @@ const FormSchema = z
       .string()
       .max(3000)
       .refine(s => s.trim().replace(/\s+/g, ' ').length >= 10, 'Field must contain at least 10 characters'),
-    toAddress: z.string().refine(value => isAddressRegex(value), 'Please enter a valid address'),
+    toAddress: z
+      .string()
+      .refine(value => isAddressRegex(value), 'Please enter a valid address')
+      .refine(value => isChecksumValid(value, CHAIN_ID), 'Address has invalid checksum'),
     tokenAddress: z.string().length(42),
     amount: z.coerce
       .number({ invalid_type_error: 'Required field' })
@@ -64,7 +67,6 @@ const FormSchema = z
     message: `The minimum amount for RBTC is ${rbtcMinimumAmount}`,
     path: ['amount'],
   })
-
 export const TreasuryWithdrawProposalForm = () => {
   const router = useRouter()
   const prices = useGetSpecificPrices()

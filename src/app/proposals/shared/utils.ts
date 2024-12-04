@@ -1,5 +1,5 @@
 import moment from 'moment'
-import { Address, decodeFunctionData, DecodeFunctionDataReturnType, Hash } from 'viem'
+import { Address, checksumAddress, decodeFunctionData, DecodeFunctionDataReturnType, Hash } from 'viem'
 import {
   SupportedActionAbi,
   abis,
@@ -124,3 +124,10 @@ export const ADDRESS_PADDING_LENGTH = 24
 export const RELAY_PARAMETER_PADDING_LENGTH = 256
 
 export const isAddressRegex = (value: string) => /^0x[a-fA-F0-9]{40}$/.test(value)
+
+export const isChecksumValid = (value: string, chainId?: string) => {
+  return (
+    value === value.toLowerCase() ||
+    checksumAddress(value as Address, chainId ? Number(chainId) : undefined) === value
+  )
+}
