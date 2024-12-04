@@ -9,6 +9,7 @@ import { useAlertContext } from '@/app/providers'
 import { TX_MESSAGES } from '@/shared/txMessages'
 import { debounce } from 'lodash'
 import { resolveRnsDomain } from '@/lib/rns'
+import { CHAIN_ID } from '@/lib/constants'
 
 interface DelegateModalProps {
   onClose: () => void
@@ -80,6 +81,11 @@ export const DelegateModal = ({ onClose, onDelegateTxStarted }: DelegateModalPro
 
     if (!isValid) {
       setError('Please insert a valid address or RNS domain.')
+      return
+    }
+
+    if (!isChecksumValid(addressToDelegateTo, CHAIN_ID)) {
+      setError('Address has invalid checksum.')
       return
     }
 
