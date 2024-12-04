@@ -8,7 +8,7 @@ import { zodResolver } from '@hookform/resolvers/zod'
 import Image from 'next/image'
 import { useRouter } from 'next/navigation'
 import { useEffect, useMemo, useState } from 'react'
-import { Address, zeroAddress } from 'viem'
+import { Address, zeroAddress, checksumAddress } from 'viem'
 import { z } from 'zod'
 import { rbtcIconSrc } from '@/shared/rbtcIconSrc'
 import { MAX_INPUT_NUMBER_AMOUNT } from '@/components/Input/InputNumber'
@@ -94,6 +94,7 @@ export const TreasuryWithdrawProposalForm = () => {
     formState: { touchedFields, errors, isValid, isDirty },
     watch,
     trigger,
+    setValue,
   } = form
 
   const pricesMap = useMemo(
@@ -238,7 +239,22 @@ export const TreasuryWithdrawProposalForm = () => {
                       <FormInput placeholder="0x123...456" {...field} data-testid="InputTransfer" />
                     </FormControl>
                     <FormDescription>Write or paste the wallet address of the recipient</FormDescription>
-                    <FormMessage />
+                    <FormMessage>
+                      {errors.toAddress?.message === 'Address has invalid checksum' && (
+                        <>
+                          {errors.toAddress.message + ' '}
+                          <span
+                            className="font-normal underline cursor-pointer"
+                            onClick={() => {
+                              setValue('toAddress', checksumAddress(field.value as Address, Number(CHAIN_ID)))
+                              trigger('toAddress')
+                            }}
+                          >
+                            Fix address.
+                          </span>
+                        </>
+                      )}
+                    </FormMessage>
                   </FormItem>
                 )}
               />
