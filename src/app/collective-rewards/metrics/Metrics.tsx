@@ -1,4 +1,4 @@
-import { useGetGaugesArray, withBuilderButton } from '@/app/collective-rewards/user'
+import { useGetGaugesArrayByType, withBuilderButton } from '@/app/collective-rewards/user'
 import { HeaderTitle } from '@/components/Typography'
 import {
   TotalAllocationsMetrics,
@@ -15,7 +15,7 @@ import { PricesContextProvider } from '@/shared/context/PricesContext'
 const HeaderWithBuilderButton = withBuilderButton(HeaderTitle)
 
 export const Metrics = () => {
-  const { data: activeGauges } = useGetGaugesArray('active')
+  const { data: activeGauges } = useGetGaugesArrayByType('active')
   const gauges = activeGauges ?? []
 
   const tokens = {

@@ -25,11 +25,11 @@ type RequiredBuilder = Required<Builder>
 
 // from the builders list, filter out the builders that are not kycApproved or are revoked or have no allocation
 const isBuilderShown = (
-  { stateFlags: { kycApproved, revoked }, address }: RequiredBuilder,
+  { stateFlags: { kycApproved, revoked, communityApproved }, address }: RequiredBuilder,
   allocations: Allocations,
 ) => {
   const allocation = allocations[address]
-  return (kycApproved && !revoked) || (allocation && allocation > 0n)
+  return (kycApproved && !revoked && communityApproved) || (allocation && allocation > 0n)
 }
 
 // FIXME: remove and use Builder and/or combination of existing types
