@@ -43,7 +43,7 @@ export const HoldersSection = () => {
       {isError && (
         <ErrorMessageAlert message="An error occurred loading Token Holders. Please try again shortly." />
       )}
-      {!isError && holders && holders?.length > 0 && (
+      {!isError && holders?.length > 0 && (
         <>
           <Table data={holders} />
           {paginationElement}
