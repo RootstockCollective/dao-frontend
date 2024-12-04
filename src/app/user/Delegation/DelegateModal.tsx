@@ -7,7 +7,6 @@ import { useDelegateToAddress } from '@/shared/hooks/useDelegateToAddress'
 import { isAddressRegex, isChecksumValid } from '@/app/proposals/shared/utils'
 import { useAlertContext } from '@/app/providers'
 import { TX_MESSAGES } from '@/shared/txMessages'
-import { isAddress } from 'viem'
 import { CHAIN_ID } from '@/lib/constants'
 
 interface DelegateModalProps {
@@ -21,7 +20,10 @@ export const DelegateModal = ({ onClose, onDelegateTxStarted }: DelegateModalPro
   const [error, setError] = useState('')
   // Global Alert
   const { setMessage: setGlobalMessage } = useAlertContext()
-  const onAddressChange = (value: string) => setAddressToDelegateTo(value)
+  const onAddressChange = (value: string) => {
+    setAddressToDelegateTo(value)
+    setError('')
+  }
 
   const { onDelegate, isPending } = useDelegateToAddress()
 
