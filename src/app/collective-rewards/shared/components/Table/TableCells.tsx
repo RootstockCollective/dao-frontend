@@ -102,7 +102,7 @@ export const BuilderNameCell: FC<BuilderCellProps> = ({
     <TableCell className={cn(className, 'border-solid')}>
       <div className="flex flex-row gap-x-1 items-center">
         <BuilderStatusFlag stateFlags={stateFlags} />
-        <Jdenticon className="rounded-md bg-white min-w-6" value={builderName} size="24" />
+        <Jdenticon className="rounded-md bg-white min-w-6" value={address} size="24" />
         <div className="w-32">
           <Popover
             content={
