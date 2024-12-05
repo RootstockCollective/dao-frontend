@@ -268,26 +268,12 @@ export const TreasuryWithdrawProposalForm = () => {
                           <SelectContent>
                             <SelectItem value={zeroAddress}>
                               <div className="flex items-center">
-                                {/* <Image
-                                  src={`data:image/svg+xml;base64,${rbtcIconSrc}`}
-                                  alt="rBTC Logo"
-                                  className="mr-1"
-                                  width={20}
-                                  height={20}
-                                /> */}
                                 <TokenImage symbol="RBTC" size={20} className="mr-1" />
                                 RBTC
                               </div>
                             </SelectItem>
                             <SelectItem value={tokenContracts.RIF as Address}>
                               <div className="flex items-center">
-                                {/* <Image
-                                  src="/images/rif-logo.png"
-                                  alt="stRIF Logo"
-                                  width={20}
-                                  height={20}
-                                  className="mr-1"
-                                /> */}
                                 <TokenImage symbol="stRIF" size={20} className="mr-1" />
                                 RIF
                               </div>
