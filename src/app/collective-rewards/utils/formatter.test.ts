@@ -16,7 +16,7 @@ describe('formatNumber', () => {
     expect(output.indexOf('.') > 0).toBeTruthy()
   })
 
-  it('should contain no "." for decimals == 0', () => {
+  it('should contain no "." when options.decimals == 0', () => {
     const wholePart = '1234567'
     const decimalPart = '111222333444555666'
     const value = `${wholePart}${decimalPart}`
@@ -82,7 +82,6 @@ describe('formatNumber', () => {
     },
   )
 
-  // TODO: test w/ carryovers eg 39999.999999
   it('should carryover correctly when ceiled', () => {
     const wholePart = '1234567'
     const decimalPart = '999999999999999999'
@@ -97,12 +96,34 @@ describe('formatNumber', () => {
     expect(output).to.eq('1234568')
   })
 
+  it('should not throw error when value is undefined', () => {
+    expect(() => formatNumber(undefined as unknown as string)).to.not.throw()
+  })
+
+  it('should return 0 when value is undefined', () => {
+    expect(formatNumber(undefined as unknown as string)).to.eq('0')
+  })
+
   // TODO: test w/ less decimals
   // TODO: test defaults
   // TODO: test mismatched options
   // TODO: test disappearance of .
+  it('should return value without decimal point if result is integer', () => {
+    const value = '1'.padEnd(19, '9')
+
+    expect(
+      formatNumber(value, {
+        decimals: 18,
+        round: {
+          decimalPlaces: 0,
+          mode: 'round',
+        },
+      }),
+    ).to.eq('2')
+  })
   // TODO: test w/o decimals
   // TODO: test w/ 0.000001
   // TODO: test w/ unknown rounding mode
   // TODO: test that the least significant digit is not rounded
+  // TODO: test that iterative processing is possible
 })

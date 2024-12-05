@@ -1,16 +1,11 @@
-import { formatUnits } from 'viem'
 import { formatCurrency } from '@/app/collective-rewards/utils/formatter'
 
-export const formatMetrics = (amount: number, price: number, symbol: string, currency: string) => ({
-  amount: `${formatCurrency(amount, symbol)} ${symbol}`,
-  fiatAmount: `= ${currency} ${formatCurrency(amount * price, currency)}`,
+export const formatMetrics = (
+  amount: number | bigint,
+  price: number | bigint,
+  symbol: string,
+  currency: string,
+) => ({
+  amount: `${formatCurrency(amount, symbol) || 0} ${symbol}`,
+  fiatAmount: `= ${currency} ${formatCurrency(Number(amount) * Number(price), currency) || 0}`,
 })
-
-export const formatOnchainFraction = (amount: bigint, displayDecimals = 2, decimals = 18) => {
-  const formattedAmount = formatUnits(amount, decimals)
-  const length =
-    formattedAmount.indexOf('.') >= 0
-      ? formattedAmount.indexOf('.') + displayDecimals + 1
-      : formattedAmount.length
-  return formattedAmount.slice(0, length)
-}
