@@ -4,7 +4,7 @@ import { Button } from '@/components/Button'
 import { Input } from '@/components/Input'
 import { useState, useEffect } from 'react'
 import { useDelegateToAddress } from '@/shared/hooks/useDelegateToAddress'
-import { isAddressRegex } from '@/app/proposals/shared/utils'
+import { isAddressRegex, isChecksumValid } from '@/app/proposals/shared/utils'
 import { useAlertContext } from '@/app/providers'
 import { TX_MESSAGES } from '@/shared/txMessages'
 import { debounce } from 'lodash'
@@ -33,10 +33,14 @@ export const DelegateModal = ({ onClose, onDelegateTxStarted }: DelegateModalPro
     setIsInputValid(false)
     setDomainValidationStatus('')
     setValidRnsAddress('')
-
+    
     if (!value) return
 
     if (isAddressRegex(value)) {
+      if (!isChecksumValid(value)) {
+        setError('Invalid checksum address')
+        return
+      }
       setIsInputValid(true)
       return
     }
@@ -50,7 +54,7 @@ export const DelegateModal = ({ onClose, onDelegateTxStarted }: DelegateModalPro
     try {
       setDomainValidationStatus('validating')
       const resolvedAddress = await resolveRnsDomain(domain)
-
+      
       if (resolvedAddress) {
         setValidRnsAddress(domain)
         setAddressToDelegateTo(resolvedAddress)
