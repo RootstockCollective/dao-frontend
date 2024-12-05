@@ -2,12 +2,13 @@ import { Modal } from '@/components/Modal/Modal'
 import { HeaderTitle, Paragraph } from '@/components/Typography'
 import { Button } from '@/components/Button'
 import { Input } from '@/components/Input'
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useDelegateToAddress } from '@/shared/hooks/useDelegateToAddress'
 import { isAddressRegex, isChecksumValid } from '@/app/proposals/shared/utils'
 import { useAlertContext } from '@/app/providers'
 import { TX_MESSAGES } from '@/shared/txMessages'
-import { CHAIN_ID } from '@/lib/constants'
+import { debounce } from 'lodash'
+import { resolveRnsDomain } from '@/lib/rns'
 
 interface DelegateModalProps {
   onClose: () => void
@@ -15,51 +16,85 @@ interface DelegateModalProps {
 }
 
 export const DelegateModal = ({ onClose, onDelegateTxStarted }: DelegateModalProps) => {
-  // NOTE: this might use RNS in the future
   const [addressToDelegateTo, setAddressToDelegateTo] = useState('')
+  const [validRnsAddress, setValidRnsAddress] = useState('')
   const [error, setError] = useState('')
-  // Global Alert
+  const [domainValidationStatus, setDomainValidationStatus] = useState<
+    'validating' | 'valid' | 'invalid' | ''
+  >('')
+  const [isInputValid, setIsInputValid] = useState(false)
+
   const { setMessage: setGlobalMessage } = useAlertContext()
+  const { onDelegate, isPending } = useDelegateToAddress()
+
   const onAddressChange = (value: string) => {
     setAddressToDelegateTo(value)
     setError('')
+    setIsInputValid(false)
+    setDomainValidationStatus('')
+    setValidRnsAddress('')
+
+    if (!value) return
+
+    if (isAddressRegex(value)) {
+      if (!isChecksumValid(value)) {
+        setError('Invalid checksum address')
+        return
+      }
+      setIsInputValid(true)
+      return
+    }
+
+    if (value.endsWith('.rsk')) {
+      debouncedValidation(value)
+    }
   }
 
-  const { onDelegate, isPending } = useDelegateToAddress()
+  const validateRnsDomain = async (domain: string) => {
+    try {
+      setDomainValidationStatus('validating')
+      const resolvedAddress = await resolveRnsDomain(domain)
+
+      if (resolvedAddress) {
+        setValidRnsAddress(domain)
+        setAddressToDelegateTo(resolvedAddress)
+        setDomainValidationStatus('valid')
+        setIsInputValid(true)
+        setError('')
+      } else {
+        setDomainValidationStatus('invalid')
+        setIsInputValid(false)
+        setError('Invalid RNS domain')
+      }
+    } catch (err) {
+      setDomainValidationStatus('invalid')
+      setIsInputValid(false)
+      setError('Error resolving RNS domain')
+    }
+  }
+
+  const debouncedValidation = debounce(validateRnsDomain, 500)
 
   const onDelegateClick = async () => {
-    setError('')
-    // Validate address is valid
-    const isValid = isAddressRegex(addressToDelegateTo)
-
-    if (!isValid) {
-      setError('Please insert a valid address.')
-      return
-    }
-    if (!isChecksumValid(addressToDelegateTo, CHAIN_ID)) {
-      setError('Address has invalid checksum.')
-      return
-    }
-
-    // If address is valid
-    const onDelegatePromise = onDelegate(addressToDelegateTo)
-
-    onDelegatePromise.then(txHash => {
+    try {
+      const tx = await onDelegate(addressToDelegateTo)
+      onDelegateTxStarted(tx)
       setGlobalMessage(TX_MESSAGES.delegation.pending)
       onClose()
-      onDelegateTxStarted(txHash)
-    })
-
-    onDelegatePromise.catch(err => {
-      if ('toString' in err) {
-        const errorParsed = err.toString()
-        if (errorParsed.includes('User rejected the request')) {
-          setError('User rejected the request.')
-        }
-        console.log({ errorParsed })
+    } catch (err) {
+      const errorParsed = (err as Error).toString()
+      if (errorParsed.includes('User rejected the request')) {
+        setError('User rejected the request.')
       }
-    })
+      console.log({ errorParsed })
+    }
   }
+
+  useEffect(() => {
+    return () => {
+      debouncedValidation.cancel()
+    }
+  })
 
   return (
     <Modal onClose={onClose} width={892}>
@@ -70,10 +105,9 @@ export const DelegateModal = ({ onClose, onDelegateTxStarted }: DelegateModalPro
           <br />
           You can easily change or remove this delegation if needed.
         </Paragraph>
-        {/* Input Container */}
         <div className="mb-14">
           <Input
-            label="Address"
+            label="Address or RNS Domain"
             name="address"
             value={addressToDelegateTo}
             onChange={onAddressChange}
@@ -82,10 +116,18 @@ export const DelegateModal = ({ onClose, onDelegateTxStarted }: DelegateModalPro
             labelWrapperProps={{ className: 'text-left mb-[10px]' }}
           />
           {error && <p className="text-st-error">{error}</p>}
+          {!error && domainValidationStatus && (
+            <p className={domainValidationStatus === 'valid' ? 'text-green-400' : 'text-st-error'}>
+              {domainValidationStatus === 'validating'
+                ? 'Validating domain...'
+                : domainValidationStatus === 'valid'
+                  ? `Valid domain: ${validRnsAddress}`
+                  : 'Invalid domain.'}
+            </p>
+          )}
         </div>
-        {/* Button */}
         <div className="flex flex-row justify-center gap-4">
-          <Button onClick={onDelegateClick} disabled={isPending || !addressToDelegateTo}>
+          <Button onClick={onDelegateClick} disabled={isPending || !isInputValid}>
             Delegate
           </Button>
           <Button variant="secondary" onClick={onClose}>
