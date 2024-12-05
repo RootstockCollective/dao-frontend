@@ -1,5 +1,5 @@
 import { AllocationsContext } from '@/app/collective-rewards/allocations/context'
-import { formatOnchainFraction } from '@/app/collective-rewards/rewards'
+import { formatCurrency } from '@/app/collective-rewards/utils'
 import { weiToPercentage } from '@/app/collective-rewards/settings'
 import { Builder } from '@/app/collective-rewards/types'
 import { Input } from '@/components/Input'
@@ -41,9 +41,9 @@ export const BuilderAllocation = (builder: BuilderAllocationProps) => {
       <Input
         type="number"
         name={`allocation-${address}`}
-        hint={`Allocation left ${allocationLeft > 0 ? formatOnchainFraction(allocationLeft) : '0'} stRIF`}
+        hint={`Allocation left ${allocationLeft > 0 ? formatCurrency(allocationLeft, 'stRIF') : '0'} stRIF`}
         onChange={onInputChange}
-        value={formatOnchainFraction(currentAllocation || 0n)}
+        value={formatCurrency(currentAllocation || 0n, 'stRIF')}
       />
       <Slider
         value={[Number(currentAllocation || 0n)]}

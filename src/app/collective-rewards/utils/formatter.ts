@@ -37,6 +37,10 @@ const normaliseValue: FormatNumber = (value, options) => {
 }
 
 export const formatNumber: FormatNumber = (value, options) => {
+  if (!value) {
+    return '0'
+  }
+
   const mergedOptions: NumberFormatOptions = {
     ...DEFAULT_NUMBER_FORMAT_OPTIONS,
     ...(options ?? {}),
@@ -78,7 +82,7 @@ const floor = (value: string, toDecimals: number) => {
 
 const ceil = (value: string, toDecimals: number) => {
   const [wholePart, decimalPart] = value.split('.')
-  if (decimalPart.length < toDecimals) {
+  if (!decimalPart || decimalPart.length < toDecimals) {
     return value
   }
 
@@ -90,8 +94,16 @@ const ceil = (value: string, toDecimals: number) => {
   return `${BigInt(wholePart) + BigInt(carryover)}${toDecimals ? '.' : ''}${ceiledDecimals.join('')}`
 }
 
+const findLeastSignificantDigit = (value: string) => {
+  if (!value.includes('.')) {
+    return value.slice(-1)
+  }
+
+  return value.trim().replace(/0+$/, '').replace(/\.$/, '').slice(-1)
+}
+
 const round = (value: string, toDecimals: number) => {
-  const leastSignificantDigit = value.indexOf('.')
+  const leastSignificantDigit = findLeastSignificantDigit(value)
   if (Number(leastSignificantDigit) >= 5) {
     return ceil(value, toDecimals)
   }

@@ -1,7 +1,7 @@
 'use client'
 
 import { AllocationsContext } from '@/app/collective-rewards/allocations/context'
-import { formatOnchainFraction } from '@/app/collective-rewards/rewards'
+import { formatCurrency } from '@/app/collective-rewards/utils'
 import { Paragraph } from '@/components/Typography'
 import { useContext } from 'react'
 
@@ -45,11 +45,11 @@ export const AllocationMetrics = () => {
     },
   } = useContext(AllocationsContext)
 
-  const balanceValue = `${formatOnchainFraction(balance)} stRIF`
+  const balanceValue = `${formatCurrency(balance, 'stRIF')} stRIF`
 
-  const allocatedAmountValue = `${formatOnchainFraction(amountToAllocate)} stRIF`
+  const allocatedAmountValue = `${formatCurrency(amountToAllocate, 'stRIF')} stRIF`
 
-  const unallocatedAmount = formatOnchainFraction(balance - amountToAllocate)
+  const unallocatedAmount = formatCurrency(balance - amountToAllocate, 'stRIF')
 
   const unallocatedAmountValue = `${unallocatedAmount} stRIF`
   return (

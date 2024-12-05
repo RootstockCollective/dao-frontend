@@ -11,7 +11,6 @@ import {
   useGetBackerRewardPercentage,
 } from '@/app/collective-rewards/rewards'
 import { useHandleErrors } from '@/app/collective-rewards/utils'
-import { formatBalanceToHuman } from '@/app/user/Balances/balanceUtils'
 import { usePricesContext } from '@/shared/context/PricesContext'
 import { FC, useEffect, useState } from 'react'
 import { Address } from 'viem'
@@ -75,10 +74,9 @@ const TokenRewards: FC<TokenRewardsProps> = ({ builder, gauge, token: { id, symb
   const rewardsAmount =
     rewardShares && totalPotentialRewards ? (rewards * rewardShares) / totalPotentialRewards : 0n
   // The complement of the reward percentage is applied to the estimated rewards since are from the builder's perspective
-  const estimatedRewardsInHuman =
-    Number(formatBalanceToHuman(rewardsAmount)) * (1 - rewardPercentageToApply / 100)
+  const estimatedRewards = BigInt(rewardsAmount) * (1n - BigInt(rewardPercentageToApply) / 100n)
   const price = prices[symbol]?.price ?? 0
-  const { amount, fiatAmount } = formatMetrics(estimatedRewardsInHuman, price, symbol, currency)
+  const { amount, fiatAmount } = formatMetrics(estimatedRewards, price, symbol, currency)
 
   return withSpinner(
     TokenMetricsCardRow,
