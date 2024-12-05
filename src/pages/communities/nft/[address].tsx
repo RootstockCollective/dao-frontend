@@ -322,7 +322,7 @@ export default function Page() {
         </div>
       </div>
       {/* Holders list */}
-      <NftHoldersSection address={nftAddress} />
+      {membersCount > 0 && <NftHoldersSection address={nftAddress} />}
     </MainContainer>
   )
 }
