@@ -6,6 +6,7 @@ import {
   useGetCycleStartAndDuration,
   useGetEndDistributionWindow,
 } from '@/app/collective-rewards/metrics'
+import { AVERAGE_BLOCKTIME } from '@/lib/constants'
 
 export type Cycle = {
   cycleStart: DateTime
@@ -37,7 +38,7 @@ export const CycleContextProvider: FC<CycleProviderProps> = ({ children }) => {
   useEffect(() => {
     const interval = setInterval(() => {
       setTimestamp(BigInt(DateTime.now().toUnixInteger()))
-    }, 30000) // Update every 30 seconds
+    }, AVERAGE_BLOCKTIME)
 
     return () => clearInterval(interval) // Cleanup interval on component unmount
   }, [])

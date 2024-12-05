@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react'
 import { MetricsCard, MetricsCardTitle, TokenMetricsCardRow } from '@/app/collective-rewards/rewards'
 import { withSpinner } from '@/components/LoadingSpinner/withLoadingSpinner'
 import { useHandleErrors } from '@/app/collective-rewards/utils'
+import { AVERAGE_BLOCKTIME } from '@/lib/constants'
 
 export const CycleMetrics = () => {
   const [timeRemaining, setTimeRemaining] = useState<Duration>(Duration.fromObject({ minutes: 0 }))
@@ -29,7 +30,7 @@ export const CycleMetrics = () => {
   useEffect(() => {
     const interval = setInterval(() => {
       setTimestamp(BigInt(DateTime.now().toUnixInteger()))
-    }, 30000) // Update every 30 seconds
+    }, AVERAGE_BLOCKTIME)
 
     return () => clearInterval(interval) // Cleanup interval on component unmount
   }, [])
