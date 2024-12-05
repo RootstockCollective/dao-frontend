@@ -59,7 +59,7 @@ export const DelegateModal = ({ onClose, onDelegateTxStarted }: DelegateModalPro
   }, 500)
 
   const onAddressChange = (value: string) => {
-    setAddressToDelegateTo(value.toLowerCase())
+    setAddressToDelegateTo(value)
     setError('')
     // Trigger RNS domain validation
     debouncedValidateRnsDomain(value)
