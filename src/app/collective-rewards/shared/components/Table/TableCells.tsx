@@ -1,19 +1,23 @@
+import { AllocationsContext } from '@/app/collective-rewards/allocations/context'
+import { BuilderRewardPercentage, Reward } from '@/app/collective-rewards/rewards'
+import { TableHeader } from '@/app/collective-rewards/shared'
+import { BuilderStateFlags } from '@/app/collective-rewards/types'
+import {
+  getBuilderInactiveState,
+  isBuilderActive,
+  isBuilderOperational,
+} from '@/app/collective-rewards/utils'
 import { AddressOrAliasWithCopy } from '@/components/Address'
+import { Button } from '@/components/Button'
 import { Jdenticon } from '@/components/Header/Jdenticon'
 import { Popover } from '@/components/Popover'
+import { ProgressBar } from '@/components/ProgressBar'
 import { TableCell } from '@/components/Table'
 import { Label, Typography } from '@/components/Typography'
 import { cn, formatCurrency, shortAddress, toFixed } from '@/lib/utils'
-import { FC, memo, useContext, useEffect, useMemo, useState } from 'react'
+import { FC, memo, useContext, useMemo } from 'react'
 import { FaArrowDown, FaArrowUp, FaCircle } from 'react-icons/fa'
 import { Address, isAddress } from 'viem'
-import { BuilderRewardPercentage, Reward } from '@/app/collective-rewards/rewards'
-import { TableHeader } from '@/app/collective-rewards/shared'
-import { ProgressBar } from '@/components/ProgressBar'
-import { Button } from '@/components/Button'
-import { BuilderStateFlags } from '@/app/collective-rewards/types'
-import { AllocationsContext } from '@/app/collective-rewards/allocations/context'
-import { getBuilderInactiveState, isBuilderActive } from '@/app/collective-rewards/utils'
 
 export function getFormattedCurrency(value: number, symbol: string) {
   const formattedCurrency = formatCurrency(value, symbol)
