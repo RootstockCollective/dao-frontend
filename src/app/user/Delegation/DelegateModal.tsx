@@ -33,7 +33,7 @@ export const DelegateModal = ({ onClose, onDelegateTxStarted }: DelegateModalPro
     setIsInputValid(false)
     setDomainValidationStatus('')
     setValidRnsAddress('')
-    
+
     if (!value) return
 
     if (isAddressRegex(value)) {
@@ -54,7 +54,7 @@ export const DelegateModal = ({ onClose, onDelegateTxStarted }: DelegateModalPro
     try {
       setDomainValidationStatus('validating')
       const resolvedAddress = await resolveRnsDomain(domain)
-      
+
       if (resolvedAddress) {
         setValidRnsAddress(domain)
         setAddressToDelegateTo(resolvedAddress)
@@ -94,7 +94,7 @@ export const DelegateModal = ({ onClose, onDelegateTxStarted }: DelegateModalPro
     return () => {
       debouncedValidation.cancel()
     }
-  }, [])
+  })
 
   return (
     <Modal onClose={onClose} width={892}>
