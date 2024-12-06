@@ -1,11 +1,7 @@
 import { formatUnits } from 'viem'
+import { roundingModes, RoundingOptions } from './rounding'
 
-export type RoundingMode = 'floor' | 'ceil' | 'round'
-type RoundingOptions = {
-  mode: RoundingMode
-  decimalPlaces: number
-}
-type NumberFormatOptions = {
+export type NumberFormatOptions = {
   decimals: number
   thousandsSeparator: string
   round: Partial<RoundingOptions>
@@ -20,18 +16,40 @@ export const DEFAULT_NUMBER_FORMAT_OPTIONS: NumberFormatOptions = {
   thousandsSeparator: '',
 }
 
-type FormatNumber = (value: bigint | string | number, options?: Partial<NumberFormatOptions>) => string
+type Numberish = bigint | string | number
+type FormatNumber = (value: Numberish, options?: Partial<NumberFormatOptions>) => string
+
+const cleanFormatting = <T extends Numberish>(value: T, { decimals }: NumberFormatOptions): Numberish => {
+  if (typeof value === 'bigint') {
+    return value
+  }
+
+  const cleanishValue: string =
+    typeof value === 'string' ? value.trim().replaceAll(/[^\d.]/g, '') : value.toString()
+  const [wholePart, decimalPart] = cleanishValue.split('.')
+
+  if (!decimalPart) {
+    return cleanishValue
+  }
+
+  return `${wholePart}${decimalPart.padEnd(decimals, '0')}`
+}
+
 const normaliseValue: FormatNumber = (value, options) => {
-  const valueAsBigInt = BigInt(value)
+  const valueAsBigInt = BigInt(cleanFormatting(value, options as NumberFormatOptions))
   const { decimals } = options as NumberFormatOptions
   const { decimalPlaces, mode } = options?.round as RoundingOptions
   const inUnits = formatUnits(valueAsBigInt, decimals)
 
-  if (decimals === decimalPlaces) {
+  if (decimals === decimalPlaces || !inUnits.includes('.')) {
     return inUnits
   }
 
   const fn = roundingModes[mode]
+
+  if (!fn) {
+    throw new Error(`Rounding mode ${mode} not found.`)
+  }
 
   return fn(inUnits, decimalPlaces)
 }
@@ -73,47 +91,6 @@ export const formatNumber: FormatNumber = (value, options) => {
 
   return `${wholePartWSeparator}${decimalPartWSeparator ? '.' : ''}${decimalPartWSeparator}`
 }
-
-const floor = (value: string, toDecimals: number) => {
-  const indexOfDecimalPoint = value.indexOf('.')
-
-  return value.slice(0, indexOfDecimalPoint + 1 + toDecimals)
-}
-
-const ceil = (value: string, toDecimals: number) => {
-  const [wholePart, decimalPart] = value.split('.')
-  if (!decimalPart || decimalPart.length < toDecimals) {
-    return value
-  }
-
-  const croppedDecimals = decimalPart.slice(0, toDecimals)
-  const retainingPrefix = '10'
-  const ceiledPrefixedDecimals = (BigInt(retainingPrefix + croppedDecimals) + 1n).toString()
-  const [_, carryover, ...ceiledDecimals] = ceiledPrefixedDecimals
-
-  return `${BigInt(wholePart) + BigInt(carryover)}${toDecimals ? '.' : ''}${ceiledDecimals.join('')}`
-}
-
-const findLeastSignificantDigit = (value: string) => {
-  if (!value.includes('.')) {
-    return value.slice(-1)
-  }
-
-  return value.trim().replace(/0+$/, '').replace(/\.$/, '').slice(-1)
-}
-
-const round = (value: string, toDecimals: number) => {
-  const leastSignificantDigit = findLeastSignificantDigit(value)
-  if (Number(leastSignificantDigit) >= 5) {
-    return ceil(value, toDecimals)
-  }
-
-  return floor(value, toDecimals)
-}
-
-type RoundingFunction = (value: string, toDecimals: number) => string
-type RoundingModes = Record<RoundingOptions['mode'], RoundingFunction>
-export const roundingModes: RoundingModes = { floor, ceil, round }
 
 export const formatRIF: FormatNumber = (value, options) => {
   return formatNumber(value, {
