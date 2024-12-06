@@ -12,7 +12,6 @@ import {
   useBackerRewardsContext,
   ClaimYourRewardsButton,
 } from '@/app/collective-rewards/rewards'
-import { formatBalanceToHuman } from '@/app/user/Balances/balanceUtils'
 import { useHandleErrors } from '@/app/collective-rewards/utils'
 import { withSpinner } from '@/components/LoadingSpinner/withLoadingSpinner'
 
@@ -35,12 +34,7 @@ const TokenRewardsMetrics: FC<TokenRewardsMetricsProps> = ({
 
   const tokenPrice = prices[symbol]?.price ?? 0
 
-  const { amount, fiatAmount } = formatMetrics(
-    Number(formatBalanceToHuman(earnedRewards)),
-    tokenPrice,
-    symbol,
-    currency,
-  )
+  const { amount, fiatAmount } = formatMetrics(earnedRewards, tokenPrice, symbol, currency)
 
   const { claimRewards, isClaimable } = useClaimBackerRewards(address)
 

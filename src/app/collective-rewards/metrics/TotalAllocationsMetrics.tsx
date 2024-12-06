@@ -2,16 +2,15 @@ import { useGaugesGetFunction } from '@/app/collective-rewards/shared/hooks'
 import { Address } from 'viem'
 import { FC } from 'react'
 import { usePricesContext } from '@/shared/context/PricesContext'
-import { formatCurrency } from '@/lib/utils'
 import {
   MetricsCard,
   MetricsCardTitle,
   TokenMetricsCardRow,
   Token,
-  formatOnchainFraction,
+  formatMetrics,
 } from '@/app/collective-rewards/rewards'
 import { withSpinner } from '@/components/LoadingSpinner/withLoadingSpinner'
-import { useHandleErrors } from '@/app/collective-rewards/utils'
+import { useHandleErrors, formatCurrency } from '@/app/collective-rewards/utils'
 
 type TotalAllocationsProps = {
   gauges: Address[]
@@ -31,8 +30,8 @@ export const TotalAllocationsMetrics: FC<TotalAllocationsProps> = ({
   const price = prices[symbol]?.price ?? 0
 
   const totalAllocations = Object.values(data).reduce((acc, allocation) => acc + allocation, 0n)
-  const totalAllocationsInHuman = Number(formatOnchainFraction(totalAllocations))
-  const fiatAmount = `= ${currency} ${formatCurrency(totalAllocationsInHuman * price, currency)}`
+
+  const { amount, fiatAmount } = formatMetrics(totalAllocations, price, 'stRIF', currency)
 
   return (
     <MetricsCard borderless>
@@ -47,7 +46,7 @@ export const TotalAllocationsMetrics: FC<TotalAllocationsProps> = ({
         TokenMetricsCardRow,
         'min-h-0 grow-0',
       )({
-        amount: `${totalAllocationsInHuman} STRIF`,
+        amount,
         fiatAmount,
         isLoading,
       })}
