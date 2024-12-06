@@ -5,6 +5,8 @@ export type NumberFormatOptions = {
   decimals: number
   thousandsSeparator: string
   round: Partial<RoundingOptions>
+  prefix?: string
+  postfix?: string
 }
 
 export const DEFAULT_NUMBER_FORMAT_OPTIONS: NumberFormatOptions = {
@@ -61,6 +63,10 @@ const normaliseValue: FormatNumber = (value, options) => {
   return fn(inUnits, decimalPlaces)
 }
 
+const applyAccessories: FormatNumber = (value, options) => {
+  return `${options?.prefix ?? ''}${value}${options?.postfix ?? ''}`
+}
+
 export const formatNumber: FormatNumber = (value, options) => {
   if (!value) {
     return '0'
@@ -76,27 +82,9 @@ export const formatNumber: FormatNumber = (value, options) => {
   }
   const normalisedValue = normaliseValue(value, mergedOptions)
 
-  const { thousandsSeparator } = mergedOptions
-  const [wholePart, decimalPart] = normalisedValue.split('.')
-  const wholePartWSeparator = wholePart
-    .split('')
-    .reduceRight((acc: string, digit: string, index: number, arr) => {
-      const inveredIndex = Math.abs(index - wholePart.length) - 1
+  const withSeparator = insertThousandsSeparator(mergedOptions, normalisedValue)
 
-      return `${digit}${!inveredIndex || inveredIndex % 3 ? '' : thousandsSeparator}${acc}`
-    }, '')
-
-  const decimalPartWSeparator = decimalPart
-    ? decimalPart
-        .split('')
-        .reduce(
-          (acc: string, digit: string, index: number) =>
-            `${acc}${!index || index % 3 ? '' : thousandsSeparator}${digit}`,
-          '',
-        )
-    : ''
-
-  return `${wholePartWSeparator}${decimalPartWSeparator ? '.' : ''}${decimalPartWSeparator}`
+  return applyAccessories(withSeparator, options)
 }
 
 export const formatRIF: FormatNumber = (value, options) => {
@@ -128,7 +116,7 @@ export const formatRBTC: FormatNumber = (value, options) => {
 type FormatCurrency = (
   value: string | number | bigint,
   symbol?: string,
-  options?: NumberFormatOptions,
+  options?: Partial<NumberFormatOptions>,
 ) => string
 export const formatCurrency: FormatCurrency = (value, symbol, options) => {
   const valueAsString = value.toString()
@@ -147,4 +135,27 @@ export const formatCurrency: FormatCurrency = (value, symbol, options) => {
     },
     ...options,
   })
+}
+function insertThousandsSeparator(mergedOptions: NumberFormatOptions, normalisedValue: string) {
+  const { thousandsSeparator } = mergedOptions
+  const [wholePart, decimalPart] = normalisedValue.split('.')
+  const wholePartWSeparator = wholePart
+    .split('')
+    .reduceRight((acc: string, digit: string, index: number, arr) => {
+      const inveredIndex = Math.abs(index - wholePart.length) - 1
+
+      return `${digit}${!inveredIndex || inveredIndex % 3 ? '' : thousandsSeparator}${acc}`
+    }, '')
+
+  const decimalPartWSeparator = decimalPart
+    ? decimalPart
+        .split('')
+        .reduce(
+          (acc: string, digit: string, index: number) =>
+            `${acc}${!index || index % 3 ? '' : thousandsSeparator}${digit}`,
+          '',
+        )
+    : ''
+
+  return `${wholePartWSeparator}${decimalPartWSeparator ? '.' : ''}${decimalPartWSeparator}`
 }
