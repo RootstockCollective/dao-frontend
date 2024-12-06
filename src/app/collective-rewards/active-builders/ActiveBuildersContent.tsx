@@ -11,6 +11,9 @@ export const isActive = (stateFlags?: BuilderStateFlags) => {
   return activeFlags.every(flag => stateFlags?.[flag])
 }
 
+const isDeactivated = ({ gauge, stateFlags }: Builder) =>
+  !(gauge && stateFlags && stateFlags.activated && !stateFlags.communityApproved)
+
 const filterFunction = (builder: Builder, status: string) => {
   if (status === 'all') return true
   if (status === 'active') return isActive(builder.stateFlags)
@@ -20,6 +23,7 @@ const filterFunction = (builder: Builder, status: string) => {
 
 export const ActiveBuildersContent = () => {
   const { data: builders, isLoading, error } = useGetBuildersByState(undefined, true)
+  const filteredBuilders = builders?.filter(isDeactivated)
   useHandleErrors({ error, title: 'Error loading builders' })
 
   const status = [
@@ -30,7 +34,7 @@ export const ActiveBuildersContent = () => {
 
   return (
     <>
-      <SearchContextProvider builders={builders} filterFunction={filterFunction}>
+      <SearchContextProvider builders={filteredBuilders} filterFunction={filterFunction}>
         <Search status={status} />
         {withSpinner(ActiveBuildersGrid)({ isLoading })}
       </SearchContextProvider>
