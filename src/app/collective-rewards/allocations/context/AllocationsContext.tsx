@@ -10,6 +10,7 @@ import { Address, zeroAddress } from 'viem'
 import { useAccount } from 'wagmi'
 import { createActions } from './allocationsActions'
 import { useGetBackerRewards } from '../hooks/useBuildersWithBackerRewardPercentage'
+import { validateAllocationsState } from './utils'
 
 export type Allocations = {
   [K: Address]: bigint
@@ -147,18 +148,6 @@ export const AllocationsContextProvider: FC<{ children: ReactNode }> = ({ childr
   }, [rawBuilders, backerRewards])
 
   /**
-   * Retrieval functions
-   */
-  const getBuilder = useCallback((address: Address) => builders[address], [builders])
-
-  const isValidState = useCallback(() => {
-    const { balance, cumulativeAllocation, amountToAllocate } = backer
-    // FIXME: verify that the initial state has changed compared to what we want to save
-
-    return cumulativeAllocation <= balance && amountToAllocate <= balance
-  }, [backer])
-
-  /**
    * Reactive state updates
    */
   useEffect(() => {
@@ -239,6 +228,22 @@ export const AllocationsContextProvider: FC<{ children: ReactNode }> = ({ childr
       allocations: initialAllocations,
     }
   }, [rawAllocations, rawBuilders, totalOnchainAllocation, selections, votingPower, isContextLoading])
+
+  /**
+   * Getters
+   */
+  const getBuilder = useCallback((address: Address) => builders[address], [builders])
+
+  const isValidState = useCallback(
+    () =>
+      validateAllocationsState({
+        backer,
+        initialAllocations: initialState.allocations,
+        currentAllocations: allocations,
+        totalOnchainAllocation: totalOnchainAllocation as bigint,
+      }),
+    [backer, allocations, totalOnchainAllocation, initialState.allocations],
+  )
 
   const state: State = useMemo(() => {
     return {
