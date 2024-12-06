@@ -4,15 +4,16 @@ import {
   RewardDetails,
   RewardsSection,
   RewardsSectionHeader,
+  BackerRewardsTable,
 } from '@/app/collective-rewards/rewards'
-import { useGetBuilderToGauge, useGetGaugesArray } from '@/app/collective-rewards/user'
+import { useGetBuildersByState, useGetBuilderToGauge } from '@/app/collective-rewards/user'
 import { getCoinbaseAddress, useHandleErrors } from '@/app/collective-rewards/utils'
 import { tokenContracts } from '@/lib/contracts'
 import { FC } from 'react'
 import { Address, getAddress, zeroAddress } from 'viem'
-import { BackerRewardsTable } from './backers/BackerRewardsTable'
 import { useRouter } from 'next/navigation'
 import { Link } from '@/components/Link'
+import { Builder } from '../types'
 import { useValidateBackerAllocations } from '@/app/collective-rewards/allocations/hooks'
 
 const SubText = () => {
@@ -35,18 +36,23 @@ const SubText = () => {
 
 export const Rewards: FC<{ builder: Address }> = ({ builder }) => {
   const router = useRouter()
-  const { data: gauges, error: gaugesError } = useGetGaugesArray()
+  const { data: activatedBuilders, error: activatedBuildersError } = useGetBuildersByState<Required<Builder>>(
+    {
+      activated: true,
+    },
+  )
+  const activatedGauges = activatedBuilders?.map(({ gauge }) => gauge) ?? []
   const { data: gauge, error: gaugeError } = useGetBuilderToGauge(builder)
   const canManageAllocations = useValidateBackerAllocations()
 
-  const error = gaugesError ?? gaugeError
+  const error = activatedBuildersError ?? gaugeError
 
   useHandleErrors({ error, title: 'Error loading gauge(s)' })
 
   // TODO: check where to store this information
   const data: RewardDetails = {
     builder,
-    gauges: gauges || [],
+    gauges: activatedGauges,
     tokens: {
       rif: {
         address: getAddress(tokenContracts.RIF),
@@ -82,7 +88,7 @@ export const Rewards: FC<{ builder: Address }> = ({ builder }) => {
           }}
           title="Backer Rewards"
           subtext={<SubText />}
-          settingsDisabled={canManageAllocations}
+          showSettingsButton={canManageAllocations}
         />
         <BackerRewards {...data} />
         <BackerRewardsTable {...data} />

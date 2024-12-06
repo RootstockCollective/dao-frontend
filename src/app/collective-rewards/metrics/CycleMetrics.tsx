@@ -38,9 +38,9 @@ export const CycleMetrics = () => {
   useEffect(() => {
     const nextCycle = Duration.fromObject({ seconds: Number(timeUntilNextCycle) })
 
-    if (nextCycle.as('minutes') <= 60) {
+    if (nextCycle.as('minutes') < 61) {
       setTimeRemaining(nextCycle.shiftTo('minutes').mapUnits(Math.floor))
-    } else if (nextCycle.as('hours') <= 24) {
+    } else if (nextCycle.as('hours') < 25) {
       setTimeRemaining(nextCycle.shiftTo('hours', 'minutes').mapUnits(Math.floor))
     } else {
       setTimeRemaining(nextCycle.shiftTo('days', 'hours').mapUnits(Math.floor))

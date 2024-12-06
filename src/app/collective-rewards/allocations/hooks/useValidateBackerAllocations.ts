@@ -9,5 +9,5 @@ export const useValidateBackerAllocations = () => {
   const isSelectionsEmpty = Object.values(selections).every(value => !value)
   const isAllocationsEmpty = !Object.keys(allocations).length
 
-  return isSelectionsEmpty && isAllocationsEmpty
+  return !isSelectionsEmpty || !isAllocationsEmpty
 }

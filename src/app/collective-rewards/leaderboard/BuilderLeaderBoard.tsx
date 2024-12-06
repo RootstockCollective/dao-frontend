@@ -20,7 +20,7 @@ export const BuildersLeaderBoard = () => {
         <CollapsibleTrigger>
           <div className="flex items-center justify-between w-full">
             <HeaderTitle className="">Rewards leaderboard</HeaderTitle>
-            <Button variant="primary" onClick={onManageAllocations} disabled={canManageAllocations}>
+            <Button variant="primary" onClick={onManageAllocations} disabled={!canManageAllocations}>
               Manage Allocations
             </Button>
           </div>
