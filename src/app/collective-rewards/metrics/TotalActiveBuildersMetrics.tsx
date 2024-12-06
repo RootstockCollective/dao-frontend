@@ -1,11 +1,21 @@
-import { useGetGaugesLength } from '@/app/collective-rewards/user'
+import { useGetBuildersByState } from '@/app/collective-rewards/user'
 import { MetricsCard, MetricsCardTitle, TokenMetricsCardRow } from '@/app/collective-rewards/rewards'
 import { withSpinner } from '@/components/LoadingSpinner/withLoadingSpinner'
 import { useHandleErrors } from '@/app/collective-rewards/utils'
+import { Builder } from '../types'
 
 export const TotalActiveBuildersMetrics = () => {
-  const { data, isLoading, error } = useGetGaugesLength('active')
+  const {
+    data: activatedBuilders,
+    isLoading,
+    error,
+  } = useGetBuildersByState<Required<Builder>>({
+    activated: true,
+    communityApproved: true,
+    kycApproved: true,
+  })
   useHandleErrors({ error, title: 'Error loading active builders' })
+  const length = activatedBuilders?.length
 
   return (
     <MetricsCard borderless>
@@ -14,7 +24,7 @@ export const TotalActiveBuildersMetrics = () => {
         TokenMetricsCardRow,
         'min-h-0 grow-0',
       )({
-        amount: Number(data || 0n).toFixed(),
+        amount: length.toString(),
         isLoading,
       })}
     </MetricsCard>

@@ -19,14 +19,14 @@ type BackerRewardsContextValue = {
   }
   isLoading: boolean
   error: Error | null
-  canClaim: (rewardToken?: Address) => boolean
+  gaugesWithEarns: (rewardToken?: Address) => Address[]
 }
 
 export const BackerRewardsContext = createContext<BackerRewardsContextValue>({
   data: {},
   isLoading: false,
   error: null,
-  canClaim: () => false,
+  gaugesWithEarns: () => [],
 })
 
 type BackerRewardsProviderProps = {
@@ -69,6 +69,9 @@ const useGetTokenRewards = (backer: Address, token: Token, gauges: Address[]) =>
   }
 }
 
+const getEarnedAddresses = (rewards: Record<Address, bigint>) =>
+  Object.keys(rewards).filter(key => rewards[key as Address] > 0n) as Address[]
+
 export const BackerRewardsContextProvider: FC<BackerRewardsProviderProps> = ({
   children,
   backer,
@@ -90,26 +93,21 @@ export const BackerRewardsContextProvider: FC<BackerRewardsProviderProps> = ({
     [rbtc.address]: rbtcRewards,
   }
 
-  const canClaim = (rewardToken?: Address) => {
-    const calculateTotalEarned = (rewards: Record<Address, bigint>) =>
-      Object.values(rewards).reduce((acc, earned) => acc + earned, 0n)
-
+  const gaugesWithEarns = (rewardToken?: Address) => {
     if (!rewardToken) {
-      const rifEarned = calculateTotalEarned(rifRewards.earned)
-      const rbtcEarned = calculateTotalEarned(rbtcRewards.earned)
-
-      return rifEarned > 0n || rbtcEarned > 0n
+      const allRewards = Object.values(data).flatMap(tokenRewards => getEarnedAddresses(tokenRewards.earned))
+      return Array.from(new Set(allRewards))
     }
 
     const { earned } = data[rewardToken]
-    return calculateTotalEarned(earned) > 0n
+    return getEarnedAddresses(earned)
   }
 
   const valueOfContext: BackerRewardsContextValue = {
     data,
     isLoading,
     error,
-    canClaim,
+    gaugesWithEarns,
   }
 
   return <BackerRewardsContext.Provider value={valueOfContext}>{children}</BackerRewardsContext.Provider>
