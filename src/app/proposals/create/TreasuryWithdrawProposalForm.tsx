@@ -35,6 +35,7 @@ import { useForm } from 'react-hook-form'
 import { CreateProposalHeaderSection } from '@/app/proposals/create/CreateProposalHeaderSection'
 import { isAddressRegex, isChecksumValid } from '@/app/proposals/shared/utils'
 import { isBaseError, isUserRejectedTxError } from '@/components/ErrorPage/commonErrors'
+import { TokenImage } from '@/components/TokenImage'
 
 const rifMinimumAmount = ENV === 'mainnet' ? 10 : 1
 const rbtcMinimumAmount = ENV === 'mainnet' ? 0.0001 : 0.000001
@@ -267,25 +268,13 @@ export const TreasuryWithdrawProposalForm = () => {
                           <SelectContent>
                             <SelectItem value={zeroAddress}>
                               <div className="flex items-center">
-                                <Image
-                                  src={`data:image/svg+xml;base64,${rbtcIconSrc}`}
-                                  alt="rBTC Logo"
-                                  className="mr-1"
-                                  width={20}
-                                  height={20}
-                                />
+                                <TokenImage symbol="RBTC" size={20} className="mr-1" />
                                 RBTC
                               </div>
                             </SelectItem>
                             <SelectItem value={tokenContracts.RIF as Address}>
                               <div className="flex items-center">
-                                <Image
-                                  src="/images/rif-logo.png"
-                                  alt="stRIF Logo"
-                                  width={20}
-                                  height={20}
-                                  className="mr-1"
-                                />
+                                <TokenImage symbol="stRIF" size={20} className="mr-1" />
                                 RIF
                               </div>
                             </SelectItem>
