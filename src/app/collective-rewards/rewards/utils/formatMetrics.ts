@@ -1,4 +1,4 @@
-import { formatCurrency } from '@/app/collective-rewards/utils/formatter'
+import { formatCurrency } from '@/app/collective-rewards/utils/formatting/formatter'
 
 export const formatMetrics = (
   amount: number | bigint,
