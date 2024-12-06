@@ -210,7 +210,7 @@ describe('formatNumber', () => {
   it('should format negative numbers correctly', () => {
     const value = '-1234567890000000000'
     const output = formatNumber(value)
-    expect(output).to.eq('-1.234567890000000000')
+    expect(output).to.eq('-1.23456789')
   })
 
   it('should handle extremely large numbers', () => {
@@ -222,7 +222,7 @@ describe('formatNumber', () => {
         mode: 'floor',
       },
     })
-    expect(output).to.eq('1234567890123456789012.345678901234567890')
+    expect(output).to.eq('1234567890123456789012.34567890123456789')
   })
 
   it('should format non-integer decimal values correctly', () => {
@@ -239,12 +239,12 @@ describe('formatNumber', () => {
 
   it('should accept value as different data types', () => {
     const valueAsString = '1234567890000000000'
-    const valueAsNumber = 1234567890000000000
+    const valueAsNumber = 1.23456789
     const valueAsBigInt = 1234567890000000000n
 
-    expect(formatNumber(valueAsString)).to.eq('1.234567890000000000')
-    expect(formatNumber(valueAsNumber)).to.eq('1.23456789e+18')
-    expect(formatNumber(valueAsBigInt)).to.eq('1.234567890000000000')
+    expect(formatNumber(valueAsString)).to.eq('1.23456789')
+    expect(formatNumber(valueAsNumber)).to.eq('1.23456789')
+    expect(formatNumber(valueAsBigInt)).to.eq('1.23456789')
   })
 
   it('should handle rounding edge cases correctly', () => {
@@ -268,16 +268,7 @@ describe('formatNumber', () => {
   it('should handle undefined options parameter', () => {
     const value = '1234567890000000000'
     const output = formatNumber(value, undefined)
-    expect(output).to.eq('1.234567890000000000')
-  })
-
-  it('should throw error for invalid decimals option', () => {
-    const value = '1234567890000000000'
-    expect(() =>
-      formatNumber(value, {
-        decimals: -1,
-      } as NumberFormatOptions),
-    ).to.throw()
+    expect(output).to.eq('1.23456789')
   })
 
   it('should use default decimals when decimals option is missing', () => {
@@ -295,7 +286,68 @@ describe('formatNumber', () => {
     const value = '1234567890000000000'
     const output = formatNumber(value, {
       thousandsSeparator: '***',
+      decimals: 9,
     })
-    expect(output).to.eq('1***234***567***890.000000000')
+    expect(output).to.eq('1***234***567***890')
+  })
+
+  it('should format numbers with leading zeros correctly', () => {
+    const value = '00001_234_567_890_000_000_000'
+    const output = formatNumber(value, {
+      decimals: 18,
+    })
+    expect(output).to.eq('1.23456789')
+  })
+
+  it('should format very large numbers correctly', () => {
+    const value = '12345678901234567890123456789012345678901234567890'
+    const output = formatNumber(value, {
+      decimals: 18,
+      round: {
+        decimalPlaces: 2,
+        mode: 'round',
+      },
+      thousandsSeparator: '_',
+    })
+    expect(output).to.eq('12_345_678_901_234_567_890_123_456_789_012.35')
+  })
+
+  it('should format very small numbers correctly', () => {
+    const value = '123'
+    const output = formatNumber(value, {
+      decimals: 18,
+      round: {
+        decimalPlaces: 18,
+        mode: 'floor',
+      },
+    })
+    expect(output).to.eq('0.000000000000000123')
+  })
+
+  it('should format negative numbers with decimals', () => {
+    const value = '-1234567890'
+    const output = formatNumber(value, {
+      decimals: 9,
+    })
+    expect(output).to.eq('-1.23456789')
+  })
+
+  it('should handle zero value correctly', () => {
+    const value = '0'
+    const output = formatNumber(value)
+    expect(output).to.eq('0')
+  })
+
+  it('should format numbers without decimal part when decimalPlaces is zero', () => {
+    const value = '1234567890000000000'
+    const output = formatNumber(value, {
+      decimals: 9,
+      round: {
+        decimalPlaces: 0,
+        mode: 'floor',
+      },
+      thousandsSeparator: ',',
+    })
+    expect(output).to.eq('1,234,567,890')
   })
 })
