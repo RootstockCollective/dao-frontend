@@ -43,7 +43,7 @@ const openDiscourse = () => {
   window.open('https://gov.rootstockcollective.xyz/c/collective-rewards/7', '_blank')
 }
 
-const openKYC = () => {
+export const openKYC = () => {
   window.open(
     'https://docs.google.com/forms/d/e/1FAIpQLScVB-A_SPncWpSV_4mSdeMxBKtiYvJDvPK_TKSddzPnuC9lqQ/viewform',
     '_blank',
