@@ -39,15 +39,13 @@ export const DelegateModal = ({ onClose, onDelegateTxStarted }: DelegateModalPro
     if (!value) return
 
     if (isAddressRegex(value)) {
-      if (!isChecksumValid(value)) {
-        setError('Invalid checksum address')
-        return
+      // accepts both Metamask and RSK addresses
+      if (isChecksumValid(value) || isChecksumValid(value, CHAIN_ID)) {
+        setIsInputValid(true)
+      } else {
+        setError('Invalid checksum address.')
       }
-      setIsInputValid(true)
-      return
-    }
-
-    if (value.endsWith('.rsk')) {
+    } else if (value.endsWith('.rsk')) {
       debouncedValidation(value)
     }
   }
@@ -121,7 +119,7 @@ export const DelegateModal = ({ onClose, onDelegateTxStarted }: DelegateModalPro
           {error && (
             <p className="text-st-error">
               {error}
-              {error === 'Invalid checksum address' && (
+              {error === 'Invalid checksum address.' && (
                 <>
                   {' '}
                   <span
