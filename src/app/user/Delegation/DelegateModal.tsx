@@ -7,6 +7,8 @@ import { useDelegateToAddress } from '@/shared/hooks/useDelegateToAddress'
 import { isAddressRegex, isChecksumValid } from '@/app/proposals/shared/utils'
 import { useAlertContext } from '@/app/providers'
 import { TX_MESSAGES } from '@/shared/txMessages'
+import { CHAIN_ID } from '@/lib/constants'
+import { Address, checksumAddress } from 'viem'
 import { debounce } from 'lodash'
 import { resolveRnsDomain } from '@/lib/rns'
 
@@ -94,7 +96,8 @@ export const DelegateModal = ({ onClose, onDelegateTxStarted }: DelegateModalPro
     return () => {
       debouncedValidation.cancel()
     }
-  })
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
 
   return (
     <Modal onClose={onClose} width={892}>
@@ -115,7 +118,24 @@ export const DelegateModal = ({ onClose, onDelegateTxStarted }: DelegateModalPro
             fullWidth
             labelWrapperProps={{ className: 'text-left mb-[10px]' }}
           />
-          {error && <p className="text-st-error">{error}</p>}
+          {error && (
+            <p className="text-st-error">
+              {error}
+              {error === 'Invalid checksum address' && (
+                <>
+                  {' '}
+                  <span
+                    className="font-normal underline cursor-pointer"
+                    onClick={() =>
+                      onAddressChange(checksumAddress(addressToDelegateTo as Address, Number(CHAIN_ID)))
+                    }
+                  >
+                    Fix address.
+                  </span>
+                </>
+              )}
+            </p>
+          )}
           {!error && domainValidationStatus && (
             <p className={domainValidationStatus === 'valid' ? 'text-green-400' : 'text-st-error'}>
               {domainValidationStatus === 'validating'
