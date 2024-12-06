@@ -19,26 +19,33 @@ export const DEFAULT_NUMBER_FORMAT_OPTIONS: NumberFormatOptions = {
 type Numberish = bigint | string | number
 type FormatNumber = (value: Numberish, options?: Partial<NumberFormatOptions>) => string
 
-const cleanFormatting = <T extends Numberish>(value: T, { decimals }: NumberFormatOptions): Numberish => {
-  if (typeof value === 'bigint') {
-    return value
-  }
+const clearFormatting = <T extends Numberish>(value: T, decimals: number): Numberish => {
+  const valueStr = value.toString().trim()
+  const isNegative = valueStr.startsWith('-')
+  const numericPart = valueStr.replace(/[^0-9.]/g, '')
+  const cleanishValue = isNegative ? `-${numericPart}` : numericPart
 
-  const cleanishValue: string =
-    typeof value === 'string' ? value.trim().replaceAll(/[^\d.]/g, '') : value.toString()
   const [wholePart, decimalPart] = cleanishValue.split('.')
 
   if (!decimalPart) {
     return cleanishValue
   }
 
-  return `${wholePart}${decimalPart.padEnd(decimals, '0')}`
+  if (decimalPart.length < decimals) {
+    const paddedDecimalPart = decimalPart.padEnd(decimals, '0')
+    return `${isNegative ? '-' : ''}${wholePart}${paddedDecimalPart}`
+  }
+  const roundFn = roundingModes.round
+  const rounded = roundFn(cleanishValue, decimals).slice(wholePart.length + 1)
+
+  const paddedDecimalPart = rounded.padEnd(decimals, '0')
+  return `${isNegative ? '-' : ''}${wholePart}${paddedDecimalPart}`
 }
 
 const normaliseValue: FormatNumber = (value, options) => {
-  const valueAsBigInt = BigInt(cleanFormatting(value, options as NumberFormatOptions))
   const { decimals } = options as NumberFormatOptions
   const { decimalPlaces, mode } = options?.round as RoundingOptions
+  const valueAsBigInt = BigInt(clearFormatting(value, decimals))
   const inUnits = formatUnits(valueAsBigInt, decimals)
 
   if (decimals === decimalPlaces || !inUnits.includes('.')) {
@@ -73,11 +80,11 @@ export const formatNumber: FormatNumber = (value, options) => {
   const [wholePart, decimalPart] = normalisedValue.split('.')
   const wholePartWSeparator = wholePart
     .split('')
-    .reduceRight(
-      (acc: string, digit: string, index: number, arr) =>
-        `${digit}${index === arr.length - 1 || index % 3 ? '' : thousandsSeparator}${acc}`,
-      '',
-    )
+    .reduceRight((acc: string, digit: string, index: number, arr) => {
+      const inveredIndex = Math.abs(index - wholePart.length) - 1
+
+      return `${digit}${!inveredIndex || inveredIndex % 3 ? '' : thousandsSeparator}${acc}`
+    }, '')
 
   const decimalPartWSeparator = decimalPart
     ? decimalPart
