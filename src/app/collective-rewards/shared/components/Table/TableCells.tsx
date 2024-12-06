@@ -3,6 +3,8 @@ import { BuilderRewardPercentage, Reward } from '@/app/collective-rewards/reward
 import { TableHeader } from '@/app/collective-rewards/shared'
 import { BuilderStateFlags } from '@/app/collective-rewards/types'
 import {
+  formatCurrency,
+  formatNumber,
   getBuilderInactiveState,
   isBuilderActive,
   isBuilderOperational,
@@ -14,14 +16,13 @@ import { Popover } from '@/components/Popover'
 import { ProgressBar } from '@/components/ProgressBar'
 import { TableCell } from '@/components/Table'
 import { Label, Typography } from '@/components/Typography'
-import { cn, formatCurrency, shortAddress, toFixed } from '@/lib/utils'
+import { cn, shortAddress } from '@/lib/utils'
 import { FC, memo, useContext, useMemo } from 'react'
 import { FaArrowDown, FaArrowUp, FaCircle } from 'react-icons/fa'
 import { Address, isAddress } from 'viem'
 
-export function getFormattedCurrency(value: number, symbol: string) {
-  const formattedCurrency = formatCurrency(value, symbol)
-  return `${formattedCurrency.substring(0, 1)}${symbol} ${formattedCurrency.substring(1)}`
+export function getFormattedCurrency(value: number, symbol: string): string {
+  return formatCurrency(value, symbol, { prefix: symbol + ' ' })
 }
 
 type RewardCellProps = {
@@ -39,7 +40,7 @@ export const RewardCell: FC<RewardCellProps> = ({ tableHeader: { className }, re
 
             <div className="flex items-center gap-1">
               <Label className="font-normal text-sm leading-none text-text-primary font-rootstock-sans">
-                {toFixed(value)}
+                {formatCurrency(value, symbol)}
               </Label>
               <div className="ml-1">{logo}</div>
             </div>
