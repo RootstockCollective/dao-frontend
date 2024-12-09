@@ -1,7 +1,7 @@
 import { useContext } from 'react'
 import { AllocationsContext } from '@/app/collective-rewards/allocations/context'
 
-export const useValidateBackerAllocations = () => {
+export const useCanManageAllocations = () => {
   const {
     state: { selections, allocations },
   } = useContext(AllocationsContext)
@@ -9,5 +9,5 @@ export const useValidateBackerAllocations = () => {
   const isSelectionsEmpty = Object.values(selections).every(value => !value)
   const isAllocationsEmpty = !Object.keys(allocations).length
 
-  return isSelectionsEmpty && isAllocationsEmpty
+  return !isSelectionsEmpty || !isAllocationsEmpty
 }

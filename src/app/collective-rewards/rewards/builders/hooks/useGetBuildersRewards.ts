@@ -23,13 +23,12 @@ import { useContext, useMemo } from 'react'
 
 type RequiredBuilder = Required<Builder>
 
-// from the builders list, filter out the builders that are not kycApproved or are revoked or have no allocation
 const isBuilderShown = (
-  { stateFlags: { kycApproved, revoked, communityApproved }, address }: RequiredBuilder,
+  { stateFlags: { kycApproved, revoked, communityApproved, paused }, address }: RequiredBuilder,
   allocations: Allocations,
 ) => {
   const allocation = allocations[address]
-  return (kycApproved && !revoked && communityApproved) || (allocation && allocation > 0n)
+  return (kycApproved && !revoked && communityApproved && !paused) || (allocation && allocation > 0n)
 }
 
 // FIXME: remove and use Builder and/or combination of existing types

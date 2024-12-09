@@ -25,12 +25,7 @@ const RewardsContent: FC<RewardsProps> = ({ builder, gauges, tokens }) => {
         <div className="min-h-[190px] w-full">
           <BackerClaimableRewards builder={builder} gauges={gauges} tokens={tokens} />
         </div>
-        <Button
-          className="w-full"
-          onClick={() => claimRewards(gauges)}
-          disabled={!isClaimable}
-          variant="primary"
-        >
+        <Button className="w-full" onClick={() => claimRewards()} disabled={!isClaimable} variant="primary">
           Claim all
         </Button>
       </MetricContainer>

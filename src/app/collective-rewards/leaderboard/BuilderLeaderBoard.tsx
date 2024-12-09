@@ -4,7 +4,7 @@ import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/component
 import { HeaderTitle } from '@/components/Typography'
 import { BuildersLeaderBoardContent } from '@/app/collective-rewards/leaderboard'
 import { useRouter } from 'next/navigation'
-import { useValidateBackerAllocations } from '@/app/collective-rewards/allocations/hooks'
+import { useCanManageAllocations } from '@/app/collective-rewards/allocations/hooks'
 
 export const BuildersLeaderBoard = () => {
   const router = useRouter()
@@ -12,7 +12,7 @@ export const BuildersLeaderBoard = () => {
     router.push('/collective-rewards/allocations')
   }
 
-  const canManageAllocations = useValidateBackerAllocations()
+  const canManageAllocations = useCanManageAllocations()
 
   return (
     <>
@@ -20,7 +20,7 @@ export const BuildersLeaderBoard = () => {
         <CollapsibleTrigger>
           <div className="flex items-center justify-between w-full">
             <HeaderTitle className="">Rewards leaderboard</HeaderTitle>
-            <Button variant="primary" onClick={onManageAllocations} disabled={canManageAllocations}>
+            <Button variant="primary" onClick={onManageAllocations} disabled={!canManageAllocations}>
               Manage Allocations
             </Button>
           </div>
