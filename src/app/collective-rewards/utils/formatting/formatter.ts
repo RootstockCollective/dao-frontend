@@ -91,7 +91,7 @@ export const formatRIF: FormatNumber = (value, options) => {
   return formatNumber(value, {
     decimals: 18,
     round: {
-      decimalPlaces: 0,
+      decimalPlaces: 2,
       mode: 'floor',
       ...options?.round,
     },
