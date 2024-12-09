@@ -37,8 +37,6 @@ describe('BecomeABuilderButton', () => {
       name: 'proposalName',
       description: 'description',
     },
-    gauge: '0x01',
-    stateFlags: { activated: false, communityApproved: false } as BuilderStateFlags,
   }
   const buildersData = {
     [builderAddress]: builderData,
@@ -67,25 +65,53 @@ describe('BecomeABuilderButton', () => {
     cleanup()
   })
 
-  test('should render if builder is in progress', async () => {
-    const { findByText } = renderWithAlertProvider(<BecomeABuilderButton address={builderAddress} />)
-
-    expect(await findByText('In Progress')).toBeVisible()
-  })
-
-  test('should render if builder is whitelisted', async () => {
-    builderData.stateFlags = { activated: true, communityApproved: true } as BuilderStateFlags
-    const { findByText } = renderWithAlertProvider(<BecomeABuilderButton address={builderAddress} />)
-
-    expect(await findByText('You are a Builder')).toBeVisible()
-  })
-
   test('should render registration button if builder does not have a proposal', async () => {
     const { findByText } = renderWithAlertProvider(
       <BecomeABuilderButton address="0xCD2a3d9F938E13CD947Ec05AbC7FE734Df8DD827" />,
     )
 
     expect(await findByText('Become a builder')).toBeVisible()
+  })
+
+  test('should render in progress component if there are not executed proposals', async () => {
+    builderData.gauge = undefined
+    const { findByText } = renderWithAlertProvider(<BecomeABuilderButton address={builderAddress} />)
+
+    expect(await findByText('In Progress')).toBeVisible()
+  })
+
+  test('should render in progress component if is not activated by the foundation', async () => {
+    builderData.stateFlags = { activated: false, communityApproved: true } as BuilderStateFlags
+    const { findByText } = renderWithAlertProvider(<BecomeABuilderButton address={builderAddress} />)
+
+    expect(await findByText('In Progress')).toBeVisible()
+  })
+
+  test('should render de-activated component if builder have a gauge but it is not approved by the community', async () => {
+    builderData.gauge = '0x01'
+    builderData.stateFlags = { activated: false, communityApproved: false } as BuilderStateFlags
+    const { findByText } = renderWithAlertProvider(<BecomeABuilderButton address={builderAddress} />)
+
+    expect(await findByText('De-activated')).toBeVisible()
+  })
+
+  test('should render paused component if builder is active, approved by the community and paused', async () => {
+    builderData.stateFlags = { activated: true, communityApproved: true, paused: true } as BuilderStateFlags
+    const { findByText } = renderWithAlertProvider(<BecomeABuilderButton address={builderAddress} />)
+
+    expect(await findByText('Paused')).toBeVisible()
+  })
+
+  test('should render active component if builder is active, approved by the community and not paused', async () => {
+    builderData.stateFlags = {
+      activated: true,
+      communityApproved: true,
+      kycApproved: false,
+      revoked: true,
+    } as BuilderStateFlags
+    const { findByText } = renderWithAlertProvider(<BecomeABuilderButton address={builderAddress} />)
+
+    expect(await findByText('You are a Builder')).toBeVisible()
   })
 
   test('should use alert for error message if fails while getting the builders', async () => {

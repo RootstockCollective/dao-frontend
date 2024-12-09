@@ -1,4 +1,4 @@
-import { BuilderStateFlags } from '../types'
+import { Builder, BuilderStateFlags } from '../types'
 
 export const isBuilderOperational = (stateFlags?: BuilderStateFlags) => {
   return !!(stateFlags && stateFlags.communityApproved && stateFlags.kycApproved && !stateFlags.paused)
@@ -13,6 +13,9 @@ export const isBuilderActive = (stateFlags?: BuilderStateFlags) => {
     !stateFlags.revoked
   )
 }
+
+export const isBuilderDeactivated = ({ gauge, stateFlags }: Builder) =>
+  !!(gauge && stateFlags && !stateFlags.communityApproved)
 
 const inactiveStates = ['Deactivated', 'KYCRevoked', 'Revoked', 'Paused'] as const
 type InactiveState = (typeof inactiveStates)[number]
