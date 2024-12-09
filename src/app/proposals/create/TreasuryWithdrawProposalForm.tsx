@@ -53,11 +53,7 @@ const FormSchema = z
     toAddress: z
       .string()
       .refine(value => isAddressRegex(value), 'Please enter a valid address')
-      .refine(
-        // accepts both Metamask and RSK addresses
-        value => isChecksumValid(value) || isChecksumValid(value, CHAIN_ID),
-        'Address has invalid checksum',
-      ),
+      .refine(value => isChecksumValid(value), 'Address has invalid checksum'),
     tokenAddress: z.string().length(42),
     amount: z.coerce
       .number({ invalid_type_error: 'Required field' })
@@ -251,7 +247,7 @@ export const TreasuryWithdrawProposalForm = () => {
                           <span
                             className="font-normal underline cursor-pointer"
                             onClick={() => {
-                              setValue('toAddress', checksumAddress(field.value as Address, Number(CHAIN_ID)))
+                              setValue('toAddress', checksumAddress(field.value as Address))
                               trigger('toAddress')
                             }}
                           >

@@ -124,9 +124,7 @@ export const DelegateModal = ({ onClose, onDelegateTxStarted }: DelegateModalPro
                   {' '}
                   <span
                     className="font-normal underline cursor-pointer"
-                    onClick={() =>
-                      onAddressChange(checksumAddress(addressToDelegateTo as Address, Number(CHAIN_ID)))
-                    }
+                    onClick={() => onAddressChange(checksumAddress(addressToDelegateTo as Address))}
                   >
                     Fix address.
                   </span>
