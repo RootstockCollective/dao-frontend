@@ -53,7 +53,11 @@ const FormSchema = z
     toAddress: z
       .string()
       .refine(value => isAddressRegex(value), 'Please enter a valid address')
-      .refine(value => isChecksumValid(value, CHAIN_ID), 'Address has invalid checksum'),
+      .refine(
+        // accepts both Metamask and RSK addresses
+        value => isChecksumValid(value) || isChecksumValid(value, CHAIN_ID),
+        'Address has invalid checksum',
+      ),
     tokenAddress: z.string().length(42),
     amount: z.coerce
       .number({ invalid_type_error: 'Required field' })
