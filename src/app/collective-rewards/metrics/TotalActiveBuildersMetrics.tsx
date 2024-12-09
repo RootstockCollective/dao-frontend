@@ -15,7 +15,6 @@ export const TotalActiveBuildersMetrics = () => {
     kycApproved: true,
   })
   useHandleErrors({ error, title: 'Error loading active builders' })
-  const length = activatedBuilders?.length
 
   return (
     <MetricsCard borderless>
@@ -24,7 +23,7 @@ export const TotalActiveBuildersMetrics = () => {
         TokenMetricsCardRow,
         'min-h-0 grow-0',
       )({
-        amount: length.toString(),
+        amount: activatedBuilders.length.toString(),
         isLoading,
       })}
     </MetricsCard>

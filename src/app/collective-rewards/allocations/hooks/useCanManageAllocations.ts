@@ -1,7 +1,7 @@
 import { useContext } from 'react'
 import { AllocationsContext } from '@/app/collective-rewards/allocations/context'
 
-export const useValidateBackerAllocations = () => {
+export const useCanManageAllocations = () => {
   const {
     state: { selections, allocations },
   } = useContext(AllocationsContext)
