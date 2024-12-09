@@ -5,6 +5,7 @@ import {
   RewardsSection,
   RewardsSectionHeader,
   BackerRewardsTable,
+  useIsBacker,
 } from '@/app/collective-rewards/rewards'
 import { useGetBuildersByState, useGetBuilderToGauge } from '@/app/collective-rewards/user'
 import { getCoinbaseAddress, useHandleErrors } from '@/app/collective-rewards/utils'
@@ -44,8 +45,10 @@ export const Rewards: FC<{ builder: Address }> = ({ builder }) => {
   const activatedGauges = activatedBuilders?.map(({ gauge }) => gauge) ?? []
   const { data: gauge, error: gaugeError } = useGetBuilderToGauge(builder)
   const canManageAllocations = useCanManageAllocations()
+  // We don't need to show the loading state for the backer rewards since the parent already has a loading state
+  const { data: isBacker, error: backerError } = useIsBacker(builder)
 
-  const error = activatedBuildersError ?? gaugeError
+  const error = activatedBuildersError ?? gaugeError ?? backerError
 
   useHandleErrors({ error, title: 'Error loading gauge(s)' })
 
@@ -81,18 +84,20 @@ export const Rewards: FC<{ builder: Address }> = ({ builder }) => {
           </RewardsSection>
         </div>
       )}
-      <RewardsSection>
-        <RewardsSectionHeader
-          onSettingsOpen={() => {
-            router.push('/collective-rewards/allocations')
-          }}
-          title="Backer Rewards"
-          subtext={<SubText />}
-          showSettingsButton={canManageAllocations}
-        />
-        <BackerRewards {...data} />
-        <BackerRewardsTable {...data} />
-      </RewardsSection>
+      {isBacker && (
+        <RewardsSection>
+          <RewardsSectionHeader
+            onSettingsOpen={() => {
+              router.push('/collective-rewards/allocations')
+            }}
+            title="Backer Rewards"
+            subtext={<SubText />}
+            showSettingsButton={canManageAllocations}
+          />
+          <BackerRewards {...data} />
+          <BackerRewardsTable {...data} />
+        </RewardsSection>
+      )}
     </>
   )
 }

@@ -33,19 +33,14 @@ export const useGetBackerRewardPerTokenPaid = (backer: Address, token: Address =
     },
   })
 
-  const data = useMemo(
-    () =>
-      (backerRewardPerTokenPaidResults ?? []).reduce(
-        (acc, { result }) => acc + ((result as bigint) ?? 0n),
-        0n,
-      ),
-    [backerRewardPerTokenPaidResults],
-  )
+  const data = useMemo(() => {
+    return (backerRewardPerTokenPaidResults ?? []).reduce(
+      (acc, { result }) => acc + ((result as bigint) ?? 0n),
+      0n,
+    )
+  }, [backerRewardPerTokenPaidResults])
 
-  const isLoading = useMemo(
-    () => isBuildersLoading || backerRewardPerTokenPaidLoading,
-    [isBuildersLoading, backerRewardPerTokenPaidLoading],
-  )
+  const isLoading = isBuildersLoading || backerRewardPerTokenPaidLoading
   const error = useMemo(
     () => buildersError ?? backerRewardPerTokenPaidError,
     [buildersError, backerRewardPerTokenPaidError],
