@@ -301,7 +301,7 @@ export default function Page() {
                       variant="primary"
                       className="my-[16px]"
                       onClick={handleMinting}
-                      disabled={!tokensAvailable || !address || isClaiming }
+                      disabled={!tokensAvailable || !address || isClaiming}
                       loading={isClaiming}
                       data-testid="claimButton"
                     >
