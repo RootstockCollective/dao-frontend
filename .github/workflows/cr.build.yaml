@@ -15,6 +15,7 @@ jobs:
         id: build-image
         env:
           IMAGE_TAG: ${{ github.sha }}
+          PROFILE: testnet.local
         run: |
           # Build a docker container and
           # push it to ECR so that it can
