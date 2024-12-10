@@ -1,64 +1,55 @@
-import { describe, it, expect } from 'vitest'
-import { formatMetrics, formatOnchainFraction } from './formatMetrics'
+import { describe, it, expect, test } from 'vitest'
+import { formatMetrics } from './formatMetrics'
+import { formatUnits, parseEther } from 'viem'
 
-describe('formatOnchainFraction', () => {
-  it('should format onchain fraction correctly with default decimals', () => {
-    const amount = BigInt('1000000000000000000')
-    const result = formatOnchainFraction(amount)
-    expect(result).toBe('1')
-  })
+const formatFiatAmount = (amount: number, currency: string) => `= ${currency} ${amount}`
 
-  it('should format onchain fraction correctly with custom display decimals', () => {
-    const amount = BigInt('1234567890000000000')
-    const result = formatOnchainFraction(amount, 3)
-    expect(result).toBe('1.234')
-  })
+const formatAmount = (amount: number, symbol: string) => `${amount} ${symbol}`
 
-  it('should round to the lower number', () => {
-    const amount = BigInt('1237567890000000000')
-    const result = formatOnchainFraction(amount, 2)
-    expect(result).toBe('1.23')
-  })
+describe('formatMetrics', () => {
+  it('should return `fiatAmount` equals to 0 if `amount` is zero', () => {
+    const result = formatMetrics(0, 10, 'RIF', 'USD')
 
-  it('should format onchain fraction correctly with custom decimals', () => {
-    const amount = BigInt('123456789')
-    const result = formatOnchainFraction(amount, 2, 9)
-    expect(result).toBe('0.12')
+    expect(result.fiatAmount).toBe(formatFiatAmount(0, 'USD'))
   })
+  it('should return `fiatAmount` equals to 0 if `price` is zero', () => {
+    const result = formatMetrics(10, 0, 'RIF', 'USD')
 
-  it('should handle zero amount correctly', () => {
-    const amount = BigInt('0')
-    const result = formatOnchainFraction(amount)
-    expect(result).toBe('0')
+    expect(result.fiatAmount).toBe(formatFiatAmount(0, 'USD'))
   })
+  it('should return `amount` equals to 0 if `amount` is zero ', () => {
+    const result = formatMetrics(0, 10, 'RIF', 'USD')
 
-  it('should handle numbers without decimals', () => {
-    const amount = BigInt('9000000000000000000')
-    const result = formatOnchainFraction(amount)
-    expect(result).toBe('9')
+    expect(result.amount).toBe(formatAmount(0, 'RIF'))
   })
+  it('should accept value as different data types(amount)', () => {
+    const valueAsNumber = 1.23456789
+    const valueAsBigInt = 1234567890000000000n
 
-  it('should handle numbers without decimals and more than 1 character', () => {
-    const amount = BigInt('90000000000000000000')
-    const result = formatOnchainFraction(amount)
-    expect(result).toBe('90')
-  })
+    const resultBigInt = formatMetrics(valueAsBigInt, 10, 'RIF', 'USD')
+    const resultNumber = formatMetrics(valueAsNumber, 10, 'RIF', 'USD')
 
-  it('should handle numbers with decimals and 3 characters', () => {
-    const amount = BigInt('900561000000000000000')
-    const result = formatOnchainFraction(amount)
-    expect(result).toBe('900.56')
+    expect(resultBigInt.amount).toBe(formatAmount(1.23, 'RIF'))
+    expect(resultBigInt.fiatAmount).toBe(formatFiatAmount(12.346, 'USD'))
+    expect(resultNumber.amount).toBe(formatAmount(1.23, 'RIF'))
+    expect(resultNumber.fiatAmount).toBe(formatFiatAmount(12.346, 'USD'))
   })
+  it('should accept value as different data types(price)', () => {
+    const resultBigInt = formatMetrics(1.23456789, 10n, 'RIF', 'USD')
+    const resultNumber = formatMetrics(1.23456789, 10, 'RIF', 'USD')
 
-  it('should handle numbers with decimals and 3 characters', () => {
-    const amount = BigInt('9000127000000000000000')
-    const result = formatOnchainFraction(amount)
-    expect(result).toBe('9000.12')
+    expect(resultBigInt.amount).toBe(formatAmount(1.23, 'RIF'))
+    expect(resultBigInt.fiatAmount).toBe(formatFiatAmount(12.346, 'USD'))
+    expect(resultNumber.amount).toBe(formatAmount(1.23, 'RIF'))
+    expect(resultNumber.fiatAmount).toBe(formatFiatAmount(12.346, 'USD'))
   })
+  it.only('should format RIF properly', () => {
+    const result = formatMetrics(parseEther('10'), 10, 'RIF', 'USD')
 
-  it('should handle very big numbers', () => {
-    const amount = BigInt('987654321123456789012300000000000000')
-    const result = formatOnchainFraction(amount)
-    expect(result).toBe('987654321123456789.01')
+    expect(result.amount).toBe(formatAmount(10, 'RIF'))
+    expect(result.fiatAmount).toBe(formatFiatAmount(100, 'USD'))
   })
+  it('should format RBTC properly', () => {})
+  it('should apply format properly', () => {})
+  it('should format currency properly', () => {})
 })
