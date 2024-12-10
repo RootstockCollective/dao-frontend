@@ -1,4 +1,4 @@
-export const votingVanguargsNftAbi = [
+export const votingVanguardsNftAbi = [
   {
     inputs: [],
     stateMutability: 'nonpayable',
