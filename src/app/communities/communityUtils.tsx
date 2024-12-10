@@ -13,7 +13,7 @@ interface CommunityItem {
   isMintable?: boolean
 }
 
-export const firstCommunity = {
+export const earlyAdoptersCommunity = {
   leftImageSrc: '/images/ea-nft-dog.png',
   title: 'Early Adopters',
   subtitle: 'DeFi',
@@ -115,14 +115,14 @@ export const ogFoundersExternalContributors = {
 }
 
 export const vanguardCommunity = {
-  leftImageSrc: '/images/nfts/vanguard-thumb.png',
+  leftImageSrc: '/images/nfts/vanguard-thumb.jpg',
   title: 'Vanguard',
   subtitle: 'DeFi',
   description:
     'The Voting Vanguards are the daring cosmonauts of RootstockCollective, charting new frontiers in decentralized governance. To join their ranks, you must engage in DAO voting and help guide the ecosystem toward shared prosperity.',
   nftAddress: nftContracts.VANGUARD,
   numberOfMembers: 0,
-  cover: '/images/nfts/vanguard-cover.png',
+  cover: '/images/nfts/vanguard-cover.jpg',
   isMintable: true,
   longDescription: (
     <>
@@ -145,10 +145,11 @@ export const vanguardCommunity = {
 }
 
 export const communitiesToRender = [
-  firstCommunity,
+  earlyAdoptersCommunity,
   ogFounders,
   ogFoundersEcosystemPartners,
   ogFoundersExternalContributors,
+  vanguardCommunity,
 ]
 
 export const communitiesMapByContract = communitiesToRender.reduce<Record<string, CommunityItem>>(
