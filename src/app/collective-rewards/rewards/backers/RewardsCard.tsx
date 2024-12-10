@@ -9,7 +9,6 @@ import {
   TooltipProps,
 } from '@/app/collective-rewards/rewards'
 import { useHandleErrors } from '@/app/collective-rewards/utils'
-import { formatBalanceToHuman } from '@/app/user/Balances/balanceUtils'
 import { usePricesContext } from '@/shared/context/PricesContext'
 import { FC } from 'react'
 import { withSpinner } from '@/components/LoadingSpinner/withLoadingSpinner'
@@ -46,10 +45,9 @@ const TokenRewardsMetrics: FC<TokenRewardsMetricsProps> = ({
 
   const { prices } = usePricesContext()
 
-  const totalRewardsInHuman = Number(formatBalanceToHuman(totalRewards))
   const price = prices[symbol]?.price ?? 0
 
-  const { amount, fiatAmount } = formatMetrics(totalRewardsInHuman, price, symbol, currency)
+  const { amount, fiatAmount } = formatMetrics(totalRewards, price, symbol, currency)
 
   return withSpinner(
     TokenMetricsCardRow,
