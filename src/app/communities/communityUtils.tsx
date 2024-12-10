@@ -25,20 +25,27 @@ export const firstCommunity = {
   isMintable: true,
   longDescription: (
     <>
-      <p className="mb-4">
+      <p className="mt-4">
         The Early Adopters collection features a vibrant array of digital pioneers, each uniquely crafted to
         embody the spirit of innovation and community in the blockchain world. From governance and protocol
         architects to visionary explorers and collaborative creators, these NFTs represent the diverse talents
         and passions driving the decentralized revolution.
       </p>
-      <p className="mb-4">
+      <p className="mt-4">
         Whether blazing new trails as blockchain pioneers, nurturing the ecosystem as open-source champions,
         or guiding the community as decentralized thinkers, each character in this collection is a testament
         to the boundless creativity and dedication of those building the future of Bitcoin and beyond.
       </p>
-      <p>
+      <p className="mt-4">
         Join the journey with these extraordinary individuals as they carve out a new digital frontier, one
         block at a time.
+      </p>
+      <p className="mt-4">
+        <b>SPECIAL POWER:</b> Voting Booster
+        <br />
+        <b>REQUIREMENT:</b> First 150 stakers with 1 stRIF, Self-Claim
+        <br />
+        <b>ACTIVATION:</b> Mar 2025
       </p>
     </>
   ),
@@ -54,6 +61,15 @@ export const ogFounders = {
   numberOfMembers: 0,
   cover: '/images/nfts/founders-cover.png',
   isMintable: true,
+  longDescription: (
+    <p className="mt-4">
+      <b>SPECIAL POWER:</b> Voting Booster
+      <br />
+      <b>REQUIREMENT:</b> 1 stRIF on 23rd Sept 2024, Self-Claim
+      <br />
+      <b>ACTIVATION:</b> Feb 2025
+    </p>
+  ),
 }
 
 export const ogFoundersEcosystemPartners = {
@@ -66,6 +82,15 @@ export const ogFoundersEcosystemPartners = {
   numberOfMembers: 0,
   cover: '/images/nfts/partners-cover.png',
   isMintable: false,
+  longDescription: (
+    <p className="mt-4">
+      <b>SPECIAL POWER:</b> Voting Booster
+      <br />
+      <b>REQUIREMENT:</b> Recognised Community contributions, 25k stRIF, Air-Drop
+      <br />
+      <b>ACTIVATION:</b> Apr 2025
+    </p>
+  ),
 }
 
 export const ogFoundersExternalContributors = {
@@ -78,6 +103,15 @@ export const ogFoundersExternalContributors = {
   numberOfMembers: 0,
   cover: '/images/nfts/contributors-cover.png',
   isMintable: false,
+  longDescription: (
+    <p className="mt-4">
+      <b>SPECIAL POWER:</b> Voting Booster
+      <br />
+      <b>REQUIREMENT:</b> Recognised Community contributions, 25k stRIF, Air-Drop
+      <br />
+      <b>ACTIVATION:</b> May 2025
+    </p>
+  ),
 }
 
 export const communitiesToRender = [
