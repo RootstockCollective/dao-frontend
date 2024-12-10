@@ -74,7 +74,7 @@ const VotingPowerPopover = () => (
   <Popover content={<PopoverContent />}>
     <button className="flex flex-row">
       <Paragraph className="text[16px] font-[700]">My Voting Power</Paragraph>
-      <FaRegQuestionCircle className="ml-1 self-center" />
+      <FaRegQuestionCircle className="ml-1 self-center" data-testid="QuestionIcon" />
     </button>
   </Popover>
 )
