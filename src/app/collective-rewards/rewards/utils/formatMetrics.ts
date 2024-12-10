@@ -5,7 +5,9 @@ export const formatMetrics = (
   price: number | bigint,
   symbol: string,
   currency: string,
-) => ({
-  amount: `${formatCurrency(amount, symbol) || 0} ${symbol}`,
-  fiatAmount: `= ${currency} ${formatCurrency(Number(formatCurrency(amount, symbol, { thousandsSeparator: '' })) * Number(price) || 0, currency)}`,
-})
+) => {
+  return {
+    amount: `${formatCurrency(amount, symbol) || 0} ${symbol}`,
+    fiatAmount: `= ${currency} ${formatCurrency(Number(formatCurrency(amount, symbol, { thousandsSeparator: '', round: { decimalPlaces: 18 } })) * Number(price) || 0, currency)}`,
+  }
+}

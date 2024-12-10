@@ -4,7 +4,6 @@ import { TableHeader } from '@/app/collective-rewards/shared'
 import { BuilderStateFlags } from '@/app/collective-rewards/types'
 import {
   formatCurrency,
-  formatNumber,
   getBuilderInactiveState,
   isBuilderActive,
   isBuilderOperational,

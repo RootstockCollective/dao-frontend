@@ -1,5 +1,5 @@
 import { describe, it, expect, test } from 'vitest'
-import { DEFAULT_NUMBER_FORMAT_OPTIONS, formatNumber, NumberFormatOptions } from './formatter'
+import { DEFAULT_NUMBER_FORMAT_OPTIONS, formatNumber } from './formatter'
 import { RoundingMode } from './rounding'
 
 describe('formatNumber', () => {
