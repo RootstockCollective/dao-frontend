@@ -5,7 +5,7 @@ import Image from 'next/image'
 import Link from 'next/link'
 
 export const CommunityCard: FC<CommunityCardProps> = ({ img, title, description, members, link }) => (
-  <div className="rounded bg-input-bg w-[300px]">
+  <div className="rounded bg-input-bg w-[300px]" data-testId={`${title}Card`}>
     <Link href={link}>
       {/* image */}
       <Image

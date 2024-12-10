@@ -77,7 +77,9 @@ const LatestProposalsTable = ({ latestProposals }: LatestProposalsTableProps) =>
           />
         </SharedProposalsTableContextProvider>
       ) : (
-        <Typography tagVariant="p">No proposals found &#x1F622;</Typography>
+        <Typography tagVariant="p" data-testid="NoProposals">
+          No proposals found &#x1F622;
+        </Typography>
       )}
     </div>
   )
