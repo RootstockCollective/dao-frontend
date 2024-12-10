@@ -21,7 +21,7 @@ export default function Proposals() {
   return (
     <MainContainer>
       <TxStatusMessage messageType="proposal" />
-      <HeaderSection createProposalDisabled={false} threshold={threshold} />
+      <HeaderSection createProposalDisabled={!canCreateProposal} threshold={threshold} />
       <div className="grid grid-rows-1 gap-[32px] mb-[100px]">
         <div>
           <VotingPowerPopover />
