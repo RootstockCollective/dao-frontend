@@ -114,6 +114,36 @@ export const ogFoundersExternalContributors = {
   ),
 }
 
+export const vanguardCommunity = {
+  leftImageSrc: '/images/nfts/vanguard-thumb.png',
+  title: 'Vanguard',
+  subtitle: 'DeFi',
+  description:
+    'The Voting Vanguards are the daring cosmonauts of RootstockCollective, charting new frontiers in decentralized governance. To join their ranks, you must engage in DAO voting and help guide the ecosystem toward shared prosperity.',
+  nftAddress: nftContracts.VANGUARD,
+  numberOfMembers: 0,
+  cover: '/images/nfts/vanguard-cover.png',
+  isMintable: true,
+  longDescription: (
+    <>
+      <p className="mt-4">
+        The Voting Vanguards are the daring cosmonauts of RootstockCollective, charting new frontiers in
+        decentralized governance. To join their ranks, you must engage in DAO voting and help guide the
+        ecosystem toward shared prosperity. Adorned with glowing Bitcoin energy, these spacefaring pioneers
+        symbolize innovation and unity. They embody the courage to explore uncharted territories, lighting the
+        way for a decentralized future and proving that collective action can transform the Bitcoin universe.
+      </p>
+      <p className="mt-4">
+        <b>SPECIAL POWER:</b> Voting Booster
+        <br />
+        <b>REQUIREMENT:</b> Voted on 3 proposals, Self-Claim
+        <br />
+        <b>ACTIVATION:</b> Mar 2025
+      </p>
+    </>
+  ),
+}
+
 export const communitiesToRender = [
   firstCommunity,
   ogFounders,

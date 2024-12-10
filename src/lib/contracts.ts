@@ -16,6 +16,7 @@ import {
   OG_CONTRIBUTORS_NFT_ADDRESS,
   BACKERS_MANAGER_ADDRESS,
   REWARD_DISTRIBUTOR_ADDRESS,
+  VANGUARD_NFT_ADDRESS,
 } from './constants'
 
 const tokenContracts = {
@@ -27,9 +28,10 @@ export type SupportedTokens = keyof typeof tokenContracts
 
 const nftContracts = {
   EA: EA_NFT_ADDRESS, // Early Adopters
-  OG_FOUNDERS: OG_FOUNDERS_NFT_ADDRESS, // Early Adopters
-  OG_PARTNERS: OG_PARTNERS_NFT_ADDRESS, // Early Adopters
-  OG_CONTRIBUTORS: OG_CONTRIBUTORS_NFT_ADDRESS, // Early Adopters
+  OG_FOUNDERS: OG_FOUNDERS_NFT_ADDRESS,
+  OG_PARTNERS: OG_PARTNERS_NFT_ADDRESS,
+  OG_CONTRIBUTORS: OG_CONTRIBUTORS_NFT_ADDRESS,
+  VANGUARD: VANGUARD_NFT_ADDRESS,
 }
 
 export const DEFAULT_NFT_CONTRACT_ABI = EarlyAdoptersNFTAbi
