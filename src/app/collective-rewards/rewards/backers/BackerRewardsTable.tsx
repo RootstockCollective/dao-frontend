@@ -33,14 +33,29 @@ enum RewardsColumnKeyEnum {
 const tableHeaders: TableHeader[] = [
   { label: 'Builder', className: 'w-[11%]', sortKey: RewardsColumnKeyEnum.builder },
   { label: 'Backer Rewards %', className: 'w-[11%]', sortKey: RewardsColumnKeyEnum.rewardPercentage },
-  { label: 'Estimated Rewards', className: 'w-[20%]', sortKey: RewardsColumnKeyEnum.estimatedRewards },
+  {
+    label: 'Estimated Rewards',
+    className: 'w-[20%]',
+    sortKey: RewardsColumnKeyEnum.estimatedRewards,
+    tooltip: {
+      text: `An estimate of this Cycle’s rewards from each Builder that will become fully claimable by the end of the current Cycle. These rewards gradually become claimable and are added to your ‘Claimable Rewards’ as the cycle progresses. To check the cycle completion, go to Collective Rewards → Current Cycle. 
+
+        The displayed information is dynamic and may vary based on total rewards and user activity. This data is for informational purposes only.`,
+      popoverProps: { size: 'medium' },
+    },
+  },
   {
     label: 'Total Allocations',
     className: 'w-[18%]',
     sortKey: RewardsColumnKeyEnum.totalAllocationPercentage,
     tooltip: { text: 'Your share of the total allocations for each Builder' },
   },
-  { label: 'Claimable Rewards', className: 'w-[20%]', sortKey: RewardsColumnKeyEnum.claimableRewards },
+  {
+    label: 'Claimable Rewards',
+    className: 'w-[20%]',
+    sortKey: RewardsColumnKeyEnum.claimableRewards,
+    tooltip: { text: 'Your rewards from each Builder available to claim' },
+  },
   { label: 'All Time Rewards', className: 'w-[20%]', sortKey: RewardsColumnKeyEnum.allTimeRewards },
 ]
 
