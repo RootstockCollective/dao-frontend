@@ -35,14 +35,15 @@ export const Metrics = () => {
       <PricesContextProvider>
         <CycleContextProvider>
           <div className="flex gap-4 w-full">
-            <div className="flex gap-4 h-min w-3/4">
+            <div className="flex gap-4 h-min w-3/5">
               <CycleMetrics />
               <TotalActiveBuildersMetrics />
               <TotalAllocationsMetrics gauges={gauges} token={tokens.rif} />
             </div>
-            <div className="w-1/4">
+            <div className="w-1/5">
               <AllTimeRewardsMetrics gauges={gauges} tokens={tokens} />
             </div>
+            <div className="w-1/5">TODO: ABI goes here</div>
           </div>
         </CycleContextProvider>
       </PricesContextProvider>
