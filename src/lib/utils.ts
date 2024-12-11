@@ -218,3 +218,17 @@ export function debounce<T extends (...args: any[]) => void>(
     if (callNow) func.apply(context, args)
   }
 }
+
+/**
+ * Formats a number with commas
+ * @param num - The number to format
+ * @returns The formatted number with commas
+ * @example formatNumberWithCommas(123456789) // '123,456,789'
+ * @example formatNumberWithCommas(1234567.89) // '1,234,567.89'
+ * @example formatNumberWithCommas(0.000123) // '0.000123'
+ */
+export function formatNumberWithCommas(num: number | string): string {
+  const parts = num.toString().split('.')
+  parts[0] = new Intl.NumberFormat('en-US').format(Number(parts[0]))
+  return parts.join('.')
+}
