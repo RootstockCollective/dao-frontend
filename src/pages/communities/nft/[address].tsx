@@ -97,7 +97,7 @@ export default function Page() {
       return setMessage({
         text: (
           <>
-            To get the Early Adopters community NFT you need to own at least ${formatEther(stRifThreshold!)}{' '}
+            To get the {nftInfo?.title} community NFT you need to own at least ${formatEther(stRifThreshold!)}{' '}
             stRIFs.{' '}
             <span
               className="underline cursor-pointer"
