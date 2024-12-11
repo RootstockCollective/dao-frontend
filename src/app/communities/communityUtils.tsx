@@ -51,7 +51,7 @@ export const earlyAdoptersCommunity = {
   ),
 }
 
-export const ogFounders = {
+export const ogFounders: CommunityItem = {
   leftImageSrc: '/images/nfts/og-founders-thumb.png',
   title: 'OG Founders',
   subtitle: 'DeFi',
@@ -79,7 +79,7 @@ export const ogFounders = {
   ),
 }
 
-export const ogFoundersEcosystemPartners = {
+export const ogFoundersEcosystemPartners: CommunityItem = {
   leftImageSrc: '/images/nfts/og-partners-thumb.jpg',
   title: 'OG Partners',
   subtitle: 'DeFi',
@@ -107,7 +107,7 @@ export const ogFoundersEcosystemPartners = {
   ),
 }
 
-export const ogFoundersExternalContributors = {
+export const ogFoundersExternalContributors: CommunityItem = {
   leftImageSrc: '/images/nfts/og-contributors-thumb.jpg',
   title: 'OG Contributors',
   subtitle: 'DeFi',
@@ -166,12 +166,25 @@ export const vanguardCommunity = {
   ),
 }
 
+export const betaBuilders: CommunityItem = {
+  leftImageSrc: '/images/nfts/bb-thumb.png',
+  title: 'Beta Builders',
+  subtitle: 'DeFi',
+  description:
+    'The Beta Builders collection is a badge of honor for the visionaries shaping the future of Bitcoin through RootstockCollective. It celebrates the pioneering Builders, Developers, Protocols, and dApps whose innovations are driving Rootstock in becoming the leading Bitcoin Layer 2.',
+  nftAddress: nftContracts.BB,
+  numberOfMembers: 0,
+  cover: '/images/nfts/bb-cover.png',
+  isMintable: false,
+}
+
 export const communitiesToRender = [
   earlyAdoptersCommunity,
   ogFounders,
   ogFoundersEcosystemPartners,
   ogFoundersExternalContributors,
   vanguardCommunity,
+  betaBuilders,
 ]
 
 export const communitiesMapByContract = communitiesToRender.reduce<Record<string, CommunityItem>>(
