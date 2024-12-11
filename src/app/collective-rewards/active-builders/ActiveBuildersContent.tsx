@@ -1,6 +1,6 @@
 import { SearchContextProvider } from '@/app/collective-rewards/shared'
 import { withSpinner } from '@/components/LoadingSpinner/withLoadingSpinner'
-import { useHandleErrors } from '@/app/collective-rewards/utils'
+import { isBuilderDeactivated, useHandleErrors } from '@/app/collective-rewards/utils'
 import { useGetBuildersByState } from '@/app/collective-rewards/user/'
 import { ActiveBuildersGrid } from '@/app/collective-rewards/active-builders'
 import { Search } from '@/app/collective-rewards/shared'
@@ -31,6 +31,7 @@ export const ActiveBuildersContent = () => {
     true,
   )
   useHandleErrors({ error, title: 'Error loading builders' })
+  const filteredBuilders = builders.filter(builder => !isBuilderDeactivated(builder))
 
   const status = [
     { label: 'All', value: 'all' },
@@ -40,7 +41,7 @@ export const ActiveBuildersContent = () => {
 
   return (
     <>
-      <SearchContextProvider builders={builders} filterFunction={filterFunction}>
+      <SearchContextProvider builders={filteredBuilders} filterFunction={filterFunction}>
         <Search status={status} />
         {withSpinner(ActiveBuildersGrid)({ isLoading })}
       </SearchContextProvider>
