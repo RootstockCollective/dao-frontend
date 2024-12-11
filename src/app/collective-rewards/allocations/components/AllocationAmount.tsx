@@ -1,7 +1,7 @@
 'use client'
 
 import { Allocations, AllocationsContext } from '@/app/collective-rewards/allocations/context'
-import { formatOnchainFraction } from '@/app/collective-rewards/rewards'
+import { formatSymbol } from '@/app/collective-rewards/rewards'
 import { Button, ButtonProps } from '@/components/Button'
 import { Input } from '@/components/Input'
 import { cn } from '@/lib/utils'
@@ -63,7 +63,7 @@ export const AllocationAmount = () => {
           name="allocated-amount"
           fullWidth
           onChange={handleOnChange}
-          value={formatOnchainFraction(amountToAllocate)}
+          value={formatSymbol(amountToAllocate, 'stRIF')}
           errorMessage={
             cumulativeAllocation > amountToAllocate && cumulativeAllocation < balance
               ? ALLOCATION_EXCEED_AMOUNT_ERROR

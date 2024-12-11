@@ -11,10 +11,9 @@ import {
   useGetBackerRewardPercentage,
 } from '@/app/collective-rewards/rewards'
 import { useHandleErrors } from '@/app/collective-rewards/utils'
-import { formatBalanceToHuman } from '@/app/user/Balances/balanceUtils'
 import { usePricesContext } from '@/shared/context/PricesContext'
 import { FC, useEffect, useState } from 'react'
-import { Address } from 'viem'
+import { Address, parseUnits } from 'viem'
 import { withSpinner } from '@/components/LoadingSpinner/withLoadingSpinner'
 import { useCycleContext } from '@/app/collective-rewards/metrics/context/CycleContext'
 
@@ -64,7 +63,7 @@ const TokenRewards: FC<TokenRewardsProps> = ({ builder, gauge, token: { id, symb
     error: backerRewardsPctError,
   } = useGetBackerRewardPercentage(builder, cycleNext.toSeconds())
 
-  const rewardPercentageToApply = backerRewardsPct?.current ?? 0
+  const rewardPercentageToApply = backerRewardsPct.current
 
   const error =
     rewardsError ?? totalPotentialRewardsError ?? rewardSharesError ?? backerRewardsPctError ?? cycleError
@@ -75,10 +74,10 @@ const TokenRewards: FC<TokenRewardsProps> = ({ builder, gauge, token: { id, symb
   const rewardsAmount =
     rewardShares && totalPotentialRewards ? (rewards * rewardShares) / totalPotentialRewards : 0n
   // The complement of the reward percentage is applied to the estimated rewards since are from the builder's perspective
-  const estimatedRewardsInHuman =
-    Number(formatBalanceToHuman(rewardsAmount)) * (1 - rewardPercentageToApply / 100)
+  const weiPerEther = parseUnits('1', 18)
+  const estimatedRewards = (rewardsAmount * (weiPerEther - rewardPercentageToApply)) / weiPerEther
   const price = prices[symbol]?.price ?? 0
-  const { amount, fiatAmount } = formatMetrics(estimatedRewardsInHuman, price, symbol, currency)
+  const { amount, fiatAmount } = formatMetrics(estimatedRewards, price, symbol, currency)
 
   return withSpinner(
     TokenMetricsCardRow,

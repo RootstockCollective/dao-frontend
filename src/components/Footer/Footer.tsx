@@ -17,7 +17,7 @@ const VARIANTS = {
 }
 
 export const Footer = ({ variant = 'login' }: Props) => (
-  <footer className={cn('bottom-4 flex justify-between text-sm opacity-60', VARIANTS[variant])}>
+  <footer className={cn('bottom-4 flex justify-between text-sm opacity-60 ', VARIANTS[variant])}>
     <div className="flex items-start">
       <a
         href={`https://github.com/${GITHUB_ORG}/dao-frontend/commit/${BUILD_ID}`}
