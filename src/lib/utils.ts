@@ -229,6 +229,6 @@ export function debounce<T extends (...args: any[]) => void>(
  */
 export function formatNumberWithCommas(num: number | string): string {
   const parts = num.toString().split('.')
-  parts[0] = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, ',')
+  parts[0] = new Intl.NumberFormat('en-US').format(Number(parts[0]))
   return parts.join('.')
 }
