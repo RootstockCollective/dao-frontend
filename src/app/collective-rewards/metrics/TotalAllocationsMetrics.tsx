@@ -12,6 +12,7 @@ import {
 } from '@/app/collective-rewards/rewards'
 import { withSpinner } from '@/components/LoadingSpinner/withLoadingSpinner'
 import { useHandleErrors } from '@/app/collective-rewards/utils'
+import { useGetTotalAllocation } from './hooks/useGetTotalAllocation'
 
 type TotalAllocationsProps = {
   gauges: Address[]
@@ -25,13 +26,11 @@ export const TotalAllocationsMetrics: FC<TotalAllocationsProps> = ({
   currency = 'USD',
 }) => {
   const { prices } = usePricesContext()
-  const { data, isLoading, error } = useGaugesGetFunction(gauges, 'totalAllocation')
+  const { data: totalAllocations, isLoading, error } = useGetTotalAllocation(gauges)
   useHandleErrors({ error, title: 'Error loading total allocations' })
+  const totalAllocationsInHuman = Number(formatOnchainFraction(totalAllocations))
 
   const price = prices[symbol]?.price ?? 0
-
-  const totalAllocations = Object.values(data).reduce((acc, allocation) => acc + allocation, 0n)
-  const totalAllocationsInHuman = Number(formatOnchainFraction(totalAllocations))
   const fiatAmount = `= ${currency} ${formatCurrency(totalAllocationsInHuman * price, currency)}`
 
   return (
