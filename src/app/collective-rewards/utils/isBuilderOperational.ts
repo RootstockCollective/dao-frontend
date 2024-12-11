@@ -17,6 +17,9 @@ export const isBuilderActive = (stateFlags?: BuilderStateFlags) => {
   )
 }
 
+export const isBuilderDeactivated = ({ gauge, stateFlags }: Builder) =>
+  !!(gauge && stateFlags && !stateFlags.communityApproved)
+
 const inactiveStates = ['Deactivated', 'KYCRevoked', 'Revoked', 'Paused'] as const
 type InactiveState = (typeof inactiveStates)[number]
 export const getBuilderInactiveState = (state: BuilderStateFlags): InactiveState => {
