@@ -1,13 +1,15 @@
 import { useCycleContext } from '@/app/collective-rewards/metrics/context/CycleContext'
 import {
   formatMetrics,
-  getLastCycleRewards,
   MetricsCard,
   MetricsCardTitle,
   TokenMetricsCardRow,
   useGetGaugeNotifyRewardLogs,
   Token,
   BuilderRewardDetails,
+  useGetRewardDistributionFinishedLogs,
+  getNotifyRewardAmount,
+  useGetLastCycleRewardsTimestamps,
 } from '@/app/collective-rewards/rewards'
 import { useHandleErrors } from '@/app/collective-rewards/utils'
 import { formatBalanceToHuman } from '@/app/user/Balances/balanceUtils'
@@ -29,18 +31,24 @@ const TokenRewardsMetrics: FC<TokenRewardsMetricsProps> = ({
 }) => {
   const { data: cycle, isLoading: cycleLoading, error: cycleError } = useCycleContext()
   const {
+    data: { fromTimestamp, toTimestamp },
+    isLoading: lastCycleRewardsLoading,
+    error: lastCycleRewardsError,
+  } = useGetLastCycleRewardsTimestamps(cycle)
+
+  const {
     data: rewardsPerToken,
     isLoading: logsLoading,
     error: rewardsError,
-  } = useGetGaugeNotifyRewardLogs(gauge)
+  } = useGetGaugeNotifyRewardLogs(gauge, address, fromTimestamp, toTimestamp)
 
-  const error = cycleError ?? rewardsError
+  const error = cycleError ?? lastCycleRewardsError ?? rewardsError
   useHandleErrors({ error, title: 'Error loading last cycle rewards' })
 
   const { prices } = usePricesContext()
 
-  const lastCycleRewards = getLastCycleRewards(cycle, rewardsPerToken[address])
-  const lastCycleRewardsInHuman = Number(formatBalanceToHuman(lastCycleRewards.builderAmount))
+  const lastCycleRewards = getNotifyRewardAmount(rewardsPerToken, address, 'builderAmount_')
+  const lastCycleRewardsInHuman = Number(formatBalanceToHuman(lastCycleRewards[address] ?? 0n))
   const price = prices[symbol]?.price ?? 0
   const { amount, fiatAmount } = formatMetrics(lastCycleRewardsInHuman, price, symbol, currency)
 
@@ -50,7 +58,7 @@ const TokenRewardsMetrics: FC<TokenRewardsMetricsProps> = ({
   )({
     amount,
     fiatAmount,
-    isLoading: cycleLoading || logsLoading,
+    isLoading: cycleLoading || lastCycleRewardsLoading || logsLoading,
   })
 }
 

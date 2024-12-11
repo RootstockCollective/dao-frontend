@@ -1,10 +1,11 @@
 import { useQuery } from '@tanstack/react-query'
 import { fetchGaugeNotifyRewardLogs, fetchNotifyRewardLogs } from '@/app/collective-rewards/actions'
-import { Address, getAddress, parseEventLogs } from 'viem'
+import { Address, getAddress, isAddressEqual, parseEventLogs } from 'viem'
 import { GaugeAbi } from '@/lib/abis/v2/GaugeAbi'
 import { BackersManagerAbi } from '@/lib/abis/v2/BackersManagerAbi'
 import { BackersManagerAddress } from '@/lib/contracts'
 import { AVERAGE_BLOCKTIME } from '@/lib/constants'
+import { useMemo } from 'react'
 
 export type NotifyRewardEventLog = ReturnType<
   typeof parseEventLogs<typeof BackersManagerAbi, true, 'NotifyReward'>
@@ -46,27 +47,56 @@ export type GaugeNotifyRewardEventLog = ReturnType<
 >
 export type GaugeNotifyRewardsPerToken = Record<Address, GaugeNotifyRewardEventLog>
 
-export const useGetGaugeNotifyRewardLogs = (gauge: Address) => {
-  const { data, error, isLoading } = useQuery({
+export const useGetGaugeNotifyRewardLogs = (
+  gauge: Address,
+  rewardToken?: Address,
+  fromTimestamp?: number,
+  toTimestamp?: number,
+) => {
+  const {
+    data: events,
+    error,
+    isLoading,
+  } = useQuery({
     queryFn: async () => {
       const { data } = await fetchGaugeNotifyRewardLogs(gauge)
 
-      const events = parseEventLogs({
+      return parseEventLogs({
         abi: GaugeAbi,
         logs: data,
         eventName: 'NotifyReward',
       })
-
-      return events.reduce<GaugeNotifyRewardsPerToken>((acc, log) => {
-        const rewardToken = getAddress(log.args.rewardToken_)
-        acc[rewardToken] = [...(acc[rewardToken] || []), log]
-        return acc
-      }, {})
     },
-    queryKey: ['notifyRewardLogs', gauge],
+    queryKey: ['notifyRewardLogs', gauge, rewardToken],
     refetchInterval: AVERAGE_BLOCKTIME,
-    initialData: {},
+    initialData: [],
   })
+
+  type Log = GaugeNotifyRewardEventLog[number]
+  const data = useMemo(() => {
+    return events.reduce<GaugeNotifyRewardsPerToken>((acc, log) => {
+      const {
+        timeStamp,
+        args: { rewardToken_ },
+      } = log as Log & { timeStamp: number }
+      const rewardTokenAddress = getAddress(rewardToken_)
+
+      if (rewardToken && !isAddressEqual(rewardToken, rewardTokenAddress)) {
+        return acc
+      }
+
+      if (fromTimestamp && timeStamp < fromTimestamp) {
+        return acc
+      }
+
+      if (toTimestamp && timeStamp > toTimestamp) {
+        return acc
+      }
+
+      acc[rewardTokenAddress] = [...(acc[rewardTokenAddress] || []), log]
+      return acc
+    }, {})
+  }, [events, rewardToken, fromTimestamp, toTimestamp])
 
   return {
     data,
