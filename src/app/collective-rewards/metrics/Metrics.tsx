@@ -11,6 +11,7 @@ import { getAddress } from 'viem'
 import { tokenContracts } from '@/lib/contracts'
 import { getCoinbaseAddress } from '@/app/collective-rewards/utils'
 import { PricesContextProvider } from '@/shared/context/PricesContext'
+import { ABIMetrics } from './components/ABIMetrics'
 
 const HeaderWithBuilderButton = withBuilderButton(HeaderTitle)
 
@@ -43,7 +44,9 @@ export const Metrics = () => {
             <div className="w-1/5">
               <AllTimeRewardsMetrics gauges={gauges} tokens={tokens} />
             </div>
-            <div className="w-1/5">TODO: ABI goes here</div>
+            <div className="w-1/5">
+              <ABIMetrics />
+            </div>
           </div>
         </CycleContextProvider>
       </PricesContextProvider>
