@@ -40,7 +40,7 @@ export const TotalAllocationsMetrics: FC<TotalAllocationsProps> = ({
         title="Total allocations"
         data-testid="TotalAllocations"
         tooltip={{
-          text: 'Total stRIF allocation from Backers to Builders',
+          text: 'Total stRIF allocation from Backers to Builders. Backers retain full ownership and access to their stRIF.',
         }}
       />
       {withSpinner(
