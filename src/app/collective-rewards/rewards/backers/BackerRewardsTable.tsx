@@ -38,7 +38,7 @@ const tableHeaders: TableHeader[] = [
     label: 'Total Allocations',
     className: 'w-[18%]',
     sortKey: RewardsColumnKeyEnum.totalAllocationPercentage,
-    tooltip: 'Your share of the total allocations for each Builder',
+    tooltip: { text: 'Your share of the total allocations for each Builder' },
   },
   { label: 'Claimable Rewards', className: 'w-[20%]', sortKey: RewardsColumnKeyEnum.claimableRewards },
   { label: 'All Time Rewards', className: 'w-[20%]', sortKey: RewardsColumnKeyEnum.allTimeRewards },
