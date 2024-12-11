@@ -2,6 +2,7 @@ import { ZeroAddress } from 'ethers'
 import { Address } from 'viem'
 import { EarlyAdoptersNFTAbi } from './abis/EarlyAdoptersNFTAbi'
 import { VotingVanguardsNftAbi } from './abis/VotingVanguardsNFTAbi'
+import { BetaBuildersNftAbi } from './abis/BetaBuildersNftAbi'
 import {
   EA_NFT_ADDRESS,
   GENERAL_BUCKET_ADDRESS,
@@ -18,6 +19,7 @@ import {
   BACKERS_MANAGER_ADDRESS,
   REWARD_DISTRIBUTOR_ADDRESS,
   VANGUARD_NFT_ADDRESS,
+  BB_NFT_ADDRESS,
 } from './constants'
 import { GovernorAbi } from './abis/Governor'
 
@@ -34,6 +36,7 @@ const nftContracts = {
   OG_PARTNERS: OG_PARTNERS_NFT_ADDRESS,
   OG_CONTRIBUTORS: OG_CONTRIBUTORS_NFT_ADDRESS,
   VANGUARD: VANGUARD_NFT_ADDRESS,
+  BB: BB_NFT_ADDRESS, // Beta Builders
 }
 
 export const DEFAULT_NFT_CONTRACT_ABI = EarlyAdoptersNFTAbi
@@ -44,6 +47,7 @@ const abiContractsMap = {
   [nftContracts.OG_CONTRIBUTORS]: EarlyAdoptersNFTAbi,
   [nftContracts.OG_PARTNERS]: EarlyAdoptersNFTAbi,
   [nftContracts.VANGUARD]: VotingVanguardsNftAbi,
+  [nftContracts.BB]: BetaBuildersNftAbi,
 }
 
 const treasuryContracts = {
