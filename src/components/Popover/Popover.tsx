@@ -8,7 +8,7 @@ export interface PopoverProps extends Omit<HTMLAttributes<HTMLDivElement>, 'chil
   disabled?: boolean
   trigger?: 'click' | 'hover'
   background?: 'dark' | 'light'
-  position?: 'top' | 'bottom' | 'right' | 'left'
+  position?: 'top' | 'bottom' | 'right' | 'left' | 'left-bottom'
   size?: 'small' | 'medium'
   hasCaret?: boolean
 }
@@ -73,6 +73,7 @@ export const Popover = ({
           position === 'bottom' && 'top-full',
           position === 'right' && 'left-full bottom-full',
           position === 'left' && 'right-full bottom-full',
+          position === 'left-bottom' && 'right-full top-full',
           size === 'small' && 'w-36',
           size === 'medium' && 'w-96',
         )}
@@ -92,7 +93,7 @@ export const Popover = ({
   )
 }
 
-const PopoverCaret = ({ position }: { position: 'top' | 'bottom' | 'right' | 'left' }) => (
+const PopoverCaret = ({ position }: { position: 'top' | 'bottom' | 'right' | 'left' | 'left-bottom' }) => (
   <>
     {position === 'top' && (
       <div className="absolute inset-x-0 flex justify-center" style={{ bottom: '2px' }}>

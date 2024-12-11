@@ -17,6 +17,16 @@ export const isBuilderActive = (stateFlags?: BuilderStateFlags) => {
   )
 }
 
+export const isBuilderRewarded = (stateFlags?: BuilderStateFlags) => {
+  return !!(
+    stateFlags &&
+    stateFlags.activated &&
+    stateFlags.communityApproved &&
+    stateFlags.kycApproved &&
+    !stateFlags.revoked
+  )
+}
+
 const inactiveStates = ['Deactivated', 'KYCRevoked', 'Revoked', 'Paused'] as const
 type InactiveState = (typeof inactiveStates)[number]
 export const getBuilderInactiveState = (state: BuilderStateFlags): InactiveState => {

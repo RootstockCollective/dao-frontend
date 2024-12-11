@@ -22,7 +22,6 @@ type TokenRewardsMetricsProps = {
 }
 
 const TokenRewardsMetrics: FC<TokenRewardsMetricsProps> = ({
-  gauges,
   token: { address, symbol },
   currency = 'USD',
 }) => {

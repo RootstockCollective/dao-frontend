@@ -1,4 +1,4 @@
-import { FC } from 'react'
+import { FC, ReactNode } from 'react'
 import { Popover, PopoverProps } from '../../../../components/Popover'
 import { Button, ButtonProps } from '../../../../components/Button'
 
@@ -22,7 +22,7 @@ const TooltipSvg = () => (
 )
 
 export type TooltipProps = {
-  text: string
+  text: ReactNode
   popoverProps?: Pick<PopoverProps, 'size' | 'position'>
 }
 

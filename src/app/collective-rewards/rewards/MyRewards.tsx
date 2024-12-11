@@ -13,7 +13,7 @@ import { FC } from 'react'
 import { Address, getAddress, zeroAddress } from 'viem'
 import { useRouter } from 'next/navigation'
 import { Link } from '@/components/Link'
-import { Builder } from '../types'
+import { RequiredBuilder } from '@/app/collective-rewards/types'
 import { useCanManageAllocations } from '@/app/collective-rewards/allocations/hooks'
 
 const SubText = () => {
@@ -37,11 +37,9 @@ const SubText = () => {
 
 export const Rewards: FC<{ builder: Address }> = ({ builder }) => {
   const router = useRouter()
-  const { data: activatedBuilders, error: activatedBuildersError } = useGetBuildersByState<Required<Builder>>(
-    {
-      activated: true,
-    },
-  )
+  const { data: activatedBuilders, error: activatedBuildersError } = useGetBuildersByState<RequiredBuilder>({
+    activated: true,
+  })
   const activatedGauges = activatedBuilders?.map(({ gauge }) => gauge) ?? []
   const { data: gauge, error: gaugeError } = useGetBuilderToGauge(builder)
   const canManageAllocations = useCanManageAllocations()

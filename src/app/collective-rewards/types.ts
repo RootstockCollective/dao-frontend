@@ -42,3 +42,5 @@ export type ProposalByBuilder = Record<Address, BuilderProposal>
 export type ProposalsToState = Record<string, ProposalState>
 
 export type BuilderState = 'active' | 'inProgress'
+
+export type RequiredBuilder = Required<Builder>
