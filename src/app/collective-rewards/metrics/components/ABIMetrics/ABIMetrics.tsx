@@ -1,9 +1,9 @@
 import { MetricsCard, MetricsCardTitle, TokenMetricsCardRow } from '@/app/collective-rewards/rewards'
 import { withSpinner } from '@/components/LoadingSpinner/withLoadingSpinner'
+import { useGetABI } from './hooks/useGetABI'
 
 export const ABIMetrics = () => {
-  const isLoading = false
-  const abiPct = 0
+  const { data: abiPct, isLoading } = useGetABI()
   return (
     <>
       <MetricsCard borderless>
