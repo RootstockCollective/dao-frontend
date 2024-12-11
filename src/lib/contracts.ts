@@ -2,6 +2,7 @@ import { ZeroAddress } from 'ethers'
 import { Address } from 'viem'
 import { EarlyAdoptersNFTAbi } from './abis/EarlyAdoptersNFTAbi'
 import { VotingVanguardsNftAbi } from './abis/VotingVanguardsNFTAbi'
+import { BetaBuildersNftAbi } from './abis/BetaBuildersNftAbi'
 import {
   EA_NFT_ADDRESS,
   GENERAL_BUCKET_ADDRESS,
@@ -46,6 +47,7 @@ const abiContractsMap = {
   [nftContracts.OG_CONTRIBUTORS]: EarlyAdoptersNFTAbi,
   [nftContracts.OG_PARTNERS]: EarlyAdoptersNFTAbi,
   [nftContracts.VANGUARD]: VotingVanguardsNftAbi,
+  [nftContracts.BB]: BetaBuildersNftAbi,
 }
 
 const treasuryContracts = {
