@@ -1,5 +1,5 @@
 import { HeaderTitle, Paragraph } from '@/components/Typography'
-import { CRWhitepaperLink } from '../../shared'
+import { CRWhitepaperLink } from '@/app/collective-rewards/shared'
 
 export const Header = () => {
   return (

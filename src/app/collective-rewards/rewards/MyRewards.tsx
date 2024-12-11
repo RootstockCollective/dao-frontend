@@ -12,10 +12,9 @@ import { tokenContracts } from '@/lib/contracts'
 import { FC } from 'react'
 import { Address, getAddress, zeroAddress } from 'viem'
 import { useRouter } from 'next/navigation'
-import { Link } from '@/components/Link'
 import { Builder } from '../types'
 import { useCanManageAllocations } from '@/app/collective-rewards/allocations/hooks'
-import { CRWhitepaperLink } from '../shared'
+import { CRWhitepaperLink } from '@/app/collective-rewards/shared'
 
 const SubText = () => {
   return (
