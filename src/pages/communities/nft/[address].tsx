@@ -97,7 +97,7 @@ export default function Page() {
       return setMessage({
         text: (
           <>
-            To get the Early Adopters community NFT you need to own at least ${formatEther(stRifThreshold!)}{' '}
+            To get the {nftInfo?.title} community NFT you need to own at least ${formatEther(stRifThreshold!)}{' '}
             stRIFs.{' '}
             <span
               className="underline cursor-pointer"
@@ -217,9 +217,7 @@ export default function Page() {
             </div>
             <div className="font-semibold">{nftInfo?.title}</div>
           </div>
-          <div className="mb-[24px] font-extralight">
-            <p>{nftInfo?.longDescription || nftInfo?.description}</p>
-          </div>
+          <div className="mb-[24px] font-extralight">{nftInfo?.longDescription}</div>
           {/* Hidden until we get social media data */}
           <div className="gap-[8px] mt-[16px] mb-[24px] hidden">
             {/* Chips with community links */}
