@@ -10,7 +10,6 @@ import {
   BuilderRewardDetails,
 } from '@/app/collective-rewards/rewards'
 import { useHandleErrors } from '@/app/collective-rewards/utils'
-import { formatBalanceToHuman } from '@/app/user/Balances/balanceUtils'
 import { withSpinner } from '@/components/LoadingSpinner/withLoadingSpinner'
 import { usePricesContext } from '@/shared/context/PricesContext'
 import { FC } from 'react'
@@ -40,12 +39,7 @@ const TokenRewardsMetrics: FC<TokenRewardsMetricsProps> = ({
 
   const tokenPrice = prices[symbol]?.price ?? 0
 
-  const { amount, fiatAmount } = formatMetrics(
-    Number(formatBalanceToHuman(rewards ?? 0n)),
-    tokenPrice,
-    symbol,
-    currency,
-  )
+  const { amount, fiatAmount } = formatMetrics(rewards ?? 0n, tokenPrice, symbol, currency)
 
   const { isClaimable, claimRewards, isPaused } = useClaimBuilderRewardsPerToken(builder, gauge, address)
   const content = isPaused ? 'You cannot be paused to claim rewards' : undefined

@@ -13,6 +13,7 @@ import {
   TotalAllocationCell,
   useSearchContext,
 } from '@/app/collective-rewards/shared'
+import { getCombinedFiatAmount } from '../utils'
 
 enum RewardsColumnKeyEnum {
   builder = 'builder',
@@ -60,13 +61,13 @@ export const BuildersLeaderBoardTable: FC = () => {
       rewardPercentage: (a: IRewardData, b: IRewardData) =>
         Number(a.rewardPercentage.current - b.rewardPercentage.current),
       lastCycleRewards: (a: IRewardData, b: IRewardData) => {
-        const aValue = a.lastCycleReward.rif.crypto.value + a.lastCycleReward.rbtc.crypto.value
-        const bValue = b.lastCycleReward.rif.crypto.value + b.lastCycleReward.rbtc.crypto.value
+        const aValue = getCombinedFiatAmount([a.lastCycleRewards.rif.amount, a.lastCycleRewards.rbtc.amount])
+        const bValue = getCombinedFiatAmount([b.lastCycleRewards.rif.amount, b.lastCycleRewards.rbtc.amount])
         return aValue - bValue
       },
       estimatedRewards: (a: IRewardData, b: IRewardData) => {
-        const aValue = a.estimatedReward.rif.crypto.value + a.estimatedReward.rbtc.crypto.value
-        const bValue = b.estimatedReward.rif.crypto.value + b.estimatedReward.rbtc.crypto.value
+        const aValue = getCombinedFiatAmount([a.estimatedRewards.rif.amount, a.estimatedRewards.rbtc.amount])
+        const bValue = getCombinedFiatAmount([b.estimatedRewards.rif.amount, b.estimatedRewards.rbtc.amount])
         return aValue - bValue
       },
       totalAllocationPercentage: (a: IRewardData, b: IRewardData) =>
@@ -124,8 +125,8 @@ export const BuildersLeaderBoardTable: FC = () => {
               address,
               builderName,
               stateFlags,
-              lastCycleReward,
-              estimatedReward,
+              lastCycleRewards,
+              estimatedRewards,
               totalAllocationPercentage,
               rewardPercentage,
             }) => (
@@ -139,11 +140,11 @@ export const BuildersLeaderBoardTable: FC = () => {
                 <BackerRewardsPercentage tableHeader={tableHeaders[1]} percentage={rewardPercentage} />
                 <LazyRewardCell
                   tableHeader={tableHeaders[2]}
-                  rewards={[lastCycleReward.rbtc, lastCycleReward.rif]}
+                  rewards={[lastCycleRewards.rbtc, lastCycleRewards.rif]}
                 />
                 <LazyRewardCell
                   tableHeader={tableHeaders[3]}
-                  rewards={[estimatedReward.rbtc, estimatedReward.rif]}
+                  rewards={[estimatedRewards.rbtc, estimatedRewards.rif]}
                 />
                 <TotalAllocationCell tableHeader={tableHeaders[4]} percentage={totalAllocationPercentage} />
                 <ActionCell tableHeader={tableHeaders[5]} builderAddress={address} />

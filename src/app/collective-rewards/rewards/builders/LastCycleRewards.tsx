@@ -10,7 +10,6 @@ import {
   BuilderRewardDetails,
 } from '@/app/collective-rewards/rewards'
 import { useHandleErrors } from '@/app/collective-rewards/utils'
-import { formatBalanceToHuman } from '@/app/user/Balances/balanceUtils'
 import { withSpinner } from '@/components/LoadingSpinner/withLoadingSpinner'
 import { usePricesContext } from '@/shared/context/PricesContext'
 import { FC } from 'react'
@@ -40,9 +39,8 @@ const TokenRewardsMetrics: FC<TokenRewardsMetricsProps> = ({
   const { prices } = usePricesContext()
 
   const lastCycleRewards = getLastCycleRewards(cycle, rewardsPerToken[address])
-  const lastCycleRewardsInHuman = Number(formatBalanceToHuman(lastCycleRewards.builderAmount))
   const price = prices[symbol]?.price ?? 0
-  const { amount, fiatAmount } = formatMetrics(lastCycleRewardsInHuman, price, symbol, currency)
+  const { amount, fiatAmount } = formatMetrics(lastCycleRewards.builderAmount, price, symbol, currency)
 
   return withSpinner(
     TokenMetricsCardRow,

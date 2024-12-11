@@ -4,7 +4,6 @@ import {
   BackerRewardsContextProvider,
   useGetBackerRewards,
 } from '@/app/collective-rewards/rewards'
-import { BuilderContextProviderWithPrices } from '@/app/collective-rewards/user'
 import {
   ISortConfig,
   TableHeader,
@@ -15,7 +14,7 @@ import {
   TotalAllocationCell,
 } from '@/app/collective-rewards/shared'
 import { TableBody, TableCore, TableHead, TableRow } from '@/components/Table'
-import { useHandleErrors } from '@/app/collective-rewards/utils'
+import { getCombinedFiatAmount, useHandleErrors } from '@/app/collective-rewards/utils'
 import { LoadingSpinner } from '@/components/LoadingSpinner'
 import { useBasicPaginationUi } from '@/shared/hooks/usePaginationUi'
 import { CycleContextProvider } from '@/app/collective-rewards/metrics'
@@ -66,14 +65,22 @@ const RewardsTable: FC<BackerRewardsTable> = ({ builder, gauges, tokens }) => {
       rewardPercentage: (a: IRewardData, b: IRewardData) =>
         Number(a.rewardPercentage.current - b.rewardPercentage.current),
       estimatedRewards: (a: IRewardData, b: IRewardData) => {
-        return Number(a.estimatedRewards.rif.crypto.value - b.estimatedRewards.rif.crypto.value)
+        const aValue = getCombinedFiatAmount([a.estimatedRewards.rif.amount, a.estimatedRewards.rbtc.amount])
+        const bValue = getCombinedFiatAmount([b.estimatedRewards.rif.amount, b.estimatedRewards.rbtc.amount])
+        return aValue - bValue
       },
       totalAllocationPercentage: (a: IRewardData, b: IRewardData) =>
         Number(a.totalAllocationPercentage - b.totalAllocationPercentage),
-      claimableRewards: (a: IRewardData, b: IRewardData) =>
-        Number(a.claimableRewards.rif.crypto.value - b.claimableRewards.rif.crypto.value),
-      allTimeRewards: (a: IRewardData, b: IRewardData) =>
-        Number(a.allTimeRewards.rif.crypto.value - b.allTimeRewards.rif.crypto.value),
+      claimableRewards: (a: IRewardData, b: IRewardData) => {
+        const aValue = getCombinedFiatAmount([a.claimableRewards.rif.amount, a.claimableRewards.rbtc.amount])
+        const bValue = getCombinedFiatAmount([b.claimableRewards.rif.amount, b.claimableRewards.rbtc.amount])
+        return aValue - bValue
+      },
+      allTimeRewards: (a: IRewardData, b: IRewardData) => {
+        const aValue = getCombinedFiatAmount([a.allTimeRewards.rif.amount, a.allTimeRewards.rbtc.amount])
+        const bValue = getCombinedFiatAmount([b.allTimeRewards.rif.amount, b.allTimeRewards.rbtc.amount])
+        return aValue - bValue
+      },
     }
     return Object.values(rewardsData).toSorted((a: IRewardData, b: IRewardData) => {
       const { key, direction } = sortConfig
