@@ -12,7 +12,8 @@ export const HeaderSection = ({ createProposalDisabled = true, threshold = '' })
         <Popover
           content={
             <Paragraph variant="normal" className="text-sm">
-              Almost there! You need {threshold} stRIF to create a proposal. Stake more RIF to get started.
+              You need at least {threshold} Voting Power to create a proposal. The easiest way to get more
+              Voting Power is to Stake more RIF.
             </Paragraph>
           }
           trigger="hover"
