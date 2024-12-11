@@ -41,3 +41,4 @@ export const USD_SYMBOL = '$'
 export const RNS_REGISTRY_ADDRESS = process.env.NEXT_PUBLIC_RNS_REGISTRY_ADDRESS as Address
 
 export const NODE_URL = process.env.NEXT_PUBLIC_NODE_URL
+export const DEFAULT_NUMBER_OF_SECONDS_PER_BLOCK = 30

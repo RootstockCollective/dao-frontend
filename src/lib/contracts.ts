@@ -19,6 +19,7 @@ import {
   REWARD_DISTRIBUTOR_ADDRESS,
   VANGUARD_NFT_ADDRESS,
 } from './constants'
+import { GovernorAbi } from './abis/Governor'
 
 const tokenContracts = {
   RIF: RIF_ADDRESS,
@@ -71,3 +72,8 @@ export {
   BackersManagerAddress,
   RewardDistributorAddress,
 }
+
+export const governor = {
+  address: GOVERNOR_ADDRESS,
+  abi: GovernorAbi,
+} as const

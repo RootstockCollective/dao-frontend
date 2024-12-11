@@ -7,7 +7,6 @@ import { MetricsCard } from '@/components/MetricsCard'
 import { Popover } from '@/components/Popover'
 import { TxStatusMessage } from '@/components/TxStatusMessage/TxStatusMessage'
 import { Paragraph, Span } from '@/components/Typography'
-import { toFixed } from '@/lib/utils'
 import { useRouter } from 'next/navigation'
 import { FaRegQuestionCircle } from 'react-icons/fa'
 import { useVotingPower } from './hooks/useVotingPower'
@@ -41,7 +40,7 @@ export default function Proposals() {
           <DelegatedTable />
           <ReceivedDelegationTable />
         </div> */}
-        <LatestProposalsTableMemoized latestProposals={memoizedProposals} />
+        <LatestProposalsTableMemoized proposals={memoizedProposals} />
       </div>
     </MainContainer>
   )
