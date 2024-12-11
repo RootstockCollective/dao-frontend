@@ -13,9 +13,9 @@ import { tokenContracts } from '@/lib/contracts'
 import { FC } from 'react'
 import { Address, getAddress, zeroAddress } from 'viem'
 import { useRouter } from 'next/navigation'
-import { Builder } from '../types'
 import { useCanManageAllocations } from '@/app/collective-rewards/allocations/hooks'
 import { CRWhitepaperLink } from '@/app/collective-rewards/shared'
+import { RequiredBuilder } from '@/app/collective-rewards/types'
 
 const SubText = () => {
   return (
@@ -28,11 +28,9 @@ const SubText = () => {
 
 export const Rewards: FC<{ builder: Address }> = ({ builder }) => {
   const router = useRouter()
-  const { data: activatedBuilders, error: activatedBuildersError } = useGetBuildersByState<Required<Builder>>(
-    {
-      activated: true,
-    },
-  )
+  const { data: activatedBuilders, error: activatedBuildersError } = useGetBuildersByState<RequiredBuilder>({
+    activated: true,
+  })
   const activatedGauges = activatedBuilders?.map(({ gauge }) => gauge) ?? []
   const { data: gauge, error: gaugeError } = useGetBuilderToGauge(builder)
   const canManageAllocations = useCanManageAllocations()
