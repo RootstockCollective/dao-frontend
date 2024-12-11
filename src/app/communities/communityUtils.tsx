@@ -62,13 +62,20 @@ export const ogFounders = {
   cover: '/images/nfts/founders-cover.png',
   isMintable: true,
   longDescription: (
-    <p className="mt-4">
-      <b>SPECIAL POWER:</b> Voting Booster
-      <br />
-      <b>REQUIREMENT:</b> 1 stRIF on 23rd Sept 2024, Self-Claim
-      <br />
-      <b>ACTIVATION:</b> Feb 2025
-    </p>
+    <>
+      <p className="mt-4">
+        In the magical realm of Rootstock, a select group of visionary elves, known as the Founders, received
+        the prestigious OG Badge. This badge was a testament to their foresight and pioneering spirit, marking
+        them as the true architects of their era.
+      </p>
+      <p className="mt-4">
+        <b>SPECIAL POWER:</b> Voting Booster
+        <br />
+        <b>REQUIREMENT:</b> 1 stRIF on 23rd Sept 2024, Self-Claim
+        <br />
+        <b>ACTIVATION:</b> Feb 2025
+      </p>
+    </>
   ),
 }
 
@@ -83,13 +90,20 @@ export const ogFoundersEcosystemPartners = {
   cover: '/images/nfts/partners-cover.png',
   isMintable: false,
   longDescription: (
-    <p className="mt-4">
-      <b>SPECIAL POWER:</b> Voting Booster
-      <br />
-      <b>REQUIREMENT:</b> Recognised Community contributions, 25k stRIF, Air-Drop
-      <br />
-      <b>ACTIVATION:</b> Apr 2025
-    </p>
+    <>
+      <p className="mt-4">
+        In the magical realm of Rootstock, a new chapter unfolds as the elves of the RootstockCollective
+        embark on an extraordinary journey. Equipped with the OG Badge, these visionary elves invite their
+        esteemed external partners to join them in exploring and innovating within the Rootstock ecosystem.
+      </p>
+      <p className="mt-4">
+        <b>SPECIAL POWER:</b> Voting Booster
+        <br />
+        <b>REQUIREMENT:</b> Recognised Community contributions, 25k stRIF, Air-Drop
+        <br />
+        <b>ACTIVATION:</b> Apr 2025
+      </p>
+    </>
   ),
 }
 
@@ -104,13 +118,21 @@ export const ogFoundersExternalContributors = {
   cover: '/images/nfts/contributors-cover.png',
   isMintable: false,
   longDescription: (
-    <p className="mt-4">
-      <b>SPECIAL POWER:</b> Voting Booster
-      <br />
-      <b>REQUIREMENT:</b> Recognised Community contributions, 25k stRIF, Air-Drop
-      <br />
-      <b>ACTIVATION:</b> May 2025
-    </p>
+    <>
+      <p className="mt-4">
+        In the enchanting realm of Rootstock, a thrilling new chapter unfolds as the elves of the
+        RootstockCollective embark on an extraordinary journey. These visionary elves, recognized for their
+        remarkable contributions, are bestowed with the prestigious OG Badge—a symbol of honor that grants
+        them special powers.
+      </p>
+      <p className="mt-4">
+        <b>SPECIAL POWER:</b> Voting Booster
+        <br />
+        <b>REQUIREMENT:</b> Recognised Community contributions, 25k stRIF, Air-Drop
+        <br />
+        <b>ACTIVATION:</b> May 2025
+      </p>
+    </>
   ),
 }
 

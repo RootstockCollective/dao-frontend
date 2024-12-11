@@ -217,9 +217,7 @@ export default function Page() {
             </div>
             <div className="font-semibold">{nftInfo?.title}</div>
           </div>
-          <div className="mb-[24px] font-extralight">
-            <p>{nftInfo?.longDescription || nftInfo?.description}</p>
-          </div>
+          <div className="mb-[24px] font-extralight">{nftInfo?.longDescription}</div>
           {/* Hidden until we get social media data */}
           <div className="gap-[8px] mt-[16px] mb-[24px] hidden">
             {/* Chips with community links */}
