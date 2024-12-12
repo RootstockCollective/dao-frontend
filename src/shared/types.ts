@@ -64,6 +64,10 @@ export interface CommunityData {
     isPending: boolean
   }
   /**
+   * Function to call additional check
+   */
+  onAdditionalCheck: (functionName: string, args?: string[]) => Promise<any>
+  /**
    * NFT Metadata
    */
   nftMeta: NftMeta | undefined

@@ -11,6 +11,9 @@ interface CommunityItem {
   cover: string
   longDescription?: ReactNode
   isMintable?: boolean
+  additionalCheck?: {
+    functionName: string
+  }
 }
 
 export const earlyAdoptersCommunity = {
@@ -158,12 +161,16 @@ export const vanguardCommunity = {
       <p className="mt-4">
         <b>SPECIAL POWER:</b> Voting Booster
         <br />
-        <b>REQUIREMENT:</b> Voted on 3 proposals, Self-Claim
+        <b>REQUIREMENT:</b> Voted on 1 of the last 3 proposals, Self-Claim
         <br />
         <b>ACTIVATION:</b> Mar 2025
       </p>
     </>
   ),
+  additionalCheck: {
+    // make it simple for now
+    functionName: 'hasVoted',
+  },
 }
 
 export const betaBuilders: CommunityItem = {
