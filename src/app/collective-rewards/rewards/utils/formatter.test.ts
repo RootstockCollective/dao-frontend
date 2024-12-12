@@ -94,7 +94,7 @@ describe('formatter', () => {
         price: 10,
         symbol,
         currency,
-        expected: { amount: `<0 ${symbol}`, fiatAmount: formatFiatAmount('<0.01', currency) },
+        expected: { amount: `<1 ${symbol}`, fiatAmount: formatFiatAmount('<0.01', currency) },
       },
     ])(
       'formatMetrics($amount, $price, $symbol, $currency) -> $expected.amount, $expected.fiatAmount',
@@ -194,7 +194,7 @@ describe('formatter', () => {
         price: 10,
         symbol,
         currency,
-        expected: { amount: `<0 ${symbol}`, fiatAmount: formatFiatAmount('<0.01', currency) },
+        expected: { amount: `<1 ${symbol}`, fiatAmount: formatFiatAmount('<0.01', currency) },
       },
     ])(
       'formatMetrics($amount, $price, $symbol, $currency) -> $expected.amount, $expected.fiatAmount',
@@ -203,6 +203,7 @@ describe('formatter', () => {
       },
     )
   })
+
   describe('getFiatAmount', () => {
     test.each([
       { amount: 0n, price: 0, expected: 0 },
@@ -258,7 +259,10 @@ describe('formatter', () => {
     test.each([
       { symbol: 'Symbol', value: 0n, expected: '0' },
       { symbol: 'RIF', value: 0n, expected: '0' },
+      { symbol: 'RIF', value: 1000000000000000n, expected: '<1' },
       { symbol: 'RBTC', value: 0n, expected: '0' },
+      { symbol: 'RBTC', value: 1000000000000000n, expected: '0.00100' },
+      { symbol: 'RBTC', value: 1000000000000n, expected: '<0.00001' },
       { symbol: 'stRIF', value: 0n, expected: '0' },
     ])('should format $symbol properly with $value', ({ symbol, value, expected }) => {
       expect(formatSymbol(value, symbol)).toBe(expected)
@@ -284,9 +288,9 @@ describe('formatter', () => {
 
     test.each([
       { symbol: 'Symbol', value: oneWei, expected: '<0.01' },
-      { symbol: 'RIF', value: oneWei, expected: '<0' },
+      { symbol: 'RIF', value: oneWei, expected: '<1' },
       { symbol: 'RBTC', value: oneWei, expected: '<0.00001' },
-      { symbol: 'stRIF', value: oneWei, expected: '<0' },
+      { symbol: 'stRIF', value: oneWei, expected: '<1' },
     ])('should format $symbol properly with $value', ({ symbol, value, expected }) => {
       expect(formatSymbol(value, symbol)).toBe(expected)
     })

@@ -62,14 +62,22 @@ export const formatSymbol = (value: bigint, symbol: string) => {
     displayDecimals: 2,
   }
   const amount = Number(formatUnits(value, decimals))
-  const minimumAmount = 1 / Math.pow(10, decimals)
+  const minimumAmount = 1 / Math.pow(10, displayDecimals)
 
-  if (amount > 0 && amount <= minimumAmount) {
-    return `<0${displayDecimals > 0 ? '.'.padEnd(displayDecimals, '0') + '1' : ''}`
+  if (amount <= 0) {
+    return new Intl.NumberFormat('en-US', {
+      minimumFractionDigits: displayDecimals,
+      maximumFractionDigits: displayDecimals,
+      roundingMode: 'floor',
+    }).format(amount)
   }
 
-  if (amount > 0 && amount < 1 && displayDecimals === 0) {
+  if (amount < 1 && displayDecimals === 0) {
     return '<1'
+  }
+
+  if (amount < minimumAmount) {
+    return `<0${displayDecimals > 0 ? '.'.padEnd(displayDecimals, '0') + '1' : ''}`
   }
 
   return new Intl.NumberFormat('en-US', {
