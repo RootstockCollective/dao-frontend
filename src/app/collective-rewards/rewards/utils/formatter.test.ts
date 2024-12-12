@@ -16,6 +16,66 @@ describe('formatter', () => {
     let currencySymbol = '$'
     test.each([
       {
+        amount: parseEther('1000000'),
+        price: 10,
+        symbol,
+        currency,
+        expected: {
+          amount: `1,000,000 ${symbol}`,
+          fiatAmount: formatFiatAmount('10,000,000.00', currency, currencySymbol),
+        },
+      },
+      {
+        amount: parseEther('12345678901'),
+        price: 10,
+        symbol,
+        currency,
+        expected: {
+          amount: `12,345,678,901 ${symbol}`,
+          fiatAmount: formatFiatAmount('123,456,789,010.00', currency, currencySymbol),
+        },
+      },
+      {
+        amount: parseEther('12345678901'),
+        price: 0.1,
+        symbol,
+        currency,
+        expected: {
+          amount: `12,345,678,901 ${symbol}`,
+          fiatAmount: formatFiatAmount('1,234,567,890.10', currency, currencySymbol),
+        },
+      },
+      {
+        amount: parseEther('12345678901'),
+        price: 0.01,
+        symbol,
+        currency,
+        expected: {
+          amount: `12,345,678,901 ${symbol}`,
+          fiatAmount: formatFiatAmount('123,456,789.01', currency, currencySymbol),
+        },
+      },
+      {
+        amount: parseEther('12345678901'),
+        price: 0.49,
+        symbol,
+        currency,
+        expected: {
+          amount: `12,345,678,901 ${symbol}`,
+          fiatAmount: formatFiatAmount('6,049,382,661.49', currency, currencySymbol),
+        },
+      },
+      {
+        amount: parseEther('1000'),
+        price: 10,
+        symbol,
+        currency,
+        expected: {
+          amount: `1,000 ${symbol}`,
+          fiatAmount: formatFiatAmount('10,000.00', currency, currencySymbol),
+        },
+      },
+      {
         amount: oneEther,
         price: 10,
         symbol,
@@ -73,6 +133,36 @@ describe('formatter', () => {
         symbol,
         currency,
         expected: { amount: `<0.00001 ${symbol}`, fiatAmount: formatFiatAmount('<0.01', currency) },
+      },
+      {
+        amount: oneEther,
+        price: 100_000,
+        symbol,
+        currency,
+        expected: {
+          amount: `1.00000 ${symbol}`,
+          fiatAmount: formatFiatAmount('100,000.00', currency, currencySymbol),
+        },
+      },
+      {
+        amount: parseEther('100'),
+        price: 100_000,
+        symbol,
+        currency,
+        expected: {
+          amount: `100.00000 ${symbol}`,
+          fiatAmount: formatFiatAmount('10,000,000.00', currency, currencySymbol),
+        },
+      },
+      {
+        amount: parseEther('123456'),
+        price: 100_000,
+        symbol,
+        currency,
+        expected: {
+          amount: `123,456.00000 ${symbol}`,
+          fiatAmount: formatFiatAmount('12,345,600,000.00', currency, currencySymbol),
+        },
       },
     ])(
       'formatMetrics($amount, $price, $symbol, $currency) -> $expected.amount, $expected.fiatAmount',
