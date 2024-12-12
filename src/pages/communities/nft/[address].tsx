@@ -55,6 +55,7 @@ export default function Page() {
     nftName,
     nftSymbol,
     mint: { onMintNFT, isPending: isClaiming },
+    onAdditionalCheck,
     nftMeta,
     stRifThreshold,
   } = useCommunity(nftAddress)
@@ -64,6 +65,7 @@ export default function Page() {
   if (nftInfo === undefined && nftAddress !== undefined) {
     console.warn('The current NFT address is not registered. Please check the config.')
   }
+  const [isChecking, setIsChecking] = useState(false)
   const [message, setMessage] = useState<MessageProps | null>(null)
   // reset message after few seconds
   useEffect(() => {
@@ -90,7 +92,7 @@ export default function Page() {
     }
   }, [isNftInWallet])
 
-  const handleMinting = () => {
+  const handleMinting = async () => {
     if (!address) return
     // check if user's stRIF Balance is more than required threshold to get a reward NFT
     if (stRifBalance < (stRifThreshold ?? 0n))
@@ -111,6 +113,24 @@ export default function Page() {
         severity: 'warning',
       })
 
+    if (nftInfo.additionalCheck) {
+      const { functionName } = nftInfo.additionalCheck
+      try {
+        setIsChecking(true)
+        const result = await onAdditionalCheck(functionName, [address])
+        setIsChecking(false)
+        if (!result) {
+          return setMessage({
+            text: 'You are not eligible for this NFT. You must have voted on one of the last three proposals to mint.',
+            severity: 'warning',
+          })
+        }
+      } catch (err) {
+        console.warn(err)
+      }
+      setIsChecking(false)
+    }
+
     onMintNFT()
       .then(txHash => {
         setMessage({
@@ -118,7 +138,7 @@ export default function Page() {
         })
       })
       .catch(err => {
-        if (err.cause.name !== 'UserRejectedRequestError') {
+        if (err.cause?.name !== 'UserRejectedRequestError') {
           console.error('ERROR', err)
           setMessage({
             text: 'Error claiming reward. An unexpected error occurred while trying to claim your reward. Please try again later. If the issue persists, contact support for assistance.',
@@ -299,8 +319,8 @@ export default function Page() {
                       variant="primary"
                       className="my-[16px]"
                       onClick={handleMinting}
-                      disabled={!tokensAvailable || !address || isClaiming}
-                      loading={isClaiming}
+                      disabled={!tokensAvailable || !address || isClaiming || isChecking}
+                      loading={isClaiming || isChecking}
                       data-testid="claimButton"
                     >
                       Claim it!
