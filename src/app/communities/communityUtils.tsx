@@ -170,8 +170,10 @@ export const betaBuilders: CommunityItem = {
   leftImageSrc: '/images/nfts/bb-thumb.png',
   title: 'Beta Builders',
   subtitle: 'DeFi',
-  description:
-    'The Beta Builders collection is a badge of honor for the visionaries shaping the future of Bitcoin through RootstockCollective. It celebrates the pioneering Builders, Developers, Protocols, and dApps whose innovations are driving Rootstock in becoming the leading Bitcoin Layer 2.',
+  description: `SPECIAL POWERS: Voting Booster \n
+   REQUIREMENT: First 50 CollectiveRewards Builders, Air-Drop \n
+    ACTIVATION: Apr 2025 \n
+    The Beta Builders collection is a badge of honor for the visionaries shaping the future of Bitcoin through RootstockCollective. It celebrates the pioneering Builders, Developers, Protocols, and dApps whose innovations are driving Rootstock in becoming the leading Bitcoin Layer 2.`,
   nftAddress: nftContracts.BB,
   numberOfMembers: 0,
   cover: '/images/nfts/bb-cover.png',
