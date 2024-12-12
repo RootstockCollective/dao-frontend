@@ -11,7 +11,7 @@ interface CommunityItem {
   cover: string
   longDescription?: ReactNode
   isMintable?: boolean
-  additionalChecks?: [{ name: string; check: (...args: any) => boolean; alertMessage: string }]
+  additionalChecks?: [{ name: string; check: (data: any) => boolean; alertMessage: string }]
 }
 
 export const earlyAdoptersCommunity = {
