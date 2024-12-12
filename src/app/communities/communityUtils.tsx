@@ -168,14 +168,17 @@ export const vanguardCommunity = {
   additionalChecks: [
     {
       name: 'hasVoted',
-      check: (data: any) => data as boolean,
+      check: (data: any) => data[0].result,
       alertMessage:
         'You are not eligible for this NFT. You must have voted on one of the last three proposals to mint.',
     },
     {
       name: 'mintLimitReached',
-      check: ({ mintLimit, totalSupply }: { mintLimit: number; totalSupply: number }) =>
-        mintLimit > totalSupply,
+      check: (data: any) => {
+        const mintLimit = data[0].result
+        const totalSupply = data[1].result
+        return mintLimit > totalSupply
+      },
       alertMessage:
         'All the NFTs have been minted for this Wave. More NFTs will be unlocked soon! Check out socials to see the latest announcements.',
     },
