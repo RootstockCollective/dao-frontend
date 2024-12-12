@@ -38,13 +38,13 @@ const tableHeaders: TableHeader[] = [
     sortKey: RewardsColumnKeyEnum.estimatedRewards,
     tooltip: {
       text: (
-        <p>
+        <>
           The estimated Backers’ share of the Builder’s rewards which will become claimable in the next Cycle.
           <br />
           <br />
           The displayed information is dynamic and may vary based on total rewards and user activity. This
           data is for informational purposes only.
-        </p>
+        </>
       ),
       popoverProps: { size: 'medium' },
     },

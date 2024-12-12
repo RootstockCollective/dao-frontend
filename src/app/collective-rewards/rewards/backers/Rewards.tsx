@@ -39,7 +39,7 @@ const RewardsContent: FC<RewardsProps> = ({ builder, gauges, tokens }) => {
           rewards={['estimated']}
           tooltip={{
             text: (
-              <p>
+              <>
                 An estimate of this Cycle’s rewards that will become fully claimable by the end of the current
                 Cycle. These rewards gradually become claimable and are added to your ‘Claimable Rewards’ as
                 the cycle progresses. To check the cycle completion, go to Collective Rewards → Current Cycle.
@@ -47,7 +47,7 @@ const RewardsContent: FC<RewardsProps> = ({ builder, gauges, tokens }) => {
                 <br />
                 The displayed information is dynamic and may vary based on total rewards and user activity.
                 This data is for informational purposes only.
-              </p>
+              </>
             ),
             popoverProps: { size: 'medium' },
           }}

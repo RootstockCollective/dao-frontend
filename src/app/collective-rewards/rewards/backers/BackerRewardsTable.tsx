@@ -39,7 +39,7 @@ const tableHeaders: TableHeader[] = [
     sortKey: RewardsColumnKeyEnum.estimatedRewards,
     tooltip: {
       text: (
-        <p>
+        <>
           An estimate of this Cycle’s rewards from each Builder that will become fully claimable by the end of
           the current Cycle. These rewards gradually become claimable and are added to your ‘Claimable
           Rewards’ as the cycle progresses. To check the cycle completion, go to Collective Rewards → Current
@@ -48,7 +48,7 @@ const tableHeaders: TableHeader[] = [
           <br />
           The displayed information is dynamic and may vary based on total rewards and user activity. This
           data is for informational purposes only.
-        </p>
+        </>
       ),
       popoverProps: { size: 'medium' },
     },

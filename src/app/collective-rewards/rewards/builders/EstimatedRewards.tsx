@@ -105,13 +105,13 @@ export const EstimatedRewards: FC<EstimatedRewardsProps> = ({ tokens: { rif, rbt
         data-testid="EstimatedRewards"
         tooltip={{
           text: (
-            <p>
+            <>
               Your estimated rewards which will become claimable at the start of the next Cycle.
               <br />
               <br />
               The displayed information is dynamic and may vary based on total rewards and user activity. This
               data is for informational purposes only.
-            </p>
+            </>
           ),
           popoverProps: { size: 'medium' },
         }}
