@@ -64,9 +64,9 @@ export interface CommunityData {
     isPending: boolean
   }
   /**
-   * Function to call additional check
+   * Call function to read data from the smart contract
    */
-  onAdditionalCheck: (functionName: string, args?: string[]) => Promise<any>
+  onReadFunctions: (functions: { functionName: string; args: string[] }[]) => Promise<any>
   /**
    * NFT Metadata
    */

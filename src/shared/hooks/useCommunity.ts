@@ -1,4 +1,4 @@
-import { readContract } from 'wagmi/actions'
+import { readContracts } from 'wagmi/actions'
 import { useMemo, useCallback, useEffect, useState } from 'react'
 import { abiContractsMap, DEFAULT_NFT_CONTRACT_ABI } from '@/lib/contracts'
 import { Address } from 'viem'
@@ -88,7 +88,7 @@ const useMintNFT = (nftAddress?: Address, tokensAvailable?: number) => {
     if (!tokensAvailable) throw new Error('No NFTs available to mint')
     return mint({
       abi: abiContractsMap[nftAddress] || DEFAULT_NFT_CONTRACT_ABI,
-      address: nftAddress || '0x0',
+      address: nftAddress,
       functionName: 'mint',
       args: [],
     })
@@ -101,7 +101,7 @@ const useMintNFT = (nftAddress?: Address, tokensAvailable?: number) => {
 }
 
 /**
- * Hook returning all information about Early Adopters community
+ * Hook returning all information about NFT community
  */
 export const useCommunity = (nftAddress?: Address): CommunityData => {
   const { refetch, ...data } = useContractData(nftAddress)
@@ -109,14 +109,16 @@ export const useCommunity = (nftAddress?: Address): CommunityData => {
 
   const nftMeta = useNftMeta(data.nftUri)
 
-  const onAdditionalCheck = useCallback(
-    (functionName: string, args: string[] = []) => {
+  const onReadFunctions = useCallback(
+    (functions: { functionName: string; args: string[] }[]) => {
       if (!nftAddress) throw new Error('Unknown NFT address')
-      return readContract(config, {
-        abi: abiContractsMap[nftAddress] || DEFAULT_NFT_CONTRACT_ABI,
-        address: nftAddress || '0x0',
-        functionName: functionName as never,
-        args,
+      return readContracts(config, {
+        contracts: functions.map(({ functionName, args }) => ({
+          abi: abiContractsMap[nftAddress] || DEFAULT_NFT_CONTRACT_ABI,
+          address: nftAddress,
+          functionName,
+          args,
+        })),
       })
     },
     [nftAddress],
@@ -134,9 +136,9 @@ export const useCommunity = (nftAddress?: Address): CommunityData => {
           onMintNFT,
           isPending,
         },
-        onAdditionalCheck,
+        onReadFunctions,
         nftMeta,
       }) satisfies CommunityData,
-    [data, isPending, nftMeta, onAdditionalCheck, onMintNFT],
+    [data, isPending, nftMeta, onReadFunctions, onMintNFT],
   )
 }

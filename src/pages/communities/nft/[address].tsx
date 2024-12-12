@@ -55,7 +55,7 @@ export default function Page() {
     nftName,
     nftSymbol,
     mint: { onMintNFT, isPending: isClaiming },
-    onAdditionalCheck,
+    onReadFunctions,
     nftMeta,
     stRifThreshold,
   } = useCommunity(nftAddress)
@@ -92,6 +92,47 @@ export default function Page() {
     }
   }, [isNftInWallet])
 
+  const doAdditionalChecks = async (
+    additionalChecks: [
+      {
+        name: string
+        check: (data: any) => boolean
+        alertMessage: string
+      },
+    ],
+  ): Promise<boolean> => {
+    if (!address) return false
+    for (const { name, check, alertMessage } of additionalChecks) {
+      setIsChecking(true)
+      let functions: { functionName: string; args: string[] }[] | undefined
+      if (name === 'hasVoted') {
+        functions = [{ functionName: 'hasVoted', args: [address] }]
+      } else if (name === 'mintLimitReached') {
+        functions = [
+          { functionName: 'mintLimit', args: [] },
+          { functionName: 'totalSupply', args: [] },
+        ]
+      }
+      if (!functions) continue
+      try {
+        const data = await onReadFunctions(functions)
+        const result = check(data)
+        if (!result) {
+          setIsChecking(false)
+          setMessage({
+            text: alertMessage,
+            severity: 'warning',
+          })
+          return false
+        }
+      } catch (err) {
+        console.warn(err)
+      }
+    }
+    setIsChecking(false)
+    return true
+  }
+
   const handleMinting = async () => {
     if (!address) return
     // check if user's stRIF Balance is more than required threshold to get a reward NFT
@@ -113,22 +154,9 @@ export default function Page() {
         severity: 'warning',
       })
 
-    if (nftInfo.additionalCheck) {
-      const { functionName } = nftInfo.additionalCheck
-      try {
-        setIsChecking(true)
-        const result = await onAdditionalCheck(functionName, [address])
-        setIsChecking(false)
-        if (!result) {
-          return setMessage({
-            text: 'You are not eligible for this NFT. You must have voted on one of the last three proposals to mint.',
-            severity: 'warning',
-          })
-        }
-      } catch (err) {
-        console.warn(err)
-      }
-      setIsChecking(false)
+    if (nftInfo.additionalChecks) {
+      const result = await doAdditionalChecks(nftInfo.additionalChecks)
+      if (!result) return
     }
 
     onMintNFT()
