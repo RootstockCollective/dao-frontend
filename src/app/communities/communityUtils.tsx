@@ -170,14 +170,28 @@ export const betaBuilders: CommunityItem = {
   leftImageSrc: '/images/nfts/bb-thumb.png',
   title: 'Beta Builders',
   subtitle: 'DeFi',
-  description: `SPECIAL POWERS: Voting Booster \n
-   REQUIREMENT: First 50 CollectiveRewards Builders, Air-Drop \n
-    ACTIVATION: Apr 2025 \n
-    The Beta Builders collection is a badge of honor for the visionaries shaping the future of Bitcoin through RootstockCollective. It celebrates the pioneering Builders, Developers, Protocols, and dApps whose innovations are driving Rootstock in becoming the leading Bitcoin Layer 2.`,
+  description:
+    'The Beta Builders collection is a badge of honor for the visionaries shaping the future of Bitcoin through RootstockCollective. It celebrates the pioneering Builders, Developers, Protocols, and dApps whose innovations are driving Rootstock in becoming the leading Bitcoin Layer 2.',
   nftAddress: nftContracts.BB,
   numberOfMembers: 0,
   cover: '/images/nfts/bb-cover.png',
   isMintable: false,
+  longDescription: (
+    <>
+      <p className="mt-4">
+        The Beta Builders collection is a badge of honor for the visionaries shaping the future of Bitcoin
+        through RootstockCollective. It celebrates the pioneering Builders, Developers, Protocols, and dApps
+        whose innovations are driving Rootstock in becoming the leading Bitcoin Layer 2.
+      </p>
+      <p className="mt-4">
+        <b>SPECIAL POWER:</b> Voting Booster
+        <br />
+        <b>REQUIREMENT:</b> First 50 CollectiveRewards Builders, Air-Drop
+        <br />
+        <b>ACTIVATION:</b> Apr 2025
+      </p>
+    </>
+  ),
 }
 
 export const communitiesToRender = [
