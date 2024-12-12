@@ -1,4 +1,4 @@
-import { readContract, readContracts } from 'wagmi/actions'
+import { readContracts } from 'wagmi/actions'
 import { useMemo, useCallback, useEffect, useState } from 'react'
 import { abiContractsMap, DEFAULT_NFT_CONTRACT_ABI } from '@/lib/contracts'
 import { Address } from 'viem'
