@@ -55,7 +55,7 @@ export default function Page() {
     nftName,
     nftSymbol,
     mint: { onMintNFT, isPending: isClaiming },
-    onAdditionalCheck,
+    onReadFunctions,
     nftMeta,
     stRifThreshold,
   } = useCommunity(nftAddress)
@@ -113,20 +113,32 @@ export default function Page() {
         severity: 'warning',
       })
 
-    if (nftInfo.additionalCheck) {
-      const { functionName } = nftInfo.additionalCheck
-      try {
+    if (nftInfo.additionalChecks) {
+      for (const { name, check, alertMessage } of nftInfo.additionalChecks) {
         setIsChecking(true)
-        const result = await onAdditionalCheck(functionName, [address])
-        setIsChecking(false)
-        if (!result) {
-          return setMessage({
-            text: 'You are not eligible for this NFT. You must have voted on one of the last three proposals to mint.',
-            severity: 'warning',
-          })
+        let functions: { functionName: string; args: string[] }[] | undefined
+        if (name === 'hasVoted') {
+          functions = [{ functionName: 'hasVoted', args: [address] }]
+        } else if (name === 'mintLimitReached') {
+          functions = [
+            { functionName: 'mintLimit', args: [] },
+            { functionName: 'totalSupply', args: [] },
+          ]
         }
-      } catch (err) {
-        console.warn(err)
+        if (!functions) continue
+        try {
+          const data = await onReadFunctions(functions)
+          const result = check(data)
+          if (!result) {
+            setIsChecking(false)
+            return setMessage({
+              text: alertMessage,
+              severity: 'warning',
+            })
+          }
+        } catch (err) {
+          console.warn(err)
+        }
       }
       setIsChecking(false)
     }

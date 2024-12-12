@@ -11,9 +11,7 @@ interface CommunityItem {
   cover: string
   longDescription?: ReactNode
   isMintable?: boolean
-  additionalCheck?: {
-    functionName: string
-  }
+  additionalChecks?: [{ name: string; check: (...args: any) => boolean; alertMessage: string }]
 }
 
 export const earlyAdoptersCommunity = {
@@ -167,10 +165,21 @@ export const vanguardCommunity = {
       </p>
     </>
   ),
-  additionalCheck: {
-    // make it simple for now
-    functionName: 'hasVoted',
-  },
+  additionalChecks: [
+    {
+      name: 'hasVoted',
+      check: (data: any) => data as boolean,
+      alertMessage:
+        'You are not eligible for this NFT. You must have voted on one of the last three proposals to mint.',
+    },
+    {
+      name: 'mintLimitReached',
+      check: ({ mintLimit, totalSupply }: { mintLimit: number; totalSupply: number }) =>
+        mintLimit > totalSupply,
+      alertMessage:
+        'All the NFTs have been minted for this Wave. More NFTs will be unlocked soon! Check out socials to see the latest announcements.',
+    },
+  ],
 }
 
 export const betaBuilders: CommunityItem = {
