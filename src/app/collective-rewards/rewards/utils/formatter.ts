@@ -5,9 +5,12 @@ export const formatMetrics = (amount: bigint, price: number, symbol: string, cur
 
   return {
     amount: `${formatSymbol(amount, symbol)} ${symbol}`,
-    fiatAmount: `= ${currency} ${formatCurrency(fiatAmount, currency)}`,
+    fiatAmount: formatFiatAmount(fiatAmount, currency),
   }
 }
+
+export const formatFiatAmount = (amount: number, currency: string) =>
+  `= ${currency} ${formatCurrency(amount, currency)}`
 
 export const getFiatAmount = (amount: bigint, price: number) => {
   const amountInEther = Number(formatEther(amount))

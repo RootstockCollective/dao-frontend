@@ -1,5 +1,12 @@
 import { AllocationsContext } from '@/app/collective-rewards/allocations/context'
-import { BackerRewardPercentage, formatMetrics, Reward } from '@/app/collective-rewards/rewards'
+import {
+  BackerRewardPercentage,
+  formatFiatAmount,
+  formatMetrics,
+  formatSymbol,
+  getFiatAmount,
+  Reward,
+} from '@/app/collective-rewards/rewards'
 import { TableHeader } from '@/app/collective-rewards/shared'
 import { BuilderStateFlags } from '@/app/collective-rewards/types'
 import {
@@ -14,7 +21,7 @@ import { Popover } from '@/components/Popover'
 import { ProgressBar } from '@/components/ProgressBar'
 import { TableCell } from '@/components/Table'
 import { Label, Typography } from '@/components/Typography'
-import { cn, formatCurrency, shortAddress, toFixed } from '@/lib/utils'
+import { cn, shortAddress, toFixed } from '@/lib/utils'
 import { FC, memo, useContext, useMemo } from 'react'
 import { FaArrowDown, FaArrowUp, FaCircle } from 'react-icons/fa'
 import { Address, isAddress, parseEther, parseUnits } from 'viem'
@@ -29,18 +36,18 @@ const RewardCellValue: FC<RewardCellValueProps> = ({ reward }) => {
     logo,
   } = reward
 
-  const { amount, fiatAmount } = formatMetrics(value, price, symbol, currency)
+  const fiatAmount = getFiatAmount(value, price)
 
   return (
     <div className="flex-1">
       <div className="flex items-center gap-1">
         <Label className="font-normal text-sm leading-none text-text-primary font-rootstock-sans">
-          {amount}
+          {formatSymbol(value, symbol)}
         </Label>
         <div className="ml-1">{logo}</div>
       </div>
       <Label className="font-normal text-sm leading-none text-disabled-primary font-rootstock-sans">
-        {fiatAmount}
+        {formatFiatAmount(fiatAmount, currency)}
       </Label>
     </div>
   )

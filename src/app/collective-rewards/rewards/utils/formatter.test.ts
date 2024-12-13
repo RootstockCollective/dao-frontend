@@ -1,8 +1,8 @@
-import { describe, it, expect, test } from 'vitest'
-import { formatMetrics, formatCurrency, formatSymbol, getFiatAmount } from './formatter'
+import { describe, expect, test } from 'vitest'
+import { formatMetrics, formatCurrency, formatSymbol, getFiatAmount, formatFiatAmount } from './formatter'
 import { parseEther } from 'viem'
 
-const formatFiatAmount = (amount: string, currency: string, currencySymbol = '') =>
+const formatAmountWithCurrency = (amount: string, currency: string, currencySymbol = '') =>
   `= ${currency} ${currencySymbol}${amount}`
 
 describe('formatter', () => {
@@ -22,7 +22,7 @@ describe('formatter', () => {
         currency,
         expected: {
           amount: `1,000,000 ${symbol}`,
-          fiatAmount: formatFiatAmount('10,000,000.00', currency, currencySymbol),
+          fiatAmount: formatAmountWithCurrency('10,000,000.00', currency, currencySymbol),
         },
       },
       {
@@ -32,7 +32,7 @@ describe('formatter', () => {
         currency,
         expected: {
           amount: `12,345,678,901 ${symbol}`,
-          fiatAmount: formatFiatAmount('123,456,789,010.00', currency, currencySymbol),
+          fiatAmount: formatAmountWithCurrency('123,456,789,010.00', currency, currencySymbol),
         },
       },
       {
@@ -42,7 +42,7 @@ describe('formatter', () => {
         currency,
         expected: {
           amount: `12,345,678,901 ${symbol}`,
-          fiatAmount: formatFiatAmount('1,234,567,890.10', currency, currencySymbol),
+          fiatAmount: formatAmountWithCurrency('1,234,567,890.10', currency, currencySymbol),
         },
       },
       {
@@ -52,7 +52,7 @@ describe('formatter', () => {
         currency,
         expected: {
           amount: `12,345,678,901 ${symbol}`,
-          fiatAmount: formatFiatAmount('123,456,789.01', currency, currencySymbol),
+          fiatAmount: formatAmountWithCurrency('123,456,789.01', currency, currencySymbol),
         },
       },
       {
@@ -62,7 +62,7 @@ describe('formatter', () => {
         currency,
         expected: {
           amount: `12,345,678,901 ${symbol}`,
-          fiatAmount: formatFiatAmount('6,049,382,661.49', currency, currencySymbol),
+          fiatAmount: formatAmountWithCurrency('6,049,382,661.49', currency, currencySymbol),
         },
       },
       {
@@ -72,7 +72,7 @@ describe('formatter', () => {
         currency,
         expected: {
           amount: `1,000 ${symbol}`,
-          fiatAmount: formatFiatAmount('10,000.00', currency, currencySymbol),
+          fiatAmount: formatAmountWithCurrency('10,000.00', currency, currencySymbol),
         },
       },
       {
@@ -80,21 +80,27 @@ describe('formatter', () => {
         price: 10,
         symbol,
         currency,
-        expected: { amount: `1 ${symbol}`, fiatAmount: formatFiatAmount('10.00', currency, currencySymbol) },
+        expected: {
+          amount: `1 ${symbol}`,
+          fiatAmount: formatAmountWithCurrency('10.00', currency, currencySymbol),
+        },
       },
       {
         amount: halfEther,
         price: 10,
         symbol,
         currency,
-        expected: { amount: `<1 ${symbol}`, fiatAmount: formatFiatAmount('5.00', currency, currencySymbol) },
+        expected: {
+          amount: `<1 ${symbol}`,
+          fiatAmount: formatAmountWithCurrency('5.00', currency, currencySymbol),
+        },
       },
       {
         amount: oneWei,
         price: 10,
         symbol,
         currency,
-        expected: { amount: `<1 ${symbol}`, fiatAmount: formatFiatAmount('<0.01', currency) },
+        expected: { amount: `<1 ${symbol}`, fiatAmount: formatAmountWithCurrency('<0.01', currency) },
       },
     ])(
       'formatMetrics($amount, $price, $symbol, $currency) -> $expected.amount, $expected.fiatAmount',
@@ -114,7 +120,7 @@ describe('formatter', () => {
         currency,
         expected: {
           amount: `1.00000 ${symbol}`,
-          fiatAmount: formatFiatAmount('10.00', currency, currencySymbol),
+          fiatAmount: formatAmountWithCurrency('10.00', currency, currencySymbol),
         },
       },
       {
@@ -124,7 +130,7 @@ describe('formatter', () => {
         currency,
         expected: {
           amount: `0.50000 ${symbol}`,
-          fiatAmount: formatFiatAmount('5.00', currency, currencySymbol),
+          fiatAmount: formatAmountWithCurrency('5.00', currency, currencySymbol),
         },
       },
       {
@@ -132,7 +138,7 @@ describe('formatter', () => {
         price: 10,
         symbol,
         currency,
-        expected: { amount: `<0.00001 ${symbol}`, fiatAmount: formatFiatAmount('<0.01', currency) },
+        expected: { amount: `<0.00001 ${symbol}`, fiatAmount: formatAmountWithCurrency('<0.01', currency) },
       },
       {
         amount: oneEther,
@@ -141,7 +147,7 @@ describe('formatter', () => {
         currency,
         expected: {
           amount: `1.00000 ${symbol}`,
-          fiatAmount: formatFiatAmount('100,000.00', currency, currencySymbol),
+          fiatAmount: formatAmountWithCurrency('100,000.00', currency, currencySymbol),
         },
       },
       {
@@ -151,7 +157,7 @@ describe('formatter', () => {
         currency,
         expected: {
           amount: `100.00000 ${symbol}`,
-          fiatAmount: formatFiatAmount('10,000,000.00', currency, currencySymbol),
+          fiatAmount: formatAmountWithCurrency('10,000,000.00', currency, currencySymbol),
         },
       },
       {
@@ -161,7 +167,7 @@ describe('formatter', () => {
         currency,
         expected: {
           amount: `123,456.00000 ${symbol}`,
-          fiatAmount: formatFiatAmount('12,345,600,000.00', currency, currencySymbol),
+          fiatAmount: formatAmountWithCurrency('12,345,600,000.00', currency, currencySymbol),
         },
       },
     ])(
@@ -180,21 +186,27 @@ describe('formatter', () => {
         price: 10,
         symbol,
         currency,
-        expected: { amount: `1 ${symbol}`, fiatAmount: formatFiatAmount('10.00', currency, currencySymbol) },
+        expected: {
+          amount: `1 ${symbol}`,
+          fiatAmount: formatAmountWithCurrency('10.00', currency, currencySymbol),
+        },
       },
       {
         amount: halfEther,
         price: 10,
         symbol,
         currency,
-        expected: { amount: `<1 ${symbol}`, fiatAmount: formatFiatAmount('5.00', currency, currencySymbol) },
+        expected: {
+          amount: `<1 ${symbol}`,
+          fiatAmount: formatAmountWithCurrency('5.00', currency, currencySymbol),
+        },
       },
       {
         amount: oneWei,
         price: 10,
         symbol,
         currency,
-        expected: { amount: `<1 ${symbol}`, fiatAmount: formatFiatAmount('<0.01', currency) },
+        expected: { amount: `<1 ${symbol}`, fiatAmount: formatAmountWithCurrency('<0.01', currency) },
       },
     ])(
       'formatMetrics($amount, $price, $symbol, $currency) -> $expected.amount, $expected.fiatAmount',
@@ -202,6 +214,23 @@ describe('formatter', () => {
         expect(formatMetrics(amount, price, symbol, currency)).toEqual(expected)
       },
     )
+  })
+
+  describe('formatFiatAmount', () => {
+    test.each([
+      { amount: 0, currency: 'USD', expected: '= USD $0.00' },
+      { amount: 0, currency: 'EUR', expected: '= EUR €0.00' },
+      { amount: 5, currency: 'USD', expected: '= USD $5.00' },
+      { amount: 5, currency: 'EUR', expected: '= EUR €5.00' },
+      { amount: 5000, currency: 'USD', expected: '= USD $5,000.00' },
+      { amount: 5000, currency: 'EUR', expected: '= EUR €5,000.00' },
+      { amount: 0.01, currency: 'USD', expected: '= USD $0.01' },
+      { amount: 0.01, currency: 'EUR', expected: '= EUR €0.01' },
+      { amount: 0.001, currency: 'USD', expected: '= USD <0.01' },
+      { amount: 0.001, currency: 'EUR', expected: '= EUR <0.01' },
+    ])('formatFiatAmount($amount, $currency) -> $expected', ({ amount, currency, expected }) => {
+      expect(formatFiatAmount(amount, currency)).toBe(expected)
+    })
   })
 
   describe('getFiatAmount', () => {
