@@ -4,6 +4,7 @@ import { cn } from '@/lib/utils'
 import { Popover } from '@/components/Popover'
 import { FaRegQuestionCircle } from 'react-icons/fa'
 import { RiArrowUpSFill, RiArrowDownSFill } from 'react-icons/ri'
+import { TooltipProps } from '@/app/collective-rewards/rewards'
 
 export type ISortConfig = {
   key: string
@@ -13,7 +14,7 @@ export type ISortConfig = {
 export type TableHeader = {
   label: string
   className: string
-  tooltip?: string
+  tooltip?: TooltipProps
   sortKey?: string
 }
 
@@ -38,7 +39,13 @@ export const TableHeaderCell: FC<TableHeaderProps> = ({
     >
       <div className="flex flex-row">
         {tooltip && (
-          <Popover content={tooltip} className="font-normal text-sm" size="small" trigger="hover">
+          <Popover
+            content={tooltip.text}
+            className="font-normal text-sm"
+            size="small"
+            trigger="hover"
+            {...tooltip.popoverProps}
+          >
             <FaRegQuestionCircle className="mr-1 self-center" />
           </Popover>
         )}

@@ -27,12 +27,33 @@ enum RewardsColumnKeyEnum {
 const tableHeaders: TableHeader[] = [
   { label: 'Builder', className: 'w-[14%]', sortKey: RewardsColumnKeyEnum.builder },
   { label: 'Backer Rewards %', className: 'w-[10%]', sortKey: RewardsColumnKeyEnum.rewardPercentage },
-  { label: 'Last Cycle Rewards', className: 'w-[22%]', sortKey: RewardsColumnKeyEnum.lastCycleRewards },
-  { label: 'Est. Backers Rewards', className: 'w-[22%]', sortKey: RewardsColumnKeyEnum.estimatedRewards },
+  {
+    label: 'Last Cycle Rewards',
+    className: 'w-[22%]',
+    sortKey: RewardsColumnKeyEnum.lastCycleRewards,
+    tooltip: { text: 'The Backers’ share of the Builder’s rewards in the previous Cycle' },
+  },
+  {
+    label: 'Est. Backers Rewards',
+    className: 'w-[22%]',
+    sortKey: RewardsColumnKeyEnum.estimatedRewards,
+    tooltip: {
+      text: (
+        <>
+          The estimated Backers’ share of the Builder’s rewards which will become claimable in the next Cycle.
+          <br />
+          <br />
+          The displayed information is dynamic and may vary based on total rewards and user activity. This
+          data is for informational purposes only.
+        </>
+      ),
+      popoverProps: { size: 'medium' },
+    },
+  },
   {
     label: 'Total Allocations',
     className: 'w-[16%]',
-    tooltip: 'The Builder’s share of the total stRIF allocations',
+    tooltip: { text: 'The Builder’s share of the total stRIF allocations' },
     sortKey: RewardsColumnKeyEnum.totalAllocationPercentage,
   },
   // TODO: text-center isn't applied

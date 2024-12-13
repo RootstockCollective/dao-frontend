@@ -51,7 +51,11 @@ type ClaimableRewardsProps = Omit<RewardDetails, 'gauge'>
 export const ClaimableRewards: FC<ClaimableRewardsProps> = ({ tokens: { rif, rbtc }, ...rest }) => {
   return (
     <MetricsCard borderless>
-      <MetricsCardTitle title="Claimable rewards" data-testid="ClaimableRewards" />
+      <MetricsCardTitle
+        title="Claimable rewards"
+        data-testid="ClaimableRewards"
+        tooltip={{ text: 'Your rewards available to claim' }}
+      />
       <TokenRewardsMetrics {...rest} token={rif} />
       <TokenRewardsMetrics {...rest} token={rbtc} />
     </MetricsCard>

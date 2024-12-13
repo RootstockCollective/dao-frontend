@@ -103,7 +103,15 @@ export const EstimatedRewards: FC<EstimatedRewardsProps> = ({ tokens: { rif, rbt
         title="Estimated rewards"
         data-testid="EstimatedRewards"
         tooltip={{
-          text: 'The information displayed is dynamic and may vary based on total rewards available and user activity. This data is provided for informational purposes only. Please note that the final reward amount will be determined at the end of the cycle.',
+          text: (
+            <>
+              Your estimated rewards which will become claimable at the start of the next Cycle.
+              <br />
+              <br />
+              The displayed information is dynamic and may vary based on total rewards and user activity. This
+              data is for informational purposes only.
+            </>
+          ),
           popoverProps: { size: 'medium' },
         }}
       />
