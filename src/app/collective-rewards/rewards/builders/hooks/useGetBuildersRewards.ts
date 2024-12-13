@@ -19,7 +19,7 @@ import { useGetBuildersByState } from '@/app/collective-rewards/user'
 import { Address, parseUnits } from 'viem'
 import { Allocations, AllocationsContext } from '@/app/collective-rewards/allocations/context'
 import { useContext, useMemo } from 'react'
-import { isBuilderRewarded } from '@/app/collective-rewards//utils'
+import { isBuilderRewardable } from '@/app/collective-rewards//utils'
 
 const isBuilderShown = (
   { stateFlags: { kycApproved, revoked, communityApproved, paused }, address }: RequiredBuilder,
@@ -149,7 +149,7 @@ export const useGetBuildersRewards = ({ rif, rbtc }: { [token: string]: Token },
 
       const weiPerEther = parseUnits('1', 18)
 
-      const isRewarded = isBuilderRewarded(stateFlags)
+      const isRewarded = isBuilderRewardable(stateFlags)
 
       // calculate rif estimated rewards
       const rewardRif = rewardsERC20 ?? 0n
