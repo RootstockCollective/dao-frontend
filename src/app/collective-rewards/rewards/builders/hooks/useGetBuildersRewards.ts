@@ -105,8 +105,8 @@ export const useGetBuildersRewards = ({ rif, rbtc }: { [token: string]: Token },
     lastCycleAfterDistribution.toSeconds(),
     endDistributionWindow.toSeconds(),
   )
-  const rifBuildersRewardsAmount = getNotifyRewardAmount(notifyRewardEventLastCycle, rif, 'builderAmount_')
-  const rbtcBuildersRewardsAmount = getNotifyRewardAmount(notifyRewardEventLastCycle, rbtc, 'builderAmount_')
+  const rifBuildersRewardsAmount = getNotifyRewardAmount(notifyRewardEventLastCycle, rif, 'backersAmount_')
+  const rbtcBuildersRewardsAmount = getNotifyRewardAmount(notifyRewardEventLastCycle, rbtc, 'backersAmount_')
 
   // get the backer reward percentage for each builder we want to show
   const buildersAddress = builders.map(({ address }) => address)
