@@ -15,6 +15,10 @@ export const useGetGaugesBackerRewardsClaimed = (
   const { data: eventsData, isLoading, error } = useGetGaugesEvents(gauges, 'BackerRewardsClaimed')
 
   const data = useMemo(() => {
+    if (!eventsData) {
+      return {}
+    }
+
     return Object.keys(eventsData).reduce((acc: { [key: string]: (typeof eventsData)[Address] }, key) => {
       let events = eventsData[key as Address]
       if (backer) {

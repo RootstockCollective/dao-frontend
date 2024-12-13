@@ -11,6 +11,10 @@ export const useGetGaugesNotifyReward = (
   const { data: eventsData, isLoading, error } = useGetGaugesEvents(gauges, 'NotifyReward')
 
   const data = useMemo(() => {
+    if (!eventsData) {
+      return {}
+    }
+
     return Object.keys(eventsData).reduce((acc: { [key: string]: (typeof eventsData)[Address] }, key) => {
       let events = eventsData[key as Address]
       if (rewardToken) {
