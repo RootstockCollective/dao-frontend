@@ -17,7 +17,7 @@ export const isBuilderActive = (stateFlags?: BuilderStateFlags) => {
   )
 }
 
-export const isBuilderRewarded = (stateFlags?: BuilderStateFlags) => {
+export const isBuilderRewardable = (stateFlags?: BuilderStateFlags) => {
   return !!(
     stateFlags &&
     stateFlags.activated &&

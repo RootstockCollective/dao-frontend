@@ -8,7 +8,7 @@ import { useGetBuildersByState } from '@/app/collective-rewards/user'
 import { RequiredBuilder } from '@/app/collective-rewards/types'
 import { useGaugesGetFunction } from '@/app/collective-rewards/shared'
 import { useCycleContext } from '@/app/collective-rewards/metrics'
-import { formatEther } from 'viem'
+import { formatEther, parseUnits } from 'viem'
 import { useMemo } from 'react'
 
 export const useGetABI = () => {
@@ -70,7 +70,7 @@ export const useGetABI = () => {
     }
 
     const topFiveBuilders = builders
-      .reduce<Array<{ allocation: bigint; current: number }>>((acc, builder) => {
+      .reduce<Array<{ allocation: bigint; current: bigint }>>((acc, builder) => {
         const allocation = totalAllocation[builder.gauge]
         const rewardPct = backersRewardsPct[builder.address]
         if (allocation && rewardPct) {
@@ -81,18 +81,19 @@ export const useGetABI = () => {
       .sort((a, b) => (a.allocation > b.allocation ? -1 : 1))
       .slice(0, 5)
 
-    const weightedAverageBuilderRewardsPct =
-      topFiveBuilders.reduce(
-        (acc, { allocation, current }) =>
-          acc + Number(((allocation * 100n) / sumTotalAllocation) * BigInt(current)),
-        0,
-      ) / 100
+    // We use the multiplication with the current backer rewards % to avoid losing precision
+    // Thats why we don't need to multiply by 100
+    const weightedAverageBuilderRewardsPct = topFiveBuilders.reduce(
+      (acc, { allocation, current }) => acc + (allocation * current) / sumTotalAllocation,
+      0n,
+    )
+    const weightedAverageBuilderRewardsPctInEther = Number(formatEther(weightedAverageBuilderRewardsPct))
 
     const totalAllocationInEther = Number(formatEther(sumTotalAllocation))
     const rewardsPerStRIFPerCycle =
-      (cyclePayout * (weightedAverageBuilderRewardsPct / totalAllocationInEther / rifPrice)) / 100
+      cyclePayout * (weightedAverageBuilderRewardsPctInEther / totalAllocationInEther)
 
-    return (Math.pow(1 + rewardsPerStRIFPerCycle, 26) - 1) * 100
+    return (Math.pow(1 + rewardsPerStRIFPerCycle / rifPrice, 26) - 1) * 100
   }, [backersRewardsPct, builders, prices, rbtcRewards, rifRewards, totalAllocation])
 
   const isLoading =

@@ -10,7 +10,7 @@ import {
   BuilderRewardDetails,
   useGetBackerRewardPercentage,
 } from '@/app/collective-rewards/rewards'
-import { isBuilderRewarded, useHandleErrors } from '@/app/collective-rewards/utils'
+import { isBuilderRewardable, useHandleErrors } from '@/app/collective-rewards/utils'
 import { usePricesContext } from '@/shared/context/PricesContext'
 import { FC, useEffect, useState } from 'react'
 import { Address, parseUnits } from 'viem'
@@ -68,7 +68,7 @@ const TokenRewards: FC<TokenRewardsProps> = ({ builder, gauge, token: { id, symb
 
   const { getBuilderByAddress } = useBuilderContext()
   const claimingBuilder = getBuilderByAddress(builder)
-  const isRewarded = isBuilderRewarded(claimingBuilder?.stateFlags)
+  const isRewarded = isBuilderRewardable(claimingBuilder?.stateFlags)
 
   const error =
     rewardsError ?? totalPotentialRewardsError ?? rewardSharesError ?? backerRewardsPctError ?? cycleError
