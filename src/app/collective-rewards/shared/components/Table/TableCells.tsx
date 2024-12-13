@@ -1,5 +1,12 @@
 import { AllocationsContext } from '@/app/collective-rewards/allocations/context'
-import { BuilderRewardPercentage, Reward } from '@/app/collective-rewards/rewards'
+import {
+  BackerRewardPercentage,
+  formatFiatAmount,
+  formatMetrics,
+  formatSymbol,
+  getFiatAmount,
+  Reward,
+} from '@/app/collective-rewards/rewards'
 import { TableHeader } from '@/app/collective-rewards/shared'
 import { BuilderStateFlags } from '@/app/collective-rewards/types'
 import {
@@ -14,46 +21,56 @@ import { Popover } from '@/components/Popover'
 import { ProgressBar } from '@/components/ProgressBar'
 import { TableCell } from '@/components/Table'
 import { Label, Typography } from '@/components/Typography'
-import { cn, formatCurrency, shortAddress, toFixed } from '@/lib/utils'
+import { cn, shortAddress, toFixed } from '@/lib/utils'
 import { FC, memo, useContext, useMemo } from 'react'
 import { FaArrowDown, FaArrowUp, FaCircle } from 'react-icons/fa'
-import { Address, isAddress } from 'viem'
+import { Address, isAddress, parseEther, parseUnits } from 'viem'
 
-export function getFormattedCurrency(value: number, symbol: string) {
-  const formattedCurrency = formatCurrency(value, symbol)
-  return `${formattedCurrency.substring(0, 1)}${symbol} ${formattedCurrency.substring(1)}`
+type RewardCellValueProps = {
+  reward: Reward
+}
+
+const RewardCellValue: FC<RewardCellValueProps> = ({ reward }) => {
+  const {
+    amount: { value, price, symbol, currency },
+    logo,
+  } = reward
+
+  const fiatAmount = getFiatAmount(value, price)
+
+  return (
+    <div className="flex-1">
+      <div className="flex items-center gap-1">
+        <Label className="font-normal text-sm leading-none text-text-primary font-rootstock-sans">
+          {formatSymbol(value, symbol)}
+        </Label>
+        <div className="ml-1">{logo}</div>
+      </div>
+      <Label className="font-normal text-sm leading-none text-disabled-primary font-rootstock-sans">
+        {formatFiatAmount(fiatAmount, currency)}
+      </Label>
+    </div>
+  )
 }
 
 type RewardCellProps = {
   tableHeader: TableHeader
   rewards: Reward[]
 }
-
 export const RewardCell: FC<RewardCellProps> = ({ tableHeader: { className }, rewards }) => (
   <TableCell className={cn(className, 'border-solid')}>
     <div className="flex flex-nowrap flex-row gap-1">
-      {rewards &&
-        rewards.map(({ crypto: { value, symbol }, fiat: { value: fiatValue, symbol: fiatSymbol }, logo }) => (
-          <div key={value + symbol} className="flex-1">
-            {/* TODO: if the value is very small, should we show it in Gwei/wei? */}
-
-            <div className="flex items-center gap-1">
-              <Label className="font-normal text-sm leading-none text-text-primary font-rootstock-sans">
-                {toFixed(value)}
-              </Label>
-              <div className="ml-1">{logo}</div>
-            </div>
-            <Label className="font-normal text-sm leading-none text-disabled-primary font-rootstock-sans">
-              {`= ${getFormattedCurrency(fiatValue, fiatSymbol)}`}
-            </Label>
-          </div>
-        ))}
+      {rewards && rewards.map((reward, index) => <RewardCellValue key={index} reward={reward} />)}
     </div>
   </TableCell>
 )
 
 export const LazyRewardCell = memo(RewardCell, ({ rewards: prevReward }, { rewards: nextReward }) =>
-  prevReward.every((reward, key) => reward.fiat.value === nextReward[key].fiat.value),
+  prevReward.every(
+    (reward, key) =>
+      reward.amount.value === nextReward[key].amount.value &&
+      reward.amount.price === nextReward[key].amount.price,
+  ),
 )
 
 type BuilderStatusFlagProps = {
@@ -131,9 +148,10 @@ export const BuilderNameCell: FC<BuilderCellProps> = ({
 
 type BackerRewardsPercentageProps = {
   tableHeader: TableHeader
-  percentage: BuilderRewardPercentage | null
+  percentage: BackerRewardPercentage | null
 }
 
+const toPercentage = (value: bigint) => Number((value * 100n) / parseEther('1'))
 export const BackerRewardsPercentage: FC<BackerRewardsPercentageProps> = ({
   tableHeader: { className },
   percentage,
@@ -141,7 +159,10 @@ export const BackerRewardsPercentage: FC<BackerRewardsPercentageProps> = ({
   const renderDelta = useMemo(() => {
     if (!percentage) return null
 
-    const deltaPercentage = percentage.next - percentage.current
+    const current = toPercentage(percentage.current)
+    const next = toPercentage(percentage.next)
+
+    const deltaPercentage = next - current
     if (deltaPercentage > 0) {
       const colorGreen = '#1bc47d'
       return (
@@ -165,7 +186,7 @@ export const BackerRewardsPercentage: FC<BackerRewardsPercentageProps> = ({
   return (
     <TableCell className={cn(className, 'border-b-0')}>
       <div className="flex flex-row gap-x-1 font-rootstock-sans justify-center gap-2 ">
-        <div>{percentage?.current}</div>
+        <div>{percentage ? toPercentage(percentage.current) : ''}</div>
         {renderDelta}
       </div>
     </TableCell>

@@ -1,13 +1,12 @@
-import { BuilderRewardPercentage, getPercentageData } from '@/app/collective-rewards/rewards/utils'
 import { BackersManagerAbi } from '@/lib/abis/v2/BackersManagerAbi'
 import { AVERAGE_BLOCKTIME } from '@/lib/constants'
 import { BackersManagerAddress } from '@/lib/contracts'
-import { useEffect, useState } from 'react'
+import { useMemo } from 'react'
 import { Address } from 'viem'
 import { useReadContract } from 'wagmi'
+import { getBackerRewardPercentage } from '../utils'
 
 export const useGetBackerRewardPercentage = (builder: Address, timestampInSeconds?: number) => {
-  const [rewardPercentageData, setRewardPercentageData] = useState<BuilderRewardPercentage>()
   const { data, isLoading, error } = useReadContract({
     address: BackersManagerAddress,
     abi: BackersManagerAbi,
@@ -18,18 +17,14 @@ export const useGetBackerRewardPercentage = (builder: Address, timestampInSecond
     },
   })
 
-  useEffect(() => {
-    if (!data) return
+  const backerRewardPercentage = useMemo(() => {
+    const [previous, next, cooldownEndTime] = data || [0n, 0n, 0n]
 
-    const [previous, next, cooldownEndTime] = data
-
-    const percentageData = getPercentageData(previous, next, cooldownEndTime, timestampInSeconds)
-
-    setRewardPercentageData(percentageData)
+    return getBackerRewardPercentage(previous, next, cooldownEndTime, timestampInSeconds)
   }, [data, timestampInSeconds])
 
   return {
-    data: rewardPercentageData,
+    data: backerRewardPercentage,
     isLoading,
     error,
   }
