@@ -4,16 +4,16 @@ import { Jdenticon } from '@/components/Header/Jdenticon'
 import { Typography } from '@/components/Typography'
 import { FC } from 'react'
 import { Builder, BuilderProposal, BuilderStateFlags } from '@/app/collective-rewards/types'
-import { getBuilderInactiveState, isBuilderActive } from '@/app/collective-rewards/utils'
+import { getBuilderInactiveState, InactiveState, isBuilderActive } from '@/app/collective-rewards/utils'
 
 export type BuilderAllocationHeaderProps = Pick<Builder, 'builderName' | 'address' | 'stateFlags' | 'gauge'> &
   Pick<BuilderProposal, 'date'>
 
 const haltedClass = 'bg-[#932309] color-text-primary py-1 px-1 text-[12px]'
-const haltedStateBadges = {
+
+const haltedStateBadges: { [key in InactiveState]: JSX.Element } = {
   Paused: <Badge content="Paused" className="bg-[#F9E1FF] text-secondary py-1 px-1 text-[12px]" />,
   Deactivated: <Badge content="Deactivated" className={haltedClass} />,
-  KYCRevoked: <Badge content="KYC Revoked" className={haltedClass} />,
   Revoked: <Badge content="Revoked" className={haltedClass} />,
 }
 
