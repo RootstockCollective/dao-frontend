@@ -1,4 +1,4 @@
-import { Context, createContext, FC, useContext, useEffect, useMemo, useState } from 'react'
+import { createContext, FC, useContext, useMemo, useState } from 'react'
 
 type PaginationConfig<T> = {
   data: T[]

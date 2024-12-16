@@ -87,12 +87,11 @@ const BuilderStatusFlag: FC<BuilderStatusFlagProps> = ({ stateFlags }) => {
   const isActive = isBuilderActive(stateFlags)
 
   const color = getStatusColor(isActive, builderInactiveState)
-  const content = builderInactiveState
 
   return (
     <Popover
       disabled={isActive}
-      content={content}
+      content={`Status: ${builderInactiveState}`}
       className="font-normal text-sm flex items-center"
       size="small"
       trigger="hover"
@@ -131,7 +130,7 @@ export const BuilderNameCell: FC<BuilderCellProps> = ({
             trigger="hover"
             disabled={!builderName || isAddress(builderName)}
           >
-            <Typography tagVariant="label" className="font-semibold line-clamp-1 text-wrap min-w-28">
+            <Typography tagVariant="label" className="font-semibold line-clamp-1 text-wrap min-w-28 relative">
               <AddressOrAliasWithCopy
                 addressOrAlias={builderName || address}
                 clipboard={address}

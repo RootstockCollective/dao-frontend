@@ -51,11 +51,11 @@ export const withCopy = <P extends {}>(Component: ComponentType<P>): FC<P & With
     const copyButtonClass = `px-2 hover:cursor-pointer ${animationShown ? 'animate-translate-x' : ''}`
     const feedbackClass = `text-sm ${feedback.color} animate-fade-in-slide-in`
     const animationClass = `${animationShown ? 'animate-fade-out-slide-out' : 'hidden'}`
-    const temp = `${animationShown ? 'hidden' : ''}`
+    const componentVisibilityClass = `${animationShown ? 'hidden' : ''}`
 
     return (
       <span className="flex items-center">
-        <div className={temp}>
+        <div className={componentVisibilityClass}>
           <Component {...(props as P)} />
         </div>
         <span className={animationClass}>{clipboardAnimationText ?? clipboard}</span>
