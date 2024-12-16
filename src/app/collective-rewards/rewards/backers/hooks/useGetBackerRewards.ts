@@ -12,7 +12,7 @@ import { useGaugesGetFunction } from '@/app/collective-rewards/shared'
 import { Address } from 'viem'
 import { usePricesContext } from '@/shared/context/PricesContext'
 import { useGetBuildersByState } from '@/app/collective-rewards//user'
-import { Builder, BuilderStateFlags } from '@/app/collective-rewards/types'
+import { BuilderStateFlags, RequiredBuilder } from '@/app/collective-rewards/types'
 import { useMemo } from 'react'
 
 export type BackerRewards = {
@@ -48,7 +48,7 @@ export const useGetBackerRewards = (
     data: builders,
     isLoading: buildersLoading,
     error: buildersError,
-  } = useGetBuildersByState<Required<Builder>>()
+  } = useGetBuildersByState<RequiredBuilder>()
   const buildersAddress = builders.map(({ address }) => address)
   const {
     data: backersRewardsPct,

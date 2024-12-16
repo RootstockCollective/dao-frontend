@@ -14,13 +14,12 @@ import {
 } from '@/app/collective-rewards/rewards'
 import { usePricesContext } from '@/shared/context/PricesContext'
 import { useGaugesGetFunction } from '@/app/collective-rewards/shared'
-import { Builder, BuilderStateFlags } from '@/app/collective-rewards/types'
+import { BuilderStateFlags, RequiredBuilder } from '@/app/collective-rewards/types'
 import { useGetBuildersByState } from '@/app/collective-rewards/user'
 import { Address, parseUnits } from 'viem'
 import { Allocations, AllocationsContext } from '@/app/collective-rewards/allocations/context'
 import { useContext, useMemo } from 'react'
-
-type RequiredBuilder = Required<Builder>
+import { isBuilderRewardable } from '@/app/collective-rewards//utils'
 
 const isBuilderShown = (
   { stateFlags: { kycApproved, revoked, communityApproved, paused }, address }: RequiredBuilder,
@@ -65,11 +64,6 @@ export const useGetBuildersRewards = ({ rif, rbtc }: { [token: string]: Token },
     isLoading: totalAllocationLoading,
     error: totalAllocationError,
   } = useGaugesGetFunction(gauges, 'totalAllocation')
-
-  const sumTotalAllocation = Object.values(totalAllocation ?? {}).reduce(
-    (acc, value) => acc + (value ?? 0n),
-    0n,
-  )
 
   const {
     data: rewardShares,
@@ -155,20 +149,24 @@ export const useGetBuildersRewards = ({ rif, rbtc }: { [token: string]: Token },
 
       const weiPerEther = parseUnits('1', 18)
 
+      const isRewarded = isBuilderRewardable(stateFlags)
+
       // calculate rif estimated rewards
       const rewardRif = rewardsERC20 ?? 0n
-      const rewardsAmountRif = totalPotentialRewards
-        ? (rewardRif * builderRewardShares) / totalPotentialRewards
-        : 0n
+      const rewardsAmountRif =
+        isRewarded && totalPotentialRewards ? (rewardRif * builderRewardShares) / totalPotentialRewards : 0n
       const estimatedRifAmount = (rewardsAmountRif * rewardPercentageToApply) / weiPerEther
 
       // calculate rbtc estimated rewards
       const rewardRbtc = rewardsCoinbase ?? 0n
-      const rewardsAmountRbtc = totalPotentialRewards
-        ? (rewardRbtc * builderRewardShares) / totalPotentialRewards
-        : 0n
+      const rewardsAmountRbtc =
+        isRewarded && totalPotentialRewards ? (rewardRbtc * builderRewardShares) / totalPotentialRewards : 0n
       const estimatedRbtcAmount = (rewardsAmountRbtc * rewardPercentageToApply) / weiPerEther
 
+      const sumTotalAllocation = Object.values(totalAllocation).reduce(
+        (acc, value) => acc + (value ?? 0n),
+        0n,
+      )
       const totalAllocationPercentage = sumTotalAllocation
         ? (totalAllocation[gauge] * 100n) / sumTotalAllocation
         : 0n
@@ -233,7 +231,6 @@ export const useGetBuildersRewards = ({ rif, rbtc }: { [token: string]: Token },
     rewardShares,
     totalPotentialRewards,
     backersRewardsPct,
-    sumTotalAllocation,
     rifBuildersRewardsAmount,
     rbtcBuildersRewardsAmount,
     rifPrice,
