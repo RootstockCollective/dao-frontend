@@ -135,23 +135,28 @@ export const sanitizeInputNumber = (num: number) => {
  * Formats a number as a currency
  * @param value - The number to format
  * @param currency - The currency to format the number as (default: 'USD')
+ * @param defaultIfNaN
  * @returns The formatted currency string
  * @example formatCurrency(123456.789) // '$123,456.79'
  * @example formatCurrency(123456.789, 'EUR') // '€123,456.79'
  * @example formatCurrency(0.0001) // '<$0.00'
  * @example formatCurrency(0) // '$0.00'
  */
-export const formatCurrency = (value: number, currency = 'USD'): string => {
+export const formatCurrency = (value: number, currency = 'USD', defaultIfNaN?: number): string => {
   if (0 < value && value < 0.01) {
     return '<$0.01'
   }
-
-  return new Intl.NumberFormat('en-US', {
+  const formattedValue = new Intl.NumberFormat('en-US', {
     style: 'currency',
     currency,
     minimumFractionDigits: 2,
     maximumFractionDigits: 2,
   }).format(value)
+
+  if (defaultIfNaN !== undefined && Number.isNaN(value)) {
+    return defaultIfNaN.toString()
+  }
+  return formattedValue
 }
 
 /**

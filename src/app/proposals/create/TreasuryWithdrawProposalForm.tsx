@@ -317,7 +317,7 @@ export const TreasuryWithdrawProposalForm = () => {
                         />
                       </FormControl>
                       {amountValue?.toString() && (
-                        <FormDescription>= USD {formatCurrency(amountUsd)}</FormDescription>
+                        <FormDescription>= USD {formatCurrency(amountUsd, 'USD', 0)}</FormDescription>
                       )}
                       <FormMessage />
                     </FormItem>
