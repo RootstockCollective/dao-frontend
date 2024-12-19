@@ -12,7 +12,6 @@ import {
   useBackerRewardsContext,
   ClaimYourRewardsButton,
 } from '@/app/collective-rewards/rewards'
-import { formatBalanceToHuman } from '@/app/user/Balances/balanceUtils'
 import { useHandleErrors } from '@/app/collective-rewards/utils'
 import { withSpinner } from '@/components/LoadingSpinner/withLoadingSpinner'
 
@@ -23,7 +22,6 @@ type TokenRewardsMetricsProps = {
 }
 
 const TokenRewardsMetrics: FC<TokenRewardsMetricsProps> = ({
-  gauges,
   token: { address, symbol },
   currency = 'USD',
 }) => {
@@ -35,12 +33,7 @@ const TokenRewardsMetrics: FC<TokenRewardsMetricsProps> = ({
 
   const tokenPrice = prices[symbol]?.price ?? 0
 
-  const { amount, fiatAmount } = formatMetrics(
-    Number(formatBalanceToHuman(earnedRewards)),
-    tokenPrice,
-    symbol,
-    currency,
-  )
+  const { amount, fiatAmount } = formatMetrics(earnedRewards, tokenPrice, symbol, currency)
 
   const { claimRewards, isClaimable } = useClaimBackerRewards(address)
 
@@ -48,7 +41,7 @@ const TokenRewardsMetrics: FC<TokenRewardsMetricsProps> = ({
     amount,
     fiatAmount,
     isLoading,
-    children: <ClaimYourRewardsButton onClick={() => claimRewards(gauges)} disabled={!isClaimable} />,
+    children: <ClaimYourRewardsButton onClick={() => claimRewards()} disabled={!isClaimable} />,
   })
 }
 
@@ -57,7 +50,11 @@ type ClaimableRewardsProps = Omit<RewardDetails, 'gauge'>
 export const ClaimableRewards: FC<ClaimableRewardsProps> = ({ tokens: { rif, rbtc }, ...rest }) => {
   return (
     <MetricsCard borderless>
-      <MetricsCardTitle title="Claimable rewards" data-testid="ClaimableRewards" />
+      <MetricsCardTitle
+        title="Claimable rewards"
+        data-testid="ClaimableRewards"
+        tooltip={{ text: 'Your rewards available to claim' }}
+      />
       <TokenRewardsMetrics {...rest} token={rif} />
       <TokenRewardsMetrics {...rest} token={rbtc} />
     </MetricsCard>

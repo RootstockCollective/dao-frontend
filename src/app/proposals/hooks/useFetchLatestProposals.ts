@@ -44,6 +44,7 @@ export const useFetchAllProposals = () => {
 
   return { latestProposals }
 }
+export type LatestProposalResponse = ReturnType<typeof useFetchAllProposals>['latestProposals'][number]
 
 type FunctionSelectorArgs = {
   functionName: string

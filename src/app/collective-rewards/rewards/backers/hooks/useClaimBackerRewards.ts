@@ -7,15 +7,20 @@ import { useBackerRewardsContext } from '@/app/collective-rewards/rewards'
 
 export const useClaimBackerRewards = (rewardToken?: Address) => {
   const { writeContractAsync, error: executionError, data: hash, isPending } = useWriteContract()
-  const { canClaim, isLoading: canClaimLoading, error: canClaimError } = useBackerRewardsContext()
+  const {
+    gaugesWithEarns,
+    isLoading: backerRewardsLoading,
+    error: backerRewardsError,
+  } = useBackerRewardsContext()
 
   const { isLoading, isSuccess, data, error: receiptError } = useWaitForTransactionReceipt({ hash })
 
-  const isClaimable = !canClaimLoading && canClaim(rewardToken)
+  const isClaimable = !backerRewardsLoading && gaugesWithEarns(rewardToken).length > 0
+  const gauges = gaugesWithEarns(rewardToken)
 
-  const error = executionError || receiptError || canClaimError
+  const error = executionError || receiptError || backerRewardsError
 
-  const claimBackerReward = (gauges: Address[]) => {
+  const claimBackerReward = () => {
     return writeContractAsync({
       abi: BackersManagerAbi,
       address: BackersManagerAddress,
@@ -37,7 +42,7 @@ export const useClaimBackerRewards = (rewardToken?: Address) => {
 
   return {
     isClaimable,
-    claimRewards: (gauges: Address[]) => isClaimable && claimBackerReward(gauges),
+    claimRewards: () => isClaimable && claimBackerReward(),
     error,
     isPendingTx: isPending,
     isLoadingReceipt: isLoading,

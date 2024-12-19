@@ -36,9 +36,8 @@ export const useGetGaugesEvents = <T extends EventName>(gauges: Address[], event
         return acc
       }, {})
     },
-    queryKey: ['useGetGaugesEvents', eventName],
+    queryKey: ['useGetGaugesEvents', eventName, gauges],
     refetchInterval: AVERAGE_BLOCKTIME,
-    initialData: {},
   })
 
   return {

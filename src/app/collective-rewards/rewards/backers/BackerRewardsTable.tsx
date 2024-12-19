@@ -4,7 +4,6 @@ import {
   BackerRewardsContextProvider,
   useGetBackerRewards,
 } from '@/app/collective-rewards/rewards'
-import { BuilderContextProviderWithPrices } from '@/app/collective-rewards/user'
 import {
   ISortConfig,
   TableHeader,
@@ -15,7 +14,7 @@ import {
   TotalAllocationCell,
 } from '@/app/collective-rewards/shared'
 import { TableBody, TableCore, TableHead, TableRow } from '@/components/Table'
-import { useHandleErrors } from '@/app/collective-rewards/utils'
+import { getCombinedFiatAmount, useHandleErrors } from '@/app/collective-rewards/utils'
 import { LoadingSpinner } from '@/components/LoadingSpinner'
 import { useBasicPaginationUi } from '@/shared/hooks/usePaginationUi'
 import { CycleContextProvider } from '@/app/collective-rewards/metrics'
@@ -33,14 +32,38 @@ enum RewardsColumnKeyEnum {
 const tableHeaders: TableHeader[] = [
   { label: 'Builder', className: 'w-[11%]', sortKey: RewardsColumnKeyEnum.builder },
   { label: 'Backer Rewards %', className: 'w-[11%]', sortKey: RewardsColumnKeyEnum.rewardPercentage },
-  { label: 'Estimated Rewards', className: 'w-[20%]', sortKey: RewardsColumnKeyEnum.estimatedRewards },
+  {
+    label: 'Estimated Rewards',
+    className: 'w-[20%]',
+    sortKey: RewardsColumnKeyEnum.estimatedRewards,
+    tooltip: {
+      text: (
+        <>
+          An estimate of this Cycle’s rewards from each Builder that will become fully claimable by the end of
+          the current Cycle. These rewards gradually become claimable and are added to your ‘Claimable
+          Rewards’ as the cycle progresses. To check the cycle completion, go to Collective Rewards → Current
+          Cycle.
+          <br />
+          <br />
+          The displayed information is dynamic and may vary based on total rewards and user activity. This
+          data is for informational purposes only.
+        </>
+      ),
+      popoverProps: { size: 'medium' },
+    },
+  },
   {
     label: 'Total Allocations',
     className: 'w-[18%]',
     sortKey: RewardsColumnKeyEnum.totalAllocationPercentage,
-    tooltip: 'Your share of the total allocations for each Builder',
+    tooltip: { text: 'Your share of the total allocations for each Builder' },
   },
-  { label: 'Claimable Rewards', className: 'w-[20%]', sortKey: RewardsColumnKeyEnum.claimableRewards },
+  {
+    label: 'Claimable Rewards',
+    className: 'w-[20%]',
+    sortKey: RewardsColumnKeyEnum.claimableRewards,
+    tooltip: { text: 'Your rewards from each Builder available to claim' },
+  },
   { label: 'All Time Rewards', className: 'w-[20%]', sortKey: RewardsColumnKeyEnum.allTimeRewards },
 ]
 
@@ -66,14 +89,22 @@ const RewardsTable: FC<BackerRewardsTable> = ({ builder, gauges, tokens }) => {
       rewardPercentage: (a: IRewardData, b: IRewardData) =>
         Number(a.rewardPercentage.current - b.rewardPercentage.current),
       estimatedRewards: (a: IRewardData, b: IRewardData) => {
-        return Number(a.estimatedRewards.rif.crypto.value - b.estimatedRewards.rif.crypto.value)
+        const aValue = getCombinedFiatAmount([a.estimatedRewards.rif.amount, a.estimatedRewards.rbtc.amount])
+        const bValue = getCombinedFiatAmount([b.estimatedRewards.rif.amount, b.estimatedRewards.rbtc.amount])
+        return aValue - bValue
       },
       totalAllocationPercentage: (a: IRewardData, b: IRewardData) =>
         Number(a.totalAllocationPercentage - b.totalAllocationPercentage),
-      claimableRewards: (a: IRewardData, b: IRewardData) =>
-        Number(a.claimableRewards.rif.crypto.value - b.claimableRewards.rif.crypto.value),
-      allTimeRewards: (a: IRewardData, b: IRewardData) =>
-        Number(a.allTimeRewards.rif.crypto.value - b.allTimeRewards.rif.crypto.value),
+      claimableRewards: (a: IRewardData, b: IRewardData) => {
+        const aValue = getCombinedFiatAmount([a.claimableRewards.rif.amount, a.claimableRewards.rbtc.amount])
+        const bValue = getCombinedFiatAmount([b.claimableRewards.rif.amount, b.claimableRewards.rbtc.amount])
+        return aValue - bValue
+      },
+      allTimeRewards: (a: IRewardData, b: IRewardData) => {
+        const aValue = getCombinedFiatAmount([a.allTimeRewards.rif.amount, a.allTimeRewards.rbtc.amount])
+        const bValue = getCombinedFiatAmount([b.allTimeRewards.rif.amount, b.allTimeRewards.rbtc.amount])
+        return aValue - bValue
+      },
     }
     return Object.values(rewardsData).toSorted((a: IRewardData, b: IRewardData) => {
       const { key, direction } = sortConfig

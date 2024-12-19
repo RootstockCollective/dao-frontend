@@ -18,9 +18,8 @@ export const CommunityItem = ({
   subtitle,
   nftAddress,
   description,
-  numberOfMembers,
 }: CommunityItemProps) => (
-  <div className="rounded-[8px] bg-input-bg p-[16px] w-[358px]">
+  <div className="rounded-[8px] bg-input-bg p-[16px] w-[358px]" data-testid={`${title}Card`}>
     <Link
       href={nftAddress ? `/communities/nft/${nftAddress}` : '/communities'}
       className="flex flex-col h-full"

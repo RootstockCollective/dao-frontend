@@ -7,7 +7,6 @@ import { MetricsCard } from '@/components/MetricsCard'
 import { Popover } from '@/components/Popover'
 import { TxStatusMessage } from '@/components/TxStatusMessage/TxStatusMessage'
 import { Paragraph, Span } from '@/components/Typography'
-import { toFixed } from '@/lib/utils'
 import { useRouter } from 'next/navigation'
 import { FaRegQuestionCircle } from 'react-icons/fa'
 import { useVotingPower } from './hooks/useVotingPower'
@@ -41,7 +40,7 @@ export default function Proposals() {
           <DelegatedTable />
           <ReceivedDelegationTable />
         </div> */}
-        <LatestProposalsTableMemoized latestProposals={memoizedProposals} />
+        <LatestProposalsTableMemoized proposals={memoizedProposals} />
       </div>
     </MainContainer>
   )
@@ -74,7 +73,7 @@ const VotingPowerPopover = () => (
   <Popover content={<PopoverContent />}>
     <button className="flex flex-row">
       <Paragraph className="text[16px] font-[700]">My Voting Power</Paragraph>
-      <FaRegQuestionCircle className="ml-1 self-center" />
+      <FaRegQuestionCircle className="ml-1 self-center" data-testid="QuestionIcon" />
     </button>
   </Popover>
 )

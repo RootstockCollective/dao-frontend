@@ -1,3 +1,5 @@
 export * from './useBackerTotalAllocation'
 export * from './useGetVotingPower'
 export * from './useActivatedBuildersWithGauge'
+export * from './useBuildersWithBackerRewardPercentage'
+export * from './useCanManageAllocations'

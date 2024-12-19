@@ -64,6 +64,10 @@ export interface CommunityData {
     isPending: boolean
   }
   /**
+   * Call function to read data from the smart contract
+   */
+  onReadFunctions: (functions: { functionName: string; args: string[] }[]) => Promise<any>
+  /**
    * NFT Metadata
    */
   nftMeta: NftMeta | undefined

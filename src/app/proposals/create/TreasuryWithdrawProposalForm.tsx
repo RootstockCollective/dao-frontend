@@ -1,6 +1,6 @@
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/Select'
 import { Header, Paragraph } from '@/components/Typography'
-import { ENV } from '@/lib/constants'
+import { CHAIN_ID, ENV } from '@/lib/constants'
 import { tokenContracts } from '@/lib/contracts'
 import { formatCurrency } from '@/lib/utils'
 import { TX_MESSAGES } from '@/shared/txMessages'
@@ -8,7 +8,7 @@ import { zodResolver } from '@hookform/resolvers/zod'
 import Image from 'next/image'
 import { useRouter } from 'next/navigation'
 import { useEffect, useMemo, useState } from 'react'
-import { Address, zeroAddress } from 'viem'
+import { Address, zeroAddress, checksumAddress } from 'viem'
 import { z } from 'zod'
 import { rbtcIconSrc } from '@/shared/rbtcIconSrc'
 import { MAX_INPUT_NUMBER_AMOUNT } from '@/components/Input/InputNumber'
@@ -33,8 +33,9 @@ import { useCreateTreasuryTransferProposal } from '@/app/proposals/hooks/useCrea
 import React from 'react'
 import { useForm } from 'react-hook-form'
 import { CreateProposalHeaderSection } from '@/app/proposals/create/CreateProposalHeaderSection'
-import { isAddressRegex } from '@/app/proposals/shared/utils'
+import { isAddressRegex, isChecksumValid } from '@/app/proposals/shared/utils'
 import { isBaseError, isUserRejectedTxError } from '@/components/ErrorPage/commonErrors'
+import { TokenImage } from '@/components/TokenImage'
 
 const rifMinimumAmount = ENV === 'mainnet' ? 10 : 1
 const rbtcMinimumAmount = ENV === 'mainnet' ? 0.0001 : 0.000001
@@ -49,7 +50,10 @@ const FormSchema = z
       .string()
       .max(3000)
       .refine(s => s.trim().replace(/\s+/g, ' ').length >= 10, 'Field must contain at least 10 characters'),
-    toAddress: z.string().refine(value => isAddressRegex(value), 'Please enter a valid address'),
+    toAddress: z
+      .string()
+      .refine(value => isAddressRegex(value), 'Please enter a valid address')
+      .refine(value => isChecksumValid(value), 'Address has invalid checksum'),
     tokenAddress: z.string().length(42),
     amount: z.coerce
       .number({ invalid_type_error: 'Required field' })
@@ -64,7 +68,6 @@ const FormSchema = z
     message: `The minimum amount for RBTC is ${rbtcMinimumAmount}`,
     path: ['amount'],
   })
-
 export const TreasuryWithdrawProposalForm = () => {
   const router = useRouter()
   const prices = useGetSpecificPrices()
@@ -92,6 +95,7 @@ export const TreasuryWithdrawProposalForm = () => {
     formState: { touchedFields, errors, isValid, isDirty },
     watch,
     trigger,
+    setValue,
   } = form
 
   const pricesMap = useMemo(
@@ -236,7 +240,22 @@ export const TreasuryWithdrawProposalForm = () => {
                       <FormInput placeholder="0x123...456" {...field} data-testid="InputTransfer" />
                     </FormControl>
                     <FormDescription>Write or paste the wallet address of the recipient</FormDescription>
-                    <FormMessage />
+                    <FormMessage>
+                      {errors.toAddress?.message === 'Address has invalid checksum' && (
+                        <>
+                          {errors.toAddress.message + ' '}
+                          <span
+                            className="font-normal underline cursor-pointer"
+                            onClick={() => {
+                              setValue('toAddress', checksumAddress(field.value as Address))
+                              trigger('toAddress')
+                            }}
+                          >
+                            Fix address.
+                          </span>
+                        </>
+                      )}
+                    </FormMessage>
                   </FormItem>
                 )}
               />
@@ -265,25 +284,13 @@ export const TreasuryWithdrawProposalForm = () => {
                           <SelectContent>
                             <SelectItem value={zeroAddress}>
                               <div className="flex items-center">
-                                <Image
-                                  src={`data:image/svg+xml;base64,${rbtcIconSrc}`}
-                                  alt="rBTC Logo"
-                                  className="mr-1"
-                                  width={20}
-                                  height={20}
-                                />
+                                <TokenImage symbol="RBTC" size={20} className="mr-1" />
                                 RBTC
                               </div>
                             </SelectItem>
                             <SelectItem value={tokenContracts.RIF as Address}>
                               <div className="flex items-center">
-                                <Image
-                                  src="/images/rif-logo.png"
-                                  alt="stRIF Logo"
-                                  width={20}
-                                  height={20}
-                                  className="mr-1"
-                                />
+                                <TokenImage symbol="stRIF" size={20} className="mr-1" />
                                 RIF
                               </div>
                             </SelectItem>

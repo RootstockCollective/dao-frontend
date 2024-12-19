@@ -101,7 +101,7 @@ export const Input: FC<Props> = ({
     search: (
       <div className="relative">
         <div className="absolute translate-y-4 translate-x-4">
-          {loading ? <FaSpinner className="animate-spin" /> : <BsSearch />}
+          {loading ? <FaSpinner className="animate-spin" /> : <BsSearch data-testid="SearchIcon" />}
         </div>
         <input
           className={classes}
@@ -118,7 +118,7 @@ export const Input: FC<Props> = ({
         {/* Small clear button at the right of the search field */}
         {onClear && (
           <button onClick={onClear} className="absolute right-4 bottom-1/2 translate-y-1/2 cursor-pointer">
-            <BsXCircle />
+            <BsXCircle data-testid="ClearIcon" />
           </button>
         )}
       </div>

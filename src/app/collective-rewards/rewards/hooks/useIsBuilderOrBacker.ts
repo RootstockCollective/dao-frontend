@@ -1,4 +1,3 @@
-import { useMemo } from 'react'
 import { Address, zeroAddress } from 'viem'
 import { useGetBuilderToGauge } from '@/app/collective-rewards/user'
 import { useGetBackerRewardPerTokenPaid } from '@/app/collective-rewards/rewards/hooks'
@@ -10,8 +9,20 @@ export const useIsBuilderOrBacker = (address: Address) => {
    * - a gauge exists for the address (builder)
    * - the backerRewardPerTokenPaid is greater than 0 (backer)
    */
-  const { data: gauge, isLoading: isGaugeLoading, error: gaugeError } = useGetBuilderToGauge(address)
+  const { data: gauge, isLoading: gaugeLoading, error: gaugeError } = useGetBuilderToGauge(address)
+  const { data: isBacker, isLoading: backerLoading, error: backerError } = useIsBacker(address)
 
+  const isLoading = gaugeLoading || backerLoading
+  const error = gaugeError ?? backerError
+
+  return {
+    data: gauge !== zeroAddress || isBacker,
+    isLoading,
+    error,
+  }
+}
+
+export const useIsBacker = (address: Address) => {
   const {
     data: backerTotalAllocation,
     isLoading: isBackerTotalAllocationLoading,
@@ -24,26 +35,11 @@ export const useIsBuilderOrBacker = (address: Address) => {
     error: backerRewardPerTokenPaidError,
   } = useGetBackerRewardPerTokenPaid(address)
 
-  const data = useMemo(() => {
-    return (
-      gauge !== zeroAddress ||
-      (backerTotalAllocation && backerTotalAllocation > 0n) ||
-      backerRewardPerTokenPaid > 0n
-    )
-  }, [gauge, backerRewardPerTokenPaid, backerTotalAllocation])
-
-  const isLoading = useMemo(
-    () => isGaugeLoading || isBackerRewardPerTokenPaidLoading || isBackerTotalAllocationLoading,
-    [isGaugeLoading, isBackerRewardPerTokenPaidLoading, isBackerTotalAllocationLoading],
-  )
-
-  const error = useMemo(
-    () => gaugeError ?? backerRewardPerTokenPaidError ?? backerTotalAllocationError,
-    [gaugeError, backerRewardPerTokenPaidError, backerTotalAllocationError],
-  )
+  const isLoading = isBackerRewardPerTokenPaidLoading || isBackerTotalAllocationLoading
+  const error = backerRewardPerTokenPaidError ?? backerTotalAllocationError
 
   return {
-    data,
+    data: (backerTotalAllocation && backerTotalAllocation > 0n) || backerRewardPerTokenPaid > 0n,
     isLoading,
     error,
   }

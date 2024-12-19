@@ -17,23 +17,11 @@ const gaugeType: Record<GaugeType, FunctionName> = {
   halted: 'getHaltedGaugeAt',
 }
 
-export const useGetGaugesArray = (type: GaugeType) => {
-  const {
-    data: gaugesLength,
-    isLoading: gaugesLengthLoading,
-    error: gaugesLengthError,
-  } = useGetGaugesLength(type)
+export const useGetGaugesArray = () => {
+  const { data: activeCalls, isLoading: isLoadingActive, error: errorActive } = useGetContractCalls('active')
+  const { data: haltedCalls, isLoading: isLoadingHalted, error: errorHalted } = useGetContractCalls('halted')
 
-  const length = Number(gaugesLength) ?? 0
-
-  const contractCalls = Array.from({ length }, (_, index) => {
-    return {
-      address: BackersManagerAddress,
-      abi: BuilderRegistryAbi,
-      functionName: gaugeType[type],
-      args: [index],
-    } as const
-  })
+  const contractCalls = [...activeCalls, ...haltedCalls]
 
   const {
     data: gaugesAddress,
@@ -47,12 +35,58 @@ export const useGetGaugesArray = (type: GaugeType) => {
   })
 
   const gauges = useMemo(() => gaugesAddress?.map(gauge => gauge.result as Address), [gaugesAddress])
-  const isLoading = gaugesLengthLoading || gaugesAddressLoading
-  const error = gaugesLengthError ?? gaugesAddressError
+  const isLoading = isLoadingActive || isLoadingHalted || gaugesAddressLoading
+  const error = errorActive ?? errorHalted ?? gaugesAddressError
 
   return {
     data: gauges,
     isLoading,
     error,
   }
+}
+
+export const useGetGaugesArrayByType = (type: GaugeType) => {
+  const {
+    data: calls,
+    isLoading: contractCallsLoading,
+    error: contractCallsError,
+  } = useGetContractCalls(type)
+
+  const {
+    data: gaugesAddress,
+    isLoading: gaugesAddressLoading,
+    error: gaugesAddressError,
+  } = useReadContracts<Address[]>({
+    contracts: calls,
+    query: {
+      refetchInterval: AVERAGE_BLOCKTIME,
+    },
+  })
+
+  const gauges = useMemo(() => gaugesAddress?.map(gauge => gauge.result as Address), [gaugesAddress])
+  const isLoading = contractCallsLoading || gaugesAddressLoading
+  const error = contractCallsError ?? gaugesAddressError
+
+  return {
+    data: gauges,
+    isLoading: isLoading || gaugesAddressLoading,
+    error: error ?? gaugesAddressError,
+  }
+}
+
+const useGetContractCalls = (type: GaugeType) => {
+  const { data: gaugesLength, isLoading, error } = useGetGaugesLength(type)
+
+  const length = Number(gaugesLength) ?? 0
+
+  const data = Array.from({ length }, (_, index) => {
+    return {
+      address: BackersManagerAddress,
+      abi: BuilderRegistryAbi,
+      functionName: gaugeType[type],
+      args: [index],
+    } as const
+  })
+
+  return { data, isLoading, error }
 }

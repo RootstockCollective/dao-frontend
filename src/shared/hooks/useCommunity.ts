@@ -1,9 +1,11 @@
+import { readContracts } from 'wagmi/actions'
 import { useMemo, useCallback, useEffect, useState } from 'react'
 import { abiContractsMap, DEFAULT_NFT_CONTRACT_ABI } from '@/lib/contracts'
 import { Address } from 'viem'
 import { useReadContracts, useAccount, useWaitForTransactionReceipt, useWriteContract } from 'wagmi'
 import { fetchIpfsUri } from '@/app/user/Balances/actions'
 import { NftMeta, CommunityData } from '../types'
+import { config } from '@/config'
 
 /**
  * Hook for loading NFT metadata from IPFS
@@ -84,9 +86,9 @@ const useMintNFT = (nftAddress?: Address, tokensAvailable?: number) => {
   const onMintNFT = useCallback(async () => {
     if (!nftAddress) throw new Error('Unknown NFT address')
     if (!tokensAvailable) throw new Error('No NFTs available to mint')
-    return await mint({
+    return mint({
       abi: abiContractsMap[nftAddress] || DEFAULT_NFT_CONTRACT_ABI,
-      address: nftAddress || '0x0',
+      address: nftAddress,
       functionName: 'mint',
       args: [],
     })
@@ -99,12 +101,28 @@ const useMintNFT = (nftAddress?: Address, tokensAvailable?: number) => {
 }
 
 /**
- * Hook returning all information about Early Adopters community
+ * Hook returning all information about NFT community
  */
 export const useCommunity = (nftAddress?: Address): CommunityData => {
   const { refetch, ...data } = useContractData(nftAddress)
   const { onMintNFT, isPending, isSuccess } = useMintNFT(nftAddress, data.tokensAvailable)
+
   const nftMeta = useNftMeta(data.nftUri)
+
+  const onReadFunctions = useCallback(
+    (functions: { functionName: string; args: string[] }[]) => {
+      if (!nftAddress) throw new Error('Unknown NFT address')
+      return readContracts(config, {
+        contracts: functions.map(({ functionName, args }) => ({
+          abi: abiContractsMap[nftAddress] || DEFAULT_NFT_CONTRACT_ABI,
+          address: nftAddress,
+          functionName,
+          args,
+        })),
+      })
+    },
+    [nftAddress],
+  )
 
   useEffect(() => {
     if (isSuccess) refetch()
@@ -118,8 +136,9 @@ export const useCommunity = (nftAddress?: Address): CommunityData => {
           onMintNFT,
           isPending,
         },
+        onReadFunctions,
         nftMeta,
       }) satisfies CommunityData,
-    [data, isPending, nftMeta, onMintNFT],
+    [data, isPending, nftMeta, onReadFunctions, onMintNFT],
   )
 }

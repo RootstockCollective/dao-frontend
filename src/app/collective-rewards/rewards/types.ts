@@ -5,14 +5,15 @@ export type Token = {
   address: Address
 }
 
-export type Currency = {
-  value: number
+export type RewardAmount = {
+  value: bigint
+  price: number
   symbol: string
+  currency: string
 }
 
 export type Reward = {
-  crypto: Currency
-  fiat: Currency
+  amount: RewardAmount
   logo?: JSX.Element
 }
 
@@ -30,3 +31,9 @@ export type RewardDetails = {
 }
 
 export type BuilderRewardDetails = RewardDetails & { gauge: Address }
+
+export type BackerRewardPercentage = {
+  current: bigint
+  next: bigint
+  cooldownEndTime: bigint
+}

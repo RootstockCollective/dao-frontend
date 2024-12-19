@@ -25,12 +25,7 @@ const RewardsContent: FC<RewardsProps> = ({ builder, gauges, tokens }) => {
         <div className="min-h-[190px] w-full">
           <BackerClaimableRewards builder={builder} gauges={gauges} tokens={tokens} />
         </div>
-        <Button
-          className="w-full"
-          onClick={() => claimRewards(gauges)}
-          disabled={!isClaimable}
-          variant="primary"
-        >
+        <Button className="w-full" onClick={() => claimRewards()} disabled={!isClaimable} variant="primary">
           Claim all
         </Button>
       </MetricContainer>
@@ -43,7 +38,17 @@ const RewardsContent: FC<RewardsProps> = ({ builder, gauges, tokens }) => {
           tokens={tokens}
           rewards={['estimated']}
           tooltip={{
-            text: 'The information displayed is dynamic and may vary based on total rewards available and user activity. This data is provided for informational purposes only. Please note that the final reward amount will be determined at the end of the cycle.',
+            text: (
+              <>
+                An estimate of this Cycle’s rewards that will become fully claimable by the end of the current
+                Cycle. These rewards gradually become claimable and are added to your ‘Claimable Rewards’ as
+                the cycle progresses. To check the cycle completion, go to Collective Rewards → Current Cycle.
+                <br />
+                <br />
+                The displayed information is dynamic and may vary based on total rewards and user activity.
+                This data is for informational purposes only.
+              </>
+            ),
             popoverProps: { size: 'medium' },
           }}
         />

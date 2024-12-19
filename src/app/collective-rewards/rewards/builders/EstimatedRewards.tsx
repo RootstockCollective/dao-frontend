@@ -10,13 +10,13 @@ import {
   BuilderRewardDetails,
   useGetBackerRewardPercentage,
 } from '@/app/collective-rewards/rewards'
-import { useHandleErrors } from '@/app/collective-rewards/utils'
-import { formatBalanceToHuman } from '@/app/user/Balances/balanceUtils'
+import { isBuilderRewardable, useHandleErrors } from '@/app/collective-rewards/utils'
 import { usePricesContext } from '@/shared/context/PricesContext'
 import { FC, useEffect, useState } from 'react'
-import { Address } from 'viem'
+import { Address, parseUnits } from 'viem'
 import { withSpinner } from '@/components/LoadingSpinner/withLoadingSpinner'
 import { useCycleContext } from '@/app/collective-rewards/metrics/context/CycleContext'
+import { useBuilderContext } from '@/app/collective-rewards/user'
 
 type TokenRewardsProps = {
   builder: Address
@@ -64,7 +64,11 @@ const TokenRewards: FC<TokenRewardsProps> = ({ builder, gauge, token: { id, symb
     error: backerRewardsPctError,
   } = useGetBackerRewardPercentage(builder, cycleNext.toSeconds())
 
-  const rewardPercentageToApply = backerRewardsPct?.current ?? 0
+  const rewardPercentageToApply = backerRewardsPct.current
+
+  const { getBuilderByAddress } = useBuilderContext()
+  const claimingBuilder = getBuilderByAddress(builder)
+  const isRewarded = isBuilderRewardable(claimingBuilder?.stateFlags)
 
   const error =
     rewardsError ?? totalPotentialRewardsError ?? rewardSharesError ?? backerRewardsPctError ?? cycleError
@@ -73,12 +77,14 @@ const TokenRewards: FC<TokenRewardsProps> = ({ builder, gauge, token: { id, symb
   const { prices } = usePricesContext()
 
   const rewardsAmount =
-    rewardShares && totalPotentialRewards ? (rewards * rewardShares) / totalPotentialRewards : 0n
+    isRewarded && rewardShares && totalPotentialRewards
+      ? (rewards * rewardShares) / totalPotentialRewards
+      : 0n
   // The complement of the reward percentage is applied to the estimated rewards since are from the builder's perspective
-  const estimatedRewardsInHuman =
-    Number(formatBalanceToHuman(rewardsAmount)) * (1 - rewardPercentageToApply / 100)
+  const weiPerEther = parseUnits('1', 18)
+  const estimatedRewards = (rewardsAmount * (weiPerEther - rewardPercentageToApply)) / weiPerEther
   const price = prices[symbol]?.price ?? 0
-  const { amount, fiatAmount } = formatMetrics(estimatedRewardsInHuman, price, symbol, currency)
+  const { amount, fiatAmount } = formatMetrics(estimatedRewards, price, symbol, currency)
 
   return withSpinner(
     TokenMetricsCardRow,
@@ -104,7 +110,15 @@ export const EstimatedRewards: FC<EstimatedRewardsProps> = ({ tokens: { rif, rbt
         title="Estimated rewards"
         data-testid="EstimatedRewards"
         tooltip={{
-          text: 'The information displayed is dynamic and may vary based on total rewards available and user activity. This data is provided for informational purposes only. Please note that the final reward amount will be determined at the end of the cycle.',
+          text: (
+            <>
+              Your estimated rewards which will become claimable at the start of the next Cycle.
+              <br />
+              <br />
+              The displayed information is dynamic and may vary based on total rewards and user activity. This
+              data is for informational purposes only.
+            </>
+          ),
           popoverProps: { size: 'medium' },
         }}
       />

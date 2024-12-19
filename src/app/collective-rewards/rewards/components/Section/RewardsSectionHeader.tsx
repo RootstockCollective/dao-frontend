@@ -7,8 +7,14 @@ export type RewardsSectionHeader = {
   title: string
   subtext: ReactNode
   onSettingsOpen: ButtonProps['onClick']
+  showSettingsButton?: boolean
 }
-export const RewardsSectionHeader: FC<RewardsSectionHeader> = ({ title, subtext, onSettingsOpen }) => (
+export const RewardsSectionHeader: FC<RewardsSectionHeader> = ({
+  title,
+  subtext,
+  onSettingsOpen,
+  showSettingsButton = true,
+}) => (
   <div className="flex justify-between w-full items-center gap-2.5">
     <div className="flex flex-col items-start w-full">
       <HeaderTitle className="uppercase text-2xl leading-7 font-normal">{title}</HeaderTitle>
@@ -16,6 +22,6 @@ export const RewardsSectionHeader: FC<RewardsSectionHeader> = ({ title, subtext,
         {subtext}
       </Typography>
     </div>
-    <SettingsButton onClick={onSettingsOpen} />
+    {showSettingsButton && <SettingsButton onClick={onSettingsOpen} />}
   </div>
 )

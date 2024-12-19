@@ -1,6 +1,6 @@
-import { FC } from 'react'
-import { Popover, PopoverProps } from '../../../../components/Popover'
-import { Button, ButtonProps } from '../../../../components/Button'
+import { FC, ReactNode } from 'react'
+import { Popover, PopoverProps } from '@/components/Popover'
+import { Button } from '@/components/Button'
 
 const TooltipSvg = () => (
   <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -22,7 +22,7 @@ const TooltipSvg = () => (
 )
 
 export type TooltipProps = {
-  text: string
+  text: ReactNode
   popoverProps?: Pick<PopoverProps, 'size' | 'position'>
 }
 
@@ -30,7 +30,7 @@ export const Tooltip: FC<TooltipProps> = ({ text, popoverProps }) => (
   <>
     <Popover
       content={
-        <div className="text-[12px] font-bold mb-1">
+        <div className="text-[12px] mb-1 font-rootstock-sans">
           <p data-testid="tooltip">{text}</p>
         </div>
       }

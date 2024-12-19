@@ -16,7 +16,7 @@ import { zodResolver } from '@hookform/resolvers/zod'
 import { useRouter, useSearchParams } from 'next/navigation'
 import { FC, useEffect, useState } from 'react'
 import { useForm } from 'react-hook-form'
-import { Address } from 'viem'
+import { Address, getAddress } from 'viem'
 import { z } from 'zod'
 import { CreateProposalHeaderSection } from '@/app/proposals/create/CreateProposalHeaderSection'
 import { Accordion, AccordionItem, AccordionTrigger, AccordionContent } from '@/components/Accordion'
@@ -24,6 +24,7 @@ import { Header, Paragraph } from '@/components/Typography'
 import { Button } from '@/components/Button'
 import { isAddressRegex } from '@/app/proposals/shared/utils'
 import { isBaseError, isUserRejectedTxError } from '@/components/ErrorPage/commonErrors'
+import { useBuilderContext } from '../../collective-rewards/user'
 
 const FormSchema = z.object({
   proposalName: z
@@ -46,12 +47,25 @@ export const RemoveBuilderProposalForm: FC = () => {
   const { isLoading: isVotingPowerLoading, canCreateProposal } = useVotingPower()
   const { setMessage } = useAlertContext()
   const { onRemoveBuilderProposal, isPublishing } = useRemoveBuilderProposal()
+  const { getBuilderByAddress } = useBuilderContext()
 
   const [activeStep, setActiveStep] = useState('proposal')
 
-  const form = useForm<z.infer<typeof FormSchema>>({
+  const updatedFormSchema = FormSchema.refine(
+    ({ builderAddress }) => {
+      if (!isAddressRegex(builderAddress)) return false
+      const builder = getBuilderByAddress(getAddress(builderAddress))
+      return builder?.stateFlags?.communityApproved ?? false
+    },
+    {
+      message: 'The address is not whitelisted',
+      path: ['builderAddress'],
+    },
+  )
+
+  const form = useForm<z.infer<typeof updatedFormSchema>>({
     mode: 'onTouched',
-    resolver: zodResolver(FormSchema),
+    resolver: zodResolver(updatedFormSchema),
     defaultValues: {
       proposalName: params?.get('proposalName') ?? ('' as string),
       builderAddress: (params?.get('builderAddress') ?? '') as Address,
@@ -73,7 +87,7 @@ export const RemoveBuilderProposalForm: FC = () => {
 
   const handleProposalCompleted = () => setActiveStep('actions')
 
-  const onSubmit = async (data: z.infer<typeof FormSchema>) => {
+  const onSubmit = async (data: z.infer<typeof updatedFormSchema>) => {
     const { proposalName, description, builderAddress } = data
     const proposalDescription = `${proposalName};${description}`
 

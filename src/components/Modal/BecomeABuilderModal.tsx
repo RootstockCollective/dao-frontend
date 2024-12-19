@@ -43,7 +43,7 @@ const openDiscourse = () => {
   window.open('https://gov.rootstockcollective.xyz/c/collective-rewards/7', '_blank')
 }
 
-const openKYC = () => {
+export const openKYC = () => {
   window.open(
     'https://docs.google.com/forms/d/e/1FAIpQLScVB-A_SPncWpSV_4mSdeMxBKtiYvJDvPK_TKSddzPnuC9lqQ/viewform',
     '_blank',
@@ -110,8 +110,8 @@ const BecomeABuilder: FC = () => {
               <Popover
                 content={
                   <Paragraph variant="normal" className="text-sm">
-                    Almost there! You need {threshold} stRIF to create a proposal. Stake more RIF to get
-                    started.
+                    You need at least {threshold} Voting Power to create a proposal. The easiest way to get
+                    more Voting Power is to Stake more RIF.
                   </Paragraph>
                 }
                 trigger="hover"
@@ -197,6 +197,9 @@ const Steps: FC = () => {
           FAQ
         </Typography>
         .
+      </li>
+      <li className="mt-4 list-none font-normal">
+        *You need to use a different address in case you stopped being a builder.
       </li>
     </ol>
   )

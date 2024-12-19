@@ -4,8 +4,8 @@ import { ProposalState } from '@/shared/types'
 
 const inactiveProposalsStates = [ProposalState.Canceled, ProposalState.Defeated, ProposalState.Expired]
 const isActive = (state: ProposalState) => !inactiveProposalsStates.includes(state)
-const isBuilderActive = (status?: BuilderStateFlags) =>
-  !status || status.activated || status.communityApproved
+const isBuilderActive = (stateFlags?: BuilderStateFlags) =>
+  !stateFlags || stateFlags.activated || stateFlags.communityApproved
 
 export const getMostAdvancedProposal = (
   proposalsEvent: CreateBuilderProposalEventLog[],

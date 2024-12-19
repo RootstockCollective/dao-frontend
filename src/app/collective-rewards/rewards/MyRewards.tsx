@@ -4,49 +4,47 @@ import {
   RewardDetails,
   RewardsSection,
   RewardsSectionHeader,
+  BackerRewardsTable,
+  useIsBacker,
 } from '@/app/collective-rewards/rewards'
-import { useGetBuilderToGauge, useGetGaugesArray } from '@/app/collective-rewards/user'
+import { useGetBuildersByState, useGetBuilderToGauge } from '@/app/collective-rewards/user'
 import { getCoinbaseAddress, useHandleErrors } from '@/app/collective-rewards/utils'
 import { tokenContracts } from '@/lib/contracts'
 import { FC } from 'react'
 import { Address, getAddress, zeroAddress } from 'viem'
-import { BackerRewardsTable } from './backers/BackerRewardsTable'
 import { useRouter } from 'next/navigation'
-import { Link } from '@/components/Link'
+import { useCanManageAllocations } from '@/app/collective-rewards/allocations/hooks'
+import { CRWhitepaperLink } from '@/app/collective-rewards/shared'
+import { RequiredBuilder } from '@/app/collective-rewards/types'
 
 const SubText = () => {
   return (
     <>
       Track and claim the rewards you earn from Collective Rewards. For more information check the{' '}
-      <Link
-        className="text-[#E56B1A]"
-        href={
-          'https://wiki.rootstockcollective.xyz/2c6e3b87b49f4c1e9225b713e1b49538?v=819168fca4964319896c19e8299a8ea0'
-        }
-        target="_blank"
-      >
-        Whitepaper
-      </Link>{' '}
-      .
+      <CRWhitepaperLink />.
     </>
   )
 }
 
 export const Rewards: FC<{ builder: Address }> = ({ builder }) => {
   const router = useRouter()
-  const { data: rewardGauges, error: rewardGaugesError } = useGetGaugesArray('active')
-  const { data: haltedGauges, error: haltedGaugesError } = useGetGaugesArray('halted')
+  const { data: activatedBuilders, error: activatedBuildersError } = useGetBuildersByState<RequiredBuilder>({
+    activated: true,
+  })
+  const activatedGauges = activatedBuilders?.map(({ gauge }) => gauge) ?? []
   const { data: gauge, error: gaugeError } = useGetBuilderToGauge(builder)
-  const gauges = [...(rewardGauges ?? []), ...(haltedGauges ?? [])]
+  const canManageAllocations = useCanManageAllocations()
+  // We don't need to show the loading state for the backer rewards since the parent already has a loading state
+  const { data: isBacker, error: backerError } = useIsBacker(builder)
 
-  const error = rewardGaugesError ?? haltedGaugesError ?? gaugeError
+  const error = activatedBuildersError ?? gaugeError ?? backerError
 
   useHandleErrors({ error, title: 'Error loading gauge(s)' })
 
   // TODO: check where to store this information
   const data: RewardDetails = {
     builder,
-    gauges,
+    gauges: activatedGauges,
     tokens: {
       rif: {
         address: getAddress(tokenContracts.RIF),
@@ -75,17 +73,20 @@ export const Rewards: FC<{ builder: Address }> = ({ builder }) => {
           </RewardsSection>
         </div>
       )}
-      <RewardsSection>
-        <RewardsSectionHeader
-          onSettingsOpen={() => {
-            router.push('/collective-rewards/allocations')
-          }}
-          title="Backer Rewards"
-          subtext={<SubText />}
-        />
-        <BackerRewards {...data} />
-        <BackerRewardsTable {...data} />
-      </RewardsSection>
+      {isBacker && (
+        <RewardsSection>
+          <RewardsSectionHeader
+            onSettingsOpen={() => {
+              router.push('/collective-rewards/allocations')
+            }}
+            title="Backer Rewards"
+            subtext={<SubText />}
+            showSettingsButton={canManageAllocations}
+          />
+          <BackerRewards {...data} />
+          <BackerRewardsTable {...data} />
+        </RewardsSection>
+      )}
     </>
   )
 }

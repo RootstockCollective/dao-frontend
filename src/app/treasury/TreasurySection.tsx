@@ -1,7 +1,7 @@
 import { useTreasuryContext } from '@/app/treasury/TreasuryContext'
 import { HeaderTitle } from '@/components/Typography'
 import { MetricsCard } from '@/components/MetricsCard'
-import { toFixed } from '@/lib/utils'
+import { formatNumberWithCommas, toFixed } from '@/lib/utils'
 import { treasuryContracts } from '@/lib/contracts'
 
 export const TreasurySection = () => {
@@ -16,7 +16,7 @@ export const TreasurySection = () => {
             key={`${contract.name}-RIF`}
             title={`${contract.name} RIF`}
             // Show the RIF amount, rounded up to the nearest whole number. If not available, show 0 RIF.
-            amount={`${buckets[index]?.RIF?.amount ? Math.ceil(Number(buckets[index].RIF.amount)) : 0} RIF`}
+            amount={`${buckets[index]?.RIF?.amount ? formatNumberWithCommas(Math.ceil(Number(buckets[index].RIF.amount))) : 0} RIF`}
             // Display the fiat amount in USD, or show 0 if not available
             fiatAmount={`= USD ${buckets[index]?.RIF?.fiatAmount ? buckets[index].RIF.fiatAmount : 0}`}
             contractAddress={contract.address}
@@ -33,7 +33,9 @@ export const TreasurySection = () => {
             // toFixed may not correctly format it to a clean output due to
             // limitations in JavaScript's handling of floating-point numbers
             amount={`${
-              Number(buckets[index]?.RBTC?.amount) < 1e-7 ? 0 : toFixed(Number(buckets[index]?.RBTC?.amount))
+              Number(buckets[index]?.RBTC?.amount) < 1e-7
+                ? 0
+                : formatNumberWithCommas(toFixed(Number(buckets[index]?.RBTC?.amount)))
             }`}
             fiatAmount={`= USD ${buckets[index]?.RBTC?.fiatAmount ? buckets[index].RBTC.fiatAmount : 0}`}
             data-testid={`${contract.name}-RBTC`}

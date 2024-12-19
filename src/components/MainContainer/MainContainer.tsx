@@ -69,7 +69,7 @@ export const MainContainer: FC<Props> = ({ children, notProtected = false }) => 
   return (
     <>
       <GradientHeader />
-      <div className="flex">
+      <div className="flex h-screen">
         <StatefulSidebar ConnectedComponent={<ConnectedComponent />} />
         <div className="flex flex-1 flex-col justify-between overflow-y-auto mt-10 ml-72">
           <main className="px-[32px] py-[34px] mb-[100px]">

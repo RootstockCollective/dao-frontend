@@ -5,15 +5,14 @@ import {
   useGetBackersRewardPercentage,
   RifSvg,
   RbtcSvg,
-  BuilderRewardPercentage,
   TokenRewards,
+  BackerRewardPercentage,
 } from '@/app/collective-rewards/rewards'
 import { useGaugesGetFunction } from '@/app/collective-rewards/shared'
 import { Address } from 'viem'
 import { usePricesContext } from '@/shared/context/PricesContext'
-import { formatBalanceToHuman } from '@/app/user/Balances/balanceUtils'
 import { useGetBuildersByState } from '@/app/collective-rewards//user'
-import { Builder, BuilderStateFlags } from '@/app/collective-rewards/types'
+import { BuilderStateFlags, RequiredBuilder } from '@/app/collective-rewards/types'
 import { useMemo } from 'react'
 
 export type BackerRewards = {
@@ -21,20 +20,16 @@ export type BackerRewards = {
   builderName: string
   stateFlags: BuilderStateFlags
   totalAllocationPercentage: bigint
-  rewardPercentage: BuilderRewardPercentage
+  rewardPercentage: BackerRewardPercentage
   estimatedRewards: TokenRewards
   claimableRewards: TokenRewards
   allTimeRewards: TokenRewards
 }
 
 const tokenRewardsMetrics = (tokenRewards: TokenBackerRewards, gauge: Address) => {
-  const estimatedRewards = Number(formatBalanceToHuman(tokenRewards.estimated[gauge] ?? 0n))
-  const earned = Number(formatBalanceToHuman(tokenRewards.earned[gauge] ?? 0n))
-  const claimed = Number(
-    formatBalanceToHuman(
-      tokenRewards.claimed[gauge]?.reduce((acc, value) => acc + value.args.amount_, 0n) ?? 0n,
-    ),
-  )
+  const estimatedRewards = tokenRewards.estimated[gauge] ?? 0n
+  const earned = tokenRewards.earned[gauge] ?? 0n
+  const claimed = tokenRewards.claimed[gauge]?.reduce((acc, value) => acc + value.args.amount_, 0n) ?? 0n
 
   return {
     claimableRewards: earned,
@@ -53,7 +48,7 @@ export const useGetBackerRewards = (
     data: builders,
     isLoading: buildersLoading,
     error: buildersError,
-  } = useGetBuildersByState<Required<Builder>>()
+  } = useGetBuildersByState<RequiredBuilder>()
   const buildersAddress = builders.map(({ address }) => address)
   const {
     data: backersRewardsPct,
@@ -121,72 +116,60 @@ export const useGetBackerRewards = (
             rewardPercentage,
             estimatedRewards: {
               rif: {
-                crypto: {
+                amount: {
                   value: rifRewards.estimatedRewards,
                   symbol: rif.symbol,
-                },
-                fiat: {
-                  value: rifPrice * rifRewards.estimatedRewards,
-                  symbol: currency,
+                  price: rifPrice,
+                  currency,
                 },
                 logo: RifSvg(),
               },
               rbtc: {
-                crypto: {
+                amount: {
                   value: rbtcRewards.estimatedRewards,
                   symbol: rbtc.symbol,
-                },
-                fiat: {
-                  value: rbtcPrice * rbtcRewards.estimatedRewards,
-                  symbol: currency,
+                  price: rbtcPrice,
+                  currency,
                 },
                 logo: RbtcSvg(),
               },
             },
             claimableRewards: {
               rif: {
-                crypto: {
+                amount: {
                   value: rifRewards.claimableRewards,
                   symbol: rif.symbol,
-                },
-                fiat: {
-                  value: rifPrice * rifRewards.claimableRewards,
-                  symbol: currency,
+                  price: rifPrice,
+                  currency,
                 },
                 logo: RifSvg(),
               },
               rbtc: {
-                crypto: {
+                amount: {
                   value: rbtcRewards.claimableRewards,
                   symbol: rbtc.symbol,
-                },
-                fiat: {
-                  value: rbtcPrice * rbtcRewards.claimableRewards,
-                  symbol: currency,
+                  price: rbtcPrice,
+                  currency,
                 },
                 logo: RbtcSvg(),
               },
             },
             allTimeRewards: {
               rif: {
-                crypto: {
+                amount: {
                   value: rifRewards.allTimeRewards,
                   symbol: rif.symbol,
-                },
-                fiat: {
-                  value: rifPrice * rifRewards.allTimeRewards,
-                  symbol: currency,
+                  price: rifPrice,
+                  currency,
                 },
                 logo: RifSvg(),
               },
               rbtc: {
-                crypto: {
+                amount: {
                   value: rbtcRewards.allTimeRewards,
                   symbol: rbtc.symbol,
-                },
-                fiat: {
-                  value: rbtcPrice * rbtcRewards.allTimeRewards,
-                  symbol: currency,
+                  price: rbtcPrice,
+                  currency,
                 },
                 logo: RbtcSvg(),
               },

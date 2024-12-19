@@ -1,0 +1,23 @@
+name: Build dApp
+
+on: pull_request
+
+jobs:
+  build_test:
+    name: Build
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+
+      - name: Build
+        id: build-image
+        env:
+          IMAGE_TAG: ${{ github.sha }}
+          PROFILE: testnet.local
+        run: |
+          # Build a docker container and
+          # push it to ECR so that it can
+          # be deployed to ECS.
+          docker build --build-arg PROFILE="$PROFILE" --build-arg NEXT_PUBLIC_BUILD_ID=${{ github.sha }} --no-cache .

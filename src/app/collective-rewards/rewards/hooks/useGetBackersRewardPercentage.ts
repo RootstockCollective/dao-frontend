@@ -1,10 +1,11 @@
-import { BuilderRewardPercentage, getPercentageData } from '@/app/collective-rewards/rewards/utils'
 import { BuilderRegistryAbi } from '@/lib/abis/v2/BuilderRegistryAbi'
 import { AVERAGE_BLOCKTIME } from '@/lib/constants'
 import { BackersManagerAddress } from '@/lib/contracts'
 import { useMemo } from 'react'
 import { Address } from 'viem'
 import { useReadContracts } from 'wagmi'
+import { BackerRewardPercentage } from '../types'
+import { getBackerRewardPercentage } from '../utils'
 
 export const useGetBackersRewardPercentage = (builders: Address[], timestampInSeconds?: number) => {
   const contractCalls = builders?.map(
@@ -28,7 +29,7 @@ export const useGetBackersRewardPercentage = (builders: Address[], timestampInSe
     },
   })
 
-  type ReturnType = BuilderRewardPercentage
+  type ReturnType = BackerRewardPercentage
   const buildersMap = useMemo(
     () =>
       builders.reduce<Record<Address, ReturnType>>((acc, gauge, index) => {
@@ -36,13 +37,19 @@ export const useGetBackersRewardPercentage = (builders: Address[], timestampInSe
           return {} as Record<Address, ReturnType>
         }
 
-        const [current, next, cooldownEndTime] = (contractResults[index].result || [0n, 0n, 0n]) as [
+        const [previous, next, cooldownEndTime] = (contractResults[index].result || [0n, 0n, 0n]) as [
           bigint,
           bigint,
           bigint,
         ]
-        const result = getPercentageData(current, next, cooldownEndTime, timestampInSeconds)
-        acc[gauge] = result
+        const backerRewardPercentage = getBackerRewardPercentage(
+          previous,
+          next,
+          cooldownEndTime,
+          timestampInSeconds,
+        )
+
+        acc[gauge] = backerRewardPercentage
 
         return acc
       }, {}),

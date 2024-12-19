@@ -13,6 +13,7 @@ import {
   TotalAllocationCell,
   useSearchContext,
 } from '@/app/collective-rewards/shared'
+import { getCombinedFiatAmount } from '../utils'
 
 enum RewardsColumnKeyEnum {
   builder = 'builder',
@@ -26,12 +27,33 @@ enum RewardsColumnKeyEnum {
 const tableHeaders: TableHeader[] = [
   { label: 'Builder', className: 'w-[14%]', sortKey: RewardsColumnKeyEnum.builder },
   { label: 'Backer Rewards %', className: 'w-[10%]', sortKey: RewardsColumnKeyEnum.rewardPercentage },
-  { label: 'Last Cycle Rewards', className: 'w-[22%]', sortKey: RewardsColumnKeyEnum.lastCycleRewards },
-  { label: 'Est. Backers Rewards', className: 'w-[22%]', sortKey: RewardsColumnKeyEnum.estimatedRewards },
+  {
+    label: 'Last Cycle Rewards',
+    className: 'w-[22%]',
+    sortKey: RewardsColumnKeyEnum.lastCycleRewards,
+    tooltip: { text: 'The Backers’ share of the Builder’s rewards in the previous Cycle' },
+  },
+  {
+    label: 'Est. Backers Rewards',
+    className: 'w-[22%]',
+    sortKey: RewardsColumnKeyEnum.estimatedRewards,
+    tooltip: {
+      text: (
+        <>
+          The estimated Backers’ share of the Builder’s rewards which will become claimable in the next Cycle.
+          <br />
+          <br />
+          The displayed information is dynamic and may vary based on total rewards and user activity. This
+          data is for informational purposes only.
+        </>
+      ),
+      popoverProps: { size: 'medium' },
+    },
+  },
   {
     label: 'Total Allocations',
     className: 'w-[16%]',
-    tooltip: 'The Builder’s share of the total stRIF allocations',
+    tooltip: { text: 'The Builder’s share of the total stRIF allocations' },
     sortKey: RewardsColumnKeyEnum.totalAllocationPercentage,
   },
   // TODO: text-center isn't applied
@@ -60,13 +82,13 @@ export const BuildersLeaderBoardTable: FC = () => {
       rewardPercentage: (a: IRewardData, b: IRewardData) =>
         Number(a.rewardPercentage.current - b.rewardPercentage.current),
       lastCycleRewards: (a: IRewardData, b: IRewardData) => {
-        const aValue = a.lastCycleReward.rif.crypto.value + a.lastCycleReward.rbtc.crypto.value
-        const bValue = b.lastCycleReward.rif.crypto.value + b.lastCycleReward.rbtc.crypto.value
+        const aValue = getCombinedFiatAmount([a.lastCycleRewards.rif.amount, a.lastCycleRewards.rbtc.amount])
+        const bValue = getCombinedFiatAmount([b.lastCycleRewards.rif.amount, b.lastCycleRewards.rbtc.amount])
         return aValue - bValue
       },
       estimatedRewards: (a: IRewardData, b: IRewardData) => {
-        const aValue = a.estimatedReward.rif.crypto.value + a.estimatedReward.rbtc.crypto.value
-        const bValue = b.estimatedReward.rif.crypto.value + b.estimatedReward.rbtc.crypto.value
+        const aValue = getCombinedFiatAmount([a.estimatedRewards.rif.amount, a.estimatedRewards.rbtc.amount])
+        const bValue = getCombinedFiatAmount([b.estimatedRewards.rif.amount, b.estimatedRewards.rbtc.amount])
         return aValue - bValue
       },
       totalAllocationPercentage: (a: IRewardData, b: IRewardData) =>
@@ -124,8 +146,8 @@ export const BuildersLeaderBoardTable: FC = () => {
               address,
               builderName,
               stateFlags,
-              lastCycleReward,
-              estimatedReward,
+              lastCycleRewards,
+              estimatedRewards,
               totalAllocationPercentage,
               rewardPercentage,
             }) => (
@@ -139,11 +161,11 @@ export const BuildersLeaderBoardTable: FC = () => {
                 <BackerRewardsPercentage tableHeader={tableHeaders[1]} percentage={rewardPercentage} />
                 <LazyRewardCell
                   tableHeader={tableHeaders[2]}
-                  rewards={[lastCycleReward.rbtc, lastCycleReward.rif]}
+                  rewards={[lastCycleRewards.rbtc, lastCycleRewards.rif]}
                 />
                 <LazyRewardCell
                   tableHeader={tableHeaders[3]}
-                  rewards={[estimatedReward.rbtc, estimatedReward.rif]}
+                  rewards={[estimatedRewards.rbtc, estimatedRewards.rif]}
                 />
                 <TotalAllocationCell tableHeader={tableHeaders[4]} percentage={totalAllocationPercentage} />
                 <ActionCell tableHeader={tableHeaders[5]} builderAddress={address} />

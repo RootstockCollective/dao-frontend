@@ -1,10 +1,8 @@
 import { Span, Header } from '@/components/Typography'
 import { Button } from '@/components/Button'
-import { TbFileSearch } from 'react-icons/tb'
 import { StakePreviewBalance } from './StakePreviewBalance'
 import { StakePreviewBalanceProps } from '@/app/user/Stake/types'
 import { ReactNode } from 'react'
-import { SHARED_MODAL_BOX_SHADOW_STYLE } from '@/lib/utils'
 
 interface StakePreviewProps {
   from: Omit<StakePreviewBalanceProps, 'topLeftText'>

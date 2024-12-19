@@ -3,6 +3,7 @@ import { SupportedTokens } from '@/lib/contracts'
 import { Paragraph } from '@/components/Typography'
 import { formatCurrency, toFixed } from '@/lib/utils'
 import { formatBalanceToHuman } from '@/app/user/Balances/balanceUtils'
+import { TokenImage } from '@/components/TokenImage'
 
 interface TokenValueProps {
   symbol: SupportedTokens
@@ -18,11 +19,12 @@ export const TokenValue = ({ symbol, amount, shouldFormatBalance = false }: Toke
 
   return (
     <>
-      <Paragraph size="small">
+      <Paragraph size="small" className="flex flex-row" data-testid={`${symbol}_Balance`}>
         {toFixed(amountFormatted.toString())} {symbol}
+        <TokenImage symbol={symbol} className="ml-[8px]" />
       </Paragraph>
       {prices[symbol] && (
-        <Paragraph size="small" className="text-zinc-500">
+        <Paragraph size="small" className="text-zinc-500" data-testid={`${symbol}_USD`}>
           = USD {formatCurrency(value) ?? 0}
         </Paragraph>
       )}

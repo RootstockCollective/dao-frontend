@@ -10,7 +10,6 @@ import {
   BuilderRewardDetails,
 } from '@/app/collective-rewards/rewards'
 import { useHandleErrors } from '@/app/collective-rewards/utils'
-import { formatBalanceToHuman } from '@/app/user/Balances/balanceUtils'
 import { withSpinner } from '@/components/LoadingSpinner/withLoadingSpinner'
 import { usePricesContext } from '@/shared/context/PricesContext'
 import { FC } from 'react'
@@ -24,6 +23,7 @@ type TokenRewardsMetricsProps = {
 }
 
 const TokenRewardsMetrics: FC<TokenRewardsMetricsProps> = ({
+  builder,
   gauge,
   token: { address, symbol },
   currency = 'USD',
@@ -39,14 +39,10 @@ const TokenRewardsMetrics: FC<TokenRewardsMetricsProps> = ({
 
   const tokenPrice = prices[symbol]?.price ?? 0
 
-  const { amount, fiatAmount } = formatMetrics(
-    Number(formatBalanceToHuman(rewards ?? 0n)),
-    tokenPrice,
-    symbol,
-    currency,
-  )
+  const { amount, fiatAmount } = formatMetrics(rewards ?? 0n, tokenPrice, symbol, currency)
 
-  const { isClaimable, claimRewards } = useClaimBuilderRewardsPerToken(gauge, address)
+  const { isClaimable, claimRewards, isPaused } = useClaimBuilderRewardsPerToken(builder, gauge, address)
+  const content = isPaused ? 'You cannot be paused to claim rewards' : undefined
 
   return withSpinner(
     TokenMetricsCardRow,
@@ -55,7 +51,13 @@ const TokenRewardsMetrics: FC<TokenRewardsMetricsProps> = ({
     amount,
     fiatAmount,
     isLoading: rewardsLoading,
-    children: <ClaimYourRewardsButton onClick={() => claimRewards()} disabled={!isClaimable} />,
+    children: (
+      <ClaimYourRewardsButton
+        onClick={() => claimRewards()}
+        disabled={!isClaimable || isPaused}
+        content={content}
+      />
+    ),
   })
 }
 
@@ -64,7 +66,11 @@ type ClaimableRewardsProps = BuilderRewardDetails
 export const ClaimableRewards: FC<ClaimableRewardsProps> = ({ tokens: { rif, rbtc }, ...rest }) => {
   return (
     <MetricsCard borderless>
-      <MetricsCardTitle title="Claimable rewards" data-testid="ClaimableRewards" />
+      <MetricsCardTitle
+        title="Claimable rewards"
+        data-testid="ClaimableRewards"
+        tooltip={{ text: 'Your rewards available to claim' }}
+      />
       <TokenRewardsMetrics {...rest} token={rif} />
       <TokenRewardsMetrics {...rest} token={rbtc} />
     </MetricsCard>

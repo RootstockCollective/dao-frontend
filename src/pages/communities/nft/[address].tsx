@@ -55,6 +55,7 @@ export default function Page() {
     nftName,
     nftSymbol,
     mint: { onMintNFT, isPending: isClaiming },
+    onReadFunctions,
     nftMeta,
     stRifThreshold,
   } = useCommunity(nftAddress)
@@ -64,6 +65,7 @@ export default function Page() {
   if (nftInfo === undefined && nftAddress !== undefined) {
     console.warn('The current NFT address is not registered. Please check the config.')
   }
+  const [isChecking, setIsChecking] = useState(false)
   const [message, setMessage] = useState<MessageProps | null>(null)
   // reset message after few seconds
   useEffect(() => {
@@ -90,14 +92,55 @@ export default function Page() {
     }
   }, [isNftInWallet])
 
-  const handleMinting = () => {
+  const doAdditionalChecks = async (
+    additionalChecks: [
+      {
+        name: string
+        check: (data: any) => boolean
+        alertMessage: string
+      },
+    ],
+  ): Promise<boolean> => {
+    if (!address) return false
+    for (const { name, check, alertMessage } of additionalChecks) {
+      setIsChecking(true)
+      let functions: { functionName: string; args: string[] }[] | undefined
+      if (name === 'hasVoted') {
+        functions = [{ functionName: 'hasVoted', args: [address] }]
+      } else if (name === 'mintLimitReached') {
+        functions = [
+          { functionName: 'mintLimit', args: [] },
+          { functionName: 'totalSupply', args: [] },
+        ]
+      }
+      if (!functions) continue
+      try {
+        const data = await onReadFunctions(functions)
+        const result = check(data)
+        if (!result) {
+          setIsChecking(false)
+          setMessage({
+            text: alertMessage,
+            severity: 'warning',
+          })
+          return false
+        }
+      } catch (err) {
+        console.warn(err)
+      }
+    }
+    setIsChecking(false)
+    return true
+  }
+
+  const handleMinting = async () => {
     if (!address) return
     // check if user's stRIF Balance is more than required threshold to get a reward NFT
     if (stRifBalance < (stRifThreshold ?? 0n))
       return setMessage({
         text: (
           <>
-            To get the Early Adopters community NFT you need to own at least ${formatEther(stRifThreshold!)}{' '}
+            To get the {nftInfo?.title} community NFT you need to own at least ${formatEther(stRifThreshold!)}{' '}
             stRIFs.{' '}
             <span
               className="underline cursor-pointer"
@@ -111,6 +154,11 @@ export default function Page() {
         severity: 'warning',
       })
 
+    if (nftInfo.additionalChecks) {
+      const result = await doAdditionalChecks(nftInfo.additionalChecks)
+      if (!result) return
+    }
+
     onMintNFT()
       .then(txHash => {
         setMessage({
@@ -118,7 +166,7 @@ export default function Page() {
         })
       })
       .catch(err => {
-        if (err.cause.name !== 'UserRejectedRequestError') {
+        if (err.cause?.name !== 'UserRejectedRequestError') {
           console.error('ERROR', err)
           setMessage({
             text: 'Error claiming reward. An unexpected error occurred while trying to claim your reward. Please try again later. If the issue persists, contact support for assistance.',
@@ -217,9 +265,7 @@ export default function Page() {
             </div>
             <div className="font-semibold">{nftInfo?.title}</div>
           </div>
-          <div className="mb-[24px] font-extralight">
-            <p>{nftInfo?.longDescription || nftInfo?.description}</p>
-          </div>
+          <div className="mb-[24px] font-extralight">{nftInfo?.longDescription}</div>
           {/* Hidden until we get social media data */}
           <div className="gap-[8px] mt-[16px] mb-[24px] hidden">
             {/* Chips with community links */}
@@ -301,8 +347,8 @@ export default function Page() {
                       variant="primary"
                       className="my-[16px]"
                       onClick={handleMinting}
-                      disabled={!tokensAvailable || !address || isClaiming}
-                      loading={isClaiming}
+                      disabled={!tokensAvailable || !address || isClaiming || isChecking}
+                      loading={isClaiming || isChecking}
                       data-testid="claimButton"
                     >
                       Claim it!
@@ -320,7 +366,7 @@ export default function Page() {
         </div>
       </div>
       {/* Holders list */}
-      <NftHoldersSection address={nftAddress} />
+      {membersCount > 0 && <NftHoldersSection address={nftAddress} />}
     </MainContainer>
   )
 }
