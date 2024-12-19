@@ -1,13 +1,14 @@
 import { useCycleContext } from '@/app/collective-rewards/metrics/context/CycleContext'
 import {
   formatMetrics,
-  getLastCycleRewards,
   MetricsCard,
   MetricsCardTitle,
   TokenMetricsCardRow,
   useGetGaugeNotifyRewardLogs,
   Token,
   BuilderRewardDetails,
+  getNotifyRewardAmount,
+  useGetLastCycleDistribution,
 } from '@/app/collective-rewards/rewards'
 import { useHandleErrors } from '@/app/collective-rewards/utils'
 import { withSpinner } from '@/components/LoadingSpinner/withLoadingSpinner'
@@ -28,19 +29,25 @@ const TokenRewardsMetrics: FC<TokenRewardsMetricsProps> = ({
 }) => {
   const { data: cycle, isLoading: cycleLoading, error: cycleError } = useCycleContext()
   const {
+    data: { fromTimestamp, toTimestamp },
+    isLoading: lastCycleRewardsLoading,
+    error: lastCycleRewardsError,
+  } = useGetLastCycleDistribution(cycle)
+
+  const {
     data: rewardsPerToken,
     isLoading: logsLoading,
     error: rewardsError,
-  } = useGetGaugeNotifyRewardLogs(gauge)
+  } = useGetGaugeNotifyRewardLogs(gauge, address, fromTimestamp, toTimestamp)
 
-  const error = cycleError ?? rewardsError
+  const error = cycleError ?? lastCycleRewardsError ?? rewardsError
   useHandleErrors({ error, title: 'Error loading last cycle rewards' })
 
   const { prices } = usePricesContext()
 
-  const lastCycleRewards = getLastCycleRewards(cycle, rewardsPerToken[address])
+  const lastCycleRewards = getNotifyRewardAmount(rewardsPerToken, address, 'builderAmount_')
   const price = prices[symbol]?.price ?? 0
-  const { amount, fiatAmount } = formatMetrics(lastCycleRewards.builderAmount, price, symbol, currency)
+  const { amount, fiatAmount } = formatMetrics(lastCycleRewards[address] ?? 0n, price, symbol, currency)
 
   return withSpinner(
     TokenMetricsCardRow,
@@ -48,7 +55,7 @@ const TokenRewardsMetrics: FC<TokenRewardsMetricsProps> = ({
   )({
     amount,
     fiatAmount,
-    isLoading: cycleLoading || logsLoading,
+    isLoading: cycleLoading || lastCycleRewardsLoading || logsLoading,
   })
 }
 
