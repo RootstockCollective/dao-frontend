@@ -8,6 +8,7 @@ interface Props {
   size?: 'normal' | 'small'
   variant?: 'normal' | 'light'
   onClick?: () => void
+  'data-testid'?: string
 }
 
 const variants = {
@@ -19,11 +20,19 @@ const sizeVariant = {
   normal: 'text-[16px]',
   small: 'text-[12px]',
 }
-export const Span = ({ children, className, variant = 'normal', size = 'normal', onClick }: Props) => (
+export const Span = ({
+  children,
+  className,
+  variant = 'normal',
+  size = 'normal',
+  onClick,
+  'data-testid': dataTestId,
+}: Props) => (
   <Typography
     tagVariant="span"
     className={cn(variants[variant], sizeVariant[size], className)}
     onClick={onClick}
+    data-testid={dataTestId}
   >
     {children}
   </Typography>
