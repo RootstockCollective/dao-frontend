@@ -61,7 +61,7 @@ export const ogFounders: CommunityItem = {
   nftAddress: nftContracts.OG_FOUNDERS,
   numberOfMembers: 0,
   cover: '/images/nfts/founders-cover.png',
-  isMintable: true,
+  isMintable: false,
   longDescription: (
     <>
       <p className="mt-4">
