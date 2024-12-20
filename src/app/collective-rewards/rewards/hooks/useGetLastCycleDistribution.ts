@@ -6,14 +6,7 @@ import {
 
 type Log = RewardDistributionFinishedEventLog[number] & { timeStamp: number }
 export const useGetLastCycleDistribution = ({ cycleStart, cycleNext }: Cycle) => {
-  const {
-    data: rewardDistributionFinished,
-    isLoading: rewardDistributionFinishedLoading,
-    error: rewardDistributionFinishedError,
-  } = useGetRewardDistributionFinishedLogs()
-
-  const isLoading = rewardDistributionFinishedLoading
-  const error = rewardDistributionFinishedError
+  const { data: rewardDistributionFinished, isLoading, error } = useGetRewardDistributionFinishedLogs()
 
   const [lastEvent] = rewardDistributionFinished.slice(-1) as Log[]
 

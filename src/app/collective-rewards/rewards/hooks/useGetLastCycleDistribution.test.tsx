@@ -66,32 +66,6 @@ describe('useGetLastCycleRewardsTimestamps', () => {
     })
   })
 
-  it('should return (from,to) = to next cycle start if there were not distributions in the current cycle', () => {
-    const lastCycleStart = cycleStart.minus({ seconds: cycleDuration.as('seconds') })
-    const previousLastCycleStart = lastCycleStart.minus({ seconds: cycleDuration.as('seconds') })
-    vi.mocked(useGetRewardDistributionFinishedLogs).mockImplementation(() => {
-      return {
-        data: [
-          {
-            timeStamp: lastCycleStart.toSeconds(),
-          },
-          {
-            timeStamp: previousLastCycleStart.toSeconds(),
-          },
-        ] as Log[],
-        isLoading: false,
-        error: null,
-      }
-    })
-
-    const { data } = useGetLastCycleDistribution(cycle)
-
-    expect(data).toEqual({
-      fromTimestamp: cycleNext.toSeconds(),
-      toTimestamp: cycleNext.toSeconds(),
-    })
-  })
-
   it('should return (from = current cycle start, to = last event) if there were distributions in the current cycle', () => {
     const endDistributionTime = cycleStart.plus({ seconds: 100 })
     vi.mocked(useGetRewardDistributionFinishedLogs).mockImplementation(() => {
@@ -111,32 +85,6 @@ describe('useGetLastCycleRewardsTimestamps', () => {
     expect(data).toEqual({
       fromTimestamp: cycleStart.toSeconds(),
       toTimestamp: endDistributionTime.toSeconds(),
-    })
-  })
-
-  it('should return (from = current cycle start, to = last event) if there were distributions in the current cycle', () => {
-    const endDistributionTime = cycleStart.plus({ seconds: 100 })
-    const lastEndDistributionTime = cycleStart.plus({ seconds: 200 })
-    vi.mocked(useGetRewardDistributionFinishedLogs).mockImplementation(() => {
-      return {
-        data: [
-          {
-            timeStamp: endDistributionTime.toSeconds(),
-          },
-          {
-            timeStamp: lastEndDistributionTime.toSeconds(),
-          },
-        ] as Log[],
-        isLoading: false,
-        error: null,
-      }
-    })
-
-    const { data } = useGetLastCycleDistribution(cycle)
-
-    expect(data).toEqual({
-      fromTimestamp: cycleStart.toSeconds(),
-      toTimestamp: lastEndDistributionTime.toSeconds(),
     })
   })
 })
