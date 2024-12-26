@@ -5,6 +5,9 @@ on:
     branches:
       - develop
 
+# Declare default permissions as read only.
+permissions: read-all
+
 env:
   AWS_REGION: us-east-1
   ECR_REPOSITORY: rscoll-dev-dao-dev

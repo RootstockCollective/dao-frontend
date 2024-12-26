@@ -8,8 +8,8 @@ on:
   schedule:
     - cron: "0 0 * * *"
 
-permissions:
-  contents: read
+# Declare default permissions as read only.
+permissions: read-all
 
 jobs:
   analyze:

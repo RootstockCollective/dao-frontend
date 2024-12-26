@@ -2,6 +2,9 @@ name: Run e2e on Chrome
 
 on: pull_request
 
+# Declare default permissions as read only.
+permissions: read-all
+
 jobs:
   chrome:
     runs-on: ubuntu-22.04

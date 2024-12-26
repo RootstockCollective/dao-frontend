@@ -4,6 +4,9 @@ on:
   release:
     types: [released]
 
+# Declare default permissions as read only.
+permissions: read-all
+
 env:
   AWS_REGION: us-east-1
   ECR_REPOSITORY: dao-frontend-mainnet

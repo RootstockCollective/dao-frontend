@@ -3,6 +3,9 @@ name: Lint files
 on:
   pull_request
 
+# Declare default permissions as read only.
+permissions: read-all
+
 jobs:
   test:
 
