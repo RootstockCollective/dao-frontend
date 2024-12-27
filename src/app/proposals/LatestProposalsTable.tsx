@@ -174,7 +174,7 @@ const LatestProposalsTable = ({ proposals }: LatestProposalsTableProps) => {
               &#x21A0;
             </Button>
             <select
-              className="border border-[#E56B1A] hover:border-[#E56B1A] rounded-md px-3 py-1 bg-transparent hover:none text-[#E56B1A] hover:text-none"
+              className="border border-[#E56B1A] hover:border-[#E56B1A] rounded-md bg-transparent hover:none text-[#E56B1A] hover:text-none"
               value={table.getState().pagination.pageSize}
               onChange={e => {
                 table.setPageSize(Number(e.target.value))
