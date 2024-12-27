@@ -5,6 +5,7 @@ import {
   getCoreRowModel,
   getSortedRowModel,
   useReactTable,
+  getPaginationRowModel,
 } from '@tanstack/react-table'
 import { type LatestProposalResponse } from './hooks/useFetchLatestProposals'
 import { StatusColumn } from '@/app/proposals/table-columns/StatusColumn'
@@ -16,6 +17,7 @@ import { VotesColumn } from './table-columns/VotesColumn'
 import { TimeColumn } from './table-columns/TimeColumn'
 import { DebounceSearch } from '../../components/DebounceSearch/DebounceSearch'
 import { useProposalListData } from './hooks/useProposalListData'
+import { Button } from '@/components/Button'
 
 interface LatestProposalsTableProps {
   proposals: LatestProposalResponse[]
@@ -122,16 +124,24 @@ const LatestProposalsTable = ({ proposals }: LatestProposalsTableProps) => {
       cell: info => <StatusColumn proposalState={info.row.original.proposalState} />,
     }),
   ]
+
+  const [pagination, setPagination] = useState({
+    pageIndex: 0, //initial page index
+    pageSize: 10, //default page size
+  })
   // create table data model which is passed to the Table UI component
   const table = useReactTable({
     columns,
     data: filteredProposalList,
     state: {
       sorting,
+      pagination,
     },
     onSortingChange: setSorting,
     getCoreRowModel: getCoreRowModel(),
     getSortedRowModel: getSortedRowModel(),
+    getPaginationRowModel: getPaginationRowModel(),
+    onPaginationChange: setPagination, //update the pagination state when internal APIs mutate the pagination state
   })
 
   return (
@@ -139,15 +149,45 @@ const LatestProposalsTable = ({ proposals }: LatestProposalsTableProps) => {
       <HeaderTitle className="mb-4">Latest Proposals</HeaderTitle>
       <DebounceSearch placeholder="Search a proposal" onSearchSubmit={onSearchSubmit} />
       {filteredProposalList.length > 0 ? (
-        <StatefulTable
-          equalColumns
-          table={table}
-          data-testid="TableProposals"
-          tbodyProps={{
-            'data-testid': 'TableProposalsTbody',
-          }}
-          className="overflow-visible"
-        />
+        <div>
+          <StatefulTable
+            equalColumns
+            table={table}
+            data-testid="TableProposals"
+            tbodyProps={{
+              'data-testid': 'TableProposalsTbody',
+            }}
+            className="overflow-visible"
+          />
+
+          <div className="flex justify-center gap-4 mt-4">
+            <Button onClick={() => table.firstPage()} disabled={!table.getCanPreviousPage()}>
+              &#x219E;
+            </Button>
+            <Button onClick={() => table.previousPage()} disabled={!table.getCanPreviousPage()}>
+              &#x2190;
+            </Button>
+            <Button onClick={() => table.nextPage()} disabled={!table.getCanNextPage()}>
+              &#x2192;
+            </Button>
+            <Button onClick={() => table.lastPage()} disabled={!table.getCanNextPage()}>
+              &#x21A0;
+            </Button>
+            <select
+              className="border border-[#E56B1A] hover:border-[#E56B1A] rounded-md px-3 py-1 bg-transparent hover:none text-[#E56B1A] hover:text-none"
+              value={table.getState().pagination.pageSize}
+              onChange={e => {
+                table.setPageSize(Number(e.target.value))
+              }}
+            >
+              {[10, 20, 30, 40, 50].map(pageSize => (
+                <option key={pageSize} value={pageSize}>
+                  {pageSize}
+                </option>
+              ))}
+            </select>
+          </div>
+        </div>
       ) : (
         <Typography tagVariant="p" data-testid="NoProposals">
           No proposals found &#x1F622;
