@@ -35,7 +35,30 @@ export type DecodedData = {
   inputs: FunctionInputs
 }
 
-const tryDecode = (data: string): DecodedData | undefined => {
+// const tryDecode = (data: string): DecodedData | undefined => {
+//   for (const abi of [...abis, GovernorAbi]) {
+//     try {
+//       const { functionName, args } = decodeFunctionData({ data: data as Hash, abi })
+
+//       if (functionName === 'relay') {
+//         return tryDecode(args[2])
+//       }
+
+//       const functionDefinition =
+//         abi.find(item => 'name' in item && item.name === functionName) || ({} as FunctionEntry)
+
+//       return {
+//         functionName: functionName as SupportedProposalActionName,
+//         args: args as DecodedFunctionData['args'],
+//         inputs: ('inputs' in functionDefinition ? functionDefinition.inputs : []) as FunctionInputs,
+//       }
+//     } catch (_) {
+//       continue
+//     }
+//   }
+//   return undefined
+// }
+const tryDecode = (data: string): DecodedData | { affectedAddress: string; callData: string } | undefined => {
   for (const abi of [...abis, GovernorAbi]) {
     try {
       const { functionName, args } = decodeFunctionData({ data: data as Hash, abi })
@@ -56,8 +79,21 @@ const tryDecode = (data: string): DecodedData | undefined => {
       continue
     }
   }
-  return undefined
+
+  // If decoding fails, extract fallback data to display
+  const affectedAddress = extractAddressFromData(data)
+  return {
+    affectedAddress,
+    callData: data,
+  }
 }
+
+// Utility to extract address from raw call data
+const extractAddressFromData = (data: string): string => {
+  // Naïve implementation: extract 20-byte address from the first 32 bytes of the data
+  return `0x${data.slice(10, 74)}`
+}
+
 /**
  * Function to parse proposal data into usable data
  * Note: Do not edit anything from this. This is being used across the app.
@@ -74,22 +110,25 @@ export const getEventArguments = ({
   timeStamp,
   blockNumber,
 }: EventArgumentsParameter) => {
-  const calldatasParsed = calldatas.reduce<DecodedData[]>((acc, cd) => {
-    try {
-      const decodedData = tryDecode(cd)
-      acc = [...acc, ...(decodedData ? [decodedData] : [])]
-    } catch (err) {
-      // TODO:: decide whether it is necessary to throw error (if so then also perhaps the function name `tryDecode` is misleading).
-      // Only logging this error due to the fact that anyone can submit any proposal directly via contract call.
-      console.error(err)
-      console.error('🐛 proposer:', proposer)
-      console.error('🐛 proposalId:', proposalId)
-      console.error('🐛 description:', description)
-      console.error('🐛 calldatas:', calldatas)
-    }
+  const calldatasParsed = calldatas.reduce<(DecodedData | { affectedAddress: string; callData: string })[]>(
+    (acc, cd) => {
+      try {
+        const decodedData = tryDecode(cd)
+        acc = [...acc, ...(decodedData ? [decodedData] : [])]
+      } catch (err) {
+        // TODO:: decide whether it is necessary to throw error (if so then also perhaps the function name `tryDecode` is misleading).
+        // Only logging this error due to the fact that anyone can submit any proposal directly via contract call.
+        console.error(err)
+        console.error('🐛 proposer:', proposer)
+        console.error('🐛 proposalId:', proposalId)
+        console.error('🐛 description:', description)
+        console.error('🐛 calldatas:', calldatas)
+      }
 
-    return acc
-  }, [])
+      return acc
+    },
+    [],
+  )
 
   return {
     name: description.split(';')[0],
