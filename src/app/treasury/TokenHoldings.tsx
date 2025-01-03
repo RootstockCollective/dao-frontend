@@ -1,6 +1,6 @@
 import { TreasurySymbolsSupported, useTreasuryContext } from '@/app/treasury/TreasuryContext'
 import { Paragraph } from '@/components/Typography'
-import { formatCurrency, toFixed } from '@/lib/utils'
+import { formatCurrency } from '@/lib/utils'
 import { usePricesContext } from '@/shared/context/PricesContext'
 
 interface TokenHoldingsProps {

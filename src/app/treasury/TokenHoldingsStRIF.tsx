@@ -1,6 +1,6 @@
 import { StRIFTokenAbi } from '@/lib/abis/StRIFTokenAbi'
 import { tokenContracts } from '@/lib/contracts'
-import { formatCurrency, toFixed } from '@/lib/utils'
+import { formatCurrency } from '@/lib/utils'
 import { useMemo } from 'react'
 import { formatEther } from 'viem'
 import { useReadContract } from 'wagmi'

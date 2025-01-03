@@ -11,6 +11,8 @@ import { Address } from 'viem'
  */
 export const cn = (...inputs: ClassValue[]) => twMerge(clsx(inputs))
 
+export const SHARED_MODAL_BOX_SHADOW_STYLE = '0px 0px 16.4px 0px rgba(229,107,26,0.68)'
+
 /**
  * Shortens the address by keeping the first and last `amount` characters
  * @param address - The address to shorten
@@ -170,7 +172,7 @@ export const formatCurrency = (value: number, currency = 'USD', defaultIfNaN?: n
  * @example toFixed(1.1e20) // '110000000000000000000'
  * @example toFixed('-') // '-'
  */
-export const toFixed = (num: number | string, decimalPlaces = 8) => {
+export const toFixed = (num: number | string | bigint, decimalPlaces = 8): string => {
   let n = Number(num)
   if (isNaN(n)) {
     return num?.toString()
@@ -191,7 +193,19 @@ export const toFixed = (num: number | string, decimalPlaces = 8) => {
   return n.toFixed(decimalPlaces).replace(/\.?0+$/, '')
 }
 
-export const SHARED_MODAL_BOX_SHADOW_STYLE = '0px 0px 16.4px 0px rgba(229,107,26,0.68)'
+/**
+ * Formats a number with commas
+ * @param num - The number to format
+ * @returns The formatted number with commas
+ * @example formatNumberWithCommas(123456789) // '123,456,789'
+ * @example formatNumberWithCommas(1234567.89) // '1,234,567.89'
+ * @example formatNumberWithCommas(0.000123) // '0.000123'
+ */
+export function formatNumberWithCommas(num: number | string | bigint): string {
+  const parts = num.toString().split('.')
+  parts[0] = new Intl.NumberFormat('en-US').format(Number(parts[0]))
+  return parts.join('.')
+}
 
 /**
  * Creates a debounced version of a function that delays its execution until after a specified wait time
@@ -222,18 +236,4 @@ export function debounce<T extends (...args: any[]) => void>(
 
     if (callNow) func.apply(context, args)
   }
-}
-
-/**
- * Formats a number with commas
- * @param num - The number to format
- * @returns The formatted number with commas
- * @example formatNumberWithCommas(123456789) // '123,456,789'
- * @example formatNumberWithCommas(1234567.89) // '1,234,567.89'
- * @example formatNumberWithCommas(0.000123) // '0.000123'
- */
-export function formatNumberWithCommas(num: number | string): string {
-  const parts = num.toString().split('.')
-  parts[0] = new Intl.NumberFormat('en-US').format(Number(parts[0]))
-  return parts.join('.')
 }
