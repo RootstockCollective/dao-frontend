@@ -161,18 +161,31 @@ const LatestProposalsTable = ({ proposals }: LatestProposalsTableProps) => {
           />
 
           <div className="flex justify-center gap-4 mt-4">
-            <Button onClick={() => table.firstPage()} disabled={!table.getCanPreviousPage()}>
-              &#x219E;
-            </Button>
+            {/* Previous page button */}
             <Button onClick={() => table.previousPage()} disabled={!table.getCanPreviousPage()}>
-              &#x2190;
+              &#x2329;
             </Button>
+
+            {/* Page numbers */}
+            {Array.from({ length: table.getPageCount() }).map((_, pageIndex) => (
+              <Button
+                key={pageIndex}
+                onClick={() => table.setPageIndex(pageIndex)}
+                disabled={table.getState().pagination.pageIndex === pageIndex}
+                className={`${
+                  table.getState().pagination.pageIndex === pageIndex ? 'bg-[#E56B1A]' : 'bg-transparent'
+                } border border-[#E56B1A] rounded-md`}
+              >
+                {pageIndex + 1}
+              </Button>
+            ))}
+
+            {/* Next page button */}
             <Button onClick={() => table.nextPage()} disabled={!table.getCanNextPage()}>
-              &#x2192;
+              &#x232A;
             </Button>
-            <Button onClick={() => table.lastPage()} disabled={!table.getCanNextPage()}>
-              &#x21A0;
-            </Button>
+
+            {/* Page size selector */}
             <select
               className="border border-[#E56B1A] hover:border-[#E56B1A] rounded-md bg-transparent hover:none text-[#E56B1A] hover:text-none"
               value={table.getState().pagination.pageSize}
