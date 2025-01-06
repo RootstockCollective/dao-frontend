@@ -160,9 +160,13 @@ const LatestProposalsTable = ({ proposals }: LatestProposalsTableProps) => {
             className="overflow-visible"
           />
 
-          <div className="flex justify-center gap-4 mt-4">
+          <div className="flex justify-center space-x-2 mt-4">
             {/* Previous page button */}
-            <Button onClick={() => table.previousPage()} disabled={!table.getCanPreviousPage()}>
+            <Button
+              onClick={() => table.previousPage()}
+              disabled={!table.getCanPreviousPage()}
+              className="px-4 py-2 bg-transparent"
+            >
               &#x2329;
             </Button>
 
@@ -174,20 +178,24 @@ const LatestProposalsTable = ({ proposals }: LatestProposalsTableProps) => {
                 disabled={table.getState().pagination.pageIndex === pageIndex}
                 className={`${
                   table.getState().pagination.pageIndex === pageIndex ? 'bg-[#E56B1A]' : 'bg-transparent'
-                } border border-[#E56B1A] rounded-md`}
+                } rounded-md px-4 py-2`}
               >
                 {pageIndex + 1}
               </Button>
             ))}
 
             {/* Next page button */}
-            <Button onClick={() => table.nextPage()} disabled={!table.getCanNextPage()}>
+            <Button
+              onClick={() => table.nextPage()}
+              disabled={!table.getCanNextPage()}
+              className="bg-transparent px-4 py-2"
+            >
               &#x232A;
             </Button>
 
             {/* Page size selector */}
             <select
-              className="border border-[#E56B1A] hover:border-[#E56B1A] rounded-md bg-transparent hover:none text-[#E56B1A] hover:text-none"
+              className="focus:outline-none focus:ring-0 focus:border-none hover:border-[#E56B1A] rounded-md bg-transparent hover:none text-[#E56B1A] hover:text-none "
               value={table.getState().pagination.pageSize}
               onChange={e => {
                 table.setPageSize(Number(e.target.value))
