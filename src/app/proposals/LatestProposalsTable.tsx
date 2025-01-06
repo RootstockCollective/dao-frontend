@@ -129,6 +129,32 @@ const LatestProposalsTable = ({ proposals }: LatestProposalsTableProps) => {
     pageIndex: 0, //initial page index
     pageSize: 10, //default page size
   })
+
+  const totalPages = Math.ceil(filteredProposalList.length / pagination.pageSize) // Calculate total pages based on the filtered proposal list and page size
+
+  const maxPageButtons = 5 // Maximum number of page buttons to display
+  const currentSetStart = Math.floor(pagination.pageIndex / maxPageButtons) * maxPageButtons
+  const currentSetEnd = Math.min(currentSetStart + maxPageButtons, totalPages)
+
+  // Generate page numbers to display
+  const pageNumbers = Array.from(
+    { length: currentSetEnd - currentSetStart },
+    (_, index) => currentSetStart + index,
+  )
+
+  // Function to handle page navigation
+  const goToPage = (pageIndex: number) => {
+    setPagination(prev => ({ ...prev, pageIndex }))
+  }
+
+  // Function to handle "..." button
+  const goToNextSet = () => {
+    goToPage(Math.min(currentSetStart + maxPageButtons, totalPages - 1))
+  }
+
+  const goToPrevSet = () => {
+    goToPage(Math.max(currentSetStart - maxPageButtons, 0))
+  }
   // create table data model which is passed to the Table UI component
   const table = useReactTable({
     columns,
@@ -170,19 +196,32 @@ const LatestProposalsTable = ({ proposals }: LatestProposalsTableProps) => {
               &#x2329;
             </Button>
 
-            {/* Page numbers */}
-            {Array.from({ length: table.getPageCount() }).map((_, pageIndex) => (
+            {/* Show "..." if there are pages before the current set */}
+            {currentSetStart > 0 && (
+              <Button onClick={goToPrevSet} className="bg-transparent">
+                ...
+              </Button>
+            )}
+
+            {/* Render Page Numbers */}
+            {pageNumbers.map(page => (
               <Button
-                key={pageIndex}
-                onClick={() => table.setPageIndex(pageIndex)}
-                disabled={table.getState().pagination.pageIndex === pageIndex}
+                key={page}
+                onClick={() => goToPage(page)}
                 className={`${
-                  table.getState().pagination.pageIndex === pageIndex ? 'bg-[#E56B1A]' : 'bg-transparent'
-                } rounded-md px-4 py-2`}
+                  page === pagination.pageIndex ? 'bg-[#E56B1A] text-white' : 'bg-transparent text-[#E56B1A]'
+                }`}
               >
-                {pageIndex + 1}
+                {page + 1} {/* Convert 0-based index to 1-based page numbers */}
               </Button>
             ))}
+
+            {/* Show "..." if there are pages after the current set */}
+            {currentSetEnd < totalPages && (
+              <Button onClick={goToNextSet} className="bg-transparent">
+                ...
+              </Button>
+            )}
 
             {/* Next page button */}
             <Button
