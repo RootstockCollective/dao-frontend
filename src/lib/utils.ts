@@ -202,6 +202,9 @@ export const toFixed = (num: number | string | bigint, decimalPlaces = 8): strin
  * @example formatNumberWithCommas(0.000123) // '0.000123'
  */
 export function formatNumberWithCommas(num: number | string | bigint): string {
+  if (isNaN(Number(num))) {
+    return num?.toString()
+  }
   const parts = num.toString().split('.')
   parts[0] = new Intl.NumberFormat('en-US').format(Number(parts[0]))
   return parts.join('.')
