@@ -1,3 +1,5 @@
+import { formatNumberWithCommas } from '@/lib/utils'
+
 interface VotesColumnProps {
   forVotes: number
   abstainVotes: number
@@ -27,9 +29,9 @@ export const VotesColumn = ({ forVotes, abstainVotes, quorumAtSnapshot }: VotesC
   return (
     <>
       <p className={colorClass}>
-        {Math.floor(quorumVotes)} ({percentageToShow}%)
+        {formatNumberWithCommas(Math.floor(quorumVotes))} ({formatNumberWithCommas(percentageToShow)}%)
       </p>
-      <p>Quorum: {quorumToShow}</p>
+      <p>Quorum: {formatNumberWithCommas(quorumToShow)}</p>
     </>
   )
 }

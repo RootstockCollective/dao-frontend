@@ -2,7 +2,7 @@ import { Button } from '@/components/Button'
 import { Modal } from '@/components/Modal/Modal'
 import { Input } from '@/components/Input'
 import { Header, Label, Paragraph, Span, Typography } from '@/components/Typography'
-import { shortAddress, toFixed, truncateMiddle } from '@/lib/utils'
+import { formatNumberWithCommas, shortAddress, toFixed, truncateMiddle } from '@/lib/utils'
 import { FC, useState } from 'react'
 import { FaCopy } from 'react-icons/fa6'
 import { Address } from 'viem'
@@ -83,7 +83,7 @@ export const VoteProposalModal: FC<Props> = ({
         <Input
           label="Voting Power"
           name="votingPower"
-          value={toFixed(votingPower)}
+          value={formatNumberWithCommas(toFixed(votingPower))}
           className="mt-4"
           fullWidth
           readonly

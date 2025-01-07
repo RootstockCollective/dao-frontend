@@ -1,4 +1,4 @@
-import { cn, shortAddress } from '@/lib/utils'
+import { cn, formatNumberWithCommas, shortAddress } from '@/lib/utils'
 import { FC, ReactNode } from 'react'
 import { Paragraph } from '../Typography/Paragraph'
 import { Address } from 'viem'
@@ -71,7 +71,7 @@ export const MetricsCard: FC<MetricsCardProps> = ({
           className="text-[24px] text-primary font-normal"
           data-testid="Amount"
         >
-          {amount}
+          {formatNumberWithCommas(amount)}
         </Typography>
       </div>
       {fiatAmount && (
