@@ -53,6 +53,7 @@ import { VoteSubmittedModal } from '@/components/Modal/VoteSubmittedModal'
 import React from 'react'
 import { ProposalState } from '@/shared/types'
 import { isUserRejectedTxError } from '@/components/ErrorPage/commonErrors'
+import DOMPurify from 'dompurify'
 
 export default function ProposalView() {
   const {
@@ -215,6 +216,18 @@ const PageWithProposal = (proposal: ParsedProposal) => {
   const formatVoteCount = (voteCount: string) =>
     formatNumberWithCommas(Math.ceil(Number(voteCount)).toString())
 
+  const linkfyUrls = (description: string) => {
+    // https://stackoverflow.com/questions/3809401/what-is-a-good-regular-expression-to-match-a-url
+    const urlRegex =
+      /(https?:\/\/(?:www\.|(?!www))[a-zA-Z0-9][a-zA-Z0-9-]+[a-zA-Z0-9]\.[^\s]{2,}|www\.[a-zA-Z0-9][a-zA-Z0-9-]+[a-zA-Z0-9]\.[^\s]{2,}|https?:\/\/(?:www\.|(?!www))[a-zA-Z0-9]+\.[^\s]{2,}|www\.[a-zA-Z0-9]+\.[^\s]{2,})/g
+    const html = description.replace(
+      urlRegex,
+      '<a href="$1" target="_blank" rel="noopener noreferrer" style="text-decoration: underline;">$1</a>',
+    )
+
+    return DOMPurify.sanitize(html)
+  }
+
   // @ts-ignore
   return (
     <div className="pl-4 grid grid-rows-1 gap-[32px] mb-[100px]">
@@ -368,9 +381,11 @@ const PageWithProposal = (proposal: ParsedProposal) => {
           <Header variant="h1" className="text-[24px] mb-6">
             Description
           </Header>
-          <Paragraph variant="normal" className="text-[16px] text-justify font-light whitespace-pre-wrap">
-            {description}
-          </Paragraph>
+          <Paragraph
+            variant="normal"
+            className="text-[16px] text-justify font-light whitespace-pre-wrap"
+            html={linkfyUrls(description)}
+          />
         </div>
         <div className="w-1/3 flex flex-col gap-y-2">
           <Header variant="h1" className="text-[24px]">

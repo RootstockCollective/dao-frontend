@@ -16,6 +16,7 @@ interface Props {
   className?: string
   fontFamily?: 'sora' | 'kk-topo' | 'rootstock-sans'
   onClick?: () => void
+  html?: string
   'data-testid'?: string
 }
 
@@ -27,6 +28,7 @@ export const Typography: FC<TypographyProps> = ({
   className,
   fontFamily = 'rootstock-sans',
   onClick,
+  html,
   'data-testid': dataTestId,
   ...styles
 }) => {
@@ -39,6 +41,7 @@ export const Typography: FC<TypographyProps> = ({
       className={cn([fontFamilyClass, classes, className])}
       style={{ ...styles }}
       onClick={onClick}
+      dangerouslySetInnerHTML={html ? { __html: html } : undefined}
       data-testid={`Typography${dataTestId || ''}`}
     >
       {children}
