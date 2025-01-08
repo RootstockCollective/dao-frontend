@@ -52,16 +52,17 @@ const PopoverContent = () => {
   const router = useRouter()
   return (
     <>
-      <Paragraph size="small" className="font-bold mb-1">
+      <Paragraph size="small" className="font-bold mb-1" data-testid="PopoverTitle">
         How is my voting power calculated?
       </Paragraph>
-      <Paragraph size="small">
+      <Paragraph size="small" data-testid="PopoverContent">
         Your voting power is determined by the amount of stRIF (staked RIF) you hold, whether you have
         delegated this voting power to someone else, and also by someone else who may have delegated their
         voting power to you. <br /> <br /> To increase your voting power,{' '}
         <Span
           className="text-primary text-[14px] hover:underline cursor-pointer"
           onClick={() => router.push('/user?action=stake')}
+          data-testid="PopoverLink"
         >
           stake RIF tokens now
         </Span>
