@@ -1,5 +1,4 @@
 import { cn } from '@/lib/utils'
-import { rbtcIconSrc } from '@/shared/rbtcIconSrc'
 import Image from 'next/image'
 
 interface Props {
@@ -27,7 +26,7 @@ export const getIconSource = (symbol: string | undefined): string | null => {
       return '/images/rif-logo.png'
     case 'RBTC':
     case 'TRBTC':
-      return `data:image/svg+xml;base64,${rbtcIconSrc}`
+      return '/images/rbtc-icon.svg'
     default:
       return null
   }
