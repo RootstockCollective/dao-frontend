@@ -11,10 +11,12 @@ import { useRouter } from 'next/navigation'
 import { FaRegQuestionCircle } from 'react-icons/fa'
 import { useVotingPower } from './hooks/useVotingPower'
 import { useMemo } from 'react'
+import { formatNumberWithCommas } from '@/lib/utils'
 
 export default function Proposals() {
-  const { canCreateProposal, threshold, totalVotingPower } = useVotingPower()
+  const { canCreateProposal, threshold, totalVotingPower = '' } = useVotingPower()
   const { latestProposals } = useFetchAllProposals()
+  console.log('🚀 ~ Proposals ~ totalVotingPower:', totalVotingPower)
 
   const memoizedProposals = useMemo(() => latestProposals, [latestProposals])
   return (
@@ -25,7 +27,7 @@ export default function Proposals() {
         <div>
           <VotingPowerPopover />
           <Paragraph className="text-[48px] text-primary tracking-[-0.96px]" fontFamily="kk-topo">
-            {totalVotingPower}
+            {formatNumberWithCommas(totalVotingPower)}
           </Paragraph>
         </div>
         <div className="flex flex-row gap-x-6">

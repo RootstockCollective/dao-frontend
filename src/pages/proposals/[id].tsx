@@ -37,7 +37,7 @@ import { Popover } from '@/components/Popover'
 import { Header, Paragraph, Span, Typography } from '@/components/Typography'
 import { config } from '@/config'
 import { RIF, RIF_ADDRESS } from '@/lib/constants'
-import { truncateMiddle } from '@/lib/utils'
+import { formatNumberWithCommas, truncateMiddle } from '@/lib/utils'
 import { useExecuteProposal } from '@/shared/hooks/useExecuteProposal'
 import { useQueueProposal } from '@/shared/hooks/useQueueProposal'
 import { useVoteOnProposal } from '@/shared/hooks/useVoteOnProposal'
@@ -116,6 +116,9 @@ const PageWithProposal = (proposal: ParsedProposal) => {
     !doesUserHasEnoughThreshold ||
     isVoting ||
     isWaitingVotingReceipt
+
+  const proposalType: SupportedProposalActionName = proposal.calldatasParsed[0]?.functionName
+  const { proposalName, builderName } = splitCombinedName(name)
 
   const cannotCastVoteReason = useMemo(() => {
     if (!isProposalActive) {
@@ -209,9 +212,9 @@ const PageWithProposal = (proposal: ParsedProposal) => {
     votingModal.openModal()
   }
 
-  const proposalType: SupportedProposalActionName = proposal.calldatasParsed[0]?.functionName
+  const formatVoteCount = (voteCount: string) =>
+    formatNumberWithCommas(Math.ceil(Number(voteCount)).toString())
 
-  const { proposalName, builderName } = splitCombinedName(name)
   // @ts-ignore
   return (
     <div className="pl-4 grid grid-rows-1 gap-[32px] mb-[100px]">
@@ -266,7 +269,11 @@ const PageWithProposal = (proposal: ParsedProposal) => {
       </div>
       <div className="flex flex-row justify-between">
         <div className="flex flex-row gap-x-6">
-          <MetricsCard title="Snapshot" amount={snapshot?.toString() || '-'} fiatAmount="Taken at block" />
+          <MetricsCard
+            title="Snapshot"
+            amount={formatNumberWithCommas(snapshot?.toString() || '-')}
+            fiatAmount="Taken at block"
+          />
           <MetricsCard title="State" amount={proposalStateHuman} />
         </div>
         <div>
@@ -371,7 +378,7 @@ const PageWithProposal = (proposal: ParsedProposal) => {
           </Header>
           <div className="flex flex-row justify-between border border-white border-opacity-40 rounded-lg px-[16px] py-[11px]">
             <Paragraph variant="semibold" className="text-[16px] text-st-success">
-              {Math.ceil(Number(forVote)).toString()}
+              {formatVoteCount(forVote)}
             </Paragraph>
             <Paragraph variant="semibold" className="text-[16px] text-st-success">
               For
@@ -379,7 +386,7 @@ const PageWithProposal = (proposal: ParsedProposal) => {
           </div>
           <div className="flex flex-row justify-between border border-white border-opacity-40 rounded-lg px-[16px] py-[11px]">
             <Paragraph variant="semibold" className="text-[16px] text-st-error">
-              {Math.ceil(Number(againstVote)).toString()}
+              {formatVoteCount(againstVote)}
             </Paragraph>
             <Paragraph variant="semibold" className="text-[16px] text-st-error">
               Against
@@ -387,7 +394,7 @@ const PageWithProposal = (proposal: ParsedProposal) => {
           </div>
           <div className="flex flex-row justify-between border border-white border-opacity-40 rounded-lg px-[16px] py-[11px]">
             <Paragraph variant="semibold" className="text-[16px] text-text-light">
-              {Math.ceil(Number(abstainVote)).toString()}
+              {formatVoteCount(abstainVote)}
             </Paragraph>
             <Paragraph variant="semibold" className="text-[16px] text-text-light">
               Abstain

@@ -7,6 +7,7 @@ import { formatBalanceToHuman } from '@/app/user/Balances/balanceUtils'
 import { LoadingSpinner } from '@/components/LoadingSpinner'
 import { Jdenticon } from '@/components/Header/Jdenticon'
 import { ErrorMessageAlert } from '@/components/ErrorMessageAlert/ErrorMessageAlert'
+import { formatNumberWithCommas } from '@/lib/utils'
 
 interface HolderColumnProps {
   address: string
@@ -34,7 +35,7 @@ export const HoldersSection = () => {
 
   const holders = currentResults.map(({ address, value }) => ({
     holder: <HolderColumn address={address.hash} rns={address.ens_domain_name} />,
-    quantity: `${formatBalanceToHuman(value).split('.')[0]} stRIF`,
+    quantity: `${formatNumberWithCommas(formatBalanceToHuman(value).split('.')[0])} stRIF`,
   }))
 
   return (

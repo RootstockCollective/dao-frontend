@@ -1,6 +1,6 @@
 import { TreasurySymbolsSupported, useTreasuryContext } from '@/app/treasury/TreasuryContext'
 import { Paragraph } from '@/components/Typography'
-import { formatCurrency, toFixed } from '@/lib/utils'
+import { formatCurrency, formatNumberWithCommas } from '@/lib/utils'
 import { usePricesContext } from '@/shared/context/PricesContext'
 
 interface TokenHoldingsProps {
@@ -14,7 +14,7 @@ export const TokenHoldings = ({ symbol }: TokenHoldingsProps) => {
   return (
     <>
       <Paragraph size="small">
-        {Math.ceil(Number(bucketsTotal[symbol]))} {symbol}
+        {formatNumberWithCommas(Math.ceil(Number(bucketsTotal[symbol])))} {symbol}
       </Paragraph>
       {prices[symbol] && (
         <Paragraph size="small" className="text-zinc-500">

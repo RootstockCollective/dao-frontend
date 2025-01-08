@@ -1,6 +1,6 @@
 import { StRIFTokenAbi } from '@/lib/abis/StRIFTokenAbi'
 import { tokenContracts } from '@/lib/contracts'
-import { formatCurrency, toFixed } from '@/lib/utils'
+import { formatCurrency, formatNumberWithCommas } from '@/lib/utils'
 import { useMemo } from 'react'
 import { formatEther } from 'viem'
 import { useReadContract } from 'wagmi'
@@ -19,7 +19,7 @@ export const TokenHoldingsStRIF = () => {
   const symbol = 'stRIF'
   return (
     <>
-      <Paragraph size="small">{Math.ceil(Number(balance))} stRIF</Paragraph>
+      <Paragraph size="small">{formatNumberWithCommas(Math.ceil(Number(balance)))} stRIF</Paragraph>
       {prices[symbol] && (
         <Paragraph size="small" className="text-zinc-500">
           = USD {formatCurrency(prices[symbol].price * Number(balance)) ?? 0}

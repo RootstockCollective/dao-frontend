@@ -1,4 +1,4 @@
-import { formatCurrency, toFixed } from '@/lib/utils'
+import { formatCurrency } from '@/lib/utils'
 import { useCanAccountUnstakeAmount } from '@/shared/hooks/useCanAccountUnstakeAmount'
 import { useMemo, useCallback } from 'react'
 import { StakeRIF } from '../StakeRIF'
