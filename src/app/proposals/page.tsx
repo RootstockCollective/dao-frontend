@@ -16,7 +16,6 @@ import { formatNumberWithCommas } from '@/lib/utils'
 export default function Proposals() {
   const { canCreateProposal, threshold, totalVotingPower = '' } = useVotingPower()
   const { latestProposals } = useFetchAllProposals()
-  console.log('🚀 ~ Proposals ~ totalVotingPower:', totalVotingPower)
 
   const memoizedProposals = useMemo(() => latestProposals, [latestProposals])
   return (
