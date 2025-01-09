@@ -1,6 +1,8 @@
 import { describe, expect, it } from 'vitest'
 import { Allocations, Backer } from './AllocationsContext'
-import { validateAllocationsState, ValidateAllocationsStateParams } from './utils'
+import { getVoteAllocations, validateAllocationsState, ValidateAllocationsStateParams } from './utils'
+import { Address } from 'viem'
+import { Builder } from '../../types'
 
 describe('Allocations context utils', () => {
   describe('validateAllocationsState', () => {
@@ -78,6 +80,85 @@ describe('Allocations context utils', () => {
       })
 
       expect(isValidState).toBe(false)
+    })
+  })
+
+  describe('getVoteAllocations', () => {
+    const builders = {
+      '0x1': {
+        gauge: '0x11',
+      },
+      '0x2': {
+        gauge: '0x21',
+      },
+      '0x3': {
+        gauge: '0x31',
+      },
+    } as unknown as Record<Address, Builder>
+
+    const getBuilder = (address: Address) => builders[address]
+
+    it('should return the modified builders', () => {
+      const [gauges, allocs] = getVoteAllocations({
+        initialAllocations: {
+          '0x1': 3n,
+        },
+        currentAllocations: {
+          '0x1': 5n,
+          '0x2': 5n,
+        },
+        getBuilder,
+      })
+
+      expect(gauges).toEqual(['0x11', '0x21'])
+      expect(allocs).toEqual([5n, 5n])
+    })
+
+    it('should return the modified builders if the initial allocation changed', () => {
+      const [gauges, allocs] = getVoteAllocations({
+        initialAllocations: {
+          '0x1': 3n,
+          '0x2': 5n,
+        },
+        currentAllocations: {
+          '0x1': 5n,
+          '0x2': 5n,
+        },
+        getBuilder,
+      })
+
+      expect(gauges).toEqual(['0x11'])
+      expect(allocs).toEqual([5n])
+    })
+
+    it('should return the empty if there are no modified builders', () => {
+      const [gauges, allocs] = getVoteAllocations({
+        initialAllocations: {
+          '0x2': 5n,
+        },
+        currentAllocations: {
+          '0x2': 5n,
+        },
+        getBuilder,
+      })
+
+      expect(gauges).toEqual([])
+      expect(allocs).toEqual([])
+    })
+
+    it('should return the empty if builder does not exist', () => {
+      const [gauges, allocs] = getVoteAllocations({
+        initialAllocations: {
+          '0x4': 5n,
+        },
+        currentAllocations: {
+          '0x4': 4n,
+        },
+        getBuilder,
+      })
+
+      expect(gauges).toEqual([])
+      expect(allocs).toEqual([])
     })
   })
 })
