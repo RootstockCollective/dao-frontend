@@ -24,7 +24,7 @@ export const ConnectButton: FC<Props> = ({ onSuccess, children = 'Connect wallet
   }
 
   return (
-    <Button onClick={handleConnectWallet} variant={variant}>
+    <Button onClick={handleConnectWallet} variant={variant} data-testid="ConnectWallet">
       {children}
     </Button>
   )
