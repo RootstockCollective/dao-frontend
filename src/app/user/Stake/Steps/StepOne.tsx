@@ -20,12 +20,11 @@ export const StepOne = ({ onGoNext = () => {} }: StepProps) => {
     (value: string) => {
       if (!value || value === '.') {
         onAmountChange('0')
-        return
-      }
-
-      const regex = /^\d*\.?\d{0,8}$/
-      if (regex.test(value)) {
-        onAmountChange(value)
+      } else {
+        const regex = /^\d*\.?\d{0,18}$/
+        if (regex.test(value)) {
+          onAmountChange(value)
+        }
       }
     },
     [onAmountChange],
@@ -45,7 +44,7 @@ export const StepOne = ({ onGoNext = () => {} }: StepProps) => {
 
       // For other percentages, calculate with precision
       const rawAmount = Number(balance) * (percentage / 100)
-      const displayAmount = rawAmount.toFixed(8)
+      const displayAmount = rawAmount.toString()
       onAmountChange(displayAmount)
     },
     [tokenToSend.balance, onAmountChange],

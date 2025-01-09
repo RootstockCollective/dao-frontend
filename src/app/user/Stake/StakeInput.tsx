@@ -17,6 +17,7 @@ export const StakeInput = ({ onChange, value, symbol = 'RIF', labelText }: Props
       value={value}
       name="amount-stake"
       fullWidth
+      inputProps={{ decimalScale: 18 }}
     />
   )
 }
