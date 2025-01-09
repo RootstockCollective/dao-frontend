@@ -8,7 +8,7 @@ export const ConnectWalletModal = () => {
   const router = useRouter()
   const onCancel = () => router.push('/')
   return (
-    <Modal onClose={onCancel} width={756}>
+    <Modal onClose={onCancel} width={756} data-testid="ConnectWalletModal">
       <div className="px-[42px] py-[50px] flex justify-center flex-col items-center">
         <Paragraph className="text-[24px] mt-4" fontFamily="kk-topo">
           SIGN IN TO VIEW MORE
@@ -20,7 +20,7 @@ export const ConnectWalletModal = () => {
 
         <div className="w-full flex justify-center mt-8 gap-6">
           <ConnectButton />
-          <Button variant="white" onClick={onCancel}>
+          <Button variant="white" onClick={onCancel} data-testid="Cancel">
             Cancel
           </Button>
         </div>
