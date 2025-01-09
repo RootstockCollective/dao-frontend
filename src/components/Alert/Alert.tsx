@@ -29,9 +29,15 @@ export const Alert = ({ severity, title, content, onDismiss, 'data-testid': data
       {IconToUse[severity]}
       {/* Main content */}
       <div className="flex-1">
-        <Paragraph className="leading-5 mb-[6px] text-[16px]">{title}</Paragraph>
+        <Paragraph className="leading-5 mb-[6px] text-[16px]" data-testid="Title">
+          {title}
+        </Paragraph>
         {typeof content === 'string' ? (
-          <Paragraph variant="light" className="font-[600] text-[14px] text-white opacity-80 mb-[12px]">
+          <Paragraph
+            variant="light"
+            className="font-[600] text-[14px] text-white opacity-80 mb-[12px]"
+            data-testid="Content"
+          >
             {content}
           </Paragraph>
         ) : (
@@ -39,7 +45,7 @@ export const Alert = ({ severity, title, content, onDismiss, 'data-testid': data
         )}
         {onDismiss && (
           <div onClick={onDismiss} className="cursor-pointer">
-            <Paragraph variant="light" className="text-[14px]">
+            <Paragraph variant="light" className="text-[14px]" data-testid="Dismiss">
               Dismiss
             </Paragraph>
           </div>
