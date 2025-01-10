@@ -219,10 +219,10 @@ const PageWithProposal = (proposal: ParsedProposal) => {
     // https://stackoverflow.com/questions/3809401/what-is-a-good-regular-expression-to-match-a-url
     const urlRegex =
       /(https?:\/\/(?:www\.|(?!www))[a-zA-Z0-9][a-zA-Z0-9-]+[a-zA-Z0-9]\.[^\s]{2,}|www\.[a-zA-Z0-9][a-zA-Z0-9-]+[a-zA-Z0-9]\.[^\s]{2,}|https?:\/\/(?:www\.|(?!www))[a-zA-Z0-9]+\.[^\s]{2,}|www\.[a-zA-Z0-9]+\.[^\s]{2,})/g
-    return description.replace(
-      urlRegex,
-      '<a href="$1" target="_blank" rel="noopener noreferrer" style="text-decoration: underline;">$1</a>',
-    )
+    return description.replace(urlRegex, url => {
+      const href = url.startsWith('http') || url.startsWith('https') ? url : `https://${url}`
+      return `<a href="${href}" target="_blank" rel="noopener noreferrer" style="text-decoration: underline;">${url}</a>`
+    })
   }
 
   // @ts-ignore
