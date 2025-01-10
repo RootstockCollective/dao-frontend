@@ -50,7 +50,7 @@ export const StakeRIF = ({
           key={i}
           percentage={percentage}
           onClick={value => {
-            const calculatedAmount = (parseFloat(totalBalance) * (value / 100)).toFixed(8)
+            const calculatedAmount = (parseFloat(totalBalance) * (value / 100)).toString()
             onAmountChange(calculatedAmount) // Update input value
             onPercentageClicked(value) // Notify parent
           }}
