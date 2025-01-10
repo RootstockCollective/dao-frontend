@@ -480,57 +480,74 @@ interface CalldataRowsData {
 }
 
 const CalldataRows = ({ calldatasParsed }: CalldataRowsData) => {
-  return calldatasParsed.map((callData, index) => <CalldataDisplay key={index} {...callData} />)
+  return (
+    <>
+      {calldatasParsed.map((callData, index) => (
+        <CalldataDisplay key={index} {...callData} />
+      ))}
+    </>
+  )
 }
 
-const CalldataDisplay = ({ functionName, args, inputs }: DecodedData) => (
-  <div>
-    <span className="flex justify-between">
-      <Paragraph variant="semibold" className="text-[16px] text-left">
-        Function:
-      </Paragraph>
-      <Span className="font-normal text-left">{functionName}</Span>
-    </span>
+const CalldataDisplay = ({
+  functionName,
+  args,
+  inputs,
+  affectedAddress,
+  callData,
+}: DecodedData & { affectedAddress?: string; callData?: string }) => {
+  const isDecodedData = inputs !== undefined && args !== undefined
 
-    <Paragraph variant="semibold" className="text-[16px] mt-2">
-      Arguments:
-    </Paragraph>
-    <ul>
-      {inputs.map((input, index) => {
-        const inputName = input.name
-        const functionInputNames =
-          actionInputNameFormatMap[functionName] ||
-          ({} as InputNameFormatMap<typeof functionName, typeof inputName>)
-        const formattedInputName = (functionInputNames[inputName as never] || inputName) as string
+  return (
+    <div>
+      <span className="flex justify-between">
+        <Paragraph variant="semibold" className="text-[16px] text-left">
+          Function:
+        </Paragraph>
+        <Span className="font-normal text-left">{isDecodedData ? functionName : 'Unknown Function'}</Span>
+      </span>
 
-        const inputValue = args[index] as InputParameterTypeByFnByName<typeof functionName, typeof inputName>
-        const inputValueComposerMap = (actionComponentMap[functionName] || {}) as InputValueComposerMap<
-          typeof functionName,
-          typeof inputName
-        >
-        const InputComponent = inputValueComposerMap[
-          inputName as keyof typeof inputValueComposerMap
-        ] as InputValueComponent<InputParameterTypeByFnByName<typeof functionName, typeof inputName>>
+      {isDecodedData && inputs && inputs.length > 0 ? (
+        <>
+          <Paragraph variant="semibold" className="text-[16px] mt-2">
+            Arguments:
+          </Paragraph>
+          <ul>
+            {inputs.map((input, index) => (
+              <li key={index} className="overflow-hidden text-ellipsis whitespace-nowrap">
+                <Span className="font-normal text-left">
+                  {input.name} ({input.type}): {args[index]}
+                </Span>
+              </li>
+            ))}
+          </ul>
+        </>
+      ) : (
+        <>
+          <Paragraph variant="semibold" className="text-[16px] mt-2">
+            Affected Address:
+          </Paragraph>
+          <span
+            className="font-normal text-left overflow-hidden text-ellipsis whitespace-nowrap block w-full"
+            title={affectedAddress || 'N/A'}
+          >
+            {affectedAddress || 'N/A'}
+          </span>
 
-        return (
-          <li key={index} className="my-2 flex justify-between">
-            <Typography tagVariant="span" className="font-semibold text-[16px] text-left">
-              {formattedInputName}
-            </Typography>
-            {InputComponent && (
-              <InputComponent
-                value={inputValue}
-                htmlProps={{
-                  className: 'font-normal text-right',
-                }}
-              />
-            )}
-          </li>
-        )
-      })}
-    </ul>
-  </div>
-)
+          <Paragraph variant="semibold" className="text-[16px] mt-2">
+            Raw Call Data:
+          </Paragraph>
+          <span
+            className="font-normal text-left overflow-hidden text-ellipsis whitespace-nowrap block w-full"
+            title={callData || 'N/A'}
+          >
+            {callData || 'N/A'}
+          </span>
+        </>
+      )}
+    </div>
+  )
+}
 
 type DewhitelistButton = {
   proposal: ParsedProposal
