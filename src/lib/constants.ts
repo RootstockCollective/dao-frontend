@@ -43,3 +43,5 @@ export const RNS_REGISTRY_ADDRESS = process.env.NEXT_PUBLIC_RNS_REGISTRY_ADDRESS
 
 export const NODE_URL = process.env.NEXT_PUBLIC_NODE_URL
 export const DEFAULT_NUMBER_OF_SECONDS_PER_BLOCK = 30
+
+export const GOOGLE_TAG_ID = 'GTM-PTL6VZM'
