@@ -584,7 +584,7 @@ const AddressInputComponent: InputValueComponent<'address'> = ({ value, htmlProp
 )
 
 const BigIntInputComponent: InputValueComponent<'bigint'> = ({ value, htmlProps }) => (
-  <Span {...(htmlProps as any)}>{formatBalanceToHuman(value)}</Span>
+  <Span {...(htmlProps as any)}>{formatNumberWithCommas(formatBalanceToHuman(value))}</Span>
 )
 
 const ERC20InputComponent: InputValueComponent<'bigint'> = ({ value, htmlProps }) => (
