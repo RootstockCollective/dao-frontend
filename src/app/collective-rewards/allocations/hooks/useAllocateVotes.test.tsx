@@ -36,14 +36,19 @@ describe('useAllocateVotes', () => {
     vi.mocked(useWaitForTransactionReceipt).mockReturnValue({} as UseWaitForTransactionReceiptReturnType)
   })
 
+  afterEach(() => {
+    vi.resetAllMocks()
+  })
+
   describe('saveAllocations', () => {
     const writeContractAsyncSpy = vi.fn()
+    const isValidStateMock = vi.fn()
 
     beforeEach(() => {
       vi.mocked(useContext).mockReturnValue({
         initialState: {},
-        state: {},
-      })
+        state: { isValidState: isValidStateMock.mockReturnValue(true) },
+      } as unknown as ReturnType<typeof useContext>)
 
       vi.mocked(useWriteContract).mockReturnValue({
         writeContractAsync: writeContractAsyncSpy,
@@ -54,17 +59,14 @@ describe('useAllocateVotes', () => {
       writeContractAsyncSpy.mockClear()
     })
 
-    test('should return allocate function', () => {
+    test('should call contract with allocate function in args', () => {
       vi.mocked(getVoteAllocations).mockReturnValue([['0x123'], [1n]])
 
       renderHook(async () => {
         const { saveAllocations } = useAllocateVotes()
 
-        expect(typeof saveAllocations).toBe('function')
-
         saveAllocations()
 
-        expect(writeContractAsyncSpy).toHaveBeenCalled()
         expect(writeContractAsyncSpy).toBeCalledWith(
           expect.objectContaining({
             functionName: 'allocate',
@@ -73,7 +75,7 @@ describe('useAllocateVotes', () => {
       })
     })
 
-    test('should return allocateBatch function', () => {
+    test('should call contract with allocateBatch function in args', () => {
       vi.mocked(getVoteAllocations).mockReturnValue([
         ['0x123', '0x456'],
         [1n, 3n],
@@ -82,16 +84,38 @@ describe('useAllocateVotes', () => {
       renderHook(async () => {
         const { saveAllocations } = useAllocateVotes()
 
-        expect(typeof saveAllocations).toBe('function')
-
         saveAllocations()
 
-        expect(writeContractAsyncSpy).toHaveBeenCalled()
         expect(writeContractAsyncSpy).toBeCalledWith(
           expect.objectContaining({
             functionName: 'allocateBatch',
           }),
         )
+      })
+    })
+
+    test('should not call contract if there are no allocations to save', () => {
+      vi.mocked(getVoteAllocations).mockReturnValue([[], []])
+
+      renderHook(async () => {
+        const { saveAllocations } = useAllocateVotes()
+
+        saveAllocations()
+
+        expect(writeContractAsyncSpy).not.toBeCalled()
+      })
+    })
+
+    test('should not call contract and getVoteAllocations if state is not valid', () => {
+      isValidStateMock.mockReturnValue(false)
+
+      renderHook(async () => {
+        const { saveAllocations } = useAllocateVotes()
+
+        saveAllocations()
+
+        expect(writeContractAsyncSpy).not.toBeCalled()
+        expect(getVoteAllocations).not.toBeCalled()
       })
     })
   })

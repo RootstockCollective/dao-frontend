@@ -26,7 +26,7 @@ export default function Allocations() {
     actions: { resetAllocations },
   } = useContext(AllocationsContext)
 
-  const { saveAllocations, isValidState } = useAllocateVotes()
+  const { saveAllocations, canSaveAllocation } = useAllocateVotes()
 
   const onReset = useCallback(() => {
     resetAllocations()
@@ -71,7 +71,7 @@ export default function Allocations() {
           <div className="flex items-center self-stretch justify-between gap-4">
             <div className="flex gap-4">
               {/* TODO: review disabled statuses */}
-              <Button disabled={!isValidState()} variant="primary" onClick={() => saveAllocations()}>
+              <Button disabled={!canSaveAllocation} variant="primary" onClick={() => saveAllocations()}>
                 Save allocations
               </Button>
               <Button variant="secondary" onClick={() => cancel()}>

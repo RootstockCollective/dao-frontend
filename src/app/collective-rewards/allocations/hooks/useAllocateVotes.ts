@@ -14,6 +14,8 @@ export const useAllocateVotes = () => {
     state: { allocations, getBuilder, isValidState },
   } = useContext(AllocationsContext)
 
+  const canSaveAllocation = isValidState()
+
   const { isLoading, isSuccess, data, error: receiptError } = useWaitForTransactionReceipt({ hash })
 
   const error = executionError ?? receiptError
@@ -24,6 +26,11 @@ export const useAllocateVotes = () => {
       currentAllocations: allocations,
       getBuilder,
     })
+
+    if (allocs.length === 0) {
+      console.error('No allocations to save')
+      return
+    }
 
     const isBatchAllocation = allocs.length > 1
 
@@ -47,8 +54,8 @@ export const useAllocateVotes = () => {
   })
 
   return {
-    isValidState,
-    saveAllocations: () => saveAllocations(),
+    canSaveAllocation,
+    saveAllocations: () => canSaveAllocation && saveAllocations(),
     error,
     isPendingTx: isPending,
     isLoadingReceipt: isLoading,

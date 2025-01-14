@@ -42,12 +42,10 @@ export const getVoteAllocations = ({
   return Object.entries(currentAllocations).reduce<[Address[], bigint[]]>(
     (acc, [key, value]) => {
       const builderAddress = key as Address
-      if (value !== initialAllocations[builderAddress]) {
-        const gauge = getBuilder(builderAddress)?.gauge
-        if (gauge) {
-          acc[0].push(gauge)
-          acc[1].push(value)
-        }
+      const gauge = getBuilder(builderAddress)?.gauge
+      if (gauge && value !== initialAllocations[builderAddress]) {
+        acc[0] = [...acc[0], gauge]
+        acc[1] = [...acc[1], value]
       }
       return acc
     },
