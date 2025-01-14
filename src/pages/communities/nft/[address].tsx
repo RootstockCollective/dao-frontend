@@ -260,7 +260,12 @@ export default function Page() {
           <div className="flex items-center gap-3 mb-2">
             <div className="rounded-xl overflow-hidden">
               {nftInfo?.leftImageSrc && (
-                <Image src={nftInfo.leftImageSrc} width={50} height={50} alt="Early Adopters" />
+                <Image
+                  src={nftInfo.leftImageSrc}
+                  width={50}
+                  height={50}
+                  alt={nftInfo?.title || 'Early Adopters'}
+                />
               )}
             </div>
             <div className="font-semibold">{nftInfo?.title}</div>
@@ -343,16 +348,19 @@ export default function Page() {
                 <div>
                   <Paragraph className="text-[18px]">{nftInfo?.title}</Paragraph>
                   {nftInfo?.isMintable && (
-                    <Button
-                      variant="primary"
-                      className="my-[16px]"
-                      onClick={handleMinting}
-                      disabled={!tokensAvailable || !address || isClaiming || isChecking}
-                      loading={isClaiming || isChecking}
-                      data-testid="claimButton"
-                    >
-                      Claim it!
-                    </Button>
+                    <>
+                      <Paragraph size="small">{tokensAvailable} NFTs left to claim.</Paragraph>
+                      <Button
+                        variant="primary"
+                        className="my-[16px]"
+                        onClick={handleMinting}
+                        disabled={!tokensAvailable || !address || isClaiming || isChecking}
+                        loading={isClaiming || isChecking}
+                        data-testid="claimButton"
+                      >
+                        Claim it!
+                      </Button>
+                    </>
                   )}
                   <Span className="text-[14px] tracking-wide hidden">
                     Crypto ipsum bitcoin ethereum dogecoin litecoin. Hedera USD kadena chainlink weave hive
