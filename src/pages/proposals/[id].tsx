@@ -479,15 +479,22 @@ interface CalldataRowsData {
   calldatasParsed: DecodedData[]
 }
 
-const CalldataRows = ({ calldatasParsed }: CalldataRowsData) => {
-  return (
-    <>
-      {calldatasParsed.map((callData, index) => (
-        <CalldataDisplay key={index} {...callData} />
-      ))}
-    </>
-  )
-}
+const CalldataRows = React.memo(
+  ({ calldatasParsed }: CalldataRowsData) => {
+    return (
+      <>
+        {calldatasParsed.map((callData, index) => (
+          <CalldataDisplay key={index} {...callData} />
+        ))}
+      </>
+    )
+  },
+  (prevProps, nextProps) => {
+    return prevProps.calldatasParsed === nextProps.calldatasParsed
+  },
+)
+
+CalldataRows.displayName = 'CalldataRows' // For debugging purposes
 
 const CalldataDisplay = ({
   functionName,
