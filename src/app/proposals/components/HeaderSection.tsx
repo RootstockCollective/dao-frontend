@@ -28,6 +28,7 @@ export const HeaderSection = ({ createProposalDisabled = true, threshold = '' })
   </div>
 )
 
+<<<<<<< HEAD:src/app/proposals/components/HeaderSection.tsx
 const CreateProposalButton = ({ disabled = false }) => (
   <Link href="/proposals/choose">
     <Button disabled={disabled} data-testid="CreateProposal">
@@ -35,3 +36,19 @@ const CreateProposalButton = ({ disabled = false }) => (
     </Button>
   </Link>
 )
+=======
+const CreateProposalButton = ({ disabled = false }) => {
+  const modal = useModal()
+
+  return (
+    <>
+      <Link href="/proposals/choose">
+        <Button disabled={disabled} data-testid="CreateProposal">
+          Create Proposal
+        </Button>
+      </Link>
+      {modal.isModalOpened && <ProposalSelectionModal onClose={modal.closeModal} />}
+    </>
+  )
+}
+>>>>>>> ee0a7b8 (chore: refactor proposal pages structure):src/app/proposals/HeaderSection.tsx
