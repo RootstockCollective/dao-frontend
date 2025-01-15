@@ -2,7 +2,6 @@ import { AllocationsContext } from '@/app/collective-rewards/allocations/context
 import {
   BackerRewardPercentage,
   formatFiatAmount,
-  formatMetrics,
   formatSymbol,
   getFiatAmount,
   Reward,
@@ -21,10 +20,10 @@ import { Popover } from '@/components/Popover'
 import { ProgressBar } from '@/components/ProgressBar'
 import { TableCell } from '@/components/Table'
 import { Label, Typography } from '@/components/Typography'
-import { cn, shortAddress, toFixed } from '@/lib/utils'
+import { cn, shortAddress } from '@/lib/utils'
 import { FC, memo, useContext, useMemo } from 'react'
 import { FaArrowDown, FaArrowUp, FaCircle } from 'react-icons/fa'
-import { Address, isAddress, parseEther, parseUnits } from 'viem'
+import { Address, isAddress, parseEther } from 'viem'
 
 type RewardCellValueProps = {
   reward: Reward
