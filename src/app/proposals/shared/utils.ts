@@ -35,29 +35,16 @@ export type DecodedData = {
   inputs: FunctionInputs
 }
 
-// const tryDecode = (data: string): DecodedData | undefined => {
-//   for (const abi of [...abis, GovernorAbi]) {
-//     try {
-//       const { functionName, args } = decodeFunctionData({ data: data as Hash, abi })
+export function isDecodedData(
+  data: DecodedData | { affectedAddress: string; callData: string },
+): data is DecodedData {
+  return (
+    (data as DecodedData).functionName !== undefined &&
+    (data as DecodedData).args !== undefined &&
+    (data as DecodedData).inputs !== undefined
+  )
+}
 
-//       if (functionName === 'relay') {
-//         return tryDecode(args[2])
-//       }
-
-//       const functionDefinition =
-//         abi.find(item => 'name' in item && item.name === functionName) || ({} as FunctionEntry)
-
-//       return {
-//         functionName: functionName as SupportedProposalActionName,
-//         args: args as DecodedFunctionData['args'],
-//         inputs: ('inputs' in functionDefinition ? functionDefinition.inputs : []) as FunctionInputs,
-//       }
-//     } catch (_) {
-//       continue
-//     }
-//   }
-//   return undefined
-// }
 const tryDecode = (data: string): DecodedData | { affectedAddress: string; callData: string } | undefined => {
   for (const abi of [...abis, GovernorAbi]) {
     try {
@@ -105,6 +92,7 @@ const extractAddressFromData = (data: string): string => {
  * @param timeStamp
  * @param blockNumber
  */
+
 export const getEventArguments = ({
   args: { description, proposalId, proposer, calldatas },
   timeStamp,
@@ -114,10 +102,17 @@ export const getEventArguments = ({
     (acc, cd) => {
       try {
         const decodedData = tryDecode(cd)
-        acc = [...acc, ...(decodedData ? [decodedData] : [])]
+        if (decodedData) {
+          acc.push(decodedData) // Add DecodedData to the array
+        } else {
+          // Handle fallback case explicitly
+          acc.push({
+            affectedAddress: extractAddressFromData(cd),
+            callData: cd,
+          })
+        }
       } catch (err) {
-        // TODO:: decide whether it is necessary to throw error (if so then also perhaps the function name `tryDecode` is misleading).
-        // Only logging this error due to the fact that anyone can submit any proposal directly via contract call.
+        // Logging error due to potential malformed proposals
         console.error(err)
         console.error('🐛 proposer:', proposer)
         console.error('🐛 proposalId:', proposalId)

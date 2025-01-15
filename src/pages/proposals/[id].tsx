@@ -16,7 +16,12 @@ import {
   InputValueComposerMap,
   SupportedProposalActionName,
 } from '@/app/proposals/shared/supportedABIs'
-import { DecodedData, getEventArguments, splitCombinedName } from '@/app/proposals/shared/utils'
+import {
+  DecodedData,
+  getEventArguments,
+  splitCombinedName,
+  isDecodedData,
+} from '@/app/proposals/shared/utils'
 import { useAlertContext } from '@/app/providers'
 import { formatBalanceToHuman } from '@/app/user/Balances/balanceUtils'
 import { useModal } from '@/app/user/Balances/hooks/useModal'
@@ -117,7 +122,10 @@ const PageWithProposal = (proposal: ParsedProposal) => {
     isVoting ||
     isWaitingVotingReceipt
 
-  const proposalType: SupportedProposalActionName = proposal.calldatasParsed[0]?.functionName
+  const proposalType: SupportedProposalActionName | undefined = isDecodedData(proposal.calldatasParsed[0])
+    ? proposal.calldatasParsed[0].functionName
+    : undefined
+
   const { proposalName, builderName } = splitCombinedName(name)
 
   const cannotCastVoteReason = useMemo(() => {
@@ -538,7 +546,11 @@ const DewhitelistButton: FC<DewhitelistButton> = ({
   const router = useRouter()
   const builderRegistryContract = 'BuilderRegistryAbi'
   const dewhitelistBuilderAction = 'dewhitelistBuilder'
-  const builderAddress = getAddress(calldatasParsed[0]?.args[0]?.toString() || '')
+  const builderAddress = getAddress(
+    isDecodedData(calldatasParsed[0])
+      ? (calldatasParsed[0].args[0]?.toString() ?? '')
+      : (calldatasParsed[0]?.affectedAddress ?? ''),
+  )
   const isProposalExecuted = proposalState === ProposalState.Executed
   const isButtonEnabled = builderAddress && isProposalExecuted
 
