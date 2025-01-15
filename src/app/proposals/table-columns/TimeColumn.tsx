@@ -1,6 +1,7 @@
 import { Typography } from '@/components/Typography'
 import moment from 'moment'
 import { DEFAULT_NUMBER_OF_SECONDS_PER_BLOCK } from '@/lib/constants'
+import Big from '@/lib/big'
 
 const convertToTimeRemaining = (seconds: number) => {
   const duration = moment.duration(seconds, 'seconds')
@@ -24,17 +25,22 @@ const getColorClass = (ratio: number): string => {
 }
 
 interface TimeColumnProps {
-  blocksUntilClosure: number
-  proposalDeadline: number
-  proposalBlockNumber: number
+  blocksUntilClosure: Big
+  proposalDeadline: Big
+  proposalBlockNumber: string
 }
 
 export function TimeColumn({ blocksUntilClosure, proposalDeadline, proposalBlockNumber }: TimeColumnProps) {
-  const votingPeriod = proposalDeadline - proposalBlockNumber
-  const ratio = blocksUntilClosure / votingPeriod
-  const colorClass = getColorClass(ratio)
-  const timeRemainingSec = blocksUntilClosure * DEFAULT_NUMBER_OF_SECONDS_PER_BLOCK
-  const timeRemainingMsg = blocksUntilClosure > 0 ? convertToTimeRemaining(timeRemainingSec) : '-'
+  const votingPeriod = proposalDeadline.minus(Number(proposalBlockNumber))
+  const ratio = blocksUntilClosure.div(votingPeriod)
+
+  const colorClass = getColorClass(ratio.toNumber())
+
+  const timeRemainingSec = blocksUntilClosure.mul(DEFAULT_NUMBER_OF_SECONDS_PER_BLOCK)
+
+  const timeRemainingMsg = blocksUntilClosure.gt(0)
+    ? convertToTimeRemaining(timeRemainingSec.toNumber())
+    : '-'
   return (
     <Typography tagVariant="p" className={colorClass}>
       {timeRemainingMsg}

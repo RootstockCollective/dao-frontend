@@ -18,6 +18,7 @@ import { TimeColumn } from './table-columns/TimeColumn'
 import { DebounceSearch } from '../../components/DebounceSearch/DebounceSearch'
 import { useProposalListData } from './hooks/useProposalListData'
 import { Button } from '@/components/Button'
+import Big from '@/lib/big'
 
 interface LatestProposalsTableProps {
   proposals: LatestProposalResponse[]
@@ -86,7 +87,7 @@ const LatestProposalsTable = ({ proposals }: LatestProposalsTableProps) => {
           <TimeColumn
             blocksUntilClosure={blocksUntilClosure}
             proposalDeadline={proposalDeadline}
-            proposalBlockNumber={Number(blockNumber)}
+            proposalBlockNumber={blockNumber}
           />
         )
       },
@@ -105,7 +106,7 @@ const LatestProposalsTable = ({ proposals }: LatestProposalsTableProps) => {
       sortingFn: (rowA, rowB) => {
         const getDominantVoteType = (votesData: typeof rowA.original.votes) => {
           const { againstVotes, forVotes, abstainVotes } = votesData
-          const maxCount = Math.max(againstVotes, forVotes, abstainVotes)
+          const maxCount = Big.max(againstVotes, forVotes, abstainVotes)
           if (maxCount === forVotes) return { type: 'for', count: maxCount, priority: 1 }
           if (maxCount === againstVotes) return { type: 'against', count: maxCount, priority: 2 }
           else return { type: 'abstain', count: maxCount, priority: 3 }
@@ -113,7 +114,7 @@ const LatestProposalsTable = ({ proposals }: LatestProposalsTableProps) => {
         const dominantA = getDominantVoteType(rowA.original.votes)
         const dominantB = getDominantVoteType(rowB.original.votes)
         if (dominantA.type === dominantB.type) {
-          return dominantB.count - dominantA.count
+          return dominantB.count.minus(dominantA.count).toNumber()
         }
         return dominantA.priority - dominantB.priority
       },
