@@ -11,7 +11,7 @@ declare module 'big.js' {
   }
   interface Big {
     ceil(): Big
-    roundHalfEven(decimalPlaces?: number): Big
+    roundHalfUp(decimalPlaces?: number): Big
     floor(decimalPlaces?: number): Big
   }
 }
@@ -30,12 +30,22 @@ Big.prototype.ceil = function () {
   return this.gt(intPart) ? intPart.plus(1) : intPart
 }
 
-Big.prototype.roundHalfEven = function (decimalPlaces?: number) {
+Big.prototype.roundHalfUp = function (decimalPlaces?: number) {
+  if (this.lt(0)) {
+    // For negative numbers, use roundHalfUp and add 1
+    return this.round(decimalPlaces, Big.roundHalfUp).plus(1)
+  }
+  // For positive numbers, roundHalfUp works as expected
   return this.round(decimalPlaces, Big.roundHalfUp)
 }
 
 Big.prototype.floor = function (decimalPlaces?: number) {
-  return this.round(decimalPlaces, Big.roundDown)
+  if (this.lt(0)) {
+    // For negative numbers, round down and subtract 1
+    return this.round(decimalPlaces || 0, Big.roundDown).minus(1)
+  }
+  // For zero or positive numbers, round down works as expected
+  return this.round(decimalPlaces || 0, Big.roundDown)
 }
 
 export default Big
