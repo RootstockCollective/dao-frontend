@@ -35,9 +35,9 @@ export type DecodedData = {
   inputs: FunctionInputs
 }
 
-export function isDecodedData(
-  data: DecodedData | { affectedAddress: string; callData: string },
-): data is DecodedData {
+export type DecodedDataFallback = { affectedAddress?: string; callData?: string }
+
+export function isDecodedData(data: DecodedData | DecodedDataFallback): data is DecodedData {
   return (
     (data as DecodedData).functionName !== undefined &&
     (data as DecodedData).args !== undefined &&
@@ -45,7 +45,7 @@ export function isDecodedData(
   )
 }
 
-const tryDecode = (data: string): DecodedData | { affectedAddress: string; callData: string } | undefined => {
+const tryDecode = (data: string): DecodedData | DecodedDataFallback | undefined => {
   for (const abi of [...abis, GovernorAbi]) {
     try {
       const { functionName, args } = decodeFunctionData({ data: data as Hash, abi })
@@ -98,32 +98,29 @@ export const getEventArguments = ({
   timeStamp,
   blockNumber,
 }: EventArgumentsParameter) => {
-  const calldatasParsed = calldatas.reduce<(DecodedData | { affectedAddress: string; callData: string })[]>(
-    (acc, cd) => {
-      try {
-        const decodedData = tryDecode(cd)
-        if (decodedData) {
-          acc.push(decodedData) // Add DecodedData to the array
-        } else {
-          // Handle fallback case explicitly
-          acc.push({
-            affectedAddress: extractAddressFromData(cd),
-            callData: cd,
-          })
-        }
-      } catch (err) {
-        // Logging error due to potential malformed proposals
-        console.error(err)
-        console.error('🐛 proposer:', proposer)
-        console.error('🐛 proposalId:', proposalId)
-        console.error('🐛 description:', description)
-        console.error('🐛 calldatas:', calldatas)
+  const calldatasParsed = calldatas.reduce<(DecodedData | DecodedDataFallback)[]>((acc, cd) => {
+    try {
+      const decodedData = tryDecode(cd)
+      if (decodedData) {
+        acc.push(decodedData) // Add DecodedData to the array
+      } else {
+        // Handle fallback case explicitly
+        acc.push({
+          affectedAddress: extractAddressFromData(cd),
+          callData: cd,
+        })
       }
+    } catch (err) {
+      // Logging error due to potential malformed proposals
+      console.error(err)
+      console.error('🐛 proposer:', proposer)
+      console.error('🐛 proposalId:', proposalId)
+      console.error('🐛 description:', description)
+      console.error('🐛 calldatas:', calldatas)
+    }
 
-      return acc
-    },
-    [],
-  )
+    return acc
+  }, [])
 
   return {
     name: description.split(';')[0],
