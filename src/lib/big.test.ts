@@ -38,3 +38,43 @@ describe('ceil', () => {
     expect(Big(-1.1).ceil().toString()).eq('-1')
   })
 })
+
+describe('roundHalfEven', () => {
+  it('roundHalfEven with 1.5 should be 2', () => {
+    const number = 1.55
+    expect(Math.round(number)).eq(2)
+    expect(Big(number).roundHalfEven().toString()).eq('2')
+  })
+
+  it('roundHalfEven with 3.45 should be 3', () => {
+    const number = 3.45
+    expect(Math.round(number)).eq(3)
+    expect(Big(number).roundHalfEven().toString()).eq('3')
+  })
+
+  it('roundHalfEven with 3.5 should be 4', () => {
+    const number = 3.5
+    expect(Math.round(number)).eq(4)
+    expect(Big(number).roundHalfEven().toString()).eq('4')
+  })
+})
+
+describe('floor', () => {
+  it('floor with 1.55 should be 1', () => {
+    const number = 1.55
+    expect(Math.floor(number)).eq(1)
+    expect(Big(number).floor().toString()).eq('1')
+  })
+
+  it('floor with 1.99 should be 1', () => {
+    const number = 1.99
+    expect(Math.floor(number)).eq(1)
+    expect(Big(number).floor().toString()).eq('1')
+  })
+
+  it('floor with 2.01 should be 1', () => {
+    const number = 2.01
+    expect(Math.floor(number)).eq(2)
+    expect(Big(number).floor().toString()).eq('2')
+  })
+})
