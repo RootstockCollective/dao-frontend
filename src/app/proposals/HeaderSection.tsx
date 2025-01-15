@@ -1,3 +1,4 @@
+import Link from 'next/link'
 import { Paragraph, HeaderTitle } from '@/components/Typography'
 import { Button } from '@/components/Button'
 import { Popover } from '@/components/Popover'
@@ -37,9 +38,11 @@ const CreateProposalButton = ({ disabled = false }) => {
 
   return (
     <>
-      <Button onClick={modal.openModal} disabled={disabled} data-testid="CreateProposal">
-        Create Proposal
-      </Button>
+      <Link href="/proposals/choose">
+        <Button disabled={disabled} data-testid="CreateProposal">
+          Create Proposal
+        </Button>
+      </Link>
       {modal.isModalOpened && <ProposalSelectionModal onClose={modal.closeModal} />}
     </>
   )
