@@ -53,6 +53,7 @@ import { VoteSubmittedModal } from '@/components/Modal/VoteSubmittedModal'
 import React from 'react'
 import { ProposalState } from '@/shared/types'
 import { isUserRejectedTxError } from '@/components/ErrorPage/commonErrors'
+import Big from '@/lib/big'
 
 export default function ProposalView() {
   const {
@@ -212,8 +213,7 @@ const PageWithProposal = (proposal: ParsedProposal) => {
     votingModal.openModal()
   }
 
-  const formatVoteCount = (voteCount: string) =>
-    formatNumberWithCommas(Math.ceil(Number(voteCount)).toString())
+  const formatVoteCount = (voteCount: string) => formatNumberWithCommas(Big(voteCount).ceil().toString())
 
   const linkfyUrls = (description: string) => {
     // https://stackoverflow.com/questions/3809401/what-is-a-good-regular-expression-to-match-a-url

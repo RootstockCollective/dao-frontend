@@ -1,6 +1,7 @@
 import { GovernorAddress } from '@/lib/contracts'
 import { GovernorAbi } from '@/lib/abis/Governor'
 import { useReadContract, useWaitForTransactionReceipt, useWriteContract } from 'wagmi'
+import Big from '@/lib/big'
 
 const DAO_DEFAULT_PARAMS = {
   abi: GovernorAbi,
@@ -11,7 +12,7 @@ const getCurrentTimeInMsAsBigInt = () => BigInt(Math.floor(Date.now() / 1000))
 
 const getBigIntTimestampAsHuman = (proposalEta?: bigint) => {
   if (!proposalEta) return ''
-  const proposalEtaMs = Number(proposalEta) * 1000
+  const proposalEtaMs = Big(proposalEta.toString()).mul(1000).toNumber()
   const proposalDate = new Date(proposalEtaMs)
   return proposalDate.toLocaleString()
 }
