@@ -4,13 +4,11 @@ import { AlertProvider, useAlertContext } from '@/app/providers/AlertProvider'
 import { describe, expect, test, vi, beforeEach, afterEach } from 'vitest'
 import { cleanup, render, waitFor } from '@testing-library/react'
 import { Builder, BuilderStateFlags } from '@/app/collective-rewards/types'
-import { BuilderContextProvider } from '../../context'
+import { BuilderContextProvider } from '@/app/collective-rewards/user'
 
-vi.mock('@/app/collective-rewards/user/hooks/useGetBuilders', () => {
-  return {
-    useGetBuilders: vi.fn(),
-  }
-})
+vi.mock('@/app/collective-rewards/user/hooks/useGetBuilders', () => ({
+  useGetBuilders: vi.fn(),
+}))
 
 vi.mock('@/app/providers/AlertProvider', () => ({
   useAlertContext: vi.fn(),
