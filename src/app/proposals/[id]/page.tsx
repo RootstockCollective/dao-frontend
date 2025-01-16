@@ -565,23 +565,22 @@ const DewhitelistButton: FC<DewhitelistButton> = ({
   )
 }
 
-export const actionInputNameFormatMap: Partial<
-  ActionInputNameFormatMap<FunctionName[number], InputParameterName>
-> = {
-  whitelistBuilder: {
-    builder_: 'Address to be whitelisted',
-    rewardReceiver_: 'Address to receive rewards',
-  },
-  communityApproveBuilder: {
-    builder_: 'Address to be whitelisted',
-  },
-  removeWhitelistedBuilder: {
-    builder_: 'Address to be removed',
-  },
-  dewhitelistBuilder: {
-    builder_: 'Address to be de-whitelisted',
-  },
-}
+const actionInputNameFormatMap: Partial<ActionInputNameFormatMap<FunctionName[number], InputParameterName>> =
+  {
+    whitelistBuilder: {
+      builder_: 'Address to be whitelisted',
+      rewardReceiver_: 'Address to receive rewards',
+    },
+    communityApproveBuilder: {
+      builder_: 'Address to be whitelisted',
+    },
+    removeWhitelistedBuilder: {
+      builder_: 'Address to be removed',
+    },
+    dewhitelistBuilder: {
+      builder_: 'Address to be de-whitelisted',
+    },
+  }
 
 const AddressInputComponent: InputValueComponent<'address'> = ({ value, htmlProps }) => (
   <AddressComponent {...htmlProps} addressOrAlias={value.toString()} />
@@ -597,7 +596,7 @@ const ERC20InputComponent: InputValueComponent<'bigint'> = ({ value, htmlProps }
   </Span>
 )
 
-export const actionComponentMap: Partial<ActionComposerMap> = {
+const actionComponentMap: Partial<ActionComposerMap> = {
   whitelistBuilder: {
     builder_: AddressInputComponent,
     rewardReceiver_: AddressInputComponent,
