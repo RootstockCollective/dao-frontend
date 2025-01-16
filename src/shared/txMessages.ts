@@ -99,6 +99,11 @@ export const TX_MESSAGES = {
         'An unexpected error occurred while trying to execute the actions of the proposal. Please try again later. If the issue persists, contact support for assistance.',
       severity: 'error',
     },
+    insufficientFunds: {
+      title: 'Error on execution',
+      content: 'There are not enough funds in the bucket to execute this proposal. Please try again later.',
+      severity: 'error',
+    },
     pending: {
       title: 'Execution in process',
       content: 'Your transaction is in progress. It will be visible when the transaction is confirmed.',
