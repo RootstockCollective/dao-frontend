@@ -197,8 +197,15 @@ const PageWithProposal = (proposal: ParsedProposal) => {
       setMessage(TX_MESSAGES.execution.success)
     } catch (err: any) {
       if (!isUserRejectedTxError(err)) {
-        console.error(err)
-        setMessage(TX_MESSAGES.execution.error)
+        if (
+          err.details?.includes('Insufficient ERC20 balance') ||
+          err.details?.includes('Insufficient Balance')
+        ) {
+          setMessage(TX_MESSAGES.execution.insufficientFunds)
+        } else {
+          console.error(err)
+          setMessage(TX_MESSAGES.execution.error)
+        }
       }
     }
   }
