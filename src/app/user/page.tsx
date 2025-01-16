@@ -14,7 +14,7 @@ import { useAccount } from 'wagmi'
 import { useIsBuilderOrBacker } from '../collective-rewards/rewards/hooks/useIsBuilderOrBacker'
 import { useHandleErrors } from '../collective-rewards/utils'
 
-type MyHoldingsProps = {
+interface MyHoldingsProps {
   showBuilderButton?: boolean
 }
 
@@ -29,15 +29,13 @@ const MyHoldings = ({ showBuilderButton = false }: MyHoldingsProps) => (
 
 const TabsListWithButton = withBuilderButton(TabsList)
 
-const values = ['holdings', 'rewards'] as const
-type TabValue = (typeof values)[number]
-type Tabs = {
-  [key in TabValue]: {
-    value: key
-    title: string
-  }
+type TabValue = 'holdings' | 'rewards'
+interface Tab {
+  value: TabValue
+  title: string
 }
-const tabs: Tabs = {
+
+const tabs: Record<TabValue, Tab> = {
   holdings: {
     value: 'holdings',
     title: 'My Holdings',
@@ -67,13 +65,13 @@ function User() {
       {!isLoading && isBuilderOrBacker ? (
         <Tabs defaultValue={defaultTabValue}>
           <TabsListWithButton>
-            <TabsTrigger value={tabs.holdings.value}>
-              <TabTitle>{tabs.holdings.title}</TabTitle>
-            </TabsTrigger>
-            <TabsTrigger value={tabs.rewards.value}>
-              <TabTitle>{tabs.rewards.title}</TabTitle>
-            </TabsTrigger>
+            {Object.values(tabs).map((t, i) => (
+              <TabsTrigger value={t.value} key={i + t.value}>
+                <TabTitle>{t.title}</TabTitle>
+              </TabsTrigger>
+            ))}
           </TabsListWithButton>
+
           <TabsContent value={tabs.holdings.value}>
             <MyHoldings />
           </TabsContent>
