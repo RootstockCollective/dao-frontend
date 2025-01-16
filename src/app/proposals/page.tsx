@@ -2,7 +2,6 @@
 import { HeaderSection } from '@/app/proposals/HeaderSection'
 import { useFetchAllProposals } from '@/app/proposals/hooks/useFetchLatestProposals'
 import { LatestProposalsTableMemoized } from '@/app/proposals/LatestProposalsTable'
-import { MainContainer } from '@/components/MainContainer/MainContainer'
 import { MetricsCard } from '@/components/MetricsCard'
 import { Popover } from '@/components/Popover'
 import { TxStatusMessage } from '@/components/TxStatusMessage/TxStatusMessage'
@@ -19,7 +18,7 @@ export default function Proposals() {
 
   const memoizedProposals = useMemo(() => latestProposals, [latestProposals])
   return (
-    <MainContainer>
+    <>
       <TxStatusMessage messageType="proposal" />
       <HeaderSection createProposalDisabled={!canCreateProposal} threshold={threshold} />
       <div className="grid grid-rows-1 gap-[32px] mb-[100px]">
@@ -43,7 +42,7 @@ export default function Proposals() {
         </div> */}
         <LatestProposalsTableMemoized proposals={memoizedProposals} />
       </div>
-    </MainContainer>
+    </>
   )
 }
 
