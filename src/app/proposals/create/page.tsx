@@ -1,10 +1,9 @@
-import { CreateBuilderProposalForm } from '@/app/proposals/create/CreateBuilderProposalForm'
-import { RemoveBuilderProposalForm } from '@/app/proposals/create/RemoveBuilderProposalForm'
-import { TreasuryWithdrawProposalForm } from '@/app/proposals/create/TreasuryWithdrawProposalForm'
-import { SupportedActionAbiName, SupportedProposalActionName } from '@/app/proposals/shared/supportedABIs'
-import { MainContainer } from '@/components/MainContainer/MainContainer'
-import { ReadonlyURLSearchParams, useSearchParams } from 'next/navigation'
 import { FC } from 'react'
+import { ReadonlyURLSearchParams, useSearchParams } from 'next/navigation'
+import { CreateBuilderProposalForm } from './CreateBuilderProposalForm'
+import { RemoveBuilderProposalForm } from './RemoveBuilderProposalForm'
+import { TreasuryWithdrawProposalForm } from './TreasuryWithdrawProposalForm'
+import { SupportedActionAbiName, SupportedProposalActionName } from '../shared/supportedABIs'
 
 export type ProposalFormByType = {
   [key in SupportedActionAbiName]: Partial<{
@@ -37,17 +36,9 @@ export default function CreateProposal() {
   if (!componentByType[contract] || !componentByType[contract][action]) {
     // Fallback to treasury proposal form
 
-    return (
-      <MainContainer>
-        <TreasuryWithdrawProposalForm />
-      </MainContainer>
-    )
+    return <TreasuryWithdrawProposalForm />
   }
   const ProposalComponent: FC = componentByType[contract][action]
 
-  return (
-    <MainContainer>
-      <ProposalComponent />
-    </MainContainer>
-  )
+  return <ProposalComponent />
 }
