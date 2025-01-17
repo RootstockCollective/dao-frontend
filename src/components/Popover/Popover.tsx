@@ -11,6 +11,7 @@ export interface PopoverProps extends Omit<HTMLAttributes<HTMLDivElement>, 'chil
   position?: 'top' | 'bottom' | 'right' | 'left' | 'left-bottom'
   size?: 'small' | 'medium'
   hasCaret?: boolean
+  contentContainerClassName?: HTMLAttributes<HTMLDivElement>['className']
 }
 export const Popover = ({
   children,
@@ -22,6 +23,7 @@ export const Popover = ({
   size = 'medium',
   hasCaret = false,
   className,
+  contentContainerClassName,
 }: PopoverProps) => {
   const [show, setShow] = useState(false)
   const wrapperRef = useRef<any>(null)
@@ -76,6 +78,7 @@ export const Popover = ({
           position === 'left-bottom' && 'right-full top-full',
           size === 'small' && 'w-36',
           size === 'medium' && 'w-96',
+          contentContainerClassName,
         )}
         style={{ top: position === 'bottom' && hasCaret ? '15px' : '' }}
       >
