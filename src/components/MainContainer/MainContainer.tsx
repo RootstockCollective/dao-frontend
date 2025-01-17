@@ -76,9 +76,7 @@ export const MainContainer: FC<Props> = ({ children, notProtected = false }) => 
             {message && (
               <Alert {...message} onDismiss={message.onDismiss === null ? null : () => setMessage(null)} />
             )}
-            <MainContainerContent notProtected={notProtected} setMessage={setMessage}>
-              {children}
-            </MainContainerContent>
+            <MainContainerContent setMessage={setMessage}>{children}</MainContainerContent>
           </main>
           <Footer variant="container" />
         </div>

@@ -8,7 +8,7 @@ import { useWaitForTransactionReceipt } from 'wagmi'
 import { Hash } from 'viem'
 import { useAlertContext } from '@/app/providers'
 import { TX_MESSAGES } from '@/shared/txMessages'
-import { HeaderTitle } from '@/components/Typography'
+import { HeaderTitle, Paragraph } from '@/components/Typography'
 import { useAccount } from 'wagmi'
 import { RenderTotalBalance } from '../Balances/RenderTotalBalance'
 import { BalancesProvider } from '../Balances/context/BalancesContext'
@@ -17,9 +17,10 @@ import { ReclaimCell } from './ReclaimCell'
 import { DelegationAction } from './type'
 import { useGetExternalDelegatedAmount } from '@/shared/hooks/useGetExternalDelegatedAmount'
 import { TokenValue } from '@/app/user/Delegation/TokenValue'
+import { Popover } from '@/components/Popover'
 
 export const DelegationSection = () => {
-  const { address } = useAccount()
+  const { address, isConnected } = useAccount()
   const { delegateeAddress } = useGetDelegates(address)
 
   const [isDelegateModalOpened, setIsDelegateModalOpened] = useState(false)
@@ -63,9 +64,24 @@ export const DelegationSection = () => {
       {/* Header Components*/}
       <div className="flex flex-row justify-between mb-6">
         <HeaderTitle>DELEGATION</HeaderTitle>
-        <Button onClick={() => setIsDelegateModalOpened(true)} data-testid="Delegate">
-          Delegate
-        </Button>
+        <Popover
+          content={
+            <Paragraph variant="normal" className="text-sm">
+              You need to connect your wallet to be able to delegate.
+            </Paragraph>
+          }
+          trigger="hover"
+          background="dark"
+          size="small"
+        >
+          <Button
+            disabled={!isConnected}
+            onClick={() => setIsDelegateModalOpened(true)}
+            data-testid="Delegate"
+          >
+            Delegate
+          </Button>
+        </Popover>
       </div>
       <BalancesProvider>
         {!isExternalDelegatedAmountLoading && <Table data={[delegatedToMe]} />}

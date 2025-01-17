@@ -7,12 +7,12 @@ import { ProtectedContent } from '../ProtectedContent/ProtectedContent'
 import { usePathname } from 'next/navigation'
 
 interface Props {
-  notProtected: boolean
   setMessage: (message: any) => void
   children: ReactNode
+  isProtected?: boolean
 }
 
-export const MainContainerContent: FC<Props> = ({ notProtected, setMessage, children }) => {
+export const MainContainerContent: FC<Props> = ({ isProtected = false, setMessage, children }) => {
   const { isConnected, chainId } = useAccount()
   const { switchChain } = useSwitchChain()
   const pathname = usePathname()
@@ -56,5 +56,5 @@ export const MainContainerContent: FC<Props> = ({ notProtected, setMessage, chil
     return null
   }
 
-  return <>{notProtected ? children : <ProtectedContent>{children}</ProtectedContent>}</>
+  return <>{isProtected ? <ProtectedContent>{children}</ProtectedContent> : children}</>
 }
