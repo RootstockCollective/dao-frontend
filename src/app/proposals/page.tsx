@@ -12,16 +12,22 @@ import { FaRegQuestionCircle } from 'react-icons/fa'
 import { useVotingPower } from './hooks/useVotingPower'
 import { useMemo } from 'react'
 import { formatNumberWithCommas } from '@/lib/utils'
+import { useGovernorParams } from './hooks/useGovernorParams'
 
 export default function Proposals() {
-  const { canCreateProposal, threshold, totalVotingPower = '' } = useVotingPower()
+  const { totalVotingPower = BigInt(0), isConnected } = useVotingPower()
+  const { threshold } = useGovernorParams()
   const { latestProposals } = useFetchAllProposals()
 
-  const memoizedProposals = useMemo(() => latestProposals, [latestProposals])
+  const memoizedProposals = useMemo(() => latestProposals.slice(0, 5), [latestProposals])
   return (
     <MainContainer>
       <TxStatusMessage messageType="proposal" />
-      <HeaderSection createProposalDisabled={!canCreateProposal} threshold={threshold} />
+      <HeaderSection
+        isConnected={isConnected}
+        createProposalDisabled={!(totalVotingPower >= threshold)}
+        threshold={threshold}
+      />
       <div className="grid grid-rows-1 gap-[32px] mb-[100px]">
         <div>
           <VotingPowerPopover />

@@ -53,6 +53,7 @@ import { VoteSubmittedModal } from '@/components/Modal/VoteSubmittedModal'
 import React from 'react'
 import { ProposalState } from '@/shared/types'
 import { isUserRejectedTxError } from '@/components/ErrorPage/commonErrors'
+import { useGovernorParams } from '@/app/proposals/hooks/useGovernorParams'
 
 export default function ProposalView() {
   const {
@@ -89,7 +90,8 @@ const PageWithProposal = (proposal: ParsedProposal) => {
   const { blocksUntilClosure } = useGetProposalDeadline(proposalId)
 
   const { votingPowerAtSnapshot, doesUserHasEnoughThreshold } = useVotingPowerAtSnapshot(snapshot as bigint)
-  const { canCreateProposal } = useVotingPower()
+  const { totalVotingPower = BigInt(0) } = useVotingPower()
+  const { threshold } = useGovernorParams()
 
   const {
     onVote,
@@ -234,7 +236,7 @@ const PageWithProposal = (proposal: ParsedProposal) => {
         {(proposalType === 'communityApproveBuilder' || proposalType === 'whitelistBuilder') && (
           <DewhitelistButton
             proposal={proposal}
-            canCreateProposal={canCreateProposal}
+            canCreateProposal={totalVotingPower >= threshold}
             proposalState={proposalState as ProposalState}
           />
         )}
@@ -524,7 +526,7 @@ const CalldataDisplay = ({ functionName, args, inputs }: DecodedData) => (
   </div>
 )
 
-type DewhitelistButton = {
+interface DewhitelistButton {
   proposal: ParsedProposal
   canCreateProposal: boolean
   proposalState: ProposalState
