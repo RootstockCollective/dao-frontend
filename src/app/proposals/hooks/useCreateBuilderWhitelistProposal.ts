@@ -6,10 +6,10 @@ import { GovernorAddress, BackersManagerAddress } from '@/lib/contracts'
 import { Address, encodeFunctionData, zeroAddress } from 'viem'
 import { useWriteContract } from 'wagmi'
 import { createProposal, encodeGovernorRelayCallData } from './proposalUtils'
-import { useVotingPower } from './useVotingPower'
+import { useCanCreateProposal } from './useCanCreateProposal'
 
 export const useCreateBuilderWhitelistProposal = () => {
-  const { canCreateProposal } = useVotingPower()
+  const { canCreateProposal } = useCanCreateProposal()
   const { writeContractAsync: propose, isPending: isPublishing, error: transactionError } = useWriteContract()
 
   const onCreateBuilderWhitelistProposal = async (builderAddress: Address, description: string) => {

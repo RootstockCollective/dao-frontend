@@ -6,6 +6,7 @@ import { GovernorAbi } from '@/lib/abis/Governor'
 import { GovernorAddress, tokenContracts, TreasuryAddress } from '@/lib/contracts'
 import { Address, encodeFunctionData, parseEther, zeroAddress } from 'viem'
 import { useWriteContract } from 'wagmi'
+import { useCanCreateProposal } from './useCanCreateProposal'
 
 const DEFAULT_DAO_CONFIG = {
   abi: GovernorAbi,
@@ -13,7 +14,7 @@ const DEFAULT_DAO_CONFIG = {
 }
 
 export const useCreateTreasuryTransferProposal = () => {
-  const { canCreateProposal } = useVotingPower()
+  const { canCreateProposal } = useCanCreateProposal()
   const { writeContractAsync: propose, isPending: isPublishing } = useWriteContract()
 
   const onCreateTreasuryTransferProposal = async (

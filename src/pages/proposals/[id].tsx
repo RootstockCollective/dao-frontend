@@ -54,6 +54,7 @@ import React from 'react'
 import { ProposalState } from '@/shared/types'
 import { isUserRejectedTxError } from '@/components/ErrorPage/commonErrors'
 import { useGovernorParams } from '@/app/proposals/hooks/useGovernorParams'
+import { useCanCreateProposal } from '@/app/proposals/hooks/useCanCreateProposal'
 
 export default function ProposalView() {
   const {
@@ -90,8 +91,7 @@ const PageWithProposal = (proposal: ParsedProposal) => {
   const { blocksUntilClosure } = useGetProposalDeadline(proposalId)
 
   const { votingPowerAtSnapshot, doesUserHasEnoughThreshold } = useVotingPowerAtSnapshot(snapshot as bigint)
-  const { totalVotingPower = BigInt(0) } = useVotingPower()
-  const { threshold } = useGovernorParams()
+  const { canCreateProposal } = useCanCreateProposal()
 
   const {
     onVote,
@@ -236,7 +236,7 @@ const PageWithProposal = (proposal: ParsedProposal) => {
         {(proposalType === 'communityApproveBuilder' || proposalType === 'whitelistBuilder') && (
           <DewhitelistButton
             proposal={proposal}
-            canCreateProposal={totalVotingPower >= threshold}
+            canCreateProposal={canCreateProposal}
             proposalState={proposalState as ProposalState}
           />
         )}

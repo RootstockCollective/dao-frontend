@@ -26,7 +26,8 @@ export const useVotingPower = () => {
   if (isLoading || !data) {
     return {
       isLoading,
-      votingPower: '-',
+      votingPower: BigInt(0),
+      totalVotingPower: BigInt(0),
       isConnected,
     }
   }

@@ -9,25 +9,19 @@ import { TxStatusMessage } from '@/components/TxStatusMessage/TxStatusMessage'
 import { Paragraph, Span } from '@/components/Typography'
 import { useRouter } from 'next/navigation'
 import { FaRegQuestionCircle } from 'react-icons/fa'
-import { useVotingPower } from './hooks/useVotingPower'
 import { useMemo } from 'react'
 import { formatNumberWithCommas } from '@/lib/utils'
-import { useGovernorParams } from './hooks/useGovernorParams'
+import { useCanCreateProposal } from './hooks/useCanCreateProposal'
 
 export default function Proposals() {
-  const { totalVotingPower = BigInt(0), isConnected } = useVotingPower()
-  const { threshold } = useGovernorParams()
+  const { isConnected, totalVotingPower, error } = useCanCreateProposal()
   const { latestProposals } = useFetchAllProposals()
 
   const memoizedProposals = useMemo(() => latestProposals.slice(0, 5), [latestProposals])
   return (
     <MainContainer>
       <TxStatusMessage messageType="proposal" />
-      <HeaderSection
-        isConnected={isConnected}
-        createProposalDisabled={!(totalVotingPower >= threshold)}
-        threshold={threshold}
-      />
+      <HeaderSection isConnected={isConnected} createProposalDisabledError={error} />
       <div className="grid grid-rows-1 gap-[32px] mb-[100px]">
         <div>
           <VotingPowerPopover />

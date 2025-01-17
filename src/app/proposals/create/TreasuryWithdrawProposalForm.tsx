@@ -36,6 +36,7 @@ import { CreateProposalHeaderSection } from '@/app/proposals/create/CreatePropos
 import { isAddressRegex, isChecksumValid } from '@/app/proposals/shared/utils'
 import { isBaseError, isUserRejectedTxError } from '@/components/ErrorPage/commonErrors'
 import { TokenImage } from '@/components/TokenImage'
+import { useCanCreateProposal } from '../hooks/useCanCreateProposal'
 
 const rifMinimumAmount = ENV === 'mainnet' ? 10 : 1
 const rbtcMinimumAmount = ENV === 'mainnet' ? 0.0001 : 0.000001
@@ -71,7 +72,7 @@ const FormSchema = z
 export const TreasuryWithdrawProposalForm = () => {
   const router = useRouter()
   const prices = useGetSpecificPrices()
-  const { isLoading: isVotingPowerLoading, canCreateProposal } = useVotingPower()
+  const { isLoading: isVotingPowerLoading, canCreateProposal } = useCanCreateProposal()
   const { onCreateTreasuryTransferProposal, isPublishing } = useCreateTreasuryTransferProposal()
   const { setMessage } = useAlertContext()
 

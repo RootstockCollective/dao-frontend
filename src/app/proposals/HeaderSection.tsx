@@ -3,23 +3,17 @@ import { Button } from '@/components/Button'
 import { Popover } from '@/components/Popover'
 import { useModal } from '@/app/user/Balances/hooks/useModal'
 import { ProposalSelectionModal } from '@/components/Modal/ProposalSelectionModal'
-import { formatUnits } from 'viem'
 
 interface Props {
-  createProposalDisabled: boolean
-  threshold: bigint
+  createProposalDisabledError: string | null
   isConnected: boolean
 }
 
-export const HeaderSection = ({
-  createProposalDisabled = true,
-  threshold = BigInt(0),
-  isConnected,
-}: Props) => (
+export const HeaderSection = ({ createProposalDisabledError, isConnected }: Props) => (
   <div className="flex flex-row justify-between container">
     <HeaderTitle>My Governance</HeaderTitle>
     <div className="flex flex-row gap-x-6">
-      {createProposalDisabled ? (
+      {createProposalDisabledError ? (
         <Popover
           content={
             !isConnected ? (
@@ -28,8 +22,7 @@ export const HeaderSection = ({
               </Paragraph>
             ) : (
               <Paragraph variant="normal" className="text-sm">
-                You need at least {formatUnits(threshold, 18)} Voting Power to create a proposal. The easiest
-                way to get more Voting Power is to Stake more RIF.
+                {createProposalDisabledError}
               </Paragraph>
             )
           }

@@ -6,9 +6,10 @@ import { Address, encodeFunctionData } from 'viem'
 import { useWriteContract } from 'wagmi'
 import { createProposal, encodeGovernorRelayCallData } from '@/app/proposals/hooks/proposalUtils'
 import { useVotingPower } from '@/app/proposals/hooks/useVotingPower'
+import { useCanCreateProposal } from './useCanCreateProposal'
 
 export const useRemoveBuilderProposal = () => {
-  const { canCreateProposal } = useVotingPower()
+  const { canCreateProposal } = useCanCreateProposal()
   const { writeContractAsync: propose, isPending: isPublishing, error: transactionError } = useWriteContract()
 
   const onRemoveBuilderProposal = async (builderAddress: Address, description: string) => {

@@ -4,10 +4,10 @@ import { Header, Paragraph, Typography } from '@/components/Typography'
 import { Button } from '@/components/Button'
 import { useRouter } from 'next/navigation'
 import { SupportedActionAbiName, SupportedProposalActionName } from '@/app/proposals/shared/supportedABIs'
-import { useVotingPower } from '@/app/proposals/hooks/useVotingPower'
 import { Popover } from '../Popover'
+import { useCanCreateProposal } from '@/app/proposals/hooks/useCanCreateProposal'
 
-type DisclaimerProps = {
+interface DisclaimerProps {
   onAccept: () => void
   onDecline: () => void
 }
@@ -77,7 +77,7 @@ const ActionButton: FC<ActionButtonProps> = ({ content, ...props }) => (
 )
 
 const BecomeABuilder: FC = () => {
-  const { canCreateProposal, threshold } = useVotingPower()
+  const { error } = useCanCreateProposal()
   const router = useRouter()
   const contractName: SupportedActionAbiName = 'BuilderRegistryAbi'
   const action: SupportedProposalActionName = 'communityApproveBuilder'
@@ -106,12 +106,11 @@ const BecomeABuilder: FC = () => {
           icon={<JoinTheClubSvg />}
           text="Join the Club"
           button={
-            !canCreateProposal ? (
+            error ? (
               <Popover
                 content={
                   <Paragraph variant="normal" className="text-sm">
-                    You need at least {threshold} Voting Power to create a proposal. The easiest way to get
-                    more Voting Power is to Stake more RIF.
+                    {error}
                   </Paragraph>
                 }
                 trigger="hover"

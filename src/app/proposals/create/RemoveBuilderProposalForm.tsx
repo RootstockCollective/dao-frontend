@@ -25,6 +25,7 @@ import { Button } from '@/components/Button'
 import { isAddressRegex } from '@/app/proposals/shared/utils'
 import { isBaseError, isUserRejectedTxError } from '@/components/ErrorPage/commonErrors'
 import { useBuilderContext } from '../../collective-rewards/user'
+import { useCanCreateProposal } from '../hooks/useCanCreateProposal'
 
 const FormSchema = z.object({
   proposalName: z
@@ -44,7 +45,7 @@ export const RemoveBuilderProposalForm: FC = () => {
   const router = useRouter()
   const params = useSearchParams()
   const proposalId = params?.get('proposalId') ?? ''
-  const { isLoading: isVotingPowerLoading, canCreateProposal } = useVotingPower()
+  const { isLoading: isVotingPowerLoading, canCreateProposal } = useCanCreateProposal()
   const { setMessage } = useAlertContext()
   const { onRemoveBuilderProposal, isPublishing } = useRemoveBuilderProposal()
   const { getBuilderByAddress } = useBuilderContext()
