@@ -1,4 +1,4 @@
-import { useMemo, memo, useState } from 'react'
+import { useMemo, memo, useState, useEffect } from 'react'
 import {
   createColumnHelper,
   type SortingState,
@@ -6,6 +6,7 @@ import {
   getSortedRowModel,
   useReactTable,
   getPaginationRowModel,
+  PaginationState,
 } from '@tanstack/react-table'
 import { type LatestProposalResponse } from './hooks/useFetchLatestProposals'
 import { StatusColumn } from '@/app/proposals/table-columns/StatusColumn'
@@ -18,6 +19,7 @@ import { TimeColumn } from './table-columns/TimeColumn'
 import { DebounceSearch } from '../../components/DebounceSearch/DebounceSearch'
 import { useProposalListData } from './hooks/useProposalListData'
 import { Button } from '@/components/Button'
+import { useRouter, useSearchParams } from 'next/navigation'
 
 interface LatestProposalsTableProps {
   proposals: LatestProposalResponse[]
@@ -125,10 +127,23 @@ const LatestProposalsTable = ({ proposals }: LatestProposalsTableProps) => {
     }),
   ]
 
-  const [pagination, setPagination] = useState({
-    pageIndex: 0, //initial page index
-    pageSize: 10, //default page size
-  })
+  const router = useRouter()
+  const searchParams = useSearchParams()
+
+  // Convert 1-indexed URL page to 0-indexed internal page
+  const [pagination, setPagination] = useState<PaginationState>(() => ({
+    pageIndex: Math.max(parseInt(searchParams?.get('page') ?? '1') - 1, 0),
+    pageSize: 10,
+  }))
+
+  // Update URL with 1-indexed page number
+  useEffect(() => {
+    if (!searchParams) return
+
+    const params = new URLSearchParams(searchParams.toString())
+    params.set('page', (pagination.pageIndex + 1).toString())
+    router.replace(`?${params.toString()}`, { scroll: false })
+  }, [pagination.pageIndex, searchParams, router])
 
   const totalPages = Math.ceil(filteredProposalList.length / pagination.pageSize) // Calculate total pages based on the filtered proposal list and page size
 
@@ -168,6 +183,8 @@ const LatestProposalsTable = ({ proposals }: LatestProposalsTableProps) => {
     getSortedRowModel: getSortedRowModel(),
     getPaginationRowModel: getPaginationRowModel(),
     onPaginationChange: setPagination, //update the pagination state when internal APIs mutate the pagination state
+    // Prevent pagination reset on data change
+    autoResetPageIndex: false,
   })
 
   return (
