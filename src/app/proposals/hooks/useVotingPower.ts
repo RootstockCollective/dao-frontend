@@ -1,11 +1,9 @@
-import { GovernorAbi } from '@/lib/abis/Governor'
 import { StRIFTokenAbi } from '@/lib/abis/StRIFTokenAbi'
-import { tokenContracts, GovernorAddress } from '@/lib/contracts'
-import { formatUnits } from 'viem'
+import { tokenContracts } from '@/lib/contracts'
 import { useAccount, useReadContracts } from 'wagmi'
 
 export const useVotingPower = () => {
-  const { address } = useAccount()
+  const { address, isConnected } = useAccount()
 
   const { data, isLoading } = useReadContracts({
     allowFailure: false,
@@ -19,12 +17,6 @@ export const useVotingPower = () => {
       {
         abi: StRIFTokenAbi,
         address: tokenContracts.stRIF,
-        functionName: 'decimals',
-      },
-      { abi: GovernorAbi, address: GovernorAddress, functionName: 'proposalThreshold' },
-      {
-        abi: StRIFTokenAbi,
-        address: tokenContracts.stRIF,
         functionName: 'getVotes',
         args: [address!],
       },
@@ -35,17 +27,16 @@ export const useVotingPower = () => {
     return {
       isLoading,
       votingPower: '-',
-      canCreateProposal: false,
-      threshold: '',
+      isConnected,
     }
   }
 
-  const [balance, decimals, threshold, totalVotingPower] = data as [bigint, number, bigint, bigint]
+  const [balance, totalVotingPower] = data as [bigint, bigint]
+
   return {
     isLoading: false,
-    votingPower: formatUnits(balance, decimals),
-    canCreateProposal: totalVotingPower >= threshold,
-    threshold: formatUnits(threshold, decimals),
-    totalVotingPower: formatUnits(totalVotingPower, decimals),
+    votingPower: balance,
+    totalVotingPower,
+    isConnected,
   }
 }
