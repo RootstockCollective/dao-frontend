@@ -1,5 +1,5 @@
 import { StaticImageData } from 'next/image'
-import standardImage from './images/standard.png'
+import standard from './images/standard.png'
 import activation from './images/activation.png'
 import deactivation from './images/deactivation.png'
 
@@ -18,7 +18,7 @@ export const cards: Card[] = [
     title: 'Standard',
     description:
       'Request community votes to allocate RootstockCollective treasury funds for grants, growth initiatives, or governance goals.',
-    image: standardImage,
+    image: standard,
   },
   {
     id: 2,
