@@ -4,6 +4,7 @@ import { useGetTreasuryBucketBalance } from '@/app/treasury/hooks/useGetTreasury
 import { treasuryContracts } from '@/lib/contracts'
 import { GetPricesResult } from '@/app/user/types'
 import { formatCurrency } from '@/lib/utils'
+import Big from '@/lib/big'
 
 type BucketItem = {
   amount: string
@@ -22,20 +23,20 @@ interface TreasuryContextProps {
 
 const getAllBucketsHoldings = (buckets: Bucket[]) => {
   const totalBalance = {
-    RIF: 0,
-    RBTC: 0,
+    RIF: Big(0),
+    RBTC: Big(0),
   }
 
   buckets.forEach(bucket => {
-    totalBalance.RIF += Number(bucket.RIF.amount)
-    totalBalance.RBTC += Number(bucket.RBTC.amount)
+    totalBalance.RIF = totalBalance.RIF.plus(bucket.RIF.amount)
+    totalBalance.RBTC = totalBalance.RBTC.plus(bucket.RBTC.amount)
   })
   return totalBalance
 }
 
 const TreasuryContext = createContext<TreasuryContextProps>({
   buckets: [],
-  bucketsTotal: { RIF: 0, RBTC: 0 },
+  bucketsTotal: { RIF: Big(0), RBTC: Big(0) },
 })
 
 interface Props {
@@ -50,11 +51,19 @@ const getBucketBalance = (
 ) => ({
   RIF: {
     amount: bucketBalance.RIF.balance,
-    fiatAmount: formatCurrency(Number(bucketBalance.RIF.balance) * (prices.RIF?.price ?? 0)),
+    fiatAmount: formatCurrency(
+      Big(bucketBalance.RIF.balance)
+        .mul(prices.RIF?.price ?? 0)
+        .toNumber(),
+    ),
   },
   RBTC: {
     amount: bucketBalance.RBTC.balance,
-    fiatAmount: formatCurrency(Number(bucketBalance.RBTC.balance) * (prices.RBTC?.price ?? 0)),
+    fiatAmount: formatCurrency(
+      Big(bucketBalance.RBTC.balance)
+        .mul(prices.RBTC?.price ?? 0)
+        .toNumber(),
+    ),
   },
 })
 
