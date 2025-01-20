@@ -1,8 +1,10 @@
+import Big from '@/lib/big'
 import axios from 'axios'
 import { ClassValue, clsx } from 'clsx'
+import { BigNumberish } from 'ethers'
 import { twMerge } from 'tailwind-merge'
-import { CHAIN_ID, EXPLORER_URL, RIF_WALLET_SERVICES_URL } from './constants'
 import { Address } from 'viem'
+import { CHAIN_ID, EXPLORER_URL, RIF_WALLET_SERVICES_URL } from './constants'
 
 /**
  * Merges Tailwind and clsx classes in order to avoid classes conflicts.
@@ -137,31 +139,39 @@ export const sanitizeInputNumber = (num: number) => {
  * Formats a number as a currency
  * @param value - The number to format
  * @param currency - The currency to format the number as (default: 'USD')
- * @param defaultIfNaN
  * @returns The formatted currency string
  * @example formatCurrency(123456.789) // '$123,456.79'
  * @example formatCurrency(123456.789, 'EUR') // '€123,456.79'
- * @example formatCurrency(0.0001) // '<$0.00'
+ * @example formatCurrency(0.0001) // '<$0.01'
  * @example formatCurrency(0) // '$0.00'
  */
-export const formatCurrency = (value: number, currency = 'USD', defaultIfNaN?: number): string => {
-  if (0 < value && value < 0.01) {
-    return '<$0.01'
+export const formatCurrency = (value: BigNumberish | Big, currency = 'USD'): string => {
+  if (isNaN(Number(value))) {
+    return ''
   }
-  const formattedValue = new Intl.NumberFormat('en-US', {
+
+  // ensure it is a Big
+  try {
+    value = Big(value.toString())
+  } catch {
+    return ''
+  }
+
+  let verySmallValue = value.gt(0) && value.lt(0.01)
+  value = verySmallValue ? 0.01 : value
+
+  const result = new Intl.NumberFormat('en-US', {
     style: 'currency',
     currency,
     minimumFractionDigits: 2,
     maximumFractionDigits: 2,
-  }).format(value)
+  }).format(value.toString() as never)
 
-  if (defaultIfNaN !== undefined && Number.isNaN(value)) {
-    return defaultIfNaN.toString()
-  }
-  return formattedValue
+  return verySmallValue ? `<${result}` : result
 }
 
 /**
+ * @deprecated Use `Big(value).toFixed(decimalPlaces)` instead
  * Formats avoiding scientific notation and trailing zeros
  * @param num - The number to format
  * @param decimalPlaces - The number of decimal places to keep (default: 8)
@@ -201,9 +211,9 @@ export const toFixed = (num: number | string | bigint, decimalPlaces = 8): strin
  * @example formatNumberWithCommas(1234567.89) // '1,234,567.89'
  * @example formatNumberWithCommas(0.000123) // '0.000123'
  */
-export function formatNumberWithCommas(num: number | string | bigint): string {
+export function formatNumberWithCommas(num: BigNumberish | Big): string {
   if (isNaN(Number(num)) || num === '') {
-    return num?.toString()
+    return ''
   }
   const parts = num.toString().split('.')
   parts[0] = new Intl.NumberFormat('en-US').format(Number(parts[0]))
