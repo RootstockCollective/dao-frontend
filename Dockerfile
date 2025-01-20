@@ -1,5 +1,5 @@
 # Use the official Node.js 18 image as a base
-FROM node:23-alpine@sha256:ef080e3024ee76f0efee71f555cbf82e5a50bf8a89635fea3af200f59e7cb530 AS builder
+FROM node:23-alpine@sha256:498bf3e45a4132b99952f88129ae5429e3568f3836edbfc09e3661515f620837 AS builder
 
 # Set the working directory
 WORKDIR /app
@@ -33,7 +33,7 @@ ENV NEXT_PUBLIC_BUILD_ID=${NEXT_PUBLIC_BUILD_ID}
 RUN npm run build
 
 # Use a minimal Node.js image for the production environment
-FROM node:23-alpine@sha256:ef080e3024ee76f0efee71f555cbf82e5a50bf8a89635fea3af200f59e7cb530 AS runner
+FROM node:23-alpine@sha256:498bf3e45a4132b99952f88129ae5429e3568f3836edbfc09e3661515f620837 AS runner
 
 # Set the working directory
 WORKDIR /app
