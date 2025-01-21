@@ -1,17 +1,18 @@
 import { useBalancesContext } from '@/app/user/Balances/context/BalancesContext'
-import { cn } from '@/lib/utils'
+import { Button } from '@/components/Button'
 
 export const UnStakeRIFCell = () => {
   const { unstakeModal, balances } = useBalancesContext()
   const { balance } = balances['stRIF']
   const hasEnoughBalance = Number(balance) > 0
   return (
-    <p
-      onClick={hasEnoughBalance ? unstakeModal.openModal : undefined}
-      className={cn('', hasEnoughBalance ? 'text-primary cursor-pointer' : 'text-zinc-500')}
-      data-testid="UnstakeRIFParagraph"
+    <Button
+      variant="outlined"
+      onClick={unstakeModal.openModal}
+      disabled={!hasEnoughBalance}
+      data-testid="UnstakeRIF"
     >
       Unstake
-    </p>
+    </Button>
   )
 }

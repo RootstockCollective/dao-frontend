@@ -1,5 +1,5 @@
 import { useBalancesContext } from '@/app/user/Balances/context/BalancesContext'
-import { cn } from '@/lib/utils'
+import { Button } from '@/components/Button'
 import { useSearchParams } from 'next/navigation'
 import { useEffect, useState } from 'react'
 
@@ -20,12 +20,12 @@ export const StakeRIFCell = () => {
   }, [openModal, hasEnoughBalance, stakeModal])
 
   return (
-    <p
+    <Button
       onClick={hasEnoughBalance ? stakeModal.openModal : undefined}
-      className={cn('', hasEnoughBalance ? 'text-primary cursor-pointer' : 'text-zinc-500')}
-      data-testid={'StakeRIFParagraph'}
+      disabled={!hasEnoughBalance}
+      data-testid="StakeRIF"
     >
       Stake
-    </p>
+    </Button>
   )
 }
