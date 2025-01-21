@@ -1,8 +1,12 @@
 import { StaticImageData } from 'next/image'
-import standard from './images/standard.png'
-import activation from './images/activation.png'
-import deactivation from './images/deactivation.png'
+import standardImage from './images/standard.png'
+import StandardInfoPanel from './info-panel/Standard'
+import activationImage from './images/activation.png'
+import ActivationInfoPanel from './info-panel/Activation'
+import deactivationImage from './images/deactivation.png'
+import DeactivationInfoPanel from './info-panel/Deactivation'
 import { SupportedActionAbiName, SupportedProposalActionName } from '../shared/supportedABIs'
+import { ReactElement } from 'react'
 
 export type ProposalType = 'Standard' | 'Activation' | 'Deactivation'
 
@@ -14,6 +18,7 @@ export interface Card {
   contract: SupportedActionAbiName
   action: SupportedProposalActionName
   proposalType: ProposalType
+  infoPanel: ReactElement
 }
 
 export const cards: Card[] = [
@@ -22,29 +27,32 @@ export const cards: Card[] = [
     title: 'Standard',
     description:
       'Request community votes to allocate RootstockCollective treasury funds for grants, growth initiatives, or governance goals.',
-    image: standard,
+    image: standardImage,
     contract: 'DAOTreasuryAbi',
     action: 'withdraw',
     proposalType: 'Standard',
+    infoPanel: <StandardInfoPanel />,
   },
   {
     id: 2,
     title: 'Builder Activation',
     description:
       'Request community votes to add a Builder to the RootstockCollective whitelist, granting them rewards access.',
-    image: activation,
+    image: activationImage,
     contract: 'BuilderRegistryAbi',
     action: 'communityApproveBuilder',
     proposalType: 'Activation',
+    infoPanel: <ActivationInfoPanel />,
   },
   {
     id: 3,
     title: 'Builder Deactivation',
     description:
       'Request community votes to remove a Builder from the RootstockCollective whitelist, revoking their rewards access.',
-    image: deactivation,
+    image: deactivationImage,
     contract: 'BuilderRegistryAbi',
     action: 'dewhitelistBuilder',
     proposalType: 'Deactivation',
+    infoPanel: <DeactivationInfoPanel />,
   },
 ]
