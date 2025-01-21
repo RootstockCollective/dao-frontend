@@ -1,31 +1,26 @@
 'use client'
 
 import { PropsWithChildren } from 'react'
+import Link from 'next/link'
+import Image, { StaticImageData } from 'next/image'
 import { motion, HTMLMotionProps } from 'motion/react'
 import { cn } from '@/lib/utils'
 import type { Card as CardType } from './cards'
-import Image, { StaticImageData } from 'next/image'
 import { Button } from '@/components/Button'
 import { HeaderTitle, Typography } from '@/components/Typography'
 
 interface CardProps extends HTMLMotionProps<'div'> {
   card: CardType
   isHighlighted: boolean
-  navigateToCreateProposal: () => void
+  createProposalLink: string
   showInfoPanel: () => void
 }
 
 /**
  * Interactive card component for displaying and selecting options for creating new proposals.
  */
-export function Card({
-  card,
-  isHighlighted,
-  className,
-  navigateToCreateProposal,
-  showInfoPanel,
-  ...props
-}: CardProps) {
+// prettier-ignore
+export function Card({ card, isHighlighted, className, createProposalLink, showInfoPanel, ...props }: CardProps) {
   return (
     <motion.div
       initial={{ opacity: 1 }}
@@ -45,13 +40,11 @@ export function Card({
           </div>
           {/* "Choose proposal" button QA test IDs: */}
           {/* ChooseProposalStandard, ChooseProposalActivation, ChooseProposalDeactivation */}
-          <Button
-            data-testid={`ChooseProposal${card.proposalType}`}
-            onClick={navigateToCreateProposal}
-            className="mb-[14px] px-3 py-2"
-          >
-            Choose proposal
-          </Button>
+          <Link href={createProposalLink}>
+            <Button data-testid={`ChooseProposal${card.proposalType}`} className="mb-[14px] px-3 py-2">
+              Choose proposal
+            </Button>
+          </Link>
           {/* "Find out more" Button QA test IDs: */}
           {/* ShowInfoPanelStandard, ShowInfoPanelActivation, ShowInfoPanelDeactivation */}
           <Typography
