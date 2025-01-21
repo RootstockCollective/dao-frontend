@@ -5,7 +5,7 @@ import { FaSpinner } from 'react-icons/fa6'
 import { Span } from '../Typography'
 import { DivWithGradient } from '@/components/Button/DivWithGradient'
 
-export const BUTTON_DEFAULT_CLASSES = 'px-[24px] py-[12px] flex gap-x-1 items-center relative rounded-[6px]'
+export const BUTTON_DEFAULT_CLASSES = 'px-[23px] py-[9px] flex gap-x-1 items-center relative rounded-[6px]'
 
 const DEFAULT_PAGINATION_CLASSES = 'w-[32px] h-[32px] p-0'
 
@@ -52,9 +52,10 @@ export const Button: FC<Props> = ({
     'bg-transparent border-secondary rounded-[6px] border': variant === 'secondary',
     'bg-secondary border-secondary rounded-[6px] border': variant === 'secondary-full',
     'bg-white rounded-[6px] border': variant === 'white',
-    'bg-disabled-primary rounded-[6px] border-0': disabled,
+    'bg-disabled-primary': disabled && variant === 'primary',
+    'rounded-[6px] border-0': disabled,
     'border-0': variant === 'borderless',
-    'border border-white rounded-[6px]': variant === 'outlined',
+    'border border-[#2D2D2D] rounded-[6px]': variant === 'outlined',
     'w-full': fullWidth,
     'pl-9': startIcon,
     'justify-start': !centerContent,
@@ -68,7 +69,7 @@ export const Button: FC<Props> = ({
   const textClasses = cn({
     'font-rootstock-sans': true,
     'font-bold relative': true,
-    'text-white': variant === 'secondary',
+    'text-white': true,
     'text-secondary': disabled,
     'font-normal text-[rgba(255,255,255,0.8)]': variant === 'borderless',
     'text-black': variant === 'white',
