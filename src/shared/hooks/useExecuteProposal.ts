@@ -1,6 +1,6 @@
 import { GovernorAddress } from '@/lib/contracts'
 import { GovernorAbi } from '@/lib/abis/Governor'
-import { useReadContract, useWaitForTransactionReceipt, useWriteContract } from 'wagmi'
+import { useReadContract, useWriteContract } from 'wagmi'
 import Big from '@/lib/big'
 
 const DAO_DEFAULT_PARAMS = {
@@ -28,8 +28,7 @@ export const useExecuteProposal = (proposalId: string) => {
   })
   const currentTime = getCurrentTimeInMsAsBigInt()
 
-  const { writeContractAsync: execute, data } = useWriteContract()
-  const { isLoading: isExecuting } = useWaitForTransactionReceipt({ hash: data })
+  const { writeContractAsync: execute, isPending: isPendingExecution } = useWriteContract()
 
   const onExecuteProposal = () => {
     if (proposalEta && getCurrentTimeInMsAsBigInt() >= proposalEta) {
@@ -48,6 +47,6 @@ export const useExecuteProposal = (proposalId: string) => {
     canProposalBeExecuted: proposalEta && currentTime >= proposalEta,
     proposalEta,
     proposalEtaHumanDate,
-    isExecuting,
+    isPendingExecution,
   }
 }
