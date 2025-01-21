@@ -70,10 +70,9 @@ export const BuilderRewardsSettingsForm: FC = () => {
                   <LoadingSpinner />
                 ) : (
                   <FormInputNumber
+                    decimalScale={0}
                     placeholder="0 ... 100 %"
-                    inputMode="decimal"
-                    decimalScale={2}
-                    decimalSeparator="."
+                    inputMode="numeric"
                     suffix="%"
                     max={100}
                     min={0}
