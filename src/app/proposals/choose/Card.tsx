@@ -1,22 +1,36 @@
 'use client'
 
-import { HTMLAttributes, PropsWithChildren } from 'react'
+import { PropsWithChildren } from 'react'
+import { motion, HTMLMotionProps } from 'motion/react'
 import { cn } from '@/lib/utils'
 import type { Card as CardType } from './cards'
 import Image, { StaticImageData } from 'next/image'
 import { Button } from '@/components/Button'
 import { HeaderTitle, Typography } from '@/components/Typography'
 
-interface CardProps extends HTMLAttributes<HTMLDivElement> {
+interface CardProps extends HTMLMotionProps<'div'> {
   card: CardType
-  handleFindMore: (id: number) => void
-  handleChoose: (id: number) => void
+  isHighlighted: boolean
+  navigateToCreateProposal: () => void
+  showInfoPanel: () => void
 }
 
-export function Card({ card, className, handleChoose, handleFindMore, ...props }: CardProps) {
+/**
+ * Interactive card component for displaying and selecting options for creating new proposals.
+ */
+export function Card({
+  card,
+  isHighlighted,
+  className,
+  navigateToCreateProposal,
+  showInfoPanel,
+  ...props
+}: CardProps) {
   return (
-    <div
-      className={cn(className, 'w-[348px] h-[582px] min-w-[200px] p-2 bg-[#1A1A1A] overflow-hidden')}
+    <motion.div
+      initial={{ opacity: 1 }}
+      animate={{ opacity: isHighlighted ? 1 : 0.5 }}
+      className={cn(className, 'w-[348px] h-[582px] min-w-[280px] p-2 bg-[#1A1A1A] overflow-hidden')}
       {...props}
     >
       <CardBackground image={card.image} alt={card.title}>
@@ -29,11 +43,20 @@ export function Card({ card, className, handleChoose, handleFindMore, ...props }
               </Typography>
             </div>
           </div>
-          <Button onClick={() => handleChoose(card.id)} className="mb-[14px] px-3 py-2">
+          {/* "Choose proposal" button QA test IDs: */}
+          {/* ChooseProposalStandard, ChooseProposalActivation, ChooseProposalDeactivation */}
+          <Button
+            data-testid={`ChooseProposal${card.proposalType}`}
+            onClick={navigateToCreateProposal}
+            className="mb-[14px] px-3 py-2"
+          >
             Choose proposal
           </Button>
+          {/* "Find out more" Button QA test IDs: */}
+          {/* ShowInfoPanelStandard, ShowInfoPanelActivation, ShowInfoPanelDeactivation */}
           <Typography
-            onClick={() => handleFindMore(card.id)}
+            data-testid={`ShowInfoPanel${card.proposalType}`}
+            onClick={showInfoPanel}
             className="text-lg font-bold leading-none cursor-pointer"
             tagVariant="p"
           >
@@ -41,7 +64,7 @@ export function Card({ card, className, handleChoose, handleFindMore, ...props }
           </Typography>
         </div>
       </CardBackground>
-    </div>
+    </motion.div>
   )
 }
 
