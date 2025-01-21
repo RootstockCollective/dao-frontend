@@ -1,5 +1,5 @@
 import { Link } from '@/components/Link'
-import { splitCombinedName } from '../shared/utils'
+import { splitCombinedName } from '../../shared/utils'
 
 interface ProposalNameColumnProps {
   name: string
