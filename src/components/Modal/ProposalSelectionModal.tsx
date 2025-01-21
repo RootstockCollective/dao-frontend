@@ -1,3 +1,5 @@
+// TODO: Delete this file
+
 import { FC, useState } from 'react'
 import { Modal } from '@/components/Modal/Modal'
 import { Header, Typography } from '@/components/Typography'
