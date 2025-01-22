@@ -10,6 +10,13 @@ import { ReactElement } from 'react'
 
 export type ProposalType = 'Standard' | 'Activation' | 'Deactivation'
 
+export interface MustHave {
+  text: string
+  linkText: string
+  linkUrl: string
+  icon: ReactElement
+}
+
 export interface Card {
   id: number
   title: string
@@ -18,7 +25,7 @@ export interface Card {
   contract: SupportedActionAbiName
   action: SupportedProposalActionName
   proposalType: ProposalType
-  infoPanel: ReactElement
+  mustHave: MustHave[]
 }
 
 export const cards: Card[] = [
@@ -31,7 +38,27 @@ export const cards: Card[] = [
     contract: 'DAOTreasuryAbi',
     action: 'withdraw',
     proposalType: 'Standard',
-    infoPanel: <StandardInfoPanel />,
+    mustHave: [
+      {
+        text: 'Ensure your project aligns with the goals of the Rootstock Ecosystem and draft your proposal',
+        linkText: 'Learn about the ecosystem goals and steps on how to submit a proposal ',
+        linkUrl: 'https://rootstockcollective.xyz/collective-rewards-become-a-builder/',
+        icon: <></>,
+      },
+      {
+        text: 'A post on the off-chain Governance Forum, on Discourse, should have previously been created. If you haven’t done this yet, don’t worry its pretty easy and you can browse other posts and ask the community for tips 😉',
+        linkText: 'Go to Governance Forum on Discourse',
+        linkUrl: 'https://gov.rootstockcollective.xyz/c/grants/5',
+        icon: <></>,
+      },
+      {
+        text: 'Get started on KYC - all applicants must pass KYC checks conducted by the Rootstock Collective Foundation after a successful vote by the community. If the vote does not pass, KYC is not required however its best to get familiar with this now and get started on this while your submission is being discussed and voted on, so there are no delays 🙂',
+        linkText: 'Get started on KYC here',
+        linkUrl:
+          'https://docs.google.com/forms/d/e/1FAIpQLSd4HklyTFPFAo2I0l_N5fy_di01WZ27e4uFDG1KVy8ZIOSiow/viewform',
+        icon: <></>,
+      },
+    ],
   },
   {
     id: 2,
@@ -42,7 +69,27 @@ export const cards: Card[] = [
     contract: 'BuilderRegistryAbi',
     action: 'communityApproveBuilder',
     proposalType: 'Activation',
-    infoPanel: <ActivationInfoPanel />,
+    mustHave: [
+      {
+        text: 'Ensure your project aligns with the goals of the Rootstock Ecosystem and draft your proposal',
+        linkText: 'Learn about the ecosystem goals and steps on how to submit a proposal',
+        linkUrl: 'https://rootstockcollective.xyz/collective-rewards-become-a-builder/',
+        icon: <></>,
+      },
+      {
+        text: 'A post on the off-chain Governance Forum, on Discourse, should have previously been created. If you haven’t done this yet, don’t worry its pretty easy and you can browse other posts and ask the community for tips 😉',
+        linkText: 'Go to Governance Forum on Discourse',
+        linkUrl: 'https://gov.rootstockcollective.xyz/c/grants/5',
+        icon: <></>,
+      },
+      {
+        text: 'Get started on KYC - all applicants must pass KYC checks conducted by the Rootstock Collective Foundation after a successful vote by the community. If the vote does not pass, KYC is not required however its best to get familiar with this now and get started on this while your submission is being discussed and voted on, so there are no delays 🙂',
+        linkText: 'Get started on KYC here',
+        linkUrl:
+          'https://docs.google.com/forms/d/e/1FAIpQLSd4HklyTFPFAo2I0l_N5fy_di01WZ27e4uFDG1KVy8ZIOSiow/viewform',
+        icon: <></>,
+      },
+    ],
   },
   {
     id: 3,
@@ -53,6 +100,19 @@ export const cards: Card[] = [
     contract: 'BuilderRegistryAbi',
     action: 'dewhitelistBuilder',
     proposalType: 'Deactivation',
-    infoPanel: <DeactivationInfoPanel />,
+    mustHave: [
+      {
+        text: 'Clearly explain why the project no longer aligns with the goals of the Rootstock Ecosystem and draft your proposal',
+        linkText: 'Learn about the ecosystem goals and steps on how to submit a proposal ',
+        linkUrl: 'https://rootstockcollective.xyz/collective-rewards-become-a-builder/',
+        icon: <></>,
+      },
+      {
+        text: 'A post on the off-chain Governance Forum, on Discourse, should have previously been created. If you haven’t done this yet, don’t worry its pretty easy and you can browse other posts and ask the community for tips 😉',
+        linkText: 'Go to Governance Forum on Discourse',
+        linkUrl: 'https://gov.rootstockcollective.xyz/c/collective-rewards/7',
+        icon: <></>,
+      },
+    ],
   },
 ]
