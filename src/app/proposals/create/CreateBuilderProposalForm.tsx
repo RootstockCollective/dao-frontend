@@ -1,4 +1,4 @@
-import { CreateProposalHeaderSection } from '@/app/proposals/create/CreateProposalHeaderSection'
+import { CreateProposalHeaderSection, ProposalType } from '@/app/proposals/create/CreateProposalHeaderSection'
 import { useCreateBuilderWhitelistProposal } from '@/app/proposals/hooks/useCreateBuilderWhitelistProposal'
 import { useAlertContext } from '@/app/providers/AlertProvider'
 import {
@@ -97,7 +97,11 @@ export const CreateBuilderProposalForm: FC = () => {
   return (
     <Form {...form}>
       <form onSubmit={handleSubmit(onSubmit)}>
-        <CreateProposalHeaderSection disabled={!isDirty || !isValid || isPublishing} loading={isPublishing} />
+        <CreateProposalHeaderSection
+          proposalType={ProposalType.BUILDER_ACTIVATION}
+          disabled={!isDirty || !isValid || isPublishing}
+          loading={isPublishing}
+        />
         <Accordion
           type="single"
           collapsible
