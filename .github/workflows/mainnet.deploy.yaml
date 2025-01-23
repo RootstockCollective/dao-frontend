@@ -3,6 +3,7 @@ name: Deploy to Amazon ECS (Mainnet)
 on:
   release:
     types: [released]
+  workflow_dispatch: 
 
 # Declare default permissions as read only.
 permissions: read-all
