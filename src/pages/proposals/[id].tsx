@@ -117,9 +117,8 @@ const PageWithProposal = (proposal: ParsedProposal) => {
     isVoting ||
     isWaitingVotingReceipt
 
-    const proposalType: SupportedProposalActionName | undefined = proposal.calldatasParsed[0]?.type === 'decoded' 
-    ? proposal.calldatasParsed[0].functionName 
-    : undefined;
+  const proposalType: SupportedProposalActionName | undefined =
+    proposal.calldatasParsed[0]?.type === 'decoded' ? proposal.calldatasParsed[0].functionName : undefined
 
   const { proposalName, builderName } = splitCombinedName(name)
 
@@ -492,51 +491,54 @@ const CalldataDisplay = (props: DecodedData) => {
 
     return (
       <div>
-    <span className="flex justify-between">
-      <Paragraph variant="semibold" className="text-[16px] text-left">
-        Function:
-      </Paragraph>
-      <Span className="font-normal text-left">{functionName}</Span>
-    </span>
+        <span className="flex justify-between">
+          <Paragraph variant="semibold" className="text-[16px] text-left">
+            Function:
+          </Paragraph>
+          <Span className="font-normal text-left">{functionName}</Span>
+        </span>
 
-    <Paragraph variant="semibold" className="text-[16px] mt-2">
-      Arguments:
-    </Paragraph>
-    <ul>
-      {inputs.map((input, index) => {
-        const inputName = input.name
-        const functionInputNames =
-          actionInputNameFormatMap[functionName] ||
-          ({} as InputNameFormatMap<typeof functionName, typeof inputName>)
-        const formattedInputName = (functionInputNames[inputName as never] || inputName) as string
+        <Paragraph variant="semibold" className="text-[16px] mt-2">
+          Arguments:
+        </Paragraph>
+        <ul>
+          {inputs.map((input, index) => {
+            const inputName = input.name
+            const functionInputNames =
+              actionInputNameFormatMap[functionName] ||
+              ({} as InputNameFormatMap<typeof functionName, typeof inputName>)
+            const formattedInputName = (functionInputNames[inputName as never] || inputName) as string
 
-        const inputValue = args[index] as InputParameterTypeByFnByName<typeof functionName, typeof inputName>
-        const inputValueComposerMap = (actionComponentMap[functionName] || {}) as InputValueComposerMap<
-          typeof functionName,
-          typeof inputName
-        >
-        const InputComponent = inputValueComposerMap[
-          inputName as keyof typeof inputValueComposerMap
-        ] as InputValueComponent<InputParameterTypeByFnByName<typeof functionName, typeof inputName>>
+            const inputValue = args[index] as InputParameterTypeByFnByName<
+              typeof functionName,
+              typeof inputName
+            >
+            const inputValueComposerMap = (actionComponentMap[functionName] || {}) as InputValueComposerMap<
+              typeof functionName,
+              typeof inputName
+            >
+            const InputComponent = inputValueComposerMap[
+              inputName as keyof typeof inputValueComposerMap
+            ] as InputValueComponent<InputParameterTypeByFnByName<typeof functionName, typeof inputName>>
 
-        return (
-          <li key={index} className="my-2 flex justify-between">
-            <Typography tagVariant="span" className="font-semibold text-[16px] text-left">
-              {formattedInputName}
-            </Typography>
-            {InputComponent && (
-              <InputComponent
-                value={inputValue}
-                htmlProps={{
-                  className: 'font-normal text-right',
-                }}
-              />
-            )}
-          </li>
-        )
-      })}
-    </ul>
-  </div>
+            return (
+              <li key={index} className="my-2 flex justify-between">
+                <Typography tagVariant="span" className="font-semibold text-[16px] text-left">
+                  {formattedInputName}
+                </Typography>
+                {InputComponent && (
+                  <InputComponent
+                    value={inputValue}
+                    htmlProps={{
+                      className: 'font-normal text-right',
+                    }}
+                  />
+                )}
+              </li>
+            )
+          })}
+        </ul>
+      </div>
     )
   }
 
@@ -547,8 +549,8 @@ const CalldataDisplay = (props: DecodedData) => {
       <Paragraph variant="semibold" className="text-[16px] mt-2">
         Affected Address:
       </Paragraph>
-      <span 
-        className="font-normal text-left overflow-hidden text-ellipsis whitespace-nowrap block w-full" 
+      <span
+        className="font-normal text-left overflow-hidden text-ellipsis whitespace-nowrap block w-full"
         title={affectedAddress}
       >
         {affectedAddress}
@@ -557,8 +559,8 @@ const CalldataDisplay = (props: DecodedData) => {
       <Paragraph variant="semibold" className="text-[16px] mt-2">
         Raw Call Data:
       </Paragraph>
-      <span 
-        className="font-normal text-left overflow-hidden text-ellipsis whitespace-nowrap block w-full" 
+      <span
+        className="font-normal text-left overflow-hidden text-ellipsis whitespace-nowrap block w-full"
         title={callData}
       >
         {callData}
@@ -581,9 +583,8 @@ const DewhitelistButton: FC<DewhitelistButton> = ({
   const router = useRouter()
   const builderRegistryContract = 'BuilderRegistryAbi'
   const dewhitelistBuilderAction = 'dewhitelistBuilder'
-  const builderAddress = calldatasParsed[0]?.type === 'decoded' 
-  ? getAddress(calldatasParsed[0].args[0]?.toString() || '')
-  : ''
+  const builderAddress =
+    calldatasParsed[0]?.type === 'decoded' ? getAddress(calldatasParsed[0].args[0]?.toString() || '') : ''
   const isProposalExecuted = proposalState === ProposalState.Executed
   const isButtonEnabled = builderAddress && isProposalExecuted
 

@@ -96,8 +96,9 @@ export const getEventArguments = ({
         const affectedAddress = targets[index]
         console.log('🐛 affectedAddress:', affectedAddress)
         acc.push({
-          affectedAddress, callData: cd,
-          type: 'fallback'
+          affectedAddress,
+          callData: cd,
+          type: 'fallback',
         })
       }
     } catch (err) {
