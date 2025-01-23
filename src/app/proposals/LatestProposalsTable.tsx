@@ -136,16 +136,16 @@ const LatestProposalsTable = ({ proposals }: LatestProposalsTableProps) => {
     pageSize: 10,
   }))
 
-    // Page validation
-    useEffect(() => {
-      const totalPages = Math.ceil(filteredProposalList.length / pagination.pageSize)
-      const requestedPage = parseInt(searchParams?.get('page') ?? '1')
-      
-      if (requestedPage > totalPages || requestedPage < 1) {
-        router.push('/404')
-        return
-      }
-    }, [searchParams, filteredProposalList.length, pagination.pageSize, router])
+  // Page validation
+  useEffect(() => {
+    const totalPages = Math.ceil(filteredProposalList.length / pagination.pageSize)
+    const requestedPage = parseInt(searchParams?.get('page') ?? '1')
+
+    if (requestedPage > totalPages || requestedPage < 1) {
+      router.push('/404')
+      return
+    }
+  }, [searchParams, filteredProposalList.length, pagination.pageSize, router])
 
   // Update URL with 1-indexed page number
   useEffect(() => {
