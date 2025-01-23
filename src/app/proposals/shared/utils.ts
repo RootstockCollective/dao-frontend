@@ -94,7 +94,6 @@ export const getEventArguments = ({
         acc.push(decodedData)
       } else {
         const affectedAddress = targets[index]
-        console.log('🐛 affectedAddress:', affectedAddress)
         acc.push({
           affectedAddress,
           callData: cd,
