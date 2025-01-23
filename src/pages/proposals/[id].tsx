@@ -117,7 +117,10 @@ const PageWithProposal = (proposal: ParsedProposal) => {
     isVoting ||
     isWaitingVotingReceipt
 
-  const proposalType: SupportedProposalActionName = proposal.calldatasParsed[0]?.functionName
+    const proposalType: SupportedProposalActionName | undefined = proposal.calldatasParsed[0]?.type === 'decoded' 
+    ? proposal.calldatasParsed[0].functionName 
+    : undefined;
+
   const { proposalName, builderName } = splitCombinedName(name)
 
   const cannotCastVoteReason = useMemo(() => {
@@ -482,8 +485,13 @@ const CalldataRows = ({ calldatasParsed }: CalldataRowsData) => {
   return calldatasParsed.map((callData, index) => <CalldataDisplay key={index} {...callData} />)
 }
 
-const CalldataDisplay = ({ functionName, args, inputs }: DecodedData) => (
-  <div>
+const CalldataDisplay = (props: DecodedData) => {
+  // Handle decoded case
+  if (props.type === 'decoded') {
+    const { functionName, inputs, args } = props
+
+    return (
+      <div>
     <span className="flex justify-between">
       <Paragraph variant="semibold" className="text-[16px] text-left">
         Function:
@@ -529,7 +537,35 @@ const CalldataDisplay = ({ functionName, args, inputs }: DecodedData) => (
       })}
     </ul>
   </div>
-)
+    )
+  }
+
+  // Handle fallback case
+  const { affectedAddress, callData } = props
+  return (
+    <div>
+      <Paragraph variant="semibold" className="text-[16px] mt-2">
+        Affected Address:
+      </Paragraph>
+      <span 
+        className="font-normal text-left overflow-hidden text-ellipsis whitespace-nowrap block w-full" 
+        title={affectedAddress}
+      >
+        {affectedAddress}
+      </span>
+
+      <Paragraph variant="semibold" className="text-[16px] mt-2">
+        Raw Call Data:
+      </Paragraph>
+      <span 
+        className="font-normal text-left overflow-hidden text-ellipsis whitespace-nowrap block w-full" 
+        title={callData}
+      >
+        {callData}
+      </span>
+    </div>
+  )
+}
 
 type DewhitelistButton = {
   proposal: ParsedProposal
@@ -545,7 +581,9 @@ const DewhitelistButton: FC<DewhitelistButton> = ({
   const router = useRouter()
   const builderRegistryContract = 'BuilderRegistryAbi'
   const dewhitelistBuilderAction = 'dewhitelistBuilder'
-  const builderAddress = getAddress(calldatasParsed[0]?.args[0]?.toString() || '')
+  const builderAddress = calldatasParsed[0]?.type === 'decoded' 
+  ? getAddress(calldatasParsed[0].args[0]?.toString() || '')
+  : ''
   const isProposalExecuted = proposalState === ProposalState.Executed
   const isButtonEnabled = builderAddress && isProposalExecuted
 

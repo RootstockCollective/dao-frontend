@@ -29,11 +29,22 @@ export interface EventArgumentsParameter {
 
 type DecodedFunctionData = DecodeFunctionDataReturnType<SupportedActionAbi>
 
-export type DecodedData = {
+// Separate types for successful decode and fallback
+type DecodedSuccessData = {
+  type: 'decoded'
   functionName: DecodedFunctionData['functionName'] & SupportedProposalActionName
   args: DecodedFunctionData['args']
   inputs: FunctionInputs
 }
+
+type DecodedFallbackData = {
+  type: 'fallback'
+  affectedAddress: string
+  callData: string
+}
+
+// Union type for all possible cases
+export type DecodedData = DecodedSuccessData | DecodedFallbackData
 
 const tryDecode = (data: string): DecodedData | undefined => {
   for (const abi of [...abis, GovernorAbi]) {
@@ -48,6 +59,7 @@ const tryDecode = (data: string): DecodedData | undefined => {
         abi.find(item => 'name' in item && item.name === functionName) || ({} as FunctionEntry)
 
       return {
+        type: 'decoded',
         functionName: functionName as SupportedProposalActionName,
         args: args as DecodedFunctionData['args'],
         inputs: ('inputs' in functionDefinition ? functionDefinition.inputs : []) as FunctionInputs,
@@ -65,19 +77,29 @@ const tryDecode = (data: string): DecodedData | undefined => {
  * @param description
  * @param proposalId
  * @param proposer
+ * @param targets
  * @param calldatas
  * @param timeStamp
  * @param blockNumber
  */
 export const getEventArguments = ({
-  args: { description, proposalId, proposer, calldatas },
+  args: { description, proposalId, proposer, targets, calldatas },
   timeStamp,
   blockNumber,
 }: EventArgumentsParameter) => {
-  const calldatasParsed = calldatas.reduce<DecodedData[]>((acc, cd) => {
+  const calldatasParsed = calldatas.reduce<DecodedData[]>((acc, cd, index) => {
     try {
       const decodedData = tryDecode(cd)
-      acc = [...acc, ...(decodedData ? [decodedData] : [])]
+      if (decodedData) {
+        acc.push(decodedData)
+      } else {
+        const affectedAddress = targets[index]
+        console.log('🐛 affectedAddress:', affectedAddress)
+        acc.push({
+          affectedAddress, callData: cd,
+          type: 'fallback'
+        })
+      }
     } catch (err) {
       // TODO:: decide whether it is necessary to throw error (if so then also perhaps the function name `tryDecode` is misleading).
       // Only logging this error due to the fact that anyone can submit any proposal directly via contract call.
