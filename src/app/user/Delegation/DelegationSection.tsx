@@ -18,7 +18,7 @@ import { DelegationAction } from './type'
 import { useGetExternalDelegatedAmount } from '@/shared/hooks/useGetExternalDelegatedAmount'
 import { TokenValue } from '@/app/user/Delegation/TokenValue'
 import { Popover } from '@/components/Popover'
-import { FaRegQuestionCircle } from 'react-icons/fa'
+import Image from 'next/image'
 
 export const DelegationSection = () => {
   const { address } = useAccount()
@@ -101,6 +101,6 @@ const DelegatePopover = () => (
       </>
     }
   >
-    <FaRegQuestionCircle className="ml-1" data-testid="QuestionIcon" />
+    <Image src="/images/question.svg" className="ml-1" width={20} height={20} alt="QuestionIcon" />
   </Popover>
 )
