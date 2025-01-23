@@ -8,10 +8,10 @@ import { Popover } from '@/components/Popover'
 import { TxStatusMessage } from '@/components/TxStatusMessage/TxStatusMessage'
 import { Paragraph, Span } from '@/components/Typography'
 import { useRouter } from 'next/navigation'
-import { FaRegQuestionCircle } from 'react-icons/fa'
 import { useVotingPower } from './hooks/useVotingPower'
 import { useMemo } from 'react'
 import { formatNumberWithCommas } from '@/lib/utils'
+import Image from 'next/image'
 
 export default function Proposals() {
   const { canCreateProposal, threshold, totalVotingPower = '' } = useVotingPower()
@@ -75,7 +75,7 @@ const VotingPowerPopover = () => (
   <Popover content={<PopoverContent />}>
     <button className="flex flex-row">
       <Paragraph className="text[16px] font-[700]">My Voting Power</Paragraph>
-      <FaRegQuestionCircle className="ml-1 self-center" data-testid="QuestionIcon" />
+      <Image src="/images/question.svg" className="ml-1" width={20} height={20} alt="QuestionIcon" />
     </button>
   </Popover>
 )

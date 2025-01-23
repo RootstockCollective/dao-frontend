@@ -2,9 +2,9 @@ import { FC } from 'react'
 import { TableCell } from '@/components/Table'
 import { cn } from '@/lib/utils'
 import { Popover } from '@/components/Popover'
-import { FaRegQuestionCircle } from 'react-icons/fa'
 import { RiArrowUpSFill, RiArrowDownSFill } from 'react-icons/ri'
 import { TooltipProps } from '@/app/collective-rewards/rewards'
+import Image from 'next/image'
 
 export type ISortConfig = {
   key: string
@@ -46,7 +46,7 @@ export const TableHeaderCell: FC<TableHeaderProps> = ({
             trigger="hover"
             {...tooltip.popoverProps}
           >
-            <FaRegQuestionCircle className="mr-1 self-center" />
+            <Image src="/images/question.svg" className="mr-1" width={20} height={20} alt="QuestionIcon" />
           </Popover>
         )}
         {label}
