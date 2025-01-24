@@ -28,7 +28,7 @@ export const BACKERS_MANAGER_ADDRESS = process.env.NEXT_PUBLIC_BACKERS_MANAGER_A
 export const REWARD_DISTRIBUTOR_ADDRESS = process.env.NEXT_PUBLIC_REWARD_DISTRIBUTOR_ADDRESS as Address
 
 export const ADDRESS_ANIMATION_DURATION = 800
-export const AVERAGE_BLOCKTIME = 30_000
+export const AVERAGE_BLOCKTIME = 60_000
 
 export const RIF = 'RIF'
 export const USD = 'USD'
