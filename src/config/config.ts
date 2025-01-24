@@ -18,12 +18,8 @@ const rskRegtest = defineChain({
 export const config = createConfig({
   chains: [rskRegtest, rootstockTestnet, rootstock],
   transports: {
-    [rootstock.id]: http(undefined, {
-      batch: true,
-    }),
-    [rootstockTestnet.id]: http(undefined, {
-      batch: true,
-    }),
+    [rootstock.id]: http(),
+    [rootstockTestnet.id]: http(),
     [rskRegtest.id]: http(),
   },
   connectors: [injected()],
