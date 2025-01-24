@@ -9,6 +9,8 @@ import { RenderTokenSymbol } from '@/app/user/Balances/RenderTokenSymbol'
 import { UnStakeRIFCell } from '@/app/user/Balances/UnStakeRIFCell'
 import { UnStakingModal } from '@/app/user/Stake/UnStakingSteps'
 import { withBuilderButton } from '@/app/collective-rewards/user'
+import { useVoteCastEvent } from '@/app/proposals/hooks/useVoteCastEvent'
+import { useAccount } from 'wagmi'
 
 const data = [
   {
@@ -34,15 +36,27 @@ const data = [
   },
 ]
 
-type BalancesSectionProps = {
+interface BalancesSectionProps {
   showBuilderButton?: boolean
 }
 
 export const BalancesSection = ({ showBuilderButton }: BalancesSectionProps) => {
+  const { address } = useAccount()
+  const { data: events } = useVoteCastEvent('0x81Df35317DF983e419630908eF6CB2BB48cE21Ca')
+
+  console.log('BALANCES SECTION EVENTS', events)
+
   return (
     <div className="mb-[32px]">
       {showBuilderButton ? (
-        withBuilderButton(HeaderTitle)({ children: 'Balances' })
+        withBuilderButton(HeaderTitle)({
+          children: (
+            <div>
+              <text>Balances </text>
+              {address ? <text>{`(Your Address Voted ${events?.length || 0} times)`}</text> : null}
+            </div>
+          ),
+        })
       ) : (
         <HeaderTitle className="mb-6">Balances</HeaderTitle>
       )}
