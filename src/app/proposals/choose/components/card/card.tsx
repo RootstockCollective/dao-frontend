@@ -5,12 +5,13 @@ import Link from 'next/link'
 import Image, { StaticImageData } from 'next/image'
 import { motion, HTMLMotionProps } from 'motion/react'
 import { cn } from '@/lib/utils'
-import type { Card as CardType } from './cards'
+import { cardData } from './data'
 import { Button } from '@/components/Button'
 import { HeaderTitle, Typography } from '@/components/Typography'
+import type { ProposalType } from '../../types'
 
 interface CardProps extends HTMLMotionProps<'div'> {
-  card: CardType
+  proposal: ProposalType
   isHighlighted: boolean
   createProposalLink: string
   showInfoPanel: () => void
@@ -19,36 +20,43 @@ interface CardProps extends HTMLMotionProps<'div'> {
 /**
  * Interactive card component for displaying and selecting options for creating new proposals.
  */
-// prettier-ignore
-export function Card({ card, isHighlighted, className, createProposalLink, showInfoPanel, ...props }: CardProps) {
+export function Card({
+  proposal,
+  isHighlighted,
+  className,
+  createProposalLink,
+  showInfoPanel,
+  ...props
+}: CardProps) {
+  const { image, title, description } = cardData[proposal]
   return (
     <motion.div
+      {...props}
       initial={{ opacity: 1 }}
       animate={{ opacity: isHighlighted ? 1 : 0.5 }}
       className={cn(className, 'w-[348px] h-[582px] min-w-[280px] p-2 bg-[#1A1A1A] overflow-hidden')}
-      {...props}
     >
-      <CardBackground image={card.image} alt={card.title}>
+      <CardBackground image={image} alt={title}>
         <div className="h-full py-7 flex flex-col items-center leading-tight">
-          <HeaderTitle className="text-[32px] text-center">{card.title}</HeaderTitle>
+          <HeaderTitle className="text-[32px] text-center">{title}</HeaderTitle>
           <div className="mb-[18px] flex-grow flex items-end">
             <div className="min-h-[5.5rem]">
               <Typography className="leading-[22.4px]" tagVariant="p">
-                {card.description}
+                {description}
               </Typography>
             </div>
           </div>
           {/* "Choose proposal" button QA test IDs: */}
           {/* ChooseProposalStandard, ChooseProposalActivation, ChooseProposalDeactivation */}
           <Link href={createProposalLink}>
-            <Button data-testid={`ChooseProposal${card.proposalType}`} className="mb-[14px] px-3 py-2">
+            <Button data-testid={`ChooseProposal${proposal}`} className="mb-[14px] px-3 py-2">
               Choose proposal
             </Button>
           </Link>
           {/* "Find out more" Button QA test IDs: */}
           {/* ShowInfoPanelStandard, ShowInfoPanelActivation, ShowInfoPanelDeactivation */}
           <Typography
-            data-testid={`ShowInfoPanel${card.proposalType}`}
+            data-testid={`ShowInfoPanel${proposal}`}
             onClick={showInfoPanel}
             className="text-lg font-bold leading-none cursor-pointer"
             tagVariant="p"

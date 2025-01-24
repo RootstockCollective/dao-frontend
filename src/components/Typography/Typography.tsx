@@ -12,7 +12,7 @@ const classesByTag: Record<TypographyTagVariants, string> = {
 }
 
 interface Props {
-  tagVariant: TypographyTagVariants
+  tagVariant?: TypographyTagVariants
   children: ReactNode
   className?: string
   fontFamily?: 'sora' | 'kk-topo' | 'rootstock-sans'

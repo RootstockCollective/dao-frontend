@@ -4,35 +4,34 @@ import { useState, useRef } from 'react'
 import { AnimatePresence, motion } from 'motion/react'
 import { HeaderTitle } from '@/components/Typography'
 import { BackButton } from '@/components/BackButton'
-import { Card } from './Card'
-import { cards } from './cards'
 import { useClickOutside } from '@/shared/hooks/useClickOutside'
-import { InfoPanel } from './info-panel/info-panel'
+import { Card, cardData } from './components/card'
+import { InfoPanel } from './components/info-panel'
+import type { ProposalType } from './types'
 
 export default function ChooseProposal() {
-  // Tracks container to detect clicks outside of it using useClickOutside.
+  const [chosenProposal, setChosenProposal] = useState<ProposalType | null>(null)
+  const [hoverIndex, setHoverIndex] = useState<number | null>(null)
+  // Closes the info panel when a click occurs outside the specified container.
   const cardsRef = useRef<HTMLDivElement>(null)
   const infoPanelRef = useRef<HTMLDivElement>(null)
-  const [hoverIndex, setHoverIndex] = useState<number | null>(null)
-  const [infoPanelIndex, setInfoPanelIndex] = useState<number | null>(null)
-  // Closes the info panel when a click occurs outside the specified container.
-  useClickOutside([cardsRef, infoPanelRef], () => setInfoPanelIndex(null))
+  useClickOutside([cardsRef, infoPanelRef], () => setChosenProposal(null))
   return (
-    <div className="max-w-[1130px] mx-auto">
+    <div className="max-w-[1130px] min-w-[600px] mx-auto">
       <BackButton className="mb-4" />
       <HeaderTitle className="mb-24 text-5xl text-center">Choose Your Proposal</HeaderTitle>
       <div ref={cardsRef} className="mb-4 xl:mb-6 flex flex-row gap-4 justify-between overflow-x-auto">
-        {cards.map((card, index) => (
+        {Object.entries(cardData).map(([proposalType, card], index) => (
           <Card
             key={card.id}
-            card={card}
+            proposal={proposalType as ProposalType}
             isHighlighted={
               // all cards are highlighted on mount
-              (hoverIndex === null && infoPanelIndex === null) ||
+              (hoverIndex === null && chosenProposal === null) ||
               // highlight hovered card
               hoverIndex === index ||
               // highlight selected card
-              infoPanelIndex === index
+              chosenProposal === proposalType
             }
             onMouseEnter={() => setHoverIndex(index)}
             onMouseLeave={() => setHoverIndex(null)}
@@ -40,16 +39,16 @@ export default function ChooseProposal() {
               contract: card.contract,
               action: card.action,
             })}`}
-            showInfoPanel={() => setInfoPanelIndex(index)}
+            showInfoPanel={() => setChosenProposal(proposalType as ProposalType)}
           />
         ))}
       </div>
       <div ref={infoPanelRef} className="relative">
         {/* Fades the info panel in and out when it is added to or removed from the DOM. */}
         <AnimatePresence mode="wait">
-          {infoPanelIndex !== null && (
-            <motion.div key={infoPanelIndex} exit={{ opacity: 0 }} transition={{ duration: 0.5 }}>
-              <InfoPanel mustHaveList={cards[infoPanelIndex].mustHave} />
+          {chosenProposal !== null && (
+            <motion.div key={chosenProposal} exit={{ opacity: 0 }} transition={{ duration: 0.5 }}>
+              <InfoPanel proposal={chosenProposal} />
             </motion.div>
           )}
         </AnimatePresence>
