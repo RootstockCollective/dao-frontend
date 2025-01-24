@@ -20,7 +20,7 @@ export const TokenValue = ({ symbol, amount, shouldFormatBalance = false }: Toke
   return (
     <>
       <Paragraph size="small" className="flex flex-row" data-testid={`${symbol}_Balance`}>
-        {formatNumberWithCommas(amountFormatted)} {symbol}
+        {formatNumberWithCommas(amountFormatted.toString())} {symbol}
         <TokenImage symbol={symbol} className="ml-[8px]" />
       </Paragraph>
       {prices[symbol] && (

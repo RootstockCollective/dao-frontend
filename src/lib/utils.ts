@@ -1,7 +1,7 @@
 import Big from '@/lib/big'
 import axios from 'axios'
+import { BigSource } from 'big.js'
 import { ClassValue, clsx } from 'clsx'
-import { BigNumberish } from 'ethers'
 import { twMerge } from 'tailwind-merge'
 import { Address } from 'viem'
 import { CHAIN_ID, EXPLORER_URL, RIF_WALLET_SERVICES_URL } from './constants'
@@ -145,7 +145,7 @@ export const sanitizeInputNumber = (num: number) => {
  * @example formatCurrency(0.0001) // '<$0.01'
  * @example formatCurrency(0) // '$0.00'
  */
-export const formatCurrency = (value: BigNumberish | Big, currency = 'USD'): string => {
+export const formatCurrency = (value: BigSource, currency = 'USD'): string => {
   if (isNaN(Number(value))) {
     return ''
   }
@@ -211,7 +211,7 @@ export const toFixed = (num: number | string | bigint, decimalPlaces = 8): strin
  * @example formatNumberWithCommas(1234567.89) // '1,234,567.89'
  * @example formatNumberWithCommas(0.000123) // '0.000123'
  */
-export function formatNumberWithCommas(num: BigNumberish | Big): string {
+export function formatNumberWithCommas(num: BigSource): string {
   if (isNaN(Number(num)) || num === '') {
     return ''
   }

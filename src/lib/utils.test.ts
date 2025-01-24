@@ -53,16 +53,6 @@ describe('formatCurrency', () => {
   it('formatCurrency with Big 0', () => {
     expect(formatCurrency(new Big(0))).toBe('$0.00')
   })
-
-  it('formatCurrency with bigint', () => {
-    expect(formatCurrency(0n)).toBe('$0.00')
-    expect(formatCurrency(1234567890123456789012345678901234567890n)).toBe(
-      '$1,234,567,890,123,456,789,012,345,678,901,234,567,890.00',
-    )
-    expect(formatCurrency(-1234567890123456789012345678901234567890n)).toBe(
-      '-$1,234,567,890,123,456,789,012,345,678,901,234,567,890.00',
-    )
-  })
 })
 
 describe('formatNumberWithCommas', () => {
