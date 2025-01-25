@@ -8,6 +8,7 @@ import { useClickOutside } from '@/shared/hooks/useClickOutside'
 import { Card, cardData } from './components/card'
 import { InfoPanel } from './components/info-panel'
 import type { ProposalType } from './types'
+import { cn } from '@/lib/utils'
 
 export default function ChooseProposal() {
   const [chosenProposal, setChosenProposal] = useState<ProposalType | null>(null)
@@ -40,6 +41,10 @@ export default function ChooseProposal() {
               action: card.action,
             })}`}
             showInfoPanel={() => setChosenProposal(proposalType as ProposalType)}
+            className={cn(
+              'border-[.8px] transition-colors duration-1000',
+              proposalType === chosenProposal ? 'border-primary' : 'border-transparent',
+            )}
           />
         ))}
       </div>

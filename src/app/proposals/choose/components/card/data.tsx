@@ -5,7 +5,7 @@ import deactivationImage from './images/deactivation.png'
 import { SupportedActionAbiName, SupportedProposalActionName } from '../../../shared/supportedABIs'
 import type { ProposalType } from '../../types'
 
-export interface Card {
+interface Card {
   id: number
   title: string
   image: StaticImageData

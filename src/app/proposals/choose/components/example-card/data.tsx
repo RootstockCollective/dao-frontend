@@ -1,11 +1,12 @@
 import { ReactElement } from 'react'
 import type { ProposalType } from '../../types'
 
-export interface Example {
+interface Example {
   title: string
   proposer: string
   proposalId: string
   text: ReactElement
+  description: string
 }
 
 export const exampleCardData: Record<ProposalType, Example> = {
@@ -30,6 +31,7 @@ export const exampleCardData: Record<ProposalType, Example> = {
         </p>
       </div>
     ),
+    description: 'Example of a grant proposal',
   },
   Activation: {
     title: 'OpenOcean',
@@ -44,6 +46,7 @@ export const exampleCardData: Record<ProposalType, Example> = {
         </p>
       </div>
     ),
+    description: 'Example of a Builder activation proposal',
   },
   Deactivation: {
     title: 'OpenOcean Deactivation',
@@ -63,5 +66,6 @@ export const exampleCardData: Record<ProposalType, Example> = {
         </p>
       </div>
     ),
+    description: 'Example of a Builder deactivation proposal',
   },
 }
