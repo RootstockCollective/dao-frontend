@@ -36,11 +36,12 @@ export default function ChooseProposal() {
             }
             onMouseEnter={() => setHoverIndex(index)}
             onMouseLeave={() => setHoverIndex(null)}
-            createProposalLink={`/proposals/create?${new URLSearchParams({
+            link={`/proposals/create?${new URLSearchParams({
               contract: card.contract,
               action: card.action,
             })}`}
             showInfoPanel={() => setChosenProposal(proposalType as ProposalType)}
+            // Orange border around selected card
             className={cn(
               'border-[.8px] transition-colors duration-1000',
               proposalType === chosenProposal ? 'border-primary' : 'border-transparent',

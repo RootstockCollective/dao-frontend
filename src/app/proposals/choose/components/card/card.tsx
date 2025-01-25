@@ -13,21 +13,14 @@ import type { ProposalType } from '../../types'
 interface CardProps extends HTMLMotionProps<'div'> {
   proposal: ProposalType
   isHighlighted: boolean
-  createProposalLink: string
+  link: string
   showInfoPanel: () => void
 }
 
 /**
  * Interactive card component for displaying and selecting options for creating new proposals.
  */
-export function Card({
-  proposal,
-  isHighlighted,
-  className,
-  createProposalLink,
-  showInfoPanel,
-  ...props
-}: CardProps) {
+export function Card({ proposal, isHighlighted, className, link, showInfoPanel, ...props }: CardProps) {
   const { image, title, description } = cardData[proposal]
   return (
     <motion.div
@@ -48,7 +41,7 @@ export function Card({
           </div>
           {/* "Choose proposal" button QA test IDs: */}
           {/* ChooseProposalStandard, ChooseProposalActivation, ChooseProposalDeactivation */}
-          <Link href={createProposalLink}>
+          <Link href={link}>
             <Button data-testid={`ChooseProposal${proposal}`} className="mb-[14px] px-3 py-2">
               Choose proposal
             </Button>
