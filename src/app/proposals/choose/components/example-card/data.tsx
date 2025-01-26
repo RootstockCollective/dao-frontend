@@ -1,11 +1,11 @@
-import { ReactElement } from 'react'
+import type { FC, HTMLAttributes } from 'react'
 import type { ProposalType } from '../../types'
 
 interface Example {
   title: string
   proposer: string
   proposalId: string
-  text: ReactElement
+  Text: FC<HTMLAttributes<HTMLDivElement>>
   description: string
 }
 
@@ -14,8 +14,8 @@ export const exampleCardData: Record<ProposalType, Example> = {
     title: 'Tokenized Microstrategy On Rootstock - Sailing Protocol',
     proposalId: '409',
     proposer: 'Cryptodude.rsk',
-    text: (
-      <div>
+    Text: props => (
+      <div {...props}>
         <p>Open a Tokenized Microstrategy (MSTR) liquidity pool and provide seed liquidity.</p>
         <p>
           This pool will allow Rootstock users to buy and hold MSTR Stock Tokens fully on Rootstock, directly
@@ -37,8 +37,8 @@ export const exampleCardData: Record<ProposalType, Example> = {
     title: 'OpenOcean',
     proposalId: '4465',
     proposer: '0x023...De34Bf',
-    text: (
-      <div>
+    Text: props => (
+      <div {...props}>
         <p>
           OpenOcean is a leading DEX Aggregator, cross-chain swap aggregator, and web3 middleware developer in
           web3, offering a suite of trading tools across 30+ chains (including EVM and non-EVM chains) and
@@ -52,8 +52,8 @@ export const exampleCardData: Record<ProposalType, Example> = {
     title: 'OpenOcean Deactivation',
     proposalId: '7842',
     proposer: '0x023...De34Bf',
-    text: (
-      <div>
+    Text: props => (
+      <div {...props}>
         <p>
           This proposal recommends the deactivation of OpenOcean as a Builder within the Rootstock Collective
           DAO. Following an evaluation of the builder’s progress and alignment with the DAO’s priorities, we
