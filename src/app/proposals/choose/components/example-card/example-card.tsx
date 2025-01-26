@@ -1,5 +1,5 @@
 import { cn } from '@/lib/utils'
-import { cloneElement, HTMLAttributes, PropsWithChildren, ReactElement } from 'react'
+import { HTMLAttributes, PropsWithChildren } from 'react'
 import type { ProposalType } from '../../types'
 import { exampleCardData } from './data'
 import { Header, Typography } from '@/components/Typography'
@@ -15,7 +15,7 @@ const Cell = ({ children }: PropsWithChildren) => (
 )
 
 export function ExampleCard({ proposal, className, style, ...props }: ProposalExampleProps) {
-  const { proposalId, proposer, text, title, description } = exampleCardData[proposal]
+  const { proposalId, proposer, Text, title, description } = exampleCardData[proposal]
   return (
     <div {...props} className={cn(className, 'flex flex-col items-center gap-3')}>
       <div className="p-4 w-[326px] min-h-[491px] flex flex-col border-[0.2px] gap-4 border-[rgba(255,255,255,0.3)] rounded-lg">
@@ -29,9 +29,7 @@ export function ExampleCard({ proposal, className, style, ...props }: ProposalEx
             <Typography className="text-[rgba(255,255,255,0.6)]">Proposal ID</Typography>
             <Typography className="text-primary">ID {proposalId}</Typography>
           </div>
-          {cloneElement<HTMLAttributes<HTMLDivElement>>(text, {
-            className: cn('text-[10px] leading-[15px] space-y-4'),
-          })}
+          <Text className="text-[10px] leading-[15px] space-y-4" />
         </div>
         <div className="flex flex-col gap-2">
           <Header className="text-base font-normal leading-tight " fontFamily="kk-topo">

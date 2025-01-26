@@ -1,4 +1,3 @@
-import { cloneElement, HTMLAttributes } from 'react'
 import { type HTMLMotionProps, motion } from 'motion/react'
 import LinkArrow from './icons/link-arrow'
 import { HeaderTitle, Typography } from '@/components/Typography'
@@ -26,21 +25,18 @@ export function InfoPanel({ proposal, className }: InfoPanelProps) {
             List of items you should have completed to submit {proposal.toLowerCase()} proposal
           </Typography>
           <ol className="p-0 space-y-6 list-none">
-            {infoPanelData[proposal].map(({ id, text, icon, linkText, linkUrl }, i) => (
+            {infoPanelData[proposal].map(({ id, Text, Icon, LinkText, linkUrl }, i) => (
               <li key={id}>
                 <div className="flex flex-row gap-2">
-                  {/* Icon */}
-                  <div className="pt-1">{icon}</div>
+                  <div className="pt-1">
+                    <Icon />
+                  </div>
                   <Typography>{i + 1}.</Typography>
-                  {/* Description paragraph */}
-                  <Typography className="leading-tight">{text}</Typography>
+                  <Text className="leading-tight" />
                 </div>
-
                 {/* Orange link */}
                 <a className="mt-2 block" target="_blank" rel="noopener noreferrer" href={linkUrl}>
-                  <Typography className="inline text-lg font-[500] leading-tight text-primary">
-                    {linkText}
-                  </Typography>
+                  <LinkText className="inline text-lg font-[500] leading-tight text-primary" />
                   <LinkArrow className="h-[22px] ml-1 inline" />
                 </a>
               </li>
