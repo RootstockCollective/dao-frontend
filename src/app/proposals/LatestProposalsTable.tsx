@@ -142,7 +142,11 @@ const LatestProposalsTable = ({ proposals }: LatestProposalsTableProps) => {
     const requestedPage = parseInt(searchParams?.get('page') ?? '1')
 
     if (requestedPage > totalPages || requestedPage < 1) {
-      router.push('/404')
+      // Reset to page 1
+      const params = new URLSearchParams(searchParams?.toString() ?? '')
+      params.set('page', '1')
+      router.replace(`?${params.toString()}`, { scroll: false })
+      setPagination(prev => ({ ...prev, pageIndex: 0 }))
       return
     }
   }, [searchParams, filteredProposalList.length, pagination.pageSize, router])
