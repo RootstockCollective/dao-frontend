@@ -17,6 +17,7 @@ export function InfoPanel({ proposal, className }: InfoPanelProps) {
       animate={{ opacity: 1 }}
       transition={{ duration: 1 }}
       className={cn(className, 'py-7 px-8 w-full bg-[#1A1A1A] overflow-hidden')}
+      data-testid={`ChooseProposalInfoPanel${proposal}`}
     >
       <div className="flex flex-col lg:flex-row gap-4">
         <div>
