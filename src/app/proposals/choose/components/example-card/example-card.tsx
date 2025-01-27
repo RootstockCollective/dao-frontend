@@ -17,7 +17,11 @@ const Cell = ({ children }: PropsWithChildren) => (
 export function ExampleCard({ proposal, className, style, ...props }: ProposalExampleProps) {
   const { proposalId, proposer, Text, title, description } = exampleCardData[proposal]
   return (
-    <div {...props} className={cn(className, 'flex flex-col items-center gap-3')}>
+    <div
+      {...props}
+      className={cn(className, 'flex flex-col items-center gap-3')}
+      data-testid={`ChooseProposalExampleCard${proposal}`}
+    >
       <div className="p-4 w-[326px] min-h-[491px] flex flex-col border-[0.2px] gap-4 border-[rgba(255,255,255,0.3)] rounded-lg">
         <div className="flex-grow">
           <Header className="mb-4 text-base font-normal leading-tight text-center" fontFamily="kk-topo">

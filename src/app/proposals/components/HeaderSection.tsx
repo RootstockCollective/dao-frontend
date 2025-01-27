@@ -2,8 +2,6 @@ import Link from 'next/link'
 import { Paragraph, HeaderTitle } from '@/components/Typography'
 import { Button } from '@/components/Button'
 import { Popover } from '@/components/Popover'
-import { useModal } from '@/app/user/Balances/hooks/useModal'
-import { ProposalSelectionModal } from '@/components/Modal/ProposalSelectionModal'
 
 export const HeaderSection = ({ createProposalDisabled = true, threshold = '' }) => (
   <div className="flex flex-row justify-between container">
@@ -30,17 +28,10 @@ export const HeaderSection = ({ createProposalDisabled = true, threshold = '' })
   </div>
 )
 
-const CreateProposalButton = ({ disabled = false }) => {
-  const modal = useModal()
-
-  return (
-    <>
-      <Link href="/proposals/choose">
-        <Button disabled={disabled} data-testid="CreateProposal">
-          Create Proposal
-        </Button>
-      </Link>
-      {modal.isModalOpened && <ProposalSelectionModal onClose={modal.closeModal} />}
-    </>
-  )
-}
+const CreateProposalButton = ({ disabled = false }) => (
+  <Link href="/proposals/choose">
+    <Button disabled={disabled} data-testid="CreateProposal">
+      Create Proposal
+    </Button>
+  </Link>
+)

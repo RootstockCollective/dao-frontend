@@ -28,6 +28,7 @@ export function Card({ proposal, isHighlighted, className, link, showInfoPanel, 
       initial={{ opacity: 1 }}
       animate={{ opacity: isHighlighted ? 1 : 0.5 }}
       className={cn(className, 'w-[348px] h-[582px] min-w-[280px] p-2 bg-[#1A1A1A] overflow-hidden')}
+      data-testid={`ChooseProposalCard${proposal}`}
     >
       <CardBackground image={image} alt={title}>
         <div className="h-full py-7 flex flex-col items-center leading-tight">
@@ -40,16 +41,16 @@ export function Card({ proposal, isHighlighted, className, link, showInfoPanel, 
             </div>
           </div>
           {/* "Choose proposal" button QA test IDs: */}
-          {/* ChooseProposalStandard, ChooseProposalActivation, ChooseProposalDeactivation */}
+          {/* ChooseProposalButtonStandard, ChooseProposalButtonActivation, ChooseProposalButtonDeactivation */}
           <Link href={link}>
-            <Button data-testid={`ChooseProposal${proposal}`} className="mb-[14px] px-3 py-2">
+            <Button data-testid={`ChooseProposalButton${proposal}`} className="mb-[14px] px-3 py-2">
               Choose proposal
             </Button>
           </Link>
           {/* "Find out more" Button QA test IDs: */}
-          {/* ShowInfoPanelStandard, ShowInfoPanelActivation, ShowInfoPanelDeactivation */}
+          {/* ShowInfoPanelButtonStandard, ShowInfoPanelButtonActivation, ShowInfoPanelButtonDeactivation */}
           <Typography
-            data-testid={`ShowInfoPanel${proposal}`}
+            data-testid={`ShowInfoPanelButton${proposal}`}
             onClick={showInfoPanel}
             className="text-lg font-bold leading-none cursor-pointer"
             tagVariant="p"
