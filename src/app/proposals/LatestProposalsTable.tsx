@@ -147,7 +147,6 @@ const LatestProposalsTable = ({ proposals }: LatestProposalsTableProps) => {
       params.set('page', '1')
       router.replace(`?${params.toString()}`, { scroll: false })
       setPagination(prev => ({ ...prev, pageIndex: 0 }))
-      return
     }
   }, [searchParams, filteredProposalList.length, pagination.pageSize, router])
 
