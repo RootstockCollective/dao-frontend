@@ -19,7 +19,9 @@ const BuilderRegistrationButton = () => {
   const modal = useModal()
   return (
     <>
-      <Button onClick={modal.openModal}>Become a builder</Button>
+      <Button variant="white" onClick={modal.openModal}>
+        Become a builder
+      </Button>
       {modal.isModalOpened && <BecomeABuilderModal onClose={modal.closeModal} />}
     </>
   )

@@ -6,6 +6,7 @@ import { useReadContracts, useAccount, useWaitForTransactionReceipt, useWriteCon
 import { fetchIpfsUri } from '@/app/user/Balances/actions'
 import { NftMeta, CommunityData } from '../types'
 import { config } from '@/config'
+import Big from '@/lib/big'
 
 /**
  * Hook for loading NFT metadata from IPFS
@@ -63,9 +64,9 @@ export const useContractData = (nftAddress?: Address) => {
     const [membersCount, tokensAvailable, balanceOf, nftName, symbol, stRifThreshold, tokenId] = data ?? []
     return {
       refetch,
-      membersCount: Number(membersCount?.result ?? 0n),
-      tokensAvailable: Number(tokensAvailable?.result ?? 0n),
-      isMember: (balanceOf?.result ?? 0n) > 0n,
+      membersCount: Big(membersCount?.result?.toString() ?? 0).toNumber(),
+      tokensAvailable: Big(tokensAvailable?.result?.toString() ?? 0).toNumber(),
+      isMember: Big(balanceOf?.result?.toString() ?? 0).gt(0),
       tokenId: typeof tokenId?.result === 'bigint' ? Number(tokenId.result) : undefined,
       nftName: nftName?.result,
       nftSymbol: symbol?.result,

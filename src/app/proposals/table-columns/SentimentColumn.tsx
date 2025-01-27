@@ -2,6 +2,7 @@ import { Paragraph } from '@/components/Typography'
 import { useMemo } from 'react'
 import { Popover } from '@/components/Popover'
 import { ComparativeProgressBar } from '@/components/ComparativeProgressBar/ComparativeProgressBar'
+import Big from '@/lib/big'
 
 interface PopoverSentimentProps {
   againstVotes?: number
@@ -43,23 +44,23 @@ const PopoverSentiment = ({ forVotes = 0, againstVotes = 0, abstainVotes = 0 }: 
 }
 
 interface SentimentColumnProps {
-  againstVotes?: number
-  forVotes?: number
-  abstainVotes?: number
+  againstVotes?: Big
+  forVotes?: Big
+  abstainVotes?: Big
   index?: number
 }
 
 export const SentimentColumn = ({
-  againstVotes = 0,
-  forVotes = 0,
-  abstainVotes = 0,
+  againstVotes = Big(0),
+  forVotes = Big(0),
+  abstainVotes = Big(0),
   index = 0,
 }: SentimentColumnProps) => {
   const sentimentValues = useMemo(() => {
     return [
-      { value: Number(forVotes), color: 'var(--st-success)' },
-      { value: Number(againstVotes), color: 'var(--st-error)' },
-      { value: Number(abstainVotes), color: 'var(--st-info)' },
+      { value: forVotes.toNumber(), color: 'var(--st-success)' },
+      { value: againstVotes.toNumber(), color: 'var(--st-error)' },
+      { value: abstainVotes.toNumber(), color: 'var(--st-info)' },
     ]
   }, [abstainVotes, againstVotes, forVotes])
 
@@ -67,7 +68,11 @@ export const SentimentColumn = ({
   return (
     <Popover
       content={
-        <PopoverSentiment againstVotes={againstVotes} forVotes={forVotes} abstainVotes={abstainVotes} />
+        <PopoverSentiment
+          againstVotes={againstVotes.toNumber()}
+          forVotes={forVotes.toNumber()}
+          abstainVotes={abstainVotes.toNumber()}
+        />
       }
       trigger="hover"
       background="light"

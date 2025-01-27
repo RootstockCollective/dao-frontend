@@ -8,7 +8,7 @@ import { useWaitForTransactionReceipt } from 'wagmi'
 import { Hash } from 'viem'
 import { useAlertContext } from '@/app/providers'
 import { TX_MESSAGES } from '@/shared/txMessages'
-import { HeaderTitle } from '@/components/Typography'
+import { HeaderTitle, Paragraph } from '@/components/Typography'
 import { useAccount } from 'wagmi'
 import { RenderTotalBalance } from '../Balances/RenderTotalBalance'
 import { BalancesProvider } from '../Balances/context/BalancesContext'
@@ -17,6 +17,8 @@ import { ReclaimCell } from './ReclaimCell'
 import { DelegationAction } from './type'
 import { useGetExternalDelegatedAmount } from '@/shared/hooks/useGetExternalDelegatedAmount'
 import { TokenValue } from '@/app/user/Delegation/TokenValue'
+import { Popover } from '@/components/Popover'
+import Image from 'next/image'
 
 export const DelegationSection = () => {
   const { address } = useAccount()
@@ -63,9 +65,12 @@ export const DelegationSection = () => {
       {/* Header Components*/}
       <div className="flex flex-row justify-between mb-6">
         <HeaderTitle>DELEGATION</HeaderTitle>
-        <Button onClick={() => setIsDelegateModalOpened(true)} data-testid="Delegate">
-          Delegate
-        </Button>
+        <div className="flex flex-row">
+          <Button variant="outlined" onClick={() => setIsDelegateModalOpened(true)} data-testid="Delegate">
+            Delegate
+          </Button>
+          <DelegatePopover />
+        </div>
       </div>
       <BalancesProvider>
         {!isExternalDelegatedAmountLoading && <Table data={[delegatedToMe]} />}
@@ -80,3 +85,22 @@ export const DelegationSection = () => {
     </div>
   )
 }
+
+const DelegatePopover = () => (
+  <Popover
+    className="self-center"
+    position="left-top"
+    content={
+      <>
+        <Paragraph size="small" className="font-bold mb-1">
+          Delegate your voting power
+        </Paragraph>
+        <Paragraph size="small">
+          Your stRIF balance for allocations in Collective Rewards <b>will not be affected.</b>
+        </Paragraph>
+      </>
+    }
+  >
+    <Image src="/images/question.svg" className="ml-1" width={20} height={20} alt="QuestionIcon" />
+  </Popover>
+)

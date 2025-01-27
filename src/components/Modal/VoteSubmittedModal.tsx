@@ -1,9 +1,8 @@
 import { Button } from '@/components/Button'
 import { Modal } from '@/components/Modal/Modal'
 import { Header, Paragraph } from '@/components/Typography'
+import { cn, truncateMiddle } from '@/lib/utils'
 import { FC } from 'react'
-import { LuBadgeCheck } from 'react-icons/lu'
-import { cn, SHARED_MODAL_BOX_SHADOW_STYLE, truncateMiddle } from '@/lib/utils'
 
 export type Vote = 'for' | 'against' | 'abstain'
 
@@ -22,20 +21,6 @@ export const VoteSubmittedModal: FC<Props> = ({ onClose, proposal, vote }) => {
   return (
     <Modal onClose={onClose}>
       <div className="px-[50px] pt-[21px] pb-[42px] flex justify-center flex-col">
-        <div className="flex justify-center mt-6">
-          <div
-            style={{
-              boxShadow: SHARED_MODAL_BOX_SHADOW_STYLE,
-              padding: 17,
-              borderRadius: '30%',
-              backgroundColor: 'white',
-              width: 80,
-            }}
-          >
-            <LuBadgeCheck size={48} color="var(--color-primary)" />
-          </div>
-        </div>
-
         <Header variant="h1" className="font-semibold text-center mt-6">
           VOTE SUBMITTED
         </Header>

@@ -112,7 +112,7 @@ export const useGetBuildersRewards = ({ rif, rbtc }: { [token: string]: Token },
     data: backersRewardsPct,
     isLoading: backersRewardsPctLoading,
     error: backersRewardsPctError,
-  } = useGetBackersRewardPercentage(buildersAddress, cycle.cycleNext.toSeconds())
+  } = useGetBackersRewardPercentage(buildersAddress)
 
   const isLoading =
     rewardSharesLoading ||

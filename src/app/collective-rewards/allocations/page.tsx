@@ -3,13 +3,9 @@
 import { Button } from '@/components/Button'
 import { MainContainer } from '@/components/MainContainer/MainContainer'
 import { Typography } from '@/components/Typography'
-import { BackersManagerAbi } from '@/lib/abis/v2/BackersManagerAbi'
-import { BackersManagerAddress } from '@/lib/contracts'
 import { useRouter } from 'next/navigation'
 import { useCallback, useContext, useState } from 'react'
 import { Address } from 'viem'
-import { useWaitForTransactionReceipt, useWriteContract } from 'wagmi'
-import { useAwaitedTxReporting } from '../shared'
 import { Builder } from '../types'
 import {
   AllocationAmount,
@@ -19,53 +15,18 @@ import {
   Header,
 } from './components'
 import { AllocationsContext } from './context'
+import { useAllocateVotes } from './hooks/useAllocateVotes'
 
 export default function Allocations() {
-  const { writeContractAsync, error: executionError, data: hash, isPending } = useWriteContract()
-  const { isLoading, isSuccess, data, error: receiptError } = useWaitForTransactionReceipt({ hash })
   const [resetCounter, setResetCounter] = useState(0)
-
-  const error = executionError || receiptError
-
-  useAwaitedTxReporting({
-    hash,
-    error,
-    isPendingTx: isPending,
-    isLoadingReceipt: isLoading,
-    isSuccess,
-    receipt: data,
-    title: 'Saving allocations',
-    errorContent: 'Error saving allocations',
-  })
 
   const router = useRouter()
   const {
-    state: { allocations, getBuilder, isValidState },
+    state: { allocations, getBuilder },
     actions: { resetAllocations },
   } = useContext(AllocationsContext)
 
-  const saveAllocations = () => {
-    const [gauges, allocs] = Object.entries(allocations).reduce(
-      (acc, [key, value]) => {
-        const builderAddress = key as Address
-        const gauge = getBuilder(builderAddress)?.gauge
-        if (gauge) {
-          acc[0] = [...acc[0], gauge]
-          acc[1] = [...acc[1], value]
-        }
-
-        return acc
-      },
-      [[], [], []] as [Address[], bigint[], Address[]],
-    )
-
-    return writeContractAsync({
-      abi: BackersManagerAbi,
-      address: BackersManagerAddress,
-      functionName: 'allocateBatch',
-      args: [gauges, allocs],
-    })
-  }
+  const { saveAllocations, canSaveAllocation } = useAllocateVotes()
 
   const onReset = useCallback(() => {
     resetAllocations()
@@ -110,13 +71,11 @@ export default function Allocations() {
           <div className="flex items-center self-stretch justify-between gap-4">
             <div className="flex gap-4">
               {/* TODO: review disabled statuses */}
-              <Button disabled={!isValidState()} variant="primary" onClick={() => saveAllocations()}>
-                {' '}
+              <Button disabled={!canSaveAllocation} variant="primary" onClick={() => saveAllocations()}>
                 Save allocations
               </Button>
               <Button variant="secondary" onClick={() => cancel()}>
-                {' '}
-                Cancel{' '}
+                Cancel
               </Button>
             </div>
 
@@ -125,7 +84,6 @@ export default function Allocations() {
               onClick={() => onReset()}
               textClassName="font-bold text-[18px] text-primary"
             >
-              {' '}
               Reset allocations
             </Button>
           </div>

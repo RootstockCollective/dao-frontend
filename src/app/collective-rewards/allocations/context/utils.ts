@@ -1,5 +1,6 @@
 import { Address } from 'viem'
 import { Allocations, Backer } from './AllocationsContext'
+import { Builder } from '../../types'
 
 export type ValidateAllocationsStateParams = {
   backer: Pick<Backer, 'amountToAllocate' | 'balance' | 'cumulativeAllocation'>
@@ -26,4 +27,28 @@ export const validateAllocationsState = ({
   }
 
   return true
+}
+
+export type GetVoteAllocationsParams = {
+  initialAllocations: Allocations
+  currentAllocations: Allocations
+  getBuilder: (address: Address) => Builder | null
+}
+export const getVoteAllocations = ({
+  initialAllocations,
+  currentAllocations,
+  getBuilder,
+}: GetVoteAllocationsParams) => {
+  return Object.entries(currentAllocations).reduce<[Address[], bigint[]]>(
+    (acc, [key, value]) => {
+      const builderAddress = key as Address
+      const gauge = getBuilder(builderAddress)?.gauge
+      if (gauge && value !== initialAllocations[builderAddress]) {
+        acc[0] = [...acc[0], gauge]
+        acc[1] = [...acc[1], value]
+      }
+      return acc
+    },
+    [[], []],
+  )
 }

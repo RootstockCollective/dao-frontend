@@ -1,6 +1,6 @@
 {
   "name": "dao-frontend",
-  "version": "1.4.1",
+  "version": "1.5.0",
   "private": true,
   "scripts": {
     "dev": "next dev",
@@ -41,7 +41,7 @@
     "lucide-react": "^0.469.0",
     "luxon": "^3.5.0",
     "moment": "^2.30.1",
-    "next": "14.2.23",
+    "next": "15.1.6",
     "react": "^18",
     "react-dom": "^18",
     "react-hook-form": "^7.52.1",
@@ -51,7 +51,7 @@
     "tailwind-merge": "^2.6.0",
     "tailwindcss-animate": "^1.0.7",
     "use-debounce": "^10.0.4",
-    "viem": "^2.17.3",
+    "viem": "^2.22.12",
     "wagmi": "^2.14.7",
     "zod": "^3.23.8"
   },
@@ -61,9 +61,9 @@
     "@storybook/addon-essentials": "^8.1.10",
     "@storybook/addon-interactions": "^8.1.10",
     "@storybook/addon-links": "^8.1.10",
-    "@storybook/addon-onboarding": "^8.1.10",
-    "@storybook/blocks": "^8.3.6",
-    "@storybook/nextjs": "^8.1.10",
+    "@storybook/addon-onboarding": "^8.5.1",
+    "@storybook/blocks": "^8.5.1",
+    "@storybook/nextjs": "^8.5.1",
     "@storybook/react": "^8.1.10",
     "@storybook/test": "^8.4.7",
     "@testing-library/dom": "^10.4.0",

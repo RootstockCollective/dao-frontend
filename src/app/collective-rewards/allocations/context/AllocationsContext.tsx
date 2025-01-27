@@ -6,7 +6,7 @@ import {
 } from '@/app/collective-rewards/allocations/hooks'
 import { Builder } from '@/app/collective-rewards/types'
 import { createContext, FC, ReactNode, useEffect, useMemo, useState, useCallback } from 'react'
-import { Address, zeroAddress } from 'viem'
+import { Address } from 'viem'
 import { useAccount } from 'wagmi'
 import { createActions } from './allocationsActions'
 import { useGetBackerRewards } from '../hooks/useBuildersWithBackerRewardPercentage'
