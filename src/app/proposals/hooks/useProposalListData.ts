@@ -88,7 +88,7 @@ export function useProposalListData({ proposals }: Props) {
           votingPeriod: deadlineBlock.minus(creationBlock),
           quorumAtSnapshot: Big(formatEther(quorum?.[i].result ?? 0n)).round(undefined, Big.roundHalfEven),
           proposalDeadline: Big(proposalDeadline?.[i].result ?? 0),
-          proposalState: ProposalState[Big(state?.[i].result.toString() ?? 0).toNumber()],
+          proposalState: ProposalState[Big(state?.[i].result?.toString() ?? 0).toNumber()],
           ...eventArgs,
         }
       }) ?? [],
