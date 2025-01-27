@@ -176,3 +176,73 @@ describe('floor', () => {
     })
   })
 })
+
+describe('.toFixedNoTrailing', () => {
+  // Basic functionality tests
+  it('handles basic number with trailing zeros', () => {
+    const num = new Big('123.4500')
+    expect(num.toFixedNoTrailing(4)).toBe('123.45')
+  })
+
+  it('handles whole numbers', () => {
+    const num = new Big('123.0000')
+    expect(num.toFixedNoTrailing(4)).toBe('123')
+  })
+
+  // Decimal places (dp) tests
+  it('handles undefined dp', () => {
+    const num = new Big('123.45')
+    expect(num.toFixedNoTrailing()).toBe('123.45')
+  })
+
+  it('handles dp = 0', () => {
+    const num = new Big('123.45')
+    expect(num.toFixedNoTrailing(0)).toBe('123')
+  })
+
+  it('throws error for negative dp', () => {
+    const num = new Big('123.45')
+    expect(() => num.toFixedNoTrailing(-1)).toThrow('Invalid dp argument')
+  })
+
+  it('throws error for non-integer dp', () => {
+    const num = new Big('123.45')
+    expect(() => num.toFixedNoTrailing(1.5)).toThrow('Invalid dp argument')
+  })
+
+  // Rounding mode (rm) tests
+  it('handles different rounding modes', () => {
+    const num = new Big('123.456')
+    expect(num.toFixedNoTrailing(2, 0)).toBe('123.45') // Round down
+    expect(num.toFixedNoTrailing(2, 1)).toBe('123.46') // Round half up
+    expect(num.toFixedNoTrailing(2, 2)).toBe('123.46') // Round half even
+    expect(num.toFixedNoTrailing(2, 3)).toBe('123.46') // Round up
+  })
+
+  it('throws error for invalid rounding mode', () => {
+    const num = new Big('123.45')
+    expect(() => num.toFixedNoTrailing(2, 4 as any)).toThrow('Invalid rm argument')
+    expect(() => num.toFixedNoTrailing(2, -1 as any)).toThrow('Invalid rm argument')
+  })
+
+  // Edge cases
+  it('handles very small numbers', () => {
+    const num = new Big('0.000001230')
+    expect(num.toFixedNoTrailing(9)).toBe('0.00000123')
+  })
+
+  it('handles very large numbers', () => {
+    const num = new Big('123456789.123400')
+    expect(num.toFixedNoTrailing(4)).toBe('123456789.1234')
+  })
+
+  it('handles negative numbers', () => {
+    const num = new Big('-123.4500')
+    expect(num.toFixedNoTrailing(4)).toBe('-123.45')
+  })
+
+  it('handles zero', () => {
+    const num = new Big('0')
+    expect(num.toFixedNoTrailing(4)).toBe('0')
+  })
+})

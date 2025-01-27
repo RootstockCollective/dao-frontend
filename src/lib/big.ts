@@ -1,4 +1,5 @@
-import Big from 'big.js'
+import Big, { RoundingMode } from 'big.js'
+
 /*
 Single source for all Big Number related logic
 
@@ -64,7 +65,7 @@ Big.prototype.floor = function (decimalPlaces?: number) {
   return this.round(decimalPlaces || 0, Big.roundDown)
 }
 
-Big.prototype.toFixedNoTrailing = function (dp?: number, rm?: 0 | 1 | 2 | 3) {
+Big.prototype.toFixedNoTrailing = function (dp?: number, rm?: RoundingMode) {
   // Validate dp (decimal places)
   if (dp !== undefined) {
     if (dp !== ~~dp || dp < 0 || dp > 1e6) {
