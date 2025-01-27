@@ -31,7 +31,6 @@ import {
 } from '@/components/Breadcrumb'
 import { Button } from '@/components/Button'
 import { CopyButton } from '@/components/CopyButton'
-import { MainContainer } from '@/components/MainContainer/MainContainer'
 import { MetricsCard } from '@/components/MetricsCard'
 import { Popover } from '@/components/Popover'
 import { Header, Paragraph, Span, Typography } from '@/components/Typography'
@@ -43,7 +42,7 @@ import { useQueueProposal } from '@/shared/hooks/useQueueProposal'
 import { useVoteOnProposal } from '@/shared/hooks/useVoteOnProposal'
 import { TX_MESSAGES } from '@/shared/txMessages'
 import { waitForTransactionReceipt } from '@wagmi/core'
-import { useRouter } from 'next/router'
+import { useRouter, useParams } from 'next/navigation'
 import { FC, useEffect, useMemo, useState } from 'react'
 import { FaMinus } from 'react-icons/fa6'
 import { getAddress } from 'viem'
@@ -56,9 +55,7 @@ import { isUserRejectedTxError } from '@/components/ErrorPage/commonErrors'
 import Big from '@/lib/big'
 
 export default function ProposalView() {
-  const {
-    query: { id },
-  } = useRouter()
+  const { id } = useParams<{ id: string }>() ?? {}
   const { latestProposals } = useFetchAllProposals()
 
   const proposal = useMemo(() => {
@@ -70,7 +67,7 @@ export default function ProposalView() {
     return getEventArguments(proposal)
   }, [id, latestProposals])
 
-  return <MainContainer>{proposal && <PageWithProposal {...proposal} />}</MainContainer>
+  return <>{proposal && <PageWithProposal {...proposal} />}</>
 }
 
 type ParsedProposal = ReturnType<typeof getEventArguments>
@@ -613,23 +610,22 @@ const DewhitelistButton: FC<DewhitelistButton> = ({
   )
 }
 
-export const actionInputNameFormatMap: Partial<
-  ActionInputNameFormatMap<FunctionName[number], InputParameterName>
-> = {
-  whitelistBuilder: {
-    builder_: 'Address to be whitelisted',
-    rewardReceiver_: 'Address to receive rewards',
-  },
-  communityApproveBuilder: {
-    builder_: 'Address to be whitelisted',
-  },
-  removeWhitelistedBuilder: {
-    builder_: 'Address to be removed',
-  },
-  dewhitelistBuilder: {
-    builder_: 'Address to be de-whitelisted',
-  },
-}
+const actionInputNameFormatMap: Partial<ActionInputNameFormatMap<FunctionName[number], InputParameterName>> =
+  {
+    whitelistBuilder: {
+      builder_: 'Address to be whitelisted',
+      rewardReceiver_: 'Address to receive rewards',
+    },
+    communityApproveBuilder: {
+      builder_: 'Address to be whitelisted',
+    },
+    removeWhitelistedBuilder: {
+      builder_: 'Address to be removed',
+    },
+    dewhitelistBuilder: {
+      builder_: 'Address to be de-whitelisted',
+    },
+  }
 
 const AddressInputComponent: InputValueComponent<'address'> = ({ value, htmlProps }) => (
   <AddressComponent {...htmlProps} addressOrAlias={value.toString()} />
@@ -645,7 +641,7 @@ const ERC20InputComponent: InputValueComponent<'bigint'> = ({ value, htmlProps }
   </Span>
 )
 
-export const actionComponentMap: Partial<ActionComposerMap> = {
+const actionComponentMap: Partial<ActionComposerMap> = {
   whitelistBuilder: {
     builder_: AddressInputComponent,
     rewardReceiver_: AddressInputComponent,

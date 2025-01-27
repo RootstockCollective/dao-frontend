@@ -1,10 +1,11 @@
+'use client'
+
 import { Button } from '@/components/Button'
 import { Chip } from '@/components/Chip/Chip'
-import { MainContainer } from '@/components/MainContainer/MainContainer'
 import { Paragraph, Span, Typography } from '@/components/Typography'
 import { cn, truncateMiddle } from '@/lib/utils'
 import Image from 'next/image'
-import { useRouter } from 'next/router'
+import { useRouter, useParams } from 'next/navigation'
 import { ReactNode, useState, useEffect, useRef } from 'react'
 import { BsTwitterX } from 'react-icons/bs'
 import { FaDiscord, FaLink } from 'react-icons/fa'
@@ -45,7 +46,7 @@ interface MessageProps {
  */
 export default function Page() {
   const router = useRouter()
-  const nftAddress = router.query.address as Address | undefined
+  const { address: nftAddress } = useParams<{ address: Address }>() ?? {}
   const { address, isConnected } = useAccount()
   const {
     tokensAvailable,
@@ -238,7 +239,7 @@ export default function Page() {
 
   if (!nftAddress) return null
   return (
-    <MainContainer notProtected>
+    <>
       {message && (
         <div
           data-testid="alertMessage"
@@ -375,7 +376,7 @@ export default function Page() {
       </div>
       {/* Holders list */}
       {membersCount > 0 && <NftHoldersSection address={nftAddress} />}
-    </MainContainer>
+    </>
   )
 }
 
