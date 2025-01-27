@@ -32,7 +32,7 @@ import { useVotingPower } from '@/app/proposals/hooks/useVotingPower'
 import { useCreateTreasuryTransferProposal } from '@/app/proposals/hooks/useCreateTreasuryTransferProposal'
 import React from 'react'
 import { useForm } from 'react-hook-form'
-import { CreateProposalHeaderSection } from '@/app/proposals/create/CreateProposalHeaderSection'
+import { CreateProposalHeaderSection, ProposalType } from '@/app/proposals/create/CreateProposalHeaderSection'
 import { isAddressRegex, isChecksumValid } from '@/app/proposals/shared/utils'
 import { isBaseError, isUserRejectedTxError } from '@/components/ErrorPage/commonErrors'
 import { TokenImage } from '@/components/TokenImage'
@@ -151,7 +151,11 @@ export const TreasuryWithdrawProposalForm = () => {
   return (
     <Form {...form}>
       <form onSubmit={handleSubmit(onSubmit)}>
-        <CreateProposalHeaderSection disabled={!isDirty || !isValid || isPublishing} loading={isPublishing} />
+        <CreateProposalHeaderSection
+          proposalType={ProposalType.STANDARD}
+          disabled={!isDirty || !isValid || isPublishing}
+          loading={isPublishing}
+        />
         <Accordion
           type="single"
           collapsible

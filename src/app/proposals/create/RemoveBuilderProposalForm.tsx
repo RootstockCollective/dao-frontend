@@ -18,7 +18,7 @@ import { FC, useEffect, useState } from 'react'
 import { useForm } from 'react-hook-form'
 import { Address, getAddress } from 'viem'
 import { z } from 'zod'
-import { CreateProposalHeaderSection } from '@/app/proposals/create/CreateProposalHeaderSection'
+import { CreateProposalHeaderSection, ProposalType } from '@/app/proposals/create/CreateProposalHeaderSection'
 import { Accordion, AccordionItem, AccordionTrigger, AccordionContent } from '@/components/Accordion'
 import { Header, Paragraph } from '@/components/Typography'
 import { Button } from '@/components/Button'
@@ -118,7 +118,11 @@ export const RemoveBuilderProposalForm: FC = () => {
   return (
     <Form {...form}>
       <form onSubmit={handleSubmit(onSubmit)}>
-        <CreateProposalHeaderSection disabled={!isDirty || !isValid || isPublishing} loading={isPublishing} />
+        <CreateProposalHeaderSection
+          proposalType={ProposalType.BUILDER_DEACTIVATION}
+          disabled={!isDirty || !isValid || isPublishing}
+          loading={isPublishing}
+        />
         <Accordion
           type="single"
           collapsible
