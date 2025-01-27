@@ -108,8 +108,10 @@ const PageWithProposal = (proposal: ParsedProposal) => {
   const { onQueueProposal, proposalNeedsQueuing, isQueuing, isTxHashFromQueueLoading } =
     useQueueProposal(proposalId)
 
-  const { onExecuteProposal, canProposalBeExecuted, proposalEtaHumanDate, isExecuting } =
+  const { onExecuteProposal, canProposalBeExecuted, proposalEtaHumanDate, isPendingExecution } =
     useExecuteProposal(proposalId)
+
+  const [isExecuting, setIsExecuting] = useState(false)
 
   const cannotCastVote =
     !isProposalActive ||
@@ -196,6 +198,7 @@ const PageWithProposal = (proposal: ParsedProposal) => {
       setMessage(null)
       const txHash = await onExecuteProposal()
       if (!txHash) return
+      setIsExecuting(true)
       setMessage(TX_MESSAGES.execution.pending)
       await waitForTransactionReceipt(config, {
         hash: txHash,
@@ -214,6 +217,7 @@ const PageWithProposal = (proposal: ParsedProposal) => {
         }
       }
     }
+    setIsExecuting(false)
   }
 
   const openModal = () => {
@@ -334,7 +338,7 @@ const PageWithProposal = (proposal: ParsedProposal) => {
             <Popover
               size="small"
               trigger="hover"
-              disabled={isExecuting}
+              disabled={isExecuting || isPendingExecution}
               content={
                 !canProposalBeExecuted ? (
                   <p className="text-[12px] font-bold mb-1">
@@ -344,23 +348,25 @@ const PageWithProposal = (proposal: ParsedProposal) => {
                 ) : isExecuting ? (
                   <p className="text-[12px] font-bold mb-1">The proposal is being executed.</p>
                 ) : (
-                  <p className="text-[12px] font-bold mb-1">
-                    The proposal <br /> can be executed.
-                  </p>
+                  !isPendingExecution && (
+                    <p className="text-[12px] font-bold mb-1">
+                      The proposal <br /> can be executed.
+                    </p>
+                  )
                 )
               }
             >
               <Button
                 onClick={handleVotingExecution}
                 className="mt-2 ml-auto"
-                disabled={!canProposalBeExecuted || isExecuting}
+                disabled={!canProposalBeExecuted || isExecuting || isPendingExecution}
                 data-testid="Execute"
               >
                 Execute
               </Button>
             </Popover>
           )}
-          {isExecuting && (
+          {(isExecuting || isPendingExecution) && (
             <Span variant="light" className="inline-block mt-2">
               Pending transaction confirmation <br />
               to complete execution.
