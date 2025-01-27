@@ -36,7 +36,12 @@ export function InfoPanel({ proposal, className }: InfoPanelProps) {
                   <Text className="leading-tight" />
                 </div>
                 {/* Orange link */}
-                <a className="mt-2 block" target="_blank" rel="noopener noreferrer" href={linkUrl}>
+                <a
+                  className="mt-2 w-fit block hover:underline decoration-primary"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  href={linkUrl}
+                >
                   <LinkText className="inline text-lg font-[500] leading-tight text-primary" />
                   <LinkArrow className="h-[22px] ml-1 inline" />
                 </a>
