@@ -27,7 +27,7 @@ export const ExternalLink: FC<ExternalLinkProps> = ({
       )}
     >
       {children}
-      {variant === 'menu' && <PiArrowUpRightLight style={{ display: 'inline' }} />}
+      {variant === 'menu' && <PiArrowUpRightLight />}
     </Component>
   )
 }
