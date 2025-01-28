@@ -52,7 +52,7 @@ const LatestProposalsTable = ({ proposals }: LatestProposalsTableProps) => {
   const [activeFilter, setActiveFilter] = useState<string | null>(null)
 
   const handleFilterToggle = useCallback(
-    (keyword: string) => {
+    (keyword: string) => () => {
       if (activeFilter === keyword) {
         // Reset both states if clicking active filter
         setActiveFilter(null)
@@ -235,7 +235,7 @@ const LatestProposalsTable = ({ proposals }: LatestProposalsTableProps) => {
               ${activeFilter === keyword ? 'bg-[#e56b1a]' : 'bg-[#e56b1a] bg-opacity-40'}
               `}
               variant="secondary"
-              onClick={() => handleFilterToggle(keyword)}
+              onClick={handleFilterToggle(keyword)}
             >
               {keyword}
             </Button>
