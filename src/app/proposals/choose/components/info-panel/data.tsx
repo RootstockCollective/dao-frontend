@@ -27,7 +27,7 @@ export const infoPanelData: Record<ProposalType, MustHave[]> = {
           Learn about the ecosystem goals and steps on how to submit a <strong>Grant</strong> proposal
         </span>
       ),
-      linkUrl: 'https://rootstockcollective.xyz/collective-rewards-become-a-builder/',
+      linkUrl: 'https://rootstockcollective.xyz/submitting-a-grant-proposal/',
       Icon: DocIcon,
     },
     {
@@ -87,7 +87,7 @@ export const infoPanelData: Record<ProposalType, MustHave[]> = {
         </span>
       ),
       LinkText: props => <span {...props}>Go to Governance Forum on Discourse</span>,
-      linkUrl: 'https://gov.rootstockcollective.xyz/c/grants/5',
+      linkUrl: 'https://gov.rootstockcollective.xyz/c/collective-rewards/7',
       Icon: ChatIcon,
     },
     {
