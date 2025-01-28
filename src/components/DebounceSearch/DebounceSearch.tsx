@@ -62,7 +62,7 @@ export function DebounceSearch({ onSearchSubmit, placeholder = 'Search' }: Propo
       fullWidth
       type="search"
       className="my-5"
-      onClear={handleClear}
+      onClear={searchText ? handleClear : undefined}
       loading={isLoading}
     />
   )
