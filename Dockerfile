@@ -31,7 +31,6 @@ ENV NEXT_PUBLIC_BUILD_ID=${NEXT_PUBLIC_BUILD_ID}
 # Build the Next.js application
 RUN npm run build
 
-# Use a minimal Node.js image for the production environment
 FROM node:22-alpine@sha256:e2b39f7b64281324929257d0f8004fb6cb4bf0fdfb9aa8cedb235a766aec31da AS runner
 
 # Set the working directory
