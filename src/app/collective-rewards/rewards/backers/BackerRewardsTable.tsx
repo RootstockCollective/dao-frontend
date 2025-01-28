@@ -19,6 +19,7 @@ import { LoadingSpinner } from '@/components/LoadingSpinner'
 import { useBasicPaginationUi } from '@/shared/hooks/usePaginationUi'
 import { CycleContextProvider } from '@/app/collective-rewards/metrics'
 import Link from 'next/link'
+import Big from 'big.js'
 
 enum RewardsColumnKeyEnum {
   builder = 'builder',
@@ -91,19 +92,19 @@ const RewardsTable: FC<BackerRewardsTable> = ({ builder, gauges, tokens }) => {
       estimatedRewards: (a: IRewardData, b: IRewardData) => {
         const aValue = getCombinedFiatAmount([a.estimatedRewards.rif.amount, a.estimatedRewards.rbtc.amount])
         const bValue = getCombinedFiatAmount([b.estimatedRewards.rif.amount, b.estimatedRewards.rbtc.amount])
-        return aValue - bValue
+        return Big(aValue).sub(bValue).toNumber()
       },
       totalAllocationPercentage: (a: IRewardData, b: IRewardData) =>
         Number(a.totalAllocationPercentage - b.totalAllocationPercentage),
       claimableRewards: (a: IRewardData, b: IRewardData) => {
         const aValue = getCombinedFiatAmount([a.claimableRewards.rif.amount, a.claimableRewards.rbtc.amount])
         const bValue = getCombinedFiatAmount([b.claimableRewards.rif.amount, b.claimableRewards.rbtc.amount])
-        return aValue - bValue
+        return Big(aValue).sub(bValue).toNumber()
       },
       allTimeRewards: (a: IRewardData, b: IRewardData) => {
         const aValue = getCombinedFiatAmount([a.allTimeRewards.rif.amount, a.allTimeRewards.rbtc.amount])
         const bValue = getCombinedFiatAmount([b.allTimeRewards.rif.amount, b.allTimeRewards.rbtc.amount])
-        return aValue - bValue
+        return Big(aValue).sub(bValue).toNumber()
       },
     }
     return Object.values(rewardsData).toSorted((a: IRewardData, b: IRewardData) => {

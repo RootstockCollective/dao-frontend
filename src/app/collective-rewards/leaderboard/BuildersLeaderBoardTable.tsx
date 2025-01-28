@@ -14,6 +14,7 @@ import {
   useSearchContext,
 } from '@/app/collective-rewards/shared'
 import { getCombinedFiatAmount } from '../utils'
+import Big from 'big.js'
 
 enum RewardsColumnKeyEnum {
   builder = 'builder',
@@ -84,12 +85,12 @@ export const BuildersLeaderBoardTable: FC = () => {
       lastCycleRewards: (a: IRewardData, b: IRewardData) => {
         const aValue = getCombinedFiatAmount([a.lastCycleRewards.rif.amount, a.lastCycleRewards.rbtc.amount])
         const bValue = getCombinedFiatAmount([b.lastCycleRewards.rif.amount, b.lastCycleRewards.rbtc.amount])
-        return aValue - bValue
+        return Big(aValue).sub(bValue).toNumber()
       },
       estimatedRewards: (a: IRewardData, b: IRewardData) => {
         const aValue = getCombinedFiatAmount([a.estimatedRewards.rif.amount, a.estimatedRewards.rbtc.amount])
         const bValue = getCombinedFiatAmount([b.estimatedRewards.rif.amount, b.estimatedRewards.rbtc.amount])
-        return aValue - bValue
+        return Big(aValue).sub(bValue).toNumber()
       },
       totalAllocationPercentage: (a: IRewardData, b: IRewardData) =>
         Number(a.totalAllocationPercentage - b.totalAllocationPercentage),

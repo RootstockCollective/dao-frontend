@@ -5,23 +5,20 @@ export type Token = {
   address: Address
 }
 
-export type RewardAmount = {
+export interface RewardAmount {
   value: bigint
   price: number
   symbol: string
   currency: string
 }
 
-export type Reward = {
+export interface Reward {
   amount: RewardAmount
   logo?: JSX.Element
 }
 
-export type TokenRewards = {
-  [token: string]: Reward
-}
-
-export type RewardDetails = {
+export type TokenRewards = Record<string, Reward>
+export interface RewardDetails {
   builder: Address
   gauges: Address[]
   currency?: string
@@ -30,9 +27,11 @@ export type RewardDetails = {
   }
 }
 
-export type BuilderRewardDetails = RewardDetails & { gauge: Address }
+export interface BuilderRewardDetails extends RewardDetails {
+  gauge: Address
+}
 
-export type BackerRewardPercentage = {
+export interface BackerRewardPercentage {
   current: bigint
   next: bigint
   cooldownEndTime: bigint
