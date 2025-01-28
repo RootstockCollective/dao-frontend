@@ -21,6 +21,7 @@ import { useProposalListData } from '../hooks/useProposalListData'
 import { Button } from '@/components/Button'
 import { useRouter, useSearchParams } from 'next/navigation'
 import Big from '@/lib/big'
+import { proposalQuickFilters } from '@/lib/constants'
 
 interface LatestProposalsTableProps {
   proposals: LatestProposalResponse[]
@@ -204,7 +205,21 @@ const LatestProposalsTable = ({ proposals }: LatestProposalsTableProps) => {
 
   return (
     <div>
-      <HeaderTitle className="mb-4">Latest Proposals</HeaderTitle>
+      <div className="flex justify-between">
+        <HeaderTitle className="mb-4">Latest Proposals</HeaderTitle>
+        <div className="flex gap-2">
+          {proposalQuickFilters.map(keyword => (
+            <Button
+              key={keyword}
+              className="bg-[#e56b1a] text-white text-sm font-thin bg-opacity-40 border-[#e56b1a] hover:bg-[#e56b1a] h-[32px]"
+              variant="secondary"
+              onClick={() => onSearchSubmit(keyword)}
+            >
+              {keyword}
+            </Button>
+          ))}
+        </div>
+      </div>
       <DebounceSearch placeholder="Search a proposal" onSearchSubmit={onSearchSubmit} />
       {filteredProposalList.length > 0 ? (
         <div>
