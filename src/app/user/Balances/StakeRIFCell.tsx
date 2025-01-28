@@ -23,6 +23,7 @@ export const StakeRIFCell = () => {
     <Button
       onClick={hasEnoughBalance ? stakeModal.openModal : undefined}
       disabled={!hasEnoughBalance}
+      buttonProps={{ style: { width: '93px' } }}
       data-testid="StakeRIF"
     >
       Stake
