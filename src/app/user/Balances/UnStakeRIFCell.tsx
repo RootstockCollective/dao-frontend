@@ -10,6 +10,7 @@ export const UnStakeRIFCell = () => {
       variant="outlined"
       onClick={unstakeModal.openModal}
       disabled={!hasEnoughBalance}
+      buttonProps={{ style: { width: '93px' } }}
       data-testid="UnstakeRIF"
     >
       Unstake
