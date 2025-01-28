@@ -129,8 +129,23 @@ const PageWithProposal = (proposal: ParsedProposal) => {
       return 'You already voted on this proposal'
     }
     if (!doesUserHasEnoughThreshold) {
-      /* eslint-disable quotes */
-      return "You don't have enough voting power to vote on this proposal"
+      return (
+        <>
+          You don&apos;t have enough voting power to vote on the this proposal. Your voting power for this
+          proposal is determined at the time this proposal was submitted. If your voting power has changed
+          since then perhaps due to the amount of stRIF you have staked, then only proposals after this will
+          take this new voting power into consideration. More details can be found in the{' '}
+          <a
+            href="https://rootstockcollective.xyz/pdfs/whitepaper.pdf"
+            target="_blank"
+            className="hover:underline"
+            style={{ color: '#0065FF' }}
+          >
+            DAO whitepaper
+          </a>
+          .
+        </>
+      )
     }
     if (isVoting) {
       return 'Your vote is being processed'
@@ -305,7 +320,8 @@ const PageWithProposal = (proposal: ParsedProposal) => {
                       <p data-testid="ParagraphCannotCastVote">{cannotCastVoteReason}</p>
                     </div>
                   }
-                  size="small"
+                  size={!doesUserHasEnoughThreshold ? 'medium' : 'small'}
+                  position={!doesUserHasEnoughThreshold ? 'left-bottom' : 'bottom'}
                   trigger="hover"
                 >
                   <Button disabled data-testid="VoteOnChain">

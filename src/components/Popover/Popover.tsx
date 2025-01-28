@@ -77,7 +77,7 @@ export const Popover = ({
           position === 'bottom' && 'top-full',
           position === 'right' && 'left-full bottom-full',
           position === 'left' && 'right-full bottom-full',
-          position === 'left-bottom' && 'right-full top-full',
+          position === 'left-bottom' && 'right-0 top-full',
           position === 'left-top' && 'right-full bottom-full',
           size === 'small' && 'w-36',
           size === 'medium' && 'w-96',
