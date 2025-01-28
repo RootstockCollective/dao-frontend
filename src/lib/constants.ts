@@ -43,7 +43,7 @@ export const DEFAULT_NUMBER_OF_SECONDS_PER_BLOCK = 30
 export const GOOGLE_TAG_ID = 'GTM-PTL6VZMT'
 
 export const proposalQuickFilters = [
-  'Grants',
+  'Grant',
   'Activation',
   '2409',
   '2410',

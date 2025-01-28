@@ -1,4 +1,4 @@
-import { useMemo, memo, useState, useEffect } from 'react'
+import { useMemo, memo, useState, useEffect, useCallback } from 'react'
 import {
   createColumnHelper,
   type SortingState,
@@ -48,9 +48,29 @@ const LatestProposalsTable = ({ proposals }: LatestProposalsTableProps) => {
     [proposalListData, searchedProposal],
   )
 
-  const onSearchSubmit = (searchValue: string) => {
-    setSearchedProposal(searchValue)
-  }
+  // State for proposal quick filters
+  const [activeFilter, setActiveFilter] = useState<string | null>(null)
+
+  const handleFilterToggle = useCallback(
+    (keyword: string) => {
+      if (activeFilter === keyword) {
+        // Reset both states if clicking active filter
+        setActiveFilter(null)
+        setSearchedProposal('')
+      } else {
+        // Set new filter if clicking different filter
+        setActiveFilter(keyword)
+        setSearchedProposal(keyword)
+      }
+    },
+    [activeFilter],
+  )
+
+  const handleSearch = useCallback((value: string) => {
+    setSearchedProposal(value)
+    setActiveFilter(null)
+  }, [])
+
   // Table data definition helper
   const { accessor } = createColumnHelper<(typeof proposalListData)[number]>()
   // Table columns definition
@@ -211,16 +231,18 @@ const LatestProposalsTable = ({ proposals }: LatestProposalsTableProps) => {
           {proposalQuickFilters.map(keyword => (
             <Button
               key={keyword}
-              className="bg-[#e56b1a] text-white text-sm font-thin bg-opacity-40 border-[#e56b1a] hover:bg-[#e56b1a] h-[32px]"
+              className={`text-white text-sm font-thin border-[#e56b1a] hover:bg-[#e56b1a] h-[32px]
+              ${activeFilter === keyword ? 'bg-[#e56b1a]' : 'bg-[#e56b1a] bg-opacity-40'}
+              `}
               variant="secondary"
-              onClick={() => onSearchSubmit(keyword)}
+              onClick={() => handleFilterToggle(keyword)}
             >
               {keyword}
             </Button>
           ))}
         </div>
       </div>
-      <DebounceSearch placeholder="Search a proposal" onSearchSubmit={onSearchSubmit} />
+      <DebounceSearch placeholder="Search a proposal" onSearchSubmit={handleSearch} />
       {filteredProposalList.length > 0 ? (
         <div>
           <StatefulTable
