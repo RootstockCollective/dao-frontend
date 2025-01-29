@@ -17,9 +17,8 @@ interface Card {
 export const cardData: Record<ProposalType, Card> = {
   Standard: {
     id: 1,
-    title: 'Standard',
-    description:
-      'Request community votes to allocate RootstockCollective treasury funds for grants, growth initiatives, or governance goals.',
+    title: 'Get a Grant',
+    description: 'Community vote to allocate treasury funds for Grants',
     image: standardImage,
     contract: 'DAOTreasuryAbi',
     action: 'withdraw',
@@ -27,8 +26,7 @@ export const cardData: Record<ProposalType, Card> = {
   Activation: {
     id: 2,
     title: 'Builder Activation',
-    description:
-      'Request community votes to add a Builder to the RootstockCollective whitelist, granting them rewards access.',
+    description: 'Community vote to add a Builder to the whitelist, granting access to rewards',
     image: activationImage,
     contract: 'BuilderRegistryAbi',
     action: 'communityApproveBuilder',
@@ -36,8 +34,7 @@ export const cardData: Record<ProposalType, Card> = {
   Deactivation: {
     id: 3,
     title: 'Builder Deactivation',
-    description:
-      'Request community votes to remove a Builder from the RootstockCollective whitelist, revoking their rewards access.',
+    description: 'Community vote to remove a Builder from the whitelist, removing access to rewards',
     image: deactivationImage,
     contract: 'BuilderRegistryAbi',
     action: 'dewhitelistBuilder',
