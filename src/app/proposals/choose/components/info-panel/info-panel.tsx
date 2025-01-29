@@ -11,6 +11,7 @@ interface InfoPanelProps extends HTMLMotionProps<'div'> {
 }
 
 export function InfoPanel({ proposal, className }: InfoPanelProps) {
+  const { title, requirements } = infoPanelData[proposal]
   return (
     <motion.div
       initial={{ opacity: 0 }}
@@ -21,12 +22,9 @@ export function InfoPanel({ proposal, className }: InfoPanelProps) {
     >
       <div className="flex flex-col lg:flex-row gap-4">
         <div>
-          <HeaderTitle className="text-[32px] uppercase leading-tight">{proposal} Must have</HeaderTitle>
-          <Typography className="mb-4 lg:mb-8 text-lg leading-tight">
-            List of items you should have completed to submit {proposal.toLowerCase()} proposal
-          </Typography>
+          <HeaderTitle className="mb-6 text-[32px] uppercase leading-none">{title}</HeaderTitle>
           <ol className="p-0 space-y-6 list-none">
-            {infoPanelData[proposal].map(({ id, Text, Icon, LinkText, linkUrl }, i) => (
+            {requirements.map(({ id, Text, Icon, LinkText, linkUrl }, i) => (
               <li key={id}>
                 <div className="flex flex-row gap-2">
                   <div className="pt-1">

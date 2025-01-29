@@ -34,7 +34,7 @@ export function Card({ proposal, isHighlighted, className, link, showInfoPanel, 
         <div className="h-full py-7 flex flex-col items-center leading-tight">
           <HeaderTitle className="text-[32px] text-center">{title}</HeaderTitle>
           <div className="mb-[18px] flex-grow flex items-end">
-            <div className="min-h-[5.5rem]">
+            <div className="min-h-[4rem]">
               <Typography className="leading-[22.4px]" tagVariant="p">
                 {description}
               </Typography>
