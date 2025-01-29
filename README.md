@@ -4,7 +4,11 @@ This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next
 
 The following tools are required to be installed:
 
-- [nvm](https://github.com/nvm-sh/nvm?tab=readme-ov-file#installing-and-updating) - Run the installation script: `curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.40.1/install.sh | bash`
+- [Node.js](https://nodejs.org/en/download) - Version 22 (LTS).
+
+## Optional development tools
+
+The following tools are optional but can help ensure a consistent development environment and improve the workflow.
 
 ### NVM
 
@@ -48,7 +52,7 @@ git clone https://github.com/RootstockCollective/dao-frontend.git
 cd dao-frontend
 ```
 
-2. Use the correct Node.js version:
+2. Use the correct Node.js version (Optional):
 
 ```bash
 nvm use
@@ -241,7 +245,7 @@ You need to have the repository https://github.com/RootstockCollective/dao-backe
 
 #### Setup frontend
 
-- `nvm use`
+- `nvm use` (Optional)
 - `npm i`
 - Create .env.local file
 - Carry over what is in .env.dev to .env.local
