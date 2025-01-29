@@ -19,7 +19,7 @@ import { LoadingSpinner } from '@/components/LoadingSpinner'
 import { useBasicPaginationUi } from '@/shared/hooks/usePaginationUi'
 import { CycleContextProvider } from '@/app/collective-rewards/metrics'
 import Link from 'next/link'
-import Big from 'big.js'
+import Big from '@/lib/big'
 
 enum RewardsColumnKeyEnum {
   builder = 'builder',
