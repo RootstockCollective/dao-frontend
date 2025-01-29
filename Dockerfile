@@ -1,5 +1,4 @@
-# Use the official Node.js 18 image as a base
-FROM node:23-alpine@sha256:498bf3e45a4132b99952f88129ae5429e3568f3836edbfc09e3661515f620837 AS builder
+FROM node:22-alpine@sha256:e2b39f7b64281324929257d0f8004fb6cb4bf0fdfb9aa8cedb235a766aec31da AS builder
 
 # Set the working directory
 WORKDIR /app
@@ -32,8 +31,7 @@ ENV NEXT_PUBLIC_BUILD_ID=${NEXT_PUBLIC_BUILD_ID}
 # Build the Next.js application
 RUN npm run build
 
-# Use a minimal Node.js image for the production environment
-FROM node:23-alpine@sha256:498bf3e45a4132b99952f88129ae5429e3568f3836edbfc09e3661515f620837 AS runner
+FROM node:22-alpine@sha256:e2b39f7b64281324929257d0f8004fb6cb4bf0fdfb9aa8cedb235a766aec31da AS runner
 
 # Set the working directory
 WORKDIR /app

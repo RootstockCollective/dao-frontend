@@ -1,12 +1,72 @@
 This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
 
+## Prerequisites
+
+The following tools are required to be installed:
+
+- [Node.js](https://nodejs.org/en/download) - Version 22 (LTS).
+
+## Optional development tools
+
+The following tools are optional but can help ensure a consistent development environment and improve the workflow.
+
+### NVM
+
+`nvm` allows you to quickly install and use different versions of node via the command line.
+
+**Example:**
+
+```sh
+$ nvm use 16
+Now using node v16.9.1 (npm v7.21.1)
+$ node -v
+v16.9.1
+$ nvm use 14
+Now using node v14.18.0 (npm v6.14.15)
+$ node -v
+v14.18.0
+$ nvm install 12
+Now using node v12.22.6 (npm v6.14.5)
+$ node -v
+v12.22.6
+```
+
+Simple as that!
+
+To specify the required Node.js version for the project, you can create a `.nvmrc` file in the root directory of your project. This file should contain the version number of Node.js that you want to use. For example, to use Node.js version 22, you would create a `.nvmrc` file with the following content:
+
+```
+22
+```
+
+Once the `.nvmrc` file is in place, you can run `nvm use` to switch to the specified Node.js version. This ensures that everyone working on the project uses the same Node.js version, which helps to avoid compatibility issues.
+
 ## Getting Started
 
-First, be sure that you are using Node Version 18+
+To get started with the project, follow these steps:
 
-Then
+1. Clone the repository:
 
-update .env file with the correct data from respective files:
+```bash
+git clone https://github.com/RootstockCollective/dao-frontend.git
+cd dao-frontend
+```
+
+2. Use the correct Node.js version (Optional):
+
+```bash
+nvm use
+```
+
+This command will read the `.nvmrc` file and switch to the specified Node.js version.
+
+3. Install the dependencies:
+
+```bash
+npm install
+```
+
+4. Update the `.env` file with the correct data from the respective files:
 
 ```
 .dev
@@ -14,15 +74,9 @@ update .env file with the correct data from respective files:
 .mainnet
 ```
 
-the chosen set of variables depends on the targeted contract versions you planning to work with. `.dev` - same as the `.testnet` versions of the contract with an exception being reduced wait times of votingDelay, votingPeriod and timelockMinDelay for automation purposes. `.testnet` and `.mainnet` versions are aligned on time but target respective chains(chainIds) 31 and 30.
+The chosen set of variables depends on the targeted contract versions you plan to work with. `.dev` is similar to the `.testnet` versions of the contract, with the exception of reduced wait times for `votingDelay`, `votingPeriod`, and `timelockMinDelay` for automation purposes. `.testnet` and `.mainnet` versions are aligned on time but target respective chains (chainIds 31 and 30).
 
-Then
-
-```bash
-npm i
-```
-
-Then, run the development server:
+5. Run the development server:
 
 ```bash
 npm run dev
@@ -34,18 +88,18 @@ pnpm dev
 bun dev
 ```
 
-Choose environment using the PROFILE environment variable, such as:
+6. Choose the environment using the `PROFILE` environment variable, such as:
 
 ```bash
 export PROFILE=testnet
 ```
 
-the value has to correspond to one of the `.env.` file endings
+The value must correspond to one of the `.env.` file endings.
 
 > [!NOTE]
 > ‼️ **<span style="color:red;">Warning: DO NOT USE IN PRODUCTION!</span>**
 >
-> To avoid **CORS errors** when running against testnet from localhost we can proxy the calls to the RIF Wallet Services via a local loop that strips the CORS headers on the way out and adds the expected response ones on the way in.
+> To avoid **CORS errors** when running against testnet from localhost, you can proxy the calls to the RIF Wallet Services via a local loop that strips the CORS headers on the way out and adds the expected response ones on the way in.
 > This can be achieved by setting the `testnet.local` `PROFILE`:
 > `PROFILE=testnet.local npm run dev`
 
@@ -63,7 +117,7 @@ All environment files are prefixed with a `.env`.
 
 | Environment      | Team     | Deploy URL                                      | Configuration                                                                                                                                                                              | Notes        |
 | ---------------- | -------- | ----------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ | ------------ |
-| .mainnet            | DAO - CR | https://app.rootstockcollective.xyz             | [DAO](https://github.com/RootstockCollective/dao-contracts/blob/develop/params/mainnet.json) <br> [CR](https://github.com/RootstockCollective/collective-rewards-sc/blob/main/.env.30.mvp) | -            |
+| .mainnet         | DAO - CR | https://app.rootstockcollective.xyz             | [DAO](https://github.com/RootstockCollective/dao-contracts/blob/develop/params/mainnet.json) <br> [CR](https://github.com/RootstockCollective/collective-rewards-sc/blob/main/.env.30.mvp) | -            |
 | .dev             | DAO - CR | https://dev.app.rootstockcollective.xyz         | [DAO](https://github.com/RootstockCollective/dao-contracts/blob/develop/params/dev.json)                                                                                                   | Requires VPN |
 | .testnet         | DAO      | https://testnet.app.rootstockcollective.xyz     | [DAO](https://github.com/RootstockCollective/dao-contracts/blob/develop/params/testnet.json)                                                                                               | -            |
 | .qa              | DAO      | -                                               | -                                                                                                                                                                                          | -            |
@@ -191,41 +245,49 @@ You need to have the repository https://github.com/RootstockCollective/dao-backe
 
 #### Setup frontend
 
-* ```npm i```
-* Create .env.local file
-* Carry over what is in .env.dev to .env.local
-* Replace NEXT_PUBLIC_RIF_WALLET_SERVICES env var with your localhost url:port, like:
-NEXT_PUBLIC_RIF_WALLET_SERVICES=http://localhost:3001
-* npm run dev
+- `nvm use` (Optional)
+- `npm i`
+- Create .env.local file
+- Carry over what is in .env.dev to .env.local
+- Replace NEXT_PUBLIC_RIF_WALLET_SERVICES env var with your localhost url:port, like:
+  NEXT_PUBLIC_RIF_WALLET_SERVICES=http://localhost:3001
+- npm run dev
 
 #### Setup backend
 
 You need to have the repository https://github.com/RootstockCollective/dao-backend-services running locally.
 
-```npm i```
+`npm i`
 
 For mac:
+
 ```bash
 EXPORT PROFILE=dao
 ```
+
 For windows
-```shell
+
+```bash
 SET PROFILE=dao
 ```
 
-Find a file named httpsApi.ts and find the line where the app.use(cors()) is being called and replace the condition with a "true"
+Find a file named `httpsApi.ts` and locate the line where `app.use(cors())` is being called. Replace the condition with `true`:
+
 ```javascript
-this.app.use(cors({
-      origin: (origin, callback) => {
-        if (true) { // <--
-          callback(null, true)
-        } else {
-          callback(new Error('Not allowed by cors'))
-        }
+this.app.use(
+  cors({
+    origin: (origin, callback) => {
+      if (true) {
+        callback(null, true)
+      } else {
+        callback(new Error('Not allowed by cors'))
       }
-    }))
+    },
+  }),
+)
 ```
-```shell
+
+```bash
 npm start
 ```
 
