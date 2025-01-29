@@ -14,7 +14,7 @@ import {
   useSearchContext,
 } from '@/app/collective-rewards/shared'
 import { getCombinedFiatAmount } from '../utils'
-import Big from 'big.js'
+import Big from '@/lib/big'
 
 enum RewardsColumnKeyEnum {
   builder = 'builder',
