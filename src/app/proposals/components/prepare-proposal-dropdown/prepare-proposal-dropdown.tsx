@@ -13,7 +13,7 @@ import { ChevronDown } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { HeaderTitle, Typography } from '@/components/Typography'
 
-export function ProposalPrepareCard({ className, ...props }: SelectTriggerProps) {
+export function PrepareProposalDropdown({ className, ...props }: SelectTriggerProps) {
   return (
     <Root>
       <SelectTrigger
@@ -21,8 +21,7 @@ export function ProposalPrepareCard({ className, ...props }: SelectTriggerProps)
         aria-label="Prepare your proposal"
         className={cn(
           className,
-          // focus:outline-none
-          'w-full max-w-96 h-12 px-5 flex items-center justify-between bg-[#E4E1DA] rounded-[4px]',
+          'w-full max-w-96 h-12 px-5 flex items-center justify-between bg-[#E4E1DA] rounded-[4px] focus:outline-none',
         )}
       >
         <HeaderTitle className="text-lg leading-none text-black whitespace-nowrap">

@@ -2,13 +2,13 @@ import Link from 'next/link'
 import { Paragraph, HeaderTitle } from '@/components/Typography'
 import { Button } from '@/components/Button'
 import { Popover } from '@/components/Popover'
-import { ProposalPrepareCard } from './proposal-prepare-card'
+import { PrepareProposalDropdown } from './prepare-proposal-dropdown'
 
 export const HeaderSection = ({ createProposalDisabled = true, threshold = '' }) => (
   <div className="flex flex-row justify-between container">
     <HeaderTitle className="whitespace-nowrap">My Governance</HeaderTitle>
     <div className="grow flex flex-row justify-end gap-x-6">
-      <ProposalPrepareCard />
+      <PrepareProposalDropdown />
       {createProposalDisabled ? (
         <Popover
           content={
