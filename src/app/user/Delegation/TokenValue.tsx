@@ -2,8 +2,8 @@ import { useBalancesContext } from '@/app/user/Balances/context/BalancesContext'
 import { SupportedTokens } from '@/lib/contracts'
 import { Paragraph } from '@/components/Typography'
 import { formatCurrency, formatNumberWithCommas } from '@/lib/utils'
-import { formatBalanceToHuman } from '@/app/user/Balances/balanceUtils'
 import { TokenImage } from '@/components/TokenImage'
+import { formatUnits } from 'ethers'
 
 interface TokenValueProps {
   symbol: SupportedTokens
@@ -13,7 +13,7 @@ interface TokenValueProps {
 
 export const TokenValue = ({ symbol, amount, shouldFormatBalance = false }: TokenValueProps) => {
   const { prices } = useBalancesContext()
-  const amountFormatted = shouldFormatBalance ? formatBalanceToHuman(amount) : amount
+  const amountFormatted = shouldFormatBalance ? formatUnits(amount) : amount
   const price = prices[symbol]?.price || 0
   const value = price * Number(amountFormatted)
 

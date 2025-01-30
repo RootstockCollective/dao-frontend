@@ -3,11 +3,11 @@ import { HeaderTitle, Span } from '@/components/Typography'
 import { EXPLORER_URL, STRIF_ADDRESS } from '@/lib/constants'
 import { RxExternalLink } from 'react-icons/rx'
 import { useFetchTokenHolders } from '@/app/treasury/hooks/useFetchTokenHolders'
-import { formatBalanceToHuman } from '@/app/user/Balances/balanceUtils'
 import { LoadingSpinner } from '@/components/LoadingSpinner'
 import { Jdenticon } from '@/components/Header/Jdenticon'
 import { ErrorMessageAlert } from '@/components/ErrorMessageAlert/ErrorMessageAlert'
 import { formatNumberWithCommas } from '@/lib/utils'
+import { formatUnits } from 'ethers'
 
 interface HolderColumnProps {
   address: string
@@ -35,7 +35,7 @@ export const HoldersSection = () => {
 
   const holders = currentResults.map(({ address, value }) => ({
     holder: <HolderColumn address={address.hash} rns={address.ens_domain_name} />,
-    quantity: `${formatNumberWithCommas(formatBalanceToHuman(value).split('.')[0])} stRIF`,
+    quantity: `${formatNumberWithCommas(formatUnits(value).split('.')[0])} stRIF`,
   }))
 
   return (

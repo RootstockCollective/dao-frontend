@@ -8,9 +8,8 @@ import {
   SupportedProposalActionName,
 } from '@/app/proposals/shared/supportedABIs'
 import { GovernorAbi } from '@/lib/abis/Governor'
-import { ZeroAddress } from 'ethers'
+import { formatUnits, ZeroAddress } from 'ethers'
 import { RIF_ADDRESS } from '@/lib/constants'
-import { formatBalanceToHuman } from '@/app/user/Balances/balanceUtils'
 
 export interface EventArgumentsParameter {
   args: {
@@ -131,7 +130,7 @@ export const actionFormatterMap = {
       [RIF_ADDRESS.toLowerCase()]: 'RIF',
     })[tokenAddress.toLowerCase()] || tokenAddress.toString(),
   to: (address: Address) => address.toString(),
-  amount: (amount: bigint) => formatBalanceToHuman(amount),
+  amount: (amount: bigint) => formatUnits(amount),
 }
 
 export const DISPLAY_NAME_SEPARATOR = 'D15PL4Y_N4M3:'
