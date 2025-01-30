@@ -1,5 +1,5 @@
 import { ENV } from '@/lib/constants'
-import { defineChain } from 'viem'
+import { defineChain, HttpTransportConfig } from 'viem'
 import { rootstockTestnet, rootstock } from 'viem/chains'
 import { createConfig, http } from 'wagmi'
 import { injected } from 'wagmi/connectors'
@@ -15,14 +15,21 @@ const rskRegtest = defineChain({
   },
 })
 
+const httpTransportConfig: HttpTransportConfig = {
+  batch: {
+    // this is the default value configured in RSKj
+    batchSize: 100,
+  },
+}
+
 export const config = createConfig({
   chains: [rskRegtest, rootstockTestnet, rootstock],
   transports: {
     [rootstock.id]: http(undefined, {
-      batch: true,
+      ...httpTransportConfig,
     }),
     [rootstockTestnet.id]: http(undefined, {
-      batch: true,
+      ...httpTransportConfig,
     }),
     [rskRegtest.id]: http(),
   },
