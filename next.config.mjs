@@ -37,6 +37,9 @@ const corsBypassRewrite = () => [
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   output: 'standalone',
+  compiler: {
+    reactRemoveProperties: { properties: ['^data-testid$'] },
+  },
   webpack: config => {
     config.optimization.splitChunks = {
       chunks: 'all',
