@@ -37,9 +37,6 @@ const corsBypassRewrite = () => [
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   output: 'standalone',
-  compiler: {
-    reactRemoveProperties: { properties: ['^data-testid$'] },
-  },
   webpack: config => {
     config.optimization.splitChunks = {
       chunks: 'all',
@@ -51,10 +48,11 @@ const nextConfig = {
   },
 }
 
-const getNextConfig = () => {
+// Add CORS bypass to the configuration if enabled in env
+const withCors = config => {
   if (isCorsBypassAllowed) {
     return {
-      ...nextConfig,
+      ...config,
       rewrites: corsBypassRewrite,
       webpack: (config, options) => {
         if (options.isServer) {
@@ -68,14 +66,31 @@ const getNextConfig = () => {
         }
 
         return {
-          ...nextConfig.webpack(config, options),
+          ...config,
           devServer,
         }
       },
     }
   }
+  return config
+}
 
-  return nextConfig
+// Remove the data-testid attributes from the production build (mainnet, testnet)
+const withDataTestId = config => {
+  const isPublic = ['mainnet', 'testnet'].includes(process.env.PROFILE) ? true : false
+  if (isPublic) {
+    return {
+      ...config,
+      compiler: {
+        reactRemoveProperties: { properties: ['^data-testid$'] },
+      },
+    }
+  }
+  return config
+}
+
+const getNextConfig = () => {
+  return withDataTestId(withCors(nextConfig))
 }
 
 const exportedNextConfig = getNextConfig()
