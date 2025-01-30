@@ -41,3 +41,14 @@ export const NODE_URL = process.env.NEXT_PUBLIC_NODE_URL
 export const DEFAULT_NUMBER_OF_SECONDS_PER_BLOCK = 30
 
 export const GOOGLE_TAG_ID = 'GTM-PTL6VZMT'
+
+export const proposalQuickFilters = [
+  'Grant',
+  'Activation',
+  '2409',
+  '2410',
+  '2412',
+  '2501',
+  'Wave 4',
+  'Wave 5',
+]
