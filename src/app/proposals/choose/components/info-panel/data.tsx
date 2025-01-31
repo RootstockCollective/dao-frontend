@@ -17,7 +17,7 @@ interface MustHave {
 
 export const infoPanelData: Record<ProposalType, MustHave> = {
   Standard: {
-    title: 'Get a Grant — Must Have',
+    title: 'Get a Grant - Must Have',
     requirements: [
       {
         id: 1,
@@ -39,9 +39,8 @@ export const infoPanelData: Record<ProposalType, MustHave> = {
         id: 2,
         Text: props => (
           <span {...props}>
-            A post <strong>about the Grant</strong> on the off-chain Governance Forum, on Discourse, should
-            have previously been created. If you haven’t done this yet, don’t worry its pretty easy and you
-            can browse other posts and ask the community for tips 😉
+            A <strong>Grant post</strong> should be created off-chain on Discourse. If you haven’t done this
+            yet, don’t worry its pretty easy and you can browse other posts and ask the community for tips 😉
           </span>
         ),
         LinkText: props => <span {...props}>Go to Governance Forum on Discourse</span>,
@@ -52,10 +51,9 @@ export const infoPanelData: Record<ProposalType, MustHave> = {
         id: 3,
         Text: props => (
           <span {...props}>
-            Get started on KYC <strong>for your Grant</strong> - all applicants must pass KYC checks conducted
-            by the Rootstock Collective Foundation after a successful vote by the community. If the vote does
-            not pass, KYC is not required however its best to get familiar with this now and get started on
-            this while your submission is being discussed and voted on, so there are no delays 🙂
+            KYC <strong>for your Grant</strong> - required if your proposal passes the community vote. Its
+            best to get this started while your submission is being discussed and voted on, so there are no
+            delays 😀
           </span>
         ),
         LinkText: props => <span {...props}>Get started on KYC here</span>,
@@ -66,7 +64,7 @@ export const infoPanelData: Record<ProposalType, MustHave> = {
     ],
   },
   Activation: {
-    title: 'Activation Must Have',
+    title: 'Join Builder Rewards - Must Have',
     requirements: [
       {
         id: 1,
@@ -89,9 +87,9 @@ export const infoPanelData: Record<ProposalType, MustHave> = {
         id: 2,
         Text: props => (
           <span {...props}>
-            A <strong>Builder Activation</strong> post on the off-chain Governance Forum, on Discourse, should
-            have previously been created. If you haven’t done this yet, don’t worry its pretty easy and you
-            can browse other posts and ask the community for tips 😉
+            A <strong>Builder Activation post</strong> should be created off-chain on Discourse. If you
+            haven’t done this yet, don’t worry its pretty easy and you can browse other posts and ask the
+            community for tips 😉
           </span>
         ),
         LinkText: props => <span {...props}>Go to Governance Forum on Discourse</span>,
@@ -102,10 +100,9 @@ export const infoPanelData: Record<ProposalType, MustHave> = {
         id: 3,
         Text: props => (
           <span {...props}>
-            Get started on <strong>Builder Activation</strong> KYC - all applicants must pass KYC checks
-            conducted by the Rootstock Collective Foundation after a successful vote by the community. If the
-            vote does not pass, KYC is not required however its best to get familiar with this now and get
-            started on this while your submission is being discussed and voted on, so there are no delays 🙂
+            <strong>Builder Activation KYC</strong> - required if your proposal passes the community vote. Its
+            best to get this started while your submission is being discussed and voted on, so there are no
+            delays 😀
           </span>
         ),
         LinkText: props => <span {...props}>Get started on KYC here</span>,
