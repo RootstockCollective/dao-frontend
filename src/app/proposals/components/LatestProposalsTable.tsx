@@ -231,7 +231,7 @@ const LatestProposalsTable = ({ proposals }: LatestProposalsTableProps) => {
           {proposalQuickFilters.map(keyword => (
             <Button
               key={keyword}
-              className={`text-white text-sm font-thin border-[#e56b1a] hover:bg-[#e56b1a] h-[32px]
+              className={`text-white text-sm font-thin border-[#e56b1a] h-[32px]
               ${activeFilter === keyword ? 'bg-[#e56b1a]' : 'bg-[#e56b1a] bg-opacity-40'}
               `}
               variant="secondary"
