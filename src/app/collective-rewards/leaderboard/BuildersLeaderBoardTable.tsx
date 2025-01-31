@@ -1,7 +1,7 @@
 import { BuildersRewards } from '@/app/collective-rewards/rewards'
 import { TableBody, TableCore, TableHead, TableRow } from '@/components/Table'
 import { useBasicPaginationUi } from '@/shared/hooks/usePaginationUi'
-import { FC, useMemo, useState } from 'react'
+import { FC, useCallback, useMemo, useState } from 'react'
 import {
   ISortConfig,
   TableHeader,
@@ -109,7 +109,7 @@ export const BuildersLeaderBoardTable: FC = () => {
     [currentPage, sortedRewardsData],
   )
 
-  const handleSort = (key?: string) => {
+  const handleSort = useCallback((key?: string) => () => {
     if (!key) {
       return
     }
@@ -124,7 +124,7 @@ export const BuildersLeaderBoardTable: FC = () => {
       // Set initial sort direction to ascending
       return { key, direction: 'asc' }
     })
-  }
+  }, [])
 
   return (
     <div className="flex flex-col gap-5 w-full">
@@ -135,7 +135,7 @@ export const BuildersLeaderBoardTable: FC = () => {
               <TableHeaderCell
                 key={header.label}
                 tableHeader={header}
-                onSort={() => handleSort(header.sortKey)}
+                onSort={handleSort(header.sortKey)}
                 sortConfig={sortConfig}
               />
             ))}
