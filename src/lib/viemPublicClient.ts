@@ -31,9 +31,7 @@ function transformResultType(result: unknown) {
  * Function that will wrap the multicall results into a plain object.
  * @param results
  */
-export function transformMulticallResults<T extends Record<string, { result?: unknown }>, R>(
-  results: T,
-): R {
+export function transformMulticallResults<T extends Record<string, { result?: unknown }>, R>(results: T): R {
   return Object.entries(results).reduce(
     (acc, [key, value]) => ({
       ...acc,
