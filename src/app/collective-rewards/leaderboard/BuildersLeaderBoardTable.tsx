@@ -109,22 +109,25 @@ export const BuildersLeaderBoardTable: FC = () => {
     [currentPage, sortedRewardsData],
   )
 
-  const handleSort = useCallback((key?: string) => () => {
-    if (!key) {
-      return
-    }
-    setSortConfig(prevSortConfig => {
-      if (prevSortConfig?.key === key) {
-        // Toggle direction if the same column is clicked
-        return {
-          key,
-          direction: prevSortConfig.direction === 'asc' ? 'desc' : 'asc',
-        }
+  const handleSort = useCallback(
+    (key?: string) => () => {
+      if (!key) {
+        return
       }
-      // Set initial sort direction to ascending
-      return { key, direction: 'asc' }
-    })
-  }, [])
+      setSortConfig(prevSortConfig => {
+        if (prevSortConfig?.key === key) {
+          // Toggle direction if the same column is clicked
+          return {
+            key,
+            direction: prevSortConfig.direction === 'asc' ? 'desc' : 'asc',
+          }
+        }
+        // Set initial sort direction to ascending
+        return { key, direction: 'asc' }
+      })
+    },
+    [],
+  )
 
   return (
     <div className="flex flex-col gap-5 w-full">
