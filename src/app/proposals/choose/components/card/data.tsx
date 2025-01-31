@@ -25,8 +25,8 @@ export const cardData: Record<ProposalType, Card> = {
   },
   Activation: {
     id: 2,
-    title: 'Builder Activation',
-    description: 'Community vote to add a Builder to the whitelist, granting access to rewards',
+    title: 'JOIN BUILDER REWARDS',
+    description: 'Community vote to add a Builder, granting access to Rewards',
     image: activationImage,
     contract: 'BuilderRegistryAbi',
     action: 'communityApproveBuilder',
@@ -34,7 +34,7 @@ export const cardData: Record<ProposalType, Card> = {
   Deactivation: {
     id: 3,
     title: 'Builder Deactivation',
-    description: 'Community vote to remove a Builder from the whitelist, removing access to rewards',
+    description: 'Community vote to remove a Builder’s access to rewards',
     image: deactivationImage,
     contract: 'BuilderRegistryAbi',
     action: 'dewhitelistBuilder',
