@@ -74,7 +74,7 @@ export interface CommunityData {
   /**
    * Necessary amount of StRIFs to get a reward NFT
    */
-  stRifThreshold: bigint | undefined
+  stRifThreshold?: bigint
   isLoading: boolean
 }
 
