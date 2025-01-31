@@ -4,7 +4,7 @@ import { useMemo, useCallback } from 'react'
 import { StakeRIF } from '../StakeRIF'
 import { useStakingContext } from '../StakingContext'
 import { StepProps } from '../types'
-import Big from 'big.js'
+import Big from '@/lib/big'
 
 export const StepOne = ({ onGoNext = () => {} }: StepProps) => {
   const { amount, onAmountChange, tokenToSend, actionName } = useStakingContext()
