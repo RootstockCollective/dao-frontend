@@ -1,5 +1,5 @@
 import { HTMLAttributes, useState, useRef } from 'react'
-import { motion, AnimatePresence } from 'framer-motion'
+import { motion, AnimatePresence } from 'motion/react'
 import { ChevronDown, X, ChevronRight } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { HeaderTitle, Typography } from '@/components/Typography'
