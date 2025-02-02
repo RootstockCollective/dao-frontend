@@ -50,14 +50,6 @@ export function useProposalListData({ proposals }: Props) {
     })),
   }) as { data?: Array<{ result: bigint }> }
 
-  const { data: proposalDeadline } = useReadContracts({
-    contracts: proposals?.map(proposal => ({
-      ...governor,
-      functionName: 'proposalDeadline',
-      args: [BigInt(proposal.args.proposalId)],
-    })),
-  }) as { data?: Array<{ result: string }> }
-
   const { data: state } = useReadContracts({
     contracts: proposals?.map(proposal => ({
       ...governor,
@@ -73,7 +65,7 @@ export function useProposalListData({ proposals }: Props) {
         const againstVotes = Big(votes?.at(0) ?? 0)
         const forVotes = Big(votes?.at(1) ?? 0)
         const abstainVotes = Big(votes?.at(2) ?? 0)
-        const deadlineBlock = Big(proposalDeadline?.[i]?.result ?? 0)
+        const deadlineBlock = Big(proposal.args.voteEnd.toString())
         const creationBlock = Number(proposal.blockNumber)
         const eventArgs = getEventArguments(proposal as unknown as EventArgumentsParameter)
         return {
@@ -87,12 +79,12 @@ export function useProposalListData({ proposals }: Props) {
           blocksUntilClosure: deadlineBlock.minus(latestBlockNumber?.toString() || 0),
           votingPeriod: deadlineBlock.minus(creationBlock),
           quorumAtSnapshot: Big(formatEther(quorum?.[i].result ?? 0n)).round(undefined, Big.roundHalfEven),
-          proposalDeadline: Big(proposalDeadline?.[i].result ?? 0),
+          proposalDeadline: deadlineBlock,
           proposalState: ProposalState[Big(state?.[i].result?.toString() ?? 0).toNumber()],
           ...eventArgs,
         }
       }) ?? [],
-    [latestBlockNumber, proposalDeadline, proposalVotes, proposals, quorum, state],
+    [latestBlockNumber, proposalVotes, proposals, quorum, state],
   )
 }
 
