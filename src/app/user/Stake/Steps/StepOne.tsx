@@ -4,15 +4,19 @@ import { useMemo, useCallback } from 'react'
 import { StakeRIF } from '../StakeRIF'
 import { useStakingContext } from '../StakingContext'
 import { StepProps } from '../types'
+import Big from '@/lib/big'
 
 export const StepOne = ({ onGoNext = () => {} }: StepProps) => {
   const { amount, onAmountChange, tokenToSend, actionName } = useStakingContext()
 
   const { isCanAccountWithdrawLoading, canAccountWithdraw, backerTotalAllocation } =
-    useCanAccountUnstakeAmount(Number(amount).toString(), tokenToSend.balance)
+    useCanAccountUnstakeAmount(amount, tokenToSend.balance)
 
   const balanceToCurrency = useMemo(
-    () => Number(tokenToSend.price) * Number(tokenToSend.balance),
+    () =>
+      Big(tokenToSend.price || 0)
+        .mul(tokenToSend.balance)
+        .toString(),
     [tokenToSend],
   )
 
@@ -23,7 +27,8 @@ export const StepOne = ({ onGoNext = () => {} }: StepProps) => {
       } else {
         const regex = /^\d*\.?\d{0,18}$/
         if (regex.test(value)) {
-          onAmountChange(value)
+          // remove leading zeros
+          onAmountChange(value.replace(/^0+(?=\d)/, ''))
         }
       }
     },
@@ -39,13 +44,12 @@ export const StepOne = ({ onGoNext = () => {} }: StepProps) => {
         requestAnimationFrame(() => {
           onAmountChange(balance)
         })
-        return
+      } else {
+        // For other percentages, calculate with precision
+        const rawAmount = Big(balance).mul(percentage).div(100)
+        const displayAmount = rawAmount.toString()
+        onAmountChange(displayAmount)
       }
-
-      // For other percentages, calculate with precision
-      const rawAmount = Number(balance) * (percentage / 100)
-      const displayAmount = rawAmount.toString()
-      onAmountChange(displayAmount)
     },
     [tokenToSend.balance, onAmountChange],
   )
@@ -54,10 +58,10 @@ export const StepOne = ({ onGoNext = () => {} }: StepProps) => {
     if (!amount || Number(amount) <= 0) return false
 
     // Compare with precision for validation
-    const rawAmount = Number(amount)
-    const rawBalance = Number(tokenToSend.balance)
+    const rawAmount = Big(amount)
+    const rawBalance = Big(tokenToSend.balance)
 
-    if (rawAmount > rawBalance) return false
+    if (rawAmount.gt(rawBalance)) return false
     if (actionName === 'UNSTAKE' && !canAccountWithdraw) return false
 
     return true
