@@ -64,8 +64,8 @@ export const DelegationSection = () => {
     <div className="mb-6">
       {/* Header Components*/}
       <div className="flex flex-row justify-between mb-6">
-        <HeaderTitle>DELEGATION</HeaderTitle>
-        <div className="flex flex-row">
+        <HeaderTitle className="w-[80%]">DELEGATION</HeaderTitle>
+        <div className="flex flex-row w-[20%] pl-3">
           <Button variant="outlined" onClick={() => setIsDelegateModalOpened(true)} data-testid="Delegate">
             Delegate
           </Button>
