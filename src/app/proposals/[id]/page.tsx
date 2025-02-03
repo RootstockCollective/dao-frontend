@@ -18,7 +18,6 @@ import {
 } from '@/app/proposals/shared/supportedABIs'
 import { DecodedData, getEventArguments, splitCombinedName } from '@/app/proposals/shared/utils'
 import { useAlertContext } from '@/app/providers'
-import { formatBalanceToHuman } from '@/app/user/Balances/balanceUtils'
 import { useModal } from '@/app/user/Balances/hooks/useModal'
 import { AddressOrAlias as AddressComponent } from '@/components/Address'
 import {
@@ -52,6 +51,7 @@ import { VoteSubmittedModal } from '@/components/Modal/VoteSubmittedModal'
 import { ProposalState } from '@/shared/types'
 import { isUserRejectedTxError } from '@/components/ErrorPage/commonErrors'
 import Big from '@/lib/big'
+import { formatUnits } from 'ethers'
 
 export default function ProposalView() {
   const { id } = useParams<{ id: string }>() ?? {}
@@ -647,7 +647,7 @@ const AddressInputComponent: InputValueComponent<'address'> = ({ value, htmlProp
 )
 
 const BigIntInputComponent: InputValueComponent<'bigint'> = ({ value, htmlProps }) => (
-  <Span {...(htmlProps as any)}>{formatNumberWithCommas(formatBalanceToHuman(value))}</Span>
+  <Span {...(htmlProps as any)}>{formatNumberWithCommas(formatUnits(value))}</Span>
 )
 
 const ERC20InputComponent: InputValueComponent<'bigint'> = ({ value, htmlProps }) => (
