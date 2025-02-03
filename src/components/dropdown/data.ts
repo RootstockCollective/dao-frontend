@@ -1,14 +1,14 @@
 import { BulbIcon } from './icons/bulb'
 import { KycIcon } from './icons/kyc'
 
-interface Item {
+export interface DropdownItem {
   id: string
   Icon: typeof BulbIcon
   title: string
   text: string
   linkUrl: string
 }
-export const dropdownItemsData: Item[] = [
+export const prepareProposalsData: DropdownItem[] = [
   {
     id: '1',
     Icon: BulbIcon,
