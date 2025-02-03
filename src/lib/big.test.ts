@@ -265,6 +265,25 @@ describe('Why big.js', () => {
       })
     })
 
+    describe('Decimal Multiplication Precision Loss', () => {
+      it('shows precision loss in decimal multiplication', () => {
+        const num1 = '0.05892520326157074'
+        const num2 = '0.07891234567891234'
+
+        // Using Number
+        const numberResult = Number(num1) * Number(num2)
+
+        // Using Big.js
+        const bigJsResult = new Big(num1).mul(num2)
+
+        console.log('Number result:', numberResult)
+        console.log('Big.js result:', bigJsResult.toString())
+
+        expect(numberResult.toString()).not.toBe(bigJsResult.toString())
+        expect(numberResult.toString().length).toBeLessThan(bigJsResult.toString().length)
+      })
+    })
+
     describe('Scientific Notation', () => {
       it('should handle scientific notation in Big.js but fail in BigInt', () => {
         const scientificNum = '1.23456789e+20'
