@@ -9,12 +9,10 @@ export interface TokenInfo {
   decimals?: string
 }
 
-const tokensToQuery = {
-  [tokenContracts.RIF]: tokenContracts.RIF,
-  [tokenContracts.stRIF]: tokenContracts.stRIF,
-}
-
-const tokenAddresses = Object.values(tokensToQuery) as Address[]
+/**
+ * These tokens are the ones that are queried - in case more are needed add here
+ */
+const tokenAddresses = [tokenContracts.RIF, tokenContracts.stRIF] as Address[]
 
 async function getTokenData() {
   const contractCallsPromises = tokenAddresses.map(tokenAddress => {
