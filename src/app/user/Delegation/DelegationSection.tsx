@@ -66,7 +66,12 @@ export const DelegationSection = () => {
       <div className="flex flex-row justify-between mb-6">
         <HeaderTitle className="w-[80%]">DELEGATION</HeaderTitle>
         <div className="flex flex-row w-[20%] pl-3">
-          <Button variant="outlined" onClick={() => setIsDelegateModalOpened(true)} data-testid="Delegate">
+          <Button
+            variant="outlined"
+            onClick={() => setIsDelegateModalOpened(true)}
+            buttonProps={{ style: { width: '93px' } }}
+            data-testid="Delegate"
+          >
             Delegate
           </Button>
           <DelegatePopover />
@@ -88,7 +93,7 @@ export const DelegationSection = () => {
 
 const DelegatePopover = () => (
   <Popover
-    className="self-center"
+    className="self-center ml-1"
     position="left-top"
     content={
       <>
