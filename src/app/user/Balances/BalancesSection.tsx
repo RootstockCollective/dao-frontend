@@ -34,7 +34,7 @@ const data = [
   },
 ]
 
-type BalancesSectionProps = {
+interface BalancesSectionProps {
   showBuilderButton?: boolean
 }
 

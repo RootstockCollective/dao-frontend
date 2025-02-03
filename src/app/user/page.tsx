@@ -14,7 +14,7 @@ import { useAccount } from 'wagmi'
 import { useIsBuilderOrBacker } from '../collective-rewards/rewards/hooks/useIsBuilderOrBacker'
 import { useHandleErrors } from '../collective-rewards/utils'
 
-type MyHoldingsProps = {
+interface MyHoldingsProps {
   showBuilderButton?: boolean
 }
 
