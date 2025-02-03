@@ -7,6 +7,9 @@ import { fetchIpfsUri } from '@/app/user/Balances/actions'
 import { NftMeta, CommunityData } from '../types'
 import { config } from '@/config'
 import Big from '@/lib/big'
+import { useQuery } from '@tanstack/react-query'
+import { axiosInstance } from '@/lib/utils'
+import { NftDataFromAddressesReturnType } from '@/app/user/api/communities/route'
 
 /**
  * Hook for loading NFT metadata from IPFS
@@ -42,39 +45,50 @@ export const useContractData = (nftAddress?: Address) => {
     address &&
       nftAddress && {
         contracts: [
-          { ...contract, functionName: 'totalSupply' },
-          { ...contract, functionName: 'tokensAvailable' },
           { ...contract, functionName: 'balanceOf', args: [address] },
-          { ...contract, functionName: 'name' },
-          { ...contract, functionName: 'symbol' },
-          { ...contract, functionName: 'stRifThreshold' },
           { ...contract, functionName: 'tokenOfOwnerByIndex', args: [address, BigInt(0)] }, // Only one token per address is assumed
         ],
       },
   )
   const { data: URI } = useReadContracts(
-    address && nftAddress && data?.[6].result
+    address && nftAddress && data?.[1].result
       ? {
-          contracts: [{ ...contract, functionName: 'tokenURI', args: [data[6].result] }],
+          contracts: [{ ...contract, functionName: 'tokenURI', args: [data[1].result] }],
         }
       : {},
   )
 
+  const { data: nftData = {} } = useQuery({
+    queryKey: ['nftInfo'],
+    queryFn: () =>
+      axiosInstance
+        .get<NftDataFromAddressesReturnType>('/user/api/communities', { baseURL: '/' })
+        .then(({ data }) => data),
+  })
+
   return useMemo(() => {
-    const [membersCount, tokensAvailable, balanceOf, nftName, symbol, stRifThreshold, tokenId] = data ?? []
+    const [balanceOf, tokenId] = data ?? []
+    const {
+      totalSupply: membersCount = 0,
+      tokensAvailable = 0,
+      name: nftName,
+      symbol,
+      stRifThreshold,
+    } = nftAddress && nftAddress in nftData ? nftData[nftAddress] : {}
+
     return {
       refetch,
-      membersCount: Big(membersCount?.result?.toString() ?? 0).toNumber(),
-      tokensAvailable: Big(tokensAvailable?.result?.toString() ?? 0).toNumber(),
+      membersCount: Number(membersCount),
+      tokensAvailable: Number(tokensAvailable),
       isMember: Big(balanceOf?.result?.toString() ?? 0).gt(0),
       tokenId: typeof tokenId?.result === 'bigint' ? Number(tokenId.result) : undefined,
-      nftName: nftName?.result,
-      nftSymbol: symbol?.result,
+      nftName: nftName,
+      nftSymbol: symbol,
       nftUri: URI?.[0].result,
+      stRifThreshold: stRifThreshold ? BigInt(stRifThreshold) : undefined,
       isLoading,
-      stRifThreshold: stRifThreshold?.result,
     }
-  }, [data, refetch, isLoading, URI])
+  }, [data, nftData, nftAddress, refetch, URI, isLoading])
 }
 
 /**
