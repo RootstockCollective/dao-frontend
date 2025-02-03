@@ -86,6 +86,8 @@ export const getEventArguments = ({
   timeStamp,
   blockNumber,
 }: EventArgumentsParameter) => {
+  const { name, description: parsedDescription } = parseProposalDescription(description)
+
   const calldatasParsed = calldatas.reduce<DecodedData[]>((acc, cd, index) => {
     try {
       const decodedData = tryDecode(cd)
@@ -113,9 +115,9 @@ export const getEventArguments = ({
   }, [])
 
   return {
-    name: description.split(';')[0],
+    name: name,
     proposer,
-    description: description.split(';')[1],
+    description: parsedDescription,
     proposalId: proposalId.toString(),
     Starts: moment(parseInt(timeStamp, 16) * 1000),
     calldatasParsed,
@@ -151,4 +153,58 @@ export const isChecksumValid = (value: string, chainId?: string) => {
     value === value.toLowerCase() ||
     checksumAddress(value as Address, chainId ? Number(chainId) : undefined) === value
   )
+}
+
+type ProposalSource = 'DAO' | 'TALLY' | 'UNKNOWN'
+interface ParsedDescription {
+  name: string
+  description: string
+  source: ProposalSource
+}
+
+export const parseProposalDescription = (description: string): ParsedDescription => {
+  // Constants
+  const MAX_NAME_LENGTH = 100
+  const TALLY_DOUBLE_SPACE = '  ' // Tally uses double spaces to separate name and description
+
+  // Default result
+  let result: ParsedDescription = {
+    name: '',
+    description: description,
+    source: 'UNKNOWN',
+  }
+
+  // Check if it's our DAO format (contains semicolon)
+  if (description.includes(';')) {
+    const [name, ...rest] = description.split(';')
+    return {
+      name: name.substring(0, MAX_NAME_LENGTH),
+      description: rest.join(';').trim(),
+      source: 'DAO',
+    }
+  }
+
+  // Check if it's from Tally (contains double spaces)
+  if (description.includes(TALLY_DOUBLE_SPACE)) {
+    // Extract first line or sentence as name
+    const firstLineBreak = description.indexOf('\n')
+    const firstPeriod = description.indexOf('.')
+    const nameEndIndex = Math.min(
+      firstLineBreak > -1 ? firstLineBreak : Infinity,
+      firstPeriod > -1 ? firstPeriod : Infinity,
+    )
+
+    return {
+      name: description.substring(0, nameEndIndex).substring(0, MAX_NAME_LENGTH),
+      description: description,
+      source: 'TALLY',
+    }
+  }
+
+  // Unknown source - use first N chars as name
+  return {
+    name: description.substring(0, MAX_NAME_LENGTH),
+    description: description,
+    source: 'UNKNOWN',
+  }
 }
