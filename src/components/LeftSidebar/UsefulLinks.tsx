@@ -1,4 +1,3 @@
-import Image from 'next/image'
 import { Paragraph } from '@/components/Typography/Paragraph'
 import { Link } from '@/components/Link'
 import { currentLinks } from '@/components/LeftSidebar/links'
