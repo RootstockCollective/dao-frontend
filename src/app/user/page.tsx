@@ -72,7 +72,6 @@ function User() {
               <TabsTrigger value={tabs.rewards.value}>
                 <TabTitle>{tabs.rewards.title}</TabTitle>
               </TabsTrigger>
-              <BecomeABuilderButton address={address!} />
             </TabsList>
             <BecomeABuilderButton address={address!} />
           </div>
