@@ -50,37 +50,52 @@ const LatestProposalsTable = ({ proposals }: LatestProposalsTableProps) => {
 
   // State for proposal quick filters
   const [activeFilter, setActiveFilter] = useState<string | null>(null)
-
+  // Ref to store the clear function from DebounceSearch
   const clearSearchRef = useRef<() => void>()
+  // Flag to prevent search updates during filter changes
+  const isFilterChanging = useRef(false)
 
+  // Handle filter button clicks
   const handleFilterToggle = useCallback(
     (keyword: string) => () => {
-      if (activeFilter === keyword) {
-        // Reset both states if clicking active filter
+      // Set flag to prevent search from interfering with filter change
+      isFilterChanging.current = true
+      const isDeactivating = activeFilter === keyword
+
+      if (isDeactivating) {
         setActiveFilter(null)
         setSearchedProposal('')
-        clearSearchRef.current?.()
       } else {
-        // Set new filter if clicking different filter
         setActiveFilter(keyword)
         setSearchedProposal(keyword)
-        clearSearchRef.current?.()
       }
     },
     [activeFilter],
   )
 
+  // Effect to clear search input after filter state updates
+  useEffect(() => {
+    if (isFilterChanging.current) {
+      clearSearchRef.current?.()
+      isFilterChanging.current = false
+    }
+  }, [activeFilter, searchedProposal])
+
+  // Handle search input changes
   const handleSearch = useCallback(
     (value: string) => {
-      if (value === '' && activeFilter) {
-        // If there's an active filter, only clear input without changing search state
-        clearSearchRef.current?.()
-        // setSearchedProposal(activeFilter)
+      if (!value) {
+        // Only clear search if no active filter
+        if (!activeFilter) {
+          setSearchedProposal('')
+        }
         return
       }
-      // Only update search if no active filter
-      setSearchedProposal(value)
-      // setActiveFilter(null)
+      // Only update search and clear filter if not in middle of filter change
+      if (!isFilterChanging.current) {
+        setActiveFilter(null)
+        setSearchedProposal(value)
+      }
     },
     [activeFilter],
   )
