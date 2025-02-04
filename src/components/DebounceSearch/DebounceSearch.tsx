@@ -13,6 +13,7 @@ interface ProposalSearchProps {
    * Placeholder text for the search input.
    */
   placeholder: string
+  maxLength?: number
 }
 
 const SPINNER_DEBOUNCE_MS = 300 // Delay after the user stops typing before showing the spinner
@@ -29,7 +30,11 @@ const SEARCH_DEBOUNCE_MS = 700 // Additional delay before finalizing input and c
  * This design ensures the spinner is only displayed after the user stops typing, creating a
  * smooth and responsive UX. It prevents unnecessary actions or spinner flickering while typing.
  */
-export function DebounceSearch({ onSearchSubmit, placeholder = 'Search' }: ProposalSearchProps) {
+export function DebounceSearch({
+  onSearchSubmit,
+  placeholder = 'Search',
+  maxLength = 100,
+}: ProposalSearchProps) {
   const [searchText, setSearchText] = useState('')
   // First debounce runs shortly after user stops typing. It launches spinner
   const [isUserStoppedTyping] = useDebounce(searchText, SPINNER_DEBOUNCE_MS)
@@ -64,6 +69,7 @@ export function DebounceSearch({ onSearchSubmit, placeholder = 'Search' }: Propo
       className="my-5"
       onClear={searchText ? handleClear : undefined}
       loading={isLoading}
+      inputProps={{ maxLength }}
     />
   )
 }
