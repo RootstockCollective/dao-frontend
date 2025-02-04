@@ -1,4 +1,4 @@
-import { useMemo, memo, useState, useEffect, useCallback } from 'react'
+import { useMemo, memo, useState, useEffect, useCallback, useRef } from 'react'
 import {
   createColumnHelper,
   type SortingState,
@@ -51,25 +51,37 @@ const LatestProposalsTable = ({ proposals }: LatestProposalsTableProps) => {
   // State for proposal quick filters
   const [activeFilter, setActiveFilter] = useState<string | null>(null)
 
+  const clearSearchRef = useRef<() => void>()
+
   const handleFilterToggle = useCallback(
     (keyword: string) => () => {
       if (activeFilter === keyword) {
         // Reset both states if clicking active filter
         setActiveFilter(null)
         setSearchedProposal('')
+        clearSearchRef.current?.()
       } else {
         // Set new filter if clicking different filter
         setActiveFilter(keyword)
         setSearchedProposal(keyword)
+        clearSearchRef.current?.()
       }
     },
     [activeFilter],
   )
 
-  const handleSearch = useCallback((value: string) => {
-    setSearchedProposal(value)
-    setActiveFilter(null)
-  }, [])
+  const handleSearch = useCallback(
+    (value: string) => {
+      if (activeFilter) {
+        // If there's an active filter, only clear input without changing search state
+        clearSearchRef.current?.()
+        return
+      }
+      // Only update search if no active filter
+      setSearchedProposal(value)
+    },
+    [activeFilter],
+  )
 
   // Table data definition helper
   const { accessor } = createColumnHelper<(typeof proposalListData)[number]>()
@@ -242,7 +254,13 @@ const LatestProposalsTable = ({ proposals }: LatestProposalsTableProps) => {
           ))}
         </div>
       </div>
-      <DebounceSearch placeholder="Search a proposal" onSearchSubmit={handleSearch} />
+      <DebounceSearch
+        placeholder="Search a proposal"
+        onSearchSubmit={handleSearch}
+        setClearHandler={handler => {
+          clearSearchRef.current = handler
+        }}
+      />
       {filteredProposalList.length > 0 ? (
         <div>
           <StatefulTable
