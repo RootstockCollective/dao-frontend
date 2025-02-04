@@ -72,13 +72,15 @@ const LatestProposalsTable = ({ proposals }: LatestProposalsTableProps) => {
 
   const handleSearch = useCallback(
     (value: string) => {
-      if (activeFilter) {
+      if (value === '' && activeFilter) {
         // If there's an active filter, only clear input without changing search state
         clearSearchRef.current?.()
+        // setSearchedProposal(activeFilter)
         return
       }
       // Only update search if no active filter
       setSearchedProposal(value)
+      // setActiveFilter(null)
     },
     [activeFilter],
   )
