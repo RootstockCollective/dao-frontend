@@ -9,7 +9,7 @@ import {
 } from '@/app/proposals/shared/supportedABIs'
 import { GovernorAbi } from '@/lib/abis/Governor'
 import { formatUnits, ZeroAddress } from 'ethers'
-import { RIF_ADDRESS } from '@/lib/constants'
+import { MAX_NAME_LENGTH_FOR_PROPOSAL, RIF_ADDRESS, TALLY_DESCRIPTION_SEPARATOR } from '@/lib/constants'
 
 export interface EventArgumentsParameter {
   args: {
@@ -162,11 +162,7 @@ interface ParsedDescription {
   source: ProposalSource
 }
 
-export const parseProposalDescription = (description: string): ParsedDescription => {
-  // Constants
-  const MAX_NAME_LENGTH = 100
-  const TALLY_DOUBLE_SPACE = '  ' // Tally uses double spaces to separate name and description
-
+const parseProposalDescription = (description: string): ParsedDescription => {
   // Default result
   let result: ParsedDescription = {
     name: '',
@@ -174,18 +170,18 @@ export const parseProposalDescription = (description: string): ParsedDescription
     source: 'UNKNOWN',
   }
 
-  // Check if it's our DAO format (contains semicolon)
+  // If the proposal description contains semicolon, we will automatically assume it's ours (for now)
   if (description.includes(';')) {
     const [name, ...rest] = description.split(';')
     return {
-      name: name.substring(0, MAX_NAME_LENGTH),
+      name: name.substring(0, MAX_NAME_LENGTH_FOR_PROPOSAL),
       description: rest.join(';').trim(),
       source: 'DAO',
     }
   }
 
   // Check if it's from Tally (contains double spaces)
-  if (description.includes(TALLY_DOUBLE_SPACE)) {
+  if (description.includes(TALLY_DESCRIPTION_SEPARATOR)) {
     // Extract first line or sentence as name
     const firstLineBreak = description.indexOf('\n')
     const firstPeriod = description.indexOf('.')
@@ -195,7 +191,7 @@ export const parseProposalDescription = (description: string): ParsedDescription
     )
 
     return {
-      name: description.substring(0, nameEndIndex).substring(0, MAX_NAME_LENGTH),
+      name: description.substring(0, nameEndIndex).substring(0, MAX_NAME_LENGTH_FOR_PROPOSAL),
       description: description,
       source: 'TALLY',
     }
@@ -203,7 +199,7 @@ export const parseProposalDescription = (description: string): ParsedDescription
 
   // Unknown source - use first N chars as name
   return {
-    name: description.substring(0, MAX_NAME_LENGTH),
+    name: description.substring(0, MAX_NAME_LENGTH_FOR_PROPOSAL),
     description: description,
     source: 'UNKNOWN',
   }
