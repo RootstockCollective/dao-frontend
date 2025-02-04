@@ -1,14 +1,9 @@
-import {
-  useGetBackersRewardPercentage,
-  useGetRewardsCoinbase,
-  useGetRewardsERC20,
-} from '@/app/collective-rewards/rewards'
+import { useGetBackersRewardPercentage } from '@/app/collective-rewards/rewards'
 import { usePricesContext } from '@/shared/context/PricesContext'
 import { useGetBuildersByState } from '@/app/collective-rewards/user'
 import { RequiredBuilder } from '@/app/collective-rewards/types'
-import { useGaugesGetFunction } from '@/app/collective-rewards/shared'
-import { useCycleContext } from '@/app/collective-rewards/metrics'
-import { formatEther, parseUnits } from 'viem'
+import { useGaugesGetFunction, useGetCyclePayout } from '@/app/collective-rewards/shared'
+import { formatEther } from 'viem'
 import { useMemo } from 'react'
 
 export const useGetABI = () => {
@@ -23,19 +18,6 @@ export const useGetABI = () => {
     revoked: false,
   })
 
-  const { data: rifRewards, isLoading: rifRewardsLoading, error: rifRewardsError } = useGetRewardsERC20()
-  const {
-    data: rbtcRewards,
-    isLoading: rbtcRewardsLoading,
-    error: rbtcRewardsError,
-  } = useGetRewardsCoinbase()
-
-  const {
-    data: { cycleNext },
-    isLoading: cycleLoading,
-    error: cycleError,
-  } = useCycleContext()
-
   const gauges = builders.map(({ gauge }) => gauge)
   const {
     data: totalAllocation,
@@ -48,7 +30,8 @@ export const useGetABI = () => {
     data: backersRewardsPct,
     isLoading: backersRewardsPctLoading,
     error: backersRewardsPctError,
-  } = useGetBackersRewardPercentage(buildersAddress, cycleNext.toSeconds())
+  } = useGetBackersRewardPercentage(buildersAddress)
+  const { cyclePayout, isLoading: cyclePayoutLoading, error: cyclePayoutError } = useGetCyclePayout()
 
   const { prices } = usePricesContext()
 
@@ -60,10 +43,6 @@ export const useGetABI = () => {
     }
 
     const rifPrice = prices.RIF?.price ?? 0
-    const rbtcPrice = prices.RBTC?.price ?? 0
-    const rifAmount = Number(formatEther(rifRewards ?? 0n))
-    const rbtcAmount = Number(formatEther(rbtcRewards ?? 0n))
-    const cyclePayout = rifAmount * rifPrice + rbtcAmount * rbtcPrice
 
     if (!rifPrice) {
       return 0
@@ -87,30 +66,18 @@ export const useGetABI = () => {
       (acc, { allocation, current }) => acc + (allocation * current) / sumTotalAllocation,
       0n,
     )
-    const weightedAverageBuilderRewardsPctInEther = Number(formatEther(weightedAverageBuilderRewardsPct))
 
-    const totalAllocationInEther = Number(formatEther(sumTotalAllocation))
-    const rewardsPerStRIFPerCycle =
-      cyclePayout * (weightedAverageBuilderRewardsPctInEther / totalAllocationInEther)
+    const rewardsPerStRIFPerCycle = Number(
+      formatEther((cyclePayout * weightedAverageBuilderRewardsPct) / sumTotalAllocation),
+    )
 
     return (Math.pow(1 + rewardsPerStRIFPerCycle / rifPrice, 26) - 1) * 100
-  }, [backersRewardsPct, builders, prices, rbtcRewards, rifRewards, totalAllocation])
+  }, [backersRewardsPct, builders, cyclePayout, prices, totalAllocation])
 
   const isLoading =
-    buildersLoading ||
-    rifRewardsLoading ||
-    rbtcRewardsLoading ||
-    cycleLoading ||
-    totalAllocationLoading ||
-    backersRewardsPctLoading
+    buildersLoading || cyclePayoutLoading || totalAllocationLoading || backersRewardsPctLoading
 
-  const error =
-    buildersError ??
-    rifRewardsError ??
-    rbtcRewardsError ??
-    totalAllocationError ??
-    cycleError ??
-    backersRewardsPctError
+  const error = buildersError ?? cyclePayoutError ?? totalAllocationError ?? backersRewardsPctError
 
   return {
     data: abi,

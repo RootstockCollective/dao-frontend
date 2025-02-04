@@ -12,13 +12,10 @@ import { useGaugesGetFunction } from '@/app/collective-rewards/shared'
 import { Address } from 'viem'
 import { usePricesContext } from '@/shared/context/PricesContext'
 import { useGetBuildersByState } from '@/app/collective-rewards//user'
-import { BuilderStateFlags, RequiredBuilder } from '@/app/collective-rewards/types'
+import { RequiredBuilder } from '@/app/collective-rewards/types'
 import { useMemo } from 'react'
 
-export type BackerRewards = {
-  address: Address
-  builderName: string
-  stateFlags: BuilderStateFlags
+export type BackerRewards = RequiredBuilder & {
   totalAllocationPercentage: bigint
   rewardPercentage: BackerRewardPercentage
   estimatedRewards: TokenRewards
@@ -87,7 +84,8 @@ export const useGetBackerRewards = (
   const rbtcPrice = prices[rbtc.symbol]?.price ?? 0
 
   const data = useMemo(() => {
-    return builders.reduce<BackerRewards[]>((acc, { address, builderName, gauge, stateFlags }) => {
+    return builders.reduce<BackerRewards[]>((acc, builder) => {
+      const { address, gauge } = builder
       const builderTotalAllocation = totalAllocation[gauge] ?? 0n
       const backerAllocationOf = allocationOf[gauge] ?? 0n
       const totalAllocationPercentage = builderTotalAllocation
@@ -109,9 +107,7 @@ export const useGetBackerRewards = (
         return [
           ...acc,
           {
-            address,
-            builderName,
-            stateFlags,
+            ...builder,
             totalAllocationPercentage,
             rewardPercentage,
             estimatedRewards: {
