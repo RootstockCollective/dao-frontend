@@ -35,19 +35,14 @@ const data = [
   },
 ]
 
-interface BalancesSectionProps {
-  showBuilderButton?: boolean
+interface Props {
+  showTitle?: boolean
 }
-
-export const BalancesSection = ({ showBuilderButton }: BalancesSectionProps) => {
-  const { address } = useAccount()
+export const BalancesSection = ({ showTitle = false }: Props) => {
   return (
     <div className="mb-[32px]">
-      <div className="row-container">
-        <HeaderTitle className="mb-6">Balances</HeaderTitle>
-        {showBuilderButton && <BecomeABuilderButton address={address!} />}
-      </div>
       <BalancesProvider>
+        {showTitle ? <HeaderTitle className="mb-6">Balances</HeaderTitle> : null}
         <StakingModal />
         <UnStakingModal />
         <Table data={data} />
