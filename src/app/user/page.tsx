@@ -1,6 +1,5 @@
 'use client'
 import { Rewards } from '@/app/collective-rewards/rewards/MyRewards'
-import { withBuilderButton } from '@/app/collective-rewards/user'
 import { BalancesSection } from '@/app/user/Balances/BalancesSection'
 import { CommunitiesSection } from '@/app/user/Communities/CommunitiesSection'
 import { DelegationSection } from '@/app/user/Delegation'
@@ -13,6 +12,7 @@ import { zeroAddress } from 'viem'
 import { useAccount } from 'wagmi'
 import { useIsBuilderOrBacker } from '../collective-rewards/rewards/hooks/useIsBuilderOrBacker'
 import { useHandleErrors } from '../collective-rewards/utils'
+import { BecomeABuilderButton } from '../collective-rewards/user'
 
 interface MyHoldingsProps {
   showBuilderButton?: boolean
@@ -26,8 +26,6 @@ const MyHoldings = ({ showBuilderButton = false }: MyHoldingsProps) => (
     <CommunitiesSection />
   </>
 )
-
-const TabsListWithButton = withBuilderButton(TabsList)
 
 const values = ['holdings', 'rewards'] as const
 type TabValue = (typeof values)[number]
@@ -66,14 +64,18 @@ function User() {
       {/* We don't show the tab if it's loading */}
       {!isLoading && isBuilderOrBacker ? (
         <Tabs defaultValue={defaultTabValue}>
-          <TabsListWithButton>
-            <TabsTrigger value={tabs.holdings.value}>
-              <TabTitle>{tabs.holdings.title}</TabTitle>
-            </TabsTrigger>
-            <TabsTrigger value={tabs.rewards.value}>
-              <TabTitle>{tabs.rewards.title}</TabTitle>
-            </TabsTrigger>
-          </TabsListWithButton>
+          <div className="row-container">
+            <TabsList>
+              <TabsTrigger value={tabs.holdings.value}>
+                <TabTitle>{tabs.holdings.title}</TabTitle>
+              </TabsTrigger>
+              <TabsTrigger value={tabs.rewards.value}>
+                <TabTitle>{tabs.rewards.title}</TabTitle>
+              </TabsTrigger>
+              <BecomeABuilderButton address={address!} />
+            </TabsList>
+            <BecomeABuilderButton address={address!} />
+          </div>
           <TabsContent value={tabs.holdings.value}>
             <MyHoldings />
           </TabsContent>

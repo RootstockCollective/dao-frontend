@@ -50,7 +50,7 @@ TabsTrigger.displayName = TabsPrimitive.Trigger.displayName
 
 const TabsContent = TabsPrimitive.Content
 
-type TabTitleProps = {
+interface TabTitleProps {
   children: ReactNode
 }
 

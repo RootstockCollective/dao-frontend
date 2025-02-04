@@ -51,3 +51,7 @@
 body {
   @apply text-text-primary bg-background;
 }
+
+.row-container {
+  @apply flex justify-between items-center self-stretch mb-6;
+}
