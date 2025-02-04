@@ -246,7 +246,7 @@ const LatestProposalsTable = ({ proposals }: LatestProposalsTableProps) => {
             <Button
               key={keyword}
               className={`text-white text-sm font-thin border-[#ffff] h-[32px] hover:bg-[#e56b1a] hover:bg-opacity-40 hover:border-[#e56b1a]
-              ${activeFilter === keyword ? 'bg-[#e56b1a] border-[#e56b1a]' : 'bg-transparent'}
+              ${activeFilter === keyword ? 'bg-[#e56b1a] border-[#e56b1a] hover:bg-opacity-100' : 'bg-transparent'}
               `}
               variant="secondary"
               onClick={handleFilterToggle(keyword)}
