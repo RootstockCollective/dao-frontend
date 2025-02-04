@@ -9,7 +9,7 @@ import {
 } from '@/app/proposals/shared/supportedABIs'
 import { GovernorAbi } from '@/lib/abis/Governor'
 import { formatUnits, ZeroAddress } from 'ethers'
-import { RIF_ADDRESS } from '@/lib/constants'
+import { MAX_NAME_LENGTH_FOR_PROPOSAL, RIF_ADDRESS, TALLY_DESCRIPTION_SEPARATOR } from '@/lib/constants'
 
 export interface EventArgumentsParameter {
   args: {
@@ -86,6 +86,8 @@ export const getEventArguments = ({
   timeStamp,
   blockNumber,
 }: EventArgumentsParameter) => {
+  const { name, description: parsedDescription } = parseProposalDescription(description)
+
   const calldatasParsed = calldatas.reduce<DecodedData[]>((acc, cd, index) => {
     try {
       const decodedData = tryDecode(cd)
@@ -113,9 +115,9 @@ export const getEventArguments = ({
   }, [])
 
   return {
-    name: description.split(';')[0],
+    name: name,
     proposer,
-    description: description.split(';')[1],
+    description: parsedDescription,
     proposalId: proposalId.toString(),
     Starts: moment(parseInt(timeStamp, 16) * 1000),
     calldatasParsed,
@@ -151,4 +153,54 @@ export const isChecksumValid = (value: string, chainId?: string) => {
     value === value.toLowerCase() ||
     checksumAddress(value as Address, chainId ? Number(chainId) : undefined) === value
   )
+}
+
+type ProposalSource = 'DAO' | 'TALLY' | 'UNKNOWN'
+interface ParsedDescription {
+  name: string
+  description: string
+  source: ProposalSource
+}
+
+const parseProposalDescription = (description: string): ParsedDescription => {
+  // Default result
+  let result: ParsedDescription = {
+    name: '',
+    description: description,
+    source: 'UNKNOWN',
+  }
+
+  // If the proposal description contains semicolon, we will automatically assume it's ours (for now)
+  if (description.includes(';')) {
+    const [name, ...rest] = description.split(';')
+    return {
+      name: name.substring(0, MAX_NAME_LENGTH_FOR_PROPOSAL),
+      description: rest.join(';').trim(),
+      source: 'DAO',
+    }
+  }
+
+  // Check if it's from Tally (contains double spaces)
+  if (description.includes(TALLY_DESCRIPTION_SEPARATOR)) {
+    // Extract first line or sentence as name
+    const firstLineBreak = description.indexOf('\n')
+    const firstPeriod = description.indexOf('.')
+    const nameEndIndex = Math.min(
+      firstLineBreak > -1 ? firstLineBreak : Infinity,
+      firstPeriod > -1 ? firstPeriod : Infinity,
+    )
+
+    return {
+      name: description.substring(0, nameEndIndex).substring(0, MAX_NAME_LENGTH_FOR_PROPOSAL),
+      description: description,
+      source: 'TALLY',
+    }
+  }
+
+  // Unknown source - use first N chars as name
+  return {
+    name: description.substring(0, MAX_NAME_LENGTH_FOR_PROPOSAL),
+    description: description,
+    source: 'UNKNOWN',
+  }
 }
