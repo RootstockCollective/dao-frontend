@@ -3,25 +3,22 @@ import { SupportedTokens } from '@/lib/contracts'
 import { Paragraph } from '@/components/Typography'
 import { formatCurrency, formatNumberWithCommas } from '@/lib/utils'
 import { TokenImage } from '@/components/TokenImage'
-import { formatUnits } from 'ethers'
-import Big from '@/lib/big'
+import Big, { round } from '@/lib/big'
 
 interface TokenValueProps {
   symbol: SupportedTokens
-  amount: bigint | number
-  shouldFormatBalance?: boolean
+  amount: string
 }
 
-export const TokenValue = ({ symbol, amount, shouldFormatBalance = false }: TokenValueProps) => {
+export const TokenValue = ({ symbol, amount }: TokenValueProps) => {
   const { prices } = useBalancesContext()
-  const amountFormatted = shouldFormatBalance ? formatUnits(amount) : amount
-  const price = Big(prices[symbol]?.price || 0)
-  const value = price.mul(Big(amountFormatted.toString()))
+  const price = Big(prices[symbol]?.price ?? 0)
+  const value = price.mul(amount)
 
   return (
     <>
       <Paragraph size="small" className="flex flex-row" data-testid={`${symbol}_Balance`}>
-        {formatNumberWithCommas(amountFormatted.toString())} {symbol}
+        {formatNumberWithCommas(round(amount))} {symbol}
         <TokenImage symbol={symbol} className="ml-[8px]" />
       </Paragraph>
       {prices[symbol] && (
