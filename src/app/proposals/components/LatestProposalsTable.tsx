@@ -274,7 +274,7 @@ const LatestProposalsTable = ({ proposals }: LatestProposalsTableProps) => {
       <DebounceSearch
         placeholder="Search a proposal"
         onSearchSubmit={handleSearch}
-        setClearHandler={handler => {
+        onClearHandler={handler => {
           clearSearchRef.current = handler
         }}
       />

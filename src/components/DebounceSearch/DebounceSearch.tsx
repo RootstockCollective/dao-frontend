@@ -18,7 +18,7 @@ interface ProposalSearchProps {
    * Optional function to set the clear handler.
    * This is useful when the parent component needs to clear the search input.
    */
-  setClearHandler?: (handler: () => void) => void
+  onClearHandler?: (handler: () => void) => void
 }
 
 const SPINNER_DEBOUNCE_MS = 300 // Delay after the user stops typing before showing the spinner
@@ -38,7 +38,7 @@ const SEARCH_DEBOUNCE_MS = 700 // Additional delay before finalizing input and c
 export function DebounceSearch({
   onSearchSubmit,
   placeholder = 'Search',
-  setClearHandler,
+  onClearHandler,
 }: ProposalSearchProps) {
   const [searchText, setSearchText] = useState('')
   // First debounce runs shortly after user stops typing. It launches spinner
@@ -64,9 +64,7 @@ export function DebounceSearch({
     setSearchText(val)
   }
   useEffect(() => {
-    if (setClearHandler) {
-      setClearHandler(handleClear)
-    }
+    onClearHandler?.(handleClear)
   }, [])
   return (
     <Input
