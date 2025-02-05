@@ -29,7 +29,7 @@ export const infoPanelData: Record<ProposalType, MustHave> = {
         ),
         LinkText: props => (
           <span {...props}>
-            Learn about the ecosystem goals and steps on how to submit a <strong>Grant</strong> proposal
+            Learn about the ecosystem goals <strong>for Grants</strong>
           </span>
         ),
         linkUrl: 'https://rootstockcollective.xyz/submitting-a-grant-proposal/',
@@ -76,8 +76,7 @@ export const infoPanelData: Record<ProposalType, MustHave> = {
         ),
         LinkText: props => (
           <span {...props}>
-            Learn about the ecosystem goals and steps on how to submit a <strong>Builder Activation</strong>{' '}
-            proposal
+            Learn about the ecosystem goals for <strong>Builder Activations</strong>
           </span>
         ),
         linkUrl: 'https://rootstockcollective.xyz/collective-rewards-become-a-builder/',

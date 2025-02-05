@@ -41,7 +41,8 @@ export function InfoPanel({ proposal, className }: InfoPanelProps) {
                   href={linkUrl}
                 >
                   <LinkText className="inline text-lg font-[500] leading-tight text-primary" />
-                  <LinkArrow className="h-[22px] ml-1 inline" />
+                  &nbsp;
+                  <LinkArrow />
                 </a>
               </li>
             ))}
