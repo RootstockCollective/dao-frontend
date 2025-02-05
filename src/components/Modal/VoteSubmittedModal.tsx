@@ -1,3 +1,4 @@
+import { splitCombinedName } from '@/app/proposals/shared/utils'
 import { Button } from '@/components/Button'
 import { Modal } from '@/components/Modal/Modal'
 import { Header, Paragraph } from '@/components/Typography'
@@ -31,7 +32,9 @@ export const VoteSubmittedModal: FC<Props> = ({ onClose, proposal, vote }) => {
         <div className="mt-8">
           <div className="flex justify-between items-center mb-2">
             <span className="w-1/3 text-sm">Proposal</span>
-            <span className="w-2/3 text-sm truncate text-right">{proposal.name}</span>
+            <span className="w-2/3 text-sm truncate text-right">
+              {splitCombinedName(proposal.name).proposalName}
+            </span>
           </div>
           <div className="flex justify-between items-center mb-2">
             <span className="w-1/3 text-sm">Proposal ID</span>
