@@ -1,7 +1,7 @@
 import { cn } from '@/lib/utils'
 import Image from 'next/image'
 
-interface Props {
+export interface TokenImageProps {
   symbol: string
   size?: number
   className?: string
@@ -32,7 +32,7 @@ export const getIconSource = (symbol: string | undefined): string | null => {
   }
 }
 
-export const TokenImage = ({ symbol, size = 16, className }: Props) => {
+export const TokenImage = ({ symbol, size = 16, className }: TokenImageProps) => {
   const imageSource = getIconSource(symbol)
   if (!imageSource) {
     return null
