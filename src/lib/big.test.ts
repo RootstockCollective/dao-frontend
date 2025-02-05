@@ -1,4 +1,4 @@
-import Big from '@/lib/big'
+import Big, { round } from '@/lib/big'
 import { describe, expect, it } from 'vitest'
 
 describe('max', () => {
@@ -244,6 +244,65 @@ describe('.toFixedNoTrailing', () => {
   it('handles zero', () => {
     const num = new Big('0')
     expect(num.toFixedNoTrailing(4)).toBe('0')
+  })
+})
+
+describe('round', () => {
+  it('should round removing decimal places', () => {
+    expect(round(123.456)).toBe('123')
+  })
+  it('should round keeping 1 decimal place', () => {
+    expect(round(123.456, 1)).toBe('123.5')
+  })
+  it('should round keeping 2 decimal places', () => {
+    expect(round(123.456, 2)).toBe('123.46')
+  })
+  it('should round up with no decimal places', () => {
+    expect(round(123.001, 0, Big.roundUp)).toBe('124')
+    expect(round(123.456, 0, Big.roundUp)).toBe('124')
+    expect(round(123.999, 0, Big.roundUp)).toBe('124')
+  })
+  it('should round up with 1 decimal place', () => {
+    expect(round(123.456, 1, Big.roundUp)).toBe('123.5')
+  })
+  it('should round up with 2 decimal places', () => {
+    expect(round(123.456, 2, Big.roundUp)).toBe('123.46')
+  })
+  it('should round down with no decimal places', () => {
+    expect(round(123.001, 0, Big.roundDown)).toBe('123')
+    expect(round(123.456, 0, Big.roundDown)).toBe('123')
+    expect(round(123.999, 0, Big.roundDown)).toBe('123')
+  })
+  it('should round down with 1 decimal place', () => {
+    expect(round(123.456, 1, Big.roundDown)).toBe('123.4')
+  })
+  it('should round down with 2 decimal places', () => {
+    expect(round(123.456, 2, Big.roundDown)).toBe('123.45')
+  })
+  it('should round half up with no decimal places', () => {
+    expect(round(123.001, 0, Big.roundHalfUp)).toBe('123')
+    expect(round(123.49, 0, Big.roundHalfUp)).toBe('123')
+    expect(round(123.5, 0, Big.roundHalfUp)).toBe('124')
+    expect(round(123.51, 0, Big.roundHalfUp)).toBe('124')
+    expect(round(123.999, 0, Big.roundHalfUp)).toBe('124')
+  })
+  it('should round half up with 1 decimal place', () => {
+    expect(round(123.55, 1, Big.roundHalfUp)).toBe('123.6')
+  })
+  it('should round half up with 2 decimal places', () => {
+    expect(round(123.555, 2, Big.roundHalfUp)).toBe('123.56')
+  })
+  it('should round even with no decimal places', () => {
+    expect(round(123.49, 0, Big.roundHalfEven)).toBe('123')
+    expect(round(123.5, 0, Big.roundHalfEven)).toBe('124')
+    expect(round(124.5, 0, Big.roundHalfEven)).toBe('124')
+    expect(round(124.51, 0, Big.roundHalfEven)).toBe('125')
+  })
+  it('should round even with 1 decimal place', () => {
+    expect(round(123.549, 1, Big.roundHalfEven)).toBe('123.5')
+    expect(round(123.55, 1, Big.roundHalfEven)).toBe('123.6')
+    expect(round(123.65, 1, Big.roundHalfEven)).toBe('123.6')
+    expect(round(123.651, 1, Big.roundHalfEven)).toBe('123.7')
   })
 })
 
