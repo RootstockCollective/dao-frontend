@@ -16,11 +16,11 @@ interface Props extends HTMLAttributes<HTMLDivElement> {
   itemsData: DropdownItem[]
 }
 
-interface IDropdownItemComponent extends Omit<DropdownItem, 'linkUrl'> {
+interface DropdownItemProps extends Omit<DropdownItem, 'linkUrl'> {
   onClick: () => void
 }
 
-export const DropdownItemComponent = ({ id, onClick, title, text, Icon }: IDropdownItemComponent) => {
+export const DropdownItemComponent = ({ id, onClick, title, text, Icon }: DropdownItemProps) => {
   return (
     <div
       key={id}
