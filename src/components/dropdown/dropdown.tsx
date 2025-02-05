@@ -1,4 +1,4 @@
-import { HTMLAttributes, useState, useRef } from 'react'
+import { HTMLAttributes, useState, useRef, useCallback } from 'react'
 import { motion, AnimatePresence } from 'motion/react'
 import { ChevronDown, X, ChevronRight } from 'lucide-react'
 import { cn } from '@/lib/utils'
@@ -14,13 +14,14 @@ interface Props extends HTMLAttributes<HTMLDivElement> {
   title: string
   description: string
   itemsData: DropdownItem[]
+  footer?: string
 }
 
 interface DropdownItemProps extends Omit<DropdownItem, 'linkUrl'> {
   onClick: () => void
 }
 
-export const DropdownItemComponent = ({ id, onClick, title, text, Icon }: DropdownItemProps) => {
+export const DropdownItemComponent = ({ id, onClick, title, text, Icon, TitleIcon }: DropdownItemProps) => {
   return (
     <div
       key={id}
@@ -32,9 +33,14 @@ export const DropdownItemComponent = ({ id, onClick, title, text, Icon }: Dropdo
       <div className="flex items-center justify-center">
         <Icon />
       </div>
-      <div className="flex-grow flex flex-col gap-1">
-        <Typography className="text-[15px] leading-none text-[#171412]">{title}</Typography>
-        <Typography className="max-w-[230px] text-[12px] leading-none text-[#66605C]">{text}</Typography>
+      <div className="flex flex-grow flex-col gap-1">
+        <div className="flex flex-row">
+          <Typography className="text-[14px] leading-none text-[#171412] font-bold">{title}</Typography>
+          {TitleIcon ? <TitleIcon size={16} className="ml-1" /> : null}
+        </div>
+        {text ? (
+          <Typography className="max-w-[230px] text-[12px] leading-none text-[#66605C]">{text}</Typography>
+        ) : null}
       </div>
       <div>
         <ChevronRight strokeWidth={1.5} color="black" />
@@ -43,7 +49,7 @@ export const DropdownItemComponent = ({ id, onClick, title, text, Icon }: Dropdo
   )
 }
 
-export function Dropdown({ className, ...props }: Props) {
+export const Dropdown = ({ className, ...props }: Props) => {
   const [isOpen, setIsOpen] = useState(false)
   const toggle = () => setIsOpen(!isOpen)
   const close = () => setIsOpen(false)
@@ -52,13 +58,16 @@ export function Dropdown({ className, ...props }: Props) {
   const dropdownRef = useRef<HTMLDivElement>(null)
   useClickOutside([dropdownRef], close)
 
-  const openLink = (linkUrl: string) => () => {
-    close()
-    // Timeout ensures the menu closes before opening the link to prevent UI glitches.
-    setTimeout(() => {
-      window.open(linkUrl, '_blank', 'noopener,noreferrer')
-    }, 200)
-  }
+  const openLink = useCallback(
+    (linkUrl: string) => () => {
+      close()
+      // Timeout ensures the menu closes before opening the link to prevent UI glitches.
+      setTimeout(() => {
+        window.open(linkUrl, '_blank', 'noopener,noreferrer')
+      }, 200)
+    },
+    [],
+  )
 
   return (
     <div {...props} ref={dropdownRef} className={cn(className, 'relative w-full max-w-[380px]')}>
@@ -81,14 +90,14 @@ export function Dropdown({ className, ...props }: Props) {
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -10 }}
             transition={{ duration: 0.2 }}
-            className="absolute left-0 top-full w-full bg-[#E4E1DA] rounded-b-[4px] overflow-hidden z-10 shadow-lg"
+            className="absolute left-0 top-full w-full bg-[#E4E1DA] rounded-b-[4px] overflow-hidden z-10 shadow-lg pb-[18px]"
           >
             <Typography className="px-5 max-w-[330px] text-[#666057] text-[15px] leading-snug">
               {props.description}
             </Typography>
 
             <div className="py-3 flex flex-col">
-              {props.itemsData.map(({ Icon, text, title, id, linkUrl }) => (
+              {props.itemsData.map(({ Icon, text, title, id, linkUrl, TitleIcon }) => (
                 <DropdownItemComponent
                   key={id}
                   id={id}
@@ -96,9 +105,15 @@ export function Dropdown({ className, ...props }: Props) {
                   title={title}
                   text={text}
                   Icon={Icon}
+                  TitleIcon={TitleIcon}
                 />
               ))}
             </div>
+            {props.footer ? (
+              <Typography className="font-normal text[12px] text-center text-black mb-2">
+                {props.footer}
+              </Typography>
+            ) : null}
           </motion.div>
         )}
       </AnimatePresence>
