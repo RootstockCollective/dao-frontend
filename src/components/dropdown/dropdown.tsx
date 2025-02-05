@@ -1,4 +1,4 @@
-import { HTMLAttributes, useState, useRef, useCallback } from 'react'
+import { HTMLAttributes, useState, useRef, useCallback, ReactNode } from 'react'
 import { motion, AnimatePresence } from 'motion/react'
 import { ChevronDown, X, ChevronRight } from 'lucide-react'
 import { cn } from '@/lib/utils'
@@ -14,7 +14,7 @@ interface Props extends HTMLAttributes<HTMLDivElement> {
   title: string
   description: string
   itemsData: DropdownItem[]
-  footer?: string
+  footer?: ReactNode
 }
 
 interface DropdownItemProps extends Omit<DropdownItem, 'linkUrl'> {
@@ -35,7 +35,9 @@ export const DropdownItemComponent = ({ id, onClick, title, text, Icon, TitleIco
       </div>
       <div className="flex flex-grow flex-col gap-1">
         <div className="flex flex-row">
-          <Typography className="text-[14px] leading-none text-[#171412] font-bold">{title}</Typography>
+          <Typography className="text-[14px] leading-none text-[#171412] font-normal" fontFamily="kk-topo">
+            {title}
+          </Typography>
           {TitleIcon ? <TitleIcon size={16} className="ml-1" /> : null}
         </div>
         {text ? (
@@ -57,17 +59,6 @@ export const Dropdown = ({ className, ...props }: Props) => {
   // Closes the dropdown when clicking outside
   const dropdownRef = useRef<HTMLDivElement>(null)
   useClickOutside([dropdownRef], close)
-
-  const openLink = useCallback(
-    (linkUrl: string) => () => {
-      close()
-      // Timeout ensures the menu closes before opening the link to prevent UI glitches.
-      setTimeout(() => {
-        window.open(linkUrl, '_blank', 'noopener,noreferrer')
-      }, 200)
-    },
-    [],
-  )
 
   return (
     <div {...props} ref={dropdownRef} className={cn(className, 'relative w-full max-w-[380px]')}>
@@ -97,11 +88,11 @@ export const Dropdown = ({ className, ...props }: Props) => {
             </Typography>
 
             <div className="py-3 flex flex-col">
-              {props.itemsData.map(({ Icon, text, title, id, linkUrl, TitleIcon }) => (
+              {props.itemsData.map(({ Icon, text, title, id, onClick, TitleIcon }) => (
                 <DropdownItemComponent
                   key={id}
                   id={id}
-                  onClick={openLink(linkUrl)}
+                  onClick={onClick}
                   title={title}
                   text={text}
                   Icon={Icon}
@@ -109,11 +100,7 @@ export const Dropdown = ({ className, ...props }: Props) => {
                 />
               ))}
             </div>
-            {props.footer ? (
-              <Typography className="font-normal text[12px] text-center text-black mb-2">
-                {props.footer}
-              </Typography>
-            ) : null}
+            {props.footer ? props.footer : null}
           </motion.div>
         )}
       </AnimatePresence>
