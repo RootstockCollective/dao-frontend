@@ -67,9 +67,12 @@ const RewardsContent: FC<RewardsProps> = ({ builder, gauges, tokens }) => {
           }}
         />
       </MetricContainer>
+      {/* 
+      // Removed until RBI% is introduced (TOK-610)
       <MetricContainer>
         <BackerAllTimeShare gauges={gauges} tokens={tokens} />
       </MetricContainer>
+      */}
     </>
   )
 }

@@ -104,7 +104,7 @@ export const Input: FC<Props> = ({
           {loading ? <FaSpinner className="animate-spin" /> : <BsSearch data-testid="SearchIcon" />}
         </div>
         <input
-          className={classes}
+          className={cn(classes, onClear && 'pr-[38px]')}
           placeholder={placeholder}
           type="text"
           value={value}

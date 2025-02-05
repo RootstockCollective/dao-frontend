@@ -246,3 +246,144 @@ describe('.toFixedNoTrailing', () => {
     expect(num.toFixedNoTrailing(4)).toBe('0')
   })
 })
+
+describe('Why big.js', () => {
+  describe('BigInt vs Big.js Precision Tests', () => {
+    describe('Division', () => {
+      it('should demonstrate precision loss in BigInt division', () => {
+        const a = 1000000000000000000000n
+        const b = 3n
+
+        const bigintResult = a / b
+
+        const bigJsA = new Big('1000000000000000000000')
+        const bigJsB = new Big('3')
+        const bigJsResult = bigJsA.div(bigJsB)
+
+        expect(bigintResult.toString()).toBe('333333333333333333333')
+        expect(bigJsResult.toString()).toBe('333333333333333333333.33333333333333333333')
+      })
+    })
+
+    describe('Decimal Multiplication Precision Loss', () => {
+      it('shows precision loss in decimal multiplication', () => {
+        const num1 = '0.05892520326157074'
+        const num2 = '0.07891234567891234'
+
+        // Using Number
+        const numberResult = Number(num1) * Number(num2)
+
+        // Using Big.js
+        const bigJsResult = new Big(num1).mul(num2)
+
+        console.log('Number result:', numberResult)
+        console.log('Big.js result:', bigJsResult.toString())
+
+        expect(numberResult.toString()).not.toBe(bigJsResult.toString())
+        expect(numberResult.toString().length).toBeLessThan(bigJsResult.toString().length)
+      })
+    })
+
+    describe('Scientific Notation', () => {
+      it('should handle scientific notation in Big.js but fail in BigInt', () => {
+        const scientificNum = '1.23456789e+20'
+
+        expect(() => BigInt(scientificNum)).toThrow()
+
+        const bigJsNum = new Big(scientificNum)
+        expect(bigJsNum.toString()).toBe('123456789000000000000')
+      })
+    })
+
+    describe('Decimal Arithmetic', () => {
+      it('should handle decimal arithmetic precisely in Big.js', () => {
+        const a = '0.1'
+        const b = '0.2'
+
+        // JavaScript floating-point arithmetic
+        expect(0.1 + 0.2).not.toBe(0.3)
+
+        // BigInt can't handle decimals
+        expect(() => BigInt(a)).toThrow()
+
+        // Big.js handles it precisely
+        const bigA = new Big(a)
+        const bigB = new Big(b)
+        expect(bigA.plus(bigB).toString()).toBe('0.3')
+      })
+    })
+  })
+
+  describe('Token Price Precision Tests', () => {
+    const TOKEN_USD_PRICE = '0.05892520326157074'
+    const TOKENS_TO_BUY = '123456789.123456789'
+
+    it('demonstrates precision loss with Number type', () => {
+      // ❌ Wrong way: Using Number
+      const priceAsNumber = Number(TOKEN_USD_PRICE)
+      const amountAsNumber = Number(TOKENS_TO_BUY)
+      const totalWithNumber = priceAsNumber * amountAsNumber
+
+      // ✅ Correct way: Using Big.js
+      const priceAsBig = new Big(TOKEN_USD_PRICE)
+      const amountAsBig = new Big(TOKENS_TO_BUY)
+      const totalWithBig = priceAsBig.mul(amountAsBig)
+
+      console.log('Price as Number:', priceAsNumber)
+      console.log('Original price string:', TOKEN_USD_PRICE)
+      console.log('\nTotal with Number:', totalWithNumber)
+      console.log('Total with Big.js:', totalWithBig.toString())
+
+      // Demonstrate that Number loses precision
+      expect(totalWithNumber.toString()).not.toBe(totalWithBig.toString())
+    })
+
+    it('fails when trying to use BigInt with decimals', () => {
+      // Attempt to use BigInt with decimals
+      expect(() => {
+        BigInt(TOKEN_USD_PRICE)
+      }).toThrow()
+
+      // Even if we multiply by 1e18 first to remove decimals, we still lose precision
+      const priceWithoutDecimals = Number(TOKEN_USD_PRICE) * 1e18
+      expect(() => {
+        BigInt(priceWithoutDecimals)
+      }).not.toThrow()
+
+      // Show what happens if we try to work around decimals
+      const scaledPrice = BigInt(Math.floor(Number(TOKEN_USD_PRICE) * 1e18))
+      const scaledAmount = BigInt(Math.floor(Number(TOKENS_TO_BUY) * 1e18))
+      const scaledTotal = (scaledPrice * scaledAmount) / BigInt(1e18)
+
+      // Compare with Big.js
+      const correctTotal = new Big(TOKEN_USD_PRICE).mul(TOKENS_TO_BUY)
+      console.log('\nBigInt scaled total:', scaledTotal.toString())
+      console.log('Correct Big.js total:', correctTotal.toString())
+
+      // This will fail because BigInt approach loses precision
+      expect(scaledTotal.toString()).not.toBe(correctTotal.mul(new Big('1e18')).round(0).toString())
+    })
+
+    it('maintains precision with various token amounts using Big.js', () => {
+      const amounts = [
+        '0.000001', // Very small amount
+        '1.23456789', // Regular amount with decimals
+        '1000000', // Large round number
+        '1234567.89123456', // Large amount with many decimals
+      ]
+
+      amounts.forEach(amount => {
+        const price = new Big(TOKEN_USD_PRICE)
+        const tokenAmount = new Big(amount)
+        const total = price.mul(tokenAmount)
+
+        console.log(`\nBuying ${amount} tokens:`)
+        console.log('Total:', total.toString())
+
+        // Verify multiplication is reversible (within rounding)
+        const calculatedAmount = total.div(price).round(8)
+        expect(calculatedAmount.toString()).toBe(new Big(amount).round(8).toString())
+      })
+    })
+  })
+})

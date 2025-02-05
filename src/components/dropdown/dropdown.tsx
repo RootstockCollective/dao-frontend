@@ -4,12 +4,46 @@ import { ChevronDown, X, ChevronRight } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { HeaderTitle, Typography } from '@/components/Typography'
 import { useClickOutside } from '@/shared/hooks/useClickOutside'
-import { dropdownItemsData } from './data'
+import { DropdownItem } from './data'
 
 /**
- * "Prepare Your Proposal" custom dropdown menu with smooth animation
+ * Custom dropdown menu with smooth animation
  */
-export function PrepareProposalDropdown({ className, ...props }: HTMLAttributes<HTMLDivElement>) {
+
+interface Props extends HTMLAttributes<HTMLDivElement> {
+  title: string
+  description: string
+  itemsData: DropdownItem[]
+}
+
+interface DropdownItemProps extends Omit<DropdownItem, 'linkUrl'> {
+  onClick: () => void
+}
+
+export const DropdownItemComponent = ({ id, onClick, title, text, Icon }: DropdownItemProps) => {
+  return (
+    <div
+      key={id}
+      onClick={onClick}
+      className="px-5 py-3 w-full flex items-center gap-3 hover:bg-[#D4CFC4] cursor-pointer"
+      /* Test IDs: PrepareYourProposalLink1, PrepareYourProposalLink2 */
+      data-testid={`DropdownLink${id}`}
+    >
+      <div className="flex items-center justify-center">
+        <Icon />
+      </div>
+      <div className="flex-grow flex flex-col gap-1">
+        <Typography className="text-[15px] leading-none text-[#171412]">{title}</Typography>
+        <Typography className="max-w-[230px] text-[12px] leading-none text-[#66605C]">{text}</Typography>
+      </div>
+      <div>
+        <ChevronRight strokeWidth={1.5} color="black" />
+      </div>
+    </div>
+  )
+}
+
+export function Dropdown({ className, ...props }: Props) {
   const [isOpen, setIsOpen] = useState(false)
   const toggle = () => setIsOpen(!isOpen)
   const close = () => setIsOpen(false)
@@ -18,11 +52,11 @@ export function PrepareProposalDropdown({ className, ...props }: HTMLAttributes<
   const dropdownRef = useRef<HTMLDivElement>(null)
   useClickOutside([dropdownRef], close)
 
-  const openLink = (link: string) => {
+  const openLink = (linkUrl: string) => () => {
     close()
     // Timeout ensures the menu closes before opening the link to prevent UI glitches.
     setTimeout(() => {
-      window.open(link, '_blank', 'noopener,noreferrer')
+      window.open(linkUrl, '_blank', 'noopener,noreferrer')
     }, 200)
   }
 
@@ -36,9 +70,7 @@ export function PrepareProposalDropdown({ className, ...props }: HTMLAttributes<
         )}
         data-testid="PrepareYourProposalDropdown"
       >
-        <HeaderTitle className="text-lg leading-none text-black whitespace-nowrap">
-          Prepare your proposal
-        </HeaderTitle>
+        <HeaderTitle className="text-lg leading-none text-black whitespace-nowrap">{props.title}</HeaderTitle>
         {isOpen ? <X className="text-black cursor-pointer" /> : <ChevronDown className="text-black" />}
       </button>
 
@@ -52,32 +84,19 @@ export function PrepareProposalDropdown({ className, ...props }: HTMLAttributes<
             className="absolute left-0 top-full w-full bg-[#E4E1DA] rounded-b-[4px] overflow-hidden z-10 shadow-lg"
           >
             <Typography className="px-5 max-w-[330px] text-[#666057] text-[15px] leading-snug">
-              If these steps are not completed, your proposal is unlikely to reach quorum and succeed in a
-              vote.
+              {props.description}
             </Typography>
 
             <div className="py-3 flex flex-col">
-              {dropdownItemsData.map(({ Icon, text, title, id, linkUrl }) => (
-                <div
+              {props.itemsData.map(({ Icon, text, title, id, linkUrl }) => (
+                <DropdownItemComponent
                   key={id}
-                  onClick={() => openLink(linkUrl)}
-                  className="px-5 py-3 w-full flex items-center gap-3 hover:bg-[#D4CFC4] cursor-pointer"
-                  /* Test IDs: PrepareYourProposalLink1, PrepareYourProposalLink2 */
-                  data-testid={`PrepareYourProposalLink${id}`}
-                >
-                  <div className="flex items-center justify-center">
-                    <Icon />
-                  </div>
-                  <div className="flex-grow flex flex-col gap-1">
-                    <Typography className="text-[15px] leading-none text-[#171412]">{title}</Typography>
-                    <Typography className="max-w-[230px] text-[12px] leading-none text-[#66605C]">
-                      {text}
-                    </Typography>
-                  </div>
-                  <div>
-                    <ChevronRight strokeWidth={1.5} color="black" />
-                  </div>
-                </div>
+                  id={id}
+                  onClick={openLink(linkUrl)}
+                  title={title}
+                  text={text}
+                  Icon={Icon}
+                />
               ))}
             </div>
           </motion.div>

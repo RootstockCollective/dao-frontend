@@ -4,6 +4,7 @@ import { Paragraph } from '@/components/Typography'
 import { formatCurrency, formatNumberWithCommas } from '@/lib/utils'
 import { TokenImage } from '@/components/TokenImage'
 import { formatUnits } from 'ethers'
+import Big from '@/lib/big'
 
 interface TokenValueProps {
   symbol: SupportedTokens
@@ -14,8 +15,8 @@ interface TokenValueProps {
 export const TokenValue = ({ symbol, amount, shouldFormatBalance = false }: TokenValueProps) => {
   const { prices } = useBalancesContext()
   const amountFormatted = shouldFormatBalance ? formatUnits(amount) : amount
-  const price = prices[symbol]?.price || 0
-  const value = price * Number(amountFormatted)
+  const price = Big(prices[symbol]?.price || 0)
+  const value = price.mul(Big(amountFormatted.toString()))
 
   return (
     <>
