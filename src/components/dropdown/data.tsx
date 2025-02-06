@@ -1,4 +1,4 @@
-import { RBTC, RIF } from '@/lib/constants'
+import { RBTC, RIF, stRIF } from '@/lib/constants'
 import { currentLinks } from '../LeftSidebar/links'
 import { TokenImage, TokenImageProps } from '../TokenImage'
 import { BulbIcon } from './icons/bulb'
@@ -45,7 +45,7 @@ export const prepareProposalsData: DropdownItem[] = [
 
 export const getStartedData = (router: AppRouterInstance): DropdownItem[] => [
   {
-    id: '1',
+    id: RBTC,
     Icon: props => <NumberIcon number="1" {...props} />,
     title: 'GET RBTC',
     text: 'Learn more about rBTC',
@@ -55,7 +55,7 @@ export const getStartedData = (router: AppRouterInstance): DropdownItem[] => [
     ),
   },
   {
-    id: '2',
+    id: RIF,
     Icon: props => <NumberIcon number="2" {...props} />,
     title: 'GET RIF',
     text: 'Learn more about RIF',
@@ -65,21 +65,21 @@ export const getStartedData = (router: AppRouterInstance): DropdownItem[] => [
     ),
   },
   {
-    id: '3',
+    id: stRIF,
     Icon: props => <NumberIcon number="3" {...props} />,
     title: 'Stake RIF',
     text: 'Learn more about staking',
     onClick: () => onExternal(''),
   },
   {
-    id: '4',
+    id: 'VOTE',
     Icon: props => <NumberIcon number="4" {...props} />,
     title: 'VOTE ON YOUR FIRST PROPOSAL',
     text: '',
     onClick: () => router.push('/proposals'),
   },
   {
-    id: '5',
+    id: 'ALLOCATIONS',
     Icon: props => <NumberIcon number="5" {...props} />,
     title: 'MAKE YOUR FIRST ALLOCATIONS OF RIF',
     text: 'Learn more about allocations',
