@@ -13,6 +13,11 @@ interface ProposalSearchProps {
    * Placeholder text for the search input.
    */
   placeholder: string
+  /**
+   * Optional function to set the clear handler.
+   * This is useful when the parent component needs to clear the search input.
+   */
+  onClearHandler?: (handler: () => void) => void
   maxLength?: number
 }
 
@@ -33,6 +38,7 @@ const SEARCH_DEBOUNCE_MS = 700 // Additional delay before finalizing input and c
 export function DebounceSearch({
   onSearchSubmit,
   placeholder = 'Search',
+  onClearHandler,
   maxLength = 100,
 }: ProposalSearchProps) {
   const [searchText, setSearchText] = useState('')
@@ -58,6 +64,9 @@ export function DebounceSearch({
   const handleChange = (val: string) => {
     setSearchText(val)
   }
+  useEffect(() => {
+    onClearHandler?.(handleClear)
+  }, [])
   return (
     <Input
       value={searchText}

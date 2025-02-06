@@ -1,4 +1,4 @@
-import { useMemo, memo, useState, useEffect, useCallback } from 'react'
+import { useMemo, memo, useState, useEffect, useCallback, useRef } from 'react'
 import {
   createColumnHelper,
   type SortingState,
@@ -50,15 +50,22 @@ const LatestProposalsTable = ({ proposals }: LatestProposalsTableProps) => {
 
   // State for proposal quick filters
   const [activeFilter, setActiveFilter] = useState<string | null>(null)
+  // Ref to store the clear function from DebounceSearch
+  const clearSearchRef = useRef<() => void>()
+  // Flag to prevent search updates during filter changes
+  const isFilterChanging = useRef(false)
 
+  // Handle filter button clicks
   const handleFilterToggle = useCallback(
     (keyword: string) => () => {
-      if (activeFilter === keyword) {
-        // Reset both states if clicking active filter
+      // Set flag to prevent search from interfering with filter change
+      isFilterChanging.current = true
+      const isDeactivating = activeFilter === keyword
+
+      if (isDeactivating) {
         setActiveFilter(null)
         setSearchedProposal('')
       } else {
-        // Set new filter if clicking different filter
         setActiveFilter(keyword)
         setSearchedProposal(keyword)
       }
@@ -66,10 +73,32 @@ const LatestProposalsTable = ({ proposals }: LatestProposalsTableProps) => {
     [activeFilter],
   )
 
-  const handleSearch = useCallback((value: string) => {
-    setSearchedProposal(value)
-    setActiveFilter(null)
-  }, [])
+  // Effect to clear search input after filter state updates
+  useEffect(() => {
+    if (isFilterChanging.current) {
+      clearSearchRef.current?.()
+      isFilterChanging.current = false
+    }
+  }, [activeFilter, searchedProposal])
+
+  // Handle search input changes
+  const handleSearch = useCallback(
+    (value: string) => {
+      if (!value) {
+        // Only clear search if no active filter
+        if (!activeFilter) {
+          setSearchedProposal('')
+        }
+        return
+      }
+      // Only update search and clear filter if not in middle of filter change
+      if (!isFilterChanging.current) {
+        setActiveFilter(null)
+        setSearchedProposal(value)
+      }
+    },
+    [activeFilter],
+  )
 
   // Table data definition helper
   const { accessor } = createColumnHelper<(typeof proposalListData)[number]>()
@@ -232,7 +261,7 @@ const LatestProposalsTable = ({ proposals }: LatestProposalsTableProps) => {
             <Button
               key={keyword}
               className={`text-white text-sm font-thin border-[#ffff] h-[32px] hover:bg-[#e56b1a] hover:bg-opacity-40 hover:border-[#e56b1a]
-              ${activeFilter === keyword ? 'bg-[#e56b1a] border-[#e56b1a]' : 'bg-transparent'}
+              ${activeFilter === keyword ? 'bg-[#e56b1a] border-[#e56b1a] hover:bg-opacity-100' : 'bg-transparent'}
               `}
               variant="secondary"
               onClick={handleFilterToggle(keyword)}
@@ -242,7 +271,13 @@ const LatestProposalsTable = ({ proposals }: LatestProposalsTableProps) => {
           ))}
         </div>
       </div>
-      <DebounceSearch placeholder="Search a proposal" onSearchSubmit={handleSearch} />
+      <DebounceSearch
+        placeholder="Search a proposal"
+        onSearchSubmit={handleSearch}
+        onClearHandler={handler => {
+          clearSearchRef.current = handler
+        }}
+      />
       {filteredProposalList.length > 0 ? (
         <div>
           <StatefulTable
