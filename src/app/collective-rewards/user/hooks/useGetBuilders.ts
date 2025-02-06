@@ -7,11 +7,11 @@ import { useFetchCreateBuilderProposals } from '@/app/proposals/hooks/useFetchLa
 import { splitCombinedName } from '@/app/proposals/shared/utils'
 import { BuilderRegistryAbi } from '@/lib/abis/v2/BuilderRegistryAbi'
 import { AVERAGE_BLOCKTIME } from '@/lib/constants'
-import { BackersManagerAddress } from '@/lib/contracts'
 import { DateTime } from 'luxon'
 import { useMemo } from 'react'
 import { Address, getAddress } from 'viem'
 import { useReadContracts } from 'wagmi'
+import { useEnvironmentsContext } from '@/shared/context/EnvironmentsContext'
 
 export type UseGetBuilders = () => {
   data: Record<Address, Builder> // TODO review Builder type
@@ -21,6 +21,8 @@ export type UseGetBuilders = () => {
 }
 
 export const useGetBuilders: UseGetBuilders = () => {
+  const { builderRegistryAddress } = useEnvironmentsContext()
+
   /*
    * // TODO: we're missing builder with KYC only on v2
    * get Gauges
@@ -36,7 +38,7 @@ export const useGetBuilders: UseGetBuilders = () => {
   const gaugeToBuilderCalls = gauges?.map(
     gauge =>
       ({
-        address: BackersManagerAddress,
+        address: builderRegistryAddress,
         abi: BuilderRegistryAbi,
         functionName: 'gaugeToBuilder',
         args: [gauge],
@@ -72,13 +74,16 @@ export const useGetBuilders: UseGetBuilders = () => {
       builders?.map(
         builder =>
           ({
-            address: BackersManagerAddress,
+            address: builderRegistryAddress,
             abi: BuilderRegistryAbi,
             functionName: 'builderState',
             args: [builder],
           }) as const,
       ),
-    [builders],
+    // disable the eslint rule because we don't need to call it again
+    // when the builderRegistryAddress changes
+    // to avoid multiple calls in a short period of time
+    [builders], // eslint-disable-line react-hooks/exhaustive-deps
   )
   const {
     data: builderStatesResult,

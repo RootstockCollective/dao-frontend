@@ -1,1 +1,1 @@
-export * from './BackerRewardsContex'
+export * from './BackerRewardsContext'

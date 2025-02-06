@@ -26,7 +26,9 @@ export const EVENTS_FROM_BLOCK = Number(process.env.NEXT_PUBLIC_EVENTS_FROM_BLOC
 export const CHAIN_ID = process.env.NEXT_PUBLIC_CHAIN_ID as string
 
 export const BACKERS_MANAGER_ADDRESS = process.env.NEXT_PUBLIC_BACKERS_MANAGER_ADDRESS as Address
+export const BUILDER_REGISTRY_ADDRESS = process.env.NEXT_PUBLIC_BUILDER_REGISTRY_ADDRESS as Address
 export const REWARD_DISTRIBUTOR_ADDRESS = process.env.NEXT_PUBLIC_REWARD_DISTRIBUTOR_ADDRESS as Address
+export const CR_MIGRATING = process.env.NEXT_PUBLIC_CR_MIGRATING === 'true'
 
 export const ADDRESS_ANIMATION_DURATION = 800
 export const AVERAGE_BLOCKTIME = 60_000

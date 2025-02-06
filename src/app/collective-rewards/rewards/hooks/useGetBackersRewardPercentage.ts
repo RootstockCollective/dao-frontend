@@ -1,17 +1,19 @@
 import { BuilderRegistryAbi } from '@/lib/abis/v2/BuilderRegistryAbi'
 import { AVERAGE_BLOCKTIME } from '@/lib/constants'
-import { BackersManagerAddress } from '@/lib/contracts'
 import { useMemo } from 'react'
 import { Address } from 'viem'
 import { useReadContracts } from 'wagmi'
 import { BackerRewardPercentage } from '../types'
 import { getBackerRewardPercentage } from '../utils'
+import { useEnvironmentsContext } from '@/shared/context/EnvironmentsContext'
 
 export const useGetBackersRewardPercentage = (builders: Address[], timestampInSeconds?: number) => {
+  const { builderRegistryAddress } = useEnvironmentsContext()
+
   const contractCalls = builders?.map(
     builder =>
       ({
-        address: BackersManagerAddress,
+        address: builderRegistryAddress,
         abi: BuilderRegistryAbi,
         functionName: 'backerRewardPercentage',
         args: [builder],

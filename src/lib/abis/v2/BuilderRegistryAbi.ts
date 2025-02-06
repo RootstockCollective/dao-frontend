@@ -1,5 +1,10 @@
 export const BuilderRegistryAbi = [
   {
+    type: 'constructor',
+    inputs: [],
+    stateMutability: 'nonpayable',
+  },
+  {
     type: 'function',
     name: 'UPGRADE_INTERFACE_VERSION',
     inputs: [],
@@ -37,7 +42,20 @@ export const BuilderRegistryAbi = [
   },
   {
     type: 'function',
-    name: 'approveBuidlerRewardReceiverReplacement',
+    name: 'approveBuilderKYC',
+    inputs: [
+      {
+        name: 'builder_',
+        type: 'address',
+        internalType: 'address',
+      },
+    ],
+    outputs: [],
+    stateMutability: 'nonpayable',
+  },
+  {
+    type: 'function',
+    name: 'approveBuilderRewardReceiverReplacement',
     inputs: [
       {
         name: 'builder_',
@@ -50,20 +68,6 @@ export const BuilderRegistryAbi = [
         internalType: 'address',
       },
     ],
-    outputs: [],
-    stateMutability: 'nonpayable',
-  },
-  {
-    type: 'function',
-    name: 'approveBuilderKYC',
-    inputs: [
-      {
-        name: 'builder_',
-        type: 'address',
-        internalType: 'address',
-      },
-    ],
-
     outputs: [],
     stateMutability: 'nonpayable',
   },
@@ -92,6 +96,19 @@ export const BuilderRegistryAbi = [
         name: 'cooldownEndTime',
         type: 'uint128',
         internalType: 'uint128',
+      },
+    ],
+    stateMutability: 'view',
+  },
+  {
+    type: 'function',
+    name: 'backersManager',
+    inputs: [],
+    outputs: [
+      {
+        name: '',
+        type: 'address',
+        internalType: 'contract BackersManagerRootstockCollective',
       },
     ],
     stateMutability: 'view',
@@ -230,77 +247,6 @@ export const BuilderRegistryAbi = [
   },
   {
     type: 'function',
-    name: 'cycleData',
-    inputs: [],
-    outputs: [
-      {
-        name: 'previousDuration',
-        type: 'uint32',
-        internalType: 'uint32',
-      },
-      {
-        name: 'nextDuration',
-        type: 'uint32',
-        internalType: 'uint32',
-      },
-      {
-        name: 'previousStart',
-        type: 'uint64',
-        internalType: 'uint64',
-      },
-      {
-        name: 'nextStart',
-        type: 'uint64',
-        internalType: 'uint64',
-      },
-      {
-        name: 'offset',
-        type: 'uint24',
-        internalType: 'uint24',
-      },
-    ],
-    stateMutability: 'view',
-  },
-  {
-    type: 'function',
-    name: 'cycleNext',
-    inputs: [
-      {
-        name: 'timestamp_',
-        type: 'uint256',
-        internalType: 'uint256',
-      },
-    ],
-    outputs: [
-      {
-        name: '',
-        type: 'uint256',
-        internalType: 'uint256',
-      },
-    ],
-    stateMutability: 'view',
-  },
-  {
-    type: 'function',
-    name: 'cycleStart',
-    inputs: [
-      {
-        name: 'timestamp_',
-        type: 'uint256',
-        internalType: 'uint256',
-      },
-    ],
-    outputs: [
-      {
-        name: '',
-        type: 'uint256',
-        internalType: 'uint256',
-      },
-    ],
-    stateMutability: 'view',
-  },
-  {
-    type: 'function',
     name: 'dewhitelistBuilder',
     inputs: [
       {
@@ -311,38 +257,6 @@ export const BuilderRegistryAbi = [
     ],
     outputs: [],
     stateMutability: 'nonpayable',
-  },
-  {
-    type: 'function',
-    name: 'distributionDuration',
-    inputs: [],
-    outputs: [
-      {
-        name: '',
-        type: 'uint32',
-        internalType: 'uint32',
-      },
-    ],
-    stateMutability: 'view',
-  },
-  {
-    type: 'function',
-    name: 'endDistributionWindow',
-    inputs: [
-      {
-        name: 'timestamp_',
-        type: 'uint256',
-        internalType: 'uint256',
-      },
-    ],
-    outputs: [
-      {
-        name: '',
-        type: 'uint256',
-        internalType: 'uint256',
-      },
-    ],
-    stateMutability: 'view',
   },
   {
     type: 'function',
@@ -372,24 +286,6 @@ export const BuilderRegistryAbi = [
         name: 'builder',
         type: 'address',
         internalType: 'address',
-      },
-    ],
-    stateMutability: 'view',
-  },
-  {
-    type: 'function',
-    name: 'getCycleStartAndDuration',
-    inputs: [],
-    outputs: [
-      {
-        name: '',
-        type: 'uint256',
-        internalType: 'uint256',
-      },
-      {
-        name: '',
-        type: 'uint256',
-        internalType: 'uint256',
       },
     ],
     stateMutability: 'view',
@@ -527,6 +423,47 @@ export const BuilderRegistryAbi = [
       },
     ],
     stateMutability: 'view',
+  },
+  {
+    type: 'function',
+    name: 'initialize',
+    inputs: [
+      {
+        name: 'governanceManager_',
+        type: 'address',
+        internalType: 'contract IGovernanceManagerRootstockCollective',
+      },
+      {
+        name: 'gaugeFactory_',
+        type: 'address',
+        internalType: 'address',
+      },
+      {
+        name: 'rewardDistributor_',
+        type: 'address',
+        internalType: 'address',
+      },
+      {
+        name: 'rewardPercentageCooldown_',
+        type: 'uint128',
+        internalType: 'uint128',
+      },
+    ],
+    outputs: [],
+    stateMutability: 'nonpayable',
+  },
+  {
+    type: 'function',
+    name: 'initializeBackersManager',
+    inputs: [
+      {
+        name: 'backersManager_',
+        type: 'address',
+        internalType: 'contract BackersManagerRootstockCollective',
+      },
+    ],
+    outputs: [],
+    stateMutability: 'nonpayable',
   },
   {
     type: 'function',
@@ -751,30 +688,17 @@ export const BuilderRegistryAbi = [
   },
   {
     type: 'function',
-    name: 'setCycleDuration',
+    name: 'setHaltedGaugeLastPeriodFinish',
     inputs: [
       {
-        name: 'newCycleDuration_',
-        type: 'uint32',
-        internalType: 'uint32',
+        name: 'gauge_',
+        type: 'address',
+        internalType: 'contract GaugeRootstockCollective',
       },
       {
-        name: 'cycleStartOffset_',
-        type: 'uint24',
-        internalType: 'uint24',
-      },
-    ],
-    outputs: [],
-    stateMutability: 'nonpayable',
-  },
-  {
-    type: 'function',
-    name: 'setDistributionDuration',
-    inputs: [
-      {
-        name: 'newDistributionDuration_',
-        type: 'uint32',
-        internalType: 'uint32',
+        name: 'periodFinish_',
+        type: 'uint256',
+        internalType: 'uint256',
       },
     ],
     outputs: [],
@@ -792,44 +716,6 @@ export const BuilderRegistryAbi = [
     ],
     outputs: [],
     stateMutability: 'nonpayable',
-  },
-  {
-    type: 'function',
-    name: 'supportsInterface',
-    inputs: [
-      {
-        name: 'interfaceId',
-        type: 'bytes4',
-        internalType: 'bytes4',
-      },
-    ],
-    outputs: [
-      {
-        name: '',
-        type: 'bool',
-        internalType: 'bool',
-      },
-    ],
-    stateMutability: 'view',
-  },
-  {
-    type: 'function',
-    name: 'timeUntilNextCycle',
-    inputs: [
-      {
-        name: 'timestamp_',
-        type: 'uint256',
-        internalType: 'uint256',
-      },
-    ],
-    outputs: [
-      {
-        name: '',
-        type: 'uint256',
-        internalType: 'uint256',
-      },
-    ],
-    stateMutability: 'view',
   },
   {
     type: 'function',
@@ -861,6 +747,19 @@ export const BuilderRegistryAbi = [
     ],
     outputs: [],
     stateMutability: 'payable',
+  },
+  {
+    type: 'function',
+    name: 'validateWhitelisted',
+    inputs: [
+      {
+        name: 'gauge_',
+        type: 'address',
+        internalType: 'contract GaugeRootstockCollective',
+      },
+    ],
+    outputs: [],
+    stateMutability: 'view',
   },
   {
     type: 'event',
@@ -1080,44 +979,6 @@ export const BuilderRegistryAbi = [
   },
   {
     type: 'event',
-    name: 'NewCycleDurationScheduled',
-    inputs: [
-      {
-        name: 'newCycleDuration_',
-        type: 'uint256',
-        indexed: false,
-        internalType: 'uint256',
-      },
-      {
-        name: 'cooldownEndTime_',
-        type: 'uint256',
-        indexed: false,
-        internalType: 'uint256',
-      },
-    ],
-    anonymous: false,
-  },
-  {
-    type: 'event',
-    name: 'NewDistributionDuration',
-    inputs: [
-      {
-        name: 'newDistributionDuration_',
-        type: 'uint256',
-        indexed: false,
-        internalType: 'uint256',
-      },
-      {
-        name: 'by_',
-        type: 'address',
-        indexed: false,
-        internalType: 'address',
-      },
-    ],
-    anonymous: false,
-  },
-  {
-    type: 'event',
     name: 'Paused',
     inputs: [
       {
@@ -1242,26 +1103,6 @@ export const BuilderRegistryAbi = [
   },
   {
     type: 'error',
-    name: 'CycleDurationTooShort',
-    inputs: [],
-  },
-  {
-    type: 'error',
-    name: 'DistributionDurationTooLong',
-    inputs: [],
-  },
-  {
-    type: 'error',
-    name: 'DistributionDurationTooShort',
-    inputs: [],
-  },
-  {
-    type: 'error',
-    name: 'DistributionModifiedDuringDistributionWindow',
-    inputs: [],
-  },
-  {
-    type: 'error',
     name: 'ERC1967InvalidImplementation',
     inputs: [
       {
@@ -1308,6 +1149,11 @@ export const BuilderRegistryAbi = [
   },
   {
     type: 'error',
+    name: 'NotAuthorized',
+    inputs: [],
+  },
+  {
+    type: 'error',
     name: 'NotCommunityApproved',
     inputs: [],
   },
@@ -1334,11 +1180,6 @@ export const BuilderRegistryAbi = [
   {
     type: 'error',
     name: 'NotRevoked',
-    inputs: [],
-  },
-  {
-    type: 'error',
-    name: 'NotValidChangerOrFoundation',
     inputs: [],
   },
   {

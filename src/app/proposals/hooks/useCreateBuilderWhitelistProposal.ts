@@ -7,8 +7,10 @@ import { Address, encodeFunctionData, zeroAddress } from 'viem'
 import { useWriteContract } from 'wagmi'
 import { createProposal, encodeGovernorRelayCallData } from './proposalUtils'
 import { useVotingPower } from './useVotingPower'
+import { useEnvironmentsContext } from '@/shared/context/EnvironmentsContext'
 
 export const useCreateBuilderWhitelistProposal = () => {
+  const { builderRegistryAddress } = useEnvironmentsContext()
   const { canCreateProposal } = useVotingPower()
   const { writeContractAsync: propose, isPending: isPublishing, error: transactionError } = useWriteContract()
 
@@ -16,7 +18,7 @@ export const useCreateBuilderWhitelistProposal = () => {
     if (!canCreateProposal) {
       throw NoVotingPowerError
     }
-    const builderGauge = await getBuilderGauge(builderAddress)
+    const builderGauge = await getBuilderGauge(builderRegistryAddress, builderAddress)
     if (builderGauge !== zeroAddress) {
       // TODO: maybe we can use a different error here
       throw AddressAlreadyWhitelistedError
