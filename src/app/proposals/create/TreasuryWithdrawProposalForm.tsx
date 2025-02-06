@@ -178,7 +178,7 @@ export const TreasuryWithdrawProposalForm = () => {
                 name="proposalName"
                 render={({ field }) => (
                   <FormItem className="mb-6 mx-1">
-                    <FormLabel>Proposal name</FormLabel>
+                    <FormLabel>Name</FormLabel>
                     <FormControl>
                       <FormInput
                         placeholder="Name your proposal"
