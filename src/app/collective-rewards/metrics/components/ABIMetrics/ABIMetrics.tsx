@@ -1,12 +1,11 @@
 import { MetricsCard, MetricsCardTitle, TokenMetricsCardRow } from '@/app/collective-rewards/rewards'
 import { withSpinner } from '@/components/LoadingSpinner/withLoadingSpinner'
-import { useGetABI } from './hooks/useGetABI'
-import { ABIFormula } from '@/app/collective-rewards/shared'
+import { ABIFormula, useGetMetricsAbi } from '@/app/collective-rewards/shared'
 import { useHandleErrors } from '@/app/collective-rewards/utils'
 
 export const ABIMetrics = () => {
-  const { data: abiPct, isLoading, error } = useGetABI()
-  useHandleErrors({ error, title: 'Error loading abi' })
+  const { data: abiPct, isLoading, error } = useGetMetricsAbi()
+  useHandleErrors({ error, title: 'Error loading ABI metrics' })
 
   return (
     <>
