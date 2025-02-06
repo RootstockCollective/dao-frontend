@@ -17,11 +17,7 @@ interface Props extends HTMLAttributes<HTMLDivElement> {
   footer?: ReactNode
 }
 
-interface DropdownItemProps extends Omit<DropdownItem, 'linkUrl'> {
-  onClick: () => void
-}
-
-export const DropdownItemComponent = ({ id, onClick, title, text, Icon, TitleIcon }: DropdownItemProps) => {
+export const DropdownItemComponent = ({ id, onClick, title, text, Icon, TitleIcon }: DropdownItem) => {
   return (
     <div
       key={id}
