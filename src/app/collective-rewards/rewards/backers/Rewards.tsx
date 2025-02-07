@@ -1,6 +1,6 @@
 import { FC } from 'react'
 import {
-  BackerAllTimeShare,
+  ABIBackers,
   BackerClaimableRewards,
   useClaimBackerRewards,
 } from '@/app/collective-rewards/rewards/backers'
@@ -66,6 +66,9 @@ const RewardsContent: FC<RewardsProps> = ({ builder, gauges, tokens }) => {
             popoverProps: { size: 'medium' },
           }}
         />
+      </MetricContainer>
+      <MetricContainer>
+        <ABIBackers backer={builder} />
       </MetricContainer>
       {/* 
       // Removed until RBI% is introduced (TOK-610)
