@@ -56,13 +56,13 @@ Big.prototype.roundHalfUp = function (decimalPlaces?: number) {
   return this.round(decimalPlaces, Big.roundHalfUp)
 }
 
-Big.prototype.floor = function (decimalPlaces?: number) {
+Big.prototype.floor = function (decimalPlaces = 0) {
   if (this.lt(0)) {
     // For negative numbers, round down and subtract 1
-    return this.round(decimalPlaces || 0, Big.roundDown).minus(1)
+    return this.round(decimalPlaces, Big.roundDown).minus(1)
   }
   // For zero or positive numbers, round down works as expected
-  return this.round(decimalPlaces || 0, Big.roundDown)
+  return this.round(decimalPlaces, Big.roundDown)
 }
 
 Big.prototype.toFixedNoTrailing = function (dp?: number, rm?: RoundingMode) {
