@@ -1,7 +1,6 @@
 import { StaticImageData } from 'next/image'
 import standardImage from './images/standard.png'
 import activationImage from './images/activation.png'
-import deactivationImage from './images/deactivation.png'
 import { SupportedActionAbiName, SupportedProposalActionName } from '../../../shared/supportedABIs'
 import type { ProposalType } from '../../types'
 
@@ -30,13 +29,5 @@ export const cardData: Record<ProposalType, Card> = {
     image: activationImage,
     contract: 'BuilderRegistryAbi',
     action: 'communityApproveBuilder',
-  },
-  Deactivation: {
-    id: 3,
-    title: 'Builder Deactivation',
-    description: 'Community vote to remove a Builder’s access to rewards',
-    image: deactivationImage,
-    contract: 'BuilderRegistryAbi',
-    action: 'dewhitelistBuilder',
   },
 }
