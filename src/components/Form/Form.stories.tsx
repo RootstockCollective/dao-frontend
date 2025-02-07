@@ -26,9 +26,9 @@ export const Default: Omit<Story, 'args'> = {
           name="Field1"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Proposal name</FormLabel>
+              <FormLabel>Name</FormLabel>
               <FormControl>
-                <FormInput placeholder="name your proposal" {...field} />
+                <FormInput placeholder="Name your proposal" {...field} />
               </FormControl>
             </FormItem>
           )}

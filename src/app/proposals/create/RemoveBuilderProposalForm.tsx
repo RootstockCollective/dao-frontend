@@ -147,7 +147,7 @@ export const RemoveBuilderProposalForm: FC = () => {
                 name="proposalName"
                 render={({ field }) => (
                   <FormItem className="mb-6 mx-1">
-                    <FormLabel>Proposal name</FormLabel>
+                    <FormLabel>Name</FormLabel>
                     <FormControl>
                       <FormInput placeholder="Name your proposal" {...field} maxLength={100} />
                     </FormControl>
