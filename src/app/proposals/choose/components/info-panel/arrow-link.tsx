@@ -10,8 +10,8 @@ export function ArrowLink({ children, className, ...props }: AnchorHTMLAttribute
     <a
       {...props}
       className={cn(
-        className,
         'mt-2 w-fit block leading-none hover:underline decoration-primary text-primary',
+        className,
       )}
     >
       {children}
