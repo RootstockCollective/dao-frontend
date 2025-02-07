@@ -143,7 +143,7 @@ const RewardsTable: FC<BackerRewardsTable> = ({ builder, gauges, tokens }) => {
         </div>
       ) : (
         <>
-          <TableCore className="table-fixed">
+          <TableCore className="table-fixed overflow-visible">
             <TableHead>
               <TableRow className="min-h-0 normal-case">
                 {tableHeaders.map(header => (
