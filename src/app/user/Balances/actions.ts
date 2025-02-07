@@ -11,7 +11,6 @@ import {
 } from '@/lib/endpoints'
 import { tokenContracts, GovernorAddress } from '@/lib/contracts'
 import { NftMeta } from '@/shared/types'
-import { ipfsGateways } from '@/config'
 import {
   NextPageParams,
   NftHolderItem,
@@ -19,6 +18,7 @@ import {
   TokenHoldersResponse,
 } from '@/app/user/Balances/types'
 import { BackendEventByTopic0ResponseValue } from '@/shared/utils'
+import { ipfsGateway } from '@/lib/constants'
 
 export const fetchAddressTokens = (address: string, chainId = 31) =>
   axiosInstance
@@ -108,13 +108,9 @@ export async function fetchIpfsUri(
   ipfsUri: string,
   responseType: 'json' | 'blob' = 'json',
 ): Promise<NftMeta | Blob> {
-  return Promise.any(
-    ipfsGateways.map(async gateway => {
-      const httpsUrl = ipfsUri.replace('ipfs://', gateway)
-      const { data } = await axiosInstance.get(httpsUrl, { responseType })
-      return data
-    }),
-  )
+  const httpsUrl = ipfsUri.replace('ipfs://', ipfsGateway)
+  const { data } = await axiosInstance.get(httpsUrl, { responseType })
+  return data
 }
 
 export const fetchNftInfo = (address: string) =>
