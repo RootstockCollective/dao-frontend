@@ -18,38 +18,40 @@ export default function ChooseProposal() {
   const infoPanelRef = useRef<HTMLDivElement>(null)
   useClickOutside([cardsRef, infoPanelRef], () => setChosenProposal(null))
   return (
-    <div className="max-w-[1130px] min-w-[600px] mx-auto">
+    <>
       <BackButton className="mb-4" />
-      <HeaderTitle className="mb-24 text-5xl text-center">Choose Your Proposal</HeaderTitle>
-      <div ref={cardsRef} className="mb-4 xl:mb-6 flex flex-row gap-4 justify-between overflow-x-auto">
-        {Object.entries(cardData).map(([proposalType, card], index) => (
-          <Card
-            key={card.id}
-            proposal={proposalType as ProposalType}
-            isHighlighted={
-              // all cards are highlighted on mount
-              (hoverIndex === null && chosenProposal === null) ||
-              // highlight hovered card
-              hoverIndex === index ||
-              // highlight selected card
-              chosenProposal === proposalType
-            }
-            onMouseEnter={() => setHoverIndex(index)}
-            onMouseLeave={() => setHoverIndex(null)}
-            link={`/proposals/create?${new URLSearchParams({
-              contract: card.contract,
-              action: card.action,
-            })}`}
-            showInfoPanel={() => setChosenProposal(proposalType as ProposalType)}
-            // Orange border around selected card
-            className={cn(
-              'border-[.8px] transition-colors duration-1000',
-              proposalType === chosenProposal ? 'border-primary' : 'border-transparent',
-            )}
-          />
-        ))}
+      <div className="mb-4 lg:mb-10 max-w-[740px] min-w-[600px] mx-auto">
+        <HeaderTitle className="mb-24 text-5xl text-center">Choose Your Proposal</HeaderTitle>
+        <div ref={cardsRef} className="flex flex-row gap-4 justify-between overflow-x-auto">
+          {Object.entries(cardData).map(([proposalType, card], index) => (
+            <Card
+              key={card.id}
+              proposal={proposalType as ProposalType}
+              isHighlighted={
+                // all cards are highlighted on mount
+                (hoverIndex === null && chosenProposal === null) ||
+                // highlight hovered card
+                hoverIndex === index ||
+                // highlight selected card
+                chosenProposal === proposalType
+              }
+              onMouseEnter={() => setHoverIndex(index)}
+              onMouseLeave={() => setHoverIndex(null)}
+              link={`/proposals/create?${new URLSearchParams({
+                contract: card.contract,
+                action: card.action,
+              })}`}
+              showInfoPanel={() => setChosenProposal(proposalType as ProposalType)}
+              // Orange border around selected card
+              className={cn(
+                'border-[.8px] transition-colors duration-1000',
+                proposalType === chosenProposal ? 'border-primary' : 'border-transparent',
+              )}
+            />
+          ))}
+        </div>
       </div>
-      <div ref={infoPanelRef} className="relative">
+      <div ref={infoPanelRef} className="relative max-w-[1130px] min-w-[600px] mx-auto">
         {/* Fades the info panel in and out when it is added to or removed from the DOM. */}
         <AnimatePresence mode="wait">
           {chosenProposal !== null && (
@@ -59,6 +61,6 @@ export default function ChooseProposal() {
           )}
         </AnimatePresence>
       </div>
-    </div>
+    </>
   )
 }

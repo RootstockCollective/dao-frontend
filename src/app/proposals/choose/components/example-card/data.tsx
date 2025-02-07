@@ -48,24 +48,4 @@ export const exampleCardData: Record<ProposalType, Example> = {
     ),
     description: 'Example of a Builder activation proposal',
   },
-  Deactivation: {
-    title: 'OpenOcean Deactivation',
-    proposalId: '7842',
-    proposer: '0x023...De34Bf',
-    Text: props => (
-      <div {...props}>
-        <p>
-          This proposal recommends the deactivation of OpenOcean as a Builder within the Rootstock Collective
-          DAO. Following an evaluation of the builder’s progress and alignment with the DAO’s priorities, we
-          suggest ending OpenOcean’s active engagement due to lack of activity
-        </p>
-        <p>
-          Deactivating OpenOcean ensures that DAO resources are focused on builders and initiatives that align
-          with our current objectives. This decision allows us to redirect attention and funding toward
-          higher-priority projects while maintaining transparency and accountability.
-        </p>
-      </div>
-    ),
-    description: 'Example of a Builder deactivation proposal',
-  },
 }

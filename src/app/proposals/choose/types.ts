@@ -1,1 +1,1 @@
-export type ProposalType = 'Standard' | 'Activation' | 'Deactivation'
+export type ProposalType = 'Standard' | 'Activation'

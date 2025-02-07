@@ -6,7 +6,7 @@ import { HTMLAttributes } from 'react'
  * To prevent it from breaking onto a new line, ensure a non-breaking space (`&nbsp;`)
  * is placed before it.
  */
-export function LinkArrow({ className, ...props }: HTMLAttributes<HTMLSpanElement>) {
+export function ArrowIcon({ className, ...props }: HTMLAttributes<HTMLSpanElement>) {
   return (
     // Wrapping SVG in <span> to apply `whitespace-nowrap`
     // This ensures the arrow doesn't break onto a new line
@@ -31,4 +31,4 @@ export function LinkArrow({ className, ...props }: HTMLAttributes<HTMLSpanElemen
     </span>
   )
 }
-export default LinkArrow
+export default ArrowIcon

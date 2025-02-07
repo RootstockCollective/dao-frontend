@@ -3,6 +3,7 @@ import type { ProposalType } from '../../types'
 import ChatIcon from './icons/chat-icon'
 import DocIcon from './icons/doc-icon'
 import KycIcon from './icons/kyc-icon'
+import { DeactivationFooter } from './deactivation-footer'
 
 interface MustHave {
   title: string
@@ -13,11 +14,12 @@ interface MustHave {
     linkUrl: string
     Icon: typeof ChatIcon
   }[]
+  Footer?: FC<HTMLAttributes<HTMLElement>>
 }
 
 export const infoPanelData: Record<ProposalType, MustHave> = {
   Standard: {
-    title: 'Get a Grant - Must Have',
+    title: 'Get a Grant Must Have',
     requirements: [
       {
         id: 1,
@@ -64,7 +66,7 @@ export const infoPanelData: Record<ProposalType, MustHave> = {
     ],
   },
   Activation: {
-    title: 'Join Builder Rewards - Must Have',
+    title: 'Join Builder Rewards Must Have',
     requirements: [
       {
         id: 1,
@@ -110,33 +112,6 @@ export const infoPanelData: Record<ProposalType, MustHave> = {
         Icon: KycIcon,
       },
     ],
-  },
-  Deactivation: {
-    title: 'Deactivation Must Have',
-    requirements: [
-      {
-        id: 1,
-        Text: props => (
-          <span {...props}>
-            We are sad to see you go. Clearly explain why the project no longer aligns with the goals of the
-            Collective Rewards in a proposal
-          </span>
-        ),
-        LinkText: props => <span {...props}>Learn more on how to submit a draft proposal</span>,
-        linkUrl: 'https://rootstockcollective.xyz/collective-rewards-become-a-builder/',
-        Icon: DocIcon,
-      },
-      {
-        id: 2,
-        Text: props => (
-          <span {...props}>
-            Make sure you have already made an off-chain Governance Forum post on Discourse
-          </span>
-        ),
-        LinkText: props => <span {...props}>Go to Governance Forum on Discourse</span>,
-        linkUrl: 'https://gov.rootstockcollective.xyz/c/collective-rewards/7',
-        Icon: ChatIcon,
-      },
-    ],
+    Footer: DeactivationFooter,
   },
 }
