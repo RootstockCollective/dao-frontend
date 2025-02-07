@@ -34,7 +34,7 @@ export function InfoPanel({ proposal, className }: InfoPanelProps) {
                     <Typography>{i + 1}.</Typography>
                     <Text className="leading-tight" />
                   </div>
-                  <ArrowLink href={linkUrl}>
+                  <ArrowLink target="_blank" rel="noopener noreferrer" href={linkUrl}>
                     <LinkText className="inline text-lg font-[600] leading-tight text-primary" />
                   </ArrowLink>
                 </li>
