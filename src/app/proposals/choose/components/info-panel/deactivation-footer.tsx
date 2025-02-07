@@ -7,7 +7,7 @@ export function DeactivationFooter({ className, ...props }: HTMLAttributes<HTMLD
   return (
     <div className={cn(className, 'flex flex-col')} {...props}>
       <HeaderTitle className="text-[14px] uppercase leading-none">A builder needs to leave ?</HeaderTitle>
-      <ArrowLink href="https://gov.rootstockcollective.xyz/c/collective-rewards/7">
+      <ArrowLink href="/proposals/create?contract=BuilderRegistryAbi&action=dewhitelistBuilder">
         <Typography className="inline text-sm font-[600]">Propose a builder Deactivation</Typography>
       </ArrowLink>
     </div>
