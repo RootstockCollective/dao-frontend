@@ -1,4 +1,4 @@
-import { HTMLAttributes, useState, useRef, useCallback, ReactNode } from 'react'
+import { HTMLAttributes, useState, useRef, ReactNode } from 'react'
 import { motion, AnimatePresence } from 'motion/react'
 import { ChevronDown, X, ChevronRight } from 'lucide-react'
 import { cn } from '@/lib/utils'
@@ -67,12 +67,12 @@ export const Dropdown = ({ className, ...props }: DropdownProps) => {
         )}
         data-testid="PrepareYourProposalDropdown"
       >
-        <div>
+        <div className={`${isOpen ? 'flex flex-row' : ''}`}>
           <HeaderTitle className="text-lg leading-none text-black whitespace-nowrap">
             {props.title}
           </HeaderTitle>
           {props.subtitle ? (
-            <Typography className="text-[10px] text-left text-black">{props.subtitle}</Typography>
+            <Typography className={cn("text-[10px] text-left text-black", isOpen && 'ml-1')}>{props.subtitle}</Typography>
           ) : null}
         </div>
         {isOpen ? <X className="text-black cursor-pointer" /> : <ChevronDown className="text-black" />}
@@ -85,7 +85,7 @@ export const Dropdown = ({ className, ...props }: DropdownProps) => {
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -10 }}
             transition={{ duration: 0.2 }}
-            className="absolute left-0 top-full w-full bg-[#E4E1DA] rounded-b-[4px] overflow-hidden z-10 shadow-lg pb-[18px]"
+            className="absolute left-0 top-full w-full bg-[#E4E1DA] rounded-b-[4px] overflow-y-auto max-h-[450px] scroll-smooth z-10 shadow-lg pb-[18px]"
           >
             <Typography className="px-5 max-w-[330px] text-[#666057] text-[15px] leading-snug">
               {props.description}
