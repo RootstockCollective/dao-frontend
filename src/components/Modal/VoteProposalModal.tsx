@@ -13,8 +13,8 @@ const QuestionMarkWithTooltip = () => (
     <div className="inline-flex items-center justify-center w-5 h-5 rounded-full border border-gray-400 text-gray-400 text-sm font-medium hover:border-gray-300 hover:text-gray-300 cursor-help">
       ?
     </div>
-    <div className="invisible group-hover:visible opacity-0 group-hover:opacity-100 transition-opacity absolute z-50 bottom-full left-1/2 -translate-x-1/2 mb-2 w-[400px]">
-      <div className="bg-gray-900 p-4 rounded-lg border border-gray-800 shadow-lg">
+    <div className="invisible group-hover:visible opacity-0 group-hover:opacity-100 transition-opacity absolute z-50 bottom-full left-4/5 -translate-x-1/4 mb-2 w-[400px]">
+      <div className="bg-[#1A1A1A] p-4 rounded-lg border border-gray-800 shadow-lg">
         <p className="text-sm text-gray-200 mb-2">
           Your Total Voting Power is the sum of your stake-based voting power and any delegated voting power.
         </p>
@@ -96,7 +96,7 @@ export const VoteProposalModal: FC<Props> = ({
             <Typography className="flex-1 font-mono">{shortAddress(address)}</Typography>
             <button
               onClick={() => navigator.clipboard.writeText(address)}
-              className="text-gray-400 hover:text-white"
+              className="text-[#2D2D2D] hover:text-white"
             >
               <FaCopy size={16} />
             </button>
