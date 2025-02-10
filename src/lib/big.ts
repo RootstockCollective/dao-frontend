@@ -1,11 +1,9 @@
-import Big, { RoundingMode } from 'big.js'
+import Big, { BigSource, RoundingMode } from 'big.js'
 
-/*
-Single source for all Big Number related logic
-
-Feel free to add methods as needed, so that it can be re-used across the codebase.
+/**
+ * Single source for all Big Number related logic
+ * Feel free to add methods as needed, so that it can be re-used across the codebase.
  */
-
 declare module 'big.js' {
   interface BigConstructor {
     max(...args: Big[]): Big
@@ -108,4 +106,8 @@ Big.prototype.toFixedNoTrailing = function (dp?: number, rm?: RoundingMode) {
   return `${parts[0]}.${trimmedDecimal}`
 }
 
+const round = (value: BigSource, decimalPlaces?: number, rm?: RoundingMode) =>
+  new Big(value).round(decimalPlaces, rm).toString()
+
+export { round }
 export default Big

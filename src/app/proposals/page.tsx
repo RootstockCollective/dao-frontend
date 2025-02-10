@@ -11,6 +11,7 @@ import { useVotingPower } from './hooks/useVotingPower'
 import { useMemo } from 'react'
 import { formatNumberWithCommas } from '@/lib/utils'
 import Image from 'next/image'
+import { round } from '@/lib/big'
 
 export default function Proposals() {
   const { canCreateProposal, threshold, totalVotingPower = '' } = useVotingPower()
@@ -24,9 +25,11 @@ export default function Proposals() {
       <div className="grid grid-rows-1 gap-[32px] mb-[100px]">
         <div>
           <VotingPowerPopover />
-          <Paragraph className="text-[48px] text-primary tracking-[-0.96px]" fontFamily="kk-topo">
-            {formatNumberWithCommas(totalVotingPower)}
-          </Paragraph>
+          {totalVotingPower && (
+            <Paragraph className="text-[48px] text-primary tracking-[-0.96px]" fontFamily="kk-topo">
+              {formatNumberWithCommas(round(totalVotingPower))}
+            </Paragraph>
+          )}
         </div>
         <div className="flex flex-row gap-x-6">
           {/*<MetricsCard title="Votes" amount="-" />*/}

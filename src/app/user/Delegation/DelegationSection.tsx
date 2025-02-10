@@ -19,6 +19,7 @@ import { useGetExternalDelegatedAmount } from '@/shared/hooks/useGetExternalDele
 import { TokenValue } from '@/app/user/Delegation/TokenValue'
 import { Popover } from '@/components/Popover'
 import Image from 'next/image'
+import { formatUnits } from 'ethers'
 
 export const DelegationSection = () => {
   const { address } = useAccount()
@@ -57,7 +58,7 @@ export const DelegationSection = () => {
     useGetExternalDelegatedAmount(address)
 
   const delegatedToMe = {
-    'Voting Power Received': <TokenValue symbol="stRIF" amount={amountDelegatedToMe} shouldFormatBalance />,
+    'Voting Power Received': <TokenValue symbol="stRIF" amount={formatUnits(amountDelegatedToMe)} />,
   }
 
   return (
