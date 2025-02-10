@@ -4,16 +4,17 @@ import { ChevronDown, X, ChevronRight } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { HeaderTitle, Typography } from '@/components/Typography'
 import { useClickOutside } from '@/shared/hooks/useClickOutside'
-import { DropdownItem } from './data'
+import { DropdownItem, DropdownTopic } from './data'
 
 /**
  * Custom dropdown menu with smooth animation
  */
 
-interface Props extends HTMLAttributes<HTMLDivElement> {
+export interface DropdownProps extends HTMLAttributes<HTMLDivElement> {
   title: string
   description: string
-  itemsData: DropdownItem[]
+  data: DropdownTopic[]
+  subtitle?: string
   footer?: ReactNode
 }
 
@@ -47,7 +48,7 @@ export const DropdownItemComponent = ({ id, onClick, title, text, Icon, TitleIco
   )
 }
 
-export const Dropdown = ({ className, ...props }: Props) => {
+export const Dropdown = ({ className, ...props }: DropdownProps) => {
   const [isOpen, setIsOpen] = useState(false)
   const toggle = () => setIsOpen(!isOpen)
   const close = () => setIsOpen(false)
@@ -66,7 +67,14 @@ export const Dropdown = ({ className, ...props }: Props) => {
         )}
         data-testid="PrepareYourProposalDropdown"
       >
-        <HeaderTitle className="text-lg leading-none text-black whitespace-nowrap">{props.title}</HeaderTitle>
+        <div>
+          <HeaderTitle className="text-lg leading-none text-black whitespace-nowrap">
+            {props.title}
+          </HeaderTitle>
+          {props.subtitle ? (
+            <Typography className="text-[10px] text-left text-black">{props.subtitle}</Typography>
+          ) : null}
+        </div>
         {isOpen ? <X className="text-black cursor-pointer" /> : <ChevronDown className="text-black" />}
       </button>
 
@@ -82,20 +90,27 @@ export const Dropdown = ({ className, ...props }: Props) => {
             <Typography className="px-5 max-w-[330px] text-[#666057] text-[15px] leading-snug">
               {props.description}
             </Typography>
+            {props.data.map(({ topic, items }) => (
+              <div key={topic ?? 'Uncategorized'} className="py-3 flex flex-col">
+                {topic ? (
+                  <Typography className="ml-5 text-[12px] leading-none text-[#171412] font-bold font-rootstock-sans">
+                    {topic}
+                  </Typography>
+                ) : null}
+                {items.map(({ Icon, text, title, id, onClick, TitleIcon }) => (
+                  <DropdownItemComponent
+                    key={id}
+                    id={id}
+                    onClick={onClick}
+                    title={title}
+                    text={text}
+                    Icon={Icon}
+                    TitleIcon={TitleIcon}
+                  />
+                ))}
+              </div>
+            ))}
 
-            <div className="py-3 flex flex-col">
-              {props.itemsData.map(({ Icon, text, title, id, onClick, TitleIcon }) => (
-                <DropdownItemComponent
-                  key={id}
-                  id={id}
-                  onClick={onClick}
-                  title={title}
-                  text={text}
-                  Icon={Icon}
-                  TitleIcon={TitleIcon}
-                />
-              ))}
-            </div>
             {props.footer ? props.footer : null}
           </motion.div>
         )}
