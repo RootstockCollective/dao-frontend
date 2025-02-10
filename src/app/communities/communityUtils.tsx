@@ -46,7 +46,7 @@ export const earlyAdoptersCommunity = {
         <br />
         <b>REQUIREMENT:</b> First 150 stakers with 1 stRIF, Self-Claim
         <br />
-        <b>ACTIVATION:</b> Mar 2025
+        <b>ACTIVATION:</b> Jul 2025
       </p>
     </>
   ),
@@ -74,7 +74,7 @@ export const ogFounders: CommunityItem = {
         <br />
         <b>REQUIREMENT:</b> 1 stRIF on 23rd Sept 2024, Self-Claim
         <br />
-        <b>ACTIVATION:</b> Feb 2025
+        <b>ACTIVATION:</b> May 2025
       </p>
     </>
   ),
@@ -102,7 +102,7 @@ export const ogFoundersEcosystemPartners: CommunityItem = {
         <br />
         <b>REQUIREMENT:</b> Recognised Community contributions, 25k stRIF, Air-Drop
         <br />
-        <b>ACTIVATION:</b> Apr 2025
+        <b>ACTIVATION:</b> Jun 2025
       </p>
     </>
   ),
@@ -161,7 +161,7 @@ export const vanguardCommunity = {
         <br />
         <b>REQUIREMENT:</b> Voted on 1 of the last 3 proposals, Self-Claim
         <br />
-        <b>ACTIVATION:</b> Mar 2025
+        <b>ACTIVATION:</b> Apr 2025
       </p>
     </>
   ),
@@ -207,7 +207,7 @@ export const betaBuilders: CommunityItem = {
         <br />
         <b>REQUIREMENT:</b> First 50 CollectiveRewards Builders, Air-Drop
         <br />
-        <b>ACTIVATION:</b> Apr 2025
+        <b>ACTIVATION:</b> May 2025
       </p>
     </>
   ),
