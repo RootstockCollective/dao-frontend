@@ -1,6 +1,5 @@
-import { cn, formatNumberWithCommas, shortAddress } from '@/lib/utils'
+import { cn, shortAddress } from '@/lib/utils'
 import { FC, ReactNode } from 'react'
-import { Paragraph } from '../Typography/Paragraph'
 import { Address } from 'viem'
 import { BoxIcon } from 'lucide-react'
 import { Span, Typography } from '../Typography'
@@ -71,7 +70,7 @@ export const MetricsCard: FC<MetricsCardProps> = ({
           className="text-[24px] text-primary font-normal"
           data-testid="Amount"
         >
-          {formatNumberWithCommas(amount)}
+          {amount}
         </Typography>
       </div>
       {fiatAmount && (
