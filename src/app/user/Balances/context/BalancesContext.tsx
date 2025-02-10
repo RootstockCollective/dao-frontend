@@ -1,4 +1,4 @@
-import { createContext, FC, ReactNode, useCallback, useContext, useMemo, useState } from 'react'
+import { createContext, FC, ReactNode, useContext, useMemo } from 'react'
 import { useGetAddressBalances } from '@/app/user/Balances/hooks/useGetAddressBalances'
 import { useGetSpecificPrices } from '@/app/user/Balances/hooks/useGetSpecificPrices'
 import { GetPricesResult, TokenBalanceRecord } from '@/app/user/types'
