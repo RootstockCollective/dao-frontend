@@ -69,6 +69,8 @@ const LatestProposalsTable = ({ proposals }: LatestProposalsTableProps) => {
         setActiveFilter(keyword)
         setSearchedProposal(keyword)
       }
+      // Reset to page 1
+      setPagination(prev => ({ ...prev, pageIndex: 0 }))
     },
     [activeFilter],
   )
@@ -95,6 +97,8 @@ const LatestProposalsTable = ({ proposals }: LatestProposalsTableProps) => {
       if (!isFilterChanging.current) {
         setActiveFilter(null)
         setSearchedProposal(value)
+        // Reset to page 1
+        setPagination(prev => ({ ...prev, pageIndex: 0 }))
       }
     },
     [activeFilter],
