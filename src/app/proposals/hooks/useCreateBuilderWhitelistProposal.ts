@@ -18,7 +18,7 @@ export const useCreateBuilderWhitelistProposal = () => {
     if (!canCreateProposal) {
       throw NoVotingPowerError
     }
-    const builderGauge = await getBuilderGauge(builderRegistryAddress, builderAddress)
+    const builderGauge = await getBuilderGauge(builderRegistryAddress!, builderAddress)
     if (builderGauge !== zeroAddress) {
       // TODO: maybe we can use a different error here
       throw AddressAlreadyWhitelistedError

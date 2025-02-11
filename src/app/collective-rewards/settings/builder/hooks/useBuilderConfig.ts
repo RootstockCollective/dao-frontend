@@ -90,7 +90,7 @@ export const useSetBackerRewardsForBuilder = (): SetBackerRewardsForBuilder => {
 
   const setNewReward = async (newReward: bigint) => {
     return await writeContractAsync({
-      address: builderRegistryAddress,
+      address: builderRegistryAddress!,
       abi: BuilderRegistryAbi,
       functionName: 'setBackerRewardPercentage',
       args: [newReward],

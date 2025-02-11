@@ -1,4 +1,3 @@
-import { useQuery } from '@tanstack/react-query'
 import {
   createContext,
   Dispatch,
@@ -11,64 +10,65 @@ import {
 } from 'react'
 import { Address, zeroAddress } from 'viem'
 import { AVERAGE_BLOCKTIME, CR_MIGRATING } from '@/lib/constants'
-import { readContract } from '@wagmi/core'
-import { config } from '@/config'
 import { BuilderRegistryAbi } from '@/lib/abis/v2/BuilderRegistryAbi'
-import { BackersManagerAddress, BuilderRegistryAddress, RewardDistributorAddress } from '@/lib/contracts'
+import { BackersManagerAddress, BuilderRegistryAddress } from '@/lib/contracts'
+import { useReadContract } from 'wagmi'
 
 type EnvironmentsContextType = {
   backersManagerAddress: Address
-  builderRegistryAddress: Address
-  rewardDistributorAddress: Address
+  builderRegistryAddress: Address | undefined
 }
 const EnvironmentsContext = createContext<EnvironmentsContextType>({
-  backersManagerAddress: zeroAddress,
-  builderRegistryAddress: zeroAddress,
-  rewardDistributorAddress: zeroAddress,
+  backersManagerAddress: BackersManagerAddress,
+  builderRegistryAddress: undefined,
 })
 
 type EnvironmentsProviderProps = {
   children: ReactNode
 }
 export const EnvironmentsProvider: FC<EnvironmentsProviderProps> = ({ children }) => {
-  const [builderRegistryAddress, setBuilderRegistryAddress] = useState<Address>(BackersManagerAddress)
+  const [builderRegistryAddress, setBuilderRegistryAddress] = useState<Address | undefined>()
 
   useBuilderRegistryMigration(setBuilderRegistryAddress)
 
   const valueOfContext: EnvironmentsContextType = {
     backersManagerAddress: BackersManagerAddress,
     builderRegistryAddress,
-    rewardDistributorAddress: RewardDistributorAddress,
   }
 
   return <EnvironmentsContext.Provider value={valueOfContext}>{children}</EnvironmentsContext.Provider>
 }
 
-const useBuilderRegistryMigration = (setBuilderRegistryAddress: Dispatch<SetStateAction<Address>>) => {
+const useBuilderRegistryMigration = (
+  setBuilderRegistryAddress: Dispatch<SetStateAction<Address | undefined>>,
+) => {
   const [migrated, setMigrated] = useState(false)
 
-  const { data: validation } = useQuery({
-    queryFn: async () => {
-      const gaugesLength = await readContract(config, {
-        address: BuilderRegistryAddress,
-        abi: BuilderRegistryAbi,
-        functionName: 'getGaugesLength',
-      })
-
-      return gaugesLength > 0
+  const { data: gaugesLength } = useReadContract({
+    address: BuilderRegistryAddress,
+    abi: BuilderRegistryAbi,
+    functionName: 'getGaugesLength',
+    query: {
+      refetchInterval: AVERAGE_BLOCKTIME,
+      enabled: CR_MIGRATING && !migrated && BuilderRegistryAddress !== zeroAddress,
     },
-    queryKey: ['builderRegistryMigration'],
-    refetchInterval: AVERAGE_BLOCKTIME,
-    initialData: false,
-    enabled: CR_MIGRATING && !migrated && BuilderRegistryAddress != zeroAddress,
   })
 
   useEffect(() => {
-    if (validation) {
-      setBuilderRegistryAddress(BuilderRegistryAddress)
-      setMigrated(true)
+    if (!CR_MIGRATING || BuilderRegistryAddress === zeroAddress) {
+      setBuilderRegistryAddress(BackersManagerAddress)
+      return
     }
-  }, [setBuilderRegistryAddress, validation])
+
+    if (gaugesLength !== undefined) {
+      if (gaugesLength > 0n) {
+        setBuilderRegistryAddress(BuilderRegistryAddress)
+        setMigrated(true)
+      } else {
+        setBuilderRegistryAddress(BackersManagerAddress)
+      }
+    }
+  }, [gaugesLength, setBuilderRegistryAddress])
 }
 
 export const useEnvironmentsContext = () => useContext(EnvironmentsContext)

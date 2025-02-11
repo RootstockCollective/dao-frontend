@@ -1,17 +1,17 @@
 import { describe, it, vi, expect, beforeEach, afterEach } from 'vitest'
-import { useQuery, UseQueryResult } from '@tanstack/react-query'
 import { renderHook } from '@testing-library/react'
 import { EnvironmentsProvider, useEnvironmentsContext } from '@/shared/context/EnvironmentsContext'
 import { ReactNode } from 'react'
 import * as contracts from '@/lib/contracts'
 import * as constants from '@/lib/constants'
 import { zeroAddress } from 'viem'
+import { useReadContract, UseReadContractReturnType } from 'wagmi'
 
-vi.mock(import('@tanstack/react-query'), async importOriginal => {
+vi.mock(import('wagmi'), async importOriginal => {
   const actual = await importOriginal()
   return {
     ...actual,
-    useQuery: vi.fn(),
+    useReadContract: vi.fn(),
   }
 })
 
@@ -35,15 +35,15 @@ const wrapper = ({ children }: { children: ReactNode }) => (
 
 const renderHookWithProvider = () => renderHook(() => useEnvironmentsContext(), { wrapper })
 
-const mockUseQuery = (data: boolean) => {
-  vi.mocked(useQuery).mockReturnValue({
+const mockUseQuery = (data: bigint | undefined) => {
+  vi.mocked(useReadContract).mockReturnValue({
     data,
-  } as UseQueryResult)
+  } as UseReadContractReturnType)
 }
 
 describe('EnvironmentsContext', () => {
   beforeEach(() => {
-    mockUseQuery(false)
+    mockUseQuery(undefined)
   })
 
   afterEach(() => {
@@ -52,76 +52,98 @@ describe('EnvironmentsContext', () => {
   })
 
   describe('useBuilderRegistryMigration', () => {
-    it('should not enable the hook if BuilderRegistryAddress is zero address', async () => {
+    it('should not enable the hook if BuilderRegistryAddress is zero address', () => {
       vi.spyOn(contracts, 'BuilderRegistryAddress', 'get').mockReturnValue(zeroAddress)
 
       const { result } = renderHookWithProvider()
 
       expect(result.current.builderRegistryAddress).toBe('0x123')
-      expect(useQuery).toBeCalledWith(
+      expect(useReadContract).toBeCalledWith(
         expect.objectContaining({
-          enabled: false,
+          query: expect.objectContaining({
+            enabled: false,
+          }),
         }),
       )
     })
 
-    it('should not enable the hook if CR_MIGRATING is false', async () => {
+    it('should not enable the hook if CR_MIGRATING is false', () => {
       vi.spyOn(constants, 'CR_MIGRATING', 'get').mockReturnValue(false)
 
       const { result } = renderHookWithProvider()
 
       expect(result.current.builderRegistryAddress).toBe('0x123')
-      expect(useQuery).toBeCalledWith(
+      expect(useReadContract).toBeCalledWith(
         expect.objectContaining({
-          enabled: false,
+          query: expect.objectContaining({
+            enabled: false,
+          }),
         }),
       )
     })
 
-    it('should return BackersManagerAddress if migration has not occurred', async () => {
+    it('should return BackersManagerAddress if migration has not occurred', () => {
+      mockUseQuery(0n)
       const { result } = renderHookWithProvider()
 
       expect(result.current.builderRegistryAddress).toBe('0x123')
-      expect(useQuery).toBeCalledWith(
+      expect(useReadContract).toBeCalledWith(
         expect.objectContaining({
-          enabled: true,
+          query: expect.objectContaining({
+            enabled: true,
+          }),
         }),
       )
     })
 
-    it('should return BuilderRegistryAddress if migration has occurred', async () => {
-      mockUseQuery(true)
+    it('should return BuilderRegistryAddress if migration has occurred', () => {
+      mockUseQuery(1n)
 
       const { result } = renderHookWithProvider()
 
       expect(result.current.builderRegistryAddress).toBe('0x456')
-      expect(useQuery).toBeCalledWith(
+      expect(useReadContract).toBeCalledWith(
         expect.objectContaining({
-          enabled: true,
+          query: expect.objectContaining({
+            enabled: true,
+          }),
         }),
       )
     })
 
-    it('should disable the hook after migration has occurred', async () => {
+    it('should disable the hook after migration has occurred', () => {
+      mockUseQuery(0n)
       const { result: priorMigration } = renderHookWithProvider()
 
       expect(priorMigration.current.builderRegistryAddress).toBe('0x123')
-      expect(useQuery).toBeCalledWith(
+      expect(useReadContract).toBeCalledWith(
         expect.objectContaining({
-          enabled: true,
+          query: expect.objectContaining({
+            enabled: true,
+          }),
         }),
       )
 
-      mockUseQuery(true)
+      mockUseQuery(1n)
 
       const { result: afterMigration } = renderHookWithProvider()
 
       expect(afterMigration.current.builderRegistryAddress).toBe('0x456')
-      expect(useQuery).toBeCalledWith(
+      expect(useReadContract).toBeCalledWith(
         expect.objectContaining({
-          enabled: false,
+          query: expect.objectContaining({
+            enabled: false,
+          }),
         }),
       )
+    })
+
+    it('should return undefined if first query has not occurred', () => {
+      mockUseQuery(undefined)
+
+      const { result } = renderHookWithProvider()
+
+      expect(result.current.builderRegistryAddress).toBeUndefined()
     })
   })
 })
