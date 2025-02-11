@@ -12,7 +12,7 @@ text-black bg-input-bg
 text-text-primary
 rounded-[6px]
 border-[1px]
-border-[white]/[0.10]
+border-[rgb(45,45,45)]
 placeholder:text-input-placeholder
 focus:outline-none
 focus-visible:ring-1 focus-visible:ring-ring

@@ -1,5 +1,6 @@
+import Image from 'next/image'
 import { Modal } from '@/components/Modal/Modal'
-import { HeaderTitle, Paragraph } from '@/components/Typography'
+import { HeaderTitle, Paragraph, Typography } from '@/components/Typography'
 import { Button } from '@/components/Button'
 import { Input } from '@/components/Input'
 import { useState, useEffect } from 'react'
@@ -11,6 +12,9 @@ import { CHAIN_ID } from '@/lib/constants'
 import { Address, checksumAddress } from 'viem'
 import { debounce } from 'lodash'
 import { resolveRnsDomain } from '@/lib/rns'
+import { PasteButton } from '@/components/PasteButton'
+import { Popover } from '@/components/Popover'
+import questionImg from '@/public/images/question.svg'
 
 interface DelegateModalProps {
   onClose: () => void
@@ -98,24 +102,47 @@ export const DelegateModal = ({ onClose, onDelegateTxStarted }: DelegateModalPro
   }, [])
 
   return (
-    <Modal onClose={onClose} width={892}>
-      <div className="px-[157px] py-[45px] text-center">
-        <HeaderTitle className="mb-[16px]">Delegate</HeaderTitle>
-        <Paragraph className="mb-[16px]">
-          This action lets you delegate all of your voting power to the selected address.
+    <Modal onClose={onClose} className="w-full max-w-[892px] px-16 pt-10 pb-24">
+      <div className="text-center">
+        <HeaderTitle className="mb-[16px]">Choose Your Delegate</HeaderTitle>
+        <Paragraph className="mb-12 text-sm">
+          Delegate all voting power to an address. Your stRF balance{' '}
+          <span className="text-primary">remains unaffected</span>.
           <br />
-          You can easily change or remove this delegation if needed.
+          Delegation can be updated anytime.
         </Paragraph>
         <div className="mb-14">
-          <Input
-            label="Address or RNS Domain"
-            name="address"
-            value={addressToDelegateTo}
-            onChange={onAddressChange}
-            className="mb-1"
-            fullWidth
-            labelWrapperProps={{ className: 'text-left mb-[10px]' }}
-          />
+          <div className="mb-10 text-left">
+            <PasteButton handlePaste={onAddressChange} className="right-3 top-11">
+              <Input
+                label="Address or RNS"
+                name="address"
+                value={addressToDelegateTo}
+                onChange={onAddressChange}
+                className="mb-2"
+                fullWidth
+                labelProps={{ className: 'text-sm tracking-wide' }}
+                labelWrapperProps={{ className: 'mb-2' }}
+              />
+              <Typography className="text-sm text-white/60">
+                Select from trusted groups or enter a custom delegate above.
+              </Typography>
+            </PasteButton>
+          </div>
+          <div className="pb-[6px] w-fit flex flex-row items-center gap-1 border-b border-b-primary">
+            <Typography className="text-sm font-bold tracking-wide">Shepherds</Typography>
+            <Popover
+              contentContainerClassName="w-64"
+              content={
+                <Typography className="text-sm">
+                  Shepherds are OG Contributors
+                  <br /> trusted by the community
+                </Typography>
+              }
+            >
+              <Image src={questionImg} alt="Tooltip" className="w-[14px] opacity-40 cursor-pointer" />
+            </Popover>
+          </div>
           {error && (
             <p className="text-st-error">
               {error}
