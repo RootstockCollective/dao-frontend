@@ -72,7 +72,9 @@ export const Dropdown = ({ className, ...props }: DropdownProps) => {
             {props.title}
           </HeaderTitle>
           {props.subtitle ? (
-            <Typography className={cn("text-[10px] text-left text-black", isOpen && 'ml-1')}>{props.subtitle}</Typography>
+            <Typography className={cn('text-[10px] text-left text-black', isOpen && 'ml-1')}>
+              {props.subtitle}
+            </Typography>
           ) : null}
         </div>
         {isOpen ? <X className="text-black cursor-pointer" /> : <ChevronDown className="text-black" />}
