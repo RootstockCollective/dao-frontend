@@ -2,13 +2,14 @@ import { governor } from '@/lib/contracts'
 import { axiosInstance } from '@/lib/utils'
 import { ethers } from 'ethers'
 
+const blockscoutAddress = process.env.NEXT_PUBLIC_BLOCKSCOUT
 const CAST_VOTE_EVENT = ethers.id('VoteCast(address,uint256,uint8,uint256,string)')
 
 export const fetchVoteCastByAddress = async (address: string, toBlockArg: bigint, fromBlock = BigInt(0)) => {
   'use server'
   try {
     const logs = await axiosInstance.get(
-      `https://rootstock-testnet.blockscout.com/api?module=logs&action=getLogs&fromBlock=${
+      `${blockscoutAddress}?module=logs&action=getLogs&fromBlock=${
         fromBlock
       }&toBlock=${toBlockArg.toString()}&address=${governor.address}&topic0=${
         CAST_VOTE_EVENT
