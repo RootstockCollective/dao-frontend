@@ -7,6 +7,7 @@ import { AlertProvider } from './AlertProvider'
 import ErrorBoundary from '@/components/ErrorPage/ErrorBoundary'
 import { BuilderContextProviderWithPrices } from '../collective-rewards/user'
 import { AllocationsContextProvider } from '../collective-rewards/allocations/context'
+import { BoosterProvider } from './NFT/BoosterContext'
 
 interface Props {
   children: ReactNode
@@ -20,7 +21,9 @@ export const ContextProviders = ({ children }: Props) => {
         <QueryClientProvider client={queryClient}>
           <AlertProvider>
             <BuilderContextProviderWithPrices>
-              <AllocationsContextProvider>{children}</AllocationsContextProvider>
+              <BoosterProvider>
+                <AllocationsContextProvider>{children}</AllocationsContextProvider>
+              </BoosterProvider>
             </BuilderContextProviderWithPrices>
           </AlertProvider>
         </QueryClientProvider>
