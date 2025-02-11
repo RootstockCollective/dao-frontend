@@ -6,6 +6,9 @@ import { KycIcon } from './icons/kyc'
 import { NumberIcon } from './icons/number'
 import { ComponentType, SVGAttributes } from 'react'
 import { AppRouterInstance } from 'next/dist/shared/lib/app-router-context.shared-runtime'
+import Big from 'big.js'
+import { TokenBalanceRecord } from '@/app/user/types'
+import { Address } from 'viem'
 
 export type SVGIconType = ComponentType<SVGAttributes<SVGSVGElement> & Record<string, any>>
 
@@ -25,6 +28,10 @@ export interface DropdownTopic {
   items: DropdownItem[]
   topic?: string
 }
+
+export const VOTE = 'VOTE'
+export const ALLOCATIONS = 'ALLOCATIONS'
+export const COMPLETED = 'COMPLETED'
 
 const onExternal = (linkUrl: string) => window.open(linkUrl, '_blank', 'noopener,noreferrer')
 
@@ -52,50 +59,107 @@ export const prepareProposalsData: DropdownTopic[] = [
   },
 ]
 
-export const getStartedData = (router: AppRouterInstance): DropdownTopic[] => [
+const checkSteps = (items: DropdownItem[], balances: TokenBalanceRecord, address: Address) => {
+  const balanceDependentSteps = checkBalancesSteps(items, balances)
+  const checkedEvents = checkEvents(balanceDependentSteps, address)
+
+  return checkedEvents
+}
+
+const checkBalancesSteps = (items: DropdownItem[], balances: TokenBalanceRecord): DropdownTopic[] => {
+  if (Big(balances[stRIF].balance).gt(0)) {
+    return [
+      {
+        items: items.slice(3),
+      },
+      {
+        topic: COMPLETED,
+        items: items.slice(0, 3),
+      },
+    ]
+  }
+
+  if (Big(balances[RIF].balance).gt(0)) {
+    return [{ items: items.slice(2) }, { topic: COMPLETED, items: items.slice(0, 2) }]
+  }
+
+  if (Big(balances[RBTC].balance).gt(0)) {
+    return [{ items: items.slice(1) }, { topic: COMPLETED, items: items.filter(step => step.id === RBTC) }]
+  }
+
+  return [{ items }]
+}
+
+const checkEvents = (steps: DropdownTopic[], address: Address): DropdownTopic[] => {
+  console.log('ADDRESS OF VOTING CHECK', address)
+  // returned previous votes from VoteCast
+  const votingArray = []
+
+  // returned array from NewAllocations
+  const allocationsArray = ['item']
+
+  const [notCompleted, completed] = steps
+  const completedObject = !completed ? { topic: COMPLETED, items: [] } : completed
+
+  if (votingArray.length >= 1) {
+    const searchIndex = notCompleted.items.findIndex(item => item.id === VOTE)
+    completedObject.items.push(notCompleted.items.splice(searchIndex, 1)[0])
+  }
+
+  if (allocationsArray.length >= 1) {
+    const searchIndex = notCompleted.items.findIndex(item => item.id === ALLOCATIONS)
+    completedObject.items.push(notCompleted.items.splice(searchIndex, 1)[0])
+  }
+
+  return [notCompleted, completedObject]
+}
+
+const getStartedData = (router: AppRouterInstance): DropdownItem[] => [
   {
-    items: [
-      {
-        id: RBTC,
-        Icon: props => <NumberIcon number="1" {...props} />,
-        title: 'GET RBTC',
-        text: 'Learn more about rBTC',
-        onClick: () => onExternal(currentLinks.rbtc),
-        TitleIcon: (props: TokenImageWithPreconfigutedSymbol) => (
-          <TokenImage symbol={RBTC} size={props.size} className={props.className} />
-        ),
-      },
-      {
-        id: RIF,
-        Icon: props => <NumberIcon number="2" {...props} />,
-        title: 'GET RIF',
-        text: 'Learn more about RIF',
-        onClick: () => onExternal(currentLinks.getRif),
-        TitleIcon: (props: TokenImageWithPreconfigutedSymbol) => (
-          <TokenImage symbol={RIF} size={props.size} className={props.className} />
-        ),
-      },
-      {
-        id: stRIF,
-        Icon: props => <NumberIcon number="3" {...props} />,
-        title: 'Stake RIF',
-        text: 'Learn more about staking',
-        onClick: () => onExternal(''),
-      },
-      {
-        id: 'VOTE',
-        Icon: props => <NumberIcon number="4" {...props} />,
-        title: 'VOTE ON YOUR FIRST PROPOSAL',
-        text: '',
-        onClick: () => router.push('/proposals'),
-      },
-      {
-        id: 'ALLOCATIONS',
-        Icon: props => <NumberIcon number="5" {...props} />,
-        title: 'MAKE YOUR FIRST ALLOCATIONS OF RIF',
-        text: 'Learn more about allocations',
-        onClick: () => onExternal(currentLinks.allocations),
-      },
-    ],
+    id: RBTC,
+    Icon: props => <NumberIcon number="1" {...props} />,
+    title: 'GET RBTC',
+    text: 'Learn more about rBTC',
+    onClick: () => onExternal(currentLinks.rbtc),
+    TitleIcon: (props: TokenImageWithPreconfigutedSymbol) => (
+      <TokenImage symbol={RBTC} size={props.size} className={props.className} />
+    ),
+  },
+  {
+    id: RIF,
+    Icon: props => <NumberIcon number="2" {...props} />,
+    title: 'GET RIF',
+    text: 'Learn more about RIF',
+    onClick: () => onExternal(currentLinks.getRif),
+    TitleIcon: (props: TokenImageWithPreconfigutedSymbol) => (
+      <TokenImage symbol={RIF} size={props.size} className={props.className} />
+    ),
+  },
+  {
+    id: stRIF,
+    Icon: props => <NumberIcon number="3" {...props} />,
+    title: 'Stake RIF',
+    text: 'Learn more about staking',
+    onClick: () => onExternal(''),
+  },
+  {
+    id: VOTE,
+    Icon: props => <NumberIcon number="4" {...props} />,
+    title: 'VOTE ON YOUR FIRST PROPOSAL',
+    text: '',
+    onClick: () => router.push('/proposals'),
+  },
+  {
+    id: ALLOCATIONS,
+    Icon: props => <NumberIcon number="5" {...props} />,
+    title: 'MAKE YOUR FIRST ALLOCATIONS OF RIF',
+    text: 'Learn more about allocations',
+    onClick: () => onExternal(currentLinks.allocations),
   },
 ]
+
+export const getGetStartedData = (
+  router: AppRouterInstance,
+  balances: TokenBalanceRecord,
+  address: Address,
+) => checkSteps(getStartedData(router), balances, address)

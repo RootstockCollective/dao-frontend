@@ -14,17 +14,13 @@ import { useAccount } from 'wagmi'
 import { useIsBuilderOrBacker } from '../collective-rewards/rewards/hooks/useIsBuilderOrBacker'
 import { useHandleErrors } from '../collective-rewards/utils'
 import { BecomeABuilderButton } from '../collective-rewards/user'
-import { Dropdown, DropdownItem, DropdownTopic, getStartedData } from '@/components/dropdown'
+import { COMPLETED, Dropdown, DropdownTopic, getGetStartedData } from '@/components/dropdown'
 import { dropdown } from '@/shared/contants'
 import { HeaderTitle, Typography } from '@/components/Typography'
 import { BalancesProvider, useBalancesContext } from './Balances/context/BalancesContext'
-import { TokenBalanceRecord } from './types'
-import { RBTC, RIF, stRIF } from '@/lib/constants'
-import Big from 'big.js'
 
 const getStartedSkipped = 'getStartedSkipped'
 const values = ['holdings', 'rewards'] as const
-const COMPLETED = 'COMPLETED'
 
 type TabValue = (typeof values)[number]
 type Tabs = {
@@ -44,41 +40,9 @@ const tabs: Tabs = {
   },
 }
 
-
-const checkSteps = (items: DropdownItem[],  balances: TokenBalanceRecord) => {
-  if (Big(balances[stRIF].balance).gt(0)) {
-    return [
-      {
-        items: items.slice(3),
-      },
-      {
-        topic: COMPLETED,
-        items: items.slice(0, 3),
-      },
-    ]
-  }
-
-  if (Big(balances[RIF].balance).gt(0)) {
-    return [
-      { items: items.slice(2) },
-      { topic: COMPLETED, items: items.slice(0, 2) },
-    ]
-  }
-
-  if (Big(balances[RBTC].balance).gt(0)) {
-    return [
-      { items: items.slice(1) },
-      {  topic: COMPLETED, items: items.filter(step => step.id === RBTC) },
-    ]
-  }
-
-  return [{ items }]
-}
-
-
-
 function User() {
   const { balances } = useBalancesContext()
+  const { address } = useAccount()
 
   // Getting Started dropdown
   const router = useRouter()
@@ -86,7 +50,6 @@ function User() {
   const isGetStatedSkipped = useMemo(() => Boolean(coockies.get(getStartedSkipped)), [coockies])
   const [dropdownData, setDropdownData] = useState<DropdownTopic[]>([])
 
-  const { address } = useAccount()
   const searchParams = useSearchParams()
   const tabFromParams = searchParams?.get('tab') as TabValue
   const defaultTabValue = tabs[tabFromParams]?.value ?? 'holdings'
@@ -103,10 +66,10 @@ function User() {
   }, [coockies])
 
   useEffect(() => {
-    if (!isGetStatedSkipped) {
-      setDropdownData(checkSteps(getStartedData(router)[0].items, balances))
+    if (address) {
+      setDropdownData(getGetStartedData(router, balances, address))
     }
-  }, [balances, isGetStatedSkipped])
+  }, [router, balances, address])
 
   const showAdditionalContent = !isLoading && isBuilderOrBacker
 
