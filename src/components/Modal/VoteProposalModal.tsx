@@ -63,7 +63,7 @@ export const VoteProposalModal: FC<Props> = ({
   const handleCopy = () => {
     navigator.clipboard.writeText(address)
     setCopied(true)
-    setTimeout(() => setCopied(false), 5000) // Reset after 2 seconds
+    setTimeout(() => setCopied(false), 2000) // Reset after 2 seconds
   }
 
   const baseButtonStyle = 'h-8 py-0 px-0 text-md font-normal w-1/6'
