@@ -1,12 +1,12 @@
 import { Modal } from '@/components/Modal/Modal'
-import { Header, Label, Paragraph, Typography } from '@/components/Typography'
-import { formatNumberWithCommas, shortAddress, toFixed, truncateMiddle } from '@/lib/utils'
+import { Typography } from '@/components/Typography'
+import { formatNumberWithCommas, shortAddress, truncateMiddle } from '@/lib/utils'
 import { FC, useState } from 'react'
 import { FaCopy } from 'react-icons/fa'
 import { Address } from 'viem'
-import Image from 'next/image'
 import { Button } from '@/components/Button'
 import { cn } from '@/lib/utils'
+import { round } from '@/lib/big'
 
 const QuestionMarkWithTooltip = () => (
   <div className="relative group">
@@ -14,7 +14,7 @@ const QuestionMarkWithTooltip = () => (
       ?
     </div>
     <div className="invisible group-hover:visible opacity-0 group-hover:opacity-100 transition-opacity absolute z-50 bottom-full left-4/5 -translate-x-1/4 mb-2 w-[400px]">
-      <div className="bg-[#1A1A1A] p-4 rounded-lg border border-gray-800 shadow-lg">
+      <div className="bg-[#1A1A1A] p-4 rounded-lg border border-gray-700 shadow-lg">
         <p className="text-sm text-gray-200 mb-2">
           Your Total Voting Power is the sum of your stake-based voting power and any delegated voting power.
         </p>
@@ -23,7 +23,7 @@ const QuestionMarkWithTooltip = () => (
           <span className="text-orange-500">at the time the proposal was created (+1 block)</span>, not at the
           time of voting.
         </p>
-        <div className="absolute left-1/2 -translate-x-1/2 -bottom-2 w-3 h-3 bg-gray-900 border-r border-b border-gray-800 transform rotate-45"></div>
+        <div className="absolute left-28 -translate-x-1/6 -bottom-1 w-3 h-3 bg-gray-900 border-r border-b border-gray-700 transform rotate-45"></div>
       </div>
     </div>
   </div>
@@ -51,6 +51,7 @@ export const VoteProposalModal: FC<Props> = ({
   errorMessage,
 }) => {
   const [vote, setVoting] = useState<Vote | null>(null)
+  const [copied, setCopied] = useState(false)
 
   const handleSubmit = (e: any) => {
     e.preventDefault()
@@ -59,10 +60,16 @@ export const VoteProposalModal: FC<Props> = ({
     }
   }
 
+  const handleCopy = () => {
+    navigator.clipboard.writeText(address)
+    setCopied(true)
+    setTimeout(() => setCopied(false), 5000) // Reset after 2 seconds
+  }
+
   const baseButtonStyle = 'h-8 py-0 px-0 text-md font-normal w-1/6'
   const baseButtonStyleForActionBtns = 'h-12 py-0 px-0 text-md font-normal w-1/5'
   const voteButtonStyle = cn(baseButtonStyle, 'border border-gray-600 hover:border-white')
-  const selectedVoteButtonStyle = cn(baseButtonStyle, 'border border-white bg-white/10')
+  const selectedVoteButtonStyle = cn(baseButtonStyle, 'bg-orange-500')
 
   return (
     <Modal onClose={onClose} width={756}>
@@ -94,12 +101,14 @@ export const VoteProposalModal: FC<Props> = ({
           <Typography className="text-xl mb-1 font-medium">Wallet</Typography>
           <div className="flex w-1/3 items-center gap-2 p-3 bg-[#1c1c1c] rounded">
             <Typography className="flex-1 font-mono">{shortAddress(address)}</Typography>
-            <button
-              onClick={() => navigator.clipboard.writeText(address)}
-              className="text-[#2D2D2D] hover:text-white"
-            >
-              <FaCopy size={16} />
+            <button onClick={handleCopy} className="text-[#2D2D2D]">
+              <FaCopy size={16} className="text-white" />
             </button>
+            {copied && (
+              <div className=" -top-12 left-1/2 -translate-x-1/2 bg-[#2d8d43] text-white text-xs py-1 px-1 rounded whitespace-nowrap z-50">
+                Copied!
+              </div>
+            )}
           </div>
         </div>
 
@@ -109,7 +118,7 @@ export const VoteProposalModal: FC<Props> = ({
             <QuestionMarkWithTooltip />
           </div>
           <Typography className="text-[64px] leading-[72px] text-orange-500 font-normal">
-            {formatNumberWithCommas(toFixed(votingPower))}
+            {formatNumberWithCommas(round(votingPower))}
           </Typography>
         </div>
 
@@ -156,15 +165,15 @@ export const VoteProposalModal: FC<Props> = ({
               variant="secondary"
               onClick={handleSubmit}
               disabled={!vote || isVoting}
-              fullWidth
+              loading={isVoting}
               className={cn(
                 baseButtonStyleForActionBtns,
                 !vote || isVoting
-                  ? '!bg-gray-600 !text-gray-400'
-                  : '!bg-gray-400 !text-black hover:!bg-gray-300',
+                  ? 'bg-gray-400 text-gray-400'
+                  : 'bg-orange-500 text-white hover:bg-orange-500',
               )}
             >
-              {isVoting ? 'Submitting...' : 'Submit'}
+              Submit
             </Button>
             <Button
               variant="secondary"
