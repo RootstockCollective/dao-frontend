@@ -113,7 +113,7 @@ export const ogFoundersExternalContributors: CommunityItem = {
   title: 'OG Contributors',
   subtitle: 'DeFi',
   description:
-    'In the enchanting realm of Rootstock, a thrilling new chapter unfolds as the elves of the RootstockCollective embark on an extraordinary journey. These visionary elves, recognized for their remarkable contributions, are bestowed with the prestigious OG Badge—a symbol of honor that grants them special powers.',
+    'In the enchanting realm of Rootstock, a thrilling new chapter unfolds as this dedicated and specialised club in the community embark on an extraordinary journey making outstanding contributions to the Collective starting with the Shepherds. These visionaries, recognized for their remarkable contributions, are bestowed with the prestigious OG Contributors Badge - a symbol of honor that highlights their passion and engagement with Governance process and community needs.',
   nftAddress: nftContracts.OG_CONTRIBUTORS,
   numberOfMembers: 0,
   cover: '/images/nfts/contributors-cover.png',
