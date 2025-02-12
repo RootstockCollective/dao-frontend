@@ -9,7 +9,7 @@ import { TxStatusMessage } from '@/components/TxStatusMessage'
 import { useRouter, useSearchParams } from 'next/navigation'
 import { Suspense, useCallback, useEffect, useMemo, useState } from 'react'
 import { useCookies } from 'next-client-cookies'
-import { zeroAddress } from 'viem'
+import { Address, zeroAddress } from 'viem'
 import { useAccount } from 'wagmi'
 import { useIsBuilderOrBacker } from '../collective-rewards/rewards/hooks/useIsBuilderOrBacker'
 import { useHandleErrors } from '../collective-rewards/utils'
@@ -18,6 +18,8 @@ import { COMPLETED, Dropdown, DropdownTopic, getGetStartedData } from '@/compone
 import { dropdown } from '@/shared/contants'
 import { HeaderTitle, Typography } from '@/components/Typography'
 import { BalancesProvider, useBalancesContext } from './Balances/context/BalancesContext'
+import { AppRouterInstance } from 'next/dist/shared/lib/app-router-context.shared-runtime'
+import { TokenBalanceRecord } from './types'
 
 const getStartedSkipped = 'getStartedSkipped'
 const values = ['holdings', 'rewards'] as const
@@ -48,7 +50,7 @@ function User() {
   const router = useRouter()
   const coockies = useCookies()
   const isGetStatedSkipped = useMemo(() => Boolean(coockies.get(getStartedSkipped)), [coockies])
-  const [dropdownData, setDropdownData] = useState<DropdownTopic[]>([])
+  const [dropdownData, setDropdownData] = useState<DropdownTopic[] | null>(null)
 
   const searchParams = useSearchParams()
   const tabFromParams = searchParams?.get('tab') as TabValue
@@ -65,11 +67,20 @@ function User() {
     coockies.set(getStartedSkipped, 'true')
   }, [coockies])
 
+  const setGetStartedDropdownData = useCallback(
+    async (router: AppRouterInstance, balances: TokenBalanceRecord, address: Address) => {
+      const dropdownData = await getGetStartedData(router, balances, address)
+      setDropdownData(dropdownData)
+    },
+    [],
+  )
+
   useEffect(() => {
+    // TODO: check how often the dependecies update to minimize re-render
     if (address) {
-      setDropdownData(getGetStartedData(router, balances, address))
+      setGetStartedDropdownData(router, balances, address)
     }
-  }, [router, balances, address])
+  }, [router, balances, address, setGetStartedDropdownData])
 
   const showAdditionalContent = !isLoading && isBuilderOrBacker
 
@@ -91,7 +102,7 @@ function User() {
             <HeaderTitle className="mb-6">Balances</HeaderTitle>
           )}
 
-          {!isGetStatedSkipped ? (
+          {!isGetStatedSkipped && dropdownData ? (
             <Dropdown
               title={dropdown.steps}
               subtitle={`(${dropdownData[1] ? dropdownData[1].items.length : '0'}/5 ${COMPLETED})`}

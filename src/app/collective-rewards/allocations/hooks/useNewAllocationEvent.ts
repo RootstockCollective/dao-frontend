@@ -5,7 +5,7 @@ import { fetchNewAllocationEventByAccountAddress } from '@/app/user/Balances/act
 
 const NEW_ALLOCATION = 'NewAllocation'
 
-const parseNewAllocationEvent = (address: Address) => async () => {
+export const parseNewAllocationEvent = (address: Address) => async () => {
   const { data } = await fetchNewAllocationEventByAccountAddress(address)
 
   const events = parseEventLogs({
