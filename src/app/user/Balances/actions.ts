@@ -101,11 +101,11 @@ export const fetchProposalCreated = (fromBlock = 0) =>
       .replace('{{fromBlock}}', fromBlock.toString()),
   )
 
-export const fetchVoteCastEventByAccountAddress = (topic1: string) =>
+export const fetchVoteCastEventByAccountAddress = (address: string) =>
   axiosInstance.get<BackendEventByTopic0ResponseValue[]>(
     fetchVoteCastEventEndpoint
       .replace('{{address}}', GovernorAddress)
-      .replace('{{topic1}}', topic1.toString()),
+      .replace('{{topic1}}', address.toString()),
   )
 
 export const fetchProposalsCreatedCached = () => axiosInstance.get('/proposals/api', { baseURL: '/' })
