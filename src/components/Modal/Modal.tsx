@@ -31,7 +31,7 @@ export const Modal: FC<Props> = ({ children, onClose, width, className, 'data-te
       >
         <button
           onClick={onClose}
-          className="absolute top-4 right-4 text-white text-[24px] rounded-full p-2"
+          className="absolute top-2 right-2 text-white text-[24px] rounded-full p-2"
           data-testid="CloseButton"
         >
           <Image src="/images/close-button.svg" width={24} height={24} alt="Close" />

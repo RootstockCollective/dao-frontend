@@ -45,7 +45,7 @@ html[data-theme='default'] {
   --font-sora: 'Sora';
 
   /* Input */
-  --input-bg: rgba(85, 85, 85, 0.2);
+  --input-bg: rgb(45, 45, 45);
   --input-placeholder: rgba(156, 163, 175, 1);
 
   /* Links (a tag) */

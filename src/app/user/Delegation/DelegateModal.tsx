@@ -1,8 +1,9 @@
+import Image from 'next/image'
 import { Modal } from '@/components/Modal/Modal'
-import { HeaderTitle, Paragraph } from '@/components/Typography'
+import { HeaderTitle, Paragraph, Typography } from '@/components/Typography'
 import { Button } from '@/components/Button'
 import { Input } from '@/components/Input'
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useMemo } from 'react'
 import { useDelegateToAddress } from '@/shared/hooks/useDelegateToAddress'
 import { isAddressRegex, isChecksumValid } from '@/app/proposals/shared/utils'
 import { useAlertContext } from '@/app/providers'
@@ -11,6 +12,20 @@ import { CHAIN_ID } from '@/lib/constants'
 import { Address, checksumAddress } from 'viem'
 import { debounce } from 'lodash'
 import { resolveRnsDomain } from '@/lib/rns'
+import { PasteButton } from '@/components/PasteButton'
+import { Popover } from '@/components/Popover'
+import questionImg from '@/public/images/question.svg'
+import rifIcon from './images/rif-icon.svg'
+import {
+  createColumnHelper,
+  getCoreRowModel,
+  getSortedRowModel,
+  SortingState,
+  useReactTable,
+} from '@tanstack/react-table'
+import { StatefulTable } from '@/components/Table'
+import { DelegateIcon } from './DelegateIcon'
+import { useNftHoldersWithVotingPower } from './hooks/useNftHoldersWithVotingPower'
 
 interface DelegateModalProps {
   onClose: () => void
@@ -97,25 +112,112 @@ export const DelegateModal = ({ onClose, onDelegateTxStarted }: DelegateModalPro
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
+  /*** Creating Shepherds table data ***/
+  const nftHolders = useNftHoldersWithVotingPower()
+  // React-table sorting state
+  const [sorting, setSorting] = useState<SortingState>([])
+  // Prepare data to display in table
+  const { accessor, display } = createColumnHelper<(typeof nftHolders)[number]>()
+  const columns = useMemo(
+    () => [
+      accessor('RNS', {
+        id: 'rns',
+        header: () => <Typography className="text-sm">Delegate</Typography>,
+        cell: info => (
+          <div className="flex flex-row items-center gap-1">
+            <DelegateIcon colorIndex={info.row.index} />
+            <Typography className="text-left">{info.getValue() ?? info.row.original.address}</Typography>
+          </div>
+        ),
+        sortingFn: (rowA, rowB) => {
+          return rowA.original.RNS && rowB.original.RNS
+            ? rowA.original.RNS.localeCompare(rowB.original.RNS)
+            : rowA.original.address.localeCompare(rowB.original.address)
+        },
+      }),
+      accessor('votingPower', {
+        id: 'vp',
+        header: () => (
+          <div className="mx-auto flex flex-row items-center gap-1">
+            <Typography className="text-sm">Voting Power</Typography>
+            <Image src={rifIcon} alt="RIF" className="w-[16px]" />
+          </div>
+        ),
+        cell: info => <Typography>{(info.getValue() ?? 0).toLocaleString('en-GB')}</Typography>,
+      }),
+      display({
+        id: 'select',
+        enableSorting: false,
+        cell: info => (
+          <Button
+            onClick={() => onAddressChange(info.row.original.address)}
+            variant="white"
+            className="w-[98px] h-[36px] p-0"
+          >
+            Select
+          </Button>
+        ),
+      }),
+    ],
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [accessor, display],
+  )
+  // Generate table data
+  const table = useReactTable({
+    columns,
+    data: nftHolders,
+    state: {
+      sorting,
+    },
+    onSortingChange: setSorting,
+    getCoreRowModel: getCoreRowModel(),
+    getSortedRowModel: getSortedRowModel(),
+  })
+
   return (
-    <Modal onClose={onClose} width={892}>
-      <div className="px-[157px] py-[45px] text-center">
-        <HeaderTitle className="mb-[16px]">Delegate</HeaderTitle>
-        <Paragraph className="mb-[16px]">
-          This action lets you delegate all of your voting power to the selected address.
+    <Modal onClose={onClose} className="w-full max-w-[892px] px-16 pt-10 pb-24">
+      <div className="text-center">
+        <HeaderTitle className="mb-[16px]">Choose Your Delegate</HeaderTitle>
+        <Paragraph className="mb-12 text-sm">
+          Delegate all voting power to an address. Your stRF balance{' '}
+          <span className="text-primary">remains unaffected</span>.
           <br />
-          You can easily change or remove this delegation if needed.
+          Delegation can be updated anytime.
         </Paragraph>
-        <div className="mb-14">
-          <Input
-            label="Address or RNS Domain"
-            name="address"
-            value={addressToDelegateTo}
-            onChange={onAddressChange}
-            className="mb-1"
-            fullWidth
-            labelWrapperProps={{ className: 'text-left mb-[10px]' }}
-          />
+        <div className="mb-9">
+          <div className="mb-10 text-left">
+            <PasteButton handlePaste={onAddressChange} className="right-3 top-11">
+              <Input
+                label="Address or RNS"
+                name="address"
+                value={addressToDelegateTo}
+                onChange={onAddressChange}
+                className="mb-2"
+                fullWidth
+                inputProps={{ className: 'pr-16' }}
+                labelProps={{ className: 'text-sm tracking-wide' }}
+                labelWrapperProps={{ className: 'mb-2' }}
+              />
+              <Typography className="text-sm text-white/60">
+                Select from trusted groups or enter a custom delegate above.
+              </Typography>
+            </PasteButton>
+          </div>
+          <div className="mb-7 pb-[6px] w-fit flex flex-row items-center gap-1 border-b border-b-primary">
+            <Typography className="text-sm font-bold tracking-wide">Shepherds</Typography>
+            <Popover
+              contentContainerClassName="w-64"
+              content={
+                <Typography className="text-sm">
+                  Shepherds are OG Contributors
+                  <br /> trusted by the community
+                </Typography>
+              }
+            >
+              <Image src={questionImg} alt="Tooltip" className="w-[14px] opacity-40 cursor-pointer" />
+            </Popover>
+          </div>
+          <StatefulTable table={table} equalColumns data-testid="TableShepherds" />
           {error && (
             <p className="text-st-error">
               {error}
