@@ -175,7 +175,7 @@ export const DelegateModal = ({ onClose, onDelegateTxStarted }: DelegateModalPro
   })
 
   return (
-    <Modal onClose={onClose} className="w-full max-w-[892px] px-16 pt-10 pb-24 overflow-y-scroll">
+    <Modal onClose={onClose} className="w-full max-w-[892px] px-16 pt-10 pb-24">
       <div className="text-center">
         <HeaderTitle className="mb-[16px]">Choose Your Delegate</HeaderTitle>
         <Paragraph className="mb-12 text-sm">
