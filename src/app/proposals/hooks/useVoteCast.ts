@@ -5,11 +5,11 @@ import { fetchVoteCastEventByAccountAddress } from '@/app/user/Balances/actions'
 
 const parseVoteCastEvents = (address: Address) => async () => {
   try {
-    const { data: logs } = await fetchVoteCastEventByAccountAddress(address)
+    const { data } = await fetchVoteCastEventByAccountAddress(address)
 
     const events = parseEventLogs({
       abi: governor.abi,
-      logs: logs as unknown as Log[], // @TODO refine this
+      logs: data as unknown as Log[], // @TODO refine this
       eventName: 'VoteCast',
     })
 
