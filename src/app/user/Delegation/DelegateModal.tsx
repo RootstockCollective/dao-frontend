@@ -159,7 +159,8 @@ export const DelegateModal = ({ onClose, onDelegateTxStarted }: DelegateModalPro
         ),
       }),
     ],
-    [nftHolders],
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [accessor, display],
   )
   // Generate table data
   const table = useReactTable({

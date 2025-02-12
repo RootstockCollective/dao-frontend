@@ -64,6 +64,7 @@ export function useNftHoldersWithVotingPower() {
       // pick only shepherds with voting power
       .filter(({ votingPower }) => votingPower > 0)
     setNftHolders(updatedHolders)
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [votingPowerResults])
 
   return nftHolders
