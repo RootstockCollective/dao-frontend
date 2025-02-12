@@ -7,27 +7,7 @@ import { Button } from '@/components/Button'
 import { cn } from '@/lib/utils'
 import { round } from '@/lib/big'
 import Image from 'next/image'
-
-const QuestionMarkWithTooltip = () => (
-  <div className="relative group">
-    <div className="inline-flex items-center justify-center w-5 h-5 rounded-full border border-gray-400 text-gray-400 text-sm font-medium hover:border-gray-300 hover:text-gray-300 cursor-help">
-      ?
-    </div>
-    <div className="invisible group-hover:visible opacity-0 group-hover:opacity-100 transition-opacity absolute z-50 bottom-full left-4/5 -translate-x-1/4 mb-2 w-[400px]">
-      <div className="bg-[#1A1A1A] p-4 rounded-lg border border-gray-700 shadow-lg">
-        <p className="text-sm text-gray-200 mb-2">
-          Your Total Voting Power is the sum of your stake-based voting power and any delegated voting power.
-        </p>
-        <p className="text-sm">
-          It is calculated based on your stake or delegation{' '}
-          <span className="text-orange-500">at the time the proposal was created (+1 block)</span>, not at the
-          time of voting.
-        </p>
-        <div className="absolute left-28 -translate-x-1/6 -bottom-1 w-3 h-3 bg-gray-900 border-r border-b border-gray-700 transform rotate-45"></div>
-      </div>
-    </div>
-  </div>
-)
+import { Popover } from '@/components/Popover'
 
 export type Vote = 'for' | 'against' | 'abstain'
 
@@ -115,7 +95,25 @@ export const VoteProposalModal: FC<Props> = ({
         <div className="mb-12">
           <div className="flex items-center gap-2 mb-3">
             <Typography className="text-xl font-medium">Total Voting Power</Typography>
-            <QuestionMarkWithTooltip />
+            <Popover
+              content={
+                <div className="w-[400px] p-4">
+                  <p className="text-sm text-gray-200 mb-2">
+                    Your Total Voting Power is the sum of your stake-based voting power and any delegated
+                    voting power.
+                  </p>
+                  <p className="text-sm">
+                    It is calculated based on your stake or delegation{' '}
+                    <span className="text-orange-500">at the time the proposal was created (+1 block)</span>,
+                    not at the time of voting.
+                  </p>
+                </div>
+              }
+            >
+              <div className="inline-flex items-center justify-center w-5 h-5 rounded-full border border-gray-400 text-gray-400 text-sm font-medium hover:border-gray-300 hover:text-gray-300 cursor-help">
+                ?
+              </div>
+            </Popover>
           </div>
           <Typography className="text-[64px] leading-[72px] text-orange-500 font-normal">
             {formatNumberWithCommas(round(votingPower))}
