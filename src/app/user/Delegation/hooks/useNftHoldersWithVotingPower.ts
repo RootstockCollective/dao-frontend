@@ -24,7 +24,8 @@ export function useNftHoldersWithVotingPower() {
   const fetchHolders = useCallback(async () => {
     const holders =
       CHAIN_ID === '30'
-        ? shepherds // Use hardcoded values for mainnet as a temporary solution
+        ? // TODO: remove hardcoded addresses after deploying new OG Contributors NFT
+          shepherds
         : await Promise.all(
             nftHoldersData.currentResults?.map(async ({ owner }) => {
               try {
