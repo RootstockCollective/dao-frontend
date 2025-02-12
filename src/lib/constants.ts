@@ -48,5 +48,3 @@ export const proposalQuickFilters = ['Grant', 'Activation', 'Wave 4', 'Wave 5']
 export const MAX_NAME_LENGTH_FOR_PROPOSAL = 100
 export const TALLY_DESCRIPTION_SEPARATOR = '  ' // Tally uses double spaces to separate name and description
 export const ipfsGateway = 'https://red-legislative-meadowlark-461.mypinata.cloud/ipfs/'
-
-export const blockscoutAddress = process.env.NEXT_PUBLIC_BLOCKSCOUT
