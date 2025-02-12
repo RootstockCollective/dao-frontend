@@ -55,21 +55,28 @@ const RewardCellValue: FC<RewardCellValueProps> = ({ reward }) => {
 type RewardCellProps = {
   tableHeader: TableHeader
   rewards: Reward[]
+  isHidden?: boolean
 }
-export const RewardCell: FC<RewardCellProps> = ({ tableHeader: { className }, rewards }) => (
-  <TableCell className={cn(className, 'border-solid')}>
+export const RewardCell: FC<RewardCellProps> = ({
+  tableHeader: { className, hiddenClassName },
+  rewards,
+  isHidden,
+}) => (
+  <TableCell className={cn(isHidden ? hiddenClassName : className, 'border-solid', { hidden: isHidden })}>
     <div className="flex flex-nowrap flex-row gap-1">
       {rewards && rewards.map((reward, index) => <RewardCellValue key={index} reward={reward} />)}
     </div>
   </TableCell>
 )
 
-export const LazyRewardCell = memo(RewardCell, ({ rewards: prevReward }, { rewards: nextReward }) =>
-  prevReward.every(
-    (reward, key) =>
-      reward.amount.value === nextReward[key].amount.value &&
-      reward.amount.price === nextReward[key].amount.price,
-  ),
+export const LazyRewardCell = memo(
+  RewardCell,
+  ({ rewards: prevReward, isHidden: prevIsHidden }, { rewards: nextReward, isHidden: nextIsHidden }) =>
+    prevReward.every(
+      (reward, key) =>
+        reward.amount.value === nextReward[key].amount.value &&
+        reward.amount.price === nextReward[key].amount.price,
+    ) && prevIsHidden === nextIsHidden,
 )
 
 type BuilderStatusFlagProps = {

@@ -1,7 +1,8 @@
 import { FC, useMemo, useState } from 'react'
 import {
+  BackerRewardsContext,
   RewardDetails,
-  BackerRewardsContextProvider,
+  useBackerRewardsContext,
   useGetBackerRewards,
 } from '@/app/collective-rewards/rewards'
 import {
@@ -11,13 +12,11 @@ import {
   BackerRewardsPercentage,
   BuilderNameCell,
   LazyRewardCell,
-  TotalAllocationCell,
 } from '@/app/collective-rewards/shared'
 import { TableBody, TableCore, TableHead, TableRow } from '@/components/Table'
 import { getCombinedFiatAmount, useHandleErrors } from '@/app/collective-rewards/utils'
 import { LoadingSpinner } from '@/components/LoadingSpinner'
 import { useBasicPaginationUi } from '@/shared/hooks/usePaginationUi'
-import { CycleContextProvider } from '@/app/collective-rewards/metrics'
 import Link from 'next/link'
 import Big from '@/lib/big'
 import { Typography } from '@/components/Typography/Typography'
@@ -26,17 +25,35 @@ enum RewardsColumnKeyEnum {
   builder = 'builder',
   rewardPercentage = 'rewardPercentage',
   estimatedRewards = 'estimatedRewards',
-  totalAllocationPercentage = 'totalAllocationPercentage',
+  totalAllocation = 'totalAllocation',
   claimableRewards = 'claimableRewards',
   allTimeRewards = 'allTimeRewards',
 }
 
 const tableHeaders: TableHeader[] = [
-  { label: 'Builder', className: 'w-[11%]', sortKey: RewardsColumnKeyEnum.builder },
-  { label: 'Backer Rewards %', className: 'w-[11%]', sortKey: RewardsColumnKeyEnum.rewardPercentage },
+  {
+    label: 'Builder',
+    className: 'w-[11%]',
+    hiddenClassName: 'w-[16%]',
+    sortKey: RewardsColumnKeyEnum.builder,
+  },
+  {
+    label: 'Backer Rewards %',
+    className: 'w-[11%]',
+    hiddenClassName: 'w-[16%]',
+    sortKey: RewardsColumnKeyEnum.rewardPercentage,
+  },
+  {
+    label: 'Claimable Rewards',
+    className: 'w-[20%]',
+    hiddenClassName: 'w-[25%]',
+    sortKey: RewardsColumnKeyEnum.claimableRewards,
+    tooltip: { text: 'Your rewards from each Builder available to claim' },
+  },
   {
     label: 'Estimated Rewards',
     className: 'w-[20%]',
+    hiddenClassName: 'w-[25%]',
     sortKey: RewardsColumnKeyEnum.estimatedRewards,
     tooltip: {
       text: (
@@ -59,26 +76,31 @@ const tableHeaders: TableHeader[] = [
     },
   },
   {
-    label: 'Total Allocations',
-    className: 'w-[18%]',
-    sortKey: RewardsColumnKeyEnum.totalAllocationPercentage,
-    tooltip: { text: 'Your share of the total allocations for each Builder' },
+    label: 'All Time Rewards',
+    className: 'w-[20%]',
+    hiddenClassName: 'w-[20%]',
+    sortKey: RewardsColumnKeyEnum.allTimeRewards,
+    canBeHidden: true,
   },
   {
-    label: 'Claimable Rewards',
-    className: 'w-[20%]',
-    sortKey: RewardsColumnKeyEnum.claimableRewards,
-    tooltip: { text: 'Your rewards from each Builder available to claim' },
+    label: 'My Allocation',
+    className: 'w-[18%]',
+    hiddenClassName: 'w-[18%]',
+    sortKey: RewardsColumnKeyEnum.totalAllocation,
+    tooltip: { text: 'Your share of the total allocations for each Builder' },
   },
-  { label: 'All Time Rewards', className: 'w-[20%]', sortKey: RewardsColumnKeyEnum.allTimeRewards },
 ]
 
-const RewardsTable: FC<BackerRewardsTable> = ({ builder, gauges, tokens }) => {
+type BackerRewardsTable = Omit<RewardDetails, 'gauge'>
+export const BackerRewardsTable: FC<BackerRewardsTable> = ({ builder, gauges, tokens }) => {
   const { data: rewardsData, isLoading, error: rewardsError } = useGetBackerRewards(builder, gauges, tokens)
+  const {
+    detailedView: { value: isDetailedView },
+  } = useBackerRewardsContext()
   useHandleErrors({ error: rewardsError, title: 'Error loading backer rewards' })
 
   const [sortConfig, setSortConfig] = useState<ISortConfig>({
-    key: RewardsColumnKeyEnum.totalAllocationPercentage,
+    key: RewardsColumnKeyEnum.totalAllocation,
     direction: 'asc',
   })
 
@@ -99,8 +121,11 @@ const RewardsTable: FC<BackerRewardsTable> = ({ builder, gauges, tokens }) => {
         const bValue = getCombinedFiatAmount([b.estimatedRewards.rif.amount, b.estimatedRewards.rbtc.amount])
         return Big(aValue).sub(bValue).toNumber()
       },
-      totalAllocationPercentage: (a: IRewardData, b: IRewardData) =>
-        Number(a.totalAllocationPercentage - b.totalAllocationPercentage),
+      totalAllocation: (a: IRewardData, b: IRewardData) => {
+        const aValue = getCombinedFiatAmount([a.totalAllocation.rif.amount])
+        const bValue = getCombinedFiatAmount([b.totalAllocation.rif.amount])
+        return Big(aValue).sub(bValue).toNumber()
+      },
       claimableRewards: (a: IRewardData, b: IRewardData) => {
         const aValue = getCombinedFiatAmount([a.claimableRewards.rif.amount, a.claimableRewards.rbtc.amount])
         const bValue = getCombinedFiatAmount([b.claimableRewards.rif.amount, b.claimableRewards.rbtc.amount])
@@ -167,6 +192,7 @@ const RewardsTable: FC<BackerRewardsTable> = ({ builder, gauges, tokens }) => {
                     tableHeader={header}
                     onSort={() => handleSort(header.sortKey)}
                     sortConfig={sortConfig}
+                    isHidden={!isDetailedView}
                   />
                 ))}
               </TableRow>
@@ -179,7 +205,7 @@ const RewardsTable: FC<BackerRewardsTable> = ({ builder, gauges, tokens }) => {
                   stateFlags,
                   rewardPercentage,
                   estimatedRewards,
-                  totalAllocationPercentage,
+                  totalAllocation,
                   claimableRewards,
                   allTimeRewards,
                 }) => (
@@ -193,20 +219,18 @@ const RewardsTable: FC<BackerRewardsTable> = ({ builder, gauges, tokens }) => {
                     <BackerRewardsPercentage tableHeader={tableHeaders[1]} percentage={rewardPercentage} />
                     <LazyRewardCell
                       tableHeader={tableHeaders[2]}
-                      rewards={[estimatedRewards.rbtc, estimatedRewards.rif]}
-                    />
-                    <TotalAllocationCell
-                      tableHeader={tableHeaders[3]}
-                      percentage={totalAllocationPercentage}
-                    />
-                    <LazyRewardCell
-                      tableHeader={tableHeaders[4]}
                       rewards={[claimableRewards.rbtc, claimableRewards.rif]}
                     />
                     <LazyRewardCell
-                      tableHeader={tableHeaders[5]}
-                      rewards={[allTimeRewards.rbtc, allTimeRewards.rif]}
+                      tableHeader={tableHeaders[3]}
+                      rewards={[estimatedRewards.rbtc, estimatedRewards.rif]}
                     />
+                    <LazyRewardCell
+                      tableHeader={tableHeaders[4]}
+                      rewards={[allTimeRewards.rbtc, allTimeRewards.rif]}
+                      isHidden={!isDetailedView}
+                    />
+                    <LazyRewardCell tableHeader={tableHeaders[5]} rewards={[totalAllocation.rif]} />
                   </TableRow>
                 ),
               )}
@@ -216,18 +240,5 @@ const RewardsTable: FC<BackerRewardsTable> = ({ builder, gauges, tokens }) => {
         </>
       )}
     </div>
-  )
-}
-
-type BackerRewardsTable = Omit<RewardDetails, 'gauge'>
-export const BackerRewardsTable: FC<BackerRewardsTable> = ({ builder, tokens, gauges }) => {
-  return (
-    <>
-      <BackerRewardsContextProvider backer={builder} gauges={gauges} tokens={tokens}>
-        <CycleContextProvider>
-          <RewardsTable builder={builder} tokens={tokens} gauges={gauges} />
-        </CycleContextProvider>
-      </BackerRewardsContextProvider>
-    </>
   )
 }

@@ -1,4 +1,3 @@
-import { CycleContextProvider } from '@/app/collective-rewards/metrics'
 import {
   BuilderAllTimeRewards,
   BuilderAllTimeShare,
@@ -10,14 +9,13 @@ import {
 } from '@/app/collective-rewards/rewards'
 import { MetricContainer } from '@/app/collective-rewards/rewards/components/MetricContainer'
 import { Button } from '@/components/Button'
-import { PricesContextProvider } from '@/shared/context/PricesContext'
 import { FC } from 'react'
 import { Address } from 'viem'
 import { Popover } from '@/components/Popover'
 
 type RewardsProps = RewardDetails & { gauge: Address }
 
-const RewardsContent: FC<RewardsProps> = props => {
+export const Rewards: FC<RewardsProps> = props => {
   const {
     builder,
     gauge,
@@ -69,15 +67,5 @@ const RewardsContent: FC<RewardsProps> = props => {
         <BuilderAllTimeShare {...props} />
       </MetricContainer>
     </div>
-  )
-}
-
-export const Rewards: FC<RewardsProps> = ({ builder, ...rest }) => {
-  return (
-    <CycleContextProvider>
-      <PricesContextProvider>
-        <RewardsContent builder={builder} {...rest} />
-      </PricesContextProvider>
-    </CycleContextProvider>
   )
 }
