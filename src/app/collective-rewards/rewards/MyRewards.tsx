@@ -84,6 +84,7 @@ const BackerRewardsSection: FC<RewardDetails> = data => {
   return (
     <RewardsSection>
       <RewardsSectionHeader
+        isBacker={true}
         title="Backer Rewards"
         subtext={<SubText />}
         utility={

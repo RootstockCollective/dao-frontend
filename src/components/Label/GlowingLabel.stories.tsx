@@ -13,5 +13,6 @@ type Story = StoryObj<typeof meta>
 export const GlowingLabelDefault: Story = {
   args: {
     children: 'Estimated Rewards',
+    showGlow: true,
   },
 }

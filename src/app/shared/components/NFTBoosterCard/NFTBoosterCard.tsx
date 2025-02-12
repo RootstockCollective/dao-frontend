@@ -1,5 +1,5 @@
-import { FC } from 'react'
 import Image from 'next/image'
+import { FC } from 'react'
 
 type NFTBoosterCardProps = {
   nftThumbPath: string
@@ -48,10 +48,10 @@ export const NFTBoosterCard: FC<NFTBoosterCardProps> = ({ nftThumbPath, boostVal
             y2="53.0696"
             gradientUnits="userSpaceOnUse"
           >
-            <stop stop-color="#E56B1A" />
-            <stop offset="0.360212" stop-color="#0D0D0D" />
-            <stop offset="0.721797" stop-color="#0D0D0D" />
-            <stop offset="1" stop-color="#C0F7FF" />
+            <stop stopColor="#E56B1A" />
+            <stop offset="0.360212" stopColor="#0D0D0D" />
+            <stop offset="0.721797" stopColor="#0D0D0D" />
+            <stop offset="1" stopColor="#C0F7FF" />
           </linearGradient>
         </defs>
       </svg>
@@ -89,7 +89,7 @@ export const NFTBoosterCard: FC<NFTBoosterCardProps> = ({ nftThumbPath, boostVal
                 {boostValue}% Rewards boost
               </div>
               <div className="self-stretch text-white text-[10px] font-normal font-rootstock-sans leading-[10px] tracking-wide">
-                You are earning {boostValue}% more rewards thanks to your {title} NFT.
+                You&apos;re earning {boostValue}% more rewards thanks to your {title} NFT.
               </div>
             </div>
           </div>

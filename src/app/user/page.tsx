@@ -3,25 +3,24 @@ import { Rewards } from '@/app/collective-rewards/rewards/MyRewards'
 import { BalancesSection } from '@/app/user/Balances/BalancesSection'
 import { CommunitiesSection } from '@/app/user/Communities/CommunitiesSection'
 import { DelegationSection } from '@/app/user/Delegation'
+import { COMPLETED, Dropdown, DropdownTopic, getGetStartedData } from '@/components/dropdown'
 import { MainContainer } from '@/components/MainContainer/MainContainer'
 import { Tabs, TabsContent, TabsList, TabsTrigger, TabTitle } from '@/components/Tabs'
 import { TxStatusMessage } from '@/components/TxStatusMessage'
-import { useRouter, useSearchParams } from 'next/navigation'
-import { Suspense, useCallback, useEffect, useMemo, useState } from 'react'
+import { HeaderTitle, Typography } from '@/components/Typography'
+import { dropdown } from '@/shared/contants'
 import { useCookiesNext } from 'cookies-next'
+import { AppRouterInstance } from 'next/dist/shared/lib/app-router-context.shared-runtime'
+import { useRouter, useSearchParams } from 'next/navigation'
+import { Suspense, useCallback, useEffect, useState } from 'react'
+import { Timeout } from 'react-number-format/types/types'
 import { Address, zeroAddress } from 'viem'
 import { useAccount } from 'wagmi'
 import { useIsBuilderOrBacker } from '../collective-rewards/rewards/hooks/useIsBuilderOrBacker'
+import { withBuilderButton } from '../collective-rewards/user/components/Button/WithBuilderButton'
 import { useHandleErrors } from '../collective-rewards/utils'
-import { BecomeABuilderButton } from '../collective-rewards/user'
-import { COMPLETED, Dropdown, DropdownTopic, getGetStartedData } from '@/components/dropdown'
-import { dropdown } from '@/shared/contants'
-import { HeaderTitle, Typography } from '@/components/Typography'
 import { BalancesProvider, useBalancesContext } from './Balances/context/BalancesContext'
-import { AppRouterInstance } from 'next/dist/shared/lib/app-router-context.shared-runtime'
 import { TokenBalanceRecord } from './types'
-import { Timeout } from 'react-number-format/types/types'
-
 const getStartedSkipped = 'getStartedSkipped'
 const values = ['holdings', 'rewards'] as const
 
@@ -54,6 +53,60 @@ const getStartedCheckRunner = (fn: () => Promise<void>) => {
   interval = setInterval(() => {
     fn()
   }, 60000)
+}
+
+interface UserHeaderProps {
+  showAdditionalContent: boolean
+  isGetStatedSkipped: boolean
+  dropdownData: DropdownTopic[] | null
+  skipGetStarted: () => Promise<void>
+  tabs: {
+    holdings: { value: string; title: string }
+    rewards: { value: string; title: string }
+  }
+}
+
+const UserHeader: React.FC<UserHeaderProps> = ({
+  showAdditionalContent,
+  isGetStatedSkipped,
+  dropdownData,
+  skipGetStarted,
+  tabs,
+}) => {
+  return (
+    <div className="row-container">
+      {showAdditionalContent ? (
+        <TabsList>
+          <TabsTrigger value={tabs.holdings.value}>
+            <TabTitle>{tabs.holdings.title}</TabTitle>
+          </TabsTrigger>
+          <TabsTrigger value={tabs.rewards.value}>
+            <TabTitle>{tabs.rewards.title}</TabTitle>
+          </TabsTrigger>
+        </TabsList>
+      ) : (
+        <HeaderTitle className="mb-6">Balances</HeaderTitle>
+      )}
+
+      {!isGetStatedSkipped && dropdownData ? (
+        <Dropdown
+          title={dropdown.steps}
+          subtitle={`(${dropdownData[1] ? dropdownData[1].items.length : '0'}/5 ${COMPLETED})`}
+          description={dropdown.influencerDesc}
+          data={dropdownData}
+          footer={
+            <Typography
+              className="text-[12px] text-center leading-none text-[#171412] font-normal font-rootstock-sans hover:underline"
+              cursor="pointer"
+              onClick={skipGetStarted}
+            >
+              {dropdown.already_familiar}
+            </Typography>
+          }
+        />
+      ) : null}
+    </div>
+  )
 }
 
 function User() {
@@ -108,40 +161,13 @@ function User() {
     <MainContainer>
       {/* We don't show the tab if it's loading */}
       <Tabs defaultValue={defaultTabValue}>
-        <div className="row-container">
-          {showAdditionalContent ? (
-            <TabsList>
-              <TabsTrigger value={tabs.holdings.value}>
-                <TabTitle>{tabs.holdings.title}</TabTitle>
-              </TabsTrigger>
-              <TabsTrigger value={tabs.rewards.value}>
-                <TabTitle>{tabs.rewards.title}</TabTitle>
-              </TabsTrigger>
-            </TabsList>
-          ) : (
-            <HeaderTitle className="mb-6">Balances</HeaderTitle>
-          )}
-
-          {!isGetStatedSkipped && dropdownData ? (
-            <Dropdown
-              title={dropdown.steps}
-              subtitle={`(${dropdownData[1] ? dropdownData[1].items.length : '0'}/5 ${COMPLETED})`}
-              description={dropdown.influencerDesc}
-              data={dropdownData}
-              footer={
-                <Typography
-                  className="text-[12px] text-center leading-none text-[#171412] font-normal font-rootstock-sans hover:underline"
-                  cursor="pointer"
-                  onClick={skipGetStarted}
-                >
-                  {dropdown.already_familiar}
-                </Typography>
-              }
-            />
-          ) : null}
-
-          <BecomeABuilderButton address={address!} />
-        </div>
+        {withBuilderButton(UserHeader)({
+          showAdditionalContent,
+          isGetStatedSkipped,
+          dropdownData,
+          skipGetStarted,
+          tabs,
+        })}
 
         <TabsContent value={tabs.holdings.value}>
           <TxStatusMessage messageType="staking" />
