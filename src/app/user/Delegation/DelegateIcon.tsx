@@ -8,15 +8,19 @@ interface DelegateIconProps extends HTMLAttributes<HTMLElement> {
   colorIndex: number
 }
 
-export default function DelegateIcon({ colorIndex, className, ...props }: DelegateIconProps) {
+/**
+ * DelegateIcon component renders a small icon with a colored overlay.
+ * The color is determined by the provided `colorIndex`, cycling through a predefined color array.
+ */
+export function DelegateIcon({ colorIndex, className, ...props }: DelegateIconProps) {
   return (
-    <div className={`relative w-10 h-10 ${className}`} {...props}>
+    <div className={`relative w-6 h-6 ${className}`} {...props}>
       {/* Icon */}
       <Image src={iconImage} alt="Delegate icon" className="w-full h-full filter grayscale" />
 
       {/* Color mask */}
       <div
-        className="absolute inset-0 mix-blend-multiply opacity-75"
+        className="absolute inset-0 mix-blend-multiply opacity-40"
         style={{ backgroundColor: colors[colorIndex % colors.length] }}
       />
     </div>

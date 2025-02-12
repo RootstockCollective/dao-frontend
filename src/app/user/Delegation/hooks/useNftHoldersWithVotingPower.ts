@@ -34,8 +34,7 @@ export function useNftHoldersWithVotingPower() {
               }
             }) ?? [],
           )
-    // Limit the array for demonstration purposes (remove if unnecessary)
-    setNftHolders(holders.slice(0, 5))
+    setNftHolders(holders)
   }, [nftHoldersData.currentResults])
 
   useEffect(() => {
@@ -57,10 +56,13 @@ export function useNftHoldersWithVotingPower() {
   // Merge voting power data into nftHolders
   useEffect(() => {
     if (!votingPowerResults) return
-    const updatedHolders = nftHolders.map((holder, i) => ({
-      ...holder,
-      votingPower: Number(formatEther((votingPowerResults[i]?.result as bigint) ?? 0n)),
-    }))
+    const updatedHolders = nftHolders
+      .map((holder, i) => ({
+        ...holder,
+        votingPower: Number(formatEther((votingPowerResults[i]?.result as bigint) ?? 0n)),
+      }))
+      // pick only shepherds with voting power
+      .filter(({ votingPower }) => votingPower > 0)
     setNftHolders(updatedHolders)
   }, [votingPowerResults])
 

@@ -3,13 +3,13 @@ import { Modal } from '@/components/Modal/Modal'
 import { HeaderTitle, Paragraph, Typography } from '@/components/Typography'
 import { Button } from '@/components/Button'
 import { Input } from '@/components/Input'
-import { useState, useEffect, useMemo, useCallback } from 'react'
+import { useState, useEffect, useMemo } from 'react'
 import { useDelegateToAddress } from '@/shared/hooks/useDelegateToAddress'
 import { isAddressRegex, isChecksumValid } from '@/app/proposals/shared/utils'
 import { useAlertContext } from '@/app/providers'
 import { TX_MESSAGES } from '@/shared/txMessages'
 import { CHAIN_ID } from '@/lib/constants'
-import { Address, checksumAddress, formatEther } from 'viem'
+import { Address, checksumAddress } from 'viem'
 import { debounce } from 'lodash'
 import { resolveRnsDomain } from '@/lib/rns'
 import { PasteButton } from '@/components/PasteButton'
@@ -24,6 +24,7 @@ import {
   useReactTable,
 } from '@tanstack/react-table'
 import { StatefulTable } from '@/components/Table'
+import { DelegateIcon } from './DelegateIcon'
 import { useNftHoldersWithVotingPower } from './hooks/useNftHoldersWithVotingPower'
 
 interface DelegateModalProps {
@@ -121,9 +122,12 @@ export const DelegateModal = ({ onClose, onDelegateTxStarted }: DelegateModalPro
     () => [
       accessor('RNS', {
         id: 'rns',
-        header: 'Delegate',
+        header: () => <Typography className="text-sm">Delegate</Typography>,
         cell: info => (
-          <Typography className="text-left">{info.getValue() ?? info.row.original.address}</Typography>
+          <div className="flex flex-row items-center gap-1">
+            <DelegateIcon colorIndex={info.row.index} />
+            <Typography className="text-left">{info.getValue() ?? info.row.original.address}</Typography>
+          </div>
         ),
         sortingFn: (rowA, rowB) => {
           return rowA.original.RNS && rowB.original.RNS
@@ -135,8 +139,8 @@ export const DelegateModal = ({ onClose, onDelegateTxStarted }: DelegateModalPro
         id: 'vp',
         header: () => (
           <div className="mx-auto flex flex-row items-center gap-1">
-            <Typography>Voting Power</Typography>
-            <Image src={rifIcon} alt="RIF" />
+            <Typography className="text-sm">Voting Power</Typography>
+            <Image src={rifIcon} alt="RIF" className="w-[16px]" />
           </div>
         ),
         cell: info => <Typography>{(info.getValue() ?? 0).toLocaleString('en-GB')}</Typography>,
@@ -170,7 +174,7 @@ export const DelegateModal = ({ onClose, onDelegateTxStarted }: DelegateModalPro
   })
 
   return (
-    <Modal onClose={onClose} className="w-full max-w-[892px] px-16 pt-10 pb-24">
+    <Modal onClose={onClose} className="w-full max-w-[892px] px-16 pt-10 pb-24 overflow-y-scroll">
       <div className="text-center">
         <HeaderTitle className="mb-[16px]">Choose Your Delegate</HeaderTitle>
         <Paragraph className="mb-12 text-sm">
@@ -179,7 +183,7 @@ export const DelegateModal = ({ onClose, onDelegateTxStarted }: DelegateModalPro
           <br />
           Delegation can be updated anytime.
         </Paragraph>
-        <div className="mb-14">
+        <div className="mb-9">
           <div className="mb-10 text-left">
             <PasteButton handlePaste={onAddressChange} className="right-3 top-11">
               <Input
@@ -198,7 +202,7 @@ export const DelegateModal = ({ onClose, onDelegateTxStarted }: DelegateModalPro
               </Typography>
             </PasteButton>
           </div>
-          <div className="pb-[6px] w-fit flex flex-row items-center gap-1 border-b border-b-primary">
+          <div className="mb-7 pb-[6px] w-fit flex flex-row items-center gap-1 border-b border-b-primary">
             <Typography className="text-sm font-bold tracking-wide">Shepherds</Typography>
             <Popover
               contentContainerClassName="w-64"
