@@ -2,11 +2,11 @@ import { Modal } from '@/components/Modal/Modal'
 import { Typography } from '@/components/Typography'
 import { formatNumberWithCommas, shortAddress, truncateMiddle } from '@/lib/utils'
 import { FC, useState } from 'react'
-import { FaCopy } from 'react-icons/fa'
 import { Address } from 'viem'
 import { Button } from '@/components/Button'
 import { cn } from '@/lib/utils'
 import { round } from '@/lib/big'
+import Image from 'next/image'
 
 const QuestionMarkWithTooltip = () => (
   <div className="relative group">
@@ -102,7 +102,7 @@ export const VoteProposalModal: FC<Props> = ({
           <div className="flex w-1/3 items-center gap-2 p-3 bg-[#1c1c1c] rounded">
             <Typography className="flex-1 font-mono">{shortAddress(address)}</Typography>
             <button onClick={handleCopy} className="text-[#2D2D2D]">
-              <FaCopy size={16} className="text-white" />
+              <Image src="/images/copy_icon.svg" alt="copy_icon" width={18} height={18} />
             </button>
             {copied && (
               <div className=" -top-12 left-1/2 -translate-x-1/2 bg-[#2d8d43] text-white text-xs py-1 px-1 rounded whitespace-nowrap z-50">
