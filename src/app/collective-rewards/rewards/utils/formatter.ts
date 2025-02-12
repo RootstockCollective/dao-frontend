@@ -1,6 +1,8 @@
-import { formatUnits, formatEther } from 'viem'
+import Big from '@/lib/big'
+import { BigSource } from 'big.js'
+import { formatCurrency } from '@/lib/utils'
 
-export const formatMetrics = (amount: bigint, price: number, symbol: string, currency: string) => {
+export const formatMetrics = (amount: bigint, price: BigSource, symbol: string, currency: string) => {
   const fiatAmount = getFiatAmount(amount, price)
 
   return {
@@ -9,25 +11,13 @@ export const formatMetrics = (amount: bigint, price: number, symbol: string, cur
   }
 }
 
-export const formatFiatAmount = (amount: number, currency: string) =>
+export const formatFiatAmount = (amount: BigSource, currency: string) =>
   `= ${currency} ${formatCurrency(amount, currency)}`
 
-export const getFiatAmount = (amount: bigint, price: number) => {
-  const amountInEther = Number(formatEther(amount))
-  return amountInEther * price
-}
-
-export const formatCurrency = (value: number, currency = 'USD'): string => {
-  if (value > 0 && value < 0.01) {
-    return '<0.01'
-  }
-
-  return new Intl.NumberFormat('en-US', {
-    style: 'currency',
-    currency,
-    minimumFractionDigits: 2,
-    maximumFractionDigits: 2,
-  }).format(value)
+export const getFiatAmount = (amount: bigint, price: BigSource) => {
+  const bigAmount = Big(amount.toString())
+  price = Big(price)
+  return bigAmount.mul(price).div(Big(10).pow(18))
 }
 
 type SymbolFormatOptions = {
@@ -64,22 +54,23 @@ export const formatSymbol = (value: bigint, symbol: string) => {
     decimals: 18,
     displayDecimals: 2,
   }
-  const amount = Number(formatUnits(value, decimals))
-  const minimumAmount = 1 / Math.pow(10, displayDecimals)
 
-  if (amount <= 0) {
+  const amount = Big(value.toString()).div(Big(10).pow(decimals))
+  const minimumAmount = Big(1).div(Big(10).pow(displayDecimals))
+
+  if (amount.lte(0)) {
     return new Intl.NumberFormat('en-US', {
       minimumFractionDigits: displayDecimals,
       maximumFractionDigits: displayDecimals,
       roundingMode: 'floor',
-    }).format(amount)
+    }).format(amount.toString() as never)
   }
 
-  if (amount < 1 && displayDecimals === 0) {
+  if (amount.lt(1) && displayDecimals === 0) {
     return '<1'
   }
 
-  if (amount < minimumAmount) {
+  if (amount.lt(minimumAmount)) {
     return `<0${displayDecimals > 0 ? '.'.padEnd(displayDecimals, '0') + '1' : ''}`
   }
 
@@ -87,5 +78,5 @@ export const formatSymbol = (value: bigint, symbol: string) => {
     minimumFractionDigits: displayDecimals,
     maximumFractionDigits: displayDecimals,
     roundingMode: 'floor',
-  }).format(amount)
+  }).format(amount.toString() as never)
 }
