@@ -5,6 +5,7 @@ import {
   fetchNFTsOwnedByAddressAndNftAddress,
   fetchPricesEndpoint,
   fetchProposalsCreatedByGovernorAddress,
+  fetchVoteCastEventEndpoint,
   getNftHolders,
   getNftInfo,
   getTokenHoldersOfAddress,
@@ -98,6 +99,13 @@ export const fetchProposalCreated = (fromBlock = 0) =>
     fetchProposalsCreatedByGovernorAddress
       .replace('{{address}}', GovernorAddress)
       .replace('{{fromBlock}}', fromBlock.toString()),
+  )
+
+export const fetchVoteCastEventByAccountAddress = (topic1: string) =>
+  axiosInstance.get<BackendEventByTopic0ResponseValue[]>(
+    fetchVoteCastEventEndpoint
+      .replace('{{address}}', GovernorAddress)
+      .replace('{{topic1}}', topic1.toString()),
   )
 
 export const fetchProposalsCreatedCached = () => axiosInstance.get('/proposals/api', { baseURL: '/' })
