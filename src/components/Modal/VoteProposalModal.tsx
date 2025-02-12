@@ -1,12 +1,13 @@
-import { Button } from '@/components/Button'
 import { Modal } from '@/components/Modal/Modal'
-import { Input } from '@/components/Input'
-import { Header, Label, Paragraph, Span, Typography } from '@/components/Typography'
-import { formatNumberWithCommas, shortAddress, toFixed, truncateMiddle } from '@/lib/utils'
+import { Typography } from '@/components/Typography'
+import { formatNumberWithCommas, shortAddress, truncateMiddle } from '@/lib/utils'
 import { FC, useState } from 'react'
-import { FaCopy } from 'react-icons/fa6'
 import { Address } from 'viem'
+import { Button } from '@/components/Button'
+import { cn } from '@/lib/utils'
+import { round } from '@/lib/big'
 import Image from 'next/image'
+import { Popover } from '@/components/Popover'
 
 export type Vote = 'for' | 'against' | 'abstain'
 
@@ -30,134 +31,161 @@ export const VoteProposalModal: FC<Props> = ({
   errorMessage,
 }) => {
   const [vote, setVoting] = useState<Vote | null>(null)
+  const [copied, setCopied] = useState(false)
+
   const handleSubmit = (e: any) => {
     e.preventDefault()
     if (vote) {
       onSubmit(vote)
     }
   }
+
+  const handleCopy = () => {
+    navigator.clipboard.writeText(address)
+    setCopied(true)
+    setTimeout(() => setCopied(false), 3000) // Reset after 3 seconds
+  }
+
+  const baseButtonStyle = 'h-8 py-0 px-0 text-md font-normal w-1/6'
+  const baseButtonStyleForActionBtns = 'h-12 py-0 px-0 text-md font-normal w-1/5'
+  const voteButtonStyle = cn(baseButtonStyle, 'border border-gray-600 hover:border-white')
+  const selectedVoteButtonStyle = cn(baseButtonStyle, 'bg-orange-500')
+
   return (
     <Modal onClose={onClose} width={756}>
-      <div className="px-[50px] pt-[21px] pb-[42px] flex justify-center flex-col">
-        <Paragraph className="text-bold text-[24px] text-center mb-4">VOTING</Paragraph>
-        <Header variant="h1" className="font-semibold">
-          {proposal.title}
-        </Header>
-        <div className="flex flex-row justify-between mt-4">
-          <Paragraph className="text-sm text-gray-500 font-normal">
-            Proposed by:
-            <br />
-            <Span className="text-primary font-semibold">{shortAddress(proposal.proposer)}</Span>
-          </Paragraph>
-          <Paragraph className="text-sm text-gray-500 font-normal ml-4">
-            Created at:
-            <br />
-            <Span className="text-primary font-semibold">{proposal.Starts.format('YYYY-MM-DD')}</Span>
-          </Paragraph>
-          <Paragraph className="text-sm text-gray-500 ml-4 font-normal">
-            Proposal ID:
-            <br />
-            <Span className="text-primary font-semibold">{truncateMiddle(proposal.proposalId)}</Span>
-          </Paragraph>
+      <div className="p-8 flex flex-col min-h-[600px] bg-black">
+        <Typography className="text-5xl font-kk-topo leading-[48px] font-medium text-center w-full mb-12">
+          VOTING
+        </Typography>
+
+        <div className="flex justify-start space-x-16 items-start mb-12">
+          <div>
+            <Typography className="text-gray-400 text-base mb-1">Proposed by</Typography>
+            <Typography className="text-orange-500 text-base">{shortAddress(proposal.proposer)}</Typography>
+          </div>
+          <div>
+            <Typography className="text-gray-400 text-base mb-1">Proposal ID</Typography>
+            <Typography className="text-orange-500 text-base">
+              {truncateMiddle(proposal.proposalId)}
+            </Typography>
+          </div>
+          <div>
+            <Typography className="text-gray-400 text-base mb-1">Created on:</Typography>
+            <Typography className="text-orange-500 text-base">
+              {proposal.Starts.format('D MMM, YYYY')}
+            </Typography>
+          </div>
         </div>
-        <Label variant="semibold" className="mt-4">
-          Wallet
-        </Label>
-        <div className="p-[15px] bg-input-bg flex gap-2 items-center justify-between w-1/2 rounded-[6px]">
-          {/* @TODO insert provider image */}
-          <Image
-            src="/images/metamask.svg"
-            alt="metamask"
-            width={0}
-            height={0}
-            style={{ width: '22px', height: 'auto' }}
-          />
-          <Typography tagVariant="span" className="flex-1">
-            {shortAddress(address, 10)}
+
+        <div className="mb-12">
+          <Typography className="text-xl mb-1 font-medium">Wallet</Typography>
+          <div className="flex w-1/3 items-center gap-2 p-3 bg-[#1c1c1c] rounded">
+            <Typography className="flex-1 font-mono">{shortAddress(address)}</Typography>
+            <button onClick={handleCopy} className="text-[#2D2D2D]">
+              <Image src="/images/copy_icon.svg" alt="copy_icon" width={18} height={18} />
+            </button>
+            {copied && (
+              <div className=" -top-12 left-1/2 -translate-x-1/2 bg-[#2d8d43] text-white text-xs py-1 px-1 rounded whitespace-nowrap z-50">
+                Copied!
+              </div>
+            )}
+          </div>
+        </div>
+
+        <div className="mb-12">
+          <div className="flex items-center gap-2 mb-3">
+            <Typography className="text-xl font-medium">Total Voting Power</Typography>
+            <Popover
+              content={
+                <div className="w-[400px] p-4">
+                  <p className="text-sm text-gray-200 mb-2">
+                    Your Total Voting Power is the sum of your stake-based voting power and any delegated
+                    voting power.
+                  </p>
+                  <p className="text-sm">
+                    It is calculated based on your stake or delegation{' '}
+                    <span className="text-orange-500">at the time the proposal was created (+1 block)</span>,
+                    not at the time of voting.
+                  </p>
+                </div>
+              }
+            >
+              <Image
+                src="/images/question.svg"
+                width={20}
+                height={20}
+                alt="QuestionIcon"
+                className="hover:cursor-help"
+              />
+            </Popover>
+          </div>
+          <Typography className="text-[64px] leading-[72px] text-orange-500 font-normal">
+            {formatNumberWithCommas(round(votingPower))}
           </Typography>
-          <button title="Copy address to clipboard" onClick={() => navigator.clipboard.writeText(address)}>
-            <FaCopy />
-          </button>
         </div>
 
-        <Input
-          label="Voting Power"
-          name="votingPower"
-          value={formatNumberWithCommas(toFixed(votingPower))}
-          className="mt-4"
-          fullWidth
-          readonly
-        />
-
-        <Label variant="semibold" className="mt-4">
-          Vote
-        </Label>
-        <div className="flex gap-4 mt-2">
-          {vote === 'for' ? (
+        <div className="flex flex-col flex-grow">
+          <Typography className="text-xl font-medium mb-4">Vote</Typography>
+          <div className="flex gap-4 mb-16">
             <Button
-              variant="primary"
-              className="w-1/3 border border-white bg-st-success bg-opacity-10"
-              textClassName="text-white"
-              onClick={() => setVoting(null)}
+              variant="secondary"
+              onClick={() => setVoting(vote === 'for' ? null : 'for')}
+              fullWidth
+              className={vote === 'for' ? selectedVoteButtonStyle : voteButtonStyle}
               data-testid="For"
             >
               For
             </Button>
-          ) : (
-            <Button variant="secondary" className="w-1/3" onClick={() => setVoting('for')} data-testid="For">
-              For
-            </Button>
-          )}
-
-          {vote === 'against' ? (
             <Button
-              variant="primary"
-              className="w-1/3 border border-white bg-st-error bg-opacity-10"
-              textClassName="text-white"
-              onClick={() => setVoting(null)}
+              variant="secondary"
+              onClick={() => setVoting(vote === 'against' ? null : 'against')}
+              fullWidth
+              className={vote === 'against' ? selectedVoteButtonStyle : voteButtonStyle}
               data-testid="Against"
             >
               Against
             </Button>
-          ) : (
             <Button
               variant="secondary"
-              className="w-1/3 border-st-error"
-              textClassName="text-st-error"
-              onClick={() => setVoting('against')}
-              data-testid="Against"
+              onClick={() => setVoting(vote === 'abstain' ? null : 'abstain')}
+              fullWidth
+              className={vote === 'abstain' ? selectedVoteButtonStyle : voteButtonStyle}
+              data-testid="Abstain"
             >
-              Against
+              Abstain
             </Button>
+          </div>
+
+          {errorMessage && (
+            <div className="bg-red-500 bg-opacity-10 text-red-500 p-4 rounded mb-8">
+              Error: {errorMessage}
+            </div>
           )}
 
-          {vote === 'abstain' ? (
-            <Button
-              variant="primary"
-              className="w-1/3 border border-white bg-gray-600"
-              textClassName="text-white"
-              onClick={() => setVoting(null)}
-              data-testid="Abstain"
-            >
-              Abstain
-            </Button>
-          ) : (
+          <div className="flex gap-4 mt-auto">
             <Button
               variant="secondary"
-              className="w-1/3 border-gray-600"
-              textClassName="text-gray-600"
-              onClick={() => setVoting('abstain')}
-              data-testid="Abstain"
+              onClick={handleSubmit}
+              disabled={!vote || isVoting}
+              loading={isVoting}
+              className={cn(
+                baseButtonStyleForActionBtns,
+                !vote || isVoting
+                  ? 'bg-gray-400 text-gray-400'
+                  : 'bg-orange-500 text-white hover:bg-orange-500',
+              )}
             >
-              Abstain
+              Submit
             </Button>
-          )}
-        </div>
-        {errorMessage && <Label className="bg-st-error mt-2 p-4">Error: {errorMessage}</Label>}
-        <div className="flex justify-center mt-8">
-          <Button onClick={handleSubmit} disabled={!vote || isVoting} loading={isVoting}>
-            Submit
-          </Button>
+            <Button
+              variant="secondary"
+              onClick={onClose}
+              fullWidth
+              className={cn(baseButtonStyleForActionBtns, '!border !border-gray-600 hover:!border-white')}
+            >
+              Cancel
+            </Button>
+          </div>
         </div>
       </div>
     </Modal>
