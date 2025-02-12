@@ -3,7 +3,7 @@ import { useQuery } from '@tanstack/react-query'
 import { Address, Log, parseEventLogs } from 'viem'
 import { fetchVoteCastEventByAccountAddress } from '@/app/user/Balances/actions'
 
-const parseVoteCastEvents = (address: Address) => async () => {
+export const parseVoteCastEvents = (address: Address) => async () => {
   try {
     const { data } = await fetchVoteCastEventByAccountAddress(address)
 

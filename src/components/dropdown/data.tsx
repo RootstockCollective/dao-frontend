@@ -9,6 +9,8 @@ import { AppRouterInstance } from 'next/dist/shared/lib/app-router-context.share
 import Big from 'big.js'
 import { TokenBalanceRecord } from '@/app/user/types'
 import { Address } from 'viem'
+import { parseVoteCastEvents } from '@/app/proposals/hooks/useVoteCast'
+import { parseNewAllocationEvent } from '@/app/collective-rewards/allocations/hooks/useNewAllocationEvent'
 
 export type SVGIconType = ComponentType<SVGAttributes<SVGSVGElement> & Record<string, any>>
 
@@ -59,11 +61,16 @@ export const prepareProposalsData: DropdownTopic[] = [
   },
 ]
 
-const checkSteps = (items: DropdownItem[], balances: TokenBalanceRecord, address: Address) => {
+const checkSteps = async (items: DropdownItem[], balances: TokenBalanceRecord, address: Address) => {
   const balanceDependentSteps = checkBalancesSteps(items, balances)
-  const checkedEvents = checkEvents(balanceDependentSteps, address)
+  try {
+    const checkedEvents = await checkEvents(balanceDependentSteps, address)
 
-  return checkedEvents
+    return checkedEvents
+  } catch (err) {
+    console.log('CHECKING THE STEPS FAILED', err)
+    return balanceDependentSteps
+  }
 }
 
 const checkBalancesSteps = (items: DropdownItem[], balances: TokenBalanceRecord): DropdownTopic[] => {
@@ -90,28 +97,36 @@ const checkBalancesSteps = (items: DropdownItem[], balances: TokenBalanceRecord)
   return [{ items }]
 }
 
-const checkEvents = (steps: DropdownTopic[], address: Address): DropdownTopic[] => {
-  console.log('ADDRESS OF VOTING CHECK', address)
-  // returned previous votes from VoteCast
-  const votingArray = []
+const checkEvents = async (steps: DropdownTopic[], address: Address): Promise<DropdownTopic[]> => {
+  try {
+    // returned previous votes from VoteCast
+    // address for testing: '0x81Df35317DF983e419630908eF6CB2BB48cE21Ca'
+    const votingEvents = await parseVoteCastEvents(address)()
 
-  // returned array from NewAllocations
-  const allocationsArray = ['item']
+    console.log('votingEvents', votingEvents)
 
-  const [notCompleted, completed] = steps
-  const completedObject = !completed ? { topic: COMPLETED, items: [] } : completed
+    const [notCompleted, completed] = steps
+    const completedObject = !completed ? { topic: COMPLETED, items: [] } : completed
 
-  if (votingArray.length >= 1) {
-    const searchIndex = notCompleted.items.findIndex(item => item.id === VOTE)
-    completedObject.items.push(notCompleted.items.splice(searchIndex, 1)[0])
+    if (votingEvents && votingEvents.length >= 1) {
+      const searchIndex = notCompleted.items.findIndex(item => item.id === VOTE)
+      completedObject.items.push(notCompleted.items.splice(searchIndex, 1)[0])
+    }
+
+    // returned array from NewAllocations
+    // address for testing: '0xEC068F31FA194d9036Ed3C61c3546111Ac3C8902'
+    const allocationsArray = await parseNewAllocationEvent(address)()
+
+    if (allocationsArray && allocationsArray.length >= 1) {
+      const searchIndex = notCompleted.items.findIndex(item => item.id === ALLOCATIONS)
+      completedObject.items.push(notCompleted.items.splice(searchIndex, 1)[0])
+    }
+
+    return [notCompleted, completedObject]
+  } catch (err) {
+    console.log('CHECK OF EVENTS FAILED', err)
+    return steps
   }
-
-  if (allocationsArray.length >= 1) {
-    const searchIndex = notCompleted.items.findIndex(item => item.id === ALLOCATIONS)
-    completedObject.items.push(notCompleted.items.splice(searchIndex, 1)[0])
-  }
-
-  return [notCompleted, completedObject]
 }
 
 const getStartedData = (router: AppRouterInstance): DropdownItem[] => [
