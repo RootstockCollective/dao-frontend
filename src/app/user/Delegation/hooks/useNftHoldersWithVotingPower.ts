@@ -60,7 +60,7 @@ export function useNftHoldersWithVotingPower() {
     const updatedHolders = nftHolders
       .map((holder, i) => ({
         ...holder,
-        votingPower: Number(formatEther((votingPowerResults[i]?.result as bigint) ?? 0n)),
+        votingPower: Math.round(Number(formatEther((votingPowerResults[i]?.result as bigint) ?? 0n))),
       }))
       // pick only shepherds with voting power
       .filter(({ votingPower }) => votingPower > 0)
