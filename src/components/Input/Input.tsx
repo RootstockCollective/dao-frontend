@@ -62,6 +62,7 @@ export const Input: FC<Props> = ({
   onClear,
   loading = false,
 }) => {
+  const { className: inputClasses, ...restInputProps } = inputProps
   const handleOnChange = (e: { target: { value: string } }) => onChange(e.target.value)
 
   const classes = cn({
@@ -75,19 +76,19 @@ export const Input: FC<Props> = ({
   const input = {
     number: (
       <InputNumber
-        className={classes}
+        className={cn(classes, inputClasses)}
         placeholder={placeholder}
         value={value}
         onValueChange={({ value }) => onChange(value)}
         name={name}
         data-testid={`Input_${name}`}
         readOnly={readonly}
-        {...inputProps}
+        {...restInputProps}
       />
     ),
     text: (
       <input
-        className={classes}
+        className={cn(classes, inputClasses)}
         placeholder={placeholder}
         type="text"
         value={value}
@@ -95,7 +96,7 @@ export const Input: FC<Props> = ({
         name={name}
         data-testid={`Input_${name}`}
         readOnly={readonly}
-        {...inputProps}
+        {...restInputProps}
       />
     ),
     search: (
@@ -104,7 +105,7 @@ export const Input: FC<Props> = ({
           {loading ? <FaSpinner className="animate-spin" /> : <BsSearch data-testid="SearchIcon" />}
         </div>
         <input
-          className={cn(classes, onClear && 'pr-[38px]')}
+          className={cn(classes, inputClasses, onClear && 'pr-[38px]')}
           placeholder={placeholder}
           type="text"
           value={value}
@@ -113,7 +114,7 @@ export const Input: FC<Props> = ({
           data-testid={`Input_${name}`}
           readOnly={readonly}
           autoComplete="off"
-          {...inputProps}
+          {...restInputProps}
         />
         {/* Small clear button at the right of the search field */}
         {onClear && (

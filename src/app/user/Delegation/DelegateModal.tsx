@@ -3,18 +3,28 @@ import { Modal } from '@/components/Modal/Modal'
 import { HeaderTitle, Paragraph, Typography } from '@/components/Typography'
 import { Button } from '@/components/Button'
 import { Input } from '@/components/Input'
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useMemo, useCallback } from 'react'
 import { useDelegateToAddress } from '@/shared/hooks/useDelegateToAddress'
 import { isAddressRegex, isChecksumValid } from '@/app/proposals/shared/utils'
 import { useAlertContext } from '@/app/providers'
 import { TX_MESSAGES } from '@/shared/txMessages'
 import { CHAIN_ID } from '@/lib/constants'
-import { Address, checksumAddress } from 'viem'
+import { Address, checksumAddress, formatEther } from 'viem'
 import { debounce } from 'lodash'
 import { resolveRnsDomain } from '@/lib/rns'
 import { PasteButton } from '@/components/PasteButton'
 import { Popover } from '@/components/Popover'
 import questionImg from '@/public/images/question.svg'
+import rifIcon from './images/rif-icon.svg'
+import {
+  createColumnHelper,
+  getCoreRowModel,
+  getSortedRowModel,
+  SortingState,
+  useReactTable,
+} from '@tanstack/react-table'
+import { StatefulTable } from '@/components/Table'
+import { useNftHoldersWithVotingPower } from './hooks/useNftHoldersWithVotingPower'
 
 interface DelegateModalProps {
   onClose: () => void
@@ -101,6 +111,64 @@ export const DelegateModal = ({ onClose, onDelegateTxStarted }: DelegateModalPro
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
+  /*** Creating Shepherds table data ***/
+  const nftHolders = useNftHoldersWithVotingPower()
+  // React-table sorting state
+  const [sorting, setSorting] = useState<SortingState>([])
+  // Prepare data to display in table
+  const { accessor, display } = createColumnHelper<(typeof nftHolders)[number]>()
+  const columns = useMemo(
+    () => [
+      accessor('RNS', {
+        id: 'rns',
+        header: 'Delegate',
+        cell: info => (
+          <Typography className="text-left">{info.getValue() ?? info.row.original.address}</Typography>
+        ),
+        sortingFn: (rowA, rowB) => {
+          return rowA.original.RNS && rowB.original.RNS
+            ? rowA.original.RNS.localeCompare(rowB.original.RNS)
+            : rowA.original.address.localeCompare(rowB.original.address)
+        },
+      }),
+      accessor('votingPower', {
+        id: 'vp',
+        header: () => (
+          <div className="mx-auto flex flex-row items-center gap-1">
+            <Typography>Voting Power</Typography>
+            <Image src={rifIcon} alt="RIF" />
+          </div>
+        ),
+        cell: info => <Typography>{(info.getValue() ?? 0).toLocaleString('en-GB')}</Typography>,
+      }),
+      display({
+        id: 'select',
+        enableSorting: false,
+        cell: info => (
+          <Button
+            onClick={() => onAddressChange(info.row.original.address)}
+            variant="white"
+            className="w-[98px] h-[36px] p-0"
+          >
+            Select
+          </Button>
+        ),
+      }),
+    ],
+    [nftHolders],
+  )
+  // Generate table data
+  const table = useReactTable({
+    columns,
+    data: nftHolders,
+    state: {
+      sorting,
+    },
+    onSortingChange: setSorting,
+    getCoreRowModel: getCoreRowModel(),
+    getSortedRowModel: getSortedRowModel(),
+  })
+
   return (
     <Modal onClose={onClose} className="w-full max-w-[892px] px-16 pt-10 pb-24">
       <div className="text-center">
@@ -121,6 +189,7 @@ export const DelegateModal = ({ onClose, onDelegateTxStarted }: DelegateModalPro
                 onChange={onAddressChange}
                 className="mb-2"
                 fullWidth
+                inputProps={{ className: 'pr-16' }}
                 labelProps={{ className: 'text-sm tracking-wide' }}
                 labelWrapperProps={{ className: 'mb-2' }}
               />
@@ -143,6 +212,7 @@ export const DelegateModal = ({ onClose, onDelegateTxStarted }: DelegateModalPro
               <Image src={questionImg} alt="Tooltip" className="w-[14px] opacity-40 cursor-pointer" />
             </Popover>
           </div>
+          <StatefulTable table={table} equalColumns data-testid="TableShepherds" />
           {error && (
             <p className="text-st-error">
               {error}

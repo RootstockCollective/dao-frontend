@@ -2,6 +2,7 @@ import { ZeroAddress } from 'ethers'
 import { Address } from 'viem'
 import { EarlyAdoptersNFTAbi } from './abis/EarlyAdoptersNFTAbi'
 import { VotingVanguardsNftAbi } from './abis/VotingVanguardsNFTAbi'
+import { StRIFTokenAbi } from './abis/StRIFTokenAbi'
 import {
   EA_NFT_ADDRESS,
   GENERAL_BUCKET_ADDRESS,
@@ -79,4 +80,9 @@ export {
 export const governor = {
   address: GOVERNOR_ADDRESS,
   abi: GovernorAbi,
+} as const
+
+export const stRif = {
+  address: STRIF_ADDRESS,
+  abi: StRIFTokenAbi,
 } as const
