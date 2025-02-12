@@ -21,6 +21,7 @@ import {
 } from '@/app/user/Balances/types'
 import { BackendEventByTopic0ResponseValue } from '@/shared/utils'
 import { ipfsGateway } from '@/lib/constants'
+import { ethers } from 'ethers'
 
 export const fetchAddressTokens = (address: string, chainId = 31) =>
   axiosInstance
@@ -108,14 +109,14 @@ export const fetchVoteCastEventByAccountAddress = (address: string) =>
   axiosInstance.get<BackendEventByTopic0ResponseValue[]>(
     fetchVoteCastEventEndpoint
       .replace('{{address}}', GovernorAddress)
-      .replace('{{topic1}}', address.toString()),
+      .replace('{{topic1}}', ethers.zeroPadValue(address, 32)),
   )
 
 export const fetchNewAllocationEventByAccountAddress = (address: string) =>
   axiosInstance.get<BackendEventByTopic0ResponseValue[]>(
     fetchNewAllocationEventEndpoint
       .replace('{{address}}', GovernorAddress)
-      .replace('{{topic1}}', address.toString()),
+      .replace('{{topic1}}', ethers.zeroPadValue(address, 32)),
   )
 
 export const fetchProposalsCreatedCached = () => axiosInstance.get('/proposals/api', { baseURL: '/' })
