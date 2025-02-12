@@ -13,7 +13,7 @@ import {
   useWriteContract,
   UseWriteContractReturnType,
 } from 'wagmi'
-import { useEnvironmentsContext } from '@/shared/context/EnvironmentsContext'
+import { useMigrationContext } from '@/shared/context/MigrationContext'
 
 export type BackerReward = {
   previous: bigint
@@ -28,7 +28,7 @@ export type BackerRewardResponse = Modify<
 >
 
 export const useGetBackerRewardsForBuilder = (builder: Address): BackerRewardResponse => {
-  const { builderRegistryAddress } = useEnvironmentsContext()
+  const { builderRegistryAddress } = useMigrationContext()
 
   const [previous, setPrevious] = useState<bigint>(0n)
   const [next, setNext] = useState<bigint>(0n)
@@ -71,7 +71,7 @@ export type SetBackerRewardsForBuilder = {
 } & Omit<UseWriteContractReturnType, 'error' | 'writeContractAsync'>
 
 export const useSetBackerRewardsForBuilder = (): SetBackerRewardsForBuilder => {
-  const { builderRegistryAddress } = useEnvironmentsContext()
+  const { builderRegistryAddress } = useMigrationContext()
   const { writeContractAsync, data, isPending, isSuccess, error: writeError, ...rest } = useWriteContract()
   const { data: receipt, isLoading, error: receiptError } = useWaitForTransactionReceipt({ hash: data! })
 

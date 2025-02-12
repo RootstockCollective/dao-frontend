@@ -3,7 +3,7 @@ import { AVERAGE_BLOCKTIME } from '@/lib/constants'
 import { BuilderRegistryAbi } from '@/lib/abis/v2/BuilderRegistryAbi'
 import { AbiFunction } from 'viem'
 import { GaugeType } from '@/app/collective-rewards/user'
-import { useEnvironmentsContext } from '@/shared/context/EnvironmentsContext'
+import { useMigrationContext } from '@/shared/context/MigrationContext'
 
 type FunctionEntry = Extract<(typeof BuilderRegistryAbi)[number], AbiFunction>
 type FunctionName = Extract<FunctionEntry['name'], 'getGaugesLength' | 'getHaltedGaugesLength'>
@@ -14,7 +14,7 @@ const gaugeType: Record<GaugeType, FunctionName> = {
 }
 
 export const useGetGaugesLength = (type: GaugeType) => {
-  const { builderRegistryAddress } = useEnvironmentsContext()
+  const { builderRegistryAddress } = useMigrationContext()
 
   const { data, isLoading, error } = useReadContract({
     address: builderRegistryAddress,

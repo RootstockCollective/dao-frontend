@@ -4,7 +4,7 @@ import { BuilderRegistryAbi } from '@/lib/abis/v2/BuilderRegistryAbi'
 import { AbiFunction, Address } from 'viem'
 import { useGetGaugesLength } from '@/app/collective-rewards/user'
 import { useMemo } from 'react'
-import { useEnvironmentsContext } from '@/shared/context/EnvironmentsContext'
+import { useMigrationContext } from '@/shared/context/MigrationContext'
 
 const gaugeTypeOptions = ['active', 'halted'] as const
 export type GaugeType = (typeof gaugeTypeOptions)[number]
@@ -75,7 +75,7 @@ export const useGetGaugesArrayByType = (type: GaugeType) => {
 }
 
 const useGetContractCalls = (type: GaugeType) => {
-  const { builderRegistryAddress } = useEnvironmentsContext()
+  const { builderRegistryAddress } = useMigrationContext()
 
   const { data: gaugesLength, isLoading, error } = useGetGaugesLength(type)
 

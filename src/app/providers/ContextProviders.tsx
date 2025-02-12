@@ -7,7 +7,7 @@ import { AlertProvider } from './AlertProvider'
 import ErrorBoundary from '@/components/ErrorPage/ErrorBoundary'
 import { BuilderContextProviderWithPrices } from '@/app/collective-rewards/user'
 import { AllocationsContextProvider } from '@/app/collective-rewards/allocations/context'
-import { EnvironmentsProvider } from '@/shared/context/EnvironmentsContext'
+import { MigrationProvider } from '@/shared/context/MigrationContext'
 
 interface Props {
   children: ReactNode
@@ -20,11 +20,11 @@ export const ContextProviders = ({ children }: Props) => {
       <WagmiProvider config={config}>
         <QueryClientProvider client={queryClient}>
           <AlertProvider>
-            <EnvironmentsProvider>
+            <MigrationProvider>
               <BuilderContextProviderWithPrices>
                 <AllocationsContextProvider>{children}</AllocationsContextProvider>
               </BuilderContextProviderWithPrices>
-            </EnvironmentsProvider>
+            </MigrationProvider>
           </AlertProvider>
         </QueryClientProvider>
       </WagmiProvider>

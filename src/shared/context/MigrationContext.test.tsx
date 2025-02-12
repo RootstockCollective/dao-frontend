@@ -1,6 +1,6 @@
 import { describe, it, vi, expect, beforeEach, afterEach } from 'vitest'
 import { renderHook } from '@testing-library/react'
-import { EnvironmentsProvider, useEnvironmentsContext } from '@/shared/context/EnvironmentsContext'
+import { MigrationProvider, useMigrationContext } from '@/shared/context/MigrationContext'
 import { ReactNode } from 'react'
 import * as contracts from '@/lib/contracts'
 import * as constants from '@/lib/constants'
@@ -29,11 +29,9 @@ vi.mock(import('@/lib/constants'), async importOriginal => {
   }
 })
 
-const wrapper = ({ children }: { children: ReactNode }) => (
-  <EnvironmentsProvider>{children}</EnvironmentsProvider>
-)
+const wrapper = ({ children }: { children: ReactNode }) => <MigrationProvider>{children}</MigrationProvider>
 
-const renderHookWithProvider = () => renderHook(() => useEnvironmentsContext(), { wrapper })
+const renderHookWithProvider = () => renderHook(() => useMigrationContext(), { wrapper })
 
 const mockUseQuery = (data: bigint | undefined) => {
   vi.mocked(useReadContract).mockReturnValue({

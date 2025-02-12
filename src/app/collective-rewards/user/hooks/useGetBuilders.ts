@@ -11,7 +11,7 @@ import { DateTime } from 'luxon'
 import { useMemo } from 'react'
 import { Address, getAddress } from 'viem'
 import { useReadContracts } from 'wagmi'
-import { useEnvironmentsContext } from '@/shared/context/EnvironmentsContext'
+import { useMigrationContext } from '@/shared/context/MigrationContext'
 
 export type UseGetBuilders = () => {
   data: Record<Address, Builder> // TODO review Builder type
@@ -21,7 +21,7 @@ export type UseGetBuilders = () => {
 }
 
 export const useGetBuilders: UseGetBuilders = () => {
-  const { builderRegistryAddress } = useEnvironmentsContext()
+  const { builderRegistryAddress } = useMigrationContext()
 
   /*
    * // TODO: we're missing builder with KYC only on v2

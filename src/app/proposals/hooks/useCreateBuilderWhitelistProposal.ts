@@ -7,10 +7,10 @@ import { Address, encodeFunctionData, zeroAddress } from 'viem'
 import { useWriteContract } from 'wagmi'
 import { createProposal, encodeGovernorRelayCallData } from './proposalUtils'
 import { useVotingPower } from './useVotingPower'
-import { useEnvironmentsContext } from '@/shared/context/EnvironmentsContext'
+import { useMigrationContext } from '@/shared/context/MigrationContext'
 
 export const useCreateBuilderWhitelistProposal = () => {
-  const { builderRegistryAddress } = useEnvironmentsContext()
+  const { builderRegistryAddress } = useMigrationContext()
   const { canCreateProposal } = useVotingPower()
   const { writeContractAsync: propose, isPending: isPublishing, error: transactionError } = useWriteContract()
 

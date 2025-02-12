@@ -14,29 +14,26 @@ import { BuilderRegistryAbi } from '@/lib/abis/v2/BuilderRegistryAbi'
 import { BackersManagerAddress, BuilderRegistryAddress } from '@/lib/contracts'
 import { useReadContract } from 'wagmi'
 
-type EnvironmentsContextType = {
-  backersManagerAddress: Address
+type MigrationContextType = {
   builderRegistryAddress: Address | undefined
 }
-const EnvironmentsContext = createContext<EnvironmentsContextType>({
-  backersManagerAddress: BackersManagerAddress,
+const MigrationContext = createContext<MigrationContextType>({
   builderRegistryAddress: undefined,
 })
 
-type EnvironmentsProviderProps = {
+type MigrationProviderProps = {
   children: ReactNode
 }
-export const EnvironmentsProvider: FC<EnvironmentsProviderProps> = ({ children }) => {
+export const MigrationProvider: FC<MigrationProviderProps> = ({ children }) => {
   const [builderRegistryAddress, setBuilderRegistryAddress] = useState<Address | undefined>()
 
   useBuilderRegistryMigration(setBuilderRegistryAddress)
 
-  const valueOfContext: EnvironmentsContextType = {
-    backersManagerAddress: BackersManagerAddress,
+  const valueOfContext: MigrationContextType = {
     builderRegistryAddress,
   }
 
-  return <EnvironmentsContext.Provider value={valueOfContext}>{children}</EnvironmentsContext.Provider>
+  return <MigrationContext.Provider value={valueOfContext}>{children}</MigrationContext.Provider>
 }
 
 const useBuilderRegistryMigration = (
@@ -71,4 +68,4 @@ const useBuilderRegistryMigration = (
   }, [gaugesLength, setBuilderRegistryAddress])
 }
 
-export const useEnvironmentsContext = () => useContext(EnvironmentsContext)
+export const useMigrationContext = () => useContext(MigrationContext)
