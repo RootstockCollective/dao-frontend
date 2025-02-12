@@ -1,3 +1,5 @@
+// Temporary solution: These shepherd addresses are hardcoded for the mainnet due to an issue with the NFT contract.
+// The problem does not exist on the testnet. These addresses will remain in place until the NFT issue on the mainnet is resolved.
 export const shepherds = [
   {
     address: '0x0579A616689f7eD748dC07692a3F150D44b0CA09',
