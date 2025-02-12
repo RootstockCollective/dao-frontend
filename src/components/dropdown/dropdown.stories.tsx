@@ -16,7 +16,7 @@ export const Default = {
     <Dropdown
       title={'Test Title'}
       description={'This is a test description to make sure it looks great'}
-      itemsData={prepareProposalsData}
+      data={prepareProposalsData}
     />
   ),
 }
