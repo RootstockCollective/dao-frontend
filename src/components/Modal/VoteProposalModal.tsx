@@ -110,9 +110,7 @@ export const VoteProposalModal: FC<Props> = ({
                 </div>
               }
             >
-              <div className="inline-flex items-center justify-center w-5 h-5 rounded-full border border-gray-400 text-gray-400 text-sm font-medium hover:border-gray-300 hover:text-gray-300 cursor-help">
-                ?
-              </div>
+              <Image src="/images/question.svg" width={20} height={20} alt="QuestionIcon" className='hover:cursor-help' />
             </Popover>
           </div>
           <Typography className="text-[64px] leading-[72px] text-orange-500 font-normal">
