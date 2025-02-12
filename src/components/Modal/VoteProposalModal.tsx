@@ -110,7 +110,13 @@ export const VoteProposalModal: FC<Props> = ({
                 </div>
               }
             >
-              <Image src="/images/question.svg" width={20} height={20} alt="QuestionIcon" className='hover:cursor-help' />
+              <Image
+                src="/images/question.svg"
+                width={20}
+                height={20}
+                alt="QuestionIcon"
+                className="hover:cursor-help"
+              />
             </Popover>
           </div>
           <Typography className="text-[64px] leading-[72px] text-orange-500 font-normal">
