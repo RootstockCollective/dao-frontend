@@ -20,6 +20,7 @@ import { useBasicPaginationUi } from '@/shared/hooks/usePaginationUi'
 import { CycleContextProvider } from '@/app/collective-rewards/metrics'
 import Link from 'next/link'
 import Big from '@/lib/big'
+import { Typography } from '@/components/Typography/Typography'
 
 enum RewardsColumnKeyEnum {
   builder = 'builder',
@@ -40,14 +41,18 @@ const tableHeaders: TableHeader[] = [
     tooltip: {
       text: (
         <>
-          An estimate of this Cycle’s rewards from each Builder that will become fully claimable by the end of
-          the current Cycle. These rewards gradually become claimable and are added to your ‘Claimable
-          Rewards’ as the cycle progresses. To check the cycle completion, go to Collective Rewards → Current
-          Cycle.
-          <br />
-          <br />
-          The displayed information is dynamic and may vary based on total rewards and user activity. This
-          data is for informational purposes only.
+          <Typography>
+            An estimate of the remainder of this Cycle’s rewards from each Builder that will become fully
+            claimable by the end of the current Cycle. These rewards gradually transition into your ‘Claimable
+            Rewards’ as the cycle progresses.
+          </Typography>
+          <Typography marginTop="1rem" marginBottom="1rem">
+            To check the cycle`s completion, go to Collective Rewards → Current Cycle.
+          </Typography>
+          <Typography>
+            The displayed information is dynamic and may vary based on total rewards and user activity. This
+            data is for informational purposes only.
+          </Typography>
         </>
       ),
       popoverProps: { size: 'medium' },
@@ -153,7 +158,7 @@ const RewardsTable: FC<BackerRewardsTable> = ({ builder, gauges, tokens }) => {
         </div>
       ) : (
         <>
-          <TableCore className="table-fixed">
+          <TableCore className="table-fixed overflow-visible">
             <TableHead>
               <TableRow className="min-h-0 normal-case">
                 {tableHeaders.map(header => (

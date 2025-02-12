@@ -30,8 +30,8 @@ export const Tooltip: FC<TooltipProps> = ({ text, popoverProps }) => (
   <>
     <Popover
       content={
-        <div className="text-[12px] mb-1 font-rootstock-sans">
-          <p data-testid="tooltip">{text}</p>
+        <div data-testid="tooltip" className="text-[12px] mb-1 font-rootstock-sans">
+          {text}
         </div>
       }
       trigger="hover"
