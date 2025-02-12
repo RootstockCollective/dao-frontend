@@ -2,6 +2,7 @@ import { GetAddressTokenResult, GetPricesResult } from '@/app/user/types'
 import { axiosInstance } from '@/lib/utils'
 import {
   fetchAddressTokensEndpoint,
+  fetchNewAllocationEventEndpoint,
   fetchNFTsOwnedByAddressAndNftAddress,
   fetchPricesEndpoint,
   fetchProposalsCreatedByGovernorAddress,
@@ -101,9 +102,18 @@ export const fetchProposalCreated = (fromBlock = 0) =>
       .replace('{{fromBlock}}', fromBlock.toString()),
   )
 
+//TODO: refactor this out of Balances folder as it does not related to Balances
+// the suggestion is to move it up the folder in User or moving it to shared
 export const fetchVoteCastEventByAccountAddress = (address: string) =>
   axiosInstance.get<BackendEventByTopic0ResponseValue[]>(
     fetchVoteCastEventEndpoint
+      .replace('{{address}}', GovernorAddress)
+      .replace('{{topic1}}', address.toString()),
+  )
+
+export const fetchNewAllocationEventByAccountAddress = (address: string) =>
+  axiosInstance.get<BackendEventByTopic0ResponseValue[]>(
+    fetchNewAllocationEventEndpoint
       .replace('{{address}}', GovernorAddress)
       .replace('{{topic1}}', address.toString()),
   )

@@ -1,26 +1,25 @@
 import { useQuery } from '@tanstack/react-query'
-import { Address, parseEventLogs } from 'viem'
-import { useBlockNumber } from 'wagmi'
-import { fetchNewAllocationEventByAddress } from '../api/events'
+import { Address, Log, parseEventLogs } from 'viem'
 import { BackersManagerAbi } from '@/lib/abis/v2/BackersManagerAbi'
+import { fetchNewAllocationEventByAccountAddress } from '@/app/user/Balances/actions'
 
 const NEW_ALLOCATION = 'NewAllocation'
 
+const parseNewAllocationEvent = (address: Address) => async () => {
+  const { data } = await fetchNewAllocationEventByAccountAddress(address)
+
+  const events = parseEventLogs({
+    abi: BackersManagerAbi,
+    logs: data as unknown as Log[], //TODO: refine this
+    eventName: NEW_ALLOCATION,
+  })
+
+  return events
+}
+
 export const useNewAllocationEvent = (address: Address) => {
-  const { data: latestBlockNumber } = useBlockNumber()
-
   return useQuery({
-    queryFn: async () => {
-      const logs = await fetchNewAllocationEventByAddress(address, latestBlockNumber!)
-
-      const events = parseEventLogs({
-        abi: BackersManagerAbi,
-        logs,
-        eventName: NEW_ALLOCATION,
-      })
-
-      return events
-    },
+    queryFn: parseNewAllocationEvent(address),
     queryKey: [NEW_ALLOCATION],
   })
 }
