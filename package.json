@@ -35,7 +35,7 @@
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
     "decimal.js": "^10.5.0",
-    "dotenv": "^16.4.5",
+    "dotenv": "^16.4.7",
     "ethers": "^6.13.1",
     "jdenticon": "^3.3.0",
     "lodash": "^4.17.21",
