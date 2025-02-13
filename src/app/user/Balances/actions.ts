@@ -11,7 +11,7 @@ import {
   getNftInfo,
   getTokenHoldersOfAddress,
 } from '@/lib/endpoints'
-import { tokenContracts, GovernorAddress } from '@/lib/contracts'
+import { tokenContracts, GovernorAddress, BackersManagerAddress } from '@/lib/contracts'
 import { NftMeta } from '@/shared/types'
 import {
   NextPageParams,
@@ -115,7 +115,7 @@ export const fetchVoteCastEventByAccountAddress = (address: string) =>
 export const fetchNewAllocationEventByAccountAddress = (address: string) =>
   axiosInstance.get<BackendEventByTopic0ResponseValue[]>(
     fetchNewAllocationEventEndpoint
-      .replace('{{address}}', GovernorAddress)
+      .replace('{{address}}', BackersManagerAddress)
       .replace('{{topic1}}', ethers.zeroPadValue(address, 32)),
   )
 
