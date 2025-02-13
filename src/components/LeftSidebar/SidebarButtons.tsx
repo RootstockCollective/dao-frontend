@@ -27,7 +27,6 @@ const SidebarButton = ({ text, onClick, isActive, buttonProps }: SidebarButtonPr
     {text}
   </Button>
 )
-
 export const SidebarButtons = ({ onClick, activeButton = 'communities' }: SidebarButtonsProps) => (
   <>
     <SidebarButton
