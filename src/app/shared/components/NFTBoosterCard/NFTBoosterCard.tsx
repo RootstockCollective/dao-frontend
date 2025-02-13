@@ -9,7 +9,7 @@ type NFTBoosterCardProps = {
 
 export const NFTBoosterCard: FC<NFTBoosterCardProps> = ({ nftThumbPath, boostValue, title }) => {
   return (
-    <div className="w-[238px] h-[52px] relative rounded-xl">
+    <div className="w-[238px] h-[52px] relative rounded-xl" data-testid="nftBoosterCard">
       <svg
         className="absolute left-[-19px] top-[-20px]"
         width="277"
@@ -89,7 +89,7 @@ export const NFTBoosterCard: FC<NFTBoosterCardProps> = ({ nftThumbPath, boostVal
                 {boostValue}% Rewards boost
               </div>
               <div className="self-stretch text-white text-[10px] font-normal font-rootstock-sans leading-[10px] tracking-wide">
-                You're earning {boostValue}% more rewards thanks to your {title} NFT.
+                You are earning {boostValue}% more rewards thanks to your {title} NFT.
               </div>
             </div>
           </div>
