@@ -14,12 +14,12 @@ export const RewardsSectionHeader: FC<RewardsSectionHeader> = ({ title, subtext,
     <div className="flex flex-col items-start w-full">
       <div className="flex justify-center items-center gap-1">
         <HeaderTitle className="uppercase text-2xl leading-7 font-normal">{title}</HeaderTitle>
-        {/* FIXME: to be removed outside*/}
-        <div className="inline-flex items-center gap-1">
+        {/* FIXME: to be removed outside and enabled for the backer only */}
+        {/* <div className="inline-flex items-center gap-1">
           <BoltSvg />
           <GlowingLabel>Boosted</GlowingLabel>
           <Tooltip text="Your rewards are boosted thanks to your NFT’s superpowers." />
-        </div>
+        </div> */}
       </div>
       <Typography tagVariant="p" className="text-sm leading-7 font-normal font-rootstock-sans">
         {subtext}
