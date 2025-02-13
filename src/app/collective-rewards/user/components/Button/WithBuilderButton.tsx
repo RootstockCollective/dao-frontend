@@ -9,7 +9,7 @@ export const withBuilderButton = <P extends {}>(Component: ComponentType<P>): FC
     return (
       <div className="flex justify-between items-center self-stretch mb-6">
         <Component {...(props as P)} />
-        <div className="flex gap-3">
+        <div className="flex gap-3 justify-end">
           {/* FIXME: get the nft booster context and check if there is an active campaign and the user owns the related NFT */}
           {/* <NFTBoosterCard boostValue={20} nftThumbPath="" title="HI" /> */}
           <BecomeABuilderButton address={address!} />
