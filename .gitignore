@@ -40,3 +40,4 @@ next-env.d.ts
 
 # PHPStorm
 .idea
+script/nft_mvp/node_modules
