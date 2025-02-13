@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react'
-import { getCachedNftHoldersShepards } from '@/app/user/Delegation/server/fetchNftHoldersWithVotingPower'
+import { getCachedNftHoldersShepherds } from '@/app/user/Delegation/server/fetchNftHoldersWithVotingPower'
 
 export interface NftHolder {
   address: string
@@ -15,7 +15,7 @@ export function useNftHoldersWithVotingPower() {
   const [nftHolders, setNftHolders] = useState<NftHolder[]>([])
 
   useEffect(() => {
-    getCachedNftHoldersShepards().then(holders => setNftHolders(holders))
+    getCachedNftHoldersShepherds().then(holders => setNftHolders(holders))
   }, [])
 
   return nftHolders
