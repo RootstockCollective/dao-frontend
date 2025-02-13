@@ -4,7 +4,6 @@ import './globals.css'
 import { ContextProviders } from './providers'
 import { GoogleTagManager } from '@next/third-parties/google'
 import { GOOGLE_TAG_ID } from '@/lib/constants'
-import { CookiesProvider } from 'next-client-cookies/server'
 
 const openSans = Open_Sans({
   variable: '--font-open-sans',
@@ -35,9 +34,7 @@ export default function RootLayout({ children }: Readonly<Props>) {
           ></iframe>
         </noscript>
         {/* End Google Tag Manager (noscript) */}
-        <ContextProviders>
-          <CookiesProvider>{children}</CookiesProvider>
-        </ContextProviders>
+        <ContextProviders>{children}</ContextProviders>
       </body>
     </html>
   )

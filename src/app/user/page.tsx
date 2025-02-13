@@ -8,7 +8,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger, TabTitle } from '@/components
 import { TxStatusMessage } from '@/components/TxStatusMessage'
 import { useRouter, useSearchParams } from 'next/navigation'
 import { Suspense, useCallback, useEffect, useMemo, useState } from 'react'
-import { useCookies } from 'next-client-cookies'
+import { useCookiesNext } from 'cookies-next'
 import { Address, zeroAddress } from 'viem'
 import { useAccount } from 'wagmi'
 import { useIsBuilderOrBacker } from '../collective-rewards/rewards/hooks/useIsBuilderOrBacker'
@@ -48,8 +48,8 @@ function User() {
 
   // Getting Started dropdown
   const router = useRouter()
-  const coockies = useCookies()
-  const isGetStatedSkipped = useMemo(() => Boolean(coockies.get(getStartedSkipped)), [coockies])
+  const coockies = useCookiesNext()
+  const [isGetStatedSkipped, setIsGetStartedSkipped] = useState<boolean>(true)
   const [dropdownData, setDropdownData] = useState<DropdownTopic[] | null>(null)
 
   const searchParams = useSearchParams()
@@ -64,7 +64,8 @@ function User() {
   })
 
   const skipGetStarted = useCallback(async () => {
-    coockies.set(getStartedSkipped, 'true')
+    coockies.setCookie(getStartedSkipped, true)
+    setIsGetStartedSkipped(true)
   }, [coockies])
 
   const setGetStartedDropdownData = useCallback(
@@ -83,6 +84,10 @@ function User() {
   }, [router, balances, address, setGetStartedDropdownData])
 
   const showAdditionalContent = !isLoading && isBuilderOrBacker
+
+  useEffect(() => {
+    setIsGetStartedSkipped(Boolean(coockies.getCookie(getStartedSkipped)))
+  }, [isGetStatedSkipped, coockies])
 
   return (
     <MainContainer>
