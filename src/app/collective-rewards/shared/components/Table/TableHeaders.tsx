@@ -14,27 +14,32 @@ export type ISortConfig = {
 export type TableHeader = {
   label: string
   className: string
+  hiddenClassName?: string
   tooltip?: TooltipProps
   sortKey?: string
+  canBeHidden?: boolean
 }
 
 type TableHeaderProps = {
   tableHeader: TableHeader
   onSort?: (parameter: any) => void
   sortConfig?: ISortConfig
+  isHidden?: boolean
 }
 
 export const TableHeaderCell: FC<TableHeaderProps> = ({
-  tableHeader: { label, className, sortKey, tooltip },
+  tableHeader: { label, className, hiddenClassName, sortKey, tooltip, canBeHidden },
   onSort,
   sortConfig,
+  isHidden,
 }) => {
   return (
     <TableCell
       key={label}
       className={cn(
+        isHidden ? hiddenClassName : className,
         'font-rootstock-sans font-bold text-base leading-none border-b border-solid border-[#2D2D2D]',
-        className,
+        { hidden: isHidden && canBeHidden },
       )}
     >
       <div className="flex flex-row">

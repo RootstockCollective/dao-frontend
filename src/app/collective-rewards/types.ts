@@ -1,6 +1,7 @@
 import { ProposalState } from '@/shared/types'
 import { AbiFunction, Address } from 'viem'
 import { BuilderRegistryAbi } from '@/lib/abis/v2/BuilderRegistryAbi'
+import { Dispatch, SetStateAction } from 'react'
 
 export type Builder = {
   proposal: BuilderProposal
@@ -44,3 +45,8 @@ export type ProposalsToState = Record<string, ProposalState>
 export type BuilderState = 'active' | 'inProgress'
 
 export type RequiredBuilder = Required<Builder>
+
+export type StateWithUpdate<T> = {
+  value: T
+  onChange: Dispatch<SetStateAction<T>>
+}

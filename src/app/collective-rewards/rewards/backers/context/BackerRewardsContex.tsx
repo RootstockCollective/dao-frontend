@@ -1,11 +1,12 @@
-import { createContext, FC, ReactNode, useContext } from 'react'
+import { createContext, FC, ReactNode, useContext, useState } from 'react'
 import {
   Token,
   BackerRewardsClaimedEventLog,
   useGetGaugesBackerRewardsClaimed,
 } from '@/app/collective-rewards/rewards'
 import { Address } from 'viem'
-import { useGaugesGetFunction } from '@/app/collective-rewards//shared'
+import { useGaugesGetFunction } from '@/app/collective-rewards/shared'
+import { StateWithUpdate } from '@/app/collective-rewards/types'
 
 export type TokenBackerRewards = {
   earned: Record<Address, bigint>
@@ -20,6 +21,7 @@ type BackerRewardsContextValue = {
   isLoading: boolean
   error: Error | null
   gaugesWithEarns: (rewardToken?: Address) => Address[]
+  detailedView: StateWithUpdate<boolean>
 }
 
 export const BackerRewardsContext = createContext<BackerRewardsContextValue>({
@@ -27,6 +29,10 @@ export const BackerRewardsContext = createContext<BackerRewardsContextValue>({
   isLoading: false,
   error: null,
   gaugesWithEarns: () => [],
+  detailedView: {
+    value: false,
+    onChange: () => {},
+  },
 })
 
 type BackerRewardsProviderProps = {
@@ -84,6 +90,7 @@ export const BackerRewardsContextProvider: FC<BackerRewardsProviderProps> = ({
     isLoading: rbtcLoading,
     error: rbtcError,
   } = useGetTokenRewards(backer, rbtc, gauges)
+  const [isDetailedView, setIsDetailedView] = useState(false)
 
   const isLoading = rifLoading || rbtcLoading
   const error = rifError ?? rbtcError
@@ -108,6 +115,7 @@ export const BackerRewardsContextProvider: FC<BackerRewardsProviderProps> = ({
     isLoading,
     error,
     gaugesWithEarns,
+    detailedView: { value: isDetailedView, onChange: setIsDetailedView },
   }
 
   return <BackerRewardsContext.Provider value={valueOfContext}>{children}</BackerRewardsContext.Provider>
