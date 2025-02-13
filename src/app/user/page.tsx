@@ -20,6 +20,7 @@ import { HeaderTitle, Typography } from '@/components/Typography'
 import { BalancesProvider, useBalancesContext } from './Balances/context/BalancesContext'
 import { AppRouterInstance } from 'next/dist/shared/lib/app-router-context.shared-runtime'
 import { TokenBalanceRecord } from './types'
+import { Timeout } from 'react-number-format/types/types'
 
 const getStartedSkipped = 'getStartedSkipped'
 const values = ['holdings', 'rewards'] as const
@@ -40,6 +41,19 @@ const tabs: Tabs = {
     value: 'rewards',
     title: 'My Rewards',
   },
+}
+
+const getStartedCheckRunner = (fn: () => Promise<void>) => {
+  let interval: Timeout | undefined = undefined
+
+  if (interval) {
+    clearInterval(interval)
+  }
+
+  fn()
+  interval = setInterval(() => {
+    fn()
+  }, 60000)
 }
 
 function User() {
@@ -78,8 +92,9 @@ function User() {
 
   useEffect(() => {
     // TODO: check how often the dependecies update to minimize re-render
+    // TODO: find a better way to cache and refresh the getStartedSteps
     if (address) {
-      setGetStartedDropdownData(router, balances, address)
+      getStartedCheckRunner(() => setGetStartedDropdownData(router, balances, address))
     }
   }, [router, balances, address, setGetStartedDropdownData])
 
