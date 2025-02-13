@@ -1,4 +1,5 @@
 import { CHAIN_ID, EVENTS_FROM_BLOCK } from '@/lib/constants'
+import { ethers } from 'ethers'
 
 const CHAIN_ID_PARAM = `chainId=${CHAIN_ID}`
 const FROM_BLOCK_PARAM = `fromBlock=${EVENTS_FROM_BLOCK}`
@@ -23,6 +24,9 @@ const CAST_VOTE_EVENT = '0xb8e138887d0aa13bab447e82de9d5c1777041ecd21ca36ba824ff
 export const fetchVoteCastEventEndpoint = `/address/{{address}}/eventsByTopic0?topic0=${CAST_VOTE_EVENT}&${CHAIN_ID_PARAM}&topic1={{topic1}}&topic01Opr=and`
 
 export const getNftInfo = process.env.NEXT_PUBLIC_API_RWS_NFT_INFO || `/nfts/{{nftAddress}}?${CHAIN_ID_PARAM}`
+
+const NEW_ALLOCATION_EVENT = ethers.id('NewAllocation(address,address,uint256)')
+export const fetchNewAllocationEventEndpoint = `/address/{{address}}/eventsByTopic0?topic0=${NEW_ALLOCATION_EVENT}&chainId=${CHAIN_ID}&topic1={{topic1}}&topic01Opr=and`
 
 export const getTokenHoldersOfAddress = `/address/{{address}}/holders?${CHAIN_ID_PARAM}`
 
