@@ -119,13 +119,6 @@ export const fetchNewAllocationEventByAccountAddress = (address: string) =>
       .replace('{{topic1}}', ethers.zeroPadValue(address, 32)),
   )
 
-export const fetchNewAllocationEventByAccountAddress = (address: string) =>
-  axiosInstance.get<BackendEventByTopic0ResponseValue[]>(
-    fetchNewAllocationEventEndpoint
-      .replace('{{address}}', GovernorAddress)
-      .replace('{{topic1}}', address.toString()),
-  )
-
 export const fetchProposalsCreatedCached = () => axiosInstance.get('/proposals/api', { baseURL: '/' })
 
 export function fetchIpfsUri(uri: string, responseType?: 'json'): Promise<NftMeta>
