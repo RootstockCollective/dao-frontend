@@ -1,8 +1,7 @@
 'use server'
 
 import { fetchNftHoldersOfAddress } from '@/app/user/Balances/actions'
-import { CHAIN_ID, OG_CONTRIBUTORS_NFT_ADDRESS } from '@/lib/constants'
-import { shepherds } from '@/app/user/Delegation/hooks/shepherds-mainnet'
+import { OG_CONTRIBUTORS_NFT_ADDRESS } from '@/lib/constants'
 import { stRif } from '@/lib/contracts'
 import { publicClient } from '@/lib/viemPublicClient'
 import { formatEther } from 'viem'
@@ -10,8 +9,7 @@ import Big from '@/lib/big'
 import { unstable_cache } from 'next/cache'
 import { resolveRnsDomain } from '@/lib/rns'
 
-export async function fetchNftHoldersShepards() {
-  if (CHAIN_ID === '30') return shepherds
+export async function fetchNftHoldersShepherds() {
   const holders = await fetchNftHoldersOfAddress(OG_CONTRIBUTORS_NFT_ADDRESS, null)
 
   // Clean the data from any duplicates
@@ -33,8 +31,8 @@ export async function fetchNftHoldersShepards() {
   )
 }
 
-async function getNftHoldersShepards() {
-  const holders = await fetchNftHoldersShepards()
+async function getNftHoldersShepherds() {
+  const holders = await fetchNftHoldersShepherds()
 
   // Prepare contract calls to fetch voting power
   const stRifContractCalls = holders.map(({ address }) => ({
@@ -57,7 +55,7 @@ async function getNftHoldersShepards() {
     .filter(({ votingPower }) => votingPower > 0)
 }
 
-export const getCachedNftHoldersShepards = unstable_cache(getNftHoldersShepards, ['nft_shepards'], {
+export const getCachedNftHoldersShepherds = unstable_cache(getNftHoldersShepherds, ['nft_shepherds'], {
   revalidate: 60, // Every 60 seconds
-  tags: ['nft_shepards'],
+  tags: ['nft_shepherds'],
 })
