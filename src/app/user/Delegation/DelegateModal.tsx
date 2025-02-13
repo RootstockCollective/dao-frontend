@@ -114,8 +114,8 @@ export const DelegateModal = ({ onClose, onDelegateTxStarted }: DelegateModalPro
 
   /*** Creating Shepherds table data ***/
   const nftHolders = useNftHoldersWithVotingPower()
-  // React-table sorting state
-  const [sorting, setSorting] = useState<SortingState>([])
+  // React-table sorting state. Initial sorting is set by Voting power
+  const [sorting, setSorting] = useState<SortingState>([{ id: 'vp', desc: true }])
   // Prepare data to display in table
   const { accessor, display } = createColumnHelper<(typeof nftHolders)[number]>()
   const columns = useMemo(
