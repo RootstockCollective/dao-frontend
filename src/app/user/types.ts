@@ -6,7 +6,7 @@ export interface CommunityCardProps {
   link: string
 }
 
-export interface AddressToken {
+export type AddressToken = {
   name: string
   symbol: string
   contractAddress: string
@@ -16,14 +16,14 @@ export interface AddressToken {
 
 export type GetAddressTokenResult = AddressToken[]
 
-export interface TokenBalance {
+export type TokenBalance = {
   balance: string
   symbol: string
 }
 
 export type TokenBalanceRecord = Record<string, TokenBalance>
 
-export interface Price {
+export type Price = {
   price: number
   lastUpdated: string
 }
