@@ -4,6 +4,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
+    "backers-list": "ts-node src/scripts/backersList.ts",
     "nft-boosted-rewards": "ts-node src/scripts/nftBoostRewards.ts"
   },
   "keywords": [],
