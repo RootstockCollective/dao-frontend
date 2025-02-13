@@ -1,6 +1,5 @@
 import { Button } from '@/components/Button'
 import { SidebarButtonsProps } from '@/components/LeftSidebar/types'
-import { sidebar } from '@/shared/contants'
 
 const DEFAULT_BUTTON_CLASSNAME = 'mb-[32px] pl-11 md:mb-[2px]'
 
@@ -29,39 +28,37 @@ const SidebarButton = ({ text, onClick, isActive, buttonProps }: SidebarButtonPr
   </Button>
 )
 
-const { my_collective, treasury, proposals, communities, collective_rewards } = sidebar
-
 export const SidebarButtons = ({ onClick, activeButton = 'communities' }: SidebarButtonsProps) => (
   <>
     <SidebarButton
       onClick={() => onClick?.('user')}
       isActive={!activeButton || activeButton.startsWith('user')}
       buttonProps={{ id: 'Button_User', name: 'user' }}
-      text={my_collective}
+      text="My Collective"
     />
     <SidebarButton
       onClick={() => onClick?.('treasury')}
       isActive={activeButton.startsWith('treasury')}
       buttonProps={{ id: 'Button_Treasury', name: 'treasury' }}
-      text={treasury}
+      text="Treasury"
     />
     <SidebarButton
       onClick={() => onClick?.('proposals')}
       isActive={activeButton.startsWith('proposals')}
       buttonProps={{ id: 'Button_Proposals', name: 'proposals' }}
-      text={proposals}
+      text="Proposals"
     />
     <SidebarButton
       onClick={() => onClick?.('communities')}
       isActive={activeButton.startsWith('communities')}
       buttonProps={{ id: 'Button_Communities', name: 'communities' }}
-      text={communities}
+      text="Communities"
     />
     <SidebarButton
       onClick={() => onClick?.('collective-rewards')}
       isActive={activeButton.startsWith('collective-rewards')}
       buttonProps={{ id: 'Button_CollectiveRewards', name: 'collective-rewards' }}
-      text={collective_rewards}
+      text="Collective Rewards"
     />
   </>
 )
