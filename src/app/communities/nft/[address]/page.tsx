@@ -65,7 +65,7 @@ export default function Page() {
     stRifThreshold,
   } = useCommunity(nftAddress)
   const { stRifBalance } = useStRif()
-  const { isBoosted, hasActiveCampaign } = useNFTBoosterContext()
+  const { isBoosted, hasActiveCampaign, boostData } = useNFTBoosterContext()
 
   const nftInfo = communitiesMapByContract[nftAddress || '']
   if (nftInfo === undefined && nftAddress !== undefined) {
@@ -277,7 +277,7 @@ export default function Page() {
             <div className="font-semibold">{nftInfo?.title}</div>
           </div>
           <div className="mb-[24px] font-extralight">{nftInfo?.longDescription}</div>
-          {hasActiveCampaign && isBoosted && (
+          {hasActiveCampaign && isBoosted && boostData?.nftContractAddress === nftAddress && (
             <div className="inline-flex items-center gap-1 pb-6">
               <BoltSvg />
               <GlowingLabel>Boosted {20}%</GlowingLabel>

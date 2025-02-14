@@ -184,7 +184,7 @@ describe('BoosterProvider', () => {
       const contextValue = JSON.parse(element.textContent || '{}')
       expect(contextValue).toEqual(
         toExpected({
-          data: testBoostData,
+          boostData: testBoostData,
           isLoading: false,
           error: null,
           currentBoost: holderRewards,
@@ -221,7 +221,7 @@ describe('BoosterProvider', () => {
       const contextValue = JSON.parse(element.textContent || '{}')
       expect(contextValue).toEqual(
         toExpected({
-          data: testBoostData,
+          boostData: testBoostData,
           isLoading: false,
           error: null,
           hasActiveCampaign: true,

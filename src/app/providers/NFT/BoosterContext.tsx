@@ -60,7 +60,7 @@ export const BoosterProvider = ({ children }: BoosterContextProviderProps) => {
         currentBoost.estimatedRBTCRewards > 0 ||
         currentBoost.estimatedRIFRewards > 0)
 
-    return { data: boostData, isLoading, error, currentBoost, hasActiveCampaign, isBoosted }
+    return { boostData, isLoading, error, currentBoost, hasActiveCampaign, isBoosted }
   }, [boostData, address, isLoading, error, hasActiveCampaign])
   return <BoosterContext.Provider value={value}>{children}</BoosterContext.Provider>
 }
