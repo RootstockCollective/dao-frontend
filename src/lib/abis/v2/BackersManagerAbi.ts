@@ -19,29 +19,6 @@ export const BackersManagerAbi = [
   },
   {
     type: 'function',
-    name: 'activateBuilder',
-    inputs: [
-      {
-        name: 'builder_',
-        type: 'address',
-        internalType: 'address',
-      },
-      {
-        name: 'rewardReceiver_',
-        type: 'address',
-        internalType: 'address',
-      },
-      {
-        name: 'rewardPercentage_',
-        type: 'uint64',
-        internalType: 'uint64',
-      },
-    ],
-    outputs: [],
-    stateMutability: 'nonpayable',
-  },
-  {
-    type: 'function',
     name: 'allocate',
     inputs: [
       {
@@ -78,66 +55,6 @@ export const BackersManagerAbi = [
   },
   {
     type: 'function',
-    name: 'approveBuidlerRewardReceiverReplacement',
-    inputs: [
-      {
-        name: 'builder_',
-        type: 'address',
-        internalType: 'address',
-      },
-      {
-        name: 'rewardReceiverReplacement_',
-        type: 'address',
-        internalType: 'address',
-      },
-    ],
-    outputs: [],
-    stateMutability: 'nonpayable',
-  },
-  {
-    type: 'function',
-    name: 'approveBuilderKYC',
-    inputs: [
-      {
-        name: 'builder_',
-        type: 'address',
-        internalType: 'address',
-      },
-    ],
-    outputs: [],
-    stateMutability: 'nonpayable',
-  },
-  {
-    type: 'function',
-    name: 'backerRewardPercentage',
-    inputs: [
-      {
-        name: 'builder',
-        type: 'address',
-        internalType: 'address',
-      },
-    ],
-    outputs: [
-      {
-        name: 'previous',
-        type: 'uint64',
-        internalType: 'uint64',
-      },
-      {
-        name: 'next',
-        type: 'uint64',
-        internalType: 'uint64',
-      },
-      {
-        name: 'cooldownEndTime',
-        type: 'uint128',
-        internalType: 'uint128',
-      },
-    ],
-    stateMutability: 'view',
-  },
-  {
-    type: 'function',
     name: 'backerTotalAllocation',
     inputs: [
       {
@@ -157,106 +74,13 @@ export const BackersManagerAbi = [
   },
   {
     type: 'function',
-    name: 'builderRewardReceiver',
-    inputs: [
-      {
-        name: 'builder',
-        type: 'address',
-        internalType: 'address',
-      },
-    ],
+    name: 'builderRegistry',
+    inputs: [],
     outputs: [
       {
-        name: 'rewardReceiver',
+        name: '',
         type: 'address',
-        internalType: 'address',
-      },
-    ],
-    stateMutability: 'view',
-  },
-  {
-    type: 'function',
-    name: 'builderRewardReceiverReplacement',
-    inputs: [
-      {
-        name: 'builder',
-        type: 'address',
-        internalType: 'address',
-      },
-    ],
-    outputs: [
-      {
-        name: 'rewardReceiverReplacement',
-        type: 'address',
-        internalType: 'address',
-      },
-    ],
-    stateMutability: 'view',
-  },
-  {
-    type: 'function',
-    name: 'builderState',
-    inputs: [
-      {
-        name: 'builder',
-        type: 'address',
-        internalType: 'address',
-      },
-    ],
-    outputs: [
-      {
-        name: 'activated',
-        type: 'bool',
-        internalType: 'bool',
-      },
-      {
-        name: 'kycApproved',
-        type: 'bool',
-        internalType: 'bool',
-      },
-      {
-        name: 'communityApproved',
-        type: 'bool',
-        internalType: 'bool',
-      },
-      {
-        name: 'paused',
-        type: 'bool',
-        internalType: 'bool',
-      },
-      {
-        name: 'revoked',
-        type: 'bool',
-        internalType: 'bool',
-      },
-      {
-        name: 'reserved',
-        type: 'bytes7',
-        internalType: 'bytes7',
-      },
-      {
-        name: 'pausedReason',
-        type: 'bytes20',
-        internalType: 'bytes20',
-      },
-    ],
-    stateMutability: 'view',
-  },
-  {
-    type: 'function',
-    name: 'builderToGauge',
-    inputs: [
-      {
-        name: 'builder',
-        type: 'address',
-        internalType: 'address',
-      },
-    ],
-    outputs: [
-      {
-        name: 'gauge',
-        type: 'address',
-        internalType: 'contract GaugeRootstockCollective',
+        internalType: 'contract BuilderRegistryRootstockCollective',
       },
     ],
     stateMutability: 'view',
@@ -287,13 +111,6 @@ export const BackersManagerAbi = [
   },
   {
     type: 'function',
-    name: 'cancelRewardReceiverReplacementRequest',
-    inputs: [],
-    outputs: [],
-    stateMutability: 'nonpayable',
-  },
-  {
-    type: 'function',
     name: 'claimBackerRewards',
     inputs: [
       {
@@ -321,25 +138,6 @@ export const BackersManagerAbi = [
       },
     ],
     outputs: [],
-    stateMutability: 'nonpayable',
-  },
-  {
-    type: 'function',
-    name: 'communityApproveBuilder',
-    inputs: [
-      {
-        name: 'builder_',
-        type: 'address',
-        internalType: 'address',
-      },
-    ],
-    outputs: [
-      {
-        name: 'gauge_',
-        type: 'address',
-        internalType: 'contract GaugeRootstockCollective',
-      },
-    ],
     stateMutability: 'nonpayable',
   },
   {
@@ -415,19 +213,6 @@ export const BackersManagerAbi = [
   },
   {
     type: 'function',
-    name: 'dewhitelistBuilder',
-    inputs: [
-      {
-        name: 'builder_',
-        type: 'address',
-        internalType: 'address',
-      },
-    ],
-    outputs: [],
-    stateMutability: 'nonpayable',
-  },
-  {
-    type: 'function',
     name: 'distribute',
     inputs: [],
     outputs: [
@@ -473,38 +258,6 @@ export const BackersManagerAbi = [
   },
   {
     type: 'function',
-    name: 'gaugeFactory',
-    inputs: [],
-    outputs: [
-      {
-        name: '',
-        type: 'address',
-        internalType: 'contract GaugeFactoryRootstockCollective',
-      },
-    ],
-    stateMutability: 'view',
-  },
-  {
-    type: 'function',
-    name: 'gaugeToBuilder',
-    inputs: [
-      {
-        name: 'gauge',
-        type: 'address',
-        internalType: 'contract GaugeRootstockCollective',
-      },
-    ],
-    outputs: [
-      {
-        name: 'builder',
-        type: 'address',
-        internalType: 'address',
-      },
-    ],
-    stateMutability: 'view',
-  },
-  {
-    type: 'function',
     name: 'getCycleStartAndDuration',
     inputs: [],
     outputs: [
@@ -517,89 +270,6 @@ export const BackersManagerAbi = [
         name: '',
         type: 'uint256',
         internalType: 'uint256',
-      },
-    ],
-    stateMutability: 'view',
-  },
-  {
-    type: 'function',
-    name: 'getGaugeAt',
-    inputs: [
-      {
-        name: 'index_',
-        type: 'uint256',
-        internalType: 'uint256',
-      },
-    ],
-    outputs: [
-      {
-        name: '',
-        type: 'address',
-        internalType: 'address',
-      },
-    ],
-    stateMutability: 'view',
-  },
-  {
-    type: 'function',
-    name: 'getGaugesLength',
-    inputs: [],
-    outputs: [
-      {
-        name: '',
-        type: 'uint256',
-        internalType: 'uint256',
-      },
-    ],
-    stateMutability: 'view',
-  },
-  {
-    type: 'function',
-    name: 'getHaltedGaugeAt',
-    inputs: [
-      {
-        name: 'index_',
-        type: 'uint256',
-        internalType: 'uint256',
-      },
-    ],
-    outputs: [
-      {
-        name: '',
-        type: 'address',
-        internalType: 'address',
-      },
-    ],
-    stateMutability: 'view',
-  },
-  {
-    type: 'function',
-    name: 'getHaltedGaugesLength',
-    inputs: [],
-    outputs: [
-      {
-        name: '',
-        type: 'uint256',
-        internalType: 'uint256',
-      },
-    ],
-    stateMutability: 'view',
-  },
-  {
-    type: 'function',
-    name: 'getRewardPercentageToApply',
-    inputs: [
-      {
-        name: 'builder_',
-        type: 'address',
-        internalType: 'address',
-      },
-    ],
-    outputs: [
-      {
-        name: '',
-        type: 'uint64',
-        internalType: 'uint64',
       },
     ],
     stateMutability: 'view',
@@ -619,41 +289,16 @@ export const BackersManagerAbi = [
   },
   {
     type: 'function',
-    name: 'haltedGaugeLastPeriodFinish',
+    name: 'haltGaugeShares',
     inputs: [
       {
-        name: 'gauge',
+        name: 'gauge_',
         type: 'address',
         internalType: 'contract GaugeRootstockCollective',
       },
     ],
-    outputs: [
-      {
-        name: 'lastPeriodFinish',
-        type: 'uint256',
-        internalType: 'uint256',
-      },
-    ],
-    stateMutability: 'view',
-  },
-  {
-    type: 'function',
-    name: 'hasBuilderRewardReceiverPendingApproval',
-    inputs: [
-      {
-        name: 'builder_',
-        type: 'address',
-        internalType: 'address',
-      },
-    ],
-    outputs: [
-      {
-        name: '',
-        type: 'bool',
-        internalType: 'bool',
-      },
-    ],
-    stateMutability: 'view',
+    outputs: [],
+    stateMutability: 'nonpayable',
   },
   {
     type: 'function',
@@ -678,22 +323,17 @@ export const BackersManagerAbi = [
         internalType: 'contract IGovernanceManagerRootstockCollective',
       },
       {
+        name: 'builderRegistry_',
+        type: 'address',
+        internalType: 'address',
+      },
+      {
         name: 'rewardToken_',
         type: 'address',
         internalType: 'address',
       },
       {
         name: 'stakingToken_',
-        type: 'address',
-        internalType: 'address',
-      },
-      {
-        name: 'gaugeFactory_',
-        type: 'address',
-        internalType: 'address',
-      },
-      {
-        name: 'rewardDistributor_',
         type: 'address',
         internalType: 'address',
       },
@@ -711,129 +351,6 @@ export const BackersManagerAbi = [
         name: 'distributionDuration_',
         type: 'uint32',
         internalType: 'uint32',
-      },
-      {
-        name: 'rewardPercentageCooldown_',
-        type: 'uint128',
-        internalType: 'uint128',
-      },
-    ],
-    outputs: [],
-    stateMutability: 'nonpayable',
-  },
-  {
-    type: 'function',
-    name: 'isBuilderOperational',
-    inputs: [
-      {
-        name: 'builder_',
-        type: 'address',
-        internalType: 'address',
-      },
-    ],
-    outputs: [
-      {
-        name: '',
-        type: 'bool',
-        internalType: 'bool',
-      },
-    ],
-    stateMutability: 'view',
-  },
-  {
-    type: 'function',
-    name: 'isBuilderPaused',
-    inputs: [
-      {
-        name: 'builder_',
-        type: 'address',
-        internalType: 'address',
-      },
-    ],
-    outputs: [
-      {
-        name: '',
-        type: 'bool',
-        internalType: 'bool',
-      },
-    ],
-    stateMutability: 'view',
-  },
-  {
-    type: 'function',
-    name: 'isGaugeHalted',
-    inputs: [
-      {
-        name: 'gauge_',
-        type: 'address',
-        internalType: 'address',
-      },
-    ],
-    outputs: [
-      {
-        name: '',
-        type: 'bool',
-        internalType: 'bool',
-      },
-    ],
-    stateMutability: 'view',
-  },
-  {
-    type: 'function',
-    name: 'isGaugeOperational',
-    inputs: [
-      {
-        name: 'gauge_',
-        type: 'address',
-        internalType: 'contract GaugeRootstockCollective',
-      },
-    ],
-    outputs: [
-      {
-        name: '',
-        type: 'bool',
-        internalType: 'bool',
-      },
-    ],
-    stateMutability: 'view',
-  },
-  {
-    type: 'function',
-    name: 'isGaugeRewarded',
-    inputs: [
-      {
-        name: 'gauge_',
-        type: 'address',
-        internalType: 'address',
-      },
-    ],
-    outputs: [
-      {
-        name: '',
-        type: 'bool',
-        internalType: 'bool',
-      },
-    ],
-    stateMutability: 'view',
-  },
-  {
-    type: 'function',
-    name: 'migrateBuilder',
-    inputs: [
-      {
-        name: 'builder_',
-        type: 'address',
-        internalType: 'address',
-      },
-      {
-        name: 'rewardAddress_',
-        type: 'address',
-        internalType: 'address',
-      },
-      {
-        name: 'rewardPercentage_',
-        type: 'uint64',
-        internalType: 'uint64',
       },
     ],
     outputs: [],
@@ -867,17 +384,25 @@ export const BackersManagerAbi = [
   },
   {
     type: 'function',
-    name: 'pauseBuilder',
+    name: 'optInRewards',
     inputs: [
       {
-        name: 'builder_',
+        name: 'backer_',
         type: 'address',
         internalType: 'address',
       },
+    ],
+    outputs: [],
+    stateMutability: 'nonpayable',
+  },
+  {
+    type: 'function',
+    name: 'optOutRewards',
+    inputs: [
       {
-        name: 'reason_',
-        type: 'bytes20',
-        internalType: 'bytes20',
+        name: 'backer_',
+        type: 'address',
+        internalType: 'address',
       },
     ],
     outputs: [],
@@ -898,19 +423,6 @@ export const BackersManagerAbi = [
   },
   {
     type: 'function',
-    name: 'permitBuilder',
-    inputs: [
-      {
-        name: 'rewardPercentage_',
-        type: 'uint64',
-        internalType: 'uint64',
-      },
-    ],
-    outputs: [],
-    stateMutability: 'nonpayable',
-  },
-  {
-    type: 'function',
     name: 'proxiableUUID',
     inputs: [],
     outputs: [
@@ -924,49 +436,16 @@ export const BackersManagerAbi = [
   },
   {
     type: 'function',
-    name: 'revokeBuilder',
-    inputs: [],
-    outputs: [],
-    stateMutability: 'nonpayable',
-  },
-  {
-    type: 'function',
-    name: 'revokeBuilderKYC',
+    name: 'resumeGaugeShares',
     inputs: [
       {
-        name: 'builder_',
+        name: 'gauge_',
         type: 'address',
-        internalType: 'address',
+        internalType: 'contract GaugeRootstockCollective',
       },
     ],
     outputs: [],
     stateMutability: 'nonpayable',
-  },
-  {
-    type: 'function',
-    name: 'rewardDistributor',
-    inputs: [],
-    outputs: [
-      {
-        name: '',
-        type: 'address',
-        internalType: 'address',
-      },
-    ],
-    stateMutability: 'view',
-  },
-  {
-    type: 'function',
-    name: 'rewardPercentageCooldown',
-    inputs: [],
-    outputs: [
-      {
-        name: '',
-        type: 'uint128',
-        internalType: 'uint128',
-      },
-    ],
-    stateMutability: 'view',
   },
   {
     type: 'function',
@@ -980,6 +459,24 @@ export const BackersManagerAbi = [
       },
     ],
     stateMutability: 'view',
+  },
+  {
+    type: 'function',
+    name: 'rewardTokenApprove',
+    inputs: [
+      {
+        name: 'gauge_',
+        type: 'address',
+        internalType: 'address',
+      },
+      {
+        name: 'value_',
+        type: 'uint256',
+        internalType: 'uint256',
+      },
+    ],
+    outputs: [],
+    stateMutability: 'nonpayable',
   },
   {
     type: 'function',
@@ -1009,16 +506,22 @@ export const BackersManagerAbi = [
   },
   {
     type: 'function',
-    name: 'setBackerRewardPercentage',
+    name: 'rewardsOptedOut',
     inputs: [
       {
-        name: 'rewardPercentage_',
-        type: 'uint64',
-        internalType: 'uint64',
+        name: 'backer',
+        type: 'address',
+        internalType: 'address',
       },
     ],
-    outputs: [],
-    stateMutability: 'nonpayable',
+    outputs: [
+      {
+        name: 'hasOptedOut',
+        type: 'bool',
+        internalType: 'bool',
+      },
+    ],
+    stateMutability: 'view',
   },
   {
     type: 'function',
@@ -1075,19 +578,6 @@ export const BackersManagerAbi = [
         internalType: 'bool',
       },
     ],
-    stateMutability: 'nonpayable',
-  },
-  {
-    type: 'function',
-    name: 'submitRewardReceiverReplacementRequest',
-    inputs: [
-      {
-        name: 'newRewardReceiver_',
-        type: 'address',
-        internalType: 'address',
-      },
-    ],
-    outputs: [],
     stateMutability: 'nonpayable',
   },
   {
@@ -1156,19 +646,6 @@ export const BackersManagerAbi = [
   },
   {
     type: 'function',
-    name: 'unpauseBuilder',
-    inputs: [
-      {
-        name: 'builder_',
-        type: 'address',
-        internalType: 'address',
-      },
-    ],
-    outputs: [],
-    stateMutability: 'nonpayable',
-  },
-  {
-    type: 'function',
     name: 'upgradeToAndCall',
     inputs: [
       {
@@ -1187,66 +664,10 @@ export const BackersManagerAbi = [
   },
   {
     type: 'event',
-    name: 'BackerRewardPercentageUpdateScheduled',
+    name: 'BackerRewardsOptedIn',
     inputs: [
       {
-        name: 'builder_',
-        type: 'address',
-        indexed: true,
-        internalType: 'address',
-      },
-      {
-        name: 'rewardPercentage_',
-        type: 'uint256',
-        indexed: false,
-        internalType: 'uint256',
-      },
-      {
-        name: 'cooldown_',
-        type: 'uint256',
-        indexed: false,
-        internalType: 'uint256',
-      },
-    ],
-    anonymous: false,
-  },
-  {
-    type: 'event',
-    name: 'BuilderActivated',
-    inputs: [
-      {
-        name: 'builder_',
-        type: 'address',
-        indexed: true,
-        internalType: 'address',
-      },
-      {
-        name: 'rewardReceiver_',
-        type: 'address',
-        indexed: false,
-        internalType: 'address',
-      },
-      {
-        name: 'rewardPercentage_',
-        type: 'uint64',
-        indexed: false,
-        internalType: 'uint64',
-      },
-    ],
-    anonymous: false,
-  },
-  {
-    type: 'event',
-    name: 'BuilderMigrated',
-    inputs: [
-      {
-        name: 'builder_',
-        type: 'address',
-        indexed: true,
-        internalType: 'address',
-      },
-      {
-        name: 'migrator_',
+        name: 'backer_',
         type: 'address',
         indexed: true,
         internalType: 'address',
@@ -1256,107 +677,12 @@ export const BackersManagerAbi = [
   },
   {
     type: 'event',
-    name: 'BuilderRewardReceiverReplacementApproved',
+    name: 'BackerRewardsOptedOut',
     inputs: [
       {
-        name: 'builder_',
+        name: 'backer_',
         type: 'address',
         indexed: true,
-        internalType: 'address',
-      },
-      {
-        name: 'newRewardReceiver_',
-        type: 'address',
-        indexed: false,
-        internalType: 'address',
-      },
-    ],
-    anonymous: false,
-  },
-  {
-    type: 'event',
-    name: 'BuilderRewardReceiverReplacementCancelled',
-    inputs: [
-      {
-        name: 'builder_',
-        type: 'address',
-        indexed: true,
-        internalType: 'address',
-      },
-      {
-        name: 'newRewardReceiver_',
-        type: 'address',
-        indexed: false,
-        internalType: 'address',
-      },
-    ],
-    anonymous: false,
-  },
-  {
-    type: 'event',
-    name: 'BuilderRewardReceiverReplacementRequested',
-    inputs: [
-      {
-        name: 'builder_',
-        type: 'address',
-        indexed: true,
-        internalType: 'address',
-      },
-      {
-        name: 'newRewardReceiver_',
-        type: 'address',
-        indexed: false,
-        internalType: 'address',
-      },
-    ],
-    anonymous: false,
-  },
-  {
-    type: 'event',
-    name: 'CommunityApproved',
-    inputs: [
-      {
-        name: 'builder_',
-        type: 'address',
-        indexed: true,
-        internalType: 'address',
-      },
-    ],
-    anonymous: false,
-  },
-  {
-    type: 'event',
-    name: 'Dewhitelisted',
-    inputs: [
-      {
-        name: 'builder_',
-        type: 'address',
-        indexed: true,
-        internalType: 'address',
-      },
-    ],
-    anonymous: false,
-  },
-  {
-    type: 'event',
-    name: 'GaugeCreated',
-    inputs: [
-      {
-        name: 'builder_',
-        type: 'address',
-        indexed: true,
-        internalType: 'address',
-      },
-      {
-        name: 'gauge_',
-        type: 'address',
-        indexed: true,
-        internalType: 'address',
-      },
-      {
-        name: 'creator_',
-        type: 'address',
-        indexed: false,
         internalType: 'address',
       },
     ],
@@ -1371,32 +697,6 @@ export const BackersManagerAbi = [
         type: 'uint64',
         indexed: false,
         internalType: 'uint64',
-      },
-    ],
-    anonymous: false,
-  },
-  {
-    type: 'event',
-    name: 'KYCApproved',
-    inputs: [
-      {
-        name: 'builder_',
-        type: 'address',
-        indexed: true,
-        internalType: 'address',
-      },
-    ],
-    anonymous: false,
-  },
-  {
-    type: 'event',
-    name: 'KYCRevoked',
-    inputs: [
-      {
-        name: 'builder_',
-        type: 'address',
-        indexed: true,
-        internalType: 'address',
       },
     ],
     anonymous: false,
@@ -1491,63 +791,6 @@ export const BackersManagerAbi = [
   },
   {
     type: 'event',
-    name: 'Paused',
-    inputs: [
-      {
-        name: 'builder_',
-        type: 'address',
-        indexed: true,
-        internalType: 'address',
-      },
-      {
-        name: 'reason_',
-        type: 'bytes20',
-        indexed: false,
-        internalType: 'bytes20',
-      },
-    ],
-    anonymous: false,
-  },
-  {
-    type: 'event',
-    name: 'Permitted',
-    inputs: [
-      {
-        name: 'builder_',
-        type: 'address',
-        indexed: true,
-        internalType: 'address',
-      },
-      {
-        name: 'rewardPercentage_',
-        type: 'uint256',
-        indexed: false,
-        internalType: 'uint256',
-      },
-      {
-        name: 'cooldown_',
-        type: 'uint256',
-        indexed: false,
-        internalType: 'uint256',
-      },
-    ],
-    anonymous: false,
-  },
-  {
-    type: 'event',
-    name: 'Revoked',
-    inputs: [
-      {
-        name: 'builder_',
-        type: 'address',
-        indexed: true,
-        internalType: 'address',
-      },
-    ],
-    anonymous: false,
-  },
-  {
-    type: 'event',
     name: 'RewardDistributed',
     inputs: [
       {
@@ -1578,19 +821,6 @@ export const BackersManagerAbi = [
     inputs: [
       {
         name: 'sender_',
-        type: 'address',
-        indexed: true,
-        internalType: 'address',
-      },
-    ],
-    anonymous: false,
-  },
-  {
-    type: 'event',
-    name: 'Unpaused',
-    inputs: [
-      {
-        name: 'builder_',
         type: 'address',
         indexed: true,
         internalType: 'address',
@@ -1635,37 +865,22 @@ export const BackersManagerAbi = [
   },
   {
     type: 'error',
-    name: 'AlreadyActivated',
+    name: 'AlreadyOptedInRewards',
     inputs: [],
   },
   {
     type: 'error',
-    name: 'AlreadyCommunityApproved',
+    name: 'BackerHasAllocations',
     inputs: [],
   },
   {
     type: 'error',
-    name: 'AlreadyKYCApproved',
-    inputs: [],
-  },
-  {
-    type: 'error',
-    name: 'AlreadyRevoked',
+    name: 'BackerOptedOutRewards',
     inputs: [],
   },
   {
     type: 'error',
     name: 'BeforeDistribution',
-    inputs: [],
-  },
-  {
-    type: 'error',
-    name: 'BuilderAlreadyExists',
-    inputs: [],
-  },
-  {
-    type: 'error',
-    name: 'BuilderDoesNotExist',
     inputs: [],
   },
   {
@@ -1721,16 +936,6 @@ export const BackersManagerAbi = [
   },
   {
     type: 'error',
-    name: 'InvalidBackerRewardPercentage',
-    inputs: [],
-  },
-  {
-    type: 'error',
-    name: 'InvalidBuilderRewardReceiver',
-    inputs: [],
-  },
-  {
-    type: 'error',
     name: 'InvalidInitialization',
     inputs: [],
   },
@@ -1741,12 +946,7 @@ export const BackersManagerAbi = [
   },
   {
     type: 'error',
-    name: 'NotActivated',
-    inputs: [],
-  },
-  {
-    type: 'error',
-    name: 'NotCommunityApproved',
+    name: 'NotAuthorized',
     inputs: [],
   },
   {
@@ -1762,26 +962,6 @@ export const BackersManagerAbi = [
   {
     type: 'error',
     name: 'NotInitializing',
-    inputs: [],
-  },
-  {
-    type: 'error',
-    name: 'NotKYCApproved',
-    inputs: [],
-  },
-  {
-    type: 'error',
-    name: 'NotOperational',
-    inputs: [],
-  },
-  {
-    type: 'error',
-    name: 'NotPaused',
-    inputs: [],
-  },
-  {
-    type: 'error',
-    name: 'NotRevoked',
     inputs: [],
   },
   {
