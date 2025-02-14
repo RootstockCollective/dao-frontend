@@ -24,7 +24,7 @@ export const useCreateBuilderWhitelistProposal = () => {
       throw AddressAlreadyWhitelistedError
     }
     const calldata = encodeWhitelistBuilderCalldata(builderAddress)
-    const relayCallData = encodeGovernorRelayCallData(BackersManagerAddress, calldata)
+    const relayCallData = encodeGovernorRelayCallData(builderRegistryAddress!, calldata)
 
     const { proposal } = createProposal([GovernorAddress], [0n], [relayCallData], description)
 
