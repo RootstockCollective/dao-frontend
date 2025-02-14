@@ -1,21 +1,20 @@
-import { BecomeABuilderButton, useGetGaugesArray } from '@/app/collective-rewards/user'
-import { HeaderTitle } from '@/components/Typography'
 import {
-  TotalAllocationsMetrics,
-  CycleMetrics,
-  CycleContextProvider,
-  TotalActiveBuildersMetrics,
   AllTimeRewardsMetrics,
+  CycleContextProvider,
+  CycleMetrics,
+  TotalActiveBuildersMetrics,
+  TotalAllocationsMetrics,
 } from '@/app/collective-rewards/metrics'
-import { getAddress } from 'viem'
-import { tokenContracts } from '@/lib/contracts'
+import { useGetGaugesArray } from '@/app/collective-rewards/user'
 import { getCoinbaseAddress } from '@/app/collective-rewards/utils'
+import { HeaderTitle } from '@/components/Typography'
+import { tokenContracts } from '@/lib/contracts'
 import { PricesContextProvider } from '@/shared/context/PricesContext'
+import { getAddress } from 'viem'
+import { withBuilderButton } from '../user/components/Button/WithBuilderButton'
 import { ABIMetrics } from './components/ABIMetrics'
-import { useAccount } from 'wagmi'
 
 export const Metrics = () => {
-  const { address } = useAccount()
   const { data: allGauges } = useGetGaugesArray()
   const gauges = allGauges ?? []
 
@@ -32,10 +31,9 @@ export const Metrics = () => {
 
   return (
     <div>
-      <div className="flex justify-between items-center self-stretch mb-6">
-        <HeaderTitle>Metrics</HeaderTitle>
-        <BecomeABuilderButton address={address!} />
-      </div>
+      {withBuilderButton(HeaderTitle)({
+        children: 'Metrics',
+      })}
       <PricesContextProvider>
         <CycleContextProvider>
           <div className="flex gap-4 w-full">

@@ -5,8 +5,9 @@ import { ReactNode } from 'react'
 import { WagmiProvider } from 'wagmi'
 import { AlertProvider } from './AlertProvider'
 import ErrorBoundary from '@/components/ErrorPage/ErrorBoundary'
-import { BuilderContextProviderWithPrices } from '@/app/collective-rewards/user'
-import { AllocationsContextProvider } from '@/app/collective-rewards/allocations/context'
+import { BuilderContextProviderWithPrices } from '../collective-rewards/user'
+import { AllocationsContextProvider } from '../collective-rewards/allocations/context'
+import { BoosterProvider } from './NFT/BoosterContext'
 import { MigrationProvider } from '@/shared/context/MigrationContext'
 
 interface Props {
@@ -22,7 +23,9 @@ export const ContextProviders = ({ children }: Props) => {
           <AlertProvider>
             <MigrationProvider>
               <BuilderContextProviderWithPrices>
-                <AllocationsContextProvider>{children}</AllocationsContextProvider>
+                <BoosterProvider>
+                  <AllocationsContextProvider>{children}</AllocationsContextProvider>
+                </BoosterProvider>
               </BuilderContextProviderWithPrices>
             </MigrationProvider>
           </AlertProvider>

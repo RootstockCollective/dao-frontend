@@ -18,9 +18,9 @@ export const BoltSvg = () => {
           y2="12"
           gradientUnits="userSpaceOnUse"
         >
-          <stop stop-color="#4B171A" />
-          <stop offset="0.35" stop-color="#C0F7FF" />
-          <stop offset="0.76" stop-color="#E3FFEB" />
+          <stop stopColor="#4B171A" />
+          <stop offset="0.35" stopColor="#C0F7FF" />
+          <stop offset="0.76" stopColor="#E3FFEB" />
         </linearGradient>
       </defs>
     </svg>

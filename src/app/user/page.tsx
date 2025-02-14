@@ -21,6 +21,7 @@ import { BalancesProvider, useBalancesContext } from './Balances/context/Balance
 import { AppRouterInstance } from 'next/dist/shared/lib/app-router-context.shared-runtime'
 import { TokenBalanceRecord } from './types'
 import { Timeout } from 'react-number-format/types/types'
+import { SelfContainedNFTBoosterCard } from '../shared/components/NFTBoosterCard/SelfContainedNFTBoosterCard'
 
 const getStartedSkipped = 'getStartedSkipped'
 const values = ['holdings', 'rewards'] as const
@@ -140,7 +141,10 @@ function User() {
             />
           ) : null}
 
-          <BecomeABuilderButton address={address!} />
+          <div className="flex gap-3 justify-end">
+            <SelfContainedNFTBoosterCard />
+            <BecomeABuilderButton address={address!} />
+          </div>
         </div>
 
         <TabsContent value={tabs.holdings.value}>

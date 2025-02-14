@@ -17,6 +17,10 @@ import { CopyButton } from '@/components/CopyButton'
 import { NftHoldersSection } from '@/app/communities/NftHoldersSection'
 import { communitiesMapByContract } from '@/app/communities/communityUtils'
 import { isUserRejectedTxError } from '@/components/ErrorPage/commonErrors'
+import { SelfContainedNFTBoosterCard } from '../../../shared/components/NFTBoosterCard/SelfContainedNFTBoosterCard'
+import { GlowingLabel } from '@/components/Label/GlowingLabel'
+import { BoltSvg } from '@/components/BoltSvg'
+import { useNFTBoosterContext } from '@/app/providers/NFT/BoosterContext'
 
 /**
  * Name of the local storage variable with information about whether the token was added to the wallet
@@ -61,6 +65,7 @@ export default function Page() {
     stRifThreshold,
   } = useCommunity(nftAddress)
   const { stRifBalance } = useStRif()
+  const { isBoosted, hasActiveCampaign, boostData } = useNFTBoosterContext()
 
   const nftInfo = communitiesMapByContract[nftAddress || '']
   if (nftInfo === undefined && nftAddress !== undefined) {
@@ -272,6 +277,12 @@ export default function Page() {
             <div className="font-semibold">{nftInfo?.title}</div>
           </div>
           <div className="mb-[24px] font-extralight">{nftInfo?.longDescription}</div>
+          {hasActiveCampaign && isBoosted && boostData?.nftContractAddress === nftAddress && (
+            <div className="inline-flex items-center gap-1 pb-6">
+              <BoltSvg />
+              <GlowingLabel>Boosted {20}%</GlowingLabel>
+            </div>
+          )}
           {/* Hidden until we get social media data */}
           <div className="gap-[8px] mt-[16px] mb-[24px] hidden">
             {/* Chips with community links */}
@@ -328,6 +339,8 @@ export default function Page() {
                       </Typography>
                     )}
                   </div>
+
+                  <SelfContainedNFTBoosterCard />
 
                   {/* `Add to wallet button` */}
                   {!isNftInWallet?.[nftAddress]?.[tokenId] && (
