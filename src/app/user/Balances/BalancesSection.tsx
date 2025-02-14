@@ -8,7 +8,8 @@ import { StakeRIFCell } from '@/app/user/Balances/StakeRIFCell'
 import { RenderTokenSymbol } from '@/app/user/Balances/RenderTokenSymbol'
 import { UnStakeRIFCell } from '@/app/user/Balances/UnStakeRIFCell'
 import { UnStakingModal } from '@/app/user/Stake/UnStakingSteps'
-import { withBuilderButton } from '@/app/collective-rewards/user'
+import { BecomeABuilderButton } from '@/app/collective-rewards/user'
+import { useAccount } from 'wagmi'
 
 const data = [
   {
@@ -34,19 +35,14 @@ const data = [
   },
 ]
 
-type BalancesSectionProps = {
-  showBuilderButton?: boolean
+interface Props {
+  showTitle?: boolean
 }
-
-export const BalancesSection = ({ showBuilderButton }: BalancesSectionProps) => {
+export const BalancesSection = ({ showTitle = false }: Props) => {
   return (
     <div className="mb-[32px]">
-      {showBuilderButton ? (
-        withBuilderButton(HeaderTitle)({ children: 'Balances' })
-      ) : (
-        <HeaderTitle className="mb-6">Balances</HeaderTitle>
-      )}
       <BalancesProvider>
+        {showTitle ? <HeaderTitle className="mb-6">Balances</HeaderTitle> : null}
         <StakingModal />
         <UnStakingModal />
         <Table data={data} />

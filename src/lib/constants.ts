@@ -34,6 +34,7 @@ export const AVERAGE_BLOCKTIME = 60_000
 export const RIF = 'RIF'
 export const USD = 'USD'
 export const RBTC = 'RBTC'
+export const stRIF = 'stRIF'
 export const USD_SYMBOL = '$'
 
 export const RNS_REGISTRY_ADDRESS = process.env.NEXT_PUBLIC_RNS_REGISTRY_ADDRESS as Address

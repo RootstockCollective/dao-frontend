@@ -13,7 +13,7 @@ export const HeaderSection = ({ createProposalDisabled = true, threshold = '' })
         description={
           'If these steps are not completed, your proposal is unlikely to reach quorum and succeed in a vote.'
         }
-        itemsData={prepareProposalsData}
+        data={prepareProposalsData}
       />
       {createProposalDisabled ? (
         <Popover

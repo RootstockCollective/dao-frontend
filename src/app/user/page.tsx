@@ -1,35 +1,30 @@
 'use client'
 import { Rewards } from '@/app/collective-rewards/rewards/MyRewards'
-import { withBuilderButton } from '@/app/collective-rewards/user'
 import { BalancesSection } from '@/app/user/Balances/BalancesSection'
 import { CommunitiesSection } from '@/app/user/Communities/CommunitiesSection'
 import { DelegationSection } from '@/app/user/Delegation'
 import { MainContainer } from '@/components/MainContainer/MainContainer'
 import { Tabs, TabsContent, TabsList, TabsTrigger, TabTitle } from '@/components/Tabs'
 import { TxStatusMessage } from '@/components/TxStatusMessage'
-import { useSearchParams } from 'next/navigation'
-import { Suspense } from 'react'
-import { zeroAddress } from 'viem'
+import { useRouter, useSearchParams } from 'next/navigation'
+import { Suspense, useCallback, useEffect, useMemo, useState } from 'react'
+import { useCookiesNext } from 'cookies-next'
+import { Address, zeroAddress } from 'viem'
 import { useAccount } from 'wagmi'
 import { useIsBuilderOrBacker } from '../collective-rewards/rewards/hooks/useIsBuilderOrBacker'
 import { useHandleErrors } from '../collective-rewards/utils'
+import { BecomeABuilderButton } from '../collective-rewards/user'
+import { COMPLETED, Dropdown, DropdownTopic, getGetStartedData } from '@/components/dropdown'
+import { dropdown } from '@/shared/contants'
+import { HeaderTitle, Typography } from '@/components/Typography'
+import { BalancesProvider, useBalancesContext } from './Balances/context/BalancesContext'
+import { AppRouterInstance } from 'next/dist/shared/lib/app-router-context.shared-runtime'
+import { TokenBalanceRecord } from './types'
+import { Timeout } from 'react-number-format/types/types'
 
-type MyHoldingsProps = {
-  showBuilderButton?: boolean
-}
-
-const MyHoldings = ({ showBuilderButton = false }: MyHoldingsProps) => (
-  <>
-    <TxStatusMessage messageType="staking" />
-    <BalancesSection showBuilderButton={showBuilderButton} />
-    <DelegationSection />
-    <CommunitiesSection />
-  </>
-)
-
-const TabsListWithButton = withBuilderButton(TabsList)
-
+const getStartedSkipped = 'getStartedSkipped'
 const values = ['holdings', 'rewards'] as const
+
 type TabValue = (typeof values)[number]
 type Tabs = {
   [key in TabValue]: {
@@ -48,8 +43,29 @@ const tabs: Tabs = {
   },
 }
 
+const getStartedCheckRunner = (fn: () => Promise<void>) => {
+  let interval: Timeout | undefined = undefined
+
+  if (interval) {
+    clearInterval(interval)
+  }
+
+  fn()
+  interval = setInterval(() => {
+    fn()
+  }, 60000)
+}
+
 function User() {
+  const { balances } = useBalancesContext()
   const { address } = useAccount()
+
+  // Getting Started dropdown
+  const router = useRouter()
+  const coockies = useCookiesNext()
+  const [isGetStatedSkipped, setIsGetStartedSkipped] = useState<boolean>(true)
+  const [dropdownData, setDropdownData] = useState<DropdownTopic[] | null>(null)
+
   const searchParams = useSearchParams()
   const tabFromParams = searchParams?.get('tab') as TabValue
   const defaultTabValue = tabs[tabFromParams]?.value ?? 'holdings'
@@ -61,29 +77,84 @@ function User() {
     title: 'Error fetching user data',
   })
 
+  const skipGetStarted = useCallback(async () => {
+    coockies.setCookie(getStartedSkipped, true)
+    setIsGetStartedSkipped(true)
+  }, [coockies])
+
+  const setGetStartedDropdownData = useCallback(
+    async (router: AppRouterInstance, balances: TokenBalanceRecord, address: Address) => {
+      const dropdownData = await getGetStartedData(router, balances, address)
+      setDropdownData(dropdownData)
+    },
+    [],
+  )
+
+  useEffect(() => {
+    // TODO: check how often the dependecies update to minimize re-render
+    // TODO: find a better way to cache and refresh the getStartedSteps
+    if (address) {
+      getStartedCheckRunner(() => setGetStartedDropdownData(router, balances, address))
+    }
+  }, [router, balances, address, setGetStartedDropdownData])
+
+  const showAdditionalContent = !isLoading && isBuilderOrBacker
+
+  useEffect(() => {
+    setIsGetStartedSkipped(Boolean(coockies.getCookie(getStartedSkipped)))
+  }, [isGetStatedSkipped, coockies])
+
   return (
     <MainContainer>
       {/* We don't show the tab if it's loading */}
-      {!isLoading && isBuilderOrBacker ? (
-        <Tabs defaultValue={defaultTabValue}>
-          <TabsListWithButton>
-            <TabsTrigger value={tabs.holdings.value}>
-              <TabTitle>{tabs.holdings.title}</TabTitle>
-            </TabsTrigger>
-            <TabsTrigger value={tabs.rewards.value}>
-              <TabTitle>{tabs.rewards.title}</TabTitle>
-            </TabsTrigger>
-          </TabsListWithButton>
-          <TabsContent value={tabs.holdings.value}>
-            <MyHoldings />
-          </TabsContent>
+      <Tabs defaultValue={defaultTabValue}>
+        <div className="row-container">
+          {showAdditionalContent ? (
+            <TabsList>
+              <TabsTrigger value={tabs.holdings.value}>
+                <TabTitle>{tabs.holdings.title}</TabTitle>
+              </TabsTrigger>
+              <TabsTrigger value={tabs.rewards.value}>
+                <TabTitle>{tabs.rewards.title}</TabTitle>
+              </TabsTrigger>
+            </TabsList>
+          ) : (
+            <HeaderTitle className="mb-6">Balances</HeaderTitle>
+          )}
+
+          {!isGetStatedSkipped && dropdownData ? (
+            <Dropdown
+              title={dropdown.steps}
+              subtitle={`(${dropdownData[1] ? dropdownData[1].items.length : '0'}/5 ${COMPLETED})`}
+              description={dropdown.influencerDesc}
+              data={dropdownData}
+              footer={
+                <Typography
+                  className="text-[12px] text-center leading-none text-[#171412] font-normal font-rootstock-sans hover:underline"
+                  cursor="pointer"
+                  onClick={skipGetStarted}
+                >
+                  {dropdown.already_familiar}
+                </Typography>
+              }
+            />
+          ) : null}
+
+          <BecomeABuilderButton address={address!} />
+        </div>
+
+        <TabsContent value={tabs.holdings.value}>
+          <TxStatusMessage messageType="staking" />
+          <BalancesSection showTitle={showAdditionalContent} />
+          <DelegationSection />
+          <CommunitiesSection />
+        </TabsContent>
+        {showAdditionalContent ? (
           <TabsContent value={tabs.rewards.value}>
             <Rewards builder={address!} />
           </TabsContent>
-        </Tabs>
-      ) : (
-        <MyHoldings showBuilderButton={true} />
-      )}
+        ) : null}
+      </Tabs>
     </MainContainer>
   )
 }
@@ -91,7 +162,9 @@ function User() {
 export default function UserPage() {
   return (
     <Suspense fallback={<div>Loading...</div>}>
-      <User />
+      <BalancesProvider>
+        <User />
+      </BalancesProvider>
     </Suspense>
   )
 }
