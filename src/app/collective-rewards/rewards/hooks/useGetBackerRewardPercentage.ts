@@ -1,15 +1,17 @@
-import { BackersManagerAbi } from '@/lib/abis/v2/BackersManagerAbi'
 import { AVERAGE_BLOCKTIME } from '@/lib/constants'
-import { BackersManagerAddress } from '@/lib/contracts'
 import { useMemo } from 'react'
 import { Address } from 'viem'
 import { useReadContract } from 'wagmi'
 import { getBackerRewardPercentage } from '../utils'
+import { useMigrationContext } from '@/shared/context/MigrationContext'
+import { BuilderRegistryAbi } from '@/lib/abis/v2/BuilderRegistryAbi'
 
 export const useGetBackerRewardPercentage = (builder: Address, timestampInSeconds?: number) => {
+  const { builderRegistryAddress } = useMigrationContext()
+
   const { data, isLoading, error } = useReadContract({
-    address: BackersManagerAddress,
-    abi: BackersManagerAbi,
+    address: builderRegistryAddress,
+    abi: BuilderRegistryAbi,
     functionName: 'backerRewardPercentage',
     args: [builder],
     query: {

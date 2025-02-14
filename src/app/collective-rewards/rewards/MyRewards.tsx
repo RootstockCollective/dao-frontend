@@ -22,7 +22,6 @@ import { RequiredBuilder } from '@/app/collective-rewards/types'
 import { Switch, SwitchThumb } from '@/components/Switch'
 import { Typography } from '@/components/Typography'
 import { CycleContextProvider } from '@/app/collective-rewards/metrics'
-import { GlowingLabel } from '@/components/Label/GlowingLabel'
 
 const SubText = () => {
   return (
@@ -84,28 +83,26 @@ const BackerRewardsSection: FC<RewardDetails> = data => {
 
   return (
     <RewardsSection>
-      <div className="inline-flex gap-6">
-        <RewardsSectionHeader
-          title="Backer Rewards"
-          subtext={<SubText />}
-          utility={
-            <div className="flex gap-x-[12px]">
-              <div className="flex flex-col items-center gap-y-[9px] w-[142px]">
-                <Switch checked={isDetailedView} onCheckedChange={() => setIsDetailedView(!isDetailedView)}>
-                  <SwitchThumb />
-                </Switch>
-                <Typography tagVariant="label" className="text-xs font-normal font-rootstock-sans">
-                  Detailed View
-                </Typography>
-              </div>
-              <SettingsButton
-                disabled={canManageAllocations}
-                onClick={() => router.push('/collective-rewards/allocations')}
-              />
+      <RewardsSectionHeader
+        title="Backer Rewards"
+        subtext={<SubText />}
+        utility={
+          <div className="flex gap-x-[12px]">
+            <div className="flex flex-col items-center gap-y-[9px] w-[142px]">
+              <Switch checked={isDetailedView} onCheckedChange={() => setIsDetailedView(!isDetailedView)}>
+                <SwitchThumb />
+              </Switch>
+              <Typography tagVariant="label" className="text-xs font-normal font-rootstock-sans">
+                Detailed View
+              </Typography>
             </div>
-          }
-        />
-      </div>
+            <SettingsButton
+              disabled={!canManageAllocations}
+              onClick={() => router.push('/collective-rewards/allocations')}
+            />
+          </div>
+        }
+      />
       <BackerRewards {...data} />
       <BackerRewardsTable {...data} />
     </RewardsSection>

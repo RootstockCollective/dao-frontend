@@ -7,8 +7,10 @@ import { Address, encodeFunctionData, zeroAddress } from 'viem'
 import { useWriteContract } from 'wagmi'
 import { createProposal, encodeGovernorRelayCallData } from './proposalUtils'
 import { useVotingPower } from './useVotingPower'
+import { useMigrationContext } from '@/shared/context/MigrationContext'
 
 export const useCreateBuilderWhitelistProposal = () => {
+  const { builderRegistryAddress } = useMigrationContext()
   const { canCreateProposal } = useVotingPower()
   const { writeContractAsync: propose, isPending: isPublishing, error: transactionError } = useWriteContract()
 
@@ -16,13 +18,13 @@ export const useCreateBuilderWhitelistProposal = () => {
     if (!canCreateProposal) {
       throw NoVotingPowerError
     }
-    const builderGauge = await getBuilderGauge(builderAddress)
+    const builderGauge = await getBuilderGauge(builderRegistryAddress!, builderAddress)
     if (builderGauge !== zeroAddress) {
       // TODO: maybe we can use a different error here
       throw AddressAlreadyWhitelistedError
     }
     const calldata = encodeWhitelistBuilderCalldata(builderAddress)
-    const relayCallData = encodeGovernorRelayCallData(BackersManagerAddress, calldata)
+    const relayCallData = encodeGovernorRelayCallData(builderRegistryAddress!, calldata)
 
     const { proposal } = createProposal([GovernorAddress], [0n], [relayCallData], description)
 

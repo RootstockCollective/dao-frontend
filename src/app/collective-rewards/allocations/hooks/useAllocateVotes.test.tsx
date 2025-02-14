@@ -62,7 +62,7 @@ describe('useAllocateVotes', () => {
     test('should call contract with allocate function in args', () => {
       vi.mocked(getVoteAllocations).mockReturnValue([['0x123'], [1n]])
 
-      renderHook(async () => {
+      renderHook(() => {
         const { saveAllocations } = useAllocateVotes()
 
         saveAllocations()

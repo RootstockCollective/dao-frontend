@@ -1,9 +1,9 @@
-import { BackersManagerAbi } from '@/lib/abis/v2/BackersManagerAbi'
-import { BackersManagerAddress } from '@/lib/contracts'
 import { Address } from 'viem'
 import { useReadContract, UseReadContractReturnType } from 'wagmi'
 import { AVERAGE_BLOCKTIME } from '@/lib/constants'
 import { Modify } from '@/shared/utility'
+import { useMigrationContext } from '@/shared/context/MigrationContext'
+import { BuilderRegistryAbi } from '@/lib/abis/v2/BuilderRegistryAbi'
 
 export type RewardPercentageToApply = Modify<
   UseReadContractReturnType,
@@ -13,9 +13,11 @@ export type RewardPercentageToApply = Modify<
 >
 
 export const useGetRewardPercentageToApply = (builder: Address): RewardPercentageToApply => {
+  const { builderRegistryAddress } = useMigrationContext()
+
   const response = useReadContract({
-    address: BackersManagerAddress,
-    abi: BackersManagerAbi,
+    address: builderRegistryAddress,
+    abi: BuilderRegistryAbi,
     functionName: 'getRewardPercentageToApply',
     args: [builder],
     query: {

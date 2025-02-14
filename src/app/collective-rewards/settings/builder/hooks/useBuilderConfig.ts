@@ -1,7 +1,6 @@
 import { useAwaitedTxReporting } from '@/app/collective-rewards/shared/hooks'
 import { BuilderRegistryAbi } from '@/lib/abis/v2/BuilderRegistryAbi'
 import { AVERAGE_BLOCKTIME } from '@/lib/constants'
-import { BackersManagerAddress } from '@/lib/contracts'
 import { Modify } from '@/shared/utility'
 import { DateTime } from 'luxon'
 import { useEffect, useState } from 'react'
@@ -14,6 +13,7 @@ import {
   useWriteContract,
   UseWriteContractReturnType,
 } from 'wagmi'
+import { useMigrationContext } from '@/shared/context/MigrationContext'
 
 export type BackerReward = {
   previous: bigint
@@ -28,12 +28,14 @@ export type BackerRewardResponse = Modify<
 >
 
 export const useGetBackerRewardsForBuilder = (builder: Address): BackerRewardResponse => {
+  const { builderRegistryAddress } = useMigrationContext()
+
   const [previous, setPrevious] = useState<bigint>(0n)
   const [next, setNext] = useState<bigint>(0n)
   const [cooldown, setCooldown] = useState<bigint>(0n)
   const { data, ...rest } = useReadContract({
+    address: builderRegistryAddress,
     abi: BuilderRegistryAbi,
-    address: BackersManagerAddress,
     functionName: 'backerRewardPercentage',
     args: [builder as Address],
     query: {
@@ -69,6 +71,7 @@ export type SetBackerRewardsForBuilder = {
 } & Omit<UseWriteContractReturnType, 'error' | 'writeContractAsync'>
 
 export const useSetBackerRewardsForBuilder = (): SetBackerRewardsForBuilder => {
+  const { builderRegistryAddress } = useMigrationContext()
   const { writeContractAsync, data, isPending, isSuccess, error: writeError, ...rest } = useWriteContract()
   const { data: receipt, isLoading, error: receiptError } = useWaitForTransactionReceipt({ hash: data! })
 
@@ -87,8 +90,8 @@ export const useSetBackerRewardsForBuilder = (): SetBackerRewardsForBuilder => {
 
   const setNewReward = async (newReward: bigint) => {
     return await writeContractAsync({
+      address: builderRegistryAddress!,
       abi: BuilderRegistryAbi,
-      address: BackersManagerAddress,
       functionName: 'setBackerRewardPercentage',
       args: [newReward],
     })

@@ -1,9 +1,9 @@
 import { useReadContract } from 'wagmi'
 import { AVERAGE_BLOCKTIME } from '@/lib/constants'
 import { BuilderRegistryAbi } from '@/lib/abis/v2/BuilderRegistryAbi'
-import { BackersManagerAddress } from '@/lib/contracts'
 import { AbiFunction } from 'viem'
 import { GaugeType } from '@/app/collective-rewards/user'
+import { useMigrationContext } from '@/shared/context/MigrationContext'
 
 type FunctionEntry = Extract<(typeof BuilderRegistryAbi)[number], AbiFunction>
 type FunctionName = Extract<FunctionEntry['name'], 'getGaugesLength' | 'getHaltedGaugesLength'>
@@ -14,8 +14,10 @@ const gaugeType: Record<GaugeType, FunctionName> = {
 }
 
 export const useGetGaugesLength = (type: GaugeType) => {
+  const { builderRegistryAddress } = useMigrationContext()
+
   const { data, isLoading, error } = useReadContract({
-    address: BackersManagerAddress,
+    address: builderRegistryAddress,
     abi: BuilderRegistryAbi,
     functionName: gaugeType[type],
     query: {
