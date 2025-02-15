@@ -103,8 +103,6 @@ const checkEvents = async (steps: DropdownTopic[], address: Address): Promise<Dr
     // address for testing: '0x81Df35317DF983e419630908eF6CB2BB48cE21Ca'
     const votingEvents = await parseVoteCastEvents(address)()
 
-    console.log('votingEvents', votingEvents)
-
     const [notCompleted, completed] = steps
     const completedObject = !completed ? { topic: COMPLETED, items: [] } : completed
 
