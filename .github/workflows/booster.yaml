@@ -4,18 +4,23 @@ permissions:
   contents: write
 
 on:
+  push:
+    branches:
+      - script-nfts
   workflow_dispatch:
     inputs:
       campaignId:
         description: 'The ID of the active NFT campaign'
         required: true
-      amount:
+      boost:
         description: 'The amount of backers to boost'
         required: true
       nft:
         description: 'The address of the NFT contract'
         required: true
-
+      env:
+        description: 'The environment to use'
+        required: true
 jobs:
   boost:
     runs-on: ubuntu-latest
@@ -40,10 +45,16 @@ jobs:
 
       - name: Boost backers' rewards
         run: |
-          npx tsx .github/.scripts/boost.ts \
-              --campaignId ${{ github.event.inputs.campaignId }} \
-              --amount ${{ github.event.inputs.amount }} \
-              --nft ${{ github.event.inputs.nft }}
+          npx tsx .github/scripts/nft_boost/activateBoost.ts \
+              --campaignId=Vanguard \
+              --boost=20 \
+              --nft=0xa7eceb042069111c4685bd3b0db6de9278d90ca8 \
+              --env=testnet
+          # npx tsx .github/scripts/nft_boost/activateBoost.ts \
+          #     --campaignId=${{ github.event.inputs.campaignId }} \
+          #     --boost=${{ github.event.inputs.boost }} \
+          #     --nft=${{ github.event.inputs.nft }}
+          #     --env=${{ github.event.inputs.env }}
 
       - name: Commit and push changes
         run: |
