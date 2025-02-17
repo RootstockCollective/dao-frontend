@@ -1,6 +1,6 @@
+import { ArrowUpRightIcon } from '@/components/Icons'
 import { Paragraph, Span } from '@/components/Typography'
 import Image from 'next/image'
-import { ArrowUpRightIcon } from '@/components/Icons'
 import Link from 'next/link'
 import { BoostedBox } from './components/BoostedBox'
 import { BoostedLabel } from './components/BoostedLabel'

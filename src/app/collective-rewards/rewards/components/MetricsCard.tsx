@@ -100,7 +100,7 @@ export const MetricsCardTitle: FC<MetricsCardTitleProps> = ({
   children,
   ...rest
 }) => (
-  <div className="flex flex-nowrap gap-1 justify-start items-center">
+  <div className="flex gap-1">
     {customLabel ?? (
       <Typography
         tagVariant="label"

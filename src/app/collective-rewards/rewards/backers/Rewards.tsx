@@ -1,4 +1,10 @@
-import { BackerRewardsCard, MetricsCard, RewardDetails, Tooltip } from '@/app/collective-rewards/rewards'
+import {
+  BackerRewardsCard,
+  MetricsCard,
+  MetricsCardProps,
+  RewardDetails,
+  Tooltip,
+} from '@/app/collective-rewards/rewards'
 import {
   ABIBackers,
   BackerClaimableRewards,
@@ -40,14 +46,15 @@ const estimatedRewardsTitleData: RewardsCardProps['titleDetails'] = {
   tooltip: estimatedRewardsTooltipData,
 }
 
-export const BoostedRewardsCard: FC<RewardsCardProps['rewardDetails']> = ({
+export const BoostedRewardsCard: FC<RewardsCardProps['rewardDetails'] & MetricsCardProps> = ({
   tokens: { rif, rbtc },
+  className,
   ...rest
 }) => (
   <MetricsCard
     borderless
     dataTestId="EstimatedRewards"
-    className="mb-[46px] flex flex-col flex-none w-[214px] order-2"
+    className={cn('flex-none', className)}
     style={{
       boxShadow: '0px 0px 8.1px 0px rgba(192, 247, 255, 255)',
     }}
@@ -83,10 +90,10 @@ export const Rewards: FC<RewardsProps> = ({ builder, tokens }) => {
 
   return (
     <>
-      <div className="flex gap-4 w-full ">
+      <div className="flex gap-4 w-full">
         <div
           data-testid="metric_with_button"
-          className="flex flex-none flex-col justify-between gap-2 w-[214px] order-1"
+          className="flex flex-none flex-col max-w-[214px] justify-between gap-2 w-[214px] order-1"
         >
           <BackerClaimableRewards tokenRewardsMetrics={{ tokens }} className="w-full h-full" />
           <Button
@@ -98,21 +105,26 @@ export const Rewards: FC<RewardsProps> = ({ builder, tokens }) => {
             Claim all
           </Button>
         </div>
-        {isBoosted ? (
-          <BoostedRewardsCard tokens={tokens} rewards={['estimated']} />
-        ) : (
-          <BackerRewardsCard
-            className="order-2"
-            rewardDetails={{
-              rewards: ['estimated'],
-              tokens,
-            }}
-            titleDetails={estimatedRewardsTitleData}
-          />
-        )}
+        <div
+          data-testid="metric_estimated_rewards"
+          className="flex flex-none flex-col max-w-[214px] justify-between gap-2 order-2"
+        >
+          {isBoosted ? (
+            <BoostedRewardsCard className="max-w-[214px]" tokens={tokens} rewards={['estimated']} />
+          ) : (
+            <BackerRewardsCard
+              className="max-w-[214px]"
+              rewardDetails={{
+                rewards: ['estimated'],
+                tokens,
+              }}
+              titleDetails={estimatedRewardsTitleData}
+            />
+          )}
+        </div>
         <BackerRewardsCard
           className={cn(
-            'flex flex-col flex-none w-[214px] mb-[46px]',
+            'flex-none mb-[46px] max-w-[214px]',
             isDetailedView ? 'order-3' : 'order-4 opacity-0 pointer-events-none',
           )}
           dataTestId="AllTimeRewards"
@@ -131,7 +143,7 @@ export const Rewards: FC<RewardsProps> = ({ builder, tokens }) => {
         <ABIBackers
           backer={builder}
           className={cn(
-            'flex flex-col flex-none mb-[46px] w-[214px]',
+            'flex flex-col flex-none mb-[46px] max-w-[214px]',
             isDetailedView ? 'order-4' : 'order-3',
           )}
         />

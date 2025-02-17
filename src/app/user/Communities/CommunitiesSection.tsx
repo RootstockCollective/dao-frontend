@@ -4,6 +4,8 @@ import { useCommunity } from '@/shared/hooks/useCommunity'
 import { communitiesMapByContract } from '@/app/communities/communityUtils'
 import { SectionHeader } from '@/components/SectionHeader'
 import { useAccount } from 'wagmi'
+import { SpinnerIcon } from '@/components/Icons'
+import { HeaderTitle } from '@/components/Typography'
 import { useEffect, useRef, useState } from 'react'
 import { useNFTBoosterContext } from '@/app/providers/NFT/BoosterContext'
 import { Address } from 'viem'
@@ -89,10 +91,8 @@ const NftInfo = ({
   onFinishedLoading: (isMember: boolean, imageUri?: string) => void
 }) => {
   const data = useCommunity(nftAddress as Address)
-  const { isBoosted, boostData } = useNFTBoosterContext()
+  const { isBoosted, isCampaignActive } = useNFTBoosterContext()
   const alreadyFinishedLoading = useRef(false)
-
-  const isCampaignActive = boostData?.nftContractAddress === nftAddress && isBoosted
 
   useEffect(() => {
     if (!data.isLoading && !alreadyFinishedLoading.current) {
@@ -119,7 +119,7 @@ const NftInfo = ({
         link={`/communities/nft/${nftAddress}`}
         description={data.nftMeta?.description || ''}
         members={data.membersCount.toString()}
-        isBoosted={isCampaignActive}
+        isBoosted={isCampaignActive(nftAddress) && isBoosted}
         alt={data.nftName + ' logo'}
       />
     )

@@ -190,6 +190,7 @@ describe('BoosterProvider', () => {
           currentBoost: holderRewards,
           hasActiveCampaign: true,
           isBoosted: true,
+          userHasRewards: true,
         }),
       )
     })
@@ -226,6 +227,7 @@ describe('BoosterProvider', () => {
           isLoading: false,
           error: null,
           hasActiveCampaign: true,
+          userHasRewards: false,
         }),
       )
     })

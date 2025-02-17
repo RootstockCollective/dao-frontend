@@ -7,18 +7,18 @@ type SelfContainedNFTBoosterCardPros = {
   forceRender?: boolean
 }
 export const SelfContainedNFTBoosterCard: FC<SelfContainedNFTBoosterCardPros> = ({ forceRender = false }) => {
-  const { hasActiveCampaign, isBoosted, boostData } = useNFTBoosterContext()
+  const { isBoosted, userHasRewards, boostData } = useNFTBoosterContext()
 
   const { title, leftImageSrc } = communitiesMapByContract[boostData?.nftContractAddress ?? ''] ?? {}
 
-  if (!title || !hasActiveCampaign || (!isBoosted && !forceRender)) {
+  if (!title || (!isBoosted && !forceRender)) {
     return null
   }
 
   // FIXME: conversion to number seems silly. Either use bigint or number, not both.
   const boostValue = Number(boostData?.boostPercentage)
 
-  const content = isBoosted
+  const content = userHasRewards
     ? `You're earning ${boostValue}% more rewards thanks to your ${title} NFT.`
     : `Voting ${title} Booster`
 
