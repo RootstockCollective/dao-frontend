@@ -9,7 +9,7 @@ import { useRouter, useParams } from 'next/navigation'
 import { ReactNode, useState, useEffect, useRef } from 'react'
 import { BsTwitterX } from 'react-icons/bs'
 import { FaDiscord, FaLink } from 'react-icons/fa'
-import { Address, formatEther } from 'viem'
+import { Address, formatEther, isAddressEqual } from 'viem'
 import { useAccount } from 'wagmi'
 import { useCommunity } from '@/shared/hooks/useCommunity'
 import { useStRif } from '@/shared/hooks/useStRIf'
@@ -68,7 +68,7 @@ export default function Page() {
   const { isBoosted, hasActiveCampaign, boostData } = useNFTBoosterContext()
 
   const nftInfo = communitiesMapByContract[nftAddress || '']
-  if (nftInfo === undefined && nftAddress !== undefined) {
+  if (nftAddress && !nftInfo) {
     console.warn('The current NFT address is not registered. Please check the config.')
   }
   const [isChecking, setIsChecking] = useState(false)
@@ -277,12 +277,15 @@ export default function Page() {
             <div className="font-semibold">{nftInfo?.title}</div>
           </div>
           <div className="mb-[24px] font-extralight">{nftInfo?.longDescription}</div>
-          {hasActiveCampaign && isBoosted && boostData?.nftContractAddress === nftAddress && (
-            <div className="inline-flex items-center gap-1 pb-6">
-              <BoltSvg />
-              <GlowingLabel>Boosted {20}%</GlowingLabel>
-            </div>
-          )}
+          {hasActiveCampaign &&
+            isBoosted &&
+            boostData &&
+            isAddressEqual(boostData.nftContractAddress, nftAddress) && (
+              <div className="inline-flex items-center gap-1 pb-6">
+                <BoltSvg />
+                <GlowingLabel>Boosted {20}%</GlowingLabel>
+              </div>
+            )}
           {/* Hidden until we get social media data */}
           <div className="gap-[8px] mt-[16px] mb-[24px] hidden">
             {/* Chips with community links */}
