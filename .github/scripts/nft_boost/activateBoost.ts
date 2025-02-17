@@ -1,9 +1,12 @@
-import { Address, createPublicClient, getAddress, http } from 'viem'
-import fs from 'fs'
+import { Address, getAddress } from 'viem'
+
+import * as fs from 'fs'
 import axios from 'axios'
-import { GaugeAbi, BackersManagerAbi } from '../ABIs'
-import { backersManagerAddress, network } from './env'
+import { BackersManagerAbi, BuilderRegistryAbi, GaugeAbi } from '../../../src/lib/abis/v2'
 import { boostDataFolder, nftActiveBoostPath, rewardCoinbaseAddress } from './consts'
+import { publicClient } from '../../../src/lib/viemPublicClient'
+import { BackersManagerAddress, BuilderRegistryAddress } from '../../../src/lib/contracts'
+import { CHAIN_ID } from '../../../src/lib/constants'
 
 interface NFTEvent {
   address: string
@@ -18,19 +21,14 @@ interface NFTEvent {
   transactionIndex: string
 }
 
-const client = createPublicClient({
-  chain: network,
-  transport: http(),
-})
-
 async function getLatestBlockNumber(): Promise<bigint> {
-  return await client.getBlockNumber()
+  return await publicClient.getBlockNumber()
 }
 
 async function getNftTransferEvents(nftContract: string): Promise<NFTEvent[]> {
   console.info('NFT contract address: ', nftContract)
   const transferTopic = '0xddf252ad1be2c89b69c2b068fc378daa952ba7f163c4a11628f55a4df523b3ef'
-  const url = `https://rws.app.rootstockcollective.xyz/address/${nftContract}/eventsByTopic0?topic0=${transferTopic}&chainId=${network.id}&fromBlock=0`
+  const url = `https://rws.app.rootstockcollective.xyz/address/${nftContract}/eventsByTopic0?topic0=${transferTopic}&chainId=${CHAIN_ID}&fromBlock=0`
   try {
     const response = await axios.get(url)
     return response.data
@@ -42,9 +40,9 @@ async function getNftTransferEvents(nftContract: string): Promise<NFTEvent[]> {
 
 async function getAllGauges(): Promise<Address[]> {
   const gaugesLength = Number(
-    await client.readContract({
-      address: backersManagerAddress,
-      abi: BackersManagerAbi,
+    await publicClient.readContract({
+      address: BuilderRegistryAddress,
+      abi: BuilderRegistryAbi,
       functionName: 'getGaugesLength',
       args: [],
     }),
@@ -52,9 +50,9 @@ async function getAllGauges(): Promise<Address[]> {
   console.info('Gauges length: ', gaugesLength)
   let gauges: Address[] = []
   for (let i = 0; i < gaugesLength; i++) {
-    const gaugeAddress = await client.readContract({
-      address: backersManagerAddress,
-      abi: BackersManagerAbi,
+    const gaugeAddress = await publicClient.readContract({
+      address: BuilderRegistryAddress,
+      abi: BuilderRegistryAbi,
       functionName: 'getGaugeAt',
       args: [BigInt(i)],
     })
@@ -64,8 +62,8 @@ async function getAllGauges(): Promise<Address[]> {
 }
 
 async function getRewardTokenAddress(): Promise<Address> {
-  return await client.readContract({
-    address: backersManagerAddress,
+  return await publicClient.readContract({
+    address: BackersManagerAddress,
     abi: BackersManagerAbi,
     functionName: 'rewardToken',
     args: [],
@@ -75,7 +73,7 @@ async function getRewardTokenAddress(): Promise<Address> {
 // Queries Gauges contracts for backer rewards
 async function estimatedGaugeRewards(rewardToken: Address, backer: Address, gauge: Address): Promise<bigint> {
   try {
-    const gaugeEstimatedRewards = await client.readContract({
+    const gaugeEstimatedRewards = await publicClient.readContract({
       address: gauge,
       abi: GaugeAbi,
       functionName: 'estimatedBackerRewards',
@@ -88,18 +86,35 @@ async function estimatedGaugeRewards(rewardToken: Address, backer: Address, gaug
   }
 }
 
+type Args = { nftContractAddress: Address; boostPercentage: number; campaignId: string }
+
 async function main() {
-  const rewardTokenAddress = await getRewardTokenAddress()
-  const nftContractAddress = getAddress(process.argv[2])
-  const boostPercentage = parseFloat(process.argv[3])
-  if (!nftContractAddress || isNaN(boostPercentage)) {
-    throw new Error('Usage: bun run nft-boosted-rewards -- <NFT_CONTRACT_ADDRESS> <BOOST_PERCENTAGE>')
+  const [, , ...args] = process.argv
+
+  const { nftContractAddress, boostPercentage, campaignId } = args.reduce<Args>((acc, val) => {
+    if (val.includes('--nft')) {
+      acc.nftContractAddress = getAddress(val.split('=')[1])
+    }
+    if (val.includes('--boost')) {
+      acc.boostPercentage = parseFloat(val.split('=')[1])
+    }
+    if (val.includes('--campaignId')) {
+      acc.campaignId = val.split('=')[1]
+    }
+    return acc
+  }, {} as Args)
+
+  if (!nftContractAddress || isNaN(boostPercentage) || !campaignId) {
+    throw new Error(
+      'Usage: npx tsx .github/scripts/boost.ts --campaignId <campaignId> --nft <nftContractAddress> --boost <boostPercentage>',
+    )
   }
   console.info('Boost percentage: ', boostPercentage)
   if (boostPercentage < 0) {
     throw new Error('Boost percentage must be positive')
   }
 
+  const rewardTokenAddress = await getRewardTokenAddress()
   const blockNumber = await getLatestBlockNumber()
   console.info(`Latest block: ${blockNumber}`)
 
@@ -108,7 +123,7 @@ async function main() {
 
   const gauges = await getAllGauges()
 
-  const noDecimalsFactor = 100000
+  const noDecimalsFactor = 100_000
   const boost = BigInt(noDecimalsFactor * Math.round(1 + boostPercentage / 100))
 
   for (let i = 0; i < nftTransferEvents.length; i++) {
