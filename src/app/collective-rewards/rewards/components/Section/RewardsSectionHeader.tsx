@@ -1,5 +1,5 @@
 import { BoltSvg } from '@/components/BoltSvg'
-import { GlowingLabel } from '@/components/Label/GlowingLabel'
+import { FadedGlowingLabel } from '@/components/Label/GlowingLabel'
 import { HeaderTitle, Typography } from '@/components/Typography'
 import React, { FC, ReactNode } from 'react'
 import { Tooltip } from '../Tooltip'
@@ -22,7 +22,7 @@ export const RewardsSectionHeader: FC<RewardsSectionHeader> = ({ title, subtext,
           {isBacker && hasActiveCampaign && isBoosted && (
             <div className="inline-flex items-center gap-1">
               <BoltSvg />
-              <GlowingLabel>Boosted</GlowingLabel>
+              <FadedGlowingLabel>Boosted</FadedGlowingLabel>
               <Tooltip text="Your rewards are boosted thanks to your NFT’s superpowers." />
             </div>
           )}
