@@ -131,7 +131,7 @@ export const BuilderNameCell: FC<BuilderCellProps> = ({ className, builderName, 
                 addressOrAlias={builderName || address}
                 clipboard={address}
                 clipboardAnimationText={shortenAddress}
-                className="text-sm"
+                className="text-sm max-w-[104px]"
               />
             </Typography>
           </Popover>

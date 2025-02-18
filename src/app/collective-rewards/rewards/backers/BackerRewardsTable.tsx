@@ -25,19 +25,21 @@ enum RewardsColumnKeyEnum {
   allTimeRewards = 'allTimeRewards',
 }
 
-const tableHeaders: Record<RewardsColumnKeyEnum, TableHeader> = {
+const detailedTable: Record<RewardsColumnKeyEnum, TableHeader> = {
   [RewardsColumnKeyEnum.builder]: {
     label: 'Builder',
+    className: 'w-[16%]',
   },
   [RewardsColumnKeyEnum.rewardPercentage]: {
     label: 'Backer Rewards %',
+    className: 'w-[16%]',
   },
   [RewardsColumnKeyEnum.claimableRewards]: {
     label: 'Claimable Rewards',
     tooltip: { text: 'Your rewards from each Builder available to claim' },
   },
   [RewardsColumnKeyEnum.estimatedRewards]: {
-    label: 'All Time Rewards',
+    label: 'Estimated Rewards',
     tooltip: {
       text: (
         <>
@@ -63,30 +65,11 @@ const tableHeaders: Record<RewardsColumnKeyEnum, TableHeader> = {
   },
   [RewardsColumnKeyEnum.totalAllocation]: {
     label: 'My Allocation',
+    className: 'w-[16%]',
   },
 }
 
-const defaultViewTable: Array<{
-  column: RewardsColumnKeyEnum
-  className: string
-}> = [
-  { column: RewardsColumnKeyEnum.builder, className: 'w-[11%]' },
-  { column: RewardsColumnKeyEnum.rewardPercentage, className: 'w-[11%]' },
-  { column: RewardsColumnKeyEnum.claimableRewards, className: 'w-[30%]' },
-  { column: RewardsColumnKeyEnum.estimatedRewards, className: 'w-[30%]' },
-  { column: RewardsColumnKeyEnum.totalAllocation, className: 'w-[18%]' },
-]
-const detailedViewTable: Array<{
-  column: RewardsColumnKeyEnum
-  className: string
-}> = [
-  { column: RewardsColumnKeyEnum.builder, className: 'w-[11%]' },
-  { column: RewardsColumnKeyEnum.rewardPercentage, className: 'w-[11%]' },
-  { column: RewardsColumnKeyEnum.claimableRewards, className: 'w-[20%]' },
-  { column: RewardsColumnKeyEnum.estimatedRewards, className: 'w-[20%]' },
-  { column: RewardsColumnKeyEnum.allTimeRewards, className: 'w-[20%]' },
-  { column: RewardsColumnKeyEnum.totalAllocation, className: 'w-[18%]' },
-]
+const { allTimeRewards, ...simpleTable } = detailedTable
 
 type BackerRewardsTable = Omit<RewardDetails, 'gauge'>
 export const BackerRewardsTable: FC<BackerRewardsTable> = ({ builder, gauges, tokens }) => {
@@ -205,7 +188,7 @@ export const BackerRewardsTable: FC<BackerRewardsTable> = ({ builder, gauges, to
     return <LoadingSpinner />
   }
 
-  const renderedTable = isDetailedView ? detailedViewTable : defaultViewTable
+  const renderedTable = isDetailedView ? detailedTable : simpleTable
   return (
     <div className="flex flex-col gap-5 w-full">
       {Object.values(paginatedRewardsData).length === 0 ? (
@@ -221,13 +204,14 @@ export const BackerRewardsTable: FC<BackerRewardsTable> = ({ builder, gauges, to
           <TableCore className="table-fixed overflow-visible">
             <TableHead>
               <TableRow className="min-h-0 normal-case">
-                {renderedTable.map(({ column, className }) => (
+                {Object.entries(renderedTable).map(([key, { className, label, tooltip }]) => (
                   <TableHeaderCell
-                    key={column}
+                    key={key}
                     className={className}
-                    tableHeader={tableHeaders[column]}
-                    sortKey={column}
-                    onSort={handleSort(column)}
+                    label={label}
+                    tooltip={tooltip}
+                    sortKey={key}
+                    onSort={handleSort(key)}
                     sortConfig={sortConfig}
                   />
                 ))}
@@ -236,9 +220,9 @@ export const BackerRewardsTable: FC<BackerRewardsTable> = ({ builder, gauges, to
             <TableBody>
               {paginatedRewardsData.map(({ builderAddress, columns }) => (
                 <TableRow key={builderAddress} className="text-[14px] border-hidden">
-                  {renderedTable.map(({ column, className }) => ({
-                    ...columns[column],
-                    key: `${builderAddress}-${column}`,
+                  {Object.entries(renderedTable).map(([key, { className }]) => ({
+                    ...columns[key as RewardsColumnKeyEnum],
+                    key: `${builderAddress}-${key}`,
                     className,
                   }))}
                 </TableRow>

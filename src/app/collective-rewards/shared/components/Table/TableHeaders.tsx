@@ -14,18 +14,17 @@ export type ISortConfig = {
 export type TableHeader = {
   label: string
   tooltip?: TooltipProps
-}
-
-type TableHeaderProps = {
-  tableHeader: TableHeader
-  className: string
+  className?: string
   sortKey?: string
   onSort?: (parameter: any) => void
   sortConfig?: ISortConfig
 }
 
+type TableHeaderProps = TableHeader
+
 export const TableHeaderCell: FC<TableHeaderProps> = ({
-  tableHeader: { label, tooltip },
+  label,
+  tooltip,
   className,
   sortKey,
   onSort,

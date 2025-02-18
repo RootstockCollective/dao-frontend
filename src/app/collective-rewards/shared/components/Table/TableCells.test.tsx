@@ -27,7 +27,7 @@ describe('TableCells', () => {
         cooldownEndTime: 100n,
       }
       const { findByText, container } = renderWithTableRow(
-        <BackerRewardsPercentage className="w-[10%" percentage={backerRewardPercentage} />,
+        <BackerRewardsPercentage className="w-[10%]" percentage={backerRewardPercentage} />,
       )
       const svgElement = container.querySelector('svg')
       const upArrowClass = container.querySelector('.fa-arrow-up')
@@ -46,7 +46,7 @@ describe('TableCells', () => {
         cooldownEndTime: 100n,
       }
       const { findByText, container } = renderWithTableRow(
-        <BackerRewardsPercentage className="w-[10%" percentage={backerRewardPercentage} />,
+        <BackerRewardsPercentage className="w-[10%]" percentage={backerRewardPercentage} />,
       )
       const svgElement = container.querySelector('svg')
       const upArrowClass = container.querySelector('.fa-arrow-up')
@@ -65,7 +65,7 @@ describe('TableCells', () => {
         cooldownEndTime: 100n,
       }
       const { findByText, container } = renderWithTableRow(
-        <BackerRewardsPercentage className="w-[10%" percentage={backerRewardPercentage} />,
+        <BackerRewardsPercentage className="w-[10%]" percentage={backerRewardPercentage} />,
       )
       const svgElement = container.querySelector('svg')
       const upArrowClass = container.querySelector('.fa-arrow-up')

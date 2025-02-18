@@ -25,16 +25,19 @@ enum RewardsColumnKeyEnum {
   actions = 'actions',
 }
 
-const tableHeaders: Record<RewardsColumnKeyEnum, TableHeader> = {
+const defaultTable: Record<RewardsColumnKeyEnum, TableHeader> = {
   [RewardsColumnKeyEnum.builder]: {
     label: 'Builder',
+    className: 'w-[14%]',
   },
   [RewardsColumnKeyEnum.rewardPercentage]: {
     label: 'Backer Rewards %',
+    className: 'w-[10%]',
   },
   [RewardsColumnKeyEnum.lastCycleRewards]: {
     label: 'All Time Rewards',
     tooltip: { text: 'The Backers’ share of the Builder’s rewards in the previous Cycle' },
+    className: 'w-[22%]',
   },
   [RewardsColumnKeyEnum.estimatedRewards]: {
     label: 'Est. Backers Rewards',
@@ -50,26 +53,17 @@ const tableHeaders: Record<RewardsColumnKeyEnum, TableHeader> = {
       ),
       popoverProps: { size: 'medium' },
     },
+    className: 'w-[22%]',
   },
   [RewardsColumnKeyEnum.totalAllocationPercentage]: {
     label: 'All Time Rewards',
+    className: 'w-[16%]',
   },
   [RewardsColumnKeyEnum.actions]: {
     label: 'Actions',
+    className: 'w-[14%]',
   },
 }
-
-const defaultViewTable: Array<{
-  column: RewardsColumnKeyEnum
-  className: string
-}> = [
-  { column: RewardsColumnKeyEnum.builder, className: 'w-[14%]' },
-  { column: RewardsColumnKeyEnum.rewardPercentage, className: 'w-[10%]' },
-  { column: RewardsColumnKeyEnum.lastCycleRewards, className: 'w-[22%]' },
-  { column: RewardsColumnKeyEnum.estimatedRewards, className: 'w-[22%]' },
-  { column: RewardsColumnKeyEnum.totalAllocationPercentage, className: 'w-[16%]' },
-  { column: RewardsColumnKeyEnum.actions, className: 'w-[14%]' },
-]
 
 export const BuildersLeaderBoardTable: FC = () => {
   const { data: rewardsData } = useSearchContext<BuildersRewards>()
@@ -177,13 +171,14 @@ export const BuildersLeaderBoardTable: FC = () => {
       <TableCore className="table-fixed">
         <TableHead>
           <TableRow className="normal-case">
-            {defaultViewTable.map(({ column, className }) => (
+            {Object.entries(defaultTable).map(([key, { className, label, tooltip }]) => (
               <TableHeaderCell
-                key={column}
+                key={key}
                 className={className}
-                tableHeader={tableHeaders[column]}
-                sortKey={column}
-                onSort={handleSort(column)}
+                label={label}
+                tooltip={tooltip}
+                sortKey={key}
+                onSort={handleSort(key)}
                 sortConfig={sortConfig}
               />
             ))}
@@ -192,9 +187,9 @@ export const BuildersLeaderBoardTable: FC = () => {
         <TableBody>
           {paginatedRewardsData.map(({ builderAddress, columns }) => (
             <TableRow key={builderAddress} className="text-[14px] border-hidden">
-              {defaultViewTable.map(({ column, className }) => ({
-                ...columns[column],
-                key: `${builderAddress}-${column}`,
+              {Object.entries(defaultTable).map(([key, { className }]) => ({
+                ...columns[key as RewardsColumnKeyEnum],
+                key: `${builderAddress}-${key}`,
                 className,
               }))}
             </TableRow>
