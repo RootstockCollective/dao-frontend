@@ -25,19 +25,19 @@ enum RewardsColumnKeyEnum {
   actions = 'actions',
 }
 
-const tableHeaders: TableHeader[] = [
-  { label: 'Builder', className: 'w-[14%]', sortKey: RewardsColumnKeyEnum.builder },
-  { label: 'Backer Rewards %', className: 'w-[10%]', sortKey: RewardsColumnKeyEnum.rewardPercentage },
-  {
-    label: 'Last Cycle Rewards',
-    className: 'w-[22%]',
-    sortKey: RewardsColumnKeyEnum.lastCycleRewards,
+const tableHeaders: Record<RewardsColumnKeyEnum, TableHeader> = {
+  [RewardsColumnKeyEnum.builder]: {
+    label: 'Builder',
+  },
+  [RewardsColumnKeyEnum.rewardPercentage]: {
+    label: 'Backer Rewards %',
+  },
+  [RewardsColumnKeyEnum.lastCycleRewards]: {
+    label: 'All Time Rewards',
     tooltip: { text: 'The Backers’ share of the Builder’s rewards in the previous Cycle' },
   },
-  {
+  [RewardsColumnKeyEnum.estimatedRewards]: {
     label: 'Est. Backers Rewards',
-    className: 'w-[22%]',
-    sortKey: RewardsColumnKeyEnum.estimatedRewards,
     tooltip: {
       text: (
         <>
@@ -51,14 +51,24 @@ const tableHeaders: TableHeader[] = [
       popoverProps: { size: 'medium' },
     },
   },
-  {
-    label: 'Total Allocations',
-    className: 'w-[16%]',
-    tooltip: { text: 'The Builder’s share of the total stRIF allocations' },
-    sortKey: RewardsColumnKeyEnum.totalAllocationPercentage,
+  [RewardsColumnKeyEnum.totalAllocationPercentage]: {
+    label: 'All Time Rewards',
   },
-  // TODO: text-center isn't applied
-  { label: 'Actions', className: 'w-[14%]' },
+  [RewardsColumnKeyEnum.actions]: {
+    label: 'Actions',
+  },
+}
+
+const defaultViewTable: Array<{
+  column: RewardsColumnKeyEnum
+  className: string
+}> = [
+  { column: RewardsColumnKeyEnum.builder, className: 'w-[14%]' },
+  { column: RewardsColumnKeyEnum.rewardPercentage, className: 'w-[10%]' },
+  { column: RewardsColumnKeyEnum.lastCycleRewards, className: 'w-[22%]' },
+  { column: RewardsColumnKeyEnum.estimatedRewards, className: 'w-[22%]' },
+  { column: RewardsColumnKeyEnum.totalAllocationPercentage, className: 'w-[16%]' },
+  { column: RewardsColumnKeyEnum.actions, className: 'w-[14%]' },
 ]
 
 export const BuildersLeaderBoardTable: FC = () => {
@@ -105,13 +115,46 @@ export const BuildersLeaderBoardTable: FC = () => {
   }, [rewardsData, sortConfig])
 
   const paginatedRewardsData = useMemo(
-    () => sortedRewardsData.slice(currentPage * buildersPerPage, (currentPage + 1) * buildersPerPage),
+    () =>
+      sortedRewardsData
+        .slice(currentPage * buildersPerPage, (currentPage + 1) * buildersPerPage)
+        .map(
+          ({
+            address,
+            builderName,
+            stateFlags,
+            lastCycleRewards,
+            estimatedRewards,
+            totalAllocationPercentage,
+            rewardPercentage,
+          }) => ({
+            builderAddress: address,
+            columns: {
+              [RewardsColumnKeyEnum.builder]: (
+                <BuilderNameCell builderName={builderName} address={address} stateFlags={stateFlags} />
+              ),
+              [RewardsColumnKeyEnum.rewardPercentage]: (
+                <BackerRewardsPercentage percentage={rewardPercentage} />
+              ),
+              [RewardsColumnKeyEnum.lastCycleRewards]: (
+                <LazyRewardCell rewards={[lastCycleRewards.rbtc, lastCycleRewards.rif]} />
+              ),
+              [RewardsColumnKeyEnum.estimatedRewards]: (
+                <LazyRewardCell rewards={[estimatedRewards.rbtc, estimatedRewards.rif]} />
+              ),
+              [RewardsColumnKeyEnum.totalAllocationPercentage]: (
+                <TotalAllocationCell percentage={totalAllocationPercentage} />
+              ),
+              [RewardsColumnKeyEnum.actions]: <ActionCell builderAddress={address} />,
+            },
+          }),
+        ),
     [currentPage, sortedRewardsData],
   )
 
   const handleSort = useCallback(
     (key?: string) => () => {
-      if (!key) {
+      if (!key || key === 'actions') {
         return
       }
       setSortConfig(prevSortConfig => {
@@ -134,48 +177,28 @@ export const BuildersLeaderBoardTable: FC = () => {
       <TableCore className="table-fixed">
         <TableHead>
           <TableRow className="normal-case">
-            {tableHeaders.map(header => (
+            {defaultViewTable.map(({ column, className }) => (
               <TableHeaderCell
-                key={header.label}
-                tableHeader={header}
-                onSort={handleSort(header.sortKey)}
+                key={column}
+                className={className}
+                tableHeader={tableHeaders[column]}
+                sortKey={column}
+                onSort={handleSort(column)}
                 sortConfig={sortConfig}
               />
             ))}
           </TableRow>
         </TableHead>
         <TableBody>
-          {Object.values(paginatedRewardsData).map(
-            ({
-              address,
-              builderName,
-              stateFlags,
-              lastCycleRewards,
-              estimatedRewards,
-              totalAllocationPercentage,
-              rewardPercentage,
-            }) => (
-              <TableRow key={address} className="text-[14px] border-hidden">
-                <BuilderNameCell
-                  tableHeader={tableHeaders[0]}
-                  builderName={builderName}
-                  address={address}
-                  stateFlags={stateFlags}
-                />
-                <BackerRewardsPercentage tableHeader={tableHeaders[1]} percentage={rewardPercentage} />
-                <LazyRewardCell
-                  tableHeader={tableHeaders[2]}
-                  rewards={[lastCycleRewards.rbtc, lastCycleRewards.rif]}
-                />
-                <LazyRewardCell
-                  tableHeader={tableHeaders[3]}
-                  rewards={[estimatedRewards.rbtc, estimatedRewards.rif]}
-                />
-                <TotalAllocationCell tableHeader={tableHeaders[4]} percentage={totalAllocationPercentage} />
-                <ActionCell tableHeader={tableHeaders[5]} builderAddress={address} />
-              </TableRow>
-            ),
-          )}
+          {paginatedRewardsData.map(({ builderAddress, columns }) => (
+            <TableRow key={builderAddress} className="text-[14px] border-hidden">
+              {defaultViewTable.map(({ column, className }) => ({
+                ...columns[column],
+                key: `${builderAddress}-${column}`,
+                className,
+              }))}
+            </TableRow>
+          ))}
         </TableBody>
       </TableCore>
       <div className="flex justify-center">{paginationUi}</div>

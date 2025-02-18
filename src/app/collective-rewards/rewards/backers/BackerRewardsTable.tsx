@@ -1,10 +1,5 @@
-import { FC, useMemo, useState } from 'react'
-import {
-  BackerRewardsContext,
-  RewardDetails,
-  useBackerRewardsContext,
-  useGetBackerRewards,
-} from '@/app/collective-rewards/rewards'
+import { FC, useCallback, useMemo, useState } from 'react'
+import { RewardDetails, useBackerRewardsContext, useGetBackerRewards } from '@/app/collective-rewards/rewards'
 import {
   ISortConfig,
   TableHeader,
@@ -30,31 +25,19 @@ enum RewardsColumnKeyEnum {
   allTimeRewards = 'allTimeRewards',
 }
 
-const tableHeaders: TableHeader[] = [
-  {
+const tableHeaders: Record<RewardsColumnKeyEnum, TableHeader> = {
+  [RewardsColumnKeyEnum.builder]: {
     label: 'Builder',
-    className: 'w-[11%]',
-    hiddenClassName: 'w-[16%]',
-    sortKey: RewardsColumnKeyEnum.builder,
   },
-  {
+  [RewardsColumnKeyEnum.rewardPercentage]: {
     label: 'Backer Rewards %',
-    className: 'w-[11%]',
-    hiddenClassName: 'w-[16%]',
-    sortKey: RewardsColumnKeyEnum.rewardPercentage,
   },
-  {
+  [RewardsColumnKeyEnum.claimableRewards]: {
     label: 'Claimable Rewards',
-    className: 'w-[20%]',
-    hiddenClassName: 'w-[25%]',
-    sortKey: RewardsColumnKeyEnum.claimableRewards,
     tooltip: { text: 'Your rewards from each Builder available to claim' },
   },
-  {
-    label: 'Estimated Rewards',
-    className: 'w-[20%]',
-    hiddenClassName: 'w-[25%]',
-    sortKey: RewardsColumnKeyEnum.estimatedRewards,
+  [RewardsColumnKeyEnum.estimatedRewards]: {
+    label: 'All Time Rewards',
     tooltip: {
       text: (
         <>
@@ -75,20 +58,34 @@ const tableHeaders: TableHeader[] = [
       popoverProps: { size: 'medium' },
     },
   },
-  {
+  [RewardsColumnKeyEnum.allTimeRewards]: {
     label: 'All Time Rewards',
-    className: 'w-[20%]',
-    hiddenClassName: 'w-[20%]',
-    sortKey: RewardsColumnKeyEnum.allTimeRewards,
-    canBeHidden: true,
   },
-  {
+  [RewardsColumnKeyEnum.totalAllocation]: {
     label: 'My Allocation',
-    className: 'w-[18%]',
-    hiddenClassName: 'w-[18%]',
-    sortKey: RewardsColumnKeyEnum.totalAllocation,
-    tooltip: { text: 'Your share of the total allocations for each Builder' },
   },
+}
+
+const defaultViewTable: Array<{
+  column: RewardsColumnKeyEnum
+  className: string
+}> = [
+  { column: RewardsColumnKeyEnum.builder, className: 'w-[11%]' },
+  { column: RewardsColumnKeyEnum.rewardPercentage, className: 'w-[11%]' },
+  { column: RewardsColumnKeyEnum.claimableRewards, className: 'w-[30%]' },
+  { column: RewardsColumnKeyEnum.estimatedRewards, className: 'w-[30%]' },
+  { column: RewardsColumnKeyEnum.totalAllocation, className: 'w-[18%]' },
+]
+const detailedViewTable: Array<{
+  column: RewardsColumnKeyEnum
+  className: string
+}> = [
+  { column: RewardsColumnKeyEnum.builder, className: 'w-[11%]' },
+  { column: RewardsColumnKeyEnum.rewardPercentage, className: 'w-[11%]' },
+  { column: RewardsColumnKeyEnum.claimableRewards, className: 'w-[20%]' },
+  { column: RewardsColumnKeyEnum.estimatedRewards, className: 'w-[20%]' },
+  { column: RewardsColumnKeyEnum.allTimeRewards, className: 'w-[20%]' },
+  { column: RewardsColumnKeyEnum.totalAllocation, className: 'w-[18%]' },
 ]
 
 type BackerRewardsTable = Omit<RewardDetails, 'gauge'>
@@ -146,31 +143,69 @@ export const BackerRewardsTable: FC<BackerRewardsTable> = ({ builder, gauges, to
   }, [rewardsData, sortConfig])
 
   const paginatedRewardsData = useMemo(
-    () => sortedRewardsData.slice(currentPage * buildersPerPage, (currentPage + 1) * buildersPerPage),
+    () =>
+      sortedRewardsData
+        .slice(currentPage * buildersPerPage, (currentPage + 1) * buildersPerPage)
+        .map(
+          ({
+            address,
+            builderName,
+            stateFlags,
+            rewardPercentage,
+            estimatedRewards,
+            totalAllocation,
+            claimableRewards,
+            allTimeRewards,
+          }) => ({
+            builderAddress: address,
+            columns: {
+              [RewardsColumnKeyEnum.builder]: (
+                <BuilderNameCell builderName={builderName} address={address} stateFlags={stateFlags} />
+              ),
+              [RewardsColumnKeyEnum.rewardPercentage]: (
+                <BackerRewardsPercentage percentage={rewardPercentage} />
+              ),
+              [RewardsColumnKeyEnum.claimableRewards]: (
+                <LazyRewardCell rewards={[claimableRewards.rbtc, claimableRewards.rif]} />
+              ),
+              [RewardsColumnKeyEnum.estimatedRewards]: (
+                <LazyRewardCell rewards={[estimatedRewards.rbtc, estimatedRewards.rif]} />
+              ),
+              [RewardsColumnKeyEnum.allTimeRewards]: (
+                <LazyRewardCell rewards={[allTimeRewards.rbtc, estimatedRewards.rif]} />
+              ),
+              [RewardsColumnKeyEnum.totalAllocation]: <LazyRewardCell rewards={[totalAllocation.rif]} />,
+            },
+          }),
+        ),
     [currentPage, sortedRewardsData],
   )
 
-  const handleSort = (key?: string) => {
-    if (!key) {
-      return
-    }
-    setSortConfig(prevSortConfig => {
-      if (prevSortConfig?.key === key) {
-        // Toggle direction if the same column is clicked
-        return {
-          key,
-          direction: prevSortConfig.direction === 'asc' ? 'desc' : 'asc',
-        }
+  const handleSort = useCallback(
+    (key?: string) => () => {
+      if (!key) {
+        return
       }
-      // Set initial sort direction to ascending
-      return { key, direction: 'asc' }
-    })
-  }
+      setSortConfig(prevSortConfig => {
+        if (prevSortConfig?.key === key) {
+          // Toggle direction if the same column is clicked
+          return {
+            key,
+            direction: prevSortConfig.direction === 'asc' ? 'desc' : 'asc',
+          }
+        }
+        // Set initial sort direction to ascending
+        return { key, direction: 'asc' }
+      })
+    },
+    [],
+  )
 
   if (isLoading) {
     return <LoadingSpinner />
   }
 
+  const renderedTable = isDetailedView ? detailedViewTable : defaultViewTable
   return (
     <div className="flex flex-col gap-5 w-full">
       {Object.values(paginatedRewardsData).length === 0 ? (
@@ -186,54 +221,28 @@ export const BackerRewardsTable: FC<BackerRewardsTable> = ({ builder, gauges, to
           <TableCore className="table-fixed overflow-visible">
             <TableHead>
               <TableRow className="min-h-0 normal-case">
-                {tableHeaders.map(header => (
+                {renderedTable.map(({ column, className }) => (
                   <TableHeaderCell
-                    key={header.label}
-                    tableHeader={header}
-                    onSort={() => handleSort(header.sortKey)}
+                    key={column}
+                    className={className}
+                    tableHeader={tableHeaders[column]}
+                    sortKey={column}
+                    onSort={handleSort(column)}
                     sortConfig={sortConfig}
-                    isHidden={!isDetailedView}
                   />
                 ))}
               </TableRow>
             </TableHead>
             <TableBody>
-              {Object.values(paginatedRewardsData).map(
-                ({
-                  address,
-                  builderName,
-                  stateFlags,
-                  rewardPercentage,
-                  estimatedRewards,
-                  totalAllocation,
-                  claimableRewards,
-                  allTimeRewards,
-                }) => (
-                  <TableRow key={address} className="text-[14px] border-hidden">
-                    <BuilderNameCell
-                      tableHeader={tableHeaders[0]}
-                      builderName={builderName}
-                      address={address}
-                      stateFlags={stateFlags}
-                    />
-                    <BackerRewardsPercentage tableHeader={tableHeaders[1]} percentage={rewardPercentage} />
-                    <LazyRewardCell
-                      tableHeader={tableHeaders[2]}
-                      rewards={[claimableRewards.rbtc, claimableRewards.rif]}
-                    />
-                    <LazyRewardCell
-                      tableHeader={tableHeaders[3]}
-                      rewards={[estimatedRewards.rbtc, estimatedRewards.rif]}
-                    />
-                    <LazyRewardCell
-                      tableHeader={tableHeaders[4]}
-                      rewards={[allTimeRewards.rbtc, allTimeRewards.rif]}
-                      isHidden={!isDetailedView}
-                    />
-                    <LazyRewardCell tableHeader={tableHeaders[5]} rewards={[totalAllocation.rif]} />
-                  </TableRow>
-                ),
-              )}
+              {paginatedRewardsData.map(({ builderAddress, columns }) => (
+                <TableRow key={builderAddress} className="text-[14px] border-hidden">
+                  {renderedTable.map(({ column, className }) => ({
+                    ...columns[column],
+                    key: `${builderAddress}-${column}`,
+                    className,
+                  }))}
+                </TableRow>
+              ))}
             </TableBody>
           </TableCore>
           <div className="flex justify-center">{paginationUi}</div>

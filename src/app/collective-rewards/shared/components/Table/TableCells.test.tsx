@@ -20,8 +20,6 @@ describe('TableCells', () => {
   })
 
   describe('BackerRewardsPercentage', () => {
-    const tableHeader = { label: 'Backer Rewards %', className: 'w-[10%]' }
-
     test('should render the current percentage with no delta percentage since current and next are the same', async () => {
       const backerRewardPercentage = {
         current: parseEther('0.1'),
@@ -29,7 +27,7 @@ describe('TableCells', () => {
         cooldownEndTime: 100n,
       }
       const { findByText, container } = renderWithTableRow(
-        <BackerRewardsPercentage tableHeader={tableHeader} percentage={backerRewardPercentage} />,
+        <BackerRewardsPercentage className="w-[10%" percentage={backerRewardPercentage} />,
       )
       const svgElement = container.querySelector('svg')
       const upArrowClass = container.querySelector('.fa-arrow-up')
@@ -48,7 +46,7 @@ describe('TableCells', () => {
         cooldownEndTime: 100n,
       }
       const { findByText, container } = renderWithTableRow(
-        <BackerRewardsPercentage tableHeader={tableHeader} percentage={backerRewardPercentage} />,
+        <BackerRewardsPercentage className="w-[10%" percentage={backerRewardPercentage} />,
       )
       const svgElement = container.querySelector('svg')
       const upArrowClass = container.querySelector('.fa-arrow-up')
@@ -67,7 +65,7 @@ describe('TableCells', () => {
         cooldownEndTime: 100n,
       }
       const { findByText, container } = renderWithTableRow(
-        <BackerRewardsPercentage tableHeader={tableHeader} percentage={backerRewardPercentage} />,
+        <BackerRewardsPercentage className="w-[10%" percentage={backerRewardPercentage} />,
       )
       const svgElement = container.querySelector('svg')
       const upArrowClass = container.querySelector('.fa-arrow-up')

@@ -13,33 +13,30 @@ export type ISortConfig = {
 
 export type TableHeader = {
   label: string
-  className: string
-  hiddenClassName?: string
   tooltip?: TooltipProps
-  sortKey?: string
-  canBeHidden?: boolean
 }
 
 type TableHeaderProps = {
   tableHeader: TableHeader
+  className: string
+  sortKey?: string
   onSort?: (parameter: any) => void
   sortConfig?: ISortConfig
-  isHidden?: boolean
 }
 
 export const TableHeaderCell: FC<TableHeaderProps> = ({
-  tableHeader: { label, className, hiddenClassName, sortKey, tooltip, canBeHidden },
+  tableHeader: { label, tooltip },
+  className,
+  sortKey,
   onSort,
   sortConfig,
-  isHidden,
 }) => {
   return (
     <TableCell
       key={label}
       className={cn(
-        isHidden ? hiddenClassName : className,
+        className,
         'font-rootstock-sans font-bold text-base leading-none border-b border-solid border-[#2D2D2D]',
-        { hidden: isHidden && canBeHidden },
       )}
     >
       <div className="flex flex-row">
@@ -54,8 +51,8 @@ export const TableHeaderCell: FC<TableHeaderProps> = ({
             <Image src="/images/question.svg" className="mr-1" width={20} height={20} alt="QuestionIcon" />
           </Popover>
         )}
-        {label}
-        {onSort && (
+        <span>{label}</span>
+        {onSort && sortKey && (
           <button
             className={`"text-xs text-white flex items-center ml-1" transition-transform duration-300 ${sortConfig?.key === sortKey && sortConfig?.direction === 'asc' ? 'rotate-180' : 'rotate-0'}`}
             onClick={() => onSort(sortKey)}

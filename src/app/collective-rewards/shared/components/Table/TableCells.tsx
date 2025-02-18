@@ -6,7 +6,6 @@ import {
   getFiatAmount,
   Reward,
 } from '@/app/collective-rewards/rewards'
-import { TableHeader } from '@/app/collective-rewards/shared'
 import { BuilderStateFlags } from '@/app/collective-rewards/types'
 import {
   getBuilderInactiveState,
@@ -24,6 +23,10 @@ import { cn, shortAddress } from '@/lib/utils'
 import { FC, memo, useContext, useMemo } from 'react'
 import { FaArrowDown, FaArrowUp, FaCircle } from 'react-icons/fa'
 import { Address, isAddress, parseEther } from 'viem'
+
+type TableCellProps = {
+  className?: string
+}
 
 type RewardCellValueProps = {
   reward: Reward
@@ -52,31 +55,24 @@ const RewardCellValue: FC<RewardCellValueProps> = ({ reward }) => {
   )
 }
 
-type RewardCellProps = {
-  tableHeader: TableHeader
+type RewardCellProps = TableCellProps & {
   rewards: Reward[]
-  isHidden?: boolean
 }
-export const RewardCell: FC<RewardCellProps> = ({
-  tableHeader: { className, hiddenClassName },
-  rewards,
-  isHidden,
-}) => (
-  <TableCell className={cn(isHidden ? hiddenClassName : className, 'border-solid', { hidden: isHidden })}>
+
+export const RewardCell: FC<RewardCellProps> = ({ className, rewards }) => (
+  <TableCell className={cn(className, 'border-solid')}>
     <div className="flex flex-nowrap flex-row gap-1">
       {rewards && rewards.map((reward, index) => <RewardCellValue key={index} reward={reward} />)}
     </div>
   </TableCell>
 )
 
-export const LazyRewardCell = memo(
-  RewardCell,
-  ({ rewards: prevReward, isHidden: prevIsHidden }, { rewards: nextReward, isHidden: nextIsHidden }) =>
-    prevReward.every(
-      (reward, key) =>
-        reward.amount.value === nextReward[key].amount.value &&
-        reward.amount.price === nextReward[key].amount.price,
-    ) && prevIsHidden === nextIsHidden,
+export const LazyRewardCell = memo(RewardCell, ({ rewards: prevReward }, { rewards: nextReward }) =>
+  prevReward.every(
+    (reward, key) =>
+      reward.amount.value === nextReward[key].amount.value &&
+      reward.amount.price === nextReward[key].amount.price,
+  ),
 )
 
 type BuilderStatusFlagProps = {
@@ -107,18 +103,12 @@ const BuilderStatusFlag: FC<BuilderStatusFlagProps> = ({ stateFlags }) => {
   )
 }
 
-type BuilderCellProps = {
-  tableHeader: TableHeader
+type BuilderCellProps = TableCellProps & {
   builderName: string
   address: Address
 } & BuilderStatusFlagProps
 
-export const BuilderNameCell: FC<BuilderCellProps> = ({
-  tableHeader: { className },
-  builderName,
-  address,
-  stateFlags,
-}) => {
+export const BuilderNameCell: FC<BuilderCellProps> = ({ className, builderName, address, stateFlags }) => {
   const shortenAddress = shortAddress(address)
   return (
     <TableCell className={cn(className, 'border-solid')}>
@@ -151,16 +141,12 @@ export const BuilderNameCell: FC<BuilderCellProps> = ({
   )
 }
 
-type BackerRewardsPercentageProps = {
-  tableHeader: TableHeader
+type BackerRewardsPercentageProps = TableCellProps & {
   percentage: BackerRewardPercentage | null
 }
 
 const toPercentage = (value: bigint) => Number((value * 100n) / parseEther('1'))
-export const BackerRewardsPercentage: FC<BackerRewardsPercentageProps> = ({
-  tableHeader: { className },
-  percentage,
-}) => {
+export const BackerRewardsPercentage: FC<BackerRewardsPercentageProps> = ({ className, percentage }) => {
   const renderDelta = useMemo(() => {
     if (!percentage) return null
 
@@ -198,16 +184,12 @@ export const BackerRewardsPercentage: FC<BackerRewardsPercentageProps> = ({
   )
 }
 
-type TotalAllocationCellProps = {
-  tableHeader: TableHeader
+type TotalAllocationCellProps = TableCellProps & {
   // a percentage without decimals
   percentage: bigint
 }
 
-export const TotalAllocationCell: FC<TotalAllocationCellProps> = ({
-  tableHeader: { className },
-  percentage,
-}) => {
+export const TotalAllocationCell: FC<TotalAllocationCellProps> = ({ className, percentage }) => {
   return (
     <TableCell className={cn(className, 'border-solid text-center border-b-0 items-center')}>
       <div className="flex flex-row gap-2 items-center">
@@ -218,12 +200,11 @@ export const TotalAllocationCell: FC<TotalAllocationCellProps> = ({
   )
 }
 
-type ActionCellProps = {
-  tableHeader: TableHeader
+type ActionCellProps = TableCellProps & {
   builderAddress: Address
 }
 
-export const ActionCell: FC<ActionCellProps> = ({ tableHeader: { className }, builderAddress }) => {
+export const ActionCell: FC<ActionCellProps> = ({ className, builderAddress }) => {
   const {
     state: { selections, allocations, getBuilder },
     actions: { toggleSelectedBuilder },
