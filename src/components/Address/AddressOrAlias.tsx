@@ -12,7 +12,7 @@ export const AddressOrAlias: React.FC<AddressProps> = ({ addressOrAlias, classNa
   const key = isAddress(addressOrAlias) ? 'address' : 'alias'
 
   const addressClass = 'font-normal text-base leading-none text-text-primary'
-  const aliasClass = 'text-sm line-clamp-1'
+  const aliasClass = 'text-sm line-clamp-1 break-all'
 
   const renderedComponent = {
     alias: <Span className={cn(aliasClass, className)}>{addressOrAlias}</Span>,
