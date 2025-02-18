@@ -23,7 +23,11 @@ export async function fetchNftHoldersShepherds() {
   return await Promise.all(
     Object.values(holdersToUse).map(async holder => {
       try {
-        return { address: holder.owner, RNS: await resolveRnsDomain(holder.owner) }
+        let rns = holder.ens_domain_name
+        if (!rns) {
+          rns = await resolveRnsDomain(holder.owner)
+        }
+        return { address: holder.owner, RNS: rns }
       } catch {
         return { address: holder.owner, RNS: null }
       }
