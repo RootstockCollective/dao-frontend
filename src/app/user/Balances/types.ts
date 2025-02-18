@@ -56,10 +56,10 @@ export interface ServerResponseV2<T> {
 
 export type NftHolderItem = {
   owner: string
-  ens_domain_name: null
   id: string
   image_url: string
   metadata: Metadata
+  ens_domain_name?: string
 }
 
 export type Metadata = {
