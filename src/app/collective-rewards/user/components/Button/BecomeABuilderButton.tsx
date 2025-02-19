@@ -1,6 +1,5 @@
 import { useBuilderContext } from '@/app/collective-rewards/user'
 import { useModal } from '@/app/user/Balances/hooks/useModal'
-import { Button } from '@/components/Button'
 import { LoadingSpinner } from '@/components/LoadingSpinner'
 import { BecomeABuilderModal, openKYC } from '@/components/Modal/BecomeABuilderModal'
 import { Typography } from '@/components/Typography'
@@ -9,6 +8,7 @@ import { Address } from 'viem'
 import { Builder, BuilderState } from '@/app/collective-rewards/types'
 import { isBuilderDeactivated, isBuilderKycRevoked, useHandleErrors } from '@/app/collective-rewards/utils'
 import { Popover } from '@/components/Popover'
+import { HeaderButton } from '@/components/Button'
 
 type ExtendedBuilderState = BuilderState | 'deactivated' | 'paused'
 type StatusBadgeProps = {
@@ -19,9 +19,9 @@ const BuilderRegistrationButton = () => {
   const modal = useModal()
   return (
     <>
-      <Button variant="white" onClick={modal.openModal}>
+      <HeaderButton variant="white" onClick={modal.openModal}>
         Become a builder
-      </Button>
+      </HeaderButton>
       {modal.isModalOpened && <BecomeABuilderModal onClose={modal.closeModal} />}
     </>
   )
@@ -51,7 +51,7 @@ const StatusBadge: FC<StatusBadgeProps> = ({ builderState }) => {
         size="small"
         trigger="hover"
       >
-        <Button onClick={openKYC}>Submit KYC</Button>
+        <HeaderButton onClick={openKYC}>Submit KYC</HeaderButton>
       </Popover>
     </StatusBadgeSection>
   )
