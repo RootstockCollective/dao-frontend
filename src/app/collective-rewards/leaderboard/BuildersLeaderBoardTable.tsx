@@ -131,7 +131,7 @@ export const BuildersLeaderBoardTable: FC = () => {
 
   return (
     <div className="flex flex-col gap-5 w-full">
-      <TableCore className="table-fixed">
+      <TableCore className="table-fixed overflow-visible">
         <TableHead>
           <TableRow className="normal-case">
             {tableHeaders.map(header => (
