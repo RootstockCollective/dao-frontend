@@ -1,7 +1,6 @@
 import { Footer } from '@/components/Footer'
 import { Headline } from '@/components/Typography'
 import { cn } from '@/lib/utils'
-import Image from 'next/image'
 import { useRouter } from 'next/navigation'
 import { useEffect, useState } from 'react'
 import { useAccount } from 'wagmi'
@@ -10,6 +9,7 @@ import { GetStarted } from './GetStarted'
 import { BG_IMG_CLASSES } from '@/shared/utils'
 import { HeaderText } from '@/components/HeaderText/HeaderText'
 import { DeviceWarning } from '@/components/DeviceWarning'
+
 export const Login = () => {
   const { isConnected, address } = useAccount()
   const [hasMounted, setHasMounted] = useState(false)
