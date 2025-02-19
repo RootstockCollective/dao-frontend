@@ -20,9 +20,7 @@ export type TableHeader = {
   sortConfig?: ISortConfig
 }
 
-type TableHeaderProps = TableHeader
-
-export const TableHeaderCell: FC<TableHeaderProps> = ({
+export const TableHeaderCell: FC<TableHeader> = ({
   label,
   tooltip,
   className,
