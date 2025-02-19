@@ -41,7 +41,7 @@ const RewardsContent: FC<RewardDetails> = data => {
 
   const error = gaugeError ?? backerError
 
-  useHandleErrors({ error, title: 'Error loading gauge / isBacker' })
+  useHandleErrors({ error, title: 'Error loading user data' })
 
   return (
     <>
