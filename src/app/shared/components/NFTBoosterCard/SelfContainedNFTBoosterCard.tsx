@@ -1,7 +1,7 @@
 import { useNFTBoosterContext } from '@/app/providers/NFT/BoosterContext'
 import { NFTBoosterCard } from '@/app/shared/components'
 import { FC } from 'react'
-import { communitiesMapByContract } from '../../../communities/communityUtils'
+import { communitiesMapByContract } from '@/app/communities/communityUtils'
 
 export const SelfContainedNFTBoosterCard: FC = () => {
   const { hasActiveCampaign, currentBoost, boostData } = useNFTBoosterContext()

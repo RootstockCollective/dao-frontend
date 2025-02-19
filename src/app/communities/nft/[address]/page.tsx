@@ -68,7 +68,7 @@ export default function Page() {
   const { isBoosted, hasActiveCampaign, boostData } = useNFTBoosterContext()
 
   const nftInfo = communitiesMapByContract[nftAddress || '']
-  if (nftInfo === undefined && nftAddress !== undefined) {
+  if (nftAddress && !nftInfo) {
     console.warn('The current NFT address is not registered. Please check the config.')
   }
   const [isChecking, setIsChecking] = useState(false)

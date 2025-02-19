@@ -1,6 +1,6 @@
 import { useQuery } from '@tanstack/react-query'
 import { render, renderHook, screen, waitFor } from '@testing-library/react'
-import { afterEach, beforeEach, describe, expect, it, Mock, vi } from 'vitest'
+import { afterEach, describe, expect, it, vi } from 'vitest'
 import { useAccount } from 'wagmi'
 import { BoosterProvider, useFetchBoostData, useNFTBoosterContext } from './BoosterContext'
 
