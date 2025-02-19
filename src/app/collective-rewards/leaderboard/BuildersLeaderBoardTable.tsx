@@ -109,40 +109,7 @@ export const BuildersLeaderBoardTable: FC = () => {
   }, [rewardsData, sortConfig])
 
   const paginatedRewardsData = useMemo(
-    () =>
-      sortedRewardsData
-        .slice(currentPage * buildersPerPage, (currentPage + 1) * buildersPerPage)
-        .map(
-          ({
-            address,
-            builderName,
-            stateFlags,
-            lastCycleRewards,
-            estimatedRewards,
-            totalAllocationPercentage,
-            rewardPercentage,
-          }) => ({
-            builderAddress: address,
-            columns: {
-              [RewardsColumnKeyEnum.builder]: (
-                <BuilderNameCell builderName={builderName} address={address} stateFlags={stateFlags} />
-              ),
-              [RewardsColumnKeyEnum.rewardPercentage]: (
-                <BackerRewardsPercentage percentage={rewardPercentage} />
-              ),
-              [RewardsColumnKeyEnum.lastCycleRewards]: (
-                <LazyRewardCell rewards={[lastCycleRewards.rbtc, lastCycleRewards.rif]} />
-              ),
-              [RewardsColumnKeyEnum.estimatedRewards]: (
-                <LazyRewardCell rewards={[estimatedRewards.rbtc, estimatedRewards.rif]} />
-              ),
-              [RewardsColumnKeyEnum.totalAllocationPercentage]: (
-                <TotalAllocationCell percentage={totalAllocationPercentage} />
-              ),
-              [RewardsColumnKeyEnum.actions]: <ActionCell builderAddress={address} />,
-            },
-          }),
-        ),
+    () => sortedRewardsData.slice(currentPage * buildersPerPage, (currentPage + 1) * buildersPerPage),
     [currentPage, sortedRewardsData],
   )
 
@@ -185,15 +152,26 @@ export const BuildersLeaderBoardTable: FC = () => {
           </TableRow>
         </TableHead>
         <TableBody>
-          {paginatedRewardsData.map(({ builderAddress, columns }) => (
-            <TableRow key={builderAddress} className="text-[14px] border-hidden">
-              {Object.entries(defaultTable).map(([key, { className }]) => ({
-                ...columns[key as RewardsColumnKeyEnum],
-                key: `${builderAddress}-${key}`,
-                className,
-              }))}
-            </TableRow>
-          ))}
+          {paginatedRewardsData.map(
+            ({
+              address,
+              builderName,
+              stateFlags,
+              lastCycleRewards,
+              estimatedRewards,
+              totalAllocationPercentage,
+              rewardPercentage,
+            }) => (
+              <TableRow key={address} className="text-[14px] border-hidden">
+                <BuilderNameCell builderName={builderName} address={address} stateFlags={stateFlags} />
+                <BackerRewardsPercentage percentage={rewardPercentage} />
+                <LazyRewardCell rewards={[lastCycleRewards.rbtc, lastCycleRewards.rif]} />
+                <LazyRewardCell rewards={[estimatedRewards.rbtc, estimatedRewards.rif]} />
+                <TotalAllocationCell percentage={totalAllocationPercentage} />
+                <ActionCell builderAddress={address} />
+              </TableRow>
+            ),
+          )}
         </TableBody>
       </TableCore>
       <div className="flex justify-center">{paginationUi}</div>
