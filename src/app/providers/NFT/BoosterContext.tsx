@@ -52,7 +52,11 @@ export const BoosterProvider = ({ children }: BoosterContextProviderProps) => {
       return { boostData, isLoading, error, hasActiveCampaign }
     }
 
-    const currentBoost = boostData?.holders[address]
+    const addressInLowerCase = address.toLocaleLowerCase()
+    const [, currentBoost] =
+      Object.entries(boostData?.holders ?? {}).find(
+        ([key]) => key.toLocaleLowerCase() === addressInLowerCase,
+      ) ?? []
     const isBoosted =
       currentBoost &&
       (currentBoost.boostedRBTCRewards > 0 ||
@@ -93,7 +97,7 @@ export const useFetchBoostData = () => {
     queryFn: async () => {
       const { data } = await axiosInstance.get(`${NFT_BOOSTER_DATA_URL}/${latestFile}`)
 
-      return data
+      return { ...data, nftContractAddress: data.nftContractAddress.toLowerCase() }
     },
     queryKey: ['nftBoosterData'],
     refetchInterval: AVERAGE_BLOCKTIME,

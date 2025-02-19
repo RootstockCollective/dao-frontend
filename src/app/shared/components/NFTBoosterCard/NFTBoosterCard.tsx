@@ -20,8 +20,8 @@ export const NFTBoosterCard: FC<NFTBoosterCardProps> = ({ nftThumbPath, boostVal
       >
         <g filter="url(#filter0_f_773_18628)">
           <path
-            fill-rule="evenodd"
-            clip-rule="evenodd"
+            fillRule="evenodd"
+            clipRule="evenodd"
             d="M17.7212 18.0696H259.721V74.0696H17.7212V18.0696ZM21.7212 22.0696V70.0696H255.721V22.0696H21.7212Z"
             fill="url(#paint0_linear_773_18628)"
           />
@@ -34,9 +34,9 @@ export const NFTBoosterCard: FC<NFTBoosterCardProps> = ({ nftThumbPath, boostVal
             width="276.2"
             height="90.2"
             filterUnits="userSpaceOnUse"
-            color-interpolation-filters="sRGB"
+            colorInterpolationFilters="sRGB"
           >
-            <feFlood flood-opacity="0" result="BackgroundImageFix" />
+            <feFlood floodOpacity="0" result="BackgroundImageFix" />
             <feBlend mode="normal" in="SourceGraphic" in2="BackgroundImageFix" result="shape" />
             <feGaussianBlur stdDeviation="8.55" result="effect1_foregroundBlur_773_18628" />
           </filter>
