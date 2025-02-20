@@ -3,6 +3,8 @@ name: Boost backers' rewards in an active NFT campaign
 permissions:
   contents: write
 
+env:
+  BOOST_DATA_BRANCH: "boost-data${{ github.event.inputs.env == 'mainnet' && '' || '-dev' }}"
 on:
   workflow_dispatch:
     inputs:
@@ -38,14 +40,14 @@ jobs:
       - name: Switch to target branch for data
         run: |
           git fetch origin
-          git checkout -B boost-data
+          git checkout -B $BOOST_DATA_BRANCH
 
       - name: Boost backers' rewards
         run: |
           npx tsx .github/scripts/nft_boost/activateBoost.ts \
               --campaignId=${{ github.event.inputs.campaignId }} \
               --boost=${{ github.event.inputs.boost }} \
-              --nft=${{ github.event.inputs.nft }}
+              --nft=${{ github.event.inputs.nft }} \
               --env=${{ github.event.inputs.env }}
 
       - name: Commit and push changes
