@@ -3,9 +3,8 @@ import Image from 'next/image'
 import { BsArrowUpRight } from 'react-icons/bs'
 import Link from 'next/link'
 import { useNFTBoosterContext } from '@/app/providers/NFT/BoosterContext'
-import { GlowingBoltSvg } from '@/components/GlowingBoltSvg'
 import { GlowingLabel } from '@/components/Label/GlowingLabel'
-import { BoltSvg } from '../../components/BoltSvg'
+import { BoltSvg } from '@/components/BoltSvg'
 
 interface CommunityItemProps {
   leftImageSrc: string
@@ -45,7 +44,7 @@ export const CommunityItem = ({
               <div className="inline-flex items-center">
                 <GlowingLabel showGlow>{title}</GlowingLabel>
                 <div className="-ml-[4px]">
-                  <GlowingBoltSvg />
+                  <BoltSvg showGlow />
                 </div>
               </div>
             ) : (
