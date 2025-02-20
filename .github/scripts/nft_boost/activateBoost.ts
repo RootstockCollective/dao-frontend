@@ -168,7 +168,7 @@ async function main() {
 
   const gauges = await getAllGauges()
 
-  const normalisationFactor = 100_000
+  const normalisationFactor = 100_000 // Scaling factor to handle decimal values in BigInts. A ratio of 1.25 => 125_000
   const boost = BigInt(Math.round(normalisationFactor * (1 + boostPercentage / 100)))
 
   for (let i = 0; i < nftTransferEvents.length; i++) {
