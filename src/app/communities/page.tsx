@@ -1,3 +1,5 @@
+'use client'
+
 import Image from 'next/image'
 import { CommunityItem } from '@/app/communities/CommunityItem'
 import { communitiesToRender } from '@/app/communities/communityUtils'

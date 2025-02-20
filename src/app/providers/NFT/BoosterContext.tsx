@@ -17,7 +17,7 @@ interface Holders {
   [holderAddress: string]: HolderRewards
 }
 
-interface BoostData {
+export interface BoostData {
   nftContractAddress: Address
   boostPercentage: bigint
   calculationBlock: bigint
