@@ -7,13 +7,12 @@ import { StakingToken } from '@/app/user/Stake/types'
 import { tokenContracts } from '@/lib/contracts'
 import { stakingSteps } from './Steps/stepsUtils'
 import { useStakeRIF } from '@/app/user/Stake/hooks/useStakeRIF'
-import { useModal } from '@/shared/hooks/useModal'
 
 interface StakingStepsProps {
   onCloseModal: () => void
 }
 
-const StakingSteps = ({ onCloseModal }: StakingStepsProps) => {
+export const StakingSteps = ({ onCloseModal }: StakingStepsProps) => {
   const { step, onGoNext, onGoBack } = useSteps(4)
   const { balances, prices } = useBalancesContext()
 
@@ -54,14 +53,4 @@ const StakingSteps = ({ onCloseModal }: StakingStepsProps) => {
       </Modal>
     </StakingProvider>
   )
-}
-
-export const StakingModal = () => {
-  const stakeModal = useModal()
-
-  if (stakeModal.isModalOpened) {
-    return <StakingSteps onCloseModal={stakeModal.closeModal} />
-  }
-
-  return null
 }
