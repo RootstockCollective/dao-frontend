@@ -280,7 +280,7 @@ export default function Page() {
           {hasActiveCampaign && isBoosted && boostData?.nftContractAddress === nftAddress && (
             <div className="inline-flex items-center gap-1 pb-6">
               <BoltSvg />
-              <GlowingLabel>Boosted {20}%</GlowingLabel>
+              <GlowingLabel faded>Active Boost {boostData.boostPercentage}%</GlowingLabel>
             </div>
           )}
           {/* Hidden until we get social media data */}

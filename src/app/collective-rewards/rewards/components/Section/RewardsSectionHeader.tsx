@@ -22,7 +22,7 @@ export const RewardsSectionHeader: FC<RewardsSectionHeader> = ({ title, subtext,
           {isBacker && hasActiveCampaign && isBoosted && (
             <div className="inline-flex items-center gap-1">
               <BoltSvg />
-              <GlowingLabel>Boosted</GlowingLabel>
+              <GlowingLabel faded>Boosted</GlowingLabel>
               <Tooltip text="Your rewards are boosted thanks to your NFT’s superpowers." />
             </div>
           )}
