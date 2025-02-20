@@ -18,7 +18,7 @@ import { NftHoldersSection } from '@/app/communities/NftHoldersSection'
 import { communitiesMapByContract } from '@/app/communities/communityUtils'
 import { isUserRejectedTxError } from '@/components/ErrorPage/commonErrors'
 import { SelfContainedNFTBoosterCard } from '../../../shared/components/NFTBoosterCard/SelfContainedNFTBoosterCard'
-import { FadedGlowingLabel } from '@/components/Label/GlowingLabel'
+import { GlowingLabel } from '@/components/Label/GlowingLabel'
 import { BoltSvg } from '@/components/BoltSvg'
 import { useNFTBoosterContext } from '@/app/providers/NFT/BoosterContext'
 
@@ -280,7 +280,7 @@ export default function Page() {
           {hasActiveCampaign && isBoosted && boostData?.nftContractAddress === nftAddress && (
             <div className="inline-flex items-center gap-1 pb-6">
               <BoltSvg />
-              <FadedGlowingLabel>Boosted {boostData.boostPercentage}%</FadedGlowingLabel>
+              <GlowingLabel faded>Active Boost {boostData.boostPercentage}%</GlowingLabel>
             </div>
           )}
           {/* Hidden until we get social media data */}

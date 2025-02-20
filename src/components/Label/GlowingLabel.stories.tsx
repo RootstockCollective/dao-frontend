@@ -14,5 +14,6 @@ export const GlowingLabelDefault: Story = {
   args: {
     children: 'Early Adopters',
     showGlow: true,
+    faded: false,
   },
 }
