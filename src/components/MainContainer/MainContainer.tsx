@@ -1,6 +1,6 @@
 'use client'
 import { useAlertContext } from '@/app/providers'
-import { useModal } from '@/app/user/Balances/hooks/useModal'
+import { useModal } from '@/shared/hooks/useModal'
 import { Footer } from '@/components/Footer'
 import { ConnectButton, Header } from '@/components/Header'
 import { StatefulSidebar } from '@/components/MainContainer/StatefulSidebar'
