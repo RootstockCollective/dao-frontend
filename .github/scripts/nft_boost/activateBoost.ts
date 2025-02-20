@@ -62,17 +62,17 @@ async function getActions() {
       }),
     )
     console.info('Gauges length: ', gaugesLength)
-    let gauges: Address[] = []
-    for (let i = 0; i < gaugesLength; i++) {
-      const gaugeAddress = await publicClient.readContract({
-        address: BuilderRegistryAddress,
-        abi: BuilderRegistryAbi,
-        functionName: 'getGaugeAt',
-        args: [BigInt(i)],
-      })
-      gauges.push(gaugeAddress)
-    }
-    return gauges
+
+    const gaugesIndexes = Array.from({ length: gaugesLength }, (_, i) => i)
+    const getGaugesCalls = gaugesIndexes.map(i => ({
+      address: BuilderRegistryAddress,
+      abi: BuilderRegistryAbi,
+      functionName: 'getGaugeAt',
+      args: [BigInt(i)],
+    }))
+
+    const response = await publicClient.multicall({ contracts: getGaugesCalls })
+    return response.map(data => data.result)
   }
 
   const getRewardTokenAddress = async (): Promise<Address> => {
