@@ -18,7 +18,7 @@ import {
 } from '@/app/proposals/shared/supportedABIs'
 import { DecodedData, getEventArguments, splitCombinedName } from '@/app/proposals/shared/utils'
 import { useAlertContext } from '@/app/providers'
-import { useModal } from '@/app/user/Balances/hooks/useModal'
+import { useModal } from '@/shared/hooks/useModal'
 import { AddressOrAlias as AddressComponent } from '@/components/Address'
 import {
   Breadcrumb,

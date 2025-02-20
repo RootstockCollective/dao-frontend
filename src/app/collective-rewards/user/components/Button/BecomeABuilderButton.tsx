@@ -1,5 +1,5 @@
 import { useBuilderContext } from '@/app/collective-rewards/user'
-import { useModal } from '@/app/user/Balances/hooks/useModal'
+import { useModal } from '@/shared/hooks/useModal'
 import { LoadingSpinner } from '@/components/LoadingSpinner'
 import { BecomeABuilderModal, openKYC } from '@/components/Modal/BecomeABuilderModal'
 import { Typography } from '@/components/Typography'
