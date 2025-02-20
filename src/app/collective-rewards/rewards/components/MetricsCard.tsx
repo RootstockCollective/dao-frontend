@@ -1,8 +1,8 @@
+import { withSpinner } from '@/components/LoadingSpinner/withLoadingSpinner'
+import { Typography, TypographyProps } from '@/components/Typography'
 import { cn } from '@/lib/utils'
 import { FC, HTMLAttributes, ReactNode } from 'react'
 import { Address } from 'viem'
-import { withSpinner } from '@/components/LoadingSpinner/withLoadingSpinner'
-import { Typography } from '@/components/Typography'
 import { Tooltip, TooltipProps } from './Tooltip'
 
 type MetricsCardRow = {
@@ -40,7 +40,7 @@ export const TokenMetricsCardRow: FC<MetricsCardRow> = ({ amount, fiatAmount, ch
   </MetricsCardRow>
 )
 
-type MetricsCardProps = {
+export type MetricsCardProps = HTMLAttributes<HTMLDivElement> & {
   /**
    * Whether the card should have a border or not.
    */
@@ -51,19 +51,9 @@ type MetricsCardProps = {
    */
   contractAddress?: Address
   dataTestId?: string
-
-  /**
-   * The children of the card. Usually a MetricsCardRow.
-   */
-  children?: ReactNode
-
-  /**
-   * Additional classes to apply to the card.
-   */
-  className?: HTMLAttributes<HTMLDivElement>['className']
 }
 
-const DEFAULT_CLASSES = 'h-min-[79px] w-full py-[12px] px-[12px] flex flex-col bg-foreground'
+const DEFAULT_CLASSES = 'w-[214px] py-[12px] px-[12px] flex flex-col bg-foreground'
 
 /**
  * Card for displaying balance and corresponding (fiat) value.
@@ -73,35 +63,60 @@ export const MetricsCard: FC<MetricsCardProps> = ({
   children,
   dataTestId,
   className,
+  ...rest
 }) => {
   const borderClasses = borderless ? '' : 'border border-white border-opacity-40 rounded-lg'
   return (
-    <div className={cn(DEFAULT_CLASSES, borderClasses, className)} data-testid={dataTestId + '_MetricsCard'}>
+    <div
+      className={cn(DEFAULT_CLASSES, borderClasses, className)}
+      data-testid={dataTestId + '_MetricsCard'}
+      {...rest}
+    >
       {children}
     </div>
   )
 }
 
-type MetricsCardTitleProps = {
-  title: string
-  'data-testid': string
-  tooltip?: TooltipProps
-}
+export type MetricsCardTitleProps =
+  | (Omit<TypographyProps, 'children'> & {
+      title: string | ReactNode
+      tooltip?: TooltipProps
+      children?: ReactNode
+      customLabel?: never
+    })
+  | (Omit<TypographyProps, 'children'> & {
+      customLabel: ReactNode
+      tooltip?: TooltipProps
+      children?: ReactNode
+      title?: never
+    })
 
 export const MetricsCardTitle: FC<MetricsCardTitleProps> = ({
   title,
   'data-testid': dataTestId,
   tooltip,
+  className,
+  customLabel,
+  children,
+  ...rest
 }) => (
-  <div className="flex gap-1">
-    <Typography
-      tagVariant="label"
-      className="text-[16px] font-normal tracking-wide overflow-hidden whitespace-nowrap text-ellipsis"
-      data-testid={`${dataTestId}_MetricsCardTitle`}
-    >
-      {title}
-    </Typography>
+  <div className="flex flex-nowrap gap-1 justify-start items-center">
+    {customLabel ?? (
+      <Typography
+        tagVariant="label"
+        className={cn(
+          'text-[16px] font-normal tracking-wide overflow-hidden whitespace-nowrap text-ellipsis',
+          className ?? '',
+        )}
+        data-testid={`${dataTestId}_MetricsCardTitle`}
+        {...rest}
+      >
+        {title}
+      </Typography>
+    )}
+
     {tooltip && <Tooltip {...tooltip} />}
+    {children}
   </div>
 )
 

@@ -1,17 +1,18 @@
 import {
   formatMetrics,
-  MetricsCardTitle,
   MetricsCard,
-  TokenMetricsCardRow,
-  Token,
+  MetricsCardProps,
+  MetricsCardTitle,
+  MetricsCardTitleProps,
   RewardDetails,
+  Token,
+  TokenMetricsCardRow,
   useBackerRewardsContext,
-  TooltipProps,
 } from '@/app/collective-rewards/rewards'
 import { useHandleErrors } from '@/app/collective-rewards/utils'
+import { withSpinner } from '@/components/LoadingSpinner/withLoadingSpinner'
 import { usePricesContext } from '@/shared/context/PricesContext'
 import { FC } from 'react'
-import { withSpinner } from '@/components/LoadingSpinner/withLoadingSpinner'
 
 export const rewardTypes = ['earned', 'claimed', 'estimated'] as const
 export type Rewards = (typeof rewardTypes)[number]
@@ -22,7 +23,7 @@ type TokenRewardsMetricsProps = {
   token: Token
 }
 
-const TokenRewardsMetrics: FC<TokenRewardsMetricsProps> = ({
+export const TokenRewardsMetrics: FC<TokenRewardsMetricsProps> = ({
   token: { symbol, address },
   currency = 'USD',
   rewards,
@@ -58,25 +59,27 @@ const TokenRewardsMetrics: FC<TokenRewardsMetricsProps> = ({
   })
 }
 
-type RewardsCardProps = Omit<RewardDetails, 'gauge'> & {
-  title: string
-  'data-testid': string
-  rewards: Rewards[]
-  tooltip?: TooltipProps
+export type RewardsCardProps = MetricsCardProps & {
+  rewardDetails: Omit<RewardDetails, 'gauges' | 'builder'> & {
+    rewards: Rewards[]
+  }
+  titleDetails: MetricsCardTitleProps
 }
 
 export const RewardsCard: FC<RewardsCardProps> = ({
-  title,
-  'data-testid': dataTestId,
-  tokens: { rif, rbtc },
-  tooltip,
+  rewardDetails: {
+    tokens: { rif, rbtc },
+    ...restOfRewardDetails
+  },
+  titleDetails,
+  dataTestId,
   ...rest
 }) => {
   return (
-    <MetricsCard borderless>
-      <MetricsCardTitle title={title} data-testid={dataTestId} tooltip={tooltip} />
-      <TokenRewardsMetrics {...rest} token={rif} />
-      <TokenRewardsMetrics {...rest} token={rbtc} />
+    <MetricsCard borderless dataTestId={dataTestId} {...rest}>
+      <MetricsCardTitle data-testid={dataTestId} {...titleDetails} />
+      <TokenRewardsMetrics {...restOfRewardDetails} token={rif} />
+      <TokenRewardsMetrics {...restOfRewardDetails} token={rbtc} />
     </MetricsCard>
   )
 }

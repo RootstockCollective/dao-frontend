@@ -1,16 +1,16 @@
-export * from './hooks'
-export * from './context'
 export * from './ABIBackers'
+export * from './context'
+export * from './hooks'
+import { AllTimeShare } from './AllTimeShare'
+import { BackerRewardsTable } from './BackerRewardsTable'
+import { ClaimableRewards } from './ClaimableRewards'
 import { Rewards } from './Rewards'
 import { RewardsCard } from './RewardsCard'
-import { AllTimeShare } from './AllTimeShare'
-import { ClaimableRewards } from './ClaimableRewards'
-import { BackerRewardsTable } from './BackerRewardsTable'
 
 export {
-  Rewards as BackerRewards,
-  RewardsCard as BackerRewardsCard,
   AllTimeShare as BackerAllTimeShare,
   ClaimableRewards as BackerClaimableRewards,
+  Rewards as BackerRewards,
+  RewardsCard as BackerRewardsCard,
   BackerRewardsTable,
 }

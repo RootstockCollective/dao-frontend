@@ -18,6 +18,7 @@ export interface Reward {
 }
 
 export type TokenRewards = Record<string, Reward>
+// FIXME: change builder to user, so that it can be used in the context of both builders and backers
 export interface RewardDetails {
   builder: Address
   gauges: Address[]
