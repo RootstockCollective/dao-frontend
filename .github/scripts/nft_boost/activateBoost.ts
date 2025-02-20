@@ -5,6 +5,7 @@ import { config as envConfig } from 'dotenv'
 import axios from 'axios'
 import { BackersManagerAbi, BuilderRegistryAbi, GaugeAbi } from '../../../src/lib/abis/v2'
 import { boostDataFolder, nftActiveBoostPath, rewardCoinbaseAddress } from './consts'
+import { RIF_WALLET_SERVICES_URL } from '../../../src/lib/constants'
 
 const [, , ...args] = process.argv
 
@@ -40,7 +41,8 @@ async function getActions() {
   const getNftTransferEvents = async (nftContract: string): Promise<NFTEvent[]> => {
     console.info('NFT contract address: ', nftContract)
     const transferTopic = '0xddf252ad1be2c89b69c2b068fc378daa952ba7f163c4a11628f55a4df523b3ef'
-    const url = `https://rws.app.rootstockcollective.xyz/address/${nftContract}/eventsByTopic0?topic0=${transferTopic}&chainId=${CHAIN_ID}&fromBlock=0`
+    const fromBlock = 5000000 // all the NFT addresses in mainnet and testnet were deployed after block 5000000
+    const url = `${RIF_WALLET_SERVICES_URL}/address/${nftContract}/eventsByTopic0?topic0=${transferTopic}&chainId=${CHAIN_ID}&fromBlock=${fromBlock}`
     try {
       const response = await axios.get(url)
       return response.data
