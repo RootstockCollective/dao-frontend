@@ -128,7 +128,8 @@ export async function fetchIpfsUri(
   responseType: 'json' | 'blob' = 'json',
 ): Promise<NftMeta | Blob> {
   const httpsUrl = ipfsUri.replace('ipfs://', ipfsGateway)
-  const { data } = await axiosInstance.get(httpsUrl, { responseType })
+  const gatewayKey = '?pinataGatewayToken=2baUTL17arZ8gxSV0aQUVNnIIJsG9co18cjJBuJKMmm4exOakOIsAXD9KS-gjRf0'
+  const { data } = await axiosInstance.get(`${httpsUrl}${gatewayKey}`, { responseType })
   return data
 }
 
