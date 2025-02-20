@@ -27,15 +27,7 @@ export const BalancesProvider: FC<BalancesProviderProps> = ({ children }) => {
   const balances = useGetAddressBalances()
   const prices = useGetSpecificPrices()
 
-  const valueOfContext = useMemo(
-    () => ({
-      balances,
-      prices,
-    }),
-    [balances, prices],
-  )
-
-  return <BalancesContext.Provider value={valueOfContext}>{children}</BalancesContext.Provider>
+  return <BalancesContext.Provider value={{ balances, prices }}>{children}</BalancesContext.Provider>
 }
 
 export const useBalancesContext = () => useContext(BalancesContext)
