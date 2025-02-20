@@ -3,28 +3,27 @@ import { Table } from '@/components/Table'
 import { RenderTokenPrice } from '@/app/user/Balances/RenderTokenPrice'
 import { RenderTotalBalance } from '@/app/user/Balances/RenderTotalBalance'
 import { BalancesProvider } from '@/app/user/Balances/context/BalancesContext'
-import { StakingModal } from '@/app/user/Stake/StakingSteps'
+import { StakingSteps } from '@/app/user/Stake/StakingSteps'
 import { StakeRIFCell } from '@/app/user/Balances/StakeRIFCell'
 import { RenderTokenSymbol } from '@/app/user/Balances/RenderTokenSymbol'
 import { UnStakeRIFCell } from '@/app/user/Balances/UnStakeRIFCell'
-import { UnStakingModal } from '@/app/user/Stake/UnStakingSteps'
-import { BecomeABuilderButton } from '@/app/collective-rewards/user'
-import { useAccount } from 'wagmi'
+import { ModalReturn, useModal } from '@/shared/hooks/useModal'
+import { UnStakingSteps } from '../Stake/UnStakingSteps'
 
-const data = [
+const makeData = (stakeModal: ModalReturn, unstakeModal: ModalReturn) => [
   {
     token: 'Rootstock Infrastructure Framework',
     symbol: <RenderTokenSymbol symbol="RIF" />,
     'Token Price': <RenderTokenPrice symbol="RIF" />,
     'Total Balance': <RenderTotalBalance symbol="RIF" />,
-    actions: <StakeRIFCell />,
+    actions: <StakeRIFCell stakeModal={stakeModal} />,
   },
   {
     token: 'Staked Rootstock Infrastructure Framework',
     symbol: <RenderTokenSymbol symbol="stRIF" />,
     'Token Price': <RenderTokenPrice symbol="stRIF" />,
     'Total Balance': <RenderTotalBalance symbol="stRIF" />,
-    actions: <UnStakeRIFCell />,
+    actions: <UnStakeRIFCell unstakeModal={unstakeModal} />,
   },
   {
     token: 'Rootstock Bitcoin',
@@ -39,14 +38,17 @@ interface Props {
   showTitle?: boolean
 }
 export const BalancesSection = ({ showTitle = false }: Props) => {
+  const stakeModal = useModal()
+  const unstakeModal = useModal()
+
   return (
-    <div className="mb-[32px]">
-      <BalancesProvider>
+    <BalancesProvider>
+      <div className="mb-[32px]">
         {showTitle ? <HeaderTitle className="mb-6">Balances</HeaderTitle> : null}
-        <StakingModal />
-        <UnStakingModal />
-        <Table data={data} />
-      </BalancesProvider>
-    </div>
+        {stakeModal.isModalOpened ? <StakingSteps onCloseModal={stakeModal.closeModal} /> : null}
+        {unstakeModal.isModalOpened ? <UnStakingSteps onCloseModal={unstakeModal.closeModal} /> : null}
+        <Table data={makeData(stakeModal, unstakeModal)} />
+      </div>
+    </BalancesProvider>
   )
 }
