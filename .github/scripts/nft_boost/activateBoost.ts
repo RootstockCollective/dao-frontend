@@ -75,32 +75,46 @@ async function getActions() {
     return response.map(data => data.result)
   }
 
+  let rewardTokenAddress: Address
   const getRewardTokenAddress = async (): Promise<Address> => {
-    return await publicClient.readContract({
+    if (rewardTokenAddress) {
+      return rewardTokenAddress
+    }
+    rewardTokenAddress = await publicClient.readContract({
       address: BackersManagerAddress,
       abi: BackersManagerAbi,
       functionName: 'rewardToken',
       args: [],
     })
+    return rewardTokenAddress
   }
 
   // Queries Gauges contracts for backer rewards
-  const estimatedGaugeRewards = async (
-    rewardToken: Address,
-    backer: Address,
-    gauge: Address,
-  ): Promise<bigint> => {
+  interface EstimatedGaugeRewards {
+    RBTC: bigint
+    RIF: bigint
+  }
+  const estimatedGaugeRewards = async (backer: Address, gauge: Address): Promise<EstimatedGaugeRewards> => {
+    const rewardTokenAddress = await getRewardTokenAddress()
+    const rewardTokens: Address[] = [rewardCoinbaseAddress, rewardTokenAddress]
     try {
-      const gaugeEstimatedRewards = await publicClient.readContract({
-        address: gauge,
-        abi: GaugeAbi,
-        functionName: 'estimatedBackerRewards',
-        args: [rewardToken, backer],
-      })
-      return gaugeEstimatedRewards
+      const gaugeEstimatedRewards = (
+        await publicClient.multicall({
+          contracts: rewardTokens.map(rewardToken => ({
+            address: gauge,
+            abi: GaugeAbi,
+            functionName: 'estimatedBackerRewards',
+            args: [rewardToken, backer],
+          })),
+        })
+      ).map(data => data.result)
+      return {
+        RBTC: BigInt(gaugeEstimatedRewards[0].toString()),
+        RIF: BigInt(gaugeEstimatedRewards[1].toString()),
+      }
     } catch (error) {
       console.error(`Error fetching rewards for ${backer}:`, error)
-      return BigInt(0)
+      return { RBTC: BigInt(0), RIF: BigInt(0) }
     }
   }
 
@@ -108,7 +122,6 @@ async function getActions() {
     getLatestBlockNumber,
     getNftTransferEvents,
     getAllGauges,
-    getRewardTokenAddress,
     estimatedGaugeRewards,
   }
 }
@@ -151,15 +164,9 @@ async function main() {
     path: `.env.${env}`,
   })
 
-  const {
-    getLatestBlockNumber,
-    getNftTransferEvents,
-    getAllGauges,
-    getRewardTokenAddress,
-    estimatedGaugeRewards,
-  } = await getActions()
+  const { getLatestBlockNumber, getNftTransferEvents, getAllGauges, estimatedGaugeRewards } =
+    await getActions()
 
-  const rewardTokenAddress = await getRewardTokenAddress()
   const blockNumber = await getLatestBlockNumber()
   console.info(`Latest block: ${blockNumber}`)
 
@@ -177,15 +184,14 @@ async function main() {
     console.info(`Processing ${i + 1} of ${nftTransferEvents.length} events. Nft holder: ${holderAddress}`)
     const tokenId = BigInt(event.topics[3]).toString()
     for (const gauge of gauges) {
-      const estimatedRBTCRewards = await estimatedGaugeRewards(rewardCoinbaseAddress, holderAddress, gauge)
-      const estimatedRIFRewards = await estimatedGaugeRewards(rewardTokenAddress, holderAddress, gauge)
+      const estimatedRewards = await estimatedGaugeRewards(holderAddress, gauge)
 
-      const boostedRBTCRewards = (estimatedRBTCRewards * boost) / BigInt(normalisationFactor)
-      const boostedRIFRewards = (estimatedRIFRewards * boost) / BigInt(normalisationFactor)
+      const boostedRBTCRewards = (estimatedRewards.RBTC * boost) / BigInt(normalisationFactor)
+      const boostedRIFRewards = (estimatedRewards.RIF * boost) / BigInt(normalisationFactor)
 
       holdersData[holderAddress] = {
-        estimatedRBTCRewards: estimatedRBTCRewards.toString(),
-        estimatedRIFRewards: estimatedRIFRewards.toString(),
+        estimatedRBTCRewards: estimatedRewards.RBTC.toString(),
+        estimatedRIFRewards: estimatedRewards.RIF.toString(),
         boostedRBTCRewards: boostedRBTCRewards.toString(),
         boostedRIFRewards: boostedRIFRewards.toString(),
         tokenId,
