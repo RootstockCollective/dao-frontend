@@ -61,69 +61,79 @@ export const prepareProposalsData: DropdownTopic[] = [
   },
 ]
 
-const checkSteps = async (items: DropdownItem[], balances: TokenBalanceRecord, address: Address) => {
-  const balanceDependentSteps = checkBalancesSteps(items, balances)
-  try {
-    const checkedEvents = await checkEvents(balanceDependentSteps, address)
-
-    return checkedEvents
-  } catch (err) {
-    console.log('CHECKING THE STEPS FAILED', err)
-    return balanceDependentSteps
-  }
-}
-
-const checkBalancesSteps = (items: DropdownItem[], balances: TokenBalanceRecord): DropdownTopic[] => {
+const checkBalancesSteps = (items: DropdownItem[], balances: TokenBalanceRecord) => {
   if (Big(balances[stRIF].balance).gt(0)) {
-    return [
-      {
-        items: items.slice(3),
-      },
-      {
-        topic: COMPLETED,
-        items: items.slice(0, 3),
-      },
-    ]
+    return items.splice(0, 3)
   }
 
   if (Big(balances[RIF].balance).gt(0)) {
-    return [{ items: items.slice(2) }, { topic: COMPLETED, items: items.slice(0, 2) }]
+    return items.splice(0, 2)
   }
 
   if (Big(balances[RBTC].balance).gt(0)) {
-    return [{ items: items.slice(1) }, { topic: COMPLETED, items: items.filter(step => step.id === RBTC) }]
+    return items.splice(0, 1)
   }
 
-  return [{ items }]
+  return []
 }
 
-const checkEvents = async (steps: DropdownTopic[], address: Address): Promise<DropdownTopic[]> => {
+const checkVoted = async (items: DropdownItem[], address: Address): Promise<DropdownItem | undefined> => {
   try {
     // returned previous votes from VoteCast
     // address for testing: '0x81Df35317DF983e419630908eF6CB2BB48cE21Ca'
     const votingEvents = await parseVoteCastEvents(address)()
 
-    const [notCompleted, completed] = steps
-    const completedObject = !completed ? { topic: COMPLETED, items: [] } : completed
-
     if (votingEvents && votingEvents.length >= 1) {
-      const searchIndex = notCompleted.items.findIndex(item => item.id === VOTE)
-      completedObject.items.push(notCompleted.items.splice(searchIndex, 1)[0])
+      return items.filter(item => item.id === VOTE)[0]
     }
+  } catch (err) {
+    console.log('ERRORED in checkVoted', err)
+  }
+}
 
+const checkAllocations = async (
+  items: DropdownItem[],
+  address: Address,
+): Promise<DropdownItem | undefined> => {
+  try {
     // returned array from NewAllocations
     // address for testing: '0xEC068F31FA194d9036Ed3C61c3546111Ac3C8902'
     const allocationsArray = await parseNewAllocationEvent(address)()
 
     if (allocationsArray && allocationsArray.length >= 1) {
-      const searchIndex = notCompleted.items.findIndex(item => item.id === ALLOCATIONS)
-      completedObject.items.push(notCompleted.items.splice(searchIndex, 1)[0])
+      return items.filter(item => item.id === ALLOCATIONS)[0]
+    }
+  } catch (err) {
+    console.log('ERROR in checkAllocations', err)
+  }
+}
+
+const checkEvents = async (
+  items: DropdownItem[],
+  address: Address,
+  balances: TokenBalanceRecord,
+): Promise<DropdownTopic[]> => {
+  try {
+    const copiedItems = [...items]
+    const checkedVotedItem = await checkVoted(copiedItems, address)
+    const checkedAllocationsItem = await checkAllocations(copiedItems, address)
+    const completedObject: DropdownTopic = { topic: COMPLETED, items: [] }
+
+    if (checkedVotedItem) {
+      completedObject.items.push(...copiedItems.splice(0, 3))
+      completedObject.items.push(checkedVotedItem)
+    } else {
+      completedObject.items.push(...checkBalancesSteps(copiedItems, balances))
     }
 
-    return [notCompleted, completedObject]
+    if (checkedAllocationsItem) {
+      completedObject.items.push(checkedAllocationsItem)
+    }
+
+    return [{ items: copiedItems }, completedObject]
   } catch (err) {
     console.log('CHECK OF EVENTS FAILED', err)
-    return steps
+    return [{ items }]
   }
 }
 
@@ -175,4 +185,4 @@ export const getGetStartedData = (
   router: AppRouterInstance,
   balances: TokenBalanceRecord,
   address: Address,
-) => checkSteps(getStartedData(router), balances, address)
+) => checkEvents(getStartedData(router), address, balances)
