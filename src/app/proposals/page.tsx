@@ -77,7 +77,14 @@ const VotingPowerPopover = () => (
   <Popover content={<PopoverContent />}>
     <button className="flex flex-row">
       <Paragraph className="text[16px] font-[700]">My Voting Power</Paragraph>
-      <Image src="/images/question.svg" className="ml-1" width={20} height={20} alt="QuestionIcon" />
+      <Image
+        src="/images/question.svg"
+        className="ml-1"
+        width={20}
+        height={20}
+        alt="QuestionIcon"
+        data-testid="QuestionIcon"
+      />
     </button>
   </Popover>
 )

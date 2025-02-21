@@ -107,6 +107,13 @@ const DelegatePopover = () => (
       </>
     }
   >
-    <Image src="/images/question.svg" className="ml-1" width={20} height={20} alt="QuestionIcon" />
+    <Image
+      src="/images/question.svg"
+      className="ml-1"
+      width={20}
+      height={20}
+      alt="QuestionIcon"
+      data-testid="QuestionIcon"
+    />
   </Popover>
 )

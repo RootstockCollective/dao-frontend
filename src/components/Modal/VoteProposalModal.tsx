@@ -114,8 +114,9 @@ export const VoteProposalModal: FC<Props> = ({
                 src="/images/question.svg"
                 width={20}
                 height={20}
-                alt="QuestionIcon"
                 className="hover:cursor-help"
+                alt="QuestionIcon"
+                data-testid="QuestionIcon"
               />
             </Popover>
           </div>
