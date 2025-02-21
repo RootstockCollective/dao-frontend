@@ -30,7 +30,7 @@ export const infoPanelData: Record<ProposalType, MustHave> = {
           </span>
         ),
         LinkText: props => (
-          <span {...props}>
+          <span {...props} data-testid="EcosystemGoalsLink">
             Learn about the ecosystem goals <strong>for Grants</strong>
           </span>
         ),
@@ -45,7 +45,11 @@ export const infoPanelData: Record<ProposalType, MustHave> = {
             yet, don’t worry its pretty easy and you can browse other posts and ask the community for tips 😉
           </span>
         ),
-        LinkText: props => <span {...props}>Go to Governance Forum on Discourse</span>,
+        LinkText: props => (
+          <span {...props} data-testid="DiscourseLink">
+            Go to Governance Forum on Discourse
+          </span>
+        ),
         linkUrl: 'https://gov.rootstockcollective.xyz/c/grants/5',
         Icon: ChatIcon,
       },
@@ -58,7 +62,11 @@ export const infoPanelData: Record<ProposalType, MustHave> = {
             delays 😀
           </span>
         ),
-        LinkText: props => <span {...props}>Get started on KYC here</span>,
+        LinkText: props => (
+          <span {...props} data-testid="KycLink">
+            Get started on KYC here
+          </span>
+        ),
         linkUrl:
           'https://docs.google.com/forms/d/e/1FAIpQLSd4HklyTFPFAo2I0l_N5fy_di01WZ27e4uFDG1KVy8ZIOSiow/viewform',
         Icon: KycIcon,
@@ -77,7 +85,7 @@ export const infoPanelData: Record<ProposalType, MustHave> = {
           </span>
         ),
         LinkText: props => (
-          <span {...props}>
+          <span {...props} data-testid="EcosystemGoalsLink">
             Learn about the ecosystem goals for <strong>Builder Activations</strong>
           </span>
         ),
@@ -93,7 +101,11 @@ export const infoPanelData: Record<ProposalType, MustHave> = {
             community for tips 😉
           </span>
         ),
-        LinkText: props => <span {...props}>Go to Governance Forum on Discourse</span>,
+        LinkText: props => (
+          <span {...props} data-testid="DiscourseLink">
+            Go to Governance Forum on Discourse
+          </span>
+        ),
         linkUrl: 'https://gov.rootstockcollective.xyz/c/collective-rewards/7',
         Icon: ChatIcon,
       },
@@ -106,7 +118,11 @@ export const infoPanelData: Record<ProposalType, MustHave> = {
             delays 😀
           </span>
         ),
-        LinkText: props => <span {...props}>Get started on KYC here</span>,
+        LinkText: props => (
+          <span {...props} data-testid="KycLink">
+            Get started on KYC here
+          </span>
+        ),
         linkUrl:
           'https://docs.google.com/forms/d/e/1FAIpQLSd4HklyTFPFAo2I0l_N5fy_di01WZ27e4uFDG1KVy8ZIOSiow/viewform',
         Icon: KycIcon,
