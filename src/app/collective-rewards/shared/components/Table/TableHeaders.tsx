@@ -45,7 +45,14 @@ export const TableHeaderCell: FC<TableHeader> = ({
             trigger="hover"
             {...tooltip.popoverProps}
           >
-            <Image src="/images/question.svg" className="mr-1" width={20} height={20} alt="QuestionIcon" />
+            <Image
+              src="/images/question.svg"
+              className="mr-1"
+              width={20}
+              height={20}
+              alt="QuestionIcon"
+              data-testid="QuestionIcon"
+            />
           </Popover>
         )}
         <span>{label}</span>
