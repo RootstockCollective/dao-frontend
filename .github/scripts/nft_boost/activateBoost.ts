@@ -110,8 +110,8 @@ async function getActions() {
         })
       ).map(data => data.result)
       return {
-        RBTC: BigInt(gaugeEstimatedRewards[0].toString()),
-        RIF: BigInt(gaugeEstimatedRewards[1].toString()),
+        RBTC: gaugeEstimatedRewards[0],
+        RIF: gaugeEstimatedRewards[1],
       }
     } catch (error) {
       console.error(`Error fetching rewards for ${backer}:`, error)
@@ -181,7 +181,7 @@ async function main() {
 
   for (let i = 0; i < nftTransferEvents.length; i++) {
     const event = nftTransferEvents[i]
-    const holderAddress = `0x${event.topics[2].slice(-40)}` as Address
+    const holderAddress = getAddress(`0x${event.topics[2].slice(-40)}`)
     console.info(`Processing ${i + 1} of ${nftTransferEvents.length} events. Nft holder: ${holderAddress}`)
     const tokenId = BigInt(event.topics[3]).toString()
     for (const gauge of gauges) {
