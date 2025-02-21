@@ -48,7 +48,7 @@ async function getActions() {
       return response.data
     } catch (error) {
       console.error('Error fetching NFT holders:', error)
-      return []
+      throw error
     }
   }
 
@@ -114,7 +114,7 @@ async function getActions() {
       }
     } catch (error) {
       console.error(`Error fetching rewards for ${backer}:`, error)
-      return { RBTC: BigInt(0), RIF: BigInt(0) }
+      throw error
     }
   }
 
@@ -216,4 +216,4 @@ async function main() {
   console.log(`Active nft boost file saved: ${nftActiveBoostPath}`)
 }
 
-main().catch(console.error)
+main()
