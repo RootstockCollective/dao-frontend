@@ -4,7 +4,7 @@ permissions:
   contents: write
 
 env:
-  BOOST_DATA_BRANCH: "boost-data${{ github.event.inputs.env == 'mainnet' && '' || '-dev' }}"
+  BOOST_DATA_BRANCH: "boost_data/${{ github.event.inputs.env}}"
 on:
   workflow_dispatch:
     inputs:
