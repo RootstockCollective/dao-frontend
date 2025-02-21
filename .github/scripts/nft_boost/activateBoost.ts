@@ -5,7 +5,6 @@ import { config as envConfig } from 'dotenv'
 import axios from 'axios'
 import { BackersManagerAbi, BuilderRegistryAbi, GaugeAbi } from '../../../src/lib/abis/v2'
 import { boostDataFolder, nftActiveBoostPath, rewardCoinbaseAddress } from './consts'
-import { RIF_WALLET_SERVICES_URL } from '../../../src/lib/constants'
 
 const [, , ...args] = process.argv
 
@@ -31,8 +30,10 @@ interface NFTEvent {
 
 async function getActions() {
   const { publicClient } = await import(`../../../src/lib/viemPublicClient`)
-  const { CHAIN_ID } = await import('../../../src/lib/constants')
-  const { BuilderRegistryAddress, BackersManagerAddress } = await import('../../../src/lib/contracts')
+  const builderRegistryAddress = process.env.NEXT_PUBLIC_BUILDER_REGISTRY_ADDRESS
+  const backersManagerAddress = process.env.NEXT_PUBLIC_BACKERS_MANAGER_ADDRESS
+  const chainId = process.env.NEXT_PUBLIC_CHAIN_ID
+  const rifWalletServicesUrl = process.env.NEXT_PUBLIC_RIF_WALLET_SERVICES
 
   const getLatestBlockNumber = async (): Promise<bigint> => {
     return await publicClient.getBlockNumber()
@@ -42,7 +43,7 @@ async function getActions() {
     console.info('NFT contract address: ', nftContract)
     const transferTopic = '0xddf252ad1be2c89b69c2b068fc378daa952ba7f163c4a11628f55a4df523b3ef'
     const fromBlock = 5000000 // all the NFT addresses in mainnet and testnet were deployed after block 5000000
-    const url = `${RIF_WALLET_SERVICES_URL}/address/${nftContract}/eventsByTopic0?topic0=${transferTopic}&chainId=${CHAIN_ID}&fromBlock=${fromBlock}`
+    const url = `${rifWalletServicesUrl}/address/${nftContract}/eventsByTopic0?topic0=${transferTopic}&chainId=${chainId}&fromBlock=${fromBlock}`
     try {
       const response = await axios.get(url)
       return response.data
@@ -55,7 +56,7 @@ async function getActions() {
   const getAllGauges = async (): Promise<Address[]> => {
     const gaugesLength = Number(
       await publicClient.readContract({
-        address: BuilderRegistryAddress,
+        address: builderRegistryAddress,
         abi: BuilderRegistryAbi,
         functionName: 'getGaugesLength',
         args: [],
@@ -65,7 +66,7 @@ async function getActions() {
 
     const gaugesIndexes = Array.from({ length: gaugesLength }, (_, i) => i)
     const getGaugesCalls = gaugesIndexes.map(i => ({
-      address: BuilderRegistryAddress,
+      address: builderRegistryAddress,
       abi: BuilderRegistryAbi,
       functionName: 'getGaugeAt',
       args: [BigInt(i)],
@@ -81,7 +82,7 @@ async function getActions() {
       return rewardTokenAddress
     }
     rewardTokenAddress = await publicClient.readContract({
-      address: BackersManagerAddress,
+      address: backersManagerAddress,
       abi: BackersManagerAbi,
       functionName: 'rewardToken',
       args: [],
