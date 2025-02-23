@@ -1,17 +1,20 @@
 import { Address, getAddress } from 'viem'
-
 import * as fs from 'fs'
 import { config as envConfig } from 'dotenv'
 import axios from 'axios'
 import { BackersManagerAbi, BuilderRegistryAbi, GaugeAbi } from '../../../src/lib/abis/v2'
-import { boostDataFolder, nftActiveBoostPath, rewardCoinbaseAddress } from './consts'
+
+// constant address. Calculation based on sc: address public constant COINBASE_ADDRESS = address(uint160(uint256(keccak256("COINBASE_ADDRESS"))));
+const rewardCoinbaseAddress = getAddress('0xf7aB6CfaebbADfe8B5494022c4C6dB776Bd63b6b')
+
+const boostDataFolder = `nft_boost_data`
+const nftActiveBoostPath = `${boostDataFolder}/latest`
 
 const [, , ...args] = process.argv
 
 type Args = {
   nftContractAddress: Address
   boostPercentage: number
-  campaignId: string
   env: string
 }
 
@@ -87,7 +90,7 @@ async function getActions() {
       functionName: 'rewardToken',
       args: [],
     })
-    return rewardTokenAddress
+    return getAddress(rewardTokenAddress)
   }
 
   // Queries Gauges contracts for backer rewards
@@ -99,19 +102,18 @@ async function getActions() {
     const rewardTokenAddress = await getRewardTokenAddress()
     const rewardTokens: Address[] = [rewardCoinbaseAddress, rewardTokenAddress]
     try {
-      const gaugeEstimatedRewards = (
-        await publicClient.multicall({
-          contracts: rewardTokens.map(rewardToken => ({
-            address: gauge,
-            abi: GaugeAbi,
-            functionName: 'estimatedBackerRewards',
-            args: [rewardToken, backer],
-          })),
-        })
-      ).map(data => data.result)
+      let gaugeEstimatedRewards = await publicClient.multicall({
+        contracts: rewardTokens.map(token => ({
+          address: gauge,
+          abi: GaugeAbi,
+          functionName: 'estimatedBackerRewards',
+          args: [token, backer],
+        })),
+      })
+      gaugeEstimatedRewards = gaugeEstimatedRewards.map(data => data.result)
       return {
-        RBTC: gaugeEstimatedRewards[0],
-        RIF: gaugeEstimatedRewards[1],
+        RBTC: BigInt(gaugeEstimatedRewards[0]),
+        RIF: BigInt(gaugeEstimatedRewards[1]),
       }
     } catch (error) {
       console.error(`Error fetching rewards for ${backer}:`, error)
@@ -128,15 +130,12 @@ async function getActions() {
 }
 
 async function main() {
-  const { nftContractAddress, boostPercentage, campaignId, env } = args.reduce<Args>((acc, val) => {
+  const { nftContractAddress, boostPercentage, env } = args.reduce<Args>((acc, val) => {
     if (val.startsWith('--nft')) {
       acc.nftContractAddress = getAddress(val.split('=')[1])
     }
     if (val.startsWith('--boost')) {
       acc.boostPercentage = parseFloat(val.split('=')[1])
-    }
-    if (val.startsWith('--campaignId')) {
-      acc.campaignId = val.split('=')[1]
     }
     if (val.startsWith('--env')) {
       acc.env = val.split('=')[1]
@@ -144,16 +143,14 @@ async function main() {
     return acc
   }, {} as Args)
 
-  if (!env || !nftContractAddress || isNaN(boostPercentage) || !campaignId) {
+  if (!env || !nftContractAddress || isNaN(boostPercentage)) {
     throw new Error(
       'Usage: npx tsx .github/scripts/nft_boost/activateBoost.ts \\\
-      --campaignId=<campaignId> \\\
       --nft=<nftContractAddress> \\\
       --boost=<boostPercentage> \\\
       --env=<env>',
     )
   }
-  console.info('campaignId: ', campaignId)
   console.info('nft: ', nftContractAddress)
   console.info('Boost percentage: ', boostPercentage)
   console.info('env: ', env)
@@ -184,19 +181,28 @@ async function main() {
     const holderAddress = getAddress(`0x${event.topics[2].slice(-40)}`)
     console.info(`Processing ${i + 1} of ${nftTransferEvents.length} events. Nft holder: ${holderAddress}`)
     const tokenId = BigInt(event.topics[3]).toString()
+
+    let backerEstimatedRBTCRewards = 0n
+    let backerEstimatedRIFRewards = 0n
+    let backerBoostedRBTCRewards = 0n
+    let backerBoostedRIFRewards = 0n
     for (const gauge of gauges) {
       const estimatedRewards = await estimatedGaugeRewards(holderAddress, gauge)
 
       const boostedRBTCRewards = (estimatedRewards.RBTC * boost) / BigInt(normalisationFactor)
       const boostedRIFRewards = (estimatedRewards.RIF * boost) / BigInt(normalisationFactor)
 
-      holdersData[holderAddress] = {
-        estimatedRBTCRewards: estimatedRewards.RBTC.toString(),
-        estimatedRIFRewards: estimatedRewards.RIF.toString(),
-        boostedRBTCRewards: boostedRBTCRewards.toString(),
-        boostedRIFRewards: boostedRIFRewards.toString(),
-        tokenId,
-      }
+      backerEstimatedRBTCRewards += estimatedRewards.RBTC
+      backerEstimatedRIFRewards += estimatedRewards.RIF
+      backerBoostedRBTCRewards += boostedRBTCRewards
+      backerBoostedRIFRewards += boostedRIFRewards
+    }
+    holdersData[holderAddress] = {
+      estimatedRBTCRewards: backerEstimatedRBTCRewards.toString(),
+      estimatedRIFRewards: backerEstimatedRIFRewards.toString(),
+      boostedRBTCRewards: backerBoostedRBTCRewards.toString(),
+      boostedRIFRewards: backerBoostedRIFRewards.toString(),
+      tokenId,
     }
   }
 
@@ -208,7 +214,7 @@ async function main() {
   }
 
   const nftBoostFilename = `${nftContractAddress}-${blockNumber}.json`
-  const nftBoostPath = `${boostDataFolder}/${nftBoostFilename}`
+  const nftBoostPath = `${boostDataFolder}/${nftBoostFilename}.txt`
   fs.mkdirSync(boostDataFolder, { recursive: true })
   fs.writeFileSync(nftBoostPath, JSON.stringify(result, null, 2))
   console.log(`Nft boost file saved: ${nftBoostPath}`)

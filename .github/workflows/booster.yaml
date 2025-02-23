@@ -8,9 +8,6 @@ env:
 on:
   workflow_dispatch:
     inputs:
-      campaignId:
-        description: 'The ID of the active NFT campaign'
-        required: true
       boost:
         description: 'The amount of backers to boost'
         required: true
@@ -37,25 +34,32 @@ jobs:
       - name: Install dependencies
         run: npm install
 
-      - name: Switch to target branch for data
-        run: |
-          git fetch origin
-          git checkout -B $BOOST_DATA_BRANCH
-
-      - name: Boost backers' rewards
-        run: |
-          npx tsx .github/scripts/nft_boost/activateBoost.ts \
-              --campaignId=${{ github.event.inputs.campaignId }} \
-              --boost=${{ github.event.inputs.boost }} \
-              --nft=${{ github.event.inputs.nft }} \
-              --env=${{ github.event.inputs.env }}
-
-      - name: Commit and push changes
+      - name: Git config
         run: |
           git config --global user.name "github-actions[bot]"
           git config --global user.email "github-actions[bot]@users.noreply.github.com"
           git config --global push.autoSetupRemote true
 
+      - name: Boost backers' rewards
+        run: |
+          npx tsx .github/scripts/nft_boost/activateBoost.ts \
+              --boost=${{ github.event.inputs.boost }} \
+              --nft=${{ github.event.inputs.nft }} \
+              --env=${{ github.event.inputs.env }}
+          
+          git add .
+          git stash push
+
+      - name: Switch to target branch for data
+        run: |
+          git fetch origin
+          git checkout $BOOST_DATA_BRANCH || git checkout -b $BOOST_DATA_BRANCH
+
+          git stash apply || echo "No stash to apply"
+          git checkout --theirs .
+
+      - name: Commit and push changes
+        run: |
           # Stage all changes
           git add .
 
