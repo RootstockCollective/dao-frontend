@@ -55,7 +55,7 @@ const getStartedCheckRunner = (fn: () => Promise<void>) => {
 
   interval = setInterval(() => {
     fn()
-  }, 3000)
+  }, 60000)
 }
 
 type UserHeaderProps = {
