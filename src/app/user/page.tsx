@@ -45,17 +45,17 @@ const tabs: Tabs = {
   },
 }
 
-const getStartedCheckRunner = (fn: () => Promise<void>) => {
-  let interval: Timeout | undefined = undefined
+let interval: Timeout | undefined = undefined
 
-  if (interval) {
+const getStartedCheckRunner = (fn: () => Promise<void>) => {
+  if (!interval) fn()
+  else {
     clearInterval(interval)
   }
 
-  fn()
   interval = setInterval(() => {
     fn()
-  }, 60000)
+  }, 3000)
 }
 
 type UserHeaderProps = {
