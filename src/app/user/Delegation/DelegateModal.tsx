@@ -217,7 +217,15 @@ export const DelegateModal = ({ onClose, onDelegateTxStarted }: DelegateModalPro
               <Image src={questionImg} alt="Tooltip" className="w-[14px] opacity-40 cursor-pointer" />
             </Popover>
           </div>
-          <StatefulTable table={table} equalColumns data-testid="TableShepherds" />
+          <div
+            className="max-h-[350px] overflow-y-auto 
+            [&::-webkit-scrollbar]:w-3
+            [&::-webkit-scrollbar-thumb]:rounded-full
+            [&::-webkit-scrollbar-track]:bg-foreground
+            [&::-webkit-scrollbar-thumb]:bg-primary"
+          >
+            <StatefulTable table={table} equalColumns data-testid="TableShepherds" />
+          </div>
           {error && (
             <p className="text-st-error">
               {error}
