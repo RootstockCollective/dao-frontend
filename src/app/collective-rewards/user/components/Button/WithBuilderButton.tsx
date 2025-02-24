@@ -3,15 +3,21 @@ import { ComponentType, FC } from 'react'
 import { useAccount } from 'wagmi'
 import { BecomeABuilderButton } from './BecomeABuilderButton'
 
-export const withBuilderButton = <P extends {}>(Component: ComponentType<P>): FC<P> => {
-  const WrappedComponent = ({ ...props }: P) => {
+type WithBuilderButtonProps = {
+  hideNFTBooster?: boolean
+}
+
+export const withBuilderButton = <P extends {}>(
+  Component: ComponentType<P>,
+): FC<P & WithBuilderButtonProps> => {
+  const WrappedComponent = ({ hideNFTBooster, ...props }: WithBuilderButtonProps) => {
     const { address } = useAccount()
 
     return (
       <div className="flex justify-between items-center self-stretch mb-6">
         <Component {...(props as P)} />
         <div className="flex gap-3 justify-end">
-          <SelfContainedNFTBoosterCard />
+          <SelfContainedNFTBoosterCard hideNotBoosted={hideNFTBooster} />
           <BecomeABuilderButton address={address!} />
         </div>
       </div>
