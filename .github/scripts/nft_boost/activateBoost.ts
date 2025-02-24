@@ -1,4 +1,4 @@
-import { Address, getAddress } from 'viem'
+import { Address, getAddress, zeroAddress } from 'viem'
 import * as fs from 'fs'
 import { config as envConfig } from 'dotenv'
 import axios from 'axios'
@@ -38,8 +38,8 @@ async function getActions() {
   const chainId = process.env.NEXT_PUBLIC_CHAIN_ID
   const rifWalletServicesUrl = process.env.NEXT_PUBLIC_RIF_WALLET_SERVICES
 
-  const getLatestBlockNumber = async (): Promise<bigint> => {
-    return await publicClient.getBlockNumber()
+  const getLatestBlockNumber = (): Promise<bigint> => {
+    return publicClient.getBlockNumber()
   }
 
   const getNftTransferEvents = async (nftContract: string): Promise<NFTEvent[]> => {
@@ -68,6 +68,7 @@ async function getActions() {
     console.info('Gauges length: ', gaugesLength)
 
     const gaugesIndexes = Array.from({ length: gaugesLength }, (_, i) => i)
+    console.log('builderRegistryAddress: ', builderRegistryAddress)
     const getGaugesCalls = gaugesIndexes.map(i => ({
       address: builderRegistryAddress,
       abi: BuilderRegistryAbi,
@@ -75,8 +76,7 @@ async function getActions() {
       args: [BigInt(i)],
     }))
 
-    const response = await publicClient.multicall({ contracts: getGaugesCalls })
-    return response.map(data => data.result)
+    return publicClient.multicall({ contracts: getGaugesCalls, allowFailure: false })
   }
 
   let rewardTokenAddress: Address
@@ -102,15 +102,15 @@ async function getActions() {
     const rewardTokenAddress = await getRewardTokenAddress()
     const rewardTokens: Address[] = [rewardCoinbaseAddress, rewardTokenAddress]
     try {
-      let gaugeEstimatedRewards = await publicClient.multicall({
+      const gaugeEstimatedRewards = await publicClient.multicall({
         contracts: rewardTokens.map(token => ({
           address: gauge,
           abi: GaugeAbi,
           functionName: 'estimatedBackerRewards',
           args: [token, backer],
         })),
+        allowFailure: false,
       })
-      gaugeEstimatedRewards = gaugeEstimatedRewards.map(data => data.result)
       return {
         RBTC: BigInt(gaugeEstimatedRewards[0]),
         RIF: BigInt(gaugeEstimatedRewards[1]),
@@ -179,6 +179,8 @@ async function main() {
   for (let i = 0; i < nftTransferEvents.length; i++) {
     const event = nftTransferEvents[i]
     const holderAddress = getAddress(`0x${event.topics[2].slice(-40)}`)
+    if (holderAddress === zeroAddress) continue
+
     console.info(`Processing ${i + 1} of ${nftTransferEvents.length} events. Nft holder: ${holderAddress}`)
     const tokenId = BigInt(event.topics[3]).toString()
 
