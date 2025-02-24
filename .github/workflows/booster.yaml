@@ -4,7 +4,7 @@ permissions:
   contents: write
 
 env:
-  BOOST_DATA_BRANCH: "boost_data/${{ github.event.inputs.env}}"
+  BOOST_DATA_BRANCH: 'boost_data/${{ github.event.inputs.env}}'
 on:
   workflow_dispatch:
     inputs:
@@ -46,16 +46,16 @@ jobs:
               --boost=${{ github.event.inputs.boost }} \
               --nft=${{ github.event.inputs.nft }} \
               --env=${{ github.event.inputs.env }}
-          
+
           git add .
-          git stash push
+          git stash
 
       - name: Switch to target branch for data
         run: |
           git fetch origin
-          git checkout $BOOST_DATA_BRANCH || git checkout -b $BOOST_DATA_BRANCH
-
+          git checkout $BOOST_DATA_BRANCH --force || git checkout -b $BOOST_DATA_BRANCH
           git stash apply || echo "No stash to apply"
+          git add .
           git checkout --theirs .
 
       - name: Commit and push changes
