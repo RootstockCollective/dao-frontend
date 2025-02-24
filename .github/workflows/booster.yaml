@@ -55,7 +55,7 @@ jobs:
           git fetch origin
           git checkout $BOOST_DATA_BRANCH || git checkout -b $BOOST_DATA_BRANCH
 
-          git stash apply || echo "No stash to apply"
+          git stash apply || (echo "No stash to apply" && exit 1)
           git checkout --theirs .
 
       - name: Commit and push changes

@@ -1,4 +1,4 @@
-import { Address, getAddress } from 'viem'
+import { Address, getAddress, zeroAddress } from 'viem'
 import * as fs from 'fs'
 import { config as envConfig } from 'dotenv'
 import axios from 'axios'
@@ -38,8 +38,8 @@ async function getActions() {
   const chainId = process.env.NEXT_PUBLIC_CHAIN_ID
   const rifWalletServicesUrl = process.env.NEXT_PUBLIC_RIF_WALLET_SERVICES
 
-  const getLatestBlockNumber = async (): Promise<bigint> => {
-    return await publicClient.getBlockNumber()
+  const getLatestBlockNumber = (): Promise<bigint> => {
+    return publicClient.getBlockNumber()
   }
 
   const getNftTransferEvents = async (nftContract: string): Promise<NFTEvent[]> => {
@@ -75,7 +75,7 @@ async function getActions() {
       args: [BigInt(i)],
     }))
 
-    const response = await publicClient.multicall({ contracts: getGaugesCalls })
+    const response = await publicClient.multicall({ contracts: getGaugesCalls, allowFailure: false })
     return response.map(data => data.result)
   }
 
@@ -109,6 +109,7 @@ async function getActions() {
           functionName: 'estimatedBackerRewards',
           args: [token, backer],
         })),
+        allowFailure: false,
       })
       gaugeEstimatedRewards = gaugeEstimatedRewards.map(data => data.result)
       return {
@@ -179,6 +180,8 @@ async function main() {
   for (let i = 0; i < nftTransferEvents.length; i++) {
     const event = nftTransferEvents[i]
     const holderAddress = getAddress(`0x${event.topics[2].slice(-40)}`)
+    if (holderAddress === zeroAddress) continue
+
     console.info(`Processing ${i + 1} of ${nftTransferEvents.length} events. Nft holder: ${holderAddress}`)
     const tokenId = BigInt(event.topics[3]).toString()
 
