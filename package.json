@@ -57,7 +57,7 @@
     "tailwindcss-animate": "^1.0.7",
     "use-debounce": "^10.0.4",
     "viem": "^2.22.12",
-    "wagmi": "^2.14.7",
+    "wagmi": "^2.14.12",
     "zod": "^3.23.8"
   },
   "devDependencies": {
