@@ -5,15 +5,18 @@ import {
   TotalActiveBuildersMetrics,
   TotalAllocationsMetrics,
 } from '@/app/collective-rewards/metrics'
-import { useGetGaugesArray } from '@/app/collective-rewards/user'
+import { BecomeABuilderButton, useGetGaugesArray } from '@/app/collective-rewards/user'
 import { getCoinbaseAddress } from '@/app/collective-rewards/utils'
 import { HeaderTitle } from '@/components/Typography'
 import { tokenContracts } from '@/lib/contracts'
 import { getAddress } from 'viem'
-import { withBuilderButton } from '../user/components/Button/WithBuilderButton'
 import { ABIMetrics } from './components/ABIMetrics'
+import { SelfContainedNFTBoosterCard } from '@/app/shared/components/NFTBoosterCard/SelfContainedNFTBoosterCard'
+import { JustifyBetweenLayout } from '@/app/collective-rewards/shared'
+import { useAccount } from 'wagmi'
 
 export const Metrics = () => {
+  const { address } = useAccount()
   const { data: allGauges } = useGetGaugesArray()
   const gauges = allGauges ?? []
 
@@ -30,9 +33,15 @@ export const Metrics = () => {
 
   return (
     <div>
-      {withBuilderButton(HeaderTitle)({
-        children: 'Metrics',
-      })}
+      <JustifyBetweenLayout
+        leftComponent={<HeaderTitle>Metrics</HeaderTitle>}
+        rightComponent={
+          <>
+            <SelfContainedNFTBoosterCard forceRender={true} />
+            <BecomeABuilderButton address={address!} />
+          </>
+        }
+      />
       <CycleContextProvider>
         <div className="flex gap-4 w-full">
           <div className="flex gap-4 h-min w-3/5">

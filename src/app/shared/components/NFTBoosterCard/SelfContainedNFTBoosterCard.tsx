@@ -3,14 +3,14 @@ import { NFTBoosterCard } from '@/app/shared/components'
 import { FC } from 'react'
 import { communitiesMapByContract } from '@/app/communities/communityUtils'
 
-type SelfContainedNFTBoosterCardProps = {
-  hideNotBoosted?: boolean
+type SelfContainedNFTBoosterCardPros = {
+  forceRender?: boolean
 }
-export const SelfContainedNFTBoosterCard: FC<SelfContainedNFTBoosterCardProps> = ({ hideNotBoosted }) => {
+export const SelfContainedNFTBoosterCard: FC<SelfContainedNFTBoosterCardPros> = ({ forceRender = false }) => {
   const { hasActiveCampaign, isBoosted, boostData } = useNFTBoosterContext()
   const { title } = communitiesMapByContract[boostData?.nftContractAddress ?? ''] ?? {}
 
-  if (!title || !hasActiveCampaign || (!isBoosted && hideNotBoosted)) {
+  if (!title || !hasActiveCampaign || (!isBoosted && !forceRender)) {
     return null
   }
 

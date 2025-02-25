@@ -28,7 +28,7 @@ describe('SelfContainedNFTBoosterCard', () => {
     cleanup()
   })
 
-  test('should render not boosted message if there is an active campaign and account is not boosted', async () => {
+  test('should not render if there is an active campaign and account is not boosted', async () => {
     vi.mocked(useNFTBoosterContext).mockReturnValue({
       boostData,
       hasActiveCampaign: true,
@@ -36,19 +36,19 @@ describe('SelfContainedNFTBoosterCard', () => {
     })
     const { findByText } = render(<SelfContainedNFTBoosterCard />)
 
-    expect(await findByText(notBoostedMessage)).toBeVisible()
+    await expect(() => findByText(notBoostedMessage)).rejects.toThrow()
     await expect(() => findByText(boostedMessage)).rejects.toThrow()
   })
 
-  test('should not render if there is active campaign, account is not boosted and hideNotBoosted is true', async () => {
+  test('should render not boosted message if there is an active campaign, account is not boosted and forceRender is true', async () => {
     vi.mocked(useNFTBoosterContext).mockReturnValue({
       boostData,
       hasActiveCampaign: true,
       isBoosted: false,
     })
-    const { findByText } = render(<SelfContainedNFTBoosterCard hideNotBoosted={true} />)
+    const { findByText } = render(<SelfContainedNFTBoosterCard forceRender={true} />)
 
-    await expect(() => findByText(notBoostedMessage)).rejects.toThrow()
+    expect(await findByText(notBoostedMessage)).toBeVisible()
     await expect(() => findByText(boostedMessage)).rejects.toThrow()
   })
 

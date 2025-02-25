@@ -7,7 +7,7 @@ import { MainContainer } from '@/components/MainContainer/MainContainer'
 import { Tabs, TabsContent, TabsList, TabsTrigger, TabTitle } from '@/components/Tabs'
 import { TxStatusMessage } from '@/components/TxStatusMessage'
 import { useRouter, useSearchParams } from 'next/navigation'
-import { FC, Suspense, useCallback, useEffect, useMemo, useState } from 'react'
+import { FC, Suspense, useCallback, useEffect, useState } from 'react'
 import { useCookiesNext } from 'cookies-next'
 import { Address, zeroAddress } from 'viem'
 import { useAccount } from 'wagmi'
@@ -20,7 +20,9 @@ import { BalancesProvider, useBalancesContext } from './Balances/context/Balance
 import { AppRouterInstance } from 'next/dist/shared/lib/app-router-context.shared-runtime'
 import { TokenBalanceRecord } from './types'
 import { Timeout } from 'react-number-format/types/types'
-import { withBuilderButton } from '../collective-rewards/user/components/Button/WithBuilderButton'
+import { SelfContainedNFTBoosterCard } from '@/app/shared/components/NFTBoosterCard/SelfContainedNFTBoosterCard'
+import { BecomeABuilderButton } from '@/app/collective-rewards/user'
+import { JustifyBetweenLayout } from '@/app/collective-rewards/shared'
 
 const getStartedSkipped = 'getStartedSkipped'
 const values = ['holdings', 'rewards'] as const
@@ -151,7 +153,15 @@ function User() {
     <MainContainer>
       {/* We don't show the tab if it's loading */}
       <Tabs defaultValue={defaultTabValue}>
-        {withBuilderButton(UserHeader)({ showAdditionalContent, hideNFTBooster: true })}
+        <JustifyBetweenLayout
+          leftComponent={<UserHeader showAdditionalContent={showAdditionalContent} />}
+          rightComponent={
+            <>
+              <SelfContainedNFTBoosterCard />
+              <BecomeABuilderButton address={address!} />
+            </>
+          }
+        />
         <TabsContent value={tabs.holdings.value}>
           <TxStatusMessage messageType="staking" />
           <BalancesSection showTitle={showAdditionalContent} />
