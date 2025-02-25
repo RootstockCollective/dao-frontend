@@ -66,7 +66,7 @@ export const prepareProposalsData: DropdownTopic[] = [
  * and because it is highly unlikely to be used anywhere apart from this case
  * @description check balances being > 0
  * Modifies the items array
- * @param items - items to check 
+ * @param items - items to check
  * @param balances - user balances from BalancesContext
  * @returns if stRIF > 0 - all balances items returned
  * if RIF  > 0 - RBTC and RIF is returned
