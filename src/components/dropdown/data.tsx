@@ -61,6 +61,18 @@ export const prepareProposalsData: DropdownTopic[] = [
   },
 ]
 
+/**
+ * @note possibly move to immutable return, now it is done this way out of convinience
+ * and because it is highly unlikely to be used anywhere apart from this case
+ * @description check balances being > 0
+ * Modifies the items array
+ * @param items - items to check 
+ * @param balances - user balances from BalancesContext
+ * @returns if stRIF > 0 - all balances items returned
+ * if RIF  > 0 - RBTC and RIF is returned
+ * if RBTC > 0 - only it is returned
+ */
+
 const checkBalancesSteps = (items: DropdownItem[], balances: TokenBalanceRecord) => {
   if (Big(balances[stRIF].balance).gt(0)) {
     return items.splice(0, 3)
@@ -77,6 +89,13 @@ const checkBalancesSteps = (items: DropdownItem[], balances: TokenBalanceRecord)
   return []
 }
 
+/**
+ * @description calls parseVoteCastEvents to check address for VoteCast events
+ * @param items - items to filter based on the votingEvents.length
+ * @param address - address to check for VoteCast events(parseVoteCastEvents)
+ * @returns [DropdownItem.id === VOTE] | undefined
+ */
+
 const checkVoted = async (items: DropdownItem[], address: Address): Promise<DropdownItem | undefined> => {
   try {
     // returned previous votes from VoteCast
@@ -90,6 +109,13 @@ const checkVoted = async (items: DropdownItem[], address: Address): Promise<Drop
     console.log('ERRORED in checkVoted', err)
   }
 }
+
+/**
+ * @description calls parseNewAllocationEvent to check address for NewAllocation events
+ * @param items - items to filter based on the allocationsArray.length
+ * @param address - address to check for NewAllocation events(parseVoteCastEvents)
+ * @returns [DropdownItem.id === ALLOCATION] | undefined
+ */
 
 const checkAllocations = async (
   items: DropdownItem[],
@@ -108,6 +134,13 @@ const checkAllocations = async (
   }
 }
 
+/**
+ * @description based on address received checks for VoteCast(checkVoted) and NewAllocation(checkAllocations) events
+ * and based on that sets values under completedObject
+ * @param items - DropdownItems to check
+ * @param address - address of the user which will be used in events
+ * @param balances - current balances from BalancesContext
+ */
 const checkEvents = async (
   items: DropdownItem[],
   address: Address,
