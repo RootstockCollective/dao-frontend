@@ -1,0 +1,28 @@
+{
+  "nftContractAddress": "0x7E6d9969CAC008bAe5f7b144df3c955515404538",
+  "boostPercentage": 20,
+  "calculationBlock": "6109491",
+  "holders": {
+    "0x31C39682382924499E35f49ce19E05a4529BaCbB": {
+      "estimatedRBTCRewards": "0",
+      "estimatedRIFRewards": "0",
+      "boostedRBTCRewards": "0",
+      "boostedRIFRewards": "0",
+      "tokenId": "1"
+    },
+    "0x81DF35317dF983E419630908eF6Cb2Bb48CE21Ca": {
+      "estimatedRBTCRewards": "0",
+      "estimatedRIFRewards": "0",
+      "boostedRBTCRewards": "0",
+      "boostedRIFRewards": "0",
+      "tokenId": "2"
+    },
+    "0x7870A235a34129189799073fa2aB144C77a1cE2b": {
+      "estimatedRBTCRewards": "0",
+      "estimatedRIFRewards": "0",
+      "boostedRBTCRewards": "0",
+      "boostedRIFRewards": "0",
+      "tokenId": "3"
+    }
+  }
+}
