@@ -68,6 +68,7 @@ async function getActions() {
     console.info('Gauges length: ', gaugesLength)
 
     const gaugesIndexes = Array.from({ length: gaugesLength }, (_, i) => i)
+    console.log('builderRegistryAddress: ', builderRegistryAddress)
     const getGaugesCalls = gaugesIndexes.map(i => ({
       address: builderRegistryAddress,
       abi: BuilderRegistryAbi,
@@ -76,6 +77,8 @@ async function getActions() {
     }))
 
     const response = await publicClient.multicall({ contracts: getGaugesCalls, allowFailure: false })
+    console.log('response: ', response)
+    
     return response.map(data => data.result)
   }
 
