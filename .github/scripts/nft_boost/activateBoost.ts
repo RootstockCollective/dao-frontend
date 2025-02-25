@@ -76,10 +76,7 @@ async function getActions() {
       args: [BigInt(i)],
     }))
 
-    const response = await publicClient.multicall({ contracts: getGaugesCalls, allowFailure: false })
-    console.log('response: ', response)
-    
-    return response.map(data => data.result)
+    return publicClient.multicall({ contracts: getGaugesCalls, allowFailure: false })
   }
 
   let rewardTokenAddress: Address
@@ -103,13 +100,9 @@ async function getActions() {
   }
   const estimatedGaugeRewards = async (backer: Address, gauge: Address): Promise<EstimatedGaugeRewards> => {
     const rewardTokenAddress = await getRewardTokenAddress()
-    console.log('gauge: ', gauge)
-    console.log('backer: ', backer)
-    console.log('rewardTokenAddress: ', rewardTokenAddress)
-    console.log('rewardCoinbaseAddress: ', rewardCoinbaseAddress)
     const rewardTokens: Address[] = [rewardCoinbaseAddress, rewardTokenAddress]
     try {
-      let gaugeEstimatedRewards = await publicClient.multicall({
+      const gaugeEstimatedRewards = await publicClient.multicall({
         contracts: rewardTokens.map(token => ({
           address: gauge,
           abi: GaugeAbi,
@@ -118,8 +111,6 @@ async function getActions() {
         })),
         allowFailure: false,
       })
-      console.log('gaugeEstimatedRewards: ', gaugeEstimatedRewards)
-      gaugeEstimatedRewards = gaugeEstimatedRewards.map(data => data.result)
       return {
         RBTC: BigInt(gaugeEstimatedRewards[0]),
         RIF: BigInt(gaugeEstimatedRewards[1]),
