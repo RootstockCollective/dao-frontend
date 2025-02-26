@@ -146,6 +146,12 @@ export const fetchNftHoldersOfAddress = async (address: string, nextParams: Next
   return data
 }
 
+export const fetchAllNftHoldersOfAddressCached = async (address: string) =>
+  axiosInstance.get('/communities/nft/api', {
+    baseURL: '/',
+    params: { address },
+  })
+
 export const fetchTokenHoldersOfAddress = async (address: string, nextParams: NextPageParams | null) => {
   const { data } = await axiosInstance.get<ServerResponseV2<TokenHoldersResponse>>(
     getTokenHoldersOfAddress.replace('{{address}}', address),

@@ -1,5 +1,5 @@
 'use client'
-import { HolderColumn } from '@/app/communities/HolderColumn'
+import { HolderColumn } from '@/app/communities/nft/[address]/HolderColumn'
 import { Table } from '@/components/Table'
 import { Button } from '@/components/Button'
 import { DelegateModal } from '@/app/user/Delegation/DelegateModal'

@@ -123,15 +123,12 @@ export const NftHoldersSection = ({ address }: HoldersSectionProps) => {
         Holders
         <ViewIconHandler view={view} onChangeView={onChangeView} />
       </HeaderTitle>
-      {isError && (
+      {isError ? (
         <ErrorMessageAlert message="An error occurred loading NFT Holders. Please try again shortly." />
-      )}
-      {!isError && (
+      ) : (
         <>
-          {view === 'table' && holders && holders?.length > 0 && <Table data={holders} />}
-          {view === 'images' && currentResults && currentResults?.length > 0 && (
-            <CardView nfts={currentResults} />
-          )}
+          {view === 'table' && holders.length > 0 && <Table data={holders} />}
+          {view === 'images' && currentResults.length > 0 && <CardView nfts={currentResults} />}
           <div className="mt-6">{paginationElement}</div>
         </>
       )}
