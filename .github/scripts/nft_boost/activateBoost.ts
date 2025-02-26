@@ -44,24 +44,28 @@ const nftActiveBoostPath = `${boostDataFolder}/latest`
 
     console.info(`Processing ${i + 1} of ${nftTransferEvents.length} events. Nft holder: ${holderAddress}`)
 
-    holders[holderAddress] = await gauges.reduce<Promise<HolderData>>(
+    const { estimatedRBTCRewards, estimatedRIFRewards } = await gauges.reduce<
+      Promise<Pick<HolderData, 'estimatedRBTCRewards' | 'estimatedRIFRewards'>>
+    >(
       async (acc, gauge) => {
-        const { boostedRBTCRewards, boostedRIFRewards, estimatedRBTCRewards, estimatedRIFRewards } = await acc
+        const { estimatedRBTCRewards, estimatedRIFRewards } = await acc
         const { RBTC, RIF } = await estimatedGaugeRewards(holderAddress, gauge)
         return {
           estimatedRBTCRewards: estimatedRBTCRewards + RBTC,
           estimatedRIFRewards: estimatedRIFRewards + RIF,
-          boostedRBTCRewards: boostedRBTCRewards + (RBTC * boost) / BigInt(normalisationFactor),
-          boostedRIFRewards: boostedRIFRewards + (RIF * boost) / BigInt(normalisationFactor),
         }
       },
       Promise.resolve({
-        boostedRBTCRewards: 0n,
-        boostedRIFRewards: 0n,
         estimatedRBTCRewards: 0n,
         estimatedRIFRewards: 0n,
       }),
     )
+    holders[holderAddress] = {
+      estimatedRBTCRewards,
+      estimatedRIFRewards,
+      boostedRBTCRewards: (estimatedRBTCRewards * boost) / BigInt(normalisationFactor),
+      boostedRIFRewards: (estimatedRIFRewards * boost) / BigInt(normalisationFactor),
+    }
   }
 
   const nftBoostData: NftBoostData = {
