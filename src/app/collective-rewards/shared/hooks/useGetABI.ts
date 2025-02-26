@@ -1,17 +1,14 @@
+import { useBackerTotalAllocation } from '@/app/collective-rewards/allocations/hooks'
 import { useGetBackersRewardPercentage } from '@/app/collective-rewards/rewards'
-import { usePricesContext } from '@/shared/context/PricesContext'
-import { useGetBuildersByState } from '@/app/collective-rewards/user'
+import { useGetCyclePayout, useGetEstimatedBackersRewardsPct } from '@/app/collective-rewards/shared'
 import { RequiredBuilder } from '@/app/collective-rewards/types'
-import {
-  useGaugesGetFunction,
-  useGetCyclePayout,
-  useGetEstimatedBackersRewardsPct,
-} from '@/app/collective-rewards/shared'
-import { Address } from 'viem'
-import { useMemo } from 'react'
+import { useGetBuildersByState } from '@/app/collective-rewards/user'
 import Big from '@/lib/big'
 import { WeiPerEther } from '@/lib/constants'
-import { useBackerTotalAllocation } from '@/app/collective-rewards/allocations/hooks'
+import { usePricesContext } from '@/shared/context/PricesContext'
+import { useReadGauges } from '@/shared/hooks/contracts'
+import { useMemo } from 'react'
+import { Address } from 'viem'
 
 const useGetAbi = (rewardsPerStRif: bigint) => {
   const { prices } = usePricesContext()
@@ -39,12 +36,12 @@ export const useGetRewardsAbi = (backer: Address) => {
     data: allocationOf,
     isLoading: allocationOfLoading,
     error: allocationOfError,
-  } = useGaugesGetFunction(gauges, 'allocationOf', [backer])
+  } = useReadGauges({ addresses: gauges, functionName: 'allocationOf', args: [backer] })
   const {
     data: totalAllocation,
     isLoading: totalAllocationLoading,
     error: totalAllocationError,
-  } = useGaugesGetFunction(gauges, 'totalAllocation')
+  } = useReadGauges({ addresses: gauges, functionName: 'totalAllocation' })
   const {
     data: backerTotalAllocation,
     isLoading: backerTotalAllocationLoading,
@@ -53,9 +50,9 @@ export const useGetRewardsAbi = (backer: Address) => {
   const { cyclePayout, isLoading: cyclePayoutLoading, error: cyclePayoutError } = useGetCyclePayout()
 
   const rewardsPerStRif = useMemo(() => {
-    const backerRewards = builders.reduce((acc, { gauge, estimatedBackerRewardsPct }) => {
-      const builderTotalAllocation = totalAllocation[gauge] ?? 0n
-      const backerAllocationOf = allocationOf[gauge] ?? 0n
+    const backerRewards = builders.reduce((acc, { estimatedBackerRewardsPct }, i) => {
+      const builderTotalAllocation = totalAllocation[i] ?? 0n
+      const backerAllocationOf = allocationOf[i] ?? 0n
 
       const backersRewardsAmount = (estimatedBackerRewardsPct * cyclePayout) / WeiPerEther
       const backerReward = builderTotalAllocation
@@ -112,7 +109,7 @@ export const useGetMetricsAbi = () => {
     data: totalAllocation,
     isLoading: totalAllocationLoading,
     error: totalAllocationError,
-  } = useGaugesGetFunction(gauges, 'totalAllocation')
+  } = useReadGauges({ addresses: gauges, functionName: 'totalAllocation' })
 
   const buildersAddress = builders.map(({ address }) => address)
   const {
@@ -123,15 +120,18 @@ export const useGetMetricsAbi = () => {
   const { cyclePayout, isLoading: cyclePayoutLoading, error: cyclePayoutError } = useGetCyclePayout()
 
   const rewardsPerStRif = useMemo(() => {
-    const sumTotalAllocation = Object.values(totalAllocation).reduce((acc, value) => acc + (value ?? 0n), 0n)
+    const sumTotalAllocation = Object.values(totalAllocation).reduce<bigint>(
+      (acc, value) => acc + (value ?? 0n),
+      0n,
+    )
 
     if (!sumTotalAllocation) {
       return 0n
     }
 
     const topFiveBuilders = builders
-      .reduce<Array<{ allocation: bigint; current: bigint }>>((acc, builder) => {
-        const allocation = totalAllocation[builder.gauge]
+      .reduce<Array<{ allocation: bigint; current: bigint }>>((acc, builder, i) => {
+        const allocation = totalAllocation[i]
         const rewardPct = backersRewardsPct[builder.address]
         if (allocation && rewardPct) {
           acc.push({ allocation, current: rewardPct.current })

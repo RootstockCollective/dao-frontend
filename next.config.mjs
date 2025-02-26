@@ -1,5 +1,5 @@
-import { createProxyMiddleware } from 'http-proxy-middleware'
 import { config } from 'dotenv'
+import { createProxyMiddleware } from 'http-proxy-middleware'
 
 // Load the environment variables based on the profile
 config({
@@ -45,6 +45,14 @@ const nextConfig = {
     }
 
     return config
+  },
+  // TODO: temporary patch. investigate
+  images: {
+    remotePatterns: [
+      {
+        hostname: 'red-legislative-meadowlark-461.mypinata.cloud',
+      },
+    ],
   },
 }
 
