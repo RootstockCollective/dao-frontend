@@ -15,5 +15,6 @@ export const NFTBoosterCardDefault: Story = {
     boostValue: 20,
     nftThumbPath: 'images/nfts/vanguard-thumb.jpg',
     title: 'Vanguard',
+    content: 'Boost your NFTs with the Vanguard booster.',
   },
 }
