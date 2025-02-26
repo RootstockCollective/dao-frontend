@@ -153,6 +153,7 @@ export const DelegateModal = ({ onClose, onDelegateTxStarted }: DelegateModalPro
             onClick={() => onAddressChange(info.row.original.address)}
             variant="white"
             className="w-[98px] h-[36px] p-0"
+            data-testid="Select"
           >
             Select
           </Button>
@@ -175,10 +176,12 @@ export const DelegateModal = ({ onClose, onDelegateTxStarted }: DelegateModalPro
   })
 
   return (
-    <Modal onClose={onClose} className="w-full max-w-[892px] px-16 pt-10 pb-24">
+    <Modal onClose={onClose} className="w-full max-w-[892px] px-16 pt-10 pb-24" data-testid="DelegateModal">
       <div className="text-center">
-        <HeaderTitle className="mb-[16px]">Choose Your Delegate</HeaderTitle>
-        <Paragraph className="mb-12 text-sm">
+        <HeaderTitle className="mb-[16px]" data-testid="Header">
+          Choose Your Delegate
+        </HeaderTitle>
+        <Paragraph className="mb-12 text-sm" data-testid="Description">
           Delegate all voting power to an address. Your stRF balance{' '}
           <span className="text-primary">remains unaffected</span>.
           <br />
@@ -186,7 +189,7 @@ export const DelegateModal = ({ onClose, onDelegateTxStarted }: DelegateModalPro
         </Paragraph>
         <div className="mb-9">
           <div className="mb-10 text-left">
-            <PasteButton handlePaste={onAddressChange} className="right-3 top-11">
+            <PasteButton handlePaste={onAddressChange} className="right-3 top-11" data-testid="Paste">
               <Input
                 label="Address or RNS"
                 name="address"
@@ -197,8 +200,9 @@ export const DelegateModal = ({ onClose, onDelegateTxStarted }: DelegateModalPro
                 inputProps={{ className: 'pr-16' }}
                 labelProps={{ className: 'text-sm tracking-wide' }}
                 labelWrapperProps={{ className: 'mb-2' }}
+                data-testid="AddressInput"
               />
-              <Typography className="text-sm text-white/60">
+              <Typography className="text-sm text-white/60" data-testid="InputDescription">
                 Select from trusted groups or enter a custom delegate above.
               </Typography>
             </PasteButton>
@@ -218,7 +222,7 @@ export const DelegateModal = ({ onClose, onDelegateTxStarted }: DelegateModalPro
             </Popover>
           </div>
           <div
-            className="max-h-[350px] overflow-y-auto 
+            className="max-h-[350px] overflow-y-auto
             [&::-webkit-scrollbar]:w-3
             [&::-webkit-scrollbar-thumb]:rounded-full
             [&::-webkit-scrollbar-track]:bg-foreground
@@ -253,10 +257,10 @@ export const DelegateModal = ({ onClose, onDelegateTxStarted }: DelegateModalPro
           )}
         </div>
         <div className="flex flex-row justify-center gap-4">
-          <Button onClick={onDelegateClick} disabled={isPending || !isInputValid}>
+          <Button onClick={onDelegateClick} disabled={isPending || !isInputValid} data-testid="Delegate">
             Delegate
           </Button>
-          <Button variant="secondary" onClick={onClose}>
+          <Button variant="secondary" onClick={onClose} data-testid="Cancel">
             Cancel
           </Button>
         </div>
