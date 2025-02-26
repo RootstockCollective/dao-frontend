@@ -46,7 +46,11 @@ export const useGetAddressTokens = (address: Address, chainId?: number) => {
     },
   })
 
-  const { data: tokenData } = useQuery({
+  const {
+    data: tokenData,
+    isLoading: IsTokenDataLoading,
+    error: tokenDataError,
+  } = useQuery({
     queryKey: ['tokenData'],
     queryFn: () =>
       axiosInstance.get<TokenInfoReturnType>('/user/api/tokens', { baseURL: '/' }).then(({ data }) => data),
@@ -69,7 +73,7 @@ export const useGetAddressTokens = (address: Address, chainId?: number) => {
         contractAddress: ZeroAddress,
       },
     ] as AddressToken[],
-    isLoading: rbtcLoading || contractsLoading,
-    error: rbtcError ?? contractsError,
+    isLoading: rbtcLoading || contractsLoading || IsTokenDataLoading,
+    error: rbtcError ?? contractsError ?? tokenDataError,
   }
 }

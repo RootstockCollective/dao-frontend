@@ -45,14 +45,14 @@ const tabs: Tabs = {
   },
 }
 
-const getStartedCheckRunner = (fn: () => Promise<void>) => {
-  let interval: Timeout | undefined = undefined
+let interval: Timeout | undefined = undefined
 
-  if (interval) {
+const getStartedCheckRunner = (fn: () => Promise<void>) => {
+  if (!interval) fn()
+  else {
     clearInterval(interval)
   }
 
-  fn()
   interval = setInterval(() => {
     fn()
   }, 60000)
@@ -62,7 +62,7 @@ type UserHeaderProps = {
   showAdditionalContent: boolean
 }
 const UserHeader: FC<UserHeaderProps> = ({ showAdditionalContent }) => {
-  const { balances } = useBalancesContext()
+  const { balances, isBalancesLoading } = useBalancesContext()
   const { address } = useAccount()
 
   // Getting Started dropdown
@@ -88,10 +88,10 @@ const UserHeader: FC<UserHeaderProps> = ({ showAdditionalContent }) => {
   useEffect(() => {
     // TODO: check how often the dependencies update to minimize re-render
     // TODO: find a better way to cache and refresh the getStartedSteps
-    if (address) {
+    if (address && !isBalancesLoading) {
       getStartedCheckRunner(() => setGetStartedDropdownData(router, balances, address))
     }
-  }, [router, balances, address, setGetStartedDropdownData])
+  }, [router, balances, isBalancesLoading, address, setGetStartedDropdownData])
 
   useEffect(() => {
     setIsGetStartedSkipped(Boolean(cookies.getCookie(getStartedSkipped)))

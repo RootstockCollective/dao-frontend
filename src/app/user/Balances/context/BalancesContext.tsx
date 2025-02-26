@@ -7,6 +7,7 @@ import { getTokenBalance } from '../balanceUtils'
 
 interface BalancesContextValue {
   balances: TokenBalanceRecord
+  isBalancesLoading: boolean
   prices: GetPricesResult
 }
 
@@ -16,6 +17,7 @@ export const BalancesContext = createContext<BalancesContextValue>({
     [RIF]: getTokenBalance(RIF),
     [stRIF]: getTokenBalance(stRIF),
   },
+  isBalancesLoading: true,
   prices: {},
 })
 
@@ -24,10 +26,14 @@ interface BalancesProviderProps {
 }
 
 export const BalancesProvider: FC<BalancesProviderProps> = ({ children }) => {
-  const balances = useGetAddressBalances()
+  const { balances, isBalancesLoading } = useGetAddressBalances()
   const prices = useGetSpecificPrices()
 
-  return <BalancesContext.Provider value={{ balances, prices }}>{children}</BalancesContext.Provider>
+  return (
+    <BalancesContext.Provider value={{ balances, isBalancesLoading, prices }}>
+      {children}
+    </BalancesContext.Provider>
+  )
 }
 
 export const useBalancesContext = () => useContext(BalancesContext)
