@@ -50,7 +50,7 @@ export const DelegationSection = () => {
   const isValidDelegatee = delegateeAddress !== address
   const delegatee = {
     'Voting Power Delegated': isValidDelegatee ? <HolderColumn address={delegateeAddress || ''} /> : '-',
-    Amount: isValidDelegatee ? <RenderTotalBalance symbol="stRIF" /> : '-',
+    Amount: isValidDelegatee ? <RenderTotalBalance symbol="stRIF" context="VotingPower" /> : '-',
     Actions: isValidDelegatee ? <ReclaimCell onDelegateTxStarted={onDelegateTxStarted} /> : '-',
   }
 
