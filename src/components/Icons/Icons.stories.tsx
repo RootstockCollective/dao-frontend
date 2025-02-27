@@ -1,5 +1,5 @@
 import { Meta, StoryObj } from '@storybook/react'
-import { ArrowDown, ArrowUp, Circle, ArrowUpSFill, ArrowDownSFill, ArrowUpRight } from './'
+import { ArrowDown, ArrowUp, Circle, ArrowUpSFill, ArrowDownSFill, ArrowUpRight, ExternalLink } from './'
 import { DEFAULT_ICON_COLOR, DEFAULT_ICON_SIZE } from './constants'
 import type { IconProps } from './types'
 
@@ -45,7 +45,11 @@ const IconsShowcase = (args: IconProps) => (
     </div>
     <div>
       <h4>Arrow Up Right</h4>
-      <ArrowUpRight strokeWidth="3px" {...args} />
+      <ArrowUpRight {...args} />
+    </div>
+    <div>
+      <h4>External Link</h4>
+      <ExternalLink {...args} />
     </div>
   </div>
 )
