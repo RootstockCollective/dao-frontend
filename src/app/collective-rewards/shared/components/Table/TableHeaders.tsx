@@ -2,7 +2,7 @@ import { FC } from 'react'
 import { TableCell } from '@/components/Table'
 import { cn } from '@/lib/utils'
 import { Popover } from '@/components/Popover'
-import { RiArrowUpSFill, RiArrowDownSFill } from 'react-icons/ri'
+import { ArrowUpSFill, ArrowDownSFill } from '@/components/Icons'
 import { TooltipProps } from '@/app/collective-rewards/rewards'
 import Image from 'next/image'
 
@@ -61,7 +61,7 @@ export const TableHeaderCell: FC<TableHeader> = ({
             className={`"text-xs text-white flex items-center ml-1" transition-transform duration-300 ${sortConfig?.key === sortKey && sortConfig?.direction === 'asc' ? 'rotate-180' : 'rotate-0'}`}
             onClick={() => onSort(sortKey)}
           >
-            {sortConfig?.key === sortKey ? <RiArrowUpSFill className="stroke-2" /> : <RiArrowDownSFill />}
+            {sortConfig?.key === sortKey ? <ArrowUpSFill className="stroke-2" /> : <ArrowDownSFill />}
           </button>
         )}
       </div>
