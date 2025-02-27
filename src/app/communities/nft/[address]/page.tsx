@@ -7,8 +7,7 @@ import { cn, truncateMiddle } from '@/lib/utils'
 import Image from 'next/image'
 import { useRouter, useParams } from 'next/navigation'
 import { ReactNode, useState, useEffect, useRef } from 'react'
-import { BsTwitterX } from 'react-icons/bs'
-import { FaDiscord, FaLink } from 'react-icons/fa'
+import { TwitterXIcon, DiscordIcon, LinkIcon } from '@/components/Icons'
 import { Address, formatEther } from 'viem'
 import { useAccount } from 'wagmi'
 import { useCommunity } from '@/shared/hooks/useCommunity'
@@ -284,18 +283,18 @@ export default function Page() {
             </div>
           )}
           {/* Hidden until we get social media data */}
-          <div className="gap-[8px] mt-[16px] mb-[24px] hidden">
+          <div className="hidden gap-[8px] mt-[16px] mb-[24px]">
             {/* Chips with community links */}
-            <Chip className="bg-white text-black">
-              <BsTwitterX />
-              <span>X</span>
+            <Chip className="justify-center w-14 bg-white text-black">
+              <TwitterXIcon size={16} fill="black" />
+              {/* <span>X</span> */}
             </Chip>
             <Chip className="bg-[rgba(74,102,247,1)] text-white">
-              <FaDiscord />
+              <DiscordIcon />
               <span>Discord</span>
             </Chip>
             <Chip className="bg-primary text-white">
-              <FaLink />
+              <LinkIcon size={16} />
               <span>Website</span>
             </Chip>
           </div>
