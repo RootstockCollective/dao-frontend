@@ -1,6 +1,7 @@
 import { Meta, StoryObj } from '@storybook/react'
 import { ArrowDownIcon, ArrowUpIcon, CircleIcon, ArrowUpSFillIcon, ArrowDownSFillIcon } from './'
 import { DEFAULT_ICON_COLOR, DEFAULT_ICON_SIZE } from './constants'
+import type { IconProps } from './types'
 
 const meta: Meta = {
   title: 'Icons/Icons',
@@ -20,7 +21,7 @@ export default meta
 
 type Story = StoryObj
 
-const IconsShowcase = (args: any) => (
+const IconsShowcase = (args: IconProps) => (
   <div style={{ display: 'flex', gap: '24px', flexWrap: 'wrap', alignItems: 'center' }}>
     <div>
       <h4>Arrow Down</h4>
