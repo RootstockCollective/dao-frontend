@@ -21,7 +21,7 @@ import { TableCell } from '@/components/Table'
 import { Label, Typography } from '@/components/Typography'
 import { cn, shortAddress } from '@/lib/utils'
 import { FC, memo, useContext, useMemo } from 'react'
-import { ArrowDown, ArrowUp, Circle } from '@/components/Icons'
+import { ArrowDownIcon, ArrowUpIcon, CircleIcon } from '@/components/Icons'
 import { Address, isAddress, parseEther } from 'viem'
 
 type TableCellProps = {
@@ -101,7 +101,7 @@ const BuilderStatusFlag: FC<BuilderStatusFlagProps> = ({ stateFlags }) => {
       size="small"
       trigger="hover"
     >
-      <Circle color={color} size={8} />
+      <CircleIcon color={color} size={8} />
     </Popover>
   )
 }
@@ -161,7 +161,7 @@ export const BackerRewardsPercentage: FC<BackerRewardsPercentageProps> = ({ clas
       const colorGreen = '#1bc47d'
       return (
         <div className="flex flex-row items-center">
-          <ArrowUp className="fa-arrow-up" style={{ color: colorGreen }} />
+          <ArrowUpIcon className="fa-arrow-up" style={{ color: colorGreen }} />
           <div className={cn(`text-[${colorGreen}] text-sm`)}>+{deltaPercentage}</div>
         </div>
       )
@@ -170,7 +170,7 @@ export const BackerRewardsPercentage: FC<BackerRewardsPercentageProps> = ({ clas
       const colorRed = '#f14722'
       return (
         <div className="flex flex-row items-center">
-          <ArrowDown className="fa-arrow-down" style={{ color: colorRed }} />
+          <ArrowDownIcon className="fa-arrow-down" style={{ color: colorRed }} />
           <div className={cn(`text-[${colorRed}] text-sm`)}>{deltaPercentage}</div>
         </div>
       )
