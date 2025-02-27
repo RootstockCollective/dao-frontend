@@ -1,6 +1,6 @@
 import { Paragraph, Span } from '@/components/Typography'
 import Image from 'next/image'
-import { ArrowUpRight } from '@/components/Icons'
+import { ArrowUpRightIcon } from '@/components/Icons'
 import Link from 'next/link'
 import { useNFTBoosterContext } from '@/app/providers/NFT/BoosterContext'
 import { GlowingLabel } from '@/components/Label/GlowingLabel'
@@ -55,7 +55,7 @@ export const CommunityItem = ({
               {subtitle}
             </Span>
           </div>
-          {nftAddress && <ArrowUpRight size={16} />}
+          {nftAddress && <ArrowUpRightIcon size={16} />}
         </div>
         <Paragraph variant="normal" className="mb-[8px] text-[14px]">
           {description}

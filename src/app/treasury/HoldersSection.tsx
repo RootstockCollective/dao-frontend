@@ -1,7 +1,7 @@
 import { Table } from '@/components/Table'
 import { HeaderTitle, Span } from '@/components/Typography'
 import { EXPLORER_URL, STRIF_ADDRESS } from '@/lib/constants'
-import { ExternalLink } from '@/components/Icons'
+import { ExternalLinkIcon } from '@/components/Icons'
 import { useFetchTokenHolders } from '@/app/treasury/hooks/useFetchTokenHolders'
 import { LoadingSpinner } from '@/components/LoadingSpinner'
 import { Jdenticon } from '@/components/Header/Jdenticon'
@@ -24,7 +24,7 @@ const HolderColumn = ({ address, rns }: HolderColumnProps) => {
       <Span className="underline text-left overflow-hidden whitespace-nowrap text-[14px]">
         {rns || address}
       </Span>
-      <ExternalLink size={18} />
+      <ExternalLinkIcon size={18} />
     </a>
   )
 }

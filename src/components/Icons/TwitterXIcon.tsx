@@ -1,8 +1,8 @@
 import { type IconProps } from './types'
-import { DEFAULT_ICON_COLOR, DEFAULT_ICON_SIZE } from './constants'
+import { DEFAULT_ICON_SIZE, DEFAULT_ICON_COLOR } from './constants'
 
-export function ArrowUpRight({
-  'aria-label': ariaLabel = 'Arrow Up Right Icon',
+export function TwitterXIcon({
+  'aria-label': ariaLabel = 'Twitter X Icon',
   size = DEFAULT_ICON_SIZE,
   fill = DEFAULT_ICON_COLOR,
   ...props
@@ -17,10 +17,7 @@ export function ArrowUpRight({
       aria-label={ariaLabel}
       {...props}
     >
-      <path
-        fillRule="evenodd"
-        d="M14 2.5a.5.5 0 0 0-.5-.5h-6a.5.5 0 0 0 0 1h4.793L2.146 13.146a.5.5 0 0 0 .708.708L13 3.707V8.5a.5.5 0 0 0 1 0z"
-      />
+      <path d="M12.6.75h2.454l-5.36 6.142L16 15.25h-4.937l-3.867-5.07-4.425 5.07H.316l5.733-6.57L0 .75h5.063l3.495 4.633L12.601.75Zm-.86 13.028h1.36L4.323 2.145H2.865z" />
     </svg>
   )
 }
