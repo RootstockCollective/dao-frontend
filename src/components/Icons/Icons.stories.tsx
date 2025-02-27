@@ -1,10 +1,10 @@
 import { Meta, StoryObj } from '@storybook/react'
 import {
-  ArrowDown,
-  ArrowUp,
-  Circle,
-  ArrowUpSFill,
-  ArrowDownSFill,
+  ArrowDownIcon,
+  ArrowUpIcon,
+  CircleIcon,
+  ArrowUpSFillIcon,
+  ArrowDownSFillIcon,
   ArrowUpRight,
   ExternalLink,
   TwitterX,
@@ -36,23 +36,23 @@ const IconsShowcase = (args: IconProps) => (
   <div style={{ display: 'flex', gap: '24px', flexWrap: 'wrap', alignItems: 'center' }}>
     <div>
       <h4>Arrow Down</h4>
-      <ArrowDown {...args} />
+      <ArrowDownIcon {...args} />
     </div>
     <div>
       <h4>Arrow Up</h4>
-      <ArrowUp {...args} />
+      <ArrowUpIcon {...args} />
     </div>
     <div>
       <h4>Circle</h4>
-      <Circle {...args} />
+      <CircleIcon {...args} />
     </div>
     <div>
       <h4>Arrow Up S Fill</h4>
-      <ArrowUpSFill {...args} />
+      <ArrowUpSFillIcon {...args} />
     </div>
     <div>
       <h4>Arrow Down S Fill</h4>
-      <ArrowDownSFill {...args} />
+      <ArrowDownSFillIcon {...args} />
     </div>
     <div>
       <h4>Arrow Up Right</h4>

@@ -1,7 +1,7 @@
 import { type IconProps } from './types'
 import { DEFAULT_ICON_COLOR, DEFAULT_ICON_SIZE } from './constants'
 
-export function ArrowUp({
+export function ArrowUpIcon({
   'aria-label': ariaLabel = 'Arrow Up Icon',
   size = DEFAULT_ICON_SIZE,
   fill = DEFAULT_ICON_COLOR,
@@ -21,4 +21,4 @@ export function ArrowUp({
   )
 }
 
-export default ArrowUp
+export default ArrowUpIcon
