@@ -1,5 +1,4 @@
-import { ReactNode, useEffect, useMemo, useState } from 'react'
-import { UsePaginatedQueryResult } from '@/shared/hooks/usePagination'
+import { ReactNode, useMemo, useState } from 'react'
 import { Button } from '@/components/Button'
 import { ChevronLeft, ChevronRight } from 'lucide-react'
 
@@ -8,8 +7,18 @@ interface UseSimplePaginationResult<T> {
   currentResults: T[]
 }
 
+interface UseSimplePaginationOptions<T> {
+  currentResults: T[]
+  totalPages: number
+  tablePage: number
+  nextTablePage: () => void
+  previousTablePage: () => void
+  isLoading: boolean
+  goToTablePage: (pageNumber: number) => void
+}
+
 export function usePaginationUi<T>(
-  paginationResult: UsePaginatedQueryResult<T>,
+  paginationResult: UseSimplePaginationOptions<T>,
 ): UseSimplePaginationResult<T> {
   const {
     currentResults,

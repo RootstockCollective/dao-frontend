@@ -1,15 +1,14 @@
 import { AVERAGE_BLOCKTIME } from '@/lib/constants'
 import { useQuery, UseQueryResult } from '@tanstack/react-query'
-import { AxiosResponse } from 'axios'
 import { useCallback, useMemo, useState } from 'react'
 
-interface UsePaginatedQueryOptions<T> {
+export interface UsePaginatedQueryOptions<T> {
   queryKey: string[]
-  queryFn: (pageParam: any) => Promise<AxiosResponse<T>>
+  queryFn: (pageParam: any) => Promise<T[]>
   resultsPerTablePage: number
 }
 
-export interface UsePaginatedQueryResult<T> extends Omit<UseQueryResult<AxiosResponse<T>>, 'data'> {
+export interface UsePaginatedQueryResult<T> extends Omit<UseQueryResult<T[]>, 'data'> {
   currentResults: T[]
   tablePage: number
   totalPages: number
@@ -25,14 +24,14 @@ export function usePagination<T>({
 }: UsePaginatedQueryOptions<T>): UsePaginatedQueryResult<T> {
   const [tablePage, setTablePage] = useState(0)
 
-  const { data, ...restQueryResult } = useQuery<AxiosResponse<T>, Error>({
+  const { data, ...restQueryResult } = useQuery<T[], Error>({
     queryKey,
     queryFn,
     refetchOnWindowFocus: false,
     refetchInterval: AVERAGE_BLOCKTIME,
   })
 
-  const allItems = useMemo(() => (Array.isArray(data?.data) ? data.data : []), [data])
+  const allItems = useMemo(() => (Array.isArray(data) ? data : []), [data])
 
   const totalItems = allItems.length
   const totalPages = Math.ceil(totalItems / resultsPerTablePage)

@@ -6,35 +6,35 @@ export interface PaginatedResponse<T> {
   [key: string]: any
 }
 
-interface UsePaginatedQueryOptions<T> {
+interface UseInfinitePaginatedQueryOptions<T> {
   queryKey: string[]
   queryFn: (pageParam: any) => Promise<PaginatedResponse<T>>
   getNextPageParam: (lastPage: PaginatedResponse<T>) => any
-  initialPageParam?: any
+  initialPageParam: any
   resultsPerTablePage: number
   hasMorePagesProperty: keyof PaginatedResponse<T>
 }
 
-export interface UsePaginatedQueryResult<T>
+export interface UseInfinitePaginatedQueryResult<T>
   extends Omit<UseInfiniteQueryResult<InfiniteData<PaginatedResponse<T>>>, 'data'> {
   currentResults: T[]
   tablePage: number
   totalPages: number
   nextTablePage: () => void
   previousTablePage: () => void
+  goToTablePage: (pageNumber: number) => void
   isFirstFetch: boolean
   hasMorePages: boolean
-  goToTablePage: (pageNumber: number) => void
 }
 
-export function usePagination<T>({
+export function useInfinitePagination<T>({
   queryKey,
   queryFn,
   getNextPageParam,
   initialPageParam,
   resultsPerTablePage,
   hasMorePagesProperty,
-}: UsePaginatedQueryOptions<T>): UsePaginatedQueryResult<T> {
+}: UseInfinitePaginatedQueryOptions<T>): UseInfinitePaginatedQueryResult<T> {
   const [tablePage, setTablePage] = useState(0)
   const [isFirstFetch, setIsFirstFetch] = useState(true)
 
