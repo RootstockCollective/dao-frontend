@@ -4,7 +4,7 @@ import { HeaderTitle, Paragraph, Span } from '@/components/Typography'
 import { Table } from '@/components/Table'
 import { LoadingSpinner } from '@/components/LoadingSpinner'
 import { EXPLORER_URL } from '@/lib/constants'
-import { RxExternalLink } from 'react-icons/rx'
+import { ExternalLink } from '@/components/Icons'
 import { truncateMiddle } from '@/lib/utils'
 import { useState } from 'react'
 import { TableIcon } from '@/app/communities/TableIcon'
@@ -42,7 +42,7 @@ const CardHolderParagraph = ({ address }: { address: string }) => (
     <Span className="underline text-left overflow-hidden whitespace-nowrap text-[14px]">
       {truncateMiddle(address, 5, 5)}
     </Span>
-    <RxExternalLink size={18} />
+    <ExternalLink size={18} />
   </a>
 )
 
