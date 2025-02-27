@@ -1,5 +1,5 @@
 import { Meta, StoryObj } from '@storybook/react'
-import { ArrowDown, ArrowUp, Circle } from './'
+import { ArrowDown, ArrowUp, Circle, ArrowUpSFill, ArrowDownSFill } from './'
 import { DEFAULT_ICON_COLOR, DEFAULT_ICON_SIZE } from './constants'
 
 const meta: Meta = {
@@ -33,6 +33,14 @@ const IconsShowcase = (args: any) => (
     <div>
       <h4>Circle</h4>
       <Circle {...args} />
+    </div>
+    <div>
+      <h4>Arrow Up S Fill</h4>
+      <ArrowUpSFill {...args} />
+    </div>
+    <div>
+      <h4>Arrow Down S Fill</h4>
+      <ArrowDownSFill {...args} />
     </div>
   </div>
 )
