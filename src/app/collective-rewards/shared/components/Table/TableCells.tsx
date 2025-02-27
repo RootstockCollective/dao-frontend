@@ -21,8 +21,8 @@ import { TableCell } from '@/components/Table'
 import { Label, Typography } from '@/components/Typography'
 import { cn, shortAddress } from '@/lib/utils'
 import { FC, memo, useContext, useMemo } from 'react'
-import { ArrowDown } from '@/components/Icons'
-import { FaArrowUp, FaCircle } from 'react-icons/fa'
+import { ArrowDown, ArrowUp } from '@/components/Icons'
+import { FaCircle } from 'react-icons/fa'
 import { Address, isAddress, parseEther } from 'viem'
 
 type TableCellProps = {
@@ -162,7 +162,7 @@ export const BackerRewardsPercentage: FC<BackerRewardsPercentageProps> = ({ clas
       const colorGreen = '#1bc47d'
       return (
         <div className="flex flex-row items-center">
-          <FaArrowUp className="fa-arrow-up" style={{ color: colorGreen }} />
+          <ArrowUp className="fa-arrow-up" style={{ color: colorGreen }} />
           <div className={cn(`text-[${colorGreen}] text-sm`)}>+{deltaPercentage}</div>
         </div>
       )
