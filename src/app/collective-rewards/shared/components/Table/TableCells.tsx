@@ -21,8 +21,7 @@ import { TableCell } from '@/components/Table'
 import { Label, Typography } from '@/components/Typography'
 import { cn, shortAddress } from '@/lib/utils'
 import { FC, memo, useContext, useMemo } from 'react'
-import { ArrowDown, ArrowUp } from '@/components/Icons'
-import { FaCircle } from 'react-icons/fa'
+import { ArrowDown, ArrowUp, Circle } from '@/components/Icons'
 import { Address, isAddress, parseEther } from 'viem'
 
 type TableCellProps = {
@@ -102,7 +101,7 @@ const BuilderStatusFlag: FC<BuilderStatusFlagProps> = ({ stateFlags }) => {
       size="small"
       trigger="hover"
     >
-      <FaCircle color={color} size={8} />
+      <Circle color={color} size={8} />
     </Popover>
   )
 }
