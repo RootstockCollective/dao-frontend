@@ -1,7 +1,7 @@
 import { type IconProps } from './types'
 import { DEFAULT_ICON_SIZE, DEFAULT_ICON_COLOR } from './constants'
 
-export function Discord({
+export function DiscordIcon({
   'aria-label': ariaLabel = 'Discord Icon',
   size = DEFAULT_ICON_SIZE,
   fill = DEFAULT_ICON_COLOR,

@@ -5,11 +5,11 @@ import {
   CircleIcon,
   ArrowUpSFillIcon,
   ArrowDownSFillIcon,
-  ArrowUpRight,
-  ExternalLink,
-  TwitterX,
-  Discord,
-  Link,
+  ArrowUpRightIcon,
+  ExternalLinkIcon,
+  TwitterXIcon,
+  DiscordIcon,
+  LinkIcon,
 } from './'
 import { DEFAULT_ICON_COLOR, DEFAULT_ICON_SIZE } from './constants'
 import type { IconProps } from './types'
@@ -56,23 +56,23 @@ const IconsShowcase = (args: IconProps) => (
     </div>
     <div>
       <h4>Arrow Up Right</h4>
-      <ArrowUpRight {...args} />
+      <ArrowUpRightIcon {...args} />
     </div>
     <div>
       <h4>External Link</h4>
-      <ExternalLink {...args} />
+      <ExternalLinkIcon {...args} />
     </div>
     <div>
       <h4>Twitter X</h4>
-      <TwitterX {...args} />
+      <TwitterXIcon {...args} />
     </div>
     <div>
       <h4>Discord</h4>
-      <Discord {...args} />
+      <DiscordIcon {...args} />
     </div>
     <div>
       <h4>Link</h4>
-      <Link {...args} />
+      <LinkIcon {...args} />
     </div>
   </div>
 )
