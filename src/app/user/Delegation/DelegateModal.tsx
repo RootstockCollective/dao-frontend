@@ -153,7 +153,7 @@ export const DelegateModal = ({ onClose, onDelegateTxStarted }: DelegateModalPro
             onClick={() => onAddressChange(info.row.original.address)}
             variant="white"
             className="w-[98px] h-[36px] p-0"
-            data-testid="Select"
+            data-testid={`Select${info.row.index}`}
           >
             Select
           </Button>
@@ -257,7 +257,7 @@ export const DelegateModal = ({ onClose, onDelegateTxStarted }: DelegateModalPro
           )}
         </div>
         <div className="flex flex-row justify-center gap-4">
-          <Button onClick={onDelegateClick} disabled={isPending || !isInputValid} data-testid="Delegate">
+          <Button onClick={onDelegateClick} disabled={isPending || !isInputValid} data-testid="DelegateModal">
             Delegate
           </Button>
           <Button variant="secondary" onClick={onClose} data-testid="Cancel">
