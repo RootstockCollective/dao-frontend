@@ -1,8 +1,8 @@
 import { type IconProps } from './types'
 import { DEFAULT_ICON_SIZE, DEFAULT_ICON_COLOR } from './constants'
 
-export function ArrowDownSFill({
-  'aria-label': ariaLabel = 'Arrow Down Icon',
+export function ArrowUpSFillIcon({
+  'aria-label': ariaLabel = 'Arrow Up Icon',
   size = DEFAULT_ICON_SIZE,
   fill = DEFAULT_ICON_COLOR,
   ...props
@@ -17,7 +17,7 @@ export function ArrowDownSFill({
       aria-label={ariaLabel}
       {...props}
     >
-      <path d="M12 16L6 10H18L12 16Z" />
+      <path d="M12 8L18 14H6L12 8Z" />
     </svg>
   )
 }
