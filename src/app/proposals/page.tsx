@@ -26,7 +26,11 @@ export default function Proposals() {
         <div>
           <VotingPowerPopover />
           {totalVotingPower && (
-            <Paragraph className="text-[48px] text-primary tracking-[-0.96px]" fontFamily="kk-topo">
+            <Paragraph
+              className="text-[48px] text-primary tracking-[-0.96px]"
+              fontFamily="kk-topo"
+              data-testid="VotingPower"
+            >
               {formatNumberWithCommas(round(totalVotingPower))}
             </Paragraph>
           )}
