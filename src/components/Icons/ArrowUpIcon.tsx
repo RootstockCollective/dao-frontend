@@ -4,7 +4,8 @@ import { DEFAULT_ICON_COLOR, DEFAULT_ICON_SIZE } from './constants'
 export function ArrowUpIcon({
   'aria-label': ariaLabel = 'Arrow Up Icon',
   size = DEFAULT_ICON_SIZE,
-  fill = DEFAULT_ICON_COLOR,
+  color = DEFAULT_ICON_COLOR,
+  fill = color,
   ...props
 }: IconProps) {
   return (
