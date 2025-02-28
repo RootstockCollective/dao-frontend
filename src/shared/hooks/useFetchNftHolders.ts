@@ -1,16 +1,14 @@
-import { Address } from 'viem'
-import { fetchNftHoldersOfAddress } from '@/app/user/Balances/actions'
+import { getCachedNftHolders } from '@/app/communities/nft/server/fetchNftHolders'
+import { NftHolderItem } from '@/app/user/Balances/types'
 import { usePagination } from '@/shared/hooks/usePagination'
 import { usePaginationUi } from '@/shared/hooks/usePaginationUi'
+import { Address } from 'viem'
 
 export const useFetchNftHolders = (address: Address) => {
-  const query = usePagination({
+  const query = usePagination<NftHolderItem>({
     queryKey: ['nft_holders'],
-    queryFn: ({ pageParam }) => fetchNftHoldersOfAddress(address, pageParam),
-    initialPageParam: null,
+    queryFn: () => getCachedNftHolders(address),
     resultsPerTablePage: 12,
-    hasMorePagesProperty: 'next_page_params',
-    getNextPageParam: lastPage => lastPage.next_page_params,
   })
 
   const ui = usePaginationUi(query)

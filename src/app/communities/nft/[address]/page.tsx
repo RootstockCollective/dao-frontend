@@ -14,13 +14,13 @@ import { useAccount } from 'wagmi'
 import { useCommunity } from '@/shared/hooks/useCommunity'
 import { useStRif } from '@/shared/hooks/useStRIf'
 import { CopyButton } from '@/components/CopyButton'
-import { NftHoldersSection } from '@/app/communities/NftHoldersSection'
 import { communitiesMapByContract } from '@/app/communities/communityUtils'
 import { isUserRejectedTxError } from '@/components/ErrorPage/commonErrors'
 import { SelfContainedNFTBoosterCard } from '../../../shared/components/NFTBoosterCard/SelfContainedNFTBoosterCard'
 import { GlowingLabel } from '@/components/Label/GlowingLabel'
 import { BoltSvg } from '@/components/BoltSvg'
 import { useNFTBoosterContext } from '@/app/providers/NFT/BoosterContext'
+import { NftHoldersSection } from './NftHoldersSection'
 
 /**
  * Name of the local storage variable with information about whether the token was added to the wallet
