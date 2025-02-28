@@ -161,7 +161,7 @@ export const BackerRewardsPercentage: FC<BackerRewardsPercentageProps> = ({ clas
       const colorGreen = '#1bc47d'
       return (
         <div className="flex flex-row items-center">
-          <ArrowUpIcon className="fa-arrow-up" style={{ color: colorGreen }} />
+          <ArrowUpIcon className="fa-arrow-up" color={colorGreen} />
           <div className={cn(`text-[${colorGreen}] text-sm`)}>+{deltaPercentage}</div>
         </div>
       )
@@ -170,7 +170,7 @@ export const BackerRewardsPercentage: FC<BackerRewardsPercentageProps> = ({ clas
       const colorRed = '#f14722'
       return (
         <div className="flex flex-row items-center">
-          <ArrowDownIcon className="fa-arrow-down" style={{ color: colorRed }} />
+          <ArrowDownIcon className="fa-arrow-down" color={colorRed} />
           <div className={cn(`text-[${colorRed}] text-sm`)}>{deltaPercentage}</div>
         </div>
       )
