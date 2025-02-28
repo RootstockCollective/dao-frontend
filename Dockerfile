@@ -18,12 +18,9 @@ COPY . .
 # Disable telemetry
 ENV NEXT_TELEMETRY_DISABLED 1
 
-# Set the build argument 
+# Set the build argument
 ARG PROFILE
 ARG NEXT_PUBLIC_BUILD_ID
-
-# Rename environment files based on PROFILE 
-RUN cp .env.${PROFILE} .env.local
 
 # Export the NEXT_PUBLIC_BUILD_ID as an environment variable
 ENV NEXT_PUBLIC_BUILD_ID=${NEXT_PUBLIC_BUILD_ID}

@@ -1,6 +1,7 @@
 name: Deploy to Amazon ECS (CR STAGING)
 
 on:
+  workflow_dispatch:
   push:
     tags:
       - 'v[0-9]+.[0-9]+.[0-9]+-rc.[0-9]+'
@@ -16,7 +17,7 @@ env:
   ECS_TASK_DEFINITION: rscoll-dev-bim-staging
   CONTAINER_NAME: rscoll-dev-bim-staging
 
-  # The .env file that is used to build the docker image 
+  # The .env file that is used to build the docker image
   # is retrieved using PROFILE, so be sure there is a `.env.<PROFILE>` file
   # that matches with the profile set
   # Example: PROFILE=testnet => .env.testnet
