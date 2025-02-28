@@ -1,7 +1,6 @@
 import { ButtonVariants } from '@/components/Button/types'
 import { cn } from '@/lib/utils'
 import { FC, JSX, MouseEvent, ReactNode } from 'react'
-import { FaSpinner } from 'react-icons/fa6'
 import { Span } from '../Typography'
 import { DivWithGradient } from '@/components/Button/DivWithGradient'
 import { SpinnerIcon } from '../Icons'
@@ -46,8 +45,7 @@ export const Button: FC<Props> = ({
   startIconClasses,
   'data-testid': dataTestId,
 }) => {
-  //startIcon = loading ? <FaSpinner className="animate-spin" /> : startIcon
-  startIcon = <SpinnerIcon className="animate-spin" />
+  startIcon = loading ? <SpinnerIcon className="animate-spin" /> : startIcon
   const classes = cn({
     [BUTTON_DEFAULT_CLASSES]: true,
     'bg-primary rounded-[6px]': variant === 'primary',

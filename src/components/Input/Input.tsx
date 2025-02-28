@@ -4,7 +4,7 @@ import { FC, JSX } from 'react'
 import { InputAttributes, NumericFormatProps } from 'react-number-format'
 import { InputNumber } from './InputNumber'
 import { BsSearch, BsXCircle } from 'react-icons/bs'
-import { FaSpinner } from 'react-icons/fa6'
+import { SpinnerIcon } from '@/components/Icons'
 
 const DEFAULT_CLASSES = `
 px-[20px] py-[12px]
@@ -102,7 +102,7 @@ export const Input: FC<Props> = ({
     search: (
       <div className="relative">
         <div className="absolute translate-y-4 translate-x-4">
-          {loading ? <FaSpinner className="animate-spin" /> : <BsSearch data-testid="SearchIcon" />}
+          {loading ? <SpinnerIcon className="animate-spin" /> : <BsSearch data-testid="SearchIcon" />}
         </div>
         <input
           className={cn(classes, inputClasses, onClear && 'pr-[38px]')}
