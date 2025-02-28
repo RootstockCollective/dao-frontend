@@ -4,7 +4,8 @@ import { DEFAULT_ICON_SIZE, DEFAULT_ICON_COLOR } from './constants'
 export function BadgeCheckIcon({
   'aria-label': ariaLabel = 'Badge Check Icon',
   size = DEFAULT_ICON_SIZE,
-  stroke = DEFAULT_ICON_COLOR,
+  color = DEFAULT_ICON_COLOR,
+  stroke = color,
   strokeWidth = 2,
   ...props
 }: IconProps) {
