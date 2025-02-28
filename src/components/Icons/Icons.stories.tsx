@@ -16,11 +16,7 @@ import type { IconProps } from './types'
 
 const meta: Meta = {
   title: 'Icons/Icons',
-  args: {
-    size: DEFAULT_ICON_SIZE,
-    fill: DEFAULT_ICON_COLOR,
-    'aria-label': 'Icon',
-  },
+  args: {},
   argTypes: {
     size: { control: 'number', description: 'Size of the icon in pixels' },
     fill: { control: 'color', description: 'Fill color of the icon' },
@@ -79,10 +75,7 @@ const IconsShowcase = (args: IconProps) => (
 
 export const DefaultIcons: Story = {
   render: args => <IconsShowcase {...args} />,
-  args: {
-    size: DEFAULT_ICON_SIZE,
-    fill: DEFAULT_ICON_COLOR,
-  },
+  args: {},
 }
 
 export const CustomSizeAndColor: Story = {
