@@ -1,15 +1,21 @@
 import { Meta, StoryObj } from '@storybook/react'
-import { ArrowDownIcon, ArrowUpIcon, CircleIcon, ArrowUpSFillIcon, ArrowDownSFillIcon } from './'
-import { DEFAULT_ICON_COLOR, DEFAULT_ICON_SIZE } from './constants'
+import {
+  ArrowDownIcon,
+  ArrowUpIcon,
+  CircleIcon,
+  ArrowUpSFillIcon,
+  ArrowDownSFillIcon,
+  UsersIcon,
+  BadgeCheckIcon,
+  SpinnerIcon,
+  MinusCircleIcon,
+  PlusCircleIcon,
+} from './'
 import type { IconProps } from './types'
 
 const meta: Meta = {
   title: 'Icons/Icons',
-  args: {
-    size: DEFAULT_ICON_SIZE,
-    fill: DEFAULT_ICON_COLOR,
-    'aria-label': 'Icon',
-  },
+  args: {},
   argTypes: {
     size: { control: 'number', description: 'Size of the icon in pixels' },
     fill: { control: 'color', description: 'Fill color of the icon' },
@@ -43,15 +49,32 @@ const IconsShowcase = (args: IconProps) => (
       <h4>Arrow Down S Fill</h4>
       <ArrowDownSFillIcon {...args} />
     </div>
+    <div>
+      <h4>Users</h4>
+      <UsersIcon {...args} />
+    </div>
+    <div>
+      <h4>Badge Check</h4>
+      <BadgeCheckIcon {...args} />
+    </div>
+    <div>
+      <h4>Spinner</h4>
+      <SpinnerIcon {...args} />
+    </div>
+    <div>
+      <h4>Minus Circle</h4>
+      <MinusCircleIcon {...args} />
+    </div>
+    <div>
+      <h4>Plus Circle</h4>
+      <PlusCircleIcon {...args} />
+    </div>
   </div>
 )
 
 export const DefaultIcons: Story = {
   render: args => <IconsShowcase {...args} />,
-  args: {
-    size: DEFAULT_ICON_SIZE,
-    fill: DEFAULT_ICON_COLOR,
-  },
+  args: {},
 }
 
 export const CustomSizeAndColor: Story = {
