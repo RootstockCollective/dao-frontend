@@ -4,8 +4,9 @@ import { DEFAULT_ICON_SIZE, DEFAULT_ICON_COLOR } from './constants'
 export function PlusCircleIcon({
   'aria-label': ariaLabel = 'Plus Circle Icon',
   size = DEFAULT_ICON_SIZE,
+  color = DEFAULT_ICON_COLOR,
+  stroke = color,
   fill = 'none',
-  stroke = DEFAULT_ICON_COLOR,
   strokeWidth = 2,
   ...props
 }: IconProps) {
