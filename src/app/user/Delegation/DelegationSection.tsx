@@ -62,7 +62,7 @@ export const DelegationSection = () => {
   }
 
   return (
-    <div className="mb-6">
+    <div className="mb-6" data-testid="DelegationSection">
       {/* Header Components*/}
       <div className="flex flex-row justify-between mb-6">
         <HeaderTitle className="w-[80%]">DELEGATION</HeaderTitle>
