@@ -3,7 +3,6 @@ import { Rewards } from '@/app/collective-rewards/rewards/MyRewards'
 import { BalancesSection } from '@/app/user/Balances/BalancesSection'
 import { CommunitiesSection } from '@/app/user/Communities/CommunitiesSection'
 import { DelegationSection } from '@/app/user/Delegation'
-import { MainContainer } from '@/components/MainContainer/MainContainer'
 import { Tabs, TabsContent, TabsList, TabsTrigger, TabTitle } from '@/components/Tabs'
 import { TxStatusMessage } from '@/components/TxStatusMessage'
 import { useRouter, useSearchParams } from 'next/navigation'
@@ -133,7 +132,7 @@ const UserHeader: FC<UserHeaderProps> = ({ showAdditionalContent }) => {
   )
 }
 
-function User() {
+export const User = () => {
   const { address } = useAccount()
 
   const searchParams = useSearchParams()
@@ -150,7 +149,7 @@ function User() {
   const showAdditionalContent = !isLoading && isBuilderOrBacker
 
   return (
-    <MainContainer>
+    <>
       {/* We don't show the tab if it's loading */}
       <Tabs defaultValue={defaultTabValue}>
         <JustifyBetweenLayout
@@ -174,16 +173,6 @@ function User() {
           </TabsContent>
         ) : null}
       </Tabs>
-    </MainContainer>
-  )
-}
-
-export default function UserPage() {
-  return (
-    <Suspense fallback={<div>Loading...</div>}>
-      <BalancesProvider>
-        <User />
-      </BalancesProvider>
-    </Suspense>
+    </>
   )
 }
