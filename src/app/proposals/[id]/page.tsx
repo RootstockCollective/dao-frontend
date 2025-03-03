@@ -34,7 +34,7 @@ import { MetricsCard } from '@/components/MetricsCard'
 import { Popover } from '@/components/Popover'
 import { Header, Paragraph, Span, Typography } from '@/components/Typography'
 import { config } from '@/config'
-import { RIF, RIF_ADDRESS } from '@/lib/constants'
+import { RIF, RIF_ADDRESS, CURRENCY_ADDRESS_SYMBOLS_PAIR } from '@/lib/constants'
 import { formatNumberWithCommas, truncateMiddle, formatCurrency } from '@/lib/utils'
 import { useExecuteProposal } from '@/shared/hooks/useExecuteProposal'
 import { useQueueProposal } from '@/shared/hooks/useQueueProposal'
@@ -566,20 +566,22 @@ const CalldataDisplay = (props: DecodedData) => {
                   {formattedInputName === 'amount' && currentTokenSymbol && (
                     <Span className="text-xs text-gray-400 mt-1">
                       {(() => {
-                        console.log('prices', prices)
-                        console.log('currentTokenSymbol', currentTokenSymbol)
-                        console.log('inputValue', inputValue)
-                        console.log('prices[currentTokenSymbol]', prices[currentTokenSymbol])
-                        
                         // Check if prices exists
                         if (!prices) return '≈ Price unavailable'
 
+                        const tokenSymbol = CURRENCY_ADDRESS_SYMBOLS_PAIR[currentTokenSymbol.toLowerCase()]
+
                         // Safely check if the token exists in prices
-                        const tokenPrice = (prices as any)[currentTokenSymbol]
+                        const tokenPrice = (prices as any)[tokenSymbol]
 
                         // Check if we have a valid price
                         if (tokenPrice && typeof tokenPrice.price === 'number') {
-                          return `≈ ${formatCurrency(tokenPrice.price * Number(inputValue))} USD`
+                          return `≈ ${formatCurrency(
+                            Big(inputValue.toString())
+                              .div('1e' + 18)
+                              .mul(tokenPrice.price)
+                              .toNumber(),
+                          )} USD`
                         }
 
                         return '≈ Price unavailable'
