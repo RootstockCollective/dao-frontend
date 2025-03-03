@@ -4,7 +4,7 @@ permissions:
   contents: write
 
 env:
-  BOOST_DATA_BRANCH: "boost_data/${{ github.event.inputs.env}}"
+  BOOST_DATA_BRANCH: 'boost_data/${{ github.event.inputs.env}}'
 on:
   workflow_dispatch:
     inputs:
@@ -41,7 +41,7 @@ jobs:
 
       - name: Reset active nft boost file
         run: |
-          echo "None" > nft_boost_data/latest.txt
+          echo "None" > nft_boost_data/latest
 
       - name: Commit and push changes
         run: |
