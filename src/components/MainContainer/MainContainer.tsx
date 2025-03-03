@@ -3,6 +3,7 @@ import { useAlertContext } from '@/app/providers'
 import { useModal } from '@/shared/hooks/useModal'
 import { Footer } from '@/components/Footer'
 import { ConnectButton, Header } from '@/components/Header'
+import { PageHeader } from '@/app/_user-connection/PageHeader'
 import { StatefulSidebar } from '@/components/MainContainer/StatefulSidebar'
 import { shortAddress } from '@/lib/utils'
 import { useRouter } from 'next/navigation'
@@ -38,43 +39,17 @@ export const MainContainer: FC<Props> = ({ children }) => {
     setHasMounted(true)
   }, [])
 
-  const ConnectedComponent = () => (
-    <>
-      {hasMounted && (
-        <>
-          <Header>
-            {isConnected ? (
-              <AccountAddress
-                address={address}
-                shortAddress={shortAddress(address)}
-                onLogoutClick={modal.openModal}
-              />
-            ) : (
-              <ConnectButton />
-            )}
-          </Header>
-          {modal.isModalOpened && (
-            <DisconnectWalletModal
-              onClose={modal.closeModal}
-              onConfirm={handleDisconnect}
-              onCancel={modal.closeModal}
-              address={address}
-            />
-          )}
-        </>
-      )}
-    </>
-  )
   return (
     <Suspense fallback={<div>Loading...</div>}>
       <GradientHeader />
       <div className="flex h-screen">
-        <StatefulSidebar ConnectedComponent={<ConnectedComponent />} />
+        <StatefulSidebar />
         <div className="flex flex-1 flex-col justify-between overflow-y-auto mt-10 ml-72">
           <main className="px-[32px] py-[34px] mb-[100px]">
             {message && (
               <Alert {...message} onDismiss={message.onDismiss === null ? null : () => setMessage(null)} />
             )}
+            <PageHeader />
             <MainContainerContent setMessage={setMessage}>{children}</MainContainerContent>
           </main>
           <Footer variant="container" />
