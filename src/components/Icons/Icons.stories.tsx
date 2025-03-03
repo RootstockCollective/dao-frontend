@@ -1,6 +1,17 @@
 import { Meta, StoryObj } from '@storybook/react'
-import { ArrowDownIcon, ArrowUpIcon, CircleIcon, ArrowUpSFillIcon, ArrowDownSFillIcon } from './'
-import { DEFAULT_ICON_COLOR, DEFAULT_ICON_SIZE } from './constants'
+import {
+  ArrowDownIcon,
+  ArrowUpIcon,
+  CircleIcon,
+  ArrowUpSFillIcon,
+  ArrowDownSFillIcon,
+  BiCopyIcon,
+  BsCopyIcon,
+  CircleCheckIcon,
+  CloseIcon,
+  ErrorIcon,
+  ExclamationCircleIcon,
+} from './'
 import type { IconProps } from './types'
 
 const meta: Meta = {
@@ -38,6 +49,30 @@ const IconsShowcase = (args: IconProps) => (
     <div>
       <h4>Arrow Down S Fill</h4>
       <ArrowDownSFillIcon {...args} />
+    </div>
+    <div>
+      <h4>Close</h4>
+      <CloseIcon {...args} />
+    </div>
+    <div>
+      <h4>Circle Check</h4>
+      <CircleCheckIcon {...args} />
+    </div>
+    <div>
+      <h4>BsCopy</h4>
+      <BsCopyIcon {...args} />
+    </div>
+    <div>
+      <h4>BiCopy</h4>
+      <BiCopyIcon {...args} />
+    </div>
+    <div>
+      <h4>Error</h4>
+      <ErrorIcon {...args} />
+    </div>
+    <div>
+      <h4>Exclamation Circle</h4>
+      <ExclamationCircleIcon {...args} />
     </div>
   </div>
 )

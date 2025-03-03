@@ -1,5 +1,5 @@
 import { FC, useState, useEffect, ReactNode, ReactElement, useRef, HTMLAttributes } from 'react'
-import { BiCopy } from 'react-icons/bi'
+import { BiCopyIcon } from '../Icons'
 import { cn } from '@/lib/utils'
 
 export interface CopyButtonProps extends HTMLAttributes<HTMLDivElement> {
@@ -43,7 +43,7 @@ export const CopyButton: FC<CopyButtonProps> = ({
   copyText,
   successLabel = 'Copied!',
   errorLabel = 'Error',
-  icon = <BiCopy className="w-[24px] h-[24px] rotate-180" />,
+  icon = <BiCopyIcon className="w-[24px] h-[24px] rotate-180" />,
   onCopyFailure = () => {},
   onCopySuccess = () => {},
   className,
