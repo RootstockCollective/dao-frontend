@@ -13,6 +13,7 @@ export const HolderColumn = ({ address, rns, image }: HolderColumnProps) => (
     href={`${EXPLORER_URL}/address/${address}`}
     target="_blank"
     className="flex items-center gap-1.5 text-white"
+    data-testid="HolderColumn"
   >
     <img src={image || '/images/treasury/holders.png'} width={24} height={24} alt="Holders Image" />
     <Span className="underline text-left overflow-hidden whitespace-nowrap text-[14px]">
