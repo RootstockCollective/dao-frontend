@@ -505,6 +505,8 @@ const CalldataRows = ({ calldatasParsed }: CalldataRowsData) => {
 
 const CalldataDisplay = (props: DecodedData) => {
   const { prices } = usePricesContext()
+  let currentTokenSymbol = '' // Added to track the token
+
   // Handle decoded case
   if (props.type === 'decoded') {
     const { functionName, inputs, args } = props
@@ -533,6 +535,12 @@ const CalldataDisplay = (props: DecodedData) => {
               typeof functionName,
               typeof inputName
             >
+
+            // If this is the token input, save its value
+            if (formattedInputName === 'token') {
+              currentTokenSymbol = String(inputValue)
+            }
+
             const inputValueComposerMap = (actionComponentMap[functionName] || {}) as InputValueComposerMap<
               typeof functionName,
               typeof inputName
@@ -540,19 +548,6 @@ const CalldataDisplay = (props: DecodedData) => {
             const InputComponent = inputValueComposerMap[
               inputName as keyof typeof inputValueComposerMap
             ] as InputValueComponent<InputParameterTypeByFnByName<typeof functionName, typeof inputName>>
-
-            // Helper function to find token symbol
-            const getTokenSymbol = () => {
-              for (let i = 0; i < inputs.length; i++) {
-                const inputName = inputs[i].name
-                const formatMap = actionInputNameFormatMap[functionName] || {}
-                const formatted = (formatMap[inputName as never] || inputName) as string
-                if (formatted === 'token') {
-                  return String(args[i] || '')
-                }
-              }
-              return ''
-            }
 
             return (
               <li key={index} className="my-2 flex justify-between">
@@ -568,30 +563,27 @@ const CalldataDisplay = (props: DecodedData) => {
                       }}
                     />
                   )}
-                  {formattedInputName === 'amount' && (
+                  {formattedInputName === 'amount' && currentTokenSymbol && (
                     <Span className="text-xs text-gray-400 mt-1">
-                      {formattedInputName === 'amount' && (
-                        <Span className="text-xs text-gray-400 mt-1">
-                          {(() => {
-                            const tokenSymbol = getTokenSymbol()
+                      {(() => {
+                        console.log('prices', prices)
+                        console.log('currentTokenSymbol', currentTokenSymbol)
+                        console.log('inputValue', inputValue)
+                        console.log('prices[currentTokenSymbol]', prices[currentTokenSymbol])
+                        
+                        // Check if prices exists
+                        if (!prices) return '≈ Price unavailable'
 
-                            // First check if we have a token symbol
-                            if (!tokenSymbol) {
-                              return '≈ Price unavailable'
-                            }
+                        // Safely check if the token exists in prices
+                        const tokenPrice = (prices as any)[currentTokenSymbol]
 
-                            // Check if prices exists and the token exists in prices
-                            const priceData = prices ? (prices as any)[tokenSymbol] : null
+                        // Check if we have a valid price
+                        if (tokenPrice && typeof tokenPrice.price === 'number') {
+                          return `≈ ${formatCurrency(tokenPrice.price * Number(inputValue))} USD`
+                        }
 
-                            // Check if price data exists and has a price property
-                            if (priceData && typeof priceData.price === 'number') {
-                              return `≈ ${formatCurrency(priceData.price * Number(inputValue))} USD`
-                            }
-
-                            return '≈ Price unavailable'
-                          })()}
-                        </Span>
-                      )}
+                        return '≈ Price unavailable'
+                      })()}
                     </Span>
                   )}
                 </div>
