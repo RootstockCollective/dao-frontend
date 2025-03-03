@@ -1,6 +1,6 @@
 'use client'
 import { Jdenticon } from '@/components/Header/Jdenticon'
-import { FaPowerOff } from 'react-icons/fa6'
+import { PowerOffIcon } from '../Icons'
 import { CopyButton } from '../CopyButton'
 
 interface Props {
@@ -16,7 +16,12 @@ export const AccountAddress = ({ address, shortAddress, onLogoutClick }: Props) 
       <CopyButton copyText={address ?? ''} icon={null}>
         <span className="underline underline-offset-1">{shortAddress}</span>
       </CopyButton>
-      <FaPowerOff onClick={onLogoutClick} id="logOut" data-testid="Logout_Icon" className="cursor-pointer" />
+      <PowerOffIcon
+        onClick={onLogoutClick}
+        id="logOut"
+        data-testid="Logout_Icon"
+        className="cursor-pointer"
+      />
     </div>
   )
 }
