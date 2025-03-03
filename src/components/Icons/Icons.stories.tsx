@@ -1,6 +1,14 @@
 import { Meta, StoryObj } from '@storybook/react'
-import { ArrowDownIcon, ArrowUpIcon, CircleIcon, ArrowUpSFillIcon, ArrowDownSFillIcon } from './'
-import { DEFAULT_ICON_COLOR, DEFAULT_ICON_SIZE } from './constants'
+import {
+  ArrowDownIcon,
+  ArrowUpIcon,
+  CircleIcon,
+  ArrowUpSFillIcon,
+  ArrowDownSFillIcon,
+  ArrowsSortIcon,
+  SortAscendingIcon,
+  SortDescendingIcon,
+} from './'
 import type { IconProps } from './types'
 
 const meta: Meta = {
@@ -39,6 +47,18 @@ const IconsShowcase = (args: IconProps) => (
       <h4>Arrow Down S Fill</h4>
       <ArrowDownSFillIcon {...args} />
     </div>
+    <div>
+      <h4>Arrows Sort</h4>
+      <ArrowsSortIcon {...args} />
+    </div>
+    <div>
+      <h4>Sort Ascending</h4>
+      <SortAscendingIcon {...args} />
+    </div>
+    <div>
+      <h4>Sort Descending</h4>
+      <SortDescendingIcon {...args} />
+    </div>
   </div>
 )
 
@@ -52,5 +72,6 @@ export const CustomSizeAndColor: Story = {
   args: {
     size: 48,
     fill: '#FF6347', // Tomato color
+    stroke: '#FF6347',
   },
 }
