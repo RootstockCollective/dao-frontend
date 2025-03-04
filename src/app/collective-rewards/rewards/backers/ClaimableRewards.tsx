@@ -1,22 +1,21 @@
-import { FC } from 'react'
-import { Address } from 'viem'
-import { usePricesContext } from '@/shared/context/PricesContext'
 import {
+  ClaimYourRewardsButton,
   formatMetrics,
   MetricsCard,
-  TokenMetricsCardRow,
+  MetricsCardProps,
   MetricsCardTitle,
-  useClaimBackerRewards,
   RewardDetails,
   Token,
+  TokenMetricsCardRow,
   useBackerRewardsContext,
-  ClaimYourRewardsButton,
+  useClaimBackerRewards,
 } from '@/app/collective-rewards/rewards'
 import { useHandleErrors } from '@/app/collective-rewards/utils'
 import { withSpinner } from '@/components/LoadingSpinner/withLoadingSpinner'
+import { usePricesContext } from '@/shared/context/PricesContext'
+import { FC } from 'react'
 
 type TokenRewardsMetricsProps = {
-  gauges: Address[]
   token: Token
   currency?: string
 }
@@ -45,18 +44,27 @@ const TokenRewardsMetrics: FC<TokenRewardsMetricsProps> = ({
   })
 }
 
-type ClaimableRewardsProps = Omit<RewardDetails, 'gauge'>
+// FIXME: change type to match the domain (backer not builder rewards)
+type ClaimableRewardsProps = MetricsCardProps & {
+  tokenRewardsMetrics: Omit<RewardDetails, 'gauges' | 'builder'>
+}
 
-export const ClaimableRewards: FC<ClaimableRewardsProps> = ({ tokens: { rif, rbtc }, ...rest }) => {
+export const ClaimableRewards: FC<ClaimableRewardsProps> = ({
+  tokenRewardsMetrics: {
+    tokens: { rif, rbtc },
+    ...restOfTokenRewardsMetrics
+  },
+  ...rest
+}) => {
   return (
-    <MetricsCard borderless>
+    <MetricsCard borderless {...rest}>
       <MetricsCardTitle
         title="Claimable rewards"
         data-testid="ClaimableRewards"
         tooltip={{ text: 'Your rewards available to claim' }}
       />
-      <TokenRewardsMetrics {...rest} token={rif} />
-      <TokenRewardsMetrics {...rest} token={rbtc} />
+      <TokenRewardsMetrics {...restOfTokenRewardsMetrics} token={rif} />
+      <TokenRewardsMetrics {...restOfTokenRewardsMetrics} token={rbtc} />
     </MetricsCard>
   )
 }

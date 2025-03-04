@@ -1,13 +1,19 @@
-import { FC } from 'react'
+import { cn } from '@/lib/utils'
+import { FC, HTMLAttributes } from 'react'
 
-export type GlowingLabelProps = {
-  children: React.ReactNode
+export type GlowingLabelProps = HTMLAttributes<HTMLDivElement> & {
   showGlow?: boolean
+  faded?: boolean
 }
 
-export const GlowingLabel: FC<GlowingLabelProps> = ({ children, showGlow }) => (
+export const GlowingLabel: FC<GlowingLabelProps> = ({ children, showGlow, faded, className, ...rest }) => (
   <div
-    className="text-[#4b171a] text-base font-normal font-['KK-Topo'] uppercase"
+    data-testid="glowingLabel"
+    className={cn(
+      'text-[#4b171a] text-base',
+      faded ? 'font-normal font-kk-topo uppercase' : 'font-bold font-rootstock-sans',
+      className,
+    )}
     style={{
       background: 'linear-gradient(270deg, #4B171A -8.88%, #C0F7FF 31.43%, #E3FFEB 78.65%)',
       backgroundClip: 'text',
@@ -15,6 +21,7 @@ export const GlowingLabel: FC<GlowingLabelProps> = ({ children, showGlow }) => (
       WebkitTextFillColor: 'transparent',
       textShadow: showGlow ? '0px 0px 8.1px rgba(192, 247, 255, 0.65)' : 'inherit',
     }}
+    {...rest}
   >
     {children}
   </div>
