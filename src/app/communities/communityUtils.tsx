@@ -1,8 +1,9 @@
 /* eslint-disable quotes */
 import { nftContracts } from '@/lib/contracts'
 import { FC, ReactNode } from 'react'
+import { Header, Paragraph } from '@/components/Typography'
 
-interface CommunityItem {
+export interface CommunityItem {
   leftImageSrc: string
   title: string
   subtitle: string
@@ -14,6 +15,21 @@ interface CommunityItem {
   isMintable?: boolean
   additionalChecks?: [{ name: string; check: (data: any) => boolean; alertMessage: string }]
 }
+
+interface RowProps {
+  leftText: string
+  rightText?: ReactNode
+}
+const Row = ({ leftText, rightText }: RowProps) => (
+  <>
+    <Header variant="h1" className="text-[24px]">
+      {leftText}
+    </Header>
+    <Paragraph>{rightText}</Paragraph>
+  </>
+)
+
+const DEFAULT_CLASS_FOR_ROW_CONTAINER = 'mt-4 grid grid-cols-2 gap-[24px] items-center'
 
 export const earlyAdoptersCommunity = {
   leftImageSrc: '/images/ea-nft-dog.png',
@@ -44,12 +60,10 @@ export const earlyAdoptersCommunity = {
         Join the journey with these extraordinary individuals as they carve out a new digital frontier, one
         block at a time.
       </p>
-      <p className="mt-4">
-        <b>SPECIAL POWER:</b> Voting Booster
-        <br />
-        <b>REQUIREMENT:</b> First 150 stakers with 1 stRIF, Self-Claim
-        <br />
-        <b>ACTIVATION:</b> {activation}
+      <p className={DEFAULT_CLASS_FOR_ROW_CONTAINER}>
+        <Row leftText="SPECIAL POWER" rightText="Voting Booster" />
+        <Row leftText="REQUIREMENT" rightText="First 150 stakers with 1 stRIF, Self-Claim" />
+        <Row leftText="ACTIVATION" rightText={activation} />
       </p>
     </>
   ),
@@ -72,12 +86,10 @@ export const ogFounders: CommunityItem = {
         the prestigious OG Badge. This badge was a testament to their foresight and pioneering spirit, marking
         them as the true architects of their era.
       </p>
-      <p className="mt-4">
-        <b>SPECIAL POWER:</b> Voting Booster
-        <br />
-        <b>REQUIREMENT:</b> 1 stRIF on 23rd Sept 2024, Self-Claim
-        <br />
-        <b>ACTIVATION:</b> {activation}
+      <p className={DEFAULT_CLASS_FOR_ROW_CONTAINER}>
+        <Row leftText="SPECIAL POWER" rightText="Voting Booster" />
+        <Row leftText="REQUIREMENT" rightText="1 stRIF on 23rd Sept 2024, Self-Claim" />
+        <Row leftText="ACTIVATION" rightText={activation} />
       </p>
     </>
   ),
@@ -100,12 +112,10 @@ export const ogFoundersEcosystemPartners: CommunityItem = {
         embark on an extraordinary journey. Equipped with the OG Badge, these visionary elves invite their
         esteemed external partners to join them in exploring and innovating within the Rootstock ecosystem.
       </p>
-      <p className="mt-4">
-        <b>SPECIAL POWER:</b> Voting Booster
-        <br />
-        <b>REQUIREMENT:</b> Recognised Community contributions, 25k stRIF, Air-Drop
-        <br />
-        <b>ACTIVATION:</b> {activation}
+      <p className={DEFAULT_CLASS_FOR_ROW_CONTAINER}>
+        <Row leftText="SPECIAL POWER" rightText="Voting Booster" />
+        <Row leftText="REQUIREMENT" rightText="Recognised Community contributions, 25k stRIF, Air-Drop" />
+        <Row leftText="ACTIVATION" rightText={activation} />
       </p>
     </>
   ),
@@ -130,12 +140,10 @@ export const ogFoundersExternalContributors: CommunityItem = {
         contributions, are bestowed with the prestigious OG Contributors Badge - a symbol of honor that
         highlights their passion and engagement with Governance process and community needs.
       </p>
-      <p className="mt-4">
-        <b>SPECIAL POWER:</b> Delegation Kickstarter OR Voting Booster
-        <br />
-        <b>REQUIREMENT:</b> Recognised Community contributions, Air-Drop
-        <br />
-        <b>ACTIVATION:</b> {activation}
+      <p className={DEFAULT_CLASS_FOR_ROW_CONTAINER}>
+        <Row leftText="SPECIAL POWER" rightText="Delegation Kickstarter OR Voting Booster" />
+        <Row leftText="REQUIREMENT" rightText="Recognised Community contributions, Air-Drop" />
+        <Row leftText="ACTIVATION" rightText={activation} />
       </p>
     </>
   ),
@@ -162,12 +170,10 @@ export const vanguardCommunity = {
         symbolize innovation and unity. They embody the courage to explore uncharted territories, lighting the
         way for a decentralized future and proving that collective action can transform the Bitcoin universe.
       </p>
-      <p className="mt-4">
-        <b>SPECIAL POWER:</b> Voting Booster
-        <br />
-        <b>REQUIREMENT:</b> Voted on 1 of the last 3 proposals, Self-Claim
-        <br />
-        <b>ACTIVATION:</b> {activation}
+      <p className={DEFAULT_CLASS_FOR_ROW_CONTAINER}>
+        <Row leftText="SPECIAL POWER" rightText="Voting Booster" />
+        <Row leftText="REQUIREMENT" rightText="Voted on 1 of the last 3 proposals, Self-Claim" />
+        <Row leftText="ACTIVATION" rightText={activation} />
       </p>
     </>
   ),
@@ -192,7 +198,7 @@ export const vanguardCommunity = {
 }
 
 export const betaBuilders: CommunityItem = {
-  leftImageSrc: '/images/nfts/bb-thumb.png',
+  leftImageSrc: '/images/nfts/bb-thumb-v2.png',
   title: 'Beta Builders',
   subtitle: 'DeFi',
   description:
@@ -208,12 +214,10 @@ export const betaBuilders: CommunityItem = {
         through RootstockCollective. It celebrates the pioneering Builders, Developers, Protocols, and dApps
         whose innovations are driving Rootstock in becoming the leading Bitcoin Layer 2.
       </p>
-      <p className="mt-4">
-        <b>SPECIAL POWER:</b> Voting Booster
-        <br />
-        <b>REQUIREMENT:</b> First 50 CollectiveRewards Builders, Air-Drop
-        <br />
-        <b>ACTIVATION:</b> {activation}
+      <p className={DEFAULT_CLASS_FOR_ROW_CONTAINER}>
+        <Row leftText="SPECIAL POWER" rightText="Voting Booster" />
+        <Row leftText="REQUIREMENT" rightText="First 50 CollectiveRewards Builders, Air-Drop" />
+        <Row leftText="ACTIVATION" rightText={activation} />
       </p>
     </>
   ),
@@ -227,6 +231,17 @@ export const communitiesToRender = [
   vanguardCommunity,
   betaBuilders,
 ]
+
+export const communitiesByCategory = {
+  BADGES: [
+    earlyAdoptersCommunity,
+    ogFounders,
+    ogFoundersEcosystemPartners,
+    ogFoundersExternalContributors,
+    vanguardCommunity,
+  ],
+  CLUBS: [betaBuilders],
+}
 
 export const communitiesMapByContract = communitiesToRender.reduce<Record<string, CommunityItem>>(
   (prev, currentValue) => {

@@ -1,9 +1,10 @@
 import { ArrowUpRightIcon } from '@/components/Icons'
-import { Paragraph, Span } from '@/components/Typography'
+import { Paragraph } from '@/components/Typography'
 import Image from 'next/image'
 import Link from 'next/link'
 import { BoostedBox } from './components/BoostedBox'
-import { BoostedLabel } from './components/BoostedLabel'
+import { ViewDetailsButton } from '@/app/communities/components/ViewDetailsButton'
+import { BoostedLabel } from '@/app/communities/components/BoostedLabel'
 
 interface CommunityItemProps {
   leftImageSrc: string
@@ -18,33 +19,38 @@ interface CommunityItemProps {
  * Server Component: Renders a community card as part of the static communities page.
  * Dynamic highlighting of the 'Boosted' state is achieved through lightweight client components.
  */
-// prettier-ignore
-export const CommunityItem = ({ leftImageSrc, title, subtitle, nftAddress, description }: CommunityItemProps) => {
+export const CommunityItem = ({ leftImageSrc, title, nftAddress, description }: CommunityItemProps) => {
   return (
     <BoostedBox nftAddress={nftAddress}>
-      <div className={'h-full p-[16px] w-[358px] rounded-[8px] bg-input-bg'} data-testid={`${title}Card`}>
-        <Link
-          href={nftAddress ? `/communities/nft/${nftAddress}` : '/communities'}
-          className="flex flex-col h-full"
-        >
-          <div className="flex mb-[22px] items-center">
-            <div className="rounded-full overflow-hidden">
-              <Image src={leftImageSrc} alt={title} width={50} height={50} />
-            </div>
-            <div className="flex-1 flex flex-col ml-[12px]">
-              <BoostedLabel nftAddress={nftAddress}>{title}</BoostedLabel>
-              <Span size="small" variant="light">
-                {subtitle}
-              </Span>
-            </div>
-            {nftAddress && <ArrowUpRightIcon />}
+      <div
+        className="h-full w-[269px] bg-foreground flex flex-col community-item-gradient-hover"
+        data-testid={`${title}Card`}
+      >
+        {/* image */}
+        <Image
+          src={leftImageSrc}
+          alt="An image that contains a community logo"
+          className="mb-[20px] flex-1"
+          width={269}
+          height={265}
+        />
+        <div className="flex flex-col flex-1">
+          {/* Title */}
+          <div className="mb-[5px]">
+            <BoostedLabel nftAddress={nftAddress}>
+              <Paragraph
+                className="text-[20px] px-[14px] uppercase break-words pt-[5px]"
+                fontFamily="kk-topo"
+              >
+                {title}
+              </Paragraph>
+            </BoostedLabel>
           </div>
-          <Paragraph variant="normal" className="mb-[8px] text-[14px]">
-            {description}
-          </Paragraph>
-          <div className="flex-1" />
-          {!nftAddress && <Image src="/images/text-coming-soon.svg" alt={title} width={121} height={121} />}
-        </Link>
+          {/* Description */}
+          <Paragraph className="text-[14px] px-[14px]">{description}</Paragraph>
+        </div>
+        {/* View details */}
+        <ViewDetailsButton nftAddress={nftAddress} />
       </div>
     </BoostedBox>
   )

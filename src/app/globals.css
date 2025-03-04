@@ -42,6 +42,13 @@
     align-items: center;
     padding-left: 25px;
   }
+  .community-item-gradient-hover {
+    transition: all 0.2s linear;
+  }
+  .community-item-gradient-hover:hover {
+    background: linear-gradient(270deg, rgba(255, 254, 227, 0.40) -88.18%, rgba(251, 235, 245, 0.40) -59.86%, rgba(249, 225, 255, 0.40) -44.94%, rgba(190, 91, 15, 0.40) -1.7%, rgba(147, 35, 9, 0.40) 41.54%, rgba(26, 26, 26, 0.00) 84.78%), #1A1A1A;
+    transform: scale(1.01);
+  }
 }
 
 * {

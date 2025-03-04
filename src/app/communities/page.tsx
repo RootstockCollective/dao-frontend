@@ -1,6 +1,7 @@
 import Image from 'next/image'
 import { CommunityItem } from '@/app/communities/CommunityItem'
-import { communitiesToRender } from '@/app/communities/communityUtils'
+import { communitiesByCategory } from '@/app/communities/communityUtils'
+import { HeaderTitle } from '@/components/Typography'
 
 export const dynamic = 'force-static'
 
@@ -18,14 +19,19 @@ export default function Communities() {
           alt="Communities"
           width={0}
           height={0}
-          style={{ width: '100%', height: 'auto' }}
+          className="w-full mb-[48px] mt-[32px]"
         />
       </div>
-      <div className="flex flex-wrap mt-[16px] gap-[24px]">
-        {communitiesToRender.map(community => (
-          <CommunityItem key={community.title} {...community} />
-        ))}
-      </div>
+      {Object.entries(communitiesByCategory).map(([category, communities]) => (
+        <div key={category} className="mb-[51px]">
+          <HeaderTitle className="text-[32px]">{category}</HeaderTitle>
+          <div className="flex flex-wrap mt-[32px] gap-[24px]">
+            {communities.map(community => (
+              <CommunityItem key={community.title} {...community} />
+            ))}
+          </div>
+        </div>
+      ))}
     </div>
   )
 }
