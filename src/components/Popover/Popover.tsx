@@ -14,6 +14,7 @@ export interface PopoverProps extends Omit<HTMLAttributes<HTMLDivElement>, 'chil
   size?: 'small' | 'medium'
   hasCaret?: boolean
   contentContainerClassName?: HTMLAttributes<HTMLDivElement>['className']
+  contentSubcontainerClassName?: HTMLAttributes<HTMLDivElement>['className']
 }
 export const Popover = ({
   children,
@@ -26,6 +27,7 @@ export const Popover = ({
   hasCaret = false,
   className,
   contentContainerClassName,
+  contentSubcontainerClassName,
 }: PopoverProps) => {
   const [show, setShow] = useState(false)
   const wrapperRef = useRef<any>(null)
@@ -89,6 +91,7 @@ export const Popover = ({
           className={cn(
             'rounded-lg bg-[#1A1A1A] border border-white border-opacity-20 p-2 shadow-[10px_30px_150px_rgba(46,38,92,0.25)] mb-[10px] min-w-min',
             background === 'light' && 'bg-white',
+            contentSubcontainerClassName,
           )}
         >
           {content}
