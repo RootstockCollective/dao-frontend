@@ -75,7 +75,7 @@ const nftActiveBoostPath = `${boostDataFolder}/latest`
     holders,
   }
   const nftBoostFilename = `${nftContractAddress}-${calculationBlock}.json`
-  const nftBoostPath = `${boostDataFolder}/${nftBoostFilename}.txt`
+  const nftBoostPath = `${boostDataFolder}/${nftBoostFilename}`
   fs.mkdirSync(boostDataFolder, { recursive: true })
   fs.writeFileSync(
     nftBoostPath,
