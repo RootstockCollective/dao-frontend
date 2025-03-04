@@ -52,13 +52,32 @@ export const BoosterProvider = ({ children }: BoosterContextProviderProps) => {
       return { boostData, isLoading, error, hasActiveCampaign }
     }
 
-    const currentBoost = boostData?.holders[address]
-    const isBoosted =
-      currentBoost &&
-      (currentBoost.boostedRBTCRewards > 0 ||
-        currentBoost.boostedRIFRewards > 0 ||
-        currentBoost.estimatedRBTCRewards > 0 ||
-        currentBoost.estimatedRIFRewards > 0)
+    const addressInLowerCase = address.toLocaleLowerCase()
+    const [, currentBoostRaw] =
+      Object.entries(boostData?.holders ?? {}).find(
+        ([key]) => key.toLocaleLowerCase() === addressInLowerCase,
+      ) ?? []
+
+    if (!currentBoostRaw) {
+      return { isBoosted: false, boostData, isLoading, error, hasActiveCampaign }
+    }
+
+    const { boostedRBTCRewards, boostedRIFRewards, estimatedRBTCRewards, estimatedRIFRewards } =
+      currentBoostRaw
+    // > ![NOTE]
+    // > This is to provide a runtime safeguard, as the data is not guaranteed to be present or to be of the correct type
+    const currentBoost = {
+      boostedRBTCRewards: BigInt(boostedRBTCRewards ?? 0),
+      boostedRIFRewards: BigInt(boostedRIFRewards ?? 0),
+      estimatedRBTCRewards: BigInt(estimatedRBTCRewards ?? 0),
+      estimatedRIFRewards: BigInt(estimatedRIFRewards ?? 0),
+    }
+    const isBoosted = !!(
+      currentBoost.boostedRBTCRewards ||
+      currentBoost.boostedRIFRewards ||
+      currentBoost.estimatedRBTCRewards ||
+      currentBoost.estimatedRIFRewards
+    )
 
     return { boostData, isLoading, error, currentBoost, hasActiveCampaign, isBoosted }
   }, [boostData, address, isLoading, error, hasActiveCampaign])
