@@ -6,7 +6,7 @@ import { ConnectButton, Header } from '@/components/Header'
 import { StatefulSidebar } from '@/components/MainContainer/StatefulSidebar'
 import { shortAddress } from '@/lib/utils'
 import { useRouter } from 'next/navigation'
-import { FC, ReactNode, useEffect, useState } from 'react'
+import { FC, ReactNode, Suspense, useEffect, useState } from 'react'
 import { useAccount, useDisconnect } from 'wagmi'
 import { Alert } from '../Alert'
 import { AccountAddress } from '../Header/AccountAddress'
@@ -66,7 +66,7 @@ export const MainContainer: FC<Props> = ({ children }) => {
     </>
   )
   return (
-    <>
+    <Suspense fallback={<div>Loading...</div>}>
       <GradientHeader />
       <div className="flex h-screen">
         <StatefulSidebar ConnectedComponent={<ConnectedComponent />} />
@@ -80,6 +80,6 @@ export const MainContainer: FC<Props> = ({ children }) => {
           <Footer variant="container" />
         </div>
       </div>
-    </>
+    </Suspense>
   )
 }
