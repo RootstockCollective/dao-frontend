@@ -19,8 +19,9 @@ export const DisconnectWorkflow = () => {
     <>
       <Popover
         contentContainerClassName="w-[145px]"
-        contentSubcontainerClassName="w-full py-[16px] px-[24px] text-center rounded-none border-[#2D2D2D] cursor-pointer"
-        content={<DisconnectButton onDisconnect={modal.openModal} />}
+        contentSubContainerClassName="w-full py-[16px] px-[24px] text-center rounded-none border-[#2D2D2D] cursor-pointer"
+        contentSubcontainerProps={{ onClick: modal.openModal }}
+        content={<DisconnectButton />}
         trigger="click"
       >
         <AccountAddress address={address} shortAddress={shortAddress(address)} />
@@ -37,11 +38,6 @@ export const DisconnectWorkflow = () => {
   )
 }
 
-interface DisconnectButtonProps {
-  onDisconnect: () => void
-}
-const DisconnectButton = ({ onDisconnect }: DisconnectButtonProps) => (
-  <div onClick={onDisconnect} className="font-bold tracking-[0.16px] text-[16px] font-rootstock-sans">
-    Disconnect
-  </div>
+const DisconnectButton = () => (
+  <div className="font-bold tracking-[0.16px] text-[16px] font-rootstock-sans">Disconnect</div>
 )
