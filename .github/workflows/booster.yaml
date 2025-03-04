@@ -9,7 +9,7 @@ on:
   workflow_dispatch:
     inputs:
       boost:
-        description: 'The amount of backers to boost'
+        description: 'The reward boost percentage (0-100)'
         required: true
       nft:
         description: 'The address of the NFT contract'
@@ -55,10 +55,6 @@ jobs:
           git checkout $BOOST_DATA_BRANCH --force || git checkout -b $BOOST_DATA_BRANCH
 
           git apply boost.diff --3way --theirs
-
-      - name: Commit and push changes
-        run: |
-          # Stage all changes
           git add .
 
           # Create a commit; if there are no changes, this command will fail, so we ignore that error.

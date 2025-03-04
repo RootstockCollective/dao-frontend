@@ -39,6 +39,10 @@ const nftActiveBoostPath = `${boostDataFolder}/latest`
   let holders: Holders = {}
   for (let i = 0; i < nftTransferEvents.length; i++) {
     const event = nftTransferEvents[i]
+    /* FIXME: lower case addresses for v1.7
+     * getAddress(`0x${event.topics[2].slice(-40)}`).toLowerCase()
+     *   on v1.6.0 this will not work, as the address is not lower cased in the consumer
+     */
     const holderAddress = getAddress(`0x${event.topics[2].slice(-40)}`)
     if (holderAddress === zeroAddress) continue
 
@@ -60,6 +64,7 @@ const nftActiveBoostPath = `${boostDataFolder}/latest`
         estimatedRIFRewards: 0n,
       }),
     )
+
     holders[holderAddress] = {
       estimatedRBTCRewards,
       estimatedRIFRewards,
