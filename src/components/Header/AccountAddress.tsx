@@ -1,7 +1,7 @@
 'use client'
 import { Jdenticon } from '@/components/Header/Jdenticon'
-import { FaPowerOff } from 'react-icons/fa6'
 import { CopyButton } from '../CopyButton'
+import { ChevronDown } from 'lucide-react'
 
 interface Props {
   address: string | undefined
@@ -16,7 +16,13 @@ export const AccountAddress = ({ address, shortAddress, onLogoutClick }: Props) 
       <CopyButton copyText={address ?? ''} icon={null}>
         <span className="underline underline-offset-1">{shortAddress}</span>
       </CopyButton>
-      <FaPowerOff onClick={onLogoutClick} id="logOut" data-testid="Logout_Icon" className="cursor-pointer" />
+      <ChevronDown
+        size={16}
+        onClick={onLogoutClick}
+        id="logOut"
+        data-testid="Logout_Icon"
+        className="cursor-pointer"
+      />
     </div>
   )
 }
