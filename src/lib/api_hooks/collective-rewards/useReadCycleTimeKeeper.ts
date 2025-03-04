@@ -1,11 +1,7 @@
 import { CycleTimeKeeperAbi } from '@/lib/abis/v2/CycleTimeKeeperAbi'
 import { BackersManagerAddress } from '@/lib/contracts'
-import { UseReadContractParameters } from 'wagmi'
-import {
-  CurriedContractConfig,
-  useReadContractGeneric,
-  ViewPureFunctionNames,
-} from '../../../../lib/useReadContractGeneric'
+import { useReadContract, UseReadContractParameters } from 'wagmi'
+import { CurriedContractConfig, ViewPureFunctionNames } from '../contract_hooks'
 
 type CycleTimeKeeperFunctionName = ViewPureFunctionNames<typeof CycleTimeKeeperAbi>
 
@@ -18,12 +14,10 @@ export const useReadCycleTimeKeeper = <TFunctionName extends CycleTimeKeeperFunc
   config: CycleTimeKeeperConfig<TFunctionName>,
   query?: Omit<UseReadContractParameters<typeof CycleTimeKeeperAbi, TFunctionName>['query'], 'select'>,
 ) => {
-  return useReadContractGeneric(
-    {
-      ...(config as any),
-      abi: CycleTimeKeeperAbi,
-      address: BackersManagerAddress,
-    },
+  return useReadContract({
+    abi: CycleTimeKeeperAbi,
+    address: BackersManagerAddress,
+    ...(config as any),
     query,
-  )
+  })
 }

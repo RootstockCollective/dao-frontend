@@ -1,6 +1,4 @@
-import { AVERAGE_BLOCKTIME } from '@/lib/constants'
 import { Abi, ContractFunctionArgs, ContractFunctionName } from 'viem'
-import { useReadContract, UseReadContractParameters, UseReadContractReturnType } from 'wagmi'
 
 export type ViewPureFunctionNames<TAbi extends Abi> = {
   [K in keyof TAbi]: TAbi[K] extends {
@@ -40,21 +38,3 @@ export type CurriedContractConfig<TAbi extends Abi, TFunctionName extends ViewPu
         functionName: TFunctionName
         args: FunctionParams<TAbi, TFunctionName>
       }
-
-export const useReadContractGeneric = <TAbi extends Abi, TFunctionName extends ViewPureFunctionNames<TAbi>>(
-  { functionName, abi, address, ...config }: ContractConfig<TAbi, TFunctionName>,
-  query?: Omit<UseReadContractParameters<TAbi, TFunctionName>['query'], 'select'>,
-): UseReadContractReturnType<TAbi, TFunctionName> => {
-  const params = {
-    abi,
-    address,
-    functionName,
-    args: 'args' in config ? config.args : undefined,
-    query: {
-      refetchInterval: AVERAGE_BLOCKTIME,
-      ...query,
-    },
-  }
-
-  return useReadContract(params as UseReadContractParameters<TAbi, TFunctionName>)
-}

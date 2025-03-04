@@ -1,11 +1,7 @@
 import { BackersManagerAbi } from '@/lib/abis/v2/BackersManagerAbi'
 import { BackersManagerAddress } from '@/lib/contracts'
-import { UseReadContractParameters } from 'wagmi'
-import {
-  CurriedContractConfig,
-  useReadContractGeneric,
-  ViewPureFunctionNames,
-} from '../../../../lib/useReadContractGeneric'
+import { useReadContract, UseReadContractParameters } from 'wagmi'
+import { CurriedContractConfig, ViewPureFunctionNames } from '../contract_hooks'
 
 type BackersManagerFunctionName = ViewPureFunctionNames<typeof BackersManagerAbi>
 
@@ -18,12 +14,12 @@ export const useReadBackersManager = <TFunctionName extends BackersManagerFuncti
   config: BackersManagerConfig<TFunctionName>,
   query?: Omit<UseReadContractParameters<typeof BackersManagerAbi, TFunctionName>['query'], 'select'>,
 ) => {
-  return useReadContractGeneric(
-    {
-      ...(config as any),
-      abi: BackersManagerAbi,
-      address: BackersManagerAddress,
-    },
+  return useReadContract({
+    abi: BackersManagerAbi,
+    address: BackersManagerAddress,
+    ...(config as any),
     query,
-  )
+  })
 }
+
+useReadBackersManager({ functionName: 'cycleStart', args: [0n] })

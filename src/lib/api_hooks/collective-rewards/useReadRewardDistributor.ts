@@ -1,11 +1,7 @@
 import { RewardDistributorAbi } from '@/lib/abis/v2/RewardDistributorAbi'
 import { RewardDistributorAddress } from '@/lib/contracts'
 import { UseReadContractParameters } from 'wagmi'
-import {
-  CurriedContractConfig,
-  useReadContractGeneric,
-  ViewPureFunctionNames,
-} from '../../../../lib/useReadContractGeneric'
+import { CurriedContractConfig, useReadContractGeneric, ViewPureFunctionNames } from '../contract_hooks'
 
 type RewardDistributorFunctionName = ViewPureFunctionNames<typeof RewardDistributorAbi>
 
