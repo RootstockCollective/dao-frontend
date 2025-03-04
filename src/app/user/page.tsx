@@ -15,7 +15,7 @@ import { useHandleErrors } from '../collective-rewards/utils'
 import { COMPLETED, Dropdown, DropdownTopic, getGetStartedData } from '@/components/dropdown'
 import { dropdown } from '@/shared/contants'
 import { HeaderTitle, Typography } from '@/components/Typography'
-import { BalancesProvider, useBalancesContext } from './Balances/context/BalancesContext'
+import { useBalancesContext } from './Balances/context/BalancesContext'
 import { AppRouterInstance } from 'next/dist/shared/lib/app-router-context.shared-runtime'
 import { TokenBalanceRecord } from './types'
 import { Timeout } from 'react-number-format/types/types'
@@ -132,7 +132,7 @@ const UserHeader: FC<UserHeaderProps> = ({ showAdditionalContent }) => {
   )
 }
 
-export const User = () => {
+const User = () => {
   const { address } = useAccount()
 
   const searchParams = useSearchParams()
