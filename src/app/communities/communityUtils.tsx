@@ -1,6 +1,6 @@
 /* eslint-disable quotes */
 import { nftContracts } from '@/lib/contracts'
-import { ReactNode } from 'react'
+import { FC, ReactNode } from 'react'
 
 interface CommunityItem {
   leftImageSrc: string
@@ -10,7 +10,7 @@ interface CommunityItem {
   nftAddress: string
   numberOfMembers: number
   cover: string
-  longDescription?: ReactNode
+  longDescription: FC<{ activation?: ReactNode }>
   isMintable?: boolean
   additionalChecks?: [{ name: string; check: (data: any) => boolean; alertMessage: string }]
 }
@@ -26,6 +26,8 @@ export const earlyAdoptersCommunity = {
   cover: '/images/nfts/ea-nft-cover.png',
   isMintable: true,
   longDescription: (
+    { activation = 'JUL 2025' }: { activation?: ReactNode }, // DAO TODO: the whole object should be properly typed
+  ) => (
     <>
       <p className="mt-4">
         The Early Adopters collection features a vibrant array of digital pioneers, each uniquely crafted to
@@ -47,7 +49,7 @@ export const earlyAdoptersCommunity = {
         <br />
         <b>REQUIREMENT:</b> First 150 stakers with 1 stRIF, Self-Claim
         <br />
-        <b>ACTIVATION:</b> Jul 2025
+        <b>ACTIVATION:</b> {activation}
       </p>
     </>
   ),
@@ -63,7 +65,7 @@ export const ogFounders: CommunityItem = {
   numberOfMembers: 0,
   cover: '/images/nfts/founders-cover.png',
   isMintable: false,
-  longDescription: (
+  longDescription: ({ activation = 'MAY 2025' }) => (
     <>
       <p className="mt-4">
         In the magical realm of Rootstock, a select group of visionary elves, known as the Founders, received
@@ -75,7 +77,7 @@ export const ogFounders: CommunityItem = {
         <br />
         <b>REQUIREMENT:</b> 1 stRIF on 23rd Sept 2024, Self-Claim
         <br />
-        <b>ACTIVATION:</b> May 2025
+        <b>ACTIVATION:</b> {activation}
       </p>
     </>
   ),
@@ -91,7 +93,7 @@ export const ogFoundersEcosystemPartners: CommunityItem = {
   numberOfMembers: 0,
   cover: '/images/nfts/partners-cover.png',
   isMintable: false,
-  longDescription: (
+  longDescription: ({ activation = 'JUN 2025' }) => (
     <>
       <p className="mt-4">
         In the magical realm of Rootstock, a new chapter unfolds as the elves of the RootstockCollective
@@ -103,7 +105,7 @@ export const ogFoundersEcosystemPartners: CommunityItem = {
         <br />
         <b>REQUIREMENT:</b> Recognised Community contributions, 25k stRIF, Air-Drop
         <br />
-        <b>ACTIVATION:</b> Jun 2025
+        <b>ACTIVATION:</b> {activation}
       </p>
     </>
   ),
@@ -119,7 +121,7 @@ export const ogFoundersExternalContributors: CommunityItem = {
   numberOfMembers: 0,
   cover: '/images/nfts/contributors-cover.png',
   isMintable: false,
-  longDescription: (
+  longDescription: ({ activation = 'MAR 2025' }) => (
     <>
       <p className="mt-4">
         In the enchanting realm of Rootstock, a thrilling new chapter unfolds as this dedicated and
@@ -133,7 +135,7 @@ export const ogFoundersExternalContributors: CommunityItem = {
         <br />
         <b>REQUIREMENT:</b> Recognised Community contributions, Air-Drop
         <br />
-        <b>ACTIVATION:</b> March 2025
+        <b>ACTIVATION:</b> {activation}
       </p>
     </>
   ),
@@ -150,6 +152,8 @@ export const vanguardCommunity = {
   cover: '/images/nfts/vanguard-cover.jpg',
   isMintable: true,
   longDescription: (
+    { activation = 'APR 2025' }: { activation?: ReactNode }, // DAO TODO: the whole object should be properly typed
+  ) => (
     <>
       <p className="mt-4">
         The Voting Vanguards are the daring cosmonauts of RootstockCollective, charting new frontiers in
@@ -163,7 +167,7 @@ export const vanguardCommunity = {
         <br />
         <b>REQUIREMENT:</b> Voted on 1 of the last 3 proposals, Self-Claim
         <br />
-        <b>ACTIVATION:</b> Apr 2025
+        <b>ACTIVATION:</b> {activation}
       </p>
     </>
   ),
@@ -197,7 +201,7 @@ export const betaBuilders: CommunityItem = {
   numberOfMembers: 0,
   cover: '/images/nfts/bb-cover.png',
   isMintable: false,
-  longDescription: (
+  longDescription: ({ activation = 'MAY 2025' }) => (
     <>
       <p className="mt-4">
         The Beta Builders collection is a badge of honor for the visionaries shaping the future of Bitcoin
@@ -209,7 +213,7 @@ export const betaBuilders: CommunityItem = {
         <br />
         <b>REQUIREMENT:</b> First 50 CollectiveRewards Builders, Air-Drop
         <br />
-        <b>ACTIVATION:</b> May 2025
+        <b>ACTIVATION:</b> {activation}
       </p>
     </>
   ),

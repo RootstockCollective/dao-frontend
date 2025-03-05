@@ -1,24 +1,25 @@
 'use client'
 
+import { communitiesMapByContract } from '@/app/communities/communityUtils'
+import { useNFTBoosterContext } from '@/app/providers/NFT/BoosterContext'
+import { BoltSvg } from '@/components/BoltSvg'
 import { Button } from '@/components/Button'
 import { Chip } from '@/components/Chip/Chip'
+import { CopyButton } from '@/components/CopyButton'
+import { isUserRejectedTxError } from '@/components/ErrorPage/commonErrors'
+import { DiscordIcon, LinkIcon, TwitterXIcon } from '@/components/Icons'
+import { GlowingLabel } from '@/components/Label/GlowingLabel'
 import { Paragraph, Span, Typography } from '@/components/Typography'
 import { cn, truncateMiddle } from '@/lib/utils'
-import Image from 'next/image'
-import { useRouter, useParams } from 'next/navigation'
-import { ReactNode, useState, useEffect, useRef } from 'react'
-import { TwitterXIcon, DiscordIcon, LinkIcon } from '@/components/Icons'
-import { Address, formatEther } from 'viem'
-import { useAccount } from 'wagmi'
 import { useCommunity } from '@/shared/hooks/useCommunity'
 import { useStRif } from '@/shared/hooks/useStRIf'
-import { CopyButton } from '@/components/CopyButton'
-import { communitiesMapByContract } from '@/app/communities/communityUtils'
-import { isUserRejectedTxError } from '@/components/ErrorPage/commonErrors'
+import { DateTime } from 'luxon'
+import Image from 'next/image'
+import { useParams, useRouter } from 'next/navigation'
+import { ReactNode, useEffect, useRef, useState } from 'react'
+import { Address, formatEther } from 'viem'
+import { useAccount } from 'wagmi'
 import { SelfContainedNFTBoosterCard } from '../../../shared/components/NFTBoosterCard/SelfContainedNFTBoosterCard'
-import { GlowingLabel } from '@/components/Label/GlowingLabel'
-import { BoltSvg } from '@/components/BoltSvg'
-import { useNFTBoosterContext } from '@/app/providers/NFT/BoosterContext'
 import { NftHoldersSection } from './NftHoldersSection'
 
 /**
@@ -242,6 +243,9 @@ export default function Page() {
   }
 
   if (!nftAddress) return null
+
+  const isCampaignActive = hasActiveCampaign && boostData?.nftContractAddress === nftAddress
+
   return (
     <>
       {message && (
@@ -275,7 +279,15 @@ export default function Page() {
             </div>
             <div className="font-semibold">{nftInfo?.title}</div>
           </div>
-          <div className="mb-[24px] font-extralight">{nftInfo?.longDescription}</div>
+          <div className="mb-[24px] font-extralight">
+            {nftInfo?.longDescription({
+              activation: isCampaignActive
+                ? DateTime.fromSeconds(Number(boostData.timestamp) ?? 0)
+                    .toFormat('MMM yyyy')
+                    .toUpperCase()
+                : undefined,
+            })}
+          </div>
           {hasActiveCampaign && boostData?.nftContractAddress === nftAddress && (
             <div className="inline-flex items-center gap-1 pb-6">
               <BoltSvg />
