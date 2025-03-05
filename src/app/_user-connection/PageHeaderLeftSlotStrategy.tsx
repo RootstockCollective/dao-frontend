@@ -7,9 +7,7 @@ import { usePathname } from 'next/navigation'
  */
 export function PageHeaderLeftSlotStrategy() {
   const pathname = usePathname()
-  const LeftComponent = getLeftComponentForRoute(pathname)
-
-  return LeftComponent ? LeftComponent : null
+  return getLeftComponentForRoute(pathname)
 }
 
 function getLeftComponentForRoute(pathname: string) {
