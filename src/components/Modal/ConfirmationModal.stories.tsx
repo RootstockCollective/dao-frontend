@@ -14,15 +14,17 @@ type Story = StoryObj<typeof meta>
 
 export const Default: Story = {
   args: {
+    title: 'Disclaimer',
     isOpen: false,
+    onClose: () => {},
   },
-  render: () => {
+  render: props => {
     const { isModalOpened, openModal, closeModal } = useModal()
     return (
       <>
         <Button onClick={openModal}>Open</Button>
         <ConfirmationModal
-          title="Disclaimer"
+          {...props}
           isOpen={isModalOpened}
           onClose={closeModal}
           onAccept={closeModal}
@@ -42,15 +44,17 @@ export const Default: Story = {
 
 export const Builder: Story = {
   args: {
+    title: 'Builder Disclaimer',
     isOpen: false,
+    onClose: () => {},
   },
-  render: () => {
+  render: props => {
     const { isModalOpened, openModal, closeModal } = useModal()
     return (
       <>
         <Button onClick={openModal}>Open</Button>
         <ConfirmationModal
-          title="Builder Disclaimer"
+          {...props}
           isOpen={isModalOpened}
           onClose={closeModal}
           onAccept={closeModal}
@@ -68,15 +72,17 @@ export const Builder: Story = {
 
 export const Footer: Story = {
   args: {
+    title: 'Custom buttons',
     isOpen: false,
+    onClose: () => {},
   },
-  render: () => {
+  render: props => {
     const { isModalOpened, openModal, closeModal } = useModal()
     return (
       <>
         <Button onClick={openModal}>Open</Button>
         <ConfirmationModal
-          title="Custom buttons"
+          {...props}
           isOpen={isModalOpened}
           onClose={closeModal}
           onAccept={closeModal}

@@ -40,7 +40,7 @@ interface ConfirmationModalProps {
   /**
    * Callback triggered when the modal is closed
    */
-  onClose?: () => void
+  onClose: () => void
   /**
    * Test identifier for unit and integration tests
    */
@@ -65,7 +65,7 @@ export function ConfirmationModal({
   isOpen = false,
 }: ConfirmationModalProps) {
   const modalRef = useRef<HTMLDivElement>(null)
-  useClickOutside([modalRef], () => onClose && onClose())
+  useClickOutside([modalRef], onClose)
   return createPortal(
     <AnimatePresence>
       {isOpen && (
