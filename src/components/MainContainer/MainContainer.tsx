@@ -30,6 +30,7 @@ export const MainContainer: FC<Props> = ({ children }) => {
   const handleDisconnect = () => {
     router.push('/')
     disconnect()
+    modal.closeModal()
   }
 
   useEffect(() => {
