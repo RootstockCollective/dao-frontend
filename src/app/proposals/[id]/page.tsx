@@ -53,6 +53,7 @@ import { isUserRejectedTxError } from '@/components/ErrorPage/commonErrors'
 import Big from '@/lib/big'
 import { formatUnits } from 'ethers'
 import { usePricesContext } from '@/shared/context/PricesContext'
+import { getCombinedFiatAmount } from '@/app/collective-rewards/utils'
 
 export default function ProposalView() {
   const { id } = useParams<{ id: string }>() ?? {}
@@ -576,12 +577,15 @@ const CalldataDisplay = (props: DecodedData) => {
 
                         // Check if we have a valid price
                         if (tokenPrice && typeof tokenPrice.price === 'number') {
-                          return `≈ ${formatCurrency(
-                            Big(inputValue.toString())
-                              .div('1e' + 18)
-                              .mul(tokenPrice.price)
-                              .toNumber(),
-                          )} USD`
+                          let newPrice = getCombinedFiatAmount([
+                            {
+                              value: inputValue as bigint,
+                              price: tokenPrice.price,
+                              symbol: tokenSymbol,
+                              currency: 'USD',
+                            },
+                          ])
+                          return `≈ ${formatCurrency(newPrice.toNumber())} USD`
                         }
 
                         return '≈ Price unavailable'
