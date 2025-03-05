@@ -12,7 +12,7 @@ import { useClickOutside } from '@/shared/hooks/useClickOutside'
 // transition animation duration
 const duration = 0.3
 
-interface GenericModalProps {
+interface ConfirmationModalProps {
   /**
    * Modal title displayed at the top
    */
@@ -36,7 +36,7 @@ interface GenericModalProps {
   /**
    * Controls whether the modal is visible
    */
-  isOpen?: boolean
+  isOpen: boolean
   /**
    * Callback triggered when the modal is closed
    */
@@ -54,7 +54,7 @@ interface GenericModalProps {
  * It is recommended to use this component together with the `useModal` hook
  * for better state management and handling open/close logic.
  */
-export function GenericModal({
+export function ConfirmationModal({
   title,
   children,
   onClose,
@@ -63,7 +63,7 @@ export function GenericModal({
   onAccept,
   onDecline,
   isOpen = false,
-}: GenericModalProps) {
+}: ConfirmationModalProps) {
   const modalRef = useRef<HTMLDivElement>(null)
   useClickOutside([modalRef], () => onClose && onClose())
   return createPortal(

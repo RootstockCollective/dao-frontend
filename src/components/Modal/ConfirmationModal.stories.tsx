@@ -1,24 +1,27 @@
 import type { Meta, StoryObj } from '@storybook/react'
-import { GenericModal } from './'
+import { ConfirmationModal } from '.'
 import { Button } from '../Button'
 import { useModal } from '@/shared/hooks/useModal'
 
 const meta = {
-  component: GenericModal,
-  title: 'Components/Modals/GenericModal',
-} satisfies Meta<typeof GenericModal>
+  component: ConfirmationModal,
+  title: 'Components/Modals/ConfirmationModal',
+} satisfies Meta<typeof ConfirmationModal>
 
 export default meta
 
 type Story = StoryObj<typeof meta>
 
 export const Default: Story = {
+  args: {
+    isOpen: false,
+  },
   render: () => {
     const { isModalOpened, openModal, closeModal } = useModal()
     return (
       <>
         <Button onClick={openModal}>Open</Button>
-        <GenericModal
+        <ConfirmationModal
           title="Disclaimer"
           isOpen={isModalOpened}
           onClose={closeModal}
@@ -31,19 +34,22 @@ export const Default: Story = {
           considered a resident, or taxpayer in a prohibited jurisdiction, including without limitation the
           United States of America, is forbidden. Please read the terms and conditions carefully before using
           the RootstockCollective dApp.
-        </GenericModal>
+        </ConfirmationModal>
       </>
     )
   },
 }
 
 export const Builder: Story = {
+  args: {
+    isOpen: false,
+  },
   render: () => {
     const { isModalOpened, openModal, closeModal } = useModal()
     return (
       <>
         <Button onClick={openModal}>Open</Button>
-        <GenericModal
+        <ConfirmationModal
           title="Builder Disclaimer"
           isOpen={isModalOpened}
           onClose={closeModal}
@@ -54,19 +60,22 @@ export const Builder: Story = {
           acknowledge and agree to be bound to the terms of the Collective Rewards and to submit your KYC
           information to the RootstockCollective Foundation. You accept that the information submitted will be
           treated pursuant to the Privacy Policy.
-        </GenericModal>
+        </ConfirmationModal>
       </>
     )
   },
 }
 
 export const Footer: Story = {
+  args: {
+    isOpen: false,
+  },
   render: () => {
     const { isModalOpened, openModal, closeModal } = useModal()
     return (
       <>
         <Button onClick={openModal}>Open</Button>
-        <GenericModal
+        <ConfirmationModal
           title="Custom buttons"
           isOpen={isModalOpened}
           onClose={closeModal}
@@ -79,7 +88,7 @@ export const Footer: Story = {
           }
         >
           When the &quot;buttons&quot; prop is passed, it replaces the default Agree/Disagree buttons
-        </GenericModal>
+        </ConfirmationModal>
       </>
     )
   },
