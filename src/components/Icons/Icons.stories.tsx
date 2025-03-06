@@ -5,6 +5,10 @@ import {
   CircleIcon,
   ArrowUpSFillIcon,
   ArrowDownSFillIcon,
+  BitcoinIcon,
+  PowerOffIcon,
+  SearchIcon,
+  XCircleIcon,
   BiCopyIcon,
   BsCopyIcon,
   CircleCheckIcon,
@@ -59,6 +63,22 @@ const IconsShowcase = (args: IconProps) => (
     <div>
       <h4>Arrow Down S Fill</h4>
       <ArrowDownSFillIcon {...args} />
+    </div>
+    <div>
+      <h4>Bitcoin</h4>
+      <BitcoinIcon {...args} />
+    </div>
+    <div>
+      <h4>Power Off</h4>
+      <PowerOffIcon {...args} />
+    </div>
+    <div>
+      <h4>X Circle</h4>
+      <XCircleIcon {...args} />
+    </div>
+    <div>
+      <h4>Search</h4>
+      <SearchIcon {...args} />
     </div>
     <div>
       <h4>Close</h4>
