@@ -5,6 +5,11 @@ import {
   CircleIcon,
   ArrowUpSFillIcon,
   ArrowDownSFillIcon,
+  UsersIcon,
+  BadgeCheckIcon,
+  SpinnerIcon,
+  MinusCircleIcon,
+  PlusCircleIcon,
   ArrowUpRightIcon,
   ExternalLinkIcon,
   TwitterXIcon,
@@ -50,6 +55,24 @@ const IconsShowcase = (args: IconProps) => (
       <ArrowDownSFillIcon {...args} />
     </div>
     <div>
+      <h4>Users</h4>
+      <UsersIcon {...args} />
+    </div>
+    <div>
+      <h4>Badge Check</h4>
+      <BadgeCheckIcon {...args} />
+    </div>
+    <div>
+      <h4>Spinner</h4>
+      <SpinnerIcon {...args} />
+    </div>
+    <div>
+      <h4>Minus Circle</h4>
+      <MinusCircleIcon {...args} />
+    </div>
+    <div>
+      <h4>Plus Circle</h4>
+      <PlusCircleIcon {...args} />
       <h4>Arrow Up Right</h4>
       <ArrowUpRightIcon {...args} />
     </div>
