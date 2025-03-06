@@ -533,23 +533,44 @@ const CalldataDisplay = (props: DecodedData) => {
               ({} as InputNameFormatMap<typeof functionName, typeof inputName>)
             const formattedInputName = (functionInputNames[inputName as never] || inputName) as string
 
-            const inputValue = args[index] as InputParameterTypeByFnByName<
-              typeof functionName,
-              typeof inputName
-            >
+            const inputValue = args[index] as any
 
             // If this is the token input, save its value
             if (formattedInputName === 'token') {
               currentTokenSymbol = String(inputValue)
             }
 
-            const inputValueComposerMap = (actionComponentMap[functionName] || {}) as InputValueComposerMap<
-              typeof functionName,
-              typeof inputName
-            >
+            const inputValueComposerMap = (actionComponentMap[functionName] || {}) as any
             const InputComponent = inputValueComposerMap[
               inputName as keyof typeof inputValueComposerMap
-            ] as InputValueComponent<InputParameterTypeByFnByName<typeof functionName, typeof inputName>>
+            ] as any
+
+            // Pre-compute USD value using useMemo outside the JSX
+            const usdValue = useMemo(() => {
+              if (formattedInputName === 'amount' && currentTokenSymbol) {
+                if (!prices) return ''
+
+                const tokenSymbol =
+                  Object.entries(tokenContracts).find(
+                    ([key, value]) => value === currentTokenSymbol.toLowerCase(),
+                  )?.[0] ?? ''
+
+                const tokenPrice = prices[tokenSymbol]
+
+                if (tokenPrice && typeof tokenPrice.price === 'number') {
+                  let newPrice = getCombinedFiatAmount([
+                    {
+                      value: inputValue as bigint,
+                      price: tokenPrice.price,
+                      symbol: tokenSymbol,
+                      currency: 'USD',
+                    },
+                  ])
+                  return `= USD ${formatCurrency(newPrice.toNumber())}`
+                }
+              }
+              return ''
+            }, [formattedInputName, inputValue])
 
             return (
               <li key={index} className="my-2 flex justify-between">
@@ -566,37 +587,7 @@ const CalldataDisplay = (props: DecodedData) => {
                     />
                   )}
                   {formattedInputName === 'amount' && currentTokenSymbol && (
-                    <Span className="text-xs text-gray-400 mt-1">
-                      {(() => {
-                        // Check if prices exists
-                        if (!prices) return ''
-
-                        // const tokenSymbol =
-                        //   tokenContracts[currentTokenSymbol.toLowerCase() as keyof typeof tokenContracts]
-                        const tokenSymbol =
-                          Object.entries(tokenContracts).find(
-                            ([key, value]) => value === currentTokenSymbol.toLowerCase(),
-                          )?.[0] ?? ''
-
-                        // Safely check if the token exists in prices
-                        const tokenPrice = prices[tokenSymbol]
-
-                        // Check if we have a valid price
-                        if (tokenPrice && typeof tokenPrice.price === 'number') {
-                          let newPrice = getCombinedFiatAmount([
-                            {
-                              value: inputValue as bigint,
-                              price: tokenPrice.price,
-                              symbol: tokenSymbol,
-                              currency: 'USD',
-                            },
-                          ])
-                          return `= USD ${formatCurrency(newPrice.toNumber())}`
-                        }
-
-                        return ''
-                      })()}
-                    </Span>
+                    <Span className="text-xs text-gray-400 mt-1">{usdValue}</Span>
                   )}
                 </div>
               </li>
