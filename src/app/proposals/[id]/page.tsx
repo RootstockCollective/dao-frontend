@@ -571,8 +571,12 @@ const CalldataDisplay = (props: DecodedData) => {
                         // Check if prices exists
                         if (!prices) return '≈ Price unavailable'
 
+                        // const tokenSymbol =
+                        //   tokenContracts[currentTokenSymbol.toLowerCase() as keyof typeof tokenContracts]
                         const tokenSymbol =
-                          tokenContracts[currentTokenSymbol.toLowerCase() as keyof typeof tokenContracts]
+                          Object.entries(tokenContracts).find(
+                            ([key, value]) => value === currentTokenSymbol.toLowerCase(),
+                          )?.[0] ?? ''
 
                         // Safely check if the token exists in prices
                         const tokenPrice = (prices as any)[tokenSymbol]
