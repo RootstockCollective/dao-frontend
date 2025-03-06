@@ -34,7 +34,7 @@ import { MetricsCard } from '@/components/MetricsCard'
 import { Popover } from '@/components/Popover'
 import { Header, Paragraph, Span, Typography } from '@/components/Typography'
 import { config } from '@/config'
-import { RIF, RIF_ADDRESS, CURRENCY_ADDRESS_SYMBOLS_PAIR } from '@/lib/constants'
+import { RIF, RIF_ADDRESS } from '@/lib/constants'
 import { formatNumberWithCommas, truncateMiddle, formatCurrency } from '@/lib/utils'
 import { useExecuteProposal } from '@/shared/hooks/useExecuteProposal'
 import { useQueueProposal } from '@/shared/hooks/useQueueProposal'
@@ -54,6 +54,7 @@ import Big from '@/lib/big'
 import { formatUnits } from 'ethers'
 import { usePricesContext } from '@/shared/context/PricesContext'
 import { getCombinedFiatAmount } from '@/app/collective-rewards/utils'
+import { tokenContracts } from '@/lib/contracts'
 
 export default function ProposalView() {
   const { id } = useParams<{ id: string }>() ?? {}
@@ -570,7 +571,8 @@ const CalldataDisplay = (props: DecodedData) => {
                         // Check if prices exists
                         if (!prices) return '≈ Price unavailable'
 
-                        const tokenSymbol = CURRENCY_ADDRESS_SYMBOLS_PAIR[currentTokenSymbol.toLowerCase()]
+                        const tokenSymbol =
+                          tokenContracts[currentTokenSymbol.toLowerCase() as keyof typeof tokenContracts]
 
                         // Safely check if the token exists in prices
                         const tokenPrice = (prices as any)[tokenSymbol]
