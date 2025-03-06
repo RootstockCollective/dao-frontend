@@ -16,6 +16,7 @@ export type NftBoostData = {
   nftContractAddress: Address
   boostPercentage: number
   calculationBlock: number
+  timestamp: bigint
   holders: Holders
 }
 
@@ -23,10 +24,16 @@ const boostDataFolder = `nft_boost_data`
 const nftActiveBoostPath = `${boostDataFolder}/latest`
 
 ;(async () => {
-  const { getLatestBlockNumber, getNftTransferEvents, getAllGauges, estimatedGaugeRewards } =
-    await getActions()
+  const {
+    getLatestBlockNumber,
+    getNftTransferEvents,
+    getBlockByNumber,
+    getAllGauges,
+    estimatedGaugeRewards,
+  } = await getActions()
 
   const calculationBlock = Number(await getLatestBlockNumber())
+  const { timestamp } = await getBlockByNumber(calculationBlock)
   console.info(`Latest block: ${calculationBlock}`)
 
   const nftTransferEvents = await getNftTransferEvents(nftContractAddress)
@@ -77,6 +84,7 @@ const nftActiveBoostPath = `${boostDataFolder}/latest`
     nftContractAddress,
     boostPercentage,
     calculationBlock,
+    timestamp,
     holders,
   }
   const nftBoostFilename = `${nftContractAddress}-${calculationBlock}.json`

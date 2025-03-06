@@ -21,6 +21,7 @@ interface BoostData {
   nftContractAddress: Address
   boostPercentage: bigint
   calculationBlock: bigint
+  timestamp: bigint
   holders: Holders
 }
 interface NFTBoosterContext {
