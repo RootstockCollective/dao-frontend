@@ -1,11 +1,11 @@
-import { communitiesMapByContract } from '@/app/communities/communityUtils'
-import { useNFTBoosterContext } from '@/app/providers/NFT/BoosterContext'
 import { CommunityCard } from '@/app/user/Communities/CommunityCard'
 import { JoinACommunity } from '@/app/user/Communities/JoinACommunity'
-import { HeaderTitle } from '@/components/Typography'
 import { useCommunity } from '@/shared/hooks/useCommunity'
-import { SpinnerIcon } from '@/components/Icons'
-import { useEffect, useRef, useState } from 'react'
+import { communitiesMapByContract } from '@/app/communities/communityUtils'
+import { SectionHeader } from '@/components/section-header'
+import { Link } from '@/components/Link'
+import { useAccount } from 'wagmi'
+import { useState } from 'react'
 
 const communities: string[] = Object.keys(communitiesMapByContract)
 
@@ -15,7 +15,9 @@ export const CommunitiesSection = () => (
   </div>
 )
 
-const UserCommunities = ({ nftAddresses }: { nftAddresses: string[] }) => {
+export const UserCommunities = ({ nftAddresses }: { nftAddresses: string[] }) => {
+  const { isConnected } = useAccount()
+
   // For each NFT address, fetch the info
   const [nftsInfo, setNftsInfo] = useState(
     nftAddresses.map(nftAddress => ({ address: nftAddress, isLoading: true, isMember: false, imageUri: '' })),
@@ -45,24 +47,32 @@ const UserCommunities = ({ nftAddresses }: { nftAddresses: string[] }) => {
 
   return (
     <>
-      <HeaderTitle className="mb-[24px] font-bold">
-        Communities ({nftsOwned}){' '}
-        {isLoadingNfts && (
-          <span>
-            <SpinnerIcon className="animate-spin inline-block" />
-          </span>
-        )}
-      </HeaderTitle>
-      <div className="flex flex-wrap gap-[24px]">
-        {nftsInfo.map((nftInfo, index) => (
-          <NftInfo
-            key={nftInfo.address}
-            nftAddress={nftInfo.address}
-            onFinishedLoading={onNftFinishedLoading(index)}
-          />
-        ))}
-      </div>
-      {!isLoadingNfts && nftsOwned === 0 && <JoinACommunity />}
+      <SectionHeader
+        name="Communities"
+        description={
+          <>
+            Select one or more Builders you want to back. You retain full ownership and access to your stRIF
+            while earning a portion of their rewards. For more information check the{' '}
+            <Link variant={'section-header'} href={'https://www.google.com/'}>
+              Whitepaper
+            </Link>
+            .
+          </>
+        }
+      />
+      {!isConnected || (!isLoadingNfts && nftsOwned === 0) ? (
+        <JoinACommunity />
+      ) : (
+        <div className="flex flex-wrap gap-[24px]">
+          {nftsInfo.map((nftInfo, index) => (
+            <NftInfo
+              key={nftInfo.address}
+              nftAddress={nftInfo.address}
+              onFinishedLoading={onNftFinishedLoading(index)}
+            />
+          ))}
+        </div>
+      )}
     </>
   )
 }
