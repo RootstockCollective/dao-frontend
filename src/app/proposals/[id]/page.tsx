@@ -579,7 +579,7 @@ const CalldataDisplay = (props: DecodedData) => {
                           )?.[0] ?? ''
 
                         // Safely check if the token exists in prices
-                        const tokenPrice = (prices as any)[tokenSymbol]
+                        const tokenPrice = prices[tokenSymbol]
 
                         // Check if we have a valid price
                         if (tokenPrice && typeof tokenPrice.price === 'number') {
