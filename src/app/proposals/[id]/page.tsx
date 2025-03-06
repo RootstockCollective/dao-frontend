@@ -594,7 +594,7 @@ const CalldataDisplay = (props: DecodedData) => {
                           return `= USD ${formatCurrency(newPrice.toNumber())}`
                         }
 
-                        return '≈ Price unavailable'
+                        return ''
                       })()}
                     </Span>
                   )}
