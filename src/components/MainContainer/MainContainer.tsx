@@ -16,7 +16,7 @@ export const MainContainer: FC<Props> = ({ children }) => {
   const { message, setMessage } = useAlertContext()
 
   return (
-    <Suspense fallback={<div>Loading...</div>}>
+    <Suspense fallback="Loading...">
       <GradientHeader />
       <div className="flex h-screen">
         <StatefulSidebar />

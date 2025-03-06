@@ -21,6 +21,7 @@ import { TokenBalanceRecord } from './types'
 import { Timeout } from 'react-number-format/types/types'
 import { SelfContainedNFTBoosterCard } from '@/app/shared/components/NFTBoosterCard/SelfContainedNFTBoosterCard'
 import { JustifyBetweenLayout } from '@/app/collective-rewards/shared'
+import { HeroSection } from './HeroSection'
 
 const getStartedSkipped = 'getStartedSkipped'
 const values = ['holdings', 'rewards'] as const
@@ -132,7 +133,7 @@ const UserHeader: FC<UserHeaderProps> = ({ showAdditionalContent }) => {
 }
 
 const User = () => {
-  const { address } = useAccount()
+  const { address, isConnected } = useAccount()
 
   const searchParams = useSearchParams()
   const tabFromParams = searchParams?.get('tab') as TabValue
@@ -151,6 +152,7 @@ const User = () => {
     <>
       {/* We don't show the tab if it's loading */}
       <Tabs defaultValue={defaultTabValue}>
+        {!isConnected && <HeroSection />}
         <JustifyBetweenLayout
           leftComponent={<UserHeader showAdditionalContent={showAdditionalContent} />}
           rightComponent={
