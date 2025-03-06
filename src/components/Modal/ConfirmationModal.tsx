@@ -16,7 +16,7 @@ interface ConfirmationModalProps {
   /**
    * Modal title displayed at the top
    */
-  title?: string
+  title: string
   /**
    * Pass the main modal text to the `children` prop
    */
@@ -48,7 +48,7 @@ interface ConfirmationModalProps {
 }
 
 /**
- * Generic reusable animated modal component.
+ * Animated modal component.
  * Can be used for disclaimers, warnings, confirmations, or other modal dialogs.
  *
  * It is recommended to use this component together with the `useModal` hook
