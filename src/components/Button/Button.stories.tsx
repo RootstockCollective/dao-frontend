@@ -1,6 +1,6 @@
 import type { Meta, StoryObj } from '@storybook/react'
 import { Button } from '@/components/Button'
-import { FaLink } from 'react-icons/fa'
+import { LinkIcon } from '@/components/Icons'
 import { userEvent, within, expect, spyOn } from '@storybook/test'
 
 const meta = {
@@ -30,7 +30,7 @@ export const PrimaryWithIcon: Story = {
     children: 'Connect wallet',
     fullWidth: false,
     onClick: () => console.log('Clicked'),
-    startIcon: <FaLink />,
+    startIcon: <LinkIcon size={16} />,
   },
 }
 
@@ -47,7 +47,7 @@ export const SecondaryWithIcon: Story = {
     children: 'Explore Communities',
     variant: 'secondary',
     onClick: () => console.log('Clicked'),
-    startIcon: <FaLink fill="var(--color-secondary)" />,
+    startIcon: <LinkIcon size={16} fill="var(--color-secondary)" />,
   },
 }
 

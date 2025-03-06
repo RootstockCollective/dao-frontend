@@ -4,7 +4,7 @@ import * as AccordionPrimitive from '@radix-ui/react-accordion'
 import * as React from 'react'
 
 import { cn } from '@/lib/utils'
-import { FiMinusCircle, FiPlusCircle } from 'react-icons/fi'
+import { MinusCircleIcon, PlusCircleIcon } from '@/components/Icons'
 
 const Accordion = AccordionPrimitive.Root
 
@@ -30,8 +30,8 @@ const AccordionTrigger = React.forwardRef<
       {...props}
     >
       {children}
-      <FiPlusCircle className="h-6 w-6 shrink-0 transition-transform duration-200 group-data-[state=open]:hidden" />
-      <FiMinusCircle className="h-6 w-6 shrink-0 transition-transform duration-200 group-data-[state=closed]:hidden" />
+      <PlusCircleIcon className="h-6 w-6 shrink-0 transition-transform duration-200 group-data-[state=open]:hidden" />
+      <MinusCircleIcon className="h-6 w-6 shrink-0 transition-transform duration-200 group-data-[state=closed]:hidden" />
     </AccordionPrimitive.Trigger>
   </AccordionPrimitive.Header>
 ))
