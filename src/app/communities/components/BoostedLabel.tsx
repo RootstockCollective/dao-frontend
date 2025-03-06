@@ -1,9 +1,9 @@
 'use client'
 
-import { GlowingLabel } from '@/components/Label/GlowingLabel'
+import { useNFTBoosterContext } from '@/app/providers/NFT/BoosterContext'
 import { BoltSvg } from '@/components/BoltSvg'
+import { GlowingLabel } from '@/components/Label/GlowingLabel'
 import { Span } from '@/components/Typography'
-import { useIsBoosted } from '../hooks/useIsBoosted'
 
 interface BoostedLabelProps {
   nftAddress: string
@@ -16,8 +16,9 @@ interface BoostedLabelProps {
  * Otherwise, renders a standard bold text label.
  */
 export function BoostedLabel({ nftAddress, children }: BoostedLabelProps) {
-  const isBoosted = useIsBoosted(nftAddress)
-  return isBoosted ? (
+  const { isCampaignActive } = useNFTBoosterContext()
+
+  return isCampaignActive(nftAddress) ? (
     <div className="inline-flex items-center">
       <GlowingLabel showGlow>{children}</GlowingLabel>
       <div className="-ml-[4px]">

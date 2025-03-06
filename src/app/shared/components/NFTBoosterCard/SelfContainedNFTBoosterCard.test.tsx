@@ -1,7 +1,7 @@
-import { describe, expect, test, vi, afterEach } from 'vitest'
-import { SelfContainedNFTBoosterCard } from './SelfContainedNFTBoosterCard'
-import { cleanup, render } from '@testing-library/react'
 import { BoostData, useNFTBoosterContext } from '@/app/providers/NFT/BoosterContext'
+import { cleanup, render } from '@testing-library/react'
+import { afterEach, describe, expect, test, vi } from 'vitest'
+import { SelfContainedNFTBoosterCard } from './SelfContainedNFTBoosterCard'
 
 vi.mock('@/app/providers/NFT/BoosterContext', () => ({
   useNFTBoosterContext: vi.fn(),
@@ -33,6 +33,7 @@ describe('SelfContainedNFTBoosterCard', () => {
       boostData,
       hasActiveCampaign: true,
       isBoosted: false,
+      isCampaignActive: () => false,
     })
     const { findByText } = render(<SelfContainedNFTBoosterCard />)
 
@@ -45,6 +46,7 @@ describe('SelfContainedNFTBoosterCard', () => {
       boostData,
       hasActiveCampaign: true,
       isBoosted: false,
+      isCampaignActive: () => true,
     })
     const { findByText } = render(<SelfContainedNFTBoosterCard forceRender={true} />)
 
@@ -57,6 +59,7 @@ describe('SelfContainedNFTBoosterCard', () => {
       boostData,
       hasActiveCampaign: true,
       isBoosted: true,
+      isCampaignActive: () => true,
     })
     const { findByText } = render(<SelfContainedNFTBoosterCard />)
 
@@ -69,6 +72,7 @@ describe('SelfContainedNFTBoosterCard', () => {
       boostData,
       hasActiveCampaign: false,
       isBoosted: false,
+      isCampaignActive: () => true,
     })
     const { findByText } = render(<SelfContainedNFTBoosterCard />)
 
