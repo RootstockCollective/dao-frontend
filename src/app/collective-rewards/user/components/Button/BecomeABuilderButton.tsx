@@ -8,7 +8,7 @@ import { Address } from 'viem'
 import { Builder, BuilderState } from '@/app/collective-rewards/types'
 import { isBuilderDeactivated, isBuilderKycRevoked, useHandleErrors } from '@/app/collective-rewards/utils'
 import { Popover } from '@/components/Popover'
-import { HeaderButton } from '@/components/Button'
+import { Button, HeaderButton } from '@/components/Button'
 
 type ExtendedBuilderState = BuilderState | 'deactivated' | 'paused'
 type StatusBadgeProps = {
@@ -19,9 +19,9 @@ const BuilderRegistrationButton = () => {
   const modal = useModal()
   return (
     <>
-      <HeaderButton variant="white" onClick={modal.openModal}>
+      <Button variant="white-new" onClick={modal.openModal}>
         Become a builder
-      </HeaderButton>
+      </Button>
       {modal.isModalOpened && <BecomeABuilderModal onClose={modal.closeModal} />}
     </>
   )

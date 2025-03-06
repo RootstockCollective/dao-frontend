@@ -55,11 +55,7 @@ interface ConnectButtonComponentProps {
 }
 
 const ConnectButtonComponent = ({ onClick }: ConnectButtonComponentProps) => (
-  <Button
-    onClick={onClick}
-    data-testid="ConnectWallet"
-    buttonProps={{ style: { width: '165px', height: '40px' } }}
-  >
+  <Button onClick={onClick} data-testid="ConnectWallet" variant="primary-new">
     Connect Wallet
   </Button>
 )
