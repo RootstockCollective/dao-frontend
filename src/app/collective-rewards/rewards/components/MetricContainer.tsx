@@ -7,5 +7,5 @@ interface MetricsElementProps {
 }
 
 export const MetricContainer = ({ children, className }: MetricsElementProps) => (
-  <div className={cn('flex-1 min-w-[calc(20%-1rem)] max-w-[17%]', className)}>{children}</div>
+  <div className={cn('flex-1 min-w-[calc(20%-1rem)] w-[214px]', className)}>{children}</div>
 )

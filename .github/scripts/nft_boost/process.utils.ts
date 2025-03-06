@@ -9,7 +9,7 @@ export type Args = {
 }
 const { nftContractAddress, boostPercentage, env } = args.reduce<Args>((acc, val) => {
   if (val.startsWith('--nft')) {
-    acc.nftContractAddress = getAddress(val.split('=')[1])
+    acc.nftContractAddress = getAddress(val.split('=')[1]).toLowerCase() as Address
   }
 
   if (val.startsWith('--boost')) {

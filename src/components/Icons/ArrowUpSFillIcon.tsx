@@ -1,9 +1,9 @@
 import { type IconProps } from './types'
-import { DEFAULT_ICON_SIZE, DEFAULT_ICON_COLOR } from './constants'
+import { DEFAULT_ICON_COLOR } from './constants'
 
 export function ArrowUpSFillIcon({
   'aria-label': ariaLabel = 'Arrow Up Icon',
-  size = DEFAULT_ICON_SIZE,
+  size = 16,
   color = DEFAULT_ICON_COLOR,
   fill = color,
   ...props

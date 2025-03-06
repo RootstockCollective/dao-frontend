@@ -9,6 +9,7 @@ import { BuilderContextProviderWithPrices } from '../collective-rewards/user'
 import { AllocationsContextProvider } from '../collective-rewards/allocations/context'
 import { BoosterProvider } from './NFT/BoosterContext'
 import { MigrationProvider } from '@/shared/context/MigrationContext'
+import { MainContainer } from '@/components/MainContainer/MainContainer'
 
 interface Props {
   children: ReactNode
@@ -16,6 +17,7 @@ interface Props {
 
 export const ContextProviders = ({ children }: Props) => {
   const queryClient = new QueryClient()
+
   return (
     <ErrorBoundary>
       <WagmiProvider config={config}>
@@ -24,7 +26,9 @@ export const ContextProviders = ({ children }: Props) => {
             <MigrationProvider>
               <BuilderContextProviderWithPrices>
                 <BoosterProvider>
-                  <AllocationsContextProvider>{children}</AllocationsContextProvider>
+                  <AllocationsContextProvider>
+                    <MainContainer>{children}</MainContainer>
+                  </AllocationsContextProvider>
                 </BoosterProvider>
               </BuilderContextProviderWithPrices>
             </MigrationProvider>
