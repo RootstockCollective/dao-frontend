@@ -521,7 +521,9 @@ const CalldataDisplay = (props: DecodedData) => {
       for (let i = 0; i < inputs.length; i++) {
         const input = inputs[i]
         const inputName = input.name
-        const functionInputNames = actionInputNameFormatMap[functionName] || {}
+        const functionInputNames =
+          actionInputNameFormatMap[functionName] ||
+          ({} as InputNameFormatMap<typeof functionName, typeof inputName>)
         const formattedName = (functionInputNames[inputName as never] || inputName) as string
 
         if (formattedName === 'token') {
@@ -543,11 +545,18 @@ const CalldataDisplay = (props: DecodedData) => {
           // Pre-calculate for all inputs
           inputs.forEach((input, idx) => {
             const inputName = input.name
-            const functionInputNames = actionInputNameFormatMap[functionName] || {}
+            const functionInputNames =
+              actionInputNameFormatMap[functionName] ||
+              ({} as InputNameFormatMap<typeof functionName, typeof inputName>)
             const formattedName = (functionInputNames[inputName as never] || inputName) as string
 
             if (formattedName === 'amount') {
-              const inputValue = args[idx]
+              // Use proper typing for the input value
+              const inputValue = args[idx] as InputParameterTypeByFnByName<
+                typeof functionName,
+                typeof inputName
+              >
+
               let newPrice = getCombinedFiatAmount([
                 {
                   value: inputValue as bigint,
@@ -590,16 +599,24 @@ const CalldataDisplay = (props: DecodedData) => {
               ({} as InputNameFormatMap<typeof functionName, typeof inputName>)
             const formattedInputName = (functionInputNames[inputName as never] || inputName) as string
 
-            const inputValue = args[index] as any
-            const inputValueComposerMap = (actionComponentMap[functionName] || {}) as any
-            const InputComponent = inputValueComposerMap[
-              inputName as keyof typeof inputValueComposerMap
-            ] as any
+            const inputValue = args[index] as InputParameterTypeByFnByName<
+              typeof functionName,
+              typeof inputName
+            >
 
             // If this is the token input, update the token value for rendering
             if (formattedInputName === 'token') {
               currentTokenSymbol = String(inputValue)
             }
+
+            const inputValueComposerMap = (actionComponentMap[functionName] || {}) as InputValueComposerMap<
+              typeof functionName,
+              typeof inputName
+            >
+
+            const InputComponent = inputValueComposerMap[
+              inputName as keyof typeof inputValueComposerMap
+            ] as InputValueComponent<InputParameterTypeByFnByName<typeof functionName, typeof inputName>>
 
             return (
               <li key={index} className="my-2 flex justify-between">
