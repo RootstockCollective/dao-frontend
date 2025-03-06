@@ -1,5 +1,5 @@
 import axios from 'axios'
-import { Address, getAddress } from 'viem'
+import { Address, Block, getAddress } from 'viem'
 import { BackersManagerAbi, BuilderRegistryAbi, GaugeAbi } from '../../../src/lib/abis/v2'
 
 interface NFTEvent {
@@ -27,6 +27,10 @@ export async function getActions() {
 
   const getLatestBlockNumber = (): Promise<bigint> => {
     return publicClient.getBlockNumber()
+  }
+
+  const getBlockByNumber = (blockNumber: number): Promise<Block> => {
+    return publicClient.getBlock(blockNumber)
   }
 
   const getNftTransferEvents = async (nftContract: string): Promise<NFTEvent[]> => {
@@ -111,6 +115,7 @@ export async function getActions() {
   return {
     getLatestBlockNumber,
     getNftTransferEvents,
+    getBlockByNumber,
     getAllGauges,
     estimatedGaugeRewards,
   }

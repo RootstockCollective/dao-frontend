@@ -2,7 +2,7 @@ import { FC } from 'react'
 import { Meta, StoryObj } from '@storybook/react'
 import { CopyButton, CopyButtonProps } from './CopyButton'
 import { shortAddress } from '@/lib/utils'
-import { BsCopy } from 'react-icons/bs'
+import { BsCopyIcon } from '../Icons'
 import { action } from '@storybook/addon-actions'
 import { spyOn } from '@storybook/test'
 
@@ -68,7 +68,7 @@ export const CustomIcon: Story = {
   args: {
     copyText: address,
     children: shortAddress(address),
-    icon: <BsCopy />,
+    icon: <BsCopyIcon />,
     onCopySuccess: action('onCopySuccess'),
     onCopyFailure: action('onCopyFailure'),
   },

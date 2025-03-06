@@ -3,8 +3,7 @@ import { cn } from '@/lib/utils'
 import { FC, JSX } from 'react'
 import { InputAttributes, NumericFormatProps } from 'react-number-format'
 import { InputNumber } from './InputNumber'
-import { BsSearch, BsXCircle } from 'react-icons/bs'
-import { FaSpinner } from 'react-icons/fa6'
+import { XCircleIcon, SearchIcon, SpinnerIcon } from '../Icons'
 
 const DEFAULT_CLASSES = `
 px-[20px] py-[12px]
@@ -102,7 +101,7 @@ export const Input: FC<Props> = ({
     search: (
       <div className="relative">
         <div className="absolute translate-y-4 translate-x-4">
-          {loading ? <FaSpinner className="animate-spin" /> : <BsSearch data-testid="SearchIcon" />}
+          {loading ? <SpinnerIcon className="animate-spin" /> : <SearchIcon data-testid="SearchIcon" />}
         </div>
         <input
           className={cn(classes, inputClasses, onClear && 'pr-[38px]')}
@@ -119,7 +118,7 @@ export const Input: FC<Props> = ({
         {/* Small clear button at the right of the search field */}
         {onClear && (
           <button onClick={onClear} className="absolute right-4 bottom-1/2 translate-y-1/2 cursor-pointer">
-            <BsXCircle data-testid="ClearIcon" />
+            <XCircleIcon data-testid="ClearIcon" />
           </button>
         )}
       </div>

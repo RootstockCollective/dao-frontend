@@ -1,6 +1,7 @@
 import { BUILD_ID, ENV, GITHUB_ORG } from '@/lib/constants'
 import { cn } from '@/lib/utils'
-import { FaGithub, FaTelegram, FaXTwitter } from 'react-icons/fa6'
+import { TwitterXIcon } from '@/components/Icons'
+import { FaGithub, FaTelegram } from 'react-icons/fa6'
 
 interface Props {
   brand?: string
@@ -51,7 +52,7 @@ export const Footer = ({ variant = 'login' }: Props) => (
     )}
     <div className="flex items-start justify-end">
       <a href="https://x.com/rootstockcoll" target="_blank">
-        <FaXTwitter className="mr-4" size={'1.5em'} />
+        <TwitterXIcon className="mr-4" size={'1.4em'} />
       </a>
       <a href={`https://github.com/${GITHUB_ORG}`} target="_blank">
         <FaGithub className="mr-4" size={'1.5em'} />

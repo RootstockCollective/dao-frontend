@@ -1,7 +1,6 @@
 import { Header, Label, Span } from '@/components/Typography'
 import { Button } from '@/components/Button'
-import { LuBadgeCheck } from 'react-icons/lu'
-import { goToExplorerWithTxHash, SHARED_MODAL_BOX_SHADOW_STYLE } from '@/lib/utils'
+import { goToExplorerWithTxHash } from '@/lib/utils'
 import { useMemo } from 'react'
 import moment from 'moment'
 import { ActionBeingExecuted, textsDependingOnAction } from '@/app/user/Stake/Steps/stepsUtils'
