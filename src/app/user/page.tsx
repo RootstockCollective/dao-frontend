@@ -6,7 +6,7 @@ import { DelegationSection } from '@/app/user/Delegation'
 import { Tabs, TabsContent, TabsList, TabsTrigger, TabTitle } from '@/components/Tabs'
 import { TxStatusMessage } from '@/components/TxStatusMessage'
 import { useRouter, useSearchParams } from 'next/navigation'
-import { FC, Suspense, useCallback, useEffect, useState } from 'react'
+import { FC, useCallback, useEffect, useState } from 'react'
 import { useCookiesNext } from 'cookies-next'
 import { Address, zeroAddress } from 'viem'
 import { useAccount } from 'wagmi'
@@ -20,7 +20,6 @@ import { AppRouterInstance } from 'next/dist/shared/lib/app-router-context.share
 import { TokenBalanceRecord } from './types'
 import { Timeout } from 'react-number-format/types/types'
 import { SelfContainedNFTBoosterCard } from '@/app/shared/components/NFTBoosterCard/SelfContainedNFTBoosterCard'
-import { BecomeABuilderButton } from '@/app/collective-rewards/user'
 import { JustifyBetweenLayout } from '@/app/collective-rewards/shared'
 
 const getStartedSkipped = 'getStartedSkipped'
@@ -157,7 +156,6 @@ const User = () => {
           rightComponent={
             <>
               <SelfContainedNFTBoosterCard />
-              <BecomeABuilderButton address={address!} />
             </>
           }
         />
