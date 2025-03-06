@@ -49,11 +49,11 @@ export const Button: FC<Props> = ({
   const classes = cn({
     [BUTTON_DEFAULT_CLASSES]: true,
     'bg-primary rounded-[6px]': variant === 'primary',
-    'bg-primary rounded-[6px] h-[40px]': variant === 'primary-new',
+    'bg-primary rounded-[6px] h-[56px]': variant === 'primary-new',
     'bg-transparent border-secondary rounded-[6px] border': variant === 'secondary',
     'bg-secondary border-secondary rounded-[6px] border': variant === 'secondary-full',
     'bg-white rounded-[6px] border': variant === 'white',
-    'bg-white rounded-[6px] border h-[40px]': variant === 'white-new',
+    'bg-white rounded-[6px] border h-[56px]': variant === 'white-new',
     'bg-disabled-primary': disabled && variant === 'primary',
     'rounded-[6px] border-0': disabled,
     'border-0': variant === 'borderless',
