@@ -1,14 +1,15 @@
+import { communitiesMapByContract } from '@/app/communities/communityUtils'
 import { useNFTBoosterContext } from '@/app/providers/NFT/BoosterContext'
 import { NFTBoosterCard } from '@/app/shared/components'
 import { FC } from 'react'
-import { communitiesMapByContract } from '@/app/communities/communityUtils'
 
 type SelfContainedNFTBoosterCardPros = {
   forceRender?: boolean
 }
 export const SelfContainedNFTBoosterCard: FC<SelfContainedNFTBoosterCardPros> = ({ forceRender = false }) => {
   const { hasActiveCampaign, isBoosted, boostData } = useNFTBoosterContext()
-  const { title } = communitiesMapByContract[boostData?.nftContractAddress ?? ''] ?? {}
+
+  const { title, leftImageSrc } = communitiesMapByContract[boostData?.nftContractAddress ?? ''] ?? {}
 
   if (!title || !hasActiveCampaign || (!isBoosted && !forceRender)) {
     return null
@@ -21,5 +22,7 @@ export const SelfContainedNFTBoosterCard: FC<SelfContainedNFTBoosterCardPros> = 
     ? `You're earning ${boostValue}% more rewards thanks to your ${title} NFT.`
     : `Voting ${title} Booster`
 
-  return <NFTBoosterCard boostValue={boostValue} nftThumbPath="" title={title} content={content} />
+  return (
+    <NFTBoosterCard boostValue={boostValue} nftThumbPath={leftImageSrc} title={title} content={content} />
+  )
 }

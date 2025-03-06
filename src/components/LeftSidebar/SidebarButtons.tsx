@@ -30,7 +30,7 @@ const SidebarButton = ({ text, onClick, isActive, buttonProps }: SidebarButtonPr
 export const SidebarButtons = ({ onClick, activeButton = 'communities' }: SidebarButtonsProps) => (
   <>
     <SidebarButton
-      onClick={() => onClick?.('user')}
+      onClick={() => onClick?.('')}
       isActive={!activeButton || activeButton.startsWith('user')}
       buttonProps={{ id: 'Button_User', name: 'user' }}
       text="My Collective"
