@@ -1,7 +1,6 @@
 'use client'
 
 import { Button } from '@/components/Button'
-import { MainContainer } from '@/components/MainContainer/MainContainer'
 import { Typography } from '@/components/Typography'
 import { useRouter } from 'next/navigation'
 import { useCallback, useContext, useState } from 'react'
@@ -39,56 +38,54 @@ export default function Allocations() {
   }
 
   return (
-    <MainContainer>
-      <div className="grid grid-rows-1 gap-[32px]">
-        <div className="flex flex-col justify-center items-start self-stretch gap-2">
-          <Header />
-        </div>
-        <div className="flex flex-col items-start gap-6 self-stretch">
-          <AllocationMetrics />
-          <AllocationAmount key={resetCounter} />
-        </div>
-        <div className="flex flex-col items-start gap-4 self-stretch">
-          <Typography tagVariant="h2" className="text-lg font-bold leading-[18px]">
-            Selected Builders
-          </Typography>
-          <div className="flex items-start content-start flex-wrap gap-4 w-full">
-            {Object.entries(allocations).map(([key, currentAllocation]) => {
-              const builderAddress = key as Address
-              const builderInfo = getBuilder(builderAddress) as Builder
-              if (!builderInfo) {
-                return null
-              }
+    <div className="grid grid-rows-1 gap-[32px]">
+      <div className="flex flex-col justify-center items-start self-stretch gap-2">
+        <Header />
+      </div>
+      <div className="flex flex-col items-start gap-6 self-stretch">
+        <AllocationMetrics />
+        <AllocationAmount key={resetCounter} />
+      </div>
+      <div className="flex flex-col items-start gap-4 self-stretch">
+        <Typography tagVariant="h2" className="text-lg font-bold leading-[18px]">
+          Selected Builders
+        </Typography>
+        <div className="flex items-start content-start flex-wrap gap-4 w-full">
+          {Object.entries(allocations).map(([key, currentAllocation]) => {
+            const builderAddress = key as Address
+            const builderInfo = getBuilder(builderAddress) as Builder
+            if (!builderInfo) {
+              return null
+            }
 
-              const builder: BuilderAllocationProps = {
-                ...builderInfo,
-                currentAllocation,
-                date: builderInfo.proposal.date,
-              }
-              return <BuilderAllocation key={builderAddress} {...builder} />
-            })}
-          </div>
-          <div className="flex items-center self-stretch justify-between gap-4">
-            <div className="flex gap-4">
-              {/* TODO: review disabled statuses */}
-              <Button disabled={!canSaveAllocation} variant="primary" onClick={() => saveAllocations()}>
-                Save allocations
-              </Button>
-              <Button variant="secondary" onClick={() => cancel()}>
-                Cancel
-              </Button>
-            </div>
-
-            <Button
-              variant="borderless"
-              onClick={() => onReset()}
-              textClassName="font-bold text-[18px] text-primary"
-            >
-              Reset allocations
+            const builder: BuilderAllocationProps = {
+              ...builderInfo,
+              currentAllocation,
+              date: builderInfo.proposal.date,
+            }
+            return <BuilderAllocation key={builderAddress} {...builder} />
+          })}
+        </div>
+        <div className="flex items-center self-stretch justify-between gap-4">
+          <div className="flex gap-4">
+            {/* TODO: review disabled statuses */}
+            <Button disabled={!canSaveAllocation} variant="primary" onClick={() => saveAllocations()}>
+              Save allocations
+            </Button>
+            <Button variant="secondary" onClick={() => cancel()}>
+              Cancel
             </Button>
           </div>
+
+          <Button
+            variant="borderless"
+            onClick={() => onReset()}
+            textClassName="font-bold text-[18px] text-primary"
+          >
+            Reset allocations
+          </Button>
         </div>
       </div>
-    </MainContainer>
+    </div>
   )
 }

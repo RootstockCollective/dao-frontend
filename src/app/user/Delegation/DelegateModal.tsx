@@ -26,6 +26,7 @@ import {
 import { StatefulTable } from '@/components/Table'
 import { DelegateIcon } from './DelegateIcon'
 import { useNftHoldersWithVotingPower } from './hooks/useNftHoldersWithVotingPower'
+import { cn } from '@/lib/utils'
 
 interface DelegateModalProps {
   onClose: () => void
@@ -222,11 +223,16 @@ export const DelegateModal = ({ onClose, onDelegateTxStarted }: DelegateModalPro
             </Popover>
           </div>
           <div
-            className="max-h-[350px] overflow-y-auto
-            [&::-webkit-scrollbar]:w-3
-            [&::-webkit-scrollbar-thumb]:rounded-full
-            [&::-webkit-scrollbar-track]:bg-foreground
-            [&::-webkit-scrollbar-thumb]:bg-primary"
+            className={cn(
+              'max-h-[350px]',
+              // show scrollbar when the number of delegates is more than 5
+              nftHolders.length > 5 &&
+                `overflow-y-auto
+                [&::-webkit-scrollbar]:w-3
+                [&::-webkit-scrollbar-thumb]:rounded-full
+                [&::-webkit-scrollbar-track]:bg-foreground
+                [&::-webkit-scrollbar-thumb]:bg-[#3A3A3A]`,
+            )}
           >
             <StatefulTable table={table} equalColumns data-testid="TableShepherds" />
           </div>
