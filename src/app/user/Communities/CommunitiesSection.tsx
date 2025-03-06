@@ -4,8 +4,8 @@ import { CommunityCard } from '@/app/user/Communities/CommunityCard'
 import { JoinACommunity } from '@/app/user/Communities/JoinACommunity'
 import { HeaderTitle } from '@/components/Typography'
 import { useCommunity } from '@/shared/hooks/useCommunity'
+import { SpinnerIcon } from '@/components/Icons'
 import { useEffect, useRef, useState } from 'react'
-import { FaSpinner } from 'react-icons/fa6'
 
 const communities: string[] = Object.keys(communitiesMapByContract)
 
@@ -49,7 +49,7 @@ const UserCommunities = ({ nftAddresses }: { nftAddresses: string[] }) => {
         Communities ({nftsOwned}){' '}
         {isLoadingNfts && (
           <span>
-            <FaSpinner className="animate-spin inline-block" />
+            <SpinnerIcon className="animate-spin inline-block" />
           </span>
         )}
       </HeaderTitle>

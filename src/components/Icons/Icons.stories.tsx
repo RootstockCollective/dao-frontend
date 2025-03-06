@@ -11,6 +11,16 @@ import {
   CloseIcon,
   ErrorIcon,
   ExclamationCircleIcon,
+  UsersIcon,
+  BadgeCheckIcon,
+  SpinnerIcon,
+  MinusCircleIcon,
+  PlusCircleIcon,
+  ArrowUpRightIcon,
+  ExternalLinkIcon,
+  TwitterXIcon,
+  DiscordIcon,
+  LinkIcon,
 } from './'
 import type { IconProps } from './types'
 
@@ -73,6 +83,46 @@ const IconsShowcase = (args: IconProps) => (
     <div>
       <h4>Exclamation Circle</h4>
       <ExclamationCircleIcon {...args} />
+    </div>
+    <div>
+      <h4>Users</h4>
+      <UsersIcon {...args} />
+    </div>
+    <div>
+      <h4>Badge Check</h4>
+      <BadgeCheckIcon {...args} />
+    </div>
+    <div>
+      <h4>Spinner</h4>
+      <SpinnerIcon {...args} />
+    </div>
+    <div>
+      <h4>Minus Circle</h4>
+      <MinusCircleIcon {...args} />
+    </div>
+    <div>
+      <h4>Plus Circle</h4>
+      <PlusCircleIcon {...args} />
+    </div>
+    <div>
+      <h4>Arrow Up Right</h4>
+      <ArrowUpRightIcon {...args} />
+    </div>
+    <div>
+      <h4>External Link</h4>
+      <ExternalLinkIcon {...args} />
+    </div>
+    <div>
+      <h4>Twitter X</h4>
+      <TwitterXIcon {...args} />
+    </div>
+    <div>
+      <h4>Discord</h4>
+      <DiscordIcon {...args} />
+    </div>
+    <div>
+      <h4>Link</h4>
+      <LinkIcon {...args} />
     </div>
   </div>
 )
