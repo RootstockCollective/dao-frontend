@@ -569,7 +569,7 @@ const CalldataDisplay = (props: DecodedData) => {
                     <Span className="text-xs text-gray-400 mt-1">
                       {(() => {
                         // Check if prices exists
-                        if (!prices) return '≈ Price unavailable'
+                        if (!prices) return ''
 
                         // const tokenSymbol =
                         //   tokenContracts[currentTokenSymbol.toLowerCase() as keyof typeof tokenContracts]
