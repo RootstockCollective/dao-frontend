@@ -221,6 +221,7 @@ describe('BoosterProvider', () => {
       const contextValue = JSON.parse(element.textContent || '{}')
       expect(contextValue).toEqual(
         toExpected({
+          isBoosted: false,
           boostData: testBoostData,
           isLoading: false,
           error: null,
