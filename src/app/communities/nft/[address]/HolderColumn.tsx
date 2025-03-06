@@ -1,6 +1,6 @@
 import { Span } from '@/components/Typography'
 import { EXPLORER_URL } from '@/lib/constants'
-import { RxExternalLink } from 'react-icons/rx'
+import { ExternalLinkIcon } from '@/components/Icons'
 
 interface HolderColumnProps {
   address: string
@@ -19,6 +19,6 @@ export const HolderColumn = ({ address, rns, image }: HolderColumnProps) => (
     <Span className="underline text-left overflow-hidden whitespace-nowrap text-[14px]">
       {rns || address}
     </Span>
-    <RxExternalLink size={18} />
+    <ExternalLinkIcon size={18} />
   </a>
 )

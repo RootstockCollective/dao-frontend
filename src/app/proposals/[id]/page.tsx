@@ -35,7 +35,7 @@ import { Popover } from '@/components/Popover'
 import { Header, Paragraph, Span, Typography } from '@/components/Typography'
 import { config } from '@/config'
 import { RIF, RIF_ADDRESS } from '@/lib/constants'
-import { formatNumberWithCommas, truncateMiddle } from '@/lib/utils'
+import { formatNumberWithCommas, truncateMiddle, formatCurrency } from '@/lib/utils'
 import { useExecuteProposal } from '@/shared/hooks/useExecuteProposal'
 import { useQueueProposal } from '@/shared/hooks/useQueueProposal'
 import { useVoteOnProposal } from '@/shared/hooks/useVoteOnProposal'
@@ -52,6 +52,9 @@ import { ProposalState } from '@/shared/types'
 import { isUserRejectedTxError } from '@/components/ErrorPage/commonErrors'
 import Big from '@/lib/big'
 import { formatUnits } from 'ethers'
+import { usePricesContext } from '@/shared/context/PricesContext'
+import { getCombinedFiatAmount } from '@/app/collective-rewards/utils'
+import { tokenContracts } from '@/lib/contracts'
 
 export default function ProposalView() {
   const { id } = useParams<{ id: string }>() ?? {}
@@ -503,6 +506,75 @@ const CalldataRows = ({ calldatasParsed }: CalldataRowsData) => {
 }
 
 const CalldataDisplay = (props: DecodedData) => {
+  const { prices } = usePricesContext()
+  let currentTokenSymbol = '' // For tracking the token
+
+  // Process token information and create cache - at the top level
+  const usdValueCache = useMemo(() => {
+    const cache: Record<number, string> = {}
+
+    // Only process if this is the decoded case
+    if (props.type === 'decoded') {
+      const { functionName, inputs, args } = props
+
+      // First find the token symbol
+      for (let i = 0; i < inputs.length; i++) {
+        const input = inputs[i]
+        const inputName = input.name
+        const functionInputNames =
+          actionInputNameFormatMap[functionName] ||
+          ({} as InputNameFormatMap<typeof functionName, typeof inputName>)
+        const formattedName = (functionInputNames[inputName as never] || inputName) as string
+
+        if (formattedName === 'token') {
+          currentTokenSymbol = String(args[i] || '')
+          break
+        }
+      }
+
+      // Then calculate USD values if we have a token
+      if (currentTokenSymbol && prices) {
+        const tokenSymbol =
+          Object.entries(tokenContracts).find(
+            ([key, value]) => value === currentTokenSymbol.toLowerCase(),
+          )?.[0] ?? ''
+
+        const tokenPrice = tokenSymbol ? prices[tokenSymbol] : undefined
+
+        if (tokenPrice && typeof tokenPrice.price === 'number') {
+          // Pre-calculate for all inputs
+          inputs.forEach((input, idx) => {
+            const inputName = input.name
+            const functionInputNames =
+              actionInputNameFormatMap[functionName] ||
+              ({} as InputNameFormatMap<typeof functionName, typeof inputName>)
+            const formattedName = (functionInputNames[inputName as never] || inputName) as string
+
+            if (formattedName === 'amount') {
+              // Use proper typing for the input value
+              const inputValue = args[idx] as InputParameterTypeByFnByName<
+                typeof functionName,
+                typeof inputName
+              >
+
+              let newPrice = getCombinedFiatAmount([
+                {
+                  value: inputValue as bigint,
+                  price: tokenPrice.price,
+                  symbol: tokenSymbol,
+                  currency: 'USD',
+                },
+              ])
+              cache[idx] = `= USD ${formatCurrency(newPrice.toNumber())}`
+            }
+          })
+        }
+      }
+    }
+
+    return cache
+  }, [props, prices])
+
   // Handle decoded case
   if (props.type === 'decoded') {
     const { functionName, inputs, args } = props
@@ -531,10 +603,17 @@ const CalldataDisplay = (props: DecodedData) => {
               typeof functionName,
               typeof inputName
             >
+
+            // If this is the token input, update the token value for rendering
+            if (formattedInputName === 'token') {
+              currentTokenSymbol = String(inputValue)
+            }
+
             const inputValueComposerMap = (actionComponentMap[functionName] || {}) as InputValueComposerMap<
               typeof functionName,
               typeof inputName
             >
+
             const InputComponent = inputValueComposerMap[
               inputName as keyof typeof inputValueComposerMap
             ] as InputValueComponent<InputParameterTypeByFnByName<typeof functionName, typeof inputName>>
@@ -544,14 +623,19 @@ const CalldataDisplay = (props: DecodedData) => {
                 <Typography tagVariant="span" className="font-semibold text-[16px] text-left">
                   {formattedInputName}
                 </Typography>
-                {InputComponent && (
-                  <InputComponent
-                    value={inputValue}
-                    htmlProps={{
-                      className: 'font-normal text-right',
-                    }}
-                  />
-                )}
+                <div className="flex flex-col items-end">
+                  {InputComponent && (
+                    <InputComponent
+                      value={inputValue}
+                      htmlProps={{
+                        className: 'font-normal text-right',
+                      }}
+                    />
+                  )}
+                  {formattedInputName === 'amount' && usdValueCache[index] && (
+                    <Span className="text-xs text-gray-400 mt-1">{usdValueCache[index]}</Span>
+                  )}
+                </div>
               </li>
             )
           })}
