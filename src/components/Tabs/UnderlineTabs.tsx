@@ -2,22 +2,22 @@ import * as Tabs from '@radix-ui/react-tabs'
 import { motion } from 'motion/react'
 import { cn } from '@/lib/utils'
 
-export interface BaseTab<U extends string> {
-  value: U
+export interface BaseTab<T> {
+  value: T
   label: string
 }
 
-interface UnderlineTabsProps<U extends string, T extends BaseTab<U>> {
+interface UnderlineTabsProps<T extends BaseTab<U>, U> {
   tabs: T[]
   activeTab: U
   onTabChange: (value: U) => void
 }
 
-export function UnderlineTabs<U extends string, T extends BaseTab<U>>({
+export function UnderlineTabs<T extends BaseTab<U>, U extends string>({
   tabs,
   activeTab,
   onTabChange,
-}: UnderlineTabsProps<U, T>) {
+}: UnderlineTabsProps<T, U>) {
   return (
     <Tabs.Root value={activeTab} onValueChange={val => onTabChange(val as U)}>
       <Tabs.List className="flex flex-row">
