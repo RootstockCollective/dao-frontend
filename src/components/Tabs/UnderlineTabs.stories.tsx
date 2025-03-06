@@ -1,6 +1,6 @@
 import type { Meta, StoryObj } from '@storybook/react'
 import { useState } from 'react'
-import { UnderlineTabs, type Tab } from './UnderlineTabs'
+import { UnderlineTabs, type BaseTab } from './UnderlineTabs'
 
 const meta = {
   title: 'Components/Tabs/UnderlineTabs',
@@ -17,7 +17,7 @@ const tabs = [
   { value: 'general', label: 'General' },
   { value: 'hello', label: 'Hello' },
   { value: 'world', label: 'World' },
-] as const satisfies Tab[]
+] as const satisfies BaseTab<string>[]
 
 export const Default: Story = {
   args: {
