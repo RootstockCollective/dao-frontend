@@ -5,6 +5,12 @@ import {
   CircleIcon,
   ArrowUpSFillIcon,
   ArrowDownSFillIcon,
+  BiCopyIcon,
+  BsCopyIcon,
+  CircleCheckIcon,
+  CloseIcon,
+  ErrorIcon,
+  ExclamationCircleIcon,
   UsersIcon,
   BadgeCheckIcon,
   SpinnerIcon,
@@ -55,6 +61,30 @@ const IconsShowcase = (args: IconProps) => (
       <ArrowDownSFillIcon {...args} />
     </div>
     <div>
+      <h4>Close</h4>
+      <CloseIcon {...args} />
+    </div>
+    <div>
+      <h4>Circle Check</h4>
+      <CircleCheckIcon {...args} />
+    </div>
+    <div>
+      <h4>BsCopy</h4>
+      <BsCopyIcon {...args} />
+    </div>
+    <div>
+      <h4>BiCopy</h4>
+      <BiCopyIcon {...args} />
+    </div>
+    <div>
+      <h4>Error</h4>
+      <ErrorIcon {...args} />
+    </div>
+    <div>
+      <h4>Exclamation Circle</h4>
+      <ExclamationCircleIcon {...args} />
+    </div>
+    <div>
       <h4>Users</h4>
       <UsersIcon {...args} />
     </div>
@@ -73,6 +103,8 @@ const IconsShowcase = (args: IconProps) => (
     <div>
       <h4>Plus Circle</h4>
       <PlusCircleIcon {...args} />
+    </div>
+    <div>
       <h4>Arrow Up Right</h4>
       <ArrowUpRightIcon {...args} />
     </div>

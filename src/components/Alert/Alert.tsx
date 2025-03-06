@@ -1,7 +1,5 @@
-import { BsExclamationCircle } from 'react-icons/bs'
-import { CiCircleCheck } from 'react-icons/ci'
 import { Paragraph } from '@/components/Typography'
-import { MdClose } from 'react-icons/md'
+import { CloseIcon, CircleCheckIcon, ExclamationCircleIcon } from '../Icons'
 import { ReactNode } from 'react'
 
 export interface AlertProps {
@@ -13,10 +11,10 @@ export interface AlertProps {
 }
 
 const IconToUse = {
-  error: <BsExclamationCircle size={20} color="rgba(217,45,32,1)" />,
-  info: <BsExclamationCircle size={20} color="cyan" />,
-  success: <CiCircleCheck size={20} color="rgba(7,148,85,1)" />,
-  warning: <BsExclamationCircle size={20} color="rgba(255,193,7,1)" />,
+  error: <ExclamationCircleIcon size={20} color="rgba(217,45,32,1)" />,
+  info: <ExclamationCircleIcon size={20} color="cyan" />,
+  success: <CircleCheckIcon size={20} color="rgba(7,148,85,1)" />,
+  warning: <ExclamationCircleIcon size={20} color="rgba(255,193,7,1)" />,
 }
 
 export const Alert = ({ severity, title, content, onDismiss, 'data-testid': dataTestId }: AlertProps) => {
@@ -52,7 +50,7 @@ export const Alert = ({ severity, title, content, onDismiss, 'data-testid': data
         )}
       </div>
       {/* X */}
-      {onDismiss && <MdClose size={20} className="cursor-pointer" onClick={onDismiss} />}
+      {onDismiss && <CloseIcon size={20} className="cursor-pointer" onClick={onDismiss} />}
     </div>
   )
 }
