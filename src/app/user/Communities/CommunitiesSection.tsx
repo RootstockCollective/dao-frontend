@@ -5,9 +5,23 @@ import { communitiesMapByContract } from '@/app/communities/communityUtils'
 import { SectionHeader } from '@/components/section-header'
 import { Link } from '@/components/Link'
 import { useAccount } from 'wagmi'
-import { useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
+import { useNFTBoosterContext } from '@/app/providers/NFT/BoosterContext'
 
 const communities: string[] = Object.keys(communitiesMapByContract)
+
+const CommuntiesSectionDescription = () => {
+  return (
+    <>
+      Select one or more Builders you want to back. You retain full ownership and access to your stRIF while
+      earning a portion of their rewards. For more information check the{' '}
+      <Link variant={'section-header'} href={'https://www.google.com/'}>
+        Whitepaper
+      </Link>
+      .
+    </>
+  )
+}
 
 export const CommunitiesSection = () => (
   <div>
@@ -47,20 +61,8 @@ export const UserCommunities = ({ nftAddresses }: { nftAddresses: string[] }) =>
 
   return (
     <>
-      <SectionHeader
-        name="Communities"
-        description={
-          <>
-            Select one or more Builders you want to back. You retain full ownership and access to your stRIF
-            while earning a portion of their rewards. For more information check the{' '}
-            <Link variant={'section-header'} href={'https://www.google.com/'}>
-              Whitepaper
-            </Link>
-            .
-          </>
-        }
-      />
-      {!isConnected || (!isLoadingNfts && nftsOwned === 0) ? (
+      <SectionHeader name="Communities" description={<CommuntiesSectionDescription />} />
+      {!isConnected || nftsOwned === 0 ? (
         <JoinACommunity />
       ) : (
         <div className="flex flex-wrap gap-[24px]">
