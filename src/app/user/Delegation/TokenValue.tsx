@@ -18,7 +18,7 @@ export const TokenValue = ({ symbol, amount }: TokenValueProps) => {
   return (
     <>
       <Paragraph size="small" className="flex flex-row" data-testid={`${symbol}_Balance`}>
-        {formatNumberWithCommas(round(amount))} {symbol}
+        {formatNumberWithCommas(round(amount, undefined, Big.roundDown))} {symbol}
         <TokenImage symbol={symbol} className="ml-[8px]" />
       </Paragraph>
       {prices[symbol] && (

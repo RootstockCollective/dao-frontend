@@ -11,7 +11,7 @@ import { useVotingPower } from './hooks/useVotingPower'
 import { useMemo } from 'react'
 import { formatNumberWithCommas } from '@/lib/utils'
 import Image from 'next/image'
-import { round } from '@/lib/big'
+import Big, { round } from '@/lib/big'
 
 export default function Proposals() {
   const { canCreateProposal, threshold, totalVotingPower = '' } = useVotingPower()
@@ -31,7 +31,7 @@ export default function Proposals() {
               fontFamily="kk-topo"
               data-testid="VotingPower"
             >
-              {formatNumberWithCommas(round(totalVotingPower))}
+              {formatNumberWithCommas(round(totalVotingPower, undefined, Big.roundDown))}
             </Paragraph>
           )}
         </div>

@@ -22,6 +22,7 @@ export const ExternalLink: FC<ExternalLinkProps> = ({
         'inline-flex items-center gap-1.5 font-sora underline underline-offset-2 underline-thick hover:cursor-pointer w-fit',
         { 'tracking-tight leading-tight text-base': variant === 'menu' },
         { 'leading-normal text-sm': variant === 'default' },
+        { 'leading-nornal text-base text-primary': variant === 'section-header' },
         // combines hardcoded styles with classes coming from props
         className,
       )}

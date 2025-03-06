@@ -6,7 +6,7 @@ import { ConnectButton, Header } from '@/components/Header'
 import { StatefulSidebar } from '@/components/MainContainer/StatefulSidebar'
 import { shortAddress } from '@/lib/utils'
 import { useRouter } from 'next/navigation'
-import { FC, ReactNode, useEffect, useState } from 'react'
+import { FC, ReactNode, Suspense, useEffect, useState } from 'react'
 import { useAccount, useDisconnect } from 'wagmi'
 import { Alert } from '../Alert'
 import { AccountAddress } from '../Header/AccountAddress'
@@ -16,10 +16,9 @@ import { GradientHeader } from '@/components/GradientHeader/GradientHeader'
 
 interface Props {
   children: ReactNode
-  notProtected?: boolean
 }
 
-export const MainContainer: FC<Props> = ({ children, notProtected = false }) => {
+export const MainContainer: FC<Props> = ({ children }) => {
   const { isConnected, address } = useAccount()
   const { disconnect } = useDisconnect()
   const { message, setMessage } = useAlertContext()
@@ -67,7 +66,7 @@ export const MainContainer: FC<Props> = ({ children, notProtected = false }) => 
     </>
   )
   return (
-    <>
+    <Suspense fallback={<div>Loading...</div>}>
       <GradientHeader />
       <div className="flex h-screen">
         <StatefulSidebar ConnectedComponent={<ConnectedComponent />} />
@@ -76,13 +75,11 @@ export const MainContainer: FC<Props> = ({ children, notProtected = false }) => 
             {message && (
               <Alert {...message} onDismiss={message.onDismiss === null ? null : () => setMessage(null)} />
             )}
-            <MainContainerContent notProtected={notProtected} setMessage={setMessage}>
-              {children}
-            </MainContainerContent>
+            <MainContainerContent setMessage={setMessage}>{children}</MainContainerContent>
           </main>
           <Footer variant="container" />
         </div>
       </div>
-    </>
+    </Suspense>
   )
 }

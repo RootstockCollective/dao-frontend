@@ -4,12 +4,12 @@ permissions:
   contents: write
 
 env:
-  BOOST_DATA_BRANCH: "boost_data/${{ github.event.inputs.env}}"
+  BOOST_DATA_BRANCH: 'boost_data/${{ github.event.inputs.env}}'
 on:
   workflow_dispatch:
     inputs:
       boost:
-        description: 'The amount of backers to boost'
+        description: 'The reward boost percentage (0-100)'
         required: true
       nft:
         description: 'The address of the NFT contract'
@@ -46,21 +46,15 @@ jobs:
               --boost=${{ github.event.inputs.boost }} \
               --nft=${{ github.event.inputs.nft }} \
               --env=${{ github.event.inputs.env }}
-          
           git add .
-          git stash push
-
-      - name: Switch to target branch for data
-        run: |
+          git diff --cached > ./boost.diff
+          echo "Changes:"
+          cat ./boost.diff
+          echo "End of changes"
           git fetch origin
-          git checkout $BOOST_DATA_BRANCH || git checkout -b $BOOST_DATA_BRANCH
+          git checkout $BOOST_DATA_BRANCH --force || git checkout -b $BOOST_DATA_BRANCH
 
-          git stash apply || (echo "No stash to apply" && exit 1)
-          git checkout --theirs .
-
-      - name: Commit and push changes
-        run: |
-          # Stage all changes
+          git apply boost.diff --3way --theirs
           git add .
 
           # Create a commit; if there are no changes, this command will fail, so we ignore that error.
