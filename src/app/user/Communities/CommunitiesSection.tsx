@@ -78,7 +78,7 @@ const NftInfo = ({
   const { isBoosted, boostData } = useNFTBoosterContext()
   const alreadyFinishedLoading = useRef(false)
 
-  const isCamapignActive = boostData?.nftContractAddress === nftAddress && isBoosted
+  const isCampaignActive = boostData?.nftContractAddress === nftAddress && isBoosted
 
   useEffect(() => {
     if (!data.isLoading && !alreadyFinishedLoading.current) {
@@ -101,7 +101,7 @@ const NftInfo = ({
         link={`/communities/nft/${nftAddress}`}
         description={data.nftMeta?.description || ''}
         members={data.membersCount.toString()}
-        isBoosted={isCamapignActive}
+        isBoosted={isCampaignActive}
       />
     )
   }
