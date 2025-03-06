@@ -1,4 +1,4 @@
-import { HeaderTitle } from '@/components/Typography'
+import { HeaderTitle, Paragraph } from '@/components/Typography'
 import { Table } from '@/components/Table'
 import { RenderTokenPrice } from '@/app/user/Balances/RenderTokenPrice'
 import { RenderTotalBalance } from '@/app/user/Balances/RenderTotalBalance'
@@ -8,6 +8,9 @@ import { RenderTokenSymbol } from '@/app/user/Balances/RenderTokenSymbol'
 import { UnStakeRIFCell } from '@/app/user/Balances/UnStakeRIFCell'
 import { ModalReturn, useModal } from '@/shared/hooks/useModal'
 import { UnStakingSteps } from '../Stake/UnStakingSteps'
+import { Link } from '@/components/Link'
+import { CRWhitepaperLink } from '@/app/collective-rewards/shared'
+import { SectionHeader } from '@/components/SectionHeader'
 
 const makeData = (stakeModal: ModalReturn, unstakeModal: ModalReturn) => [
   {
@@ -42,10 +45,21 @@ export const BalancesSection = ({ showTitle = false }: Props) => {
 
   return (
     <div className="mb-[32px]">
-      {showTitle ? <HeaderTitle className="mb-6">Balances</HeaderTitle> : null}
+      {showTitle && (
+        <SectionHeader
+          name="Balances"
+          description={
+            <>
+              Select one or more Builders you want to back. You retain full ownership and access to your stRIF
+              while earning a portion of their rewards. For more information check the{' '}
+              <CRWhitepaperLink className="text-[14px]" />.
+            </>
+          }
+        />
+      )}
       {stakeModal.isModalOpened ? <StakingSteps onCloseModal={stakeModal.closeModal} /> : null}
       {unstakeModal.isModalOpened ? <UnStakingSteps onCloseModal={unstakeModal.closeModal} /> : null}
-      <Table data={makeData(stakeModal, unstakeModal)} />
+      <Table data={makeData(stakeModal, unstakeModal)} className="overflow-visible" />
     </div>
   )
 }
