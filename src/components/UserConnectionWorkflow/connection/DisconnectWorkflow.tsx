@@ -31,7 +31,6 @@ export const DisconnectWorkflow = () => {
           onClose={modal.closeModal}
           onConfirm={handleDisconnect}
           onCancel={modal.closeModal}
-          address={address}
         />
       )}
     </>

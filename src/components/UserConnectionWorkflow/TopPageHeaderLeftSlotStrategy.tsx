@@ -5,7 +5,7 @@ import { usePathname } from 'next/navigation'
  * Uses Strategy Algorithm to know when to render the left components which vary from page to page
  * @constructor
  */
-export function PageHeaderLeftSlotStrategy() {
+export function TopPageHeaderLeftSlotStrategy() {
   const pathname = usePathname()
   return getLeftComponentForRoute(pathname)
 }

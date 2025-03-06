@@ -1,7 +1,7 @@
 'use client'
 import { useAlertContext } from '@/app/providers'
 import { Footer } from '@/components/Footer'
-import { PageHeader } from '@/app/_user-connection/PageHeader'
+import { TopPageHeader } from '@/components/UserConnectionWorkflow/TopPageHeader'
 import { StatefulSidebar } from '@/components/MainContainer/StatefulSidebar'
 import { FC, ReactNode, Suspense } from 'react'
 import { Alert } from '../Alert'
@@ -25,7 +25,7 @@ export const MainContainer: FC<Props> = ({ children }) => {
             {message && (
               <Alert {...message} onDismiss={message.onDismiss === null ? null : () => setMessage(null)} />
             )}
-            <PageHeader />
+            <TopPageHeader />
             <MainContainerContent setMessage={setMessage}>{children}</MainContainerContent>
           </main>
           <Footer variant="container" />

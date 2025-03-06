@@ -3,26 +3,22 @@ import { ComponentType, useState } from 'react'
 import { Button } from '@/components/Button'
 import { useConnect } from 'wagmi'
 import { useAlertContext } from '@/app/providers'
-const onSuccess = () => {
-  console.log('Dummy on success')
-}
+import { ConfirmationModal } from '@/components/Modal'
+import { disclaimerModalText } from '@/components/UserConnectionWorkflow/connection/constants'
 
 interface ConnectWorkflowProps {
   ConnectComponent?: ComponentType<ConnectButtonComponentProps>
 }
 
 /**
- * The developer can override the ConnectComponent to use a custom button/component.
- // @TODO what if the user leaves metamask opened? (handle case)
+ * The developer can override the ConnectComponent to use a custom button/component to trigger the flow.
  * @param ConnectComponent
  * @constructor
  */
 export const ConnectWorkflow = ({ ConnectComponent = ConnectButtonComponent }: ConnectWorkflowProps) => {
   const [flowState, setFlowState] = useState('idle')
 
-  const { connectors, connectAsync } = useConnect({
-    mutation: { onSuccess },
-  })
+  const { connectors, connectAsync } = useConnect()
   const { setMessage } = useAlertContext()
 
   const handleConnectWallet = () => {
@@ -31,7 +27,7 @@ export const ConnectWorkflow = ({ ConnectComponent = ConnectButtonComponent }: C
         setFlowState('idle')
         setMessage({
           severity: 'error',
-          content: err.toString(),
+          content: parseWalletConnectionError(err),
           title: 'Failed to connect to wallet',
         })
       })
@@ -74,21 +70,48 @@ interface DisclaimerFlowProps {
 }
 
 /**
- * This is dependent on the generic modal @TODO
+ * Shows the modal with the disclaimer text and triggers the onAgree callback when the user agrees.
  * @param onAgree
  * @param onClose
  * @constructor
  */
 const DisclaimerFlow = ({ onAgree, onClose }: DisclaimerFlowProps) => {
   return (
-    <div>
-      <p>A placeholder for the modal here</p>
-      <button type="button" onClick={onAgree}>
-        Agree
-      </button>
-      <button type="button" onClick={onClose}>
-        Agree
-      </button>
-    </div>
+    <ConfirmationModal
+      title={disclaimerModalText.modalTitle}
+      isOpen
+      onClose={onClose}
+      onDecline={onClose}
+      onAccept={onAgree}
+    >
+      {disclaimerModalText.modalDescription}
+    </ConfirmationModal>
   )
+}
+
+/**
+ * Parses the error object when attempting to connect to extract the error message.
+ * @param error
+ */
+function parseWalletConnectionError(error: unknown): string {
+  let errorParsed: string
+
+  if (error instanceof Error) {
+    // If it's an Error object, access the message property directly
+    errorParsed = error.message
+  } else if (typeof error === 'object' && error !== null && 'message' in error) {
+    // If it's an object with a message property (but not an Error instance)
+    errorParsed = (error as { message: string }).message
+  } else {
+    // Fall back to string conversion for other cases
+    errorParsed = String(error)
+  }
+  switch (true) {
+    case errorParsed.includes('rejected the request'):
+      return 'Request to connect wallet has been rejected.'
+    case errorParsed.includes('already pending'):
+      return 'You have a pending request. Please check your wallet.'
+    default:
+      return errorParsed
+  }
 }
