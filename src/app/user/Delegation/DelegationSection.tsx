@@ -66,7 +66,11 @@ export const DelegationSection = () => {
       <div className="mb-6 flex flex-col items-center" data-testid="DelegationSection">
         <div className="text-center mt-10 mb-8">
           <HeaderTitle className="mb-4 font-kk-topo">DELEGATION</HeaderTitle>
-          <Paragraph className="mb-6">You haven&apos;t delegated or received any voting power</Paragraph>
+          <Paragraph className="mb-6">
+            Delegation allows you to assign your voting power to another community member you trust.
+            <br />
+            You remain the owner of your staked RIF.
+          </Paragraph>
           <div className="flex justify-center">
             <Button
               variant="primary"
