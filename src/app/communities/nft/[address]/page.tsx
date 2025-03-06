@@ -1,7 +1,13 @@
 'use client'
 
+import { communitiesMapByContract } from '@/app/communities/communityUtils'
+import { useNFTBoosterContext } from '@/app/providers/NFT/BoosterContext'
+import { BoltSvg } from '@/components/BoltSvg'
 import { Button } from '@/components/Button'
 import { Chip } from '@/components/Chip/Chip'
+import { CopyButton } from '@/components/CopyButton'
+import { isUserRejectedTxError } from '@/components/ErrorPage/commonErrors'
+import { GlowingLabel } from '@/components/Label/GlowingLabel'
 import { Paragraph, Span, Typography } from '@/components/Typography'
 import { cn, truncateMiddle } from '@/lib/utils'
 import Image from 'next/image'
@@ -13,14 +19,9 @@ import { Address, formatEther } from 'viem'
 import { useAccount } from 'wagmi'
 import { useCommunity } from '@/shared/hooks/useCommunity'
 import { useStRif } from '@/shared/hooks/useStRIf'
-import { CopyButton } from '@/components/CopyButton'
 import { NftHoldersSection } from '@/app/communities/NftHoldersSection'
-import { communitiesMapByContract } from '@/app/communities/communityUtils'
-import { isUserRejectedTxError } from '@/components/ErrorPage/commonErrors'
 import { SelfContainedNFTBoosterCard } from '../../../shared/components/NFTBoosterCard/SelfContainedNFTBoosterCard'
-import { GlowingLabel } from '@/components/Label/GlowingLabel'
-import { BoltSvg } from '@/components/BoltSvg'
-import { useNFTBoosterContext } from '@/app/providers/NFT/BoosterContext'
+import { DateTime } from 'luxon'
 
 /**
  * Name of the local storage variable with information about whether the token was added to the wallet
@@ -243,6 +244,9 @@ export default function Page() {
   }
 
   if (!nftAddress) return null
+
+  const isCampaignActive = hasActiveCampaign && boostData?.nftContractAddress === nftAddress
+
   return (
     <>
       {message && (
@@ -276,7 +280,15 @@ export default function Page() {
             </div>
             <div className="font-semibold">{nftInfo?.title}</div>
           </div>
-          <div className="mb-[24px] font-extralight">{nftInfo?.longDescription}</div>
+          <div className="mb-[24px] font-extralight">
+            {nftInfo?.longDescription({
+              activation: isCampaignActive
+                ? DateTime.fromSeconds(Number(boostData.timestamp) ?? 0)
+                    .toFormat('MMM yyyy')
+                    .toUpperCase()
+                : undefined,
+            })}
+          </div>
           {hasActiveCampaign && boostData?.nftContractAddress === nftAddress && (
             <div className="inline-flex items-center gap-1 pb-6">
               <BoltSvg />

@@ -55,6 +55,7 @@ jobs:
           git checkout $BOOST_DATA_BRANCH --force || git checkout -b $BOOST_DATA_BRANCH
 
           git apply boost.diff --3way --theirs
+          rm -f boost.diff
           git add .
 
           # Create a commit; if there are no changes, this command will fail, so we ignore that error.
