@@ -1,7 +1,7 @@
 'use client'
 import { useAlertContext } from '@/app/providers'
 import { Footer } from '@/components/Footer'
-import { TopPageHeader } from '@/lib/walletConnection/components/TopPageHeader'
+import { TopPageHeader } from '@/lib/walletConnection/components/topPageHeader/TopPageHeader'
 import { StatefulSidebar } from '@/components/MainContainer/StatefulSidebar'
 import { FC, ReactNode, Suspense } from 'react'
 import { Alert } from '../Alert'

@@ -62,7 +62,7 @@ export const Dropdown = ({ className, ...props }: DropdownProps) => {
       <button
         onClick={toggle}
         className={cn(
-          'px-5 w-full h-12 flex items-center justify-between gap-2 bg-[#E4E1DA] rounded-t-[4px] focus:outline-none',
+          'px-5 w-full h-14 flex items-center justify-between gap-2 bg-[#E4E1DA] rounded-t-[4px] focus:outline-none',
           !isOpen && 'rounded-b-[4px]',
         )}
         data-testid="PrepareYourProposalDropdown"

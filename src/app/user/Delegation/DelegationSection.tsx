@@ -11,7 +11,6 @@ import { TX_MESSAGES } from '@/shared/txMessages'
 import { HeaderTitle, Paragraph } from '@/components/Typography'
 import { useAccount } from 'wagmi'
 import { RenderTotalBalance } from '../Balances/RenderTotalBalance'
-import { BalancesProvider } from '../Balances/context/BalancesContext'
 import { useGetDelegates } from './hooks/useGetDelegates'
 import { ReclaimCell } from './ReclaimCell'
 import { DelegationAction } from './type'
@@ -78,10 +77,8 @@ export const DelegationSection = () => {
           <DelegatePopover />
         </div>
       </div>
-      <BalancesProvider>
-        {!isExternalDelegatedAmountLoading && <Table data={[delegatedToMe]} />}
-        <Table data={[delegatee]} />
-      </BalancesProvider>
+      {!isExternalDelegatedAmountLoading && <Table data={[delegatedToMe]} />}
+      <Table data={[delegatee]} />
       {isDelegateModalOpened && (
         <DelegateModal
           onClose={() => setIsDelegateModalOpened(false)}

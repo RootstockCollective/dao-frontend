@@ -1,4 +1,4 @@
-import { routePatterns } from '@/lib/walletConnection/constants'
+import { routePatterns } from './constants'
 
 /**
  * Parses the error object when attempting to connect to extract the error message.
