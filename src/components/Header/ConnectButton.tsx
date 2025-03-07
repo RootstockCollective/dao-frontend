@@ -9,6 +9,13 @@ interface Props {
   children?: string
 }
 
+/**
+ * @deprecated
+ * @param onSuccess
+ * @param children
+ * @param variant
+ * @constructor
+ */
 export const ConnectButton: FC<Props> = ({ onSuccess, children = 'Connect wallet', variant = 'primary' }) => {
   const { connectors, connectAsync } = useConnect({
     mutation: { onSuccess },

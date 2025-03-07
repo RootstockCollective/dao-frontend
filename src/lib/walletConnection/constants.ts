@@ -12,3 +12,10 @@ export const disclaimerModalText = {
   the RootstockCollective dApp.
 `,
 }
+
+// Define route patterns and their components
+export const routePatterns = [
+  { pattern: /^(\/|\/user)$/, component: null },
+  { pattern: /^\/communities/, component: null },
+  // Add more patterns as needed
+]

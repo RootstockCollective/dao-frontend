@@ -1,5 +1,5 @@
-import { UserConnectionManager } from '@/components/UserConnectionWorkflow/connection/UserConnectionManager'
-import { TopPageHeaderLeftSlotStrategy } from '@/components/UserConnectionWorkflow/TopPageHeaderLeftSlotStrategy'
+import { UserConnectionManager } from '@/lib/walletConnection/connection/UserConnectionManager'
+import { TopPageHeaderLeftSlotStrategy } from '@/lib/walletConnection/components/TopPageHeaderLeftSlotStrategy'
 import { BecomeABuilderButton } from '@/app/collective-rewards/user'
 import { useAccount } from 'wagmi'
 
