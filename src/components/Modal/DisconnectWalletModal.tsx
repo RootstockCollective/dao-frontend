@@ -24,7 +24,7 @@ export const DisconnectWalletModal: FC<Props> = ({ onClose, onConfirm, onCancel 
         <Button variant="outlined" onClick={onCancel} data-testid="Cancel">
           Cancel
         </Button>
-        <Button onClick={onConfirm} data-testid="Disconnect">
+        <Button onClick={onConfirm} data-testid="DisconnectModal">
           Disconnect
         </Button>
       </div>
