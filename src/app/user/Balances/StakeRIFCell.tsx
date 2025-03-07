@@ -1,8 +1,6 @@
 import { useBalancesContext } from '@/app/user/Balances/context/BalancesContext'
 import { Button } from '@/components/Button'
 import { ModalReturn } from '@/shared/hooks/useModal'
-import { useSearchParams } from 'next/navigation'
-import { useEffect, useState } from 'react'
 
 interface Props {
   stakeModal: ModalReturn
