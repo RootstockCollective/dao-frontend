@@ -12,12 +12,12 @@ export default meta
 type Story = StoryObj<typeof meta>
 
 const tabs = [
-  { value: 'grant', label: 'Grant' },
-  { value: 'growth', label: 'Growth' },
-  { value: 'general', label: 'General' },
-  { value: 'hello', label: 'Hello' },
-  { value: 'world', label: 'World' },
-] as const satisfies BaseTab<string>[]
+  { value: '1', label: 'Grant' },
+  { value: '2', label: 'Growth' },
+  { value: '3', label: 'General' },
+  { value: '4', label: 'Hello' },
+  { value: '5', label: 'World' },
+] as const satisfies BaseTab[]
 
 export const Default: Story = {
   args: {
@@ -26,8 +26,29 @@ export const Default: Story = {
     tabs,
   },
   render: () => {
-    const [activeTab, setActiveTab] = useState<(typeof tabs)[number]['value']>('growth')
+    const [activeTab, setActiveTab] = useState<(typeof tabs)[number]['value']>('1')
 
-    return <UnderlineTabs tabs={tabs} activeTab={activeTab} onTabChange={setActiveTab} />
+    return <UnderlineTabs tabs={tabs} activeTab={activeTab} onTabChange={setActiveTab} layoutId="default" />
+  },
+}
+
+const stringTabs = [
+  { value: 'Grant' },
+  { value: 'Growth' },
+  { value: 'General' },
+] as const satisfies BaseTab[]
+
+export const StringTabs: Story = {
+  args: {
+    activeTab: 'Grant',
+    onTabChange: () => {},
+    tabs: stringTabs,
+  },
+  render: () => {
+    const [activeTab, setActiveTab] = useState<(typeof stringTabs)[number]['value']>('Grant')
+
+    return (
+      <UnderlineTabs tabs={stringTabs} activeTab={activeTab} onTabChange={setActiveTab} layoutId="strings" />
+    )
   },
 }

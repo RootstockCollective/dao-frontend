@@ -1,2 +1,2 @@
 export * from './Tabs'
-export { UnderlineTabs } from './UnderlineTabs'
+export { UnderlineTabs, type BaseTab } from './UnderlineTabs'
