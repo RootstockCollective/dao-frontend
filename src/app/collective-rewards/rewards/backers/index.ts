@@ -1,6 +1,7 @@
 export * from './ABIBackers'
 export * from './context'
 export * from './hooks'
+export * from './RBI'
 import { AllTimeShare } from './AllTimeShare'
 import { BackerRewardsTable } from './BackerRewardsTable'
 import { ClaimableRewards } from './ClaimableRewards'

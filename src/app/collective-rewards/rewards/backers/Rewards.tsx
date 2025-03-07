@@ -10,6 +10,7 @@ import {
   BackerClaimableRewards,
   useBackerRewardsContext,
   useClaimBackerRewards,
+  RBI,
 } from '@/app/collective-rewards/rewards/backers'
 import { useNFTBoosterContext } from '@/app/providers/NFT/BoosterContext'
 import { BoltSvg } from '@/components/BoltSvg'
@@ -124,8 +125,8 @@ export const Rewards: FC<RewardsProps> = ({ builder, tokens }) => {
         </div>
         <BackerRewardsCard
           className={cn(
-            'flex-none mb-[46px] max-w-[214px]',
-            isDetailedView ? 'order-3' : 'order-4 opacity-0 pointer-events-none',
+            'flex flex-col flex-none max-w-[214px] mb-[46px]',
+            isDetailedView ? 'order-3' : 'order-5 opacity-0 pointer-events-none',
           )}
           dataTestId="AllTimeRewards"
           titleDetails={{
@@ -147,10 +148,14 @@ export const Rewards: FC<RewardsProps> = ({ builder, tokens }) => {
             isDetailedView ? 'order-4' : 'order-3',
           )}
         />
-        {/* 
-      // Removed until RBI% is introduced (TOK-610)
-        <BackerAllTimeShare gauges={gauges} tokens={tokens} />
-      */}
+        <RBI
+          backer={builder}
+          tokens={tokens}
+          className={cn(
+            'flex flex-col flex-none mb-[46px] max-w-[214px]',
+            isDetailedView ? 'order-5' : 'order-4',
+          )}
+        />
       </div>
     </>
   )
