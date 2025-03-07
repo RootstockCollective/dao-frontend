@@ -1,6 +1,8 @@
 import { FC } from 'react'
+import { useConnect } from 'wagmi'
 import { Button } from '../Button'
-import { useWalletConnect } from '@/shared/hooks/useWalletConnect'
+import { useErrorThrowerContext } from '@/components/ErrorPage/ErrorThrowerContext'
+import { isUserRejectedTxError } from '../ErrorPage'
 
 interface Props {
   onSuccess?: () => void
@@ -16,9 +18,23 @@ interface Props {
  * @constructor
  */
 export const ConnectButton: FC<Props> = ({ onSuccess, children = 'Connect wallet', variant = 'primary' }) => {
-  const { onConnect } = useWalletConnect({ onSuccess })
+  const { connectors, connectAsync } = useConnect({
+    mutation: { onSuccess },
+  })
+  const { triggerError } = useErrorThrowerContext()
+
+  const handleConnectWallet = () => {
+    if (connectors.length) {
+      connectAsync({ connector: connectors[connectors.length - 1] }).catch(err => {
+        if (!isUserRejectedTxError(err)) {
+          triggerError(err.toString())
+        }
+      })
+    }
+  }
+
   return (
-    <Button onClick={onConnect} variant={variant} data-testid="ConnectWallet">
+    <Button onClick={handleConnectWallet} variant={variant} data-testid="ConnectWallet">
       {children}
     </Button>
   )
