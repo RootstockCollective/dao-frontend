@@ -13,11 +13,11 @@ import { useAccount } from 'wagmi'
 export function TopPageHeader() {
   const { address } = useAccount()
   return (
-    <div className="flex">
+    <div className="flex my-4">
       <div className="flex-1">
         <TopPageHeaderLeftSlotStrategy />
       </div>
-      <div className="flex flex-row gap-x-[20px] items-center">
+      <div className="flex flex-row gap-5 items-center">
         <BecomeABuilderButton address={address!} />
         <UserConnectionManager />
       </div>

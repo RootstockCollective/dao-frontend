@@ -12,14 +12,11 @@ export const ErrorThrowerContext = createContext<{
  */
 export const ErrorThrowerContextProvider = ({ children }: { children: ReactNode }) => {
   const [error, setError] = useState('')
-  const triggerError = (errorMessage: string) => {
-    setError(errorMessage)
-  }
   if (error !== '') {
     throw new Error(error)
   }
   const value = {
-    triggerError,
+    triggerError: setError,
   }
   return <ErrorThrowerContext.Provider value={value}>{children}</ErrorThrowerContext.Provider>
 }
