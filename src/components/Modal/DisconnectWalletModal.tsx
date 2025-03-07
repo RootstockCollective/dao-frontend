@@ -21,10 +21,12 @@ export const DisconnectWalletModal: FC<Props> = ({ onClose, onConfirm, onCancel 
         manage your assets.
       </Paragraph>
       <div className="w-full flex justify-center mt-[26px] gap-6">
-        <Button variant="outlined" onClick={onCancel}>
+        <Button variant="outlined" onClick={onCancel} data-testid="Cancel">
           Cancel
         </Button>
-        <Button onClick={onConfirm}>Disconnect</Button>
+        <Button onClick={onConfirm} data-testid="Disconnect">
+          Disconnect
+        </Button>
       </div>
     </div>
   </Modal>
