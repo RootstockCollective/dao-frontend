@@ -12,27 +12,27 @@ export const TreasurySection = () => {
       <HeaderTitle className="mb-4">Treasury</HeaderTitle>
       <div className="grid grid-cols-2 xl:grid-cols-5 gap-[24px]">
         {/* RIF Holdings */}
-        {Object.values(treasuryContracts).map((contract, index) => (
+        {Object.entries(buckets).map(([contract, bucket]) => (
           <MetricsCard
-            key={`${contract.name}-RIF`}
-            title={`${contract.name} RIF`}
+            key={`${contract}-RIF`}
+            title={`${contract} RIF`}
             // Show the RIF amount, rounded up to the nearest whole number. If not available, show 0 RIF.
-            amount={`${buckets[index]?.RIF?.amount ? formatNumberWithCommas(Big(buckets[index].RIF.amount).ceil()) : 0} RIF`}
+            amount={`${bucket?.RIF?.amount ? formatNumberWithCommas(Big(bucket.RIF.amount).ceil()) : 0} RIF`}
             // Display the fiat amount in USD, or show 0 if not available
-            fiatAmount={`= USD ${buckets[index]?.RIF?.fiatAmount ? buckets[index].RIF.fiatAmount : 0}`}
-            contractAddress={contract.address}
-            data-testid={`${contract.name}-RIF`}
+            fiatAmount={`= USD ${bucket?.RIF?.fiatAmount ? bucket.RIF.fiatAmount : 0}`}
+            contractAddress={treasuryContracts[contract as keyof typeof treasuryContracts].address}
+            data-testid={`${contract}-RIF`}
             borderless
           />
         ))}
         {/* RBTC Holdings */}
-        {Object.values(treasuryContracts).map((contract, index) => (
+        {Object.entries(buckets).map(([contract, bucket]) => (
           <MetricsCard
-            key={`${contract.name}-RBTC`}
-            title={`${contract.name} RBTC`}
-            amount={`${formatNumberWithCommas(Big(buckets[index]?.RBTC?.amount).toFixedNoTrailing(8))} RBTC`}
-            fiatAmount={`= USD ${buckets[index]?.RBTC?.fiatAmount ? buckets[index].RBTC.fiatAmount : 0}`}
-            data-testid={`${contract.name}-RBTC`}
+            key={`${contract}-RBTC`}
+            title={`${contract} RBTC`}
+            amount={`${formatNumberWithCommas(Big(bucket?.RBTC?.amount).toFixedNoTrailing(8))} RBTC`}
+            fiatAmount={`= USD ${bucket?.RBTC?.fiatAmount ? bucket.RBTC.fiatAmount : 0}`}
+            data-testid={`${contract}-RBTC`}
             borderless
           />
         ))}
