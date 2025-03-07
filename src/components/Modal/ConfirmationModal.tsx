@@ -112,10 +112,15 @@ export function ConfirmationModal({
               <div>{buttons}</div>
             ) : (
               <div className="flex flex-row gap-6">
-                <Button onClick={onDecline} variant="secondary" className="bg-foreground">
+                <Button
+                  onClick={onDecline}
+                  variant="secondary"
+                  className="bg-foreground"
+                  data-testid="Disagree"
+                >
                   I Disagree
                 </Button>
-                <Button onClick={onAccept} variant="primary">
+                <Button onClick={onAccept} variant="primary" data-testid="Agree">
                   I Agree
                 </Button>
               </div>
