@@ -5,7 +5,12 @@ import { AccountAddress } from '@/components/Header'
 import { shortAddress } from '@/lib/utils'
 import { DisconnectWalletModal } from '@/components/Modal/DisconnectWalletModal'
 import { Popover } from '@/components/Popover'
+import { DisconnectButton } from '@/lib/walletConnection/components/DisconnectButton'
 
+/**
+ * Component in charge of disconnecting the user
+ * @constructor
+ */
 export const DisconnectWorkflow = () => {
   const modal = useModal()
   const { address } = useAccount()
@@ -31,13 +36,8 @@ export const DisconnectWorkflow = () => {
           onClose={modal.closeModal}
           onConfirm={handleDisconnect}
           onCancel={modal.closeModal}
-          address={address}
         />
       )}
     </>
   )
 }
-
-const DisconnectButton = () => (
-  <div className="font-bold tracking-[0.16px] text-[16px] font-rootstock-sans">Disconnect</div>
-)
