@@ -42,7 +42,7 @@ import { useVoteOnProposal } from '@/shared/hooks/useVoteOnProposal'
 import { TX_MESSAGES } from '@/shared/txMessages'
 import { waitForTransactionReceipt } from '@wagmi/core'
 import { useRouter, useParams } from 'next/navigation'
-import { FC, useEffect, useMemo, useState } from 'react'
+import { FC, useEffect, useMemo, useRef, useState } from 'react'
 import { FaMinus } from 'react-icons/fa6'
 import { getAddress } from 'viem'
 import { type BaseError, useAccount } from 'wagmi'
@@ -51,7 +51,7 @@ import { VoteSubmittedModal } from '@/components/Modal/VoteSubmittedModal'
 import { ProposalState } from '@/shared/types'
 import { isUserRejectedTxError } from '@/components/ErrorPage/commonErrors'
 import Big from '@/lib/big'
-import { formatUnits } from 'ethers'
+import { formatUnits, ZeroAddress } from 'ethers'
 import { usePricesContext } from '@/shared/context/PricesContext'
 import { getCombinedFiatAmount } from '@/app/collective-rewards/utils'
 import { tokenContracts } from '@/lib/contracts'
@@ -507,7 +507,7 @@ const CalldataRows = ({ calldatasParsed }: CalldataRowsData) => {
 
 const CalldataDisplay = (props: DecodedData) => {
   const { prices } = usePricesContext()
-  let currentTokenSymbol = '' // For tracking the token
+  const currentTokenSymbol = useRef('') // For tracking the token
 
   // Process token information and create cache - at the top level
   const usdValueCache = useMemo(() => {
@@ -517,26 +517,39 @@ const CalldataDisplay = (props: DecodedData) => {
     if (props.type === 'decoded') {
       const { functionName, inputs, args } = props
 
-      // First find the token symbol
-      for (let i = 0; i < inputs.length; i++) {
-        const input = inputs[i]
-        const inputName = input.name
-        const functionInputNames =
-          actionInputNameFormatMap[functionName] ||
-          ({} as InputNameFormatMap<typeof functionName, typeof inputName>)
-        const formattedName = (functionInputNames[inputName as never] || inputName) as string
+      // First check if this is a withdraw function
+      if (functionName === 'withdraw') {
+        // For withdraw function, use ZeroAddress (RBTC) as the token
+        currentTokenSymbol.current = ZeroAddress
+      } else {
+        // For other functions, try to find the token symbol
+        let foundToken = false
+        for (let i = 0; i < inputs.length; i++) {
+          const input = inputs[i]
+          const inputName = input.name
+          const functionInputNames =
+            actionInputNameFormatMap[functionName] ||
+            ({} as InputNameFormatMap<typeof functionName, typeof inputName>)
+          const formattedName = (functionInputNames[inputName as never] || inputName) as string
 
-        if (formattedName === 'token') {
-          currentTokenSymbol = String(args[i] || '')
-          break
+          if (formattedName === 'token') {
+            currentTokenSymbol.current = String(args[i] || '')
+            foundToken = true
+            break
+          }
+        }
+
+        // If no token found and the function is withdrawERC20, use ZeroAddress as fallback
+        if (!foundToken && functionName === 'withdrawERC20') {
+          currentTokenSymbol.current = ZeroAddress
         }
       }
 
       // Then calculate USD values if we have a token
-      if (currentTokenSymbol && prices) {
+      if (currentTokenSymbol.current && prices) {
         const tokenSymbol =
           Object.entries(tokenContracts).find(
-            ([key, value]) => value === currentTokenSymbol.toLowerCase(),
+            ([key, value]) => value === currentTokenSymbol.current.toLowerCase(),
           )?.[0] ?? ''
 
         const tokenPrice = tokenSymbol ? prices[tokenSymbol] : undefined
@@ -606,7 +619,7 @@ const CalldataDisplay = (props: DecodedData) => {
 
             // If this is the token input, update the token value for rendering
             if (formattedInputName === 'token') {
-              currentTokenSymbol = String(inputValue)
+              currentTokenSymbol.current = String(inputValue)
             }
 
             const inputValueComposerMap = (actionComponentMap[functionName] || {}) as InputValueComposerMap<
