@@ -10,6 +10,7 @@ import { AllocationsContextProvider } from '../collective-rewards/allocations/co
 import { BoosterProvider } from './NFT/BoosterContext'
 import { MigrationProvider } from '@/shared/context/MigrationContext'
 import { MainContainer } from '@/components/MainContainer/MainContainer'
+import { BalancesProvider } from '@/app/user/Balances/context/BalancesContext'
 
 interface Props {
   children: ReactNode
@@ -27,7 +28,9 @@ export const ContextProviders = ({ children }: Props) => {
               <BuilderContextProviderWithPrices>
                 <BoosterProvider>
                   <AllocationsContextProvider>
-                    <MainContainer>{children}</MainContainer>
+                    <BalancesProvider>
+                      <MainContainer>{children}</MainContainer>
+                    </BalancesProvider>
                   </AllocationsContextProvider>
                 </BoosterProvider>
               </BuilderContextProviderWithPrices>

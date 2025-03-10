@@ -1,7 +1,7 @@
 'use client'
 import { useAccount } from 'wagmi'
-import { DisconnectWorkflow } from '@/lib/walletConnection/connection/DisconnectWorkflow'
-import { ConnectWorkflow } from '@/lib/walletConnection/connection/ConnectWorkflow'
+import { DisconnectWorkflow } from './DisconnectWorkflow'
+import { ConnectWorkflow } from './ConnectWorkflow'
 
 export function UserConnectionManager() {
   const { isConnected } = useAccount()
