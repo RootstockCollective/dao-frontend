@@ -20,6 +20,7 @@ import { TokenValue } from '@/app/user/Delegation/TokenValue'
 import { Popover } from '@/components/Popover'
 import Image from 'next/image'
 import { formatUnits } from 'ethers'
+import { ConnectWorkflow } from '@/lib/walletConnection/connection/ConnectWorkflow'
 
 export const DelegationSection = () => {
   const { address, isConnected } = useAccount()
@@ -61,6 +62,13 @@ export const DelegationSection = () => {
     'Voting Power Received': <TokenValue symbol="stRIF" amount={formatUnits(amountDelegatedToMe)} />,
   }
 
+  const handleDelegateClick = () => {
+    if (!isConnected) {
+      return // ConnectWorkflow will handle the connection
+    }
+    setIsDelegateModalOpened(true)
+  }
+
   if (!isConnected) {
     return (
       <div className="mb-6 flex flex-col items-center" data-testid="DelegationSection">
@@ -72,21 +80,25 @@ export const DelegationSection = () => {
             You remain the owner of your staked RIF.
           </Paragraph>
           <div className="flex justify-center">
-            <Button
-              variant="primary"
-              onClick={() => setIsDelegateModalOpened(true)}
-              data-testid="Delegate"
-              buttonProps={{
-                style: {
-                  background: '#FFFFFF',
-                  borderRadius: '4px',
-                  padding: '8px 24px',
-                },
-              }}
-              textClassName="text-black"
-            >
-              Delegate
-            </Button>
+            <ConnectWorkflow
+              ConnectComponent={({ onClick }) => (
+                <Button
+                  variant="primary"
+                  onClick={onClick}
+                  data-testid="Delegate"
+                  buttonProps={{
+                    style: {
+                      background: '#FFFFFF',
+                      borderRadius: '4px',
+                      padding: '8px 24px',
+                    },
+                  }}
+                  textClassName="text-black"
+                >
+                  Delegate
+                </Button>
+              )}
+            />
           </div>
         </div>
 
