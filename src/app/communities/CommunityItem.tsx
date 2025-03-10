@@ -1,7 +1,7 @@
 import { Paragraph, Span } from '@/components/Typography'
 import Image from 'next/image'
-import { BsArrowUpRight } from 'react-icons/bs'
 import Link from 'next/link'
+import { BsArrowUpRight } from 'react-icons/bs'
 import { BoostedBox } from './components/BoostedBox'
 import { BoostedLabel } from './components/BoostedLabel'
 

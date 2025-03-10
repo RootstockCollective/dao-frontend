@@ -19,11 +19,9 @@ export function BoostedLabel({ nftAddress, children }: BoostedLabelProps) {
   const { isCampaignActive } = useNFTBoosterContext()
 
   return isCampaignActive(nftAddress) ? (
-    <div className="inline-flex items-center">
+    <div className="inline-flex items-center gap-1">
       <GlowingLabel showGlow>{children}</GlowingLabel>
-      <div className="-ml-[4px]">
-        <BoltSvg showGlow />
-      </div>
+      <BoltSvg showGlow />
     </div>
   ) : (
     <Span className="text-[15px] font-bold">{children}</Span>
