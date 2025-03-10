@@ -90,10 +90,10 @@ export const Rewards: FC<RewardsProps> = ({ builder, tokens }) => {
 
   return (
     <>
-      <div className="flex gap-4 w-full ">
+      <div className="flex gap-4 w-full">
         <div
           data-testid="metric_with_button"
-          className="flex flex-none flex-col justify-between gap-2 w-[214px] order-1"
+          className="flex flex-none flex-col max-w-[214px] justify-between gap-2 w-[214px] order-1"
         >
           <BackerClaimableRewards tokenRewardsMetrics={{ tokens }} className="w-full h-full" />
           <Button
@@ -107,13 +107,13 @@ export const Rewards: FC<RewardsProps> = ({ builder, tokens }) => {
         </div>
         <div
           data-testid="metric_estimated_rewards"
-          className="flex flex-none flex-col justify-between gap-2 order-2"
+          className="flex flex-none flex-col max-w-[214px] justify-between gap-2 order-2"
         >
           {isBoosted ? (
-            <BoostedRewardsCard tokens={tokens} rewards={['estimated']} />
+            <BoostedRewardsCard className="max-w-[214px]" tokens={tokens} rewards={['estimated']} />
           ) : (
             <BackerRewardsCard
-              className="order-2"
+              className="max-w-[214px]"
               rewardDetails={{
                 rewards: ['estimated'],
                 tokens,
@@ -124,7 +124,7 @@ export const Rewards: FC<RewardsProps> = ({ builder, tokens }) => {
         </div>
         <BackerRewardsCard
           className={cn(
-            'flex-none mb-[46px]',
+            'flex-none mb-[46px] max-w-[214px]',
             isDetailedView ? 'order-3' : 'order-4 opacity-0 pointer-events-none',
           )}
           dataTestId="AllTimeRewards"
@@ -143,7 +143,7 @@ export const Rewards: FC<RewardsProps> = ({ builder, tokens }) => {
         <ABIBackers
           backer={builder}
           className={cn(
-            'flex flex-col flex-none mb-[46px] w-[214px]',
+            'flex flex-col flex-none mb-[46px] max-w-[214px]',
             isDetailedView ? 'order-4' : 'order-3',
           )}
         />
