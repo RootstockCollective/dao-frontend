@@ -1,4 +1,4 @@
-import { ButtonHTMLAttributes, FC, HtmlHTMLAttributes, useState } from 'react'
+import { ButtonHTMLAttributes, FC, useState } from 'react'
 import { Modal } from '@/components/Modal/Modal'
 import { Header, Paragraph, Typography } from '@/components/Typography'
 import { Button } from '@/components/Button'
@@ -29,10 +29,10 @@ const Disclaimer: FC<DisclaimerProps> = ({ onAccept, onDecline }) => {
           </Typography>
         </div>
         <div className="flex flex-row justify-center items-center text-center gap-x-10">
-          <Button onClick={onAccept}>I Agree</Button>
           <Button variant="secondary" onClick={onDecline}>
             I Disagree
           </Button>
+          <Button onClick={onAccept}>I Agree</Button>
         </div>
       </div>
     </div>
