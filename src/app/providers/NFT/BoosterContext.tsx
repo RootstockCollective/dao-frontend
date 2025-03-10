@@ -2,7 +2,7 @@
 import { AVERAGE_BLOCKTIME, NFT_BOOSTER_DATA_URL } from '@/lib/constants'
 import { useQuery } from '@tanstack/react-query'
 import axios from 'axios'
-import { createContext, ReactNode, useContext, useMemo } from 'react'
+import { createContext, ReactNode, useCallback, useContext, useMemo } from 'react'
 import { Address } from 'viem'
 import { useAccount } from 'wagmi'
 
@@ -30,11 +30,14 @@ interface NFTBoosterContext {
   error?: Error | null
   currentBoost?: HolderRewards
   hasActiveCampaign?: boolean
+  isCampaignActive: (nft: Address | string | undefined) => boolean
+  userHasRewards?: boolean
   isBoosted?: boolean
 }
 
 const BoosterContext = createContext<NFTBoosterContext>({
   boostData: {} as BoostData,
+  isCampaignActive: () => false,
 })
 
 interface BoosterContextProviderProps {
@@ -43,6 +46,13 @@ interface BoosterContextProviderProps {
 export const BoosterProvider = ({ children }: BoosterContextProviderProps) => {
   const { address } = useAccount()
   const { data: boostData, isLoading, error, hasActiveCampaign } = useFetchBoostData()
+
+  const isCampaignActive: NFTBoosterContext['isCampaignActive'] = useCallback(
+    nft => {
+      return hasActiveCampaign && boostData?.nftContractAddress === nft
+    },
+    [boostData, hasActiveCampaign],
+  )
 
   const value = useMemo(() => {
     if (!boostData && !isLoading && !error) {
@@ -60,7 +70,7 @@ export const BoosterProvider = ({ children }: BoosterContextProviderProps) => {
       ) ?? []
 
     if (!currentBoostRaw) {
-      return { isBoosted: false, boostData, isLoading, error, hasActiveCampaign }
+      return { userHasRewards: false, boostData, isLoading, error, hasActiveCampaign }
     }
 
     const { boostedRBTCRewards, boostedRIFRewards, estimatedRBTCRewards, estimatedRIFRewards } =
@@ -73,16 +83,25 @@ export const BoosterProvider = ({ children }: BoosterContextProviderProps) => {
       estimatedRBTCRewards: BigInt(estimatedRBTCRewards ?? 0),
       estimatedRIFRewards: BigInt(estimatedRIFRewards ?? 0),
     }
-    const isBoosted = !!(
+    const userHasRewards = !!(
       currentBoost.boostedRBTCRewards ||
       currentBoost.boostedRIFRewards ||
       currentBoost.estimatedRBTCRewards ||
       currentBoost.estimatedRIFRewards
     )
 
-    return { boostData, isLoading, error, currentBoost, hasActiveCampaign, isBoosted }
+    return { boostData, isLoading, error, currentBoost, hasActiveCampaign, userHasRewards, isBoosted: true }
   }, [boostData, address, isLoading, error, hasActiveCampaign])
-  return <BoosterContext.Provider value={value}>{children}</BoosterContext.Provider>
+  return (
+    <BoosterContext.Provider
+      value={{
+        ...value,
+        isCampaignActive,
+      }}
+    >
+      {children}
+    </BoosterContext.Provider>
+  )
 }
 
 export const useNFTBoosterContext = () => useContext(BoosterContext)
@@ -113,7 +132,7 @@ export const useFetchBoostData = () => {
     queryFn: async () => {
       const { data } = await axiosInstance.get(`${NFT_BOOSTER_DATA_URL}/${latestFile}`)
 
-      return data
+      return { ...data, nftContractAddress: data.nftContractAddress.toLowerCase() }
     },
     queryKey: ['nftBoosterData'],
     refetchInterval: AVERAGE_BLOCKTIME,

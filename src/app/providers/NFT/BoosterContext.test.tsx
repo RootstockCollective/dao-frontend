@@ -1,6 +1,6 @@
 import { useQuery } from '@tanstack/react-query'
 import { render, renderHook, screen, waitFor } from '@testing-library/react'
-import { afterEach, beforeEach, describe, expect, it, Mock, vi } from 'vitest'
+import { afterEach, describe, expect, it, vi } from 'vitest'
 import { useAccount } from 'wagmi'
 import { BoosterProvider, useFetchBoostData, useNFTBoosterContext } from './BoosterContext'
 
@@ -190,6 +190,7 @@ describe('BoosterProvider', () => {
           currentBoost: holderRewards,
           hasActiveCampaign: true,
           isBoosted: true,
+          userHasRewards: true,
         }),
       )
     })
@@ -221,11 +222,11 @@ describe('BoosterProvider', () => {
       const contextValue = JSON.parse(element.textContent || '{}')
       expect(contextValue).toEqual(
         toExpected({
-          isBoosted: false,
           boostData: testBoostData,
           isLoading: false,
           error: null,
           hasActiveCampaign: true,
+          userHasRewards: false,
         }),
       )
     })

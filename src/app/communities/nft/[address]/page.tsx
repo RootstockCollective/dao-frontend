@@ -1,6 +1,7 @@
 'use client'
 
 import { communitiesMapByContract } from '@/app/communities/communityUtils'
+import { NftHoldersSection } from '@/app/communities/NftHoldersSection'
 import { useNFTBoosterContext } from '@/app/providers/NFT/BoosterContext'
 import { BoltSvg } from '@/components/BoltSvg'
 import { Button } from '@/components/Button'
@@ -10,18 +11,17 @@ import { isUserRejectedTxError } from '@/components/ErrorPage/commonErrors'
 import { GlowingLabel } from '@/components/Label/GlowingLabel'
 import { Paragraph, Span, Typography } from '@/components/Typography'
 import { cn, truncateMiddle } from '@/lib/utils'
+import { useCommunity } from '@/shared/hooks/useCommunity'
+import { useStRif } from '@/shared/hooks/useStRIf'
+import { DateTime } from 'luxon'
 import Image from 'next/image'
-import { useRouter, useParams } from 'next/navigation'
-import { ReactNode, useState, useEffect, useRef } from 'react'
+import { useParams, useRouter } from 'next/navigation'
+import { ReactNode, useEffect, useRef, useState } from 'react'
 import { BsTwitterX } from 'react-icons/bs'
 import { FaDiscord, FaLink } from 'react-icons/fa'
 import { Address, formatEther } from 'viem'
 import { useAccount } from 'wagmi'
-import { useCommunity } from '@/shared/hooks/useCommunity'
-import { useStRif } from '@/shared/hooks/useStRIf'
-import { NftHoldersSection } from '@/app/communities/NftHoldersSection'
 import { SelfContainedNFTBoosterCard } from '../../../shared/components/NFTBoosterCard/SelfContainedNFTBoosterCard'
-import { DateTime } from 'luxon'
 
 /**
  * Name of the local storage variable with information about whether the token was added to the wallet
@@ -66,7 +66,7 @@ export default function Page() {
     stRifThreshold,
   } = useCommunity(nftAddress)
   const { stRifBalance } = useStRif()
-  const { hasActiveCampaign, boostData } = useNFTBoosterContext()
+  const { isCampaignActive, boostData } = useNFTBoosterContext()
 
   const nftInfo = communitiesMapByContract[nftAddress || '']
   if (nftInfo === undefined && nftAddress !== undefined) {
@@ -244,9 +244,7 @@ export default function Page() {
   }
 
   if (!nftAddress) return null
-
-  const isCampaignActive = hasActiveCampaign && boostData?.nftContractAddress === nftAddress
-
+  const showNFTBoost = isCampaignActive(nftAddress)
   return (
     <>
       {message && (
@@ -282,17 +280,17 @@ export default function Page() {
           </div>
           <div className="mb-[24px] font-extralight">
             {nftInfo?.longDescription({
-              activation: isCampaignActive
-                ? DateTime.fromSeconds(Number(boostData.timestamp) ?? 0)
+              activation: showNFTBoost
+                ? DateTime.fromSeconds(Number(boostData?.timestamp) ?? 0)
                     .toFormat('MMM yyyy')
                     .toUpperCase()
                 : undefined,
             })}
           </div>
-          {hasActiveCampaign && boostData?.nftContractAddress === nftAddress && (
+          {showNFTBoost && (
             <div className="inline-flex items-center gap-1 pb-6">
               <BoltSvg />
-              <GlowingLabel faded>Active Boost {boostData.boostPercentage}%</GlowingLabel>
+              <GlowingLabel faded>Active Boost {boostData!.boostPercentage}%</GlowingLabel>
             </div>
           )}
           {/* Hidden until we get social media data */}
@@ -352,7 +350,7 @@ export default function Page() {
                     )}
                   </div>
 
-                  <SelfContainedNFTBoosterCard />
+                  <SelfContainedNFTBoosterCard forceRender={showNFTBoost} />
 
                   {/* `Add to wallet button` */}
                   {!isNftInWallet?.[nftAddress]?.[tokenId] && (

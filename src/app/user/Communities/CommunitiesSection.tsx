@@ -75,10 +75,8 @@ const NftInfo = ({
   onFinishedLoading: (isMember: boolean, imageUri?: string) => void
 }) => {
   const data = useCommunity(nftAddress as `0x${string}`)
-  const { isBoosted, boostData } = useNFTBoosterContext()
+  const { isBoosted, isCampaignActive } = useNFTBoosterContext()
   const alreadyFinishedLoading = useRef(false)
-
-  const isCampaignActive = boostData?.nftContractAddress === nftAddress && isBoosted
 
   useEffect(() => {
     if (!data.isLoading && !alreadyFinishedLoading.current) {
@@ -101,7 +99,7 @@ const NftInfo = ({
         link={`/communities/nft/${nftAddress}`}
         description={data.nftMeta?.description || ''}
         members={data.membersCount.toString()}
-        isBoosted={isCampaignActive}
+        isBoosted={isCampaignActive(nftAddress) && isBoosted}
       />
     )
   }
