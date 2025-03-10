@@ -47,5 +47,9 @@ export const useVotingPower = () => {
     canCreateProposal: totalVotingPower >= threshold,
     threshold: formatUnits(threshold, decimals),
     totalVotingPower: formatUnits(totalVotingPower, decimals),
+    delegatedVotingPower: formatUnits(
+      totalVotingPower > balance ? totalVotingPower - balance : balance - totalVotingPower,
+      decimals,
+    ),
   }
 }

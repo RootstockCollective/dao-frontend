@@ -22,12 +22,14 @@ import { Button } from '@/components/Button'
 import { useRouter, useSearchParams } from 'next/navigation'
 import Big from '@/lib/big'
 import { proposalQuickFilters } from '@/lib/constants'
+import { CategoryColumn } from '@/app/proposals/components/table-columns/CategoryColumn'
 
 interface LatestProposalsTableProps {
   proposals: LatestProposalResponse[]
+  onEmitActiveProposal?: (activeProposals: number) => void
 }
 
-const LatestProposalsTable = ({ proposals }: LatestProposalsTableProps) => {
+const LatestProposalsTable = ({ proposals, onEmitActiveProposal }: LatestProposalsTableProps) => {
   // search textfield
   const [searchedProposal, setSearchedProposal] = useState('')
   // React-table sorting state
@@ -47,6 +49,15 @@ const LatestProposalsTable = ({ proposals }: LatestProposalsTableProps) => {
       }),
     [proposalListData, searchedProposal],
   )
+
+  useEffect(() => {
+    if (onEmitActiveProposal) {
+      onEmitActiveProposal(
+        proposalListData.filter(proposal => ['Pending', 'Active'].includes(proposal.proposalState)).length ||
+          0,
+      )
+    }
+  }, [onEmitActiveProposal, proposalListData])
 
   // State for proposal quick filters
   const [activeFilter, setActiveFilter] = useState<string | null>(null)
@@ -117,7 +128,7 @@ const LatestProposalsTable = ({ proposals }: LatestProposalsTableProps) => {
     }),
     accessor('votes.quorum', {
       id: 'votes',
-      header: 'Quorum Votes',
+      header: 'Votes',
       cell: info => {
         const { forVotes, abstainVotes } = info.row.original.votes
         return (
@@ -132,7 +143,7 @@ const LatestProposalsTable = ({ proposals }: LatestProposalsTableProps) => {
     accessor(row => row.Starts.unix(), {
       id: 'date',
       header: 'Date',
-      cell: info => <Typography tagVariant="p">{info.row.original.Starts.format('MM-DD-YYYY')}</Typography>,
+      cell: info => <Typography tagVariant="p">{info.row.original.Starts.format('MM/DD/YYYY')}</Typography>,
     }),
     accessor('blocksUntilClosure', {
       id: 'timeRemaining',
@@ -174,6 +185,11 @@ const LatestProposalsTable = ({ proposals }: LatestProposalsTableProps) => {
         }
         return dominantA.priority - dominantB.priority
       },
+    }),
+    accessor('category', {
+      id: 'category',
+      header: 'Category',
+      cell: info => <CategoryColumn proposalCategory={info.row.original.category} />,
     }),
     accessor('proposalState', {
       id: 'status',
