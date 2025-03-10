@@ -57,7 +57,7 @@ describe('SelfContainedNFTBoosterCard', () => {
   test('should render boosted message if there is active campaign and account is boosted', async () => {
     vi.mocked(useNFTBoosterContext).mockReturnValue({
       boostData,
-      hasActiveCampaign: true,
+      userHasRewards: true,
       isBoosted: true,
       isCampaignActive: () => true,
     })
