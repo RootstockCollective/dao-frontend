@@ -1,6 +1,5 @@
 import { ConfirmationModal } from '@/components/Modal'
-import { disclaimerModalText } from '@/lib/walletConnection'
-import { DisclaimerFlowProps } from '@/lib/walletConnection/types'
+import { disclaimerModalText, DisclaimerFlowProps } from '..'
 
 /**
  * Shows the modal with the disclaimer text and triggers the onAgree callback when the user agrees.

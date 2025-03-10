@@ -1,5 +1,5 @@
 import { Button } from '@/components/Button'
-import { ConnectButtonComponentProps } from '@/lib/walletConnection/types'
+import { ConnectButtonComponentProps } from '../types'
 
 /**
  * New button that shows Connect Wallet

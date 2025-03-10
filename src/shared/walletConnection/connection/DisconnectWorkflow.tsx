@@ -5,7 +5,7 @@ import { AccountAddress } from '@/components/Header'
 import { shortAddress } from '@/lib/utils'
 import { DisconnectWalletModal } from '@/components/Modal/DisconnectWalletModal'
 import { Popover } from '@/components/Popover'
-import { DisconnectButton } from '@/lib/walletConnection/components/DisconnectButton'
+import { DisconnectButton } from '../components/DisconnectButton'
 
 /**
  * Component in charge of disconnecting the user
