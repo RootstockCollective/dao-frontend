@@ -19,9 +19,10 @@ import { TokenValue } from '@/app/user/Delegation/TokenValue'
 import { Popover } from '@/components/Popover'
 import Image from 'next/image'
 import { formatUnits } from 'ethers'
+import { ConnectWorkflow } from '@/lib/walletConnection/connection/ConnectWorkflow'
 
 export const DelegationSection = () => {
-  const { address } = useAccount()
+  const { address, isConnected } = useAccount()
   const { delegateeAddress } = useGetDelegates(address)
 
   const [isDelegateModalOpened, setIsDelegateModalOpened] = useState(false)
@@ -58,6 +59,85 @@ export const DelegationSection = () => {
 
   const delegatedToMe = {
     'Voting Power Received': <TokenValue symbol="stRIF" amount={formatUnits(amountDelegatedToMe)} />,
+  }
+
+  const handleDelegateClick = () => {
+    if (!isConnected) {
+      return // ConnectWorkflow will handle the connection
+    }
+    setIsDelegateModalOpened(true)
+  }
+
+  if (!isConnected) {
+    return (
+      <div className="mb-6 flex flex-col items-center" data-testid="DelegationSection">
+        <div className="text-center mt-10 mb-8">
+          <HeaderTitle className="mb-4 font-kk-topo">DELEGATION</HeaderTitle>
+          <Paragraph className="mb-6">
+            Delegation allows you to assign your voting power to another community member you trust.
+            <br />
+            You remain the owner of your staked RIF.
+          </Paragraph>
+          <div className="flex justify-center">
+            <ConnectWorkflow
+              ConnectComponent={({ onClick }) => (
+                <Button
+                  variant="white-new"
+                  onClick={onClick}
+                  data-testid="Delegate"
+                  className="h-[40px]"
+                  textClassName="text-black"
+                >
+                  Delegate
+                </Button>
+              )}
+            />
+          </div>
+        </div>
+
+        <div className="max-w-xl mt-10">
+          <div className="flex items-start mb-4">
+            <div className="mr-2 mt-1">
+              <span className="inline-block w-5 h-5 text-center rounded-sm">✅</span>
+            </div>
+            <div>
+              <Paragraph className="font-bold">Delegate your voting power</Paragraph>
+              <Paragraph>Assign your stRIF to someone you trust to vote on your behalf.</Paragraph>
+            </div>
+          </div>
+
+          <div className="flex items-start mb-4">
+            <div className="mr-2 mt-1">
+              <span className="inline-block w-5 h-5 text-center rounded-sm">✅</span>
+            </div>
+            <div>
+              <Paragraph className="font-bold">Receive delegations</Paragraph>
+              <Paragraph>
+                Others can delegate their voting power to you, increasing your influence in the DAO
+              </Paragraph>
+            </div>
+          </div>
+
+          <div className="flex items-start mb-4">
+            <div className="mr-2 mt-1">
+              <span className="inline-block w-5 h-5 text-center bg-transparent">💡</span>
+            </div>
+            <div>
+              <Paragraph>
+                Start by delegating or ask others to delegate to you to participate in governance
+              </Paragraph>
+            </div>
+          </div>
+        </div>
+
+        {isDelegateModalOpened && (
+          <DelegateModal
+            onClose={() => setIsDelegateModalOpened(false)}
+            onDelegateTxStarted={onDelegateTxStarted}
+          />
+        )}
+      </div>
+    )
   }
 
   return (
