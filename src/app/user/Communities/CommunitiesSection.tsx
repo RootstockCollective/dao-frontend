@@ -7,6 +7,8 @@ import { Link } from '@/components/Link'
 import { useAccount } from 'wagmi'
 import { useEffect, useRef, useState } from 'react'
 import { useNFTBoosterContext } from '@/app/providers/NFT/BoosterContext'
+import { Address } from 'viem'
+import { CardPlaceholder } from '@/components/loading-components'
 
 const communities: string[] = Object.keys(communitiesMapByContract)
 
@@ -29,12 +31,21 @@ export const CommunitiesSection = () => (
   </div>
 )
 
-export const UserCommunities = ({ nftAddresses }: { nftAddresses: string[] }) => {
+interface Props {
+  nftAddresses: string[]
+}
+
+const UserCommunities = ({ nftAddresses }: Props) => {
   const { isConnected } = useAccount()
 
   // For each NFT address, fetch the info
   const [nftsInfo, setNftsInfo] = useState(
-    nftAddresses.map(nftAddress => ({ address: nftAddress, isLoading: true, isMember: false, imageUri: '' })),
+    nftAddresses.map(nftAddress => ({
+      address: nftAddress,
+      isLoading: true,
+      isMember: false,
+      imageUri: '',
+    })),
   )
 
   const onNftFinishedLoading = (index: number) => (isMember: boolean, imageUri?: string) => {
@@ -59,22 +70,22 @@ export const UserCommunities = ({ nftAddresses }: { nftAddresses: string[] }) =>
     { isLoadingNfts: false, nftsOwned: 0 },
   )
 
+  if (!isConnected || (!isLoadingNfts && nftsOwned === 0)) {
+    return <JoinACommunity />
+  }
+
   return (
     <>
       <SectionHeader name="Communities" description={<CommuntiesSectionDescription />} />
-      {!isConnected || nftsOwned === 0 ? (
-        <JoinACommunity />
-      ) : (
-        <div className="flex flex-wrap gap-[24px]">
-          {nftsInfo.map((nftInfo, index) => (
-            <NftInfo
-              key={nftInfo.address}
-              nftAddress={nftInfo.address}
-              onFinishedLoading={onNftFinishedLoading(index)}
-            />
-          ))}
-        </div>
-      )}
+      <div className="flex flex-wrap gap-[24px]">
+        {nftsInfo.map((nftInfo, index) => (
+          <NftInfo
+            key={nftInfo.address}
+            nftAddress={nftInfo.address}
+            onFinishedLoading={onNftFinishedLoading(index)}
+          />
+        ))}
+      </div>
     </>
   )
 }
@@ -86,7 +97,7 @@ const NftInfo = ({
   nftAddress: string
   onFinishedLoading: (isMember: boolean, imageUri?: string) => void
 }) => {
-  const data = useCommunity(nftAddress as `0x${string}`)
+  const data = useCommunity(nftAddress as Address)
   const { isBoosted, boostData } = useNFTBoosterContext()
   const alreadyFinishedLoading = useRef(false)
 
@@ -97,7 +108,11 @@ const NftInfo = ({
       onFinishedLoading(data.isMember, data.nftMeta?.image)
       alreadyFinishedLoading.current = true
     }
-  }, [data, onFinishedLoading])
+  }, [data, onFinishedLoading, nftAddress])
+
+  if (data.isLoading) {
+    return <CardPlaceholder />
+  }
 
   // DAO FIXME: the nftName from data is in CapitaCamelCase but also with abbreviations,
   // so it renders as single word atm (e.g. "OGFOUNDERS" instead of "OG FOUNDERS")
@@ -114,6 +129,7 @@ const NftInfo = ({
         description={data.nftMeta?.description || ''}
         members={data.membersCount.toString()}
         isBoosted={isCampaignActive}
+        alt={data.nftName + ' logo'}
       />
     )
   }
