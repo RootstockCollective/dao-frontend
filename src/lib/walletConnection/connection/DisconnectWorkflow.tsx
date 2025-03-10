@@ -24,12 +24,12 @@ export const DisconnectWorkflow = () => {
     <>
       <Popover
         contentContainerClassName="w-[145px]"
-        contentSubContainerClassName="w-full py-[16px] px-[24px] text-center rounded-none border-[#2D2D2D] cursor-pointer"
+        contentSubContainerClassName="w-full py-[16px] px-[24px] text-center rounded-none border-[#2D2D2D] cursor-pointer select-none"
         contentSubcontainerProps={{ onClick: modal.openModal }}
         content={<DisconnectButton />}
         trigger="click"
       >
-        <AccountAddress address={address} shortAddress={shortAddress(address)} />
+        <AccountAddress address={address} shortAddress={shortAddress(address)} withCopy={false} />
       </Popover>
       {modal.isModalOpened && (
         <DisconnectWalletModal
