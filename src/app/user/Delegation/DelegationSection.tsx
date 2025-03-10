@@ -83,16 +83,10 @@ export const DelegationSection = () => {
             <ConnectWorkflow
               ConnectComponent={({ onClick }) => (
                 <Button
-                  variant="primary"
+                  variant="white-new"
                   onClick={onClick}
                   data-testid="Delegate"
-                  buttonProps={{
-                    style: {
-                      background: '#FFFFFF',
-                      borderRadius: '4px',
-                      padding: '8px 24px',
-                    },
-                  }}
+                  className="h-[40px]"
                   textClassName="text-black"
                 >
                   Delegate
@@ -105,9 +99,7 @@ export const DelegationSection = () => {
         <div className="max-w-xl mt-10">
           <div className="flex items-start mb-4">
             <div className="mr-2 mt-1">
-              <span className="inline-block w-5 h-5 bg-green-500 text-white text-center rounded-sm">
-                &#10003;
-              </span>
+              <span className="inline-block w-5 h-5 text-center rounded-sm">✅</span>
             </div>
             <div>
               <Paragraph className="font-bold">Delegate your voting power</Paragraph>
@@ -117,9 +109,7 @@ export const DelegationSection = () => {
 
           <div className="flex items-start mb-4">
             <div className="mr-2 mt-1">
-              <span className="inline-block w-5 h-5 bg-green-500 text-white text-center rounded-sm">
-                &#10003;
-              </span>
+              <span className="inline-block w-5 h-5 text-center rounded-sm">✅</span>
             </div>
             <div>
               <Paragraph className="font-bold">Receive delegations</Paragraph>
@@ -131,7 +121,7 @@ export const DelegationSection = () => {
 
           <div className="flex items-start mb-4">
             <div className="mr-2 mt-1">
-              <span className="inline-block w-5 h-5 text-center bg-transparent">&#128161;</span>
+              <span className="inline-block w-5 h-5 text-center bg-transparent">💡</span>
             </div>
             <div>
               <Paragraph>
