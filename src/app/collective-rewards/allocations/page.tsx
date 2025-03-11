@@ -15,11 +15,13 @@ import {
 } from './components'
 import { AllocationsContext } from './context'
 import { useAllocateVotes } from './hooks/useAllocateVotes'
+import { useAccount } from 'wagmi'
 
 export default function Allocations() {
   const [resetCounter, setResetCounter] = useState(0)
-
+  const { isConnected } = useAccount()
   const router = useRouter()
+
   const {
     state: { allocations, getBuilder },
     actions: { resetAllocations },
@@ -35,6 +37,11 @@ export default function Allocations() {
   const cancel = () => {
     resetAllocations()
     router.back()
+  }
+
+  if (!isConnected) {
+    router.push('/')
+    return
   }
 
   return (
