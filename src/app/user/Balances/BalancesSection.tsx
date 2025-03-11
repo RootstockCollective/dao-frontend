@@ -1,4 +1,3 @@
-import { HeaderTitle, Paragraph } from '@/components/Typography'
 import { Table } from '@/components/Table'
 import { RenderTokenPrice } from '@/app/user/Balances/RenderTokenPrice'
 import { RenderTotalBalance } from '@/app/user/Balances/RenderTotalBalance'
@@ -8,8 +7,6 @@ import { RenderTokenSymbol } from '@/app/user/Balances/RenderTokenSymbol'
 import { UnStakeRIFCell } from '@/app/user/Balances/UnStakeRIFCell'
 import { ModalReturn, useModal } from '@/shared/hooks/useModal'
 import { UnStakingSteps } from '../Stake/UnStakingSteps'
-import { Link } from '@/components/Link'
-import { CRWhitepaperLink } from '@/app/collective-rewards/shared'
 import { SectionHeader } from '@/components/SectionHeader'
 
 const makeData = (stakeModal: ModalReturn, unstakeModal: ModalReturn) => [
