@@ -1,4 +1,4 @@
-import { UserTopLeftComponent } from './components/topPageHeader/pages'
+import { UserTopLeftComponent, ProposalDetailTopLeftComponent } from './components/topPageHeader/pages'
 
 export const disclaimerModalText = {
   modalTitle: 'DISCLAIMER',
@@ -37,5 +37,6 @@ export const disclaimerModalText = {
 export const routePatterns = [
   { pattern: /^(\/|\/user)$/, component: <UserTopLeftComponent /> },
   { pattern: /^\/communities/, component: null },
+  { pattern: /^\/proposals\/\d+$/, component: <ProposalDetailTopLeftComponent /> },
   // Add more patterns as needed
 ]

@@ -20,19 +20,12 @@ import { DecodedData, getEventArguments, splitCombinedName } from '@/app/proposa
 import { useAlertContext } from '@/app/providers'
 import { useModal } from '@/shared/hooks/useModal'
 import { AddressOrAlias as AddressComponent } from '@/components/Address'
-import {
-  Breadcrumb,
-  BreadcrumbItem,
-  BreadcrumbLink,
-  BreadcrumbList,
-  BreadcrumbPage,
-  BreadcrumbSeparator,
-} from '@/components/Breadcrumb'
 import { Button } from '@/components/Button'
 import { CopyButton } from '@/components/CopyButton'
 import { MetricsCard } from '@/components/MetricsCard'
 import { Popover } from '@/components/Popover'
 import { Header, Paragraph, Span, Typography } from '@/components/Typography'
+import { ProposalQuorum } from '@/app/proposals/components/ProposalQuorum'
 import { config } from '@/config'
 import { RIF, RIF_ADDRESS } from '@/lib/constants'
 import { formatNumberWithCommas, truncateMiddle, formatCurrency } from '@/lib/utils'
@@ -55,6 +48,7 @@ import { formatUnits, ZeroAddress } from 'ethers'
 import { usePricesContext } from '@/shared/context/PricesContext'
 import { getCombinedFiatAmount } from '@/app/collective-rewards/utils'
 import { tokenContracts } from '@/lib/contracts'
+import { ConnectWorkflow } from '@/shared/walletConnection'
 
 export default function ProposalView() {
   const { id } = useParams<{ id: string }>() ?? {}
@@ -78,7 +72,7 @@ const PageWithProposal = (proposal: ParsedProposal) => {
   const { proposalId, name, description, proposer, Starts } = proposal
   const [vote, setVote] = useState<Vote | null>('for')
   const [errorVoting, setErrorVoting] = useState('')
-  const { address } = useAccount()
+  const { address, isConnected } = useAccount()
   const votingModal = useModal()
   const submittedModal = useModal()
   const { setMessage } = useAlertContext()
@@ -87,7 +81,6 @@ const PageWithProposal = (proposal: ParsedProposal) => {
   const snapshot = useGetProposalSnapshot(proposalId)
 
   const { blocksUntilClosure } = useGetProposalDeadline(proposalId)
-
   const { votingPowerAtSnapshot, doesUserHasEnoughThreshold } = useVotingPowerAtSnapshot(snapshot as bigint)
   const { canCreateProposal } = useVotingPower()
 
@@ -255,9 +248,8 @@ const PageWithProposal = (proposal: ParsedProposal) => {
   // @ts-ignore
   return (
     <div className="pl-4 grid grid-rows-1 gap-[32px] mb-[100px]">
-      <BreadcrumbSection title={proposalName} />
       <div className="flex items-center justify-between">
-        <Header className="text-2xl ">{proposalName}</Header>
+        <Header className="text-3xl ">{proposalName}</Header>
         {(proposalType === 'communityApproveBuilder' || proposalType === 'whitelistBuilder') && (
           <DewhitelistButton
             proposal={proposal}
@@ -305,16 +297,26 @@ const PageWithProposal = (proposal: ParsedProposal) => {
         )}
       </div>
       <div className="flex flex-row justify-between">
-        <div className="flex flex-row gap-x-6">
+        <div className="flex flex-row gap-x-8 basis-1/2">
+          <ProposalQuorum blockNumber={proposal.blockNumber} />
           <MetricsCard
             title="Snapshot"
             amount={formatNumberWithCommas(snapshot?.toString() || '-')}
             fiatAmount="Taken at block"
+            borderless={true}
           />
-          <MetricsCard title="State" amount={proposalStateHuman} />
         </div>
         <div>
-          {proposalState === ProposalState.Active && (
+          {!isConnected && (
+            <ConnectWorkflow
+              ConnectComponent={({ onClick }) => (
+                <Button variant="secondary" onClick={onClick} data-testid="VoteOnChain">
+                  Vote on chain
+                </Button>
+              )}
+            />
+          )}
+          {isConnected && proposalState === ProposalState.Active && (
             <>
               {cannotCastVote ? (
                 <Popover
@@ -338,7 +340,7 @@ const PageWithProposal = (proposal: ParsedProposal) => {
               )}
             </>
           )}
-          {proposalNeedsQueuing && proposalStateHuman === 'Succeeded' && (
+          {isConnected && proposalNeedsQueuing && proposalStateHuman === 'Succeeded' && (
             <Button
               onClick={handleQueuingProposal}
               className="mt-2"
@@ -349,7 +351,7 @@ const PageWithProposal = (proposal: ParsedProposal) => {
               Put on Queue
             </Button>
           )}
-          {proposalState === ProposalState.Queued && (
+          {isConnected && proposalState === ProposalState.Queued && (
             <Popover
               size="small"
               trigger="hover"
@@ -381,7 +383,7 @@ const PageWithProposal = (proposal: ParsedProposal) => {
               </Button>
             </Popover>
           )}
-          {(isExecuting || isPendingExecution) && (
+          {isConnected && (isExecuting || isPendingExecution) && (
             <Span variant="light" className="inline-block mt-2">
               Pending transaction confirmation <br />
               to complete execution.
@@ -478,22 +480,6 @@ const PageWithProposal = (proposal: ParsedProposal) => {
         </div>
       </div>
     </div>
-  )
-}
-
-const BreadcrumbSection: FC<{ title: string }> = ({ title }) => {
-  return (
-    <Breadcrumb className="pb-4 border-b">
-      <BreadcrumbList>
-        <BreadcrumbItem>
-          <BreadcrumbLink href="/proposals">Proposals</BreadcrumbLink>
-        </BreadcrumbItem>
-        <BreadcrumbSeparator />
-        <BreadcrumbItem>
-          <BreadcrumbPage className="max-w-lg truncate">{title}</BreadcrumbPage>
-        </BreadcrumbItem>
-      </BreadcrumbList>
-    </Breadcrumb>
   )
 }
 
