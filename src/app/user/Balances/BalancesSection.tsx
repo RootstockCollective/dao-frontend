@@ -48,13 +48,7 @@ export const BalancesSection = ({ showTitle = false }: Props) => {
       {showTitle && (
         <SectionHeader
           name="Balances"
-          description={
-            <>
-              Select one or more Builders you want to back. You retain full ownership and access to your stRIF
-              while earning a portion of their rewards. For more information check the{' '}
-              <CRWhitepaperLink className="text-[14px]" />.
-            </>
-          }
+          description="Your tokens that can be used in the Collective are shown here together with summary total balances with the option to Stake your RIF."
         />
       )}
       {stakeModal.isModalOpened ? <StakingSteps onCloseModal={stakeModal.closeModal} /> : null}
