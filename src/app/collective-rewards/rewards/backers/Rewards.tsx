@@ -31,7 +31,7 @@ const estimatedRewardsTooltipData: RewardsCardProps['titleDetails']['tooltip'] =
       </Typography>
     </>
   ),
-  popoverProps: { size: 'medium' },
+  popoverProps: { size: 'medium', position: 'left-bottom' },
 }
 
 const estimatedRewardsTitleData: RewardsCardProps['titleDetails'] = {
@@ -120,7 +120,7 @@ export const Rewards: FC<RewardsProps> = ({ builder, tokens }) => {
             title: 'All time rewards',
             tooltip: {
               text: 'Total of your received and claimable rewards',
-              popoverProps: { size: 'medium' },
+              popoverProps: { size: 'medium', position: 'bottom' },
             },
           }}
           rewardDetails={{
