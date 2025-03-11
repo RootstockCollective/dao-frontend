@@ -23,6 +23,8 @@ export const BuildersLeaderBoard = () => {
 
   const canManageAllocations = useCanManageAllocations()
 
+  const isActionEnabled = isConnected && !isInDistributionPeriod && canManageAllocations
+
   return (
     <>
       <Collapsible defaultOpen>
@@ -39,9 +41,9 @@ export const BuildersLeaderBoard = () => {
 
             <PopoverWrapper isInDistributionPeriod={!!isInDistributionPeriod} isConnected={isConnected}>
               <Button
-                variant={isConnected ? 'primary' : 'outlined'}
+                variant={isActionEnabled ? 'primary' : 'outlined'}
                 onClick={onManageAllocations}
-                disabled={!isConnected || !!isInDistributionPeriod || !canManageAllocations}
+                disabled={!isActionEnabled}
               >
                 Manage Allocations
               </Button>
@@ -78,7 +80,7 @@ const noWalletConnectedPopover = (children: React.ReactNode) => (
   </Popover>
 )
 
-const distributionOngoingPopover = (children: React.ReactNode) => (
+const distributionPeriodPopover = (children: React.ReactNode) => (
   <Popover
     content={
       <div className="flex flex-col">
@@ -94,7 +96,7 @@ const distributionOngoingPopover = (children: React.ReactNode) => (
         </Typography>
       </div>
     }
-    trigger="click"
+    trigger="hover"
     contentContainerClassName="top-full -left-[87%]"
   >
     {children}
@@ -110,7 +112,7 @@ const PopoverWrapper: React.FC<{
     return <>{noWalletConnectedPopover(children)}</>
   }
   if (isInDistributionPeriod) {
-    return <>{distributionOngoingPopover(children)}</>
+    return <>{distributionPeriodPopover(children)}</>
   }
   return <>{children}</>
 }
