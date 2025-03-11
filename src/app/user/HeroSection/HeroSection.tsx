@@ -5,16 +5,16 @@ import { ChevronDown, ChevronUp } from 'lucide-react'
 import { AnimatePresence, motion } from 'motion/react'
 import Image from 'next/image'
 import { useRouter } from 'next/navigation'
-import { useState } from 'react'
 import { HeroItem, HeroItemProps } from './HeroItem'
 import { HeroButton } from './HeroButton'
-import { ConnectWorkflow } from '@/shared/walletConnection'
-import { ConnectButtonComponentProps } from '@/shared/walletConnection/types'
+import { ConnectWorkflow } from '@/lib/walletConnection'
+import { ConnectButtonComponentProps } from '@/lib/walletConnection/types'
+import { useCollapseContext } from '@/app/user/HeroSection/HeroCollapseContext'
 
 export const HeroSection = () => {
   const modal = useModal()
   const router = useRouter()
-  const [isCollapsed, setIsCollapsed] = useState(false)
+  const { isCollapsed, setIsCollapsed } = useCollapseContext()
 
   const StakeButton = ({ onClick }: ConnectButtonComponentProps) => (
     <HeroButton text="Stake" onClick={onClick} />
