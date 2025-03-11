@@ -4,6 +4,7 @@ import { Paragraph } from '@/components/Typography'
 import { SupportedTokens } from '@/lib/contracts'
 import { formatCurrency, formatNumberWithCommas } from '@/lib/utils'
 import Big from '@/lib/big'
+import { useAccount } from 'wagmi'
 
 interface Props {
   symbol: SupportedTokens
@@ -12,6 +13,12 @@ interface Props {
 
 export const RenderTotalBalance = ({ symbol, context }: Props) => {
   const { balances, prices } = useBalancesContext()
+  const { isConnected } = useAccount()
+
+  if (!isConnected) {
+    return '-'
+  }
+
   const token = balances[symbol]
   const tokenBalance = Big(token.balance)
   const tokenBalanceRounded = symbol === 'RBTC' ? tokenBalance.toFixed(8) : tokenBalance.floor()
