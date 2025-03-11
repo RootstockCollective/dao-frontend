@@ -28,7 +28,11 @@ export const Default: Story = {
   render: () => {
     const [activeTab, setActiveTab] = useState<(typeof tabs)[number]['value']>('1')
 
-    return <UnderlineTabs tabs={tabs} activeTab={activeTab} onTabChange={setActiveTab} layoutId="default" />
+    return (
+      <UnderlineTabs tabs={tabs} activeTab={activeTab} onTabChange={setActiveTab} layoutId="default">
+        <div className="py-3">{tabs.find(({ value }) => value === activeTab)?.label}</div>
+      </UnderlineTabs>
+    )
   },
 }
 
@@ -37,6 +41,13 @@ const stringTabs = [
   { value: 'Growth' },
   { value: 'General' },
 ] as const satisfies BaseTab[]
+type TabValues = (typeof stringTabs)[number]['value']
+
+const stringTabsContents: Record<TabValues, string> = {
+  Grant: 'Grant tab',
+  Growth: 'Growth tab',
+  General: 'General tab',
+}
 
 export const StringTabs: Story = {
   args: {
@@ -45,10 +56,12 @@ export const StringTabs: Story = {
     tabs: stringTabs,
   },
   render: () => {
-    const [activeTab, setActiveTab] = useState<(typeof stringTabs)[number]['value']>('Grant')
+    const [activeTab, setActiveTab] = useState<TabValues>('Grant')
 
     return (
-      <UnderlineTabs tabs={stringTabs} activeTab={activeTab} onTabChange={setActiveTab} layoutId="strings" />
+      <UnderlineTabs tabs={stringTabs} activeTab={activeTab} onTabChange={setActiveTab} layoutId="strings">
+        <p className="py-2 text-blue-300">{stringTabsContents[activeTab]}</p>
+      </UnderlineTabs>
     )
   },
 }

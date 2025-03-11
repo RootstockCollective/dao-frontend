@@ -35,6 +35,7 @@ interface UnderlineTabsProps<T extends BaseTab<U>, U = string> extends Tabs.Tabs
   onTabChange: (value: U) => void
   /**
    * Unique ID for Framer Motion's layout animation.
+   * Needs to be provided when there are multiple Tabs on the same page
    */
   layoutId?: string
 }
