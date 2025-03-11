@@ -6,6 +6,8 @@ import { useRouter } from 'next/navigation'
 import { SupportedActionAbiName, SupportedProposalActionName } from '@/app/proposals/shared/supportedABIs'
 import { useVotingPower } from '@/app/proposals/hooks/useVotingPower'
 import { Popover } from '../Popover'
+import { useAccount } from 'wagmi'
+import { ConnectButtonComponentSecondary, ConnectWorkflow } from '@/lib/walletConnection'
 
 type DisclaimerProps = {
   onAccept: () => void
@@ -39,6 +41,15 @@ const Disclaimer: FC<DisclaimerProps> = ({ onAccept, onDecline }) => {
   )
 }
 
+const ConnectWalletPopoverContent: FC = () => (
+  <>
+    <Paragraph variant="normal" className="text-sm pb-3">
+      Submit proposals to shape the DAO’s future.
+    </Paragraph>
+    <ConnectWorkflow ConnectComponent={ConnectButtonComponentSecondary} />
+  </>
+)
+
 const openDiscourse = () => {
   window.open('https://gov.rootstockcollective.xyz/c/collective-rewards/7', '_blank')
 }
@@ -70,6 +81,7 @@ type ActionButtonProps = ButtonHTMLAttributes<HTMLButtonElement> & {
 const ActionButton: FC<ActionButtonProps> = ({ content, ...props }) => (
   <Button
     className="w-[156px] h-12 font-rootstock-sans text-[16px] test-bold leading-none text-center text-nowrap"
+    variant="secondary"
     {...props}
   >
     {content}
@@ -78,6 +90,7 @@ const ActionButton: FC<ActionButtonProps> = ({ content, ...props }) => (
 
 const BecomeABuilder: FC = () => {
   const { canCreateProposal, threshold } = useVotingPower()
+  const { isConnected } = useAccount()
   const router = useRouter()
   const contractName: SupportedActionAbiName = 'BuilderRegistryAbi'
   const action: SupportedProposalActionName = 'communityApproveBuilder'
@@ -106,25 +119,29 @@ const BecomeABuilder: FC = () => {
           icon={<JoinTheClubSvg />}
           text="Join the Club"
           button={
-            !canCreateProposal ? (
-              <Popover
-                content={
-                  <Paragraph variant="normal" className="text-sm">
-                    You need at least {threshold} Voting Power to create a proposal. The easiest way to get
-                    more Voting Power is to Stake more RIF.
-                  </Paragraph>
-                }
-                trigger="hover"
-                background="dark"
-                size="small"
-                position="top"
-                className="z-[100]"
-              >
-                <ActionButton disabled content="Submit proposal" />
-              </Popover>
-            ) : (
-              <ActionButton onClick={submitProposal} content="Submit proposal" />
-            )
+            <Popover
+              content={
+                <Paragraph variant="normal" className="text-sm">
+                  {isConnected ? (
+                    `You need at least ${threshold} Voting Power to create a proposal. The easiest way to get more Voting Power is to Stake more RIF.`
+                  ) : (
+                    <ConnectWalletPopoverContent></ConnectWalletPopoverContent>
+                  )}
+                </Paragraph>
+              }
+              trigger="hover"
+              background="dark"
+              size="medium"
+              position="top"
+              className="z-[100]"
+              contentSubContainerClassName="p-3"
+            >
+              <ActionButton
+                disabled={!isConnected || !canCreateProposal}
+                content="Submit proposal"
+                onClick={submitProposal}
+              />
+            </Popover>
           }
         />
         <Action
