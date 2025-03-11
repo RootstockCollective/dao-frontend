@@ -15,6 +15,7 @@ export const StakeRIFCell = ({ stakeModal }: Props) => {
   const { isConnected } = useAccount()
   const { balances } = useBalancesContext()
   const { balance } = balances['RIF']
+  const { isConnected } = useAccount()
   const hasEnoughBalance = Number(balance) > 0
 
   if (isConnected) {
@@ -65,3 +66,19 @@ const PopoverContent = () => {
     </>
   )
 }
+
+const ConnectWalletStakePopoverContent = () => (
+  <>
+    <Paragraph variant="normal" className="text-sm pb-">
+      <span className="text-primary">Staking RIF</span> is how you actively participate in the DAO. When you
+      stake <span className="text-primary">RIF</span>, it becomes <span className="text-primary">stRIF</span>,
+      which gives you power to:
+      <ul className="my-3 space-y-1">
+        <li>✅ Vote on Proposals</li>
+        <li>✅ Allocate Funds</li>
+        <li>✅ Earn Rewards</li>
+      </ul>
+    </Paragraph>
+    <ConnectWorkflow ConnectComponent={ConnectButtonComponentSecondary} />
+  </>
+)
