@@ -1,5 +1,4 @@
 'use client'
-import { HeaderSection } from './components/HeaderSection'
 import { useFetchAllProposals } from '@/app/proposals/hooks/useFetchLatestProposals'
 import { LatestProposalsTableMemoized } from './components/LatestProposalsTable'
 import { MetricsCard } from '@/components/MetricsCard'
@@ -14,14 +13,13 @@ import Image from 'next/image'
 import Big, { round } from '@/lib/big'
 
 export default function Proposals() {
-  const { canCreateProposal, threshold, totalVotingPower = '' } = useVotingPower()
+  const { totalVotingPower = '' } = useVotingPower()
   const { latestProposals } = useFetchAllProposals()
 
   const memoizedProposals = useMemo(() => latestProposals, [latestProposals])
   return (
     <>
       <TxStatusMessage messageType="proposal" />
-      <HeaderSection createProposalDisabled={!canCreateProposal} threshold={threshold} />
       <div className="grid grid-rows-1 gap-[32px] mb-[100px]">
         <div>
           <VotingPowerPopover />
