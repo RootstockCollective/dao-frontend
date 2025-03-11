@@ -1,4 +1,3 @@
-import { HeaderTitle } from '@/components/Typography'
 import { Table } from '@/components/Table'
 import { RenderTokenPrice } from '@/app/user/Balances/RenderTokenPrice'
 import { RenderTotalBalance } from '@/app/user/Balances/RenderTotalBalance'
@@ -8,6 +7,7 @@ import { RenderTokenSymbol } from '@/app/user/Balances/RenderTokenSymbol'
 import { UnStakeRIFCell } from '@/app/user/Balances/UnStakeRIFCell'
 import { ModalReturn, useModal } from '@/shared/hooks/useModal'
 import { UnStakingSteps } from '../Stake/UnStakingSteps'
+import { SectionHeader } from '@/components/SectionHeader'
 
 const makeData = (stakeModal: ModalReturn, unstakeModal: ModalReturn) => [
   {
@@ -42,10 +42,15 @@ export const BalancesSection = ({ showTitle = false }: Props) => {
 
   return (
     <div className="mb-[32px]">
-      {showTitle ? <HeaderTitle className="mb-6">Balances</HeaderTitle> : null}
+      {showTitle && (
+        <SectionHeader
+          name="Balances"
+          description="Your tokens that can be used in the Collective are shown here together with summary total balances with the option to Stake your RIF."
+        />
+      )}
       {stakeModal.isModalOpened ? <StakingSteps onCloseModal={stakeModal.closeModal} /> : null}
       {unstakeModal.isModalOpened ? <UnStakingSteps onCloseModal={unstakeModal.closeModal} /> : null}
-      <Table data={makeData(stakeModal, unstakeModal)} />
+      <Table data={makeData(stakeModal, unstakeModal)} className="overflow-visible" />
     </div>
   )
 }
