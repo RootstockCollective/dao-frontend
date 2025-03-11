@@ -8,10 +8,14 @@ import { Popover } from '@/components/Popover'
 import { HeaderTitle, Paragraph, Typography } from '@/components/Typography'
 import { useRouter } from 'next/navigation'
 import { CRWhitepaperLink } from '../shared'
+import { useAccount } from 'wagmi'
+import { ConnectWorkflow } from '@/lib/walletConnection'
+import { ConnectButtonComponentSecondary } from '@/lib/walletConnection/components/ConnectButtonComponent'
 
 export const BuildersLeaderBoard = () => {
   const router = useRouter()
   const { data: isInDistributionPeriod } = useReadBackersManager('onDistributionPeriod')
+  const { isConnected } = useAccount()
 
   const onManageAllocations = () => {
     router.push('/collective-rewards/allocations')
@@ -33,33 +37,15 @@ export const BuildersLeaderBoard = () => {
               </Paragraph>
             </div>
 
-            <Popover
-              content={
-                <div className="flex flex-col">
-                  <Typography
-                    tagVariant="h2"
-                    fontFamily="kk-topo"
-                    className="self-end text-[20.44px] text-primary font-normal uppercase"
-                  >
-                    Rewards distribution is in progress.
-                  </Typography>
-                  <Typography tagVariant="p" fontFamily="rootstock-sans" className="self-end">
-                    Manage Allocation will be available shortly, please check back soon
-                  </Typography>
-                </div>
-              }
-              trigger="hover"
-              disabled={!isInDistributionPeriod}
-              contentContainerClassName="top-full -left-[87%]"
-            >
+            <PopoverWrapper isInDistributionPeriod={!!isInDistributionPeriod} isConnected={isConnected}>
               <Button
-                variant="primary"
+                variant="outlined"
                 onClick={onManageAllocations}
-                disabled={!!isInDistributionPeriod || !canManageAllocations}
+                disabled={!isConnected || !!isInDistributionPeriod || !canManageAllocations}
               >
                 Manage Allocations
               </Button>
-            </Popover>
+            </PopoverWrapper>
           </div>
         </CollapsibleTrigger>
         <CollapsibleContent>
@@ -70,4 +56,61 @@ export const BuildersLeaderBoard = () => {
       </Collapsible>
     </>
   )
+}
+
+const noWalletConnectedPopover = (children: React.ReactNode) => (
+  <Popover
+    content={
+      <>
+        <Paragraph variant="normal" className="text-sm pb-3">
+          Manage how your stRIF are allocated to builders. Support projects and earn rewards at the end of
+          each cycle.
+        </Paragraph>
+        <ConnectWorkflow ConnectComponent={ConnectButtonComponentSecondary} />
+      </>
+    }
+    trigger="click"
+    size="medium"
+    position="left-top"
+    contentSubContainerClassName="p-3"
+  >
+    {children}
+  </Popover>
+)
+
+const distributionOngoingPopover = (children: React.ReactNode) => (
+  <Popover
+    content={
+      <div className="flex flex-col">
+        <Typography
+          tagVariant="h2"
+          fontFamily="kk-topo"
+          className="self-end text-[20.44px] text-primary font-normal uppercase"
+        >
+          Rewards distribution is in progress.
+        </Typography>
+        <Typography tagVariant="p" fontFamily="rootstock-sans" className="self-end">
+          Manage Allocation will be available shortly, please check back soon
+        </Typography>
+      </div>
+    }
+    trigger="click"
+    contentContainerClassName="top-full -left-[87%]"
+  >
+    {children}
+  </Popover>
+)
+
+const PopoverWrapper: React.FC<{
+  isInDistributionPeriod: boolean
+  isConnected: boolean
+  children: React.ReactNode
+}> = ({ isInDistributionPeriod, isConnected, children }) => {
+  if (!isConnected) {
+    return <>{noWalletConnectedPopover(children)}</>
+  }
+  if (isInDistributionPeriod) {
+    return <>{distributionOngoingPopover(children)}</>
+  }
+  return <>{children}</>
 }
