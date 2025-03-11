@@ -19,7 +19,7 @@ import { TokenValue } from '@/app/user/Delegation/TokenValue'
 import { Popover } from '@/components/Popover'
 import Image from 'next/image'
 import { formatUnits } from 'ethers'
-import { ConnectWorkflow } from '@/lib/walletConnection/connection/ConnectWorkflow'
+import { ConnectWorkflow } from '@/shared/walletConnection/connection/ConnectWorkflow'
 
 export const DelegationSection = () => {
   const { address, isConnected } = useAccount()

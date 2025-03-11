@@ -2,10 +2,9 @@
 import { useState } from 'react'
 import { useConnect } from 'wagmi'
 import { useAlertContext } from '@/app/providers'
-import { ConnectButtonComponent } from '@/lib/walletConnection/components/ConnectButtonComponent'
-import { DisclaimerFlow } from '@/lib/walletConnection/components'
-import { parseWalletConnectionError } from '@/lib/walletConnection/utils'
-import { ConnectWorkflowProps } from '@/lib/walletConnection/types'
+import { DisclaimerFlow, ConnectButtonComponent } from '../components'
+import { parseWalletConnectionError } from '../utils'
+import { ConnectWorkflowProps } from '../types'
 
 /**
  * The developer can override the ConnectComponent to use a custom button/component to trigger the flow.
