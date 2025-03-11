@@ -14,7 +14,7 @@ export default function Communities() {
     <div className="flex flex-col ml-[24px]">
       <div>
         <Image
-          src="/images/communities-header.svg"
+          src="/images/communities-banner.svg"
           alt="Communities"
           width={0}
           height={0}
