@@ -12,19 +12,6 @@ import { CardPlaceholder } from '@/components/loading-components'
 
 const communities: string[] = Object.keys(communitiesMapByContract)
 
-const CommuntiesSectionDescription = () => {
-  return (
-    <>
-      Select one or more Builders you want to back. You retain full ownership and access to your stRIF while
-      earning a portion of their rewards. For more information check the{' '}
-      <Link variant={'section-header'} href={'https://www.google.com/'}>
-        Whitepaper
-      </Link>
-      .
-    </>
-  )
-}
-
 export const CommunitiesSection = () => (
   <div>
     <UserCommunities nftAddresses={communities} />
@@ -76,7 +63,12 @@ const UserCommunities = ({ nftAddresses }: Props) => {
 
   return (
     <>
-      <SectionHeader name="Communities" description={<CommuntiesSectionDescription />} />
+      <SectionHeader
+        name="Communities"
+        description={
+          'When you own or earn badges as part of contributions and participation in Collective Communities they will be summarized below.'
+        }
+      />
       <div className="flex flex-wrap gap-[24px]">
         {nftsInfo.map((nftInfo, index) => (
           <NftInfo
