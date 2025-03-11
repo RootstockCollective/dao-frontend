@@ -7,8 +7,8 @@ import Image from 'next/image'
 import { useRouter } from 'next/navigation'
 import { HeroItem, HeroItemProps } from './HeroItem'
 import { HeroButton } from './HeroButton'
-import { ConnectWorkflow } from '@/lib/walletConnection'
-import { ConnectButtonComponentProps } from '@/lib/walletConnection/types'
+import { ConnectWorkflow } from '@/shared/walletConnection'
+import { ConnectButtonComponentProps } from '@/shared/walletConnection/types'
 import { useCollapseContext } from '@/app/user/HeroSection/HeroCollapseContext'
 
 export const HeroSection = () => {

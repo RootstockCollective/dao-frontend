@@ -24,7 +24,7 @@ import { FC, memo, useContext, useMemo } from 'react'
 import { ArrowDownIcon, ArrowUpIcon, CircleIcon } from '@/components/Icons'
 import { Address, isAddress, parseEther } from 'viem'
 import { useAccount } from 'wagmi'
-import { ConnectButtonComponentSecondary, ConnectWorkflow } from '@/lib/walletConnection'
+import { ConnectButtonComponentSecondary, ConnectWorkflow } from '@/shared/walletConnection'
 
 type TableCellProps = {
   className?: string
@@ -240,24 +240,19 @@ export const ActionCell: FC<ActionCellProps> = ({ className, builderAddress }) =
   return (
     <TableCell className={cn(className, 'border-solid align-center')}>
       <Popover
-        content={
-          <>
-            <Paragraph variant="normal" className="text-sm pb-3">
-              Select the builders you want to allocate your stRIF to and start earning rewards.
-            </Paragraph>
-            <ConnectWorkflow ConnectComponent={ConnectButtonComponentSecondary} />
-          </>
-        }
-        trigger="click"
+        content={NotConnectedPopoverContent()}
+        trigger="hover"
         size="medium"
-        position="left-top"
+        position="top-expand-left"
         disabled={isConnected}
         contentSubContainerClassName="p-3"
       >
         <Button
           variant={isSelected ? 'white' : 'outlined'}
           disabled={!isConnected || !isOperational || isPreallocated}
-          onClick={selectBuilder}
+          onClick={() => {
+            isConnected && selectBuilder()
+          }}
           className="white text-center"
         >
           {isSelected ? 'Selected' : 'Select'}
@@ -266,3 +261,12 @@ export const ActionCell: FC<ActionCellProps> = ({ className, builderAddress }) =
     </TableCell>
   )
 }
+
+const NotConnectedPopoverContent = () => (
+  <>
+    <Paragraph variant="normal" className="text-sm pb-3">
+      Select the builders you want to allocate your stRIF to and start earning rewards.
+    </Paragraph>
+    <ConnectWorkflow ConnectComponent={ConnectButtonComponentSecondary} />
+  </>
+)

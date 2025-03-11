@@ -7,7 +7,7 @@ import { SupportedActionAbiName, SupportedProposalActionName } from '@/app/propo
 import { useVotingPower } from '@/app/proposals/hooks/useVotingPower'
 import { Popover } from '../Popover'
 import { useAccount } from 'wagmi'
-import { ConnectButtonComponentSecondary, ConnectWorkflow } from '@/lib/walletConnection'
+import { ConnectButtonComponentSecondary, ConnectWorkflow } from '@/shared/walletConnection'
 
 type DisclaimerProps = {
   onAccept: () => void
@@ -203,7 +203,7 @@ const Steps: FC = () => {
         Find out more on the RootstockCollective{' '}
         <Typography
           tagVariant="span"
-          className="font-bold underline cursor-pointer"
+          className="font-bold underline cursor-pointer text-primary"
           onClick={() =>
             window.open(
               'https://wiki.rootstockcollective.xyz/RootstockCollective-FAQ-1031ca6b0b02808c95d3dcb5a0074f4b',

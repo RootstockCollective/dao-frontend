@@ -2,7 +2,7 @@
 import { cn } from '@/lib/utils'
 import { HTMLAttributes, ReactNode, useEffect, useRef, useState } from 'react'
 
-type Position = 'top' | 'bottom' | 'right' | 'left' | 'left-bottom' | 'left-top'
+type Position = 'top' | 'bottom' | 'right' | 'left' | 'left-bottom' | 'left-top' | 'top-expand-left'
 
 export interface PopoverProps extends Omit<HTMLAttributes<HTMLDivElement>, 'children' | 'content'> {
   children: ReactNode
@@ -84,6 +84,7 @@ export const Popover = ({
           position === 'left' && 'right-full',
           position === 'left-bottom' && 'right-0 top-full',
           position === 'left-top' && 'right-full bottom-full',
+          position === 'top-expand-left' && 'right-0 bottom-full',
           size === 'small' && 'w-36',
           size === 'medium' && 'w-96',
           contentContainerClassName,

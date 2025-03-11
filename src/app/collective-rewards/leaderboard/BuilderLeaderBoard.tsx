@@ -9,8 +9,8 @@ import { HeaderTitle, Paragraph, Typography } from '@/components/Typography'
 import { useRouter } from 'next/navigation'
 import { CRWhitepaperLink } from '../shared'
 import { useAccount } from 'wagmi'
-import { ConnectWorkflow } from '@/lib/walletConnection'
-import { ConnectButtonComponentSecondary } from '@/lib/walletConnection/components/ConnectButtonComponent'
+import { ConnectWorkflow } from '@/shared/walletConnection'
+import { ConnectButtonComponentSecondary } from '@/shared/walletConnection/components/ConnectButtonComponent'
 
 export const BuildersLeaderBoard = () => {
   const router = useRouter()
@@ -39,7 +39,7 @@ export const BuildersLeaderBoard = () => {
 
             <PopoverWrapper isInDistributionPeriod={!!isInDistributionPeriod} isConnected={isConnected}>
               <Button
-                variant="outlined"
+                variant={isConnected ? 'primary' : 'outlined'}
                 onClick={onManageAllocations}
                 disabled={!isConnected || !!isInDistributionPeriod || !canManageAllocations}
               >
@@ -69,9 +69,9 @@ const noWalletConnectedPopover = (children: React.ReactNode) => (
         <ConnectWorkflow ConnectComponent={ConnectButtonComponentSecondary} />
       </>
     }
-    trigger="click"
+    trigger="hover"
     size="medium"
-    position="left-top"
+    position="top-expand-left"
     contentSubContainerClassName="p-3"
   >
     {children}
