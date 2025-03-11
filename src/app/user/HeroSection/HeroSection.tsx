@@ -44,7 +44,7 @@ export const HeroSection = () => {
   return (
     <div className="flex flex-col ml-[24px]">
       <Image
-        src={isCollapsed ? '/images/hero-collapsed.svg' : '/images/hero-expanded.svg'}
+        src="images/hero-banner.svg"
         alt="Hero"
         width={0}
         height={0}
