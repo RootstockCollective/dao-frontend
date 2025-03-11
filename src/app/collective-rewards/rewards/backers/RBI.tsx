@@ -2,7 +2,6 @@ import { FC } from 'react'
 import {
   MetricsCardWithSpinner,
   MetricsCardTitle,
-  RewardDetails,
   MetricsCardContent,
   useGetBackerRBI,
   MetricsCardProps,

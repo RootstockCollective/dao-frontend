@@ -46,3 +46,5 @@ export const fetchBackerRewardsClaimedLogsByAddress = `/address/{{address}}/even
 
 const REWARD_DISTRIBUTION_FINISHED = '0x2e0a637781c44a621d21ae02c97a62860799594e47e453e0491eb348ebf83bff'
 export const fetchRewardDistributionFinishedLogsByAddress = `/address/{{address}}/eventsByTopic0?topic0=${REWARD_DISTRIBUTION_FINISHED}&${CHAIN_ID_PARAM}&${FROM_BLOCK_PARAM}`
+
+export const fetchCrTheGraphEndpoint = `${process.env.THE_GRAPH_URL}/${process.env.THE_GRAPH_API_KEY}/${process.env.THE_GRAPH_ID}`
