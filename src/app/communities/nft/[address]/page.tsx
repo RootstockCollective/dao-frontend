@@ -350,7 +350,7 @@ export default function Page() {
                     )}
                   </div>
 
-                  <SelfContainedNFTBoosterCard forceRender={showNFTBoost} />
+                  {showNFTBoost && <SelfContainedNFTBoosterCard />}
 
                   {/* `Add to wallet button` */}
                   {!isNftInWallet?.[nftAddress]?.[tokenId] && (
