@@ -5,7 +5,7 @@ import {
   TotalActiveBuildersMetrics,
   TotalAllocationsMetrics,
 } from '@/app/collective-rewards/metrics'
-import { BecomeABuilderButton, useGetGaugesArray } from '@/app/collective-rewards/user'
+import { useGetGaugesArray } from '@/app/collective-rewards/user'
 import { getCoinbaseAddress } from '@/app/collective-rewards/utils'
 import { HeaderTitle } from '@/components/Typography'
 import { tokenContracts } from '@/lib/contracts'
@@ -38,7 +38,6 @@ export const Metrics = () => {
         rightComponent={
           <>
             <SelfContainedNFTBoosterCard forceRender={true} />
-            <BecomeABuilderButton address={address!} />
           </>
         }
       />
