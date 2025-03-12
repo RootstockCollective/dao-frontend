@@ -54,7 +54,7 @@ export function UnderlineTabs<T extends BaseTab<U>, U extends string>({
   ...props
 }: UnderlineTabsProps<T, U>) {
   return (
-    <>
+    <div>
       <Tabs.Root value={activeTab} onValueChange={val => onTabChange(val as U)} {...props}>
         <Tabs.List className="flex flex-row">
           {tabs.map(({ value, label }) => (
@@ -95,6 +95,6 @@ export function UnderlineTabs<T extends BaseTab<U>, U extends string>({
           {children}
         </motion.div>
       </AnimatePresence>
-    </>
+    </div>
   )
 }

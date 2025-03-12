@@ -16,43 +16,41 @@ export function TabsSection() {
   const [activeTab, setActiveTab] = useState<keyof typeof cards>('Grants')
 
   return (
-    <div>
-      <UnderlineTabs
-        tabs={Object.keys(cards).map(value => ({ value: value as keyof typeof cards }))}
-        activeTab={activeTab}
-        onTabChange={setActiveTab}
-      >
-        <div className="pt-4 flex flex-row gap-4">
-          {cards[activeTab].map(({ title, bucket, contract }) => {
-            const isRif = title.toLowerCase().includes('rif')
-            return (
-              <MetricsCard
-                className="max-w-[214px]"
-                title={<Typography className="text-sm font-bold">{title}</Typography>}
-                amount={
-                  isRif
-                    ? `${bucket?.amount ? millify(Big(bucket.amount).ceil()) : 0} RIF`
-                    : `${bucket?.amount ? millify(Big(bucket.amount).toFixedNoTrailing(8)) : 0} RBTC`
-                }
-                fiatAmount={`= USD ${bucket?.fiatAmount ? millify(Big(bucket.fiatAmount).toFixed(2), ' ', fullDenominations) : 0}`}
-                contractAddress={contract}
-                key={`${activeTab}-${title}`}
-                borderless
-              />
-            )
-          })}
+    <UnderlineTabs
+      tabs={Object.keys(cards).map(value => ({ value: value as keyof typeof cards }))}
+      activeTab={activeTab}
+      onTabChange={setActiveTab}
+    >
+      <div className="pt-4 flex flex-row gap-4">
+        {cards[activeTab].map(({ title, bucket, contract }) => {
+          const isRif = title.toLowerCase().includes('rif')
+          return (
+            <MetricsCard
+              className="max-w-[214px]"
+              title={<Typography className="text-sm font-bold">{title}</Typography>}
+              amount={
+                isRif
+                  ? `${bucket?.amount ? millify(Big(bucket.amount).ceil()) : 0} RIF`
+                  : `${bucket?.amount ? millify(Big(bucket.amount).toFixedNoTrailing(8)) : 0} RBTC`
+              }
+              fiatAmount={`= USD ${bucket?.fiatAmount ? millify(Big(bucket.fiatAmount).toFixed(2), ' ', fullDenominations) : 0}`}
+              contractAddress={contract}
+              key={`${activeTab}-${title}`}
+              borderless
+            />
+          )
+        })}
 
-          {/* A place for “Others” section (card) */}
+        {/* A place for “Others” section (card) */}
 
-          {/* {activeTab === 'General' && (
+        {/* {activeTab === 'General' && (
             <MetricsCard
               className="max-w-[447px]"
               title={<Typography className="text-sm">OTHERS</Typography>}
               borderless
             />
           )} */}
-        </div>
-      </UnderlineTabs>
-    </div>
+      </div>
+    </UnderlineTabs>
   )
 }
