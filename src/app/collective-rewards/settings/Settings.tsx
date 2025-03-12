@@ -1,7 +1,7 @@
 'use client'
 
 import { useRouter, useSearchParams } from 'next/navigation'
-import { FC, ReactNode } from 'react'
+import { FC, ReactNode, useEffect } from 'react'
 import { BuilderSettings } from './builder/BuilderSettings'
 import { useAccount } from 'wagmi'
 import { useGetBuilderToGauge } from '@/app/collective-rewards/user'
@@ -23,26 +23,29 @@ export const Settings: FC = () => {
   const router = useRouter()
   const { data: gauge, isLoading: isLoadingGauge } = useGetBuilderToGauge(address!)
 
-  if (!isConnected) {
-    router.push('/')
-    // return to avoid rendering the component while redirecting
-    return
-  }
+  useEffect(() => {
+    if (!isConnected) {
+      router.replace('/')
+    }
+  }, [isConnected, router])
 
-  if (isLoadingGauge) {
+  const isBuilder = gauge && gauge !== zeroAddress
+  useEffect(() => {
+    if (!isBuilder) {
+      router.replace('/')
+    }
+  }, [gauge, router])
+
+  const settingType = searchParams.get('type') as SettingType
+  const isValidSettingType = searchParams && isSettingType(settingType)
+  useEffect(() => {
+    if (!isValidSettingType) {
+      router.replace('/_not-found')
+    }
+  }, [searchParams, router])
+
+  if (!isConnected || !isBuilder || !isValidSettingType) {
     return <LoadingSpinner />
   }
-  if (!gauge || gauge === zeroAddress) {
-    router.push('/')
-    return
-  }
-
-  const settingType = searchParams?.get('type') as SettingType
-
-  if (!settingType || !isSettingType(settingType)) {
-    router.push('/_not-found')
-    return
-  }
-
   return settings[settingType]
 }

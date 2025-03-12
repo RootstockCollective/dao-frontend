@@ -3,7 +3,7 @@
 import { Button } from '@/components/Button'
 import { Typography } from '@/components/Typography'
 import { useRouter } from 'next/navigation'
-import { useCallback, useContext, useState } from 'react'
+import { useCallback, useContext, useEffect, useState } from 'react'
 import { Address } from 'viem'
 import { Builder } from '../types'
 import {
@@ -16,6 +16,7 @@ import {
 import { AllocationsContext } from './context'
 import { useAllocateVotes } from './hooks/useAllocateVotes'
 import { useAccount } from 'wagmi'
+import { LoadingSpinner } from '@/components/LoadingSpinner'
 
 export default function Allocations() {
   const [resetCounter, setResetCounter] = useState(0)
@@ -39,9 +40,14 @@ export default function Allocations() {
     router.back()
   }
 
+  useEffect(() => {
+    if (!isConnected) {
+      router.replace('/')
+    }
+  }, [isConnected, router])
+
   if (!isConnected) {
-    router.push('/')
-    return
+    return <LoadingSpinner />
   }
 
   return (
