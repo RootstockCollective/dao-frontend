@@ -9,8 +9,8 @@ const classesByVariant: Record<HeaderVariants, string> = {
 }
 
 interface Props {
-  variant?: HeaderVariants
   children: ReactNode
+  variant?: HeaderVariants
   className?: string
   fontFamily?: 'sora' | 'kk-topo' | 'rootstock-sans'
 }

@@ -14,6 +14,7 @@ export const CommunityCard: FC<CommunityCardProps> = ({
   members,
   link,
   isBoosted,
+  alt,
 }) => {
   return (
     <div
@@ -27,7 +28,7 @@ export const CommunityCard: FC<CommunityCardProps> = ({
         {/* image */}
         <Image
           src={img}
-          alt="An image that contains a community logo"
+          alt={alt ?? 'An image that contains a community logo'}
           className="mb-[20px]"
           width={300}
           height={300}

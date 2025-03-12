@@ -1,33 +1,28 @@
-import { Paragraph } from '@/components/Typography/Paragraph'
 import { Button } from '@/components/Button'
 import { Header } from '@/components/Typography'
-import { UsersIcon } from '@/components/Icons'
 import { useRouter } from 'next/navigation'
-import { SHARED_MODAL_BOX_SHADOW_STYLE } from '@/lib/utils'
+import Image from 'next/image'
 
 export const JoinACommunity = () => {
   const router = useRouter()
+
   return (
-    <div className="flex justify-center align-center">
-      <div className="w-[506px] flex align-middle items-center flex-col">
-        <div
-          style={{
-            boxShadow: SHARED_MODAL_BOX_SHADOW_STYLE,
-            padding: 17,
-            borderRadius: '30%',
-            backgroundColor: 'white',
-          }}
-        >
-          <UsersIcon size={48} color="var(--color-primary)" />
-        </div>
-        <Header className="mt-[42px] mb-[8px] text-[24px]" fontFamily="kk-topo">
-          JOIN A COMMUNITY
+    <div className="relative w-full h-[482px]">
+      <Image
+        src="/images/nfts/empty-nft-cover.png"
+        alt="join-communities-cover"
+        fill
+        className="object-cover"
+      />
+      <div className="absolute inset-0 flex flex-col justify-center items-center">
+        <Header className="mt-[42px] mb-[8px] text-[40px]" fontFamily="kk-topo">
+          {'JOIN A COMMUNITY'}
+          <br />
+          {'AND EARN BOOSTS'}
         </Header>
-        <Paragraph variant="normal" className="text-center pb-[40px] text-[16px]">
-          You&apos;re not currently part of any communities. Join a community to connect with like-minded
-          individuals, participate in discussions, and gain access to exclusive content.
-        </Paragraph>
-        <Button onClick={() => router.push('/communities')}>Explore Communities</Button>
+        <Button variant="white" className="mt-4" onClick={() => router.push('/communities')}>
+          Get an NFT
+        </Button>
       </div>
     </div>
   )

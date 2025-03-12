@@ -5,6 +5,7 @@ export interface CommunityCardProps {
   members: string
   link: string
   isBoosted?: boolean
+  alt?: string
 }
 
 export type AddressToken = {
