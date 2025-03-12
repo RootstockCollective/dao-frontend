@@ -13,10 +13,8 @@ import { getAddress } from 'viem'
 import { ABIMetrics } from './components/ABIMetrics'
 import { SelfContainedNFTBoosterCard } from '@/app/shared/components/NFTBoosterCard/SelfContainedNFTBoosterCard'
 import { JustifyBetweenLayout } from '@/app/collective-rewards/shared'
-import { useAccount } from 'wagmi'
 
 export const Metrics = () => {
-  const { address } = useAccount()
   const { data: allGauges } = useGetGaugesArray()
   const gauges = allGauges ?? []
 

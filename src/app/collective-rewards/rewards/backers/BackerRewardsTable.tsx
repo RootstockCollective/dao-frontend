@@ -12,7 +12,6 @@ import { TableBody, TableCore, TableHead, TableRow } from '@/components/Table'
 import { getCombinedFiatAmount, useHandleErrors } from '@/app/collective-rewards/utils'
 import { LoadingSpinner } from '@/components/LoadingSpinner'
 import { useBasicPaginationUi } from '@/shared/hooks/usePaginationUi'
-import Link from 'next/link'
 import Big from '@/lib/big'
 import { Typography } from '@/components/Typography/Typography'
 import { cn } from '@/lib/utils'
@@ -156,64 +155,54 @@ export const BackerRewardsTable: FC<BackerRewardsTable> = ({ builder, gauges, to
   }
   return (
     <div className="flex flex-col gap-5 w-full">
-      {Object.values(paginatedRewardsData).length === 0 ? (
-        <div className="text-center font-kk-topo">
-          Have your say! Start voting now to shape the RootstockCollective community. Click{' '}
-          <Link href={'/collective-rewards'} className="text-[#E56B1A]">
-            here
-          </Link>{' '}
-          to begin!
-        </div>
-      ) : (
-        <>
-          <TableCore className="table-fixed overflow-visible">
-            <TableHead>
-              <TableRow className="min-h-0 normal-case">
-                {Object.entries(defaultTable).map(([key, { className, label, tooltip }]) => (
-                  <TableHeaderCell
-                    key={key}
-                    className={cn(className, {
-                      hidden: !isDetailedView && isHidable(key as RewardsColumnKeyEnum),
-                    })}
-                    label={label}
-                    tooltip={tooltip}
-                    sortKey={key}
-                    onSort={handleSort(key)}
-                    sortConfig={sortConfig}
+      <>
+        <TableCore className="table-fixed overflow-visible">
+          <TableHead>
+            <TableRow className="min-h-0 normal-case">
+              {Object.entries(defaultTable).map(([key, { className, label, tooltip }]) => (
+                <TableHeaderCell
+                  key={key}
+                  className={cn(className, {
+                    hidden: !isDetailedView && isHidable(key as RewardsColumnKeyEnum),
+                  })}
+                  label={label}
+                  tooltip={tooltip}
+                  sortKey={key}
+                  onSort={handleSort(key)}
+                  sortConfig={sortConfig}
+                />
+              ))}
+            </TableRow>
+          </TableHead>
+          <TableBody>
+            {paginatedRewardsData.map(
+              ({
+                address,
+                builderName,
+                stateFlags,
+                rewardPercentage,
+                estimatedRewards,
+                totalAllocation,
+                claimableRewards,
+                allTimeRewards,
+              }) => (
+                <TableRow key={address} className="text-[14px] border-hidden">
+                  <BuilderNameCell builderName={builderName} address={address} stateFlags={stateFlags} />
+                  <BackerRewardsPercentage percentage={rewardPercentage} />
+                  <LazyRewardCell rewards={[claimableRewards.rbtc, claimableRewards.rif]} />
+                  <LazyRewardCell rewards={[estimatedRewards.rbtc, estimatedRewards.rif]} />
+                  <LazyRewardCell
+                    rewards={[allTimeRewards.rbtc, allTimeRewards.rif]}
+                    isHidden={!isDetailedView && isHidable(RewardsColumnKeyEnum.allTimeRewards)}
                   />
-                ))}
-              </TableRow>
-            </TableHead>
-            <TableBody>
-              {paginatedRewardsData.map(
-                ({
-                  address,
-                  builderName,
-                  stateFlags,
-                  rewardPercentage,
-                  estimatedRewards,
-                  totalAllocation,
-                  claimableRewards,
-                  allTimeRewards,
-                }) => (
-                  <TableRow key={address} className="text-[14px] border-hidden">
-                    <BuilderNameCell builderName={builderName} address={address} stateFlags={stateFlags} />
-                    <BackerRewardsPercentage percentage={rewardPercentage} />
-                    <LazyRewardCell rewards={[claimableRewards.rbtc, claimableRewards.rif]} />
-                    <LazyRewardCell rewards={[estimatedRewards.rbtc, estimatedRewards.rif]} />
-                    <LazyRewardCell
-                      rewards={[allTimeRewards.rbtc, allTimeRewards.rif]}
-                      isHidden={!isDetailedView && isHidable(RewardsColumnKeyEnum.allTimeRewards)}
-                    />
-                    <LazyRewardCell rewards={[totalAllocation.rif]} />
-                  </TableRow>
-                ),
-              )}
-            </TableBody>
-          </TableCore>
-          <div className="flex justify-center">{paginationUi}</div>
-        </>
-      )}
+                  <LazyRewardCell rewards={[totalAllocation.rif]} />
+                </TableRow>
+              ),
+            )}
+          </TableBody>
+        </TableCore>
+        <div className="flex justify-center">{paginationUi}</div>
+      </>
     </div>
   )
 }
