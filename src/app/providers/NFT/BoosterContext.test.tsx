@@ -222,12 +222,11 @@ describe('BoosterProvider', () => {
       const contextValue = JSON.parse(element.textContent || '{}')
       expect(contextValue).toEqual(
         toExpected({
-          isBoosted: false,
+          userHasRewards: false,
           boostData: testBoostData,
           isLoading: false,
           error: null,
           hasActiveCampaign: true,
-          userHasRewards: false,
         }),
       )
     })
