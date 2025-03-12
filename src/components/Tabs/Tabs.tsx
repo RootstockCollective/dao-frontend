@@ -36,8 +36,8 @@ const TabsTrigger = forwardRef<
       ref={ref}
       className={cn(
         'h-12 whitespace-nowrap',
-        'data-[state=active]:rounded-md data-[state=active]:bg-primary',
-        'data-[state=inactive]:font-light data-[state=inactive]:text-disabled-primary',
+        'data-[state=active]:border-b data-[state=active]:border-primary data-[state=active]:text-primary',
+        'data-[state=inactive]:text-white',
         'px-[16px] py-[8px]',
         className,
       )}
