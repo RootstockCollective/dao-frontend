@@ -28,7 +28,7 @@ export default function Page() {
   const { isCampaignActive, boostData } = useNFTBoosterContext()
 
   const showNFTBoost = isCampaignActive(nftAddress)
-  
+
   return (
     <CommunityNFTProvider nftAddress={nftAddress}>
       <div className="flex flex-col xl:flex-row justify-between pl-4 gap-8">

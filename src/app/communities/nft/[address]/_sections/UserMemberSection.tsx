@@ -4,6 +4,7 @@ import { truncateMiddle } from '@/lib/utils'
 import { SelfContainedNFTBoosterCard } from '@/app/shared/components/NFTBoosterCard/SelfContainedNFTBoosterCard'
 import { AddToWalletButton } from '@/app/communities/nft/[address]/_components/AddToWalletButton'
 import { useCommunityNFT } from '@/app/communities/nft/[address]/CommunityNFTContext'
+import { useNFTBoosterContext } from '@/app/providers/NFT/BoosterContext'
 
 /**
  * Component to show user NFT info plus add to wallet logic
@@ -11,6 +12,9 @@ import { useCommunityNFT } from '@/app/communities/nft/[address]/CommunityNFTCon
  */
 export const UserMemberSection = () => {
   const { tokenId, title, description, nftAddress: address } = useCommunityNFT()
+
+  const { isCampaignActive } = useNFTBoosterContext()
+  const showNFTBoost = isCampaignActive(address)
 
   return (
     <div>
@@ -23,7 +27,7 @@ export const UserMemberSection = () => {
         {address && <Span className="text-primary">{truncateMiddle(address, 4, 3)}</Span>}
       </div>
 
-      <SelfContainedNFTBoosterCard />
+      {showNFTBoost && <SelfContainedNFTBoosterCard />}
 
       <AddToWalletButton />
 
