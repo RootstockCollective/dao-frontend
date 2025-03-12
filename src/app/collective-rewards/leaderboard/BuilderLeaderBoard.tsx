@@ -60,7 +60,7 @@ export const BuildersLeaderBoard = () => {
   )
 }
 
-const noWalletConnectedPopover = (children: React.ReactNode) => (
+const NoWalletConnectedPopover = (children: React.ReactNode) => (
   <Popover
     content={
       <>
@@ -80,7 +80,7 @@ const noWalletConnectedPopover = (children: React.ReactNode) => (
   </Popover>
 )
 
-const distributionPeriodPopover = (children: React.ReactNode) => (
+const DistributionPeriodPopover = (children: React.ReactNode) => (
   <Popover
     content={
       <div className="flex flex-col">
@@ -109,10 +109,10 @@ const PopoverWrapper: React.FC<{
   children: React.ReactNode
 }> = ({ isInDistributionPeriod, isConnected, children }) => {
   if (!isConnected) {
-    return <>{noWalletConnectedPopover(children)}</>
+    return <>{NoWalletConnectedPopover(children)}</>
   }
   if (isInDistributionPeriod) {
-    return <>{distributionPeriodPopover(children)}</>
+    return <>{DistributionPeriodPopover(children)}</>
   }
   return <>{children}</>
 }
