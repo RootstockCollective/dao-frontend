@@ -53,7 +53,7 @@ export type MetricsCardProps = HTMLAttributes<HTMLDivElement> & {
   dataTestId?: string
 }
 
-const DEFAULT_CLASSES = 'w-[214px] py-[12px] px-[12px] flex flex-col bg-foreground'
+const DEFAULT_CLASSES = 'h-min-[79px] w-full py-[12px] px-[12px] flex flex-col bg-foreground'
 
 /**
  * Card for displaying balance and corresponding (fiat) value.
