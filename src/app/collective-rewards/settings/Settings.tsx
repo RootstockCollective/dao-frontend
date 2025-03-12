@@ -34,7 +34,7 @@ export const Settings: FC = () => {
     if (!isBuilder) {
       router.replace('/')
     }
-  }, [gauge, router])
+  }, [gauge, router, isBuilder])
 
   const settingType = searchParams.get('type') as SettingType
   const isValidSettingType = searchParams && isSettingType(settingType)
@@ -42,7 +42,7 @@ export const Settings: FC = () => {
     if (!isValidSettingType) {
       router.replace('/_not-found')
     }
-  }, [searchParams, router])
+  }, [searchParams, router, isValidSettingType])
 
   if (!isConnected || !isBuilder || !isValidSettingType) {
     return <LoadingSpinner />
