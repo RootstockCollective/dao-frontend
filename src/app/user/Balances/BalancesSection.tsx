@@ -33,21 +33,16 @@ const makeData = (stakeModal: ModalReturn, unstakeModal: ModalReturn) => [
   },
 ]
 
-interface Props {
-  showTitle?: boolean
-}
-export const BalancesSection = ({ showTitle = false }: Props) => {
+export const BalancesSection = () => {
   const stakeModal = useModal()
   const unstakeModal = useModal()
 
   return (
     <div className="mb-[32px]">
-      {showTitle && (
-        <SectionHeader
-          name="Balances"
-          description="Your tokens that can be used in the Collective are shown here together with summary total balances with the option to Stake your RIF."
-        />
-      )}
+      <SectionHeader
+        name="Balances"
+        description="Your tokens that can be used in the Collective are shown here together with summary total balances with the option to Stake your RIF."
+      />
       {stakeModal.isModalOpened ? <StakingSteps onCloseModal={stakeModal.closeModal} /> : null}
       {unstakeModal.isModalOpened ? <UnStakingSteps onCloseModal={unstakeModal.closeModal} /> : null}
       <Table data={makeData(stakeModal, unstakeModal)} className="overflow-visible" />
