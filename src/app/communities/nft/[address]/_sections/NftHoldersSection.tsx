@@ -10,7 +10,7 @@ import { useState } from 'react'
 import { TableIcon } from '@/app/communities/TableIcon'
 import { SquareIcon } from '@/app/communities/SquareIcon'
 import { ErrorMessageAlert } from '@/components/ErrorMessageAlert/ErrorMessageAlert'
-import { HolderColumn } from './HolderColumn'
+import { HolderColumn } from '../_components/HolderColumn'
 
 interface IdNumberColumnProps {
   id: string

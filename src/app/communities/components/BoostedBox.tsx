@@ -17,7 +17,7 @@ export function BoostedBox({ nftAddress, children }: BoostedBoxProps) {
   return (
     <div
       className={cn(
-        'rounded-[8px] overflow-hidden',
+        'overflow-hidden',
         isCampaignActive(nftAddress) && 'shadow-[0px_0px_20.799999237060547px_0px_rgba(192,247,255,0.43)]',
       )}
     >

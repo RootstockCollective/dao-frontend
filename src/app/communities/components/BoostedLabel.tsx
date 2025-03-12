@@ -4,10 +4,11 @@ import { useNFTBoosterContext } from '@/app/providers/NFT/BoosterContext'
 import { BoltSvg } from '@/components/BoltSvg'
 import { GlowingLabel } from '@/components/Label/GlowingLabel'
 import { Span } from '@/components/Typography'
+import { ReactNode } from 'react'
 
 interface BoostedLabelProps {
   nftAddress: string
-  children: string
+  children: ReactNode
 }
 
 /**
