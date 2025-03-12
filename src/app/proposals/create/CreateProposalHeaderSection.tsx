@@ -1,6 +1,6 @@
 import { Button } from '@/components/Button'
 import { Header } from '@/components/Typography'
-import { GoRocket } from 'react-icons/go'
+import { RocketIcon } from '@/components/Icons'
 
 interface CreateProposalHeaderSectionProps {
   proposalType: ProposalType
@@ -25,7 +25,7 @@ export const CreateProposalHeaderSection = ({
     </Header>
     <div className="flex flex-row gap-x-6">
       <Button
-        startIcon={<GoRocket />}
+        startIcon={<RocketIcon />}
         disabled={disabled}
         buttonProps={{ type: 'submit' }}
         loading={loading}
