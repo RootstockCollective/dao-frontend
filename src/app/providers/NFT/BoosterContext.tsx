@@ -109,13 +109,15 @@ export const useNFTBoosterContext = () => useContext(BoosterContext)
 export const axiosInstance = axios.create()
 
 export const useFetchBoostData = () => {
+  const now = Date.now().toString()
+  const noCacheParam = `nocache=${now}`
   const {
     data: latestFile,
     isLoading: isFileDataLoading,
     error: fileDataError,
   } = useQuery<string>({
     queryFn: async () => {
-      const { data } = await axiosInstance.get(`${NFT_BOOSTER_DATA_URL}/latest`)
+      const { data } = await axiosInstance.get(`${NFT_BOOSTER_DATA_URL}/latest?${noCacheParam}`)
 
       return data
     },
@@ -130,7 +132,7 @@ export const useFetchBoostData = () => {
     error: boostDataError,
   } = useQuery<BoostData>({
     queryFn: async () => {
-      const { data } = await axiosInstance.get(`${NFT_BOOSTER_DATA_URL}/${latestFile}`)
+      const { data } = await axiosInstance.get(`${NFT_BOOSTER_DATA_URL}/${latestFile}?${noCacheParam}`)
 
       return { ...data, nftContractAddress: data.nftContractAddress.toLowerCase() }
     },
