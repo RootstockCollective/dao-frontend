@@ -20,7 +20,7 @@ env:
   # is retrieved using PROFILE, so be sure there is a `.env.<PROFILE>` file
   # that matches with the profile set
   # Example: PROFILE=testnet => .env.testnet
-  PROFILE: testnet.qa
+  PROFILE: cr.qa
 
 jobs:
   deploy:
