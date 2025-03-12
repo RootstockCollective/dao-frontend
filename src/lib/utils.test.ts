@@ -1,5 +1,5 @@
 import Big from '@/lib/big'
-import { formatCurrency, formatNumberWithCommas } from '@/lib/utils'
+import { formatCurrency, formatNumberWithCommas, millify } from '@/lib/utils'
 import { describe, expect, it } from 'vitest'
 
 describe('formatCurrency', () => {
@@ -74,5 +74,72 @@ describe('formatNumberWithCommas', () => {
   it('formatNumberWithCommas with invalid Big', () => {
     expect(isNaN(Number('invalid' as never))).toBe(true)
     expect(formatNumberWithCommas('invalid' as never)).toBe('')
+  })
+})
+
+describe('millify', () => {
+  it('formats millions', () => {
+    expect(millify(936000000)).toBe('936M')
+  })
+
+  it('formats billions', () => {
+    expect(millify(1372000000)).toBe('1.372B')
+  })
+
+  it('formats trillions', () => {
+    expect(millify(9876543210000)).toBe('9.876T')
+  })
+
+  it('formats thousands with decimals', () => {
+    expect(millify(1234)).toBe('1.234K')
+    expect(millify(3107.55)).toBe('3.107K')
+  })
+
+  it('formats big integers larger than trillion', () => {
+    expect(millify(9876543210000000n)).toBe('9,876.543T')
+  })
+
+  it('formats numbers less than thousand', () => {
+    expect(millify(999)).toBe('999')
+  })
+
+  it('formats Big numbers', () => {
+    expect(millify(new Big(1234567890))).toBe('1.234B')
+  })
+
+  it('formats string numbers', () => {
+    expect(millify('1234567890')).toBe('1.234B')
+  })
+
+  it('formats very small numbers', () => {
+    expect(millify(0.0001)).toBe('0.0001')
+  })
+
+  it('formats zero', () => {
+    expect(millify(0)).toBe('0')
+  })
+
+  it('formats negative numbers', () => {
+    expect(millify(-1234567890)).toBe('-1.234B')
+  })
+
+  it('throws error on invalid input', () => {
+    expect(() => millify('invalid' as never)).toThrow()
+    expect(() => millify(undefined as never)).toThrow()
+    expect(() => millify(null as never)).toThrow()
+  })
+
+  it('formats exact thresholds correctly', () => {
+    expect(millify(1000)).toBe('1K')
+    expect(millify(1000000)).toBe('1M')
+    expect(millify(1000000000)).toBe('1B')
+    expect(millify(1000000000000)).toBe('1T')
+  })
+
+  it('handles large numbers with proper rounding', () => {
+    expect(millify(1372500)).toBe('1.372M')
+    expect(millify(1372499)).toBe('1.372M')
+    expect(millify(1372510)).toBe('1.372M')
+    expect(millify(1372000000)).toBe('1.372B')
   })
 })

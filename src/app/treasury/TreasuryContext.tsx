@@ -3,7 +3,6 @@ import { usePricesContext, withPricesContextProvider } from '@/shared/context/Pr
 import { useGetTreasuryBucketBalance } from '@/app/treasury/hooks/useGetTreasuryBucketBalance'
 import { treasuryContracts } from '@/lib/contracts'
 import { GetPricesResult } from '@/app/user/types'
-import { formatCurrency } from '@/lib/utils'
 import Big from '@/lib/big'
 
 type BucketItem = {
@@ -17,7 +16,7 @@ type Bucket = {
 }
 
 interface TreasuryContextProps {
-  buckets: Bucket[]
+  buckets: Partial<Record<keyof typeof treasuryContracts, ReturnType<typeof getBucketBalance>>>
   bucketsTotal: ReturnType<typeof getAllBucketsHoldings>
 }
 
@@ -35,7 +34,7 @@ const getAllBucketsHoldings = (buckets: Bucket[]) => {
 }
 
 const TreasuryContext = createContext<TreasuryContextProps>({
-  buckets: [],
+  buckets: {},
   bucketsTotal: { RIF: Big(0), RBTC: Big(0) },
 })
 
@@ -51,19 +50,15 @@ const getBucketBalance = (
 ) => ({
   RIF: {
     amount: bucketBalance.RIF.balance,
-    fiatAmount: formatCurrency(
-      Big(bucketBalance.RIF.balance)
-        .mul(prices.RIF?.price ?? 0)
-        .toNumber(),
-    ),
+    fiatAmount: Big(bucketBalance.RIF.balance)
+      .mul(prices.RIF?.price ?? 0)
+      .toString(),
   },
   RBTC: {
     amount: bucketBalance.RBTC.balance,
-    fiatAmount: formatCurrency(
-      Big(bucketBalance.RBTC.balance)
-        .mul(prices.RBTC?.price ?? 0)
-        .toNumber(),
-    ),
+    fiatAmount: Big(bucketBalance.RBTC.balance)
+      .mul(prices.RBTC?.price ?? 0)
+      .toString(),
   },
 })
 
@@ -77,18 +72,18 @@ const TreasuryContextProvider = ({ children }: Props) => {
   const bucketFiveBalance = useGetTreasuryBucketBalance(treasuryContracts['GENERAL'].address)
 
   // Create the buckets array
-  const buckets = useMemo(
-    () => [
-      getBucketBalance(bucketOneBalance, prices),
-      getBucketBalance(bucketTwoBalance, prices),
-      getBucketBalance(bucketThreeBalance, prices),
-      getBucketBalance(bucketFourBalance, prices),
-      getBucketBalance(bucketFiveBalance, prices),
-    ],
+  const buckets = useMemo<Record<keyof typeof treasuryContracts, ReturnType<typeof getBucketBalance>>>(
+    () => ({
+      GRANTS: getBucketBalance(bucketOneBalance, prices),
+      GRANTS_ACTIVE: getBucketBalance(bucketTwoBalance, prices),
+      GROWTH: getBucketBalance(bucketThreeBalance, prices),
+      GROWTH_REWARDS: getBucketBalance(bucketFourBalance, prices),
+      GENERAL: getBucketBalance(bucketFiveBalance, prices),
+    }),
     [bucketOneBalance, bucketTwoBalance, bucketThreeBalance, bucketFourBalance, bucketFiveBalance, prices],
   )
 
-  const bucketsTotal = useMemo(() => getAllBucketsHoldings(buckets), [buckets])
+  const bucketsTotal = useMemo(() => getAllBucketsHoldings(Object.values(buckets)), [buckets])
 
   const valueToUse = useMemo(() => ({ buckets, bucketsTotal }), [buckets, bucketsTotal])
   return <TreasuryContext.Provider value={valueToUse}>{children}</TreasuryContext.Provider>

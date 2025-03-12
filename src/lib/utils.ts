@@ -250,3 +250,60 @@ export function debounce<T extends (...args: any[]) => void>(
     if (callNow) func.apply(context, args)
   }
 }
+
+interface Denomination {
+  value: number
+  symbol: string
+}
+/**
+ * A list of full-text denominations for large numbers, used when a more descriptive output is needed.
+ * Example: `1,000,000` → `"Millions"`
+ */
+export const fullDenominations: Denomination[] = [
+  { value: 1e12, symbol: 'Trillions' },
+  { value: 1e9, symbol: 'Billions' },
+  { value: 1e6, symbol: 'Millions' },
+  { value: 1e3, symbol: 'Thousand' },
+]
+/**
+ * A list of short-form denominations for large numbers, used for compact display.
+ * Example: `1,000,000` → `"1M"`
+ */
+const shortDenominations: Denomination[] = [
+  { value: 1e12, symbol: 'T' },
+  { value: 1e9, symbol: 'B' },
+  { value: 1e6, symbol: 'M' },
+  { value: 1e3, symbol: 'K' },
+]
+
+/**
+ * Formats a large number using denominations provided in `units` param.
+ * @param num - The number to format, can be a BigSource or bigint.
+ * @param separator - A string separator to place between the number and the unit (default: '').
+ * @param units - An array of denominations to use for formatting (default: `shortDenominations`).
+ * @returns The formatted string representation of the number with appropriate unit.
+ * @example millify(936000000) // '936M'
+ * @example millify(1372000000) // '1.372B'
+ * @example millify(9876543210000) // '9.876T'
+ * @example millify(1234) // '1.234K'
+ * @example millify(3107.55) // '3.107K'
+ * @example millify(1000) // '1K'
+ * @example millify(-1234567890) // '-1.234B'
+ * @example millify('1234567890') // '1.234B'
+ * @example millify(1000000, ' ') // '1 M'
+ * @example millify(1000000, ' ', fullDenominations) // '1 Millions'
+ */
+export function millify(num: BigSource | bigint, separator = '', units = shortDenominations): string {
+  const bigNum = Big(typeof num === 'bigint' ? num.toString() : num)
+  if (bigNum.lt(0)) return `-${millify(bigNum.abs())}`
+
+  for (const unit of units) {
+    if (bigNum.gte(unit.value)) {
+      const divided = bigNum.div(unit.value)
+      const rounded = divided.round(3, Big.roundDown)
+      return formatNumberWithCommas(rounded) + separator + unit.symbol
+    }
+  }
+
+  return formatNumberWithCommas(bigNum)
+}
