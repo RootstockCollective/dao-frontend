@@ -18,11 +18,13 @@ import { Jdenticon } from '@/components/Header/Jdenticon'
 import { Popover } from '@/components/Popover'
 import { ProgressBar } from '@/components/ProgressBar'
 import { TableCell } from '@/components/Table'
-import { Label, Typography } from '@/components/Typography'
+import { Label, Paragraph, Typography } from '@/components/Typography'
 import { cn, shortAddress } from '@/lib/utils'
 import { FC, memo, useContext, useMemo } from 'react'
 import { ArrowDownIcon, ArrowUpIcon, CircleIcon } from '@/components/Icons'
 import { Address, isAddress, parseEther } from 'viem'
+import { useAccount } from 'wagmi'
+import { ConnectButtonComponentSecondary, ConnectWorkflow } from '@/shared/walletConnection'
 
 type TableCellProps = {
   className?: string
@@ -212,6 +214,7 @@ export const ActionCell: FC<ActionCellProps> = ({ className, builderAddress }) =
     state: { selections, allocations, getBuilder },
     actions: { toggleSelectedBuilder },
   } = useContext(AllocationsContext)
+  const { isConnected } = useAccount()
 
   const builder = useMemo(() => getBuilder(builderAddress), [builderAddress, getBuilder])
 
@@ -236,14 +239,34 @@ export const ActionCell: FC<ActionCellProps> = ({ className, builderAddress }) =
 
   return (
     <TableCell className={cn(className, 'border-solid align-center')}>
-      <Button
-        variant={isSelected ? 'white' : 'secondary'}
-        disabled={!isOperational || isPreallocated}
-        onClick={selectBuilder}
-        className="white text-center"
+      <Popover
+        content={NotConnectedPopoverContent()}
+        trigger="hover"
+        size="medium"
+        position="top-expand-left"
+        disabled={isConnected}
+        contentSubContainerClassName="p-3"
       >
-        {isSelected ? 'Selected' : 'Select'}
-      </Button>
+        <Button
+          variant={isSelected ? 'white' : 'outlined'}
+          disabled={!isConnected || !isOperational || isPreallocated}
+          onClick={() => {
+            isConnected && selectBuilder()
+          }}
+          className="white text-center"
+        >
+          {isSelected ? 'Selected' : 'Select'}
+        </Button>
+      </Popover>
     </TableCell>
   )
 }
+
+const NotConnectedPopoverContent = () => (
+  <>
+    <Paragraph variant="normal" className="text-sm pb-3">
+      Select the builders you want to allocate your stRIF to and start earning rewards.
+    </Paragraph>
+    <ConnectWorkflow ConnectComponent={ConnectButtonComponentSecondary} />
+  </>
+)

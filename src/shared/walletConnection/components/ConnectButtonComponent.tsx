@@ -11,3 +11,8 @@ export const ConnectButtonComponent = ({ onClick }: ConnectButtonComponentProps)
     Connect Wallet
   </Button>
 )
+export const ConnectButtonComponentSecondary = ({ onClick }: ConnectButtonComponentProps) => (
+  <Button onClick={onClick} data-testid="ConnectWallet" variant="secondary">
+    Connect Wallet
+  </Button>
+)

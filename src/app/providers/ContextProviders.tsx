@@ -11,6 +11,7 @@ import { BoosterProvider } from './NFT/BoosterContext'
 import { MigrationProvider } from '@/shared/context/MigrationContext'
 import { MainContainer } from '@/components/MainContainer/MainContainer'
 import { BalancesProvider } from '@/app/user/Balances/context/BalancesContext'
+import { HeroCollapseProvider } from '@/app/user/HeroSection/HeroCollapseContext'
 
 interface Props {
   children: ReactNode
@@ -25,15 +26,17 @@ export const ContextProviders = ({ children }: Props) => {
         <QueryClientProvider client={queryClient}>
           <AlertProvider>
             <MigrationProvider>
-              <BuilderContextProviderWithPrices>
-                <BoosterProvider>
-                  <AllocationsContextProvider>
-                    <BalancesProvider>
-                      <MainContainer>{children}</MainContainer>
-                    </BalancesProvider>
-                  </AllocationsContextProvider>
-                </BoosterProvider>
-              </BuilderContextProviderWithPrices>
+              <HeroCollapseProvider>
+                <BuilderContextProviderWithPrices>
+                  <BoosterProvider>
+                    <AllocationsContextProvider>
+                      <BalancesProvider>
+                        <MainContainer>{children}</MainContainer>
+                      </BalancesProvider>
+                    </AllocationsContextProvider>
+                  </BoosterProvider>
+                </BuilderContextProviderWithPrices>
+              </HeroCollapseProvider>
             </MigrationProvider>
           </AlertProvider>
         </QueryClientProvider>
