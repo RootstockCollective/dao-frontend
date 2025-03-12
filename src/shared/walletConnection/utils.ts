@@ -23,7 +23,7 @@ export function parseWalletConnectionError(error: unknown): string {
     case errorParsed.includes('already pending'):
       return 'You have a pending request. Please check your wallet.'
     case errorParsed.includes('Provider not found'):
-      return 'Your browser does not have a wallet installed.'
+      return 'Your browser does not have a compatible wallet installed.'
     default:
       return errorParsed
   }
