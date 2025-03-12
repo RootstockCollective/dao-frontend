@@ -4,6 +4,7 @@ import { BecomeABuilderButton } from '@/app/collective-rewards/user'
 import { useAccount } from 'wagmi'
 import { useCollapseContext } from '@/app/user/HeroSection/HeroCollapseContext'
 import { usePathname } from 'next/navigation'
+import { AnimatePresence, motion } from 'motion/react'
 
 /**
  * This component will render first for all pages. It should contain the user connection workflow.
@@ -24,7 +25,18 @@ export function TopPageHeader() {
         <TopPageHeaderLeftSlotStrategy />
       </div>
       <div className="flex justify-end flex-row gap-5 items-center">
-        {(isCollapsed || isNotMyCollective) && <BecomeABuilderButton address={address!} />}
+        <AnimatePresence mode="sync">
+          {(isCollapsed || isNotMyCollective) && (
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 0.2 }}
+            >
+              <BecomeABuilderButton address={address!} />
+            </motion.div>
+          )}
+        </AnimatePresence>
         <UserConnectionManager />
       </div>
     </div>
