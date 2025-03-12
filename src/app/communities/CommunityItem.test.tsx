@@ -1,7 +1,7 @@
-import { describe, expect, test, vi, afterEach } from 'vitest'
-import { CommunityItem } from './CommunityItem'
-import { cleanup, render } from '@testing-library/react'
 import { BoostData, useNFTBoosterContext } from '@/app/providers/NFT/BoosterContext'
+import { cleanup, render } from '@testing-library/react'
+import { afterEach, describe, expect, test, vi } from 'vitest'
+import { CommunityItem } from './CommunityItem'
 
 vi.mock('@/app/providers/NFT/BoosterContext', () => ({
   useNFTBoosterContext: vi.fn(),
@@ -31,6 +31,7 @@ describe('CommunityItem', () => {
       hasActiveCampaign: false,
       isLoading: false,
       error: null,
+      isCampaignActive: () => false,
     })
     const { findByText, findByTestId } = render(<CommunityItem {...communityItemProps} />)
 
@@ -46,6 +47,7 @@ describe('CommunityItem', () => {
       hasActiveCampaign: true,
       isLoading: false,
       error: null,
+      isCampaignActive: () => true,
     })
     const { findByText, findByTestId } = render(<CommunityItem {...communityItemProps} />)
 

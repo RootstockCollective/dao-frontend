@@ -1,9 +1,9 @@
+import { useNFTBoosterContext } from '@/app/providers/NFT/BoosterContext'
 import { BoltSvg } from '@/components/BoltSvg'
 import { GlowingLabel } from '@/components/Label/GlowingLabel'
 import { HeaderTitle, Typography } from '@/components/Typography'
-import React, { FC, ReactNode } from 'react'
+import { FC, ReactNode } from 'react'
 import { Tooltip } from '../Tooltip'
-import { useNFTBoosterContext } from '@/app/providers/NFT/BoosterContext'
 
 export type RewardsSectionHeader = {
   title: string

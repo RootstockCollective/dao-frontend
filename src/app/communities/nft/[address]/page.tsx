@@ -7,12 +7,13 @@ import { Button } from '@/components/Button'
 import { Chip } from '@/components/Chip/Chip'
 import { CopyButton } from '@/components/CopyButton'
 import { isUserRejectedTxError } from '@/components/ErrorPage/commonErrors'
-import { DiscordIcon, LinkIcon, TwitterXIcon } from '@/components/Icons'
+import { DiscordIcon, TwitterXIcon } from '@/components/Icons'
 import { GlowingLabel } from '@/components/Label/GlowingLabel'
 import { Paragraph, Span, Typography } from '@/components/Typography'
 import { cn, truncateMiddle } from '@/lib/utils'
 import { useCommunity } from '@/shared/hooks/useCommunity'
 import { useStRif } from '@/shared/hooks/useStRIf'
+import { LinkIcon } from 'lucide-react'
 import { DateTime } from 'luxon'
 import Image from 'next/image'
 import { useParams, useRouter } from 'next/navigation'
@@ -65,7 +66,7 @@ export default function Page() {
     stRifThreshold,
   } = useCommunity(nftAddress)
   const { stRifBalance } = useStRif()
-  const { hasActiveCampaign, boostData } = useNFTBoosterContext()
+  const { isCampaignActive, boostData } = useNFTBoosterContext()
 
   const nftInfo = communitiesMapByContract[nftAddress || '']
   if (nftAddress && !nftInfo) {
@@ -243,9 +244,7 @@ export default function Page() {
   }
 
   if (!nftAddress) return null
-
-  const isCampaignActive = hasActiveCampaign && boostData?.nftContractAddress === nftAddress
-
+  const showNFTBoost = isCampaignActive(nftAddress)
   return (
     <>
       {message && (
@@ -281,17 +280,17 @@ export default function Page() {
           </div>
           <div className="mb-[24px] font-extralight">
             {nftInfo?.longDescription({
-              activation: isCampaignActive
-                ? DateTime.fromSeconds(Number(boostData.timestamp) ?? 0)
+              activation: showNFTBoost
+                ? DateTime.fromSeconds(Number(boostData?.timestamp) ?? 0)
                     .toFormat('MMM yyyy')
                     .toUpperCase()
                 : undefined,
             })}
           </div>
-          {hasActiveCampaign && boostData?.nftContractAddress === nftAddress && (
+          {showNFTBoost && (
             <div className="inline-flex items-center gap-1 pb-6">
               <BoltSvg />
-              <GlowingLabel faded>Active Boost {boostData.boostPercentage}%</GlowingLabel>
+              <GlowingLabel faded>Active Boost {boostData!.boostPercentage}%</GlowingLabel>
             </div>
           )}
           {/* Hidden until we get social media data */}
@@ -351,7 +350,7 @@ export default function Page() {
                     )}
                   </div>
 
-                  <SelfContainedNFTBoosterCard />
+                  {showNFTBoost && <SelfContainedNFTBoosterCard />}
 
                   {/* `Add to wallet button` */}
                   {!isNftInWallet?.[nftAddress]?.[tokenId] && (

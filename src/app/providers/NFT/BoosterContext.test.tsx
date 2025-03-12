@@ -190,6 +190,7 @@ describe('BoosterProvider', () => {
           currentBoost: holderRewards,
           hasActiveCampaign: true,
           isBoosted: true,
+          userHasRewards: true,
         }),
       )
     })
@@ -221,7 +222,7 @@ describe('BoosterProvider', () => {
       const contextValue = JSON.parse(element.textContent || '{}')
       expect(contextValue).toEqual(
         toExpected({
-          isBoosted: false,
+          userHasRewards: false,
           boostData: testBoostData,
           isLoading: false,
           error: null,

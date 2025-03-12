@@ -1,14 +1,14 @@
+import { Builder, BuilderState } from '@/app/collective-rewards/types'
 import { useBuilderContext } from '@/app/collective-rewards/user'
-import { useModal } from '@/shared/hooks/useModal'
+import { isBuilderDeactivated, isBuilderKycRevoked, useHandleErrors } from '@/app/collective-rewards/utils'
+import { Button } from '@/components/Button'
 import { LoadingSpinner } from '@/components/LoadingSpinner'
 import { BecomeABuilderModal, openKYC } from '@/components/Modal/BecomeABuilderModal'
+import { Popover } from '@/components/Popover'
 import { Typography } from '@/components/Typography'
+import { useModal } from '@/shared/hooks/useModal'
 import { FC, ReactNode } from 'react'
 import { Address } from 'viem'
-import { Builder, BuilderState } from '@/app/collective-rewards/types'
-import { isBuilderDeactivated, isBuilderKycRevoked, useHandleErrors } from '@/app/collective-rewards/utils'
-import { Popover } from '@/components/Popover'
-import { Button, HeaderButton } from '@/components/Button'
 
 type ExtendedBuilderState = BuilderState | 'deactivated' | 'paused'
 type StatusBadgeProps = {
@@ -51,7 +51,7 @@ const StatusBadge: FC<StatusBadgeProps> = ({ builderState }) => {
         size="small"
         trigger="hover"
       >
-        <HeaderButton onClick={openKYC}>Submit KYC</HeaderButton>
+        <Button onClick={openKYC}>Submit KYC</Button>
       </Popover>
     </StatusBadgeSection>
   )
