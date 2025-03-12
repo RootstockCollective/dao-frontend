@@ -40,9 +40,10 @@ export const StepOne = ({ onGoNext = () => {} }: StepProps) => {
       const balance = tokenToSend.balance
 
       if (percentage === 100) {
-        // For 100%, use exact balance
+        // For 100%, round to 18 decimal places to prevent precision issues
+        const exactBalance = Big(balance).round(18, Big.roundDown).toString()
         requestAnimationFrame(() => {
-          onAmountChange(balance)
+          onAmountChange(exactBalance)
         })
       } else {
         // For other percentages, calculate with precision
