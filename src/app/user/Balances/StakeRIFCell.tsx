@@ -46,13 +46,11 @@ const PopoverContent = () => {
         <Bold>Staking RIF</Bold> is how you actively participate in the DAO. When you stake <Bold>RIF</Bold>,
         it becomes <Bold>stRIF</Bold>, which give you power to:
       </Paragraph>
-      <Paragraph size="small" className="text-white mt-3">
-        <ul>
-          <li>✅ Vote on proposals</li>
-          <li>✅ Allocate Funds</li>
-          <li>✅ Earn Rewards</li>
-        </ul>
-      </Paragraph>
+      <ul className="text-white mt-3">
+        <li>✅ Vote on proposals</li>
+        <li>✅ Allocate Funds</li>
+        <li>✅ Earn Rewards</li>
+      </ul>
       <div className="mt-4">
         <ConnectWorkflow ConnectComponent={ConnectButtonComponentSecondary}></ConnectWorkflow>
       </div>

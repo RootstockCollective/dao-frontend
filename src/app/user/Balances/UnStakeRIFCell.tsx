@@ -46,13 +46,11 @@ const PopoverContent = () => {
         Unstaking lets you <Bold>convert your stRIF back to RIF</Bold>, giving you full control over your
         tokens again.
       </Paragraph>
-      <Paragraph size="small" className="text-white mt-3">
-        <ul>
-          <li>❌ Stop Participating</li>
-          <li>❌ Withdraw Your Funds</li>
-          <li>❌ End Rewards</li>
-        </ul>
-      </Paragraph>
+      <ul className="text-white mt-3">
+        <li>❌ Stop Participating</li>
+        <li>❌ Withdraw Your Funds</li>
+        <li>❌ End Rewards</li>
+      </ul>
     </>
   )
 }
