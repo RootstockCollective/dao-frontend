@@ -36,8 +36,8 @@ const TabsTrigger = forwardRef<
       ref={ref}
       className={cn(
         'h-12 whitespace-nowrap',
-        'data-[state=active]:border-b data-[state=active]:border-primary data-[state=active]:text-primary',
-        'data-[state=inactive]:text-white',
+        'data-[state=active]:border-b data-[state=active]:border-primary data-[state=active]:text-primary data-[state=active]:font-bold',
+        'data-[state=inactive]:text-white data-[state=inactive]:font-normal',
         'px-[16px] py-[8px]',
         className,
       )}
@@ -57,7 +57,7 @@ type TabTitleProps = {
 
 // TODO: To be aligned with the design once we have access to dev mode
 const TabTitle = ({ children }: TabTitleProps) => (
-  <Typography tagVariant="label" fontFamily="rootstock-sans" fontWeight={700}>
+  <Typography tagVariant="label" fontFamily="rootstock-sans">
     {children}
   </Typography>
 )
