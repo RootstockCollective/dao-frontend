@@ -3,7 +3,6 @@ import { usePricesContext, withPricesContextProvider } from '@/shared/context/Pr
 import { useGetTreasuryBucketBalance } from '@/app/treasury/hooks/useGetTreasuryBucketBalance'
 import { treasuryContracts } from '@/lib/contracts'
 import { GetPricesResult } from '@/app/user/types'
-import { formatCurrency } from '@/lib/utils'
 import Big from '@/lib/big'
 
 type BucketItem = {
@@ -51,19 +50,15 @@ const getBucketBalance = (
 ) => ({
   RIF: {
     amount: bucketBalance.RIF.balance,
-    fiatAmount: formatCurrency(
-      Big(bucketBalance.RIF.balance)
-        .mul(prices.RIF?.price ?? 0)
-        .toNumber(),
-    ),
+    fiatAmount: Big(bucketBalance.RIF.balance)
+      .mul(prices.RIF?.price ?? 0)
+      .toString(),
   },
   RBTC: {
     amount: bucketBalance.RBTC.balance,
-    fiatAmount: formatCurrency(
-      Big(bucketBalance.RBTC.balance)
-        .mul(prices.RBTC?.price ?? 0)
-        .toNumber(),
-    ),
+    fiatAmount: Big(bucketBalance.RBTC.balance)
+      .mul(prices.RBTC?.price ?? 0)
+      .toString(),
   },
 })
 
