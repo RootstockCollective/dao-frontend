@@ -11,8 +11,6 @@ import { HeaderTitle } from '@/components/Typography'
 import { tokenContracts } from '@/lib/contracts'
 import { getAddress } from 'viem'
 import { ABIMetrics } from './components/ABIMetrics'
-import { SelfContainedNFTBoosterCard } from '@/app/shared/components/NFTBoosterCard/SelfContainedNFTBoosterCard'
-import { JustifyBetweenLayout } from '@/app/collective-rewards/shared'
 
 export const Metrics = () => {
   const { data: allGauges } = useGetGaugesArray()
@@ -31,14 +29,7 @@ export const Metrics = () => {
 
   return (
     <div>
-      <JustifyBetweenLayout
-        leftComponent={<HeaderTitle>Metrics</HeaderTitle>}
-        rightComponent={
-          <>
-            <SelfContainedNFTBoosterCard forceRender={true} />
-          </>
-        }
-      />
+      <HeaderTitle className="mb-6">Metrics</HeaderTitle>
       <CycleContextProvider>
         <div className="flex gap-4 w-full">
           <div className="flex gap-4 h-min w-3/5">

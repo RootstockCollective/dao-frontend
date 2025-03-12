@@ -5,6 +5,7 @@ import { useAccount } from 'wagmi'
 import { useCollapseContext } from '@/app/user/HeroSection/HeroCollapseContext'
 import { usePathname } from 'next/navigation'
 import { AnimatePresence, motion } from 'motion/react'
+import { SelfContainedNFTBoosterCard } from '@/app/shared/components/NFTBoosterCard/SelfContainedNFTBoosterCard'
 
 /**
  * This component will render first for all pages. It should contain the user connection workflow.
@@ -25,6 +26,8 @@ export function TopPageHeader() {
         <TopPageHeaderLeftSlotStrategy />
       </div>
       <div className="flex justify-end flex-row gap-5 items-center">
+        {/* TODO: we may need to change it if we decide to show this component on certain pages only */}
+        <SelfContainedNFTBoosterCard forceRender={true} />
         <AnimatePresence mode="sync">
           {(isCollapsed || isNotMyCollective) && (
             <motion.div
