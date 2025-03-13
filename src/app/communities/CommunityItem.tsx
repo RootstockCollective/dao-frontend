@@ -1,10 +1,8 @@
-import { ArrowUpRightIcon } from '@/components/Icons'
 import { Paragraph } from '@/components/Typography'
 import Image from 'next/image'
-import Link from 'next/link'
 import { BoostedBox } from './components/BoostedBox'
-import { ViewDetailsButton } from '@/app/communities/components/ViewDetailsButton'
 import { BoostedLabel } from '@/app/communities/components/BoostedLabel'
+import { CommunityItemButtonHandler } from '@/app/communities/components/CommunityItemButtonHandler'
 
 interface CommunityItemProps {
   leftImageSrc: string
@@ -13,13 +11,20 @@ interface CommunityItemProps {
   nftAddress: string
   description: string
   numberOfMembers: number
+  readMoreLink?: string
 }
 
 /**
  * Server Component: Renders a community card as part of the static communities page.
  * Dynamic highlighting of the 'Boosted' state is achieved through lightweight client components.
  */
-export const CommunityItem = ({ leftImageSrc, title, nftAddress, description }: CommunityItemProps) => {
+export const CommunityItem = ({
+  leftImageSrc,
+  title,
+  nftAddress,
+  description,
+  readMoreLink,
+}: CommunityItemProps) => {
   return (
     <BoostedBox nftAddress={nftAddress}>
       <div
@@ -50,7 +55,7 @@ export const CommunityItem = ({ leftImageSrc, title, nftAddress, description }: 
           <Paragraph className="text-[14px] px-[14px]">{description}</Paragraph>
         </div>
         {/* View details */}
-        <ViewDetailsButton nftAddress={nftAddress} />
+        <CommunityItemButtonHandler nftAddress={nftAddress} readMoreLink={readMoreLink} />
       </div>
     </BoostedBox>
   )
