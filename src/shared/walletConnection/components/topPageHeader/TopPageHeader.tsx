@@ -6,7 +6,9 @@ import { useCollapseContext } from '@/app/user/HeroSection/HeroCollapseContext'
 import { usePathname } from 'next/navigation'
 import { AnimatePresence, motion } from 'motion/react'
 import { SelfContainedNFTBoosterCard } from '@/app/shared/components/NFTBoosterCard/SelfContainedNFTBoosterCard'
+import { collectiveRewards, home } from '@/shared/contants'
 
+const visibleRoutes = [home, collectiveRewards]
 /**
  * This component will render first for all pages. It should contain the user connection workflow.
  * It will also render the left slot strategy component.
@@ -18,8 +20,8 @@ export function TopPageHeader() {
   const { address } = useAccount()
   const { isCollapsed } = useCollapseContext()
   const pathname = usePathname()
-  const isNotMyCollective = pathname !== '/'
-  const isCollectiveRewards = pathname === '/collective-rewards'
+  const isNotMyCollective = pathname !== home
+  const showBoosterCard = visibleRoutes.includes(pathname)
 
   return (
     <div className="grid grid-cols-[1fr_auto] gap-x-3 mb-4">
@@ -28,7 +30,7 @@ export function TopPageHeader() {
       </div>
       <div className="flex justify-end flex-row gap-5 items-center">
         {/* TODO: we may need to change it if we decide to show this component on certain pages only */}
-        <SelfContainedNFTBoosterCard forceRender={isCollectiveRewards} />
+        <SelfContainedNFTBoosterCard forceRender={showBoosterCard} />
         <AnimatePresence mode="sync">
           {(isCollapsed || isNotMyCollective) && (
             <motion.div
