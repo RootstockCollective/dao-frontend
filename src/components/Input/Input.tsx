@@ -100,7 +100,7 @@ export const Input: FC<Props> = ({
     ),
     search: (
       <div className="relative">
-        <div className="absolute translate-y-4 translate-x-4">
+        <div className="absolute translate-y-3 translate-x-4">
           {loading ? <SpinnerIcon className="animate-spin" /> : <SearchIcon data-testid="SearchIcon" />}
         </div>
         <input
