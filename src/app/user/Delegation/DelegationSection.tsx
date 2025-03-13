@@ -20,6 +20,7 @@ import { Popover } from '@/components/Popover'
 import Image from 'next/image'
 import { formatUnits } from 'ethers'
 import { ConnectWorkflow } from '@/shared/walletConnection/connection/ConnectWorkflow'
+import { QuestionIcon } from '@/components/Icons'
 
 export const DelegationSection = () => {
   const { address, isConnected } = useAccount()
@@ -184,13 +185,6 @@ const DelegatePopover = () => (
       </>
     }
   >
-    <Image
-      src="/images/question.svg"
-      className="ml-1"
-      width={20}
-      height={20}
-      alt="QuestionIcon"
-      data-testid="QuestionIcon"
-    />
+    <QuestionIcon className="ml-1" />
   </Popover>
 )
