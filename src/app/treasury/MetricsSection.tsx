@@ -56,6 +56,3 @@ export const MetricsSection = () => {
     </div>
   )
 }
-/* 
-
-*/
