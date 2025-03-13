@@ -8,6 +8,7 @@ import { cn } from '@/lib/utils'
 import { round } from '@/lib/big'
 import Image from 'next/image'
 import { Popover } from '@/components/Popover'
+import { QuestionIcon } from '@/components/Icons'
 
 export type Vote = 'for' | 'against' | 'abstain'
 
@@ -110,14 +111,7 @@ export const VoteProposalModal: FC<Props> = ({
                 </div>
               }
             >
-              <Image
-                src="/images/question.svg"
-                width={20}
-                height={20}
-                className="hover:cursor-help"
-                alt="QuestionIcon"
-                data-testid="QuestionIcon"
-              />
+              <QuestionIcon className="hover:cursor-help" />
             </Popover>
           </div>
           <Typography className="text-[64px] leading-[72px] text-orange-500 font-normal">
