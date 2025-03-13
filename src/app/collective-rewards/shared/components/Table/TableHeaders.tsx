@@ -2,9 +2,8 @@ import { FC } from 'react'
 import { TableCell } from '@/components/Table'
 import { cn } from '@/lib/utils'
 import { Popover } from '@/components/Popover'
-import { ArrowUpSFillIcon, ArrowDownSFillIcon } from '@/components/Icons'
+import { ArrowUpSFillIcon, ArrowDownSFillIcon, QuestionIcon } from '@/components/Icons'
 import { TooltipProps } from '@/app/collective-rewards/rewards'
-import Image from 'next/image'
 
 export type ISortConfig = {
   key: string
@@ -45,14 +44,7 @@ export const TableHeaderCell: FC<TableHeader> = ({
             trigger="hover"
             {...tooltip.popoverProps}
           >
-            <Image
-              src="/images/question.svg"
-              className="mr-1"
-              width={20}
-              height={20}
-              alt="QuestionIcon"
-              data-testid="QuestionIcon"
-            />
+            <QuestionIcon className="mr-1" />
           </Popover>
         )}
         <span>{label}</span>

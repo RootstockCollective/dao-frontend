@@ -14,7 +14,7 @@ import { debounce } from 'lodash'
 import { resolveRnsDomain } from '@/lib/rns'
 import { PasteButton } from '@/components/PasteButton'
 import { Popover } from '@/components/Popover'
-import questionImg from '@/public/images/question.svg'
+import { QuestionIcon } from '@/components/Icons'
 import rifIcon from './images/rif-icon.svg'
 import {
   createColumnHelper,
@@ -219,7 +219,7 @@ export const DelegateModal = ({ onClose, onDelegateTxStarted }: DelegateModalPro
                 </Typography>
               }
             >
-              <Image src={questionImg} alt="Tooltip" className="w-[14px] opacity-40 cursor-pointer" />
+              <QuestionIcon size={14} className="opacity-40 cursor-pointer" />
             </Popover>
           </div>
           <div
