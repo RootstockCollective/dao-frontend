@@ -13,7 +13,7 @@ import { zodResolver } from '@hookform/resolvers/zod'
 import { useRouter } from 'next/navigation'
 import { FC, useEffect, useState } from 'react'
 import { useForm } from 'react-hook-form'
-import { GoRocket } from 'react-icons/go'
+import { RocketIcon } from '@/components/Icons'
 import { z } from 'zod'
 import { percentageToWei } from '@/app/collective-rewards/settings/utils'
 import { useBuilderSettingsContext } from './context'
@@ -100,7 +100,7 @@ export const BuilderRewardsSettingsForm: FC = () => {
             disabled={isBuilderOperational}
           >
             <Button
-              startIcon={<GoRocket />}
+              startIcon={<RocketIcon />}
               disabled={!isDirty || !isValid || !isBuilderOperational}
               buttonProps={{ type: 'submit' }}
               loading={isPending}

@@ -36,7 +36,7 @@ import { TX_MESSAGES } from '@/shared/txMessages'
 import { waitForTransactionReceipt } from '@wagmi/core'
 import { useRouter, useParams } from 'next/navigation'
 import { FC, useEffect, useMemo, useRef, useState } from 'react'
-import { FaMinus } from 'react-icons/fa6'
+import { MinusIcon } from '@/components/Icons'
 import { getAddress } from 'viem'
 import { type BaseError, useAccount } from 'wagmi'
 import { Vote, VoteProposalModal } from '@/components/Modal/VoteProposalModal'
@@ -693,7 +693,7 @@ const DewhitelistButton: FC<DewhitelistButton> = ({
     <>
       {isButtonEnabled && (
         <Button
-          startIcon={<FaMinus />}
+          startIcon={<MinusIcon />}
           onClick={() =>
             router.push(
               `/proposals/create?contract=${builderRegistryContract}&action=${dewhitelistBuilderAction}&builderAddress=${builderAddress}&proposalId=${proposalId}`,

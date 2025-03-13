@@ -1,7 +1,7 @@
 import { BUILD_ID, ENV, GITHUB_ORG } from '@/lib/constants'
 import { cn } from '@/lib/utils'
 import { TwitterXIcon } from '@/components/Icons'
-import { FaGithub, FaTelegram } from 'react-icons/fa6'
+import { GithubIcon, TelegramIcon } from '@/components/Icons'
 
 interface Props {
   brand?: string
@@ -55,10 +55,10 @@ export const Footer = ({ variant = 'login' }: Props) => (
         <TwitterXIcon className="mr-4" size={'1.4em'} />
       </a>
       <a href={`https://github.com/${GITHUB_ORG}`} target="_blank">
-        <FaGithub className="mr-4" size={'1.5em'} />
+        <GithubIcon className="mr-4" size={'1.5em'} />
       </a>
       <a href="https://t.me/rootstockcollective" target="_blank">
-        <FaTelegram className="mr-4" size={'1.5em'} />
+        <TelegramIcon className="mr-4" size={'1.5em'} />
       </a>
     </div>
   </footer>

@@ -1,6 +1,6 @@
 import { cn } from '@/lib/utils'
 import { FC } from 'react'
-import { PiArrowUpRightLight } from 'react-icons/pi'
+import { ArrowUpRightLightIcon } from '../Icons'
 import { ExternalLinkProps } from './types'
 
 /**
@@ -28,7 +28,7 @@ export const ExternalLink: FC<ExternalLinkProps> = ({
       )}
     >
       {children}
-      {variant === 'menu' && <PiArrowUpRightLight />}
+      {variant === 'menu' && <ArrowUpRightLightIcon />}
     </Component>
   )
 }
