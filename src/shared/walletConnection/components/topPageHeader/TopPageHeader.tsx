@@ -7,8 +7,7 @@ import { usePathname } from 'next/navigation'
 import { AnimatePresence, motion } from 'motion/react'
 import { SelfContainedNFTBoosterCard } from '@/app/shared/components/NFTBoosterCard/SelfContainedNFTBoosterCard'
 import { collectiveRewards, home } from '@/shared/constants'
-
-const visibleRoutes = [home, collectiveRewards]
+import { useNFTBoosterContext } from '@/app/providers/NFT/BoosterContext'
 /**
  * This component will render first for all pages. It should contain the user connection workflow.
  * It will also render the left slot strategy component.
@@ -20,7 +19,10 @@ export function TopPageHeader() {
   const { address } = useAccount()
   const { isCollapsed } = useCollapseContext()
   const pathname = usePathname()
-  const isNotMyCollective = pathname !== home
+  const isMyCollective = pathname === home
+  const isCollectiveRewards = pathname === collectiveRewards
+  const { isBoosted } = useNFTBoosterContext()
+  const forceRender = isCollectiveRewards || (isMyCollective && isBoosted)
 
   return (
     <div className="grid grid-cols-[1fr_auto] gap-x-3 mb-4">
@@ -28,9 +30,9 @@ export function TopPageHeader() {
         <TopPageHeaderLeftSlotStrategy />
       </div>
       <div className="flex justify-end flex-row gap-5 items-center">
-        <SelfContainedNFTBoosterCard forceRender={visibleRoutes.includes(pathname)} />
+        <SelfContainedNFTBoosterCard forceRender={forceRender} />
         <AnimatePresence mode="sync">
-          {(isCollapsed || isNotMyCollective) && (
+          {(isCollapsed || !isMyCollective) && (
             <motion.div
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
