@@ -33,7 +33,7 @@ export const Alert = ({ severity, title, content, onDismiss, 'data-testid': data
         {typeof content === 'string' ? (
           <Paragraph
             variant="light"
-            className="font-[600] text-[14px] text-white opacity-80 mb-[12px] break-all"
+            className="font-[600] text-[14px] text-white opacity-80 mb-[12px] break-all max-h-36 overflow-y-auto"
             data-testid="Content"
           >
             {content}
