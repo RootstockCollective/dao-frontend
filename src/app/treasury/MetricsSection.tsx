@@ -3,6 +3,7 @@ import { MetricsCard } from '@/components/MetricsCard'
 import { useStRifHoldings } from './hooks/useStRifHoldings'
 import { formatNumberWithCommas } from '@/lib/utils'
 import { Popover } from '@/components/Popover'
+import { QuestionIcon } from '@/components/Icons'
 
 /**
  * Displays key treasury metrics including total stRIF, treasury balance,
@@ -34,11 +35,18 @@ export const MetricsSection = () => {
               <Typography tagVariant="span" className="text-sm font-bold">
                 TVL{' '}
               </Typography>
-              {/* <Typography tagVariant="span" className="text-sm">
-                (Total stRIF + Treasury)
-              </Typography> */}
-              {/* <Popover></Popover> */}
-              <Popover content={<></>}>abc</Popover>
+              <Popover
+                contentContainerClassName="w-max"
+                trigger="hover"
+                content={
+                  <div>
+                    <Typography className="">Total value locked</Typography>
+                    <Typography className="text-sm">(Total stRIF + Treasury)</Typography>
+                  </div>
+                }
+              >
+                <QuestionIcon className="ml-1 hover:cursor-help" />
+              </Popover>
             </div>
           }
           amount={`${formatNumberWithCommas(tvlUsd)} USD`}
@@ -48,3 +56,6 @@ export const MetricsSection = () => {
     </div>
   )
 }
+/* 
+
+*/
