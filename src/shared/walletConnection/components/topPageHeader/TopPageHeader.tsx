@@ -16,7 +16,7 @@ import { useNFTBoosterContext } from '@/app/providers/NFT/BoosterContext'
  * @constructor
  */
 export function TopPageHeader() {
-  const { address } = useAccount()
+  const { address, isConnected } = useAccount()
   const { isCollapsed } = useCollapseContext()
   const pathname = usePathname()
   const isMyCollective = pathname === home
@@ -32,7 +32,7 @@ export function TopPageHeader() {
       <div className="flex justify-end flex-row gap-5 items-center">
         <SelfContainedNFTBoosterCard forceRender={forceRender} />
         <AnimatePresence mode="sync">
-          {(isCollapsed || !isMyCollective) && (
+          {(isCollapsed || !isMyCollective || (isMyCollective && isConnected)) && (
             <motion.div
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
