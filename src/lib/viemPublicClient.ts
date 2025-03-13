@@ -6,7 +6,7 @@ import { config } from '@/config'
  * ts-ignore because chainId is detected as string and it must be 30 31 32
  */
 // @ts-ignore
-const client = config.getClient({ chainId: Number(process.env.NEXT_PUBLIC_CHAIN_ID) })
+const client = config.getClient({ chainId: Number(process.env.NEXT_PUBLIC_CHAIN_ID) || 31 })
 
 export const publicClient = client.extend(publicActions)
 
