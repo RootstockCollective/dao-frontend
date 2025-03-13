@@ -1,13 +1,13 @@
 'use client'
 import { useAccount } from 'wagmi'
-import { Span } from '@/components/Typography'
+import { Paragraph, Span } from '@/components/Typography'
 import Image from 'next/image'
 import { UserMemberSection } from './UserMemberSection'
 import { ClaimItButton } from '../_components/ClaimItButton'
 import { useCommunityNFT } from '@/app/communities/nft/[address]/CommunityNFTContext'
 
 export const MembershipNFTSection = () => {
-  const { name, image, isMember, tokenId, isMintable } = useCommunityNFT()
+  const { name, image, isMember, tokenId, isMintable, tokensAvailable } = useCommunityNFT()
   const { isConnected } = useAccount()
 
   return (
@@ -29,8 +29,7 @@ export const MembershipNFTSection = () => {
               <Span>By joining to the community you will receive one of the NFTs</Span>
               {isMintable && isConnected && (
                 <>
-                  {/* @TODO was this removed from design? */}
-                  {/*<Paragraph size="small">{tokensAvailable} NFTs left to claim.</Paragraph>*/}
+                  <Paragraph size="small">{tokensAvailable} NFTs left to claim.</Paragraph>
                   <ClaimItButton />
                 </>
               )}
