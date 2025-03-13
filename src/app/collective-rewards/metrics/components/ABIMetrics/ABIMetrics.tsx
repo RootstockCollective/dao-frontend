@@ -11,6 +11,7 @@ export const ABIMetrics = () => {
     <>
       <MetricsCard borderless>
         <MetricsCardTitle
+          className="text-wrap"
           title="Annual Backers Incentives %"
           data-testid="abiPct"
           tooltip={{

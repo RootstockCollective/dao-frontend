@@ -19,6 +19,7 @@ describe('useGetLastCycleRewardsTimestamps', () => {
   const duration = 1209600 //  14 days
   const distributionWindow = 3600 // 1 hour
   const cycle: Cycle = {
+    timestamp: 10n,
     cycleStart: DateTime.fromSeconds(startTimestamp),
     cycleNext: DateTime.fromSeconds(startTimestamp + duration),
     cycleDuration: Duration.fromObject({ seconds: duration }),

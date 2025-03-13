@@ -15,6 +15,7 @@ type FunctionName = Extract<
   | 'totalAllocation'
   | 'rewardShares'
   | 'allocationOf'
+  | 'rewardPerToken'
 >
 type FunctionParams = ContractFunctionArgs<typeof GaugeAbi, AbiStateMutability, FunctionName>
 type FunctionResultType = ContractFunctionReturnType<typeof GaugeAbi, AbiStateMutability, FunctionName>
@@ -25,6 +26,7 @@ type FunctionReturnType<T extends FunctionName> = T extends
   | 'totalAllocation'
   | 'rewardShares'
   | 'allocationOf'
+  | 'rewardPerToken'
   ? bigint
   : never
 type InferFunctionReturnType<T extends FunctionName> = FunctionReturnType<T>
