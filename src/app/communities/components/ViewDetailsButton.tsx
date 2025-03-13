@@ -1,17 +1,21 @@
 'use client'
 import { Button } from '@/components/Button'
 import Link from 'next/link'
+import { HTMLAttributeAnchorTarget } from 'react'
 
 interface ViewDetailsButtonProps {
-  nftAddress?: string
+  href: string
+  textForButton?: string
+  target?: HTMLAttributeAnchorTarget
 }
-export const ViewDetailsButton = ({ nftAddress }: ViewDetailsButtonProps) => (
-  <Link
-    href={nftAddress ? `/communities/nft/${nftAddress}` : '/communities'}
-    className="flex justify-center my-[16px] flex-0"
-  >
+export const ViewDetailsButton = ({
+  href,
+  textForButton = 'View details',
+  target,
+}: ViewDetailsButtonProps) => (
+  <Link href={href} className="flex justify-center my-[16px] flex-0" target={target}>
     <Button variant="secondary" className="bg-foreground">
-      View details
+      {textForButton}
     </Button>
   </Link>
 )

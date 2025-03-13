@@ -14,6 +14,7 @@ export interface CommunityItem {
   longDescription: FC<{ activation?: ReactNode }>
   isMintable?: boolean
   additionalChecks?: [{ name: string; check: (data: any) => boolean; alertMessage: string }]
+  readMoreLink?: string
 }
 
 interface RowProps {
@@ -223,6 +224,19 @@ export const betaBuilders: CommunityItem = {
   ),
 }
 
+export const rootstockHacktivator: CommunityItem = {
+  leftImageSrc: '/images/nfts/rsk-hacktivator-thumb.png',
+  title: 'HACKTIVATOR',
+  subtitle: '', // Not necessary
+  description: 'Developers evolve Rootstock by contributing code or educational content - for rewards.',
+  nftAddress: '', // It's just a LINK - not an actual NFT
+  numberOfMembers: 0,
+  cover: '',
+  isMintable: false,
+  longDescription: () => '',
+  readMoreLink: 'https://dev.rootstock.io/resources/contribute/hacktivator/',
+}
+
 export const communitiesToRender = [
   earlyAdoptersCommunity,
   ogFounders,
@@ -240,7 +254,7 @@ export const communitiesByCategory = {
     ogFoundersExternalContributors,
     vanguardCommunity,
   ],
-  CLUBS: [betaBuilders],
+  CLUBS: [betaBuilders, rootstockHacktivator],
 }
 
 export const communitiesMapByContract = communitiesToRender.reduce<Record<string, CommunityItem>>(
