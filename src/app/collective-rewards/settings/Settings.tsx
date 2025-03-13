@@ -21,7 +21,7 @@ export const Settings: FC = () => {
   const { isConnected, address } = useAccount()
   const searchParams = useSearchParams()
   const router = useRouter()
-  const { data: gauge, isLoading: isLoadingGauge } = useGetBuilderToGauge(address!)
+  const { data: gauge, status } = useGetBuilderToGauge(address!)
 
   useEffect(() => {
     if (!isConnected) {
@@ -31,10 +31,13 @@ export const Settings: FC = () => {
 
   const isBuilder = gauge && gauge !== zeroAddress
   useEffect(() => {
+    if (status === 'pending') {
+      return
+    }
     if (!isBuilder) {
       router.replace('/')
     }
-  }, [gauge, router, isBuilder])
+  }, [gauge, router, isBuilder, status])
 
   const settingType = searchParams.get('type') as SettingType
   const isValidSettingType = searchParams && isSettingType(settingType)
