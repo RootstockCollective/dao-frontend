@@ -17,7 +17,7 @@ export const UserMemberSection = () => {
   const showNFTBoost = isCampaignActive(address)
 
   return (
-    <div className="flex flex-col justify-between gap-4">
+    <div className="flex flex-col gap-4">
       <Paragraph variant="semibold" className="text-[18px]">
         {title} #{tokenId}
       </Paragraph>
