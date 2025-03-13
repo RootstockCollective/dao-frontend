@@ -5,6 +5,7 @@ import { SelfContainedNFTBoosterCard } from '@/app/shared/components/NFTBoosterC
 import { AddToWalletButton } from '@/app/communities/nft/[address]/_components/AddToWalletButton'
 import { useCommunityNFT } from '@/app/communities/nft/[address]/CommunityNFTContext'
 import { useNFTBoosterContext } from '@/app/providers/NFT/BoosterContext'
+import { useAccount } from 'wagmi'
 
 /**
  * Component to show user NFT info plus add to wallet logic
@@ -12,7 +13,7 @@ import { useNFTBoosterContext } from '@/app/providers/NFT/BoosterContext'
  */
 export const UserMemberSection = () => {
   const { tokenId, title, description, nftAddress: address } = useCommunityNFT()
-
+  const { address: accountAddress } = useAccount()
   const { isBoosted, isCampaignActive } = useNFTBoosterContext()
   const showNFTBoost = isCampaignActive(address)
 
@@ -23,8 +24,8 @@ export const UserMemberSection = () => {
       </Paragraph>
       {/* `Owned by 0x00000` colored with 2 colors */}
       <div className="font-light">
-        <Span>Owned{address && ' by '}</Span>
-        {address && <Span className="text-primary">{truncateMiddle(address, 4, 3)}</Span>}
+        <Span>Owned{accountAddress && ' by '}</Span>
+        {accountAddress && <Span className="text-primary">{truncateMiddle(accountAddress, 4, 3)}</Span>}
       </div>
 
       <SelfContainedNFTBoosterCard forceRender={showNFTBoost && isBoosted} />
