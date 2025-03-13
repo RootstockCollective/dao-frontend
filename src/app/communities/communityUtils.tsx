@@ -46,7 +46,9 @@ export const earlyAdoptersCommunity = {
   ) => (
     <>
       <p className="mt-4">
-        The Early Adopters badge symbolizes foresight and commitment, awarded to the first pioneers who saw the potential of RootstockCollective and staked their claim early. These digital trailblazers embody the spirit of innovation and are the foundation of the community.
+        The Early Adopters badge symbolizes foresight and commitment, awarded to the first pioneers who saw
+        the potential of RootstockCollective and staked their claim early. These digital trailblazers embody
+        the spirit of innovation and are the foundation of the community.
       </p>
       <p className={DEFAULT_CLASS_FOR_ROW_CONTAINER}>
         <Row leftText="SPECIAL POWER" rightText="Voting Booster" />
@@ -62,7 +64,7 @@ export const ogFounders: CommunityItem = {
   title: 'OG Founders',
   subtitle: 'DeFi',
   description:
-    'The OG Founders badge celebrates the visionaries who laid the groundwork for RootstockCollective's success.',
+    'The OG Founders badge celebrates the visionaries who laid the groundwork for RootstockCollective&apos;s success.',
   nftAddress: nftContracts.OG_FOUNDERS,
   numberOfMembers: 0,
   cover: '/images/nfts/founders-cover.png',
@@ -70,7 +72,9 @@ export const ogFounders: CommunityItem = {
   longDescription: ({ activation = 'MAY 2025' }) => (
     <>
       <p className="mt-4">
-        The OG Founders badge celebrates the visionaries who laid the groundwork for RootstockCollective's success. These early supporters are recognized as the architects of the DAO's future.
+        The OG Founders badge celebrates the visionaries who laid the groundwork for
+        RootstockCollective&apos;s success. These early supporters are recognized as the architects of the
+        DAO&apos;s future.
       </p>
       <p className={DEFAULT_CLASS_FOR_ROW_CONTAINER}>
         <Row leftText="SPECIAL POWER" rightText="Voting Booster" />
@@ -94,7 +98,9 @@ export const ogFoundersEcosystemPartners: CommunityItem = {
   longDescription: ({ activation = 'JUN 2025' }) => (
     <>
       <p className="mt-4">
-        The OG Partners badge honors external collaborators who joined RootstockCollective in its early days. This badge represents their invaluable contributions to the ecosystem's growth and their role in shaping its trajectory.
+        The OG Partners badge honors external collaborators who joined RootstockCollective in its early days.
+        This badge represents their invaluable contributions to the ecosystem&apos;s growth and their role in
+        shaping its trajectory.
       </p>
       <p className={DEFAULT_CLASS_FOR_ROW_CONTAINER}>
         <Row leftText="SPECIAL POWER" rightText="Voting Booster" />
@@ -118,7 +124,9 @@ export const ogFoundersExternalContributors: CommunityItem = {
   longDescription: ({ activation = 'MAR 2025' }) => (
     <>
       <p className="mt-4">
-        Awarded to those who demonstrated exceptional contributions during the collective's formative stages. The OG Contributors badge recognizes the efforts of individuals who went above and beyond to support the DAO's vision, starting with the Shepherds.
+        Awarded to those who demonstrated exceptional contributions during the collective&apos;s formative
+        stages. The OG Contributors badge recognizes the efforts of individuals who went above and beyond to
+        support the DAO&apos;s vision, starting with the Shepherds.
       </p>
       <p className={DEFAULT_CLASS_FOR_ROW_CONTAINER}>
         <Row leftText="SPECIAL POWER" rightText="Delegation Kickstarter OR Voting Booster" />
@@ -144,7 +152,8 @@ export const vanguardCommunity = {
   ) => (
     <>
       <p className="mt-4">
-        The Vanguard badge celebrates the governance pioneers who actively participate in shaping the DAO. These members are the guiding stars, lighting the path toward shared prosperity.
+        The Vanguard badge celebrates the governance pioneers who actively participate in shaping the DAO.
+        These members are the guiding stars, lighting the path toward shared prosperity.
       </p>
       <p className={DEFAULT_CLASS_FOR_ROW_CONTAINER}>
         <Row leftText="SPECIAL POWER" rightText="Voting Booster" />
@@ -186,7 +195,9 @@ export const betaBuilders: CommunityItem = {
   longDescription: ({ activation = 'MAY 2025' }) => (
     <>
       <p className="mt-4">
-        Beta Builders are the innovation heroes, creating the dApps and protocols that define our ecosystem. This badge is a testament to their contributions to advancing Bitcoin's utility through cutting-edge development.
+        Beta Builders are the innovation heroes, creating the dApps and protocols that define our ecosystem.
+        This badge is a testament to their contributions to advancing Bitcoin&apos;s utility through
+        cutting-edge development.
       </p>
       <p className={DEFAULT_CLASS_FOR_ROW_CONTAINER}>
         <Row leftText="SPECIAL POWER" rightText="Voting Booster" />
