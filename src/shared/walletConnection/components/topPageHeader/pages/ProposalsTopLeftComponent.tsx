@@ -34,12 +34,12 @@ export const ProposalsTopLeftComponent = () => {
             Voting Power is to Stake more RIF.
           </Paragraph>
         }
-        disabled={!canUserCreateProposals}
+        disabled={canUserCreateProposals}
         trigger="hover"
         background="dark"
         size="small"
       >
-        <CreateProposalButton disabled={canUserCreateProposals} />
+        <CreateProposalButton disabled={!canUserCreateProposals} />
       </Popover>
     </div>
   )
