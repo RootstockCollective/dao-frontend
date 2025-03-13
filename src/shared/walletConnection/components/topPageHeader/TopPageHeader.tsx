@@ -6,7 +6,7 @@ import { useCollapseContext } from '@/app/user/HeroSection/HeroCollapseContext'
 import { usePathname } from 'next/navigation'
 import { AnimatePresence, motion } from 'motion/react'
 import { SelfContainedNFTBoosterCard } from '@/app/shared/components/NFTBoosterCard/SelfContainedNFTBoosterCard'
-import { collectiveRewards, home } from '@/shared/contants'
+import { collectiveRewards, home } from '@/shared/constants'
 
 const visibleRoutes = [home, collectiveRewards]
 /**
