@@ -37,7 +37,7 @@ export const earlyAdoptersCommunity = {
   title: 'Early Adopters',
   subtitle: 'DeFi',
   description:
-    'The Early Adopters badge symbolizes foresight and commitment, awarded to the first pioneers who saw the potential of RootstockCollective and staked their claim early.',
+    'The Early Adopters badge symbolizes foresight and commitment, awarded to those who staked their claim early.',
   nftAddress: nftContracts.EA,
   numberOfMembers: 0,
   cover: '/images/nfts/ea-nft-cover.png',
