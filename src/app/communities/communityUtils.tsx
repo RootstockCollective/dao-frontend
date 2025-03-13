@@ -65,7 +65,7 @@ export const ogFounders: CommunityItem = {
   title: 'OG Founders',
   subtitle: 'DeFi',
   description:
-    'The OG Founders badge celebrates the visionaries who laid the groundwork for RootstockCollective&apos;s success.',
+    "The OG Founders badge celebrates the visionaries who laid the groundwork for RootstockCollective's success.",
   nftAddress: nftContracts.OG_FOUNDERS,
   numberOfMembers: 0,
   cover: '/images/nfts/founders-cover.png',
