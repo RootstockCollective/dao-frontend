@@ -1,11 +1,18 @@
-import { GovernorAbi } from '@/lib/abis/Governor'
 import { StRIFTokenAbi } from '@/lib/abis/StRIFTokenAbi'
-import { tokenContracts, GovernorAddress } from '@/lib/contracts'
+import { tokenContracts } from '@/lib/contracts'
 import { formatUnits } from 'viem'
 import { useAccount, useReadContracts } from 'wagmi'
+import { getCachedProposalSharedDetails } from '@/app/proposals/actions/proposalsAction'
+import { useEffect, useState } from 'react'
 
 export const useVotingPower = () => {
   const { address } = useAccount()
+  const [proposalDetails, setProposalDetails] =
+    useState<Awaited<ReturnType<typeof getCachedProposalSharedDetails>>>()
+
+  useEffect(() => {
+    getCachedProposalSharedDetails().then(setProposalDetails)
+  }, [])
 
   const { data, isLoading } = useReadContracts({
     allowFailure: false,
@@ -19,19 +26,13 @@ export const useVotingPower = () => {
       {
         abi: StRIFTokenAbi,
         address: tokenContracts.stRIF,
-        functionName: 'decimals',
-      },
-      { abi: GovernorAbi, address: GovernorAddress, functionName: 'proposalThreshold' },
-      {
-        abi: StRIFTokenAbi,
-        address: tokenContracts.stRIF,
         functionName: 'getVotes',
         args: [address!],
       },
     ],
   })
 
-  if (isLoading || !data) {
+  if (isLoading || !data || !proposalDetails) {
     return {
       isLoading,
       votingPower: '-',
@@ -40,16 +41,17 @@ export const useVotingPower = () => {
     }
   }
 
-  const [balance, decimals, threshold, totalVotingPower] = data as [bigint, number, bigint, bigint]
+  const [balance, totalVotingPower] = data as [bigint, bigint]
+  const { proposalThreshold, stRIFDecimals } = proposalDetails
   return {
     isLoading: false,
-    votingPower: formatUnits(balance, decimals),
-    canCreateProposal: totalVotingPower >= threshold,
-    threshold: formatUnits(threshold, decimals),
-    totalVotingPower: formatUnits(totalVotingPower, decimals),
+    votingPower: formatUnits(balance, stRIFDecimals),
+    canCreateProposal: totalVotingPower >= BigInt(proposalThreshold),
+    threshold: formatUnits(BigInt(proposalThreshold), stRIFDecimals),
+    totalVotingPower: formatUnits(totalVotingPower, stRIFDecimals),
     delegatedVotingPower: formatUnits(
       totalVotingPower > balance ? totalVotingPower - balance : balance - totalVotingPower,
-      decimals,
+      stRIFDecimals,
     ),
   }
 }

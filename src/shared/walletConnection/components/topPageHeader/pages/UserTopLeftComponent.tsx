@@ -2,7 +2,7 @@
 import { dropdown } from '@/shared/contants'
 import { COMPLETED, Dropdown, DropdownTopic, getGetStartedData } from '@/components/dropdown'
 import { Typography } from '@/components/Typography'
-import { useCallback, useEffect, useState } from 'react'
+import { useCallback, useEffect, useState, useRef } from 'react'
 import { AppRouterInstance } from 'next/dist/shared/lib/app-router-context.shared-runtime'
 import { TokenBalanceRecord } from '@/app/user/types'
 import { Address } from 'viem'
@@ -39,6 +39,10 @@ export const UserTopLeftComponent = () => {
   const router = useRouter()
   const [isGetStatedSkipped, setIsGetStartedSkipped] = useState<boolean>(true)
   const cookies = useCookiesNext()
+  // Flag to let us know when it's the first fetch
+  // This is because if the component unmounts and mounts, then the getStartedCheckRunner will not allow
+  // the data to be fetched; causing the 5 steps to get started to not render @TODO refine
+  const isFirstFetch = useRef(true)
 
   useEffect(() => {
     setIsGetStartedSkipped(Boolean(cookies.getCookie(getStartedSkipped)))
@@ -63,7 +67,13 @@ export const UserTopLeftComponent = () => {
     // TODO: check how often the dependencies update to minimize re-render
     // TODO: find a better way to cache and refresh the getStartedSteps
     if (address && !isBalancesLoading) {
-      getStartedCheckRunner(() => setGetStartedDropdownData(router, balances, address))
+      // If this is the first time fetching, run it, else go through the getStartedCheckRunner throttle @TODO refine
+      if (isFirstFetch.current) {
+        isFirstFetch.current = true
+        setGetStartedDropdownData(router, balances, address)
+      } else {
+        getStartedCheckRunner(() => setGetStartedDropdownData(router, balances, address))
+      }
     }
   }, [router, balances, isBalancesLoading, address, setGetStartedDropdownData])
   if (!address) {
