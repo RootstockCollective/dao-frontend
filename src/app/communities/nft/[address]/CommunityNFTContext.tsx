@@ -175,6 +175,8 @@ export function CommunityNFTProvider({ children, nftAddress }: CommunityNFTProvi
     isMember,
     tokenId,
     membersCount,
+    isMintable: nftInfo?.isMintable,
+
     nftName,
     nftSymbol,
     nftMeta,

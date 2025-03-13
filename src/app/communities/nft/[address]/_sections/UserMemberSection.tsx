@@ -29,7 +29,9 @@ export const UserMemberSection = () => {
 
       <SelfContainedNFTBoosterCard forceRender={showNFTBoost && isBoosted} />
 
-      <AddToWalletButton />
+      <div>
+        <AddToWalletButton />
+      </div>
 
       <Span className="inline-block text-[14px] tracking-wide font-light">{description}</Span>
     </div>
