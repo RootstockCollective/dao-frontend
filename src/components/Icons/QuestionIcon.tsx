@@ -3,6 +3,7 @@ import { DEFAULT_ICON_COLOR } from './constants'
 
 export function QuestionIcon({
   'aria-label': ariaLabel = 'Question Icon',
+  'data-testid': dataTestId = 'QuestionIcon',
   size = 20,
   color = DEFAULT_ICON_COLOR,
   fill = 'none',
@@ -18,6 +19,7 @@ export function QuestionIcon({
       fill={fill}
       stroke={stroke}
       aria-label={ariaLabel}
+      data-testid={dataTestId}
       {...props}
     >
       <g clip-path="url(#clip0_187_21511)">
