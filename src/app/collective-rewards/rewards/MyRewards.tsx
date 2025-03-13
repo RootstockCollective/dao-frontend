@@ -25,6 +25,7 @@ import { CycleContextProvider } from '@/app/collective-rewards/metrics'
 import { useAccount } from 'wagmi'
 import { Button } from '@/components/Button'
 import Image from 'next/image'
+import { LoadingSpinner } from '@/components/LoadingSpinner'
 
 const SubText = () => (
   <>
@@ -63,12 +64,17 @@ const RewardsContent: FC<RewardDetails> = data => {
   const { builder } = data
 
   // We don't need to show the loading state for the backer rewards since the parent already has a loading state
-  const { data: isBacker, error: backerError } = useIsBacker(builder)
-  const { data: gauge, error: gaugeError } = useGetBuilderToGauge(builder)
+  const { data: isBacker, isLoading: isBackerLoading, error: backerError } = useIsBacker(builder)
+  const { data: gauge, isLoading: gaugeLoading, error: gaugeError } = useGetBuilderToGauge(builder)
 
   const error = gaugeError ?? backerError
+  const isLoading = isBackerLoading || gaugeLoading
 
   useHandleErrors({ error, title: 'Error loading user data' })
+
+  if (isLoading) {
+    return <LoadingSpinner />
+  }
 
   return (
     <>
