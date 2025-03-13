@@ -7,7 +7,7 @@ import { fetchCrTheGraphEndpoint } from '@/lib/endpoints'
 
 type Response = {
   data: {
-    backerStakingHistory: BackerStakingHistory
+    backerStakingHistory?: BackerStakingHistory
   }
 }
 
@@ -31,9 +31,7 @@ const query = `
 
 export async function fetchBackerStakingHistory(backer: Address) {
   const {
-    data: {
-      data: { backerStakingHistory },
-    },
+    data: { data },
   } = await axios.post<Response>(fetchCrTheGraphEndpoint, {
     query,
     variables: {
@@ -41,5 +39,5 @@ export async function fetchBackerStakingHistory(backer: Address) {
     },
   })
 
-  return backerStakingHistory
+  return data.backerStakingHistory
 }
