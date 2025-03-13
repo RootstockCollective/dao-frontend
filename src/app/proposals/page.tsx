@@ -9,7 +9,7 @@ import { useRouter } from 'next/navigation'
 import { useVotingPower } from './hooks/useVotingPower'
 import { useMemo, useState } from 'react'
 import { formatNumberWithCommas } from '@/lib/utils'
-import Image from 'next/image'
+import { QuestionIcon } from '@/components/Icons'
 import Big, { round } from '@/lib/big'
 
 export default function Proposals() {
@@ -105,14 +105,7 @@ const VotingPowerPopover = () => (
   <Popover content={<VotingPowerPopoverContent />}>
     <button className="flex flex-row">
       <Paragraph className="text[16px] font-[700]">My Voting Power</Paragraph>
-      <Image
-        src="/images/question.svg"
-        className="ml-1"
-        width={20}
-        height={20}
-        alt="QuestionIcon"
-        data-testid="QuestionIcon"
-      />
+      <QuestionIcon className="ml-1" />
     </button>
   </Popover>
 )
@@ -130,14 +123,7 @@ const DelegatedVotingPowerPopover = () => (
   <Popover content={<DelegatedVotingPowerPopoverContent />}>
     <button className="flex flex-row">
       <Paragraph className="text[16px] font-[700]">Delegated Voting Power</Paragraph>
-      <Image
-        src="/images/question.svg"
-        className="ml-1"
-        width={20}
-        height={20}
-        alt="QuestionIcon"
-        data-testid="QuestionIcon"
-      />
+      <QuestionIcon className="ml-1" />
     </button>
   </Popover>
 )
