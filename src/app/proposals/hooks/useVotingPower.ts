@@ -3,18 +3,16 @@ import { tokenContracts } from '@/lib/contracts'
 import { formatUnits } from 'viem'
 import { useAccount, useReadContracts } from 'wagmi'
 import { getCachedProposalSharedDetails } from '@/app/proposals/actions/proposalsAction'
-import { useEffect, useState } from 'react'
+import { useQuery } from '@tanstack/react-query'
 
 export const useVotingPower = () => {
   const { address } = useAccount()
-  const [proposalDetails, setProposalDetails] =
-    useState<Awaited<ReturnType<typeof getCachedProposalSharedDetails>>>()
+  const { data: proposalDetails, isLoading: isProposalsDetailsLoading } = useQuery({
+    queryFn: getCachedProposalSharedDetails,
+    queryKey: ['cachedProposalsSharedDetails'],
+  })
 
-  useEffect(() => {
-    getCachedProposalSharedDetails().then(setProposalDetails)
-  }, [])
-
-  const { data, isLoading } = useReadContracts({
+  const { data, isLoading: isLoadingVotes } = useReadContracts({
     allowFailure: false,
     contracts: [
       {
@@ -31,7 +29,7 @@ export const useVotingPower = () => {
       },
     ],
   })
-
+  const isLoading = isProposalsDetailsLoading || isLoadingVotes
   if (isLoading || !data || !proposalDetails) {
     return {
       isLoading,
