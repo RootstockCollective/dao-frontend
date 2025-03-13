@@ -186,11 +186,6 @@ const LatestProposalsTable = ({ proposals, onEmitActiveProposal }: LatestProposa
         return dominantA.priority - dominantB.priority
       },
     }),
-    accessor('category', {
-      id: 'category',
-      header: 'Category',
-      cell: info => <CategoryColumn proposalCategory={info.row.original.category} />,
-    }),
     accessor('proposalState', {
       id: 'status',
       header: 'Status',

@@ -308,12 +308,12 @@ const PageWithProposal = (proposal: ParsedProposal) => {
         </div>
         <div>
           {!isConnected && (
-            <ConnectWorkflow
-              ConnectComponent={({ onClick }) => (
-                <Button variant="secondary" onClick={onClick} data-testid="VoteOnChain">
-                  Vote on chain
-                </Button>
-              )}
+            <DisconnectedAction
+              proposalState={proposalState}
+              proposalNeedsQueuing={proposalNeedsQueuing}
+              proposalStateHuman={proposalStateHuman}
+              isExecuting={isExecuting}
+              isPendingExecution={isPendingExecution}
             />
           )}
           {isConnected && proposalState === ProposalState.Active && (
@@ -481,6 +481,63 @@ const PageWithProposal = (proposal: ParsedProposal) => {
       </div>
     </div>
   )
+}
+interface DisconnectedActionProps {
+  proposalState: number | undefined
+  proposalNeedsQueuing: boolean | undefined
+  proposalStateHuman: string
+  isExecuting: boolean
+  isPendingExecution: boolean
+}
+const DisconnectedAction = ({
+  proposalState,
+  proposalNeedsQueuing,
+  proposalStateHuman,
+  isExecuting,
+  isPendingExecution,
+}: DisconnectedActionProps) => {
+  if (proposalState === ProposalState.Active) {
+    return (
+      <ConnectWorkflow
+        ConnectComponent={({ onClick }) => (
+          <Button variant="secondary" onClick={onClick} data-testid="VoteOnChain">
+            Vote on chain
+          </Button>
+        )}
+      />
+    )
+  }
+  if (proposalNeedsQueuing && proposalStateHuman === 'Succeeded') {
+    return (
+      <ConnectWorkflow
+        ConnectComponent={({ onClick }) => (
+          <Button variant="secondary" onClick={onClick} className="mt-2" data-testid="PutOnQueue">
+            Put on Queue
+          </Button>
+        )}
+      />
+    )
+  }
+  if (proposalState === ProposalState.Queued) {
+    return (
+      <ConnectWorkflow
+        ConnectComponent={({ onClick }) => (
+          <Button variant="secondary" onClick={onClick} className="mt-2 ml-auto" data-testid="Execute">
+            Execute
+          </Button>
+        )}
+      />
+    )
+  }
+  if (isExecuting || isPendingExecution) {
+    return (
+      <Span variant="light" className="inline-block mt-2">
+        Pending transaction confirmation <br />
+        to complete execution.
+      </Span>
+    )
+  }
+  return null
 }
 
 interface CalldataRowsData {
