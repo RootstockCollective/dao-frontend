@@ -1,17 +1,21 @@
 import { communitiesMapByContract } from '@/app/communities/communityUtils'
 import { useNFTBoosterContext } from '@/app/providers/NFT/BoosterContext'
 import { NFTBoosterCard } from '@/app/shared/components'
+import { usePathname } from 'next/navigation'
 import { FC } from 'react'
+
+const visibleRoutes = ['/collective-rewards', '/']
 
 type SelfContainedNFTBoosterCardPros = {
   forceRender?: boolean
 }
 export const SelfContainedNFTBoosterCard: FC<SelfContainedNFTBoosterCardPros> = ({ forceRender = false }) => {
   const { isBoosted, userHasRewards, boostData } = useNFTBoosterContext()
+  const pathname = usePathname()
 
   const { title, leftImageSrc } = communitiesMapByContract[boostData?.nftContractAddress ?? ''] ?? {}
 
-  if (!title || (!isBoosted && !forceRender)) {
+  if (!title || (!isBoosted && !forceRender) || !visibleRoutes.includes(pathname)) {
     return null
   }
 

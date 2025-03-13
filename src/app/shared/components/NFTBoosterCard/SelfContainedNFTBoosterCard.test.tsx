@@ -1,6 +1,7 @@
 import { BoostData, useNFTBoosterContext } from '@/app/providers/NFT/BoosterContext'
 import { cleanup, render } from '@testing-library/react'
-import { afterEach, describe, expect, test, vi } from 'vitest'
+import { afterEach, describe, expect, test, vi, beforeEach } from 'vitest'
+import { usePathname } from 'next/navigation'
 import { SelfContainedNFTBoosterCard } from './SelfContainedNFTBoosterCard'
 
 vi.mock('@/app/providers/NFT/BoosterContext', () => ({
@@ -9,8 +10,12 @@ vi.mock('@/app/providers/NFT/BoosterContext', () => ({
 
 vi.mock('@/app/communities/communityUtils', () => ({
   communitiesMapByContract: {
-    '0xabc': { title: 'Test NFT' },
+    '0xabc': { title: 'Test NFT', leftImageSrc: '/' },
   },
+}))
+
+vi.mock('next/navigation', () => ({
+  usePathname: vi.fn(),
 }))
 
 describe('SelfContainedNFTBoosterCard', () => {
@@ -23,6 +28,10 @@ describe('SelfContainedNFTBoosterCard', () => {
     nftContractAddress: nftAddress,
     boostPercentage,
   } as unknown as BoostData
+
+  beforeEach(() => {
+    vi.mocked(usePathname).mockReturnValue('/')
+  })
 
   afterEach(() => {
     cleanup()
