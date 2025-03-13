@@ -19,7 +19,7 @@ export default function Communities() {
           alt="Communities"
           width={0}
           height={0}
-          className="w-full mb-[48px] mt-[32px]"
+          className="w-full mb-[48px]"
         />
       </div>
       {Object.entries(communitiesByCategory).map(([category, communities]) => (
