@@ -44,6 +44,7 @@ export const useGetBackerRBI = (backer: Address, { rbtc, rif }: Record<string, T
     isLoading: cycleLoading,
     error: cycleError,
   } = useCycleContext()
+  const { prices } = usePricesContext()
 
   const rbi = useMemo(() => {
     if (!stakingHistory) return Big(0)
@@ -65,10 +66,14 @@ export const useGetBackerRBI = (backer: Address, { rbtc, rif }: Record<string, T
       accumulatedTime = Big(accumulatedTime_).add(lastStakedSeconds)
     }
 
-    return accumulatedTime.mul(
-      rbtcRewards.add(rifRewards).div(accumulatedAllocationsTime.div(WeiPerEther.toString())),
-    )
-  }, [stakingHistory, timestamp, rbtcRewards, rifRewards])
+    const rifPrice = prices[rif.symbol]?.price ?? 0
+
+    return accumulatedTime
+      .mul(
+        rbtcRewards.add(rifRewards).div(accumulatedAllocationsTime.div(WeiPerEther.toString()).mul(rifPrice)),
+      )
+      .mul(100)
+  }, [stakingHistory, prices, rif.symbol, rbtcRewards, rifRewards, timestamp])
 
   const isLoading = stakingHistoryLoading || rbtcRewardsLoading || rifRewardsLoading || cycleLoading
   const error = stakingHistoryError ?? rbtcRewardsError ?? rifRewardsError ?? cycleError
