@@ -8,12 +8,12 @@ import { DiscordIcon, LinkIcon, TwitterXIcon } from '@/components/Icons'
 import { GlowingLabel } from '@/components/Label/GlowingLabel'
 import { Paragraph } from '@/components/Typography'
 import { DateTime } from 'luxon'
-import { useParams } from 'next/navigation'
-import { Address } from 'viem'
 import { NftHoldersSection } from './_sections/NftHoldersSection'
 import { MembershipNFTSection } from './_sections/MembershipNFTSection'
 import { NFTMiscData } from '@/app/communities/nft/[address]/_components/NFTMiscData'
 import { CommunityNFTProvider } from '@/app/communities/nft/[address]/CommunityNFTContext'
+import { useParams } from 'next/navigation'
+import { Address } from 'viem'
 
 /**
  * Community Page

@@ -1,5 +1,5 @@
 'use client'
-import { dropdown } from '@/shared/contants'
+import { dropdown } from '@/shared/constants'
 import { COMPLETED, Dropdown, DropdownTopic, getGetStartedData } from '@/components/dropdown'
 import { Typography } from '@/components/Typography'
 import { useCallback, useEffect, useState, useRef } from 'react'
