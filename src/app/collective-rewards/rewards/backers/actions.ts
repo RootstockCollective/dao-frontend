@@ -3,7 +3,6 @@
 import axios from 'axios'
 import { Address } from 'viem'
 import { BackerStakingHistory } from '@/app/collective-rewards/rewards'
-import { fetchCrTheGraphEndpoint } from '@/lib/endpoints'
 
 type Response = {
   data: {
@@ -29,6 +28,7 @@ const query = `
     }
 `
 
+const fetchCrTheGraphEndpoint = `${process.env.THE_GRAPH_URL}/${process.env.THE_GRAPH_API_KEY}/${process.env.THE_GRAPH_ID}`
 export async function fetchBackerStakingHistory(backer: Address) {
   const {
     data: { data },
