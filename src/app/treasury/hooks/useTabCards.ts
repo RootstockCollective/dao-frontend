@@ -56,7 +56,7 @@ export function useTabCards() {
         },
         {
           title: 'Rewards RBTC',
-          bucket: buckets.GROWTH?.RBTC,
+          bucket: buckets.GROWTH_REWARDS?.RBTC,
         },
       ],
       General: [

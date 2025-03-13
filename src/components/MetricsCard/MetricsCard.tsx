@@ -86,7 +86,7 @@ export const MetricsCard: FC<MetricsCardProps> = ({
       {typeof fiatAmount === 'string' ? (
         <Typography
           tagVariant="label"
-          className="text-[14px] font-normal font-rootstock-sans text-white leading-none"
+          className="text-[14px] font-normal font-rootstock-sans text-disabled-primary leading-none"
           data-testid="FiatAmount"
         >
           {fiatAmount}
