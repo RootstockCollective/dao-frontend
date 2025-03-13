@@ -1,7 +1,6 @@
 import { communitiesMapByContract } from '@/app/communities/communityUtils'
 import { useNFTBoosterContext } from '@/app/providers/NFT/BoosterContext'
 import { NFTBoosterCard } from '@/app/shared/components'
-import { usePathname } from 'next/navigation'
 import { FC } from 'react'
 
 type SelfContainedNFTBoosterCardPros = {
