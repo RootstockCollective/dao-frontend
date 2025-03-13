@@ -13,7 +13,7 @@ import { useNFTBoosterContext } from '@/app/providers/NFT/BoosterContext'
 export const UserMemberSection = () => {
   const { tokenId, title, description, nftAddress: address } = useCommunityNFT()
 
-  const { isCampaignActive } = useNFTBoosterContext()
+  const { isBoosted, isCampaignActive } = useNFTBoosterContext()
   const showNFTBoost = isCampaignActive(address)
 
   return (
@@ -27,7 +27,7 @@ export const UserMemberSection = () => {
         {address && <Span className="text-primary">{truncateMiddle(address, 4, 3)}</Span>}
       </div>
 
-      {showNFTBoost && <SelfContainedNFTBoosterCard />}
+      <SelfContainedNFTBoosterCard forceRender={showNFTBoost && isBoosted} />
 
       <AddToWalletButton />
 

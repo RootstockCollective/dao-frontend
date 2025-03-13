@@ -21,7 +21,6 @@ export function TopPageHeader() {
   const { isCollapsed } = useCollapseContext()
   const pathname = usePathname()
   const isNotMyCollective = pathname !== home
-  const showBoosterCard = visibleRoutes.includes(pathname)
 
   return (
     <div className="grid grid-cols-[1fr_auto] gap-x-3 mb-4">
@@ -29,8 +28,7 @@ export function TopPageHeader() {
         <TopPageHeaderLeftSlotStrategy />
       </div>
       <div className="flex justify-end flex-row gap-5 items-center">
-        {/* TODO: we may need to change it if we decide to show this component on certain pages only */}
-        <SelfContainedNFTBoosterCard forceRender={showBoosterCard} />
+        <SelfContainedNFTBoosterCard forceRender={visibleRoutes.includes(pathname)} />
         <AnimatePresence mode="sync">
           {(isCollapsed || isNotMyCollective) && (
             <motion.div
