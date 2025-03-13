@@ -37,7 +37,7 @@ export const earlyAdoptersCommunity = {
   title: 'Early Adopters',
   subtitle: 'DeFi',
   description:
-    'The Early Adopters badge symbolizes foresight and commitment, awarded to the first pioneers who saw the potential of RootstockCollective and staked their claim early.',
+    'The Early Adopters badge symbolizes foresight and commitment, awarded to those who staked their claim early.',
   nftAddress: nftContracts.EA,
   numberOfMembers: 0,
   cover: '/images/nfts/ea-nft-cover.png',
@@ -65,7 +65,7 @@ export const ogFounders: CommunityItem = {
   title: 'OG Founders',
   subtitle: 'DeFi',
   description:
-    'The OG Founders badge celebrates the visionaries who laid the groundwork for RootstockCollective&apos;s success.',
+    "The OG Founders badge celebrates the visionaries who laid the groundwork for RootstockCollective's success.",
   nftAddress: nftContracts.OG_FOUNDERS,
   numberOfMembers: 0,
   cover: '/images/nfts/founders-cover.png',
