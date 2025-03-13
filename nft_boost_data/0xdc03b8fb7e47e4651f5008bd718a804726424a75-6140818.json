@@ -81,6 +81,12 @@
       "estimatedRIFRewards": "0",
       "boostedRBTCRewards": "0",
       "boostedRIFRewards": "0"
+    },
+    "0xcb8f8130e289946aec9a17b29819716b1e9e4998": {
+      "estimatedRBTCRewards": "33330",
+      "estimatedRIFRewards": "444440",
+      "boostedRBTCRewards": "52323430",
+      "boostedRIFRewards": "242342350"
     }
   }
 }
