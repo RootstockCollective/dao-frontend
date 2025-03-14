@@ -23,7 +23,7 @@ export const TokenValue = ({ symbol, amount }: TokenValueProps) => {
       </Paragraph>
       {prices[symbol] && (
         <Paragraph size="small" className="text-zinc-500" data-testid={`${symbol}_USD`}>
-          = USD {formatCurrency(value) ?? 0}
+          = USD {formatCurrency(value ?? 0)}
         </Paragraph>
       )}
     </>
