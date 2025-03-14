@@ -26,7 +26,7 @@ export function TabsSection() {
           const isRif = title.toLowerCase().includes('rif')
           return (
             <MetricsCard
-              className="max-w-[214px]"
+              className="max-w-[214px] min-w-[120px]"
               title={<Typography className="text-sm font-bold">{title}</Typography>}
               amount={
                 isRif
