@@ -199,7 +199,7 @@ const getStartedData = (router: AppRouterInstance): DropdownItem[] => [
   {
     id: stRIF,
     Icon: props => <NumberIcon number="3" {...props} />,
-    title: 'Stake RIF',
+    title: 'STAKE RIF',
     text: 'Learn more about staking',
     onClick: () => onExternal(currentLinks.stakeRif),
   },
