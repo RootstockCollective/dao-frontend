@@ -21,12 +21,14 @@ ENV NEXT_TELEMETRY_DISABLED 1
 # Set the build argument 
 ARG PROFILE
 ARG NEXT_PUBLIC_BUILD_ID
+ARG THE_GRAPH_API_KEY
 
 # Rename environment files based on PROFILE 
 RUN cp .env.${PROFILE} .env.local
 
 # Export the NEXT_PUBLIC_BUILD_ID as an environment variable
 ENV NEXT_PUBLIC_BUILD_ID=${NEXT_PUBLIC_BUILD_ID}
+ENV THE_GRAPH_API_KEY=${THE_GRAPH_API_KEY}
 
 # Build the Next.js application
 RUN npm run build
@@ -40,10 +42,14 @@ WORKDIR /app
 COPY --from=builder /app/.next ./.next
 COPY --from=builder /app/public ./public
 COPY --from=builder /app/package*.json ./
+COPY --from=builder /app/.env.local ./.env.local
+
+ARG THE_GRAPH_API_KEY
+
+ENV THE_GRAPH_API_KEY=${THE_GRAPH_API_KEY}
 
 # Install production dependencies
 RUN npm install --production
-
 # Expose the port that Next.js will run on
 EXPOSE 3000
 
