@@ -11,9 +11,16 @@ import { useMemo, useState } from 'react'
 import { formatNumberWithCommas } from '@/lib/utils'
 import { QuestionIcon } from '@/components/Icons'
 import Big, { round } from '@/lib/big'
+import { useGetExternalDelegatedAmount } from '@/shared/hooks/useGetExternalDelegatedAmount'
+import { useAccount } from 'wagmi'
+import { formatUnits } from 'ethers'
 
 export default function Proposals() {
-  const { totalVotingPower = '', delegatedVotingPower } = useVotingPower()
+  const { address, isConnected } = useAccount()
+  const { amount: amountDelegatedToMe, isLoading: isExternalDelegatedAmountLoading } =
+    useGetExternalDelegatedAmount(address)
+
+  const { totalVotingPower = '' } = useVotingPower()
   const { latestProposals } = useFetchAllProposals()
   const [activeProposals, setActiveProposals] = useState<number>(0)
 
@@ -44,8 +51,8 @@ export default function Proposals() {
                 fontFamily="kk-topo"
                 data-testid="VotingPower"
               >
-                {delegatedVotingPower
-                  ? formatNumberWithCommas(round(delegatedVotingPower, undefined, Big.roundDown))
+                {!isExternalDelegatedAmountLoading && isConnected
+                  ? formatNumberWithCommas(round(formatUnits(amountDelegatedToMe), undefined, Big.roundDown))
                   : '-'}
               </Paragraph>
             </div>
