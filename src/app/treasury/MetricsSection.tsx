@@ -29,7 +29,7 @@ export const MetricsSection = () => {
           borderless
         />
         <MetricsCard
-          className="max-w-[444px] min-w-[120px]"
+          className="max-w-[444px] min-w-[120px] overflow-visible"
           title={
             <div className="flex flex-row gap-2">
               <Typography tagVariant="span" className="text-sm font-bold">
