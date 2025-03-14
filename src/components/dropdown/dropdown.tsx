@@ -92,28 +92,31 @@ export const Dropdown = ({ className, ...props }: DropdownProps) => {
             <Typography className="px-5 max-w-[330px] text-[#666057] text-[15px] leading-snug">
               {props.description}
             </Typography>
-            {props.data.map(({ topic, items }) => (
-              <div key={topic ?? 'Uncategorized'} className="py-3 flex flex-col">
-                {topic ? (
-                  <Typography className="ml-5 text-[12px] leading-none text-[#171412] font-bold font-rootstock-sans">
-                    {topic}
-                  </Typography>
-                ) : null}
-                {items.map(({ Icon, text, title, id, onClick, TitleIcon }) => (
-                  <DropdownItemComponent
-                    key={id}
-                    id={id}
-                    onClick={onClick}
-                    title={title}
-                    text={text}
-                    Icon={Icon}
-                    TitleIcon={TitleIcon}
-                  />
-                ))}
-              </div>
-            ))}
+            {props.data.map(
+              ({ topic, items }) =>
+                items.length > 0 && (
+                  <div key={topic ?? 'Uncategorized'} className="py-3 flex flex-col">
+                    {topic ? (
+                      <Typography className="ml-5 text-[12px] leading-none text-[#171412] font-bold font-rootstock-sans">
+                        {topic}
+                      </Typography>
+                    ) : null}
+                    {items.map(({ Icon, text, title, id, onClick, TitleIcon }) => (
+                      <DropdownItemComponent
+                        key={id}
+                        id={id}
+                        onClick={onClick}
+                        title={title}
+                        text={text}
+                        Icon={Icon}
+                        TitleIcon={TitleIcon}
+                      />
+                    ))}
+                  </div>
+                ),
+            )}
 
-            {props.footer ? props.footer : null}
+            {props.footer}
           </motion.div>
         )}
       </AnimatePresence>

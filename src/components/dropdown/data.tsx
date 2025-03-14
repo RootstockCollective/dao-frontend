@@ -106,7 +106,7 @@ const checkVoted = async (items: DropdownItem[], address: Address): Promise<Drop
       return items.filter(item => item.id === VOTE)[0]
     }
   } catch (err) {
-    console.log('ERRORED in checkVoted', err)
+    console.log('ERROR in checkVoted', err)
   }
 }
 
@@ -152,15 +152,20 @@ const checkEvents = async (
     const checkedAllocationsItem = await checkAllocations(copiedItems, address)
     const completedObject: DropdownTopic = { topic: COMPLETED, items: [] }
 
-    if (checkedVotedItem) {
+    if (checkedVotedItem || checkedAllocationsItem) {
       completedObject.items.push(...copiedItems.splice(0, 3))
-      completedObject.items.push(checkedVotedItem)
+
+      if (checkedVotedItem) {
+        completedObject.items.push(checkedVotedItem)
+        copiedItems.splice(copiedItems.indexOf(checkedVotedItem), 1)
+      }
+
+      if (checkedAllocationsItem) {
+        completedObject.items.push(checkedAllocationsItem)
+        copiedItems.splice(copiedItems.indexOf(checkedAllocationsItem), 1)
+      }
     } else {
       completedObject.items.push(...checkBalancesSteps(copiedItems, balances))
-    }
-
-    if (checkedAllocationsItem) {
-      completedObject.items.push(checkedAllocationsItem)
     }
 
     return [{ items: copiedItems }, completedObject]
@@ -194,7 +199,7 @@ const getStartedData = (router: AppRouterInstance): DropdownItem[] => [
   {
     id: stRIF,
     Icon: props => <NumberIcon number="3" {...props} />,
-    title: 'Stake RIF',
+    title: 'STAKE RIF',
     text: 'Learn more about staking',
     onClick: () => onExternal(currentLinks.stakeRif),
   },
