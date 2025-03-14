@@ -48,7 +48,7 @@ export const useVotingPower = () => {
     threshold: formatUnits(BigInt(proposalThreshold), stRIFDecimals),
     totalVotingPower: formatUnits(totalVotingPower, stRIFDecimals),
     delegatedVotingPower: formatUnits(
-      totalVotingPower > balance ? totalVotingPower - balance : balance - totalVotingPower,
+      totalVotingPower > balance ? totalVotingPower - balance : 0n,
       stRIFDecimals,
     ),
   }
