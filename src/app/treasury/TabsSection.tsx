@@ -2,7 +2,7 @@ import { useState } from 'react'
 import { UnderlineTabs } from '@/components/Tabs'
 import { MetricsCard } from '@/components/MetricsCard'
 import { Typography } from '@/components/Typography'
-import { formatNumberWithCommas } from '@/lib/utils'
+import { formatCurrency, formatNumberWithCommas } from '@/lib/utils'
 import Big from '@/lib/big'
 import { useTabCards } from './hooks/useTabCards'
 
@@ -33,7 +33,7 @@ export function TabsSection() {
                   ? `${bucket?.amount ? formatNumberWithCommas(Big(bucket.amount).ceil()) : 0} RIF`
                   : `${bucket?.amount ? formatNumberWithCommas(Big(bucket.amount).toFixedNoTrailing(8)) : 0} RBTC`
               }
-              fiatAmount={`= USD $${bucket?.fiatAmount ? Big(bucket.fiatAmount).toFixed(2) : 0}`}
+              fiatAmount={`= USD ${formatCurrency(bucket?.fiatAmount || 0)}`}
               contractAddress={contract}
               key={`${activeTab}-${title}`}
               borderless
