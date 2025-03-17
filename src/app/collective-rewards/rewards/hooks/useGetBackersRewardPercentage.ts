@@ -5,15 +5,13 @@ import { Address } from 'viem'
 import { useReadContracts } from 'wagmi'
 import { BackerRewardPercentage } from '../types'
 import { getBackerRewardPercentage } from '../utils'
-import { useMigrationContext } from '@/shared/context/MigrationContext'
+import { BuilderRegistryAddress } from '@/lib/contracts'
 
 export const useGetBackersRewardPercentage = (builders: Address[], timestampInSeconds?: number) => {
-  const { builderRegistryAddress } = useMigrationContext()
-
   const contractCalls = builders?.map(
     builder =>
       ({
-        address: builderRegistryAddress,
+        address: BuilderRegistryAddress,
         abi: BuilderRegistryAbi,
         functionName: 'backerRewardPercentage',
         args: [builder],

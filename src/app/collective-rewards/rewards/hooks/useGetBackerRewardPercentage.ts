@@ -3,14 +3,12 @@ import { useMemo } from 'react'
 import { Address } from 'viem'
 import { useReadContract } from 'wagmi'
 import { getBackerRewardPercentage } from '../utils'
-import { useMigrationContext } from '@/shared/context/MigrationContext'
 import { BuilderRegistryAbi } from '@/lib/abis/v2/BuilderRegistryAbi'
+import { BuilderRegistryAddress } from '@/lib/contracts'
 
 export const useGetBackerRewardPercentage = (builder: Address, timestampInSeconds?: number) => {
-  const { builderRegistryAddress } = useMigrationContext()
-
   const { data, isLoading, error } = useReadContract({
-    address: builderRegistryAddress,
+    address: BuilderRegistryAddress,
     abi: BuilderRegistryAbi,
     functionName: 'backerRewardPercentage',
     args: [builder],
