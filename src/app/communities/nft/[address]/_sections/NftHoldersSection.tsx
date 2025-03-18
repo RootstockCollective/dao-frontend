@@ -29,7 +29,7 @@ interface HoldersSectionProps {
   address: Address
 }
 
-const CardHolderParagraph = ({ address }: { address: string }) => (
+const CardHolderParagraph = ({ address, image }: { address: string; image: string }) => (
   <a
     href={`${EXPLORER_URL}/address/${address}`}
     target="_blank"
@@ -38,7 +38,7 @@ const CardHolderParagraph = ({ address }: { address: string }) => (
     <Paragraph fontFamily="kk-topo" size="large" className="pt-[6px]">
       HOLDER
     </Paragraph>
-    <img src="/images/treasury/holders.png" width={24} height={24} alt="Holders Image" />
+    <img src={image} width={24} height={24} alt="Holders Image" />
     <Span className="underline text-left overflow-hidden whitespace-nowrap text-[14px]">
       {truncateMiddle(address, 5, 5)}
     </Span>
@@ -60,7 +60,7 @@ const Card = ({ image, id, holderAddress }: CardProps) => {
         <Paragraph fontFamily="kk-topo" size="large">
           ID# {id}
         </Paragraph>
-        <CardHolderParagraph address={holderAddress} />
+        <CardHolderParagraph address={holderAddress} image={image} />
       </div>
     </div>
   )
