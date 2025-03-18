@@ -5,7 +5,7 @@ import { Modify } from '@/shared/utility'
 import { useMemo } from 'react'
 import { ContractFunctionReturnType, ReadContractErrorType } from 'viem'
 import { UseReadContractReturnType, useReadContracts } from 'wagmi'
-import { useMigrationContext } from '@/shared/context/MigrationContext'
+import { BuilderRegistryAddress } from '@/lib/contracts'
 
 type RawBackerRewardPercentage = ContractFunctionReturnType<
   typeof BuilderRegistryAbi,
@@ -25,17 +25,15 @@ type UseGetBackerRewardsReturnType = Pick<
 type UseGetBackerRewards = (builders: Builder[]) => UseGetBackerRewardsReturnType
 
 export const useGetBackerRewards: UseGetBackerRewards = builders => {
-  const { builderRegistryAddress } = useMigrationContext()
-
   const backerRewardCalls = builders.map(({ address }) => ({
-    address: builderRegistryAddress,
+    address: BuilderRegistryAddress,
     abi: BuilderRegistryAbi,
     functionName: 'backerRewardPercentage',
     args: [address],
   }))
 
   const activePercentageCalls = builders.map(({ address }) => ({
-    address: builderRegistryAddress,
+    address: BuilderRegistryAddress,
     abi: BuilderRegistryAbi,
     functionName: 'getRewardPercentageToApply',
     args: [address],

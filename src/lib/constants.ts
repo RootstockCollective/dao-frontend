@@ -28,7 +28,6 @@ export const CHAIN_ID = process.env.NEXT_PUBLIC_CHAIN_ID as string
 export const BACKERS_MANAGER_ADDRESS = process.env.NEXT_PUBLIC_BACKERS_MANAGER_ADDRESS as Address
 export const BUILDER_REGISTRY_ADDRESS = process.env.NEXT_PUBLIC_BUILDER_REGISTRY_ADDRESS as Address
 export const REWARD_DISTRIBUTOR_ADDRESS = process.env.NEXT_PUBLIC_REWARD_DISTRIBUTOR_ADDRESS as Address
-export const CR_MIGRATING = process.env.NEXT_PUBLIC_CR_MIGRATING === 'true'
 export const NFT_BOOSTER_DATA_URL = (process.env.NEXT_PUBLIC_NFT_BOOSTER_DATA_URL as string) ?? ''
 
 export const ADDRESS_ANIMATION_DURATION = 800
