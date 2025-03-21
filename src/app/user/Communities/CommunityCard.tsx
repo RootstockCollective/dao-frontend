@@ -3,7 +3,6 @@ import { BoltSvg } from '@/components/BoltSvg'
 import { GlowingLabel } from '@/components/Label/GlowingLabel'
 import { Paragraph } from '@/components/Typography/Paragraph'
 import { cn } from '@/lib/utils'
-import Image from 'next/image'
 import Link from 'next/link'
 import { FC } from 'react'
 
@@ -26,7 +25,7 @@ export const CommunityCard: FC<CommunityCardProps> = ({
     >
       <Link href={link}>
         {/* image */}
-        <Image
+        <img
           src={img}
           alt={alt ?? 'An image that contains a community logo'}
           className="mb-[20px]"

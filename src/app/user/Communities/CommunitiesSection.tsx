@@ -8,6 +8,7 @@ import { useEffect, useRef, useState } from 'react'
 import { useNFTBoosterContext } from '@/app/providers/NFT/BoosterContext'
 import { Address } from 'viem'
 import { CardPlaceholder } from '@/components/loading-components'
+import { applyPinataImageOptions } from '@/lib/ipfs'
 
 const communities: string[] = Object.keys(communitiesMapByContract)
 
@@ -106,7 +107,9 @@ const NftInfo = ({
   if (data.nftName && data.isMember) {
     return (
       <CommunityCard
-        img={data.nftMeta?.image || ''}
+        img={
+          data.nftMeta?.image ? applyPinataImageOptions(data.nftMeta.image, { width: 300, height: 300 }) : ''
+        }
         title={data.nftName}
         link={`/communities/nft/${nftAddress}`}
         description={data.nftMeta?.description || ''}

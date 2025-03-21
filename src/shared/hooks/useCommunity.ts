@@ -3,7 +3,7 @@ import { useMemo, useCallback, useEffect, useState } from 'react'
 import { abiContractsMap, DEFAULT_NFT_CONTRACT_ABI } from '@/lib/contracts'
 import { Address } from 'viem'
 import { useReadContracts, useAccount, useWaitForTransactionReceipt, useWriteContract } from 'wagmi'
-import { fetchIpfsUri } from '@/app/user/Balances/actions'
+import { fetchIpfsNftMeta, ipfsGatewayUrl } from '@/lib/ipfs'
 import { NftMeta, CommunityData } from '../types'
 import { config } from '@/config'
 import Big from '@/lib/big'
@@ -20,11 +20,11 @@ const useNftMeta = (nftUri?: string) => {
 
   useEffect(() => {
     if (!nftUri) return setNftMeta(undefined)
-    fetchIpfsUri(nftUri).then(async nftMeta => {
-      const response = await fetchIpfsUri(nftMeta.image, 'blob')
-      const url = URL.createObjectURL(response)
-      setNftMeta({ ...nftMeta, image: url })
-    })
+    fetchIpfsNftMeta(nftUri)
+      .then(nftMeta => setNftMeta({ ...nftMeta, image: ipfsGatewayUrl(nftMeta.image) }))
+      .catch(error => {
+        console.log('🚀 ~ useCommunity.ts ~ useNftMeta ~ useEffect ~ error:', error)
+      })
   }, [nftUri])
 
   return nftMeta

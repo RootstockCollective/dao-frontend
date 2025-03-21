@@ -12,7 +12,6 @@ import {
   getTokenHoldersOfAddress,
 } from '@/lib/endpoints'
 import { tokenContracts, GovernorAddress, BackersManagerAddress } from '@/lib/contracts'
-import { NftMeta } from '@/shared/types'
 import {
   NextPageParams,
   NftHolderItem,
@@ -20,7 +19,6 @@ import {
   TokenHoldersResponse,
 } from '@/app/user/Balances/types'
 import { BackendEventByTopic0ResponseValue } from '@/shared/utils'
-import { ipfsGateway } from '@/lib/constants'
 import { ethers } from 'ethers'
 
 export const fetchAddressTokens = (address: string, chainId = 31) =>
@@ -120,17 +118,6 @@ export const fetchNewAllocationEventByAccountAddress = (address: string) =>
   )
 
 export const fetchProposalsCreatedCached = () => axiosInstance.get('/proposals/api', { baseURL: '/' })
-
-export function fetchIpfsUri(uri: string, responseType?: 'json'): Promise<NftMeta>
-export function fetchIpfsUri(uri: string, responseType?: 'blob'): Promise<Blob>
-export async function fetchIpfsUri(
-  ipfsUri: string,
-  responseType: 'json' | 'blob' = 'json',
-): Promise<NftMeta | Blob> {
-  const httpsUrl = ipfsUri.replace('ipfs://', ipfsGateway)
-  const { data } = await axiosInstance.get(httpsUrl, { responseType })
-  return data
-}
 
 export const fetchNftInfo = (address: string) =>
   axiosInstance.get(getNftInfo.replace('{{nftAddress}}', address))
