@@ -7,7 +7,6 @@ env:
   BOOST: '30'
   NFT_CONTRACT: '0x1EEA464C8632A71A2E9B364725da6e09aaed2Ddc'
   ENVIRONMENT: 'mainnet'
-  BOOST_DATA_BRANCH: 'boost_data/mainnet'
 
 on:
   schedule:
@@ -35,6 +34,9 @@ jobs:
           git config --global user.name "github-actions[bot]"
           git config --global user.email "github-actions[bot]@users.noreply.github.com"
           git config --global push.autoSetupRemote true
+
+      - name: Set BOOST_DATA_BRANCH
+        run: echo "BOOST_DATA_BRANCH=boost_data/${{ env.ENVIRONMENT }}" >> $GITHUB_ENV
 
       - name: Boost backers' rewards
         run: |
