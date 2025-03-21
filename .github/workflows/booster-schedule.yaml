@@ -1,4 +1,4 @@
-name: Boost backers' rewards in an active NFT campaign
+name: Vanguard Boost schedule
 
 permissions:
   contents: write
@@ -7,7 +7,7 @@ env:
   BOOST: '30'
   NFT_CONTRACT: '0x1EEA464C8632A71A2E9B364725da6e09aaed2Ddc'
   ENVIRONMENT: 'mainnet'
-  BOOST_DATA_BRANCH: 'boost_data/v1.7.0'
+  BOOST_DATA_BRANCH: 'boost_data/mainnet'
 
 on:
   schedule:
@@ -18,12 +18,12 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
         with:
           persist-credentials: true
 
       - name: Set up Node.js
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@1d0ff469b7ec7b3cb9d8673fde0c81c44821de2a
         with:
           node-version: '22'
 
