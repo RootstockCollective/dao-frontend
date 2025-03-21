@@ -1,5 +1,5 @@
 import Big from '@/lib/big'
-import { formatCurrency, formatNumberWithCommas, millify } from '@/lib/utils'
+import { formatCurrency, formatNumberWithCommas, millify, splitWords } from '@/lib/utils'
 import { describe, expect, it } from 'vitest'
 
 describe('formatCurrency', () => {
@@ -141,5 +141,36 @@ describe('millify', () => {
     expect(millify(1372499)).toBe('1.372M')
     expect(millify(1372510)).toBe('1.372M')
     expect(millify(1372000000)).toBe('1.372B')
+  })
+})
+
+describe('splitWords', () => {
+  it('splits camelCase words', () => {
+    expect(splitWords('camelCase')).toBe('camel Case')
+    expect(splitWords('thisIsCamelCase')).toBe('this Is Camel Case')
+  })
+
+  it('splits PascalCase words', () => {
+    expect(splitWords('PascalCase')).toBe('Pascal Case')
+    expect(splitWords('ThisIsPascalCase')).toBe('This Is Pascal Case')
+  })
+
+  it('handles acronyms correctly', () => {
+    expect(splitWords('JSONParser')).toBe('JSON Parser')
+    expect(splitWords('parseXMLDocument')).toBe('parse XML Document')
+    expect(splitWords('ABCdef')).toBe('AB Cdef')
+    expect(splitWords('OGFounders')).toBe('OG Founders')
+    expect(splitWords('OGContributors')).toBe('OG Contributors')
+    expect(splitWords('EarlyAdopters')).toBe('Early Adopters')
+  })
+
+  it('handles single word inputs', () => {
+    expect(splitWords('hello')).toBe('hello')
+    expect(splitWords('Hello')).toBe('Hello')
+  })
+
+  it('handles empty string', () => {
+    expect(splitWords('')).toBe('')
+    expect(splitWords(undefined)).toBe('')
   })
 })

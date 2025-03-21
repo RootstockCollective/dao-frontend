@@ -8,7 +8,7 @@ import { NftMeta, CommunityData } from '../types'
 import { config } from '@/config'
 import Big from '@/lib/big'
 import { useQuery } from '@tanstack/react-query'
-import { axiosInstance } from '@/lib/utils'
+import { axiosInstance, splitWords } from '@/lib/utils'
 import { NftDataFromAddressesReturnType } from '@/app/user/api/communities/route'
 
 /**
@@ -82,7 +82,7 @@ export const useContractData = (nftAddress?: Address) => {
       tokensAvailable: Number(tokensAvailable),
       isMember: Big(balanceOf?.result?.toString() ?? 0).gt(0),
       tokenId: typeof tokenId?.result === 'bigint' ? Number(tokenId.result) : undefined,
-      nftName: nftName,
+      nftName: splitWords(nftName),
       nftSymbol: symbol,
       nftUri: URI?.[0].result,
       stRifThreshold: stRifThreshold ? BigInt(stRifThreshold) : undefined,
