@@ -310,10 +310,10 @@ export function millify(num: BigSource | bigint, separator = '', units = shortDe
 
 /**
  * Splits a string by inserting spaces between camelCase and PascalCase words.
- * 
+ *
  * @param str - The input string to split
  * @returns The string with spaces inserted between word boundaries
- * 
+ *
  * @example
  * splitWords("camelCase") // returns "camel Case"
  * splitWords("PascalCase") // returns "Pascal Case"
