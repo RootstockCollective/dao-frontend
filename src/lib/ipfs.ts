@@ -1,6 +1,32 @@
 import { NftMeta } from '@/shared/types'
 
 /**
+ * Interface for Pinata Image Optimization options.
+ * Used to customize image serving through Pinata IPFS gateway.
+ * For detailed parameters description visit:
+ * @see https://docs.pinata.cloud/gateways/image-optimizations
+ */
+export interface PinataImageOptions {
+  width?: number
+  height?: number
+  dpr?: number
+  fit?: 'scaleDown' | 'contain' | 'cover' | 'crop' | 'pad'
+  gravity?: 'auto' | 'side' | string
+  quality?: number
+  format?: 'auto' | 'webp'
+  animation?: boolean
+  sharpen?: number
+  onError?: boolean
+  metadata?: 'keep' | 'copyright' | 'none'
+}
+
+export const defaultImageOptions: PinataImageOptions = {
+  height: 500,
+  width: 500,
+  format: 'webp',
+}
+
+/**
  * Applies image transformation options to a Pinata IPFS image URL and appends authentication token
  * @param imageUrl - The original Pinata IPFS image URL
  * @param options - Image transformation options to apply (e.g. width, height, quality)
@@ -12,7 +38,11 @@ import { NftMeta } from '@/shared/types'
  * // Returns: "https://gateway.pinata.cloud/ipfs/...?img-width=100&img-height=100..."
  * ```
  */
-export function applyPinataImageOptions(imageUrl: string, options: PinataImageOptions = {}) {
+export function applyPinataImageOptions(
+  imageUrl?: string,
+  options: PinataImageOptions = defaultImageOptions,
+) {
+  if (!imageUrl) return ''
   const url = new URL(imageUrl)
   const urlImageOptions = attachPrefixToKeys(options)
   Object.entries(urlImageOptions).forEach(([key, val]) => url.searchParams.append(key, val))
@@ -44,26 +74,6 @@ export function ipfsGatewayUrl(cid: string, gateway = process.env.NEXT_PUBLIC_PI
   if (!gateway) throw new Error('Unknown IPFS gateway')
   cid = removeIpfsPrefix(cid)
   return `https://${gateway}/ipfs/${cid}`
-}
-
-/**
- * Interface for Pinata Image Optimization options.
- * Used to customize image serving through Pinata IPFS gateway.
- * For detailed parameters description visit:
- * @see https://docs.pinata.cloud/gateways/image-optimizations
- */
-export interface PinataImageOptions {
-  width?: number
-  height?: number
-  dpr?: number
-  fit?: 'scaleDown' | 'contain' | 'cover' | 'crop' | 'pad'
-  gravity?: 'auto' | 'side' | string
-  quality?: number
-  format?: 'auto' | 'webp'
-  animation?: boolean
-  sharpen?: number
-  onError?: boolean
-  metadata?: 'keep' | 'copyright' | 'none'
 }
 
 /**

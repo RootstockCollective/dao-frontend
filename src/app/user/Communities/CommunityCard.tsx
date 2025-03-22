@@ -2,7 +2,9 @@ import { CommunityCardProps } from '@/app/user/types'
 import { BoltSvg } from '@/components/BoltSvg'
 import { GlowingLabel } from '@/components/Label/GlowingLabel'
 import { Paragraph } from '@/components/Typography/Paragraph'
+import { applyPinataImageOptions } from '@/lib/ipfs'
 import { cn } from '@/lib/utils'
+import Image from 'next/image'
 import Link from 'next/link'
 import { FC } from 'react'
 
@@ -25,13 +27,18 @@ export const CommunityCard: FC<CommunityCardProps> = ({
     >
       <Link href={link}>
         {/* image */}
-        <img
-          src={img}
-          alt={alt ?? 'An image that contains a community logo'}
-          className="mb-[20px]"
-          width={300}
-          height={300}
-        />
+        {img && (
+          <Image
+            /* Image is coming from the Piñata gateway already optimized */
+            unoptimized
+            src={applyPinataImageOptions(img, { width: 350, height: 350 })}
+            alt={alt ?? 'An image that contains a community logo'}
+            className="mb-[20px]"
+            width={300}
+            height={300}
+          />
+        )}
+
         {/* community title */}
 
         <div className="inline-flex items-center gap-2">

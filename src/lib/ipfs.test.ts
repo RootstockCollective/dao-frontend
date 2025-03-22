@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest'
-import { applyPinataImageOptions, fetchIpfsNftMeta, ipfsGatewayUrl } from './ipfs'
+import { applyPinataImageOptions, fetchIpfsNftMeta, ipfsGatewayUrl, defaultImageOptions } from './ipfs'
 
 describe('IPFS Utils', () => {
   beforeEach(() => {
@@ -22,9 +22,19 @@ describe('IPFS Utils', () => {
       expect(url).toContain('pinataGatewayToken=test-token')
     })
 
-    it('should handle empty options', () => {
+    it('should use default options when no options provided', () => {
       const url = applyPinataImageOptions('https://example.com/image.jpg')
-      expect(url).toBe('https://example.com/image.jpg?pinataGatewayToken=test-token')
+
+      // Check default values are included only if they exist
+      Object.entries(defaultImageOptions).forEach(([key, value]) => {
+        if (value !== undefined) {
+          expect(url).toContain(`img-${key}=${value}`)
+        } else {
+          expect(url).not.toContain(`img-${key}`)
+        }
+      })
+
+      expect(url).toContain('pinataGatewayToken=test-token')
     })
 
     it('should ignore undefined option values', () => {

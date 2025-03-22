@@ -8,6 +8,7 @@ import { communitiesMapByContract, CommunityItem } from '@/app/communities/commu
 import { useAlertContext } from '@/app/providers'
 import { useAccount } from 'wagmi'
 import { nftAlertMessages } from '@/app/communities/nft/[address]/constants'
+import { applyPinataImageOptions } from '@/lib/ipfs'
 
 interface CommunityNFTContextProps {
   // NFT Information Management
@@ -161,7 +162,7 @@ export function CommunityNFTProvider({ children, nftAddress }: CommunityNFTProvi
     // Community info
     title: nftInfo?.title || '',
     name: nftMeta?.name || 'Early Adopters NFT',
-    image: nftMeta?.image || nftInfo?.cover || '',
+    image: applyPinataImageOptions(nftMeta?.image, { width: 300, height: 300 }) || nftInfo?.cover || '',
     description: nftMeta?.description || '',
 
     // Minting and Claim Logic

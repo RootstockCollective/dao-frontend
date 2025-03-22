@@ -16,11 +16,13 @@ export const MembershipNFTSection = () => {
         <Span className="mb-6 font-bold inline-block">Membership NFT</Span>
         <div className="flex gap-6">
           <Image
+            /* Image is coming from the Piñata gateway already optimized */
+            unoptimized
             alt={name ?? 'Early Adopters NFT'}
             src={image}
             className="w-full self-center max-w-56 rounded-md"
-            width={500}
-            height={500}
+            width={224}
+            height={224}
           />
           {isMember && tokenId ? (
             <UserMemberSection />

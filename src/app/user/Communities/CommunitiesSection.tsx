@@ -107,9 +107,7 @@ const NftInfo = ({
   if (data.nftName && data.isMember) {
     return (
       <CommunityCard
-        img={
-          data.nftMeta?.image ? applyPinataImageOptions(data.nftMeta.image, { width: 300, height: 300 }) : ''
-        }
+        img={data.nftMeta?.image}
         title={data.nftName}
         link={`/communities/nft/${nftAddress}`}
         description={data.nftMeta?.description || ''}
