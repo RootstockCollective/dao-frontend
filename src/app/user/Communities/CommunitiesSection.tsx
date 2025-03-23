@@ -8,7 +8,6 @@ import { useEffect, useRef, useState } from 'react'
 import { useNFTBoosterContext } from '@/app/providers/NFT/BoosterContext'
 import { Address } from 'viem'
 import { CardPlaceholder } from '@/components/loading-components'
-import { applyPinataImageOptions } from '@/lib/ipfs'
 
 const communities: string[] = Object.keys(communitiesMapByContract)
 

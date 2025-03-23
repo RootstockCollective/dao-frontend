@@ -27,15 +27,28 @@ export const defaultImageOptions: PinataImageOptions = {
 }
 
 /**
- * Applies image transformation options to a Pinata IPFS image URL and appends authentication token
- * @param imageUrl - The original Pinata IPFS image URL
- * @param options - Image transformation options to apply (e.g. width, height, quality)
- * @returns Modified URL string with applied options and authentication token
+ * Appends image optimization parameters to a Pinata gateway URL.
+ *
+ * This function expects a full HTTPS URL that already points to an IPFS resource
+ * through a gateway (e.g. https://gateway.pinata.cloud/ipfs/<cid>/...). It does not
+ * accept raw `ipfs://` URLs or plain CIDs.
+ *
+ * The image URL typically comes from the NFT metadata and is first normalized
+ * to a gateway URL using `ipfsGatewayUrl()`. Once converted, this function is used
+ * to customize how the image will be served through the Pinata gateway
+ * — e.g., for different sizes or formats.
+ *
+ * This is especially useful when the same NFT image is displayed in multiple places
+ * on the site (e.g. thumbnail vs full screen), allowing on-the-fly optimization.
+ *
+ * @param imageUrl - Full gateway-based image URL (HTTPS only)
+ * @param options - Pinata image optimization options (width, height, format, etc.)
+ * @returns A modified URL with optimization parameters and auth token (if present)
  *
  * @example
  * ```ts
- * const url = applyImageOptions("ipfs://...", { width: 100, height: 100 });
- * // Returns: "https://gateway.pinata.cloud/ipfs/...?img-width=100&img-height=100..."
+ * const rawImageUrl = ipfsGatewayUrl(nftMeta.image)
+ * const optimized = applyPinataImageOptions(rawImageUrl, { width: 300, height: 300 })
  * ```
  */
 export function applyPinataImageOptions(
@@ -52,12 +65,11 @@ export function applyPinataImageOptions(
 /**
  * Fetches NFT metadata from IPFS using the provided CID
  * @param cid - Content Identifier for IPFS
- * @param gateway - Optional IPFS gateway URL
  * @returns Promise resolving to NFT metadata
  * @throws Error if the fetch request fails
  */
-export async function fetchIpfsNftMeta(cid: string, gateway?: string): Promise<NftMeta> {
-  const gatewayUrl = appendPinataTokenToUrl(ipfsGatewayUrl(cid, gateway))
+export async function fetchIpfsNftMeta(cid: string): Promise<NftMeta> {
+  const gatewayUrl = appendPinataTokenToUrl(ipfsGatewayUrl(cid))
   const res = await fetch(gatewayUrl)
   if (!res.ok) throw new Error(`Failed to fetch IPFS data: ${res.status} ${res.statusText}`)
   return res.json()
@@ -66,11 +78,11 @@ export async function fetchIpfsNftMeta(cid: string, gateway?: string): Promise<N
 /**
  * Constructs a full IPFS gateway URL from a CID (Content Identifier)
  * @param cid - The IPFS Content Identifier to create a URL for
- * @param gateway - Optional IPFS gateway domain. Defaults to the Pinata gateway from environment variables
  * @returns The complete IPFS gateway URL in the format `https://<gateway>/ipfs/<cid>`
  * @throws {Error} If no gateway is provided or found in environment variables
  */
-export function ipfsGatewayUrl(cid: string, gateway = process.env.NEXT_PUBLIC_PINATA_GATEWAY) {
+export function ipfsGatewayUrl(cid: string) {
+  const gateway = process.env.NEXT_PUBLIC_IPFS_GATEWAY
   if (!gateway) throw new Error('Unknown IPFS gateway')
   cid = removeIpfsPrefix(cid)
   return `https://${gateway}/ipfs/${cid}`

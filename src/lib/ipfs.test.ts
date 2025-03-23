@@ -4,7 +4,7 @@ import { applyPinataImageOptions, fetchIpfsNftMeta, ipfsGatewayUrl, defaultImage
 describe('IPFS Utils', () => {
   beforeEach(() => {
     vi.restoreAllMocks()
-    process.env.NEXT_PUBLIC_PINATA_GATEWAY = 'gateway.pinata.cloud'
+    process.env.NEXT_PUBLIC_IPFS_GATEWAY = 'gateway.pinata.cloud'
     process.env.NEXT_PUBLIC_PINATA_GATEWAY_KEY = 'test-token'
   })
 
@@ -59,20 +59,22 @@ describe('IPFS Utils', () => {
       expect(url).toContain('img-dpr=2')
     })
 
-    it('should work with IPFS URLs', () => {
-      const url = applyPinataImageOptions('ipfs://QmTest123/image.jpg', {
-        width: 100,
-      })
-      expect(url).toContain('ipfs://QmTest123/image.jpg')
-      expect(url).toContain('img-width=100')
-    })
-
     it('should handle special characters in URLs', () => {
       const url = applyPinataImageOptions('https://example.com/image with spaces.jpg', {
         width: 100,
       })
       expect(url).toContain('image%20with%20spaces.jpg')
       expect(url).toContain('img-width=100')
+    })
+
+    it('should throw when a non-url string was passed', () => {
+      expect(() => applyPinataImageOptions('not-a-url')).toThrow()
+    })
+
+    it('should return empty string when falsy values are passed', () => {
+      expect(applyPinataImageOptions('')).toBe('')
+      expect(applyPinataImageOptions(undefined)).toBe('')
+      expect(applyPinataImageOptions(null as unknown as string)).toBe('')
     })
   })
 
@@ -88,13 +90,8 @@ describe('IPFS Utils', () => {
     })
 
     it('should throw error if no gateway provided', () => {
-      process.env.NEXT_PUBLIC_PINATA_GATEWAY = ''
+      process.env.NEXT_PUBLIC_IPFS_GATEWAY = ''
       expect(() => ipfsGatewayUrl('Qm123456')).toThrow('Unknown IPFS gateway')
-    })
-
-    it('should use custom gateway when provided', () => {
-      const url = ipfsGatewayUrl('Qm123456', 'custom.gateway.com')
-      expect(url).toBe('https://custom.gateway.com/ipfs/Qm123456')
     })
 
     it('should remove /ipfs/ prefix', () => {
@@ -138,39 +135,6 @@ describe('IPFS Utils', () => {
       })
 
       await expect(fetchIpfsNftMeta('Qm123456')).rejects.toThrow('Failed to fetch IPFS data')
-    })
-
-    it('should use custom gateway when provided', async () => {
-      const mockNftMeta = { name: 'Test NFT' }
-      global.fetch = vi.fn().mockResolvedValueOnce({
-        ok: true,
-        json: () => Promise.resolve(mockNftMeta),
-      })
-
-      await fetchIpfsNftMeta('Qm123456', 'custom.gateway.com')
-      expect(global.fetch).toHaveBeenCalledWith(expect.stringContaining('custom.gateway.com/ipfs/Qm123456'))
-    })
-
-    it('should append gateway token to fetch URL', async () => {
-      const mockNftMeta = { name: 'Test NFT' }
-      global.fetch = vi.fn().mockResolvedValueOnce({
-        ok: true,
-        json: () => Promise.resolve(mockNftMeta),
-      })
-
-      await fetchIpfsNftMeta('Qm123456')
-      expect(global.fetch).toHaveBeenCalledWith(expect.stringContaining('pinataGatewayToken=test-token'))
-    })
-
-    it('should handle IPFS protocol in CID', async () => {
-      const mockNftMeta = { name: 'Test NFT' }
-      global.fetch = vi.fn().mockResolvedValueOnce({
-        ok: true,
-        json: () => Promise.resolve(mockNftMeta),
-      })
-
-      await fetchIpfsNftMeta('ipfs://Qm123456')
-      expect(global.fetch).toHaveBeenCalledWith(expect.stringContaining('/ipfs/Qm123456'))
     })
 
     it('should throw error when json parsing fails', async () => {
