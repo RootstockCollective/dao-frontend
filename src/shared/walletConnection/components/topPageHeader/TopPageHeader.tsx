@@ -43,6 +43,9 @@ export function TopPageHeader() {
             </motion.div>
           )}
         </AnimatePresence>
+        {/* Commented buttons to test reown  */}
+        {/*<appkit-account-button />*/}
+        {/*<appkit-network-button />*/}
         <UserConnectionManager />
       </div>
     </div>

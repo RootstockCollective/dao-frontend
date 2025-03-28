@@ -2,6 +2,7 @@
 import { Address } from 'viem'
 import { useEffect, useState } from 'react'
 import { NFTWalletLocalStorage } from './types'
+import { Eip1193Provider } from 'ethers'
 
 /***************************************************
  * Local Storage Logic to avoid adding wallet twice
@@ -72,7 +73,7 @@ export const requestProviderToAddNFT: (arg: AddToWalletArgument) => Promise<unkn
   image,
   tokenId,
 }) =>
-  window.ethereum.request({
+  (window.ethereum as unknown as Eip1193Provider).request({
     method: 'wallet_watchAsset',
     params: {
       type: 'ERC721',

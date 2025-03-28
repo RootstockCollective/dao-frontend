@@ -1,4 +1,5 @@
 import type { Metadata } from 'next'
+import type { ReactNode } from 'react'
 import { Open_Sans } from 'next/font/google'
 import './globals.css'
 import { ContextProviders } from './providers'
@@ -16,7 +17,7 @@ export const metadata: Metadata = {
 }
 
 interface Props {
-  children: React.ReactNode
+  children: ReactNode
 }
 
 export default function RootLayout({ children }: Readonly<Props>) {
