@@ -1,6 +1,6 @@
 import { ENV } from '@/lib/constants'
 import { defineChain, HttpTransportConfig } from 'viem'
-import { rootstockTestnet, rootstock } from 'viem/chains'
+import { rootstock, rootstockTestnet } from 'viem/chains'
 import { createConfig, http } from 'wagmi'
 import { injected } from 'wagmi/connectors'
 
@@ -23,7 +23,7 @@ const httpTransportConfig: HttpTransportConfig = {
 }
 
 export const config = createConfig({
-  chains: [rskRegtest, rootstockTestnet, rootstock],
+  chains: [rootstock, rootstockTestnet, rskRegtest],
   transports: {
     [rootstock.id]: http(undefined, {
       ...httpTransportConfig,

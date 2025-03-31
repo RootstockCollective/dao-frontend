@@ -1,10 +1,10 @@
-import { useReadContracts } from 'wagmi'
-import { AVERAGE_BLOCKTIME } from '@/lib/constants'
-import { BuilderRegistryAbi } from '@/lib/abis/v2/BuilderRegistryAbi'
-import { AbiFunction, Address } from 'viem'
 import { useGetGaugesLength } from '@/app/collective-rewards/user'
-import { useMemo } from 'react'
+import { BuilderRegistryAbi } from '@/lib/abis/v2/BuilderRegistryAbi'
+import { AVERAGE_BLOCKTIME } from '@/lib/constants'
 import { BuilderRegistryAddress } from '@/lib/contracts'
+import { useMemo } from 'react'
+import { AbiFunction, Address } from 'viem'
+import { useAccount, useReadContracts } from 'wagmi'
 
 const gaugeTypeOptions = ['active', 'halted'] as const
 export type GaugeType = (typeof gaugeTypeOptions)[number]
@@ -18,6 +18,7 @@ const gaugeType: Record<GaugeType, FunctionName> = {
 }
 
 export const useGetGaugesArray = () => {
+  const { address } = useAccount()
   const { data: activeCalls, isLoading: isLoadingActive, error: errorActive } = useGetContractCalls('active')
   const { data: haltedCalls, isLoading: isLoadingHalted, error: errorHalted } = useGetContractCalls('halted')
 
@@ -31,6 +32,7 @@ export const useGetGaugesArray = () => {
     contracts: contractCalls,
     query: {
       refetchInterval: AVERAGE_BLOCKTIME,
+      enabled: !!address && !!contractCalls.length,
     },
   })
 
@@ -46,6 +48,7 @@ export const useGetGaugesArray = () => {
 }
 
 export const useGetGaugesArrayByType = (type: GaugeType) => {
+  const { address } = useAccount()
   const {
     data: calls,
     isLoading: contractCallsLoading,
@@ -60,6 +63,7 @@ export const useGetGaugesArrayByType = (type: GaugeType) => {
     contracts: calls,
     query: {
       refetchInterval: AVERAGE_BLOCKTIME,
+      enabled: !!address && !!calls.length,
     },
   })
 
