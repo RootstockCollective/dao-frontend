@@ -67,7 +67,7 @@ const Card = ({ image, id, holderAddress }: CardProps) => {
 }
 
 interface CardViewProps {
-  nfts: { image_url: string; id: string; owner: string; ens_domain_name: string }[]
+  nfts: { image_url: string; id: string; owner: string; ens_domain_name?: string }[]
 }
 
 const CardView = ({ nfts }: CardViewProps) => (
