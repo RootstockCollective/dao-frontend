@@ -67,13 +67,13 @@ const Card = ({ image, id, holderAddress }: CardProps) => {
 }
 
 interface CardViewProps {
-  nfts: { image_url: string; id: string; owner: string }[]
+  nfts: { image_url: string; id: string; owner: string; ens_domain_name: string }[]
 }
 
 const CardView = ({ nfts }: CardViewProps) => (
   <div className="grid 2xl:grid-cols-4 xl:grid-cols-3 lg:grid-cols-2 md:grid-cols-1 gap-y-4">
-    {nfts.map(({ image_url, id, owner }) => (
-      <Card key={id} image={image_url} id={id} holderAddress={owner} />
+    {nfts.map(({ image_url, id, owner, ens_domain_name }) => (
+      <Card key={id} image={image_url} id={id} holderAddress={ens_domain_name || owner} />
     ))}
   </div>
 )
