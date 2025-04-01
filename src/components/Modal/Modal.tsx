@@ -6,9 +6,9 @@ import { cn } from '@/lib/utils'
 import { createPortal } from 'react-dom'
 
 interface Props {
-  className?: string
   children: ReactNode
   onClose: () => void
+  className?: string
   width?: number
   'data-testid'?: string
 }
