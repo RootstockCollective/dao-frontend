@@ -303,6 +303,7 @@ const LatestProposalsTable = ({ proposals, onEmitActiveProposal }: LatestProposa
               'data-testid': 'TableProposalsTbody',
             }}
             className="overflow-visible"
+            tHeadRowsPropsById={theadRowsPropsById}
           />
 
           <div className="flex justify-center space-x-2 mt-4">
@@ -377,3 +378,11 @@ const LatestProposalsTable = ({ proposals, onEmitActiveProposal }: LatestProposa
 }
 
 export const LatestProposalsTableMemoized = memo(LatestProposalsTable)
+
+const theadRowsPropsById = {
+  name: {
+    style: {
+      width: '32%',
+    },
+  },
+}

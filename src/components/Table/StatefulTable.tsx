@@ -1,5 +1,5 @@
 import { flexRender, type Table as ReactTable } from '@tanstack/react-table'
-import { type HTMLAttributes } from 'react'
+import { ComponentProps, type HTMLAttributes } from 'react'
 import { TableHead, TableRow, TableCell, TableBody, TableCore } from './components'
 import { SortIndicator } from './components/SortIndicator'
 import { cn } from '@/lib/utils'
@@ -9,11 +9,12 @@ interface SharedProps {
 }
 
 interface Props<T> extends HTMLAttributes<HTMLDivElement> {
+  table: ReactTable<T>
   equalColumns?: boolean
   theadProps?: SharedProps
   tbodyProps?: SharedProps
   headerClassName?: string
-  table: ReactTable<T>
+  tHeadRowsPropsById?: Record<string, ComponentProps<typeof TableCell>>
 }
 
 /**
@@ -26,6 +27,7 @@ export function StatefulTable<T>({
   tbodyProps,
   theadProps,
   headerClassName,
+  tHeadRowsPropsById,
   ...props
 }: Props<T>) {
   const width = equalColumns ? Math.round(100 / table.getHeaderGroups()[0]?.headers.length) + '%' : 'inherit'
@@ -50,6 +52,7 @@ export function StatefulTable<T>({
                   'border-b border-solid border-[#888888]',
                 )}
                 style={{ width }}
+                {...(tHeadRowsPropsById ? tHeadRowsPropsById[header.id] : {})}
               >
                 <SortIndicator
                   sortEnabled={header.column.getCanSort()}
