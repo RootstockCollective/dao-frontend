@@ -7,12 +7,14 @@ export type GlowingLabelProps = HTMLAttributes<HTMLDivElement> & {
 }
 
 export const GlowingLabel: FC<GlowingLabelProps> = ({ children, showGlow, faded, className, ...props }) => {
+  const backgroundStyle: CSSProperties['background'] = faded
+    ? 'linear-gradient(270deg, #4B171A -8.88%, #C0F7FF 31.43%, #E3FFEB 78.65%)'
+    : 'linear-gradient(270deg, #4B171A -456.96%, #C0F7FF -195.47%, #E3FFEB 110.84%)'
+
   const style: CSSProperties =
     showGlow || faded
       ? {
-          background: faded
-            ? 'linear-gradient(270deg, #4B171A -8.88%, #C0F7FF 31.43%, #E3FFEB 78.65%)'
-            : 'linear-gradient(270deg, #4B171A -456.96%, #C0F7FF -195.47%, #E3FFEB 110.84%)',
+          background: backgroundStyle,
           backgroundClip: 'text',
           WebkitBackgroundClip: 'text',
           WebkitTextFillColor: 'transparent',
