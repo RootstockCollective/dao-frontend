@@ -18,6 +18,14 @@ interface ConfirmationModalProps {
    */
   title: string
   /**
+   * Controls whether the modal is visible
+   */
+  isOpen: boolean
+  /**
+   * Callback triggered when the modal is closed
+   */
+  onClose: () => void
+  /**
    * Pass the main modal text to the `children` prop
    */
   children?: ReactNode
@@ -33,14 +41,6 @@ interface ConfirmationModalProps {
    * When defined, replaces accept/decline buttons
    */
   buttons?: ReactNode
-  /**
-   * Controls whether the modal is visible
-   */
-  isOpen: boolean
-  /**
-   * Callback triggered when the modal is closed
-   */
-  onClose: () => void
   /**
    * Test identifier for unit and integration tests
    */

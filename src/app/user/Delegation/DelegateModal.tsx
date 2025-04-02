@@ -46,7 +46,7 @@ export const DelegateModal = ({ onClose, onDelegateTxStarted }: DelegateModalPro
   const { onDelegate, isPending } = useDelegateToAddress()
 
   const onAddressChange = (value: string) => {
-    setAddressToDelegateTo(value)
+    setAddressToDelegateTo(value.toLowerCase())
     setError('')
     setIsInputValid(false)
     setDomainValidationStatus('')
@@ -73,7 +73,7 @@ export const DelegateModal = ({ onClose, onDelegateTxStarted }: DelegateModalPro
 
       if (resolvedAddress) {
         setValidRnsAddress(domain)
-        setAddressToDelegateTo(resolvedAddress)
+        setAddressToDelegateTo(resolvedAddress.toLowerCase())
         setDomainValidationStatus('valid')
         setIsInputValid(true)
         setError('')
