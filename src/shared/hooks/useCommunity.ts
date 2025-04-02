@@ -10,6 +10,7 @@ import Big from '@/lib/big'
 import { useQuery } from '@tanstack/react-query'
 import { axiosInstance, splitWords } from '@/lib/utils'
 import { NftDataFromAddressesReturnType } from '@/app/user/api/communities/route'
+import { communitiesMapByContract } from '@/app/communities/communityUtils'
 
 /**
  * Hook for loading NFT metadata from IPFS
@@ -82,7 +83,8 @@ export const useContractData = (nftAddress?: Address) => {
       tokensAvailable: Number(tokensAvailable),
       isMember: Big(balanceOf?.result?.toString() ?? 0).gt(0),
       tokenId: typeof tokenId?.result === 'bigint' ? Number(tokenId.result) : undefined,
-      nftName: splitWords(nftName),
+      // NFT name from predefined communities list or from NFT metadata if not listed
+      nftName: communitiesMapByContract[nftAddress as string]?.title ?? splitWords(nftName),
       nftSymbol: symbol,
       nftUri: URI?.[0].result,
       stRifThreshold: stRifThreshold ? BigInt(stRifThreshold) : undefined,
