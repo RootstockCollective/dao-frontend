@@ -35,7 +35,7 @@ const defaultTable: Record<RewardsColumnKeyEnum, TableHeader> = {
     className: 'w-[10%]',
   },
   [RewardsColumnKeyEnum.lastCycleRewards]: {
-    label: 'All Time Rewards',
+    label: 'Last Cycle Rewards',
     tooltip: { text: 'The Backers’ share of the Builder’s rewards in the previous Cycle' },
     className: 'w-[22%]',
   },
@@ -56,8 +56,9 @@ const defaultTable: Record<RewardsColumnKeyEnum, TableHeader> = {
     className: 'w-[22%]',
   },
   [RewardsColumnKeyEnum.totalAllocationPercentage]: {
-    label: 'All Time Rewards',
+    label: 'Total Allocations',
     className: 'w-[16%]',
+    tooltip: { text: 'The Builder’s share of the total stRIF allocations' },
   },
   [RewardsColumnKeyEnum.actions]: {
     label: 'Actions',
