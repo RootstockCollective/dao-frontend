@@ -1,5 +1,5 @@
 export interface CommunityCardProps {
-  img: string
+  img?: string
   title: string
   description: string
   members: string
