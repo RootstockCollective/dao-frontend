@@ -15,6 +15,7 @@ export interface CommunityItem {
   isMintable?: boolean
   additionalChecks?: [{ name: string; check: (data: any) => boolean; alertMessage: string }]
   readMoreLink?: string
+  discussionLink?: string
 }
 
 interface RowProps {
@@ -207,6 +208,7 @@ export const betaBuilders: CommunityItem = {
       </p>
     </>
   ),
+  discussionLink: 'https://discord.com/channels/842021106956238848/1284160805671272458',
 }
 
 export const rootstockHacktivator: CommunityItem = {
