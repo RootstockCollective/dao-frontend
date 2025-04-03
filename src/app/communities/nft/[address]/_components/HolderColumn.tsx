@@ -17,6 +17,7 @@ export const HolderColumn = ({ address, rns, image }: HolderColumnProps) => (
     data-testid="HolderColumn"
   >
     <Image
+      /* Image is coming from the Piñata gateway already optimized */
       unoptimized
       src={image || '/images/treasury/holders.png'}
       width={24}
