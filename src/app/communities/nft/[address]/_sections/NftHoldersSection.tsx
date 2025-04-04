@@ -33,11 +33,11 @@ const IdNumberColumn = ({ id, image }: IdNumberColumnProps) => {
   )
 }
 
-interface HoldersSectionProps {
-  address: Address
+interface CardHolderParagraphProps {
+  address: string
+  image: string
 }
-
-const CardHolderParagraph = ({ address, image }: { address: string; image: string }) => {
+const CardHolderParagraph = ({ address, image }: CardHolderParagraphProps) => {
   // getting an image from Pinata a little bigger than the page size to make the image more detailed
   const optimizedImageUrl = applyPinataImageOptions(image, { width: 40, height: 40 })
   return (
@@ -117,6 +117,9 @@ const ViewIconHandler = ({
   </span>
 )
 
+interface HoldersSectionProps {
+  address: Address
+}
 export const NftHoldersSection = ({ address }: HoldersSectionProps) => {
   const { currentResults, paginationElement, isLoading, isError } = useFetchNftHolders(address)
 
