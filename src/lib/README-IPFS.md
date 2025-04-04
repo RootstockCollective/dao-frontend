@@ -14,7 +14,7 @@ The Piñata Gateway accepts requests from a set of whitelisted domains (includin
 NEXT_PUBLIC_PINATA_GATEWAY_KEY=your_api_key_here
 ```
 
-We **do not store this key in the repository**. Please contact Jessie or Alex S. to obtain this key.
+We **do not store this key in the repository**. Please contact Jesse or Alex S. to obtain this key.
 
 ---
 
