@@ -1,13 +1,13 @@
-import { useMemo } from 'react'
 import {
   BackerRewardPercentage,
   useGetBackersRewardPercentage,
   useGetTotalPotentialReward,
 } from '@/app/collective-rewards/rewards'
+import { useGaugesGetFunction } from '@/app/collective-rewards/shared'
 import { RequiredBuilder } from '@/app/collective-rewards/types'
 import { useGetBuildersByState } from '@/app/collective-rewards/user'
 import { isBuilderRewardable } from '@/app/collective-rewards/utils'
-import { useGaugesGetFunction } from '@/app/collective-rewards/shared'
+import { useMemo } from 'react'
 
 export type EstimatedBackerRewards = RequiredBuilder & {
   estimatedBackerRewardsPct: bigint
@@ -43,15 +43,15 @@ export const useGetEstimatedBackersRewardsPct = () => {
   const data = useMemo(() => {
     return builders.reduce<EstimatedBackerRewards[]>((acc, builder) => {
       const { address, gauge, stateFlags } = builder
-      const builderRewardShares = rewardShares[gauge] ?? 0n
+      const builderRewardShares = BigInt(rewardShares[gauge] ?? 0n)
       const rewardPercentage = backersRewardsPct[address] ?? null
-      const rewardPercentageToApply = rewardPercentage?.current ?? 0n
+      const rewardPercentageToApply = BigInt(rewardPercentage?.current ?? 0n)
 
       const isRewarded = isBuilderRewardable(stateFlags)
 
       const estimatedBackerRewardsPct =
         totalPotentialRewards && isRewarded
-          ? (builderRewardShares * rewardPercentageToApply) / totalPotentialRewards
+          ? (builderRewardShares * rewardPercentageToApply) / BigInt(totalPotentialRewards)
           : 0n
 
       return [
