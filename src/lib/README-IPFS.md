@@ -1,6 +1,6 @@
-# NFT Images via Piñata IPFS Gateway
+# IPFS Usage in the DAO App (Images, Metadata, and More)
 
-This is a documentation summary of the work done as part of the task [**Backend/Frontend DAO - IPFS - Centralize logic**](https://rsklabs.atlassian.net/browse/DAO-1087). It describes the refactoring of NFT image loading and IPFS metadata handling to streamline and simplify logic across the application.
+This documentation describes the refactoring of IPFS usage across the app, mainly focused on NFT images, but equally applicable to metadata and any other IPFS-hosted content. While we mostly work with NFT images, the same approach applies to any asset identified by a CID, including metadata JSON files and other IPFS-hosted content.
 
 NFT images are loaded via the dedicated IPFS-to-HTTP Piñata Gateway. The gateway URL is set through an environment variable:
 
