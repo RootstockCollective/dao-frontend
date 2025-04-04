@@ -1,4 +1,7 @@
 name: Deploy to Amazon ECS (Mainnet)
+# Deploys to: https://app.rootstockcollective.xyz/
+# Triggers when a release is created
+# Uses the `.env.mainnet` env file.
 
 on:
   release:
