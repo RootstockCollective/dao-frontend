@@ -20,7 +20,7 @@ export const useGetEstimatedBackersRewardsPct = () => {
   const buildersAddress = builders.map(({ address }) => address)
 
   const {
-    data: totalPotentialRewards,
+    data: rawTotalPotentialRewards,
     isLoading: totalPotentialRewardsLoading,
     error: totalPotentialRewardsError,
   } = useReadBackersManager({
@@ -40,15 +40,16 @@ export const useGetEstimatedBackersRewardsPct = () => {
 
   const data = useMemo(() => {
     return builders.reduce<EstimatedBackerRewards[]>((acc, builder, i) => {
-      const { address, gauge, stateFlags } = builder
-      const builderRewardShares = rewardShares[i] ?? 0n
+      const { address, stateFlags } = builder
+      const builderRewardShares = BigInt(rewardShares?.[i] ?? 0n)
       const rewardPercentage = backersRewardsPct[address] ?? null
-      const rewardPercentageToApply = rewardPercentage?.current ?? 0n
+      const rewardPercentageToApply = BigInt(rewardPercentage?.current ?? 0n)
+      const totalPotentialRewards = BigInt(rawTotalPotentialRewards ?? 0n)
 
       const isRewarded = isBuilderRewardable(stateFlags)
 
       const estimatedBackerRewardsPct =
-        totalPotentialRewards && isRewarded
+        rawTotalPotentialRewards && isRewarded
           ? (builderRewardShares * rewardPercentageToApply) / totalPotentialRewards
           : 0n
 
@@ -61,7 +62,7 @@ export const useGetEstimatedBackersRewardsPct = () => {
         },
       ]
     }, [])
-  }, [backersRewardsPct, builders, rewardShares, totalPotentialRewards])
+  }, [backersRewardsPct, builders, rewardShares, rawTotalPotentialRewards])
 
   const isLoading =
     buildersLoading || totalPotentialRewardsLoading || rewardSharesLoading || backersRewardsPctLoading

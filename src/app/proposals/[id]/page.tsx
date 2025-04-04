@@ -1,4 +1,6 @@
 'use client'
+import { getCombinedFiatAmount } from '@/app/collective-rewards/utils'
+import { ProposalQuorum } from '@/app/proposals/components/ProposalQuorum'
 import { useFetchAllProposals } from '@/app/proposals/hooks/useFetchLatestProposals'
 import { useGetProposalDeadline } from '@/app/proposals/hooks/useGetProposalDeadline'
 import { useGetProposalSnapshot } from '@/app/proposals/hooks/useGetProposalSnapshot'
@@ -18,36 +20,34 @@ import {
 } from '@/app/proposals/shared/supportedABIs'
 import { DecodedData, getEventArguments, splitCombinedName } from '@/app/proposals/shared/utils'
 import { useAlertContext } from '@/app/providers'
-import { useModal } from '@/shared/hooks/useModal'
 import { AddressOrAlias as AddressComponent } from '@/components/Address'
 import { Button } from '@/components/Button'
 import { CopyButton } from '@/components/CopyButton'
+import { isUserRejectedTxError } from '@/components/ErrorPage/commonErrors'
+import { MinusIcon } from '@/components/Icons'
 import { MetricsCard } from '@/components/MetricsCard'
+import { Vote, VoteProposalModal } from '@/components/Modal/VoteProposalModal'
+import { VoteSubmittedModal } from '@/components/Modal/VoteSubmittedModal'
 import { Popover } from '@/components/Popover'
 import { Header, Paragraph, Span, Typography } from '@/components/Typography'
-import { ProposalQuorum } from '@/app/proposals/components/ProposalQuorum'
 import { config } from '@/config'
+import Big from '@/lib/big'
 import { RIF, RIF_ADDRESS } from '@/lib/constants'
-import { formatNumberWithCommas, truncateMiddle, formatCurrency } from '@/lib/utils'
+import { tokenContracts } from '@/lib/contracts'
+import { formatCurrency, formatNumberWithCommas, truncateMiddle } from '@/lib/utils'
+import { usePricesContext } from '@/shared/context/PricesContext'
 import { useExecuteProposal } from '@/shared/hooks/useExecuteProposal'
+import { useModal } from '@/shared/hooks/useModal'
 import { useQueueProposal } from '@/shared/hooks/useQueueProposal'
 import { useVoteOnProposal } from '@/shared/hooks/useVoteOnProposal'
 import { TX_MESSAGES } from '@/shared/txMessages'
-import { waitForTransactionReceipt } from '@wagmi/core'
-import { useRouter, useParams } from 'next/navigation'
-import { FC, useEffect, useMemo, useRef, useState } from 'react'
-import { MinusIcon } from '@/components/Icons'
-import { getAddress, formatEther, zeroAddress } from 'viem'
-import { type BaseError, useAccount } from 'wagmi'
-import { Vote, VoteProposalModal } from '@/components/Modal/VoteProposalModal'
-import { VoteSubmittedModal } from '@/components/Modal/VoteSubmittedModal'
 import { ProposalState } from '@/shared/types'
-import { isUserRejectedTxError } from '@/components/ErrorPage/commonErrors'
-import Big from '@/lib/big'
-import { usePricesContext } from '@/shared/context/PricesContext'
-import { getCombinedFiatAmount } from '@/app/collective-rewards/utils'
-import { tokenContracts } from '@/lib/contracts'
 import { ConnectWorkflow } from '@/shared/walletConnection'
+import { waitForTransactionReceipt } from '@wagmi/core'
+import { useParams, useRouter } from 'next/navigation'
+import { FC, useEffect, useMemo, useRef, useState } from 'react'
+import { formatEther, getAddress, zeroAddress } from 'viem'
+import { type BaseError, useAccount } from 'wagmi'
 
 export default function ProposalView() {
   const { id } = useParams<{ id: string }>() ?? {}
@@ -80,7 +80,7 @@ const PageWithProposal = (proposal: ParsedProposal) => {
   const snapshot = useGetProposalSnapshot(proposalId)
 
   const { blocksUntilClosure } = useGetProposalDeadline(proposalId)
-  const { votingPowerAtSnapshot, doesUserHasEnoughThreshold } = useVotingPowerAtSnapshot(snapshot as bigint)
+  const { votingPowerAtSnapshot, doesUserHasEnoughThreshold } = useVotingPowerAtSnapshot(snapshot)
   const { canCreateProposal } = useVotingPower()
 
   const {
@@ -614,7 +614,7 @@ const CalldataDisplay = (props: DecodedData) => {
 
               let newPrice = getCombinedFiatAmount([
                 {
-                  value: inputValue as bigint,
+                  value: BigInt(inputValue),
                   price: tokenPrice.price,
                   symbol: tokenSymbol,
                   currency: 'USD',

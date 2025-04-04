@@ -1,7 +1,7 @@
-import { useReadContracts, useAccount } from 'wagmi'
 import { StRIFTokenAbi } from '@/lib/abis/StRIFTokenAbi'
 import { tokenContracts } from '@/lib/contracts'
 import { useMemo } from 'react'
+import { useAccount, useReadContracts } from 'wagmi'
 
 const stRifContract = {
   abi: StRIFTokenAbi,
@@ -24,7 +24,7 @@ export function useStRif() {
   return useMemo(() => {
     const [balance] = data ?? []
     return {
-      stRifBalance: balance?.result ?? 0n,
+      stRifBalance: BigInt(balance?.result ?? 0n),
     }
   }, [data])
 }

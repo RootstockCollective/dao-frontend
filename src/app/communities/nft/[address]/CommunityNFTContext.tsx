@@ -1,14 +1,14 @@
 'use client'
-import { ReactNode, createContext, useContext, useState } from 'react'
-import { Address } from 'viem'
-import { useRouter } from 'next/navigation'
+import { communitiesMapByContract, CommunityItem } from '@/app/communities/communityUtils'
+import { nftAlertMessages } from '@/app/communities/nft/[address]/constants'
+import { useAlertContext } from '@/app/providers'
+import { applyPinataImageOptions } from '@/lib/ipfs'
 import { useCommunity } from '@/shared/hooks/useCommunity'
 import { useStRif } from '@/shared/hooks/useStRIf'
-import { communitiesMapByContract, CommunityItem } from '@/app/communities/communityUtils'
-import { useAlertContext } from '@/app/providers'
+import { useRouter } from 'next/navigation'
+import { createContext, ReactNode, useContext, useState } from 'react'
+import { Address } from 'viem'
 import { useAccount } from 'wagmi'
-import { nftAlertMessages } from '@/app/communities/nft/[address]/constants'
-import { applyPinataImageOptions } from '@/lib/ipfs'
 
 interface CommunityNFTContextProps {
   // NFT Information Management
@@ -129,8 +129,7 @@ export function CommunityNFTProvider({ children, nftAddress }: CommunityNFTProvi
   }
 
   const handleMinting = async () => {
-    // check if user's stRIF Balance is more than required threshold to get a reward NFT
-    if (stRifBalance < (stRifThreshold ?? 0n))
+    if (stRifBalance < BigInt(stRifThreshold ?? 0n))
       return setMessage(
         nftAlertMessages.NFT_BALANCE_ALERT(nftInfo?.title, stRifThreshold as bigint, () =>
           router.push('/user?action=stake'),

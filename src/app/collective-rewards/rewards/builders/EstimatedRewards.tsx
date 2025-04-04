@@ -34,7 +34,7 @@ const TokenRewards: FC<TokenRewardsProps> = ({ builder, gauge, token: { id, symb
 
   useEffect(() => {
     if (tokenRewards && tokenRewards.data) {
-      setRewards(tokenRewards.data ?? 0n)
+      setRewards(BigInt(tokenRewards.data ?? 0n))
     }
     if (tokenRewards && tokenRewards.error) {
       setRewardsError(tokenRewards.error)
@@ -45,14 +45,14 @@ const TokenRewards: FC<TokenRewardsProps> = ({ builder, gauge, token: { id, symb
   }, [tokenRewards, symbol])
 
   const {
-    data: totalPotentialRewards,
+    data: rawTotalPotentialRewards,
     isLoading: totalPotentialRewardsLoading,
     error: totalPotentialRewardsError,
   } = useReadBackersManager({
     functionName: 'totalPotentialReward',
   })
   const {
-    data: rewardShares,
+    data: rawRewardShares,
     isLoading: rewardSharesLoading,
     error: rewardSharesError,
   } = useReadGauge({ address: gauge, functionName: 'rewardShares' })
@@ -87,6 +87,9 @@ const TokenRewards: FC<TokenRewardsProps> = ({ builder, gauge, token: { id, symb
   useHandleErrors({ error, title: 'Error loading estimated rewards' })
 
   const { prices } = usePricesContext()
+
+  const totalPotentialRewards = BigInt(rawTotalPotentialRewards ?? 0n)
+  const rewardShares = BigInt(rawRewardShares ?? 0n)
 
   const rewardsAmount =
     isRewarded && rewardShares && totalPotentialRewards

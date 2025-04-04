@@ -56,10 +56,10 @@ interface AllocationsContext {
 const DEFAULT_CONTEXT: AllocationsContext = {
   initialState: {
     backer: {
-      balance: BigInt(0),
-      amountToAllocate: BigInt(0),
+      balance: 0n,
+      amountToAllocate: 0n,
       allocationsCount: 0,
-      cumulativeAllocation: BigInt(0),
+      cumulativeAllocation: 0n,
     },
     allocations: {},
   },
@@ -67,10 +67,10 @@ const DEFAULT_CONTEXT: AllocationsContext = {
     selections: {},
     allocations: {},
     backer: {
-      balance: BigInt(0),
-      amountToAllocate: BigInt(0),
+      balance: 0n,
+      amountToAllocate: 0n,
       allocationsCount: 0,
-      cumulativeAllocation: BigInt(0),
+      cumulativeAllocation: 0n,
     },
     isContextLoading: true,
     contextError: null,
@@ -153,12 +153,13 @@ export const AllocationsContextProvider: FC<{ children: ReactNode }> = ({ childr
       acc[builder.address] = {
         ...builder,
         backerRewardPercentage: {
-          active: backerRewards[index]?.active ?? BigInt(0),
-          previous: backerRewards[index]?.previous ?? BigInt(0),
-          next: backerRewards[index]?.next ?? BigInt(0),
-          cooldown: backerRewards[index]?.cooldown ?? BigInt(0),
+          active: BigInt(backerRewards[index]?.active ?? 0n),
+          previous: BigInt(backerRewards[index]?.previous ?? 0n),
+          next: BigInt(backerRewards[index]?.next ?? 0n),
+          cooldown: BigInt(backerRewards[index]?.cooldown ?? 0n),
         },
       }
+
       return acc
     }, {} as Builders)
   }, [rawBuilders, backerRewards])
@@ -201,6 +202,7 @@ export const AllocationsContextProvider: FC<{ children: ReactNode }> = ({ childr
         backerRewardsError,
     )
   }, [allRawAllocationsError, buildersError, totalAllocationError, votingPowerError, backerRewardsError])
+
   useEffect(() => {
     setIsContextLoading(
       isLoadingBuilders ||
@@ -236,8 +238,8 @@ export const AllocationsContextProvider: FC<{ children: ReactNode }> = ({ childr
     return {
       backer: {
         allocationsCount,
-        balance: votingPower ?? BigInt(0),
-        amountToAllocate: totalOnchainAllocation ?? BigInt(0),
+        balance: BigInt(votingPower ?? 0n),
+        amountToAllocate: BigInt(totalOnchainAllocation ?? 0n),
         allocationCount: Object.entries(initialAllocations).length,
         cumulativeAllocation: initialCumulativeAllocations,
       },
@@ -256,7 +258,7 @@ export const AllocationsContextProvider: FC<{ children: ReactNode }> = ({ childr
         backer,
         initialAllocations: initialState.allocations,
         currentAllocations: allocations,
-        totalOnchainAllocation: totalOnchainAllocation as bigint,
+        totalOnchainAllocation: BigInt(totalOnchainAllocation ?? 0n),
       }),
     [backer, allocations, totalOnchainAllocation, initialState.allocations],
   )
@@ -298,7 +300,7 @@ function createInitialAllocations(
 ): [Allocations, bigint, number] {
   return rawAllocations.reduce(
     (acc, rawAllocation, index) => {
-      const allocation = rawAllocation ?? 0n
+      const allocation = BigInt(rawAllocation ?? 0n)
       const builderAddress = rawBuilders[index].address
       if (allocation > 0n || selections[builderAddress]) {
         acc[0][builderAddress] = allocation

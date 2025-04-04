@@ -41,7 +41,7 @@ export const useGetBackerRewards: UseGetBackerRewards = builders => {
         previous,
         next,
         cooldown,
-        active: activePercPerBuilder[index] as bigint,
+        active: BigInt(activePercPerBuilder[index] ?? 0n),
       } as BackerRewardsConfig
     })
   }, [backerRewardsPercPerBuilder, activePercPerBuilder])
