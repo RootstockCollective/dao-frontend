@@ -15,13 +15,10 @@ export type EstimatedBackerRewards = RequiredBuilder & {
 }
 
 export const useGetEstimatedBackersRewardsPct = () => {
-  const {
-    data: builders,
-    isLoading: buildersLoading,
-    error: buildersError,
-  } = useGetBuildersByState<RequiredBuilder>()
-  const gauges = builders.map(({ gauge }) => gauge)
-  const buildersAddress = builders.map(({ address }) => address)
+  const { data, isLoading: buildersLoading, error: buildersError } = useGetBuildersByState<RequiredBuilder>()
+  const builders = data ?? []
+  const gauges = builders?.map(({ gauge }) => gauge)
+  const buildersAddress = builders?.map(({ address }) => address)
 
   const {
     data: totalPotentialRewards,
@@ -40,11 +37,11 @@ export const useGetEstimatedBackersRewardsPct = () => {
     error: backersRewardsPctError,
   } = useGetBackersRewardPercentage(buildersAddress)
 
-  const data = useMemo(() => {
+  const buildersRewardData = useMemo(() => {
     return builders.reduce<EstimatedBackerRewards[]>((acc, builder) => {
       const { address, gauge, stateFlags } = builder
-      const builderRewardShares = BigInt(rewardShares[gauge] ?? 0n)
-      const rewardPercentage = backersRewardsPct[address] ?? null
+      const builderRewardShares = BigInt((rewardShares && rewardShares[gauge]) ?? 0n)
+      const rewardPercentage = (backersRewardsPct && backersRewardsPct[address]) ?? null
       const rewardPercentageToApply = BigInt(rewardPercentage?.current ?? 0n)
 
       const isRewarded = isBuilderRewardable(stateFlags)
@@ -70,7 +67,7 @@ export const useGetEstimatedBackersRewardsPct = () => {
   const error = buildersError ?? totalPotentialRewardsError ?? rewardSharesError ?? backersRewardsPctError
 
   return {
-    data,
+    data: buildersRewardData,
     isLoading,
     error,
   }
