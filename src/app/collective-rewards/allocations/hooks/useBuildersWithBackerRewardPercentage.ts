@@ -1,11 +1,11 @@
 import { BackerRewardsConfig, Builder } from '@/app/collective-rewards/types'
 import { BuilderRegistryAbi } from '@/lib/abis/v2/BuilderRegistryAbi'
 import { AVERAGE_BLOCKTIME } from '@/lib/constants'
+import { useMigrationContext } from '@/shared/context/MigrationContext'
 import { Modify } from '@/shared/utility'
 import { useMemo } from 'react'
 import { ContractFunctionReturnType, ReadContractErrorType } from 'viem'
 import { UseReadContractReturnType, useReadContracts } from 'wagmi'
-import { useMigrationContext } from '@/shared/context/MigrationContext'
 
 type RawBackerRewardPercentage = ContractFunctionReturnType<
   typeof BuilderRegistryAbi,
@@ -71,10 +71,10 @@ export const useGetBackerRewards: UseGetBackerRewards = builders => {
         const [previous, next, cooldown] = result as RawBackerRewardPercentage
 
         return {
-          previous,
-          next,
-          cooldown,
-          active: activePercentages[index]?.result as RawActivePercentage,
+          previous: BigInt(previous),
+          next: BigInt(next),
+          cooldown: BigInt(cooldown),
+          active: BigInt(activePercentages[index]?.result as RawActivePercentage),
         }
       }
     })

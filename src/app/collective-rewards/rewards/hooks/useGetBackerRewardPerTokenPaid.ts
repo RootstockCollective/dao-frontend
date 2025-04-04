@@ -35,7 +35,7 @@ export const useGetBackerRewardPerTokenPaid = (backer: Address, token: Address =
 
   const data = useMemo(() => {
     return (backerRewardPerTokenPaidResults ?? []).reduce(
-      (acc, { result }) => acc + ((result as bigint) ?? 0n),
+      (acc, { result }) => acc + BigInt((result as bigint) ?? 0n),
       0n,
     )
   }, [backerRewardPerTokenPaidResults])

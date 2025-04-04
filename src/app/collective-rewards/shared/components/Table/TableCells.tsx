@@ -15,16 +15,16 @@ import {
 import { AddressOrAliasWithCopy } from '@/components/Address'
 import { Button } from '@/components/Button'
 import { Jdenticon } from '@/components/Header/Jdenticon'
+import { ArrowDownIcon, ArrowUpIcon, CircleIcon } from '@/components/Icons'
 import { Popover } from '@/components/Popover'
 import { ProgressBar } from '@/components/ProgressBar'
 import { TableCell } from '@/components/Table'
 import { Label, Paragraph, Typography } from '@/components/Typography'
 import { cn, shortAddress } from '@/lib/utils'
+import { ConnectButtonComponentSecondary, ConnectWorkflow } from '@/shared/walletConnection'
 import { FC, memo, useContext, useMemo } from 'react'
-import { ArrowDownIcon, ArrowUpIcon, CircleIcon } from '@/components/Icons'
 import { Address, isAddress, parseEther } from 'viem'
 import { useAccount } from 'wagmi'
-import { ConnectButtonComponentSecondary, ConnectWorkflow } from '@/shared/walletConnection'
 
 type TableCellProps = {
   className?: string
@@ -150,7 +150,7 @@ type BackerRewardsPercentageProps = TableCellProps & {
   percentage: BackerRewardPercentage | null
 }
 
-const toPercentage = (value: bigint) => Number((value * 100n) / parseEther('1'))
+const toPercentage = (value: bigint) => Number((BigInt(value) * 100n) / parseEther('1'))
 export const BackerRewardsPercentage: FC<BackerRewardsPercentageProps> = ({ className, percentage }) => {
   const renderDelta = useMemo(() => {
     if (!percentage) return null

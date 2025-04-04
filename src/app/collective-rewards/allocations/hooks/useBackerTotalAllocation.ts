@@ -21,7 +21,7 @@ export const useBackerTotalAllocation = (backer?: Address) => {
   })
 
   return {
-    data,
+    data: data ? BigInt(data.toString()) : null,
     isLoading,
     error,
   }
@@ -45,7 +45,7 @@ export const useGetAllAllocationOf = (builder: Builder[], backer?: Address) => {
     },
   })
 
-  const data = useMemo(() => gauges?.map(({ result }) => result as bigint), [gauges])
+  const data = useMemo(() => gauges?.map(({ result }) => BigInt(result as bigint)), [gauges])
 
   return {
     data,

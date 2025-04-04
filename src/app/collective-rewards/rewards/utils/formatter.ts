@@ -1,9 +1,9 @@
 import Big from '@/lib/big'
-import { BigSource } from 'big.js'
 import { formatCurrency } from '@/lib/utils'
+import { BigSource } from 'big.js'
 
 export const formatMetrics = (amount: bigint, price: BigSource, symbol: string, currency: string) => {
-  const fiatAmount = getFiatAmount(amount, price)
+  const fiatAmount = getFiatAmount(BigInt(amount), price)
 
   return {
     amount: `${formatSymbol(amount, symbol)} ${symbol}`,

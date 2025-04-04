@@ -1,5 +1,3 @@
-import { createContext, FC, ReactNode, useContext, useEffect, useMemo, useState } from 'react'
-import { DateTime, Duration } from 'luxon'
 import {
   useGetCycleNext,
   useGetCycleStart,
@@ -7,6 +5,8 @@ import {
   useGetEndDistributionWindow,
 } from '@/app/collective-rewards/metrics'
 import { AVERAGE_BLOCKTIME } from '@/lib/constants'
+import { DateTime, Duration } from 'luxon'
+import { createContext, FC, ReactNode, useContext, useEffect, useMemo, useState } from 'react'
 
 export type Cycle = {
   timestamp: bigint
@@ -74,11 +74,11 @@ export const CycleContextProvider: FC<CycleProviderProps> = ({ children }) => {
   const data = useMemo(
     () => ({
       timestamp,
-      cycleStart: DateTime.fromSeconds(Number(cycleStart ?? BigInt(0))),
-      cycleNext: DateTime.fromSeconds(Number(cycleNext ?? BigInt(0))),
-      cycleDuration: Duration.fromObject({ seconds: Number(cycleDuration ?? BigInt(0)) }),
-      fistCycleStart: DateTime.fromSeconds(Number(firstCycleStart ?? BigInt(0))),
-      endDistributionWindow: DateTime.fromSeconds(Number(endDistributionWindow ?? BigInt(0))),
+      cycleStart: DateTime.fromSeconds(Number(cycleStart ?? 0)),
+      cycleNext: DateTime.fromSeconds(Number(cycleNext ?? 0)),
+      cycleDuration: Duration.fromObject({ seconds: Number(cycleDuration ?? 0) }),
+      fistCycleStart: DateTime.fromSeconds(Number(firstCycleStart ?? 0)),
+      endDistributionWindow: DateTime.fromSeconds(Number(endDistributionWindow ?? 0)),
     }),
     [timestamp, firstCycleStart, cycleDuration, cycleStart, endDistributionWindow, cycleNext],
   )

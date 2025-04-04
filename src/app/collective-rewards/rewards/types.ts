@@ -26,7 +26,7 @@ export interface RewardDetails {
 }
 
 export interface BuilderRewardDetails extends RewardDetails {
-  gauge: Address
+  gauge: Address // FIXME: what is going on here? why do we need both gauge and gauges?
 }
 
 export interface BackerRewardPercentage {

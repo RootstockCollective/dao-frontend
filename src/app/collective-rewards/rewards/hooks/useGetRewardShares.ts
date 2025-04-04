@@ -14,7 +14,7 @@ export const useGetRewardShares = (gauge: Address) => {
   })
 
   return {
-    data,
+    data: data ? BigInt(data.toString()) : null,
     isLoading,
     error,
   }
