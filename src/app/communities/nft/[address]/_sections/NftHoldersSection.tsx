@@ -1,3 +1,4 @@
+import Image from 'next/image'
 import { Address } from 'viem'
 import { useFetchNftHolders } from '@/shared/hooks/useFetchNftHolders'
 import { HeaderTitle, Paragraph, Span } from '@/components/Typography'
@@ -11,6 +12,7 @@ import { TableIcon } from '@/app/communities/TableIcon'
 import { SquareIcon } from '@/app/communities/SquareIcon'
 import { ErrorMessageAlert } from '@/components/ErrorMessageAlert/ErrorMessageAlert'
 import { HolderColumn } from '../_components/HolderColumn'
+import { applyPinataImageOptions } from '@/lib/ipfs'
 
 interface IdNumberColumnProps {
   id: string
@@ -19,32 +21,42 @@ interface IdNumberColumnProps {
 const IdNumberColumn = ({ id, image }: IdNumberColumnProps) => {
   return (
     <div className="flex items-center gap-1.5">
-      <img src={image || '/images/holders-square.png'} width={24} height={24} alt="Holders Image Square" />
+      <Image
+        unoptimized
+        src={image || '/images/holders-square.png'}
+        width={24}
+        height={24}
+        alt="Holders Image Square"
+      />
       <span className="tracking-widest">#{id}</span>
     </div>
   )
 }
 
-interface HoldersSectionProps {
-  address: Address
+interface CardHolderParagraphProps {
+  address: string
+  image: string
 }
-
-const CardHolderParagraph = ({ address, image }: { address: string; image: string }) => (
-  <a
-    href={`${EXPLORER_URL}/address/${address}`}
-    target="_blank"
-    className="flex gap-1.5 text-white items-center"
-  >
-    <Paragraph fontFamily="kk-topo" size="large" className="pt-[6px]">
-      HOLDER
-    </Paragraph>
-    <img src={image} width={24} height={24} alt="Holders Image" />
-    <Span className="underline text-left overflow-hidden whitespace-nowrap text-[14px]">
-      {truncateMiddle(address, 5, 5)}
-    </Span>
-    <ExternalLinkIcon size={18} />
-  </a>
-)
+const CardHolderParagraph = ({ address, image }: CardHolderParagraphProps) => {
+  // getting an image from Pinata a little bigger than the page size to make the image more detailed
+  const optimizedImageUrl = applyPinataImageOptions(image, { width: 40, height: 40 })
+  return (
+    <a
+      href={`${EXPLORER_URL}/address/${address}`}
+      target="_blank"
+      className="flex gap-1.5 text-white items-center"
+    >
+      <Paragraph fontFamily="kk-topo" size="large" className="pt-[6px]">
+        HOLDER
+      </Paragraph>
+      <Image unoptimized src={optimizedImageUrl} width={24} height={24} alt="Holders Image" />
+      <Span className="underline text-left overflow-hidden whitespace-nowrap text-[14px]">
+        {truncateMiddle(address, 5, 5)}
+      </Span>
+      <ExternalLinkIcon size={18} />
+    </a>
+  )
+}
 
 interface CardProps {
   image: string
@@ -53,9 +65,11 @@ interface CardProps {
 }
 
 const Card = ({ image, id, holderAddress }: CardProps) => {
+  // getting an image from Pinata a little bigger than the actual size to make the image more detailed
+  const optimizedImageUrl = applyPinataImageOptions(image, { width: 320, height: 320 })
   return (
     <div className="w-[272px] bg-foreground">
-      <img src={image} width={272} alt="NFT" />
+      <Image unoptimized src={optimizedImageUrl} width={272} height={272} alt="NFT" />
       <div className="px-[8px] py-[16px]">
         <Paragraph fontFamily="kk-topo" size="large">
           ID# {id}
@@ -103,6 +117,9 @@ const ViewIconHandler = ({
   </span>
 )
 
+interface HoldersSectionProps {
+  address: Address
+}
 export const NftHoldersSection = ({ address }: HoldersSectionProps) => {
   const { currentResults, paginationElement, isLoading, isError } = useFetchNftHolders(address)
 
@@ -112,10 +129,13 @@ export const NftHoldersSection = ({ address }: HoldersSectionProps) => {
     setView(selectedView)
   }
 
-  const holders = currentResults.map(({ owner, ens_domain_name, id, image_url }) => ({
-    holder: <HolderColumn address={owner} rns={ens_domain_name || ''} image={image_url} />,
-    'ID Number': <IdNumberColumn id={id} image={image_url} />,
-  }))
+  const holders = currentResults.map(({ owner, ens_domain_name, id, image_url }) => {
+    const icon = applyPinataImageOptions(image_url, { width: 40, height: 40 })
+    return {
+      holder: <HolderColumn address={owner} rns={ens_domain_name || ''} image={icon} />,
+      'ID Number': <IdNumberColumn id={id} image={icon} />,
+    }
+  })
 
   return (
     <div className="pl-4 relative">

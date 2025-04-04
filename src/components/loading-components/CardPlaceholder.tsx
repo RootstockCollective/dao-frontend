@@ -27,6 +27,7 @@ export const CardPlaceholder: FC = () => (
         src="/images/loading-card.png"
         alt={'Communities Image Placeholder'}
         fill
+        sizes="300px"
         className="object-cover"
       />
       {/* The shimmer overlay */}

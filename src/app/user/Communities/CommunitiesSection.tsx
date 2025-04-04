@@ -106,7 +106,7 @@ const NftInfo = ({
   if (data.nftName && data.isMember) {
     return (
       <CommunityCard
-        img={data.nftMeta?.image || ''}
+        img={data.nftMeta?.image}
         title={data.nftName}
         link={`/communities/nft/${nftAddress}`}
         description={data.nftMeta?.description || ''}

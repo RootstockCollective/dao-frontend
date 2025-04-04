@@ -32,13 +32,9 @@ export const CommunityItem = ({
         data-testid={`${title}Card`}
       >
         {/* image */}
-        <Image
-          src={leftImageSrc}
-          alt="An image that contains a community logo"
-          className="mb-[20px] flex-1"
-          width={269}
-          height={265}
-        />
+        <div className="relative mb-[20px] w-full aspect-square">
+          <Image src={leftImageSrc} alt="An image that contains a community logo" sizes="269px" fill />
+        </div>
         <div className="flex flex-col flex-1">
           {/* Title */}
           <div className="mb-[5px]">
