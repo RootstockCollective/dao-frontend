@@ -64,6 +64,16 @@ export default function Page() {
               </a>
             </div>
           )}
+          <div className="mb-[24px] font-extralight">
+            {nftInfo?.campaignDetails &&
+              nftInfo.campaignDetails({
+                activation: showNFTBoost
+                  ? DateTime.fromSeconds(Number(boostData?.timestamp) ?? 0)
+                      .toFormat('MMM yyyy')
+                      .toUpperCase()
+                  : undefined,
+              })}
+          </div>
 
           {showNFTBoost && (
             <div className="inline-flex items-center gap-1 pb-6">

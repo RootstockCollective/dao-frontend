@@ -16,6 +16,7 @@ export interface CommunityItem {
   additionalChecks?: [{ name: string; check: (data: any) => boolean; alertMessage: string }]
   readMoreLink?: string
   discussionLink?: string
+  campaignDetails?: FC<{ activation?: ReactNode }>
 }
 
 interface RowProps {
@@ -194,13 +195,17 @@ export const betaBuilders: CommunityItem = {
   numberOfMembers: 0,
   cover: '/images/nfts/bb-cover.png',
   isMintable: false,
-  longDescription: ({ activation = 'MAY 2025' }) => (
+  longDescription: () => (
     <>
       <p className="mt-4">
         Beta Builders are the innovation heroes, creating the dApps and protocols that define our ecosystem.
         This badge is a testament to their contributions to advancing Bitcoin&apos;s utility through
         cutting-edge development.
       </p>
+    </>
+  ),
+  campaignDetails: ({ activation = 'MAY 2025' }) => (
+    <>
       <p className={DEFAULT_CLASS_FOR_ROW_CONTAINER}>
         <Row leftText="SPECIAL POWER" rightText="Voting Booster" />
         <Row leftText="REQUIREMENT" rightText="First 50 CollectiveRewards Builders, Air-Drop" />
