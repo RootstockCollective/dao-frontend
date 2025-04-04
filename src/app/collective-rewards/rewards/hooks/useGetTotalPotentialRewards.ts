@@ -14,7 +14,7 @@ export const useGetTotalPotentialReward = () => {
   })
 
   return {
-    data,
+    data: data ? BigInt(data.toString()) : null,
     isLoading,
     error,
   }

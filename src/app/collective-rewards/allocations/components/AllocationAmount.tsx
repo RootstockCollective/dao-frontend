@@ -70,7 +70,7 @@ export const AllocationAmount = () => {
               : ''
           }
           hint={
-            Number(amountToAllocate - cumulativeAllocation) < 0 || amountToAllocate > balance ? (
+            amountToAllocate - cumulativeAllocation < 0n || amountToAllocate > balance ? (
               <StakeHint />
             ) : undefined
           }

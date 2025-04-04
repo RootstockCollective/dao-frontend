@@ -1,6 +1,6 @@
-import { useReadContract } from 'wagmi'
 import { GovernorAbi } from '@/lib/abis/Governor'
 import { GovernorAddress } from '@/lib/contracts'
+import { useReadContract } from 'wagmi'
 
 export const useGetProposalSnapshot = (proposalId: string) => {
   const { data } = useReadContract({
@@ -10,5 +10,5 @@ export const useGetProposalSnapshot = (proposalId: string) => {
     args: [BigInt(proposalId)],
   })
 
-  return data
+  return data ? BigInt(data.toString()) : null
 }

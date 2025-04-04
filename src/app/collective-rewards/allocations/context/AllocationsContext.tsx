@@ -5,11 +5,11 @@ import {
   useGetVotingPower,
 } from '@/app/collective-rewards/allocations/hooks'
 import { Builder } from '@/app/collective-rewards/types'
-import { createContext, FC, ReactNode, useEffect, useMemo, useState, useCallback } from 'react'
+import { createContext, FC, ReactNode, useCallback, useEffect, useMemo, useState } from 'react'
 import { Address } from 'viem'
 import { useAccount } from 'wagmi'
-import { createActions } from './allocationsActions'
 import { useGetBackerRewards } from '../hooks/useBuildersWithBackerRewardPercentage'
+import { createActions } from './allocationsActions'
 import { validateAllocationsState } from './utils'
 
 export interface Allocations {
@@ -137,10 +137,10 @@ export const AllocationsContextProvider: FC<{ children: ReactNode }> = ({ childr
       acc[builder.address] = {
         ...builder,
         backerRewardPercentage: {
-          active: backerRewards[index]?.active ?? BigInt(0),
-          previous: backerRewards[index]?.previous ?? BigInt(0),
-          next: backerRewards[index]?.next ?? BigInt(0),
-          cooldown: backerRewards[index]?.cooldown ?? BigInt(0),
+          active: BigInt(backerRewards[index]?.active ?? 0n),
+          previous: BigInt(backerRewards[index]?.previous ?? 0n),
+          next: BigInt(backerRewards[index]?.next ?? 0n),
+          cooldown: BigInt(backerRewards[index]?.cooldown ?? 0n),
         },
       }
       return acc
@@ -240,7 +240,7 @@ export const AllocationsContextProvider: FC<{ children: ReactNode }> = ({ childr
         backer,
         initialAllocations: initialState.allocations,
         currentAllocations: allocations,
-        totalOnchainAllocation: totalOnchainAllocation as bigint,
+        totalOnchainAllocation: BigInt(totalOnchainAllocation ?? 0n),
       }),
     [backer, allocations, totalOnchainAllocation, initialState.allocations],
   )
@@ -285,7 +285,7 @@ function createInitialAllocations(
       const builderAddress = rawBuilders[index].address
       if (allocation > 0n || selections[builderAddress]) {
         acc[0][builderAddress] = allocation
-        acc[1] += allocation ?? BigInt(0) // cumulative allocation
+        acc[1] += BigInt(allocation ?? 0) // cumulative allocation
         acc[2] += 1 // allocations count
       }
       return acc

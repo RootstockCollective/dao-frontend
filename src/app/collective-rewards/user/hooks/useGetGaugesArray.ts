@@ -1,10 +1,10 @@
-import { useReadContracts } from 'wagmi'
-import { AVERAGE_BLOCKTIME } from '@/lib/constants'
-import { BuilderRegistryAbi } from '@/lib/abis/v2/BuilderRegistryAbi'
-import { AbiFunction, Address } from 'viem'
 import { useGetGaugesLength } from '@/app/collective-rewards/user'
-import { useMemo } from 'react'
+import { BuilderRegistryAbi } from '@/lib/abis/v2/BuilderRegistryAbi'
+import { AVERAGE_BLOCKTIME } from '@/lib/constants'
 import { useMigrationContext } from '@/shared/context/MigrationContext'
+import { useMemo } from 'react'
+import { AbiFunction, Address } from 'viem'
+import { useReadContracts } from 'wagmi'
 
 const gaugeTypeOptions = ['active', 'halted'] as const
 export type GaugeType = (typeof gaugeTypeOptions)[number]

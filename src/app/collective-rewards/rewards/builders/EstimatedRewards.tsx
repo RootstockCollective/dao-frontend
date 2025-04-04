@@ -1,22 +1,22 @@
+import { useCycleContext } from '@/app/collective-rewards/metrics/context/CycleContext'
 import {
+  BuilderRewardDetails,
   formatMetrics,
   MetricsCard,
   MetricsCardTitle,
+  Token,
   TokenMetricsCardRow,
+  useGetBackerRewardPercentage,
+  useGetPerTokenRewards,
   useGetRewardShares,
   useGetTotalPotentialReward,
-  useGetPerTokenRewards,
-  Token,
-  BuilderRewardDetails,
-  useGetBackerRewardPercentage,
 } from '@/app/collective-rewards/rewards'
+import { useBuilderContext } from '@/app/collective-rewards/user'
 import { isBuilderRewardable, useHandleErrors } from '@/app/collective-rewards/utils'
+import { withSpinner } from '@/components/LoadingSpinner/withLoadingSpinner'
 import { usePricesContext } from '@/shared/context/PricesContext'
 import { FC, useEffect, useState } from 'react'
 import { Address, parseUnits } from 'viem'
-import { withSpinner } from '@/components/LoadingSpinner/withLoadingSpinner'
-import { useCycleContext } from '@/app/collective-rewards/metrics/context/CycleContext'
-import { useBuilderContext } from '@/app/collective-rewards/user'
 
 type TokenRewardsProps = {
   builder: Address
@@ -33,7 +33,7 @@ const TokenRewards: FC<TokenRewardsProps> = ({ builder, gauge, token: { id, symb
 
   useEffect(() => {
     if (tokenRewards && tokenRewards.data) {
-      setRewards(tokenRewards.data ?? 0n)
+      setRewards(BigInt(tokenRewards.data ?? 0n))
     }
     if (tokenRewards && tokenRewards.error) {
       setRewardsError(tokenRewards.error)
@@ -78,7 +78,7 @@ const TokenRewards: FC<TokenRewardsProps> = ({ builder, gauge, token: { id, symb
 
   const rewardsAmount =
     isRewarded && rewardShares && totalPotentialRewards
-      ? (rewards * rewardShares) / totalPotentialRewards
+      ? (rewards * rewardShares) / BigInt(totalPotentialRewards)
       : 0n
   // The complement of the reward percentage is applied to the estimated rewards since are from the builder's perspective
   const weiPerEther = parseUnits('1', 18)
