@@ -23,6 +23,7 @@ export const HolderColumn = ({ address, rns, image }: HolderColumnProps) => (
       width={24}
       height={24}
       alt="Holders Image"
+      crossOrigin="anonymous"
     />
     <Span className="underline text-left overflow-hidden whitespace-nowrap text-[14px]">
       {rns || address}

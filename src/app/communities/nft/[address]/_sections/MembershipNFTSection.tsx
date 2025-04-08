@@ -23,6 +23,7 @@ export const MembershipNFTSection = () => {
             className="w-full self-center max-w-56 rounded-md"
             width={224}
             height={224}
+            crossOrigin="anonymous"
           />
           {isMember && tokenId ? (
             <UserMemberSection />

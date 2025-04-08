@@ -27,6 +27,7 @@ const IdNumberColumn = ({ id, image }: IdNumberColumnProps) => {
         width={24}
         height={24}
         alt="Holders Image Square"
+        crossOrigin="anonymous"
       />
       <span className="tracking-widest">#{id}</span>
     </div>
@@ -49,7 +50,14 @@ const CardHolderParagraph = ({ address, image }: CardHolderParagraphProps) => {
       <Paragraph fontFamily="kk-topo" size="large" className="pt-[6px]">
         HOLDER
       </Paragraph>
-      <Image unoptimized src={optimizedImageUrl} width={24} height={24} alt="Holders Image" />
+      <Image
+        unoptimized
+        src={optimizedImageUrl}
+        width={24}
+        height={24}
+        alt="Holders Image"
+        crossOrigin="anonymous"
+      />
       <Span className="underline text-left overflow-hidden whitespace-nowrap text-[14px]">
         {truncateMiddle(address, 5, 5)}
       </Span>
@@ -69,7 +77,7 @@ const Card = ({ image, id, holderAddress }: CardProps) => {
   const optimizedImageUrl = applyPinataImageOptions(image, { width: 320, height: 320 })
   return (
     <div className="w-[272px] bg-foreground">
-      <Image unoptimized src={optimizedImageUrl} width={272} height={272} alt="NFT" />
+      <Image unoptimized src={optimizedImageUrl} width={272} height={272} alt="NFT" crossOrigin="anonymous" />
       <div className="px-[8px] py-[16px]">
         <Paragraph fontFamily="kk-topo" size="large">
           ID# {id}

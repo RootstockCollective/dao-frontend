@@ -36,6 +36,7 @@ export const CommunityCard: FC<CommunityCardProps> = ({
             className="mb-[20px]"
             width={300}
             height={300}
+            crossOrigin="anonymous"
           />
         )}
 
