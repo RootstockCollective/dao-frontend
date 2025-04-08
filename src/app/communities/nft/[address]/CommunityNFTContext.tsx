@@ -162,7 +162,10 @@ export function CommunityNFTProvider({ children, nftAddress }: CommunityNFTProvi
     // Community info
     title: nftInfo?.title || '',
     name: nftMeta?.name || 'Early Adopters NFT',
-    image: applyPinataImageOptions(nftMeta?.image, { width: 300, height: 300 }) || nftInfo?.cover || '',
+    image: applyPinataImageOptions(nftMeta?.image || nftInfo?.cover, {
+      width: 300,
+      height: 300,
+    }),
     description: nftMeta?.description || '',
 
     // Minting and Claim Logic

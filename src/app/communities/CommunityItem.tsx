@@ -3,9 +3,10 @@ import Image from 'next/image'
 import { BoostedBox } from './components/BoostedBox'
 import { BoostedLabel } from '@/app/communities/components/BoostedLabel'
 import { CommunityItemButtonHandler } from '@/app/communities/components/CommunityItemButtonHandler'
+import { applyPinataImageOptions } from '@/lib/ipfs'
 
 interface CommunityItemProps {
-  leftImageSrc: string
+  cardImage: string
   title: string
   subtitle: string
   nftAddress: string
@@ -18,13 +19,10 @@ interface CommunityItemProps {
  * Server Component: Renders a community card as part of the static communities page.
  * Dynamic highlighting of the 'Boosted' state is achieved through lightweight client components.
  */
-export const CommunityItem = ({
-  leftImageSrc,
-  title,
-  nftAddress,
-  description,
-  readMoreLink,
-}: CommunityItemProps) => {
+// prettier-ignore
+export const CommunityItem = ({ cardImage, title, nftAddress, description, readMoreLink }: CommunityItemProps) => {
+  const isExternalImage = cardImage.startsWith('http')
+  const image = isExternalImage ? applyPinataImageOptions(cardImage, { width: 269, height: 269, quality: 90 }) : cardImage
   return (
     <BoostedBox nftAddress={nftAddress}>
       <div
@@ -33,7 +31,14 @@ export const CommunityItem = ({
       >
         {/* image */}
         <div className="relative mb-[20px] w-full aspect-square">
-          <Image src={leftImageSrc} alt="An image that contains a community logo" sizes="269px" fill />
+          <Image
+            crossOrigin={isExternalImage ? 'anonymous' : undefined}
+            unoptimized={isExternalImage}
+            src={image}
+            alt={title}
+            sizes="269px"
+            fill
+          />
         </div>
         <div className="flex flex-col flex-1">
           {/* Title */}

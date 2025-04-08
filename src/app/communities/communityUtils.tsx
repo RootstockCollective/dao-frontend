@@ -2,18 +2,19 @@
 import { nftContracts } from '@/lib/contracts'
 import { FC, ReactNode } from 'react'
 import { Header, Paragraph } from '@/components/Typography'
+import { ipfsGatewayUrl } from '@/lib/ipfs'
 
 export interface CommunityItem {
-  leftImageSrc: string
+  cardImage: string
   title: string
   subtitle: string
   description: string
   nftAddress: string
   numberOfMembers: number
-  cover: string
   longDescription: FC<{ activation?: ReactNode }>
+  cover?: string
   isMintable?: boolean
-  additionalChecks?: [{ name: string; check: (data: any) => boolean; alertMessage: string }]
+  additionalChecks?: { name: string; check: (data: any) => boolean; alertMessage: string }[]
   readMoreLink?: string
   discussionLink?: string
   campaignDetails?: FC<{ activation?: ReactNode }>
@@ -34,15 +35,15 @@ const Row = ({ leftText, rightText }: RowProps) => (
 
 const DEFAULT_CLASS_FOR_ROW_CONTAINER = 'mt-4 grid grid-cols-2 gap-[24px] items-center'
 
-export const earlyAdoptersCommunity = {
-  leftImageSrc: '/images/ea-nft-dog.png',
+export const earlyAdoptersCommunity: CommunityItem = {
+  cardImage: ipfsGatewayUrl('QmfDwhwpU21G9x2kzbhw1LjQGDUFLucAjcJsn8ivqTgXrm/1.png'),
   title: 'Early Adopters',
   subtitle: 'DeFi',
   description:
     'The Early Adopters badge symbolizes foresight and commitment, awarded to those who staked their claim early.',
   nftAddress: nftContracts.EA,
   numberOfMembers: 0,
-  cover: '/images/nfts/ea-nft-cover.png',
+  cover: ipfsGatewayUrl('QmUSCZPeHVUtdScnnBfFbxUA5ndC3xw3oNBZ83BnfEKMyK/101.png'),
   isMintable: true,
   longDescription: (
     { activation = 'JUL 2025' }: { activation?: ReactNode }, // DAO TODO: the whole object should be properly typed
@@ -63,14 +64,14 @@ export const earlyAdoptersCommunity = {
 }
 
 export const ogFounders: CommunityItem = {
-  leftImageSrc: '/images/nfts/og-founders-thumb.png',
+  cardImage: ipfsGatewayUrl('QmVL654arKhZu2BiUMnAcqHahg9iwwxdrdaDF8BaDQZYqx'),
   title: 'OG Founders',
   subtitle: 'DeFi',
   description:
     "The OG Founders badge celebrates the visionaries who laid the groundwork for RootstockCollective's success.",
   nftAddress: nftContracts.OG_FOUNDERS,
   numberOfMembers: 0,
-  cover: '/images/nfts/founders-cover.png',
+  cover: ipfsGatewayUrl('QmQ5roZkJfCYe7MwajxjVcLE958A6dY7FMSNTZzXChma7p'),
   isMintable: false,
   longDescription: ({ activation = 'MAY 2025' }) => (
     <>
@@ -89,14 +90,14 @@ export const ogFounders: CommunityItem = {
 }
 
 export const ogFoundersEcosystemPartners: CommunityItem = {
-  leftImageSrc: '/images/nfts/og-partners-thumb.jpg',
+  cardImage: ipfsGatewayUrl('QmZdtTofnqG2HC8XB7Dab7xnWxYGmn9kUWqP1gBxpSipvW'),
   title: 'OG Partners',
   subtitle: 'DeFi',
   description:
     'The OG Partners badge honors external collaborators who joined RootstockCollective in its early days.',
   nftAddress: nftContracts.OG_PARTNERS,
   numberOfMembers: 0,
-  cover: '/images/nfts/partners-cover.png',
+  cover: ipfsGatewayUrl('QmY7WQm4uGDg7xkq1fMJuUaTHEUw3UpoEg24nhpFZG8WcT'),
   isMintable: false,
   longDescription: ({ activation = 'JUN 2025' }) => (
     <>
@@ -115,14 +116,14 @@ export const ogFoundersEcosystemPartners: CommunityItem = {
 }
 
 export const ogFoundersExternalContributors: CommunityItem = {
-  leftImageSrc: '/images/nfts/og-contributors-thumb.jpg',
+  cardImage: ipfsGatewayUrl('QmRJtD9EacXJ5KQRJchQPwtEjqok2fEZtAWj2696nZ7Kn1'),
   title: 'OG Contributors',
   subtitle: 'DeFi',
   description:
     "Awarded to those who demonstrated exceptional contributions during the collective's formative stages.",
   nftAddress: nftContracts.OG_CONTRIBUTORS,
   numberOfMembers: 0,
-  cover: '/images/nfts/contributors-cover.png',
+  cover: ipfsGatewayUrl('QmVqzzZ5eNR4abJydJVQp7dNcGBxWs698par1FxmyW37PH'),
   isMintable: false,
   longDescription: ({ activation = 'MAR 2025' }) => (
     <>
@@ -140,15 +141,15 @@ export const ogFoundersExternalContributors: CommunityItem = {
   ),
 }
 
-export const vanguardCommunity = {
-  leftImageSrc: '/images/nfts/vanguard-thumb.jpg',
+export const vanguardCommunity: CommunityItem = {
+  cardImage: ipfsGatewayUrl('QmZaxudWS9U6ozvbCVRHP4ksMPHDLX71yAT1mAz5xMKvzi/1.png'),
   title: 'Vanguard',
   subtitle: 'DeFi',
   description:
     'The Vanguard badge celebrates the governance pioneers who actively participate in shaping the DAO.',
   nftAddress: nftContracts.VANGUARD,
   numberOfMembers: 0,
-  cover: '/images/nfts/vanguard-cover.jpg',
+  cover: ipfsGatewayUrl('QmZaxudWS9U6ozvbCVRHP4ksMPHDLX71yAT1mAz5xMKvzi/2.png'),
   isMintable: true,
   longDescription: (
     { activation = 'APR 2025' }: { activation?: ReactNode }, // DAO TODO: the whole object should be properly typed
@@ -186,14 +187,14 @@ export const vanguardCommunity = {
 }
 
 export const betaBuilders: CommunityItem = {
-  leftImageSrc: '/images/nfts/bb-thumb-v2.png',
+  cardImage: ipfsGatewayUrl('bafybeibkzvkxkticjh26dngcym35mlzf6mwb3d24z3fgi5ty3pgbojcmme/41.jpg'),
   title: 'Beta Builders',
   subtitle: 'DeFi',
   description:
     'Beta Builders are the innovation heroes, creating the dApps and protocols that define our ecosystem.',
   nftAddress: nftContracts.BB,
   numberOfMembers: 0,
-  cover: '/images/nfts/bb-cover.png',
+  cover: ipfsGatewayUrl('bafybeibkzvkxkticjh26dngcym35mlzf6mwb3d24z3fgi5ty3pgbojcmme/41.jpg'),
   isMintable: false,
   longDescription: () => (
     <>
@@ -217,13 +218,12 @@ export const betaBuilders: CommunityItem = {
 }
 
 export const rootstockHacktivator: CommunityItem = {
-  leftImageSrc: '/images/nfts/rsk-hacktivator-thumb.png',
+  cardImage: '/images/nfts/rsk-hacktivator-thumb.png',
   title: 'HACKTIVATOR',
   subtitle: '', // Not necessary
   description: 'Developers evolve Rootstock by contributing code or educational content - for rewards.',
   nftAddress: '', // It's just a LINK - not an actual NFT
   numberOfMembers: 0,
-  cover: '',
   isMintable: false,
   longDescription: () => '',
   readMoreLink: 'https://dev.rootstock.io/resources/contribute/hacktivator/',
