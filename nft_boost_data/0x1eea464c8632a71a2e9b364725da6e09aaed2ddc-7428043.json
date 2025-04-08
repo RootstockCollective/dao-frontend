@@ -1,0 +1,356 @@
+{
+  "nftContractAddress": "0x1eea464c8632a71a2e9b364725da6e09aaed2ddc",
+  "boostPercentage": 30,
+  "calculationBlock": 7428043,
+  "timestamp": "1744113788",
+  "holders": {
+    "0x31c39682382924499e35f49ce19e05a4529bacbb": {
+      "estimatedRBTCRewards": "731853533604062",
+      "estimatedRIFRewards": "332660697092756758102",
+      "boostedRBTCRewards": "951409593685280",
+      "boostedRIFRewards": "432458906220583785532"
+    },
+    "0x81df35317df983e419630908ef6cb2bb48ce21ca": {
+      "estimatedRBTCRewards": "181786460167",
+      "estimatedRIFRewards": "82630209167064896",
+      "boostedRBTCRewards": "236322398217",
+      "boostedRIFRewards": "107419271917184364"
+    },
+    "0x5a66069e5ca4bf5211a3f7b18c0c2ccf32ac4d6f": {
+      "estimatedRBTCRewards": "23145991845374",
+      "estimatedRIFRewards": "10520905384261226850",
+      "boostedRBTCRewards": "30089789398986",
+      "boostedRIFRewards": "13677176999539594905"
+    },
+    "0xc0160a06ced5fa9583fb006d9e6669519132d2fa": {
+      "estimatedRBTCRewards": "245037470397625",
+      "estimatedRIFRewards": "111380668362557441921",
+      "boostedRBTCRewards": "318548711516912",
+      "boostedRIFRewards": "144794868871324674497"
+    },
+    "0xec068f31fa194d9036ed3c61c3546111ac3c8902": {
+      "estimatedRBTCRewards": "11195738620020",
+      "estimatedRIFRewards": "5088972100010243305",
+      "boostedRBTCRewards": "14554460206026",
+      "boostedRIFRewards": "6615663730013316296"
+    },
+    "0xe38bf6f68dbf5733d5bf3c9e3fe47bf7f9eda3e1": {
+      "estimatedRBTCRewards": "7435910232085",
+      "estimatedRIFRewards": "3379959196402685029",
+      "boostedRBTCRewards": "9666683301710",
+      "boostedRIFRewards": "4393946955323490537"
+    },
+    "0xd2f767b46b507951935d0aa64a5e96a53dbf326d": {
+      "estimatedRBTCRewards": "190186057893800",
+      "estimatedRIFRewards": "86448208133545573166",
+      "boostedRBTCRewards": "247241875261940",
+      "boostedRIFRewards": "112382670573609245115"
+    },
+    "0xe4b24247204d210fd813e39ffe070f181851cd4d": {
+      "estimatedRBTCRewards": "8814401062461",
+      "estimatedRIFRewards": "4006545937482689860",
+      "boostedRBTCRewards": "11458721381199",
+      "boostedRIFRewards": "5208509718727496818"
+    },
+    "0x29dc0494716b02de4a4b82650b786329c2ae4cde": {
+      "estimatedRBTCRewards": "0",
+      "estimatedRIFRewards": "0",
+      "boostedRBTCRewards": "0",
+      "boostedRIFRewards": "0"
+    },
+    "0x3e00aee52066ee270f8badf0b5bb41993f057321": {
+      "estimatedRBTCRewards": "255518175164427",
+      "estimatedRIFRewards": "116144625074740617477",
+      "boostedRBTCRewards": "332173627713755",
+      "boostedRIFRewards": "150988012597162802720"
+    },
+    "0x674ab206940fc31130a6b950adad5d066170a1f1": {
+      "estimatedRBTCRewards": "0",
+      "estimatedRIFRewards": "0",
+      "boostedRBTCRewards": "0",
+      "boostedRIFRewards": "0"
+    },
+    "0x0e2d4778422ab0e550d362e4564d59e78e2f8872": {
+      "estimatedRBTCRewards": "0",
+      "estimatedRIFRewards": "0",
+      "boostedRBTCRewards": "0",
+      "boostedRIFRewards": "0"
+    },
+    "0xdccfbbcc21899e567be9c066a6e3dd067d6e19da": {
+      "estimatedRBTCRewards": "0",
+      "estimatedRIFRewards": "0",
+      "boostedRBTCRewards": "0",
+      "boostedRIFRewards": "0"
+    },
+    "0x4287a74bd4b0d8f81943edd47a71a71345b8124e": {
+      "estimatedRBTCRewards": "4684194817914845",
+      "estimatedRIFRewards": "2129179462688567364590",
+      "boostedRBTCRewards": "6089453263289298",
+      "boostedRIFRewards": "2767933301495137573967"
+    },
+    "0x7260bb1daeb4a1ba31a4e8d2d962883592f00584": {
+      "estimatedRBTCRewards": "44393493922900",
+      "estimatedRIFRewards": "20178860874045880774",
+      "boostedRBTCRewards": "57711542099770",
+      "boostedRIFRewards": "26232519136259645006"
+    },
+    "0x5c59eb50ff62326331745403852c4b0dfb824795": {
+      "estimatedRBTCRewards": "55868088300661",
+      "estimatedRIFRewards": "25394585591210604519",
+      "boostedRBTCRewards": "72628514790859",
+      "boostedRIFRewards": "33012961268573785874"
+    },
+    "0x1723e4d5daac7d6761941237d9a70b200424af41": {
+      "estimatedRBTCRewards": "56806611740511",
+      "estimatedRIFRewards": "25821187154778500538",
+      "boostedRBTCRewards": "73848595262664",
+      "boostedRIFRewards": "33567543301212050699"
+    },
+    "0x2bb87714704d3c9b90f22cf3df4d1bd8102fa206": {
+      "estimatedRBTCRewards": "3413126089708",
+      "estimatedRIFRewards": "1551420949867887369",
+      "boostedRBTCRewards": "4437063916620",
+      "boostedRIFRewards": "2016847234828253579"
+    },
+    "0x53afcd06c533e6172f177ad35ea5178bc0b464d6": {
+      "estimatedRBTCRewards": "0",
+      "estimatedRIFRewards": "0",
+      "boostedRBTCRewards": "0",
+      "boostedRIFRewards": "0"
+    },
+    "0x128b4d9a062d137710f362d2b5c0b81e2726cc40": {
+      "estimatedRBTCRewards": "0",
+      "estimatedRIFRewards": "0",
+      "boostedRBTCRewards": "0",
+      "boostedRIFRewards": "0"
+    },
+    "0x82a41714bfec405b5ba392dc78589d5316693d21": {
+      "estimatedRBTCRewards": "3329512044217",
+      "estimatedRIFRewards": "1513414565553441058",
+      "boostedRBTCRewards": "4328365657482",
+      "boostedRIFRewards": "1967438935219473375"
+    },
+    "0x23c535c7c770673e764c05d61e1005b293469b6f": {
+      "estimatedRBTCRewards": "2590395582847484",
+      "estimatedRIFRewards": "1177452537657948923380",
+      "boostedRBTCRewards": "3367514257701729",
+      "boostedRIFRewards": "1530688298955333600394"
+    },
+    "0xa9156016996164feb11fb319ad7120a6b9089221": {
+      "estimatedRBTCRewards": "0",
+      "estimatedRIFRewards": "0",
+      "boostedRBTCRewards": "0",
+      "boostedRIFRewards": "0"
+    },
+    "0x2946861248c6e0345a2574f5bf4a5e836b58ee5f": {
+      "estimatedRBTCRewards": "0",
+      "estimatedRIFRewards": "0",
+      "boostedRBTCRewards": "0",
+      "boostedRIFRewards": "0"
+    },
+    "0x3c68031b489cefd28106536471cf936182e311d0": {
+      "estimatedRBTCRewards": "0",
+      "estimatedRIFRewards": "0",
+      "boostedRBTCRewards": "0",
+      "boostedRIFRewards": "0"
+    },
+    "0x12e2f731dd0c57a6073ad7dae2cc564aaa403922": {
+      "estimatedRBTCRewards": "120808244448374",
+      "estimatedRIFRewards": "54912838385624825559",
+      "boostedRBTCRewards": "157050717782886",
+      "boostedRIFRewards": "71386689901312273226"
+    },
+    "0xb23eb6233a4cbbb746a43fa675c773e7f1cbe2de": {
+      "estimatedRBTCRewards": "0",
+      "estimatedRIFRewards": "0",
+      "boostedRBTCRewards": "0",
+      "boostedRIFRewards": "0"
+    },
+    "0x41f5bff3d3bb4777ee47a3a1da534220826c6583": {
+      "estimatedRBTCRewards": "47205255310012",
+      "estimatedRIFRewards": "21456934231823776487",
+      "boostedRBTCRewards": "61366831903015",
+      "boostedRIFRewards": "27894014501370909433"
+    },
+    "0xf454ada0fa4b59c1a84735dc62ba70575793c985": {
+      "estimatedRBTCRewards": "0",
+      "estimatedRIFRewards": "0",
+      "boostedRBTCRewards": "0",
+      "boostedRIFRewards": "0"
+    },
+    "0x47bbb1d26a9930070fac1e9d35e42baba5e89f01": {
+      "estimatedRBTCRewards": "80810956770987",
+      "estimatedRIFRewards": "36732253077721518303",
+      "boostedRBTCRewards": "105054243802283",
+      "boostedRIFRewards": "47751929001037973793"
+    },
+    "0x4870474d263d1059ec0df63aef604d7fc72cd796": {
+      "estimatedRBTCRewards": "250195139279734",
+      "estimatedRIFRewards": "113725063308970804496",
+      "boostedRBTCRewards": "325253681063654",
+      "boostedRIFRewards": "147842582301662045844"
+    },
+    "0x026b7a15ad04180abee7feaf34e0f695426bd193": {
+      "estimatedRBTCRewards": "0",
+      "estimatedRIFRewards": "0",
+      "boostedRBTCRewards": "0",
+      "boostedRIFRewards": "0"
+    },
+    "0x93bfbd9d2d477b68efcf43e10ea1b55f31f7795f": {
+      "estimatedRBTCRewards": "232237416661978",
+      "estimatedRIFRewards": "105562462119081820861",
+      "boostedRBTCRewards": "301908641660571",
+      "boostedRIFRewards": "137231200754806367119"
+    },
+    "0x74dc97aca9acf3e9089d2fe4c6cffe4242aa6c2d": {
+      "estimatedRBTCRewards": "35671528696195",
+      "estimatedRIFRewards": "16214331225543941027",
+      "boostedRBTCRewards": "46372987305053",
+      "boostedRIFRewards": "21078630593207123335"
+    },
+    "0xcd50e7ea474422f2069e66fde5e83e234c336bc1": {
+      "estimatedRBTCRewards": "8105535351409",
+      "estimatedRIFRewards": "3684334250641302076",
+      "boostedRBTCRewards": "10537195956831",
+      "boostedRIFRewards": "4789634525833692698"
+    },
+    "0x568ceefad3519865b50c60bc6f37de377995908a": {
+      "estimatedRBTCRewards": "613137886041",
+      "estimatedRIFRewards": "278699039110315304",
+      "boostedRBTCRewards": "797079251853",
+      "boostedRIFRewards": "362308750843409895"
+    },
+    "0x32f7dc481f0dd413d7acdacb5e17dbbb1891e1eb": {
+      "estimatedRBTCRewards": "221965787702",
+      "estimatedRIFRewards": "100893539864993218",
+      "boostedRBTCRewards": "288555524012",
+      "boostedRIFRewards": "131161601824491183"
+    },
+    "0xa1b1201b1f6ef7a5d589fed4e2cc4441276156b1": {
+      "estimatedRBTCRewards": "14945696372000",
+      "estimatedRIFRewards": "6793498350909543349",
+      "boostedRBTCRewards": "19429405283600",
+      "boostedRIFRewards": "8831547856182406353"
+    },
+    "0x3dd03d7d6c3137f1eb7582ba5957b8a2e26f304a": {
+      "estimatedRBTCRewards": "57093823409560",
+      "estimatedRIFRewards": "25951737913436645272",
+      "boostedRBTCRewards": "74221970432428",
+      "boostedRIFRewards": "33737259287467638853"
+    },
+    "0x048f00b05c061c34380bf13be03f6ae98582439b": {
+      "estimatedRBTCRewards": "46209884027359",
+      "estimatedRIFRewards": "21004492739709977666",
+      "boostedRBTCRewards": "60072849235566",
+      "boostedRIFRewards": "27305840561622970965"
+    },
+    "0xca7dff4de75d85ff2200f23ebd12119942f4a5e8": {
+      "estimatedRBTCRewards": "0",
+      "estimatedRIFRewards": "0",
+      "boostedRBTCRewards": "0",
+      "boostedRIFRewards": "0"
+    },
+    "0xa4c4fceda0e52971cfb98d7b849ece4a47c8379b": {
+      "estimatedRBTCRewards": "7539490884587",
+      "estimatedRIFRewards": "3427041311176685614",
+      "boostedRBTCRewards": "9801338149963",
+      "boostedRIFRewards": "4455153704529691298"
+    },
+    "0xa1e8c71031bdcff54a2b8376c7fd1694961e83b0": {
+      "estimatedRBTCRewards": "252621156736834",
+      "estimatedRIFRewards": "114827798516742796369",
+      "boostedRBTCRewards": "328407503757884",
+      "boostedRIFRewards": "149276138071765635279"
+    },
+    "0xd5475e57f744bf9dc9801562d31303f13cc2715e": {
+      "estimatedRBTCRewards": "2634158936629027",
+      "estimatedRIFRewards": "1197344971195012875599",
+      "boostedRBTCRewards": "3424406617617735",
+      "boostedRIFRewards": "1556548462553516738278"
+    },
+    "0x21fa8998fcb61a94963cbe54b2d2d24304a6ed0b": {
+      "estimatedRBTCRewards": "47442968125101",
+      "estimatedRIFRewards": "21564985511409731246",
+      "boostedRBTCRewards": "61675858562631",
+      "boostedRIFRewards": "28034481164832650619"
+    },
+    "0xa440ff2e5ba9f8afda1a9cab493c703bae42aa43": {
+      "estimatedRBTCRewards": "11738244362076",
+      "estimatedRIFRewards": "5335565619127292074",
+      "boostedRBTCRewards": "15259717670698",
+      "boostedRIFRewards": "6936235304865479696"
+    },
+    "0x3f7eafcae06998d391bf8c6c6ddae9e52c92d518": {
+      "estimatedRBTCRewards": "866470183751",
+      "estimatedRIFRewards": "393850083523199508",
+      "boostedRBTCRewards": "1126411238876",
+      "boostedRIFRewards": "512005108580159360"
+    },
+    "0xf9090502a5aaa99a3d3be1505c66370201c986fb": {
+      "estimatedRBTCRewards": "183024840762140",
+      "estimatedRIFRewards": "83193109437336900543",
+      "boostedRBTCRewards": "237932292990782",
+      "boostedRIFRewards": "108151042268537970705"
+    },
+    "0x9c53a9db71b700b98178e89e4960facfe042504f": {
+      "estimatedRBTCRewards": "505692963925558",
+      "estimatedRIFRewards": "229860438147981147154",
+      "boostedRBTCRewards": "657400853103225",
+      "boostedRIFRewards": "298818569592375491300"
+    },
+    "0xbab8432a1fa14b2c0f9ffa91df8ca32f847cba63": {
+      "estimatedRBTCRewards": "12896909169226",
+      "estimatedRIFRewards": "5862231440558395669",
+      "boostedRBTCRewards": "16765981919993",
+      "boostedRIFRewards": "7620900872725914369"
+    },
+    "0x36f52582424929ce9425f7b8fa3adbc089a97a1e": {
+      "estimatedRBTCRewards": "47383627698203",
+      "estimatedRIFRewards": "21538012590092534179",
+      "boostedRBTCRewards": "61598716007663",
+      "boostedRIFRewards": "27999416367120294432"
+    },
+    "0x4f390587dd4df46fc59a9c757061b4d345c69629": {
+      "estimatedRBTCRewards": "53682857003789",
+      "estimatedRIFRewards": "24401298638086222494",
+      "boostedRBTCRewards": "69787714104925",
+      "boostedRIFRewards": "31721688229512089242"
+    },
+    "0xf7e1baf8261f85f01b0d955a998a5d1388862fcc": {
+      "estimatedRBTCRewards": "53714279485915",
+      "estimatedRIFRewards": "24415581584507089622",
+      "boostedRBTCRewards": "69828563331689",
+      "boostedRIFRewards": "31740256059859216508"
+    },
+    "0x72d230c11faf135743b6166d783ddd684531a2c1": {
+      "estimatedRBTCRewards": "48831077298224",
+      "estimatedRIFRewards": "22195944226465944100",
+      "boostedRBTCRewards": "63480400487691",
+      "boostedRIFRewards": "28854727494405727330"
+    },
+    "0xdfe89e28d63a3b74f2e1e57c990a824b141fdc79": {
+      "estimatedRBTCRewards": "236486620079390",
+      "estimatedRIFRewards": "107493918217905224963",
+      "boostedRBTCRewards": "307432606103207",
+      "boostedRIFRewards": "139742093683276792451"
+    },
+    "0x181c27b57bc055655bfbaacb5614e924e1af15a5": {
+      "estimatedRBTCRewards": "0",
+      "estimatedRIFRewards": "0",
+      "boostedRBTCRewards": "0",
+      "boostedRIFRewards": "0"
+    },
+    "0x4f62c4228f50875a2f3be0921c4c2c41029a8bae": {
+      "estimatedRBTCRewards": "0",
+      "estimatedRIFRewards": "0",
+      "boostedRBTCRewards": "0",
+      "boostedRIFRewards": "0"
+    },
+    "0x96eee666d975afa822bb85b4efd1abdd55a5d5e4": {
+      "estimatedRBTCRewards": "801529639231",
+      "estimatedRIFRewards": "364331654196809489",
+      "boostedRBTCRewards": "1041988531000",
+      "boostedRIFRewards": "473631150455852335"
+    }
+  }
+}
