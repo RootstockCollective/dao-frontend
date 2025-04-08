@@ -6,7 +6,7 @@ import { CommunityItemButtonHandler } from '@/app/communities/components/Communi
 import { applyPinataImageOptions } from '@/lib/ipfs'
 
 interface CommunityItemProps {
-  cardImage: string
+  leftImageSrc: string
   title: string
   subtitle: string
   nftAddress: string
@@ -20,9 +20,17 @@ interface CommunityItemProps {
  * Dynamic highlighting of the 'Boosted' state is achieved through lightweight client components.
  */
 // prettier-ignore
-export const CommunityItem = ({ cardImage, title, nftAddress, description, readMoreLink }: CommunityItemProps) => {
-  const isExternalImage = cardImage.startsWith('http')
-  const image = isExternalImage ? applyPinataImageOptions(cardImage, { width: 269, height: 269, quality: 90 }) : cardImage
+export const CommunityItem = ({
+  leftImageSrc,
+  title,
+  nftAddress,
+  description,
+  readMoreLink,
+}: CommunityItemProps) => {
+  const isExternalImage = leftImageSrc.startsWith('http')
+  const image = isExternalImage
+    ? applyPinataImageOptions(leftImageSrc, { width: 269, height: 269, quality: 90 })
+    : leftImageSrc
   return (
     <BoostedBox nftAddress={nftAddress}>
       <div

@@ -11,7 +11,7 @@ describe('CommunityItem', () => {
   const title = 'Early adopters'
   const nftAddress = '0x123'
   const communityItemProps = {
-    cardImage: '/src',
+    leftImageSrc: '/src',
     title,
     subtitle: '',
     nftAddress,

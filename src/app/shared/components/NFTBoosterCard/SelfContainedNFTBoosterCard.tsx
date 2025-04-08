@@ -9,7 +9,7 @@ type SelfContainedNFTBoosterCardPros = {
 export const SelfContainedNFTBoosterCard: FC<SelfContainedNFTBoosterCardPros> = ({ forceRender = false }) => {
   const { userHasRewards, boostData } = useNFTBoosterContext()
 
-  const { title, cardImage } = communitiesMapByContract[boostData?.nftContractAddress ?? ''] ?? {}
+  const { title, leftImageSrc } = communitiesMapByContract[boostData?.nftContractAddress ?? ''] ?? {}
 
   if (!title || !forceRender) {
     return null
@@ -22,5 +22,7 @@ export const SelfContainedNFTBoosterCard: FC<SelfContainedNFTBoosterCardPros> = 
     ? `You're earning ${boostValue}% more rewards thanks to your ${title} NFT.`
     : `Voting ${title} Booster`
 
-  return <NFTBoosterCard boostValue={boostValue} nftThumbPath={cardImage} title={title} content={content} />
+  return (
+    <NFTBoosterCard boostValue={boostValue} nftThumbPath={leftImageSrc} title={title} content={content} />
+  )
 }

@@ -5,7 +5,7 @@ import { Header, Paragraph } from '@/components/Typography'
 import { ipfsGatewayUrl } from '@/lib/ipfs'
 
 export interface CommunityItem {
-  cardImage: string
+  leftImageSrc: string
   title: string
   subtitle: string
   description: string
@@ -36,7 +36,7 @@ const Row = ({ leftText, rightText }: RowProps) => (
 const DEFAULT_CLASS_FOR_ROW_CONTAINER = 'mt-4 grid grid-cols-2 gap-[24px] items-center'
 
 export const earlyAdoptersCommunity: CommunityItem = {
-  cardImage: ipfsGatewayUrl('QmfDwhwpU21G9x2kzbhw1LjQGDUFLucAjcJsn8ivqTgXrm/1.png'),
+  leftImageSrc: ipfsGatewayUrl('QmfDwhwpU21G9x2kzbhw1LjQGDUFLucAjcJsn8ivqTgXrm/1.png'),
   title: 'Early Adopters',
   subtitle: 'DeFi',
   description:
@@ -64,7 +64,7 @@ export const earlyAdoptersCommunity: CommunityItem = {
 }
 
 export const ogFounders: CommunityItem = {
-  cardImage: ipfsGatewayUrl('QmVL654arKhZu2BiUMnAcqHahg9iwwxdrdaDF8BaDQZYqx'),
+  leftImageSrc: ipfsGatewayUrl('QmVL654arKhZu2BiUMnAcqHahg9iwwxdrdaDF8BaDQZYqx'),
   title: 'OG Founders',
   subtitle: 'DeFi',
   description:
@@ -90,7 +90,7 @@ export const ogFounders: CommunityItem = {
 }
 
 export const ogFoundersEcosystemPartners: CommunityItem = {
-  cardImage: ipfsGatewayUrl('QmZdtTofnqG2HC8XB7Dab7xnWxYGmn9kUWqP1gBxpSipvW'),
+  leftImageSrc: ipfsGatewayUrl('QmZdtTofnqG2HC8XB7Dab7xnWxYGmn9kUWqP1gBxpSipvW'),
   title: 'OG Partners',
   subtitle: 'DeFi',
   description:
@@ -116,7 +116,7 @@ export const ogFoundersEcosystemPartners: CommunityItem = {
 }
 
 export const ogFoundersExternalContributors: CommunityItem = {
-  cardImage: ipfsGatewayUrl('QmRJtD9EacXJ5KQRJchQPwtEjqok2fEZtAWj2696nZ7Kn1'),
+  leftImageSrc: ipfsGatewayUrl('QmRJtD9EacXJ5KQRJchQPwtEjqok2fEZtAWj2696nZ7Kn1'),
   title: 'OG Contributors',
   subtitle: 'DeFi',
   description:
@@ -142,7 +142,7 @@ export const ogFoundersExternalContributors: CommunityItem = {
 }
 
 export const vanguardCommunity: CommunityItem = {
-  cardImage: ipfsGatewayUrl('QmZaxudWS9U6ozvbCVRHP4ksMPHDLX71yAT1mAz5xMKvzi/1.png'),
+  leftImageSrc: ipfsGatewayUrl('QmZaxudWS9U6ozvbCVRHP4ksMPHDLX71yAT1mAz5xMKvzi/1.png'),
   title: 'Vanguard',
   subtitle: 'DeFi',
   description:
@@ -187,7 +187,7 @@ export const vanguardCommunity: CommunityItem = {
 }
 
 export const betaBuilders: CommunityItem = {
-  cardImage: ipfsGatewayUrl('bafybeibkzvkxkticjh26dngcym35mlzf6mwb3d24z3fgi5ty3pgbojcmme/41.jpg'),
+  leftImageSrc: ipfsGatewayUrl('bafybeibkzvkxkticjh26dngcym35mlzf6mwb3d24z3fgi5ty3pgbojcmme/41.jpg'),
   title: 'Beta Builders',
   subtitle: 'DeFi',
   description:
@@ -218,7 +218,7 @@ export const betaBuilders: CommunityItem = {
 }
 
 export const rootstockHacktivator: CommunityItem = {
-  cardImage: '/images/nfts/rsk-hacktivator-thumb.png',
+  leftImageSrc: '/images/nfts/rsk-hacktivator-thumb.png',
   title: 'HACKTIVATOR',
   subtitle: '', // Not necessary
   description: 'Developers evolve Rootstock by contributing code or educational content - for rewards.',
