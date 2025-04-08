@@ -29,6 +29,8 @@ export default function Page() {
 
   const showNFTBoost = isCampaignActive(nftAddress)
 
+  const { discussionLink } = nftInfo || {}
+
   return (
     <CommunityNFTProvider nftAddress={nftAddress}>
       <div className="flex flex-col xl:flex-row justify-between pl-4 gap-8">
@@ -48,6 +50,31 @@ export default function Page() {
                 : undefined,
             })}
           </div>
+
+          {/* Conditionally render Discussion button */}
+          {discussionLink && (
+            <div className="mb-[24px]">
+              <a
+                href={discussionLink}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-block px-4 py-2 bg-white text-black rounded-md hover:bg-gray-200 transition-colors font-bold"
+              >
+                Discussion
+              </a>
+            </div>
+          )}
+          <div className="mb-[24px] font-extralight">
+            {nftInfo?.campaignDetails &&
+              nftInfo.campaignDetails({
+                activation: showNFTBoost
+                  ? DateTime.fromSeconds(Number(boostData?.timestamp) ?? 0)
+                      .toFormat('MMM yyyy')
+                      .toUpperCase()
+                  : undefined,
+              })}
+          </div>
+
           {showNFTBoost && (
             <div className="inline-flex items-center gap-1 pb-6">
               <BoltSvg />
