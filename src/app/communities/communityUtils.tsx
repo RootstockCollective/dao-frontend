@@ -35,6 +35,7 @@ const Row = ({ leftText, rightText }: RowProps) => (
 
 const DEFAULT_CLASS_FOR_ROW_CONTAINER = 'mt-4 grid grid-cols-2 gap-[24px] items-center'
 
+// For details on how to add IPFS images, see `src/lib/README-IPFS.md`
 export const earlyAdoptersCommunity: CommunityItem = {
   leftImageSrc: ipfsGatewayUrl('QmfDwhwpU21G9x2kzbhw1LjQGDUFLucAjcJsn8ivqTgXrm/1.png'),
   title: 'Early Adopters',
