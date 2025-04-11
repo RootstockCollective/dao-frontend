@@ -1,5 +1,6 @@
 'use client'
-import { ReactNode, useEffect, useMemo } from 'react'
+
+import { ReactNode, useMemo } from 'react'
 import { Rewards } from '@/app/collective-rewards/rewards/MyRewards'
 import { BalancesSection } from '@/app/user/Balances/BalancesSection'
 import { CommunitiesSection } from '@/app/user/Communities/CommunitiesSection'
