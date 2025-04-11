@@ -32,9 +32,7 @@ export default function User() {
   const activeTab = (searchParams.get('tab') as TabValue | null) ?? 'holdings'
   return (
     <>
-      {/* We don't show the tab if it's loading */}
       {!isConnected && <HeroSection />}
-
       <UnderlineTabs
         tabs={tabs}
         activeTab={activeTab}
