@@ -33,7 +33,8 @@ export default function User() {
   const searchParams = useSearchParams()
   const activeTab = useMemo<TabValue>(() => {
     const currentTab = (searchParams.get('tab') ?? defaultTab) as TabValue
-    return currentTab in tabsContent ? currentTab : defaultTab
+    // if selected tab doesn't exist display default tab
+    return values.includes(currentTab) ? currentTab : defaultTab
   }, [searchParams])
   return (
     <>
