@@ -1,66 +1,59 @@
 'use client'
+import { ReactNode } from 'react'
 import { Rewards } from '@/app/collective-rewards/rewards/MyRewards'
 import { BalancesSection } from '@/app/user/Balances/BalancesSection'
 import { CommunitiesSection } from '@/app/user/Communities/CommunitiesSection'
 import { DelegationSection } from '@/app/user/Delegation'
-import { Tabs, TabsContent, TabsList, TabsTrigger, TabTitle } from '@/components/Tabs'
+import { UnderlineTabs, BaseTab } from '@/components/Tabs'
 import { TxStatusMessage } from '@/components/TxStatusMessage'
-import { useSearchParams } from 'next/navigation'
+import { usePathname, useSearchParams, useRouter } from 'next/navigation'
 import { useAccount } from 'wagmi'
 import { HeroSection } from './HeroSection'
 
 const values = ['holdings', 'rewards'] as const
-
 type TabValue = (typeof values)[number]
-type Tabs = {
-  [key in TabValue]: {
-    value: key
-    title: string
-  }
-}
-const tabs: Tabs = {
-  holdings: {
+
+const tabs: BaseTab<TabValue>[] = [
+  {
     value: 'holdings',
-    title: 'My Holdings',
+    label: 'My Holdings',
   },
-  rewards: {
+  {
     value: 'rewards',
-    title: 'My Rewards',
+    label: 'My Rewards',
   },
-}
+]
 
-const User = () => {
+export default function User() {
   const { isConnected } = useAccount()
-
+  const router = useRouter()
+  const pathName = usePathname()
   const searchParams = useSearchParams()
-  const tabFromParams = searchParams?.get('tab') as TabValue
-  const defaultTabValue = tabs[tabFromParams]?.value ?? 'holdings'
-
+  const activeTab = (searchParams.get('tab') as TabValue | null) ?? 'holdings'
   return (
     <>
       {/* We don't show the tab if it's loading */}
-      <Tabs defaultValue={defaultTabValue}>
-        {!isConnected && <HeroSection />}
-        <TabsList>
-          <TabsTrigger value={tabs.holdings.value}>
-            <TabTitle>{tabs.holdings.title}</TabTitle>
-          </TabsTrigger>
-          <TabsTrigger value={tabs.rewards.value}>
-            <TabTitle>{tabs.rewards.title}</TabTitle>
-          </TabsTrigger>
-        </TabsList>
-        <TabsContent value={tabs.holdings.value}>
-          <TxStatusMessage messageType="staking" />
-          <BalancesSection />
-          <DelegationSection />
-          <CommunitiesSection />
-        </TabsContent>
-        <TabsContent value={tabs.rewards.value}>
-          <Rewards />
-        </TabsContent>
-      </Tabs>
+      {!isConnected && <HeroSection />}
+
+      <UnderlineTabs
+        tabs={tabs}
+        activeTab={activeTab}
+        onTabChange={(newTab: TabValue) => router.push(`${pathName}?${new URLSearchParams({ tab: newTab })}`)}
+      >
+        <div className="pt-4">{tabsContent[activeTab]}</div>
+      </UnderlineTabs>
     </>
   )
 }
 
-export default User
+const tabsContent: Record<TabValue, ReactNode> = {
+  holdings: (
+    <>
+      <TxStatusMessage messageType="staking" />
+      <BalancesSection />
+      <DelegationSection />
+      <CommunitiesSection />
+    </>
+  ),
+  rewards: <Rewards />,
+}
