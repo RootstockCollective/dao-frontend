@@ -17,6 +17,7 @@ export function TabsSection() {
 
   return (
     <UnderlineTabs
+      layoutId="treasury-tab"
       tabs={Object.keys(cards).map(value => ({ value: value as keyof typeof cards }))}
       activeTab={activeTab}
       onTabChange={setActiveTab}

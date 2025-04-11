@@ -40,6 +40,7 @@ export default function User() {
     <>
       {!isConnected && <HeroSection />}
       <UnderlineTabs
+        layoutId="user-tab"
         tabs={tabs}
         activeTab={activeTab}
         onTabChange={(newTab: TabValue) => router.push(`${pathName}?${new URLSearchParams({ tab: newTab })}`)}
