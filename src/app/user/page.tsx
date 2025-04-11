@@ -1,5 +1,5 @@
 'use client'
-import { ReactNode } from 'react'
+import { ReactNode, useEffect, useMemo } from 'react'
 import { Rewards } from '@/app/collective-rewards/rewards/MyRewards'
 import { BalancesSection } from '@/app/user/Balances/BalancesSection'
 import { CommunitiesSection } from '@/app/user/Communities/CommunitiesSection'
@@ -12,6 +12,7 @@ import { HeroSection } from './HeroSection'
 
 const values = ['holdings', 'rewards'] as const
 type TabValue = (typeof values)[number]
+const [defaultTab] = values
 
 const tabs: BaseTab<TabValue>[] = [
   {
@@ -29,7 +30,10 @@ export default function User() {
   const router = useRouter()
   const pathName = usePathname()
   const searchParams = useSearchParams()
-  const activeTab = (searchParams.get('tab') as TabValue | null) ?? 'holdings'
+  const activeTab = useMemo<TabValue>(() => {
+    const currentTab = (searchParams.get('tab') ?? defaultTab) as TabValue
+    return currentTab in tabsContent ? currentTab : defaultTab
+  }, [searchParams])
   return (
     <>
       {!isConnected && <HeroSection />}
