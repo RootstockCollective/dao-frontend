@@ -70,6 +70,7 @@ export function applyPinataImageOptions(
  */
 export async function fetchIpfsNftMeta(cid: string): Promise<NftMeta> {
   const gatewayUrl = appendPinataTokenToUrl(ipfsGatewayUrl(cid))
+  if (!gatewayUrl) throw new Error('fetchIpfsNftMeta: unknown IPFS gateway')
   const res = await fetch(gatewayUrl)
   if (!res.ok) throw new Error(`Failed to fetch IPFS data: ${res.status} ${res.statusText}`)
   return res.json()
@@ -83,7 +84,7 @@ export async function fetchIpfsNftMeta(cid: string): Promise<NftMeta> {
  */
 export function ipfsGatewayUrl(cid: string) {
   const gateway = process.env.NEXT_PUBLIC_IPFS_GATEWAY
-  if (!gateway) throw new Error('Unknown IPFS gateway')
+  if (!gateway) return ''
   cid = removeIpfsPrefix(cid)
   return `https://${gateway}/ipfs/${cid}`
 }

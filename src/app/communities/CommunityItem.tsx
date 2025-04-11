@@ -3,6 +3,7 @@ import Image from 'next/image'
 import { BoostedBox } from './components/BoostedBox'
 import { BoostedLabel } from '@/app/communities/components/BoostedLabel'
 import { CommunityItemButtonHandler } from '@/app/communities/components/CommunityItemButtonHandler'
+import { applyPinataImageOptions } from '@/lib/ipfs'
 
 interface CommunityItemProps {
   leftImageSrc: string
@@ -18,6 +19,7 @@ interface CommunityItemProps {
  * Server Component: Renders a community card as part of the static communities page.
  * Dynamic highlighting of the 'Boosted' state is achieved through lightweight client components.
  */
+// prettier-ignore
 export const CommunityItem = ({
   leftImageSrc,
   title,
@@ -25,6 +27,10 @@ export const CommunityItem = ({
   description,
   readMoreLink,
 }: CommunityItemProps) => {
+  const isExternalImage = leftImageSrc.startsWith('http')
+  const image = isExternalImage
+    ? applyPinataImageOptions(leftImageSrc, { width: 269, height: 269, quality: 90 })
+    : leftImageSrc
   return (
     <BoostedBox nftAddress={nftAddress}>
       <div
@@ -33,7 +39,14 @@ export const CommunityItem = ({
       >
         {/* image */}
         <div className="relative mb-[20px] w-full aspect-square">
-          <Image src={leftImageSrc} alt="An image that contains a community logo" sizes="269px" fill />
+          <Image
+            crossOrigin={isExternalImage ? 'anonymous' : undefined}
+            unoptimized={isExternalImage}
+            src={image}
+            alt={title}
+            sizes="269px"
+            fill
+          />
         </div>
         <div className="flex flex-col flex-1">
           {/* Title */}

@@ -75,6 +75,32 @@ const optimizedImageUrl = applyPinataImageOptions(gatewayUrl, {
 
 You can now pass the resulting URL (`optimizedImageUrl`) into the `src` prop of an `<img>` or Next.js `<Image>` component, and the image will load accordingly.
 
+## Image Directories on IPFS (NFT Images)
+
+We have a large number of NFT images hosted and pinned on [Piñata](https://www.pinata.cloud/), organized by community badge. You can reference these directly via their IPFS directories. This is the preferred approach, as it leverages Piñata's gateway optimizations and avoids putting image processing or hosting load on our own server.
+
+Here are the base IPFS folders containing badge images:
+
+- **Early Adopters**: `ipfs://bafybeih233klnpbruiyacttq5n4xs6vo25ybehmcybdwy4npxpqasf2f6y`
+- **OG Founders**: `ipfs://bafybeickypxnb6g4bwm6t66tqf4s6gg2q53nt6pwtmw2ihhoehekuiqfc4`
+- **OG Partners**: `ipfs://bafybeifak5k7zjyc52hjn3ytkdzzp6ruxia4kdbjwpoooi5bvfbnciuiay`
+- **OG Contributors**: `ipfs://bafybeig54pevpgwnm7ync2672nocidosultzmz5wl47cnafm6sygrqrzsq`
+- **Vanguards**: `ipfs://bafybeifhdnb4yh4g57tfsprpplih5soapjxf66h5batkke2eaumbqfjxo4`
+- **Beta Builders**: `ipfs://bafybeibkzvkxkticjh26dngcym35mlzf6mwb3d24z3fgi5ty3pgbojcmme`
+
+To use an image from these folders, convert its CID path using the `ipfsGatewayUrl` function:
+
+```ts
+ipfsGatewayUrl('bafybeih233klnpbruiyacttq5n4xs6vo25ybehmcybdwy4npxpqasf2f6y/1.png')
+```
+
+This will produce a gateway URL like:
+
+```
+https://red-legislative-meadowlark-461.mypinata.cloud/ipfs/bafybeih233klnpbruiyacttq5n4xs6vo25ybehmcybdwy4npxpqasf2f6y/1.png
+```
+
+Optionally, apply optimizations via `applyPinataImageOptions()`.
 ---
 
 ## How to Load NFT Metadata

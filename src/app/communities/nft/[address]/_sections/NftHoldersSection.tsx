@@ -12,18 +12,22 @@ import { TableIcon } from '@/app/communities/TableIcon'
 import { SquareIcon } from '@/app/communities/SquareIcon'
 import { ErrorMessageAlert } from '@/components/ErrorMessageAlert/ErrorMessageAlert'
 import { HolderColumn } from '../_components/HolderColumn'
-import { applyPinataImageOptions } from '@/lib/ipfs'
+import { applyPinataImageOptions, ipfsGatewayUrl } from '@/lib/ipfs'
 
 interface IdNumberColumnProps {
   id: string
   image?: string
 }
 const IdNumberColumn = ({ id, image }: IdNumberColumnProps) => {
+  const defaultImage = applyPinataImageOptions(
+    ipfsGatewayUrl('QmUSCZPeHVUtdScnnBfFbxUA5ndC3xw3oNBZ83BnfEKMyK/36.png'),
+    { width: 40, height: 40 },
+  )
   return (
     <div className="flex items-center gap-1.5">
       <Image
         unoptimized
-        src={image || '/images/holders-square.png'}
+        src={image || defaultImage}
         width={24}
         height={24}
         alt="Holders Image Square"

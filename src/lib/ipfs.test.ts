@@ -89,9 +89,9 @@ describe('IPFS Utils', () => {
       expect(url).toBe('https://gateway.pinata.cloud/ipfs/Qm123456')
     })
 
-    it('should throw error if no gateway provided', () => {
+    it('should return empty string if IPFS gateway is not defined', () => {
       process.env.NEXT_PUBLIC_IPFS_GATEWAY = ''
-      expect(() => ipfsGatewayUrl('Qm123456')).toThrow('Unknown IPFS gateway')
+      expect(ipfsGatewayUrl('Qm123456')).toBe('')
     })
 
     it('should remove /ipfs/ prefix', () => {
