@@ -1,8 +1,5 @@
 name: Boost backers' rewards NFT campaign deactivation
 
-permissions:
-  contents: write
-
 env:
   BOOST_DATA_BRANCH: 'boost_data/${{ github.event.inputs.env}}'
 on:
@@ -14,6 +11,10 @@ on:
 jobs:
   boost-deactivate:
     runs-on: ubuntu-latest
+
+    permissions:
+      contents: write
+
     steps:
       - name: Checkout
         uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683

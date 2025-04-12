@@ -1,8 +1,5 @@
 name: Vanguard Boost schedule
 
-permissions:
-  contents: write
-
 env:
   BOOST: '30'
   NFT_CONTRACT: '0x1EEA464C8632A71A2E9B364725da6e09aaed2Ddc'
@@ -15,6 +12,10 @@ on:
 jobs:
   boost:
     runs-on: ubuntu-latest
+
+    permissions:
+      contents: write
+
     steps:
       - name: Checkout
         uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
