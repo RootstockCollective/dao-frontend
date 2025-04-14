@@ -8,7 +8,7 @@ export const LeftSidebar = ({
   ConnectedComponent,
 }: LeftSidebarProps) => {
   return (
-    <aside className="h-screen fixed top-0 left-0 w-[300px] sm:overflow-y-auto sm:max-h-screen border border-input-bg px-6 border-b-0 flex flex-col justify-between whitespace-nowrap bg-foreground z-[9]">
+    <aside className="h-screen fixed top-0 left-0 w-[300px] sm:overflow-y-auto sm:max-h-screen border border-input-bg px-6 border-b-0 flex flex-col justify-between whitespace-nowrap bg-foreground z-9">
       <div className="mt-[87px]">
         <SidebarButtons onClick={onSidebarButtonClick} activeButton={activeButton} />
       </div>

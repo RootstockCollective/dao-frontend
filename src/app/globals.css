@@ -1,15 +1,141 @@
-@import '../theme/default.css';
+@import '../theme/default.css' layer(base);
 
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+@import 'tailwindcss';
 
-@layer utilities {
-  .underline-thick {
-    text-decoration-thickness: 0.5px;
+@theme {
+  --font-sans: var(--font-open-sans);
+  --font-sora: Sora;
+  --font-kk-topo: KK-Topo;
+  --font-rootstock-sans: Rootstock-Sans;
+
+  --color-primary: var(--color-primary);
+  --color-secondary: var(--color-secondary);
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-text-primary: var(--text-primary);
+  --color-text-secondary: var(--text-secondary);
+  --color-st-success: var(--st-success);
+  --color-st-info: var(--st-info);
+  --color-st-error: var(--st-error);
+  --color-st-white: var(--st-white);
+  --color-st-queue: var(--st-queue);
+  --color-text-light: var(--text-light);
+  --color-disabled-primary: var(--disabled-primary);
+  --color-disabled-secondary: var(--disabled-secondary);
+  --color-input-bg: var(--input-bg);
+  --color-input-placeholder: var(--input-placeholder);
+  --color-link: var(--link);
+
+  --color-popover: var(--background);
+  --color-popover-foreground: var(--text-primary);
+
+  --color-accent: var(--input-bg);
+  --color-accent-foreground: var(--text-primary);
+
+  --animate-accordion-down: accordion-down 0.2s ease-out;
+  --animate-accordion-up: accordion-up 0.2s ease-out;
+  --animate-collapsible-down: collapsible-down 0.2s ease-out;
+  --animate-collapsible-up: collapsible-up 0.2s ease-out;
+  --animate-translate-x: translate-x 800ms;
+  --animate-fade-out-slide-out: fade-out-slide-out 800ms;
+  --animate-fade-in-slide-in: fade-in-slide-in 800ms;
+
+  @keyframes accordion-down {
+    from {
+      height: 0;
+    }
+    to {
+      height: var(--radix-accordion-content-height);
+    }
   }
+  @keyframes accordion-up {
+    from {
+      height: var(--radix-accordion-content-height);
+    }
+    to {
+      height: 0;
+    }
+  }
+  @keyframes collapsible-down {
+    from {
+      height: 0;
+      opacity: 0;
+    }
+    to {
+      height: var(--radix-collapsible-content-height);
+      opacity: 1;
+    }
+  }
+  @keyframes collapsible-up {
+    from {
+      height: var(--radix-collapsible-content-height);
+      opacity: 1;
+    }
+    to {
+      height: 0;
+      opacity: 0;
+    }
+  }
+  @keyframes fade-out-slide-out {
+    from {
+      opacity: 1;
+      transform: translateY(0);
+      position: absolute;
+    }
+    to {
+      opacity: 0;
+      transform: translateY(-100%);
+      position: absolute;
+    }
+  }
+  @keyframes fade-in-slide-in {
+    from {
+      opacity: 0;
+      transform: translate(-100%, 100%);
+    }
+    to {
+      opacity: 1;
+      transform: translate(0, 0);
+    }
+  }
+  @keyframes translate-x {
+    from {
+      transform: translateX(100px);
+    }
+    to {
+      transform: translateX(0);
+    }
+  }
+}
 
-  div.div-with-gradient::after {
+@utility container {
+  margin-inline: auto;
+}
+
+/*
+  The default border color has changed to `currentcolor` in Tailwind CSS v4,
+  so we've added these compatibility styles to make sure everything still
+  looks the same as it did with Tailwind CSS v3.
+
+  If we ever want to remove these styles, we need to add an explicit border
+  color utility to any element that depends on these defaults.
+*/
+@layer base {
+  *,
+  ::after,
+  ::before,
+  ::backdrop,
+  ::file-selector-button {
+    border-color: var(--color-gray-200, currentcolor);
+  }
+}
+
+@utility underline-thick {
+  text-decoration-thickness: 0.5px;
+}
+
+@utility div-with-gradient {
+  &div::after {
     background: linear-gradient(
       270deg,
       #fffee3 -30.96%,
@@ -26,27 +152,38 @@
     top: 0;
     left: 0;
   }
+}
 
-  .gradient-header {
-    background: linear-gradient(
-      270deg,
-      #fffee3 -30.96%,
-      #f9e1ff 43.65%,
-      #be5b0f 77.22%,
-      #932309 110.79%,
-      #010101 155.56%
-    );
-    width: 100%;
-    height: 48px;
-    display: flex;
-    align-items: center;
-    padding-left: 25px;
-  }
-  .community-item-gradient-hover {
-    transition: all 0.2s linear;
-  }
-  .community-item-gradient-hover:hover {
-    background: linear-gradient(270deg, rgba(255, 254, 227, 0.40) -88.18%, rgba(251, 235, 245, 0.40) -59.86%, rgba(249, 225, 255, 0.40) -44.94%, rgba(190, 91, 15, 0.40) -1.7%, rgba(147, 35, 9, 0.40) 41.54%, rgba(26, 26, 26, 0.00) 84.78%), #1A1A1A;
+@utility gradient-header {
+  background: linear-gradient(
+    270deg,
+    #fffee3 -30.96%,
+    #f9e1ff 43.65%,
+    #be5b0f 77.22%,
+    #932309 110.79%,
+    #010101 155.56%
+  );
+  width: 100%;
+  height: 48px;
+  display: flex;
+  align-items: center;
+  padding-left: 25px;
+}
+
+@utility community-item-gradient-hover {
+  transition: all 0.2s linear;
+  &:hover {
+    background:
+      linear-gradient(
+        270deg,
+        rgba(255, 254, 227, 0.4) -88.18%,
+        rgba(251, 235, 245, 0.4) -59.86%,
+        rgba(249, 225, 255, 0.4) -44.94%,
+        rgba(190, 91, 15, 0.4) -1.7%,
+        rgba(147, 35, 9, 0.4) 41.54%,
+        rgba(26, 26, 26, 0) 84.78%
+      ),
+      #1a1a1a;
     transform: scale(1.01);
   }
 }

@@ -13,7 +13,7 @@ rounded-[6px]
 border-[1px]
 border-[rgb(45,45,45)]
 placeholder:text-input-placeholder
-focus:outline-none
+focus:outline-hidden
 focus-visible:ring-1 focus-visible:ring-ring
 focus-visible:ring-white focus-visible:ring-opacity-50
 `
