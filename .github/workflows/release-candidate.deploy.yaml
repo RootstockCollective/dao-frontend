@@ -1,7 +1,8 @@
 name: Deploy to Amazon ECS (release candidate staging)
-# Deploys to: https://staging.app.rootstockcollective.xyz/
+# Deploys to: https://release-candidate.app.rootstockcollective.xyz/
 # Triggers on when a tag is pushed to the repo in the format of vX.X.X-rc.X
 # where X are numbers. An example: v1.5.0-rc.1
+# Uses the `.env.release-candidate` env file
 
 on:
   push:
@@ -30,7 +31,8 @@ jobs:
     name: Deploy
     runs-on: ubuntu-latest
     environment:
-      name: staging
+      name: release-candidate
+      url: https://release-candidate.app.rootstockcollective.xyz
 
     permissions:
       id-token: write
