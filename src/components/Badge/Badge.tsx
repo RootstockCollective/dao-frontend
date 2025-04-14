@@ -6,7 +6,7 @@ export type BadgeProps = { content: string; className: HtmlHTMLAttributes<HTMLSp
 export const Badge = ({ content, className }: BadgeProps) => {
   return (
     <Span
-      className={`rounded-sm font-bold min-h-fit justify-center flex text-center gap-1 text-[14px] leading-none ${className}`}
+      className={`rounded-xs font-bold min-h-fit justify-center flex text-center gap-1 text-[14px] leading-none ${className}`}
     >
       {content}
     </Span>

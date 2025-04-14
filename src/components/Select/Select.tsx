@@ -17,7 +17,7 @@ rounded-md
 border-[1px]
 border-[white]/[0.10]
 placeholder:text-input-placeholder
-focus:outline-none
+focus:outline-hidden
 focus-visible:ring-1 focus-visible:ring-ring
 focus-visible:ring-white focus-visible:ring-opacity-50
 disabled:cursor-not-allowed disabled:opacity-50
@@ -122,8 +122,8 @@ const SelectItem = React.forwardRef<
   <SelectPrimitive.Item
     ref={ref}
     className={cn(
-      'relative flex w-full cursor-default select-none items-center rounded-sm py-1.5 pl-2 pr-8 text-sm outline-none focus:bg-accent focus:text-accent-foreground data-[disabled]:pointer-events-none data-[disabled]:opacity-50',
-      'data-[highlighted]:bg-[#FFF] data-[selected]:bg-[#FFF] data-[highlighted]:bg-gradient-to-t data-[highlighted]:text-black',
+      'relative flex w-full cursor-default select-none items-center rounded-xs py-1.5 pl-2 pr-8 text-sm outline-hidden focus:bg-accent focus:text-accent-foreground data-disabled:pointer-events-none data-disabled:opacity-50',
+      'data-highlighted:bg-[#FFF] data-selected:bg-[#FFF] data-highlighted:bg-linear-to-t data-highlighted:text-black',
       className,
     )}
     {...props}

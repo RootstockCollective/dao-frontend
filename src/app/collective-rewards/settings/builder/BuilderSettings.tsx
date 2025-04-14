@@ -5,7 +5,7 @@ import { BuilderSettingsProvider } from './context'
 
 export const BuilderSettings: FC = () => {
   return (
-    <div className="flex flex-col items-start self-stretch flex-grow flex-shrink-0 gap-6 h-full">
+    <div className="flex flex-col items-start self-stretch grow shrink-0 gap-6 h-full">
       <Header
         variant="h1"
         fontFamily="kk-topo"

@@ -354,7 +354,7 @@ const LatestProposalsTable = ({ proposals, onEmitActiveProposal }: LatestProposa
 
             {/* Page size selector */}
             <select
-              className="focus:outline-none focus:ring-0 focus:border-none hover:border-[#E56B1A] rounded-md bg-transparent hover:none text-[#E56B1A] hover:text-none "
+              className="focus:outline-hidden focus:ring-0 focus:border-none hover:border-[#E56B1A] rounded-md bg-transparent hover:none text-[#E56B1A] hover:text-none "
               value={table.getState().pagination.pageSize}
               onChange={e => {
                 table.setPageSize(Number(e.target.value))

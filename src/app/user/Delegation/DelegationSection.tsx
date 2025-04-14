@@ -99,7 +99,7 @@ export const DelegationSection = () => {
         <div className="max-w-xl mt-10">
           <div className="flex items-start mb-4">
             <div className="mr-2 mt-1">
-              <span className="inline-block w-5 h-5 text-center rounded-sm">✅</span>
+              <span className="inline-block w-5 h-5 text-center rounded-xs">✅</span>
             </div>
             <div>
               <Paragraph className="font-bold">Delegate your voting power</Paragraph>
@@ -109,7 +109,7 @@ export const DelegationSection = () => {
 
           <div className="flex items-start mb-4">
             <div className="mr-2 mt-1">
-              <span className="inline-block w-5 h-5 text-center rounded-sm">✅</span>
+              <span className="inline-block w-5 h-5 text-center rounded-xs">✅</span>
             </div>
             <div>
               <Paragraph className="font-bold">Receive delegations</Paragraph>
