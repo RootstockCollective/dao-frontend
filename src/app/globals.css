@@ -2,112 +2,6 @@
 
 @import 'tailwindcss';
 
-@theme {
-  --font-sans: var(--font-open-sans);
-  --font-sora: Sora;
-  --font-kk-topo: KK-Topo;
-  --font-rootstock-sans: Rootstock-Sans;
-
-  --color-primary: var(--color-primary);
-  --color-secondary: var(--color-secondary);
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --color-text-primary: var(--text-primary);
-  --color-text-secondary: var(--text-secondary);
-  --color-st-success: var(--st-success);
-  --color-st-info: var(--st-info);
-  --color-st-error: var(--st-error);
-  --color-st-white: var(--st-white);
-  --color-st-queue: var(--st-queue);
-  --color-text-light: var(--text-light);
-  --color-disabled-primary: var(--disabled-primary);
-  --color-disabled-secondary: var(--disabled-secondary);
-  --color-input-bg: var(--input-bg);
-  --color-input-placeholder: var(--input-placeholder);
-  --color-link: var(--link);
-
-  --color-popover: var(--background);
-  --color-popover-foreground: var(--text-primary);
-
-  --color-accent: var(--input-bg);
-  --color-accent-foreground: var(--text-primary);
-
-  --animate-accordion-down: accordion-down 0.2s ease-out;
-  --animate-accordion-up: accordion-up 0.2s ease-out;
-  --animate-collapsible-down: collapsible-down 0.2s ease-out;
-  --animate-collapsible-up: collapsible-up 0.2s ease-out;
-  --animate-translate-x: translate-x 800ms;
-  --animate-fade-out-slide-out: fade-out-slide-out 800ms;
-  --animate-fade-in-slide-in: fade-in-slide-in 800ms;
-
-  @keyframes accordion-down {
-    from {
-      height: 0;
-    }
-    to {
-      height: var(--radix-accordion-content-height);
-    }
-  }
-  @keyframes accordion-up {
-    from {
-      height: var(--radix-accordion-content-height);
-    }
-    to {
-      height: 0;
-    }
-  }
-  @keyframes collapsible-down {
-    from {
-      height: 0;
-      opacity: 0;
-    }
-    to {
-      height: var(--radix-collapsible-content-height);
-      opacity: 1;
-    }
-  }
-  @keyframes collapsible-up {
-    from {
-      height: var(--radix-collapsible-content-height);
-      opacity: 1;
-    }
-    to {
-      height: 0;
-      opacity: 0;
-    }
-  }
-  @keyframes fade-out-slide-out {
-    from {
-      opacity: 1;
-      transform: translateY(0);
-      position: absolute;
-    }
-    to {
-      opacity: 0;
-      transform: translateY(-100%);
-      position: absolute;
-    }
-  }
-  @keyframes fade-in-slide-in {
-    from {
-      opacity: 0;
-      transform: translate(-100%, 100%);
-    }
-    to {
-      opacity: 1;
-      transform: translate(0, 0);
-    }
-  }
-  @keyframes translate-x {
-    from {
-      transform: translateX(100px);
-    }
-    to {
-      transform: translateX(0);
-    }
-  }
-}
-
 @utility container {
   margin-inline: auto;
 }
@@ -193,5 +87,6 @@
 }
 
 body {
-  @apply text-text-primary bg-background;
+  color: var(--text-primary);
+  background-color: var(--background);
 }
