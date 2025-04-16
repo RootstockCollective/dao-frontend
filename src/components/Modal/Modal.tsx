@@ -24,7 +24,7 @@ export const Modal: FC<Props> = ({ children, onClose, width, className, 'data-te
       ></div>
       <div
         className={cn(
-          'max-w-xl bg-background rounded-lg shadow-xl overflow-hidden transform transition-all border border-[#2D2D2D]',
+          'relative max-w-xl bg-background rounded-lg shadow-xl overflow-hidden transform transition-all border border-[#2D2D2D] z-10',
           className,
         )}
         style={{ minWidth: width }}
