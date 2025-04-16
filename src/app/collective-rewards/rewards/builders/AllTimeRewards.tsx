@@ -1,16 +1,16 @@
 import {
+  BuilderRewardDetails,
   formatMetrics,
   MetricsCard,
   MetricsCardTitle,
-  TokenMetricsCardRow,
-  useGetBuilderRewards,
-  useGetBuilderRewardsClaimedLogs,
   Token,
-  BuilderRewardDetails,
+  TokenMetricsCardRow,
+  useGetBuilderRewardsClaimedLogs,
 } from '@/app/collective-rewards/rewards'
 import { useHandleErrors } from '@/app/collective-rewards/utils'
 import { withSpinner } from '@/components/LoadingSpinner/withLoadingSpinner'
 import { usePricesContext } from '@/shared/context/PricesContext'
+import { useReadGauges } from '@/shared/hooks/contracts'
 import { FC } from 'react'
 import { Address } from 'viem'
 
@@ -34,7 +34,7 @@ const TokenRewardsMetrics: FC<TokenRewardsMetricsProps> = ({
     data: claimableRewards,
     isLoading: claimableRewardsLoading,
     error: claimableRewardsError,
-  } = useGetBuilderRewards(address, gauge)
+  } = useReadGauges({ addresses: [gauge], functionName: 'builderRewards', args: [address] })
 
   const error = builderRewardsPerTokenError ?? claimableRewardsError
   useHandleErrors({ error, title: 'Error loading all time rewards' })
@@ -47,7 +47,7 @@ const TokenRewardsMetrics: FC<TokenRewardsMetricsProps> = ({
       return acc + amount
     }, 0n) ?? 0n
 
-  const totalRewards = totalClaimedRewards + (claimableRewards ?? 0n)
+  const totalRewards = totalClaimedRewards + (claimableRewards[0] ?? 0n)
   const price = prices[symbol]?.price ?? 0
 
   const { amount, fiatAmount } = formatMetrics(totalRewards, price, symbol, currency)

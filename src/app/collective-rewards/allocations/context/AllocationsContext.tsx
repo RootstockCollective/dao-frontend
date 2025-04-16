@@ -1,15 +1,15 @@
 import {
   useActivatedBuildersWithGauge,
   useBackerTotalAllocation,
-  useGetAllAllocationOf,
   useGetVotingPower,
 } from '@/app/collective-rewards/allocations/hooks'
 import { Builder } from '@/app/collective-rewards/types'
-import { createContext, FC, ReactNode, useEffect, useMemo, useState, useCallback } from 'react'
-import { Address } from 'viem'
+import { useReadGauges } from '@/shared/hooks/contracts'
+import { createContext, FC, ReactNode, useCallback, useEffect, useMemo, useState } from 'react'
+import { Address, zeroAddress } from 'viem'
 import { useAccount } from 'wagmi'
-import { createActions } from './allocationsActions'
 import { useGetBackerRewards } from '../hooks/useBuildersWithBackerRewardPercentage'
+import { createActions } from './allocationsActions'
 import { validateAllocationsState } from './utils'
 
 export interface Allocations {
@@ -113,6 +113,8 @@ export const AllocationsContextProvider: FC<{ children: ReactNode }> = ({ childr
     error: buildersError,
   } = useActivatedBuildersWithGauge()
 
+  const gauges = useMemo(() => rawBuilders.map(builder => builder.gauge ?? zeroAddress), [rawBuilders])
+
   const {
     data: backerRewards,
     isLoading: backerRewardsLoading,
@@ -123,7 +125,16 @@ export const AllocationsContextProvider: FC<{ children: ReactNode }> = ({ childr
     data: rawAllocations,
     isLoading: isRawAllocationsLoading,
     error: allRawAllocationsError,
-  } = useGetAllAllocationOf(rawBuilders, backerAddress)
+  } = useReadGauges(
+    {
+      addresses: gauges,
+      functionName: 'allocationOf',
+      args: [backerAddress as Address],
+    },
+    {
+      enabled: !!backerAddress && !!rawBuilders.length,
+    },
+  )
 
   const {
     data: totalOnchainAllocation,
@@ -276,20 +287,21 @@ export const AllocationsContextProvider: FC<{ children: ReactNode }> = ({ childr
 }
 
 function createInitialAllocations(
-  rawAllocations: bigint[],
+  rawAllocations: (bigint | undefined)[],
   rawBuilders: Builder[],
   selections: State['selections'],
 ): [Allocations, bigint, number] {
   return rawAllocations.reduce(
-    (acc, allocation, index) => {
+    (acc, rawAllocation, index) => {
+      const allocation = rawAllocation ?? 0n
       const builderAddress = rawBuilders[index].address
       if (allocation > 0n || selections[builderAddress]) {
         acc[0][builderAddress] = allocation
-        acc[1] += allocation ?? BigInt(0) // cumulative allocation
+        acc[1] += allocation // cumulative allocation
         acc[2] += 1 // allocations count
       }
       return acc
     },
-    [{} as Allocations, BigInt(0), 0],
+    [{} as Allocations, 0n, 0],
   )
 }

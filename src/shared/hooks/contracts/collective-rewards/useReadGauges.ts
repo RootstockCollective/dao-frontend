@@ -41,15 +41,10 @@ export const useReadGauges = <TFunctionName extends GaugeFunctionName>(
   const data = useMemo(
     () =>
       results?.reduce<ReturnType[]>((acc, { result, error, status }, i) => {
-        if (status !== 'success') {
+        if (status !== 'success' || error) {
           console.error(
             `Call index: ${i}: data fetch not successful for Gauge(${addresses[i]}).${config.functionName}.`,
-          )
-        }
-        if (error) {
-          console.error(
-            `Call index: ${i}: error fetching data for Gauge(${addresses[i]}).${config.functionName}:`,
-            error,
+            error ? error : 'Unknown error',
           )
         }
 

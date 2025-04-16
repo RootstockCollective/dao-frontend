@@ -1,12 +1,12 @@
-import { createContext, FC, ReactNode, useContext, useState } from 'react'
 import {
-  Token,
   BackerRewardsClaimedEventLog,
+  Token,
   useGetGaugesBackerRewardsClaimed,
 } from '@/app/collective-rewards/rewards'
-import { Address } from 'viem'
-import { useGaugesGetFunction } from '@/app/collective-rewards/shared'
 import { StateWithUpdate } from '@/app/collective-rewards/types'
+import { useReadGauges } from '@/shared/hooks/contracts'
+import { createContext, FC, ReactNode, useContext, useState } from 'react'
+import { Address } from 'viem'
 
 export type TokenBackerRewards = {
   earned: Record<Address, bigint>
@@ -44,17 +44,28 @@ type BackerRewardsProviderProps = {
   }
 }
 
+function mapToRecord(earned: (bigint | undefined)[], gauges: `0x${string}`[]) {
+  return earned.reduce<Record<Address, bigint>>((acc, value, i) => {
+    acc[gauges[i]] = value as bigint
+    return acc
+  }, {})
+}
+
 const useGetTokenRewards = (backer: Address, token: Token, gauges: Address[]) => {
   const {
     data: earned,
     isLoading: earnedLoading,
     error: earnedError,
-  } = useGaugesGetFunction(gauges, 'earned', [token.address, backer])
+  } = useReadGauges({ addresses: gauges, functionName: 'earned', args: [token.address, backer] })
   const {
     data: estimated,
     isLoading: estimatedLoading,
     error: estimatedError,
-  } = useGaugesGetFunction(gauges, 'estimatedBackerRewards', [token.address, backer])
+  } = useReadGauges({
+    addresses: gauges,
+    functionName: 'estimatedBackerRewards',
+    args: [token.address, backer],
+  })
   const {
     data: claimed,
     isLoading: claimedLoading,
@@ -66,9 +77,9 @@ const useGetTokenRewards = (backer: Address, token: Token, gauges: Address[]) =>
 
   return {
     data: {
-      earned,
+      earned: mapToRecord(earned, gauges),
       claimed,
-      estimated,
+      estimated: mapToRecord(estimated, gauges),
     },
     isLoading,
     error,

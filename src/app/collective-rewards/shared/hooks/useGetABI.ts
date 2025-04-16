@@ -131,7 +131,7 @@ export const useGetMetricsAbi = () => {
 
     const topFiveBuilders = builders
       .reduce<Array<{ allocation: bigint; current: bigint }>>((acc, builder, i) => {
-        const allocation = totalAllocation[i]
+        const allocation = totalAllocation[i] ?? 0n
         const rewardPct = backersRewardsPct[builder.address]
         if (allocation && rewardPct) {
           acc.push({ allocation, current: rewardPct.current })

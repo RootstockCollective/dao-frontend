@@ -1,19 +1,19 @@
+import { useGetBuildersByState } from '@/app/collective-rewards//user'
 import {
+  BackerRewardPercentage,
+  RbtcSvg,
+  RifSvg,
   Token,
   TokenBackerRewards,
+  TokenRewards,
   useBackerRewardsContext,
   useGetBackersRewardPercentage,
-  RifSvg,
-  RbtcSvg,
-  TokenRewards,
-  BackerRewardPercentage,
 } from '@/app/collective-rewards/rewards'
-import { useGaugesGetFunction } from '@/app/collective-rewards/shared'
-import { Address } from 'viem'
-import { usePricesContext } from '@/shared/context/PricesContext'
-import { useGetBuildersByState } from '@/app/collective-rewards//user'
 import { RequiredBuilder } from '@/app/collective-rewards/types'
+import { usePricesContext } from '@/shared/context/PricesContext'
+import { useReadGauges } from '@/shared/hooks/contracts'
 import { useMemo } from 'react'
+import { Address } from 'viem'
 
 export type BackerRewards = RequiredBuilder & {
   totalAllocation: TokenRewards
@@ -56,7 +56,7 @@ export const useGetBackerRewards = (
     data: allocationOf,
     isLoading: allocationOfLoading,
     error: allocationOfError,
-  } = useGaugesGetFunction(gauges, 'allocationOf', [builder])
+  } = useReadGauges({ addresses: gauges, functionName: 'allocationOf', args: [builder] })
   const { data: tokenRewards, isLoading: rewardsLoading, error: rewardsError } = useBackerRewardsContext()
 
   const isLoading = useMemo(
@@ -73,9 +73,9 @@ export const useGetBackerRewards = (
   const rbtcPrice = prices[rbtc.symbol]?.price ?? 0
 
   const data = useMemo(() => {
-    return builders.reduce<BackerRewards[]>((acc, builder) => {
+    return builders.reduce<BackerRewards[]>((acc, builder, i) => {
       const { address, gauge } = builder
-      const backerAllocationOf = allocationOf[gauge] ?? 0n
+      const backerAllocationOf = allocationOf[i] ?? 0n
 
       const rewardPercentage = backersRewardsPct[address] ?? null
       const rifRewards = tokenRewardsMetrics(tokenRewards[rif.address], gauge)
