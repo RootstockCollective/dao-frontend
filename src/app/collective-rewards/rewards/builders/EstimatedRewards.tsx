@@ -1,22 +1,22 @@
+import { useCycleContext } from '@/app/collective-rewards/metrics/context/CycleContext'
 import {
+  BuilderRewardDetails,
   formatMetrics,
   MetricsCard,
   MetricsCardTitle,
-  TokenMetricsCardRow,
-  useGetRewardShares,
-  useGetTotalPotentialReward,
-  useGetPerTokenRewards,
   Token,
-  BuilderRewardDetails,
+  TokenMetricsCardRow,
   useGetBackerRewardPercentage,
+  useGetPerTokenRewards,
+  useGetTotalPotentialReward,
 } from '@/app/collective-rewards/rewards'
+import { useBuilderContext } from '@/app/collective-rewards/user'
 import { isBuilderRewardable, useHandleErrors } from '@/app/collective-rewards/utils'
+import { withSpinner } from '@/components/LoadingSpinner/withLoadingSpinner'
 import { usePricesContext } from '@/shared/context/PricesContext'
+import { useReadGauges } from '@/shared/hooks/contracts'
 import { FC, useEffect, useState } from 'react'
 import { Address, parseUnits } from 'viem'
-import { withSpinner } from '@/components/LoadingSpinner/withLoadingSpinner'
-import { useCycleContext } from '@/app/collective-rewards/metrics/context/CycleContext'
-import { useBuilderContext } from '@/app/collective-rewards/user'
 
 type TokenRewardsProps = {
   builder: Address
@@ -52,7 +52,7 @@ const TokenRewards: FC<TokenRewardsProps> = ({ builder, gauge, token: { id, symb
     data: rewardShares,
     isLoading: rewardSharesLoading,
     error: rewardSharesError,
-  } = useGetRewardShares(gauge)
+  } = useReadGauges({ addresses: [gauge], functionName: 'rewardShares' })
   const {
     data: { cycleNext },
     isLoading: cycleLoading,
@@ -77,8 +77,8 @@ const TokenRewards: FC<TokenRewardsProps> = ({ builder, gauge, token: { id, symb
   const { prices } = usePricesContext()
 
   const rewardsAmount =
-    isRewarded && rewardShares && totalPotentialRewards
-      ? (rewards * rewardShares) / totalPotentialRewards
+    isRewarded && rewardShares[0] && totalPotentialRewards
+      ? (rewards * rewardShares[0]) / totalPotentialRewards
       : 0n
   // The complement of the reward percentage is applied to the estimated rewards since are from the builder's perspective
   const weiPerEther = parseUnits('1', 18)
