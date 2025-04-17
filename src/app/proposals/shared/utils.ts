@@ -8,7 +8,7 @@ import {
   SupportedProposalActionName,
 } from '@/app/proposals/shared/supportedABIs'
 import { GovernorAbi } from '@/lib/abis/Governor'
-import { formatUnits, ZeroAddress } from 'ethers'
+import { formatEther, zeroAddress } from 'viem'
 import { MAX_NAME_LENGTH_FOR_PROPOSAL, RIF_ADDRESS, TALLY_DESCRIPTION_SEPARATOR } from '@/lib/constants'
 
 export interface EventArgumentsParameter {
@@ -128,11 +128,11 @@ export const getEventArguments = ({
 export const actionFormatterMap = {
   token: (tokenAddress: Address) =>
     ({
-      [ZeroAddress]: 'RBTC',
+      [zeroAddress]: 'RBTC',
       [RIF_ADDRESS.toLowerCase()]: 'RIF',
     })[tokenAddress.toLowerCase()] || tokenAddress.toString(),
   to: (address: Address) => address.toString(),
-  amount: (amount: bigint) => formatUnits(amount),
+  amount: (amount: bigint) => formatEther(amount),
 }
 
 export const DISPLAY_NAME_SEPARATOR = 'D15PL4Y_N4M3:'

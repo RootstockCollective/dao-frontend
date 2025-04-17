@@ -1,8 +1,7 @@
 import { useBalance, useReadContracts } from 'wagmi'
-import { Address } from 'viem'
+import { Address, zeroAddress } from 'viem'
 import { RIFTokenAbi } from '@/lib/abis/RIFTokenAbi'
 import { tokenContracts, MulticallAddress } from '@/lib/contracts'
-import { ZeroAddress } from 'ethers'
 import { AddressToken } from '@/app/user/types'
 import { useQuery } from '@tanstack/react-query'
 import { axiosInstance } from '@/lib/utils'
@@ -70,7 +69,7 @@ export const useGetAddressTokens = (address: Address, chainId?: number) => {
       {
         symbol: rbtc?.symbol || 'RBTC',
         balance: rbtc?.value.toString() || '0',
-        contractAddress: ZeroAddress,
+        contractAddress: zeroAddress,
       },
     ] as AddressToken[],
     isLoading: rbtcLoading || contractsLoading || IsTokenDataLoading,

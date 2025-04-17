@@ -13,7 +13,7 @@ import { QuestionIcon } from '@/components/Icons'
 import Big, { round } from '@/lib/big'
 import { useGetExternalDelegatedAmount } from '@/shared/hooks/useGetExternalDelegatedAmount'
 import { useAccount } from 'wagmi'
-import { formatUnits } from 'ethers'
+import { formatEther } from 'viem'
 
 export default function Proposals() {
   const { address, isConnected } = useAccount()
@@ -52,7 +52,7 @@ export default function Proposals() {
                 data-testid="VotingPower"
               >
                 {!isExternalDelegatedAmountLoading && isConnected
-                  ? formatNumberWithCommas(round(formatUnits(amountDelegatedToMe), undefined, Big.roundDown))
+                  ? formatNumberWithCommas(round(formatEther(amountDelegatedToMe), undefined, Big.roundDown))
                   : '-'}
               </Paragraph>
             </div>

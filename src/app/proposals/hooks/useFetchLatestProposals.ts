@@ -2,9 +2,8 @@ import { fetchProposalsCreatedCached } from '@/app/user/Balances/actions'
 import { GovernorAbi } from '@/lib/abis/Governor'
 import { SimplifiedRewardDistributorAbi } from '@/lib/abis/SimplifiedRewardDistributorAbi'
 import { useQuery, UseQueryResult } from '@tanstack/react-query'
-import { Interface, InterfaceAbi } from 'ethers'
 import { useMemo } from 'react'
-import { getAddress, parseEventLogs } from 'viem'
+import { getAddress, parseEventLogs, prepareEncodeFunctionData } from 'viem'
 import { ADDRESS_PADDING_LENGTH, RELAY_PARAMETER_PADDING_LENGTH } from '@/app/proposals/shared/utils'
 import { BuilderRegistryAbi } from '@/lib/abis/v2/BuilderRegistryAbi'
 import { AVERAGE_BLOCKTIME } from '@/lib/constants'
@@ -46,29 +45,19 @@ export const useFetchAllProposals = () => {
 }
 export type LatestProposalResponse = ReturnType<typeof useFetchAllProposals>['latestProposals'][number]
 
-type FunctionSelectorArgs = {
-  functionName: string
-  abi: InterfaceAbi
-}
-
-const toFunctionSelector = ({ functionName, abi }: FunctionSelectorArgs) => {
-  const selector = new Interface(abi).getFunction(functionName)?.selector
-  if (!selector) {
-    throw new Error(`Function ${functionName} not found in abi.`)
-  }
-  return selector
-}
-
-const RELAY_FUNCTION_SELECTOR = toFunctionSelector({ abi: GovernorAbi, functionName: 'relay' })
-const CR_WHITELIST_FUNCTION_SELECTOR_MVP = toFunctionSelector({
+const RELAY_FUNCTION_SELECTOR = prepareEncodeFunctionData({
+  abi: GovernorAbi,
+  functionName: 'relay',
+}).functionName
+const CR_WHITELIST_FUNCTION_SELECTOR_MVP = prepareEncodeFunctionData({
   abi: SimplifiedRewardDistributorAbi,
   functionName: 'whitelistBuilder', // v1
-})
+}).functionName
 
-const CR_WHITELIST_FUNCTION_SELECTOR_V2 = toFunctionSelector({
+const CR_WHITELIST_FUNCTION_SELECTOR_V2 = prepareEncodeFunctionData({
   abi: BuilderRegistryAbi,
   functionName: 'communityApproveBuilder',
-})
+}).functionName
 
 type ElementType<T> = T extends (infer U)[] ? U : never
 

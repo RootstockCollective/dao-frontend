@@ -38,7 +38,6 @@
     "cookies-next": "^5.1.0",
     "decimal.js": "^10.5.0",
     "dotenv": "^16.4.7",
-    "ethers": "^6.13.5",
     "jdenticon": "^3.3.0",
     "lodash": "^4.17.21",
     "lottie-react": "^2.4.0",

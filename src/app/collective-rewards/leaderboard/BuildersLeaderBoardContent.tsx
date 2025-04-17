@@ -1,11 +1,12 @@
 import { useGetBuildersRewards } from '@/app/collective-rewards/rewards'
-import { getCoinbaseAddress, useHandleErrors } from '@/app/collective-rewards/utils'
+import { useHandleErrors } from '@/app/collective-rewards/utils'
 import { LoadingSpinner } from '@/components/LoadingSpinner'
 import { Typography } from '@/components/Typography'
 import { Search, SearchContextProvider } from '@/app/collective-rewards/shared'
 import { getAddress } from 'viem'
 import { tokenContracts } from '@/lib/contracts'
 import { BuildersLeaderBoardTable } from '@/app/collective-rewards/leaderboard'
+import { CoinBaseAddress } from '@/lib/constants'
 
 const EmptyLeaderboard = () => (
   <div className="relative w-full py-6">
@@ -27,7 +28,7 @@ export const BuildersLeaderBoardContent = () => {
       symbol: 'RIF',
     },
     rbtc: {
-      address: getCoinbaseAddress(),
+      address: CoinBaseAddress,
       symbol: 'RBTC',
     },
   }
