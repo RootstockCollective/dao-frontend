@@ -19,7 +19,7 @@ import {
   TokenHoldersResponse,
 } from '@/app/user/Balances/types'
 import { BackendEventByTopic0ResponseValue } from '@/shared/utils'
-import { ethers } from 'ethers'
+import { Address, padHex } from 'viem'
 
 export const fetchAddressTokens = (address: string, chainId = 31) =>
   axiosInstance
@@ -103,18 +103,18 @@ export const fetchProposalCreated = (fromBlock = 0) =>
 
 //TODO: refactor this out of Balances folder as it does not related to Balances
 // the suggestion is to move it up the folder in User or moving it to shared
-export const fetchVoteCastEventByAccountAddress = (address: string) =>
+export const fetchVoteCastEventByAccountAddress = (address: Address) =>
   axiosInstance.get<BackendEventByTopic0ResponseValue[]>(
     fetchVoteCastEventEndpoint
       .replace('{{address}}', GovernorAddress)
-      .replace('{{topic1}}', ethers.zeroPadValue(address, 32)),
+      .replace('{{topic1}}', padHex(address, { size: 32 })),
   )
 
-export const fetchNewAllocationEventByAccountAddress = (address: string) =>
+export const fetchNewAllocationEventByAccountAddress = (address: Address) =>
   axiosInstance.get<BackendEventByTopic0ResponseValue[]>(
     fetchNewAllocationEventEndpoint
       .replace('{{address}}', BackersManagerAddress)
-      .replace('{{topic1}}', ethers.zeroPadValue(address, 32)),
+      .replace('{{topic1}}', padHex(address, { size: 32 })),
   )
 
 export const fetchProposalsCreatedCached = () => axiosInstance.get('/proposals/api', { baseURL: '/' })

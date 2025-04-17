@@ -2,9 +2,9 @@ import { Address } from 'viem'
 import { usePricesContext } from '@/shared/context/PricesContext'
 import Big from '@/lib/big'
 import { useMemo } from 'react'
-import { WeiPerEther } from 'ethers'
 import { useCycleContext } from '@/app/collective-rewards/metrics'
 import { useBackerRewardsContext, useGetBackerStakingHistory, Token } from '@/app/collective-rewards/rewards'
+import { WeiPerEther } from '@/lib/constants'
 
 const useGetTokenRewards = ({ address, symbol }: Token) => {
   const { prices } = usePricesContext()

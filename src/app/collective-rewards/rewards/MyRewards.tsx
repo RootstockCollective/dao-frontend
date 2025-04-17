@@ -11,7 +11,7 @@ import {
   useBackerRewardsContext,
 } from '@/app/collective-rewards/rewards'
 import { useGetBuildersByState, useGetBuilderToGauge } from '@/app/collective-rewards/user'
-import { getCoinbaseAddress, useHandleErrors } from '@/app/collective-rewards/utils'
+import { useHandleErrors } from '@/app/collective-rewards/utils'
 import { tokenContracts } from '@/lib/contracts'
 import { FC } from 'react'
 import { Address, getAddress, zeroAddress } from 'viem'
@@ -26,6 +26,7 @@ import { useAccount } from 'wagmi'
 import { Button } from '@/components/Button'
 import Image from 'next/image'
 import { LoadingSpinner } from '@/components/LoadingSpinner'
+import { CoinBaseAddress } from '@/lib/constants'
 
 const SubText = () => (
   <>
@@ -168,7 +169,7 @@ export const Rewards: FC = () => {
         symbol: 'RIF',
       },
       rbtc: {
-        address: getCoinbaseAddress(),
+        address: CoinBaseAddress,
         symbol: 'RBTC',
       },
     },

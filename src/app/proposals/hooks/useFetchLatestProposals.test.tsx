@@ -8,8 +8,7 @@ import { GovernorAbi } from '@/lib/abis/Governor'
 import { SimplifiedRewardDistributorAbi } from '@/lib/abis/SimplifiedRewardDistributorAbi'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { renderHook, waitFor } from '@testing-library/react'
-import { Interface } from 'ethers/abi'
-import { parseEventLogs } from 'viem'
+import { prepareEncodeFunctionData, parseEventLogs } from 'viem'
 import { Mock, beforeEach, describe, expect, it, vi } from 'vitest'
 
 vi.mock('@/app/user/Balances/actions', () => ({
@@ -17,14 +16,19 @@ vi.mock('@/app/user/Balances/actions', () => ({
 }))
 
 const CR_WHITELIST_FUNCTION = 'whitelistBuilder' // v1
-const CR_WHITELIST_FUNCTION_SELECTOR = new Interface(SimplifiedRewardDistributorAbi).getFunction(
-  CR_WHITELIST_FUNCTION,
-)?.selector
+const CR_WHITELIST_FUNCTION_SELECTOR = prepareEncodeFunctionData({
+  abi: SimplifiedRewardDistributorAbi,
+  functionName: CR_WHITELIST_FUNCTION,
+}).functionName
 
-vi.mock('viem', () => ({
-  parseEventLogs: vi.fn(),
-  getAddress: vi.fn().mockImplementation((address: string) => address),
-}))
+vi.mock(import('viem'), async importOriginal => {
+  const actual = await importOriginal()
+  return {
+    ...actual,
+    parseEventLogs: vi.fn(),
+    getAddress: vi.fn().mockImplementation((address: string) => address),
+  }
+})
 
 const builder_1 = '0xCD2a3d9F938E13CD947Ec05AbC7FE734Df8DD826'
 const builder_2 = '0x45418b3cc0CF56847A8A3C3004961c572E259142'
@@ -59,7 +63,11 @@ const renderAndWaitForHook = async <P, R>(hook: (initialProps: P) => ProposalQue
 }
 
 const RELAY_FUNCTION = 'relay'
-const RELAY_FUNCTION_SELECTOR = new Interface(GovernorAbi).getFunction(RELAY_FUNCTION)?.selector
+const RELAY_FUNCTION_SELECTOR = prepareEncodeFunctionData({
+  abi: GovernorAbi,
+  functionName: RELAY_FUNCTION,
+}).functionName
+
 const relayWrapper = (bytes: string) =>
   `${RELAY_FUNCTION_SELECTOR}${createPadding(RELAY_PARAMETER_PADDING_LENGTH)}${bytes.slice(2)}${createPadding(56)}`
 

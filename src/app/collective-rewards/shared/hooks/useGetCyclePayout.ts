@@ -1,6 +1,6 @@
 import { parseEther } from 'viem'
 import { usePricesContext } from '@/shared/context/PricesContext'
-import { WeiPerEther } from 'ethers'
+import { WeiPerEther } from '@/lib/constants'
 import { useGetRewardsCoinbase, useGetRewardsERC20 } from '@/app/collective-rewards/rewards'
 import { useMemo } from 'react'
 

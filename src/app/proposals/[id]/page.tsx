@@ -37,14 +37,13 @@ import { waitForTransactionReceipt } from '@wagmi/core'
 import { useRouter, useParams } from 'next/navigation'
 import { FC, useEffect, useMemo, useRef, useState } from 'react'
 import { MinusIcon } from '@/components/Icons'
-import { getAddress } from 'viem'
+import { getAddress, formatEther, zeroAddress } from 'viem'
 import { type BaseError, useAccount } from 'wagmi'
 import { Vote, VoteProposalModal } from '@/components/Modal/VoteProposalModal'
 import { VoteSubmittedModal } from '@/components/Modal/VoteSubmittedModal'
 import { ProposalState } from '@/shared/types'
 import { isUserRejectedTxError } from '@/components/ErrorPage/commonErrors'
 import Big from '@/lib/big'
-import { formatUnits, ZeroAddress } from 'ethers'
 import { usePricesContext } from '@/shared/context/PricesContext'
 import { getCombinedFiatAmount } from '@/app/collective-rewards/utils'
 import { tokenContracts } from '@/lib/contracts'
@@ -563,7 +562,7 @@ const CalldataDisplay = (props: DecodedData) => {
       // First check if this is a withdraw function
       if (functionName === 'withdraw') {
         // For withdraw function, use ZeroAddress (RBTC) as the token
-        currentTokenSymbol.current = ZeroAddress
+        currentTokenSymbol.current = zeroAddress
       } else {
         // For other functions, try to find the token symbol
         let foundToken = false
@@ -584,7 +583,7 @@ const CalldataDisplay = (props: DecodedData) => {
 
         // If no token found and the function is withdrawERC20, use ZeroAddress as fallback
         if (!foundToken && functionName === 'withdrawERC20') {
-          currentTokenSymbol.current = ZeroAddress
+          currentTokenSymbol.current = zeroAddress
         }
       }
 
@@ -787,7 +786,7 @@ const AddressInputComponent: InputValueComponent<'address'> = ({ value, htmlProp
 )
 
 const BigIntInputComponent: InputValueComponent<'bigint'> = ({ value, htmlProps }) => (
-  <Span {...(htmlProps as any)}>{formatNumberWithCommas(formatUnits(value))}</Span>
+  <Span {...(htmlProps as any)}>{formatNumberWithCommas(formatEther(BigInt(value)))}</Span>
 )
 
 const ERC20InputComponent: InputValueComponent<'bigint'> = ({ value, htmlProps }) => (
