@@ -3,11 +3,9 @@ name: Deploy Storybook site to Pages
 on:
   push:
     branches: [main, develop]
-    
-permissions: 
-  contents: read
-  pages: write
-  id-token: write
+
+# Declare default permissions as read only.
+permissions: read-all
   
 concurrency: 
   group: "storybook"
@@ -16,15 +14,21 @@ concurrency:
 jobs:
   build:
     runs-on: ubuntu-latest
+    permissions: 
+      pages: write
+      id-token: write
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 #v4.2.2
+      - uses: actions/setup-node@cdca7365b2dadb8aad0a33bc7601856ffabcc48e #v4.3.0
+        with:
+          node-version-file: '.nvmrc'
       - name: Install dependencies
         run: npm i
       - name: Build storybook
         run: npm run build-storybook
       - name: Upload artifact
-        uses: actions/upload-pages-artifact@v3
+        uses: actions/upload-pages-artifact@56afc609e74202658d3ffba0e8f6dda462b719fa #v3.0.1
         with:
           # Upload storybook build output
           path: './storybook-static'
@@ -32,9 +36,12 @@ jobs:
   deploy:
     needs: build
     runs-on: ubuntu-latest
+    permissions: 
+      pages: write
+      id-token: write
     steps:
       - name: Setup Pages
-        uses: actions/configure-pages@v5
+        uses: actions/configure-pages@983d7736d9b0ae728b81ab479565c72886d7745b #v5.0.0
       - name: Deploy to GitHub Pages
         id: deployment
-        uses: actions/deploy-pages@v4
+        uses: actions/deploy-pages@d6db90164ac5ed86f2b6aed7e0febac5b3c0c03e #v4.0.5

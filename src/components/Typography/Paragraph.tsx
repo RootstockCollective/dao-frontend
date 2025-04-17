@@ -1,15 +1,27 @@
 import { ParagraphVariants, SizeVariants, Typography } from '@/components/Typography'
 import { cn } from '@/lib/utils'
-import { FC, ReactNode } from 'react'
+import { FC } from 'react'
 
-interface Props {
+interface BaseProps {
   variant?: ParagraphVariants
-  children: ReactNode
   size?: SizeVariants
   className?: string
   fontFamily?: 'sora' | 'kk-topo' | 'rootstock-sans'
   'data-testid'?: string
 }
+
+type PropsWithChildren = BaseProps & {
+  children: React.ReactNode
+  html?: never
+}
+
+type PropsWithHTML = BaseProps & {
+  html: string
+  children?: never
+}
+
+// either children or html is required, but not both
+export type Props = PropsWithChildren | PropsWithHTML
 
 const DEFAULT_CLASSES = 'text-[1.4rem]'
 
@@ -34,12 +46,14 @@ export const Paragraph: FC<Props> = ({
   children,
   fontFamily = 'rootstock-sans',
   'data-testid': dataTestId,
+  ...props
 }) => (
   <Typography
     tagVariant="p"
     className={cn(DEFAULT_CLASSES, classesByVariant[variant], classesBySize[size], className)}
     fontFamily={fontFamily}
     data-testid={`Paragraph${dataTestId || ''}`}
+    {...props}
   >
     {children}
   </Typography>

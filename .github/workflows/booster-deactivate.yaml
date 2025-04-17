@@ -1,0 +1,59 @@
+name: Boost backers' rewards NFT campaign deactivation
+
+# Declare default permissions as read only.
+permissions: read-all
+
+env:
+  BOOST_DATA_BRANCH: 'boost_data/${{ github.event.inputs.env}}'
+on:
+  workflow_dispatch:
+    inputs:
+      env:
+        description: 'The environment to use'
+        required: true
+jobs:
+  boost-deactivate:
+    runs-on: ubuntu-latest
+
+    permissions:
+      contents: write
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: true
+
+      - name: Set up Node.js
+        uses: actions/setup-node@cdca7365b2dadb8aad0a33bc7601856ffabcc48e
+        with:
+          node-version: '22'
+
+      - name: Install dependencies
+        run: npm install --production
+
+      - name: Git config
+        run: |
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "github-actions[bot]@users.noreply.github.com"
+          git config --global push.autoSetupRemote true
+
+      - name: Switch to target branch
+        run: |
+          git fetch origin
+          git checkout $BOOST_DATA_BRANCH || (echo "Branch not found" && exit 1)
+
+      - name: Reset active nft boost file
+        run: |
+          echo "None" > nft_boost_data/latest
+
+      - name: Commit and push changes
+        run: |
+          # Stage all changes
+          git add .
+
+          # Create a commit; if there are no changes, this command will fail, so we ignore that error.
+          git commit -m "Deactivate nft boost campaign" || echo "No changes to commit"
+
+          # Push the commit back to the current branch
+          git push --force

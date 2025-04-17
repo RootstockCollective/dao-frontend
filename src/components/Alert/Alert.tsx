@@ -1,7 +1,5 @@
-import { BsExclamationCircle } from 'react-icons/bs'
-import { CiCircleCheck } from 'react-icons/ci'
 import { Paragraph } from '@/components/Typography'
-import { MdClose } from 'react-icons/md'
+import { CloseIcon, CircleCheckIcon, ExclamationCircleIcon } from '../Icons'
 import { ReactNode } from 'react'
 
 export interface AlertProps {
@@ -13,10 +11,10 @@ export interface AlertProps {
 }
 
 const IconToUse = {
-  error: <BsExclamationCircle size={20} color="rgba(217,45,32,1)" />,
-  info: <BsExclamationCircle size={20} color="cyan" />,
-  success: <CiCircleCheck size={20} color="rgba(7,148,85,1)" />,
-  warning: <BsExclamationCircle size={20} color="rgba(255,193,7,1)" />,
+  error: <ExclamationCircleIcon size={20} color="rgba(217,45,32,1)" />,
+  info: <ExclamationCircleIcon size={20} color="cyan" />,
+  success: <CircleCheckIcon size={20} color="rgba(7,148,85,1)" />,
+  warning: <ExclamationCircleIcon size={20} color="rgba(255,193,7,1)" />,
 }
 
 export const Alert = ({ severity, title, content, onDismiss, 'data-testid': dataTestId }: AlertProps) => {
@@ -29,9 +27,15 @@ export const Alert = ({ severity, title, content, onDismiss, 'data-testid': data
       {IconToUse[severity]}
       {/* Main content */}
       <div className="flex-1">
-        <Paragraph className="leading-5 mb-[6px] text-[16px]">{title}</Paragraph>
+        <Paragraph className="leading-5 mb-[6px] text-[16px]" data-testid="Title">
+          {title}
+        </Paragraph>
         {typeof content === 'string' ? (
-          <Paragraph variant="light" className="font-[600] text-[14px] text-white opacity-80 mb-[12px]">
+          <Paragraph
+            variant="light"
+            className="font-[600] text-[14px] text-white opacity-80 mb-[12px] break-all max-h-36 overflow-y-auto"
+            data-testid="Content"
+          >
             {content}
           </Paragraph>
         ) : (
@@ -39,14 +43,14 @@ export const Alert = ({ severity, title, content, onDismiss, 'data-testid': data
         )}
         {onDismiss && (
           <div onClick={onDismiss} className="cursor-pointer">
-            <Paragraph variant="light" className="text-[14px]">
+            <Paragraph variant="light" className="text-[14px]" data-testid="Dismiss">
               Dismiss
             </Paragraph>
           </div>
         )}
       </div>
       {/* X */}
-      {onDismiss && <MdClose size={20} className="cursor-pointer" onClick={onDismiss} />}
+      {onDismiss && <CloseIcon size={20} className="cursor-pointer" onClick={onDismiss} />}
     </div>
   )
 }

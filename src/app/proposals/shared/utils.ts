@@ -8,9 +8,8 @@ import {
   SupportedProposalActionName,
 } from '@/app/proposals/shared/supportedABIs'
 import { GovernorAbi } from '@/lib/abis/Governor'
-import { ZeroAddress } from 'ethers'
-import { RIF_ADDRESS } from '@/lib/constants'
-import { formatBalanceToHuman } from '@/app/user/Balances/balanceUtils'
+import { formatUnits, ZeroAddress } from 'ethers'
+import { MAX_NAME_LENGTH_FOR_PROPOSAL, RIF_ADDRESS, TALLY_DESCRIPTION_SEPARATOR } from '@/lib/constants'
 
 export interface EventArgumentsParameter {
   args: {
@@ -29,11 +28,22 @@ export interface EventArgumentsParameter {
 
 type DecodedFunctionData = DecodeFunctionDataReturnType<SupportedActionAbi>
 
-export type DecodedData = {
+// Separate types for successful decode and fallback
+type DecodedSuccessData = {
+  type: 'decoded'
   functionName: DecodedFunctionData['functionName'] & SupportedProposalActionName
   args: DecodedFunctionData['args']
   inputs: FunctionInputs
 }
+
+type DecodedFallbackData = {
+  type: 'fallback'
+  affectedAddress: string
+  callData: string
+}
+
+// Union type for all possible cases
+export type DecodedData = DecodedSuccessData | DecodedFallbackData
 
 const tryDecode = (data: string): DecodedData | undefined => {
   for (const abi of [...abis, GovernorAbi]) {
@@ -48,6 +58,7 @@ const tryDecode = (data: string): DecodedData | undefined => {
         abi.find(item => 'name' in item && item.name === functionName) || ({} as FunctionEntry)
 
       return {
+        type: 'decoded',
         functionName: functionName as SupportedProposalActionName,
         args: args as DecodedFunctionData['args'],
         inputs: ('inputs' in functionDefinition ? functionDefinition.inputs : []) as FunctionInputs,
@@ -65,19 +76,31 @@ const tryDecode = (data: string): DecodedData | undefined => {
  * @param description
  * @param proposalId
  * @param proposer
+ * @param targets
  * @param calldatas
  * @param timeStamp
  * @param blockNumber
  */
 export const getEventArguments = ({
-  args: { description, proposalId, proposer, calldatas },
+  args: { description, proposalId, proposer, targets, calldatas },
   timeStamp,
   blockNumber,
 }: EventArgumentsParameter) => {
-  const calldatasParsed = calldatas.reduce<DecodedData[]>((acc, cd) => {
+  const { name, description: parsedDescription } = parseProposalDescription(description)
+
+  const calldatasParsed = calldatas.reduce<DecodedData[]>((acc, cd, index) => {
     try {
       const decodedData = tryDecode(cd)
-      acc = [...acc, ...(decodedData ? [decodedData] : [])]
+      if (decodedData) {
+        acc.push(decodedData)
+      } else {
+        const affectedAddress = targets[index]
+        acc.push({
+          affectedAddress,
+          callData: cd,
+          type: 'fallback',
+        })
+      }
     } catch (err) {
       // TODO:: decide whether it is necessary to throw error (if so then also perhaps the function name `tryDecode` is misleading).
       // Only logging this error due to the fact that anyone can submit any proposal directly via contract call.
@@ -92,9 +115,9 @@ export const getEventArguments = ({
   }, [])
 
   return {
-    name: description.split(';')[0],
+    name: name,
     proposer,
-    description: description.split(';')[1],
+    description: parsedDescription,
     proposalId: proposalId.toString(),
     Starts: moment(parseInt(timeStamp, 16) * 1000),
     calldatasParsed,
@@ -109,7 +132,7 @@ export const actionFormatterMap = {
       [RIF_ADDRESS.toLowerCase()]: 'RIF',
     })[tokenAddress.toLowerCase()] || tokenAddress.toString(),
   to: (address: Address) => address.toString(),
-  amount: (amount: bigint) => formatBalanceToHuman(amount),
+  amount: (amount: bigint) => formatUnits(amount),
 }
 
 export const DISPLAY_NAME_SEPARATOR = 'D15PL4Y_N4M3:'
@@ -130,4 +153,54 @@ export const isChecksumValid = (value: string, chainId?: string) => {
     value === value.toLowerCase() ||
     checksumAddress(value as Address, chainId ? Number(chainId) : undefined) === value
   )
+}
+
+type ProposalSource = 'DAO' | 'TALLY' | 'UNKNOWN'
+interface ParsedDescription {
+  name: string
+  description: string
+  source: ProposalSource
+}
+
+const parseProposalDescription = (description: string): ParsedDescription => {
+  // Default result
+  let result: ParsedDescription = {
+    name: '',
+    description: description,
+    source: 'UNKNOWN',
+  }
+
+  // If the proposal description contains semicolon, we will automatically assume it's ours (for now)
+  if (description.includes(';')) {
+    const [name, ...rest] = description.split(';')
+    return {
+      name: name.substring(0, MAX_NAME_LENGTH_FOR_PROPOSAL),
+      description: rest.join(';').trim(),
+      source: 'DAO',
+    }
+  }
+
+  // Check if it's from Tally (contains double spaces)
+  if (description.includes(TALLY_DESCRIPTION_SEPARATOR)) {
+    // Extract first line or sentence as name
+    const firstLineBreak = description.indexOf('\n')
+    const firstPeriod = description.indexOf('.')
+    const nameEndIndex = Math.min(
+      firstLineBreak > -1 ? firstLineBreak : Infinity,
+      firstPeriod > -1 ? firstPeriod : Infinity,
+    )
+
+    return {
+      name: description.substring(0, nameEndIndex).substring(0, MAX_NAME_LENGTH_FOR_PROPOSAL),
+      description: description,
+      source: 'TALLY',
+    }
+  }
+
+  // Unknown source - use first N chars as name
+  return {
+    name: description.substring(0, MAX_NAME_LENGTH_FOR_PROPOSAL),
+    description: description,
+    source: 'UNKNOWN',
+  }
 }

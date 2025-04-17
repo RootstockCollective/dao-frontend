@@ -3,9 +3,14 @@ import { useMemo, useCallback, useEffect, useState } from 'react'
 import { abiContractsMap, DEFAULT_NFT_CONTRACT_ABI } from '@/lib/contracts'
 import { Address } from 'viem'
 import { useReadContracts, useAccount, useWaitForTransactionReceipt, useWriteContract } from 'wagmi'
-import { fetchIpfsUri } from '@/app/user/Balances/actions'
+import { fetchIpfsNftMeta, ipfsGatewayUrl } from '@/lib/ipfs'
 import { NftMeta, CommunityData } from '../types'
 import { config } from '@/config'
+import Big from '@/lib/big'
+import { useQuery } from '@tanstack/react-query'
+import { axiosInstance, splitWords } from '@/lib/utils'
+import { NftDataFromAddressesReturnType } from '@/app/user/api/communities/route'
+import { communitiesMapByContract } from '@/app/communities/communityUtils'
 
 /**
  * Hook for loading NFT metadata from IPFS
@@ -15,11 +20,11 @@ const useNftMeta = (nftUri?: string) => {
 
   useEffect(() => {
     if (!nftUri) return setNftMeta(undefined)
-    fetchIpfsUri(nftUri).then(async nftMeta => {
-      const response = await fetchIpfsUri(nftMeta.image, 'blob')
-      const url = URL.createObjectURL(response)
-      setNftMeta({ ...nftMeta, image: url })
-    })
+    fetchIpfsNftMeta(nftUri)
+      .then(nftMeta => setNftMeta({ ...nftMeta, image: ipfsGatewayUrl(nftMeta.image) }))
+      .catch(error => {
+        console.log('🚀 ~ useCommunity.ts ~ useNftMeta ~ useEffect ~ error:', error)
+      })
   }, [nftUri])
 
   return nftMeta
@@ -41,39 +46,51 @@ export const useContractData = (nftAddress?: Address) => {
     address &&
       nftAddress && {
         contracts: [
-          { ...contract, functionName: 'totalSupply' },
-          { ...contract, functionName: 'tokensAvailable' },
           { ...contract, functionName: 'balanceOf', args: [address] },
-          { ...contract, functionName: 'name' },
-          { ...contract, functionName: 'symbol' },
-          { ...contract, functionName: 'stRifThreshold' },
           { ...contract, functionName: 'tokenOfOwnerByIndex', args: [address, BigInt(0)] }, // Only one token per address is assumed
         ],
       },
   )
   const { data: URI } = useReadContracts(
-    address && nftAddress && data?.[6].result
+    address && nftAddress && data?.[1].result
       ? {
-          contracts: [{ ...contract, functionName: 'tokenURI', args: [data[6].result] }],
+          contracts: [{ ...contract, functionName: 'tokenURI', args: [data[1].result] }],
         }
       : {},
   )
 
+  const { data: nftData = {} } = useQuery({
+    queryKey: ['nftInfo'],
+    queryFn: () =>
+      axiosInstance
+        .get<NftDataFromAddressesReturnType>('/user/api/communities', { baseURL: '/' })
+        .then(({ data }) => data),
+  })
+
   return useMemo(() => {
-    const [membersCount, tokensAvailable, balanceOf, nftName, symbol, stRifThreshold, tokenId] = data ?? []
+    const [balanceOf, tokenId] = data ?? []
+    const {
+      totalSupply: membersCount = 0,
+      tokensAvailable = 0,
+      name: nftName,
+      symbol,
+      stRifThreshold,
+    } = nftAddress && nftAddress in nftData ? nftData[nftAddress] : {}
+
     return {
       refetch,
-      membersCount: Number(membersCount?.result ?? 0n),
-      tokensAvailable: Number(tokensAvailable?.result ?? 0n),
-      isMember: (balanceOf?.result ?? 0n) > 0n,
+      membersCount: Number(membersCount),
+      tokensAvailable: Number(tokensAvailable),
+      isMember: Big(balanceOf?.result?.toString() ?? 0).gt(0),
       tokenId: typeof tokenId?.result === 'bigint' ? Number(tokenId.result) : undefined,
-      nftName: nftName?.result,
-      nftSymbol: symbol?.result,
+      // NFT name from predefined communities list or from NFT metadata if not listed
+      nftName: communitiesMapByContract[nftAddress as string]?.title ?? splitWords(nftName),
+      nftSymbol: symbol,
       nftUri: URI?.[0].result,
+      stRifThreshold: stRifThreshold ? BigInt(stRifThreshold) : undefined,
       isLoading,
-      stRifThreshold: stRifThreshold?.result,
     }
-  }, [data, refetch, isLoading, URI])
+  }, [data, nftData, nftAddress, refetch, URI, isLoading])
 }
 
 /**

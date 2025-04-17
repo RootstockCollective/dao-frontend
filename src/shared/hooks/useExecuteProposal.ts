@@ -1,6 +1,7 @@
 import { GovernorAddress } from '@/lib/contracts'
 import { GovernorAbi } from '@/lib/abis/Governor'
-import { useReadContract, useWaitForTransactionReceipt, useWriteContract } from 'wagmi'
+import { useReadContract, useWriteContract } from 'wagmi'
+import Big from '@/lib/big'
 
 const DAO_DEFAULT_PARAMS = {
   abi: GovernorAbi,
@@ -11,7 +12,7 @@ const getCurrentTimeInMsAsBigInt = () => BigInt(Math.floor(Date.now() / 1000))
 
 const getBigIntTimestampAsHuman = (proposalEta?: bigint) => {
   if (!proposalEta) return ''
-  const proposalEtaMs = Number(proposalEta) * 1000
+  const proposalEtaMs = Big(proposalEta.toString()).mul(1000).toNumber()
   const proposalDate = new Date(proposalEtaMs)
   return proposalDate.toLocaleString()
 }
@@ -27,8 +28,7 @@ export const useExecuteProposal = (proposalId: string) => {
   })
   const currentTime = getCurrentTimeInMsAsBigInt()
 
-  const { writeContractAsync: execute, data } = useWriteContract()
-  const { isLoading: isExecuting } = useWaitForTransactionReceipt({ hash: data })
+  const { writeContractAsync: execute, isPending: isPendingExecution } = useWriteContract()
 
   const onExecuteProposal = () => {
     if (proposalEta && getCurrentTimeInMsAsBigInt() >= proposalEta) {
@@ -47,6 +47,6 @@ export const useExecuteProposal = (proposalId: string) => {
     canProposalBeExecuted: proposalEta && currentTime >= proposalEta,
     proposalEta,
     proposalEtaHumanDate,
-    isExecuting,
+    isPendingExecution,
   }
 }

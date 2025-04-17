@@ -1,14 +1,14 @@
+import { Builder, BuilderState } from '@/app/collective-rewards/types'
 import { useBuilderContext } from '@/app/collective-rewards/user'
-import { useModal } from '@/app/user/Balances/hooks/useModal'
+import { isBuilderDeactivated, isBuilderKycRevoked, useHandleErrors } from '@/app/collective-rewards/utils'
 import { Button } from '@/components/Button'
 import { LoadingSpinner } from '@/components/LoadingSpinner'
 import { BecomeABuilderModal, openKYC } from '@/components/Modal/BecomeABuilderModal'
+import { Popover } from '@/components/Popover'
 import { Typography } from '@/components/Typography'
+import { useModal } from '@/shared/hooks/useModal'
 import { FC, ReactNode } from 'react'
 import { Address } from 'viem'
-import { Builder, BuilderState } from '@/app/collective-rewards/types'
-import { isBuilderDeactivated, isBuilderKycRevoked, useHandleErrors } from '@/app/collective-rewards/utils'
-import { Popover } from '@/components/Popover'
 
 type ExtendedBuilderState = BuilderState | 'deactivated' | 'paused'
 type StatusBadgeProps = {
@@ -19,7 +19,9 @@ const BuilderRegistrationButton = () => {
   const modal = useModal()
   return (
     <>
-      <Button onClick={modal.openModal}>Become a builder</Button>
+      <Button variant="white-new" onClick={modal.openModal} data-testid="BecomeABuilderButton">
+        Become a builder
+      </Button>
       {modal.isModalOpened && <BecomeABuilderModal onClose={modal.closeModal} />}
     </>
   )

@@ -1,16 +1,14 @@
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/Select'
 import { Header, Paragraph } from '@/components/Typography'
-import { CHAIN_ID, ENV } from '@/lib/constants'
+import { ENV } from '@/lib/constants'
 import { tokenContracts } from '@/lib/contracts'
 import { formatCurrency } from '@/lib/utils'
 import { TX_MESSAGES } from '@/shared/txMessages'
 import { zodResolver } from '@hookform/resolvers/zod'
-import Image from 'next/image'
 import { useRouter } from 'next/navigation'
 import { useEffect, useMemo, useState } from 'react'
 import { Address, zeroAddress, checksumAddress } from 'viem'
 import { z } from 'zod'
-import { rbtcIconSrc } from '@/shared/rbtcIconSrc'
 import { MAX_INPUT_NUMBER_AMOUNT } from '@/components/Input/InputNumber'
 import { useGetSpecificPrices } from '@/app/user/Balances/hooks/useGetSpecificPrices'
 import { useAlertContext } from '@/app/providers'
@@ -32,7 +30,7 @@ import { useVotingPower } from '@/app/proposals/hooks/useVotingPower'
 import { useCreateTreasuryTransferProposal } from '@/app/proposals/hooks/useCreateTreasuryTransferProposal'
 import React from 'react'
 import { useForm } from 'react-hook-form'
-import { CreateProposalHeaderSection } from '@/app/proposals/create/CreateProposalHeaderSection'
+import { CreateProposalHeaderSection, ProposalType } from '@/app/proposals/create/CreateProposalHeaderSection'
 import { isAddressRegex, isChecksumValid } from '@/app/proposals/shared/utils'
 import { isBaseError, isUserRejectedTxError } from '@/components/ErrorPage/commonErrors'
 import { TokenImage } from '@/components/TokenImage'
@@ -151,7 +149,11 @@ export const TreasuryWithdrawProposalForm = () => {
   return (
     <Form {...form}>
       <form onSubmit={handleSubmit(onSubmit)}>
-        <CreateProposalHeaderSection disabled={!isDirty || !isValid || isPublishing} loading={isPublishing} />
+        <CreateProposalHeaderSection
+          proposalType={ProposalType.STANDARD}
+          disabled={!isDirty || !isValid || isPublishing}
+          loading={isPublishing}
+        />
         <Accordion
           type="single"
           collapsible
@@ -176,7 +178,7 @@ export const TreasuryWithdrawProposalForm = () => {
                 name="proposalName"
                 render={({ field }) => (
                   <FormItem className="mb-6 mx-1">
-                    <FormLabel>Proposal name</FormLabel>
+                    <FormLabel>Name</FormLabel>
                     <FormControl>
                       <FormInput
                         placeholder="Name your proposal"
@@ -317,7 +319,7 @@ export const TreasuryWithdrawProposalForm = () => {
                         />
                       </FormControl>
                       {amountValue?.toString() && (
-                        <FormDescription>= USD {formatCurrency(amountUsd)}</FormDescription>
+                        <FormDescription>= USD {formatCurrency(amountUsd || 0)}</FormDescription>
                       )}
                       <FormMessage />
                     </FormItem>

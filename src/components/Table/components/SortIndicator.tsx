@@ -1,6 +1,6 @@
 import { type SortDirection } from '@tanstack/react-table'
 import { type PropsWithChildren } from 'react'
-import { TbArrowsSort, TbSortAscending, TbSortDescending } from 'react-icons/tb'
+import { ArrowsSortIcon, SortAscendingIcon, SortDescendingIcon } from '@/components/Icons'
 import { cn } from '@/lib/utils'
 
 interface SortIndicatorProps extends PropsWithChildren {
@@ -14,11 +14,11 @@ export function SortIndicator({ children, sortDirection, sortEnabled = true }: S
       {sortEnabled && (
         <div className="flex items-center">
           {sortDirection === 'asc' ? (
-            <TbSortAscending />
+            <SortAscendingIcon />
           ) : sortDirection === 'desc' ? (
-            <TbSortDescending />
+            <SortDescendingIcon />
           ) : (
-            <TbArrowsSort className="text-gray-500" />
+            <ArrowsSortIcon className="text-gray-500" />
           )}
         </div>
       )}

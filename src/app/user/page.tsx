@@ -1,97 +1,64 @@
 'use client'
+
+import { ReactNode, useMemo } from 'react'
 import { Rewards } from '@/app/collective-rewards/rewards/MyRewards'
-import { withBuilderButton } from '@/app/collective-rewards/user'
 import { BalancesSection } from '@/app/user/Balances/BalancesSection'
 import { CommunitiesSection } from '@/app/user/Communities/CommunitiesSection'
 import { DelegationSection } from '@/app/user/Delegation'
-import { MainContainer } from '@/components/MainContainer/MainContainer'
-import { Tabs, TabsContent, TabsList, TabsTrigger, TabTitle } from '@/components/Tabs'
+import { UnderlineTabs, BaseTab } from '@/components/Tabs'
 import { TxStatusMessage } from '@/components/TxStatusMessage'
-import { useSearchParams } from 'next/navigation'
-import { Suspense } from 'react'
-import { zeroAddress } from 'viem'
+import { usePathname, useSearchParams, useRouter } from 'next/navigation'
 import { useAccount } from 'wagmi'
-import { useIsBuilderOrBacker } from '../collective-rewards/rewards/hooks/useIsBuilderOrBacker'
-import { useHandleErrors } from '../collective-rewards/utils'
-
-type MyHoldingsProps = {
-  showBuilderButton?: boolean
-}
-
-const MyHoldings = ({ showBuilderButton = false }: MyHoldingsProps) => (
-  <>
-    <TxStatusMessage messageType="staking" />
-    <BalancesSection showBuilderButton={showBuilderButton} />
-    <DelegationSection />
-    <CommunitiesSection />
-  </>
-)
-
-const TabsListWithButton = withBuilderButton(TabsList)
+import { HeroSection } from './HeroSection'
 
 const values = ['holdings', 'rewards'] as const
 type TabValue = (typeof values)[number]
-type Tabs = {
-  [key in TabValue]: {
-    value: key
-    title: string
-  }
-}
-const tabs: Tabs = {
-  holdings: {
+const [defaultTab] = values
+
+const tabs: BaseTab<TabValue>[] = [
+  {
     value: 'holdings',
-    title: 'My Holdings',
+    label: 'My Holdings',
   },
-  rewards: {
+  {
     value: 'rewards',
-    title: 'My Rewards',
+    label: 'My Rewards',
   },
-}
+]
 
-function User() {
-  const { address } = useAccount()
+export default function User() {
+  const { isConnected } = useAccount()
+  const router = useRouter()
+  const pathName = usePathname()
   const searchParams = useSearchParams()
-  const tabFromParams = searchParams?.get('tab') as TabValue
-  const defaultTabValue = tabs[tabFromParams]?.value ?? 'holdings'
-
-  const { data: isBuilderOrBacker, isLoading, error } = useIsBuilderOrBacker(address ?? zeroAddress)
-
-  useHandleErrors({
-    error,
-    title: 'Error fetching user data',
-  })
-
+  const activeTab = useMemo<TabValue>(() => {
+    const currentTab = (searchParams.get('tab') ?? defaultTab) as TabValue
+    // if selected tab doesn't exist display default tab
+    return values.includes(currentTab) ? currentTab : defaultTab
+  }, [searchParams])
   return (
-    <MainContainer>
-      {/* We don't show the tab if it's loading */}
-      {!isLoading && isBuilderOrBacker ? (
-        <Tabs defaultValue={defaultTabValue}>
-          <TabsListWithButton>
-            <TabsTrigger value={tabs.holdings.value}>
-              <TabTitle>{tabs.holdings.title}</TabTitle>
-            </TabsTrigger>
-            <TabsTrigger value={tabs.rewards.value}>
-              <TabTitle>{tabs.rewards.title}</TabTitle>
-            </TabsTrigger>
-          </TabsListWithButton>
-          <TabsContent value={tabs.holdings.value}>
-            <MyHoldings />
-          </TabsContent>
-          <TabsContent value={tabs.rewards.value}>
-            <Rewards builder={address!} />
-          </TabsContent>
-        </Tabs>
-      ) : (
-        <MyHoldings showBuilderButton={true} />
-      )}
-    </MainContainer>
+    <>
+      {!isConnected && <HeroSection />}
+      <UnderlineTabs
+        layoutId="user-tab"
+        tabs={tabs}
+        activeTab={activeTab}
+        onTabChange={(newTab: TabValue) => router.push(`${pathName}?${new URLSearchParams({ tab: newTab })}`)}
+      >
+        <div className="pt-4">{tabsContent[activeTab]}</div>
+      </UnderlineTabs>
+    </>
   )
 }
 
-export default function UserPage() {
-  return (
-    <Suspense fallback={<div>Loading...</div>}>
-      <User />
-    </Suspense>
-  )
+const tabsContent: Record<TabValue, ReactNode> = {
+  holdings: (
+    <>
+      <TxStatusMessage messageType="staking" />
+      <BalancesSection />
+      <DelegationSection />
+      <CommunitiesSection />
+    </>
+  ),
+  rewards: <Rewards />,
 }

@@ -1,7 +1,6 @@
 import { useAwaitedTxReporting } from '@/app/collective-rewards/shared/hooks'
 import { BuilderRegistryAbi } from '@/lib/abis/v2/BuilderRegistryAbi'
 import { AVERAGE_BLOCKTIME } from '@/lib/constants'
-import { BackersManagerAddress } from '@/lib/contracts'
 import { Modify } from '@/shared/utility'
 import { DateTime } from 'luxon'
 import { useEffect, useState } from 'react'
@@ -14,6 +13,7 @@ import {
   useWriteContract,
   UseWriteContractReturnType,
 } from 'wagmi'
+import { BuilderRegistryAddress } from '@/lib/contracts'
 
 export type BackerReward = {
   previous: bigint
@@ -32,8 +32,8 @@ export const useGetBackerRewardsForBuilder = (builder: Address): BackerRewardRes
   const [next, setNext] = useState<bigint>(0n)
   const [cooldown, setCooldown] = useState<bigint>(0n)
   const { data, ...rest } = useReadContract({
+    address: BuilderRegistryAddress,
     abi: BuilderRegistryAbi,
-    address: BackersManagerAddress,
     functionName: 'backerRewardPercentage',
     args: [builder as Address],
     query: {
@@ -87,8 +87,8 @@ export const useSetBackerRewardsForBuilder = (): SetBackerRewardsForBuilder => {
 
   const setNewReward = async (newReward: bigint) => {
     return await writeContractAsync({
+      address: BuilderRegistryAddress,
       abi: BuilderRegistryAbi,
-      address: BackersManagerAddress,
       functionName: 'setBackerRewardPercentage',
       args: [newReward],
     })

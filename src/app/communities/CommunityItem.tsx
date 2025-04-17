@@ -1,7 +1,9 @@
-import { Paragraph, Span } from '@/components/Typography'
+import { Paragraph } from '@/components/Typography'
 import Image from 'next/image'
-import { BsArrowUpRight } from 'react-icons/bs'
-import Link from 'next/link'
+import { BoostedBox } from './components/BoostedBox'
+import { BoostedLabel } from '@/app/communities/components/BoostedLabel'
+import { CommunityItemButtonHandler } from '@/app/communities/components/CommunityItemButtonHandler'
+import { applyPinataImageOptions } from '@/lib/ipfs'
 
 interface CommunityItemProps {
   leftImageSrc: string
@@ -10,37 +12,60 @@ interface CommunityItemProps {
   nftAddress: string
   description: string
   numberOfMembers: number
+  readMoreLink?: string
 }
 
+/**
+ * Server Component: Renders a community card as part of the static communities page.
+ * Dynamic highlighting of the 'Boosted' state is achieved through lightweight client components.
+ */
+// prettier-ignore
 export const CommunityItem = ({
   leftImageSrc,
   title,
-  subtitle,
   nftAddress,
   description,
-}: CommunityItemProps) => (
-  <div className="rounded-[8px] bg-input-bg p-[16px] w-[358px]" data-testid={`${title}Card`}>
-    <Link
-      href={nftAddress ? `/communities/nft/${nftAddress}` : '/communities'}
-      className="flex flex-col h-full"
-    >
-      <div className="flex mb-[22px] items-center">
-        <div className="rounded-full overflow-hidden">
-          <Image src={leftImageSrc} alt={title} width={50} height={50} />
+  readMoreLink,
+}: CommunityItemProps) => {
+  const isExternalImage = leftImageSrc.startsWith('http')
+  const image = isExternalImage
+    ? applyPinataImageOptions(leftImageSrc, { width: 269, height: 269, quality: 90 })
+    : leftImageSrc
+  return (
+    <BoostedBox nftAddress={nftAddress}>
+      <div
+        className="h-full w-[269px] bg-foreground flex flex-col community-item-gradient-hover"
+        data-testid={`${title}Card`}
+      >
+        {/* image */}
+        <div className="relative mb-[20px] w-full aspect-square">
+          <Image
+            crossOrigin={isExternalImage ? 'anonymous' : undefined}
+            unoptimized={isExternalImage}
+            src={image}
+            alt={title}
+            sizes="269px"
+            fill
+          />
         </div>
-        <div className="flex-1 flex flex-col ml-[12px]">
-          <Span className="text-[15px] font-bold">{title}</Span>
-          <Span size="small" variant="light">
-            {subtitle}
-          </Span>
+        <div className="flex flex-col flex-1">
+          {/* Title */}
+          <div className="mb-[5px]">
+            <BoostedLabel nftAddress={nftAddress}>
+              <Paragraph
+                className="text-[20px] px-[14px] uppercase break-words pt-[5px]"
+                fontFamily="kk-topo"
+              >
+                {title}
+              </Paragraph>
+            </BoostedLabel>
+          </div>
+          {/* Description */}
+          <Paragraph className="text-[14px] px-[14px]">{description}</Paragraph>
         </div>
-        {nftAddress && <BsArrowUpRight />}
+        {/* View details */}
+        <CommunityItemButtonHandler nftAddress={nftAddress} readMoreLink={readMoreLink} />
       </div>
-      <Paragraph variant="normal" className="mb-[8px] text-[14px]">
-        {description}
-      </Paragraph>
-      <div className="flex-1" />
-      {!nftAddress && <Image src="/images/text-coming-soon.svg" alt={title} width={121} height={121} />}
-    </Link>
-  </div>
-)
+    </BoostedBox>
+  )
+}

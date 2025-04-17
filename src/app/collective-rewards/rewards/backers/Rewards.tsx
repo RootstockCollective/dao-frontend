@@ -1,89 +1,162 @@
-import { FC } from 'react'
 import {
-  BackerAllTimeShare,
-  BackerClaimableRewards,
-  useClaimBackerRewards,
-} from '@/app/collective-rewards/rewards/backers'
-import {
-  RewardDetails,
   BackerRewardsCard,
-  BackerRewardsContextProvider,
+  MetricsCard,
+  MetricsCardProps,
+  RewardDetails,
+  Tooltip,
 } from '@/app/collective-rewards/rewards'
-import { CycleContextProvider } from '@/app/collective-rewards/metrics'
-import { PricesContextProvider } from '@/shared/context/PricesContext'
+import {
+  ABIBackers,
+  BackerClaimableRewards,
+  useBackerRewardsContext,
+  useClaimBackerRewards,
+  RBI,
+} from '@/app/collective-rewards/rewards/backers'
+import { useNFTBoosterContext } from '@/app/providers/NFT/BoosterContext'
+import { BoltSvg } from '@/components/BoltSvg'
 import { Button } from '@/components/Button'
-import { MetricContainer } from '@/app/collective-rewards/rewards/components/MetricContainer'
+import { GlowingLabel } from '@/components/Label/GlowingLabel'
+import { Typography } from '@/components/Typography/Typography'
+import { cn } from '@/lib/utils'
+import { FC } from 'react'
+import { RewardsCardProps, TokenRewardsMetrics } from './RewardsCard'
 
+const estimatedRewardsTooltipData: RewardsCardProps['titleDetails']['tooltip'] = {
+  text: (
+    <>
+      <Typography>
+        An estimate of the remainder of this Cycle&apos;s rewards that will become fully claimable by the end
+        of the current Cycle. These rewards gradually transition into your &apos;Claimable Rewards&apos; as
+        the cycle progresses.
+      </Typography>
+      <Typography marginTop="1rem" marginBottom="1rem">
+        To check the cycle&apos;s completion, go to Collective Rewards → Current Cycle.
+      </Typography>
+      <Typography>
+        The displayed information is dynamic and may vary based on total rewards and user activity. This data
+        is for informational purposes only.
+      </Typography>
+    </>
+  ),
+  popoverProps: { size: 'medium', position: 'left-bottom' },
+}
+
+const estimatedRewardsTitleData: RewardsCardProps['titleDetails'] = {
+  'data-testid': 'EstimatedRewards',
+  title: 'Estimated rewards',
+  tooltip: estimatedRewardsTooltipData,
+}
+
+export const BoostedRewardsCard: FC<RewardsCardProps['rewardDetails'] & MetricsCardProps> = ({
+  tokens: { rif, rbtc },
+  className,
+  ...rest
+}) => (
+  <MetricsCard
+    borderless
+    dataTestId="EstimatedRewards"
+    className={cn('flex-none', className)}
+    style={{
+      boxShadow: '0px 0px 8.1px 0px rgba(192, 247, 255, 255)',
+    }}
+  >
+    <div className="flex flex-nowrap gap-1 justify-between items-center">
+      <GlowingLabel
+        faded
+        showGlow
+        className={cn('normal-case font-bold font-rootstock-sans leading-none text-nowrap')}
+        data-testid={'EstimatedRewards_MetricsCardTitle'}
+      >
+        {estimatedRewardsTitleData.title}
+      </GlowingLabel>
+      <div className="flex items-center gap-0">
+        <Tooltip {...estimatedRewardsTooltipData} />
+        <BoltSvg showGlow />
+      </div>
+    </div>
+    <TokenRewardsMetrics {...rest} token={rif} />
+    <TokenRewardsMetrics {...rest} token={rbtc} />
+  </MetricsCard>
+)
+
+// FIXME: change type to match the domain (no builder in backer rewards)
 type RewardsProps = RewardDetails
-
-const RewardsContent: FC<RewardsProps> = ({ builder, gauges, tokens }) => {
+export const Rewards: FC<RewardsProps> = ({ builder, tokens }) => {
   const { claimRewards, isClaimable } = useClaimBackerRewards()
+  const {
+    detailedView: { value: isDetailedView },
+  } = useBackerRewardsContext()
+
+  const { isBoosted } = useNFTBoosterContext()
 
   return (
     <>
-      <MetricContainer className="flex-1 flex flex-col gap-2">
-        <div className="min-h-[190px] w-full">
-          <BackerClaimableRewards builder={builder} gauges={gauges} tokens={tokens} />
+      <div className="flex gap-4 w-full">
+        <div
+          data-testid="metric_with_button"
+          className="flex flex-none flex-col max-w-[214px] justify-between gap-2 w-[214px] order-1"
+        >
+          <BackerClaimableRewards tokenRewardsMetrics={{ tokens }} className="w-full h-full" />
+          <Button
+            className="h-[38px] w-full"
+            onClick={() => claimRewards()}
+            disabled={!isClaimable}
+            variant="primary"
+          >
+            Claim all
+          </Button>
         </div>
-        <Button className="w-full" onClick={() => claimRewards()} disabled={!isClaimable} variant="primary">
-          Claim all
-        </Button>
-      </MetricContainer>
-      <MetricContainer>
+        <div
+          data-testid="metric_estimated_rewards"
+          className="flex flex-none flex-col max-w-[214px] justify-between gap-2 order-2"
+        >
+          {isBoosted ? (
+            <BoostedRewardsCard className="max-w-[214px]" tokens={tokens} rewards={['estimated']} />
+          ) : (
+            <BackerRewardsCard
+              className="max-w-[214px]"
+              rewardDetails={{
+                rewards: ['estimated'],
+                tokens,
+              }}
+              titleDetails={estimatedRewardsTitleData}
+            />
+          )}
+        </div>
         <BackerRewardsCard
-          title="Estimated rewards"
-          data-testid="EstimatedRewards"
-          builder={builder}
-          gauges={gauges}
-          tokens={tokens}
-          rewards={['estimated']}
-          tooltip={{
-            text: (
-              <>
-                An estimate of this Cycle’s rewards that will become fully claimable by the end of the current
-                Cycle. These rewards gradually become claimable and are added to your ‘Claimable Rewards’ as
-                the cycle progresses. To check the cycle completion, go to Collective Rewards → Current Cycle.
-                <br />
-                <br />
-                The displayed information is dynamic and may vary based on total rewards and user activity.
-                This data is for informational purposes only.
-              </>
-            ),
-            popoverProps: { size: 'medium' },
+          className={cn(
+            'flex flex-col flex-none max-w-[214px] mb-[46px]',
+            isDetailedView ? 'order-3' : 'order-5 opacity-0 pointer-events-none',
+          )}
+          dataTestId="AllTimeRewards"
+          titleDetails={{
+            title: 'All time rewards',
+            tooltip: {
+              text: 'Total of your received and claimable rewards',
+              popoverProps: { size: 'medium', position: 'bottom' },
+            },
+          }}
+          rewardDetails={{
+            rewards: ['earned', 'claimed'],
+            tokens,
           }}
         />
-      </MetricContainer>
-      <MetricContainer>
-        <BackerRewardsCard
-          title="All time rewards"
-          data-testid="AllTimeRewards"
-          builder={builder}
-          gauges={gauges}
-          tokens={tokens}
-          rewards={['earned', 'claimed']}
-          tooltip={{
-            text: 'Total of your received and claimable rewards',
-            popoverProps: { size: 'medium' },
-          }}
+        <ABIBackers
+          backer={builder}
+          className={cn(
+            'flex flex-col flex-none mb-[46px] max-w-[214px]',
+            isDetailedView ? 'order-4' : 'order-3',
+          )}
         />
-      </MetricContainer>
-      <MetricContainer>
-        <BackerAllTimeShare gauges={gauges} tokens={tokens} />
-      </MetricContainer>
+        <RBI
+          backer={builder}
+          tokens={tokens}
+          className={cn(
+            'flex flex-col flex-none mb-[46px] max-w-[214px]',
+            isDetailedView ? 'order-5' : 'order-4',
+          )}
+        />
+      </div>
     </>
-  )
-}
-
-export const Rewards: FC<RewardsProps> = ({ builder, gauges, tokens }) => {
-  return (
-    <div className="flex gap-4 w-full">
-      <BackerRewardsContextProvider backer={builder} gauges={gauges} tokens={tokens}>
-        <CycleContextProvider>
-          <PricesContextProvider>
-            <RewardsContent builder={builder} gauges={gauges} tokens={tokens} />
-          </PricesContextProvider>
-        </CycleContextProvider>
-      </BackerRewardsContextProvider>
-    </div>
   )
 }

@@ -1,31 +1,29 @@
 import { useBalancesContext } from '@/app/user/Balances/context/BalancesContext'
 import { SupportedTokens } from '@/lib/contracts'
 import { Paragraph } from '@/components/Typography'
-import { formatCurrency, toFixed } from '@/lib/utils'
-import { formatBalanceToHuman } from '@/app/user/Balances/balanceUtils'
+import { formatCurrency, formatNumberWithCommas } from '@/lib/utils'
 import { TokenImage } from '@/components/TokenImage'
+import Big, { round } from '@/lib/big'
 
 interface TokenValueProps {
   symbol: SupportedTokens
-  amount: bigint | number
-  shouldFormatBalance?: boolean
+  amount: string
 }
 
-export const TokenValue = ({ symbol, amount, shouldFormatBalance = false }: TokenValueProps) => {
+export const TokenValue = ({ symbol, amount }: TokenValueProps) => {
   const { prices } = useBalancesContext()
-  const amountFormatted = shouldFormatBalance ? formatBalanceToHuman(amount) : amount
-  const price = prices[symbol]?.price || 0
-  const value = price * Number(amountFormatted)
+  const price = Big(prices[symbol]?.price ?? 0)
+  const value = price.mul(amount)
 
   return (
     <>
       <Paragraph size="small" className="flex flex-row" data-testid={`${symbol}_Balance`}>
-        {toFixed(amountFormatted.toString())} {symbol}
+        {formatNumberWithCommas(round(amount, undefined, Big.roundDown))} {symbol}
         <TokenImage symbol={symbol} className="ml-[8px]" />
       </Paragraph>
       {prices[symbol] && (
         <Paragraph size="small" className="text-zinc-500" data-testid={`${symbol}_USD`}>
-          = USD {formatCurrency(value) ?? 0}
+          = USD {formatCurrency(value ?? 0)}
         </Paragraph>
       )}
     </>

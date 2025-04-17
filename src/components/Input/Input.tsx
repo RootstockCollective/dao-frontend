@@ -3,8 +3,7 @@ import { cn } from '@/lib/utils'
 import { FC, JSX } from 'react'
 import { InputAttributes, NumericFormatProps } from 'react-number-format'
 import { InputNumber } from './InputNumber'
-import { BsSearch, BsXCircle } from 'react-icons/bs'
-import { FaSpinner } from 'react-icons/fa6'
+import { XCircleIcon, SearchIcon, SpinnerIcon } from '../Icons'
 
 const DEFAULT_CLASSES = `
 px-[20px] py-[12px]
@@ -12,7 +11,7 @@ text-black bg-input-bg
 text-text-primary
 rounded-[6px]
 border-[1px]
-border-[white]/[0.10]
+border-[rgb(45,45,45)]
 placeholder:text-input-placeholder
 focus:outline-none
 focus-visible:ring-1 focus-visible:ring-ring
@@ -62,6 +61,7 @@ export const Input: FC<Props> = ({
   onClear,
   loading = false,
 }) => {
+  const { className: inputClasses, ...restInputProps } = inputProps
   const handleOnChange = (e: { target: { value: string } }) => onChange(e.target.value)
 
   const classes = cn({
@@ -75,19 +75,19 @@ export const Input: FC<Props> = ({
   const input = {
     number: (
       <InputNumber
-        className={classes}
+        className={cn(classes, inputClasses)}
         placeholder={placeholder}
         value={value}
         onValueChange={({ value }) => onChange(value)}
         name={name}
         data-testid={`Input_${name}`}
         readOnly={readonly}
-        {...inputProps}
+        {...restInputProps}
       />
     ),
     text: (
       <input
-        className={classes}
+        className={cn(classes, inputClasses)}
         placeholder={placeholder}
         type="text"
         value={value}
@@ -95,16 +95,16 @@ export const Input: FC<Props> = ({
         name={name}
         data-testid={`Input_${name}`}
         readOnly={readonly}
-        {...inputProps}
+        {...restInputProps}
       />
     ),
     search: (
       <div className="relative">
-        <div className="absolute translate-y-4 translate-x-4">
-          {loading ? <FaSpinner className="animate-spin" /> : <BsSearch data-testid="SearchIcon" />}
+        <div className="absolute translate-y-3 translate-x-4">
+          {loading ? <SpinnerIcon className="animate-spin" /> : <SearchIcon data-testid="SearchIcon" />}
         </div>
         <input
-          className={classes}
+          className={cn(classes, inputClasses, onClear && 'pr-[38px]')}
           placeholder={placeholder}
           type="text"
           value={value}
@@ -113,12 +113,12 @@ export const Input: FC<Props> = ({
           data-testid={`Input_${name}`}
           readOnly={readonly}
           autoComplete="off"
-          {...inputProps}
+          {...restInputProps}
         />
         {/* Small clear button at the right of the search field */}
         {onClear && (
           <button onClick={onClear} className="absolute right-4 bottom-1/2 translate-y-1/2 cursor-pointer">
-            <BsXCircle data-testid="ClearIcon" />
+            <XCircleIcon data-testid="ClearIcon" />
           </button>
         )}
       </div>

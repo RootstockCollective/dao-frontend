@@ -3,7 +3,7 @@
 import { cn } from '@/lib/utils'
 import * as CollapsiblePrimitive from '@radix-ui/react-collapsible'
 import React from 'react'
-import { SlArrowDown, SlArrowUp } from 'react-icons/sl'
+import { ChevronUpIcon, ChevronDownIcon } from '../Icons'
 
 const Collapsible = CollapsiblePrimitive.Root
 const CollapsibleTrigger = React.forwardRef<
@@ -15,8 +15,8 @@ const CollapsibleTrigger = React.forwardRef<
     <div className="flex">
       <div className="flex gap-[10px] w-full">
         <CollapsiblePrimitive.Trigger ref={ref} className={cn('transition-all group', className)} {...props}>
-          <SlArrowUp className={cn(iconBaseCn, 'group-data-[state=open]:hidden')} />
-          <SlArrowDown className={cn(iconBaseCn, 'group-data-[state=closed]:hidden')} />
+          <ChevronUpIcon className={cn(iconBaseCn, 'group-data-[state=open]:hidden')} />
+          <ChevronDownIcon className={cn(iconBaseCn, 'group-data-[state=closed]:hidden')} />
         </CollapsiblePrimitive.Trigger>
         {children}
       </div>

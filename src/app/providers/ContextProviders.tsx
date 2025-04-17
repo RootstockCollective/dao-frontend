@@ -7,6 +7,10 @@ import { AlertProvider } from './AlertProvider'
 import ErrorBoundary from '@/components/ErrorPage/ErrorBoundary'
 import { BuilderContextProviderWithPrices } from '../collective-rewards/user'
 import { AllocationsContextProvider } from '../collective-rewards/allocations/context'
+import { BoosterProvider } from './NFT/BoosterContext'
+import { MainContainer } from '@/components/MainContainer/MainContainer'
+import { BalancesProvider } from '@/app/user/Balances/context/BalancesContext'
+import { HeroCollapseProvider } from '@/app/user/HeroSection/HeroCollapseContext'
 
 interface Props {
   children: ReactNode
@@ -14,14 +18,23 @@ interface Props {
 
 export const ContextProviders = ({ children }: Props) => {
   const queryClient = new QueryClient()
+
   return (
     <ErrorBoundary>
       <WagmiProvider config={config}>
         <QueryClientProvider client={queryClient}>
           <AlertProvider>
-            <BuilderContextProviderWithPrices>
-              <AllocationsContextProvider>{children}</AllocationsContextProvider>
-            </BuilderContextProviderWithPrices>
+            <HeroCollapseProvider>
+              <BuilderContextProviderWithPrices>
+                <BoosterProvider>
+                  <AllocationsContextProvider>
+                    <BalancesProvider>
+                      <MainContainer>{children}</MainContainer>
+                    </BalancesProvider>
+                  </AllocationsContextProvider>
+                </BoosterProvider>
+              </BuilderContextProviderWithPrices>
+            </HeroCollapseProvider>
           </AlertProvider>
         </QueryClientProvider>
       </WagmiProvider>

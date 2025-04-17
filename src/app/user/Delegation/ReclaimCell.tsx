@@ -4,6 +4,7 @@ import { isUserRejectedTxError } from '@/components/ErrorPage/commonErrors'
 import { TX_MESSAGES } from '@/shared/txMessages'
 import { useAccount } from 'wagmi'
 import { DelegationAction } from './type'
+import { Button } from '@/components/Button'
 
 type Props = {
   onDelegateTxStarted: (hash: string, action?: DelegationAction) => void
@@ -29,12 +30,8 @@ export const ReclaimCell = ({ onDelegateTxStarted }: Props) => {
   }
 
   return (
-    <p
-      onClick={onReclaim}
-      className={isPending ? 'text-zinc-500' : 'text-primary cursor-pointer'}
-      data-testid="Reclaim"
-    >
+    <Button variant="outlined" onClick={onReclaim} disabled={isPending} data-testid="Reclaim">
       Reclaim
-    </p>
+    </Button>
   )
 }

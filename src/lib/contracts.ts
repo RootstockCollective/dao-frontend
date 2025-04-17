@@ -2,6 +2,7 @@ import { ZeroAddress } from 'ethers'
 import { Address } from 'viem'
 import { EarlyAdoptersNFTAbi } from './abis/EarlyAdoptersNFTAbi'
 import { VotingVanguardsNftAbi } from './abis/VotingVanguardsNFTAbi'
+import { StRIFTokenAbi } from './abis/StRIFTokenAbi'
 import {
   EA_NFT_ADDRESS,
   GENERAL_BUCKET_ADDRESS,
@@ -16,6 +17,7 @@ import {
   OG_PARTNERS_NFT_ADDRESS,
   OG_CONTRIBUTORS_NFT_ADDRESS,
   BACKERS_MANAGER_ADDRESS,
+  BUILDER_REGISTRY_ADDRESS,
   REWARD_DISTRIBUTOR_ADDRESS,
   VANGUARD_NFT_ADDRESS,
   BB_NFT_ADDRESS,
@@ -62,6 +64,7 @@ const MulticallAddress = MULTICALL_ADDRESS
 const TreasuryAddress = GRANTS_ACTIVE_BUCKET_ADDRESS
 
 const BackersManagerAddress = BACKERS_MANAGER_ADDRESS || ZeroAddress
+const BuilderRegistryAddress = BUILDER_REGISTRY_ADDRESS || ZeroAddress
 const RewardDistributorAddress = REWARD_DISTRIBUTOR_ADDRESS || ZeroAddress
 
 export {
@@ -73,10 +76,16 @@ export {
   TreasuryAddress,
   treasuryContracts,
   BackersManagerAddress,
+  BuilderRegistryAddress,
   RewardDistributorAddress,
 }
 
 export const governor = {
   address: GOVERNOR_ADDRESS,
   abi: GovernorAbi,
+} as const
+
+export const stRif = {
+  address: STRIF_ADDRESS,
+  abi: StRIFTokenAbi,
 } as const

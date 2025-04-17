@@ -1,18 +1,5 @@
-import {
-  Context,
-  createContext,
-  Dispatch,
-  ReactNode,
-  SetStateAction,
-  useContext,
-  useMemo,
-  useState,
-} from 'react'
-
-type StateWithUpdate<T> = {
-  value: T
-  onChange: Dispatch<SetStateAction<T>>
-}
+import { Context, createContext, ReactNode, useContext, useMemo, useState } from 'react'
+import { StateWithUpdate } from '@/app/collective-rewards/types'
 
 type SearchContextValue<Type> = {
   data: Type[]

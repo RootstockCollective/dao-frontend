@@ -2,12 +2,10 @@ import { AllocationsContext } from '@/app/collective-rewards/allocations/context
 import {
   BackerRewardPercentage,
   formatFiatAmount,
-  formatMetrics,
   formatSymbol,
   getFiatAmount,
   Reward,
 } from '@/app/collective-rewards/rewards'
-import { TableHeader } from '@/app/collective-rewards/shared'
 import { BuilderStateFlags } from '@/app/collective-rewards/types'
 import {
   getBuilderInactiveState,
@@ -20,11 +18,17 @@ import { Jdenticon } from '@/components/Header/Jdenticon'
 import { Popover } from '@/components/Popover'
 import { ProgressBar } from '@/components/ProgressBar'
 import { TableCell } from '@/components/Table'
-import { Label, Typography } from '@/components/Typography'
-import { cn, shortAddress, toFixed } from '@/lib/utils'
+import { Label, Paragraph, Typography } from '@/components/Typography'
+import { cn, shortAddress } from '@/lib/utils'
 import { FC, memo, useContext, useMemo } from 'react'
-import { FaArrowDown, FaArrowUp, FaCircle } from 'react-icons/fa'
-import { Address, isAddress, parseEther, parseUnits } from 'viem'
+import { ArrowDownIcon, ArrowUpIcon, CircleIcon } from '@/components/Icons'
+import { Address, isAddress, parseEther } from 'viem'
+import { useAccount } from 'wagmi'
+import { ConnectButtonComponentSecondary, ConnectWorkflow } from '@/shared/walletConnection'
+
+type TableCellProps = {
+  className?: string
+}
 
 type RewardCellValueProps = {
   reward: Reward
@@ -53,24 +57,27 @@ const RewardCellValue: FC<RewardCellValueProps> = ({ reward }) => {
   )
 }
 
-type RewardCellProps = {
-  tableHeader: TableHeader
+type RewardCellProps = TableCellProps & {
   rewards: Reward[]
+  isHidden?: boolean
 }
-export const RewardCell: FC<RewardCellProps> = ({ tableHeader: { className }, rewards }) => (
-  <TableCell className={cn(className, 'border-solid')}>
+
+export const RewardCell: FC<RewardCellProps> = ({ className, rewards, isHidden }) => (
+  <TableCell className={cn(className, 'border-solid', { hidden: isHidden })}>
     <div className="flex flex-nowrap flex-row gap-1">
       {rewards && rewards.map((reward, index) => <RewardCellValue key={index} reward={reward} />)}
     </div>
   </TableCell>
 )
 
-export const LazyRewardCell = memo(RewardCell, ({ rewards: prevReward }, { rewards: nextReward }) =>
-  prevReward.every(
-    (reward, key) =>
-      reward.amount.value === nextReward[key].amount.value &&
-      reward.amount.price === nextReward[key].amount.price,
-  ),
+export const LazyRewardCell = memo(
+  RewardCell,
+  ({ rewards: prevReward, isHidden: prevIsHidden }, { rewards: nextReward, isHidden: nextIsHidden }) =>
+    prevReward.every(
+      (reward, key) =>
+        reward.amount.value === nextReward[key].amount.value &&
+        reward.amount.price === nextReward[key].amount.price,
+    ) && prevIsHidden === nextIsHidden,
 )
 
 type BuilderStatusFlagProps = {
@@ -96,23 +103,17 @@ const BuilderStatusFlag: FC<BuilderStatusFlagProps> = ({ stateFlags }) => {
       size="small"
       trigger="hover"
     >
-      <FaCircle color={color} size={8} />
+      <CircleIcon color={color} size={8} />
     </Popover>
   )
 }
 
-type BuilderCellProps = {
-  tableHeader: TableHeader
+type BuilderCellProps = TableCellProps & {
   builderName: string
   address: Address
 } & BuilderStatusFlagProps
 
-export const BuilderNameCell: FC<BuilderCellProps> = ({
-  tableHeader: { className },
-  builderName,
-  address,
-  stateFlags,
-}) => {
+export const BuilderNameCell: FC<BuilderCellProps> = ({ className, builderName, address, stateFlags }) => {
   const shortenAddress = shortAddress(address)
   return (
     <TableCell className={cn(className, 'border-solid')}>
@@ -135,7 +136,7 @@ export const BuilderNameCell: FC<BuilderCellProps> = ({
                 addressOrAlias={builderName || address}
                 clipboard={address}
                 clipboardAnimationText={shortenAddress}
-                className="text-sm"
+                className="text-sm max-w-[104px]"
               />
             </Typography>
           </Popover>
@@ -145,16 +146,12 @@ export const BuilderNameCell: FC<BuilderCellProps> = ({
   )
 }
 
-type BackerRewardsPercentageProps = {
-  tableHeader: TableHeader
+type BackerRewardsPercentageProps = TableCellProps & {
   percentage: BackerRewardPercentage | null
 }
 
 const toPercentage = (value: bigint) => Number((value * 100n) / parseEther('1'))
-export const BackerRewardsPercentage: FC<BackerRewardsPercentageProps> = ({
-  tableHeader: { className },
-  percentage,
-}) => {
+export const BackerRewardsPercentage: FC<BackerRewardsPercentageProps> = ({ className, percentage }) => {
   const renderDelta = useMemo(() => {
     if (!percentage) return null
 
@@ -166,7 +163,7 @@ export const BackerRewardsPercentage: FC<BackerRewardsPercentageProps> = ({
       const colorGreen = '#1bc47d'
       return (
         <div className="flex flex-row items-center">
-          <FaArrowUp style={{ color: colorGreen }} />
+          <ArrowUpIcon className="fa-arrow-up" color={colorGreen} />
           <div className={cn(`text-[${colorGreen}] text-sm`)}>+{deltaPercentage}</div>
         </div>
       )
@@ -175,7 +172,7 @@ export const BackerRewardsPercentage: FC<BackerRewardsPercentageProps> = ({
       const colorRed = '#f14722'
       return (
         <div className="flex flex-row items-center">
-          <FaArrowDown style={{ color: colorRed }} />
+          <ArrowDownIcon className="fa-arrow-down" color={colorRed} />
           <div className={cn(`text-[${colorRed}] text-sm`)}>{deltaPercentage}</div>
         </div>
       )
@@ -192,16 +189,12 @@ export const BackerRewardsPercentage: FC<BackerRewardsPercentageProps> = ({
   )
 }
 
-type TotalAllocationCellProps = {
-  tableHeader: TableHeader
+type TotalAllocationCellProps = TableCellProps & {
   // a percentage without decimals
   percentage: bigint
 }
 
-export const TotalAllocationCell: FC<TotalAllocationCellProps> = ({
-  tableHeader: { className },
-  percentage,
-}) => {
+export const TotalAllocationCell: FC<TotalAllocationCellProps> = ({ className, percentage }) => {
   return (
     <TableCell className={cn(className, 'border-solid text-center border-b-0 items-center')}>
       <div className="flex flex-row gap-2 items-center">
@@ -212,16 +205,16 @@ export const TotalAllocationCell: FC<TotalAllocationCellProps> = ({
   )
 }
 
-type ActionCellProps = {
-  tableHeader: TableHeader
+type ActionCellProps = TableCellProps & {
   builderAddress: Address
 }
 
-export const ActionCell: FC<ActionCellProps> = ({ tableHeader: { className }, builderAddress }) => {
+export const ActionCell: FC<ActionCellProps> = ({ className, builderAddress }) => {
   const {
     state: { selections, allocations, getBuilder },
     actions: { toggleSelectedBuilder },
   } = useContext(AllocationsContext)
+  const { isConnected } = useAccount()
 
   const builder = useMemo(() => getBuilder(builderAddress), [builderAddress, getBuilder])
 
@@ -246,14 +239,34 @@ export const ActionCell: FC<ActionCellProps> = ({ tableHeader: { className }, bu
 
   return (
     <TableCell className={cn(className, 'border-solid align-center')}>
-      <Button
-        variant={isSelected ? 'white' : 'secondary'}
-        disabled={!isOperational || isPreallocated}
-        onClick={selectBuilder}
-        className="white text-center"
+      <Popover
+        content={NotConnectedPopoverContent()}
+        trigger="hover"
+        size="medium"
+        position="top-expand-left"
+        disabled={isConnected}
+        contentSubContainerClassName="p-3"
       >
-        {isSelected ? 'Selected' : 'Select'}
-      </Button>
+        <Button
+          variant={isSelected ? 'white' : 'outlined'}
+          disabled={!isConnected || !isOperational || isPreallocated}
+          onClick={() => {
+            isConnected && selectBuilder()
+          }}
+          className="white text-center"
+        >
+          {isSelected ? 'Selected' : 'Select'}
+        </Button>
+      </Popover>
     </TableCell>
   )
 }
+
+const NotConnectedPopoverContent = () => (
+  <>
+    <Paragraph variant="normal" className="text-sm pb-3">
+      Select the builders you want to allocate your stRIF to and start earning rewards.
+    </Paragraph>
+    <ConnectWorkflow ConnectComponent={ConnectButtonComponentSecondary} />
+  </>
+)

@@ -12,7 +12,7 @@ interface StakingStepsProps {
   onCloseModal: () => void
 }
 
-const StakingSteps = ({ onCloseModal }: StakingStepsProps) => {
+export const StakingSteps = ({ onCloseModal }: StakingStepsProps) => {
   const { step, onGoNext, onGoBack } = useSteps(4)
   const { balances, prices } = useBalancesContext()
 
@@ -53,14 +53,4 @@ const StakingSteps = ({ onCloseModal }: StakingStepsProps) => {
       </Modal>
     </StakingProvider>
   )
-}
-
-export const StakingModal = () => {
-  const { stakeModal } = useBalancesContext()
-
-  if (stakeModal.isModalOpened) {
-    return <StakingSteps onCloseModal={stakeModal.closeModal} />
-  }
-
-  return null
 }

@@ -1,18 +1,22 @@
-import { formatCurrency, toFixed } from '@/lib/utils'
+import { formatCurrency } from '@/lib/utils'
 import { useCanAccountUnstakeAmount } from '@/shared/hooks/useCanAccountUnstakeAmount'
 import { useMemo, useCallback } from 'react'
 import { StakeRIF } from '../StakeRIF'
 import { useStakingContext } from '../StakingContext'
 import { StepProps } from '../types'
+import Big from '@/lib/big'
 
 export const StepOne = ({ onGoNext = () => {} }: StepProps) => {
   const { amount, onAmountChange, tokenToSend, actionName } = useStakingContext()
 
   const { isCanAccountWithdrawLoading, canAccountWithdraw, backerTotalAllocation } =
-    useCanAccountUnstakeAmount(Number(amount).toString(), tokenToSend.balance)
+    useCanAccountUnstakeAmount(amount, tokenToSend.balance)
 
   const balanceToCurrency = useMemo(
-    () => Number(tokenToSend.price) * Number(tokenToSend.balance),
+    () =>
+      Big(tokenToSend.price || 0)
+        .mul(tokenToSend.balance)
+        .toString(),
     [tokenToSend],
   )
 
@@ -20,12 +24,12 @@ export const StepOne = ({ onGoNext = () => {} }: StepProps) => {
     (value: string) => {
       if (!value || value === '.') {
         onAmountChange('0')
-        return
-      }
-
-      const regex = /^\d*\.?\d{0,8}$/
-      if (regex.test(value)) {
-        onAmountChange(value)
+      } else {
+        const regex = /^\d*\.?\d{0,18}$/
+        if (regex.test(value)) {
+          // remove leading zeros
+          onAmountChange(value.replace(/^0+(?=\d)/, ''))
+        }
       }
     },
     [onAmountChange],
@@ -36,17 +40,17 @@ export const StepOne = ({ onGoNext = () => {} }: StepProps) => {
       const balance = tokenToSend.balance
 
       if (percentage === 100) {
-        // For 100%, use exact balance
+        // For 100%, round to 18 decimal places to prevent precision issues
+        const exactBalance = Big(balance).round(18, Big.roundDown).toString()
         requestAnimationFrame(() => {
-          onAmountChange(balance)
+          onAmountChange(exactBalance)
         })
-        return
+      } else {
+        // For other percentages, calculate with precision
+        const rawAmount = Big(balance).mul(percentage).div(100)
+        const displayAmount = rawAmount.toString()
+        onAmountChange(displayAmount)
       }
-
-      // For other percentages, calculate with precision
-      const rawAmount = Number(balance) * (percentage / 100)
-      const displayAmount = rawAmount.toFixed(8)
-      onAmountChange(displayAmount)
     },
     [tokenToSend.balance, onAmountChange],
   )
@@ -55,10 +59,10 @@ export const StepOne = ({ onGoNext = () => {} }: StepProps) => {
     if (!amount || Number(amount) <= 0) return false
 
     // Compare with precision for validation
-    const rawAmount = Number(amount)
-    const rawBalance = Number(tokenToSend.balance)
+    const rawAmount = Big(amount)
+    const rawBalance = Big(tokenToSend.balance)
 
-    if (rawAmount > rawBalance) return false
+    if (rawAmount.gt(rawBalance)) return false
     if (actionName === 'UNSTAKE' && !canAccountWithdraw) return false
 
     return true

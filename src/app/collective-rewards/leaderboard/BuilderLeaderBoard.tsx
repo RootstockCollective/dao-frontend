@@ -1,19 +1,29 @@
+import { useCanManageAllocations } from '@/app/collective-rewards/allocations/hooks'
+import { BuildersLeaderBoardContent } from '@/app/collective-rewards/leaderboard'
 import { CycleContextProvider } from '@/app/collective-rewards/metrics'
+import { useReadBackersManager } from '@/app/collective-rewards/shared'
 import { Button } from '@/components/Button'
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/Collapsible'
-import { HeaderTitle, Paragraph } from '@/components/Typography'
-import { BuildersLeaderBoardContent } from '@/app/collective-rewards/leaderboard'
+import { Popover } from '@/components/Popover'
+import { HeaderTitle, Paragraph, Typography } from '@/components/Typography'
 import { useRouter } from 'next/navigation'
-import { useCanManageAllocations } from '@/app/collective-rewards/allocations/hooks'
 import { CRWhitepaperLink } from '../shared'
+import { useAccount } from 'wagmi'
+import { ConnectWorkflow } from '@/shared/walletConnection'
+import { ConnectButtonComponentSecondary } from '@/shared/walletConnection/components/ConnectButtonComponent'
 
 export const BuildersLeaderBoard = () => {
   const router = useRouter()
+  const { data: isInDistributionPeriod } = useReadBackersManager('onDistributionPeriod')
+  const { isConnected } = useAccount()
+
   const onManageAllocations = () => {
     router.push('/collective-rewards/allocations')
   }
 
   const canManageAllocations = useCanManageAllocations()
+
+  const isActionEnabled = isConnected && !isInDistributionPeriod && canManageAllocations
 
   return (
     <>
@@ -28,9 +38,16 @@ export const BuildersLeaderBoard = () => {
                 <CRWhitepaperLink />.
               </Paragraph>
             </div>
-            <Button variant="primary" onClick={onManageAllocations} disabled={!canManageAllocations}>
-              Manage Allocations
-            </Button>
+
+            <PopoverWrapper isInDistributionPeriod={!!isInDistributionPeriod} isConnected={isConnected}>
+              <Button
+                variant={isActionEnabled ? 'primary' : 'outlined'}
+                onClick={onManageAllocations}
+                disabled={!isActionEnabled}
+              >
+                Manage Allocations
+              </Button>
+            </PopoverWrapper>
           </div>
         </CollapsibleTrigger>
         <CollapsibleContent>
@@ -41,4 +58,61 @@ export const BuildersLeaderBoard = () => {
       </Collapsible>
     </>
   )
+}
+
+const NoWalletConnectedPopover = (children: React.ReactNode) => (
+  <Popover
+    content={
+      <>
+        <Paragraph variant="normal" className="text-sm pb-3">
+          Manage how your stRIF are allocated to builders. Support projects and earn rewards at the end of
+          each cycle.
+        </Paragraph>
+        <ConnectWorkflow ConnectComponent={ConnectButtonComponentSecondary} />
+      </>
+    }
+    trigger="hover"
+    size="medium"
+    position="top-expand-left"
+    contentSubContainerClassName="p-3"
+  >
+    {children}
+  </Popover>
+)
+
+const DistributionPeriodPopover = (children: React.ReactNode) => (
+  <Popover
+    content={
+      <div className="flex flex-col">
+        <Typography
+          tagVariant="h2"
+          fontFamily="kk-topo"
+          className="self-end text-[20.44px] text-primary font-normal uppercase"
+        >
+          Rewards distribution is in progress.
+        </Typography>
+        <Typography tagVariant="p" fontFamily="rootstock-sans" className="self-end">
+          Manage Allocation will be available shortly, please check back soon
+        </Typography>
+      </div>
+    }
+    trigger="hover"
+    contentContainerClassName="top-full -left-[87%]"
+  >
+    {children}
+  </Popover>
+)
+
+const PopoverWrapper: React.FC<{
+  isInDistributionPeriod: boolean
+  isConnected: boolean
+  children: React.ReactNode
+}> = ({ isInDistributionPeriod, isConnected, children }) => {
+  if (!isConnected) {
+    return <>{NoWalletConnectedPopover(children)}</>
+  }
+  if (isInDistributionPeriod) {
+    return <>{DistributionPeriodPopover(children)}</>
+  }
+  return <>{children}</>
 }

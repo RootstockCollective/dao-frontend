@@ -1,6 +1,8 @@
 import { describe, expect, test } from 'vitest'
-import { formatMetrics, formatCurrency, formatSymbol, getFiatAmount, formatFiatAmount } from './formatter'
+import { formatMetrics, formatSymbol, getFiatAmount, formatFiatAmount } from './formatter'
 import { parseEther } from 'viem'
+import Big from '@/lib/big'
+import { formatCurrency } from '@/lib/utils'
 
 const formatAmountWithCurrency = (amount: string, currency: string, currencySymbol = '') =>
   `= ${currency} ${currencySymbol}${amount}`
@@ -100,7 +102,7 @@ describe('formatter', () => {
         price: 10,
         symbol,
         currency,
-        expected: { amount: `<1 ${symbol}`, fiatAmount: formatAmountWithCurrency('<0.01', currency) },
+        expected: { amount: `<1 ${symbol}`, fiatAmount: formatAmountWithCurrency('<$0.01', currency) },
       },
     ])(
       'formatMetrics($amount, $price, $symbol, $currency) -> $expected.amount, $expected.fiatAmount',
@@ -138,7 +140,7 @@ describe('formatter', () => {
         price: 10,
         symbol,
         currency,
-        expected: { amount: `<0.00001 ${symbol}`, fiatAmount: formatAmountWithCurrency('<0.01', currency) },
+        expected: { amount: `<0.00001 ${symbol}`, fiatAmount: formatAmountWithCurrency('<$0.01', currency) },
       },
       {
         amount: oneEther,
@@ -206,7 +208,7 @@ describe('formatter', () => {
         price: 10,
         symbol,
         currency,
-        expected: { amount: `<1 ${symbol}`, fiatAmount: formatAmountWithCurrency('<0.01', currency) },
+        expected: { amount: `<1 ${symbol}`, fiatAmount: formatAmountWithCurrency('<€0.01', currency) },
       },
     ])(
       'formatMetrics($amount, $price, $symbol, $currency) -> $expected.amount, $expected.fiatAmount',
@@ -226,8 +228,8 @@ describe('formatter', () => {
       { amount: 5000, currency: 'EUR', expected: '= EUR €5,000.00' },
       { amount: 0.01, currency: 'USD', expected: '= USD $0.01' },
       { amount: 0.01, currency: 'EUR', expected: '= EUR €0.01' },
-      { amount: 0.001, currency: 'USD', expected: '= USD <0.01' },
-      { amount: 0.001, currency: 'EUR', expected: '= EUR <0.01' },
+      { amount: 0.001, currency: 'USD', expected: '= USD <$0.01' },
+      { amount: 0.001, currency: 'EUR', expected: '= EUR <€0.01' },
     ])('formatFiatAmount($amount, $currency) -> $expected', ({ amount, currency, expected }) => {
       expect(formatFiatAmount(amount, currency)).toBe(expected)
     })
@@ -235,12 +237,12 @@ describe('formatter', () => {
 
   describe('getFiatAmount', () => {
     test.each([
-      { amount: 0n, price: 0, expected: 0 },
-      { amount: oneEther, price: 10, expected: 10 },
-      { amount: halfEther, price: 10, expected: 5 },
-      { amount: oneWei, price: 10, expected: 0.00000000000000001 },
+      { amount: 0n, price: 0, expected: Big(0) },
+      { amount: oneEther, price: 10, expected: Big(10) },
+      { amount: halfEther, price: 10, expected: Big(5) },
+      { amount: oneWei, price: 10, expected: Big(0.00000000000000001) },
     ])('getFiatAmount($amount, $price) -> $expected', ({ amount, price, expected }) => {
-      expect(getFiatAmount(amount, price)).toBe(expected)
+      expect(getFiatAmount(amount, price)).toStrictEqual(expected)
     })
   })
   describe('formatCurrency', () => {
@@ -277,9 +279,9 @@ describe('formatter', () => {
     })
 
     test.each([
-      { value: 0.001, expected: '<0.01' },
-      { currency: 'USD', value: 0.001, expected: '<0.01' },
-      { currency: 'EUR', value: 0.001, expected: '<0.01' },
+      { value: 0.001, expected: '<$0.01' },
+      { currency: 'USD', value: 0.001, expected: '<$0.01' },
+      { currency: 'EUR', value: 0.001, expected: '<€0.01' },
     ])('should format $currency properly with $value', ({ currency, value, expected }) => {
       expect(formatCurrency(value, currency)).toBe(expected)
     })

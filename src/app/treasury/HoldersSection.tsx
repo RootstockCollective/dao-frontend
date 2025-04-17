@@ -1,12 +1,13 @@
 import { Table } from '@/components/Table'
 import { HeaderTitle, Span } from '@/components/Typography'
 import { EXPLORER_URL, STRIF_ADDRESS } from '@/lib/constants'
-import { RxExternalLink } from 'react-icons/rx'
+import { ExternalLinkIcon } from '@/components/Icons'
 import { useFetchTokenHolders } from '@/app/treasury/hooks/useFetchTokenHolders'
-import { formatBalanceToHuman } from '@/app/user/Balances/balanceUtils'
 import { LoadingSpinner } from '@/components/LoadingSpinner'
 import { Jdenticon } from '@/components/Header/Jdenticon'
 import { ErrorMessageAlert } from '@/components/ErrorMessageAlert/ErrorMessageAlert'
+import { formatNumberWithCommas } from '@/lib/utils'
+import { formatUnits } from 'ethers'
 
 interface HolderColumnProps {
   address: string
@@ -23,7 +24,7 @@ const HolderColumn = ({ address, rns }: HolderColumnProps) => {
       <Span className="underline text-left overflow-hidden whitespace-nowrap text-[14px]">
         {rns || address}
       </Span>
-      <RxExternalLink size={18} />
+      <ExternalLinkIcon size={18} />
     </a>
   )
 }
@@ -34,7 +35,7 @@ export const HoldersSection = () => {
 
   const holders = currentResults.map(({ address, value }) => ({
     holder: <HolderColumn address={address.hash} rns={address.ens_domain_name} />,
-    quantity: `${formatBalanceToHuman(value).split('.')[0]} stRIF`,
+    quantity: `${formatNumberWithCommas(formatUnits(value).split('.')[0])} stRIF`,
   }))
 
   return (

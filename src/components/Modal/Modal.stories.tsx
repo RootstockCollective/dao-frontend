@@ -4,7 +4,7 @@ import { DisconnectWalletModal } from './DisconnectWalletModal'
 
 const meta = {
   component: Modal,
-  title: 'Components/Modal',
+  title: 'Components/Modals/Modal',
 } satisfies Meta<typeof Modal>
 
 export default meta

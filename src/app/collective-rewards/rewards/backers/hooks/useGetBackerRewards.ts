@@ -12,14 +12,11 @@ import { useGaugesGetFunction } from '@/app/collective-rewards/shared'
 import { Address } from 'viem'
 import { usePricesContext } from '@/shared/context/PricesContext'
 import { useGetBuildersByState } from '@/app/collective-rewards//user'
-import { BuilderStateFlags, RequiredBuilder } from '@/app/collective-rewards/types'
+import { RequiredBuilder } from '@/app/collective-rewards/types'
 import { useMemo } from 'react'
 
-export type BackerRewards = {
-  address: Address
-  builderName: string
-  stateFlags: BuilderStateFlags
-  totalAllocationPercentage: bigint
+export type BackerRewards = RequiredBuilder & {
+  totalAllocation: TokenRewards
   rewardPercentage: BackerRewardPercentage
   estimatedRewards: TokenRewards
   claimableRewards: TokenRewards
@@ -56,11 +53,6 @@ export const useGetBackerRewards = (
     error: backersRewardsPctError,
   } = useGetBackersRewardPercentage(buildersAddress)
   const {
-    data: totalAllocation,
-    isLoading: totalAllocationLoading,
-    error: totalAllocationError,
-  } = useGaugesGetFunction(gauges, 'totalAllocation')
-  const {
     data: allocationOf,
     isLoading: allocationOfLoading,
     error: allocationOfError,
@@ -68,18 +60,12 @@ export const useGetBackerRewards = (
   const { data: tokenRewards, isLoading: rewardsLoading, error: rewardsError } = useBackerRewardsContext()
 
   const isLoading = useMemo(
-    () =>
-      buildersLoading ||
-      backersRewardsPctLoading ||
-      totalAllocationLoading ||
-      allocationOfLoading ||
-      rewardsLoading,
-    [buildersLoading, backersRewardsPctLoading, totalAllocationLoading, allocationOfLoading, rewardsLoading],
+    () => buildersLoading || backersRewardsPctLoading || allocationOfLoading || rewardsLoading,
+    [buildersLoading, backersRewardsPctLoading, allocationOfLoading, rewardsLoading],
   )
   const error = useMemo(
-    () =>
-      buildersError ?? backersRewardsPctError ?? totalAllocationError ?? allocationOfError ?? rewardsError,
-    [buildersError, backersRewardsPctError, totalAllocationError, allocationOfError, rewardsError],
+    () => buildersError ?? backersRewardsPctError ?? allocationOfError ?? rewardsError,
+    [buildersError, backersRewardsPctError, allocationOfError, rewardsError],
   )
 
   const { prices } = usePricesContext()
@@ -87,14 +73,11 @@ export const useGetBackerRewards = (
   const rbtcPrice = prices[rbtc.symbol]?.price ?? 0
 
   const data = useMemo(() => {
-    return builders.reduce<BackerRewards[]>((acc, { address, builderName, gauge, stateFlags }) => {
-      const builderTotalAllocation = totalAllocation[gauge] ?? 0n
+    return builders.reduce<BackerRewards[]>((acc, builder) => {
+      const { address, gauge } = builder
       const backerAllocationOf = allocationOf[gauge] ?? 0n
-      const totalAllocationPercentage = builderTotalAllocation
-        ? (backerAllocationOf * 100n) / builderTotalAllocation
-        : 0n
-      const rewardPercentage = backersRewardsPct[address] ?? null
 
+      const rewardPercentage = backersRewardsPct[address] ?? null
       const rifRewards = tokenRewardsMetrics(tokenRewards[rif.address], gauge)
       const rbtcRewards = tokenRewardsMetrics(tokenRewards[rbtc.address], gauge)
 
@@ -109,10 +92,18 @@ export const useGetBackerRewards = (
         return [
           ...acc,
           {
-            address,
-            builderName,
-            stateFlags,
-            totalAllocationPercentage,
+            ...builder,
+            totalAllocation: {
+              rif: {
+                amount: {
+                  value: backerAllocationOf,
+                  symbol: rif.symbol,
+                  price: rifPrice,
+                  currency,
+                },
+                logo: RifSvg(),
+              },
+            },
             rewardPercentage,
             estimatedRewards: {
               rif: {
@@ -179,18 +170,7 @@ export const useGetBackerRewards = (
       }
       return acc
     }, [])
-  }, [
-    builders,
-    totalAllocation,
-    allocationOf,
-    backersRewardsPct,
-    tokenRewards,
-    rif,
-    rbtc,
-    rifPrice,
-    rbtcPrice,
-    currency,
-  ])
+  }, [builders, allocationOf, backersRewardsPct, tokenRewards, rif, rbtc, rifPrice, rbtcPrice, currency])
 
   return {
     data,

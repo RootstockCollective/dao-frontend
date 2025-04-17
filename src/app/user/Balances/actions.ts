@@ -2,16 +2,16 @@ import { GetAddressTokenResult, GetPricesResult } from '@/app/user/types'
 import { axiosInstance } from '@/lib/utils'
 import {
   fetchAddressTokensEndpoint,
+  fetchNewAllocationEventEndpoint,
   fetchNFTsOwnedByAddressAndNftAddress,
   fetchPricesEndpoint,
   fetchProposalsCreatedByGovernorAddress,
+  fetchVoteCastEventEndpoint,
   getNftHolders,
   getNftInfo,
   getTokenHoldersOfAddress,
 } from '@/lib/endpoints'
-import { tokenContracts, GovernorAddress } from '@/lib/contracts'
-import { NftMeta } from '@/shared/types'
-import { ipfsGateways } from '@/config'
+import { tokenContracts, GovernorAddress, BackersManagerAddress } from '@/lib/contracts'
 import {
   NextPageParams,
   NftHolderItem,
@@ -19,6 +19,7 @@ import {
   TokenHoldersResponse,
 } from '@/app/user/Balances/types'
 import { BackendEventByTopic0ResponseValue } from '@/shared/utils'
+import { ethers } from 'ethers'
 
 export const fetchAddressTokens = (address: string, chainId = 31) =>
   axiosInstance
@@ -100,22 +101,23 @@ export const fetchProposalCreated = (fromBlock = 0) =>
       .replace('{{fromBlock}}', fromBlock.toString()),
   )
 
-export const fetchProposalsCreatedCached = () => axiosInstance.get('/proposals/api', { baseURL: '/' })
-
-export function fetchIpfsUri(uri: string, responseType?: 'json'): Promise<NftMeta>
-export function fetchIpfsUri(uri: string, responseType?: 'blob'): Promise<Blob>
-export async function fetchIpfsUri(
-  ipfsUri: string,
-  responseType: 'json' | 'blob' = 'json',
-): Promise<NftMeta | Blob> {
-  return Promise.any(
-    ipfsGateways.map(async gateway => {
-      const httpsUrl = ipfsUri.replace('ipfs://', gateway)
-      const { data } = await axiosInstance.get(httpsUrl, { responseType })
-      return data
-    }),
+//TODO: refactor this out of Balances folder as it does not related to Balances
+// the suggestion is to move it up the folder in User or moving it to shared
+export const fetchVoteCastEventByAccountAddress = (address: string) =>
+  axiosInstance.get<BackendEventByTopic0ResponseValue[]>(
+    fetchVoteCastEventEndpoint
+      .replace('{{address}}', GovernorAddress)
+      .replace('{{topic1}}', ethers.zeroPadValue(address, 32)),
   )
-}
+
+export const fetchNewAllocationEventByAccountAddress = (address: string) =>
+  axiosInstance.get<BackendEventByTopic0ResponseValue[]>(
+    fetchNewAllocationEventEndpoint
+      .replace('{{address}}', BackersManagerAddress)
+      .replace('{{topic1}}', ethers.zeroPadValue(address, 32)),
+  )
+
+export const fetchProposalsCreatedCached = () => axiosInstance.get('/proposals/api', { baseURL: '/' })
 
 export const fetchNftInfo = (address: string) =>
   axiosInstance.get(getNftInfo.replace('{{nftAddress}}', address))

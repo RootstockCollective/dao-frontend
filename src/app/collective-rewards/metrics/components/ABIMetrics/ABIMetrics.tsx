@@ -1,13 +1,17 @@
 import { MetricsCard, MetricsCardTitle, TokenMetricsCardRow } from '@/app/collective-rewards/rewards'
 import { withSpinner } from '@/components/LoadingSpinner/withLoadingSpinner'
-import { useGetABI } from './hooks/useGetABI'
+import { ABIFormula, useGetMetricsAbi } from '@/app/collective-rewards/shared'
+import { useHandleErrors } from '@/app/collective-rewards/utils'
 
 export const ABIMetrics = () => {
-  const { data: abiPct, isLoading } = useGetABI()
+  const { data: abiPct, isLoading, error } = useGetMetricsAbi()
+  useHandleErrors({ error, title: 'Error loading ABI metrics' })
+
   return (
     <>
       <MetricsCard borderless>
         <MetricsCardTitle
+          className="text-wrap"
           title="Annual Backers Incentives %"
           data-testid="abiPct"
           tooltip={{
@@ -17,11 +21,14 @@ export const ABIMetrics = () => {
                 rewards that backers could receive based on their backing allocations.
                 <br />
                 <br />
-                The calculation follows the formula: (1 + Rewards per stRIF per Cycle / RIF price)^26 - 1.
+                The calculation follows the formula:
+                <span className="flex justify-center">
+                  <ABIFormula />
+                </span>
                 <br />
                 <br />
                 This estimation is dynamic and may vary based on total rewards and user activity. This data is
-                for informational purposes only.{' '}
+                for informational purposes only.
               </span>
             ),
             popoverProps: {

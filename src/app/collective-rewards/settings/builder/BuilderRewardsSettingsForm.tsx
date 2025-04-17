@@ -1,40 +1,26 @@
 import { Button } from '@/components/Button'
-import { Form, FormControl, FormField, FormInput, FormItem, FormLabel, FormMessage } from '@/components/Form'
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormInputNumber,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from '@/components/Form'
 import { LoadingSpinner } from '@/components/LoadingSpinner'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useRouter } from 'next/navigation'
 import { FC, useEffect, useState } from 'react'
 import { useForm } from 'react-hook-form'
-import { GoRocket } from 'react-icons/go'
+import { RocketIcon } from '@/components/Icons'
 import { z } from 'zod'
 import { percentageToWei } from '@/app/collective-rewards/settings/utils'
 import { useBuilderSettingsContext } from './context'
 import { Popover } from '@/components/Popover'
 
 const formSchema = z.object({
-  reward: z
-    .string()
-    .regex(
-      /^\d{1,3}(\.\d{1,18})?$/,
-      'Invalid format: should only contain digits and at most 1 decimal point with up to 18 decimal places.',
-    )
-    .refine(
-      value => {
-        const digitsOnly = value.replace('.', '')
-
-        if (digitsOnly.length > 19) {
-          return false
-        }
-
-        const [whole, decimal] = value.split('.')
-
-        // Check that if there are 3 digits before the decimal, they must be "100" and there are no non-zero digits after ".".
-        return whole.length < 3 || (whole === '100' && (!decimal || BigInt(decimal) == 0n))
-      },
-      {
-        message: 'Value must be between 0 and 100',
-      },
-    ),
+  reward: z.string().transform(arg => arg.slice(0, arg.length - 1)),
 })
 
 export const BuilderRewardsSettingsForm: FC = () => {
@@ -49,9 +35,6 @@ export const BuilderRewardsSettingsForm: FC = () => {
   const form = useForm<z.infer<typeof formSchema>>({
     mode: 'onTouched',
     resolver: zodResolver(formSchema),
-    defaultValues: {
-      reward: '',
-    },
   })
 
   const {
@@ -86,9 +69,13 @@ export const BuilderRewardsSettingsForm: FC = () => {
                 {isCurrentRewardsLoading ? (
                   <LoadingSpinner />
                 ) : (
-                  <FormInput
+                  <FormInputNumber
+                    decimalScale={0}
                     placeholder="0 ... 100 %"
-                    inputMode="decimal"
+                    inputMode="numeric"
+                    suffix="%"
+                    max={100}
+                    min={0}
                     {...field}
                     disabled={!isBuilderOperational}
                   />
@@ -113,7 +100,7 @@ export const BuilderRewardsSettingsForm: FC = () => {
             disabled={isBuilderOperational}
           >
             <Button
-              startIcon={<GoRocket />}
+              startIcon={<RocketIcon />}
               disabled={!isDirty || !isValid || !isBuilderOperational}
               buttonProps={{ type: 'submit' }}
               loading={isPending}

@@ -1,10 +1,10 @@
 import { useReadContracts } from 'wagmi'
 import { AVERAGE_BLOCKTIME } from '@/lib/constants'
 import { BuilderRegistryAbi } from '@/lib/abis/v2/BuilderRegistryAbi'
-import { BackersManagerAddress } from '@/lib/contracts'
 import { AbiFunction, Address } from 'viem'
 import { useGetGaugesLength } from '@/app/collective-rewards/user'
 import { useMemo } from 'react'
+import { BuilderRegistryAddress } from '@/lib/contracts'
 
 const gaugeTypeOptions = ['active', 'halted'] as const
 export type GaugeType = (typeof gaugeTypeOptions)[number]
@@ -81,7 +81,7 @@ const useGetContractCalls = (type: GaugeType) => {
 
   const data = Array.from({ length }, (_, index) => {
     return {
-      address: BackersManagerAddress,
+      address: BuilderRegistryAddress,
       abi: BuilderRegistryAbi,
       functionName: gaugeType[type],
       args: [index],

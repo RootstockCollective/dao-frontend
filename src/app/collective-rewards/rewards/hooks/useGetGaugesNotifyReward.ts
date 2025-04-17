@@ -1,6 +1,6 @@
 import { Address, isAddressEqual } from 'viem'
 import { useMemo } from 'react'
-import { useGetGaugesEvents } from '@/app/collective-rewards/rewards'
+import { GaugeNotifyRewardEventLog, useGetGaugesEvents } from '@/app/collective-rewards/rewards'
 
 export const useGetGaugesNotifyReward = (
   gauges: Address[],
@@ -10,25 +10,24 @@ export const useGetGaugesNotifyReward = (
 ) => {
   const { data: eventsData, isLoading, error } = useGetGaugesEvents(gauges, 'NotifyReward')
 
+  type Log = GaugeNotifyRewardEventLog[number]
   const data = useMemo(() => {
     if (!eventsData) {
       return {}
     }
 
     return Object.keys(eventsData).reduce((acc: { [key: string]: (typeof eventsData)[Address] }, key) => {
-      let events = eventsData[key as Address]
+      let events = eventsData[key as Address] as (Log & { timeStamp: number })[]
       if (rewardToken) {
         events = events.filter(event => isAddressEqual(event.args.rewardToken_, rewardToken))
       }
       if (fromTimestamp) {
         events = events.filter(event => {
-          // @ts-ignore
           return event.timeStamp >= fromTimestamp
         })
       }
       if (toTimestamp) {
         events = events.filter(event => {
-          // @ts-ignore
           return event.timeStamp <= toTimestamp
         })
       }

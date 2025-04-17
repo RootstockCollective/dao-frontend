@@ -1,9 +1,6 @@
-import { BigNumberish, ethers } from 'ethers'
 import { GetAddressTokenResult, TokenBalance } from '@/app/user/types'
 import { tokenContracts } from '@/lib/contracts'
-
-export const formatBalanceToHuman = (balance: BigNumberish, decimal = 18) =>
-  ethers.formatUnits(balance, decimal)
+import { formatUnits } from 'ethers'
 
 const symbolsToGetFromArray = {
   RIF: { equivalentSymbols: ['tRIF', 'RIF'], currentContract: tokenContracts.RIF },
@@ -34,7 +31,7 @@ export const getTokenBalance = (
         token.contractAddress.toLowerCase() === currentContract.toLowerCase(),
     )
     if (tokenData) {
-      resultToReturn.balance = formatBalanceToHuman(tokenData.balance)
+      resultToReturn.balance = formatUnits(tokenData.balance)
       resultToReturn.symbol = tokenData.symbol
       return resultToReturn
     }

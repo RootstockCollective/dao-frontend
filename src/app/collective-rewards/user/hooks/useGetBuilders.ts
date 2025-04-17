@@ -7,11 +7,11 @@ import { useFetchCreateBuilderProposals } from '@/app/proposals/hooks/useFetchLa
 import { splitCombinedName } from '@/app/proposals/shared/utils'
 import { BuilderRegistryAbi } from '@/lib/abis/v2/BuilderRegistryAbi'
 import { AVERAGE_BLOCKTIME } from '@/lib/constants'
-import { BackersManagerAddress } from '@/lib/contracts'
 import { DateTime } from 'luxon'
 import { useMemo } from 'react'
 import { Address, getAddress } from 'viem'
 import { useReadContracts } from 'wagmi'
+import { BuilderRegistryAddress } from '@/lib/contracts'
 
 export type UseGetBuilders = () => {
   data: Record<Address, Builder> // TODO review Builder type
@@ -36,7 +36,7 @@ export const useGetBuilders: UseGetBuilders = () => {
   const gaugeToBuilderCalls = gauges?.map(
     gauge =>
       ({
-        address: BackersManagerAddress,
+        address: BuilderRegistryAddress,
         abi: BuilderRegistryAbi,
         functionName: 'gaugeToBuilder',
         args: [gauge],
@@ -72,7 +72,7 @@ export const useGetBuilders: UseGetBuilders = () => {
       builders?.map(
         builder =>
           ({
-            address: BackersManagerAddress,
+            address: BuilderRegistryAddress,
             abi: BuilderRegistryAbi,
             functionName: 'builderState',
             args: [builder],

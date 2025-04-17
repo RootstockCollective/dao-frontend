@@ -9,6 +9,7 @@ import {
 import { AVERAGE_BLOCKTIME } from '@/lib/constants'
 
 export type Cycle = {
+  timestamp: bigint
   cycleStart: DateTime
   cycleDuration: Duration
   cycleNext: DateTime
@@ -72,13 +73,14 @@ export const CycleContextProvider: FC<CycleProviderProps> = ({ children }) => {
 
   const data = useMemo(
     () => ({
+      timestamp,
       cycleStart: DateTime.fromSeconds(Number(cycleStart ?? BigInt(0))),
       cycleNext: DateTime.fromSeconds(Number(cycleNext ?? BigInt(0))),
       cycleDuration: Duration.fromObject({ seconds: Number(cycleDuration ?? BigInt(0)) }),
       fistCycleStart: DateTime.fromSeconds(Number(firstCycleStart ?? BigInt(0))),
       endDistributionWindow: DateTime.fromSeconds(Number(endDistributionWindow ?? BigInt(0))),
     }),
-    [firstCycleStart, cycleDuration, cycleStart, endDistributionWindow, cycleNext],
+    [timestamp, firstCycleStart, cycleDuration, cycleStart, endDistributionWindow, cycleNext],
   )
 
   const valueOfContext: CycleContextValue = {

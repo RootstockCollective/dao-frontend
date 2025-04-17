@@ -1,8 +1,10 @@
+import Big from '@/lib/big'
 import axios from 'axios'
+import { BigSource } from 'big.js'
 import { ClassValue, clsx } from 'clsx'
 import { twMerge } from 'tailwind-merge'
-import { CHAIN_ID, EXPLORER_URL, RIF_WALLET_SERVICES_URL } from './constants'
 import { Address } from 'viem'
+import { CHAIN_ID, EXPLORER_URL, RIF_WALLET_SERVICES_URL } from './constants'
 
 /**
  * Merges Tailwind and clsx classes in order to avoid classes conflicts.
@@ -10,6 +12,8 @@ import { Address } from 'viem'
  * https://www.youtube.com/watch?v=re2JFITR7TI
  */
 export const cn = (...inputs: ClassValue[]) => twMerge(clsx(inputs))
+
+export const SHARED_MODAL_BOX_SHADOW_STYLE = '0px 0px 16.4px 0px rgba(229,107,26,0.68)'
 
 /**
  * Shortens the address by keeping the first and last `amount` characters
@@ -138,55 +142,50 @@ export const sanitizeInputNumber = (num: number) => {
  * @returns The formatted currency string
  * @example formatCurrency(123456.789) // '$123,456.79'
  * @example formatCurrency(123456.789, 'EUR') // '€123,456.79'
- * @example formatCurrency(0.0001) // '<$0.00'
+ * @example formatCurrency(0.0001) // '<$0.01'
  * @example formatCurrency(0) // '$0.00'
  */
-export const formatCurrency = (value: number, currency = 'USD'): string => {
-  if (0 < value && value < 0.01) {
-    return '<$0.01'
+export const formatCurrency = (value: BigSource, currency = 'USD'): string => {
+  if (isNaN(Number(value))) {
+    return ''
   }
 
-  return new Intl.NumberFormat('en-US', {
+  // ensure it is a Big
+  try {
+    value = Big(value.toString())
+  } catch {
+    return ''
+  }
+
+  let verySmallValue = value.gt(0) && value.lt(0.01)
+  value = verySmallValue ? 0.01 : value
+
+  const result = new Intl.NumberFormat('en-US', {
     style: 'currency',
     currency,
     minimumFractionDigits: 2,
     maximumFractionDigits: 2,
-  }).format(value)
+  }).format(value.toString() as never)
+
+  return verySmallValue ? `<${result}` : result
 }
 
 /**
- * Formats avoiding scientific notation and trailing zeros
+ * Formats a number with commas
  * @param num - The number to format
- * @param decimalPlaces - The number of decimal places to keep (default: 8)
- * @returns The formatted number
- * @example toFixed(1e-7) // '0.0000001'
- * @example toFixed(1.123456789e-7) // '0.0000001123456789'
- * @example toFixed(1.1e+10) // '11000000000'
- * @example toFixed(1.1e20) // '110000000000000000000'
- * @example toFixed('-') // '-'
+ * @returns The formatted number with commas
+ * @example formatNumberWithCommas(123456789) // '123,456,789'
+ * @example formatNumberWithCommas(1234567.89) // '1,234,567.89'
+ * @example formatNumberWithCommas(0.000123) // '0.000123'
  */
-export const toFixed = (num: number | string, decimalPlaces = 8) => {
-  let n = Number(num)
-  if (isNaN(n)) {
-    return num?.toString()
+export function formatNumberWithCommas(num: BigSource): string {
+  if (isNaN(Number(num)) || num === '') {
+    return ''
   }
-  if (Math.abs(n) < 1.0) {
-    const e = parseInt(n.toString().split('e-')[1])
-    if (e) {
-      return Number(n).toFixed(e)
-    }
-  } else {
-    let e = parseInt(n.toString().split('+')[1])
-    if (e > 20) {
-      e -= 20
-      n /= Math.pow(10, e)
-      return n + new Array(e + 1).join('0')
-    }
-  }
-  return n.toFixed(decimalPlaces).replace(/\.?0+$/, '')
+  const parts = num.toString().split('.')
+  parts[0] = new Intl.NumberFormat('en-US').format(Number(parts[0]))
+  return parts.join('.')
 }
-
-export const SHARED_MODAL_BOX_SHADOW_STYLE = '0px 0px 16.4px 0px rgba(229,107,26,0.68)'
 
 /**
  * Creates a debounced version of a function that delays its execution until after a specified wait time
@@ -219,16 +218,74 @@ export function debounce<T extends (...args: any[]) => void>(
   }
 }
 
+interface Denomination {
+  value: number
+  symbol: string
+}
 /**
- * Formats a number with commas
- * @param num - The number to format
- * @returns The formatted number with commas
- * @example formatNumberWithCommas(123456789) // '123,456,789'
- * @example formatNumberWithCommas(1234567.89) // '1,234,567.89'
- * @example formatNumberWithCommas(0.000123) // '0.000123'
+ * A list of full-text denominations for large numbers, used when a more descriptive output is needed.
+ * Example: `1,000,000` → `"Millions"`
  */
-export function formatNumberWithCommas(num: number | string): string {
-  const parts = num.toString().split('.')
-  parts[0] = new Intl.NumberFormat('en-US').format(Number(parts[0]))
-  return parts.join('.')
+export const fullDenominations: Denomination[] = [
+  { value: 1e12, symbol: 'Trillions' },
+  { value: 1e9, symbol: 'Billions' },
+  { value: 1e6, symbol: 'Millions' },
+  { value: 1e3, symbol: 'Thousand' },
+]
+/**
+ * A list of short-form denominations for large numbers, used for compact display.
+ * Example: `1,000,000` → `"1M"`
+ */
+const shortDenominations: Denomination[] = [
+  { value: 1e12, symbol: 'T' },
+  { value: 1e9, symbol: 'B' },
+  { value: 1e6, symbol: 'M' },
+  { value: 1e3, symbol: 'K' },
+]
+
+/**
+ * Formats a large number using denominations provided in `units` param.
+ * @param num - The number to format, can be a BigSource or bigint.
+ * @param separator - A string separator to place between the number and the unit (default: '').
+ * @param units - An array of denominations to use for formatting (default: `shortDenominations`).
+ * @returns The formatted string representation of the number with appropriate unit.
+ * @example millify(936000000) // '936M'
+ * @example millify(1372000000) // '1.372B'
+ * @example millify(9876543210000) // '9.876T'
+ * @example millify(1234) // '1.234K'
+ * @example millify(3107.55) // '3.107K'
+ * @example millify(1000) // '1K'
+ * @example millify(-1234567890) // '-1.234B'
+ * @example millify('1234567890') // '1.234B'
+ * @example millify(1000000, ' ') // '1 M'
+ * @example millify(1000000, ' ', fullDenominations) // '1 Millions'
+ */
+export function millify(num: BigSource | bigint, separator = '', units = shortDenominations): string {
+  const bigNum = Big(typeof num === 'bigint' ? num.toString() : num)
+  if (bigNum.lt(0)) return `-${millify(bigNum.abs())}`
+
+  for (const unit of units) {
+    if (bigNum.gte(unit.value)) {
+      const divided = bigNum.div(unit.value)
+      const rounded = divided.round(3, Big.roundDown)
+      return formatNumberWithCommas(rounded) + separator + unit.symbol
+    }
+  }
+
+  return formatNumberWithCommas(bigNum)
+}
+
+/**
+ * Splits a string by inserting spaces between camelCase and PascalCase words.
+ *
+ * @param str - The input string to split
+ * @returns The string with spaces inserted between word boundaries
+ *
+ * @example
+ * splitWords("camelCase") // returns "camel Case"
+ * splitWords("PascalCase") // returns "Pascal Case"
+ * splitWords("ABCdef") // returns "AB Cdef"
+ */
+export function splitWords(str?: string) {
+  return str ? str.replace(/([A-Z]+)([A-Z][a-z])/g, '$1 $2').replace(/([a-z])([A-Z])/g, '$1 $2') : ''
 }

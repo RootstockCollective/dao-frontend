@@ -1,4 +1,3 @@
-import { useGaugesGetFunction } from '@/app/collective-rewards/shared/hooks'
 import { Address } from 'viem'
 import { FC } from 'react'
 import { usePricesContext } from '@/shared/context/PricesContext'

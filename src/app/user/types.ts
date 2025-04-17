@@ -1,9 +1,11 @@
 export interface CommunityCardProps {
-  img: string
   title: string
   description: string
   members: string
   link: string
+  img?: string
+  alt?: string
+  isBoosted?: boolean
 }
 
 export type AddressToken = {

@@ -22,24 +22,31 @@ export const GRANTS_BUCKET_ADDRESS = process.env.NEXT_PUBLIC_GRANTS_BUCKET_ADDRE
 export const GRANTS_ACTIVE_BUCKET_ADDRESS = process.env.NEXT_PUBLIC_GRANTS_ACTIVE_BUCKET_ADDRESS as Address
 export const GROWTH_BUCKET_ADDRESS = process.env.NEXT_PUBLIC_GROWTH_BUCKET_ADDRESS as Address
 export const GENERAL_BUCKET_ADDRESS = process.env.NEXT_PUBLIC_GENERAL_BUCKET_ADDRESS as Address
-export const CHAIN_ID = process.env.NEXT_PUBLIC_CHAIN_ID
+export const EVENTS_FROM_BLOCK = Number(process.env.NEXT_PUBLIC_EVENTS_FROM_BLOCK ?? 0)
+export const CHAIN_ID = process.env.NEXT_PUBLIC_CHAIN_ID as string
 
-export const SIMPLIFIED_REWARD_DISTRIBUTOR_ADDRESS = process.env
-  .NEXT_PUBLIC_SIMPLIFIED_REWARD_DISTRIBUTOR_ADDRESS as Address
 export const BACKERS_MANAGER_ADDRESS = process.env.NEXT_PUBLIC_BACKERS_MANAGER_ADDRESS as Address
+export const BUILDER_REGISTRY_ADDRESS = process.env.NEXT_PUBLIC_BUILDER_REGISTRY_ADDRESS as Address
 export const REWARD_DISTRIBUTOR_ADDRESS = process.env.NEXT_PUBLIC_REWARD_DISTRIBUTOR_ADDRESS as Address
-export const CYCLE_DURATION_IN_DAYS = process.env.NEXT_PUBLIC_CYCLE_DURATION_IN_DAYS
-export const FIRST_CYCLE_START_DATE_ISO = process.env.NEXT_PUBLIC_FIRST_CYCLE_START_DATE_ISO
+export const NFT_BOOSTER_DATA_URL = (process.env.NEXT_PUBLIC_NFT_BOOSTER_DATA_URL as string) ?? ''
 
 export const ADDRESS_ANIMATION_DURATION = 800
-export const AVERAGE_BLOCKTIME = 30_000
+export const AVERAGE_BLOCKTIME = 60_000
 
 export const RIF = 'RIF'
 export const USD = 'USD'
 export const RBTC = 'RBTC'
+export const stRIF = 'stRIF'
 export const USD_SYMBOL = '$'
 
 export const RNS_REGISTRY_ADDRESS = process.env.NEXT_PUBLIC_RNS_REGISTRY_ADDRESS as Address
 
 export const NODE_URL = process.env.NEXT_PUBLIC_NODE_URL
 export const DEFAULT_NUMBER_OF_SECONDS_PER_BLOCK = 30
+
+export const GOOGLE_TAG_ID = 'GTM-PTL6VZMT'
+
+export const proposalQuickFilters = ['Grant', 'Activation', 'Wave 4', 'Wave 5', 'March-25']
+
+export const MAX_NAME_LENGTH_FOR_PROPOSAL = 100
+export const TALLY_DESCRIPTION_SEPARATOR = '  ' // Tally uses double spaces to separate name and description

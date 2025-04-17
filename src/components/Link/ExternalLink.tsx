@@ -1,6 +1,6 @@
 import { cn } from '@/lib/utils'
 import { FC } from 'react'
-import { PiArrowUpRightLight } from 'react-icons/pi'
+import { ArrowUpRightLightIcon } from '../Icons'
 import { ExternalLinkProps } from './types'
 
 /**
@@ -22,12 +22,13 @@ export const ExternalLink: FC<ExternalLinkProps> = ({
         'inline-flex items-center gap-1.5 font-sora underline underline-offset-2 underline-thick hover:cursor-pointer w-fit',
         { 'tracking-tight leading-tight text-base': variant === 'menu' },
         { 'leading-normal text-sm': variant === 'default' },
+        { 'leading-nornal text-base text-primary': variant === 'section-header' },
         // combines hardcoded styles with classes coming from props
         className,
       )}
     >
       {children}
-      {variant === 'menu' && <PiArrowUpRightLight />}
+      {variant === 'menu' && <ArrowUpRightLightIcon />}
     </Component>
   )
 }

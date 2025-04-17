@@ -1,6 +1,6 @@
 import { Meta, StoryObj } from '@storybook/react'
 import { useForm } from 'react-hook-form'
-import { FaBitcoin } from 'react-icons/fa6'
+import { BitcoinIcon } from '../Icons'
 import { Button } from '../Button'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../Select'
 import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from './Form'
@@ -26,9 +26,9 @@ export const Default: Omit<Story, 'args'> = {
           name="Field1"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Proposal name</FormLabel>
+              <FormLabel>Name</FormLabel>
               <FormControl>
-                <FormInput placeholder="name your proposal" {...field} />
+                <FormInput placeholder="Name your proposal" {...field} />
               </FormControl>
             </FormItem>
           )}
@@ -78,13 +78,13 @@ export const Default: Omit<Story, 'args'> = {
                       <SelectItem value="RBTC">
                         <div className="flex items-center">
                           {/* TODO: token icon */}
-                          <FaBitcoin className="mr-2" />
+                          <BitcoinIcon className="mr-2" />
                           RBTC
                         </div>
                       </SelectItem>
                       <SelectItem value="stRIF">
                         <div className="flex items-center">
-                          <FaBitcoin className="mr-2" />
+                          <BitcoinIcon className="mr-2" />
                           stRIF
                         </div>
                       </SelectItem>

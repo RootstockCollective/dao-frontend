@@ -1,7 +1,7 @@
 import { BuildersRewards } from '@/app/collective-rewards/rewards'
 import { TableBody, TableCore, TableHead, TableRow } from '@/components/Table'
 import { useBasicPaginationUi } from '@/shared/hooks/usePaginationUi'
-import { FC, useMemo, useState } from 'react'
+import { FC, useCallback, useMemo, useState } from 'react'
 import {
   ISortConfig,
   TableHeader,
@@ -14,6 +14,7 @@ import {
   useSearchContext,
 } from '@/app/collective-rewards/shared'
 import { getCombinedFiatAmount } from '../utils'
+import Big from '@/lib/big'
 
 enum RewardsColumnKeyEnum {
   builder = 'builder',
@@ -24,19 +25,22 @@ enum RewardsColumnKeyEnum {
   actions = 'actions',
 }
 
-const tableHeaders: TableHeader[] = [
-  { label: 'Builder', className: 'w-[14%]', sortKey: RewardsColumnKeyEnum.builder },
-  { label: 'Backer Rewards %', className: 'w-[10%]', sortKey: RewardsColumnKeyEnum.rewardPercentage },
-  {
-    label: 'Last Cycle Rewards',
-    className: 'w-[22%]',
-    sortKey: RewardsColumnKeyEnum.lastCycleRewards,
-    tooltip: { text: 'The Backers’ share of the Builder’s rewards in the previous Cycle' },
+const defaultTable: Record<RewardsColumnKeyEnum, TableHeader> = {
+  [RewardsColumnKeyEnum.builder]: {
+    label: 'Builder',
+    className: 'w-[14%]',
   },
-  {
-    label: 'Est. Backers Rewards',
+  [RewardsColumnKeyEnum.rewardPercentage]: {
+    label: 'Backer Rewards %',
+    className: 'w-[10%]',
+  },
+  [RewardsColumnKeyEnum.lastCycleRewards]: {
+    label: 'Last Cycle Rewards',
+    tooltip: { text: 'The Backers’ share of the Builder’s rewards in the previous Cycle' },
     className: 'w-[22%]',
-    sortKey: RewardsColumnKeyEnum.estimatedRewards,
+  },
+  [RewardsColumnKeyEnum.estimatedRewards]: {
+    label: 'Est. Backers Rewards',
     tooltip: {
       text: (
         <>
@@ -49,16 +53,18 @@ const tableHeaders: TableHeader[] = [
       ),
       popoverProps: { size: 'medium' },
     },
+    className: 'w-[22%]',
   },
-  {
+  [RewardsColumnKeyEnum.totalAllocationPercentage]: {
     label: 'Total Allocations',
     className: 'w-[16%]',
     tooltip: { text: 'The Builder’s share of the total stRIF allocations' },
-    sortKey: RewardsColumnKeyEnum.totalAllocationPercentage,
   },
-  // TODO: text-center isn't applied
-  { label: 'Actions', className: 'w-[14%]' },
-]
+  [RewardsColumnKeyEnum.actions]: {
+    label: 'Actions',
+    className: 'w-[14%]',
+  },
+}
 
 export const BuildersLeaderBoardTable: FC = () => {
   const { data: rewardsData } = useSearchContext<BuildersRewards>()
@@ -84,12 +90,12 @@ export const BuildersLeaderBoardTable: FC = () => {
       lastCycleRewards: (a: IRewardData, b: IRewardData) => {
         const aValue = getCombinedFiatAmount([a.lastCycleRewards.rif.amount, a.lastCycleRewards.rbtc.amount])
         const bValue = getCombinedFiatAmount([b.lastCycleRewards.rif.amount, b.lastCycleRewards.rbtc.amount])
-        return aValue - bValue
+        return Big(aValue).sub(bValue).toNumber()
       },
       estimatedRewards: (a: IRewardData, b: IRewardData) => {
         const aValue = getCombinedFiatAmount([a.estimatedRewards.rif.amount, a.estimatedRewards.rbtc.amount])
         const bValue = getCombinedFiatAmount([b.estimatedRewards.rif.amount, b.estimatedRewards.rbtc.amount])
-        return aValue - bValue
+        return Big(aValue).sub(bValue).toNumber()
       },
       totalAllocationPercentage: (a: IRewardData, b: IRewardData) =>
         Number(a.totalAllocationPercentage - b.totalAllocationPercentage),
@@ -108,40 +114,46 @@ export const BuildersLeaderBoardTable: FC = () => {
     [currentPage, sortedRewardsData],
   )
 
-  const handleSort = (key?: string) => {
-    if (!key) {
-      return
-    }
-    setSortConfig(prevSortConfig => {
-      if (prevSortConfig?.key === key) {
-        // Toggle direction if the same column is clicked
-        return {
-          key,
-          direction: prevSortConfig.direction === 'asc' ? 'desc' : 'asc',
-        }
+  const handleSort = useCallback(
+    (key?: string) => () => {
+      if (!key || key === 'actions') {
+        return
       }
-      // Set initial sort direction to ascending
-      return { key, direction: 'asc' }
-    })
-  }
+      setSortConfig(prevSortConfig => {
+        if (prevSortConfig?.key === key) {
+          // Toggle direction if the same column is clicked
+          return {
+            key,
+            direction: prevSortConfig.direction === 'asc' ? 'desc' : 'asc',
+          }
+        }
+        // Set initial sort direction to ascending
+        return { key, direction: 'asc' }
+      })
+    },
+    [],
+  )
 
   return (
     <div className="flex flex-col gap-5 w-full">
-      <TableCore className="table-fixed">
+      <TableCore className="table-fixed overflow-visible">
         <TableHead>
           <TableRow className="normal-case">
-            {tableHeaders.map(header => (
+            {Object.entries(defaultTable).map(([key, { className, label, tooltip }]) => (
               <TableHeaderCell
-                key={header.label}
-                tableHeader={header}
-                onSort={() => handleSort(header.sortKey)}
+                key={key}
+                className={className}
+                label={label}
+                tooltip={tooltip}
+                sortKey={key}
+                onSort={handleSort(key)}
                 sortConfig={sortConfig}
               />
             ))}
           </TableRow>
         </TableHead>
         <TableBody>
-          {Object.values(paginatedRewardsData).map(
+          {paginatedRewardsData.map(
             ({
               address,
               builderName,
@@ -152,23 +164,12 @@ export const BuildersLeaderBoardTable: FC = () => {
               rewardPercentage,
             }) => (
               <TableRow key={address} className="text-[14px] border-hidden">
-                <BuilderNameCell
-                  tableHeader={tableHeaders[0]}
-                  builderName={builderName}
-                  address={address}
-                  stateFlags={stateFlags}
-                />
-                <BackerRewardsPercentage tableHeader={tableHeaders[1]} percentage={rewardPercentage} />
-                <LazyRewardCell
-                  tableHeader={tableHeaders[2]}
-                  rewards={[lastCycleRewards.rbtc, lastCycleRewards.rif]}
-                />
-                <LazyRewardCell
-                  tableHeader={tableHeaders[3]}
-                  rewards={[estimatedRewards.rbtc, estimatedRewards.rif]}
-                />
-                <TotalAllocationCell tableHeader={tableHeaders[4]} percentage={totalAllocationPercentage} />
-                <ActionCell tableHeader={tableHeaders[5]} builderAddress={address} />
+                <BuilderNameCell builderName={builderName} address={address} stateFlags={stateFlags} />
+                <BackerRewardsPercentage percentage={rewardPercentage} />
+                <LazyRewardCell rewards={[lastCycleRewards.rbtc, lastCycleRewards.rif]} />
+                <LazyRewardCell rewards={[estimatedRewards.rbtc, estimatedRewards.rif]} />
+                <TotalAllocationCell percentage={totalAllocationPercentage} />
+                <ActionCell builderAddress={address} />
               </TableRow>
             ),
           )}

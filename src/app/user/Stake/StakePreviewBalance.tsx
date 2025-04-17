@@ -1,7 +1,8 @@
 import { StakePreviewBalanceProps } from '@/app/user/Stake/types'
 import { TokenImage } from '@/components/TokenImage'
 import { Span } from '@/components/Typography'
-import { toFixed } from '@/lib/utils'
+import { formatNumberWithCommas } from '@/lib/utils'
+import Big from '@/lib/big'
 
 export const StakePreviewBalance = ({
   topLeftText,
@@ -25,7 +26,7 @@ export const StakePreviewBalance = ({
     <div>
       {/* Balance and Token */}
       <Span size="small" variant="light">
-        Balance: {toFixed(balance)}
+        Balance: {formatNumberWithCommas(Big(balance).toFixedNoTrailing(8))}
       </Span>
       <div className="text-right mt-[8px] flex justify-end items-center">
         <TokenImage symbol={tokenSymbol as string} className="mr-[8px]" />

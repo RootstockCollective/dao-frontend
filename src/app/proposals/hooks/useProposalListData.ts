@@ -4,17 +4,8 @@ import { formatEther } from 'viem'
 import { governor } from '@/lib/contracts'
 import { type LatestProposalResponse } from './useFetchLatestProposals'
 import { type EventArgumentsParameter, getEventArguments } from '../shared/utils'
-
-enum ProposalState {
-  Pending,
-  Active,
-  Canceled,
-  Defeated,
-  Succeeded,
-  Queued,
-  Expired,
-  Executed,
-}
+import Big from '@/lib/big'
+import { ProposalState } from '@/shared/types'
 
 interface Props {
   /**
@@ -49,14 +40,6 @@ export function useProposalListData({ proposals }: Props) {
     })),
   }) as { data?: Array<{ result: bigint }> }
 
-  const { data: proposalDeadline } = useReadContracts({
-    contracts: proposals?.map(proposal => ({
-      ...governor,
-      functionName: 'proposalDeadline',
-      args: [BigInt(proposal.args.proposalId)],
-    })),
-  }) as { data?: Array<{ result: string }> }
-
   const { data: state } = useReadContracts({
     contracts: proposals?.map(proposal => ({
       ...governor,
@@ -68,30 +51,37 @@ export function useProposalListData({ proposals }: Props) {
   return useMemo(
     () =>
       proposals?.map((proposal, i) => {
-        const votes = proposalVotes?.[i]?.result?.map(vote => Math.round(+formatEther(vote)))
-        const againstVotes = votes?.at(0) ?? 0
-        const forVotes = votes?.at(1) ?? 0
-        const abstainVotes = votes?.at(2) ?? 0
-        const deadlineBlock = Number(proposalDeadline?.[i]?.result ?? 0n)
+        const votes = proposalVotes?.[i]?.result?.map(vote => Big(formatEther(vote)).round())
+        const againstVotes = Big(votes?.at(0) ?? 0)
+        const forVotes = Big(votes?.at(1) ?? 0)
+        const abstainVotes = Big(votes?.at(2) ?? 0)
+        const deadlineBlock = Big(proposal.args.voteEnd.toString())
         const creationBlock = Number(proposal.blockNumber)
         const eventArgs = getEventArguments(proposal as unknown as EventArgumentsParameter)
+        const { calldatasParsed } = eventArgs
+        const category = calldatasParsed
+          .filter(data => data.type === 'decoded')
+          .find(data => ['withdraw', 'withdrawERC20'].includes(data.functionName))
+          ? 'Grants'
+          : 'Builder'
         return {
           ...proposal,
           votes: {
             againstVotes,
             forVotes,
             abstainVotes,
-            quorum: forVotes + abstainVotes,
+            quorum: forVotes.add(abstainVotes),
           },
-          blocksUntilClosure: deadlineBlock - Number(latestBlockNumber),
-          votingPeriod: deadlineBlock - creationBlock,
-          quorumAtSnapshot: Math.round(Number(formatEther(quorum?.[i].result ?? 0n))),
-          proposalDeadline: Number(proposalDeadline?.[i].result ?? 0n),
-          proposalState: ProposalState[Number(state?.[i].result ?? 0n)],
+          blocksUntilClosure: deadlineBlock.minus(latestBlockNumber?.toString() || 0),
+          votingPeriod: deadlineBlock.minus(creationBlock),
+          quorumAtSnapshot: Big(formatEther(quorum?.[i].result ?? 0n)).round(undefined, Big.roundHalfEven),
+          proposalDeadline: deadlineBlock,
+          proposalState: ProposalState[Big(state?.[i].result?.toString() ?? 0).toNumber()],
+          category,
           ...eventArgs,
         }
       }) ?? [],
-    [latestBlockNumber, proposalDeadline, proposalVotes, proposals, quorum, state],
+    [latestBlockNumber, proposalVotes, proposals, quorum, state],
   )
 }
 

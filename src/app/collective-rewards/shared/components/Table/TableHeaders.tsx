@@ -2,8 +2,7 @@ import { FC } from 'react'
 import { TableCell } from '@/components/Table'
 import { cn } from '@/lib/utils'
 import { Popover } from '@/components/Popover'
-import { FaRegQuestionCircle } from 'react-icons/fa'
-import { RiArrowUpSFill, RiArrowDownSFill } from 'react-icons/ri'
+import { ArrowUpSFillIcon, ArrowDownSFillIcon, QuestionIcon } from '@/components/Icons'
 import { TooltipProps } from '@/app/collective-rewards/rewards'
 
 export type ISortConfig = {
@@ -13,19 +12,18 @@ export type ISortConfig = {
 
 export type TableHeader = {
   label: string
-  className: string
   tooltip?: TooltipProps
+  className?: string
   sortKey?: string
-}
-
-type TableHeaderProps = {
-  tableHeader: TableHeader
   onSort?: (parameter: any) => void
   sortConfig?: ISortConfig
 }
 
-export const TableHeaderCell: FC<TableHeaderProps> = ({
-  tableHeader: { label, className, sortKey, tooltip },
+export const TableHeaderCell: FC<TableHeader> = ({
+  label,
+  tooltip,
+  className,
+  sortKey,
   onSort,
   sortConfig,
 }) => {
@@ -33,8 +31,8 @@ export const TableHeaderCell: FC<TableHeaderProps> = ({
     <TableCell
       key={label}
       className={cn(
-        'font-rootstock-sans font-bold text-base leading-none border-b border-solid border-[#2D2D2D]',
         className,
+        'font-rootstock-sans font-bold text-base leading-none border-b border-solid border-[#2D2D2D]',
       )}
     >
       <div className="flex flex-row">
@@ -46,16 +44,16 @@ export const TableHeaderCell: FC<TableHeaderProps> = ({
             trigger="hover"
             {...tooltip.popoverProps}
           >
-            <FaRegQuestionCircle className="mr-1 self-center" />
+            <QuestionIcon className="mr-1" />
           </Popover>
         )}
-        {label}
-        {onSort && (
+        <span>{label}</span>
+        {onSort && sortKey && (
           <button
             className={`"text-xs text-white flex items-center ml-1" transition-transform duration-300 ${sortConfig?.key === sortKey && sortConfig?.direction === 'asc' ? 'rotate-180' : 'rotate-0'}`}
             onClick={() => onSort(sortKey)}
           >
-            {sortConfig?.key === sortKey ? <RiArrowUpSFill className="stroke-2" /> : <RiArrowDownSFill />}
+            {sortConfig?.key === sortKey ? <ArrowUpSFillIcon className="stroke-2" /> : <ArrowDownSFillIcon />}
           </button>
         )}
       </div>

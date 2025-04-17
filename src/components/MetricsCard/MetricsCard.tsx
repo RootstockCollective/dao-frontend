@@ -1,13 +1,12 @@
 import { cn, shortAddress } from '@/lib/utils'
-import { FC, ReactNode } from 'react'
-import { Paragraph } from '../Typography/Paragraph'
+import { FC, HTMLProps, ReactNode } from 'react'
 import { Address } from 'viem'
 import { BoxIcon } from 'lucide-react'
 import { Span, Typography } from '../Typography'
 import { EXPLORER_URL } from '@/lib/constants'
 import { withSpinner } from '@/components/LoadingSpinner/withLoadingSpinner'
 
-interface MetricsCardProps {
+interface MetricsCardProps extends Omit<HTMLProps<HTMLDivElement>, 'title'> {
   /**
    * The title of the card, usually indicating the type of balance.
    */
@@ -15,11 +14,11 @@ interface MetricsCardProps {
   /**
    * The amount in tokens, e.g., `136.26 RIF`.
    */
-  amount: string
+  amount: ReactNode
   /**
    * The equivalent amount in fiat currency, e.g., `= $50.45`.
    */
-  fiatAmount?: string
+  fiatAmount?: ReactNode
 
   /**
    * Whether the card should have a border or not.
@@ -33,7 +32,7 @@ interface MetricsCardProps {
   'data-testid'?: string
 }
 
-const DEFAULT_CLASSES = 'h-min-[79px] w-full py-[12px] px-[12px] flex flex-col bg-foreground'
+const DEFAULT_CLASSES = 'h-min-[79px] w-full py-[12px] px-[12px] flex flex-col bg-foreground overflow-hidden'
 
 /**
  * Card for displaying balance and corresponding (fiat) value.
@@ -45,10 +44,16 @@ export const MetricsCard: FC<MetricsCardProps> = ({
   borderless = false,
   contractAddress,
   'data-testid': dataTestId,
+  className,
+  ...props
 }) => {
   const borderClasses = borderless ? '' : 'border border-white border-opacity-40 rounded-lg'
   return (
-    <div className={cn(DEFAULT_CLASSES, borderClasses)} data-testid={dataTestId || 'MetricsCard'}>
+    <div
+      {...props}
+      className={cn(DEFAULT_CLASSES, borderClasses, className)}
+      data-testid={dataTestId || 'MetricsCard'}
+    >
       {typeof title === 'string' ? (
         <div>
           <Typography
@@ -62,27 +67,32 @@ export const MetricsCard: FC<MetricsCardProps> = ({
         title
       )}
       <div className="flex items-center">
-        <Typography
-          tagVariant="h2"
-          paddingBottom="2px"
-          paddingTop="10px"
-          lineHeight="28.8px"
-          fontFamily="kk-topo"
-          className="text-[24px] text-primary font-normal"
-          data-testid="Amount"
-        >
-          {amount}
-        </Typography>
+        {typeof amount === 'string' ? (
+          <Typography
+            tagVariant="h2"
+            paddingBottom="2px"
+            paddingTop="10px"
+            lineHeight="28.8px"
+            fontFamily="kk-topo"
+            className="text-[24px] text-primary font-normal"
+            data-testid="Amount"
+          >
+            {amount}
+          </Typography>
+        ) : (
+          amount
+        )}
       </div>
-      {fiatAmount && (
+      {typeof fiatAmount === 'string' ? (
         <Typography
           tagVariant="label"
-          className="text-[14px] font-rootstock-sans text-disabled-primary"
-          lineHeight="14px"
+          className="text-[14px] font-normal font-rootstock-sans text-disabled-primary leading-none"
           data-testid="FiatAmount"
         >
           {fiatAmount}
         </Typography>
+      ) : (
+        fiatAmount
       )}
       {contractAddress && (
         <a href={`${EXPLORER_URL}/address/${contractAddress}`} target="_blank" className="mt-2">

@@ -1,11 +1,11 @@
 import { createContext, FC, ReactNode, useCallback, useContext, useMemo, useState } from 'react'
-import Decimal from 'decimal.js'
 import { useBalancesContext } from '@/app/user/Balances/context/BalancesContext'
 import { GetPricesResult, TokenBalanceRecord } from '@/app/user/types'
 import { StakingToken } from '@/app/user/Stake/types'
 import { Hash } from 'viem'
 import { ActionBeingExecuted } from '@/app/user/Stake/Steps/stepsUtils'
-import { formatCurrency, toFixed } from '@/lib/utils'
+import { formatCurrency } from '@/lib/utils'
+import Big from '@/lib/big'
 
 export type ActionHookToUse = (
   amount: string,
@@ -95,41 +95,38 @@ export const StakingProvider: FC<Props> = ({
   actionName,
 }) => {
   const { balances, prices } = useBalancesContext()
-  const [stakeData, setStakeData] = useState({
-    amount: '',
-  })
+  const [stakeData, setStakeData] = useState({ amount: '' })
+  const [stakeTxHash, setStakeTxHash] = useState('')
 
   const onAmountChange = useCallback((amount: string) => {
     if (amount !== '.') {
-      setStakeData(prevState => ({ ...prevState, amount }))
+      setStakeData(prev => ({ ...prev, amount }))
     }
   }, [])
 
-  const [stakeTxHash, setStakeTxHash] = useState('')
-
   const amountDataToReceive = useMemo(() => {
-    const receiveTokenPrice = new Decimal(tokenToReceive.price || 0)
-    const sendTokenPrice = new Decimal(tokenToSend.price || 0)
+    const receiveTokenPrice = Big(tokenToReceive.price || 0)
+    const sendTokenPrice = Big(tokenToSend.price || 0)
     if (receiveTokenPrice.eq(0) || sendTokenPrice.eq(0)) {
       return {
         amountToReceive: '0',
         amountToReceiveConvertedToCurrency: 'USD 0',
       }
     }
-    const stakeAmount = new Decimal(stakeData.amount || 0)
+    const stakeAmount = Big(stakeData.amount || 0)
     const amountToReceive = stakeAmount.mul(sendTokenPrice).div(receiveTokenPrice)
     const amountToReceiveConvertedToCurrency = amountToReceive.mul(receiveTokenPrice)
     return {
       amountToReceive: amountToReceive.toString(),
-      amountToReceiveConvertedToCurrency: `USD ${formatCurrency(amountToReceiveConvertedToCurrency.toNumber())}`,
+      amountToReceiveConvertedToCurrency: `USD ${formatCurrency(amountToReceiveConvertedToCurrency)}`,
     }
   }, [stakeData.amount, tokenToSend.price, tokenToReceive.price])
 
   const stakePreviewFrom = useMemo(
     () => ({
-      amount: toFixed(stakeData.amount),
+      amount: Big(stakeData.amount || 0).toFixedNoTrailing(8),
       amountConvertedToCurrency:
-        'USD ' + formatCurrency(Number(tokenToSend.price) * Number(stakeData.amount) || 0),
+        'USD ' + formatCurrency(Big(tokenToSend.price || 0).mul(Big(stakeData.amount || 0))),
       balance: tokenToSend.balance,
       tokenSymbol: tokenToSend.symbol,
     }),
@@ -138,7 +135,7 @@ export const StakingProvider: FC<Props> = ({
 
   const stakePreviewTo = useMemo(
     () => ({
-      amount: toFixed(amountDataToReceive.amountToReceive),
+      amount: Big(amountDataToReceive.amountToReceive).toFixedNoTrailing(8),
       amountConvertedToCurrency: amountDataToReceive.amountToReceiveConvertedToCurrency,
       balance: tokenToReceive.balance,
       tokenSymbol: tokenToReceive.symbol,

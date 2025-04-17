@@ -4,6 +4,10 @@ import { RIFTokenAbi } from '@/lib/abis/RIFTokenAbi'
 import { tokenContracts, MulticallAddress } from '@/lib/contracts'
 import { ZeroAddress } from 'ethers'
 import { AddressToken } from '@/app/user/types'
+import { useQuery } from '@tanstack/react-query'
+import { axiosInstance } from '@/lib/utils'
+import { TokenInfoReturnType } from '@/app/user/api/tokens/route'
+import { AVERAGE_BLOCKTIME } from '@/lib/constants'
 
 const getTokenFunction = (
   tokenAddress: Address,
@@ -34,18 +38,31 @@ export const useGetAddressTokens = (address: Address, chainId?: number) => {
   } = useReadContracts({
     contracts: [
       getTokenFunction(tokenContracts.RIF, address, 'balanceOf'),
-      getTokenFunction(tokenContracts.RIF, address, 'symbol'),
       getTokenFunction(tokenContracts.stRIF, address, 'balanceOf'),
-      getTokenFunction(tokenContracts.stRIF, address, 'symbol'),
     ],
     multicallAddress: MulticallAddress,
     query: {
-      refetchInterval: 5000,
+      refetchInterval: AVERAGE_BLOCKTIME,
     },
   })
 
-  const RIF = contracts && ([contracts[0], contracts[1]] as TokenData)
-  const stRIF = contracts && ([contracts[2], contracts[3]] as TokenData)
+  const {
+    data: tokenData,
+    isLoading: IsTokenDataLoading,
+    error: tokenDataError,
+  } = useQuery({
+    queryKey: ['tokenData'],
+    queryFn: () =>
+      axiosInstance.get<TokenInfoReturnType>('/user/api/tokens', { baseURL: '/' }).then(({ data }) => data),
+  })
+
+  const RIF =
+    contracts && tokenData && ([contracts[0], { result: tokenData[tokenContracts.RIF].symbol }] as TokenData)
+  const stRIF =
+    contracts &&
+    tokenData &&
+    ([contracts[1], { result: tokenData[tokenContracts.stRIF].symbol }] as TokenData)
+
   return {
     data: [
       buildTokenBalanceObject('stRIF', stRIF),
@@ -56,7 +73,7 @@ export const useGetAddressTokens = (address: Address, chainId?: number) => {
         contractAddress: ZeroAddress,
       },
     ] as AddressToken[],
-    isLoading: rbtcLoading || contractsLoading,
-    error: rbtcError ?? contractsError,
+    isLoading: rbtcLoading || contractsLoading || IsTokenDataLoading,
+    error: rbtcError ?? contractsError ?? tokenDataError,
   }
 }

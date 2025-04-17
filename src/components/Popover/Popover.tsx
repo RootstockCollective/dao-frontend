@@ -2,16 +2,22 @@
 import { cn } from '@/lib/utils'
 import { HTMLAttributes, ReactNode, useEffect, useRef, useState } from 'react'
 
+type Position = 'top' | 'bottom' | 'right' | 'left' | 'left-bottom' | 'left-top' | 'top-expand-left'
+
 export interface PopoverProps extends Omit<HTMLAttributes<HTMLDivElement>, 'children' | 'content'> {
   children: ReactNode
   content: ReactNode
   disabled?: boolean
   trigger?: 'click' | 'hover'
   background?: 'dark' | 'light'
-  position?: 'top' | 'bottom' | 'right' | 'left' | 'left-bottom'
+  position?: Position
   size?: 'small' | 'medium'
   hasCaret?: boolean
+  contentContainerClassName?: HTMLAttributes<HTMLDivElement>['className']
+  contentSubContainerClassName?: HTMLAttributes<HTMLDivElement>['className']
+  contentSubcontainerProps?: HTMLAttributes<HTMLDivElement>
 }
+// We might have to refactor this to de-couple it a bit
 export const Popover = ({
   children,
   content,
@@ -22,6 +28,9 @@ export const Popover = ({
   size = 'medium',
   hasCaret = false,
   className,
+  contentContainerClassName,
+  contentSubContainerClassName,
+  contentSubcontainerProps = {},
 }: PopoverProps) => {
   const [show, setShow] = useState(false)
   const wrapperRef = useRef<any>(null)
@@ -72,18 +81,23 @@ export const Popover = ({
           position === 'top' && 'bottom-full',
           position === 'bottom' && 'top-full',
           position === 'right' && 'left-full bottom-full',
-          position === 'left' && 'right-full bottom-full',
-          position === 'left-bottom' && 'right-full top-full',
+          position === 'left' && 'right-full',
+          position === 'left-bottom' && 'right-0 top-full',
+          position === 'left-top' && 'right-full bottom-full',
+          position === 'top-expand-left' && 'right-0 bottom-full',
           size === 'small' && 'w-36',
           size === 'medium' && 'w-96',
+          contentContainerClassName,
         )}
         style={{ top: position === 'bottom' && hasCaret ? '15px' : '' }}
       >
         <div
           className={cn(
-            'rounded bg-zinc-900 p-2 shadow-[10px_30px_150px_rgba(46,38,92,0.25)] mb-[10px] min-w-min',
+            'rounded-lg bg-[#1A1A1A] border border-white border-opacity-20 p-2 shadow-[10px_30px_150px_rgba(46,38,92,0.25)] mb-[10px] min-w-min',
             background === 'light' && 'bg-white',
+            contentSubContainerClassName,
           )}
+          {...contentSubcontainerProps}
         >
           {content}
           {hasCaret && <PopoverCaret position={position} />}
@@ -93,7 +107,7 @@ export const Popover = ({
   )
 }
 
-const PopoverCaret = ({ position }: { position: 'top' | 'bottom' | 'right' | 'left' | 'left-bottom' }) => (
+const PopoverCaret = ({ position }: { position: Position }) => (
   <>
     {position === 'top' && (
       <div className="absolute inset-x-0 flex justify-center" style={{ bottom: '2px' }}>

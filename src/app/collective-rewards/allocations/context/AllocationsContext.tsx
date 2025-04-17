@@ -6,21 +6,21 @@ import {
 } from '@/app/collective-rewards/allocations/hooks'
 import { Builder } from '@/app/collective-rewards/types'
 import { createContext, FC, ReactNode, useEffect, useMemo, useState, useCallback } from 'react'
-import { Address, zeroAddress } from 'viem'
+import { Address } from 'viem'
 import { useAccount } from 'wagmi'
 import { createActions } from './allocationsActions'
 import { useGetBackerRewards } from '../hooks/useBuildersWithBackerRewardPercentage'
 import { validateAllocationsState } from './utils'
 
-export type Allocations = {
+export interface Allocations {
   [K: Address]: bigint
 }
 
-export type Builders = {
+export interface Builders {
   [K: Address]: Builder
 }
 
-export type Selections = {
+export interface Selections {
   [K: Address]: boolean
 }
 
@@ -31,7 +31,7 @@ export interface Backer {
   cumulativeAllocation: bigint
 }
 
-type State = {
+interface State {
   selections: Selections
   allocations: Allocations
   backer: Backer
@@ -41,7 +41,7 @@ type State = {
   isValidState: () => boolean
 }
 
-export type AllocationsActions = {
+export interface AllocationsActions {
   toggleSelectedBuilder: (address: Address) => void
   updateAllocation: (address: Address, value: bigint) => void
   updateAllocations: (newAllocations: Allocations) => void
@@ -51,7 +51,7 @@ export type AllocationsActions = {
 
 export type InitialState = Pick<State, 'backer' | 'allocations'>
 
-type AllocationsContext = {
+interface AllocationsContext {
   initialState: InitialState
   state: State
   actions: AllocationsActions
