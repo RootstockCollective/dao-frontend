@@ -9,13 +9,11 @@ import {
   TokenRewards,
   useGetGaugesNotifyReward,
   useGetLastCycleDistribution,
-  useGetRewardsCoinbase,
-  useGetRewardsERC20,
 } from '@/app/collective-rewards/rewards'
 import { useGetEstimatedBackersRewardsPct } from '@/app/collective-rewards/shared'
 import { RequiredBuilder } from '@/app/collective-rewards/types'
 import { usePricesContext } from '@/shared/context/PricesContext'
-import { useReadGauges } from '@/shared/hooks/contracts'
+import { useReadGauges, useReadRewardDistributor } from '@/shared/hooks/contracts'
 import { WeiPerEther } from 'ethers'
 import { useContext, useMemo } from 'react'
 
@@ -57,13 +55,13 @@ export const useGetBuildersRewards = ({ rif, rbtc }: { [token: string]: Token },
     data: rewardsERC20,
     isLoading: rewardsERC20Loading,
     error: rewardsERC20Error,
-  } = useGetRewardsERC20()
+  } = useReadRewardDistributor({ functionName: 'defaultRewardTokenAmount' })
 
   const {
     data: rewardsCoinbase,
     isLoading: rewardsCoinbaseLoading,
     error: rewardsCoinbaseError,
-  } = useGetRewardsCoinbase()
+  } = useReadRewardDistributor({ functionName: 'defaultRewardCoinbaseAmount' })
 
   const {
     data: { fromTimestamp, toTimestamp },

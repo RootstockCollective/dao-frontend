@@ -1,17 +1,21 @@
-import { parseEther } from 'viem'
 import { usePricesContext } from '@/shared/context/PricesContext'
+import { useReadRewardDistributor } from '@/shared/hooks/contracts'
 import { WeiPerEther } from 'ethers'
-import { useGetRewardsCoinbase, useGetRewardsERC20 } from '@/app/collective-rewards/rewards'
 import { useMemo } from 'react'
+import { parseEther } from 'viem'
 
 export const useGetCyclePayout = () => {
   const { prices } = usePricesContext()
-  const { data: rifRewards, isLoading: rifRewardsLoading, error: rifRewardsError } = useGetRewardsERC20()
+  const {
+    data: rifRewards,
+    isLoading: rifRewardsLoading,
+    error: rifRewardsError,
+  } = useReadRewardDistributor({ functionName: 'defaultRewardTokenAmount' })
   const {
     data: rbtcRewards,
     isLoading: rbtcRewardsLoading,
     error: rbtcRewardsError,
-  } = useGetRewardsCoinbase()
+  } = useReadRewardDistributor({ functionName: 'defaultRewardCoinbaseAmount' })
 
   const cyclePayout = useMemo(() => {
     const rifPrice = prices.RIF?.price ? parseEther(prices.RIF.price.toString()) : 0n
