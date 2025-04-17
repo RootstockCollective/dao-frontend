@@ -46,6 +46,9 @@ const nextConfig = {
 
     return config
   },
+  images: {
+    remotePatterns: [new URL(`https://${process.env.NEXT_PUBLIC_IPFS_GATEWAY}/**`)],
+  },
 }
 
 const getNextConfig = () => {
