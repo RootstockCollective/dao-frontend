@@ -20,7 +20,7 @@ export const CommunityCard: FC<CommunityCardProps> = ({
   return (
     <div
       className={cn(
-        'rounded bg-input-bg w-[300px]',
+        'rounded-sm bg-input-bg w-[300px]',
         isBoosted ? 'shadow-[0px_0px_20.799999237060547px_0px_rgba(192,247,255,0.43)]' : '',
       )}
       data-testid={`${title}Card`}

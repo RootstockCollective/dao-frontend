@@ -33,7 +33,7 @@ export function Card({ proposal, isHighlighted, className, link, showInfoPanel, 
       <CardBackground image={image} alt={title}>
         <div className="h-full py-7 flex flex-col items-center leading-tight">
           <HeaderTitle className="text-[32px] text-center">{title}</HeaderTitle>
-          <div className="mb-[18px] flex-grow flex items-end">
+          <div className="mb-[18px] grow flex items-end">
             <div className="min-h-[4rem]">
               <Typography className="leading-[22.4px]" tagVariant="p">
                 {description}
@@ -70,9 +70,9 @@ interface CardBackgroundProps extends PropsWithChildren {
 function CardBackground({ image, alt, children }: CardBackgroundProps) {
   return (
     <div className="relative w-full h-full">
-      <div className="absolute w-full h-full z-[2]">{children}</div>
+      <div className="absolute w-full h-full z-2">{children}</div>
       <div
-        className="absolute w-full h-[506px] z-[1]"
+        className="absolute w-full h-[506px] z-1"
         style={{
           background:
             'linear-gradient(180deg, rgba(26, 26, 26, 0.84) 7.85%, rgba(26, 26, 26, 0) 41.38%, #1A1A1A 74.71%)',

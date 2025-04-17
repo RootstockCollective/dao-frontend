@@ -80,13 +80,13 @@ export const VoteProposalModal: FC<Props> = ({
 
         <div className="mb-12">
           <Typography className="text-xl mb-1 font-medium">Wallet</Typography>
-          <div className="flex w-1/3 items-center gap-2 p-3 bg-[#1c1c1c] rounded">
+          <div className="flex w-1/3 items-center gap-2 p-3 bg-[#1c1c1c] rounded-sm">
             <Typography className="flex-1 font-mono">{shortAddress(address)}</Typography>
             <button onClick={handleCopy} className="text-[#2D2D2D]">
               <Image src="/images/copy_icon.svg" alt="copy_icon" width={18} height={18} />
             </button>
             {copied && (
-              <div className=" -top-12 left-1/2 -translate-x-1/2 bg-[#2d8d43] text-white text-xs py-1 px-1 rounded whitespace-nowrap z-50">
+              <div className=" -top-12 left-1/2 -translate-x-1/2 bg-[#2d8d43] text-white text-xs py-1 px-1 rounded-sm whitespace-nowrap z-50">
                 Copied!
               </div>
             )}
@@ -119,7 +119,7 @@ export const VoteProposalModal: FC<Props> = ({
           </Typography>
         </div>
 
-        <div className="flex flex-col flex-grow">
+        <div className="flex flex-col grow">
           <Typography className="text-xl font-medium mb-4">Vote</Typography>
           <div className="flex gap-4 mb-16">
             <Button
@@ -152,7 +152,7 @@ export const VoteProposalModal: FC<Props> = ({
           </div>
 
           {errorMessage && (
-            <div className="bg-red-500 bg-opacity-10 text-red-500 p-4 rounded mb-8">
+            <div className="bg-red-500 bg-opacity-10 text-red-500 p-4 rounded-sm mb-8">
               Error: {errorMessage}
             </div>
           )}
@@ -176,7 +176,7 @@ export const VoteProposalModal: FC<Props> = ({
               variant="secondary"
               onClick={onClose}
               fullWidth
-              className={cn(baseButtonStyleForActionBtns, '!border !border-gray-600 hover:!border-white')}
+              className={cn(baseButtonStyleForActionBtns, 'border! border-gray-600! hover:border-white!')}
             >
               Cancel
             </Button>

@@ -20,7 +20,7 @@ const shimmerVariants: Variants = {
 }
 
 export const CardPlaceholder: FC = () => (
-  <div className="rounded bg-input-bg w-[300px] pb-4" data-testid="CommunityCardPlaceholder">
+  <div className="rounded-sm bg-input-bg w-[300px] pb-4" data-testid="CommunityCardPlaceholder">
     {/* Image placeholder */}
     <div className="relative w-full h-[300px] mb-5">
       <Image

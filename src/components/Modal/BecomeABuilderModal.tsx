@@ -133,7 +133,7 @@ const BecomeABuilder: FC = () => {
               background="dark"
               size="medium"
               position="top"
-              className="z-[100]"
+              className="z-100"
               contentSubContainerClassName="p-3"
             >
               <ActionButton

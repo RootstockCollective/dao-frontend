@@ -65,7 +65,7 @@ export const BuilderRewardsSettingsForm: FC = () => {
               <FormLabel className="font-rootstock-sans font-normal text-base leading-none p-0">
                 Adjust backers rewards %
               </FormLabel>
-              <FormControl className="bg-[#1A1A1A] rounded border border-[#2D2D2D] w-36 h-[53px] gap-2 items-center flex">
+              <FormControl className="bg-[#1A1A1A] rounded-sm border border-[#2D2D2D] w-36 h-[53px] gap-2 items-center flex">
                 {isCurrentRewardsLoading ? (
                   <LoadingSpinner />
                 ) : (
