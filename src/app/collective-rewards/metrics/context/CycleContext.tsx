@@ -1,12 +1,7 @@
-import { createContext, FC, ReactNode, useContext, useEffect, useMemo, useState } from 'react'
+import { useReadCycleTimeKeeper } from '@/shared/hooks/contracts'
 import { DateTime, Duration } from 'luxon'
-import {
-  useGetCycleNext,
-  useGetCycleStart,
-  useGetCycleStartAndDuration,
-  useGetEndDistributionWindow,
-} from '@/app/collective-rewards/metrics'
-import { AVERAGE_BLOCKTIME } from '@/lib/constants'
+import { createContext, FC, ReactNode, useContext, useMemo } from 'react'
+import { useIntervalTimestamp } from '../hooks/useIntervalTimestamp'
 
 export type Cycle = {
   timestamp: bigint
@@ -34,21 +29,13 @@ type CycleProviderProps = {
 }
 
 export const CycleContextProvider: FC<CycleProviderProps> = ({ children }) => {
-  const [timestamp, setTimestamp] = useState(BigInt(DateTime.now().toUnixInteger()))
-
-  useEffect(() => {
-    const interval = setInterval(() => {
-      setTimestamp(BigInt(DateTime.now().toUnixInteger()))
-    }, AVERAGE_BLOCKTIME)
-
-    return () => clearInterval(interval) // Cleanup interval on component unmount
-  }, [])
+  const timestamp = useIntervalTimestamp()
 
   const {
     data: cycleStartAndDuration,
     isLoading: cycleStartAndDurationLoading,
     error: cycleStartAndDurationError,
-  } = useGetCycleStartAndDuration()
+  } = useReadCycleTimeKeeper({ functionName: 'getCycleStartAndDuration' }, { initialData: 0n })
 
   const [firstCycleStart, cycleDuration] = cycleStartAndDuration || []
 
@@ -56,15 +43,22 @@ export const CycleContextProvider: FC<CycleProviderProps> = ({ children }) => {
     data: cycleStart,
     isLoading: cycleStartLoading,
     error: cycleStartError,
-  } = useGetCycleStart(timestamp)
+  } = useReadCycleTimeKeeper({ functionName: 'cycleStart', args: [timestamp] }, { initialData: 0n })
 
   const {
     data: endDistributionWindow,
     isLoading: endDistributionWindowLoading,
     error: endDistributionWindowError,
-  } = useGetEndDistributionWindow(timestamp)
+  } = useReadCycleTimeKeeper(
+    { functionName: 'endDistributionWindow', args: [timestamp] },
+    { initialData: 0n },
+  )
 
-  const { data: cycleNext, isLoading: cycleNextLoading, error: cycleNextError } = useGetCycleNext(timestamp)
+  const {
+    data: cycleNext,
+    isLoading: cycleNextLoading,
+    error: cycleNextError,
+  } = useReadCycleTimeKeeper({ functionName: 'cycleNext', args: [timestamp] }, { initialData: 0n })
 
   const isLoading =
     cycleStartAndDurationLoading || cycleStartLoading || endDistributionWindowLoading || cycleNextLoading
