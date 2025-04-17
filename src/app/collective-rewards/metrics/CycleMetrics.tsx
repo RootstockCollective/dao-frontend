@@ -1,15 +1,15 @@
-import { useCycleContext, useGetTimeUntilNextCycle } from '@/app/collective-rewards/metrics'
-import { Duration, DateTime } from 'luxon'
-import { useEffect, useState } from 'react'
+import { useCycleContext } from '@/app/collective-rewards/metrics'
 import { MetricsCard, MetricsCardTitle, TokenMetricsCardRow } from '@/app/collective-rewards/rewards'
-import { withSpinner } from '@/components/LoadingSpinner/withLoadingSpinner'
 import { useHandleErrors } from '@/app/collective-rewards/utils'
-import { AVERAGE_BLOCKTIME } from '@/lib/constants'
+import { withSpinner } from '@/components/LoadingSpinner/withLoadingSpinner'
+import { useReadCycleTimeKeeper } from '@/shared/hooks/contracts'
+import { Duration } from 'luxon'
+import { useEffect, useState } from 'react'
+import { useIntervalTimestamp } from './hooks/useIntervalTimestamp'
 
 export const CycleMetrics = () => {
   const [timeRemaining, setTimeRemaining] = useState<Duration>(Duration.fromObject({ minutes: 0 }))
-  const [timestamp, setTimestamp] = useState(BigInt(DateTime.now().toUnixInteger()))
-
+  const timestamp = useIntervalTimestamp()
   const {
     data: { cycleDuration, cycleNext },
     isLoading: cycleLoading,
@@ -19,21 +19,18 @@ export const CycleMetrics = () => {
     data: timeUntilNextCycle,
     isLoading: timeUntilNextCycleLoading,
     error: timeUntilNextCycleError,
-  } = useGetTimeUntilNextCycle(timestamp)
+  } = useReadCycleTimeKeeper(
+    { functionName: 'timeUntilNextCycle', args: [timestamp] },
+    {
+      initialData: 0n,
+    },
+  )
 
   const error = cycleError ?? timeUntilNextCycleError
   useHandleErrors({ error, title: 'Error loading cycle metrics' })
 
   const duration =
     cycleDuration.as('days') < 1 ? cycleDuration.shiftTo('hours') : cycleDuration.shiftTo('days')
-
-  useEffect(() => {
-    const interval = setInterval(() => {
-      setTimestamp(BigInt(DateTime.now().toUnixInteger()))
-    }, AVERAGE_BLOCKTIME)
-
-    return () => clearInterval(interval) // Cleanup interval on component unmount
-  }, [])
 
   useEffect(() => {
     const nextCycle = Duration.fromObject({ seconds: Number(timeUntilNextCycle) })

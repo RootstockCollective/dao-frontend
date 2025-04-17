@@ -1,11 +1,11 @@
-import {
-  useGetRewardDistributionFinishedLogs,
-  useGetLastCycleDistribution,
-  RewardDistributionFinishedEventLog,
-} from '@/app/collective-rewards/rewards'
-import { describe, expect, it, vi } from 'vitest'
 import { Cycle } from '@/app/collective-rewards/metrics'
+import {
+  RewardDistributionFinishedEventLog,
+  useGetLastCycleDistribution,
+  useGetRewardDistributionFinishedLogs,
+} from '@/app/collective-rewards/rewards'
 import { DateTime, Duration } from 'luxon'
+import { describe, expect, it, vi } from 'vitest'
 
 vi.mock('@/app/collective-rewards/rewards/hooks/useGetRewardDistributionFinishedLogs', () => {
   return {
@@ -19,11 +19,10 @@ describe('useGetLastCycleRewardsTimestamps', () => {
   const duration = 1209600 //  14 days
   const distributionWindow = 3600 // 1 hour
   const cycle: Cycle = {
-    timestamp: 10n,
     cycleStart: DateTime.fromSeconds(startTimestamp),
     cycleNext: DateTime.fromSeconds(startTimestamp + duration),
     cycleDuration: Duration.fromObject({ seconds: duration }),
-    fistCycleStart: DateTime.fromSeconds(startTimestamp),
+    firstCycleStart: DateTime.fromSeconds(startTimestamp),
     endDistributionWindow: DateTime.fromSeconds(distributionWindow),
   }
   const { cycleStart, cycleNext, cycleDuration } = cycle

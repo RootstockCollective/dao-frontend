@@ -1,10 +1,10 @@
-import { Address } from 'viem'
-import { usePricesContext } from '@/shared/context/PricesContext'
+import { useIntervalTimestamp } from '@/app/collective-rewards/metrics/hooks/useIntervalTimestamp'
+import { Token, useBackerRewardsContext, useGetBackerStakingHistory } from '@/app/collective-rewards/rewards'
 import Big from '@/lib/big'
-import { useMemo } from 'react'
-import { useCycleContext } from '@/app/collective-rewards/metrics'
-import { useBackerRewardsContext, useGetBackerStakingHistory, Token } from '@/app/collective-rewards/rewards'
 import { WeiPerEther } from '@/lib/constants'
+import { usePricesContext } from '@/shared/context/PricesContext'
+import { useMemo } from 'react'
+import { Address } from 'viem'
 
 const useGetTokenRewards = ({ address, symbol }: Token) => {
   const { prices } = usePricesContext()
@@ -39,11 +39,8 @@ export const useGetBackerRBI = (backer: Address, { rbtc, rif }: Record<string, T
     error: rbtcRewardsError,
   } = useGetTokenRewards(rbtc)
   const { data: rifRewards, isLoading: rifRewardsLoading, error: rifRewardsError } = useGetTokenRewards(rif)
-  const {
-    data: { timestamp },
-    isLoading: cycleLoading,
-    error: cycleError,
-  } = useCycleContext()
+  const timestamp = useIntervalTimestamp()
+
   const { prices } = usePricesContext()
 
   const rbi = useMemo(() => {
@@ -75,8 +72,8 @@ export const useGetBackerRBI = (backer: Address, { rbtc, rif }: Record<string, T
       .mul(100)
   }, [stakingHistory, prices, rif.symbol, rbtcRewards, rifRewards, timestamp])
 
-  const isLoading = stakingHistoryLoading || rbtcRewardsLoading || rifRewardsLoading || cycleLoading
-  const error = stakingHistoryError ?? rbtcRewardsError ?? rifRewardsError ?? cycleError
+  const isLoading = stakingHistoryLoading || rbtcRewardsLoading || rifRewardsLoading
+  const error = stakingHistoryError ?? rbtcRewardsError ?? rifRewardsError
 
   return {
     data: rbi,
