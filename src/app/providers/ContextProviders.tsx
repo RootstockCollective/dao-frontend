@@ -26,7 +26,7 @@ const metadata = {
   icons: ['https://assets.reown.com/reown-profile-pic.png'],
 }
 
-// Create the modal (even tho it says it's being used, it is.
+// Create the modal (even though it says it's being used, it is.
 const modal = createAppKit({
   adapters: [wagmiAdapter],
   projectId: REOWN_PROJECT_ID,
