@@ -5,11 +5,10 @@ import {
   useGetCycleStart,
   useGetCycleStartAndDuration,
   useGetEndDistributionWindow,
+  useGetTimestamp,
 } from '@/app/collective-rewards/metrics'
-import { AVERAGE_BLOCKTIME } from '@/lib/constants'
 
 export type Cycle = {
-  timestamp: bigint
   cycleStart: DateTime
   cycleDuration: Duration
   cycleNext: DateTime
@@ -34,37 +33,70 @@ type CycleProviderProps = {
 }
 
 export const CycleContextProvider: FC<CycleProviderProps> = ({ children }) => {
-  const [timestamp, setTimestamp] = useState(BigInt(DateTime.now().toUnixInteger()))
-
-  useEffect(() => {
-    const interval = setInterval(() => {
-      setTimestamp(BigInt(DateTime.now().toUnixInteger()))
-    }, AVERAGE_BLOCKTIME)
-
-    return () => clearInterval(interval) // Cleanup interval on component unmount
-  }, [])
+  const timestamp = useGetTimestamp()
 
   const {
-    data: cycleStartAndDuration,
+    data: cycleStartAndDurationData,
     isLoading: cycleStartAndDurationLoading,
     error: cycleStartAndDurationError,
   } = useGetCycleStartAndDuration()
 
-  const [firstCycleStart, cycleDuration] = cycleStartAndDuration || []
+  const [firstCycleStart, setFirstCycleStart] = useState(0n)
+  const [cycleDuration, setCycleDuration] = useState(0n)
+
+  useEffect(() => {
+    if (cycleStartAndDurationData) {
+      const [firstCycleStartData, cycleDurationData] = cycleStartAndDurationData
+      if (firstCycleStartData !== firstCycleStart) {
+        setFirstCycleStart(firstCycleStartData)
+      }
+      if (cycleDurationData !== cycleDuration) {
+        setCycleDuration(cycleDurationData)
+      }
+    }
+  }, [cycleDuration, cycleStartAndDurationData, firstCycleStart])
+
+  const [cycleStart, setCycleStart] = useState(0n)
 
   const {
-    data: cycleStart,
+    data: cycleStartData,
     isLoading: cycleStartLoading,
     error: cycleStartError,
   } = useGetCycleStart(timestamp)
 
+  useEffect(() => {
+    if (cycleStartData && cycleStartData !== cycleStart) {
+      setCycleStart(cycleStartData)
+    }
+  }, [cycleStart, cycleStartData])
+
+  const [endDistributionWindow, setEndDistributionWindow] = useState(0n)
+
   const {
-    data: endDistributionWindow,
+    data: endDistributionWindowData,
     isLoading: endDistributionWindowLoading,
     error: endDistributionWindowError,
   } = useGetEndDistributionWindow(timestamp)
 
-  const { data: cycleNext, isLoading: cycleNextLoading, error: cycleNextError } = useGetCycleNext(timestamp)
+  useEffect(() => {
+    if (endDistributionWindowData && endDistributionWindowData !== endDistributionWindow) {
+      setEndDistributionWindow(endDistributionWindowData)
+    }
+  }, [endDistributionWindow, endDistributionWindowData])
+
+  const [cycleNext, setCycleNext] = useState(0n)
+
+  const {
+    data: cycleNextData,
+    isLoading: cycleNextLoading,
+    error: cycleNextError,
+  } = useGetCycleNext(timestamp)
+
+  useEffect(() => {
+    if (cycleNextData && cycleNextData !== cycleNext) {
+      setCycleNext(cycleNextData)
+    }
+  }, [cycleNext, cycleNextData])
 
   const isLoading =
     cycleStartAndDurationLoading || cycleStartLoading || endDistributionWindowLoading || cycleNextLoading
@@ -73,14 +105,13 @@ export const CycleContextProvider: FC<CycleProviderProps> = ({ children }) => {
 
   const data = useMemo(
     () => ({
-      timestamp,
       cycleStart: DateTime.fromSeconds(Number(cycleStart ?? BigInt(0))),
       cycleNext: DateTime.fromSeconds(Number(cycleNext ?? BigInt(0))),
       cycleDuration: Duration.fromObject({ seconds: Number(cycleDuration ?? BigInt(0)) }),
       fistCycleStart: DateTime.fromSeconds(Number(firstCycleStart ?? BigInt(0))),
       endDistributionWindow: DateTime.fromSeconds(Number(endDistributionWindow ?? BigInt(0))),
     }),
-    [timestamp, firstCycleStart, cycleDuration, cycleStart, endDistributionWindow, cycleNext],
+    [firstCycleStart, cycleDuration, cycleStart, endDistributionWindow, cycleNext],
   )
 
   const valueOfContext: CycleContextValue = {

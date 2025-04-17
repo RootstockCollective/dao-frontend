@@ -1,14 +1,13 @@
-import { useCycleContext, useGetTimeUntilNextCycle } from '@/app/collective-rewards/metrics'
-import { Duration, DateTime } from 'luxon'
+import { useCycleContext, useGetTimestamp, useGetTimeUntilNextCycle } from '@/app/collective-rewards/metrics'
+import { Duration } from 'luxon'
 import { useEffect, useState } from 'react'
 import { MetricsCard, MetricsCardTitle, TokenMetricsCardRow } from '@/app/collective-rewards/rewards'
 import { withSpinner } from '@/components/LoadingSpinner/withLoadingSpinner'
 import { useHandleErrors } from '@/app/collective-rewards/utils'
-import { AVERAGE_BLOCKTIME } from '@/lib/constants'
 
 export const CycleMetrics = () => {
   const [timeRemaining, setTimeRemaining] = useState<Duration>(Duration.fromObject({ minutes: 0 }))
-  const [timestamp, setTimestamp] = useState(BigInt(DateTime.now().toUnixInteger()))
+  const timestamp = useGetTimestamp()
 
   const {
     data: { cycleDuration, cycleNext },
@@ -28,14 +27,8 @@ export const CycleMetrics = () => {
     cycleDuration.as('days') < 1 ? cycleDuration.shiftTo('hours') : cycleDuration.shiftTo('days')
 
   useEffect(() => {
-    const interval = setInterval(() => {
-      setTimestamp(BigInt(DateTime.now().toUnixInteger()))
-    }, AVERAGE_BLOCKTIME)
+    if (!timeUntilNextCycle) return
 
-    return () => clearInterval(interval) // Cleanup interval on component unmount
-  }, [])
-
-  useEffect(() => {
     const nextCycle = Duration.fromObject({ seconds: Number(timeUntilNextCycle) })
 
     if (nextCycle.as('minutes') < 61) {
