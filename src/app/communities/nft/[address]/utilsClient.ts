@@ -1,5 +1,5 @@
 'use client'
-import { Address } from 'viem'
+import { Address, EIP1193Provider } from 'viem'
 import { useEffect, useState } from 'react'
 import { NFTWalletLocalStorage } from './types'
 
@@ -66,20 +66,29 @@ interface AddToWalletArgument {
   tokenId: string
 }
 
+/**
+ * Request the provider to add an NFT to the wallet
+ * Link to properly understand type used: https://docs.metamask.io/wallet/reference/json-rpc-methods/wallet_watchasset/
+ * @param nftAddress
+ * @param nftSymbol
+ * @param image
+ * @param tokenId
+ */
 export const requestProviderToAddNFT: (arg: AddToWalletArgument) => Promise<unknown> = ({
   nftAddress,
   nftSymbol,
   image,
   tokenId,
 }) =>
-  window.ethereum.request({
+  (window.ethereum as EIP1193Provider).request({
     method: 'wallet_watchAsset',
     params: {
-      type: 'ERC721',
+      type: 'ERC721' as 'ERC20', // This is placed here to avoid over-complication because Viem doesn't support this type,
       options: {
         address: nftAddress,
         symbol: nftSymbol,
         image: image,
+        /* @ts-ignore Viem does not support tokenId but injected providers now do */
         tokenId: String(tokenId),
       },
     },
