@@ -1,5 +1,8 @@
 name: Boost backers' rewards NFT campaign deactivation
 
+# Declare default permissions as read only.
+permissions: read-all
+
 env:
   BOOST_DATA_BRANCH: 'boost_data/${{ github.event.inputs.env}}'
 on:

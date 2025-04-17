@@ -1,5 +1,8 @@
 name: Vanguard Boost schedule
 
+# Declare default permissions as read only.
+permissions: read-all
+
 env:
   BOOST: '30'
   NFT_CONTRACT: '0x1EEA464C8632A71A2E9B364725da6e09aaed2Ddc'
