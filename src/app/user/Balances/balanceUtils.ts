@@ -1,6 +1,6 @@
 import { GetAddressTokenResult, TokenBalance } from '@/app/user/types'
 import { tokenContracts } from '@/lib/contracts'
-import { formatUnits } from 'ethers'
+import { formatEther } from 'viem'
 
 const symbolsToGetFromArray = {
   RIF: { equivalentSymbols: ['tRIF', 'RIF'], currentContract: tokenContracts.RIF },
@@ -31,7 +31,7 @@ export const getTokenBalance = (
         token.contractAddress.toLowerCase() === currentContract.toLowerCase(),
     )
     if (tokenData) {
-      resultToReturn.balance = formatUnits(tokenData.balance)
+      resultToReturn.balance = formatEther(BigInt(tokenData.balance))
       resultToReturn.symbol = tokenData.symbol
       return resultToReturn
     }

@@ -1,5 +1,4 @@
-import { ZeroAddress } from 'ethers'
-import { Address } from 'viem'
+import { Address, zeroAddress } from 'viem'
 import { EarlyAdoptersNFTAbi } from './abis/EarlyAdoptersNFTAbi'
 import { VotingVanguardsNftAbi } from './abis/VotingVanguardsNFTAbi'
 import { StRIFTokenAbi } from './abis/StRIFTokenAbi'
@@ -27,7 +26,7 @@ import { GovernorAbi } from './abis/Governor'
 const tokenContracts = {
   RIF: RIF_ADDRESS,
   stRIF: STRIF_ADDRESS,
-  RBTC: ZeroAddress as Address,
+  RBTC: zeroAddress as Address,
 }
 export type SupportedTokens = keyof typeof tokenContracts
 
@@ -63,9 +62,9 @@ const GovernorAddress = GOVERNOR_ADDRESS
 const MulticallAddress = MULTICALL_ADDRESS
 const TreasuryAddress = GRANTS_ACTIVE_BUCKET_ADDRESS
 
-const BackersManagerAddress = BACKERS_MANAGER_ADDRESS || ZeroAddress
-const BuilderRegistryAddress = BUILDER_REGISTRY_ADDRESS || ZeroAddress
-const RewardDistributorAddress = REWARD_DISTRIBUTOR_ADDRESS || ZeroAddress
+const BackersManagerAddress = BACKERS_MANAGER_ADDRESS || zeroAddress
+const BuilderRegistryAddress = BUILDER_REGISTRY_ADDRESS || zeroAddress
+const RewardDistributorAddress = REWARD_DISTRIBUTOR_ADDRESS || zeroAddress
 
 export {
   abiContractsMap,

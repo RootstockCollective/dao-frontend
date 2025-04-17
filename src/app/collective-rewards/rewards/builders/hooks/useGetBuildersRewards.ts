@@ -2,7 +2,6 @@ import { useCycleContext } from '@/app/collective-rewards/metrics'
 import {
   getNotifyRewardAmount,
   Token,
-  useGetBackersRewardPercentage,
   useGetGaugesNotifyReward,
   useGetRewardsCoinbase,
   useGetRewardsERC20,
@@ -17,7 +16,7 @@ import { useGaugesGetFunction, useGetEstimatedBackersRewardsPct } from '@/app/co
 import { RequiredBuilder } from '@/app/collective-rewards/types'
 import { Allocations, AllocationsContext } from '@/app/collective-rewards/allocations/context'
 import { useContext, useMemo } from 'react'
-import { WeiPerEther } from 'ethers'
+import { WeiPerEther } from '@/lib/constants'
 
 const isBuilderShown = (
   { stateFlags: { kycApproved, revoked, communityApproved, paused }, address }: RequiredBuilder,
