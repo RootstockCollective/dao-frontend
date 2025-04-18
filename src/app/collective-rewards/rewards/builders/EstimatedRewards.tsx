@@ -8,13 +8,12 @@ import {
   Token,
   TokenMetricsCardRow,
   useGetPerTokenRewards,
-  useGetTotalPotentialReward,
 } from '@/app/collective-rewards/rewards'
 import { useBuilderContext } from '@/app/collective-rewards/user'
 import { isBuilderRewardable, useHandleErrors } from '@/app/collective-rewards/utils'
 import { withSpinner } from '@/components/LoadingSpinner/withLoadingSpinner'
 import { usePricesContext } from '@/shared/context/PricesContext'
-import { useReadBuilderRegistry, useReadGauges } from '@/shared/hooks/contracts'
+import { useReadBackersManager, useReadBuilderRegistry, useReadGauges } from '@/shared/hooks/contracts'
 import { FC, useEffect, useMemo, useState } from 'react'
 import { Address, parseUnits } from 'viem'
 
@@ -47,7 +46,9 @@ const TokenRewards: FC<TokenRewardsProps> = ({ builder, gauge, token: { id, symb
     data: totalPotentialRewards,
     isLoading: totalPotentialRewardsLoading,
     error: totalPotentialRewardsError,
-  } = useGetTotalPotentialReward()
+  } = useReadBackersManager({
+    functionName: 'totalPotentialReward',
+  })
   const {
     data: rewardShares,
     isLoading: rewardSharesLoading,

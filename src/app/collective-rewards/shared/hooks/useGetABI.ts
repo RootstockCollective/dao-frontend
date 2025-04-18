@@ -1,11 +1,10 @@
-import { useBackerTotalAllocation } from '@/app/collective-rewards/allocations/hooks'
 import { useGetBackersRewardPercentage } from '@/app/collective-rewards/rewards'
 import { useGetCyclePayout, useGetEstimatedBackersRewardsPct } from '@/app/collective-rewards/shared'
 import { RequiredBuilder } from '@/app/collective-rewards/types'
 import { useGetBuildersByState } from '@/app/collective-rewards/user'
 import Big from '@/lib/big'
 import { usePricesContext } from '@/shared/context/PricesContext'
-import { useReadGauges } from '@/shared/hooks/contracts'
+import { useReadBackersManager, useReadGauges } from '@/shared/hooks/contracts'
 import { WeiPerEther } from 'ethers'
 import { useMemo } from 'react'
 import { Address } from 'viem'
@@ -46,7 +45,10 @@ export const useGetRewardsAbi = (backer: Address) => {
     data: backerTotalAllocation,
     isLoading: backerTotalAllocationLoading,
     error: backerTotalAllocationError,
-  } = useBackerTotalAllocation(backer)
+  } = useReadBackersManager({
+    functionName: 'backerTotalAllocation',
+    args: [backer],
+  })
   const { cyclePayout, isLoading: cyclePayoutLoading, error: cyclePayoutError } = useGetCyclePayout()
 
   const rewardsPerStRif = useMemo(() => {
