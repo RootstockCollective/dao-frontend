@@ -1,10 +1,6 @@
-import {
-  useActivatedBuildersWithGauge,
-  useBackerTotalAllocation,
-  useGetVotingPower,
-} from '@/app/collective-rewards/allocations/hooks'
+import { useActivatedBuildersWithGauge, useGetVotingPower } from '@/app/collective-rewards/allocations/hooks'
 import { Builder } from '@/app/collective-rewards/types'
-import { useReadGauges } from '@/shared/hooks/contracts'
+import { useReadBackersManager, useReadGauges } from '@/shared/hooks/contracts'
 import { createContext, FC, ReactNode, useCallback, useEffect, useMemo, useState } from 'react'
 import { Address, zeroAddress } from 'viem'
 import { useAccount } from 'wagmi'
@@ -129,7 +125,7 @@ export const AllocationsContextProvider: FC<{ children: ReactNode }> = ({ childr
     {
       addresses: gauges,
       functionName: 'allocationOf',
-      args: [backerAddress as Address],
+      args: [backerAddress ?? zeroAddress],
     },
     {
       enabled: !!backerAddress && !!rawBuilders.length,
@@ -140,7 +136,16 @@ export const AllocationsContextProvider: FC<{ children: ReactNode }> = ({ childr
     data: totalOnchainAllocation,
     isLoading: isTotalAllocationLoading,
     error: totalAllocationError,
-  } = useBackerTotalAllocation(backerAddress)
+  } = useReadBackersManager(
+    {
+      functionName: 'backerTotalAllocation',
+      args: [backerAddress ?? zeroAddress],
+    },
+    {
+      initialData: 0n,
+      enabled: !!backerAddress,
+    },
+  )
 
   const builders: Builders = useMemo(() => {
     if (!rawBuilders || !backerRewards) return {}

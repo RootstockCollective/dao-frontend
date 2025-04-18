@@ -1,6 +1,5 @@
-import { useBackerTotalAllocation } from '@/app/collective-rewards/allocations/hooks'
 import { useGetBackerRewardPerTokenPaid } from '@/app/collective-rewards/rewards/hooks'
-import { useReadBuilderRegistry } from '@/shared/hooks/contracts'
+import { useReadBackersManager, useReadBuilderRegistry } from '@/shared/hooks/contracts'
 import { Address, zeroAddress } from 'viem'
 
 export const useIsBuilderOrBacker = (address: Address) => {
@@ -34,7 +33,10 @@ export const useIsBacker = (address: Address) => {
     data: backerTotalAllocation,
     isLoading: isBackerTotalAllocationLoading,
     error: backerTotalAllocationError,
-  } = useBackerTotalAllocation(address)
+  } = useReadBackersManager({
+    functionName: 'backerTotalAllocation',
+    args: [address],
+  })
 
   const {
     data: backerRewardPerTokenPaid,

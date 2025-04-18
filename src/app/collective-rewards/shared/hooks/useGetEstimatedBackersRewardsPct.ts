@@ -1,12 +1,8 @@
-import {
-  BackerRewardPercentage,
-  useGetBackersRewardPercentage,
-  useGetTotalPotentialReward,
-} from '@/app/collective-rewards/rewards'
+import { BackerRewardPercentage, useGetBackersRewardPercentage } from '@/app/collective-rewards/rewards'
 import { RequiredBuilder } from '@/app/collective-rewards/types'
 import { useGetBuildersByState } from '@/app/collective-rewards/user'
 import { isBuilderRewardable } from '@/app/collective-rewards/utils'
-import { useReadGauges } from '@/shared/hooks/contracts'
+import { useReadBackersManager, useReadGauges } from '@/shared/hooks/contracts'
 import { useMemo } from 'react'
 
 export type EstimatedBackerRewards = RequiredBuilder & {
@@ -27,7 +23,9 @@ export const useGetEstimatedBackersRewardsPct = () => {
     data: totalPotentialRewards,
     isLoading: totalPotentialRewardsLoading,
     error: totalPotentialRewardsError,
-  } = useGetTotalPotentialReward()
+  } = useReadBackersManager({
+    functionName: 'totalPotentialReward',
+  })
   const {
     data: rewardShares,
     isLoading: rewardSharesLoading,

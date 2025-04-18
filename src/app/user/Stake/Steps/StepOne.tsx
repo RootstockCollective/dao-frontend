@@ -1,16 +1,37 @@
+import Big from '@/lib/big'
 import { formatCurrency } from '@/lib/utils'
-import { useCanAccountUnstakeAmount } from '@/shared/hooks/useCanAccountUnstakeAmount'
-import { useMemo, useCallback } from 'react'
+import { useReadBackersManager } from '@/shared/hooks/contracts'
+import { useCallback, useMemo } from 'react'
+import { parseEther, zeroAddress } from 'viem'
+import { useAccount } from 'wagmi'
 import { StakeRIF } from '../StakeRIF'
 import { useStakingContext } from '../StakingContext'
 import { StepProps } from '../types'
-import Big from '@/lib/big'
 
 export const StepOne = ({ onGoNext = () => {} }: StepProps) => {
+  const { address } = useAccount()
+
   const { amount, onAmountChange, tokenToSend, actionName } = useStakingContext()
 
-  const { isCanAccountWithdrawLoading, canAccountWithdraw, backerTotalAllocation } =
-    useCanAccountUnstakeAmount(amount, tokenToSend.balance)
+  const { data: backerTotalAllocation, isLoading: isCanAccountWithdrawLoading } = useReadBackersManager(
+    {
+      functionName: 'backerTotalAllocation',
+      args: [address ?? zeroAddress],
+    },
+    {
+      refetchInterval: 10000,
+      enabled: !!address,
+      initialData: 0n,
+    },
+  )
+
+  const canAccountWithdraw = useMemo(() => {
+    const parsedAmount = parseEther(amount) ?? 0n
+    const parsedBalance = parseEther(tokenToSend.balance) ?? 0n
+    const balanceThatCanBeWithdraw = parsedBalance - (backerTotalAllocation || 0n)
+
+    return parsedAmount <= balanceThatCanBeWithdraw
+  }, [amount, tokenToSend.balance, backerTotalAllocation])
 
   const balanceToCurrency = useMemo(
     () =>
