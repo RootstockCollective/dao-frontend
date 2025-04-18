@@ -31,6 +31,14 @@ export type UseReadContractsConfig<TAbi extends Abi, TFunctionName extends ViewP
           }
         | {
             functionName: TFunctionName
-            argsPerCall: FunctionParams<TAbi, TFunctionName>[]
+            argsPerCall: Array<FunctionParams<TAbi, TFunctionName>>
             addresses: Address[]
           }
+
+export type UseReadContractForMultipleArgsConfig<
+  TAbi extends Abi,
+  TFunctionName extends ViewPureFunctionName<TAbi>,
+> = {
+  functionName: TFunctionName
+  args: Array<FunctionParams<TAbi, TFunctionName>>
+}
