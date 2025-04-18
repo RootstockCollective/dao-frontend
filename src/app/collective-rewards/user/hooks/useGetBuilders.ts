@@ -1,17 +1,16 @@
 import { Builder, BuilderStateFlags } from '@/app/collective-rewards/types'
+import { useGetProposalsState } from '@/app/collective-rewards/user'
 import { useGetGaugesArray } from '@/app/collective-rewards/user/hooks/useGetGaugesArray'
 import { getMostAdvancedProposal, removeBrackets } from '@/app/collective-rewards/utils'
-import { RawBuilderState } from '@/app/collective-rewards/utils/getBuilderGauge'
-import { useGetProposalsState } from '@/app/collective-rewards/user'
 import { useFetchCreateBuilderProposals } from '@/app/proposals/hooks/useFetchLatestProposals'
 import { splitCombinedName } from '@/app/proposals/shared/utils'
 import { BuilderRegistryAbi } from '@/lib/abis/v2/BuilderRegistryAbi'
 import { AVERAGE_BLOCKTIME } from '@/lib/constants'
+import { BuilderRegistryAddress } from '@/lib/contracts'
 import { DateTime } from 'luxon'
 import { useMemo } from 'react'
 import { Address, getAddress } from 'viem'
 import { useReadContracts } from 'wagmi'
-import { BuilderRegistryAddress } from '@/lib/contracts'
 
 export type UseGetBuilders = () => {
   data: Record<Address, Builder> // TODO review Builder type
@@ -106,19 +105,11 @@ export const useGetBuilders: UseGetBuilders = () => {
   } = useGetProposalsState(proposalIds)
 
   const data: Record<Address, Builder> = useMemo(() => {
-    const builderStates = builderStatesResult?.map(({ result }) => result as RawBuilderState)
+    const builderStates = builderStatesResult?.map(({ result }) => result)
 
     const statusByBuilder =
       builders?.reduce<Record<Address, BuilderStateFlags>>((acc, builder, index) => {
-        const builderState = (builderStates?.[index] ?? [
-          false,
-          false,
-          false,
-          false,
-          false,
-          '',
-          '',
-        ]) as RawBuilderState
+        const builderState = builderStates?.[index] ?? [false, false, false, false, false, '', '']
         const [activated, kycApproved, communityApproved, paused, revoked] = builderState
         acc[builder] = { activated, kycApproved, communityApproved, paused, revoked }
 

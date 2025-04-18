@@ -1,12 +1,12 @@
 'use client'
 
+import { LoadingSpinner } from '@/components/LoadingSpinner'
+import { useReadBuilderRegistry } from '@/shared/hooks/contracts'
 import { useRouter, useSearchParams } from 'next/navigation'
 import { FC, ReactNode, useEffect } from 'react'
-import { BuilderSettings } from './builder/BuilderSettings'
-import { useAccount } from 'wagmi'
-import { useGetBuilderToGauge } from '@/app/collective-rewards/user'
-import { LoadingSpinner } from '@/components/LoadingSpinner'
 import { zeroAddress } from 'viem'
+import { useAccount } from 'wagmi'
+import { BuilderSettings } from './builder/BuilderSettings'
 
 const settingTypes = ['builder'] as const
 type SettingType = (typeof settingTypes)[number]
@@ -21,7 +21,10 @@ export const Settings: FC = () => {
   const { isConnected, address } = useAccount()
   const searchParams = useSearchParams()
   const router = useRouter()
-  const { data: gauge, status } = useGetBuilderToGauge(address!)
+  const { data: gauge, status } = useReadBuilderRegistry({
+    functionName: 'builderToGauge',
+    args: [address ?? zeroAddress],
+  })
 
   useEffect(() => {
     if (!isConnected) {
