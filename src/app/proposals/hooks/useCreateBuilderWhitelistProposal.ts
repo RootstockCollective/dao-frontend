@@ -1,13 +1,13 @@
-import { getBuilderGauge } from '@/app/collective-rewards/utils'
 import { AddressAlreadyWhitelistedError, NoVotingPowerError } from '@/app/proposals/shared/errors'
+import { config } from '@/config'
 import { GovernorAbi } from '@/lib/abis/Governor'
 import { BuilderRegistryAbi } from '@/lib/abis/v2/BuilderRegistryAbi'
-import { GovernorAddress } from '@/lib/contracts'
+import { BuilderRegistryAddress, GovernorAddress } from '@/lib/contracts'
 import { Address, encodeFunctionData, zeroAddress } from 'viem'
 import { useWriteContract } from 'wagmi'
+import { readContract } from 'wagmi/actions'
 import { createProposal, encodeGovernorRelayCallData } from './proposalUtils'
 import { useVotingPower } from './useVotingPower'
-import { BuilderRegistryAddress } from '@/lib/contracts'
 
 export const useCreateBuilderWhitelistProposal = () => {
   const { canCreateProposal } = useVotingPower()
@@ -17,7 +17,12 @@ export const useCreateBuilderWhitelistProposal = () => {
     if (!canCreateProposal) {
       throw NoVotingPowerError
     }
-    const builderGauge = await getBuilderGauge(BuilderRegistryAddress, builderAddress)
+    const builderGauge = await readContract(config, {
+      address: BuilderRegistryAddress,
+      abi: BuilderRegistryAbi,
+      functionName: 'builderToGauge',
+      args: [builderAddress],
+    })
     if (builderGauge !== zeroAddress) {
       // TODO: maybe we can use a different error here
       throw AddressAlreadyWhitelistedError

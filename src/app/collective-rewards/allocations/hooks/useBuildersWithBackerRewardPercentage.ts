@@ -1,82 +1,50 @@
 import { BackerRewardsConfig, Builder } from '@/app/collective-rewards/types'
-import { BuilderRegistryAbi } from '@/lib/abis/v2/BuilderRegistryAbi'
-import { AVERAGE_BLOCKTIME } from '@/lib/constants'
+import { useReadBuilderRegistryForMultipleArgs } from '@/shared/hooks/contracts/collective-rewards/useReadBuilderRegistryForMultipleArgs'
 import { Modify } from '@/shared/utility'
 import { useMemo } from 'react'
-import { ContractFunctionReturnType, ReadContractErrorType } from 'viem'
-import { UseReadContractReturnType, useReadContracts } from 'wagmi'
-import { BuilderRegistryAddress } from '@/lib/contracts'
-
-type RawBackerRewardPercentage = ContractFunctionReturnType<
-  typeof BuilderRegistryAbi,
-  'view',
-  'backerRewardPercentage'
->
-type RawActivePercentage = ContractFunctionReturnType<
-  typeof BuilderRegistryAbi,
-  'view',
-  'getRewardPercentageToApply'
->
+import { ReadContractErrorType } from 'viem'
+import { UseReadContractReturnType } from 'wagmi'
 
 type UseGetBackerRewardsReturnType = Pick<
-  Modify<UseReadContractReturnType, { data: (BackerRewardsConfig | undefined)[] | undefined }>,
+  Modify<UseReadContractReturnType, { data: BackerRewardsConfig[] | undefined }>,
   'data' | 'isLoading' | 'error'
 >
+
 type UseGetBackerRewards = (builders: Builder[]) => UseGetBackerRewardsReturnType
 
 export const useGetBackerRewards: UseGetBackerRewards = builders => {
-  const backerRewardCalls = builders.map(({ address }) => ({
-    address: BuilderRegistryAddress,
-    abi: BuilderRegistryAbi,
-    functionName: 'backerRewardPercentage',
-    args: [address],
-  }))
-
-  const activePercentageCalls = builders.map(({ address }) => ({
-    address: BuilderRegistryAddress,
-    abi: BuilderRegistryAbi,
-    functionName: 'getRewardPercentageToApply',
-    args: [address],
-  }))
+  const args = builders.map(({ address }) => [address] as const)
 
   const {
-    data: backerRewards,
+    data: backerRewardsPercPerBuilder,
     isLoading: backerRewardsLoading,
     error: backerRewardError,
-  } = useReadContracts<RawBackerRewardPercentage[]>({
-    contracts: backerRewardCalls,
-    query: {
-      refetchInterval: AVERAGE_BLOCKTIME,
-    },
+  } = useReadBuilderRegistryForMultipleArgs({
+    functionName: 'backerRewardPercentage',
+    args,
   })
 
   const {
-    data: activePercentages,
+    data: activePercPerBuilder,
     isLoading: activePercentagesLoading,
     error: activePercentagesError,
-  } = useReadContracts<RawActivePercentage[]>({
-    contracts: activePercentageCalls,
-    query: {
-      refetchInterval: AVERAGE_BLOCKTIME,
-    },
+  } = useReadBuilderRegistryForMultipleArgs({
+    functionName: 'getRewardPercentageToApply',
+    args,
   })
 
   const data = useMemo(() => {
-    if (!backerRewards || !activePercentages) return undefined
+    return backerRewardsPercPerBuilder.map((backerRewardsPerc, index) => {
+      const [previous, next, cooldown] = (backerRewardsPerc ?? [0n, 0n, 0n]) as [bigint, bigint, bigint]
 
-    return backerRewards.map<BackerRewardsConfig | undefined>(({ status, error, result }, index) => {
-      if (status === 'success' && !error && !!result) {
-        const [previous, next, cooldown] = result as RawBackerRewardPercentage
-
-        return {
-          previous,
-          next,
-          cooldown,
-          active: activePercentages[index]?.result as RawActivePercentage,
-        }
-      }
+      return {
+        previous,
+        next,
+        cooldown,
+        active: activePercPerBuilder[index] as bigint,
+      } as BackerRewardsConfig
     })
-  }, [backerRewards, activePercentages])
+  }, [backerRewardsPercPerBuilder, activePercPerBuilder])
 
   return {
     data,

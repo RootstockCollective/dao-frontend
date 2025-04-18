@@ -1,7 +1,6 @@
-import { Address, zeroAddress } from 'viem'
-import { useGetBuilderToGauge } from '@/app/collective-rewards/user'
 import { useGetBackerRewardPerTokenPaid } from '@/app/collective-rewards/rewards/hooks'
-import { useBackerTotalAllocation } from '@/app/collective-rewards/allocations/hooks'
+import { useReadBackersManager, useReadBuilderRegistry } from '@/shared/hooks/contracts'
+import { Address, zeroAddress } from 'viem'
 
 export const useIsBuilderOrBacker = (address: Address) => {
   /*
@@ -9,7 +8,14 @@ export const useIsBuilderOrBacker = (address: Address) => {
    * - a gauge exists for the address (builder)
    * - the backerRewardPerTokenPaid is greater than 0 (backer)
    */
-  const { data: gauge, isLoading: gaugeLoading, error: gaugeError } = useGetBuilderToGauge(address)
+  const {
+    data: gauge,
+    isLoading: gaugeLoading,
+    error: gaugeError,
+  } = useReadBuilderRegistry({
+    functionName: 'builderToGauge',
+    args: [address],
+  })
   const { data: isBacker, isLoading: backerLoading, error: backerError } = useIsBacker(address)
 
   const isLoading = gaugeLoading || backerLoading
@@ -27,7 +33,10 @@ export const useIsBacker = (address: Address) => {
     data: backerTotalAllocation,
     isLoading: isBackerTotalAllocationLoading,
     error: backerTotalAllocationError,
-  } = useBackerTotalAllocation(address)
+  } = useReadBackersManager({
+    functionName: 'backerTotalAllocation',
+    args: [address],
+  })
 
   const {
     data: backerRewardPerTokenPaid,

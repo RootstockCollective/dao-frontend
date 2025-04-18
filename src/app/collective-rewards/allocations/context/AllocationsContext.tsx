@@ -1,15 +1,11 @@
-import {
-  useActivatedBuildersWithGauge,
-  useBackerTotalAllocation,
-  useGetAllAllocationOf,
-  useGetVotingPower,
-} from '@/app/collective-rewards/allocations/hooks'
+import { useActivatedBuildersWithGauge, useGetVotingPower } from '@/app/collective-rewards/allocations/hooks'
 import { Builder } from '@/app/collective-rewards/types'
-import { createContext, FC, ReactNode, useEffect, useMemo, useState, useCallback } from 'react'
-import { Address } from 'viem'
+import { useReadBackersManager, useReadGauges } from '@/shared/hooks/contracts'
+import { createContext, FC, ReactNode, useCallback, useEffect, useMemo, useState } from 'react'
+import { Address, zeroAddress } from 'viem'
 import { useAccount } from 'wagmi'
-import { createActions } from './allocationsActions'
 import { useGetBackerRewards } from '../hooks/useBuildersWithBackerRewardPercentage'
+import { createActions } from './allocationsActions'
 import { validateAllocationsState } from './utils'
 
 export interface Allocations {
@@ -123,13 +119,31 @@ export const AllocationsContextProvider: FC<{ children: ReactNode }> = ({ childr
     data: rawAllocations,
     isLoading: isRawAllocationsLoading,
     error: allRawAllocationsError,
-  } = useGetAllAllocationOf(rawBuilders, backerAddress)
+  } = useReadGauges(
+    {
+      addresses: rawBuilders.map(({ gauge }) => gauge ?? zeroAddress),
+      functionName: 'allocationOf',
+      args: [backerAddress ?? zeroAddress],
+    },
+    {
+      enabled: !!backerAddress,
+    },
+  )
 
   const {
     data: totalOnchainAllocation,
     isLoading: isTotalAllocationLoading,
     error: totalAllocationError,
-  } = useBackerTotalAllocation(backerAddress)
+  } = useReadBackersManager(
+    {
+      functionName: 'backerTotalAllocation',
+      args: [backerAddress ?? zeroAddress],
+    },
+    {
+      initialData: 0n,
+      enabled: !!backerAddress,
+    },
+  )
 
   const builders: Builders = useMemo(() => {
     if (!rawBuilders || !backerRewards) return {}
@@ -276,14 +290,14 @@ export const AllocationsContextProvider: FC<{ children: ReactNode }> = ({ childr
 }
 
 function createInitialAllocations(
-  rawAllocations: bigint[],
+  rawAllocations: (bigint | undefined)[],
   rawBuilders: Builder[],
   selections: State['selections'],
 ): [Allocations, bigint, number] {
   return rawAllocations.reduce(
     (acc, allocation, index) => {
       const builderAddress = rawBuilders[index].address
-      if (allocation > 0n || selections[builderAddress]) {
+      if (allocation && (allocation > 0n || selections[builderAddress])) {
         acc[0][builderAddress] = allocation
         acc[1] += allocation ?? BigInt(0) // cumulative allocation
         acc[2] += 1 // allocations count
