@@ -4,13 +4,10 @@ import { useGetGaugesArray } from '@/app/collective-rewards/user/hooks/useGetGau
 import { getMostAdvancedProposal, removeBrackets } from '@/app/collective-rewards/utils'
 import { useFetchCreateBuilderProposals } from '@/app/proposals/hooks/useFetchLatestProposals'
 import { splitCombinedName } from '@/app/proposals/shared/utils'
-import { BuilderRegistryAbi } from '@/lib/abis/v2/BuilderRegistryAbi'
-import { AVERAGE_BLOCKTIME } from '@/lib/constants'
-import { BuilderRegistryAddress } from '@/lib/contracts'
+import { useReadBuilderRegistryForMultipleArgs } from '@/shared/hooks/contracts/collective-rewards/useReadBuilderRegistryForMultipleArgs'
 import { DateTime } from 'luxon'
 import { useMemo } from 'react'
-import { Address, getAddress } from 'viem'
-import { useReadContracts } from 'wagmi'
+import { Address, getAddress, zeroAddress } from 'viem'
 
 export type UseGetBuilders = () => {
   data: Record<Address, Builder> // TODO review Builder type
@@ -31,59 +28,42 @@ export const useGetBuilders: UseGetBuilders = () => {
   // get the gauges
   const { data: gauges, isLoading: gaugesLoading, error: gaugesError } = useGetGaugesArray()
 
-  // get the builders for each gauge
-  const gaugeToBuilderCalls = gauges?.map(
-    gauge =>
-      ({
-        address: BuilderRegistryAddress,
-        abi: BuilderRegistryAbi,
-        functionName: 'gaugeToBuilder',
-        args: [gauge],
-      }) as const,
-  )
   const {
-    data: buildersResult,
+    data: builders,
     isLoading: buildersLoading,
     error: buildersError,
-  } = useReadContracts<Address[]>({
-    contracts: gaugeToBuilderCalls,
-    query: {
-      refetchInterval: AVERAGE_BLOCKTIME,
-    },
+  } = useReadBuilderRegistryForMultipleArgs({
+    functionName: 'gaugeToBuilder',
+    args: useMemo(() => gauges?.map(gauge => [gauge] as const) ?? [], [gauges]),
   })
-  const builders = useMemo(
-    () => buildersResult?.map(builder => builder.result) as Address[],
-    [buildersResult],
-  )
+
+  if (!gaugesLoading && !buildersLoading && builders.length !== gauges.length) {
+    console.error(
+      'The number of builders and gauges do not match. This is not expected. Please reload the page.',
+      builders,
+      gauges,
+    )
+  }
 
   const builderToGauge = useMemo(
     () =>
       builders?.reduce<Record<Address, Address>>((acc, builder, index) => {
+        if (!builder) return acc
+
         acc[builder] = gauges![index]
         return acc
       }, {}),
     [builders, gauges],
   )
 
-  // get the builder state for each builder
-  const builderStatesCalls = useMemo(
-    () =>
-      builders?.map(
-        builder =>
-          ({
-            address: BuilderRegistryAddress,
-            abi: BuilderRegistryAbi,
-            functionName: 'builderState',
-            args: [builder],
-          }) as const,
-      ),
-    [builders],
-  )
   const {
-    data: builderStatesResult,
+    data: builderStates,
     isLoading: builderStatesLoading,
     error: builderStatesError,
-  } = useReadContracts({ contracts: builderStatesCalls, query: { refetchInterval: AVERAGE_BLOCKTIME } })
+  } = useReadBuilderRegistryForMultipleArgs({
+    functionName: 'builderState',
+    args: useMemo(() => builders?.map(builder => [builder ?? zeroAddress] as const) ?? [], [builders]),
+  })
 
   // TODO: useFetchCreateBuilderProposals & useGetProposalsState & getMostAdvancedProposal can be joined
   const {
@@ -105,10 +85,10 @@ export const useGetBuilders: UseGetBuilders = () => {
   } = useGetProposalsState(proposalIds)
 
   const data: Record<Address, Builder> = useMemo(() => {
-    const builderStates = builderStatesResult?.map(({ result }) => result)
-
     const statusByBuilder =
       builders?.reduce<Record<Address, BuilderStateFlags>>((acc, builder, index) => {
+        if (!builder) return acc
+
         const builderState = builderStates?.[index] ?? [false, false, false, false, false, '', '']
         const [activated, kycApproved, communityApproved, paused, revoked] = builderState
         acc[builder] = { activated, kycApproved, communityApproved, paused, revoked }
@@ -147,7 +127,7 @@ export const useGetBuilders: UseGetBuilders = () => {
       },
       {},
     )
-  }, [proposalsByBuilder, builderToGauge, builderStatesResult, proposalsStateMap, builders])
+  }, [proposalsByBuilder, builderToGauge, builderStates, proposalsStateMap, builders])
 
   const isLoading =
     isLoadingProposalsByBuilder ||
