@@ -2,11 +2,11 @@ import { useCycleContext } from '@/app/collective-rewards/metrics/context/CycleC
 import {
   BuilderRewardDetails,
   formatMetrics,
+  getBackerRewardPercentage,
   MetricsCard,
   MetricsCardTitle,
   Token,
   TokenMetricsCardRow,
-  useGetBackerRewardPercentage,
   useGetPerTokenRewards,
   useGetTotalPotentialReward,
 } from '@/app/collective-rewards/rewards'
@@ -15,8 +15,8 @@ import { isBuilderRewardable, useHandleErrors } from '@/app/collective-rewards/u
 import { withSpinner } from '@/components/LoadingSpinner/withLoadingSpinner'
 import { WeiPerEther } from '@/lib/constants'
 import { usePricesContext } from '@/shared/context/PricesContext'
-import { useReadGauges } from '@/shared/hooks/contracts'
-import { FC, useEffect, useState } from 'react'
+import { useReadBuilderRegistry, useReadGauges } from '@/shared/hooks/contracts'
+import { FC, useEffect, useMemo, useState } from 'react'
 import { Address } from 'viem'
 
 interface TokenRewardsProps {
@@ -60,10 +60,19 @@ const TokenRewards: FC<TokenRewardsProps> = ({ builder, gauge, token: { id, symb
     error: cycleError,
   } = useCycleContext()
   const {
-    data: backerRewardsPct,
+    data: rawBackerRewardsPct,
     isLoading: backerRewardsPctLoading,
     error: backerRewardsPctError,
-  } = useGetBackerRewardPercentage(builder, cycleNext.toSeconds())
+  } = useReadBuilderRegistry({
+    functionName: 'backerRewardPercentage',
+    args: [builder],
+  })
+
+  const backerRewardsPct = useMemo(() => {
+    const [previous, next, cooldownEndTime] = rawBackerRewardsPct ?? [0n, 0n, 0n]
+
+    return getBackerRewardPercentage(previous, next, cooldownEndTime, cycleNext.toSeconds())
+  }, [rawBackerRewardsPct, cycleNext])
 
   const rewardPercentageToApply = backerRewardsPct.current
 

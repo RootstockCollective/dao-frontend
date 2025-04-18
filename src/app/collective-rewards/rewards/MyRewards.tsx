@@ -1,32 +1,33 @@
+import { useCanManageAllocations } from '@/app/collective-rewards/allocations/hooks'
+import { CycleContextProvider } from '@/app/collective-rewards/metrics'
 import {
   BackerRewards,
+  BackerRewardsContextProvider,
+  BackerRewardsTable,
   BuilderRewards,
   RewardDetails,
   RewardsSection,
   RewardsSectionHeader,
-  BackerRewardsTable,
-  useIsBacker,
   SettingsButton,
-  BackerRewardsContextProvider,
   useBackerRewardsContext,
+  useIsBacker,
 } from '@/app/collective-rewards/rewards'
-import { useGetBuildersByState, useGetBuilderToGauge } from '@/app/collective-rewards/user'
-import { useHandleErrors } from '@/app/collective-rewards/utils'
-import { tokenContracts } from '@/lib/contracts'
-import { FC } from 'react'
-import { Address, getAddress, zeroAddress } from 'viem'
-import { useRouter } from 'next/navigation'
-import { useCanManageAllocations } from '@/app/collective-rewards/allocations/hooks'
 import { CRWhitepaperLink } from '@/app/collective-rewards/shared'
 import { RequiredBuilder } from '@/app/collective-rewards/types'
+import { useGetBuildersByState } from '@/app/collective-rewards/user'
+import { useHandleErrors } from '@/app/collective-rewards/utils'
+import { Button } from '@/components/Button'
+import { LoadingSpinner } from '@/components/LoadingSpinner'
 import { Switch, SwitchThumb } from '@/components/Switch'
 import { Typography } from '@/components/Typography'
-import { CycleContextProvider } from '@/app/collective-rewards/metrics'
-import { useAccount } from 'wagmi'
-import { Button } from '@/components/Button'
-import Image from 'next/image'
-import { LoadingSpinner } from '@/components/LoadingSpinner'
 import { CoinBaseAddress } from '@/lib/constants'
+import { tokenContracts } from '@/lib/contracts'
+import { useReadBuilderRegistry } from '@/shared/hooks/contracts'
+import Image from 'next/image'
+import { useRouter } from 'next/navigation'
+import { FC } from 'react'
+import { Address, getAddress, zeroAddress } from 'viem'
+import { useAccount } from 'wagmi'
 
 const SubText = () => (
   <>
@@ -66,7 +67,14 @@ const RewardsContent: FC<RewardDetails> = data => {
 
   // We don't need to show the loading state for the backer rewards since the parent already has a loading state
   const { data: isBacker, isLoading: isBackerLoading, error: backerError } = useIsBacker(builder)
-  const { data: gauge, isLoading: gaugeLoading, error: gaugeError } = useGetBuilderToGauge(builder)
+  const {
+    data: gauge,
+    isLoading: gaugeLoading,
+    error: gaugeError,
+  } = useReadBuilderRegistry({
+    functionName: 'builderToGauge',
+    args: [builder],
+  })
 
   const error = gaugeError ?? backerError
   const isLoading = isBackerLoading || gaugeLoading

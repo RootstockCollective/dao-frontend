@@ -1,20 +1,26 @@
-import { useReadContracts } from 'wagmi'
-import { AVERAGE_BLOCKTIME } from '@/lib/constants'
 import { BuilderRegistryAbi } from '@/lib/abis/v2/BuilderRegistryAbi'
-import { AbiFunction, Address } from 'viem'
-import { useGetGaugesLength } from '@/app/collective-rewards/user'
-import { useMemo } from 'react'
+import { AVERAGE_BLOCKTIME } from '@/lib/constants'
 import { BuilderRegistryAddress } from '@/lib/contracts'
+import { useReadBuilderRegistry } from '@/shared/hooks/contracts'
+import { useMemo } from 'react'
+import { AbiFunction, Address } from 'viem'
+import { useReadContracts } from 'wagmi'
 
 const gaugeTypeOptions = ['active', 'halted'] as const
 export type GaugeType = (typeof gaugeTypeOptions)[number]
 
 type FunctionEntry = Extract<(typeof BuilderRegistryAbi)[number], AbiFunction>
-type FunctionName = Extract<FunctionEntry['name'], 'getGaugeAt' | 'getHaltedGaugeAt'>
+type GetAtFunctionName = Extract<FunctionEntry['name'], 'getGaugeAt' | 'getHaltedGaugeAt'>
 
-const gaugeType: Record<GaugeType, FunctionName> = {
+const getAtFunction: Record<GaugeType, GetAtFunctionName> = {
   active: 'getGaugeAt',
   halted: 'getHaltedGaugeAt',
+}
+type GetLengthFunctionName = Extract<FunctionEntry['name'], 'getGaugesLength' | 'getHaltedGaugesLength'>
+
+const getLengthFunction: Record<GaugeType, GetLengthFunctionName> = {
+  active: 'getGaugesLength',
+  halted: 'getHaltedGaugesLength',
 }
 
 export const useGetGaugesArray = () => {
@@ -34,7 +40,7 @@ export const useGetGaugesArray = () => {
     },
   })
 
-  const gauges = useMemo(() => gaugesAddress?.map(gauge => gauge.result as Address), [gaugesAddress])
+  const gauges = useMemo(() => gaugesAddress?.map(gauge => gauge.result as Address) ?? [], [gaugesAddress])
   const isLoading = isLoadingActive || isLoadingHalted || gaugesAddressLoading
   const error = errorActive ?? errorHalted ?? gaugesAddressError
 
@@ -45,37 +51,14 @@ export const useGetGaugesArray = () => {
   }
 }
 
-export const useGetGaugesArrayByType = (type: GaugeType) => {
-  const {
-    data: calls,
-    isLoading: contractCallsLoading,
-    error: contractCallsError,
-  } = useGetContractCalls(type)
-
-  const {
-    data: gaugesAddress,
-    isLoading: gaugesAddressLoading,
-    error: gaugesAddressError,
-  } = useReadContracts<Address[]>({
-    contracts: calls,
-    query: {
-      refetchInterval: AVERAGE_BLOCKTIME,
-    },
-  })
-
-  const gauges = useMemo(() => gaugesAddress?.map(gauge => gauge.result as Address), [gaugesAddress])
-  const isLoading = contractCallsLoading || gaugesAddressLoading
-  const error = contractCallsError ?? gaugesAddressError
-
-  return {
-    data: gauges,
-    isLoading: isLoading || gaugesAddressLoading,
-    error: error ?? gaugesAddressError,
-  }
-}
-
 const useGetContractCalls = (type: GaugeType) => {
-  const { data: gaugesLength, isLoading, error } = useGetGaugesLength(type)
+  const {
+    data: gaugesLength,
+    isLoading,
+    error,
+  } = useReadBuilderRegistry({
+    functionName: getLengthFunction[type],
+  })
 
   const length = Number(gaugesLength) ?? 0
 
@@ -83,7 +66,7 @@ const useGetContractCalls = (type: GaugeType) => {
     return {
       address: BuilderRegistryAddress,
       abi: BuilderRegistryAbi,
-      functionName: gaugeType[type],
+      functionName: getAtFunction[type],
       args: [index],
     } as const
   })

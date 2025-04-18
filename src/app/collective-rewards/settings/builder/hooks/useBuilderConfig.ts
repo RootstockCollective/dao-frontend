@@ -1,64 +1,12 @@
 import { useAwaitedTxReporting } from '@/app/collective-rewards/shared/hooks'
 import { BuilderRegistryAbi } from '@/lib/abis/v2/BuilderRegistryAbi'
-import { AVERAGE_BLOCKTIME } from '@/lib/constants'
-import { Modify } from '@/shared/utility'
-import { DateTime } from 'luxon'
-import { useEffect, useState } from 'react'
-import { Address } from 'viem'
+import { BuilderRegistryAddress } from '@/lib/contracts'
 import {
-  useReadContract,
-  UseReadContractReturnType,
   useWaitForTransactionReceipt,
   UseWaitForTransactionReceiptReturnType,
   useWriteContract,
   UseWriteContractReturnType,
 } from 'wagmi'
-import { BuilderRegistryAddress } from '@/lib/contracts'
-
-export type BackerReward = {
-  previous: bigint
-  next: bigint
-  cooldownEndTime: DateTime
-}
-export type BackerRewardResponse = Modify<
-  UseReadContractReturnType,
-  {
-    data?: BackerReward
-  }
->
-
-export const useGetBackerRewardsForBuilder = (builder: Address): BackerRewardResponse => {
-  const [previous, setPrevious] = useState<bigint>(0n)
-  const [next, setNext] = useState<bigint>(0n)
-  const [cooldown, setCooldown] = useState<bigint>(0n)
-  const { data, ...rest } = useReadContract({
-    address: BuilderRegistryAddress,
-    abi: BuilderRegistryAbi,
-    functionName: 'backerRewardPercentage',
-    args: [builder as Address],
-    query: {
-      refetchInterval: AVERAGE_BLOCKTIME,
-    },
-  })
-
-  useEffect(() => {
-    if (data) {
-      const [prev, next, cooldown] = data
-      setPrevious(prev)
-      setNext(next)
-      setCooldown(cooldown)
-    }
-  }, [data, setPrevious, setNext, setCooldown])
-
-  return {
-    ...rest,
-    data: {
-      previous,
-      next,
-      cooldownEndTime: DateTime.fromSeconds(Number(cooldown)),
-    },
-  }
-}
 
 export type SetBackerRewardsForBuilder = {
   data: UseWriteContractReturnType['data']

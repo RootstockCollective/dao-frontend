@@ -1,4 +1,3 @@
-export * from './useGetBackerRewardPercentage'
 export * from './useGetBackerRewardPerTokenPaid'
 export * from './useGetBackersRewardPercentage'
 export * from './useGetGaugesEvents'
