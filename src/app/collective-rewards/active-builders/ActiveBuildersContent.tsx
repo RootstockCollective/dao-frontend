@@ -10,6 +10,7 @@ import { useGetBuildersByState } from '@/app/collective-rewards/user/'
 import { ActiveBuildersGrid } from '@/app/collective-rewards/active-builders'
 import { Search } from '@/app/collective-rewards/shared'
 import { Builder, BuilderStateFlags } from '@/app/collective-rewards/types'
+import { size } from 'lodash'
 
 export const isActive = (stateFlags?: BuilderStateFlags) => {
   const activeFlags = ['kycApproved', 'communityApproved']
