@@ -46,11 +46,12 @@ const nextConfig = {
 
     return config
   },
-  // TODO: temporary patch. investigate
   images: {
     remotePatterns: [
       {
+        protocol: 'https',
         hostname: 'red-legislative-meadowlark-461.mypinata.cloud',
+        pathname: '/ipfs/**',
       },
     ],
   },
