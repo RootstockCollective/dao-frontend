@@ -62,4 +62,4 @@ export const wagmiAdapter = new WagmiAdapter({
   },
 })
 
-export const configToUse = wagmiAdapter.wagmiConfig
+export const wagmiAdapterConfig = wagmiAdapter.wagmiConfig

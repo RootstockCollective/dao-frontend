@@ -1,5 +1,5 @@
 'use client'
-import { configToUse, REOWN_PROJECT_ID, wagmiAdapter } from '@/config'
+import { wagmiAdapterConfig, REOWN_PROJECT_ID, wagmiAdapter } from '@/config'
 import { createAppKit } from '@reown/appkit/react'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { ReactNode } from 'react'
@@ -46,7 +46,7 @@ export const ContextProviders = ({ children }: Props) => {
 
   return (
     <ErrorBoundary>
-      <WagmiProvider config={configToUse}>
+      <WagmiProvider config={wagmiAdapterConfig}>
         <QueryClientProvider client={queryClient}>
           <AlertProvider>
             <HeroCollapseProvider>
