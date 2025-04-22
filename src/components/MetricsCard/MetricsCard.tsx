@@ -47,7 +47,7 @@ export const MetricsCard: FC<MetricsCardProps> = ({
   className,
   ...props
 }) => {
-  const borderClasses = borderless ? '' : 'border border-white border-opacity-40 rounded-lg'
+  const borderClasses = borderless ? '' : 'border border-white/40 rounded-lg'
   return (
     <div
       {...props}

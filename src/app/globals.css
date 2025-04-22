@@ -20,7 +20,7 @@
   ::before,
   ::backdrop,
   ::file-selector-button {
-    border-color: var(--color-gray-200, currentcolor);
+    border-color: theme('colors.gray.200', currentcolor);
   }
 }
 
@@ -28,8 +28,8 @@
   text-decoration-thickness: 0.5px;
 }
 
-@utility div-with-gradient {
-  &div::after {
+@layer utilities {
+  .div-with-gradient::after {
     background: linear-gradient(
       270deg,
       #fffee3 -30.96%,
@@ -67,8 +67,7 @@
 @utility community-item-gradient-hover {
   transition: all 0.2s linear;
   &:hover {
-    background:
-      linear-gradient(
+    background: linear-gradient(
         270deg,
         rgba(255, 254, 227, 0.4) -88.18%,
         rgba(251, 235, 245, 0.4) -59.86%,

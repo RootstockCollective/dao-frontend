@@ -17,7 +17,7 @@ border-[white]/[0.10]
 placeholder:text-input-placeholder
 focus:outline-hidden
 focus-visible:ring-1 focus-visible:ring-ring
-focus-visible:ring-white focus-visible:ring-opacity-50
+focus-visible:ring-white/50
 disabled:cursor-not-allowed disabled:opacity-50
 `
 
