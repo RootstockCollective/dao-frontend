@@ -32,7 +32,7 @@ export const Slider = React.forwardRef<
         {props.value?.map((_, i) => (
           <SliderPrimitive.Thumb
             key={i}
-            className="block size-3 rounded-[10px] bg-white shadow-[0_2px_10px] shadow-primary focus:shadow-[0_0_0_2px] focus:shadow-primary focus:outline-none"
+            className="block size-3 rounded-[10px] bg-white shadow-[0_2px_10px] shadow-primary focus:shadow-[0_0_0_2px] focus:shadow-primary focus:outline-hidden"
             aria-label="Volume"
           />
         ))}

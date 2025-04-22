@@ -275,8 +275,8 @@ const LatestProposalsTable = ({ proposals, onEmitActiveProposal }: LatestProposa
           {proposalQuickFilters.map(keyword => (
             <Button
               key={keyword}
-              className={`text-white text-sm font-thin border-[#ffff] h-[32px] hover:bg-[#e56b1a] hover:bg-opacity-40 hover:border-[#e56b1a]
-              ${activeFilter === keyword ? 'bg-[#e56b1a] border-[#e56b1a] hover:bg-opacity-100' : 'bg-transparent'}
+              className={`text-white text-sm font-thin border-[#ffff] h-[32px] hover:bg-[#e56b1a]/40 hover:border-[#e56b1a]
+              ${activeFilter === keyword ? 'bg-[#e56b1a] border-[#e56b1a] hover:bg-[#e56b1a]/100' : 'bg-transparent'}
               `}
               variant="secondary"
               onClick={handleFilterToggle(keyword)}
@@ -354,7 +354,7 @@ const LatestProposalsTable = ({ proposals, onEmitActiveProposal }: LatestProposa
 
             {/* Page size selector */}
             <select
-              className="focus:outline-none focus:ring-0 focus:border-none hover:border-[#E56B1A] rounded-md bg-transparent hover:none text-[#E56B1A] hover:text-none "
+              className="focus:outline-hidden focus:ring-0 focus:border-none hover:border-[#E56B1A] rounded-md bg-transparent hover:none text-[#E56B1A] hover:text-none "
               value={table.getState().pagination.pageSize}
               onChange={e => {
                 table.setPageSize(Number(e.target.value))

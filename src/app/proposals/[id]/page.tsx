@@ -420,7 +420,7 @@ const PageWithProposal = (proposal: ParsedProposal) => {
           <Header variant="h1" className="text-[24px]">
             Votes
           </Header>
-          <div className="flex flex-row justify-between border border-white border-opacity-40 rounded-lg px-[16px] py-[11px]">
+          <div className="flex flex-row justify-between border border-white/40 rounded-lg px-[16px] py-[11px]">
             <Paragraph variant="semibold" className="text-[16px] text-st-success">
               {formatVoteCount(forVote)}
             </Paragraph>
@@ -428,7 +428,7 @@ const PageWithProposal = (proposal: ParsedProposal) => {
               For
             </Paragraph>
           </div>
-          <div className="flex flex-row justify-between border border-white border-opacity-40 rounded-lg px-[16px] py-[11px]">
+          <div className="flex flex-row justify-between border border-white/40 rounded-lg px-[16px] py-[11px]">
             <Paragraph variant="semibold" className="text-[16px] text-st-error">
               {formatVoteCount(againstVote)}
             </Paragraph>
@@ -436,7 +436,7 @@ const PageWithProposal = (proposal: ParsedProposal) => {
               Against
             </Paragraph>
           </div>
-          <div className="flex flex-row justify-between border border-white border-opacity-40 rounded-lg px-[16px] py-[11px]">
+          <div className="flex flex-row justify-between border border-white/40 rounded-lg px-[16px] py-[11px]">
             <Paragraph variant="semibold" className="text-[16px] text-text-light">
               {formatVoteCount(abstainVote)}
             </Paragraph>
@@ -447,7 +447,7 @@ const PageWithProposal = (proposal: ParsedProposal) => {
           <Header variant="h1" className="text-[24px]">
             Actions
           </Header>
-          <div className="border border-white border-opacity-40 rounded-lg px-[16px] py-[11px]">
+          <div className="border border-white/40 rounded-lg px-[16px] py-[11px]">
             <div className="flex flex-col">
               {/*<div className="flex justify-between">*/}
               {/*  <Paragraph variant="semibold" className="text-[16px]">*/}

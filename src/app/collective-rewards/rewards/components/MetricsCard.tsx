@@ -61,11 +61,11 @@ const DEFAULT_CLASSES = 'h-min-[79px] w-full py-[12px] px-[12px] flex flex-col b
 export const MetricsCard: FC<MetricsCardProps> = ({
   borderless = false,
   children,
-  dataTestId,
+  dataTestId = '',
   className,
   ...rest
 }) => {
-  const borderClasses = borderless ? '' : 'border border-white border-opacity-40 rounded-lg'
+  const borderClasses = borderless ? '' : 'border border-white/40 rounded-lg'
   return (
     <div
       className={cn(DEFAULT_CLASSES, borderClasses, className)}
