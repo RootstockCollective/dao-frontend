@@ -41,11 +41,10 @@ export const TxStatusMessage = ({ messageType }: Props) => {
   // check if the tx is an unstaking tx
   useEffect(() => {
     if (messageType === 'staking' && txData) {
-      const decodedFunctionData = decodeFunctionData({
+      const { functionName } = decodeFunctionData({
         abi: StRIFTokenAbi,
         data: txData.input,
       })
-      const functionName = decodedFunctionData.functionName
       if (functionName === 'withdrawTo') {
         setTxType('unstaking')
       } else {
