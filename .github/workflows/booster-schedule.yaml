@@ -1,7 +1,7 @@
 name: Vanguard Boost schedule
 
-permissions:
-  contents: write
+# Declare default permissions as read only.
+permissions: read-all
 
 env:
   BOOST: '30'
@@ -15,6 +15,10 @@ on:
 jobs:
   boost:
     runs-on: ubuntu-latest
+
+    permissions:
+      contents: write
+
     steps:
       - name: Checkout
         uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
@@ -27,7 +31,7 @@ jobs:
           node-version: '22'
 
       - name: Install dependencies
-        run: npm install
+        run:  npm install --production
 
       - name: Git config
         run: |

@@ -1,4 +1,7 @@
 name: Deploy to Amazon ECS (CR QA)
+# Deploys to: https://qa.cr.rootstockcollective.xyz
+# Triggers when a branch is merged into develop
+# Uses the `.env.cr.qa` env file
 
 on:
   workflow_dispatch: # Manually triggered from GitHub Actions tab
@@ -30,6 +33,8 @@ jobs:
       github.event_name == 'workflow_dispatch' || github.event.label.name == 'deploy to QA'
     environment:
       name: CR-QA
+      url: https://qa.cr.rootstockcollective.xyz
+
     permissions:
       id-token: write
       contents: read
@@ -66,14 +71,14 @@ jobs:
 
       - name: Fill in the new image ID in the Amazon ECS task definition
         id: task-def
-        uses: aws-actions/amazon-ecs-render-task-definition@23e93b6b860a402948c739b0db055bc5dc55dfa9 #v1.7.1
+        uses: aws-actions/amazon-ecs-render-task-definition@e89b6874818d80bb892e7010a5013519bde9d9a6 #v1.7.2
         with:
           task-definition: task-definition.json
           container-name: ${{ env.CONTAINER_NAME }}
           image: ${{ steps.build-image.outputs.image }}
 
       - name: Deploy Amazon ECS task definition
-        uses: aws-actions/amazon-ecs-deploy-task-definition@176bcc0288c49ee545288583859af21ee17f4b2c #v2.3.1
+        uses: aws-actions/amazon-ecs-deploy-task-definition@538b32884c2bf327057c6805f0315e5ee92102cc #v2.3.2
         with:
           task-definition: ${{ steps.task-def.outputs.task-definition }}
           service: ${{ env.ECS_SERVICE }}

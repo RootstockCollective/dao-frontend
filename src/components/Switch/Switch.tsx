@@ -12,7 +12,7 @@ w-[44px]
 rounded-full 
 border-[#2D2D2D] 
 bg-[#1A1A1A] 
-outline-none 
+outline-hidden 
 border 
 data-[state=checked]:bg-[#E56B1A]
 `

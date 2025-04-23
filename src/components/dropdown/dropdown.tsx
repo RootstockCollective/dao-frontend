@@ -30,7 +30,7 @@ export const DropdownItemComponent = ({ id, onClick, title, text, Icon, TitleIco
       <div className="flex items-center justify-center">
         <Icon />
       </div>
-      <div className="flex flex-grow flex-col gap-1">
+      <div className="flex grow flex-col gap-1">
         <div className="flex flex-row">
           <Typography className="text-[14px] leading-none text-[#171412] font-normal" fontFamily="kk-topo">
             {title}
@@ -62,7 +62,7 @@ export const Dropdown = ({ className, ...props }: DropdownProps) => {
       <button
         onClick={toggle}
         className={cn(
-          'px-5 w-full h-14 flex items-center justify-between gap-2 bg-[#E4E1DA] rounded-t-[4px] focus:outline-none',
+          'px-5 w-full h-14 flex items-center justify-between gap-2 bg-[#E4E1DA] rounded-t-[4px] focus:outline-hidden',
           !isOpen && 'rounded-b-[4px]',
         )}
         data-testid="PrepareYourProposalDropdown"

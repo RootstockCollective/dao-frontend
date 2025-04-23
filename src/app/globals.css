@@ -1,15 +1,35 @@
-@import '../theme/default.css';
+@import '../theme/default.css' layer(base);
 
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+@import 'tailwindcss';
+
+@utility container {
+  margin-inline: auto;
+}
+
+/*
+  The default border color has changed to `currentcolor` in Tailwind CSS v4,
+  so we've added these compatibility styles to make sure everything still
+  looks the same as it did with Tailwind CSS v3.
+
+  If we ever want to remove these styles, we need to add an explicit border
+  color utility to any element that depends on these defaults.
+*/
+@layer base {
+  *,
+  ::after,
+  ::before,
+  ::backdrop,
+  ::file-selector-button {
+    border-color: theme('colors.gray.200', currentcolor);
+  }
+}
+
+@utility underline-thick {
+  text-decoration-thickness: 0.5px;
+}
 
 @layer utilities {
-  .underline-thick {
-    text-decoration-thickness: 0.5px;
-  }
-
-  div.div-with-gradient::after {
+  .div-with-gradient::after {
     background: linear-gradient(
       270deg,
       #fffee3 -30.96%,
@@ -26,27 +46,37 @@
     top: 0;
     left: 0;
   }
+}
 
-  .gradient-header {
+@utility gradient-header {
+  background: linear-gradient(
+    270deg,
+    #fffee3 -30.96%,
+    #f9e1ff 43.65%,
+    #be5b0f 77.22%,
+    #932309 110.79%,
+    #010101 155.56%
+  );
+  width: 100%;
+  height: 48px;
+  display: flex;
+  align-items: center;
+  padding-left: 25px;
+}
+
+@utility community-item-gradient-hover {
+  transition: all 0.2s linear;
+  &:hover {
     background: linear-gradient(
-      270deg,
-      #fffee3 -30.96%,
-      #f9e1ff 43.65%,
-      #be5b0f 77.22%,
-      #932309 110.79%,
-      #010101 155.56%
-    );
-    width: 100%;
-    height: 48px;
-    display: flex;
-    align-items: center;
-    padding-left: 25px;
-  }
-  .community-item-gradient-hover {
-    transition: all 0.2s linear;
-  }
-  .community-item-gradient-hover:hover {
-    background: linear-gradient(270deg, rgba(255, 254, 227, 0.40) -88.18%, rgba(251, 235, 245, 0.40) -59.86%, rgba(249, 225, 255, 0.40) -44.94%, rgba(190, 91, 15, 0.40) -1.7%, rgba(147, 35, 9, 0.40) 41.54%, rgba(26, 26, 26, 0.00) 84.78%), #1A1A1A;
+        270deg,
+        rgba(255, 254, 227, 0.4) -88.18%,
+        rgba(251, 235, 245, 0.4) -59.86%,
+        rgba(249, 225, 255, 0.4) -44.94%,
+        rgba(190, 91, 15, 0.4) -1.7%,
+        rgba(147, 35, 9, 0.4) 41.54%,
+        rgba(26, 26, 26, 0) 84.78%
+      ),
+      #1a1a1a;
     transform: scale(1.01);
   }
 }
@@ -56,5 +86,6 @@
 }
 
 body {
-  @apply text-text-primary bg-background;
+  color: var(--text-primary);
+  background-color: var(--background);
 }

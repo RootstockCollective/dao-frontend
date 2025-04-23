@@ -9,17 +9,17 @@ import { cn } from '@/lib/utils'
 
 const DEFAULT_CLASSES = `
 flex w-64
-p-[12px]
+p-3
 justify-between
 text-black bg-input-bg
 text-text-primary
 rounded-md
-border-[1px]
-border-[white]/[0.10]
+border
+border-white/10
 placeholder:text-input-placeholder
-focus:outline-none
+focus:outline-hidden
 focus-visible:ring-1 focus-visible:ring-ring
-focus-visible:ring-white focus-visible:ring-opacity-50
+focus-visible:ring-white/50
 disabled:cursor-not-allowed disabled:opacity-50
 font-rootstock-sans
 `
@@ -122,8 +122,10 @@ const SelectItem = React.forwardRef<
   <SelectPrimitive.Item
     ref={ref}
     className={cn(
-      'relative flex w-full cursor-default select-none items-center rounded-sm py-1.5 pl-2 pr-8 text-sm outline-none focus:bg-accent focus:text-accent-foreground data-[disabled]:pointer-events-none data-[disabled]:opacity-50',
-      'data-[highlighted]:bg-[#FFF] data-[selected]:bg-[#FFF] data-[highlighted]:bg-gradient-to-t data-[highlighted]:text-black',
+      'relative flex w-full cursor-default select-none items-center rounded-xs py-1.5 pl-2 pr-8 text-sm outline-hidden',
+      'focus:bg-white/10 focus:text-white',
+      'data-[state=checked]:bg-white/10 data-[highlighted]:bg-white/5',
+      'data-disabled:pointer-events-none/50',
       className,
     )}
     {...props}
