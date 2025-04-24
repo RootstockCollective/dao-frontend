@@ -49,9 +49,10 @@ export const CycleMetrics = () => {
   return (
     <MetricsCard borderless>
       <MetricsCardTitle title="Current cycle" data-testid="CurrentCycle" />
-      {withSpinner(TokenMetricsCardRow, 'min-h-0 grow-0', {
-        size: 8,
-      })({
+      {withSpinner(
+        TokenMetricsCardRow,
+        'min-h-0 grow-0',
+      )({
         amount: `${timeRemaining.toHuman()}`,
         fiatAmount: `out of ${duration.toHuman()}. Ends ${cycleNext.toFormat('EEE, dd MMM')}`,
         isLoading,
