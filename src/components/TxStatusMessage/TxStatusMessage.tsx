@@ -1,10 +1,9 @@
 import { Alert } from '@/components/Alert'
 import { StRIFTokenAbi } from '@/lib/abis/StRIFTokenAbi'
 import { TX_MESSAGES } from '@/shared/txMessages'
-import { Interface } from 'ethers'
 import { useSearchParams } from 'next/navigation'
 import { useEffect, useState } from 'react'
-import { Address } from 'viem'
+import { Address, decodeFunctionData } from 'viem'
 import { useTransaction, useWaitForTransactionReceipt } from 'wagmi'
 
 type TxMessage =
@@ -42,8 +41,10 @@ export const TxStatusMessage = ({ messageType }: Props) => {
   // check if the tx is an unstaking tx
   useEffect(() => {
     if (messageType === 'staking' && txData) {
-      const stRIF = new Interface(StRIFTokenAbi)
-      const functionName = stRIF.parseTransaction({ data: txData.input })?.name
+      const { functionName } = decodeFunctionData({
+        abi: StRIFTokenAbi,
+        data: txData.input,
+      })
       if (functionName === 'withdrawTo') {
         setTxType('unstaking')
       } else {
