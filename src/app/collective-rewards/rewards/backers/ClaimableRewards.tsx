@@ -36,7 +36,7 @@ const TokenRewardsMetrics: FC<TokenRewardsMetricsProps> = ({
 
   const { claimRewards, isClaimable } = useClaimBackerRewards(address)
 
-  return withSpinner(TokenMetricsCardRow)({
+  return withSpinner(TokenMetricsCardRow, { size: 'small' })({
     amount,
     fiatAmount,
     isLoading,

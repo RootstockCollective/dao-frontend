@@ -46,6 +46,14 @@ const nextConfig = {
 
     return config
   },
+  // TODO: temporary patch. investigate
+  images: {
+    remotePatterns: [
+      {
+        hostname: 'red-legislative-meadowlark-461.mypinata.cloud',
+      },
+    ],
+  },
 }
 
 const getNextConfig = () => {

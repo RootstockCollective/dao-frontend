@@ -6,18 +6,18 @@ type WithLoadingProps = {
 }
 
 type SpinnerOptions = {
+  className?: string
   size?: SpinnerSize
 }
 
 export const withSpinner = <P extends {}>(
   Component: ComponentType<P>,
-  className = '',
   options?: SpinnerOptions,
 ): FC<P & WithLoadingProps> => {
   const WrappedComponent = ({ isLoading, ...props }: WithLoadingProps) => (
     <>
       {isLoading ? (
-        <LoadingSpinner className={className} size={options?.size} />
+        <LoadingSpinner className={options?.className} size={options?.size} />
       ) : (
         <Component {...(props as P)} />
       )}

@@ -1,12 +1,13 @@
 import { cn } from '@/lib/utils'
-import { SpinnerSize } from '.'
+
+export type SpinnerSize = 'small' | 'medium' | 'large' | number | 'auto' | 'responsive'
 
 export type LoadingSpinnerProps = {
   className?: string
   size?: SpinnerSize
 }
 
-const LoadingSpinner = ({ className = '', size = 'auto' }: LoadingSpinnerProps) => {
+export const LoadingSpinner = ({ className = '', size = 'auto' }: LoadingSpinnerProps) => {
   // Define size classes based on the size prop
   let sizeClass = ''
 
@@ -50,5 +51,3 @@ const LoadingSpinner = ({ className = '', size = 'auto' }: LoadingSpinnerProps) 
     </div>
   )
 }
-
-export default LoadingSpinner
