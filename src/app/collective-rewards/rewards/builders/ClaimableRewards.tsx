@@ -11,7 +11,7 @@ import {
 import { useHandleErrors } from '@/app/collective-rewards/utils'
 import { withSpinner } from '@/components/LoadingSpinner/withLoadingSpinner'
 import { usePricesContext } from '@/shared/context/PricesContext'
-import { useReadGauges } from '@/shared/hooks/contracts'
+import { useReadGauge } from '@/shared/hooks/contracts/collective-rewards/useReadGauge'
 import { FC } from 'react'
 import { Address } from 'viem'
 
@@ -34,12 +34,12 @@ const TokenRewardsMetrics: FC<TokenRewardsMetricsProps> = ({
     data: rewards,
     isLoading: rewardsLoading,
     error: rewardsError,
-  } = useReadGauges({ addresses: [gauge], functionName: 'builderRewards', args: [address] })
+  } = useReadGauge({ address: gauge, functionName: 'builderRewards', args: [address] })
   useHandleErrors({ error: rewardsError, title: 'Error loading rewards' })
 
   const tokenPrice = prices[symbol]?.price ?? 0
 
-  const { amount, fiatAmount } = formatMetrics(rewards[0] ?? 0n, tokenPrice, symbol, currency)
+  const { amount, fiatAmount } = formatMetrics(rewards ?? 0n, tokenPrice, symbol, currency)
 
   const { isClaimable, claimRewards, isPaused } = useClaimBuilderRewardsPerToken(builder, gauge, address)
   const content = isPaused ? 'You cannot be paused to claim rewards' : undefined

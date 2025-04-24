@@ -7,7 +7,7 @@ import {
   useGetGaugesNotifyReward,
 } from '@/app/collective-rewards/rewards'
 import { useHandleErrors } from '@/app/collective-rewards/utils'
-import { useReadGauges } from '@/shared/hooks/contracts'
+import { useReadGauge } from '@/shared/hooks/contracts/collective-rewards/useReadGauge'
 import { FC } from 'react'
 
 type AllTimeShareProps = Omit<BuilderRewardDetails, 'builder'>
@@ -27,7 +27,7 @@ export const AllTimeShare: FC<AllTimeShareProps> = ({ gauge, gauges, tokens: { r
     data: claimableRewards,
     isLoading: claimableRewardsLoading,
     error: claimableRewardsError,
-  } = useReadGauges({ addresses: [gauge], functionName: 'builderRewards', args: [rif.address] })
+  } = useReadGauge({ address: gauge, functionName: 'builderRewards', args: [rif.address] })
 
   const error = notifyRewardError ?? builderRewardsPerTokenError ?? claimableRewardsError
 
@@ -40,7 +40,7 @@ export const AllTimeShare: FC<AllTimeShareProps> = ({ gauge, gauges, tokens: { r
       const amount = event.args.amount_
       return acc + amount
     }, 0n) ?? 0n
-  const totalBuilderRewards = builderClaimedRewards + (claimableRewards[0] ?? 0n)
+  const totalBuilderRewards = builderClaimedRewards + (claimableRewards ?? 0n)
 
   const notifyRewards = Object.values(notifyReward).reduce(
     (acc, events) =>

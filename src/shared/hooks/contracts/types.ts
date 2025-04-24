@@ -42,3 +42,18 @@ export type UseReadContractForMultipleArgsConfig<
   functionName: TFunctionName
   args: Array<FunctionParams<TAbi, TFunctionName>>
 }
+
+export type UseReadContractWithAddressConfig<
+  TAbi extends Abi,
+  TFunctionName extends ViewPureFunctionName<TAbi>,
+> =
+  FunctionParams<TAbi, TFunctionName> extends never | readonly []
+    ? {
+        address: Address
+        functionName: TFunctionName
+      }
+    : {
+        address: Address
+        functionName: TFunctionName
+        args: FunctionParams<TAbi, TFunctionName>
+      }

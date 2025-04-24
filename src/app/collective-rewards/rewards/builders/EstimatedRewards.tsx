@@ -14,7 +14,8 @@ import { isBuilderRewardable, useHandleErrors } from '@/app/collective-rewards/u
 import { withSpinner } from '@/components/LoadingSpinner/withLoadingSpinner'
 import { WeiPerEther } from '@/lib/constants'
 import { usePricesContext } from '@/shared/context/PricesContext'
-import { useReadBackersManager, useReadBuilderRegistry, useReadGauges } from '@/shared/hooks/contracts'
+import { useReadBackersManager, useReadBuilderRegistry } from '@/shared/hooks/contracts'
+import { useReadGauge } from '@/shared/hooks/contracts/collective-rewards/useReadGauge'
 import { FC, useEffect, useMemo, useState } from 'react'
 import { Address } from 'viem'
 
@@ -54,7 +55,7 @@ const TokenRewards: FC<TokenRewardsProps> = ({ builder, gauge, token: { id, symb
     data: rewardShares,
     isLoading: rewardSharesLoading,
     error: rewardSharesError,
-  } = useReadGauges({ addresses: [gauge], functionName: 'rewardShares' })
+  } = useReadGauge({ address: gauge, functionName: 'rewardShares' })
   const {
     data: { cycleNext },
     isLoading: cycleLoading,
@@ -88,8 +89,8 @@ const TokenRewards: FC<TokenRewardsProps> = ({ builder, gauge, token: { id, symb
   const { prices } = usePricesContext()
 
   const rewardsAmount =
-    isRewarded && rewardShares[0] && totalPotentialRewards
-      ? (rewards * rewardShares[0]) / totalPotentialRewards
+    isRewarded && rewardShares && totalPotentialRewards
+      ? (rewards * rewardShares) / totalPotentialRewards
       : 0n
   // The complement of the reward percentage is applied to the estimated rewards since are from the builder's perspective
   const estimatedRewards = (rewardsAmount * (WeiPerEther - rewardPercentageToApply)) / WeiPerEther
