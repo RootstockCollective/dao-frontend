@@ -1,4 +1,2 @@
-import dynamic from 'next/dynamic'
-
-export const LoadingSpinner = dynamic(() => import('./LoadingSpinner'), { ssr: false })
+export * from './LoadingSpinner'
 export type SpinnerSize = 'small' | 'medium' | 'large' | number | 'auto' | 'responsive'
