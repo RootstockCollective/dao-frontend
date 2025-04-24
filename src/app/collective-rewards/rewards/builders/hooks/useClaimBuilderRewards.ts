@@ -10,7 +10,7 @@ const useClaimBuilderReward = (builder: Address, gauge: Address, rewardToken?: A
   const { getBuilderByAddress } = useBuilderContext()
 
   const claimingBuilder = getBuilderByAddress(builder)
-  const isPaused = claimingBuilder?.stateFlags?.paused ?? false
+  const isPaused = claimingBuilder?.stateFlags?.kycPaused ?? false
 
   const { isLoading, isSuccess, data, error: receiptError } = useWaitForTransactionReceipt({ hash })
 

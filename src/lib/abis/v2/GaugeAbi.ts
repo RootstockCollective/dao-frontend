@@ -94,7 +94,20 @@ export const GaugeAbi = [
       {
         name: '',
         type: 'address',
-        internalType: 'contract IBackersManagerRootstockCollective',
+        internalType: 'contract BackersManagerRootstockCollective',
+      },
+    ],
+    stateMutability: 'view',
+  },
+  {
+    type: 'function',
+    name: 'builderRegistry',
+    inputs: [],
+    outputs: [
+      {
+        name: '',
+        type: 'address',
+        internalType: 'contract BuilderRegistryRootstockCollective',
       },
     ],
     stateMutability: 'view',
@@ -247,7 +260,7 @@ export const GaugeAbi = [
         internalType: 'address',
       },
       {
-        name: 'backersManager_',
+        name: 'builderRegistry_',
         type: 'address',
         internalType: 'address',
       },
@@ -672,11 +685,6 @@ export const GaugeAbi = [
   },
   {
     type: 'error',
-    name: 'BuilderRewardsLocked',
-    inputs: [],
-  },
-  {
-    type: 'error',
     name: 'FailedInnerCall',
     inputs: [],
   },
@@ -693,11 +701,6 @@ export const GaugeAbi = [
   {
     type: 'error',
     name: 'NotAuthorized',
-    inputs: [],
-  },
-  {
-    type: 'error',
-    name: 'NotBackersManager',
     inputs: [],
   },
   {

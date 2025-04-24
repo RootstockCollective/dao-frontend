@@ -14,7 +14,7 @@ const haltedClass = 'bg-[#932309] color-text-primary py-1 px-1 text-[12px]'
 const haltedStateBadges: { [key in InactiveState]: JSX.Element } = {
   Paused: <Badge content="Paused" className="bg-[#F9E1FF] text-secondary py-1 px-1 text-[12px]" />,
   Deactivated: <Badge content="Deactivated" className={haltedClass} />,
-  Revoked: <Badge content="Revoked" className={haltedClass} />,
+  SelfPaused: <Badge content="SelfPaused" className={haltedClass} />,
 }
 
 export const BuilderAllocationHeader: FC<BuilderAllocationHeaderProps> = ({

@@ -85,6 +85,19 @@ export const CycleTimeKeeperAbi = [
   },
   {
     type: 'function',
+    name: 'distributionDuration',
+    inputs: [],
+    outputs: [
+      {
+        name: '',
+        type: 'uint32',
+        internalType: 'uint32',
+      },
+    ],
+    stateMutability: 'view',
+  },
+  {
+    type: 'function',
     name: 'endDistributionWindow',
     inputs: [
       {
@@ -166,6 +179,19 @@ export const CycleTimeKeeperAbi = [
   },
   {
     type: 'function',
+    name: 'setDistributionDuration',
+    inputs: [
+      {
+        name: 'newDistributionDuration_',
+        type: 'uint32',
+        internalType: 'uint32',
+      },
+    ],
+    outputs: [],
+    stateMutability: 'nonpayable',
+  },
+  {
+    type: 'function',
     name: 'timeUntilNextCycle',
     inputs: [
       {
@@ -235,6 +261,25 @@ export const CycleTimeKeeperAbi = [
   },
   {
     type: 'event',
+    name: 'NewDistributionDuration',
+    inputs: [
+      {
+        name: 'newDistributionDuration_',
+        type: 'uint256',
+        indexed: false,
+        internalType: 'uint256',
+      },
+      {
+        name: 'by_',
+        type: 'address',
+        indexed: false,
+        internalType: 'address',
+      },
+    ],
+    anonymous: false,
+  },
+  {
+    type: 'event',
     name: 'Upgraded',
     inputs: [
       {
@@ -259,17 +304,22 @@ export const CycleTimeKeeperAbi = [
   },
   {
     type: 'error',
-    name: 'CycleDurationNotHourBasis',
-    inputs: [],
-  },
-  {
-    type: 'error',
     name: 'CycleDurationTooShort',
     inputs: [],
   },
   {
     type: 'error',
-    name: 'CycleDurationsAreNotMultiples',
+    name: 'DistributionDurationTooLong',
+    inputs: [],
+  },
+  {
+    type: 'error',
+    name: 'DistributionDurationTooShort',
+    inputs: [],
+  },
+  {
+    type: 'error',
+    name: 'DistributionModifiedDuringDistributionWindow',
     inputs: [],
   },
   {
@@ -301,6 +351,11 @@ export const CycleTimeKeeperAbi = [
   {
     type: 'error',
     name: 'NotInitializing',
+    inputs: [],
+  },
+  {
+    type: 'error',
+    name: 'NotValidChangerOrFoundation',
     inputs: [],
   },
   {

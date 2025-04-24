@@ -163,7 +163,7 @@ export const RemoveBuilderProposalForm: FC = () => {
                     <FormLabel>Description</FormLabel>
                     <FormControl>
                       <FormTextarea
-                        placeholder="Enter the reason for de-whitelisting and any supporting evidence..."
+                        placeholder="Enter the reason for the ban and any supporting evidence..."
                         {...field}
                         maxLength={3000}
                       />

@@ -766,12 +766,15 @@ const DewhitelistButton: FC<DewhitelistButton> = ({
 
 const actionInputNameFormatMap: Partial<ActionInputNameFormatMap<FunctionName[number], InputParameterName>> =
   {
+    communityApproveBuilder: {
+      builder_: 'Address to be whitelisted',
+    },
+    communityBanBuilder: {
+      builder_: 'Address to be whitelisted',
+    },
     whitelistBuilder: {
       builder_: 'Address to be whitelisted',
       rewardReceiver_: 'Address to receive rewards',
-    },
-    communityApproveBuilder: {
-      builder_: 'Address to be whitelisted',
     },
     removeWhitelistedBuilder: {
       builder_: 'Address to be removed',
@@ -796,6 +799,12 @@ const ERC20InputComponent: InputValueComponent<'bigint'> = ({ value, htmlProps }
 )
 
 const actionComponentMap: Partial<ActionComposerMap> = {
+  communityApproveBuilder: {
+    builder_: AddressInputComponent,
+  },
+  communityBanBuilder: {
+    builder_: AddressInputComponent,
+  },
   whitelistBuilder: {
     builder_: AddressInputComponent,
     rewardReceiver_: AddressInputComponent,
@@ -804,9 +813,6 @@ const actionComponentMap: Partial<ActionComposerMap> = {
     builder_: AddressInputComponent,
   },
   dewhitelistBuilder: {
-    builder_: AddressInputComponent,
-  },
-  communityApproveBuilder: {
     builder_: AddressInputComponent,
   },
   withdraw: {

@@ -1,7 +1,7 @@
 import { NoVotingPowerError } from '@/app/proposals/shared/errors'
 import { GovernorAbi } from '@/lib/abis/Governor'
 import { BuilderRegistryAbi } from '@/lib/abis/v2/BuilderRegistryAbi'
-import { GovernorAddress, BackersManagerAddress } from '@/lib/contracts'
+import { GovernorAddress, BuilderRegistryAddress } from '@/lib/contracts'
 import { Address, encodeFunctionData } from 'viem'
 import { useWriteContract } from 'wagmi'
 import { createProposal, encodeGovernorRelayCallData } from '@/app/proposals/hooks/proposalUtils'
@@ -17,7 +17,7 @@ export const useRemoveBuilderProposal = () => {
     }
 
     const calldata = encodeRemoveBuilderCalldata(builderAddress)
-    const relayCallData = encodeGovernorRelayCallData(BackersManagerAddress, calldata)
+    const relayCallData = encodeGovernorRelayCallData(BuilderRegistryAddress, calldata)
 
     const { proposal } = createProposal([GovernorAddress], [0n], [relayCallData], description)
 
@@ -34,7 +34,7 @@ export const useRemoveBuilderProposal = () => {
 const encodeRemoveBuilderCalldata = (builderAddress: Address) => {
   return encodeFunctionData({
     abi: BuilderRegistryAbi,
-    functionName: 'dewhitelistBuilder',
+    functionName: 'communityBanBuilder',
     args: [builderAddress.toLocaleLowerCase() as Address],
   })
 }

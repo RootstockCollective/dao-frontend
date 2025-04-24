@@ -156,12 +156,13 @@ const BackerRewardsSection: FC<RewardDetails> = data => {
 
 export const Rewards: FC = () => {
   const { address, isConnected } = useAccount()
-  const { data: activatedBuilders, error: activatedBuildersError } = useGetBuildersByState<RequiredBuilder>({
-    activated: true,
-  })
-  const activatedGauges = activatedBuilders?.map(({ gauge }) => gauge) ?? []
+  const { data: initializedBuilders, error: initializedBuildersError } =
+    useGetBuildersByState<RequiredBuilder>({
+      initialized: true,
+    })
+  const activatedGauges = initializedBuilders?.map(({ gauge }) => gauge) ?? []
 
-  useHandleErrors({ error: activatedBuildersError, title: 'Error loading gauges' })
+  useHandleErrors({ error: initializedBuildersError, title: 'Error loading gauges' })
 
   if (!isConnected) {
     return <NotBacking />

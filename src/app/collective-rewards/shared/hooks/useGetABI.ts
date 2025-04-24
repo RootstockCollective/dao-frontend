@@ -100,10 +100,10 @@ export const useGetMetricsAbi = () => {
     isLoading: buildersLoading,
     error: buildersError,
   } = useGetBuildersByState<RequiredBuilder>({
-    activated: true,
+    initialized: true,
     communityApproved: true,
     kycApproved: true,
-    revoked: false,
+    selfPaused: false,
   })
 
   const gauges = builders.map(({ gauge }) => gauge)
