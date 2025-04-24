@@ -46,6 +46,15 @@ const nextConfig = {
 
     return config
   },
+  images: {
+    remotePatterns: [
+      {
+        protocol: 'https',
+        hostname: 'red-legislative-meadowlark-461.mypinata.cloud',
+        pathname: '/ipfs/**',
+      },
+    ],
+  },
 }
 
 const getNextConfig = () => {
