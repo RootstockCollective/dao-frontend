@@ -1,13 +1,13 @@
-name: Deploy to Amazon ECS (Testnet)
-# Deploys to: https://testnet.app.rootstockcollective.xyz/
-# Triggers when a release is created
-# Uses the `.env.testnet` env file
-# NOTE: Will be deprecated soon and replaced with the release candidate workflow.
+name: Deploy to Amazon ECS (DAO QA)
+# Deploys to: https://dqo.qa.app.rootstockcollective.xyz/
+# Can be manually triggered, or triggered when the tag "deploy to DAO QA" is
+# added to a PR.
+# Uses the `.env.dao.qa` env file
 
 on:
-  release:
-    types: [released]
-  workflow_dispatch: 
+  workflow_dispatch: # Manually triggered from GitHub Actions tab
+  pull_request:
+    types: [labeled] # Triggered by a label in a PR
 
 # Declare default permissions as read only.
 permissions: read-all
@@ -24,15 +24,18 @@ env:
   # is retrieved using PROFILE, so be sure there is a `.env.<PROFILE>` file
   # that matches with the profile set
   # Example: PROFILE=testnet => .env.testnet
-  PROFILE: testnet
+  PROFILE: dao.qa
 
 jobs:
   deploy:
     name: Deploy
     runs-on: ubuntu-latest
+    if: |
+      github.event_name == 'workflow_dispatch' || github.event.label.name == 'deploy to DAO QA'
+
     environment:
-      name: testnet
-      url: https://testnet.app.rootstockcollective.xyz
+      name: DAO-QA
+      url: https://qa.dao.rootstockcollective.xyz
 
     permissions:
       id-token: write
