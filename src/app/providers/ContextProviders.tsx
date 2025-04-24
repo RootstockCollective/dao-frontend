@@ -1,6 +1,6 @@
 'use client'
 import { wagmiAdapterConfig, wagmiAdapter } from '@/config'
-import { REOWN_PROJECT_ID } from "@/lib/constants";
+import { REOWN_PROJECT_ID } from '@/lib/constants'
 import { createAppKit } from '@reown/appkit/react'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { ReactNode } from 'react'
