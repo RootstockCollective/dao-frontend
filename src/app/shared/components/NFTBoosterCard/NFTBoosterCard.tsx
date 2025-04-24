@@ -1,5 +1,6 @@
 import Image from 'next/image'
 import { FC } from 'react'
+import { applyPinataImageOptions } from '@/lib/ipfs'
 
 type NFTBoosterCardProps = {
   nftThumbPath: string
@@ -9,6 +10,11 @@ type NFTBoosterCardProps = {
 }
 
 export const NFTBoosterCard: FC<NFTBoosterCardProps> = ({ nftThumbPath, boostValue, title, content }) => {
+  const isExternalImage = nftThumbPath.startsWith('http')
+  const image = isExternalImage
+    ? applyPinataImageOptions(nftThumbPath, { width: 50, height: 50, quality: 90 })
+    : nftThumbPath
+
   return (
     <div className="w-[238px] h-[52px] relative rounded-xl" data-testid="nftBoosterCard">
       <svg
@@ -83,7 +89,16 @@ export const NFTBoosterCard: FC<NFTBoosterCardProps> = ({ nftThumbPath, boostVal
         <div className="h-[52px] p-1 flex-col justify-start items-start gap-1 inline-flex">
           <div className="self-stretch p-1 justify-start items-center gap-1 inline-flex">
             <div data-svg-wrapper className="relative w-8 h-8 bg-white">
-              {nftThumbPath !== '' && <Image src={nftThumbPath} alt={title} width={50} height={50} />}
+              {nftThumbPath !== '' && (
+                <Image
+                  crossOrigin={isExternalImage ? 'anonymous' : undefined}
+                  unoptimized={isExternalImage}
+                  src={image}
+                  alt={title}
+                  width={50}
+                  height={50}
+                />
+              )}
             </div>
             <div className="w-[188px] flex-col justify-start items-start gap-0.5 inline-flex">
               <div className="self-stretch text-white text-sm font-bold font-rootstock-sans leading-[14px] tracking-wide">

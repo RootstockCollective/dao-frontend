@@ -7,6 +7,10 @@ vi.mock('@/app/providers/NFT/BoosterContext', () => ({
   useNFTBoosterContext: vi.fn(),
 }))
 
+vi.mock('@/lib/ipfs', () => ({
+  applyPinataImageOptions: vi.fn(),
+}))
+
 vi.mock('@/app/communities/communityUtils', () => ({
   communitiesMapByContract: {
     '0xabc': { title: 'Test NFT', leftImageSrc: '/' },
