@@ -1,23 +1,23 @@
+import { useCycleContext } from '@/app/collective-rewards/metrics/context/CycleContext'
 import {
+  BuilderRewardDetails,
   formatMetrics,
+  getBackerRewardPercentage,
   MetricsCard,
   MetricsCardTitle,
-  TokenMetricsCardRow,
-  useGetRewardShares,
-  useGetTotalPotentialReward,
-  useGetPerTokenRewards,
   Token,
-  BuilderRewardDetails,
-  useGetBackerRewardPercentage,
+  TokenMetricsCardRow,
+  useGetPerTokenRewards,
 } from '@/app/collective-rewards/rewards'
-import { isBuilderRewardable, useHandleErrors } from '@/app/collective-rewards/utils'
-import { usePricesContext } from '@/shared/context/PricesContext'
-import { FC, useEffect, useState } from 'react'
-import { Address } from 'viem'
-import { withSpinner } from '@/components/LoadingSpinner/withLoadingSpinner'
-import { useCycleContext } from '@/app/collective-rewards/metrics/context/CycleContext'
 import { useBuilderContext } from '@/app/collective-rewards/user'
+import { isBuilderRewardable, useHandleErrors } from '@/app/collective-rewards/utils'
+import { withSpinner } from '@/components/LoadingSpinner/withLoadingSpinner'
 import { WeiPerEther } from '@/lib/constants'
+import { usePricesContext } from '@/shared/context/PricesContext'
+import { useReadBackersManager, useReadBuilderRegistry } from '@/shared/hooks/contracts'
+import { useReadGauge } from '@/shared/hooks/contracts/collective-rewards/useReadGauge'
+import { FC, useEffect, useMemo, useState } from 'react'
+import { Address } from 'viem'
 
 interface TokenRewardsProps {
   builder: Address
@@ -48,22 +48,33 @@ const TokenRewards: FC<TokenRewardsProps> = ({ builder, gauge, token: { id, symb
     data: totalPotentialRewards,
     isLoading: totalPotentialRewardsLoading,
     error: totalPotentialRewardsError,
-  } = useGetTotalPotentialReward()
+  } = useReadBackersManager({
+    functionName: 'totalPotentialReward',
+  })
   const {
     data: rewardShares,
     isLoading: rewardSharesLoading,
     error: rewardSharesError,
-  } = useGetRewardShares(gauge)
+  } = useReadGauge({ address: gauge, functionName: 'rewardShares' })
   const {
     data: { cycleNext },
     isLoading: cycleLoading,
     error: cycleError,
   } = useCycleContext()
   const {
-    data: backerRewardsPct,
+    data: rawBackerRewardsPct,
     isLoading: backerRewardsPctLoading,
     error: backerRewardsPctError,
-  } = useGetBackerRewardPercentage(builder, cycleNext.toSeconds())
+  } = useReadBuilderRegistry({
+    functionName: 'backerRewardPercentage',
+    args: [builder],
+  })
+
+  const backerRewardsPct = useMemo(() => {
+    const [previous, next, cooldownEndTime] = rawBackerRewardsPct ?? [0n, 0n, 0n]
+
+    return getBackerRewardPercentage(previous, next, cooldownEndTime, cycleNext.toSeconds())
+  }, [rawBackerRewardsPct, cycleNext])
 
   const rewardPercentageToApply = backerRewardsPct.current
 

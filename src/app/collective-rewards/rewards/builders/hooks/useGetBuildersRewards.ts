@@ -1,22 +1,21 @@
+import { Allocations, AllocationsContext } from '@/app/collective-rewards/allocations/context'
 import { useCycleContext } from '@/app/collective-rewards/metrics'
 import {
-  getNotifyRewardAmount,
-  Token,
-  useGetGaugesNotifyReward,
-  useGetRewardsCoinbase,
-  useGetRewardsERC20,
-  RifSvg,
-  RbtcSvg,
-  TokenRewards,
   BackerRewardPercentage,
+  getNotifyRewardAmount,
+  RbtcSvg,
+  RifSvg,
+  Token,
+  TokenRewards,
+  useGetGaugesNotifyReward,
   useGetLastCycleDistribution,
 } from '@/app/collective-rewards/rewards'
-import { usePricesContext } from '@/shared/context/PricesContext'
-import { useGaugesGetFunction, useGetEstimatedBackersRewardsPct } from '@/app/collective-rewards/shared'
+import { useGetEstimatedBackersRewardsPct } from '@/app/collective-rewards/shared'
 import { RequiredBuilder } from '@/app/collective-rewards/types'
-import { Allocations, AllocationsContext } from '@/app/collective-rewards/allocations/context'
-import { useContext, useMemo } from 'react'
 import { WeiPerEther } from '@/lib/constants'
+import { usePricesContext } from '@/shared/context/PricesContext'
+import { useReadGauges, useReadRewardDistributor } from '@/shared/hooks/contracts'
+import { useContext, useMemo } from 'react'
 
 const isBuilderShown = (
   { stateFlags: { kycApproved, revoked, communityApproved, paused }, address }: RequiredBuilder,
@@ -50,19 +49,19 @@ export const useGetBuildersRewards = ({ rif, rbtc }: { [token: string]: Token },
     data: totalAllocation,
     isLoading: totalAllocationLoading,
     error: totalAllocationError,
-  } = useGaugesGetFunction(gauges, 'totalAllocation')
+  } = useReadGauges({ addresses: gauges, functionName: 'totalAllocation' })
 
   const {
     data: rewardsERC20,
     isLoading: rewardsERC20Loading,
     error: rewardsERC20Error,
-  } = useGetRewardsERC20()
+  } = useReadRewardDistributor({ functionName: 'defaultRewardTokenAmount' })
 
   const {
     data: rewardsCoinbase,
     isLoading: rewardsCoinbaseLoading,
     error: rewardsCoinbaseError,
-  } = useGetRewardsCoinbase()
+  } = useReadRewardDistributor({ functionName: 'defaultRewardCoinbaseAmount' })
 
   const {
     data: { fromTimestamp, toTimestamp },
@@ -110,9 +109,12 @@ export const useGetBuildersRewards = ({ rif, rbtc }: { [token: string]: Token },
   const rbtcPrice = prices[rbtc.symbol]?.price ?? 0
 
   const data = useMemo(() => {
-    const sumTotalAllocation = Object.values(totalAllocation).reduce((acc, value) => acc + value, 0n)
+    const sumTotalAllocation = Object.values(totalAllocation).reduce<bigint>(
+      (acc, value) => acc + (value ?? 0n),
+      0n,
+    )
 
-    return builders.reduce<BuildersRewards[]>((acc, builder) => {
+    return builders.reduce<BuildersRewards[]>((acc, builder, i) => {
       const { gauge, rewardPercentage, estimatedBackerRewardsPct } = builder
 
       const isShown = isBuilderShown(builder, allocations)
@@ -126,7 +128,7 @@ export const useGetBuildersRewards = ({ rif, rbtc }: { [token: string]: Token },
       const rewardRbtc = rewardsCoinbase ?? 0n
       const estimatedRbtcAmount = (estimatedBackerRewardsPct * rewardRbtc) / WeiPerEther
 
-      const builderTotalAllocation = totalAllocation[gauge] ?? 0n
+      const builderTotalAllocation = totalAllocation[i] ?? 0n
       const totalAllocationPercentage = sumTotalAllocation
         ? (builderTotalAllocation * 100n) / sumTotalAllocation
         : 0n

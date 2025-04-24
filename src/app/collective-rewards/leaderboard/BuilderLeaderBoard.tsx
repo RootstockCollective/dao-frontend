@@ -1,21 +1,21 @@
 import { useCanManageAllocations } from '@/app/collective-rewards/allocations/hooks'
 import { BuildersLeaderBoardContent } from '@/app/collective-rewards/leaderboard'
 import { CycleContextProvider } from '@/app/collective-rewards/metrics'
-import { useReadBackersManager } from '@/app/collective-rewards/shared'
 import { Button } from '@/components/Button'
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/Collapsible'
 import { Popover } from '@/components/Popover'
 import { HeaderTitle, Paragraph, Typography } from '@/components/Typography'
-import { useRouter } from 'next/navigation'
-import { CRWhitepaperLink } from '../shared'
-import { useAccount } from 'wagmi'
+import { useReadBackersManager } from '@/shared/hooks/contracts'
 import { ConnectWorkflow } from '@/shared/walletConnection'
 import { ConnectButtonComponentSecondary } from '@/shared/walletConnection/components/ConnectButtonComponent'
+import { useRouter } from 'next/navigation'
+import { useAccount } from 'wagmi'
+import { CRWhitepaperLink } from '../shared'
 
 export const BuildersLeaderBoard = () => {
   const router = useRouter()
-  const { data: isInDistributionPeriod } = useReadBackersManager('onDistributionPeriod')
   const { isConnected } = useAccount()
+  const { data: isInDistributionPeriod } = useReadBackersManager({ functionName: 'onDistributionPeriod' })
 
   const onManageAllocations = () => {
     router.push('/collective-rewards/allocations')

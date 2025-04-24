@@ -1,9 +1,9 @@
 import { useAwaitedTxReporting } from '@/app/collective-rewards/shared/hooks'
+import { useBuilderContext } from '@/app/collective-rewards/user'
 import { GaugeAbi } from '@/lib/abis/v2/GaugeAbi'
+import { useReadGauge } from '@/shared/hooks/contracts/collective-rewards/useReadGauge'
 import { Address } from 'viem'
 import { useWaitForTransactionReceipt, useWriteContract } from 'wagmi'
-import { useGetBuilderRewards } from '@/app/collective-rewards/rewards'
-import { useBuilderContext } from '@/app/collective-rewards/user'
 
 const useClaimBuilderReward = (builder: Address, gauge: Address, rewardToken?: Address) => {
   const { writeContractAsync, error: executionError, data: hash, isPending } = useWriteContract()
@@ -76,7 +76,11 @@ export const useClaimBuilderRewards = (
 
 export const useClaimBuilderRewardsPerToken = (builder: Address, gauge: Address, rewardToken: Address) => {
   const { error: claimBuilderRewardError, ...rest } = useClaimBuilderReward(builder, gauge, rewardToken)
-  const { data: rewards, isLoading, error: getBuilderRewardsError } = useGetBuilderRewards(rewardToken, gauge)
+  const {
+    data: rewards,
+    isLoading,
+    error: getBuilderRewardsError,
+  } = useReadGauge({ address: gauge, functionName: 'builderRewards', args: [rewardToken] })
 
   const isClaimable = !isLoading && rewards !== 0n
   const error = claimBuilderRewardError ?? getBuilderRewardsError

@@ -1,12 +1,12 @@
-import { useQuery } from '@tanstack/react-query'
 import { fetchRewardDistributionFinished } from '@/app/collective-rewards/actions'
-import { parseEventLogs } from 'viem'
-import { BackersManagerAbi } from '@/lib/abis/v2/BackersManagerAbi'
-import { BackersManagerAddress } from '@/lib/contracts'
+import { type BackersManagerAbi, getAbi } from '@/lib/abis/v2'
 import { AVERAGE_BLOCKTIME } from '@/lib/constants'
+import { BackersManagerAddress } from '@/lib/contracts'
+import { useQuery } from '@tanstack/react-query'
+import { parseEventLogs } from 'viem'
 
 export type RewardDistributionFinishedEventLog = ReturnType<
-  typeof parseEventLogs<typeof BackersManagerAbi, true, 'RewardDistributionFinished'>
+  typeof parseEventLogs<BackersManagerAbi, true, 'RewardDistributionFinished'>
 >
 
 export const useGetRewardDistributionFinishedLogs = () => {
@@ -15,7 +15,7 @@ export const useGetRewardDistributionFinishedLogs = () => {
       const { data } = await fetchRewardDistributionFinished()
 
       return parseEventLogs({
-        abi: BackersManagerAbi,
+        abi: getAbi('BackersManagerAbi'),
         logs: data,
         eventName: 'RewardDistributionFinished',
       })

@@ -1,16 +1,16 @@
 import {
+  BuilderRewardDetails,
   formatMetrics,
   MetricsCard,
   MetricsCardTitle,
-  TokenMetricsCardRow,
-  useGetBuilderRewards,
-  useGetBuilderRewardsClaimedLogs,
   Token,
-  BuilderRewardDetails,
+  TokenMetricsCardRow,
+  useGetBuilderRewardsClaimedLogs,
 } from '@/app/collective-rewards/rewards'
 import { useHandleErrors } from '@/app/collective-rewards/utils'
 import { withSpinner } from '@/components/LoadingSpinner/withLoadingSpinner'
 import { usePricesContext } from '@/shared/context/PricesContext'
+import { useReadGauge } from '@/shared/hooks/contracts/collective-rewards/useReadGauge'
 import { FC } from 'react'
 import { Address } from 'viem'
 
@@ -34,7 +34,7 @@ const TokenRewardsMetrics: FC<TokenRewardsMetricsProps> = ({
     data: claimableRewards,
     isLoading: claimableRewardsLoading,
     error: claimableRewardsError,
-  } = useGetBuilderRewards(address, gauge)
+  } = useReadGauge({ address: gauge, functionName: 'builderRewards', args: [address] })
 
   const error = builderRewardsPerTokenError ?? claimableRewardsError
   useHandleErrors({ error, title: 'Error loading all time rewards' })

@@ -1,14 +1,14 @@
-import { FC } from 'react'
 import {
-  useGetBuilderRewards,
-  MetricsCardWithSpinner,
-  MetricsCardTitle,
+  BuilderRewardDetails,
   MetricsCardContent,
+  MetricsCardTitle,
+  MetricsCardWithSpinner,
   useGetBuilderRewardsClaimedLogs,
   useGetGaugesNotifyReward,
-  BuilderRewardDetails,
 } from '@/app/collective-rewards/rewards'
 import { useHandleErrors } from '@/app/collective-rewards/utils'
+import { useReadGauge } from '@/shared/hooks/contracts/collective-rewards/useReadGauge'
+import { FC } from 'react'
 
 type AllTimeShareProps = Omit<BuilderRewardDetails, 'builder'>
 
@@ -27,7 +27,7 @@ export const AllTimeShare: FC<AllTimeShareProps> = ({ gauge, gauges, tokens: { r
     data: claimableRewards,
     isLoading: claimableRewardsLoading,
     error: claimableRewardsError,
-  } = useGetBuilderRewards(rif.address, gauge)
+  } = useReadGauge({ address: gauge, functionName: 'builderRewards', args: [rif.address] })
 
   const error = notifyRewardError ?? builderRewardsPerTokenError ?? claimableRewardsError
 
