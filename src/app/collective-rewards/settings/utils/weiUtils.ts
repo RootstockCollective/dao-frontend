@@ -1,4 +1,4 @@
-import { WeiPerEther } from 'ethers'
+import { WeiPerEther } from '@/lib/constants'
 
 export function weiToPercentage(weiValue: bigint, decimalsLimit: number = 18): string {
   const scaledWei = weiValue * 100n

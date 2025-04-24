@@ -10,7 +10,7 @@ import {
 import { Address } from 'viem'
 import { useMemo } from 'react'
 import Big from '@/lib/big'
-import { WeiPerEther } from 'ethers'
+import { WeiPerEther } from '@/lib/constants'
 import { useBackerTotalAllocation } from '@/app/collective-rewards/allocations/hooks'
 
 const useGetAbi = (rewardsPerStRif: bigint) => {

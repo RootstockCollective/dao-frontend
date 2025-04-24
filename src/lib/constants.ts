@@ -1,4 +1,5 @@
 import { Address } from 'viem'
+import { keccak256, toBytes, sliceHex } from 'viem'
 
 export const GITHUB_ORG = 'RootstockCollective'
 export const ENV = process.env.NEXT_PUBLIC_ENV as string
@@ -50,3 +51,6 @@ export const proposalQuickFilters = ['Grant', 'Activation', 'Wave 4', 'Wave 5', 
 
 export const MAX_NAME_LENGTH_FOR_PROPOSAL = 100
 export const TALLY_DESCRIPTION_SEPARATOR = '  ' // Tally uses double spaces to separate name and description
+export const WeiPerEther = 10n ** 18n
+// address(uint160(uint256(keccak256("COINBASE_ADDRESS"))))
+export const CoinBaseAddress = '0xf7ab6cfaebbadfe8b5494022c4c6db776bd63b6b' as Address

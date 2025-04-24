@@ -13,12 +13,13 @@ import {
 import { isBuilderRewardable, useHandleErrors } from '@/app/collective-rewards/utils'
 import { usePricesContext } from '@/shared/context/PricesContext'
 import { FC, useEffect, useState } from 'react'
-import { Address, parseUnits } from 'viem'
+import { Address } from 'viem'
 import { withSpinner } from '@/components/LoadingSpinner/withLoadingSpinner'
 import { useCycleContext } from '@/app/collective-rewards/metrics/context/CycleContext'
 import { useBuilderContext } from '@/app/collective-rewards/user'
+import { WeiPerEther } from '@/lib/constants'
 
-type TokenRewardsProps = {
+interface TokenRewardsProps {
   builder: Address
   gauge: Address
   currency?: string
@@ -81,8 +82,7 @@ const TokenRewards: FC<TokenRewardsProps> = ({ builder, gauge, token: { id, symb
       ? (rewards * rewardShares) / totalPotentialRewards
       : 0n
   // The complement of the reward percentage is applied to the estimated rewards since are from the builder's perspective
-  const weiPerEther = parseUnits('1', 18)
-  const estimatedRewards = (rewardsAmount * (weiPerEther - rewardPercentageToApply)) / weiPerEther
+  const estimatedRewards = (rewardsAmount * (WeiPerEther - rewardPercentageToApply)) / WeiPerEther
   const price = prices[symbol]?.price ?? 0
   const { amount, fiatAmount } = formatMetrics(estimatedRewards, price, symbol, currency)
 

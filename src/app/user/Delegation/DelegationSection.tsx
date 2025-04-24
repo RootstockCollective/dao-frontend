@@ -4,12 +4,11 @@ import { Table } from '@/components/Table'
 import { Button } from '@/components/Button'
 import { DelegateModal } from '@/app/user/Delegation/DelegateModal'
 import { useEffect, useState } from 'react'
-import { useWaitForTransactionReceipt } from 'wagmi'
-import { Hash } from 'viem'
+import { useWaitForTransactionReceipt, useAccount } from 'wagmi'
+import { Hash, formatEther } from 'viem'
 import { useAlertContext } from '@/app/providers'
 import { TX_MESSAGES } from '@/shared/txMessages'
 import { HeaderTitle, Paragraph } from '@/components/Typography'
-import { useAccount } from 'wagmi'
 import { RenderTotalBalance } from '../Balances/RenderTotalBalance'
 import { useGetDelegates } from './hooks/useGetDelegates'
 import { ReclaimCell } from './ReclaimCell'
@@ -17,8 +16,6 @@ import { DelegationAction } from './type'
 import { useGetExternalDelegatedAmount } from '@/shared/hooks/useGetExternalDelegatedAmount'
 import { TokenValue } from '@/app/user/Delegation/TokenValue'
 import { Popover } from '@/components/Popover'
-import Image from 'next/image'
-import { formatUnits } from 'ethers'
 import { ConnectWorkflow } from '@/shared/walletConnection/connection/ConnectWorkflow'
 import { QuestionIcon } from '@/components/Icons'
 
@@ -59,7 +56,7 @@ export const DelegationSection = () => {
     useGetExternalDelegatedAmount(address)
 
   const delegatedToMe = {
-    'Voting Power Received': <TokenValue symbol="stRIF" amount={formatUnits(amountDelegatedToMe)} />,
+    'Voting Power Received': <TokenValue symbol="stRIF" amount={formatEther(amountDelegatedToMe)} />,
   }
 
   const handleDelegateClick = () => {
