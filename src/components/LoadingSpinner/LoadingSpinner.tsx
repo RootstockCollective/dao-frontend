@@ -6,11 +6,14 @@ export type LoadingSpinnerProps = {
   size?: SpinnerSize
 }
 
-const LoadingSpinner = ({ className = '', size = 'responsive' }: LoadingSpinnerProps) => {
+const LoadingSpinner = ({ className = '', size = 'auto' }: LoadingSpinnerProps) => {
   // Define size classes based on the size prop
   let sizeClass = ''
 
-  if (size === 'responsive') {
+  if (size === 'auto') {
+    // Auto sizing - will use a reasonable default size
+    sizeClass = 'w-auto h-auto max-w-[20%] max-h-[20%]'
+  } else if (size === 'responsive') {
     // Responsive sizing - will adapt to parent container
     sizeClass = 'w-full h-full max-w-full max-h-full'
   } else if (typeof size === 'number') {
@@ -20,7 +23,7 @@ const LoadingSpinner = ({ className = '', size = 'responsive' }: LoadingSpinnerP
     // Use predefined sizes
     switch (size) {
       case 'small':
-        sizeClass = 'h-10 w-10'
+        sizeClass = 'h-8 w-8'
         break
       case 'large':
         sizeClass = 'h-24 w-24'
@@ -33,9 +36,9 @@ const LoadingSpinner = ({ className = '', size = 'responsive' }: LoadingSpinnerP
   }
 
   return (
-    <div className={cn('flex justify-center items-center', className)}>
+    <div className={cn('flex justify-center items-center w-full h-full', className)}>
       <svg
-        className={`animate-spin ${sizeClass} text-indigo-500`}
+        className={`animate-spin ${sizeClass} text-indigo-500 mt-2`}
         xmlns="http://www.w3.org/2000/svg"
         fill="none"
         viewBox="0 0 24 24"

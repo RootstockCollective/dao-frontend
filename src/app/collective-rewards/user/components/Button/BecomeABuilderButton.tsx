@@ -88,7 +88,7 @@ export const BecomeABuilderButton = ({ address }: { address: Address }) => {
   useHandleErrors({ error: builderLoadingError, title: `Error loading builder with address ${address}` })
 
   if (builderLoading) {
-    return <LoadingSpinner className={'justify-end w-1/4'} />
+    return <LoadingSpinner className={'justify-end'} size={'small'} />
   }
 
   if (!builder) {
