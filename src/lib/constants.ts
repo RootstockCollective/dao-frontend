@@ -55,4 +55,5 @@ export const WeiPerEther = 10n ** 18n
 // address(uint160(uint256(keccak256("COINBASE_ADDRESS"))))
 export const CoinBaseAddress = '0xf7ab6cfaebbadfe8b5494022c4c6db776bd63b6b' as Address
 
-export const REOWN_PROJECT_ID = process.env.NEXT_PUBLIC_REOWN_PROJECT_ID as string
+export const REOWN_PROJECT_ID = (process.env.NEXT_PUBLIC_REOWN_PROJECT_ID ?? '') as string
+export const REOWN_METADATA_URL = (process.env.NEXT_PUBLIC_REOWN_METADATA_URL ?? '') as string

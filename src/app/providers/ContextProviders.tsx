@@ -1,6 +1,6 @@
 'use client'
 import { wagmiAdapterConfig, wagmiAdapter } from '@/config'
-import { REOWN_PROJECT_ID } from '@/lib/constants'
+import { REOWN_METADATA_URL, REOWN_PROJECT_ID } from '@/lib/constants'
 import { createAppKit } from '@reown/appkit/react'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { ReactNode } from 'react'
@@ -23,7 +23,7 @@ interface Props {
 const metadata = {
   name: 'Rootstock Collective',
   description: 'AppKit for the Rootstock Collective',
-  url: process.env.NEXT_PUBLIC_REOWN_METADATA_URL as string, // origin must match your domain & subdomain
+  url: REOWN_METADATA_URL, // origin must match your domain & subdomain
   icons: ['https://assets.reown.com/reown-profile-pic.png'],
 }
 
