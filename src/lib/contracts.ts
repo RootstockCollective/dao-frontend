@@ -1,4 +1,4 @@
-import { Address, zeroAddress } from 'viem'
+import { zeroAddress } from 'viem'
 import { EarlyAdoptersNFTAbi } from './abis/EarlyAdoptersNFTAbi'
 import { VotingVanguardsNftAbi } from './abis/VotingVanguardsNFTAbi'
 import { StRIFTokenAbi } from './abis/StRIFTokenAbi'
@@ -26,7 +26,7 @@ import { GovernorAbi } from './abis/Governor'
 const tokenContracts = {
   RIF: RIF_ADDRESS,
   stRIF: STRIF_ADDRESS,
-  RBTC: zeroAddress as Address,
+  RBTC: zeroAddress,
 }
 export type SupportedTokens = keyof typeof tokenContracts
 

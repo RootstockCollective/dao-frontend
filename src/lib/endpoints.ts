@@ -14,16 +14,19 @@ export const fetchNFTsOwnedByAddressAndNftAddress =
   process.env.NEXT_PUBLIC_API_RWS_NFT_BY_ADDRESS ||
   `/address/{{address}}/nfts/{{nftAddress}}?${CHAIN_ID_PARAM}`
 
+// keccak256('ProposalCreated(uint256,address,address[],uint256[],string[],bytes[],uint256,uint256,string)')
 const PROPOSAL_CREATED_EVENT = '0x7d84a6263ae0d98d3329bd7b46bb4e8d6f98cd35a7adb45c274c8b7fd5ebd5e0'
 export const fetchProposalsCreatedByGovernorAddress =
   process.env.NEXT_PUBLIC_API_RWS_EVENTS_PROPOSALS_BY_ADDRESS ||
   `/address/{{address}}/eventsByTopic0?topic0=${PROPOSAL_CREATED_EVENT}&${CHAIN_ID_PARAM}&fromBlock={{fromBlock}}`
 
+// keccak256('VoteCast(address,uint256,uint8,uint256,string)')
 const CAST_VOTE_EVENT = '0xb8e138887d0aa13bab447e82de9d5c1777041ecd21ca36ba824ff1e6c07ddda4'
 export const fetchVoteCastEventEndpoint = `/address/{{address}}/eventsByTopic0?topic0=${CAST_VOTE_EVENT}&${CHAIN_ID_PARAM}&topic1={{topic1}}&topic01Opr=and`
 
 export const getNftInfo = process.env.NEXT_PUBLIC_API_RWS_NFT_INFO || `/nfts/{{nftAddress}}?${CHAIN_ID_PARAM}`
 
+// keccak256('NewAllocation(address,address,uint256)')
 const NEW_ALLOCATION_EVENT = '0xed07ca57097393e77ba36105a07f6810afc2180b72a9c02a4b0da4b51a73a6ec'
 export const fetchNewAllocationEventEndpoint = `/address/{{address}}/eventsByTopic0?topic0=${NEW_ALLOCATION_EVENT}&chainId=${CHAIN_ID}&topic1={{topic1}}&topic01Opr=and`
 
@@ -31,17 +34,22 @@ export const getTokenHoldersOfAddress = `/address/{{address}}/holders?${CHAIN_ID
 
 export const getNftHolders = `/nfts/{{address}}/holders?${CHAIN_ID_PARAM}`
 
+// keccak256('NotifyReward(address,address,uint256)')
 const NOTIFY_REWARD_EVENT = '0xf70d5c697de7ea828df48e5c4573cb2194c659f1901f70110c52b066dcf50826'
 export const fetchNotifyRewardLogsByAddress = `/address/{{address}}/eventsByTopic0?topic0=${NOTIFY_REWARD_EVENT}&${CHAIN_ID_PARAM}&${FROM_BLOCK_PARAM}`
 
+// keccak256('NotifyReward(address,uint256,uint256)')
 const GAUGE_NOTIFY_REWARD_EVENT = '0x3c0f5c48b0ffa2c570c1a0f4fbf7b0f8982213afff9eb42cd258ead865cf3c9d'
 export const fetchGaugeNotifyRewardLogsByAddress = `/address/{{address}}/eventsByTopic0?topic0=${GAUGE_NOTIFY_REWARD_EVENT}&${CHAIN_ID_PARAM}&${FROM_BLOCK_PARAM}`
 
+// keccak256('BuilderRewardsClaimed(address,address,uint256)')
 const BUILDER_REWARDS_CLAIMED_EVENT = '0xc309438e69ba53ef6afef64839bd1ab1acc4a9a8fd28c8e0356075ca66f72c1b'
 export const fetchBuilderRewardsClaimedLogsByAddress = `/address/{{address}}/eventsByTopic0?topic0=${BUILDER_REWARDS_CLAIMED_EVENT}&${CHAIN_ID_PARAM}&${FROM_BLOCK_PARAM}`
 
+// keccak256('BackerRewardsClaimed(address,address,uint256)')
 const BACKER_REWARDS_CLAIMED_EVENT = '0x72421f1eeaa316f3b67618996c0df193d45328d3645bb1866b6beb11a0c8230e'
 export const fetchBackerRewardsClaimedLogsByAddress = `/address/{{address}}/eventsByTopic0?topic0=${BACKER_REWARDS_CLAIMED_EVENT}&${CHAIN_ID_PARAM}&${FROM_BLOCK_PARAM}`
 
+// keccak256('RewardDistributionFinished(address)')
 const REWARD_DISTRIBUTION_FINISHED = '0x2e0a637781c44a621d21ae02c97a62860799594e47e453e0491eb348ebf83bff'
 export const fetchRewardDistributionFinishedLogsByAddress = `/address/{{address}}/eventsByTopic0?topic0=${REWARD_DISTRIBUTION_FINISHED}&${CHAIN_ID_PARAM}&${FROM_BLOCK_PARAM}`

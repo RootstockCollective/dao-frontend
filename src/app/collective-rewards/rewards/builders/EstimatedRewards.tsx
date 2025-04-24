@@ -19,7 +19,7 @@ import { useCycleContext } from '@/app/collective-rewards/metrics/context/CycleC
 import { useBuilderContext } from '@/app/collective-rewards/user'
 import { WeiPerEther } from '@/lib/constants'
 
-type TokenRewardsProps = {
+interface TokenRewardsProps {
   builder: Address
   gauge: Address
   currency?: string
