@@ -19,10 +19,7 @@ export const TotalActiveBuildersMetrics = () => {
   return (
     <MetricsCard borderless>
       <MetricsCardTitle title="Total active builders" data-testid="TotalActiveBuilders" />
-      {withSpinner(
-        TokenMetricsCardRow,
-        'min-h-0 grow-0',
-      )({
+      {withSpinner(TokenMetricsCardRow, { className: 'min-h-0 grow-0', size: 'small' })({
         amount: activatedBuilders.length.toString(),
         isLoading,
       })}
