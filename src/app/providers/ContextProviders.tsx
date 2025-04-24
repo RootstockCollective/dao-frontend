@@ -1,5 +1,6 @@
 'use client'
-import { wagmiAdapterConfig, REOWN_PROJECT_ID, wagmiAdapter } from '@/config'
+import { wagmiAdapterConfig, wagmiAdapter } from '@/config'
+import { REOWN_PROJECT_ID } from "@/lib/constants";
 import { createAppKit } from '@reown/appkit/react'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { ReactNode } from 'react'
@@ -26,7 +27,7 @@ const metadata = {
   icons: ['https://assets.reown.com/reown-profile-pic.png'],
 }
 
-// Create the modal (even though it says it's being used, it is.
+// Create the modal (even though it says it's being used, it is.)
 const modal = createAppKit({
   adapters: [wagmiAdapter],
   projectId: REOWN_PROJECT_ID,

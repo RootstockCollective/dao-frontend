@@ -4,8 +4,7 @@ import { WagmiAdapter } from '@reown/appkit-adapter-wagmi'
 import { rootstock, rootstockTestnet } from '@reown/appkit/networks'
 import { createConfig, http, cookieStorage, createStorage } from 'wagmi'
 import { injected } from 'wagmi/connectors'
-
-export const REOWN_PROJECT_ID = process.env.NEXT_PUBLIC_REOWN_PROJECT_ID as string
+import { REOWN_PROJECT_ID } from '@/lib/constants'
 
 const rskRegtest = defineChain({
   id: 33,
