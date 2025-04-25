@@ -1,4 +1,4 @@
-FROM node:22-alpine@sha256:9bef0ef1e268f60627da9ba7d7605e8831d5b56ad07487d24d1aa386336d1944 AS builder
+FROM node:22-alpine@sha256:ad1aedbcc1b0575074a91ac146d6956476c1f9985994810e4ee02efd932a68fd AS builder
 
 # Set the working directory
 WORKDIR /app
@@ -33,7 +33,7 @@ ENV THE_GRAPH_API_KEY=${THE_GRAPH_API_KEY}
 # Build the Next.js application
 RUN npm run build
 
-FROM node:22-alpine@sha256:9bef0ef1e268f60627da9ba7d7605e8831d5b56ad07487d24d1aa386336d1944 AS runner
+FROM node:22-alpine@sha256:ad1aedbcc1b0575074a91ac146d6956476c1f9985994810e4ee02efd932a68fd AS runner
 
 # Set the working directory
 WORKDIR /app
