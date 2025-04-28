@@ -1,13 +1,13 @@
-import { ButtonHTMLAttributes, FC, HtmlHTMLAttributes, useState } from 'react'
-import { Modal } from '@/components/Modal/Modal'
-import { Header, Paragraph, Typography } from '@/components/Typography'
-import { Button } from '@/components/Button'
-import { useRouter } from 'next/navigation'
-import { SupportedActionAbiName, SupportedProposalActionName } from '@/app/proposals/shared/supportedABIs'
 import { useVotingPower } from '@/app/proposals/hooks/useVotingPower'
-import { Popover } from '../Popover'
-import { useAccount } from 'wagmi'
+import { SupportedActionAbiName, SupportedProposalActionName } from '@/app/proposals/shared/supportedABIs'
+import { Button } from '@/components/Button'
+import { Modal, ModalProps } from '@/components/Modal/Modal'
+import { Header, Paragraph, Typography } from '@/components/Typography'
 import { ConnectButtonComponentSecondary, ConnectWorkflow } from '@/shared/walletConnection'
+import { useRouter } from 'next/navigation'
+import { ButtonHTMLAttributes, FC, useState } from 'react'
+import { useAccount } from 'wagmi'
+import { Popover } from '../Popover'
 
 type DisclaimerProps = {
   onAccept: () => void
@@ -88,15 +88,19 @@ const ActionButton: FC<ActionButtonProps> = ({ content, ...props }) => (
   </Button>
 )
 
-const BecomeABuilder: FC = () => {
+type ContentProps = Pick<ModalProps, 'onClose'>
+
+const BecomeABuilderModalContent: FC<ContentProps> = ({ onClose }) => {
   const { canCreateProposal, threshold } = useVotingPower()
   const { isConnected } = useAccount()
   const router = useRouter()
   const contractName: SupportedActionAbiName = 'BuilderRegistryAbi'
   const action: SupportedProposalActionName = 'communityApproveBuilder'
 
-  const submitProposal = () => router.push(`/proposals/create?contract=${contractName}&action=${action}`)
-
+  const submitProposal = () => {
+    router.push(`/proposals/create?contract=${contractName}&action=${action}`)
+    onClose()
+  }
   return (
     <div className="flex flex-col items-center gap-y-2 py-[50px]">
       <Header
@@ -122,13 +126,12 @@ const BecomeABuilder: FC = () => {
             <Popover
               content={
                 <Paragraph variant="normal" className="text-sm">
-                  {isConnected ? (
-                    `You need at least ${threshold} Voting Power to create a proposal. The easiest way to get more Voting Power is to Stake more RIF.`
-                  ) : (
-                    <ConnectWalletPopoverContent></ConnectWalletPopoverContent>
-                  )}
+                  {isConnected &&
+                    `You need at least ${threshold} Voting Power to create a proposal. The easiest way to get more Voting Power is to Stake more RIF.`}
+                  {!isConnected && <ConnectWalletPopoverContent />}
                 </Paragraph>
               }
+              disabled={isConnected && canCreateProposal}
               trigger="hover"
               background="dark"
               size="medium"
@@ -154,16 +157,15 @@ const BecomeABuilder: FC = () => {
   )
 }
 
-type BecomeABuilderModalProps = {
-  onClose: () => void
-}
-export const BecomeABuilderModal: FC<BecomeABuilderModalProps> = ({ onClose }) => {
+type BecomeABuilderModalProps = Omit<ModalProps, 'children'>
+
+export const BecomeABuilderModal: FC<BecomeABuilderModalProps> = ({ onClose, ...props }) => {
   const [isDisclaimerAccepted, setIsDisclaimerAccepted] = useState(false)
 
   return (
-    <Modal onClose={onClose} width={1016} className="overflow-auto">
+    <Modal onClose={onClose} width={1016} className="overflow-auto" {...props}>
       {isDisclaimerAccepted ? (
-        <BecomeABuilder />
+        <BecomeABuilderModalContent onClose={onClose} />
       ) : (
         <Disclaimer onAccept={() => setIsDisclaimerAccepted(true)} onDecline={onClose} />
       )}

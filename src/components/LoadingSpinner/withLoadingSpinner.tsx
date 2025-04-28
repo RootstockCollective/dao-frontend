@@ -1,16 +1,27 @@
 import { ComponentType, FC } from 'react'
-import { LoadingSpinner } from '@/components/LoadingSpinner'
+import { LoadingSpinner, SpinnerSize } from '@/components/LoadingSpinner'
 
 type WithLoadingProps = {
   isLoading: boolean
 }
 
+type SpinnerOptions = {
+  className?: string
+  size?: SpinnerSize
+}
+
 export const withSpinner = <P extends {}>(
   Component: ComponentType<P>,
-  className = '',
+  options?: SpinnerOptions,
 ): FC<P & WithLoadingProps> => {
   const WrappedComponent = ({ isLoading, ...props }: WithLoadingProps) => (
-    <>{isLoading ? <LoadingSpinner className={className} /> : <Component {...(props as P)} />}</>
+    <>
+      {isLoading ? (
+        <LoadingSpinner className={options?.className} size={options?.size} />
+      ) : (
+        <Component {...(props as P)} />
+      )}
+    </>
   )
 
   WrappedComponent.displayName = `WithSpinner(${Component.displayName || Component.name})`

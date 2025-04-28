@@ -40,7 +40,6 @@
     "dotenv": "^16.4.7",
     "jdenticon": "^3.3.0",
     "lodash": "^4.17.21",
-    "lottie-react": "^2.4.0",
     "lucide-react": "^0.469.0",
     "luxon": "^3.5.0",
     "moment": "^2.30.1",

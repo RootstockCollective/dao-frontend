@@ -49,10 +49,7 @@ const TokenRewardsMetrics: FC<TokenRewardsMetricsProps> = ({
   const price = prices[symbol]?.price ?? 0
   const { amount, fiatAmount } = formatMetrics(lastCycleRewards[address] ?? 0n, price, symbol, currency)
 
-  return withSpinner(
-    TokenMetricsCardRow,
-    'min-h-0 grow-0',
-  )({
+  return withSpinner(TokenMetricsCardRow, { className: 'min-h-0 grow-0', size: 'small' })({
     amount,
     fiatAmount,
     isLoading: cycleLoading || lastCycleRewardsLoading || logsLoading,

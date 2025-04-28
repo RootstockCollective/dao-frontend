@@ -44,10 +44,7 @@ const TokenRewardsMetrics: FC<TokenRewardsMetricsProps> = ({
   const { isClaimable, claimRewards, isPaused } = useClaimBuilderRewardsPerToken(builder, gauge, address)
   const content = isPaused ? 'You cannot be paused to claim rewards' : undefined
 
-  return withSpinner(
-    TokenMetricsCardRow,
-    'min-h-0 grow-0',
-  )({
+  return withSpinner(TokenMetricsCardRow, { className: 'min-h-0 grow-0', size: 'small' })({
     amount,
     fiatAmount,
     isLoading: rewardsLoading,

@@ -97,10 +97,7 @@ const TokenRewards: FC<TokenRewardsProps> = ({ builder, gauge, token: { id, symb
   const price = prices[symbol]?.price ?? 0
   const { amount, fiatAmount } = formatMetrics(estimatedRewards, price, symbol, currency)
 
-  return withSpinner(
-    TokenMetricsCardRow,
-    'min-h-0 grow-0',
-  )({
+  return withSpinner(TokenMetricsCardRow, { className: 'min-h-0 grow-0', size: 'small' })({
     amount,
     fiatAmount,
     isLoading:
