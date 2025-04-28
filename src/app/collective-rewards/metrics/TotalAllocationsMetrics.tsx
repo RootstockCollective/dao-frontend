@@ -40,13 +40,11 @@ export const TotalAllocationsMetrics: FC<TotalAllocationsProps> = ({
           popoverProps: { size: 'medium' },
         }}
       />
-      <>
-        {withSpinner(TokenMetricsCardRow, { className: 'min-h-0 grow-0', size: 'small' })({
-          amount,
-          fiatAmount,
-          isLoading,
-        })}
-      </>
+      {withSpinner(TokenMetricsCardRow, { className: 'min-h-0 grow-0', size: 'small' })({
+        amount,
+        fiatAmount,
+        isLoading,
+      })}
     </MetricsCard>
   )
 }
