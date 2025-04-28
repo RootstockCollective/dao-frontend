@@ -1,8 +1,8 @@
 'use client'
 
-import { FC, ReactNode } from 'react'
-import Image from 'next/image'
 import { cn } from '@/lib/utils'
+import Image from 'next/image'
+import { FC, ReactNode } from 'react'
 import { createPortal } from 'react-dom'
 
 interface Props {
@@ -42,3 +42,5 @@ export const Modal: FC<Props> = ({ children, onClose, width, className, 'data-te
     document.body,
   )
 }
+
+export type ModalProps = Props
