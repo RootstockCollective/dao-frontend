@@ -20,7 +20,7 @@ import { Button } from '@/components/Button'
 import { LoadingSpinner } from '@/components/LoadingSpinner'
 import { Switch, SwitchThumb } from '@/components/Switch'
 import { Typography } from '@/components/Typography'
-import { CoinBaseAddress } from '@/lib/constants'
+import { COINBASE_ADDRESS } from '@/lib/constants'
 import { tokenContracts } from '@/lib/contracts'
 import { useReadBuilderRegistry } from '@/shared/hooks/contracts'
 import Image from 'next/image'
@@ -177,7 +177,7 @@ export const Rewards: FC = () => {
         symbol: 'RIF',
       },
       rbtc: {
-        address: CoinBaseAddress,
+        address: COINBASE_ADDRESS,
         symbol: 'RBTC',
       },
     },

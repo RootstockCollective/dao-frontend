@@ -7,10 +7,10 @@ import {
 } from '@/app/collective-rewards/metrics'
 import { useGetGaugesArray } from '@/app/collective-rewards/user'
 import { HeaderTitle } from '@/components/Typography'
+import { COINBASE_ADDRESS } from '@/lib/constants'
 import { tokenContracts } from '@/lib/contracts'
 import { getAddress } from 'viem'
 import { ABIMetrics } from './components/ABIMetrics'
-import { CoinBaseAddress } from '@/lib/constants'
 
 export const Metrics = () => {
   const { data: allGauges } = useGetGaugesArray()
@@ -22,7 +22,7 @@ export const Metrics = () => {
       symbol: 'RIF',
     },
     rbtc: {
-      address: CoinBaseAddress,
+      address: COINBASE_ADDRESS,
       symbol: 'RBTC',
     },
   }

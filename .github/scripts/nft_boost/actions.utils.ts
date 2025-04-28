@@ -1,6 +1,7 @@
 import axios from 'axios'
 import { Address, Block, getAddress } from 'viem'
-import { BackersManagerAbi, BuilderRegistryAbi, GaugeAbi } from '../../../src/lib/abis/v2'
+import { getAbi } from '../../../src/lib/abis/v2'
+import { COINBASE_ADDRESS } from '../../../src/lib/constants'
 
 interface NFTEvent {
   address: string
@@ -14,9 +15,6 @@ interface NFTEvent {
   transactionHash: string
   transactionIndex: string
 }
-
-// constant address. Calculation based on sc: address public constant COINBASE_ADDRESS = address(uint160(uint256(keccak256("COINBASE_ADDRESS"))));
-const rewardCoinbaseAddress = getAddress('0xf7aB6CfaebbADfe8B5494022c4C6dB776Bd63b6b')
 
 export async function getActions() {
   const { publicClient } = await import(`../../../src/lib/viemPublicClient`)
@@ -48,10 +46,12 @@ export async function getActions() {
   }
 
   const getAllGauges = async (): Promise<Address[]> => {
+    const abi = getAbi('BuilderRegistryAbi')
+
     const gaugesLength = Number(
       await publicClient.readContract({
         address: builderRegistryAddress,
-        abi: BuilderRegistryAbi,
+        abi,
         functionName: 'getGaugesLength',
         args: [],
       }),
@@ -62,7 +62,7 @@ export async function getActions() {
     console.log('builderRegistryAddress: ', builderRegistryAddress)
     const getGaugesCalls = gaugesIndexes.map(i => ({
       address: builderRegistryAddress,
-      abi: BuilderRegistryAbi,
+      abi,
       functionName: 'getGaugeAt',
       args: [BigInt(i)],
     }))
@@ -72,12 +72,13 @@ export async function getActions() {
 
   let rewardTokenAddress: Address
   const getRewardTokenAddress = async (): Promise<Address> => {
+    const abi = getAbi('BackersManagerAbi')
     if (rewardTokenAddress) {
       return rewardTokenAddress
     }
     rewardTokenAddress = await publicClient.readContract({
       address: backersManagerAddress,
-      abi: BackersManagerAbi,
+      abi,
       functionName: 'rewardToken',
       args: [],
     })
@@ -91,12 +92,12 @@ export async function getActions() {
   }
   const estimatedGaugeRewards = async (backer: Address, gauge: Address): Promise<EstimatedGaugeRewards> => {
     const rewardTokenAddress = await getRewardTokenAddress()
-    const rewardTokens: Address[] = [rewardCoinbaseAddress, rewardTokenAddress]
+    const rewardTokens: Address[] = [COINBASE_ADDRESS, rewardTokenAddress]
     try {
       const gaugeEstimatedRewards = await publicClient.multicall({
         contracts: rewardTokens.map(token => ({
           address: gauge,
-          abi: GaugeAbi,
+          abi: getAbi('GaugeAbi'),
           functionName: 'estimatedBackerRewards',
           args: [token, backer],
         })),
