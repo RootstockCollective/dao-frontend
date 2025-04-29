@@ -65,7 +65,7 @@ export function ConfirmationModal({
   isOpen = false,
 }: ConfirmationModalProps) {
   const modalRef = useRef<HTMLDivElement>(null)
-  useClickOutside([modalRef], onClose)
+  useClickOutside([modalRef as React.RefObject<HTMLElement>], onClose)
   return createPortal(
     <AnimatePresence>
       {isOpen && (

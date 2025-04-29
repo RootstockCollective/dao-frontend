@@ -1,4 +1,4 @@
-import { ButtonHTMLAttributes, FC, HtmlHTMLAttributes, useState } from 'react'
+import { ButtonHTMLAttributes, FC, HtmlHTMLAttributes, JSX, useState } from 'react'
 import { Modal } from '@/components/Modal/Modal'
 import { Header, Paragraph, Typography } from '@/components/Typography'
 import { Button } from '@/components/Button'

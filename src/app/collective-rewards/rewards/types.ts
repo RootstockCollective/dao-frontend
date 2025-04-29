@@ -1,3 +1,4 @@
+import { JSX } from 'react'
 import { Address } from 'viem'
 
 export type Token = {

@@ -2,7 +2,7 @@ import { AddressOrAlias } from '@/components/Address'
 import { Badge } from '@/components/Badge'
 import { Jdenticon } from '@/components/Header/Jdenticon'
 import { Typography } from '@/components/Typography'
-import { FC } from 'react'
+import { FC, JSX } from 'react'
 import { Builder, BuilderProposal, BuilderStateFlags } from '@/app/collective-rewards/types'
 import { getBuilderInactiveState, InactiveState, isBuilderActive } from '@/app/collective-rewards/utils'
 

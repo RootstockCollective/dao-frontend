@@ -1,3 +1,4 @@
+import React from 'react'
 import { MetricsCard, MetricsCardTitle, TokenMetricsCardRow } from '@/app/collective-rewards/rewards'
 import { withSpinner } from '@/components/LoadingSpinner/withLoadingSpinner'
 import { ABIFormula, useGetMetricsAbi } from '@/app/collective-rewards/shared'
@@ -37,10 +38,13 @@ export const ABIMetrics = () => {
             },
           }}
         />
-        {withSpinner(TokenMetricsCardRow, { className: 'min-h-0 grow-0', size: 'small' })({
-          amount: `${abiPct.toFixed(0)}%`,
-          isLoading,
-        })}
+        {React.createElement(
+          withSpinner(TokenMetricsCardRow, { className: 'min-h-0 grow-0', size: 'small' }),
+          {
+            amount: `${abiPct?.toFixed(0)}%`,
+            isLoading,
+          },
+        )}
       </MetricsCard>
     </>
   )

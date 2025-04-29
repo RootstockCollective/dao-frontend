@@ -42,13 +42,15 @@ export default function Page() {
             </Paragraph>
           </div>
           <div className="mb-[24px] font-extralight">
-            {nftInfo?.longDescription({
-              activation: showNFTBoost
-                ? DateTime.fromSeconds(Number(boostData?.timestamp) ?? 0)
-                    .toFormat('MMM yyyy')
-                    .toUpperCase()
-                : undefined,
-            })}
+            <>
+              {nftInfo?.longDescription({
+                activation: showNFTBoost
+                  ? DateTime.fromSeconds(Number(boostData?.timestamp) ?? 0)
+                      .toFormat('MMM yyyy')
+                      .toUpperCase()
+                  : undefined,
+              })}
+            </>
           </div>
 
           {/* Conditionally render Discussion button */}
@@ -65,14 +67,16 @@ export default function Page() {
             </div>
           )}
           <div className="mb-[24px] font-extralight">
-            {nftInfo?.campaignDetails &&
-              nftInfo.campaignDetails({
-                activation: showNFTBoost
-                  ? DateTime.fromSeconds(Number(boostData?.timestamp) ?? 0)
-                      .toFormat('MMM yyyy')
-                      .toUpperCase()
-                  : undefined,
-              })}
+            <>
+              {nftInfo?.campaignDetails &&
+                nftInfo.campaignDetails({
+                  activation: showNFTBoost
+                    ? DateTime.fromSeconds(Number(boostData?.timestamp) ?? 0)
+                        .toFormat('MMM yyyy')
+                        .toUpperCase()
+                    : undefined,
+                })}
+            </>
           </div>
 
           {showNFTBoost && (

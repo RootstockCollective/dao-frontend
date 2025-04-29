@@ -2,7 +2,7 @@ import { DAOTreasuryAbi } from '@/lib/abis/DAOTreasuryAbi'
 import { RIFTokenAbi } from '@/lib/abis/RIFTokenAbi'
 import { SimplifiedRewardDistributorAbi } from '@/lib/abis/SimplifiedRewardDistributorAbi'
 import { BuilderRegistryAbi } from '@/lib/abis/v2/BuilderRegistryAbi'
-import { HTMLProps } from 'react'
+import { HTMLProps, JSX } from 'react'
 import { AbiFunction, AbiParameterToPrimitiveType } from 'viem'
 
 export const abiNames = [
