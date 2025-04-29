@@ -4,7 +4,7 @@ import { REOWN_METADATA_URL, REOWN_PROJECT_ID } from '@/lib/constants'
 import { createAppKit } from '@reown/appkit/react'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { ReactNode } from 'react'
-import { WagmiProvider } from 'wagmi'
+import { WagmiProvider, State } from 'wagmi'
 import { AlertProvider } from './AlertProvider'
 import ErrorBoundary from '@/components/ErrorPage/ErrorBoundary'
 import { BuilderContextProviderWithPrices } from '../collective-rewards/user'
@@ -17,6 +17,7 @@ import { rootstock, rootstockTestnet } from '@reown/appkit/networks'
 
 interface Props {
   children: ReactNode
+  initialState?: State
 }
 
 // Set up metadata
@@ -42,12 +43,12 @@ const modal = createAppKit({
   },
 })
 
-export const ContextProviders = ({ children }: Props) => {
+export const ContextProviders = ({ children, initialState }: Props) => {
   const queryClient = new QueryClient()
 
   return (
     <ErrorBoundary>
-      <WagmiProvider config={wagmiAdapterConfig}>
+      <WagmiProvider config={wagmiAdapterConfig} initialState={initialState}>
         <QueryClientProvider client={queryClient}>
           <AlertProvider>
             <HeroCollapseProvider>

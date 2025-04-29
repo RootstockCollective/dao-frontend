@@ -5,6 +5,9 @@ import './globals.css'
 import { ContextProviders } from './providers'
 import { GoogleTagManager } from '@next/third-parties/google'
 import { GOOGLE_TAG_ID } from '@/lib/constants'
+import { cookieToInitialState } from 'wagmi'
+import { headers } from 'next/headers'
+import { wagmiAdapterConfig } from '@/config'
 
 const openSans = Open_Sans({
   variable: '--font-open-sans',
@@ -20,7 +23,8 @@ interface Props {
   children: ReactNode
 }
 
-export default function RootLayout({ children }: Readonly<Props>) {
+export default async function RootLayout({ children }: Readonly<Props>) {
+  const initialState = cookieToInitialState(wagmiAdapterConfig, (await headers()).get('cookie'))
   return (
     <html lang="en" data-theme="default">
       <GoogleTagManager gtmId={`${GOOGLE_TAG_ID}`} />
@@ -35,7 +39,7 @@ export default function RootLayout({ children }: Readonly<Props>) {
           ></iframe>
         </noscript>
         {/* End Google Tag Manager (noscript) */}
-        <ContextProviders>{children}</ContextProviders>
+        <ContextProviders initialState={initialState}>{children}</ContextProviders>
       </body>
     </html>
   )
