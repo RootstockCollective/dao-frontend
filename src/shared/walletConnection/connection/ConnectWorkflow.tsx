@@ -1,9 +1,9 @@
 'use client'
 import { useState } from 'react'
-import { useConnect } from 'wagmi'
 import { useAlertContext } from '@/app/providers'
 import { DisclaimerFlow, ConnectButtonComponent } from '../components'
 import { parseWalletConnectionError } from '../utils'
+import { useAppKit } from '@reown/appkit/react'
 import { ConnectWorkflowProps } from '../types'
 
 /**
@@ -13,19 +13,18 @@ import { ConnectWorkflowProps } from '../types'
  */
 export const ConnectWorkflow = ({ ConnectComponent = ConnectButtonComponent }: ConnectWorkflowProps) => {
   const [flowState, setFlowState] = useState('idle')
-
-  const { connectors, connectAsync } = useConnect()
+  const { open } = useAppKit()
   const { setMessage } = useAlertContext()
 
   const handleConnectWallet = () => {
-    if (connectors.length) {
-      connectAsync({ connector: connectors[connectors.length - 1] }).catch(err => {
-        setFlowState('idle')
-        setMessage({
-          severity: 'error',
-          content: parseWalletConnectionError(err),
-          title: 'Failed to connect to wallet',
-        })
+    try {
+      open()
+    } catch (err) {
+      setFlowState('idle')
+      setMessage({
+        severity: 'error',
+        content: parseWalletConnectionError(err),
+        title: 'Failed to connect to wallet',
       })
     }
   }
