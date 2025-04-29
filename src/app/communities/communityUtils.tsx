@@ -55,11 +55,11 @@ export const earlyAdoptersCommunity: CommunityItem = {
         the potential of RootstockCollective and staked their claim early. These digital trailblazers embody
         the spirit of innovation and are the foundation of the community.
       </p>
-      <p className={DEFAULT_CLASS_FOR_ROW_CONTAINER}>
+      <div className={DEFAULT_CLASS_FOR_ROW_CONTAINER}>
         <Row leftText="SPECIAL POWER" rightText="Voting Booster" />
         <Row leftText="REQUIREMENT" rightText="First 150 stakers with 1 stRIF, Self-Claim" />
         <Row leftText="ACTIVATION" rightText={activation} />
-      </p>
+      </div>
     </>
   ),
 }
@@ -81,11 +81,11 @@ export const ogFounders: CommunityItem = {
         RootstockCollective&apos;s success. These early supporters are recognized as the architects of the
         DAO&apos;s future.
       </p>
-      <p className={DEFAULT_CLASS_FOR_ROW_CONTAINER}>
+      <div className={DEFAULT_CLASS_FOR_ROW_CONTAINER}>
         <Row leftText="SPECIAL POWER" rightText="Voting Booster" />
         <Row leftText="REQUIREMENT" rightText="1 stRIF on 23rd Sept 2024, Self-Claim" />
         <Row leftText="ACTIVATION" rightText={activation} />
-      </p>
+      </div>
     </>
   ),
 }
@@ -107,11 +107,11 @@ export const ogFoundersEcosystemPartners: CommunityItem = {
         This badge represents their invaluable contributions to the ecosystem&apos;s growth and their role in
         shaping its trajectory.
       </p>
-      <p className={DEFAULT_CLASS_FOR_ROW_CONTAINER}>
+      <div className={DEFAULT_CLASS_FOR_ROW_CONTAINER}>
         <Row leftText="SPECIAL POWER" rightText="Voting Booster" />
         <Row leftText="REQUIREMENT" rightText="Recognised Community contributions, 25k stRIF, Air-Drop" />
         <Row leftText="ACTIVATION" rightText={activation} />
-      </p>
+      </div>
     </>
   ),
 }
@@ -133,11 +133,11 @@ export const ogFoundersExternalContributors: CommunityItem = {
         stages. The OG Contributors badge recognizes the efforts of individuals who went above and beyond to
         support the DAO&apos;s vision, starting with the Shepherds.
       </p>
-      <p className={DEFAULT_CLASS_FOR_ROW_CONTAINER}>
+      <div className={DEFAULT_CLASS_FOR_ROW_CONTAINER}>
         <Row leftText="SPECIAL POWER" rightText="Delegation Kickstarter OR Voting Booster" />
         <Row leftText="REQUIREMENT" rightText="Recognised Community contributions, Air-Drop" />
         <Row leftText="ACTIVATION" rightText={activation} />
-      </p>
+      </div>
     </>
   ),
 }
@@ -160,11 +160,11 @@ export const vanguardCommunity: CommunityItem = {
         The Vanguard badge celebrates the governance pioneers who actively participate in shaping the DAO.
         These members are the guiding stars, lighting the path toward shared prosperity.
       </p>
-      <p className={DEFAULT_CLASS_FOR_ROW_CONTAINER}>
+      <div className={DEFAULT_CLASS_FOR_ROW_CONTAINER}>
         <Row leftText="SPECIAL POWER" rightText="Voting Booster" />
         <Row leftText="REQUIREMENT" rightText="Voted on 1 of the last 3 proposals, Self-Claim" />
         <Row leftText="ACTIVATION" rightText={activation} />
-      </p>
+      </div>
     </>
   ),
   additionalChecks: [
@@ -208,11 +208,11 @@ export const betaBuilders: CommunityItem = {
   ),
   campaignDetails: ({ activation = 'MAY 2025' }) => (
     <>
-      <p className={DEFAULT_CLASS_FOR_ROW_CONTAINER}>
+      <div className={DEFAULT_CLASS_FOR_ROW_CONTAINER}>
         <Row leftText="SPECIAL POWER" rightText="Voting Booster" />
         <Row leftText="REQUIREMENT" rightText="First 50 CollectiveRewards Builders, Air-Drop" />
         <Row leftText="ACTIVATION" rightText={activation} />
-      </p>
+      </div>
     </>
   ),
   discussionLink: 'https://discord.com/channels/842021106956238848/1284160805671272458',
