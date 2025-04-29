@@ -295,3 +295,10 @@ Optional:
 In order to get the prices, you need a coin market cap api key.
 After you get it, set it in the .env.dao
 COIN_MARKET_CAP_KEY=your_key
+
+
+## Develop branch out of service (~2025-04)
+
+The develop branch has been decommissioned and now the branch that is in place is **main**.
+
+Adjustments had to be made to the workflows in order to account for this change.
