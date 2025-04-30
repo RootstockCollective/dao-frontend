@@ -38,13 +38,10 @@ export const ABIMetrics = () => {
           }}
         />
         <>
-          {
-            (withSpinner(TokenMetricsCardRow, { className: 'min-h-0 grow-0', size: 'small' }),
-            {
-              amount: `${abiPct?.toFixed(0)}%`,
-              isLoading,
-            })
-          }
+          {withSpinner(TokenMetricsCardRow, { className: 'min-h-0 grow-0', size: 'small' })({
+            isLoading,
+            amount: `${abiPct?.toFixed(0)}%`,
+          })}
         </>
       </MetricsCard>
     </>
