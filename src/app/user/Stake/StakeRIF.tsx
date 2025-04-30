@@ -43,7 +43,7 @@ export const StakeRIF = ({
     <Label>
       Available: <span data-testid="totalBalance">{totalBalance}</span>{' '}
       <span data-testid="symbol">{symbol}</span>{' '}
-      {totalBalanceConverted && <span data-testid="totalBalanceConverted">= ${totalBalanceConverted}</span>}
+      {totalBalanceConverted && <span data-testid="totalBalanceConverted">= {totalBalanceConverted}</span>}
     </Label>
     {/* Percentage button */}
     <div className="flex justify-end gap-2 pt-1">
