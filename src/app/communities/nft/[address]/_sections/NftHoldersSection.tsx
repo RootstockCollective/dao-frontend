@@ -149,6 +149,11 @@ export const NftHoldersSection = ({ address }: HoldersSectionProps) => {
     }
   })
 
+  // Don't render the section at all if there are no holders and we're not loading
+  if (currentResults.length === 0 && !isLoading) {
+    return null
+  }
+
   return (
     <div className="pl-4 relative">
       <HeaderTitle className="mb-[24px]">
