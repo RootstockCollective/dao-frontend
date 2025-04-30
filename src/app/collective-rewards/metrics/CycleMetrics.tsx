@@ -50,14 +50,11 @@ export const CycleMetrics = () => {
     <MetricsCard borderless>
       <MetricsCardTitle title="Current cycle" data-testid="CurrentCycle" />
       <>
-        {
-          (withSpinner(TokenMetricsCardRow, { size: 'small' }),
-          {
-            amount: `${timeRemaining.toHuman()}`,
-            fiatAmount: `out of ${duration.toHuman()}. Ends ${cycleNext.toFormat('EEE, dd MMM')}`,
-            isLoading,
-          })
-        }
+        {withSpinner(TokenMetricsCardRow, { size: 'small' })({
+          amount: `${timeRemaining.toHuman()}`,
+          fiatAmount: `out of ${duration.toHuman()}. Ends ${cycleNext.toFormat('EEE, dd MMM')}`,
+          isLoading,
+        })}
       </>
     </MetricsCard>
   )
