@@ -1,17 +1,16 @@
 import { supportedChainId } from '@/config'
 import { ENV } from '@/lib/constants'
+import { usePathname } from 'next/navigation'
 import { FC, ReactNode, useCallback, useEffect } from 'react'
 import { useAccount, useSwitchChain } from 'wagmi'
 import { Paragraph, Span } from '../Typography'
-import { ProtectedContent } from '../ProtectedContent/ProtectedContent'
-import { usePathname } from 'next/navigation'
+import { dismissToastAlerts, showToastAlert } from '@/shared/lib/toastAlert'
 
 interface Props {
-  setMessage: (message: any) => void
   children: ReactNode
 }
 
-export const MainContainerContent: FC<Props> = ({ setMessage, children }) => {
+export const MainContainerContent: FC<Props> = ({ children }) => {
   const { isConnected, chainId } = useAccount()
   const { switchChain } = useSwitchChain()
   const pathname = usePathname()
@@ -25,15 +24,15 @@ export const MainContainerContent: FC<Props> = ({ setMessage, children }) => {
   useEffect(() => {
     // Clear message on route change if not on wrong network
     if (!wrongNetwork) {
-      setMessage(null)
+      dismissToastAlerts()
     }
-  }, [pathname, setMessage, wrongNetwork])
+  }, [pathname, wrongNetwork])
 
   useEffect(() => {
     if (wrongNetwork) {
       console.error('Unsupported network', chainId)
       const networkName = ENV.charAt(0).toUpperCase() + ENV.slice(1)
-      setMessage({
+      showToastAlert({
         title: 'Unsupported network',
         content: (
           <Paragraph variant="light" className="font-[600] text-[14px] text-white opacity-80 mb-[12px]">
@@ -44,16 +43,11 @@ export const MainContainerContent: FC<Props> = ({ setMessage, children }) => {
           </Paragraph>
         ),
         severity: 'error',
-        onDismiss: null, // force not showing dismiss button
+        dismissible: false,
+        dataTestId: 'UnsupportedNetwork',
       })
-    } else {
-      setMessage(null)
     }
-  }, [chainId, handleSwitchNetwork, setMessage, wrongNetwork])
+  }, [chainId, handleSwitchNetwork, wrongNetwork])
 
-  if (isConnected && wrongNetwork) {
-    return null
-  }
-
-  return <>{children}</>
+  return isConnected && wrongNetwork ? null : children
 }
