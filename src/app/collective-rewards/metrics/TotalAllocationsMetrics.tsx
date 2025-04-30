@@ -31,24 +31,22 @@ export const TotalAllocationsMetrics: FC<TotalAllocationsProps> = ({
   const { amount, fiatAmount } = formatMetrics(totalAllocations, price, symbol, currency)
 
   return (
-    <>
-      <MetricsCard borderless>
-        <MetricsCardTitle
-          title="Total allocations"
-          data-testid="TotalAllocations"
-          tooltip={{
-            text: 'Total stRIF allocation from Backers to Builders. Backers retain full ownership and access to their stRIF.',
-            popoverProps: { size: 'medium' },
-          }}
-        />
-        <>
-          {withSpinner(TokenMetricsCardRow, { className: 'min-h-0 grow-0', size: 'small' })({
-            amount,
-            fiatAmount,
-            isLoading,
-          })}
-        </>
-      </MetricsCard>
-    </>
+    <MetricsCard borderless>
+      <MetricsCardTitle
+        title="Total allocations"
+        data-testid="TotalAllocations"
+        tooltip={{
+          text: 'Total stRIF allocation from Backers to Builders. Backers retain full ownership and access to their stRIF.',
+          popoverProps: { size: 'medium' },
+        }}
+      />
+      <>
+        {withSpinner(TokenMetricsCardRow, { className: 'min-h-0 grow-0', size: 'small' })({
+          amount,
+          fiatAmount,
+          isLoading,
+        })}
+      </>
+    </MetricsCard>
   )
 }

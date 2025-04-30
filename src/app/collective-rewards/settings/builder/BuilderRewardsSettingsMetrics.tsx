@@ -52,44 +52,42 @@ export const BuilderRewardsSettingsMetrics: FC = () => {
   const timeRemaining: string | undefined = getDateTimeRemaining(data?.cooldownEndTime)
 
   return (
-    <>
-      <div className="flex flex-row gap-2.5 self-stretch items-start content-start flex-nowrap">
-        <RewardsSettingsCard title="Current %" dataTestId="CurrentBackerReward">
-          <>
-            {withSpinner(Typography)({
-              tagVariant: 'h2',
-              className: 'text-2xl leading-[120%] uppercase text-primary font-normal',
-              isLoading: isLoading,
-              children: `${weiToPercentage(rewardPercentageToApply ?? 0n)}%`,
-            })}
-          </>
-        </RewardsSettingsCard>
+    <div className="flex flex-row gap-2.5 self-stretch items-start content-start flex-nowrap">
+      <RewardsSettingsCard title="Current %" dataTestId="CurrentBackerReward">
+        <>
+          {withSpinner(Typography)({
+            tagVariant: 'h2',
+            className: 'text-2xl leading-[120%] uppercase text-primary font-normal',
+            isLoading: isLoading,
+            children: `${weiToPercentage(rewardPercentageToApply ?? 0n)}%`,
+          })}
+        </>
+      </RewardsSettingsCard>
 
-        {timeRemaining && (
-          <>
-            <RewardsSettingsCard title="Next %" dataTestId="NextBackerReward">
-              <Typography
-                tagVariant="h2"
-                className="text-2xl leading-[120%] uppercase text-primary font-normal"
-              >
-                {weiToPercentage(data?.next ?? 0n)}%
-              </Typography>
-            </RewardsSettingsCard>
-            <RewardsSettingsCard
-              className="min-w-[242px]"
-              title="Takes Effect In"
-              dataTestId="BackerRewardCooldown"
+      {timeRemaining && (
+        <>
+          <RewardsSettingsCard title="Next %" dataTestId="NextBackerReward">
+            <Typography
+              tagVariant="h2"
+              className="text-2xl leading-[120%] uppercase text-primary font-normal"
             >
-              <Typography
-                tagVariant="h2"
-                className="text-2xl leading-[120%] uppercase text-primary font-normal"
-              >
-                {getDateTimeRemaining(data?.cooldownEndTime) ?? '-'}
-              </Typography>
-            </RewardsSettingsCard>
-          </>
-        )}
-      </div>
-    </>
+              {weiToPercentage(data?.next ?? 0n)}%
+            </Typography>
+          </RewardsSettingsCard>
+          <RewardsSettingsCard
+            className="min-w-[242px]"
+            title="Takes Effect In"
+            dataTestId="BackerRewardCooldown"
+          >
+            <Typography
+              tagVariant="h2"
+              className="text-2xl leading-[120%] uppercase text-primary font-normal"
+            >
+              {getDateTimeRemaining(data?.cooldownEndTime) ?? '-'}
+            </Typography>
+          </RewardsSettingsCard>
+        </>
+      )}
+    </div>
   )
 }

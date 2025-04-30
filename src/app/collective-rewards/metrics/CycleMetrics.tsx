@@ -4,7 +4,7 @@ import { useHandleErrors } from '@/app/collective-rewards/utils'
 import { withSpinner } from '@/components/LoadingSpinner/withLoadingSpinner'
 import { useReadCycleTimeKeeper } from '@/shared/hooks/contracts'
 import { Duration } from 'luxon'
-import { useEffect, useState, createElement } from 'react'
+import { useEffect, useState } from 'react'
 import { useIntervalTimestamp } from './hooks/useIntervalTimestamp'
 
 export const CycleMetrics = () => {
@@ -49,11 +49,16 @@ export const CycleMetrics = () => {
   return (
     <MetricsCard borderless>
       <MetricsCardTitle title="Current cycle" data-testid="CurrentCycle" />
-      {createElement(withSpinner(TokenMetricsCardRow, { size: 'small' }), {
-        amount: `${timeRemaining.toHuman()}`,
-        fiatAmount: `out of ${duration.toHuman()}. Ends ${cycleNext.toFormat('EEE, dd MMM')}`,
-        isLoading,
-      })}
+      <>
+        {
+          (withSpinner(TokenMetricsCardRow, { size: 'small' }),
+          {
+            amount: `${timeRemaining.toHuman()}`,
+            fiatAmount: `out of ${duration.toHuman()}. Ends ${cycleNext.toFormat('EEE, dd MMM')}`,
+            isLoading,
+          })
+        }
+      </>
     </MetricsCard>
   )
 }

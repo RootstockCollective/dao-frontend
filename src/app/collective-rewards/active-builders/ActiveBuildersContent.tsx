@@ -43,9 +43,7 @@ export const ActiveBuildersContent = () => {
     <>
       <SearchContextProvider builders={filteredBuilders} filterFunction={filterFunction}>
         <Search status={status} />
-        <>
-          {withSpinner(ActiveBuildersGrid)} isLoading={isLoading}
-        </>
+        <>{withSpinner(ActiveBuildersGrid)({ isLoading })}</>
       </SearchContextProvider>
     </>
   )
