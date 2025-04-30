@@ -17,7 +17,7 @@ export default function ChooseProposal() {
   const cardsRef = useRef<HTMLDivElement>(null)
   const infoPanelRef = useRef<HTMLDivElement>(null)
   useClickOutside(
-    [cardsRef, infoPanelRef].filter((ref): ref is RefObject<HTMLDivElement> => ref.current !== null),
+    [cardsRef, infoPanelRef].filter((ref): ref is RefObject<HTMLDivElement> => !!ref.current),
     () => setChosenProposal(null),
   )
   return (
