@@ -1,4 +1,3 @@
-import { createElement } from 'react'
 import { MetricsCard, MetricsCardTitle, TokenMetricsCardRow } from '@/app/collective-rewards/rewards'
 import { withSpinner } from '@/components/LoadingSpinner/withLoadingSpinner'
 import { ABIFormula, useGetMetricsAbi } from '@/app/collective-rewards/shared'
