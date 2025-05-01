@@ -57,6 +57,7 @@ export const useGetBackerRewards = (
     isLoading: allocationOfLoading,
     error: allocationOfError,
   } = useReadGauges({ addresses: gauges, functionName: 'allocationOf', args: [builder] })
+
   const { data: tokenRewards, isLoading: rewardsLoading, error: rewardsError } = useBackerRewardsContext()
 
   const isLoading = useMemo(

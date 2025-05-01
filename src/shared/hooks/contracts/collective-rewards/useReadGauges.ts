@@ -30,27 +30,19 @@ export const useReadGauges = <TFunctionName extends GaugeFunctionName>(
       ...(config as any),
     })),
     query: {
-      retry: true,
       refetchInterval: AVERAGE_BLOCKTIME,
       ...query,
     },
   })
 
-  type ReturnType = ReadGaugesReturnType<GaugeAbi, TFunctionName>
+  type ReturnType = ReadGaugesReturnType<GaugeAbi, TFunctionName> | Error
 
-  const data = useMemo(
+  const data: ReturnType[] = useMemo(
     () =>
-      results?.reduce<ReturnType[]>((acc, { result, error, status }, i) => {
-        if (status !== 'success' || error) {
-          console.error(
-            `Call index: ${i}: data fetch not successful for Gauge(${addresses[i]}).${config.functionName}.`,
-            error ? error : 'Unknown error',
-          )
-        }
-
-        return [...acc, result as ReturnType]
-      }, []) ?? [],
-    [addresses, results, config.functionName],
+      results?.map(({ result, error }) => {
+        return error ?? (result as ReturnType)
+      }) ?? [],
+    [results],
   )
 
   return {
