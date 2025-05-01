@@ -58,11 +58,11 @@ export const useGetBackerRBI = (backer: Address, { rbtc, rif }: Record<string, T
 
     const rifPrice = prices[rif.symbol]?.price ?? 0
 
-    const priceAdjustedAllocTime = accumulatedAllocationsTime.div(WeiPerEther.toString()).mul(rifPrice)
-
-    if (priceAdjustedAllocTime.eq(0)) {
+    if (!rifPrice || accumulatedAllocationsTime.eq(0)) {
       return Big(0)
     }
+
+    const priceAdjustedAllocTime = accumulatedAllocationsTime.div(WeiPerEther.toString()).mul(rifPrice)
 
     const backerTotalAllocation = Big(backerTotalAllocation_)
     let accumulatedTime = Big(accumulatedTime_)
