@@ -1,17 +1,17 @@
 import { useQuery } from '@tanstack/react-query'
 import { render, renderHook, screen, waitFor } from '@testing-library/react'
+import { FC } from 'react'
 import { afterEach, describe, expect, it, vi } from 'vitest'
 import { useAccount } from 'wagmi'
+import * as boostUtils from './boost.utils'
 import { BoosterProvider, useFetchBoostData, useNFTBoosterContext } from './BoosterContext'
 
 // Mock the external hooks
-vi.mock('wagmi', () => ({
-  useAccount: vi.fn(),
-}))
+vi.mock('wagmi')
 
-vi.mock('@tanstack/react-query', () => ({
-  useQuery: vi.fn(),
-}))
+vi.mock('@tanstack/react-query')
+
+vi.mock('./boost.utils')
 
 // Helper function to safely stringify objects containing BigInts
 const safeStringify = (obj: any) =>
@@ -276,6 +276,65 @@ describe('useFetchBoostData', () => {
 
     const { result } = renderHook(() => useFetchBoostData())
     expect(result.current.hasActiveCampaign).toBe(false)
+  })
+
+  it('should trim the latestFile string before checking for "None"', () => {
+    const testLatestFile = '  None\n'
+    ;(useQuery as any)
+      .mockImplementationOnce(() => ({
+        data: testLatestFile,
+        isLoading: false,
+        error: null,
+      }))
+      .mockImplementationOnce(() => ({
+        data: undefined,
+        isLoading: false,
+        error: null,
+      }))
+    const { result } = renderHook(() => useFetchBoostData())
+    expect(result.current.hasActiveCampaign).toBe(false)
+    expect(result.current.data).toBeUndefined()
+    expect(result.current.isLoading).toBe(false)
+    expect(result.current.error).toBeNull()
+  })
+
+  it('should trim the latestFile string before retrieving boost data', async () => {
+    const testLatestFile = '  some-file\n'
+    const testBoostData = {
+      nftContractAddress: '0x123',
+      boostPercentage: BigInt(50),
+      calculationBlock: BigInt(200),
+      holders: {},
+    }
+
+    const realReactQuery =
+      await vi.importActual<typeof import('@tanstack/react-query')>('@tanstack/react-query')
+
+    vi.mocked(useQuery).mockImplementation(realReactQuery.useQuery)
+
+    const queryClient = new realReactQuery.QueryClient({
+      defaultOptions: {
+        queries: {
+          retry: false,
+        },
+      },
+    })
+    const wrapper: FC<{ children: React.ReactNode }> = ({ children }) => (
+      <realReactQuery.QueryClientProvider client={queryClient}>
+        <BoosterProvider>{children}</BoosterProvider>
+      </realReactQuery.QueryClientProvider>
+    )
+
+    vi.mocked(boostUtils.fetchLatestFile).mockResolvedValueOnce(testLatestFile)
+    const mockedFetchBoostData = vi.fn().mockResolvedValueOnce(testBoostData)
+    vi.mocked(boostUtils.fetchBoostData).mockImplementationOnce(mockedFetchBoostData)
+
+    const expectedLatestFile = testLatestFile.trim()
+    renderHook(() => useFetchBoostData(), { wrapper })
+    await waitFor(() => {
+      expect(mockedFetchBoostData).toHaveBeenCalledTimes(1)
+      expect(mockedFetchBoostData).toHaveBeenCalledWith(expectedLatestFile, expect.any(Number))
+    })
   })
 
   it('should return boost data and hasActiveCampaign as true when a valid latestFile is returned', () => {

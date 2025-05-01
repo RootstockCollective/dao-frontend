@@ -1,10 +1,11 @@
 'use client'
-import { AVERAGE_BLOCKTIME, NFT_BOOSTER_DATA_URL } from '@/lib/constants'
+import { AVERAGE_BLOCKTIME } from '@/lib/constants'
 import { useQuery } from '@tanstack/react-query'
 import axios from 'axios'
 import { createContext, ReactNode, useCallback, useContext, useMemo } from 'react'
 import { Address } from 'viem'
 import { useAccount } from 'wagmi'
+import { fetchBoostData, fetchLatestFile } from './boost.utils'
 
 interface HolderRewards {
   estimatedRBTCRewards: bigint
@@ -109,33 +110,25 @@ export const useNFTBoosterContext = () => useContext(BoosterContext)
 export const axiosInstance = axios.create()
 
 export const useFetchBoostData = () => {
-  const now = Date.now().toString()
-  const noCacheParam = `nocache=${now}`
+  const now = Date.now()
   const {
     data: latestFile,
     isLoading: isFileDataLoading,
     error: fileDataError,
   } = useQuery<string>({
-    queryFn: async () => {
-      const { data } = await axiosInstance.get(`${NFT_BOOSTER_DATA_URL}/latest?${noCacheParam}`)
-
-      return data
-    },
+    queryFn: async () => fetchLatestFile(now),
     queryKey: ['nftBoosterLatestFile'],
     refetchInterval: AVERAGE_BLOCKTIME,
   })
-  const hasActiveCampaign = !!latestFile && latestFile !== 'None'
+
+  const hasActiveCampaign = !!latestFile && latestFile.trim() !== 'None'
 
   const {
     data: boostData,
     isLoading: isBoostDataLoading,
     error: boostDataError,
   } = useQuery<BoostData>({
-    queryFn: async () => {
-      const { data } = await axiosInstance.get(`${NFT_BOOSTER_DATA_URL}/${latestFile}?${noCacheParam}`)
-
-      return { ...data, nftContractAddress: data.nftContractAddress.toLowerCase() }
-    },
+    queryFn: async () => fetchBoostData(latestFile?.trim(), now),
     queryKey: ['nftBoosterData'],
     refetchInterval: AVERAGE_BLOCKTIME,
     enabled: hasActiveCampaign,
