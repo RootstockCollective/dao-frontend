@@ -32,7 +32,7 @@ interface TimeColumnProps {
 
 export function TimeColumn({ blocksUntilClosure, proposalDeadline, proposalBlockNumber }: TimeColumnProps) {
   const votingPeriod = proposalDeadline.minus(Number(proposalBlockNumber))
-  const ratio = blocksUntilClosure.div(votingPeriod)
+  const ratio = votingPeriod.eq(0) ? Big(0) : blocksUntilClosure.div(votingPeriod)
 
   const colorClass = getColorClass(ratio.toNumber())
 
