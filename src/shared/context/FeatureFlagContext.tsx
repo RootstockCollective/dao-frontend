@@ -1,8 +1,10 @@
-import React, { createContext, FC, ReactNode, useContext, useEffect, useState } from 'react'
+import { createContext, FC, ReactNode, useContext, useEffect, useState } from 'react'
 
 export const features = {
   user_flags: 'Allows users to enable certain flags',
   v2_rewards: 'Brings voting to builders',
+  limit_kickback:
+    'Turn on limiting of the amount of kickback (backerRewardPercentage) that can be set by the builder',
 } as const
 export type Feature = keyof typeof features
 
@@ -39,6 +41,7 @@ const getEnvFlag = (value?: string): boolean | undefined => {
 export const envFlags: FeatureFlags = {
   user_flags: getEnvFlag(process.env.NEXT_PUBLIC_ENABLE_FEATURE_USER_FLAGS),
   v2_rewards: getEnvFlag(process.env.NEXT_PUBLIC_ENABLE_FEATURE_V2_REWARDS),
+  limit_kickback: getEnvFlag(process.env.NEXT_PUBLIC_ENABLE_FEATURE_LIMIT_KICKBACK),
 }
 
 type FeatureFlagContextType = {
