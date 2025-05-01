@@ -1,5 +1,4 @@
 import { Address } from 'viem'
-import { keccak256, toBytes, sliceHex } from 'viem'
 
 export const GITHUB_ORG = 'RootstockCollective'
 export const ENV = process.env.NEXT_PUBLIC_ENV as string
@@ -53,7 +52,7 @@ export const MAX_NAME_LENGTH_FOR_PROPOSAL = 100
 export const TALLY_DESCRIPTION_SEPARATOR = '  ' // Tally uses double spaces to separate name and description
 export const WeiPerEther = 10n ** 18n
 // address(uint160(uint256(keccak256("COINBASE_ADDRESS"))))
-export const CoinBaseAddress = '0xf7ab6cfaebbadfe8b5494022c4c6db776bd63b6b' as Address
+export const COINBASE_ADDRESS = '0xf7ab6cfaebbadfe8b5494022c4c6db776bd63b6b' as Address
 
 export const REOWN_PROJECT_ID = (process.env.NEXT_PUBLIC_REOWN_PROJECT_ID ?? '') as string
 export const REOWN_METADATA_URL = (process.env.NEXT_PUBLIC_REOWN_METADATA_URL ?? '') as string
