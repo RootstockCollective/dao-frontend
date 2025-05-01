@@ -20,7 +20,7 @@ const componentByType: Partial<ProposalFormByType> = {
   },
   BuilderRegistryAbi: {
     communityApproveBuilder: CreateBuilderProposalForm,
-    dewhitelistBuilder: RemoveBuilderProposalForm,
+    communityBanBuilder: RemoveBuilderProposalForm,
   },
 }
 

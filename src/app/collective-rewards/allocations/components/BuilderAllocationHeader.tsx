@@ -9,12 +9,15 @@ import { getBuilderInactiveState, InactiveState, isBuilderActive } from '@/app/c
 export type BuilderAllocationHeaderProps = Pick<Builder, 'builderName' | 'address' | 'stateFlags' | 'gauge'> &
   Pick<BuilderProposal, 'date'>
 
-const haltedClass = 'bg-[#932309] color-text-primary py-1 px-1 text-[12px]'
-
-const haltedStateBadges: { [key in InactiveState]: JSX.Element } = {
-  Paused: <Badge content="Paused" className="bg-[#F9E1FF] text-secondary py-1 px-1 text-[12px]" />,
-  Deactivated: <Badge content="Deactivated" className={haltedClass} />,
-  SelfPaused: <Badge content="SelfPaused" className={haltedClass} />,
+const badgeBaseClass = 'py-1 px-1 text-[12px]'
+const haltedClass = `${badgeBaseClass} bg-[#932309] color-text-primary`
+const badgeState: {
+  [key in InactiveState | 'Active']: { content: string; className: string }
+} = {
+  Active: { content: 'Active', className: `${badgeBaseClass} bg-[#DBFEE5] text-secondary` },
+  Paused: { content: 'Paused', className: `${badgeBaseClass} bg-[#F9E1FF] text-secondary` },
+  Deactivated: { content: 'Deactivated', className: `${badgeBaseClass} ${haltedClass}` },
+  SelfPaused: { content: 'SelfPaused', className: `${badgeBaseClass} ${haltedClass}` },
 }
 
 export const BuilderAllocationHeader: FC<BuilderAllocationHeaderProps> = ({
@@ -23,6 +26,8 @@ export const BuilderAllocationHeader: FC<BuilderAllocationHeaderProps> = ({
   stateFlags,
 }) => {
   const state = stateFlags as BuilderStateFlags
+  const stateKey = isBuilderActive(state) ? 'Active' : getBuilderInactiveState(state)
+  const { content, className } = badgeState[stateKey]
 
   return (
     <div className="flex flex-row w-full items-center content-between gap-3">
@@ -31,11 +36,7 @@ export const BuilderAllocationHeader: FC<BuilderAllocationHeaderProps> = ({
         <Typography tagVariant="label" className="font-semibold line-clamp-1 text-wrap text-base leading-4">
           <AddressOrAlias addressOrAlias={builderName || address} className="text-base font-bold leading-4" />
         </Typography>
-        {isBuilderActive(state) ? (
-          <Badge content="Active" className="bg-[#DBFEE5] text-secondary py-1 px-1 text-[12px]" />
-        ) : (
-          haltedStateBadges[getBuilderInactiveState(state)]
-        )}
+        <Badge content={content} className={className} />
       </div>
     </div>
   )

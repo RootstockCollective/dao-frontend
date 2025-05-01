@@ -9,14 +9,14 @@ export const abiNames = [
   'DAOTreasuryAbi',
   'RIFTokenAbi',
   'BuilderRegistryAbi',
-  // CR MVP: To keep compatibility with the MVP logs
+  // To keep compatibility with the previous logs
   'CRDeprecatedAbi',
 ] as const
 export const abis = [
   DAOTreasuryAbi,
   RIFTokenAbi,
   BuilderRegistryAbi,
-  // CR MVP: To keep compatibility with the MVP logs
+  // To keep compatibility with the previous operations
   CRDeprecatedAbi,
 ] as const
 
@@ -25,7 +25,7 @@ export const supportedProposalActions = [
   'withdrawERC20',
   'communityApproveBuilder',
   'communityBanBuilder',
-  // CR MVP: To keep compatibility with the MVP logs
+  // To keep compatibility with the previous operations
   'removeWhitelistedBuilder',
   'whitelistBuilder',
   'dewhitelistBuilder',

@@ -250,7 +250,7 @@ const PageWithProposal = (proposal: ParsedProposal) => {
       <div className="flex items-center justify-between">
         <Header className="text-3xl ">{proposalName}</Header>
         {(proposalType === 'communityApproveBuilder' || proposalType === 'whitelistBuilder') && (
-          <DewhitelistButton
+          <CommunityBanBuilderButton
             proposal={proposal}
             canCreateProposal={canCreateProposal}
             proposalState={proposalState as ProposalState}
@@ -726,20 +726,20 @@ const CalldataDisplay = (props: DecodedData) => {
   )
 }
 
-type DewhitelistButton = {
+type CommunityBanBuilderButton = {
   proposal: ParsedProposal
   canCreateProposal: boolean
   proposalState: ProposalState
 }
 
-const DewhitelistButton: FC<DewhitelistButton> = ({
+const CommunityBanBuilderButton: FC<CommunityBanBuilderButton> = ({
   proposal: { calldatasParsed, proposalId },
   canCreateProposal,
   proposalState,
 }) => {
   const router = useRouter()
   const builderRegistryContract = 'BuilderRegistryAbi'
-  const dewhitelistBuilderAction = 'dewhitelistBuilder'
+  const communityBanBuilderAction = 'communityBanBuilder'
   const builderAddress =
     calldatasParsed[0]?.type === 'decoded' ? getAddress(calldatasParsed[0].args[0]?.toString() || '') : ''
   const isProposalExecuted = proposalState === ProposalState.Executed
@@ -752,7 +752,7 @@ const DewhitelistButton: FC<DewhitelistButton> = ({
           startIcon={<MinusIcon />}
           onClick={() =>
             router.push(
-              `/proposals/create?contract=${builderRegistryContract}&action=${dewhitelistBuilderAction}&builderAddress=${builderAddress}&proposalId=${proposalId}`,
+              `/proposals/create?contract=${builderRegistryContract}&action=${communityBanBuilderAction}&builderAddress=${builderAddress}&proposalId=${proposalId}`,
             )
           }
           disabled={!canCreateProposal}
@@ -770,17 +770,7 @@ const actionInputNameFormatMap: Partial<ActionInputNameFormatMap<FunctionName[nu
       builder_: 'Address to be whitelisted',
     },
     communityBanBuilder: {
-      builder_: 'Address to be whitelisted',
-    },
-    whitelistBuilder: {
-      builder_: 'Address to be whitelisted',
-      rewardReceiver_: 'Address to receive rewards',
-    },
-    removeWhitelistedBuilder: {
-      builder_: 'Address to be removed',
-    },
-    dewhitelistBuilder: {
-      builder_: 'Address to be de-whitelisted',
+      builder_: 'Address to be banned',
     },
   }
 
