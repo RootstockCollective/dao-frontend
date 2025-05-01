@@ -14,7 +14,7 @@ const useGetAbi = (rewardsPerStRif: bigint) => {
   const rifPrice = prices.RIF?.price ?? 0
 
   if (!rifPrice) {
-    return 0
+    return Big(0)
   }
 
   return Big(1)

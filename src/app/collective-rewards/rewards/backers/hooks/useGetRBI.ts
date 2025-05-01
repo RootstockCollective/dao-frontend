@@ -51,10 +51,18 @@ export const useGetBackerRBI = (backer: Address, { rbtc, rif }: Record<string, T
     const accumulatedAllocationsTime = gauges_.reduce(
       (acc, { accumulatedAllocationsTime_, allocation_, lastBlockTimestamp_: gaugeLastBlockTimestamp_ }) => {
         const lastStakedSeconds = Big(timestamp.toString()).sub(gaugeLastBlockTimestamp_)
-        return acc.add(accumulatedAllocationsTime_).add(Big(allocation_).mul(lastStakedSeconds))
+        return acc.add(accumulatedAllocationsTime_).add(lastStakedSeconds.mul(allocation_))
       },
       Big(0),
     )
+
+    const rifPrice = prices[rif.symbol]?.price ?? 0
+
+    const priceAdjustedAllocTime = accumulatedAllocationsTime.div(WeiPerEther.toString()).mul(rifPrice)
+
+    if (priceAdjustedAllocTime.eq(0)) {
+      return Big(0)
+    }
 
     const backerTotalAllocation = Big(backerTotalAllocation_)
     let accumulatedTime = Big(accumulatedTime_)
@@ -63,13 +71,7 @@ export const useGetBackerRBI = (backer: Address, { rbtc, rif }: Record<string, T
       accumulatedTime = Big(accumulatedTime_).add(lastStakedSeconds)
     }
 
-    const rifPrice = prices[rif.symbol]?.price ?? 0
-
-    return accumulatedTime
-      .mul(
-        rbtcRewards.add(rifRewards).div(accumulatedAllocationsTime.div(WeiPerEther.toString()).mul(rifPrice)),
-      )
-      .mul(100)
+    return accumulatedTime.mul(rbtcRewards.add(rifRewards).div(priceAdjustedAllocTime)).mul(100)
   }, [stakingHistory, prices, rif.symbol, rbtcRewards, rifRewards, timestamp])
 
   const isLoading = stakingHistoryLoading || rbtcRewardsLoading || rifRewardsLoading
