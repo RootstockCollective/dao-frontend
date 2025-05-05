@@ -71,9 +71,9 @@ const defaultTable: Record<RewardsColumnKeyEnum, TableHeader> = {
 
 const isHidable = (key: RewardsColumnKeyEnum) => key === RewardsColumnKeyEnum.allTimeRewards
 
-type BackerRewardsTable = Omit<RewardDetails, 'gauge'>
-export const BackerRewardsTable: FC<BackerRewardsTable> = ({ builder, gauges, tokens }) => {
-  const { data: rewardsData, isLoading, error: rewardsError } = useGetBackerRewards(builder, gauges, tokens)
+type BackerRewardsTable = Omit<RewardDetails, 'gauges'>
+export const BackerRewardsTable: FC<BackerRewardsTable> = ({ builder, tokens }) => {
+  const { data: rewardsData, isLoading, error: rewardsError } = useGetBackerRewards(builder, tokens)
   const {
     detailedView: { value: isDetailedView },
   } = useBackerRewardsContext()
