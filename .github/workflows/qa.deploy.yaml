@@ -1,26 +1,26 @@
-name: Deploy to Amazon ECS (Testnet)
-# Deploys to: https://testnet.app.rootstockcollective.xyz/
+name: Deploy to Amazon ECS (QA)
+# Deploys to: https://qa.dao.rootstockcollective.xyz/
 # Triggers when a release is created
 # Uses the `.env.testnet` env file
 # NOTE: Will be deprecated soon and replaced with the release candidate workflow.
 
 on:
-  release:
-    types: [released]
-  workflow_dispatch: 
+  push:
+    tags:
+      - 'v[0-9]+.[0-9]+.[0-9]+-rc.[0-9]+'
 
 # Declare default permissions as read only.
 permissions: read-all
 
 env:
   AWS_REGION: us-east-1
-  ECR_REPOSITORY: dao-frontend-testnet
-  ECS_CLUSTER: dao-frontend
-  ECS_SERVICE: dao-frontend-testnet
-  ECS_TASK_DEFINITION: dao-frontend-testnet
-  CONTAINER_NAME: dao-frontend-testnet
+  ECR_REPOSITORY: rscoll-dev-dao-qa
+  ECS_CLUSTER: rscoll-dev
+  ECS_SERVICE: rscoll-dev-dao-qa
+  ECS_TASK_DEFINITION: rscoll-dev-dao-qa
+  CONTAINER_NAME: rscoll-dev-dao-qa
 
-  # The .env file that is used to build the docker image 
+  # The .env file that is used to build the docker image
   # is retrieved using PROFILE, so be sure there is a `.env.<PROFILE>` file
   # that matches with the profile set
   # Example: PROFILE=testnet => .env.testnet
@@ -31,8 +31,8 @@ jobs:
     name: Deploy
     runs-on: ubuntu-latest
     environment:
-      name: testnet
-      url: https://testnet.app.rootstockcollective.xyz
+      name: QA
+      url: https://qa.dao.rootstockcollective.xyz
 
     permissions:
       id-token: write
@@ -45,7 +45,7 @@ jobs:
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@ececac1a45f3b08a01d2dd070d28d111c5fe6722 #v4.1.0
         with:
-          role-to-assume: ${{ secrets.AWS_LOGIN_TESTNET_ROLE_ARN }}
+          role-to-assume: ${{ secrets.AWS_LOGIN_QA_ROLE_ARN }}
           aws-region: ${{ env.AWS_REGION }}
 
       - name: Login to Amazon ECR
@@ -61,7 +61,7 @@ jobs:
           # Build a docker container and
           # push it to ECR so that it can
           # be deployed to ECS.
-          docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG --build-arg PROFILE="$PROFILE" --build-arg NEXT_PUBLIC_BUILD_ID=${{ github.sha }} --build-arg THE_GRAPH_API_KEY=${{ secrets.THE_GRAPH_API_KEY }}  --no-cache .
+          docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG --build-arg PROFILE="$PROFILE" --build-arg NEXT_PUBLIC_BUILD_ID=${{ github.sha }} --build-arg THE_GRAPH_API_KEY=${{ secrets.THE_GRAPH_API_KEY }} --no-cache .
           docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
           echo "::set-output name=image::$ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG"
 
