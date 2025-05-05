@@ -44,8 +44,8 @@ type BackerRewardsProviderProps = {
   }
 }
 
-function mapToRecord(earned: (bigint | undefined)[], gauges: `0x${string}`[]) {
-  return earned.reduce<Record<Address, bigint>>((acc, value, i) => {
+function mapToRecord(rewardsAmount: (bigint | undefined)[], gauges: `0x${string}`[]) {
+  return rewardsAmount.reduce<Record<Address, bigint>>((acc, value, i) => {
     acc[gauges[i]] = value as bigint
     return acc
   }, {})
