@@ -53,7 +53,6 @@ export const StepTwo = ({ onGoNext, onCloseModal = () => {} }: StepProps) => {
       onGoNext?.()
     } catch (err: any) {
       if (!isUserRejectedTxError(err)) {
-        // setMessage(TX_MESSAGES.staking.error)
         switch (actionName) {
           case 'STAKE':
             setMessage(TX_MESSAGES.staking.error)
