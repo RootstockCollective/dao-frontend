@@ -5,9 +5,9 @@ name: Deploy to Amazon ECS (QA)
 # NOTE: Will be deprecated soon and replaced with the release candidate workflow.
 
 on:
-  push:
-    branches:
-      - DEVOPS-2191/infra-testnet-qa
+  release:
+    types: [released]
+  workflow_dispatch: 
 
 # Declare default permissions as read only.
 permissions: read-all
