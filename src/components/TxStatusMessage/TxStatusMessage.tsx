@@ -11,6 +11,7 @@ type TxMessage =
   (typeof TX_MESSAGES)[keyof typeof TX_MESSAGES][keyof (typeof TX_MESSAGES)[keyof typeof TX_MESSAGES]]
 
 type TxMessageType = 'proposal' | 'staking' | 'unstaking'
+type TxStatusSeverity = 'success' | 'error' | 'warning'
 
 export const useTxStatusMessage = () => {
   const searchParams = useSearchParams()
@@ -19,7 +20,6 @@ export const useTxStatusMessage = () => {
   const isProposalPage = pathname.includes('/proposals')
   const { status: txStatus } = useWaitForTransactionReceipt({ hash: txHash as Address })
   const { data: txData } = useTransaction({ hash: txHash as Address })
-  const [isDismissed, setIsDismissed] = useState(false)
   const [txType, setTxType] = useState<TxMessageType>(isProposalPage ? 'proposal' : 'staking')
   const toastIdRef = useRef<Id | null>(null)
 
@@ -27,11 +27,6 @@ export const useTxStatusMessage = () => {
   if (txHash && txStatus) {
     message = TX_MESSAGES[txType][txStatus]
   }
-  useEffect(() => {
-    if (txStatus === 'success' || txHash) {
-      setIsDismissed(false)
-    }
-  }, [txStatus, txHash])
 
   // check if the tx is an unstaking tx
   useEffect(() => {
@@ -49,8 +44,8 @@ export const useTxStatusMessage = () => {
   }, [txData])
 
   useEffect(() => {
-    if (message && !isDismissed && txHash) {
-      const txStatusSeverity: Record<string, 'success' | 'error' | 'warning'> = {
+    if (message && txHash) {
+      const txStatusSeverity: Record<string, TxStatusSeverity> = {
         success: 'success',
         error: 'error',
         pending: 'warning',
@@ -64,7 +59,6 @@ export const useTxStatusMessage = () => {
         closeButton: txStatus !== 'pending',
         dataTestId: `TxStatus-${txStatus}`,
         toastId: txHash,
-        onClose: () => setIsDismissed(txStatus === 'success'),
       }
 
       if (toastIdRef.current) {
@@ -76,5 +70,5 @@ export const useTxStatusMessage = () => {
         }
       }
     }
-  }, [message, txStatus, isDismissed, txHash])
+  }, [message, txStatus, txHash])
 }
