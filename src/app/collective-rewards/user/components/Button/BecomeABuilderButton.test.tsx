@@ -54,6 +54,7 @@ describe('BecomeABuilderButton', () => {
     vi.mocked(useAlertContext).mockReturnValue({
       setMessage: setAlertMessageSpy,
       message: null,
+      preserveCurrentAlert: () => undefined,
     })
   })
 
