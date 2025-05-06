@@ -67,8 +67,8 @@ export const useTxStatusMessage = () => {
         title: message.title,
         content: message.content,
         severity: txStatusSeverity[txStatus],
-        dismissible: txStatus !== 'pending',
-        closeButton: txStatus !== 'pending',
+        autoClose: txStatus === 'pending' ? false : 10000,
+        closeButton: true,
         dataTestId: `TxStatus-${txStatus}`,
         toastId: txHash,
         onClose: () => {

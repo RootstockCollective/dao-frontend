@@ -21,7 +21,7 @@ const buildToastProps = ({
   title,
   content,
   toastId,
-  dismissible = false,
+  dismissible = true,
   ...props
 }: ToastAlertOptions): ToastOptions => ({
   toastId: toastId || `${severity}-${title}-${content}`,
