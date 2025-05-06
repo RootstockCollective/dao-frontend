@@ -1,5 +1,5 @@
 import { StRIFTokenAbi } from '@/lib/abis/StRIFTokenAbi'
-import { showToastAlert, updateToastAlert } from '@/shared/lib/toastAlert'
+import { showToastAlert, ToastAlertOptions, updateToastAlert } from '@/shared/lib/toastAlert'
 import { TX_MESSAGES } from '@/shared/txMessages'
 import { usePathname, useSearchParams } from 'next/navigation'
 import { useEffect, useRef, useState } from 'react'
@@ -15,7 +15,8 @@ type TxStatusSeverity = 'success' | 'error' | 'warning'
 
 export const useTxStatusMessage = () => {
   const searchParams = useSearchParams()
-  const txHash = searchParams?.get('txHash')
+  // const txHash = searchParams?.get('txHash')
+  const [txHash, setTxHash] = useState<string | null>(searchParams?.get('txHash'))
   const pathname = usePathname()
   const isProposalPage = pathname.includes('/proposals')
   const { status: txStatus } = useWaitForTransactionReceipt({ hash: txHash as Address })
@@ -27,6 +28,17 @@ export const useTxStatusMessage = () => {
   if (txHash && txStatus) {
     message = TX_MESSAGES[txType][txStatus]
   }
+
+  // keep the txHash even if the user navigates to another page
+  useEffect(() => {
+    if (searchParams) {
+      const newTxHash = searchParams.get('txHash')
+      if (newTxHash && newTxHash !== txHash) {
+        setTxHash(newTxHash)
+        toastIdRef.current = null
+      }
+    }
+  }, [searchParams, txHash])
 
   // check if the tx is an unstaking tx
   useEffect(() => {
@@ -51,7 +63,7 @@ export const useTxStatusMessage = () => {
         pending: 'warning',
       }
 
-      const toastProps = {
+      const toastProps: ToastAlertOptions = {
         title: message.title,
         content: message.content,
         severity: txStatusSeverity[txStatus],
@@ -59,6 +71,12 @@ export const useTxStatusMessage = () => {
         closeButton: txStatus !== 'pending',
         dataTestId: `TxStatus-${txStatus}`,
         toastId: txHash,
+        onClose: () => {
+          if (txStatus !== 'pending') {
+            toastIdRef.current = null
+            setTxHash(null)
+          }
+        },
       }
 
       if (toastIdRef.current) {

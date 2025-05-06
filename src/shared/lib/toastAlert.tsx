@@ -8,7 +8,7 @@ interface ToastAlertData {
   dataTestId?: string
 }
 
-interface ToastAlertOptions extends ToastOptions {
+export interface ToastAlertOptions extends ToastOptions {
   severity: 'error' | 'success' | 'info' | 'warning'
   title: string
   content: string | ReactNode
@@ -36,7 +36,7 @@ const buildToastProps = ({
 })
 
 const buildToastData = ({ title, content, dataTestId }: ToastAlertData) => (
-  <div className="flex items-start gap-2" data-testid={`Alert-${dataTestId}`}>
+  <div className="flex items-start gap-2" data-testid={`Alert${dataTestId}`}>
     <div>
       <Paragraph
         variant="bold"
