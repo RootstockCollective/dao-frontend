@@ -3,7 +3,6 @@ import { useFetchAllProposals } from '@/app/proposals/hooks/useFetchLatestPropos
 import { LatestProposalsTableMemoized } from './components/LatestProposalsTable'
 import { MetricsCard } from '@/components/MetricsCard'
 import { Popover } from '@/components/Popover'
-import { TxStatusMessage } from '@/components/TxStatusMessage/TxStatusMessage'
 import { HeaderTitle, Paragraph, Span } from '@/components/Typography'
 import { useRouter } from 'next/navigation'
 import { useVotingPower } from './hooks/useVotingPower'
@@ -27,7 +26,6 @@ export default function Proposals() {
   const memoizedProposals = useMemo(() => latestProposals, [latestProposals])
   return (
     <>
-      <TxStatusMessage messageType="proposal" />
       <HeaderTitle className="pb-6 whitespace-nowrap">My Governance</HeaderTitle>
       <div className="grid grid-rows-1 gap-[32px] mb-[100px]">
         <div>

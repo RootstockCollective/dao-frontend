@@ -1,37 +1,32 @@
-import { Alert } from '@/components/Alert'
 import { StRIFTokenAbi } from '@/lib/abis/StRIFTokenAbi'
+import { showToastAlert, updateToastAlert } from '@/shared/lib/toastAlert'
 import { TX_MESSAGES } from '@/shared/txMessages'
-import { useSearchParams } from 'next/navigation'
-import { useEffect, useState } from 'react'
+import { usePathname, useSearchParams } from 'next/navigation'
+import { useEffect, useRef, useState } from 'react'
+import { Id } from 'react-toastify'
 import { Address, decodeFunctionData } from 'viem'
 import { useTransaction, useWaitForTransactionReceipt } from 'wagmi'
 
 type TxMessage =
   (typeof TX_MESSAGES)[keyof typeof TX_MESSAGES][keyof (typeof TX_MESSAGES)[keyof typeof TX_MESSAGES]]
 
-interface Props {
-  messageType: 'proposal' | 'staking' | 'unstaking'
-}
+type TxMessageType = 'proposal' | 'staking' | 'unstaking'
 
-/**
- * This component will check the txHash that exists in the query string
- * If it exists, then it'll show the appropriate alert message
- * @constructor
- */
-export const TxStatusMessage = ({ messageType }: Props) => {
+export const useTxStatusMessage = () => {
   const searchParams = useSearchParams()
   const txHash = searchParams?.get('txHash')
+  const pathname = usePathname()
+  const isProposalPage = pathname.includes('/proposals')
   const { status: txStatus } = useWaitForTransactionReceipt({ hash: txHash as Address })
   const { data: txData } = useTransaction({ hash: txHash as Address })
   const [isDismissed, setIsDismissed] = useState(false)
-  const [txType, setTxType] = useState<typeof messageType>(messageType)
+  const [txType, setTxType] = useState<TxMessageType>(isProposalPage ? 'proposal' : 'staking')
+  const toastIdRef = useRef<Id | null>(null)
 
   let message: TxMessage | null = null
   if (txHash && txStatus) {
     message = TX_MESSAGES[txType][txStatus]
   }
-  const onDismiss = () => setIsDismissed(true)
-
   useEffect(() => {
     if (txStatus === 'success' || txHash) {
       setIsDismissed(false)
@@ -40,7 +35,7 @@ export const TxStatusMessage = ({ messageType }: Props) => {
 
   // check if the tx is an unstaking tx
   useEffect(() => {
-    if (messageType === 'staking' && txData) {
+    if (txType === 'staking' && txData) {
       const { functionName } = decodeFunctionData({
         abi: StRIFTokenAbi,
         data: txData.input,
@@ -51,11 +46,35 @@ export const TxStatusMessage = ({ messageType }: Props) => {
         setTxType('staking')
       }
     }
-  }, [messageType, txData])
+  }, [txData])
 
-  if (message && !isDismissed) {
-    return <Alert {...message} onDismiss={onDismiss} data-testid={messageType} />
-  }
+  useEffect(() => {
+    if (message && !isDismissed && txHash) {
+      const txStatusSeverity: Record<string, 'success' | 'error' | 'warning'> = {
+        success: 'success',
+        error: 'error',
+        pending: 'warning',
+      }
 
-  return null
+      const toastProps = {
+        title: message.title,
+        content: message.content,
+        severity: txStatusSeverity[txStatus],
+        dismissible: txStatus !== 'pending',
+        closeButton: txStatus !== 'pending',
+        dataTestId: `TxStatus-${txStatus}`,
+        toastId: txHash,
+        onClose: () => setIsDismissed(txStatus === 'success'),
+      }
+
+      if (toastIdRef.current) {
+        updateToastAlert(toastIdRef.current, toastProps)
+      } else {
+        const toastId = showToastAlert(toastProps)
+        if (txStatus === 'pending') {
+          toastIdRef.current = toastId
+        }
+      }
+    }
+  }, [message, txStatus, isDismissed, txHash])
 }

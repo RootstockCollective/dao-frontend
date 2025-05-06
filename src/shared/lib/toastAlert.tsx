@@ -2,7 +2,13 @@ import { Paragraph } from '@/components/Typography'
 import { ReactNode } from 'react'
 import { Bounce, Id, toast, ToastOptions } from 'react-toastify'
 
-interface ToastAlertProps {
+interface ToastAlertData {
+  title: string
+  content: string | ReactNode
+  dataTestId?: string
+}
+
+interface ToastAlertOptions extends ToastOptions {
   severity: 'error' | 'success' | 'info' | 'warning'
   title: string
   content: string | ReactNode
@@ -14,19 +20,45 @@ const buildToastProps = ({
   severity,
   title,
   content,
+  toastId,
   dismissible = false,
-}: ToastAlertProps): ToastOptions => ({
-  toastId: `${severity}-${title}-${content}`,
+  ...props
+}: ToastAlertOptions): ToastOptions => ({
+  toastId: toastId || `${severity}-${title}-${content}`,
   type: severity,
   position: 'top-right',
-  autoClose: dismissible ? 5000 : false,
+  autoClose: dismissible && 10000,
   hideProgressBar: !dismissible,
-  closeOnClick: dismissible,
   closeButton: dismissible,
-  pauseOnHover: false,
   theme: 'dark',
   transition: Bounce,
+  ...props,
 })
+
+const buildToastData = ({ title, content, dataTestId }: ToastAlertData) => (
+  <div className="flex items-start gap-2" data-testid={`Alert-${dataTestId}`}>
+    <div>
+      <Paragraph
+        variant="bold"
+        className="leading-5 mb-[6px] text-[18px] text-white"
+        data-testid="AlertTitle"
+      >
+        {title}
+      </Paragraph>
+      {typeof content === 'string' ? (
+        <Paragraph
+          variant="light"
+          className="font-[600] text-[14px] text-white opacity-80 mb-[12px] max-h-36 overflow-y-auto"
+          data-testid="AlertContent"
+        >
+          {content}
+        </Paragraph>
+      ) : (
+        content
+      )}
+    </div>
+  </div>
+)
 
 /**
  * This function is used to show a toast alert with the given properties
@@ -42,35 +74,16 @@ export const showToastAlert = ({
   content,
   dismissible = false,
   dataTestId = '',
-}: ToastAlertProps) =>
+  ...props
+}: ToastAlertOptions) =>
   toast(
-    <div className="flex items-start gap-2" data-testid={`Alert${dataTestId}`}>
-      <div>
-        <Paragraph
-          variant="bold"
-          className="leading-5 mb-[6px] text-[18px] text-white"
-          data-testid="AlertTitle"
-        >
-          {title}
-        </Paragraph>
-        {typeof content === 'string' ? (
-          <Paragraph
-            variant="light"
-            className="font-[600] text-[14px] text-white opacity-80 mb-[12px] max-h-36 overflow-y-auto"
-            data-testid="AlertContent"
-          >
-            {content}
-          </Paragraph>
-        ) : (
-          content
-        )}
-      </div>
-    </div>,
+    buildToastData({ title, content, dataTestId }),
     buildToastProps({
       severity,
       title,
       content,
       dismissible,
+      ...props,
     }),
   )
 
@@ -79,10 +92,13 @@ export const showToastAlert = ({
  * @param toastId - The ID of the toast alert to update
  * @param props - The optional properties to update the toast alert with
  */
-export const updateToastAlert = (toastId: Id, props: Partial<ToastAlertProps>) =>
-  toast.update(toastId, buildToastProps({ ...props } as ToastAlertProps))
-
-/**
- * This function is used to dismiss all toast alerts
- */
-export const dismissToastAlerts = () => toast.dismiss()
+export const updateToastAlert = (toastId: Id, props: ToastAlertOptions) => {
+  return toast.update(toastId, {
+    ...buildToastProps(props as ToastAlertOptions),
+    render: buildToastData({
+      title: props.title,
+      content: props.content,
+      dataTestId: props.dataTestId,
+    }),
+  })
+}
