@@ -67,6 +67,8 @@ const buildToastData = ({ title, content, dataTestId }: ToastAlertData) => (
  * @param content - The content of the alert (can be a string or a ReactNode)
  * @param dismissible - Whether the alert is dismissible or not (default: false)
  * @param dataTestId - The data-testid attribute for testing purposes (default: '')
+ * @param props - Additional properties for the toast alert
+ * @returns The ID of the created toast alert
  */
 export const showToastAlert = ({
   severity,
@@ -90,7 +92,7 @@ export const showToastAlert = ({
 /**
  * This function is used to update a toast alert with the given properties
  * @param toastId - The ID of the toast alert to update
- * @param props - The optional properties to update the toast alert with
+ * @param props - The properties to update the toast alert with
  */
 export const updateToastAlert = (toastId: Id, props: ToastAlertOptions) => {
   return toast.update(toastId, {
