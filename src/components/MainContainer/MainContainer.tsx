@@ -9,7 +9,7 @@ import { MainContainerContent } from './MainContainerContent'
 import { GradientHeader } from '@/components/GradientHeader/GradientHeader'
 import Scroll from '@/components/Scroll'
 import { ToastContainer } from 'react-toastify'
-import { useTxStatusMessage } from '../TxStatusMessage'
+import { useTxStatusMessage } from '@/shared/hooks/useTxStatusMessage'
 
 interface Props {
   children: ReactNode

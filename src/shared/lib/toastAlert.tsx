@@ -95,12 +95,13 @@ export const showToastAlert = ({
  * @param props - The properties to update the toast alert with
  */
 export const updateToastAlert = (toastId: Id, props: ToastAlertOptions) => {
+  const { title, content, dataTestId } = props
   return toast.update(toastId, {
-    ...buildToastProps(props as ToastAlertOptions),
+    ...buildToastProps(props),
     render: buildToastData({
-      title: props.title,
-      content: props.content,
-      dataTestId: props.dataTestId,
+      title,
+      content,
+      dataTestId,
     }),
   })
 }
