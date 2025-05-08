@@ -1,12 +1,16 @@
 'use client'
 import { AlertProps } from '@/components/Alert/Alert'
-import { createContext, FC, ReactNode, useContext, useState } from 'react'
+import { createContext, FC, ReactNode, useContext, useState, useEffect } from 'react'
 
 // Define the context without an initial value (which will be set by the provider)
-const AlertContext = createContext<{
+interface AlertContextValue {
   message: AlertProps | null
   setMessage: (message: AlertProps | null) => void
-} | null>(null)
+  // Adding a function to preserve alerts during navigation/modal closing
+  preserveCurrentAlert: () => void
+}
+
+const AlertContext = createContext<AlertContextValue | null>(null)
 
 interface Props {
   children: ReactNode
@@ -15,7 +19,34 @@ interface Props {
 // Create the provider component
 export const AlertProvider: FC<Props> = ({ children }) => {
   const [message, setMessage] = useState<AlertProps | null>(null)
-  return <AlertContext.Provider value={{ message, setMessage }}>{children}</AlertContext.Provider>
+
+  // Track if we're actively preserving an alert
+  const [isPreserving, setIsPreserving] = useState(false)
+
+  // Function to signal that current alert should persist
+  const preserveCurrentAlert = () => {
+    if (message) {
+      setIsPreserving(true)
+    }
+  }
+
+  // If preserving flag is set, don't clear message on unmount
+  useEffect(() => {
+    return () => {
+      // If we're NOT preserving, clear message
+      if (!isPreserving) {
+        setMessage(null)
+      }
+      // Reset preserving flag for next time
+      setIsPreserving(false)
+    }
+  }, [isPreserving])
+
+  return (
+    <AlertContext.Provider value={{ message, setMessage, preserveCurrentAlert }}>
+      {children}
+    </AlertContext.Provider>
+  )
 }
 
 // Hook to use the AlertContext

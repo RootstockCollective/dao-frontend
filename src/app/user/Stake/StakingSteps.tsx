@@ -1,4 +1,4 @@
-import { useMemo } from 'react'
+import { useMemo, useCallback } from 'react'
 import { StakingProvider } from '@/app/user/Stake/StakingContext'
 import { useSteps } from '@/app/user/Stake/hooks/useSteps'
 import { Modal } from '@/components/Modal/Modal'
@@ -7,6 +7,7 @@ import { StakingToken } from '@/app/user/Stake/types'
 import { tokenContracts } from '@/lib/contracts'
 import { stakingSteps } from './Steps/stepsUtils'
 import { useStakeRIF } from '@/app/user/Stake/hooks/useStakeRIF'
+import { useAlertContext } from '@/app/providers'
 
 interface StakingStepsProps {
   onCloseModal: () => void
@@ -15,12 +16,11 @@ interface StakingStepsProps {
 export const StakingSteps = ({ onCloseModal }: StakingStepsProps) => {
   const { step, onGoNext, onGoBack } = useSteps(4)
   const { balances, prices } = useBalancesContext()
+  const { preserveCurrentAlert } = useAlertContext()
 
   const currentStep = useMemo(() => stakingSteps[step], [step])
 
   const StepComponent = currentStep.stepComponent
-
-  const stepsFunctions = { onGoNext, onGoBack, onCloseModal }
 
   const tokenToSend: StakingToken = useMemo(
     () => ({
@@ -41,6 +41,15 @@ export const StakingSteps = ({ onCloseModal }: StakingStepsProps) => {
     }),
     [balances.stRIF.balance, balances.stRIF.symbol, prices.stRIF?.price],
   )
+
+  // Enhanced close handler
+  const handleCloseModal = useCallback(() => {
+    preserveCurrentAlert() // Preserve any current alert
+    onCloseModal()
+  }, [onCloseModal, preserveCurrentAlert])
+
+  const stepsFunctions = { onGoNext, onGoBack, onCloseModal: handleCloseModal }
+
   return (
     <StakingProvider
       tokenToSend={tokenToSend}
