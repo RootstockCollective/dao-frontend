@@ -95,13 +95,4 @@ export type TxMessage =
 
 export type TxStatus = 'info' | 'success' | 'error'
 
-export type TxAction =
-  | 'proposal'
-  | 'staking'
-  | 'unstaking'
-  | 'queuing'
-  | 'voting'
-  | 'execution'
-  | 'delegation'
-  | 'reclaiming'
-  | 'allowance'
+export type TxAction = keyof typeof TX_MESSAGES
