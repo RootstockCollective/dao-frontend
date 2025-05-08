@@ -54,12 +54,14 @@ export const BuilderRewardsSettingsMetrics: FC = () => {
   return (
     <div className="flex flex-row gap-2.5 self-stretch items-start content-start flex-nowrap">
       <RewardsSettingsCard title="Current %" dataTestId="CurrentBackerReward">
-        {withSpinner(Typography)({
-          tagVariant: 'h2',
-          className: 'text-2xl leading-[120%] uppercase text-primary font-normal',
-          isLoading: isLoading,
-          children: `${weiToPercentage(rewardPercentageToApply ?? 0n)}%`,
-        })}
+        <>
+          {withSpinner(Typography)({
+            tagVariant: 'h2',
+            className: 'text-2xl leading-[120%] uppercase text-primary font-normal',
+            isLoading: isLoading,
+            children: `${weiToPercentage(rewardPercentageToApply ?? 0n)}%`,
+          })}
+        </>
       </RewardsSettingsCard>
 
       {timeRemaining && (

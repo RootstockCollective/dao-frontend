@@ -62,7 +62,7 @@ const LatestProposalsTable = ({ proposals, onEmitActiveProposal }: LatestProposa
   // State for proposal quick filters
   const [activeFilter, setActiveFilter] = useState<string | null>(null)
   // Ref to store the clear function from DebounceSearch
-  const clearSearchRef = useRef<() => void>()
+  const clearSearchRef = useRef<() => void>(undefined)
   // Flag to prevent search updates during filter changes
   const isFilterChanging = useRef(false)
 

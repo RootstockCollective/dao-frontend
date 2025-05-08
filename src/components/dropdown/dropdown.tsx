@@ -55,7 +55,7 @@ export const Dropdown = ({ className, ...props }: DropdownProps) => {
 
   // Closes the dropdown when clicking outside
   const dropdownRef = useRef<HTMLDivElement>(null)
-  useClickOutside([dropdownRef], close)
+  useClickOutside([dropdownRef as React.RefObject<HTMLElement>], close)
 
   return (
     <div {...props} ref={dropdownRef} className={cn(className, 'relative w-full max-w-[380px]')}>

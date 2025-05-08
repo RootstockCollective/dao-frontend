@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useRef } from 'react'
+import { useState, useRef, RefObject } from 'react'
 import { AnimatePresence, motion } from 'motion/react'
 import { HeaderTitle } from '@/components/Typography'
 import { BackButton } from '@/components/BackButton'
@@ -16,7 +16,10 @@ export default function ChooseProposal() {
   // Closes the info panel when a click occurs outside the specified container.
   const cardsRef = useRef<HTMLDivElement>(null)
   const infoPanelRef = useRef<HTMLDivElement>(null)
-  useClickOutside([cardsRef, infoPanelRef], () => setChosenProposal(null))
+  useClickOutside(
+    [cardsRef, infoPanelRef].filter((ref): ref is RefObject<HTMLDivElement> => !!ref.current),
+    () => setChosenProposal(null),
+  )
   return (
     <>
       <BackButton className="mb-4" />
