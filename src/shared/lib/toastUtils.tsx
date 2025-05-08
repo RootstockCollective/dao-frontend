@@ -3,7 +3,7 @@ import { ReactNode } from 'react'
 import { Bounce, Id, toast, ToastOptions } from 'react-toastify'
 import { TxStatus } from '../types'
 
-interface ToastAlertData {
+interface ToastAlertContent {
   title: string
   content: string | ReactNode
   loading?: boolean
@@ -11,7 +11,7 @@ interface ToastAlertData {
 }
 
 export interface ToastAlertOptions extends ToastOptions {
-  severity: TxStatus
+  severity: TxStatus | 'warning'
   title: string
   content: string | ReactNode
   dismissible?: boolean
@@ -71,16 +71,17 @@ const buildToastProps = ({
   toastId: toastId || `${severity}-${title}-${content}`,
   type: severity,
   position: 'top-right',
-  autoClose: dismissible ? (loading ? 120_000 : 10000) : false,
-  hideProgressBar: dismissible || loading,
+  // 2 minutes for loading toasts to prevent them from getting stuck indefinitely
+  autoClose: dismissible ? (loading ? 120_000 : 10_000) : false,
+  hideProgressBar: !dismissible || loading,
   isLoading: loading,
-  closeButton: !dismissible,
+  closeButton: dismissible,
   theme: 'dark',
   transition: Bounce,
   ...props,
 })
 
-const buildToastContent = ({ title, content, dataTestId }: ToastAlertData) => (
+const buildToastContent = ({ title, content, dataTestId }: ToastAlertContent) => (
   <div className="flex items-start gap-2" data-testid={`Alert-${dataTestId}`}>
     <div>
       <Paragraph
