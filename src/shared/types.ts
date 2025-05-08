@@ -1,4 +1,5 @@
 import { Address } from 'viem'
+import { TX_MESSAGES } from './txMessages'
 
 /**
  * NFT metadata properties from JSON metadata files
@@ -88,3 +89,19 @@ export enum ProposalState {
   Expired,
   Executed,
 }
+
+export type TxMessage =
+  (typeof TX_MESSAGES)[keyof typeof TX_MESSAGES][keyof (typeof TX_MESSAGES)[keyof typeof TX_MESSAGES]]
+
+export type TxStatus = 'info' | 'success' | 'error'
+
+export type TxAction =
+  | 'proposal'
+  | 'staking'
+  | 'unstaking'
+  | 'queuing'
+  | 'voting'
+  | 'execution'
+  | 'delegation'
+  | 'reclaiming'
+  | 'allowance'

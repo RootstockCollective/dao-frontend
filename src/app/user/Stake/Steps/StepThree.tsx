@@ -9,7 +9,7 @@ export const StepThree = ({ onCloseModal = () => {} }: StepProps) => {
   if (!stakeTxHash) return null
 
   const handleCloseModal = () => {
-    router.push(`/user?txHash=${stakeTxHash}`)
+    router.push('/user')
     onCloseModal()
   }
   return (

@@ -1,6 +1,6 @@
 import { supportedChainId } from '@/config'
 import { ENV } from '@/lib/constants'
-import { showToastAlert } from '@/shared/lib/toastAlert'
+import { showToast } from '@/shared/lib/toastUtils'
 import { usePathname } from 'next/navigation'
 import { FC, ReactNode, useCallback, useEffect, useRef } from 'react'
 import { Id, toast } from 'react-toastify'
@@ -35,13 +35,13 @@ export const MainContainerContent: FC<Props> = ({ children }) => {
     if (!wrongNetwork && toastIdRef.current) {
       dismissToastAlert()
     }
-  }, [, pathname, wrongNetwork, dismissToastAlert])
+  }, [pathname, wrongNetwork, dismissToastAlert])
 
   useEffect(() => {
     if (wrongNetwork) {
       console.error('Unsupported network', chainId)
       const networkName = ENV.charAt(0).toUpperCase() + ENV.slice(1)
-      const toastId = showToastAlert({
+      const toastId = showToast({
         title: 'Unsupported network',
         content: (
           <Paragraph variant="light" className="font-[600] text-[14px] text-white opacity-80 mb-[12px]">

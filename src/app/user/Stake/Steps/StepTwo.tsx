@@ -1,9 +1,10 @@
-import { useAlertContext } from '@/app/providers'
 import { StakePreview } from '@/app/user/Stake/StakePreview'
 import { useStakingContext } from '@/app/user/Stake/StakingContext'
 import { textsDependingOnAction } from '@/app/user/Stake/Steps/stepsUtils'
 import { StepProps } from '@/app/user/Stake/types'
 import { isUserRejectedTxError } from '@/components/ErrorPage/commonErrors'
+import { useTxStatusContext } from '@/shared/context/TxStatusContext'
+import { showToast } from '@/shared/lib/toastUtils'
 import { TX_MESSAGES } from '@/shared/txMessages'
 
 export const StepTwo = ({ onGoNext, onCloseModal = () => {} }: StepProps) => {
@@ -17,7 +18,7 @@ export const StepTwo = ({ onGoNext, onCloseModal = () => {} }: StepProps) => {
     stakePreviewFrom: from,
     stakePreviewTo: to,
   } = useStakingContext()
-  const { setMessage } = useAlertContext()
+  const { setTxMessage } = useTxStatusContext()
 
   const { onConfirm: onConfirmAction, isPending } = actionToUse(
     amount,
@@ -29,10 +30,11 @@ export const StepTwo = ({ onGoNext, onCloseModal = () => {} }: StepProps) => {
     try {
       const txHash = await onConfirmAction()
       setStakeTxHash?.(txHash)
+      setTxMessage(txHash, 'staking')
       onGoNext?.()
     } catch (err: any) {
       if (!isUserRejectedTxError(err)) {
-        setMessage(TX_MESSAGES.staking.error)
+        showToast(TX_MESSAGES.staking.error)
       }
     }
   }

@@ -9,7 +9,6 @@ import { MainContainerContent } from './MainContainerContent'
 import { GradientHeader } from '@/components/GradientHeader/GradientHeader'
 import Scroll from '@/components/Scroll'
 import { ToastContainer } from 'react-toastify'
-import { useTxStatusMessage } from '@/shared/hooks/useTxStatusMessage'
 
 interface Props {
   children: ReactNode
@@ -17,7 +16,6 @@ interface Props {
 
 export const MainContainer: FC<Props> = ({ children }) => {
   const { message, setMessage } = useAlertContext()
-  useTxStatusMessage()
 
   return (
     <Suspense fallback="Loading...">

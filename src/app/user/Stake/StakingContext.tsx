@@ -1,11 +1,12 @@
-import { createContext, FC, ReactNode, useCallback, useContext, useMemo, useState } from 'react'
 import { useBalancesContext } from '@/app/user/Balances/context/BalancesContext'
-import { GetPricesResult, TokenBalanceRecord } from '@/app/user/types'
-import { StakingToken } from '@/app/user/Stake/types'
-import { Hash } from 'viem'
 import { ActionBeingExecuted } from '@/app/user/Stake/Steps/stepsUtils'
-import { formatCurrency } from '@/lib/utils'
+import { StakingToken } from '@/app/user/Stake/types'
+import { GetPricesResult, TokenBalanceRecord } from '@/app/user/types'
 import Big from '@/lib/big'
+import { formatCurrency } from '@/lib/utils'
+import { createContext, FC, ReactNode, useCallback, useContext, useEffect, useMemo, useState } from 'react'
+import { Hash } from 'viem'
+import { useTxStatusContext } from '@/shared/context/TxStatusContext'
 
 export type ActionHookToUse = (
   amount: string,
@@ -34,7 +35,7 @@ interface StakingContextProps {
   amount: string
   onAmountChange: (amount: string) => void
   stakeTxHash?: string
-  setStakeTxHash?: (txHash: string) => void
+  setStakeTxHash: (txHash: string) => void
   tokenToSend: StakingToken
   tokenToReceive: StakingToken
   amountDataToReceive: {
@@ -77,6 +78,7 @@ const StakingContext = createContext<StakingContextProps>({
   actionName: 'STAKE',
   stakePreviewFrom: { ...DEFAULT_STAKE_PREVIEW_TOKEN },
   stakePreviewTo: { ...DEFAULT_STAKE_PREVIEW_TOKEN },
+  setStakeTxHash: (txHash: string): void => {},
 })
 
 interface Props {
