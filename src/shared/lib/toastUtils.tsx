@@ -19,6 +19,46 @@ export interface ToastAlertOptions extends ToastOptions {
   dataTestId?: string
 }
 
+/**
+ * Displays a toast alert with the specified properties.
+ *
+ * @param {TxStatus} severity - The severity of the alert (e.g., 'error', 'success', 'info', 'warning').
+ * @param {string} title - The title of the alert.
+ * @param {string | ReactNode} content - The content of the alert (can be a string or a ReactNode).
+ * @param {boolean} [dismissible=true] - Whether the alert is dismissible or not.
+ * @param {string} [dataTestId=''] - The `data-testid` attribute for testing purposes.
+ * @param {ToastAlertOptions} props - Additional properties for the toast alert.
+ * @returns {Id} The ID of the created toast alert.
+ */
+export const showToast = ({
+  severity,
+  title,
+  content,
+  loading = false,
+  dataTestId = severity,
+  ...props
+}: ToastAlertOptions): Id =>
+  toast(
+    buildToastContent({ title, content, dataTestId, loading }),
+    buildToastProps({ severity, title, content, loading, ...props }),
+  )
+
+/**
+ * Updates an existing toast alert with the specified properties.
+ *
+ * @param {Id} toastId - The ID of the toast alert to update.
+ * @param {ToastAlertOptions} props - The properties to update the toast alert with.
+ *
+ * @example pending to success
+ */
+export const updateToast = (toastId: Id, props: ToastAlertOptions) => {
+  const { title, content, dataTestId } = props
+  return toast.update(toastId, {
+    ...buildToastProps(props),
+    render: buildToastContent({ title, content, dataTestId }),
+  })
+}
+
 const buildToastProps = ({
   severity,
   title,
@@ -64,40 +104,3 @@ const buildToastContent = ({ title, content, dataTestId }: ToastAlertData) => (
     </div>
   </div>
 )
-
-/**
- * This function is used to show a toast alert with the given properties
- * @param severity - The severity of the alert (error, success, info, warning)
- * @param title - The title of the alert
- * @param content - The content of the alert (can be a string or a ReactNode)
- * @param dismissible - Whether the alert is dismissible or not (default: true)
- * @param dataTestId - The data-testid attribute for testing purposes (default: '')
- * @param props - Additional properties for the toast alert
- * @returns The ID of the created toast alert
- */
-export const showToast = ({
-  severity,
-  title,
-  content,
-  loading = false,
-  dataTestId = severity,
-  ...props
-}: ToastAlertOptions) =>
-  toast(
-    buildToastContent({ title, content, dataTestId, loading }),
-    buildToastProps({ severity, title, content, loading, ...props }),
-  )
-
-/**
- * This function is used to update a toast alert with the given properties
- * @param toastId - The ID of the toast alert to update
- * @param props - The properties to update the toast alert with
- * @example pending to success
- */
-export const updateToast = (toastId: Id, props: ToastAlertOptions) => {
-  const { title, content, dataTestId } = props
-  return toast.update(toastId, {
-    ...buildToastProps(props),
-    render: buildToastContent({ title, content, dataTestId }),
-  })
-}
