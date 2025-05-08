@@ -83,9 +83,15 @@ const Template: StoryFn = () => {
       <button
         {...buttonProps}
         onClick={() => {
-          const toastId = showToast(TX_MESSAGES.staking.pending)
+          const toastId = showToast({
+            ...TX_MESSAGES.staking.pending,
+            txHash: '0xd712f981e04d92d69b86a81e9756acc9c42893b584ffeffd2a9673c276ac99be',
+          })
           setTimeout(() => {
-            updateToast(toastId, TX_MESSAGES.staking.success)
+            updateToast(toastId, {
+              ...TX_MESSAGES.staking.success,
+              txHash: '0xd712f981e04d92d69b86a81e9756acc9c42893b584ffeffd2a9673c276ac99be',
+            })
           }, 3000)
         }}
       >
@@ -95,9 +101,15 @@ const Template: StoryFn = () => {
       <button
         {...buttonProps}
         onClick={() => {
-          const toastId = showToast(TX_MESSAGES.staking.pending)
+          const toastId = showToast({
+            ...TX_MESSAGES.staking.pending,
+            txHash: '0xebbbb6df68ad462e8a201e3cf9dac9011f51ece01418d9744050a4c0fdf119b4',
+          })
           setTimeout(() => {
-            updateToast(toastId, TX_MESSAGES.staking.error)
+            updateToast(toastId, {
+              ...TX_MESSAGES.staking.error,
+              txHash: '0xebbbb6df68ad462e8a201e3cf9dac9011f51ece01418d9744050a4c0fdf119b4',
+            })
           }, 3000)
         }}
       >

@@ -30,7 +30,7 @@ export const StepTwo = ({ onGoNext, onCloseModal = () => {} }: StepProps) => {
     try {
       const txHash = await onConfirmAction()
       setStakeTxHash?.(txHash)
-      setTxMessage(txHash, 'staking')
+      setTxMessage(txHash)
       onGoNext?.()
     } catch (err: any) {
       if (!isUserRejectedTxError(err)) {

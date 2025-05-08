@@ -119,7 +119,7 @@ export const TX_MESSAGES = {
       title: 'Error on execution',
       content: 'There are not enough funds in the bucket to execute this proposal. Please try again later.',
       severity: 'error',
-      autoClose: true,
+      loading: false,
     },
     pending: {
       title: 'Execution in process',

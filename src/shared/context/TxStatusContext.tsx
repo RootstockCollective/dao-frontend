@@ -21,6 +21,11 @@ export const TxStatusProvider = ({ children }: { children: React.ReactNode }) =>
         ...txMessage,
         dataTestId: `${txMessage.severity}-tx-${currentTxHash}`,
         toastId: currentTxHash,
+        txHash: currentTxHash,
+        onClose: () => {
+          // Remove the toast ID from the ref when the toast is closed
+          delete toastIdRef.current[currentTxHash]
+        },
       }
 
       if (toastIdRef.current[currentTxHash]) {

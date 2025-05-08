@@ -2,10 +2,13 @@ import { Paragraph } from '@/components/Typography'
 import { ReactNode } from 'react'
 import { Bounce, Id, toast, ToastOptions } from 'react-toastify'
 import { TxStatus } from '../types'
+import { EXPLORER_URL } from '@/lib/constants'
+import { Link } from '@/components/Link'
 
 interface ToastAlertContent {
   title: string
   content: string | ReactNode
+  txHash?: string
   loading?: boolean
   dataTestId?: string
 }
@@ -16,6 +19,7 @@ export interface ToastAlertOptions extends ToastOptions {
   content: string | ReactNode
   dismissible?: boolean
   loading?: boolean
+  txHash?: string
   dataTestId?: string
 }
 
@@ -34,12 +38,13 @@ export const showToast = ({
   severity,
   title,
   content,
+  txHash,
   loading = false,
   dataTestId = severity,
   ...props
 }: ToastAlertOptions): Id =>
   toast(
-    buildToastContent({ title, content, dataTestId, loading }),
+    buildToastContent({ title, content, txHash, loading, dataTestId }),
     buildToastProps({ severity, title, content, loading, ...props }),
   )
 
@@ -52,10 +57,10 @@ export const showToast = ({
  * @example pending to success
  */
 export const updateToast = (toastId: Id, props: ToastAlertOptions) => {
-  const { title, content, dataTestId } = props
+  const { title, content, txHash, dataTestId } = props
   return toast.update(toastId, {
     ...buildToastProps(props),
-    render: buildToastContent({ title, content, dataTestId }),
+    render: buildToastContent({ title, content, txHash, dataTestId }),
   })
 }
 
@@ -81,7 +86,7 @@ const buildToastProps = ({
   ...props,
 })
 
-const buildToastContent = ({ title, content, dataTestId }: ToastAlertContent) => (
+const buildToastContent = ({ title, content, txHash, dataTestId }: ToastAlertContent) => (
   <div className="flex items-start gap-2" data-testid={`Alert-${dataTestId}`}>
     <div>
       <Paragraph
@@ -101,6 +106,16 @@ const buildToastContent = ({ title, content, dataTestId }: ToastAlertContent) =>
         </Paragraph>
       ) : (
         content
+      )}
+      {txHash && (
+        <Link
+          href={`${EXPLORER_URL}/tx/${txHash}`}
+          target="_blank"
+          className="text-blue-500 underline block"
+          data-testid="ToastExplorerLink"
+        >
+          View on Explorer
+        </Link>
       )}
     </div>
   </div>
