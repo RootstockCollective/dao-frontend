@@ -8,6 +8,7 @@ import { Alert } from '../Alert'
 import { MainContainerContent } from './MainContainerContent'
 import { GradientHeader } from '@/components/GradientHeader/GradientHeader'
 import Scroll from '@/components/Scroll'
+import { ToastContainer } from 'react-toastify'
 
 interface Props {
   children: ReactNode
@@ -27,8 +28,9 @@ export const MainContainer: FC<Props> = ({ children }) => {
             {message && (
               <Alert {...message} onDismiss={message.onDismiss === null ? null : () => setMessage(null)} />
             )}
+            <ToastContainer />
             <TopPageHeader />
-            <MainContainerContent setMessage={setMessage}>{children}</MainContainerContent>
+            <MainContainerContent>{children}</MainContainerContent>
           </main>
           <Footer variant="container" />
         </div>

@@ -6,7 +6,6 @@ import { BalancesSection } from '@/app/user/Balances/BalancesSection'
 import { CommunitiesSection } from '@/app/user/Communities/CommunitiesSection'
 import { DelegationSection } from '@/app/user/Delegation'
 import { UnderlineTabs, BaseTab } from '@/components/Tabs'
-import { TxStatusMessage } from '@/components/TxStatusMessage'
 import { usePathname, useSearchParams, useRouter } from 'next/navigation'
 import { useAccount } from 'wagmi'
 import { HeroSection } from './HeroSection'
@@ -54,7 +53,6 @@ export default function User() {
 const tabsContent: Record<TabValue, ReactNode> = {
   holdings: (
     <>
-      <TxStatusMessage messageType="staking" />
       <BalancesSection />
       <DelegationSection />
       <CommunitiesSection />

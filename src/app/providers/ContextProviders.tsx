@@ -14,6 +14,7 @@ import { MainContainer } from '@/components/MainContainer/MainContainer'
 import { BalancesProvider } from '@/app/user/Balances/context/BalancesContext'
 import { HeroCollapseProvider } from '@/app/user/HeroSection/HeroCollapseContext'
 import { rootstock, rootstockTestnet } from '@reown/appkit/networks'
+import { TxStatusProvider } from '@/shared/context/TxStatusContext'
 
 interface Props {
   children: ReactNode
@@ -50,19 +51,21 @@ export const ContextProviders = ({ children, initialState }: Props) => {
     <ErrorBoundary>
       <WagmiProvider config={wagmiAdapterConfig} initialState={initialState}>
         <QueryClientProvider client={queryClient}>
-          <AlertProvider>
-            <HeroCollapseProvider>
-              <BuilderContextProviderWithPrices>
-                <BoosterProvider>
-                  <AllocationsContextProvider>
-                    <BalancesProvider>
-                      <MainContainer>{children}</MainContainer>
-                    </BalancesProvider>
-                  </AllocationsContextProvider>
-                </BoosterProvider>
-              </BuilderContextProviderWithPrices>
-            </HeroCollapseProvider>
-          </AlertProvider>
+          <TxStatusProvider>
+            <AlertProvider>
+              <HeroCollapseProvider>
+                <BuilderContextProviderWithPrices>
+                  <BoosterProvider>
+                    <AllocationsContextProvider>
+                      <BalancesProvider>
+                        <MainContainer>{children}</MainContainer>
+                      </BalancesProvider>
+                    </AllocationsContextProvider>
+                  </BoosterProvider>
+                </BuilderContextProviderWithPrices>
+              </HeroCollapseProvider>
+            </AlertProvider>
+          </TxStatusProvider>
         </QueryClientProvider>
       </WagmiProvider>
     </ErrorBoundary>
