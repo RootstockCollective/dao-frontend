@@ -4,6 +4,9 @@ import { useStRifHoldings } from './hooks/useStRifHoldings'
 import { formatNumberWithCommas } from '@/lib/utils'
 import { Popover } from '@/components/Popover'
 import { QuestionIcon } from '@/components/Icons'
+import { tokenContracts } from '@/lib/contracts'
+import { useTreasuryBalances } from './hooks/useTreasuryBalances'
+import { useMemo } from 'react'
 
 /**
  * Displays key treasury metrics including total stRIF, treasury balance,
@@ -11,6 +14,10 @@ import { QuestionIcon } from '@/components/Icons'
  */
 export const MetricsSection = () => {
   const { stRifBalance, stRifUsdBalance, totalFundingUsd, tvlUsd } = useStRifHoldings()
+  // Only RBTC and RIF are whitelisted for now
+  const whitelistedTokenContracts = useMemo(() => Object.values(tokenContracts), [])
+  const { balances, loading } = useTreasuryBalances(whitelistedTokenContracts)
+
   return (
     <div>
       <HeaderTitle className="mb-4">Metrics</HeaderTitle>
@@ -29,7 +36,7 @@ export const MetricsSection = () => {
           borderless
         />
         <MetricsCard
-          className="max-w-[444px] min-w-[120px] overflow-visible"
+          className="max-w-[214px] min-w-[120px] overflow-visible"
           title={
             <div className="flex flex-row gap-2">
               <Typography tagVariant="span" className="text-sm font-bold">
@@ -52,6 +59,36 @@ export const MetricsSection = () => {
           amount={`${formatNumberWithCommas(tvlUsd)} USD`}
           borderless
         />
+        {!loading && balances.length && (
+          <MetricsCard
+            className="max-w-[214px] min-w-[120px] overflow-visible"
+            title={
+              <div className="flex flex-row gap-2">
+                <Typography tagVariant="span" className="text-sm font-bold">
+                  Others{' '}
+                </Typography>
+              </div>
+            }
+            amount={
+              <div className="flex flex-col">
+                {balances.map(({ symbol, balance }) => (
+                  <Typography
+                    key={symbol}
+                    tagVariant="h2"
+                    paddingBottom="2px"
+                    paddingTop="10px"
+                    lineHeight="28.8px"
+                    fontFamily="kk-topo"
+                    className="text-[24px] text-primary font-normal"
+                  >
+                    {formatNumberWithCommas(balance)} {symbol}
+                  </Typography>
+                ))}
+              </div>
+            }
+            borderless
+          />
+        )}
       </div>
     </div>
   )
