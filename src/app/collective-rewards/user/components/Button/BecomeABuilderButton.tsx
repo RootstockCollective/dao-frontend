@@ -10,7 +10,7 @@ import { useModal } from '@/shared/hooks/useModal'
 import { FC, ReactNode } from 'react'
 import { Address } from 'viem'
 
-type ExtendedBuilderState = BuilderState | 'deactivated' | 'paused'
+type ExtendedBuilderState = BuilderState | 'deactivated' | 'kycPaused'
 type StatusBadgeProps = {
   builderState: ExtendedBuilderState
 }
@@ -67,7 +67,7 @@ const StatusBadge: FC<StatusBadgeProps> = ({ builderState }) => {
   return {
     inProgress: InProgressComponent,
     active: ActiveComponent,
-    paused: PausedComponent,
+    kycPaused: PausedComponent,
     deactivated: DeactivatedComponent,
   }[builderState]
 }
@@ -75,9 +75,9 @@ const StatusBadge: FC<StatusBadgeProps> = ({ builderState }) => {
 const getBuilderState = (builder: Builder): ExtendedBuilderState => {
   if (!builder.stateFlags) return 'inProgress'
   if (isBuilderDeactivated(builder) || isBuilderKycRevoked(builder.stateFlags)) return 'deactivated'
-  const { paused, activated, communityApproved } = builder.stateFlags
-  if (!activated || !communityApproved) return 'inProgress'
-  return paused ? 'paused' : 'active'
+  const { kycPaused, initialized, communityApproved } = builder.stateFlags
+  if (!initialized || !communityApproved) return 'inProgress'
+  return kycPaused ? 'kycPaused' : 'active'
 }
 
 export const BecomeABuilderButton = ({ address }: { address: Address }) => {

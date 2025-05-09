@@ -5,7 +5,7 @@ import {
 import { ADDRESS_PADDING_LENGTH, RELAY_PARAMETER_PADDING_LENGTH } from '@/app/proposals/shared/utils'
 import { fetchProposalsCreatedCached } from '@/app/user/Balances/actions'
 import { GovernorAbi } from '@/lib/abis/Governor'
-import { SimplifiedRewardDistributorAbi } from '@/lib/abis/SimplifiedRewardDistributorAbi'
+import { CRDeprecatedAbi } from '@/lib/abis/CRDeprecatedAbi'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { renderHook, waitFor } from '@testing-library/react'
 import { prepareEncodeFunctionData, parseEventLogs } from 'viem'
@@ -17,7 +17,7 @@ vi.mock('@/app/user/Balances/actions', () => ({
 
 const CR_WHITELIST_FUNCTION = 'whitelistBuilder' // v1
 const CR_WHITELIST_FUNCTION_SELECTOR = prepareEncodeFunctionData({
-  abi: SimplifiedRewardDistributorAbi,
+  abi: CRDeprecatedAbi,
   functionName: CR_WHITELIST_FUNCTION,
 }).functionName
 

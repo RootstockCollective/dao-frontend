@@ -90,8 +90,8 @@ export const useGetBuilders: UseGetBuilders = () => {
         if (!builder) return acc
 
         const builderState = builderStates?.[index] ?? [false, false, false, false, false, '', '']
-        const [activated, kycApproved, communityApproved, paused, revoked] = builderState
-        acc[builder] = { activated, kycApproved, communityApproved, paused, revoked }
+        const [initialized, kycApproved, communityApproved, kycPaused, selfPaused] = builderState
+        acc[builder] = { initialized, kycApproved, communityApproved, kycPaused, selfPaused }
 
         return acc
       }, {}) ?? ({} as Record<Address, BuilderStateFlags>)

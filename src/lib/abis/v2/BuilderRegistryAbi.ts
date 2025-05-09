@@ -19,29 +19,6 @@ export const BuilderRegistryAbi = [
   },
   {
     type: 'function',
-    name: 'activateBuilder',
-    inputs: [
-      {
-        name: 'builder_',
-        type: 'address',
-        internalType: 'address',
-      },
-      {
-        name: 'rewardReceiver_',
-        type: 'address',
-        internalType: 'address',
-      },
-      {
-        name: 'rewardPercentage_',
-        type: 'uint64',
-        internalType: 'uint64',
-      },
-    ],
-    outputs: [],
-    stateMutability: 'nonpayable',
-  },
-  {
-    type: 'function',
     name: 'approveBuilderKYC',
     inputs: [
       {
@@ -55,7 +32,7 @@ export const BuilderRegistryAbi = [
   },
   {
     type: 'function',
-    name: 'approveBuilderRewardReceiverReplacement',
+    name: 'approveNewRewardReceiver',
     inputs: [
       {
         name: 'builder_',
@@ -63,7 +40,7 @@ export const BuilderRegistryAbi = [
         internalType: 'address',
       },
       {
-        name: 'rewardReceiverReplacement_',
+        name: 'newRewardReceiver_',
         type: 'address',
         internalType: 'address',
       },
@@ -115,44 +92,6 @@ export const BuilderRegistryAbi = [
   },
   {
     type: 'function',
-    name: 'builderRewardReceiver',
-    inputs: [
-      {
-        name: 'builder',
-        type: 'address',
-        internalType: 'address',
-      },
-    ],
-    outputs: [
-      {
-        name: 'rewardReceiver',
-        type: 'address',
-        internalType: 'address',
-      },
-    ],
-    stateMutability: 'view',
-  },
-  {
-    type: 'function',
-    name: 'builderRewardReceiverReplacement',
-    inputs: [
-      {
-        name: 'builder',
-        type: 'address',
-        internalType: 'address',
-      },
-    ],
-    outputs: [
-      {
-        name: 'rewardReceiverReplacement',
-        type: 'address',
-        internalType: 'address',
-      },
-    ],
-    stateMutability: 'view',
-  },
-  {
-    type: 'function',
     name: 'builderState',
     inputs: [
       {
@@ -163,7 +102,7 @@ export const BuilderRegistryAbi = [
     ],
     outputs: [
       {
-        name: 'activated',
+        name: 'initialized',
         type: 'bool',
         internalType: 'bool',
       },
@@ -178,12 +117,12 @@ export const BuilderRegistryAbi = [
         internalType: 'bool',
       },
       {
-        name: 'paused',
+        name: 'kycPaused',
         type: 'bool',
         internalType: 'bool',
       },
       {
-        name: 'revoked',
+        name: 'selfPaused',
         type: 'bool',
         internalType: 'bool',
       },
@@ -221,7 +160,26 @@ export const BuilderRegistryAbi = [
   },
   {
     type: 'function',
-    name: 'cancelRewardReceiverReplacementRequest',
+    name: 'canClaimBuilderReward',
+    inputs: [
+      {
+        name: 'claimer_',
+        type: 'address',
+        internalType: 'address',
+      },
+    ],
+    outputs: [
+      {
+        name: 'rewardReceiver_',
+        type: 'address',
+        internalType: 'address',
+      },
+    ],
+    stateMutability: 'view',
+  },
+  {
+    type: 'function',
+    name: 'cancelRewardReceiverUpdate',
     inputs: [],
     outputs: [],
     stateMutability: 'nonpayable',
@@ -247,7 +205,7 @@ export const BuilderRegistryAbi = [
   },
   {
     type: 'function',
-    name: 'dewhitelistBuilder',
+    name: 'communityBanBuilder',
     inputs: [
       {
         name: 'builder_',
@@ -407,31 +365,12 @@ export const BuilderRegistryAbi = [
   },
   {
     type: 'function',
-    name: 'hasBuilderRewardReceiverPendingApproval',
-    inputs: [
-      {
-        name: 'builder_',
-        type: 'address',
-        internalType: 'address',
-      },
-    ],
-    outputs: [
-      {
-        name: '',
-        type: 'bool',
-        internalType: 'bool',
-      },
-    ],
-    stateMutability: 'view',
-  },
-  {
-    type: 'function',
     name: 'initialize',
     inputs: [
       {
-        name: 'governanceManager_',
+        name: 'backersManager_',
         type: 'address',
-        internalType: 'contract IGovernanceManagerRootstockCollective',
+        internalType: 'contract BackersManagerRootstockCollective',
       },
       {
         name: 'gaugeFactory_',
@@ -454,12 +393,22 @@ export const BuilderRegistryAbi = [
   },
   {
     type: 'function',
-    name: 'initializeBackersManager',
+    name: 'initializeBuilder',
     inputs: [
       {
-        name: 'backersManager_',
+        name: 'builder_',
         type: 'address',
-        internalType: 'contract BackersManagerRootstockCollective',
+        internalType: 'address',
+      },
+      {
+        name: 'rewardReceiver_',
+        type: 'address',
+        internalType: 'address',
+      },
+      {
+        name: 'rewardPercentage_',
+        type: 'uint64',
+        internalType: 'uint64',
       },
     ],
     outputs: [],
@@ -562,30 +511,26 @@ export const BuilderRegistryAbi = [
   },
   {
     type: 'function',
-    name: 'migrateBuilder',
+    name: 'isRewardReceiverUpdatePending',
     inputs: [
       {
         name: 'builder_',
         type: 'address',
         internalType: 'address',
       },
+    ],
+    outputs: [
       {
-        name: 'rewardAddress_',
-        type: 'address',
-        internalType: 'address',
-      },
-      {
-        name: 'rewardPercentage_',
-        type: 'uint64',
-        internalType: 'uint64',
+        name: '',
+        type: 'bool',
+        internalType: 'bool',
       },
     ],
-    outputs: [],
-    stateMutability: 'nonpayable',
+    stateMutability: 'view',
   },
   {
     type: 'function',
-    name: 'pauseBuilder',
+    name: 'pauseBuilderKYC',
     inputs: [
       {
         name: 'builder_',
@@ -603,14 +548,8 @@ export const BuilderRegistryAbi = [
   },
   {
     type: 'function',
-    name: 'permitBuilder',
-    inputs: [
-      {
-        name: 'rewardPercentage_',
-        type: 'uint64',
-        internalType: 'uint64',
-      },
-    ],
+    name: 'pauseSelf',
+    inputs: [],
     outputs: [],
     stateMutability: 'nonpayable',
   },
@@ -629,10 +568,29 @@ export const BuilderRegistryAbi = [
   },
   {
     type: 'function',
-    name: 'revokeBuilder',
-    inputs: [],
+    name: 'requestRewardReceiverUpdate',
+    inputs: [
+      {
+        name: 'newRewardReceiver_',
+        type: 'address',
+        internalType: 'address',
+      },
+    ],
     outputs: [],
     stateMutability: 'nonpayable',
+  },
+  {
+    type: 'function',
+    name: 'requireInitializedBuilder',
+    inputs: [
+      {
+        name: 'gauge_',
+        type: 'address',
+        internalType: 'contract GaugeRootstockCollective',
+      },
+    ],
+    outputs: [],
+    stateMutability: 'view',
   },
   {
     type: 'function',
@@ -675,6 +633,44 @@ export const BuilderRegistryAbi = [
   },
   {
     type: 'function',
+    name: 'rewardReceiver',
+    inputs: [
+      {
+        name: 'builder',
+        type: 'address',
+        internalType: 'address',
+      },
+    ],
+    outputs: [
+      {
+        name: 'rewardReceiver',
+        type: 'address',
+        internalType: 'address',
+      },
+    ],
+    stateMutability: 'view',
+  },
+  {
+    type: 'function',
+    name: 'rewardReceiverUpdate',
+    inputs: [
+      {
+        name: 'builder',
+        type: 'address',
+        internalType: 'address',
+      },
+    ],
+    outputs: [
+      {
+        name: 'update',
+        type: 'address',
+        internalType: 'address',
+      },
+    ],
+    stateMutability: 'view',
+  },
+  {
+    type: 'function',
     name: 'setBackerRewardPercentage',
     inputs: [
       {
@@ -706,10 +702,10 @@ export const BuilderRegistryAbi = [
   },
   {
     type: 'function',
-    name: 'submitRewardReceiverReplacementRequest',
+    name: 'unpauseBuilderKYC',
     inputs: [
       {
-        name: 'newRewardReceiver_',
+        name: 'builder_',
         type: 'address',
         internalType: 'address',
       },
@@ -719,12 +715,12 @@ export const BuilderRegistryAbi = [
   },
   {
     type: 'function',
-    name: 'unpauseBuilder',
+    name: 'unpauseSelf',
     inputs: [
       {
-        name: 'builder_',
-        type: 'address',
-        internalType: 'address',
+        name: 'rewardPercentage_',
+        type: 'uint64',
+        internalType: 'uint64',
       },
     ],
     outputs: [],
@@ -747,19 +743,6 @@ export const BuilderRegistryAbi = [
     ],
     outputs: [],
     stateMutability: 'payable',
-  },
-  {
-    type: 'function',
-    name: 'validateWhitelisted',
-    inputs: [
-      {
-        name: 'gauge_',
-        type: 'address',
-        internalType: 'contract GaugeRootstockCollective',
-      },
-    ],
-    outputs: [],
-    stateMutability: 'view',
   },
   {
     type: 'event',
@@ -788,7 +771,7 @@ export const BuilderRegistryAbi = [
   },
   {
     type: 'event',
-    name: 'BuilderActivated',
+    name: 'BuilderInitialized',
     inputs: [
       {
         name: 'builder_',
@@ -813,82 +796,6 @@ export const BuilderRegistryAbi = [
   },
   {
     type: 'event',
-    name: 'BuilderMigrated',
-    inputs: [
-      {
-        name: 'builder_',
-        type: 'address',
-        indexed: true,
-        internalType: 'address',
-      },
-      {
-        name: 'migrator_',
-        type: 'address',
-        indexed: true,
-        internalType: 'address',
-      },
-    ],
-    anonymous: false,
-  },
-  {
-    type: 'event',
-    name: 'BuilderRewardReceiverReplacementApproved',
-    inputs: [
-      {
-        name: 'builder_',
-        type: 'address',
-        indexed: true,
-        internalType: 'address',
-      },
-      {
-        name: 'newRewardReceiver_',
-        type: 'address',
-        indexed: false,
-        internalType: 'address',
-      },
-    ],
-    anonymous: false,
-  },
-  {
-    type: 'event',
-    name: 'BuilderRewardReceiverReplacementCancelled',
-    inputs: [
-      {
-        name: 'builder_',
-        type: 'address',
-        indexed: true,
-        internalType: 'address',
-      },
-      {
-        name: 'newRewardReceiver_',
-        type: 'address',
-        indexed: false,
-        internalType: 'address',
-      },
-    ],
-    anonymous: false,
-  },
-  {
-    type: 'event',
-    name: 'BuilderRewardReceiverReplacementRequested',
-    inputs: [
-      {
-        name: 'builder_',
-        type: 'address',
-        indexed: true,
-        internalType: 'address',
-      },
-      {
-        name: 'newRewardReceiver_',
-        type: 'address',
-        indexed: false,
-        internalType: 'address',
-      },
-    ],
-    anonymous: false,
-  },
-  {
-    type: 'event',
     name: 'CommunityApproved',
     inputs: [
       {
@@ -902,7 +809,7 @@ export const BuilderRegistryAbi = [
   },
   {
     type: 'event',
-    name: 'Dewhitelisted',
+    name: 'CommunityBanned',
     inputs: [
       {
         name: 'builder_',
@@ -966,20 +873,7 @@ export const BuilderRegistryAbi = [
   },
   {
     type: 'event',
-    name: 'KYCRevoked',
-    inputs: [
-      {
-        name: 'builder_',
-        type: 'address',
-        indexed: true,
-        internalType: 'address',
-      },
-    ],
-    anonymous: false,
-  },
-  {
-    type: 'event',
-    name: 'Paused',
+    name: 'KYCPaused',
     inputs: [
       {
         name: 'builder_',
@@ -998,7 +892,103 @@ export const BuilderRegistryAbi = [
   },
   {
     type: 'event',
-    name: 'Permitted',
+    name: 'KYCResumed',
+    inputs: [
+      {
+        name: 'builder_',
+        type: 'address',
+        indexed: true,
+        internalType: 'address',
+      },
+    ],
+    anonymous: false,
+  },
+  {
+    type: 'event',
+    name: 'KYCRevoked',
+    inputs: [
+      {
+        name: 'builder_',
+        type: 'address',
+        indexed: true,
+        internalType: 'address',
+      },
+    ],
+    anonymous: false,
+  },
+  {
+    type: 'event',
+    name: 'RewardReceiverUpdateCancelled',
+    inputs: [
+      {
+        name: 'builder_',
+        type: 'address',
+        indexed: true,
+        internalType: 'address',
+      },
+      {
+        name: 'newRewardReceiver_',
+        type: 'address',
+        indexed: false,
+        internalType: 'address',
+      },
+    ],
+    anonymous: false,
+  },
+  {
+    type: 'event',
+    name: 'RewardReceiverUpdateRequested',
+    inputs: [
+      {
+        name: 'builder_',
+        type: 'address',
+        indexed: true,
+        internalType: 'address',
+      },
+      {
+        name: 'newRewardReceiver_',
+        type: 'address',
+        indexed: false,
+        internalType: 'address',
+      },
+    ],
+    anonymous: false,
+  },
+  {
+    type: 'event',
+    name: 'RewardReceiverUpdated',
+    inputs: [
+      {
+        name: 'builder_',
+        type: 'address',
+        indexed: true,
+        internalType: 'address',
+      },
+      {
+        name: 'newRewardReceiver_',
+        type: 'address',
+        indexed: false,
+        internalType: 'address',
+      },
+    ],
+    anonymous: false,
+  },
+  {
+    type: 'event',
+    name: 'SelfPaused',
+    inputs: [
+      {
+        name: 'builder_',
+        type: 'address',
+        indexed: true,
+        internalType: 'address',
+      },
+    ],
+    anonymous: false,
+  },
+  {
+    type: 'event',
+    name: 'SelfResumed',
     inputs: [
       {
         name: 'builder_',
@@ -1017,32 +1007,6 @@ export const BuilderRegistryAbi = [
         type: 'uint256',
         indexed: false,
         internalType: 'uint256',
-      },
-    ],
-    anonymous: false,
-  },
-  {
-    type: 'event',
-    name: 'Revoked',
-    inputs: [
-      {
-        name: 'builder_',
-        type: 'address',
-        indexed: true,
-        internalType: 'address',
-      },
-    ],
-    anonymous: false,
-  },
-  {
-    type: 'event',
-    name: 'Unpaused',
-    inputs: [
-      {
-        name: 'builder_',
-        type: 'address',
-        indexed: true,
-        internalType: 'address',
       },
     ],
     anonymous: false,
@@ -1073,22 +1037,7 @@ export const BuilderRegistryAbi = [
   },
   {
     type: 'error',
-    name: 'AlreadyActivated',
-    inputs: [],
-  },
-  {
-    type: 'error',
-    name: 'AlreadyCommunityApproved',
-    inputs: [],
-  },
-  {
-    type: 'error',
-    name: 'AlreadyKYCApproved',
-    inputs: [],
-  },
-  {
-    type: 'error',
-    name: 'AlreadyRevoked',
+    name: 'BuilderAlreadyCommunityApproved',
     inputs: [],
   },
   {
@@ -1098,7 +1047,57 @@ export const BuilderRegistryAbi = [
   },
   {
     type: 'error',
+    name: 'BuilderAlreadyInitialized',
+    inputs: [],
+  },
+  {
+    type: 'error',
+    name: 'BuilderAlreadyKYCApproved',
+    inputs: [],
+  },
+  {
+    type: 'error',
+    name: 'BuilderAlreadySelfPaused',
+    inputs: [],
+  },
+  {
+    type: 'error',
     name: 'BuilderDoesNotExist',
+    inputs: [],
+  },
+  {
+    type: 'error',
+    name: 'BuilderNotCommunityApproved',
+    inputs: [],
+  },
+  {
+    type: 'error',
+    name: 'BuilderNotInitialized',
+    inputs: [],
+  },
+  {
+    type: 'error',
+    name: 'BuilderNotKYCApproved',
+    inputs: [],
+  },
+  {
+    type: 'error',
+    name: 'BuilderNotKYCPaused',
+    inputs: [],
+  },
+  {
+    type: 'error',
+    name: 'BuilderNotOperational',
+    inputs: [],
+  },
+  {
+    type: 'error',
+    name: 'BuilderNotSelfPaused',
+    inputs: [],
+  },
+  {
+    type: 'error',
+    name: 'BuilderRewardsLocked',
     inputs: [],
   },
   {
@@ -1134,12 +1133,12 @@ export const BuilderRegistryAbi = [
   },
   {
     type: 'error',
-    name: 'InvalidBuilderRewardReceiver',
+    name: 'InvalidInitialization',
     inputs: [],
   },
   {
     type: 'error',
-    name: 'InvalidInitialization',
+    name: 'InvalidRewardReceiver',
     inputs: [],
   },
   {
@@ -1154,32 +1153,7 @@ export const BuilderRegistryAbi = [
   },
   {
     type: 'error',
-    name: 'NotCommunityApproved',
-    inputs: [],
-  },
-  {
-    type: 'error',
     name: 'NotInitializing',
-    inputs: [],
-  },
-  {
-    type: 'error',
-    name: 'NotKYCApproved',
-    inputs: [],
-  },
-  {
-    type: 'error',
-    name: 'NotOperational',
-    inputs: [],
-  },
-  {
-    type: 'error',
-    name: 'NotPaused',
-    inputs: [],
-  },
-  {
-    type: 'error',
-    name: 'NotRevoked',
     inputs: [],
   },
   {
@@ -1197,5 +1171,10 @@ export const BuilderRegistryAbi = [
         internalType: 'bytes32',
       },
     ],
+  },
+  {
+    type: 'error',
+    name: 'ZeroAddressNotAllowed',
+    inputs: [],
   },
 ] as const

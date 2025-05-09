@@ -18,11 +18,11 @@ import { useReadGauges, useReadRewardDistributor } from '@/shared/hooks/contract
 import { useContext, useMemo } from 'react'
 
 const isBuilderShown = (
-  { stateFlags: { kycApproved, revoked, communityApproved, paused }, address }: RequiredBuilder,
+  { stateFlags: { kycApproved, selfPaused, communityApproved, kycPaused }, address }: RequiredBuilder,
   allocations: Allocations,
 ) => {
   const allocation = allocations[address]
-  return (kycApproved && !revoked && communityApproved && !paused) || (allocation && allocation > 0n)
+  return (kycApproved && !selfPaused && communityApproved && !kycPaused) || (allocation && allocation > 0n)
 }
 
 export type BuildersRewards = RequiredBuilder & {

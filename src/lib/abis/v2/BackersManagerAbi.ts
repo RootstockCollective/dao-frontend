@@ -323,11 +323,6 @@ export const BackersManagerAbi = [
         internalType: 'contract IGovernanceManagerRootstockCollective',
       },
       {
-        name: 'builderRegistry_',
-        type: 'address',
-        internalType: 'address',
-      },
-      {
         name: 'rewardToken_',
         type: 'address',
         internalType: 'address',
@@ -351,6 +346,19 @@ export const BackersManagerAbi = [
         name: 'distributionDuration_',
         type: 'uint32',
         internalType: 'uint32',
+      },
+    ],
+    outputs: [],
+    stateMutability: 'nonpayable',
+  },
+  {
+    type: 'function',
+    name: 'initializeBuilderRegistry',
+    inputs: [
+      {
+        name: 'builderRegistry_',
+        type: 'address',
+        internalType: 'contract BuilderRegistryRootstockCollective',
       },
     ],
     outputs: [],
@@ -981,6 +989,11 @@ export const BackersManagerAbi = [
   },
   {
     type: 'error',
+    name: 'RewardTokenNotApproved',
+    inputs: [],
+  },
+  {
+    type: 'error',
     name: 'SafeERC20FailedOperation',
     inputs: [
       {
@@ -1009,6 +1022,11 @@ export const BackersManagerAbi = [
   {
     type: 'error',
     name: 'UnequalLengths',
+    inputs: [],
+  },
+  {
+    type: 'error',
+    name: 'ZeroAddressNotAllowed',
     inputs: [],
   },
 ] as const

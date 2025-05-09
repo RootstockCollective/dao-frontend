@@ -9,10 +9,10 @@ export const TotalActiveBuildersMetrics = () => {
     isLoading,
     error,
   } = useGetBuildersByState({
-    activated: true,
+    initialized: true,
     communityApproved: true,
     kycApproved: true,
-    paused: false,
+    kycPaused: false,
   })
   useHandleErrors({ error, title: 'Error loading active builders' })
 

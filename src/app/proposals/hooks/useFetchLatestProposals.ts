@@ -1,6 +1,6 @@
 import { fetchProposalsCreatedCached } from '@/app/user/Balances/actions'
 import { GovernorAbi } from '@/lib/abis/Governor'
-import { SimplifiedRewardDistributorAbi } from '@/lib/abis/SimplifiedRewardDistributorAbi'
+import { CRDeprecatedAbi } from '@/lib/abis/CRDeprecatedAbi'
 import { useQuery, UseQueryResult } from '@tanstack/react-query'
 import { useMemo } from 'react'
 import { getAddress, parseEventLogs, prepareEncodeFunctionData } from 'viem'
@@ -50,7 +50,7 @@ const RELAY_FUNCTION_SELECTOR = prepareEncodeFunctionData({
   functionName: 'relay',
 }).functionName
 const CR_WHITELIST_FUNCTION_SELECTOR_MVP = prepareEncodeFunctionData({
-  abi: SimplifiedRewardDistributorAbi,
+  abi: CRDeprecatedAbi,
   functionName: 'whitelistBuilder', // v1
 }).functionName
 
