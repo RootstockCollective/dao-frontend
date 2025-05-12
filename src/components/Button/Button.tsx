@@ -2,7 +2,6 @@ import { ButtonVariants } from '@/components/Button/types'
 import { cn } from '@/lib/utils'
 import { FC, JSX, MouseEvent, ReactNode } from 'react'
 import { Span } from '../Typography'
-import { DivWithGradient } from '@/components/Button/DivWithGradient'
 import { SpinnerIcon } from '../Icons'
 
 export const BUTTON_DEFAULT_CLASSES = 'px-[23px] py-[9px] flex gap-x-1 items-center relative rounded-[6px]'
@@ -90,7 +89,6 @@ export const Button: FC<Props> = ({
         <span className={cn('absolute left-[-20px] top-[4px]', startIconClasses)}>{startIcon}</span>
         <Span className={textClassName}>{text}</Span>
       </span>
-      {variant === 'sidebar-active' && <DivWithGradient />}
     </button>
   )
 }
