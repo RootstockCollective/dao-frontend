@@ -4,6 +4,7 @@ import { UserConnectionManager } from '@/shared/walletConnection'
 import { cn } from '@/lib/utils'
 import { SideBarClosedIcon, SideBarOpenedIcon } from './icons'
 import { useLayoutContext } from '@/app/providers/LayoutProvider'
+import { Tooltip } from '../Tooltip'
 
 export function HeaderDesktop({ className, ...props }: HTMLAttributes<HTMLDivElement>) {
   const { isSidebarOpen, toggleSidebar } = useLayoutContext()
@@ -12,18 +13,26 @@ export function HeaderDesktop({ className, ...props }: HTMLAttributes<HTMLDivEle
       <div className="flex flex-row justify-between">
         {/* Left side */}
         <div className="flex flex-row items-center">
-          <button onClick={toggleSidebar} className="cursor-pointer">
-            {isSidebarOpen ? <SideBarOpenedIcon /> : <SideBarClosedIcon />}
-          </button>
-          <StarIcon className="ml-3" />
+          <Tooltip position="bottom" text={isSidebarOpen ? 'Close sidebar' : 'Open sidebar'}>
+            <button onClick={toggleSidebar} className="cursor-pointer">
+              {isSidebarOpen ? <SideBarOpenedIcon /> : <SideBarClosedIcon />}
+            </button>
+          </Tooltip>
+          <Tooltip position="bottom" text="Add to favourites">
+            <StarIcon className="ml-3" />
+          </Tooltip>
           <p className="ml-6 text-sm font-extralight">
             <span className="text-warm-gray">Category /</span> Selected navigation item
           </p>
         </div>
         {/* Right side */}
         <div className="flex flex-row">
-          <SunIcon className="mr-3" />
-          <BellIcon className="mr-5" />
+          <Tooltip position="left" text="Light theme">
+            <SunIcon className="mr-3" />
+          </Tooltip>
+          <Tooltip position="bottom" text="Notifications">
+            <BellIcon className="mr-5" />
+          </Tooltip>
           <UserConnectionManager />
         </div>
       </div>
