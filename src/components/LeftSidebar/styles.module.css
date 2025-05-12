@@ -1,0 +1,10 @@
+.nav-active::before {
+  background: linear-gradient(180deg, #fffee3 0%, #f9e1ff 40%, #be5b0f 58%, #932309 76%, #010101 100%);
+  content: '';
+  width: 4px;
+  height: 100%;
+  display: block;
+  position: absolute;
+  top: 0;
+  left: 0;
+}

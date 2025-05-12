@@ -1,15 +1,17 @@
 import { ENV } from '@/lib/constants'
 
-const regtest = {
-  registerRns: '',
-  tokenBridge: '',
-  rif: '',
-  rbtc: '',
-  getRif: '',
-  forum: '',
+interface Resources {
+  registerRns: string
+  tokenBridge: string
+  rif: string
+  rbtc: string
+  getRif: string
+  forum: string
+  stakeRif: string
+  allocations: string
 }
 
-const testnet = {
+const testnet: Resources = {
   registerRns: 'https://testnet.manager.rns.rifos.org/',
   tokenBridge: 'https://testnet.tokenbridge.rsk.co/',
   rif: 'https://www.coingecko.com/en/coins/rsk-infrastructure-framework/',
@@ -20,7 +22,7 @@ const testnet = {
   allocations: 'https://rootstockcollective.xyz/collective-rewards-how-to-become-a-backer/',
 }
 
-const mainnet = {
+const mainnet: Resources = {
   registerRns: 'https://manager.rns.rifos.org/',
   tokenBridge: 'https://tokenbridge.rsk.co/',
   rif: 'https://www.coingecko.com/en/coins/rsk-infrastructure-framework/',
@@ -31,10 +33,21 @@ const mainnet = {
   allocations: 'https://rootstockcollective.xyz/collective-rewards-how-to-become-a-backer/',
 }
 
+const regtest: Resources = {
+  registerRns: '',
+  tokenBridge: '',
+  rif: '',
+  rbtc: '',
+  getRif: '',
+  stakeRif: '',
+  forum: '',
+  allocations: '',
+}
+
 const environments = {
   regtest,
   testnet,
   mainnet,
 }
-// @ts-ignore
-export const currentLinks = environments[ENV] as typeof testnet
+
+export const currentLinks: Resources = environments[ENV as keyof typeof environments]

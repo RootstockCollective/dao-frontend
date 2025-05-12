@@ -1,4 +1,3 @@
-import { UserConnectionManager } from '../../connection'
 import { TopPageHeaderLeftSlotStrategy } from './TopPageHeaderLeftSlotStrategy'
 import { BecomeABuilderButton } from '@/app/collective-rewards/user'
 import { useAccount } from 'wagmi'
@@ -46,7 +45,6 @@ export function TopPageHeader() {
         {/* Commented buttons to test reown  */}
         {/*<appkit-account-button />*/}
         {/*<appkit-network-button />*/}
-        <UserConnectionManager />
       </div>
     </div>
   )

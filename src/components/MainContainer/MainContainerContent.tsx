@@ -1,21 +1,16 @@
 import { supportedChainId } from '@/config'
 import { ENV } from '@/lib/constants'
-import { FC, ReactNode, useCallback, useEffect } from 'react'
+import { FC, PropsWithChildren, useCallback, useEffect } from 'react'
 import { useAccount, useSwitchChain } from 'wagmi'
 import { Paragraph, Span } from '../Typography'
-import { ProtectedContent } from '../ProtectedContent/ProtectedContent'
 import { usePathname } from 'next/navigation'
+import { useAlertContext } from '@/app/providers'
 
-interface Props {
-  setMessage: (message: any) => void
-  children: ReactNode
-}
-
-export const MainContainerContent: FC<Props> = ({ setMessage, children }) => {
+export const MainContainerContent: FC<PropsWithChildren> = ({ children }) => {
   const { isConnected, chainId } = useAccount()
   const { switchChain } = useSwitchChain()
   const pathname = usePathname()
-
+  const { setMessage } = useAlertContext()
   const handleSwitchNetwork = useCallback(() => {
     switchChain({ chainId: supportedChainId })
   }, [switchChain])
