@@ -5,12 +5,14 @@ import { createAppKit } from '@reown/appkit/react'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { ReactNode } from 'react'
 import { WagmiProvider, State } from 'wagmi'
+import { TooltipProvider } from '@radix-ui/react-tooltip'
+import { Context as ResponsiveContext } from 'react-responsive'
 import { AlertProvider } from './AlertProvider'
 import ErrorBoundary from '@/components/ErrorPage/ErrorBoundary'
 import { BuilderContextProviderWithPrices } from '../collective-rewards/user'
 import { AllocationsContextProvider } from '../collective-rewards/allocations/context'
 import { BoosterProvider } from './NFT/BoosterContext'
-import { MainContainer } from '@/components/MainContainer/MainContainer'
+import { LayoutProvider } from './LayoutProvider'
 import { BalancesProvider } from '@/app/user/Balances/context/BalancesContext'
 import { HeroCollapseProvider } from '@/app/user/HeroSection/HeroCollapseContext'
 
@@ -68,7 +70,11 @@ export const ContextProviders = ({ children, initialState }: Props) => {
                 <BoosterProvider>
                   <AllocationsContextProvider>
                     <BalancesProvider>
-                      <MainContainer>{children}</MainContainer>
+                      {/* <ResponsiveContext.Provider value={{ width: 375 }}> */}
+                      <LayoutProvider>
+                        <TooltipProvider>{children}</TooltipProvider>
+                      </LayoutProvider>
+                      {/* </ResponsiveContext.Provider> */}
                     </BalancesProvider>
                   </AllocationsContextProvider>
                 </BoosterProvider>

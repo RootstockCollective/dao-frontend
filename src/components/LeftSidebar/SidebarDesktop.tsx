@@ -1,0 +1,84 @@
+import Link from 'next/link'
+import { motion, type Transition } from 'motion/react'
+import { UsefulLinks } from './UsefulLinks'
+import styles from './styles.module.css'
+import { cn } from '@/lib/utils'
+import { NavIcon } from './NavIcon'
+import { sidebarData } from './sidebarData'
+import { usePathname } from 'next/navigation'
+import { RootstockLogoIcon } from './icons/RootstockLogoIcon'
+import { useLayoutContext } from '@/app/providers/LayoutProvider'
+import { Tooltip } from '../Tooltip/'
+
+const sideBarWidth = 239
+const closedSideWidth = 79
+const transition: Transition = { duration: 0.3, ease: 'circOut' }
+
+export const SidebarDesktop = () => {
+  const activeButton = usePathname()?.substring(1)
+  const { isSidebarOpen } = useLayoutContext()
+  return (
+    <motion.aside
+      initial={{ width: sideBarWidth }}
+      whileInView={{ opacity: 1 }}
+      animate={{ width: isSidebarOpen ? sideBarWidth : closedSideWidth }}
+      transition={transition}
+      className={cn('overflow-hidden shrink-0 border-r border-dark-gray')}
+    >
+      <div className="h-[calc(100vh-40px)] flex flex-col justify-between whitespace-nowrap">
+        <div>
+          <Link href="/" className="m-6 block w-fit">
+            <RootstockLogoIcon />
+          </Link>
+          <ul className="px-3">
+            {sidebarData.map(({ text, href, buttonProps }) => {
+              const isActive = activeButton === href
+              return (
+                <li key={href} className={cn('relative pl-3', isSidebarOpen && isActive && 'bg-v-charcoal')}>
+                  <Link href={`/${href}`} data-testid={buttonProps.id}>
+                    <div
+                      className={cn(
+                        'h-10 flex flex-row flex-nowrap gap-2 items-center group',
+                        isActive && styles['nav-active'],
+                      )}
+                    >
+                      <motion.div
+                        initial={{ scale: 1, x: 0 }}
+                        animate={{ scale: isSidebarOpen ? 1 : 1.6, x: isSidebarOpen ? 0 : 5 }}
+                        transition={transition}
+                      >
+                        <Tooltip text={text} disabled={isSidebarOpen}>
+                          <NavIcon className="" />
+                        </Tooltip>
+                      </motion.div>
+
+                      <motion.span
+                        initial={{ opacity: 1 }}
+                        animate={{ opacity: +isSidebarOpen }}
+                        className={cn('text-sm font-light font-rootstock-sans', {
+                          // hide transparent text when sidebar is closed
+                          'pointer-events-none': !isSidebarOpen,
+                        })}
+                      >
+                        {text}
+                      </motion.span>
+                    </div>
+                  </Link>
+                </li>
+              )
+            })}
+          </ul>
+        </div>
+        <motion.div
+          initial={{ opacity: 1 }}
+          animate={{ opacity: +isSidebarOpen }}
+          transition={{ duration: transition.duration, ease: 'easeOut' }}
+          /* Hide transparent links */
+          className={cn({ 'pointer-events-none': !isSidebarOpen })}
+        >
+          <UsefulLinks className="ml-6" />
+        </motion.div>
+      </div>
+    </motion.aside>
+  )
+}

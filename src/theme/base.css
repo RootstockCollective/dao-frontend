@@ -28,6 +28,10 @@
     --color-accent: var(--input-bg);
     --color-accent-foreground: var(--text-primary);
 
+    --color-v-charcoal: var(--v-charcoal);
+    --color-warm-gray: var(--warm-gray);
+    --color-dark-gray: var(--dark-gray);
+
     --animate-accordion-down: accordion-down 0.2s ease-out;
     --animate-accordion-up: accordion-up 0.2s ease-out;
     --animate-collapsible-down: collapsible-down 0.2s ease-out;
