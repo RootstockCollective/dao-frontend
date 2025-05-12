@@ -1,15 +1,21 @@
 import { cn } from '@/lib/utils'
-import { PropsWithChildren } from 'react'
-import { motion } from 'motion/react'
+import { HTMLAttributes, PropsWithChildren } from 'react'
 import * as RadixTooltip from '@radix-ui/react-tooltip'
 
-interface TooltipProps extends PropsWithChildren {
+interface Props extends HTMLAttributes<HTMLElement> {
   text: string
   position?: 'right' | 'left' | 'top' | 'bottom'
   disabled?: boolean
 }
 
-export function Tooltip({ children, text, position = 'right', disabled = false }: TooltipProps) {
+export function Tooltip({
+  className,
+  children,
+  text,
+  position = 'right',
+  disabled = false,
+  ...props
+}: Props) {
   if (disabled) {
     return <>{children}</>
   }
@@ -20,7 +26,11 @@ export function Tooltip({ children, text, position = 'right', disabled = false }
         <RadixTooltip.Content
           side={position}
           sideOffset={5}
-          className={cn('rounded-full bg-[#35312E] px-2 py-1 text-warm-gray text-xs font-normal shadow-lg')}
+          className={cn(
+            'rounded-full bg-dark-gray px-2 py-1 text-warm-gray text-xs font-normal shadow-lg',
+            className,
+          )}
+          {...props}
         >
           {text}
         </RadixTooltip.Content>
