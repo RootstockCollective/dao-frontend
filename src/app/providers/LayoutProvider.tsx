@@ -18,6 +18,11 @@ interface LayoutState {
 
 const LayoutContext = createContext<LayoutState | null>(null)
 
+/**
+ * LayoutProvider manages global layout states for the entire application.
+ * Currently handles sidebar visibility, but can be extended to manage other
+ * layout configurations like theme, responsive settings, and other UI states.
+ */
 export function LayoutProvider({ children }: PropsWithChildren) {
   const [isSidebarOpen, setIsSidebarOpen] = useState(true)
   const toggleSidebar = () => setIsSidebarOpen(state => !state)
@@ -32,6 +37,11 @@ export function LayoutProvider({ children }: PropsWithChildren) {
   return <LayoutContext.Provider value={value}>{children}</LayoutContext.Provider>
 }
 
+/**
+ * Hook to access global layout states and control functions from any component.
+ * Provides access to sidebar state and can be extended for other layout configurations.
+ * Must be used within a LayoutProvider.
+ */
 export function useLayoutContext() {
   const context = useContext(LayoutContext)
   if (!context) {

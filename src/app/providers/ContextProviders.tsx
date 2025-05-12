@@ -6,7 +6,6 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { ReactNode } from 'react'
 import { WagmiProvider, State } from 'wagmi'
 import { TooltipProvider } from '@radix-ui/react-tooltip'
-import { Context as ResponsiveContext } from 'react-responsive'
 import { AlertProvider } from './AlertProvider'
 import ErrorBoundary from '@/components/ErrorPage/ErrorBoundary'
 import { BuilderContextProviderWithPrices } from '../collective-rewards/user'
@@ -70,11 +69,9 @@ export const ContextProviders = ({ children, initialState }: Props) => {
                 <BoosterProvider>
                   <AllocationsContextProvider>
                     <BalancesProvider>
-                      {/* <ResponsiveContext.Provider value={{ width: 375 }}> */}
                       <LayoutProvider>
                         <TooltipProvider>{children}</TooltipProvider>
                       </LayoutProvider>
-                      {/* </ResponsiveContext.Provider> */}
                     </BalancesProvider>
                   </AllocationsContextProvider>
                 </BoosterProvider>
