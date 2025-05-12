@@ -5,6 +5,7 @@ import { cn } from '@/lib/utils'
 import { SideBarClosedIcon, SideBarOpenedIcon } from './icons'
 import { useLayoutContext } from '@/app/providers/LayoutProvider'
 import { Tooltip } from '../Tooltip'
+import { Breadcrumbs } from './Breadcrumbs'
 
 export function HeaderDesktop({ className, ...props }: HTMLAttributes<HTMLDivElement>) {
   const { isSidebarOpen, toggleSidebar } = useLayoutContext()
@@ -21,9 +22,7 @@ export function HeaderDesktop({ className, ...props }: HTMLAttributes<HTMLDivEle
           <Tooltip position="bottom" text="Add to favourites">
             <StarIcon className="ml-3" />
           </Tooltip>
-          <p className="ml-6 text-sm font-extralight">
-            <span className="text-warm-gray">Category /</span> Selected navigation item
-          </p>
+          <Breadcrumbs />
         </div>
         {/* Right side */}
         <div className="flex flex-row">
