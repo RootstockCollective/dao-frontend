@@ -35,6 +35,7 @@ const modal = createAppKit({
   networks: [rootstock, rootstockTestnet],
   defaultNetwork: rootstockTestnet,
   metadata: metadata,
+  enableWalletConnect: false,
   features: {
     analytics: true,
     email: false,
