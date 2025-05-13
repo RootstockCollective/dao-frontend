@@ -1,5 +1,5 @@
 name: Deploy to Amazon ECS (DAO QA)
-# Deploys to: https://dqo.qa.app.rootstockcollective.xyz/
+# Deploys to: https://dao.qa.app.rootstockcollective.xyz
 # Can be manually triggered, or triggered when the tag "deploy to DAO QA" is
 # added to a PR.
 # Uses the `.env.dao.qa` env file
