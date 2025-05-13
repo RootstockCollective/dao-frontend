@@ -6,6 +6,7 @@ import { useCallback, useEffect, useMemo, useState } from 'react'
 import { Address, Hash, parseEther } from 'viem'
 import { useAccount, useReadContract, useWaitForTransactionReceipt, useWriteContract } from 'wagmi'
 import { CustomStakingRIFFooter } from '../CustomStakingRIFFooter'
+import { useTxStatusContext } from '@/shared/context/TxStatusContext'
 
 export const useStakeRIF: ActionHookToUse = (
   amount: string,
@@ -14,6 +15,7 @@ export const useStakeRIF: ActionHookToUse = (
 ) => {
   const { address } = useAccount()
   const [allowanceHash, setAllowanceHashUsed] = useState<Hash>()
+  const { trackTransaction } = useTxStatusContext()
 
   const { data: allowanceBalance, isLoading: isAllowanceReadLoading } = useReadContract({
     abi: RIFTokenAbi,
@@ -44,8 +46,9 @@ export const useStakeRIF: ActionHookToUse = (
   useEffect(() => {
     if (allowanceTxHash) {
       setAllowanceHashUsed(allowanceTxHash)
+      trackTransaction(allowanceTxHash)
     }
-  }, [allowanceTxHash])
+  }, [allowanceTxHash, trackTransaction])
 
   const onRequestAllowance = useCallback(
     () =>
