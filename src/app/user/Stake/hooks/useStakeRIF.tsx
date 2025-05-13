@@ -6,6 +6,9 @@ import { useCallback, useEffect, useMemo, useState } from 'react'
 import { Address, Hash, parseEther } from 'viem'
 import { useAccount, useReadContract, useWaitForTransactionReceipt, useWriteContract } from 'wagmi'
 import { CustomStakingRIFFooter } from '../CustomStakingRIFFooter'
+import { useAlertContext } from '@/app/providers'
+import { TX_MESSAGES } from '@/shared/txMessages'
+import { isUserRejectedTxError } from '@/components/ErrorPage/commonErrors'
 
 export const useStakeRIF: ActionHookToUse = (
   amount: string,
@@ -14,6 +17,7 @@ export const useStakeRIF: ActionHookToUse = (
 ) => {
   const { address } = useAccount()
   const [allowanceHash, setAllowanceHashUsed] = useState<Hash>()
+  const { setMessage } = useAlertContext() // Get the setMessage function from the alert context
 
   const { data: allowanceBalance, isLoading: isAllowanceReadLoading } = useReadContract({
     abi: RIFTokenAbi,
@@ -64,14 +68,23 @@ export const useStakeRIF: ActionHookToUse = (
   )
   const { writeContractAsync: stake, isPending } = useWriteContract()
 
-  const onRequestStake = () =>
-    stake({
-      abi: StRIFTokenAbi,
-      address: tokenToReceiveContract as Address,
-      functionName: 'depositAndDelegate',
-      args: [address!, parseEther(amount)],
-    })
-
+  const onRequestStake = async () => {
+    try {
+      const response = await stake({
+        abi: StRIFTokenAbi,
+        address: tokenToReceiveContract as Address,
+        functionName: 'depositAndDelegate',
+        args: [address!, parseEther(amount)],
+      })
+      setMessage(TX_MESSAGES.staking.success)
+      return response
+    } catch (err: any) {
+      if (!isUserRejectedTxError(err)) {
+        setMessage(TX_MESSAGES.staking.error)
+      }
+      throw err
+    }
+  }
   const customFooter = useMemo(
     () => (
       <CustomStakingRIFFooter
