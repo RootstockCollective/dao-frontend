@@ -5,35 +5,23 @@ import { Address, decodeFunctionData } from 'viem'
 import { useTransaction, useWaitForTransactionReceipt } from 'wagmi'
 import { TxAction } from '../types'
 
-/**
- * A custom hook to derive a transaction status message based on the transaction hash and action.
- *
- * @param {string | null} txHash - The hash of the transaction to monitor.
- * @param {TxAction | null} [txActionInit] - An optional initial transaction action (e.g., 'staking', 'unstaking', 'allowance').
- * @returns {{ txMessage: string | null }} - The transaction status message or null if unavailable.
- */
-export const useTxStatusMessage = (txHash: string | null, txActionInit?: TxAction | null) => {
-  const [txAction, setTxAction] = useState<TxAction | undefined | null>(txActionInit)
-  const { status: txStatus } = useWaitForTransactionReceipt({ hash: txHash as Address })
-  const { data: txData } = useTransaction({ hash: txHash as Address })
+const TX_ACTIONS = {
+  depositAndDelegate: 'staking',
+  withdrawTo: 'unstaking',
+  approve: 'allowance',
+} as const
+
+export const useTxStatusMessage = (txHash: string) => {
+  const [action, setAction] = useState<TxAction | null>(null)
+  const { status } = useWaitForTransactionReceipt({ hash: txHash as Address })
+  const { data } = useTransaction({ hash: txHash as Address })
 
   useEffect(() => {
-    if (txData) {
-      const { functionName } = decodeFunctionData({
-        abi: StRIFTokenAbi,
-        data: txData.input,
-      })
-      if (functionName === 'withdrawTo') {
-        setTxAction('unstaking')
-      } else if (functionName === 'approve') {
-        setTxAction('allowance')
-      } else {
-        setTxAction('staking')
-      }
+    if (data) {
+      const { functionName } = decodeFunctionData({ abi: StRIFTokenAbi, data: data.input })
+      setAction(TX_ACTIONS[functionName as keyof typeof TX_ACTIONS] ?? null)
     }
-  }, [txData])
+  }, [data])
 
-  return {
-    txMessage: txHash && txAction && txStatus ? TX_MESSAGES[txAction][txStatus] : null,
-  }
+  return { txMessage: txHash && action && status ? TX_MESSAGES[action][status] : null }
 }

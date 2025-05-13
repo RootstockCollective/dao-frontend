@@ -18,7 +18,7 @@ export const StepTwo = ({ onGoNext, onCloseModal = () => {} }: StepProps) => {
     stakePreviewFrom: from,
     stakePreviewTo: to,
   } = useStakingContext()
-  const { setTxMessage } = useTxStatusContext()
+  const { trackTransaction } = useTxStatusContext()
 
   const { onConfirm: onConfirmAction, isPending } = actionToUse(
     amount,
@@ -30,7 +30,7 @@ export const StepTwo = ({ onGoNext, onCloseModal = () => {} }: StepProps) => {
     try {
       const txHash = await onConfirmAction()
       setStakeTxHash?.(txHash)
-      setTxMessage(txHash)
+      trackTransaction(txHash)
       onGoNext?.()
     } catch (err: any) {
       if (!isUserRejectedTxError(err)) {

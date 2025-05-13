@@ -15,7 +15,7 @@ export const useStakeRIF: ActionHookToUse = (
 ) => {
   const { address } = useAccount()
   const [allowanceHash, setAllowanceHashUsed] = useState<Hash>()
-  const { setTxMessage } = useTxStatusContext()
+  const { trackTransaction } = useTxStatusContext()
 
   const { data: allowanceBalance, isLoading: isAllowanceReadLoading } = useReadContract({
     abi: RIFTokenAbi,
@@ -46,9 +46,9 @@ export const useStakeRIF: ActionHookToUse = (
   useEffect(() => {
     if (allowanceTxHash) {
       setAllowanceHashUsed(allowanceTxHash)
-      setTxMessage(allowanceTxHash, 'allowance')
+      trackTransaction(allowanceTxHash)
     }
-  }, [allowanceTxHash, setTxMessage])
+  }, [allowanceTxHash, trackTransaction])
 
   const onRequestAllowance = useCallback(
     () =>
