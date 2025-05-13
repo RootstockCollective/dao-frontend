@@ -6,9 +6,10 @@ import { cn } from '@/lib/utils'
 import { NavIcon } from './NavIcon'
 import { sidebarData } from './sidebarData'
 import { usePathname } from 'next/navigation'
-import { RootstockLogoIcon } from './icons/RootstockLogoIcon'
+import { RootstockLogoIcon } from '../Icons'
 import { useLayoutContext } from '@/app/providers/LayoutProvider'
 import { Tooltip } from '../Tooltip/'
+import { useMemo } from 'react'
 
 const sideBarWidth = 239
 const closedSideWidth = 79
@@ -17,11 +18,24 @@ const transition: Transition = { duration: 0.3, ease: 'circOut' }
 export const SidebarDesktop = () => {
   const activeButton = usePathname()?.substring(1)
   const { isSidebarOpen } = useLayoutContext()
+
+  // Animation variants for the sidebar UI states
+  const variants = useMemo(
+    () => ({
+      sidebar: {
+        width: isSidebarOpen ? sideBarWidth : closedSideWidth,
+      },
+      icon: { scale: isSidebarOpen ? 1 : 1.6, x: isSidebarOpen ? 0 : 5 },
+      text: { opacity: +isSidebarOpen },
+    }),
+    [isSidebarOpen],
+  )
   return (
     <motion.aside
-      initial={{ width: sideBarWidth }}
+      variants={variants}
+      initial="sidebar"
+      animate="sidebar"
       whileInView={{ opacity: 1 }}
-      animate={{ width: isSidebarOpen ? sideBarWidth : closedSideWidth }}
       transition={transition}
       className={cn('overflow-hidden shrink-0 border-r border-dark-gray')}
     >
@@ -42,19 +56,16 @@ export const SidebarDesktop = () => {
                         isActive && styles['nav-active'],
                       )}
                     >
-                      <motion.div
-                        initial={{ scale: 1, x: 0 }}
-                        animate={{ scale: isSidebarOpen ? 1 : 1.6, x: isSidebarOpen ? 0 : 5 }}
-                        transition={transition}
-                      >
+                      <motion.div variants={variants} initial="icon" animate="icon" transition={transition}>
                         <Tooltip text={text} disabled={isSidebarOpen}>
                           <NavIcon className="" />
                         </Tooltip>
                       </motion.div>
 
                       <motion.span
-                        initial={{ opacity: 1 }}
-                        animate={{ opacity: +isSidebarOpen }}
+                        variants={variants}
+                        initial="text"
+                        animate="text"
                         className={cn('text-sm font-light font-rootstock-sans', {
                           // hide transparent text when sidebar is closed
                           'pointer-events-none': !isSidebarOpen,
@@ -70,8 +81,9 @@ export const SidebarDesktop = () => {
           </ul>
         </div>
         <motion.div
-          initial={{ opacity: 1 }}
-          animate={{ opacity: +isSidebarOpen }}
+          variants={variants}
+          initial="text"
+          animate="text"
           transition={{ duration: transition.duration, ease: 'easeOut' }}
           /* Hide transparent links */
           className={cn({ 'pointer-events-none': !isSidebarOpen })}

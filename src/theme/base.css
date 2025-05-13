@@ -28,8 +28,6 @@
   --color-accent: var(--input-bg);
   --color-accent-foreground: var(--text-primary);
 
-  /* New Design 2025 May variables */
-
   /* Background colors */
   --color-bg-100: var(--background-100);
   --color-bg-80: var(--background-80);
@@ -72,6 +70,7 @@
   --color-v-charcoal: var(--v-charcoal);
   --color-warm-gray: var(--warm-gray);
   --color-dark-gray: var(--dark-gray);
+  --color-l-black: var(--l-black);
 
   @keyframes accordion-down {
     from {
