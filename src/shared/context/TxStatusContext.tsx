@@ -1,60 +1,45 @@
-import { createContext, memo, useContext, useEffect, useRef, useState } from 'react'
-import { Id } from 'react-toastify'
-import { useTxStatusMessage } from '../hooks/useTxStatusMessage'
-import { showToast, ToastAlertOptions, updateToast } from '../lib/toastUtils'
+import { createContext, memo, ReactNode, useCallback, useContext, useMemo, useState } from 'react'
+import { useTransactionToast } from '../hooks/useTransactionToast'
 
 const TxStatusContext = createContext<{
   trackTransaction: (txHash: string) => void
 } | null>(null)
 
+type TransactionToastProps = {
+  txHash: string
+  onTxComplete: (hash: string) => void
+}
+
 const TransactionToast = memo(
-  function TransactionToast({ txHash, onClose }: { txHash: string; onClose: (hash: string) => void }) {
-    const { txMessage } = useTxStatusMessage(txHash)
-    const loadingRef = useRef(false)
-
-    useEffect(() => {
-      if (txMessage) {
-        const toastProps: ToastAlertOptions = {
-          ...txMessage,
-          dataTestId: `${txMessage.severity}-tx-${txHash}`,
-          toastId: txHash as Id,
-          txHash: txHash,
-          onClose: () => onClose(txHash),
-        }
-
-        if (loadingRef.current) {
-          // Update the existing toast
-          updateToast(txHash as Id, toastProps)
-        } else {
-          // Create a new toast
-          showToast(toastProps)
-          loadingRef.current = true
-        }
-      }
-      // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [txMessage])
-
+  function TransactionToast({ txHash, onTxComplete }: TransactionToastProps) {
+    useTransactionToast(txHash, onTxComplete)
     return null
   },
   // prevent re-rendering if txHash is the same
   (prevProps, nextProps) => prevProps.txHash === nextProps.txHash,
 )
 
-export const TxStatusProvider = ({ children }: { children: React.ReactNode }) => {
-  const [activeTxs, setActiveTxs] = useState<string[]>([])
+export const TxStatusProvider = ({ children }: { children: ReactNode }) => {
+  const [activeTxs, setActiveTxs] = useState<Set<string>>(new Set())
 
-  const trackTransaction = (txHash: string) => {
-    setActiveTxs(prev => (prev.includes(txHash) ? prev : [...prev, txHash]))
-  }
+  const trackTransaction = useCallback((txHash: string) => {
+    setActiveTxs(prev => new Set(prev).add(txHash))
+  }, [])
 
-  const removeActiveTx = (txHash: string) => {
-    setActiveTxs(prev => prev.filter(tx => tx !== txHash))
-  }
+  const removeActiveTx = useCallback((txHash: string) => {
+    setActiveTxs(prev => {
+      const next = new Set(prev)
+      next.delete(txHash)
+      return next
+    })
+  }, [])
+
+  const contextValue = useMemo(() => ({ trackTransaction }), [trackTransaction])
 
   return (
-    <TxStatusContext.Provider value={{ trackTransaction }}>
-      {activeTxs.map(txHash => (
-        <TransactionToast key={txHash} txHash={txHash} onClose={removeActiveTx} />
+    <TxStatusContext.Provider value={contextValue}>
+      {Array.from(activeTxs).map(txHash => (
+        <TransactionToast key={txHash} txHash={txHash} onTxComplete={removeActiveTx} />
       ))}
       {children}
     </TxStatusContext.Provider>
