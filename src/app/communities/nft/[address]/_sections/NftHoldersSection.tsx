@@ -148,7 +148,7 @@ export const NftHoldersSection = ({ address }: HoldersSectionProps) => {
       // Reset loading state when address changes
       setHasCompletedLoad(false)
       setCurrentAddress(address)
-    } else if (isLoading === false && !hasCompletedLoad) {
+    } else if (!isLoading && !hasCompletedLoad) {
       // Mark as completed once loading is done for the current address
       setHasCompletedLoad(true)
     }
