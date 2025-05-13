@@ -2,7 +2,7 @@
 
 import { HTMLAttributes } from 'react'
 import { useAlertContext } from '@/app/providers'
-import { Footer } from '@/components/Footer'
+import { FooterDesktop } from '@/components/Footer'
 import { TopPageHeader } from '@/shared/walletConnection/components/topPageHeader/TopPageHeader'
 import { SidebarDesktop } from '../LeftSidebar/SidebarDesktop'
 import { Alert } from '../Alert'
@@ -21,14 +21,14 @@ export function ContainerDesktop({ children, className, ...props }: HTMLAttribut
         <div className="grow flex flex-col">
           <Scroll />
           <div className="flex flex-1 flex-col justify-between overflow-y-auto mt-10" id="main-container">
-            <main className="px-[32px] py-[34px] mb-[100px]">
+            <main className="p-8 mb-25">
               {message && (
                 <Alert {...message} onDismiss={message.onDismiss === null ? null : () => setMessage(null)} />
               )}
               <TopPageHeader />
               {children}
             </main>
-            <Footer variant="container" />
+            <FooterDesktop variant="container" />
           </div>
         </div>
       </div>

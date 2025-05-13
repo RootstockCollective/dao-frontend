@@ -1,1 +1,2 @@
-export * from './Footer'
+export * from './FooterDesktop'
+export { FooterMobile } from './FooterMobile'
