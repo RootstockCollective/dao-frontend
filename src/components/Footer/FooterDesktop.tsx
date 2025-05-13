@@ -17,7 +17,7 @@ const VARIANTS = {
   login: DEFAULT_LOGIN_CLASS,
 }
 
-export const Footer = ({ variant = 'login' }: Props) => (
+export const FooterDesktop = ({ variant = 'login' }: Props) => (
   <footer className={cn('bottom-4 flex justify-between text-sm opacity-60 ', VARIANTS[variant])}>
     <div className="flex items-start">
       <a

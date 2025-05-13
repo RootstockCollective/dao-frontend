@@ -51,5 +51,5 @@
 
 body {
   color: var(--text-primary);
-  background-color: var(--background);
+  background-color: var(--l-black);
 }
