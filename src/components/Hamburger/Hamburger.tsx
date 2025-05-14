@@ -21,7 +21,7 @@ export function Hamburger({
   ...props
 }: HamburgerProps) {
   return (
-    <span className={cn('inline-flex', className)} {...props}>
+    <span className={cn('flex w-fit', className)} {...props}>
       <button onClick={toggle}>
         <motion.svg
           width="24"
@@ -32,6 +32,7 @@ export function Hamburger({
         >
           <Path
             variants={{
+              // means: move pen to (4,6), draw horiz line to (20,6)
               closed: { d: 'M 4 6.625 L 20 6.625' },
               open: { d: 'M 5 5 L 19 19' },
             }}
