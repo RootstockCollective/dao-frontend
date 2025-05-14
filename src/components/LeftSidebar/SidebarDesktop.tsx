@@ -1,15 +1,15 @@
+import { useMemo } from 'react'
 import Link from 'next/link'
+import { usePathname } from 'next/navigation'
 import { motion, type Transition } from 'motion/react'
 import { UsefulLinks } from './UsefulLinks'
 import styles from './styles.module.css'
 import { cn } from '@/lib/utils'
 import { NavIcon } from './NavIcon'
 import { sidebarData } from './sidebarData'
-import { usePathname } from 'next/navigation'
 import { RootstockLogoIcon } from '../Icons'
 import { useLayoutContext } from '@/app/providers/LayoutProvider'
 import { Tooltip } from '../Tooltip/'
-import { useMemo } from 'react'
 
 const sideBarWidth = 239
 const closedSideWidth = 79
@@ -58,7 +58,7 @@ export const SidebarDesktop = () => {
                     >
                       <motion.div variants={variants} initial="icon" animate="icon" transition={transition}>
                         <Tooltip text={text} disabled={isSidebarOpen}>
-                          <NavIcon className="" />
+                          <NavIcon />
                         </Tooltip>
                       </motion.div>
 
