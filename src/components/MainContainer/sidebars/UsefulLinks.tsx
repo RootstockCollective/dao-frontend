@@ -1,13 +1,13 @@
 import { Paragraph } from '@/components/Typography/Paragraph'
 import { Link } from '@/components/Link'
-import { sidebarLinksData } from './sidebarLinksData'
+import { usefulLinksData } from './usefulLinksData'
 import { HTMLAttributes } from 'react'
 
 export const UsefulLinks = (props: HTMLAttributes<HTMLDivElement>) => (
   <div {...props}>
     <Paragraph className="text-base font-medium text-warm-gray">Useful links</Paragraph>
     <ul className="mt-6 space-y-2">
-      {sidebarLinksData.map(({ href, testId, content }) => (
+      {usefulLinksData.map(({ href, testId, content }) => (
         <li key={href}>
           <Link
             href={href}

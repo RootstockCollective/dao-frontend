@@ -1,12 +1,11 @@
 import { usePathname } from 'next/navigation'
 import { useMemo } from 'react'
 import Link from 'next/link'
-import { sidebarData } from '../sidebars/sidebarData'
+import { menuData } from '../sidebars/menuData'
 
 // A map that links known URL path segments (hrefs) to human-readable breadcrumb titles.
-// Generated from sidebarData used in the LeftSidebar component.
-const breadcrumbsMap = Object.fromEntries(sidebarData.map(({ href, text }) => [href, text])) as {
-  [K in (typeof sidebarData)[number] as K['href']]: K['text']
+const breadcrumbsMap = Object.fromEntries(menuData.map(({ href, text }) => [href, text])) as {
+  [K in (typeof menuData)[number] as K['href']]: K['text']
 }
 
 /**

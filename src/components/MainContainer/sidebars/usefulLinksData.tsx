@@ -2,12 +2,12 @@ import { ReactNode } from 'react'
 import { TokenImage } from '@/components/TokenImage'
 import { currentLinks } from '@/lib/links'
 
-interface Link {
+interface UsefulLink {
   href: string
   testId: string
   content: ReactNode
 }
-export const sidebarLinksData: Link[] = [
+export const usefulLinksData: UsefulLink[] = [
   {
     href: currentLinks.rif,
     testId: 'RIFLink',
