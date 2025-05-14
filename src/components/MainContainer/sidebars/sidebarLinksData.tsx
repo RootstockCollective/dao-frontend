@@ -1,6 +1,6 @@
 import { ReactNode } from 'react'
-import { TokenImage } from '../TokenImage'
-import { currentLinks } from './links'
+import { TokenImage } from '@/components/TokenImage'
+import { currentLinks } from '@/lib/links'
 
 interface Link {
   href: string

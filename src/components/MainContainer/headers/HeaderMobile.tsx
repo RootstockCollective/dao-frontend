@@ -1,10 +1,10 @@
 import { HTMLAttributes } from 'react'
 import Link from 'next/link'
-import { RootstockLogoIcon } from '../Icons'
-import { StarIcon, SunIcon } from './icons'
+import { RootstockLogoIcon } from '@/components/Icons'
+import { StarIcon, SunIcon } from '../icons'
 import { useLayoutContext } from '@/app/providers/LayoutProvider'
-import { Hamburger } from './Hamburger'
-import { Tooltip } from '../Tooltip'
+import { Hamburger } from '@/components/Hamburger'
+import { Tooltip } from '@/components/Tooltip'
 import { cn } from '@/lib/utils'
 
 export function HeaderMobile({ className, ...props }: HTMLAttributes<HTMLDivElement>) {

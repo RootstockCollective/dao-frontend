@@ -2,7 +2,7 @@
 
 import { HTMLAttributes } from 'react'
 import { cn } from '@/lib/utils'
-import { HeaderMobile } from './HeaderMobile'
+import { HeaderMobile } from './headers/HeaderMobile'
 import { FooterMobile } from '../Footer'
 
 export default function ContainerMobile({ className, children, ...props }: HTMLAttributes<HTMLDivElement>) {
