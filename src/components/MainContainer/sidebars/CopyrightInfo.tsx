@@ -1,4 +1,4 @@
-import { Paragraph } from '../Typography'
+import { Paragraph } from '../../Typography'
 
 export const CopyrightInfo = () => {
   const year = new Date().getFullYear()

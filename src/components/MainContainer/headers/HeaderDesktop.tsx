@@ -1,10 +1,9 @@
 import { HTMLAttributes } from 'react'
-import { StarIcon, BellIcon, SunIcon } from './icons'
+import { StarIcon, BellIcon, SunIcon, SideBarClosedIcon, SideBarOpenedIcon } from '../icons'
 import { UserConnectionManager } from '@/shared/walletConnection'
 import { cn } from '@/lib/utils'
-import { SideBarClosedIcon, SideBarOpenedIcon } from './icons'
 import { useLayoutContext } from '@/app/providers/LayoutProvider'
-import { Tooltip } from '../Tooltip'
+import { Tooltip } from '@/components/Tooltip'
 import { Breadcrumbs } from './Breadcrumbs'
 
 export function HeaderDesktop({ className, ...props }: HTMLAttributes<HTMLDivElement>) {
