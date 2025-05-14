@@ -5,16 +5,21 @@ import { TopPageHeader } from '@/shared/walletConnection/components/topPageHeade
 import { StatefulSidebar } from '@/components/MainContainer/StatefulSidebar'
 import { FC, ReactNode, Suspense } from 'react'
 import { Alert } from '../Alert'
-import { MainContainerContent } from './MainContainerContent'
 import { GradientHeader } from '@/components/GradientHeader/GradientHeader'
 import Scroll from '@/components/Scroll'
+import { currentEnvChain } from '@/config'
+import { useAccount } from 'wagmi'
 
 interface Props {
   children: ReactNode
 }
 
 export const MainContainer: FC<Props> = ({ children }) => {
+  const { isConnected, chainId } = useAccount()
   const { message, setMessage } = useAlertContext()
+
+  const wrongNetwork = chainId !== currentEnvChain.id
+  const shouldDisplayContent = !isConnected || !wrongNetwork
 
   return (
     <Suspense fallback="Loading...">
@@ -27,8 +32,12 @@ export const MainContainer: FC<Props> = ({ children }) => {
             {message && (
               <Alert {...message} onDismiss={message.onDismiss === null ? null : () => setMessage(null)} />
             )}
-            <TopPageHeader />
-            <MainContainerContent setMessage={setMessage}>{children}</MainContainerContent>
+            {shouldDisplayContent && (
+              <>
+                <TopPageHeader />
+                {children}
+              </>
+            )}
           </main>
           <Footer variant="container" />
         </div>
