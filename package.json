@@ -17,6 +17,8 @@
     "build:start": "next build && next start"
   },
   "dependencies": {
+    "@apollo/client": "^3.13.8",
+    "@apollo/client-integration-nextjs": "^0.12.2",
     "@hookform/resolvers": "^3.10.0",
     "@next/third-parties": "^15.2.4",
     "@radix-ui/react-accordion": "^1.2.2",
@@ -41,6 +43,7 @@
     "cookies-next": "^5.1.0",
     "decimal.js": "^10.5.0",
     "dotenv": "^16.4.7",
+    "graphql": "^16.11.0",
     "jdenticon": "^3.3.0",
     "lodash": "^4.17.21",
     "lucide-react": "^0.469.0",
