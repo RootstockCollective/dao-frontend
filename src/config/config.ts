@@ -23,7 +23,7 @@ const envChains = {
   regtest: rskRegtest,
 } as const
 
-const currentEnvChain: Chain = envChains[ENV as keyof typeof envChains]
+export const currentEnvChain: Chain = envChains[ENV as keyof typeof envChains]
 
 export const config = createConfig({
   chains: [currentEnvChain],
