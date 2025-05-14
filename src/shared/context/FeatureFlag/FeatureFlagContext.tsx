@@ -114,4 +114,10 @@ export const FeatureFlagProvider: FC<{ children: ReactNode }> = ({ children }) =
   )
 }
 
-export const useFeatureFlags = () => useContext(FeatureFlagContext)
+export const useFeatureFlags = () => {
+  const context = useContext(FeatureFlagContext)
+  if (!context) {
+    throw new Error('FeatureFlagContext not found. Use FeatureFlagProvider to wrap your app.')
+  }
+  return context
+}

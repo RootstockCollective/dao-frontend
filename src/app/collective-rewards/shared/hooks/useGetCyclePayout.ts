@@ -17,17 +17,26 @@ export const useGetCyclePayout = () => {
     error: rbtcRewardsError,
   } = useReadRewardDistributor({ functionName: 'defaultRewardCoinbaseAmount' })
 
-  const cyclePayout = useMemo(() => {
-    const rifPrice = prices.RIF?.price ? parseEther(prices.RIF.price.toString()) : 0n
-    const rbtcPrice = prices.RBTC?.price ? parseEther(prices.RBTC.price.toString()) : 0n
-    const rifAmount = rifRewards ?? 0n
-    const rbtcAmount = rbtcRewards ?? 0n
-    return (rifAmount * rifPrice + rbtcAmount * rbtcPrice) / WeiPerEther
-  }, [prices, rifRewards, rbtcRewards])
+  const cyclePayout = useMemo(
+    () => getCyclePayout(prices, rifRewards, rbtcRewards),
+    [prices, rifRewards, rbtcRewards],
+  )
 
   return {
     cyclePayout,
     isLoading: rifRewardsLoading || rbtcRewardsLoading,
     error: rifRewardsError ?? rbtcRewardsError ?? null,
   }
+}
+
+export const getCyclePayout = (
+  prices: { RIF?: { price: number }; RBTC?: { price: number } },
+  rifRewards: bigint | undefined,
+  rbtcRewards: bigint | undefined,
+) => {
+  const rifPrice = prices.RIF?.price ? parseEther(prices.RIF.price.toString()) : 0n
+  const rbtcPrice = prices.RBTC?.price ? parseEther(prices.RBTC.price.toString()) : 0n
+  const rifAmount = rifRewards ?? 0n
+  const rbtcAmount = rbtcRewards ?? 0n
+  return (rifAmount * rifPrice + rbtcAmount * rbtcPrice) / WeiPerEther
 }

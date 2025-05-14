@@ -9,6 +9,10 @@ import { useReadBackersManager, useReadGauges } from '@/shared/hooks/contracts'
 import { useMemo } from 'react'
 import { Address } from 'viem'
 
+export const calculateAbi = (rewardsPerStRif: Big, rifPrice: number): Big => {
+  return Big(1).add(rewardsPerStRif.div(WeiPerEther.toString()).div(rifPrice)).pow(26).minus(1).mul(100)
+}
+
 const useGetAbi = (rewardsPerStRif: bigint) => {
   const { prices } = usePricesContext()
   const rifPrice = prices.RIF?.price ?? 0
@@ -17,11 +21,7 @@ const useGetAbi = (rewardsPerStRif: bigint) => {
     return Big(0)
   }
 
-  return Big(1)
-    .add(Big(rewardsPerStRif.toString()).div(WeiPerEther.toString()).div(rifPrice))
-    .pow(26)
-    .minus(1)
-    .mul(100)
+  return calculateAbi(Big(rewardsPerStRif.toString()), rifPrice)
 }
 
 export const useGetRewardsAbi = (backer: Address) => {

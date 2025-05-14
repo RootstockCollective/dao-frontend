@@ -4,6 +4,7 @@ import { HeroCollapseProvider } from '@/app/user/HeroSection/HeroCollapseContext
 import ErrorBoundary from '@/components/ErrorPage/ErrorBoundary'
 import { currentEnvChain, wagmiAdapter, wagmiAdapterConfig } from '@/config'
 import { REOWN_METADATA_URL, REOWN_PROJECT_ID } from '@/lib/constants'
+import { IndexerProvider } from '@/shared/components/ApolloClient/ApolloClient'
 import { FeatureFlagProvider } from '@/shared/context/FeatureFlag'
 import { TxStatusProvider } from '@/shared/context/TxStatusContext'
 import { TooltipProvider } from '@radix-ui/react-tooltip'
@@ -65,21 +66,23 @@ export const ContextProviders = ({ children, initialState }: Props) => {
       <FeatureFlagProvider>
         <WagmiProvider config={wagmiAdapterConfig} initialState={initialState}>
           <QueryClientProvider client={queryClient}>
-            <TxStatusProvider>
-              <AlertProvider>
-                <HeroCollapseProvider>
-                  <BuilderContextProviderWithPrices>
-                    <BoosterProvider>
-                      <AllocationsContextProvider>
-                        <BalancesProvider>
-                          <TooltipProvider>{children}</TooltipProvider>
-                        </BalancesProvider>
-                      </AllocationsContextProvider>
-                    </BoosterProvider>
-                  </BuilderContextProviderWithPrices>
-                </HeroCollapseProvider>
-              </AlertProvider>
-            </TxStatusProvider>
+            <IndexerProvider>
+              <TxStatusProvider>
+                <AlertProvider>
+                  <HeroCollapseProvider>
+                    <BuilderContextProviderWithPrices>
+                      <BoosterProvider>
+                        <AllocationsContextProvider>
+                          <BalancesProvider>
+                            <TooltipProvider>{children}</TooltipProvider>
+                          </BalancesProvider>
+                        </AllocationsContextProvider>
+                      </BoosterProvider>
+                    </BuilderContextProviderWithPrices>
+                  </HeroCollapseProvider>
+                </AlertProvider>
+              </TxStatusProvider>
+            </IndexerProvider>
           </QueryClientProvider>
         </WagmiProvider>
       </FeatureFlagProvider>
