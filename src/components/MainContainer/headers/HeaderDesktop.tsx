@@ -2,7 +2,7 @@ import { HTMLAttributes } from 'react'
 import { StarIcon, BellIcon, SunIcon, SideBarClosedIcon, SideBarOpenedIcon } from '../icons'
 import { UserConnectionManager } from '@/shared/walletConnection'
 import { cn } from '@/lib/utils'
-import { useLayoutContext } from '@/app/providers/LayoutProvider'
+import { useLayoutContext } from '../LayoutProvider'
 import { Tooltip } from '@/components/Tooltip'
 import { Breadcrumbs } from './Breadcrumbs'
 
