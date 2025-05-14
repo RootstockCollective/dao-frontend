@@ -6,10 +6,10 @@ import { UsefulLinks } from './UsefulLinks'
 import styles from './styles.module.css'
 import { cn } from '@/lib/utils'
 import { NavIcon } from '../icons/NavIcon'
-import { sidebarData } from './sidebarData'
-import { RootstockLogoIcon } from '../../Icons'
+import { menuData } from './menuData'
+import { RootstockLogoIcon } from '@/components/Icons'
 import { useLayoutContext } from '../LayoutProvider'
-import { Tooltip } from '../../Tooltip'
+import { Tooltip } from '@/components/Tooltip'
 
 const sideBarWidth = 239
 const closedSideWidth = 79
@@ -46,7 +46,7 @@ export const SidebarDesktop = () => {
           </Link>
           {/* Menu */}
           <ul className="px-3">
-            {sidebarData.map(data => (
+            {menuData.map(data => (
               <MenuItem variants={variants} key={data.href} {...data} />
             ))}
           </ul>
@@ -72,7 +72,7 @@ const MenuItem = ({
   text,
   buttonProps,
   variants,
-}: (typeof sidebarData)[number] & { variants: Variants }) => {
+}: (typeof menuData)[number] & { variants: Variants }) => {
   const { isSidebarOpen } = useLayoutContext()
   const activeButton = usePathname()?.substring(1)
   const isActive = activeButton === href

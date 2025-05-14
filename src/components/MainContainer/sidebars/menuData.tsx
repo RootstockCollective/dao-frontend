@@ -1,4 +1,4 @@
-interface SidebarData {
+interface MenuData {
   text: string
   href: string
   buttonProps: {
@@ -7,7 +7,7 @@ interface SidebarData {
   }
 }
 
-export const sidebarData = [
+export const menuData = [
   {
     href: '',
     text: 'My Collective',
@@ -33,4 +33,4 @@ export const sidebarData = [
     text: 'Collective Rewards',
     buttonProps: { id: 'Button_CollectiveRewards', name: 'collective-rewards' },
   },
-] as const satisfies SidebarData[]
+] as const satisfies MenuData[]
