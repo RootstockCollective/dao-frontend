@@ -5,6 +5,7 @@ import { useMediaQuery } from 'react-responsive'
 import { ContainerDesktop } from './ContainerDesktop'
 import ContainerMobile from './ContainerMobile'
 import { MainContainerContent } from './MainContainerContent'
+import { LayoutProvider } from './LayoutProvider'
 
 export const MainContainer: FC<PropsWithChildren> = ({ children }) => {
   const isDesktop = useMediaQuery({ minWidth: 640 })
@@ -16,12 +17,14 @@ export const MainContainer: FC<PropsWithChildren> = ({ children }) => {
 
   if (!isMounted) return null
   return (
-    <MainContainerContent>
-      {isDesktop ? (
-        <ContainerDesktop>{children}</ContainerDesktop>
-      ) : (
-        <ContainerMobile>{children}</ContainerMobile>
-      )}
-    </MainContainerContent>
+    <LayoutProvider>
+      <MainContainerContent>
+        {isDesktop ? (
+          <ContainerDesktop>{children}</ContainerDesktop>
+        ) : (
+          <ContainerMobile>{children}</ContainerMobile>
+        )}
+      </MainContainerContent>
+    </LayoutProvider>
   )
 }
