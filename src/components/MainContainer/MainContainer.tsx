@@ -7,7 +7,7 @@ import { FC, ReactNode, Suspense } from 'react'
 import { Alert } from '../Alert'
 import { GradientHeader } from '@/components/GradientHeader/GradientHeader'
 import Scroll from '@/components/Scroll'
-import { supportedChainId } from '@/config'
+import { currentEnvChain } from '@/config'
 import { useAccount } from 'wagmi'
 
 interface Props {
@@ -18,7 +18,7 @@ export const MainContainer: FC<Props> = ({ children }) => {
   const { isConnected, chainId } = useAccount()
   const { message, setMessage } = useAlertContext()
 
-  const wrongNetwork = chainId && chainId !== supportedChainId
+  const wrongNetwork = chainId !== currentEnvChain.id
   const shouldDisplayContent = !isConnected || !wrongNetwork
 
   return (

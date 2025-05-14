@@ -23,12 +23,12 @@ interface Props {
 const metadata = {
   name: 'Rootstock Collective',
   description: 'AppKit for the Rootstock Collective',
-  url: REOWN_METADATA_URL, // origin must match your domain & subdomain
+  url: REOWN_METADATA_URL,
   icons: ['https://assets.reown.com/reown-profile-pic.png'],
 }
 
-// Create the modal (even though it says it's being used, it is.)
-const modal = createAppKit({
+// Create AppKit instance
+createAppKit({
   adapters: [wagmiAdapter],
   projectId: REOWN_PROJECT_ID,
   networks: [currentEnvChain],

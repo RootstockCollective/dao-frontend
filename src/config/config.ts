@@ -38,12 +38,6 @@ export const config = createConfig({
   connectors: [injected()],
 })
 
-export const supportedChainId = {
-  mainnet: rootstock.id,
-  testnet: rootstockTestnet.id,
-  regtest: rskRegtest.id,
-}[ENV]!
-
 export const wagmiAdapter = new WagmiAdapter({
   storage: createStorage({
     storage: cookieStorage,
