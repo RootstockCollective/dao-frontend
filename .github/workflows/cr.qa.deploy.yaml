@@ -30,7 +30,7 @@ jobs:
     name: Deploy
     runs-on: ubuntu-latest
     if: |
-      github.event_name == 'workflow_dispatch' || github.event.label.name == 'deploy to QA'
+      github.event_name == 'workflow_dispatch' || github.event.label.name == 'deploy to CR QA'
     environment:
       name: CR-QA
       url: https://qa.cr.rootstockcollective.xyz
