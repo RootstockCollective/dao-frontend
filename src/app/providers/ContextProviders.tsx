@@ -11,7 +11,6 @@ import ErrorBoundary from '@/components/ErrorPage/ErrorBoundary'
 import { BuilderContextProviderWithPrices } from '../collective-rewards/user'
 import { AllocationsContextProvider } from '../collective-rewards/allocations/context'
 import { BoosterProvider } from './NFT/BoosterContext'
-import { LayoutProvider } from './LayoutProvider'
 import { BalancesProvider } from '@/app/user/Balances/context/BalancesContext'
 import { HeroCollapseProvider } from '@/app/user/HeroSection/HeroCollapseContext'
 
@@ -69,9 +68,7 @@ export const ContextProviders = ({ children, initialState }: Props) => {
                 <BoosterProvider>
                   <AllocationsContextProvider>
                     <BalancesProvider>
-                      <LayoutProvider>
-                        <TooltipProvider>{children}</TooltipProvider>
-                      </LayoutProvider>
+                      <TooltipProvider>{children}</TooltipProvider>
                     </BalancesProvider>
                   </AllocationsContextProvider>
                 </BoosterProvider>

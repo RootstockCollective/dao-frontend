@@ -8,7 +8,7 @@ import { cn } from '@/lib/utils'
 import { NavIcon } from '../icons/NavIcon'
 import { sidebarData } from './sidebarData'
 import { RootstockLogoIcon } from '../../Icons'
-import { useLayoutContext } from '@/app/providers/LayoutProvider'
+import { useLayoutContext } from '../LayoutProvider'
 import { Tooltip } from '../../Tooltip'
 
 const sideBarWidth = 239
