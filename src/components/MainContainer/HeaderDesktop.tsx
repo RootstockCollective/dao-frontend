@@ -11,25 +11,25 @@ export function HeaderDesktop({ className, ...props }: HTMLAttributes<HTMLDivEle
   const { isSidebarOpen, toggleSidebar } = useLayoutContext()
   return (
     <header {...props} className={cn('pt-6 px-7', className)}>
-      <div className="flex flex-row justify-between">
+      <div className="flex flex-row justify-between items-center">
         {/* Left side */}
         <div className="flex flex-row items-center">
-          <Tooltip position="bottom" text={isSidebarOpen ? 'Close sidebar' : 'Open sidebar'}>
+          <Tooltip text={isSidebarOpen ? 'Close sidebar' : 'Open sidebar'}>
             <button onClick={toggleSidebar} className="cursor-pointer">
               {isSidebarOpen ? <SideBarOpenedIcon /> : <SideBarClosedIcon />}
             </button>
           </Tooltip>
-          <Tooltip position="bottom" text="Add to favourites">
+          <Tooltip text="Add to favourites">
             <StarIcon className="ml-3" />
           </Tooltip>
           <Breadcrumbs />
         </div>
         {/* Right side */}
-        <div className="flex flex-row">
+        <div className="flex flex-row items-center">
           <Tooltip position="left" text="Light theme">
             <SunIcon className="mr-3" />
           </Tooltip>
-          <Tooltip position="bottom" text="Notifications">
+          <Tooltip text="Notifications">
             <BellIcon className="mr-5" />
           </Tooltip>
           <UserConnectionManager />
