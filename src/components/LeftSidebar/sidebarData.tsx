@@ -1,4 +1,4 @@
-export interface SidebarData {
+interface SidebarData {
   text: string
   href: string
   buttonProps: {
