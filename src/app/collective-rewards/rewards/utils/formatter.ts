@@ -15,7 +15,7 @@ export const formatMetrics = (amount: bigint, price: BigSource, symbol: string, 
 export const formatFiatAmount = (amount: BigSource, currency: string) =>
   `= ${currency} ${formatCurrency(amount, currency)}`
 
-export const getFiatAmount = (amount: bigint, price: BigSource) => {
+export const getFiatAmount = (amount: bigint, price: BigSource): Big => {
   const bigAmount = Big(amount.toString())
   return bigAmount.mul(price).div(WeiPerEther.toString())
 }
