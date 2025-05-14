@@ -5,7 +5,7 @@ import { Modal, ModalProps } from '@/components/Modal/Modal'
 import { Header, Paragraph, Typography } from '@/components/Typography'
 import { ConnectButtonComponentSecondary, ConnectWorkflow } from '@/shared/walletConnection'
 import { useRouter } from 'next/navigation'
-import { ButtonHTMLAttributes, FC, useState } from 'react'
+import { ButtonHTMLAttributes, FC, JSX, useState } from 'react'
 import { useAccount } from 'wagmi'
 import { Popover } from '../Popover'
 

@@ -19,12 +19,7 @@ export const CycleMetrics = () => {
     data: timeUntilNextCycle,
     isLoading: timeUntilNextCycleLoading,
     error: timeUntilNextCycleError,
-  } = useReadCycleTimeKeeper(
-    { functionName: 'timeUntilNextCycle', args: [timestamp] },
-    {
-      initialData: 0n,
-    },
-  )
+  } = useReadCycleTimeKeeper({ functionName: 'timeUntilNextCycle', args: [timestamp] }, { initialData: 0n })
 
   const error = cycleError ?? timeUntilNextCycleError
   useHandleErrors({ error, title: 'Error loading cycle metrics' })
@@ -49,11 +44,13 @@ export const CycleMetrics = () => {
   return (
     <MetricsCard borderless>
       <MetricsCardTitle title="Current cycle" data-testid="CurrentCycle" />
-      {withSpinner(TokenMetricsCardRow, { size: 'small' })({
-        amount: `${timeRemaining.toHuman()}`,
-        fiatAmount: `out of ${duration.toHuman()}. Ends ${cycleNext.toFormat('EEE, dd MMM')}`,
-        isLoading,
-      })}
+      <>
+        {withSpinner(TokenMetricsCardRow, { size: 'small' })({
+          amount: `${timeRemaining.toHuman()}`,
+          fiatAmount: `out of ${duration.toHuman()}. Ends ${cycleNext.toFormat('EEE, dd MMM')}`,
+          isLoading,
+        })}
+      </>
     </MetricsCard>
   )
 }
