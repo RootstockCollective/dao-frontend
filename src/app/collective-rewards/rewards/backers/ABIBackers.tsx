@@ -18,7 +18,7 @@ export const ABIBackers: FC<ABIProps> = ({ backer, ...metricsCardProps }) => {
   useHandleErrors({ error, title: 'Error loading backers abi' })
 
   return (
-    <MetricsCardWithSpinner isLoading={isLoading} borderless {...metricsCardProps} dataTestId="backerAbi">
+    <MetricsCardWithSpinner isLoading={!!isLoading} borderless {...metricsCardProps} dataTestId="backerAbi">
       <div className="flex flex-col gap-y-[10px]">
         <MetricsCardTitle
           className="text-wrap"

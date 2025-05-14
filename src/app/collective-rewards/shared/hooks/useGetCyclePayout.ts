@@ -1,33 +1,49 @@
 import { WeiPerEther } from '@/lib/constants'
 import { usePricesContext } from '@/shared/context/PricesContext'
-import { useReadRewardDistributor } from '@/shared/hooks/contracts'
+import { gql, useQuery } from '@apollo/client'
 import { useMemo } from 'react'
 import { parseEther } from 'viem'
 
+type CycleData = {
+  id: string
+  rewardsERC20: bigint
+  rewardsRBTC: bigint
+}
+
+type CyclePayoutData = {
+  cycles: CycleData[]
+}
+
+const CYCLE_PAYOUT_QUERY = gql`
+  query CyclePayout {
+    cycles(first: 1, orderBy: id, orderDirection: desc) {
+      rewardsERC20
+      rewardsRBTC
+    }
+  }
+`
+
 export const useGetCyclePayout = () => {
   const { prices } = usePricesContext()
-  const {
-    data: rifRewards,
-    isLoading: rifRewardsLoading,
-    error: rifRewardsError,
-  } = useReadRewardDistributor({ functionName: 'defaultRewardTokenAmount' })
-  const {
-    data: rbtcRewards,
-    isLoading: rbtcRewardsLoading,
-    error: rbtcRewardsError,
-  } = useReadRewardDistributor({ functionName: 'defaultRewardCoinbaseAmount' })
+  const { data, ...responseMeta } = useQuery<CyclePayoutData>(CYCLE_PAYOUT_QUERY)
 
   const cyclePayout = useMemo(() => {
-    const rifPrice = prices.RIF?.price ? parseEther(prices.RIF.price.toString()) : 0n
-    const rbtcPrice = prices.RBTC?.price ? parseEther(prices.RBTC.price.toString()) : 0n
-    const rifAmount = rifRewards ?? 0n
-    const rbtcAmount = rbtcRewards ?? 0n
-    return (rifAmount * rifPrice + rbtcAmount * rbtcPrice) / WeiPerEther
-  }, [prices, rifRewards, rbtcRewards])
+    if (!data?.cycles?.length || !prices?.RIF?.price || !prices?.RBTC?.price) return 0n
+    const { rewardsERC20, rewardsRBTC } = data.cycles[0]
+    const {
+      RIF: { price: rifPrice },
+      RBTC: { price: rbtcPrice },
+    } = prices
+
+    const rewardsERC20InUSD = (rewardsERC20 ?? 0n) * parseEther(rifPrice.toString())
+    const rewardsRBTCInUSD = (rewardsRBTC ?? 0n) * parseEther(rbtcPrice.toString())
+    const totalRewardsInUSD = rewardsERC20InUSD + rewardsRBTCInUSD
+
+    return totalRewardsInUSD / WeiPerEther
+  }, [prices, data])
 
   return {
     cyclePayout,
-    isLoading: rifRewardsLoading || rbtcRewardsLoading,
-    error: rifRewardsError ?? rbtcRewardsError ?? null,
+    ...responseMeta,
   }
 }

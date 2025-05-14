@@ -1,8 +1,6 @@
-import { BackerRewardPercentage, useGetBackersRewardPercentage } from '@/app/collective-rewards/rewards'
+import { BackerRewardPercentage } from '@/app/collective-rewards/rewards'
 import { RequiredBuilder } from '@/app/collective-rewards/types'
-import { useGetBuildersByState } from '@/app/collective-rewards/user'
-import { isBuilderRewardable } from '@/app/collective-rewards/utils'
-import { useReadBackersManager, useReadGauges } from '@/shared/hooks/contracts'
+import { gql, useQuery } from '@apollo/client'
 import { useMemo } from 'react'
 
 export type EstimatedBackerRewards = RequiredBuilder & {
@@ -10,66 +8,63 @@ export type EstimatedBackerRewards = RequiredBuilder & {
   rewardPercentage: BackerRewardPercentage
 }
 
+type BuilderData = {
+  id: string
+  backerRewardPercentage: bigint
+  rewardShares: bigint
+}
+
+type CycleData = {
+  id: string
+  totalPotentialReward: bigint
+}
+
+type EstimatedBackersRewardsData = {
+  cycles: CycleData[]
+  builders: BuilderData[]
+}
+
+const ESTIMATED_BACKERS_REWARDS_QUERY = gql`
+  query EstimatedBackersRewardsPct {
+    builders(
+      where: { state_: { kycApproved: true, communityApproved: true, initialized: true, selfPaused: false } }
+    ) {
+      id
+      backerRewardPercentage
+      rewardShares
+    }
+    cycles(first: 1, orderBy: id, orderDirection: desc) {
+      totalPotentialReward
+    }
+  }
+`
+
 export const useGetEstimatedBackersRewardsPct = () => {
-  const {
-    data: builders,
-    isLoading: buildersLoading,
-    error: buildersError,
-  } = useGetBuildersByState<RequiredBuilder>()
-  const gauges = builders.map(({ gauge }) => gauge)
-  const buildersAddress = builders.map(({ address }) => address)
-
-  const {
-    data: totalPotentialRewards,
-    isLoading: totalPotentialRewardsLoading,
-    error: totalPotentialRewardsError,
-  } = useReadBackersManager({
-    functionName: 'totalPotentialReward',
-  })
-  const {
-    data: rewardShares,
-    isLoading: rewardSharesLoading,
-    error: rewardSharesError,
-  } = useReadGauges({ addresses: gauges, functionName: 'rewardShares' })
-
-  const {
-    data: backersRewardsPct,
-    isLoading: backersRewardsPctLoading,
-    error: backersRewardsPctError,
-  } = useGetBackersRewardPercentage(buildersAddress)
-
-  const data = useMemo(() => {
-    return builders.reduce<EstimatedBackerRewards[]>((acc, builder, i) => {
-      const { address, gauge, stateFlags } = builder
-      const builderRewardShares = rewardShares[i] ?? 0n
-      const rewardPercentage = backersRewardsPct[address] ?? null
-      const rewardPercentageToApply = rewardPercentage?.current ?? 0n
-
-      const isRewarded = isBuilderRewardable(stateFlags)
-
-      const estimatedBackerRewardsPct =
-        totalPotentialRewards && isRewarded
-          ? (builderRewardShares * rewardPercentageToApply) / totalPotentialRewards
-          : 0n
-
-      return [
-        ...acc,
-        {
-          ...builder,
-          estimatedBackerRewardsPct,
-          rewardPercentage,
-        },
-      ]
-    }, [])
-  }, [backersRewardsPct, builders, rewardShares, totalPotentialRewards])
-
-  const isLoading =
-    buildersLoading || totalPotentialRewardsLoading || rewardSharesLoading || backersRewardsPctLoading
-  const error = buildersError ?? totalPotentialRewardsError ?? rewardSharesError ?? backersRewardsPctError
+  const { data, ...responseMeta } = useQuery<EstimatedBackersRewardsData>(ESTIMATED_BACKERS_REWARDS_QUERY)
 
   return {
-    data,
-    isLoading,
-    error,
+    data: useMemo(() => {
+      if (!data?.cycles[0]?.totalPotentialReward || !data?.builders?.length) return []
+      const { totalPotentialReward } = data.cycles[0]
+
+      return data.builders.map(builder => {
+        const { id, backerRewardPercentage, rewardShares } = builder
+
+        if (!backerRewardPercentage || !rewardShares || backerRewardPercentage <= 0n || rewardShares <= 0n) {
+          return {
+            id,
+            estimatedBackerRewardsPct: 0n,
+            backerRewardPercentage: 0n,
+          }
+        }
+
+        return {
+          id,
+          estimatedBackerRewardsPct: (rewardShares * backerRewardPercentage) / totalPotentialReward,
+          backerRewardPercentage,
+        }
+      })
+    }, [data]),
+    ...responseMeta,
   }
 }

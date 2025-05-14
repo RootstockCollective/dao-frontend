@@ -1,8 +1,9 @@
 import { useIntervalTimestamp } from '@/app/collective-rewards/metrics/hooks/useIntervalTimestamp'
-import { Token, useBackerRewardsContext, useGetBackerStakingHistory } from '@/app/collective-rewards/rewards'
+import { Token, useBackerRewardsContext } from '@/app/collective-rewards/rewards'
 import Big from '@/lib/big'
 import { WeiPerEther } from '@/lib/constants'
 import { usePricesContext } from '@/shared/context/PricesContext'
+import { gql, useQuery } from '@apollo/client'
 import { useMemo } from 'react'
 import { Address } from 'viem'
 
@@ -27,12 +28,46 @@ const useGetTokenRewards = ({ address, symbol }: Token) => {
   }
 }
 
+export type BackerStakingHistory = {
+  id: Address
+  backerTotalAllocation: string
+  accumulatedTime: string
+  lastBlockTimestamp: string
+  gauges: GaugeStakingHistory[]
+}
+
+export type GaugeStakingHistory = {
+  allocation_: string
+  gauge: Address
+  accumulatedAllocationsTime: string
+  lastBlockTimestamp: string
+}
+
+const BACKER_STAKING_HISTORY_QUERY = gql`
+  query BackerStakingHistory($backer: Bytes) {
+    backerStakingHistory(id: $backer) {
+      id
+      backerTotalAllocation
+      accumulatedTime
+      lastBlockTimestamp
+      gauges {
+        gauge
+        accumulatedAllocationsTime
+        allocation
+        lastBlockTimestamp
+      }
+    }
+  }
+`
+
 export const useGetBackerRBI = (backer: Address, { rbtc, rif }: Record<string, Token>) => {
   const {
     data: stakingHistory,
-    isLoading: stakingHistoryLoading,
+    loading: stakingHistoryLoading,
     error: stakingHistoryError,
-  } = useGetBackerStakingHistory(backer)
+  } = useQuery<{ backerStakingHistory: BackerStakingHistory }>(BACKER_STAKING_HISTORY_QUERY, {
+    variables: { backer },
+  })
   const {
     data: rbtcRewards,
     isLoading: rbtcRewardsLoading,
@@ -44,12 +79,24 @@ export const useGetBackerRBI = (backer: Address, { rbtc, rif }: Record<string, T
   const { prices } = usePricesContext()
 
   const rbi = useMemo(() => {
-    if (!stakingHistory) return Big(0)
+    if (!stakingHistory?.backerStakingHistory) return Big(0)
 
-    const { backerTotalAllocation_, lastBlockTimestamp_, accumulatedTime_, gauges_ } = stakingHistory
+    const {
+      backerTotalAllocation: backerTotalAllocation_,
+      lastBlockTimestamp: lastBlockTimestamp_,
+      accumulatedTime: accumulatedTime_,
+      gauges: gauges_,
+    } = stakingHistory.backerStakingHistory
 
     const accumulatedAllocationsTime = gauges_.reduce(
-      (acc, { accumulatedAllocationsTime_, allocation_, lastBlockTimestamp_: gaugeLastBlockTimestamp_ }) => {
+      (
+        acc,
+        {
+          accumulatedAllocationsTime: accumulatedAllocationsTime_,
+          allocation_,
+          lastBlockTimestamp: gaugeLastBlockTimestamp_,
+        },
+      ) => {
         const lastStakedSeconds = Big(timestamp.toString()).sub(gaugeLastBlockTimestamp_)
         return acc.add(accumulatedAllocationsTime_).add(Big(allocation_).mul(lastStakedSeconds))
       },
