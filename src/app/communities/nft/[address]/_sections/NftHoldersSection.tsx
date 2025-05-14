@@ -7,7 +7,7 @@ import { LoadingSpinner } from '@/components/LoadingSpinner'
 import { EXPLORER_URL } from '@/lib/constants'
 import { ExternalLinkIcon } from '@/components/Icons'
 import { truncateMiddle } from '@/lib/utils'
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { TableIcon } from '@/app/communities/TableIcon'
 import { SquareIcon } from '@/app/communities/SquareIcon'
 import { ErrorMessageAlert } from '@/components/ErrorMessageAlert/ErrorMessageAlert'
@@ -133,38 +133,16 @@ interface HoldersSectionProps {
   address: Address
 }
 export const NftHoldersSection = ({ address }: HoldersSectionProps) => {
-  // Track the current address to detect changes
-  const [currentAddress, setCurrentAddress] = useState<Address>(address)
-
-  // Local state to track if we've loaded data for the current address
-  const [hasCompletedLoad, setHasCompletedLoad] = useState(false)
-
-  const { currentResults, paginationElement, isLoading, isError } = useFetchNftHolders(address)
   const [view, setView] = useState<ViewState>('table')
+  const { currentResults, paginationElement, isLoading, isError } = useFetchNftHolders(address)
 
-  // Reset state when address changes
-  useEffect(() => {
-    if (address !== currentAddress) {
-      // Reset loading state when address changes
-      setHasCompletedLoad(false)
-      setCurrentAddress(address)
-    } else if (!isLoading && !hasCompletedLoad) {
-      // Mark as completed once loading is done for the current address
-      setHasCompletedLoad(true)
-    }
-  }, [address, currentAddress, isLoading, hasCompletedLoad])
+  // Early return: If not loading and either there are no holders or there's an error, don't render anything
+  if (!isLoading && (currentResults.length === 0 || isError)) {
+    return null
+  }
 
   const onChangeView = (selectedView: ViewState) => {
     setView(selectedView)
-  }
-
-  // Only show content if we've completed a load for the current address
-  const hasHolders = currentResults.length > 0
-
-  // Don't render anything until we've completed at least one load cycle
-  // for the current address or we're actively loading
-  if (!hasHolders && hasCompletedLoad) {
-    return null
   }
 
   const holders = currentResults.map(({ owner, ens_domain_name, id, image_url }) => {
@@ -179,16 +157,12 @@ export const NftHoldersSection = ({ address }: HoldersSectionProps) => {
     <div className="pl-4 relative">
       <HeaderTitle className="mb-[24px]">
         Holders
-        {hasHolders && <ViewIconHandler view={view} onChangeView={onChangeView} />}
+        {currentResults.length > 0 && <ViewIconHandler view={view} onChangeView={onChangeView} />}
       </HeaderTitle>
 
       {isLoading && <LoadingSpinner />}
 
-      {!isLoading && isError && hasCompletedLoad && (
-        <ErrorMessageAlert message="An error occurred loading NFT Holders. Please try again shortly." />
-      )}
-
-      {!isLoading && !isError && hasHolders && (
+      {!isLoading && currentResults.length > 0 && (
         <>
           {view === 'table' && <Table data={holders} />}
           {view === 'images' && <CardView nfts={currentResults} />}
