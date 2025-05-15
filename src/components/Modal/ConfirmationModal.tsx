@@ -8,6 +8,7 @@ import { cn } from '@/lib/utils'
 import { HeaderTitle } from '../Typography'
 import { Button } from '../Button'
 import { useClickOutside } from '@/shared/hooks/useClickOutside'
+import { useScrollLock } from '@/shared/hooks/useScrollLock'
 
 // transition animation duration
 const duration = 0.3
@@ -66,6 +67,10 @@ export function ConfirmationModal({
 }: ConfirmationModalProps) {
   const modalRef = useRef<HTMLDivElement>(null)
   useClickOutside([modalRef], onClose)
+
+  // setting scroll lock if the modal is opened
+  useScrollLock(isOpen)
+
   return createPortal(
     <AnimatePresence>
       {isOpen && (

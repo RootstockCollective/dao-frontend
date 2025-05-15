@@ -31,6 +31,7 @@ export function HeaderMobile({ className, ...props }: HTMLAttributes<HTMLDivElem
         <Tooltip text="White theme">
           <SunIcon />
         </Tooltip>
+        {/* TODO: Connection button */}
       </div>
     </header>
   )
