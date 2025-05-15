@@ -19,12 +19,7 @@ export const CycleMetrics = () => {
     data: timeUntilNextCycle,
     isLoading: timeUntilNextCycleLoading,
     error: timeUntilNextCycleError,
-  } = useReadCycleTimeKeeper(
-    { functionName: 'timeUntilNextCycle', args: [timestamp] },
-    {
-      initialData: 0n,
-    },
-  )
+  } = useReadCycleTimeKeeper({ functionName: 'timeUntilNextCycle', args: [timestamp] }, { initialData: 0n })
 
   const error = cycleError ?? timeUntilNextCycleError
   useHandleErrors({ error, title: 'Error loading cycle metrics' })
