@@ -217,7 +217,7 @@ export const DelegateModal = ({ onClose, onDelegateTxStarted }: DelegateModalPro
               content={
                 <Typography className="text-sm">
                   OG Contributors trusted and
-                  <br /> recognised by the community
+                  <br /> recognized by the community
                 </Typography>
               }
             >
