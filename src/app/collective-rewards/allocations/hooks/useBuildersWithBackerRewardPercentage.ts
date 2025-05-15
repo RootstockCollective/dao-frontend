@@ -10,9 +10,9 @@ type UseGetBackerRewardsReturnType = Pick<
   'data' | 'isLoading' | 'error'
 >
 
-type UseGetBackerRewards = (builders: Builder[]) => UseGetBackerRewardsReturnType
+type UseBuildersWithBackerRewardPercentage = (builders: Builder[]) => UseGetBackerRewardsReturnType
 
-export const useGetBackerRewards: UseGetBackerRewards = builders => {
+export const useBuildersWithBackerRewardPercentage: UseBuildersWithBackerRewardPercentage = builders => {
   const args = builders.map(({ address }) => [address] as const)
 
   const {

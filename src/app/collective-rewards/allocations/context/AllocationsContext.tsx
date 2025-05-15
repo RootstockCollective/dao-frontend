@@ -4,7 +4,7 @@ import { useReadBackersManager, useReadGauges } from '@/shared/hooks/contracts'
 import { createContext, FC, ReactNode, useCallback, useEffect, useMemo, useState } from 'react'
 import { Address, zeroAddress } from 'viem'
 import { useAccount } from 'wagmi'
-import { useGetBackerRewards } from '../hooks/useBuildersWithBackerRewardPercentage'
+import { useBuildersWithBackerRewardPercentage } from '../hooks/useBuildersWithBackerRewardPercentage'
 import { createActions } from './allocationsActions'
 import { validateAllocationsState } from './utils'
 
@@ -115,7 +115,7 @@ export const AllocationsContextProvider: FC<{ children: ReactNode }> = ({ childr
     data: backerRewards,
     isLoading: backerRewardsLoading,
     error: backerRewardsError,
-  } = useGetBackerRewards(rawBuilders)
+  } = useBuildersWithBackerRewardPercentage(rawBuilders)
 
   const {
     data: rawAllocations,
