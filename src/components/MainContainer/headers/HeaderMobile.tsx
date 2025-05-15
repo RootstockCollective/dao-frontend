@@ -10,10 +10,7 @@ import { cn } from '@/lib/utils'
 export function HeaderMobile({ className, ...props }: HTMLAttributes<HTMLDivElement>) {
   const { isSidebarOpen, toggleSidebar } = useLayoutContext()
   return (
-    <header
-      {...props}
-      className={cn('px-4 h-21 border-b border-dark-gray', 'flex flex-row items-center', className)}
-    >
+    <header {...props} className={cn('px-4 h-21 flex items-center', className)}>
       <div className="flex-1/3">
         <Tooltip text={isSidebarOpen ? 'Close menu' : 'Open menu'}>
           <Hamburger isOpen={isSidebarOpen} toggle={toggleSidebar} />
