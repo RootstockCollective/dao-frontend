@@ -93,7 +93,7 @@
     "pino-pretty": "^11.2.1",
     "postcss": "^8",
     "prettier": "^3.4.2",
-    "start-server-and-test": "^2.0.4",
+    "start-server-and-test": "^2.0.12",
     "storybook": "^8.5.4",
     "tailwindcss": "^4.1.4",
     "ts-node": "^10.9.2",
