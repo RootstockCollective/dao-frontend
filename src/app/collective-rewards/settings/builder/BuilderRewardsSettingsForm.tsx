@@ -1,3 +1,4 @@
+import { percentageToWei } from '@/app/collective-rewards/settings/utils'
 import { Button } from '@/components/Button'
 import {
   Form,
@@ -8,20 +9,15 @@ import {
   FormLabel,
   FormMessage,
 } from '@/components/Form'
+import { RocketIcon } from '@/components/Icons'
 import { LoadingSpinner } from '@/components/LoadingSpinner'
+import { Popover } from '@/components/Popover'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useRouter } from 'next/navigation'
 import { FC, useEffect, useState } from 'react'
 import { useForm } from 'react-hook-form'
-import { RocketIcon } from '@/components/Icons'
 import { z } from 'zod'
-import { percentageToWei } from '@/app/collective-rewards/settings/utils'
 import { useBuilderSettingsContext } from './context'
-import { Popover } from '@/components/Popover'
-
-const formSchema = z.object({
-  reward: z.string().transform(arg => arg.slice(0, arg.length - 1)),
-})
 
 export const BuilderRewardsSettingsForm: FC = () => {
   const router = useRouter()
@@ -29,8 +25,29 @@ export const BuilderRewardsSettingsForm: FC = () => {
   const {
     current: { refetch, isLoading: isCurrentRewardsLoading },
     update: { isSuccess, setNewReward, isPending },
+    maxBackerRewardPercentage: { data: maxBackerRewardPercentage },
     isBuilderOperational,
   } = useBuilderSettingsContext()
+
+  const formSchema = z.object({
+    reward: z
+      .string()
+      .superRefine((value, context) => {
+        const withoutSign = value.endsWith('%') ? value.slice(0, -1) : value
+        const parsedValue = BigInt(withoutSign ?? 0)
+
+        if (parsedValue > maxBackerRewardPercentage) {
+          context.addIssue({
+            code: z.ZodIssueCode.too_big,
+            maximum: maxBackerRewardPercentage,
+            type: 'bigint',
+            inclusive: true,
+            message: `Maximum allowed backer reward percentage is ${maxBackerRewardPercentage} %`,
+          })
+        }
+      })
+      .transform(arg => arg.slice(0, arg.length - 1)), // remove the % sign
+  })
 
   const form = useForm<z.infer<typeof formSchema>>({
     mode: 'onTouched',

@@ -19,6 +19,19 @@ export const BuilderRegistryAbi = [
   },
   {
     type: 'function',
+    name: 'backerRewardPercentageLimits',
+    inputs: [],
+    outputs: [
+      {
+        name: 'max',
+        type: 'uint64',
+        internalType: 'uint64',
+      },
+    ],
+    stateMutability: 'view',
+  },
+  {
+    type: 'function',
     name: 'activateBuilder',
     inputs: [
       {
