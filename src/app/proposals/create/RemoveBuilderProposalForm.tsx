@@ -37,7 +37,7 @@ const FormSchema = z.object({
     .refine(s => s.trim().replace(/\s+/g, ' ').length >= 10, 'Field must contain at least 10 characters'),
   builderAddress: z
     .string()
-    .refine(value => isAddressRegex(value), 'Write or paste the address to be de-whitelisted'),
+    .refine(value => isAddressRegex(value), 'Write or paste the address to be banned'),
 })
 
 export const RemoveBuilderProposalForm: FC = () => {
@@ -163,7 +163,7 @@ export const RemoveBuilderProposalForm: FC = () => {
                     <FormLabel>Description</FormLabel>
                     <FormControl>
                       <FormTextarea
-                        placeholder="Enter the reason for de-whitelisting and any supporting evidence..."
+                        placeholder="Enter the reason for the ban and any supporting evidence..."
                         {...field}
                         maxLength={3000}
                       />

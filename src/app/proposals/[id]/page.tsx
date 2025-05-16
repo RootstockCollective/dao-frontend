@@ -250,7 +250,7 @@ const PageWithProposal = (proposal: ParsedProposal) => {
       <div className="flex items-center justify-between">
         <Header className="text-3xl ">{proposalName}</Header>
         {(proposalType === 'communityApproveBuilder' || proposalType === 'whitelistBuilder') && (
-          <DewhitelistButton
+          <CommunityBanBuilderButton
             proposal={proposal}
             canCreateProposal={canCreateProposal}
             proposalState={proposalState as ProposalState}
@@ -726,20 +726,20 @@ const CalldataDisplay = (props: DecodedData) => {
   )
 }
 
-type DewhitelistButton = {
+type CommunityBanBuilderButton = {
   proposal: ParsedProposal
   canCreateProposal: boolean
   proposalState: ProposalState
 }
 
-const DewhitelistButton: FC<DewhitelistButton> = ({
+const CommunityBanBuilderButton: FC<CommunityBanBuilderButton> = ({
   proposal: { calldatasParsed, proposalId },
   canCreateProposal,
   proposalState,
 }) => {
   const router = useRouter()
   const builderRegistryContract = 'BuilderRegistryAbi'
-  const dewhitelistBuilderAction = 'dewhitelistBuilder'
+  const communityBanBuilderAction = 'communityBanBuilder'
   const builderAddress =
     calldatasParsed[0]?.type === 'decoded' ? getAddress(calldatasParsed[0].args[0]?.toString() || '') : ''
   const isProposalExecuted = proposalState === ProposalState.Executed
@@ -752,7 +752,7 @@ const DewhitelistButton: FC<DewhitelistButton> = ({
           startIcon={<MinusIcon />}
           onClick={() =>
             router.push(
-              `/proposals/create?contract=${builderRegistryContract}&action=${dewhitelistBuilderAction}&builderAddress=${builderAddress}&proposalId=${proposalId}`,
+              `/proposals/create?contract=${builderRegistryContract}&action=${communityBanBuilderAction}&builderAddress=${builderAddress}&proposalId=${proposalId}`,
             )
           }
           disabled={!canCreateProposal}
@@ -766,18 +766,11 @@ const DewhitelistButton: FC<DewhitelistButton> = ({
 
 const actionInputNameFormatMap: Partial<ActionInputNameFormatMap<FunctionName[number], InputParameterName>> =
   {
-    whitelistBuilder: {
-      builder_: 'Address to be whitelisted',
-      rewardReceiver_: 'Address to receive rewards',
-    },
     communityApproveBuilder: {
       builder_: 'Address to be whitelisted',
     },
-    removeWhitelistedBuilder: {
-      builder_: 'Address to be removed',
-    },
-    dewhitelistBuilder: {
-      builder_: 'Address to be de-whitelisted',
+    communityBanBuilder: {
+      builder_: 'Address to be banned',
     },
   }
 
@@ -796,6 +789,12 @@ const ERC20InputComponent: InputValueComponent<'bigint'> = ({ value, htmlProps }
 )
 
 const actionComponentMap: Partial<ActionComposerMap> = {
+  communityApproveBuilder: {
+    builder_: AddressInputComponent,
+  },
+  communityBanBuilder: {
+    builder_: AddressInputComponent,
+  },
   whitelistBuilder: {
     builder_: AddressInputComponent,
     rewardReceiver_: AddressInputComponent,
@@ -804,9 +803,6 @@ const actionComponentMap: Partial<ActionComposerMap> = {
     builder_: AddressInputComponent,
   },
   dewhitelistBuilder: {
-    builder_: AddressInputComponent,
-  },
-  communityApproveBuilder: {
     builder_: AddressInputComponent,
   },
   withdraw: {

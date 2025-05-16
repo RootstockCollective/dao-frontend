@@ -27,7 +27,7 @@ export const useCreateBuilderWhitelistProposal = () => {
       // TODO: maybe we can use a different error here
       throw AddressAlreadyWhitelistedError
     }
-    const calldata = encodeWhitelistBuilderCalldata(builderAddress)
+    const calldata = encodeCommunityApproveBuilderCalldata(builderAddress)
     const relayCallData = encodeGovernorRelayCallData(BuilderRegistryAddress, calldata)
 
     const { proposal } = createProposal([GovernorAddress], [0n], [relayCallData], description)
@@ -42,7 +42,7 @@ export const useCreateBuilderWhitelistProposal = () => {
   return { onCreateBuilderWhitelistProposal, isPublishing, transactionError }
 }
 
-export const encodeWhitelistBuilderCalldata = (builderAddress: Address) => {
+export const encodeCommunityApproveBuilderCalldata = (builderAddress: Address) => {
   return encodeFunctionData({
     abi: BuilderRegistryAbi,
     functionName: 'communityApproveBuilder',

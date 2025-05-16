@@ -80,7 +80,7 @@ describe('BecomeABuilderButton', () => {
 
   test('should render in progress component if is not activated and approved by the community', async () => {
     builderData.stateFlags = {
-      activated: false,
+      initialized: false,
       communityApproved: true,
     } as BuilderStateFlags
     const { findByText } = renderWithAlertProvider(<BecomeABuilderButton address={builderAddress} />)
@@ -91,7 +91,7 @@ describe('BecomeABuilderButton', () => {
   test('should render in progress component if is activated and not approved by the community', async () => {
     builderData.gauge = undefined
     builderData.stateFlags = {
-      activated: true,
+      initialized: true,
       communityApproved: false,
       kycApproved: true,
     } as BuilderStateFlags
@@ -102,7 +102,7 @@ describe('BecomeABuilderButton', () => {
 
   test('should render de-activated component if builder is deactivated(have a gauge but it is not approved by the community)', async () => {
     builderData.gauge = '0x01'
-    builderData.stateFlags = { activated: false, communityApproved: false } as BuilderStateFlags
+    builderData.stateFlags = { initialized: false, communityApproved: false } as BuilderStateFlags
     const { findByText } = renderWithAlertProvider(<BecomeABuilderButton address={builderAddress} />)
 
     expect(await findByText('De-activated')).toBeVisible()
@@ -111,10 +111,10 @@ describe('BecomeABuilderButton', () => {
   test('should render de-activated component if builder is kyc revoked and paused', async () => {
     builderData.gauge = '0x01'
     builderData.stateFlags = {
-      activated: true,
+      initialized: true,
       communityApproved: false,
       kycApproved: false,
-      paused: true,
+      kycPaused: true,
     } as BuilderStateFlags
     const { findByText } = renderWithAlertProvider(<BecomeABuilderButton address={builderAddress} />)
 
@@ -124,10 +124,10 @@ describe('BecomeABuilderButton', () => {
   test('should render de-activated component if builder is kyc revoked and not paused', async () => {
     builderData.gauge = '0x01'
     builderData.stateFlags = {
-      activated: true,
+      initialized: true,
       communityApproved: false,
       kycApproved: false,
-      paused: false,
+      kycPaused: false,
     } as BuilderStateFlags
     const { findByText } = renderWithAlertProvider(<BecomeABuilderButton address={builderAddress} />)
 
@@ -136,34 +136,34 @@ describe('BecomeABuilderButton', () => {
 
   test('should render paused component if builder is active, kyc approved, approved by the community and paused', async () => {
     builderData.stateFlags = {
-      activated: true,
+      initialized: true,
       communityApproved: true,
       kycApproved: true,
-      paused: true,
+      kycPaused: true,
     } as BuilderStateFlags
     const { findByText } = renderWithAlertProvider(<BecomeABuilderButton address={builderAddress} />)
 
     expect(await findByText('Paused')).toBeVisible()
   })
 
-  test('should render active component if builder is active, approve by the community, kyc approved and not revoked', async () => {
+  test('should render active component if builder is active, approve by the community, kyc approved and not self paused', async () => {
     builderData.stateFlags = {
-      activated: true,
+      initialized: true,
       communityApproved: true,
       kycApproved: true,
-      revoked: false,
+      selfPaused: false,
     } as BuilderStateFlags
     const { findByText } = renderWithAlertProvider(<BecomeABuilderButton address={builderAddress} />)
 
     expect(await findByText('You are a Builder')).toBeVisible()
   })
 
-  test('should render active component if builder is active, approve by the community, kyc approved and revoked', async () => {
+  test('should render active component if builder is active, approve by the community, kyc approved and self paused', async () => {
     builderData.stateFlags = {
-      activated: true,
+      initialized: true,
       communityApproved: true,
       kycApproved: true,
-      revoked: true,
+      selfPaused: true,
     } as BuilderStateFlags
     const { findByText } = renderWithAlertProvider(<BecomeABuilderButton address={builderAddress} />)
 

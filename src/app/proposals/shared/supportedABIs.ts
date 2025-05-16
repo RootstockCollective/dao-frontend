@@ -1,6 +1,6 @@
 import { DAOTreasuryAbi } from '@/lib/abis/DAOTreasuryAbi'
 import { RIFTokenAbi } from '@/lib/abis/RIFTokenAbi'
-import { SimplifiedRewardDistributorAbi } from '@/lib/abis/SimplifiedRewardDistributorAbi'
+import { CRDeprecatedAbi } from '@/lib/abis/CRDeprecatedAbi'
 import { BuilderRegistryAbi } from '@/lib/abis/v2/BuilderRegistryAbi'
 import { HTMLProps, JSX } from 'react'
 import { AbiFunction, AbiParameterToPrimitiveType } from 'viem'
@@ -9,25 +9,26 @@ export const abiNames = [
   'DAOTreasuryAbi',
   'RIFTokenAbi',
   'BuilderRegistryAbi',
-  // CR MVP: To keep compatibility with the MVP logs
-  'SimplifiedRewardDistributorAbi',
+  // To keep compatibility with the previous logs
+  'CRDeprecatedAbi',
 ] as const
 export const abis = [
   DAOTreasuryAbi,
   RIFTokenAbi,
   BuilderRegistryAbi,
-  // CR MVP: To keep compatibility with the MVP logs
-  SimplifiedRewardDistributorAbi,
+  // To keep compatibility with the previous operations
+  CRDeprecatedAbi,
 ] as const
 
 export const supportedProposalActions = [
   'withdraw',
   'withdrawERC20',
   'communityApproveBuilder',
-  'dewhitelistBuilder',
-  // CR MVP: To keep compatibility with the MVP logs
+  'communityBanBuilder',
+  // To keep compatibility with the previous operations
   'removeWhitelistedBuilder',
   'whitelistBuilder',
+  'dewhitelistBuilder',
 ] as const
 
 export type SupportedActionAbiName = (typeof abiNames)[number]
