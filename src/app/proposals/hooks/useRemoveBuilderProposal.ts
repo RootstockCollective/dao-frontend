@@ -1,11 +1,11 @@
+import { createProposal, encodeGovernorRelayCallData } from '@/app/proposals/hooks/proposalUtils'
+import { useVotingPower } from '@/app/proposals/hooks/useVotingPower'
 import { NoVotingPowerError } from '@/app/proposals/shared/errors'
 import { GovernorAbi } from '@/lib/abis/Governor'
 import { BuilderRegistryAbi } from '@/lib/abis/v2/BuilderRegistryAbi'
-import { GovernorAddress, BackersManagerAddress } from '@/lib/contracts'
+import { BuilderRegistryAddress, GovernorAddress } from '@/lib/contracts'
 import { Address, encodeFunctionData } from 'viem'
 import { useWriteContract } from 'wagmi'
-import { createProposal, encodeGovernorRelayCallData } from '@/app/proposals/hooks/proposalUtils'
-import { useVotingPower } from '@/app/proposals/hooks/useVotingPower'
 
 export const useRemoveBuilderProposal = () => {
   const { canCreateProposal } = useVotingPower()
@@ -17,7 +17,7 @@ export const useRemoveBuilderProposal = () => {
     }
 
     const calldata = encodeRemoveBuilderCalldata(builderAddress)
-    const relayCallData = encodeGovernorRelayCallData(BackersManagerAddress, calldata)
+    const relayCallData = encodeGovernorRelayCallData(BuilderRegistryAddress, calldata)
 
     const { proposal } = createProposal([GovernorAddress], [0n], [relayCallData], description)
 
