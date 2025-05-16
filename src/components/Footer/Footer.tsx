@@ -12,12 +12,18 @@ export const Footer = ({ variant = 'login' }: Props) => (
   <>
     {/* Main footer with three sections: Build ID, FAQs/Whitepaper, Social Icons */}
     <footer>
-      <section className="bg-[#121212] w-full flex flex-row justify-between items-center p-6 text-sm border-t border-gray-600 text-gray-400">
+      <section
+        className={cn(
+          'flex flex-row justify-between items-center py-6 text-sm border-t border-dark-gray text-warm-gray w-[95%] mx-auto',
+        )}
+      >
         {/* Left: Build ID section */}
-        <div className="hidden md:flex space-x-6 divide-x-1 divide-gray-600 divide-solid px-4">
+        <div
+          className={cn('hidden md:flex justify-start space-x-6 divide-x-1 divide-dark-gray divide-solid')}
+        >
           <a
             href={`https://github.com/${GITHUB_ORG}/dao-frontend/commit/${BUILD_ID}`}
-            className="hover:underline"
+            className="hover:underline pr-6"
             target="_blank"
             data-testid="BuildIDLink"
           >
@@ -26,7 +32,7 @@ export const Footer = ({ variant = 'login' }: Props) => (
 
           <a
             href="https://wiki.rootstockcollective.xyz/RootstockCollective-FAQ-1031ca6b0b02808c95d3dcb5a0074f4b"
-            className="hover:underline"
+            className="hover:underline pr-6"
             target="_blank"
             data-testid="FAQsLink"
           >

@@ -52,6 +52,11 @@ html[data-theme='default'] {
 
   /* Links (a tag) */
   --link: rgba(143, 154, 255, 1);
+
+  --v-charcoal: rgba(37, 33, 30, 1);
+  --warm-gray: rgba(172, 163, 157, 1);
+  --dark-gray: rgba(55, 50, 47, 1);
+  --l-black: rgba(23, 20, 18, 1);
 }
 
 @layer base {
