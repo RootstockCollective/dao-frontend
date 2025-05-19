@@ -1,6 +1,7 @@
 name: Deploy Storybook site to Pages
 
 on:
+  workflow_dispatch: # Manually triggered from GitHub Actions tab
   push:
     branches: [main, develop]
 
