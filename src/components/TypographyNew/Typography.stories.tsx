@@ -108,7 +108,7 @@ export const ParagraphVariations: Story = {
         zebra and my wolves quack.
       </Paragraph>
       <Paragraph variant="body-xs" bold>
-        This is a Body Extra Small Bold variant for the smallest emphasized text. Watch "Jeopardy!", Alex
+        This is a Body Extra Small Bold variant for the smallest emphasized text. Watch Jeopardy!, Alex
         Trebek`s fun TV quiz game.
       </Paragraph>
     </div>
