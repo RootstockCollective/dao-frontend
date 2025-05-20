@@ -4,6 +4,6 @@ export type EmphaseVariants = 'e1' | 'e2' | 'e2m' | 'e3'
 
 export type HeaderVariants = 'h1' | 'h1m' | 'h2' | 'h3' | 'h4' | 'h5'
 
-export type BodyVariants = 'bl' | 'bl-bold' | 'b' | 'b-bold' | 'bs' | 'bs-bold' | 'bxs' | 'bxs-bold'
+export type BodyVariants = 'body-l' | 'body' | 'body-s' | 'body-xs'
 
-export type TagVariants = 't' | 'ts' | 'tm'
+export type TagVariants = 'tag' | 'tag-s' | 'tag-m'

@@ -8,12 +8,7 @@ interface Props extends Omit<TypographyProps, 'as'> {
   variant?: LabelVariant
 }
 
-export const Label: FC<Props> = ({
-  children,
-  variant = 'b-bold',
-  'data-testid': dataTestId = '',
-  ...rest
-}) => (
+export const Label: FC<Props> = ({ children, variant = 'body', 'data-testid': dataTestId = '', ...rest }) => (
   <Typography as="label" variant={variant} data-testid={`Label${dataTestId}`} {...rest}>
     {children}
   </Typography>

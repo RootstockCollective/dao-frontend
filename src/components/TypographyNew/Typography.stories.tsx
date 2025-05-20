@@ -20,7 +20,7 @@ type Story = StoryObj<typeof meta>
 export const TypographyStory: Story = {
   args: {
     children: 'Pack my box with five dozen liquor jugs',
-    variant: 'b',
+    variant: 'body',
     caps: false,
   },
 }
@@ -81,37 +81,35 @@ export const ParagraphVariations: Story = {
   },
   render: () => (
     <div className="space-y-6">
-      <Paragraph variant="bl">
-        This is a Body Large variant (bl) with longer text to demonstrate how it handles content that flows
-        across multiple lines. The quick brown fox jumps over the lazy dog.
+      <Paragraph variant="body-l">
+        This is a Body Large variant (body-l) with longer text to demonstrate how it handles content that
+        flows across multiple lines. The quick brown fox jumps over the lazy dog.
       </Paragraph>
-      <Paragraph variant="bl-bold">
-        This is a Body Large Bold variant (bl-bold) that shows how bold text looks in longer paragraphs. Pack
-        my box with five dozen liquor jugs.
+      <Paragraph variant="body-l" bold>
+        This is a Body Large Bold variant that shows how bold text looks in longer paragraphs. Pack my box
+        with five dozen liquor jugs.
       </Paragraph>
-      <Paragraph variant="b">
-        This is a Body Regular variant (b) that represents the default body text style. How vexingly quick
-        daft zebras jump.
+      <Paragraph variant="body">
+        This is a Body variant that represents the default body text style. How vexingly quick daft zebras
+        jump.
       </Paragraph>
-      <Paragraph variant="b-bold">
-        This is a Body Regular Bold variant (b-bold) for emphasizing regular body text. The five boxing
-        wizards jump quickly.
+      <Paragraph variant="body" bold>
+        This is a Body Bold variant for emphasizing body text. The five boxing wizards jump quickly.
       </Paragraph>
-      <Paragraph variant="bs">
-        This is a Body Small variant (bs) for less prominent text content. Sphinx of black quartz, judge my
-        vow.
+      <Paragraph variant="body-s">
+        This is a Body Small variant (body-s) for less prominent text content. Sphinx of black quartz, judge
+        my vow.
       </Paragraph>
-      <Paragraph variant="bs-bold">
-        This is a Body Small Bold variant (bs-bold) for emphasized smaller text. Quick wafting zephyrs vex
-        bold Jim.
+      <Paragraph variant="body-s" bold>
+        This is a Body Small Bold variant for emphasized smaller text. Quick wafting zephyrs vex bold Jim.
       </Paragraph>
-      <Paragraph variant="bxs">
-        This is a Body Extra Small variant (bxs) for the smallest body text needs. The jay, pig, fox, zebra
-        and my wolves quack.
+      <Paragraph variant="body-xs">
+        This is a Body Extra Small variant (body-xs) for the smallest body text needs. The jay, pig, fox,
+        zebra and my wolves quack.
       </Paragraph>
-      <Paragraph variant="bxs-bold">
-        This is a Body Extra Small Bold variant (bxs-bold) for the smallest emphasized text. Watch Jeopardy!,
-        Alex Trebek`s fun TV quiz game.
+      <Paragraph variant="body-xs" bold>
+        This is a Body Extra Small Bold variant for the smallest emphasized text. Watch "Jeopardy!", Alex
+        Trebek`s fun TV quiz game.
       </Paragraph>
     </div>
   ),
@@ -123,29 +121,29 @@ export const ParagraphVariationsWithCaps: Story = {
   },
   render: () => (
     <div className="space-y-6">
-      <Paragraph variant="bl" caps>
-        This is a Body Large variant with caps (bl) demonstrating capitalized text
+      <Paragraph variant="body-l" caps>
+        This is a Body Large variant with caps demonstrating capitalized text
       </Paragraph>
-      <Paragraph variant="bl-bold" caps>
-        This is a Body Large Bold variant with caps (bl-bold)
+      <Paragraph variant="body-l" bold caps>
+        This is a Body Large Bold variant with caps
       </Paragraph>
-      <Paragraph variant="b" caps>
-        This is a Body Regular variant with caps (b)
+      <Paragraph variant="body" caps>
+        This is a Body variant with caps
       </Paragraph>
-      <Paragraph variant="b-bold" caps>
-        This is a Body Regular Bold variant with caps (b-bold)
+      <Paragraph variant="body" bold caps>
+        This is a Body Bold variant with caps
       </Paragraph>
-      <Paragraph variant="bs" caps>
-        This is a Body Small variant with caps (bs)
+      <Paragraph variant="body-s" caps>
+        This is a Body Small variant with caps
       </Paragraph>
-      <Paragraph variant="bs-bold" caps>
-        This is a Body Small Bold variant with caps (bs-bold)
+      <Paragraph variant="body-s" bold caps>
+        This is a Body Small Bold variant with caps
       </Paragraph>
-      <Paragraph variant="bxs" caps>
-        This is a Body Extra Small variant with caps (bxs)
+      <Paragraph variant="body-xs" caps>
+        This is a Body Extra Small variant with caps
       </Paragraph>
-      <Paragraph variant="bxs-bold" caps>
-        This is a Body Extra Small Bold variant with caps (bxs-bold)
+      <Paragraph variant="body-xs" bold caps>
+        This is a Body Extra Small Bold variant with caps
       </Paragraph>
     </div>
   ),
@@ -158,14 +156,14 @@ export const LabelVariations: Story = {
   render: () => (
     <div className="space-y-6">
       <div className="space-y-2">
-        <Label variant="t">
+        <Label variant="tag">
           This is a Tag variant (t) with longer text to show the difference in size and how it handles longer
           content in a single line
         </Label>
         <br />
-        <Label variant="ts">This is a Tag Small variant (ts)</Label>
+        <Label variant="tag-s">This is a Tag Small variant (ts)</Label>
         <br />
-        <Label variant="tm">
+        <Label variant="tag-m">
           This is a Tag Medium variant (tm) with longer text to demonstrate the uppercase transformation and
           letter spacing
         </Label>
@@ -181,15 +179,15 @@ export const LabelVariationsWithCaps: Story = {
   render: () => (
     <div className="space-y-6">
       <div className="space-y-2">
-        <Label variant="t" caps>
+        <Label variant="tag" caps>
           This is a Tag variant (t) with caps and longer text to show the difference
         </Label>
         <br />
-        <Label variant="ts" caps>
+        <Label variant="tag-s" caps>
           This is a Tag Small variant (ts) with caps
         </Label>
         <br />
-        <Label variant="tm" caps>
+        <Label variant="tag-m" caps>
           This is a Tag Medium variant (tm) with caps to show both uppercase and caps
         </Label>
       </div>

@@ -12,6 +12,7 @@ interface Props {
   className?: string
   html?: boolean
   caps?: boolean
+  bold?: boolean
   'data-testid'?: string
   onClick?: () => void
 }
@@ -29,26 +30,23 @@ const variantClasses: Record<TypographyVariant, string> = {
   h3: 'font-kk-topo font-normal text-lg leading-[130%] tracking-[0.02em]',
   h4: 'font-rootstock-sans font-medium text-base leading-[150%] tracking-[0.08em]',
   h5: 'font-rootstock-sans font-medium text-xs leading-[150%] tracking-[0.05em]',
-  bl: 'font-rootstock-sans font-normal text-[1.125rem] leading-[133%] tracking-normal',
-  'bl-bold': 'font-rootstock-sans font-bold text-[1.125rem] leading-[133%] tracking-normal',
-  b: 'font-rootstock-sans font-normal text-base leading-[150%] tracking-normal',
-  'b-bold': 'font-rootstock-sans font-bold text-base leading-[150%] tracking-normal',
-  bs: 'font-rootstock-sans font-normal text-sm leading-[145%] tracking-normal',
-  'bs-bold': 'font-rootstock-sans font-bold text-sm leading-[145%] tracking-normal',
-  bxs: 'font-rootstock-sans font-normal text-xs leading-[150%] tracking-normal',
-  'bxs-bold': 'font-rootstock-sans font-bold text-xs leading-[150%] tracking-normal',
-  t: 'font-rootstock-sans font-medium text-base leading-[150%] tracking-normal',
-  ts: 'font-rootstock-sans font-medium text-sm leading-[145%] tracking-normal',
-  tm: 'font-rootstock-sans font-medium text-sm leading-[145%] tracking-[0.08em] uppercase',
+  'body-l': 'font-rootstock-sans font-normal text-[1.125rem] leading-[133%] tracking-normal',
+  body: 'font-rootstock-sans font-normal text-base leading-[150%] tracking-normal',
+  'body-s': 'font-rootstock-sans font-normal text-sm leading-[145%] tracking-normal',
+  'body-xs': 'font-rootstock-sans font-normal text-xs leading-[150%] tracking-normal',
+  tag: 'font-rootstock-sans font-medium text-base leading-[150%] tracking-normal',
+  'tag-s': 'font-rootstock-sans font-medium text-sm leading-[145%] tracking-normal',
+  'tag-m': 'font-rootstock-sans font-medium text-sm leading-[145%] tracking-[0.08em]',
 }
 
 export const Typography: FC<TypographyProps> = ({
   children,
   as: Component = 'span',
-  variant = 'b',
-  className,
+  variant = 'body',
+  className = '',
   html = false,
   caps = false,
+  bold = false,
   'data-testid': dataTestId,
   onClick,
   ...styles
@@ -64,7 +62,7 @@ export const Typography: FC<TypographyProps> = ({
 
   return (
     <Component
-      className={cn(className, variantClasses[variant], caps && 'uppercase')}
+      className={cn(className, variantClasses[variant], caps && 'uppercase', bold && 'font-bold')}
       style={{ ...styles }}
       onClick={onClick}
       dangerouslySetInnerHTML={cleanHtml ? { __html: cleanHtml } : undefined}

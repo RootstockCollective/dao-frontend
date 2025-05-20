@@ -9,7 +9,7 @@ interface Props extends Omit<TypographyProps, 'as'> {
 }
 
 export const Paragraph: FC<Props> = ({
-  variant = 'b',
+  variant = 'body',
   children,
   'data-testid': dataTestId = '',
   ...rest

@@ -8,7 +8,7 @@ interface Props extends Omit<TypographyProps, 'as'> {
   variant?: SpanVariant
 }
 
-export const Span: FC<Props> = ({ variant = 'b', children, 'data-testid': dataTestId = '', ...rest }) => (
+export const Span: FC<Props> = ({ variant = 'body', children, 'data-testid': dataTestId = '', ...rest }) => (
   <Typography as="span" variant={variant} data-testid={`Span${dataTestId}`} {...rest}>
     {children}
   </Typography>
