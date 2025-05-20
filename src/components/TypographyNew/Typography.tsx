@@ -62,7 +62,7 @@ export const Typography: FC<TypographyProps> = ({
 
   return (
     <Component
-      className={cn(className, variantClasses[variant], caps && 'uppercase', bold && 'font-bold')}
+      className={cn(variantClasses[variant], className, caps && 'uppercase', bold && 'font-bold')}
       style={{ ...styles }}
       onClick={onClick}
       dangerouslySetInnerHTML={cleanHtml ? { __html: cleanHtml } : undefined}
