@@ -1,13 +1,11 @@
-'use client'
-
 import { HttpLink } from '@apollo/client'
-import { ApolloClient, ApolloNextAppProvider, InMemoryCache } from '@apollo/client-integration-nextjs'
+import { ApolloClient, InMemoryCache } from '@apollo/client-integration-nextjs'
 
 // have a function to create a client for you
-function makeClient() {
+export function makeClient(uri: string) {
   const httpLink = new HttpLink({
     // this needs to be an absolute url, as relative urls cannot be used in SSR
-    uri: '/api/graphql',
+    uri,
     // you can disable result caching here if you want to
     // (this does not work if you are rendering your page with `export const dynamic = "force-static"`)
     fetchOptions: {
@@ -27,9 +25,4 @@ function makeClient() {
     cache: new InMemoryCache(),
     link: httpLink,
   })
-}
-
-// you need to create a component to wrap your app in
-export function IndexerProvider({ children }: React.PropsWithChildren) {
-  return <ApolloNextAppProvider makeClient={makeClient}>{children}</ApolloNextAppProvider>
 }
