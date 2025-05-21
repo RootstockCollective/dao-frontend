@@ -60,9 +60,14 @@ export const Typography: FC<TypographyProps> = ({
         })
       : undefined
 
+  const modifierClasses = {
+    'font-bold': bold,
+    uppercase: caps,
+  }
+
   return (
     <Component
-      className={cn(variantClasses[variant], className, caps && 'uppercase', bold && 'font-bold')}
+      className={cn(variantClasses[variant], className, modifierClasses)}
       style={{ ...styles }}
       onClick={onClick}
       dangerouslySetInnerHTML={cleanHtml ? { __html: cleanHtml } : undefined}
