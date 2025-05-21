@@ -1,19 +1,12 @@
 import { useState, useEffect } from 'react'
 
-interface ProgressState {
-  progress: number
-  flip: boolean
-}
-
 /**
- * Custom hook to handle progress animation and flipping effect.
- * @param animationDuration in ms
- * @param flipDuration in ms
- * @returns { progress: number; flip: boolean }
+ * Custom hook to handle progress animation.
+ * @param duration in ms
+ * @returns progress percentage (0-100)
  */
-export const useProgressAnimation = (animationDuration: number, flipDuration: number): ProgressState => {
+export const useProgressAnimation = (duration: number): number => {
   const [progress, setProgress] = useState(0)
-  const [flip, setFlip] = useState(false)
 
   useEffect(() => {
     let animationFrameId: number
@@ -22,26 +15,20 @@ export const useProgressAnimation = (animationDuration: number, flipDuration: nu
     const animate = (time: number) => {
       if (!startTime) startTime = time
       const elapsed = time - startTime
-      const newProgress = Math.min(100, (elapsed / animationDuration) * 100)
+      const newProgress = Math.min(100, (elapsed / duration) * 100)
       setProgress(newProgress)
       animationFrameId = requestAnimationFrame(animate)
-      if (elapsed >= animationDuration) {
+      if (elapsed >= duration) {
         startTime = null
         setProgress(0)
       }
     }
 
     animationFrameId = requestAnimationFrame(animate)
-
-    const flipInterval = setInterval(() => {
-      setFlip(prev => !prev)
-    }, flipDuration)
-
     return () => {
       cancelAnimationFrame(animationFrameId)
-      clearInterval(flipInterval)
     }
-  }, [animationDuration, flipDuration])
+  }, [duration])
 
-  return { progress, flip }
+  return progress
 }

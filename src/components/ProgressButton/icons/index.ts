@@ -1,2 +1,2 @@
-export * from './HourglassIcon'
-export * from './ProgressPatternIcon'
+export * from './AnimatedHourglassIcon'
+export * from './AnimatedProgressPattern'
