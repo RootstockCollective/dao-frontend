@@ -1,16 +1,16 @@
 import { motion } from 'framer-motion'
 import { useRef } from 'react'
 import { ProgressPatternIcon } from './ProgressPatternIcon'
+import { useInterval, useProgressAnimation } from '../hooks'
 
-interface Props {
-  progress: number
-  flip: boolean
-}
-
+const PROGRESS_DURATION = 5000
+const FLIP_DURATION = 700
 const PATTERN_OFFSET = 48
 const PATTERN_ADJUSTMENT = 106
 
-export const AnimatedProgressPattern = ({ progress, flip }: Props) => {
+export const AnimatedProgressPattern = () => {
+  const progress = useProgressAnimation(PROGRESS_DURATION)
+  const flip = useInterval(FLIP_DURATION)
   const containerRef = useRef<HTMLDivElement>(null)
   const ratio = progress / 100
   const width = containerRef.current?.offsetWidth || 0

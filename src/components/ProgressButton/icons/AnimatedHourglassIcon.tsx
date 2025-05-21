@@ -1,8 +1,10 @@
 import { motion } from 'framer-motion'
+import { useInterval } from '../hooks'
 import { HourglassIcon } from './HourglassIcon'
-import { FC } from 'react'
 
-export const AnimatedHourglassIcon: FC<{ flip: boolean }> = ({ flip }) => {
+const FLIP_DURATION = 2000
+export const AnimatedHourglassIcon = () => {
+  const flip = useInterval(FLIP_DURATION)
   return (
     <motion.div
       animate={{ rotate: flip ? 180 : 0 }}
