@@ -64,6 +64,8 @@ html[data-theme='default'] {
   --warm-gray: rgba(172, 163, 157, 1);
   --dark-gray: rgba(55, 50, 47, 1);
   --l-black: rgba(23, 20, 18, 1);
+
+  --header-height: 5.25rem;
 }
 
 @layer base {

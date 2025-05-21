@@ -1,19 +1,13 @@
 'use client'
 
-import {
-  createContext,
-  Dispatch,
-  PropsWithChildren,
-  SetStateAction,
-  useContext,
-  useMemo,
-  useState,
-} from 'react'
+import { useIsDesktop } from '@/shared/hooks/useIsDesktop'
+import { createContext, PropsWithChildren, useContext, useMemo, useState } from 'react'
 
 interface LayoutState {
   isSidebarOpen: boolean
-  setIsSidebarOpen: Dispatch<SetStateAction<boolean>>
   toggleSidebar: () => void
+  openSidebar: () => void
+  closeSidebar: () => void
 }
 
 const LayoutContext = createContext<LayoutState | null>(null)
@@ -24,13 +18,18 @@ const LayoutContext = createContext<LayoutState | null>(null)
  * layout configurations like theme, responsive settings, and other UI states.
  */
 export function LayoutProvider({ children }: PropsWithChildren) {
-  const [isSidebarOpen, setIsSidebarOpen] = useState(true)
+  // on desktop the sidebar is initially open, on mobile - initially closed
+  const isDesktop = useIsDesktop()
+  const [isSidebarOpen, setIsSidebarOpen] = useState(isDesktop)
   const toggleSidebar = () => setIsSidebarOpen(state => !state)
+  const openSidebar = () => setIsSidebarOpen(true)
+  const closeSidebar = () => setIsSidebarOpen(false)
   const value = useMemo<LayoutState>(
     () => ({
       isSidebarOpen,
-      setIsSidebarOpen,
       toggleSidebar,
+      openSidebar,
+      closeSidebar,
     }),
     [isSidebarOpen],
   )
@@ -42,7 +41,7 @@ export function LayoutProvider({ children }: PropsWithChildren) {
  * Provides access to sidebar state and can be extended for other layout configurations.
  * Must be used within a LayoutProvider.
  */
-export function useLayoutContext() {
+export function useLayoutContext(): LayoutState {
   const context = useContext(LayoutContext)
   if (!context) {
     throw new Error('useLayoutContext must be used within an LayoutProvider')

@@ -28,6 +28,7 @@
     --color-accent: var(--input-bg);
     --color-accent-foreground: var(--text-primary);
 
+    /* May 2025 Koto design colors */
     --color-v-charcoal: var(--v-charcoal);
     --color-warm-gray: var(--warm-gray);
     --color-dark-gray: var(--dark-gray);

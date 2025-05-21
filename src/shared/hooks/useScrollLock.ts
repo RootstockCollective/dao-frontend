@@ -1,19 +1,37 @@
 import { useEffect } from 'react'
 
+let scrollLockCount = 0
+
 /**
- * Disables page scrolling when `isOpen` is true and restores it when `isOpen` is false or on unmount.
+ * Disables page scrolling while the provided condition is true.
  *
- * @param isOpen - Whether the scroll lock should be active
+ * This hook is typically used to prevent background scrolling
+ * when modals, sidebars, or other overlay components are visible.
+ *
+ * Scrolling is automatically re-enabled when the condition becomes false
+ * or when the component using the hook is unmounted.
+ *
+ * @param lock - A boolean indicating whether scrolling should be disabled.
  */
-export function useScrollLock(isOpen: boolean) {
+export function useScrollLock(lock: boolean) {
   useEffect(() => {
-    if (isOpen) {
-      document.body.classList.add('overflow-hidden')
-    } else {
-      document.body.classList.remove('overflow-hidden')
+    if (typeof document === 'undefined') return
+
+    if (lock) {
+      scrollLockCount++
+      if (scrollLockCount === 1) {
+        document.body.style.overflow = 'hidden'
+      }
     }
+
     return () => {
-      document.body.classList.remove('overflow-hidden')
+      if (lock) {
+        scrollLockCount--
+        if (scrollLockCount <= 0) {
+          document.body.style.overflow = ''
+          scrollLockCount = 0
+        }
+      }
     }
-  }, [isOpen])
+  }, [lock])
 }
