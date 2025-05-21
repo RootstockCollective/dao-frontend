@@ -7,7 +7,6 @@ import { TopPageHeader } from '@/shared/walletConnection/components/topPageHeade
 import { SidebarDesktop } from './sidebars/SidebarDesktop'
 import { Alert } from '../Alert'
 import { HeaderDesktop } from './headers/HeaderDesktop'
-import Scroll from '@/components/Scroll'
 import { cn } from '@/lib/utils'
 
 export function ContainerDesktop({ children, className, ...props }: HTMLAttributes<HTMLDivElement>) {
@@ -19,7 +18,6 @@ export function ContainerDesktop({ children, className, ...props }: HTMLAttribut
       <div className="grow flex flex-col">
         <HeaderDesktop />
         <div className="grow flex flex-col">
-          <Scroll />
           <div className="flex flex-1 flex-col justify-between overflow-y-auto mt-10" id="main-container">
             <main className="p-8 mb-25">
               {message && (

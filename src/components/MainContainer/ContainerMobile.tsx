@@ -5,10 +5,18 @@ import { cn } from '@/lib/utils'
 import { HeaderMobile } from './headers/HeaderMobile'
 import { FooterMobile } from '../Footer'
 import { SidebarMobile } from './sidebars/SidebarMobile'
+import { useLayoutContext } from './LayoutProvider'
 
 export default function ContainerMobile({ className, children, ...props }: HTMLAttributes<HTMLDivElement>) {
+  const { isSidebarOpen } = useLayoutContext()
   return (
-    <div {...props} className={cn('flex flex-col min-h-screen', className)}>
+    <div
+      {...props}
+      className={cn(
+        'flex flex-col w-full',
+        isSidebarOpen ? 'overflow-y-hidden h-[calc(100dvh-var(--header-height))]' : 'min-h-screen',
+      )}
+    >
       <HeaderMobile />
       <div className="relative p-4 grow flex flex-col">
         <SidebarMobile />

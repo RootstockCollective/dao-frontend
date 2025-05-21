@@ -9,7 +9,7 @@ interface Props extends HTMLAttributes<HTMLElement> {
 }
 
 export function Tooltip({
-  className,
+  className = 'rounded-full bg-dark-gray px-2 py-1 text-warm-gray text-xs font-normal shadow-lg',
   children,
   text,
   position = 'right',
@@ -23,15 +23,7 @@ export function Tooltip({
     <RadixTooltip.Root delayDuration={300}>
       <RadixTooltip.Trigger asChild>{children}</RadixTooltip.Trigger>
       <RadixTooltip.Portal>
-        <RadixTooltip.Content
-          side={position}
-          sideOffset={5}
-          className={cn(
-            'rounded-full bg-dark-gray px-2 py-1 text-warm-gray text-xs font-normal shadow-lg',
-            className,
-          )}
-          {...props}
-        >
+        <RadixTooltip.Content side={position} sideOffset={5} className={className} {...props}>
           {text}
         </RadixTooltip.Content>
       </RadixTooltip.Portal>

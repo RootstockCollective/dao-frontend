@@ -4,7 +4,6 @@ import { cn } from '@/lib/utils'
 
 interface HamburgerProps extends HTMLAttributes<HTMLSpanElement> {
   isOpen: boolean
-  toggle: () => void
   strokeWidth?: number
 }
 
@@ -15,14 +14,14 @@ interface HamburgerProps extends HTMLAttributes<HTMLSpanElement> {
 export function Hamburger({
   strokeWidth = 1.25,
   color = '#fff',
-  toggle,
+  onClick,
   isOpen,
   className,
   ...props
 }: HamburgerProps) {
   return (
     <span className={cn('flex w-fit', className)} {...props}>
-      <button onClick={toggle}>
+      <button onClick={onClick}>
         <motion.svg
           width="24"
           height="24"

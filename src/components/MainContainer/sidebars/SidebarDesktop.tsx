@@ -38,7 +38,12 @@ export const SidebarDesktop = () => {
       transition={transition}
       className={cn('overflow-hidden shrink-0 border-r border-dark-gray')}
     >
-      <div className="h-[calc(100vh-40px)] flex flex-col justify-between whitespace-nowrap">
+      <div
+        className={cn(
+          'h-[calc(100vh-var(--header-height))]',
+          'flex flex-col justify-between whitespace-nowrap',
+        )}
+      >
         <div>
           {/* Logo link */}
           <Link href="/" className="m-6 block w-fit">
@@ -74,10 +79,9 @@ const MenuItem = ({
   variants,
 }: (typeof menuData)[number] & { variants: Variants }) => {
   const { isSidebarOpen } = useLayoutContext()
-  const activeButton = usePathname()?.substring(1)
-  const isActive = activeButton === href
+  const isActive = usePathname()?.substring(1) === href
   return (
-    <li key={href} className={cn('relative pl-3', isSidebarOpen && isActive && 'bg-v-charcoal')}>
+    <li className={cn('relative pl-3', { 'bg-v-charcoal': isSidebarOpen && isActive })}>
       <Link href={`/${href}`} data-testid={buttonProps.id}>
         <div
           className={cn(

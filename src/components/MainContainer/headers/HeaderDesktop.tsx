@@ -1,5 +1,5 @@
 import { HTMLAttributes } from 'react'
-import { StarIcon, BellIcon, SunIcon, SideBarClosedIcon, SideBarOpenedIcon } from '../icons'
+import { /* StarIcon, BellIcon, SunIcon, */ SideBarClosedIcon, SideBarOpenedIcon } from '../icons'
 import { UserConnectionManager } from '@/shared/walletConnection'
 import { cn } from '@/lib/utils'
 import { useLayoutContext } from '../LayoutProvider'
@@ -18,19 +18,24 @@ export function HeaderDesktop({ className, ...props }: HTMLAttributes<HTMLDivEle
               {isSidebarOpen ? <SideBarOpenedIcon /> : <SideBarClosedIcon />}
             </button>
           </Tooltip>
-          <Tooltip text="Add to favourites">
+
+          {/* Favourites star */}
+          {/* <Tooltip text="Add to favourites">
             <StarIcon className="ml-3" />
-          </Tooltip>
+          </Tooltip> */}
           <Breadcrumbs />
         </div>
         {/* Right side */}
         <div className="flex flex-row items-center">
-          <Tooltip position="left" text="Light theme">
+          {/* Theme switch */}
+          {/* <Tooltip position="left" text="Light theme">
             <SunIcon className="mr-3" />
-          </Tooltip>
-          <Tooltip text="Notifications">
+          </Tooltip> */}
+
+          {/* Notification indicator */}
+          {/* <Tooltip text="Notifications">
             <BellIcon className="mr-5" />
-          </Tooltip>
+          </Tooltip> */}
           <UserConnectionManager />
         </div>
       </div>
