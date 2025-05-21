@@ -1,65 +1,24 @@
 import { getBackerRewardPercentage } from '@/app/collective-rewards/rewards'
 import Big from '@/lib/big'
 import { usePricesContext } from '@/shared/context/PricesContext'
-import { gql, useQuery } from '@apollo/client'
+import { useQuery } from '@tanstack/react-query'
 import { useMemo } from 'react'
-import { Address } from 'viem'
 import { calculateAbi } from './useGetABI'
 import { getCyclePayout } from './useGetCyclePayout'
-
-type CycleData = {
-  id: string
-  rewardsERC20: string
-  rewardsRBTC: string
-}
-
-type BackerRewardPercentageData = {
-  id: string
-  next: string
-  previous: string
-  cooldownEndTime: string
-}
-
-type BuilderData = {
-  id: Address
-  backerRewardPercentage: BackerRewardPercentageData
-  rewardShares: string
-  totalAllocation: string
-}
-
-const ABI_METRICS_DATA_QUERY = gql`
-  query AbiMetricsData {
-    builders(
-      where: { state_: { kycApproved: true, communityApproved: true, initialized: true, selfPaused: false } }
-      orderBy: totalAllocation
-      orderDirection: desc
-    ) {
-      id
-      totalAllocation
-      backerRewardPercentage {
-        id
-        next
-        previous
-        cooldownEndTime
-      }
-    }
-    cycles(first: 1, orderBy: id, orderDirection: desc) {
-      id
-      rewardsERC20
-      rewardsRBTC
-    }
-  }
-`
+import { fetchABIData } from '../actions'
+import { AVERAGE_BLOCKTIME } from '@/lib/constants'
 
 export const useGetMetricsAbiWithGraph = () => {
   const {
     data: abiData,
+    isLoading: abiDataIsLoading,
     error: abiDataError,
-    ...abiDataMeta
-  } = useQuery<{
-    builders: BuilderData[]
-    cycles: CycleData[]
-  }>(ABI_METRICS_DATA_QUERY)
+  } = useQuery({
+    queryFn: () => fetchABIData(),
+    queryKey: ['abiData'],
+    refetchInterval: AVERAGE_BLOCKTIME,
+  })
+
   const { prices } = usePricesContext()
 
   const data: Big = useMemo(() => {
@@ -107,7 +66,7 @@ export const useGetMetricsAbiWithGraph = () => {
 
   return {
     data,
-    isLoading: abiDataMeta.loading,
+    isLoading: abiDataIsLoading,
     error: abiDataError,
   }
 }
