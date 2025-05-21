@@ -30,6 +30,7 @@ const query = `
 
 const fetchCrTheGraphEndpoint = `${process.env.THE_GRAPH_URL}/${process.env.THE_GRAPH_API_KEY}/${process.env.THE_GRAPH_ID}`
 export async function fetchBackerStakingHistory(backer: Address) {
+  // FIXME: we could perform the request with apollo client
   const {
     data: { data },
   } = await axios.post<Response>(fetchCrTheGraphEndpoint, {
