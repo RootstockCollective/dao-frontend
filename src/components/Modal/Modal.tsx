@@ -9,30 +9,38 @@ interface Props {
   children: ReactNode
   onClose: () => void
   className?: string
-  width?: number
+  variant?: 'desktop' | 'mobile'
   'data-testid'?: string
 }
-export const Modal: FC<Props> = ({ children, onClose, width, className, 'data-testid': dataTestId }) => {
+
+export const Modal: FC<Props> = ({
+  children,
+  onClose,
+  className,
+  variant = 'desktop',
+  'data-testid': dataTestId,
+}) => {
   return createPortal(
-    <div
-      className="fixed inset-0 flex items-center justify-center z-50 rounded-[4px]"
-      data-testid={dataTestId}
-    >
+    <div className="fixed inset-0 flex items-center justify-center z-50" data-testid={dataTestId}>
+      {/* Backdrop */}
       <div className="fixed inset-0 bg-black/50 backdrop-blur-[5px]"></div>
+
+      {/* Modal Container */}
       <div
         className={cn(
-          'relative max-w-xl bg-background rounded-lg shadow-xl overflow-hidden transform transition-all border border-[#2D2D2D] z-10',
+          'relative bg-[#1C1C1C] rounded-[4px] overflow-hidden',
+          'shadow-lg border border-[#2D2D2D]',
+          variant === 'desktop'
+            ? 'w-[600px]' // Desktop width
+            : 'w-[380px] max-w-[90vw]', // Mobile width
           className,
         )}
-        style={{ minWidth: width }}
       >
-        <button
-          onClick={onClose}
-          className="absolute top-2 right-2 text-white text-[24px] rounded-full p-2"
-          data-testid="CloseButton"
-        >
+        {/* Close Button */}
+        <button onClick={onClose} className="absolute top-4 right-4 z-10" data-testid="CloseButton">
           <Image src="/images/close-button.svg" width={24} height={24} alt="Close" />
         </button>
+
         {children}
       </div>
     </div>,
