@@ -59,6 +59,15 @@ html[data-theme='default'] {
 
   /* Links (a tag) */
   --link: rgba(143, 154, 255, 1);
+
+  /* New Design May 2025 */
+  --bg-60: #37322F; /* L Dark Grey */
+  --bg-80: #25211E; /* L Charcoal */
+
+  --bg-0: #ACA39D; /* Warm Gray */
+
+  --text-error: #F24822; /* L Red */
+
 }
 
 @layer base {
