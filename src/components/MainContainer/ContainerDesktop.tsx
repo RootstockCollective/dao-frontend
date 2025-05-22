@@ -2,7 +2,7 @@
 
 import { HTMLAttributes } from 'react'
 import { useAlertContext } from '@/app/providers'
-import { FooterDesktop } from '@/components/Footer'
+import { FooterDesktop } from './footers/FooterDesktop'
 import { TopPageHeader } from '@/shared/walletConnection/components/topPageHeader/TopPageHeader'
 import { SidebarDesktop } from './sidebars/SidebarDesktop'
 import { Alert } from '../Alert'
@@ -26,7 +26,7 @@ export function ContainerDesktop({ children, className, ...props }: HTMLAttribut
               <TopPageHeader />
               {children}
             </main>
-            <FooterDesktop variant="container" />
+            <FooterDesktop />
           </div>
         </div>
       </div>
