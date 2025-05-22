@@ -19,7 +19,16 @@ interface Props {
 
 export type TypographyProps = Props & CSSProperties
 
-const variantClasses: Record<TypographyVariant, string> = {
+/**
+ * A record that maps typography variants to their corresponding CSS class strings.
+ *
+ * The `variantClasses` object defines a set of pre-configured styles for different typography elements,
+ * where the key represents the typography variant, and the value is the associated CSS class string.
+ * These classes typically include font family, weight, size, spacing, and other typography-related properties.
+ *
+ * Being exported to use it in the input component
+ */
+export const variantClasses: Record<TypographyVariant, string> = {
   e1: 'font-kk-topo font-normal text-6xl leading-[63.6px] tracking-normal uppercase',
   e2: 'font-kk-topo font-normal text-[2.75rem] leading-[47.52px] tracking-normal uppercase',
   e2m: 'font-kk-topo font-normal text-[2.5rem] leading-[44px] tracking-normal uppercase',
@@ -31,8 +40,10 @@ const variantClasses: Record<TypographyVariant, string> = {
   h4: 'font-rootstock-sans font-medium text-base leading-[24px] tracking-[0.08em]',
   h5: 'font-rootstock-sans font-medium text-xs leading-[18px] tracking-[0.05em]',
   'body-l': 'font-rootstock-sans font-normal text-lg leading-[23.94px] tracking-normal',
+  'body-l-bold': 'font-rootstock-sans font-bold text-lg leading-[23.94px] tracking-normal',
   body: 'font-rootstock-sans font-normal text-base leading-[24px] tracking-normal',
   'body-s': 'font-rootstock-sans font-normal text-sm leading-[20.3px] tracking-normal',
+  'body-s-bold': 'font-rootstock-sans font-bold text-sm leading-[20.3px] tracking-normal',
   'body-xs': 'font-rootstock-sans font-normal text-xs leading-[18px] tracking-normal',
   tag: 'font-rootstock-sans font-medium text-base leading-[24px] tracking-normal',
   'tag-s': 'font-rootstock-sans font-medium text-sm leading-[20.3px] tracking-normal',

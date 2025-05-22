@@ -28,6 +28,13 @@
     --color-accent: var(--input-bg);
     --color-accent-foreground: var(--text-primary);
 
+    /* New Design 2025 May variables */
+
+    --color-bg-60: var(--bg-60);
+    --color-bg-80: var(--bg-80);
+    --color-bg-0: var(--bg-0);
+    --color-text-error: var(--text-error);
+
     --animate-accordion-down: accordion-down 0.2s ease-out;
     --animate-accordion-up: accordion-up 0.2s ease-out;
     --animate-collapsible-down: collapsible-down 0.2s ease-out;
