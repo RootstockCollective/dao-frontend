@@ -15,13 +15,10 @@ interface Props {
 export const Modal: FC<Props> = ({ children, onClose, width, className, 'data-testid': dataTestId }) => {
   return createPortal(
     <div
-      className="fixed inset-0 flex items-center justify-center z-50 rounded-[8px]"
+      className="fixed inset-0 flex items-center justify-center z-50 rounded-[4px]"
       data-testid={dataTestId}
     >
-      <div
-        className="fixed inset-0 backdrop-filter backdrop-blur-2xl transition-opacity"
-        onClick={onClose}
-      ></div>
+      <div className="fixed inset-0 bg-black/50 backdrop-blur-[5px]"></div>
       <div
         className={cn(
           'relative max-w-xl bg-background rounded-lg shadow-xl overflow-hidden transform transition-all border border-[#2D2D2D] z-10',
