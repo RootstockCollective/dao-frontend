@@ -16,6 +16,7 @@ interface Props {
   children: ReactNode
 }
 
+/** @deprecated Use TypographyNew/Label instead */
 export const Label: FC<Props> = ({ variant = 'normal', className, children }) => (
   <Typography tagVariant="label" className={cn(DEFAULT_CLASSES, classesByVariant[variant], className)}>
     {children}

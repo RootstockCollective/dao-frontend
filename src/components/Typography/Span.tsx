@@ -20,6 +20,8 @@ const sizeVariant = {
   normal: 'text-[16px]',
   small: 'text-[12px]',
 }
+
+/** @deprecated Use TypographyNew/Span instead */
 export const Span = ({
   children,
   className,
