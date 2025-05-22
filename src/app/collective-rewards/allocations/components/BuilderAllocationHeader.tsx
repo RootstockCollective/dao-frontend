@@ -15,7 +15,7 @@ const badgeState: {
   [key in InactiveState | 'Active']: { content: string; className: string }
 } = {
   Active: { content: 'Active', className: `${badgeBaseClass} bg-[#DBFEE5] text-secondary` },
-  Paused: { content: 'Paused', className: `${badgeBaseClass} bg-[#F9E1FF] text-secondary` },
+  KYCPaused: { content: 'KYCPaused', className: `${badgeBaseClass} bg-[#F9E1FF] text-secondary` },
   Deactivated: { content: 'Deactivated', className: `${badgeBaseClass} ${haltedClass}` },
   SelfPaused: { content: 'SelfPaused', className: `${badgeBaseClass} ${haltedClass}` },
 }

@@ -38,11 +38,11 @@ export const isBuilderRewardable = (stateFlags?: BuilderStateFlags) => {
   )
 }
 
-const inactiveStates = ['Deactivated', 'Paused', 'SelfPaused'] as const
+const inactiveStates = ['Deactivated', 'KYCPaused', 'SelfPaused'] as const
 export type InactiveState = (typeof inactiveStates)[number]
 export const getBuilderInactiveState = (state: BuilderStateFlags): InactiveState => {
   if (!state.communityApproved) return 'Deactivated'
   if (!state.kycApproved) return 'Deactivated'
   if (state.selfPaused) return 'SelfPaused'
-  return 'Paused'
+  return 'KYCPaused'
 }
