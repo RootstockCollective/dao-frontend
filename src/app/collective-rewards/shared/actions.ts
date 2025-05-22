@@ -1,5 +1,6 @@
 'use server'
 
+import { fetchCrTheGraphEndpoint } from '@/lib/the-graph'
 import { makeClient } from '@/shared/components/ApolloClient'
 import { gql as apolloGQL } from '@apollo/client'
 import { Address } from 'viem'
@@ -29,7 +30,7 @@ type Response = {
   cycles: CycleData[]
 }
 
-const apolloQuery = apolloGQL`
+const abiQuery = apolloGQL`
   query AbiMetricsData {
     builders(
       where: { state_: { kycApproved: true, communityApproved: true, initialized: true, selfPaused: false } }
@@ -52,16 +53,10 @@ const apolloQuery = apolloGQL`
     }
   }
 `
-
-const fetchCrTheGraphEndpoint = `${process.env.THE_GRAPH_URL}/${process.env.THE_GRAPH_API_KEY}/${process.env.THE_GRAPH_ID}`
 const client = makeClient(fetchCrTheGraphEndpoint)
 
-async function apolloRequest<T>(query: any) {
-  return client.query<T>({ query })
-}
-
 export async function fetchABIData() {
-  const { data: abiData } = await apolloRequest<Response>(apolloQuery)
+  const { data: abiData } = await client.query<Response>({ query: abiQuery })
 
   return abiData
 }
