@@ -39,6 +39,7 @@ const classesBySize: Record<SizeVariants, string> = {
   large: 'text-[18px]',
 }
 
+/** @deprecated Use TypographyNew/Paragraph instead */
 export const Paragraph: FC<Props> = ({
   variant = 'normal',
   size = 'medium',

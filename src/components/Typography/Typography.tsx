@@ -23,6 +23,7 @@ interface Props {
 
 export type TypographyProps = Props & CSSProperties
 
+/** @deprecated Use TypographyNew/Typography instead */
 export const Typography: FC<TypographyProps> = ({
   tagVariant = 'p',
   children,

@@ -15,6 +15,7 @@ interface Props {
   fontFamily?: 'sora' | 'kk-topo' | 'rootstock-sans'
 }
 
+/** @deprecated Use TypographyNew/Header instead */
 export const Header: FC<Props> = ({ variant = 'h1', children, className, fontFamily = 'rootstock-sans' }) => (
   <Typography
     tagVariant={variant}
