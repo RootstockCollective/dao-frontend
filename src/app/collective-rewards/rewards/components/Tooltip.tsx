@@ -1,6 +1,6 @@
-import { FC, ReactNode } from 'react'
-import { Popover, PopoverProps } from '@/components/Popover'
 import { Button } from '@/components/Button'
+import { Popover, PopoverProps } from '@/components/Popover'
+import { FC, PropsWithChildren, ReactNode } from 'react'
 
 const TooltipSvg = () => (
   <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -21,12 +21,12 @@ const TooltipSvg = () => (
   </svg>
 )
 
-export type TooltipProps = {
+export type TooltipProps = PropsWithChildren & {
   text: ReactNode
   popoverProps?: Pick<PopoverProps, 'size' | 'position'>
 }
 
-export const Tooltip: FC<TooltipProps> = ({ text, popoverProps }) => (
+export const Tooltip: FC<TooltipProps> = ({ text, popoverProps, children = <TooltipSvg /> }) => (
   <>
     <Popover
       content={
@@ -40,7 +40,7 @@ export const Tooltip: FC<TooltipProps> = ({ text, popoverProps }) => (
       {...popoverProps}
     >
       <Button variant="borderless" className="px-1 py-1">
-        <TooltipSvg />
+        {children}
       </Button>
     </Popover>
   </>
