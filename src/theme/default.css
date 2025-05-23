@@ -59,6 +59,37 @@ html[data-theme='default'] {
 
   /* Links (a tag) */
   --link: rgba(143, 154, 255, 1);
+
+  /* New Design May 2025 */
+
+  /* Backgrounds */
+  --background-100: #171412;
+  --background-80: #25211E;
+  --background-60: #37322F;
+  --background-40: #66605C;
+  --background-20: #9A948D;
+  --background-0:  #ACA39D;
+
+  /* Text */
+  --text-100: #FFFFFF;
+  --text-80: #E4E1DA;
+  --text-60: #D4CFC4;
+  --text-40: #9A948D;
+  --text-20: #37322F;
+  --text-10: #25211E;
+  --text-0:  #171412;
+
+  --primary: #F47A2A;
+
+  /* System Status */
+  --status-success: #1BC47D;
+  --status-error:   #F24822;
+
+  /* Brand Colors */
+  --brand-rif-blue:       #4B5CF0;
+  --brand-rootstock-purple: #9E76FF;
+  --brand-rootstock-pink:   #FF71E1;
+  --brand-rootstock-green:  #79C600;
 }
 
 @layer base {

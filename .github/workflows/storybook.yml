@@ -3,7 +3,7 @@ name: Deploy Storybook site to Pages
 on:
   workflow_dispatch: # Manually triggered from GitHub Actions tab
   push:
-    branches: [main, develop, DAO-1264]
+    branches: [main, develop]
 
 # Declare default permissions as read only.
 permissions: read-all
