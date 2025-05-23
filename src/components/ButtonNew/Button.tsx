@@ -1,5 +1,6 @@
 import { cn } from '@/lib/utils'
 import { FC, ReactNode } from 'react'
+import { Span } from '../TypographyNew'
 
 type ButtonVariant = 'primary' | 'secondary'
 
@@ -21,7 +22,7 @@ export const Button: FC<Props> = ({ children, variant = 'primary', onClick, clas
 
   return (
     <button type="button" className={cn(baseStyles, styles[variant], className)} onClick={onClick}>
-      {children}
+      <Span bold>{children}</Span>
     </button>
   )
 }
