@@ -1,10 +1,9 @@
 'use server'
 
-import { Address } from 'viem'
 import { BackerStakingHistory } from '@/app/collective-rewards/rewards'
-import { fetchCrTheGraphEndpoint } from '@/lib/the-graph'
-import { makeClient } from '@/shared/components/ApolloClient'
+import { client } from '@/shared/components/ApolloClient'
 import { gql } from '@apollo/client'
+import { Address } from 'viem'
 
 type Response = {
   backerStakingHistory?: BackerStakingHistory
@@ -27,7 +26,6 @@ const query = gql`
   }
 `
 
-const client = makeClient(fetchCrTheGraphEndpoint)
 export async function fetchBackerStakingHistory(backer: Address) {
   const { data } = await client.query<Response>({
     query,
