@@ -26,13 +26,27 @@ export const Modal: FC<Props> = ({
       <div className="fixed inset-0 bg-black/50 backdrop-blur-[4px]"></div>
 
       {/* Modal Container */}
+      {/* Desktop Modal - Hidden on mobile */}
       <div
         className={cn(
-          'relative bg-[#1C1C1C] rounded-[4px] overflow-hidden',
+          'hidden md:block relative bg-[#1C1C1C] rounded-[4px] overflow-hidden',
           'shadow-lg border border-[#2D2D2D]',
-          variant === 'desktop'
-            ? 'w-[600px]' // Desktop width
-            : 'w-[380px] max-w-[90vw]', // Mobile width
+          className,
+        )}
+      >
+        {/* Close Button */}
+        <button onClick={onClose} className="absolute top-4 right-4 z-10" data-testid="CloseButton">
+          <Image src="/images/close-button.svg" width={24} height={24} alt="Close" />
+        </button>
+
+        {children}
+      </div>
+
+      {/* Mobile Modal - Hidden on desktop */}
+      <div
+        className={cn(
+          'block md:hidden relative w-[380px] max-w-[90vw] bg-[#1C1C1C] rounded-[4px] overflow-hidden',
+          'shadow-lg border border-[#2D2D2D]',
           className,
         )}
       >
