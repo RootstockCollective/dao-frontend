@@ -30,7 +30,7 @@ export const Modal: FC<Props> = ({
       <div
         className={cn(
           'hidden md:block relative bg-[#1C1C1C] rounded-[4px] overflow-hidden',
-          'shadow-lg border border-[#2D2D2D]',
+
           className,
         )}
       >
@@ -46,7 +46,7 @@ export const Modal: FC<Props> = ({
       <div
         className={cn(
           'block md:hidden relative w-[380px] max-w-[90vw] bg-[#1C1C1C] rounded-[4px] overflow-hidden',
-          'shadow-lg border border-[#2D2D2D]',
+
           className,
         )}
       >
