@@ -1,4 +1,5 @@
 import type { Metadata } from 'next'
+import dynamic from 'next/dynamic'
 import type { ReactNode } from 'react'
 import { Open_Sans } from 'next/font/google'
 import './globals.css'
@@ -8,6 +9,7 @@ import { GOOGLE_TAG_ID } from '@/lib/constants'
 import { cookieToInitialState } from 'wagmi'
 import { headers } from 'next/headers'
 import { wagmiAdapterConfig } from '@/config'
+import { MainContainer } from '@/components/MainContainer'
 
 const openSans = Open_Sans({
   variable: '--font-open-sans',
@@ -39,7 +41,9 @@ export default async function RootLayout({ children }: Readonly<Props>) {
           ></iframe>
         </noscript>
         {/* End Google Tag Manager (noscript) */}
-        <ContextProviders initialState={initialState}>{children}</ContextProviders>
+        <ContextProviders initialState={initialState}>
+          <MainContainer>{children}</MainContainer>
+        </ContextProviders>
       </body>
     </html>
   )

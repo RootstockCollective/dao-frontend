@@ -56,3 +56,9 @@ export const wagmiAdapter = new WagmiAdapter({
 })
 
 export const wagmiAdapterConfig = wagmiAdapter.wagmiConfig
+
+export const supportedChainId = {
+  mainnet: rootstock.id,
+  testnet: rootstockTestnet.id,
+  regtest: rskRegtest.id,
+}[ENV]!
