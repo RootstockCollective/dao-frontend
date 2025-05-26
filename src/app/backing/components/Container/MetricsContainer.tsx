@@ -9,7 +9,7 @@ export const MetricsContainer: FC<MetricsContainerProps> = ({ dataTestid, classN
     <div
       data-testid={`${dataTestid}_MetricsContainer`}
       className={cn(
-        'flex flex-col justify-center items-center gap-2 shrink-0 self-stretch w-[17.5rem] pt-[4.06rem] pb-[4.06rem] pl-6 pr-6 rounded-sm bg-v3-bg-accent-80',
+        'flex flex-col justify-center items-center gap-2 shrink-0 self-stretch grow pt-[4.06rem] pb-[4.06rem] pl-6 pr-6 rounded-sm bg-v3-bg-accent-80',
         className,
       )}
     >

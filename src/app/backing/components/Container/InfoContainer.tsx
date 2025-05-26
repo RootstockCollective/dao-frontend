@@ -8,7 +8,7 @@ export const InfoContainer: FC<InfoContainer> = ({ children, dataTestid, classNa
   return (
     <div
       className={cn(
-        'flex flex-col items-start w-[53.5rem] gap-2 grow self-stretch p-6 pt-10 rounded-sm bg-v3-bg-accent-80',
+        'flex flex-col items-start gap-2 grow-[3] self-stretch p-6 pt-10 rounded-sm bg-v3-bg-accent-80',
         className,
       )}
       data-testid={`${dataTestid}_InfoContainer`}
