@@ -8,7 +8,6 @@ export interface AllocationItem {
   value: number // percentage
   color: string // Tailwind class for color
   displayColor: string // Hex or Tailwind for dot
-  // TODO: not sure if it makes sense to have it or not
   isTemporary?: boolean
 }
 
@@ -99,7 +98,7 @@ const AllocationBar: React.FC<AllocationBarProps> = ({
   // End drag
   const onMouseUp = () => setDragIndex(null)
 
-  React.useEffect(() => {
+  useEffect(() => {
     if (dragIndex !== null) {
       window.addEventListener('mousemove', onMouseMove)
       window.addEventListener('mouseup', onMouseUp)
@@ -155,6 +154,7 @@ const AllocationBar: React.FC<AllocationBarProps> = ({
               </div>
             )} */}
             {i < values.length - 1 && (
+              // TODO: make it undraggable if left is between 0
               <div
                 className={`w-2 cursor-col-resize h-full flex items-center justify-center z-10 relative`}
                 onMouseDown={onHandleMouseDown(i)}
