@@ -7,7 +7,7 @@ export const features = {
 } as const
 export type Feature = keyof typeof features
 
-export const userFlags = ['v2_rewards'] as const
+export const userFlags = ['v2_rewards', 'use_the_graph'] as const
 
 export type UserFlag = (typeof userFlags)[number]
 
