@@ -5,8 +5,8 @@ import { steps } from '@/app/user/Stake/Steps/stepsUtils'
 import { StakingToken } from '@/app/user/Stake/types'
 import { tokenContracts } from '@/lib/contracts'
 import { StakingProvider } from '@/app/user/Stake/StakingContext'
-import { Modal } from '@/components/Modal/Modal'
 import { useUnstakeStRIF } from '@/app/user/Stake/hooks/useUnstakeStRIF'
+import { StakingModal } from './StakeModal'
 
 interface StakingStepsProps {
   onCloseModal: () => void
@@ -49,9 +49,7 @@ export const UnStakingSteps = ({ onCloseModal }: StakingStepsProps) => {
       actionToUse={useUnstakeStRIF}
       actionName="UNSTAKE"
     >
-      <Modal {...currentStep.modalProps} onClose={onCloseModal}>
-        <StepComponent {...stepsFunctions} />
-      </Modal>
+      <StakingModal currentStep={currentStep} stepsFunctions={stepsFunctions} onClose={onCloseModal} />
     </StakingProvider>
   )
 }

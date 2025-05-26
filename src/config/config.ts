@@ -23,7 +23,7 @@ const envChains = {
   regtest: rskRegtest,
 } as const
 
-const currentEnvChain: Chain = envChains[ENV as keyof typeof envChains]
+export const currentEnvChain: Chain = envChains[ENV as keyof typeof envChains]
 
 export const config = createConfig({
   chains: [currentEnvChain],
@@ -37,12 +37,6 @@ export const config = createConfig({
   },
   connectors: [injected()],
 })
-
-export const supportedChainId = {
-  mainnet: rootstock.id,
-  testnet: rootstockTestnet.id,
-  regtest: rskRegtest.id,
-}[ENV]!
 
 export const wagmiAdapter = new WagmiAdapter({
   storage: createStorage({
@@ -62,3 +56,9 @@ export const wagmiAdapter = new WagmiAdapter({
 })
 
 export const wagmiAdapterConfig = wagmiAdapter.wagmiConfig
+
+export const supportedChainId = {
+  mainnet: rootstock.id,
+  testnet: rootstockTestnet.id,
+  regtest: rskRegtest.id,
+}[ENV]!

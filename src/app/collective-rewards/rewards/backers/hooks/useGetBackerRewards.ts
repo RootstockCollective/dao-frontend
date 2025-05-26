@@ -37,7 +37,6 @@ const tokenRewardsMetrics = (tokenRewards: TokenBackerRewards, gauge: Address) =
 
 export const useGetBackerRewards = (
   builder: Address,
-  gauges: Address[],
   { rif, rbtc }: { [token: string]: Token },
   currency = 'USD',
 ) => {
@@ -47,6 +46,7 @@ export const useGetBackerRewards = (
     error: buildersError,
   } = useGetBuildersByState<RequiredBuilder>()
   const buildersAddress = builders.map(({ address }) => address)
+  const gauges = builders.map(({ gauge }) => gauge)
   const {
     data: backersRewardsPct,
     isLoading: backersRewardsPctLoading,

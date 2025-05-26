@@ -1,105 +1,141 @@
 @theme {
-    --font-sans: var(--font-open-sans);
-    --font-sora: Sora;
-    --font-kk-topo: KK-Topo;
-    --font-rootstock-sans: Rootstock-Sans;
+  --font-sans: var(--font-open-sans);
+  --font-sora: Sora;
+  --font-kk-topo: KK-Topo;
+  --font-rootstock-sans: Rootstock-Sans;
 
-    --color-primary: var(--color-primary);
-    --color-secondary: var(--color-secondary);
-    --color-background: var(--background);
-    --color-foreground: var(--foreground);
-    --color-text-primary: var(--text-primary);
-    --color-text-secondary: var(--text-secondary);
-    --color-st-success: var(--st-success);
-    --color-st-info: var(--st-info);
-    --color-st-error: var(--st-error);
-    --color-st-white: var(--st-white);
-    --color-st-queue: var(--st-queue);
-    --color-text-light: var(--text-light);
-    --color-disabled-primary: var(--disabled-primary);
-    --color-disabled-secondary: var(--disabled-secondary);
-    --color-input-bg: var(--input-bg);
-    --color-input-placeholder: var(--input-placeholder);
-    --color-link: var(--link);
+  --color-primary: var(--color-primary);
+  --color-secondary: var(--color-secondary);
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-text-primary: var(--text-primary);
+  --color-text-secondary: var(--text-secondary);
+  --color-st-success: var(--st-success);
+  --color-st-info: var(--st-info);
+  --color-st-error: var(--st-error);
+  --color-st-white: var(--st-white);
+  --color-st-queue: var(--st-queue);
+  --color-text-light: var(--text-light);
+  --color-disabled-primary: var(--disabled-primary);
+  --color-disabled-secondary: var(--disabled-secondary);
+  --color-input-bg: var(--input-bg);
+  --color-input-placeholder: var(--input-placeholder);
+  --color-link: var(--link);
 
-    --color-popover: var(--background);
-    --color-popover-foreground: var(--text-primary);
+  --color-popover: var(--background);
+  --color-popover-foreground: var(--text-primary);
 
-    --color-accent: var(--input-bg);
-    --color-accent-foreground: var(--text-primary);
+  --color-accent: var(--input-bg);
+  --color-accent-foreground: var(--text-primary);
 
-    --animate-accordion-down: accordion-down 0.2s ease-out;
-    --animate-accordion-up: accordion-up 0.2s ease-out;
-    --animate-collapsible-down: collapsible-down 0.2s ease-out;
-    --animate-collapsible-up: collapsible-up 0.2s ease-out;
-    --animate-translate-x: translate-x 800ms;
-    --animate-fade-out-slide-out: fade-out-slide-out 800ms;
-    --animate-fade-in-slide-in: fade-in-slide-in 800ms;
+  /* Background colors */
+  --color-bg-100: var(--background-100);
+  --color-bg-80: var(--background-80);
+  --color-bg-60: var(--background-60);
+  --color-bg-40: var(--background-40);
+  --color-bg-20: var(--background-20);
+  --color-bg-0: var(--background-0);
 
-    @keyframes accordion-down {
-      from {
-        height: 0;
-      }
-      to {
-        height: var(--radix-accordion-content-height);
-      }
+  /* Text colors */
+  --color-text-100: var(--text-100);
+  --color-text-80: var(--text-80);
+  --color-text-60: var(--text-60);
+  --color-text-40: var(--text-40);
+  --color-text-20: var(--text-20);
+  --color-text-10: var(--text-10);
+  --color-text-0: var(--text-0);
+
+  /* Primary */
+  /*--color-primary: var(--primary);*/
+
+  /* System Status */
+  --color-success: var(--status-success);
+  --color-error: var(--status-error);
+
+  /* Brand */
+  --color-brand-rif-blue: var(--brand-rif-blue);
+  --color-brand-rootstock-purple: var(--brand-rootstock-purple);
+  --color-brand-rootstock-pink: var(--brand-rootstock-pink);
+  --color-brand-rootstock-green: var(--brand-rootstock-green);
+
+  --animate-accordion-down: accordion-down 0.2s ease-out;
+  --animate-accordion-up: accordion-up 0.2s ease-out;
+  --animate-collapsible-down: collapsible-down 0.2s ease-out;
+  --animate-collapsible-up: collapsible-up 0.2s ease-out;
+  --animate-translate-x: translate-x 800ms;
+  --animate-fade-out-slide-out: fade-out-slide-out 800ms;
+  --animate-fade-in-slide-in: fade-in-slide-in 800ms;
+
+  /* TODO: replace these main layout colors with New Design 2025 colors */
+  --color-v-charcoal: var(--v-charcoal);
+  --color-warm-gray: var(--warm-gray);
+  --color-dark-gray: var(--dark-gray);
+  --color-l-black: var(--l-black);
+
+  @keyframes accordion-down {
+    from {
+      height: 0;
     }
-    @keyframes accordion-up {
-      from {
-        height: var(--radix-accordion-content-height);
-      }
-      to {
-        height: 0;
-      }
-    }
-    @keyframes collapsible-down {
-      from {
-        height: 0;
-        opacity: 0;
-      }
-      to {
-        height: var(--radix-collapsible-content-height);
-        opacity: 1;
-      }
-    }
-    @keyframes collapsible-up {
-      from {
-        height: var(--radix-collapsible-content-height);
-        opacity: 1;
-      }
-      to {
-        height: 0;
-        opacity: 0;
-      }
-    }
-    @keyframes fade-out-slide-out {
-      from {
-        opacity: 1;
-        transform: translateY(0);
-        position: absolute;
-      }
-      to {
-        opacity: 0;
-        transform: translateY(-100%);
-        position: absolute;
-      }
-    }
-    @keyframes fade-in-slide-in {
-      from {
-        opacity: 0;
-        transform: translate(-100%, 100%);
-      }
-      to {
-        opacity: 1;
-        transform: translate(0, 0);
-      }
-    }
-    @keyframes translate-x {
-      from {
-        transform: translateX(100px);
-      }
-      to {
-        transform: translateX(0);
-      }
+    to {
+      height: var(--radix-accordion-content-height);
     }
   }
+  @keyframes accordion-up {
+    from {
+      height: var(--radix-accordion-content-height);
+    }
+    to {
+      height: 0;
+    }
+  }
+  @keyframes collapsible-down {
+    from {
+      height: 0;
+      opacity: 0;
+    }
+    to {
+      height: var(--radix-collapsible-content-height);
+      opacity: 1;
+    }
+  }
+  @keyframes collapsible-up {
+    from {
+      height: var(--radix-collapsible-content-height);
+      opacity: 1;
+    }
+    to {
+      height: 0;
+      opacity: 0;
+    }
+  }
+  @keyframes fade-out-slide-out {
+    from {
+      opacity: 1;
+      transform: translateY(0);
+      position: absolute;
+    }
+    to {
+      opacity: 0;
+      transform: translateY(-100%);
+      position: absolute;
+    }
+  }
+  @keyframes fade-in-slide-in {
+    from {
+      opacity: 0;
+      transform: translate(-100%, 100%);
+    }
+    to {
+      opacity: 1;
+      transform: translate(0, 0);
+    }
+  }
+  @keyframes translate-x {
+    from {
+      transform: translateX(100px);
+    }
+    to {
+      transform: translateX(0);
+    }
+  }
+}

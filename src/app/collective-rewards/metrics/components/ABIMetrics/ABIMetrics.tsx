@@ -31,16 +31,13 @@ export const ABIMetrics = () => {
                 for informational purposes only.
               </span>
             ),
-            popoverProps: {
-              size: 'medium',
-              position: 'left-bottom',
-            },
+            popoverProps: { size: 'medium', position: 'left-bottom' },
           }}
         />
         <>
           {withSpinner(TokenMetricsCardRow, { className: 'min-h-0 grow-0', size: 'small' })({
+            amount: `${abiPct.toFixed(0)}%`,
             isLoading,
-            amount: `${abiPct?.toFixed(0)}%`,
           })}
         </>
       </MetricsCard>

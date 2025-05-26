@@ -28,42 +28,6 @@
   text-decoration-thickness: 0.5px;
 }
 
-@layer utilities {
-  .div-with-gradient::after {
-    background: linear-gradient(
-      270deg,
-      #fffee3 -30.96%,
-      #f9e1ff 43.65%,
-      #be5b0f 77.22%,
-      #932309 110.79%,
-      #010101 155.56%
-    );
-    content: '';
-    width: 100%;
-    height: 1px;
-    display: block;
-    position: absolute;
-    top: 0;
-    left: 0;
-  }
-}
-
-@utility gradient-header {
-  background: linear-gradient(
-    270deg,
-    #fffee3 -30.96%,
-    #f9e1ff 43.65%,
-    #be5b0f 77.22%,
-    #932309 110.79%,
-    #010101 155.56%
-  );
-  width: 100%;
-  height: 48px;
-  display: flex;
-  align-items: center;
-  padding-left: 25px;
-}
-
 @utility community-item-gradient-hover {
   transition: all 0.2s linear;
   &:hover {
@@ -87,5 +51,5 @@
 
 body {
   color: var(--text-primary);
-  background-color: var(--background);
+  background-color: var(--l-black);
 }

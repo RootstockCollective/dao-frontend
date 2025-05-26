@@ -1,6 +1,7 @@
 name: Deploy Storybook site to Pages
 
 on:
+  workflow_dispatch: # Manually triggered from GitHub Actions tab
   push:
     branches: [main, develop]
 
@@ -39,6 +40,9 @@ jobs:
     permissions: 
       pages: write
       id-token: write
+    environment:
+      name: storybook
+      url: https://rootstockcollective.github.io/dao-frontend
     steps:
       - name: Setup Pages
         uses: actions/configure-pages@983d7736d9b0ae728b81ab479565c72886d7745b #v5.0.0

@@ -73,7 +73,7 @@ const buildToastProps = ({
   loading = false,
   ...props
 }: ToastAlertOptions): ToastOptions => ({
-  toastId: toastId || `${severity}-${title}-${content}`,
+  toastId: toastId || `${severity}-${title}-${Date.now()}`,
   type: severity,
   position: 'top-right',
   // 2 minutes for loading toasts to prevent them from getting stuck indefinitely

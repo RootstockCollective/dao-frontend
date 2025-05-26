@@ -2,16 +2,12 @@ import { supportedChainId } from '@/config'
 import { ENV } from '@/lib/constants'
 import { showToast } from '@/shared/lib/toastUtils'
 import { usePathname } from 'next/navigation'
-import { FC, ReactNode, useCallback, useEffect, useRef } from 'react'
+import { FC, PropsWithChildren, useCallback, useEffect, useRef } from 'react'
 import { Id, toast } from 'react-toastify'
 import { useAccount, useSwitchChain } from 'wagmi'
 import { Paragraph, Span } from '../Typography'
 
-interface Props {
-  children: ReactNode
-}
-
-export const MainContainerContent: FC<Props> = ({ children }) => {
+export const MainContainerContent: FC<PropsWithChildren> = ({ children }) => {
   const { isConnected, chainId } = useAccount()
   const { switchChain } = useSwitchChain()
   const pathname = usePathname()

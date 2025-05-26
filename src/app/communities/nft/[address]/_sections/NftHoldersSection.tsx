@@ -7,7 +7,7 @@ import { LoadingSpinner } from '@/components/LoadingSpinner'
 import { EXPLORER_URL } from '@/lib/constants'
 import { ExternalLinkIcon } from '@/components/Icons'
 import { truncateMiddle } from '@/lib/utils'
-import { useState } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { TableIcon } from '@/app/communities/TableIcon'
 import { SquareIcon } from '@/app/communities/SquareIcon'
 import { ErrorMessageAlert } from '@/components/ErrorMessageAlert/ErrorMessageAlert'
@@ -133,9 +133,13 @@ interface HoldersSectionProps {
   address: Address
 }
 export const NftHoldersSection = ({ address }: HoldersSectionProps) => {
+  const [view, setView] = useState<ViewState>('table')
   const { currentResults, paginationElement, isLoading, isError } = useFetchNftHolders(address)
 
-  const [view, setView] = useState<ViewState>('table')
+  // Early return: If not loading and either there are no holders or there's an error, don't render anything
+  if (!isLoading && (currentResults.length === 0 || isError)) {
+    return null
+  }
 
   const onChangeView = (selectedView: ViewState) => {
     setView(selectedView)
@@ -149,27 +153,22 @@ export const NftHoldersSection = ({ address }: HoldersSectionProps) => {
     }
   })
 
-  // Don't render the section at all if there are no holders and we're not loading
-  if (currentResults.length === 0 && !isLoading) {
-    return null
-  }
-
   return (
     <div className="pl-4 relative">
       <HeaderTitle className="mb-[24px]">
         Holders
-        <ViewIconHandler view={view} onChangeView={onChangeView} />
+        {currentResults.length > 0 && <ViewIconHandler view={view} onChangeView={onChangeView} />}
       </HeaderTitle>
-      {isError ? (
-        <ErrorMessageAlert message="An error occurred loading NFT Holders. Please try again shortly." />
-      ) : (
+
+      {isLoading && <LoadingSpinner />}
+
+      {!isLoading && currentResults.length > 0 && (
         <>
-          {view === 'table' && holders.length > 0 && <Table data={holders} />}
-          {view === 'images' && currentResults.length > 0 && <CardView nfts={currentResults} />}
+          {view === 'table' && <Table data={holders} />}
+          {view === 'images' && <CardView nfts={currentResults} />}
           <div className="mt-6">{paginationElement}</div>
         </>
       )}
-      {isLoading && <LoadingSpinner />}
     </div>
   )
 }

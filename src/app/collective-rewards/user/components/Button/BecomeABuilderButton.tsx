@@ -6,8 +6,7 @@ import { LoadingSpinner } from '@/components/LoadingSpinner'
 import { BecomeABuilderModal, openKYC } from '@/components/Modal/BecomeABuilderModal'
 import { Popover } from '@/components/Popover'
 import { Typography } from '@/components/Typography'
-import { useModal } from '@/shared/hooks/useModal'
-import { FC, ReactNode } from 'react'
+import { FC, ReactNode, useState } from 'react'
 import { Address } from 'viem'
 
 type ExtendedBuilderState = BuilderState | 'deactivated' | 'paused'
@@ -16,13 +15,13 @@ type StatusBadgeProps = {
 }
 
 const BuilderRegistrationButton = () => {
-  const modal = useModal()
+  const [showModal, setShowModal] = useState(false)
   return (
     <>
-      <Button variant="white-new" onClick={modal.openModal} data-testid="BecomeABuilderButton">
+      <Button variant="white-new" onClick={() => setShowModal(true)} data-testid="BecomeABuilderButton">
         Become a builder
       </Button>
-      {modal.isModalOpened && <BecomeABuilderModal onClose={modal.closeModal} />}
+      {showModal && <BecomeABuilderModal onClose={() => setShowModal(false)} />}
     </>
   )
 }

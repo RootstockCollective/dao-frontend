@@ -209,13 +209,15 @@ export const DelegateModal = ({ onClose, onDelegateTxStarted }: DelegateModalPro
             </PasteButton>
           </div>
           <div className="mb-7 pb-[6px] w-fit flex flex-row items-center gap-1 border-b border-b-primary">
-            <Typography className="text-sm font-bold tracking-wide">Shepherds</Typography>
+            <Typography className="text-sm font-bold tracking-wide">
+              Shepherds & Delegate Race Winners
+            </Typography>
             <Popover
               contentContainerClassName="w-64"
               content={
                 <Typography className="text-sm">
-                  Shepherds are OG Contributors
-                  <br /> trusted by the community
+                  OG Contributors trusted and
+                  <br /> recognized by the community
                 </Typography>
               }
             >
