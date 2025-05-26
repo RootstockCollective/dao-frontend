@@ -1,5 +1,5 @@
 import { RBTC, RIF, stRIF } from '@/lib/constants'
-import { currentLinks } from '../LeftSidebar/links'
+import { currentLinks } from '@/lib/links'
 import { TokenImage, TokenImageProps } from '../TokenImage'
 import { BulbIcon } from './icons/bulb'
 import { KycIcon } from './icons/kyc'
