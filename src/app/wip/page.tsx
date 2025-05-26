@@ -1,5 +1,4 @@
 import AllocationBar, { AllocationItem } from './AllocationBar'
-import PortfolioBar from './AllocationBar2'
 // FIXME: to be removed
 export default function Wip() {
   const items: AllocationItem[] = [
