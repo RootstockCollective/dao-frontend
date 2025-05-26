@@ -63,7 +63,7 @@ export const SidebarDesktop = () => {
           animate="text"
           transition={{ duration: transition.duration, ease: 'easeOut' }}
           /* Hide transparent links */
-          className={cn({ 'pointer-events-none': !isSidebarOpen })}
+          className={cn('fixed bottom-8', { 'pointer-events-none': !isSidebarOpen })}
         >
           <UsefulLinks className="ml-6" />
         </motion.div>

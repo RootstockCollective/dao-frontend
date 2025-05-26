@@ -12,7 +12,7 @@ import { cn } from '@/lib/utils'
 export function ContainerDesktop({ children, className, ...props }: HTMLAttributes<HTMLDivElement>) {
   const { message, setMessage } = useAlertContext()
   return (
-    <div {...props} className={cn('flex min-h-screen max-w-6xl mx-auto', className)}>
+    <div {...props} className={cn('flex min-h-screen max-w-[1440px] mx-auto', className)}>
       <SidebarDesktop />
       {/* Central section */}
       <div className="grow flex flex-col">

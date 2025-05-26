@@ -1,8 +1,7 @@
 import { useMediaQuery } from 'react-responsive'
-
-const mobileDesktopBreakpoint = 640
+import { MOBILE_DESKTOP_BREAKPOINT } from '@/lib/constants'
 
 export function useIsDesktop() {
-  const isDesktop = useMediaQuery({ minWidth: mobileDesktopBreakpoint })
+  const isDesktop = useMediaQuery({ minWidth: MOBILE_DESKTOP_BREAKPOINT })
   return isDesktop
 }
