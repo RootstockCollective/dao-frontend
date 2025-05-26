@@ -2,6 +2,7 @@ const features = {
   user_flags: 'Allows users to enable certain flags',
   v2_rewards: 'Brings voting to builders',
   v3_design: 'Use the new v3 koto-based design',
+  use_the_graph: 'Use the graph to fetch event data',
 } as const
 export type Feature = keyof typeof features
 export const getFeatures = (): Feature[] => [...Object.keys(features)] as Feature[]
@@ -10,7 +11,7 @@ export type FeatureFlags = {
 }
 export const isFeatureFlag = (flag: Feature): flag is Feature => !!features[flag]
 
-const userFlags = ['v2_rewards'] as const
+const userFlags = ['v2_rewards', 'use_the_graph'] as const
 export type UserFlag = (typeof userFlags)[number]
 export type UserFlags = {
   [Key in UserFlag]?: boolean
