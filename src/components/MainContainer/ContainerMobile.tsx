@@ -3,7 +3,7 @@
 import { HTMLAttributes } from 'react'
 import { cn } from '@/lib/utils'
 import { HeaderMobile } from './headers/HeaderMobile'
-import { FooterMobile } from '../Footer'
+import { FooterMobile } from './footers/FooterMobile'
 import { SidebarMobile } from './sidebars/SidebarMobile'
 import { useLayoutContext } from './LayoutProvider'
 
