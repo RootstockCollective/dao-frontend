@@ -22,7 +22,7 @@ function rand(min: number, max: number) {
   return Math.random() * (max - min) + min
 }
 
-export function FancyProgressButton({
+export function ProgressBar({
   className,
   tileSize = 15,
   width = 300,

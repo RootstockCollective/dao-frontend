@@ -1,12 +1,12 @@
 import { Meta, StoryObj } from '@storybook/react'
-import { FancyProgressButton } from './FancyProgressButton'
+import { ProgressBar } from './ProgressBar'
 
 export default {
-  title: 'Components/ProgressButton/FancyProgressButton',
-  component: FancyProgressButton,
-} as Meta<typeof FancyProgressButton>
+  title: 'Components/ProgressBar',
+  component: ProgressBar,
+} as Meta<typeof ProgressBar>
 
-type Story = StoryObj<typeof FancyProgressButton>
+type Story = StoryObj<typeof ProgressBar>
 
 export const Default: Story = {
   args: {
