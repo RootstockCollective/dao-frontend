@@ -8,29 +8,16 @@ interface BuilderHeaderProps {
   name: string
   onNameClick?: () => void
   className?: string
-  testId?: string
 }
 
-export const BuilderHeader: FC<BuilderHeaderProps> = ({
-  address,
-  name,
-  onNameClick,
-  className,
-  testId = '',
-}) => {
+export const BuilderHeader: FC<BuilderHeaderProps> = ({ address, name, onNameClick, className }) => {
   return (
-    <div
-      className={cn('flex flex-col items-center', className)}
-      data-testid={`${testId}builderHeaderContainer`}
-    >
-      <div
-        className="rounded-full overflow-hidden inline-block size-[88px]"
-        data-testid={`${testId}builderAvatar`}
-      >
+    <div className={cn('flex flex-col items-center', className)} data-testid="builderHeaderContainer">
+      <div className="rounded-full overflow-hidden inline-block size-[88px]" data-testid="builderAvatar">
         <Jdenticon className="bg-white" value={address} size="88" />
       </div>
       <Header className="mt-2 text-center text-[22px] text-[#FF7A00] font-bold" fontFamily="kk-topo">
-        <div className="cursor-pointer" onClick={onNameClick} data-testid={`${testId}builderName`}>
+        <div className="cursor-pointer" onClick={onNameClick} data-testid="builderName">
           {name}
         </div>
       </Header>

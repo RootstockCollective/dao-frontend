@@ -6,16 +6,15 @@ interface LabeledContentProps {
   label: string
   children: ReactNode
   className?: string
-  testId?: string
 }
 
-export const LabeledContent: FC<LabeledContentProps> = ({ label, children, className, testId = '' }) => {
+export const LabeledContent: FC<LabeledContentProps> = ({ label, children, className }) => {
   return (
-    <div className={cn('flex flex-col', className)} data-testid={`${testId}labeledContainer`}>
-      <Label className="text-xs text-[#B0B0B0]" data-testid={`${testId}labeledTitle`}>
+    <div className={cn('flex flex-col', className)} data-testid="labeledContainer">
+      <Label className="text-xs text-[#B0B0B0]" data-testid="labeledTitle">
         {label}
       </Label>
-      <div className="text-base text-white font-bold" data-testid={`${testId}labeledValue`}>
+      <div className="text-base text-white font-bold" data-testid="labeledContent">
         {children}
       </div>
     </div>

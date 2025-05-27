@@ -1,13 +1,12 @@
-import { Button } from '@/components/Button'
+import { ConnectPopover } from '@/app/backing/components/builder-card/ConnectPopover/ConnectPopover'
+import { cn } from '@/lib/utils'
 import { FC, useState } from 'react'
+import { useAccount } from 'wagmi'
 import { AllocationInput } from '../AllocationInput/AllocationInput'
+import { BuilderActionButton } from '../BuilderActionButton/BuilderActionButton'
 import { BuilderHeader } from '../BuilderHeader/BuilderHeader'
 import { CurrentBacking } from '../CurrentBacking/CurrentBacking'
 import { RewardsInfo } from '../RewardsInfo/RewardsInfo'
-import { useAccount } from 'wagmi'
-import { BuilderActionButton } from '../BuilderActionButton/BuilderActionButton'
-import { ConnectPopover } from '@/app/backing/components/builder-card/ConnectPopover/ConnectPopover'
-import { cn } from '@/lib/utils'
 
 interface BuilderCardProps {
   builderAddress: string
@@ -20,7 +19,7 @@ interface BuilderCardProps {
   estimatedRewards?: string
   allocationTxPending?: boolean
   topBarColor: string
-  testId?: string
+  dataTestId?: string
   className?: string
 }
 
@@ -35,7 +34,7 @@ export const BuilderCard: FC<BuilderCardProps> = ({
   allocationTxPending = false,
   onUpdateAllocation,
   topBarColor,
-  testId = '',
+  dataTestId = '',
   className,
 }) => {
   const { isConnected } = useAccount()
@@ -55,29 +54,27 @@ export const BuilderCard: FC<BuilderCardProps> = ({
   return (
     <div
       className={cn('rounded bg-[#37322F] px-2 flex flex-col items-center relative', className)}
-      data-testid={`${testId}builderCardContainer`}
+      data-dataTestId={`builderCardContainer${dataTestId}`}
     >
       <div
         className="absolute top-0 left-0 w-full h-[8px] rounded-t"
         style={{ backgroundColor: topBarColor }}
-        data-testid={`${testId}builderCardTopBar`}
+        data-dataTestId="builderCardTopBar"
       />
       <BuilderHeader
         address={builderAddress}
         name={builderName}
         onNameClick={handleBuilderNameClick}
         className="mt-8"
-        testId={`${testId}builderCard`}
       />
       <div
         className="w-full mt-6 border border-[#66605C] rounded-lg gap-3 flex flex-col divide-y divide-[#66605C]"
-        data-testid={`${testId}builderCardContent`}
+        data-dataTestId="builderCardContent"
       >
         <RewardsInfo
           builderRewardPct={builderRewardPct}
           builderNextRewardPct={builderNextRewardPct}
           estimatedRewards={estimatedRewards}
-          testId={`${testId}builderCard`}
         />
         {isConnected && (
           <AllocationInput
@@ -87,27 +84,16 @@ export const BuilderCard: FC<BuilderCardProps> = ({
             allocationTxPending={allocationTxPending}
             onAllocationChange={handleAllocationChange}
             className="px-2 py-3 mx-3"
-            testId={`${testId}builderCard`}
           />
         )}
-        {isConnected && (
-          <CurrentBacking currentAllocation={currentAllocation} testId={`${testId}builderCard`} />
-        )}
+        {isConnected && <CurrentBacking currentAllocation={currentAllocation} />}
       </div>
       {isConnected && currentAllocation !== 0 && (
-        <BuilderActionButton
-          onClick={() => handleAllocationChange(0)}
-          text="Remove backing"
-          testId={`${testId}builderCard`}
-        />
+        <BuilderActionButton onClick={() => handleAllocationChange(0)} text="Remove backing" />
       )}
       {!isConnected && (
         <ConnectPopover>
-          <BuilderActionButton
-            onClick={() => handleAllocationChange(allocation)}
-            text="Back builder"
-            testId={`${testId}builderCard`}
-          />
+          <BuilderActionButton onClick={() => handleAllocationChange(allocation)} text="Back builder" />
         </ConnectPopover>
       )}
     </div>

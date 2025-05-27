@@ -5,6 +5,7 @@ import { ConnectWorkflow } from '@/shared/walletConnection/connection/ConnectWor
 import { ConnectButtonComponentSecondary } from '@/shared/walletConnection'
 
 export const ConnectPopover = ({ children }: { children: ReactNode }) => (
+  // FIXME: conciliate with the new popover component once implemented (ie. remove custom styles)
   <Popover
     content={
       <div className="bg-[#E4E1DA] rounded-sm shadow-sm flex flex-col w-full items-start p-6">

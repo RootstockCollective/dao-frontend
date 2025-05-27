@@ -5,29 +5,21 @@ import { Popover } from '@/components/Popover/Popover'
 interface PendingAllocationProps {
   pendingBacking: number | string
   currentBacking: number | string
-  testId?: string
 }
 
-export const PendingAllocation: FC<PendingAllocationProps> = ({
-  pendingBacking,
-  currentBacking,
-  testId = '',
-}) => {
+export const PendingAllocation: FC<PendingAllocationProps> = ({ pendingBacking, currentBacking }) => {
   const popoverContent = (
-    <div
-      className="min-w-[220px] text-black rounded-lg p-4"
-      data-testid={`${testId}pendingAllocationContent`}
-    >
+    <div className="min-w-[220px] text-black rounded-lg p-4" data-testid="pendingAllocationPopover">
       <div className="flex justify-between items-center mb-2">
         <span>Pending</span>
         <span className="flex items-center gap-1">
           <Image src="/images/hourglass.svg" alt="Pending" width={16} height={16} />
-          <span data-testid={`${testId}pendingAllocationPending`}>{pendingBacking}</span>
+          <span data-testid="pendingAllocationPending">{pendingBacking}</span>
         </span>
       </div>
       <div className="flex justify-between items-center">
         <span>Current backing</span>
-        <span data-testid={`${testId}pendingAllocationCurrent`}>{currentBacking}</span>
+        <span data-testid="pendingAllocationCurrent">{currentBacking}</span>
       </div>
     </div>
   )
@@ -39,7 +31,7 @@ export const PendingAllocation: FC<PendingAllocationProps> = ({
         width={16}
         height={16}
         className="flex-shrink-0 cursor-pointer"
-        data-testid={`${testId}pendingAllocationIcon`}
+        data-testid="pendingAllocationIcon"
       />
     </Popover>
   )
