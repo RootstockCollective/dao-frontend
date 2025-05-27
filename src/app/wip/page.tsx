@@ -1,5 +1,6 @@
 'use client'
 import AllocationBar, { AllocationItem } from './AllocationBar'
+import AllocationBarUndraggable from './AllocationBarUndraggable'
 // FIXME: to be removed
 export default function Wip() {
   const items: AllocationItem[] = [
@@ -37,6 +38,7 @@ export default function Wip() {
   return (
     <>
       <AllocationBar initialItemsData={items} />
+      <AllocationBarUndraggable itemsData={items} />
     </>
   )
 }
