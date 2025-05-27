@@ -1,11 +1,13 @@
+'use client'
+
 import { createContext, FC, ReactNode, useContext, useEffect, useState } from 'react'
 import {
+  type Feature,
+  type FeatureFlags,
+  type UserFlag,
+  type UserFlags,
   envFlags,
-  Feature,
-  FeatureFlags,
   isUserFeatureFlag,
-  UserFlag,
-  UserFlags,
   validateUserFlags,
 } from './flags'
 

@@ -24,7 +24,6 @@ export const WithSingleAction: Story = {
         <button className="px-4 py-2 bg-blue-500 text-white rounded">Execute</button>
       </div>
     ),
-    dataTestid: 'test',
   },
 }
 
@@ -50,7 +49,6 @@ export const WithMultipleActions: Story = {
         </div>
       </div>
     ),
-    dataTestid: 'test',
   },
 }
 
@@ -65,6 +63,5 @@ export const WithCustomStyling: Story = {
       </div>
     ),
     className: 'bg-blue-50 border-2 border-blue-200',
-    dataTestid: 'test',
   },
 }

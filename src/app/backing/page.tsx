@@ -1,4 +1,4 @@
-import { envFlags } from '@/shared/context/flags'
+import { envFlags } from '@/shared/context/FeatureFlag'
 import { redirect } from 'next/navigation'
 import { BackingPage } from './BackingPage'
 
