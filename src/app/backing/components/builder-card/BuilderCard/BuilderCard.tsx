@@ -7,6 +7,7 @@ import { RewardsInfo } from '../RewardsInfo/RewardsInfo'
 import { useAccount } from 'wagmi'
 import { BuilderActionButton } from '../BuilderActionButton/BuilderActionButton'
 import { ConnectPopover } from '@/app/backing/components/builder-card/ConnectPopover/ConnectPopover'
+import { cn } from '@/lib/utils'
 
 interface BuilderCardProps {
   builderAddress: string
@@ -20,6 +21,7 @@ interface BuilderCardProps {
   allocationTxPending?: boolean
   topBarColor: string
   testId?: string
+  className?: string
 }
 
 export const BuilderCard: FC<BuilderCardProps> = ({
@@ -34,6 +36,7 @@ export const BuilderCard: FC<BuilderCardProps> = ({
   onUpdateAllocation,
   topBarColor,
   testId = '',
+  className,
 }) => {
   const { isConnected } = useAccount()
   const [allocation, setAllocation] = useState<number>(currentAllocation)
@@ -51,7 +54,7 @@ export const BuilderCard: FC<BuilderCardProps> = ({
 
   return (
     <div
-      className="rounded bg-[#37322F] px-2 flex flex-col items-center w-[260px] relative"
+      className={cn('rounded bg-[#37322F] px-2 flex flex-col items-center relative', className)}
       data-testid={`${testId}builderCardContainer`}
     >
       <div
