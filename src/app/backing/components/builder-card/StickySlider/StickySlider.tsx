@@ -12,7 +12,6 @@ export interface StickySliderProps {
   thumbSize?: number
   ticksEdgesSize?: number
   stickyThreshold?: number
-  testId?: string
 }
 
 export const StickySlider: React.FC<StickySliderProps> = ({
@@ -25,7 +24,6 @@ export const StickySlider: React.FC<StickySliderProps> = ({
   thumbSize = 12,
   ticksEdgesSize = 8,
   stickyThreshold = 1,
-  testId = '',
 }) => {
   // Snap to nearest tick during drag to have a magnetic effect
   const handleValueChange = (val: number[]) => {
@@ -52,18 +50,18 @@ export const StickySlider: React.FC<StickySliderProps> = ({
       max={max}
       step={step}
       className={cn('relative flex h-10 items-center w-full', className)}
-      data-testid={`${testId}sliderRoot`}
+      data-testid="sliderRoot"
     >
-      <div className="relative w-full h-10 flex items-center" data-testid={`${testId}sliderContainer`}>
+      <div className="relative w-full h-10 flex items-center" data-testid="sliderContainer">
         {/* Track with clipped range */}
         <SliderPrimitive.Track
           className="relative h-[1px] grow rounded-full bg-[#B0B0B0]"
           style={{ clipPath: 'inset(0 6px 0 6px)' }}
-          data-testid={`${testId}sliderTrack`}
+          data-testid="sliderTrack"
         >
           <SliderPrimitive.Range
             className="absolute h-full rounded-full bg-[#4B5CF0]"
-            data-testid={`${testId}sliderRange`}
+            data-testid="sliderRange"
           />
         </SliderPrimitive.Track>
         {/* Tick marks */}
@@ -85,7 +83,7 @@ export const StickySlider: React.FC<StickySliderProps> = ({
                 height: `${height}px`,
                 top: `calc(50% + ${top}px)`, // center vertically
               }}
-              data-testid={`${testId}sliderTick${tick}`}
+              data-testid={`sliderTick${tick}`}
             />
           )
         })}
@@ -96,7 +94,7 @@ export const StickySlider: React.FC<StickySliderProps> = ({
             width: `${thumbSize}px`,
             height: `${thumbSize}px`,
           }}
-          data-testid={`${testId}sliderThumb`}
+          data-testid="sliderThumb"
         />
       </div>
     </SliderPrimitive.Root>
