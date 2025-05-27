@@ -17,23 +17,27 @@ export const Default: Story = {
 export const Colored: Story = {
   args: {
     children: <p>Colored Progress Bar</p>,
-    colors: ['#ff0000', '#00ff00', '#0000ff'],
+    colors: [
+      ['#ff0000', '#00ff00'],
+      ['#0000ff', '#ff00f7'],
+    ],
     width: 400,
     height: 50,
-    tileSize: 5,
-    speed: 20,
+    tileSize: 17,
+    speed: 15,
     className: 'border-none',
+    dispersion: 0.3,
   },
 }
 
 export const ThinLine: Story = {
   args: {
-    colors: ['#3b41eb', '#ed6522'],
-    tileSize: 3,
-    height: 9,
-    width: 500,
-    className: 'border-none',
-    speed: 70,
+    colors: ['#25211E', ['#4B5CF0', '#C27265']],
+    tileSize: 4,
+    height: 8,
+    width: 644,
+    speed: 20,
     dispersion: 0.3,
+    tileAnimationDuration: 0.1,
   },
 }
