@@ -54,27 +54,27 @@ const defaultItemsWithUnallocated = addUnallocated(defaultItems)
 
 export const Default: Story = {
   args: {
-    itemsData: defaultItemsWithUnallocated,
+    initialItemsData: defaultItemsWithUnallocated,
   },
 }
 
 export const WithoutPercent: Story = {
   args: {
-    itemsData: defaultItemsWithUnallocated,
+    initialItemsData: defaultItemsWithUnallocated,
     showPercent: false,
   },
 }
 
 export const WithoutLegend: Story = {
   args: {
-    itemsData: defaultItemsWithUnallocated,
+    initialItemsData: defaultItemsWithUnallocated,
     showLegend: false,
   },
 }
 
 export const WithoutLegendAndPercent: Story = {
   args: {
-    itemsData: defaultItemsWithUnallocated,
+    initialItemsData: defaultItemsWithUnallocated,
     showPercent: false,
     showLegend: false,
   },
@@ -93,7 +93,7 @@ const dataWithTemp: AllocationItem[] = [
 ]
 export const WithoutTemporaryValues: Story = {
   args: {
-    itemsData: addUnallocated(dataWithTemp),
+    initialItemsData: addUnallocated(dataWithTemp),
     showPercent: true,
     showLegend: true,
   },
