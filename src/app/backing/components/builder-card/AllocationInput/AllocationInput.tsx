@@ -17,6 +17,7 @@ interface AllocationInputProps {
   allocationTxPending?: boolean
   onAllocationChange: (value: number) => void
   className?: string
+  testId?: string
 }
 
 export const AllocationInput: FC<AllocationInputProps> = ({
@@ -26,6 +27,7 @@ export const AllocationInput: FC<AllocationInputProps> = ({
   allocationTxPending = false,
   onAllocationChange,
   className,
+  testId = '',
 }) => {
   const { prices } = usePricesContext()
   const [editing, setEditing] = useState(false)
@@ -42,16 +44,22 @@ export const AllocationInput: FC<AllocationInputProps> = ({
   }
 
   const rifToken = (
-    <div className="flex items-center gap-1 flex-shrink-0">
+    <div className="flex items-center gap-1 flex-shrink-0" data-testid={`${testId}allocationInputToken`}>
       <TokenImage symbol={RIF} size={16} />
       <div className="text-[14px] text-white">stRIF</div>
     </div>
   )
 
   return (
-    <div className={cn('bg-[#25211E] border border-[#393532] rounded-lg p-3', className)}>
-      <div className="flex items-center justify-between w-full">
-        <div className="flex-grow min-w-0">
+    <div
+      className={cn('bg-[#25211E] border border-[#393532] rounded-lg p-3', className)}
+      data-testid={`${testId}allocationInputContainer`}
+    >
+      <div
+        className="flex items-center justify-between w-full"
+        data-testid={`${testId}allocationInputContent`}
+      >
+        <div className="flex-grow min-w-0" data-testid={`${testId}allocationInputValue`}>
           <InputNumber
             name="allocation"
             placeholder={`max ${maxAllocation}`}
@@ -61,20 +69,37 @@ export const AllocationInput: FC<AllocationInputProps> = ({
             onValueChange={({ value }) => onAllocationChange(Number(value))}
             onFocus={() => !editing && setEditing(true)}
             disabled={allocationTxPending}
+            data-testid={`${testId}allocationInputNumber`}
           />
         </div>
-        <div className="flex items-center gap-1 flex-shrink-0">
+        <div
+          className="flex items-center gap-1 flex-shrink-0"
+          data-testid={`${testId}allocationInputActions`}
+        >
           {allocationTxPending && (
-            <PendingAllocation pendingBacking={allocation} currentBacking={currentAllocation} />
+            <PendingAllocation
+              pendingBacking={allocation}
+              currentBacking={currentAllocation}
+              testId={`${testId}allocationInput`}
+            />
           )}
           {rifToken}
         </div>
       </div>
-      <Paragraph className="text-[14px] text-[#B0B0B0]">{amountUsd} USD</Paragraph>
+      <Paragraph className="text-[14px] text-[#B0B0B0]" data-testid={`${testId}allocationInputUsd`}>
+        {amountUsd} USD
+      </Paragraph>
       {editing && !allocationTxPending && (
-        <div>
-          <StickySlider value={[allocationPercentage]} onValueChange={handleSliderChange} />
-          <Paragraph className="text-[12px] text-[#B0B0B0] mt-2">
+        <div data-testid={`${testId}allocationInputSlider`}>
+          <StickySlider
+            value={[allocationPercentage]}
+            onValueChange={handleSliderChange}
+            testId={`${testId}allocationInput`}
+          />
+          <Paragraph
+            className="text-[12px] text-[#B0B0B0] mt-2"
+            data-testid={`${testId}allocationInputPercentage`}
+          >
             {allocationPercentage.toFixed(2)}% of total backing power
           </Paragraph>
         </div>

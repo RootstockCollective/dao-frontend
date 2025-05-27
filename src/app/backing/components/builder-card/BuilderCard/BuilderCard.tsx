@@ -18,6 +18,7 @@ interface BuilderCardProps {
   estimatedRewards?: string
   allocationTxPending?: boolean
   topBarColor: string
+  testId?: string
 }
 
 export const BuilderCard: FC<BuilderCardProps> = ({
@@ -31,6 +32,7 @@ export const BuilderCard: FC<BuilderCardProps> = ({
   allocationTxPending = false,
   onUpdateAllocation,
   topBarColor,
+  testId = '',
 }) => {
   const { isConnected } = useAccount()
   const [allocation, setAllocation] = useState<number>(currentAllocation)
@@ -47,22 +49,31 @@ export const BuilderCard: FC<BuilderCardProps> = ({
   }
 
   return (
-    <div className="rounded bg-[#37322F] px-2 flex flex-col items-center w-[260px] relative">
+    <div
+      className="rounded bg-[#37322F] px-2 flex flex-col items-center w-[260px] relative"
+      data-testid={`${testId}builderCardContainer`}
+    >
       <div
         className="absolute top-0 left-0 w-full h-[8px] rounded-t"
         style={{ backgroundColor: topBarColor }}
+        data-testid={`${testId}builderCardTopBar`}
       />
       <BuilderHeader
         address={builderAddress}
         name={builderName}
         onNameClick={handleBuilderNameClick}
         className="mt-8"
+        testId={`${testId}builderCard`}
       />
-      <div className="w-full mt-6 border border-[#66605C] rounded-lg gap-3 flex flex-col divide-y divide-[#66605C]">
+      <div
+        className="w-full mt-6 border border-[#66605C] rounded-lg gap-3 flex flex-col divide-y divide-[#66605C]"
+        data-testid={`${testId}builderCardContent`}
+      >
         <RewardsInfo
           builderRewardPct={builderRewardPct}
           builderNextRewardPct={builderNextRewardPct}
           estimatedRewards={estimatedRewards}
+          testId={`${testId}builderCard`}
         />
         {isConnected && (
           <AllocationInput
@@ -72,15 +83,26 @@ export const BuilderCard: FC<BuilderCardProps> = ({
             allocationTxPending={allocationTxPending}
             onAllocationChange={handleAllocationChange}
             className="px-2 py-3 mx-3"
+            testId={`${testId}builderCard`}
           />
         )}
-        {isConnected && <CurrentBacking currentAllocation={currentAllocation} />}
+        {isConnected && (
+          <CurrentBacking currentAllocation={currentAllocation} testId={`${testId}builderCard`} />
+        )}
       </div>
       {isConnected && currentAllocation !== 0 && (
-        <BuilderActionButton onClick={() => handleAllocationChange(0)} text="Remove backing" />
+        <BuilderActionButton
+          onClick={() => handleAllocationChange(0)}
+          text="Remove backing"
+          testId={`${testId}builderCard`}
+        />
       )}
       {!isConnected && (
-        <BuilderActionButton onClick={() => handleAllocationChange(allocation)} text="Back builder" />
+        <BuilderActionButton
+          onClick={() => handleAllocationChange(allocation)}
+          text="Back builder"
+          testId={`${testId}builderCard`}
+        />
       )}
     </div>
   )
