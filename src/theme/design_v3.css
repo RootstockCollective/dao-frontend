@@ -1,0 +1,28 @@
+@theme{
+    --color-v3-primary: rgba(244, 122, 42, 1);
+    
+    --color-v3-bg-accent-100: rgba(23, 20, 18, 1);
+    --color-v3-bg-accent-80: rgba(37, 33, 30, 1);
+    --color-v3-bg-accent-60: rgba(55, 50, 47, 1);
+    --color-v3-bg-accent-40: rgba(102, 96, 92, 1);
+    --color-v3-bg-accent-20: rgba(154, 148, 141, 1);
+    --color-v3-bg-accent-10: rgb(27, 196, 125);
+    --color-v3-bg-accent-0: rgba(172, 163, 157, 1);
+
+    --color-v3-text-100: rgba(255, 255, 255, 1);
+    --color-v3-text-80: rgb(228, 225, 218);
+    --color-v3-text-60: rgb(212, 207, 196);
+    --color-v3-text-40: rgb(23, 20, 18);
+    --color-v3-text-20: rgb(55, 50, 47);
+    --color-v3-text-10: rgb(37, 33, 30);
+    --color-v3-text-0: rgb(23, 20, 18);
+
+    --color-v3-success: rgb(27, 196, 125);
+    --color-v3-error: rgb(242, 72, 34);
+
+    --color-v3-rif-blue: rgb(75, 92, 240);
+    --color-v3-rsk-purple: rgb(158, 118, 255);
+    --color-v3-rsk-pink: rgb(255, 113, 225);
+    --color-v3-rsk-green: rgb(121, 198, 0);
+
+}

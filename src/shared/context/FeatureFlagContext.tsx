@@ -1,45 +1,13 @@
-import React, { createContext, FC, ReactNode, useContext, useEffect, useState } from 'react'
-
-export const features = {
-  user_flags: 'Allows users to enable certain flags',
-  v2_rewards: 'Brings voting to builders',
-} as const
-export type Feature = keyof typeof features
-
-export const userFlags = ['v2_rewards'] as const
-
-export type UserFlag = (typeof userFlags)[number]
-
-export const isUserFeatureFlag = (flag: UserFlag): flag is UserFlag => userFlags.includes(flag)
-
-export type FeatureFlags = {
-  [Key in Feature]?: boolean
-}
-export type UserFlags = {
-  [Key in UserFlag]?: boolean
-}
-
-export const isFeatureFlag = (flag: Feature): flag is Feature => !!features[flag]
-
-export const validateUserFlags = (flags: Record<string, any>): flags is UserFlags => {
-  return Object.keys(flags).every(key => {
-    return userFlags.includes(key as UserFlag) && typeof flags[key] === 'boolean'
-  })
-}
-
-const getEnvFlag = (value?: string): boolean | undefined => {
-  if (value === 'true') {
-    return true
-  }
-  if (value === 'false') {
-    return false
-  }
-}
-
-export const envFlags: FeatureFlags = {
-  user_flags: getEnvFlag(process.env.NEXT_PUBLIC_ENABLE_FEATURE_USER_FLAGS),
-  v2_rewards: getEnvFlag(process.env.NEXT_PUBLIC_ENABLE_FEATURE_V2_REWARDS),
-}
+import { createContext, FC, ReactNode, useContext, useEffect, useState } from 'react'
+import {
+  envFlags,
+  Feature,
+  FeatureFlags,
+  isUserFeatureFlag,
+  UserFlag,
+  UserFlags,
+  validateUserFlags,
+} from './flags'
 
 type FeatureFlagContextType = {
   flags: FeatureFlags
