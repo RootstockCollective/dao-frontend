@@ -58,7 +58,7 @@ function SortableBarSegment({
   const { attributes, listeners, setNodeRef, transform, isDragging } = useSortable({ id: item.key })
 
   const style: React.CSSProperties = {
-    ...checkerboardStyle(),
+    ...(item.isTemporary ? checkerboardStyle() : {}),
     width: `${Math.max(value, MIN_SEGMENT_PERCENT)}%`,
     minWidth: '48px',
     transition: dragIndex !== null ? 'none' : 'width 0.2s',
