@@ -1,0 +1,82 @@
+name: Deploy to Amazon ECS (release candidate staging - mainnet)
+# Deploys to: https://release-candidate.app.rootstockcollective.xyz/
+# Triggers on when a tag is pushed to the repo in the format of vX.X.X-rc.X
+# where X are numbers. An example: v1.5.0-rc.1
+# Uses the `.env.release-candidate` env file
+
+on: push
+
+# Declare default permissions as read only.
+permissions: read-all
+
+env:
+  AWS_REGION: us-east-1
+  ECR_REPOSITORY: rscoll-dev-dao-rc-mainnet
+  ECS_CLUSTER: rscoll-dev
+  ECS_SERVICE: rscoll-dev-dao-rc-mainnet
+  ECS_TASK_DEFINITION: rscoll-dev-dao-rc-mainnet
+  CONTAINER_NAME: rscoll-dev-dao-rc-mainnet
+
+  # The .env file that is used to build the docker image
+  # is retrieved using PROFILE, so be sure there is a `.env.<PROFILE>` file
+  # that matches with the profile set
+  # Example: PROFILE=testnet => .env.testnet
+  PROFILE: release-candidate
+
+jobs:
+  deploy:
+    name: Deploy
+    runs-on: ubuntu-latest
+    environment:
+      name: release-candidate-mainnet
+      url: https://release-candidate-mainnet.app.rootstockcollective.xyz
+
+    permissions:
+      id-token: write
+      contents: read
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 #v4.2.2
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@ececac1a45f3b08a01d2dd070d28d111c5fe6722 #v4.1.0
+        with:
+          role-to-assume: ${{ secrets.AWS_LOGIN_STAGING_ROLE_ARN }}
+          aws-region: ${{ env.AWS_REGION }}
+
+      - name: Login to Amazon ECR
+        id: login-ecr
+        uses: aws-actions/amazon-ecr-login@062b18b96a7aff071d4dc91bc00c4c1a7945b076 #v2.0.1
+
+      - name: Build, tag, and push image to Amazon ECR
+        id: build-image
+        env:
+          ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
+          IMAGE_TAG: ${{ github.sha }}
+        run: |
+          # Build a docker container and
+          # push it to ECR so that it can
+          # be deployed to ECS.
+          docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG --build-arg PROFILE="$PROFILE" --build-arg NEXT_PUBLIC_BUILD_ID=${{ github.sha }} --build-arg THE_GRAPH_API_KEY=${{ secrets.THE_GRAPH_API_KEY }} --no-cache .
+          docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
+          echo "::set-output name=image::$ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG"
+
+      - name: Download task definition
+        run: aws ecs describe-task-definition --task-definition ${{ env.ECS_TASK_DEFINITION }} --query taskDefinition > task-definition.json
+
+      - name: Fill in the new image ID in the Amazon ECS task definition
+        id: task-def
+        uses: aws-actions/amazon-ecs-render-task-definition@e89b6874818d80bb892e7010a5013519bde9d9a6 #v1.7.2
+        with:
+          task-definition: task-definition.json
+          container-name: ${{ env.CONTAINER_NAME }}
+          image: ${{ steps.build-image.outputs.image }}
+
+      - name: Deploy Amazon ECS task definition
+        uses: aws-actions/amazon-ecs-deploy-task-definition@538b32884c2bf327057c6805f0315e5ee92102cc #v2.3.2
+        with:
+          task-definition: ${{ steps.task-def.outputs.task-definition }}
+          service: ${{ env.ECS_SERVICE }}
+          cluster: ${{ env.ECS_CLUSTER }}
+          wait-for-service-stability: true
