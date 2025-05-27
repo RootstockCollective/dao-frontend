@@ -6,6 +6,7 @@ import { CurrentBacking } from '../CurrentBacking/CurrentBacking'
 import { RewardsInfo } from '../RewardsInfo/RewardsInfo'
 import { useAccount } from 'wagmi'
 import { BuilderActionButton } from '../BuilderActionButton/BuilderActionButton'
+import { ConnectPopover } from '@/app/backing/components/builder-card/ConnectPopover/ConnectPopover'
 
 interface BuilderCardProps {
   builderAddress: string
@@ -98,11 +99,13 @@ export const BuilderCard: FC<BuilderCardProps> = ({
         />
       )}
       {!isConnected && (
-        <BuilderActionButton
-          onClick={() => handleAllocationChange(allocation)}
-          text="Back builder"
-          testId={`${testId}builderCard`}
-        />
+        <ConnectPopover>
+          <BuilderActionButton
+            onClick={() => handleAllocationChange(allocation)}
+            text="Back builder"
+            testId={`${testId}builderCard`}
+          />
+        </ConnectPopover>
       )}
     </div>
   )
