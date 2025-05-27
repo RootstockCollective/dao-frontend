@@ -84,7 +84,7 @@ export function AnimatedTiles({
     <div className={cn('relative overflow-hidden rounded-md', className)} style={{ width, height }}>
       <svg shapeRendering="crispEdges" width={width} height={height} viewBox={`0 0 ${width} ${height}`}>
         <defs>
-          <mask type="alpha" id={`mask-${uniqueId}`} key={wave}>
+          <motion.mask type="alpha" id={`mask-${uniqueId}`} key={wave}>
             {grid.map(({ x, y, delay }, i) => (
               <motion.rect
                 key={`${wave}-${i}`} // remount the grid by setting iteration value to the key
@@ -102,7 +102,7 @@ export function AnimatedTiles({
                 }}
               />
             ))}
-          </mask>
+          </motion.mask>
           <GradientDef id={`grad-next-${uniqueId}`} color={nextColor} />
           <GradientDef id={`grad-current-${uniqueId}`} color={currentColor} />
         </defs>
