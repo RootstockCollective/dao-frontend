@@ -15,7 +15,7 @@ export const Default: Story = {
   args: {
     children: 'test',
     onClose: () => console.log('Test'),
-    width: 500,
+    className: 'w-[756px]',
   },
   render: () => (
     <DisconnectWalletModal

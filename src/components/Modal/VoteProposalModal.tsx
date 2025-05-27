@@ -53,7 +53,7 @@ export const VoteProposalModal: FC<Props> = ({
   const selectedVoteButtonStyle = cn(baseButtonStyle, 'bg-orange-500')
 
   return (
-    <Modal onClose={onClose} width={756}>
+    <Modal onClose={onClose} className="w-[756px]">
       <div className="p-8 flex flex-col min-h-[600px] bg-black">
         <Typography className="text-5xl font-kk-topo leading-[48px] font-medium text-center w-full mb-12">
           VOTING

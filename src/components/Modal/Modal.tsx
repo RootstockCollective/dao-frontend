@@ -9,17 +9,10 @@ interface Props {
   children: ReactNode
   onClose: () => void
   className?: string
-  variant?: 'desktop' | 'mobile'
   'data-testid'?: string
 }
 
-export const Modal: FC<Props> = ({
-  children,
-  onClose,
-  className,
-  variant = 'desktop',
-  'data-testid': dataTestId,
-}) => {
+export const Modal: FC<Props> = ({ children, onClose, className, 'data-testid': dataTestId }) => {
   return createPortal(
     <div className="fixed inset-0 flex items-center justify-center z-50" data-testid={dataTestId}>
       {/* Backdrop */}

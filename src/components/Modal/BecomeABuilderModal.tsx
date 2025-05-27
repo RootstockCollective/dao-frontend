@@ -163,7 +163,7 @@ export const BecomeABuilderModal: FC<BecomeABuilderModalProps> = ({ onClose, ...
   const [isDisclaimerAccepted, setIsDisclaimerAccepted] = useState(false)
 
   return (
-    <Modal onClose={onClose} width={1016} className="overflow-auto" {...props}>
+    <Modal onClose={onClose} className="overflow-auto w-[1016px]" {...props}>
       {isDisclaimerAccepted ? (
         <BecomeABuilderModalContent onClose={onClose} />
       ) : (
