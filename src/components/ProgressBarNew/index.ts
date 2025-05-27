@@ -1,1 +1,1 @@
-export { ProgressBar } from './ProgressBar'
+export { AnimatedTiles as ProgressBar } from './AnimatedTiles'
