@@ -16,7 +16,9 @@ const meta: Meta<typeof BuilderCard> = {
   decorators: [
     Story => (
       <WagmiProvider config={config}>
-        <Story />
+        <div className="w-[800px]">
+          <Story />
+        </div>
       </WagmiProvider>
     ),
   ],
@@ -33,6 +35,7 @@ export const WithBackerNotConnected: Story = {
     maxAllocation: 120000,
     currentAllocation: 90,
     topBarColor: '#A084F5',
+    className: 'w-[200px]',
   },
 }
 
@@ -44,6 +47,7 @@ export const WithBackerConnected: Story = {
     maxAllocation: 120000,
     currentAllocation: 0,
     topBarColor: '#4FFFE7',
+    className: 'w-[200px]',
   },
 }
 
@@ -55,6 +59,7 @@ export const WithAllocation: Story = {
     maxAllocation: 120000,
     currentAllocation: 90000,
     topBarColor: '#A084F5',
+    className: 'w-[200px]',
   },
 }
 
@@ -67,6 +72,7 @@ export const WithBuilderIncreasedRewardPct: Story = {
     maxAllocation: 120000,
     currentAllocation: 0,
     topBarColor: '#A084F5',
+    className: 'w-[200px]',
   },
 }
 
@@ -79,6 +85,7 @@ export const WithBuilderDecreasedRewardPct: Story = {
     maxAllocation: 120000,
     currentAllocation: 0,
     topBarColor: '#A084F5',
+    className: 'w-[200px]',
   },
 }
 
@@ -91,5 +98,6 @@ export const WithAllocationPending: Story = {
     currentAllocation: 9000,
     allocationTxPending: true,
     topBarColor: '#A084F5',
+    className: 'w-[200px]',
   },
 }
