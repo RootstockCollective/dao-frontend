@@ -5,12 +5,25 @@ import { motion } from 'motion/react'
 
 type Color = `#${string}`
 interface Props extends HTMLAttributes<HTMLButtonElement> {
+  /** Width of the progress bar in pixels */
   width: number
+
+  /** Height of the progress bar in pixels */
   height: number
+
+  /** Size of each square tile in pixels */
   tileSize?: number
+
+  /** Sequence of colors used for the gradient waves */
   colors: (Color | [Color, Color])[]
+
+  /** Speed of wave animation */
   speed: number
+
+  /** Random variation added to each tile's animation delay */
   dispersion: number
+
+  /** Duration of opacity animation for each tile */
   tileAnimationDuration: number
 }
 
@@ -20,10 +33,9 @@ interface Cell {
   delay: number
 }
 
-function rand(min: number, max: number) {
-  return Math.random() * (max - min) + min
-}
-
+/**
+ * Renders an animated gradient progress bar using tiled SVG mask animation.
+ */
 export function ProgressBar({
   className,
   tileSize: rawTileSize = 15,
@@ -52,14 +64,14 @@ export function ProgressBar({
   const { grid, lastIndex } = useMemo(() => {
     const cols = Math.max(1, Math.ceil(width / tileSize))
     const rows = Math.max(1, Math.ceil(height / tileSize))
-    // 1. Build the array of cells
+    // Generates grid cells with individual animation delays based on their x-position and randomness
     const grid: Cell[] = []
     for (let y = 0; y < rows; y++) {
       for (let x = 0; x < cols; x++) {
-        grid.push({ x, y, delay: x / speed + rand(0, dispersion) })
+        grid.push({ x, y, delay: x / speed + Math.random() * dispersion })
       }
     }
-    // 2. Find the index of the cell with the maximum delay
+    // Finds the cell with the longest delay to trigger the wave transition after its animation ends
     const lastIndex = grid.reduce(
       (bestIdx, cell, idx, arr) => (cell.delay > arr[bestIdx].delay ? idx : bestIdx),
       0,
@@ -108,6 +120,9 @@ export function ProgressBar({
   )
 }
 
+/**
+ * Renders an SVG linearGradient definition for single or dual color gradient.
+ */
 function GradientDef({ id, color }: { id: string; color: Color | [Color, Color] }) {
   return (
     <linearGradient id={id}>
