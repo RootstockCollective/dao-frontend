@@ -2,24 +2,13 @@ import { FC, useState } from 'react'
 import { useAccount } from 'wagmi'
 import { usePricesContext } from '@/shared/context/PricesContext'
 import { RIF } from '@/lib/constants'
-import { BuilderCard } from './BuilderCard'
+import { BuilderCard, BuilderCardProps } from './BuilderCard'
 
-interface BuilderCardProps {
-  builderAddress: string
-  builderName: string
-  currentAllocation: number
-  maxAllocation: number
+interface BuilderCardContainerProps extends BuilderCardProps {
   onUpdateAllocation: (newAllocation: number) => void
-  builderRewardPct: number
-  builderNextRewardPct?: number
-  estimatedRewards?: string
-  allocationTxPending?: boolean
-  topBarColor: string
-  dataTestId?: string
-  className?: string
 }
 
-export const BuilderCardContainer: FC<BuilderCardProps> = ({
+export const BuilderCardContainer: FC<BuilderCardContainerProps> = ({
   currentAllocation,
   allocationTxPending = false,
   onUpdateAllocation,
@@ -36,11 +25,6 @@ export const BuilderCardContainer: FC<BuilderCardProps> = ({
     onUpdateAllocation(value)
   }
 
-  const handleBuilderNameClick = () => {
-    // FIXME: implement builder name click logic
-    console.log('builder name clicked')
-  }
-
   return (
     <BuilderCard
       {...props}
@@ -50,7 +34,6 @@ export const BuilderCardContainer: FC<BuilderCardProps> = ({
       currentAllocation={currentAllocation}
       allocationTxPending={allocationTxPending}
       onAllocationChange={handleAllocationChange}
-      onBuilderNameClick={handleBuilderNameClick}
     />
   )
 }

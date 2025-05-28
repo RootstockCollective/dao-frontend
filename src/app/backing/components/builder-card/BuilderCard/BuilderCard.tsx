@@ -7,23 +7,27 @@ import { BuilderHeader } from '../BuilderHeader/BuilderHeader'
 import { CurrentBacking } from '../CurrentBacking/CurrentBacking'
 import { RewardsInfo } from '../RewardsInfo/RewardsInfo'
 
-interface BuilderCardProps {
+// FIXME: to be merged with type Builder
+export interface BuilderInfo {
   builderAddress: string
   builderName: string
+  proposalPage: string
   currentAllocation: number
+  builderRewardPct: number
+  builderNextRewardPct?: number
+}
+
+export interface BuilderCardProps extends BuilderInfo {
   maxAllocation: number
   allocation: number
   onAllocationChange: (newAllocation: number) => void
-  builderRewardPct: number
   topBarColor: string
   rifPriceUsd: number
   isConnected: boolean
-  builderNextRewardPct?: number
   estimatedRewards?: string
   allocationTxPending?: boolean
   dataTestId?: string
   className?: string
-  onBuilderNameClick: () => void
 }
 
 export const BuilderCard: FC<BuilderCardProps> = ({
@@ -42,7 +46,6 @@ export const BuilderCard: FC<BuilderCardProps> = ({
   topBarColor,
   dataTestId = '',
   className,
-  onBuilderNameClick,
 }) => {
   return (
     <div
@@ -57,12 +60,8 @@ export const BuilderCard: FC<BuilderCardProps> = ({
         style={{ backgroundColor: topBarColor }}
         data-dataTestId="builderCardTopBar"
       />
-      <BuilderHeader
-        address={builderAddress}
-        name={builderName}
-        onNameClick={onBuilderNameClick}
-        className="mt-8"
-      />
+      {/* FIXME: replace the builder page link */}
+      <BuilderHeader address={builderAddress} name={builderName} builderPageLink="#" className="mt-8" />
       <div
         className="w-full mt-6 border border-[#66605C] rounded-lg gap-3 flex flex-col divide-y divide-[#66605C]"
         data-dataTestId="builderCardContent"
