@@ -13,6 +13,6 @@ export const InfoIconButton: FC<InfoIconButtonProps> = ({ info, className = '' }
     <Tooltip text={info}>
       <KotoQuestionMarkIcon />
     </Tooltip>
-    {/* </Popover> */}
+    {/* FIXME: </Popover> */}
   </div>
 )
