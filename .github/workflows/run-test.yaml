@@ -1,26 +1,43 @@
 name: Trigger DAO Dapp Automation Workflow
 
-on: pull_request
+on: 
+  pull_request:
+  workflow_dispatch:
+    inputs:
+      ENVIRONMENT:
+        description: "Environment to run the tests in"
+        required: true
+        default: "CR-QA"
+        type: string
+      TEST_TYPE:
+        description: "Type of test to run (smoke, regression)"
+        required: true
+        default: "smoke"
+        type: string
 
 jobs:
   build:
     runs-on: ubuntu-latest
 
     steps:
-      # Other steps as needed...
-
       - name: Start E2E tests in target repo
         uses: actions/github-script@v7
         with:
           github-token: ${{ secrets.DAO_DAPP_AUTOMATION_PAT }}
           script: |
+            const environment = process.env.ENVIRONMENT || 'CR-QA';
+            const testType = process.env.TEST_TYPE || 'smoke';
+
             await github.request('POST /repos/{owner}/{repo}/actions/workflows/{workflow_id}/dispatches', {
               owner: 'rsksmart',
               repo: 'Deprecated_DAO-dApp-automation',
               workflow_id: 'playwright.yml',
               ref: 'main',
               inputs: {
-                ENVIRONMENT: 'STAGING',
-                TEST_TYPE: 'smoke'
+                ENVIRONMENT: environment,
+                TEST_TYPE: testType
               }
             });
+        env:
+          ENVIRONMENT: ${{ github.event.inputs.ENVIRONMENT || 'CR-QA' }}
+          TEST_TYPE: ${{ github.event.inputs.TEST_TYPE || 'smoke' }}
