@@ -1,8 +1,6 @@
 import { AllocationInput } from './AllocationInput'
 import type { Meta, StoryObj } from '@storybook/react'
-
-// FIXME: currently throws an error because of the wallet connection
-// Error; Cannot read properties of undefined (reading 'ConnectWorkflow')
+import { useState } from 'react'
 
 const meta: Meta<typeof AllocationInput> = {
   title: 'Backing/AllocationInput',
@@ -13,30 +11,41 @@ export default meta
 
 type Story = StoryObj<typeof AllocationInput>
 
+// Wrapper component to handle state
+const AllocationInputWithState = (args: any) => {
+  const [allocation, setAllocation] = useState(args.allocation)
+  return (
+    <AllocationInput {...args} allocation={allocation} onAllocationChange={value => setAllocation(value)} />
+  )
+}
+
 export const Default: Story = {
+  render: args => <AllocationInputWithState {...args} />,
   args: {
     allocation: 0,
     maxAllocation: 120000,
     currentAllocation: 0,
-    onAllocationChange: value => console.log('Allocation changed:', value),
+    rifPriceUsd: 0.05,
   },
 }
 
 export const WithAllocation: Story = {
+  render: args => <AllocationInputWithState {...args} />,
   args: {
     allocation: 50000,
     maxAllocation: 120000,
     currentAllocation: 50000,
-    onAllocationChange: value => console.log('Allocation changed:', value),
+    rifPriceUsd: 0.05,
   },
 }
 
 export const Pending: Story = {
+  render: args => <AllocationInputWithState {...args} />,
   args: {
     allocation: 50000,
     maxAllocation: 120000,
     currentAllocation: 30000,
     allocationTxPending: true,
-    onAllocationChange: value => console.log('Allocation changed:', value),
+    rifPriceUsd: 0.05,
   },
 }
