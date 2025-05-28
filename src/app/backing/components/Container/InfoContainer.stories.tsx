@@ -23,7 +23,6 @@ export const WithTextContent: Story = {
         </p>
       </div>
     ),
-    dataTestid: 'test',
   },
 }
 
@@ -39,7 +38,6 @@ export const WithListContent: Story = {
         </ul>
       </div>
     ),
-    dataTestid: 'test',
   },
 }
 
@@ -47,6 +45,5 @@ export const WithCustomStyling: Story = {
   args: {
     children: <p>Content with custom container styling</p>,
     className: 'bg-blue-50 border-2 border-blue-200',
-    dataTestid: 'test',
   },
 }
