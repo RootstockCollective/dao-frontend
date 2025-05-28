@@ -3,10 +3,6 @@ import { motion, useMotionValue, useTransform, animate } from 'motion/react'
 import { GradientDef } from './GradientDef'
 import type { Color } from '../types'
 
-function random(min: number, max: number) {
-  return Math.random() * (max - min) + min
-}
-
 interface AnimatedTilesProps {
   /** SVG width in pixels */
   width: number
@@ -14,18 +10,21 @@ interface AnimatedTilesProps {
   height: number
   /** Size of each tile (square side, in px) */
   tileSize: number
-  /** Slope/steepness of the reveal wave (higher = faster reveal across X) */
-  waveSlope: number
-  /** Amount of random delay added to each tile (for pixelated/glitchy edge) */
-  dispersion: number
-  /** Duration of fade-in for each tile (in "progress units") */
-  tileAnimationDuration: number
   /** Array of two gradient colors (current and next layer) */
   colors: (Color | [Color, Color])[]
   /** Progress value (0–100) */
   progress: number
   /** Animation speed (progress units per second) */
   progressSpeed: number
+
+  /** Randomness */
+
+  /** Duration of fade-in for each tile (in "progress units") */
+  tileAnimationDuration: number
+  /** Slope/steepness of the reveal wave (higher = faster reveal across X) */
+  waveSlope: number
+  /** Amount of random delay added to each tile (for pixelated/glitchy edge) */
+  dispersion: number
 }
 
 /**
@@ -44,27 +43,33 @@ export function AnimatedTilesProgress({
   progress,
   progressSpeed,
 }: AnimatedTilesProps) {
+  const progressMv = useMotionValue(0)
   const uniqueId = useId()
+
   const maskId = `mask-${uniqueId}`
   const [currentColor, nextColor] = colors
-
   const cols = Math.ceil(width / tileSize)
   const rows = Math.ceil(height / tileSize)
+  const maxDelay = (cols - 1) / waveSlope + dispersion
+  const scale = 100 / (maxDelay + tileAnimationDuration)
 
+  // calculate width * height grid with all the tiles parameters
   const grid = useMemo(() => {
     const arr = []
     for (let x = 0; x < cols; x++) {
       for (let y = 0; y < rows; y++) {
         const baseDelay = x / waveSlope
-        const jitter = random(0, dispersion)
-        arr.push({ x: x * tileSize, y: y * tileSize, delay: baseDelay + jitter })
+        const jitter = Math.random() * dispersion
+        const delay = baseDelay + jitter
+        const start = delay * scale
+        const end = start + tileAnimationDuration
+        arr.push({ x: x * tileSize, y: y * tileSize, start, end })
       }
     }
     return arr
-  }, [cols, rows, tileSize, waveSlope, dispersion])
+  }, [cols, rows, tileSize, waveSlope, dispersion, scale, tileAnimationDuration])
 
-  const progressMv = useMotionValue(0)
-
+  // start animation when progress value is changed
   useEffect(() => {
     const distance = Math.abs(progress - progressMv.get())
     const duration = distance / progressSpeed
@@ -73,11 +78,8 @@ export function AnimatedTilesProgress({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [progress, progressSpeed])
 
-  const Rect = ({ x, y, delay }: { x: number; y: number; delay: number }) => {
-    const maxDelay = (cols - 1) / waveSlope + dispersion
-    const scale = 100 / (maxDelay + tileAnimationDuration)
-    const start = delay * scale
-    const end = start + tileAnimationDuration
+  // draw single rectangle of the grid
+  const Rect = ({ x, y, start, end }: { x: number; y: number; start: number; end: number }) => {
     const opacity = useTransform(progressMv, [start, end], [0, 1])
     return <motion.rect opacity={opacity} x={x} y={y} width={tileSize} height={tileSize} fill="white" />
   }
