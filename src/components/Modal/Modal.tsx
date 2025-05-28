@@ -36,7 +36,7 @@ export const Modal: FC<Props> = ({
         className={cn(
           'relative',
           width ? 'w-full' : 'w-[380px] md:w-[600px]', // Default responsive width
-          height === 'auto' ? 'h-full' : 'h-auto',
+          height !== 'auto' ? 'h-full' : 'h-auto',
           'max-w-[95vw]',
           'bg-bg-80',
           'rounded-[4px]',
