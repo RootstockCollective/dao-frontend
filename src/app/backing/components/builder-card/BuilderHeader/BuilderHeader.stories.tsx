@@ -16,10 +16,10 @@ export const Default: Story = {
   },
 }
 
-export const WithClickHandler: Story = {
+export const WithPageLink: Story = {
   args: {
     address: '0x1234567890abcdef',
     name: 'Beefy',
-    onNameClick: () => console.log('Name clicked'),
+    builderPageLink: 'https://app.rootstockcollective.xyz/',
   },
 }
