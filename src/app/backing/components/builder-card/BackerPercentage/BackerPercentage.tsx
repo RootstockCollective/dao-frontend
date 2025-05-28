@@ -1,6 +1,8 @@
 import { FC, useMemo } from 'react'
 import { cn } from '@/lib/utils'
 import Image from 'next/image'
+import { ArrowUpIcon } from '@/components/Icons/ArrowUpIcon'
+import { ArrowDownIcon } from '@/components/Icons/ArrowDownIcon'
 
 interface BackerRewardsPercentageProps {
   className?: string
@@ -21,7 +23,7 @@ export const BackerRewardsPercentage: FC<BackerRewardsPercentageProps> = ({
     if (deltaPercentage > 0) {
       return (
         <div className="flex flex-row items-center" data-testid="backerPercentageIncrease">
-          <Image src="/images/arrow-up.svg" width={16} height={16} alt="Arrow Up" />
+          <ArrowUpIcon className="flex-shrink-0 cursor-pointer" size={16} />
           <div className="text-[#1bc47d]" data-testid="backerPercentageIncreaseValue">
             {deltaPercentage}
           </div>
@@ -30,7 +32,7 @@ export const BackerRewardsPercentage: FC<BackerRewardsPercentageProps> = ({
     } else if (deltaPercentage < 0) {
       return (
         <div className="flex flex-row items-center" data-testid="backerPercentageDecrease">
-          <Image src="/images/arrow-down.svg" width={16} height={16} alt="Arrow Down" />
+          <ArrowDownIcon className="flex-shrink-0 cursor-pointer" size={16} />
           <div className="text-[#f14722]" data-testid="backerPercentageDecreaseValue">
             {Math.abs(deltaPercentage)}
           </div>
