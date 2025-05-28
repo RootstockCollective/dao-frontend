@@ -1,13 +1,27 @@
-import { FC, useMemo } from 'react'
-import { cn } from '@/lib/utils'
-import Image from 'next/image'
-import { ArrowUpIcon } from '@/components/Icons/ArrowUpIcon'
 import { ArrowDownIcon } from '@/components/Icons/ArrowDownIcon'
+import { ArrowUpIcon } from '@/components/Icons/ArrowUpIcon'
+import { cn } from '@/lib/utils'
+import { FC, useMemo } from 'react'
 
 interface BackerRewardsPercentageProps {
   className?: string
   currentPct: number
   nextPct?: number
+}
+
+const deltaMap = {
+  increase: {
+    Icon: ArrowUpIcon,
+    colorClass: 'text-[#1bc47d]',
+    testId: 'backerPercentageIncrease',
+    valueTestId: 'backerPercentageIncreaseValue',
+  },
+  decrease: {
+    Icon: ArrowDownIcon,
+    colorClass: 'text-[#f14722]',
+    testId: 'backerPercentageDecrease',
+    valueTestId: 'backerPercentageDecreaseValue',
+  },
 }
 
 export const BackerRewardsPercentage: FC<BackerRewardsPercentageProps> = ({
@@ -16,26 +30,26 @@ export const BackerRewardsPercentage: FC<BackerRewardsPercentageProps> = ({
   nextPct,
 }) => {
   const renderDelta = useMemo(() => {
-    if (!currentPct || !nextPct) return null
+    // if the values are undefined, we don't show the difference, but we show the difference if one of them is 0
+    if (currentPct === undefined || nextPct === undefined) return null
     if (currentPct === nextPct) return null
     const deltaPercentage = nextPct - currentPct
 
-    if (deltaPercentage > 0) {
-      return (
-        <div className="flex flex-row items-center text-[#1bc47d]" data-testid="backerPercentageIncrease">
-          <ArrowUpIcon className="flex-shrink-0 cursor-pointer" size={16} />
-          <div data-testid="backerPercentageIncreaseValue">{deltaPercentage}</div>
-        </div>
-      )
-    } else if (deltaPercentage < 0) {
-      return (
-        <div className="flex flex-row items-center text-[#f14722]" data-testid="backerPercentageDecrease">
-          <ArrowDownIcon className="flex-shrink-0 cursor-pointer" size={16} />
-          <div data-testid="backerPercentageDecreaseValue">{Math.abs(deltaPercentage)}</div>
-        </div>
-      )
+    if (deltaPercentage === 0) {
+      return null
     }
-    return null
+
+    const isIncrease = deltaPercentage > 0
+    const deltaType = isIncrease ? 'increase' : 'decrease'
+    const { Icon, colorClass, testId, valueTestId } = deltaMap[deltaType]
+    const value = isIncrease ? deltaPercentage : Math.abs(deltaPercentage)
+
+    return (
+      <div className={`flex flex-row items-center ${colorClass}`} data-testid={testId}>
+        <Icon className="flex-shrink-0 cursor-pointer" size={16} />
+        <div data-testid={valueTestId}>{value}</div>
+      </div>
+    )
   }, [currentPct, nextPct])
   return (
     <div
