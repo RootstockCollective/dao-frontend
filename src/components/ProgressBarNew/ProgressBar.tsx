@@ -12,8 +12,8 @@ export function ProgressBar({ progress }: Props) {
       tileSize={4}
       height={8}
       width={644}
-      waveSlope={40}
-      dispersion={0.2}
+      waveSlope={35}
+      dispersion={0.3}
       tileAnimationDuration={0.1}
       progress={progress}
       progressSpeed={40}
