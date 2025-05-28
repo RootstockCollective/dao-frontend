@@ -1,7 +1,8 @@
 // Modal.stories.tsx
 import type { Meta, StoryObj } from '@storybook/react'
 import { Modal } from '@/components/Modal/Modal'
-import { useState } from 'react'
+import { useModal } from '@/shared/hooks/useModal'
+import { useState, useEffect } from 'react'
 
 const meta: Meta<typeof Modal> = {
   title: 'Components/Modals/Modal',
@@ -28,16 +29,16 @@ type Story = StoryObj<typeof Modal>
 
 // Wrapper component to manage modal state
 const ModalWrapper = (args: any) => {
-  const [isOpen, setIsOpen] = useState(true)
+  const { isModalOpened, openModal, closeModal } = useModal()
 
-  const handleClose = () => {
-    setIsOpen(false)
-  }
+  useEffect(() => {
+    openModal()
+  }, [])
 
-  if (!isOpen) return null
+  if (!isModalOpened) return null
 
   return (
-    <Modal {...args} onClose={handleClose}>
+    <Modal {...args} onClose={closeModal}>
       {args.children || (
         <div className="p-6 text-center">
           <h2 className="text-xl font-bold mb-4 font-kk-topo">Modal Content</h2>
@@ -69,7 +70,7 @@ export const CustomHeight: Story = {
 export const CustomContent: Story = {
   render: args => (
     <ModalWrapper {...args}>
-      <div className="p-6 bg-bg-8">
+      <div className="p-6 bg-[var(--color-bg-80)]">
         <h2 className="text-2xl font-bold mb-4">Custom Modal</h2>
         <p>This modal has custom content and styling.</p>
         <div className="mt-4 flex justify-between">
