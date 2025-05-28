@@ -4,7 +4,6 @@ import { TokenImage } from '@/components/TokenImage'
 import { Paragraph } from '@/components/TypographyNew'
 import { RIF } from '@/lib/constants'
 import { cn } from '@/lib/utils'
-import { usePricesContext } from '@/shared/context/PricesContext'
 import { FC, useState } from 'react'
 import { parseEther } from 'viem'
 import { PendingAllocation } from '../PendingAllocation/PendingAllocation'
@@ -14,6 +13,7 @@ interface AllocationInputProps {
   allocation: number
   currentAllocation: number
   maxAllocation: number
+  rifPriceUsd: number
   allocationTxPending?: boolean
   onAllocationChange: (value: number) => void
   className?: string
@@ -23,17 +23,15 @@ export const AllocationInput: FC<AllocationInputProps> = ({
   allocation,
   currentAllocation,
   maxAllocation,
+  rifPriceUsd,
   allocationTxPending = false,
   onAllocationChange,
   className,
 }) => {
-  const { prices } = usePricesContext()
   const [editing, setEditing] = useState(false)
 
   const allocationPercentage = maxAllocation === 0 ? 0 : (allocation / maxAllocation) * 100
-
-  const tokenPrice = prices[RIF]?.price ?? 0
-  const amountUsd = Number(getFiatAmount(parseEther(allocation.toString()), tokenPrice).toFixed(2))
+  const amountUsd = Number(getFiatAmount(parseEther(allocation.toString()), rifPriceUsd).toFixed(2))
 
   const handleSliderChange = (value: number[]) => {
     const percent = value[0]
@@ -50,7 +48,7 @@ export const AllocationInput: FC<AllocationInputProps> = ({
 
   return (
     <div
-      className={cn('bg-[#25211E] border border-[#393532] rounded-lg p-3', className)}
+      className={cn('bg-[#25211E] border border-[#393532] rounded-lg p-3 font-rootstock-sans', className)}
       data-testid="allocationInputContainer"
     >
       <div className="flex items-center justify-between w-full" data-testid="allocationInputContent">

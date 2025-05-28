@@ -16,7 +16,7 @@ export const CurrentBacking: FC<CurrentBackingProps> = ({ currentAllocation }) =
   )
 
   return (
-    <div className="px-3 mb-3" data-testid="currentBackingContainer">
+    <div className="px-3 mb-3 font-rootstock-sans" data-testid="currentBackingContainer">
       <Label className="text-xs text-[#B0B0B0]" data-testid="currentBackingLabel">
         Current backing
       </Label>
