@@ -21,6 +21,7 @@ export const RewardsInfo: FC<RewardsInfoProps> = ({
       </LabeledContent>
       {estimatedRewards && (
         <LabeledContent label="Rewards (est.)" className="w-1/2">
+          {/* FIXME: we should include here a popover that shows the estimated rewards in RIF and RBTC */}
           <Paragraph data-testid="rewardsInfoEstimated">{estimatedRewards}</Paragraph>
         </LabeledContent>
       )}
