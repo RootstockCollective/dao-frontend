@@ -22,20 +22,16 @@ export const BackerRewardsPercentage: FC<BackerRewardsPercentageProps> = ({
 
     if (deltaPercentage > 0) {
       return (
-        <div className="flex flex-row items-center" data-testid="backerPercentageIncrease">
+        <div className="flex flex-row items-center text-[#1bc47d]" data-testid="backerPercentageIncrease">
           <ArrowUpIcon className="flex-shrink-0 cursor-pointer" size={16} />
-          <div className="text-[#1bc47d]" data-testid="backerPercentageIncreaseValue">
-            {deltaPercentage}
-          </div>
+          <div data-testid="backerPercentageIncreaseValue">{deltaPercentage}</div>
         </div>
       )
     } else if (deltaPercentage < 0) {
       return (
-        <div className="flex flex-row items-center" data-testid="backerPercentageDecrease">
+        <div className="flex flex-row items-center text-[#f14722]" data-testid="backerPercentageDecrease">
           <ArrowDownIcon className="flex-shrink-0 cursor-pointer" size={16} />
-          <div className="text-[#f14722]" data-testid="backerPercentageDecreaseValue">
-            {Math.abs(deltaPercentage)}
-          </div>
+          <div data-testid="backerPercentageDecreaseValue">{Math.abs(deltaPercentage)}</div>
         </div>
       )
     }

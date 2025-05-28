@@ -102,7 +102,6 @@ export const BuilderCard: FC<BuilderCardProps> = ({
             variant="secondary"
             className={cn('border-[#66605C] px-2 py-1 mt-6')}
             textClassName="text-[14px] font-normal"
-            onClick={() => onAllocationChange(allocation)}
             data-testid="backBuilderButton"
           >
             Back builder
