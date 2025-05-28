@@ -1,13 +1,12 @@
 import { getFiatAmount } from '@/app/collective-rewards/rewards'
 import { InputNumber } from '@/components/Input/InputNumber'
-import { TokenImage } from '@/components/TokenImage'
 import { Paragraph } from '@/components/TypographyNew'
-import { RIF } from '@/lib/constants'
 import { cn } from '@/lib/utils'
 import { FC, useState } from 'react'
 import { parseEther } from 'viem'
 import { PendingAllocation } from '../PendingAllocation/PendingAllocation'
 import { StickySlider } from '../StickySlider/StickySlider'
+import { RIFToken } from '../RIFToken/RIFToken'
 
 interface AllocationInputProps {
   allocation: number
@@ -39,13 +38,6 @@ export const AllocationInput: FC<AllocationInputProps> = ({
     onAllocationChange(newAllocation)
   }
 
-  const rifToken = (
-    <div className="flex items-center gap-1 flex-shrink-0" data-testid="allocationInputToken">
-      <TokenImage symbol={RIF} size={16} />
-      <div className="text-[14px] text-white">stRIF</div>
-    </div>
-  )
-
   return (
     <div
       className={cn('bg-[#25211E] border border-[#393532] rounded-lg p-3 font-rootstock-sans', className)}
@@ -69,7 +61,7 @@ export const AllocationInput: FC<AllocationInputProps> = ({
           {allocationTxPending && (
             <PendingAllocation pendingBacking={allocation} currentBacking={currentAllocation} />
           )}
-          {rifToken}
+          <RIFToken />
         </div>
       </div>
       <Paragraph className="text-[14px] text-[#B0B0B0]" data-testid="allocationInputUsd">
