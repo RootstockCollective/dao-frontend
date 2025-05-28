@@ -38,7 +38,7 @@ export const Modal: FC<Props> = ({
           width ? 'w-full' : 'w-[380px] md:w-[600px]', // Default responsive width
           height !== 'auto' ? 'h-full' : 'h-auto',
           'max-w-[90vw]',
-          'bg-[var(--color-bg-80)]',
+          'bg-bg-80',
           'rounded-[4px]',
           'overflow-hidden',
           className,
