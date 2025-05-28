@@ -23,7 +23,7 @@ interface Props {
  * @param error this can be a string or a ReactNode. It should be accompanied by a red icon per design - out of scope
  * @constructor
  */
-export const StakeInputNew = ({ onChange, value, symbol, labelText, currencyValue, error }: Props) => {
+export const StakeInput = ({ onChange, value, symbol, labelText, currencyValue, error }: Props) => {
   return (
     <div className="flex flex-col py-[12px] px-[16px] rounded-[4px] w-full bg-bg-60">
       {labelText && <Paragraph className="mb-[12px]">{labelText}</Paragraph>}

@@ -1,10 +1,10 @@
 import type { Meta, StoryObj } from '@storybook/react'
-import { StakeInputNew } from './StakeInputNew'
+import { StakeInput } from './StakeInput'
 
 const meta = {
   title: 'Components/StakeInputNew',
-  component: StakeInputNew,
-} satisfies Meta<typeof StakeInputNew>
+  component: StakeInput,
+} satisfies Meta<typeof StakeInput>
 
 export default meta
 

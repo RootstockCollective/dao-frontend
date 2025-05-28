@@ -1,5 +1,5 @@
 import { Header, Label, Paragraph } from '@/components/Typography'
-import { StakeInputNew } from '@/app/user/Stake/StakeInputNew/StakeInputNew'
+import { StakeInput } from '@/app/user/Stake/StakeInputNew/StakeInput'
 import { Button } from '@/components/Button'
 import { useMemo } from 'react'
 import { ActionBeingExecuted, textsDependingOnAction } from '@/app/user/Stake/Steps/stepsUtils'
@@ -34,7 +34,7 @@ export const StakeRIF = ({
       {textsDependingOnAction[actionName].modalTitle}
       {symbol}
     </Header>
-    <StakeInputNew
+    <StakeInput
       onChange={onAmountChange}
       value={amount}
       symbol={symbol}
