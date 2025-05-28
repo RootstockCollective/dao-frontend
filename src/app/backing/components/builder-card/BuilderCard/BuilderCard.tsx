@@ -1,7 +1,6 @@
 import { ConnectPopover } from '@/app/backing/components/builder-card/ConnectPopover/ConnectPopover'
 import { cn } from '@/lib/utils'
-import { FC, useState } from 'react'
-import { useAccount } from 'wagmi'
+import { FC } from 'react'
 import { AllocationInput } from '../AllocationInput/AllocationInput'
 import { BuilderActionButton } from '../BuilderActionButton/BuilderActionButton'
 import { BuilderHeader } from '../BuilderHeader/BuilderHeader'
@@ -13,14 +12,18 @@ interface BuilderCardProps {
   builderName: string
   currentAllocation: number
   maxAllocation: number
-  onUpdateAllocation: (newAllocation: number) => void
+  allocation: number
+  onAllocationChange: (newAllocation: number) => void
   builderRewardPct: number
+  topBarColor: string
+  rifPriceUsd: number
+  isConnected: boolean
   builderNextRewardPct?: number
   estimatedRewards?: string
   allocationTxPending?: boolean
-  topBarColor: string
   dataTestId?: string
   className?: string
+  onBuilderNameClick: () => void
 }
 
 export const BuilderCard: FC<BuilderCardProps> = ({
@@ -28,33 +31,23 @@ export const BuilderCard: FC<BuilderCardProps> = ({
   builderName,
   currentAllocation,
   maxAllocation,
+  allocation,
   builderRewardPct,
+  rifPriceUsd,
+  isConnected,
   builderNextRewardPct,
   estimatedRewards,
-  allocationTxPending = false,
-  onUpdateAllocation,
+  allocationTxPending,
+  onAllocationChange,
   topBarColor,
   dataTestId = '',
   className,
+  onBuilderNameClick,
 }) => {
-  const { isConnected } = useAccount()
-  const [allocation, setAllocation] = useState<number>(currentAllocation)
-
-  const handleAllocationChange = (value: number) => {
-    if (allocationTxPending) return
-    setAllocation(value)
-    onUpdateAllocation(value)
-  }
-
-  const handleBuilderNameClick = () => {
-    // FIXME: implement builder name click logic
-    console.log('builder name clicked')
-  }
-
   return (
     <div
       className={cn(
-        'rounded bg-[#37322F] px-2 flex flex-col items-center relative w-1/4 min-w-[280px]',
+        'rounded bg-[#37322F] px-2 pb-6 flex flex-col items-center relative w-1/4 min-w-[280px]',
         className,
       )}
       data-dataTestId={`builderCardContainer${dataTestId}`}
@@ -67,7 +60,7 @@ export const BuilderCard: FC<BuilderCardProps> = ({
       <BuilderHeader
         address={builderAddress}
         name={builderName}
-        onNameClick={handleBuilderNameClick}
+        onNameClick={onBuilderNameClick}
         className="mt-8"
       />
       <div
@@ -85,7 +78,8 @@ export const BuilderCard: FC<BuilderCardProps> = ({
             maxAllocation={maxAllocation}
             currentAllocation={currentAllocation}
             allocationTxPending={allocationTxPending}
-            onAllocationChange={handleAllocationChange}
+            rifPriceUsd={rifPriceUsd}
+            onAllocationChange={onAllocationChange}
             className="px-2 py-3 mx-3"
           />
         )}
