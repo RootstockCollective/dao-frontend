@@ -9,7 +9,7 @@ export type PageTitleContainerProps = CommonComponentProps & {
 
 export const PageTitleContainer: FC<PageTitleContainerProps> = ({ leftText, className = '' }) => {
   return (
-    <div data-testid="PageTitleContainer" className={cn('flex h-10 pr-[36.19rem] items-center', className)}>
+    <div data-testid="PageTitleContainer" className={cn('flex h-10 pr-36 items-center', className)}>
       <Typography
         variant="h1"
         className="grow text-left uppercase text-v3-text-100 leading-10 not-italic"
