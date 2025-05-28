@@ -15,7 +15,7 @@ export function ProgressBar({ progress }: Props) {
       progress={progress}
       progressSpeed={40}
       /* Randomness params */
-      tileAnimationDuration={0.5}
+      tileAnimationDuration={0.3}
       waveSlope={10}
       dispersion={0.8}
     />
