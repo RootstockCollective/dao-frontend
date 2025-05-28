@@ -25,7 +25,7 @@ export const Modal: FC<Props> = ({
   return createPortal(
     <div className="fixed inset-0 flex items-center justify-center z-50" data-testid={dataTestId}>
       {/* Backdrop */}
-      <div className="fixed inset-0 bg-[var(--color-bg-100)]/50 backdrop-blur-xs"></div>
+      <div className="fixed inset-0 bg-bg-100/50 backdrop-blur-xs"></div>
 
       {/* Modal Container */}
       <div
@@ -35,7 +35,7 @@ export const Modal: FC<Props> = ({
           'max-w-[90vw]', // Default Responsive width
           height !== 'auto' ? `h-[${height}px]` : 'h-auto',
           'max-w-[90vw]',
-          'bg-[var(--color-bg-80)]',
+          'bg-bg-80',
           'rounded-[4px]',
           'overflow-hidden',
           className,
