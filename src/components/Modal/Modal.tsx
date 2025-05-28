@@ -16,13 +16,17 @@ export const Modal: FC<Props> = ({ children, onClose, className, 'data-testid': 
   return createPortal(
     <div className="fixed inset-0 flex items-center justify-center z-50" data-testid={dataTestId}>
       {/* Backdrop */}
-      <div className="fixed inset-0 bg-black/50 backdrop-blur-[4px]"></div>
+      <div className="fixed inset-0 bg-[var(--color-bg-100)]/50 backdrop-blur-xs"></div>
 
       {/* Modal Container */}
       {/* Desktop Modal - Hidden on mobile */}
       <div
         className={cn(
-          'hidden md:block relative bg-[#1C1C1C] rounded-[4px] overflow-hidden',
+          'hidden md:block',
+          'relative',
+          'bg-[var(--color-bg-80)]',
+          'rounded-[4px]',
+          'overflow-hidden',
 
           className,
         )}
@@ -38,7 +42,12 @@ export const Modal: FC<Props> = ({ children, onClose, className, 'data-testid': 
       {/* Mobile Modal - Hidden on desktop */}
       <div
         className={cn(
-          'block md:hidden relative w-[380px] max-w-[90vw] bg-[#1C1C1C] rounded-[4px] overflow-hidden',
+          'block md:hidden',
+          'relative w-[380px]',
+          'max-w-[90vw]',
+          'bg-[var(--color-bg-80)]',
+          'rounded-[4px]',
+          'overflow-hidden',
 
           className,
         )}
