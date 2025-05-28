@@ -69,12 +69,12 @@ export const CustomHeight: Story = {
 export const CustomContent: Story = {
   render: args => (
     <ModalWrapper {...args}>
-      <div className="p-6 bg-[var(--color-bg-80)]">
+      <div className="p-6 bg-bg-8">
         <h2 className="text-2xl font-bold mb-4">Custom Modal</h2>
         <p>This modal has custom content and styling.</p>
         <div className="mt-4 flex justify-between">
-          <button className="bg-blue-500 text-white px-4 py-2 rounded">Confirm</button>
-          <button className="bg-gray-300 text-black px-4 py-2 rounded">Cancel</button>
+          <button className="bg-primary text-100 px-4 py-2 rounded">Confirm</button>
+          <button className="bg-warm-gray text-0 px-4 py-2 rounded">Cancel</button>
         </div>
       </div>
     </ModalWrapper>
