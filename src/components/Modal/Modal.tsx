@@ -29,13 +29,16 @@ export const Modal: FC<Props> = ({
 
       {/* Modal Container */}
       <div
+        style={{
+          width: width ? `${width}px` : undefined,
+          height: height !== 'auto' ? `${height}px` : undefined,
+        }}
         className={cn(
           'relative',
-          width ? `w-[${width}px]` : 'w-[380px] md:w-[600px]', // Default responsive width,
-          'max-w-[90vw]', // Default Responsive width
-          height !== 'auto' ? `h-[${height}px]` : 'h-auto',
+          width ? 'w-full' : 'w-[380px] md:w-[600px]', // Default responsive width
+          height !== 'auto' ? 'h-full' : 'h-auto',
           'max-w-[90vw]',
-          'bg-bg-80',
+          'bg-[var(--color-bg-80)]',
           'rounded-[4px]',
           'overflow-hidden',
           className,
