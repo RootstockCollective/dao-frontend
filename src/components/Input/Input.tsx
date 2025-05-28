@@ -152,7 +152,7 @@ export const Input: FC<Props> = ({
   )
 }
 
-interface NewInputProps extends Props {
+interface InputNewProps extends Props {
   classes?: string
   inputClasses?: string
   restInputProps?: JSX.IntrinsicElements['input'] & NumericFormatProps<InputAttributes>
@@ -160,6 +160,9 @@ interface NewInputProps extends Props {
 
 /**
  * New input from the new design system May 2025
+ * This is a simplified version of the Input component
+ * It only contains the input field without the label, hint, or error message.
+ * Should replace the map in the Input component in the future like input[type]
  * @param type
  * @param classes
  * @param inputClasses
@@ -181,7 +184,7 @@ export const InputNew = ({
   name,
   readonly,
   restInputProps,
-}: NewInputProps) => {
+}: InputNewProps) => {
   switch (type) {
     case 'number':
       return (
