@@ -7,6 +7,14 @@ interface Props {
   labelText: string
 }
 
+/**
+ * @deprecated No longer used, use StakeInputNew instead
+ * @param onChange
+ * @param value
+ * @param symbol
+ * @param labelText
+ * @constructor
+ */
 export const StakeInput = ({ onChange, value, symbol = 'RIF', labelText }: Props) => {
   return (
     <Input

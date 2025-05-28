@@ -151,3 +151,56 @@ export const Input: FC<Props> = ({
     </div>
   )
 }
+
+interface NewInputProps extends Props {
+  classes?: string
+  inputClasses?: string
+  restInputProps?: JSX.IntrinsicElements['input'] & NumericFormatProps<InputAttributes>
+}
+
+/**
+ * New input from the new design system May 2025
+ * @param type
+ * @param classes
+ * @param inputClasses
+ * @param placeholder
+ * @param value
+ * @param onChange
+ * @param name
+ * @param readonly
+ * @param restInputProps
+ * @constructor
+ */
+export const InputNew = ({
+  type,
+  classes,
+  inputClasses,
+  placeholder,
+  value,
+  onChange,
+  name,
+  readonly,
+  restInputProps,
+}: NewInputProps) => {
+  switch (type) {
+    case 'number':
+      return (
+        <InputNumber
+          className={cn(classes, inputClasses)}
+          placeholder={placeholder}
+          value={value}
+          onValueChange={({ value }) => onChange?.(value)}
+          name={name}
+          data-testid={`Input_${name}`}
+          readOnly={readonly}
+          {...restInputProps}
+        />
+      )
+    case 'text':
+      return <p>Not implemented</p>
+    case 'search':
+      return <p>Not implemented</p>
+    default:
+      return <p>Default case not implemented</p>
+  }
+}
