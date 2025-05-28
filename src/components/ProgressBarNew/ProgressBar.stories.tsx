@@ -1,23 +1,33 @@
 import { Meta, StoryObj } from '@storybook/react'
-import { AnimatedTiles } from './AnimatedTiles'
 import { ProgressBar } from './ProgressBar'
-import { ProgressButton } from './ProgressButton'
+import { useState } from 'react'
 
 export default {
-  title: 'Components/ProgressBar',
-  component: AnimatedTiles,
-} as Meta<typeof AnimatedTiles>
+  title: 'Components/Progress/Bar',
+  component: ProgressBar,
+} as Meta<typeof ProgressBar>
 
-type Story = StoryObj<typeof AnimatedTiles>
+type Story = StoryObj<typeof ProgressBar>
 
-export const Button: Story = {
-  render: () => (
-    <ProgressButton>
-      <p className="font-rootstock-sans text-sm">In Progress - 2 mins average</p>
-    </ProgressButton>
-  ),
-}
+const progress = [5, 10, 30, 50, 80, 90, 100]
 
-export const Bar: Story = {
-  render: () => <ProgressBar />,
+export const Static: Story = {
+  render: () => {
+    const [index, setIndex] = useState(0)
+    const progressValue = progress[index % progress.length]
+    return (
+      <div className="w-fit">
+        <div className="flex justify-between">
+          <button
+            className="px-2 mb-2 border rounded-sm border-neutral-500"
+            onClick={() => setIndex(val => val + 1)}
+          >
+            Go to next value
+          </button>
+          <p>Current progress: {progressValue}</p>
+        </div>
+        <ProgressBar progress={progressValue} />
+      </div>
+    )
+  },
 }

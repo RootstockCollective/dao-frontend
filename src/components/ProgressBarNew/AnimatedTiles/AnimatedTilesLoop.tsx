@@ -2,72 +2,55 @@ import { useId } from 'react'
 import { cn } from '@/lib/utils'
 import { useMemo, HTMLAttributes, useState } from 'react'
 import { motion } from 'motion/react'
+import { GradientDef } from './GradientDef'
+import type { Color } from '../types'
 
-type Color = `#${string}`
 interface Props extends HTMLAttributes<HTMLButtonElement> {
   /** Width of the progress bar in pixels */
   width: number
-
   /** Height of the progress bar in pixels */
   height: number
-
   /** Size of each square tile in pixels */
   tileSize: number
-
   /** Sequence of colors used for the gradient waves */
   colors: (Color | [Color, Color])[]
-
   /** Speed of wave animation */
   speed: number
-
   /** Random variation added to each tile's animation delay */
   dispersion: number
-
   /** Duration of opacity animation for each tile */
   tileAnimationDuration: number
 }
 
-interface Cell {
-  x: number
-  y: number
-  delay: number
-}
-
 /**
- * Renders an animated gradient progress bar using tiled SVG mask animation.
+ * Renders a looped animated gradient progress bar using tiled SVG mask animation.
  */
-export function AnimatedTiles({
+export function AnimatedTilesLoop({
   className,
-  tileSize: rawTileSize,
-  width: rawWidth,
-  height: rawHeight,
-  speed: rawSpeed,
-  dispersion: rawDispersion,
+  tileSize,
+  width,
+  height,
+  speed,
+  dispersion,
   tileAnimationDuration,
   colors = [],
   children,
 }: Props) {
-  const tileSize = Math.max(rawTileSize, 1)
-  const width = Math.max(Math.abs(rawWidth), 2)
-  const height = Math.max(Math.abs(rawHeight), 2)
-  const dispersion = Math.abs(rawDispersion)
-  const speed = Math.max(Math.abs(rawSpeed), 1)
-
   const uniqueId = useId()
+  // Indicates iteration of the loop
   const [wave, setWave] = useState(0)
 
   /** current and next wave colors */
   const currentColor = colors[wave % colors.length]
   const nextColor = colors[(wave + 1) % colors.length]
 
-  /** cell grid */
   const { grid, lastIndex } = useMemo(() => {
-    const cols = Math.max(1, Math.ceil(width / tileSize))
-    const rows = Math.max(1, Math.ceil(height / tileSize))
+    const cols = Math.ceil(width / tileSize)
+    const rows = Math.ceil(height / tileSize)
     // Generates grid cells with individual animation delays based on their x-position and randomness
-    const grid: Cell[] = []
-    for (let y = 0; y < rows; y++) {
-      for (let x = 0; x < cols; x++) {
+    const grid = []
+    for (let x = 0; x < cols; x++) {
+      for (let y = 0; y < rows; y++) {
         grid.push({ x, y, delay: x / speed + Math.random() * dispersion })
       }
     }
@@ -114,29 +97,7 @@ export function AnimatedTiles({
           fill={`url(#grad-next-${uniqueId})`}
         />
       </svg>
-
       <span className="absolute inset-0 flex items-center justify-center">{children}</span>
     </div>
-  )
-}
-
-/**
- * Renders an SVG linearGradient definition for single or dual color gradient.
- */
-function GradientDef({ id, color }: { id: string; color: Color | [Color, Color] }) {
-  return (
-    <linearGradient id={id}>
-      {Array.isArray(color) ? (
-        <>
-          <stop offset="0%" stopColor={color[0]} />
-          <stop offset="100%" stopColor={color[1]} />
-        </>
-      ) : (
-        <>
-          <stop offset="0%" stopColor={color} />
-          <stop offset="100%" stopColor={color} />
-        </>
-      )}
-    </linearGradient>
   )
 }

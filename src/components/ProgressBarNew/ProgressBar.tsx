@@ -1,17 +1,22 @@
-import { AnimatedTiles } from './AnimatedTiles'
+import React from 'react'
+import { AnimatedTilesProgress } from './AnimatedTiles/AnimatedTilesProgress'
+
 interface Props {
-  width?: number
+  /** 1 - 100 */
+  progress: number
 }
-export function ProgressBar({ width = 644 }: Props) {
+export function ProgressBar({ progress }: Props) {
   return (
-    <AnimatedTiles
+    <AnimatedTilesProgress
       colors={['#25211E', ['#4B5CF0', '#C27265']]}
       tileSize={4}
       height={8}
-      width={width}
-      speed={20}
-      dispersion={0.3}
+      width={644}
+      waveSlope={40}
+      dispersion={0.2}
       tileAnimationDuration={0.1}
+      progress={progress}
+      progressSpeed={40}
     />
   )
 }

@@ -1,5 +1,5 @@
 import { ReactNode } from 'react'
-import { AnimatedTiles } from './AnimatedTiles'
+import { AnimatedTilesLoop } from './AnimatedTiles/AnimatedTilesLoop'
 import { TimeIcon } from './icons/TimeIcon'
 
 interface Props {
@@ -9,7 +9,7 @@ interface Props {
 }
 export function ProgressButton({ width = 261, height = 48, children }: Props) {
   return (
-    <AnimatedTiles
+    <AnimatedTilesLoop
       tileSize={12}
       width={width}
       height={height}
@@ -34,6 +34,6 @@ export function ProgressButton({ width = 261, height = 48, children }: Props) {
         </div>
         <div className="grow flex items-center justify-center">{children}</div>
       </div>
-    </AnimatedTiles>
+    </AnimatedTilesLoop>
   )
 }
