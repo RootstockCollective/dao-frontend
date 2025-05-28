@@ -1,6 +1,6 @@
 import type { Meta, StoryObj } from '@storybook/react'
 import { ConnectPopover } from './ConnectPopover'
-import { BuilderActionButton } from '../BuilderActionButton/BuilderActionButton'
+import { Button } from '@/components/Button'
 import { AlertProvider } from '@/app/providers/AlertProvider'
 
 const meta: Meta<typeof ConnectPopover> = {
@@ -18,7 +18,14 @@ export const Default: Story = {
     <AlertProvider>
       <div className="flex justify-center items-center h-96">
         <ConnectPopover {...args}>
-          <BuilderActionButton text="Back builder" onClick={() => {}} testId="storybook-builder-action-btn" />
+          <Button
+            variant="secondary"
+            className="border-[#66605C] px-2 py-1"
+            textClassName="text-[14px] font-normal"
+            onClick={() => {}}
+          >
+            Back builder
+          </Button>
         </ConnectPopover>
       </div>
     </AlertProvider>
@@ -30,7 +37,14 @@ export const OpenByDefault: Story = {
     <AlertProvider>
       <div className="flex justify-center items-center h-96">
         <ConnectPopover {...args}>
-          <BuilderActionButton text="Back builder" onClick={() => {}} testId="storybook-builder-action-btn" />
+          <Button
+            variant="secondary"
+            className="border-[#66605C] px-2 py-1"
+            textClassName="text-[14px] font-normal"
+            onClick={() => {}}
+          >
+            Back builder
+          </Button>
         </ConnectPopover>
         <div className="mt-4 text-gray-500 pl-6">Hover the button to open the popover.</div>
       </div>

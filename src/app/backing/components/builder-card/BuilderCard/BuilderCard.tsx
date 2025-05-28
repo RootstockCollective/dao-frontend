@@ -1,8 +1,8 @@
 import { ConnectPopover } from '@/app/backing/components/builder-card/ConnectPopover/ConnectPopover'
+import { Button } from '@/components/Button'
 import { cn } from '@/lib/utils'
 import { FC } from 'react'
 import { AllocationInput } from '../AllocationInput/AllocationInput'
-import { BuilderActionButton } from '../BuilderActionButton/BuilderActionButton'
 import { BuilderHeader } from '../BuilderHeader/BuilderHeader'
 import { CurrentBacking } from '../CurrentBacking/CurrentBacking'
 import { RewardsInfo } from '../RewardsInfo/RewardsInfo'
@@ -86,11 +86,27 @@ export const BuilderCard: FC<BuilderCardProps> = ({
         {isConnected && <CurrentBacking currentAllocation={currentAllocation} />}
       </div>
       {isConnected && currentAllocation !== 0 && (
-        <BuilderActionButton onClick={() => handleAllocationChange(0)} text="Remove backing" />
+        <Button
+          variant="secondary"
+          className={cn('border-[#66605C] px-2 py-1 mt-6')}
+          textClassName="text-[14px] font-normal"
+          onClick={() => onAllocationChange(0)}
+          data-testid="removeBackingButton"
+        >
+          Remove backing
+        </Button>
       )}
       {!isConnected && (
         <ConnectPopover>
-          <BuilderActionButton onClick={() => handleAllocationChange(allocation)} text="Back builder" />
+          <Button
+            variant="secondary"
+            className={cn('border-[#66605C] px-2 py-1 mt-6')}
+            textClassName="text-[14px] font-normal"
+            onClick={() => onAllocationChange(allocation)}
+            data-testid="backBuilderButton"
+          >
+            Back builder
+          </Button>
         </ConnectPopover>
       )}
     </div>
