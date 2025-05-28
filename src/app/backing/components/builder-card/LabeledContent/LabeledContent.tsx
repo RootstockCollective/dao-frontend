@@ -11,7 +11,7 @@ interface LabeledContentProps {
 export const LabeledContent: FC<LabeledContentProps> = ({ label, children, className }) => {
   return (
     <div className={cn('flex flex-col', className)} data-testid="labeledContainer">
-      <Label className="text-xs text-[#B0B0B0]" data-testid="labeledTitle">
+      <Label className="text-xs text-[#ACA39D]" data-testid="labeledTitle">
         {label}
       </Label>
       <div className="text-base text-white font-bold" data-testid="labeledContent">
