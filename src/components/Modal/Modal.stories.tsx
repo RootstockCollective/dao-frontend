@@ -40,7 +40,7 @@ const ModalWrapper = (args: any) => {
     <Modal {...args} onClose={handleClose}>
       {args.children || (
         <div className="p-6 text-center">
-          <h2 className="text-xl font-bold mb-4">Modal Content</h2>
+          <h2 className="text-xl font-bold mb-4 font-kk-topo">Modal Content</h2>
           <p>This is a sample modal content.</p>
         </div>
       )}
