@@ -86,8 +86,13 @@ jobs:
           service: ${{ env.ECS_SERVICE }}
           cluster: ${{ env.ECS_CLUSTER }}
           wait-for-service-stability: true
-      
-      - name: Start E2E tests in target repo
+
+  trigger-e2e-tests:
+    name: Trigger E2E Tests
+    runs-on: ubuntu-latest
+    needs: deploy
+    steps:
+      - name: Trigger E2E Tests in Target Repo
         uses: actions/github-script@v7
         with:
           github-token: ${{ secrets.DAO_DAPP_AUTOMATION_PAT }}
