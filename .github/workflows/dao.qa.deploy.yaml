@@ -98,7 +98,7 @@ jobs:
               workflow_id: 'playwright.yml',
               ref: 'main',
               inputs: {
-                ENVIRONMENT: 'QA',
+                ENVIRONMENT: 'DAO-QA',
                 TEST_TYPE: 'smoke'
               }
             });
