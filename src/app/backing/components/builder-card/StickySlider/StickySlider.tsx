@@ -18,7 +18,7 @@ export const StickySlider: React.FC<StickySliderProps> = ({
   value,
   onValueChange,
   max = 100,
-  step = 0.01,
+  step = 25,
   className = '',
   ticks = [0, 25, 50, 75, 100],
   thumbSize = 12,

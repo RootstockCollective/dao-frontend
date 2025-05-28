@@ -17,7 +17,11 @@ type Story = StoryObj<typeof StickySlider>
 // Wrapper component to handle state
 const StickySliderWithState = (args: any) => {
   const [value, setValue] = useState([50])
-  return <StickySlider {...args} value={value} onValueChange={setValue} />
+  return (
+    <div className="w-xl">
+      <StickySlider {...args} value={value} onValueChange={setValue} />
+    </div>
+  )
 }
 
 export const Default: Story = {
@@ -48,8 +52,8 @@ export const WithCustomTicks: Story = {
   render: args => <StickySliderWithState {...args} />,
   args: {
     max: 100,
-    step: 0.01,
-    ticks: [0, 20, 40, 60, 80, 100],
+    step: 25,
+    ticks: [0, 25, 50, 75, 100],
   },
 }
 
