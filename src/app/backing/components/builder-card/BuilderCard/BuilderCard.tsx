@@ -53,7 +53,10 @@ export const BuilderCard: FC<BuilderCardProps> = ({
 
   return (
     <div
-      className={cn('rounded bg-[#37322F] px-2 flex flex-col items-center relative', className)}
+      className={cn(
+        'rounded bg-[#37322F] px-2 flex flex-col items-center relative w-1/4 min-w-[280px]',
+        className,
+      )}
       data-dataTestId={`builderCardContainer${dataTestId}`}
     >
       <div
