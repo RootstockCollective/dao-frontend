@@ -96,7 +96,7 @@ jobs:
               workflow_id: 'playwright.yml',
               ref: 'main',
               inputs: {
-                ENVIRONMENT: 'QA',
+                ENVIRONMENT: 'CR-QA',
                 TEST_TYPE: 'smoke'
               }
             });
