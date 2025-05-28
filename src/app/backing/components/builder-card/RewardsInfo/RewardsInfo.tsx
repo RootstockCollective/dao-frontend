@@ -3,6 +3,7 @@ import { BackerRewardsPercentage } from '../BackerPercentage/BackerPercentage'
 import { FC } from 'react'
 import { LabeledContent } from '../LabeledContent/LabeledContent'
 
+// FIXME: reuse the Builder type
 interface RewardsInfoProps {
   builderRewardPct: number
   builderNextRewardPct?: number
