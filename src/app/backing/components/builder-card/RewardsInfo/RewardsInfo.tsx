@@ -17,11 +17,7 @@ export const RewardsInfo: FC<RewardsInfoProps> = ({
   return (
     <div className="flex justify-between p-3 w-full" data-testid="rewardsInfoContainer">
       <LabeledContent label="Rewards %" className="w-1/2 pr-3">
-        <BackerRewardsPercentage
-          currentPct={builderRewardPct}
-          nextPct={builderNextRewardPct}
-          testId="rewardsInfo"
-        />
+        <BackerRewardsPercentage currentPct={builderRewardPct} nextPct={builderNextRewardPct} />
       </LabeledContent>
       {estimatedRewards && (
         <LabeledContent label="Rewards (est.)" className="w-1/2">

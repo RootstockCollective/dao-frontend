@@ -4,6 +4,13 @@ import { PendingAllocation } from './PendingAllocation'
 const meta: Meta<typeof PendingAllocation> = {
   title: 'Backing/PendingAllocation',
   component: PendingAllocation,
+  decorators: [
+    Story => (
+      <div className="p-8 pt-[200px] relative min-h-[300px]">
+        <Story />
+      </div>
+    ),
+  ],
 }
 
 export default meta
