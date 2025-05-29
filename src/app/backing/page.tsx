@@ -1,13 +1,9 @@
-import { envFlags } from '@/shared/context/FeatureFlag'
-import { redirect } from 'next/navigation'
+import { withFeatureFlagRSC } from '@/shared/context/FeatureFlag'
 import { BackingPage } from './BackingPage'
 
-export default function Backing() {
-  const { v3_design } = envFlags
+const BackingPageWithFeature = withFeatureFlagRSC(BackingPage, {
+  feature: 'v3_design',
+  redirectTo: '/',
+})
 
-  if (!v3_design) {
-    redirect('/')
-  }
-
-  return v3_design && <BackingPage />
-}
+export default BackingPageWithFeature
