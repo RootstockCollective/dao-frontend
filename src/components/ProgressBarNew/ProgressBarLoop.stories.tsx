@@ -8,6 +8,20 @@ export default {
 
 type Story = StoryObj<typeof ProgressBarLoop>
 
-export const Default: Story = {
-  render: () => <ProgressBarLoop />,
+export const Gradient: Story = {
+  render: () => <ProgressBarLoop color="gradient" />,
+}
+export const Blue: Story = {
+  render: () => <ProgressBarLoop color="blue" />,
+}
+export const CustomColor: Story = {
+  render: () => (
+    <ProgressBarLoop
+      width={200}
+      color={[
+        ['#ff0000', '#ff00ff'],
+        ['#00ff00', '#0000ff'],
+      ]}
+    />
+  ),
 }

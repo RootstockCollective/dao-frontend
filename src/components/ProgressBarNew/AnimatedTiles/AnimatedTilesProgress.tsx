@@ -1,7 +1,7 @@
 import { useId, useEffect, useMemo } from 'react'
 import { motion, useMotionValue, useTransform, animate } from 'motion/react'
 import { GradientDef } from './GradientDef'
-import type { Color } from '../types'
+import type { Color } from '../colors'
 
 interface AnimatedTilesProps {
   /** SVG width in pixels */

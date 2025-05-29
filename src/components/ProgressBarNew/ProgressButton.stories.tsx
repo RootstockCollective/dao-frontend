@@ -15,3 +15,15 @@ export const Default: Story = {
     </ProgressButton>
   ),
 }
+export const CustomColors: Story = {
+  render: () => (
+    <ProgressButton
+      color={[
+        ['#ff0000', '#ff00ff'],
+        ['#00ff00', '#0000ff'],
+      ]}
+    >
+      <p className="font-rootstock-sans text-sm">In Progress - 2 mins average</p>
+    </ProgressButton>
+  ),
+}

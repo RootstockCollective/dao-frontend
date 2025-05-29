@@ -3,7 +3,7 @@ import { cn } from '@/lib/utils'
 import { useMemo, HTMLAttributes, useState } from 'react'
 import { motion } from 'motion/react'
 import { GradientDef } from './GradientDef'
-import type { Color } from '../types'
+import type { Color } from '../colors'
 
 interface Props extends HTMLAttributes<HTMLButtonElement> {
   /** Width of the progress bar in pixels */

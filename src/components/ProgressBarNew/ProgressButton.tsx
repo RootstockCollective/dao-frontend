@@ -1,13 +1,16 @@
 import { ReactNode } from 'react'
 import { AnimatedTilesLoop } from './AnimatedTiles/AnimatedTilesLoop'
 import { TimeIcon } from './icons/TimeIcon'
+import { type Color, progressBarColors } from './colors'
 
 interface Props {
   width?: number
   height?: number
+  color?: keyof typeof progressBarColors | (Color | [Color, Color])[]
   children?: ReactNode
 }
-export function ProgressButton({ width = 261, height = 48, children }: Props) {
+
+export function ProgressButton({ width = 261, height = 48, color = 'gray', children }: Props) {
   return (
     <AnimatedTilesLoop
       tileSize={12}
@@ -15,7 +18,7 @@ export function ProgressButton({ width = 261, height = 48, children }: Props) {
       height={height}
       speed={8}
       dispersion={0.7}
-      colors={['#25211E', '#66605C']} // bg80 , bg40
+      colors={Array.isArray(color) ? color : progressBarColors[color]}
       tileAnimationDuration={0.2}
       className="border border-bg-40"
     >

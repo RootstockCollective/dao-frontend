@@ -1,14 +1,17 @@
 import React from 'react'
 import { AnimatedTilesProgress } from './AnimatedTiles/AnimatedTilesProgress'
+import { type Color, progressBarColors } from './colors'
 
 interface Props {
   /** 1 - 100 */
   progress: number
+  color?: keyof typeof progressBarColors | (Color | [Color, Color])[]
 }
-export function ProgressBar({ progress }: Props) {
+
+export function ProgressBar({ progress, color = 'gradient' }: Props) {
   return (
     <AnimatedTilesProgress
-      colors={['#25211E', ['#4B5CF0', '#C27265']]}
+      colors={Array.isArray(color) ? color : progressBarColors[color]}
       tileSize={4}
       height={8}
       width={644}
