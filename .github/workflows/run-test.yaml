@@ -38,21 +38,20 @@ jobs:
                 TEST_TYPE: testType
               }
             });
+
+            // wait briefly for the workflow to be queued
+            await new Promise(resolve => setTimeout(resolve, 10000));
+
+            const runs = await github.request('GET /repos/rsksmart/Deprecated_DAO-dApp-automation/actions/runs', {
+              per_page: 1,
+              event: 'workflow_dispatch'
+            });
+
+            const runId = runs.data.workflow_runs[0].id;
+            core.setOutput('run_id', runId);
         env:
           ENVIRONMENT: ${{ github.event.inputs.ENVIRONMENT || 'CR-QA' }}
           TEST_TYPE: ${{ github.event.inputs.TEST_TYPE || 'smoke' }}
-
-        
-        // wait briefly for the workflow to be queued
-        await new Promise(resolve => setTimeout(resolve, 10000));
-
-        const runs = await github.request('GET /repos/rsksmart/Deprecated_DAO-dApp-automation/actions/runs', {
-          per_page: 1,
-          event: 'workflow_dispatch'
-        });
-
-        const runId = runs.data.workflow_runs[0].id;
-        core.setOutput('run_id', runId);
 
       - name: Poll E2E workflow run status
         run: |
