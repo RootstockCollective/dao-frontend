@@ -40,7 +40,10 @@ export const AllocationInput: FC<AllocationInputProps> = ({
 
   return (
     <div
-      className={cn('bg-v3-bg-accent-80 border border-v3-bg-accent-60 rounded-lg p-3 font-rootstock-sans', className)}
+      className={cn(
+        'bg-v3-bg-accent-80 border border-v3-bg-accent-60 rounded-lg p-3 font-rootstock-sans',
+        className,
+      )}
       data-testid="allocationInputContainer"
     >
       <div className="flex items-center justify-between w-full" data-testid="allocationInputContent">

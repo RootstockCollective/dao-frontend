@@ -6,44 +6,36 @@ import { AllocationInput } from '../AllocationInput/AllocationInput'
 import { BuilderHeader } from '../BuilderHeader/BuilderHeader'
 import { CurrentBacking } from '../CurrentBacking/CurrentBacking'
 import { RewardsInfo } from '../RewardsInfo/RewardsInfo'
+import { Builder } from '@/app/collective-rewards/types'
 
-// FIXME: to be merged with type Builder
-export interface BuilderInfo {
-  builderAddress: string
-  builderName: string
-  proposalPage: string
+export interface BuilderCardProps extends Omit<Builder, 'backerRewardPercentage'> {
+  backerRewardPercentage: NonNullable<Builder['backerRewardPercentage']>
   currentAllocation: number
-  builderRewardPct: number
-  builderNextRewardPct?: number
-}
-
-export interface BuilderCardProps extends BuilderInfo {
   maxAllocation: number
   allocation: number
   onAllocationChange: (newAllocation: number) => void
-  topBarColor: string
   rifPriceUsd: number
   isConnected: boolean
   estimatedRewards?: string
   allocationTxPending?: boolean
   dataTestId?: string
+  topBarColor?: string
   className?: string
 }
 
 export const BuilderCard: FC<BuilderCardProps> = ({
-  builderAddress,
+  address,
   builderName,
   currentAllocation,
   maxAllocation,
   allocation,
-  builderRewardPct,
+  backerRewardPercentage,
   rifPriceUsd,
   isConnected,
-  builderNextRewardPct,
   estimatedRewards,
   allocationTxPending,
   onAllocationChange,
-  topBarColor,
+  topBarColor = 'transparent',
   dataTestId = '',
   className,
 }) => {
@@ -61,16 +53,12 @@ export const BuilderCard: FC<BuilderCardProps> = ({
         data-dataTestId="builderCardTopBar"
       />
       {/* FIXME: replace the builder page link */}
-      <BuilderHeader address={builderAddress} name={builderName} builderPageLink="#" className="mt-8" />
+      <BuilderHeader address={address} name={builderName} builderPageLink="#" className="mt-8" />
       <div
         className="w-full mt-6 border border-v3-bg-accent-40 rounded-lg gap-3 flex flex-col divide-y divide-v3-bg-accent-40"
         data-dataTestId="builderCardContent"
       >
-        <RewardsInfo
-          builderRewardPct={builderRewardPct}
-          builderNextRewardPct={builderNextRewardPct}
-          estimatedRewards={estimatedRewards}
-        />
+        <RewardsInfo {...backerRewardPercentage} estimatedRewards={estimatedRewards} />
         {isConnected && (
           <AllocationInput
             allocation={allocation}
