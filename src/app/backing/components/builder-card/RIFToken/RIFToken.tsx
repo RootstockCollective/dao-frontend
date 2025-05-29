@@ -9,7 +9,7 @@ export const RIFToken: FC = () => {
       data-testid="currentBackingToken"
     >
       <TokenImage symbol={RIF} size={16} />
-      <div className="text-xs text-white">stRIF</div>
+      <div className="text-xs text-v3-text-100">stRIF</div>
     </div>
   )
 }

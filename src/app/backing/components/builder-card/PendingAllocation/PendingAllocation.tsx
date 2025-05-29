@@ -10,7 +10,7 @@ interface PendingAllocationProps {
 
 export const PendingAllocation: FC<PendingAllocationProps> = ({ pendingBacking, currentBacking }) => {
   const popoverContent = (
-    <div className="min-w-[220px] text-black rounded-lg p-4" data-testid="pendingAllocationPopover">
+    <div className="min-w-[220px] text-v3-text-0 rounded-lg p-4" data-testid="pendingAllocationPopover">
       <div className="flex justify-between items-center mb-2">
         <span>Pending</span>
         <span className="flex items-center gap-1">

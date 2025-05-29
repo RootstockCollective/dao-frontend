@@ -40,7 +40,7 @@ export const AllocationInput: FC<AllocationInputProps> = ({
 
   return (
     <div
-      className={cn('bg-[#25211E] border border-[#393532] rounded-lg p-3 font-rootstock-sans', className)}
+      className={cn('bg-v3-bg-accent-80 border border-v3-bg-accent-60 rounded-lg p-3 font-rootstock-sans', className)}
       data-testid="allocationInputContainer"
     >
       <div className="flex items-center justify-between w-full" data-testid="allocationInputContent">
@@ -64,13 +64,13 @@ export const AllocationInput: FC<AllocationInputProps> = ({
           <RIFToken />
         </div>
       </div>
-      <Paragraph className="text-[14px] text-[#B0B0B0]" data-testid="allocationInputUsd">
+      <Paragraph className="text-[14px] text-v3-text-60" data-testid="allocationInputUsd">
         {amountUsd} USD
       </Paragraph>
       {editing && !allocationTxPending && (
         <div data-testid="allocationInputSlider">
           <StickySlider value={[allocationPercentage]} onValueChange={handleSliderChange} />
-          <Paragraph className="text-[12px] text-[#B0B0B0] mt-2" data-testid="allocationInputPercentage">
+          <Paragraph className="text-[12px] text-v3-text-60 mt-2" data-testid="allocationInputPercentage">
             {allocationPercentage.toFixed(2)}% of total backing power
           </Paragraph>
         </div>

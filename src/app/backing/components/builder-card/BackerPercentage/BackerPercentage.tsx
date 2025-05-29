@@ -12,13 +12,13 @@ interface BackerRewardsPercentageProps {
 const deltaMap = {
   increase: {
     Icon: ArrowUpIcon,
-    colorClass: 'text-[#1bc47d]',
+    colorClass: 'text-v3-success',
     testId: 'backerPercentageIncrease',
     valueTestId: 'backerPercentageIncreaseValue',
   },
   decrease: {
     Icon: ArrowDownIcon,
-    colorClass: 'text-[#f14722]',
+    colorClass: 'text-v3-error',
     testId: 'backerPercentageDecrease',
     valueTestId: 'backerPercentageDecreaseValue',
   },
