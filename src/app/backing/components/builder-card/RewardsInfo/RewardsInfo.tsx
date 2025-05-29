@@ -4,7 +4,7 @@ import { FC } from 'react'
 import { LabeledContent } from '../LabeledContent/LabeledContent'
 import { BackerRewardsConfig } from '@/app/collective-rewards/types'
 
-interface RewardsInfoProps extends BackerRewardsConfig {
+export interface RewardsInfoProps extends BackerRewardsConfig {
   estimatedRewards?: string
 }
 

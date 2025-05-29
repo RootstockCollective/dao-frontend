@@ -1,4 +1,4 @@
-import { RewardsInfo } from './RewardsInfo'
+import { RewardsInfo, RewardsInfoProps } from './RewardsInfo'
 import type { Meta, StoryObj } from '@storybook/react'
 
 const meta: Meta<typeof RewardsInfo> = {
@@ -9,41 +9,40 @@ const meta: Meta<typeof RewardsInfo> = {
 export default meta
 type Story = StoryObj<typeof RewardsInfo>
 
+const defaultArgs: RewardsInfoProps = {
+  // @ts-expect-error: Storybook cannot serialize bigint
+  previous: 50,
+  // @ts-expect-error: Storybook cannot serialize bigint
+  next: 40,
+  // @ts-expect-error: Storybook cannot serialize bigint
+  cooldown: 0,
+  // @ts-expect-error: Storybook cannot serialize bigint
+  active: 50,
+}
+
 export const Default: Story = {
-  args: {
-    previous: BigInt(50),
-    next: BigInt(40),
-    cooldown: BigInt(0),
-    active: BigInt(50),
-  },
+  args: defaultArgs,
 }
 
 export const WithEstimatedRewards: Story = {
   args: {
-    previous: BigInt(50),
-    next: BigInt(40),
-    cooldown: BigInt(0),
-    active: BigInt(50),
+    ...defaultArgs,
     estimatedRewards: '300.00 USD',
   },
 }
 
 export const WithIncreaseNextRewardPct: Story = {
   args: {
-    previous: BigInt(50),
-    next: BigInt(60),
-    cooldown: BigInt(0),
-    active: BigInt(50),
+    ...defaultArgs,
+    // @ts-expect-error: Storybook cannot serialize bigint
+    next: 60,
     estimatedRewards: '300.00 USD',
   },
 }
 
 export const WithDecreaseNextRewardPct: Story = {
   args: {
-    previous: BigInt(50),
-    next: BigInt(40),
-    cooldown: BigInt(0),
-    active: BigInt(50),
+    ...defaultArgs,
     estimatedRewards: '300.00 USD',
   },
 }
