@@ -41,3 +41,43 @@ jobs:
         env:
           ENVIRONMENT: ${{ github.event.inputs.ENVIRONMENT || 'CR-QA' }}
           TEST_TYPE: ${{ github.event.inputs.TEST_TYPE || 'smoke' }}
+
+        
+        // wait briefly for the workflow to be queued
+        await new Promise(resolve => setTimeout(resolve, 10000));
+
+        const runs = await github.request('GET /repos/rsksmart/Deprecated_DAO-dApp-automation/actions/runs', {
+          per_page: 1,
+          event: 'workflow_dispatch'
+        });
+
+        const runId = runs.data.workflow_runs[0].id;
+        core.setOutput('run_id', runId);
+
+      - name: Poll E2E workflow run status
+        run: |
+          run_id=${{ steps.trigger.outputs.run_id }}
+
+          echo "Polling workflow run ID: $run_id"
+
+          status="in_progress"
+          conclusion=""
+
+          while [[ "$status" != "completed" ]]; do
+            sleep 15
+            response=$(curl -s -H "Authorization: Bearer ${{ secrets.DAO_DAPP_AUTOMATION_PAT }}" \
+              -H "Accept: application/vnd.github+json" \
+              https://api.github.com/repos/rsksmart/Deprecated_DAO-dApp-automation/actions/runs/$run_id)
+
+            status=$(echo "$response" | jq -r .status)
+            conclusion=$(echo "$response" | jq -r .conclusion)
+
+            echo "Status: $status, Conclusion: $conclusion"
+          done
+
+          if [[ "$conclusion" != "success" ]]; then
+            echo "❌ E2E tests failed with conclusion: $conclusion"
+            exit 1
+          else
+            echo "✅ E2E tests passed successfully!"
+          fi
