@@ -23,7 +23,7 @@ export const Modal: FC<Props> = ({
   'data-testid': dataTestId,
 }) => {
   return createPortal(
-    <div className="fixed inset-0 flex items-center justify-center z-50" data-testid={dataTestId}>
+    <div className="fixed inset-0 flex items-center justify-center align-center z-50" data-testid={dataTestId}>
       {/* Backdrop */}
       <div className="fixed inset-0 bg-bg-100/50 backdrop-blur-xs"></div>
 
@@ -36,8 +36,10 @@ export const Modal: FC<Props> = ({
         className={cn(
           'relative',
           width ? 'w-full' : 'w-[380px] md:w-[600px]', // Default responsive width
-          height !== 'auto' ? 'h-full' : 'h-auto',
-          'max-w-[95vw]',
+          height === 'auto'
+            ? 'h-full md:h-auto' // Auto on desktop, full on mobile when no height specified
+            : 'h-full', // Full height when specific height provided
+          'md:max-w-[97vw]',
           'bg-bg-80',
           'rounded-[4px]',
           'overflow-hidden',
