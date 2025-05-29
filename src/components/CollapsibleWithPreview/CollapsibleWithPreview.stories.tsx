@@ -32,6 +32,10 @@ export const Default: Story = {
   args: {
     expandedContent: <ExpandedContent />,
     collapsedContent: <CollapsedContent />,
+    expandedState: {
+      backgroundColor: 'bg-white',
+      chevronColor: 'text-gray-600',
+    },
     defaultOpen: true,
   },
 }
@@ -40,24 +44,26 @@ export const InitiallyCollapsed: Story = {
   args: {
     expandedContent: <ExpandedContent />,
     collapsedContent: <CollapsedContent />,
+    expandedState: {
+      backgroundColor: 'bg-white',
+      chevronColor: 'text-gray-600',
+    },
     defaultOpen: false,
   },
 }
 
-export const CustomColors: Story = {
+export const WithColorsChange: Story = {
   args: {
     expandedContent: <ExpandedContent />,
     collapsedContent: <CollapsedContent />,
-    expandedBgColor: 'bg-blue-100',
-    collapsedBgColor: 'bg-blue-900',
-    defaultOpen: true,
-  },
-}
-
-export const WithStateChange: Story = {
-  args: {
-    expandedContent: <ExpandedContent />,
-    collapsedContent: <CollapsedContent />,
+    expandedState: {
+      backgroundColor: 'bg-blue-100',
+      chevronColor: 'text-blue-600',
+    },
+    collapsedState: {
+      backgroundColor: 'bg-blue-900',
+      chevronColor: 'text-blue-100',
+    },
     defaultOpen: true,
     onStateChange: isOpen => console.log('State changed:', isOpen),
   },
