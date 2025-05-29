@@ -10,7 +10,7 @@ import { RIFToken } from '../RIFToken/RIFToken'
 
 interface AllocationInputProps {
   allocation: number
-  currentAllocation: number
+  existentAllocation: number
   maxAllocation: number
   rifPriceUsd: number
   allocationTxPending?: boolean
@@ -20,7 +20,7 @@ interface AllocationInputProps {
 
 export const AllocationInput: FC<AllocationInputProps> = ({
   allocation,
-  currentAllocation,
+  existentAllocation,
   maxAllocation,
   rifPriceUsd,
   allocationTxPending = false,
@@ -62,7 +62,7 @@ export const AllocationInput: FC<AllocationInputProps> = ({
         </div>
         <div className="flex items-center gap-1 flex-shrink-0" data-testid="allocationInputActions">
           {allocationTxPending && (
-            <PendingAllocation pendingBacking={allocation} currentBacking={currentAllocation} />
+            <PendingAllocation pendingBacking={allocation} currentBacking={existentAllocation} />
           )}
           <RIFToken />
         </div>
