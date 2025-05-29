@@ -3,6 +3,7 @@
 import axios from 'axios'
 import { Address } from 'viem'
 import { BackerStakingHistory } from '@/app/collective-rewards/rewards'
+import { pool } from '@/lib/db'
 
 type Response = {
   data: {
@@ -10,7 +11,7 @@ type Response = {
   }
 }
 
-const query = `
+const graphQlQuery = `
     query($backer: Bytes){
         backerStakingHistory(id: $backer) {
             id
@@ -23,7 +24,6 @@ const query = `
                 allocation_
                 lastBlockTimestamp_
             }
-
         }
     }
 `
@@ -33,11 +33,36 @@ export async function fetchBackerStakingHistory(backer: Address) {
   const {
     data: { data },
   } = await axios.post<Response>(fetchCrTheGraphEndpoint, {
-    query,
+    query: graphQlQuery,
     variables: {
       backer,
     },
   })
 
   return data.backerStakingHistory
+}
+
+
+const sqlQuery = `
+  SELECT convert_from(bsh.id, 'utf8') AS id, 
+  bsh."backerTotalAllocation" AS "backerTotalAllocation_", 
+  bsh."accumulatedTime" AS "accumulatedTime_", 
+  bsh."lastBlockTimestamp" AS "lastBlockTimestamp_",
+  COALESCE(
+    json_agg(
+      json_build_object('gauge_', convert_from(gsh.gauge, 'utf8'), 
+      'accumulatedAllocationsTime_', gsh."accumulatedAllocationsTime",
+      'allocation_', gsh."allocation",
+      'lastBlockTimestamp_', gsh."lastBlockTimestamp"
+      )
+    ), 
+  '[]') AS gauges_
+  FROM "BackerStakingHistory" bsh 
+  INNER JOIN "GaugeStakingHistory" gsh ON bsh.id = gsh.backer
+  WHERE bsh.id = LOWER($1)::bytea
+  GROUP BY bsh.id;
+`
+export async function fetchBackerStakingHistoryFromDb(backer: Address) {
+  const { rows } = await pool.query<BackerStakingHistory>(sqlQuery, [backer])
+  return rows[0]
 }
