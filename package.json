@@ -16,6 +16,8 @@
     "build:start": "next build && next start"
   },
   "dependencies": {
+    "@apollo/client": "^3.13.8",
+    "@apollo/client-integration-nextjs": "^0.12.2",
     "@hookform/resolvers": "^3.10.0",
     "@next/third-parties": "^15.2.4",
     "@radix-ui/react-accordion": "^1.2.2",
