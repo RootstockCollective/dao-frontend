@@ -3,10 +3,10 @@ import { FC } from 'react'
 import { RIFToken } from '../RIFToken/RIFToken'
 
 interface CurrentBackingProps {
-  currentAllocation: number
+  existentAllocation: number
 }
 
-export const CurrentBacking: FC<CurrentBackingProps> = ({ currentAllocation }) => {
+export const CurrentBacking: FC<CurrentBackingProps> = ({ existentAllocation }) => {
   return (
     <div className="px-3 mb-3 font-rootstock-sans" data-testid="currentBackingContainer">
       {/* FIXME: variables to moved in the variables file */}
@@ -15,7 +15,7 @@ export const CurrentBacking: FC<CurrentBackingProps> = ({ currentAllocation }) =
       </Label>
       <div className="flex gap-2 text-xs">
         <span className="text-[16px]" data-testid="currentBackingValue">
-          {currentAllocation}
+          {existentAllocation}
         </span>{' '}
         <RIFToken />
       </div>

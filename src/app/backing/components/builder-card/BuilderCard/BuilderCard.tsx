@@ -10,7 +10,7 @@ import { Builder } from '@/app/collective-rewards/types'
 
 export interface BuilderCardProps extends Omit<Builder, 'backerRewardPercentage'> {
   backerRewardPercentage: NonNullable<Builder['backerRewardPercentage']>
-  currentAllocation: number
+  existentAllocation: number
   maxAllocation: number
   allocation: number
   onAllocationChange: (newAllocation: number) => void
@@ -26,7 +26,7 @@ export interface BuilderCardProps extends Omit<Builder, 'backerRewardPercentage'
 export const BuilderCard: FC<BuilderCardProps> = ({
   address,
   builderName,
-  currentAllocation,
+  existentAllocation,
   maxAllocation,
   allocation,
   backerRewardPercentage,
@@ -63,16 +63,16 @@ export const BuilderCard: FC<BuilderCardProps> = ({
           <AllocationInput
             allocation={allocation}
             maxAllocation={maxAllocation}
-            currentAllocation={currentAllocation}
+            existentAllocation={existentAllocation}
             allocationTxPending={allocationTxPending}
             rifPriceUsd={rifPriceUsd}
             onAllocationChange={onAllocationChange}
             className="px-2 py-3 mx-3"
           />
         )}
-        {isConnected && <CurrentBacking currentAllocation={currentAllocation} />}
+        {isConnected && <CurrentBacking existentAllocation={existentAllocation} />}
       </div>
-      {isConnected && currentAllocation !== 0 && (
+      {isConnected && existentAllocation !== 0 && (
         <Button
           variant="secondary"
           className={cn('border-v3-bg-accent-40 px-2 py-1 mt-6')}

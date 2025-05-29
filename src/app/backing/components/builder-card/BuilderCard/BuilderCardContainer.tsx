@@ -9,7 +9,7 @@ interface BuilderCardContainerProps extends BuilderCardProps {
 }
 
 export const BuilderCardContainer: FC<BuilderCardContainerProps> = ({
-  currentAllocation,
+  existentAllocation,
   allocationTxPending = false,
   onUpdateAllocation,
   ...props
@@ -17,7 +17,7 @@ export const BuilderCardContainer: FC<BuilderCardContainerProps> = ({
   const { isConnected } = useAccount()
   const { prices } = usePricesContext()
   const rifPriceUsd = prices[RIF]?.price ?? 0
-  const [allocation, setAllocation] = useState<number>(currentAllocation)
+  const [allocation, setAllocation] = useState<number>(existentAllocation)
 
   const handleAllocationChange = (value: number) => {
     if (allocationTxPending) return
@@ -31,7 +31,7 @@ export const BuilderCardContainer: FC<BuilderCardContainerProps> = ({
       isConnected={isConnected}
       rifPriceUsd={rifPriceUsd}
       allocation={allocation}
-      currentAllocation={currentAllocation}
+      existentAllocation={existentAllocation}
       allocationTxPending={allocationTxPending}
       onAllocationChange={handleAllocationChange}
     />

@@ -24,7 +24,7 @@ export const Default: Story = {
   args: {
     allocation: 0,
     maxAllocation: 120000,
-    currentAllocation: 0,
+    existentAllocation: 0,
     rifPriceUsd: 0.05,
   },
 }
@@ -34,7 +34,7 @@ export const WithAllocation: Story = {
   args: {
     allocation: 50000,
     maxAllocation: 120000,
-    currentAllocation: 50000,
+    existentAllocation: 50000,
     rifPriceUsd: 0.05,
   },
 }
@@ -44,7 +44,7 @@ export const Pending: Story = {
   args: {
     allocation: 50000,
     maxAllocation: 120000,
-    currentAllocation: 30000,
+    existentAllocation: 30000,
     allocationTxPending: true,
     rifPriceUsd: 0.05,
   },
