@@ -1,5 +1,5 @@
 import { Paragraph } from '@/components/TypographyNew'
-import { BackerRewardsPercentage } from '../BackerPercentage/BackerPercentage'
+import { BackerRewardsPercentage } from '../BackerPercentage/BackerRewardsPercentage'
 import { FC } from 'react'
 import { LabeledContent } from '../LabeledContent/LabeledContent'
 import { BackerRewardsConfig } from '@/app/collective-rewards/types'
