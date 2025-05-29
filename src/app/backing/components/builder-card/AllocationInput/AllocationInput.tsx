@@ -1,4 +1,5 @@
-import { getFiatAmount } from '@/app/collective-rewards/rewards'
+// we import it where it's exported to avoid the need to config env variables for storybook
+import { getFiatAmount } from '@/app/collective-rewards/rewards/utils'
 import { InputNumber } from '@/components/Input/InputNumber'
 import { Paragraph } from '@/components/TypographyNew'
 import { cn } from '@/lib/utils'
