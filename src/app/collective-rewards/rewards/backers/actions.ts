@@ -23,7 +23,6 @@ const query = `
                 allocation_
                 lastBlockTimestamp_
             }
-
         }
     }
 `
