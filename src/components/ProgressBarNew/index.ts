@@ -1,3 +1,3 @@
-export { AnimatedTilesLoop as AnimatedTiles } from './AnimatedTiles/AnimatedTilesLoop'
-export { ProgressBarLoop as ProgressBarNew } from './ProgressBarLoop'
-import { ProgressButton } from './ProgressButton'
+export { ProgressBar } from './ProgressBar'
+export { ProgressBarLoop } from './ProgressBarLoop'
+export { ProgressButton } from './ProgressButton'
