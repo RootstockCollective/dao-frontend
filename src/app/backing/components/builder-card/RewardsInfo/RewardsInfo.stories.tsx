@@ -11,29 +11,39 @@ type Story = StoryObj<typeof RewardsInfo>
 
 export const Default: Story = {
   args: {
-    builderRewardPct: 50,
+    previous: BigInt(50),
+    next: BigInt(40),
+    cooldown: BigInt(0),
+    active: BigInt(50),
   },
 }
 
 export const WithEstimatedRewards: Story = {
   args: {
-    builderRewardPct: 50,
+    previous: BigInt(50),
+    next: BigInt(40),
+    cooldown: BigInt(0),
+    active: BigInt(50),
     estimatedRewards: '300.00 USD',
   },
 }
 
 export const WithIncreaseNextRewardPct: Story = {
   args: {
-    builderRewardPct: 50,
-    builderNextRewardPct: 60,
+    previous: BigInt(50),
+    next: BigInt(60),
+    cooldown: BigInt(0),
+    active: BigInt(50),
     estimatedRewards: '300.00 USD',
   },
 }
 
 export const WithDecreaseNextRewardPct: Story = {
   args: {
-    builderRewardPct: 50,
-    builderNextRewardPct: 40,
+    previous: BigInt(50),
+    next: BigInt(40),
+    cooldown: BigInt(0),
+    active: BigInt(50),
     estimatedRewards: '300.00 USD',
   },
 }

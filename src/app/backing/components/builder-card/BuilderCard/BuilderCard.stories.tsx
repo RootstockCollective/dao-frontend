@@ -26,28 +26,17 @@ const BuilderCardWithState = (args: any) => {
   return <BuilderCard {...args} allocation={allocation} onAllocationChange={value => setAllocation(value)} />
 }
 
-export const WithBackerNotConnected: Story = {
+export const WithoutAllocation: Story = {
   render: args => <BuilderCardWithState {...args} />,
   args: {
-    builderAddress: '0x1234567890abcdef',
+    address: '0x1234567890abcdef',
     builderName: 'Beefy',
-    builderRewardPct: 50,
-    rifPriceUsd: 0.05,
-    isConnected: false,
-    maxAllocation: 120000,
-    currentAllocation: 90,
-    allocation: 0,
-    topBarColor: '#A084F5',
-    className: 'w-[200px]',
-  },
-}
-
-export const WithBackerConnected: Story = {
-  render: args => <BuilderCardWithState {...args} />,
-  args: {
-    builderAddress: '0x1234567890abcdef',
-    builderName: 'Beefy',
-    builderRewardPct: 50,
+    backerRewardPercentage: {
+      previous: BigInt(40),
+      next: BigInt(50),
+      cooldown: BigInt(0),
+      active: BigInt(50),
+    },
     rifPriceUsd: 0.05,
     isConnected: true,
     maxAllocation: 120000,
@@ -61,9 +50,14 @@ export const WithBackerConnected: Story = {
 export const WithAllocation: Story = {
   render: args => <BuilderCardWithState {...args} />,
   args: {
-    builderAddress: '0x1234567890abcdef',
+    address: '0x1234567890abcdef',
     builderName: 'Beefy',
-    builderRewardPct: 50,
+    backerRewardPercentage: {
+      previous: BigInt(40),
+      next: BigInt(50),
+      cooldown: BigInt(0),
+      active: BigInt(50),
+    },
     rifPriceUsd: 0.05,
     isConnected: true,
     maxAllocation: 120000,
@@ -77,10 +71,14 @@ export const WithAllocation: Story = {
 export const WithBuilderIncreasedRewardPct: Story = {
   render: args => <BuilderCardWithState {...args} />,
   args: {
-    builderAddress: '0x1234567890abcdef',
+    address: '0x1234567890abcdef',
     builderName: 'Beefy',
-    builderRewardPct: 50,
-    builderNextRewardPct: 60,
+    backerRewardPercentage: {
+      previous: BigInt(50),
+      next: BigInt(60),
+      cooldown: BigInt(0),
+      active: BigInt(50),
+    },
     rifPriceUsd: 0.05,
     isConnected: true,
     maxAllocation: 120000,
@@ -94,10 +92,14 @@ export const WithBuilderIncreasedRewardPct: Story = {
 export const WithBuilderDecreasedRewardPct: Story = {
   render: args => <BuilderCardWithState {...args} />,
   args: {
-    builderAddress: '0x1234567890abcdef',
+    address: '0x1234567890abcdef',
     builderName: 'Beefy',
-    builderRewardPct: 50,
-    builderNextRewardPct: 40,
+    backerRewardPercentage: {
+      previous: BigInt(50),
+      next: BigInt(40),
+      cooldown: BigInt(0),
+      active: BigInt(50),
+    },
     rifPriceUsd: 0.05,
     isConnected: true,
     maxAllocation: 120000,
@@ -111,9 +113,14 @@ export const WithBuilderDecreasedRewardPct: Story = {
 export const WithAllocationPending: Story = {
   render: args => <BuilderCardWithState {...args} />,
   args: {
-    builderAddress: '0x1234567890abcdef',
+    address: '0x1234567890abcdef',
     builderName: 'Beefy',
-    builderRewardPct: 50,
+    backerRewardPercentage: {
+      previous: BigInt(40),
+      next: BigInt(50),
+      cooldown: BigInt(0),
+      active: BigInt(50),
+    },
     rifPriceUsd: 0.05,
     isConnected: true,
     maxAllocation: 120000,
