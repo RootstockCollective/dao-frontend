@@ -86,6 +86,11 @@ jobs:
             echo "Status: $STATUS, Conclusion: $CONCLUSION"
           done
 
+          echo ""
+          echo "🔗 View the workflow run here:"
+          echo "https://github.com/rsksmart/Deprecated_DAO-dApp-automation/actions/runs/$RUN_ID"
+          echo ""
+
           if [ "$CONCLUSION" != "success" ]; then
             echo "❌ E2E tests failed."
             exit 1
