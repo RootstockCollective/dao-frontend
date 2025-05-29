@@ -23,7 +23,10 @@ export const Modal: FC<Props> = ({
   'data-testid': dataTestId,
 }) => {
   return createPortal(
-    <div className="fixed inset-0 flex items-center justify-center align-center z-50" data-testid={dataTestId}>
+    <div
+      className="fixed inset-0 flex items-center justify-center align-center z-50"
+      data-testid={dataTestId}
+    >
       {/* Backdrop */}
       <div className="fixed inset-0 bg-bg-100/50 backdrop-blur-xs"></div>
 
