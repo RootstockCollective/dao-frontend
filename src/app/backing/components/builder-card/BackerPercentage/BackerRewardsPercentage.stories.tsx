@@ -1,5 +1,5 @@
 import type { Meta, StoryObj } from '@storybook/react'
-import { BackerRewardsPercentage } from './BackerPercentage'
+import { BackerRewardsPercentage } from './BackerRewardsPercentage'
 
 const meta: Meta<typeof BackerRewardsPercentage> = {
   title: 'Backing/BackerRewardsPercentage',
