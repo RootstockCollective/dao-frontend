@@ -16,10 +16,9 @@ export const BuilderHeader: FC<BuilderHeaderProps> = ({ address, name, builderPa
     // TODO: do we want the whole header to redirect to the Builder page?
     <div className={cn('flex flex-col items-center', className)} data-testid="builderHeaderContainer">
       <div className="rounded-full overflow-hidden inline-block size-[88px]" data-testid="builderAvatar">
-        <Jdenticon className="bg-white" value={address} size="88" />
+        <Jdenticon className="bg-v3-text-100" value={address} size="88" />
       </div>
-      {/* FIXME: link text colour to be specified in the variables file */}
-      <Header className="mt-2 text-center text-[22px] text-[#F47A2A] font-bold" fontFamily="kk-topo">
+      <Header className="mt-2 text-center text-[22px] text-v3-primary font-bold" fontFamily="kk-topo">
         <Link
           href={builderPageLink || '#'}
           data-testid="builderName"

@@ -8,8 +8,8 @@ export const ConnectPopover = ({ children }: { children: ReactNode }) => (
   // FIXME: conciliate with the new popover component once implemented (ie. remove custom styles)
   <Popover
     content={
-      <div className="bg-[#E4E1DA] rounded-sm shadow-sm flex flex-col w-full items-start p-6">
-        <Paragraph className="text-[#37322F] text-[14px] font-normal text-left mb-[14px]">
+      <div className="bg-v3-text-80 rounded-sm shadow-sm flex flex-col w-full items-start p-6">
+        <Paragraph className="text-v3-bg-accent-60 text-[14px] font-normal text-left mb-[14px]">
           Connect your wallet and get RIF before backing a Builder
         </Paragraph>
         <ConnectWorkflow ConnectComponent={ConnectButtonComponentSecondary} />

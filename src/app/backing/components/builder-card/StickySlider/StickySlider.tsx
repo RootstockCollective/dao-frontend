@@ -55,12 +55,12 @@ export const StickySlider: React.FC<StickySliderProps> = ({
       <div className="relative w-full h-10 flex items-center" data-testid="sliderContainer">
         {/* Track with clipped range */}
         <SliderPrimitive.Track
-          className="relative h-[1px] grow rounded-full bg-[#B0B0B0]"
+          className="relative h-[1px] grow rounded-full bg-v3-text-60"
           style={{ clipPath: 'inset(0 6px 0 6px)' }}
           data-testid="sliderTrack"
         >
           <SliderPrimitive.Range
-            className="absolute h-full rounded-full bg-[#4B5CF0]"
+            className="absolute h-full rounded-full bg-v3-rif-blue"
             data-testid="sliderRange"
           />
         </SliderPrimitive.Track>
@@ -73,7 +73,7 @@ export const StickySlider: React.FC<StickySliderProps> = ({
           const factor = (tick / max - 0.5) * thumbSize
           const left = `calc(${tick}% - ${factor}px)`
           const isActive = tick <= value[0]
-          const tickColor = isActive ? 'bg-[#4B5CF0]' : 'bg-[#B0B0B0]'
+          const tickColor = isActive ? 'bg-v3-rif-blue' : 'bg-v3-text-60'
           return (
             <span
               key={tick}
@@ -89,7 +89,7 @@ export const StickySlider: React.FC<StickySliderProps> = ({
         })}
         {/* Thumb */}
         <SliderPrimitive.Thumb
-          className="block rounded-full bg-[#FF7A00] focus:outline-none focus-visible:outline-none"
+          className="block rounded-full bg-v3-primary focus:outline-none focus-visible:outline-none"
           style={{
             width: `${thumbSize}px`,
             height: `${thumbSize}px`,
