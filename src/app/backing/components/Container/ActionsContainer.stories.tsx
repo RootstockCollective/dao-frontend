@@ -22,7 +22,6 @@ export const WithSimpleTitle: Story = {
         <button className="px-4 py-2 bg-green-500 text-white rounded">Action 2</button>
       </>
     ),
-    dataTestid: 'test',
   },
 }
 
@@ -40,7 +39,6 @@ export const WithComplexTitle: Story = {
         <button className="px-4 py-2 bg-blue-500 text-white rounded">Primary Action</button>
       </div>
     ),
-    dataTestid: 'test',
   },
 }
 
@@ -49,6 +47,5 @@ export const WithCustomClassName: Story = {
     title: 'Custom Styled Container',
     children: <p>Content with custom container styling</p>,
     className: 'bg-gray-50 border border-gray-200',
-    dataTestid: 'test',
   },
 }

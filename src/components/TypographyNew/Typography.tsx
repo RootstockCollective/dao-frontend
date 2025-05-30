@@ -19,7 +19,7 @@ interface Props {
 
 export type TypographyProps = Props & CSSProperties
 
-const variantClasses: Record<TypographyVariant, string> = {
+export const variantClasses: Record<TypographyVariant, string> = {
   e1: 'font-kk-topo font-normal text-6xl leading-[63.6px] tracking-normal uppercase',
   e2: 'font-kk-topo font-normal text-[2.75rem] leading-[47.52px] tracking-normal uppercase',
   e2m: 'font-kk-topo font-normal text-[2.5rem] leading-[44px] tracking-normal uppercase',

@@ -10,32 +10,50 @@ interface Props {
   onClose: () => void
   className?: string
   width?: number
+  height?: number | 'auto'
   'data-testid'?: string
 }
-export const Modal: FC<Props> = ({ children, onClose, width, className, 'data-testid': dataTestId }) => {
+
+export const Modal: FC<Props> = ({
+  children,
+  onClose,
+  className,
+  width,
+  height = 'auto',
+  'data-testid': dataTestId,
+}) => {
   return createPortal(
     <div
-      className="fixed inset-0 flex items-center justify-center z-50 rounded-[8px]"
+      className="fixed inset-0 flex items-center justify-center align-center z-50"
       data-testid={dataTestId}
     >
+      {/* Backdrop */}
+      <div className="fixed inset-0 bg-bg-100/50 backdrop-blur-xs"></div>
+
+      {/* Modal Container */}
       <div
-        className="fixed inset-0 backdrop-filter backdrop-blur-2xl transition-opacity"
-        onClick={onClose}
-      ></div>
-      <div
+        style={{
+          width: width ? `${width}px` : undefined,
+          height: height !== 'auto' ? `${height}px` : undefined,
+        }}
         className={cn(
-          'relative max-w-xl bg-background rounded-lg shadow-xl overflow-hidden transform transition-all border border-[#2D2D2D] z-10',
+          'relative',
+          width ? 'w-full' : 'w-[380px] md:w-[600px]', // Default responsive width
+          height === 'auto'
+            ? 'h-full md:h-auto' // Auto on desktop, full on mobile when no height specified
+            : 'h-full', // Full height when specific height provided
+          'md:max-w-[97vw]',
+          'bg-bg-80',
+          'rounded-[4px]',
+          'overflow-hidden',
           className,
         )}
-        style={{ minWidth: width }}
       >
-        <button
-          onClick={onClose}
-          className="absolute top-2 right-2 text-white text-[24px] rounded-full p-2"
-          data-testid="CloseButton"
-        >
+        {/* Close Button */}
+        <button onClick={onClose} className="absolute top-4 right-4 z-10" data-testid="CloseButton">
           <Image src="/images/close-button.svg" width={24} height={24} alt="Close" />
         </button>
+
         {children}
       </div>
     </div>,
