@@ -1,4 +1,4 @@
-import React from 'react';
+import React from 'react'
 
 export const Metrics = () => {
   return (
@@ -23,8 +23,8 @@ export const Metrics = () => {
         <div className="text-3xl font-bold text-white">123,456</div>
       </div>
     </div>
-  );
-};
+  )
+}
 
 // FIXME: Connect metrics to real data source
 // FIXME: Implement real-time updates for metrics

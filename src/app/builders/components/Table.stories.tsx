@@ -10,9 +10,9 @@ const meta = {
       default: 'dark',
       values: [
         { name: 'dark', value: '#1f2937' },
-        { name: 'light', value: '#ffffff' }
-      ]
-    }
+        { name: 'light', value: '#ffffff' },
+      ],
+    },
   },
   tags: ['autodocs'],
 } satisfies Meta<typeof Table>
@@ -23,7 +23,7 @@ type Story = StoryObj<typeof meta>
 export const Default: Story = {
   args: {},
   decorators: [
-    (Story) => (
+    Story => (
       <div className="bg-gray-800 p-6 rounded-sm w-full max-w-7xl">
         <Story />
       </div>
@@ -34,7 +34,7 @@ export const Default: Story = {
 export const WithLimitedData: Story = {
   args: {},
   decorators: [
-    (Story) => (
+    Story => (
       <div className="bg-gray-800 p-6 rounded-sm w-full max-w-7xl">
         <div className="w-full">
           <div className="overflow-x-auto">
@@ -66,7 +66,8 @@ export const WithLimitedData: Story = {
                     <td className="py-3 px-2 text-gray-300">{builder.rewards}</td>
                     <td className="py-3 px-2">
                       <span className={builder.positive ? 'text-green-400' : 'text-red-400'}>
-                        {builder.positive ? '+' : ''}{builder.change}
+                        {builder.positive ? '+' : ''}
+                        {builder.change}
                       </span>
                     </td>
                     <td className="py-3 px-2 text-gray-300">{builder.amount}</td>
@@ -87,7 +88,7 @@ export const WithLimitedData: Story = {
 export const LoadingState: Story = {
   args: {},
   decorators: [
-    (Story) => (
+    Story => (
       <div className="bg-gray-800 p-6 rounded-sm w-full max-w-7xl">
         <div className="w-full">
           <div className="overflow-x-auto">
@@ -102,7 +103,7 @@ export const LoadingState: Story = {
                 </tr>
               </thead>
               <tbody>
-                {[1, 2, 3, 4, 5].map((item) => (
+                {[1, 2, 3, 4, 5].map(item => (
                   <tr key={item} className="border-b border-gray-700/50">
                     <td className="py-3 px-2">
                       <div className="flex items-center space-x-3">
@@ -136,7 +137,7 @@ export const LoadingState: Story = {
 export const EmptyState: Story = {
   args: {},
   decorators: [
-    (Story) => (
+    Story => (
       <div className="bg-gray-800 p-6 rounded-sm w-full max-w-7xl">
         <div className="w-full">
           <div className="overflow-x-auto">
@@ -172,7 +173,7 @@ export const EmptyState: Story = {
 export const MobileView: Story = {
   args: {},
   decorators: [
-    (Story) => (
+    Story => (
       <div className="bg-gray-800 p-4 rounded-sm w-full max-w-sm">
         <div className="w-full">
           <div className="space-y-4">
@@ -199,7 +200,8 @@ export const MobileView: Story = {
                   <div>
                     <div className="text-gray-400">Change</div>
                     <div className={builder.positive ? 'text-green-400' : 'text-red-400'}>
-                      {builder.positive ? '+' : ''}{builder.change}
+                      {builder.positive ? '+' : ''}
+                      {builder.change}
                     </div>
                   </div>
                   <div>
