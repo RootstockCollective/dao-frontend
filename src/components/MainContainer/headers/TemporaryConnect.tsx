@@ -2,7 +2,7 @@ import Image from 'next/image'
 import { useAccount } from 'wagmi'
 import { Tooltip } from '@/components/Tooltip'
 import connectIcon from '../icons/connect.png'
-import { ConnectWorkflow } from '@/shared/walletConnection'
+import { ConnectWorkflow } from '@/shared/walletConnection/connection/ConnectWorkflow'
 
 /**
  * Temporary connect button. Replace with the real one
