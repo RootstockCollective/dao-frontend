@@ -1,10 +1,11 @@
-import React from 'react'
+import React, { FC } from 'react'
 
 interface CaretRightProps {
+  color?: string
   className?: string
 }
 
-export const CaretRight: React.FC<CaretRightProps> = ({ className }) => {
+export const CaretRight: FC<CaretRightProps> = ({ color = 'var(--background-0)', className }) => {
   return (
     <svg
       xmlns="http://www.w3.org/2000/svg"
@@ -17,7 +18,7 @@ export const CaretRight: React.FC<CaretRightProps> = ({ className }) => {
       <g clipPath="url(#clip0_2481_2573)">
         <path
           d="M6 12.5714L11 7.57141L6 2.57141"
-          stroke="#ACA39D"
+          stroke={color}
           strokeWidth="1.25"
           strokeLinecap="round"
           strokeLinejoin="round"
