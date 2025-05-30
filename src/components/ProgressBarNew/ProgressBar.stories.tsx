@@ -27,6 +27,7 @@ export const CustomColor: Story = {
             ['#ff0000', '#ff00ff'],
             ['#00ff00', '#0000ff'],
           ]}
+          className="w-11/12"
         />
       )}
     />
@@ -36,7 +37,7 @@ const Container = ({ ProgressComponent }: { ProgressComponent: typeof ProgressBa
   const [index, setIndex] = useState(0)
   const progressValue = progress[index % progress.length]
   return (
-    <div className="w-fit">
+    <div className="w-full">
       <div className="flex justify-between">
         <button
           className="px-2 mb-2 border rounded-sm border-neutral-500"

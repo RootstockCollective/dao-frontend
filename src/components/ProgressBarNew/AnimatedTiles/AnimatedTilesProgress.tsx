@@ -1,13 +1,11 @@
-import { useId, useEffect, useMemo } from 'react'
+import { useId, useEffect, useMemo, useRef, HTMLAttributes } from 'react'
 import { motion, useMotionValue, useTransform, animate } from 'motion/react'
 import { GradientDef } from './GradientDef'
 import type { Color } from '../colors'
+import { useResizeObserver } from '@/shared/hooks/useResizeObserver'
+import { cn } from '@/lib/utils'
 
-interface AnimatedTilesProps {
-  /** SVG width in pixels */
-  width: number
-  /** SVG height in pixels */
-  height: number
+interface AnimatedTilesProps extends HTMLAttributes<SVGSVGElement> {
   /** Size of each tile (square side, in px) */
   tileSize: number
   /** Array of two gradient colors (current and next layer) */
@@ -33,8 +31,6 @@ interface AnimatedTilesProps {
  * Supports gradient transitions and a "glitchy" pixel-style animated edge.
  */
 export function AnimatedTilesProgress({
-  width,
-  height,
   tileSize,
   waveSlope,
   dispersion,
@@ -42,10 +38,14 @@ export function AnimatedTilesProgress({
   colors,
   progress,
   progressSpeed,
+  className,
+  ...props
 }: AnimatedTilesProps) {
   const progressMv = useMotionValue(0)
   const uniqueId = useId()
-
+  const ref = useRef<SVGSVGElement>(null)
+  // getting size from CSS
+  const { width, height } = useResizeObserver(ref)
   const maskId = `mask-${uniqueId}`
   const [currentColor, nextColor] = colors
   const cols = Math.ceil(width / tileSize)
@@ -86,11 +86,13 @@ export function AnimatedTilesProgress({
 
   return (
     <svg
-      className="rounded-sm"
+      ref={ref}
+      className={cn('rounded-sm', className)}
       shapeRendering="crispEdges"
       width={width}
       height={height}
       viewBox={`0 0 ${width} ${height}`}
+      {...props}
     >
       <defs>
         <mask id={maskId} type="alpha">

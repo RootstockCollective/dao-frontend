@@ -1,15 +1,12 @@
-import { useId } from 'react'
+import { useId, useRef } from 'react'
 import { cn } from '@/lib/utils'
 import { useMemo, HTMLAttributes, useState } from 'react'
 import { motion } from 'motion/react'
 import { GradientDef } from './GradientDef'
 import type { Color } from '../colors'
+import { useResizeObserver } from '@/shared/hooks/useResizeObserver'
 
-interface Props extends HTMLAttributes<HTMLButtonElement> {
-  /** Width of the progress bar in pixels */
-  width: number
-  /** Height of the progress bar in pixels */
-  height: number
+interface Props extends HTMLAttributes<HTMLDivElement> {
   /** Size of each square tile in pixels */
   tileSize: number
   /** Sequence of colors used for the gradient waves */
@@ -28,13 +25,12 @@ interface Props extends HTMLAttributes<HTMLButtonElement> {
 export function AnimatedTilesLoop({
   className,
   tileSize,
-  width,
-  height,
   speed,
   dispersion,
   tileAnimationDuration,
   colors = [],
   children,
+  ...props
 }: Props) {
   const uniqueId = useId()
   // Indicates iteration of the loop
@@ -43,7 +39,9 @@ export function AnimatedTilesLoop({
   /** current and next wave colors */
   const currentColor = colors[wave % colors.length]
   const nextColor = colors[(wave + 1) % colors.length]
-
+  const ref = useRef(null)
+  // measure width and height for animations
+  const { width, height } = useResizeObserver(ref)
   const { grid, lastIndex } = useMemo(() => {
     const cols = Math.ceil(width / tileSize)
     const rows = Math.ceil(height / tileSize)
@@ -64,7 +62,7 @@ export function AnimatedTilesLoop({
   }, [width, tileSize, height, speed, dispersion, wave])
 
   return (
-    <div className={cn('relative overflow-hidden rounded-md', className)} style={{ width, height }}>
+    <div ref={ref} className={cn('relative overflow-hidden rounded-md', className)} {...props}>
       <svg shapeRendering="crispEdges" width={width} height={height} viewBox={`0 0 ${width} ${height}`}>
         <defs>
           <motion.mask type="alpha" id={`mask-${uniqueId}`} key={wave}>

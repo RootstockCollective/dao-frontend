@@ -17,7 +17,6 @@ export const Blue: Story = {
 export const CustomColor: Story = {
   render: () => (
     <ProgressBarLoop
-      width={200}
       color={[
         ['#ff0000', '#ff00ff'],
         ['#00ff00', '#0000ff'],
