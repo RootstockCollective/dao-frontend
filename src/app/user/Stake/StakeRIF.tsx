@@ -4,6 +4,7 @@ import { Button } from '@/components/ButtonNew/Button'
 import { CaretRight } from '@/components/Icons/CaretRight'
 import { TokenImage } from '@/components/TokenImage'
 import { Header, Label, Paragraph, Span } from '@/components/TypographyNew'
+import { StakeSteps } from './Steps/StakeSteps'
 
 interface Props {
   amount: string
@@ -33,17 +34,7 @@ export const StakeRIF = ({
   <div className="p-6">
     <Header className="mt-16 mb-4">{textsDependingOnAction[actionName].modalTitle}</Header>
 
-    <div className="flex justify-between items-center mb-12">
-      <Span variant="tag">SELECT AMOUNT</Span>
-      <CaretRight />
-      <Span variant="tag" className="text-text-60">
-        REQUEST ALLOWANCE
-      </Span>
-      <CaretRight />
-      <Span variant="tag" className="text-text-60">
-        CONFIRM STAKE
-      </Span>
-    </div>
+    <StakeSteps currentStep={1} />
 
     <StakeInput
       onChange={onAmountChange}
@@ -74,7 +65,7 @@ export const StakeRIF = ({
     <div className="flex justify-end">
       <Button
         variant="primary"
-        onClick={shouldEnableGoNext ? onGoNext : undefined}
+        onClick={onGoNext}
         disabled={!shouldEnableGoNext}
         data-testid={textsDependingOnAction[actionName].confirmButtonText}
       >
