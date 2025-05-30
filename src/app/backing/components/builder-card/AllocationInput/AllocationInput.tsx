@@ -51,6 +51,7 @@ export const AllocationInput: FC<AllocationInputProps> = ({
         <div className="flex-grow min-w-0" data-testid="allocationInputValue">
           <InputNumber
             name="allocation"
+            autoComplete="off"
             placeholder={`max ${maxAllocation}`}
             className="focus:outline-none focus-visible:outline-none text-left p-0 m-0 border-0 bg-transparent w-full text-[24px]"
             value={allocation ? allocation.toString() : ''}
