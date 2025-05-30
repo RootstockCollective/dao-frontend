@@ -33,7 +33,7 @@ export const BuildersPage = () => {
       <PageTitleContainer leftText={NAME} dataTestid={NAME}>
         {/* TODO: ADD CHILDREN HERE OR TEXT IN LEFT_TEXT */}
       </PageTitleContainer>
-      
+
       <div data-testid={`${NAME}_info`} className="flex flex-col w-full items-start gap-2">
         <InfoContainer dataTestid={NAME}>
           <Content />
@@ -48,7 +48,7 @@ export const BuildersPage = () => {
           <Spotlight />
         </ActionMetricsContainer>
       )}
-      
+
       <ActionsContainer title={<TableTitle />} dataTestid={NAME}>
         <Table />
       </ActionsContainer>

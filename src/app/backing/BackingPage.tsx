@@ -27,7 +27,7 @@ export const BackingPage = () => {
       {address && (
         <ActionMetricsContainer dataTestid={NAME}>{/* TODO: ADD CHILDREN HERE */}</ActionMetricsContainer>
       )}
-      <ActionsContainer title={`TODO: ADD TITLE COMPONENT`} dataTestid={NAME} />
+      <ActionsContainer title="TODO: ADD TITLE COMPONENT" dataTestid={NAME} />
     </div>
   )
 }

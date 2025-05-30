@@ -66,7 +66,7 @@ export function DebounceSearch({
   }
   useEffect(() => {
     onClearHandler?.(handleClear)
-  }, [])
+  }, [onClearHandler])
   return (
     <Input
       value={searchText}

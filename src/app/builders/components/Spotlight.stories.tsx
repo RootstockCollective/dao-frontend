@@ -10,9 +10,9 @@ const meta = {
       default: 'dark',
       values: [
         { name: 'dark', value: '#1f2937' },
-        { name: 'light', value: '#ffffff' }
-      ]
-    }
+        { name: 'light', value: '#ffffff' },
+      ],
+    },
   },
   tags: ['autodocs'],
 } satisfies Meta<typeof Spotlight>
@@ -23,7 +23,7 @@ type Story = StoryObj<typeof meta>
 export const Default: Story = {
   args: {},
   decorators: [
-    (Story) => (
+    Story => (
       <div className="bg-gray-800 p-6 rounded-sm w-full max-w-6xl">
         <Story />
       </div>
@@ -34,7 +34,7 @@ export const Default: Story = {
 export const WithDifferentBuilders: Story = {
   args: {},
   decorators: [
-    (Story) => (
+    Story => (
       <div className="bg-gray-800 p-6 rounded-sm w-full max-w-6xl">
         <div className="w-full">
           <h3 className="text-lg font-semibold mb-6 text-white">IN THE SPOTLIGHT</h3>
@@ -69,12 +69,12 @@ export const WithDifferentBuilders: Story = {
 export const LoadingState: Story = {
   args: {},
   decorators: [
-    (Story) => (
+    Story => (
       <div className="bg-gray-800 p-6 rounded-sm w-full max-w-6xl">
         <div className="w-full">
           <h3 className="text-lg font-semibold mb-6 text-white">IN THE SPOTLIGHT</h3>
           <div className="grid grid-cols-4 gap-6">
-            {[1, 2, 3, 4].map((item) => (
+            {[1, 2, 3, 4].map(item => (
               <div key={item} className="text-center">
                 <div className="w-20 h-20 bg-gray-600 rounded-full mx-auto mb-4 animate-pulse"></div>
                 <div className="h-6 bg-gray-600 rounded mb-2 animate-pulse"></div>
@@ -93,7 +93,7 @@ export const LoadingState: Story = {
 export const TwoColumns: Story = {
   args: {},
   decorators: [
-    (Story) => (
+    Story => (
       <div className="bg-gray-800 p-6 rounded-sm w-full max-w-4xl">
         <div className="w-full">
           <h3 className="text-lg font-semibold mb-6 text-white">FEATURED BUILDERS</h3>

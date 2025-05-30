@@ -10,9 +10,9 @@ const meta = {
       default: 'dark',
       values: [
         { name: 'dark', value: '#1f2937' },
-        { name: 'light', value: '#ffffff' }
-      ]
-    }
+        { name: 'light', value: '#ffffff' },
+      ],
+    },
   },
   tags: ['autodocs'],
 } satisfies Meta<typeof Metrics>
@@ -23,7 +23,7 @@ type Story = StoryObj<typeof meta>
 export const Default: Story = {
   args: {},
   decorators: [
-    (Story) => (
+    Story => (
       <div className="bg-gray-800 p-6 rounded-sm w-full max-w-4xl">
         <Story />
       </div>
@@ -34,7 +34,7 @@ export const Default: Story = {
 export const WithDifferentValues: Story = {
   args: {},
   decorators: [
-    (Story) => (
+    Story => (
       <div className="bg-gray-800 p-6 rounded-sm w-full max-w-4xl">
         <div className="grid grid-cols-3 gap-8 w-full">
           <div>
@@ -65,7 +65,7 @@ export const WithDifferentValues: Story = {
 export const Loading: Story = {
   args: {},
   decorators: [
-    (Story) => (
+    Story => (
       <div className="bg-gray-800 p-6 rounded-sm w-full max-w-4xl">
         <div className="grid grid-cols-3 gap-8 w-full">
           <div>

@@ -1,39 +1,25 @@
-import React from 'react';
+import React from 'react'
 
 export const Content = () => {
   return (
-    <div className="bg-gradient-to-r from-red-500 to-orange-400 rounded-lg p-8 text-white relative overflow-hidden">
-      <div className="absolute left-0 top-0 w-1/3 h-full">
-        <div className="w-full h-full bg-gradient-to-br from-red-600 to-orange-500 opacity-80"></div>
+    <div className="flex flex-col w-full">
+      <div className="text-2xl font-bold text-white mb-4">Welcome to the Builders Program</div>
+      <div className="text-gray-400 text-sm">
+        Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et
+        dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut
+        aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum
+        dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui
+        officia deserunt mollit anim id est laborum.
       </div>
-      <div className="relative z-10 grid grid-cols-2 gap-8">
-        <div>
-          <h2 className="text-3xl font-bold mb-2">BECOME A COLLECTIVE BUILDER.</h2>
-          <h3 className="text-xl text-orange-100 mb-4">GET RICH AND FAMOUS</h3>
-          <p className="text-orange-100 mb-6">
-            Lorem ipsum dolor sit amet, consectetur adipiscing elit. Maecenas 
-            dictum dignissim libero, eu imperdiet neque dignissim non.
-          </p>
-          <div className="flex space-x-4">
-            <button className="bg-orange-600 hover:bg-orange-700 text-white px-6 py-2 rounded font-medium">
-              Become a Builder
-            </button>
-            <button className="border border-white/30 hover:bg-white/10 text-white px-6 py-2 rounded font-medium">
-              Apply for a Grant
-            </button>
-          </div>
-        </div>
-        <div>
-          <h4 className="text-lg font-semibold mb-4">WHY BECOME A BUILDER?</h4>
-          <ul className="space-y-2 text-orange-100">
-            <li>• Lorem ipsum dolor sit amet</li>
-            <li>• Consectetur adipiscing</li>
-          </ul>
-        </div>
+      <div className="text-gray-400 text-sm mt-4">
+        Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium,
+        totam rem aperiam, eaque ipsa quae ab illo inventore veritatis et quasi architecto beatae vitae dicta
+        sunt explicabo. Nemo enim ipsam voluptatem quia voluptas sit aspernatur aut odit aut fugit, sed quia
+        consequuntur magni dolores eos qui ratione voluptatem sequi nesciunt.
       </div>
     </div>
-  );
-};
+  )
+}
 
 // FIXME: Connect CTA buttons to actual registration/application flows
 // FIXME: Make content dynamic/editable from CMS
