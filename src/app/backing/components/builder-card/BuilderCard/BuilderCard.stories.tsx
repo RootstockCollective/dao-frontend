@@ -34,6 +34,22 @@ const BuilderCardWithState = (args: any) => {
   return <BuilderCard {...args} allocation={allocation} onAllocationChange={value => setAllocation(value)} />
 }
 
+export const NotConnected: Story = {
+  render: args => <BuilderCardWithState {...args} />,
+  args: {
+    address: '0x1234567890abcdef',
+    builderName: 'Beefy',
+    backerRewardPercentage: createBackerRewardPercentage(40, 50, 0, 50),
+    rifPriceUsd: 0.05,
+    isConnected: false,
+    maxAllocation: 120000,
+    existentAllocation: 0,
+    allocation: 0,
+    topBarColor: '#4FFFE7',
+    className: 'w-[200px]',
+  },
+}
+
 export const WithoutAllocation: Story = {
   render: args => <BuilderCardWithState {...args} />,
   args: {
@@ -45,7 +61,7 @@ export const WithoutAllocation: Story = {
     maxAllocation: 120000,
     existentAllocation: 0,
     allocation: 0,
-    topBarColor: '#4FFFE7',
+    topBarColor: '#FF6B6B',
     className: 'w-[200px]',
   },
 }
@@ -61,7 +77,8 @@ export const WithAllocation: Story = {
     maxAllocation: 120000,
     existentAllocation: 90000,
     allocation: 90000,
-    topBarColor: '#A084F5',
+    estimatedRewards: '250.00 USD',
+    topBarColor: '#4ECDC4',
     className: 'w-[200px]',
   },
 }
@@ -77,7 +94,7 @@ export const WithBuilderIncreasedRewardPct: Story = {
     maxAllocation: 120000,
     existentAllocation: 0,
     allocation: 0,
-    topBarColor: '#A084F5',
+    topBarColor: '#FFD93D',
     className: 'w-[200px]',
   },
 }
@@ -110,7 +127,7 @@ export const WithAllocationPending: Story = {
     existentAllocation: 9000,
     allocation: 9000,
     allocationTxPending: true,
-    topBarColor: '#A084F5',
+    topBarColor: '#95E1D3',
     className: 'w-[200px]',
   },
 }
