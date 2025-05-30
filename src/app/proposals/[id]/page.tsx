@@ -47,7 +47,7 @@ import Big from '@/lib/big'
 import { usePricesContext } from '@/shared/context/PricesContext'
 import { getCombinedFiatAmount } from '@/app/collective-rewards/utils'
 import { tokenContracts } from '@/lib/contracts'
-import { ConnectWorkflow } from '@/shared/walletConnection'
+import { ConnectWorkflow } from '@/shared/walletConnection/connection/ConnectWorkflow'
 
 export default function ProposalView() {
   const { id } = useParams<{ id: string }>() ?? {}

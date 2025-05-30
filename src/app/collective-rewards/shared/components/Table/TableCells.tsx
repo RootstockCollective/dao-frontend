@@ -24,7 +24,8 @@ import { FC, memo, useContext, useMemo } from 'react'
 import { ArrowDownIcon, ArrowUpIcon, CircleIcon } from '@/components/Icons'
 import { Address, isAddress, parseEther } from 'viem'
 import { useAccount } from 'wagmi'
-import { ConnectButtonComponentSecondary, ConnectWorkflow } from '@/shared/walletConnection'
+import { ConnectButtonComponentSecondary } from '@/shared/walletConnection'
+import { ConnectWorkflow } from '@/shared/walletConnection/connection/ConnectWorkflow'
 
 type TableCellProps = {
   className?: string
