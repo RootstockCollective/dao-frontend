@@ -23,7 +23,6 @@ export const BackingPage = () => {
         <InfoContainer className="grow-[9]">{/* TODO: ADD CHILDREN HERE */}</InfoContainer>
         <MetricsContainer className="grow-[3]">{/* TODO: ADD CHILDREN HERE */}</MetricsContainer>
       </div>
-
       {address && <ActionMetricsContainer>{/* TODO: ADD CHILDREN HERE */}</ActionMetricsContainer>}
       <ActionsContainer title="TODO: ADD TITLE COMPONENT" />
     </div>
