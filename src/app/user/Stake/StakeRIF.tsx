@@ -48,11 +48,21 @@ export const StakeRIF = ({
       currencyValue={totalBalanceConverted}
     />
 
-    <div className="flex items-center gap-1 mt-2">
-      <TokenImage symbol="RIF" size={12} className="ml-1" />
-      <Label variant="body-s" className="text-text-60" data-testid="totalBalanceLabel">
-        RIF Balance: {totalBalance}
-      </Label>
+    <div className="flex items-center justify-between mx-3 mt-2">
+      <div className="flex items-center gap-1">
+        <TokenImage symbol="RIF" size={12} />
+        <Label variant="body-s" className="text-text-60" data-testid="totalBalanceLabel">
+          RIF Balance: {totalBalance}
+        </Label>
+      </div>
+      <Button
+        variant="secondary"
+        onClick={() => onAmountChange(totalBalance)}
+        className="bg-transparent border border-bg-40 px-2 py-0"
+        data-testid="maxButton"
+      >
+        <Span variant="body-s">Max</Span>
+      </Button>
     </div>
 
     {/* Cannot withdraw paragraph */}

@@ -1,5 +1,5 @@
 import { cn } from '@/lib/utils'
-import { FC, MouseEvent, ReactNode } from 'react'
+import { FC, ReactNode } from 'react'
 import { Span } from '../TypographyNew'
 
 type ButtonVariant = 'primary' | 'secondary'
@@ -11,7 +11,7 @@ interface Props {
   children: ReactNode
   variant?: ButtonVariant
   disabled?: boolean
-  onClick?: (e: MouseEvent<HTMLButtonElement>) => void
+  onClick?: () => void
   className?: string
   'data-testid'?: string
 }
@@ -26,15 +26,14 @@ export const Button: FC<Props> = ({
 }) => {
   const styles = {
     primary: 'bg-primary text-bg-100 disabled:bg-disabled-primary',
-    secondary:
-      'bg-transparent text-white border border-white hover:bg-white hover:text-black disabled:opacity-50',
+    secondary: 'bg-bg-100 text-text-100 border-0 disabled:opacity-80',
   }
 
   return (
     <button
       type="button"
       className={cn(DEFAULT_CLASSES, styles[variant], className)}
-      onClick={e => !disabled && onClick?.(e)}
+      onClick={() => !disabled && onClick?.()}
       disabled={disabled}
       data-testid={dataTestId}
     >
