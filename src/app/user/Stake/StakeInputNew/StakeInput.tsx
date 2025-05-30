@@ -27,7 +27,7 @@ export const StakeInput = ({ onChange, value, symbol, labelText, currencyValue, 
   return (
     <div className="flex flex-col py-[12px] px-[16px] rounded-[4px] w-full bg-bg-60">
       {labelText && <Paragraph className="mb-[12px]">{labelText}</Paragraph>}
-      <div className="flex">
+      <div className="flex gap-2">
         <InputNew
           name="amount-stake"
           type="number"
