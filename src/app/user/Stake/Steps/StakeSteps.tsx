@@ -6,7 +6,7 @@ interface StakeStepsProps {
 }
 
 export const StakeSteps = ({ currentStep }: StakeStepsProps) => (
-  <div className="flex justify-between items-center mb-12">
+  <div className="flex justify-between items-center">
     <Span variant="tag" className={currentStep === 1 ? '' : 'text-text-60'}>
       SELECT AMOUNT
     </Span>

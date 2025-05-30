@@ -5,6 +5,7 @@ import { CaretRight } from '@/components/Icons/CaretRight'
 import { TokenImage } from '@/components/TokenImage'
 import { Header, Label, Paragraph, Span } from '@/components/TypographyNew'
 import { StakeSteps } from './Steps/StakeSteps'
+import { ProgressBar } from '@/components/ProgressBarNew'
 
 interface Props {
   amount: string
@@ -34,7 +35,10 @@ export const StakeRIF = ({
   <div className="p-6">
     <Header className="mt-16 mb-4">{textsDependingOnAction[actionName].modalTitle}</Header>
 
-    <StakeSteps currentStep={1} />
+    <div className="mb-12">
+      <StakeSteps currentStep={1} />
+      <ProgressBar progress={28} className="mt-3" />
+    </div>
 
     <StakeInput
       onChange={onAmountChange}
