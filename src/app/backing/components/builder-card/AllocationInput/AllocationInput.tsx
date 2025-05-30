@@ -76,7 +76,7 @@ export const AllocationInput: FC<AllocationInputProps> = ({
         <div data-testid="allocationInputSlider">
           <StickySlider value={[allocationPercentage]} step={1} onValueChange={handleSliderChange} />
           <Paragraph className="text-[12px] text-v3-text-60 mt-2" data-testid="allocationInputPercentage">
-            {allocationPercentage.toFixed(2)}% of total backing power
+            {allocationPercentage.toFixed(0)}% of total backing power
           </Paragraph>
         </div>
       )}
