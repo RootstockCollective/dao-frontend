@@ -2,18 +2,16 @@
 
 import { createContext, FC, ReactNode, useContext, useEffect, useState } from 'react'
 import {
-  type Feature,
+  type FeatureFlag,
   type FeatureFlags,
-  type UserFlag,
+  getEnvFlags,
   type UserFlags,
-  envFlags,
-  isUserFeatureFlag,
   validateUserFlags,
-} from './flags'
+} from './flags.utils'
 
 type FeatureFlagContextType = {
   flags: FeatureFlags
-  toggleFlag: (flagName: UserFlag) => void
+  toggleFlag: (flagName: FeatureFlag) => void
   updateFlags: (newFlags: UserFlags) => void
 }
 const FeatureFlagContext = createContext<FeatureFlagContextType>({
@@ -28,34 +26,42 @@ const updateLocalStorage = (features: FeatureFlags): void => {
   }
 }
 
-const readLocalStorage = (): FeatureFlags => {
+const readLocalStorage = (): Partial<FeatureFlags> => {
   if (typeof window !== 'undefined' && !!window.localStorage) {
-    return JSON.parse(window.localStorage.getItem('features') ?? '{}')
+    const stored = JSON.parse(window.localStorage.getItem('features') ?? '{}')
+    // Filter out user_flags from localStorage as it should only come from env
+    const { user_flags, ...flags } = stored
+    return flags
   }
   return {}
 }
 
 export const FeatureFlagProvider: FC<{ children: ReactNode }> = ({ children }) => {
-  const [flags, setFlags] = useState<FeatureFlags>(envFlags)
+  const [flags, setFlags] = useState<FeatureFlags>(getEnvFlags())
 
   useEffect(() => {
     const localStorageFlags = readLocalStorage()
-    const cleanEnvFlags: FeatureFlags = Object.entries(envFlags).reduce<FeatureFlags>((acc, [key, value]) => {
+    const cleanEnvFlags = Object.entries(getEnvFlags()).reduce<FeatureFlags>((acc, [key, value]) => {
       if (value !== undefined) {
-        acc[key as Feature] = value
+        acc[key as keyof FeatureFlags] = value as any // FIXME: replace any with proper type
       }
-
       return acc
-    }, {})
-    const allFlags: FeatureFlags = { ...envFlags, ...localStorageFlags, ...cleanEnvFlags }
+    }, {} as FeatureFlags)
 
+    const { user_flags, ...envFlags } = cleanEnvFlags
+
+    const allFlags: FeatureFlags = {
+      ...(user_flags ?? []).map(flag => ({ [flag]: true })), // first set all user flags defined in env to true
+      ...localStorageFlags, // then overwrite these with user-defined values
+      ...envFlags, // finally let env flags to have the final word
+    }
     setFlags(allFlags)
     updateLocalStorage(allFlags)
   }, [])
 
-  const toggleFlag = (flag: UserFlag) => {
-    if (flags.user_flags && isUserFeatureFlag(flag)) {
-      const updatedFlags = {
+  const toggleFlag = (flag: FeatureFlag) => {
+    if (flags.user_flags?.includes(flag)) {
+      const updatedFlags: FeatureFlags = {
         ...flags,
         [flag]: !flags[flag],
       }
@@ -66,7 +72,7 @@ export const FeatureFlagProvider: FC<{ children: ReactNode }> = ({ children }) =
 
   const updateFlags = (newFlags: UserFlags) => {
     if (flags.user_flags && validateUserFlags(newFlags)) {
-      const updatedFlags = {
+      const updatedFlags: FeatureFlags = {
         ...flags,
         ...newFlags,
       }
