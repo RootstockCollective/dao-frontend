@@ -23,7 +23,7 @@ export const StickySlider: React.FC<StickySliderProps> = ({
   ticks = [0, 25, 50, 75, 100],
   thumbSize = 12,
   ticksEdgesSize = 8,
-  stickyThreshold = 1,
+  stickyThreshold = 2,
 }) => {
   // Snap to nearest tick during drag to have a magnetic effect
   const handleValueChange = (val: number[]) => {
