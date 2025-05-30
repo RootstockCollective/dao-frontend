@@ -1,8 +1,9 @@
-import { Header, Label, Paragraph } from '@/components/Typography'
-import { StakeInput } from '@/app/user/Stake/StakeInputNew/StakeInput'
-import { Button } from '@/components/Button'
-import { useMemo } from 'react'
+import { StakeInput } from '@/app/user/Stake/StakeInputNew'
 import { ActionBeingExecuted, textsDependingOnAction } from '@/app/user/Stake/Steps/stepsUtils'
+import { Button } from '@/components/ButtonNew/Button'
+import { CaretRight } from '@/components/Icons/CaretRight'
+import { TokenImage } from '@/components/TokenImage'
+import { Header, Label, Paragraph, Span } from '@/components/TypographyNew'
 
 interface Props {
   amount: string
@@ -29,11 +30,21 @@ export const StakeRIF = ({
   symbol = 'RIF',
   shouldShowCannotWithdraw = false,
 }: Props) => (
-  <div className="px-[50px] py-[20px]">
-    <Header className="text-center font-normal" fontFamily="kk-topo">
-      {textsDependingOnAction[actionName].modalTitle}
-      {symbol}
-    </Header>
+  <div className="p-6">
+    <Header className="mt-16 mb-4">{textsDependingOnAction[actionName].modalTitle}</Header>
+
+    <div className="flex justify-between items-center mb-12">
+      <Span variant="tag">SELECT AMOUNT</Span>
+      <CaretRight />
+      <Span variant="tag" className="text-text-60">
+        REQUEST ALLOWANCE
+      </Span>
+      <CaretRight />
+      <Span variant="tag" className="text-text-60">
+        CONFIRM STAKE
+      </Span>
+    </div>
+
     <StakeInput
       onChange={onAmountChange}
       value={amount}
@@ -41,92 +52,34 @@ export const StakeRIF = ({
       labelText={textsDependingOnAction[actionName].inputLabel}
       currencyValue={totalBalanceConverted}
     />
-    <Label>
-      Available: <span data-testid="totalBalance">{totalBalance}</span>{' '}
-      <span data-testid="symbol">{symbol}</span>{' '}
-      {totalBalanceConverted && <span data-testid="totalBalanceConverted">= {totalBalanceConverted}</span>}
-    </Label>
-    {/* Percentage button */}
-    <div className="flex justify-end gap-2 pt-1">
-      {[10, 20, 50, 100].map((percentage: number, i) => (
-        <PercentageButton
-          key={i}
-          percentage={percentage}
-          onClick={value => {
-            const calculatedAmount = (parseFloat(totalBalance) * (value / 100)).toString()
-            onAmountChange(calculatedAmount) // Update input value
-            onPercentageClicked(value) // Notify parent
-          }}
-          totalAmountAllowed={totalBalance}
-          amount={amount}
-        />
-      ))}
+
+    <div className="flex items-center gap-1 mt-2">
+      <TokenImage symbol="RIF" size={12} className="ml-1" />
+      <Label variant="body-s" className="text-text-60" data-testid="totalBalanceLabel">
+        RIF Balance: {totalBalance}
+      </Label>
     </div>
+
     {/* Cannot withdraw paragraph */}
     {shouldShowCannotWithdraw && (
-      <Paragraph size="small" className="mt-2">
+      <Paragraph variant="body-s" className="mt-2">
         It appears you have votes allocated in the Collective Rewards! You can unstake your stRIF anytime.
         However, please note that you must first de-allocate the same amount of stRIF from the Collective
         Rewards
       </Paragraph>
     )}
-    {/* Stake */}
-    <div className="flex justify-center pt-10">
+
+    <hr className="bg-bg-60 h-px border-0 mt-8 mb-6" />
+
+    <div className="flex justify-end">
       <Button
+        variant="primary"
         onClick={shouldEnableGoNext ? onGoNext : undefined}
         disabled={!shouldEnableGoNext}
-        buttonProps={{
-          'data-testid': 'StakeRIF',
-        }}
+        data-testid={textsDependingOnAction[actionName].confirmButtonText}
       >
         {textsDependingOnAction[actionName].confirmButtonText}
       </Button>
     </div>
   </div>
 )
-
-interface PercentageButtonProps {
-  amount: string
-  percentage: number
-  totalAmountAllowed: string
-  onClick: (percentageClicked: number) => void
-}
-
-const PercentageButton = ({ amount, percentage, totalAmountAllowed, onClick }: PercentageButtonProps) => {
-  const onPercentageClicked = () => onClick(percentage)
-
-  const isActive = useMemo(() => {
-    if (!amount || !totalAmountAllowed) return false
-
-    try {
-      const totalAmount = Number(totalAmountAllowed)
-      const currentAmount = Number(amount)
-
-      // Calculate raw value for comparison (not display)
-      const rawExpectedAmount = (totalAmount * percentage) / 100
-
-      if (percentage === 100) {
-        // For 100%, compare raw values
-        return Math.abs(currentAmount - totalAmount) < 1e-8
-      }
-
-      // For other percentages, compare raw values with small epsilon
-      return Math.abs(currentAmount - rawExpectedAmount) < 1e-8
-    } catch (error) {
-      console.error('Error calculating percentage button state:', error)
-      return false
-    }
-  }, [amount, totalAmountAllowed, percentage])
-
-  return (
-    <Button
-      variant={isActive ? 'secondary-full' : 'secondary'}
-      onClick={onPercentageClicked}
-      buttonProps={{
-        'data-testid': `Percentage${percentage}`,
-      }}
-    >
-      {`${percentage}%`}
-    </Button>
-  )
-}
