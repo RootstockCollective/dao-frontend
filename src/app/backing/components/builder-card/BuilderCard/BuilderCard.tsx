@@ -45,18 +45,18 @@ export const BuilderCard: FC<BuilderCardProps> = ({
         'rounded bg-v3-bg-accent-60 px-2 pb-6 flex flex-col items-center relative w-1/4 min-w-[280px]',
         className,
       )}
-      data-dataTestId={`builderCardContainer${dataTestId}`}
+      data-testid={`builderCardContainer${dataTestId}`}
     >
       <div
         className="absolute top-0 left-0 w-full h-[8px] rounded-t"
         style={{ backgroundColor: topBarColor }}
-        data-dataTestId="builderCardTopBar"
+        data-testid="builderCardTopBar"
       />
       {/* FIXME: replace the builder page link */}
       <BuilderHeader address={address} name={builderName} builderPageLink="#" className="mt-8" />
       <div
         className="w-full mt-6 border border-v3-bg-accent-40 rounded-lg gap-3 flex flex-col divide-y divide-v3-bg-accent-40"
-        data-dataTestId="builderCardContent"
+        data-testid="builderCardContent"
       >
         <RewardsInfo {...backerRewardPercentage} estimatedRewards={estimatedRewards} />
         {isConnected && (
