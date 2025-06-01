@@ -1,17 +1,16 @@
 import { useMemo } from 'react'
-import { useBlockNumber, useReadContracts } from 'wagmi'
-import { formatEther } from 'viem'
-import { governor } from '@/lib/contracts'
-import { type LatestProposalResponse } from './useFetchLatestProposals'
-import { type EventArgumentsParameter, getEventArguments } from '../shared/utils'
+import { useBlockNumber } from 'wagmi'
+import { Address, formatEther } from 'viem'
+import { getEventArguments } from '../shared/utils'
 import Big from '@/lib/big'
-import { ProposalState } from '@/shared/types'
+import { ProposalGraphQLResponse } from '@/app/proposals/actions/proposalsAction'
+import { handleProposalState } from '@/lib/utils'
 
 interface Props {
   /**
    * Array of proposals returned by the backend API
    */
-  proposals?: LatestProposalResponse[]
+  proposals: ProposalGraphQLResponse[]
 }
 
 /**
@@ -24,65 +23,50 @@ interface Props {
 export function useProposalListData({ proposals }: Props) {
   const { data: latestBlockNumber } = useBlockNumber()
 
-  const { data: proposalVotes } = useReadContracts({
-    contracts: proposals?.map(proposal => ({
-      ...governor,
-      functionName: 'proposalVotes',
-      args: [BigInt(proposal.args.proposalId)],
-    })),
-  }) as { data?: Array<{ result: bigint[] }> }
-
-  const { data: quorum } = useReadContracts({
-    contracts: proposals?.map(proposal => ({
-      ...governor,
-      functionName: 'quorum',
-      args: [BigInt(proposal.blockNumber)],
-    })),
-  }) as { data?: Array<{ result: bigint }> }
-
-  const { data: state } = useReadContracts({
-    contracts: proposals?.map(proposal => ({
-      ...governor,
-      functionName: 'state',
-      args: [BigInt(proposal.args.proposalId)],
-    })),
-  }) as { data?: Array<{ result: bigint }> }
-
-  return useMemo(
-    () =>
-      proposals?.map((proposal, i) => {
-        const votes = proposalVotes?.[i]?.result?.map(vote => Big(formatEther(vote)).round())
-        const againstVotes = Big(votes?.at(0) ?? 0)
-        const forVotes = Big(votes?.at(1) ?? 0)
-        const abstainVotes = Big(votes?.at(2) ?? 0)
-        const deadlineBlock = Big(proposal.args.voteEnd.toString())
-        const creationBlock = Number(proposal.blockNumber)
-        const eventArgs = getEventArguments(proposal as unknown as EventArgumentsParameter)
-        const { calldatasParsed } = eventArgs
-        const category = calldatasParsed
-          .filter(data => data.type === 'decoded')
-          .find(data => ['withdraw', 'withdrawERC20'].includes(data.functionName))
-          ? 'Grants'
-          : 'Builder'
-        return {
-          ...proposal,
-          votes: {
-            againstVotes,
-            forVotes,
-            abstainVotes,
-            quorum: forVotes.add(abstainVotes),
-          },
-          blocksUntilClosure: deadlineBlock.minus(latestBlockNumber?.toString() || 0),
-          votingPeriod: deadlineBlock.minus(creationBlock),
-          quorumAtSnapshot: Big(formatEther(quorum?.[i].result ?? 0n)).round(undefined, Big.roundHalfEven),
-          proposalDeadline: deadlineBlock,
-          proposalState: Number(state?.[i].result ?? 0n) as ProposalState,
-          category,
-          ...eventArgs,
-        }
-      }) ?? [],
-    [latestBlockNumber, proposalVotes, proposals, quorum, state],
-  )
+  return useMemo(() => {
+    return proposals?.map((proposal, i) => {
+      const againstVotes = Big(proposal.votesAgainst).div(Big('1e18')).round()
+      const forVotes = Big(proposal.votesFor).div(Big('1e18')).round()
+      const abstainVotes = Big(proposal.votesAbstains).div(Big('1e18')).round()
+      const deadlineBlock = Big(proposal.voteEnd)
+      const creationBlock = Number(proposal.createdAtBlock)
+      // @TODO this can be moved to server side
+      const eventArgs = getEventArguments({
+        args: {
+          description: proposal.description,
+          proposalId: BigInt(proposal.proposalId),
+          proposer: proposal.proposer.id as Address,
+          targets: proposal.targets,
+          values: proposal.values as unknown as bigint[],
+          calldatas: proposal.calldatas,
+          voteStart: BigInt(proposal.voteStart),
+          voteEnd: BigInt(proposal.voteEnd),
+        },
+        timeStamp: proposal.createdAt,
+        blockNumber: proposal.createdAtBlock,
+      })
+      const { calldatasParsed } = eventArgs
+      const category = calldatasParsed
+        .filter(data => data.type === 'decoded')
+        .find(data => ['withdraw', 'withdrawERC20'].includes(data.functionName))
+        ? 'Grants'
+        : 'Builder'
+      return {
+        ...proposal,
+        votes: {
+          againstVotes,
+          forVotes,
+          abstainVotes,
+          quorum: forVotes.add(abstainVotes),
+        },
+        blocksUntilClosure: deadlineBlock.minus(latestBlockNumber?.toString() || 0),
+        votingPeriod: deadlineBlock.minus(creationBlock),
+        quorumAtSnapshot: Big(formatEther(BigInt(proposal.quorum ?? 0n))).round(undefined, Big.roundHalfEven),
+        proposalDeadline: deadlineBlock,
+        proposalState: handleProposalState(proposal, latestBlockNumber ?? 0n),
+        category,
+        ...eventArgs,
+      }
+    })
+  }, [latestBlockNumber, proposals])
 }
-
-export type ProposalParams = ReturnType<typeof useProposalListData>[number]
