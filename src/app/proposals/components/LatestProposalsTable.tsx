@@ -1,4 +1,5 @@
-import { useMemo, memo, useState, useEffect, useCallback, useRef } from 'react'
+'use client'
+import { useMemo, useState, useEffect, useCallback, useRef } from 'react'
 import {
   createColumnHelper,
   type SortingState,
@@ -8,7 +9,6 @@ import {
   getPaginationRowModel,
   PaginationState,
 } from '@tanstack/react-table'
-import { type LatestProposalResponse } from '../hooks/useFetchLatestProposals'
 import { StatusColumn } from './table-columns/StatusColumn'
 import { StatefulTable } from '@/components/Table'
 import { HeaderTitle, Typography } from '@/components/Typography'
@@ -22,14 +22,13 @@ import { Button } from '@/components/Button'
 import { useRouter, useSearchParams } from 'next/navigation'
 import Big from '@/lib/big'
 import { proposalQuickFilters } from '@/lib/constants'
-import { CategoryColumn } from '@/app/proposals/components/table-columns/CategoryColumn'
+import { ProposalGraphQLResponse } from '@/app/proposals/actions/proposalsAction'
 
 interface LatestProposalsTableProps {
-  proposals: LatestProposalResponse[]
-  onEmitActiveProposal?: (activeProposals: number) => void
+  proposals: ProposalGraphQLResponse[]
 }
 
-const LatestProposalsTable = ({ proposals, onEmitActiveProposal }: LatestProposalsTableProps) => {
+export const LatestProposalsTable = ({ proposals }: LatestProposalsTableProps) => {
   // search textfield
   const [searchedProposal, setSearchedProposal] = useState('')
   // React-table sorting state
@@ -49,15 +48,6 @@ const LatestProposalsTable = ({ proposals, onEmitActiveProposal }: LatestProposa
       }),
     [proposalListData, searchedProposal],
   )
-
-  useEffect(() => {
-    if (onEmitActiveProposal) {
-      onEmitActiveProposal(
-        proposalListData.filter(proposal => ['Pending', 'Active'].includes(proposal.proposalState)).length ||
-          0,
-      )
-    }
-  }, [onEmitActiveProposal, proposalListData])
 
   // State for proposal quick filters
   const [activeFilter, setActiveFilter] = useState<string | null>(null)
@@ -376,8 +366,6 @@ const LatestProposalsTable = ({ proposals, onEmitActiveProposal }: LatestProposa
     </div>
   )
 }
-
-export const LatestProposalsTableMemoized = memo(LatestProposalsTable)
 
 const theadRowsPropsById = {
   name: {
