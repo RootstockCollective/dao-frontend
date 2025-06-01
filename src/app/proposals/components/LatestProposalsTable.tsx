@@ -22,19 +22,18 @@ import { useProposalListData } from '../hooks/useProposalListData'
 import { Button } from '@/components/Button'
 import { useRouter, useSearchParams } from 'next/navigation'
 import Big from '@/lib/big'
-import { ProposalState } from '@/shared/types'
 import { filterOptions } from './filter/filterOptions'
 import { FilterButton } from './filter/FilterButton'
 import { FilterSideBar } from './filter/FilterSideBar'
 import { cn } from '@/lib/utils'
 import { useClickOutside } from '@/shared/hooks/useClickOutside'
+import { ProposalGraphQLResponse } from '@/app/proposals/actions/proposalsAction'
 
 interface LatestProposalsTableProps {
-  proposals: LatestProposalResponse[]
-  onEmitActiveProposal?: (activeProposals: number) => void
+  proposals: ProposalGraphQLResponse[]
 }
 
-const LatestProposalsTable = ({ proposals, onEmitActiveProposal }: LatestProposalsTableProps) => {
+export const LatestProposalsTable = ({ proposals }: LatestProposalsTableProps) => {
   // search textfield
   const [searchedProposal, setSearchedProposal] = useState('')
   // React-table sorting state
@@ -54,16 +53,6 @@ const LatestProposalsTable = ({ proposals, onEmitActiveProposal }: LatestProposa
       }),
     [proposalListData, searchedProposal],
   )
-
-  useEffect(() => {
-    if (onEmitActiveProposal) {
-      onEmitActiveProposal(
-        proposalListData.filter(proposal =>
-          [ProposalState.Pending, ProposalState.Active].includes(proposal.proposalState),
-        ).length || 0,
-      )
-    }
-  }, [onEmitActiveProposal, proposalListData])
 
   // State for proposal quick filters
   const [activeFilter, setActiveFilter] = useState<number>(0)

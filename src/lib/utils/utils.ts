@@ -5,6 +5,7 @@ import { ClassValue, clsx } from 'clsx'
 import { twMerge } from 'tailwind-merge'
 import { Address } from 'viem'
 import { CHAIN_ID, EXPLORER_URL, RIF_WALLET_SERVICES_URL } from '../constants'
+import { ProposalGraphQLResponse } from '@/app/proposals/actions/proposalsAction'
 
 /**
  * Merges Tailwind and clsx classes in order to avoid classes conflicts.
@@ -135,51 +136,39 @@ export const sanitizeInputNumber = (num: number) => {
   return str
 }
 
-type FormatCurrencyProps = {
-  currency?: string
-  showCurrency?: boolean
-}
-
 /**
  * Formats a number as a currency
- * @param amount - The number to format
- * @param props - The props to format the number
- * @param props.currency - The currency to format the number as (default: 'USD')
- * @param props.showCurrency - Whether to show the currency symbol (default: false)
+ * @param value - The number to format
+ * @param currency - The currency to format the number as (default: 'USD')
  * @returns The formatted currency string
  * @example formatCurrency(123456.789) // '$123,456.79'
- * @example formatCurrency(123456.789, { currency: 'EUR' }) // '€123,456.79'
+ * @example formatCurrency(123456.789, 'EUR') // '€123,456.79'
  * @example formatCurrency(0.0001) // '<$0.01'
  * @example formatCurrency(0) // '$0.00'
- * @example formatCurrency(123456.789, { showCurrency: true }) // '$123,456.79 USD'
  */
-export const formatCurrency = (
-  amount: BigSource,
-  { currency = 'USD', showCurrency = false }: FormatCurrencyProps = {},
-): string => {
-  if (isNaN(Number(amount))) {
+export const formatCurrency = (value: BigSource, currency = 'USD'): string => {
+  if (isNaN(Number(value))) {
     return ''
   }
 
   // ensure it is a Big
   try {
-    amount = Big(amount.toString())
+    value = Big(value.toString())
   } catch {
     return ''
   }
 
-  let isBelowMinimumDisplay = amount.gt(0) && amount.lt(0.01)
-  amount = isBelowMinimumDisplay ? 0.01 : amount
+  let verySmallValue = value.gt(0) && value.lt(0.01)
+  value = verySmallValue ? 0.01 : value
 
-  const formattedAmount = new Intl.NumberFormat('en-US', {
+  const result = new Intl.NumberFormat('en-US', {
     style: 'currency',
     currency,
     minimumFractionDigits: 2,
     maximumFractionDigits: 2,
-  }).format(amount.toString() as never)
+  }).format(value.toString() as never)
 
-  const result = isBelowMinimumDisplay ? `<${formattedAmount}` : formattedAmount
-  return showCurrency ? `${result} ${currency}` : result
+  return verySmallValue ? `<${result}` : result
 }
 
 /**
