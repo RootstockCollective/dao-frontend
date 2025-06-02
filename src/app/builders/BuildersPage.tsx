@@ -1,6 +1,7 @@
 'use client'
 
 import { useAccount } from 'wagmi'
+import { Typography } from '@/components/TypographyNew/Typography'
 import { ActionsContainer } from '../../components/Container'
 import { ActionMetricsContainer } from '../../components/Container/ActionMetricsContainer'
 import { InfoContainer } from '../../components/Container/InfoContainer'
@@ -18,9 +19,13 @@ export const BuildersPage = () => {
 
   const TableTitle = () => (
     <div className="flex items-center justify-between w-full">
-      <h3 className="text-lg font-semibold text-white">THE COLLECTIVE BUILDERS</h3>
+      <Typography variant="h3" className="text-lg font-semibold text-white uppercase">
+        The Collective Builders
+      </Typography>
       <div className="flex items-center space-x-2">
-        <span className="text-gray-400">Active Builders</span>
+        <Typography variant="body" className="text-gray-400">
+          Active Builders
+        </Typography>
       </div>
     </div>
   )
