@@ -62,7 +62,7 @@ export const WithCustomSizes: Story = {
   args: {
     max: 100,
     step: 0.01,
-    thumbSize: 16,
+    thumbSize: '1rem',
     ticksEdgesSize: 12,
   },
 }
