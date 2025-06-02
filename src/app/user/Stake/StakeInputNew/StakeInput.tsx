@@ -3,6 +3,7 @@ import { Paragraph } from '@/components/TypographyNew'
 import { InputNew } from '@/components/Input'
 import { variantClasses } from '@/components/TypographyNew/Typography'
 import { TokenImage } from '@/components/TokenImage'
+import { cn } from '@/lib/utils'
 
 interface Props {
   onChange: (value: string) => void
@@ -33,7 +34,7 @@ export const StakeInput = ({ onChange, value, symbol, labelText, currencyValue, 
           type="number"
           value={value}
           onChange={onChange}
-          classes={`grow ${variantClasses.h1} ${error ? 'text-error' : 'text-bg-0'}`}
+          className={cn('grow', variantClasses.h1, error ? 'text-error' : 'text-bg-0')}
           placeholder="0"
         />
         <div className="flex flex-row gap-x-[4px] items-center">
