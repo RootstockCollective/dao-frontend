@@ -2,7 +2,7 @@ import { Label, Paragraph } from '@/components/Typography'
 import { cn } from '@/lib/utils'
 import { FC, JSX } from 'react'
 import { InputAttributes, NumericFormatProps } from 'react-number-format'
-import { InputNumber, InputNumberProps } from './InputNumber'
+import { InputNumber } from './InputNumber'
 import { XCircleIcon, SearchIcon, SpinnerIcon } from '../Icons'
 
 const DEFAULT_CLASSES = `
