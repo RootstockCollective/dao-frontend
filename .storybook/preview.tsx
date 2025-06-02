@@ -3,6 +3,16 @@ import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import "./../src/app/globals.css";
 import React from 'react';
+import { WagmiConfig, createConfig } from 'wagmi';
+import { mainnet } from 'wagmi/chains';
+import { http } from 'viem';
+
+const config = createConfig({
+  chains: [mainnet],
+  transports: {
+    [mainnet.id]: http(),
+  },
+});
 
 const preview: Preview = {
   parameters: {
@@ -24,10 +34,10 @@ const preview: Preview = {
   },
   decorators: [
     (Story) => (
-      <>
+      <WagmiConfig config={config}>
         <Story />
         <ToastContainer />
-      </>
+      </WagmiConfig>
     ),
   ],
   tags: ['autodocs']

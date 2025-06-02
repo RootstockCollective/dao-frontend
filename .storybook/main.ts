@@ -23,6 +23,11 @@ const config: StorybookConfig = {
 
   typescript: {
     reactDocgen: 'react-docgen-typescript'
-  }
+  },
+
+  env: (config) => ({
+    ...config,
+    NEXT_PUBLIC_ENV: 'testnet'
+  })
 }
 export default config;
