@@ -9,7 +9,7 @@ export interface StickySliderProps {
   step?: number
   className?: string
   ticks?: number[]
-  thumbSize?: number
+  thumbSize?: string
   ticksEdgesSize?: number
   stickyThreshold?: number
 }
@@ -21,7 +21,7 @@ export const StickySlider: React.FC<StickySliderProps> = ({
   step = 1,
   className = '',
   ticks = [0, 25, 50, 75, 100],
-  thumbSize = 12,
+  thumbSize = '1rem',
   ticksEdgesSize = 8,
   stickyThreshold = 2,
 }) => {
@@ -69,8 +69,8 @@ export const StickySlider: React.FC<StickySliderProps> = ({
           const isEdge = i === 0 || i === ticks.length - 1
           const height = isEdge ? ticksEdgesSize : ticksEdgesSize / 2
           const top = -height / 2
-          // Calculate left relative to the container
-          const factor = (tick / max - 0.5) * thumbSize
+          // Calculate left relative to the container, 12 = 6px clip on each side
+          const factor = (tick / max - 0.5) * 12
           const left = `calc(${tick}% - ${factor}px)`
           const isActive = tick <= value[0]
           const tickColor = isActive ? 'bg-v3-rif-blue' : 'bg-v3-text-60'
@@ -91,8 +91,8 @@ export const StickySlider: React.FC<StickySliderProps> = ({
         <SliderPrimitive.Thumb
           className="block rounded-full bg-v3-primary focus:outline-none focus-visible:outline-none"
           style={{
-            width: `${thumbSize}px`,
-            height: `${thumbSize}px`,
+            width: thumbSize,
+            height: thumbSize,
           }}
           data-testid="sliderThumb"
         />
