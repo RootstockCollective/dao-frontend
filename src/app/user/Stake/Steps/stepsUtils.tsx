@@ -28,7 +28,7 @@ export const textsDependingOnAction = {
   STAKE: {
     modalTitle: 'STAKE ',
     inputLabel: 'Amount to stake',
-    confirmButtonText: 'Stake',
+    confirmButtonText: 'Continue',
     preview: 'STAKE PREVIEW',
     previewText: 'Preview your stake and make sure everything is correct!',
     inProcess: 'STAKE IN PROCESS',
@@ -49,25 +49,25 @@ export const stakingSteps = [
   {
     stepComponent: StepOne,
     modalProps: {
-      width: 720,
+      width: 688,
     },
   },
   {
     stepComponent: StepAllowance,
     modalProps: {
-      width: 720,
+      width: 688,
     },
   },
   {
     stepComponent: StepTwo,
     modalProps: {
-      width: 720,
+      width: 688,
     },
   },
   {
     stepComponent: StepThree,
     modalProps: {
-      width: 720,
+      width: 688,
     },
   },
 ]

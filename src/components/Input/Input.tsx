@@ -153,8 +153,7 @@ export const Input: FC<Props> = ({
 }
 
 interface InputNewProps extends Props {
-  classes?: string
-  inputClasses?: string
+  className?: string
   restInputProps?: JSX.IntrinsicElements['input'] & NumericFormatProps<InputAttributes>
 }
 
@@ -164,8 +163,7 @@ interface InputNewProps extends Props {
  * It only contains the input field without the label, hint, or error message.
  * Should replace the map in the Input component in the future like input[type]
  * @param type
- * @param classes
- * @param inputClasses
+ * @param className
  * @param placeholder
  * @param value
  * @param onChange
@@ -176,8 +174,7 @@ interface InputNewProps extends Props {
  */
 export const InputNew = ({
   type,
-  classes,
-  inputClasses,
+  className,
   placeholder,
   value,
   onChange,
@@ -189,7 +186,7 @@ export const InputNew = ({
     case 'number':
       return (
         <InputNumber
-          className={cn(classes, inputClasses)}
+          className={cn('focus:outline-hidden', className)}
           placeholder={placeholder}
           value={value}
           onValueChange={({ value }) => onChange?.(value)}
