@@ -14,6 +14,11 @@ import { StepProps } from '../types'
 import { formatCurrency } from '@/lib/utils'
 import { StakeSteps } from './StakeSteps'
 
+const DECIMAL_SCALES = {
+  STAKE: 8,
+  UNSTAKE: 18,
+}
+
 export const StepOne = ({ onGoNext = () => {} }: StepProps) => {
   const { address } = useAccount()
   const { amount, onAmountChange, tokenToSend, actionName } = useStakingContext()
@@ -23,7 +28,7 @@ export const StepOne = ({ onGoNext = () => {} }: StepProps) => {
     { refetchInterval: 10000, enabled: !!address, initialData: 0n },
   )
 
-  const isUnstake = actionName === 'UNSTAKE'
+  const isUnstake = useMemo(() => actionName === 'UNSTAKE', [actionName])
 
   const canAccountWithdraw = useMemo(() => {
     const parsedAmount = parseEther(amount) ?? 0n
@@ -93,7 +98,7 @@ export const StepOne = ({ onGoNext = () => {} }: StepProps) => {
         symbol={tokenToSend.symbol}
         labelText={actionTexts.inputLabel}
         currencyValue={formatCurrency(balanceToCurrency)}
-        decimalScale={isUnstake ? 18 : 8} // Use 18 for 100% unstaking, but 8 for staking
+        decimalScale={DECIMAL_SCALES[actionName]}
       />
 
       <div className="flex items-center justify-between mx-3 mt-2">
