@@ -40,12 +40,12 @@ export const BuildersPage = () => {
       </PageTitleContainer>
 
       <div data-testid={`${NAME}_info`} className="flex flex-col w-full items-start gap-2">
-        <InfoContainer dataTestid={NAME}>
-          <Content />
-        </InfoContainer>
         <MetricsContainer dataTestid={NAME}>
           <Metrics />
         </MetricsContainer>
+        <InfoContainer dataTestid={NAME}>
+          <Content />
+        </InfoContainer>
       </div>
 
       {address && (
