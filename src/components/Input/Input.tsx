@@ -154,7 +154,7 @@ export const Input: FC<Props> = ({
 
 interface InputNewProps extends Props {
   className?: string
-  restInputProps?: JSX.IntrinsicElements['input'] & NumericFormatProps<InputAttributes>
+  inputProps?: JSX.IntrinsicElements['input'] & NumericFormatProps<InputAttributes>
 }
 
 /**
@@ -169,7 +169,7 @@ interface InputNewProps extends Props {
  * @param onChange
  * @param name
  * @param readonly
- * @param restInputProps
+ * @param inputProps
  * @constructor
  */
 export const InputNew = ({
@@ -180,20 +180,20 @@ export const InputNew = ({
   onChange,
   name,
   readonly,
-  restInputProps,
+  inputProps,
 }: InputNewProps) => {
   switch (type) {
     case 'number':
       return (
         <InputNumber
-          className={cn('focus:outline-hidden', className)}
+          className={cn('focus:outline-hidden w-full', className)}
           placeholder={placeholder}
           value={value}
           onValueChange={({ value }) => onChange?.(value)}
           name={name}
           data-testid={`Input_${name}`}
           readOnly={readonly}
-          {...restInputProps}
+          {...inputProps}
         />
       )
     case 'text':
