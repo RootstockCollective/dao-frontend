@@ -59,7 +59,7 @@ export const StepOne = ({ onGoNext = () => {} }: StepProps) => {
     return true
   }, [amount, tokenToSend.balance, actionName, canAccountWithdraw])
 
-  const cannotWithdraw = useMemo(
+  const shouldShowCannotWithdraw = useMemo(
     () =>
       isUnstake && !isCanAccountWithdrawLoading && !canAccountWithdraw && (backerTotalAllocation || 0n) > 0n,
     [actionName, backerTotalAllocation, canAccountWithdraw, isCanAccountWithdrawLoading],
@@ -118,7 +118,7 @@ export const StepOne = ({ onGoNext = () => {} }: StepProps) => {
         </Button>
       </div>
 
-      {cannotWithdraw && (
+      {shouldShowCannotWithdraw && (
         <Paragraph variant="body-s" className="mt-2">
           It appears you have votes allocated in the Collective Rewards! You can unstake your stRIF anytime.
           However, please note that you must first de-allocate the same amount of stRIF from the Collective
