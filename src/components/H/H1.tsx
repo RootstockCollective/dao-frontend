@@ -1,6 +1,6 @@
 import { cn } from '@/lib/utils'
 import { FC, PropsWithChildren } from 'react'
-import { StylableComponentProps } from '../../app/builders/components/commonProps'
+import { StylableComponentProps } from '../../components/commonProps'
 
 export type H1Pros = StylableComponentProps<HTMLHeadingElement> & PropsWithChildren
 
