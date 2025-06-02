@@ -13,6 +13,7 @@ interface Props {
   currencyValue?: string
   icon?: ReactNode
   error?: ReactNode
+  decimalScale?: number
 }
 
 /**
@@ -22,9 +23,18 @@ interface Props {
  * @param labelText
  * @param currencyValue
  * @param error this can be a string or a ReactNode. It should be accompanied by a red icon per design - out of scope
+ * @param decimalScale
  * @constructor
  */
-export const StakeInput = ({ onChange, value, symbol, labelText, currencyValue, error }: Props) => {
+export const StakeInput = ({
+  onChange,
+  value,
+  symbol,
+  labelText,
+  currencyValue,
+  error,
+  decimalScale,
+}: Props) => {
   return (
     <div className="flex flex-col py-[12px] px-[16px] rounded-[4px] w-full bg-bg-60">
       {labelText && <Paragraph className="mb-[12px]">{labelText}</Paragraph>}
@@ -36,6 +46,7 @@ export const StakeInput = ({ onChange, value, symbol, labelText, currencyValue, 
           onChange={onChange}
           className={cn('grow', variantClasses.h1, error ? 'text-error' : 'text-bg-0')}
           placeholder="0"
+          inputProps={{ decimalScale }}
         />
         <div className="flex flex-row gap-x-[4px] items-center">
           <TokenImage symbol={symbol} size={24} />

@@ -2,7 +2,7 @@ import { Label, Paragraph } from '@/components/Typography'
 import { cn } from '@/lib/utils'
 import { FC, JSX } from 'react'
 import { InputAttributes, NumericFormatProps } from 'react-number-format'
-import { InputNumber } from './InputNumber'
+import { InputNumber, InputNumberProps } from './InputNumber'
 import { XCircleIcon, SearchIcon, SpinnerIcon } from '../Icons'
 
 const DEFAULT_CLASSES = `
@@ -154,7 +154,7 @@ export const Input: FC<Props> = ({
 
 interface InputNewProps extends Props {
   className?: string
-  restInputProps?: JSX.IntrinsicElements['input'] & NumericFormatProps<InputAttributes>
+  inputProps?: JSX.IntrinsicElements['input'] & NumericFormatProps<InputAttributes>
 }
 
 /**
@@ -169,7 +169,7 @@ interface InputNewProps extends Props {
  * @param onChange
  * @param name
  * @param readonly
- * @param restInputProps
+ * @param inputProps
  * @constructor
  */
 export const InputNew = ({
@@ -180,7 +180,7 @@ export const InputNew = ({
   onChange,
   name,
   readonly,
-  restInputProps,
+  inputProps,
 }: InputNewProps) => {
   switch (type) {
     case 'number':
@@ -193,7 +193,7 @@ export const InputNew = ({
           name={name}
           data-testid={`Input_${name}`}
           readOnly={readonly}
-          {...restInputProps}
+          {...inputProps}
         />
       )
     case 'text':
