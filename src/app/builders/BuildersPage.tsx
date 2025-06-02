@@ -31,30 +31,27 @@ export const BuildersPage = () => {
   )
 
   return (
-    <div
-      data-testid={NAME}
-      className="flex flex-col items-start w-full h-full pt-[0.13rem] gap-6 rounded-sm"
-    >
-      <PageTitleContainer leftText={NAME} dataTestid={NAME}>
+    <div data-testid={NAME} className="flex flex-col items-start w-full h-full pt-[0.13rem] gap-6 rounded-sm">
+      <PageTitleContainer leftText={NAME} data-testid={NAME}>
         {/* TODO: ADD CHILDREN HERE OR TEXT IN LEFT_TEXT */}
       </PageTitleContainer>
 
       <div data-testid={`${NAME}_info`} className="flex flex-col w-full items-start gap-2">
-        <MetricsContainer dataTestid={NAME}>
+        <MetricsContainer data-testid={NAME}>
           <Metrics />
         </MetricsContainer>
-        <InfoContainer dataTestid={NAME}>
+        <InfoContainer data-testid={NAME}>
           <Content />
         </InfoContainer>
       </div>
 
       {address && (
-        <ActionMetricsContainer dataTestid={NAME}>
+        <ActionMetricsContainer data-testid={NAME}>
           <Spotlight />
         </ActionMetricsContainer>
       )}
 
-      <ActionsContainer title={<TableTitle />} dataTestid={NAME}>
+      <ActionsContainer title={<TableTitle />} data-testid={NAME}>
         <Table />
       </ActionsContainer>
     </div>

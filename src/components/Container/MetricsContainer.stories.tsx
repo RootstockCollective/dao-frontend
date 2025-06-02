@@ -21,7 +21,6 @@ export const WithSingleMetric: Story = {
         <div className="text-sm text-gray-500">Total Users</div>
       </div>
     ),
-    dataTestid: 'test',
   },
 }
 
@@ -39,7 +38,6 @@ export const WithMultipleMetrics: Story = {
         </div>
       </div>
     ),
-    dataTestid: 'test',
   },
 }
 
@@ -52,6 +50,5 @@ export const WithCustomStyling: Story = {
       </div>
     ),
     className: 'bg-blue-50 border-2 border-blue-200',
-    dataTestid: 'test',
   },
 }
