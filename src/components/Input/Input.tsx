@@ -186,7 +186,7 @@ export const InputNew = ({
     case 'number':
       return (
         <InputNumber
-          className={cn('focus:outline-hidden', className)}
+          className={cn('focus:outline-hidden w-full', className)}
           placeholder={placeholder}
           value={value}
           onValueChange={({ value }) => onChange?.(value)}

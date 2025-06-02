@@ -73,3 +73,18 @@ export const NoLabelNoCurrencyError: Story = {
     error: 'This is an error message',
   },
 }
+
+export const MobileFirst: Story = {
+  args: {
+    onChange: (val: string) => console.log(val),
+    value: '75',
+    symbol: 'RIF',
+    labelText: 'Mobile Stake',
+    currencyValue: '112.5 USD',
+  },
+  parameters: {
+    viewport: {
+      defaultViewport: 'mobile1',
+    },
+  },
+}
