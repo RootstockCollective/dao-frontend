@@ -1,6 +1,7 @@
 'use client'
-import AllocationBar, { AllocationItem } from './AllocationBar'
-import AllocationBarUndraggable from './AllocationBarUndraggable'
+import AllocationBar from '@/components/AllocationBar/AllocationBar'
+import { AllocationItem } from '@/components/AllocationBar/types'
+
 // FIXME: to be removed
 export default function Wip() {
   const items: AllocationItem[] = [
@@ -38,7 +39,6 @@ export default function Wip() {
   return (
     <>
       <AllocationBar initialItemsData={items} />
-      <AllocationBarUndraggable itemsData={items} />
     </>
   )
 }
