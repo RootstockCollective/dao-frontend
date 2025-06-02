@@ -2,7 +2,7 @@ import type { Meta, StoryObj } from '@storybook/react'
 import { Table } from './Table'
 
 const meta = {
-  title: 'Koto/Backing/Components/Table',
+  title: 'Koto/Builders/Components/Table',
   component: Table,
   parameters: {
     layout: 'centered',
