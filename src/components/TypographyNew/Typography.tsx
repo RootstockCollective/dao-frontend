@@ -60,8 +60,10 @@ export const Typography: FC<TypographyProps> = ({
         })
       : undefined
 
+  // Use font-medium for bold in small body text variants, font-bold for others
+  const boldClass = /^body-(xs|s)$/.test(variant) ? 'font-medium' : 'font-bold'
   const modifierClasses = {
-    'font-bold': bold,
+    [boldClass]: bold,
     uppercase: caps,
   }
 

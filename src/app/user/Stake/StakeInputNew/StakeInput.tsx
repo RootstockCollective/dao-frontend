@@ -56,11 +56,9 @@ export const StakeInput = ({
         </div>
       </div>
       {currencyValue && (
-        <div>
-          <Paragraph variant="body-s" bold className="text-bg-0">
-            {currencyValue}
-          </Paragraph>
-        </div>
+        <Paragraph variant="body-s" className="text-bg-0">
+          {currencyValue}
+        </Paragraph>
       )}
       {error}
     </div>
