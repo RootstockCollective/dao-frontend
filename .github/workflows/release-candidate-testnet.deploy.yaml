@@ -1,8 +1,8 @@
-name: Deploy to Amazon ECS (release candidate staging)
+name: Deploy to Amazon ECS (release candidate staging - testnet)
 # Deploys to: https://release-candidate.app.rootstockcollective.xyz/
 # Triggers on when a tag is pushed to the repo in the format of vX.X.X-rc.X
 # where X are numbers. An example: v1.5.0-rc.1
-# Uses the `.env.release-candidate` env file
+# Uses the `.env.release-candidate-testnet` env file
 
 on:
   push:
@@ -24,15 +24,15 @@ env:
   # is retrieved using PROFILE, so be sure there is a `.env.<PROFILE>` file
   # that matches with the profile set
   # Example: PROFILE=testnet => .env.testnet
-  PROFILE: release-candidate
+  PROFILE: release-candidate-testnet
 
 jobs:
   deploy:
     name: Deploy
     runs-on: ubuntu-latest
     environment:
-      name: release-candidate
-      url: https://release-candidate.app.rootstockcollective.xyz
+      name: release-candidate-testnet
+      url: https://release-candidate-testnet.app.rootstockcollective.xyz
 
     permissions:
       id-token: write
