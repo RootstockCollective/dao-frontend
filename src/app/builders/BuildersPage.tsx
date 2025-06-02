@@ -33,7 +33,7 @@ export const BuildersPage = () => {
   return (
     <div
       data-testid={NAME}
-      className="flex flex-col items-start w-full h-full pt-[0.13rem] gap-10 rounded-sm"
+      className="flex flex-col items-start w-full h-full pt-[0.13rem] gap-6 rounded-sm"
     >
       <PageTitleContainer leftText={NAME} dataTestid={NAME}>
         {/* TODO: ADD CHILDREN HERE OR TEXT IN LEFT_TEXT */}
