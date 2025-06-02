@@ -18,15 +18,13 @@ const BecomeBuilderCollapsible: React.FC = () => {
     <div className="flex flex-col md:flex-row gap-0 items-start h-full">
       {/* Left: Image */}
       <div className="relative overflow-hidden h-full min-h-[304px] basis-1/4 md:basis-1/4 flex-shrink-0 w-full transition-all duration-300 ease-in-out">
-        <div className="relative w-full h-full">
-          <Image
-            src="/images/become-a-builder-banner-big.png"
-            alt="Become a Builder Banner"
-            fill
-            className="object-fill"
-            priority
-          />
-        </div>
+        <Image
+          src="/images/become-a-builder-banner-big.png"
+          alt="Become a Builder Banner"
+          fill
+          className="object-fill"
+          priority
+        />
       </div>
       {/* Center: Main Content */}
       <div className="flex flex-col text-base justify-center gap-4 basis-1/2 md:basis-1/2 mt-16">
@@ -57,7 +55,7 @@ const BecomeBuilderCollapsible: React.FC = () => {
         <Typography variant="h3" className="text-v3-text-0 mb-4">
           WHY BECOME A BUILDER?
         </Typography>
-        <ul className="list-[circle] pl-4 space-y-2 text-lg text-v3-text-0">
+        <ul className="list-[circle] pl-4 text-v3-text-0">
           <li>
             <Paragraph>Lorem ipsum dolor sit amet</Paragraph>
           </li>
