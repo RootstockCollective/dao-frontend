@@ -1,11 +1,11 @@
 'use client'
 
 import { useAccount } from 'wagmi'
-import { ActionsContainer } from './components/Container'
-import { ActionMetricsContainer } from './components/Container/ActionMetricsContainer'
-import { InfoContainer } from './components/Container/InfoContainer'
-import { MetricsContainer } from './components/Container/MetricsContainer'
-import { PageTitleContainer } from './components/Container/PageTitleContainer'
+import { ActionsContainer } from '../../components/Container'
+import { ActionMetricsContainer } from '../../components/Container/ActionMetricsContainer'
+import { InfoContainer } from '../../components/Container/InfoContainer'
+import { MetricsContainer } from '../../components/Container/MetricsContainer'
+import { PageTitleContainer } from '../../components/Container/PageTitleContainer'
 
 const NAME = 'Backing'
 export const BackingPage = () => {
