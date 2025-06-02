@@ -1,7 +1,7 @@
 import { cn } from '@/lib/utils'
 import { FC } from 'react'
 import { CommonComponentProps } from '../commonProps'
-import { H1 } from '../H/H1'
+import { Typography } from '@/components/TypographyNew/Typography'
 
 export type PageTitleContainerProps =
   | (CommonComponentProps & {
@@ -33,13 +33,18 @@ export const PageTitleContainer: FC<PageTitleContainerProps> = ({
 
   return (
     <div data-testid={'PageTitleContainer'} className={cn('flex h-10 pr-[36.19rem] items-center', className)}>
-      <H1 data-testid={'PageTitleContainerLeft'}>
-        {leftText} {/* FIXME: adopt Typography from DAO@koto */}
-      </H1>
+      <Typography as="h1" variant="h1" data-testid={'PageTitleContainerLeft'}>
+        {leftText}
+      </Typography>
 
-      <h2 className="grow uppercase text-right" data-testid={'PageTitleContainerRight'}>
-        {rightText} {/* FIXME: adopt Typography from DAO@koto */}
-      </h2>
+      <Typography
+        as="h2"
+        variant="h2"
+        className="grow uppercase text-right"
+        data-testid={'PageTitleContainerRight'}
+      >
+        {rightText}
+      </Typography>
     </div>
   )
 }
