@@ -1,4 +1,4 @@
-import { AllocationItem } from "./types"
+import { AllocationItem } from './types'
 
 export const AllocationLegend = ({ items }: { items: AllocationItem[] }) => {
   return (

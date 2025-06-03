@@ -120,6 +120,7 @@ const AllocationBar: React.FC<AllocationBarProps> = ({
           <div
             className="flex items-center w-full mb-4 relative select-none"
             ref={barRef}
+            // TODO: set height in vars and make it configurable
             style={{ height: '96px' }}
           >
             {itemsData.map((item, i) => (
@@ -137,7 +138,6 @@ const AllocationBar: React.FC<AllocationBarProps> = ({
           </div>
         </SortableContext>
       </DndContext>
-      {/* Legend */}
       {showLegend && <AllocationLegend items={initialItemsData} />}
     </div>
   )
