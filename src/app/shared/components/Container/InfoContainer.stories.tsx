@@ -2,7 +2,7 @@ import type { Meta, StoryObj } from '@storybook/react'
 import { InfoContainer } from './InfoContainer'
 
 const meta = {
-  title: 'Koto/Backing/Container/InfoContainer',
+  title: 'Koto/Components/Container/InfoContainer',
   component: InfoContainer,
   parameters: {
     layout: 'centered',
