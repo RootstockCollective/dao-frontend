@@ -2,7 +2,7 @@ import KotoQuestionMarkIcon from '@/components/Icons/KotoQuestionMarkIcon'
 import { Tooltip } from '@/components/Tooltip'
 import { cn } from '@/lib/utils'
 import { FC } from 'react'
-import { CommonComponentProps } from '../../../../components/commonProps'
+import { CommonComponentProps } from '../../../shared/components/commonProps'
 
 interface InfoIconButtonProps extends CommonComponentProps {
   info: string
