@@ -4,6 +4,7 @@ import { Paragraph } from '@/components/TypographyNew'
 import { variantClasses } from '@/components/TypographyNew/Typography'
 import { cn } from '@/lib/utils'
 import Image from 'next/image'
+import { ReactNode } from 'react'
 
 interface Props {
   onChange: (value: string) => void
