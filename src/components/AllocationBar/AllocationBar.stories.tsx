@@ -1,5 +1,6 @@
 import type { Meta, StoryObj } from '@storybook/react'
-import AllocationBar, { AllocationItem } from './AllocationBar'
+import AllocationBar from './AllocationBar'
+import { AllocationItem } from './types'
 
 const meta = {
   title: 'Components/AllocationBar',
