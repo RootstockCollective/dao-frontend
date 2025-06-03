@@ -60,7 +60,7 @@ export const StepOne = ({ onGoNext = () => {} }: StepProps) => {
   const shouldShowCannotWithdraw = useMemo(
     () =>
       isUnstake && !isCanAccountWithdrawLoading && !canAccountWithdraw && (backerTotalAllocation || 0n) > 0n,
-    [actionName, backerTotalAllocation, canAccountWithdraw, isCanAccountWithdrawLoading],
+    [isUnstake, isCanAccountWithdrawLoading, canAccountWithdraw, backerTotalAllocation],
   )
 
   const totalBalance = useMemo(() => tokenToSend.balance || '0', [tokenToSend.balance])

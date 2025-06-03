@@ -70,7 +70,7 @@ export const NoLabelNoCurrencyError: Story = {
     onChange: (val: string) => console.log(val),
     value: '50',
     symbol: 'RIF',
-    error: 'This is an error message',
+    errorText: 'This is an error message',
   },
 }
 
