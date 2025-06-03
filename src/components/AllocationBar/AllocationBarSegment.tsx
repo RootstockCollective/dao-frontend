@@ -48,6 +48,18 @@ const AllocationBarSegmentResizeHandle = ({
   )
 }
 
+interface AllocationBarSegmentProps {
+  value: number
+  item: AllocationItem
+  index: number
+  isLast: boolean
+  showPercent: boolean
+  onHandleMouseDown: (idx: number) => (e: React.MouseEvent) => void
+  dragIndex: number | null
+  isDraggable: boolean
+  isResizable: boolean
+}
+
 export const AllocationBarSegment = ({
   value,
   item,
@@ -56,15 +68,9 @@ export const AllocationBarSegment = ({
   showPercent,
   onHandleMouseDown,
   dragIndex,
-}: {
-  value: number
-  item: AllocationItem
-  index: number
-  isLast: boolean
-  showPercent: boolean
-  onHandleMouseDown: (idx: number) => (e: React.MouseEvent) => void
-  dragIndex: number | null
-}) => {
+  isDraggable,
+  isResizable,
+}: AllocationBarSegmentProps) => {
   const { attributes, listeners, setNodeRef, transform, isDragging } = useSortable({ id: item.key })
 
   const style: React.CSSProperties = {
@@ -91,28 +97,30 @@ export const AllocationBarSegment = ({
       } ${item.color} relative`}
     >
       {/* DRAG HANDLE (always far left) */}
-      <div
-        {...attributes}
-        {...listeners}
-        className="cursor-grab flex items-center px-1 select-none"
-        style={{
-          userSelect: 'none',
-          height: '100%',
-          alignSelf: 'stretch',
-          background: 'rgba(255,255,255,0.06)',
-        }}
-        aria-label="Drag to reorder"
-        tabIndex={0}
-      >
-        <SixDotsIcon />
-      </div>
+      {isDraggable && (
+        <div
+          {...attributes}
+          {...listeners}
+          className="cursor-grab flex items-center px-1 select-none"
+          style={{
+            userSelect: 'none',
+            height: '100%',
+            alignSelf: 'stretch',
+            background: 'rgba(255,255,255,0.06)',
+          }}
+          aria-label="Drag to reorder"
+          tabIndex={0}
+        >
+          <SixDotsIcon />
+        </div>
+      )}
 
       <div className="flex-1 flex items-center justify-center relative">
         {showPercent && <AllocationBarSegmentPercent value={value} />}
       </div>
 
       {/* RESIZE HANDLE (far right, not overlapping drag handle) */}
-      {!isLast && (
+      {!isLast && isResizable && (
         <AllocationBarSegmentResizeHandle
           onHandleMouseDown={onHandleMouseDown}
           dragIndex={dragIndex}

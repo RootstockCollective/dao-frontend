@@ -9,6 +9,9 @@ export interface AllocationItem {
 
 export interface AllocationBarProps {
   initialItemsData?: AllocationItem[]
+  isDraggable?: boolean
+  isResizable?: boolean
+  height?: string
   showPercent?: boolean
   showLegend?: boolean
   className?: string

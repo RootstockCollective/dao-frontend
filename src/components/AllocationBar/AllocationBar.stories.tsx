@@ -92,10 +92,50 @@ const dataWithTemp: AllocationItem[] = [
     isTemporary: true,
   },
 ]
+
 export const WithoutTemporaryValues: Story = {
   args: {
     initialItemsData: addUnallocated(dataWithTemp),
     showPercent: true,
     showLegend: true,
+  },
+}
+
+export const NotDraggable: Story = {
+  args: {
+    initialItemsData: addUnallocated(dataWithTemp),
+    showPercent: true,
+    showLegend: true,
+    isDraggable: false,
+  },
+}
+
+export const NotResizable: Story = {
+  args: {
+    initialItemsData: addUnallocated(dataWithTemp),
+    showPercent: true,
+    showLegend: true,
+    isResizable: false,
+  },
+}
+
+export const NotEditable: Story = {
+  args: {
+    initialItemsData: addUnallocated(dataWithTemp),
+    showPercent: true,
+    showLegend: true,
+    isResizable: false,
+    isDraggable: false,
+  },
+}
+
+export const WithoutUnallocatedValuesAndFixedHeight: Story = {
+  args: {
+    initialItemsData: addUnallocated([]),
+    height: '1rem',
+    showPercent: true,
+    showLegend: true,
+    isDraggable: false,
+    isResizable: false,
   },
 }
