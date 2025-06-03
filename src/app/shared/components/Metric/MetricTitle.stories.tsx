@@ -4,7 +4,7 @@ import { expect, within } from '@storybook/test'
 import { MetricTitle } from './MetricTitle'
 
 const meta: Meta<typeof MetricTitle> = {
-  title: 'Koto/Components/MetricTitle',
+  title: 'Koto/Components/Metric/MetricTitle',
   component: MetricTitle,
   parameters: {
     layout: 'centered',

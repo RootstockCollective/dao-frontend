@@ -2,7 +2,7 @@ import type { Meta, StoryObj } from '@storybook/react'
 import { PageTitleContainer } from './PageTitleContainer'
 
 const meta = {
-  title: 'Koto/Backing/Container/PageTitleContainer',
+  title: 'Koto/Components/Container/PageTitleContainer',
   component: PageTitleContainer,
   parameters: {
     layout: 'centered',
