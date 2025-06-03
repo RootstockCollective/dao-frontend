@@ -67,17 +67,16 @@ const AllocationBar: React.FC<AllocationBarProps> = ({
     // Calculate the handle's x relative to leftPx
     let relX = clamp(x - leftPx, minLeftPx, maxLeftPx)
 
-    // Convert back to percentage
-    let leftValue = (relX / totalPairPx) * pairSum
+    // Convert back to percentage and round to whole numbers
+    let leftValue = Math.round((relX / totalPairPx) * pairSum)
     let rightValue = pairSum - leftValue
 
-    // TODO: right now when one bar reaches MIN_SEGMENT_PERCENT, the other bar is resized but may consider adjusting it in future
-    // Final clamp for safety (sometimes rounding can allow a fraction below min)
+    // When a segment reaches minimum size, maintain the right segment's width
     if (leftValue < MIN_SEGMENT_PERCENT) {
-      leftValue = MIN_SEGMENT_PERCENT
+      leftValue = Math.ceil(MIN_SEGMENT_PERCENT)
       rightValue = pairSum - leftValue
     } else if (rightValue < MIN_SEGMENT_PERCENT) {
-      rightValue = MIN_SEGMENT_PERCENT
+      rightValue = Math.ceil(MIN_SEGMENT_PERCENT)
       leftValue = pairSum - rightValue
     }
 
