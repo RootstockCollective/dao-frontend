@@ -2,7 +2,7 @@ import { MetricsCard, MetricsCardTitle, TokenMetricsCardRow } from '@/app/collec
 import { ABIFormula, useGetMetricsAbi, useGetMetricsAbiWithGraph } from '@/app/collective-rewards/shared'
 import { useHandleErrors } from '@/app/collective-rewards/utils'
 import { withSpinner } from '@/components/LoadingSpinner/withLoadingSpinner'
-import { useFeatureFlags } from '@/shared/context/FeatureFlagContext'
+import { useFeatureFlags } from '@/shared/context/FeatureFlag'
 
 const ABIMetricsContent = ({ abiPct, isLoading }: { abiPct: Big; isLoading: boolean }) => {
   return (
@@ -44,16 +44,18 @@ const ABIMetricsContent = ({ abiPct, isLoading }: { abiPct: Big; isLoading: bool
 }
 
 const ABIMetricsFromChain = () => {
+  console.time('ABIMetricsFromChain')
   const { data: abiPct, isLoading, error } = useGetMetricsAbi()
   useHandleErrors({ error, title: 'Error loading ABI metrics' })
-
+  console.timeEnd('ABIMetricsFromChain')
   return <ABIMetricsContent abiPct={abiPct} isLoading={isLoading} />
 }
 
 const ABIMetricsWTheGraph = () => {
+  console.time('ABIMetricsWTheGraph')
   const { data: abiPct, isLoading, error } = useGetMetricsAbiWithGraph()
   useHandleErrors({ error, title: 'Error loading ABI metrics' })
-
+  console.timeEnd('ABIMetricsWTheGraph')
   return <ABIMetricsContent abiPct={abiPct} isLoading={isLoading} />
 }
 
