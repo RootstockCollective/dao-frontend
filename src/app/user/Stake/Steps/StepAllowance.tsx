@@ -98,10 +98,18 @@ export const StepAllowance = ({ onGoNext = () => {}, onGoBack = () => {} }: Step
         </div>
       </div>
 
-      <hr className="bg-bg-60 h-px border-0 mt-8 mb-6" />
-
-      <div className="flex items-center justify-between mt-8">
+      {/* Mobile: Show HelpPopover above hr */}
+      <div className="block md:hidden mb-4">
         <HelpPopover />
+      </div>
+
+      <hr className="bg-bg-60 h-px border-0 mb-6" />
+
+      {/* Desktop: Show HelpPopover next to buttons */}
+      <div className="flex flex-col md:flex-row md:items-center md:justify-between mt-8 gap-4">
+        <div className="hidden md:inline">
+          <HelpPopover />
+        </div>
         <div className="flex gap-3">
           <Button
             variant="secondary-outline"
