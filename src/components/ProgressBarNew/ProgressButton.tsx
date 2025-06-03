@@ -20,7 +20,7 @@ export function ProgressButton({ tileSize = 12, color = 'gray', className, child
       className={cn('w-[261px] h-12 border border-bg-40', className)}
       {...props}
     >
-      <div className="w-full px-4 py-3 flex flex-row ">
+      <div className="px-4 py-3 flex flex-row">
         <div className="flex items-center justify-center">
           <TimeIcon
             animate={{ rotate: 360 }}
