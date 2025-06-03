@@ -2,7 +2,7 @@ import { Typography } from '@/components/TypographyNew/Typography'
 import { cn } from '@/lib/utils'
 import { FC, ReactNode } from 'react'
 import { CommonComponentProps } from '../../../../components/commonProps'
-import { InfoIconButton } from '../IconButton/InfoIconButton'
+import { InfoIconButton } from '../../../backing/components/IconButton/InfoIconButton'
 
 export type MetricTitleProps = CommonComponentProps & {
   title: ReactNode

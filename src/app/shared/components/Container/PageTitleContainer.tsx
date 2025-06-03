@@ -1,6 +1,6 @@
 import { cn } from '@/lib/utils'
 import { FC } from 'react'
-import { CommonComponentProps } from '../commonProps'
+import { CommonComponentProps } from '../../../../components/commonProps'
 import { Typography } from '@/components/TypographyNew/Typography'
 
 export type PageTitleContainerProps =
