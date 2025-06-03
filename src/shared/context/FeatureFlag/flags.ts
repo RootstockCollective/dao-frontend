@@ -39,4 +39,5 @@ export const envFlags: FeatureFlags = {
   user_flags: getEnvFlag(process.env.NEXT_PUBLIC_ENABLE_FEATURE_USER_FLAGS),
   v2_rewards: getEnvFlag(process.env.NEXT_PUBLIC_ENABLE_FEATURE_V2_REWARDS),
   v3_design: getEnvFlag(process.env.NEXT_PUBLIC_ENABLE_FEATURE_V3_DESIGN),
+  use_the_graph: getEnvFlag(process.env.NEXT_PUBLIC_ENABLE_FEATURE_USE_THE_GRAPH),
 }
