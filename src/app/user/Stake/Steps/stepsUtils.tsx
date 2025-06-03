@@ -26,7 +26,7 @@ export const steps = [
 
 export const textsDependingOnAction = {
   STAKE: {
-    modalTitle: 'STAKE ',
+    modalTitle: 'STAKE',
     inputLabel: 'Amount to stake',
     confirmButtonText: 'Continue',
     preview: 'STAKE PREVIEW',
@@ -36,7 +36,7 @@ export const textsDependingOnAction = {
     amountError: 'This is more than the available RIF balance. Please update the amount.',
   },
   UNSTAKE: {
-    modalTitle: 'UNSTAKE ',
+    modalTitle: 'UNSTAKE',
     inputLabel: 'Unstake amount',
     confirmButtonText: 'Unstake',
     preview: 'UNSTAKE PREVIEW',
