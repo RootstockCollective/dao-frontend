@@ -13,6 +13,7 @@ import Image from 'next/image'
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { StakeSteps } from './StakeSteps'
 import { textsDependingOnAction } from './stepsUtils'
+import { Popover } from '@/components/Popover'
 
 export const StepAllowance = ({ onGoNext = () => {}, onGoBack = () => {} }: StepProps) => {
   const { amount, tokenToSend, tokenToReceive, stakePreviewFrom: from, actionName } = useStakingContext()
@@ -100,10 +101,7 @@ export const StepAllowance = ({ onGoNext = () => {}, onGoBack = () => {} }: Step
       <hr className="bg-bg-60 h-px border-0 mt-8 mb-6" />
 
       <div className="flex items-center justify-between mt-8">
-        <div className="flex items-center gap-1 cursor-pointer">
-          <Image src="/Images/info-icon.svg" alt="info" width={20} height={20} />
-          <Span variant="tag-s">Help, I don&apos;t understand</Span>
-        </div>
+        <HelpPopover />
         <div className="flex gap-3">
           <Button
             variant="secondary-outline"
@@ -140,6 +138,44 @@ export const StepAllowance = ({ onGoNext = () => {}, onGoBack = () => {} }: Step
         </div>
       </div>
       {customFooter}
+    </div>
+  )
+}
+
+const HelpPopover = () => {
+  return (
+    <Popover
+      contentV2={<HelpPopoverContent />}
+      position="top"
+      contentSubContainerClassName="rounded-none p-6"
+    >
+      <div className="flex items-center gap-1">
+        <Image src="/Images/info-icon.svg" alt="info" width={20} height={20} />
+        <Span variant="tag-s">Help, I don&apos;t understand</Span>
+      </div>
+    </Popover>
+  )
+}
+
+const HelpPopoverContent = () => {
+  return (
+    <div className="bg-text-80 rounded-lg p-4 max-w-xs flex flex-col gap-4">
+      <div>
+        <Span variant="body-s" bold className="text-bg-100">
+          Why request the allowance?
+        </Span>
+        <Paragraph variant="body-s" className="mt-2 text-bg-60">
+          Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor.
+        </Paragraph>
+      </div>
+      <div>
+        <Span variant="body-s" bold className="text-bg-100">
+          What is stRIF?
+        </Span>
+        <Paragraph variant="body-s" className="mt-2 text-bg-60">
+          Ipsum dolor sit amet, consectetur adipiscing elit.
+        </Paragraph>
+      </div>
     </div>
   )
 }
