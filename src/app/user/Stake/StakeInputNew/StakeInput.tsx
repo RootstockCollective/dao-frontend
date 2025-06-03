@@ -1,10 +1,10 @@
-import { ReactNode } from 'react'
-import { Paragraph, Span } from '@/components/TypographyNew'
 import { InputNew } from '@/components/Input'
-import { variantClasses } from '@/components/TypographyNew/Typography'
 import { TokenImage } from '@/components/TokenImage'
+import { Paragraph } from '@/components/TypographyNew'
+import { variantClasses } from '@/components/TypographyNew/Typography'
 import { cn } from '@/lib/utils'
 import Image from 'next/image'
+import { ReactNode } from 'react'
 
 interface Props {
   onChange: (value: string) => void
@@ -17,16 +17,6 @@ interface Props {
   decimalScale?: number
 }
 
-/**
- * @param onChange
- * @param value
- * @param symbol
- * @param labelText
- * @param currencyValue
- * @param errorText
- * @param decimalScale
- * @constructor
- */
 export const StakeInput = ({
   onChange,
   value,
@@ -37,8 +27,8 @@ export const StakeInput = ({
   decimalScale,
 }: Props) => {
   return (
-    <div className="flex flex-col py-[12px] px-[16px] rounded-[4px] w-full bg-bg-60">
-      {labelText && <Paragraph className="mb-[12px]">{labelText}</Paragraph>}
+    <div className="flex flex-col py-3 px-4 rounded-1 w-full bg-bg-60">
+      {labelText && <Paragraph className="mb-3">{labelText}</Paragraph>}
       <div className="flex gap-2">
         <InputNew
           name="amount-stake"
@@ -49,7 +39,7 @@ export const StakeInput = ({
           placeholder="0"
           inputProps={{ decimalScale }}
         />
-        <div className="flex flex-row gap-x-[4px] items-center">
+        <div className="flex items-center gap-1 shrink-0">
           <TokenImage symbol={symbol} size={24} />
           <Paragraph variant="body-l" bold>
             {symbol}
@@ -64,7 +54,7 @@ export const StakeInput = ({
       {errorText && (
         <div className="flex items-center gap-2 mt-2">
           <Image src="/images/warning-icon.svg" alt="Warning" width={40} height={40} />
-          <Span className="text-error">{errorText}</Span>
+          <Paragraph className="text-error">{errorText}</Paragraph>
         </div>
       )}
     </div>
