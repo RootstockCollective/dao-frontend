@@ -10,6 +10,9 @@ import { AllocationLegend } from './AllocationBarLegend'
 
 const AllocationBar: React.FC<AllocationBarProps> = ({
   initialItemsData = [],
+  height = '96px',
+  isDraggable = true,
+  isResizable = true,
   showPercent = true,
   showLegend = true,
   className = '',
@@ -41,11 +44,11 @@ const AllocationBar: React.FC<AllocationBarProps> = ({
   }
 
   // Drag logic
-  const onMouseMove = (e: MouseEvent) => {
+  const onMouseMove = ({ clientX }: MouseEvent) => {
     if (dragIndex === null || !barRef.current) return
 
     const rect = barRef.current.getBoundingClientRect()
-    const x = clamp(e.clientX - rect.left, 0, rect.width)
+    const x = clamp(clientX - rect.left, 0, rect.width)
 
     // Calculate px positions
     let cumSum = 0
@@ -103,8 +106,7 @@ const AllocationBar: React.FC<AllocationBarProps> = ({
   }, [dragIndex, values])
 
   // dnd-kit sort logic
-  function handleDragEnd(event: DragEndEvent) {
-    const { active, over } = event
+  function handleDragEnd({ active, over }: DragEndEvent) {
     if (!over || active.id === over.id) return
     const oldIndex = itemsData.findIndex(item => item.key === active.id)
     const newIndex = itemsData.findIndex(item => item.key === over.id)
@@ -117,12 +119,7 @@ const AllocationBar: React.FC<AllocationBarProps> = ({
       {/* Bar */}
       <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
         <SortableContext items={itemsData.map(item => item.key)} strategy={horizontalListSortingStrategy}>
-          <div
-            className="flex items-center w-full mb-4 relative select-none"
-            ref={barRef}
-            // TODO: set height in vars and make it configurable
-            style={{ height: '96px' }}
-          >
+          <div className="flex items-center w-full mb-4 relative select-none" ref={barRef} style={{ height }}>
             {itemsData.map((item, i) => (
               <AllocationBarSegment
                 key={item.key}
@@ -133,6 +130,8 @@ const AllocationBar: React.FC<AllocationBarProps> = ({
                 showPercent={showPercent}
                 onHandleMouseDown={onHandleMouseDown}
                 dragIndex={dragIndex}
+                isDraggable={isDraggable}
+                isResizable={isResizable}
               />
             ))}
           </div>
