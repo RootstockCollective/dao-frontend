@@ -1,6 +1,6 @@
 import { cn } from '@/lib/utils'
 import { FC, PropsWithChildren } from 'react'
-import { CommonComponentProps } from '../commonProps'
+import { CommonComponentProps } from '../../../../components/commonProps'
 
 export type MetricsContainerProps = CommonComponentProps & PropsWithChildren
 
