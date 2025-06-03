@@ -5,6 +5,7 @@ import { rootstock, rootstockTestnet } from '@reown/appkit/networks'
 import { createConfig, http, cookieStorage, createStorage } from 'wagmi'
 import { injected } from 'wagmi/connectors'
 import { REOWN_PROJECT_ID } from '@/lib/constants'
+import { ledgerConnector } from './ledgerConnector'
 
 const rskRegtest = defineChain({
   id: 33,
@@ -35,7 +36,12 @@ export const config = createConfig({
       },
     }),
   },
-  connectors: [injected()],
+  connectors: [
+    injected(),
+    ledgerConnector({
+      chainId: currentEnvChain.id,
+    }),
+  ],
 })
 
 export const wagmiAdapter = new WagmiAdapter({
@@ -45,6 +51,12 @@ export const wagmiAdapter = new WagmiAdapter({
   ssr: true,
   projectId: REOWN_PROJECT_ID,
   networks: [currentEnvChain],
+  connectors: [
+    injected(),
+    ledgerConnector({
+      chainId: currentEnvChain.id,
+    }),
+  ],
   transports: {
     [currentEnvChain.id]: http(undefined, {
       batch: {
