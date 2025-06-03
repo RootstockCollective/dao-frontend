@@ -44,18 +44,14 @@ const ABIMetricsContent = ({ abiPct, isLoading }: { abiPct: Big; isLoading: bool
 }
 
 const ABIMetricsFromChain = () => {
-  console.time('ABIMetricsFromChain')
   const { data: abiPct, isLoading, error } = useGetMetricsAbi()
   useHandleErrors({ error, title: 'Error loading ABI metrics' })
-  console.timeEnd('ABIMetricsFromChain')
   return <ABIMetricsContent abiPct={abiPct} isLoading={isLoading} />
 }
 
 const ABIMetricsWTheGraph = () => {
-  console.time('ABIMetricsWTheGraph')
   const { data: abiPct, isLoading, error } = useGetMetricsAbiWithGraph()
   useHandleErrors({ error, title: 'Error loading ABI metrics' })
-  console.timeEnd('ABIMetricsWTheGraph')
   return <ABIMetricsContent abiPct={abiPct} isLoading={isLoading} />
 }
 
