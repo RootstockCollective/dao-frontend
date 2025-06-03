@@ -127,12 +127,13 @@ export const StepOne = ({ onGoNext = () => {} }: StepProps) => {
 
       <hr className="bg-bg-60 h-px border-0 mt-8 mb-6" />
 
-      <div className="flex justify-end">
+      <div className="flex md:justify-end">
         <Button
           variant="primary"
           onClick={onGoNext}
           disabled={!canGoNext}
           data-testid={actionTexts.confirmButtonText}
+          className="w-full md:w-auto"
         >
           {actionTexts.confirmButtonText}
         </Button>
