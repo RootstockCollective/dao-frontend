@@ -33,6 +33,7 @@ export const textsDependingOnAction = {
     previewText: 'Preview your stake and make sure everything is correct!',
     inProcess: 'STAKE IN PROCESS',
     description: 'Congratulations and thank you for staking your RIF in the Collective',
+    amountError: 'This is more than the available RIF balance. Please update the amount.',
   },
   UNSTAKE: {
     modalTitle: 'UNSTAKE ',
@@ -42,6 +43,7 @@ export const textsDependingOnAction = {
     previewText: 'Preview your unstake and make sure everything is correct!',
     inProcess: 'UNSTAKE IN PROCESS',
     description: 'Your tokens will arrive soon.',
+    amountError: 'This is more than the available stRIF balance. Please update the amount.',
   },
 }
 

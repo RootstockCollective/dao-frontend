@@ -46,23 +46,21 @@ export const StepOne = ({ onGoNext = () => {} }: StepProps) => {
     [tokenToSend],
   )
 
-  const canGoNext = useMemo(() => {
-    if (!amount || Number(amount) <= 0) return false
-
-    // Compare with precision for validation
+  const isAmountOverBalance = useMemo(() => {
+    if (!amount) return false
     const rawAmount = Big(amount)
     const rawBalance = Big(tokenToSend.balance)
+    return rawAmount.gt(rawBalance)
+  }, [amount, tokenToSend.balance])
 
-    if (rawAmount.gt(rawBalance)) return false
-    if (isUnstake && !canAccountWithdraw) return false
-
-    return true
-  }, [amount, tokenToSend.balance, actionName, canAccountWithdraw])
+  const canGoNext = useMemo(() => {
+    return amount && Number(amount) > 0 && !isAmountOverBalance && (!isUnstake || canAccountWithdraw)
+  }, [amount, isAmountOverBalance, isUnstake, canAccountWithdraw])
 
   const shouldShowCannotWithdraw = useMemo(
     () =>
       isUnstake && !isCanAccountWithdrawLoading && !canAccountWithdraw && (backerTotalAllocation || 0n) > 0n,
-    [actionName, backerTotalAllocation, canAccountWithdraw, isCanAccountWithdrawLoading],
+    [isUnstake, isCanAccountWithdrawLoading, canAccountWithdraw, backerTotalAllocation],
   )
 
   const totalBalance = useMemo(() => tokenToSend.balance || '0', [tokenToSend.balance])
@@ -99,6 +97,7 @@ export const StepOne = ({ onGoNext = () => {} }: StepProps) => {
         labelText={actionTexts.inputLabel}
         currencyValue={formatCurrency(balanceToCurrency)}
         decimalScale={DECIMAL_SCALES[actionName]}
+        errorText={isAmountOverBalance ? actionTexts.amountError : ''}
       />
 
       <div className="flex items-center justify-between mx-3 mt-2">
