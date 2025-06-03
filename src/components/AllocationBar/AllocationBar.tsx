@@ -71,6 +71,7 @@ const AllocationBar: React.FC<AllocationBarProps> = ({
     let leftValue = (relX / totalPairPx) * pairSum
     let rightValue = pairSum - leftValue
 
+    // TODO: right now when one bar reaches MIN_SEGMENT_PERCENT, the other bar is resized but may consider adjusting it in future
     // Final clamp for safety (sometimes rounding can allow a fraction below min)
     if (leftValue < MIN_SEGMENT_PERCENT) {
       leftValue = MIN_SEGMENT_PERCENT
