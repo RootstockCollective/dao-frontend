@@ -1,5 +1,5 @@
 import { DraggableAttributes } from '@dnd-kit/core/dist/hooks/useDraggable'
-import { SixDotsIcon } from '../Icons/SixDotsIcon'
+import { FourDotsIcon } from '../Icons/FourDotsIcon'
 import { SyntheticListenerMap } from '@dnd-kit/core/dist/hooks/utilities/useSyntheticListeners'
 
 export const AllocationBarDragHandle = ({
@@ -17,7 +17,7 @@ export const AllocationBarDragHandle = ({
       aria-label="Drag to reorder"
       tabIndex={0}
     >
-      <SixDotsIcon />
+      <FourDotsIcon />
     </div>
   )
 }
