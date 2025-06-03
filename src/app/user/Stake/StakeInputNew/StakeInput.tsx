@@ -1,9 +1,10 @@
 import { ReactNode } from 'react'
-import { Paragraph } from '@/components/TypographyNew'
+import { Paragraph, Span } from '@/components/TypographyNew'
 import { InputNew } from '@/components/Input'
 import { variantClasses } from '@/components/TypographyNew/Typography'
 import { TokenImage } from '@/components/TokenImage'
 import { cn } from '@/lib/utils'
+import Image from 'next/image'
 
 interface Props {
   onChange: (value: string) => void
@@ -12,7 +13,7 @@ interface Props {
   labelText?: string
   currencyValue?: string
   icon?: ReactNode
-  error?: ReactNode
+  errorText?: string
   decimalScale?: number
 }
 
@@ -22,7 +23,7 @@ interface Props {
  * @param symbol
  * @param labelText
  * @param currencyValue
- * @param error this can be a string or a ReactNode. It should be accompanied by a red icon per design - out of scope
+ * @param errorText
  * @param decimalScale
  * @constructor
  */
@@ -32,7 +33,7 @@ export const StakeInput = ({
   symbol,
   labelText,
   currencyValue,
-  error,
+  errorText,
   decimalScale,
 }: Props) => {
   return (
@@ -44,7 +45,7 @@ export const StakeInput = ({
           type="number"
           value={value}
           onChange={onChange}
-          className={cn('grow', variantClasses.h1, error ? 'text-error' : 'text-bg-0')}
+          className={cn('grow', variantClasses.h1, errorText ? 'text-error' : 'text-bg-0')}
           placeholder="0"
           inputProps={{ decimalScale }}
         />
@@ -60,7 +61,12 @@ export const StakeInput = ({
           {currencyValue}
         </Paragraph>
       )}
-      {error}
+      {errorText && (
+        <div className="flex items-center gap-2 mt-2">
+          <Image src="/images/warning-icon.svg" alt="Warning" width={40} height={40} />
+          <Span className="text-error">{errorText}</Span>
+        </div>
+      )}
     </div>
   )
 }
