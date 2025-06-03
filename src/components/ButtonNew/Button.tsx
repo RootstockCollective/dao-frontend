@@ -2,10 +2,10 @@ import { cn } from '@/lib/utils'
 import { FC, ButtonHTMLAttributes } from 'react'
 import { Span } from '../TypographyNew'
 
-type ButtonVariant = 'primary' | 'secondary'
+type ButtonVariant = 'primary' | 'secondary' | 'secondary-outline'
 
 const DEFAULT_CLASSES =
-  'relative overflow-hidden px-6 py-2 rounded-md font-bold text-base transition-all duration-150 flex items-center justify-center gap-2'
+  'relative overflow-hidden px-4 py-2 rounded-md font-bold text-base transition-all duration-150 flex items-center justify-center gap-2'
 
 interface Props extends ButtonHTMLAttributes<HTMLButtonElement> {
   variant?: ButtonVariant
@@ -24,6 +24,7 @@ export const Button: FC<Props> = ({
   const styles = {
     primary: 'bg-primary text-bg-100 disabled:bg-disabled-primary',
     secondary: 'bg-bg-100 text-text-100 border-0 disabled:opacity-80',
+    'secondary-outline': 'bg-transparent text-text-100 border border-bg-0 disabled:opacity-50',
   }
 
   return (

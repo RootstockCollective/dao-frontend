@@ -26,3 +26,10 @@ export const Secondary: Story = {
     children: 'Secondary Button',
   },
 }
+
+export const SecondaryOutline: Story = {
+  args: {
+    variant: 'secondary-outline',
+    children: 'Secondary Outline Button',
+  },
+}
