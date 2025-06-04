@@ -72,6 +72,8 @@ export function ledgerConnector(options: LedgerConnectorOptions = {}) {
         state.transport = null
         state.eth = null
         state.account = null
+        // Emit disconnect event to ensure proper cleanup
+        config.emitter.emit('disconnect')
       }
     },
 
@@ -170,12 +172,27 @@ export function ledgerConnector(options: LedgerConnectorOptions = {}) {
 
   async function connectToDevice(): Promise<void> {
     try {
+      // Ensure any existing connection is closed first
+      if (state.transport) {
+        try {
+          await state.transport.close()
+        } catch (e) {
+          console.warn('Error closing existing transport:', e)
+        }
+        state.transport = null
+        state.eth = null
+      }
+
       // Try WebHID first (preferred for modern browsers)
       if (await TransportWebHID.isSupported()) {
+        // Create new transport with a small delay to ensure previous connections are cleaned up
+        await new Promise(resolve => setTimeout(resolve, 1000))
         state.transport = await TransportWebHID.create()
       } 
       // Fallback to WebUSB
       else if (await TransportWebUSB.isSupported()) {
+        // Create new transport with a small delay to ensure previous connections are cleaned up
+        await new Promise(resolve => setTimeout(resolve, 1000))
         state.transport = await TransportWebUSB.create()
       } else {
         throw new Error('No compatible transport found. Please ensure your browser supports WebHID or WebUSB.')
@@ -183,6 +200,10 @@ export function ledgerConnector(options: LedgerConnectorOptions = {}) {
 
       state.eth = new Eth(state.transport)
     } catch (error) {
+      // Clean up state in case of error
+      state.transport = null
+      state.eth = null
+      
       if (error instanceof TransportStatusError) {
         throw new Error('Ledger device: Please ensure the Ethereum app is open and ready')
       }
