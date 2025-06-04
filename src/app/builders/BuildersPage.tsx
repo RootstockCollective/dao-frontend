@@ -43,17 +43,15 @@ export const BuildersPage = () => {
         <InfoContainer data-testid={NAME} className="grow-[3]">
           <Content />
         </InfoContainer>
+        {address && (
+          <ActionMetricsContainer data-testid={NAME}>
+            <Spotlight />
+          </ActionMetricsContainer>
+        )}
+        <ActionsContainer title={<TableTitle />} data-testid={NAME}>
+          <Table />
+        </ActionsContainer>
       </div>
-
-      {address && (
-        <ActionMetricsContainer data-testid={NAME}>
-          <Spotlight />
-        </ActionMetricsContainer>
-      )}
-
-      <ActionsContainer title={<TableTitle />} data-testid={NAME}>
-        <Table />
-      </ActionsContainer>
     </div>
   )
 }
