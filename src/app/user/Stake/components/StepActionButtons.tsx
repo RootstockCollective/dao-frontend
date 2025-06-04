@@ -41,7 +41,7 @@ export const StepActionButtons = ({
           variant="secondary-outline"
           onClick={secondaryButton.onClick}
           data-testid={secondaryButton.label}
-          disabled={secondaryButton.disabled || isRequesting}
+          disabled={secondaryButton.disabled || isRequesting || isTxPending}
         >
           {secondaryButton.label}
         </Button>
