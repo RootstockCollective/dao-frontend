@@ -5,16 +5,6 @@ import { GetPricesResult, TokenBalanceRecord } from '@/app/user/types'
 import Big from '@/lib/big'
 import { formatCurrency } from '@/lib/utils'
 import { createContext, FC, ReactNode, useCallback, useContext, useMemo, useState } from 'react'
-import { Hash } from 'viem'
-
-export type ActionHookToUse = (
-  amount: string,
-  tokenToReceiveContract: string,
-) => {
-  onConfirm: () => Promise<Hash>
-  customFooter: ReactNode
-  isPending: boolean
-}
 
 type StakePreviewToken = {
   amount: string
@@ -36,7 +26,6 @@ interface StakingContextProps {
     amountToReceive: string
     amountToReceiveConvertedToCurrency: string
   }
-  actionToUse: ActionHookToUse
   actionName: ActionBeingExecuted
   stakePreviewFrom: StakePreviewToken
   stakePreviewTo: StakePreviewToken
@@ -61,11 +50,6 @@ const StakingContext = createContext<StakingContextProps>({
     amountToReceive: '',
     amountToReceiveConvertedToCurrency: '',
   },
-  actionToUse: () => ({
-    onConfirm: async () => '0x0',
-    customFooter: null,
-    isPending: false,
-  }),
   actionName: 'STAKE',
   stakePreviewFrom: { ...DEFAULT_STAKE_PREVIEW_TOKEN },
   stakePreviewTo: { ...DEFAULT_STAKE_PREVIEW_TOKEN },
@@ -76,17 +60,10 @@ interface Props {
   children: ReactNode
   tokenToSend: StakingToken
   tokenToReceive: StakingToken
-  actionToUse: ActionHookToUse
   actionName: ActionBeingExecuted
 }
 
-export const StakingProvider: FC<Props> = ({
-  tokenToSend,
-  tokenToReceive,
-  actionToUse,
-  children,
-  actionName,
-}) => {
+export const StakingProvider: FC<Props> = ({ tokenToSend, tokenToReceive, children, actionName }) => {
   const { balances, prices } = useBalancesContext()
   const [stakeData, setStakeData] = useState({ amount: '' })
   const [stakeTxHash, setStakeTxHash] = useState('')
@@ -152,7 +129,6 @@ export const StakingProvider: FC<Props> = ({
       tokenToSend,
       tokenToReceive,
       amountDataToReceive,
-      actionToUse,
       actionName,
       stakePreviewFrom,
       stakePreviewTo,
@@ -166,7 +142,6 @@ export const StakingProvider: FC<Props> = ({
       tokenToSend,
       tokenToReceive,
       amountDataToReceive,
-      actionToUse,
       actionName,
       stakePreviewFrom,
       stakePreviewTo,
