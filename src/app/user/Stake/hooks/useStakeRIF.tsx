@@ -96,5 +96,7 @@ export const useStakeRIF: ActionHookToUse = (
     onRequestAllowance,
     isRequestingAllowance,
     isAllowanceTxPending: allowanceHash && isAllowanceTxPending && !isAllowanceTxFailed,
+    isAllowanceTxFailed: allowanceHash && isAllowanceTxFailed,
+    allowanceHash,
   }
 }
