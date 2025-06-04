@@ -1,21 +1,19 @@
 import { useBalancesContext } from '@/app/user/Balances/context/BalancesContext'
 import { StakingProvider } from '@/app/user/Stake/StakingContext'
-import { steps } from '@/app/user/Stake/Steps/stepsUtils'
 import { useSteps } from '@/app/user/Stake/hooks/useSteps'
 import { StakingToken } from '@/app/user/Stake/types'
 import { tokenContracts } from '@/lib/contracts'
 import { useMemo } from 'react'
-import { StakingModal } from './StakeModal'
+import { Modal } from '@/components/Modal'
+import { StepOne } from './Steps/StepOne'
 
-interface StakingStepsProps {
+interface Props {
   onCloseModal: () => void
 }
 
-export const UnStakingSteps = ({ onCloseModal }: StakingStepsProps) => {
-  const { step, onGoNext, onGoBack } = useSteps(1)
+export const UnStakingSteps = ({ onCloseModal }: Props) => {
+  const { onGoNext, onGoBack } = useSteps(1)
   const { balances, prices } = useBalancesContext()
-
-  const currentStep = useMemo(() => steps[step], [step])
 
   const stepsFunctions = { onGoNext, onGoBack, onCloseModal }
 
@@ -40,8 +38,10 @@ export const UnStakingSteps = ({ onCloseModal }: StakingStepsProps) => {
   )
 
   return (
-    <StakingProvider tokenToSend={tokenToSend} tokenToReceive={tokenToReceive} actionName="UNSTAKE">
-      <StakingModal currentStep={currentStep} stepsFunctions={stepsFunctions} onClose={onCloseModal} />
+    <StakingProvider tokenToSend={tokenToSend} tokenToReceive={tokenToReceive}>
+      <Modal width={688} onClose={onCloseModal}>
+        <StepOne {...stepsFunctions} />
+      </Modal>
     </StakingProvider>
   )
 }

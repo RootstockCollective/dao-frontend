@@ -18,9 +18,9 @@ const DECIMAL_SCALES = {
   UNSTAKE: 18,
 }
 
-export const StepOne = ({ onGoNext = () => {} }: StepProps) => {
+export const StepOne = ({ onGoNext, actionName }: StepProps) => {
   const { address } = useAccount()
-  const { amount, onAmountChange, tokenToSend, actionName } = useStakingContext()
+  const { amount, onAmountChange, tokenToSend } = useStakingContext()
 
   const { data: backerTotalAllocation, isLoading: isCanAccountWithdrawLoading } = useReadBackersManager(
     { functionName: 'backerTotalAllocation', args: [address ?? zeroAddress] },
@@ -37,13 +37,7 @@ export const StepOne = ({ onGoNext = () => {} }: StepProps) => {
     return parsedAmount <= balanceThatCanBeWithdraw
   }, [amount, tokenToSend.balance, backerTotalAllocation])
 
-  const balanceToCurrency = useMemo(
-    () =>
-      Big(tokenToSend.price || 0)
-        .mul(tokenToSend.balance)
-        .toString(),
-    [tokenToSend],
-  )
+  const balanceToCurrency = formatCurrency(Big(tokenToSend.price || 0).mul(amount))
 
   const isAmountOverBalance = useMemo(() => {
     if (!amount) return false
@@ -87,7 +81,7 @@ export const StepOne = ({ onGoNext = () => {} }: StepProps) => {
         value={amount}
         symbol={tokenToSend.symbol}
         labelText={actionTexts.inputLabel}
-        currencyValue={formatCurrency(balanceToCurrency)}
+        currencyValue={balanceToCurrency}
         decimalScale={DECIMAL_SCALES[actionName]}
         errorText={isAmountOverBalance ? actionTexts.amountError : ''}
       />
@@ -124,10 +118,10 @@ export const StepOne = ({ onGoNext = () => {} }: StepProps) => {
           variant="primary"
           onClick={onGoNext}
           disabled={!canGoNext}
-          data-testid={actionTexts.confirmButtonText}
+          data-testid="ContinueButton"
           className="w-full md:w-auto"
         >
-          {actionTexts.confirmButtonText}
+          Continue
         </Button>
       </div>
     </StepWrapper>

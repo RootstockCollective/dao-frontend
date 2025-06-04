@@ -12,7 +12,7 @@ import { TokenAmountDisplay } from '../components/TokenAmountDisplay'
 import { TransactionStatus } from '../components/TransactionStatus'
 import { useStakeRIF } from '../hooks/useStakeRIF'
 
-export const StepThree = ({ onCloseModal = () => {} }: StepProps) => {
+export const StepThree = ({ onCloseModal }: StepProps) => {
   const { amount, tokenToReceive, stakePreviewFrom: from, stakePreviewTo: to } = useStakingContext()
 
   const { onRequestStake, isRequesting, isTxPending, isTxFailed, stakeHash } = useStakeRIF(

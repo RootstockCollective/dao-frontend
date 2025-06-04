@@ -14,7 +14,7 @@ import { TokenAmountDisplay } from '../components/TokenAmountDisplay'
 import { TransactionStatus } from '../components/TransactionStatus'
 import { useAllowance } from '../hooks/useAllowance'
 
-export const StepTwo = ({ onGoNext = () => {}, onGoBack = () => {} }: StepProps) => {
+export const StepTwo = ({ onGoNext, onGoBack }: StepProps) => {
   const { amount, tokenToSend, tokenToReceive, stakePreviewFrom: from } = useStakingContext()
 
   const {
@@ -124,7 +124,7 @@ const HelpPopover = () => {
       contentSubContainerClassName="rounded-none p-6"
     >
       <div className="flex items-center gap-1">
-        <Image src="/Images/info-icon.svg" alt="info" width={20} height={20} />
+        <Image src="/images/info-icon.svg" alt="info" width={20} height={20} />
         <Span variant="tag-s">Help, I don&apos;t understand</Span>
       </div>
     </Popover>
