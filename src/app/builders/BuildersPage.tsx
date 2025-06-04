@@ -40,7 +40,7 @@ export const BuildersPage = () => {
         <MetricsContainer data-testid={NAME}>
           <Metrics />
         </MetricsContainer>
-        <InfoContainer data-testid={NAME}>
+        <InfoContainer data-testid={NAME} className="grow-[3]">
           <Content />
         </InfoContainer>
       </div>
