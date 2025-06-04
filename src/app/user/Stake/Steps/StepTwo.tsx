@@ -119,7 +119,7 @@ export const StepTwo = ({ onGoNext = () => {}, onGoBack = () => {} }: StepProps)
 const HelpPopover = () => {
   return (
     <Popover
-      contentV2={<HelpPopoverContent />}
+      customContent={<HelpPopoverContent />}
       position="top"
       contentSubContainerClassName="rounded-none p-6"
     >
