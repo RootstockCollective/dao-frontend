@@ -72,7 +72,7 @@ export function useLedger() {
   const connectLedger = useCallback(async () => {
     try {
       setLedgerState(prev => ({ ...prev, error: null, isConnecting: true }))
-      
+
       const ledgerConnector = connectors.find(c => c.id === 'ledger')
       if (!ledgerConnector) {
         throw new Error('Ledger connector not found')
@@ -81,10 +81,10 @@ export function useLedger() {
       await connect({ connector: ledgerConnector })
     } catch (error) {
       const errorMessage = error instanceof Error ? error.message : 'Failed to connect to Ledger'
-      setLedgerState(prev => ({ 
-        ...prev, 
+      setLedgerState(prev => ({
+        ...prev,
         error: errorMessage,
-        isConnecting: false 
+        isConnecting: false,
       }))
     }
   }, [connectors, connect])
@@ -107,7 +107,8 @@ export function useLedger() {
     if (!ledgerState.isLedgerSupported) {
       return {
         title: 'Ledger Not Supported',
-        message: 'Your browser does not support Ledger hardware wallets. Please use Chrome, Edge, or another Chromium-based browser.',
+        message:
+          'Your browser does not support Ledger hardware wallets. Please use Chrome, Edge, or another Chromium-based browser.',
         actions: ['Update your browser', 'Try a different browser'],
       }
     }
@@ -151,4 +152,4 @@ export function useLedger() {
     getLedgerInstructions,
     isLoading: isPending,
   }
-} 
+}
