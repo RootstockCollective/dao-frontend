@@ -17,19 +17,6 @@ const NAME = 'Builders'
 export const BuildersPage = () => {
   const { address } = useAccount()
 
-  const TableTitle = () => (
-    <div className="flex items-center justify-between w-full">
-      <Typography variant="h3" className="text-lg font-semibold text-white uppercase">
-        The Collective Builders
-      </Typography>
-      <div className="flex items-center space-x-2">
-        <Typography variant="body" className="text-gray-400">
-          Active Builders
-        </Typography>
-      </div>
-    </div>
-  )
-
   return (
     <div data-testid={NAME} className="flex flex-col items-start w-full h-full pt-[0.13rem] gap-6 rounded-sm">
       <PageTitleContainer leftText={NAME} data-testid={NAME}>
@@ -48,7 +35,7 @@ export const BuildersPage = () => {
             <Spotlight />
           </ActionMetricsContainer>
         )}
-        <ActionsContainer title={<TableTitle />} data-testid={NAME}>
+        <ActionsContainer title={'The Collective Builders'} data-testid={NAME}>
           <Table />
         </ActionsContainer>
       </div>
