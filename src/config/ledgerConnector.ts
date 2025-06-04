@@ -42,9 +42,16 @@ export function ledgerConnector(options: LedgerConnectorOptions = {}) {
         const account = await getAccount()
         state.account = account
 
+        // Emit connection event
+        const chainId = options?.chainId || config.chains[0]?.id || 1
+        config.emitter.emit('change', { 
+          accounts: [account],
+          chainId 
+        })
+
         return {
           accounts: [account],
-          chainId: options?.chainId || config.chains[0]?.id || 1,
+          chainId,
         }
       } catch (error) {
         if (isUserRejectedRequestError(error)) {
@@ -84,7 +91,12 @@ export function ledgerConnector(options: LedgerConnectorOptions = {}) {
         request: async ({ method, params }: { method: string; params?: any[] }) => {
           switch (method) {
             case 'eth_requestAccounts':
-              return await this.getAccounts()
+              const accounts = await this.getAccounts()
+              config.emitter.emit('change', { 
+                accounts,
+                chainId: await this.getChainId()
+              })
+              return accounts
             case 'eth_accounts':
               return state.account ? [state.account] : []
             case 'eth_chainId':
@@ -104,7 +116,24 @@ export function ledgerConnector(options: LedgerConnectorOptions = {}) {
 
     async isAuthorized() {
       try {
-        return !!state.account || !!(await getAccount())
+        // Check if we have a stored account
+        if (state.account) {
+          return true
+        }
+
+        // Try to reconnect if we have no active connection
+        if (!state.transport || !state.eth) {
+          try {
+            await connectToDevice()
+            const account = await getAccount()
+            state.account = account
+            return true
+          } catch {
+            return false
+          }
+        }
+
+        return !!(await getAccount())
       } catch {
         return false
       }
