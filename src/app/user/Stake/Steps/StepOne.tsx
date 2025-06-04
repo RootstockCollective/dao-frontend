@@ -1,9 +1,8 @@
 import { StakeInput } from '@/app/user/Stake/StakeInputNew'
 import { textsDependingOnAction } from '@/app/user/Stake/Steps/stepsUtils'
 import { Button } from '@/components/ButtonNew/Button'
-import { ProgressBar } from '@/components/ProgressBarNew'
 import { TokenImage } from '@/components/TokenImage'
-import { Header, Label, Paragraph, Span } from '@/components/TypographyNew'
+import { Label, Paragraph, Span } from '@/components/TypographyNew'
 import Big from '@/lib/big'
 import { useReadBackersManager } from '@/shared/hooks/contracts'
 import { useCallback, useMemo } from 'react'
@@ -12,7 +11,7 @@ import { useAccount } from 'wagmi'
 import { useStakingContext } from '../StakingContext'
 import { StepProps } from '../types'
 import { formatCurrency } from '@/lib/utils'
-import { StakeSteps } from './StakeSteps'
+import { StepWrapper } from '../components/StepWrapper'
 
 const DECIMAL_SCALES = {
   STAKE: 8,
@@ -82,14 +81,7 @@ export const StepOne = ({ onGoNext = () => {} }: StepProps) => {
   )
 
   return (
-    <div className="p-6">
-      <Header className="mt-16 mb-4">{actionTexts.modalTitle}</Header>
-
-      <div className="mb-12">
-        <StakeSteps currentStep={1} />
-        <ProgressBar progress={28} className="mt-3" />
-      </div>
-
+    <StepWrapper currentStep={1} progress={28}>
       <StakeInput
         onChange={handleAmountChange}
         value={amount}
@@ -138,6 +130,6 @@ export const StepOne = ({ onGoNext = () => {} }: StepProps) => {
           {actionTexts.confirmButtonText}
         </Button>
       </div>
-    </div>
+    </StepWrapper>
   )
 }

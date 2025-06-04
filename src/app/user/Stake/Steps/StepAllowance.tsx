@@ -1,25 +1,21 @@
 import { useStakingContext } from '@/app/user/Stake/StakingContext'
 import { StepProps } from '@/app/user/Stake/types'
-import { Button } from '@/components/ButtonNew/Button'
+import { isUserRejectedTxError } from '@/components/ErrorPage/commonErrors'
 import { Popover } from '@/components/Popover'
-import { ProgressBar, ProgressButton } from '@/components/ProgressBarNew'
-import { TokenImage } from '@/components/TokenImage'
 import { Header, Label, Paragraph, Span } from '@/components/TypographyNew'
 import { config } from '@/config'
-import Big from '@/lib/big'
-import { cn, formatNumberWithCommas } from '@/lib/utils'
 import { waitForTransactionReceipt } from '@wagmi/core'
 import Image from 'next/image'
-import { useEffect, useMemo, useRef } from 'react'
-import { StakeSteps } from './StakeSteps'
-import { textsDependingOnAction } from './stepsUtils'
-import { ExternalLink } from '@/components/Link/ExternalLink'
-import { EXPLORER_URL } from '@/lib/constants'
+import { useEffect, useRef } from 'react'
+import { Divider } from '../components/Divider'
+import { StepActionButtons } from '../components/StepActionButtons'
+import { StepWrapper } from '../components/StepWrapper'
+import { TokenAmountDisplay } from '../components/TokenAmountDisplay'
+import { TransactionStatus } from '../components/TransactionStatus'
 import { useAllowance } from '../hooks/useAllowance'
-import { isUserRejectedTxError } from '@/components/ErrorPage/commonErrors'
 
 export const StepAllowance = ({ onGoNext = () => {}, onGoBack = () => {} }: StepProps) => {
-  const { amount, tokenToSend, tokenToReceive, stakePreviewFrom: from, actionName } = useStakingContext()
+  const { amount, tokenToSend, tokenToReceive, stakePreviewFrom: from } = useStakingContext()
 
   const {
     isAllowanceEnough,
@@ -49,7 +45,6 @@ export const StepAllowance = ({ onGoNext = () => {}, onGoBack = () => {} }: Step
   }
 
   const hasCalledOnGoNextRef = useRef(false)
-  const actionTexts = useMemo(() => textsDependingOnAction[actionName], [actionName])
 
   useEffect(() => {
     if (isAllowanceEnough && !hasCalledOnGoNextRef.current) {
@@ -59,19 +54,18 @@ export const StepAllowance = ({ onGoNext = () => {}, onGoBack = () => {} }: Step
     }
   }, [isAllowanceEnough, onGoNext])
 
+  const getPrimaryButtonLabel = () => {
+    if (isAllowanceReadLoading) return 'Fetching allowance...'
+    if (isRequesting) return 'Requesting...'
+    return 'Request allowance'
+  }
+
   return (
-    <div className="p-6">
-      <Header className="mt-16 mb-4">{actionTexts.modalTitle}</Header>
-
-      <div className="mb-12">
-        <StakeSteps currentStep={2} />
-        <ProgressBar progress={68} className="mt-3" />
-      </div>
-
-      <Paragraph variant="body" className="mb-8">
-        Before you can stake, you must first approve the allowance in your wallet.
-      </Paragraph>
-
+    <StepWrapper
+      currentStep={2}
+      progress={68}
+      description="Before you can stake, you must first approve the allowance in your wallet."
+    >
       <div className="flex flex-col md:flex-row md:items-start md:justify-between mb-8">
         <div className="flex-1 mb-4 md:mb-0">
           <Label variant="tag" className="text-bg-0">
@@ -81,92 +75,44 @@ export const StepAllowance = ({ onGoNext = () => {}, onGoBack = () => {} }: Step
             <Header variant="h1">{tokenToSend.symbol} smart contract</Header>
           </div>
         </div>
-        <div className="flex-1 flex-col md:items-end">
-          <Label variant="tag" className="text-bg-0">
-            Allowance amount
-          </Label>
-          <div className="flex items-center gap-2 mt-2">
-            <Header variant="h1" className="font-bold">
-              {formatNumberWithCommas(Big(amount).toFixedNoTrailing(8))}
-            </Header>
-            <TokenImage symbol={tokenToSend.symbol} size={24} />
-            <Span variant="body-l" bold>
-              {tokenToSend.symbol}
-            </Span>
-          </div>
-          <Span variant="body-s" bold className="text-bg-0 mt-1">
-            {from.amountConvertedToCurrency}
-          </Span>
-        </div>
+        <TokenAmountDisplay
+          label="Allowance amount"
+          amount={amount}
+          tokenSymbol={tokenToSend.symbol}
+          amountInCurrency={from.amountConvertedToCurrency}
+          isFlexEnd
+        />
       </div>
 
-      {allowanceHash && (
-        <div className="flex flex-col mb-5">
-          {isTxFailed && (
-            <div className="flex items-center gap-2">
-              <Image src="/images/warning-icon.svg" alt="Warning" width={40} height={40} />
-              <Paragraph variant="body" className="text-error">
-                Allowance TX failed.
-              </Paragraph>
-            </div>
-          )}
-          <div className={cn({ 'ml-12': isTxFailed })}>
-            <ExternalLink href={`${EXPLORER_URL}/tx/${allowanceHash}`} target="_blank" variant="menu">
-              <Span variant="body-s" bold>
-                View transaction in Explorer
-              </Span>
-            </ExternalLink>
-          </div>
-        </div>
-      )}
+      <TransactionStatus
+        txHash={allowanceHash}
+        isTxFailed={isTxFailed}
+        failureMessage="Allowance TX failed."
+      />
 
       {/* Mobile: Show HelpPopover above hr */}
       <div className="block md:hidden mb-4">
         <HelpPopover />
       </div>
 
-      <hr className="bg-bg-60 h-px border-0 mb-6" />
+      <Divider />
 
-      {/* Desktop: Show HelpPopover next to buttons */}
-      <div className="flex flex-col md:flex-row md:items-center md:justify-between mt-8 gap-4">
-        <div className="hidden md:inline">
-          <HelpPopover />
-        </div>
-        <div className="flex gap-4">
-          <Button
-            variant="secondary-outline"
-            onClick={onGoBack}
-            data-testid="Back"
-            disabled={isAllowanceReadLoading || isRequesting}
-          >
-            Back
-          </Button>
-          {isTxPending ? (
-            <ProgressButton className="whitespace-nowrap">
-              <Span bold className="text-text-60">
-                In progress
-              </Span>
-              <Span className="text-text-80 hidden md:inline">&nbsp;- 2 mins average</Span>
-              <Span className="text-text-80 md:hidden">&nbsp;- 2 mins avg</Span>
-            </ProgressButton>
-          ) : (
-            <Button
-              variant="primary"
-              className="w-full md:w-auto"
-              onClick={handleRequestAllowance}
-              data-testid="Request allowance"
-              disabled={isAllowanceReadLoading || isRequesting || !amount || Number(amount) <= 0}
-            >
-              {isAllowanceReadLoading
-                ? 'Fetching allowance...'
-                : isRequesting
-                  ? 'Requesting...'
-                  : 'Request allowance'}
-            </Button>
-          )}
-        </div>
-      </div>
-    </div>
+      <StepActionButtons
+        primaryButton={{
+          label: getPrimaryButtonLabel(),
+          onClick: handleRequestAllowance,
+          disabled: isAllowanceReadLoading || !amount || Number(amount) <= 0,
+        }}
+        secondaryButton={{
+          label: 'Back',
+          onClick: onGoBack,
+          disabled: isAllowanceReadLoading,
+        }}
+        isTxPending={isTxPending}
+        isRequesting={isRequesting}
+        additionalContent={<HelpPopover />}
+      />
+    </StepWrapper>
   )
 }
 
