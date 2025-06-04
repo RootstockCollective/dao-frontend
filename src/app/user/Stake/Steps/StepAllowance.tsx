@@ -16,6 +16,7 @@ import { textsDependingOnAction } from './stepsUtils'
 import { ExternalLink } from '@/components/Link/ExternalLink'
 import { EXPLORER_URL } from '@/lib/constants'
 import { useAllowance } from '../hooks/useAllowance'
+import { isUserRejectedTxError } from '@/components/ErrorPage/commonErrors'
 
 export const StepAllowance = ({ onGoNext = () => {}, onGoBack = () => {} }: StepProps) => {
   const { amount, tokenToSend, tokenToReceive, stakePreviewFrom: from, actionName } = useStakingContext()
@@ -35,16 +36,15 @@ export const StepAllowance = ({ onGoNext = () => {}, onGoBack = () => {} }: Step
   })
 
   const handleRequestAllowance = async () => {
-    if (!onRequestAllowance) {
-      return
-    }
     try {
       const txHash = await onRequestAllowance()
       await waitForTransactionReceipt(config, {
         hash: txHash,
       })
     } catch (err) {
-      console.error('Error requesting allowance', err)
+      if (!isUserRejectedTxError(err)) {
+        console.error('Error requesting allowance', err)
+      }
     }
   }
 

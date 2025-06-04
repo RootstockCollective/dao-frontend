@@ -7,13 +7,13 @@ import { useTxStatusContext } from '@/shared/context/TxStatusContext'
 
 interface Props {
   amount: string
-  tokenToSendContract: string
-  tokenToReceiveContract: string
+  tokenToSendContract: Address
+  tokenToReceiveContract: Address
 }
 
 export const useAllowance = ({ amount, tokenToSendContract, tokenToReceiveContract }: Props) => {
   const { address } = useAccount()
-  const [allowanceHash, setAllowanceHashUsed] = useState<Hash>()
+  const [allowanceHash, setAllowanceHash] = useState<Hash>()
   const { trackTransaction } = useTxStatusContext()
 
   const { data: allowanceBalance, isLoading: isAllowanceReadLoading } = useReadContract({
@@ -43,28 +43,28 @@ export const useAllowance = ({ amount, tokenToSendContract, tokenToReceiveContra
 
   const { isPending: isAllowanceTxPending, failureReason: isAllowanceTxFailed } = tx
 
-  useEffect(() => {
-    if (allowanceTxHash) {
-      setAllowanceHashUsed(allowanceTxHash)
-      trackTransaction(allowanceTxHash)
-    }
-  }, [allowanceTxHash, trackTransaction])
-
   const onRequestAllowance = useCallback(
     () =>
       requestAllowance(
         {
           abi: RIFTokenAbi,
-          address: tokenToSendContract as Address,
+          address: tokenToSendContract,
           functionName: 'approve',
-          args: [tokenToReceiveContract as Address, parseEther(amount)],
+          args: [tokenToReceiveContract, parseEther(amount)],
         },
         {
-          onSuccess: txHash => setAllowanceHashUsed(txHash),
+          onSuccess: txHash => setAllowanceHash(txHash),
         },
       ),
     [amount, requestAllowance, tokenToReceiveContract, tokenToSendContract],
   )
+
+  useEffect(() => {
+    if (allowanceTxHash) {
+      setAllowanceHash(allowanceTxHash)
+      trackTransaction(allowanceTxHash)
+    }
+  }, [allowanceTxHash, trackTransaction])
 
   return {
     isAllowanceEnough,

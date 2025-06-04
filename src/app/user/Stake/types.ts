@@ -1,5 +1,6 @@
 import { ReactNode } from 'react'
 import { TokenBalance } from '@/app/user/types'
+import { Address } from 'viem'
 
 export interface StakePreviewBalanceProps {
   topLeftText: string
@@ -11,7 +12,7 @@ export interface StakePreviewBalanceProps {
 
 export type StakingToken = TokenBalance & {
   price: string | undefined
-  contract: string
+  contract: Address
 }
 
 export interface StepProps {

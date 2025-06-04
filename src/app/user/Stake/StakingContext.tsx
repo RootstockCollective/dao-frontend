@@ -55,8 +55,8 @@ const StakingContext = createContext<StakingContextProps>({
   amount: '0',
   onAmountChange: () => {},
   stakeTxHash: '',
-  tokenToSend: { balance: '', symbol: '', price: '', contract: '' },
-  tokenToReceive: { balance: '', symbol: '', price: '', contract: '' },
+  tokenToSend: { balance: '', symbol: '', price: '', contract: '0x0' },
+  tokenToReceive: { balance: '', symbol: '', price: '', contract: '0x0' },
   amountDataToReceive: {
     amountToReceive: '',
     amountToReceiveConvertedToCurrency: '',

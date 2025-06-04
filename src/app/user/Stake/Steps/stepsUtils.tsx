@@ -66,12 +66,6 @@ export const stakingSteps = [
       width: 688,
     },
   },
-  {
-    stepComponent: StepThree,
-    modalProps: {
-      width: 688,
-    },
-  },
 ]
 
 export type ActionBeingExecuted = keyof typeof textsDependingOnAction
