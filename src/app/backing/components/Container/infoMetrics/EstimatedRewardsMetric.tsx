@@ -27,7 +27,7 @@ export const EstimatedRewardsMetric = () => {
   useHandleErrors({ error, title: 'Error loading builder rewards' })
   const { totalEstimatedRif, totalEstimatedRbtc, totalEstimatedUsd } = useEstimatedRewards(rewardsData)
 
-  if (isLoading) return <LoadingSpinner size="small" />
+  if (isLoading || rewardsData === undefined) return <LoadingSpinner size="small" />
 
   return (
     <Metric
