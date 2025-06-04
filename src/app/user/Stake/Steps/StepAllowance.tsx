@@ -25,9 +25,9 @@ export const StepAllowance = ({ onGoNext = () => {}, onGoBack = () => {} }: Step
     isAllowanceEnough,
     isAllowanceReadLoading,
     onRequestAllowance,
-    isRequestingAllowance,
-    isAllowanceTxPending,
-    isAllowanceTxFailed,
+    isRequesting,
+    isTxPending,
+    isTxFailed,
     allowanceHash,
   } = useAllowance({
     amount,
@@ -102,7 +102,7 @@ export const StepAllowance = ({ onGoNext = () => {}, onGoBack = () => {} }: Step
 
       {allowanceHash && (
         <div className="flex flex-col mb-5">
-          {isAllowanceTxFailed && (
+          {isTxFailed && (
             <div className="flex items-center gap-2">
               <Image src="/images/warning-icon.svg" alt="Warning" width={40} height={40} />
               <Paragraph variant="body" className="text-error">
@@ -110,7 +110,7 @@ export const StepAllowance = ({ onGoNext = () => {}, onGoBack = () => {} }: Step
               </Paragraph>
             </div>
           )}
-          <div className={cn({ 'ml-12': isAllowanceTxFailed })}>
+          <div className={cn({ 'ml-12': isTxFailed })}>
             <ExternalLink href={`${EXPLORER_URL}/tx/${allowanceHash}`} target="_blank" variant="menu">
               <Span variant="body-s" bold>
                 View transaction in Explorer
@@ -137,11 +137,11 @@ export const StepAllowance = ({ onGoNext = () => {}, onGoBack = () => {} }: Step
             variant="secondary-outline"
             onClick={onGoBack}
             data-testid="Back"
-            disabled={isAllowanceReadLoading || isRequestingAllowance}
+            disabled={isAllowanceReadLoading || isRequesting}
           >
             Back
           </Button>
-          {isAllowanceTxPending ? (
+          {isTxPending ? (
             <ProgressButton className="whitespace-nowrap">
               <Span bold className="text-text-60">
                 In progress
@@ -155,11 +155,11 @@ export const StepAllowance = ({ onGoNext = () => {}, onGoBack = () => {} }: Step
               className="w-full md:w-auto"
               onClick={handleRequestAllowance}
               data-testid="Request allowance"
-              disabled={isAllowanceReadLoading || isRequestingAllowance || !amount || Number(amount) <= 0}
+              disabled={isAllowanceReadLoading || isRequesting || !amount || Number(amount) <= 0}
             >
               {isAllowanceReadLoading
                 ? 'Fetching allowance...'
-                : isRequestingAllowance
+                : isRequesting
                   ? 'Requesting...'
                   : 'Request allowance'}
             </Button>
