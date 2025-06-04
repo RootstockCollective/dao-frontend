@@ -21,7 +21,7 @@ export type GaugeStakingHistory = {
 export const useGetBackerStakingHistory = (backer: Address) => {
   const { data, isLoading, error } = useQuery({
     queryFn: async () => {
-      const { data } = await axios.get<BackerStakingHistory>(`/api/rbi?backer=${backer}`)
+      const { data } = await axios.get<BackerStakingHistory>(`/api/backers/${backer}/metrics/rbi`)
       return data
     },
     queryKey: ['backerStakingHistory', backer],

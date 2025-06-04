@@ -1,7 +1,10 @@
-import { Pool } from 'pg'
+import knex from 'knex'
 
-const pool = new Pool({
-  connectionString: process.env.DB_CONNECTION_STRING,
+const db = knex({
+  client: 'pg',
+  connection: {
+    connectionString: process.env.ROOTSTOCK_COLLECTIVE_STATE,
+  },
 })
 
-export { pool }
+export { db }
