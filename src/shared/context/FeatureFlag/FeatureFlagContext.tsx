@@ -37,7 +37,6 @@ const readLocalStorage = (): FeatureFlags => {
 
 export const FeatureFlagProvider: FC<{ children: ReactNode }> = ({ children }) => {
   const [flags, setFlags] = useState<FeatureFlags>(envFlags)
-
   useEffect(() => {
     const localStorageFlags = readLocalStorage()
     const cleanEnvFlags: FeatureFlags = Object.entries(envFlags).reduce<FeatureFlags>((acc, [key, value]) => {
@@ -82,4 +81,10 @@ export const FeatureFlagProvider: FC<{ children: ReactNode }> = ({ children }) =
   )
 }
 
-export const useFeatureFlags = () => useContext(FeatureFlagContext)
+export const useFeatureFlags = () => {
+  const context = useContext(FeatureFlagContext)
+  if (!context) {
+    throw new Error('FeatureFlagContext not found. Use FeatureFlagProvider to wrap your app.')
+  }
+  return context
+}
