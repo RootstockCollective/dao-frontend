@@ -110,7 +110,7 @@ export const StepAllowance = ({ onGoNext = () => {}, onGoBack = () => {} }: Step
         <div className="hidden md:inline">
           <HelpPopover />
         </div>
-        <div className="flex gap-3">
+        <div className="flex gap-4">
           <Button
             variant="secondary-outline"
             onClick={onGoBack}
@@ -130,6 +130,7 @@ export const StepAllowance = ({ onGoNext = () => {}, onGoBack = () => {} }: Step
           ) : (
             <Button
               variant="primary"
+              className="w-full md:w-auto"
               onClick={handleRequestAllowance}
               data-testid="Request allowance"
               disabled={

@@ -20,6 +20,14 @@ export const Primary: Story = {
   },
 }
 
+export const PrimaryDisabled: Story = {
+  args: {
+    variant: 'primary',
+    children: 'Primary Button',
+    disabled: true,
+  },
+}
+
 export const Secondary: Story = {
   args: {
     variant: 'secondary',
@@ -27,9 +35,25 @@ export const Secondary: Story = {
   },
 }
 
+export const SecondaryDisabled: Story = {
+  args: {
+    variant: 'secondary',
+    children: 'Secondary Button',
+    disabled: true,
+  },
+}
+
 export const SecondaryOutline: Story = {
   args: {
     variant: 'secondary-outline',
     children: 'Secondary Outline Button',
+  },
+}
+
+export const SecondaryOutlineDisabled: Story = {
+  args: {
+    variant: 'secondary-outline',
+    children: 'Secondary Outline Button',
+    disabled: true,
   },
 }
