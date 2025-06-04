@@ -11,7 +11,7 @@ export const AnnualBackersIncentivesMetric = () => {
   const { data: abiPct, isLoading, error } = useGetMetricsAbi()
   useHandleErrors({ error, title: 'Error loading ABI metrics' })
 
-  if (isLoading) return <LoadingSpinner size="small" />
+  if (isLoading || abiPct === undefined) return <LoadingSpinner size="small" />
 
   return (
     <Metric
