@@ -34,7 +34,7 @@ export const useAllowance = ({ amount, tokenToSendContract, tokenToReceiveContra
   const {
     writeContractAsync: requestAllowance,
     data: allowanceTxHash,
-    isPending: isRequestingAllowance,
+    isPending: isRequesting,
   } = useWriteContract()
 
   const tx = useWaitForTransactionReceipt({
@@ -70,9 +70,9 @@ export const useAllowance = ({ amount, tokenToSendContract, tokenToReceiveContra
     isAllowanceEnough,
     isAllowanceReadLoading,
     onRequestAllowance,
-    isRequestingAllowance,
-    isAllowanceTxPending: !!(allowanceHash && isAllowanceTxPending && !isAllowanceTxFailed),
-    isAllowanceTxFailed: !!(allowanceHash && isAllowanceTxFailed),
+    isRequesting,
+    isTxPending: !!(allowanceHash && isAllowanceTxPending && !isAllowanceTxFailed),
+    isTxFailed: !!(allowanceHash && isAllowanceTxFailed),
     allowanceHash,
   }
 }
