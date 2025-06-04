@@ -9,10 +9,10 @@ interface LedgerConnectButtonProps {
   children?: React.ReactNode
 }
 
-export const LedgerConnectButton = ({ 
-  variant = 'primary', 
+export const LedgerConnectButton = ({
+  variant = 'primary',
   className,
-  children = 'Connect Ledger'
+  children = 'Connect Ledger',
 }: LedgerConnectButtonProps) => {
   const {
     isLedgerSupported,
@@ -71,10 +71,8 @@ export const LedgerConnectButton = ({
   if (!isLedgerSupported || error) {
     return (
       <div className="relative">
-        <Tooltip text={instructions.message}>
-          {buttonContent}
-        </Tooltip>
-        
+        <Tooltip text={instructions.message}>{buttonContent}</Tooltip>
+
         {(showInstructions || error) && (
           <div className="absolute top-full left-0 mt-2 p-4 bg-white border border-gray-200 rounded-lg shadow-lg z-50 min-w-80">
             <div className="space-y-3">
@@ -82,7 +80,7 @@ export const LedgerConnectButton = ({
                 <h4 className="font-semibold text-gray-900">{instructions.title}</h4>
                 <p className="text-sm text-gray-600 mt-1">{instructions.message}</p>
               </div>
-              
+
               <div className="space-y-2">
                 <h5 className="text-sm font-medium text-gray-700">Steps to connect:</h5>
                 <ol className="list-decimal list-inside space-y-1 text-sm text-gray-600">
@@ -91,7 +89,7 @@ export const LedgerConnectButton = ({
                   ))}
                 </ol>
               </div>
-              
+
               <div className="flex gap-2 pt-2">
                 {error && (
                   <Button
@@ -104,10 +102,7 @@ export const LedgerConnectButton = ({
                     Try Again
                   </Button>
                 )}
-                <Button
-                  onClick={() => setShowInstructions(false)}
-                  variant="white"
-                >
+                <Button onClick={() => setShowInstructions(false)} variant="white">
                   Close
                 </Button>
               </div>
@@ -121,4 +116,4 @@ export const LedgerConnectButton = ({
   return buttonContent
 }
 
-export default LedgerConnectButton 
+export default LedgerConnectButton

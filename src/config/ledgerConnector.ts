@@ -25,7 +25,7 @@ export function ledgerConnector(options: LedgerConnectorOptions = {}) {
     derivationPath: "44'/60'/0'/0/0", // Default Ethereum derivation path
   }
 
-  return createConnector<unknown>((config) => ({
+  return createConnector<unknown>(config => ({
     id: 'ledger',
     name: 'Ledger',
     type: 'hardware',
@@ -33,7 +33,7 @@ export function ledgerConnector(options: LedgerConnectorOptions = {}) {
     async connect() {
       try {
         await connectToDevice()
-        
+
         if (!state.eth) {
           throw new Error('Failed to initialize Ledger Ethereum app')
         }
@@ -44,9 +44,9 @@ export function ledgerConnector(options: LedgerConnectorOptions = {}) {
 
         // Emit connection event
         const chainId = options?.chainId || config.chains[0]?.id || 1
-        config.emitter.emit('change', { 
+        config.emitter.emit('change', {
           accounts: [account],
-          chainId 
+          chainId,
         })
 
         return {
@@ -94,9 +94,9 @@ export function ledgerConnector(options: LedgerConnectorOptions = {}) {
           switch (method) {
             case 'eth_requestAccounts':
               const accounts = await this.getAccounts()
-              config.emitter.emit('change', { 
+              config.emitter.emit('change', {
                 accounts,
-                chainId: await this.getChainId()
+                chainId: await this.getChainId(),
               })
               return accounts
             case 'eth_accounts':
@@ -142,11 +142,11 @@ export function ledgerConnector(options: LedgerConnectorOptions = {}) {
     },
 
     async switchChain({ chainId }) {
-      const chain = config.chains.find((c) => c.id === chainId)
+      const chain = config.chains.find(c => c.id === chainId)
       if (!chain) {
         throw new SwitchChainError(new Error(`Chain ${chainId} not configured`))
       }
-      
+
       // Update the connector's chain
       config.emitter.emit('change', { chainId })
       return chain
@@ -188,14 +188,16 @@ export function ledgerConnector(options: LedgerConnectorOptions = {}) {
         // Create new transport with a small delay to ensure previous connections are cleaned up
         await new Promise(resolve => setTimeout(resolve, 1000))
         state.transport = await TransportWebHID.create()
-      } 
+      }
       // Fallback to WebUSB
       else if (await TransportWebUSB.isSupported()) {
         // Create new transport with a small delay to ensure previous connections are cleaned up
         await new Promise(resolve => setTimeout(resolve, 1000))
         state.transport = await TransportWebUSB.create()
       } else {
-        throw new Error('No compatible transport found. Please ensure your browser supports WebHID or WebUSB.')
+        throw new Error(
+          'No compatible transport found. Please ensure your browser supports WebHID or WebUSB.',
+        )
       }
 
       state.eth = new Eth(state.transport)
@@ -203,7 +205,7 @@ export function ledgerConnector(options: LedgerConnectorOptions = {}) {
       // Clean up state in case of error
       state.transport = null
       state.eth = null
-      
+
       if (error instanceof TransportStatusError) {
         throw new Error('Ledger device: Please ensure the Ethereum app is open and ready')
       }
@@ -233,10 +235,10 @@ export function ledgerConnector(options: LedgerConnectorOptions = {}) {
     }
 
     try {
-      const messageBytes = message.startsWith('0x') 
+      const messageBytes = message.startsWith('0x')
         ? Buffer.from(message.slice(2), 'hex')
         : Buffer.from(message, 'utf8')
-      
+
       const result = await state.eth.signPersonalMessage(state.derivationPath, messageBytes.toString('hex'))
       const signature = `0x${result.r}${result.s}${result.v.toString(16).padStart(2, '0')}`
       return signature
@@ -272,7 +274,7 @@ export function ledgerConnector(options: LedgerConnectorOptions = {}) {
     return (
       error instanceof TransportStatusError &&
       (error.statusCode === 0x6985 || // User rejected
-       error.statusCode === 0x6a80)   // Invalid data received
+        error.statusCode === 0x6a80) // Invalid data received
     )
   }
-} 
+}
