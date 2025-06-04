@@ -5,6 +5,9 @@ import { rootstock, rootstockTestnet } from '@reown/appkit/networks'
 import { createConfig, http, cookieStorage, createStorage } from 'wagmi'
 import { injected } from 'wagmi/connectors'
 import { REOWN_PROJECT_ID } from '@/lib/constants'
+import { trezorWalletConnector } from '@/shared/trezor-connector/trezor-connector'
+
+const connectors = [injected(), trezorWalletConnector()]
 
 const rskRegtest = defineChain({
   id: 33,
@@ -35,7 +38,6 @@ export const config = createConfig({
       },
     }),
   },
-  connectors: [injected()],
 })
 
 export const wagmiAdapter = new WagmiAdapter({
@@ -53,6 +55,7 @@ export const wagmiAdapter = new WagmiAdapter({
       },
     }),
   },
+  connectors,
 })
 
 export const wagmiAdapterConfig = wagmiAdapter.wagmiConfig
