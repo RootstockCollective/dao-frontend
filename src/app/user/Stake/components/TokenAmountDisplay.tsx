@@ -1,7 +1,7 @@
 import { TokenImage } from '@/components/TokenImage'
 import { Header, Label, Paragraph, Span } from '@/components/TypographyNew'
 import Big from '@/lib/big'
-import { formatNumberWithCommas } from '@/lib/utils'
+import { cn, formatNumberWithCommas } from '@/lib/utils'
 
 interface TokenAmountDisplayProps {
   label: string
@@ -22,12 +22,8 @@ export const TokenAmountDisplay = ({
   className = '',
   isFlexEnd = false,
 }: TokenAmountDisplayProps) => {
-  const containerClass = isFlexEnd
-    ? `flex-1 flex-col md:items-end ${className}`
-    : `flex-1 mb-4 md:mb-0 ${className}`
-
   return (
-    <div className={containerClass}>
+    <div className={cn('flex-1', isFlexEnd ? 'flex-col md:items-end' : 'mb-4 md:mb-0', className)}>
       <Label variant="tag" className="text-bg-0">
         {label}
       </Label>

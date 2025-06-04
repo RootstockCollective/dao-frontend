@@ -29,9 +29,11 @@ export const StepActionButtons = ({
 }: Props) => {
   return (
     <div
-      className={cn('flex flex-col md:flex-row md:items-center md:justify-end mt-8 gap-4', {
-        'justify-between': additionalContent,
-      })}
+      className={cn(
+        'flex flex-col gap-4 mt-8',
+        'md:flex-row md:items-center',
+        additionalContent ? 'justify-between' : 'md:justify-end',
+      )}
     >
       {additionalContent && <div className="hidden md:inline">{additionalContent}</div>}
       <div className="flex gap-4">
@@ -48,8 +50,8 @@ export const StepActionButtons = ({
             <Span bold className="text-text-60">
               {progressText}
             </Span>
-            <Span className="text-text-80 hidden md:inline">&nbsp;- 2 mins average</Span>
-            <Span className="text-text-80 md:hidden">&nbsp;- 2 mins avg</Span>
+            <Span className="text-text-80 hidden md:inline">&nbsp;- 1 min average</Span>
+            <Span className="text-text-80 md:hidden">&nbsp;- 1 min avg</Span>
           </ProgressButton>
         ) : (
           <Button
