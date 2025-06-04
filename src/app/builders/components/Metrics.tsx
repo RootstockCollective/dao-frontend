@@ -1,5 +1,5 @@
 import React from 'react'
-import { Metric } from '@/app/shared/components/Metric/Metric'
+import { Metric } from '../../../components/Metric/Metric'
 
 export const Metrics = () => {
   return (
