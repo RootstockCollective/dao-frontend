@@ -41,10 +41,7 @@ export const BuilderCard: FC<BuilderCardProps> = ({
 }) => {
   return (
     <div
-      className={cn(
-        'rounded bg-v3-bg-accent-60 px-2 pb-6 flex flex-col items-center relative w-1/4 min-w-[280px]',
-        className,
-      )}
+      className={cn('rounded bg-v3-bg-accent-60 px-2 pb-6 flex flex-col items-center relative', className)}
       data-testid={`builderCardContainer${dataTestId}`}
     >
       <div
@@ -55,7 +52,7 @@ export const BuilderCard: FC<BuilderCardProps> = ({
       {/* FIXME: replace the builder page link */}
       <BuilderHeader address={address} name={builderName} builderPageLink="#" className="mt-8" />
       <div
-        className="w-full mt-6 border border-v3-bg-accent-40 rounded-lg gap-3 flex flex-col divide-y divide-v3-bg-accent-40"
+        className="w-full mt-6 border border-v3-bg-accent-40 rounded-lg gap-3 flex flex-col divide-y divide-v3-bg-accent-40 mb-6"
         data-testid="builderCardContent"
       >
         <RewardsInfo {...backerRewardPercentage} estimatedRewards={estimatedRewards} />
@@ -75,7 +72,7 @@ export const BuilderCard: FC<BuilderCardProps> = ({
       {isConnected && existentAllocation !== 0 && (
         <Button
           variant="secondary"
-          className={cn('border-v3-bg-accent-40 px-2 py-1 mt-6')}
+          className={cn('border-v3-bg-accent-40 px-2 py-1´')}
           textClassName="text-[14px] font-normal"
           onClick={() => onAllocationChange(0)}
           data-testid="removeBackingButton"
@@ -87,7 +84,7 @@ export const BuilderCard: FC<BuilderCardProps> = ({
         <ConnectPopover>
           <Button
             variant="secondary"
-            className={cn('border-v3-bg-accent-40 px-2 py-1 mt-6')}
+            className={cn('border-v3-bg-accent-40 px-2 py-1')}
             textClassName="text-[14px] font-normal"
             data-testid="backBuilderButton"
           >
