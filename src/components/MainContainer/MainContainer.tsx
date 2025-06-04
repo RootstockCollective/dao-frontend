@@ -8,6 +8,7 @@ import Scroll from '../Scroll'
 import { ContainerDesktop } from './ContainerDesktop'
 import ContainerMobile from './ContainerMobile'
 import { LayoutProvider } from './LayoutProvider'
+import { ToastContainer } from 'react-toastify'
 
 export const MainContainer: FC<PropsWithChildren> = ({ children }) => {
   const isDesktop = useIsDesktop()
@@ -17,6 +18,7 @@ export const MainContainer: FC<PropsWithChildren> = ({ children }) => {
   return (
     <DelayedRender>
       <LayoutProvider>
+        <ToastContainer />
         {shouldDisplayContent && (
           <>
             <Scroll />
