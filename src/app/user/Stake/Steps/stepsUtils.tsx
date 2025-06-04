@@ -1,17 +1,8 @@
-import { StepOne } from '@/app/user/Stake/Steps/StepOne'
-import { StepTwo } from '@/app/user/Stake/Steps/StepTwo'
-import { StepThree } from '@/app/user/Stake/Steps/StepThree'
-import { StepAllowance } from '@/app/user/Stake/Steps/StepAllowance'
+import { StepOne, StepTwo, StepThree } from '.'
 
 export const steps = [
   {
     stepComponent: StepOne,
-    modalProps: {
-      width: 720,
-    },
-  },
-  {
-    stepComponent: StepTwo,
     modalProps: {
       width: 720,
     },
@@ -55,13 +46,13 @@ export const stakingSteps = [
     },
   },
   {
-    stepComponent: StepAllowance,
+    stepComponent: StepTwo,
     modalProps: {
       width: 688,
     },
   },
   {
-    stepComponent: StepTwo,
+    stepComponent: StepThree,
     modalProps: {
       width: 688,
     },
