@@ -7,7 +7,7 @@ type Position = 'top' | 'bottom' | 'right' | 'left' | 'left-bottom' | 'left-top'
 export interface PopoverProps extends Omit<HTMLAttributes<HTMLDivElement>, 'children' | 'content'> {
   children: ReactNode
   content?: ReactNode
-  contentV2?: ReactNode
+  customContent?: ReactNode
   disabled?: boolean
   trigger?: 'click' | 'hover'
   background?: 'dark' | 'light'
@@ -22,7 +22,7 @@ export interface PopoverProps extends Omit<HTMLAttributes<HTMLDivElement>, 'chil
 export const Popover = ({
   children,
   content,
-  contentV2,
+  customContent,
   disabled = false,
   trigger = 'click',
   background = 'dark',
@@ -108,9 +108,9 @@ export const Popover = ({
             {hasCaret && <PopoverCaret position={position} />}
           </div>
         )}
-        {contentV2 && (
+        {!content && customContent && (
           <>
-            {contentV2}
+            {customContent}
             {hasCaret && <PopoverCaret position={position} />}
           </>
         )}
