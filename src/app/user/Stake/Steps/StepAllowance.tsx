@@ -2,6 +2,7 @@ import { useStakeRIF } from '@/app/user/Stake/hooks/useStakeRIF'
 import { useStakingContext } from '@/app/user/Stake/StakingContext'
 import { StepProps } from '@/app/user/Stake/types'
 import { Button } from '@/components/ButtonNew/Button'
+import { Popover } from '@/components/Popover'
 import { ProgressBar, ProgressButton } from '@/components/ProgressBarNew'
 import { TokenImage } from '@/components/TokenImage'
 import { Header, Label, Paragraph, Span } from '@/components/TypographyNew'
@@ -10,10 +11,9 @@ import Big from '@/lib/big'
 import { formatNumberWithCommas } from '@/lib/utils'
 import { waitForTransactionReceipt } from '@wagmi/core'
 import Image from 'next/image'
-import { useEffect, useMemo, useRef, useState } from 'react'
+import { useEffect, useMemo, useRef } from 'react'
 import { StakeSteps } from './StakeSteps'
 import { textsDependingOnAction } from './stepsUtils'
-import { Popover } from '@/components/Popover'
 
 export const StepAllowance = ({ onGoNext = () => {}, onGoBack = () => {} }: StepProps) => {
   const { amount, tokenToSend, tokenToReceive, stakePreviewFrom: from, actionName } = useStakingContext()
@@ -24,16 +24,14 @@ export const StepAllowance = ({ onGoNext = () => {}, onGoBack = () => {} }: Step
     customFooter,
     onRequestAllowance,
     isRequestingAllowance,
+    isAllowanceTxPending,
   } = useStakeRIF(amount, tokenToSend.contract, tokenToReceive.contract)
-
-  const [isAllowanceRequestPending, setIsAllowanceRequestPending] = useState(false)
 
   const handleRequestAllowance = async () => {
     if (!onRequestAllowance) {
       return
     }
     try {
-      setIsAllowanceRequestPending(true)
       const txHash = await onRequestAllowance()
       await waitForTransactionReceipt(config, {
         hash: txHash,
@@ -41,7 +39,6 @@ export const StepAllowance = ({ onGoNext = () => {}, onGoBack = () => {} }: Step
     } catch (err) {
       console.error('Error requesting allowance', err)
     }
-    setIsAllowanceRequestPending(false)
   }
 
   const hasCalledOnGoNextRef = useRef(false)
@@ -55,8 +52,6 @@ export const StepAllowance = ({ onGoNext = () => {}, onGoBack = () => {} }: Step
     }
   }, [isAllowanceEnough, onGoNext])
 
-  console.log('🚀 ~ StepAllowance ~ isRequestingAllowance:', isRequestingAllowance)
-  console.log('🚀 ~ StepAllowance ~ isAllowanceRequestPending:', isAllowanceRequestPending)
   return (
     <div className="p-6">
       <Header className="mt-16 mb-4">{actionTexts.modalTitle}</Header>
@@ -115,11 +110,11 @@ export const StepAllowance = ({ onGoNext = () => {}, onGoBack = () => {} }: Step
             variant="secondary-outline"
             onClick={onGoBack}
             data-testid="Back"
-            disabled={isAllowanceReadLoading || isRequestingAllowance || isAllowanceRequestPending}
+            disabled={isAllowanceReadLoading || isRequestingAllowance}
           >
             Back
           </Button>
-          {isAllowanceRequestPending || isRequestingAllowance ? (
+          {isAllowanceTxPending ? (
             <ProgressButton className="whitespace-nowrap">
               <Span bold className="text-text-60">
                 In progress
@@ -133,13 +128,7 @@ export const StepAllowance = ({ onGoNext = () => {}, onGoBack = () => {} }: Step
               className="w-full md:w-auto"
               onClick={handleRequestAllowance}
               data-testid="Request allowance"
-              disabled={
-                isAllowanceReadLoading ||
-                isRequestingAllowance ||
-                isAllowanceRequestPending ||
-                !amount ||
-                Number(amount) <= 0
-              }
+              disabled={isAllowanceReadLoading || isRequestingAllowance || !amount || Number(amount) <= 0}
             >
               {isRequestingAllowance ? 'Requesting...' : 'Request allowance'}
             </Button>

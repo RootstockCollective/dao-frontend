@@ -6,7 +6,6 @@ import Big from '@/lib/big'
 import { formatCurrency } from '@/lib/utils'
 import { createContext, FC, ReactNode, useCallback, useContext, useEffect, useMemo, useState } from 'react'
 import { Hash } from 'viem'
-import { useTxStatusContext } from '@/shared/context/TxStatusContext'
 
 export type ActionHookToUse = (
   amount: string,
@@ -20,6 +19,7 @@ export type ActionHookToUse = (
   isAllowanceReadLoading?: boolean
   onRequestAllowance?: () => Promise<Hash>
   isRequestingAllowance?: boolean
+  isAllowanceTxPending?: boolean
 }
 
 type StakePreviewToken = {
