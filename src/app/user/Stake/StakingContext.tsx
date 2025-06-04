@@ -20,6 +20,8 @@ export type ActionHookToUse = (
   onRequestAllowance?: () => Promise<Hash>
   isRequestingAllowance?: boolean
   isAllowanceTxPending?: boolean
+  isAllowanceTxFailed?: boolean
+  allowanceHash?: string
 }
 
 type StakePreviewToken = {

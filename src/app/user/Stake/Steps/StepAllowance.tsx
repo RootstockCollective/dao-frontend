@@ -8,12 +8,14 @@ import { TokenImage } from '@/components/TokenImage'
 import { Header, Label, Paragraph, Span } from '@/components/TypographyNew'
 import { config } from '@/config'
 import Big from '@/lib/big'
-import { formatNumberWithCommas } from '@/lib/utils'
+import { cn, formatNumberWithCommas } from '@/lib/utils'
 import { waitForTransactionReceipt } from '@wagmi/core'
 import Image from 'next/image'
 import { useEffect, useMemo, useRef } from 'react'
 import { StakeSteps } from './StakeSteps'
 import { textsDependingOnAction } from './stepsUtils'
+import { ExternalLink } from '@/components/Link/ExternalLink'
+import { EXPLORER_URL } from '@/lib/constants'
 
 export const StepAllowance = ({ onGoNext = () => {}, onGoBack = () => {} }: StepProps) => {
   const { amount, tokenToSend, tokenToReceive, stakePreviewFrom: from, actionName } = useStakingContext()
@@ -21,10 +23,11 @@ export const StepAllowance = ({ onGoNext = () => {}, onGoBack = () => {} }: Step
   const {
     isAllowanceEnough,
     isAllowanceReadLoading,
-    customFooter,
     onRequestAllowance,
     isRequestingAllowance,
     isAllowanceTxPending,
+    isAllowanceTxFailed,
+    allowanceHash,
   } = useStakeRIF(amount, tokenToSend.contract, tokenToReceive.contract)
 
   const handleRequestAllowance = async () => {
@@ -93,6 +96,26 @@ export const StepAllowance = ({ onGoNext = () => {}, onGoBack = () => {} }: Step
         </div>
       </div>
 
+      {allowanceHash && (
+        <div className="flex flex-col mb-5">
+          {isAllowanceTxFailed && (
+            <div className="flex items-center gap-2">
+              <Image src="/images/warning-icon.svg" alt="Warning" width={40} height={40} />
+              <Paragraph variant="body" className="text-error">
+                Allowance TX failed.
+              </Paragraph>
+            </div>
+          )}
+          <div className={cn({ 'ml-12': isAllowanceTxFailed })}>
+            <ExternalLink href={`${EXPLORER_URL}/tx/${allowanceHash}`} target="_blank" variant="menu">
+              <Span variant="body-s" bold>
+                View transaction in Explorer
+              </Span>
+            </ExternalLink>
+          </div>
+        </div>
+      )}
+
       {/* Mobile: Show HelpPopover above hr */}
       <div className="block md:hidden mb-4">
         <HelpPopover />
@@ -130,12 +153,15 @@ export const StepAllowance = ({ onGoNext = () => {}, onGoBack = () => {} }: Step
               data-testid="Request allowance"
               disabled={isAllowanceReadLoading || isRequestingAllowance || !amount || Number(amount) <= 0}
             >
-              {isRequestingAllowance ? 'Requesting...' : 'Request allowance'}
+              {isAllowanceReadLoading
+                ? 'Fetching allowance...'
+                : isRequestingAllowance
+                  ? 'Requesting...'
+                  : 'Request allowance'}
             </Button>
           )}
         </div>
       </div>
-      {customFooter}
     </div>
   )
 }
