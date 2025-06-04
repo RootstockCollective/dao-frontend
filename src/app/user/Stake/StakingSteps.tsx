@@ -4,20 +4,22 @@ import { useSteps } from '@/app/user/Stake/hooks/useSteps'
 import { useBalancesContext } from '@/app/user/Balances/context/BalancesContext'
 import { StakingToken } from '@/app/user/Stake/types'
 import { tokenContracts } from '@/lib/contracts'
-import { stakingSteps } from './Steps/stepsUtils'
-import { StakingModal } from './StakeModal'
+import { Modal } from '@/components/Modal'
+import { StepOne, StepThree, StepTwo } from './Steps'
 
-interface StakingStepsProps {
+interface Props {
   onCloseModal: () => void
 }
 
-export const StakingSteps = ({ onCloseModal }: StakingStepsProps) => {
+const StakingComponents = [StepOne, StepTwo, StepThree]
+
+export const StakingSteps = ({ onCloseModal }: Props) => {
   const { step, onGoNext, onGoBack } = useSteps(3)
   const { balances, prices } = useBalancesContext()
 
-  const currentStep = useMemo(() => stakingSteps[step], [step])
+  const CurrentStep = useMemo(() => StakingComponents[step], [step])
 
-  const stepsFunctions = { onGoNext, onGoBack, onCloseModal }
+  const stakingHandlers = { onGoNext, onGoBack, onCloseModal }
 
   const tokenToSend: StakingToken = useMemo(
     () => ({
@@ -39,8 +41,10 @@ export const StakingSteps = ({ onCloseModal }: StakingStepsProps) => {
     [balances.stRIF.balance, balances.stRIF.symbol, prices.stRIF?.price],
   )
   return (
-    <StakingProvider tokenToSend={tokenToSend} tokenToReceive={tokenToReceive} actionName="STAKE">
-      <StakingModal currentStep={currentStep} stepsFunctions={stepsFunctions} onClose={onCloseModal} />
+    <StakingProvider tokenToSend={tokenToSend} tokenToReceive={tokenToReceive}>
+      <Modal width={688} onClose={onCloseModal}>
+        <CurrentStep {...stakingHandlers} actionName="STAKE" />
+      </Modal>
     </StakingProvider>
   )
 }
