@@ -1,4 +1,3 @@
-import { useStakeRIF } from '@/app/user/Stake/hooks/useStakeRIF'
 import { useStakingContext } from '@/app/user/Stake/StakingContext'
 import { StepProps } from '@/app/user/Stake/types'
 import { Button } from '@/components/ButtonNew/Button'
@@ -16,6 +15,7 @@ import { StakeSteps } from './StakeSteps'
 import { textsDependingOnAction } from './stepsUtils'
 import { ExternalLink } from '@/components/Link/ExternalLink'
 import { EXPLORER_URL } from '@/lib/constants'
+import { useAllowance } from '../hooks/useAllowance'
 
 export const StepAllowance = ({ onGoNext = () => {}, onGoBack = () => {} }: StepProps) => {
   const { amount, tokenToSend, tokenToReceive, stakePreviewFrom: from, actionName } = useStakingContext()
@@ -28,7 +28,11 @@ export const StepAllowance = ({ onGoNext = () => {}, onGoBack = () => {} }: Step
     isAllowanceTxPending,
     isAllowanceTxFailed,
     allowanceHash,
-  } = useStakeRIF(amount, tokenToSend.contract, tokenToReceive.contract)
+  } = useAllowance({
+    amount,
+    tokenToSendContract: tokenToSend.contract,
+    tokenToReceiveContract: tokenToReceive.contract,
+  })
 
   const handleRequestAllowance = async () => {
     if (!onRequestAllowance) {

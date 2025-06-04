@@ -11,7 +11,6 @@ export const StepTwo = ({ onGoNext, onCloseModal = () => {} }: StepProps) => {
   const {
     amount,
     setStakeTxHash,
-    tokenToSend,
     tokenToReceive,
     actionToUse,
     actionName,
@@ -20,11 +19,7 @@ export const StepTwo = ({ onGoNext, onCloseModal = () => {} }: StepProps) => {
   } = useStakingContext()
   const { trackTransaction } = useTxStatusContext()
 
-  const { onConfirm: onConfirmAction, isPending } = actionToUse(
-    amount,
-    tokenToSend.contract,
-    tokenToReceive.contract,
-  )
+  const { onConfirm: onConfirmAction, isPending } = actionToUse(amount, tokenToReceive.contract)
 
   const onConfirm = async () => {
     try {

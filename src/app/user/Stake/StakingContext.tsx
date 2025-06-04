@@ -4,24 +4,16 @@ import { StakingToken } from '@/app/user/Stake/types'
 import { GetPricesResult, TokenBalanceRecord } from '@/app/user/types'
 import Big from '@/lib/big'
 import { formatCurrency } from '@/lib/utils'
-import { createContext, FC, ReactNode, useCallback, useContext, useEffect, useMemo, useState } from 'react'
+import { createContext, FC, ReactNode, useCallback, useContext, useMemo, useState } from 'react'
 import { Hash } from 'viem'
 
 export type ActionHookToUse = (
   amount: string,
-  tokenToSendContract: string,
   tokenToReceiveContract: string,
 ) => {
-  isAllowanceEnough: boolean
   onConfirm: () => Promise<Hash>
   customFooter: ReactNode
   isPending: boolean
-  isAllowanceReadLoading?: boolean
-  onRequestAllowance?: () => Promise<Hash>
-  isRequestingAllowance?: boolean
-  isAllowanceTxPending?: boolean
-  isAllowanceTxFailed?: boolean
-  allowanceHash?: string
 }
 
 type StakePreviewToken = {
@@ -70,12 +62,9 @@ const StakingContext = createContext<StakingContextProps>({
     amountToReceiveConvertedToCurrency: '',
   },
   actionToUse: () => ({
-    isAllowanceEnough: false,
     onConfirm: async () => '0x0',
     customFooter: null,
     isPending: false,
-    isAllowanceReadLoading: false,
-    onRequestAllowance: async () => '0x0',
   }),
   actionName: 'STAKE',
   stakePreviewFrom: { ...DEFAULT_STAKE_PREVIEW_TOKEN },
