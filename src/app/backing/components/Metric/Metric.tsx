@@ -14,18 +14,16 @@ export const Metric: FC<MetricProps> = ({ title, content, className = '' }) => {
   const isContentTextual = typeof title === 'string'
 
   return (
-    <div data-testid="Metric" className={cn('flex items-center gap-4', className)}>
-      <div className="flex flex-col items-start">
-        <div className="flex flex-col items-start gap-2 self-stretch">
-          {isTitleTextual ? (
-            <Typography variant="body" className="grow not-italic leading-6 text-v3-bg-accent-0">
-              {title}
-            </Typography>
-          ) : (
-            title
-          )}
-          {isContentTextual ? <MetricContent>{content}</MetricContent> : content}
-        </div>
+    <div data-testid="Metric" className={cn('flex items-center gap-4 w-full', className)}>
+      <div className="w-full flex flex-col gap-2">
+        {isTitleTextual ? (
+          <Typography variant="body" className="grow not-italic leading-6 text-v3-bg-accent-0">
+            {title}
+          </Typography>
+        ) : (
+          title
+        )}
+        {isContentTextual ? <MetricContent>{content}</MetricContent> : content}
       </div>
     </div>
   )

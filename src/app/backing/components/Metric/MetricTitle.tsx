@@ -6,17 +6,17 @@ import { InfoIconButton } from '../IconButton/InfoIconButton'
 
 export type MetricTitleProps = CommonComponentProps & {
   title: ReactNode
-  info: string
+  info: ReactNode
 }
 
 export const MetricTitle: FC<MetricTitleProps> = ({ title, info, className = '' }) => {
   const isTitleTextual = typeof title === 'string'
+  const isInfoTextual = typeof info === 'string'
 
   return (
-    <div data-testid="MetricTitle" className={cn('flex w-full items-start gap-2', className)}>
+    <div data-testid="MetricTitle" className={cn('flex w-full items-start justify-between gap-2', className)}>
       {isTitleTextual ? <Typography className="grow">{title}</Typography> : title}
-
-      <InfoIconButton info={info} />
+      {isInfoTextual ? <InfoIconButton info={info} className="cursor-pointer" /> : info}
     </div>
   )
 }
