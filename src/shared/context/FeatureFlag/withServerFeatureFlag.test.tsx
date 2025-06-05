@@ -4,7 +4,7 @@ import { redirect } from 'next/navigation'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import type { FeatureFlag } from './flags.utils'
 import { getEnvFlag } from './flags.utils'
-import { withFeatureFlagRSC } from './withFeatureFlagRSC'
+import { withServerFeatureFlag } from './withServerFeatureFlag'
 
 // Constants used in tests
 const FAKE_FEATURE = 'v2_rewards' as Feature
@@ -22,7 +22,7 @@ vi.mock('./flags.utils', async () => ({
 const mockRedirect = vi.mocked(redirect)
 const mockGetEnvFlag = vi.mocked(getEnvFlag)
 
-describe('withFeatureFlagRSC HOC', () => {
+describe('withServerFeatureFlag HOC', () => {
   // Test component
   const TestComponent = () => <div>Test Component</div>
   TestComponent.displayName = 'TestComponent'
@@ -46,7 +46,7 @@ describe('withFeatureFlagRSC HOC', () => {
     })
 
     it('should render the wrapped component', () => {
-      const WrappedComponent = withFeatureFlagRSC(TestComponent, {
+      const WrappedComponent = withServerFeatureFlag(TestComponent, {
         feature: FAKE_FEATURE as FeatureFlag,
       })
 
@@ -56,20 +56,21 @@ describe('withFeatureFlagRSC HOC', () => {
 
     it('should pass props to the wrapped component', () => {
       const PropsTestComponent = ({ text }: { text: string }) => <div>{text}</div>
-      const WrappedComponent = withFeatureFlagRSC(PropsTestComponent, {
+      const WrappedComponent = withServerFeatureFlag(PropsTestComponent, {
         feature: FAKE_FEATURE as FeatureFlag,
       })
 
-      render(<WrappedComponent text="Hello" />)
-      expect(screen.getByText('Hello')).toBeInTheDocument()
+      const expectedText = 'Hello'
+      render(<WrappedComponent text={expectedText} />)
+      expect(screen.getByText(expectedText)).toBeInTheDocument()
     })
 
     it('should preserve the display name', () => {
-      const WrappedComponent = withFeatureFlagRSC(TestComponent, {
+      const WrappedComponent = withServerFeatureFlag(TestComponent, {
         feature: FAKE_FEATURE as FeatureFlag,
       })
 
-      expect(WrappedComponent.displayName).toBe('WithFeatureFlagRSC(TestComponent)')
+      expect(WrappedComponent.displayName).toBe('WithServerFeatureFlag(TestComponent)')
     })
   })
 
@@ -79,7 +80,7 @@ describe('withFeatureFlagRSC HOC', () => {
     })
 
     it('should render fallback when feature is disabled', () => {
-      const WrappedComponent = withFeatureFlagRSC(TestComponent, {
+      const WrappedComponent = withServerFeatureFlag(TestComponent, {
         feature: FAKE_FEATURE as FeatureFlag,
         fallback: <div>Fallback Content</div>,
       })
@@ -89,7 +90,7 @@ describe('withFeatureFlagRSC HOC', () => {
     })
 
     it('should redirect when redirectTo is provided', () => {
-      const WrappedComponent = withFeatureFlagRSC(TestComponent, {
+      const WrappedComponent = withServerFeatureFlag(TestComponent, {
         feature: FAKE_FEATURE as FeatureFlag,
         redirectTo: '/redirect-path',
       })
@@ -105,7 +106,7 @@ describe('withFeatureFlagRSC HOC', () => {
     })
 
     it('should render fallback when flag is undefined', () => {
-      const WrappedComponent = withFeatureFlagRSC(TestComponent, {
+      const WrappedComponent = withServerFeatureFlag(TestComponent, {
         feature: FAKE_FEATURE as FeatureFlag,
         fallback: <div>Fallback Content</div>,
       })

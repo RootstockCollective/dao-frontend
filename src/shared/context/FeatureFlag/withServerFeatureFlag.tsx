@@ -8,13 +8,13 @@ export type FeatureHandleConfig = {
   redirectTo?: string
 }
 
-export const DefaultFallback: FC = () => <div>Feature not available</div>
+export const DefaultFallback: FC = () => <></>
 
 export const DEFAULT_CONFIG: Partial<FeatureHandleConfig> = {
   fallback: <DefaultFallback />,
 }
 
-export const withFeatureFlagRSC = <P extends object>(
+export const withServerFeatureFlag = <P extends object>(
   WrappedComponent: ComponentType<P>,
   config: FeatureHandleConfig,
 ) => {
@@ -23,7 +23,7 @@ export const withFeatureFlagRSC = <P extends object>(
     ...config,
   }
 
-  const WithFeatureFlagRSC: FC<P> = props => {
+  const WithServerFeatureFlag: FC<P> = props => {
     if (!(getEnvFlag(feature) ?? false)) {
       if (redirectTo) {
         redirect(redirectTo)
@@ -35,9 +35,9 @@ export const withFeatureFlagRSC = <P extends object>(
     return <WrappedComponent {...props} />
   }
 
-  WithFeatureFlagRSC.displayName = `WithFeatureFlagRSC(${
+  WithServerFeatureFlag.displayName = `WithServerFeatureFlag(${
     WrappedComponent.displayName || WrappedComponent.name || 'Component'
   })`
 
-  return WithFeatureFlagRSC
+  return WithServerFeatureFlag
 }

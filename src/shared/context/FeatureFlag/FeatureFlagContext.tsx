@@ -34,10 +34,15 @@ const readLocalStorage = (): Partial<FeatureFlags> => {
       return {}
     }
 
-    const stored = JSON.parse(storageItem)
+    let stored: Partial<FeatureFlags> = {}
+    try {
+      stored = JSON.parse(storageItem)
+    } catch (error) {
+      console.error('Error parsing localStorage', error)
+    }
+
     // Filter out user_flags from localStorage if present, as it should only come from env
     const { user_flags, ...flags } = stored
-
     return flags
   }
 

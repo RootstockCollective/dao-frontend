@@ -75,8 +75,9 @@ describe('withFeatureFlag HOC', () => {
         feature: FAKE_FEATURE as FeatureFlag,
       })
 
-      const { container } = render(<WrappedComponent text="Hello" />)
-      expect(container).toHaveTextContent('Hello')
+      const expectedText = 'Hello'
+      const { container } = render(<WrappedComponent text={expectedText} />)
+      expect(container).toHaveTextContent(expectedText)
     })
 
     it('should preserve the display name', () => {
