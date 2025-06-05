@@ -11,7 +11,7 @@ import { useGetExternalDelegatedAmount } from '@/shared/hooks/useGetExternalDele
 import { useAccount } from 'wagmi'
 import { formatEther } from 'viem'
 
-export function ProposalsPresentation({
+export function ProposalsSummary({
   activeProposals,
   totalProposals,
 }: {

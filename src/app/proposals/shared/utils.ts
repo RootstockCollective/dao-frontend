@@ -10,7 +10,6 @@ import {
 import { GovernorAbi } from '@/lib/abis/Governor'
 import { formatEther, zeroAddress } from 'viem'
 import { MAX_NAME_LENGTH_FOR_PROPOSAL, RIF_ADDRESS, TALLY_DESCRIPTION_SEPARATOR } from '@/lib/constants'
-import Big from 'big.js'
 
 export interface EventArgumentsParameter {
   args: {
@@ -120,21 +119,12 @@ export const getEventArguments = ({
     proposer,
     description: parsedDescription,
     proposalId: proposalId.toString(),
-    Starts: moment.unix(parseInt(timeStamp)),
+    Starts: timeStamp.startsWith('0x')
+      ? moment(parseInt(timeStamp, 16) * 1000)
+      : moment.unix(parseInt(timeStamp)),
     calldatasParsed,
     blockNumber,
   }
-}
-export function formatBig18(big: Big, decimalPlaces = 3, withCommas = true) {
-  const shifted = big.div(Big('1e18')) // Convert from 18 decimals
-  const fixed = shifted.toFixed(decimalPlaces) // Round to desired decimals
-
-  if (!withCommas) return fixed
-
-  // Format with commas
-  const parts = fixed.split('.')
-  parts[0] = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, ',')
-  return parts.join('.')
 }
 
 export const actionFormatterMap = {
