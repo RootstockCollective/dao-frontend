@@ -3,7 +3,7 @@
 import { useRouter } from 'next/navigation'
 import { ComponentType, FC } from 'react'
 import { useFeatureFlags } from './FeatureFlagContext'
-import { DEFAULT_CONFIG, FeatureHandleConfig } from './withFeatureFlagRSC'
+import { DEFAULT_CONFIG, FeatureHandleConfig } from './withServerFeatureFlag'
 
 export const withFeatureFlag = <P extends object>(
   WrappedComponent: ComponentType<P>,

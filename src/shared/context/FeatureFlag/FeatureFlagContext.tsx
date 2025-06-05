@@ -1,5 +1,6 @@
 'use client'
 
+import { Feature, getFeatures, USER_FLAGS_FEATURE } from '@/config/features.conf'
 import { createContext, FC, ReactNode, useContext, useEffect, useState } from 'react'
 import {
   type BaseFlags,
@@ -26,49 +27,60 @@ const updateLocalStorage = (features: FeatureFlags): void => {
   }
 }
 
-const readLocalStorage = (): Partial<FeatureFlags> => {
+const readLocalStorage = (item: string): Partial<FeatureFlags> => {
   if (typeof window !== 'undefined' && !!window.localStorage) {
-    const storageItem = window.localStorage.getItem('features')
+    const storageItem = window.localStorage.getItem(item)
 
     if (!storageItem || storageItem.trim() === '') {
       return {}
     }
 
-    const stored = JSON.parse(storageItem)
-    // Filter out user_flags from localStorage if present, as it should only come from env
-    const { user_flags, ...flags } = stored
+    let stored: Partial<FeatureFlags> = {}
+    try {
+      stored = JSON.parse(storageItem)
+    } catch (error) {
+      console.error('Error parsing localStorage', error)
+    }
 
-    return flags
+    return stored
   }
 
   return {}
+}
+
+export const cleanUserFlags = (userFlags: Partial<FeatureFlags>, features: Feature[]) => {
+  const envFlags = getEnvFlags()
+  return Object.entries(userFlags).reduce((acc, [key, value]) => {
+    if (!features?.includes(key as FeatureFlag) || key == USER_FLAGS_FEATURE) {
+      return acc
+    }
+
+    const flagOverride = envFlags[key as FeatureFlag]
+
+    return {
+      ...acc,
+      [key as FeatureFlag]: flagOverride === undefined ? value : flagOverride,
+    }
+  }, {})
+}
+
+export const combineUserFlags = (userFlags: Partial<FeatureFlags>): FeatureFlags => {
+  if (!getEnvFlags() || !userFlags) {
+    return {}
+  }
+  return {
+    ...cleanUserFlags(userFlags, getFeatures()),
+    ...getEnvFlags(),
+  }
 }
 
 export const FeatureFlagProvider: FC<{ children: ReactNode }> = ({ children }) => {
   const [flags, setFlags] = useState<FeatureFlags>(() => getEnvFlags())
 
   useEffect(() => {
-    const localStorageFlags = readLocalStorage()
-    const envFlags = getEnvFlags()
-    // const cleanEnvFlags = Object.entries(envFlags).reduce<FeatureFlags>(
-    //   (acc, [key, value]) =>
-    //     value === undefined
-    //       ? acc
-    //       : {
-    //           ...acc,
-    //           [key]: key === 'user_flags' ? (value as FeatureFlag[]) : (value as boolean),
-    //         },
-    //   {} as FeatureFlags,
-    // )
+    const localStorageFlags = readLocalStorage('features')
+    const allFlags = combineUserFlags(localStorageFlags)
 
-    // const { user_flags, ...remainingEnvFlags } = getEnvFlags()
-
-    const allFlags: FeatureFlags = {
-      // FIXME: There is no need for us to set the cleanEnvFlags, as we are overwriting it with the env flags
-      // ...cleanEnvFlags, // first set all user flags defined in env to true
-      ...localStorageFlags, // then overwrite these with user-defined values
-      ...envFlags, // finally let env flags to have the final word
-    }
     setFlags(allFlags)
     updateLocalStorage(allFlags)
   }, [])

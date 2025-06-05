@@ -1,7 +1,7 @@
-import { withFeatureFlagRSC } from '@/shared/context/FeatureFlag'
+import { withServerFeatureFlag } from '@/shared/context/FeatureFlag'
 import { BackingPage } from './BackingPage'
 
-const BackingPageWithFeature = withFeatureFlagRSC(BackingPage, {
+const BackingPageWithFeature = withServerFeatureFlag(BackingPage, {
   feature: 'v3_design',
   redirectTo: '/',
 })

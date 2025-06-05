@@ -1,5 +1,4 @@
 import * as features from '@/config/features.conf'
-import { Feature, USER_FLAGS_FEATURE } from '@/config/features.conf'
 import * as constants from '@/lib/constants'
 import { act, renderHook, waitFor } from '@testing-library/react'
 import { FC, ReactNode } from 'react'
@@ -8,20 +7,21 @@ import { FeatureFlagProvider, useFeatureFlags } from './FeatureFlagContext'
 import * as flagUtils from './flags.utils'
 
 // Constants used in tests
-const FAKE_FEATURE_1 = 'fake_feature1' as Feature
-const FAKE_FEATURE_2 = 'fake_feature2' as Feature
-const FAKE_FEATURE_3 = 'fake_feature3' as Feature
+const FAKE_FEATURE_1 = 'fake_feature1' as features.Feature
+const FAKE_FEATURE_2 = 'fake_feature2' as features.Feature
+const FAKE_FEATURE_3 = 'fake_feature3' as features.Feature
 
 type FakeFeature =
   | typeof FAKE_FEATURE_1
   | typeof FAKE_FEATURE_2
   | typeof FAKE_FEATURE_3
-  | typeof USER_FLAGS_FEATURE
+  | typeof features.USER_FLAGS_FEATURE
 
 vi.mock('./flags.utils', async () => {
   const actual = await vi.importActual<typeof flagUtils>('./flags.utils')
   return {
     ...actual,
+    combineUserFlags: vi.fn(),
     isFeatureFlag: vi.fn(),
     getEnvFlags: vi.fn(),
   }
@@ -36,7 +36,7 @@ vi.mock('@/lib/constants', async () => {
 })
 
 vi.mock('@/config/features.conf', async () => {
-  const actual = await vi.importActual('@/config/features.conf')
+  const actual = (await vi.importActual('@/config/features.conf')) as typeof features
   return {
     ...actual,
     USER_FLAGS_FEATURE: actual.USER_FLAGS_FEATURE,
@@ -65,16 +65,22 @@ const Wrapper: FC<{ children: ReactNode }> = ({ children }) => (
 
 type FakeFeatureFlags = Record<
   FakeFeature,
-  flagUtils.FeatureFlags extends typeof USER_FLAGS_FEATURE ? string[] : string
+  flagUtils.FeatureFlags extends typeof features.USER_FLAGS_FEATURE ? string[] : string
 >
 
 const setEnvFlags = (flags: FakeFeatureFlags) => {
-  const { [USER_FLAGS_FEATURE]: userFlags, ...rest } = flags
-  mockGetFeatures.mockReturnValue([...Object.keys(flags)] as Feature[])
+  mockGetFeatures.mockReset()
+  mockGetFeatureEnvFlags.mockReset()
+  mockGetEnvFlags.mockReset()
+  mockIsFeatureFlag.mockReset()
+
+  const { [features.USER_FLAGS_FEATURE]: userFlags, ...restOfFlags } = flags
+  const fakeFeatures = [...Object.keys(flags)].concat(userFlags ?? []) as features.Feature[]
+  mockGetFeatures.mockReturnValue(fakeFeatures)
   mockGetFeatureEnvFlags.mockReturnValue({
-    ...rest,
-    [USER_FLAGS_FEATURE]: (userFlags as unknown as string[]).join(','),
-  } as Record<Feature, string>)
+    ...restOfFlags,
+    [features.USER_FLAGS_FEATURE]: userFlags ? (userFlags as unknown as string[]).join(',') : '',
+  } as Record<features.Feature, string>)
   mockGetEnvFlags.mockReturnValue(flags as unknown as flagUtils.FeatureFlags)
   mockIsFeatureFlag.mockImplementation(feature => {
     return Object.keys(flags).includes(feature as FakeFeature)
@@ -87,12 +93,11 @@ describe('FeatureFlagContext', () => {
     vi.clearAllMocks()
     mockLocalStorage.getItem.mockReset()
     mockLocalStorage.setItem.mockReset()
-    mockGetEnvFlags.mockReset()
     setEnvFlags({
       [FAKE_FEATURE_1]: true,
       [FAKE_FEATURE_2]: false,
       [FAKE_FEATURE_3]: true,
-      [USER_FLAGS_FEATURE]: [FAKE_FEATURE_1, FAKE_FEATURE_2],
+      [features.USER_FLAGS_FEATURE]: [FAKE_FEATURE_1, FAKE_FEATURE_2],
     } as unknown as FakeFeatureFlags)
   })
 
@@ -107,10 +112,8 @@ describe('FeatureFlagContext', () => {
       setEnvFlags({
         [FAKE_FEATURE_1]: true,
         [FAKE_FEATURE_2]: false,
-        [USER_FLAGS_FEATURE]: [FAKE_FEATURE_1, FAKE_FEATURE_2],
+        [features.USER_FLAGS_FEATURE]: [FAKE_FEATURE_1, FAKE_FEATURE_2],
       } as unknown as FakeFeatureFlags)
-
-      const envFlags = flagUtils.getEnvFlags()
 
       const { result } = renderHook(() => useFeatureFlags(), {
         wrapper: Wrapper,
@@ -118,19 +121,19 @@ describe('FeatureFlagContext', () => {
 
       await waitFor(() => {
         expect(result.current.flags[FAKE_FEATURE_1]).toBe(true)
-        expect(result.current.flags[USER_FLAGS_FEATURE]).toContain(FAKE_FEATURE_1)
-        expect(result.current.flags[USER_FLAGS_FEATURE]).toContain(FAKE_FEATURE_2)
+        expect(result.current.flags[features.USER_FLAGS_FEATURE]).toContain(FAKE_FEATURE_1)
+        expect(result.current.flags[features.USER_FLAGS_FEATURE]).toContain(FAKE_FEATURE_2)
         expect(result.current.flags[FAKE_FEATURE_2]).toBe(false)
         expect(result.current.flags[FAKE_FEATURE_3]).toBeUndefined()
       })
     })
 
     it('should merge localStorage flags with env flags', async () => {
-      mockGetEnvFlags.mockReturnValue({
-        [USER_FLAGS_FEATURE]: [FAKE_FEATURE_1, FAKE_FEATURE_2, FAKE_FEATURE_3],
+      setEnvFlags({
         [FAKE_FEATURE_1]: true,
         [FAKE_FEATURE_3]: false,
-      } as flagUtils.FeatureFlags)
+        [features.USER_FLAGS_FEATURE]: [FAKE_FEATURE_1, FAKE_FEATURE_2],
+      } as unknown as FakeFeatureFlags)
 
       mockLocalStorage.getItem.mockReturnValue(
         JSON.stringify({
@@ -143,10 +146,9 @@ describe('FeatureFlagContext', () => {
       const { result } = renderHook(() => useFeatureFlags(), {
         wrapper: Wrapper,
       })
-
       await waitFor(() => {
-        expect(result.current.flags[USER_FLAGS_FEATURE]).toContain(FAKE_FEATURE_1)
-        expect(result.current.flags[USER_FLAGS_FEATURE]).toContain(FAKE_FEATURE_2)
+        expect(result.current.flags[features.USER_FLAGS_FEATURE]).toContain(FAKE_FEATURE_1)
+        expect(result.current.flags[features.USER_FLAGS_FEATURE]).toContain(FAKE_FEATURE_2)
         expect(result.current.flags[FAKE_FEATURE_1]).toBe(true) // From env
         expect(result.current.flags[FAKE_FEATURE_2]).toBe(true) // From localStorage
         expect(result.current.flags[FAKE_FEATURE_3]).toBe(false) // From env
@@ -156,7 +158,7 @@ describe('FeatureFlagContext', () => {
     it('should ignore user flags in localStorage', async () => {
       mockLocalStorage.getItem.mockReturnValue(
         JSON.stringify({
-          [USER_FLAGS_FEATURE]: [FAKE_FEATURE_3], // This should be ignored
+          [features.USER_FLAGS_FEATURE]: [FAKE_FEATURE_3], // This should be ignored
           fake_feature1: true,
         }),
       )
@@ -166,9 +168,9 @@ describe('FeatureFlagContext', () => {
       })
 
       await waitFor(() => {
-        expect(result.current.flags[USER_FLAGS_FEATURE]).not.toContain(FAKE_FEATURE_3)
-        expect(result.current.flags[USER_FLAGS_FEATURE]).toContain(FAKE_FEATURE_1)
-        expect(result.current.flags[USER_FLAGS_FEATURE]).toContain(FAKE_FEATURE_2)
+        expect(result.current.flags[features.USER_FLAGS_FEATURE]).not.toContain(FAKE_FEATURE_3)
+        expect(result.current.flags[features.USER_FLAGS_FEATURE]).toContain(FAKE_FEATURE_1)
+        expect(result.current.flags[features.USER_FLAGS_FEATURE]).toContain(FAKE_FEATURE_2)
       })
     })
   })
@@ -177,7 +179,7 @@ describe('FeatureFlagContext', () => {
     it('should toggle user flags', async () => {
       setEnvFlags({
         [FAKE_FEATURE_1]: true,
-        [USER_FLAGS_FEATURE]: [FAKE_FEATURE_1],
+        [features.USER_FLAGS_FEATURE]: [FAKE_FEATURE_1],
       } as unknown as FakeFeatureFlags)
 
       const { result } = renderHook(() => useFeatureFlags(), {
@@ -205,7 +207,7 @@ describe('FeatureFlagContext', () => {
       setEnvFlags({
         [FAKE_FEATURE_1]: true,
         [FAKE_FEATURE_2]: undefined,
-        [USER_FLAGS_FEATURE]: [FAKE_FEATURE_2],
+        [features.USER_FLAGS_FEATURE]: [FAKE_FEATURE_2],
       } as unknown as FakeFeatureFlags)
 
       const { result } = renderHook(() => useFeatureFlags(), {
@@ -236,7 +238,7 @@ describe('FeatureFlagContext', () => {
         [FAKE_FEATURE_1]: true,
         [FAKE_FEATURE_2]: undefined,
         [FAKE_FEATURE_3]: true,
-        [USER_FLAGS_FEATURE]: [FAKE_FEATURE_1, FAKE_FEATURE_2],
+        [features.USER_FLAGS_FEATURE]: [FAKE_FEATURE_1, FAKE_FEATURE_2],
       } as unknown as FakeFeatureFlags)
 
       const { result } = renderHook(() => useFeatureFlags(), {
@@ -276,7 +278,7 @@ describe('FeatureFlagContext', () => {
         [FAKE_FEATURE_1]: true,
         [FAKE_FEATURE_2]: undefined,
         [FAKE_FEATURE_3]: true,
-        [USER_FLAGS_FEATURE]: [FAKE_FEATURE_1, FAKE_FEATURE_2],
+        [features.USER_FLAGS_FEATURE]: [FAKE_FEATURE_1, FAKE_FEATURE_2],
       } as unknown as FakeFeatureFlags)
 
       const { result } = renderHook(() => useFeatureFlags(), {
@@ -315,7 +317,7 @@ describe('FeatureFlagContext', () => {
         [FAKE_FEATURE_1]: true,
         [FAKE_FEATURE_2]: undefined,
         [FAKE_FEATURE_3]: true,
-        [USER_FLAGS_FEATURE]: [FAKE_FEATURE_1, FAKE_FEATURE_2],
+        [features.USER_FLAGS_FEATURE]: [FAKE_FEATURE_1, FAKE_FEATURE_2],
       } as unknown as FakeFeatureFlags)
 
       const { result } = renderHook(() => useFeatureFlags(), {

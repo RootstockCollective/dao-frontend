@@ -26,14 +26,6 @@ const getFlagListFromEnv = (value?: string): FeatureFlag[] => {
   return envUserFlags.filter(flag => isFeatureFlag(flag))
 }
 
-export const validateUserFlags = (flags: Record<string, any>): flags is BaseFlags => {
-  const allowedUserFlags = loadEnvFlags()[USER_FLAGS_FEATURE] ?? []
-  return Object.keys(flags).every(key => {
-    const isValid = allowedUserFlags.includes(key as FeatureFlag) && typeof flags[key] === 'boolean'
-    return isValid
-  })
-}
-
 const getBooleanEnvFlag = (value?: string): boolean => {
   if (value === 'true') {
     return true
@@ -73,3 +65,11 @@ const loadEnvFlags = (): FeatureFlags => {
 export const getEnvFlags = (): FeatureFlags => loadEnvFlags()
 
 export const getEnvFlag = (flag: FeatureFlag): boolean | undefined => loadEnvFlags()[flag]
+
+export const validateUserFlags = (flags: Record<string, any>): flags is BaseFlags => {
+  const allowedUserFlags = loadEnvFlags()[USER_FLAGS_FEATURE] ?? []
+  return Object.keys(flags).every(key => {
+    const isValid = allowedUserFlags.includes(key as FeatureFlag) && typeof flags[key] === 'boolean'
+    return isValid
+  })
+}
