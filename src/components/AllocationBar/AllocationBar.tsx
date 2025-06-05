@@ -2,6 +2,7 @@
 import React, { useEffect, useRef, useState } from 'react'
 import { DndContext, closestCenter, PointerSensor, useSensor, useSensors, DragEndEvent } from '@dnd-kit/core'
 import { SortableContext, horizontalListSortingStrategy, arrayMove } from '@dnd-kit/sortable'
+import { restrictToHorizontalAxis } from '@dnd-kit/modifiers'
 
 import { clamp, MIN_SEGMENT_PERCENT } from './utils'
 import { AllocationBarProps, AllocationItem } from './types'
@@ -117,7 +118,12 @@ const AllocationBar: React.FC<AllocationBarProps> = ({
   return (
     <div className={`w-full p-8 ${className}`}>
       {/* Bar */}
-      <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
+      <DndContext
+        sensors={sensors}
+        collisionDetection={closestCenter}
+        onDragEnd={handleDragEnd}
+        modifiers={[restrictToHorizontalAxis]}
+      >
         <SortableContext items={itemsData.map(item => item.key)} strategy={horizontalListSortingStrategy}>
           <div className="flex items-center w-full mb-4 relative select-none" ref={barRef} style={{ height }}>
             {itemsData.map((item, i) => (
