@@ -36,10 +36,12 @@ export const TokenAmountDisplay = ({
           {tokenSymbol}
         </Span>
       </div>
-      {amountInCurrency && (
+      {amountInCurrency ? (
         <Span variant="body-s" bold className="text-bg-0 mt-1">
           {amountInCurrency}
         </Span>
+      ) : (
+        <br />
       )}
       {balance && (
         <div className="flex items-center gap-2 mt-4">

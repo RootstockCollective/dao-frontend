@@ -52,7 +52,6 @@ export const StepThree = ({ onCloseModal }: StepProps) => {
           label="To"
           amount={amount}
           tokenSymbol={to.tokenSymbol}
-          amountInCurrency={to.amountConvertedToCurrency}
           balance={to.balance}
           isFlexEnd
         />
