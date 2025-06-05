@@ -1,7 +1,7 @@
 import React from 'react'
 
 export const Spotlight = () => {
-  return <div></div>
+  return <div>Spotlight</div>
 }
 
 // FIXME: Connect to real spotlight data

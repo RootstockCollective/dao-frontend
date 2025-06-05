@@ -1,22 +1,18 @@
-'use client'
-
-import { useAccount } from 'wagmi'
-import { Typography } from '@/components/TypographyNew/Typography'
-import { ActionsContainer } from '../../components/Container'
-import { ActionMetricsContainer } from '../../components/Container/ActionMetricsContainer'
-import { InfoContainer } from '../../components/Container/InfoContainer'
-import { MetricsContainer } from '../../components/Container/MetricsContainer'
-import { PageTitleContainer } from '../../components/Container/PageTitleContainer'
-import { Metrics } from './components/Metrics'
+import {
+  ActionsContainer,
+  ActionMetricsContainer,
+  InfoContainer,
+  MetricsContainer,
+  PageTitleContainer,
+} from '@/components/containers'
 import { Content } from './components/Content'
+import { Metrics } from './components/Metrics'
 import { Spotlight } from './components/Spotlight'
 import { Table } from './components/Table'
 
 const NAME = 'Builders'
 
 export const BuildersPage = () => {
-  const { address } = useAccount()
-
   return (
     <div data-testid={NAME} className="flex flex-col items-start w-full h-full pt-[0.13rem] gap-6 rounded-sm">
       <PageTitleContainer leftText={NAME} data-testid={NAME}>
@@ -30,11 +26,9 @@ export const BuildersPage = () => {
         <InfoContainer data-testid={NAME} className="grow-[3]">
           <Content />
         </InfoContainer>
-        {address && (
-          <ActionMetricsContainer data-testid={NAME}>
-            <Spotlight />
-          </ActionMetricsContainer>
-        )}
+        <ActionMetricsContainer data-testid={NAME}>
+          <Spotlight />
+        </ActionMetricsContainer>
         <ActionsContainer title={'The Collective Builders'} data-testid={NAME}>
           <Table />
         </ActionsContainer>
