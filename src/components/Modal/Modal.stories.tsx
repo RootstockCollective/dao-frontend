@@ -1,8 +1,8 @@
 // Modal.stories.tsx
-import type { Meta, StoryObj } from '@storybook/react'
 import { Modal } from '@/components/Modal/Modal'
 import { useModal } from '@/shared/hooks/useModal'
-import { useState, useEffect } from 'react'
+import type { Meta, StoryObj } from '@storybook/react'
+import { useEffect } from 'react'
 
 const meta: Meta<typeof Modal> = {
   title: 'Components/Modals/Modal',
@@ -33,7 +33,7 @@ const ModalWrapper = (args: any) => {
 
   useEffect(() => {
     openModal()
-  }, [])
+  }, [openModal])
 
   if (!isModalOpened) return null
 
