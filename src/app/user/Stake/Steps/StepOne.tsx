@@ -1,6 +1,7 @@
 import { StakeInput } from '@/app/user/Stake/StakeInputNew'
 import { textsDependingOnAction } from '@/app/user/Stake/Steps/stepsUtils'
 import { Button } from '@/components/ButtonNew/Button'
+import { Divider } from '@/components/Divider'
 import { TokenImage } from '@/components/TokenImage'
 import { Label, Paragraph, Span } from '@/components/TypographyNew'
 import Big from '@/lib/big'
@@ -126,7 +127,7 @@ export const StepOne = ({ onGoNext, actionName }: StepProps) => {
         </Paragraph>
       )}
 
-      <hr className="bg-bg-60 h-px border-0 mt-8 mb-6" />
+      <Divider className="mt-8" />
 
       <div className="flex md:justify-end">
         <Button
