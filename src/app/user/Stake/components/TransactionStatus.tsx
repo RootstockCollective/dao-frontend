@@ -4,7 +4,7 @@ import { EXPLORER_URL } from '@/lib/constants'
 import { cn } from '@/lib/utils'
 import Image from 'next/image'
 
-interface TransactionStatusProps {
+interface Props {
   txHash?: string
   isTxFailed?: boolean
   failureMessage?: string
@@ -16,7 +16,7 @@ export const TransactionStatus = ({
   isTxFailed,
   failureMessage = 'Transaction failed.',
   className,
-}: TransactionStatusProps) => {
+}: Props) => {
   if (!txHash) return null
 
   return (

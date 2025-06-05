@@ -3,7 +3,7 @@ import { ProgressBar } from '@/components/ProgressBarNew'
 import { StakeSteps } from '../Steps/StakeSteps'
 import { memo, ReactNode } from 'react'
 
-interface StepWrapperProps {
+interface Props {
   currentStep: 1 | 2 | 3
   progress: number
   description?: string
@@ -17,7 +17,7 @@ export const StepWrapper = memo(function StepWrapper({
   description,
   children,
   actionName,
-}: StepWrapperProps) {
+}: Props) {
   return (
     <div className="p-6">
       <Header className="mt-16 mb-4">{actionName}</Header>
