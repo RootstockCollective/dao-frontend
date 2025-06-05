@@ -37,7 +37,7 @@ export const StepOne = ({ onGoNext, actionName }: StepProps) => {
     return parsedAmount <= balanceThatCanBeWithdraw
   }, [amount, tokenToSend.balance, backerTotalAllocation])
 
-  const balanceToCurrency = formatCurrency(Big(tokenToSend.price || 0).mul(amount))
+  const balanceToCurrency = formatCurrency(Big(tokenToSend.price || 0).mul(amount || 0))
 
   const isAmountOverBalance = useMemo(() => {
     if (!amount) return false
