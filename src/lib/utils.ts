@@ -5,6 +5,7 @@ import { ClassValue, clsx } from 'clsx'
 import { twMerge } from 'tailwind-merge'
 import { Address } from 'viem'
 import { CHAIN_ID, EXPLORER_URL, RIF_WALLET_SERVICES_URL } from './constants'
+import { ProposalGraphQLResponse } from './graphql/queries/getProposals'
 
 /**
  * Merges Tailwind and clsx classes in order to avoid classes conflicts.
@@ -288,4 +289,45 @@ export function millify(num: BigSource | bigint, separator = '', units = shortDe
  */
 export function splitWords(str?: string) {
   return str ? str.replace(/([A-Z]+)([A-Z][a-z])/g, '$1 $2').replace(/([a-z])([A-Z])/g, '$1 $2') : ''
+}
+
+/**
+ * Determines the current state of a proposal based on its properties and the current block number.
+ *
+ * @param proposal - The proposal object containing state, voting, and quorum information.
+ * @param blockNumber - The current blockchain block number used to compare voting deadlines.
+ * @returns The evaluated proposal state as a string, which could be:
+ *          - The original state ('Pending' or 'Active') if voting is ongoing,
+ *          - 'Defeated' if quorum is not met or votesAgainst exceed votesFor,
+ *          - 'Succeeded' if voting conditions are met.
+ *
+ * @example
+ * const proposal = {
+ *   state: 'Active',
+ *   voteEnd: '123456',
+ *   quorum: '100',
+ *   votesFor: '150',
+ *   votesAgainst: '30'
+ * };
+ * const currentBlock = BigInt(123400);
+ * const result = handleProposalState(proposal, currentBlock);
+ * // result will be 'Active'
+ */
+export function handleProposalState(proposal: ProposalGraphQLResponse, blockNumber?: bigint) {
+  if (!blockNumber) {
+    return proposal.state
+  }
+  if (proposal.state != 'Pending' && proposal.state != 'Active') {
+    return proposal.state
+  }
+  if (Big(proposal.voteEnd).gt(Big(blockNumber.toString()))) {
+    return proposal.state
+  }
+  if (
+    Big(proposal.quorum).gt(Big(proposal.votesFor)) ||
+    Big(proposal.votesAgainst).gt(Big(proposal.votesFor))
+  ) {
+    return 'Defeated'
+  }
+  return 'Succeeded'
 }

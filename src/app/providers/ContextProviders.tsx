@@ -14,6 +14,8 @@ import { BalancesProvider } from '@/app/user/Balances/context/BalancesContext'
 import { HeroCollapseProvider } from '@/app/user/HeroSection/HeroCollapseContext'
 import { TxStatusProvider } from '@/shared/context/TxStatusContext'
 import { TooltipProvider } from '@radix-ui/react-tooltip'
+import { ApolloNextAppProvider } from '@apollo/client-integration-nextjs'
+import { makeClient } from '@/lib/apolloClient'
 
 interface Props {
   children: ReactNode
@@ -62,23 +64,25 @@ export const ContextProviders = ({ children, initialState }: Props) => {
   return (
     <ErrorBoundary>
       <WagmiProvider config={wagmiAdapterConfig} initialState={initialState}>
-        <QueryClientProvider client={queryClient}>
-          <TxStatusProvider>
-            <AlertProvider>
-              <HeroCollapseProvider>
-                <BuilderContextProviderWithPrices>
-                  <BoosterProvider>
-                    <AllocationsContextProvider>
-                      <BalancesProvider>
-                        <TooltipProvider>{children}</TooltipProvider>
-                      </BalancesProvider>
-                    </AllocationsContextProvider>
-                  </BoosterProvider>
-                </BuilderContextProviderWithPrices>
-              </HeroCollapseProvider>
-            </AlertProvider>
-          </TxStatusProvider>
-        </QueryClientProvider>
+        <ApolloNextAppProvider makeClient={makeClient}>
+          <QueryClientProvider client={queryClient}>
+            <TxStatusProvider>
+              <AlertProvider>
+                <HeroCollapseProvider>
+                  <BuilderContextProviderWithPrices>
+                    <BoosterProvider>
+                      <AllocationsContextProvider>
+                        <BalancesProvider>
+                          <TooltipProvider>{children}</TooltipProvider>
+                        </BalancesProvider>
+                      </AllocationsContextProvider>
+                    </BoosterProvider>
+                  </BuilderContextProviderWithPrices>
+                </HeroCollapseProvider>
+              </AlertProvider>
+            </TxStatusProvider>
+          </QueryClientProvider>
+        </ApolloNextAppProvider>
       </WagmiProvider>
     </ErrorBoundary>
   )
