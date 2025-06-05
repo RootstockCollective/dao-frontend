@@ -5,13 +5,11 @@ import { RIFTokenAbi } from '@/lib/abis/RIFTokenAbi'
 import { tokenContracts } from '@/lib/contracts'
 import { useTxStatusContext } from '@/shared/context/TxStatusContext'
 
-interface Props {
-  amount: string
-  tokenToSendContract: Address
-  tokenToReceiveContract: Address
-}
-
-export const useAllowance = ({ amount, tokenToSendContract, tokenToReceiveContract }: Props) => {
+export const useAllowance = (
+  amount: string,
+  tokenToSendContract: Address,
+  tokenToReceiveContract: Address,
+) => {
   const { address } = useAccount()
   const [allowanceHash, setAllowanceHash] = useState<Hash>()
   const { trackTransaction } = useTxStatusContext()
