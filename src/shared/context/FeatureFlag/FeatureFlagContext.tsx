@@ -49,21 +49,23 @@ export const FeatureFlagProvider: FC<{ children: ReactNode }> = ({ children }) =
 
   useEffect(() => {
     const localStorageFlags = readLocalStorage()
-    const cleanEnvFlags = Object.entries(getEnvFlags()).reduce<FeatureFlags>(
-      (acc, [key, value]) =>
-        value === undefined
-          ? acc
-          : {
-              ...acc,
-              [key]: key === 'user_flags' ? (value as FeatureFlag[]) : (value as boolean),
-            },
-      {} as FeatureFlags,
-    )
+    const envFlags = getEnvFlags()
+    // const cleanEnvFlags = Object.entries(envFlags).reduce<FeatureFlags>(
+    //   (acc, [key, value]) =>
+    //     value === undefined
+    //       ? acc
+    //       : {
+    //           ...acc,
+    //           [key]: key === 'user_flags' ? (value as FeatureFlag[]) : (value as boolean),
+    //         },
+    //   {} as FeatureFlags,
+    // )
 
-    const { user_flags, ...envFlags } = getEnvFlags()
+    // const { user_flags, ...remainingEnvFlags } = getEnvFlags()
 
     const allFlags: FeatureFlags = {
-      ...cleanEnvFlags, // first set all user flags defined in env to true
+      // FIXME: There is no need for us to set the cleanEnvFlags, as we are overwriting it with the env flags
+      // ...cleanEnvFlags, // first set all user flags defined in env to true
       ...localStorageFlags, // then overwrite these with user-defined values
       ...envFlags, // finally let env flags to have the final word
     }
