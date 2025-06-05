@@ -1,12 +1,13 @@
-import { fetchCrTheGraphEndpoint, fetchDaoTheGraphEndpoint } from '@/lib/the-graph'
+'use client'
+
 import { HttpLink } from '@apollo/client'
 import { ApolloClient, InMemoryCache } from '@apollo/client-integration-nextjs'
 
 // have a function to create a client for you
-export function makeClient(uri: string) {
+export function makeClient() {
   const httpLink = new HttpLink({
     // this needs to be an absolute url, as relative urls cannot be used in SSR
-    uri,
+    uri: `${process.env.NEXT_PUBLIC_DAO_GRAPH_URL}/${process.env.NEXT_PUBLIC_DAO_GRAPH_API_KEY}/${process.env.NEXT_PUBLIC_DAO_GRAPH_ID}`,
     // you can disable result caching here if you want to
     // (this does not work if you are rendering your page with `export const dynamic = "force-static"`)
     fetchOptions: {
@@ -27,6 +28,3 @@ export function makeClient(uri: string) {
     link: httpLink,
   })
 }
-
-export const client = makeClient(fetchCrTheGraphEndpoint)
-export const daoClient = makeClient(fetchDaoTheGraphEndpoint)

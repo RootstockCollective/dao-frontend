@@ -1,5 +1,5 @@
 'use client'
-import { useMemo, useState, useEffect, useCallback, useRef } from 'react'
+import { useMemo, useState, useEffect, useCallback, useRef, memo } from 'react'
 import {
   createColumnHelper,
   type SortingState,
@@ -17,15 +17,14 @@ import { ProposalNameColumn } from './table-columns/ProposalNameColumn'
 import { VotesColumn } from './table-columns/VotesColumn'
 import { TimeColumn } from './table-columns/TimeColumn'
 import { DebounceSearch } from '@/components/DebounceSearch'
-import { useProposalListData } from '../hooks/useProposalListData'
 import { Button } from '@/components/Button'
 import { useRouter, useSearchParams } from 'next/navigation'
 import Big from '@/lib/big'
 import { proposalQuickFilters } from '@/lib/constants'
-import { ProposalGraphQLResponse } from '@/app/proposals/actions/proposalsAction'
+import { IProposal } from '@/app/proposals/shared/types'
 
 interface LatestProposalsTableProps {
-  proposals: ProposalGraphQLResponse[]
+  proposals: IProposal[]
 }
 
 export const LatestProposalsTable = ({ proposals }: LatestProposalsTableProps) => {
@@ -33,12 +32,10 @@ export const LatestProposalsTable = ({ proposals }: LatestProposalsTableProps) =
   const [searchedProposal, setSearchedProposal] = useState('')
   // React-table sorting state
   const [sorting, setSorting] = useState<SortingState>([])
-  // query all proposals parameters at the Governor after receiving proposal list
-  const proposalListData = useProposalListData({ proposals })
   // filter all proposals after user typed text in the search field
   const filteredProposalList = useMemo(
     () =>
-      proposalListData.filter(({ name }) => {
+      proposals.filter(({ name }) => {
         try {
           const proposalName = String(name).toLowerCase()
           return proposalName.includes(searchedProposal.toLowerCase())
@@ -46,7 +43,7 @@ export const LatestProposalsTable = ({ proposals }: LatestProposalsTableProps) =
           return false
         }
       }),
-    [proposalListData, searchedProposal],
+    [proposals, searchedProposal],
   )
 
   // State for proposal quick filters
@@ -106,7 +103,7 @@ export const LatestProposalsTable = ({ proposals }: LatestProposalsTableProps) =
   )
 
   // Table data definition helper
-  const { accessor } = createColumnHelper<(typeof proposalListData)[number]>()
+  const { accessor } = createColumnHelper<(typeof proposals)[number]>()
   // Table columns definition
   const columns = [
     accessor('name', {
@@ -366,6 +363,7 @@ export const LatestProposalsTable = ({ proposals }: LatestProposalsTableProps) =
     </div>
   )
 }
+export const LatestProposalsTableMemoized = memo(LatestProposalsTable)
 
 const theadRowsPropsById = {
   name: {
