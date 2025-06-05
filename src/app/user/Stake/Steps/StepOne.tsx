@@ -118,10 +118,10 @@ export const StepOne = ({ onGoNext, actionName }: StepProps) => {
           variant="primary"
           onClick={onGoNext}
           disabled={!canGoNext}
-          data-testid={isUnstake ? 'UnstakeButton' : 'ContinueButton'}
+          data-testid={actionTexts.buttonText}
           className="w-full md:w-auto"
         >
-          {isUnstake ? 'Unstake' : 'Continue'}
+          {actionTexts.buttonText}
         </Button>
       </div>
     </StepWrapper>
