@@ -1,5 +1,5 @@
 'use client'
-import { useMemo, useState, useEffect, useCallback, useRef, memo } from 'react'
+import { useMemo, useState, useEffect, useCallback, useRef } from 'react'
 import {
   createColumnHelper,
   type SortingState,
@@ -17,25 +17,24 @@ import { ProposalNameColumn } from './table-columns/ProposalNameColumn'
 import { VotesColumn } from './table-columns/VotesColumn'
 import { TimeColumn } from './table-columns/TimeColumn'
 import { DebounceSearch } from '@/components/DebounceSearch'
-import { useProposalListData } from '../hooks/useProposalListData'
 import { Button } from '@/components/Button'
 import { useRouter, useSearchParams } from 'next/navigation'
 import Big from '@/lib/big'
 import { proposalQuickFilters } from '@/lib/constants'
-import { LatestProposalResponse } from '@/app/proposals/hooks/useFetchLatestProposals'
+import { ProposalGraphQLResponse } from '@/lib/graphql/queries/getProposals'
+import { useGetProposalListData } from '@/app/proposals/hooks/useGetProposalListData'
 
 interface LatestProposalsTableProps {
-  proposals: LatestProposalResponse[]
-  onEmitActiveProposal?: (activeProposals: number) => void
+  proposals: ProposalGraphQLResponse[]
 }
 
-export const LatestProposalsTable = ({ proposals, onEmitActiveProposal }: LatestProposalsTableProps) => {
+export const ProposalGraphQLTable = ({ proposals }: LatestProposalsTableProps) => {
   // search textfield
   const [searchedProposal, setSearchedProposal] = useState('')
   // React-table sorting state
   const [sorting, setSorting] = useState<SortingState>([])
   // query all proposals parameters at the Governor after receiving proposal list
-  const proposalListData = useProposalListData({ proposals })
+  const proposalListData = useGetProposalListData({ proposals })
   // filter all proposals after user typed text in the search field
   const filteredProposalList = useMemo(
     () =>
@@ -49,15 +48,6 @@ export const LatestProposalsTable = ({ proposals, onEmitActiveProposal }: Latest
       }),
     [proposalListData, searchedProposal],
   )
-
-  useEffect(() => {
-    if (onEmitActiveProposal) {
-      onEmitActiveProposal(
-        proposalListData.filter(proposal => ['Pending', 'Active'].includes(proposal.proposalState)).length ||
-          0,
-      )
-    }
-  }, [onEmitActiveProposal, proposalListData])
 
   // State for proposal quick filters
   const [activeFilter, setActiveFilter] = useState<string | null>(null)
@@ -376,8 +366,6 @@ export const LatestProposalsTable = ({ proposals, onEmitActiveProposal }: Latest
     </div>
   )
 }
-export const LatestProposalsTableMemoized = memo(LatestProposalsTable)
-
 const theadRowsPropsById = {
   name: {
     style: {

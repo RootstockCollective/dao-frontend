@@ -5,7 +5,7 @@ import { ClassValue, clsx } from 'clsx'
 import { twMerge } from 'tailwind-merge'
 import { Address } from 'viem'
 import { CHAIN_ID, EXPLORER_URL, RIF_WALLET_SERVICES_URL } from './constants'
-import { ProposalGraphQLResponse } from '@/app/proposals/actions/proposalsAction'
+import { ProposalGraphQLResponse } from './graphql/queries/getProposals'
 
 /**
  * Merges Tailwind and clsx classes in order to avoid classes conflicts.
@@ -313,7 +313,10 @@ export function splitWords(str?: string) {
  * const result = handleProposalState(proposal, currentBlock);
  * // result will be 'Active'
  */
-export function handleProposalState(proposal: ProposalGraphQLResponse, blockNumber: bigint) {
+export function handleProposalState(proposal: ProposalGraphQLResponse, blockNumber?: bigint) {
+  if (!blockNumber) {
+    return proposal.state
+  }
   if (proposal.state != 'Pending' && proposal.state != 'Active') {
     return proposal.state
   }
