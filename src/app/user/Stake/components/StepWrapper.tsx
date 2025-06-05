@@ -8,7 +8,7 @@ interface Props {
   progress: number
   description?: string
   children: ReactNode
-  actionName: 'STAKE' | 'UNSTAKE'
+  actionName?: 'STAKE' | 'UNSTAKE'
 }
 
 export const StepWrapper = memo(function StepWrapper({
@@ -16,7 +16,7 @@ export const StepWrapper = memo(function StepWrapper({
   progress,
   description,
   children,
-  actionName,
+  actionName = 'STAKE',
 }: Props) {
   return (
     <div className="p-6">

@@ -1,9 +1,8 @@
-import { ActionHookToUse } from '@/app/user/Stake/StakingContext'
 import { useAccount, useWriteContract } from 'wagmi'
 import { StRIFTokenAbi } from '@/lib/abis/StRIFTokenAbi'
 import { Address, parseEther } from 'viem'
 
-export const useUnstakeStRIF: ActionHookToUse = (amount, tokenToSendContract) => {
+export const useUnstakeStRIF = (amount: string, tokenToSendContract: Address) => {
   const { address } = useAccount()
 
   const { writeContractAsync: unstake, isPending } = useWriteContract()
