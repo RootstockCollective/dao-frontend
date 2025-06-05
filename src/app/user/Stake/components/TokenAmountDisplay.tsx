@@ -3,7 +3,7 @@ import { Header, Label, Paragraph, Span } from '@/components/TypographyNew'
 import Big from '@/lib/big'
 import { cn, formatNumberWithCommas } from '@/lib/utils'
 
-interface TokenAmountDisplayProps {
+interface Props {
   label: string
   amount: string
   tokenSymbol: string
@@ -21,7 +21,7 @@ export const TokenAmountDisplay = ({
   balance,
   className = '',
   isFlexEnd = false,
-}: TokenAmountDisplayProps) => {
+}: Props) => {
   return (
     <div className={cn('flex-1', isFlexEnd ? 'flex-col md:items-end' : 'mb-4 md:mb-0', className)}>
       <Label variant="tag" className="text-bg-0">
