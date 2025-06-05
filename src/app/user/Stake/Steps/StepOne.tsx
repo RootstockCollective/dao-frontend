@@ -4,14 +4,14 @@ import { Button } from '@/components/ButtonNew/Button'
 import { TokenImage } from '@/components/TokenImage'
 import { Label, Paragraph, Span } from '@/components/TypographyNew'
 import Big from '@/lib/big'
+import { formatCurrency } from '@/lib/utils'
 import { useReadBackersManager } from '@/shared/hooks/contracts'
 import { useCallback, useMemo } from 'react'
 import { parseEther, zeroAddress } from 'viem'
 import { useAccount } from 'wagmi'
+import { StepWrapper } from '../components/StepWrapper'
 import { useStakingContext } from '../StakingContext'
 import { StepProps } from '../types'
-import { formatCurrency } from '@/lib/utils'
-import { StepWrapper } from '../components/StepWrapper'
 
 const DECIMAL_SCALES = {
   STAKE: 8,
@@ -74,6 +74,11 @@ export const StepOne = ({ onGoNext, actionName }: StepProps) => {
     [onAmountChange],
   )
 
+  const handleMaxAmount = useCallback(() => {
+    const roundedBalance = Big(totalBalance).floor(DECIMAL_SCALES[actionName]).toString()
+    handleAmountChange(roundedBalance)
+  }, [totalBalance, handleAmountChange, actionName])
+
   return (
     <StepWrapper currentStep={1} progress={28} actionName={actionName}>
       <StakeInput
@@ -95,7 +100,7 @@ export const StepOne = ({ onGoNext, actionName }: StepProps) => {
         </div>
         <Button
           variant="secondary"
-          onClick={() => handleAmountChange(totalBalance)}
+          onClick={handleMaxAmount}
           className="bg-transparent border border-bg-40 px-2 py-0"
           data-testid="maxButton"
         >
