@@ -25,11 +25,7 @@ export const StepTwo = ({ onGoNext, onGoBack }: StepProps) => {
     isTxPending,
     isTxFailed,
     allowanceHash,
-  } = useAllowance({
-    amount,
-    tokenToSendContract: tokenToSend.contract,
-    tokenToReceiveContract: tokenToReceive.contract,
-  })
+  } = useAllowance(amount, tokenToSend.contract, tokenToReceive.contract)
 
   const handleRequestAllowance = async () => {
     try {
