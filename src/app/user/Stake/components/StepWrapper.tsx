@@ -8,6 +8,7 @@ interface StepWrapperProps {
   progress: number
   description?: string
   children: ReactNode
+  actionName: 'STAKE' | 'UNSTAKE'
 }
 
 export const StepWrapper = memo(function StepWrapper({
@@ -15,15 +16,18 @@ export const StepWrapper = memo(function StepWrapper({
   progress,
   description,
   children,
+  actionName,
 }: StepWrapperProps) {
   return (
     <div className="p-6">
-      <Header className="mt-16 mb-4">STAKE</Header>
+      <Header className="mt-16 mb-4">{actionName}</Header>
 
-      <div className="mb-12">
-        <StakeSteps currentStep={currentStep} />
-        <ProgressBar progress={progress} className="mt-3" />
-      </div>
+      {actionName === 'STAKE' && (
+        <div className="mb-12">
+          <StakeSteps currentStep={currentStep} />
+          <ProgressBar progress={progress} className="mt-3" />
+        </div>
+      )}
 
       {description && (
         <Paragraph variant="body" className="mb-8">

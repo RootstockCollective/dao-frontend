@@ -40,7 +40,7 @@ export const UnStakingSteps = ({ onCloseModal }: Props) => {
   return (
     <StakingProvider tokenToSend={tokenToSend} tokenToReceive={tokenToReceive}>
       <Modal width={688} onClose={onCloseModal}>
-        <StepOne {...stepsFunctions} />
+        <StepOne {...stepsFunctions} actionName="UNSTAKE" />
       </Modal>
     </StakingProvider>
   )

@@ -75,7 +75,7 @@ export const StepOne = ({ onGoNext, actionName }: StepProps) => {
   )
 
   return (
-    <StepWrapper currentStep={1} progress={28}>
+    <StepWrapper currentStep={1} progress={28} actionName={actionName}>
       <StakeInput
         onChange={handleAmountChange}
         value={amount}
@@ -118,10 +118,10 @@ export const StepOne = ({ onGoNext, actionName }: StepProps) => {
           variant="primary"
           onClick={onGoNext}
           disabled={!canGoNext}
-          data-testid="ContinueButton"
+          data-testid={isUnstake ? 'UnstakeButton' : 'ContinueButton'}
           className="w-full md:w-auto"
         >
-          Continue
+          {isUnstake ? 'Unstake' : 'Continue'}
         </Button>
       </div>
     </StepWrapper>
