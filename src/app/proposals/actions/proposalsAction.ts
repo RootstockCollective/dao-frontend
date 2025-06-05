@@ -5,6 +5,8 @@ import { StRIFTokenAbi } from '@/lib/abis/StRIFTokenAbi'
 import { GovernorAddress, tokenContracts } from '@/lib/contracts'
 import { GovernorAbi } from '@/lib/abis/Governor'
 import { unstable_cache } from 'next/cache'
+import { gql as apolloGQL } from '@apollo/client'
+import { daoClient } from '@/shared/components/ApolloClient'
 
 const fetchProposalSharedDetails = async () => {
   // Proposal Threshold (from governor)
@@ -34,11 +36,9 @@ export const getCachedProposalSharedDetails = unstable_cache(fetchProposalShared
   revalidate: 3600, // 1 hour in seconds
 })
 
-//(studio = test env with a limit of 2 request per minute, gateway = deployed graph)
-const GRAPH_URl = `${process.env.DAO_GRAPH_URL}/${process.env.DAO_GRAPH_API_KEY}/${process.env.DAO_GRAPH_ID}`
-
-const queryProposals = `{
-    proposals(first:1000, orderDirection: desc, orderBy: createdAt) {
+const query = apolloGQL`
+  query GetProposals {
+    proposals(first: 1000, orderDirection: desc, orderBy: createdAt) {
       id
       proposalId
       proposer {
@@ -59,19 +59,18 @@ const queryProposals = `{
       values
       calldatas
       state
-    },
+      rawState
+    }
     counters {
       id
       count
     }
-  }`
-
-// Types for the GraphQL response
-interface GraphQLResponse {
-  data: {
-    proposals: ProposalGraphQLResponse[]
-    counters: Counter[]
   }
+`
+
+export interface GraphQLResponse {
+  proposals: ProposalGraphQLResponse[]
+  counters: Counter[]
 }
 
 export interface ProposalGraphQLResponse {
@@ -93,46 +92,16 @@ export interface ProposalGraphQLResponse {
   signatures: string[]
   values: string[]
   calldatas: string[]
-  state: ProposalState
+  state: string
+  rawState: number
 }
 
-type ProposalState =
-  | 'Pending'
-  | 'Active'
-  | 'Canceled'
-  | 'Defeated'
-  | 'Succeeded'
-  | 'Queued'
-  | 'Expired'
-  | 'Executed'
-
-interface Counter {
+export interface Counter {
   id: string
   count: string
 }
 
-const fetchProposalsFromGraph = async (): Promise<GraphQLResponse['data']> => {
-  const res = await fetch(GRAPH_URl, {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-    },
-    body: JSON.stringify({
-      query: queryProposals,
-      variables: {},
-    }),
-  })
-  if (!res.ok) {
-    throw new Error('Failed to fetch proposals')
-  }
-  const { data }: { data: GraphQLResponse['data'] } = await res.json()
+export async function fetchProposals() {
+  const { data } = await daoClient.query<GraphQLResponse>({ query })
   return data
-}
-
-export const fetchCachedProposalsFromGraph = unstable_cache(fetchProposalsFromGraph, undefined, {
-  revalidate: 60,
-})
-
-export async function getBlockNumber() {
-  return publicClient.getBlockNumber()
 }
