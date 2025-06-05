@@ -1,11 +1,13 @@
 'use client'
 
 import { useAccount } from 'wagmi'
-import { ActionsContainer } from './components/Container'
-import { ActionMetricsContainer } from './components/Container/ActionMetricsContainer'
-import { InfoContainer } from './components/Container/InfoContainer'
-import { MetricsContainer } from './components/Container/MetricsContainer'
-import { PageTitleContainer } from './components/Container/PageTitleContainer'
+import {
+  ActionMetricsContainer,
+  ActionsContainer,
+  InfoContainer,
+  MetricsContainer,
+  PageTitleContainer,
+} from '@/components/containers'
 
 const NAME = 'Backing'
 export const BackingPage = () => {
@@ -23,7 +25,6 @@ export const BackingPage = () => {
         <InfoContainer className="grow-[9]">{/* TODO: ADD CHILDREN HERE */}</InfoContainer>
         <MetricsContainer className="grow-[3]">{/* TODO: ADD CHILDREN HERE */}</MetricsContainer>
       </div>
-
       {address && <ActionMetricsContainer>{/* TODO: ADD CHILDREN HERE */}</ActionMetricsContainer>}
       <ActionsContainer title="TODO: ADD TITLE COMPONENT" />
     </div>

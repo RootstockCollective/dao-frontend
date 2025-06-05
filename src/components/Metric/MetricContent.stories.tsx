@@ -4,7 +4,7 @@ import { BedIcon } from 'lucide-react'
 import { MetricContent } from './MetricContent'
 
 const meta = {
-  title: 'Koto/Components/MetricContent',
+  title: 'Koto/Components/Metric/MetricContent',
   component: MetricContent,
   parameters: {
     layout: 'centered',
