@@ -15,7 +15,7 @@ const coalesce = `
 
 export async function GET() {
   try {
-    const result = await db('Builder')
+    const builders = await db('Builder')
       .join('BuilderState', 'Builder.id', '=', 'BuilderState.builder')
       .join('BackerRewardPercentage', 'Builder.id', '=', 'BackerRewardPercentage.builder')
       .select({ id: db.raw(`convert_from("Builder".id, 'utf8')`) }, 'Builder.totalAllocation', {
@@ -26,7 +26,12 @@ export async function GET() {
       .where('BuilderState.initialized', '=', true)
       .where('BuilderState.selfPaused', '=', false)
       .groupBy('Builder.id')
-    return NextResponse.json(result)
+
+    const cycles = await db('Cycle')
+      .select({ id: db.raw(`convert_from(id, 'utf8')`) }, 'rewardsERC20', 'rewardsRBTC')
+      .orderBy('id', 'desc')
+
+    return NextResponse.json({ builders, cycles })
   } catch (err) {
     console.error(err)
     return NextResponse.json({ error: 'Database error' }, { status: 500 })

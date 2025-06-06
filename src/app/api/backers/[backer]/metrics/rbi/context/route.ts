@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { db } from '@/lib/db'
-import { Address } from 'viem'
+import { Address, isAddress } from 'viem'
 
 const coalesce = `
   COALESCE(
@@ -17,6 +17,10 @@ const coalesce = `
 export async function GET(request: NextRequest, { params }: { params: Promise<{ backer: Address }> }) {
   const { backer } = await params
 
+  if (!isAddress(backer)) {
+    return NextResponse.json({ error: 'Invalid address' }, { status: 400 })
+  }
+
   try {
     const result = await db('BackerStakingHistory')
       .join('GaugeStakingHistory', 'BackerStakingHistory.id', '=', 'GaugeStakingHistory.backer')
@@ -30,6 +34,10 @@ export async function GET(request: NextRequest, { params }: { params: Promise<{ 
       .where('BackerStakingHistory.id', '=', backer.toLowerCase())
       .groupBy('BackerStakingHistory.id')
       .first()
+
+    if (!result) {
+      return NextResponse.json({ error: 'Backer not found' }, { status: 404 })
+    }
 
     return NextResponse.json(result)
   } catch (err) {
