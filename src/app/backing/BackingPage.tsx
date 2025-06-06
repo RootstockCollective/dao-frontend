@@ -26,14 +26,20 @@ export const BackingPage = () => {
       <div data-testid="CenterContainer" className="flex w-full items-start gap-2">
         <InfoContainer className="grow-[9]">{/* TODO: ADD CHILDREN HERE */}</InfoContainer>
         <MetricsContainer className="grow-[3]">
-          <Metric 
-            title="Available for backing" 
+          <Metric
+            title="Available for backing"
             content={
               <div className="flex flex-col gap-4">
                 <div className="text-[48px]">{availableForBacking}</div>
                 <div className="flex gap-2">
                   {availableForBacking === 0 ? (
-                    <Button variant="primary" className="w-full">
+                    <Button
+                      variant="primary"
+                      className="w-full"
+                      onClick={() => {
+                        // FIXME: Implement staking page and update this navigation
+                      }}
+                    >
                       Stake some RIF
                     </Button>
                   ) : (
