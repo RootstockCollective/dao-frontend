@@ -32,7 +32,7 @@ export const BackingPage = () => {
 
       {/* {address && <ActionMetricsContainer>{/* TODO: ADD CHILDREN HERE */}
       {/* </ActionMetricsContainer>} */}
-      <ActionsContainer title="IN THE SPOTLIGHT">
+      <ActionsContainer title="BUILDERS THAT YOU MAY WANT TO BACK">
         <BuildersContainer />
       </ActionsContainer>
     </div>
