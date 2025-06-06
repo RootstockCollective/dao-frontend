@@ -1,4 +1,4 @@
-import { cn } from '@/lib/utils'
+import { cn } from '@/lib/utils/utils'
 import { HTMLAttributes, PropsWithChildren } from 'react'
 import * as RadixTooltip from '@radix-ui/react-tooltip'
 

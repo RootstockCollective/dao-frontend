@@ -1,5 +1,5 @@
 'use client'
-import { cn } from '@/lib/utils'
+import { cn } from '@/lib/utils/utils'
 import { HTMLAttributes, ReactNode, useEffect, useRef, useState } from 'react'
 
 type Position = 'top' | 'bottom' | 'right' | 'left' | 'left-bottom' | 'left-top' | 'top-expand-left'

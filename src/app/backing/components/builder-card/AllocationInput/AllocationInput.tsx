@@ -1,7 +1,7 @@
 import { getFiatAmount } from '@/app/collective-rewards/rewards'
 import { InputNumber } from '@/components/Input/InputNumber'
 import { Paragraph } from '@/components/TypographyNew'
-import { cn } from '@/lib/utils'
+import { cn } from '@/lib/utils/utils'
 import { FC, useState } from 'react'
 import { parseEther } from 'viem'
 import { PendingAllocation } from '../PendingAllocation/PendingAllocation'

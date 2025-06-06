@@ -1,6 +1,6 @@
 import { Button } from '@/components/Button'
 import { Paragraph } from '@/components/Typography'
-import { goToExplorerWithTxHash } from '@/lib/utils'
+import { goToExplorerWithTxHash } from '@/lib/utils/utils'
 
 interface CustomStakingRIFFooterProps {
   hash?: string

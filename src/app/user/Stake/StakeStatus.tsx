@@ -1,6 +1,6 @@
 import { Header, Label, Span } from '@/components/Typography'
 import { Button } from '@/components/Button'
-import { goToExplorerWithTxHash } from '@/lib/utils'
+import { goToExplorerWithTxHash } from '@/lib/utils/utils'
 import { useMemo } from 'react'
 import moment from 'moment'
 import { ActionBeingExecuted, textsDependingOnAction } from '@/app/user/Stake/Steps/stepsUtils'

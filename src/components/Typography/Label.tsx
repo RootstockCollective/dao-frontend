@@ -1,5 +1,5 @@
 import { LabelVariants, Typography } from '@/components/Typography'
-import { cn } from '@/lib/utils'
+import { cn } from '@/lib/utils/utils'
 import { FC, ReactNode } from 'react'
 
 const DEFAULT_CLASSES = 'text-[1rem]'

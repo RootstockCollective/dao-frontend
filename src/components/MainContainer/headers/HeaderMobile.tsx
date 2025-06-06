@@ -5,7 +5,7 @@ import { RootstockLogoIcon } from '@/components/Icons'
 import { useLayoutContext } from '../LayoutProvider'
 import { Hamburger } from '@/components/Hamburger'
 import { Tooltip } from '@/components/Tooltip'
-import { cn } from '@/lib/utils'
+import { cn } from '@/lib/utils/utils'
 import { TemporaryConnect } from './TemporaryConnect'
 
 export function HeaderMobile({ className, ...props }: HTMLAttributes<HTMLDivElement>) {

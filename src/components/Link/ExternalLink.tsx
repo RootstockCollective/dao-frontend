@@ -1,4 +1,4 @@
-import { cn } from '@/lib/utils'
+import { cn } from '@/lib/utils/utils'
 import { FC } from 'react'
 import { ArrowUpRightLightIcon } from '../Icons'
 import { ExternalLinkProps } from './types'

@@ -1,5 +1,5 @@
 import { ParagraphVariants, SizeVariants, Typography } from '@/components/Typography'
-import { cn } from '@/lib/utils'
+import { cn } from '@/lib/utils/utils'
 import { FC } from 'react'
 
 interface BaseProps {

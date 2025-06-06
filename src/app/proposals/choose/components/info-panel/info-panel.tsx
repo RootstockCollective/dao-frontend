@@ -1,6 +1,6 @@
 import { type HTMLMotionProps, motion } from 'motion/react'
 import { HeaderTitle, Typography } from '@/components/Typography'
-import { cn } from '@/lib/utils'
+import { cn } from '@/lib/utils/utils'
 import type { ProposalType } from '../../types'
 import { infoPanelData } from './data'
 import { ExampleCard } from '../example-card/example-card'

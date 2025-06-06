@@ -1,6 +1,6 @@
 'use client'
 
-import { cn } from '@/lib/utils'
+import { cn } from '@/lib/utils/utils'
 import { ChevronDownIcon } from 'lucide-react'
 import React, { useEffect, useRef, useState } from 'react'
 

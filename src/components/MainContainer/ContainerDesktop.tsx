@@ -7,7 +7,7 @@ import { TopPageHeader } from '@/shared/walletConnection/components/topPageHeade
 import { SidebarDesktop } from './sidebars/SidebarDesktop'
 import { Alert } from '../Alert'
 import { HeaderDesktop } from './headers/HeaderDesktop'
-import { cn } from '@/lib/utils'
+import { cn } from '@/lib/utils/utils'
 
 export function ContainerDesktop({ children, className, ...props }: HTMLAttributes<HTMLDivElement>) {
   const { message, setMessage } = useAlertContext()

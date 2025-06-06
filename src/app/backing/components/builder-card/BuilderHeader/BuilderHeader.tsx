@@ -1,7 +1,7 @@
 import { Header } from '@/components/TypographyNew'
 import { Jdenticon } from '@/components/Header/Jdenticon'
 import { FC } from 'react'
-import { cn } from '@/lib/utils'
+import { cn } from '@/lib/utils/utils'
 import Link from 'next/link'
 
 interface BuilderHeaderProps {

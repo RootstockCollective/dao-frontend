@@ -1,5 +1,5 @@
 import { GetAddressTokenResult, GetPricesResult } from '@/app/user/types'
-import { axiosInstance } from '@/lib/utils'
+import { axiosInstance } from '@/lib/utils/utils'
 import {
   fetchAddressTokensEndpoint,
   fetchNewAllocationEventEndpoint,

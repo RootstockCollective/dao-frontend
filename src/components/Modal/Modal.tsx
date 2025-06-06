@@ -1,6 +1,6 @@
 'use client'
 
-import { cn } from '@/lib/utils'
+import { cn } from '@/lib/utils/utils'
 import Image from 'next/image'
 import { FC, ReactNode } from 'react'
 import { createPortal } from 'react-dom'
