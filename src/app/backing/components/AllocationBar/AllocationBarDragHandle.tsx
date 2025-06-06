@@ -1,5 +1,5 @@
 import { DraggableAttributes } from '@dnd-kit/core/dist/hooks/useDraggable'
-import { FourDotsIcon } from '../Icons/FourDotsIcon'
+import { FourDotsIcon } from '@/components/Icons/FourDotsIcon'
 import { SyntheticListenerMap } from '@dnd-kit/core/dist/hooks/utilities/useSyntheticListeners'
 
 export const AllocationBarDragHandle = ({
