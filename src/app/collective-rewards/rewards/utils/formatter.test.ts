@@ -2,7 +2,7 @@ import { describe, expect, test } from 'vitest'
 import { formatMetrics, formatSymbol, getFiatAmount, formatFiatAmount } from './formatter'
 import { parseEther } from 'viem'
 import Big from '@/lib/big'
-import { formatCurrency } from '@/lib/utils'
+import { formatCurrency } from '@/lib/utils/utils'
 
 const formatAmountWithCurrency = (amount: string, currency: string, currencySymbol = '') =>
   `= ${currency} ${currencySymbol}${amount}`

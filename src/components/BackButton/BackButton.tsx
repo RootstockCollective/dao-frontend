@@ -4,7 +4,7 @@ import { useRouter } from 'next/navigation'
 import { LeftArrow } from './LeftArrow'
 import { Typography } from '../Typography'
 import { HTMLAttributes, MouseEvent } from 'react'
-import { cn } from '@/lib/utils'
+import { cn } from '@/lib/utils/utils'
 
 export type BackButtonProps = HTMLAttributes<HTMLDivElement>
 

@@ -26,7 +26,7 @@ import {
 import { StatefulTable } from '@/components/Table'
 import { DelegateIcon } from './DelegateIcon'
 import { useNftHoldersWithVotingPower } from './hooks/useNftHoldersWithVotingPower'
-import { cn } from '@/lib/utils'
+import { cn } from '@/lib/utils/utils'
 
 interface DelegateModalProps {
   onClose: () => void

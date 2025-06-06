@@ -1,4 +1,4 @@
-import { cn } from '@/lib/utils'
+import { cn } from '@/lib/utils/utils'
 import { FC, PropsWithChildren } from 'react'
 import { CommonComponentProps } from '../commonProps'
 

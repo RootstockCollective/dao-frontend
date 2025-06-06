@@ -1,7 +1,7 @@
 import { useBalancesContext } from '@/app/user/Balances/context/BalancesContext'
 import { SupportedTokens } from '@/lib/contracts'
 import { Paragraph } from '@/components/Typography'
-import { formatCurrency, formatNumberWithCommas } from '@/lib/utils'
+import { formatCurrency, formatNumberWithCommas } from '@/lib/utils/utils'
 import { TokenImage } from '@/components/TokenImage'
 import Big, { round } from '@/lib/big'
 

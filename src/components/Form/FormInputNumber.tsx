@@ -1,4 +1,4 @@
-import { cn } from '@/lib/utils'
+import { cn } from '@/lib/utils/utils'
 import React from 'react'
 import { InputAttributes, NumericFormatProps } from 'react-number-format'
 import { useFormField } from '.'

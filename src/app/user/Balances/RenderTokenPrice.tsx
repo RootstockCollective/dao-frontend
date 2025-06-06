@@ -1,6 +1,6 @@
 import { useBalancesContext } from '@/app/user/Balances/context/BalancesContext'
 import { SupportedTokens } from '@/lib/contracts'
-import { formatCurrency } from '@/lib/utils'
+import { formatCurrency } from '@/lib/utils/utils'
 import { usePricesContext } from '@/shared/context/PricesContext'
 
 interface Props {

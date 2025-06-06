@@ -1,5 +1,5 @@
 import { HeaderVariants, Typography } from '@/components/Typography'
-import { cn } from '@/lib/utils'
+import { cn } from '@/lib/utils/utils'
 import { FC, ReactNode } from 'react'
 
 const classesByVariant: Record<HeaderVariants, string> = {

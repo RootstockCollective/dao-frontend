@@ -1,5 +1,5 @@
 import { ButtonVariants } from '@/components/Button/types'
-import { cn } from '@/lib/utils'
+import { cn } from '@/lib/utils/utils'
 import { FC, JSX, MouseEvent, ReactNode } from 'react'
 import { Span } from '../Typography'
 import { SpinnerIcon } from '../Icons'

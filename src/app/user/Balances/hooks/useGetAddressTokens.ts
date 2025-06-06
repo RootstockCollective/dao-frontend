@@ -4,7 +4,7 @@ import { RIFTokenAbi } from '@/lib/abis/RIFTokenAbi'
 import { tokenContracts, MulticallAddress } from '@/lib/contracts'
 import { AddressToken } from '@/app/user/types'
 import { useQuery } from '@tanstack/react-query'
-import { axiosInstance } from '@/lib/utils'
+import { axiosInstance } from '@/lib/utils/utils'
 import { TokenInfoReturnType } from '@/app/user/api/tokens/route'
 import { AVERAGE_BLOCKTIME } from '@/lib/constants'
 

@@ -1,7 +1,7 @@
 import { StakePreviewBalanceProps } from '@/app/user/Stake/types'
 import { TokenImage } from '@/components/TokenImage'
 import { Span } from '@/components/Typography'
-import { formatNumberWithCommas } from '@/lib/utils'
+import { formatNumberWithCommas } from '@/lib/utils/utils'
 import Big from '@/lib/big'
 
 export const StakePreviewBalance = ({

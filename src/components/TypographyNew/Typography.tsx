@@ -1,4 +1,4 @@
-import { cn } from '@/lib/utils'
+import { cn } from '@/lib/utils/utils'
 import { CSSProperties, FC, ReactNode } from 'react'
 import sanitizeHtml from 'sanitize-html'
 import { BodyVariants, EmphaseVariants, HeaderVariants, TagVariants, TypographyElement } from './types'

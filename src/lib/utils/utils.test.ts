@@ -1,5 +1,5 @@
 import Big from '@/lib/big'
-import { formatCurrency, formatNumberWithCommas, millify, splitWords } from '@/lib/utils'
+import { formatCurrency, formatNumberWithCommas, millify, splitWords } from '@/lib/utils/utils'
 import { describe, expect, it } from 'vitest'
 
 describe('formatCurrency', () => {

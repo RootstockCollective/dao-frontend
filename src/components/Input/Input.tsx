@@ -1,5 +1,5 @@
 import { Label, Paragraph } from '@/components/Typography'
-import { cn } from '@/lib/utils'
+import { cn } from '@/lib/utils/utils'
 import { FC, JSX } from 'react'
 import { InputAttributes, NumericFormatProps } from 'react-number-format'
 import { InputNumber } from './InputNumber'

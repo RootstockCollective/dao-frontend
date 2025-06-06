@@ -6,7 +6,7 @@ import { useFetchTokenHolders } from '@/app/treasury/hooks/useFetchTokenHolders'
 import { LoadingSpinner } from '@/components/LoadingSpinner'
 import { Jdenticon } from '@/components/Header/Jdenticon'
 import { ErrorMessageAlert } from '@/components/ErrorMessageAlert/ErrorMessageAlert'
-import { formatNumberWithCommas } from '@/lib/utils'
+import { formatNumberWithCommas } from '@/lib/utils/utils'
 import { formatEther } from 'viem'
 
 interface HolderColumnProps {

@@ -2,7 +2,7 @@ import { useBalancesContext } from '@/app/user/Balances/context/BalancesContext'
 import { TokenImage } from '@/components/TokenImage'
 import { Paragraph } from '@/components/Typography'
 import { SupportedTokens } from '@/lib/contracts'
-import { formatCurrency, formatNumberWithCommas } from '@/lib/utils'
+import { formatCurrency, formatNumberWithCommas } from '@/lib/utils/utils'
 import Big from '@/lib/big'
 import { useAccount } from 'wagmi'
 

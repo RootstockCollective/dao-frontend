@@ -17,7 +17,7 @@ import { BoltSvg } from '@/components/BoltSvg'
 import { Button } from '@/components/Button'
 import { GlowingLabel } from '@/components/Label/GlowingLabel'
 import { Typography } from '@/components/Typography/Typography'
-import { cn } from '@/lib/utils'
+import { cn } from '@/lib/utils/utils'
 import { FC } from 'react'
 import { RewardsCardProps, TokenRewardsMetrics } from './RewardsCard'
 

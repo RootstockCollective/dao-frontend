@@ -1,4 +1,4 @@
-import { cn, shortAddress } from '@/lib/utils'
+import { cn, shortAddress } from '@/lib/utils/utils'
 import { FC, HTMLProps, ReactNode } from 'react'
 import { Address } from 'viem'
 import { BoxIcon } from 'lucide-react'

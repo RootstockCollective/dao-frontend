@@ -3,7 +3,7 @@ import AllocationBar from './AllocationBar'
 import { AllocationItem } from './types'
 
 const meta = {
-  title: 'Components/AllocationBar',
+  title: 'KOTO/Backing/Components/AllocationBar',
   component: AllocationBar,
 } satisfies Meta<typeof AllocationBar>
 
@@ -33,22 +33,22 @@ const defaultItems: AllocationItem[] = [
     key: 'boltz',
     label: 'Boltz',
     value: 20,
-    color: 'bg-purple-400',
-    displayColor: '#a78bfa', // Tailwind purple-400 hex
+    color: 'bg-[#9E76FF]',
+    displayColor: '#9E76FF',
   },
   {
     key: 'wallet',
     label: '0x1D11...2D00',
     value: 10,
-    color: 'bg-cyan-300',
-    displayColor: '#67e8f9', // Tailwind cyan-300 hex
+    color: 'bg-[#08FFD0]',
+    displayColor: '#08FFD0',
   },
   {
     key: 'abuilder',
     label: 'another builder',
     value: 10,
     color: 'bg-yellow-300',
-    displayColor: '#DEFF1A', // Tailwind cyan-300 hex
+    displayColor: '#DEFF1A',
   },
 ]
 const defaultItemsWithUnallocated = addUnallocated(defaultItems)
@@ -66,22 +66,22 @@ export const WithDecimals: Story = {
         key: 'boltz',
         label: 'Boltz',
         value: 20.3,
-        color: 'bg-purple-400',
-        displayColor: '#a78bfa', // Tailwind purple-400 hex
+        color: 'bg-[#9E76FF]',
+        displayColor: '#9E76FF',
       },
       {
         key: 'wallet',
         label: '0x1D11...2D00',
         value: 10,
-        color: 'bg-cyan-300',
-        displayColor: '#67e8f9', // Tailwind cyan-300 hex
+        color: 'bg-[#08FFD0]',
+        displayColor: '#08FFD0',
       },
       {
         key: 'abuilder',
         label: 'another builder',
         value: 10.76,
         color: 'bg-yellow-300',
-        displayColor: '#DEFF1A', // Tailwind cyan-300 hex
+        displayColor: '#DEFF1A',
       },
     ]),
   },
@@ -121,7 +121,7 @@ const dataWithTemp: AllocationItem[] = [
   },
 ]
 
-export const WithoutTemporaryValues: Story = {
+export const WithTemporaryValues: Story = {
   args: {
     initialItemsData: addUnallocated(dataWithTemp),
     showPercent: true,

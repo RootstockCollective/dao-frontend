@@ -1,6 +1,6 @@
 import { Address } from 'viem'
 import { BackersManagerAddress } from '@/lib/contracts'
-import { axiosInstance } from '@/lib/utils'
+import { axiosInstance } from '@/lib/utils/utils'
 import {
   fetchBackerRewardsClaimedLogsByAddress,
   fetchBuilderRewardsClaimedLogsByAddress,

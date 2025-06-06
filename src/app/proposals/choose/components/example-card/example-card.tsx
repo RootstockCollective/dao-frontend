@@ -1,4 +1,4 @@
-import { cn } from '@/lib/utils'
+import { cn } from '@/lib/utils/utils'
 import { HTMLAttributes, PropsWithChildren } from 'react'
 import type { ProposalType } from '../../types'
 import { exampleCardData } from './data'

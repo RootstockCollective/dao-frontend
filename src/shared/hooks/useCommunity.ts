@@ -8,7 +8,7 @@ import { NftMeta, CommunityData } from '../types'
 import { config } from '@/config'
 import Big from '@/lib/big'
 import { useQuery } from '@tanstack/react-query'
-import { axiosInstance, splitWords } from '@/lib/utils'
+import { axiosInstance, splitWords } from '@/lib/utils/utils'
 import { NftDataFromAddressesReturnType } from '@/app/user/api/communities/route'
 import { communitiesMapByContract } from '@/app/communities/communityUtils'
 
