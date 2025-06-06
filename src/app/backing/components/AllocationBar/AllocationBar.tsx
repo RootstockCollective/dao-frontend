@@ -4,7 +4,7 @@ import { DndContext, PointerSensor, useSensor, useSensors, DragEndEvent, pointer
 import { SortableContext, horizontalListSortingStrategy, arrayMove } from '@dnd-kit/sortable'
 import { restrictToHorizontalAxis } from '@dnd-kit/modifiers'
 
-import { clamp, MIN_SEGMENT_PERCENT } from './utils'
+import { calculateNewSegmentValues, calculateSegmentPositions, clamp } from './utils'
 import { AllocationBarProps, AllocationItem } from './types'
 import { AllocationBarSegment } from './AllocationBarSegment'
 import { AllocationLegend } from './AllocationBarLegend'
@@ -44,44 +44,17 @@ const AllocationBar: React.FC<AllocationBarProps> = ({
     e.preventDefault()
   }
 
-  // Drag logic
-  const onMouseMove = ({ clientX }: MouseEvent) => {
+  // Handle resize logic
+  const handleResize = ({ clientX }: MouseEvent) => {
     if (dragIndex === null || !barRef.current) return
 
     const rect = barRef.current.getBoundingClientRect()
     const x = clamp(clientX - rect.left, 0, rect.width)
 
-    // Calculate px positions
-    let cumSum = 0
-    for (let i = 0; i < dragIndex; ++i) cumSum += values[i]
-    const leftPx = (cumSum / 100) * rect.width
-    const rightPx = ((cumSum + values[dragIndex] + values[dragIndex + 1]) / 100) * rect.width
+    const { leftPx, rightPx } = calculateSegmentPositions(dragIndex, rect, values)
+    const { leftValue, rightValue } = calculateNewSegmentValues(x, leftPx, rightPx, dragIndex, values)
 
-    // Boundaries to keep segments from getting too small
-    const pairSum = values[dragIndex] + values[dragIndex + 1]
-
-    // Handler position as a proportion between minX and maxX
-    const totalPairPx = rightPx - leftPx
-    const minLeftPx = (MIN_SEGMENT_PERCENT / pairSum) * totalPairPx
-    const maxLeftPx = totalPairPx - minLeftPx
-
-    // Calculate the handle's x relative to leftPx
-    let relX = clamp(x - leftPx, minLeftPx, maxLeftPx)
-
-    // Convert back to percentage and round to whole numbers
-    let leftValue = Math.round((relX / totalPairPx) * pairSum)
-    let rightValue = pairSum - leftValue
-
-    // When a segment reaches minimum size, maintain the right segment's width
-    if (leftValue < MIN_SEGMENT_PERCENT) {
-      leftValue = Math.ceil(MIN_SEGMENT_PERCENT)
-      rightValue = pairSum - leftValue
-    } else if (rightValue < MIN_SEGMENT_PERCENT) {
-      rightValue = Math.ceil(MIN_SEGMENT_PERCENT)
-      leftValue = pairSum - rightValue
-    }
-
-    // Only update the two affected
+    // Update the values
     const newValues = [...values]
     newValues[dragIndex] = leftValue
     newValues[dragIndex + 1] = rightValue
@@ -93,14 +66,14 @@ const AllocationBar: React.FC<AllocationBarProps> = ({
 
   useEffect(() => {
     if (dragIndex !== null) {
-      window.addEventListener('mousemove', onMouseMove)
+      window.addEventListener('mousemove', handleResize)
       window.addEventListener('mouseup', onMouseUp)
     } else {
-      window.removeEventListener('mousemove', onMouseMove)
+      window.removeEventListener('mousemove', handleResize)
       window.removeEventListener('mouseup', onMouseUp)
     }
     return () => {
-      window.removeEventListener('mousemove', onMouseMove)
+      window.removeEventListener('mousemove', handleResize)
       window.removeEventListener('mouseup', onMouseUp)
     }
     // eslint-disable-next-line
