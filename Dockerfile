@@ -1,5 +1,15 @@
 FROM node:22-alpine@sha256:9bef0ef1e268f60627da9ba7d7605e8831d5b56ad07487d24d1aa386336d1944 AS builder
 
+# Install required dependencies for Trezor (and possibly Ledger)
+RUN apk add --no-cache \
+    python3 \
+    make \
+    g++ \
+    eudev-dev \
+    libusb-dev \
+    linux-headers 
+
+
 # Set the working directory
 WORKDIR /app
 
@@ -33,6 +43,9 @@ ENV THE_GRAPH_API_KEY=${THE_GRAPH_API_KEY}
 # Build the Next.js application
 RUN npm run build
 
+# Clean node_modules for production after build
+RUN npm prune --production
+
 FROM node:22-alpine@sha256:9bef0ef1e268f60627da9ba7d7605e8831d5b56ad07487d24d1aa386336d1944 AS runner
 
 # Set the working directory
@@ -43,13 +56,12 @@ COPY --from=builder /app/.next ./.next
 COPY --from=builder /app/public ./public
 COPY --from=builder /app/package*.json ./
 COPY --from=builder /app/.env.local ./.env.local
+COPY --from=builder /app/node_modules ./node_modules
 
 ARG THE_GRAPH_API_KEY
 
 ENV THE_GRAPH_API_KEY=${THE_GRAPH_API_KEY}
 
-# Install production dependencies
-RUN npm install --production
 # Expose the port that Next.js will run on
 EXPOSE 3000
 
