@@ -15,11 +15,8 @@ export const BackingPage = () => {
   const { address } = useAccount()
 
   return (
-    <div
-      data-testid={NAME}
-      className="flex flex-col items-start w-full h-full pt-[0.13rem] gap-10 rounded-sm"
-    >
-      <PageTitleContainer leftText={NAME} />
+    <div data-testid={NAME} className="flex flex-col items-start w-full h-full pt-[0.13rem] gap-2 rounded-sm">
+      <PageTitleContainer leftText={NAME} className="mb-8" />
       <div data-testid="CenterContainer" className="flex w-full items-stretch gap-2">
         <InfoContainer
           className="grow-[9] h-full"
