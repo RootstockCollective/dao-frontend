@@ -1,4 +1,4 @@
-import { cn } from '@/lib/utils'
+import { cn } from '@/lib/utils/utils'
 
 export type SpinnerSize = 'small' | 'medium' | 'large' | number | 'auto' | 'responsive'
 

@@ -2,7 +2,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Header, Paragraph } from '@/components/Typography'
 import { ENV } from '@/lib/constants'
 import { tokenContracts } from '@/lib/contracts'
-import { formatCurrency } from '@/lib/utils'
+import { formatCurrency } from '@/lib/utils/utils'
 import { TX_MESSAGES } from '@/shared/txMessages'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useRouter } from 'next/navigation'

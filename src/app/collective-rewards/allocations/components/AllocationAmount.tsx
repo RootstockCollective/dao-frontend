@@ -4,7 +4,7 @@ import { Allocations, AllocationsContext } from '@/app/collective-rewards/alloca
 import { formatSymbol } from '@/app/collective-rewards/rewards'
 import { Button, ButtonProps } from '@/components/Button'
 import { Input } from '@/components/Input'
-import { cn } from '@/lib/utils'
+import { cn } from '@/lib/utils/utils'
 import { useContext, useState } from 'react'
 import { Address, parseEther } from 'viem'
 import { StakeHint } from './StakeHint'

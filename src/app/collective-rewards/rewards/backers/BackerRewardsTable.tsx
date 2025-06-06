@@ -14,7 +14,7 @@ import { LoadingSpinner } from '@/components/LoadingSpinner'
 import { useBasicPaginationUi } from '@/shared/hooks/usePaginationUi'
 import Big from '@/lib/big'
 import { Typography } from '@/components/Typography/Typography'
-import { cn } from '@/lib/utils'
+import { cn } from '@/lib/utils/utils'
 
 enum RewardsColumnKeyEnum {
   builder = 'builder',

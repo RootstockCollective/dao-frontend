@@ -2,7 +2,7 @@ import { HTMLAttributes } from 'react'
 import { AnimatedTilesLoop } from './AnimatedTiles/AnimatedTilesLoop'
 import { TimeIcon } from './icons/TimeIcon'
 import { type Color, progressBarColors } from './colors'
-import { cn } from '@/lib/utils'
+import { cn } from '@/lib/utils/utils'
 
 interface Props extends Omit<HTMLAttributes<HTMLDivElement>, 'color'> {
   tileSize?: number

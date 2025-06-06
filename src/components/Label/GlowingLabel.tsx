@@ -1,4 +1,4 @@
-import { cn } from '@/lib/utils'
+import { cn } from '@/lib/utils/utils'
 import { FC, HTMLAttributes, CSSProperties } from 'react'
 
 export type GlowingLabelProps = HTMLAttributes<HTMLDivElement> & {

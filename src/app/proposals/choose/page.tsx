@@ -8,7 +8,7 @@ import { useClickOutside } from '@/shared/hooks/useClickOutside'
 import { Card, cardData } from './components/card'
 import { InfoPanel } from './components/info-panel'
 import type { ProposalType } from './types'
-import { cn } from '@/lib/utils'
+import { cn } from '@/lib/utils/utils'
 
 export default function ChooseProposal() {
   const [chosenProposal, setChosenProposal] = useState<ProposalType | null>(null)
