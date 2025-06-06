@@ -1,7 +1,7 @@
 import { Header } from '@/components/TypographyNew'
 import { Jdenticon } from '@/components/Header/Jdenticon'
 import { FC } from 'react'
-import { cn } from '@/lib/utils'
+import { cn, truncate } from '@/lib/utils'
 import Link from 'next/link'
 
 interface BuilderHeaderProps {
@@ -14,7 +14,10 @@ interface BuilderHeaderProps {
 export const BuilderHeader: FC<BuilderHeaderProps> = ({ address, name, builderPageLink, className }) => {
   return (
     // TODO: do we want the whole header to redirect to the Builder page?
-    <div className={cn('flex flex-col items-center', className)} data-testid="builderHeaderContainer">
+    <div
+      className={cn('flex flex-col items-center max-w-[90%] overflow-hidden', className)}
+      data-testid="builderHeaderContainer"
+    >
       <div className="rounded-full overflow-hidden inline-block size-[88px]" data-testid="builderAvatar">
         <Jdenticon className="bg-v3-text-100" value={address} size="88" />
       </div>
@@ -24,8 +27,9 @@ export const BuilderHeader: FC<BuilderHeaderProps> = ({ address, name, builderPa
           data-testid="builderName"
           target="_blank"
           rel="noopener noreferrer"
+          className="max-w-[200px]"
         >
-          {name}
+          {truncate(name, 15)}
         </Link>
       </Header>
     </div>
