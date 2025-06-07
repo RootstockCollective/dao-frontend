@@ -5,7 +5,6 @@ import { config } from '@/config'
 import { waitForTransactionReceipt } from 'wagmi/actions'
 import { Divider } from '../components/Divider'
 import { StepActionButtons } from '../components/StepActionButtons'
-import { StepWrapper } from '../components/StepWrapper'
 import { TokenAmountDisplay } from '../components/TokenAmountDisplay'
 import { TransactionStatus } from '../components/TransactionStatus'
 import { useStakeRIF } from '../hooks/useStakeRIF'
@@ -33,11 +32,7 @@ export const StepThree = ({ onGoToStep, onCloseModal }: StepProps) => {
   }
 
   return (
-    <StepWrapper
-      currentStep={3}
-      progress={100}
-      description="Make sure that everything is correct before continuing:"
-    >
+    <>
       <div className="flex flex-col md:flex-row md:items-start md:justify-between mb-8">
         <TokenAmountDisplay
           label="From"
@@ -72,6 +67,6 @@ export const StepThree = ({ onGoToStep, onCloseModal }: StepProps) => {
         isTxPending={isTxPending}
         isRequesting={isRequesting}
       />
-    </StepWrapper>
+    </>
   )
 }

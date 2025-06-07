@@ -9,7 +9,6 @@ import Image from 'next/image'
 import { useEffect, useRef } from 'react'
 import { Divider } from '../components/Divider'
 import { StepActionButtons } from '../components/StepActionButtons'
-import { StepWrapper } from '../components/StepWrapper'
 import { TokenAmountDisplay } from '../components/TokenAmountDisplay'
 import { TransactionStatus } from '../components/TransactionStatus'
 import { useAllowance } from '../hooks/useAllowance'
@@ -58,11 +57,7 @@ export const StepTwo = ({ onGoNext, onGoBack }: StepProps) => {
   }
 
   return (
-    <StepWrapper
-      currentStep={2}
-      progress={68}
-      description="Before you can stake, you must first approve the allowance in your wallet."
-    >
+    <>
       <div className="flex flex-col md:flex-row md:items-start md:justify-between mb-8">
         <div className="flex-1 mb-4 md:mb-0">
           <Label variant="tag" className="text-bg-0">
@@ -109,7 +104,7 @@ export const StepTwo = ({ onGoNext, onGoBack }: StepProps) => {
         isRequesting={isRequesting}
         additionalContent={<HelpPopover />}
       />
-    </StepWrapper>
+    </>
   )
 }
 
