@@ -47,7 +47,7 @@ export const TokenAmountDisplay = ({
         <div className="flex items-center gap-2 mt-4">
           <TokenImage symbol={tokenSymbol} size={12} />
           <Paragraph variant="body-s" className="text-bg-0">
-            Balance: {formatNumberWithCommas(Big(balance).toFixedNoTrailing(8))}
+            {tokenSymbol} Balance: {formatNumberWithCommas(Big(balance).toFixedNoTrailing(8))}
           </Paragraph>
         </div>
       )}
