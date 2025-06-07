@@ -33,6 +33,7 @@ export const StepTwo = ({ onGoNext, onGoBack }: StepProps) => {
       await waitForTransactionReceipt(config, {
         hash: txHash,
       })
+      onGoNext()
     } catch (err) {
       if (!isUserRejectedTxError(err)) {
         console.error('Error requesting allowance', err)
