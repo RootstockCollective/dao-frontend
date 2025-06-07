@@ -29,7 +29,7 @@ export const StepThree = ({ onCloseModal }: StepProps) => {
       onCloseModal()
     } catch (err: any) {
       if (!isUserRejectedTxError(err)) {
-        showToast(TX_MESSAGES.staking.error)
+        console.error('Error requesting stake', err)
       }
     }
   }
