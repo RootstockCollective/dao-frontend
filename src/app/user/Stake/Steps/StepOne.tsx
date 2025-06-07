@@ -1,25 +1,17 @@
 import { StakeInput } from '@/app/user/Stake/StakeInputNew'
-import { textsDependingOnAction } from '@/app/user/Stake/Steps/stepsUtils'
 import { Button } from '@/components/ButtonNew/Button'
 import { Divider } from '@/components/Divider'
 import { TokenImage } from '@/components/TokenImage'
-import { Label, Paragraph, Span } from '@/components/TypographyNew'
+import { Label, Span } from '@/components/TypographyNew'
 import Big from '@/lib/big'
 import { formatCurrency } from '@/lib/utils'
-import { useReadBackersManager } from '@/shared/hooks/contracts'
 import { useCallback, useMemo, useRef, useEffect } from 'react'
-import { parseEther, zeroAddress } from 'viem'
-import { useAccount } from 'wagmi'
 import { useStakingContext } from '../StakingContext'
 import { StepProps } from '../types'
 
-const DECIMAL_SCALES = {
-  STAKE: 8,
-  UNSTAKE: 18,
-}
+const STAKE_DECIMAL_PLACES = 8
 
-export const StepOne = ({ onGoNext, actionName }: StepProps) => {
-  const { address } = useAccount()
+export const StepOne = ({ onGoNext }: StepProps) => {
   const { amount, onAmountChange, tokenToSend } = useStakingContext()
   const inputRef = useRef<HTMLInputElement>(null)
 
@@ -30,24 +22,7 @@ export const StepOne = ({ onGoNext, actionName }: StepProps) => {
     }
   }, [])
 
-  const { data: backerTotalAllocation, isLoading: isCanAccountWithdrawLoading } = useReadBackersManager(
-    { functionName: 'backerTotalAllocation', args: [address ?? zeroAddress] },
-    { refetchInterval: 10000, enabled: !!address, initialData: 0n },
-  )
-
-  const isUnstake = useMemo(() => actionName === 'UNSTAKE', [actionName])
-
-  const canAccountWithdraw = useMemo(() => {
-    const parsedAmount = parseEther(amount) ?? 0n
-    const parsedBalance = parseEther(tokenToSend.balance) ?? 0n
-    const balanceThatCanBeWithdraw = parsedBalance - (backerTotalAllocation || 0n)
-
-    return parsedAmount <= balanceThatCanBeWithdraw
-  }, [amount, tokenToSend.balance, backerTotalAllocation])
-
-  const balanceToCurrency = formatCurrency(Big(tokenToSend.price || 0).mul(amount || 0), {
-    showCurrency: true,
-  })
+  const balanceToCurrency = formatCurrency(Big(tokenToSend.price || 0).mul(amount || 0))
 
   const isAmountOverBalance = useMemo(() => {
     if (!amount) return false
@@ -57,17 +32,10 @@ export const StepOne = ({ onGoNext, actionName }: StepProps) => {
   }, [amount, tokenToSend.balance])
 
   const canGoNext = useMemo(() => {
-    return amount && Number(amount) > 0 && !isAmountOverBalance && (!isUnstake || canAccountWithdraw)
-  }, [amount, isAmountOverBalance, isUnstake, canAccountWithdraw])
-
-  const shouldShowCannotWithdraw = useMemo(
-    () =>
-      isUnstake && !isCanAccountWithdrawLoading && !canAccountWithdraw && (backerTotalAllocation || 0n) > 0n,
-    [isUnstake, isCanAccountWithdrawLoading, canAccountWithdraw, backerTotalAllocation],
-  )
+    return amount && Number(amount) > 0 && !isAmountOverBalance
+  }, [amount, isAmountOverBalance])
 
   const totalBalance = useMemo(() => tokenToSend.balance || '0', [tokenToSend.balance])
-  const actionTexts = useMemo(() => textsDependingOnAction[actionName], [actionName])
 
   const handleAmountChange = useCallback(
     (value: string) => {
@@ -85,9 +53,9 @@ export const StepOne = ({ onGoNext, actionName }: StepProps) => {
   )
 
   const handleMaxAmount = useCallback(() => {
-    const roundedBalance = Big(totalBalance).floor(DECIMAL_SCALES[actionName]).toString()
+    const roundedBalance = Big(totalBalance).floor(STAKE_DECIMAL_PLACES).toString()
     handleAmountChange(roundedBalance)
-  }, [totalBalance, handleAmountChange, actionName])
+  }, [totalBalance, handleAmountChange])
 
   return (
     <>
@@ -96,10 +64,12 @@ export const StepOne = ({ onGoNext, actionName }: StepProps) => {
         onChange={handleAmountChange}
         value={amount}
         symbol={tokenToSend.symbol}
-        labelText={actionTexts.inputLabel}
+        labelText="Amount to stake"
         currencyValue={balanceToCurrency}
-        decimalScale={DECIMAL_SCALES[actionName]}
-        errorText={isAmountOverBalance ? actionTexts.amountError : ''}
+        decimalScale={STAKE_DECIMAL_PLACES}
+        errorText={
+          isAmountOverBalance ? 'This is more than the available RIF balance. Please update the amount.' : ''
+        }
       />
 
       <div className="flex items-center justify-between mx-3 mt-2">
@@ -119,14 +89,6 @@ export const StepOne = ({ onGoNext, actionName }: StepProps) => {
         </Button>
       </div>
 
-      {shouldShowCannotWithdraw && (
-        <Paragraph variant="body-s" className="mt-2">
-          It appears you have votes allocated in the Collective Rewards! You can unstake your stRIF anytime.
-          However, please note that you must first de-allocate the same amount of stRIF from the Collective
-          Rewards
-        </Paragraph>
-      )}
-
       <Divider className="mt-8" />
 
       <div className="flex md:justify-end">
@@ -134,10 +96,10 @@ export const StepOne = ({ onGoNext, actionName }: StepProps) => {
           variant="primary"
           onClick={onGoNext}
           disabled={!canGoNext}
-          data-testid={actionTexts.buttonText}
+          data-testid="ContinueButton"
           className="w-full md:w-auto"
         >
-          {actionTexts.buttonText}
+          Continue
         </Button>
       </div>
     </>

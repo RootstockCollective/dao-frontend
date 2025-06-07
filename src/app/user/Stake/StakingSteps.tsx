@@ -18,7 +18,6 @@ export const StakingSteps = ({ onCloseModal }: Props) => {
 
   const currentStep = useMemo(() => stakingSteps[step], [step])
   const StepComponent = currentStep.component
-  const stakingHandlers = { ...stepFunctions, onCloseModal }
 
   const tokenToSend: StakingToken = useMemo(
     () => ({
@@ -43,13 +42,8 @@ export const StakingSteps = ({ onCloseModal }: Props) => {
   return (
     <StakingProvider tokenToSend={tokenToSend} tokenToReceive={tokenToReceive}>
       <Modal width={688} onClose={onCloseModal}>
-        <StepWrapper
-          currentStep={step}
-          progress={currentStep.progress}
-          description={currentStep.description}
-          actionName="STAKE"
-        >
-          <StepComponent {...stakingHandlers} actionName="STAKE" />
+        <StepWrapper currentStep={step} progress={currentStep.progress} description={currentStep.description}>
+          <StepComponent {...stepFunctions} onCloseModal={onCloseModal} />
         </StepWrapper>
       </Modal>
     </StakingProvider>

@@ -20,6 +20,8 @@ import { config } from '@/config'
 import { useUnstakeStRIF } from '../Stake/hooks/useUnstakeStRIF'
 import { ProgressButton } from '@/components/ProgressBarNew'
 
+const UNSTAKE_DECIMAL_PLACES = 18
+
 interface Props {
   onCloseModal: () => void
 }
@@ -110,7 +112,7 @@ export const UnstakeModal = ({ onCloseModal }: Props) => {
         console.error('Error requesting allowance', err)
       }
     }
-  }, [amount, onRequestUnstake])
+  }, [amount, onRequestUnstake, onCloseModal])
 
   return (
     <Modal width={688} onClose={onCloseModal}>
@@ -123,7 +125,7 @@ export const UnstakeModal = ({ onCloseModal }: Props) => {
           symbol="stRIF"
           labelText="Amount to unstake"
           currencyValue={amountToCurrency}
-          decimalScale={18}
+          decimalScale={UNSTAKE_DECIMAL_PLACES}
           errorText={errorMessage}
         />
 
