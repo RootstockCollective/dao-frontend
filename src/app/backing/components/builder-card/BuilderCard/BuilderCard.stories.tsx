@@ -5,10 +5,10 @@ import { AlertProvider } from '@/app/providers/AlertProvider'
 
 // Workaround for Storybook BigInt serialization
 const createBackerRewardPercentage = (previous: number, next: number, cooldown: number, active: number) => ({
-  previous: previous as unknown as bigint,
-  next: next as unknown as bigint,
-  cooldown: cooldown as unknown as bigint,
-  active: active as unknown as bigint,
+  previous: BigInt(previous),
+  next: BigInt(next),
+  cooldown: BigInt(cooldown),
+  active: BigInt(active),
 })
 
 const meta: Meta<typeof BuilderCard> = {
