@@ -10,5 +10,6 @@ export interface StepProps {
   onGoNext: () => void
   onGoBack: () => void
   onCloseModal: () => void
+  onGoToStep: (step: number) => void
   actionName: 'STAKE' | 'UNSTAKE'
 }

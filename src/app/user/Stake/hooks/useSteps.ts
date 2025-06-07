@@ -9,5 +9,7 @@ export const useSteps = (maxSteps: number) => {
 
   const onReset = () => setStep(0)
 
-  return { step, onGoBack, onGoNext, onReset }
+  const onGoToStep = (step: number) => setStep(step)
+
+  return { step, onGoBack, onGoNext, onReset, onGoToStep }
 }
