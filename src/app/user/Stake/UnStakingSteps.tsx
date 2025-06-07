@@ -12,10 +12,10 @@ interface Props {
 }
 
 export const UnStakingSteps = ({ onCloseModal }: Props) => {
-  const { onGoNext, onGoBack } = useSteps(1)
+  const { step, ...stepFunctions } = useSteps(1)
   const { balances, prices } = useBalancesContext()
 
-  const stepsFunctions = { onGoNext, onGoBack, onCloseModal }
+  const stepsFunctions = { ...stepFunctions, onCloseModal }
 
   const tokenToSend: StakingToken = useMemo(
     () => ({

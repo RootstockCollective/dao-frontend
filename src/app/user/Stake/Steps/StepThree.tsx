@@ -2,8 +2,6 @@ import { useStakingContext } from '@/app/user/Stake/StakingContext'
 import { StepProps } from '@/app/user/Stake/types'
 import { isUserRejectedTxError } from '@/components/ErrorPage/commonErrors'
 import { config } from '@/config'
-import { showToast } from '@/shared/lib/toastUtils'
-import { TX_MESSAGES } from '@/shared/txMessages'
 import { waitForTransactionReceipt } from 'wagmi/actions'
 import { Divider } from '../components/Divider'
 import { StepActionButtons } from '../components/StepActionButtons'
@@ -12,7 +10,7 @@ import { TokenAmountDisplay } from '../components/TokenAmountDisplay'
 import { TransactionStatus } from '../components/TransactionStatus'
 import { useStakeRIF } from '../hooks/useStakeRIF'
 
-export const StepThree = ({ onCloseModal }: StepProps) => {
+export const StepThree = ({ onGoToStep, onCloseModal }: StepProps) => {
   const { amount, tokenToReceive, stakePreviewFrom: from, stakePreviewTo: to } = useStakingContext()
 
   const { onRequestStake, isRequesting, isTxPending, isTxFailed, stakeHash } = useStakeRIF(
@@ -68,8 +66,8 @@ export const StepThree = ({ onCloseModal }: StepProps) => {
           disabled: !amount || Number(amount) <= 0,
         }}
         secondaryButton={{
-          label: 'Cancel',
-          onClick: onCloseModal,
+          label: 'Back',
+          onClick: () => onGoToStep(0),
         }}
         isTxPending={isTxPending}
         isRequesting={isRequesting}
