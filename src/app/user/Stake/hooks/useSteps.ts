@@ -1,6 +1,6 @@
 import { useState } from 'react'
 
-export const useSteps = (maxSteps = 3) => {
+export const useSteps = (maxSteps: number) => {
   const [step, setStep] = useState(0)
 
   const onGoNext = () => setStep(p => (p === maxSteps - 1 ? p : p + 1))
@@ -9,5 +9,7 @@ export const useSteps = (maxSteps = 3) => {
 
   const onReset = () => setStep(0)
 
-  return { step, onGoBack, onGoNext, onReset }
+  const onGoToStep = (step: number) => setStep(step)
+
+  return { step, onGoBack, onGoNext, onReset, onGoToStep }
 }
