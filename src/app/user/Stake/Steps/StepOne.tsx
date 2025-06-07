@@ -9,7 +9,6 @@ import { useReadBackersManager } from '@/shared/hooks/contracts'
 import { useCallback, useMemo } from 'react'
 import { parseEther, zeroAddress } from 'viem'
 import { useAccount } from 'wagmi'
-import { StepWrapper } from '../components/StepWrapper'
 import { useStakingContext } from '../StakingContext'
 import { StepProps } from '../types'
 
@@ -80,7 +79,7 @@ export const StepOne = ({ onGoNext, actionName }: StepProps) => {
   }, [totalBalance, handleAmountChange, actionName])
 
   return (
-    <StepWrapper currentStep={1} progress={28} actionName={actionName}>
+    <>
       <StakeInput
         onChange={handleAmountChange}
         value={amount}
@@ -129,6 +128,6 @@ export const StepOne = ({ onGoNext, actionName }: StepProps) => {
           {actionTexts.buttonText}
         </Button>
       </div>
-    </StepWrapper>
+    </>
   )
 }
