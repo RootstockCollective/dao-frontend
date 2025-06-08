@@ -31,18 +31,12 @@ export const BuilderCardContainer: FC<BuilderCardContainerProps> = ({
     initialState,
   } = useContext(AllocationsContext)
   const rifPriceUsd = prices[RIF]?.price ?? 0
-  const allocation = Number(formatSymbol(allocations[builderAddress], 'stRIF'))
-  const existentAllocation = Number(formatSymbol(initialState.allocations[builderAddress], 'stRIF'))
-
-  if (allocation === undefined || existentAllocation === undefined) {
-    return <LoadingSpinner />
-  }
-
-  const unallocatedAmount = Number(formatSymbol(balance - amountToAllocate, 'stRIF'))
+  const allocation = allocations[builderAddress] ?? 0n
+  const existentAllocation = initialState.allocations[builderAddress] ?? 0n
+  const unallocatedAmount = balance - amountToAllocate
 
   const handleAllocationChange = (value: number) => {
     if (allocationTxPending) return
-
     updateAllocation(builderAddress, parseEther(value.toString()))
   }
 

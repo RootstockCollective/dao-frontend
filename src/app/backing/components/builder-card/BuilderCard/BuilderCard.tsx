@@ -7,12 +7,13 @@ import { BuilderHeader } from '../BuilderHeader/BuilderHeader'
 import { CurrentBacking } from '../CurrentBacking/CurrentBacking'
 import { RewardsInfo } from '../RewardsInfo/RewardsInfo'
 import { Builder } from '@/app/collective-rewards/types'
+import { formatSymbol } from '@/app/collective-rewards/rewards/utils/formatter'
 
 export interface BuilderCardProps extends Omit<Builder, 'backerRewardPercentage'> {
   backerRewardPercentage: NonNullable<Builder['backerRewardPercentage']>
-  existentAllocation: number
-  maxAllocation: number
-  allocation: number
+  existentAllocation: bigint
+  maxAllocation: bigint
+  allocation: bigint
   onAllocationChange: (newAllocation: number) => void
   rifPriceUsd: number
   isConnected: boolean
@@ -69,7 +70,7 @@ export const BuilderCard: FC<BuilderCardProps> = ({
         )}
         {isConnected && <CurrentBacking existentAllocation={existentAllocation} />}
       </div>
-      {isConnected && existentAllocation !== 0 && (
+      {isConnected && existentAllocation !== 0n && (
         <Button
           variant="secondary"
           className={cn('border-v3-bg-accent-40 px-2 py-1´')}

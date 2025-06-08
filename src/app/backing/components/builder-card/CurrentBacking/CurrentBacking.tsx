@@ -1,9 +1,10 @@
 import { Label } from '@/components/TypographyNew'
 import { FC } from 'react'
 import { RIFToken } from '../RIFToken/RIFToken'
+import { formatSymbol } from '@/app/collective-rewards/rewards/utils/formatter'
 
 interface CurrentBackingProps {
-  existentAllocation: number
+  existentAllocation: bigint
 }
 
 export const CurrentBacking: FC<CurrentBackingProps> = ({ existentAllocation }) => {
@@ -15,7 +16,7 @@ export const CurrentBacking: FC<CurrentBackingProps> = ({ existentAllocation }) 
       </Label>
       <div className="flex gap-2 text-xs">
         <span className="text-[16px]" data-testid="currentBackingValue">
-          {existentAllocation}
+          {formatSymbol(existentAllocation, 'stRIF')}
         </span>{' '}
         <RIFToken />
       </div>
