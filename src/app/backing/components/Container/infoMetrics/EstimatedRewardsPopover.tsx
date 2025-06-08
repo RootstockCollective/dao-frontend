@@ -27,16 +27,20 @@ export const EstimatedRewardsPopover = ({
         className={`rounded p-4 bg-v3-text-80 text-v3-text-0 ${className ?? ''}`}
         data-testid="estimatedRewardsPopover"
       >
-        <div className="flex flex-col gap-2">
-          <div className="flex items-start text-2xl font-medium">
-            <Typography className="mr-2">{formatSymbol(totalEstimatedRbtc, 'rbtc')}</Typography>
-            <TokenImage className="mr-1" symbol={RBTC} size={18} />
-            <Typography>rBTC</Typography>
+        <div className="flex items-start text-2xl font-medium">
+          <div className="flex flex-col gap-2 mr-2">
+            <Typography>{formatSymbol(totalEstimatedRbtc, 'rbtc')}</Typography>
+            <Typography>{formatSymbol(totalEstimatedRif, 'stRIF')}</Typography>
           </div>
-          <div className="flex items-start text-2xl font-medium">
-            <Typography className="mr-2">{formatSymbol(totalEstimatedRif, 'stRIF')}</Typography>
-            <TokenImage className="mr-1" symbol={RIF} size={16} />
-            <Typography>RIF</Typography>
+          <div className="flex flex-col gap-2">
+            <div className="flex items-start gap-1">
+              <TokenImage symbol={RBTC} size={18} />
+              <Typography>rBTC</Typography>
+            </div>
+            <div className="flex items-start gap-1">
+              <TokenImage symbol={RIF} size={16} />
+              <Typography>RIF</Typography>
+            </div>
           </div>
         </div>
       </div>
