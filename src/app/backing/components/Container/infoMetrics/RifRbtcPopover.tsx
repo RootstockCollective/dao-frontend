@@ -5,19 +5,19 @@ import { TokenImage } from '@/components/TokenImage'
 import { RBTC, RIF } from '@/lib/constants'
 import { formatSymbol } from '@/app/collective-rewards/rewards/utils/formatter'
 
-interface EstimatedRewardsPopoverProps {
+interface RifRbtcPopoverProps {
   children: ReactNode
   totalEstimatedRbtc: bigint
   totalEstimatedRif: bigint
   className?: string
 }
 
-export const EstimatedRewardsPopover = ({
+export const RifRbtcPopover = ({
   children,
   totalEstimatedRbtc,
   totalEstimatedRif,
   className,
-}: EstimatedRewardsPopoverProps) => (
+}: RifRbtcPopoverProps) => (
   <Popover
     trigger="hover"
     position="left"
@@ -25,7 +25,7 @@ export const EstimatedRewardsPopover = ({
     content={
       <div
         className={`rounded p-4 bg-v3-text-80 text-v3-text-0 ${className ?? ''}`}
-        data-testid="estimatedRewardsPopover"
+        data-testid="rifRbtcPopover"
       >
         <div className="flex items-start text-2xl font-medium">
           <div className="flex flex-col gap-2 mr-2">

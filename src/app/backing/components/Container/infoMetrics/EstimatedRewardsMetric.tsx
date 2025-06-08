@@ -9,7 +9,7 @@ import { getAddress } from 'viem'
 import KotoQuestionMarkIcon from '@/components/Icons/KotoQuestionMarkIcon'
 import { LoadingSpinner } from '@/components/LoadingSpinner'
 import { Header } from '@/components/TypographyNew'
-import { EstimatedRewardsPopover } from '@/app/backing/components/Container/infoMetrics/EstimatedRewardsPopover'
+import { RifRbtcPopover } from '@/app/backing/components/Container/InfoMetrics/RifRbtcPopover'
 
 export const EstimatedRewardsMetric = () => {
   const tokens = {
@@ -35,13 +35,13 @@ export const EstimatedRewardsMetric = () => {
         <MetricTitle
           title="Estimated Rewards"
           info={
-            <EstimatedRewardsPopover
+            <RifRbtcPopover
               className="p-6"
               totalEstimatedRbtc={totalEstimatedRbtc}
               totalEstimatedRif={totalEstimatedRif}
             >
               <KotoQuestionMarkIcon className="cursor-pointer" />
-            </EstimatedRewardsPopover>
+            </RifRbtcPopover>
           }
         />
       }
