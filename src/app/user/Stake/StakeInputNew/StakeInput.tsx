@@ -33,7 +33,7 @@ export const StakeInput = ({
           type="number"
           value={value}
           onChange={onChange}
-          className={cn('grow', variantClasses.h1, errorText ? 'text-error' : 'text-bg-0')}
+          className={cn('grow', variantClasses.h1, errorText ? 'text-error' : '')}
           placeholder="0"
           inputProps={{ decimalScale }}
         />
