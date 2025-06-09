@@ -1,4 +1,4 @@
-import { ConnectPopover } from '@/app/backing/components/builder-card/ConnectPopover/ConnectPopover'
+import { ConnectPopover } from '@/app/backing/components/ConnectPopover/ConnectPopover'
 import { Button } from '@/components/Button'
 import { cn } from '@/lib/utils'
 import { FC } from 'react'
@@ -8,9 +8,10 @@ import { CurrentBacking } from '../CurrentBacking/CurrentBacking'
 import { RewardsInfo } from '../RewardsInfo/RewardsInfo'
 import { Builder } from '@/app/collective-rewards/types'
 import { formatSymbol } from '@/app/collective-rewards/rewards/utils/formatter'
+import { BackerRewardPercentage } from '@/app/collective-rewards/rewards/types'
 
 export interface BuilderCardProps extends Omit<Builder, 'backerRewardPercentage'> {
-  backerRewardPercentage: NonNullable<Builder['backerRewardPercentage']>
+  backerRewardPct: BackerRewardPercentage
   existentAllocation: bigint
   maxAllocation: bigint
   allocation: bigint
@@ -30,7 +31,7 @@ export const BuilderCard: FC<BuilderCardProps> = ({
   existentAllocation,
   maxAllocation,
   allocation,
-  backerRewardPercentage,
+  backerRewardPct,
   rifPriceUsd,
   isConnected,
   estimatedRewards,
@@ -56,7 +57,7 @@ export const BuilderCard: FC<BuilderCardProps> = ({
         className="w-full mt-6 border border-v3-bg-accent-40 rounded-lg gap-3 flex flex-col divide-y divide-v3-bg-accent-40 mb-6"
         data-testid="builderCardContent"
       >
-        <RewardsInfo {...backerRewardPercentage} estimatedRewards={estimatedRewards} />
+        <RewardsInfo {...backerRewardPct} estimatedRewards={estimatedRewards} />
         {isConnected && (
           <AllocationInput
             allocation={allocation}

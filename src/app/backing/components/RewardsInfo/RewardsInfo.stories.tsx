@@ -10,14 +10,9 @@ export default meta
 type Story = StoryObj<typeof RewardsInfo>
 
 const defaultArgs: RewardsInfoProps = {
-  // @ts-expect-error: Storybook cannot serialize bigint
-  previous: 50,
-  // @ts-expect-error: Storybook cannot serialize bigint
-  next: 40,
-  // @ts-expect-error: Storybook cannot serialize bigint
-  cooldown: 0,
-  // @ts-expect-error: Storybook cannot serialize bigint
-  active: 50,
+  current: 50n,
+  next: 60n,
+  cooldownEndTime: 1717987200n,
 }
 
 export const Default: Story = {

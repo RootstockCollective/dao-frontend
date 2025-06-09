@@ -3,14 +3,6 @@ import { BuilderCard } from './BuilderCard'
 import { useState } from 'react'
 import { AlertProvider } from '@/app/providers/AlertProvider'
 
-// Workaround for Storybook BigInt serialization
-const createBackerRewardPercentage = (previous: number, next: number, cooldown: number, active: number) => ({
-  previous: BigInt(previous),
-  next: BigInt(next),
-  cooldown: BigInt(cooldown),
-  active: BigInt(active),
-})
-
 const meta: Meta<typeof BuilderCard> = {
   title: 'Backing/BuilderCard',
   component: BuilderCard,
@@ -39,7 +31,11 @@ export const NotConnected: Story = {
   args: {
     address: '0x1234567890abcdef',
     builderName: 'Beefy',
-    backerRewardPercentage: createBackerRewardPercentage(40, 50, 0, 50),
+    backerRewardPct: {
+      current: 40n,
+      next: 50n,
+      cooldownEndTime: 0n,
+    },
     rifPriceUsd: 0.05,
     isConnected: false,
     maxAllocation: 120000n,
@@ -55,7 +51,11 @@ export const WithoutAllocation: Story = {
   args: {
     address: '0x1234567890abcdef',
     builderName: 'Beefy',
-    backerRewardPercentage: createBackerRewardPercentage(40, 50, 0, 50),
+    backerRewardPct: {
+      current: 40n,
+      next: 50n,
+      cooldownEndTime: 0n,
+    },
     rifPriceUsd: 0.05,
     isConnected: true,
     maxAllocation: 120000n,
@@ -71,7 +71,11 @@ export const WithAllocation: Story = {
   args: {
     address: '0x1234567890abcdef',
     builderName: 'Beefy',
-    backerRewardPercentage: createBackerRewardPercentage(40, 50, 0, 50),
+    backerRewardPct: {
+      current: 40n,
+      next: 50n,
+      cooldownEndTime: 0n,
+    },
     rifPriceUsd: 0.05,
     isConnected: true,
     maxAllocation: 120000n,
@@ -88,7 +92,11 @@ export const WithBuilderIncreasedRewardPct: Story = {
   args: {
     address: '0x1234567890abcdef',
     builderName: 'Beefy',
-    backerRewardPercentage: createBackerRewardPercentage(50, 60, 0, 50),
+    backerRewardPct: {
+      current: 50n,
+      next: 60n,
+      cooldownEndTime: 0n,
+    },
     rifPriceUsd: 0.05,
     isConnected: true,
     maxAllocation: 120000n,
@@ -104,7 +112,11 @@ export const WithBuilderDecreasedRewardPct: Story = {
   args: {
     address: '0x1234567890abcdef',
     builderName: 'Beefy',
-    backerRewardPercentage: createBackerRewardPercentage(50, 40, 0, 50),
+    backerRewardPct: {
+      current: 50n,
+      next: 40n,
+      cooldownEndTime: 0n,
+    },
     rifPriceUsd: 0.05,
     isConnected: true,
     maxAllocation: 120000n,
@@ -120,7 +132,11 @@ export const WithAllocationPending: Story = {
   args: {
     address: '0x1234567890abcdef',
     builderName: 'Beefy',
-    backerRewardPercentage: createBackerRewardPercentage(40, 50, 0, 50),
+    backerRewardPct: {
+      current: 40n,
+      next: 50n,
+      cooldownEndTime: 0n,
+    },
     rifPriceUsd: 0.05,
     isConnected: true,
     maxAllocation: 120000n,

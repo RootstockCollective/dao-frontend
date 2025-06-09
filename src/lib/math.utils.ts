@@ -1,16 +1,5 @@
-import { useRef } from 'react'
-
-export const useShuffledArray = <T>(array: T[] | undefined): T[] => {
-  // Generate a random seed once per session
-  const seedRef = useRef<number>(Math.floor(Math.random() * 1_000_000_000))
-
-  if (!array) return []
-
-  return seededShuffle(array, seedRef.current)
-}
-
 // Seeded shuffle
-function seededShuffle<T>(array: T[], seed: number): T[] {
+export function seededShuffle<T>(array: T[], seed: number): T[] {
   const arr = [...array]
   const random = mulberry32(seed)
   for (let i = arr.length - 1; i > 0; i--) {
@@ -21,7 +10,7 @@ function seededShuffle<T>(array: T[], seed: number): T[] {
 }
 
 // Simple seeded random number generator (Mulberry32)
-function mulberry32(seed: number) {
+export function mulberry32(seed: number) {
   return function () {
     let t = (seed += 0x6d2b79f5)
     t = Math.imul(t ^ (t >>> 15), t | 1)

@@ -3,7 +3,7 @@ import { Header } from '@/components/TypographyNew'
 import { Typography } from '@/components/TypographyNew/Typography'
 import { cn } from '@/lib/utils'
 import { FC } from 'react'
-import { CommonComponentProps } from '../../commonProps'
+import { CommonComponentProps } from '../commonProps'
 
 export const BackingBanner: FC<CommonComponentProps> = ({ className = '' }) => {
   return (

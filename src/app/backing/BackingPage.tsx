@@ -1,15 +1,16 @@
 'use client'
 
 import { useAccount } from 'wagmi'
-import { InfoContainer, BackingBanner } from '@/app/backing/components/Container/BackingInfo'
 import {
   MetricsContainer,
   AnnualBackersIncentivesMetric,
   EstimatedRewardsMetric,
 } from '@/app/backing/components/Container/InfoMetrics'
 import { PageTitleContainer } from '@/app/backing/components/Container/PageTitleContainer'
-import { BuildersContainer } from '@/app/backing/components/builder-card/BuildersContainer/BuildersContainer'
-import { ActionsContainer } from '@/app/backing/components/Container/ActionMetrics'
+import { BuildersSpotlight } from '@/app/backing/components/BuildersSpotlight/BuildersSpotlight'
+import { ActionsContainer } from '@/app/backing/components/Container/ActionContainer/ActionsContainer'
+import { BackingBanner } from '@/app/backing/components/BackingBanner/BackingBanner'
+import { InfoContainer } from '@/app/backing/components/Container/BackingInfo/InfoContainer'
 
 const NAME = 'Backing'
 export const BackingPage = () => {
@@ -34,7 +35,7 @@ export const BackingPage = () => {
       {/* {address && <ActionMetricsContainer>{/* TODO: ADD CHILDREN HERE */}
       {/* </ActionMetricsContainer>} */}
       <ActionsContainer title="BUILDERS THAT YOU MAY WANT TO BACK">
-        <BuildersContainer />
+        <BuildersSpotlight />
       </ActionsContainer>
     </div>
   )

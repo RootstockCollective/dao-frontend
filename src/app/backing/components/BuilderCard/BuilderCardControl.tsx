@@ -1,5 +1,5 @@
 import { AllocationsContext } from '@/app/collective-rewards/allocations/context'
-import { formatSymbol } from '@/app/collective-rewards/rewards/utils/formatter'
+import { BackerRewardPercentage } from '@/app/collective-rewards/rewards/types'
 import { Builder } from '@/app/collective-rewards/types'
 import { RIF } from '@/lib/constants'
 import { usePricesContext } from '@/shared/context/PricesContext'
@@ -7,15 +7,14 @@ import { FC, useContext } from 'react'
 import { parseEther } from 'viem'
 import { useAccount } from 'wagmi'
 import { BuilderCard } from './BuilderCard'
-import { LoadingSpinner } from '@/components/LoadingSpinner'
 
-export interface BuilderCardContainerProps extends Builder {
-  backerRewardPercentage: NonNullable<Builder['backerRewardPercentage']>
+export interface BuilderCardControlProps extends Builder {
+  backerRewardPct: BackerRewardPercentage
   estimatedRewards?: string
   allocationTxPending?: boolean
 }
 
-export const BuilderCardContainer: FC<BuilderCardContainerProps> = ({
+export const BuilderCardControl: FC<BuilderCardControlProps> = ({
   allocationTxPending = false,
   address: builderAddress,
   ...props
