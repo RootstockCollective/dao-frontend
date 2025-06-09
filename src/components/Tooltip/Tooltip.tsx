@@ -1,10 +1,9 @@
-import { cn } from '@/lib/utils'
-import { HTMLAttributes, PropsWithChildren } from 'react'
+import { HTMLAttributes, ReactNode } from 'react'
 import * as RadixTooltip from '@radix-ui/react-tooltip'
 
 interface Props extends HTMLAttributes<HTMLElement> {
-  text: string
-  position?: 'right' | 'left' | 'top' | 'bottom'
+  text: ReactNode
+  position?: RadixTooltip.TooltipContentProps['side']
   disabled?: boolean
 }
 
