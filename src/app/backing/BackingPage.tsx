@@ -9,7 +9,7 @@ import {
 } from '@/app/backing/components/Container/InfoMetrics'
 import { PageTitleContainer } from '@/app/backing/components/Container/PageTitleContainer'
 import { BuildersContainer } from '@/app/backing/components/builder-card/BuildersContainer/BuildersContainer'
-import { ActionsContainer } from '@/app/backing/components/Container/ActionMetrics/ActionsContainer'
+import { ActionsContainer } from '@/app/backing/components/Container/ActionMetrics'
 
 const NAME = 'Backing'
 export const BackingPage = () => {
