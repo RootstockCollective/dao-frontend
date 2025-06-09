@@ -6,7 +6,7 @@ import { Label, Paragraph, Span } from '@/components/TypographyNew'
 import Big from '@/lib/big'
 import { formatCurrency } from '@/lib/utils'
 import { useReadBackersManager } from '@/shared/hooks/contracts'
-import { useCallback, useMemo } from 'react'
+import { useCallback, useMemo, useRef, useEffect } from 'react'
 import { parseEther, zeroAddress } from 'viem'
 import { useAccount } from 'wagmi'
 import { useStakingContext } from '../StakingContext'
@@ -20,6 +20,14 @@ const DECIMAL_SCALES = {
 export const StepOne = ({ onGoNext, actionName }: StepProps) => {
   const { address } = useAccount()
   const { amount, onAmountChange, tokenToSend } = useStakingContext()
+  const inputRef = useRef<HTMLInputElement>(null)
+
+  useEffect(() => {
+    // Focus the input when component mounts
+    if (inputRef.current) {
+      inputRef.current.focus()
+    }
+  }, [])
 
   const { data: backerTotalAllocation, isLoading: isCanAccountWithdrawLoading } = useReadBackersManager(
     { functionName: 'backerTotalAllocation', args: [address ?? zeroAddress] },
@@ -83,6 +91,7 @@ export const StepOne = ({ onGoNext, actionName }: StepProps) => {
   return (
     <>
       <StakeInput
+        ref={inputRef}
         onChange={handleAmountChange}
         value={amount}
         symbol={tokenToSend.symbol}
