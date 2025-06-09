@@ -23,7 +23,7 @@ const DEFAULT_STAKE_PREVIEW_TOKEN = {
   amount: '0',
   balance: '0',
   tokenSymbol: '0',
-  amountConvertedToCurrency: formatCurrency(0),
+  amountConvertedToCurrency: formatCurrency(0, { showCurrency: true }),
 }
 
 const StakingContext = createContext<StakingContextProps>({
@@ -56,7 +56,7 @@ export const StakingProvider: FC<Props> = ({ tokenToSend, tokenToReceive, childr
     if (receiveTokenPrice.eq(0) || sendTokenPrice.eq(0)) {
       return {
         amount: '0',
-        amountConvertedToCurrency: formatCurrency(0),
+        amountConvertedToCurrency: formatCurrency(0, { showCurrency: true }),
         balance: tokenToReceive.balance,
         tokenSymbol: tokenToReceive.symbol,
       }
@@ -66,7 +66,9 @@ export const StakingProvider: FC<Props> = ({ tokenToSend, tokenToReceive, childr
     const amountToReceiveConvertedToCurrency = amountToReceive.mul(receiveTokenPrice)
     return {
       amount: amountToReceive.toString(),
-      amountConvertedToCurrency: formatCurrency(amountToReceiveConvertedToCurrency),
+      amountConvertedToCurrency: formatCurrency(amountToReceiveConvertedToCurrency, {
+        showCurrency: true,
+      }),
       balance: tokenToReceive.balance,
       tokenSymbol: tokenToReceive.symbol,
     }
@@ -81,7 +83,9 @@ export const StakingProvider: FC<Props> = ({ tokenToSend, tokenToReceive, childr
   const stakePreviewFrom = useMemo(
     () => ({
       amount: Big(stakeData.amount || 0).toFixedNoTrailing(8),
-      amountConvertedToCurrency: formatCurrency(Big(tokenToSend.price || 0).mul(Big(stakeData.amount || 0))),
+      amountConvertedToCurrency: formatCurrency(Big(tokenToSend.price || 0).mul(Big(stakeData.amount || 0)), {
+        showCurrency: true,
+      }),
       balance: tokenToSend.balance,
       tokenSymbol: tokenToSend.symbol,
     }),
