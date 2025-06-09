@@ -34,7 +34,7 @@ export const RifRbtcPopover = ({
           </div>
           <div className="flex flex-col gap-2">
             <div className="flex items-start gap-1">
-              <TokenImage symbol={RBTC} size={18} />
+              <TokenImage symbol={RBTC} size={20} />
               <Typography>rBTC</Typography>
             </div>
             <div className="flex items-start gap-1">

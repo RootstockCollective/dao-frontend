@@ -9,6 +9,7 @@ import { getAddress } from 'viem'
 import KotoQuestionMarkIcon from '@/components/Icons/KotoQuestionMarkIcon'
 import { LoadingSpinner } from '@/components/LoadingSpinner'
 import { Header } from '@/components/TypographyNew'
+import { formatCurrency } from '@/lib/utils'
 import { RifRbtcPopover } from '@/app/backing/components/Container/InfoMetrics/RifRbtcPopover'
 
 export const EstimatedRewardsMetric = () => {
@@ -45,7 +46,7 @@ export const EstimatedRewardsMetric = () => {
           }
         />
       }
-      content={<Header variant="h1">{totalEstimatedUsd.toFixed(2)} USD</Header>}
+      content={<Header variant="h1">{formatCurrency(totalEstimatedUsd)} USD</Header>}
     />
   )
 }

@@ -1,4 +1,4 @@
-import { ABIPopover } from '@/app/backing/components/Container/infoMetrics/ABIPopover'
+import { ABIPopover } from '@/app/backing/components/Container/InfoMetrics/ABIPopover'
 import { Metric } from '@/app/backing/components/Metric/Metric'
 import { MetricTitle } from '@/app/backing/components/Metric/MetricTitle'
 import { useGetMetricsAbi } from '@/app/collective-rewards/shared'

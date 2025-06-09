@@ -11,7 +11,7 @@ export type MetricProps = CommonComponentProps & {
 
 export const Metric: FC<MetricProps> = ({ title, content, className = '' }) => {
   const isTitleTextual = typeof title === 'string'
-  const isContentTextual = typeof title === 'string'
+  const isContentTextual = typeof content === 'string'
 
   return (
     <div data-testid="Metric" className={cn('flex items-center gap-4 w-full', className)}>

@@ -12,13 +12,10 @@ export const BuildersContainer: FC = () => {
   const { data: builders, isLoading, error } = useGetEstimatedBackersRewardsPct()
   const router = useRouter()
   const shuffledBuilders = useShuffledArray<Builder>(builders)
+  useHandleErrors({ error, title: 'Error loading builders' })
 
   if (isLoading) {
     return <LoadingSpinner />
-  }
-
-  if (error) {
-    useHandleErrors({ error, title: 'Error loading builders' })
   }
 
   if (!builders || builders.length === 0) {

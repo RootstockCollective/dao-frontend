@@ -19,14 +19,14 @@ type Story = StoryObj<typeof PendingAllocation>
 
 export const Default: Story = {
   args: {
-    pendingBacking: 1000,
-    currentBacking: 5000,
+    pendingBacking: '1000',
+    currentBacking: '5000',
   },
 }
 
 export const CustomAllocation: Story = {
   args: {
-    pendingBacking: 50000,
-    currentBacking: 100000,
+    pendingBacking: '50000',
+    currentBacking: '100000',
   },
 }
