@@ -81,7 +81,9 @@ export function ledgerConnector(options: LedgerConnectorOptions = {}) {
             }
 
             if (error.message.includes('not supported')) {
-              throw new Error('Your browser does not support hardware wallet connections. Please use Chrome, Edge, or Opera.')
+              throw new Error(
+                'Your browser does not support hardware wallet connections. Please use Chrome, Edge, or Opera.',
+              )
             }
           }
 
