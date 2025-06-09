@@ -1,4 +1,6 @@
-import { ConnectPopover } from '@/app/backing/components/ConnectPopover/ConnectPopover'
+import { ConnectPopover } from '@/app/backing/components/Popovers/ConnectPopover'
+import { BackerRewardPercentage } from '@/app/collective-rewards/rewards/types'
+import { Builder } from '@/app/collective-rewards/types'
 import { Button } from '@/components/Button'
 import { cn } from '@/lib/utils'
 import { FC } from 'react'
@@ -6,9 +8,6 @@ import { AllocationInput } from '../AllocationInput/AllocationInput'
 import { BuilderHeader } from '../BuilderHeader/BuilderHeader'
 import { CurrentBacking } from '../CurrentBacking/CurrentBacking'
 import { RewardsInfo } from '../RewardsInfo/RewardsInfo'
-import { Builder } from '@/app/collective-rewards/types'
-import { formatSymbol } from '@/app/collective-rewards/rewards/utils/formatter'
-import { BackerRewardPercentage } from '@/app/collective-rewards/rewards/types'
 
 export interface BuilderCardProps extends Omit<Builder, 'backerRewardPercentage'> {
   backerRewardPct: BackerRewardPercentage

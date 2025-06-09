@@ -1,14 +1,14 @@
 import type { Meta, StoryObj } from '@storybook/react'
-import { InfoContainer } from './InfoContainer'
+import { BackingInfoContainer } from './BackingInfoContainer'
 
 const meta = {
-  title: 'Koto/Components/Container/InfoContainer',
-  component: InfoContainer,
+  title: 'Koto/Backing/Container/InfoContainer',
+  component: BackingInfoContainer,
   parameters: {
     layout: 'centered',
   },
   tags: ['autodocs'],
-} satisfies Meta<typeof InfoContainer>
+} satisfies Meta<typeof BackingInfoContainer>
 
 export default meta
 type Story = StoryObj<typeof meta>

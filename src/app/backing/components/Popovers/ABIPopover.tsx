@@ -1,7 +1,7 @@
 import { ReactNode } from 'react'
 import { Popover } from '@/components/Popover'
 import { Paragraph } from '@/components/TypographyNew'
-import { ABIFormula } from '@/app/backing/components/Container/shared/ABIFormula'
+import { ABIFormula } from '@/app/backing/components/ABIFormula'
 
 export const ABIPopover = ({ children }: { children: ReactNode }) => (
   <Popover

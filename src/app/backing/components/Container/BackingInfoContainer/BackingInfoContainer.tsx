@@ -3,11 +3,11 @@ import { cn } from '@/lib/utils'
 import { FC, ReactNode } from 'react'
 import { CommonComponentProps } from '../../commonProps'
 
-export type InfoContainerProps = CommonComponentProps & {
+export type BackingInfoContainerProps = CommonComponentProps & {
   title: ReactNode
 }
 
-export const InfoContainer: FC<InfoContainerProps> = ({ className = '', title, children }) => {
+export const BackingInfoContainer: FC<BackingInfoContainerProps> = ({ className = '', title, children }) => {
   return (
     <div className={cn('relative w-full bg-v3-bg-accent-80 rounded p-6', className)}>
       <div className="flex flex-col gap-[56px]">
