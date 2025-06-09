@@ -1,6 +1,5 @@
-import { ABIPopover } from '@/app/backing/components/Container/InfoMetrics/ABIPopover'
-import { Metric } from '@/app/backing/components/Metric/Metric'
-import { MetricTitle } from '@/app/backing/components/Metric/MetricTitle'
+import { ABIPopover } from '@/app/backing/components/Container/InfoMetrics'
+import { Metric, MetricTitle } from '@/app/backing/components/Metric'
 import { useGetMetricsAbi } from '@/app/collective-rewards/shared'
 import { useHandleErrors } from '@/app/collective-rewards/utils'
 import KotoQuestionMarkIcon from '@/components/Icons/KotoQuestionMarkIcon'

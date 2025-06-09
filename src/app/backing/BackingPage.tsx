@@ -1,14 +1,15 @@
 'use client'
 
 import { useAccount } from 'wagmi'
-import { InfoContainer } from './components/Container/backingInfo/InfoContainer'
-import { MetricsContainer } from './components/Container/infoMetrics/MetricsContainer'
-import { BuildersContainer } from './components/builder-card/BuildersContainer/BuildersContainer'
-import { BackingBanner } from '@/app/backing/components/Container/backingInfo/BackingBanner'
-import { AnnualBackersIncentivesMetric } from '@/app/backing/components/Container/infoMetrics/AnnualBackersIncentivesMetric'
-import { EstimatedRewardsMetric } from '@/app/backing/components/Container/infoMetrics/EstimatedRewardsMetric'
-import { ActionsContainer } from '@/app/backing/components/Container/actionMetrics/ActionsContainer'
-import { PageTitleContainer } from '@/components/containers'
+import { InfoContainer, BackingBanner } from '@/app/backing/components/Container/BackingInfo'
+import {
+  MetricsContainer,
+  AnnualBackersIncentivesMetric,
+  EstimatedRewardsMetric,
+} from '@/app/backing/components/Container/InfoMetrics'
+import { PageTitleContainer } from '@/app/backing/components/Container/PageTitleContainer'
+import { BuildersContainer } from '@/app/backing/components/builder-card/BuildersContainer/BuildersContainer'
+import { ActionsContainer } from '@/app/backing/components/Container/ActionMetrics/ActionsContainer'
 
 const NAME = 'Backing'
 export const BackingPage = () => {

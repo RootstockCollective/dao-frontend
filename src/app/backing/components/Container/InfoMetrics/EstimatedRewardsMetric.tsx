@@ -1,5 +1,4 @@
-import { Metric } from '@/app/backing/components/Metric/Metric'
-import { MetricTitle } from '@/app/backing/components/Metric/MetricTitle'
+import { Metric, MetricTitle } from '@/app/backing/components/Metric'
 import { useGetBuildersRewards } from '@/app/collective-rewards/rewards/builders/hooks/useGetBuildersRewards'
 import { useEstimatedRewards } from '../hooks/useEstimatedRewards'
 import { useHandleErrors } from '@/app/collective-rewards/utils'
@@ -10,7 +9,7 @@ import KotoQuestionMarkIcon from '@/components/Icons/KotoQuestionMarkIcon'
 import { LoadingSpinner } from '@/components/LoadingSpinner'
 import { Header } from '@/components/TypographyNew'
 import { formatCurrency } from '@/lib/utils'
-import { RifRbtcPopover } from '@/app/backing/components/Container/InfoMetrics/RifRbtcPopover'
+import { RifRbtcPopover } from '@/app/backing/components/Container/InfoMetrics'
 
 export const EstimatedRewardsMetric = () => {
   const tokens = {
