@@ -18,7 +18,8 @@ import { isUserRejectedTxError } from '@/components/ErrorPage/commonErrors'
 import { waitForTransactionReceipt } from 'wagmi/actions'
 import { config } from '@/config'
 import { useUnstakeStRIF } from '../Stake/hooks/useUnstakeStRIF'
-import { ProgressButton } from '@/components/ProgressBarNew'
+import { PercentageButtons } from './components/PorcentageButtons'
+import { ProgressButtonInProgress } from '../Stake/components/ProgressButtonInProgress'
 
 const UNSTAKE_DECIMAL_PLACES = 18
 
@@ -137,35 +138,7 @@ export const UnstakeModal = ({ onCloseModal }: Props) => {
             </Label>
           </div>
           <div className="flex gap-1">
-            <Button
-              variant="secondary"
-              onClick={() => handlePercentageClick(0.1)}
-              className="bg-transparent border border-bg-40 px-2 py-0"
-            >
-              <Span variant="body-s">10%</Span>
-            </Button>
-            <Button
-              variant="secondary"
-              onClick={() => handlePercentageClick(0.2)}
-              className="bg-transparent border border-bg-40 px-2 py-0"
-            >
-              <Span variant="body-s">20%</Span>
-            </Button>
-            <Button
-              variant="secondary"
-              onClick={() => handlePercentageClick(0.5)}
-              className="bg-transparent border border-bg-40 px-2 py-0"
-            >
-              <Span variant="body-s">50%</Span>
-            </Button>
-            <Button
-              variant="secondary"
-              onClick={() => handlePercentageClick(1)}
-              className="bg-transparent border border-bg-40 px-2 py-0"
-              data-testid="maxButton"
-            >
-              <Span variant="body-s">Max</Span>
-            </Button>
+            <PercentageButtons onPercentageClick={handlePercentageClick} />
           </div>
         </div>
 
@@ -195,15 +168,15 @@ export const UnstakeModal = ({ onCloseModal }: Props) => {
 
         <div className="flex justify-end">
           {isTxPending ? (
-            <ProgressButton className="whitespace-nowrap">
-              <Span bold className="text-text-60">
-                In progress
-              </Span>
-              <Span className="text-text-80 hidden md:inline">&nbsp;- 1 min average</Span>
-              <Span className="text-text-80 md:hidden">&nbsp;- 1 min avg</Span>
-            </ProgressButton>
+            <ProgressButtonInProgress />
           ) : (
-            <Button variant="primary" onClick={handleUnstake} disabled={cannotProceedWithUnstake}>
+            <Button
+              variant="primary"
+              className="w-full md:w-auto"
+              onClick={handleUnstake}
+              disabled={cannotProceedWithUnstake}
+              data-testid="UnstakeButton"
+            >
               {isRequesting ? 'Requesting...' : 'Unstake'}
             </Button>
           )}

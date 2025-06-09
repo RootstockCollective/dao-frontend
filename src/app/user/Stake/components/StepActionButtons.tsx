@@ -1,8 +1,7 @@
 import { Button } from '@/components/ButtonNew/Button'
-import { ProgressButton } from '@/components/ProgressBarNew'
-import { Span } from '@/components/TypographyNew'
 import { cn } from '@/lib/utils'
 import { ReactNode } from 'react'
+import { ProgressButtonInProgress } from './ProgressButtonInProgress'
 
 interface ButtonProps {
   label: string
@@ -15,7 +14,6 @@ interface Props {
   secondaryButton: ButtonProps
   isTxPending?: boolean
   isRequesting?: boolean
-  progressText?: string
   additionalContent?: ReactNode
 }
 
@@ -24,7 +22,6 @@ export const StepActionButtons = ({
   secondaryButton,
   isTxPending = false,
   isRequesting = false,
-  progressText = 'In progress',
   additionalContent,
 }: Props) => {
   return (
@@ -46,13 +43,7 @@ export const StepActionButtons = ({
           {secondaryButton.label}
         </Button>
         {isTxPending ? (
-          <ProgressButton className="whitespace-nowrap">
-            <Span bold className="text-text-60">
-              {progressText}
-            </Span>
-            <Span className="text-text-80 hidden md:inline">&nbsp;- 1 min average</Span>
-            <Span className="text-text-80 md:hidden">&nbsp;- 1 min avg</Span>
-          </ProgressButton>
+          <ProgressButtonInProgress />
         ) : (
           <Button
             variant="primary"
