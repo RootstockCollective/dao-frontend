@@ -1,10 +1,9 @@
 import { useIntervalTimestamp } from '@/app/collective-rewards/metrics/hooks/useIntervalTimestamp'
-import { Token, useBackerRewardsContext, useGetBackerStakingHistory } from '@/app/collective-rewards/rewards'
+import { BackerStakingHistory, Token, useBackerRewardsContext } from '@/app/collective-rewards/rewards'
 import Big from '@/lib/big'
 import { WeiPerEther } from '@/lib/constants'
 import { usePricesContext } from '@/shared/context/PricesContext'
 import { useMemo } from 'react'
-import { Address } from 'viem'
 
 const useGetTokenRewards = ({ address, symbol }: Token) => {
   const { prices } = usePricesContext()
@@ -27,12 +26,10 @@ const useGetTokenRewards = ({ address, symbol }: Token) => {
   }
 }
 
-export const useGetBackerRBI = (backer: Address, { rbtc, rif }: Record<string, Token>) => {
-  const {
-    data: stakingHistory,
-    isLoading: stakingHistoryLoading,
-    error: stakingHistoryError,
-  } = useGetBackerStakingHistory(backer)
+export const useGetBackerRBI = (
+  backerStakingHistory: BackerStakingHistory | undefined,
+  { rbtc, rif }: Record<string, Token>,
+) => {
   const {
     data: rbtcRewards,
     isLoading: rbtcRewardsLoading,
@@ -44,9 +41,9 @@ export const useGetBackerRBI = (backer: Address, { rbtc, rif }: Record<string, T
   const { prices } = usePricesContext()
 
   const rbi = useMemo(() => {
-    if (!stakingHistory) return Big(0)
+    if (!backerStakingHistory) return Big(0)
 
-    const { backerTotalAllocation_, lastBlockTimestamp_, accumulatedTime_, gauges_ } = stakingHistory
+    const { backerTotalAllocation_, lastBlockTimestamp_, accumulatedTime_, gauges_ } = backerStakingHistory
 
     const accumulatedAllocationsTime = gauges_.reduce(
       (acc, { accumulatedAllocationsTime_, allocation_, lastBlockTimestamp_: gaugeLastBlockTimestamp_ }) => {
@@ -72,10 +69,10 @@ export const useGetBackerRBI = (backer: Address, { rbtc, rif }: Record<string, T
     }
 
     return accumulatedTime.mul(rbtcRewards.add(rifRewards).div(priceAdjustedAllocTime)).mul(100)
-  }, [stakingHistory, prices, rif.symbol, rbtcRewards, rifRewards, timestamp])
+  }, [backerStakingHistory, prices, rif.symbol, rbtcRewards, rifRewards, timestamp])
 
-  const isLoading = stakingHistoryLoading || rbtcRewardsLoading || rifRewardsLoading
-  const error = stakingHistoryError ?? rbtcRewardsError ?? rifRewardsError
+  const isLoading = rbtcRewardsLoading || rifRewardsLoading
+  const error = rbtcRewardsError ?? rifRewardsError
 
   return {
     data: rbi,

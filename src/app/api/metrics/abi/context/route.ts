@@ -1,16 +1,15 @@
 import { NextResponse } from 'next/server'
 import { db } from '@/lib/db'
 
-const coalesce = `
-    COALESCE(
-    json_agg(
-      json_build_object('id', convert_from("BackerRewardPercentage".id, 'utf8'), 
+const DB_COMMAND_COALESCE = `
+  COALESCE(
+    json_build_object(
       'next', "BackerRewardPercentage"."next",
-      'previous', "BackerRewardPercentage"."previous",
+      'previous', "BackerRewardPercentage"."previous", 
       'cooldownEndTime', "BackerRewardPercentage"."cooldownEndTime"
-      )
-    ), 
-  '[]')
+    ),
+    '{}'
+  )
 `
 
 export async function GET() {
@@ -18,17 +17,16 @@ export async function GET() {
     const builders = await db('Builder')
       .join('BuilderState', 'Builder.id', '=', 'BuilderState.builder')
       .join('BackerRewardPercentage', 'Builder.id', '=', 'BackerRewardPercentage.builder')
-      .select({ id: db.raw(`convert_from("Builder".id, 'utf8')`) }, 'Builder.totalAllocation', {
-        backerRewardPercentage: db.raw(coalesce),
+      .select({ id: db.raw('convert_from("Builder".id, \'utf8\')') }, 'Builder.totalAllocation', {
+        backerRewardPercentage: db.raw(DB_COMMAND_COALESCE),
       })
       .where('BuilderState.kycApproved', '=', true)
       .where('BuilderState.communityApproved', '=', true)
       .where('BuilderState.initialized', '=', true)
       .where('BuilderState.selfPaused', '=', false)
-      .groupBy('Builder.id')
 
     const cycles = await db('Cycle')
-      .select({ id: db.raw(`convert_from(id, 'utf8')`) }, 'rewardsERC20', 'rewardsRBTC')
+      .select({ id: db.raw("convert_from(id, 'utf8')") }, 'rewardsERC20', 'rewardsRBTC')
       .orderBy('id', 'desc')
 
     return NextResponse.json({ builders, cycles })

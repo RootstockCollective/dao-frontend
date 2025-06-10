@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { db } from '@/lib/db'
 import { Address, isAddress } from 'viem'
 
-const coalesce = `
+const DB_COMMAND_COALESCE = `
   COALESCE(
     json_agg(
       json_build_object('gauge_', convert_from("GaugeStakingHistory".gauge, 'utf8'), 
@@ -25,11 +25,11 @@ export async function GET(request: NextRequest, { params }: { params: Promise<{ 
     const result = await db('BackerStakingHistory')
       .join('GaugeStakingHistory', 'BackerStakingHistory.id', '=', 'GaugeStakingHistory.backer')
       .select(
-        { id: db.raw(`convert_from("BackerStakingHistory".id, 'utf8')`) },
+        { id: db.raw('convert_from("BackerStakingHistory".id, \'utf8\')') },
         { backerTotalAllocation_: 'BackerStakingHistory.backerTotalAllocation' },
         { accumulatedTime_: 'BackerStakingHistory.accumulatedTime' },
         { lastBlockTimestamp_: 'BackerStakingHistory.lastBlockTimestamp' },
-        { gauges_: db.raw(coalesce) },
+        { gauges_: db.raw(DB_COMMAND_COALESCE) },
       )
       .where('BackerStakingHistory.id', '=', backer.toLowerCase())
       .groupBy('BackerStakingHistory.id')
