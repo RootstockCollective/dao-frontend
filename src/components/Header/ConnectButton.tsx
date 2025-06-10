@@ -1,8 +1,8 @@
 import { FC } from 'react'
 import { useConnect } from 'wagmi'
 import { Button } from '../Button'
-import { useErrorThrowerContext } from '@/components/ErrorPage/ErrorThrowerContext'
 import { isUserRejectedTxError } from '../ErrorPage'
+import { useErrorBoundary } from 'react-error-boundary'
 
 interface Props {
   onSuccess?: () => void
@@ -21,13 +21,14 @@ export const ConnectButton: FC<Props> = ({ onSuccess, children = 'Connect wallet
   const { connectors, connectAsync } = useConnect({
     mutation: { onSuccess },
   })
-  const { triggerError } = useErrorThrowerContext()
+
+  const { showBoundary } = useErrorBoundary()
 
   const handleConnectWallet = () => {
     if (connectors.length) {
       connectAsync({ connector: connectors[connectors.length - 1] }).catch(err => {
         if (!isUserRejectedTxError(err)) {
-          triggerError(err.toString())
+          showBoundary(err)
         }
       })
     }
