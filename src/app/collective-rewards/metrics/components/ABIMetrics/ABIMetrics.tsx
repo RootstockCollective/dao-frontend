@@ -1,9 +1,15 @@
 import { MetricsCard, MetricsCardTitle, TokenMetricsCardRow } from '@/app/collective-rewards/rewards'
-import { ABIFormula, useGetMetricsAbi, useGetMetricsAbiWithGraph } from '@/app/collective-rewards/shared'
+import {
+  ABIFormula,
+  useGetMetricsAbi,
+  useGetMetricsAbiWithGraph,
+  useGetMetricsAbiWithStateSync,
+} from '@/app/collective-rewards/shared'
 import { withFallbackRetry } from '@/app/shared/components/Fallback/FallbackWithRetry'
 import { useHandleErrors } from '@/app/collective-rewards/utils'
 import { withSpinner } from '@/components/LoadingSpinner/withLoadingSpinner'
 import { ErrorBoundary } from 'react-error-boundary'
+import { useFeatureFlags } from '@/shared/context/FeatureFlag'
 
 const ABIMetricsContent = ({ abiPct, isLoading }: { abiPct: Big; isLoading: boolean }) => {
   return (
@@ -59,10 +65,22 @@ const ABIMetricsWTheGraph = () => {
   return <ABIMetricsContent abiPct={abiPct} isLoading={isLoading} />
 }
 
+const ABIMetricsWStateSync = () => {
+  const { data: abiPct, isLoading, error } = useGetMetricsAbiWithStateSync()
+
+  if (error) throw error
+
+  return <ABIMetricsContent abiPct={abiPct} isLoading={isLoading} />
+}
+
 export const ABIMetrics = () => {
+  const {
+    flags: { use_state_sync },
+  } = useFeatureFlags()
+
   return (
     <ErrorBoundary fallbackRender={withFallbackRetry(<ABIMetricsFromChain />)}>
-      <ABIMetricsWTheGraph />
+      {use_state_sync ? <ABIMetricsWStateSync /> : <ABIMetricsWTheGraph />}
     </ErrorBoundary>
   )
 }
