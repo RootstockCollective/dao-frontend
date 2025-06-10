@@ -73,9 +73,15 @@ export const BackingPage = () => {
                           </Typography>
                         </Button>
                       ) : (
-                        <Button variant="secondary">
-                          <Typography variant="tag-s" className="text-[#171412]">
-                            Distribute Equally
+                        <Button
+                          variant="secondary"
+                          className="flex h-7 px-2 py-1 items-center gap-2 rounded border border-[#66605C]"
+                        >
+                          <Typography
+                            variant="tag-s"
+                            className="text-white font-rootstock-sans text-sm font-normal leading-[145%]"
+                          >
+                            Distribute equally
                           </Typography>
                         </Button>
                       )}
