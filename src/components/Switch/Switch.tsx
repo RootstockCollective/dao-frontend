@@ -2,7 +2,7 @@
 
 import * as SwitchPrimitive from '@radix-ui/react-switch'
 
-import { cn } from '@/lib/utils/utils'
+import { cn } from '@/lib/utils'
 import { ComponentPropsWithoutRef, ElementRef, forwardRef } from 'react'
 
 const SWITCH_DEFAULT_CLASSES = `

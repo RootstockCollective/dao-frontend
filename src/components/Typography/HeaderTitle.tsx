@@ -1,4 +1,4 @@
-import { cn } from '@/lib/utils/utils'
+import { cn } from '@/lib/utils'
 import { Typography, TypographyProps } from '@/components/Typography/Typography'
 
 const DEFAULT_CLASSES = 'text-white text-[24px] font-normal uppercase'

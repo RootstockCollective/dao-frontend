@@ -2,7 +2,7 @@ import { useState } from 'react'
 import { UnderlineTabs } from '@/components/Tabs'
 import { MetricsCard } from '@/components/MetricsCard'
 import { Typography } from '@/components/Typography'
-import { formatCurrency, formatNumberWithCommas } from '@/lib/utils/utils'
+import { formatCurrency, formatNumberWithCommas } from '@/lib/utils'
 import Big from '@/lib/big'
 import { useTabCards } from './hooks/useTabCards'
 

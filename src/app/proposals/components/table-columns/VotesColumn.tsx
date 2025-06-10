@@ -1,4 +1,4 @@
-import { formatNumberWithCommas } from '@/lib/utils/utils'
+import { formatNumberWithCommas } from '@/lib/utils'
 import Big from '@/lib/big'
 
 interface VotesColumnProps {

@@ -1,6 +1,6 @@
 import React, { HTMLAttributes } from 'react'
 import { Typography } from '../Typography'
-import { cn } from '@/lib/utils/utils'
+import { cn } from '@/lib/utils'
 
 interface PasteButtonProps extends HTMLAttributes<HTMLElement> {
   handlePaste: (val: string) => void

@@ -1,6 +1,6 @@
 import { Typography } from '@/components/Typography/Typography'
 import { ReactNode } from 'react'
-import { cn } from '@/lib/utils/utils'
+import { cn } from '@/lib/utils'
 
 interface Props {
   className?: string

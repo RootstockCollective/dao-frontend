@@ -6,7 +6,7 @@ import { useLayoutContext } from '../LayoutProvider'
 import { UsefulLinks } from './UsefulLinks'
 import { NavIcon } from '../icons/NavIcon'
 import { menuData } from './menuData'
-import { cn } from '@/lib/utils/utils'
+import { cn } from '@/lib/utils'
 import styles from './styles.module.css'
 
 export function SidebarMobile() {

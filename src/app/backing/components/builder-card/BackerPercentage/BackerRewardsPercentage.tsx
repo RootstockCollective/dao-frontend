@@ -1,6 +1,6 @@
 import { ArrowDownIcon } from '@/components/Icons/ArrowDownIcon'
 import { ArrowUpIcon } from '@/components/Icons/ArrowUpIcon'
-import { cn } from '@/lib/utils/utils'
+import { cn } from '@/lib/utils'
 import { FC, useMemo } from 'react'
 
 interface BackerRewardsPercentageProps {

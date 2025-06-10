@@ -1,6 +1,6 @@
 // components/ErrorBoundary.js
 import { Component, ErrorInfo, ReactNode } from 'react'
-import { cn } from '@/lib/utils/utils'
+import { cn } from '@/lib/utils'
 import { BG_IMG_CLASSES } from '@/shared/utils'
 import { Headline, Paragraph } from '@/components/Typography'
 import { HeaderText } from '@/components/HeaderText/HeaderText'

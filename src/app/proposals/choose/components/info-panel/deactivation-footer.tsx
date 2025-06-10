@@ -1,6 +1,6 @@
 import { HTMLAttributes } from 'react'
 import { HeaderTitle, Typography } from '@/components/Typography'
-import { cn } from '@/lib/utils/utils'
+import { cn } from '@/lib/utils'
 import { ArrowLink } from './arrow-link'
 
 export function DeactivationFooter({ className, ...props }: HTMLAttributes<HTMLDivElement>) {

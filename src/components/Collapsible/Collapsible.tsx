@@ -1,6 +1,6 @@
 'use client'
 
-import { cn } from '@/lib/utils/utils'
+import { cn } from '@/lib/utils'
 import * as CollapsiblePrimitive from '@radix-ui/react-collapsible'
 import React from 'react'
 import { ChevronUpIcon, ChevronDownIcon } from '../Icons'

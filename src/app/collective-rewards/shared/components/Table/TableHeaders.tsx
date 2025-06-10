@@ -1,6 +1,6 @@
 import { FC } from 'react'
 import { TableCell } from '@/components/Table'
-import { cn } from '@/lib/utils/utils'
+import { cn } from '@/lib/utils'
 import { Popover } from '@/components/Popover'
 import { ArrowUpSFillIcon, ArrowDownSFillIcon, QuestionIcon } from '@/components/Icons'
 import { TooltipProps } from '@/app/collective-rewards/rewards'

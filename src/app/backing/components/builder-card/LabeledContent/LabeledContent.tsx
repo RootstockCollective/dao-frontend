@@ -1,5 +1,5 @@
 import { Label } from '@/components/TypographyNew'
-import { cn } from '@/lib/utils/utils'
+import { cn } from '@/lib/utils'
 import { FC, ReactNode } from 'react'
 
 interface LabeledContentProps {

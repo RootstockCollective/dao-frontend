@@ -1,6 +1,6 @@
 import { FC } from 'react'
 import { Button, ButtonProps } from '.'
-import { cn } from '@/lib/utils/utils'
+import { cn } from '@/lib/utils'
 
 export const HeaderButton: FC<ButtonProps> = ({ className, children, ...buttonProps }) => {
   return (

@@ -1,5 +1,5 @@
 import { useId, useRef } from 'react'
-import { cn } from '@/lib/utils/utils'
+import { cn } from '@/lib/utils'
 import { useMemo, HTMLAttributes, useState } from 'react'
 import { motion } from 'motion/react'
 import { GradientDef } from './GradientDef'

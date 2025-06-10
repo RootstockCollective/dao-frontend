@@ -2,7 +2,7 @@ import { flexRender, type Table as ReactTable } from '@tanstack/react-table'
 import { ComponentProps, type HTMLAttributes } from 'react'
 import { TableHead, TableRow, TableCell, TableBody, TableCore } from './components'
 import { SortIndicator } from './components/SortIndicator'
-import { cn } from '@/lib/utils/utils'
+import { cn } from '@/lib/utils'
 
 interface SharedProps {
   'data-testid'?: string

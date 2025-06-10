@@ -2,7 +2,7 @@ import { InputNew } from '@/components/Input'
 import { TokenImage } from '@/components/TokenImage'
 import { Paragraph } from '@/components/TypographyNew'
 import { variantClasses } from '@/components/TypographyNew/Typography'
-import { cn } from '@/lib/utils/utils'
+import { cn } from '@/lib/utils'
 import Image from 'next/image'
 
 interface Props {

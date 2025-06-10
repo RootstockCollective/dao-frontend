@@ -1,7 +1,7 @@
 import { FC } from 'react'
 import { Meta, StoryObj } from '@storybook/react'
 import { CopyButton, CopyButtonProps } from './CopyButton'
-import { shortAddress } from '@/lib/utils/utils'
+import { shortAddress } from '@/lib/utils'
 import { BsCopyIcon } from '../Icons'
 import { action } from '@storybook/addon-actions'
 import { spyOn } from '@storybook/test'

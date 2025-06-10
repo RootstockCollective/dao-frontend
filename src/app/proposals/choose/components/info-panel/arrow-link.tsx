@@ -1,6 +1,6 @@
 import { AnchorHTMLAttributes } from 'react'
 import ArrowIcon from './icons/arrow-icon'
-import { cn } from '@/lib/utils/utils'
+import { cn } from '@/lib/utils'
 
 /**
  * Link with a trailing orange arrow

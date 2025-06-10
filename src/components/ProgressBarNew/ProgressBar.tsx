@@ -1,7 +1,7 @@
 import { HTMLAttributes } from 'react'
 import { AnimatedTilesProgress } from './AnimatedTiles/AnimatedTilesProgress'
 import { type Color, progressBarColors } from './colors'
-import { cn } from '@/lib/utils/utils'
+import { cn } from '@/lib/utils'
 
 interface Props extends Omit<HTMLAttributes<SVGSVGElement>, 'color'> {
   /** 1 - 100 */

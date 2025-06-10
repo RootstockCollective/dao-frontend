@@ -1,6 +1,6 @@
 import * as Tabs from '@radix-ui/react-tabs'
 import { AnimatePresence, motion } from 'motion/react'
-import { cn } from '@/lib/utils/utils'
+import { cn } from '@/lib/utils'
 import { ReactNode } from 'react'
 
 /**

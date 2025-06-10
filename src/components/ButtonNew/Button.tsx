@@ -1,4 +1,4 @@
-import { cn } from '@/lib/utils/utils'
+import { cn } from '@/lib/utils'
 import { FC, ReactNode } from 'react'
 import { Span } from '../TypographyNew'
 

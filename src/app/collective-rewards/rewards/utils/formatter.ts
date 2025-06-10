@@ -1,6 +1,6 @@
 import Big from '@/lib/big'
 import { BigSource } from 'big.js'
-import { formatCurrency } from '@/lib/utils/utils'
+import { formatCurrency } from '@/lib/utils'
 import { WeiPerEther } from '@/lib/constants'
 
 export const formatMetrics = (amount: bigint, price: BigSource, symbol: string, currency: string) => {

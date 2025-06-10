@@ -5,7 +5,7 @@ import * as React from 'react'
 
 import { CheckIcon, ChevronDown, ChevronUp } from 'lucide-react'
 
-import { cn } from '@/lib/utils/utils'
+import { cn } from '@/lib/utils'
 
 const DEFAULT_CLASSES = `
 flex w-64

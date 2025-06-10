@@ -2,7 +2,7 @@
 
 import * as TabsPrimitive from '@radix-ui/react-tabs'
 
-import { cn } from '@/lib/utils/utils'
+import { cn } from '@/lib/utils'
 import { ComponentPropsWithoutRef, ElementRef, forwardRef, ReactNode } from 'react'
 import { Typography } from '@/components/Typography'
 import { usePathname, useRouter, useSearchParams } from 'next/navigation'

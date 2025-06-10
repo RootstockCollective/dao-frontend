@@ -1,6 +1,6 @@
 import { ConnectPopover } from '@/app/backing/components/builder-card/ConnectPopover/ConnectPopover'
 import { Button } from '@/components/Button'
-import { cn } from '@/lib/utils/utils'
+import { cn } from '@/lib/utils'
 import { FC } from 'react'
 import { AllocationInput } from '../AllocationInput/AllocationInput'
 import { BuilderHeader } from '../BuilderHeader/BuilderHeader'

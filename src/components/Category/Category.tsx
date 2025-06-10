@@ -1,4 +1,4 @@
-import { cn } from '@/lib/utils/utils'
+import { cn } from '@/lib/utils'
 import { Paragraph } from '@/components/Typography'
 import { FC, HTMLProps } from 'react'
 import { CategoryType } from '@/components/Category/types'

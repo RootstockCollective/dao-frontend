@@ -1,6 +1,6 @@
 import { StatusSeverity } from '@/components/Status/types'
 import { Paragraph } from '@/components/Typography/Paragraph'
-import { cn } from '@/lib/utils/utils'
+import { cn } from '@/lib/utils'
 import { FC, JSX } from 'react'
 
 type Props = JSX.IntrinsicElements['div'] & {

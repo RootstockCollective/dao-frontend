@@ -1,7 +1,7 @@
 import { HTMLAttributes } from 'react'
 import { AnimatedTilesLoop } from './AnimatedTiles/AnimatedTilesLoop'
 import { type Color, progressBarColors } from './colors'
-import { cn } from '@/lib/utils/utils'
+import { cn } from '@/lib/utils'
 
 interface Props extends Omit<HTMLAttributes<HTMLDivElement>, 'color'> {
   color?: keyof typeof progressBarColors | (Color | [Color, Color])[]

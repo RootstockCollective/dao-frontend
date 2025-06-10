@@ -1,6 +1,6 @@
 import { Address, isAddress } from 'viem'
 import { Span } from '@/components/Typography'
-import { cn, shortAddress } from '@/lib/utils/utils'
+import { cn, shortAddress } from '@/lib/utils'
 import { withCopy } from './withCopy'
 
 export interface AddressProps {

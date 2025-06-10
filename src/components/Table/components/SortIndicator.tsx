@@ -1,7 +1,7 @@
 import { type SortDirection } from '@tanstack/react-table'
 import { type PropsWithChildren } from 'react'
 import { ArrowsSortIcon, SortAscendingIcon, SortDescendingIcon } from '@/components/Icons'
-import { cn } from '@/lib/utils/utils'
+import { cn } from '@/lib/utils'
 
 interface SortIndicatorProps extends PropsWithChildren {
   sortDirection: SortDirection | false

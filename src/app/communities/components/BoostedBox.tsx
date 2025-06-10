@@ -1,7 +1,7 @@
 'use client'
 
 import { useNFTBoosterContext } from '@/app/providers/NFT/BoosterContext'
-import { cn } from '@/lib/utils/utils'
+import { cn } from '@/lib/utils'
 import { PropsWithChildren } from 'react'
 
 interface BoostedBoxProps extends PropsWithChildren {

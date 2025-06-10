@@ -1,4 +1,4 @@
-import { cn } from '@/lib/utils/utils'
+import { cn } from '@/lib/utils'
 import Image from 'next/image'
 
 export interface TokenImageProps {

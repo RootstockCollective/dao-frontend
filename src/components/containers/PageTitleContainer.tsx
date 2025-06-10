@@ -1,5 +1,5 @@
 import { Typography } from '@/components/TypographyNew/Typography'
-import { cn } from '@/lib/utils/utils'
+import { cn } from '@/lib/utils'
 import { FC } from 'react'
 import { CommonComponentProps } from '../commonProps'
 

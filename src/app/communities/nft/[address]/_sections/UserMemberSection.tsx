@@ -1,6 +1,6 @@
 'use client'
 import { Paragraph, Span } from '@/components/Typography'
-import { truncateMiddle } from '@/lib/utils/utils'
+import { truncateMiddle } from '@/lib/utils'
 import { SelfContainedNFTBoosterCard } from '@/app/shared/components/NFTBoosterCard/SelfContainedNFTBoosterCard'
 import { AddToWalletButton } from '@/app/communities/nft/[address]/_components/AddToWalletButton'
 import { useCommunityNFT } from '@/app/communities/nft/[address]/CommunityNFTContext'

@@ -2,7 +2,7 @@ import { splitCombinedName } from '@/app/proposals/shared/utils'
 import { Button } from '@/components/Button'
 import { Modal } from '@/components/Modal/Modal'
 import { Header, Paragraph } from '@/components/Typography'
-import { cn, truncateMiddle } from '@/lib/utils/utils'
+import { cn, truncateMiddle } from '@/lib/utils'
 import { FC } from 'react'
 
 export type Vote = 'for' | 'against' | 'abstain'

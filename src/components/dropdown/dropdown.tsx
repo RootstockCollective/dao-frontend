@@ -1,7 +1,7 @@
 import { HTMLAttributes, useState, useRef, ReactNode } from 'react'
 import { motion, AnimatePresence } from 'motion/react'
 import { ChevronDown, X, ChevronRight } from 'lucide-react'
-import { cn } from '@/lib/utils/utils'
+import { cn } from '@/lib/utils'
 import { HeaderTitle, Typography } from '@/components/Typography'
 import { useClickOutside } from '@/shared/hooks/useClickOutside'
 import { DropdownItem, DropdownTopic } from './data'

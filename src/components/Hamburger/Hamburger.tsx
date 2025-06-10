@@ -1,6 +1,6 @@
 import { HTMLAttributes } from 'react'
 import { motion, type SVGMotionProps } from 'motion/react'
-import { cn } from '@/lib/utils/utils'
+import { cn } from '@/lib/utils'
 
 interface HamburgerProps extends HTMLAttributes<HTMLSpanElement> {
   isOpen: boolean

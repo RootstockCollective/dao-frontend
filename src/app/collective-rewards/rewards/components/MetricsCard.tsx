@@ -1,6 +1,6 @@
 import { withSpinner } from '@/components/LoadingSpinner/withLoadingSpinner'
 import { Typography, TypographyProps } from '@/components/Typography'
-import { cn } from '@/lib/utils/utils'
+import { cn } from '@/lib/utils'
 import { FC, HTMLAttributes, ReactNode } from 'react'
 import { Address } from 'viem'
 import { Tooltip, TooltipProps } from './Tooltip'

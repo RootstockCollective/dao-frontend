@@ -1,7 +1,7 @@
 import { MetricsCard, MetricsCardRow, MetricsCardTitle } from '@/app/collective-rewards/rewards'
 import { withSpinner } from '@/components/LoadingSpinner/withLoadingSpinner'
 import { Typography } from '@/components/Typography'
-import { cn } from '@/lib/utils/utils'
+import { cn } from '@/lib/utils'
 import { DateTime } from 'luxon'
 import { FC, HTMLAttributes, ReactNode, useMemo } from 'react'
 import { weiToPercentage } from '../utils'

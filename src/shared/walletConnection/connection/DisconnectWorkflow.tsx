@@ -2,7 +2,7 @@
 import { useModal } from '@/shared/hooks/useModal'
 import { useAccount, useDisconnect } from 'wagmi'
 import { AccountAddress } from '@/components/Header'
-import { shortAddress } from '@/lib/utils/utils'
+import { shortAddress } from '@/lib/utils'
 import { DisconnectWalletModal } from '@/components/Modal/DisconnectWalletModal'
 import { Popover } from '@/components/Popover'
 import { DisconnectButton } from '../components/DisconnectButton'

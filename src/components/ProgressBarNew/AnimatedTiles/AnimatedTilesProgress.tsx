@@ -3,7 +3,7 @@ import { motion, useMotionValue, useTransform, animate } from 'motion/react'
 import { GradientDef } from './GradientDef'
 import type { Color } from '../colors'
 import { useResizeObserver } from '@/shared/hooks/useResizeObserver'
-import { cn } from '@/lib/utils/utils'
+import { cn } from '@/lib/utils'
 
 interface AnimatedTilesProps extends HTMLAttributes<SVGSVGElement> {
   /** Size of each tile (square side, in px) */

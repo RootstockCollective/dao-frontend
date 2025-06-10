@@ -11,7 +11,7 @@ import { parseEther, zeroAddress } from 'viem'
 import { useAccount } from 'wagmi'
 import { useStakingContext } from '../StakingContext'
 import { StepProps } from '../types'
-import { formatCurrency } from '@/lib/utils/utils'
+import { formatCurrency } from '@/lib/utils'
 import { StakeSteps } from './StakeSteps'
 
 const DECIMAL_SCALES = {

@@ -1,6 +1,6 @@
 'use client'
 import { CopyButton } from '@/components/CopyButton'
-import { truncateMiddle } from '@/lib/utils/utils'
+import { truncateMiddle } from '@/lib/utils'
 import { ReactNode } from 'react'
 import { Paragraph } from '@/components/Typography'
 import { useCommunityNFT } from '@/app/communities/nft/[address]/CommunityNFTContext'
