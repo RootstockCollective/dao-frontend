@@ -19,6 +19,7 @@ export const BackingPage = () => {
   const { address } = useAccount()
   const [availableForBacking, setAvailableForBacking] = useState(0)
   const [totalBacking, setTotalBacking] = useState(0)
+  const [availableBackingUSD, setAvailableBackingUSD] = useState(125.45)
 
   return (
     <div
@@ -93,6 +94,16 @@ export const BackingPage = () => {
                       )}
                     </div>
                   </div>
+                  {availableForBacking > 0 && (
+                    <div className="flex items-start self-stretch">
+                      <Typography
+                        variant="tag-s"
+                        className="text-[#ACA39D] font-rootstock-sans text-sm font-medium leading-[145%] self-stretch"
+                      >
+                        {availableBackingUSD} USD
+                      </Typography>
+                    </div>
+                  )}
                 </div>
               }
             />
