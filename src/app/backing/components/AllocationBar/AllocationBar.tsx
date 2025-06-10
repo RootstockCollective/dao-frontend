@@ -7,7 +7,7 @@ import { restrictToHorizontalAxis } from '@dnd-kit/modifiers'
 import { calculateNewSegmentValues, calculateSegmentPositions, clamp } from './utils'
 import { AllocationBarProps, AllocationItem } from './types'
 import { AllocationBarSegment } from './AllocationBarSegment'
-import { AllocationLegend } from './AllocationBarLegend'
+import { Legend } from '@/components/Legend'
 
 const AllocationBar: React.FC<AllocationBarProps> = ({
   initialItemsData = [],
@@ -116,7 +116,7 @@ const AllocationBar: React.FC<AllocationBarProps> = ({
           </div>
         </SortableContext>
       </DndContext>
-      {showLegend && <AllocationLegend items={initialItemsData} />}
+      {showLegend && <Legend title="Total portfolio:" items={initialItemsData} />}
     </div>
   )
 }
