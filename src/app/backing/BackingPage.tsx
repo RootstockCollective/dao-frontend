@@ -1,7 +1,9 @@
 'use client'
 
 import { useAccount } from 'wagmi'
-import { useState } from 'react'
+import { useMemo, useContext } from 'react'
+import { usePricesContext } from '@/shared/context/PricesContext'
+import { AllocationsContext } from '@/app/collective-rewards/allocations/context/AllocationsContext'
 import { ActionsContainer } from './components/Container'
 import { ActionMetricsContainer } from './components/Container/ActionMetricsContainer'
 import { InfoContainer } from './components/Container/InfoContainer'
@@ -11,15 +13,33 @@ import { Button } from '@/components/Button'
 import { Metric } from './components/Metric/Metric'
 import { Typography } from '@/components/TypographyNew/Typography'
 import { TokenImage } from '@/components/TokenImage'
-import { stRIF } from '@/lib/constants'
+import { stRIF, RIF } from '@/lib/constants'
 import KotoQuestionMarkIcon from '@/components/Icons/KotoQuestionMarkIcon'
 
 const NAME = 'Backing'
 export const BackingPage = () => {
   const { address } = useAccount()
-  const [availableForBacking, setAvailableForBacking] = useState(0)
-  const [totalBacking, setTotalBacking] = useState(0)
-  const [availableBackingUSD, setAvailableBackingUSD] = useState(125.45)
+  const { prices } = usePricesContext()
+  // TODO: add useAllocationsContext hook?
+  const { state } = useContext(AllocationsContext)
+  const votingPower = state.backer.balance
+  const totalOnchainAllocation = state.backer.amountToAllocate
+  const rifPriceUsd = prices[RIF]?.price ?? 0
+
+  const availableForBacking = useMemo(() => {
+    if (!votingPower || !totalOnchainAllocation) return 0
+    return Number(votingPower - totalOnchainAllocation)
+  }, [votingPower, totalOnchainAllocation])
+
+  const totalBacking = useMemo(() => {
+    if (!totalOnchainAllocation) return 0
+    return Number(totalOnchainAllocation)
+  }, [totalOnchainAllocation])
+
+  const availableBackingUSD = useMemo(() => {
+    if (!availableForBacking || !rifPriceUsd) return 0
+    return availableForBacking * rifPriceUsd
+  }, [availableForBacking, rifPriceUsd])
 
   return (
     <div
