@@ -8,7 +8,7 @@ import { MetricContent } from './MetricContent'
 import { MetricTitle } from './MetricTitle'
 
 const meta: Meta<typeof Metric> = {
-  title: 'Koto/Components/Metric',
+  title: 'Koto/Components/Metric/Metric',
   component: Metric,
   parameters: {
     layout: 'centered',

@@ -11,7 +11,7 @@ export const InfoContainer: FC<InfoContainer> = ({ children, className = '' }) =
         'flex flex-col items-start gap-2 self-stretch p-6 pt-10 rounded-sm bg-v3-bg-accent-80',
         className,
       )}
-      data-testid="InfoContainer"
+      data-testid={'InfoContainer'}
     >
       {children}
     </div>

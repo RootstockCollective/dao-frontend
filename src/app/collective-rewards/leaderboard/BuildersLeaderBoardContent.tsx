@@ -7,10 +7,18 @@ import { Typography } from '@/components/Typography'
 import { COINBASE_ADDRESS } from '@/lib/constants'
 import { tokenContracts } from '@/lib/contracts'
 import { getAddress } from 'viem'
+import Image from 'next/image'
 
 const EmptyLeaderboard = () => (
   <div className="relative w-full py-6">
-    <img className="w-full h-fll object-cover" alt="no builders yet" src="/images/joining-without-text.png" />
+    <Image
+      className="w-full h-fll object-cover"
+      alt="no builders yet"
+      src="/images/joining-without-text.png"
+      width={1200}
+      height={600}
+      priority
+    />
     <Typography
       tagVariant="h1"
       className="uppercase font-kk-topo text-[48px] leading-tight font-normal absolute inset-0 flex items-center justify-center tracking-[-0.96px]"
