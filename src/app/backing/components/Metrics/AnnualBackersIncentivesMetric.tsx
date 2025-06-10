@@ -1,9 +1,9 @@
 import { ABIPopover } from '@/app/backing/components/Popovers/ABIPopover'
-import { Metric, MetricTitle } from '@/app/backing/components/Metric'
 import { useGetMetricsAbi } from '@/app/collective-rewards/shared'
 import { useHandleErrors } from '@/app/collective-rewards/utils'
 import KotoQuestionMarkIcon from '@/components/Icons/KotoQuestionMarkIcon'
 import { LoadingSpinner } from '@/components/LoadingSpinner'
+import { Metric, MetricTitle } from '@/components/Metric'
 import { Header } from '@/components/TypographyNew'
 
 export const AnnualBackersIncentivesMetric = () => {

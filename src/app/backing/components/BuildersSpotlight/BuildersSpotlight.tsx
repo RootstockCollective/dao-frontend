@@ -50,7 +50,10 @@ export const BuildersSpotlight: FC = () => {
 
   return (
     <>
-      <div className="grid gap-2 grid-cols-[repeat(auto-fit,minmax(200px,1fr))]">
+      <div
+        className="grid gap-2 justify-center w-full"
+        style={{ gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))' }}
+      >
         {visibleBuilders.map(builder => (
           <BuilderCardControl key={builder.address} {...builder} />
         ))}

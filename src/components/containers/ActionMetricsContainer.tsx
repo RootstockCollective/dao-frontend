@@ -1,8 +1,8 @@
 import { cn } from '@/lib/utils'
-import { FC, PropsWithChildren } from 'react'
-import { CommonComponentProps } from '../../components/commonProps'
+import { FC } from 'react'
+import { CommonComponentProps } from '../commonProps'
 
-export type ActionMetricsContainerProps = CommonComponentProps & PropsWithChildren
+export type ActionMetricsContainerProps = CommonComponentProps
 
 export const ActionMetricsContainer: FC<ActionMetricsContainerProps> = ({ className = '', children }) => {
   return (

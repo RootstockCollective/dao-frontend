@@ -1,14 +1,14 @@
 'use client'
 
 import { useAccount } from 'wagmi'
-import { PageTitleContainer } from '@/app/backing/components/Container/PageTitleContainer'
 import { BuildersSpotlight } from '@/app/backing/components/BuildersSpotlight/BuildersSpotlight'
-import { ActionsContainer } from '@/app/backing/components/Container/ActionContainer/ActionsContainer'
+import { ActionsContainer } from '@/components/containers'
 import { BackingBanner } from '@/app/backing/components/BackingBanner/BackingBanner'
 import { BackingInfoContainer } from '@/app/backing/components/Container/BackingInfoContainer/BackingInfoContainer'
-import { MetricsContainer } from '@/app/backing/components/Container/MetricsContainer/MetricsContainer'
+import { MetricsContainer } from '@/components/containers'
 import { AnnualBackersIncentivesMetric } from '@/app/backing/components/Metrics/AnnualBackersIncentivesMetric'
 import { EstimatedRewardsMetric } from '@/app/backing/components/Metrics/EstimatedRewardsMetric'
+import { PageTitleContainer } from '@/components/containers'
 
 const NAME = 'Backing'
 export const BackingPage = () => {
@@ -32,7 +32,7 @@ export const BackingPage = () => {
 
       {/* {address && <ActionMetricsContainer>{/* TODO: ADD CHILDREN HERE */}
       {/* </ActionMetricsContainer>} */}
-      <ActionsContainer title="BUILDERS THAT YOU MAY WANT TO BACK">
+      <ActionsContainer title="BUILDERS THAT YOU MAY WANT TO BACK" className="">
         <BuildersSpotlight />
       </ActionsContainer>
     </div>

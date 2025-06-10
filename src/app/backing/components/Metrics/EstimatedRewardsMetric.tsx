@@ -1,4 +1,3 @@
-import { Metric, MetricTitle } from '@/app/backing/components/Metric'
 import { useGetBuildersRewards } from '@/app/collective-rewards/rewards/builders/hooks/useGetBuildersRewards'
 import { useEstimatedRewards } from '../../hooks/useEstimatedRewards'
 import { useHandleErrors } from '@/app/collective-rewards/utils'
@@ -10,6 +9,7 @@ import { LoadingSpinner } from '@/components/LoadingSpinner'
 import { Header } from '@/components/TypographyNew'
 import { formatCurrency } from '@/lib/utils'
 import { RifRbtcPopover } from '@/app/backing/components/Popovers/RifRbtcPopover'
+import { Metric, MetricTitle } from '@/components/Metric'
 
 export const EstimatedRewardsMetric = () => {
   const tokens = {

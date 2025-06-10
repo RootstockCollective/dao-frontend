@@ -1,7 +1,7 @@
 import { Typography } from '@/components/TypographyNew/Typography'
 import { cn } from '@/lib/utils'
 import { FC, ReactNode } from 'react'
-import { CommonComponentProps } from '../../commonProps'
+import { CommonComponentProps } from '@/components/commonProps'
 
 export type BackingInfoContainerProps = CommonComponentProps & {
   title: ReactNode

@@ -1,5 +1,6 @@
+'use client'
 import { CycleContextProvider } from '@/app/collective-rewards/metrics'
-import { withServerFeatureFlag } from '@/shared/context/FeatureFlag'
+import { withFeatureFlag } from '@/shared/context/FeatureFlag'
 import { BackingPage } from './BackingPage'
 
 const BackingPageWithContext = () => (
@@ -8,7 +9,7 @@ const BackingPageWithContext = () => (
   </CycleContextProvider>
 )
 
-const BackingPageWithFeature = withServerFeatureFlag(BackingPageWithContext, {
+const BackingPageWithFeature = withFeatureFlag(BackingPageWithContext, {
   feature: 'v3_design',
   redirectTo: '/',
 })

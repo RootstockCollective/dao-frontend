@@ -1,6 +1,6 @@
 import React from 'react'
 import { Metric } from '../../../components/Metric/Metric'
-import { RIFToken } from '@/app/backing/components/builder-card/RIFToken/RIFToken'
+import { RIFToken } from '@/app/backing/components/RIFToken/RIFToken'
 
 export const Metrics = () => {
   return (
