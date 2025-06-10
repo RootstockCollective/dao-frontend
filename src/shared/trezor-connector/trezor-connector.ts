@@ -10,8 +10,6 @@ import { TrezorHardwareWallet } from './trezor-hardware-wallet'
 export function trezorWalletConnector(options: TrezorConnectorOptions = {}) {
   // Use createConnector from wagmi to create the connector
   return createConnector(config => {
-    // console.log('[Trezor] Creating connector with config:', config)
-
     // Extract chain information from Wagmi config
     const defaultChainId = config.chains[0]?.id
 
