@@ -1,21 +1,26 @@
 import React from 'react'
 import type { Meta, StoryObj } from '@storybook/react'
 import { Tooltip } from './Tooltip'
-import { Typography } from '../TypographyNew/Typography'
 import { Button } from '../ButtonNew/Button'
+import { Typography } from '../TypographyNew/Typography'
 
 const meta: Meta<typeof Tooltip> = {
   title: 'Components/Tooltip',
   component: Tooltip,
   tags: ['autodocs'],
   argTypes: {
-    position: {
+    side: {
       control: 'select',
       options: ['top', 'right', 'bottom', 'left'],
     },
     disabled: { control: 'boolean' },
     text: { control: 'text' },
     className: { control: 'text' },
+    sideOffset: {
+      control: 'number',
+      description: 'Tooltip offset relative to the trigger',
+      defaultValue: 5,
+    },
   },
 }
 
@@ -26,14 +31,12 @@ type Story = StoryObj<typeof Tooltip>
 export const Default: Story = {
   args: {
     text: 'Default tooltip',
-    position: 'right',
+    side: 'right',
     disabled: false,
   },
   render: args => (
     <Tooltip {...args}>
-      <button className="px-4 py-2 bg-primary">
-        <Typography>Hover me</Typography>
-      </button>
+      <Button>Hover me</Button>
     </Tooltip>
   ),
 }
@@ -45,9 +48,7 @@ export const Disabled: Story = {
   },
   render: args => (
     <Tooltip {...args}>
-      <button className="px-4 py-2 bg-gray-400 text-white rounded cursor-not-allowed">
-        <Typography>Disabled Tooltip</Typography>
-      </button>
+      <Button disabled={args.disabled}>Disabled Tooltip</Button>
     </Tooltip>
   ),
 }
@@ -55,16 +56,43 @@ export const Disabled: Story = {
 export const Positions: Story = {
   render: () => (
     <ul className="flex gap-8 flex-wrap">
-      {(['top', 'right', 'bottom', 'left'] as const).map(pos => (
-        <li key={pos}>
-          <Tooltip text={`Position: ${pos}`} position={pos}>
-            {/* <span className="px-4 py-2 bg-emerald-600 text-white rounded cursor-pointer">{pos}</span> */}
-            <Typography className="px-4 py-2 bg-emerald-600 text-white rounded cursor-pointer">
-              {pos}
-            </Typography>
+      {(['top', 'right', 'bottom', 'left'] as const).map(side => (
+        <li key={side}>
+          <Tooltip text={`Position: ${side}`} side={side}>
+            <Button className="bg-emerald-600 text-white">{side}</Button>
           </Tooltip>
         </li>
       ))}
     </ul>
+  ),
+}
+
+export const WithSideOffset: Story = {
+  args: {
+    text: 'Tooltip with custom sideOffset',
+    side: 'right',
+    sideOffset: 30,
+  },
+  render: args => (
+    <div className="flex flex-col items-start gap-2">
+      <Tooltip {...args}>
+        <Button className="bg-indigo-600 text-white">Hover me</Button>
+      </Tooltip>
+      <span className="text-xs text-gray-500">sideOffset: {args.sideOffset}</span>
+    </div>
+  ),
+}
+
+export const TooltipOnTypography: Story = {
+  args: {
+    text: 'Tip on Typography',
+    side: 'top',
+  },
+  render: args => (
+    <Tooltip {...args}>
+      <Typography as="p" className="w-fit text-lg text-emerald-700 bg-green-200" bold>
+        Hover me
+      </Typography>
+    </Tooltip>
   ),
 }

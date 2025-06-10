@@ -1,17 +1,18 @@
-import { HTMLAttributes, ReactNode } from 'react'
+import { ReactNode } from 'react'
 import * as RadixTooltip from '@radix-ui/react-tooltip'
+import { cn } from '@/lib/utils'
 
-interface Props extends HTMLAttributes<HTMLElement> {
+interface Props extends RadixTooltip.TooltipContentProps {
   text: ReactNode
-  position?: RadixTooltip.TooltipContentProps['side']
   disabled?: boolean
 }
 
 export function Tooltip({
-  className = 'rounded-full bg-dark-gray px-2 py-1 text-warm-gray text-xs font-normal shadow-lg',
+  className,
   children,
   text,
-  position = 'right',
+  side = 'right',
+  sideOffset = 5,
   disabled = false,
   ...props
 }: Props) {
@@ -22,7 +23,16 @@ export function Tooltip({
     <RadixTooltip.Root delayDuration={300}>
       <RadixTooltip.Trigger asChild>{children}</RadixTooltip.Trigger>
       <RadixTooltip.Portal>
-        <RadixTooltip.Content side={position} sideOffset={5} className={className} {...props}>
+        <RadixTooltip.Content
+          side={side}
+          sideOffset={sideOffset}
+          className={cn(
+            'rounded-full bg-dark-gray px-2 py-1 text-warm-gray text-xs font-normal shadow-lg font-rootstock-sans',
+            /* Mixing in new classes (not replacing all the default classes) */
+            className,
+          )}
+          {...props}
+        >
           {text}
         </RadixTooltip.Content>
       </RadixTooltip.Portal>

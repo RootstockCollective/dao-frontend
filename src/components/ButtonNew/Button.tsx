@@ -1,5 +1,5 @@
 import { cn } from '@/lib/utils'
-import { FC, ReactNode } from 'react'
+import { FC, ButtonHTMLAttributes } from 'react'
 import { Span } from '../TypographyNew'
 
 type ButtonVariant = 'primary' | 'secondary'
@@ -7,12 +7,8 @@ type ButtonVariant = 'primary' | 'secondary'
 const DEFAULT_CLASSES =
   'relative overflow-hidden px-6 py-2 rounded-md font-bold text-base transition-all duration-150 flex items-center justify-center gap-2'
 
-interface Props {
-  children: ReactNode
+interface Props extends ButtonHTMLAttributes<HTMLButtonElement> {
   variant?: ButtonVariant
-  disabled?: boolean
-  onClick?: () => void
-  className?: string
   'data-testid'?: string
 }
 
@@ -23,6 +19,7 @@ export const Button: FC<Props> = ({
   onClick,
   className = '',
   'data-testid': dataTestId,
+  ...props
 }) => {
   const styles = {
     primary: 'bg-primary text-bg-100 disabled:bg-disabled-primary',
@@ -33,9 +30,11 @@ export const Button: FC<Props> = ({
     <button
       type="button"
       className={cn(DEFAULT_CLASSES, styles[variant], className)}
-      onClick={() => !disabled && onClick?.()}
+      onClick={e => !disabled && onClick?.(e)}
       disabled={disabled}
       data-testid={dataTestId}
+      // All props must be forwarded to the underlying component to ensure that wrapping components (like Tooltip) function correctly.
+      {...props}
     >
       <Span bold>{children}</Span>
     </button>

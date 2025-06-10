@@ -4,7 +4,7 @@ import { Typography, TypographyProps } from './Typography'
 
 type LabelVariant = BodyVariants | TagVariants
 
-interface Props extends Omit<TypographyProps, 'as'> {
+interface Props extends Omit<TypographyProps<'label'>, 'as'> {
   variant?: LabelVariant
 }
 

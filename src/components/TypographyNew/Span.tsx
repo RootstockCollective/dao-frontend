@@ -4,7 +4,7 @@ import { Typography, TypographyProps } from './Typography'
 
 type SpanVariant = BodyVariants | TagVariants
 
-interface Props extends Omit<TypographyProps, 'as'> {
+interface Props extends Omit<TypographyProps<'span'>, 'as'> {
   variant?: SpanVariant
 }
 
