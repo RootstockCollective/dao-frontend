@@ -1,3 +1,4 @@
+import { Feature } from '@/config/features.conf'
 import { Address } from 'viem'
 
 export const GITHUB_ORG = 'RootstockCollective'
@@ -58,3 +59,12 @@ export const REOWN_PROJECT_ID = (process.env.NEXT_PUBLIC_REOWN_PROJECT_ID ?? '')
 export const REOWN_METADATA_URL = (process.env.NEXT_PUBLIC_REOWN_METADATA_URL ?? '') as string
 
 export const MOBILE_DESKTOP_BREAKPOINT = 640
+
+export const FEATURE_FLAGS: Record<Feature, string> = {
+  user_flags: process.env.NEXT_PUBLIC_ENABLE_FEATURE_USER_FLAGS ?? '',
+  v2_rewards: process.env.NEXT_PUBLIC_ENABLE_FEATURE_V2_REWARDS ?? '',
+  v3_design: process.env.NEXT_PUBLIC_ENABLE_FEATURE_V3_DESIGN ?? '',
+  use_the_graph: process.env.NEXT_PUBLIC_ENABLE_FEATURE_USE_THE_GRAPH ?? '',
+}
+
+export const getFeatureEnvFlags = (): Record<Feature, string> => FEATURE_FLAGS

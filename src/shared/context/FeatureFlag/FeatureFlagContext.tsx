@@ -1,20 +1,19 @@
 'use client'
 
+import { Feature, getFeatures, USER_FLAGS_FEATURE } from '@/config/features.conf'
 import { createContext, FC, ReactNode, useContext, useEffect, useState } from 'react'
 import {
-  type Feature,
+  type BaseFlags,
+  type FeatureFlag,
   type FeatureFlags,
-  type UserFlag,
-  type UserFlags,
-  envFlags,
-  isUserFeatureFlag,
+  getEnvFlags,
   validateUserFlags,
-} from './flags'
+} from './flags.utils'
 
 type FeatureFlagContextType = {
   flags: FeatureFlags
-  toggleFlag: (flagName: UserFlag) => void
-  updateFlags: (newFlags: UserFlags) => void
+  toggleFlag: (flagName: FeatureFlag) => void
+  updateFlags: (newFlags: BaseFlags) => void
 }
 const FeatureFlagContext = createContext<FeatureFlagContextType>({
   flags: {} as FeatureFlags,
@@ -28,34 +27,67 @@ const updateLocalStorage = (features: FeatureFlags): void => {
   }
 }
 
-const readLocalStorage = (): FeatureFlags => {
+const readLocalStorage = (item: string): Partial<FeatureFlags> => {
   if (typeof window !== 'undefined' && !!window.localStorage) {
-    return JSON.parse(window.localStorage.getItem('features') ?? '{}')
+    const storageItem = window.localStorage.getItem(item)
+
+    if (!storageItem || storageItem.trim() === '') {
+      return {}
+    }
+
+    let stored: Partial<FeatureFlags> = {}
+    try {
+      stored = JSON.parse(storageItem)
+    } catch (error) {
+      console.error('Error parsing localStorage', error)
+    }
+
+    return stored
   }
+
   return {}
 }
 
+export const cleanUserFlags = (userFlags: Partial<FeatureFlags>, features: Feature[]) => {
+  const envFlags = getEnvFlags()
+  return Object.entries(userFlags).reduce((acc, [key, value]) => {
+    if (!features?.includes(key as FeatureFlag) || key == USER_FLAGS_FEATURE) {
+      return acc
+    }
+
+    const flagOverride = envFlags[key as FeatureFlag]
+
+    return {
+      ...acc,
+      [key as FeatureFlag]: flagOverride === undefined ? value : flagOverride,
+    }
+  }, {})
+}
+
+export const combineUserFlags = (userFlags: Partial<FeatureFlags>): FeatureFlags => {
+  if (!getEnvFlags() || !userFlags) {
+    return {}
+  }
+  return {
+    ...cleanUserFlags(userFlags, getFeatures()),
+    ...getEnvFlags(),
+  }
+}
+
 export const FeatureFlagProvider: FC<{ children: ReactNode }> = ({ children }) => {
-  const [flags, setFlags] = useState<FeatureFlags>(envFlags)
+  const [flags, setFlags] = useState<FeatureFlags>(() => getEnvFlags())
 
   useEffect(() => {
-    const localStorageFlags = readLocalStorage()
-    const cleanEnvFlags: FeatureFlags = Object.entries(envFlags).reduce<FeatureFlags>((acc, [key, value]) => {
-      if (value !== undefined) {
-        acc[key as Feature] = value
-      }
-
-      return acc
-    }, {})
-    const allFlags: FeatureFlags = { ...envFlags, ...localStorageFlags, ...cleanEnvFlags }
+    const localStorageFlags = readLocalStorage('features')
+    const allFlags = combineUserFlags(localStorageFlags)
 
     setFlags(allFlags)
     updateLocalStorage(allFlags)
   }, [])
 
-  const toggleFlag = (flag: UserFlag) => {
-    if (flags.user_flags && isUserFeatureFlag(flag)) {
-      const updatedFlags = {
+  const toggleFlag = (flag: FeatureFlag) => {
+    if (flags.user_flags?.includes(flag)) {
+      const updatedFlags: FeatureFlags = {
         ...flags,
         [flag]: !flags[flag],
       }
@@ -64,9 +96,9 @@ export const FeatureFlagProvider: FC<{ children: ReactNode }> = ({ children }) =
     }
   }
 
-  const updateFlags = (newFlags: UserFlags) => {
-    if (flags.user_flags && validateUserFlags(newFlags)) {
-      const updatedFlags = {
+  const updateFlags = (newFlags: BaseFlags) => {
+    if (!!flags.user_flags && validateUserFlags(newFlags)) {
+      const updatedFlags: FeatureFlags = {
         ...flags,
         ...newFlags,
       }
