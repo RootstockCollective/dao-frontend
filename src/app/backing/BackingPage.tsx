@@ -26,7 +26,7 @@ export const BackingPage = () => {
       </PageTitleContainer>
       <div data-testid="CenterContainer" className="flex flex-col items-start gap-2">
         <InfoContainer className="grow-[9]">{/* TODO: ADD CHILDREN HERE */}</InfoContainer>
-        <MetricsContainer className="grow-[3]">
+        <MetricsContainer className="flex flex-col items-start w-[1144px] p-6">
           <div className="flex w-full gap-4">
             <Metric
               title="Available for backing"
