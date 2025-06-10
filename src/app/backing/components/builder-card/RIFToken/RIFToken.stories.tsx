@@ -16,3 +16,11 @@ type Story = StoryObj<typeof RIFToken>
 export const Default: Story = {
   args: {},
 }
+
+export const WithCustomStyle: Story = {
+  args: {
+    className: 'p-2',
+    textClassName: 'text-lg font-bold leading-[133%]',
+    size: 20,
+  },
+}

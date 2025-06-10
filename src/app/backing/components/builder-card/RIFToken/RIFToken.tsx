@@ -1,15 +1,21 @@
 import { TokenImage } from '@/components/TokenImage'
 import { RIF } from '@/lib/constants'
+import { cn } from '@/lib/utils'
 import { FC } from 'react'
 
-export const RIFToken: FC = () => {
+export const RIFToken: FC<{ size?: number; className?: string; textClassName?: string }> = ({
+  className,
+  textClassName,
+  size = 16,
+}) => {
   return (
     <div
-      className="flex items-center gap-1 flex-shrink-0 font-rootstock-sans"
+      className={cn('flex items-center gap-1 font-rootstock-sans', className)}
       data-testid="currentBackingToken"
     >
-      <TokenImage symbol={RIF} size={16} />
-      <div className="text-xs text-v3-text-100">stRIF</div>
+      <TokenImage symbol={RIF} size={size} />
+
+      <div className={cn('text-xs text-v3-text-100', textClassName)}>stRIF</div>
     </div>
   )
 }
