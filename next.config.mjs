@@ -54,6 +54,8 @@ const nextConfig = {
       },
     ],
   },
+
+  serverExternalPackages: ['knex'],
 }
 
 const getNextConfig = () => {

@@ -1,7 +1,7 @@
 import { AVERAGE_BLOCKTIME } from '@/lib/constants'
 import { useQuery } from '@tanstack/react-query'
 import { Address } from 'viem'
-import { fetchBackerStakingHistory } from '@/app/collective-rewards/rewards'
+import { fetchBackerStakingHistory } from '../actions'
 
 export type BackerStakingHistory = {
   id: Address
@@ -18,7 +18,29 @@ export type GaugeStakingHistory = {
   lastBlockTimestamp_: string
 }
 
-export const useGetBackerStakingHistory = (backer: Address) => {
+export const useGetBackerStakingHistoryWithStateSync = (backer: Address) => {
+  const { data, isLoading, error } = useQuery<BackerStakingHistory, Error>({
+    queryFn: async () => {
+      const response = await fetch(`/api/backers/${backer}/metrics/rbi/context`)
+
+      if (!response.ok) {
+        throw new Error('Failed to fetch backer staking history')
+      }
+
+      return response.json()
+    },
+    queryKey: ['backerStakingHistory', backer],
+    refetchInterval: AVERAGE_BLOCKTIME,
+  })
+
+  return {
+    data,
+    isLoading,
+    error,
+  }
+}
+
+export const useGetBackerStakingHistoryWithGraph = (backer: Address) => {
   const { data, isLoading, error } = useQuery({
     queryFn: () => fetchBackerStakingHistory(backer),
     queryKey: ['backerStakingHistory', backer],
