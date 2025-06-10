@@ -10,6 +10,8 @@ import { PageTitleContainer } from './components/Container/PageTitleContainer'
 import { Button } from '@/components/Button'
 import { Metric } from './components/Metric/Metric'
 import { Typography } from '@/components/TypographyNew/Typography'
+import { TokenImage } from '@/components/TokenImage'
+import { stRIF } from '@/lib/constants'
 
 const NAME = 'Backing'
 export const BackingPage = () => {
@@ -51,9 +53,7 @@ export const BackingPage = () => {
                         {availableForBacking}
                       </Typography>
                       <div className="flex py-2 pl-2 pr-0 items-center gap-1 rounded">
-                        <div className="w-6 h-6 bg-[#4B5CF0] rounded-full flex items-center justify-center">
-                          <span className="text-white text-xs font-bold">st</span>
-                        </div>
+                        <TokenImage symbol={stRIF} size={24} />
                         <Typography variant="body-l" bold className="text-white text-right">
                           stRIF
                         </Typography>
@@ -106,9 +106,7 @@ export const BackingPage = () => {
                         {totalBacking}
                       </Typography>
                       <div className="flex py-2 pl-2 pr-0 items-center gap-1 rounded">
-                        <div className="w-6 h-6 bg-[#4B5CF0] rounded-full flex items-center justify-center">
-                          <span className="text-white text-xs font-bold">st</span>
-                        </div>
+                        <TokenImage symbol={stRIF} size={24} />
                         <Typography variant="body-l" bold className="text-white text-right">
                           stRIF
                         </Typography>
