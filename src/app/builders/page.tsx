@@ -1,13 +1,9 @@
-import { envFlags } from '@/shared/context/flags'
-import { redirect } from 'next/navigation'
+import { withServerFeatureFlag } from '@/shared/context/FeatureFlag'
 import { BuildersPage } from './BuildersPage'
 
-export default function Builders() {
-  const { v3_design } = envFlags
+const BackingPageWithFeature = withServerFeatureFlag(BuildersPage, {
+  feature: 'v3_design',
+  redirectTo: '/',
+})
 
-  if (!v3_design) {
-    redirect('/')
-  }
-
-  return v3_design && <BuildersPage />
-}
+export default BackingPageWithFeature
