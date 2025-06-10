@@ -4,7 +4,7 @@ import { BigSource } from 'big.js'
 import { ClassValue, clsx } from 'clsx'
 import { twMerge } from 'tailwind-merge'
 import { Address } from 'viem'
-import { CHAIN_ID, EXPLORER_URL, RIF_WALLET_SERVICES_URL } from './constants'
+import { CHAIN_ID, EXPLORER_URL, RIF_WALLET_SERVICES_URL } from '../constants'
 
 /**
  * Merges Tailwind and clsx classes in order to avoid classes conflicts.
