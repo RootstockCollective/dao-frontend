@@ -1,7 +1,7 @@
 import { ReactNode, useEffect } from 'react'
 import { FallbackProps } from 'react-error-boundary'
 
-type FallbackWithRetryProps = FallbackProps & {
+interface FallbackWithRetryProps extends FallbackProps {
   retryDelayMs: number
   children: ReactNode
 }

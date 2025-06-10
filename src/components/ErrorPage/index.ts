@@ -1,2 +1,2 @@
 export * from './commonErrors'
-export * from './CustomErrorBoundary'
+export * from './GlobalErrorBoundary'

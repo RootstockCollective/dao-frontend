@@ -34,7 +34,7 @@ interface Props {
   children: ReactNode
 }
 
-export const CustomErrorBoundary = ({ children }: Props) => {
+export const GlobalErrorBoundary = ({ children }: Props) => {
   return (
     <ErrorBoundary
       FallbackComponent={ErrorFallback}
