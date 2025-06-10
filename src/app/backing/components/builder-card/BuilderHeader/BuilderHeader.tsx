@@ -18,7 +18,7 @@ export const BuilderHeader: FC<BuilderHeaderProps> = ({ address, name, builderPa
       <div className="rounded-full overflow-hidden inline-block size-[88px]" data-testid="builderAvatar">
         <Jdenticon className="bg-v3-text-100" value={address} size="88" />
       </div>
-      <Header className="mt-2 text-center text-[22px] text-v3-primary font-bold" fontFamily="kk-topo">
+      <Header className="mt-2 text-center text-[22px] text-v3-primary font-bold font-kk-topo">
         <Link
           href={builderPageLink || '#'}
           data-testid="builderName"

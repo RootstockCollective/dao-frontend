@@ -6,13 +6,14 @@ import React from 'react';
 import { WagmiConfig, createConfig } from 'wagmi';
 import { mainnet } from 'wagmi/chains';
 import { http } from 'viem';
+import { TooltipProvider } from '@radix-ui/react-tooltip'
 
 const config = createConfig({
   chains: [mainnet],
   transports: {
     [mainnet.id]: http(),
   },
-});
+})
 
 const preview: Preview = {
   parameters: {
@@ -33,14 +34,16 @@ const preview: Preview = {
     },
   },
   decorators: [
-    (Story) => (
+    Story => (
       <WagmiConfig config={config}>
-        <Story />
-        <ToastContainer />
+        <TooltipProvider>
+          <Story />
+          <ToastContainer />
+        </TooltipProvider>
       </WagmiConfig>
     ),
   ],
-  tags: ['autodocs']
+  tags: ['autodocs'],
 }
 
 export default preview;

@@ -4,17 +4,19 @@ import { useAccount } from 'wagmi'
 import { useMemo, useContext } from 'react'
 import { usePricesContext } from '@/shared/context/PricesContext'
 import { AllocationsContext } from '@/app/collective-rewards/allocations/context/AllocationsContext'
-import { ActionsContainer } from './components/Container'
-import { ActionMetricsContainer } from './components/Container/ActionMetricsContainer'
-import { InfoContainer } from './components/Container/InfoContainer'
-import { MetricsContainer } from './components/Container/MetricsContainer'
-import { PageTitleContainer } from './components/Container/PageTitleContainer'
 import { Button } from '@/components/Button'
 import { Metric } from './components/Metric/Metric'
 import { Typography } from '@/components/TypographyNew/Typography'
 import { TokenImage } from '@/components/TokenImage'
 import { stRIF, RIF } from '@/lib/constants'
 import KotoQuestionMarkIcon from '@/components/Icons/KotoQuestionMarkIcon'
+import {
+  ActionMetricsContainer,
+  ActionsContainer,
+  InfoContainer,
+  MetricsContainer,
+  PageTitleContainer,
+} from '@/components/containers'
 
 const NAME = 'Backing'
 export const BackingPage = () => {

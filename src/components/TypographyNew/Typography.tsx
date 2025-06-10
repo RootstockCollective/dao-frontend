@@ -1,23 +1,18 @@
 import { cn } from '@/lib/utils'
-import { CSSProperties, FC, ReactNode } from 'react'
+import type { ComponentPropsWithoutRef, ElementType } from 'react'
 import sanitizeHtml from 'sanitize-html'
-import { BodyVariants, EmphaseVariants, HeaderVariants, TagVariants, TypographyElement } from './types'
+import type { BodyVariants, EmphaseVariants, HeaderVariants, TagVariants } from './types'
 
 type TypographyVariant = EmphaseVariants | HeaderVariants | BodyVariants | TagVariants
 
-interface Props {
-  children: ReactNode
-  as?: TypographyElement
+export type TypographyProps<T extends ElementType> = {
+  as?: T
   variant?: TypographyVariant
-  className?: string
   html?: boolean
   caps?: boolean
   bold?: boolean
   'data-testid'?: string
-  onClick?: () => void
-}
-
-export type TypographyProps = Props & CSSProperties
+} & ComponentPropsWithoutRef<T>
 
 export const variantClasses: Record<TypographyVariant, string> = {
   e1: 'font-kk-topo font-normal text-6xl leading-[63.6px] tracking-normal uppercase',
@@ -39,9 +34,9 @@ export const variantClasses: Record<TypographyVariant, string> = {
   'tag-m': 'font-rootstock-sans font-medium text-sm leading-[20.3px] tracking-[0.08em]',
 }
 
-export const Typography: FC<TypographyProps> = ({
+export function Typography<T extends ElementType>({
   children,
-  as: Component = 'span',
+  as = 'span' as T,
   variant = 'body',
   className = '',
   html = false,
@@ -49,8 +44,9 @@ export const Typography: FC<TypographyProps> = ({
   bold = false,
   'data-testid': dataTestId,
   onClick,
-  ...styles
-}) => {
+  ...props
+}: TypographyProps<T>) {
+  const Component: ElementType = as
   const cleanHtml =
     html && typeof children === 'string'
       ? sanitizeHtml(children, {
@@ -70,10 +66,11 @@ export const Typography: FC<TypographyProps> = ({
   return (
     <Component
       className={cn(variantClasses[variant], className, modifierClasses)}
-      style={{ ...styles }}
       onClick={onClick}
       dangerouslySetInnerHTML={cleanHtml ? { __html: cleanHtml } : undefined}
       data-testid={dataTestId}
+      // All props must be forwarded to the underlying component to ensure that wrapping components (like Tooltip) function correctly.
+      {...props}
     >
       {!cleanHtml && children}
     </Component>
