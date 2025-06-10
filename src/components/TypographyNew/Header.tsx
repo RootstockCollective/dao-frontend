@@ -17,7 +17,7 @@ const elementByVariant: Record<HeaderVariant, TypographyElement> = {
   h5: 'h5',
 }
 
-interface Props extends Omit<TypographyProps, 'as'> {
+interface Props extends Omit<TypographyProps<TypographyElement>, 'as'> {
   variant?: HeaderVariant
 }
 

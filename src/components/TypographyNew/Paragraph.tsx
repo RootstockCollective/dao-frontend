@@ -2,10 +2,8 @@ import { FC } from 'react'
 import { BodyVariants } from './types'
 import { Typography, TypographyProps } from './Typography'
 
-type ParagraphVariant = BodyVariants
-
-interface Props extends Omit<TypographyProps, 'as'> {
-  variant?: ParagraphVariant
+interface Props extends Omit<TypographyProps<'p'>, 'as'> {
+  variant?: BodyVariants
 }
 
 export const Paragraph: FC<Props> = ({
