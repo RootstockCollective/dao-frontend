@@ -12,6 +12,7 @@ import { Metric } from './components/Metric/Metric'
 import { Typography } from '@/components/TypographyNew/Typography'
 import { TokenImage } from '@/components/TokenImage'
 import { stRIF } from '@/lib/constants'
+import KotoQuestionMarkIcon from '@/components/Icons/KotoQuestionMarkIcon'
 
 const NAME = 'Backing'
 export const BackingPage = () => {
@@ -73,17 +74,22 @@ export const BackingPage = () => {
                           </Typography>
                         </Button>
                       ) : (
-                        <Button
-                          variant="secondary"
-                          className="flex h-7 px-2 py-1 items-center gap-2 rounded border border-[#66605C]"
-                        >
-                          <Typography
-                            variant="tag-s"
-                            className="text-white font-rootstock-sans text-sm font-normal leading-[145%]"
+                        <div className="flex items-center gap-3">
+                          <Button
+                            variant="secondary"
+                            className="flex h-7 px-2 py-1 items-center gap-2 rounded border border-[#66605C]"
                           >
-                            Distribute equally
-                          </Typography>
-                        </Button>
+                            <Typography
+                              variant="tag-s"
+                              className="text-white font-rootstock-sans text-sm font-normal leading-[145%]"
+                            >
+                              Distribute equally
+                            </Typography>
+                          </Button>
+                          <div className="flex w-4 py-[6px] flex-col justify-center items-center self-stretch aspect-square">
+                            <KotoQuestionMarkIcon />
+                          </div>
+                        </div>
                       )}
                     </div>
                   </div>
