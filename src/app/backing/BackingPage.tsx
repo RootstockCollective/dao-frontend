@@ -31,8 +31,8 @@ export const BackingPage = () => {
           <div className="flex w-full gap-4">
             <Metric
               title={
-                <Typography 
-                  variant="tag" 
+                <Typography
+                  variant="tag"
                   className="text-[#ACA39D] text-base font-medium font-rootstock-sans leading-[150%]"
                 >
                   Available for backing
@@ -43,9 +43,9 @@ export const BackingPage = () => {
                 <div className="flex flex-col items-start gap-2 self-stretch">
                   <div className="flex h-10 items-center gap-6">
                     <div className="flex items-center gap-2">
-                      <Typography 
-                        variant="h1" 
-                        caps 
+                      <Typography
+                        variant="h1"
+                        caps
                         className="text-white overflow-hidden text-ellipsis [-webkit-box-orient:vertical] [-webkit-line-clamp:1] [display:-webkit-box] leading-[40px]"
                       >
                         {availableForBacking}
@@ -54,11 +54,7 @@ export const BackingPage = () => {
                         <div className="w-6 h-6 bg-[#4B5CF0] rounded-full flex items-center justify-center">
                           <span className="text-white text-xs font-bold">st</span>
                         </div>
-                        <Typography 
-                          variant="body-l" 
-                          bold 
-                          className="text-white text-right"
-                        >
+                        <Typography variant="body-l" bold className="text-white text-right">
                           stRIF
                         </Typography>
                       </div>
@@ -72,19 +68,13 @@ export const BackingPage = () => {
                             // FIXME: Implement staking page and update this navigation
                           }}
                         >
-                          <Typography 
-                            variant="tag-s" 
-                            className="text-[#171412]"
-                          >
+                          <Typography variant="tag-s" className="text-[#171412]">
                             Stake some RIF
                           </Typography>
                         </Button>
                       ) : (
                         <Button variant="secondary">
-                          <Typography 
-                            variant="tag-s" 
-                            className="text-[#171412]"
-                          >
+                          <Typography variant="tag-s" className="text-[#171412]">
                             Distribute Equally
                           </Typography>
                         </Button>
@@ -96,8 +86,8 @@ export const BackingPage = () => {
             />
             <Metric
               title={
-                <Typography 
-                  variant="tag" 
+                <Typography
+                  variant="tag"
                   className="text-[#ACA39D] text-base font-medium font-rootstock-sans leading-[150%]"
                 >
                   Total backing
@@ -108,9 +98,9 @@ export const BackingPage = () => {
                 <div className="flex flex-col items-start gap-2 self-stretch">
                   <div className="flex h-10 items-center gap-6">
                     <div className="flex items-center gap-2">
-                      <Typography 
-                        variant="h1" 
-                        caps 
+                      <Typography
+                        variant="h1"
+                        caps
                         className="text-white overflow-hidden text-ellipsis [-webkit-box-orient:vertical] [-webkit-line-clamp:1] [display:-webkit-box] leading-[40px]"
                       >
                         {totalBacking}
@@ -119,11 +109,7 @@ export const BackingPage = () => {
                         <div className="w-6 h-6 bg-[#4B5CF0] rounded-full flex items-center justify-center">
                           <span className="text-white text-xs font-bold">st</span>
                         </div>
-                        <Typography 
-                          variant="body-l" 
-                          bold 
-                          className="text-white text-right"
-                        >
+                        <Typography variant="body-l" bold className="text-white text-right">
                           stRIF
                         </Typography>
                       </div>
