@@ -1,7 +1,7 @@
 import { AVERAGE_BLOCKTIME } from '@/lib/constants'
 import { useQuery } from '@tanstack/react-query'
-import axios from 'axios'
 import { Address } from 'viem'
+import { fetchBackerStakingHistory } from '../actions'
 
 export type BackerStakingHistory = {
   id: Address
@@ -42,10 +42,7 @@ export const useGetBackerStakingHistoryWithStateSync = (backer: Address) => {
 
 export const useGetBackerStakingHistoryWithGraph = (backer: Address) => {
   const { data, isLoading, error } = useQuery({
-    queryFn: async () => {
-      const { data } = await axios.get<BackerStakingHistory>(`/api/backers/${backer}/metrics/rbi/context`)
-      return data
-    },
+    queryFn: () => fetchBackerStakingHistory(backer),
     queryKey: ['backerStakingHistory', backer],
     refetchInterval: AVERAGE_BLOCKTIME,
   })
