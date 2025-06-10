@@ -24,7 +24,7 @@ type BuilderData = {
   totalAllocation: string
 }
 
-type Response = {
+export type Response = {
   builders: BuilderData[]
   cycles: CycleData[]
 }
