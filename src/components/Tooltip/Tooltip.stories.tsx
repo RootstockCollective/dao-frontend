@@ -2,7 +2,7 @@ import React from 'react'
 import type { Meta, StoryObj } from '@storybook/react'
 import { Tooltip } from './Tooltip'
 import { Button } from '../ButtonNew/Button'
-import { Typography } from '../TypographyNew/Typography'
+import { Paragraph } from '../TypographyNew'
 
 const meta: Meta<typeof Tooltip> = {
   title: 'Components/Tooltip',
@@ -85,14 +85,14 @@ export const WithSideOffset: Story = {
 
 export const TooltipOnTypography: Story = {
   args: {
-    text: 'Tip on Typography',
+    text: 'Tip on Paragraph',
     side: 'top',
   },
   render: args => (
     <Tooltip {...args}>
-      <Typography as="p" className="w-fit text-lg text-emerald-700 bg-green-200" bold>
+      <Paragraph className="w-fit text-lg text-emerald-700 bg-green-200" bold>
         Hover me
-      </Typography>
+      </Paragraph>
     </Tooltip>
   ),
 }
