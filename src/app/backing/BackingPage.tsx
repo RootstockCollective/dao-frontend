@@ -40,54 +40,56 @@ export const BackingPage = () => {
               }
               className="flex-1"
               content={
-                <div className="flex flex-col gap-4">
-                  <div className="flex items-center gap-2">
-                    <Typography 
-                      variant="h1" 
-                      caps 
-                      className="text-white overflow-hidden text-ellipsis [-webkit-box-orient:vertical] [-webkit-line-clamp:1] [display:-webkit-box] leading-[40px]"
-                    >
-                      {availableForBacking}
-                    </Typography>
-                    <div className="flex items-center gap-1">
-                      <div className="w-6 h-6 bg-[#4B5CF0] rounded-full flex items-center justify-center">
-                        <span className="text-white text-xs font-bold">st</span>
-                      </div>
+                <div className="flex flex-col items-start gap-2 self-stretch">
+                  <div className="flex h-10 items-center gap-6">
+                    <div className="flex items-center gap-2">
                       <Typography 
-                        variant="body-l" 
-                        bold 
-                        className="text-white text-right"
+                        variant="h1" 
+                        caps 
+                        className="text-white overflow-hidden text-ellipsis [-webkit-box-orient:vertical] [-webkit-line-clamp:1] [display:-webkit-box] leading-[40px]"
                       >
-                        stRIF
+                        {availableForBacking}
                       </Typography>
+                      <div className="flex py-2 pl-2 pr-0 items-center gap-1 rounded">
+                        <div className="w-6 h-6 bg-[#4B5CF0] rounded-full flex items-center justify-center">
+                          <span className="text-white text-xs font-bold">st</span>
+                        </div>
+                        <Typography 
+                          variant="body-l" 
+                          bold 
+                          className="text-white text-right"
+                        >
+                          stRIF
+                        </Typography>
+                      </div>
                     </div>
-                  </div>
-                  <div className="flex gap-2">
-                    {availableForBacking === 0 ? (
-                      <Button
-                        variant="primary"
-                        className="w-full bg-[#F47A2A] hover:bg-[#E6691B]"
-                        onClick={() => {
-                          // FIXME: Implement staking page and update this navigation
-                        }}
-                      >
-                        <Typography 
-                          variant="tag-s" 
-                          className="text-[#171412]"
+                    <div className="flex items-center">
+                      {availableForBacking === 0 ? (
+                        <Button
+                          variant="primary"
+                          className="flex h-7 px-4 py-3 items-center gap-2 rounded bg-[#F47A2A] hover:bg-[#E6691B]"
+                          onClick={() => {
+                            // FIXME: Implement staking page and update this navigation
+                          }}
                         >
-                          Stake some RIF
-                        </Typography>
-                      </Button>
-                    ) : (
-                      <Button variant="secondary" className="w-full">
-                        <Typography 
-                          variant="tag-s" 
-                          className="text-[#171412]"
-                        >
-                          Distribute Equally
-                        </Typography>
-                      </Button>
-                    )}
+                          <Typography 
+                            variant="tag-s" 
+                            className="text-[#171412]"
+                          >
+                            Stake some RIF
+                          </Typography>
+                        </Button>
+                      ) : (
+                        <Button variant="secondary">
+                          <Typography 
+                            variant="tag-s" 
+                            className="text-[#171412]"
+                          >
+                            Distribute Equally
+                          </Typography>
+                        </Button>
+                      )}
+                    </div>
                   </div>
                 </div>
               }
@@ -103,26 +105,28 @@ export const BackingPage = () => {
               }
               className="flex-1"
               content={
-                <div className="flex flex-col gap-4">
-                  <div className="flex items-center gap-2">
-                    <Typography 
-                      variant="h1" 
-                      caps 
-                      className="text-white overflow-hidden text-ellipsis [-webkit-box-orient:vertical] [-webkit-line-clamp:1] [display:-webkit-box] leading-[40px]"
-                    >
-                      {totalBacking}
-                    </Typography>
-                    <div className="flex items-center gap-1">
-                      <div className="w-6 h-6 bg-[#4B5CF0] rounded-full flex items-center justify-center">
-                        <span className="text-white text-xs font-bold">st</span>
-                      </div>
+                <div className="flex flex-col items-start gap-2 self-stretch">
+                  <div className="flex h-10 items-center gap-6">
+                    <div className="flex items-center gap-2">
                       <Typography 
-                        variant="body-l" 
-                        bold 
-                        className="text-white text-right"
+                        variant="h1" 
+                        caps 
+                        className="text-white overflow-hidden text-ellipsis [-webkit-box-orient:vertical] [-webkit-line-clamp:1] [display:-webkit-box] leading-[40px]"
                       >
-                        stRIF
+                        {totalBacking}
                       </Typography>
+                      <div className="flex py-2 pl-2 pr-0 items-center gap-1 rounded">
+                        <div className="w-6 h-6 bg-[#4B5CF0] rounded-full flex items-center justify-center">
+                          <span className="text-white text-xs font-bold">st</span>
+                        </div>
+                        <Typography 
+                          variant="body-l" 
+                          bold 
+                          className="text-white text-right"
+                        >
+                          stRIF
+                        </Typography>
+                      </div>
                     </div>
                   </div>
                 </div>
