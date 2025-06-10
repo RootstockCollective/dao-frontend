@@ -1,7 +1,7 @@
 'use client'
 import { BalancesProvider } from '@/app/user/Balances/context/BalancesContext'
 import { HeroCollapseProvider } from '@/app/user/HeroSection/HeroCollapseContext'
-import ErrorBoundary from '@/components/ErrorPage/ErrorBoundary'
+import { GlobalErrorBoundary } from '@/components/ErrorPage/GlobalErrorBoundary'
 import { MainContainer } from '@/components/MainContainer/MainContainer'
 import { currentEnvChain, wagmiAdapter, wagmiAdapterConfig } from '@/config'
 import { REOWN_METADATA_URL, REOWN_PROJECT_ID } from '@/lib/constants'
@@ -60,7 +60,7 @@ export const ContextProviders = ({ children, initialState }: Props) => {
   const queryClient = new QueryClient()
 
   return (
-    <ErrorBoundary>
+    <GlobalErrorBoundary>
       <FeatureFlagProvider>
         <WagmiProvider config={wagmiAdapterConfig} initialState={initialState}>
           <QueryClientProvider client={queryClient}>
@@ -80,6 +80,6 @@ export const ContextProviders = ({ children, initialState }: Props) => {
           </QueryClientProvider>
         </WagmiProvider>
       </FeatureFlagProvider>
-    </ErrorBoundary>
+    </GlobalErrorBoundary>
   )
 }
