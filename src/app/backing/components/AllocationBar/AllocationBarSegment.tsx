@@ -45,12 +45,23 @@ export const AllocationBarSegment = ({
     transform: CSS.Translate.toString(transform),
   }
 
+  const baseClasses = 'min-w-12 h-full relative overflow-visible flex items-stretch p-0'
+  const transitionClasses =
+    dragIndex !== null ? 'transition-none' : 'transition-transform duration-200 ease-out'
+  const dragStateClasses = isDragging ? 'opacity-60 z-[99]' : 'opacity-100 z-1'
+  const borderClasses = `${index === 0 ? 'rounded-l-sm' : ''} ${isLast ? 'rounded-r-sm' : ''}`
+
   return (
     <div
       ref={setNodeRef}
       style={style}
-      // TODO: we may need to review the transition here
-      className={`min-w-12 h-full relative overflow-visible flex items-stretch p-0 ${dragIndex !== null ? 'transition-none' : 'transition-transform duration-200 ease-out'} ${isDragging ? 'opacity-60 z-[99]' : 'opacity-100 z-1'} ${index === 0 ? 'rounded-l-sm' : ''} ${isLast ? 'rounded-r-sm' : ''} ${item.color}`}
+      className={`
+        ${baseClasses}
+        ${transitionClasses}
+        ${dragStateClasses}
+        ${borderClasses}
+        ${item.color}
+      `.trim()}
     >
       {/* DRAG HANDLE (always far left) */}
       {isDraggable && <AllocationBarDragHandle attributes={attributes} listeners={listeners} />}
