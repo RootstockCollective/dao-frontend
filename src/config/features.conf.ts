@@ -5,6 +5,7 @@ const features = {
   v2_rewards: 'Brings voting to builders',
   v3_design: 'Use the new v3 koto-based design',
   use_the_graph: 'Use the graph protocol for data collection',
+  use_state_sync: 'Use the state sync for data collection',
 } as const
 
 type Feature = keyof typeof features
