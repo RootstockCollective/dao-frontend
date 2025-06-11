@@ -1,13 +1,15 @@
-import { Paragraph } from '@/components/TypographyNew'
-import { BackerRewardsPercentage } from '../BackerPercentage/BackerRewardsPercentage'
-import { FC } from 'react'
-import { LabeledContent } from '../LabeledContent/LabeledContent'
-import { BackerRewardsConfig } from '@/app/collective-rewards/types'
+import { BackerRewardPercentage, TokenRewards } from '@/app/collective-rewards/rewards/types'
 import { weiToPercentage } from '@/app/collective-rewards/settings/utils'
-import { BackerRewardPercentage } from '@/app/collective-rewards/rewards/types'
+import { getCombinedFiatAmount } from '@/app/collective-rewards/utils'
+import { Paragraph } from '@/components/TypographyNew'
+import { formatCurrency } from '@/lib/utils'
+import { FC } from 'react'
+import { BackerRewardsPercentage } from '../BackerPercentage/BackerRewardsPercentage'
+import { LabeledContent } from '../LabeledContent/LabeledContent'
+import { RifRbtcPopover } from '../Popovers/RifRbtcPopover'
 
 export interface RewardsInfoProps extends BackerRewardPercentage {
-  estimatedRewards?: string
+  estimatedRewards?: TokenRewards
 }
 
 export const RewardsInfo: FC<RewardsInfoProps> = ({ current, next, estimatedRewards }) => {
@@ -21,8 +23,17 @@ export const RewardsInfo: FC<RewardsInfoProps> = ({ current, next, estimatedRewa
       </LabeledContent>
       {estimatedRewards && (
         <LabeledContent label="Rewards (est.)" className="w-1/2">
-          {/* FIXME: we should include here a popover that shows the estimated rewards in RIF and RBTC */}
-          <Paragraph data-testid="rewardsInfoEstimated">{estimatedRewards}</Paragraph>
+          <RifRbtcPopover
+            totalEstimatedRbtc={estimatedRewards.rbtc.amount.value}
+            totalEstimatedRif={estimatedRewards.rif.amount.value}
+          >
+            <Paragraph className="cursor-pointer">
+              {formatCurrency(
+                getCombinedFiatAmount([estimatedRewards.rbtc.amount, estimatedRewards.rif.amount]),
+              )}{' '}
+              USD
+            </Paragraph>
+          </RifRbtcPopover>
         </LabeledContent>
       )}
     </div>

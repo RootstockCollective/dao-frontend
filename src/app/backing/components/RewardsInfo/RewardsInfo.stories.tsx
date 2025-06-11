@@ -40,7 +40,24 @@ export const Default: Story = {
 export const WithEstimatedRewards: Story = {
   args: {
     ...defaultArgs,
-    estimatedRewards: '300.00 USD',
+    estimatedRewards: {
+      rif: {
+        amount: {
+          value: 300000000000000000000n, // 300 RIF in wei
+          price: 1,
+          symbol: 'RIF',
+          currency: 'USD',
+        },
+      },
+      rbtc: {
+        amount: {
+          value: 0n,
+          price: 0,
+          symbol: 'RBTC',
+          currency: 'USD',
+        },
+      },
+    },
   },
 }
 
@@ -48,7 +65,24 @@ export const WithIncreaseNextRewardPct: Story = {
   args: {
     ...defaultArgs,
     next: 60,
-    estimatedRewards: '300.00 USD',
+    estimatedRewards: {
+      rif: {
+        amount: {
+          value: 300000000000000000000n, // 300 RIF in wei
+          price: 1,
+          symbol: 'RIF',
+          currency: 'USD',
+        },
+      },
+      rbtc: {
+        amount: {
+          value: 0n,
+          price: 0,
+          symbol: 'RBTC',
+          currency: 'USD',
+        },
+      },
+    },
   },
 }
 
@@ -56,6 +90,23 @@ export const WithDecreaseNextRewardPct: Story = {
   args: {
     ...defaultArgs,
     next: 40,
-    estimatedRewards: '300.00 USD',
+    estimatedRewards: {
+      rif: {
+        amount: {
+          value: 300000000000000000000n, // 300 RIF in wei
+          price: 1,
+          symbol: 'RIF',
+          currency: 'USD',
+        },
+      },
+      rbtc: {
+        amount: {
+          value: 0n,
+          price: 0,
+          symbol: 'RBTC',
+          currency: 'USD',
+        },
+      },
+    },
   },
 }

@@ -1,235 +1,120 @@
-import type { Meta, StoryObj } from '@storybook/react'
-import { BuilderCard } from './BuilderCard'
-import { useState } from 'react'
+import { percentageToWei } from '@/app/collective-rewards/settings/utils/weiUtils'
 import { AlertProvider } from '@/app/providers/AlertProvider'
+import type { Meta, StoryObj } from '@storybook/react'
+import { getAddress, parseEther } from 'viem'
+import { BuilderCard } from './BuilderCard'
+
+// Decorator to handle BigInt serialization
+const withBigIntSerialization = (Story: any) => {
+  return (
+    <div style={{ maxWidth: '600px' }}>
+      <AlertProvider>
+        <Story />
+      </AlertProvider>
+    </div>
+  )
+}
 
 const meta: Meta<typeof BuilderCard> = {
   title: 'Backing/BuilderCard',
   component: BuilderCard,
-  decorators: [
-    Story => (
-      <AlertProvider>
-        <div className="w-[800px]">
-          <Story />
-        </div>
-      </AlertProvider>
-    ),
-  ],
+  parameters: {
+    layout: 'centered',
+  },
+  decorators: [withBigIntSerialization],
+  tags: ['autodocs'],
 }
+
 export default meta
+type Story = StoryObj<typeof BuilderCard>
 
-// All BigInt-like values as strings for Storybook serialization
-export type BuilderCardStoryArgs = {
-  address: string
-  builderName: string
-  proposal: {
-    id: string
-    name: string
-    description: string
-    date: string
-  }
+const defaultProps = {
+  address: getAddress('0x1234567890123456789012345678901234567890'),
+  builderName: 'Example Builder',
   backerRewardPct: {
-    current: string
-    next: string
-    cooldownEndTime: string
-  }
-  rifPriceUsd: number
-  isConnected: boolean
-  maxAllocation: string
-  existentAllocation: string
-  allocation: string
-  topBarColor: string
-  className: string
-  allocationTxPending?: boolean
-  estimatedRewards?: string
+    current: percentageToWei('50'),
+    next: percentageToWei('50'),
+    cooldownEndTime: BigInt(Math.floor(Date.now() / 1000) + 3600), // 1 hour from now
+  },
+  existentAllocation: parseEther('1000'),
+  maxAllocation: parseEther('10000'),
+  allocation: parseEther('1000'),
+  rifPriceUsd: 0.1,
+  isConnected: true,
+  estimatedRewards: {
+    rif: {
+      amount: {
+        value: parseEther('550'),
+        price: 0.1,
+        symbol: 'RIF',
+        currency: 'USD',
+      },
+    },
+    rbtc: {
+      amount: {
+        value: parseEther('0.05'),
+        price: 5000,
+        symbol: 'RBTC',
+        currency: 'USD',
+      },
+    },
+  },
+  allocationTxPending: false,
+  onAllocationChange: () => {},
+  topBarColor: '#4CAF50',
 }
 
-type Story = StoryObj<BuilderCardStoryArgs>
-
-// Wrapper: converts string args to BigInt for the real component
-const BuilderCardWithState = (args: BuilderCardStoryArgs) => {
-  const [allocation, setAllocation] = useState(BigInt(args.allocation || '0'))
-  return (
-    <BuilderCard
-      address={args.address as `0x${string}`}
-      builderName={args.builderName}
-      proposal={{
-        ...args.proposal,
-        id: BigInt(args.proposal.id),
-      }}
-      backerRewardPct={{
-        current: BigInt(args.backerRewardPct.current),
-        next: BigInt(args.backerRewardPct.next),
-        cooldownEndTime: BigInt(args.backerRewardPct.cooldownEndTime),
-      }}
-      rifPriceUsd={args.rifPriceUsd}
-      isConnected={args.isConnected}
-      maxAllocation={BigInt(args.maxAllocation)}
-      existentAllocation={BigInt(args.existentAllocation)}
-      allocation={allocation}
-      onAllocationChange={value => setAllocation(BigInt(value))}
-      topBarColor={args.topBarColor}
-      className={args.className}
-      allocationTxPending={args.allocationTxPending}
-      estimatedRewards={args.estimatedRewards}
-    />
-  )
+export const Default: Story = {
+  args: defaultProps,
 }
 
 export const NotConnected: Story = {
-  render: args => <BuilderCardWithState {...args} />,
   args: {
-    address: '0x1234567890abcdef',
-    builderName: 'Beefy',
-    proposal: {
-      id: '1',
-      name: 'Test Proposal',
-      description: 'Test Description',
-      date: '2024-03-20',
-    },
-    backerRewardPct: {
-      current: '40',
-      next: '50',
-      cooldownEndTime: '0',
-    },
-    rifPriceUsd: 0.05,
+    ...defaultProps,
     isConnected: false,
-    maxAllocation: '120000',
-    existentAllocation: '0',
-    allocation: '0',
-    topBarColor: '#4FFFE7',
-    className: 'w-[200px]',
   },
 }
 
-export const WithoutAllocation: Story = {
-  render: args => <BuilderCardWithState {...args} />,
+export const NoExistingAllocation: Story = {
   args: {
-    address: '0x1234567890abcdef',
-    builderName: 'Beefy',
-    proposal: {
-      id: '1',
-      name: 'Test Proposal',
-      description: 'Test Description',
-      date: '2024-03-20',
-    },
-    backerRewardPct: {
-      current: '40',
-      next: '50',
-      cooldownEndTime: '0',
-    },
-    rifPriceUsd: 0.05,
-    isConnected: true,
-    maxAllocation: '120000',
-    existentAllocation: '0',
-    allocation: '0',
-    topBarColor: '#FF6B6B',
-    className: 'w-[200px]',
+    ...defaultProps,
+    existentAllocation: parseEther('0'),
   },
 }
 
 export const WithAllocation: Story = {
-  render: args => <BuilderCardWithState {...args} />,
   args: {
-    address: '0x1234567890abcdef',
-    builderName: 'Beefy',
-    proposal: {
-      id: '1',
-      name: 'Test Proposal',
-      description: 'Test Description',
-      date: '2024-03-20',
-    },
-    backerRewardPct: {
-      current: '40',
-      next: '50',
-      cooldownEndTime: '0',
-    },
-    rifPriceUsd: 0.05,
-    isConnected: true,
-    maxAllocation: '120000',
-    existentAllocation: '90000',
-    allocation: '90000',
-    estimatedRewards: '250.00 USD',
-    topBarColor: '#4ECDC4',
-    className: 'w-[200px]',
+    ...defaultProps,
+    allocation: parseEther('5000'),
+    existentAllocation: parseEther('5000'),
   },
 }
 
 export const WithBuilderIncreasedRewardPct: Story = {
-  render: args => <BuilderCardWithState {...args} />,
   args: {
-    address: '0x1234567890abcdef',
-    builderName: 'Beefy',
-    proposal: {
-      id: '1',
-      name: 'Test Proposal',
-      description: 'Test Description',
-      date: '2024-03-20',
-    },
+    ...defaultProps,
     backerRewardPct: {
-      current: '50',
-      next: '60',
-      cooldownEndTime: '0',
+      current: percentageToWei('50'),
+      next: percentageToWei('80'),
+      cooldownEndTime: BigInt(Math.floor(Date.now() / 1000) + 3600), // 1 hour from now
     },
-    rifPriceUsd: 0.05,
-    isConnected: true,
-    maxAllocation: '120000',
-    existentAllocation: '0',
-    allocation: '0',
-    topBarColor: '#FFD93D',
-    className: 'w-[200px]',
   },
 }
 
 export const WithBuilderDecreasedRewardPct: Story = {
-  render: args => <BuilderCardWithState {...args} />,
   args: {
-    address: '0x1234567890abcdef',
-    builderName: 'Beefy',
-    proposal: {
-      id: '1',
-      name: 'Test Proposal',
-      description: 'Test Description',
-      date: '2024-03-20',
-    },
+    ...defaultProps,
     backerRewardPct: {
-      current: '50',
-      next: '40',
-      cooldownEndTime: '0',
+      current: percentageToWei('50'),
+      next: percentageToWei('30'),
+      cooldownEndTime: BigInt(Math.floor(Date.now() / 1000) + 3600), // 1 hour from now
     },
-    rifPriceUsd: 0.05,
-    isConnected: true,
-    maxAllocation: '120000',
-    existentAllocation: '0',
-    allocation: '0',
-    topBarColor: '#A084F5',
-    className: 'w-[200px]',
   },
 }
 
 export const WithAllocationPending: Story = {
-  render: args => <BuilderCardWithState {...args} />,
   args: {
-    address: '0x1234567890abcdef',
-    builderName: 'Beefy',
-    proposal: {
-      id: '1',
-      name: 'Test Proposal',
-      description: 'Test Description',
-      date: '2024-03-20',
-    },
-    backerRewardPct: {
-      current: '40',
-      next: '50',
-      cooldownEndTime: '0',
-    },
-    rifPriceUsd: 0.05,
-    isConnected: true,
-    maxAllocation: '120000',
-    existentAllocation: '9000',
-    allocation: '9000',
+    ...defaultProps,
     allocationTxPending: true,
-    topBarColor: '#95E1D3',
-    className: 'w-[200px]',
   },
 }

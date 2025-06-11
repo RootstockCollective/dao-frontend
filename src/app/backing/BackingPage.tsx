@@ -9,10 +9,16 @@ import { MetricsContainer } from '@/components/containers'
 import { AnnualBackersIncentivesMetric } from '@/app/backing/components/Metrics/AnnualBackersIncentivesMetric'
 import { EstimatedRewardsMetric } from '@/app/backing/components/Metrics/EstimatedRewardsMetric'
 import { PageTitleContainer } from '@/components/containers'
+import { useGetBuildersRewards } from '@/app/collective-rewards/rewards/builders/hooks/useGetBuildersRewards'
+import { getTokens } from '@/lib/tokens'
+import { useHandleErrors } from '@/app/collective-rewards/utils'
+import { LoadingSpinner } from '@/components/LoadingSpinner'
 
 const NAME = 'Backing'
 export const BackingPage = () => {
   const { address } = useAccount()
+  const { data: rewardsData, error: rewardsError } = useGetBuildersRewards(getTokens())
+  useHandleErrors({ error: rewardsError, title: 'Error loading builder rewards' })
 
   return (
     <div data-testid={NAME} className="flex flex-col items-start w-full h-full pt-[0.13rem] gap-2 rounded-sm">
@@ -26,14 +32,14 @@ export const BackingPage = () => {
         </BackingInfoContainer>
         <MetricsContainer className="grow-[3] h-full">
           <AnnualBackersIncentivesMetric />
-          <EstimatedRewardsMetric />
+          <EstimatedRewardsMetric rewardsData={rewardsData} />
         </MetricsContainer>
       </div>
 
       {/* {address && <ActionMetricsContainer>{/* TODO: ADD CHILDREN HERE */}
       {/* </ActionMetricsContainer>} */}
       <ActionsContainer title="BUILDERS THAT YOU MAY WANT TO BACK" className="">
-        <BuildersSpotlight />
+        <BuildersSpotlight rewardsData={rewardsData} />
       </ActionsContainer>
     </div>
   )

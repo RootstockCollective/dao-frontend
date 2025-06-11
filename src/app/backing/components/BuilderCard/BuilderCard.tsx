@@ -1,5 +1,5 @@
 import { ConnectPopover } from '@/app/backing/components/Popovers/ConnectPopover'
-import { BackerRewardPercentage } from '@/app/collective-rewards/rewards/types'
+import { BackerRewardPercentage, TokenRewards } from '@/app/collective-rewards/rewards/types'
 import { Builder } from '@/app/collective-rewards/types'
 import { Button } from '@/components/Button'
 import { cn } from '@/lib/utils'
@@ -17,7 +17,7 @@ export interface BuilderCardProps extends Builder {
   onAllocationChange: (newAllocation: number) => void
   rifPriceUsd: number
   isConnected: boolean
-  estimatedRewards?: string
+  estimatedRewards?: TokenRewards
   allocationTxPending?: boolean
   dataTestId?: string
   topBarColor?: string
@@ -56,17 +56,17 @@ export const BuilderCard: FC<BuilderCardProps> = ({
       {/* FIXME: replace the builder page link */}
       <BuilderHeader address={address} name={builderName} builderPageLink="#" className="mt-8" />
       <div
-        className="w-full mt-6 border border-v3-bg-accent-40 rounded-lg gap-3 flex flex-col divide-y divide-v3-bg-accent-40 mb-6"
+        className="w-full mt-6 border border-v3-bg-accent-40 rounded-lg gap-3 flex flex-col divide-y divide-v3-bg-accent-40"
         data-testid="builderCardContent"
       >
         <RewardsInfo {...backerRewardPct} estimatedRewards={estimatedRewards} />
         {isConnected && (
           <AllocationInput
             allocation={allocation}
-            maxAllocation={maxAllocation}
             existentAllocation={existentAllocation}
-            allocationTxPending={allocationTxPending}
+            maxAllocation={maxAllocation}
             rifPriceUsd={rifPriceUsd}
+            allocationTxPending={allocationTxPending}
             onAllocationChange={onAllocationChange}
             className="px-2 py-3 mx-3"
           />
@@ -76,7 +76,7 @@ export const BuilderCard: FC<BuilderCardProps> = ({
       {isConnected && existentAllocation !== 0n && (
         <Button
           variant="secondary"
-          className={cn('border-v3-bg-accent-40 px-2 py-1´')}
+          className="border-v3-bg-accent-40 px-2 py-1 mt-6"
           textClassName="text-[14px] font-normal"
           onClick={() => onAllocationChange(0)}
           data-testid="removeBackingButton"
@@ -88,7 +88,7 @@ export const BuilderCard: FC<BuilderCardProps> = ({
         <ConnectPopover>
           <Button
             variant="secondary"
-            className={cn('border-v3-bg-accent-40 px-2 py-1')}
+            className={cn('border-v3-bg-accent-40 px-2 py-1 mt-6')}
             textClassName="text-[14px] font-normal"
             data-testid="backBuilderButton"
           >

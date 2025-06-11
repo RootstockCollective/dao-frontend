@@ -10,7 +10,6 @@ import { BuilderCard } from './BuilderCard'
 
 export interface BuilderCardControlProps extends Builder {
   backerRewardPct: BackerRewardPercentage
-  estimatedRewards?: string
   allocationTxPending?: boolean
 }
 

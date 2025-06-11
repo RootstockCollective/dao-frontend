@@ -8,10 +8,15 @@ import { useRouter } from 'next/navigation'
 import { FC } from 'react'
 import { useShuffledArray } from '../../hooks/useShuffledArray'
 import { BuilderCardControl } from '../BuilderCard/BuilderCardControl'
+import { BuildersRewards } from '@/app/collective-rewards/rewards/builders/hooks/useGetBuildersRewards'
 
 const SPOTLIGHT_BUILDERS = 4
 
-export const BuildersSpotlight: FC = () => {
+interface BuildersSpotlightProps {
+  rewardsData: BuildersRewards[]
+}
+
+export const BuildersSpotlight: FC<BuildersSpotlightProps> = ({ rewardsData }) => {
   const {
     data: builders,
     isLoading: buildersLoading,
@@ -23,6 +28,7 @@ export const BuildersSpotlight: FC = () => {
     isLoading,
     error,
   } = useGetBackersRewardPercentage(builders.map(({ address }) => address))
+
   const router = useRouter()
   const shuffledBuilders = useShuffledArray<Builder>(builders)
 
@@ -38,9 +44,12 @@ export const BuildersSpotlight: FC = () => {
   }
 
   const spotlightBuilders = shuffledBuilders.map((builder: Builder) => {
+    const builderRewards = rewardsData.find(r => r.address === builder.address)
+
     return {
       ...builder,
       backerRewardPct: buildersWithBackerRewards[builder.address],
+      estimatedRewards: builderRewards?.estimatedRewards,
     }
   })
 
