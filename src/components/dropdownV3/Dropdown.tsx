@@ -1,5 +1,5 @@
 // Generic Dropdown container for v3
-// Handles open/close logic, positioning, animation, and click-outside detection
+// Handles open/close logic, positioning, and click-outside detection
 
 import React, { useState, useRef, ReactNode, ReactElement } from 'react'
 import { useClickOutside } from '@/shared/hooks/useClickOutside'
