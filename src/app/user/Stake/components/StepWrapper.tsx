@@ -1,7 +1,7 @@
 import { Header, Paragraph } from '@/components/TypographyNew'
 import { ProgressBar } from '@/components/ProgressBarNew'
-import { StakeSteps } from '../Steps/StakeSteps'
 import { ReactNode } from 'react'
+import { StakeSteps } from '../Steps/StakeSteps'
 
 interface Props {
   currentStep: number

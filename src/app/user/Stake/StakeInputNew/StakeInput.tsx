@@ -13,11 +13,10 @@ interface Props {
   labelText?: string
   currencyValue?: string
   errorText?: string
-  decimalScale?: number
 }
 
 export const StakeInput = forwardRef<HTMLInputElement, Props>(
-  ({ onChange, value, symbol, labelText, currencyValue, errorText, decimalScale }, ref) => {
+  ({ onChange, value, symbol, labelText, currencyValue, errorText }, ref) => {
     return (
       <div className="flex flex-col py-3 px-4 rounded-1 w-full bg-bg-60">
         {labelText && <Paragraph className="mb-3">{labelText}</Paragraph>}
@@ -30,7 +29,7 @@ export const StakeInput = forwardRef<HTMLInputElement, Props>(
             onChange={onChange}
             className={cn('grow', variantClasses.h1, errorText ? 'text-error' : '')}
             placeholder="0"
-            inputProps={{ decimalScale }}
+            inputProps={{ decimalScale: 18 }}
           />
           <div className="flex items-center gap-1 shrink-0">
             <TokenImage symbol={symbol} size={24} />

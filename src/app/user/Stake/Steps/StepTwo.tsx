@@ -6,7 +6,7 @@ import { Header, Label, Paragraph, Span } from '@/components/TypographyNew'
 import { config } from '@/config'
 import { waitForTransactionReceipt } from '@wagmi/core'
 import Image from 'next/image'
-import { useEffect, useRef } from 'react'
+import { useEffect, useMemo, useRef } from 'react'
 import { Divider } from '@/components/Divider'
 import { StepActionButtons } from '../components/StepActionButtons'
 import { TokenAmountDisplay } from '../components/TokenAmountDisplay'
@@ -116,7 +116,7 @@ const HelpPopover = () => {
       contentSubContainerClassName="rounded-none p-6"
     >
       <div className="flex items-center gap-1">
-        <Image src="/images/info-icon.svg" alt="info" width={20} height={20} />
+        <Image src="/images/info-icon-sm.svg" alt="info" width={20} height={20} />
         <Span variant="tag-s">Help, I don&apos;t understand</Span>
       </div>
     </Popover>

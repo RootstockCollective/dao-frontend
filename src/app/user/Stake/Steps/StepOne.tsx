@@ -9,8 +9,6 @@ import { useCallback, useMemo, useRef, useEffect } from 'react'
 import { useStakingContext } from '../StakingContext'
 import { StepProps } from '../types'
 
-const STAKE_DECIMAL_PLACES = 8
-
 export const StepOne = ({ onGoNext }: StepProps) => {
   const { amount, onAmountChange, tokenToSend } = useStakingContext()
   const inputRef = useRef<HTMLInputElement>(null)
@@ -52,10 +50,9 @@ export const StepOne = ({ onGoNext }: StepProps) => {
     [onAmountChange],
   )
 
-  const handleMaxAmount = useCallback(() => {
-    const roundedBalance = Big(totalBalance).floor(STAKE_DECIMAL_PLACES).toString()
-    handleAmountChange(roundedBalance)
-  }, [totalBalance, handleAmountChange])
+  useEffect(() => {
+    inputRef.current?.focus()
+  }, [])
 
   return (
     <>
@@ -66,7 +63,6 @@ export const StepOne = ({ onGoNext }: StepProps) => {
         symbol={tokenToSend.symbol}
         labelText="Amount to stake"
         currencyValue={balanceToCurrency}
-        decimalScale={STAKE_DECIMAL_PLACES}
         errorText={
           isAmountOverBalance ? 'This is more than the available RIF balance. Please update the amount.' : ''
         }
@@ -81,7 +77,7 @@ export const StepOne = ({ onGoNext }: StepProps) => {
         </div>
         <Button
           variant="secondary"
-          onClick={handleMaxAmount}
+          onClick={() => handleAmountChange(totalBalance)}
           className="bg-transparent border border-bg-40 px-2 py-0"
           data-testid="maxButton"
         >
