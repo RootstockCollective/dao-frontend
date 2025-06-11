@@ -22,12 +22,9 @@ const AllocationInputWithState = (args: any) => {
 export const Default: Story = {
   render: args => <AllocationInputWithState {...args} />,
   args: {
-    // @ts-expect-error: Storybook cannot serialize bigint
-    allocation: 0,
-    // @ts-expect-error: Storybook cannot serialize bigint
-    maxAllocation: 120000,
-    // @ts-expect-error: Storybook cannot serialize bigint
-    existentAllocation: 0,
+    allocation: 0n,
+    maxAllocation: 120000n,
+    existentAllocation: 0n,
     rifPriceUsd: 0.05,
   },
 }
@@ -35,12 +32,9 @@ export const Default: Story = {
 export const WithAllocation: Story = {
   render: args => <AllocationInputWithState {...args} />,
   args: {
-    // @ts-expect-error: Storybook cannot serialize bigint
-    allocation: 50000,
-    // @ts-expect-error: Storybook cannot serialize bigint
-    maxAllocation: 120000,
-    // @ts-expect-error: Storybook cannot serialize bigint
-    existentAllocation: 50000,
+    allocation: 50000n,
+    maxAllocation: 120000n,
+    existentAllocation: 50000n,
     rifPriceUsd: 0.05,
   },
 }
@@ -48,12 +42,9 @@ export const WithAllocation: Story = {
 export const Pending: Story = {
   render: args => <AllocationInputWithState {...args} />,
   args: {
-    // @ts-expect-error: Storybook cannot serialize bigint
-    allocation: 50000,
-    // @ts-expect-error: Storybook cannot serialize bigint
-    maxAllocation: 120000,
-    // @ts-expect-error: Storybook cannot serialize bigint
-    existentAllocation: 30000,
+    allocation: 50000n,
+    maxAllocation: 120000n,
+    existentAllocation: 30000n,
     allocationTxPending: true,
     rifPriceUsd: 0.05,
   },

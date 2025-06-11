@@ -3,7 +3,7 @@ import { InputNumber } from '@/components/Input/InputNumber'
 import { Paragraph } from '@/components/TypographyNew'
 import { cn } from '@/lib/utils'
 import { FC, useState } from 'react'
-import { parseEther, formatEther } from 'viem'
+import { formatEther } from 'viem'
 import { PendingAllocation } from '../PendingAllocation/PendingAllocation'
 import { StickySlider } from '../StickySlider/StickySlider'
 import { RIFToken } from '../RIFToken/RIFToken'
@@ -30,9 +30,7 @@ export const AllocationInput: FC<AllocationInputProps> = ({
 }) => {
   const [editing, setEditing] = useState(false)
 
-  // We need to cast allocation and maxAllocation to bigint to avoid storybook issues. In production, it doesn't have any effect.
-  const allocationPercentage =
-    maxAllocation === 0n ? 0 : Number((BigInt(allocation) * 100n) / BigInt(maxAllocation))
+  const allocationPercentage = maxAllocation === 0n ? 0 : Number((allocation * 100n) / maxAllocation)
   const amountUsd = Number(getFiatAmount(allocation, rifPriceUsd).toFixed(2))
 
   const handleSliderChange = (value: number[]) => {
