@@ -22,7 +22,7 @@ export const PercentageButtons = ({ onPercentageClick }: Props) => (
   <>
     {PERCENTAGE_OPTIONS.map(({ value, label, testId }) => (
       <Button
-        key={label}
+        key={value}
         variant="secondary"
         onClick={() => onPercentageClick(value)}
         className="bg-transparent border border-bg-40 px-2 py-0"

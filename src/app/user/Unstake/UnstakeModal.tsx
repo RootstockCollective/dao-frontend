@@ -107,7 +107,7 @@ export const UnstakeModal = ({ onCloseModal }: Props) => {
       onCloseModal()
     } catch (err) {
       if (!isUserRejectedTxError(err)) {
-        console.error('Error requesting allowance', err)
+        console.error('Error requesting unstake', err)
       }
     }
   }, [amount, onRequestUnstake, onCloseModal])
