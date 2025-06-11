@@ -18,7 +18,7 @@ interface UseContractWriteResult<T> {
   txHash: Hash | undefined
 }
 
-export const useContractWrite = <T extends (...args: any[]) => Promise<Hash>>(
+export const useContractWrite = <T extends () => Promise<Hash>>(
   config: ContractWriteConfig,
 ): UseContractWriteResult<T> => {
   const { writeContractAsync: executeTransaction, data: txHash, isPending: isRequesting } = useWriteContract()
@@ -26,13 +26,7 @@ export const useContractWrite = <T extends (...args: any[]) => Promise<Hash>>(
   const { isTxPending, isTxFailed } = useTransactionStatus(txHash)
 
   const onRequestTransaction = useCallback(
-    async (...args: Parameters<T>) => {
-      console.log('🚀 ~ args:', args)
-      return executeTransaction({
-        ...config,
-        args: args.length > 0 ? args : config.args,
-      })
-    },
+    () => executeTransaction(config),
     [config, executeTransaction],
   ) as T
 
