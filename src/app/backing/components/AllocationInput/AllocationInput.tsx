@@ -30,7 +30,9 @@ export const AllocationInput: FC<AllocationInputProps> = ({
 }) => {
   const [editing, setEditing] = useState(false)
 
-  const allocationPercentage = maxAllocation === 0n ? 0 : Number((allocation * 100n) / maxAllocation)
+  // We need to cast allocation and maxAllocation to bigint to avoid storybook issues. In production, it doesn't have any effect.
+  const allocationPercentage =
+    maxAllocation === 0n ? 0 : Number((BigInt(allocation) * 100n) / BigInt(maxAllocation))
   const amountUsd = Number(getFiatAmount(allocation, rifPriceUsd).toFixed(2))
 
   const handleSliderChange = (value: number[]) => {
