@@ -10,7 +10,7 @@ import Big from '@/lib/big'
 import { tokenContracts } from '@/lib/contracts'
 import { formatCurrency } from '@/lib/utils'
 import Image from 'next/image'
-import { useCallback, useMemo, useState } from 'react'
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { formatEther, parseEther } from 'viem'
 import { useAccount } from 'wagmi'
 import { Divider } from '@/components/Divider'
@@ -27,6 +27,7 @@ interface Props {
 }
 
 export const UnstakeModal = ({ onCloseModal }: Props) => {
+  const inputRef = useRef<HTMLInputElement>(null)
   const { balances, prices } = useBalancesContext()
   const { address } = useAccount()
   const [amount, setAmount] = useState('')
@@ -123,12 +124,17 @@ export const UnstakeModal = ({ onCloseModal }: Props) => {
     }
   }, [amount, onRequestUnstake, onCloseModal])
 
+  useEffect(() => {
+    inputRef.current?.focus()
+  }, [])
+
   return (
     <Modal width={688} onClose={onCloseModal}>
       <div className="p-6">
         <Header className="mt-16 mb-4">UNSTAKE stRIF</Header>
 
         <StakeInput
+          ref={inputRef}
           value={amount}
           onChange={handleAmountChange}
           symbol="stRIF"
