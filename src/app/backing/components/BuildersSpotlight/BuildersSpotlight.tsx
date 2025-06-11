@@ -58,7 +58,7 @@ export const BuildersSpotlight: FC = () => {
           <BuilderCardControl key={builder.address} {...builder} />
         ))}
       </div>
-      <div className="flex justify-center mt-6">
+      <div className="flex justify-center self-center mt-6">
         <Button variant="secondary" className="py-3 px-4" onClick={() => router.push('/builders')}>
           See all Builders
         </Button>
