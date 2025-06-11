@@ -193,11 +193,13 @@ describe('Table Actions and State Management', () => {
   describe('Column Visibility', () => {
     const ColumnVisibilityTestComponent: FC<{ columnId: string }> = ({ columnId }) => {
       const dispatch = useTableActionsContext()
-      const { hiddenColumns } = useTableContext()
+      const { columns } = useTableContext()
 
       const toggleColumnVisibility = () => {
         dispatch({ type: 'TOGGLE_COLUMN_VISIBILITY', payload: columnId })
       }
+
+      const hiddenColumns = columns.filter(col => col.hidden).map(col => col.id)
 
       return (
         <div>
@@ -223,9 +225,18 @@ describe('Table Actions and State Management', () => {
     })
 
     it('adds column to hiddenColumns when toggled for the first time', async () => {
-      const WrappedComponent = withTableContext(() => (
-        <ColumnVisibilityTestComponent columnId={testColumnId} />
-      ))
+      const TestComponentWithColumns: FC = () => {
+        const dispatch = useTableActionsContext()
+        React.useEffect(() => {
+          dispatch({
+            type: 'SET_COLUMNS',
+            payload: [{ id: testColumnId, label: 'Test Column', sortable: true, hidden: false }],
+          })
+        }, [dispatch])
+        return <ColumnVisibilityTestComponent columnId={testColumnId} />
+      }
+
+      const WrappedComponent = withTableContext(TestComponentWithColumns)
       render(<WrappedComponent />)
 
       // Initially no hidden columns
@@ -243,9 +254,18 @@ describe('Table Actions and State Management', () => {
     })
 
     it('removes column from hiddenColumns when toggled back to visible', async () => {
-      const WrappedComponent = withTableContext(() => (
-        <ColumnVisibilityTestComponent columnId={testColumnId} />
-      ))
+      const TestComponentWithColumns: FC = () => {
+        const dispatch = useTableActionsContext()
+        React.useEffect(() => {
+          dispatch({
+            type: 'SET_COLUMNS',
+            payload: [{ id: testColumnId, label: 'Test Column', sortable: true, hidden: false }],
+          })
+        }, [dispatch])
+        return <ColumnVisibilityTestComponent columnId={testColumnId} />
+      }
+
+      const WrappedComponent = withTableContext(TestComponentWithColumns)
       render(<WrappedComponent />)
 
       const toggleButton = screen.getByTestId('toggle-column')
@@ -269,10 +289,22 @@ describe('Table Actions and State Management', () => {
     it('handles multiple columns being hidden independently', async () => {
       const MultiColumnTestComponent: FC = () => {
         const dispatch = useTableActionsContext()
-        const { hiddenColumns } = useTableContext()
+        const { columns } = useTableContext()
+
+        React.useEffect(() => {
+          dispatch({
+            type: 'SET_COLUMNS',
+            payload: [
+              { id: 'col1', label: 'Column 1', sortable: true, hidden: false },
+              { id: 'col2', label: 'Column 2', sortable: true, hidden: false },
+            ],
+          })
+        }, [dispatch])
 
         const toggleColumn1 = () => dispatch({ type: 'TOGGLE_COLUMN_VISIBILITY', payload: 'col1' })
         const toggleColumn2 = () => dispatch({ type: 'TOGGLE_COLUMN_VISIBILITY', payload: 'col2' })
+
+        const hiddenColumns = columns.filter(col => col.hidden).map(col => col.id)
 
         return (
           <div>
@@ -488,9 +520,9 @@ describe('Table Actions and State Management', () => {
 
         const setTestColumns = () => {
           const testColumns = [
-            { id: 'name', label: 'Name', sortable: true },
-            { id: 'value', label: 'Value', sortable: true },
-            { id: 'status', label: 'Status', sortable: false },
+            { id: 'name', label: 'Name', sortable: true, hidden: false },
+            { id: 'value', label: 'Value', sortable: true, hidden: false },
+            { id: 'status', label: 'Status', sortable: false, hidden: false },
           ]
           dispatch({ type: 'SET_COLUMNS', payload: testColumns })
         }
@@ -518,9 +550,9 @@ describe('Table Actions and State Management', () => {
         await waitFor(() => {
           const columnsData = parseTestElementData('columns-data')
           expect(columnsData).toEqual([
-            { id: 'name', label: 'Name', sortable: true },
-            { id: 'value', label: 'Value', sortable: true },
-            { id: 'status', label: 'Status', sortable: false },
+            { id: 'name', label: 'Name', sortable: true, hidden: false },
+            { id: 'value', label: 'Value', sortable: true, hidden: false },
+            { id: 'status', label: 'Status', sortable: false, hidden: false },
           ])
         })
       })
@@ -592,7 +624,20 @@ describe('Table Actions and State Management', () => {
     describe('SET_HIDDEN_COLUMNS', () => {
       const SetHiddenColumnsTestComponent: FC = () => {
         const dispatch = useTableActionsContext()
-        const { hiddenColumns } = useTableContext()
+        const { columns } = useTableContext()
+
+        React.useEffect(() => {
+          dispatch({
+            type: 'SET_COLUMNS',
+            payload: [
+              { id: 'col1', label: 'Column 1', sortable: true, hidden: false },
+              { id: 'col2', label: 'Column 2', sortable: true, hidden: false },
+              { id: 'col3', label: 'Column 3', sortable: true, hidden: false },
+              { id: 'col4', label: 'Column 4', sortable: true, hidden: false },
+              { id: 'col5', label: 'Column 5', sortable: true, hidden: false },
+            ],
+          })
+        }, [dispatch])
 
         const setHiddenColumns = () => {
           const hidden = ['col1', 'col3', 'col5']
@@ -602,6 +647,8 @@ describe('Table Actions and State Management', () => {
         const showAllColumns = () => {
           dispatch({ type: 'SET_HIDDEN_COLUMNS', payload: [] })
         }
+
+        const hiddenColumns = columns.filter(col => col.hidden).map(col => col.id)
 
         return (
           <div>
@@ -823,11 +870,11 @@ describe('Table Actions and State Management', () => {
 describe('Table Integration Test', () => {
   // Mock table data
   const mockColumns = [
-    { id: 'id', label: 'ID', sortable: true },
-    { id: 'name', label: 'Name', sortable: true },
-    { id: 'email', label: 'Email', sortable: true },
-    { id: 'status', label: 'Status', sortable: false },
-    { id: 'actions', label: 'Actions', sortable: false },
+    { id: 'id', label: 'ID', sortable: true, hidden: false },
+    { id: 'name', label: 'Name', sortable: true, hidden: false },
+    { id: 'email', label: 'Email', sortable: true, hidden: false },
+    { id: 'status', label: 'Status', sortable: false, hidden: false },
+    { id: 'actions', label: 'Actions', sortable: false, hidden: false },
   ]
 
   const mockRows = [
@@ -840,7 +887,7 @@ describe('Table Integration Test', () => {
   // Realistic table component that uses the context
   const IntegratedTableComponent: FC = () => {
     const dispatch = useTableActionsContext()
-    const { columns, rows, hiddenColumns, selectedRows, sort, loading, error } = useTableContext()
+    const { columns, rows, selectedRows, sort, loading, error } = useTableContext()
 
     // Initialize table data on mount
     React.useEffect(() => {
@@ -882,7 +929,8 @@ describe('Table Integration Test', () => {
       dispatch({ type: 'SET_ERROR', payload: null })
     }
 
-    const visibleColumns = columns.filter(col => !hiddenColumns.includes(col.id))
+    const hiddenColumns = columns.filter(col => col.hidden).map(col => col.id)
+    const visibleColumns = columns.filter(col => !col.hidden)
     const selectedCount = Object.values(selectedRows).filter(Boolean).length
 
     if (loading) {
@@ -919,7 +967,7 @@ describe('Table Integration Test', () => {
             <label key={column.id} data-testid={`column-toggle-${column.id}`}>
               <input
                 type="checkbox"
-                checked={!hiddenColumns.includes(column.id)}
+                checked={!column.hidden}
                 onChange={() => handleColumnVisibility(column.id)}
                 data-testid={`column-checkbox-${column.id}`}
               />

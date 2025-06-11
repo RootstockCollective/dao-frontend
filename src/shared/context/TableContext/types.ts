@@ -16,12 +16,12 @@ export type SelectedRows = {
 export type Column = {
   id: string
   label: string
+  hidden: boolean
   sortable: boolean
 }
 
 export type TableState = {
   columns: Column[]
-  hiddenColumns: Column['id'][]
   rows: RowData[]
   sort: Sort
   defaultSort: Sort

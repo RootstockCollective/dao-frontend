@@ -6,7 +6,6 @@ import { TableState } from '.'
 
 export const initialState: TableState = {
   columns: [],
-  hiddenColumns: [],
   rows: [],
   selectedRows: {},
   loading: false,

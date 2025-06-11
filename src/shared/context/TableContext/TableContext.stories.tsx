@@ -5,12 +5,12 @@ import { Column } from './types'
 
 // Mock data for the story
 const sampleColumns: Column[] = [
-  { id: 'id', label: 'ID', sortable: true },
-  { id: 'name', label: 'Name', sortable: true },
-  { id: 'email', label: 'Email', sortable: true },
-  { id: 'role', label: 'Role', sortable: false },
-  { id: 'status', label: 'Status', sortable: true },
-  { id: 'lastLogin', label: 'Last Login', sortable: true },
+  { id: 'id', label: 'ID', sortable: true, hidden: false },
+  { id: 'name', label: 'Name', sortable: true, hidden: false },
+  { id: 'email', label: 'Email', sortable: true, hidden: false },
+  { id: 'role', label: 'Role', sortable: false, hidden: false },
+  { id: 'status', label: 'Status', sortable: true, hidden: false },
+  { id: 'lastLogin', label: 'Last Login', sortable: true, hidden: false },
 ]
 
 const sampleData = [
@@ -180,7 +180,7 @@ const TableControlPanel: FC = () => {
 
 // Main Interactive Table Component
 const InteractiveTableComponent: FC = () => {
-  const { columns, rows, selectedRows, hiddenColumns, sort, loading, error } = useTableContext()
+  const { columns, rows, selectedRows, sort, loading, error } = useTableContext()
   const dispatch = useTableActionsContext()
 
   // Initialize data on component mount
@@ -190,7 +190,8 @@ const InteractiveTableComponent: FC = () => {
     dispatch({ type: 'SORT_BY_COLUMN', payload: { id: 'name', direction: 'asc' } })
   }, [dispatch])
 
-  const visibleColumns = columns.filter(col => !hiddenColumns.includes(col.id))
+  const hiddenColumns = columns.filter(col => col.hidden).map(col => col.id)
+  const visibleColumns = columns.filter(col => !col.hidden)
   const selectedCount = Object.values(selectedRows).filter(Boolean).length
   const isAllSelected = selectedCount === rows.length && rows.length > 0
 
@@ -305,7 +306,7 @@ const InteractiveTableComponent: FC = () => {
               <label key={column.id} className="flex items-center space-x-2">
                 <input
                   type="checkbox"
-                  checked={!hiddenColumns.includes(column.id)}
+                  checked={!column.hidden}
                   onChange={() => handleColumnToggle(column.id)}
                   className="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
                 />

@@ -17,9 +17,7 @@ const toggleColumnVisibility = (state: TableState, action: TableAction) => {
   const { payload: id } = action
   return {
     ...state,
-    hiddenColumns: state.hiddenColumns.includes(id)
-      ? state.hiddenColumns.filter(columnId => columnId !== id)
-      : [...state.hiddenColumns, id],
+    columns: state.columns.map(column => (column.id === id ? { ...column, hidden: !column.hidden } : column)),
   }
 }
 
@@ -64,8 +62,14 @@ const setSelectedRows = (state: TableState, action: TableAction) => {
 
 const setHiddenColumns = (state: TableState, action: TableAction) => {
   if (action.type !== 'SET_HIDDEN_COLUMNS') return state
-  const { payload: hiddenColumns } = action
-  return { ...state, hiddenColumns }
+  const { payload: hiddenColumnIds } = action
+  return {
+    ...state,
+    columns: state.columns.map(column => ({
+      ...column,
+      hidden: hiddenColumnIds.includes(column.id),
+    })),
+  }
 }
 
 const setDefaultSort = (state: TableState, action: TableAction) => {
