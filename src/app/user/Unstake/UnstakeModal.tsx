@@ -11,7 +11,7 @@ import { tokenContracts } from '@/lib/contracts'
 import { formatCurrency } from '@/lib/utils'
 import Image from 'next/image'
 import { useCallback, useMemo, useState } from 'react'
-import { formatEther, parseEther, zeroAddress } from 'viem'
+import { formatEther, parseEther } from 'viem'
 import { useAccount } from 'wagmi'
 import { Divider } from '@/components/Divider'
 import { isUserRejectedTxError } from '@/components/ErrorPage/commonErrors'
@@ -20,8 +20,6 @@ import { config } from '@/config'
 import { useUnstakeStRIF } from '../Stake/hooks/useUnstakeStRIF'
 import { PercentageButtons } from './components/PorcentageButtons'
 import { ProgressButtonInProgress } from '../Stake/components/ProgressButtonInProgress'
-
-const UNSTAKE_DECIMAL_PLACES = 18
 
 interface Props {
   onCloseModal: () => void
@@ -126,7 +124,6 @@ export const UnstakeModal = ({ onCloseModal }: Props) => {
           symbol="stRIF"
           labelText="Amount to unstake"
           currencyValue={amountToCurrency}
-          decimalScale={UNSTAKE_DECIMAL_PLACES}
           errorText={errorMessage}
         />
 
