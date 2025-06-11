@@ -9,7 +9,7 @@ import { BuilderHeader } from '../BuilderHeader/BuilderHeader'
 import { CurrentBacking } from '../CurrentBacking/CurrentBacking'
 import { RewardsInfo } from '../RewardsInfo/RewardsInfo'
 
-export interface BuilderCardProps extends Omit<Builder, 'backerRewardPercentage'> {
+export interface BuilderCardProps extends Builder {
   backerRewardPct: BackerRewardPercentage
   existentAllocation: bigint
   maxAllocation: bigint

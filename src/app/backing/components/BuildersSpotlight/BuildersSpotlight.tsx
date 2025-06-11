@@ -1,15 +1,13 @@
-import { useGetEstimatedBackersRewardsPct } from '@/app/collective-rewards/shared/hooks/useGetEstimatedBackersRewardsPct'
+import { useGetBackersRewardPercentage } from '@/app/collective-rewards/rewards/hooks/useGetBackersRewardPercentage'
+import { Builder, RequiredBuilder } from '@/app/collective-rewards/types'
+import { useGetBuildersByState } from '@/app/collective-rewards/user/hooks/useGetBuildersByState'
+import { useHandleErrors } from '@/app/collective-rewards/utils'
 import { Button } from '@/components/Button'
 import { LoadingSpinner } from '@/components/LoadingSpinner'
-import { FC } from 'react'
 import { useRouter } from 'next/navigation'
-import { useHandleErrors } from '@/app/collective-rewards/utils'
+import { FC } from 'react'
 import { useShuffledArray } from '../../hooks/useShuffledArray'
-import { Builder, BackerRewardsConfig, RequiredBuilder } from '@/app/collective-rewards/types'
-import { useGetBackersRewardPercentage } from '@/app/collective-rewards/rewards/hooks/useGetBackersRewardPercentage'
-import { useGetBuildersByState } from '@/app/collective-rewards/user/hooks/useGetBuildersByState'
 import { BuilderCardControl } from '../BuilderCard/BuilderCardControl'
-import { BackerRewardPercentage } from '@/app/collective-rewards/rewards/types'
 
 const SPOTLIGHT_BUILDERS = 4
 

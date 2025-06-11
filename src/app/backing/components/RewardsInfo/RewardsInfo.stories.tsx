@@ -1,18 +1,36 @@
 import { RewardsInfo, RewardsInfoProps } from './RewardsInfo'
 import type { Meta, StoryObj } from '@storybook/react'
+import { FC } from 'react'
+import { WeiPerEther } from '@/lib/constants'
 
-const meta: Meta<typeof RewardsInfo> = {
+// Simple wrapper to convert numbers to BigInt
+const RewardsInfoWrapper: FC<
+  Omit<RewardsInfoProps, 'current' | 'next' | 'cooldownEndTime'> & {
+    current: number
+    next: number
+    cooldownEndTime: number
+  }
+> = ({ current, next, cooldownEndTime, ...props }) => (
+  <RewardsInfo
+    current={(BigInt(current) * WeiPerEther) / 100n}
+    next={(BigInt(next) * WeiPerEther) / 100n}
+    cooldownEndTime={BigInt(cooldownEndTime)}
+    {...props}
+  />
+)
+
+const meta: Meta<typeof RewardsInfoWrapper> = {
   title: 'Backing/RewardsInfo',
-  component: RewardsInfo,
+  component: RewardsInfoWrapper,
 }
 
 export default meta
-type Story = StoryObj<typeof RewardsInfo>
+type Story = StoryObj<typeof RewardsInfoWrapper>
 
-const defaultArgs: RewardsInfoProps = {
-  current: 50n,
-  next: 60n,
-  cooldownEndTime: 1717987200n,
+const defaultArgs = {
+  current: 50,
+  next: 50,
+  cooldownEndTime: 1717987200,
 }
 
 export const Default: Story = {
@@ -29,7 +47,6 @@ export const WithEstimatedRewards: Story = {
 export const WithIncreaseNextRewardPct: Story = {
   args: {
     ...defaultArgs,
-    // @ts-expect-error: Storybook cannot serialize bigint
     next: 60,
     estimatedRewards: '300.00 USD',
   },
@@ -38,6 +55,7 @@ export const WithIncreaseNextRewardPct: Story = {
 export const WithDecreaseNextRewardPct: Story = {
   args: {
     ...defaultArgs,
+    next: 40,
     estimatedRewards: '300.00 USD',
   },
 }
