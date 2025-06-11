@@ -1,3 +1,4 @@
+import { NoContextProviderError } from '@/lib/errors/ContextError'
 import { createContext, FC, useContext, useMemo, useState } from 'react'
 
 type PaginationConfig<T> = {
@@ -35,7 +36,7 @@ export const PaginatedDataContext = createContext<PageContext<any>>({
 export const usePaginatedDataContext = <T extends Object = {}>() => {
   const context = useContext<PageContext<T>>(PaginatedDataContext)
   if (!context) {
-    throw new Error('usePaginatedDataContext must be used within a PaginatedDataContextProvider')
+    throw new NoContextProviderError('usePaginatedDataContext', 'PaginatedDataContextProvider')
   }
   return context
 }
