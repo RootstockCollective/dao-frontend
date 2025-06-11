@@ -6,7 +6,7 @@ import { Header, Label, Paragraph, Span } from '@/components/TypographyNew'
 import { config } from '@/config'
 import { waitForTransactionReceipt } from '@wagmi/core'
 import Image from 'next/image'
-import { useEffect, useRef } from 'react'
+import { useEffect, useMemo, useRef } from 'react'
 import { Divider } from '../components/Divider'
 import { StepActionButtons } from '../components/StepActionButtons'
 import { TokenAmountDisplay } from '../components/TokenAmountDisplay'
@@ -50,11 +50,11 @@ export const StepTwo = ({ onGoNext, onGoBack }: StepProps) => {
     }
   }, [isAllowanceEnough, onGoNext])
 
-  const getPrimaryButtonLabel = () => {
+  const primaryButtonLabel = useMemo(() => {
     if (isAllowanceReadLoading) return 'Fetching allowance...'
     if (isRequesting) return 'Requesting...'
     return 'Request allowance'
-  }
+  }, [isAllowanceReadLoading, isRequesting])
 
   return (
     <>
@@ -91,7 +91,7 @@ export const StepTwo = ({ onGoNext, onGoBack }: StepProps) => {
 
       <StepActionButtons
         primaryButton={{
-          label: getPrimaryButtonLabel(),
+          label: primaryButtonLabel,
           onClick: handleRequestAllowance,
           disabled: isAllowanceReadLoading || !amount || Number(amount) <= 0,
         }}
