@@ -26,11 +26,11 @@ export interface EIP6963Provider {
 }
 
 export interface TransactionParameters {
+  to: string
   nonce?: string
   gasPrice?: string
   gas?: string
   gasLimit?: string
-  to: string
   value?: string
   data?: string
 }
