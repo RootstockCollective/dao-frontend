@@ -58,6 +58,15 @@ export const UsefulLinks = () => (
       >
         Get RNS Domain
       </Link>
+      <Link
+        href={currentLinks.feedbackForm}
+        variant="menu"
+        className="mt-[16px] text-[14px]"
+        target="_blank"
+        data-testid="GetRNSDomainLink"
+      >
+        Submit Feedback
+      </Link>
     </div>
   </div>
 )
