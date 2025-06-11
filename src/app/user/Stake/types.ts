@@ -1,21 +1,15 @@
-import { ReactNode } from 'react'
 import { TokenBalance } from '@/app/user/types'
-
-export interface StakePreviewBalanceProps {
-  topLeftText: string
-  amount: string
-  amountConvertedToCurrency: string
-  balance: string
-  tokenSymbol: string | ReactNode
-}
+import { Address } from 'viem'
 
 export type StakingToken = TokenBalance & {
   price: string | undefined
-  contract: string
+  contract: Address
 }
 
 export interface StepProps {
-  onGoNext?: () => void
-  onGoBack?: () => void
-  onCloseModal?: () => void
+  onGoNext: () => void
+  onGoBack: () => void
+  onCloseModal: () => void
+  onGoToStep: (step: number) => void
+  actionName: 'STAKE' | 'UNSTAKE'
 }

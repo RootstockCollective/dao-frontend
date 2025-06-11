@@ -1,99 +1,44 @@
-import { ActionHookToUse } from '@/app/user/Stake/StakingContext'
-import { RIFTokenAbi } from '@/lib/abis/RIFTokenAbi'
 import { StRIFTokenAbi } from '@/lib/abis/StRIFTokenAbi'
-import { tokenContracts } from '@/lib/contracts'
-import { useCallback, useEffect, useMemo, useState } from 'react'
-import { Address, Hash, parseEther } from 'viem'
-import { useAccount, useReadContract, useWaitForTransactionReceipt, useWriteContract } from 'wagmi'
-import { CustomStakingRIFFooter } from '../CustomStakingRIFFooter'
 import { useTxStatusContext } from '@/shared/context/TxStatusContext'
+import { useCallback, useEffect, useState } from 'react'
+import { Address, Hash, parseEther } from 'viem'
+import { useAccount, useWaitForTransactionReceipt, useWriteContract } from 'wagmi'
 
-export const useStakeRIF: ActionHookToUse = (
-  amount: string,
-  tokenToSendContract: string,
-  tokenToReceiveContract: string,
-) => {
+export const useStakeRIF = (amount: string, tokenToReceiveContract: Address) => {
   const { address } = useAccount()
-  const [allowanceHash, setAllowanceHashUsed] = useState<Hash>()
+  const [stakeHash, setStakeHash] = useState<Hash>()
   const { trackTransaction } = useTxStatusContext()
 
-  const { data: allowanceBalance, isLoading: isAllowanceReadLoading } = useReadContract({
-    abi: RIFTokenAbi,
-    address: tokenContracts.RIF,
-    functionName: 'allowance',
-    args: [address!, tokenToReceiveContract as Address],
-    query: {
-      refetchInterval: 5000,
-    },
-  })
-  const isAllowanceEnough = useMemo(
-    () => !!(allowanceBalance && allowanceBalance >= parseEther(amount)),
-    [amount, allowanceBalance],
-  )
-
-  const {
-    writeContractAsync: requestAllowance,
-    data: allowanceTxHash,
-    isPending: isRequestingAllowance,
-  } = useWriteContract()
+  const { writeContractAsync: stake, data: stakeTxHash, isPending: isRequesting } = useWriteContract()
 
   const tx = useWaitForTransactionReceipt({
-    hash: allowanceHash,
+    hash: stakeHash,
   })
+  const { isPending: isTxPending, failureReason: isTxFailed } = tx
 
-  const { isPending: isAllowanceTxPending, failureReason: isAllowanceTxFailed } = tx
+  const onRequestStake = useCallback(
+    () =>
+      stake({
+        abi: StRIFTokenAbi,
+        address: tokenToReceiveContract,
+        functionName: 'depositAndDelegate',
+        args: [address!, parseEther(amount)],
+      }),
+    [address, amount, stake, tokenToReceiveContract],
+  )
 
   useEffect(() => {
-    if (allowanceTxHash) {
-      setAllowanceHashUsed(allowanceTxHash)
-      trackTransaction(allowanceTxHash)
+    if (stakeTxHash) {
+      setStakeHash(stakeTxHash)
+      trackTransaction(stakeTxHash)
     }
-  }, [allowanceTxHash, trackTransaction])
+  }, [stakeTxHash, trackTransaction])
 
-  const onRequestAllowance = useCallback(
-    () =>
-      requestAllowance(
-        {
-          abi: RIFTokenAbi,
-          address: tokenToSendContract as Address,
-          functionName: 'approve',
-          args: [tokenToReceiveContract as Address, parseEther(amount)],
-        },
-        {
-          onSuccess: txHash => setAllowanceHashUsed(txHash),
-        },
-      ),
-    [amount, requestAllowance, tokenToReceiveContract, tokenToSendContract],
-  )
-  const { writeContractAsync: stake, isPending } = useWriteContract()
-
-  const onRequestStake = () =>
-    stake({
-      abi: StRIFTokenAbi,
-      address: tokenToReceiveContract as Address,
-      functionName: 'depositAndDelegate',
-      args: [address!, parseEther(amount)],
-    })
-
-  const customFooter = useMemo(
-    () => (
-      <CustomStakingRIFFooter
-        hash={allowanceHash}
-        isAllowanceNeeded={!isAllowanceEnough}
-        isAllowanceTxPending={allowanceHash && isAllowanceTxPending && !isAllowanceTxFailed}
-        isAllowanceReadLoading={isAllowanceReadLoading}
-        isAllowanceTxFailed={!!isAllowanceTxFailed}
-      />
-    ),
-    [allowanceHash, isAllowanceEnough, isAllowanceTxPending, isAllowanceReadLoading, isAllowanceTxFailed],
-  )
   return {
-    isAllowanceEnough,
-    onConfirm: onRequestStake,
-    customFooter,
-    isAllowanceReadLoading,
-    isPending,
-    onRequestAllowance,
-    isRequestingAllowance,
+    onRequestStake,
+    isRequesting,
+    isTxPending: !!(stakeHash && isTxPending && !isTxFailed),
+    isTxFailed: !!(stakeHash && isTxFailed),
+    stakeHash,
   }
 }

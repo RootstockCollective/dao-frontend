@@ -13,7 +13,7 @@ export const formatMetrics = (amount: bigint, price: BigSource, symbol: string, 
 }
 
 export const formatFiatAmount = (amount: BigSource, currency: string) =>
-  `= ${currency} ${formatCurrency(amount, currency)}`
+  `= ${currency} ${formatCurrency(amount, { currency })}`
 
 export const getFiatAmount = (amount: bigint, price: BigSource): Big => {
   const bigAmount = Big(amount.toString())

@@ -6,7 +6,8 @@ type Position = 'top' | 'bottom' | 'right' | 'left' | 'left-bottom' | 'left-top'
 
 export interface PopoverProps extends Omit<HTMLAttributes<HTMLDivElement>, 'children' | 'content'> {
   children: ReactNode
-  content: ReactNode
+  content?: ReactNode
+  customContent?: ReactNode
   disabled?: boolean
   trigger?: 'click' | 'hover'
   background?: 'dark' | 'light'
@@ -21,6 +22,7 @@ export interface PopoverProps extends Omit<HTMLAttributes<HTMLDivElement>, 'chil
 export const Popover = ({
   children,
   content,
+  customContent,
   disabled = false,
   trigger = 'click',
   background = 'dark',
@@ -63,7 +65,7 @@ export const Popover = ({
   }, [show, wrapperRef])
 
   if (disabled) {
-    return <>{children}</>
+    return children
   }
 
   return (
@@ -73,7 +75,9 @@ export const Popover = ({
       onMouseLeave={handleMouseLeft}
       className={cn('relative', className)}
     >
-      <div onClick={() => setShow(!show)}>{children}</div>
+      <div className="cursor-pointer" onClick={() => setShow(!show)}>
+        {children}
+      </div>
       <div
         hidden={!show}
         className={cn(
@@ -91,17 +95,25 @@ export const Popover = ({
         )}
         style={{ top: position === 'bottom' && hasCaret ? '15px' : '' }}
       >
-        <div
-          className={cn(
-            'rounded-lg bg-[#1A1A1A] border border-white/20 p-2 shadow-[10px_30px_150px_rgba(46,38,92,0.25)] mb-[10px] min-w-min',
-            background === 'light' && 'bg-white',
-            contentSubContainerClassName,
-          )}
-          {...contentSubcontainerProps}
-        >
-          {content}
-          {hasCaret && <PopoverCaret position={position} />}
-        </div>
+        {content && (
+          <div
+            className={cn(
+              'rounded-lg bg-[#1A1A1A] border border-white/20 p-2 shadow-[10px_30px_150px_rgba(46,38,92,0.25)] mb-[10px] min-w-min',
+              background === 'light' && 'bg-white',
+              contentSubContainerClassName,
+            )}
+            {...contentSubcontainerProps}
+          >
+            {content}
+            {hasCaret && <PopoverCaret position={position} />}
+          </div>
+        )}
+        {!content && customContent && (
+          <>
+            {customContent}
+            {hasCaret && <PopoverCaret position={position} />}
+          </>
+        )}
       </div>
     </div>
   )

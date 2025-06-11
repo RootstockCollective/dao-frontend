@@ -1,6 +1,6 @@
 import { StRIFTokenAbi } from '@/lib/abis/StRIFTokenAbi'
 import { TX_MESSAGES } from '@/shared/txMessages'
-import { useEffect, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { Address, decodeFunctionData } from 'viem'
 import { useTransaction, useWaitForTransactionReceipt } from 'wagmi'
 import { TxAction } from '../types'
@@ -11,6 +11,8 @@ const TX_ACTIONS = {
   approve: 'allowance',
 } as const
 
+type TxActionKey = keyof typeof TX_ACTIONS
+
 export const useTxStatusMessage = (txHash: string) => {
   const [action, setAction] = useState<TxAction | null>(null)
   const { status } = useWaitForTransactionReceipt({ hash: txHash as Address })
@@ -19,9 +21,16 @@ export const useTxStatusMessage = (txHash: string) => {
   useEffect(() => {
     if (data) {
       const { functionName } = decodeFunctionData({ abi: StRIFTokenAbi, data: data.input })
-      setAction(TX_ACTIONS[functionName as keyof typeof TX_ACTIONS] ?? null)
+      setAction(TX_ACTIONS[functionName as TxActionKey] ?? null)
     }
   }, [data])
 
-  return { txMessage: txHash && action && status ? TX_MESSAGES[action][status] : null }
+  const txMessage = useMemo(() => {
+    if (txHash && action && status) {
+      return TX_MESSAGES[action][status]
+    }
+    return null
+  }, [txHash, action, status])
+
+  return { txMessage }
 }

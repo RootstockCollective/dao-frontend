@@ -1,26 +1,21 @@
-import { useSteps } from '@/app/user/Stake/hooks/useSteps'
 import { useBalancesContext } from '@/app/user/Balances/context/BalancesContext'
-import { useMemo } from 'react'
-import { steps } from '@/app/user/Stake/Steps/stepsUtils'
+import { StakingProvider } from '@/app/user/Stake/StakingContext'
+import { useSteps } from '@/app/user/Stake/hooks/useSteps'
 import { StakingToken } from '@/app/user/Stake/types'
 import { tokenContracts } from '@/lib/contracts'
-import { StakingProvider } from '@/app/user/Stake/StakingContext'
-import { useUnstakeStRIF } from '@/app/user/Stake/hooks/useUnstakeStRIF'
-import { StakingModal } from './StakeModal'
+import { useMemo } from 'react'
+import { Modal } from '@/components/Modal'
+import { StepOne } from './Steps/StepOne'
 
-interface StakingStepsProps {
+interface Props {
   onCloseModal: () => void
 }
 
-export const UnStakingSteps = ({ onCloseModal }: StakingStepsProps) => {
-  const { step, onGoNext, onGoBack } = useSteps()
+export const UnStakingSteps = ({ onCloseModal }: Props) => {
+  const { step, ...stepFunctions } = useSteps(1)
   const { balances, prices } = useBalancesContext()
 
-  const currentStep = useMemo(() => steps[step], [step])
-
-  const StepComponent = currentStep.stepComponent
-
-  const stepsFunctions = { onGoNext, onGoBack, onCloseModal }
+  const stepsFunctions = { ...stepFunctions, onCloseModal }
 
   const tokenToSend: StakingToken = useMemo(
     () => ({
@@ -43,13 +38,10 @@ export const UnStakingSteps = ({ onCloseModal }: StakingStepsProps) => {
   )
 
   return (
-    <StakingProvider
-      tokenToSend={tokenToSend}
-      tokenToReceive={tokenToReceive}
-      actionToUse={useUnstakeStRIF}
-      actionName="UNSTAKE"
-    >
-      <StakingModal currentStep={currentStep} stepsFunctions={stepsFunctions} onClose={onCloseModal} />
+    <StakingProvider tokenToSend={tokenToSend} tokenToReceive={tokenToReceive}>
+      <Modal width={688} onClose={onCloseModal}>
+        <StepOne {...stepsFunctions} actionName="UNSTAKE" />
+      </Modal>
     </StakingProvider>
   )
 }

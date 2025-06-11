@@ -251,7 +251,7 @@ describe('formatter', () => {
       { currency: 'USD', value: 0, expected: '$0.00' },
       { currency: 'EUR', value: 0, expected: '€0.00' },
     ])('should format $currency properly with $value', ({ currency, value, expected }) => {
-      expect(formatCurrency(value, currency)).toBe(expected)
+      expect(formatCurrency(value, { currency })).toBe(expected)
     })
 
     test.each([
@@ -259,7 +259,7 @@ describe('formatter', () => {
       { currency: 'USD', value: 5, expected: '$5.00' },
       { currency: 'EUR', value: 5, expected: '€5.00' },
     ])('should format $currency properly with $value', ({ currency, value, expected }) => {
-      expect(formatCurrency(value, currency)).toBe(expected)
+      expect(formatCurrency(value, { currency })).toBe(expected)
     })
 
     test.each([
@@ -267,7 +267,7 @@ describe('formatter', () => {
       { currency: 'USD', value: 5.00001, expected: '$5.00' },
       { currency: 'EUR', value: 5.00001, expected: '€5.00' },
     ])('should format $currency properly with $value', ({ currency, value, expected }) => {
-      expect(formatCurrency(value, currency)).toBe(expected)
+      expect(formatCurrency(value, { currency })).toBe(expected)
     })
 
     test.each([
@@ -275,7 +275,7 @@ describe('formatter', () => {
       { currency: 'USD', value: 5.01, expected: '$5.01' },
       { currency: 'EUR', value: 5.01, expected: '€5.01' },
     ])('should format $currency properly with $value', ({ currency, value, expected }) => {
-      expect(formatCurrency(value, currency)).toBe(expected)
+      expect(formatCurrency(value, { currency })).toBe(expected)
     })
 
     test.each([
@@ -283,7 +283,7 @@ describe('formatter', () => {
       { currency: 'USD', value: 0.001, expected: '<$0.01' },
       { currency: 'EUR', value: 0.001, expected: '<€0.01' },
     ])('should format $currency properly with $value', ({ currency, value, expected }) => {
-      expect(formatCurrency(value, currency)).toBe(expected)
+      expect(formatCurrency(value, { currency })).toBe(expected)
     })
   })
   describe('formatSymbol', () => {

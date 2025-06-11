@@ -1,24 +1,20 @@
-import { expect, describe, it, vi } from 'vitest'
+import { expect, describe, it } from 'vitest'
 import { render, screen, fireEvent } from '@testing-library/react'
 import { StakingProvider, useStakingContext } from './StakingContext'
 import { StakingToken } from './types'
 
 const TestComponent = ({ stakeAmount, id }: { stakeAmount: string; id: number }) => {
-  const { amountDataToReceive, onAmountChange } = useStakingContext()
+  const { onAmountChange } = useStakingContext()
   return (
     <div>
-      <span data-testid={`amountToReceive-${id}`}>{amountDataToReceive.amountToReceive}</span>
-      <span data-testid={`amountToReceiveConvertedToCurrency-${id}`}>
-        {amountDataToReceive.amountToReceiveConvertedToCurrency}
-      </span>
+      <span data-testid={`amountToReceive-${id}`}>{stakeAmount}</span>
       <button data-testid={`setAmountButton-${id}`} onClick={() => onAmountChange(stakeAmount)}>
         Set Amount
       </button>
     </div>
   )
 }
-const actionToUse = vi.fn()
-actionToUse.mockClear()
+
 const rif: Omit<StakingToken, 'price'> = {
   balance: '294.0',
   symbol: 'tRIF',
@@ -29,7 +25,6 @@ const stRif: Omit<StakingToken, 'price'> = {
   symbol: 'stRIF',
   contract: '0xC4b091d97AD25ceA5922f09fe80711B7ACBbb16f',
 }
-const actionName = 'STAKE'
 
 describe('StakingProvider', () => {
   it('Amount to receive is a whole number if the stake amount is also a whole number and the token prices are equal', () => {
@@ -42,12 +37,7 @@ describe('StakingProvider', () => {
       // StRif and Rif prices are equal
       const price = Math.random().toString()
       render(
-        <StakingProvider
-          tokenToSend={{ ...rif, price }}
-          tokenToReceive={{ ...stRif, price }}
-          actionToUse={actionToUse}
-          actionName={actionName}
-        >
+        <StakingProvider tokenToSend={{ ...rif, price }} tokenToReceive={{ ...stRif, price }}>
           <TestComponent stakeAmount={stakeAmount} id={i} />
         </StakingProvider>,
       )

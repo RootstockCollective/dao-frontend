@@ -1,4 +1,4 @@
-import { FC } from 'react'
+import { forwardRef } from 'react'
 import { InputAttributes, NumericFormat, NumericFormatProps } from 'react-number-format'
 
 export const MAX_INPUT_NUMBER_AMOUNT = 999999999
@@ -8,18 +8,18 @@ interface Props extends NumericFormatProps<InputAttributes> {
   decimalScale?: number
 }
 
-export const InputNumber: FC<Props> = ({
-  prefix,
-  decimalScale = 8,
-  max = MAX_INPUT_NUMBER_AMOUNT,
-  ...props
-}) => (
-  <NumericFormat
-    decimalSeparator="."
-    prefix={prefix}
-    decimalScale={decimalScale}
-    allowNegative={false}
-    isAllowed={({ floatValue }) => !floatValue || floatValue <= Number(max)}
-    {...props}
-  />
+export const InputNumber = forwardRef<HTMLInputElement, Props>(
+  ({ prefix, decimalScale = 8, max = MAX_INPUT_NUMBER_AMOUNT, ...props }, ref) => (
+    <NumericFormat
+      getInputRef={ref}
+      decimalSeparator="."
+      prefix={prefix}
+      decimalScale={decimalScale}
+      allowNegative={false}
+      isAllowed={({ floatValue }) => !floatValue || floatValue <= Number(max)}
+      {...props}
+    />
+  ),
 )
+
+InputNumber.displayName = 'InputNumber'

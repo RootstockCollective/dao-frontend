@@ -5,18 +5,21 @@ import { describe, expect, it } from 'vitest'
 describe('formatCurrency', () => {
   it('formatCurrency with USD', () => {
     expect(formatCurrency(123456.789)).toBe('$123,456.79')
+    expect(formatCurrency(123456.789, { showCurrency: true })).toBe('$123,456.79 USD')
   })
 
   it('formatCurrency with EUR', () => {
-    expect(formatCurrency(123456.789, 'EUR')).toBe('€123,456.79')
+    expect(formatCurrency(123456.789, { currency: 'EUR' })).toBe('€123,456.79')
   })
 
   it('formatCurrency with small value', () => {
     expect(formatCurrency(0.0001)).toBe('<$0.01')
+    expect(formatCurrency(0.0001, { showCurrency: true })).toBe('<$0.01 USD')
   })
 
   it('formatCurrency with zero', () => {
     expect(formatCurrency(0)).toBe('$0.00')
+    expect(formatCurrency(0, { showCurrency: true })).toBe('$0.00 USD')
   })
 
   it('formatCurrency with Big', () => {
