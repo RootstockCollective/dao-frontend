@@ -20,6 +20,7 @@ import { config } from '@/config'
 import { useUnstakeStRIF } from '../Stake/hooks/useUnstakeStRIF'
 import { PercentageButtons } from './components/PorcentageButtons'
 import { ProgressButtonInProgress } from '../Stake/components/ProgressButtonInProgress'
+import { TransactionStatus } from '../Stake/components/TransactionStatus'
 
 interface Props {
   onCloseModal: () => void
@@ -29,7 +30,9 @@ export const UnstakeModal = ({ onCloseModal }: Props) => {
   const { balances, prices } = useBalancesContext()
   const { address } = useAccount()
   const [amount, setAmount] = useState('')
-  const { onRequestUnstake, isRequesting, isTxPending, isTxFailed } = useUnstakeStRIF(tokenContracts.stRIF)
+  const { onRequestUnstake, isRequesting, isTxPending, isTxFailed, unstakeTxHash } = useUnstakeStRIF(
+    tokenContracts.stRIF,
+  )
 
   const { data: backerTotalAllocation = 0n } = useReadBackersManager(
     { functionName: 'backerTotalAllocation', args: [address!] },
@@ -165,6 +168,12 @@ export const UnstakeModal = ({ onCloseModal }: Props) => {
             </div>
           </>
         )}
+
+        <TransactionStatus
+          txHash={unstakeTxHash}
+          isTxFailed={isTxFailed}
+          failureMessage="Unstake TX failed."
+        />
 
         <Divider className="mt-8" />
 

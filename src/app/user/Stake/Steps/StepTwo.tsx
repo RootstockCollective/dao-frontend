@@ -23,7 +23,7 @@ export const StepTwo = ({ onGoNext, onGoBack }: StepProps) => {
     isRequesting,
     isTxPending,
     isTxFailed,
-    allowanceHash,
+    allowanceTxHash,
   } = useAllowance(amount, tokenToSend.contract, tokenToReceive.contract)
 
   const handleRequestAllowance = async () => {
@@ -77,7 +77,7 @@ export const StepTwo = ({ onGoNext, onGoBack }: StepProps) => {
       </div>
 
       <TransactionStatus
-        txHash={allowanceHash}
+        txHash={allowanceTxHash}
         isTxFailed={isTxFailed}
         failureMessage="Allowance TX failed."
       />

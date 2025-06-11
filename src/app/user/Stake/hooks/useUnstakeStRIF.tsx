@@ -34,7 +34,7 @@ export const useUnstakeStRIF = (tokenToSendContract: Address) => {
     if (unstakeTxHash) {
       trackTransaction(unstakeTxHash)
     }
-  }, [unstakeTxHash])
+  }, [unstakeTxHash, trackTransaction])
 
   return {
     customFooter: null,

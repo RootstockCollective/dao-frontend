@@ -1,5 +1,5 @@
-import { useCallback, useEffect, useMemo, useState } from 'react'
-import { Address, Hash, parseEther } from 'viem'
+import { useCallback, useEffect, useMemo } from 'react'
+import { Address, parseEther } from 'viem'
 import { useAccount, useReadContract, useWaitForTransactionReceipt, useWriteContract } from 'wagmi'
 import { RIFTokenAbi } from '@/lib/abis/RIFTokenAbi'
 import { tokenContracts } from '@/lib/contracts'
@@ -11,7 +11,6 @@ export const useAllowance = (
   tokenToReceiveContract: Address,
 ) => {
   const { address } = useAccount()
-  const [allowanceHash, setAllowanceHash] = useState<Hash>()
   const { trackTransaction } = useTxStatusContext()
 
   const { data: allowanceBalance, isLoading: isAllowanceReadLoading } = useReadContract({
@@ -36,30 +35,24 @@ export const useAllowance = (
   } = useWriteContract()
 
   const tx = useWaitForTransactionReceipt({
-    hash: allowanceHash,
+    hash: allowanceTxHash,
   })
 
   const { isPending: isAllowanceTxPending, failureReason: isAllowanceTxFailed } = tx
 
   const onRequestAllowance = useCallback(
     () =>
-      requestAllowance(
-        {
-          abi: RIFTokenAbi,
-          address: tokenToSendContract,
-          functionName: 'approve',
-          args: [tokenToReceiveContract, parseEther(amount)],
-        },
-        {
-          onSuccess: txHash => setAllowanceHash(txHash),
-        },
-      ),
+      requestAllowance({
+        abi: RIFTokenAbi,
+        address: tokenToSendContract,
+        functionName: 'approve',
+        args: [tokenToReceiveContract, parseEther(amount)],
+      }),
     [amount, requestAllowance, tokenToReceiveContract, tokenToSendContract],
   )
 
   useEffect(() => {
     if (allowanceTxHash) {
-      setAllowanceHash(allowanceTxHash)
       trackTransaction(allowanceTxHash)
     }
   }, [allowanceTxHash, trackTransaction])
@@ -69,8 +62,8 @@ export const useAllowance = (
     isAllowanceReadLoading,
     onRequestAllowance,
     isRequesting,
-    isTxPending: !!(allowanceHash && isAllowanceTxPending && !isAllowanceTxFailed),
-    isTxFailed: !!(allowanceHash && isAllowanceTxFailed),
-    allowanceHash,
+    isTxPending: !!(allowanceTxHash && isAllowanceTxPending && !isAllowanceTxFailed),
+    isTxFailed: !!(allowanceTxHash && isAllowanceTxFailed),
+    allowanceTxHash,
   }
 }
