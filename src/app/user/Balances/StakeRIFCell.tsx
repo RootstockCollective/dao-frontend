@@ -2,9 +2,10 @@ import { useBalancesContext } from '@/app/user/Balances/context/BalancesContext'
 import { Button } from '@/components/Button'
 import { Popover } from '@/components/Popover'
 import { Paragraph, Span } from '@/components/Typography'
-import { ConnectButtonComponentSecondary, ConnectWorkflow } from '@/shared/walletConnection'
+import { ConnectButtonComponentSecondary } from '@/shared/walletConnection'
 import { ModalReturn } from '@/shared/hooks/useModal'
 import { useAccount } from 'wagmi'
+import { ConnectWorkflow } from '@/shared/walletConnection/connection/ConnectWorkflow'
 
 interface Props {
   stakeModal: ModalReturn
