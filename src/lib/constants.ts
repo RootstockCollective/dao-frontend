@@ -58,6 +58,9 @@ export const REOWN_METADATA_URL = (process.env.NEXT_PUBLIC_REOWN_METADATA_URL ??
 
 export const MOBILE_DESKTOP_BREAKPOINT = 640
 
+// Layout constants
+export const MAIN_CONTAINER_MAX_WIDTH = '1440px'
+
 export const FEATURE_FLAGS: Record<Feature, string> = {
   user_flags: process.env.NEXT_PUBLIC_ENABLE_FEATURE_USER_FLAGS ?? '',
   v2_rewards: process.env.NEXT_PUBLIC_ENABLE_FEATURE_V2_REWARDS ?? '',

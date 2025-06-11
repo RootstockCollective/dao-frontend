@@ -12,11 +12,16 @@ import { PageTitleContainer } from '@/components/containers'
 import { useGetBuildersRewards } from '@/app/collective-rewards/rewards/builders/hooks/useGetBuildersRewards'
 import { getTokens } from '@/lib/tokens'
 import { useHandleErrors } from '@/app/collective-rewards/utils'
-import { LoadingSpinner } from '@/components/LoadingSpinner'
+import { useState } from 'react'
+import { Button } from '@/components/Button'
+import { BottomActionBar } from '@/components/BottomActionBar/BottomActionBar'
 
 const NAME = 'Backing'
 export const BackingPage = () => {
   const { address } = useAccount()
+
+  const [isOpen, setIsOpen] = useState(false)
+
   const { data: rewardsData, error: rewardsError } = useGetBuildersRewards(getTokens())
   useHandleErrors({ error: rewardsError, title: 'Error loading builder rewards' })
 
@@ -41,6 +46,19 @@ export const BackingPage = () => {
       <ActionsContainer title="BUILDERS THAT YOU MAY WANT TO BACK" className="">
         <BuildersSpotlight rewardsData={rewardsData} />
       </ActionsContainer>
+
+      {/* TODO: REMOVE THIS */}
+      <Button variant="secondary" onClick={() => setIsOpen(!isOpen)}>
+        Open action bar
+      </Button>
+
+      {/* TODO: CONNECT ACTIONS */}
+      <BottomActionBar isOpen={isOpen}>
+        <div className="flex justify-center gap-2 w-full">
+          <Button variant="secondary">Cancel</Button>
+          <Button variant="primary">Save new backing amounts</Button>
+        </div>
+      </BottomActionBar>
     </div>
   )
 }

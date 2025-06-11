@@ -11,8 +11,8 @@ import { RootstockLogoIcon } from '@/components/Icons'
 import { useLayoutContext } from '../LayoutProvider'
 import { Tooltip } from '@/components/Tooltip'
 
-const openedWidth = 239
-const closedWidth = 79
+export const openedWidth = 239
+export const closedWidth = 79
 const transition: Transition = { duration: 0.3, ease: 'circOut' }
 
 export const SidebarDesktop = () => {
