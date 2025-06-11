@@ -22,7 +22,12 @@ export const UnstakeActions = ({
   onUnstake,
 }: Props) => (
   <>
-    <TransactionStatus txHash={unstakeTxHash} isTxFailed={isTxFailed} failureMessage="Unstake TX failed." />
+    <TransactionStatus
+      txHash={unstakeTxHash}
+      isTxFailed={isTxFailed}
+      failureMessage="Unstake TX failed."
+      className="mt-8"
+    />
 
     <Divider className="mt-8" />
 
