@@ -6,28 +6,16 @@ import { Label, Paragraph, Span } from '@/components/TypographyNew'
 import Big from '@/lib/big'
 import { formatCurrency } from '@/lib/utils'
 import { useReadBackersManager } from '@/shared/hooks/contracts'
-import { useCallback, useMemo, useRef, useEffect } from 'react'
+import { useCallback, useEffect, useMemo, useRef } from 'react'
 import { parseEther, zeroAddress } from 'viem'
 import { useAccount } from 'wagmi'
 import { useStakingContext } from '../StakingContext'
 import { StepProps } from '../types'
 
-const DECIMAL_SCALES = {
-  STAKE: 8,
-  UNSTAKE: 18,
-}
-
 export const StepOne = ({ onGoNext, actionName }: StepProps) => {
   const { address } = useAccount()
   const { amount, onAmountChange, tokenToSend } = useStakingContext()
   const inputRef = useRef<HTMLInputElement>(null)
-
-  useEffect(() => {
-    // Focus the input when component mounts
-    if (inputRef.current) {
-      inputRef.current.focus()
-    }
-  }, [])
 
   const { data: backerTotalAllocation, isLoading: isCanAccountWithdrawLoading } = useReadBackersManager(
     { functionName: 'backerTotalAllocation', args: [address ?? zeroAddress] },
@@ -83,10 +71,9 @@ export const StepOne = ({ onGoNext, actionName }: StepProps) => {
     [onAmountChange],
   )
 
-  const handleMaxAmount = useCallback(() => {
-    const roundedBalance = Big(totalBalance).floor(DECIMAL_SCALES[actionName]).toString()
-    handleAmountChange(roundedBalance)
-  }, [totalBalance, handleAmountChange, actionName])
+  useEffect(() => {
+    inputRef.current?.focus()
+  }, [])
 
   return (
     <>
@@ -97,7 +84,6 @@ export const StepOne = ({ onGoNext, actionName }: StepProps) => {
         symbol={tokenToSend.symbol}
         labelText={actionTexts.inputLabel}
         currencyValue={balanceToCurrency}
-        decimalScale={DECIMAL_SCALES[actionName]}
         errorText={isAmountOverBalance ? actionTexts.amountError : ''}
       />
 
@@ -110,7 +96,7 @@ export const StepOne = ({ onGoNext, actionName }: StepProps) => {
         </div>
         <Button
           variant="secondary"
-          onClick={handleMaxAmount}
+          onClick={() => handleAmountChange(totalBalance)}
           className="bg-transparent border border-bg-40 px-2 py-0"
           data-testid="maxButton"
         >
