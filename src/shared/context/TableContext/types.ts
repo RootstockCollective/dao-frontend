@@ -9,9 +9,7 @@ export type RowData<T extends Record<string, unknown> = Record<string, unknown>>
   id: string
 }
 
-export type SelectedRows = {
-  [key in RowData['id']]: boolean
-}
+export type SelectedRows = Record<RowData['id'], boolean>
 
 export type Column = {
   id: string

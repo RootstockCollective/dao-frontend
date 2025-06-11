@@ -24,6 +24,6 @@ export const TableContext = createContext<TableState | null>(null)
 
 export const useTableContext = () => {
   const context = useContext(TableContext)
-  if (!context) throw new NoContextProviderError('TableContext', 'TableProvider')
+  if (!context) throw new NoContextProviderError('useTableContext', 'TableProvider')
   return context
 }

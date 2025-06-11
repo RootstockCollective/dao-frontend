@@ -7,7 +7,7 @@ export const TableActionsContext = createContext<Dispatch<TableAction> | null>(n
 export const useTableActionsContext = () => {
   const context = useContext(TableActionsContext)
   if (!context) {
-    throw new NoContextProviderError('TableActionsContext', 'TableProvider')
+    throw new NoContextProviderError('useTableActionsContext', 'TableProvider')
   }
 
   return context

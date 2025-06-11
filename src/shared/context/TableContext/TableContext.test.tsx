@@ -24,7 +24,7 @@ describe('TableContext Hook Usage', () => {
     }
     it('throws error when used outside TableProvider', () => {
       expect(() => render(<ContextDisplayComponent />)).toThrow(
-        new NoContextProviderError('TableContext', 'TableProvider'),
+        new NoContextProviderError('useTableContext', 'TableProvider'),
       )
     })
 
@@ -84,6 +84,7 @@ describe('TableProvider Integration', () => {
           <div data-testid="context-available">Context available</div>
           <div data-testid="dispatcher-available">Dispatcher available</div>
           <div data-testid="context-data">{JSON.stringify(context)}</div>
+          <div data-testid="dispatcher-data">{JSON.stringify(dispatch)}</div>
         </div>
       )
     }
@@ -98,6 +99,9 @@ describe('TableProvider Integration', () => {
 
     const contextData = parseTestElementData('context-data')
     expect(contextData).toEqual(initialState)
+
+    const dispatcher = parseTestElementData('dispatcher-data')
+    expect(dispatcher).toBeDefined()
   })
 
   it('supports direct context access with provider', async () => {
