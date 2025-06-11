@@ -70,8 +70,8 @@ export const UnstakeModal = ({ onCloseModal }: Props) => {
   }, [isAmountOverBalance])
 
   const cannotProceedWithUnstake = useMemo(
-    () => isAmountOverBalance || !amount || Big(amount).gt(availableToUnstake) || isRequesting,
-    [isAmountOverBalance, amount, availableToUnstake, isRequesting],
+    () => !amount || !Big(amount).gt(0) || Big(amount).gt(availableToUnstake) || isRequesting,
+    [amount, availableToUnstake, isRequesting],
   )
 
   const handleAmountChange = useCallback(
