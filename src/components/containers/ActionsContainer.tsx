@@ -4,7 +4,7 @@ import { CommonComponentProps } from '../commonProps'
 import { Header } from '@/components/TypographyNew'
 
 export type ActionsContainerProps = CommonComponentProps & {
-  title: ReactNode
+  title?: ReactNode
 }
 
 export const ActionsContainer: FC<ActionsContainerProps> = ({ title, children, className = '' }) => {

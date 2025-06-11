@@ -2,6 +2,7 @@
 
 import { HTMLAttributes } from 'react'
 import { useAlertContext } from '@/app/providers'
+import { MAIN_CONTAINER_MAX_WIDTH } from '@/lib/constants'
 import { FooterDesktop } from './footers/FooterDesktop'
 import { TopPageHeader } from '@/shared/walletConnection/components/topPageHeader/TopPageHeader'
 import { SidebarDesktop } from './sidebars/SidebarDesktop'
@@ -12,7 +13,11 @@ import { cn } from '@/lib/utils'
 export function ContainerDesktop({ children, className, ...props }: HTMLAttributes<HTMLDivElement>) {
   const { message, setMessage } = useAlertContext()
   return (
-    <div {...props} className={cn('flex min-h-screen max-w-[1440px] mx-auto', className)}>
+    <div
+      {...props}
+      className={cn('flex min-h-screen mx-auto', className)}
+      style={{ maxWidth: MAIN_CONTAINER_MAX_WIDTH }}
+    >
       <SidebarDesktop />
       {/* Central section */}
       <div className="grow flex flex-col">

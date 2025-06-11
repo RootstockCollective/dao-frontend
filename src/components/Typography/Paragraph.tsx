@@ -1,4 +1,5 @@
-import { ParagraphVariants, SizeVariants, Typography } from '@/components/Typography'
+import { ParagraphVariants, SizeVariants } from './types'
+import { Typography } from './Typography'
 import { cn } from '@/lib/utils'
 import { FC } from 'react'
 
