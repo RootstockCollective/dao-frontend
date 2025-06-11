@@ -5,36 +5,31 @@ interface Props {
   onPercentageClick: (percentage: number) => void
 }
 
+type PercentageOption = {
+  value: number
+  label: string
+  testId: string
+}
+
+const PERCENTAGE_OPTIONS: PercentageOption[] = [
+  { value: 0.1, label: '10%', testId: '10Button' },
+  { value: 0.2, label: '20%', testId: '20Button' },
+  { value: 0.5, label: '50%', testId: '50Button' },
+  { value: 1, label: 'Max', testId: 'MaxButton' },
+]
+
 export const PercentageButtons = ({ onPercentageClick }: Props) => (
   <>
-    <Button
-      variant="secondary"
-      onClick={() => onPercentageClick(0.1)}
-      className="bg-transparent border border-bg-40 px-2 py-0"
-    >
-      <Span variant="body-s">10%</Span>
-    </Button>
-    <Button
-      variant="secondary"
-      onClick={() => onPercentageClick(0.2)}
-      className="bg-transparent border border-bg-40 px-2 py-0"
-    >
-      <Span variant="body-s">20%</Span>
-    </Button>
-    <Button
-      variant="secondary"
-      onClick={() => onPercentageClick(0.5)}
-      className="bg-transparent border border-bg-40 px-2 py-0"
-    >
-      <Span variant="body-s">50%</Span>
-    </Button>
-    <Button
-      variant="secondary"
-      onClick={() => onPercentageClick(1)}
-      className="bg-transparent border border-bg-40 px-2 py-0"
-      data-testid="maxButton"
-    >
-      <Span variant="body-s">Max</Span>
-    </Button>
+    {PERCENTAGE_OPTIONS.map(({ value, label, testId }) => (
+      <Button
+        key={label}
+        variant="secondary"
+        onClick={() => onPercentageClick(value)}
+        className="bg-transparent border border-bg-40 px-2 py-0"
+        data-testid={testId}
+      >
+        <Span variant="body-s">{label}</Span>
+      </Button>
+    ))}
   </>
 )
