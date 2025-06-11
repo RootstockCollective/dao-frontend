@@ -63,6 +63,12 @@ export const UnstakeModal = ({ onCloseModal }: Props) => {
     return rawAmount.gt(rawBalance)
   }, [amount, stRifToken.balance])
 
+  const isAmountOverAvailableToUnstake = useMemo(() => {
+    if (!amount) return false
+    const rawAmount = Big(amount)
+    return rawAmount.gt(availableToUnstake)
+  }, [amount, availableToUnstake])
+
   const errorMessage = useMemo(() => {
     if (isAmountOverBalance) {
       return 'This is more than the available stRIF balance. Please update the amount.'
@@ -139,7 +145,7 @@ export const UnstakeModal = ({ onCloseModal }: Props) => {
           </div>
         </div>
 
-        {backerTotalAllocation > 0n && (
+        {isAmountOverAvailableToUnstake && (
           <>
             <div className="flex items-center gap-2 mb-2 mt-10">
               <Image src="/images/info-icon.svg" alt="Info" width={40} height={40} />
@@ -148,8 +154,7 @@ export const UnstakeModal = ({ onCloseModal }: Props) => {
                 <Span variant="body" bold>
                   {formatEther(backerTotalAllocation)} stRIF
                 </Span>{' '}
-                in votes allocated in the Collective Rewards. You must de-allocate it, before unstaking all
-                your stRIF.
+                in votes allocated in the Collective Rewards. You must de-allocate it, before unstaking.
               </Paragraph>
             </div>
             <div className="flex items-center gap-2 mb-6 ml-12">
