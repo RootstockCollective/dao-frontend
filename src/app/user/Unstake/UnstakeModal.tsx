@@ -31,6 +31,7 @@ export const UnstakeModal = ({ onCloseModal }: Props) => {
   const { address } = useAccount()
   const [amount, setAmount] = useState('')
   const { onRequestUnstake, isRequesting, isTxPending, isTxFailed, unstakeTxHash } = useUnstakeStRIF(
+    amount,
     tokenContracts.stRIF,
   )
 
@@ -110,7 +111,7 @@ export const UnstakeModal = ({ onCloseModal }: Props) => {
   const handleUnstake = useCallback(async () => {
     if (!amount) return
     try {
-      const txHash = await onRequestUnstake(amount)
+      const txHash = await onRequestUnstake()
       await waitForTransactionReceipt(config, {
         hash: txHash,
       })

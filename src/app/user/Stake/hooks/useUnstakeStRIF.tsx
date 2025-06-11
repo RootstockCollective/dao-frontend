@@ -1,40 +1,29 @@
-import { useAccount, useWaitForTransactionReceipt, useWriteContract } from 'wagmi'
+import { useAccount } from 'wagmi'
 import { StRIFTokenAbi } from '@/lib/abis/StRIFTokenAbi'
 import { Address, parseEther } from 'viem'
-import { useEffect } from 'react'
-import { useTxStatusContext } from '@/shared/context/TxStatusContext'
+import { useContractWrite } from './useContractWrite'
 
-export const useUnstakeStRIF = (tokenToSendContract: Address) => {
+export const useUnstakeStRIF = (amount: string, tokenToSendContract: Address) => {
   const { address } = useAccount()
-  const { trackTransaction } = useTxStatusContext()
 
-  const { writeContractAsync: unstake, data: unstakeTxHash, isPending: isRequesting } = useWriteContract()
-
-  const tx = useWaitForTransactionReceipt({
-    hash: unstakeTxHash,
+  const {
+    onRequestTransaction: onRequestUnstake,
+    isRequesting,
+    isTxPending,
+    isTxFailed,
+    txHash: unstakeTxHash,
+  } = useContractWrite({
+    abi: StRIFTokenAbi,
+    address: tokenToSendContract,
+    functionName: 'withdrawTo',
+    args: [address, parseEther(amount)],
   })
-
-  const { isPending: isTxPending, failureReason: isTxFailed } = tx
-
-  const onRequestUnstake = (amount: string) =>
-    unstake({
-      abi: StRIFTokenAbi,
-      address: tokenToSendContract as Address,
-      functionName: 'withdrawTo',
-      args: [address as Address, parseEther(amount)],
-    })
-
-  useEffect(() => {
-    if (unstakeTxHash) {
-      trackTransaction(unstakeTxHash)
-    }
-  }, [unstakeTxHash, trackTransaction])
 
   return {
     onRequestUnstake,
     isRequesting,
-    isTxPending: !!(unstakeTxHash && isTxPending && !isTxFailed),
-    isTxFailed: !!(unstakeTxHash && isTxFailed),
+    isTxPending,
+    isTxFailed,
     unstakeTxHash,
   }
 }
