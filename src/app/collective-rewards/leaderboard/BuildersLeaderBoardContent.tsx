@@ -4,9 +4,7 @@ import { Search, SearchContextProvider } from '@/app/collective-rewards/shared'
 import { useHandleErrors } from '@/app/collective-rewards/utils'
 import { LoadingSpinner } from '@/components/LoadingSpinner'
 import { Typography } from '@/components/Typography'
-import { COINBASE_ADDRESS } from '@/lib/constants'
-import { tokenContracts } from '@/lib/contracts'
-import { getAddress } from 'viem'
+import { getTokens } from '@/lib/tokens'
 import Image from 'next/image'
 
 const EmptyLeaderboard = () => (
@@ -30,16 +28,7 @@ const EmptyLeaderboard = () => (
 
 export const BuildersLeaderBoardContent = () => {
   // TODO: check where to store this information
-  const tokens = {
-    rif: {
-      address: getAddress(tokenContracts.RIF),
-      symbol: 'RIF',
-    },
-    rbtc: {
-      address: COINBASE_ADDRESS,
-      symbol: 'RBTC',
-    },
-  }
+  const tokens = getTokens()
 
   const { data: rewardsData, isLoading, error } = useGetBuildersRewards(tokens)
   useHandleErrors({ error, title: 'Error loading builder rewards' })

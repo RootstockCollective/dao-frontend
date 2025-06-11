@@ -22,6 +22,7 @@ import { Switch, SwitchThumb } from '@/components/Switch'
 import { Typography } from '@/components/Typography'
 import { COINBASE_ADDRESS } from '@/lib/constants'
 import { tokenContracts } from '@/lib/contracts'
+import { getTokens } from '@/lib/tokens'
 import { useReadBuilderRegistry } from '@/shared/hooks/contracts'
 import Image from 'next/image'
 import { useRouter } from 'next/navigation'
@@ -171,16 +172,7 @@ export const Rewards: FC = () => {
   const data: RewardDetails = {
     builder: address!,
     gauges: activatedGauges,
-    tokens: {
-      rif: {
-        address: getAddress(tokenContracts.RIF),
-        symbol: 'RIF',
-      },
-      rbtc: {
-        address: COINBASE_ADDRESS,
-        symbol: 'RBTC',
-      },
-    },
+    tokens: getTokens(),
   }
 
   return (

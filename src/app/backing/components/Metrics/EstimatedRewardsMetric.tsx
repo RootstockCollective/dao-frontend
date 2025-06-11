@@ -1,9 +1,7 @@
 import { useGetBuildersRewards } from '@/app/collective-rewards/rewards/builders/hooks/useGetBuildersRewards'
 import { useEstimatedRewards } from '../../hooks/useEstimatedRewards'
 import { useHandleErrors } from '@/app/collective-rewards/utils'
-import { COINBASE_ADDRESS } from '@/lib/constants'
-import { tokenContracts } from '@/lib/contracts'
-import { getAddress } from 'viem'
+import { getTokens } from '@/lib/tokens'
 import KotoQuestionMarkIcon from '@/components/Icons/KotoQuestionMarkIcon'
 import { LoadingSpinner } from '@/components/LoadingSpinner'
 import { Header } from '@/components/TypographyNew'
@@ -12,18 +10,7 @@ import { RifRbtcPopover } from '@/app/backing/components/Popovers/RifRbtcPopover
 import { Metric, MetricTitle } from '@/components/Metric'
 
 export const EstimatedRewardsMetric = () => {
-  const tokens = {
-    rif: {
-      address: getAddress(tokenContracts.RIF),
-      symbol: 'RIF',
-    },
-    rbtc: {
-      address: COINBASE_ADDRESS,
-      symbol: 'RBTC',
-    },
-  }
-
-  const { data: rewardsData, isLoading, error } = useGetBuildersRewards(tokens)
+  const { data: rewardsData, isLoading, error } = useGetBuildersRewards(getTokens())
   useHandleErrors({ error, title: 'Error loading builder rewards' })
   const { totalEstimatedRif, totalEstimatedRbtc, totalEstimatedUsd } = useEstimatedRewards(rewardsData)
 
