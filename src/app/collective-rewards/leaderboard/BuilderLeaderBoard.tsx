@@ -6,7 +6,7 @@ import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/component
 import { Popover } from '@/components/Popover'
 import { HeaderTitle, Paragraph, Typography } from '@/components/Typography'
 import { useReadBackersManager } from '@/shared/hooks/contracts'
-import { ConnectWorkflow } from '@/shared/walletConnection'
+import { ConnectWorkflow } from '@/shared/walletConnection/connection/ConnectWorkflow'
 import { ConnectButtonComponentSecondary } from '@/shared/walletConnection/components/ConnectButtonComponent'
 import { useRouter } from 'next/navigation'
 import { useAccount } from 'wagmi'

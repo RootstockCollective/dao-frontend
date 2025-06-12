@@ -11,12 +11,12 @@ type Story = StoryObj<typeof CurrentBacking>
 
 export const Default: Story = {
   args: {
-    existentAllocation: 0,
+    existentAllocation: 0n,
   },
 }
 
 export const WithAllocation: Story = {
   args: {
-    existentAllocation: 50000,
+    existentAllocation: 50000n,
   },
 }

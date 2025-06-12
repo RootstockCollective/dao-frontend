@@ -4,8 +4,8 @@ import { Popover } from '@/components/Popover/Popover'
 import { HourglassIcon } from '@/components/Icons/HourglassIcon'
 
 interface PendingAllocationProps {
-  pendingBacking: number | string
-  currentBacking: number | string
+  pendingBacking: string
+  currentBacking: string
 }
 
 export const PendingAllocation: FC<PendingAllocationProps> = ({ pendingBacking, currentBacking }) => {

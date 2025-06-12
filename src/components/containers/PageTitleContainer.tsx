@@ -15,7 +15,7 @@ export const PageTitleContainer: FC<PageTitleContainerProps> = ({ leftText, clas
         className="grow text-left uppercase text-v3-text-100 leading-10 not-italic"
         data-testid="PageTitleContainerLeft"
       >
-        {leftText} {/* FIXME: adopt Typography from DAO@koto */}
+        {leftText}
       </Typography>
     </div>
   )

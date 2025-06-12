@@ -3,15 +3,16 @@ import { InputNumber } from '@/components/Input/InputNumber'
 import { Paragraph } from '@/components/TypographyNew'
 import { cn } from '@/lib/utils'
 import { FC, useState } from 'react'
-import { parseEther } from 'viem'
+import { formatEther } from 'viem'
 import { PendingAllocation } from '../PendingAllocation/PendingAllocation'
 import { StickySlider } from '../StickySlider/StickySlider'
 import { RIFToken } from '../RIFToken/RIFToken'
+import { formatSymbol } from '@/app/collective-rewards/rewards/utils/formatter'
 
 interface AllocationInputProps {
-  allocation: number
-  existentAllocation: number
-  maxAllocation: number
+  allocation: bigint
+  existentAllocation: bigint
+  maxAllocation: bigint
   rifPriceUsd: number
   allocationTxPending?: boolean
   onAllocationChange: (value: number) => void
@@ -29,12 +30,12 @@ export const AllocationInput: FC<AllocationInputProps> = ({
 }) => {
   const [editing, setEditing] = useState(false)
 
-  const allocationPercentage = maxAllocation === 0 ? 0 : (allocation / maxAllocation) * 100
-  const amountUsd = Number(getFiatAmount(parseEther(allocation.toString()), rifPriceUsd).toFixed(2))
+  const allocationPercentage = maxAllocation === 0n ? 0 : Number((allocation * 100n) / maxAllocation)
+  const amountUsd = Number(getFiatAmount(allocation, rifPriceUsd).toFixed(2))
 
   const handleSliderChange = (value: number[]) => {
     const percent = value[0]
-    const newAllocation = Math.round((percent / 100) * maxAllocation)
+    const newAllocation = Math.round((percent / 100) * Number(formatEther(maxAllocation)))
     onAllocationChange(newAllocation)
   }
 
@@ -51,10 +52,10 @@ export const AllocationInput: FC<AllocationInputProps> = ({
           <InputNumber
             name="allocation"
             autoComplete="off"
-            placeholder={`max ${maxAllocation}`}
+            placeholder={`max ${formatSymbol(maxAllocation, 'stRIF')}`}
             className="focus:outline-none focus-visible:outline-none text-left p-0 m-0 border-0 bg-transparent w-full text-[24px]"
-            value={allocation ? allocation.toString() : ''}
-            max={maxAllocation}
+            value={allocation ? formatSymbol(allocation, 'stRIF') : ''}
+            max={Number(formatEther(maxAllocation))}
             onValueChange={({ value }) => onAllocationChange(Number(value))}
             onFocus={() => !editing && setEditing(true)}
             disabled={allocationTxPending}
@@ -63,7 +64,10 @@ export const AllocationInput: FC<AllocationInputProps> = ({
         </div>
         <div className="flex items-center gap-1 flex-shrink-0" data-testid="allocationInputActions">
           {allocationTxPending && (
-            <PendingAllocation pendingBacking={allocation} currentBacking={existentAllocation} />
+            <PendingAllocation
+              pendingBacking={formatSymbol(allocation, 'stRIF')}
+              currentBacking={formatSymbol(existentAllocation, 'stRIF')}
+            />
           )}
           <RIFToken />
         </div>

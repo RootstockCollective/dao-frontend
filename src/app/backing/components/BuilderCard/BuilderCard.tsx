@@ -1,4 +1,6 @@
-import { ConnectPopover } from '@/app/backing/components/builder-card/ConnectPopover/ConnectPopover'
+import { ConnectPopover } from '@/app/backing/components/Popovers/ConnectPopover'
+import { BackerRewardPercentage, TokenRewards } from '@/app/collective-rewards/rewards/types'
+import { Builder } from '@/app/collective-rewards/types'
 import { Button } from '@/components/Button'
 import { cn } from '@/lib/utils'
 import { FC } from 'react'
@@ -6,17 +8,16 @@ import { AllocationInput } from '../AllocationInput/AllocationInput'
 import { BuilderHeader } from '../BuilderHeader/BuilderHeader'
 import { CurrentBacking } from '../CurrentBacking/CurrentBacking'
 import { RewardsInfo } from '../RewardsInfo/RewardsInfo'
-import { Builder } from '@/app/collective-rewards/types'
 
-export interface BuilderCardProps extends Omit<Builder, 'backerRewardPercentage'> {
-  backerRewardPercentage: NonNullable<Builder['backerRewardPercentage']>
-  existentAllocation: number
-  maxAllocation: number
-  allocation: number
+export interface BuilderCardProps extends Builder {
+  backerRewardPct: BackerRewardPercentage
+  existentAllocation: bigint
+  maxAllocation: bigint
+  allocation: bigint
   onAllocationChange: (newAllocation: number) => void
   rifPriceUsd: number
   isConnected: boolean
-  estimatedRewards?: string
+  estimatedRewards?: TokenRewards
   allocationTxPending?: boolean
   dataTestId?: string
   topBarColor?: string
@@ -29,7 +30,7 @@ export const BuilderCard: FC<BuilderCardProps> = ({
   existentAllocation,
   maxAllocation,
   allocation,
-  backerRewardPercentage,
+  backerRewardPct,
   rifPriceUsd,
   isConnected,
   estimatedRewards,
@@ -42,7 +43,7 @@ export const BuilderCard: FC<BuilderCardProps> = ({
   return (
     <div
       className={cn(
-        'rounded bg-v3-bg-accent-60 px-2 pb-6 flex flex-col items-center relative w-1/4 min-w-[280px]',
+        'rounded bg-v3-bg-accent-60 px-2 pb-6 flex flex-col items-center relative min-w-[200px]',
         className,
       )}
       data-testid={`builderCardContainer${dataTestId}`}
@@ -58,24 +59,24 @@ export const BuilderCard: FC<BuilderCardProps> = ({
         className="w-full mt-6 border border-v3-bg-accent-40 rounded-lg gap-3 flex flex-col divide-y divide-v3-bg-accent-40"
         data-testid="builderCardContent"
       >
-        <RewardsInfo {...backerRewardPercentage} estimatedRewards={estimatedRewards} />
+        <RewardsInfo {...backerRewardPct} estimatedRewards={estimatedRewards} />
         {isConnected && (
           <AllocationInput
             allocation={allocation}
-            maxAllocation={maxAllocation}
             existentAllocation={existentAllocation}
-            allocationTxPending={allocationTxPending}
+            maxAllocation={maxAllocation}
             rifPriceUsd={rifPriceUsd}
+            allocationTxPending={allocationTxPending}
             onAllocationChange={onAllocationChange}
             className="px-2 py-3 mx-3"
           />
         )}
         {isConnected && <CurrentBacking existentAllocation={existentAllocation} />}
       </div>
-      {isConnected && existentAllocation !== 0 && (
+      {isConnected && existentAllocation !== 0n && (
         <Button
           variant="secondary"
-          className={cn('border-v3-bg-accent-40 px-2 py-1 mt-6')}
+          className="border-v3-bg-accent-40 px-2 py-1 mt-6"
           textClassName="text-[14px] font-normal"
           onClick={() => onAllocationChange(0)}
           data-testid="removeBackingButton"
