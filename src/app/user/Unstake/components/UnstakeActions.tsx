@@ -1,7 +1,7 @@
 import { Button } from '@/components/ButtonNew/Button'
 import { Divider } from '@/components/Divider'
 import { Hash } from 'viem'
-import { ProgressButtonInProgress } from '@/app/user/Stake/components/ProgressButtonInProgress'
+import { TransactionInProgressButton } from '@/app/user/Stake/components/TransactionInProgressButton'
 import { TransactionStatus } from '@/app/user/Stake/components/TransactionStatus'
 
 interface Props {
@@ -33,7 +33,7 @@ export const UnstakeActions = ({
 
     <div className="flex justify-end">
       {isTxPending ? (
-        <ProgressButtonInProgress />
+        <TransactionInProgressButton />
       ) : (
         <Button
           variant="primary"

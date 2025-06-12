@@ -1,7 +1,7 @@
 import { Button } from '@/components/ButtonNew/Button'
 import { cn } from '@/lib/utils'
 import { ReactNode } from 'react'
-import { ProgressButtonInProgress } from './ProgressButtonInProgress'
+import { TransactionInProgressButton } from './TransactionInProgressButton'
 
 interface ButtonProps {
   label: string
@@ -43,7 +43,7 @@ export const StepActionButtons = ({
           {secondaryButton.label}
         </Button>
         {isTxPending ? (
-          <ProgressButtonInProgress />
+          <TransactionInProgressButton />
         ) : (
           <Button
             variant="primary"
