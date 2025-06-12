@@ -1,5 +1,5 @@
 import { MoreIcon } from '@/components/Icons/MoreIcon'
-import { X } from 'lucide-react'
+import Image from 'next/image'
 import { Button } from '@/components/Button'
 import { cn } from '@/lib/utils'
 import { FC, MouseEvent } from 'react'
@@ -26,7 +26,11 @@ export const DropdownTrigger: FC<DropdownTriggerProps> = ({
       onClick={onClick}
       aria-label={isOpen ? 'Close menu' : 'Open menu'}
     >
-      {isOpen ? <X className="w-6 h-6 text-white" /> : <MoreIcon className="w-5 h-5 text-white" />}
+      {isOpen ? (
+        <Image src="/images/close-button.svg" alt="Close menu" width={24} height={24} />
+      ) : (
+        <MoreIcon />
+      )}
     </Button>
   )
 }
