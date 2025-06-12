@@ -1,15 +1,9 @@
 import { cn } from '@/lib/utils'
-import { HTMLAttributes, useMemo } from 'react'
-import { Color, defaultColors, getRandomColorWithLightness } from './utils'
-
-export interface Segment {
-  name: string // Label for the segment
-  value: number // Numeric value for the segment
-  color?: Color // Optional color for the segment
-}
+import { HTMLAttributes } from 'react'
+import type { ColoredSegment, Color } from './types'
 
 interface Props extends HTMLAttributes<HTMLDivElement> {
-  segments: Segment[] // Array of pizza chart segments
+  segments: ColoredSegment[] // Array of pizza chart segments
 }
 
 /**
@@ -17,23 +11,17 @@ interface Props extends HTMLAttributes<HTMLDivElement> {
  * If a color is not provided for a segment, it uses a default or random color.
  */
 export function PizzaChartDetails({ segments, className }: Props) {
-  // Memoize the color array to avoid recalculating on every render
-  const colors = useMemo(
-    //  first colors are taken from the default colors array, the rest are randomly generated
-    () => segments.map(({ color }, i) => color ?? defaultColors[i] ?? getRandomColorWithLightness()),
-    [segments],
-  )
   return (
     <div
       className={cn('min-w-[208px] w-fit p-4 bg-text-80 rounded-sm', className)}
       style={{ boxShadow: '0px 8px 24px 0px rgba(23, 20, 18, 0.14)' }}
     >
       <ul className="space-y-2">
-        {segments.map(({ name, value }, i) => (
+        {segments.map(({ name, value, color }, i) => (
           <li key={`${name}-${i}`}>
             <div className="flex w-full gap-2 items-center">
               {/* Color indicator circle */}
-              <Circle color={colors[i]} />
+              <Circle color={color} />
               {/* Segment name */}
               <p className="font-rootstock-sans text-sm text-bg-100">{name}</p>
               {/* Segment value, right-aligned */}

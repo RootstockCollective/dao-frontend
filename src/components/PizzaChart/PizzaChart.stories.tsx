@@ -13,20 +13,65 @@ type Story = StoryObj<typeof meta>
 
 export const Default: Story = {
   args: {
-    values: [
-      { name: 'Category A', value: 40 },
-      { name: 'Category B', value: 25 },
-      { name: 'Category C', value: 35 },
+    segments: [
+      { name: 'Category A', value: 5 },
+      { name: 'Category B', value: 5 },
+      { name: 'Category C', value: 5 },
     ],
+  },
+}
+
+export const Disabled: Story = {
+  args: {
+    disabled: true,
+    segments: [
+      { name: 'Category A', value: 5 },
+      { name: 'Category B', value: 5 },
+      { name: 'Category C', value: 5 },
+    ],
+  },
+  render(args) {
+    return (
+      <div className="flex justify-end">
+        <PizzaChart {...args} />
+      </div>
+    )
   },
 }
 
 export const WithCustomColors: Story = {
   args: {
-    values: [
-      { name: 'For', value: 12_340_999, color: '#1BC47D' },
-      { name: 'Against', value: 5_670_999, color: '#FF6688' },
-      { name: 'Abstain', value: 9_800_999, color: '#DEFF1A' },
+    segments: [
+      { name: 'For', value: 50_000_000, color: 'red' },
+      { name: 'Against', value: 25_000_000, color: 'green' },
+      { name: 'Abstain', value: 25_000_000, color: 'blue' },
+    ],
+  },
+  render(args) {
+    return (
+      <div className="flex justify-center">
+        <PizzaChart {...args} />
+      </div>
+    )
+  },
+}
+
+export const ChartWithSingleValue: Story = {
+  args: {
+    segments: [
+      { name: 'Category A', value: 1 },
+      { name: 'Category B', value: 0 },
+      { name: 'Category C', value: 0 },
+    ],
+  },
+}
+
+export const ChartWithZeroValues: Story = {
+  args: {
+    segments: [
+      { name: 'Category A', value: 0 },
+      { name: 'Category B', value: 0 },
+      { name: 'Category C', value: 0 },
     ],
   },
 }

@@ -14,9 +14,9 @@ type Story = StoryObj<typeof meta>
 export const Default: Story = {
   args: {
     segments: [
-      { name: 'Category A', value: 40 },
-      { name: 'Category B', value: 25 },
-      { name: 'Category C', value: 35 },
+      { name: 'Category A', value: 40, color: 'red' },
+      { name: 'Category B', value: 25, color: 'green' },
+      { name: 'Category C', value: 35, color: 'blue' },
     ],
   },
 }
@@ -37,17 +37,20 @@ export const OnLightBackgroundWithLongContents: Story = {
       {
         name: 'Lorem ipsum dolor sit amet, consectetur adipisicing elit.',
         value: 12_340_999,
+        color: 'violet',
       },
-      { name: 'Consectetur adipisicing elit. Sunt ipsum recusandae', value: 5_670_999 },
+      { name: 'Consectetur adipisicing elit. Sunt ipsum recusandae', value: 5_670_999, color: 'red' },
       {
         name: 'Sunt ipsum recusandae vitae atque dolor quas consequatur',
         value: 9_800_999,
+        color: 'coral',
       },
       {
         name: 'Lorem ipsum dolor sit amet consectetur',
         value: 999_999_999_999,
+        color: 'green',
       },
-      { name: 'Consectetur adipisicing elit. Sunt ipsum recusandae', value: 5_670_999 },
+      { name: 'Consectetur adipisicing elit. Sunt ipsum recusandae', value: 5_670_999, color: 'orange' },
     ],
   },
   render: args => (
