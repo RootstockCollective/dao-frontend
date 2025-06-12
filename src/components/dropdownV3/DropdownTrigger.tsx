@@ -1,17 +1,17 @@
-import React from 'react'
 import { MoreIcon } from '@/components/Icons/MoreIcon'
 import { X } from 'lucide-react'
 import { Button } from '@/components/Button'
 import { cn } from '@/lib/utils'
+import { FC, MouseEvent } from 'react'
 
 interface DropdownTriggerProps {
   className?: string
   'aria-expanded'?: boolean
   'aria-haspopup'?: boolean
-  onClick?: (e: React.MouseEvent) => void
+  onClick?: (e: MouseEvent) => void
 }
 
-export const DropdownTrigger: React.FC<DropdownTriggerProps> = ({
+export const DropdownTrigger: FC<DropdownTriggerProps> = ({
   className,
   'aria-expanded': isOpen,
   'aria-haspopup': hasPopup,

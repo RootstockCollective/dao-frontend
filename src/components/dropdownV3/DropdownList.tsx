@@ -3,7 +3,7 @@
 // Handles keyboard navigation, focus management, and accessibility
 // Accepts a render prop or children for custom item rendering
 
-import React, { useRef, useEffect, useState, ReactNode } from 'react'
+import { useRef, useEffect, useState, ReactNode, KeyboardEvent } from 'react'
 
 export interface DropdownListProps<T> {
   items: T[]
@@ -25,7 +25,7 @@ export function DropdownList<T>({ items, renderItem, onItemClick, className }: D
   }, [activeIndex])
 
   // Keyboard navigation
-  const handleKeyDown = (e: React.KeyboardEvent) => {
+  const handleKeyDown = (e: KeyboardEvent) => {
     if (e.key === 'ArrowDown') {
       setActiveIndex(prev => (prev + 1) % items.length)
       e.preventDefault()

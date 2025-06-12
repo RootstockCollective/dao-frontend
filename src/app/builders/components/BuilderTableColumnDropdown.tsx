@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import { useState } from 'react'
 import { Dropdown } from '@/components/dropdownV3/Dropdown'
 import { DropdownSelector, SelectorOption } from '@/components/dropdownV3/DropdownSelector'
 import { DropdownTrigger } from '@/components/dropdownV3/DropdownTrigger'

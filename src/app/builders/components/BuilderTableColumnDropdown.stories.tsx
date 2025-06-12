@@ -1,4 +1,3 @@
-import React from 'react'
 import { BuilderTableColumnDropdown } from './BuilderTableColumnDropdown'
 
 export default {

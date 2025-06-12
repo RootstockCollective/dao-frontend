@@ -2,10 +2,10 @@ import { Paragraph } from '@/components/TypographyNew'
 import { Typography } from '@/components/TypographyNew/Typography'
 import { Button } from '@/components/Button/Button'
 import Image from 'next/image'
-import React from 'react'
 import CollapsibleWithPreview from '@/components/CollapsibleWithPreview/CollapsibleWithPreview'
+import { FC } from 'react'
 
-const BecomeBuilderCollapsible: React.FC = () => {
+const BecomeBuilderCollapsible: FC = () => {
   const handleBecomeBuilder = () => {
     // FIXME: Implement become builder functionality
   }
