@@ -1,7 +1,7 @@
 // Generic Dropdown container for v3
 // Handles open/close logic, positioning, and click-outside detection
 
-import React, { useState, useRef, ReactNode, ReactElement } from 'react'
+import { useState, useRef, ReactNode, ReactElement, cloneElement, FC, MouseEvent } from 'react'
 import { useClickOutside } from '@/shared/hooks/useClickOutside'
 import { cn } from '@/lib/utils'
 
@@ -13,7 +13,7 @@ export interface DropdownProps {
   direction?: 'bottom-left' | 'bottom-right'
 }
 
-export const Dropdown: React.FC<DropdownProps> = ({
+export const Dropdown: FC<DropdownProps> = ({
   trigger,
   children,
   className,
@@ -29,8 +29,8 @@ export const Dropdown: React.FC<DropdownProps> = ({
   useClickOutside([dropdownRef], close)
 
   // Clone the trigger to inject onClick
-  const triggerWithProps = React.cloneElement(trigger, {
-    onClick: (e: React.MouseEvent) => {
+  const triggerWithProps = cloneElement(trigger, {
+    onClick: (e: MouseEvent) => {
       if (typeof trigger.props.onClick === 'function') {
         trigger.props.onClick(e)
       }

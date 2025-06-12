@@ -5,6 +5,7 @@ import { CheckboxChecked } from '@/components/Icons/CheckboxChecked'
 import { CheckboxUnchecked } from '@/components/Icons/CheckboxUnchecked'
 import { Paragraph } from '@/components/TypographyNew'
 import { cn } from '@/lib/utils'
+import { FC } from 'react'
 
 export interface DropdownSelectorItemProps {
   label: string
@@ -13,7 +14,7 @@ export interface DropdownSelectorItemProps {
   className?: string
 }
 
-export const DropdownSelectorItem: React.FC<DropdownSelectorItemProps> = ({
+export const DropdownSelectorItem: FC<DropdownSelectorItemProps> = ({
   label,
   sublabel,
   checked,

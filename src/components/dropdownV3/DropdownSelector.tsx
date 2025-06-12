@@ -2,7 +2,7 @@
 // Implements the UI for selection with labels and sublabels
 // Handles specific labels and custom styles
 
-import React from 'react'
+import { FC } from 'react'
 import { DropdownList } from './DropdownList'
 import { DropdownSelectorItem } from './DropdownSelectorItem'
 import { Label } from '@/components/TypographyNew'
@@ -22,7 +22,7 @@ export interface DropdownSelectorProps {
   className?: string
 }
 
-export const DropdownSelector: React.FC<DropdownSelectorProps> = ({
+export const DropdownSelector: FC<DropdownSelectorProps> = ({
   title,
   options,
   selected,
