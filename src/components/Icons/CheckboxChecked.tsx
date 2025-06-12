@@ -1,9 +1,9 @@
 import { type IconProps } from './types'
-import { DEFAULT_ICON_COLOR } from './constants'
+import { DEFAULT_ICON_COLOR, DEFAULT_ICON_SIZE } from './constants'
 
 export function CheckboxChecked({
   'aria-label': ariaLabel = 'Checkbox Checked',
-  size = 24,
+  size = DEFAULT_ICON_SIZE,
   color = DEFAULT_ICON_COLOR,
   fill = color,
   ...props
