@@ -43,3 +43,6 @@ next-env.d.ts
 
 # Cursor
 .cursor
+
+# bun lock file
+bun.lockb
