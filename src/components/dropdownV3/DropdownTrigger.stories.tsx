@@ -1,46 +1,41 @@
-import React, { useState } from 'react'
+import type { Meta, StoryObj } from '@storybook/react'
 import { DropdownTrigger } from './DropdownTrigger'
+import { useState } from 'react'
 
-export default {
+const meta = {
   title: 'DropdownV3/DropdownTrigger',
   component: DropdownTrigger,
-}
+  parameters: {
+    layout: 'centered',
+  },
+  tags: ['autodocs'],
+  argTypes: {
+    className: {
+      control: 'text',
+      description: 'Optional CSS class name for custom styling',
+    },
+    onClick: {
+      action: 'clicked',
+      description: 'Click handler for the trigger',
+    },
+  },
+} satisfies Meta<typeof DropdownTrigger>
 
-export const Basic = () => {
-  const [isOpen, setIsOpen] = useState(false)
-  return (
-    <div className="p-4 bg-v3-bg-primary">
-      <DropdownTrigger aria-expanded={isOpen} aria-haspopup={true} onClick={() => setIsOpen(!isOpen)} />
-    </div>
-  )
-}
+export default meta
+type Story = StoryObj<typeof meta>
 
-export const CustomClassName = () => {
-  const [isOpen, setIsOpen] = useState(false)
-  return (
-    <div className="p-4 bg-v3-bg-primary">
-      <DropdownTrigger
-        className="hover:bg-v3-bg-accent-1 rounded-full p-2 transition-colors"
-        aria-expanded={isOpen}
-        aria-haspopup={true}
-        onClick={() => setIsOpen(!isOpen)}
-      />
-    </div>
-  )
-}
-
-export const Open = () => {
-  return (
-    <div className="p-4 bg-v3-bg-primary">
-      <DropdownTrigger aria-expanded={true} aria-haspopup={true} />
-    </div>
-  )
-}
-
-export const Closed = () => {
-  return (
-    <div className="p-4 bg-v3-bg-primary">
-      <DropdownTrigger aria-expanded={false} aria-haspopup={true} />
-    </div>
-  )
+export const Default: Story = {
+  args: {
+    'aria-expanded': false,
+    'aria-haspopup': true,
+    className: '',
+  },
+  render: args => {
+    const [isOpen, setIsOpen] = useState(false)
+    return (
+      <div className="p-4 bg-v3-bg-primary">
+        <DropdownTrigger {...args} aria-expanded={isOpen} onClick={() => setIsOpen(!isOpen)} />
+      </div>
+    )
+  },
 }
