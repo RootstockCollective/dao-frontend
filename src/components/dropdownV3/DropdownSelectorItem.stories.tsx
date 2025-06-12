@@ -1,39 +1,45 @@
-import React from 'react'
+import type { Meta, StoryObj } from '@storybook/react'
 import { DropdownSelectorItem } from './DropdownSelectorItem'
 
-export default {
+const meta = {
   title: 'DropdownV3/DropdownSelectorItem',
   component: DropdownSelectorItem,
-}
+  parameters: {
+    layout: 'centered',
+  },
+  tags: ['autodocs'],
+  argTypes: {
+    label: {
+      control: 'text',
+      description: 'The main label text of the item',
+    },
+    sublabel: {
+      control: 'text',
+      description: 'Optional sublabel text shown below the main label',
+    },
+    checked: {
+      control: 'boolean',
+      description: 'Whether the item is checked/selected',
+    },
+    className: {
+      control: 'text',
+      description: 'Optional CSS class name for custom styling',
+    },
+  },
+} satisfies Meta<typeof DropdownSelectorItem>
 
-export const Basic = () => {
-  return (
-    <div className="p-4">
-      <DropdownSelectorItem label="Basic Item" checked={false} />
-    </div>
-  )
-}
+export default meta
+type Story = StoryObj<typeof meta>
 
-export const Checked = () => {
-  return (
+export const Default: Story = {
+  args: {
+    label: 'Basic Item',
+    checked: false,
+    sublabel: 'Sublabel',
+  },
+  render: args => (
     <div className="p-4">
-      <DropdownSelectorItem label="Checked Item" checked={true} />
+      <DropdownSelectorItem {...args} />
     </div>
-  )
-}
-
-export const WithSublabel = () => {
-  return (
-    <div className="p-4">
-      <DropdownSelectorItem label="Item with Sublabel" sublabel="Additional info" checked={false} />
-    </div>
-  )
-}
-
-export const CheckedWithSublabel = () => {
-  return (
-    <div className="p-4">
-      <DropdownSelectorItem label="Checked Item with Sublabel" sublabel="Additional info" checked={true} />
-    </div>
-  )
+  ),
 }
