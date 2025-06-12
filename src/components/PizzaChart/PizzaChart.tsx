@@ -59,9 +59,9 @@ export const PizzaChart = memo(function PizzaChart({
               <Popover.Content asChild side="top" align="center" sideOffset={4}>
                 <motion.div
                   key={key}
-                  initial={{ opacity: 0, y: 10 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  exit={{ opacity: 0 }}
+                  initial={{ opacity: 0, y: 10, scale: 0.96 }}
+                  animate={{ opacity: 1, y: 0, scale: 1 }}
+                  exit={{ opacity: 0, y: 10, scale: 0.96 }}
                   transition={{ duration: 0.3 }}
                 >
                   <PizzaChartDetails segments={slices} />
