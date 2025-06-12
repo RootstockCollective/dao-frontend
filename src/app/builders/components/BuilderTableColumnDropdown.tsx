@@ -1,25 +1,22 @@
-import { useState } from 'react'
+import { FC, useState } from 'react'
 import { Dropdown } from '@/components/dropdownV3/Dropdown'
 import { DropdownSelector, SelectorOption } from '@/components/dropdownV3/DropdownSelector'
 import { DropdownTrigger } from '@/components/dropdownV3/DropdownTrigger'
+import { CommonComponentProps } from '@/components/commonProps'
 
 const columnOptions: SelectorOption[] = [
-  { label: 'Builder', value: 'builder' },
-  { label: 'Backing', value: 'backing' },
-  { label: 'Rewards %', value: 'rewardsPercent' },
-  { label: 'Change', value: 'change' },
-  { label: 'Rewards', value: 'rewardsPast', sublabel: 'past cycle' },
-  { label: 'Rewards', value: 'rewardsUpcoming', sublabel: 'upcoming cycle' },
-  { label: 'Allocations', value: 'allocations' },
+  { id: 'builder', label: 'Builder' },
+  { id: 'backing', label: 'Backing' },
+  { id: 'rewardsPercent', label: 'Rewards %' },
+  { id: 'change', label: 'Change' },
+  { id: 'rewardsPast', label: 'Rewards', sublabel: 'past cycle' },
+  { id: 'rewardsUpcoming', label: 'Rewards', sublabel: 'upcoming cycle' },
+  { id: 'allocations', label: 'Allocations' },
 ]
 
-export interface BuilderTableColumnDropdownProps {
-  className?: string
-}
-
-export const BuilderTableColumnDropdown: React.FC<BuilderTableColumnDropdownProps> = ({ className }) => {
+export const BuilderTableColumnDropdown: FC<CommonComponentProps> = ({ className }) => {
   // FIXME: interact with the table context once ready
-  const [selected, setSelected] = useState<number[]>([])
+  const [selected, setSelected] = useState<string[]>([])
 
   return (
     <div className={className}>
@@ -33,7 +30,7 @@ export const BuilderTableColumnDropdown: React.FC<BuilderTableColumnDropdownProp
           title="Table Columns"
           options={columnOptions}
           selected={selected}
-          onChange={(_, indices) => setSelected(indices)}
+          onChange={setSelected}
         />
       </Dropdown>
     </div>

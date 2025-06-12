@@ -7,23 +7,23 @@ export default {
 }
 
 const options: SelectorOption[] = [
-  { label: 'Builder', value: 'builder' },
-  { label: 'Backing', value: 'backing' },
-  { label: 'Rewards %', value: 'rewardsPercent' },
-  { label: 'Change', value: 'change' },
-  { label: 'Rewards', value: 'rewardsPast', sublabel: 'past cycle' },
-  { label: 'Rewards', value: 'rewardsUpcoming', sublabel: 'upcoming cycle' },
-  { label: 'Allocations', value: 'allocations' },
+  { id: 'builder', label: 'Builder' },
+  { id: 'backing', label: 'Backing' },
+  { id: 'rewardsPercent', label: 'Rewards %' },
+  { id: 'change', label: 'Change' },
+  { id: 'rewardsPast', label: 'Rewards', sublabel: 'past cycle' },
+  { id: 'rewardsUpcoming', label: 'Rewards', sublabel: 'upcoming cycle' },
+  { id: 'allocations', label: 'Allocations' },
 ]
 
 export const Basic = () => {
-  const [selected, setSelected] = useState<number[]>([])
+  const [selected, setSelected] = useState<string[]>([])
   return (
     <DropdownSelector
       title="Select Columns"
       options={options}
       selected={selected}
-      onChange={(_, indices) => setSelected(indices)}
+      onChange={ids => setSelected(ids)}
     />
   )
 }

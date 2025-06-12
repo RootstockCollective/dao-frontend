@@ -10,15 +10,15 @@ import { cn } from '@/lib/utils'
 
 export interface SelectorOption {
   label: string
-  value: string
+  id: string
   sublabel?: string
 }
 
 export interface DropdownSelectorProps {
   title: string
   options: SelectorOption[]
-  selected: number[]
-  onChange?: (selectedOptions: SelectorOption[], selectedIndices: number[]) => void
+  selected: string[]
+  onChange?: (selectedValues: string[]) => void
   className?: string
 }
 
@@ -29,18 +29,14 @@ export const DropdownSelector: FC<DropdownSelectorProps> = ({
   onChange,
   className,
 }) => {
-  const handleItemClick = (item: SelectorOption, idx: number) => {
-    let newSelected: number[]
-    if (selected.includes(idx)) {
-      newSelected = selected.filter(i => i !== idx)
+  const handleItemClick = (item: SelectorOption) => {
+    let newSelected: string[]
+    if (selected.includes(item.id)) {
+      newSelected = selected.filter(v => v !== item.id)
     } else {
-      newSelected = [...selected, idx]
+      newSelected = [...selected, item.id]
     }
-    if (onChange)
-      onChange(
-        newSelected.map(i => options[i]),
-        newSelected,
-      )
+    if (onChange) onChange(newSelected)
   }
 
   return (
@@ -49,8 +45,12 @@ export const DropdownSelector: FC<DropdownSelectorProps> = ({
       <DropdownList
         items={options}
         onItemClick={handleItemClick}
-        renderItem={(item, _, active) => (
-          <DropdownSelectorItem label={item.label} sublabel={item.sublabel} checked={selected.includes(_)} />
+        renderItem={item => (
+          <DropdownSelectorItem
+            label={item.label}
+            sublabel={item.sublabel}
+            checked={selected.includes(item.id)}
+          />
         )}
       />
     </div>
