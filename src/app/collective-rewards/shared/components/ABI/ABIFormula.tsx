@@ -1,3 +1,4 @@
+/** @deprecated Use src/app/backing/components/ABIFormula.tsx instead */
 export const ABIFormula = () => (
   <span className="flex items-center space-x-1">
     <span className="text-4xl">(</span>

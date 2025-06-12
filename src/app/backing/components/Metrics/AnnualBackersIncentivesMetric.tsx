@@ -7,6 +7,7 @@ import { Metric, MetricTitle } from '@/components/Metric'
 import { Header } from '@/components/TypographyNew'
 
 export const AnnualBackersIncentivesMetric = () => {
+  // TODO: change this to load the info from the backend if feature flag is enabled
   const { data: abiPct, isLoading, error } = useGetMetricsAbi()
   useHandleErrors({ error, title: 'Error loading ABI metrics' })
 

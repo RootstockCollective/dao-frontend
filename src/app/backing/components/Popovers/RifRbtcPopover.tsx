@@ -11,6 +11,18 @@ interface RifRbtcPopoverProps {
   totalEstimatedRif: bigint
   className?: string
 }
+const TokenSymbol = ({ symbol }: { symbol: string }) => {
+  return (
+    <div className="flex items-start gap-1">
+      <TokenImage symbol={symbol} size={16} />
+      <Typography>{symbol}</Typography>
+    </div>
+  )
+}
+
+const TokenAmount = ({ amount, symbol }: { amount: bigint; symbol: string }) => {
+  return <Typography>{formatSymbol(amount, symbol)}</Typography>
+}
 
 export const RifRbtcPopover = ({
   children,
@@ -29,18 +41,12 @@ export const RifRbtcPopover = ({
       >
         <div className="flex items-start text-2xl font-medium">
           <div className="flex flex-col gap-2 mr-2">
-            <Typography>{formatSymbol(totalEstimatedRbtc, 'rbtc')}</Typography>
-            <Typography>{formatSymbol(totalEstimatedRif, 'stRIF')}</Typography>
+            <TokenAmount amount={totalEstimatedRbtc} symbol="rbtc" />
+            <TokenAmount amount={totalEstimatedRif} symbol="stRIF" />
           </div>
           <div className="flex flex-col gap-2">
-            <div className="flex items-start gap-1">
-              <TokenImage symbol={RBTC} size={20} />
-              <Typography>rBTC</Typography>
-            </div>
-            <div className="flex items-start gap-1">
-              <TokenImage symbol={RIF} size={16} />
-              <Typography>RIF</Typography>
-            </div>
+            <TokenSymbol symbol={'rBTC'} />
+            <TokenSymbol symbol={RIF} />
           </div>
         </div>
       </div>

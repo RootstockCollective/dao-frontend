@@ -26,14 +26,16 @@ export const BuildersSpotlight: FC<BuildersSpotlightProps> = ({ rewardsData }) =
   const {
     data: buildersWithBackerRewards,
     isLoading,
-    error,
+    error: buildersWithBackerRewardsError,
   } = useGetBackersRewardPercentage(builders.map(({ address }) => address))
 
   const router = useRouter()
   const shuffledBuilders = useShuffledArray<Builder>(builders)
 
-  useHandleErrors({ error, title: 'Error loading builders' })
-  useHandleErrors({ error: buildersError, title: 'Error loading builders' })
+  useHandleErrors({
+    error: buildersWithBackerRewardsError ?? buildersError,
+    title: 'Error loading builders',
+  })
 
   if (isLoading || buildersLoading) {
     return <LoadingSpinner />
