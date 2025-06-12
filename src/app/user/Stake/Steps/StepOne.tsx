@@ -4,7 +4,7 @@ import { Divider } from '@/components/Divider'
 import { TokenImage } from '@/components/TokenImage'
 import { Label, Span } from '@/components/TypographyNew'
 import Big from '@/lib/big'
-import { formatCurrency } from '@/lib/utils'
+import { formatCurrency, handleAmountInput } from '@/lib/utils'
 import { useCallback, useMemo, useRef, useEffect } from 'react'
 import { useStakingContext } from '../StakingContext'
 import { StepProps } from '../types'
@@ -37,15 +37,7 @@ export const StepOne = ({ onGoNext }: StepProps) => {
 
   const handleAmountChange = useCallback(
     (value: string) => {
-      if (!value || value === '.') {
-        onAmountChange('0')
-      } else {
-        const regex = /^\d*\.?\d{0,18}$/
-        if (regex.test(value)) {
-          // remove leading zeros
-          onAmountChange(value.replace(/^0+(?=\d)/, ''))
-        }
-      }
+      onAmountChange(handleAmountInput(value))
     },
     [onAmountChange],
   )

@@ -6,6 +6,7 @@ import { Header } from '@/components/TypographyNew'
 import { config } from '@/config'
 import Big from '@/lib/big'
 import { tokenContracts } from '@/lib/contracts'
+import { handleAmountInput } from '@/lib/utils'
 import { useReadBackersManager } from '@/shared/hooks/contracts'
 import { useCallback, useMemo, useState } from 'react'
 import { formatEther, parseEther } from 'viem'
@@ -76,15 +77,7 @@ export const UnstakeModal = ({ onCloseModal }: Props) => {
 
   const handleAmountChange = useCallback(
     (value: string) => {
-      if (!value || value === '.') {
-        setAmount('0')
-      } else {
-        const regex = /^\d*\.?\d{0,18}$/
-        if (regex.test(value)) {
-          // remove leading zeros
-          setAmount(value.replace(/^0+(?=\d)/, ''))
-        }
-      }
+      setAmount(handleAmountInput(value))
     },
     [setAmount],
   )

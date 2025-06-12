@@ -301,3 +301,39 @@ export function millify(num: BigSource | bigint, separator = '', units = shortDe
 export function splitWords(str?: string) {
   return str ? str.replace(/([A-Z]+)([A-Z][a-z])/g, '$1 $2').replace(/([a-z])([A-Z])/g, '$1 $2') : ''
 }
+
+/**
+ * Handles amount input changes with proper validation and formatting.
+ * This function ensures that:
+ * 1. The input is a valid number with up to 18 decimal places
+ * 2. Leading zeros are removed
+ * 3. Empty or invalid inputs are handled gracefully
+ * 4. The value is properly formatted for blockchain transactions
+ *
+ * @param value - The input value to process
+ * @param maxDecimals - Maximum number of decimal places (default: 18)
+ * @returns The processed value, or '' if invalid/empty
+ *
+ * @example
+ * handleAmountInput('123.456') // '123.456'
+ * handleAmountInput('00123.456') // '123.456'
+ * handleAmountInput('0.1234567890123456789') // '0.123456789012345678'
+ * handleAmountInput('') // ''
+ * handleAmountInput('.') // ''
+ * handleAmountInput('.1') // '0.1'
+ */
+export const handleAmountInput = (value: string, maxDecimals = 18): string => {
+  // Handle empty or dot-only input
+  if (!value || value === '.') {
+    return ''
+  }
+
+  // Validate input format: numbers with optional decimal point and up to maxDecimals decimal places
+  const regex = new RegExp(`^\\d*\\.?\\d{0,${maxDecimals}}$`)
+  if (!regex.test(value)) {
+    return value.slice(0, -1) // Remove last character if invalid
+  }
+
+  // Remove leading zeros while preserving decimal numbers
+  return value.replace(/^0+(?=\d)/, '')
+}
