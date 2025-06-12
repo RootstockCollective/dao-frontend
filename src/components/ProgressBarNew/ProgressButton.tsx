@@ -17,7 +17,7 @@ export function ProgressButton({ tileSize = 12, color = 'gray', className, child
       dispersion={0.7}
       colors={Array.isArray(color) ? color : progressBarColors[color]}
       tileAnimationDuration={0.2}
-      className={cn('w-full md:w-[261px] h-[42px] border border-bg-40', className)}
+      className={cn('w-full md:w-[231px] h-[42px] border border-bg-40', className)}
       {...props}
     >
       <div className="px-4 py-3 flex flex-row">

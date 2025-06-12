@@ -7,7 +7,7 @@ import { config } from '@/config'
 import { waitForTransactionReceipt } from '@wagmi/core'
 import Image from 'next/image'
 import { useEffect, useMemo, useRef } from 'react'
-import { Divider } from '../components/Divider'
+import { Divider } from '@/components/Divider'
 import { StepActionButtons } from '../components/StepActionButtons'
 import { TokenAmountDisplay } from '../components/TokenAmountDisplay'
 import { TransactionStatus } from '../components/TransactionStatus'
@@ -23,7 +23,7 @@ export const StepTwo = ({ onGoNext, onGoBack }: StepProps) => {
     isRequesting,
     isTxPending,
     isTxFailed,
-    allowanceHash,
+    allowanceTxHash,
   } = useAllowance(amount, tokenToSend.contract, tokenToReceive.contract)
 
   const handleRequestAllowance = async () => {
@@ -77,7 +77,7 @@ export const StepTwo = ({ onGoNext, onGoBack }: StepProps) => {
       </div>
 
       <TransactionStatus
-        txHash={allowanceHash}
+        txHash={allowanceTxHash}
         isTxFailed={isTxFailed}
         failureMessage="Allowance TX failed."
       />
@@ -116,7 +116,7 @@ const HelpPopover = () => {
       contentSubContainerClassName="rounded-none p-6"
     >
       <div className="flex items-center gap-1">
-        <Image src="/images/info-icon.svg" alt="info" width={20} height={20} />
+        <Image src="/images/info-icon-sm.svg" alt="info" width={20} height={20} />
         <Span variant="tag-s">Help, I don&apos;t understand</Span>
       </div>
     </Popover>

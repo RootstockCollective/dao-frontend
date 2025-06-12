@@ -3,7 +3,7 @@ import { StepProps } from '@/app/user/Stake/types'
 import { isUserRejectedTxError } from '@/components/ErrorPage/commonErrors'
 import { config } from '@/config'
 import { waitForTransactionReceipt } from 'wagmi/actions'
-import { Divider } from '../components/Divider'
+import { Divider } from '@/components/Divider'
 import { StepActionButtons } from '../components/StepActionButtons'
 import { TokenAmountDisplay } from '../components/TokenAmountDisplay'
 import { TransactionStatus } from '../components/TransactionStatus'
@@ -12,7 +12,7 @@ import { useStakeRIF } from '../hooks/useStakeRIF'
 export const StepThree = ({ onGoToStep, onCloseModal }: StepProps) => {
   const { amount, tokenToReceive, stakePreviewFrom: from, stakePreviewTo: to } = useStakingContext()
 
-  const { onRequestStake, isRequesting, isTxPending, isTxFailed, stakeHash } = useStakeRIF(
+  const { onRequestStake, isRequesting, isTxPending, isTxFailed, stakeTxHash } = useStakeRIF(
     amount,
     tokenToReceive.contract,
   )
@@ -50,7 +50,7 @@ export const StepThree = ({ onGoToStep, onCloseModal }: StepProps) => {
         />
       </div>
 
-      <TransactionStatus txHash={stakeHash} isTxFailed={isTxFailed} failureMessage="Stake TX failed." />
+      <TransactionStatus txHash={stakeTxHash} isTxFailed={isTxFailed} failureMessage="Stake TX failed." />
 
       <Divider />
 

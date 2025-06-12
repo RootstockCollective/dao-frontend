@@ -1,9 +1,9 @@
-import { useCallback, useEffect, useMemo, useState } from 'react'
-import { Address, Hash, parseEther } from 'viem'
-import { useAccount, useReadContract, useWaitForTransactionReceipt, useWriteContract } from 'wagmi'
+import { useMemo } from 'react'
+import { Address, parseEther } from 'viem'
+import { useAccount, useReadContract } from 'wagmi'
 import { RIFTokenAbi } from '@/lib/abis/RIFTokenAbi'
 import { tokenContracts } from '@/lib/contracts'
-import { useTxStatusContext } from '@/shared/context/TxStatusContext'
+import { useContractWrite } from './useContractWrite'
 
 export const useAllowance = (
   amount: string,
@@ -11,14 +11,12 @@ export const useAllowance = (
   tokenToReceiveContract: Address,
 ) => {
   const { address } = useAccount()
-  const [allowanceHash, setAllowanceHash] = useState<Hash>()
-  const { trackTransaction } = useTxStatusContext()
 
   const { data: allowanceBalance, isLoading: isAllowanceReadLoading } = useReadContract({
     abi: RIFTokenAbi,
     address: tokenContracts.RIF,
     functionName: 'allowance',
-    args: [address!, tokenToReceiveContract as Address],
+    args: [address!, tokenToReceiveContract],
     query: {
       refetchInterval: 5000,
     },
@@ -30,47 +28,25 @@ export const useAllowance = (
   )
 
   const {
-    writeContractAsync: requestAllowance,
-    data: allowanceTxHash,
-    isPending: isRequesting,
-  } = useWriteContract()
-
-  const tx = useWaitForTransactionReceipt({
-    hash: allowanceHash,
+    onRequestTransaction: onRequestAllowance,
+    isRequesting,
+    isTxPending,
+    isTxFailed,
+    txHash: allowanceTxHash,
+  } = useContractWrite({
+    abi: RIFTokenAbi,
+    address: tokenToSendContract,
+    functionName: 'approve',
+    args: [tokenToReceiveContract, parseEther(amount)],
   })
-
-  const { isPending: isAllowanceTxPending, failureReason: isAllowanceTxFailed } = tx
-
-  const onRequestAllowance = useCallback(
-    () =>
-      requestAllowance(
-        {
-          abi: RIFTokenAbi,
-          address: tokenToSendContract,
-          functionName: 'approve',
-          args: [tokenToReceiveContract, parseEther(amount)],
-        },
-        {
-          onSuccess: txHash => setAllowanceHash(txHash),
-        },
-      ),
-    [amount, requestAllowance, tokenToReceiveContract, tokenToSendContract],
-  )
-
-  useEffect(() => {
-    if (allowanceTxHash) {
-      setAllowanceHash(allowanceTxHash)
-      trackTransaction(allowanceTxHash)
-    }
-  }, [allowanceTxHash, trackTransaction])
 
   return {
     isAllowanceEnough,
     isAllowanceReadLoading,
     onRequestAllowance,
     isRequesting,
-    isTxPending: !!(allowanceHash && isAllowanceTxPending && !isAllowanceTxFailed),
-    isTxFailed: !!(allowanceHash && isAllowanceTxFailed),
-    allowanceHash,
+    isTxPending,
+    isTxFailed,
+    allowanceTxHash,
   }
 }
