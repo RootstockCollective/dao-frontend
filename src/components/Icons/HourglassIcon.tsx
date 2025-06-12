@@ -5,7 +5,6 @@ export function HourglassIcon({
   'aria-label': ariaLabel = 'Hourglass Icon',
   size = 16,
   color = DEFAULT_ICON_COLOR,
-  fill = color,
   ...props
 }: IconProps) {
   return (
