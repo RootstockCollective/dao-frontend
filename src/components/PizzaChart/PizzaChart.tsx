@@ -1,5 +1,6 @@
-import { HTMLAttributes, useMemo, memo } from 'react'
+import { HTMLAttributes, useState, useMemo, memo, useId } from 'react'
 import * as Popover from '@radix-ui/react-popover'
+import { motion, AnimatePresence } from 'motion/react'
 import { PizzaChartDetails } from './PizzaChartDetails'
 import { cn } from '@/lib/utils'
 import type { Color, ColoredSegment, OptionalColorSegment } from './types'
@@ -24,13 +25,15 @@ export const PizzaChart = memo(function PizzaChart({
   disabled = false,
   ...props
 }: Props) {
+  const key = useId()
+  const [open, setOpen] = useState(false)
   const slices = usePaintSlices(segments)
   // Calculates sum for normalization
   const total = useMemo(() => slices.reduce((sum, s) => sum + s.value, 0), [slices])
   let currentAngle = startAngle
   return (
     <div className={cn({ grayscale: disabled })} {...props}>
-      <Popover.Root>
+      <Popover.Root open={open} onOpenChange={setOpen}>
         <Popover.Trigger>
           {total <= 0 ? (
             /* Renders an empty (white) pizza chart when there is no data */
@@ -50,11 +53,23 @@ export const PizzaChart = memo(function PizzaChart({
             </svg>
           )}
         </Popover.Trigger>
-        <Popover.Portal>
-          <Popover.Content side="top" align="center" sideOffset={4}>
-            <PizzaChartDetails segments={slices} />
-          </Popover.Content>
-        </Popover.Portal>
+        <AnimatePresence>
+          {open && (
+            <Popover.Portal forceMount>
+              <Popover.Content asChild side="top" align="center" sideOffset={4}>
+                <motion.div
+                  key={key}
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0 }}
+                  transition={{ duration: 0.3 }}
+                >
+                  <PizzaChartDetails segments={slices} />
+                </motion.div>
+              </Popover.Content>
+            </Popover.Portal>
+          )}
+        </AnimatePresence>
       </Popover.Root>
     </div>
   )
