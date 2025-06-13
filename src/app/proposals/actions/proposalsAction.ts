@@ -5,6 +5,8 @@ import { StRIFTokenAbi } from '@/lib/abis/StRIFTokenAbi'
 import { GovernorAddress, tokenContracts } from '@/lib/contracts'
 import { GovernorAbi } from '@/lib/abis/Governor'
 import { unstable_cache } from 'next/cache'
+import { gql as apolloGQL } from '@apollo/client'
+import { daoClient } from '@/shared/components/ApolloClient'
 
 const fetchProposalSharedDetails = async () => {
   // Proposal Threshold (from governor)
@@ -33,3 +35,81 @@ const fetchProposalSharedDetails = async () => {
 export const getCachedProposalSharedDetails = unstable_cache(fetchProposalSharedDetails, undefined, {
   revalidate: 3600, // 1 hour in seconds
 })
+
+const query = apolloGQL`
+  query GetProposals {
+    proposals(first: 1000, orderDirection: desc, orderBy: createdAt) {
+      id
+      proposalId
+      proposer {
+        id
+      }
+      targets
+      description
+      votesFor
+      votesAgainst
+      votesAbstains
+      voteEnd
+      voteStart
+      quorum
+      createdAt
+      createdAtBlock
+      description
+      signatures
+      values
+      calldatas
+      state
+    }
+    counters {
+      id
+      count
+    }
+  }
+`
+
+export interface GraphQLResponse {
+  proposals: ProposalGraphQLResponse[]
+  counters: Counter[]
+}
+
+type ProposalState =
+  | 'Pending'
+  | 'Active'
+  | 'Canceled'
+  | 'Defeated'
+  | 'Succeeded'
+  | 'Queued'
+  | 'Expired'
+  | 'Executed'
+
+export interface ProposalGraphQLResponse {
+  id: string
+  proposalId: string
+  proposer: {
+    id: string
+  }
+  targets: string[]
+  description: string
+  votesFor: string
+  votesAgainst: string
+  votesAbstains: string
+  voteEnd: string
+  voteStart: string
+  quorum: string
+  createdAt: string
+  createdAtBlock: string
+  signatures: string[]
+  values: string[]
+  calldatas: string[]
+  state: ProposalState
+}
+
+export interface Counter {
+  id: string
+  count: string
+}
+
+export async function fetchProposals() {
+  const { data } = await daoClient.query<GraphQLResponse>({ query })
+  return data
+}
