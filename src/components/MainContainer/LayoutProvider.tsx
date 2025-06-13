@@ -2,13 +2,17 @@
 
 import { NoContextProviderError } from '@/lib/errors/ContextError'
 import { useIsDesktop } from '@/shared/hooks/useIsDesktop'
-import { createContext, PropsWithChildren, useContext, useMemo, useState } from 'react'
+import { createContext, PropsWithChildren, ReactNode, useContext, useMemo, useState } from 'react'
 
 interface LayoutState {
   isSidebarOpen: boolean
   toggleSidebar: () => void
   openSidebar: () => void
   closeSidebar: () => void
+  isDrawerOpen: boolean
+  openDrawer: (content: ReactNode) => void
+  closeDrawer: () => void
+  drawerContent: ReactNode | null
 }
 
 const LayoutContext = createContext<LayoutState | null>(null)
@@ -25,14 +29,32 @@ export function LayoutProvider({ children }: PropsWithChildren) {
   const toggleSidebar = () => setIsSidebarOpen(state => !state)
   const openSidebar = () => setIsSidebarOpen(true)
   const closeSidebar = () => setIsSidebarOpen(false)
+
+  const [drawerContent, setDrawerContent] = useState<ReactNode | null>(null)
+  const [isDrawerOpen, setIsDrawerOpen] = useState(false)
+
+  const openDrawer = (content: ReactNode) => {
+    setDrawerContent(content)
+    setIsDrawerOpen(true)
+  }
+
+  const closeDrawer = () => {
+    setIsDrawerOpen(false)
+    setDrawerContent(null)
+  }
+
   const value = useMemo<LayoutState>(
     () => ({
       isSidebarOpen,
       toggleSidebar,
       openSidebar,
       closeSidebar,
+      isDrawerOpen,
+      drawerContent,
+      openDrawer,
+      closeDrawer,
     }),
-    [isSidebarOpen],
+    [isSidebarOpen, isDrawerOpen, drawerContent],
   )
   return <LayoutContext.Provider value={value}>{children}</LayoutContext.Provider>
 }

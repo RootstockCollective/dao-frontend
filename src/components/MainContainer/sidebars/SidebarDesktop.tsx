@@ -11,9 +11,10 @@ import { RootstockLogoIcon } from '@/components/Icons'
 import { useLayoutContext } from '../LayoutProvider'
 import { Tooltip } from '@/components/Tooltip'
 
-export const openedWidth = 239
-export const closedWidth = 79
 const transition: Transition = { duration: 0.3, ease: 'circOut' }
+
+export const SIDEBAR_OPENED_WIDTH = 239
+export const SIDEBAR_CLOSED_WIDTH = 79
 
 export const SidebarDesktop = () => {
   const { isSidebarOpen } = useLayoutContext()
@@ -22,7 +23,7 @@ export const SidebarDesktop = () => {
   const variants = useMemo<Variants>(
     () => ({
       sidebar: {
-        width: isSidebarOpen ? openedWidth : closedWidth,
+        width: isSidebarOpen ? SIDEBAR_OPENED_WIDTH : SIDEBAR_CLOSED_WIDTH,
       },
       icon: { scale: isSidebarOpen ? 1 : 1.6, x: isSidebarOpen ? 0 : 5 },
       text: { opacity: +isSidebarOpen },
