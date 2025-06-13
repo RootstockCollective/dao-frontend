@@ -1,7 +1,3 @@
-// Generic DropdownSelector for v3
-// Implements the UI for selection with labels and sublabels
-// Handles specific labels and custom styles
-
 import { FC, useState } from 'react'
 import * as DropdownMenu from '@radix-ui/react-dropdown-menu'
 import { DropdownSelectorItem } from './DropdownSelectorItem'
