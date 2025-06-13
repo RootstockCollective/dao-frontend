@@ -12,18 +12,16 @@ import { PageTitleContainer } from '@/components/containers'
 import { useGetBuildersRewards } from '@/app/collective-rewards/rewards/builders/hooks/useGetBuildersRewards'
 import { getTokens } from '@/lib/tokens'
 import { useHandleErrors } from '@/app/collective-rewards/utils'
-import { useState } from 'react'
+import { useLayoutContext } from '@/components/MainContainer/LayoutProvider'
 import { Button } from '@/components/Button'
-import { BottomActionBar } from '@/components/BottomActionBar/BottomActionBar'
 
 const NAME = 'Backing'
 export const BackingPage = () => {
   const { address } = useAccount()
-
-  const [isOpen, setIsOpen] = useState(false)
-
   const { data: rewardsData, error: rewardsError } = useGetBuildersRewards(getTokens())
   useHandleErrors({ error: rewardsError, title: 'Error loading builder rewards' })
+
+  const { openDrawer, closeDrawer } = useLayoutContext()
 
   return (
     <div data-testid={NAME} className="flex flex-col items-start w-full h-full pt-[0.13rem] gap-2 rounded-sm">
@@ -47,18 +45,23 @@ export const BackingPage = () => {
         <BuildersSpotlight rewardsData={rewardsData} />
       </ActionsContainer>
 
-      {/* TODO: REMOVE THIS */}
-      <Button variant="secondary" onClick={() => setIsOpen(!isOpen)}>
+      <Button
+        variant="secondary"
+        onClick={() =>
+          openDrawer(
+            <ActionsContainer className="gap-0">
+              <div className="flex justify-center gap-2 w-full">
+                <Button variant="secondary" onClick={closeDrawer}>
+                  Cancel
+                </Button>
+                <Button variant="primary">Save new backing amounts</Button>
+              </div>
+            </ActionsContainer>,
+          )
+        }
+      >
         Open action bar
       </Button>
-
-      {/* TODO: CONNECT ACTIONS */}
-      <BottomActionBar isOpen={isOpen}>
-        <div className="flex justify-center gap-2 w-full">
-          <Button variant="secondary">Cancel</Button>
-          <Button variant="primary">Save new backing amounts</Button>
-        </div>
-      </BottomActionBar>
     </div>
   )
 }
