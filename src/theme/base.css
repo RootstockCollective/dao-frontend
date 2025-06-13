@@ -57,6 +57,7 @@
   --color-brand-rootstock-purple: var(--brand-rootstock-purple);
   --color-brand-rootstock-pink: var(--brand-rootstock-pink);
   --color-brand-rootstock-green: var(--brand-rootstock-green);
+  --color-brand-rootstock-lime: var(--brand-rootstock-lime);
 
   --animate-accordion-down: accordion-down 0.2s ease-out;
   --animate-accordion-up: accordion-up 0.2s ease-out;
