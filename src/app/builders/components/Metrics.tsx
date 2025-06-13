@@ -1,4 +1,3 @@
-import React from 'react'
 import { Metric } from '../../../components/Metric/Metric'
 import { RIFToken } from '@/app/backing/components/RIFToken/RIFToken'
 
