@@ -44,24 +44,6 @@ export const BackingPage = () => {
       <ActionsContainer title="BUILDERS THAT YOU MAY WANT TO BACK" className="">
         <BuildersSpotlight rewardsData={rewardsData} />
       </ActionsContainer>
-
-      <Button
-        variant="secondary"
-        onClick={() =>
-          openDrawer(
-            <ActionsContainer className="gap-0">
-              <div className="flex justify-center gap-2 w-full">
-                <Button variant="secondary" onClick={closeDrawer}>
-                  Cancel
-                </Button>
-                <Button variant="primary">Save new backing amounts</Button>
-              </div>
-            </ActionsContainer>,
-          )
-        }
-      >
-        Open action bar
-      </Button>
     </div>
   )
 }

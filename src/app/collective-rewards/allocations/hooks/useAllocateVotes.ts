@@ -42,6 +42,9 @@ export const useAllocateVotes = () => {
     })
   }
 
+  // TODO: validate what are we going to do with the notifications at the top
+  // since when you press the button to save the allocations, the notifications at the top are shown
+  // causing the scroll to jump
   useAwaitedTxReporting({
     hash,
     error,
