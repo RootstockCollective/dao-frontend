@@ -1,6 +1,3 @@
-// DropdownSelectorItem for v3
-// Renders a single selector item with label, sublabel, and checkbox
-// Used by DropdownSelector
 import { CheckboxChecked } from '@/components/Icons/CheckboxChecked'
 import { CheckboxUnchecked } from '@/components/Icons/CheckboxUnchecked'
 import { Paragraph } from '@/components/TypographyNew'

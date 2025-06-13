@@ -2,8 +2,8 @@
 // Implements the UI for selection with labels and sublabels
 // Handles specific labels and custom styles
 
-import { FC } from 'react'
-import { DropdownList } from './DropdownList'
+import { FC, useState } from 'react'
+import * as DropdownMenu from '@radix-ui/react-dropdown-menu'
 import { DropdownSelectorItem } from './DropdownSelectorItem'
 import { Label } from '@/components/TypographyNew'
 import { cn } from '@/lib/utils'
@@ -20,6 +20,8 @@ export interface DropdownSelectorProps {
   selected: string[]
   onChange?: (selectedValues: string[]) => void
   className?: string
+  trigger: React.ReactNode
+  align?: 'start' | 'center' | 'end'
 }
 
 export const DropdownSelector: FC<DropdownSelectorProps> = ({
@@ -28,7 +30,11 @@ export const DropdownSelector: FC<DropdownSelectorProps> = ({
   selected,
   onChange,
   className,
+  trigger,
+  align = 'end',
 }) => {
+  const [open, setOpen] = useState(false)
+
   const handleItemClick = (item: SelectorOption) => {
     let newSelected: string[]
     if (selected.includes(item.id)) {
@@ -40,19 +46,42 @@ export const DropdownSelector: FC<DropdownSelectorProps> = ({
   }
 
   return (
-    <div className={cn('bg-v3-bg-accent-100 rounded shadow-lg p-6 ', className)}>
-      <Label className="pb-2 text-v3-bg-accent-0 text-sm uppercase">{title}</Label>
-      <DropdownList
-        items={options}
-        onItemClick={handleItemClick}
-        renderItem={item => (
-          <DropdownSelectorItem
-            label={item.label}
-            sublabel={item.sublabel}
-            checked={selected.includes(item.id)}
-          />
-        )}
-      />
-    </div>
+    <DropdownMenu.Root open={open} onOpenChange={setOpen}>
+      <DropdownMenu.Trigger className="focus:outline-none focus:ring-0">{trigger}</DropdownMenu.Trigger>
+
+      <DropdownMenu.Portal>
+        <DropdownMenu.Content
+          className={cn(
+            'z-[1000] min-w-[220px] rounded p-1 shadow-md',
+            'data-[side=bottom]:animate-slideUpAndFade',
+            'data-[side=top]:animate-slideDownAndFade',
+          )}
+          sideOffset={5}
+          align={align}
+        >
+          <div className={cn('bg-v3-bg-accent-100 rounded shadow-lg p-6', className)}>
+            <Label className="pb-2 text-v3-bg-accent-0 text-sm uppercase">{title}</Label>
+            <DropdownMenu.Group className="w-full">
+              {options.map(item => (
+                <DropdownMenu.Item
+                  key={item.id}
+                  className="outline-none"
+                  onSelect={e => {
+                    e.preventDefault()
+                    handleItemClick(item)
+                  }}
+                >
+                  <DropdownSelectorItem
+                    label={item.label}
+                    sublabel={item.sublabel}
+                    checked={selected.includes(item.id)}
+                  />
+                </DropdownMenu.Item>
+              ))}
+            </DropdownMenu.Group>
+          </div>
+        </DropdownMenu.Content>
+      </DropdownMenu.Portal>
+    </DropdownMenu.Root>
   )
 }

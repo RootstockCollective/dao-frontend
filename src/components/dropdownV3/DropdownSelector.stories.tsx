@@ -1,29 +1,53 @@
-import { useState } from 'react'
+import type { Meta, StoryObj } from '@storybook/react'
 import { DropdownSelector, SelectorOption } from './DropdownSelector'
+import { Button } from '@/components/Button'
+import { useState } from 'react'
 
-export default {
-  title: 'DropdownV3/DropdownSelector',
+const meta: Meta<typeof DropdownSelector> = {
+  title: 'Components/DropdownV3/DropdownSelector',
   component: DropdownSelector,
+  parameters: {
+    layout: 'centered',
+  },
+  argTypes: {
+    title: { control: 'text' },
+    align: {
+      control: { type: 'select' },
+      options: ['start', 'center', 'end'],
+    },
+    options: { control: 'object' },
+    className: { control: 'text' },
+  },
 }
 
-const options: SelectorOption[] = [
-  { id: 'builder', label: 'Builder' },
-  { id: 'backing', label: 'Backing' },
-  { id: 'rewardsPercent', label: 'Rewards %' },
-  { id: 'change', label: 'Change' },
-  { id: 'rewardsPast', label: 'Rewards', sublabel: 'past cycle' },
-  { id: 'rewardsUpcoming', label: 'Rewards', sublabel: 'upcoming cycle' },
-  { id: 'allocations', label: 'Allocations' },
+export default meta
+
+type Story = StoryObj<typeof DropdownSelector>
+
+const defaultOptions: SelectorOption[] = [
+  { id: '1', label: 'Option 1' },
+  { id: '2', label: 'Option 2', sublabel: 'Description 2' },
+  { id: '3', label: 'Option 3', sublabel: 'Description 3' },
 ]
 
-export const Basic = () => {
-  const [selected, setSelected] = useState<string[]>([])
+const Template = (args: any) => {
+  const [selected, setSelected] = useState<string[]>(['1'])
   return (
     <DropdownSelector
-      title="Select Columns"
-      options={options}
+      {...args}
+      trigger={<Button>Select Options</Button>}
       selected={selected}
-      onChange={ids => setSelected(ids)}
+      onChange={setSelected}
     />
   )
+}
+
+export const Default: Story = {
+  render: Template,
+  args: {
+    title: 'Select Options',
+    options: defaultOptions,
+    align: 'end',
+    className: '',
+  },
 }
