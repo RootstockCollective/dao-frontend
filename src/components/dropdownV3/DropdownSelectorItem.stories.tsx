@@ -1,8 +1,10 @@
 import type { Meta, StoryObj } from '@storybook/react'
 import { DropdownSelectorItem } from './DropdownSelectorItem'
+import * as DropdownMenu from '@radix-ui/react-dropdown-menu'
+import { Button } from '@/components/Button'
 
 const meta = {
-  title: 'DropdownV3/DropdownSelectorItem',
+  title: 'Components/DropdownV3/DropdownSelectorItem',
   component: DropdownSelectorItem,
   parameters: {
     layout: 'centered',
@@ -38,8 +40,35 @@ export const Default: Story = {
     sublabel: 'Sublabel',
   },
   render: args => (
-    <div className="p-4">
+    <div className="p-4 bg-v3-bg-accent-100 rounded">
       <DropdownSelectorItem {...args} />
     </div>
+  ),
+}
+
+export const InDropdown: Story = {
+  args: {
+    label: 'Dropdown Item',
+    checked: true,
+    sublabel: 'With sublabel',
+  },
+  render: args => (
+    <DropdownMenu.Root>
+      <DropdownMenu.Trigger asChild>
+        <Button>Open Dropdown</Button>
+      </DropdownMenu.Trigger>
+      <DropdownMenu.Portal>
+        <DropdownMenu.Content className="min-w-[220px] bg-white rounded-md p-1 shadow-md">
+          <DropdownMenu.Group>
+            <DropdownMenu.Item className="outline-none">
+              <DropdownSelectorItem {...args} />
+            </DropdownMenu.Item>
+            <DropdownMenu.Item className="outline-none">
+              <DropdownSelectorItem label="Another Item" checked={false} />
+            </DropdownMenu.Item>
+          </DropdownMenu.Group>
+        </DropdownMenu.Content>
+      </DropdownMenu.Portal>
+    </DropdownMenu.Root>
   ),
 }
