@@ -4,18 +4,20 @@ import { Paragraph } from '@/components/TypographyNew'
 import { cn } from '@/lib/utils'
 import { FC } from 'react'
 
-export interface DropdownSelectorItemProps {
+export interface DropdownSelectableItem {
   label: string
   sublabel?: string
   checked: boolean
   className?: string
+  onClick?: () => void
 }
 
-export const DropdownSelectorItem: FC<DropdownSelectorItemProps> = ({
+export const DropdownSelectableItem: FC<DropdownSelectableItem> = ({
   label,
   sublabel,
   checked,
   className,
+  onClick,
 }) => {
   return (
     <label
@@ -23,6 +25,7 @@ export const DropdownSelectorItem: FC<DropdownSelectorItemProps> = ({
         'flex items-center gap-2 pt-2 rounded cursor-pointer select-none transition-colors',
         className,
       )}
+      onClick={onClick}
     >
       <span className="w-5 h-5 flex items-center justify-center">
         {checked ? <CheckboxChecked /> : <CheckboxUnchecked />}
