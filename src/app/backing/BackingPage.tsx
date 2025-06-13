@@ -51,7 +51,7 @@ export const BackingPage = () => {
       <PageTitleContainer leftText={NAME}>
         {/* TODO: ADD CHILDREN HERE OR TEXT IN LEFT_TEXT */}
       </PageTitleContainer>
-      <div data-testid="CenterContainer" className="flex flex-col items-start gap-2">
+      <div data-testid="CenterContainer" className="flex w-full items-start gap-2">
         <InfoContainer className="grow-[9]">{/* TODO: ADD CHILDREN HERE */}</InfoContainer>
         <MetricsContainer className="flex flex-col items-start w-[1144px] p-6">
           <div className="flex w-full items-start gap-14">
