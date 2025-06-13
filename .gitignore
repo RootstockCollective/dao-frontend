@@ -46,3 +46,6 @@ next-env.d.ts
 
 # bun lock file
 bun.lockb
+
+#VSCode
+.vscode
