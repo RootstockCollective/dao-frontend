@@ -1,4 +1,4 @@
-import { FC, useState } from 'react'
+import { FC, ReactNode, useState } from 'react'
 import * as DropdownMenu from '@radix-ui/react-dropdown-menu'
 import { DropdownSelectorItem } from './DropdownSelectorItem'
 import { Label } from '@/components/TypographyNew'
@@ -16,7 +16,7 @@ export interface DropdownSelectorProps {
   selected: string[]
   onChange?: (selectedValues: string[]) => void
   className?: string
-  trigger: React.ReactNode
+  trigger: ReactNode | ((isOpen: boolean) => ReactNode)
   align?: 'start' | 'center' | 'end'
 }
 
@@ -41,9 +41,18 @@ export const DropdownSelector: FC<DropdownSelectorProps> = ({
     if (onChange) onChange(newSelected)
   }
 
+  const renderTrigger = () => {
+    if (typeof trigger === 'function') {
+      return trigger(open)
+    }
+    return trigger
+  }
+
   return (
     <DropdownMenu.Root open={open} onOpenChange={setOpen}>
-      <DropdownMenu.Trigger className="focus:outline-none focus:ring-0">{trigger}</DropdownMenu.Trigger>
+      <DropdownMenu.Trigger className="focus:outline-none focus:ring-0">
+        {renderTrigger()}
+      </DropdownMenu.Trigger>
 
       <DropdownMenu.Portal>
         <DropdownMenu.Content
