@@ -240,15 +240,7 @@ export class TrezorHardwareWallet {
    */
   async isAuthorized(): Promise<boolean> {
     this.log('[Trezor] isAuthorized check')
-    try {
-      const accounts = await this.getAccounts()
-      const authorized = accounts.length > 0
-      this.log('[Trezor] Authorization status:', authorized)
-      return authorized
-    } catch (error) {
-      this.logError('[Trezor] Error checking authorization:', error)
-      return false
-    }
+    return false // Trezor does not saves sessions, always returns false
   }
 
   /**
