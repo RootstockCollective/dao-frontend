@@ -45,10 +45,11 @@ export const DropdownSelector: FC<DropdownSelectorProps> = ({
   }
 
   return (
-    <DropdownMenu.Root open={open} onOpenChange={setOpen}>
+    <DropdownMenu.Root open={open} onOpenChange={setOpen} data-testid="dropdown-selector-root">
       <DropdownMenu.Trigger 
         className="focus:outline-none focus:ring-0 cursor-pointer"
         aria-label={title}
+        data-testid="dropdown-selector-trigger"
       >
         {renderTrigger()}
       </DropdownMenu.Trigger>
@@ -61,6 +62,7 @@ export const DropdownSelector: FC<DropdownSelectorProps> = ({
           align={align}
           role="listbox"
           aria-label={title}
+          data-testid="dropdown-selector-content"
         >
           <motion.div
             initial={{ opacity: 0, scale: 0.95 }}
@@ -68,8 +70,8 @@ export const DropdownSelector: FC<DropdownSelectorProps> = ({
             transition={{ duration: 0.15 }}
             className={cn('bg-v3-bg-accent-100 rounded shadow-lg p-6', className)}
           >
-            <Label className="pb-2 text-v3-bg-accent-0 text-sm uppercase">{title}</Label>
-            <DropdownMenu.Group className="w-full" role="group">
+            <Label className="pb-2 text-v3-bg-accent-0 text-sm uppercase" data-testid="dropdown-selector-title">{title}</Label>
+            <DropdownMenu.Group className="w-full" role="group" data-testid="dropdown-selector-group">
               {options.map(item => (
                 <DropdownMenu.Item
                   key={item.id}
@@ -80,6 +82,7 @@ export const DropdownSelector: FC<DropdownSelectorProps> = ({
                   }}
                   role="option"
                   aria-selected={selected.includes(item.id)}
+                  data-testid={`dropdown-selector-item-${item.id}`}
                 >
                   <DropdownSelectorItem
                     label={item.label}
