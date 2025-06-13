@@ -8,6 +8,16 @@ const meta: Meta<typeof DropdownSelectableItem> = {
     layout: 'centered',
   },
   tags: ['autodocs'],
+  argTypes: {
+    checked: {
+      control: 'boolean',
+      description: 'Controls the checked state of the checkbox',
+    },
+    onClick: {
+      action: 'clicked',
+      description: 'Called when the item is clicked',
+    },
+  },
 }
 
 export default meta
