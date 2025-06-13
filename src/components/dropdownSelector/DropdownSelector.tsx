@@ -1,5 +1,6 @@
 import { FC, ReactNode, useState } from 'react'
 import * as DropdownMenu from '@radix-ui/react-dropdown-menu'
+import { motion } from 'motion/react'
 import { DropdownSelectorItem } from './DropdownSelectorItem'
 import { Label } from '@/components/TypographyNew'
 import { cn } from '@/lib/utils'
@@ -50,21 +51,23 @@ export const DropdownSelector: FC<DropdownSelectorProps> = ({
 
   return (
     <DropdownMenu.Root open={open} onOpenChange={setOpen}>
-      <DropdownMenu.Trigger className="focus:outline-none focus:ring-0">
+      <DropdownMenu.Trigger className="focus:outline-none focus:ring-0 cursor-pointer">
         {renderTrigger()}
       </DropdownMenu.Trigger>
 
       <DropdownMenu.Portal>
         <DropdownMenu.Content
-          className={cn(
-            'z-[1000] min-w-[220px] rounded p-1 shadow-md',
-            'data-[side=bottom]:animate-slideUpAndFade',
-            'data-[side=top]:animate-slideDownAndFade',
-          )}
+          asChild
+          className={cn('z-[1000] min-w-[220px] rounded p-1 shadow-md')}
           sideOffset={5}
           align={align}
         >
-          <div className={cn('bg-v3-bg-accent-100 rounded shadow-lg p-6', className)}>
+          <motion.div
+            initial={{ opacity: 0, scale: 0.95 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ duration: 0.15 }}
+            className={cn('bg-v3-bg-accent-100 rounded shadow-lg p-6', className)}
+          >
             <Label className="pb-2 text-v3-bg-accent-0 text-sm uppercase">{title}</Label>
             <DropdownMenu.Group className="w-full">
               {options.map(item => (
@@ -84,7 +87,7 @@ export const DropdownSelector: FC<DropdownSelectorProps> = ({
                 </DropdownMenu.Item>
               ))}
             </DropdownMenu.Group>
-          </div>
+          </motion.div>
         </DropdownMenu.Content>
       </DropdownMenu.Portal>
     </DropdownMenu.Root>
