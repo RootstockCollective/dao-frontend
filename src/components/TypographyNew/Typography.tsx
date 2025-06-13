@@ -19,7 +19,7 @@ type TypographyVariant = EmphaseVariants | HeaderVariants | BodyVariants | TagVa
  * @property {boolean} [caps=false] - Whether to apply uppercase text transform
  * @property {boolean} [bold=false] - Whether to apply bold font weight
  * @property {string} [data-testid] - Test ID for testing purposes
- * @property {React.ComponentPropsWithoutRef<T>} - All other props are forwarded to the underlying component
+ * @extends {ComponentPropsWithoutRef<T>} - Inherits all props from the underlying HTML element
  */
 export type TypographyProps<T extends ElementType> = {
   as?: T
