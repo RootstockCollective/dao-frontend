@@ -1,4 +1,5 @@
 import { Status } from '@/components/Status'
+import { ProposalState } from '@/shared/types'
 import type { Meta, StoryObj } from '@storybook/react'
 import { expect, spyOn, userEvent, within } from '@storybook/test'
 
@@ -13,31 +14,55 @@ type Story = StoryObj<typeof meta>
 
 export const Success: Story = {
   args: {
-    severity: 'success',
+    proposalState: ProposalState.Succeeded,
   },
 }
 
-export const InProgress: Story = {
+export const Pending: Story = {
   args: {
-    severity: 'in-progress',
+    proposalState: ProposalState.Pending,
   },
 }
 
-export const Rejected: Story = {
+export const Active: Story = {
   args: {
-    severity: 'rejected',
+    proposalState: ProposalState.Active,
+  },
+}
+
+export const Executed: Story = {
+  args: {
+    proposalState: ProposalState.Executed,
+  },
+}
+
+export const Queued: Story = {
+  args: {
+    proposalState: ProposalState.Queued,
+  },
+}
+
+export const Defeated: Story = {
+  args: {
+    proposalState: ProposalState.Defeated,
   },
 }
 
 export const Canceled: Story = {
   args: {
-    severity: 'canceled',
+    proposalState: ProposalState.Canceled,
+  },
+}
+
+export const Expired: Story = {
+  args: {
+    proposalState: ProposalState.Expired,
   },
 }
 
 export const TestDivEvent: Story = {
   args: {
-    severity: 'success',
+    proposalState: ProposalState.Succeeded,
     onClick: () => console.log('Clicked'),
   },
   play: async ({ canvasElement }) => {
