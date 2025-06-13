@@ -1,5 +1,6 @@
 'use client'
 
+import { NoContextProviderError } from '@/lib/errors/ContextError'
 import { useIsDesktop } from '@/shared/hooks/useIsDesktop'
 import { createContext, PropsWithChildren, useContext, useMemo, useState } from 'react'
 
@@ -44,7 +45,7 @@ export function LayoutProvider({ children }: PropsWithChildren) {
 export function useLayoutContext(): LayoutState {
   const context = useContext(LayoutContext)
   if (!context) {
-    throw new Error('useLayoutContext must be used within an LayoutProvider')
+    throw new NoContextProviderError('useLayoutContext', 'LayoutProvider')
   }
   return context
 }

@@ -1,14 +1,15 @@
 'use client'
-import { ReactNode, createContext, useContext, useState } from 'react'
-import { Address } from 'viem'
-import { useRouter } from 'next/navigation'
+import { communitiesMapByContract, CommunityItem } from '@/app/communities/communityUtils'
+import { nftAlertMessages } from '@/app/communities/nft/[address]/constants'
+import { useAlertContext } from '@/app/providers'
+import { NoContextProviderError } from '@/lib/errors/ContextError'
+import { applyPinataImageOptions } from '@/lib/ipfs'
 import { useCommunity } from '@/shared/hooks/useCommunity'
 import { useStRif } from '@/shared/hooks/useStRIf'
-import { communitiesMapByContract, CommunityItem } from '@/app/communities/communityUtils'
-import { useAlertContext } from '@/app/providers'
+import { useRouter } from 'next/navigation'
+import { createContext, ReactNode, useContext, useState } from 'react'
+import { Address } from 'viem'
 import { useAccount } from 'wagmi'
-import { nftAlertMessages } from '@/app/communities/nft/[address]/constants'
-import { applyPinataImageOptions } from '@/lib/ipfs'
 
 interface CommunityNFTContextProps {
   // NFT Information Management
@@ -194,7 +195,7 @@ export function CommunityNFTProvider({ children, nftAddress }: CommunityNFTProvi
 export const useCommunityNFT = () => {
   const context = useContext(CommunityNFTContext)
   if (!context) {
-    throw new Error('useCommunityNFT must be used within a CommunityNFTProvider')
+    throw new NoContextProviderError('useCommunityNFT', 'CommunityNFTProvider')
   }
   return context
 }

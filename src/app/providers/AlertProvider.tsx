@@ -1,5 +1,6 @@
 'use client'
 import { AlertProps } from '@/components/Alert/Alert'
+import { NoContextProviderError } from '@/lib/errors/ContextError'
 import { createContext, FC, ReactNode, useContext, useState } from 'react'
 
 // Define the context without an initial value (which will be set by the provider)
@@ -22,7 +23,7 @@ export const AlertProvider: FC<Props> = ({ children }) => {
 export const useAlertContext = () => {
   const context = useContext(AlertContext)
   if (!context) {
-    throw new Error('useAlertContext must be used within an AlertProvider')
+    throw new NoContextProviderError('useAlertContext', 'AlertProvider')
   }
   return context
 }

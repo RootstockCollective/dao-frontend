@@ -1,3 +1,4 @@
+import { NoContextProviderError } from '@/lib/errors/ContextError'
 import { createContext, memo, ReactNode, useCallback, useContext, useMemo, useState } from 'react'
 import { useTransactionToast } from '../hooks/useTransactionToast'
 
@@ -49,7 +50,7 @@ export const TxStatusProvider = ({ children }: { children: ReactNode }) => {
 export const useTxStatusContext = () => {
   const context = useContext(TxStatusContext)
   if (!context) {
-    throw new Error('useTxStatusContext must be used within a TxStatusProvider')
+    throw new NoContextProviderError('useTxStatusContext', 'TxStatusProvider')
   }
   return context
 }
