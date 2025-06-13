@@ -1,8 +1,10 @@
 import { FC, useState } from 'react'
-import { DropdownSelector, SelectorOption } from '@/components/dropdownV3/DropdownSelector'
 import { CommonComponentProps } from '@/components/commonProps'
 import { Button } from '@/components/Button'
 import { MoreIcon } from '@/components/Icons/MoreIcon'
+import { DropdownSelector, SelectorOption } from '@/components/DropdownSelector/DropdownSelector'
+import Image from 'next/image'
+import { CloseIcon } from '@/components/Icons/CloseIcon'
 
 const columnOptions: SelectorOption[] = [
   { id: 'builder', label: 'Builder' },
@@ -25,14 +27,14 @@ export const BuilderTableColumnDropdown: FC<CommonComponentProps> = ({ className
         options={columnOptions}
         selected={selected}
         onChange={setSelected}
-        trigger={
+        trigger={isOpen => (
           <Button
             variant="secondary"
             className="w-8 h-8 flex items-center justify-center rounded-full hover:bg-[#39342A] transition-colors border-none"
           >
-            <MoreIcon />
+            {isOpen ? <CloseIcon /> : <MoreIcon />}
           </Button>
-        }
+        )}
       />
     </div>
   )
