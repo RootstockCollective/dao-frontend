@@ -57,6 +57,7 @@ export const VotingDetails = ({ voteData, votingPower, buttonAction, hasVoted }:
       <div className="grid grid-cols-2 gap-2 mt-4">
         {Object.keys(voteData).map(key => (
           <VoteCounter
+            key={key}
             title={capitalizeFirstLetter(key)}
             value={voteData[key]}
             color={colorMap.get(key.toLowerCase())!}
