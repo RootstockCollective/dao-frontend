@@ -8,11 +8,17 @@ import { SidebarDesktop } from './sidebars/SidebarDesktop'
 import { Alert } from '../Alert'
 import { HeaderDesktop } from './headers/HeaderDesktop'
 import { cn } from '@/lib/utils'
+import { BottomDrawer } from './drawers/BottomDrawer'
 
+export const MAIN_CONTAINER_MAX_WIDTH = '1440px'
 export function ContainerDesktop({ children, className, ...props }: HTMLAttributes<HTMLDivElement>) {
   const { message, setMessage } = useAlertContext()
   return (
-    <div {...props} className={cn('flex min-h-screen max-w-[1440px] mx-auto', className)}>
+    <div
+      {...props}
+      className={cn('flex min-h-screen mx-auto', className)}
+      style={{ maxWidth: MAIN_CONTAINER_MAX_WIDTH }}
+    >
       <SidebarDesktop />
       {/* Central section */}
       <div className="grow flex flex-col">
@@ -26,6 +32,7 @@ export function ContainerDesktop({ children, className, ...props }: HTMLAttribut
               <TopPageHeader />
               {children}
             </main>
+            <BottomDrawer />
             <FooterDesktop />
           </div>
         </div>

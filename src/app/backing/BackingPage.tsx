@@ -12,13 +12,16 @@ import { PageTitleContainer } from '@/components/containers'
 import { useGetBuildersRewards } from '@/app/collective-rewards/rewards/builders/hooks/useGetBuildersRewards'
 import { getTokens } from '@/lib/tokens'
 import { useHandleErrors } from '@/app/collective-rewards/utils'
-import { LoadingSpinner } from '@/components/LoadingSpinner'
+import { useLayoutContext } from '@/components/MainContainer/LayoutProvider'
+import { Button } from '@/components/Button'
 
 const NAME = 'Backing'
 export const BackingPage = () => {
   const { address } = useAccount()
   const { data: rewardsData, error: rewardsError } = useGetBuildersRewards(getTokens())
   useHandleErrors({ error: rewardsError, title: 'Error loading builder rewards' })
+
+  const { openDrawer, closeDrawer } = useLayoutContext()
 
   return (
     <div data-testid={NAME} className="flex flex-col items-start w-full h-full pt-[0.13rem] gap-2 rounded-sm">

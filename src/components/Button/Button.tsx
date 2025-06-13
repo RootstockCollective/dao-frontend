@@ -1,4 +1,4 @@
-import { ButtonVariants } from '@/components/Button/types'
+import { ButtonVariants } from './types'
 import { cn } from '@/lib/utils'
 import { FC, JSX, MouseEvent, ReactNode } from 'react'
 import { Span } from '../Typography'
