@@ -28,10 +28,7 @@ export const BuilderTableColumnDropdown: FC<CommonComponentProps> = ({ className
         selected={selected}
         onChange={setSelected}
         trigger={isOpen => (
-          <Button
-            variant="secondary"
-            className="w-8 h-8 flex items-center justify-center rounded-full hover:bg-[#39342A] transition-colors border-none"
-          >
+          <Button variant="secondary" className="p-0 border-none">
             {isOpen ? <CloseIcon /> : <MoreIcon />}
           </Button>
         )}
