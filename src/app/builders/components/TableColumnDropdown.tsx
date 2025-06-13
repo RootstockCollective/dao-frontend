@@ -3,7 +3,6 @@ import { CommonComponentProps } from '@/components/commonProps'
 import { Button } from '@/components/Button'
 import { MoreIcon } from '@/components/Icons/MoreIcon'
 import { DropdownSelector, SelectorOption } from '@/components/DropdownSelector/DropdownSelector'
-import Image from 'next/image'
 import { CloseIcon } from '@/components/Icons/CloseIcon'
 
 const columnOptions: SelectorOption[] = [
@@ -16,7 +15,7 @@ const columnOptions: SelectorOption[] = [
   { id: 'allocations', label: 'Allocations' },
 ]
 
-export const BuilderTableColumnDropdown: FC<CommonComponentProps> = ({ className }) => {
+export const TableColumnDropdown: FC<CommonComponentProps> = ({ className }) => {
   // FIXME: interact with the table context once ready
   const [selected, setSelected] = useState<string[]>([])
 
