@@ -6,7 +6,6 @@ import sanitizeHtml from 'sanitize-html'
 const classesByTag: Record<TypographyTagVariants, string> = {
   h1: 'font-bold text-[1.7rem]',
   h2: '',
-  h3: 'font-normal text-xl leading-normal',
   p: '',
   label: '',
   span: '',
