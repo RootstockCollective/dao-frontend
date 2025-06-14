@@ -5,7 +5,7 @@ import { useMemo, useContext } from 'react'
 import { usePricesContext } from '@/shared/context/PricesContext'
 import { AllocationsContext } from '@/app/collective-rewards/allocations/context/AllocationsContext'
 import { RIF } from '@/lib/constants'
-import { AvailableBackingMetric, TotalBackingMetric, BackingMetrics } from './components'
+import { AvailableBackingMetric, TotalBackingMetric } from './components'
 import {
   ActionMetricsContainer,
   ActionsContainer,
