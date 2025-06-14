@@ -104,7 +104,7 @@ export const AvailableBackingMetric = ({
                   variant="tag-s"
                   className="text-[#ACA39D] font-rootstock-sans text-sm font-medium leading-[145%] self-stretch"
                 >
-                  {availableBackingUSD} USD
+                  {availableBackingUSD.toFixed(2)} USD
                 </Typography>
               </div>
             )}
