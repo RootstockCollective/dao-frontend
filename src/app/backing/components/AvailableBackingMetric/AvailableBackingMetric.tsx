@@ -80,14 +80,15 @@ export const AvailableBackingMetric = ({
                       <Tooltip
                         text={
                           <div className="flex w-[269px] p-6 flex-col items-start gap-2">
-                            <Typography
-                              className="self-stretch text-[#171412] font-rootstock-sans text-[14px] font-normal leading-[145%]"
-                            >
-                              You'll be distributing equally to each of the Builders below
+                            <Typography className="self-stretch text-[#171412] font-rootstock-sans text-[14px] font-normal leading-[145%]">
+                              You&apos;ll be distributing equally to each of the Builders below
                             </Typography>
                           </div>
                         }
                         side="top"
+                        align="center"
+                        alignOffset={-60}
+                        sideOffset={10}
                         className="bg-white rounded-[4px] shadow-lg"
                       >
                         <KotoQuestionMarkIcon />
