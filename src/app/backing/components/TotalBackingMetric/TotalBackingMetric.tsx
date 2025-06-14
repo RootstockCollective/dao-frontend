@@ -9,7 +9,8 @@ interface TotalBackingMetricProps {
 
 export const TotalBackingMetric = ({ totalBacking }: TotalBackingMetricProps) => {
   return (
-    <Metric
+    <div className="flex-1">
+      <Metric
       title={
         <Typography
           variant="tag"
@@ -43,5 +44,6 @@ export const TotalBackingMetric = ({ totalBacking }: TotalBackingMetricProps) =>
         </div>
       }
     />
+    </div>
   )
 }

@@ -19,7 +19,7 @@ export const AvailableBackingMetric = ({
   onDistributeClick,
 }: AvailableBackingMetricProps) => {
   return (
-    <div className="flex flex-col items-start gap-2 self-stretch">
+    <div className="flex flex-col items-start gap-2 self-stretch flex-1">
       <Metric
         title={
           <Typography

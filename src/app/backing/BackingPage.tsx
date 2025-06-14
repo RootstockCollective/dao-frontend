@@ -54,7 +54,7 @@ export const BackingPage = () => {
       </div>
 
       {address && (
-        <ActionMetricsContainer  className="flex flex-col items-start w-[1144px] p-6 gap-2 rounded-[4px] bg-[#25211E]">
+        <ActionMetricsContainer  className="flex flex-col items-start w-[1144px] p-6 gap-2 rounded-[4px] bg-[#25211E] [&>div]:w-full">
           <AvailableBackingMetric
             availableForBacking={availableForBacking}
             availableBackingUSD={availableBackingUSD}
