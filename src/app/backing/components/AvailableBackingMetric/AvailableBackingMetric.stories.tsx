@@ -1,4 +1,5 @@
 import type { Meta, StoryObj } from '@storybook/react'
+import * as RadixTooltip from '@radix-ui/react-tooltip'
 import { AvailableBackingMetric } from './AvailableBackingMetric'
 
 const meta: Meta<typeof AvailableBackingMetric> = {
@@ -7,6 +8,13 @@ const meta: Meta<typeof AvailableBackingMetric> = {
   parameters: {
     layout: 'centered',
   },
+  decorators: [
+    Story => (
+      <RadixTooltip.Provider>
+        <Story />
+      </RadixTooltip.Provider>
+    ),
+  ],
 }
 
 export default meta
