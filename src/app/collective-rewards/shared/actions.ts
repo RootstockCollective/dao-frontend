@@ -2,32 +2,7 @@
 
 import { client } from '@/shared/components/ApolloClient'
 import { gql as apolloGQL } from '@apollo/client'
-import { Address } from 'viem'
-
-type CycleData = {
-  id: string
-  rewardsERC20: string
-  rewardsRBTC: string
-}
-
-type BackerRewardPercentageData = {
-  id: string
-  next: string
-  previous: string
-  cooldownEndTime: string
-}
-
-type BuilderData = {
-  id: Address
-  backerRewardPercentage: BackerRewardPercentageData
-  rewardShares: string
-  totalAllocation: string
-}
-
-export type Response = {
-  builders: BuilderData[]
-  cycles: CycleData[]
-}
+import { AbiData } from './hooks/useGetABI'
 
 const query = apolloGQL`
   query AbiMetricsData {
@@ -54,7 +29,7 @@ const query = apolloGQL`
 `
 
 export async function fetchABIData() {
-  const { data: abiData } = await client.query<Response>({ query })
+  const { data: abiData } = await client.query<AbiData>({ query })
 
   return abiData
 }

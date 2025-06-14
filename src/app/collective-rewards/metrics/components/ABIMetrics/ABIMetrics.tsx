@@ -1,9 +1,9 @@
 import { MetricsCard, MetricsCardTitle, TokenMetricsCardRow } from '@/app/collective-rewards/rewards'
 import {
   ABIFormula,
-  useGetMetricsAbi,
   useGetMetricsAbiWithGraph,
   useGetMetricsAbiWithStateSync,
+  useGetABIFromChain,
 } from '@/app/collective-rewards/shared'
 import { withFallbackRetry } from '@/app/shared/components/Fallback/FallbackWithRetry'
 import { useHandleErrors } from '@/app/collective-rewards/utils'
@@ -51,7 +51,7 @@ const ABIMetricsContent = ({ abiPct, isLoading }: { abiPct: Big; isLoading: bool
 }
 
 const ABIMetricsFromChain = () => {
-  const { data: abiPct, isLoading, error } = useGetMetricsAbi()
+  const { data: abiPct, isLoading, error } = useGetABIFromChain()
   useHandleErrors({ error, title: 'Error loading ABI metrics' })
 
   return <ABIMetricsContent abiPct={abiPct} isLoading={isLoading} />
