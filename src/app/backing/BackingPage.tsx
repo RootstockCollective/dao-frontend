@@ -1,7 +1,7 @@
 'use client'
 
 import { useAccount } from 'wagmi'
-import { useMemo, useContext } from 'react'
+import { useContext } from 'react'
 import { usePricesContext } from '@/shared/context/PricesContext'
 import { AllocationsContext } from '@/app/collective-rewards/allocations/context/AllocationsContext'
 import { RIF } from '@/lib/constants'
@@ -24,20 +24,12 @@ export const BackingPage = () => {
   const totalOnchainAllocation = state.backer.amountToAllocate
   const rifPriceUsd = prices[RIF]?.price ?? 0
 
-  const availableForBacking = useMemo(() => {
-    if (!votingPower || !totalOnchainAllocation) return 0
-    return Number(votingPower - totalOnchainAllocation)
-  }, [votingPower, totalOnchainAllocation])
+  const availableForBacking =
+    !votingPower || !totalOnchainAllocation ? 0 : Number(votingPower - totalOnchainAllocation)
 
-  const totalBacking = useMemo(() => {
-    if (!totalOnchainAllocation) return 0
-    return Number(totalOnchainAllocation)
-  }, [totalOnchainAllocation])
+  const totalBacking = !totalOnchainAllocation ? 0 : Number(totalOnchainAllocation)
 
-  const availableBackingUSD = useMemo(() => {
-    if (!availableForBacking || !rifPriceUsd) return 0
-    return availableForBacking * rifPriceUsd
-  }, [availableForBacking, rifPriceUsd])
+  const availableBackingUSD = !availableForBacking || !rifPriceUsd ? 0 : availableForBacking * rifPriceUsd
 
   return (
     <div
