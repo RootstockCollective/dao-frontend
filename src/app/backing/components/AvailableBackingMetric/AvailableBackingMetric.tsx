@@ -2,6 +2,7 @@ import { Button } from '@/components/Button'
 import { Metric } from '@/components/Metric/Metric'
 import { Typography } from '@/components/TypographyNew/Typography'
 import { TokenImage } from '@/components/TokenImage'
+import { Tooltip } from '@/components/Tooltip'
 import { stRIF } from '@/lib/constants'
 import KotoQuestionMarkIcon from '@/components/Icons/KotoQuestionMarkIcon'
 
@@ -76,7 +77,21 @@ export const AvailableBackingMetric = ({
                       </Typography>
                     </Button>
                     <div className="flex w-4 py-[6px] flex-col justify-center items-center self-stretch aspect-square">
-                      <KotoQuestionMarkIcon />
+                      <Tooltip
+                        text={
+                          <div className="flex w-[269px] p-6 flex-col items-start gap-2">
+                            <Typography
+                              className="self-stretch text-[#171412] font-rootstock-sans text-[14px] font-normal leading-[145%]"
+                            >
+                              You'll be distributing equally to each of the Builders below
+                            </Typography>
+                          </div>
+                        }
+                        side="top"
+                        className="bg-white rounded-[4px] shadow-lg"
+                      >
+                        <KotoQuestionMarkIcon />
+                      </Tooltip>
                     </div>
                   </div>
                 )}
