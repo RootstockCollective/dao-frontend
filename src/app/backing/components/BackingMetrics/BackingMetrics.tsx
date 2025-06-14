@@ -17,14 +17,16 @@ export const BackingMetrics = ({
   onDistributeClick,
 }: BackingMetricsProps) => {
   return (
-    <div className="flex w-full items-start gap-14">
-      <AvailableBackingMetric
-        availableForBacking={availableForBacking}
-        availableBackingUSD={availableBackingUSD}
-        onStakeClick={onStakeClick}
-        onDistributeClick={onDistributeClick}
-      />
-      <TotalBackingMetric totalBacking={totalBacking} />
+    <div>
+      <div className="flex w-full items-start gap-14">
+        <AvailableBackingMetric
+          availableForBacking={availableForBacking}
+          availableBackingUSD={availableBackingUSD}
+          onStakeClick={onStakeClick}
+          onDistributeClick={onDistributeClick}
+        />
+        <TotalBackingMetric totalBacking={totalBacking} />
+      </div>
     </div>
   )
 }

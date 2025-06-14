@@ -5,7 +5,7 @@ import { useMemo, useContext } from 'react'
 import { usePricesContext } from '@/shared/context/PricesContext'
 import { AllocationsContext } from '@/app/collective-rewards/allocations/context/AllocationsContext'
 import { RIF } from '@/lib/constants'
-import { AvailableBackingMetric, TotalBackingMetric } from './components'
+import { AvailableBackingMetric, TotalBackingMetric, BackingMetrics } from './components'
 import {
   ActionMetricsContainer,
   ActionsContainer,
@@ -49,24 +49,27 @@ export const BackingPage = () => {
       </PageTitleContainer>
       <div data-testid="CenterContainer" className="flex w-full items-start gap-2">
         <InfoContainer className="grow-[9]">{/* TODO: ADD CHILDREN HERE */}</InfoContainer>
-        <MetricsContainer className="flex flex-col items-start w-[1144px] p-6">
-          <div className="flex w-full items-start gap-14">
-            <AvailableBackingMetric
-              availableForBacking={availableForBacking}
-              availableBackingUSD={availableBackingUSD}
-              onStakeClick={() => {
-                // FIXME: Implement staking page and update this navigation
-              }}
-              onDistributeClick={() => {
-                // TODO: Implement distribute functionality
-              }}
-            />
-            <TotalBackingMetric totalBacking={totalBacking} />
-          </div>
+        <MetricsContainer>
         </MetricsContainer>
       </div>
 
-      {address && <ActionMetricsContainer>{/* TODO: ADD CHILDREN HERE */}</ActionMetricsContainer>}
+      {address && (
+        <ActionMetricsContainer  className="flex flex-col items-start w-[1144px] p-6 gap-2 rounded-[4px] bg-[#25211E]">
+          <AvailableBackingMetric
+            availableForBacking={availableForBacking}
+            availableBackingUSD={availableBackingUSD}
+            onStakeClick={() => {
+              // FIXME: Implement staking page and update this navigation
+            }}
+            onDistributeClick={() => {
+              // TODO: Implement distribute functionality
+            }}
+          />
+          <TotalBackingMetric
+            totalBacking={totalBacking}
+          />
+        </ActionMetricsContainer>
+      )}
       <ActionsContainer title="TODO: ADD TITLE COMPONENT" />
     </div>
   )
