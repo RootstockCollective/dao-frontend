@@ -1,6 +1,7 @@
 export type ButtonVariants =
   | 'primary'
   | 'primary-new' // New design
+  | 'secondary-new' // New koto design May 2025
   | 'secondary'
   | 'secondary-full'
   | 'borderless'

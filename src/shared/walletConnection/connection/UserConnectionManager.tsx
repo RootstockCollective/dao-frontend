@@ -1,5 +1,5 @@
 'use client'
-import { DisconnectWorkflow } from './DisconnectWorkflow'
+import { DisconnectWorkflowContainer } from './DisconnectWorkflowContainer'
 import { ConnectWorkflow } from './ConnectWorkflow'
 import { useState, useEffect } from 'react'
 import { useAccount } from 'wagmi'
@@ -36,7 +36,7 @@ export function UserConnectionManager() {
   if (!mounted) return null
 
   if (isConnected) {
-    return <DisconnectWorkflow />
+    return <DisconnectWorkflowContainer />
   }
 
   return <ConnectWorkflow />
