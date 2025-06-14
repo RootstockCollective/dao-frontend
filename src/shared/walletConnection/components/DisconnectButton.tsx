@@ -1,5 +1,13 @@
+import { Button } from '@/components/Button'
+import { PowerIconKoto } from '@/components/Icons'
+
 export const DisconnectButton = () => (
-  <div className="font-bold tracking-[0.16px] text-[16px] font-rootstock-sans" data-testid="ButtonDisconnect">
-    Disconnect
-  </div>
+  <Button
+    data-testid="ButtonDisconnect"
+    variant="secondary-new"
+    startIcon={<PowerIconKoto />}
+    startIconClasses="left-[-25px] top-[2.5px]"
+  >
+    Disconnect Wallet
+  </Button>
 )
