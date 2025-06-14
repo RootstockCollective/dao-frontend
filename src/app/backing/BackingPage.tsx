@@ -49,12 +49,11 @@ export const BackingPage = () => {
       </PageTitleContainer>
       <div data-testid="CenterContainer" className="flex w-full items-start gap-2">
         <InfoContainer className="grow-[9]">{/* TODO: ADD CHILDREN HERE */}</InfoContainer>
-        <MetricsContainer>
-        </MetricsContainer>
+        <MetricsContainer></MetricsContainer>
       </div>
 
       {address && (
-        <ActionMetricsContainer  className="flex flex-col items-start w-[1144px] p-6 gap-2 rounded-[4px] bg-[#25211E] [&>div]:w-full">
+        <ActionMetricsContainer className="flex flex-col items-start w-[1144px] p-6 gap-2 rounded-[4px] bg-[#25211E] [&>div]:w-full">
           <AvailableBackingMetric
             availableForBacking={availableForBacking}
             availableBackingUSD={availableBackingUSD}
@@ -65,9 +64,7 @@ export const BackingPage = () => {
               // TODO: Implement distribute functionality
             }}
           />
-          <TotalBackingMetric
-            totalBacking={totalBacking}
-          />
+          <TotalBackingMetric totalBacking={totalBacking} />
         </ActionMetricsContainer>
       )}
       <ActionsContainer title="TODO: ADD TITLE COMPONENT" />
