@@ -1,15 +1,20 @@
 import { useQuery } from '@tanstack/react-query'
-import { fetchABIData } from '../actions'
 import { AVERAGE_BLOCKTIME } from '@/lib/constants'
-import { useGetABI } from './useGetABI'
+import { AbiData, useGetABI } from './useGetABI'
 
-export const useGetMetricsAbiWithGraph = () => {
+export const useGetMetricsAbiWithStateSync = () => {
   const {
     data: abiData,
     isLoading: abiDataIsLoading,
     error: abiDataError,
-  } = useQuery({
-    queryFn: () => fetchABIData(),
+  } = useQuery<AbiData, Error>({
+    queryFn: async () => {
+      const response = await fetch('/api/metrics/abi/context')
+      if (!response.ok) {
+        throw new Error('Failed to fetch ABI data')
+      }
+      return response.json()
+    },
     queryKey: ['abiData'],
     refetchInterval: AVERAGE_BLOCKTIME,
   })
