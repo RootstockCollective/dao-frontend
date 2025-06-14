@@ -7,7 +7,7 @@ import { ConnectButtonComponentProps } from '../types'
  * @constructor
  */
 export const ConnectButtonComponent = ({ onClick }: ConnectButtonComponentProps) => (
-  <Button onClick={onClick} data-testid="ConnectWallet" variant="primary-new">
+  <Button onClick={onClick} data-testid="ConnectWallet" variant="secondary-new">
     Connect Wallet
   </Button>
 )
