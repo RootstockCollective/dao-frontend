@@ -91,6 +91,7 @@ html[data-theme='default'] {
   --brand-rootstock-purple: #9e76ff;
   --brand-rootstock-pink: #ff71e1;
   --brand-rootstock-green: #79c600;
+  --brand-rootstock-lime: #DEFF1A;
 
   /* TODO: replace these main layout colors with New Design 2025 colors */
   --v-charcoal: rgba(37, 33, 30, 1);

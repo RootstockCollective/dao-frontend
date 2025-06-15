@@ -1,21 +1,19 @@
 import { CaretRight } from '@/components/Icons/CaretRight'
 import { Span } from '@/components/TypographyNew'
 
-interface StakeStepsProps {
-  currentStep: 1 | 2 | 3
+interface Props {
+  currentStep: number
 }
 
-export const StakeSteps = ({ currentStep }: StakeStepsProps) => (
+export const StakeSteps = ({ currentStep }: Props) => (
   <div className="flex justify-between items-center">
-    <Span variant="tag" className={currentStep === 1 ? '' : 'text-text-60'}>
-      SELECT AMOUNT
-    </Span>
+    <Span variant="tag">SELECT AMOUNT</Span>
     <CaretRight />
-    <Span variant="tag" className={currentStep === 2 ? '' : 'text-text-60'}>
+    <Span variant="tag" className={currentStep >= 1 ? '' : 'text-text-60'}>
       REQUEST ALLOWANCE
     </Span>
     <CaretRight />
-    <Span variant="tag" className={currentStep === 3 ? '' : 'text-text-60'}>
+    <Span variant="tag" className={currentStep >= 2 ? '' : 'text-text-60'}>
       CONFIRM STAKE
     </Span>
   </div>

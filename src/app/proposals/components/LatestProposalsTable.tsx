@@ -22,7 +22,8 @@ import { Button } from '@/components/Button'
 import { useRouter, useSearchParams } from 'next/navigation'
 import Big from '@/lib/big'
 import { proposalQuickFilters } from '@/lib/constants'
-import { CategoryColumn } from '@/app/proposals/components/table-columns/CategoryColumn'
+
+import { ProposalState } from '@/shared/types'
 
 interface LatestProposalsTableProps {
   proposals: LatestProposalResponse[]
@@ -53,8 +54,9 @@ const LatestProposalsTable = ({ proposals, onEmitActiveProposal }: LatestProposa
   useEffect(() => {
     if (onEmitActiveProposal) {
       onEmitActiveProposal(
-        proposalListData.filter(proposal => ['Pending', 'Active'].includes(proposal.proposalState)).length ||
-          0,
+        proposalListData.filter(proposal =>
+          [ProposalState.Pending, ProposalState.Active].includes(proposal.proposalState),
+        ).length || 0,
       )
     }
   }, [onEmitActiveProposal, proposalListData])

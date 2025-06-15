@@ -13,10 +13,21 @@ import {
   MetricsContainer,
   PageTitleContainer,
 } from '@/components/containers'
+import { BuildersSpotlight } from '@/app/backing/components/BuildersSpotlight/BuildersSpotlight'
+import { BackingBanner } from '@/app/backing/components/BackingBanner/BackingBanner'
+import { BackingInfoContainer } from '@/app/backing/components/Container/BackingInfoContainer/BackingInfoContainer'
+import { AnnualBackersIncentivesMetric } from '@/app/backing/components/Metrics/AnnualBackersIncentivesMetric'
+import { EstimatedRewardsMetric } from '@/app/backing/components/Metrics/EstimatedRewardsMetric'
+import { useGetBuildersRewards } from '@/app/collective-rewards/rewards/builders/hooks/useGetBuildersRewards'
+import { getTokens } from '@/lib/tokens'
+import { useHandleErrors } from '@/app/collective-rewards/utils'
+import { LoadingSpinner } from '@/components/LoadingSpinner'
 
 const NAME = 'Backing'
 export const BackingPage = () => {
   const { address } = useAccount()
+  const { data: rewardsData, error: rewardsError } = useGetBuildersRewards(getTokens())
+  useHandleErrors({ error: rewardsError, title: 'Error loading builder rewards' })
   const { prices } = usePricesContext()
   // TODO: add useAllocationsContext hook?
   const { state } = useContext(AllocationsContext)
@@ -32,16 +43,19 @@ export const BackingPage = () => {
   const availableBackingUSD = !availableForBacking || !rifPriceUsd ? 0 : availableForBacking * rifPriceUsd
 
   return (
-    <div
-      data-testid={NAME}
-      className="flex flex-col items-start w-full h-full pt-[0.13rem] gap-10 rounded-sm"
-    >
-      <PageTitleContainer leftText={NAME}>
-        {/* TODO: ADD CHILDREN HERE OR TEXT IN LEFT_TEXT */}
-      </PageTitleContainer>
-      <div data-testid="CenterContainer" className="flex w-full items-start gap-2">
-        <InfoContainer className="grow-[9]">{/* TODO: ADD CHILDREN HERE */}</InfoContainer>
-        <MetricsContainer></MetricsContainer>
+    <div data-testid={NAME} className="flex flex-col items-start w-full h-full pt-[0.13rem] gap-2 rounded-sm">
+      <PageTitleContainer leftText={NAME} className="mb-8" />
+      <div data-testid="CenterContainer" className="flex w-full items-stretch gap-2">
+        <BackingInfoContainer
+          className="grow-[9] h-full"
+          title="Support innovative Builders by allocating your stRIF to those you align with."
+        >
+          <BackingBanner />
+        </BackingInfoContainer>
+        <MetricsContainer className="grow-[3] h-full">
+          <AnnualBackersIncentivesMetric />
+          <EstimatedRewardsMetric rewardsData={rewardsData} />
+        </MetricsContainer>
       </div>
 
       {address && (
@@ -59,7 +73,10 @@ export const BackingPage = () => {
           <TotalBackingMetric totalBacking={totalBacking} />
         </ActionMetricsContainer>
       )}
-      <ActionsContainer title="TODO: ADD TITLE COMPONENT" />
+      {/* </ActionMetricsContainer>} */}
+      <ActionsContainer title="BUILDERS THAT YOU MAY WANT TO BACK" className="">
+        <BuildersSpotlight rewardsData={rewardsData} />
+      </ActionsContainer>
     </div>
   )
 }

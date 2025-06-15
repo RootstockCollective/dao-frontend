@@ -1,8 +1,9 @@
 'use client'
 import { useState } from 'react'
 import { useAlertContext } from '@/app/providers'
-import { DisclaimerFlow, ConnectButtonComponent } from '../components'
-import { parseWalletConnectionError } from '../utils'
+import { ConnectButtonComponent } from '@/shared/walletConnection/components/ConnectButtonComponent'
+import { DisclaimerFlow } from '@/shared/walletConnection/components/DisclaimerFlowModal'
+import { parseWalletConnectionError } from '@/shared/walletConnection/utils'
 import { useAppKit } from '@reown/appkit/react'
 import { ConnectWorkflowProps } from '../types'
 

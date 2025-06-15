@@ -115,15 +115,15 @@ The following table describes the different environments files that the teams in
 
 All environment files are prefixed with `.env`.
 
-| Environment      | Team     | Deployed URL                                    |  Configuration          | Notes         |
-| ---------------- | -------- | ----------------------------------------------- | ----------------------- | ------------- | 
-| .mainnet         | DAO - CR | https://app.rootstockcollective.xyz             | [DAO](https://github.com/RootstockCollective/dao-contracts/blob/develop/params/mainnet.json) <br> [CR](https://github.com/RootstockCollective/collective-rewards-sc/blob/main/.env.30)     | -             |
-| .dev             | DAO - CR | https://dev.app.rootstockcollective.xyz         | [DAO](https://github.com/RootstockCollective/dao-contracts/blob/develop/params/dev.json)     | Requires VPN  |
-| .release-candidate              | DAO - CR | https://release-candidate.app.rootstockcollective.xyz     | [DAO](https://github.com/RootstockCollective/dao-contracts/blob/develop/params/testnet.json) <br> [CR](https://github.com/RootstockCollective/collective-rewards-sc/blob/main/.env.31.release-candidate)     | Requires VPN  |
-| .testnet.local   | CR       | http://localhost:3000                           | [DAO](https://github.com/RootstockCollective/dao-contracts/blob/develop/params/dev.json) <br> [CR](https://github.com/RootstockCollective/collective-rewards-sc/blob/main/.env.31.qa.dapp)     | -             |
-| .cr.qa           | CR       | https://qa.cr.rootstockcollective.xyz           | [DAO](https://github.com/RootstockCollective/dao-contracts/blob/develop/params/dev.json) <br> [CR](https://github.com/RootstockCollective/collective-rewards-sc/blob/main/.env.31.qa.dapp)     | Requires VPN  |
-| .dao.qa         | DAO      | https://qa.dao.rootstockcollective.xyz     | [DAO](https://github.com/RootstockCollective/dao-contracts/blob/develop/params/testnet.json) <br> [CR](https://github.com/RootstockCollective/collective-rewards-sc/blob/main/.env.31)     | -             |
-
+| Environment                | Team     | Deployed URL                                                  |  Configuration          | Notes        |
+|----------------------------|----------|---------------------------------------------------------------| ----------------------- |--------------| 
+| .mainnet                   | DAO - CR | https://app.rootstockcollective.xyz                           | [DAO](https://github.com/RootstockCollective/dao-contracts/blob/develop/params/mainnet.json) <br> [CR](https://github.com/RootstockCollective/collective-rewards-sc/blob/main/.env.30)     | -            |
+| .dev                       | DAO - CR | https://dev.app.rootstockcollective.xyz                       | [DAO](https://github.com/RootstockCollective/dao-contracts/blob/develop/params/dev.json)     | Requires VPN |
+| .testnet.local             | CR       | http://localhost:3000                                         | [DAO](https://github.com/RootstockCollective/dao-contracts/blob/develop/params/dev.json) <br> [CR](https://github.com/RootstockCollective/collective-rewards-sc/blob/main/.env.31.qa.dapp)     | -            |
+| .cr.qa                     | CR       | https://qa.cr.rootstockcollective.xyz                         | [DAO](https://github.com/RootstockCollective/dao-contracts/blob/develop/params/dev.json) <br> [CR](https://github.com/RootstockCollective/collective-rewards-sc/blob/main/.env.31.qa.dapp)     | Requires VPN |
+| .dao.qa                    | DAO      | https://qa.dao.rootstockcollective.xyz                        | [DAO](https://github.com/RootstockCollective/dao-contracts/blob/develop/params/testnet.json) <br> [CR](https://github.com/RootstockCollective/collective-rewards-sc/blob/main/.env.31)     | -            |
+| .release-candidate-testnet | DAO - CR | https://release-candidate-testnet.app.rootstockcollective.xyz | [DAO](https://github.com/RootstockCollective/dao-contracts/blob/develop/params/testnet.json) <br> [CR](https://github.com/RootstockCollective/collective-rewards-sc/blob/main/.env.31)     | Requires VPN |
+| .release-candidate-mainnet | DAO - CR | https://release-candidate-mainnet.app.rootstockcollective.xyz | [DAO](https://github.com/RootstockCollective/dao-contracts/blob/develop/params/mainnet.json) <br> [CR](https://github.com/RootstockCollective/collective-rewards-sc/blob/main/.env.30)     | Requires VPN   |
 **CR**: Rootstock Collective Rewards squad <br>
 **DAO**: Rootstock DAO squad
 

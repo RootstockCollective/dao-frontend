@@ -1,6 +1,6 @@
 import { Label, Paragraph } from '@/components/Typography'
 import { cn } from '@/lib/utils'
-import { FC, JSX } from 'react'
+import { FC, JSX, forwardRef } from 'react'
 import { InputAttributes, NumericFormatProps } from 'react-number-format'
 import { InputNumber } from './InputNumber'
 import { XCircleIcon, SearchIcon, SpinnerIcon } from '../Icons'
@@ -162,45 +162,32 @@ interface InputNewProps extends Props {
  * This is a simplified version of the Input component
  * It only contains the input field without the label, hint, or error message.
  * Should replace the map in the Input component in the future like input[type]
- * @param type
- * @param className
- * @param placeholder
- * @param value
- * @param onChange
- * @param name
- * @param readonly
- * @param inputProps
- * @constructor
  */
-export const InputNew = ({
-  type,
-  className,
-  placeholder,
-  value,
-  onChange,
-  name,
-  readonly,
-  inputProps,
-}: InputNewProps) => {
-  switch (type) {
-    case 'number':
-      return (
-        <InputNumber
-          className={cn('focus:outline-hidden w-full', className)}
-          placeholder={placeholder}
-          value={value}
-          onValueChange={({ value }) => onChange?.(value)}
-          name={name}
-          data-testid={`Input_${name}`}
-          readOnly={readonly}
-          {...inputProps}
-        />
-      )
-    case 'text':
-      return <p>Not implemented</p>
-    case 'search':
-      return <p>Not implemented</p>
-    default:
-      return <p>Default case not implemented</p>
-  }
-}
+export const InputNew = forwardRef<HTMLInputElement, InputNewProps>(
+  ({ type, className, placeholder, value, onChange, name, readonly, inputProps }, ref) => {
+    switch (type) {
+      case 'number':
+        return (
+          <InputNumber
+            ref={ref}
+            className={cn('focus:outline-hidden w-full', className)}
+            placeholder={placeholder}
+            value={value}
+            onValueChange={({ value }) => onChange?.(value)}
+            name={name}
+            data-testid={`Input_${name}`}
+            readOnly={readonly}
+            {...inputProps}
+          />
+        )
+      case 'text':
+        return <p>Not implemented</p>
+      case 'search':
+        return <p>Not implemented</p>
+      default:
+        return <p>Default case not implemented</p>
+    }
+  },
+)
+
+InputNew.displayName = 'InputNew'

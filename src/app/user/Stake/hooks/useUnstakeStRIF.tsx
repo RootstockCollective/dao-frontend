@@ -1,24 +1,29 @@
-import { ActionHookToUse } from '@/app/user/Stake/StakingContext'
-import { useAccount, useWriteContract } from 'wagmi'
+import { useAccount } from 'wagmi'
 import { StRIFTokenAbi } from '@/lib/abis/StRIFTokenAbi'
 import { Address, parseEther } from 'viem'
+import { useContractWrite } from './useContractWrite'
 
-export const useUnstakeStRIF: ActionHookToUse = (amount, tokenToSendContract) => {
+export const useUnstakeStRIF = (amount: string, tokenToSendContract: Address) => {
   const { address } = useAccount()
 
-  const { writeContractAsync: unstake, isPending } = useWriteContract()
+  const {
+    onRequestTransaction: onRequestUnstake,
+    isRequesting,
+    isTxPending,
+    isTxFailed,
+    txHash: unstakeTxHash,
+  } = useContractWrite({
+    abi: StRIFTokenAbi,
+    address: tokenToSendContract,
+    functionName: 'withdrawTo',
+    args: [address, parseEther(amount)],
+  })
 
-  const onRequestUnstake = () =>
-    unstake({
-      abi: StRIFTokenAbi,
-      address: tokenToSendContract as Address,
-      functionName: 'withdrawTo',
-      args: [address as Address, parseEther(amount)],
-    })
   return {
-    isAllowanceEnough: true,
-    customFooter: null,
-    onConfirm: onRequestUnstake,
-    isPending,
+    onRequestUnstake,
+    isRequesting,
+    isTxPending,
+    isTxFailed,
+    unstakeTxHash,
   }
 }

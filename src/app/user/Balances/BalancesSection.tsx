@@ -1,13 +1,13 @@
-import { Table } from '@/components/Table'
 import { RenderTokenPrice } from '@/app/user/Balances/RenderTokenPrice'
-import { RenderTotalBalance } from '@/app/user/Balances/RenderTotalBalance'
-import { StakingSteps } from '@/app/user/Stake/StakingSteps'
-import { StakeRIFCell } from '@/app/user/Balances/StakeRIFCell'
 import { RenderTokenSymbol } from '@/app/user/Balances/RenderTokenSymbol'
+import { RenderTotalBalance } from '@/app/user/Balances/RenderTotalBalance'
+import { StakeRIFCell } from '@/app/user/Balances/StakeRIFCell'
 import { UnStakeRIFCell } from '@/app/user/Balances/UnStakeRIFCell'
-import { ModalReturn, useModal } from '@/shared/hooks/useModal'
-import { UnStakingSteps } from '../Stake/UnStakingSteps'
+import { StakingSteps } from '@/app/user/Stake'
+import { UnstakeModal } from '@/app/user/Unstake'
 import { SectionHeader } from '@/components/SectionHeader'
+import { Table } from '@/components/Table'
+import { ModalReturn, useModal } from '@/shared/hooks/useModal'
 
 const makeData = (stakeModal: ModalReturn, unstakeModal: ModalReturn) => [
   {
@@ -44,7 +44,7 @@ export const BalancesSection = () => {
         description="Your tokens that can be used in the Collective are shown here together with summary total balances with the option to Stake your RIF."
       />
       {stakeModal.isModalOpened ? <StakingSteps onCloseModal={stakeModal.closeModal} /> : null}
-      {unstakeModal.isModalOpened ? <UnStakingSteps onCloseModal={unstakeModal.closeModal} /> : null}
+      {unstakeModal.isModalOpened ? <UnstakeModal onCloseModal={unstakeModal.closeModal} /> : null}
       <Table data={makeData(stakeModal, unstakeModal)} className="overflow-visible" />
     </div>
   )
