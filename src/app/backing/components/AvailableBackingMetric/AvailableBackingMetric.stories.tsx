@@ -3,7 +3,7 @@ import * as RadixTooltip from '@radix-ui/react-tooltip'
 import { AvailableBackingMetric } from './AvailableBackingMetric'
 
 const meta: Meta<typeof AvailableBackingMetric> = {
-  title: 'Backing/AvailableBackingMetric',
+  title: 'Koto/Backing/Components/AvailableBackingMetric',
   component: AvailableBackingMetric,
   parameters: {
     layout: 'centered',

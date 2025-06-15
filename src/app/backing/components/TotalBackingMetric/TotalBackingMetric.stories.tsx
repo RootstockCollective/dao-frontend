@@ -2,7 +2,7 @@ import type { Meta, StoryObj } from '@storybook/react'
 import { TotalBackingMetric } from './TotalBackingMetric'
 
 const meta: Meta<typeof TotalBackingMetric> = {
-  title: 'Backing/TotalBackingMetric',
+  title: 'Koto/Backing/Components/TotalBackingMetric',
   component: TotalBackingMetric,
   parameters: {
     layout: 'centered',
