@@ -9,6 +9,7 @@ const meta: Meta<typeof TablePager> = {
     pageSize: { control: { type: 'number', min: 1 } },
     totalItems: { control: { type: 'number', min: 0 } },
     pagedItemName: { control: 'text' },
+    mode: { control: { type: 'radio' }, options: ['cyclic', 'expandable'] },
   },
 }
 export default meta
@@ -20,6 +21,7 @@ export const Default: Story = {
     pageSize: 20,
     totalItems: 42,
     pagedItemName: 'Builders',
+    mode: 'cyclic',
     onPageChange: (startIndex, endIndex) => {
       console.log(`Page changed: showing items ${startIndex} to ${endIndex}`)
     },
@@ -31,6 +33,7 @@ export const Empty: Story = {
     pageSize: 20,
     totalItems: 0,
     pagedItemName: 'Builders',
+    mode: 'cyclic',
     onPageChange: (startIndex, endIndex) => {
       console.log(`Page changed: showing items ${startIndex} to ${endIndex}`)
     },

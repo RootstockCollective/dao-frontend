@@ -14,6 +14,7 @@ export const BuildersTablePager: FC<BuildersTablePagerProps> = ({ pageSize, tota
       totalItems={totalItems}
       pagedItemName="Builders"
       onPageChange={onPageChange}
+      mode="expandable"
     />
   )
 }
