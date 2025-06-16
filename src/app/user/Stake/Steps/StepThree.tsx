@@ -1,9 +1,8 @@
 import { useStakingContext } from '@/app/user/Stake/StakingContext'
 import { StepProps } from '@/app/user/Stake/types'
-import { isUserRejectedTxError } from '@/components/ErrorPage/commonErrors'
-import { config } from '@/config'
-import { waitForTransactionReceipt } from 'wagmi/actions'
 import { Divider } from '@/components/Divider'
+import { waitForTx } from '@/shared/lib/waitForTx'
+import { useCallback } from 'react'
 import { StepActionButtons } from '../components/StepActionButtons'
 import { TokenAmountDisplay } from '../components/TokenAmountDisplay'
 import { TransactionStatus } from '../components/TransactionStatus'
@@ -17,19 +16,13 @@ export const StepThree = ({ onGoToStep, onCloseModal }: StepProps) => {
     tokenToReceive.contract,
   )
 
-  const handleConfirmStake = async () => {
-    try {
-      const txHash = await onRequestStake()
-      await waitForTransactionReceipt(config, {
-        hash: txHash,
-      })
-      onCloseModal()
-    } catch (err: any) {
-      if (!isUserRejectedTxError(err)) {
-        console.error('Error requesting stake', err)
-      }
-    }
-  }
+  const handleConfirmStake = useCallback(() => {
+    waitForTx({
+      onRequestTx: onRequestStake,
+      onSuccess: onCloseModal,
+      action: 'staking',
+    })
+  }, [onRequestStake, onCloseModal])
 
   return (
     <>

@@ -16,6 +16,7 @@ import { useUnstakeStRIF } from '../Stake/hooks/useUnstakeStRIF'
 import { AllocationWarning } from './components/AllocationWarning'
 import { UnstakeActions } from './components/UnstakeActions'
 import { UnstakeInput } from './components/UnstakeInput'
+import { waitForTx } from '@/shared/lib/waitForTx'
 
 interface Props {
   onCloseModal: () => void
@@ -90,20 +91,13 @@ export const UnstakeModal = ({ onCloseModal }: Props) => {
     [stRifToken.balance],
   )
 
-  const handleUnstake = useCallback(async () => {
-    if (!amount) return
-    try {
-      const txHash = await onRequestUnstake()
-      await waitForTransactionReceipt(config, {
-        hash: txHash,
-      })
-      onCloseModal()
-    } catch (err) {
-      if (!isUserRejectedTxError(err)) {
-        console.error('Error requesting unstake', err)
-      }
-    }
-  }, [amount, onRequestUnstake, onCloseModal])
+  const handleConfirmUnstake = useCallback(() => {
+    waitForTx({
+      onRequestTx: onRequestUnstake,
+      onSuccess: onCloseModal,
+      action: 'unstaking',
+    })
+  }, [onRequestUnstake, onCloseModal])
 
   return (
     <Modal width={688} onClose={onCloseModal}>
@@ -132,7 +126,7 @@ export const UnstakeModal = ({ onCloseModal }: Props) => {
           isTxFailed={isTxFailed}
           unstakeTxHash={unstakeTxHash}
           cannotProceed={cannotProceedWithUnstake}
-          onUnstake={handleUnstake}
+          onUnstake={handleConfirmUnstake}
         />
       </div>
     </Modal>
