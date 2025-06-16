@@ -66,11 +66,13 @@ export const TablePager: React.FC<TablePagerProps> = ({
     <div className="w-full flex items-center justify-between mt-6">
       {hasItems && (
         <Button
-          variant="pagination"
+          variant="secondary"
           onClick={handleNext}
           aria-label={`Show next ${pageSize} ${pagedItemName}`}
           data-testid="table-pager-next"
           disabled={mode === 'expandable' && isButtonDisabled}
+          className="border border-v3-bg-accent-40 px-2 py-1"
+          textClassName="text-sm font-normal"
         >
           Show next {pageSize} {pagedItemName}
         </Button>
