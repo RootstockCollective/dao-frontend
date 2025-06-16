@@ -21,8 +21,6 @@ export const BackingPage = () => {
   const { data: rewardsData, error: rewardsError } = useGetBuildersRewards(getTokens())
   useHandleErrors({ error: rewardsError, title: 'Error loading builder rewards' })
 
-  const { openDrawer, closeDrawer } = useLayoutContext()
-
   return (
     <div data-testid={NAME} className="flex flex-col items-start w-full h-full pt-[0.13rem] gap-2 rounded-sm">
       <PageTitleContainer leftText={NAME} className="mb-8" />

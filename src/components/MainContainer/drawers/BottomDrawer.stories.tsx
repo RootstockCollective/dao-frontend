@@ -1,7 +1,7 @@
 import { Meta, StoryObj } from '@storybook/react'
 import { BottomDrawer } from './BottomDrawer'
 import { LayoutProvider, useLayoutContext } from '@/components/MainContainer/LayoutProvider'
-import { Button } from '@/components/Button'
+import { Button } from '@/components/ButtonNew/Button'
 import { ActionsContainer } from '@/components/containers/ActionsContainer'
 
 const Controls = () => {

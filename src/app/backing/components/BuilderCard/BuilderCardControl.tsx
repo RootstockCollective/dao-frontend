@@ -9,7 +9,7 @@ import { useAccount } from 'wagmi'
 import { BuilderCard } from './BuilderCard'
 import { useLayoutContext } from '@/components/MainContainer/LayoutProvider'
 import { ActionsContainer } from '@/components/containers/ActionsContainer'
-import { Button } from '@/components/Button'
+import { Button } from '@/components/ButtonNew/Button'
 import { useAllocateVotes } from '@/app/collective-rewards/allocations/hooks/useAllocateVotes'
 
 export interface BuilderCardControlProps extends Builder {
@@ -48,7 +48,7 @@ export const BuilderCardControl: FC<BuilderCardControlProps> = ({
     if (!canSaveAllocation) return
 
     openDrawer(
-      <ActionsContainer className="gap-0">
+      <ActionsContainer>
         <div className="flex justify-center gap-2 w-full">
           <Button
             variant="secondary"
