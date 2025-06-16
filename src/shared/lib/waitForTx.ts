@@ -48,7 +48,7 @@ const createToastConfig = (
  * - Transaction hash is used as the toast ID for consistent updates
  * - Error toasts are shown for both transaction failures and network errors
  */
-export const waitForTx = async ({ onRequestTx, onSuccess, action }: Props): Promise<void> => {
+export const waitForTx = async ({ onRequestTx, onSuccess, action }: Props): Promise<Hash | undefined> => {
   let txHash: Hash | undefined
   const { success, error, pending } = TX_MESSAGES[action]
 
@@ -81,5 +81,7 @@ export const waitForTx = async ({ onRequestTx, onSuccess, action }: Props): Prom
         showToast(createToastConfig(error))
       }
     }
+
+    return txHash
   }
 }
