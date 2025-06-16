@@ -29,6 +29,23 @@ export type ButtonProps = Props
 
 const DEFAULT_DATA_TESTID = 'Button'
 
+/**
+ * @deprecated Use `ButtonNew` instead.
+ * @param text
+ * @param onClick
+ * @param startIcon
+ * @param variant
+ * @param fullWidth
+ * @param centerContent
+ * @param disabled
+ * @param className
+ * @param textClassName
+ * @param buttonProps
+ * @param loading
+ * @param startIconClasses
+ * @param dataTestId
+ * @constructor
+ */
 export const Button: FC<Props> = ({
   children: text,
   onClick,
@@ -50,7 +67,6 @@ export const Button: FC<Props> = ({
     'bg-primary rounded-[6px]': variant === 'primary',
     'bg-primary rounded-[6px] h-[56px]': variant === 'primary-new',
     'bg-transparent border-secondary rounded-[6px] border': variant === 'secondary',
-    'bg-transparent px-2 py-1 text-white border border-bg-40': variant === 'secondary-new',
     'bg-secondary border-secondary rounded-[6px] border': variant === 'secondary-full',
     'bg-white rounded-[6px] border': variant === 'white',
     'bg-white rounded-[6px] border h-[56px]': variant === 'white-new',
@@ -75,7 +91,6 @@ export const Button: FC<Props> = ({
     'text-secondary': disabled,
     'font-normal text-[rgba(255,255,255,0.8)]': variant === 'borderless',
     'text-black': ['white', 'white-new'].includes(variant),
-    'text-[14px] font-normal': variant === 'secondary-new',
     [textClassName]: true,
   })
 

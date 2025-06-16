@@ -122,7 +122,7 @@ export function Typography<T extends ElementType>({
 
   return (
     <Component
-      className={cn(variantClasses[variant], className, modifierClasses)}
+      className={cn(variantClasses[variant], modifierClasses, className)}
       onClick={onClick}
       dangerouslySetInnerHTML={cleanHtml ? { __html: cleanHtml } : undefined}
       data-testid={dataTestId}

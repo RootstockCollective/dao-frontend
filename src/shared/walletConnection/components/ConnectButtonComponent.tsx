@@ -1,4 +1,4 @@
-import { Button } from '@/components/Button'
+import { Button } from '@/components/ButtonNew/Button'
 import { ConnectButtonComponentProps } from '../types'
 
 /**
@@ -7,7 +7,13 @@ import { ConnectButtonComponentProps } from '../types'
  * @constructor
  */
 export const ConnectButtonComponent = ({ onClick }: ConnectButtonComponentProps) => (
-  <Button onClick={onClick} data-testid="ConnectWallet" variant="secondary-new">
+  <Button
+    onClick={onClick}
+    data-testid="ConnectWallet"
+    variant="secondary-outline"
+    className="px-2 py-1 border-bg-40"
+    textClassName="text-[14px] font-normal"
+  >
     Connect Wallet
   </Button>
 )
