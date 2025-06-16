@@ -55,11 +55,11 @@ export const VotingDetails = ({ voteData, votingPower, buttonAction, hasVoted }:
       <Typography tagVariant="h3">VOTE DETAILS</Typography>
 
       <div className="grid grid-cols-2 gap-2 mt-4">
-        {Object.keys(voteData).map(key => (
+        {Object.entries(voteData).map(([key, value]) => (
           <VoteCounter
             key={key}
             title={capitalizeFirstLetter(key)}
-            value={voteData[key]}
+            value={value}
             color={colorMap.get(key.toLowerCase())!}
             disabled={hasVoted && hasVoted !== key}
           />
