@@ -42,6 +42,27 @@ const createToastConfig = (
  * @param props.onSuccess - Optional callback executed on successful transaction completion
  * @param props.action - Transaction type key that maps to predefined toast messages
  *
+ * @example
+ * ```typescript
+ * // Staking RIF tokens
+ * const txHash = await waitForTx({
+ *   onRequestTx: () => stakeContract.write.stake({ value: amount }),
+ *   onSuccess: () => {
+ *     // Close modal, refresh balances, etc.
+ *     closeStakeModal()
+ *     refetchBalances()
+ *   },
+ *   action: 'staking'
+ * })
+ *
+ * // The function automatically:
+ * // 1. Shows "Staking in process..." toast
+ * // 2. Waits for blockchain confirmation
+ * // 3. Updates to "Stake successful" toast
+ * // 4. Calls onSuccess callback
+ * // 5. Returns transaction hash
+ * ```
+ *
  * @remarks
  * - User-rejected transactions (wallet cancellations) are silently ignored
  * - Toast notifications are automatically managed based on the action type
