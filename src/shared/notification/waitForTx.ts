@@ -1,6 +1,6 @@
 import { isUserRejectedTxError } from '@/components/ErrorPage/commonErrors'
 import { config } from '@/config'
-import { showToast, updateToast, ToastAlertOptions } from '@/shared/lib'
+import { showToast, updateToast, ToastAlertOptions } from '@/shared/notification'
 import { TX_MESSAGES } from '@/shared/txMessages'
 import { TxStatus } from '@/shared/types'
 import { waitForTransactionReceipt } from '@wagmi/core'

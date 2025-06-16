@@ -1,13 +1,13 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest'
 import { waitForTx } from './waitForTx'
-import { showToast, updateToast } from '@/shared/lib'
+import { showToast, updateToast } from '@/shared/notification'
 import { waitForTransactionReceipt } from '@wagmi/core'
 import { isUserRejectedTxError } from '@/components/ErrorPage/commonErrors'
 import { TX_MESSAGES } from '@/shared/txMessages'
 import { Hash } from 'viem'
 
 // Mock dependencies
-vi.mock('@/shared/lib', () => ({
+vi.mock('@/shared/notification', () => ({
   showToast: vi.fn(),
   updateToast: vi.fn(),
 }))

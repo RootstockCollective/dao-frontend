@@ -16,7 +16,7 @@ import { useUnstakeStRIF } from '../Stake/hooks/useUnstakeStRIF'
 import { AllocationWarning } from './components/AllocationWarning'
 import { UnstakeActions } from './components/UnstakeActions'
 import { UnstakeInput } from './components/UnstakeInput'
-import { waitForTx } from '@/shared/lib/waitForTx'
+import { waitForTx } from '@/shared/notification/waitForTx'
 
 interface Props {
   onCloseModal: () => void

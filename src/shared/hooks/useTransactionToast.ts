@@ -1,7 +1,7 @@
 import { useEffect, useRef } from 'react'
 import { Id } from 'react-toastify'
 import { useTxStatusMessage } from './useTxStatusMessage'
-import { showToast, ToastAlertOptions, updateToast } from '../lib/toastUtils'
+import { showToast, ToastAlertOptions, updateToast } from '../notification/toastUtils'
 
 export const useTransactionToast = (txHash: string, onTxComplete: (hash: string) => void) => {
   const { txMessage } = useTxStatusMessage(txHash)
