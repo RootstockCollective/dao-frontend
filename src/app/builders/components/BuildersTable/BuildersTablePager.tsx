@@ -1,4 +1,4 @@
-import { TablePager } from '@/components/TableV3/TablePager'
+import { TablePager } from '@/components/TableNew/TablePager'
 import { FC } from 'react'
 
 interface BuildersTablePagerProps {
