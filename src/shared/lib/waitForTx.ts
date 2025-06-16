@@ -81,7 +81,6 @@ export const waitForTx = async ({ onRequestTx, onSuccess, action }: Props): Prom
         showToast(createToastConfig(error))
       }
     }
-
-    return txHash
   }
+  return txHash
 }
