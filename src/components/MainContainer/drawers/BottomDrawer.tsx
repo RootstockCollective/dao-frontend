@@ -28,6 +28,7 @@ export const BottomDrawer: FC<BottomActionBarBaseProps> = ({ className = '', por
 
   const drawerRef = useRef<HTMLDivElement>(null)
   const [drawerHeight, setDrawerHeight] = useState(0)
+  const [showPadding, setShowPadding] = useState(false)
 
   useEffect(() => {
     if (drawerRef.current) {
@@ -38,11 +39,17 @@ export const BottomDrawer: FC<BottomActionBarBaseProps> = ({ className = '', por
   }, [drawerContent])
 
   useEffect(() => {
+    if (isDrawerOpen && drawerHeight > 0) {
+      setShowPadding(true)
+    }
+  }, [isDrawerOpen, drawerHeight])
+
+  useEffect(() => {
     const container = document.querySelector('#main-container') as HTMLElement | null
     if (!container) return
 
     container.style.transition = 'padding-bottom 0.3s ease-in-out'
-    if (isDrawerOpen && drawerHeight > 0) {
+    if (showPadding && drawerHeight > 0) {
       container.style.paddingBottom = `${drawerHeight}px`
     } else {
       container.style.paddingBottom = '0px'
@@ -54,7 +61,7 @@ export const BottomDrawer: FC<BottomActionBarBaseProps> = ({ className = '', por
         container.style.transition = ''
       }
     }
-  }, [drawerHeight, isDrawerOpen])
+  }, [drawerHeight, showPadding])
 
   return createPortal(
     <div className="fixed bottom-0 left-0 right-0 z-30">
@@ -66,7 +73,7 @@ export const BottomDrawer: FC<BottomActionBarBaseProps> = ({ className = '', por
         }}
         transition={TRANSITION}
       >
-        <AnimatePresence>
+        <AnimatePresence onExitComplete={() => setShowPadding(false)}>
           {isDrawerOpen && (
             <motion.div
               ref={drawerRef}
