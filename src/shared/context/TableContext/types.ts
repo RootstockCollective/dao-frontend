@@ -14,6 +14,7 @@ export type SelectedRows = Record<RowData['id'], boolean>
 export type Column = {
   id: string
   label: string
+  sublabel?: string
   hidden: boolean
   sortable: boolean
 }

@@ -37,7 +37,6 @@ export const DropdownSelector: FC<DropdownSelectorProps> = ({
       const newSelected = selected.includes(item.id)
         ? selected.filter(v => v !== item.id)
         : [...selected, item.id]
-
       onChange?.(newSelected)
     },
     [selected, onChange],
