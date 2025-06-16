@@ -1,5 +1,5 @@
 import { FC, ReactNode, useState, useCallback } from 'react'
-import * as DropdownMenu from '@radix-ui/react-dropdown-menu'
+import * as DropdownMenuPrimitive from '@radix-ui/react-dropdown-menu'
 import { motion } from 'motion/react'
 import { DropdownSelectorItem } from './DropdownSelectorItem'
 import { Label } from '@/components/TypographyNew'
@@ -48,17 +48,17 @@ export const DropdownSelector: FC<DropdownSelectorProps> = ({
   }
 
   return (
-    <DropdownMenu.Root open={open} onOpenChange={setOpen} data-testid="dropdown-selector-root">
-      <DropdownMenu.Trigger
+    <DropdownMenuPrimitive.Root open={open} onOpenChange={setOpen} data-testid="dropdown-selector-root">
+      <DropdownMenuPrimitive.Trigger
         className="focus:outline-none focus:ring-0 cursor-pointer"
         aria-label={title}
         data-testid="dropdown-selector-trigger"
       >
         {renderTrigger()}
-      </DropdownMenu.Trigger>
+      </DropdownMenuPrimitive.Trigger>
 
-      <DropdownMenu.Portal>
-        <DropdownMenu.Content
+      <DropdownMenuPrimitive.Portal>
+        <DropdownMenuPrimitive.Content
           asChild
           className={cn('z-[1000] min-w-[220px] rounded p-1 shadow-md')}
           sideOffset={5}
@@ -79,9 +79,9 @@ export const DropdownSelector: FC<DropdownSelectorProps> = ({
             >
               {title}
             </Label>
-            <DropdownMenu.Group className="w-full" role="group" data-testid="dropdown-selector-group">
+            <DropdownMenuPrimitive.Group className="w-full" role="group" data-testid="dropdown-selector-group">
               {options.map(item => (
-                <DropdownMenu.Item
+                <DropdownMenuPrimitive.Item
                   key={item.id}
                   className="outline-none"
                   onSelect={e => {
@@ -97,12 +97,12 @@ export const DropdownSelector: FC<DropdownSelectorProps> = ({
                     sublabel={item.sublabel}
                     checked={selected.includes(item.id)}
                   />
-                </DropdownMenu.Item>
+                </DropdownMenuPrimitive.Item>
               ))}
-            </DropdownMenu.Group>
+            </DropdownMenuPrimitive.Group>
           </motion.div>
-        </DropdownMenu.Content>
-      </DropdownMenu.Portal>
-    </DropdownMenu.Root>
+        </DropdownMenuPrimitive.Content>
+      </DropdownMenuPrimitive.Portal>
+    </DropdownMenuPrimitive.Root>
   )
 }

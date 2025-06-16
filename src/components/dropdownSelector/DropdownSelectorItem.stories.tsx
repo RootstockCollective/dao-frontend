@@ -1,6 +1,6 @@
 import type { Meta, StoryObj } from '@storybook/react'
 import { DropdownSelectorItem } from './DropdownSelectorItem'
-import * as DropdownMenu from '@radix-ui/react-dropdown-menu'
+import * as DropdownMenuPrimitive from '@radix-ui/react-dropdown-menu'
 import { Button } from '@/components/Button'
 
 const meta = {
@@ -53,22 +53,22 @@ export const InDropdown: Story = {
     sublabel: 'With sublabel',
   },
   render: args => (
-    <DropdownMenu.Root>
-      <DropdownMenu.Trigger asChild>
+    <DropdownMenuPrimitive.Root>
+      <DropdownMenuPrimitive.Trigger asChild>
         <Button>Open Dropdown</Button>
-      </DropdownMenu.Trigger>
-      <DropdownMenu.Portal>
-        <DropdownMenu.Content className="min-w-[220px] bg-white rounded-md p-1 shadow-md">
-          <DropdownMenu.Group>
-            <DropdownMenu.Item className="outline-none">
+      </DropdownMenuPrimitive.Trigger>
+      <DropdownMenuPrimitive.Portal>
+        <DropdownMenuPrimitive.Content className="min-w-[220px] bg-white rounded-md p-1 shadow-md">
+          <DropdownMenuPrimitive.Group>
+            <DropdownMenuPrimitive.Item className="outline-none">
               <DropdownSelectorItem {...args} />
-            </DropdownMenu.Item>
-            <DropdownMenu.Item className="outline-none">
+            </DropdownMenuPrimitive.Item>
+            <DropdownMenuPrimitive.Item className="outline-none">
               <DropdownSelectorItem label="Another Item" checked={false} />
-            </DropdownMenu.Item>
-          </DropdownMenu.Group>
-        </DropdownMenu.Content>
-      </DropdownMenu.Portal>
-    </DropdownMenu.Root>
+            </DropdownMenuPrimitive.Item>
+          </DropdownMenuPrimitive.Group>
+        </DropdownMenuPrimitive.Content>
+      </DropdownMenuPrimitive.Portal>
+    </DropdownMenuPrimitive.Root>
   ),
 }
