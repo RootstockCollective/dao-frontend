@@ -36,14 +36,3 @@ export const Empty: Story = {
     },
   },
 }
-
-export const SinglePage: Story = {
-  args: {
-    pageSize: 20,
-    totalItems: 15,
-    pagedItemName: 'Builders',
-    onPageChange: (startIndex, endIndex) => {
-      console.log(`Page changed: showing items ${startIndex} to ${endIndex}`)
-    },
-  },
-}
