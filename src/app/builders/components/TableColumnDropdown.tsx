@@ -2,7 +2,7 @@ import { FC, useState } from 'react'
 import { CommonComponentProps } from '@/components/commonProps'
 import { Button } from '@/components/Button'
 import { MoreIcon } from '@/components/Icons/MoreIcon'
-import { DropdownSelector, SelectorOption } from '@/components/DropdownSelector/DropdownSelector'
+import { DropdownSelector, SelectorOption } from '@/components/DropdownSelectorA/DropdownSelector'
 import { CloseIcon } from '@/components/Icons/CloseIcon'
 
 const columnOptions: SelectorOption[] = [
