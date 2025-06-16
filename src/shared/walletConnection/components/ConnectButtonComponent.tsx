@@ -1,4 +1,5 @@
 import { Button } from '@/components/ButtonNew/Button'
+import { Button as OldButton } from '@/components/Button/Button'
 import { ConnectButtonComponentProps } from '../types'
 
 /**
@@ -18,7 +19,7 @@ export const ConnectButtonComponent = ({ onClick }: ConnectButtonComponentProps)
   </Button>
 )
 export const ConnectButtonComponentSecondary = ({ onClick }: ConnectButtonComponentProps) => (
-  <Button onClick={onClick} data-testid="ConnectWallet" variant="secondary">
+  <OldButton onClick={onClick} data-testid="ConnectWallet" variant="secondary">
     Connect Wallet
-  </Button>
+  </OldButton>
 )
