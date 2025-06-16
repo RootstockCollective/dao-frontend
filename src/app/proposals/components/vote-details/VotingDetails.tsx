@@ -37,7 +37,7 @@ interface VoteDetailsProps {
     quorum: string
   }
   buttonAction?: {
-    onButtonClick: () => void
+    onButtonClick: (event: React.MouseEvent<HTMLButtonElement>) => void
     actionName: string
   }
   hasVoted?: HasVoted
