@@ -1,8 +1,8 @@
 import React from 'react'
 import { Button } from '@/components/Button'
-import { Typography } from '@/components/TypographyNew/Typography'
 import { Popover } from '@/components/Popover'
 import { capitalizeFirstLetter } from '@/shared/utils'
+import { Header, Paragraph } from '@/components/TypographyNew'
 
 interface VoteCounterProps {
   title: string
@@ -16,12 +16,12 @@ export const VoteCounter = ({ title, value, color, disabled }: VoteCounterProps)
     <div
       className={`bg-[#37322F] pl-4 pb-3 rounded-[4px] flex flex-col items-start justify-center w-40 border-t-4 border-${!disabled ? color : 'disabled-border'}`}
     >
-      <Typography tagVariant="p" className={`text-white text-sm mt-6 text-${disabled && 'disabled-border'}`}>
+      <Paragraph variant="body" className={`text-white text-sm mt-6 text-${disabled && 'disabled-border'}`}>
         {title}
-      </Typography>
-      <Typography tagVariant="p" className={`text-lg text-${!disabled ? color : 'text-primary'}`}>
+      </Paragraph>
+      <Paragraph variant="body" className={`text-lg text-${!disabled ? color : 'text-primary'}`}>
         {value}
-      </Typography>
+      </Paragraph>
     </div>
   )
 }
@@ -52,7 +52,9 @@ const colorMap = new Map([
 export const VotingDetails = ({ voteData, votingPower, buttonAction, hasVoted }: VoteDetailsProps) => {
   return (
     <div className="bg-[#25211E] p-6 rounded-[4px] max-w-[376px] max-h-[422px]">
-      <Typography tagVariant="h3">VOTE DETAILS</Typography>
+      <Header variant="h3" className="font-normal">
+        VOTE DETAILS
+      </Header>
 
       <div className="grid grid-cols-2 gap-2 mt-4">
         {Object.entries(voteData).map(([key, value]) => (
@@ -71,19 +73,17 @@ export const VotingDetails = ({ voteData, votingPower, buttonAction, hasVoted }:
         {!hasVoted ? (
           <>
             <div className="flex items-center text-sm">
-              <Typography className="mr-2 text-[16px]" color={'#ACA39D'}>
+              <Paragraph className="mr-2 text-[16px] text-disabled-border">
                 Your available voting power
-              </Typography>
+              </Paragraph>
               <Popover position="top" content={'How much power is available for this proposal'}>
                 {'?'}
               </Popover>
             </div>
-            <Typography tagVariant="h1" className="font-kk-topo font-normal text-[32px]">
-              {votingPower}
-            </Typography>
+            <Header className="font-kk-topo font-normal text-[32px]">{votingPower}</Header>
           </>
         ) : (
-          <Typography>{`You voted ${hasVoted.toUpperCase()} this proposal. ${!buttonAction ? '' : ' Take the next step now.'}`}</Typography>
+          <Paragraph variant="body">{`You voted ${hasVoted.toUpperCase()} this proposal. ${!buttonAction ? '' : ' Take the next step now.'}`}</Paragraph>
         )}
       </div>
       {!buttonAction ? null : (
