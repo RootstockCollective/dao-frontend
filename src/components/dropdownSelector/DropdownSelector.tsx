@@ -79,7 +79,11 @@ export const DropdownSelector: FC<DropdownSelectorProps> = ({
             >
               {title}
             </Label>
-            <DropdownMenuPrimitive.Group className="w-full" role="group" data-testid="dropdown-selector-group">
+            <DropdownMenuPrimitive.Group
+              className="w-full"
+              role="group"
+              data-testid="dropdown-selector-group"
+            >
               {options.map(item => (
                 <DropdownMenuPrimitive.Item
                   key={item.id}
