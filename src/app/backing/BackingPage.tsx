@@ -12,8 +12,6 @@ import { PageTitleContainer } from '@/components/containers'
 import { useGetBuildersRewards } from '@/app/collective-rewards/rewards/builders/hooks/useGetBuildersRewards'
 import { getTokens } from '@/lib/tokens'
 import { useHandleErrors } from '@/app/collective-rewards/utils'
-import { useLayoutContext } from '@/components/MainContainer/LayoutProvider'
-import { Button } from '@/components/Button'
 
 const NAME = 'Backing'
 export const BackingPage = () => {

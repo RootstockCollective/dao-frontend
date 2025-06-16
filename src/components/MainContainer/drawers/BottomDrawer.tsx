@@ -41,6 +41,7 @@ export const BottomDrawer: FC<BottomActionBarBaseProps> = ({ className = '', por
     const container = document.querySelector('#main-container') as HTMLElement | null
     if (!container) return
 
+    container.style.transition = 'padding-bottom 0.3s ease-in-out'
     if (isDrawerOpen && drawerHeight > 0) {
       container.style.paddingBottom = `${drawerHeight}px`
     } else {
@@ -48,12 +49,15 @@ export const BottomDrawer: FC<BottomActionBarBaseProps> = ({ className = '', por
     }
 
     return () => {
-      if (container) container.style.paddingBottom = '0px'
+      if (container) {
+        container.style.paddingBottom = '0px'
+        container.style.transition = ''
+      }
     }
   }, [drawerHeight, isDrawerOpen])
 
   return createPortal(
-    <div className="fixed bottom-0 left-0 right-0 z-30 overflow-hidden">
+    <div className="fixed bottom-0 left-0 right-0 z-30">
       <motion.div
         className={cn('mx-auto', className)}
         style={{ maxWidth: MAIN_CONTAINER_MAX_WIDTH }}
