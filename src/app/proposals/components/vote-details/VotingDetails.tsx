@@ -16,10 +16,10 @@ export const VoteCounter = ({ title, value, color, disabled }: VoteCounterProps)
     <div
       className={`bg-[#37322F] pl-4 pb-3 rounded-[4px] flex flex-col items-start justify-center w-40 border-t-4 border-${!disabled ? color : 'disabled-border'}`}
     >
-      <Typography tagVariant="p" className={`text-white text-sm mt-6 ${disabled && 'text-text-secondary'}`}>
+      <Typography tagVariant="p" className={`text-white text-sm mt-6 text-${disabled && 'disabled-border'}`}>
         {title}
       </Typography>
-      <Typography tagVariant="p" className={`text-lg text-${!disabled ? color : 'disabled-border'}`}>
+      <Typography tagVariant="p" className={`text-lg text-${!disabled ? color : 'text-primary'}`}>
         {value}
       </Typography>
     </div>

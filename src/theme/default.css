@@ -43,6 +43,7 @@ html[data-theme='default'] {
 
   --disabled-primary: rgba(255, 255, 255, 0.6);
   --disabled-secondary: rgba(136, 153, 168, 1);
+  --disabled-border: rgba(172, 163, 157, 1);
   /* Statuses */
   --st-success: rgba(34, 173, 92, 1);
   --st-info: rgba(255, 153, 0, 1);
