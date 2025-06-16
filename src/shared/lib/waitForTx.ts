@@ -1,7 +1,8 @@
 import { isUserRejectedTxError } from '@/components/ErrorPage/commonErrors'
 import { config } from '@/config'
-import { showToast, updateToast } from '@/shared/lib/toastUtils'
+import { showToast, updateToast, ToastAlertOptions } from '@/shared/lib/toastUtils'
 import { TX_MESSAGES } from '@/shared/txMessages'
+import { TxStatus } from '@/shared/types'
 import { waitForTransactionReceipt } from '@wagmi/core'
 import { Id } from 'react-toastify'
 import { Hash } from 'viem'
@@ -11,6 +12,19 @@ interface Props {
   onSuccess?: () => void
   action: keyof typeof TX_MESSAGES
 }
+
+/**
+ * Creates toast configuration with consistent dataTestId and optional txHash
+ */
+const createToastConfig = (
+  baseMessage: { severity: TxStatus; title: string; content: string; loading: boolean },
+  txHash?: Hash,
+): ToastAlertOptions => ({
+  ...baseMessage,
+  dataTestId: `${baseMessage.severity}-tx${txHash ? `-${txHash}` : ''}`,
+  txHash,
+  toastId: txHash as Id,
+})
 
 /**
  * Utility function that handles the complete transaction flow including:
@@ -43,12 +57,7 @@ export const waitForTx = async ({ onRequestTx, onSuccess, action }: Props): Prom
     txHash = await onRequestTx()
 
     // Step 2: Show pending toast notification
-    showToast({
-      ...pending,
-      dataTestId: `${pending.severity}-tx-${txHash}`,
-      toastId: txHash as Id,
-      txHash,
-    })
+    showToast(createToastConfig(pending, txHash))
 
     // Step 3: Wait for transaction confirmation on the blockchain
     await waitForTransactionReceipt(config, {
@@ -56,10 +65,7 @@ export const waitForTx = async ({ onRequestTx, onSuccess, action }: Props): Prom
     })
 
     // Step 4: Update toast to success notification
-    updateToast(txHash, {
-      ...success,
-      dataTestId: `${success.severity}-tx-${txHash}`,
-    })
+    updateToast(txHash, createToastConfig(success, txHash))
 
     // Step 5: Execute success callback if provided
     onSuccess?.()
@@ -70,16 +76,9 @@ export const waitForTx = async ({ onRequestTx, onSuccess, action }: Props): Prom
 
       // Show error toast - update existing toast if we have a hash, otherwise show new toast
       if (txHash) {
-        updateToast(txHash, {
-          ...error,
-          dataTestId: `${error.severity}-tx-${txHash}`,
-          txHash,
-        })
+        updateToast(txHash, createToastConfig(error, txHash))
       } else {
-        showToast({
-          ...error,
-          dataTestId: `${error.severity}-tx`,
-        })
+        showToast(createToastConfig(error))
       }
     }
   }
