@@ -1,7 +1,5 @@
 import type { Meta, StoryObj } from '@storybook/react'
 import { DropdownSelectorItem } from './DropdownSelectorItem'
-import * as DropdownMenuPrimitive from '@radix-ui/react-dropdown-menu'
-import { Button } from '@/components/Button'
 
 const meta = {
   title: 'Builders/DropdownSelectorItem',
@@ -43,32 +41,5 @@ export const Default: Story = {
     <div className="p-4 bg-v3-bg-accent-100 rounded">
       <DropdownSelectorItem {...args} />
     </div>
-  ),
-}
-
-export const InDropdown: Story = {
-  args: {
-    label: 'Dropdown Item',
-    checked: true,
-    sublabel: 'With sublabel',
-  },
-  render: args => (
-    <DropdownMenuPrimitive.Root>
-      <DropdownMenuPrimitive.Trigger asChild>
-        <Button>Open Dropdown</Button>
-      </DropdownMenuPrimitive.Trigger>
-      <DropdownMenuPrimitive.Portal>
-        <DropdownMenuPrimitive.Content className="min-w-[220px] bg-white rounded-md p-1 shadow-md">
-          <DropdownMenuPrimitive.Group>
-            <DropdownMenuPrimitive.Item className="outline-none">
-              <DropdownSelectorItem {...args} />
-            </DropdownMenuPrimitive.Item>
-            <DropdownMenuPrimitive.Item className="outline-none">
-              <DropdownSelectorItem label="Another Item" checked={false} />
-            </DropdownMenuPrimitive.Item>
-          </DropdownMenuPrimitive.Group>
-        </DropdownMenuPrimitive.Content>
-      </DropdownMenuPrimitive.Portal>
-    </DropdownMenuPrimitive.Root>
   ),
 }
