@@ -47,8 +47,6 @@ export const DEFAULT_NUMBER_OF_SECONDS_PER_BLOCK = 30
 
 export const GOOGLE_TAG_ID = 'GTM-PTL6VZMT'
 
-export const proposalQuickFilters = ['Grant', 'Activation', 'Wave 4', 'Wave 5', 'March-25']
-
 export const MAX_NAME_LENGTH_FOR_PROPOSAL = 100
 export const TALLY_DESCRIPTION_SEPARATOR = '  ' // Tally uses double spaces to separate name and description
 export const WeiPerEther = 10n ** 18n

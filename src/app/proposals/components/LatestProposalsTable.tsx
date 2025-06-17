@@ -1,4 +1,5 @@
 import { useMemo, memo, useState, useEffect, useCallback, useRef } from 'react'
+import { motion } from 'motion/react'
 import {
   createColumnHelper,
   type SortingState,
@@ -21,9 +22,11 @@ import { useProposalListData } from '../hooks/useProposalListData'
 import { Button } from '@/components/Button'
 import { useRouter, useSearchParams } from 'next/navigation'
 import Big from '@/lib/big'
-import { proposalQuickFilters } from '@/lib/constants'
-
 import { ProposalState } from '@/shared/types'
+import { filterOptions } from './filter/filterOptions'
+import { FilterButton } from './filter/FilterButton'
+import { FilterSideBar } from './filter/FilterSideBar'
+import { cn } from '@/lib/utils'
 
 interface LatestProposalsTableProps {
   proposals: LatestProposalResponse[]
@@ -62,31 +65,23 @@ const LatestProposalsTable = ({ proposals, onEmitActiveProposal }: LatestProposa
   }, [onEmitActiveProposal, proposalListData])
 
   // State for proposal quick filters
-  const [activeFilter, setActiveFilter] = useState<string | null>(null)
+  const [activeFilter, setActiveFilter] = useState<number>(0)
+  const [isFilterSidebarOpen, setIsFilterSidebarOpen] = useState(false)
   // Ref to store the clear function from DebounceSearch
   const clearSearchRef = useRef<() => void>(undefined)
   // Flag to prevent search updates during filter changes
   const isFilterChanging = useRef(false)
 
   // Handle filter button clicks
-  const handleFilterToggle = useCallback(
-    (keyword: string) => () => {
-      // Set flag to prevent search from interfering with filter change
-      isFilterChanging.current = true
-      const isDeactivating = activeFilter === keyword
-
-      if (isDeactivating) {
-        setActiveFilter(null)
-        setSearchedProposal('')
-      } else {
-        setActiveFilter(keyword)
-        setSearchedProposal(keyword)
-      }
-      // Reset to page 1
-      setPagination(prev => ({ ...prev, pageIndex: 0 }))
-    },
-    [activeFilter],
-  )
+  const handleFilterToggle = (id: number) => {
+    // Set flag to prevent search from interfering with filter change
+    isFilterChanging.current = true
+    setActiveFilter(id)
+    const { name } = filterOptions.find(opt => opt.id === id) ?? filterOptions[0]
+    setSearchedProposal(name)
+    // Reset to page 1
+    setPagination(prev => ({ ...prev, pageIndex: 0 }))
+  }
 
   // Effect to clear search input after filter state updates
   useEffect(() => {
@@ -108,7 +103,7 @@ const LatestProposalsTable = ({ proposals, onEmitActiveProposal }: LatestProposa
       }
       // Only update search and clear filter if not in middle of filter change
       if (!isFilterChanging.current) {
-        setActiveFilter(null)
+        setActiveFilter(0)
         setSearchedProposal(value)
         // Reset to page 1
         setPagination(prev => ({ ...prev, pageIndex: 0 }))
@@ -271,110 +266,125 @@ const LatestProposalsTable = ({ proposals, onEmitActiveProposal }: LatestProposa
 
   return (
     <div>
-      <div className="flex justify-between">
-        <HeaderTitle className="mb-4">Latest Proposals</HeaderTitle>
+      <div className="mb-10 w-full flex items-center gap-4">
+        <HeaderTitle className="">Latest Proposals</HeaderTitle>
+        <div className="grow flex justify-end">
+          <DebounceSearch
+            className="w-full max-w-[776px]"
+            placeholder="Search a proposal"
+            onSearchSubmit={handleSearch}
+            onClearHandler={handler => {
+              clearSearchRef.current = handler
+            }}
+          />
+        </div>
         <div className="flex gap-2">
-          {proposalQuickFilters.map(keyword => (
-            <Button
-              key={keyword}
-              className={`text-white text-sm font-thin border-[#ffff] h-[32px] hover:bg-[#e56b1a]/40 hover:border-[#e56b1a]
-              ${activeFilter === keyword ? 'bg-[#e56b1a] border-[#e56b1a] hover:bg-[#e56b1a]/100' : 'bg-transparent'}
-              `}
-              variant="secondary"
-              onClick={handleFilterToggle(keyword)}
-            >
-              {keyword}
-            </Button>
-          ))}
+          <FilterButton
+            isOpen={isFilterSidebarOpen}
+            setIsOpen={setIsFilterSidebarOpen}
+            disabled={proposalListData.length === 0}
+            isFiltering={activeFilter > 0}
+          />
         </div>
       </div>
-      <DebounceSearch
-        placeholder="Search a proposal"
-        onSearchSubmit={handleSearch}
-        onClearHandler={handler => {
-          clearSearchRef.current = handler
-        }}
-      />
-      {filteredProposalList.length > 0 ? (
-        <div>
-          <StatefulTable
-            equalColumns
-            table={table}
-            data-testid="TableProposals"
-            tbodyProps={{
-              'data-testid': 'TableProposalsTbody',
-            }}
-            className="overflow-visible"
-            tHeadRowsPropsById={theadRowsPropsById}
+      <div className={cn('flex flex-row-reverse')}>
+        <motion.div
+          initial={{ width: 0 }}
+          animate={{ width: isFilterSidebarOpen ? 264 : 0 }}
+          className="overflow-hidden shrink-0"
+        >
+          <FilterSideBar
+            className="ml-2 h-full"
+            filterOptions={filterOptions}
+            currentFilter={activeFilter}
+            setCurrentFilter={handleFilterToggle}
           />
+        </motion.div>
+        <div className="grow">
+          {filteredProposalList.length > 0 ? (
+            <div>
+              <StatefulTable
+                equalColumns
+                table={table}
+                data-testid="TableProposals"
+                tbodyProps={{
+                  'data-testid': 'TableProposalsTbody',
+                }}
+                className="overflow-visible"
+                tHeadRowsPropsById={theadRowsPropsById}
+              />
 
-          <div className="flex justify-center space-x-2 mt-4">
-            {/* Previous page button */}
-            <Button
-              onClick={() => table.previousPage()}
-              disabled={!table.getCanPreviousPage()}
-              className="px-4 py-2 bg-transparent"
-            >
-              &#x2329;
-            </Button>
+              <div className="flex justify-center space-x-2 mt-4">
+                {/* Previous page button */}
+                <Button
+                  onClick={() => table.previousPage()}
+                  disabled={!table.getCanPreviousPage()}
+                  className="px-4 py-2 bg-transparent"
+                >
+                  &#x2329;
+                </Button>
 
-            {/* Show "..." if there are pages before the current set */}
-            {currentSetStart > 0 && (
-              <Button onClick={goToPrevSet} className="bg-transparent">
-                ...
-              </Button>
-            )}
+                {/* Show "..." if there are pages before the current set */}
+                {currentSetStart > 0 && (
+                  <Button onClick={goToPrevSet} className="bg-transparent">
+                    ...
+                  </Button>
+                )}
 
-            {/* Render Page Numbers */}
-            {pageNumbers.map(page => (
-              <Button
-                key={page}
-                onClick={() => goToPage(page)}
-                className={`${
-                  page === pagination.pageIndex ? 'bg-[#E56B1A] text-white' : 'bg-transparent text-[#E56B1A]'
-                }`}
-              >
-                {page + 1} {/* Convert 0-based index to 1-based page numbers */}
-              </Button>
-            ))}
+                {/* Render Page Numbers */}
+                {pageNumbers.map(page => (
+                  <Button
+                    key={page}
+                    onClick={() => goToPage(page)}
+                    className={`${
+                      page === pagination.pageIndex
+                        ? 'bg-[#E56B1A] text-white'
+                        : 'bg-transparent text-[#E56B1A]'
+                    }`}
+                  >
+                    {page + 1} {/* Convert 0-based index to 1-based page numbers */}
+                  </Button>
+                ))}
 
-            {/* Show "..." if there are pages after the current set */}
-            {currentSetEnd < totalPages && (
-              <Button onClick={goToNextSet} className="bg-transparent">
-                ...
-              </Button>
-            )}
+                {/* Show "..." if there are pages after the current set */}
+                {currentSetEnd < totalPages && (
+                  <Button onClick={goToNextSet} className="bg-transparent">
+                    ...
+                  </Button>
+                )}
 
-            {/* Next page button */}
-            <Button
-              onClick={() => table.nextPage()}
-              disabled={!table.getCanNextPage()}
-              className="bg-transparent px-4 py-2"
-            >
-              &#x232A;
-            </Button>
+                {/* Next page button */}
+                <Button
+                  onClick={() => table.nextPage()}
+                  disabled={!table.getCanNextPage()}
+                  className="bg-transparent px-4 py-2"
+                >
+                  &#x232A;
+                </Button>
 
-            {/* Page size selector */}
-            <select
-              className="focus:outline-hidden focus:ring-0 focus:border-none hover:border-[#E56B1A] rounded-md bg-transparent hover:none text-[#E56B1A] hover:text-none "
-              value={table.getState().pagination.pageSize}
-              onChange={e => {
-                table.setPageSize(Number(e.target.value))
-              }}
-            >
-              {[10, 20, 30, 40, 50].map(pageSize => (
-                <option key={pageSize} value={pageSize}>
-                  {pageSize}
-                </option>
-              ))}
-            </select>
-          </div>
+                {/* Page size selector */}
+                <select
+                  className="focus:outline-hidden focus:ring-0 focus:border-none hover:border-[#E56B1A] rounded-md bg-transparent hover:none text-[#E56B1A] hover:text-none "
+                  value={table.getState().pagination.pageSize}
+                  onChange={e => {
+                    table.setPageSize(Number(e.target.value))
+                  }}
+                >
+                  {[10, 20, 30, 40, 50].map(pageSize => (
+                    <option key={pageSize} value={pageSize}>
+                      {pageSize}
+                    </option>
+                  ))}
+                </select>
+              </div>
+            </div>
+          ) : (
+            <Typography tagVariant="p" data-testid="NoProposals">
+              No proposals found &#x1F622;
+            </Typography>
+          )}
         </div>
-      ) : (
-        <Typography tagVariant="p" data-testid="NoProposals">
-          No proposals found &#x1F622;
-        </Typography>
-      )}
+      </div>
     </div>
   )
 }
