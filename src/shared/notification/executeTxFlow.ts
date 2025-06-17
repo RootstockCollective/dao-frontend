@@ -45,7 +45,7 @@ const createToastConfig = (
  * @example
  * ```typescript
  * // Staking RIF tokens
- * const txHash = await waitForTx({
+ * const txHash = await executeTxFlow({
  *   onRequestTx: () => stakeContract.write.stake({ value: amount }),
  *   onSuccess: () => {
  *     // Close modal, refresh balances, etc.
@@ -69,7 +69,7 @@ const createToastConfig = (
  * - Transaction hash is used as the toast ID for consistent updates
  * - Error toasts are shown for both transaction failures and network errors
  */
-export const waitForTx = async ({ onRequestTx, onSuccess, action }: Props): Promise<Hash | undefined> => {
+export const executeTxFlow = async ({ onRequestTx, onSuccess, action }: Props): Promise<Hash | undefined> => {
   let txHash: Hash | undefined
   const { success, error, pending } = TX_MESSAGES[action]
 

@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest'
-import { waitForTx } from './waitForTx'
+import { executeTxFlow } from './executeTxFlow'
 import { showToast, updateToast } from '@/shared/notification'
 import { waitForTransactionReceipt } from '@wagmi/core'
 import { isUserRejectedTxError } from '@/components/ErrorPage/commonErrors'
@@ -29,7 +29,7 @@ const mockUpdateToast = vi.mocked(updateToast)
 const mockWaitForTransactionReceipt = vi.mocked(waitForTransactionReceipt)
 const mockIsUserRejectedTxError = vi.mocked(isUserRejectedTxError)
 
-describe('waitForTx', () => {
+describe('executeTxFlow', () => {
   const mockTxHash = '0x1234567890abcdef1234567890abcdef12345678' as Hash
   const mockOnRequestTx = vi.fn()
   const mockOnSuccess = vi.fn()
@@ -52,7 +52,7 @@ describe('waitForTx', () => {
       const action = 'staking' as const
 
       // Act
-      const result = await waitForTx({
+      const result = await executeTxFlow({
         onRequestTx: mockOnRequestTx,
         onSuccess: mockOnSuccess,
         action,
@@ -86,7 +86,7 @@ describe('waitForTx', () => {
       const action = 'unstaking' as const
 
       // Act
-      const result = await waitForTx({
+      const result = await executeTxFlow({
         onRequestTx: mockOnRequestTx,
         action,
       })
@@ -121,7 +121,7 @@ describe('waitForTx', () => {
       const action = 'voting' as const
 
       // Act
-      const result = await waitForTx({
+      const result = await executeTxFlow({
         onRequestTx: mockOnRequestTx,
         onSuccess: mockOnSuccess,
         action,
@@ -151,7 +151,7 @@ describe('waitForTx', () => {
       const action = 'execution' as const
 
       // Act
-      const result = await waitForTx({
+      const result = await executeTxFlow({
         onRequestTx: mockOnRequestTx,
         onSuccess: mockOnSuccess,
         action,
@@ -189,7 +189,7 @@ describe('waitForTx', () => {
       const action = 'proposal' as const
 
       // Act
-      const result = await waitForTx({
+      const result = await executeTxFlow({
         onRequestTx: mockOnRequestTx,
         onSuccess: mockOnSuccess,
         action,
@@ -214,7 +214,7 @@ describe('waitForTx', () => {
       const action = 'delegation' as const
 
       // Act
-      const result = await waitForTx({
+      const result = await executeTxFlow({
         onRequestTx: mockOnRequestTx,
         onSuccess: mockOnSuccess,
         action,
@@ -246,7 +246,7 @@ describe('waitForTx', () => {
       const action = 'allowance' as const
 
       // Act
-      await waitForTx({
+      await executeTxFlow({
         onRequestTx: mockOnRequestTx,
         action,
       })
@@ -267,7 +267,7 @@ describe('waitForTx', () => {
       const action = 'reclaiming' as const
 
       // Act
-      await waitForTx({
+      await executeTxFlow({
         onRequestTx: mockOnRequestTx,
         action,
       })
@@ -290,7 +290,7 @@ describe('waitForTx', () => {
       const action = 'queuing' as const
 
       // Act
-      await waitForTx({
+      await executeTxFlow({
         onRequestTx: mockOnRequestTx,
         action,
       })
@@ -312,7 +312,7 @@ describe('waitForTx', () => {
       const action = 'voting' as const
 
       // Act
-      await waitForTx({
+      await executeTxFlow({
         onRequestTx: mockOnRequestTx,
         action,
       })
@@ -348,7 +348,7 @@ describe('waitForTx', () => {
         mockWaitForTransactionReceipt.mockResolvedValue({} as any)
 
         // Act
-        const result = await waitForTx({
+        const result = await executeTxFlow({
           onRequestTx: mockOnRequestTx,
           action,
         })
@@ -381,7 +381,7 @@ describe('waitForTx', () => {
       const action = 'proposal' as const
 
       // Act
-      const result = await waitForTx({
+      const result = await executeTxFlow({
         onRequestTx: mockOnRequestTx,
         action,
       })
@@ -405,7 +405,7 @@ describe('waitForTx', () => {
       const action = 'staking' as const
 
       // Act
-      const result = await waitForTx({
+      const result = await executeTxFlow({
         onRequestTx: mockOnRequestTx,
         action,
       })

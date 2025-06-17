@@ -1,7 +1,7 @@
 import { useStakingContext } from '@/app/user/Stake/StakingContext'
 import { StepProps } from '@/app/user/Stake/types'
 import { Divider } from '@/components/Divider'
-import { waitForTx } from '@/shared/notification'
+import { executeTxFlow } from '@/shared/notification'
 import { useCallback } from 'react'
 import { StepActionButtons } from '../components/StepActionButtons'
 import { TokenAmountDisplay } from '../components/TokenAmountDisplay'
@@ -17,7 +17,7 @@ export const StepThree = ({ onGoToStep, onCloseModal }: StepProps) => {
   )
 
   const handleConfirmStake = useCallback(() => {
-    waitForTx({
+    executeTxFlow({
       onRequestTx: onRequestStake,
       onSuccess: onCloseModal,
       action: 'staking',

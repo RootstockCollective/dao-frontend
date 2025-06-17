@@ -1,2 +1,2 @@
 export * from './toastUtils'
-export * from './waitForTx'
+export * from './executeTxFlow'

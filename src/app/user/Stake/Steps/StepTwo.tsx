@@ -3,7 +3,7 @@ import { StepProps } from '@/app/user/Stake/types'
 import { Divider } from '@/components/Divider'
 import { Popover } from '@/components/Popover'
 import { Header, Label, Paragraph, Span } from '@/components/TypographyNew'
-import { waitForTx } from '@/shared/notification'
+import { executeTxFlow } from '@/shared/notification'
 import Image from 'next/image'
 import { useCallback, useEffect, useMemo, useRef } from 'react'
 import { StepActionButtons } from '../components/StepActionButtons'
@@ -41,7 +41,7 @@ export const StepTwo = ({ onGoNext, onGoBack }: StepProps) => {
   }, [isAllowanceReadLoading, isRequesting])
 
   const handleRequestAllowance = useCallback(() => {
-    waitForTx({
+    executeTxFlow({
       onRequestTx: onRequestAllowance,
       onSuccess: onGoNext,
       action: 'allowance',

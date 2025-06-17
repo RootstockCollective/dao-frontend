@@ -1,22 +1,19 @@
 import { useBalancesContext } from '@/app/user/Balances/context/BalancesContext'
 import { StakingToken } from '@/app/user/Stake/types'
-import { isUserRejectedTxError } from '@/components/ErrorPage/commonErrors'
 import { Modal } from '@/components/Modal'
 import { Header } from '@/components/TypographyNew'
-import { config } from '@/config'
 import Big from '@/lib/big'
 import { tokenContracts } from '@/lib/contracts'
 import { handleAmountInput } from '@/lib/utils'
 import { useReadBackersManager } from '@/shared/hooks/contracts'
+import { executeTxFlow } from '@/shared/notification'
 import { useCallback, useMemo, useState } from 'react'
 import { formatEther, parseEther } from 'viem'
 import { useAccount } from 'wagmi'
-import { waitForTransactionReceipt } from 'wagmi/actions'
 import { useUnstakeStRIF } from '../Stake/hooks/useUnstakeStRIF'
 import { AllocationWarning } from './components/AllocationWarning'
 import { UnstakeActions } from './components/UnstakeActions'
 import { UnstakeInput } from './components/UnstakeInput'
-import { waitForTx } from '@/shared/notification/waitForTx'
 
 interface Props {
   onCloseModal: () => void
@@ -92,7 +89,7 @@ export const UnstakeModal = ({ onCloseModal }: Props) => {
   )
 
   const handleConfirmUnstake = useCallback(() => {
-    waitForTx({
+    executeTxFlow({
       onRequestTx: onRequestUnstake,
       onSuccess: onCloseModal,
       action: 'unstaking',
