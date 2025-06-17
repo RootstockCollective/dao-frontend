@@ -3,7 +3,7 @@ import { Meta, StoryObj } from '@storybook/react'
 import { TablePager } from './TablePager'
 
 const meta: Meta<typeof TablePager> = {
-  title: 'components/TableV3/TablePager',
+  title: 'components/TableNew/TablePager',
   component: TablePager,
   argTypes: {
     pageSize: { control: { type: 'number', min: 1 } },
