@@ -5,7 +5,7 @@ import { TokenImage } from '@/components/TokenImage'
 import { Label, Span } from '@/components/TypographyNew'
 import Big from '@/lib/big'
 import { formatCurrency, handleAmountInput } from '@/lib/utils'
-import { useCallback, useMemo, useRef, useEffect } from 'react'
+import { useCallback, useEffect, useMemo, useRef } from 'react'
 import { useStakingContext } from '../StakingContext'
 import { StepProps } from '../types'
 

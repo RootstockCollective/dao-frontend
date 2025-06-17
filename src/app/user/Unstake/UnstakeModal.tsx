@@ -1,17 +1,15 @@
 import { useBalancesContext } from '@/app/user/Balances/context/BalancesContext'
 import { StakingToken } from '@/app/user/Stake/types'
-import { isUserRejectedTxError } from '@/components/ErrorPage/commonErrors'
 import { Modal } from '@/components/Modal'
 import { Header } from '@/components/TypographyNew'
-import { config } from '@/config'
 import Big from '@/lib/big'
 import { tokenContracts } from '@/lib/contracts'
 import { handleAmountInput } from '@/lib/utils'
 import { useReadBackersManager } from '@/shared/hooks/contracts'
+import { executeTxFlow } from '@/shared/notification'
 import { useCallback, useMemo, useState } from 'react'
 import { formatEther, parseEther } from 'viem'
 import { useAccount } from 'wagmi'
-import { waitForTransactionReceipt } from 'wagmi/actions'
 import { useUnstakeStRIF } from '../Stake/hooks/useUnstakeStRIF'
 import { AllocationWarning } from './components/AllocationWarning'
 import { UnstakeActions } from './components/UnstakeActions'
@@ -90,20 +88,13 @@ export const UnstakeModal = ({ onCloseModal }: Props) => {
     [stRifToken.balance],
   )
 
-  const handleUnstake = useCallback(async () => {
-    if (!amount) return
-    try {
-      const txHash = await onRequestUnstake()
-      await waitForTransactionReceipt(config, {
-        hash: txHash,
-      })
-      onCloseModal()
-    } catch (err) {
-      if (!isUserRejectedTxError(err)) {
-        console.error('Error requesting unstake', err)
-      }
-    }
-  }, [amount, onRequestUnstake, onCloseModal])
+  const handleConfirmUnstake = useCallback(() => {
+    executeTxFlow({
+      onRequestTx: onRequestUnstake,
+      onSuccess: onCloseModal,
+      action: 'unstaking',
+    })
+  }, [onRequestUnstake, onCloseModal])
 
   return (
     <Modal width={688} onClose={onCloseModal}>
@@ -132,7 +123,7 @@ export const UnstakeModal = ({ onCloseModal }: Props) => {
           isTxFailed={isTxFailed}
           unstakeTxHash={unstakeTxHash}
           cannotProceed={cannotProceedWithUnstake}
-          onUnstake={handleUnstake}
+          onUnstake={handleConfirmUnstake}
         />
       </div>
     </Modal>

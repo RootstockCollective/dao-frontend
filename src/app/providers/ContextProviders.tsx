@@ -5,7 +5,6 @@ import { GlobalErrorBoundary } from '@/components/ErrorPage/GlobalErrorBoundary'
 import { currentEnvChain, wagmiAdapter, wagmiAdapterConfig } from '@/config'
 import { REOWN_METADATA_URL, REOWN_PROJECT_ID } from '@/lib/constants'
 import { FeatureFlagProvider } from '@/shared/context/FeatureFlag'
-import { TxStatusProvider } from '@/shared/context/TxStatusContext'
 import { TooltipProvider } from '@radix-ui/react-tooltip'
 import { createAppKit } from '@reown/appkit/react'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
@@ -66,21 +65,19 @@ export const ContextProviders = ({ children, initialState }: Props) => {
       <FeatureFlagProvider>
         <WagmiProvider config={wagmiAdapterConfig} initialState={initialState}>
           <QueryClientProvider client={queryClient}>
-            <TxStatusProvider>
-              <AlertProvider>
-                <HeroCollapseProvider>
-                  <BuilderContextProviderWithPrices>
-                    <BoosterProvider>
-                      <AllocationsContextProvider>
-                        <BalancesProvider>
-                          <TooltipProvider>{children}</TooltipProvider>
-                        </BalancesProvider>
-                      </AllocationsContextProvider>
-                    </BoosterProvider>
-                  </BuilderContextProviderWithPrices>
-                </HeroCollapseProvider>
-              </AlertProvider>
-            </TxStatusProvider>
+            <AlertProvider>
+              <HeroCollapseProvider>
+                <BuilderContextProviderWithPrices>
+                  <BoosterProvider>
+                    <AllocationsContextProvider>
+                      <BalancesProvider>
+                        <TooltipProvider>{children}</TooltipProvider>
+                      </BalancesProvider>
+                    </AllocationsContextProvider>
+                  </BoosterProvider>
+                </BuilderContextProviderWithPrices>
+              </HeroCollapseProvider>
+            </AlertProvider>
           </QueryClientProvider>
         </WagmiProvider>
       </FeatureFlagProvider>
