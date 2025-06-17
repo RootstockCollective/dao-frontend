@@ -74,24 +74,16 @@ export const waitForTx = async ({ onRequestTx, onSuccess, action }: Props): Prom
   const { success, error, pending } = TX_MESSAGES[action]
 
   try {
-    // Step 1: Initiate the transaction
     txHash = await onRequestTx()
-
-    // Step 2: Show pending toast notification
     showToast(createToastConfig(pending, txHash))
 
-    // Step 3: Wait for transaction confirmation on the blockchain
     await waitForTransactionReceipt(config, {
       hash: txHash,
     })
 
-    // Step 4: Update toast to success notification
     updateToast(txHash, createToastConfig(success, txHash))
-
-    // Step 5: Execute success callback if provided
     onSuccess?.()
   } catch (err) {
-    // Handle errors, but ignore user-rejected transactions
     if (!isUserRejectedTxError(err)) {
       console.error(`Error requesting ${action} tx`, err)
 
