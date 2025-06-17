@@ -27,6 +27,7 @@ import { filterOptions } from './filter/filterOptions'
 import { FilterButton } from './filter/FilterButton'
 import { FilterSideBar } from './filter/FilterSideBar'
 import { cn } from '@/lib/utils'
+import { useClickOutside } from '@/shared/hooks/useClickOutside'
 
 interface LatestProposalsTableProps {
   proposals: LatestProposalResponse[]
@@ -67,6 +68,9 @@ const LatestProposalsTable = ({ proposals, onEmitActiveProposal }: LatestProposa
   // State for proposal quick filters
   const [activeFilter, setActiveFilter] = useState<number>(0)
   const [isFilterSidebarOpen, setIsFilterSidebarOpen] = useState(false)
+  const filterSidebarRef = useRef<HTMLDivElement>(null) // ref for useClickOutside
+  // close filter sidebar when user clicks outside of it
+  useClickOutside(filterSidebarRef, () => setIsFilterSidebarOpen(false))
   // Ref to store the clear function from DebounceSearch
   const clearSearchRef = useRef<() => void>(undefined)
   // Flag to prevent search updates during filter changes
@@ -293,12 +297,14 @@ const LatestProposalsTable = ({ proposals, onEmitActiveProposal }: LatestProposa
           animate={{ width: isFilterSidebarOpen ? 264 : 0 }}
           className="overflow-hidden shrink-0"
         >
-          <FilterSideBar
-            className="ml-2 h-full"
-            filterOptions={filterOptions}
-            currentFilter={activeFilter}
-            setCurrentFilter={handleFilterToggle}
-          />
+          {/* container for useClickOutside ref */}
+          <div ref={filterSidebarRef} className="pl-2 h-full">
+            <FilterSideBar
+              filterOptions={filterOptions}
+              currentFilter={activeFilter}
+              setCurrentFilter={handleFilterToggle}
+            />
+          </div>
         </motion.div>
         <div className="grow">
           {filteredProposalList.length > 0 ? (

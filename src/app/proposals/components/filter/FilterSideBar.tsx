@@ -26,7 +26,7 @@ export function FilterSideBar({
   ...props
 }: FilterSideBarProps) {
   return (
-    <div className={cn('w-[256px] pt-[56px] pb-4 px-6 bg-bg-60 rounded-sm', className)} {...props}>
+    <div className={cn('w-[256px] h-full pt-[56px] pb-4 px-6 bg-bg-60 rounded-sm', className)} {...props}>
       <h3
         id="filter-title"
         className="mb-4 font-rootstock-sans text-xs font-medium tracking-wider uppercase text-text-40"
