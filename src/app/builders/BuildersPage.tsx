@@ -19,16 +19,16 @@ export const BuildersPage = () => {
       </Header>
 
       <div data-testid="info" className="flex flex-col w-full items-start gap-2">
-        <MetricsContainer>
+        <MetricsContainer className="bg-v3-bg-accent-80">
           <Metrics />
         </MetricsContainer>
-        <InfoContainer className="grow-[3]">
+        <InfoContainer className="grow-[3] bg-v3-bg-accent-80">
           <Content />
         </InfoContainer>
-        <ActionMetricsContainer>
+        <ActionMetricsContainer className="bg-v3-bg-accent-80">
           <Spotlight />
         </ActionMetricsContainer>
-        <ActionsContainer title={'The Collective Builders'}>
+        <ActionsContainer title={'The Collective Builders'} className="bg-v3-bg-accent-80">
           <Table />
         </ActionsContainer>
       </div>

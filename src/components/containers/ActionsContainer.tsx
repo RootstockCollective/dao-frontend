@@ -11,7 +11,7 @@ export const ActionsContainer: FC<ActionsContainerProps> = ({ title, children, c
   return (
     <div
       data-testid="ActionsContainer"
-      className={cn('flex flex-col w-full gap-10 p-6 rounded-sm bg-v3-bg-accent-80', className)}
+      className={cn('flex flex-col w-full gap-10 p-6 rounded-sm', className)}
     >
       {title && (
         <div data-testid="title" className="flex w-full justify-between items-center">

@@ -31,7 +31,7 @@ export const BackingPage = () => {
         >
           <BackingBanner />
         </BackingInfoContainer>
-        <MetricsContainer className="grow-[3] h-full">
+        <MetricsContainer className="grow-[3] h-full bg-v3-bg-accent-80">
           <AnnualBackersIncentivesMetric />
           <EstimatedRewardsMetric rewardsData={rewardsData} />
         </MetricsContainer>
