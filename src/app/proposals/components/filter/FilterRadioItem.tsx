@@ -7,6 +7,9 @@ export interface Props {
   onClick: (id: number) => void
 }
 
+/**
+ * Individual radio button item for selecting proposal filter categories
+ */
 export const FilterRadioItem = ({ id, name, selected, onClick }: Props) => {
   return (
     <button

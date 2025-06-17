@@ -3,6 +3,9 @@ export interface FilterOption {
   name: string
 }
 
+/**
+ * Configuration array containing available proposal filter categories
+ */
 export const filterOptions = [
   { id: 0, name: 'All categories' },
   { id: 1, name: 'Grant' },

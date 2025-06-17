@@ -14,6 +14,9 @@ interface FilterSideBarProps extends HTMLAttributes<HTMLDivElement> {
   title?: string
 }
 
+/**
+ * Sidebar panel containing radio button filters for proposal categories
+ */
 export function FilterSideBar({
   filterOptions,
   currentFilter,

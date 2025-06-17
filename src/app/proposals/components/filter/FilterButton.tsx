@@ -10,6 +10,9 @@ interface Props extends HTMLAttributes<HTMLButtonElement> {
   isFiltering?: boolean
 }
 
+/**
+ * Toggle button that opens and closes the proposals filter sidebar
+ */
 export function FilterButton({
   isOpen,
   setIsOpen,
