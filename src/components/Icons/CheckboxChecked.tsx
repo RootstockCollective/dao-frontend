@@ -1,5 +1,5 @@
-import { type IconProps } from './types'
 import { DEFAULT_ICON_COLOR, DEFAULT_ICON_SIZE } from './constants'
+import { type IconProps } from './types'
 
 export function CheckboxChecked({
   'aria-label': ariaLabel = 'Checkbox Checked',
@@ -14,6 +14,8 @@ export function CheckboxChecked({
       viewBox={`0 0 ${size} ${size}`}
       fill="none"
       xmlns="http://www.w3.org/2000/svg"
+      aria-label={ariaLabel}
+      role="checkbox"
       {...props}
     >
       <g clipPath="url(#clip0_3718_29849)">
