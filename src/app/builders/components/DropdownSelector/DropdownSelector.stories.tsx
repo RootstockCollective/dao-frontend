@@ -4,7 +4,7 @@ import { Button } from '@/components/Button'
 import { useState } from 'react'
 
 const meta: Meta<typeof DropdownSelector> = {
-  title: 'builders/DropdownSelector',
+  title: 'Builders/DropdownSelector',
   component: DropdownSelector,
   parameters: {
     layout: 'centered',

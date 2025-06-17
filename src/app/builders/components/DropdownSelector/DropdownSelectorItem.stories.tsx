@@ -4,7 +4,7 @@ import * as DropdownMenuPrimitive from '@radix-ui/react-dropdown-menu'
 import { Button } from '@/components/Button'
 
 const meta = {
-  title: 'Components/DropdownSelectorItem',
+  title: 'Builders/DropdownSelectorItem',
   component: DropdownSelectorItem,
   parameters: {
     layout: 'centered',
