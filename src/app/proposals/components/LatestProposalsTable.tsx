@@ -77,10 +77,10 @@ const LatestProposalsTable = ({ proposals, onEmitActiveProposal }: LatestProposa
     // Set flag to prevent search from interfering with filter change
     isFilterChanging.current = true
     setActiveFilter(id)
-    const { name } = filterOptions.find(opt => opt.id === id) ?? filterOptions[0]
-    setSearchedProposal(name)
-    // Reset to page 1
-    setPagination(prev => ({ ...prev, pageIndex: 0 }))
+    setPagination(prev => ({ ...prev, pageIndex: 0 })) // Reset to page 1
+    if (id === 0) return setSearchedProposal('')
+    const option = filterOptions.find(opt => opt.id === id)
+    setSearchedProposal(option?.name ?? '')
   }
 
   // Effect to clear search input after filter state updates
