@@ -19,7 +19,7 @@ focus-visible:ring-white/50
 `
 
 export type InputType = 'text' | 'number' | 'search'
-interface Props {
+export interface InputProps {
   name: string
   fullWidth?: boolean
   value?: string
@@ -43,7 +43,7 @@ interface Props {
    */
   loading?: boolean
 }
-export const Input: FC<Props> = ({
+export const Input: FC<InputProps> = ({
   name,
   fullWidth = false,
   value,
@@ -152,7 +152,7 @@ export const Input: FC<Props> = ({
   )
 }
 
-interface InputNewProps extends Props {
+interface InputNewProps extends InputProps {
   className?: string
   inputProps?: JSX.IntrinsicElements['input'] & NumericFormatProps<InputAttributes>
 }

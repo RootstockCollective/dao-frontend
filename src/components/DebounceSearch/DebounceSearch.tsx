@@ -1,10 +1,10 @@
 'use client'
 
-import { Input } from '@/components/Input'
+import { Input, type InputProps } from '@/components/Input'
 import { useState, useEffect } from 'react'
 import { useDebounce } from 'use-debounce'
 
-interface ProposalSearchProps {
+interface ProposalSearchProps extends Omit<InputProps, 'name'> {
   /**
    * Function to handle search input updates after debounce.
    */
@@ -40,6 +40,7 @@ export function DebounceSearch({
   placeholder = 'Search',
   onClearHandler,
   maxLength = 100,
+  ...props
 }: ProposalSearchProps) {
   const [searchText, setSearchText] = useState('')
   // First debounce runs shortly after user stops typing. It launches spinner
@@ -75,10 +76,10 @@ export function DebounceSearch({
       placeholder={placeholder}
       fullWidth
       type="search"
-      className="my-5"
       onClear={searchText ? handleClear : undefined}
       loading={isLoading}
       inputProps={{ maxLength }}
+      {...props}
     />
   )
 }
