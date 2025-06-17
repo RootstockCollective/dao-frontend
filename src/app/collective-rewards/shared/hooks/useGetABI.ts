@@ -1,168 +1,88 @@
-import { useGetBackersRewardPercentage } from '@/app/collective-rewards/rewards'
-import { useGetCyclePayout, useGetEstimatedBackersRewardsPct } from '@/app/collective-rewards/shared'
-import { RequiredBuilder } from '@/app/collective-rewards/types'
-import { useGetBuildersByState } from '@/app/collective-rewards/user'
 import Big from '@/lib/big'
 import { WeiPerEther } from '@/lib/constants'
 import { usePricesContext } from '@/shared/context/PricesContext'
-import { useReadBackersManager, useReadGauges } from '@/shared/hooks/contracts'
 import { useMemo } from 'react'
 import { Address } from 'viem'
+import { getBackerRewardPercentage } from '@/app/collective-rewards/rewards'
+import { getCyclePayout } from './getCyclePayout'
 
-export const calculateAbi = (rewardsPerStRif: Big, rifPrice: number): Big => {
-  return Big(1).add(rewardsPerStRif.div(WeiPerEther.toString()).div(rifPrice)).pow(26).minus(1).mul(100)
+export type CycleData = {
+  id: string
+  rewardsERC20: string
+  rewardsRBTC: string
 }
 
-const useGetAbi = (rewardsPerStRif: bigint) => {
-  const { prices } = usePricesContext()
-  const rifPrice = prices.RIF?.price ?? 0
+export type BackerRewardPercentageData = {
+  id: string
+  next: string
+  previous: string
+  cooldownEndTime: string
+}
 
+export type BuilderData = {
+  id: Address
+  backerRewardPercentage: BackerRewardPercentageData
+  rewardShares: string
+  totalAllocation: string
+}
+
+export type AbiData = {
+  builders: BuilderData[]
+  cycles: CycleData[]
+}
+
+export const calculateAbi = (rewardsPerStRif: Big, rifPrice: number): Big => {
   if (!rifPrice) {
     return Big(0)
   }
 
-  return calculateAbi(Big(rewardsPerStRif.toString()), rifPrice)
+  return Big(1).add(rewardsPerStRif.div(WeiPerEther.toString()).div(rifPrice)).pow(26).minus(1).mul(100)
 }
 
-export const useGetRewardsAbi = (backer: Address) => {
-  const {
-    data: builders,
-    isLoading: estimatedBackerRewardsPctLoading,
-    error: estimatedBackerRewardsPctError,
-  } = useGetEstimatedBackersRewardsPct()
-  const gauges = builders.map(({ gauge }) => gauge)
-  const {
-    data: allocationOf,
-    isLoading: allocationOfLoading,
-    error: allocationOfError,
-  } = useReadGauges({ addresses: gauges, functionName: 'allocationOf', args: [backer] })
-  const {
-    data: totalAllocation,
-    isLoading: totalAllocationLoading,
-    error: totalAllocationError,
-  } = useReadGauges({ addresses: gauges, functionName: 'totalAllocation' })
-  const {
-    data: backerTotalAllocation,
-    isLoading: backerTotalAllocationLoading,
-    error: backerTotalAllocationError,
-  } = useReadBackersManager({
-    functionName: 'backerTotalAllocation',
-    args: [backer],
-  })
-  const { cyclePayout, isLoading: cyclePayoutLoading, error: cyclePayoutError } = useGetCyclePayout()
+export const useGetABI = (abiData: AbiData | undefined) => {
+  const { prices } = usePricesContext()
 
-  const rewardsPerStRif = useMemo(() => {
-    const backerRewards = builders.reduce((acc, { estimatedBackerRewardsPct }, i) => {
-      const builderTotalAllocation = totalAllocation[i] ?? 0n
-      const backerAllocationOf = allocationOf[i] ?? 0n
-
-      const backersRewardsAmount = (estimatedBackerRewardsPct * cyclePayout) / WeiPerEther
-      const backerReward = builderTotalAllocation
-        ? (backersRewardsAmount * backerAllocationOf) / builderTotalAllocation
-        : 0n
-
-      return acc + backerReward
-    }, 0n)
-
-    if (!backerTotalAllocation) {
-      return 0n
+  return useMemo(() => {
+    if (!abiData?.builders || !abiData.cycles?.length) {
+      return Big(0)
     }
 
-    return (backerRewards * WeiPerEther) / backerTotalAllocation
-  }, [allocationOf, backerTotalAllocation, builders, cyclePayout, totalAllocation])
+    const { builders, cycles } = abiData
+    const [{ rewardsERC20, rewardsRBTC }] = cycles
 
-  const isLoading =
-    estimatedBackerRewardsPctLoading ||
-    allocationOfLoading ||
-    totalAllocationLoading ||
-    backerTotalAllocationLoading ||
-    cyclePayoutLoading
+    const rifPrice = prices.RIF?.price ?? 0
+    const rbtcPrice = prices.RBTC?.price ?? 0
 
-  const error =
-    estimatedBackerRewardsPctError ??
-    allocationOfError ??
-    totalAllocationError ??
-    backerTotalAllocationError ??
-    cyclePayoutError
-
-  const abi = useGetAbi(rewardsPerStRif)
-
-  return {
-    data: abi,
-    isLoading,
-    error,
-  }
-}
-
-export const useGetMetricsAbi = () => {
-  const {
-    data: builders,
-    isLoading: buildersLoading,
-    error: buildersError,
-  } = useGetBuildersByState<RequiredBuilder>({
-    activated: true,
-    communityApproved: true,
-    kycApproved: true,
-    revoked: false,
-  })
-
-  const gauges = builders.map(({ gauge }) => gauge)
-  const {
-    data: totalAllocation,
-    isLoading: totalAllocationLoading,
-    error: totalAllocationError,
-  } = useReadGauges({ addresses: gauges, functionName: 'totalAllocation' })
-
-  const buildersAddress = builders.map(({ address }) => address)
-  const {
-    data: backersRewardsPct,
-    isLoading: backersRewardsPctLoading,
-    error: backersRewardsPctError,
-  } = useGetBackersRewardPercentage(buildersAddress)
-  const { cyclePayout, isLoading: cyclePayoutLoading, error: cyclePayoutError } = useGetCyclePayout()
-
-  const rewardsPerStRif = useMemo(() => {
-    const sumTotalAllocation = Object.values(totalAllocation).reduce<bigint>(
-      (acc, value) => acc + (value ?? 0n),
-      0n,
+    const cyclePayout = Big(
+      getCyclePayout(rifPrice, rbtcPrice, BigInt(rewardsERC20), BigInt(rewardsRBTC)).toString(),
     )
 
-    if (!sumTotalAllocation) {
-      return 0n
-    }
+    const sumTotalAllocation = builders.reduce<Big>(
+      (acc, builder) => acc.plus(Big(builder?.totalAllocation ?? 0)),
+      Big(0),
+    )
 
-    const topFiveBuilders = builders
-      .reduce<Array<{ allocation: bigint; current: bigint }>>((acc, builder, i) => {
-        const allocation = totalAllocation[i] ?? 0n
-        const rewardPct = backersRewardsPct[builder.address]
-        if (allocation && rewardPct) {
-          acc.push({ allocation, current: rewardPct.current })
-        }
-        return acc
-      }, [])
-      .sort((a, b) => (a.allocation > b.allocation ? -1 : 1))
-      .slice(0, 5)
+    if (sumTotalAllocation.eq(0)) {
+      return Big(0)
+    }
 
     // We use the multiplication with the current backer rewards % to avoid losing precision
     // Thats why we don't need to multiply by 100
-    const weightedAverageBuilderRewardsPct = topFiveBuilders.reduce(
-      (acc, { allocation, current }) => acc + (allocation * current) / sumTotalAllocation,
-      0n,
-    )
+    const weightedAverageBuilderRewardsPct = builders
+      .slice(0, 5)
+      .reduce<Big>((acc, { backerRewardPercentage, totalAllocation }) => {
+        const currentBackerRewardPercentage = backerRewardPercentage
+          ? getBackerRewardPercentage(
+              BigInt(backerRewardPercentage.previous ?? 0n),
+              BigInt(backerRewardPercentage.next ?? 0n),
+              BigInt(backerRewardPercentage.cooldownEndTime ?? 0n),
+            ).current.toString()
+          : 0
+        return acc.plus(Big(totalAllocation).mul(Big(currentBackerRewardPercentage)).div(sumTotalAllocation))
+      }, Big(0))
 
-    return (cyclePayout * weightedAverageBuilderRewardsPct) / sumTotalAllocation
-  }, [backersRewardsPct, builders, cyclePayout, totalAllocation])
+    const rewardsPerStRif = cyclePayout.mul(weightedAverageBuilderRewardsPct).div(sumTotalAllocation)
 
-  const isLoading =
-    buildersLoading || cyclePayoutLoading || totalAllocationLoading || backersRewardsPctLoading
-
-  const error = buildersError ?? cyclePayoutError ?? totalAllocationError ?? backersRewardsPctError
-
-  const abi = useGetAbi(rewardsPerStRif)
-
-  return {
-    data: abi,
-    isLoading,
-    error,
-  }
+    return calculateAbi(rewardsPerStRif, rifPrice)
+  }, [abiData, prices])
 }
