@@ -33,6 +33,7 @@ ARG PROFILE
 ARG NEXT_PUBLIC_BUILD_ID
 ARG THE_GRAPH_API_KEY
 ARG DB_CONNECTION_STRING
+ARG DAO_GRAPH_API_KEY
 
 # Rename environment files based on PROFILE 
 RUN cp .env.${PROFILE} .env.local
@@ -41,6 +42,7 @@ RUN cp .env.${PROFILE} .env.local
 ENV NEXT_PUBLIC_BUILD_ID=${NEXT_PUBLIC_BUILD_ID}
 ENV THE_GRAPH_API_KEY=${THE_GRAPH_API_KEY}
 ENV DB_CONNECTION_STRING=${DB_CONNECTION_STRING}
+ENV DAO_GRAPH_API_KEY=${DAO_GRAPH_API_KEY}
 
 # Build the Next.js application
 RUN npm run build
@@ -62,13 +64,16 @@ COPY --from=builder /app/node_modules ./node_modules
 
 ARG THE_GRAPH_API_KEY
 ARG DB_CONNECTION_STRING
+ARG DAO_GRAPH_API_KEY
 
 ENV THE_GRAPH_API_KEY=${THE_GRAPH_API_KEY}
 ENV DB_CONNECTION_STRING=${DB_CONNECTION_STRING}
+ENV DAO_GRAPH_API_KEY=${DAO_GRAPH_API_KEY}
 
 # Download AWS RDS CA certificate
 RUN apk add --no-cache wget && \
     wget -O rds-ca-cert.pem https://truststore.pki.rds.amazonaws.com/global/global-bundle.pem
+
 
 # Expose the port that Next.js will run on
 EXPOSE 3000

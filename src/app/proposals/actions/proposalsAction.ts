@@ -102,6 +102,11 @@ export interface Counter {
 }
 
 export async function fetchProposals() {
-  const { data } = await daoClient.query<GraphQLResponse>({ query })
+  const { data } = await daoClient.query<GraphQLResponse>({ query, fetchPolicy: 'no-cache' })
   return data
 }
+
+export const getCachedProposals = unstable_cache(fetchProposals, ['cached_proposals'], {
+  revalidate: 60, // Every 60 seconds
+  tags: ['cached_proposals'],
+})

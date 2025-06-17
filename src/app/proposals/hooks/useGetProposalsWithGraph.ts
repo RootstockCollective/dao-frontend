@@ -1,7 +1,7 @@
 import { useMemo } from 'react'
 import { useBlockNumber } from 'wagmi'
 import { useQuery } from '@tanstack/react-query'
-import { fetchProposals, ProposalGraphQLResponse } from '@/app/proposals/actions/proposalsAction'
+import { getCachedProposals, ProposalGraphQLResponse } from '@/app/proposals/actions/proposalsAction'
 import { AVERAGE_BLOCKTIME } from '@/lib/constants'
 import Big from '@/lib/big'
 import { getEventArguments } from '@/app/proposals/shared/utils'
@@ -14,11 +14,16 @@ export function useGetProposalsWithGraph() {
     isLoading: proposalDataIsLoading,
     error: proposalsDataError,
   } = useQuery({
-    queryFn: () => fetchProposals(),
+    queryFn: () => getCachedProposals(),
     queryKey: ['proposals'],
     refetchInterval: AVERAGE_BLOCKTIME,
   })
-  const { data: latestBlockNumber } = useBlockNumber()
+  const { data: latestBlockNumber } = useBlockNumber({
+    query: {
+      refetchInterval: AVERAGE_BLOCKTIME,
+      staleTime: AVERAGE_BLOCKTIME,
+    },
+  })
 
   const activeProposals = useMemo(() => {
     if (!proposalsData || !latestBlockNumber) return '0'
@@ -95,8 +100,12 @@ function handleProposalState(proposal: ProposalGraphQLResponse, blockNumber?: bi
   if (proposal.rawState != ProposalState.Pending && proposal.rawState != ProposalState.Active) {
     return proposal.rawState as ProposalState
   }
-  if (Big(proposal.voteEnd).gt(Big(blockNumber.toString()))) {
-    return proposal.rawState as ProposalState
+  let block = Big(blockNumber.toString())
+  if (Big(proposal.voteStart).gte(block)) {
+    return ProposalState.Pending
+  }
+  if (Big(proposal.voteEnd).gte(block)) {
+    return ProposalState.Active
   }
   if (
     Big(proposal.quorum).gt(Big(proposal.votesFor)) ||
