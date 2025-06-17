@@ -2,6 +2,7 @@ import { Popover } from '@/components/Popover'
 import { DisconnectButton } from '@/shared/walletConnection'
 import { AccountAddress } from '@/components/Header'
 import { DisconnectWalletModal } from '@/components/Modal/DisconnectWalletModal'
+import { CopyButton } from '@/components/CopyButton'
 
 interface DisconnectWorkflowPresentationProps {
   shortAddress: string
@@ -29,8 +30,13 @@ export const DisconnectWorkflowPresentation = ({
       <Popover
         contentContainerClassName="w-[233px] max-w-[calc(100vw-1rem)] right-0"
         contentSubContainerClassName="w-full p-[24px] text-center rounded border-[#2D2D2D] cursor-pointer select-none bg-bg-60 mt-2 flex justify-center"
-        contentSubcontainerProps={{ onClick: onOpenModal }}
-        content={<DisconnectButton />}
+        content={
+          <PopoverDisconnectContentContainer
+            address={address ?? ''}
+            shortAddress={shortAddress}
+            onDisconnectClick={onOpenModal}
+          />
+        }
         trigger="click"
       >
         <AccountAddress address={address} shortAddress={shortAddress} withCopy={false} />
@@ -41,3 +47,29 @@ export const DisconnectWorkflowPresentation = ({
     </>
   )
 }
+
+interface PopoverDisconnectContainerProps {
+  address: string
+  shortAddress: string
+  onDisconnectClick: () => void
+}
+
+/**
+ * Container for disconnect popover content (when popover is opened)
+ * @param address
+ * @param shortAddress
+ * @param onDisconnectClick
+ * @constructor
+ */
+const PopoverDisconnectContentContainer = ({
+  address,
+  shortAddress,
+  onDisconnectClick,
+}: PopoverDisconnectContainerProps) => (
+  <div className="flex flex-col gap-3">
+    <CopyButton copyText={address} className="md:hidden">
+      {shortAddress}
+    </CopyButton>
+    <DisconnectButton onClick={onDisconnectClick} />
+  </div>
+)
