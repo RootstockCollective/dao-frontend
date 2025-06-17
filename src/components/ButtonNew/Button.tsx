@@ -10,6 +10,7 @@ const DEFAULT_CLASSES =
 interface Props extends ButtonHTMLAttributes<HTMLButtonElement> {
   variant?: ButtonVariant
   'data-testid'?: string
+  textClassName?: string
 }
 
 export const Button: FC<Props> = ({
@@ -19,6 +20,7 @@ export const Button: FC<Props> = ({
   onClick,
   className = '',
   'data-testid': dataTestId,
+  textClassName,
   ...props
 }) => {
   const styles = {
@@ -40,7 +42,9 @@ export const Button: FC<Props> = ({
       // All props must be forwarded to the underlying component to ensure that wrapping components (like Tooltip) function correctly.
       {...props}
     >
-      <Span bold>{children}</Span>
+      <Span bold className={textClassName}>
+        {children}
+      </Span>
     </button>
   )
 }

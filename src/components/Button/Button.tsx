@@ -29,6 +29,23 @@ export type ButtonProps = Props
 
 const DEFAULT_DATA_TESTID = 'Button'
 
+/**
+ * @deprecated Use `ButtonNew` instead.
+ * @param text
+ * @param onClick
+ * @param startIcon
+ * @param variant
+ * @param fullWidth
+ * @param centerContent
+ * @param disabled
+ * @param className
+ * @param textClassName
+ * @param buttonProps
+ * @param loading
+ * @param startIconClasses
+ * @param dataTestId
+ * @constructor
+ */
 export const Button: FC<Props> = ({
   children: text,
   onClick,
