@@ -8,12 +8,97 @@ export interface LedgerConnectorOptions {
 interface LedgerConnectorState {
   provider: any | null
   account: Address | null
+  isConnecting: boolean
+  lastConnectionAttempt: number | null
+}
+
+// EIP-6963 Provider Info for Ledger
+const LEDGER_PROVIDER_INFO = {
+  uuid: 'ledger-hardware-wallet',
+  name: 'Ledger',
+  icon: 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMzIiIGhlaWdodD0iMzIiIHZpZXdCb3g9IjAgMCAzMiAzMiIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHBhdGggZD0iTTAgMEgxNlYxNkgwVjBaIiBmaWxsPSIjMDBEOEZGIi8+CjxwYXRoIGQ9Ik0xNiAwSDMyVjE2SDE2VjBaIiBmaWxsPSIjMDBEOEZGIi8+CjxwYXRoIGQ9Ik0wIDE2SDE2VjMySDBWMTZaIiBmaWxsPSIjMDBEOEZGIi8+CjxwYXRoIGQ9Ik0xNiAxNkgzMlYzMkgxNlYxNloiIGZpbGw9IiMwMEQ4RkYiLz4KPC9zdmc+',
+  rdns: 'com.ledger.hardware',
+}
+
+// Storage key for persistence
+const LEDGER_CONNECTION_KEY = 'ledger_connection_state'
+
+// Connection state persistence
+const saveConnectionState = (account: Address | null) => {
+  if (typeof window !== 'undefined') {
+    try {
+      localStorage.setItem(LEDGER_CONNECTION_KEY, JSON.stringify({
+        account,
+        timestamp: Date.now(),
+      }))
+    } catch (error) {
+      console.warn('Failed to save Ledger connection state:', error)
+    }
+  }
+}
+
+const getStoredConnectionState = (): { account: Address | null; timestamp: number } | null => {
+  if (typeof window !== 'undefined') {
+    try {
+      const stored = localStorage.getItem(LEDGER_CONNECTION_KEY)
+      if (stored) {
+        const parsed = JSON.parse(stored)
+        // Only consider connections from the last 24 hours
+        if (Date.now() - parsed.timestamp < 24 * 60 * 60 * 1000) {
+          return parsed
+        }
+      }
+    } catch (error) {
+      console.warn('Failed to retrieve Ledger connection state:', error)
+    }
+  }
+  return null
+}
+
+const clearConnectionState = () => {
+  if (typeof window !== 'undefined') {
+    try {
+      localStorage.removeItem(LEDGER_CONNECTION_KEY)
+    } catch (error) {
+      console.warn('Failed to clear Ledger connection state:', error)
+    }
+  }
 }
 
 export function ledgerConnector(options: LedgerConnectorOptions = {}) {
   let state: LedgerConnectorState = {
     provider: null,
     account: null,
+    isConnecting: false,
+    lastConnectionAttempt: null,
+  }
+
+  // EIP-6963 Provider announcement
+  const announceProvider = () => {
+    if (typeof window !== 'undefined') {
+      const provider = {
+        info: { ...LEDGER_PROVIDER_INFO },
+        provider: {
+          isLedger: true,
+          request: async ({ method, params }: { method: string; params?: any[] }) => {
+            // This is a placeholder - actual requests go through the connector
+            throw new Error('Please connect through the Ledger connector')
+          },
+        },
+      }
+
+      window.dispatchEvent(
+        new CustomEvent('eip6963:announceProvider', {
+          detail: Object.freeze(provider),
+        })
+      )
+    }
+  }
+
+  // Announce provider on load and when requested
+  if (typeof window !== 'undefined') {
+    announceProvider()
+    window.addEventListener('eip6963:requestProvider', announceProvider)
   }
 
   return createConnector<unknown>(config => {
@@ -23,6 +108,13 @@ export function ledgerConnector(options: LedgerConnectorOptions = {}) {
       type: 'hardware',
 
       async connect() {
+        if (state.isConnecting) {
+          throw new Error('Connection already in progress')
+        }
+
+        state.isConnecting = true
+        state.lastConnectionAttempt = Date.now()
+
         try {
           // Only import and use LedgerProvider on the client side
           if (typeof window === 'undefined') {
@@ -43,8 +135,13 @@ export function ledgerConnector(options: LedgerConnectorOptions = {}) {
             dPath: "44'/60'/0'/0/0", // Force standard Ethereum derivation path
           })
 
-          // Connect to the Ledger device
-          await state.provider.connect()
+          // Connect to the Ledger device with timeout
+          const connectPromise = state.provider.connect()
+          const timeoutPromise = new Promise((_, reject) => {
+            setTimeout(() => reject(new Error('Connection timeout - please check your device')), 30000)
+          })
+
+          await Promise.race([connectPromise, timeoutPromise])
 
           // Get the address through the provider's accounts
           const accounts = (await state.provider.request({
@@ -59,6 +156,9 @@ export function ledgerConnector(options: LedgerConnectorOptions = {}) {
           const address = accounts[0] as Address
           state.account = address
 
+          // Save connection state for auto-reconnection
+          saveConnectionState(address)
+
           // Emit connection event
           config.emitter.emit('change', {
             accounts: [address],
@@ -70,27 +170,62 @@ export function ledgerConnector(options: LedgerConnectorOptions = {}) {
             chainId,
           }
         } catch (error) {
-          // Add more specific error handling
+          // Clear any partial state on error
+          state.provider = null
+          state.account = null
+          clearConnectionState()
+
+          // Enhanced error handling with specific user guidance
           if (error instanceof Error) {
-            if (error.message.includes('0x6a15')) {
-              throw new Error('Ledger device: Please unlock your device and open the Ethereum app')
+            // Device locked or app not open
+            if (error.message.includes('0x6a15') || error.message.includes('6a15')) {
+              throw new Error('Please unlock your Ledger device and open the Ethereum app, then try again.')
             }
 
-            if (error.message.includes('Permission')) {
-              throw new Error('Browser permission denied. Please allow USB access and try again.')
+            // Device not found or disconnected
+            if (error.message.includes('0x6e00') || error.message.includes('6e00')) {
+              throw new Error('Ledger device not found. Please connect your device and try again.')
             }
 
-            if (error.message.includes('not supported')) {
-              throw new Error(
-                'Your browser does not support hardware wallet connections. Please use Chrome, Edge, or Opera.',
-              )
+            // App not installed
+            if (error.message.includes('0x6d00') || error.message.includes('6d00')) {
+              throw new Error('Ethereum app not found on your Ledger device. Please install the Ethereum app using Ledger Live.')
+            }
+
+            // User rejected
+            if (error.message.includes('denied') || error.message.includes('rejected')) {
+              throw new UserRejectedRequestError(new Error('Connection rejected by user'))
+            }
+
+            // Permission denied
+            if (error.message.includes('Permission') || error.message.includes('permission')) {
+              throw new Error('Browser permission denied. Please allow USB/HID access in your browser settings and try again.')
+            }
+
+            // Browser not supported
+            if (error.message.includes('not supported') || error.message.includes('unsupported')) {
+              throw new Error('Your browser does not support hardware wallet connections. Please use Chrome, Edge, or Opera.')
+            }
+
+            // Timeout
+            if (error.message.includes('timeout') || error.message.includes('Timeout')) {
+              throw new Error('Connection timed out. Please ensure your Ledger is unlocked with the Ethereum app open, then try again.')
+            }
+
+            // Transport errors
+            if (error.message.includes('transport') || error.message.includes('Transport')) {
+              throw new Error('Failed to connect to Ledger device. Please disconnect and reconnect your device, then try again.')
             }
           }
 
           if (isUserRejectedRequestError(error)) {
             throw new UserRejectedRequestError(error as Error)
           }
-          throw error
+          
+          // Generic error with helpful message
+          throw new Error(`Failed to connect to Ledger: ${error instanceof Error ? error.message : 'Unknown error'}. Please ensure your device is unlocked with the Ethereum app open.`)
+        } finally {
+          state.isConnecting = false
         }
       },
 
@@ -100,10 +235,12 @@ export function ledgerConnector(options: LedgerConnectorOptions = {}) {
             await state.provider.disconnect()
           }
         } catch (error) {
-          // Silent cleanup
+          console.warn('Error during Ledger disconnect:', error)
         } finally {
           state.provider = null
           state.account = null
+          state.isConnecting = false
+          clearConnectionState()
           // Emit disconnect event to ensure proper cleanup
           config.emitter.emit('disconnect')
         }
@@ -169,7 +306,28 @@ export function ledgerConnector(options: LedgerConnectorOptions = {}) {
           if (typeof window === 'undefined') {
             return false
           }
-          return !!(state.provider && state.account)
+
+          // Check if we have an active connection
+          if (state.provider && state.account) {
+            return true
+          }
+
+          // Check for stored connection state for auto-reconnection
+          const storedState = getStoredConnectionState()
+          if (storedState?.account) {
+            // Attempt silent reconnection
+            try {
+              await this.connect()
+              return true
+            } catch (error) {
+              // Silent fail - user will need to manually reconnect
+              console.warn('Auto-reconnection failed:', error)
+              clearConnectionState()
+              return false
+            }
+          }
+
+          return false
         } catch {
           return false
         }
@@ -188,8 +346,13 @@ export function ledgerConnector(options: LedgerConnectorOptions = {}) {
 
       onAccountsChanged(accounts: string[]) {
         if (accounts.length === 0) {
+          state.account = null
+          clearConnectionState()
           config.emitter.emit('disconnect')
         } else {
+          const address = accounts[0] as Address
+          state.account = address
+          saveConnectionState(address)
           config.emitter.emit('change', { accounts: accounts as readonly Address[] })
         }
       },
@@ -200,6 +363,10 @@ export function ledgerConnector(options: LedgerConnectorOptions = {}) {
       },
 
       onDisconnect() {
+        state.provider = null
+        state.account = null
+        state.isConnecting = false
+        clearConnectionState()
         config.emitter.emit('disconnect')
       },
     }
@@ -210,7 +377,8 @@ export function ledgerConnector(options: LedgerConnectorOptions = {}) {
       error instanceof Error &&
       (error.message.includes('User rejected') ||
         error.message.includes('Denied by user') ||
-        error.message.includes('User denied'))
+        error.message.includes('User denied') ||
+        error.message.includes('rejected by user'))
     )
   }
 }
