@@ -1,4 +1,4 @@
-import { FC, useEffect, useRef, useState } from 'react'
+import { FC } from 'react'
 import { createPortal } from 'react-dom'
 import { motion, type Variants, AnimatePresence } from 'motion/react'
 import { CommonComponentProps } from '@/components/commonProps'
@@ -23,45 +23,8 @@ interface BottomActionBarBaseProps extends CommonComponentProps {
 }
 
 export const BottomDrawer: FC<BottomActionBarBaseProps> = ({ className = '', portalContainer }) => {
-  const { isSidebarOpen, isDrawerOpen, drawerContent } = useLayoutContext()
+  const { isSidebarOpen, isDrawerOpen, drawerContent, setDrawerRef } = useLayoutContext()
   const sidebarWidth = isSidebarOpen ? SIDEBAR_OPENED_WIDTH : SIDEBAR_CLOSED_WIDTH
-
-  const drawerRef = useRef<HTMLDivElement>(null)
-  const [drawerHeight, setDrawerHeight] = useState(0)
-  const [showPadding, setShowPadding] = useState(false)
-
-  useEffect(() => {
-    if (drawerRef.current) {
-      setDrawerHeight(drawerRef.current.offsetHeight)
-    } else {
-      setDrawerHeight(0)
-    }
-  }, [drawerContent])
-
-  useEffect(() => {
-    if (isDrawerOpen && drawerHeight > 0) {
-      setShowPadding(true)
-    }
-  }, [isDrawerOpen, drawerHeight])
-
-  useEffect(() => {
-    const container = document.querySelector('#main-container') as HTMLElement | null
-    if (!container) return
-
-    container.style.transition = 'padding-bottom 0.3s ease-in-out'
-    if (showPadding && drawerHeight > 0) {
-      container.style.paddingBottom = `${drawerHeight}px`
-    } else {
-      container.style.paddingBottom = '0px'
-    }
-
-    return () => {
-      if (container) {
-        container.style.paddingBottom = '0px'
-        container.style.transition = ''
-      }
-    }
-  }, [drawerHeight, showPadding])
 
   return createPortal(
     <div className="fixed bottom-0 left-0 right-0 z-30">
@@ -73,10 +36,10 @@ export const BottomDrawer: FC<BottomActionBarBaseProps> = ({ className = '', por
         }}
         transition={TRANSITION}
       >
-        <AnimatePresence onExitComplete={() => setShowPadding(false)}>
+        <AnimatePresence>
           {isDrawerOpen && (
             <motion.div
-              ref={drawerRef}
+              ref={setDrawerRef}
               variants={VARIANTS}
               initial="hidden"
               animate="visible"

@@ -13,6 +13,7 @@ import { BottomDrawer } from './drawers/BottomDrawer'
 export const MAIN_CONTAINER_MAX_WIDTH = '1440px'
 export function ContainerDesktop({ children, className, ...props }: HTMLAttributes<HTMLDivElement>) {
   const { message, setMessage } = useAlertContext()
+
   return (
     <div
       {...props}
