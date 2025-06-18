@@ -1,6 +1,6 @@
 import { FC, TableHTMLAttributes, useState, useCallback, useRef, useEffect } from 'react'
 import { cn } from '@/lib/utils'
-import { useTableContext } from '../../TableNew/context/TableContext'
+import { useTableContext } from './context/TableContext'
 
 interface TableRowProps extends Omit<TableHTMLAttributes<HTMLTableRowElement>, 'onClick'> {
   rowId?: string

@@ -1,13 +1,13 @@
 import type { Meta, StoryObj } from '@storybook/react'
 import { TableRow } from './TableRow'
-import { TableCore } from './TableCore'
-import { TableBody } from './TableBody'
-import { TableHead } from './TableHead'
-import { TableCell } from './TableCell'
-import { TableContextProvider } from '../context'
-import { TableActionsBar } from './TableActionsBar'
-import { Button } from '../../Button'
-import { Span } from '../../Typography'
+import { TableCore } from '../Table/components/TableCore'
+import { TableBody } from '../Table/components/TableBody'
+import { TableHead } from '../Table/components/TableHead'
+import { TableCell } from '../Table/components/TableCell'
+import { TableContextProvider } from './context/TableContext'
+import { TableActionsBar } from '../Table/components/TableActionsBar'
+import { Button } from '@/components/Button'
+import { Span } from '@/components/Typography'
 
 const meta: Meta<typeof TableRow> = {
   title: 'Components/TableRow',

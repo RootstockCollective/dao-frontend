@@ -1,6 +1,6 @@
 import { FC, ReactNode } from 'react'
 import { cn } from '@/lib/utils'
-import { useTableContext } from '../context/TableContext'
+import { useTableContext } from '../../TableNew/context/TableContext'
 import { Span } from '../../Typography'
 
 interface TableActionsBarProps {
