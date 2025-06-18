@@ -67,7 +67,7 @@ export const DropdownSelector: FC<DropdownSelectorProps> = ({
             initial={{ opacity: 0, scale: 0.95 }}
             animate={{ opacity: 1, scale: 1 }}
             transition={{ duration: 0.15 }}
-            className={cn('bg-v3-bg-accent-100 rounded shadow-lg p-6', className)}
+            className={cn('bg-v3-bg-accent-60 rounded shadow-lg p-6', className)}
           >
             <Label
               className="pb-2 text-v3-bg-accent-0 text-sm uppercase"
