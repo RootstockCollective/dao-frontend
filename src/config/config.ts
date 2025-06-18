@@ -6,8 +6,7 @@ import { createConfig, http, cookieStorage, createStorage } from 'wagmi'
 import { injected } from 'wagmi/connectors'
 import { REOWN_PROJECT_ID } from '@/lib/constants'
 import { trezorWalletConnector } from '@/shared/trezor-connector/trezor-connector'
-
-const connectors = [injected(), trezorWalletConnector()]
+import { ledgerConnector } from '@/config/ledgerConnector'
 
 const rskRegtest = defineChain({
   id: 33,
@@ -28,19 +27,22 @@ const envChains = {
 
 export const currentEnvChain: Chain = envChains[ENV as keyof typeof envChains]
 
+const connectors = [
+  injected(),
+  // ledgerConnector({ chainId: currentEnvChain.id }), // TEMPORARILY REMOVED for troubleshooting
+  trezorWalletConnector(),
+]
+
 export const config = createConfig({
   chains: [currentEnvChain],
   transports: {
     [currentEnvChain.id]: http(undefined, {
       batch: {
-        // this is the default value configured in RSKj
         batchSize: 100,
       },
     }),
   },
-  connectors: [
-    injected(),
-  ],
+  connectors,
 })
 
 export const wagmiAdapter = new WagmiAdapter({
@@ -50,18 +52,14 @@ export const wagmiAdapter = new WagmiAdapter({
   ssr: true,
   projectId: REOWN_PROJECT_ID,
   networks: [currentEnvChain],
-  connectors: [
-    injected(),
-  ],
+  connectors,
   transports: {
     [currentEnvChain.id]: http(undefined, {
       batch: {
-        // this is the default value configured in RSKj
         batchSize: 100,
       },
     }),
   },
-  connectors,
 })
 
 export const wagmiAdapterConfig = wagmiAdapter.wagmiConfig
