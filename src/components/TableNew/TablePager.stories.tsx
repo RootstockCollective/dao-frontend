@@ -27,15 +27,3 @@ export const Default: Story = {
     },
   },
 }
-
-export const Empty: Story = {
-  args: {
-    pageSize: 20,
-    totalItems: 0,
-    pagedItemName: 'Builders',
-    mode: 'cyclic',
-    onPageChange: (startIndex, endIndex) => {
-      console.log(`Page changed: showing items ${startIndex} to ${endIndex}`)
-    },
-  },
-}

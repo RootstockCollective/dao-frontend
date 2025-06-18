@@ -45,12 +45,8 @@ export const TablePager: React.FC<TablePagerProps> = ({
     })
   }, [mode, totalItems, pageSize])
 
-  if (totalItems === 0) {
-    return (
-      <PagerContainer className="justify-end">
-        <PagerCount start={0} end={0} total={0} itemName={pagedItemName} />
-      </PagerContainer>
-    )
+  if (totalItems <= pageSize) {
+    return null
   }
 
   const isButtonDisabled = mode === 'expandable' ? end >= totalItems : false
