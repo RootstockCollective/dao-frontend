@@ -3,21 +3,26 @@ import { FC } from 'react'
 import { CommonComponentProps } from '../commonProps'
 
 export interface TableHeaderCellProps extends CommonComponentProps {
-  id: string // columnName
   onClick?: () => void
+  contentClassName?: string
 }
 
-export const TableHeaderCell: FC<TableHeaderCellProps> = ({ children, className, onClick }) => {
+export const TableHeaderCell: FC<TableHeaderCellProps> = ({
+  children,
+  className,
+  onClick,
+  contentClassName,
+}) => {
   return (
-    <div
+    <td
       className={cn(
-        'flex flex-row justify-center items-center',
+        'flex flex-col items-start gap-2',
         onClick ? 'cursor-pointer' : 'cursor-default',
         className,
       )}
       onClick={onClick}
     >
-      {children}
-    </div>
+      <div className={cn('flex items-start self-stretch gap-1.5', contentClassName)}>{children}</div>
+    </td>
   )
 }

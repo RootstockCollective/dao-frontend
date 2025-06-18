@@ -1,27 +1,29 @@
 export type SortDirection = 'asc' | 'desc' | null
 
-export type Sort = {
-  by: Column['id'] | null // For now just one column can be sorted
+export type Sort<Id extends Column['id'] = Column['id']> = {
+  by: Id | null // For now just one column can be sorted
   direction: SortDirection
 }
 
-export type RowData<T extends Record<string, unknown> = Record<string, unknown>> = T & {
-  id: string
+export type RowData<
+  ColumnId extends Column['id'] = Column['id'],
+  T extends Record<ColumnId, unknown> = Record<ColumnId, unknown>,
+> = T & {
+  id: ColumnId
 }
 
-export type SelectedRows = Record<RowData['id'], boolean>
+export type SelectedRows<Id extends string = string> = Record<Id, boolean>
 
-export type Column = {
-  id: string
-  label: string
-  sublabel?: string
+export type Column<Id extends string = string, Type extends string = string> = {
+  id: Id
+  type: Type
   hidden: boolean
   sortable: boolean
 }
 
-export type TableState = {
-  columns: Column[]
-  rows: RowData[]
+export type TableState<ColumnId extends Column['id'] = Column['id'], ColumnType extends string = string> = {
+  columns: Column<ColumnId, ColumnType>[]
+  rows: RowData<ColumnId>[]
   sort: Sort
   defaultSort: Sort
   selectedRows: SelectedRows // may contain selections across pages
@@ -29,33 +31,33 @@ export type TableState = {
   error: string | null
 }
 
-export type TableAction =
+export type TableAction<ColumnId extends Column['id'] = Column['id'], ColumnType extends string = string> =
   | {
       type: 'TOGGLE_ROW_SELECTION'
-      payload: RowData['id']
+      payload: RowData<ColumnId>['id']
     }
   | {
       type: 'TOGGLE_COLUMN_VISIBILITY'
-      payload: Column['id']
+      payload: ColumnId
     }
   | {
       type: 'SORT_BY_COLUMN'
       payload: {
-        id: Column['id']
+        id: ColumnId | null
         direction: SortDirection | null
       }
     }
   | {
       type: 'SET_ROWS'
-      payload: RowData[]
+      payload: RowData<ColumnId>[]
     }
   | {
       type: 'SET_COLUMNS'
-      payload: Column[]
+      payload: Column<ColumnId, ColumnType>[]
     }
   | {
       type: 'SET_DEFAULT_SORT'
-      payload: Sort
+      payload: Sort<ColumnId>
     }
   | {
       type: 'SET_LOADING'
@@ -67,9 +69,9 @@ export type TableAction =
     }
   | {
       type: 'SET_SELECTED_ROWS'
-      payload: SelectedRows
+      payload: SelectedRows<ColumnId>
     }
   | {
       type: 'SET_HIDDEN_COLUMNS'
-      payload: Column['id'][]
+      payload: ColumnId[]
     }
