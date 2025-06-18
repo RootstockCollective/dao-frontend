@@ -6,7 +6,7 @@ export interface TableSelections {
 
 interface TableState {
   selections: TableSelections
-  selectedCount: number
+  selectedRowId: string | null
 }
 
 interface TableActions {
@@ -24,7 +24,7 @@ interface TableContextType {
 const DEFAULT_CONTEXT: TableContextType = {
   state: {
     selections: {},
-    selectedCount: 0,
+    selectedRowId: null,
   },
   actions: {
     selectRow: () => {},
@@ -39,17 +39,21 @@ const TableContext = createContext<TableContextType>(DEFAULT_CONTEXT)
 export const TableContextProvider: FC<{ children: ReactNode }> = ({ children }) => {
   const [selections, setSelections] = useState<TableSelections>({})
 
-  const selectedCount = Object.values(selections).filter(Boolean).length
+  const selectedRowId = Object.keys(selections).find(key => selections[key]) || null
 
   const selectRow = useCallback((rowId: string) => {
     setSelections({ [rowId]: true })
   }, [])
 
   const toggleRowSelection = useCallback((rowId: string) => {
-    setSelections(prev => ({
-      ...prev,
-      [rowId]: !prev[rowId],
-    }))
+    setSelections(prev => {
+      // If the row is currently selected, deselect it
+      if (prev[rowId]) {
+        return {}
+      }
+      // Otherwise, select only this row (clear all others)
+      return { [rowId]: true }
+    })
   }, [])
 
   const clearSelections = useCallback(() => {
@@ -66,7 +70,7 @@ export const TableContextProvider: FC<{ children: ReactNode }> = ({ children }) 
   const contextValue: TableContextType = {
     state: {
       selections,
-      selectedCount,
+      selectedRowId,
     },
     actions: {
       selectRow,
