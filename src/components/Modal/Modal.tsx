@@ -1,9 +1,9 @@
 'use client'
 
 import { cn } from '@/lib/utils'
-import Image from 'next/image'
 import { FC, ReactNode } from 'react'
 import { createPortal } from 'react-dom'
+import { CloseIcon } from '../Icons'
 
 interface Props {
   children: ReactNode
@@ -11,6 +11,7 @@ interface Props {
   className?: string
   width?: number
   height?: number | 'auto'
+  closeButtonColor?: 'white' | 'black'
   'data-testid'?: string
 }
 
@@ -20,6 +21,7 @@ export const Modal: FC<Props> = ({
   className,
   width,
   height = 'auto',
+  closeButtonColor = 'white',
   'data-testid': dataTestId,
 }) => {
   return createPortal(
@@ -51,7 +53,7 @@ export const Modal: FC<Props> = ({
       >
         {/* Close Button */}
         <button onClick={onClose} className="absolute top-4 right-4 z-10" data-testid="CloseButton">
-          <Image src="/images/close-button.svg" width={24} height={24} alt="Close" />
+          <CloseIcon size={24} aria-label="Close" color={closeButtonColor} />
         </button>
 
         {children}

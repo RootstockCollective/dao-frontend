@@ -9,6 +9,7 @@ import { UnderlineTabs, BaseTab } from '@/components/Tabs'
 import { usePathname, useSearchParams, useRouter } from 'next/navigation'
 import { useAccount } from 'wagmi'
 import { HeroSection } from './HeroSection'
+import { IntroModal } from './IntroModal'
 
 const values = ['holdings', 'rewards'] as const
 type TabValue = (typeof values)[number]
@@ -53,6 +54,7 @@ export default function User() {
 const tabsContent: Record<TabValue, ReactNode> = {
   holdings: (
     <>
+      <IntroModal />
       <BalancesSection />
       <DelegationSection />
       <CommunitiesSection />
