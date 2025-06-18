@@ -23,16 +23,22 @@ export const useReadGauges = <TFunctionName extends GaugeFunctionName>(
   { addresses, ...config }: ReadGaugesConfig<TFunctionName>,
   query?: Omit<UseReadContractParameters<GaugeAbi, TFunctionName>['query'], 'select'>,
 ) => {
+  const contracts = useMemo(
+    () =>
+      addresses.map(address => ({
+        abi,
+        address,
+        ...(config as any),
+      })),
+    [addresses, config],
+  )
   const { data: results, ...queryData } = useReadContracts({
-    contracts: addresses.map(address => ({
-      abi,
-      address,
-      ...(config as any),
-    })),
+    contracts,
     query: {
       retry: true,
       refetchInterval: AVERAGE_BLOCKTIME,
       ...query,
+      enabled: !!contracts.length,
     },
   })
 

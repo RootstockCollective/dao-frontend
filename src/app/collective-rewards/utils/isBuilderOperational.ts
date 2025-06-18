@@ -10,7 +10,7 @@ export const isBuilderOperational = (stateFlags?: BuilderStateFlags) => {
   )
 }
 
-export const isBuilderDeactivated = ({ gauge, stateFlags }: Builder) =>
+export const isBuilderCommunityBanned = ({ gauge, stateFlags }: Builder) =>
   !!(gauge && stateFlags && !stateFlags.communityApproved)
 
 export const isBuilderKycRevoked = (stateFlags?: BuilderStateFlags) =>

@@ -1,11 +1,11 @@
 import { MultipleSelectDropdown, SelectorOption } from '@/app/builders/components/MultipleSelectDropdown'
-import { Button } from '@/components/Button'
+import { Button } from '@/components/ButtonNew/Button'
 import { CommonComponentProps } from '@/components/commonProps'
 import { CloseIcon } from '@/components/Icons/CloseIcon'
 import { MoreIcon } from '@/components/Icons/MoreIcon'
 import { useTableActionsContext, useTableContext } from '@/shared/context/TableContext'
 import { FC } from 'react'
-import { ColumnId } from '../BuilderTable.types'
+import { ColumnId } from '../BuilderTable.config'
 
 type ColumnLabel = {
   label: string
@@ -31,8 +31,8 @@ const LABELS: Record<DropdowColumn, ColumnLabel> = {
   backing: {
     label: 'Backing',
   },
-  allocations: {
-    label: 'Backing share',
+  backing_share: {
+    label: 'Backing Share',
   },
 }
 

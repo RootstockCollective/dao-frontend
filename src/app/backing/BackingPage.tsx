@@ -1,25 +1,25 @@
 'use client'
 
-import { useAccount } from 'wagmi'
-import { useContext } from 'react'
-import { usePricesContext } from '@/shared/context/PricesContext'
-import { AllocationsContext } from '@/app/collective-rewards/allocations/context/AllocationsContext'
-import { RIF } from '@/lib/constants'
-import { AvailableBackingMetric, TotalBackingMetric } from './components'
-import { ActionMetricsContainer, ActionsContainer, MetricsContainer } from '@/components/containers'
-import { BuildersSpotlight } from '@/app/backing/components/BuildersSpotlight/BuildersSpotlight'
 import { BackingBanner } from '@/app/backing/components/BackingBanner/BackingBanner'
-import { BackingInfoContainer } from '@/app/backing/components/Container/BackingInfoContainer/BackingInfoContainer'
 import { BackingInfoTitleControl } from '@/app/backing/components/BackingInfoTitle/BackingInfoTitleControl'
+import { BuildersSpotlight } from '@/app/backing/components/BuildersSpotlight/BuildersSpotlight'
+import { BackingInfoContainer } from '@/app/backing/components/Container/BackingInfoContainer/BackingInfoContainer'
 import { AnnualBackersIncentives } from '@/app/backing/components/Metrics/AnnualBackersIncentives'
 import { EstimatedRewardsMetric } from '@/app/backing/components/Metrics/EstimatedRewardsMetric'
-import { useGetBuildersRewards } from '@/app/collective-rewards/rewards/builders/hooks/useGetBuildersRewards'
-import { getTokens } from '@/lib/tokens'
-import { useHandleErrors } from '@/app/collective-rewards/utils'
-import { BuilderAllocationBar } from './components/BuilderAllocationBar'
-import { Header } from '@/components/TypographyNew'
+import { AllocationsContext } from '@/app/collective-rewards/allocations/context/AllocationsContext'
 import { formatSymbol, getFiatAmount } from '@/app/collective-rewards/rewards'
+import { useGetBuildersRewards } from '@/app/collective-rewards/rewards/builders/hooks/useGetBuildersRewards'
+import { useHandleErrors } from '@/app/collective-rewards/utils'
+import { ActionMetricsContainer, ActionsContainer, MetricsContainer } from '@/components/containers'
+import { Header } from '@/components/TypographyNew'
+import { RIF } from '@/lib/constants'
+import { getTokens } from '@/lib/tokens'
 import { formatCurrency } from '@/lib/utils'
+import { usePricesContext } from '@/shared/context/PricesContext'
+import { useContext } from 'react'
+import { useAccount } from 'wagmi'
+import { AvailableBackingMetric, TotalBackingMetric } from './components'
+import { BuilderAllocationBar } from './components/BuilderAllocationBar'
 
 const NAME = 'Backing'
 
@@ -83,8 +83,13 @@ export const BackingPage = () => {
           <TotalBackingMetric totalBacking={totalBacking} />
         </ActionMetricsContainer>
       )}
-      {/* </ActionMetricsContainer>} */}
-      <ActionsContainer title="BUILDERS THAT YOU MAY WANT TO BACK">
+      <ActionsContainer
+        title={
+          <Header caps variant="h3">
+            builders that you may want to back
+          </Header>
+        }
+      >
         <BuildersSpotlight rewardsData={rewardsData} />
       </ActionsContainer>
     </div>

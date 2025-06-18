@@ -1,10 +1,10 @@
-import { DeltaIndicator } from '@/components/DeltaIndicator/DeltaIndicator'
 import { BackerRewardPercentage } from '@/app/collective-rewards/rewards/types'
 import { weiToPercentage } from '@/app/collective-rewards/settings'
+import { DeltaIndicator } from '@/components/DeltaIndicator/DeltaIndicator'
 import { cn } from '@/lib/utils'
 import { FC } from 'react'
 
-interface BackersPercentageCellProps {
+export interface BackersPercentageCellProps {
   percentage: BackerRewardPercentage
   className?: string
 }

@@ -1,18 +1,13 @@
-import { FC, ReactNode, useEffect, useState } from 'react'
 import {
   Dropdown,
-  DropdownTrigger,
   DropdownContent,
   DropdownItem,
+  DropdownTrigger,
   DropdownValue,
-} from '../../components/SingleSelectDropdown/SingleSelectDropdown'
+} from '@/components/SingleSelectDropdown/SingleSelectDropdown'
+import { FC, useEffect, useState } from 'react'
 
-export interface BuilderFilterDropdownProps {
-  className?: string
-  onSelected: (option: { id: string; content: ReactNode }) => void
-}
-
-const BuilderFilterOptions = [
+const builderFilterOptions = [
   { id: 'all', content: 'All builders' },
   { id: 'active', content: 'Active builders' },
   { id: 'inactive', content: 'Inactive builders' },
@@ -20,15 +15,22 @@ const BuilderFilterOptions = [
   { id: 'revoked', content: 'Revoked builders' },
   { id: 'paused', content: 'Paused builders' },
   { id: 'in-progress', content: 'In Progress' },
-]
+] as const
+
+export type BuilderFilterOption = (typeof builderFilterOptions)[number]['id']
+
+export interface BuilderFilterDropdownProps {
+  className?: string
+  onSelected: (id: BuilderFilterOption) => void
+}
 
 export const BuilderFilterDropdown: FC<BuilderFilterDropdownProps> = ({ className, onSelected }) => {
-  const [selectedOptionId, setSelectedOptionId] = useState<string>(BuilderFilterOptions[0].id)
+  const [selectedOptionId, setSelectedOptionId] = useState<string>(builderFilterOptions[0].id)
 
   useEffect(() => {
-    const selected = BuilderFilterOptions.find(opt => opt.id === selectedOptionId)
+    const selected = builderFilterOptions.find(opt => opt.id === selectedOptionId)
     if (selected) {
-      onSelected(selected)
+      onSelected(selected.id)
     }
   }, [selectedOptionId, onSelected])
 
@@ -38,7 +40,7 @@ export const BuilderFilterDropdown: FC<BuilderFilterDropdownProps> = ({ classNam
         <DropdownValue />
       </DropdownTrigger>
       <DropdownContent>
-        {BuilderFilterOptions.map(opt => (
+        {builderFilterOptions.map(opt => (
           <DropdownItem key={opt.id} value={opt.id} data-testid={`dropdown-option-${opt.id}`}>
             {opt.content}
           </DropdownItem>

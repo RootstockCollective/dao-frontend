@@ -107,10 +107,10 @@ export function Typography<T extends ElementType>({
   const cleanHtml =
     html && typeof children === 'string'
       ? sanitizeHtml(children, {
-          allowedAttributes: {
-            a: ['href', 'target', 'rel', 'style'],
-          },
-        })
+        allowedAttributes: {
+          a: ['href', 'target', 'rel', 'style'],
+        },
+      })
       : undefined
 
   // Use font-medium for bold in body-s and body-xs variants, font-bold for others

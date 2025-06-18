@@ -1,6 +1,10 @@
 import { Builder, BuilderState } from '@/app/collective-rewards/types'
 import { useBuilderContext } from '@/app/collective-rewards/user'
-import { isBuilderDeactivated, isBuilderKycRevoked, useHandleErrors } from '@/app/collective-rewards/utils'
+import {
+  isBuilderCommunityBanned,
+  isBuilderKycRevoked,
+  useHandleErrors,
+} from '@/app/collective-rewards/utils'
 import { Button } from '@/components/Button'
 import { LoadingSpinner } from '@/components/LoadingSpinner'
 import { BecomeABuilderModal, openKYC } from '@/components/Modal/BecomeABuilderModal'
@@ -73,7 +77,7 @@ const StatusBadge: FC<StatusBadgeProps> = ({ builderState }) => {
 
 const getBuilderState = (builder: Builder): ExtendedBuilderState => {
   if (!builder.stateFlags) return 'inProgress'
-  if (isBuilderDeactivated(builder) || isBuilderKycRevoked(builder.stateFlags)) return 'deactivated'
+  if (isBuilderCommunityBanned(builder) || isBuilderKycRevoked(builder.stateFlags)) return 'deactivated'
   const { paused, activated, communityApproved } = builder.stateFlags
   if (!activated || !communityApproved) return 'inProgress'
   return paused ? 'paused' : 'active'

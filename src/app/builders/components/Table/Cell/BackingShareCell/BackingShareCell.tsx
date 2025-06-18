@@ -1,20 +1,22 @@
+import { weiToPercentage } from '@/app/collective-rewards/settings'
 import { Paragraph } from '@/components/TypographyNew'
-import { FC } from 'react'
-import * as Progress from '@radix-ui/react-progress'
 import { cn } from '@/lib/utils'
+import * as Progress from '@radix-ui/react-progress'
+import { FC } from 'react'
 
-interface AllocationCellProps {
-  allocationPct: number
+export interface BackingShareCellProps {
+  backingSharePct: bigint
   step?: number
   className?: string
 }
 
-export const AllocationCell: FC<AllocationCellProps> = ({ allocationPct, step = 1, className }) => {
+export const BackingShareCell: FC<BackingShareCellProps> = ({ backingSharePct, step = 1, className }) => {
+  const backingShare = parseInt(weiToPercentage(backingSharePct, 0))
   // Round to the nearest step
-  const displayValue = step > 0 ? Math.round(allocationPct / step) * step : allocationPct
+  const displayValue = step > 0 ? Math.round(backingShare / step) * step : backingShare
 
   return (
-    <div className={cn('flex items-center justify-center w-full h-full gap-2', className)}>
+    <div className={cn('flex items-center justify-center w-[75%] h-full gap-2', className)}>
       <Progress.Root
         className="relative overflow-hidden bg-v3-bg-accent-20 w-full h-[0.0625rem]"
         value={displayValue}

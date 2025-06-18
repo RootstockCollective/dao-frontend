@@ -12,7 +12,7 @@ export type Sort<ColumnId extends Column['id'] = Column['id']> = {
 }
 
 export type RowData<ColumnId extends Column['id'] = Column['id'], DT extends unknown = unknown> = {
-  [k in ColumnId]: DT
+  [k in ColumnId]: DT // FIXME: just use Record<Column['id'], DT>
 }
 
 export type Row<ColumnId extends Column['id'] = Column['id'], RowId extends BaseRowId = BaseRowId> = {

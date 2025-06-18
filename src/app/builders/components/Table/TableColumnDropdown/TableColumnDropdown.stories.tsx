@@ -1,6 +1,6 @@
 import { useTableActionsContext, withTableContext } from '@/shared/context/TableContext'
 import { useEffect } from 'react'
-import { ColumnId } from '../BuilderTable.types'
+import { ColumnId } from '../BuilderTable.config'
 import { TableColumnDropdown } from './TableColumnDropdown'
 
 const TableColumnDropdownWithContext = () => {
@@ -15,7 +15,7 @@ const TableColumnDropdownWithContext = () => {
         { id: 'backer_rewards', sortable: true, hidden: false },
         { id: 'rewards_past_cycle', sortable: true, hidden: false },
         { id: 'rewards_upcoming', sortable: true, hidden: false },
-        { id: 'allocations', sortable: true, hidden: false },
+        { id: 'backing_share', sortable: true, hidden: false },
         { id: 'actions', sortable: false, hidden: true }, // should not be shown
       ],
     })
@@ -27,11 +27,11 @@ const TableColumnDropdownWithContext = () => {
 }
 
 export default {
-  title: 'Koto/Builders/Components/Table/TableColumnDropdown',
+  title: 'Koto/Builders/Table/TableColumnDropdown',
   component: TableColumnDropdown,
 }
 
+const WrappedComponent = withTableContext(TableColumnDropdownWithContext)
 export const Basic = () => {
-  const WrappedComponent = withTableContext(TableColumnDropdownWithContext)
   return <WrappedComponent />
 }

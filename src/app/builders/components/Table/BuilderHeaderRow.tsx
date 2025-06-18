@@ -1,9 +1,5 @@
 'use client'
 
-import { Column, Sort, TableAction, useTableActionsContext, useTableContext } from '@/shared/context'
-import { SORT_DIRECTIONS } from '@/shared/context/TableContext/types'
-import { HtmlHTMLAttributes, Suspense } from 'react'
-
 import { CommonComponentProps } from '@/components/commonProps'
 import { ArrowDownWFill } from '@/components/Icons/v3design/ArrowDownWFill'
 import { ArrowsUpDown } from '@/components/Icons/v3design/ArrowsUpDown'
@@ -11,20 +7,13 @@ import { ArrowUpWFill } from '@/components/Icons/v3design/ArrowUpWFill'
 import { TableHeaderCell, TableHeaderNode } from '@/components/TableNew'
 import { Label, Paragraph } from '@/components/TypographyNew'
 import { cn } from '@/lib/utils'
-import { Dispatch, FC } from 'react'
-import { ColumnId } from './BuilderTable.types'
+import { Column, Sort, TableAction, useTableActionsContext, useTableContext } from '@/shared/context'
+import { SORT_DIRECTIONS } from '@/shared/context/TableContext/types'
+import { Dispatch, FC, Suspense } from 'react'
+import { COLUMN_WIDTHS, ColumnId } from './BuilderTable.config'
 import { SelectorHeaderCell } from './Cell/SelectorHeaderCell/SelectorHeaderCell'
+import { TableColumnDropdown } from './TableColumnDropdown'
 
-// FIXME: Leave to the end to fix the dynamic width of the columns so that the actions column expands when other columns are hidden without affecting the builder column.
-export const COLUMN_WIDTHS: Record<ColumnId, HtmlHTMLAttributes<HTMLTableCellElement>['className']> = {
-  builder: 'grow-3 shrink-2 basis-6 pl-4',
-  backing: 'grow-1 shrink-1 basis-6 pl-4',
-  backer_rewards: 'grow-1 shrink-1 basis-6 pl-4',
-  rewards_past_cycle: 'grow-1 shrink-1 basis-6 pl-4',
-  rewards_upcoming: 'grow-1 shrink-1 basis-6 pl-4',
-  allocations: 'grow-1 shrink-0 basis-6 pl-4',
-  actions: 'grow-1 shrink-0 basis-6 pl-4',
-}
 const OrderIndicatorContainer: FC<CommonComponentProps> = ({ className, children }) => (
   <div className={cn('flex pt-1 justify-center gap-2', className)}>{children}</div>
 )
@@ -114,82 +103,51 @@ const BuilderHeaderCell: FC<CommonComponentProps & { columnId: ColumnId }> = ({
   const dispatch = useTableActionsContext()
 
   const column = columns.find(({ id }) => id === columnId)
-
   if (!column || column.hidden) return null
 
   const isSortable = column.sortable
 
   return (
-    <TableHeaderCell
-      className={cn(COLUMN_WIDTHS[columnId], className)}
-      onClick={() => isSortable && dispatchSortRoundRobin(dispatch, columnId, sort)}
-      {...props}
-    >
-      {isSortable && <OrderIndicator columnId={columnId} />}
-      <TableHeaderNode className={isSortable ? 'cursor-pointer' : 'cursor-default'}>
-        {children}
-      </TableHeaderNode>
-    </TableHeaderCell>
+    <>
+      <TableHeaderCell
+        className={cn(COLUMN_WIDTHS[columnId], className)}
+        onClick={() => isSortable && dispatchSortRoundRobin(dispatch, columnId, sort)}
+        {...props}
+      >
+        {isSortable && <OrderIndicator columnId={columnId} />}
+        <TableHeaderNode className={isSortable ? 'cursor-pointer' : 'cursor-default'}>
+          {children}
+        </TableHeaderNode>
+      </TableHeaderCell>
+    </>
   )
 }
 
 const HeaderTitle: FC<CommonComponentProps> = ({ className, children }) => (
-  <Label variant="tag" className={cn('text-v3-text-100 cursor-[inherit]', className)}>
+  <Label
+    variant="tag"
+    className={cn(
+      'text-v3-text-100 cursor-[inherit] rootstock-sans text-[0.875rem] leading-5 font-normal',
+      className,
+    )}
+  >
     {children}
   </Label>
 )
 const HeaderSubtitle: FC<CommonComponentProps> = ({ className, children }) => (
-  <Paragraph variant="body-xs" className={cn('text-v3-bg-accent-40', className)}>
+  <Paragraph
+    variant="body-xs"
+    className={cn('text-v3-bg-accent-40 rootstock-sans text-xs leading-5 lowercase font-normal', className)}
+  >
     {children}
   </Paragraph>
 )
 
-export const DEFAULT_HEADERS: Column<ColumnId>[] = [
-  {
-    id: 'builder',
-    hidden: false,
-    sortable: true,
-  },
-  {
-    id: 'backer_rewards',
-    hidden: false,
-    sortable: true,
-  },
-  {
-    id: 'backing',
-    hidden: false,
-    sortable: true,
-  },
-  {
-    id: 'rewards_past_cycle',
-    hidden: false,
-    sortable: true,
-  },
-  {
-    id: 'rewards_upcoming',
-    hidden: false,
-    sortable: true,
-  },
-  {
-    id: 'allocations',
-    hidden: false,
-    sortable: true,
-  },
-  {
-    id: 'actions',
-    hidden: true,
-    sortable: false,
-  },
-]
-
 export const BuilderHeaderRow = () => {
   return (
     <Suspense fallback={<div>Loading table headers...</div>}>
-      <tr className="capitalize text-xs leading-4 flex border-b-1 border-b-v3-text-60 select-none">
+      <tr className="flex border-b-1 border-b-v3-text-60 select-none gap-4">
         <BuilderSelectorHeaderCell key="builder" columnId="builder" />
-        <BuilderHeaderCell key="backing" columnId="backing">
-          <HeaderTitle>Backing</HeaderTitle>
-        </BuilderHeaderCell>
         <BuilderHeaderCell key="backer_rewards" columnId="backer_rewards">
           <HeaderTitle>Rewards</HeaderTitle>
           <HeaderSubtitle>%</HeaderSubtitle>
@@ -202,13 +160,17 @@ export const BuilderHeaderRow = () => {
           <HeaderTitle>Rewards</HeaderTitle>
           <HeaderSubtitle>upcoming cycle, estimated</HeaderSubtitle>
         </BuilderHeaderCell>
-        <BuilderHeaderCell key="allocations" columnId="allocations">
-          <HeaderTitle>Allocations</HeaderTitle>
-          <HeaderSubtitle>Total</HeaderSubtitle>
+        <BuilderHeaderCell key="backing" columnId="backing">
+          <HeaderTitle>Backing</HeaderTitle>
+        </BuilderHeaderCell>
+        <BuilderHeaderCell key="backing_share" columnId="backing_share">
+          <HeaderTitle>Backing Share</HeaderTitle>
+          <HeaderSubtitle>%</HeaderSubtitle>
         </BuilderHeaderCell>
         <BuilderHeaderCell columnId="actions">
           <HeaderTitle>Actions</HeaderTitle>
         </BuilderHeaderCell>
+        <TableColumnDropdown className="self-start" />
       </tr>
     </Suspense>
   )

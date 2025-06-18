@@ -1,15 +1,14 @@
-import { SearchContextProvider } from '@/app/collective-rewards/shared'
-import { withSpinner } from '@/components/LoadingSpinner/withLoadingSpinner'
+import { ActiveBuildersGrid } from '@/app/collective-rewards/active-builders'
+import { Search, SearchContextProvider } from '@/app/collective-rewards/shared'
+import { Builder, BuilderStateFlags } from '@/app/collective-rewards/types'
+import { useGetBuildersByState } from '@/app/collective-rewards/user/'
 import {
-  isBuilderDeactivated,
+  isBuilderCommunityBanned,
   isBuilderKycRevoked,
   isBuilderPaused,
   useHandleErrors,
 } from '@/app/collective-rewards/utils'
-import { useGetBuildersByState } from '@/app/collective-rewards/user/'
-import { ActiveBuildersGrid } from '@/app/collective-rewards/active-builders'
-import { Search } from '@/app/collective-rewards/shared'
-import { Builder, BuilderStateFlags } from '@/app/collective-rewards/types'
+import { withSpinner } from '@/components/LoadingSpinner/withLoadingSpinner'
 
 export const isActive = (stateFlags?: BuilderStateFlags) => {
   const activeFlags = ['kycApproved', 'communityApproved']
@@ -28,7 +27,7 @@ export const ActiveBuildersContent = () => {
   useHandleErrors({ error, title: 'Error loading builders' })
   const filteredBuilders = builders.filter(
     builder =>
-      !isBuilderDeactivated(builder) && // remove deactivated builders
+      !isBuilderCommunityBanned(builder) && // remove deactivated builders
       !isBuilderKycRevoked(builder.stateFlags) && // remove kyc revoked builders
       !isBuilderPaused(builder.stateFlags), // remove paused builders
   )

@@ -16,7 +16,7 @@ export const TableHeaderCell: FC<TableHeaderCellProps> = ({
   return (
     <td
       className={cn(
-        'flex flex-col items-start gap-2',
+        'flex flex-col items-start gap-2 text-nowrap',
         !!onClick ? 'cursor-pointer' : 'cursor-default',
         className,
       )}

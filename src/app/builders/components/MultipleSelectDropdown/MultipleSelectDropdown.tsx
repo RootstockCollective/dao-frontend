@@ -1,27 +1,27 @@
-import { FC, ReactNode, useState } from 'react'
-import * as DropdownMenuPrimitive from '@radix-ui/react-dropdown-menu'
-import { motion } from 'motion/react'
-import { MultipleSelectDropdownItem } from './MultipleSelectDropdownItem'
 import { Label } from '@/components/TypographyNew'
 import { cn } from '@/lib/utils'
+import * as DropdownMenuPrimitive from '@radix-ui/react-dropdown-menu'
+import { motion } from 'motion/react'
+import { ReactNode, useState } from 'react'
+import { MultipleSelectDropdownItem } from './MultipleSelectDropdownItem'
 
-export interface SelectorOption {
+export interface SelectorOption<ColumnId extends string = string> {
+  id: ColumnId
   label: string
-  id: string
   sublabel?: string
 }
 
-export interface MultipleSelectDropdownProps {
+export interface MultipleSelectDropdownProps<ColumnId extends string = string> {
   title: string
-  options: SelectorOption[]
-  selected: string[]
-  onChange?: (selectedValues: string[]) => void
+  options: SelectorOption<ColumnId>[]
+  selected: ColumnId[]
+  onChange?: (selectedValues: ColumnId[]) => void
   className?: string
   trigger: ReactNode | ((isOpen: boolean) => ReactNode)
   align?: 'start' | 'center' | 'end'
 }
 
-export const MultipleSelectDropdown: FC<MultipleSelectDropdownProps> = ({
+export const MultipleSelectDropdown = <ColumnId extends string = string>({
   title,
   options,
   selected,
@@ -29,14 +29,12 @@ export const MultipleSelectDropdown: FC<MultipleSelectDropdownProps> = ({
   className,
   trigger,
   align = 'end',
-}) => {
+}: MultipleSelectDropdownProps<ColumnId>) => {
   const [open, setOpen] = useState(false)
 
-  const handleItemClick = (item: SelectorOption): void => {
-    const newSelected = selected.includes(item.id)
-      ? selected.filter(v => v !== item.id)
-      : [...selected, item.id]
-    onChange?.(newSelected)
+  const handleItemClick = ({ id }: SelectorOption<ColumnId>): void => {
+    const newSelected = selected.includes(id) ? selected.filter(v => v !== id) : [...selected, id]
+    onChange && onChange(newSelected)
   }
 
   const renderTrigger = (): ReactNode => {
