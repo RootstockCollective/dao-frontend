@@ -5,7 +5,6 @@ import { TableBody } from '../Table/components/TableBody'
 import { TableHead } from '../Table/components/TableHead'
 import { TableCell } from '../Table/components/TableCell'
 import { TableContextProvider } from './context/TableContext'
-import { TableActionsBar } from '../Table/components/TableActionsBar'
 import { Button } from '@/components/Button'
 import { Span } from '@/components/Typography'
 
@@ -133,5 +132,3 @@ export const Selectable: Story = {
     },
   },
 }
-
-
