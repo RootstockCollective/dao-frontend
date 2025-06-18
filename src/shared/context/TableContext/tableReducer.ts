@@ -104,5 +104,10 @@ const actionMap = {
 } as const
 
 export const tableReducer = (state: TableState, action: TableAction) => {
-  return actionMap[action.type]?.(state, action) ?? state
+  console.log('action', action)
+  console.log('state', state)
+  const newState = actionMap[action.type]?.(state, action) ?? state
+  console.log('newState', newState)
+
+  return newState
 }

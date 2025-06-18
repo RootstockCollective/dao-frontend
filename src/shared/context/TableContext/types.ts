@@ -13,7 +13,7 @@ export type SelectedRows = Record<RowData['id'], boolean>
 
 export type Column = {
   id: string
-  label: string
+  type: string
   hidden: boolean
   sortable: boolean
 }

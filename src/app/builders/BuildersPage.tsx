@@ -1,14 +1,14 @@
 import {
-  ActionsContainer,
   ActionMetricsContainer,
+  ActionsContainer,
   InfoContainer,
   MetricsContainer,
   PageTitleContainer,
 } from '@/components/containers'
+import BuildersTable from './components/BuildersTable'
 import { Content } from './components/Content'
 import { Metrics } from './components/Metrics'
 import { Spotlight } from './components/Spotlight'
-import { Table } from './components/Table'
 
 const NAME = 'Builders'
 
@@ -30,7 +30,7 @@ export const BuildersPage = () => {
           <Spotlight />
         </ActionMetricsContainer>
         <ActionsContainer title={'The Collective Builders'}>
-          <Table />
+          <BuildersTable />
         </ActionsContainer>
       </div>
     </div>
