@@ -56,6 +56,7 @@ export const TablePager: React.FC<TablePagerProps> = ({
   const isButtonDisabled = mode === 'expandable' ? end >= totalItems : false
 
   const handleNext = () => {
+    if (totalItems === 0) return
     if (mode === 'expandable') {
       const newEnd = Math.min(end + pageSize, totalItems)
       setRange({ start: 1, end: newEnd })
