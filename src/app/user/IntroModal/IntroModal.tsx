@@ -8,9 +8,12 @@ import { useEffect } from 'react'
 
 export const IntroModal = () => {
   const introModal = useModal()
-
   useEffect(() => {
-    introModal.openModal()
+    const image = new window.Image()
+    image.src = '/images/intro/rbtc-rif-bg.svg'
+    image.onload = () => {
+      introModal.openModal()
+    }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
