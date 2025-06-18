@@ -1,6 +1,7 @@
 import { Button } from '@/components/ButtonNew/Button'
 import { Paragraph } from '@/components/TypographyNew'
 import { CommonComponentProps } from '@/components/commonProps'
+import { cn } from '@/lib/utils'
 import { useEffect, useState } from 'react'
 
 interface TablePagerProps {
@@ -12,7 +13,7 @@ interface TablePagerProps {
 }
 
 const PagerContainer: React.FC<CommonComponentProps> = ({ children, className = '' }) => (
-  <div className={`w-full flex items-center justify-between mt-6 ${className}`}>{children}</div>
+  <div className={cn('w-full flex items-center justify-between mt-6', className)}>{children}</div>
 )
 
 const PagerCount: React.FC<{
