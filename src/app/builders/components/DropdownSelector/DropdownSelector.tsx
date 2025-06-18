@@ -1,4 +1,4 @@
-import { FC, ReactNode, useState, useCallback } from 'react'
+import { FC, ReactNode, useState } from 'react'
 import * as DropdownMenuPrimitive from '@radix-ui/react-dropdown-menu'
 import { motion } from 'motion/react'
 import { DropdownSelectorItem } from './DropdownSelectorItem'
@@ -32,15 +32,12 @@ export const DropdownSelector: FC<DropdownSelectorProps> = ({
 }) => {
   const [open, setOpen] = useState(false)
 
-  const handleItemClick = useCallback(
-    (item: SelectorOption): void => {
-      const newSelected = selected.includes(item.id)
-        ? selected.filter(v => v !== item.id)
-        : [...selected, item.id]
-      onChange?.(newSelected)
-    },
-    [selected, onChange],
-  )
+  const handleItemClick = (item: SelectorOption): void => {
+    const newSelected = selected.includes(item.id)
+      ? selected.filter(v => v !== item.id)
+      : [...selected, item.id]
+    onChange?.(newSelected)
+  }
 
   const renderTrigger = (): ReactNode => {
     return typeof trigger === 'function' ? trigger(open) : trigger
