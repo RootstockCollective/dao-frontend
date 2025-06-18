@@ -2,7 +2,7 @@ import type { Meta, StoryObj } from '@storybook/react'
 import { SelectorCell } from './SelectorCell'
 
 const meta = {
-  title: 'Builders/Table/SelectorCell',
+  title: 'Koto/Builders/Table/Cell/SelectorCell',
   component: SelectorCell,
   parameters: {
     layout: 'centered',

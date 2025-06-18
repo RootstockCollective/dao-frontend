@@ -1,11 +1,14 @@
 'use client'
 
-import { FC, PropsWithChildren, useReducer } from 'react'
+import { CommonComponentProps } from '@/components/commonProps'
+import { FC, ReactElement, useReducer } from 'react'
 import { TableActionsContext } from './TableActionsContext'
 import { initialState, TableContext } from './TableContext'
 import { tableReducer } from './tableReducer'
 
-export const TableProvider: FC<PropsWithChildren> = ({ children }) => {
+export const TableProvider = <ColumnId extends string = string, Action extends string = string>({
+  children,
+}: CommonComponentProps): ReactElement => {
   const [state, dispatch] = useReducer(tableReducer, initialState)
 
   return (
@@ -15,10 +18,12 @@ export const TableProvider: FC<PropsWithChildren> = ({ children }) => {
   )
 }
 
-export const withTableContext = (Component: FC<PropsWithChildren>) => {
-  const WrappedComponent = (props: PropsWithChildren) => {
+export const withTableContext = <ColumnId extends string = string, Action extends string = string>(
+  Component: FC<CommonComponentProps>,
+) => {
+  const WrappedComponent = (props: CommonComponentProps): ReactElement => {
     return (
-      <TableProvider>
+      <TableProvider<ColumnId, Action>>
         <Component {...props} />
       </TableProvider>
     )

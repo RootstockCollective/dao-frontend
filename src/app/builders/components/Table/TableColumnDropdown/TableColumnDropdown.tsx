@@ -1,22 +1,19 @@
 import { MultipleSelectDropdown, SelectorOption } from '@/app/builders/components/MultipleSelectDropdown'
-import { Button } from '@/components/Button'
+import { Button } from '@/components/ButtonNew/Button'
 import { CommonComponentProps } from '@/components/commonProps'
 import { CloseIcon } from '@/components/Icons/CloseIcon'
 import { MoreIcon } from '@/components/Icons/MoreIcon'
 import { useTableActionsContext, useTableContext } from '@/shared/context/TableContext'
 import { FC } from 'react'
-import { ColumnId } from '../BuilderTable.types'
+import { ColumnId } from '../BuilderTable.config'
 
 type ColumnLabel = {
   label: string
   sublabel?: string
 }
-type DropdowColumn = Exclude<ColumnId, 'actions'>
+type DropdowColumn = Exclude<ColumnId, 'actions' | 'builder'>
 
 const LABELS: Record<DropdowColumn, ColumnLabel> = {
-  builder: {
-    label: 'Builder',
-  },
   backer_rewards: {
     label: 'Backer Rewards %',
   },

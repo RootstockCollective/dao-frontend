@@ -1,17 +1,18 @@
 import { Paragraph } from '@/components/TypographyNew'
-import { FC } from 'react'
-import * as Progress from '@radix-ui/react-progress'
 import { cn } from '@/lib/utils'
+import * as Progress from '@radix-ui/react-progress'
+import { FC } from 'react'
 
-interface AllocationCellProps {
-  allocationPct: number
+export interface AllocationCellProps {
+  allocationPct: bigint
   step?: number
   className?: string
 }
 
 export const AllocationCell: FC<AllocationCellProps> = ({ allocationPct, step = 1, className }) => {
+  const allocations = Number(allocationPct)
   // Round to the nearest step
-  const displayValue = step > 0 ? Math.round(allocationPct / step) * step : allocationPct
+  const displayValue = step > 0 ? Math.round(allocations / step) * step : allocations
 
   return (
     <div className={cn('flex items-center justify-center w-full h-full gap-2', className)}>

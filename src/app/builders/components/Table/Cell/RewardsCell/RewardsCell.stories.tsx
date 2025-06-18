@@ -2,7 +2,7 @@ import type { Meta, StoryObj } from '@storybook/react'
 import { RewardsCell } from './RewardsCell'
 
 const meta: Meta<typeof RewardsCell> = {
-  title: 'Builders/Table/RewardsCell',
+  title: 'Koto/Builders/Table/Cell/RewardsCell',
   component: RewardsCell,
   tags: ['autodocs'],
   parameters: {
@@ -31,8 +31,8 @@ type Story = StoryObj<typeof RewardsCell>
 export const Default: Story = {
   args: {
     usdValue: 1250.5,
-    rbtcValue: BigInt(1000000000000000000), // 1 RBTC in wei
-    rifValue: BigInt(500000000000000000000), // 500 RIF in wei
+    rbtcValue: 1000000000000000000n, // 1 RBTC in wei
+    rifValue: 500000000000000000000n, // 500 RIF in wei
   },
   render: args => (
     <div className="w-[400px] p-4 bg-[#37322F]">

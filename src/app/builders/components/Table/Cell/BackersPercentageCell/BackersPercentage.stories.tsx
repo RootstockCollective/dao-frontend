@@ -1,6 +1,6 @@
 import type { Meta, StoryObj } from '@storybook/react'
-import { BackersPercentageCell } from './BackersPercentageCell'
 import { parseEther } from 'viem'
+import { BackersPercentageCell } from './BackersPercentageCell'
 
 type StoryArgs = {
   currentPercentage: number
@@ -9,7 +9,7 @@ type StoryArgs = {
 }
 
 const meta: Meta<StoryArgs> = {
-  title: 'Builders/Table/BackersPercentageCell',
+  title: 'Koto/Builders/Table/Cell/BackersPercentageCell',
   component: BackersPercentageCell,
   parameters: {
     layout: 'centered',

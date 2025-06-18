@@ -44,7 +44,7 @@ export const useGetBuildersRewards = ({ rif, rbtc }: { [token: string]: Token },
   } = useGetEstimatedRewardsPct()
 
   // get the total allocation for all the builders
-  const gauges = builders.map(({ gauge }) => gauge)
+  const gauges = useMemo(() => builders.map(({ gauge }) => gauge), [builders])
   const {
     data: totalAllocation,
     isLoading: totalAllocationLoading,
@@ -74,16 +74,6 @@ export const useGetBuildersRewards = ({ rif, rbtc }: { [token: string]: Token },
     isLoading: logsLoading,
     error: logsError,
   } = useGetGaugesNotifyReward(gauges, undefined, fromTimestamp, toTimestamp)
-  const rifBuildersRewardsAmount = getNotifyRewardAmount(
-    notifyRewardEventLastCycle,
-    rif.address,
-    'backersAmount_',
-  )
-  const rbtcBuildersRewardsAmount = getNotifyRewardAmount(
-    notifyRewardEventLastCycle,
-    rbtc.address,
-    'backersAmount_',
-  )
 
   const isLoading =
     estimatedRewardsPctLoading ||
@@ -105,13 +95,22 @@ export const useGetBuildersRewards = ({ rif, rbtc }: { [token: string]: Token },
 
   const { prices } = usePricesContext()
 
-  const rifPrice = prices[rif.symbol]?.price ?? 0
-  const rbtcPrice = prices[rbtc.symbol]?.price ?? 0
-
   const data = useMemo(() => {
+    const rifPrice = prices[rif.symbol]?.price ?? 0
+    const rbtcPrice = prices[rbtc.symbol]?.price ?? 0
     const sumTotalAllocation = Object.values(totalAllocation).reduce<bigint>(
       (acc, value) => acc + (value ?? 0n),
       0n,
+    )
+    const rifBuildersRewardsAmount = getNotifyRewardAmount(
+      notifyRewardEventLastCycle,
+      rif.address,
+      'backersAmount_',
+    )
+    const rbtcBuildersRewardsAmount = getNotifyRewardAmount(
+      notifyRewardEventLastCycle,
+      rbtc.address,
+      'backersAmount_',
     )
 
     return builders.reduce<BuildersRewards[]>((acc, builder, i) => {
@@ -188,16 +187,14 @@ export const useGetBuildersRewards = ({ rif, rbtc }: { [token: string]: Token },
   }, [
     builders,
     allocations,
-    rifBuildersRewardsAmount,
-    rbtcBuildersRewardsAmount,
-    rifPrice,
-    rbtcPrice,
     currency,
     rif,
     rbtc,
     rewardsERC20,
     rewardsCoinbase,
     totalAllocation,
+    notifyRewardEventLastCycle,
+    prices,
   ])
 
   return {
