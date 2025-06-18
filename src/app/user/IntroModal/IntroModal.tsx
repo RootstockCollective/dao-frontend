@@ -1,10 +1,15 @@
 import { Button } from '@/components/ButtonNew'
 import { ArrowUpRightLightIcon } from '@/components/Icons'
+import { ArrowRightIcon } from '@/components/Icons/ArrowRightIcon'
 import { Modal } from '@/components/Modal'
 import { Label, Header, Paragraph, Span } from '@/components/TypographyNew'
+import { cn } from '@/lib/utils'
 import { useModal } from '@/shared/hooks/useModal'
 import Image from 'next/image'
 import { useEffect } from 'react'
+
+const GLASS_STYLE =
+  'rounded bg-[rgba(255,255,255,0.16)] shadow-[inset_0px_0px_14px_0px_rgba(255,255,255,0.25)] backdrop-blur-[3px]'
 
 export const IntroModal = () => {
   const introModal = useModal()
@@ -22,13 +27,47 @@ export const IntroModal = () => {
       <Modal width={920} onClose={introModal.closeModal} closeButtonColor="black">
         <div className="flex flex-row p-4 bg-text-80 gap-6">
           <div className="flex-1">
-            <Image
-              src="/images/intro/rbtc-rif-bg.svg"
-              alt="Intro Modal"
-              height={0}
-              width={0}
-              className="h-auto w-full"
-            />
+            <div className="relative">
+              <Image
+                src="/images/intro/rbtc-rif-bg.svg"
+                alt="Intro Modal"
+                height={0}
+                width={0}
+                className="h-auto w-full"
+              />
+              <div
+                className={cn(
+                  'absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2',
+                  'p-4 w-[360px]',
+                  GLASS_STYLE,
+                )}
+              >
+                <Header variant="e3" className="text-text-100 mb-8" caps>
+                  Your Wallet
+                </Header>
+                <Header variant="e2" className="text-text-100 flex flex-row items-end gap-2" caps>
+                  <Span className="flex flex-row items-center gap-2">
+                    BTC
+                    <ArrowRightIcon size={16} />
+                  </Span>
+                  <Span variant="e2" className="text-text-100">
+                    RBTC
+                  </Span>
+                </Header>
+                <Header variant="e2" className="text-text-100 flex flex-row items-end gap-2" caps>
+                  <Span className="flex flex-row items-center gap-2">
+                    USD
+                    <ArrowRightIcon size={16} />
+                  </Span>
+                  <Span variant="e2" className="text-text-100">
+                    RIF
+                  </Span>
+                </Header>
+                <Paragraph variant="body-s" className="text-text-100 mt-2">
+                  You need RBTC to pay fees & RIF to stake
+                </Paragraph>
+              </div>
+            </div>
           </div>
           <div className="flex-1 flex flex-col justify-between">
             <div className="flex flex-1 flex-col justify-center">
