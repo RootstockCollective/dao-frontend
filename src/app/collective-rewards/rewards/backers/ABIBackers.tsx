@@ -4,7 +4,7 @@ import {
   MetricsCardTitle,
   MetricsCardWithSpinner,
 } from '@/app/collective-rewards/rewards'
-import { ABIFormula, useGetRewardsAbi } from '@/app/collective-rewards/shared'
+import { ABIFormula, useGetBackerABI } from '@/app/collective-rewards/shared'
 import { useHandleErrors } from '@/app/collective-rewards/utils'
 import { FC } from 'react'
 import { Address } from 'viem'
@@ -14,7 +14,7 @@ type ABIProps = MetricsCardProps & {
 }
 
 export const ABIBackers: FC<ABIProps> = ({ backer, ...metricsCardProps }) => {
-  const { data: abiPct, isLoading, error } = useGetRewardsAbi(backer)
+  const { data: abiPct, isLoading, error } = useGetBackerABI(backer)
   useHandleErrors({ error, title: 'Error loading backers abi' })
 
   return (
