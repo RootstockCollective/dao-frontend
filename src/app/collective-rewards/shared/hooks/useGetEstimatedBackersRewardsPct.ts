@@ -16,8 +16,8 @@ export const useGetEstimatedBackersRewardsPct = () => {
     isLoading: buildersLoading,
     error: buildersError,
   } = useGetBuildersByState<RequiredBuilder>()
-  const gauges = builders.map(({ gauge }) => gauge)
-  const buildersAddress = builders.map(({ address }) => address)
+  const gauges = useMemo(() => builders.map(({ gauge }) => gauge), [builders])
+  const buildersAddress = useMemo(() => builders.map(({ address }) => address), [builders])
 
   const {
     data: totalPotentialRewards,

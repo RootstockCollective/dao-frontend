@@ -1,14 +1,15 @@
-import { FC } from 'react'
-import { TableCell } from '@/components/Table'
-import { cn } from '@/lib/utils'
-import { Button } from '@/components/Button'
-import { RemoveBackingIcon } from '@/components/Icons/RemoveBackingIcon'
+// FIXME: move to @/app/builders/components/Table folder
+import { Button } from '@/components/ButtonNew/Button'
 import { AdjustBacking } from '@/components/Icons/AdjustBackingIcon'
 import { BackBuilder } from '@/components/Icons/BackBuilderIcon'
+import { RemoveBackingIcon } from '@/components/Icons/RemoveBackingIcon'
+import { TableCell } from '@/components/Table'
+import { cn } from '@/lib/utils'
+import { ReactElement } from 'react'
 
 type ActionType = 'removeBacking' | 'adjustBacking' | 'backBuilder'
 
-type ActionCellProps = {
+export type ActionCellProps = {
   className?: string
   actionType: ActionType
   onClick?: () => void
@@ -20,7 +21,7 @@ const ACTION_CONFIG = {
   backBuilder: { text: 'Back Builder', icon: <BackBuilder size={16} /> },
 }
 
-export const ActionCell: FC<ActionCellProps> = ({ className, actionType, onClick }) => {
+export const ActionCell = ({ className, actionType, onClick }: ActionCellProps): ReactElement => {
   const config = ACTION_CONFIG[actionType]
 
   const handleClick = () => {
@@ -34,7 +35,7 @@ export const ActionCell: FC<ActionCellProps> = ({ className, actionType, onClick
   return (
     <TableCell className={cn(className, 'border-solid align-center')}>
       <Button
-        variant="outlined"
+        variant="secondary-outline"
         onClick={handleClick}
         className="p-2 min-w-[40px] h-[40px] flex justify-center items-center gap-1 text-sm font-medium text-[var(--text-0)] font-rootstock-sans leading-[145%]"
       >

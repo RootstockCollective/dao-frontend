@@ -30,6 +30,7 @@ export interface BuilderRewardDetails extends RewardDetails {
   gauge: Address
 }
 
+// FIXME: move to shared folder
 export interface BackerRewardPercentage {
   current: bigint
   next: bigint

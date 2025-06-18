@@ -2,7 +2,7 @@ import type { Meta, StoryObj } from '@storybook/react'
 import { AllocationCell } from './AllocationCell'
 
 const meta = {
-  title: 'Builders/Table/AllocationCell',
+  title: 'Koto/Builders/Table/Cell/AllocationCell',
   component: AllocationCell,
   parameters: {
     layout: 'centered',

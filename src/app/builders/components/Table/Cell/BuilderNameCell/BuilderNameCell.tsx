@@ -6,7 +6,6 @@ import { WarningIcon } from '@/components/Icons/WarningIcon'
 import { Tooltip } from '@/components/Tooltip/Tooltip'
 import { Paragraph } from '@/components/TypographyNew'
 import { cn, truncate } from '@/lib/utils'
-import Link from 'next/link'
 import { createElement, FC } from 'react'
 
 // Builder states map
@@ -54,9 +53,8 @@ const BuilderStateIcon: FC<BuilderStateIconProps> = ({ stateKey, isHighlighted, 
   )
 }
 
-interface BuilderNameCellProps {
+export interface BuilderNameCellProps {
   builder: Builder
-  builderPageLink: string
   isHighlighted?: boolean
   hasAirdrop?: boolean
   className?: string
@@ -96,7 +94,6 @@ const getBuilderStateForIcon = (builder: Builder): BuilderIconState => {
 
 export const BuilderNameCell: FC<BuilderNameCellProps> = ({
   builder,
-  builderPageLink,
   isHighlighted,
   hasAirdrop,
   className,
@@ -106,16 +103,14 @@ export const BuilderNameCell: FC<BuilderNameCellProps> = ({
   return (
     <div className={cn('flex items-center justify-between w-full h-full', className)}>
       <div className="flex items-center gap-2">
-        <Link href={builderPageLink} data-testid="builderName" target="_blank" rel="noopener noreferrer">
-          <Paragraph
-            className={cn(
-              'text-v3-primary font-rootstock-sans',
-              isHighlighted && 'text-v3-bg-accent-100 underline underline-offset-2',
-            )}
-          >
-            {truncate(builder.builderName, 18)}
-          </Paragraph>
-        </Link>
+        <Paragraph
+          className={cn(
+            'text-v3-primary font-rootstock-sans',
+            isHighlighted && 'text-v3-bg-accent-100 underline underline-offset-2',
+          )}
+        >
+          {truncate(builder.builderName, 18)}
+        </Paragraph>
         {hasAirdrop && (
           <BuilderStateIcon stateKey="extraRewards" isHighlighted={isHighlighted} className={className} />
         )}

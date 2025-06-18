@@ -1,10 +1,40 @@
-import { FC } from 'react'
-import { CommonComponentProps } from '@/components/commonProps'
-import { Button } from '@/components/Button'
-import { MoreIcon } from '@/components/Icons/MoreIcon'
 import { MultipleSelectDropdown, SelectorOption } from '@/app/builders/components/MultipleSelectDropdown'
+import { Button } from '@/components/Button'
+import { CommonComponentProps } from '@/components/commonProps'
 import { CloseIcon } from '@/components/Icons/CloseIcon'
-import { useTableContext, useTableActionsContext } from '@/shared/context/TableContext'
+import { MoreIcon } from '@/components/Icons/MoreIcon'
+import { useTableActionsContext, useTableContext } from '@/shared/context/TableContext'
+import { FC } from 'react'
+import { ColumnId } from './Table/BuilderHeaderRow'
+
+type ColumnLabel = {
+  label: string
+  sublabel?: string
+}
+type DropdowColumn = Exclude<ColumnId, 'actions'>
+
+const LABELS: Record<DropdowColumn, ColumnLabel> = {
+  builder: {
+    label: 'Builder',
+  },
+  backer_rewards: {
+    label: 'Backer Rewards %',
+  },
+  rewards_past_cycle: {
+    label: 'Rewards',
+    sublabel: 'past cycle',
+  },
+  rewards_upcoming: {
+    label: 'Rewards',
+    sublabel: 'upcoming cycle',
+  },
+  backing: {
+    label: 'Backing',
+  },
+  allocations: {
+    label: 'Backing share',
+  },
+}
 
 export const TableColumnDropdown: FC<CommonComponentProps> = ({ className }) => {
   const { columns } = useTableContext()
@@ -20,8 +50,8 @@ export const TableColumnDropdown: FC<CommonComponentProps> = ({ className }) => 
   // Convert columns to selector options
   const columnOptions: SelectorOption[] = columns.map(col => ({
     id: col.id,
-    label: col.label,
-    sublabel: col.sublabel,
+    label: LABELS[col.id as DropdowColumn]?.label,
+    sublabel: LABELS[col.id as DropdowColumn]?.sublabel,
   }))
 
   // Get currently visible columns

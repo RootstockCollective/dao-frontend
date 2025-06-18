@@ -1,8 +1,8 @@
-import type { Meta, StoryObj } from '@storybook/react'
-import { BackingCell } from './BackingCell'
 import { AllocationsContext } from '@/app/collective-rewards/allocations/context'
 import { PricesContext } from '@/shared/context/PricesContext'
+import type { Meta, StoryObj } from '@storybook/react'
 import { parseEther } from 'viem'
+import { BackingCell } from './BackingCell'
 
 // Simple mock data
 const mockAllocations = {
@@ -16,7 +16,7 @@ const mockPrices = {
 }
 
 const meta: Meta<typeof BackingCell> = {
-  title: 'Components/BackingCell',
+  title: 'Koto/Builders/Table/Cell/BackingCell',
   component: BackingCell,
   parameters: {
     layout: 'centered',

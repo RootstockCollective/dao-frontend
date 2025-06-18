@@ -1,5 +1,6 @@
 import { AllocationsContext } from '@/app/collective-rewards/allocations/context'
 import { formatSymbol, getFiatAmount } from '@/app/collective-rewards/rewards/utils/formatter'
+import { CommonComponentProps } from '@/components/commonProps'
 import { TokenImage } from '@/components/TokenImage'
 import { Typography } from '@/components/TypographyNew/Typography'
 import { RIF } from '@/lib/constants'
@@ -8,12 +9,11 @@ import { usePricesContext } from '@/shared/context/PricesContext'
 import { FC, useContext } from 'react'
 import { Address } from 'viem'
 
-type BackingCellProps = {
-  className?: string
+export interface BackingCellProps extends CommonComponentProps {
   builderAddress: Address
 }
 
-export const BackingCell: FC<BackingCellProps> = ({ className, builderAddress }) => {
+export const BackingCell: FC<BackingCellProps> = ({ builderAddress, className }) => {
   const { prices } = usePricesContext()
   const {
     state: { allocations },

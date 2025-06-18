@@ -1,9 +1,10 @@
+import { withTableContext } from '@/shared/context'
 import type { Meta, StoryObj } from '@storybook/react'
 import { useState } from 'react'
 import { SelectorHeaderCell } from './SelectorHeaderCell'
 
 const meta: Meta<typeof SelectorHeaderCell> = {
-  title: 'Koto/Builders/Table/SelectorHeaderCell',
+  title: 'Koto/Builders/Table/Cell/SelectorHeaderCell',
   component: SelectorHeaderCell,
   tags: ['autodocs'],
   parameters: {
@@ -16,13 +17,12 @@ export default meta
 type Story = StoryObj<typeof SelectorHeaderCell>
 
 export const Default: Story = {
-  render: () => {
+  render: withTableContext(() => {
     const [hasSelections, setHasSelections] = useState(false)
 
     return (
       <div className="w-[300px] p-4 bg-[#37322F]">
         <SelectorHeaderCell
-          hasSelections={hasSelections}
           onClick={() => setHasSelections(prev => !prev)}
           className="cursor-pointer hover:outline-1 hover:outline-white transition-colors p-2 rounded"
         />
@@ -31,27 +31,27 @@ export const Default: Story = {
         </div>
       </div>
     )
-  },
+  }),
 }
 
 export const WithSelections: Story = {
-  render: () => (
+  render: withTableContext(() => (
     <div className="w-[300px] p-4 bg-[#37322F]">
-      <SelectorHeaderCell hasSelections={true} className="p-2" />
+      <SelectorHeaderCell className="p-2" />
     </div>
-  ),
+  )),
 }
 
 export const WithoutSelections: Story = {
-  render: () => (
+  render: withTableContext(() => (
     <div className="w-[300px] p-4 bg-[#37322F]">
-      <SelectorHeaderCell hasSelections={false} className="p-2" />
+      <SelectorHeaderCell className="p-2" />
     </div>
-  ),
+  )),
 }
 
 export const InTable: Story = {
-  render: () => {
+  render: withTableContext(() => {
     const [selections, setSelections] = useState<string[]>([])
 
     return (
@@ -61,7 +61,6 @@ export const InTable: Story = {
             <tr className="bg-[#37322F]">
               <th className="border border-white-800 p-2">
                 <SelectorHeaderCell
-                  hasSelections={selections.length > 0}
                   onClick={() => setSelections(prev => (prev.length > 0 ? [] : ['1', '2', '3']))}
                   className="cursor-pointer hover:outline-1 hover:outline-white transition-colors"
                 />
@@ -74,7 +73,6 @@ export const InTable: Story = {
             <tr>
               <td className="border border-gray-200 p-2">
                 <SelectorHeaderCell
-                  hasSelections={selections.includes('1')}
                   className="cursor-pointer hover:outline-1 hover:outline-white transition-colors"
                   onClick={() =>
                     setSelections(prev =>
@@ -89,7 +87,6 @@ export const InTable: Story = {
             <tr>
               <td className="border border-gray-200 p-2">
                 <SelectorHeaderCell
-                  hasSelections={selections.includes('2')}
                   className="cursor-pointer hover:outline-1 hover:outline-white transition-colors"
                   onClick={() =>
                     setSelections(prev =>
@@ -105,5 +102,5 @@ export const InTable: Story = {
         </table>
       </div>
     )
-  },
+  }),
 }

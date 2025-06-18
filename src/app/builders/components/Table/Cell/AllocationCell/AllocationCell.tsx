@@ -1,9 +1,9 @@
 import { Paragraph } from '@/components/TypographyNew'
-import { FC } from 'react'
-import * as Progress from '@radix-ui/react-progress'
 import { cn } from '@/lib/utils'
+import * as Progress from '@radix-ui/react-progress'
+import { FC } from 'react'
 
-interface AllocationCellProps {
+export interface AllocationCellProps {
   allocationPct: number
   step?: number
   className?: string
