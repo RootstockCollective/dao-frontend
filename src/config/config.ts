@@ -27,17 +27,14 @@ const envChains = {
 
 export const currentEnvChain: Chain = envChains[ENV as keyof typeof envChains]
 
-const connectors = [
-  injected(),
-  // ledgerConnector({ chainId: currentEnvChain.id }), // TEMPORARILY REMOVED for troubleshooting
-  trezorWalletConnector(),
-]
+const connectors = [injected(), ledgerConnector({ chainId: currentEnvChain.id }), trezorWalletConnector()]
 
 export const config = createConfig({
   chains: [currentEnvChain],
   transports: {
     [currentEnvChain.id]: http(undefined, {
       batch: {
+        // this is the default value configured in RSKj
         batchSize: 100,
       },
     }),
@@ -56,6 +53,7 @@ export const wagmiAdapter = new WagmiAdapter({
   transports: {
     [currentEnvChain.id]: http(undefined, {
       batch: {
+        // this is the default value configured in RSKj
         batchSize: 100,
       },
     }),

@@ -35,13 +35,13 @@ createAppKit({
   networks: [currentEnvChain],
   defaultNetwork: currentEnvChain,
   metadata: metadata,
-  enableWalletConnect: true,
+  enableWalletConnect: false,
   allWallets: 'HIDE',
   // The `featuredWalletIds` array contains hashes representing specific wallet providers.
   // These hashes are used to identify and prioritize certain wallets in the UI.
   // Link for wallet IDs as of 2025-05-14 https://docs.reown.com/cloud/wallets/wallet-list
   featuredWalletIds: [
-    '19177a98252e07ddfc9af2083ba8e07ef627cb6103467ffebb3f8f4205fd7927', // Ledger Live
+    // '19177a98252e07ddfc9af2083ba8e07ef627cb6103467ffebb3f8f4205fd7927', // Ledger Live(Currently disabled as it doesn't support RSK network)
     'ledger-hardware-wallet', // Ledger (direct)
     'c57ca95b47569778a828d19178114f4db188b89b763c899ba0be274e97267d96', // Metamask
     '18388be9ac2d02726dbac9777c96efaac06d744b2f6d580fccdd4127a6d01fd1', // Rabby

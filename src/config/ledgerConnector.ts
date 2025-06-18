@@ -1,5 +1,6 @@
 import { createConnector } from 'wagmi'
 import { Chain, Address, UserRejectedRequestError, SwitchChainError } from 'viem'
+import { showToast, ToastAlertOptions } from '../shared/lib/toastUtils'
 
 export interface LedgerConnectorOptions {
   chainId?: number
@@ -27,12 +28,15 @@ const LEDGER_CONNECTION_KEY = 'ledger_connection_state'
 const saveConnectionState = (account: Address | null) => {
   if (typeof window !== 'undefined') {
     try {
-      localStorage.setItem(LEDGER_CONNECTION_KEY, JSON.stringify({
-        account,
-        timestamp: Date.now(),
-      }))
+      localStorage.setItem(
+        LEDGER_CONNECTION_KEY,
+        JSON.stringify({
+          account,
+          timestamp: Date.now(),
+        }),
+      )
     } catch (error) {
-      console.warn('Failed to save Ledger connection state:', error)
+      throw error
     }
   }
 }
@@ -49,7 +53,7 @@ const getStoredConnectionState = (): { account: Address | null; timestamp: numbe
         }
       }
     } catch (error) {
-      console.warn('Failed to retrieve Ledger connection state:', error)
+      throw error
     }
   }
   return null
@@ -60,7 +64,7 @@ const clearConnectionState = () => {
     try {
       localStorage.removeItem(LEDGER_CONNECTION_KEY)
     } catch (error) {
-      console.warn('Failed to clear Ledger connection state:', error)
+      throw error
     }
   }
 }
@@ -90,7 +94,7 @@ export function ledgerConnector(options: LedgerConnectorOptions = {}) {
       window.dispatchEvent(
         new CustomEvent('eip6963:announceProvider', {
           detail: Object.freeze(provider),
-        })
+        }),
       )
     }
   }
@@ -147,13 +151,13 @@ export function ledgerConnector(options: LedgerConnectorOptions = {}) {
           const accounts = (await state.provider.request({
             method: 'eth_accounts',
             params: [],
-          })) as string[]
+          })) as `0x${string}`[]
 
           if (!accounts || accounts.length === 0) {
             throw new Error('No accounts found on Ledger device')
           }
 
-          const address = accounts[0] as Address
+          const address = accounts[0]
           state.account = address
 
           // Save connection state for auto-reconnection
@@ -165,8 +169,9 @@ export function ledgerConnector(options: LedgerConnectorOptions = {}) {
             chainId,
           })
 
+          // Always return the correct object, never undefined, and ensure type matches wagmi's expectations
           return {
-            accounts: [address],
+            accounts: [address] as readonly `0x${string}`[],
             chainId,
           }
         } catch (error) {
@@ -175,55 +180,215 @@ export function ledgerConnector(options: LedgerConnectorOptions = {}) {
           state.account = null
           clearConnectionState()
 
-          // Enhanced error handling with specific user guidance
+          // Debug logging
+          console.error('Ledger connection error:', error)
           if (error instanceof Error) {
-            // Device locked or app not open
-            if (error.message.includes('0x6a15') || error.message.includes('6a15')) {
-              throw new Error('Please unlock your Ledger device and open the Ethereum app, then try again.')
+            console.error('Error message:', error.message)
+            console.error('Error name:', error.name)
+            console.error('Error stack:', error.stack)
+
+            // Enhanced error handling with specific user guidance
+            if (error instanceof Error) {
+              // Device locked or app not open
+              if (
+                error.message.includes('0x6a15') ||
+                error.message.includes('6a15') ||
+                error.message.includes('0x5515') ||
+                error.message.includes('5515') ||
+                error.message.includes('Locked device') ||
+                error.message.includes('Connection declined') ||
+                error.message.includes('previous request is still active')
+              ) {
+                const toastProps: ToastAlertOptions = {
+                  severity: 'error',
+                  title: 'Ledger Connection Error',
+                  content: 'Please unlock your Ledger device and open the Ethereum app, then try again.',
+                  dataTestId: 'ledger-error',
+                  toastId: 'ledger-error',
+                }
+                showToast(toastProps)
+                throw new Error('Please unlock your Ledger device and open the Ethereum app, then try again.')
+              }
+
+              // Device not found or disconnected
+              if (
+                error.message.includes('0x6e00') ||
+                error.message.includes('6e00') ||
+                error.message.includes('No device selected') ||
+                error.message.includes('0x6d06') ||
+                error.message.includes('6d06')
+              ) {
+                const toastProps: ToastAlertOptions = {
+                  severity: 'error',
+                  title: 'Ledger Connection Error',
+                  content: 'Ledger device not found. Please connect your device and try again.',
+                  dataTestId: 'ledger-error',
+                  toastId: 'ledger-error',
+                }
+                showToast(toastProps)
+                throw new Error('Ledger device not found. Please connect your device and try again.')
+              }
+
+              // App not installed or wrong app open
+              if (
+                error.message.includes('0x6d00') ||
+                error.message.includes('6d00') ||
+                error.message.includes('App not found') ||
+                error.message.includes('0x6d01') ||
+                error.message.includes('6d01') ||
+                error.message.includes('0x6d02') ||
+                error.message.includes('6d02')
+              ) {
+                const toastProps: ToastAlertOptions = {
+                  severity: 'error',
+                  title: 'Ledger Connection Error',
+                  content:
+                    'Ethereum app not found on your Ledger device. Please install the Ethereum app using Ledger Live.',
+                  dataTestId: 'ledger-error',
+                  toastId: 'ledger-error',
+                }
+                showToast(toastProps)
+                throw new Error(
+                  'Ethereum app not found on your Ledger device. Please install the Ethereum app using Ledger Live.',
+                )
+              }
+
+              // User rejected
+              if (
+                error.message.includes('denied') ||
+                error.message.includes('rejected') ||
+                error.message.includes('User rejected') ||
+                error.message.includes('User denied') ||
+                error.message.includes('0x6985') ||
+                error.message.includes('6985')
+              ) {
+                const toastProps: ToastAlertOptions = {
+                  severity: 'error',
+                  title: 'Ledger Connection Error',
+                  content: 'Connection rejected by user.',
+                  dataTestId: 'ledger-error',
+                  toastId: 'ledger-error',
+                }
+                showToast(toastProps)
+                throw new UserRejectedRequestError(new Error('Connection rejected by user'))
+              }
+
+              // Permission denied
+              if (
+                error.message.includes('Permission') ||
+                error.message.includes('permission') ||
+                error.message.includes('access denied') ||
+                error.message.includes('0x6a80') ||
+                error.message.includes('6a80')
+              ) {
+                const toastProps: ToastAlertOptions = {
+                  severity: 'error',
+                  title: 'Ledger Connection Error',
+                  content:
+                    'Browser permission denied. Please allow USB/HID access in your browser settings and try again.',
+                  dataTestId: 'ledger-error',
+                  toastId: 'ledger-error',
+                }
+                showToast(toastProps)
+                throw new Error(
+                  'Browser permission denied. Please allow USB/HID access in your browser settings and try again.',
+                )
+              }
+
+              // Browser not supported
+              if (
+                error.message.includes('not supported') ||
+                error.message.includes('unsupported') ||
+                error.message.includes('WebUSB not available') ||
+                error.message.includes('0x6a81') ||
+                error.message.includes('6a81')
+              ) {
+                const toastProps: ToastAlertOptions = {
+                  severity: 'error',
+                  title: 'Ledger Connection Error',
+                  content:
+                    'Your browser does not support hardware wallet connections. Please use Chrome, Edge, or Opera.',
+                  dataTestId: 'ledger-error',
+                  toastId: 'ledger-error',
+                }
+                showToast(toastProps)
+                throw new Error(
+                  'Your browser does not support hardware wallet connections. Please use Chrome, Edge, or Opera.',
+                )
+              }
+
+              // Timeout
+              if (
+                error.message.includes('timeout') ||
+                error.message.includes('Timeout') ||
+                error.message.includes('Connection timed out') ||
+                error.message.includes('0x6a82') ||
+                error.message.includes('6a82')
+              ) {
+                const toastProps: ToastAlertOptions = {
+                  severity: 'error',
+                  title: 'Ledger Connection Error',
+                  content:
+                    'Connection timed out. Please ensure your Ledger is unlocked with the Ethereum app open, then try again.',
+                  dataTestId: 'ledger-error',
+                  toastId: 'ledger-error',
+                }
+                showToast(toastProps)
+                throw new Error(
+                  'Connection timed out. Please ensure your Ledger is unlocked with the Ethereum app open, then try again.',
+                )
+              }
+
+              // Transport errors
+              if (
+                error.message.includes('transport') ||
+                error.message.includes('Transport') ||
+                error.message.includes('Failed to connect') ||
+                error.message.includes('0x6a83') ||
+                error.message.includes('6a83')
+              ) {
+                const toastProps: ToastAlertOptions = {
+                  severity: 'error',
+                  title: 'Ledger Connection Error',
+                  content:
+                    'Failed to connect to Ledger device. Please disconnect and reconnect your device, then try again.',
+                  dataTestId: 'ledger-error',
+                  toastId: 'ledger-error',
+                }
+                showToast(toastProps)
+                throw new Error(
+                  'Failed to connect to Ledger device. Please disconnect and reconnect your device, then try again.',
+                )
+              }
+
+              // Handle "Connection declined" specifically
+              if (error.message.includes('Connection declined')) {
+                const toastProps: ToastAlertOptions = {
+                  severity: 'error',
+                  title: 'Ledger Connection Error',
+                  content:
+                    'Connection declined. Please ensure your Ledger is unlocked and the Ethereum app is open, then try again.',
+                  dataTestId: 'ledger-error',
+                  toastId: 'ledger-error',
+                }
+                showToast(toastProps)
+                throw new Error(
+                  'Connection declined. Please ensure your Ledger is unlocked and the Ethereum app is open, then try again.',
+                )
+              }
             }
 
-            // Device not found or disconnected
-            if (error.message.includes('0x6e00') || error.message.includes('6e00')) {
-              throw new Error('Ledger device not found. Please connect your device and try again.')
+            if (isUserRejectedRequestError(error)) {
+              throw new UserRejectedRequestError(error as Error)
             }
 
-            // App not installed
-            if (error.message.includes('0x6d00') || error.message.includes('6d00')) {
-              throw new Error('Ethereum app not found on your Ledger device. Please install the Ethereum app using Ledger Live.')
-            }
-
-            // User rejected
-            if (error.message.includes('denied') || error.message.includes('rejected')) {
-              throw new UserRejectedRequestError(new Error('Connection rejected by user'))
-            }
-
-            // Permission denied
-            if (error.message.includes('Permission') || error.message.includes('permission')) {
-              throw new Error('Browser permission denied. Please allow USB/HID access in your browser settings and try again.')
-            }
-
-            // Browser not supported
-            if (error.message.includes('not supported') || error.message.includes('unsupported')) {
-              throw new Error('Your browser does not support hardware wallet connections. Please use Chrome, Edge, or Opera.')
-            }
-
-            // Timeout
-            if (error.message.includes('timeout') || error.message.includes('Timeout')) {
-              throw new Error('Connection timed out. Please ensure your Ledger is unlocked with the Ethereum app open, then try again.')
-            }
-
-            // Transport errors
-            if (error.message.includes('transport') || error.message.includes('Transport')) {
-              throw new Error('Failed to connect to Ledger device. Please disconnect and reconnect your device, then try again.')
-            }
+            // Generic error with helpful message
+            throw new Error(
+              `Failed to connect to Ledger: ${error instanceof Error ? error.message : 'Unknown error'}. Please ensure your device is unlocked with the Ethereum app open.`,
+            )
           }
-
-          if (isUserRejectedRequestError(error)) {
-            throw new UserRejectedRequestError(error as Error)
-          }
-          
-          // Generic error with helpful message
-          throw new Error(`Failed to connect to Ledger: ${error instanceof Error ? error.message : 'Unknown error'}. Please ensure your device is unlocked with the Ethereum app open.`)
+          // Always rethrow to avoid returning undefined
+          throw error
         } finally {
           state.isConnecting = false
         }
@@ -235,7 +400,7 @@ export function ledgerConnector(options: LedgerConnectorOptions = {}) {
             await state.provider.disconnect()
           }
         } catch (error) {
-          console.warn('Error during Ledger disconnect:', error)
+          throw error
         } finally {
           state.provider = null
           state.account = null
@@ -321,7 +486,6 @@ export function ledgerConnector(options: LedgerConnectorOptions = {}) {
               return true
             } catch (error) {
               // Silent fail - user will need to manually reconnect
-              console.warn('Auto-reconnection failed:', error)
               clearConnectionState()
               return false
             }
