@@ -1,13 +1,13 @@
 import { FC } from 'react'
 import { createPortal } from 'react-dom'
-import { motion, type Variants, AnimatePresence } from 'motion/react'
+import { motion, type Variants, AnimatePresence, Transition } from 'motion/react'
 import { CommonComponentProps } from '@/components/commonProps'
 import { useLayoutContext } from '../LayoutProvider'
 import { cn } from '@/lib/utils'
 import { SIDEBAR_CLOSED_WIDTH, SIDEBAR_OPENED_WIDTH } from '../sidebars/SidebarDesktop'
 import { MAIN_CONTAINER_MAX_WIDTH } from '../ContainerDesktop'
 
-const TRANSITION = {
+const TRANSITION: Transition = {
   duration: 0.3,
   ease: 'circOut',
 }
