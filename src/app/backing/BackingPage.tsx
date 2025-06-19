@@ -21,6 +21,7 @@ import { useGetBuildersRewards } from '@/app/collective-rewards/rewards/builders
 import { getTokens } from '@/lib/tokens'
 import { useHandleErrors } from '@/app/collective-rewards/utils'
 import { Header } from '@/components/TypographyNew'
+import Big from '@/lib/big'
 
 const NAME = 'Backing'
 export const BackingPage = () => {
@@ -37,9 +38,11 @@ export const BackingPage = () => {
   const rifPriceUsd = prices[RIF]?.price ?? 0
 
   const availableForBacking =
-    !votingPower || !totalOnchainAllocation ? 0 : Number(votingPower - totalOnchainAllocation)
+    !votingPower || !totalOnchainAllocation
+      ? 0
+      : Big((votingPower - totalOnchainAllocation).toString()).toNumber()
 
-  const totalBacking = !totalOnchainAllocation ? 0 : Number(totalOnchainAllocation)
+  const totalBacking = !totalOnchainAllocation ? 0 : Big(totalOnchainAllocation.toString()).toNumber()
 
   const availableBackingUSD = !availableForBacking || !rifPriceUsd ? 0 : availableForBacking * rifPriceUsd
 
