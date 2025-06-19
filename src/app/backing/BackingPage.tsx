@@ -11,7 +11,6 @@ import {
   ActionsContainer,
   InfoContainer,
   MetricsContainer,
-  PageTitleContainer,
 } from '@/components/containers'
 import { BuildersSpotlight } from '@/app/backing/components/BuildersSpotlight/BuildersSpotlight'
 import { BackingBanner } from '@/app/backing/components/BackingBanner/BackingBanner'
@@ -35,7 +34,6 @@ export const BackingPage = () => {
       backer: { balance: votingPower, amountToAllocate: totalOnchainAllocation },
     },
   } = useContext(AllocationsContext)
-  const rifPriceUsd = prices[RIF]?.price ?? 0
   const rifPriceUsd = prices[RIF]?.price ?? 0
 
   const availableForBacking =
