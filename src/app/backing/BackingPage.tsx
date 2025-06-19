@@ -29,9 +29,12 @@ export const BackingPage = () => {
   useHandleErrors({ error: rewardsError, title: 'Error loading builder rewards' })
   const { prices } = usePricesContext()
   // TODO: add useAllocationsContext hook?
-  const { state } = useContext(AllocationsContext)
-  const votingPower = state.backer.balance
-  const totalOnchainAllocation = state.backer.amountToAllocate
+  const {
+    state: {
+      backer: { balance: votingPower, amountToAllocate: totalOnchainAllocation },
+    },
+  } = useContext(AllocationsContext)
+  const rifPriceUsd = prices[RIF]?.price ?? 0
   const rifPriceUsd = prices[RIF]?.price ?? 0
 
   const availableForBacking =
