@@ -12,17 +12,17 @@ export interface BuilderFilterDropdownProps {
   onSelected?: (option: { id: string; content: ReactNode }) => void
 }
 
-const dummyOptions = [
+const BuilderFilterOptions = [
   { id: 'active', content: 'Active builders' },
   { id: 'inactive', content: 'Inactive builders' },
   { id: 'all', content: 'All builders' },
 ]
 
 export const BuilderFilterDropdown: FC<BuilderFilterDropdownProps> = ({ className, onSelected }) => {
-  const [value, setValue] = useState<string>(dummyOptions[0].id)
+  const [value, setValue] = useState<string>(BuilderFilterOptions[0].id)
 
   useEffect(() => {
-    const selected = dummyOptions.find(opt => opt.id === value)
+    const selected = BuilderFilterOptions.find(opt => opt.id === value)
     if (selected && onSelected) {
       onSelected(selected)
     }
