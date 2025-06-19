@@ -7,7 +7,7 @@ import { useFeatureFlags } from '@/shared/context/FeatureFlag'
 import { CollectiveRewardsPage } from './CollectiveRewardsPage'
 
 const CollectiveRewardsOld = () => (
-  <div className="grid grid-rows-1 gap-[32px]">
+  <div className="grid grid-rows-1 gap-[2rem]">
     <Metrics />
     <ActiveBuilders />
     <BuildersLeaderBoard />
