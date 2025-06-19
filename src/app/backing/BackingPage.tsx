@@ -21,11 +21,10 @@ import { EstimatedRewardsMetric } from '@/app/backing/components/Metrics/Estimat
 import { useGetBuildersRewards } from '@/app/collective-rewards/rewards/builders/hooks/useGetBuildersRewards'
 import { getTokens } from '@/lib/tokens'
 import { useHandleErrors } from '@/app/collective-rewards/utils'
-import { LoadingSpinner } from '@/components/LoadingSpinner'
 
 const NAME = 'Backing'
 export const BackingPage = () => {
-  const { address } = useAccount()
+  const { isConnected } = useAccount()
   const { data: rewardsData, error: rewardsError } = useGetBuildersRewards(getTokens())
   useHandleErrors({ error: rewardsError, title: 'Error loading builder rewards' })
   const { prices } = usePricesContext()
@@ -58,7 +57,7 @@ export const BackingPage = () => {
         </MetricsContainer>
       </div>
 
-      {address && (
+      {isConnected && (
         <ActionMetricsContainer className="flex flex-col items-start w-[1144px] p-6 gap-2 rounded-[4px] bg-[#25211E] [&>div]:w-full">
           <AvailableBackingMetric
             availableForBacking={availableForBacking}
