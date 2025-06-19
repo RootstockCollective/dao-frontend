@@ -21,7 +21,8 @@ import { useGetBuildersRewards } from '@/app/collective-rewards/rewards/builders
 import { getTokens } from '@/lib/tokens'
 import { useHandleErrors } from '@/app/collective-rewards/utils'
 import { Header } from '@/components/TypographyNew'
-import Big from '@/lib/big'
+import { formatSymbol, getFiatAmount } from '@/app/collective-rewards/rewards'
+import { formatCurrency } from '@/lib/utils'
 
 const NAME = 'Backing'
 export const BackingPage = () => {
@@ -37,14 +38,18 @@ export const BackingPage = () => {
   } = useContext(AllocationsContext)
   const rifPriceUsd = prices[RIF]?.price ?? 0
 
-  const availableForBacking =
-    !votingPower || !totalOnchainAllocation
-      ? 0
-      : Big((votingPower - totalOnchainAllocation).toString()).toNumber()
+  const availableForBackingBigInt =
+    !votingPower || !totalOnchainAllocation ? 0n : votingPower - totalOnchainAllocation
 
-  const totalBacking = !totalOnchainAllocation ? 0 : Big(totalOnchainAllocation.toString()).toNumber()
+  const totalBackingBigInt = !totalOnchainAllocation ? 0n : totalOnchainAllocation
 
-  const availableBackingUSD = !availableForBacking || !rifPriceUsd ? 0 : availableForBacking * rifPriceUsd
+  // Format values properly using formatter functions
+  const availableForBacking = formatSymbol(availableForBackingBigInt, 'stRIF')
+  const totalBacking = formatSymbol(totalBackingBigInt, 'stRIF')
+  const availableBackingUSD =
+    !availableForBackingBigInt || !rifPriceUsd
+      ? formatCurrency(0)
+      : formatCurrency(getFiatAmount(availableForBackingBigInt, rifPriceUsd))
 
   return (
     <div data-testid={NAME} className="flex flex-col items-start w-full h-full pt-[0.13rem] gap-2 rounded-sm">

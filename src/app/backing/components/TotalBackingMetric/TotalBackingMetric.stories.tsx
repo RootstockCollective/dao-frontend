@@ -14,12 +14,12 @@ type Story = StoryObj<typeof TotalBackingMetric>
 
 export const WithTotalBacking: Story = {
   args: {
-    totalBacking: 5000,
+    totalBacking: '5,000',
   },
 }
 
 export const NoTotalBacking: Story = {
   args: {
-    totalBacking: 0,
+    totalBacking: '0',
   },
 }

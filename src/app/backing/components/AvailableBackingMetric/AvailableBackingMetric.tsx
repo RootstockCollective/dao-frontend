@@ -7,8 +7,8 @@ import { stRIF } from '@/lib/constants'
 import KotoQuestionMarkIcon from '@/components/Icons/KotoQuestionMarkIcon'
 
 interface AvailableBackingMetricProps {
-  availableForBacking: number
-  availableBackingUSD: number
+  availableForBacking: string
+  availableBackingUSD: string
   onStakeClick?: () => void
   onDistributeClick?: () => void
 }
@@ -52,7 +52,7 @@ export const AvailableBackingMetric = ({
                 </div>
               </div>
               <div className="flex items-center">
-                {availableForBacking === 0 ? (
+                {availableForBacking === '0' ? (
                   <Button
                     variant="primary"
                     className="flex h-7 px-4 py-3 items-center gap-2 rounded bg-[#F47A2A] hover:bg-[#E6691B]"
@@ -98,13 +98,13 @@ export const AvailableBackingMetric = ({
                 )}
               </div>
             </div>
-            {availableForBacking > 0 && (
+            {availableForBacking !== '0' && (
               <div className="flex items-start self-stretch">
                 <Typography
                   variant="tag-s"
                   className="text-[#ACA39D] font-rootstock-sans text-sm font-medium leading-[145%] self-stretch"
                 >
-                  {availableBackingUSD.toFixed(2)} USD
+                  {availableBackingUSD}
                 </Typography>
               </div>
             )}

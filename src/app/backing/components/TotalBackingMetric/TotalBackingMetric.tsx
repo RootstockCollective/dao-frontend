@@ -4,7 +4,7 @@ import { TokenImage } from '@/components/TokenImage'
 import { stRIF } from '@/lib/constants'
 
 interface TotalBackingMetricProps {
-  totalBacking: number
+  totalBacking: string
 }
 
 export const TotalBackingMetric = ({ totalBacking }: TotalBackingMetricProps) => {
