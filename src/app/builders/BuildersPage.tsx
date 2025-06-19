@@ -3,33 +3,32 @@ import {
   ActionMetricsContainer,
   InfoContainer,
   MetricsContainer,
-  PageTitleContainer,
 } from '@/components/containers'
 import { Content } from './components/Content'
 import { Metrics } from './components/Metrics'
 import { Spotlight } from './components/Spotlight'
 import { Table } from './components/Table'
+import { Header } from '@/components/TypographyNew'
 
 const NAME = 'Builders'
-
 export const BuildersPage = () => {
   return (
     <div data-testid={NAME} className="flex flex-col items-start w-full h-full pt-[0.13rem] gap-6 rounded-sm">
-      <PageTitleContainer leftText={NAME}>
-        {/* TODO: ADD CHILDREN HERE OR TEXT IN LEFT_TEXT */}
-      </PageTitleContainer>
+      <Header caps variant="h1" className="text-3xl leading-10 pb-[2.5rem]">
+        {NAME}
+      </Header>
 
       <div data-testid="info" className="flex flex-col w-full items-start gap-2">
-        <MetricsContainer>
+        <MetricsContainer className="bg-v3-bg-accent-80">
           <Metrics />
         </MetricsContainer>
-        <InfoContainer className="grow-[3]">
+        <InfoContainer className="grow-[3] bg-v3-bg-accent-80">
           <Content />
         </InfoContainer>
-        <ActionMetricsContainer>
+        <ActionMetricsContainer className="bg-v3-bg-accent-80">
           <Spotlight />
         </ActionMetricsContainer>
-        <ActionsContainer title={'The Collective Builders'}>
+        <ActionsContainer title={'The Collective Builders'} className="bg-v3-bg-accent-80">
           <Table />
         </ActionsContainer>
       </div>

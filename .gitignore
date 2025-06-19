@@ -19,6 +19,7 @@
 # misc
 .DS_Store
 *.pem
+.tool-versions
 
 # debug
 npm-debug.log*
@@ -46,3 +47,6 @@ next-env.d.ts
 
 # bun lock file
 bun.lockb
+
+#VSCode
+.vscode

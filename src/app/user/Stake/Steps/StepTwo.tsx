@@ -1,13 +1,11 @@
 import { useStakingContext } from '@/app/user/Stake/StakingContext'
 import { StepProps } from '@/app/user/Stake/types'
-import { isUserRejectedTxError } from '@/components/ErrorPage/commonErrors'
+import { Divider } from '@/components/Divider'
 import { Popover } from '@/components/Popover'
 import { Header, Label, Paragraph, Span } from '@/components/TypographyNew'
-import { config } from '@/config'
-import { waitForTransactionReceipt } from '@wagmi/core'
+import { executeTxFlow } from '@/shared/notification'
 import Image from 'next/image'
-import { useEffect, useMemo, useRef } from 'react'
-import { Divider } from '@/components/Divider'
+import { useCallback, useEffect, useMemo, useRef } from 'react'
 import { StepActionButtons } from '../components/StepActionButtons'
 import { TokenAmountDisplay } from '../components/TokenAmountDisplay'
 import { TransactionStatus } from '../components/TransactionStatus'
@@ -26,20 +24,6 @@ export const StepTwo = ({ onGoNext, onGoBack }: StepProps) => {
     allowanceTxHash,
   } = useAllowance(amount, tokenToSend.contract, tokenToReceive.contract)
 
-  const handleRequestAllowance = async () => {
-    try {
-      const txHash = await onRequestAllowance()
-      await waitForTransactionReceipt(config, {
-        hash: txHash,
-      })
-      onGoNext()
-    } catch (err) {
-      if (!isUserRejectedTxError(err)) {
-        console.error('Error requesting allowance', err)
-      }
-    }
-  }
-
   const hasCalledOnGoNextRef = useRef(false)
 
   useEffect(() => {
@@ -55,6 +39,14 @@ export const StepTwo = ({ onGoNext, onGoBack }: StepProps) => {
     if (isRequesting) return 'Requesting...'
     return 'Request allowance'
   }, [isAllowanceReadLoading, isRequesting])
+
+  const handleRequestAllowance = useCallback(() => {
+    executeTxFlow({
+      onRequestTx: onRequestAllowance,
+      onSuccess: onGoNext,
+      action: 'allowance',
+    })
+  }, [onRequestAllowance, onGoNext])
 
   return (
     <>

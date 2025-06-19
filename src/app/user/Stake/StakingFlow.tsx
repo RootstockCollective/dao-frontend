@@ -12,7 +12,7 @@ interface Props {
   onCloseModal: () => void
 }
 
-export const StakingSteps = ({ onCloseModal }: Props) => {
+export const StakingFlow = ({ onCloseModal }: Props) => {
   const { step, ...stepFunctions } = useSteps(stakingSteps.length)
   const { balances, prices } = useBalancesContext()
 

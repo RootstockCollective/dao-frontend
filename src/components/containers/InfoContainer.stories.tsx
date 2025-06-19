@@ -16,6 +16,7 @@ type Story = StoryObj<typeof meta>
 export const WithTextContent: Story = {
   args: {
     title: 'Information Title',
+    className: 'bg-v3-bg-accent-80',
     children: (
       <div className="space-y-4">
         <p className="text-gray-700">
@@ -29,6 +30,7 @@ export const WithTextContent: Story = {
 export const WithListContent: Story = {
   args: {
     title: 'Key Points',
+    className: 'bg-v3-bg-accent-80',
     children: (
       <div className="space-y-4">
         <ul className="list-disc list-inside space-y-2">
@@ -44,7 +46,7 @@ export const WithListContent: Story = {
 export const WithCustomStyling: Story = {
   args: {
     title: 'Custom Styled Container',
-    children: <p>Content with custom container styling</p>,
     className: 'bg-blue-50 border-2 border-blue-200',
+    children: <p>Content with custom container styling</p>,
   },
 }

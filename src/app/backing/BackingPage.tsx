@@ -21,6 +21,7 @@ import { EstimatedRewardsMetric } from '@/app/backing/components/Metrics/Estimat
 import { useGetBuildersRewards } from '@/app/collective-rewards/rewards/builders/hooks/useGetBuildersRewards'
 import { getTokens } from '@/lib/tokens'
 import { useHandleErrors } from '@/app/collective-rewards/utils'
+import { Header } from '@/components/TypographyNew'
 
 const NAME = 'Backing'
 export const BackingPage = () => {
@@ -46,7 +47,9 @@ export const BackingPage = () => {
 
   return (
     <div data-testid={NAME} className="flex flex-col items-start w-full h-full pt-[0.13rem] gap-2 rounded-sm">
-      <PageTitleContainer leftText={NAME} className="mb-8" />
+      <Header caps variant="h1" className="text-3xl leading-10 pb-[2.5rem]">
+        {NAME}
+      </Header>
       <div data-testid="CenterContainer" className="flex w-full items-stretch gap-2">
         <BackingInfoContainer
           className="grow-[9] h-full"
@@ -54,7 +57,7 @@ export const BackingPage = () => {
         >
           <BackingBanner />
         </BackingInfoContainer>
-        <MetricsContainer className="grow-[3] h-full">
+        <MetricsContainer className="grow-[3] h-full bg-v3-bg-accent-80">
           <AnnualBackersIncentivesMetric />
           <EstimatedRewardsMetric rewardsData={rewardsData} />
         </MetricsContainer>

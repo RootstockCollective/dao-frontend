@@ -47,8 +47,6 @@ export const DEFAULT_NUMBER_OF_SECONDS_PER_BLOCK = 30
 
 export const GOOGLE_TAG_ID = 'GTM-PTL6VZMT'
 
-export const proposalQuickFilters = ['Grant', 'Activation', 'Wave 4', 'Wave 5', 'March-25']
-
 export const MAX_NAME_LENGTH_FOR_PROPOSAL = 100
 export const TALLY_DESCRIPTION_SEPARATOR = '  ' // Tally uses double spaces to separate name and description
 export const WeiPerEther = 10n ** 18n
@@ -59,12 +57,14 @@ export const REOWN_PROJECT_ID = (process.env.NEXT_PUBLIC_REOWN_PROJECT_ID ?? '')
 export const REOWN_METADATA_URL = (process.env.NEXT_PUBLIC_REOWN_METADATA_URL ?? '') as string
 
 export const MOBILE_DESKTOP_BREAKPOINT = 640
+export const MAIN_CONTAINER_ID = 'main-container'
 
 export const FEATURE_FLAGS: Record<Feature, string> = {
   user_flags: process.env.NEXT_PUBLIC_ENABLE_FEATURE_USER_FLAGS ?? '',
   v2_rewards: process.env.NEXT_PUBLIC_ENABLE_FEATURE_V2_REWARDS ?? '',
   v3_design: process.env.NEXT_PUBLIC_ENABLE_FEATURE_V3_DESIGN ?? '',
   use_the_graph: process.env.NEXT_PUBLIC_ENABLE_FEATURE_USE_THE_GRAPH ?? '',
+  use_state_sync: process.env.NEXT_PUBLIC_ENABLE_FEATURE_USE_STATE_SYNC ?? '',
 }
 
 export const getFeatureEnvFlags = (): Record<Feature, string> => FEATURE_FLAGS

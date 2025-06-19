@@ -16,6 +16,7 @@ type Story = StoryObj<typeof meta>
 export const WithSimpleTitle: Story = {
   args: {
     title: 'Actions Title',
+    className: 'bg-v3-bg-accent-80',
     children: (
       <>
         <button className="px-4 py-2 bg-blue-500 text-white rounded">Action 1</button>
@@ -33,6 +34,7 @@ export const WithComplexTitle: Story = {
         <span className="text-sm text-gray-500">(with subtitle)</span>
       </div>
     ),
+    className: 'bg-v3-bg-accent-80',
     children: (
       <div className="flex flex-col gap-4">
         <p className="text-gray-700">Some descriptive text</p>
@@ -45,7 +47,7 @@ export const WithComplexTitle: Story = {
 export const WithCustomClassName: Story = {
   args: {
     title: 'Custom Styled Container',
-    children: <p>Content with custom container styling</p>,
     className: 'bg-gray-50 border border-gray-200',
+    children: <p>Content with custom container styling</p>,
   },
 }

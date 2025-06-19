@@ -1,11 +1,11 @@
-import React from 'react'
+import { FC } from 'react'
 
 type Props = {
   progress: number // A number between 0 and 100
   color?: string
 }
 
-export const ProgressBar: React.FC<Props> = ({ progress, color }) => {
+export const ProgressBar: FC<Props> = ({ progress, color }) => {
   return (
     <div className="w-full bg-gray-200 rounded-full h-2 dark:bg-gray-700">
       <div

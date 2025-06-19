@@ -15,6 +15,7 @@ type Story = StoryObj<typeof meta>
 
 export const WithSingleAction: Story = {
   args: {
+    className: 'bg-v3-bg-accent-80',
     children: (
       <div className="flex items-center gap-4">
         <div className="text-center">
@@ -29,6 +30,7 @@ export const WithSingleAction: Story = {
 
 export const WithMultipleActions: Story = {
   args: {
+    className: 'bg-v3-bg-accent-80',
     children: (
       <div className="flex gap-8">
         <div className="flex items-center gap-4">
@@ -54,6 +56,7 @@ export const WithMultipleActions: Story = {
 
 export const WithCustomStyling: Story = {
   args: {
+    className: 'bg-blue-50 border-2 border-blue-200',
     children: (
       <div className="flex items-center gap-4">
         <div className="text-center">
@@ -62,6 +65,5 @@ export const WithCustomStyling: Story = {
         </div>
       </div>
     ),
-    className: 'bg-blue-50 border-2 border-blue-200',
   },
 }

@@ -15,9 +15,11 @@
   --color-st-error: var(--st-error);
   --color-st-white: var(--st-white);
   --color-st-queue: var(--st-queue);
+  --color-st-warning: var(--st-warning);
   --color-text-light: var(--text-light);
   --color-disabled-primary: var(--disabled-primary);
   --color-disabled-secondary: var(--disabled-secondary);
+  --color-disabled-border: var(--disabled-border);
   --color-input-bg: var(--input-bg);
   --color-input-placeholder: var(--input-placeholder);
   --color-link: var(--link);
