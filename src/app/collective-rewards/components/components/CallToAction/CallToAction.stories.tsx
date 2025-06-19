@@ -6,7 +6,7 @@ import { Typography } from '@/components/TypographyNew/Typography'
 import { MetricsContainer } from '@/components/containers/MetricsContainer'
 
 const meta: Meta<typeof CallToAction> = {
-  title: 'CollectiveRewards/Components/CallToAction',
+  title: 'CollectiveRewards/CallToAction',
   component: CallToAction,
   tags: ['autodocs'],
 }
@@ -36,7 +36,7 @@ export const Default: Story = {
         </Header>
       </div>
     ),
-    content: (
+    children: (
       <MetricsContainer className="px-6 pb-10 pt-0">
         <Typography className="text-v3-text-0">Default container content</Typography>
       </MetricsContainer>
@@ -53,7 +53,7 @@ export const CustomStyles: Story = {
         Custom Styled Call To Action Title
       </Header>
     ),
-    content: (
+    children: (
       <MetricsContainer className="mx-4 ">
         <Typography>Customized container content</Typography>
       </MetricsContainer>

@@ -5,15 +5,14 @@ import { FC, ReactNode } from 'react'
 interface CallToActionProps extends CommonComponentProps {
   banner?: ReactNode
   title: ReactNode
-  content: ReactNode
 }
 
-export const CallToAction: FC<CallToActionProps> = ({ banner, title, content, className = '' }) => {
+export const CallToAction: FC<CallToActionProps> = ({ banner, title, children, className = '' }) => {
   return (
     <div data-testid="CallToAction" className={cn('flex flex-col bg-v3-text-80', className)}>
-      {banner && banner}
+      {banner}
       {title}
-      {content}
+      {children}
     </div>
   )
 }
