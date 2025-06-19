@@ -1,6 +1,7 @@
-import { FC, TableHTMLAttributes, useCallback, useState } from 'react'
+import { FC, TableHTMLAttributes, useCallback, useState, useContext } from 'react'
 import { cn } from '@/lib/utils'
-import { useTableContext } from './context/TableContext'
+import { TableContext } from '@/shared/context/TableContext/TableContext'
+import { TableActionsContext } from '@/shared/context/TableContext/TableActionsContext'
 
 interface TableRowProps extends Omit<TableHTMLAttributes<HTMLTableRowElement>, 'onClick'> {
   rowId?: string
@@ -9,13 +10,6 @@ interface TableRowProps extends Omit<TableHTMLAttributes<HTMLTableRowElement>, '
   selectable?: boolean
 }
 
-const useSafeTableContext = () => {
-  try {
-    return useTableContext()
-  } catch {
-    return null
-  }
-}
 export const TableRow: FC<TableRowProps> = ({
   className,
   rowId,
@@ -28,20 +22,22 @@ export const TableRow: FC<TableRowProps> = ({
   const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 })
   const [showTooltip, setShowTooltip] = useState(false)
 
-  const tableContext = useSafeTableContext()
+  // Use context directly to avoid throwing errors when context is not available
+  const tableContext = useContext(TableContext)
+  const dispatch = useContext(TableActionsContext)
 
   const isSelected =
-    externalIsSelected ?? (rowId && tableContext ? tableContext.actions.isRowSelected(rowId) : false)
+    externalIsSelected ?? (rowId && tableContext ? !!tableContext.selectedRows[rowId] : false)
 
   const handleClick = useCallback(() => {
     if (selectable && rowId) {
       if (onClick) {
         onClick(rowId)
-      } else if (tableContext) {
-        tableContext.actions.toggleRowSelection(rowId)
+      } else if (dispatch) {
+        dispatch({ type: 'TOGGLE_ROW_SELECTION', payload: rowId })
       }
     }
-  }, [selectable, rowId, onClick, tableContext])
+  }, [selectable, rowId, onClick, dispatch])
 
   const handleMouseEnter = useCallback(() => {
     if (selectable) {
