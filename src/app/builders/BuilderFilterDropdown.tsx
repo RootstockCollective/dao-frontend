@@ -13,9 +13,12 @@ export interface BuilderFilterDropdownProps {
 }
 
 const BuilderFilterOptions = [
+  { id: 'all', content: 'All builders' },
   { id: 'active', content: 'Active builders' },
   { id: 'inactive', content: 'Inactive builders' },
-  { id: 'all', content: 'All builders' },
+  { id: 'deactivated', content: 'Deactivated builders' },
+  { id: 'revoked', content: 'Revoked builders' },
+  { id: 'paused', content: 'Paused builders' },
 ]
 
 export const BuilderFilterDropdown: FC<BuilderFilterDropdownProps> = ({ className, onSelected }) => {
