@@ -1,7 +1,7 @@
 import { FC, ReactNode, useState } from 'react'
 import * as DropdownMenuPrimitive from '@radix-ui/react-dropdown-menu'
 import { motion } from 'motion/react'
-import { DropdownSelectorItem } from './DropdownSelectorItem'
+import { MultipleSelectDropdownItem } from './MultipleSelectDropdownItem'
 import { Label } from '@/components/TypographyNew'
 import { cn } from '@/lib/utils'
 
@@ -11,7 +11,7 @@ export interface SelectorOption {
   sublabel?: string
 }
 
-export interface DropdownSelectorProps {
+export interface MultipleSelectDropdownProps {
   title: string
   options: SelectorOption[]
   selected: string[]
@@ -21,7 +21,7 @@ export interface DropdownSelectorProps {
   align?: 'start' | 'center' | 'end'
 }
 
-export const DropdownSelector: FC<DropdownSelectorProps> = ({
+export const MultipleSelectDropdown: FC<MultipleSelectDropdownProps> = ({
   title,
   options,
   selected,
@@ -92,7 +92,7 @@ export const DropdownSelector: FC<DropdownSelectorProps> = ({
                   aria-selected={selected.includes(item.id)}
                   data-testid={`dropdown-selector-item-${item.id}`}
                 >
-                  <DropdownSelectorItem
+                  <MultipleSelectDropdownItem
                     label={item.label}
                     sublabel={item.sublabel}
                     checked={selected.includes(item.id)}

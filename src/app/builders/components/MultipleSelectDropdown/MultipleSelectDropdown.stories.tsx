@@ -1,11 +1,12 @@
 import type { Meta, StoryObj } from '@storybook/react'
-import { DropdownSelector, SelectorOption } from './DropdownSelector'
+import { MultipleSelectDropdown } from './MultipleSelectDropdown'
+import { SelectorOption } from './MultipleSelectDropdown'
 import { Button } from '@/components/Button'
 import { useState } from 'react'
 
-const meta: Meta<typeof DropdownSelector> = {
-  title: 'Builders/DropdownSelector',
-  component: DropdownSelector,
+const meta: Meta<typeof MultipleSelectDropdown> = {
+  title: 'Builders/MultipleSelectDropdown',
+  component: MultipleSelectDropdown,
   parameters: {
     layout: 'centered',
   },
@@ -22,7 +23,7 @@ const meta: Meta<typeof DropdownSelector> = {
 
 export default meta
 
-type Story = StoryObj<typeof DropdownSelector>
+type Story = StoryObj<typeof MultipleSelectDropdown>
 
 const defaultOptions: SelectorOption[] = [
   { id: '1', label: 'Option 1' },
@@ -33,7 +34,7 @@ const defaultOptions: SelectorOption[] = [
 const Template = (args: any) => {
   const [selected, setSelected] = useState<string[]>(['1'])
   return (
-    <DropdownSelector
+    <MultipleSelectDropdown
       {...args}
       trigger={<Button>Select Options</Button>}
       selected={selected}

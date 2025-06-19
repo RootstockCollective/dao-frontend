@@ -2,7 +2,7 @@ import { FC } from 'react'
 import { CommonComponentProps } from '@/components/commonProps'
 import { Button } from '@/components/Button'
 import { MoreIcon } from '@/components/Icons/MoreIcon'
-import { DropdownSelector, SelectorOption } from '@/app/builders/components/DropdownSelector/DropdownSelector'
+import { MultipleSelectDropdown, SelectorOption } from '@/app/builders/components/MultipleSelectDropdown'
 import { CloseIcon } from '@/components/Icons/CloseIcon'
 import { useTableContext, useTableActionsContext } from '@/shared/context/TableContext'
 
@@ -29,7 +29,7 @@ export const TableColumnDropdown: FC<CommonComponentProps> = ({ className }) => 
 
   return (
     <div className={className}>
-      <DropdownSelector
+      <MultipleSelectDropdown
         title="Table Columns"
         options={columnOptions}
         selected={selectedColumns}
