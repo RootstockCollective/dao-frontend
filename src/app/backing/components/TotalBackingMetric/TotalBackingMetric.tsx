@@ -24,11 +24,11 @@ export const TotalBackingMetric = ({ totalBacking }: TotalBackingMetricProps) =>
           <div className="flex flex-col items-start gap-2 self-stretch">
             <div className="flex h-10 items-center gap-6">
               <div className="flex items-center gap-2">
-                <div className="pt-2 items-center [display:-webkit-box] [-webkit-box-orient:vertical] [-webkit-line-clamp:1]">
+                <div className="pt-2 items-center">
                   <Typography
                     variant="h1"
                     caps
-                    className="text-white overflow-hidden text-ellipsis [-webkit-box-orient:vertical] [-webkit-line-clamp:1] [display:-webkit-box] font-kk-topo text-[32px] font-normal leading-[125%]"
+                    className="text-white overflow-hidden text-ellipsis line-clamp-1 font-kk-topo text-[32px] font-normal leading-[125%]"
                   >
                     {totalBacking}
                   </Typography>
