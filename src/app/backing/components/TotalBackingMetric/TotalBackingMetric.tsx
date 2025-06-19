@@ -14,7 +14,7 @@ export const TotalBackingMetric = ({ totalBacking }: TotalBackingMetricProps) =>
         title={
           <Typography
             variant="tag"
-            className="text-[#ACA39D] text-base font-medium font-rootstock-sans leading-[150%]"
+            className="text-v3-bg-accent-0 text-base font-medium font-rootstock-sans leading-[150%]"
           >
             Total backing
           </Typography>
