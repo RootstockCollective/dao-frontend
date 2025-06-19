@@ -67,7 +67,7 @@ export const BackingPage = () => {
               // FIXME: Implement staking page and update this navigation
             }}
             onDistributeClick={() => {
-              // TODO: Implement distribute functionality
+              // FIXME: Implement distribute functionality
             }}
           />
           <TotalBackingMetric totalBacking={totalBacking} />
