@@ -15,6 +15,7 @@ type Story = StoryObj<typeof meta>
 
 export const WithSingleMetric: Story = {
   args: {
+    className: 'bg-v3-bg-accent-80',
     children: (
       <div className="text-center">
         <div className="text-3xl font-bold">1,234</div>
@@ -26,6 +27,7 @@ export const WithSingleMetric: Story = {
 
 export const WithMultipleMetrics: Story = {
   args: {
+    className: 'bg-v3-bg-accent-80',
     children: (
       <div className="space-y-6 text-center">
         <div>
@@ -43,12 +45,12 @@ export const WithMultipleMetrics: Story = {
 
 export const WithCustomStyling: Story = {
   args: {
+    className: 'bg-blue-50 border-2 border-blue-200',
     children: (
       <div className="text-center">
         <div className="text-3xl font-bold text-blue-600">$9,876</div>
         <div className="text-sm text-blue-400">Revenue</div>
       </div>
     ),
-    className: 'bg-blue-50 border-2 border-blue-200',
   },
 }
