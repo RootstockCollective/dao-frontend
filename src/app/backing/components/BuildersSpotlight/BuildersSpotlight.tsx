@@ -1,7 +1,7 @@
 import { useGetBackersRewardPercentage } from '@/app/collective-rewards/rewards/hooks/useGetBackersRewardPercentage'
 import { Builder, RequiredBuilder } from '@/app/collective-rewards/types'
 import { useGetBuildersByState } from '@/app/collective-rewards/user/hooks/useGetBuildersByState'
-import { useHandleErrors } from '@/app/collective-rewards/utils'
+import { isBuilderRewardable, useHandleErrors } from '@/app/collective-rewards/utils'
 import { Button } from '@/components/Button'
 import { LoadingSpinner } from '@/components/LoadingSpinner'
 import { useRouter } from 'next/navigation'
@@ -23,14 +23,16 @@ export const BuildersSpotlight: FC<BuildersSpotlightProps> = ({ rewardsData }) =
     error: buildersError,
   } = useGetBuildersByState<RequiredBuilder>()
 
+  const buildersToShow = builders.filter(({ stateFlags }) => isBuilderRewardable(stateFlags))
+
   const {
     data: buildersWithBackerRewards,
     isLoading,
     error: buildersWithBackerRewardsError,
-  } = useGetBackersRewardPercentage(builders.map(({ address }) => address))
+  } = useGetBackersRewardPercentage(buildersToShow.map(({ address }) => address))
 
   const router = useRouter()
-  const shuffledBuilders = useShuffledArray<Builder>(builders)
+  const shuffledBuilders = useShuffledArray<Builder>(buildersToShow)
 
   useHandleErrors({
     error: buildersWithBackerRewardsError ?? buildersError,

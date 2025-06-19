@@ -57,6 +57,7 @@ export const REOWN_PROJECT_ID = (process.env.NEXT_PUBLIC_REOWN_PROJECT_ID ?? '')
 export const REOWN_METADATA_URL = (process.env.NEXT_PUBLIC_REOWN_METADATA_URL ?? '') as string
 
 export const MOBILE_DESKTOP_BREAKPOINT = 640
+export const MAIN_CONTAINER_ID = 'main-container'
 
 export const FEATURE_FLAGS: Record<Feature, string> = {
   user_flags: process.env.NEXT_PUBLIC_ENABLE_FEATURE_USER_FLAGS ?? '',

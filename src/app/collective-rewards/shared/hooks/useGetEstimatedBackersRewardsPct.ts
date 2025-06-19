@@ -40,7 +40,7 @@ export const useGetEstimatedBackersRewardsPct = () => {
 
   const data = useMemo(() => {
     return builders.reduce<EstimatedBackerRewards[]>((acc, builder, i) => {
-      const { address, gauge, stateFlags } = builder
+      const { address, stateFlags } = builder
       const builderRewardShares = rewardShares[i] ?? 0n
       const rewardPercentage = backersRewardsPct[address] ?? null
       const rewardPercentageToApply = rewardPercentage?.current ?? 0n

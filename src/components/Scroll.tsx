@@ -1,4 +1,5 @@
 'use client'
+import { MAIN_CONTAINER_ID } from '@/lib/constants'
 import { usePathname } from 'next/navigation'
 import { useEffect } from 'react'
 
@@ -15,7 +16,7 @@ export default function Scroll() {
 
   const pathname = usePathname()
   useEffect(() => {
-    window.document.querySelector('#main-container')?.scrollTo(0, 0)
+    window.document.getElementById(MAIN_CONTAINER_ID)?.scrollTo(0, 0)
   }, [pathname])
   return <></>
 }
