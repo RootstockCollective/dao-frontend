@@ -11,8 +11,8 @@ import {
 } from '@tanstack/react-table'
 import { type LatestProposalResponse } from '../hooks/useFetchLatestProposals'
 import { StatusColumn } from './table-columns/StatusColumn'
-import { StatefulTable } from '@/components/Table'
-import { HeaderTitle, Typography } from '@/components/Typography'
+import { GridTable } from '@/components/Table'
+import { Typography } from '@/components/Typography'
 import { SentimentColumn } from './table-columns/SentimentColumn'
 import { ProposalNameColumn } from './table-columns/ProposalNameColumn'
 import { VotesColumn } from './table-columns/VotesColumn'
@@ -28,6 +28,8 @@ import { FilterButton } from './filter/FilterButton'
 import { FilterSideBar } from './filter/FilterSideBar'
 import { cn } from '@/lib/utils'
 import { useClickOutside } from '@/shared/hooks/useClickOutside'
+import { mockProposalListData } from './mockProposalData'
+import { splitCombinedName } from '../shared/utils'
 
 interface LatestProposalsTableProps {
   proposals: LatestProposalResponse[]
@@ -40,7 +42,8 @@ const LatestProposalsTable = ({ proposals, onEmitActiveProposal }: LatestProposa
   // React-table sorting state
   const [sorting, setSorting] = useState<SortingState>([])
   // query all proposals parameters at the Governor after receiving proposal list
-  const proposalListData = useProposalListData({ proposals })
+  /* const proposalListData = useProposalListData({ proposals }) */
+  const proposalListData = mockProposalListData
   // filter all proposals after user typed text in the search field
   const filteredProposalList = useMemo(
     () =>
@@ -117,15 +120,26 @@ const LatestProposalsTable = ({ proposals, onEmitActiveProposal }: LatestProposa
   )
 
   // Table data definition helper
-  const { accessor } = createColumnHelper<(typeof proposalListData)[number]>()
+  const { accessor, display } = createColumnHelper<(typeof proposalListData)[number]>()
   // Table columns definition
   const columns = [
     accessor('name', {
+      meta: {
+        // Mark this column to render across full width above the grid row
+        renderAbove: true,
+      },
       id: 'name',
-      header: 'Proposal',
       cell: info => (
         <ProposalNameColumn name={info.row.original.name} proposalId={info.row.original.proposalId} />
       ),
+    }),
+    display({
+      id: 'builderName',
+      header: 'Proposal name',
+      cell: info => {
+        const { builderName, proposalName } = splitCombinedName(info.row.original.name)
+        return <p>by {builderName ?? proposalName.split(' ').at(0) ?? 'unknown'}</p>
+      },
     }),
     accessor('votes.quorum', {
       id: 'votes',
@@ -269,9 +283,9 @@ const LatestProposalsTable = ({ proposals, onEmitActiveProposal }: LatestProposa
   })
 
   return (
-    <div>
+    <div className="py-4 px-6 rounded-sm bg-bg-80">
       <div className="mb-10 w-full flex items-center gap-4">
-        <HeaderTitle className="">Latest Proposals</HeaderTitle>
+        <h2 className="font-kk-topo text-xl leading-tight uppercase tracking-wide">Latest Proposals</h2>
         <div className="grow flex justify-end">
           <DebounceSearch
             className="w-full max-w-[776px]"
@@ -309,15 +323,11 @@ const LatestProposalsTable = ({ proposals, onEmitActiveProposal }: LatestProposa
         <div className="grow">
           {filteredProposalList.length > 0 ? (
             <div>
-              <StatefulTable
+              <GridTable
                 equalColumns
                 table={table}
                 data-testid="TableProposals"
-                tbodyProps={{
-                  'data-testid': 'TableProposalsTbody',
-                }}
                 className="overflow-visible"
-                tHeadRowsPropsById={theadRowsPropsById}
               />
 
               <div className="flex justify-center space-x-2 mt-4">
@@ -396,11 +406,3 @@ const LatestProposalsTable = ({ proposals, onEmitActiveProposal }: LatestProposa
 }
 
 export const LatestProposalsTableMemoized = memo(LatestProposalsTable)
-
-const theadRowsPropsById = {
-  name: {
-    style: {
-      width: '32%',
-    },
-  },
-}

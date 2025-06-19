@@ -1,7 +1,8 @@
 import { type SortDirection } from '@tanstack/react-table'
 import { type PropsWithChildren } from 'react'
-import { ArrowsSortIcon, SortAscendingIcon, SortDescendingIcon } from '@/components/Icons'
 import { cn } from '@/lib/utils'
+import { DoubleArrowIcon } from './icons/DoubleArrowIcon'
+import { ArrowIcon } from './icons/ArrowIcon'
 
 interface SortIndicatorProps extends PropsWithChildren {
   sortDirection: SortDirection | false
@@ -10,15 +11,15 @@ interface SortIndicatorProps extends PropsWithChildren {
 
 export function SortIndicator({ children, sortDirection, sortEnabled = true }: SortIndicatorProps) {
   return (
-    <div className={cn('flex gap-1', sortEnabled && 'cursor-pointer')}>
+    <div className={cn('flex gap-1', { 'cursor-pointer': sortEnabled })}>
       {sortEnabled && (
-        <div className="flex items-center">
+        <div className={cn('flex items-center', { 'opacity-50': !sortEnabled })}>
           {sortDirection === 'asc' ? (
-            <SortAscendingIcon />
+            <ArrowIcon />
           ) : sortDirection === 'desc' ? (
-            <SortDescendingIcon />
+            <ArrowIcon className="rotate-180" />
           ) : (
-            <ArrowsSortIcon className="text-gray-500" />
+            <DoubleArrowIcon />
           )}
         </div>
       )}
