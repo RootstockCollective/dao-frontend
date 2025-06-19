@@ -9,6 +9,7 @@ import { Alert } from '../Alert'
 import { HeaderDesktop } from './headers/HeaderDesktop'
 import { cn } from '@/lib/utils'
 import { BottomDrawer } from './drawers/BottomDrawer'
+import { MAIN_CONTAINER_ID } from '@/lib/constants'
 
 export const MAIN_CONTAINER_MAX_WIDTH = '1440px'
 export function ContainerDesktop({ children, className, ...props }: HTMLAttributes<HTMLDivElement>) {
@@ -25,7 +26,7 @@ export function ContainerDesktop({ children, className, ...props }: HTMLAttribut
       <div className="grow flex flex-col">
         <HeaderDesktop />
         <div className="grow flex flex-col">
-          <div className="flex flex-1 flex-col justify-between overflow-y-auto mt-10" id="main-container">
+          <div className="flex flex-1 flex-col justify-between overflow-y-auto mt-10" id={MAIN_CONTAINER_ID}>
             <main className="p-8 mb-25">
               {message && (
                 <Alert {...message} onDismiss={message.onDismiss === null ? null : () => setMessage(null)} />

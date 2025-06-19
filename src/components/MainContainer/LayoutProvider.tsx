@@ -1,6 +1,7 @@
 'use client'
 
 import { NoContextProviderError } from '@/lib/errors/ContextError'
+import { MAIN_CONTAINER_ID } from '@/lib/constants'
 import { useIsDesktop } from '@/shared/hooks/useIsDesktop'
 import {
   createContext,
@@ -66,7 +67,7 @@ export function LayoutProvider({ children }: PropsWithChildren) {
 
   // Get and store main container reference once
   useEffect(() => {
-    mainContainerRef.current = document.getElementById('main-container') as HTMLDivElement | null
+    mainContainerRef.current = document.getElementById(MAIN_CONTAINER_ID) as HTMLDivElement | null
   }, [])
 
   // Update drawer height when drawer content changes

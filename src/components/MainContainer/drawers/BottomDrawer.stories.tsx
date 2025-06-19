@@ -3,6 +3,7 @@ import { BottomDrawer } from './BottomDrawer'
 import { LayoutProvider, useLayoutContext } from '@/components/MainContainer/LayoutProvider'
 import { Button } from '@/components/ButtonNew/Button'
 import { ActionsContainer } from '@/components/containers/ActionsContainer'
+import { MAIN_CONTAINER_ID } from '@/lib/constants'
 
 const Controls = () => {
   const { isSidebarOpen, toggleSidebar, isDrawerOpen, openDrawer, closeDrawer } = useLayoutContext()
@@ -42,7 +43,7 @@ const meta: Meta<typeof BottomDrawer> = {
           <div style={{ position: 'fixed', top: '10px', left: '10px', zIndex: 1000 }}>
             <Controls />
           </div>
-          <div id="main-container" style={{ paddingTop: '60px' }} />
+          <div id={MAIN_CONTAINER_ID} style={{ paddingTop: '60px' }} />
           <Story />
         </div>
       </LayoutProvider>
