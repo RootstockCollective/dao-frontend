@@ -1,4 +1,4 @@
-import { Link } from '@/components/Link'
+import Link from 'next/link'
 import { splitCombinedName } from '../../shared/utils'
 
 interface ProposalNameColumnProps {
@@ -8,5 +8,12 @@ interface ProposalNameColumnProps {
 
 export const ProposalNameColumn = ({ name, proposalId }: ProposalNameColumnProps) => {
   const { proposalName } = splitCombinedName(name)
-  return <Link href={`/proposals/${proposalId}`}>{proposalName.slice(0, 50)}</Link>
+  return (
+    <Link
+      className="text-primary group-hover:underline group-hover:text-bg-100 group-hover:decoration-bg-40"
+      href={`/proposals/${proposalId}`}
+    >
+      {proposalName}
+    </Link>
+  )
 }

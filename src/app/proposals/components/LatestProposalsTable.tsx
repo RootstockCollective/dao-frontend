@@ -1,4 +1,3 @@
-'use client'
 import { useMemo, memo, useState, useEffect, useCallback, useRef } from 'react'
 import { motion } from 'motion/react'
 import {
@@ -11,8 +10,8 @@ import {
   PaginationState,
 } from '@tanstack/react-table'
 import { StatusColumn } from './table-columns/StatusColumn'
-import { StatefulTable } from '@/components/Table'
-import { HeaderTitle, Typography } from '@/components/Typography'
+import { GridTable } from '@/components/Table'
+import { Typography } from '@/components/Typography'
 import { SentimentColumn } from './table-columns/SentimentColumn'
 import { ProposalNameColumn } from './table-columns/ProposalNameColumn'
 import { VotesColumn } from './table-columns/VotesColumn'
@@ -27,6 +26,8 @@ import { FilterButton } from './filter/FilterButton'
 import { FilterSideBar } from './filter/FilterSideBar'
 import { cn } from '@/lib/utils'
 import { useClickOutside } from '@/shared/hooks/useClickOutside'
+import { mockProposalListData } from './mockProposalData'
+import { splitCombinedName } from '../shared/utils'
 
 interface LatestProposalsTableProps {
   proposals: Proposal[]
@@ -272,7 +273,7 @@ export const LatestProposalsTable = ({ proposals }: LatestProposalsTableProps) =
           <FilterButton
             isOpen={isFilterSidebarOpen}
             setIsOpen={setIsFilterSidebarOpen}
-            disabled={proposals.length === 0}
+            disabled={proposalListData.length === 0}
             isFiltering={activeFilter > 0}
           />
         </div>
@@ -380,6 +381,7 @@ export const LatestProposalsTable = ({ proposals }: LatestProposalsTableProps) =
     </div>
   )
 }
+
 export const LatestProposalsTableMemoized = memo(LatestProposalsTable)
 
 const theadRowsPropsById = {
