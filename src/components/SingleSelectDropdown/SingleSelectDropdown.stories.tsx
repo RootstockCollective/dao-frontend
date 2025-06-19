@@ -8,7 +8,14 @@ import {
 } from './SingleSelectDropdown'
 import { useState } from 'react'
 
-const meta: Meta<typeof Dropdown> = {
+// Define the story args interface
+interface StoryArgs {
+  value?: string
+  onValueChange?: (value: string) => void
+  position: 'popper' | 'item-aligned'
+}
+
+const meta: Meta<StoryArgs> = {
   title: 'Components/SingleSelectDropdown',
   component: Dropdown,
   parameters: {
@@ -24,6 +31,15 @@ const meta: Meta<typeof Dropdown> = {
       action: 'valueChanged',
       description: 'Callback function when value changes',
     },
+    position: {
+      control: { type: 'select' },
+      options: ['popper', 'item-aligned'],
+      description: 'Position of the dropdown content',
+      defaultValue: 'popper',
+    },
+  },
+  args: {
+    position: 'popper',
   },
 }
 
@@ -38,7 +54,7 @@ const defaultOptions = [
 ]
 
 // Wrapper component that manages its own state
-const DefaultDropdownWrapper = () => {
+const DefaultDropdownWrapper = ({ position }: { position: 'popper' | 'item-aligned' }) => {
   const [value, setValue] = useState('1')
 
   return (
@@ -47,7 +63,7 @@ const DefaultDropdownWrapper = () => {
         <DropdownTrigger>
           <DropdownValue />
         </DropdownTrigger>
-        <DropdownContent>
+        <DropdownContent position={position}>
           {defaultOptions.map(option => (
             <DropdownItem key={option.id} value={option.id}>
               {option.content}
@@ -59,7 +75,7 @@ const DefaultDropdownWrapper = () => {
   )
 }
 
-const CustomizedDropdownWrapper = () => {
+const CustomizedDropdownWrapper = ({ position }: { position: 'popper' | 'item-aligned' }) => {
   const [value, setValue] = useState('star')
   const customOptions = [
     {
@@ -121,7 +137,7 @@ const CustomizedDropdownWrapper = () => {
         <DropdownTrigger className="bg-white border border-gray-200 shadow-sm">
           <DropdownValue />
         </DropdownTrigger>
-        <DropdownContent>
+        <DropdownContent position={position}>
           {customOptions.map(option => (
             <DropdownItem key={option.id} value={option.id}>
               {option.content}
@@ -133,12 +149,12 @@ const CustomizedDropdownWrapper = () => {
   )
 }
 
-type Story = StoryObj<typeof Dropdown>
+type Story = StoryObj<typeof meta>
 
 export const Default: Story = {
-  render: () => <DefaultDropdownWrapper />,
+  render: args => <DefaultDropdownWrapper position={args.position} />,
 }
 
 export const Customized: Story = {
-  render: () => <CustomizedDropdownWrapper />,
+  render: args => <CustomizedDropdownWrapper position={args.position} />,
 }
