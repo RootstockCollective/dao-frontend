@@ -54,10 +54,10 @@ export const mockProposalListData: ProposalParams[] = [
 
     // From useProposalListData
     votes: {
-      againstVotes: new Big('1'), // 1 token
-      forVotes: new Big('5'), // 5 tokens
-      abstainVotes: new Big('1'), // 0.5 tokens
-      quorum: new Big('6'), // forVotes + abstainVotes
+      againstVotes: new Big('1000000'), // 1 token
+      forVotes: new Big('5000000'), // 5 tokens
+      abstainVotes: new Big('1000000'), // 0.5 tokens
+      quorum: new Big('6000000'), // forVotes + abstainVotes
     },
     blocksUntilClosure: new Big('35811'),
     votingPeriod: new Big('241'), // ~7 days in blocks
