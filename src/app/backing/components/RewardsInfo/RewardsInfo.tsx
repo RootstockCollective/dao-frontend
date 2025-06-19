@@ -7,6 +7,7 @@ import { FC } from 'react'
 import { BackerRewardsPercentage } from '../BackerPercentage/BackerRewardsPercentage'
 import { LabeledContent } from '../LabeledContent/LabeledContent'
 import { RifRbtcPopover } from '../Popovers/RifRbtcPopover'
+import { DottedUnderlineLabel } from '../DottedUnderlineLabel/DottedUnderlineLabel'
 
 export interface RewardsInfoProps extends BackerRewardPercentage {
   estimatedRewards?: TokenRewards
@@ -31,7 +32,7 @@ export const RewardsInfo: FC<RewardsInfoProps> = ({ current, next, estimatedRewa
               {formatCurrency(
                 getCombinedFiatAmount([estimatedRewards.rbtc.amount, estimatedRewards.rif.amount]),
               )}{' '}
-              USD
+              <DottedUnderlineLabel>USD</DottedUnderlineLabel>
             </Paragraph>
           </RifRbtcPopover>
         </LabeledContent>
