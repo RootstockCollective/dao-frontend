@@ -123,22 +123,52 @@ const LatestProposalsTable = ({ proposals, onEmitActiveProposal }: LatestProposa
   const { accessor, display } = createColumnHelper<(typeof proposalListData)[number]>()
   // Table columns definition
   const columns = [
-    accessor('name', {
-      meta: {
-        // Mark this column to render across full width above the grid row
-        renderAbove: true,
-      },
+    display({
       id: 'name',
       cell: info => (
         <ProposalNameColumn name={info.row.original.name} proposalId={info.row.original.proposalId} />
       ),
     }),
-    display({
+    accessor('name', {
       id: 'builderName',
       header: 'Proposal name',
       cell: info => {
         const { builderName, proposalName } = splitCombinedName(info.row.original.name)
         return <p>by {builderName ?? proposalName.split(' ').at(0) ?? 'unknown'}</p>
+      },
+      // sortingFn: (rowA, rowB) => rowA.original.name.localeCompare(rowB.original.name),
+    }),
+    accessor(row => row.Starts.unix(), {
+      id: 'date',
+      header: 'Date',
+      cell: info => <p>{info.row.original.Starts.format('MMM DD, YYYY')}</p>,
+    }),
+    accessor('blocksUntilClosure', {
+      id: 'timeRemaining',
+      header: 'Vote ending in',
+      cell: info => {
+        const { blocksUntilClosure, proposalDeadline, blockNumber } = info.row.original
+        return (
+          <TimeColumn
+            blocksUntilClosure={blocksUntilClosure}
+            proposalDeadline={proposalDeadline}
+            proposalBlockNumber={blockNumber}
+          />
+        )
+      },
+    }),
+    accessor('votes.quorum', {
+      id: 'quorum',
+      header: 'Quorum',
+      cell: info => {
+        const { forVotes, abstainVotes } = info.row.original.votes
+        return (
+          <VotesColumn
+            forVotes={forVotes}
+            abstainVotes={abstainVotes}
+            quorumAtSnapshot={info.row.original.quorumAtSnapshot}
+          />
+        )
       },
     }),
     accessor('votes.quorum', {
@@ -151,25 +181,6 @@ const LatestProposalsTable = ({ proposals, onEmitActiveProposal }: LatestProposa
             forVotes={forVotes}
             abstainVotes={abstainVotes}
             quorumAtSnapshot={info.row.original.quorumAtSnapshot}
-          />
-        )
-      },
-    }),
-    accessor(row => row.Starts.unix(), {
-      id: 'date',
-      header: 'Date',
-      cell: info => <Typography tagVariant="p">{info.row.original.Starts.format('MM/DD/YYYY')}</Typography>,
-    }),
-    accessor('blocksUntilClosure', {
-      id: 'timeRemaining',
-      header: 'Time Remaining',
-      cell: info => {
-        const { blocksUntilClosure, proposalDeadline, blockNumber } = info.row.original
-        return (
-          <TimeColumn
-            blocksUntilClosure={blocksUntilClosure}
-            proposalDeadline={proposalDeadline}
-            proposalBlockNumber={blockNumber}
           />
         )
       },
@@ -324,7 +335,8 @@ const LatestProposalsTable = ({ proposals, onEmitActiveProposal }: LatestProposa
           {filteredProposalList.length > 0 ? (
             <div>
               <GridTable
-                equalColumns
+                aria-label="Proposal table"
+                stackFirstColumn
                 table={table}
                 data-testid="TableProposals"
                 className="overflow-visible"
