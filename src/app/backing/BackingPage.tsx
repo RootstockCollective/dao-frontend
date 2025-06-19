@@ -74,7 +74,7 @@ export const BackingPage = () => {
         </ActionMetricsContainer>
       )}
       {/* </ActionMetricsContainer>} */}
-      <ActionsContainer title="BUILDERS THAT YOU MAY WANT TO BACK" className="">
+      <ActionsContainer title="BUILDERS THAT YOU MAY WANT TO BACK">
         <BuildersSpotlight rewardsData={rewardsData} />
       </ActionsContainer>
     </div>
