@@ -1,9 +1,10 @@
 import Big from '@/lib/big'
 import moment from 'moment'
 import { ProposalState, ProposalCategory } from '@/shared/types'
-import { ProposalParams } from '../hooks/useProposalListData'
+import { Proposal } from '@/app/proposals/shared/types'
 
-export const mockProposalListData: ProposalParams[] = [
+// Mock data structure based on useProposalListData return type
+export const mockProposalListData: Proposal[] = [
   {
     address: '0xb1a019e675315d422eeb1564412286e629f7',
     blockNumber: '0x616627',
