@@ -24,8 +24,8 @@ export const WithAvailableBacking: Story = {
   args: {
     availableForBacking: 1000,
     availableBackingUSD: 50000,
-    onStakeClick: () => console.log('Stake clicked'),
-    onDistributeClick: () => console.log('Distribute clicked'),
+    onStakeClick: () => alert('Stake clicked'),
+    onDistributeClick: () => alert('Distribute clicked'),
   },
 }
 
@@ -33,6 +33,6 @@ export const NoAvailableBacking: Story = {
   args: {
     availableForBacking: 0,
     availableBackingUSD: 0,
-    onStakeClick: () => console.log('Stake clicked'),
+    onStakeClick: () => alert('Stake clicked'),
   },
 }
