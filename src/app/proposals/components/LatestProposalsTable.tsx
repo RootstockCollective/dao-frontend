@@ -9,6 +9,7 @@ import {
   getPaginationRowModel,
   PaginationState,
 } from '@tanstack/react-table'
+import { type LatestProposalResponse } from '../hooks/useFetchLatestProposals'
 import { StatusColumn } from './table-columns/StatusColumn'
 import { GridTable } from '@/components/Table'
 import { Typography } from '@/components/Typography'
@@ -17,10 +18,11 @@ import { ProposalNameColumn } from './table-columns/ProposalNameColumn'
 import { VotesColumn } from './table-columns/VotesColumn'
 import { TimeColumn } from './table-columns/TimeColumn'
 import { DebounceSearch } from '@/components/DebounceSearch'
+import { useProposalListData } from '../hooks/useProposalListData'
 import { Button } from '@/components/Button'
 import { useRouter, useSearchParams } from 'next/navigation'
 import Big from '@/lib/big'
-import { Proposal } from '@/app/proposals/shared/types'
+import { ProposalState } from '@/shared/types'
 import { filterOptions } from './filter/filterOptions'
 import { FilterButton } from './filter/FilterButton'
 import { FilterSideBar } from './filter/FilterSideBar'
@@ -30,18 +32,22 @@ import { mockProposalListData } from './mockProposalData'
 import { splitCombinedName } from '../shared/utils'
 
 interface LatestProposalsTableProps {
-  proposals: Proposal[]
+  proposals: LatestProposalResponse[]
+  onEmitActiveProposal?: (activeProposals: number) => void
 }
 
-export const LatestProposalsTable = ({ proposals }: LatestProposalsTableProps) => {
+const LatestProposalsTable = ({ proposals, onEmitActiveProposal }: LatestProposalsTableProps) => {
   // search textfield
   const [searchedProposal, setSearchedProposal] = useState('')
   // React-table sorting state
   const [sorting, setSorting] = useState<SortingState>([])
+  // query all proposals parameters at the Governor after receiving proposal list
+  /* const proposalListData = useProposalListData({ proposals }) */
+  const proposalListData = mockProposalListData
   // filter all proposals after user typed text in the search field
   const filteredProposalList = useMemo(
     () =>
-      proposals.filter(({ name }) => {
+      proposalListData.filter(({ name }) => {
         try {
           const proposalName = String(name).toLowerCase()
           return proposalName.includes(searchedProposal.toLowerCase())
@@ -49,8 +55,18 @@ export const LatestProposalsTable = ({ proposals }: LatestProposalsTableProps) =
           return false
         }
       }),
-    [proposals, searchedProposal],
+    [proposalListData, searchedProposal],
   )
+
+  useEffect(() => {
+    if (onEmitActiveProposal) {
+      onEmitActiveProposal(
+        proposalListData.filter(proposal =>
+          [ProposalState.Pending, ProposalState.Active].includes(proposal.proposalState),
+        ).length || 0,
+      )
+    }
+  }, [onEmitActiveProposal, proposalListData])
 
   // State for proposal quick filters
   const [activeFilter, setActiveFilter] = useState<number>(0)
@@ -104,12 +120,11 @@ export const LatestProposalsTable = ({ proposals }: LatestProposalsTableProps) =
   )
 
   // Table data definition helper
-  const { accessor } = createColumnHelper<(typeof proposals)[number]>()
+  const { accessor, display } = createColumnHelper<(typeof proposalListData)[number]>()
   // Table columns definition
   const columns = [
     accessor('name', {
       id: 'name',
-      header: 'Proposal',
       cell: info => (
         <ProposalNameColumn name={info.row.original.name} proposalId={info.row.original.proposalId} />
       ),
@@ -256,9 +271,9 @@ export const LatestProposalsTable = ({ proposals }: LatestProposalsTableProps) =
   })
 
   return (
-    <div>
+    <div className="py-4 px-6 rounded-sm bg-bg-80">
       <div className="mb-10 w-full flex items-center gap-4">
-        <HeaderTitle className="">Latest Proposals</HeaderTitle>
+        <h2 className="font-kk-topo text-xl leading-tight uppercase tracking-wide">Latest Proposals</h2>
         <div className="grow flex justify-end">
           <DebounceSearch
             className="w-full max-w-[776px]"
@@ -300,11 +315,7 @@ export const LatestProposalsTable = ({ proposals }: LatestProposalsTableProps) =
                 equalColumns
                 table={table}
                 data-testid="TableProposals"
-                tbodyProps={{
-                  'data-testid': 'TableProposalsTbody',
-                }}
                 className="overflow-visible"
-                tHeadRowsPropsById={theadRowsPropsById}
               />
 
               <div className="flex justify-center space-x-2 mt-4">
@@ -383,11 +394,3 @@ export const LatestProposalsTable = ({ proposals }: LatestProposalsTableProps) =
 }
 
 export const LatestProposalsTableMemoized = memo(LatestProposalsTable)
-
-const theadRowsPropsById = {
-  name: {
-    style: {
-      width: '32%',
-    },
-  },
-}
