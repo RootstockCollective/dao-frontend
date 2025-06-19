@@ -123,34 +123,29 @@ const LatestProposalsTable = ({ proposals, onEmitActiveProposal }: LatestProposa
   const { accessor, display } = createColumnHelper<(typeof proposalListData)[number]>()
   // Table columns definition
   const columns = [
-    accessor('name', {
+    display({
       id: 'name',
       cell: info => (
         <ProposalNameColumn name={info.row.original.name} proposalId={info.row.original.proposalId} />
       ),
     }),
-    accessor('votes.quorum', {
-      id: 'votes',
-      header: 'Votes',
+    accessor('name', {
+      id: 'builderName',
+      header: 'Proposal name',
       cell: info => {
-        const { forVotes, abstainVotes } = info.row.original.votes
-        return (
-          <VotesColumn
-            forVotes={forVotes}
-            abstainVotes={abstainVotes}
-            quorumAtSnapshot={info.row.original.quorumAtSnapshot}
-          />
-        )
+        const { builderName, proposalName } = splitCombinedName(info.row.original.name)
+        return <p>by {builderName ?? proposalName.split(' ').at(0) ?? 'unknown'}</p>
       },
+      // sortingFn: (rowA, rowB) => rowA.original.name.localeCompare(rowB.original.name),
     }),
     accessor(row => row.Starts.unix(), {
       id: 'date',
       header: 'Date',
-      cell: info => <Typography tagVariant="p">{info.row.original.Starts.format('MM/DD/YYYY')}</Typography>,
+      cell: info => <p>{info.row.original.Starts.format('MMM DD, YYYY')}</p>,
     }),
     accessor('blocksUntilClosure', {
       id: 'timeRemaining',
-      header: 'Time Remaining',
+      header: 'Vote ending in',
       cell: info => {
         const { blocksUntilClosure, proposalDeadline, blockNumber } = info.row.original
         return (
@@ -311,8 +306,9 @@ const LatestProposalsTable = ({ proposals, onEmitActiveProposal }: LatestProposa
         <div className="grow">
           {filteredProposalList.length > 0 ? (
             <div>
-              <StatefulTable
-                equalColumns
+              <GridTable
+                aria-label="Proposal table"
+                stackFirstColumn
                 table={table}
                 data-testid="TableProposals"
                 className="overflow-visible"

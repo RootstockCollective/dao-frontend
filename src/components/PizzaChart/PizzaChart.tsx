@@ -23,6 +23,7 @@ export const PizzaChart = memo(function PizzaChart({
   radius = 16,
   startAngle = -90,
   disabled = false,
+  className,
   ...props
 }: Props) {
   const key = useId()
@@ -32,9 +33,9 @@ export const PizzaChart = memo(function PizzaChart({
   const total = useMemo(() => slices.reduce((sum, s) => sum + s.value, 0), [slices])
   let currentAngle = startAngle
   return (
-    <div className={cn({ grayscale: disabled })} {...props}>
+    <div className={cn({ grayscale: disabled }, className)} {...props}>
       <Popover.Root open={open} onOpenChange={setOpen}>
-        <Popover.Trigger>
+        <Popover.Trigger className="cursor-help">
           {total <= 0 ? (
             /* Renders an empty (white) pizza chart when there is no data */
             <svg width={radius * 2} height={radius * 2} viewBox={`0 0 ${radius * 2} ${radius * 2}`}>
