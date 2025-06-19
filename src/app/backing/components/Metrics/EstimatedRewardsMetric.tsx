@@ -5,6 +5,7 @@ import { formatCurrency } from '@/lib/utils'
 import { RifRbtcPopover } from '@/app/backing/components/Popovers/RifRbtcPopover'
 import { Metric, MetricTitle } from '@/components/Metric'
 import { BuildersRewards } from '@/app/collective-rewards/rewards/builders/hooks/useGetBuildersRewards'
+import { DottedUnderlineLabel } from '@/app/backing/components/DottedUnderlineLabel/DottedUnderlineLabel'
 
 interface EstimatedRewardsMetricProps {
   rewardsData: BuildersRewards[]
@@ -29,7 +30,11 @@ export const EstimatedRewardsMetric = ({ rewardsData }: EstimatedRewardsMetricPr
           }
         />
       }
-      content={<Header variant="h1">{formatCurrency(totalEstimatedUsd)} USD</Header>}
+      content={
+        <Header variant="h1">
+          {formatCurrency(totalEstimatedUsd)} <DottedUnderlineLabel>USD</DottedUnderlineLabel>
+        </Header>
+      }
     />
   )
 }
