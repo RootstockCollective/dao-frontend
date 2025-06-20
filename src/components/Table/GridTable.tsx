@@ -13,17 +13,20 @@ interface Props<T> extends HTMLAttributes<HTMLDivElement> {
 
 /**
  * Grid-based table component with sorting support and flexible column layouts.
+ * Columns can specify width via `columnDef.meta.width` (e.g. '2fr', '150px').
  * When `hasStackedColumn` is true, the first column expands to full width.
  */
 export function GridTable<T>({ className, table, stackFirstColumn = false, ...props }: Props<T>) {
-  const numCols = table.getAllColumns().length - Number(stackFirstColumn)
-  const gridTemplateColumns = `repeat(${numCols}, 1fr)`
+  // Build grid template from column definitions' meta.width (fallback to 1fr)
+  // Slice off the first column if it's stacked
+  const headers = table.getHeaderGroups()[0].headers.slice(Number(stackFirstColumn))
+  const gridTemplateColumns = headers.map(header => header.column.columnDef.meta?.width ?? '1fr').join(' ')
   return (
     <div role="table" className={className} {...props}>
       {/* Table head */}
       <div
         role="rowheader"
-        className="grid gap-2 px-4 pb-[18px] border-b border-b-text-60 select-none"
+        className="grid px-4 pb-[18px] border-b border-b-text-60 select-none"
         style={{ gridTemplateColumns }}
       >
         {/* Head cells */}

@@ -3,7 +3,7 @@ import { Table } from './Table'
 import { tableSampleData } from './tableSampleData'
 
 const meta = {
-  title: 'Components/Table',
+  title: 'Components/Table/SimpleTable',
   component: Table,
 } satisfies Meta<typeof Table>
 
