@@ -4,7 +4,7 @@ import { useAccount } from 'wagmi'
 import { BuildersSpotlight } from '@/app/backing/components/BuildersSpotlight/BuildersSpotlight'
 import { ActionsContainer } from '@/components/containers'
 import { BackingBanner } from '@/app/backing/components/BackingBanner/BackingBanner'
-import { BackingInfoContainer } from '@/app/backing/components/Container/BackingInfoContainer/BackingInfoContainer'
+import { BackingInfoTitleControl } from '@/app/backing/components/BackingInfoTitle/BackingInfoTitleControl'
 import { MetricsContainer } from '@/components/containers'
 import { AnnualBackersIncentivesMetric } from '@/app/backing/components/Metrics/AnnualBackersIncentivesMetric'
 import { EstimatedRewardsMetric } from '@/app/backing/components/Metrics/EstimatedRewardsMetric'
@@ -12,8 +12,10 @@ import { useGetBuildersRewards } from '@/app/collective-rewards/rewards/builders
 import { getTokens } from '@/lib/tokens'
 import { useHandleErrors } from '@/app/collective-rewards/utils'
 import { Header } from '@/components/TypographyNew'
+import { BackingInfoContainer } from '@/app/backing/components/Container/BackingInfoContainer/BackingInfoContainer'
 
 const NAME = 'Backing'
+
 export const BackingPage = () => {
   const { address } = useAccount()
   const { data: rewardsData, error: rewardsError } = useGetBuildersRewards(getTokens())
@@ -25,10 +27,7 @@ export const BackingPage = () => {
         {NAME}
       </Header>
       <div data-testid="CenterContainer" className="flex w-full items-stretch gap-2">
-        <BackingInfoContainer
-          className="grow-[9] h-full"
-          title="Support innovative Builders by allocating your stRIF to those you align with."
-        >
+        <BackingInfoContainer className="grow-[9] h-full" title={<BackingInfoTitleControl />}>
           <BackingBanner />
         </BackingInfoContainer>
         <MetricsContainer className="grow-[3] h-full bg-v3-bg-accent-80">
