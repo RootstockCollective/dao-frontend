@@ -1,19 +1,15 @@
 import { cn } from '@/lib/utils'
-import { FC, PropsWithChildren } from 'react'
+import { FC } from 'react'
 import { CommonComponentProps } from '../commonProps'
 
-type InfoContainer = CommonComponentProps &
-  PropsWithChildren & {
-    title?: string
-  }
+type InfoContainer = CommonComponentProps & {
+  title?: string
+}
 
 export const InfoContainer: FC<InfoContainer> = ({ children, className = '', title }) => {
   return (
     <div
-      className={cn(
-        'flex flex-col items-start gap-2 self-stretch p-6 pt-10 rounded-sm bg-v3-bg-accent-80',
-        className,
-      )}
+      className={cn('flex flex-col items-start gap-2 self-stretch p-6 pt-10 rounded-sm', className)}
       data-testid={'InfoContainer'}
     >
       {title && <h3 className="text-lg font-semibold">{title}</h3>}

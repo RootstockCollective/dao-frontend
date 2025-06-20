@@ -1,4 +1,5 @@
-import { HeaderVariants, Typography } from '@/components/Typography'
+import { HeaderVariants } from './types'
+import { Typography } from './Typography'
 import { cn } from '@/lib/utils'
 import { FC, ReactNode } from 'react'
 

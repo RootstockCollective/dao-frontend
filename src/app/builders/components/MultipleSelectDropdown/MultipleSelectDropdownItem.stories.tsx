@@ -1,9 +1,9 @@
+import { MultipleSelectDropdownItem } from '@/app/builders/components/MultipleSelectDropdown/MultipleSelectDropdownItem'
 import type { Meta, StoryObj } from '@storybook/react'
-import { DropdownSelectorItem } from './DropdownSelectorItem'
 
 const meta = {
-  title: 'Builders/DropdownSelectorItem',
-  component: DropdownSelectorItem,
+  title: 'Builders/MultipleSelectDropdownItem',
+  component: MultipleSelectDropdownItem,
   parameters: {
     layout: 'centered',
   },
@@ -26,7 +26,7 @@ const meta = {
       description: 'Optional CSS class name for custom styling',
     },
   },
-} satisfies Meta<typeof DropdownSelectorItem>
+} satisfies Meta<typeof MultipleSelectDropdownItem>
 
 export default meta
 type Story = StoryObj<typeof meta>
@@ -39,7 +39,7 @@ export const Default: Story = {
   },
   render: args => (
     <div className="p-4 bg-v3-bg-accent-100 rounded">
-      <DropdownSelectorItem {...args} />
+      <MultipleSelectDropdownItem {...args} />
     </div>
   ),
 }

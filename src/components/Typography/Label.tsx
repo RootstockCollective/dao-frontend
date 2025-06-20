@@ -1,4 +1,5 @@
-import { LabelVariants, Typography } from '@/components/Typography'
+import { LabelVariants } from './types'
+import { Typography } from './Typography'
 import { cn } from '@/lib/utils'
 import { FC, ReactNode } from 'react'
 
