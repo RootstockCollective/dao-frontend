@@ -22,7 +22,7 @@ type Story = StoryObj<typeof AvailableBackingMetric>
 
 export const WithAvailableBacking: Story = {
   args: {
-    availableForBacking: '1,000',
+    availableForBacking: '120,000',
     availableBackingUSD: '$50,000.00',
     onStakeClick: () => alert('Stake clicked'),
     onDistributeClick: () => alert('Distribute clicked'),

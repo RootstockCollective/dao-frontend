@@ -35,7 +35,7 @@ export const AvailableBackingMetric = ({
           <div className="flex flex-col items-start gap-2 self-stretch">
             <div className="flex h-10 items-center gap-6">
               <div className="flex items-center gap-2">
-                <div className="pt-2 items-center">
+                <div className="flex items-center">
                   <Typography
                     variant="h1"
                     caps
@@ -44,9 +44,9 @@ export const AvailableBackingMetric = ({
                     {availableForBacking}
                   </Typography>
                 </div>
-                <div className="flex py-2 pl-2 pr-0 items-center gap-1 rounded">
+                <div className="flex items-center gap-1 pl-2 pt-2 pb-2">
                   <TokenImage symbol={stRIF} size={24} />
-                  <Typography variant="body-l" bold className="text-white text-right">
+                  <Typography variant="body-l" bold className="text-white">
                     stRIF
                   </Typography>
                 </div>
