@@ -8,7 +8,7 @@ import { withTableContext } from '@/shared/context/TableContext'
 import { Span } from '@/components/Typography'
 
 const meta: Meta<typeof TableRow> = {
-  title: 'Koto/Components/TableNew/TableRow',
+  title: 'Components/TableNew/TableRow',
   component: TableRow,
   parameters: {
     layout: 'centered',
