@@ -1,5 +1,6 @@
 import { Circle } from '@/components/Circle'
 import { cn } from '@/lib/utils'
+import { AddressOrAlias } from '../Address/AddressOrAlias'
 
 interface LegendItem {
   key: string
@@ -25,7 +26,7 @@ export const Legend = ({ title, className, items }: LegendProps) => {
       {items.map(({ key, label, displayColor }) => (
         <span key={key} className="flex items-center space-x-2">
           <Circle color={displayColor} />
-          <span>{label}</span>
+          <AddressOrAlias addressOrAlias={label} />
         </span>
       ))}
     </div>

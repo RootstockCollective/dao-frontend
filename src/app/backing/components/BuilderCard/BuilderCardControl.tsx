@@ -11,6 +11,7 @@ import { useLayoutContext } from '@/components/MainContainer/LayoutProvider'
 import { ActionsContainer } from '@/components/containers/ActionsContainer'
 import { Button } from '@/components/ButtonNew/Button'
 import { useAllocateVotes } from '@/app/collective-rewards/allocations/hooks/useAllocateVotes'
+import { floorToUnit } from '../utils'
 
 export interface BuilderCardControlProps extends Builder {
   backerRewardPct: BackerRewardPercentage
@@ -28,7 +29,7 @@ export const BuilderCardControl: FC<BuilderCardControlProps> = ({
   const {
     actions: { updateAllocation, resetAllocations },
     state: {
-      backer: { balance, amountToAllocate },
+      backer: { balance, cumulativeAllocation },
       allocations,
     },
     initialState: { allocations: initialAllocations },
@@ -39,7 +40,7 @@ export const BuilderCardControl: FC<BuilderCardControlProps> = ({
   const rifPriceUsd = prices[RIF]?.price ?? 0
   const allocation = allocations[builderAddress] ?? 0n
   const existentAllocation = initialAllocations[builderAddress] ?? 0n
-  const unallocatedAmount = balance - amountToAllocate
+  const unallocatedAmount = floorToUnit(balance - (cumulativeAllocation - allocation))
 
   const handleAllocationChange = (value: number) => {
     if (allocationTxPending) return
@@ -48,7 +49,7 @@ export const BuilderCardControl: FC<BuilderCardControlProps> = ({
     if (!canSaveAllocation) return
 
     openDrawer(
-      <ActionsContainer>
+      <ActionsContainer className="bg-v3-bg-accent-60">
         <div className="flex justify-center gap-2 w-full">
           <Button
             variant="secondary"

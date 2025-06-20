@@ -3,7 +3,6 @@ import { InputNumber } from '@/components/Input/InputNumber'
 import { Paragraph } from '@/components/TypographyNew'
 import { cn } from '@/lib/utils'
 import { FC, useState } from 'react'
-import { formatEther } from 'viem'
 import { PendingAllocation } from '../PendingAllocation/PendingAllocation'
 import { StickySlider } from '../StickySlider/StickySlider'
 import { RIFToken } from '../RIFToken/RIFToken'
@@ -35,7 +34,7 @@ export const AllocationInput: FC<AllocationInputProps> = ({
 
   const handleSliderChange = (value: number[]) => {
     const percent = value[0]
-    const newAllocation = Math.round((percent / 100) * Number(formatEther(maxAllocation)))
+    const newAllocation = Math.round((percent / 100) * Number(formatSymbol(maxAllocation, 'stRIF')))
     onAllocationChange(newAllocation)
   }
 
@@ -55,7 +54,7 @@ export const AllocationInput: FC<AllocationInputProps> = ({
             placeholder={`max ${formatSymbol(maxAllocation, 'stRIF')}`}
             className="focus:outline-none focus-visible:outline-none text-left p-0 m-0 border-0 bg-transparent w-full text-[24px]"
             value={allocation ? formatSymbol(allocation, 'stRIF') : ''}
-            max={Number(formatEther(maxAllocation))}
+            max={Number(formatSymbol(maxAllocation, 'stRIF'))}
             onValueChange={({ value }) => onAllocationChange(Number(value))}
             onFocus={() => !editing && setEditing(true)}
             disabled={allocationTxPending}
