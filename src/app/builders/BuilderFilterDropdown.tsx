@@ -19,6 +19,7 @@ const BuilderFilterOptions = [
   { id: 'deactivated', content: 'Deactivated builders' },
   { id: 'revoked', content: 'Revoked builders' },
   { id: 'paused', content: 'Paused builders' },
+  { id: 'paused', content: 'Paused builders' },
 ]
 
 export const BuilderFilterDropdown: FC<BuilderFilterDropdownProps> = ({ className, onSelected }) => {
