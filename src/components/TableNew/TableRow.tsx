@@ -62,7 +62,7 @@ export const TableRow: FC<TableRowProps> = ({
     <>
       <tr
         className={cn(
-          'text-[14px] border-hidden relative',
+          'text-sm border-hidden relative',
           selectable && [
             'cursor-pointer transition-all duration-150',
             'hover:bg-[var(--color-v3-text-80)] hover:border-b hover:border-[var(--color-v3-bg-accent-60)]',
@@ -87,30 +87,16 @@ export const TableRow: FC<TableRowProps> = ({
 
       {showTooltip && selectable && (
         <div
-          className="fixed pointer-events-none z-50"
+          className="fixed pointer-events-none z-50 flex p-6 flex-col items-start gap-2 self-stretch rounded bg-[var(--color-v3-text-80)] shadow-[0px_8px_24px_0px_rgb(from_var(--color-v3-bg-accent-100)_r_g_b_/_0.14)]"
           style={{
             left: mousePosition.x + 10,
             top: mousePosition.y - 10,
-            display: 'flex',
-            padding: '24px',
-            flexDirection: 'column',
-            alignItems: 'flex-start',
-            gap: '8px',
-            alignSelf: 'stretch',
-            borderRadius: '4px',
-            background: 'var(--color-v3-text-80)',
-            boxShadow: '0px 8px 24px 0px rgb(from var(--color-v3-bg-accent-100) r g b / 0.14)',
           }}
         >
           <span
+            className="text-sm font-normal leading-[1.45] self-stretch text-[var(--color-v3-bg-accent-100)]"
             style={{
-              color: 'var(--Background-100, #171412)',
               fontFamily: 'Rootstock Sans',
-              fontSize: '14px',
-              fontStyle: 'normal',
-              fontWeight: 400,
-              lineHeight: '145%',
-              alignSelf: 'stretch',
             }}
           >
             Select the row
