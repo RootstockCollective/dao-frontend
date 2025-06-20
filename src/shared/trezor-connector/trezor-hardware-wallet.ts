@@ -1,8 +1,9 @@
 import TrezorConnect from '@trezor/connect-web'
-import { getAddress } from 'viem'
 import type { Logger, EIP6963Provider, EIP6963ProviderInfo, TransactionParameters } from './types'
 
 type Address = `0x${string}`
+
+type GetAddressFunction = (address: string) => Address
 
 /**
  * TrezorHardwareWallet class provides core integration with Trezor hardware wallets
@@ -41,6 +42,9 @@ export class TrezorHardwareWallet {
   /** Flag to control logging behavior */
   private shouldLog = true
 
+  /** Get Address function for correct checksum */
+  private getAddress: GetAddressFunction
+
   /** EIP-6963 provider information */
   static readonly PROVIDER_INFO: EIP6963ProviderInfo = {
     uuid: 'io.trezor.hardware-wallet',
@@ -63,6 +67,7 @@ export class TrezorHardwareWallet {
     rpcUrls: Record<number, string>
     logger?: Logger
     shouldLog?: boolean
+    getAddress?: GetAddressFunction
   }) {
     this.email = options.email
     this.appUrl = options.appUrl
@@ -71,6 +76,7 @@ export class TrezorHardwareWallet {
     this.rpcUrls = options.rpcUrls
     this.logger = options.logger || console
     this.shouldLog = options.shouldLog || false
+    this.getAddress = options.getAddress || ((address: string) => address as Address)
 
     this.log('[Trezor] Created wallet with options:', options)
   }
@@ -200,16 +206,21 @@ export class TrezorHardwareWallet {
         path: this.derivationPath,
         showOnTrezor: false,
       })
-
-      if (result.success) {
-        this.currentAddress = getAddress(result.payload.address)
+      this.log('[Trezor] getAccounts Payload: ', result.payload)
+      if (result.success && result.payload.address && result.payload.address.length > 0) {
+        this.currentAddress = this.getAddress(result.payload.address)
         this.log('[Trezor] Retrieved address:', this.currentAddress)
         return [this.currentAddress]
       } else {
-        this.log('[Trezor] Failed to get address:', result.payload.error)
+        this.log('[Trezor] Failed to get address:', 'error' in result.payload ? result.payload.error : result)
+        throw new Error(
+          'error' in result.payload ? result.payload.error : 'An error occurred while getting account.',
+        )
       }
     } catch (error) {
-      this.logError('[Trezor] Error getting accounts:', error)
+      const errorMessage = typeof error === 'string' ? error : String(error)
+      this.logError('[Trezor] Error getting accounts:', errorMessage)
+      throw new Error(errorMessage)
     }
 
     return []

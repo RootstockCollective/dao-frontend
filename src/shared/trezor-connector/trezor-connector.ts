@@ -1,6 +1,7 @@
 import { createConnector } from 'wagmi'
 import type { TrezorConnectorOptions } from './types'
 import { TrezorHardwareWallet } from './trezor-hardware-wallet'
+import { getAddress } from 'viem'
 
 /**
  * Creates a Wagmi connector for Trezor hardware wallet
@@ -30,6 +31,7 @@ export function trezorWalletConnector(options: TrezorConnectorOptions = {}) {
       derivationPath: options.derivationPath || "m/44'/60'/0'/0/0",
       defaultChainId,
       rpcUrls,
+      getAddress,
     })
 
     // Return Wagmi connector interface with methods mapped to the wallet instance
