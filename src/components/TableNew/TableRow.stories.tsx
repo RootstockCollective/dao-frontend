@@ -25,7 +25,7 @@ const meta: Meta<typeof TableRow> = {
                   style={{
                     fontWeight: 700,
                     fontSize: '16px',
-                    borderBottom: '1px solid #2D2D2D',
+                    borderBottom: '1px solid var(--color-v3-bg-accent-80)',
                     fontFamily: 'rootstock-sans',
                   }}
                 >
@@ -35,7 +35,7 @@ const meta: Meta<typeof TableRow> = {
                   style={{
                     fontWeight: 700,
                     fontSize: '16px',
-                    borderBottom: '1px solid #2D2D2D',
+                    borderBottom: '1px solid var(--color-v3-bg-accent-80)',
                     fontFamily: 'rootstock-sans',
                   }}
                 >
@@ -45,7 +45,7 @@ const meta: Meta<typeof TableRow> = {
                   style={{
                     fontWeight: 700,
                     fontSize: '16px',
-                    borderBottom: '1px solid #2D2D2D',
+                    borderBottom: '1px solid var(--color-v3-bg-accent-80)',
                     fontFamily: 'rootstock-sans',
                   }}
                 >
@@ -144,7 +144,7 @@ export const MultipleRows: Story = {
                 style={{
                   fontWeight: 700,
                   fontSize: '16px',
-                  borderBottom: '1px solid #2D2D2D',
+                  borderBottom: '1px solid var(--color-v3-bg-accent-80)',
                   fontFamily: 'rootstock-sans',
                 }}
               >
@@ -154,7 +154,7 @@ export const MultipleRows: Story = {
                 style={{
                   fontWeight: 700,
                   fontSize: '16px',
-                  borderBottom: '1px solid #2D2D2D',
+                  borderBottom: '1px solid var(--color-v3-bg-accent-80)',
                   fontFamily: 'rootstock-sans',
                 }}
               >
@@ -164,7 +164,7 @@ export const MultipleRows: Story = {
                 style={{
                   fontWeight: 700,
                   fontSize: '16px',
-                  borderBottom: '1px solid #2D2D2D',
+                  borderBottom: '1px solid var(--color-v3-bg-accent-80)',
                   fontFamily: 'rootstock-sans',
                 }}
               >

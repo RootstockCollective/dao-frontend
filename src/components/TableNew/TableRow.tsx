@@ -65,8 +65,8 @@ export const TableRow: FC<TableRowProps> = ({
           'text-[14px] border-hidden relative',
           selectable && [
             'cursor-pointer transition-all duration-150',
-            'hover:bg-[#E4E1DA] hover:border-b hover:border-[#37322F]',
-            'hover:[&_*]:text-[#171412]',
+            'hover:bg-[var(--color-v3-text-80)] hover:border-b hover:border-[var(--color-v3-bg-accent-60)]',
+            'hover:[&_*]:text-[var(--color-v3-bg-accent-100)]',
             isSelected && 'bg-white/5 border-primary/20',
           ],
           className,
@@ -98,8 +98,8 @@ export const TableRow: FC<TableRowProps> = ({
             gap: '8px',
             alignSelf: 'stretch',
             borderRadius: '4px',
-            background: 'var(--Text-80, #E4E1DA)',
-            boxShadow: '0px 8px 24px 0px rgba(23, 20, 18, 0.14)',
+            background: 'var(--color-v3-text-80)',
+            boxShadow: '0px 8px 24px 0px rgb(from var(--color-v3-bg-accent-100) r g b / 0.14)',
           }}
         >
           <span
