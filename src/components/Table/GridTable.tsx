@@ -17,7 +17,7 @@ interface Props<T> extends HTMLAttributes<HTMLDivElement> {
  */
 export function GridTable<T>({ className, table, stackFirstColumn = false, ...props }: Props<T>) {
   const numCols = table.getAllColumns().length - Number(stackFirstColumn)
-  const gridTemplateColumns = `repeat(${numCols}, minmax(0, 1fr))`
+  const gridTemplateColumns = `repeat(${numCols}, 1fr)`
   return (
     <div role="table" className={className} {...props}>
       {/* Table head */}
@@ -69,7 +69,7 @@ export function GridTable<T>({ className, table, stackFirstColumn = false, ...pr
               return (
                 <div
                   role="cell"
-                  className={cn({ 'pb-[22px]': isStacked })}
+                  className={cn('overflow-hidden', { 'pb-[22px]': isStacked })}
                   key={cell.id}
                   style={{
                     // stacked cells span full width, others occupy their original column

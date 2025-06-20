@@ -34,7 +34,6 @@ export const VotesColumn = ({ forVotes, abstainVotes, quorumAtSnapshot }: VotesC
         {formatNumberWithCommas(quorumVotes.round().toString())} (
         {formatNumberWithCommas(percentageToShow.toString())}%)
       </p>
-      <p>Quorum: {formatNumberWithCommas(quorumToShow.toString())}</p>
     </>
   )
 }

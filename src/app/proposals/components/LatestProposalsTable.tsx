@@ -1,5 +1,5 @@
 import { useMemo, memo, useState, useEffect, useCallback, useRef } from 'react'
-import { motion } from 'motion/react'
+import { AnimatePresence, motion } from 'motion/react'
 import {
   createColumnHelper,
   type SortingState,
@@ -29,6 +29,8 @@ import { mockProposalListData } from './mockProposalData'
 import { splitCombinedName } from '../shared/utils'
 import { PizzaChart } from '@/components/PizzaChart'
 import { Status } from '@/components/Status'
+import { SearchIcon } from '@/components/Icons'
+import { Tooltip } from '@/components/Tooltip'
 
 interface LatestProposalsTableProps {
   proposals: LatestProposalResponse[]
@@ -38,11 +40,12 @@ interface LatestProposalsTableProps {
 const LatestProposalsTable = ({ proposals, onEmitActiveProposal }: LatestProposalsTableProps) => {
   // search textfield
   const [searchedProposal, setSearchedProposal] = useState('')
+  const [searchVisible, setSearchVisible] = useState(false)
   // React-table sorting state
   const [sorting, setSorting] = useState<SortingState>([])
   // query all proposals parameters at the Governor after receiving proposal list
-  /* const proposalListData = useProposalListData({ proposals }) */
-  const proposalListData = mockProposalListData
+  const proposalListData = useProposalListData({ proposals })
+  /* const proposalListData = mockProposalListData */ // mocked proposals
   // filter all proposals after user typed text in the search field
   const filteredProposalList = useMemo(
     () =>
@@ -135,7 +138,6 @@ const LatestProposalsTable = ({ proposals, onEmitActiveProposal }: LatestProposa
         const { builderName, proposalName } = splitCombinedName(info.row.original.name)
         return <p>by {builderName ?? proposalName.split(' ').at(0) ?? 'unknown'}</p>
       },
-      // sortingFn: (rowA, rowB) => rowA.original.name.localeCompare(rowB.original.name),
     }),
     accessor(row => row.Starts.unix(), {
       id: 'date',
@@ -276,22 +278,52 @@ const LatestProposalsTable = ({ proposals, onEmitActiveProposal }: LatestProposa
 
   return (
     <div className="py-4 px-6 rounded-sm bg-bg-80">
-      <div className="mb-10 w-full flex items-center gap-4">
+      <div className="mb-8 w-full flex items-center gap-4">
         <h2 className="font-kk-topo text-xl leading-tight uppercase tracking-wide">Latest Proposals</h2>
-        <div className="grow flex justify-end">
-          <DebounceSearch
-            className="w-full max-w-[776px]"
-            placeholder="Search a proposal"
-            onSearchSubmit={handleSearch}
-            onClearHandler={handler => {
-              clearSearchRef.current = handler
-            }}
-          />
+        <div className="grow h-[50px] flex justify-end">
+          <AnimatePresence>
+            {searchVisible && (
+              <motion.div
+                initial={{ opacity: 0 }}
+                animate={{ opacity: searchVisible ? 1 : 0, x: 0 }}
+                exit={{ opacity: 0 }}
+                className="w-full  max-w-[776px]"
+              >
+                <DebounceSearch
+                  placeholder="Search a proposal"
+                  onSearchSubmit={handleSearch}
+                  onClearHandler={handler => {
+                    clearSearchRef.current = handler
+                  }}
+                />
+              </motion.div>
+            )}
+          </AnimatePresence>
         </div>
-        <div className="flex gap-2">
+        <div className="flex items-center gap-4">
+          <AnimatePresence>
+            {!searchVisible && (
+              <motion.div
+                initial={{ x: 16, opacity: 0 }}
+                animate={{ x: 0, opacity: 1 }}
+                exit={{ x: 16, opacity: 0 }}
+              >
+                <Tooltip text="Search proposals">
+                  <button className="cursor-pointer" onClick={() => setSearchVisible(v => !v)}>
+                    <SearchIcon size={16} />
+                  </button>
+                </Tooltip>
+              </motion.div>
+            )}
+          </AnimatePresence>
           <FilterButton
             isOpen={isFilterSidebarOpen}
-            setIsOpen={setIsFilterSidebarOpen}
+            setIsOpen={state => {
+              setIsFilterSidebarOpen(state)
+              if (state) {
+                setSearchVisible(false)
+              }
+            }}
             disabled={proposalListData.length === 0}
             isFiltering={activeFilter > 0}
           />
