@@ -10,6 +10,7 @@ import { ActionMetricsContainer, ActionsContainer, MetricsContainer } from '@/co
 import { BuildersSpotlight } from '@/app/backing/components/BuildersSpotlight/BuildersSpotlight'
 import { BackingBanner } from '@/app/backing/components/BackingBanner/BackingBanner'
 import { BackingInfoContainer } from '@/app/backing/components/Container/BackingInfoContainer/BackingInfoContainer'
+import { BackingInfoTitleControl } from '@/app/backing/components/BackingInfoTitle/BackingInfoTitleControl'
 import { AnnualBackersIncentivesMetric } from '@/app/backing/components/Metrics/AnnualBackersIncentivesMetric'
 import { EstimatedRewardsMetric } from '@/app/backing/components/Metrics/EstimatedRewardsMetric'
 import { useGetBuildersRewards } from '@/app/collective-rewards/rewards/builders/hooks/useGetBuildersRewards'
@@ -20,6 +21,7 @@ import { formatSymbol, getFiatAmount } from '@/app/collective-rewards/rewards'
 import { formatCurrency } from '@/lib/utils'
 
 const NAME = 'Backing'
+
 export const BackingPage = () => {
   const { isConnected } = useAccount()
   const { data: rewardsData, error: rewardsError } = useGetBuildersRewards(getTokens())
@@ -51,10 +53,7 @@ export const BackingPage = () => {
         {NAME}
       </Header>
       <div data-testid="CenterContainer" className="flex w-full items-stretch gap-2">
-        <BackingInfoContainer
-          className="grow-[9] h-full"
-          title="Support innovative Builders by allocating your stRIF to those you align with."
-        >
+        <BackingInfoContainer className="grow-[9] h-full" title={<BackingInfoTitleControl />}>
           <BackingBanner />
         </BackingInfoContainer>
         <MetricsContainer className="grow-[3] h-full bg-v3-bg-accent-80">
