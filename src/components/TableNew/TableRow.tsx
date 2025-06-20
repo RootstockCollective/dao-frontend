@@ -17,8 +17,8 @@ export const TableRow: FC<TableRowProps> = ({
   children,
   ...props
 }) => {
-  const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 })
   const [showTooltip, setShowTooltip] = useState(false)
+  const [tooltipPosition, setTooltipPosition] = useState({ top: 0, left: 0 })
 
   // Use context directly to avoid throwing errors when context is not available
   const tableContext = useContext(TableContext)
@@ -37,16 +37,17 @@ export const TableRow: FC<TableRowProps> = ({
     }
   }, [rowId, onClick, dispatch])
 
-  const handleMouseEnter = useCallback(() => {
+  const handleMouseEnter = useCallback((e: React.MouseEvent<HTMLTableRowElement>) => {
+    const rect = e.currentTarget.getBoundingClientRect()
+    setTooltipPosition({
+      top: rect.top - 10, // 10px above the row
+      left: rect.right + 10, // 10px to the right of the row
+    })
     setShowTooltip(true)
   }, [])
 
   const handleMouseLeave = useCallback(() => {
     setShowTooltip(false)
-  }, [])
-
-  const handleMouseMove = useCallback((e: React.MouseEvent) => {
-    setMousePosition({ x: e.clientX, y: e.clientY })
   }, [])
 
   return (
@@ -64,19 +65,18 @@ export const TableRow: FC<TableRowProps> = ({
         onClick={handleClick}
         onMouseEnter={handleMouseEnter}
         onMouseLeave={handleMouseLeave}
-        onMouseMove={handleMouseMove}
         data-selected={isSelected}
         {...props}
       >
         {children}
       </tr>
 
-      {showTooltip && (
+      {showTooltip && !isSelected && (
         <div
           className="fixed pointer-events-none z-50 flex p-6 flex-col items-start gap-2 self-stretch rounded bg-[var(--color-v3-text-80)] shadow-[0px_8px_24px_0px_rgb(from_var(--color-v3-bg-accent-100)_r_g_b_/_0.14)]"
           style={{
-            left: mousePosition.x + 10,
-            top: mousePosition.y - 10,
+            top: tooltipPosition.top,
+            left: tooltipPosition.left,
           }}
         >
           <span className="text-sm font-normal leading-[1.45] self-stretch text-[var(--color-v3-bg-accent-100)] font-[Rootstock_Sans]">
