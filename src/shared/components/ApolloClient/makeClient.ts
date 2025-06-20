@@ -1,4 +1,4 @@
-import { fetchCrTheGraphEndpoint } from '@/lib/the-graph'
+import { fetchCrTheGraphEndpoint, fetchDaoTheGraphEndpoint } from '@/lib/the-graph'
 import { HttpLink } from '@apollo/client'
 import { ApolloClient, InMemoryCache } from '@apollo/client-integration-nextjs'
 
@@ -29,3 +29,4 @@ export function makeClient(uri: string) {
 }
 
 export const client = makeClient(fetchCrTheGraphEndpoint)
+export const daoClient = makeClient(fetchDaoTheGraphEndpoint)
