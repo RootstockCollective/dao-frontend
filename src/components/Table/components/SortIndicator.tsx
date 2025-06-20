@@ -11,9 +11,13 @@ interface SortIndicatorProps extends PropsWithChildren {
 
 export function SortIndicator({ children, sortDirection, sortEnabled = true }: SortIndicatorProps) {
   return (
-    <div className={cn('flex items-start gap-1', { 'cursor-pointer': sortEnabled })}>
+    <div
+      className={cn('flex items-start gap-1', {
+        'cursor-pointer': sortEnabled,
+      })}
+    >
       {sortEnabled && (
-        <div className={cn('p-0.5 flex items-center', { 'opacity-50': !sortEnabled })}>
+        <div className={cn('pt-1 flex items-center', { 'opacity-50': !sortEnabled })}>
           {sortDirection === 'asc' ? (
             <ArrowIcon />
           ) : sortDirection === 'desc' ? (
@@ -23,7 +27,7 @@ export function SortIndicator({ children, sortDirection, sortEnabled = true }: S
           )}
         </div>
       )}
-      <div>{children}</div>
+      <div className="grow">{children}</div>
     </div>
   )
 }
