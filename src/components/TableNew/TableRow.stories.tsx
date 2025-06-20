@@ -21,34 +21,13 @@ const meta: Meta<typeof TableRow> = {
           <TableCore>
             <TableHead>
               <TableRow>
-                <TableCell
-                  style={{
-                    fontWeight: 700,
-                    fontSize: '16px',
-                    borderBottom: '1px solid var(--color-v3-bg-accent-80)',
-                    fontFamily: 'rootstock-sans',
-                  }}
-                >
+                <TableCell className="font-bold text-base border-b border-[var(--color-v3-bg-accent-80)] font-[rootstock-sans]">
                   Column 1
                 </TableCell>
-                <TableCell
-                  style={{
-                    fontWeight: 700,
-                    fontSize: '16px',
-                    borderBottom: '1px solid var(--color-v3-bg-accent-80)',
-                    fontFamily: 'rootstock-sans',
-                  }}
-                >
+                <TableCell className="font-bold text-base border-b border-[var(--color-v3-bg-accent-80)] font-[rootstock-sans]">
                   Column 2
                 </TableCell>
-                <TableCell
-                  style={{
-                    fontWeight: 700,
-                    fontSize: '16px',
-                    borderBottom: '1px solid var(--color-v3-bg-accent-80)',
-                    fontFamily: 'rootstock-sans',
-                  }}
-                >
+                <TableCell className="font-bold text-base border-b border-[var(--color-v3-bg-accent-80)] font-[rootstock-sans]">
                   Column 3
                 </TableCell>
               </TableRow>
@@ -72,17 +51,17 @@ export const Default: Story = {
     children: (
       <>
         <TableCell>
-          <Span className="text-[14px]" variant="light">
+          <Span className="text-sm" variant="light">
             Cell 1
           </Span>
         </TableCell>
         <TableCell>
-          <Span className="text-[14px]" variant="light">
+          <Span className="text-sm" variant="light">
             Cell 2
           </Span>
         </TableCell>
         <TableCell>
-          <Span className="text-[14px]" variant="light">
+          <Span className="text-sm" variant="light">
             Cell 3
           </Span>
         </TableCell>
@@ -93,7 +72,7 @@ export const Default: Story = {
     docs: {
       description: {
         story:
-          'Basic TableRow with consistent typography using text-[14px] and Span component with light variant, matching existing Table component patterns.',
+          'Basic TableRow with consistent typography using text-sm and Span component with light variant, matching existing Table component patterns.',
       },
     },
   },
@@ -106,17 +85,17 @@ export const Selectable: Story = {
     children: (
       <>
         <TableCell>
-          <Span className="text-[14px]" variant="light">
+          <Span className="text-sm" variant="light">
             Selectable Row
           </Span>
         </TableCell>
         <TableCell>
-          <Span className="text-[14px]" variant="light">
+          <Span className="text-sm" variant="light">
             Click me
           </Span>
         </TableCell>
         <TableCell>
-          <Span className="text-[14px]" variant="light">
+          <Span className="text-sm" variant="light">
             I highlight on hover
           </Span>
         </TableCell>
@@ -140,34 +119,13 @@ export const MultipleRows: Story = {
         <TableCore>
           <TableHead>
             <TableRow>
-              <TableCell
-                style={{
-                  fontWeight: 700,
-                  fontSize: '16px',
-                  borderBottom: '1px solid var(--color-v3-bg-accent-80)',
-                  fontFamily: 'rootstock-sans',
-                }}
-              >
+              <TableCell className="font-bold text-base border-b border-[var(--color-v3-bg-accent-80)] font-[rootstock-sans]">
                 Name
               </TableCell>
-              <TableCell
-                style={{
-                  fontWeight: 700,
-                  fontSize: '16px',
-                  borderBottom: '1px solid var(--color-v3-bg-accent-80)',
-                  fontFamily: 'rootstock-sans',
-                }}
-              >
+              <TableCell className="font-bold text-base border-b border-[var(--color-v3-bg-accent-80)] font-[rootstock-sans]">
                 Data
               </TableCell>
-              <TableCell
-                style={{
-                  fontWeight: 700,
-                  fontSize: '16px',
-                  borderBottom: '1px solid var(--color-v3-bg-accent-80)',
-                  fontFamily: 'rootstock-sans',
-                }}
-              >
+              <TableCell className="font-bold text-base border-b border-[var(--color-v3-bg-accent-80)] font-[rootstock-sans]">
                 Action
               </TableCell>
             </TableRow>
@@ -175,51 +133,51 @@ export const MultipleRows: Story = {
           <TableBody>
             <TableRow rowId="row-1" selectable>
               <TableCell>
-                <Span className="text-[14px]" variant="light">
+                <Span className="text-sm" variant="light">
                   Row 1
                 </Span>
               </TableCell>
               <TableCell>
-                <Span className="text-[14px]" variant="light">
+                <Span className="text-sm" variant="light">
                   Data 1
                 </Span>
               </TableCell>
               <TableCell>
-                <Span className="text-[14px]" variant="light">
+                <Span className="text-sm" variant="light">
                   Action 1
                 </Span>
               </TableCell>
             </TableRow>
             <TableRow rowId="row-2" selectable>
               <TableCell>
-                <Span className="text-[14px]" variant="light">
+                <Span className="text-sm" variant="light">
                   Row 2
                 </Span>
               </TableCell>
               <TableCell>
-                <Span className="text-[14px]" variant="light">
+                <Span className="text-sm" variant="light">
                   Data 2
                 </Span>
               </TableCell>
               <TableCell>
-                <Span className="text-[14px]" variant="light">
+                <Span className="text-sm" variant="light">
                   Action 2
                 </Span>
               </TableCell>
             </TableRow>
             <TableRow rowId="row-3" selectable>
               <TableCell>
-                <Span className="text-[14px]" variant="light">
+                <Span className="text-sm" variant="light">
                   Row 3
                 </Span>
               </TableCell>
               <TableCell>
-                <Span className="text-[14px]" variant="light">
+                <Span className="text-sm" variant="light">
                   Data 3
                 </Span>
               </TableCell>
               <TableCell>
-                <Span className="text-[14px]" variant="light">
+                <Span className="text-sm" variant="light">
                   Action 3
                 </Span>
               </TableCell>
@@ -245,7 +203,7 @@ Complete example showing TableRow multi-selection functionality with the shared 
 
 **Design Consistency:**
 - Headers use rootstock-sans font, 16px, bold
-- Rows use text-[14px] class with Span component and "light" variant
+- Rows use text-sm class with Span component and "light" variant
 - Selection states use subtle styling
         `,
       },
