@@ -10,10 +10,7 @@ import {
   PaginationState,
 } from '@tanstack/react-table'
 import { type LatestProposalResponse } from '../hooks/useFetchLatestProposals'
-import { StatusColumn } from './table-columns/StatusColumn'
 import { GridTable } from '@/components/Table'
-import { Typography } from '@/components/Typography'
-import { SentimentColumn } from './table-columns/SentimentColumn'
 import { ProposalNameColumn } from './table-columns/ProposalNameColumn'
 import { VotesColumn } from './table-columns/VotesColumn'
 import { TimeColumn } from './table-columns/TimeColumn'
@@ -30,6 +27,10 @@ import { cn } from '@/lib/utils'
 import { useClickOutside } from '@/shared/hooks/useClickOutside'
 import { mockProposalListData } from './mockProposalData'
 import { splitCombinedName } from '../shared/utils'
+import { PizzaChart } from '@/components/PizzaChart'
+import { Status } from '@/components/Status'
+import { SearchIcon } from '@/components/Icons'
+import { Tooltip } from '@/components/Tooltip'
 
 interface LatestProposalsTableProps {
   proposals: LatestProposalResponse[]
@@ -157,37 +158,47 @@ const LatestProposalsTable = ({ proposals, onEmitActiveProposal }: LatestProposa
         )
       },
     }),
-    accessor(row => row.votes, {
-      id: 'sentiment',
-      header: 'Sentiment',
-      cell: info => (
-        <SentimentColumn
-          index={info.row.index}
-          againstVotes={info.row.original.votes?.againstVotes}
-          forVotes={info.row.original.votes?.forVotes}
-          abstainVotes={info.row.original.votes?.abstainVotes}
-        />
-      ),
-      sortingFn: (rowA, rowB) => {
-        const getDominantVoteType = (votesData: typeof rowA.original.votes) => {
-          const { againstVotes, forVotes, abstainVotes } = votesData
-          const maxCount = Big.max(againstVotes, forVotes, abstainVotes)
-          if (maxCount === forVotes) return { type: 'for', count: maxCount, priority: 1 }
-          if (maxCount === againstVotes) return { type: 'against', count: maxCount, priority: 2 }
-          else return { type: 'abstain', count: maxCount, priority: 3 }
-        }
-        const dominantA = getDominantVoteType(rowA.original.votes)
-        const dominantB = getDominantVoteType(rowB.original.votes)
-        if (dominantA.type === dominantB.type) {
-          return dominantB.count.minus(dominantA.count).toNumber()
-        }
-        return dominantA.priority - dominantB.priority
+    accessor('votes.quorum', {
+      id: 'quorum',
+      header: 'Quorum',
+      cell: info => {
+        const { forVotes, abstainVotes } = info.row.original.votes
+        return (
+          <VotesColumn
+            forVotes={forVotes}
+            abstainVotes={abstainVotes}
+            quorumAtSnapshot={info.row.original.quorumAtSnapshot}
+          />
+        )
+      },
+    }),
+    accessor('votes', {
+      id: 'votes',
+      header: 'Votes',
+      cell: info => {
+        const { forVotes, abstainVotes, againstVotes } = info.row.original.votes
+        return (
+          <div className="flex flex-wrap items-center justify-end gap-3">
+            <p>{forVotes.add(abstainVotes).add(againstVotes).toNumber().toLocaleString('en-US')}</p>
+            <PizzaChart
+              segments={[
+                { name: 'For', value: forVotes.toNumber() },
+                { name: 'Abstain', value: abstainVotes.toNumber() },
+                { name: 'Against', value: againstVotes.toNumber() },
+              ]}
+            />
+          </div>
+        )
       },
     }),
     accessor('proposalState', {
       id: 'status',
-      header: 'Status',
-      cell: info => <StatusColumn proposalState={info.row.original.proposalState} />,
+      header: xxx => <div className="">Status</div>,
+      cell: info => (
+        <div className="flex justify-end">
+          <Status proposalState={info.row.original.proposalState} />
+        </div>
+      ),
     }),
   ]
 
@@ -379,9 +390,7 @@ const LatestProposalsTable = ({ proposals, onEmitActiveProposal }: LatestProposa
               </div>
             </div>
           ) : (
-            <Typography tagVariant="p" data-testid="NoProposals">
-              No proposals found &#x1F622;
-            </Typography>
+            <p data-testid="NoProposals">No proposals found &#x1F622;</p>
           )}
         </div>
       </div>

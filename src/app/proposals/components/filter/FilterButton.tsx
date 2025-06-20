@@ -27,15 +27,13 @@ export function FilterButton({
     setIsOpen(false)
   }, [disabled, setIsOpen])
   return (
-    <Tooltip disabled={disabled} text={isOpen ? 'Close filter' : 'Filter proposals'}>
-      <button
-        disabled={disabled}
-        onClick={() => setIsOpen(!isOpen)}
-        className={cn({ 'opacity-50': disabled }, className)}
-        {...props}
-      >
-        {isOpen ? <CloseIcon /> : <FilterIcon color={isFiltering ? 'var(--primary)' : undefined} />}
-      </button>
-    </Tooltip>
+    <button
+      disabled={disabled}
+      onClick={() => setIsOpen(!isOpen)}
+      className={cn({ 'opacity-50': disabled }, className)}
+      {...props}
+    >
+      {isOpen ? <CloseIcon /> : <FilterIcon color={isFiltering ? 'var(--primary)' : undefined} />}
+    </button>
   )
 }
