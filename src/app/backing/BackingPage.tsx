@@ -6,12 +6,7 @@ import { usePricesContext } from '@/shared/context/PricesContext'
 import { AllocationsContext } from '@/app/collective-rewards/allocations/context/AllocationsContext'
 import { RIF } from '@/lib/constants'
 import { AvailableBackingMetric, TotalBackingMetric } from './components'
-import {
-  ActionMetricsContainer,
-  ActionsContainer,
-  InfoContainer,
-  MetricsContainer,
-} from '@/components/containers'
+import { ActionMetricsContainer, ActionsContainer, MetricsContainer } from '@/components/containers'
 import { BuildersSpotlight } from '@/app/backing/components/BuildersSpotlight/BuildersSpotlight'
 import { BackingBanner } from '@/app/backing/components/BackingBanner/BackingBanner'
 import { BackingInfoContainer } from '@/app/backing/components/Container/BackingInfoContainer/BackingInfoContainer'
@@ -38,8 +33,7 @@ export const BackingPage = () => {
   } = useContext(AllocationsContext)
   const rifPriceUsd = prices[RIF]?.price ?? 0
 
-  const availableForBackingBigInt =
-    !votingPower || !totalOnchainAllocation ? 0n : votingPower - totalOnchainAllocation
+  const availableForBackingBigInt = !votingPower ? 0n : votingPower - totalOnchainAllocation
 
   const totalBackingBigInt = !totalOnchainAllocation ? 0n : totalOnchainAllocation
 
