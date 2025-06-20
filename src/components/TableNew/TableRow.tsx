@@ -53,17 +53,14 @@ export const TableRow: FC<TableRowProps> = ({
     <>
       <tr
         className={cn(
-          'text-sm border-hidden relative',
+          'text-sm border-hidden relative border-t-solid',
           'cursor-pointer transition-all duration-150',
           'hover:bg-[var(--color-v3-text-80)] hover:border-b hover:border-[var(--color-v3-bg-accent-60)]',
           'hover:[&_*]:text-[var(--color-v3-bg-accent-100)]',
           isSelected && 'bg-white/5 border-primary/20',
           className,
         )}
-        style={{
-          borderTopStyle: 'solid',
-          ...props.style,
-        }}
+        style={props.style}
         onClick={handleClick}
         onMouseEnter={handleMouseEnter}
         onMouseLeave={handleMouseLeave}
@@ -82,12 +79,7 @@ export const TableRow: FC<TableRowProps> = ({
             top: mousePosition.y - 10,
           }}
         >
-          <span
-            className="text-sm font-normal leading-[1.45] self-stretch text-[var(--color-v3-bg-accent-100)]"
-            style={{
-              fontFamily: 'Rootstock Sans',
-            }}
-          >
+          <span className="text-sm font-normal leading-[1.45] self-stretch text-[var(--color-v3-bg-accent-100)] font-[Rootstock_Sans]">
             Select the row
           </span>
         </div>
