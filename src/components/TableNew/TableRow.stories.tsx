@@ -81,7 +81,6 @@ export const Default: Story = {
 export const Selectable: Story = {
   args: {
     rowId: 'row-1',
-    selectable: true,
     children: (
       <>
         <TableCell>
@@ -131,7 +130,7 @@ export const MultipleRows: Story = {
             </TableRow>
           </TableHead>
           <TableBody>
-            <TableRow rowId="row-1" selectable>
+            <TableRow rowId="row-1">
               <TableCell>
                 <Span className="text-sm" variant="light">
                   Row 1
@@ -148,7 +147,7 @@ export const MultipleRows: Story = {
                 </Span>
               </TableCell>
             </TableRow>
-            <TableRow rowId="row-2" selectable>
+            <TableRow rowId="row-2">
               <TableCell>
                 <Span className="text-sm" variant="light">
                   Row 2
@@ -165,7 +164,7 @@ export const MultipleRows: Story = {
                 </Span>
               </TableCell>
             </TableRow>
-            <TableRow rowId="row-3" selectable>
+            <TableRow rowId="row-3">
               <TableCell>
                 <Span className="text-sm" variant="light">
                   Row 3

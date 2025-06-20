@@ -7,7 +7,6 @@ interface TableRowProps extends Omit<TableHTMLAttributes<HTMLTableRowElement>, '
   rowId?: string
   isSelected?: boolean
   onClick?: (rowId: string) => void
-  selectable?: boolean
 }
 
 export const TableRow: FC<TableRowProps> = ({
@@ -15,7 +14,6 @@ export const TableRow: FC<TableRowProps> = ({
   rowId,
   isSelected: externalIsSelected,
   onClick,
-  selectable = false,
   children,
   ...props
 }) => {
@@ -30,45 +28,36 @@ export const TableRow: FC<TableRowProps> = ({
     externalIsSelected ?? (rowId && tableContext ? !!tableContext.selectedRows[rowId] : false)
 
   const handleClick = useCallback(() => {
-    if (selectable && rowId) {
+    if (rowId) {
       if (onClick) {
         onClick(rowId)
       } else if (dispatch) {
         dispatch({ type: 'TOGGLE_ROW_SELECTION', payload: rowId })
       }
     }
-  }, [selectable, rowId, onClick, dispatch])
+  }, [rowId, onClick, dispatch])
 
   const handleMouseEnter = useCallback(() => {
-    if (selectable) {
-      setShowTooltip(true)
-    }
-  }, [selectable])
+    setShowTooltip(true)
+  }, [])
 
   const handleMouseLeave = useCallback(() => {
     setShowTooltip(false)
   }, [])
 
-  const handleMouseMove = useCallback(
-    (e: React.MouseEvent) => {
-      if (selectable) {
-        setMousePosition({ x: e.clientX, y: e.clientY })
-      }
-    },
-    [selectable],
-  )
+  const handleMouseMove = useCallback((e: React.MouseEvent) => {
+    setMousePosition({ x: e.clientX, y: e.clientY })
+  }, [])
 
   return (
     <>
       <tr
         className={cn(
           'text-sm border-hidden relative',
-          selectable && [
-            'cursor-pointer transition-all duration-150',
-            'hover:bg-[var(--color-v3-text-80)] hover:border-b hover:border-[var(--color-v3-bg-accent-60)]',
-            'hover:[&_*]:text-[var(--color-v3-bg-accent-100)]',
-            isSelected && 'bg-white/5 border-primary/20',
-          ],
+          'cursor-pointer transition-all duration-150',
+          'hover:bg-[var(--color-v3-text-80)] hover:border-b hover:border-[var(--color-v3-bg-accent-60)]',
+          'hover:[&_*]:text-[var(--color-v3-bg-accent-100)]',
+          isSelected && 'bg-white/5 border-primary/20',
           className,
         )}
         style={{
@@ -85,7 +74,7 @@ export const TableRow: FC<TableRowProps> = ({
         {children}
       </tr>
 
-      {showTooltip && selectable && (
+      {showTooltip && (
         <div
           className="fixed pointer-events-none z-50 flex p-6 flex-col items-start gap-2 self-stretch rounded bg-[var(--color-v3-text-80)] shadow-[0px_8px_24px_0px_rgb(from_var(--color-v3-bg-accent-100)_r_g_b_/_0.14)]"
           style={{
