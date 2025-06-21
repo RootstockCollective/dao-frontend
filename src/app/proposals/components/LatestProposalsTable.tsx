@@ -1,4 +1,5 @@
 'use client'
+/* eslint-disable prettier/prettier */
 import { useMemo, memo, useState, useEffect, useCallback, useRef } from 'react'
 import { AnimatePresence, motion } from 'motion/react'
 import {
