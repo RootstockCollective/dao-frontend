@@ -31,6 +31,8 @@ import { PizzaChart } from '@/components/PizzaChart'
 import { Status } from '@/components/Status'
 import { SearchIcon } from '@/components/Icons'
 import { Tooltip } from '@/components/Tooltip'
+import { CategoryColumn } from './table-columns/CategoryColumn'
+import { KotoQuestionMarkIcon } from '@/components/Icons'
 
 interface LatestProposalsTableProps {
   proposals: LatestProposalResponse[]
@@ -40,11 +42,12 @@ interface LatestProposalsTableProps {
 const LatestProposalsTable = ({ proposals, onEmitActiveProposal }: LatestProposalsTableProps) => {
   // search textfield
   const [searchedProposal, setSearchedProposal] = useState('')
+  const [searchVisible, setSearchVisible] = useState(false)
   // React-table sorting state
   const [sorting, setSorting] = useState<SortingState>([])
   // query all proposals parameters at the Governor after receiving proposal list
   /* const proposalListData = useProposalListData({ proposals }) */
-  const proposalListData = mockProposalListData
+  const proposalListData = mockProposalListData // mocked proposals
   // filter all proposals after user typed text in the search field
   const filteredProposalList = useMemo(
     () =>
@@ -190,6 +193,17 @@ const LatestProposalsTable = ({ proposals, onEmitActiveProposal }: LatestProposa
         )
       },
     }),
+    accessor('category', {
+      id: 'category',
+      header: 'Cat.',
+      meta: {
+        width: '0.5fr',
+      },
+      cell: ({ cell }) => {
+        const category = cell.getValue()
+        return <CategoryColumn category={category} />
+      },
+    }),
     accessor('proposalState', {
       id: 'status',
       header: xxx => <div className="">Status</div>,
@@ -198,6 +212,9 @@ const LatestProposalsTable = ({ proposals, onEmitActiveProposal }: LatestProposa
           <Status proposalState={info.row.original.proposalState} />
         </div>
       ),
+      meta: {
+        width: '70px',
+      },
     }),
   ]
 

@@ -1,13 +1,14 @@
 import { formatNumberWithCommas } from '@/lib/utils'
 import Big from '@/lib/big'
+import { PizzaChart } from '@/components/PizzaChart'
 
-interface VotesColumnProps {
+interface QuorumColumnProps {
   forVotes: Big
   abstainVotes: Big
   quorumAtSnapshot: Big
 }
 
-export const VotesColumn = ({ forVotes, abstainVotes, quorumAtSnapshot }: VotesColumnProps) => {
+export const QuorumColumn = ({ forVotes, abstainVotes, quorumAtSnapshot }: QuorumColumnProps) => {
   // Calculate the total votes considered for the quorum
   const quorumVotes = forVotes.add(abstainVotes)
 
@@ -31,9 +32,26 @@ export const VotesColumn = ({ forVotes, abstainVotes, quorumAtSnapshot }: VotesC
   return (
     <>
       <p className={colorClass}>
-        {formatNumberWithCommas(quorumVotes.round().toString())}&nbsp;|&nbsp;
+        {formatNumberWithCommas(quorumToShow)}&nbsp;|&nbsp;
         {formatNumberWithCommas(percentageToShow.toString())}%
       </p>
     </>
   )
 }
+interface VotesColumnProps {
+  forVotes: number
+  againstVotes: number
+  abstainVotes: number
+}
+export const VotesColumn = ({ forVotes, againstVotes, abstainVotes }: VotesColumnProps) => (
+  <div className="flex flex-wrap items-center justify-end gap-3">
+    <p>{forVotes + againstVotes + abstainVotes}</p>
+    <PizzaChart
+      segments={[
+        { name: 'For', value: forVotes },
+        { name: 'Abstain', value: abstainVotes },
+        { name: 'Against', value: againstVotes },
+      ]}
+    />
+  </div>
+)
