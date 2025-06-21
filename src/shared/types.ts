@@ -96,3 +96,9 @@ export type TxMessage =
 export type TxStatus = 'info' | 'success' | 'error'
 
 export type TxAction = keyof typeof TX_MESSAGES
+
+export enum ProposalCategory {
+  Grants = 'Grants',
+  Builder = 'Builder',
+  Treasury = 'Treasury',
+}

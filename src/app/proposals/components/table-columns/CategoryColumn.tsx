@@ -1,14 +1,25 @@
-import { Category } from '@/components/Category/Category'
-import { type CategoryType } from '@/components/Category/types'
+import { Tooltip } from '@/components/Tooltip'
+import { GrantsIcon } from './icons/GrantsIcon'
+import { ToolsIcon } from './icons/ToolsIcon'
+import { ProposalCategory } from '@/shared/types'
+import { TreasuryIcon } from './icons/TreasuryIcon'
 
-interface CategoryColumnProps {
-  proposalCategory: string | undefined
+const icons = {
+  [ProposalCategory.Grants]: <GrantsIcon />,
+  [ProposalCategory.Builder]: <ToolsIcon />,
+  [ProposalCategory.Treasury]: <TreasuryIcon />,
+} as const satisfies Record<ProposalCategory, React.JSX.Element>
+
+interface Props {
+  category: ProposalCategory
 }
 
-export const CategoryColumn = ({ proposalCategory }: CategoryColumnProps) => {
-  if (typeof proposalCategory === 'undefined') {
-    return null
-  }
-  const category = proposalCategory as CategoryType
-  return <Category category={category} />
+export function CategoryColumn({ category }: Props) {
+  return (
+    <div className="flex justify-center">
+      <Tooltip text={category}>
+        <div>{icons[category]}</div>
+      </Tooltip>
+    </div>
+  )
 }

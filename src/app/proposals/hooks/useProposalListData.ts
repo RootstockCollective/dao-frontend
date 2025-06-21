@@ -5,7 +5,7 @@ import { governor } from '@/lib/contracts'
 import { type LatestProposalResponse } from './useFetchLatestProposals'
 import { type EventArgumentsParameter, getEventArguments } from '../shared/utils'
 import Big from '@/lib/big'
-import { ProposalState } from '@/shared/types'
+import { ProposalCategory, ProposalState } from '@/shared/types'
 
 interface Props {
   /**
@@ -59,11 +59,11 @@ export function useProposalListData({ proposals }: Props) {
         const creationBlock = Number(proposal.blockNumber)
         const eventArgs = getEventArguments(proposal as unknown as EventArgumentsParameter)
         const { calldatasParsed } = eventArgs
-        const category = calldatasParsed
+        const category: ProposalCategory = calldatasParsed
           .filter(data => data.type === 'decoded')
           .find(data => ['withdraw', 'withdrawERC20'].includes(data.functionName))
-          ? 'Grants'
-          : 'Builder'
+          ? ProposalCategory.Grants
+          : ProposalCategory.Builder
         return {
           ...proposal,
           votes: {
