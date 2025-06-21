@@ -11,7 +11,7 @@ import {
 } from '@tanstack/react-table'
 import { type LatestProposalResponse } from '../hooks/useFetchLatestProposals'
 import { GridTable } from '@/components/Table'
-import { ProposalNameColumn } from './table-columns/ProposalNameColumn'
+import { ProposalNameColumn, ProposalByColumn } from './table-columns/ProposalNameColumn'
 import { VotesColumn } from './table-columns/VotesColumn'
 import { TimeColumn } from './table-columns/TimeColumn'
 import { DebounceSearch } from '@/components/DebounceSearch'
@@ -133,9 +133,9 @@ const LatestProposalsTable = ({ proposals, onEmitActiveProposal }: LatestProposa
     accessor('name', {
       id: 'builderName',
       header: 'Proposal name',
-      cell: info => {
-        const { builderName, proposalName } = splitCombinedName(info.row.original.name)
-        return <p>by {builderName ?? proposalName.split(' ').at(0) ?? 'unknown'}</p>
+      cell: ({ cell }) => {
+        const { builderName, proposalName } = splitCombinedName(cell.getValue())
+        return <ProposalByColumn by={builderName ?? proposalName.split(' ').at(0) ?? 'unknown'} />
       },
     }),
     accessor(row => row.Starts.unix(), {
@@ -157,16 +157,16 @@ const LatestProposalsTable = ({ proposals, onEmitActiveProposal }: LatestProposa
         )
       },
     }),
-    accessor('votes.quorum', {
+    accessor('votes', {
       id: 'quorum',
       header: 'Quorum',
-      cell: info => {
-        const { forVotes, abstainVotes } = info.row.original.votes
+      cell: ({ cell, row }) => {
+        const { forVotes, abstainVotes } = cell.getValue()
         return (
           <VotesColumn
             forVotes={forVotes}
             abstainVotes={abstainVotes}
-            quorumAtSnapshot={info.row.original.quorumAtSnapshot}
+            quorumAtSnapshot={row.original.quorumAtSnapshot}
           />
         )
       },

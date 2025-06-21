@@ -17,3 +17,10 @@ export const ProposalNameColumn = ({ name, proposalId }: ProposalNameColumnProps
     </Link>
   )
 }
+
+export const ProposalByColumn = ({ by: proposer }: { by: string }) => (
+  <p>
+    <span className="text-primary">by</span>&nbsp;
+    {proposer}
+  </p>
+)
