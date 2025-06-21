@@ -1,3 +1,4 @@
+/* eslint-disable prettier/prettier */
 import { useMemo, memo, useState, useEffect, useCallback, useRef } from 'react'
 import { AnimatePresence, motion } from 'motion/react'
 import {
@@ -12,13 +13,12 @@ import {
 import { type LatestProposalResponse } from '../hooks/useFetchLatestProposals'
 import { GridTable } from '@/components/Table'
 import { ProposalNameColumn, ProposalByColumn } from './table-columns/ProposalNameColumn'
-import { VotesColumn } from './table-columns/VotesColumn'
+import { QuorumColumn, VotesColumn } from './table-columns/VotesColumn'
 import { TimeColumn } from './table-columns/TimeColumn'
 import { DebounceSearch } from '@/components/DebounceSearch'
 import { useProposalListData } from '../hooks/useProposalListData'
 import { Button } from '@/components/Button'
 import { useRouter, useSearchParams } from 'next/navigation'
-import Big from '@/lib/big'
 import { ProposalState } from '@/shared/types'
 import { filterOptions } from './filter/filterOptions'
 import { FilterButton } from './filter/FilterButton'
@@ -27,11 +27,11 @@ import { cn } from '@/lib/utils'
 import { useClickOutside } from '@/shared/hooks/useClickOutside'
 import { mockProposalListData } from './mockProposalData'
 import { splitCombinedName } from '../shared/utils'
-import { PizzaChart } from '@/components/PizzaChart'
 import { Status } from '@/components/Status'
 import { SearchIcon } from '@/components/Icons'
 import { Tooltip } from '@/components/Tooltip'
 import { CategoryColumn } from './table-columns/CategoryColumn'
+import { KotoQuestionMarkIcon } from '@/components/Icons'
 
 interface LatestProposalsTableProps {
   proposals: LatestProposalResponse[]
@@ -126,70 +126,78 @@ const LatestProposalsTable = ({ proposals, onEmitActiveProposal }: LatestProposa
   const { accessor, display } = createColumnHelper<(typeof proposalListData)[number]>()
   // Table columns definition
   const columns = [
-    display({
+    accessor('name', {
       id: 'name',
-      cell: info => (
-        <ProposalNameColumn name={info.row.original.name} proposalId={info.row.original.proposalId} />
-      ),
+      cell: ({ cell, row }) => {
+        const { proposalName } = splitCombinedName(cell.getValue())
+        return <ProposalNameColumn name={proposalName} proposalId={row.original.proposalId} />
+      },
     }),
     accessor('name', {
       id: 'builderName',
       header: 'Proposal name',
       cell: ({ cell }) => {
-        const { builderName, proposalName } = splitCombinedName(cell.getValue())
-        return <ProposalByColumn by={builderName ?? proposalName.split(' ').at(0) ?? 'unknown'} />
+        const { builderName } = splitCombinedName(cell.getValue())
+        return <ProposalByColumn by={builderName ?? 'unknown'} />
       },
     }),
-    accessor(row => row.Starts.unix(), {
-      id: 'date',
-      header: 'Date',
-      cell: info => <p>{info.row.original.Starts.format('MMM DD, YYYY')}</p>,
-    }),
-    accessor('blocksUntilClosure', {
-      id: 'timeRemaining',
-      header: 'Vote ending in',
-      cell: info => {
-        const { blocksUntilClosure, proposalDeadline, blockNumber } = info.row.original
-        return (
-          <TimeColumn
-            blocksUntilClosure={blocksUntilClosure}
-            proposalDeadline={proposalDeadline}
-            proposalBlockNumber={blockNumber}
-          />
-        )
-      },
-    }),
-    accessor('votes', {
-      id: 'quorum',
-      header: 'Quorum',
-      cell: ({ cell, row }) => {
-        const { forVotes, abstainVotes } = cell.getValue()
-        return (
-          <VotesColumn
-            forVotes={forVotes}
-            abstainVotes={abstainVotes}
-            quorumAtSnapshot={row.original.quorumAtSnapshot}
-          />
-        )
-      },
-    }),
+      accessor(row => row.Starts.unix(), {
+        id: 'date',
+        header: 'Date',
+        cell: info => <p>{info.row.original.Starts.format('MMM DD, YYYY')}</p>,
+      }),
+      accessor('blocksUntilClosure', {
+        id: 'timeRemaining',
+        header: 'Vote ending in',
+        cell: info => {
+          const { blocksUntilClosure, proposalDeadline, blockNumber } = info.row.original
+          return (
+            <TimeColumn
+              blocksUntilClosure={blocksUntilClosure}
+              proposalDeadline={proposalDeadline}
+              proposalBlockNumber={blockNumber}
+            />
+          )
+        },
+      }),
+      accessor('votes', {
+        id: 'quorum',
+        header: () => (
+          <div>
+            <div className="flex items-center-safe gap-1">
+              <p className="mb-1">Quorum</p>
+              <KotoQuestionMarkIcon className="mb-1" />
+            </div>
+            <p className="text-xs font-normal text-text-40">needed | reached</p>
+          </div>
+        ),
+        cell: ({ cell, row }) => {
+          const { forVotes, abstainVotes } = cell.getValue()
+          return (
+            <QuorumColumn
+              forVotes={forVotes}
+              abstainVotes={abstainVotes}
+              quorumAtSnapshot={row.original.quorumAtSnapshot}
+            />
+          )
+        },
+      }),
     accessor('votes', {
       id: 'votes',
       header: 'Votes',
-      cell: info => {
-        const { forVotes, abstainVotes, againstVotes } = info.row.original.votes
+
+      cell: ({ cell }) => {
+        const { forVotes, abstainVotes, againstVotes } = cell.getValue()
         return (
-          <div className="flex flex-wrap items-center justify-end gap-3">
-            <p>{forVotes.add(abstainVotes).add(againstVotes).toNumber().toLocaleString('en-US')}</p>
-            <PizzaChart
-              segments={[
-                { name: 'For', value: forVotes.toNumber() },
-                { name: 'Abstain', value: abstainVotes.toNumber() },
-                { name: 'Against', value: againstVotes.toNumber() },
-              ]}
-            />
-          </div>
+          <VotesColumn
+            forVotes={forVotes.toNumber()}
+            againstVotes={againstVotes.toNumber()}
+            abstainVotes={abstainVotes.toNumber()}
+          />
         )
+      },
+      meta: {
+        width: '0.7fr',
       },
     }),
     accessor('category', {
@@ -198,17 +206,17 @@ const LatestProposalsTable = ({ proposals, onEmitActiveProposal }: LatestProposa
       meta: {
         width: '0.5fr',
       },
-      cell: info => {
-        const category = info.cell.getValue()
+      cell: ({ cell }) => {
+        const category = cell.getValue()
         return <CategoryColumn category={category} />
       },
     }),
     accessor('proposalState', {
       id: 'status',
-      header: xxx => <div className="">Status</div>,
-      cell: info => (
+      header: 'Status',
+      cell: ({ cell }) => (
         <div className="flex justify-end">
-          <Status proposalState={info.row.original.proposalState} />
+          <Status proposalState={cell.getValue()} />
         </div>
       ),
       meta: {
@@ -363,11 +371,11 @@ const LatestProposalsTable = ({ proposals, onEmitActiveProposal }: LatestProposa
           {filteredProposalList.length > 0 ? (
             <div>
               <GridTable
+                className="min-w-[600px]"
                 aria-label="Proposal table"
                 stackFirstColumn
                 table={table}
                 data-testid="TableProposals"
-                className="overflow-visible"
               />
 
               <div className="flex justify-center space-x-2 mt-4">
