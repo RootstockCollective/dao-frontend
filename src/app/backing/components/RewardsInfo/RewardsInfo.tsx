@@ -7,6 +7,7 @@ import { FC } from 'react'
 import { BackerRewardsPercentage } from '../BackerPercentage/BackerRewardsPercentage'
 import { LabeledContent } from '../LabeledContent/LabeledContent'
 import { RifRbtcPopover } from '../Popovers/RifRbtcPopover'
+import { DottedUnderlineLabel } from '../DottedUnderlineLabel/DottedUnderlineLabel'
 
 export interface RewardsInfoProps extends BackerRewardPercentage {
   estimatedRewards?: TokenRewards
@@ -23,17 +24,19 @@ export const RewardsInfo: FC<RewardsInfoProps> = ({ current, next, estimatedRewa
       </LabeledContent>
       {estimatedRewards && (
         <LabeledContent label="Rewards (est.)" className="w-1/2">
-          <RifRbtcPopover
-            totalEstimatedRbtc={estimatedRewards.rbtc.amount.value}
-            totalEstimatedRif={estimatedRewards.rif.amount.value}
-          >
-            <Paragraph className="cursor-pointer">
+          <div className="flex flex-row items-center gap-2">
+            <Paragraph>
               {formatCurrency(
                 getCombinedFiatAmount([estimatedRewards.rbtc.amount, estimatedRewards.rif.amount]),
-              )}{' '}
-              USD
+              )}
             </Paragraph>
-          </RifRbtcPopover>
+            <RifRbtcPopover
+              totalEstimatedRbtc={estimatedRewards.rbtc.amount.value}
+              totalEstimatedRif={estimatedRewards.rif.amount.value}
+            >
+              <DottedUnderlineLabel className="font-normal">USD</DottedUnderlineLabel>
+            </RifRbtcPopover>
+          </div>
         </LabeledContent>
       )}
     </div>
