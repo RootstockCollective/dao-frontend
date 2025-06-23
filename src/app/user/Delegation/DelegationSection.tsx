@@ -45,7 +45,7 @@ export const DelegationSection = () => {
     }
   }, [action, isError, isSuccess, setGlobalMessage])
 
-  const isValidDelegatee = delegateeAddress !== address
+  const isValidDelegatee = delegateeAddress?.toLowerCase() !== address?.toLowerCase()
   const delegatee = {
     'Voting Power Delegated': isValidDelegatee ? <HolderColumn address={delegateeAddress || ''} /> : '-',
     Amount: isValidDelegatee ? <RenderTotalBalance symbol="stRIF" context="VotingPower" /> : '-',
