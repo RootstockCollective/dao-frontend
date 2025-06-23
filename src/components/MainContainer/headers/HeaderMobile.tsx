@@ -6,7 +6,7 @@ import { useLayoutContext } from '../LayoutProvider'
 import { Hamburger } from '@/components/Hamburger'
 import { Tooltip } from '@/components/Tooltip'
 import { cn } from '@/lib/utils'
-import { TemporaryConnect } from './TemporaryConnect'
+import { UserConnectionManager } from '@/shared/walletConnection'
 
 export function HeaderMobile({ className, ...props }: HTMLAttributes<HTMLDivElement>) {
   const { isSidebarOpen, toggleSidebar, closeSidebar } = useLayoutContext()
@@ -32,7 +32,7 @@ export function HeaderMobile({ className, ...props }: HTMLAttributes<HTMLDivElem
         {/* <Tooltip text="White theme">
           <SunIcon />
         </Tooltip> */}
-        <TemporaryConnect />
+        {!isSidebarOpen && <UserConnectionManager />}
       </div>
     </header>
   )
