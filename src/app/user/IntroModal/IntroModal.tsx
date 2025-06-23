@@ -72,7 +72,7 @@ export const IntroModal = () => {
     introModal.isModalOpened &&
     isLoaded && (
       <Modal width={920} onClose={introModal.closeModal} closeButtonColor="black" className="bg-text-80">
-        <div className="flex flex-col md:flex-row p-4 bg-text-md:gap-6 relative">
+        <div className="flex flex-col md:flex-row p-4 md:gap-6 relative">
           {isMobile ? (
             <div className="mt-12 flex flex-col gap-4">
               <div className="relative">
@@ -89,30 +89,10 @@ export const IntroModal = () => {
                   width={40}
                   height={30}
                   className="absolute bottom-[-40px] right-0"
-                  style={{ pointerEvents: 'none' }}
                 />
               </div>
-              <div className="flex flex-1 flex-col justify-center gap-4">
-                <Label variant="tag" className="text-bg-100" caps>
-                  STAKE
-                </Label>
-                <div>
-                  <Header variant="e2" className="text-bg-20" caps>
-                    Before you stake
-                  </Header>
-                  <Header variant="e2" className="text-bg-100" caps>
-                    add RBTC & RIF to your wallet
-                  </Header>
-                </div>
-                <Paragraph className="text-bg-100">
-                  RIF is the token required for staking, and RBTC is used to cover transaction fees.
-                  You&apos;ll need both to participate in the DAO.
-                </Paragraph>
-              </div>
-              <Button variant="secondary" className="flex items-center gap-1 mt-12">
-                <Span bold>Continue</Span>
-                <ArrowUpRightLightIcon size={24} />
-              </Button>
+              <StakeDescription />
+              <ContinueButton className="mt-12" />
             </div>
           ) : (
             <>
@@ -122,7 +102,6 @@ export const IntroModal = () => {
                 width={40}
                 height={30}
                 className="absolute block left-1/2 top-8 -translate-x-[calc(55%)] z-10"
-                style={{ pointerEvents: 'none' }}
               />
               <div className="flex-1 relative">
                 <div className="relative">
@@ -133,63 +112,13 @@ export const IntroModal = () => {
                     width={0}
                     className="h-auto w-full"
                   />
-                  <div
-                    className={cn(
-                      'absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2',
-                      'p-4 w-[360px]',
-                      GLASS_STYLE,
-                    )}
-                  >
-                    <Header variant="e3" className="text-text-100 mb-8" caps>
-                      Your Wallet
-                    </Header>
-                    <Header variant="e2" className="text-text-100 flex flex-row items-end gap-2" caps>
-                      <Span className="flex flex-row items-center gap-2">
-                        BTC
-                        <ArrowRightIcon size={16} />
-                      </Span>
-                      <Span variant="e2" className="text-text-100">
-                        RBTC
-                      </Span>
-                    </Header>
-                    <Header variant="e2" className="text-text-100 flex flex-row items-end gap-2" caps>
-                      <Span className="flex flex-row items-center gap-2">
-                        USD
-                        <ArrowRightIcon size={16} />
-                      </Span>
-                      <Span variant="e2" className="text-text-100">
-                        RIF
-                      </Span>
-                    </Header>
-                    <Paragraph variant="body-s" className="text-text-100 mt-2">
-                      You need RBTC to pay fees & RIF to stake
-                    </Paragraph>
-                  </div>
+                  <YourWalletInfo />
                 </div>
               </div>
               <div className="flex-1 flex flex-col justify-between p-4 md:p-0">
-                <div className="flex flex-1 flex-col justify-center gap-4">
-                  <Label variant="tag" className="text-bg-100" caps>
-                    STAKE
-                  </Label>
-                  <div>
-                    <Header variant="e2" className="text-bg-20" caps>
-                      Before you stake
-                    </Header>
-                    <Header variant="e2" className="text-bg-100" caps>
-                      add RBTC & RIF to your wallet
-                    </Header>
-                  </div>
-                  <Paragraph className="text-bg-100">
-                    RIF is the token required for staking, and RBTC is used to cover transaction fees.
-                    You&apos;ll need both to participate in the DAO.
-                  </Paragraph>
-                </div>
+                <StakeDescription />
                 <div className="flex justify-end">
-                  <Button variant="secondary" className="flex items-center gap-1">
-                    <Span bold>Continue</Span>
-                    <ArrowUpRightLightIcon size={24} />
-                  </Button>
+                  <ContinueButton />
                 </div>
               </div>
             </>
@@ -199,3 +128,65 @@ export const IntroModal = () => {
     )
   )
 }
+
+const StakeDescription = () => (
+  <div className="flex flex-1 flex-col justify-center gap-4">
+    <Label variant="tag" className="text-bg-100" caps>
+      STAKE
+    </Label>
+    <div>
+      <Header variant="e2" className="text-bg-20" caps>
+        Before you stake
+      </Header>
+      <Header variant="e2" className="text-bg-100" caps>
+        add RBTC & RIF to your wallet
+      </Header>
+    </div>
+    <Paragraph className="text-bg-100">
+      RIF is the token required for staking, and RBTC is used to cover transaction fees. You&apos;ll need both
+      to participate in the DAO.
+    </Paragraph>
+  </div>
+)
+
+const YourWalletInfo = () => (
+  <div
+    className={cn(
+      'absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2',
+      'p-4 w-[360px]',
+      GLASS_STYLE,
+    )}
+  >
+    <Header variant="e3" className="text-text-100 mb-8" caps>
+      Your Wallet
+    </Header>
+    <Header variant="e2" className="text-text-100 flex flex-row items-end gap-2" caps>
+      <Span className="flex flex-row items-center gap-2">
+        BTC
+        <ArrowRightIcon size={16} />
+      </Span>
+      <Span variant="e2" className="text-text-100">
+        RBTC
+      </Span>
+    </Header>
+    <Header variant="e2" className="text-text-100 flex flex-row items-end gap-2" caps>
+      <Span className="flex flex-row items-center gap-2">
+        USD
+        <ArrowRightIcon size={16} />
+      </Span>
+      <Span variant="e2" className="text-text-100">
+        RIF
+      </Span>
+    </Header>
+    <Paragraph variant="body-s" className="text-text-100 mt-2">
+      You need RBTC to pay fees & RIF to stake
+    </Paragraph>
+  </div>
+)
+
+const ContinueButton = ({ className }: { className?: string }) => (
+  <Button variant="secondary" className={cn('flex items-center gap-1', className)}>
+    <Span bold>Continue</Span>
+    <ArrowUpRightLightIcon size={24} />
+  </Button>
+)
