@@ -24,17 +24,19 @@ export const RewardsInfo: FC<RewardsInfoProps> = ({ current, next, estimatedRewa
       </LabeledContent>
       {estimatedRewards && (
         <LabeledContent label="Rewards (est.)" className="w-1/2">
-          <RifRbtcPopover
-            totalEstimatedRbtc={estimatedRewards.rbtc.amount.value}
-            totalEstimatedRif={estimatedRewards.rif.amount.value}
-          >
-            <Paragraph className="cursor-pointer">
+          <div className="flex flex-row items-center gap-2">
+            <Paragraph>
               {formatCurrency(
                 getCombinedFiatAmount([estimatedRewards.rbtc.amount, estimatedRewards.rif.amount]),
-              )}{' '}
-              <DottedUnderlineLabel>USD</DottedUnderlineLabel>
+              )}
             </Paragraph>
-          </RifRbtcPopover>
+            <RifRbtcPopover
+              totalEstimatedRbtc={estimatedRewards.rbtc.amount.value}
+              totalEstimatedRif={estimatedRewards.rif.amount.value}
+            >
+              <DottedUnderlineLabel className="font-normal">USD</DottedUnderlineLabel>
+            </RifRbtcPopover>
+          </div>
         </LabeledContent>
       )}
     </div>

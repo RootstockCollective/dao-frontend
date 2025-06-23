@@ -28,15 +28,12 @@ export const EstimatedRewardsMetric = ({ rewardsData }: EstimatedRewardsMetricPr
         />
       }
       content={
-        <RifRbtcPopover
-          className="p-6"
-          totalEstimatedRbtc={totalEstimatedRbtc}
-          totalEstimatedRif={totalEstimatedRif}
-        >
-          <Header variant="h1">
-            {formatCurrency(totalEstimatedUsd)} <DottedUnderlineLabel>USD</DottedUnderlineLabel>
-          </Header>
-        </RifRbtcPopover>
+        <div className="flex flex-row items-baseline gap-2 font-rootstock-sans">
+          <Header variant="h1">{formatCurrency(totalEstimatedUsd)}</Header>
+          <RifRbtcPopover totalEstimatedRbtc={totalEstimatedRbtc} totalEstimatedRif={totalEstimatedRif}>
+            <DottedUnderlineLabel className="text-lg">USD</DottedUnderlineLabel>
+          </RifRbtcPopover>
+        </div>
       }
     />
   )
