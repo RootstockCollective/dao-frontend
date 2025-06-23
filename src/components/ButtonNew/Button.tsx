@@ -21,7 +21,6 @@ export const Button: FC<Props> = ({
   className = '',
   textClassName = '',
   'data-testid': dataTestId,
-  textClassName,
   ...props
 }) => {
   const styles = {
