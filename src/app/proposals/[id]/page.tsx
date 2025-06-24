@@ -62,6 +62,7 @@ import {
   ParamComponents,
 } from './types'
 import { ActionDetails } from '../components/action-details'
+import type { GetPricesResult } from '@/app/user/types'
 
 export default function ProposalView() {
   const { id } = useParams<{ id: string }>() ?? {}
@@ -127,7 +128,10 @@ const tokenAddressToSymbol = {
   // Add more tokens here
 }
 
-const parseProposalActionDetails = (calldatasParsed: any, prices: any): ParsedActionDetails => {
+const parseProposalActionDetails = (
+  calldatasParsed: DecodedData[],
+  prices: GetPricesResult,
+): ParsedActionDetails => {
   const action = calldatasParsed?.[0]
   if (!action || action.type !== 'decoded') return { type: '-', amount: undefined, tokenSymbol: undefined }
   const { functionName, args } = action
@@ -384,8 +388,6 @@ const PageWithProposal = (proposal: ParsedProposal) => {
   ) {
     addressToWhitelist = calldatasParsed[0].args[1]
   }
-
-  console.log('proposalState', proposalState)
 
   const votingButtonActionMap = new Map<ProposalState, ButtonAction>([
     [ProposalState.Active, { actionName: 'Vote on proposal', onButtonClick: handleVoting }],
