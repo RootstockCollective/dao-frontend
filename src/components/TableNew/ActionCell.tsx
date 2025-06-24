@@ -18,7 +18,7 @@ const getActionConfig = (actionType: ActionType) => {
     delete: { text: 'Delete', icon: '⋯' },
     view: { text: 'View', icon: '⋯' },
   }
-  return configs[actionType] || configs.select
+  return configs[actionType]
 }
 
 export const ActionCell: FC<ActionCellProps> = ({ className, actionType, onClick }) => {
@@ -28,6 +28,10 @@ export const ActionCell: FC<ActionCellProps> = ({ className, actionType, onClick
   const handleToggle = () => {
     setIsVisible(!isVisible)
     onClick?.()
+  }
+
+  if (!config) {
+    return <TableCell className={cn(className, 'border-solid align-center')} />
   }
 
   return (
