@@ -137,18 +137,20 @@ const parseProposalActionDetails = (
   const { functionName, args } = action
   switch (functionName) {
     case 'withdraw': {
-      const amount = args[1]
+      const amount = typeof args[1] === 'bigint' ? args[1] : undefined
+      const toAddress = typeof args[0] === 'string' ? args[0] : undefined
       return {
         type: ProposalType.WITHDRAW,
         amount,
         tokenSymbol: 'RBTC',
         price: prices?.RBTC?.price ?? 0,
-        toAddress: args[0],
+        toAddress,
       }
     }
     case 'withdrawERC20': {
-      const tokenAddress = args[0]?.toLowerCase()
-      const amount = args[2]
+      const tokenAddress = typeof args[0] === 'string' ? args[0].toLowerCase() : ''
+      const amount = typeof args[2] === 'bigint' ? args[2] : undefined
+      const toAddress = typeof args[1] === 'string' ? args[1] : undefined
       const symbol = tokenAddressToSymbol[tokenAddress] || tokenAddress
       const price = symbol === 'RIF' ? (prices?.RIF?.price ?? 0) : 0
       return {
@@ -156,20 +158,22 @@ const parseProposalActionDetails = (
         amount,
         tokenSymbol: symbol,
         price,
-        toAddress: args[1],
+        toAddress,
       }
     }
     case 'communityApproveBuilder': {
+      const builder = typeof args[0] === 'string' ? args[0] : undefined
       return {
         type: ProposalType.BUILDER_ACTIVATION,
-        builder: args[0],
+        builder,
       }
     }
     case 'removeWhitelistedBuilder':
     case 'dewhitelistBuilder': {
+      const builder = typeof args[0] === 'string' ? args[0] : undefined
       return {
         type: ProposalType.BUILDER_DEACTIVATION,
-        builder: args[0],
+        builder,
       }
     }
     default:
@@ -389,11 +393,33 @@ const PageWithProposal = (proposal: ParsedProposal) => {
     addressToWhitelist = calldatasParsed[0].args[1]
   }
 
-  const votingButtonActionMap = new Map<ProposalState, ButtonAction>([
-    [ProposalState.Active, { actionName: 'Vote on proposal', onButtonClick: handleVoting }],
-    [ProposalState.Succeeded, { actionName: 'Put on queue', onButtonClick: handleQueuingProposal }],
-    [ProposalState.Queued, { actionName: 'Execute', onButtonClick: handleVotingExecution }],
-  ])
+  const getButtonActionForState = (state: ProposalState | undefined): ButtonAction | undefined => {
+    switch (state) {
+      case ProposalState.Active:
+        return {
+          actionName: 'Vote on proposal',
+          onButtonClick: _event => {
+            handleVoting('for')
+          },
+        }
+      case ProposalState.Succeeded:
+        return {
+          actionName: 'Put on queue',
+          onButtonClick: _event => {
+            handleQueuingProposal()
+          },
+        }
+      case ProposalState.Queued:
+        return {
+          actionName: 'Execute',
+          onButtonClick: _event => {
+            handleVotingExecution()
+          },
+        }
+      default:
+        return undefined
+    }
+  }
 
   const { prices } = usePricesContext()
   const parsedAction = parseProposalActionDetails(calldatasParsed, prices)
@@ -531,7 +557,7 @@ const PageWithProposal = (proposal: ParsedProposal) => {
               abstain: abstainVote,
               quorum,
             }}
-            buttonAction={proposalState !== undefined ? votingButtonActionMap.get(proposalState) : undefined}
+            buttonAction={getButtonActionForState(proposalState)}
             actionDisabled={cannotCastVote}
           />
           <ActionDetails parsedAction={parsedAction} actionType={actionType} />
