@@ -5,27 +5,17 @@ import { TableActionsContext } from '@/shared/context/TableContext/TableActionsC
 
 interface TableRowProps extends Omit<TableHTMLAttributes<HTMLTableRowElement>, 'onClick'> {
   rowId?: string
-  isSelected?: boolean
   onClick?: (rowId: string) => void
 }
 
-export const TableRow: FC<TableRowProps> = ({
-  className,
-  rowId,
-  isSelected: externalIsSelected,
-  onClick,
-  children,
-  ...props
-}) => {
+export const TableRow: FC<TableRowProps> = ({ className, rowId, onClick, children, ...props }) => {
   const [showTooltip, setShowTooltip] = useState(false)
   const [tooltipPosition, setTooltipPosition] = useState({ top: 0, left: 0 })
 
-  // Use context directly to avoid throwing errors when context is not available
   const tableContext = useContext(TableContext)
   const dispatch = useContext(TableActionsContext)
 
-  const isSelected =
-    externalIsSelected ?? (rowId && tableContext ? !!tableContext.selectedRows[rowId] : false)
+  const isSelected = rowId && tableContext ? !!tableContext.selectedRows[rowId] : false
 
   const handleClick = useCallback(() => {
     if (rowId) {
