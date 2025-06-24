@@ -20,7 +20,7 @@ const meta: Meta<typeof TableRow> = {
         <div className="relative">
           <TableCore>
             <TableHead>
-              <TableRow>
+              <TableRow rowId="header-row">
                 <TableCell className="font-bold text-base border-b border-[var(--color-v3-bg-accent-80)] font-[rootstock-sans]">
                   Column 1
                 </TableCell>
@@ -48,6 +48,7 @@ type Story = StoryObj<typeof TableRow>
 
 export const Default: Story = {
   args: {
+    rowId: 'default-row',
     children: (
       <>
         <TableCell>
@@ -117,7 +118,7 @@ export const MultipleRows: Story = {
       <div className="relative">
         <TableCore>
           <TableHead>
-            <TableRow>
+            <TableRow rowId="multiple-rows-header">
               <TableCell className="font-bold text-base border-b border-[var(--color-v3-bg-accent-80)] font-[rootstock-sans]">
                 Name
               </TableCell>
