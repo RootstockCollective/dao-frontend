@@ -14,17 +14,14 @@ type ActionCellProps = {
   onClick?: () => void
 }
 
-const getActionConfig = (actionType: ActionType) => {
-  const configs = {
-    removeBacking: { text: 'Remove Backing', icon: <RemoveBackingIcon size={16} /> },
-    adjustBacking: { text: 'Adjust Backing', icon: <AdjustBacking size={16} /> },
-    backBuilder: { text: 'Back Builder', icon: <BackBuilder size={16} /> },
-  }
-  return configs[actionType]
+const ACTION_CONFIG = {
+  removeBacking: { text: 'Remove Backing', icon: <RemoveBackingIcon size={16} /> },
+  adjustBacking: { text: 'Adjust Backing', icon: <AdjustBacking size={16} /> },
+  backBuilder: { text: 'Back Builder', icon: <BackBuilder size={16} /> },
 }
 
 export const ActionCell: FC<ActionCellProps> = ({ className, actionType, onClick }) => {
-  const config = getActionConfig(actionType)
+  const config = ACTION_CONFIG[actionType]
 
   const handleClick = () => {
     onClick?.()
