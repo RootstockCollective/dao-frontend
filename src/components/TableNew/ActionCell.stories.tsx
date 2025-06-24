@@ -19,7 +19,7 @@ const meta: Meta<typeof ActionCell> = {
   argTypes: {
     actionType: {
       control: 'select',
-      options: ['select', 'edit', 'delete', 'view'],
+      options: ['removeBacking', 'adjustBacking', 'backBuilder'],
       description: 'The type of action this cell represents',
     },
     onClick: {
@@ -37,45 +37,23 @@ export default meta
 
 type Story = StoryObj<typeof meta>
 
-export const Primary: Story = {
+export const RemoveBacking: Story = {
   args: {
-    actionType: 'select',
-    onClick: () => console.log('Primary action clicked'),
+    actionType: 'removeBacking',
+    onClick: () => alert('Remove backing action clicked'),
   },
 }
 
-export const Select: Story = {
+export const AdjustBacking: Story = {
   args: {
-    actionType: 'select',
-    onClick: () => console.log('Select action clicked'),
+    actionType: 'adjustBacking',
+    onClick: () => alert('Adjust backing action clicked'),
   },
 }
 
-export const Edit: Story = {
+export const BackBuilder: Story = {
   args: {
-    actionType: 'edit',
-    onClick: () => console.log('Edit action clicked'),
-  },
-}
-
-export const Delete: Story = {
-  args: {
-    actionType: 'delete',
-    onClick: () => console.log('Delete action clicked'),
-  },
-}
-
-export const View: Story = {
-  args: {
-    actionType: 'view',
-    onClick: () => console.log('View action clicked'),
-  },
-}
-
-export const WithCustomClassName: Story = {
-  args: {
-    actionType: 'select',
-    className: 'bg-blue-50 border-blue-200',
-    onClick: () => console.log('Custom styled action clicked'),
+    actionType: 'backBuilder',
+    onClick: () => alert('Back builder action clicked'),
   },
 }
