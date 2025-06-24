@@ -4,7 +4,7 @@ import { TableContext } from '@/shared/context/TableContext/TableContext'
 import { TableActionsContext } from '@/shared/context/TableContext/TableActionsContext'
 
 interface TableRowProps extends Omit<TableHTMLAttributes<HTMLTableRowElement>, 'onClick'> {
-  rowId?: string
+  rowId: string
   onClick?: (rowId: string) => void
 }
 
@@ -15,7 +15,7 @@ export const TableRow: FC<TableRowProps> = ({ className, rowId, onClick, childre
   const tableContext = useContext(TableContext)
   const dispatch = useContext(TableActionsContext)
 
-  const isSelected = rowId && tableContext ? !!tableContext.selectedRows[rowId] : false
+  const isSelected = tableContext ? !!tableContext.selectedRows[rowId] : false
 
   const handleClick = useCallback(() => {
     if (rowId) {
