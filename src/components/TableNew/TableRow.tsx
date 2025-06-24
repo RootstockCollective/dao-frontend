@@ -2,6 +2,7 @@ import { FC, TableHTMLAttributes, useCallback, useState, useContext } from 'reac
 import { cn } from '@/lib/utils'
 import { TableContext } from '@/shared/context/TableContext/TableContext'
 import { TableActionsContext } from '@/shared/context/TableContext/TableActionsContext'
+import { Paragraph } from '@/components/TypographyNew'
 
 interface TableRowProps extends Omit<TableHTMLAttributes<HTMLTableRowElement>, 'onClick'> {
   rowId: string
@@ -69,9 +70,9 @@ export const TableRow: FC<TableRowProps> = ({ className, rowId, onClick, childre
             left: tooltipPosition.left,
           }}
         >
-          <span className="text-sm font-normal leading-[1.45] self-stretch text-[var(--color-v3-bg-accent-100)] font-[Rootstock_Sans]">
+          <Paragraph variant="body-s" className="self-stretch text-[var(--color-v3-bg-accent-100)]">
             Select the row
-          </span>
+          </Paragraph>
         </div>
       )}
     </>
