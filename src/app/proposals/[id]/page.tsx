@@ -414,7 +414,7 @@ const PageWithProposal = (proposal: ParsedProposal) => {
               <ProgressBar progress={proposalStateToProgressMap.get(proposalState) ?? 0} className="mt-3" />
             </div>
 
-            <div className="grid grid-cols-2 gap-x-4 gap-y-2 text-sm">
+            <div className="grid grid-cols-2 gap-x-4 gap-y-2 text-sm mt-10">
               <div>
                 <Paragraph variant="body-s" className="text-white/70" bold>
                   Proposal type
@@ -486,10 +486,10 @@ const PageWithProposal = (proposal: ParsedProposal) => {
           </div>
 
           <div className="w-full mt-2 bg-bg-80 p-6">
-            <Header variant="h3" className="text-lg mb-2 text-primary">
+            <Header variant="h3" className="text-lg mb-2">
               TECHNICAL DETAILS
             </Header>
-            <div className="flex flex-row justify-between">
+            <div className="grid grid-cols-2 gap-x-4">
               <div>
                 <Paragraph variant="body-s" className="text-white/70" bold>
                   Snapshot - taken at block
