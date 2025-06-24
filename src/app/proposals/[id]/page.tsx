@@ -367,8 +367,8 @@ const PageWithProposal = (proposal: ParsedProposal) => {
   let actionType: ActionType = ActionType.Unknown
   let addressToWhitelist = ''
 
-  if (actionName && actionNameToActionTypeMap[actionName]) {
-    actionType = actionNameToActionTypeMap[actionName]
+  if (actionName && actionNameToActionTypeMap.has(actionName)) {
+    actionType = actionNameToActionTypeMap.get(actionName)!
   }
 
   if (
