@@ -1,7 +1,8 @@
-import { FC, TableHTMLAttributes, useCallback, useState, useContext } from 'react'
+import { FC, TableHTMLAttributes, useCallback, useContext } from 'react'
 import { cn } from '@/lib/utils'
 import { TableContext } from '@/shared/context/TableContext/TableContext'
 import { TableActionsContext } from '@/shared/context/TableContext/TableActionsContext'
+import { Tooltip } from '@/components/Tooltip'
 import { Paragraph } from '@/components/TypographyNew'
 
 interface TableRowProps extends Omit<TableHTMLAttributes<HTMLTableRowElement>, 'onClick'> {
@@ -10,9 +11,6 @@ interface TableRowProps extends Omit<TableHTMLAttributes<HTMLTableRowElement>, '
 }
 
 export const TableRow: FC<TableRowProps> = ({ className, rowId, onClick, children, ...props }) => {
-  const [showTooltip, setShowTooltip] = useState(false)
-  const [tooltipPosition, setTooltipPosition] = useState({ top: 0, left: 0 })
-
   const tableContext = useContext(TableContext)
   const dispatch = useContext(TableActionsContext)
 
@@ -28,21 +26,18 @@ export const TableRow: FC<TableRowProps> = ({ className, rowId, onClick, childre
     }
   }, [rowId, onClick, dispatch])
 
-  const handleMouseEnter = useCallback((e: React.MouseEvent<HTMLTableRowElement>) => {
-    const rect = e.currentTarget.getBoundingClientRect()
-    setTooltipPosition({
-      top: rect.top - 10, // 10px above the row
-      left: rect.right + 10, // 10px to the right of the row
-    })
-    setShowTooltip(true)
-  }, [])
-
-  const handleMouseLeave = useCallback(() => {
-    setShowTooltip(false)
-  }, [])
-
   return (
-    <>
+    <Tooltip
+      text={
+        <Paragraph variant="body-s" className="self-stretch text-[var(--color-v3-bg-accent-100)]">
+          Select the row
+        </Paragraph>
+      }
+      disabled={isSelected}
+      side="right"
+      sideOffset={10}
+      className="flex flex-col items-start gap-2 self-stretch p-6 rounded bg-[var(--color-v3-text-80)] shadow-[0px_8px_24px_0px_rgba(23,20,18,0.14)] font-rootstock-sans"
+    >
       <tr
         className={cn(
           'text-sm border-hidden relative border-t-solid',
@@ -54,27 +49,11 @@ export const TableRow: FC<TableRowProps> = ({ className, rowId, onClick, childre
         )}
         style={props.style}
         onClick={handleClick}
-        onMouseEnter={handleMouseEnter}
-        onMouseLeave={handleMouseLeave}
         data-selected={isSelected}
         {...props}
       >
         {children}
       </tr>
-
-      {showTooltip && !isSelected && (
-        <div
-          className="fixed pointer-events-none z-50 flex p-6 flex-col items-start gap-2 self-stretch rounded bg-[var(--color-v3-text-80)] shadow-[0px_8px_24px_0px_rgb(from_var(--color-v3-bg-accent-100)_r_g_b_/_0.14)]"
-          style={{
-            top: tooltipPosition.top,
-            left: tooltipPosition.left,
-          }}
-        >
-          <Paragraph variant="body-s" className="self-stretch text-[var(--color-v3-bg-accent-100)]">
-            Select the row
-          </Paragraph>
-        </div>
-      )}
-    </>
+    </Tooltip>
   )
 }
