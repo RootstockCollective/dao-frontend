@@ -16,7 +16,6 @@ export interface InfoGridItem {
 export interface ActionDetailsProps {
   parsedAction: {
     type: string
-    display: string
     amount?: bigint
     tokenSymbol?: string
     price?: number
@@ -79,8 +78,12 @@ export const ActionDetails = ({ parsedAction, actionType }: ActionDetailsProps) 
             </Paragraph>
             <div className="flex items-center gap-2 text-[18px] font-bold">
               <Span>{formatNumberWithCommas(formatEther(parsedAction.amount || 0n))}</Span>
-              <TokenImage symbol={parsedAction.tokenSymbol || ''} />
-              <Span>{parsedAction.tokenSymbol}</Span>
+              {parsedAction.tokenSymbol && (
+                <>
+                  <TokenImage symbol={parsedAction.tokenSymbol} />
+                  <Span>{parsedAction.tokenSymbol}</Span>
+                </>
+              )}
             </div>
             <Paragraph variant="body-s" className="text-white/50 mt-1">
               {parsedAction.price !== undefined

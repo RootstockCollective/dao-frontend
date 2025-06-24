@@ -129,15 +129,13 @@ const tokenAddressToSymbol = {
 
 const parseProposalActionDetails = (calldatasParsed: any, prices: any): ParsedActionDetails => {
   const action = calldatasParsed?.[0]
-  if (!action || action.type !== 'decoded')
-    return { type: '-', display: '-', amount: undefined, tokenSymbol: undefined }
+  if (!action || action.type !== 'decoded') return { type: '-', amount: undefined, tokenSymbol: undefined }
   const { functionName, args } = action
   switch (functionName) {
     case 'withdraw': {
       const amount = args[1]
       return {
         type: ProposalType.WITHDRAW,
-        display: `Transfer of ${formatNumberWithCommas(formatEther(amount))} RBTC`,
         amount,
         tokenSymbol: 'RBTC',
         price: prices?.RBTC?.price ?? 0,
@@ -151,7 +149,6 @@ const parseProposalActionDetails = (calldatasParsed: any, prices: any): ParsedAc
       const price = symbol === 'RIF' ? (prices?.RIF?.price ?? 0) : 0
       return {
         type: ProposalType.WITHDRAW,
-        display: `Transfer of ${formatNumberWithCommas(formatEther(amount))} ${symbol}`,
         amount,
         tokenSymbol: symbol,
         price,
@@ -161,7 +158,6 @@ const parseProposalActionDetails = (calldatasParsed: any, prices: any): ParsedAc
     case 'communityApproveBuilder': {
       return {
         type: ProposalType.BUILDER_ACTIVATION,
-        display: 'Builder activation',
         builder: args[0],
       }
     }
@@ -169,12 +165,11 @@ const parseProposalActionDetails = (calldatasParsed: any, prices: any): ParsedAc
     case 'dewhitelistBuilder': {
       return {
         type: ProposalType.BUILDER_DEACTIVATION,
-        display: 'Builder deactivation',
         builder: args[0],
       }
     }
     default:
-      return { type: '-', display: '-', amount: undefined, tokenSymbol: undefined }
+      return { type: '-', amount: undefined, tokenSymbol: undefined }
   }
 }
 
@@ -419,7 +414,26 @@ const PageWithProposal = (proposal: ParsedProposal) => {
                 <Paragraph variant="body-s" className="text-white/70" bold>
                   Proposal type
                 </Paragraph>
-                <Paragraph variant="body">{parsedAction.display}</Paragraph>
+                <Paragraph variant="body">
+                  {/* For transfer actions, show amount, token image, and symbol. For others, show a label. */}
+                  {parsedAction.type === ProposalType.WITHDRAW &&
+                  parsedAction.amount &&
+                  parsedAction.tokenSymbol ? (
+                    <>
+                      Transfer of {formatNumberWithCommas(formatEther(parsedAction.amount))}
+                      <Span className="inline-flex items-center ml-2 align-middle">
+                        <TokenImage symbol={parsedAction.tokenSymbol} size={20} className="ml-1" />
+                        <Span className="font-bold ml-1">{parsedAction.tokenSymbol}</Span>
+                      </Span>
+                    </>
+                  ) : parsedAction.type === ProposalType.BUILDER_ACTIVATION ? (
+                    <>Builder activation</>
+                  ) : parsedAction.type === ProposalType.BUILDER_DEACTIVATION ? (
+                    <>Builder deactivation</>
+                  ) : (
+                    <>{parsedAction.type}</>
+                  )}
+                </Paragraph>
               </div>
               <div>
                 <Paragraph variant="body-s" className="text-white/70" bold>
