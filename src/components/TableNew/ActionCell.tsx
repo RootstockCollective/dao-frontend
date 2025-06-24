@@ -1,4 +1,4 @@
-import { FC, useState } from 'react'
+import { FC } from 'react'
 import { TableCell } from '@/components/Table'
 import { cn } from '@/lib/utils'
 import { Button } from '@/components/Button'
@@ -22,11 +22,9 @@ const getActionConfig = (actionType: ActionType) => {
 }
 
 export const ActionCell: FC<ActionCellProps> = ({ className, actionType, onClick }) => {
-  const [isVisible, setIsVisible] = useState(false)
   const config = getActionConfig(actionType)
 
-  const handleToggle = () => {
-    setIsVisible(!isVisible)
+  const handleClick = () => {
     onClick?.()
   }
 
@@ -38,10 +36,10 @@ export const ActionCell: FC<ActionCellProps> = ({ className, actionType, onClick
     <TableCell className={cn(className, 'border-solid align-center')}>
       <Button
         variant="outlined"
-        onClick={handleToggle}
+        onClick={handleClick}
         className="text-center p-2 min-w-[40px] h-[40px] flex items-center justify-center"
       >
-        {isVisible ? '✕' : config.icon}
+        {config.icon}
       </Button>
     </TableCell>
   )
