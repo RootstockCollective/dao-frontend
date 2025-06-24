@@ -37,9 +37,9 @@ export const ActionCell: FC<ActionCellProps> = ({ className, actionType, onClick
       <Button
         variant="outlined"
         onClick={handleClick}
-        className="text-center p-2 min-w-[40px] h-[40px] flex items-center justify-center"
+        className="p-2 min-w-[40px] h-[40px] flex justify-center items-center gap-1 text-sm font-medium text-[var(--text-0)] font-rootstock-sans leading-[145%]"
       >
-        {config.icon}
+        {config.icon} {config.text}
       </Button>
     </TableCell>
   )
