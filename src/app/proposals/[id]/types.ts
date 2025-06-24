@@ -3,12 +3,12 @@ import { ProposalType } from '../create/CreateProposalHeaderSection'
 
 export interface ParsedActionDetails {
   type: ProposalType | string
-  display: string
-  amount?: bigint
-  tokenSymbol?: string
-  price?: number
-  toAddress?: string
-  builder?: string
+  amount?: bigint // The amount being transferred or acted upon
+  tokenSymbol?: string // The symbol of the token involved (e.g., RIF, RBTC)
+  price?: number // The price of the token (if relevant)
+  toAddress?: string // The recipient address (if relevant)
+  builder?: string // The builder address (if relevant)
+  // Add more fields as needed for other action types
 }
 
 export interface ActionDetailsProps {
