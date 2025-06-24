@@ -7,11 +7,11 @@ export interface AllocationItem {
 }
 
 export interface AllocationChangeData {
+  type: 'resize' | 'reorder'
   values: number[]
   itemsData: AllocationItem[]
   increasedIndex: number
   decreasedIndex: number
-  totalValue: number
 }
 
 export interface AllocationBarValueDisplay {
@@ -24,7 +24,7 @@ export interface AllocationBarValueDisplay {
 }
 
 export interface AllocationBarProps {
-  initialItemsData?: AllocationItem[]
+  itemsData: AllocationItem[]
   isDraggable?: boolean
   isResizable?: boolean
   height?: string

@@ -1,5 +1,4 @@
-'use client'
-import React, { useEffect, useRef, useState } from 'react'
+import React, { useRef, useState, useEffect } from 'react'
 import { DndContext, PointerSensor, useSensor, useSensors, DragEndEvent, pointerWithin } from '@dnd-kit/core'
 import { SortableContext, horizontalListSortingStrategy, arrayMove } from '@dnd-kit/sortable'
 import { restrictToHorizontalAxis } from '@dnd-kit/modifiers'
@@ -10,82 +9,39 @@ import {
   calculateSegmentPositions,
   clamp,
 } from './utils'
-import { AllocationBarProps, AllocationItem } from './types'
+import { AllocationBarProps } from './types'
 import { AllocationBarSegment } from './AllocationBarSegment'
 import { Legend } from '@/components/Legend'
 
 const AllocationBar: React.FC<AllocationBarProps> = ({
-  initialItemsData = [],
+  itemsData,
   height = '96px',
   isDraggable = true,
   isResizable = true,
   valueDisplay = {
     showPercent: true,
-    format: {
-      percentDecimals: 0,
-    },
+    format: { percentDecimals: 0 },
   },
   showLegend = true,
   className = '',
   onChange,
 }) => {
-  const initialValues = initialItemsData.map(item => item.value)
-  const totalValue = initialItemsData.reduce((sum, item) => sum + item.value, 0)
+  // Derive values internally from itemsData
+  const values = itemsData.map(item => item.value)
+  const totalValue = values.reduce((sum, v) => sum + v, 0)
   const minSegmentValue = calculateMinSegmentValue(totalValue)
 
-  const [values, setValues] = useState(initialValues)
-  const [itemsData, setItemsData] = useState<AllocationItem[]>([...initialItemsData])
   const barRef = useRef<HTMLDivElement>(null)
   const [dragIndex, setDragIndex] = useState<number | null>(null)
-  const [lastResizeInfo, setLastResizeInfo] = useState<{
-    increasedIndex: number
-    decreasedIndex: number
-  } | null>(null)
-  const itemOrderRef = useRef<string[]>(initialItemsData.map(item => item.key))
 
   // dnd-kit sensors
   const sensors = useSensors(
-    // TODO: for now we use PointerSensor only, but we'll add TouchSensor later to support mobile
     useSensor(PointerSensor, {
       activationConstraint: { distance: 5 },
     }),
   )
 
-  useEffect(() => {
-    const newKeys = initialItemsData.map(item => item.key)
-
-    const keysChanged =
-      newKeys.length !== itemOrderRef.current.length ||
-      !newKeys.every(key => itemOrderRef.current.includes(key))
-
-    if (keysChanged) {
-      itemOrderRef.current = newKeys
-      setItemsData([...initialItemsData])
-      setValues(initialItemsData.map(item => item.value))
-    } else {
-      const orderedItems = itemOrderRef.current
-        .map(key => initialItemsData.find(item => item.key === key))
-        .filter((item): item is AllocationItem => item !== undefined)
-
-      setItemsData(orderedItems)
-      setValues(orderedItems.map(item => item.value))
-    }
-  }, [initialItemsData])
-
-  useEffect(() => {
-    if (lastResizeInfo && onChange) {
-      onChange({
-        values,
-        itemsData,
-        increasedIndex: lastResizeInfo.increasedIndex,
-        decreasedIndex: lastResizeInfo.decreasedIndex,
-        totalValue,
-      })
-      setLastResizeInfo(null)
-    }
-  }, [values, lastResizeInfo, onChange, itemsData, totalValue])
-
-  // Start drag
+  // Start drag handler
   const onHandleMouseDown = (idx: number) => (e: React.MouseEvent) => {
     setDragIndex(idx)
     e.preventDefault()
@@ -108,7 +64,6 @@ const AllocationBar: React.FC<AllocationBarProps> = ({
       minSegmentValue,
     )
 
-    // Update the values
     const newValues = [...values]
     newValues[dragIndex] = leftValue
     newValues[dragIndex + 1] = rightValue
@@ -116,11 +71,15 @@ const AllocationBar: React.FC<AllocationBarProps> = ({
     const increasedIndex = leftValue > values[dragIndex] ? dragIndex : dragIndex + 1
     const decreasedIndex = increasedIndex === dragIndex ? dragIndex + 1 : dragIndex
 
-    setValues(newValues)
-    setLastResizeInfo({ increasedIndex, decreasedIndex })
+    onChange?.({
+      type: 'resize',
+      values: newValues,
+      itemsData,
+      increasedIndex,
+      decreasedIndex,
+    })
   }
 
-  // End drag
   const onMouseUp = () => setDragIndex(null)
 
   useEffect(() => {
@@ -135,11 +94,10 @@ const AllocationBar: React.FC<AllocationBarProps> = ({
       window.removeEventListener('mousemove', handleResize)
       window.removeEventListener('mouseup', onMouseUp)
     }
-    // eslint-disable-next-line
   }, [dragIndex, values])
 
-  // dnd-kit sort logic
-  function handleDragEnd({ active, over }: DragEndEvent) {
+  // dnd-kit reorder logic
+  const handleDragEnd = ({ active, over }: DragEndEvent) => {
     if (!over || active.id === over.id) return
 
     const oldIndex = itemsData.findIndex(item => item.key === active.id)
@@ -148,15 +106,17 @@ const AllocationBar: React.FC<AllocationBarProps> = ({
     const newItems = arrayMove(itemsData, oldIndex, newIndex)
     const newValues = arrayMove(values, oldIndex, newIndex)
 
-    itemOrderRef.current = newItems.map(item => item.key)
-
-    setItemsData(newItems)
-    setValues(newValues)
+    onChange?.({
+      type: 'reorder',
+      values: newValues,
+      itemsData: newItems,
+      increasedIndex: 0,
+      decreasedIndex: 0,
+    })
   }
 
   return (
     <div className={`w-full p-8 ${className}`}>
-      {/* Bar */}
       <DndContext
         sensors={sensors}
         collisionDetection={pointerWithin}
