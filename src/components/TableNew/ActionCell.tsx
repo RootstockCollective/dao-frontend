@@ -13,10 +13,10 @@ type ActionCellProps = {
 
 const getActionConfig = (actionType: ActionType) => {
   const configs = {
-    select: { text: 'Select', icon: '⋯' },
-    edit: { text: 'Edit', icon: '⋯' },
-    delete: { text: 'Delete', icon: '⋯' },
-    view: { text: 'View', icon: '⋯' },
+    select: { text: 'Select', icon: '✓' },
+    edit: { text: 'Edit', icon: '✏️' },
+    delete: { text: 'Delete', icon: '🗑️' },
+    view: { text: 'View', icon: '👁️' },
   }
   return configs[actionType]
 }
