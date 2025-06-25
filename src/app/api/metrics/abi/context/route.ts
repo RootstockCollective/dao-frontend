@@ -24,6 +24,7 @@ export async function GET() {
       .where('BuilderState.communityApproved', '=', true)
       .where('BuilderState.initialized', '=', true)
       .where('BuilderState.selfPaused', '=', false)
+      .orderByRaw('"Builder"."totalAllocation"::numeric DESC')
 
     const cycles = await db('Cycle')
       .select({ id: db.raw("convert_from(id, 'utf8')") }, 'rewardsERC20', 'rewardsRBTC')
