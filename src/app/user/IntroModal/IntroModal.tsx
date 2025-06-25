@@ -1,6 +1,5 @@
 import { Button } from '@/components/ButtonNew'
-import { ArrowUpRightLightIcon } from '@/components/Icons'
-import { ArrowRightIcon } from '@/components/Icons/ArrowRightIcon'
+import { ArrowRightIcon, ArrowUpRightLightIcon } from '@/components/Icons'
 import { Modal } from '@/components/Modal'
 import { Header, Label, Paragraph, Span } from '@/components/TypographyNew'
 import Big from '@/lib/big'
