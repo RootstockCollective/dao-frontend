@@ -3,13 +3,17 @@ import { ArrowUpRightLightIcon } from '@/components/Icons'
 import { ArrowRightIcon } from '@/components/Icons/ArrowRightIcon'
 import { Modal } from '@/components/Modal'
 import { Header, Label, Paragraph, Span } from '@/components/TypographyNew'
-import { cn } from '@/lib/utils'
+import { cn, formatNumberWithCommas } from '@/lib/utils'
 import { useModal } from '@/shared/hooks/useModal'
 import Image from 'next/image'
 import { useEffect, useState } from 'react'
 import { CONTENT_CONFIG, IMAGE_CONFIG, type IntroModalContent } from './config'
 import { useMediaQuery } from './hooks/useMediaQuery'
 import { useRequiredTokens } from './hooks/useRequiredTokens'
+import { useBalancesContext } from '../Balances/context/BalancesContext'
+import { RBTC, RIF } from '@/lib/constants'
+import Big from '@/lib/big'
+import { useRouter } from 'next/navigation'
 
 const GLASS_STYLE =
   'rounded bg-[rgba(255,255,255,0.16)] shadow-[inset_0px_0px_14px_0px_rgba(255,255,255,0.25)] backdrop-blur-[3px]'
@@ -19,6 +23,7 @@ export const IntroModal = () => {
   const [isLoaded, setIsLoaded] = useState(false)
   const isMobile = useMediaQuery('(max-width: 768px)')
   const tokenStatus = useRequiredTokens()
+  const router = useRouter()
 
   // Preload images for current status
   useEffect(() => {
@@ -56,13 +61,6 @@ export const IntroModal = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isLoaded, tokenStatus])
 
-  const handleContinue = (): void => {
-    if (tokenStatus) {
-      const currentContent = CONTENT_CONFIG[tokenStatus]
-      window.open(currentContent.url, '_blank', 'noopener,noreferrer')
-    }
-  }
-
   // Don't render if no required tokens or not loaded
   if (!tokenStatus || !isLoaded || !introModal.isModalOpened) {
     return null
@@ -70,6 +68,17 @@ export const IntroModal = () => {
 
   const currentConfig = IMAGE_CONFIG[tokenStatus]
   const currentContent = CONTENT_CONFIG[tokenStatus]
+
+  const handleContinue = (): void => {
+    if (tokenStatus) {
+      window.open(currentContent.url, '_blank', 'noopener,noreferrer')
+    }
+  }
+
+  const goToStake = () => {
+    introModal.closeModal()
+    router.push('/user?action=stake')
+  }
 
   return (
     <Modal
@@ -125,7 +134,14 @@ export const IntroModal = () => {
             <div className="flex-1 flex flex-col justify-between p-4 md:p-0">
               <StakeDescription content={currentContent} />
               <div className="flex justify-end">
-                <ContinueButton onClick={handleContinue} />
+                <Button
+                  variant="primary"
+                  className="flex items-center gap-1"
+                  onClick={goToStake}
+                  data-testid="intro-modal-continue-button"
+                >
+                  <Span bold>Continue to staking</Span>
+                </Button>
               </div>
             </div>
           </>
@@ -142,10 +158,10 @@ const StakeDescription = ({ content }: { content: IntroModalContent }) => (
     </Label>
     <div>
       <Header variant="e2" className="text-bg-20" caps data-testid="stake-subtitle">
-        Before you stake
+        {content.title}
       </Header>
       <Header variant="e2" className="text-bg-100" caps data-testid="stake-title">
-        {content.title}
+        {content.subtitle}
       </Header>
     </div>
     <Paragraph className="text-bg-100" data-testid="stake-description-text">
@@ -154,56 +170,71 @@ const StakeDescription = ({ content }: { content: IntroModalContent }) => (
   </div>
 )
 
-const YourWalletInfo = ({ content }: { content: IntroModalContent }) => (
-  <div
-    className={cn(
-      'absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2',
-      'p-4 w-[360px]',
-      GLASS_STYLE,
-    )}
-    data-testid="wallet-info"
-  >
-    <Header variant="e3" className="text-text-100 mb-8" caps data-testid="wallet-info-title">
-      Your Wallet
-    </Header>
+const YourWalletInfo = ({ content }: { content: IntroModalContent }) => {
+  const { balances } = useBalancesContext()
+  const rbtcBalance = balances[RBTC].balance
+  const rifBalance = balances[RIF].balance
+  return (
+    <div
+      className={cn(
+        'absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2',
+        'p-4 w-[360px]',
+        GLASS_STYLE,
+      )}
+      data-testid="wallet-info"
+    >
+      <Header variant="e3" className="text-text-100 mb-8" caps data-testid="wallet-info-title">
+        Your Wallet
+      </Header>
 
-    {content.showRbtc && (
-      <Header
-        variant="e2"
-        className="text-text-100 flex flex-row items-end gap-2"
-        caps
-        data-testid="wallet-info-rbtc"
-      >
-        <Span className="flex flex-row items-center gap-2">
-          BTC
-          <ArrowRightIcon size={16} />
-        </Span>
-        <Span variant="e2" className="text-text-100">
-          RBTC
-        </Span>
-      </Header>
-    )}
-    {content.showRif && (
-      <Header
-        variant="e2"
-        className="text-text-100 flex flex-row items-end gap-2"
-        caps
-        data-testid="wallet-info-rif"
-      >
-        <Span className="flex flex-row items-center gap-2">
-          USD
-          <ArrowRightIcon size={16} />
-        </Span>
-        <Span variant="e2" className="text-text-100">
-          RIF
-        </Span>
-      </Header>
-    )}
-    <Paragraph variant="body-s" className="text-text-100 mt-2" data-testid="wallet-info-description">
-      {content.walletInfo}
-    </Paragraph>
-  </div>
-)
+      {content.showRbtc && (
+        <Header
+          variant="e2"
+          className="text-text-100 flex flex-row items-end gap-2"
+          caps
+          data-testid="wallet-info-rbtc"
+        >
+          <Span className="flex flex-row items-center gap-2">
+            BTC
+            <ArrowRightIcon size={16} />
+          </Span>
+          <Span variant="e2" className="text-text-100">
+            RBTC
+          </Span>
+        </Header>
+      )}
+      {content.showRif && (
+        <Header
+          variant="e2"
+          className="text-text-100 flex flex-row items-end gap-2"
+          caps
+          data-testid="wallet-info-rif"
+        >
+          <Span className="flex flex-row items-center gap-2">
+            USD
+            <ArrowRightIcon size={16} />
+          </Span>
+          <Span variant="e2" className="text-text-100">
+            RIF
+          </Span>
+        </Header>
+      )}
+      {content.showBalance && (
+        <div className="text-text-100 flex flex-col items-start gap-2">
+          <Header variant="e2" className="text-text-100">
+            {formatNumberWithCommas(Big(rbtcBalance).toFixedNoTrailing(6))} RBTC
+          </Header>
+          <Header variant="e2" className="text-text-100">
+            {formatNumberWithCommas(Big(rifBalance).toFixedNoTrailing(2))} RIF
+          </Header>
+        </div>
+      )}
+      <Paragraph variant="body-s" className="text-text-100 mt-2" data-testid="wallet-info-description">
+        {content.walletInfo}
+      </Paragraph>
+    </div>
+  )
+}
 
 const ContinueButton = ({ className, onClick }: { className?: string; onClick: () => void }) => (
   <Button
