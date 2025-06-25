@@ -22,9 +22,7 @@ export const RewardsCell: React.FC<RewardsCellProps> = ({
     <div className={cn('flex flex-row items-baseline justify-center gap-1 font-rootstock-sans', className)}>
       <Paragraph>{formatCurrency(totalEstimatedUsd)}</Paragraph>
       <RifRbtcTooltip totalEstimatedRbtc={totalEstimatedRbtc} totalEstimatedRif={totalEstimatedRif}>
-        <span>
-          <DottedUnderlineLabel>USD</DottedUnderlineLabel>
-        </span>
+        <DottedUnderlineLabel>USD</DottedUnderlineLabel>
       </RifRbtcTooltip>
     </div>
   )

@@ -48,6 +48,6 @@ export const RifRbtcTooltip = ({
       </div>
     }
   >
-    {children}
+    <span>{children}</span>
   </Tooltip>
 )

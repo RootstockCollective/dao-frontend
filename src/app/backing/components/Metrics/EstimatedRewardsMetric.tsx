@@ -31,9 +31,7 @@ export const EstimatedRewardsMetric = ({ rewardsData }: EstimatedRewardsMetricPr
         <div className="flex flex-row items-baseline gap-2 font-rootstock-sans">
           <Header variant="h1">{formatCurrency(totalEstimatedUsd)}</Header>
           <RifRbtcTooltip totalEstimatedRbtc={totalEstimatedRbtc} totalEstimatedRif={totalEstimatedRif}>
-            <span>
-              <DottedUnderlineLabel className="text-lg">USD</DottedUnderlineLabel>
-            </span>
+            <DottedUnderlineLabel className="text-lg">USD</DottedUnderlineLabel>
           </RifRbtcTooltip>
         </div>
       }
