@@ -26,9 +26,15 @@ const AllocationBar: React.FC<AllocationBarProps> = ({
   className = '',
   onChange,
 }) => {
-  // Derive values internally from itemsData
-  const values = itemsData.map(item => item.value)
-  const totalValue = values.reduce((sum, v) => sum + v, 0)
+  const isControlled = typeof onChange === 'function'
+  const [localItemsData, setLocalItemsData] = useState(itemsData)
+  const [localValues, setLocalValues] = useState(itemsData.map(item => item.value))
+
+  // Reactive current state
+  const currentItems = isControlled ? itemsData : localItemsData
+  const currentValues = isControlled ? itemsData.map(item => item.value) : localValues
+
+  const totalValue = currentValues.reduce((sum, v) => sum + v, 0)
   const minSegmentValue = calculateMinSegmentValue(totalValue)
 
   const barRef = useRef<HTMLDivElement>(null)
@@ -54,30 +60,34 @@ const AllocationBar: React.FC<AllocationBarProps> = ({
     const rect = barRef.current.getBoundingClientRect()
     const x = clamp(clientX - rect.left, 0, rect.width)
 
-    const { leftPx, rightPx } = calculateSegmentPositions(dragIndex, rect, values, totalValue)
+    const { leftPx, rightPx } = calculateSegmentPositions(dragIndex, rect, currentValues, totalValue)
     const { leftValue, rightValue } = calculateNewSegmentValues(
       x,
       leftPx,
       rightPx,
       dragIndex,
-      values,
+      currentValues,
       minSegmentValue,
     )
 
-    const newValues = [...values]
+    const newValues = [...currentValues]
     newValues[dragIndex] = leftValue
     newValues[dragIndex + 1] = rightValue
 
-    const increasedIndex = leftValue > values[dragIndex] ? dragIndex : dragIndex + 1
+    const increasedIndex = leftValue > currentValues[dragIndex] ? dragIndex : dragIndex + 1
     const decreasedIndex = increasedIndex === dragIndex ? dragIndex + 1 : dragIndex
 
-    onChange?.({
-      type: 'resize',
-      values: newValues,
-      itemsData,
-      increasedIndex,
-      decreasedIndex,
-    })
+    if (isControlled) {
+      onChange?.({
+        type: 'resize',
+        values: newValues,
+        itemsData: currentItems,
+        increasedIndex,
+        decreasedIndex,
+      })
+    } else {
+      setLocalValues(newValues)
+    }
   }
 
   const onMouseUp = () => setDragIndex(null)
@@ -94,25 +104,30 @@ const AllocationBar: React.FC<AllocationBarProps> = ({
       window.removeEventListener('mousemove', handleResize)
       window.removeEventListener('mouseup', onMouseUp)
     }
-  }, [dragIndex, values])
+  }, [dragIndex, currentValues])
 
   // dnd-kit reorder logic
   const handleDragEnd = ({ active, over }: DragEndEvent) => {
     if (!over || active.id === over.id) return
 
-    const oldIndex = itemsData.findIndex(item => item.key === active.id)
-    const newIndex = itemsData.findIndex(item => item.key === over.id)
+    const oldIndex = currentItems.findIndex(item => item.key === active.id)
+    const newIndex = currentItems.findIndex(item => item.key === over.id)
 
-    const newItems = arrayMove(itemsData, oldIndex, newIndex)
-    const newValues = arrayMove(values, oldIndex, newIndex)
+    const newItems = arrayMove(currentItems, oldIndex, newIndex)
+    const newValues = arrayMove(currentValues, oldIndex, newIndex)
 
-    onChange?.({
-      type: 'reorder',
-      values: newValues,
-      itemsData: newItems,
-      increasedIndex: 0,
-      decreasedIndex: 0,
-    })
+    if (isControlled) {
+      onChange?.({
+        type: 'reorder',
+        values: newValues,
+        itemsData: newItems,
+        increasedIndex: 0,
+        decreasedIndex: 0,
+      })
+    } else {
+      setLocalItemsData(newItems)
+      setLocalValues(newValues)
+    }
   }
 
   return (
@@ -123,16 +138,16 @@ const AllocationBar: React.FC<AllocationBarProps> = ({
         onDragEnd={handleDragEnd}
         modifiers={[restrictToHorizontalAxis]}
       >
-        <SortableContext items={itemsData.map(item => item.key)} strategy={horizontalListSortingStrategy}>
+        <SortableContext items={currentItems.map(item => item.key)} strategy={horizontalListSortingStrategy}>
           <div className="flex items-center w-full mb-4 relative select-none" ref={barRef} style={{ height }}>
-            {itemsData.map((item, i) => (
+            {currentItems.map((item, i) => (
               <AllocationBarSegment
                 key={item.key}
-                value={values[i]}
+                value={currentValues[i]}
                 totalValue={totalValue}
                 item={item}
                 index={i}
-                isLast={i === itemsData.length - 1}
+                isLast={i === currentItems.length - 1}
                 valueDisplay={valueDisplay}
                 onHandleMouseDown={onHandleMouseDown}
                 dragIndex={dragIndex}
@@ -143,7 +158,7 @@ const AllocationBar: React.FC<AllocationBarProps> = ({
           </div>
         </SortableContext>
       </DndContext>
-      {showLegend && <Legend title="Total portfolio:" items={itemsData} />}
+      {showLegend && <Legend title="Total portfolio:" items={currentItems} />}
     </div>
   )
 }

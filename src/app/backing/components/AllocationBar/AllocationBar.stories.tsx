@@ -1,7 +1,7 @@
-import React, { useState, useCallback } from 'react'
 import type { Meta, StoryObj } from '@storybook/react'
 import AllocationBar from './AllocationBar'
 import { AllocationChangeData, AllocationItem } from './types'
+import { useState } from 'react'
 
 const meta = {
   title: 'KOTO/Backing/Components/AllocationBar',
@@ -50,40 +50,7 @@ const defaultItems: AllocationItem[] = [
 ]
 const defaultItemsWithUnallocated = addUnallocated(defaultItems)
 
-const dataWithTemp: AllocationItem[] = [
-  ...defaultItems,
-  {
-    key: 'money-on-chain',
-    label: 'MoneyOnChain',
-    value: 35,
-    displayColor: '#4ade80',
-    isTemporary: true,
-  },
-]
-
-// Wrapper component to add internal state and handle changes
-const InteractiveAllocationBar = (args: any) => {
-  const [itemsData, setItemsData] = useState<AllocationItem[]>(args.itemsData)
-
-  const handleChange = (change: AllocationChangeData) => {
-    const { type, itemsData, values } = change
-    if (type === 'resize') {
-      const newItems = itemsData.map((item, index) => {
-        return { ...item, value: values[index] }
-      })
-      setItemsData(newItems)
-    } else if (change.type === 'reorder') {
-      setItemsData(itemsData)
-    }
-  }
-
-  return <AllocationBar {...args} itemsData={itemsData} onChange={handleChange} />
-}
-
-// Stories
-
 export const Default: Story = {
-  render: args => <InteractiveAllocationBar {...args} />,
   args: {
     itemsData: defaultItemsWithUnallocated,
     valueDisplay: {
@@ -96,7 +63,6 @@ export const Default: Story = {
 }
 
 export const WithPercentDecimals: Story = {
-  render: args => <InteractiveAllocationBar {...args} />,
   args: {
     itemsData: addUnallocated([
       {
@@ -128,7 +94,6 @@ export const WithPercentDecimals: Story = {
 }
 
 export const WithValues: Story = {
-  render: args => <InteractiveAllocationBar {...args} />,
   args: {
     itemsData: addUnallocated([
       {
@@ -157,7 +122,6 @@ export const WithValues: Story = {
 }
 
 export const WithValuesAndPercent: Story = {
-  render: args => <InteractiveAllocationBar {...args} />,
   args: {
     itemsData: addUnallocated([
       {
@@ -187,7 +151,6 @@ export const WithValuesAndPercent: Story = {
 }
 
 export const WithoutPercent: Story = {
-  render: args => <InteractiveAllocationBar {...args} />,
   args: {
     itemsData: defaultItemsWithUnallocated,
     valueDisplay: {
@@ -197,7 +160,6 @@ export const WithoutPercent: Story = {
 }
 
 export const WithoutLegend: Story = {
-  render: args => <InteractiveAllocationBar {...args} />,
   args: {
     itemsData: defaultItemsWithUnallocated,
     showLegend: false,
@@ -205,7 +167,6 @@ export const WithoutLegend: Story = {
 }
 
 export const WithoutLegendAndPercent: Story = {
-  render: args => <InteractiveAllocationBar {...args} />,
   args: {
     itemsData: defaultItemsWithUnallocated,
     valueDisplay: {
@@ -215,8 +176,18 @@ export const WithoutLegendAndPercent: Story = {
   },
 }
 
+const dataWithTemp: AllocationItem[] = [
+  ...defaultItems,
+  {
+    key: 'money-on-chain',
+    label: 'MoneyOnChain',
+    value: 35,
+    displayColor: '#4ade80',
+    isTemporary: true,
+  },
+]
+
 export const WithTemporaryValues: Story = {
-  render: args => <InteractiveAllocationBar {...args} />,
   args: {
     itemsData: addUnallocated(dataWithTemp),
     valueDisplay: {
@@ -227,7 +198,6 @@ export const WithTemporaryValues: Story = {
 }
 
 export const NotDraggable: Story = {
-  render: args => <InteractiveAllocationBar {...args} />,
   args: {
     itemsData: addUnallocated(dataWithTemp),
     valueDisplay: {
@@ -239,7 +209,6 @@ export const NotDraggable: Story = {
 }
 
 export const NotResizable: Story = {
-  render: args => <InteractiveAllocationBar {...args} />,
   args: {
     itemsData: addUnallocated(dataWithTemp),
     valueDisplay: {
@@ -251,7 +220,6 @@ export const NotResizable: Story = {
 }
 
 export const NotEditable: Story = {
-  render: args => <InteractiveAllocationBar {...args} />,
   args: {
     itemsData: addUnallocated(dataWithTemp),
     valueDisplay: {
@@ -264,7 +232,6 @@ export const NotEditable: Story = {
 }
 
 export const WithoutUnallocatedValuesAndFixedHeight: Story = {
-  render: args => <InteractiveAllocationBar {...args} />,
   args: {
     itemsData: addUnallocated([]),
     height: '1rem',
@@ -274,5 +241,33 @@ export const WithoutUnallocatedValuesAndFixedHeight: Story = {
     showLegend: true,
     isDraggable: false,
     isResizable: false,
+  },
+}
+
+const InteractiveAllocationBar = (args: any) => {
+  const [itemsData, setItemsData] = useState<AllocationItem[]>(args.itemsData)
+
+  const handleChange = (change: AllocationChangeData) => {
+    const { type, itemsData, values } = change
+    if (type === 'resize') {
+      const newItems = itemsData.map((item, index) => {
+        return { ...item, value: values[index] }
+      })
+      setItemsData(newItems)
+    } else if (change.type === 'reorder') {
+      setItemsData(itemsData)
+    }
+  }
+
+  return <AllocationBar {...args} itemsData={itemsData} onChange={handleChange} />
+}
+
+export const Controlled: Story = {
+  render: args => <InteractiveAllocationBar {...args} />,
+  args: {
+    itemsData: defaultItemsWithUnallocated,
+    valueDisplay: {
+      showPercent: true,
+    },
   },
 }
