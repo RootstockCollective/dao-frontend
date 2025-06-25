@@ -20,7 +20,8 @@ export const TableRow: FC<TableRowProps> = ({ className, rowId, onClick, childre
     if (rowId) {
       if (onClick) {
         onClick(rowId)
-      } else if (dispatch) {
+      }
+      if (dispatch) {
         dispatch({ type: 'TOGGLE_ROW_SELECTION', payload: rowId })
       }
     }

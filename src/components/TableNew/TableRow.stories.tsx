@@ -115,76 +115,59 @@ export const Selectable: Story = {
 export const MultipleRows: Story = {
   render: () => {
     const MultiRowStory = withTableContext(() => (
-      <div className="relative">
-        <TableCore>
-          <TableHead>
-            <TableRow rowId="multiple-rows-header">
-              <TableCell className="font-bold text-base border-b border-[var(--color-v3-bg-accent-80)] font-[rootstock-sans]">
-                Name
-              </TableCell>
-              <TableCell className="font-bold text-base border-b border-[var(--color-v3-bg-accent-80)] font-[rootstock-sans]">
-                Data
-              </TableCell>
-              <TableCell className="font-bold text-base border-b border-[var(--color-v3-bg-accent-80)] font-[rootstock-sans]">
-                Action
-              </TableCell>
-            </TableRow>
-          </TableHead>
-          <TableBody>
-            <TableRow rowId="row-1">
-              <TableCell>
-                <Span className="text-sm" variant="light">
-                  Row 1
-                </Span>
-              </TableCell>
-              <TableCell>
-                <Span className="text-sm" variant="light">
-                  Data 1
-                </Span>
-              </TableCell>
-              <TableCell>
-                <Span className="text-sm" variant="light">
-                  Action 1
-                </Span>
-              </TableCell>
-            </TableRow>
-            <TableRow rowId="row-2">
-              <TableCell>
-                <Span className="text-sm" variant="light">
-                  Row 2
-                </Span>
-              </TableCell>
-              <TableCell>
-                <Span className="text-sm" variant="light">
-                  Data 2
-                </Span>
-              </TableCell>
-              <TableCell>
-                <Span className="text-sm" variant="light">
-                  Action 2
-                </Span>
-              </TableCell>
-            </TableRow>
-            <TableRow rowId="row-3">
-              <TableCell>
-                <Span className="text-sm" variant="light">
-                  Row 3
-                </Span>
-              </TableCell>
-              <TableCell>
-                <Span className="text-sm" variant="light">
-                  Data 3
-                </Span>
-              </TableCell>
-              <TableCell>
-                <Span className="text-sm" variant="light">
-                  Action 3
-                </Span>
-              </TableCell>
-            </TableRow>
-          </TableBody>
-        </TableCore>
-      </div>
+      <>
+        <TableRow rowId="row-1">
+          <TableCell>
+            <Span className="text-sm" variant="light">
+              Row 1
+            </Span>
+          </TableCell>
+          <TableCell>
+            <Span className="text-sm" variant="light">
+              Data 1
+            </Span>
+          </TableCell>
+          <TableCell>
+            <Span className="text-sm" variant="light">
+              Action 1
+            </Span>
+          </TableCell>
+        </TableRow>
+        <TableRow rowId="row-2">
+          <TableCell>
+            <Span className="text-sm" variant="light">
+              Row 2
+            </Span>
+          </TableCell>
+          <TableCell>
+            <Span className="text-sm" variant="light">
+              Data 2
+            </Span>
+          </TableCell>
+          <TableCell>
+            <Span className="text-sm" variant="light">
+              Action 2
+            </Span>
+          </TableCell>
+        </TableRow>
+        <TableRow rowId="row-3">
+          <TableCell>
+            <Span className="text-sm" variant="light">
+              Row 3
+            </Span>
+          </TableCell>
+          <TableCell>
+            <Span className="text-sm" variant="light">
+              Data 3
+            </Span>
+          </TableCell>
+          <TableCell>
+            <Span className="text-sm" variant="light">
+              Action 3
+            </Span>
+          </TableCell>
+        </TableRow>
+      </>
     ))
     return <MultiRowStory />
   },
