@@ -5,17 +5,17 @@ import { fetchBackerStakingHistory } from '../actions'
 
 export type BackerStakingHistory = {
   id: Address
-  backerTotalAllocation_: string
-  accumulatedTime_: string
-  lastBlockTimestamp_: string
-  gauges_: GaugeStakingHistory[]
+  backerTotalAllocation: string
+  accumulatedTime: string
+  lastBlockTimestamp: string
+  gauges: GaugeStakingHistory[]
 }
 
 export type GaugeStakingHistory = {
-  allocation_: string
-  gauge_: Address
-  accumulatedAllocationsTime_: string
-  lastBlockTimestamp_: string
+  allocation: string
+  gauge: Address
+  accumulatedAllocationsTime: string
+  lastBlockTimestamp: string
 }
 
 export const useGetBackerStakingHistoryWithStateSync = (backer: Address) => {

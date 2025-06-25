@@ -43,12 +43,12 @@ export const useGetBackerRBI = (
   const rbi = useMemo(() => {
     if (!backerStakingHistory) return Big(0)
 
-    const { backerTotalAllocation_, lastBlockTimestamp_, accumulatedTime_, gauges_ } = backerStakingHistory
+    const { backerTotalAllocation, lastBlockTimestamp, accumulatedTime, gauges } = backerStakingHistory
 
-    const accumulatedAllocationsTime = gauges_.reduce(
-      (acc, { accumulatedAllocationsTime_, allocation_, lastBlockTimestamp_: gaugeLastBlockTimestamp_ }) => {
-        const lastStakedSeconds = Big(timestamp.toString()).sub(gaugeLastBlockTimestamp_)
-        return acc.add(accumulatedAllocationsTime_).add(lastStakedSeconds.mul(allocation_))
+    const accumulatedAllocationsTime = gauges.reduce(
+      (acc, { accumulatedAllocationsTime, allocation, lastBlockTimestamp: gaugeLastBlockTimestamp }) => {
+        const lastStakedSeconds = Big(timestamp.toString()).sub(gaugeLastBlockTimestamp)
+        return acc.add(accumulatedAllocationsTime).add(lastStakedSeconds.mul(allocation))
       },
       Big(0),
     )
@@ -61,14 +61,14 @@ export const useGetBackerRBI = (
 
     const priceAdjustedAllocTime = accumulatedAllocationsTime.div(WeiPerEther.toString()).mul(rifPrice)
 
-    const backerTotalAllocation = Big(backerTotalAllocation_)
-    let accumulatedTime = Big(accumulatedTime_)
-    if (backerTotalAllocation.gt(0)) {
-      const lastStakedSeconds = Big(timestamp.toString()).sub(lastBlockTimestamp_)
-      accumulatedTime = Big(accumulatedTime_).add(lastStakedSeconds)
+    const bigBackerTotalAllocation = Big(backerTotalAllocation)
+    let bigAccumulatedTime = Big(accumulatedTime)
+    if (bigBackerTotalAllocation.gt(0)) {
+      const lastStakedSeconds = Big(timestamp.toString()).sub(lastBlockTimestamp)
+      bigAccumulatedTime = Big(accumulatedTime).add(lastStakedSeconds)
     }
 
-    return accumulatedTime.mul(rbtcRewards.add(rifRewards).div(priceAdjustedAllocTime)).mul(100)
+    return bigAccumulatedTime.mul(rbtcRewards.add(rifRewards).div(priceAdjustedAllocTime)).mul(100)
   }, [backerStakingHistory, prices, rif.symbol, rbtcRewards, rifRewards, timestamp])
 
   const isLoading = rbtcRewardsLoading || rifRewardsLoading
