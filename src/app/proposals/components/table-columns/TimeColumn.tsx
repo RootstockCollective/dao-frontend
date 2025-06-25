@@ -1,4 +1,4 @@
-import { Typography } from '@/components/Typography'
+import { Paragraph } from '@/components/TypographyNew'
 import moment from 'moment'
 import { DEFAULT_NUMBER_OF_SECONDS_PER_BLOCK } from '@/lib/constants'
 import Big from '@/lib/big'
@@ -41,9 +41,5 @@ export function TimeColumn({ blocksUntilClosure, proposalDeadline, proposalBlock
   const timeRemainingMsg = blocksUntilClosure.gt(0)
     ? convertToTimeRemaining(timeRemainingSec.toNumber())
     : '-'
-  return (
-    <Typography tagVariant="p" className={colorClass}>
-      {timeRemainingMsg}
-    </Typography>
-  )
+  return <Paragraph className={colorClass}>{timeRemainingMsg}</Paragraph>
 }

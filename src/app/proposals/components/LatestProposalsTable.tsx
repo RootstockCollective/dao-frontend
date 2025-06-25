@@ -1,3 +1,4 @@
+/* eslint-disable prettier/prettier */
 import { useMemo, memo, useState, useEffect, useCallback, useRef } from 'react'
 import { AnimatePresence, motion } from 'motion/react'
 import {
@@ -12,7 +13,7 @@ import {
 import { type LatestProposalResponse } from '../hooks/useFetchLatestProposals'
 import { GridTable } from '@/components/Table'
 import { ProposalNameColumn, ProposalByColumn } from './table-columns/ProposalNameColumn'
-import { VotesColumn } from './table-columns/VotesColumn'
+import { QuorumColumn, VotesColumn } from './table-columns/VotesColumn'
 import { TimeColumn } from './table-columns/TimeColumn'
 import { DebounceSearch } from '@/components/DebounceSearch'
 import { useProposalListData } from '../hooks/useProposalListData'
@@ -27,12 +28,14 @@ import { cn } from '@/lib/utils'
 import { useClickOutside } from '@/shared/hooks/useClickOutside'
 import { mockProposalListData } from './mockProposalData'
 import { splitCombinedName } from '../shared/utils'
-import { PizzaChart } from '@/components/PizzaChart'
 import { Status } from '@/components/Status'
 import { SearchIcon } from '@/components/Icons'
 import { Tooltip } from '@/components/Tooltip'
 import { CategoryColumn } from './table-columns/CategoryColumn'
 import { KotoQuestionMarkIcon } from '@/components/Icons'
+import { ProposalParams } from '../hooks/useProposalListData'
+import { Paragraph } from '@/components/TypographyNew'
+import Pagination from './pagination/Pagination'
 
 interface LatestProposalsTableProps {
   proposals: LatestProposalResponse[]
@@ -127,18 +130,19 @@ const LatestProposalsTable = ({ proposals, onEmitActiveProposal }: LatestProposa
   const { accessor, display } = createColumnHelper<(typeof proposalListData)[number]>()
   // Table columns definition
   const columns = [
-    display({
+    accessor('name', {
       id: 'name',
-      cell: info => (
-        <ProposalNameColumn name={info.row.original.name} proposalId={info.row.original.proposalId} />
-      ),
+      cell: ({ cell, row }) => {
+        const { proposalName } = splitCombinedName(cell.getValue())
+        return <ProposalNameColumn name={proposalName} proposalId={row.original.proposalId} />
+      },
     }),
     accessor('name', {
       id: 'builderName',
       header: 'Proposal name',
       cell: ({ cell }) => {
-        const { builderName, proposalName } = splitCombinedName(cell.getValue())
-        return <ProposalByColumn by={builderName ?? proposalName.split(' ').at(0) ?? 'unknown'} />
+        const { builderName } = splitCombinedName(cell.getValue())
+        return <ProposalByColumn by={builderName ?? 'unknown'} />
       },
     }),
     accessor(row => row.Starts.unix(), {
@@ -177,8 +181,8 @@ const LatestProposalsTable = ({ proposals, onEmitActiveProposal }: LatestProposa
     accessor('votes', {
       id: 'votes',
       header: 'Votes',
-      cell: info => {
-        const { forVotes, abstainVotes, againstVotes } = info.row.original.votes
+      cell: ({ cell }) => {
+        const { forVotes, abstainVotes, againstVotes } = cell.getValue()
         return (
           <div className="flex flex-wrap items-center justify-end gap-3">
             <p>{forVotes.add(abstainVotes).add(againstVotes).toNumber().toLocaleString('en-US')}</p>
@@ -191,6 +195,16 @@ const LatestProposalsTable = ({ proposals, onEmitActiveProposal }: LatestProposa
             />
           </div>
         )
+      },
+      sortingFn: (a, b) => {
+        const votesA = a.original.votes
+        const votesB = b.original.votes
+        const sumA = votesA.forVotes.add(votesA.againstVotes).add(votesA.abstainVotes)
+        const sumB = votesB.forVotes.add(votesB.againstVotes).add(votesB.abstainVotes)
+        return sumA.cmp(sumB)
+      },
+      meta: {
+        width: '0.7fr',
       },
     }),
     accessor('category', {
@@ -206,10 +220,10 @@ const LatestProposalsTable = ({ proposals, onEmitActiveProposal }: LatestProposa
     }),
     accessor('proposalState', {
       id: 'status',
-      header: xxx => <div className="">Status</div>,
-      cell: info => (
+      header: 'Status',
+      cell: ({ cell }) => (
         <div className="flex justify-end">
-          <Status proposalState={info.row.original.proposalState} />
+          <Status proposalState={cell.getValue()} />
         </div>
       ),
       meta: {
@@ -364,11 +378,11 @@ const LatestProposalsTable = ({ proposals, onEmitActiveProposal }: LatestProposa
           {filteredProposalList.length > 0 ? (
             <div>
               <GridTable
+                className="min-w-[600px]"
                 aria-label="Proposal table"
                 stackFirstColumn
                 table={table}
                 data-testid="TableProposals"
-                className="overflow-visible"
               />
 
               <div className="flex justify-center space-x-2 mt-4">

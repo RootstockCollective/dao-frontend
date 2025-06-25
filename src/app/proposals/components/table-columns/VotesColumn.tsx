@@ -1,17 +1,14 @@
 import { formatNumberWithCommas } from '@/lib/utils'
 import Big from '@/lib/big'
 import { PizzaChart } from '@/components/PizzaChart'
+import { Paragraph } from '@/components/TypographyNew'
 
 interface QuorumColumnProps {
-  forVotes: Big
-  abstainVotes: Big
+  quorumVotes: Big
   quorumAtSnapshot: Big
 }
 
-export const QuorumColumn = ({ forVotes, abstainVotes, quorumAtSnapshot }: QuorumColumnProps) => {
-  // Calculate the total votes considered for the quorum
-  const quorumVotes = forVotes.add(abstainVotes)
-
+export const QuorumColumn = ({ quorumVotes, quorumAtSnapshot }: QuorumColumnProps) => {
   // Calculate the percentage relative to the quorumAtSnapshot
   // If quorumAtSnapshot is 0, percentage defaults to 0
   const percentage = quorumAtSnapshot.eq(0)
@@ -25,16 +22,18 @@ export const QuorumColumn = ({ forVotes, abstainVotes, quorumAtSnapshot }: Quoru
       ? 'text-st-info' // Orange for 50% to 99%
       : 'text-st-error' // Red for less than 50%
 
-  // Prepare values to display
-  const quorumToShow = quorumAtSnapshot.eq(0) ? '-' : quorumAtSnapshot // Show '-' if quorum is 0
-  const percentageToShow = quorumAtSnapshot.eq(0) ? '-' : percentage // Show '-' if percentage can't be calculated
-
   return (
     <>
-      <p className={colorClass}>
-        {formatNumberWithCommas(quorumToShow)}&nbsp;|&nbsp;
-        {formatNumberWithCommas(percentageToShow.toString())}%
-      </p>
+      <Paragraph className={colorClass}>
+        {quorumAtSnapshot.eq(0) ? (
+          '-'
+        ) : (
+          <>
+            {formatNumberWithCommas(quorumVotes)}&nbsp;|&nbsp;
+            {formatNumberWithCommas(percentage)}%
+          </>
+        )}
+      </Paragraph>
     </>
   )
 }
@@ -45,7 +44,7 @@ interface VotesColumnProps {
 }
 export const VotesColumn = ({ forVotes, againstVotes, abstainVotes }: VotesColumnProps) => (
   <div className="flex flex-wrap items-center justify-end gap-3">
-    <p>{forVotes + againstVotes + abstainVotes}</p>
+    <Paragraph>{forVotes + againstVotes + abstainVotes}</Paragraph>
     <PizzaChart
       segments={[
         { name: 'For', value: forVotes },
