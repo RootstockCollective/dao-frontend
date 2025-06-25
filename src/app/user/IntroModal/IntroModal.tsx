@@ -66,12 +66,9 @@ export const IntroModal = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isLoaded])
 
-  const handleContinue = () => {
-    if (status < 3) {
-      setStatus((status + 1) as IntroModalStatus)
-    } else {
-      introModal.closeModal()
-    }
+  const handleContinue = (): void => {
+    const currentContent = CONTENT_CONFIG[status]
+    window.open(currentContent.url, '_blank', 'noopener,noreferrer')
   }
 
   const currentConfig = IMAGE_CONFIG[status]
