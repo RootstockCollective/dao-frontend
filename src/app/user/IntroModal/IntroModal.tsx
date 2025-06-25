@@ -72,7 +72,13 @@ export const IntroModal = () => {
   const currentContent = CONTENT_CONFIG[requiredTokens]
 
   return (
-    <Modal width={920} onClose={introModal.closeModal} closeButtonColor="black" className="bg-text-80">
+    <Modal
+      width={920}
+      onClose={introModal.closeModal}
+      closeButtonColor="black"
+      className="bg-text-80"
+      data-testid={isMobile ? 'intro-modal-mobile' : 'intro-modal-desktop'}
+    >
       <div className="flex flex-col md:flex-row p-4 md:gap-6 relative">
         {isMobile ? (
           <div className="mt-12 flex flex-col gap-4">
@@ -130,19 +136,21 @@ export const IntroModal = () => {
 }
 
 const StakeDescription = ({ content }: { content: IntroModalContent }) => (
-  <div className="flex flex-1 flex-col justify-center gap-4">
-    <Label variant="tag" className="text-bg-100" caps>
+  <div className="flex flex-1 flex-col justify-center gap-4" data-testid="stake-description">
+    <Label variant="tag" className="text-bg-100" caps data-testid="stake-label">
       STAKE
     </Label>
     <div>
-      <Header variant="e2" className="text-bg-20" caps>
+      <Header variant="e2" className="text-bg-20" caps data-testid="stake-subtitle">
         Before you stake
       </Header>
-      <Header variant="e2" className="text-bg-100" caps>
+      <Header variant="e2" className="text-bg-100" caps data-testid="stake-title">
         {content.title}
       </Header>
     </div>
-    <Paragraph className="text-bg-100">{content.description}</Paragraph>
+    <Paragraph className="text-bg-100" data-testid="stake-description-text">
+      {content.description}
+    </Paragraph>
   </div>
 )
 
@@ -153,13 +161,19 @@ const YourWalletInfo = ({ content }: { content: IntroModalContent }) => (
       'p-4 w-[360px]',
       GLASS_STYLE,
     )}
+    data-testid="wallet-info"
   >
-    <Header variant="e3" className="text-text-100 mb-8" caps>
+    <Header variant="e3" className="text-text-100 mb-8" caps data-testid="wallet-info-title">
       Your Wallet
     </Header>
 
     {content.showRbtc && (
-      <Header variant="e2" className="text-text-100 flex flex-row items-end gap-2" caps>
+      <Header
+        variant="e2"
+        className="text-text-100 flex flex-row items-end gap-2"
+        caps
+        data-testid="wallet-info-rbtc"
+      >
         <Span className="flex flex-row items-center gap-2">
           BTC
           <ArrowRightIcon size={16} />
@@ -170,7 +184,12 @@ const YourWalletInfo = ({ content }: { content: IntroModalContent }) => (
       </Header>
     )}
     {content.showRif && (
-      <Header variant="e2" className="text-text-100 flex flex-row items-end gap-2" caps>
+      <Header
+        variant="e2"
+        className="text-text-100 flex flex-row items-end gap-2"
+        caps
+        data-testid="wallet-info-rif"
+      >
         <Span className="flex flex-row items-center gap-2">
           USD
           <ArrowRightIcon size={16} />
@@ -180,14 +199,19 @@ const YourWalletInfo = ({ content }: { content: IntroModalContent }) => (
         </Span>
       </Header>
     )}
-    <Paragraph variant="body-s" className="text-text-100 mt-2">
+    <Paragraph variant="body-s" className="text-text-100 mt-2" data-testid="wallet-info-description">
       {content.walletInfo}
     </Paragraph>
   </div>
 )
 
 const ContinueButton = ({ className, onClick }: { className?: string; onClick: () => void }) => (
-  <Button variant="secondary" className={cn('flex items-center gap-1', className)} onClick={onClick}>
+  <Button
+    variant="secondary"
+    className={cn('flex items-center gap-1', className)}
+    onClick={onClick}
+    data-testid="intro-modal-continue-button"
+  >
     <Span bold>Continue</Span>
     <ArrowUpRightLightIcon size={24} />
   </Button>
