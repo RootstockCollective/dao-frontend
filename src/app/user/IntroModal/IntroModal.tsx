@@ -5,7 +5,6 @@ import { Header, Label, Paragraph, Span } from '@/components/TypographyNew'
 import Big from '@/lib/big'
 import { RBTC, RIF } from '@/lib/constants'
 import { cn, formatNumberWithCommas } from '@/lib/utils'
-import { useIsMobile } from '@/shared/hooks/useIsMobile'
 import { useModal } from '@/shared/hooks/useModal'
 import Image from 'next/image'
 import { useRouter } from 'next/navigation'
@@ -13,6 +12,7 @@ import { useEffect, useState } from 'react'
 import { useBalancesContext } from '../Balances/context/BalancesContext'
 import { CONTENT_CONFIG, IMAGE_CONFIG, type IntroModalContent } from './config'
 import { useRequiredTokens } from './hooks/useRequiredTokens'
+import { useIsDesktop } from '@/shared/hooks/useIsDesktop'
 
 const GLASS_STYLE =
   'rounded bg-[rgba(255,255,255,0.16)] shadow-[inset_0px_0px_14px_0px_rgba(255,255,255,0.25)] backdrop-blur-[3px]'
@@ -20,7 +20,7 @@ const GLASS_STYLE =
 export const IntroModal = () => {
   const introModal = useModal()
   const [isLoaded, setIsLoaded] = useState(false)
-  const isMobile = useIsMobile()
+  const isDesktop = useIsDesktop()
   const tokenStatus = useRequiredTokens()
   const router = useRouter()
 
@@ -85,35 +85,10 @@ export const IntroModal = () => {
       onClose={introModal.closeModal}
       closeButtonColor="black"
       className="bg-text-80"
-      data-testid={isMobile ? 'intro-modal-mobile' : 'intro-modal-desktop'}
+      data-testid={isDesktop ? 'intro-modal-desktop' : 'intro-modal-mobile'}
     >
       <div className="flex flex-col md:flex-row p-4 md:gap-6 relative">
-        {isMobile ? (
-          <div className="mt-12 flex flex-col gap-4">
-            <div className="relative">
-              <Image
-                src={currentConfig.mobile.bg}
-                alt="Intro Modal"
-                height={0}
-                width={0}
-                className="h-auto w-full"
-              />
-              <Image
-                src={currentConfig.mobile.squares}
-                alt="Squares Divider"
-                width={30}
-                height={20}
-                className="absolute bottom-[-30px] right-0"
-              />
-            </div>
-            <StakeDescription content={currentContent} />
-            {currentContent.url ? (
-              <ContinueButton className="mt-12" onClick={handleContinue} />
-            ) : (
-              <ContinueToStakingButton className="mt-12" onClick={goToStake} />
-            )}
-          </div>
-        ) : (
+        {isDesktop ? (
           <>
             <Image
               src={currentConfig.desktop.squares}
@@ -145,6 +120,31 @@ export const IntroModal = () => {
               </div>
             </div>
           </>
+        ) : (
+          <div className="mt-12 flex flex-col gap-4">
+            <div className="relative">
+              <Image
+                src={currentConfig.mobile.bg}
+                alt="Intro Modal"
+                height={0}
+                width={0}
+                className="h-auto w-full"
+              />
+              <Image
+                src={currentConfig.mobile.squares}
+                alt="Squares Divider"
+                width={30}
+                height={20}
+                className="absolute bottom-[-30px] right-0"
+              />
+            </div>
+            <StakeDescription content={currentContent} />
+            {currentContent.url ? (
+              <ContinueButton className="mt-12" onClick={handleContinue} />
+            ) : (
+              <ContinueToStakingButton className="mt-12" onClick={goToStake} />
+            )}
+          </div>
         )}
       </div>
     </Modal>
