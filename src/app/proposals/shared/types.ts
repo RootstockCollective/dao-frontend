@@ -1,6 +1,6 @@
 import Big from '@/lib/big'
 import { DecodedData } from '@/app/proposals/shared/utils'
-import { ProposalState } from '@/shared/types'
+import { ProposalCategory, ProposalState } from '@/shared/types'
 export interface Proposal {
   votes: {
     againstVotes: Big
@@ -13,7 +13,7 @@ export interface Proposal {
   quorumAtSnapshot: Big
   proposalDeadline: Big
   proposalState: ProposalState
-  category: string
+  category: ProposalCategory
   name: string
   proposer: `0x${string}`
   description: string

@@ -1,16 +1,16 @@
 import type { Table, PaginationState } from '@tanstack/react-table'
 import { useSearchParams, useRouter } from 'next/navigation'
 import { Dispatch, SetStateAction, useEffect, useMemo } from 'react'
-import { type ProposalParams } from '../../hooks/useProposalListData'
 import PaginationArrowButton from './PaginationArrowButton'
 import PaginationPageNumbers from './PaginationPageNumbers'
 import PaginationPageSizeSelector from './PaginationPageSizeSelector'
+import { Proposal } from '@/app/proposals/shared/types'
 
 interface PaginationProps {
   pagination: PaginationState
   setPagination: Dispatch<SetStateAction<PaginationState>>
-  proposals: ProposalParams[]
-  table: Table<ProposalParams>
+  proposals: Proposal[]
+  table: Table<Proposal>
 }
 
 export default function Pagination({ pagination, setPagination, proposals, table }: PaginationProps) {

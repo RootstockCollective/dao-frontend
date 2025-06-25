@@ -1,5 +1,4 @@
 'use client'
-/* eslint-disable prettier/prettier */
 import { useMemo, memo, useState, useEffect, useCallback, useRef } from 'react'
 import { AnimatePresence, motion } from 'motion/react'
 import {
@@ -64,7 +63,6 @@ const LatestProposalsTable = ({ proposals }: LatestProposalsTableProps) => {
   // close filter sidebar when user clicks outside of it
   useClickOutside(filterSidebarRef, () => setIsFilterSidebarOpen(false))
   // Ref to store the clear function from DebounceSearch
-  const clearSearchRef = useRef<() => void>(undefined)
   useClickOutside(searchRef, () => setSearchVisible(false))
 
   // Flag to prevent search updates during filter changes
@@ -84,7 +82,6 @@ const LatestProposalsTable = ({ proposals }: LatestProposalsTableProps) => {
   // Effect to clear search input after filter state updates
   useEffect(() => {
     if (isFilterChanging.current) {
-      clearSearchRef.current?.()
       isFilterChanging.current = false
     }
   }, [activeFilter, searchedProposal])
@@ -111,22 +108,22 @@ const LatestProposalsTable = ({ proposals }: LatestProposalsTableProps) => {
   )
 
   // Table data definition helper
-  const { accessor, display } = createColumnHelper<(typeof proposals)[number]>()
+  const { accessor } = createColumnHelper<(typeof proposals)[number]>()
   // Table columns definition
   const columns = [
     accessor('name', {
       id: 'name',
-      cell: ({ cell, row }) => {
-        const { proposalName } = splitCombinedName(cell.getValue())
-        return <ProposalNameColumn name={proposalName} proposalId={row.original.proposalId} />
-      },
+      cell: ({ cell, row }) => (
+        <ProposalNameColumn name={cell.getValue()} proposalId={row.original.proposalId} />
+      ),
     }),
-    accessor('name', {
-      id: 'builderName',
+    accessor('proposer', {
+      id: 'proposer',
       header: 'Proposal name',
       cell: ({ cell }) => {
-        const { builderName } = splitCombinedName(cell.getValue())
-        return <ProposalByColumn by={builderName ?? 'unknown'} />
+        const proposer = cell.getValue()
+        const short = shortAddress(proposer)
+        return <ProposalByColumn by={short} />
       },
     }),
     accessor('Starts', {
@@ -201,8 +198,8 @@ const LatestProposalsTable = ({ proposals }: LatestProposalsTableProps) => {
       },
     }),
     accessor('category', {
-      id: 'category',
-      header: 'Cat.',
+      id: 'propType',
+      header: 'Type',
       meta: {
         width: '0.5fr',
       },
@@ -261,10 +258,9 @@ const LatestProposalsTable = ({ proposals }: LatestProposalsTableProps) => {
               >
                 <DebounceSearch
                   placeholder="Search a proposal"
+                  searchValue={searchedProposal}
                   onSearchSubmit={handleSearch}
-                  onClearHandler={handler => {
-                    clearSearchRef.current = handler
-                  }}
+                  ref={searchRef}
                 />
               </motion.div>
             )}
@@ -287,12 +283,7 @@ const LatestProposalsTable = ({ proposals }: LatestProposalsTableProps) => {
           </motion.div>
           <FilterButton
             isOpen={isFilterSidebarOpen}
-            setIsOpen={state => {
-              setIsFilterSidebarOpen(state)
-              if (state) {
-                setSearchVisible(false)
-              }
-            }}
+            setIsOpen={setIsFilterSidebarOpen}
             disabled={proposals.length === 0}
             isFiltering={activeFilter > 0}
           />

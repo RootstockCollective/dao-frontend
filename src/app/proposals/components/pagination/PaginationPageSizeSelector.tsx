@@ -1,10 +1,10 @@
 import { Chevron } from './Chevron'
 import { cn } from '@/lib/utils'
 import type { Table } from '@tanstack/react-table'
-import type { ProposalParams } from '../../hooks/useProposalListData'
+import { Proposal } from '@/app/proposals/shared/types'
 
 interface PaginationPageSizeSelectorProps {
-  table: Table<ProposalParams>
+  table: Table<Proposal>
 }
 
 // Dropdown for selecting page size in pagination

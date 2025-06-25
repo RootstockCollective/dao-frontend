@@ -6,7 +6,7 @@ import { AVERAGE_BLOCKTIME } from '@/lib/constants'
 import Big from '@/lib/big'
 import { getEventArguments } from '@/app/proposals/shared/utils'
 import { Address, formatEther } from 'viem'
-import { ProposalState } from '@/shared/types'
+import { ProposalCategory, ProposalState } from '@/shared/types'
 
 export function useGetProposalsWithGraph() {
   const {
@@ -64,8 +64,8 @@ export function useGetProposalsWithGraph() {
     const category = calldatasParsed
       .filter(data => data.type === 'decoded')
       .find(data => ['withdraw', 'withdrawERC20'].includes(data.functionName))
-      ? 'Grants'
-      : 'Builder'
+      ? ProposalCategory.Grants
+      : ProposalCategory.Builder
     return {
       ...proposal,
       votes: {
