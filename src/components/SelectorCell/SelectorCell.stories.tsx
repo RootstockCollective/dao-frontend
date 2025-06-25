@@ -30,7 +30,7 @@ type Story = StoryObj<typeof meta>
 
 export const Default: Story = {
   args: {
-    children: <div style={{ width: 100, height: 100, backgroundColor: '#DDDD00', borderRadius: '50%' }} />,
+    children: <div className="w-20 h-20 bg-yellow-500 rounded-full" />,
     isSelected: false,
     isHovered: false,
   },

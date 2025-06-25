@@ -1,13 +1,11 @@
-import React from 'react'
 import { EllipseIcon } from '../Icons/EllipseIcon'
 import { CheckPriorityIcon } from '../Icons/CheckPriority'
+import { CommonComponentProps } from '@/components/commonProps'
+import { cn } from '@/lib/utils'
 
-export interface SelectorCellProps {
-  children: React.ReactNode
+export interface SelectorCellProps extends CommonComponentProps {
   isSelected?: boolean
   isHovered?: boolean
-  className?: string
-  style?: React.CSSProperties
   onClick?: () => void
 }
 
@@ -18,16 +16,11 @@ export function SelectorCell({
   isSelected = false,
   isHovered = false,
   className = '',
-  style,
   onClick,
 }: SelectorCellProps) {
   return (
     <div
-      className={className}
-      style={{
-        position: 'relative',
-        ...style,
-      }}
+      className={cn('relative', className)}
       onClick={onClick}
     >
       {children}
