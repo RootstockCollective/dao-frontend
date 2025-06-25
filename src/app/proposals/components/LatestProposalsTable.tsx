@@ -18,9 +18,8 @@ import { useSearchParams } from 'next/navigation'
 import { filterOptions } from './filter/filterOptions'
 import { FilterButton } from './filter/FilterButton'
 import { FilterSideBar } from './filter/FilterSideBar'
-import { cn } from '@/lib/utils'
+import { cn, shortAddress } from '@/lib/utils'
 import { useClickOutside } from '@/shared/hooks/useClickOutside'
-import { splitCombinedName } from '../shared/utils'
 import { Status } from '@/components/Status'
 import { SearchIconKoto } from '@/components/Icons'
 import { CategoryColumn } from './table-columns/CategoryColumn'
@@ -115,17 +114,17 @@ const LatestProposalsTable = ({ proposals }: LatestProposalsTableProps) => {
   const columns = [
     accessor('name', {
       id: 'name',
-      cell: ({ cell, row }) => {
-        const { proposalName } = splitCombinedName(cell.getValue())
-        return <ProposalNameColumn name={proposalName} proposalId={row.original.proposalId} />
-      },
+      cell: ({ cell, row }) => (
+        <ProposalNameColumn name={cell.getValue()} proposalId={row.original.proposalId} />
+      ),
     }),
-    accessor('name', {
-      id: 'builderName',
+    accessor('proposer', {
+      id: 'proposer',
       header: 'Proposal name',
       cell: ({ cell }) => {
-        const { builderName } = splitCombinedName(cell.getValue())
-        return <ProposalByColumn by={builderName ?? 'unknown'} />
+        const proposer = cell.getValue()
+        const short = shortAddress(proposer)
+        return <ProposalByColumn by={short} />
       },
     }),
     accessor('Starts', {
@@ -200,8 +199,8 @@ const LatestProposalsTable = ({ proposals }: LatestProposalsTableProps) => {
       },
     }),
     accessor('category', {
-      id: 'category',
-      header: 'Cat.',
+      id: 'propType',
+      header: 'Type',
       meta: {
         width: '0.5fr',
       },
