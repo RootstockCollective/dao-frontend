@@ -77,6 +77,7 @@ const RBIWStateSync: FC<RBIProps> = ({ backer, tokens, ...metricsCardProps }) =>
 
   const isLoading = backerStakingHistoryLoading || rbiPctLoading
   const error = backerStakingHistoryError ?? rbiPctError
+
   useHandleErrors({ error, title: 'Error loading RBI with state sync' })
 
   return <RBIContent rbiPct={rbiPct} isLoading={isLoading} {...metricsCardProps} />
