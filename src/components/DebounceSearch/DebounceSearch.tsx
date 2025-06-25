@@ -3,6 +3,7 @@
 import { useState, useEffect, HTMLAttributes, RefObject } from 'react'
 import { useDebounce } from 'use-debounce'
 import { CloseIconKoto, SearchIconKoto, SpinnerIcon } from '../Icons'
+import { cn } from '@/lib/utils'
 
 interface ProposalSearchProps extends HTMLAttributes<HTMLDivElement> {
   /**
@@ -37,6 +38,7 @@ export function DebounceSearch({
   placeholder = 'Search',
   searchValue,
   maxLength = 100,
+  className,
   ...props
 }: ProposalSearchProps) {
   const [searchText, setSearchText] = useState(searchValue)
@@ -63,7 +65,7 @@ export function DebounceSearch({
     setSearchText(val)
   }
   return (
-    <div className="relative bg-bg-60 rounded-sm" {...props}>
+    <div className={cn('relative bg-bg-60 rounded-sm', className)} {...props}>
       <div className="absolute left-3 top-1/2 -translate-y-1/2">
         {isLoading ? <SpinnerIcon className="animate-spin" /> : <SearchIconKoto />}
       </div>

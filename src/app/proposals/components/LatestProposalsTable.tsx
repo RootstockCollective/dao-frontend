@@ -23,7 +23,6 @@ import { useClickOutside } from '@/shared/hooks/useClickOutside'
 import { splitCombinedName } from '../shared/utils'
 import { Status } from '@/components/Status'
 import { SearchIconKoto } from '@/components/Icons'
-import { Tooltip } from '@/components/Tooltip'
 import { CategoryColumn } from './table-columns/CategoryColumn'
 import { KotoQuestionMarkIcon } from '@/components/Icons'
 import { ProposalParams } from '../hooks/useProposalListData'
@@ -256,7 +255,7 @@ const LatestProposalsTable = ({ proposals }: LatestProposalsTableProps) => {
                 initial={{ opacity: 0 }}
                 animate={{ opacity: searchVisible ? 1 : 0, x: 0 }}
                 exit={{ opacity: 0 }}
-                className="w-full  max-w-[776px]"
+                className="w-full max-w-[650px]"
               >
                 <DebounceSearch
                   placeholder="Search a proposal"
@@ -269,23 +268,21 @@ const LatestProposalsTable = ({ proposals }: LatestProposalsTableProps) => {
             )}
           </AnimatePresence>
         </div>
-        <div className="flex items-center gap-4">
-          <AnimatePresence>
-            {!searchVisible && (
-              <motion.div
-                initial={{ x: 16, opacity: 0 }}
-                animate={{ x: 0, opacity: 1 }}
-                exit={{ x: 16, opacity: 0 }}
-                className="flex items-center"
-              >
-                <Tooltip text="Search proposals">
-                  <button className="cursor-pointer" onClick={() => setSearchVisible(v => !v)}>
-                    <SearchIconKoto className="scale-90" />
-                  </button>
-                </Tooltip>
-              </motion.div>
-            )}
-          </AnimatePresence>
+        <div className="flex items-center justify-end">
+          <motion.div
+            initial={{ width: 40, opacity: 1 }}
+            animate={searchVisible ? { width: 0, opacity: 0 } : { width: 40, opacity: 1 }}
+            className="flex items-center"
+            style={{ pointerEvents: searchVisible ? 'none' : 'auto' }}
+          >
+            <button
+              disabled={searchVisible}
+              className="cursor-pointer"
+              onClick={() => setSearchVisible(v => !v)}
+            >
+              <SearchIconKoto className="scale-90" />
+            </button>
+          </motion.div>
           <FilterButton
             isOpen={isFilterSidebarOpen}
             setIsOpen={state => {
