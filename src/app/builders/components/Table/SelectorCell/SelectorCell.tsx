@@ -1,5 +1,5 @@
-import { EllipseIcon } from '../Icons/EllipseIcon'
-import { CheckPriorityIcon } from '../Icons/CheckPriority'
+import { EllipseIcon } from '../../../../../components/Icons/EllipseIcon'
+import { CheckPriorityIcon } from '../../../../../components/Icons/CheckPriority'
 import { CommonComponentProps } from '@/components/commonProps'
 import { cn } from '@/lib/utils'
 
@@ -19,10 +19,7 @@ export function SelectorCell({
   onClick,
 }: SelectorCellProps) {
   return (
-    <div
-      className={cn('relative', className)}
-      onClick={onClick}
-    >
+    <div className={cn('relative', className)} onClick={onClick}>
       {children}
 
       {/* Show Ellipse icon on hover or when selected */}

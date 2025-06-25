@@ -1,8 +1,8 @@
 import type { Meta, StoryObj } from '@storybook/react'
-import { SelectorCell } from './'
+import { SelectorCell } from './SelectorCell'
 
 const meta = {
-  title: 'Components/SelectorCell',
+  title: 'Builders/Table/SelectorCell',
   component: SelectorCell,
   parameters: {
     layout: 'centered',
