@@ -8,8 +8,8 @@ import { cn } from '@/lib/utils'
 
 interface RifRbtcTooltipProps {
   children: ReactNode
-  totalEstimatedRbtc: bigint
-  totalEstimatedRif: bigint
+  rbtcValue: bigint
+  rifValue: bigint
   className?: string
 }
 const TokenSymbol = ({ symbol }: { symbol: string }) => {
@@ -25,12 +25,7 @@ const TokenAmount = ({ amount, symbol }: { amount: bigint; symbol: string }) => 
   return <Typography>{formatSymbol(amount, symbol)}</Typography>
 }
 
-export const RifRbtcTooltip = ({
-  children,
-  totalEstimatedRbtc,
-  totalEstimatedRif,
-  className,
-}: RifRbtcTooltipProps) => (
+export const RifRbtcTooltip = ({ children, rbtcValue, rifValue, className }: RifRbtcTooltipProps) => (
   <Tooltip
     side="top"
     align="center"
@@ -38,8 +33,8 @@ export const RifRbtcTooltip = ({
     text={
       <div className="flex items-start text-2xl font-medium rounded p-4 bg-v3-text-80 text-v3-text-0">
         <div className="flex flex-col gap-2 mr-2">
-          <TokenAmount amount={totalEstimatedRbtc} symbol="rbtc" />
-          <TokenAmount amount={totalEstimatedRif} symbol="stRIF" />
+          <TokenAmount amount={rbtcValue} symbol="rbtc" />
+          <TokenAmount amount={rifValue} symbol="stRIF" />
         </div>
         <div className="flex flex-col gap-2">
           <TokenSymbol symbol={RBTC} />

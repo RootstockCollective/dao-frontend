@@ -31,8 +31,8 @@ export const RewardsInfo: FC<RewardsInfoProps> = ({ current, next, estimatedRewa
               )}
             </Paragraph>
             <RifRbtcTooltip
-              totalEstimatedRbtc={estimatedRewards.rbtc.amount.value}
-              totalEstimatedRif={estimatedRewards.rif.amount.value}
+              rbtcValue={estimatedRewards.rbtc.amount.value}
+              rifValue={estimatedRewards.rif.amount.value}
             >
               <DottedUnderlineLabel className="font-normal">USD</DottedUnderlineLabel>
             </RifRbtcTooltip>

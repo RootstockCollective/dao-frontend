@@ -9,11 +9,11 @@ const meta: Meta<typeof RifRbtcTooltip> = {
   },
   tags: ['autodocs'],
   argTypes: {
-    totalEstimatedRbtc: {
+    rbtcValue: {
       control: { type: 'text' },
       description: 'Total estimated RBTC amount as bigint string',
     },
-    totalEstimatedRif: {
+    rifValue: {
       control: { type: 'text' },
       description: 'Total estimated RIF amount as bigint string',
     },

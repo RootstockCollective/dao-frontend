@@ -6,22 +6,22 @@ import { formatCurrency } from '@/lib/utils'
 import { cn } from '@/lib/utils'
 
 interface RewardsCellProps {
-  totalEstimatedUsd: number
-  totalEstimatedRbtc: bigint
-  totalEstimatedRif: bigint
+  usdValue: number
+  rbtcValue: bigint
+  rifValue: bigint
   className?: string
 }
 
 export const RewardsCell: React.FC<RewardsCellProps> = ({
-  totalEstimatedUsd,
-  totalEstimatedRbtc,
-  totalEstimatedRif,
+  usdValue,
+  rbtcValue,
+  rifValue,
   className = '',
 }) => {
   return (
     <div className={cn('flex flex-row items-baseline justify-center gap-1 font-rootstock-sans', className)}>
-      <Paragraph>{formatCurrency(totalEstimatedUsd)}</Paragraph>
-      <RifRbtcTooltip totalEstimatedRbtc={totalEstimatedRbtc} totalEstimatedRif={totalEstimatedRif}>
+      <Paragraph>{formatCurrency(usdValue)}</Paragraph>
+      <RifRbtcTooltip rbtcValue={rbtcValue} rifValue={rifValue}>
         <DottedUnderlineLabel>USD</DottedUnderlineLabel>
       </RifRbtcTooltip>
     </div>
