@@ -1,5 +1,5 @@
 import React from 'react'
-import { ElipseIcon } from '../Icons/Elipse'
+import { EllipseIcon } from '../Icons/EllipseIcon'
 import { CheckPriorityIcon } from '../Icons/CheckPriority'
 
 export interface SelectorCellProps {
@@ -21,7 +21,6 @@ export function SelectorCell({
   style,
   onClick,
 }: SelectorCellProps) {
-
   return (
     <div
       className={className}
@@ -33,9 +32,9 @@ export function SelectorCell({
     >
       {children}
 
-      {/* Show Elipse icon on hover or when selected */}
+      {/* Show Ellipse icon on hover or when selected */}
       {(isHovered || isSelected) && (
-        <ElipseIcon
+        <EllipseIcon
           className="absolute top-[50%] left-[50%] transform -translate-x-1/2 -translate-y-1/2 text-v3-bg-accent-100 z-10 bg-v3-text-80 rounded-full"
           style={{
             width: `${SIZE_ICONS_PCT}%`,

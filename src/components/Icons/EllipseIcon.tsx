@@ -1,9 +1,9 @@
 import { type IconProps } from './types'
 import { DEFAULT_ICON_COLOR, DEFAULT_ICON_SIZE } from './constants'
 
-export function ElipseIcon({
-  'aria-label': ariaLabel = 'Elipse Icon',
-  size = 28,
+export function EllipseIcon({
+  'aria-label': ariaLabel = 'Ellipse Icon',
+  size = DEFAULT_ICON_SIZE,
   color = DEFAULT_ICON_COLOR,
   fill = 'none',
   className = '',
@@ -25,4 +25,4 @@ export function ElipseIcon({
   )
 }
 
-export default ElipseIcon
+export default EllipseIcon
