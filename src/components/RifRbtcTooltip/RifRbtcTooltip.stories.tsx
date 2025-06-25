@@ -11,11 +11,11 @@ const meta: Meta<typeof RifRbtcTooltip> = {
   argTypes: {
     rbtcValue: {
       control: { type: 'text' },
-      description: 'Total estimated RBTC amount as bigint string',
+      description: 'RBTC amount as bigint string',
     },
     rifValue: {
       control: { type: 'text' },
-      description: 'Total estimated RIF amount as bigint string',
+      description: 'RIF amount as bigint string',
     },
     className: {
       control: { type: 'text' },
@@ -29,8 +29,8 @@ type Story = StoryObj<typeof meta>
 
 export const Default: Story = {
   args: {
-    totalEstimatedRbtc: '1000000000000000000', // 1 RBTC in wei
-    totalEstimatedRif: '500000000000000000000', // 500 RIF in wei
+    rbtcValue: '1000000000000000000', // 1 RBTC in wei
+    rifValue: '500000000000000000000', // 500 RIF in wei
     children: 'Hover me to see tooltip',
   },
 }
