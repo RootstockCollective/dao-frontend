@@ -1,7 +1,7 @@
 import React from 'react'
 import { Paragraph } from '@/components/TypographyNew'
-import { DottedUnderlineLabel } from '@/app/backing/components/DottedUnderlineLabel/DottedUnderlineLabel'
-import { RifRbtcTooltip } from '@/app/backing/components/Popovers/RifRbtcTooltip'
+import { DottedUnderlineLabel } from '@/components/DottedUnderlineLabel/DottedUnderlineLabel'
+import { RifRbtcTooltip } from '@/components/RifRbtcTooltip/RifRbtcTooltip'
 import { formatCurrency } from '@/lib/utils'
 import { cn } from '@/lib/utils'
 

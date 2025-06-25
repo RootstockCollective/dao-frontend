@@ -2,7 +2,7 @@ import type { Meta, StoryObj } from '@storybook/react'
 import { DottedUnderlineLabel } from './DottedUnderlineLabel'
 
 const meta = {
-  title: 'Backing/DottedUnderlineLabel',
+  title: 'Components/DottedUnderlineLabel',
   component: DottedUnderlineLabel,
   parameters: {
     layout: 'centered',

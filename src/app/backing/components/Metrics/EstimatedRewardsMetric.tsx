@@ -2,10 +2,10 @@ import { useEstimatedRewards } from '../../hooks/useEstimatedRewards'
 import KotoQuestionMarkIcon from '@/components/Icons/KotoQuestionMarkIcon'
 import { Header } from '@/components/TypographyNew'
 import { formatCurrency } from '@/lib/utils'
-import { RifRbtcTooltip } from '@/app/backing/components/Popovers/RifRbtcTooltip'
+import { RifRbtcTooltip } from '@/components/RifRbtcTooltip/RifRbtcTooltip'
 import { Metric, MetricTitle } from '@/components/Metric'
 import { BuildersRewards } from '@/app/collective-rewards/rewards/builders/hooks/useGetBuildersRewards'
-import { DottedUnderlineLabel } from '@/app/backing/components/DottedUnderlineLabel/DottedUnderlineLabel'
+import { DottedUnderlineLabel } from '@/components/DottedUnderlineLabel/DottedUnderlineLabel'
 import { EstimatedRewardsPopover } from '@/app/backing/components/Popovers/EstimatedRewardsPopover'
 
 interface EstimatedRewardsMetricProps {

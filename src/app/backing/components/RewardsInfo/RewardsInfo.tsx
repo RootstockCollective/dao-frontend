@@ -6,8 +6,8 @@ import { formatCurrency } from '@/lib/utils'
 import { FC } from 'react'
 import { BackerRewardsPercentage } from '../BackerPercentage/BackerRewardsPercentage'
 import { LabeledContent } from '../LabeledContent/LabeledContent'
-import { RifRbtcTooltip } from '../Popovers/RifRbtcTooltip'
-import { DottedUnderlineLabel } from '../DottedUnderlineLabel/DottedUnderlineLabel'
+import { RifRbtcTooltip } from '@/components/RifRbtcTooltip/RifRbtcTooltip'
+import { DottedUnderlineLabel } from '@/components/DottedUnderlineLabel/DottedUnderlineLabel'
 
 export interface RewardsInfoProps extends BackerRewardPercentage {
   estimatedRewards?: TokenRewards
