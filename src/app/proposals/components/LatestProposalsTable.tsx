@@ -1,4 +1,3 @@
-/* eslint-disable prettier/prettier */
 import { useMemo, memo, useState, useEffect, useCallback, useRef } from 'react'
 import { AnimatePresence, motion } from 'motion/react'
 import {
@@ -15,15 +14,12 @@ import { ProposalNameColumn, ProposalByColumn } from './table-columns/ProposalNa
 import { QuorumColumn, VotesColumn } from './table-columns/VotesColumn'
 import { TimeColumn } from './table-columns/TimeColumn'
 import { DebounceSearch } from '@/components/DebounceSearch'
-import { useRouter, useSearchParams } from 'next/navigation'
-import Big from '@/lib/big'
-import { ProposalState } from '@/shared/types'
+import { useSearchParams } from 'next/navigation'
 import { filterOptions } from './filter/filterOptions'
 import { FilterButton } from './filter/FilterButton'
 import { FilterSideBar } from './filter/FilterSideBar'
 import { cn } from '@/lib/utils'
 import { useClickOutside } from '@/shared/hooks/useClickOutside'
-import { mockProposalListData } from './mockProposalData'
 import { splitCombinedName } from '../shared/utils'
 import { Status } from '@/components/Status'
 import { SearchIconKoto } from '@/components/Icons'
@@ -33,6 +29,7 @@ import { KotoQuestionMarkIcon } from '@/components/Icons'
 import { ProposalParams } from '../hooks/useProposalListData'
 import { Paragraph } from '@/components/TypographyNew'
 import Pagination from './pagination/Pagination'
+import Big from 'big.js'
 
 interface LatestProposalsTableProps {
   proposals: ProposalParams[]
@@ -63,10 +60,13 @@ const LatestProposalsTable = ({ proposals }: LatestProposalsTableProps) => {
   const [activeFilter, setActiveFilter] = useState<number>(0)
   const [isFilterSidebarOpen, setIsFilterSidebarOpen] = useState(false)
   const filterSidebarRef = useRef<HTMLDivElement>(null) // ref for useClickOutside
+  const searchRef = useRef<HTMLDivElement>(null)
   // close filter sidebar when user clicks outside of it
   useClickOutside(filterSidebarRef, () => setIsFilterSidebarOpen(false))
   // Ref to store the clear function from DebounceSearch
   const clearSearchRef = useRef<() => void>(undefined)
+  useClickOutside(searchRef, () => setSearchVisible(false))
+
   // Flag to prevent search updates during filter changes
   const isFilterChanging = useRef(false)
 
@@ -223,7 +223,6 @@ const LatestProposalsTable = ({ proposals }: LatestProposalsTableProps) => {
   ]
 
   const searchParams = useSearchParams()
-
   // Convert 1-indexed URL page to 0-indexed internal page
   const [pagination, setPagination] = useState<PaginationState>(() => ({
     pageIndex: Math.max(parseInt(searchParams?.get('page') ?? '1') - 1, 0),
@@ -277,10 +276,11 @@ const LatestProposalsTable = ({ proposals }: LatestProposalsTableProps) => {
                 initial={{ x: 16, opacity: 0 }}
                 animate={{ x: 0, opacity: 1 }}
                 exit={{ x: 16, opacity: 0 }}
+                className="flex items-center"
               >
                 <Tooltip text="Search proposals">
                   <button className="cursor-pointer" onClick={() => setSearchVisible(v => !v)}>
-                    <SearchIcon size={16} />
+                    <SearchIconKoto className="scale-90" />
                   </button>
                 </Tooltip>
               </motion.div>
@@ -314,7 +314,7 @@ const LatestProposalsTable = ({ proposals }: LatestProposalsTableProps) => {
             />
           </div>
         </motion.div>
-        <div className="grow">
+        <div className="grow overflow-y-auto">
           {filteredProposalList.length > 0 ? (
             <div>
               <GridTable

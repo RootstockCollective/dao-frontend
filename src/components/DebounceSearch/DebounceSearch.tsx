@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect, HTMLAttributes } from 'react'
+import { useState, useEffect, HTMLAttributes, RefObject } from 'react'
 import { useDebounce } from 'use-debounce'
 import { CloseIconKoto, SearchIconKoto, SpinnerIcon } from '../Icons'
 
@@ -15,6 +15,7 @@ interface ProposalSearchProps extends HTMLAttributes<HTMLDivElement> {
    */
   placeholder: string
   maxLength?: number
+  ref: RefObject<HTMLDivElement | null>
 }
 
 const SPINNER_DEBOUNCE_MS = 300 // Delay after the user stops typing before showing the spinner
