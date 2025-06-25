@@ -111,22 +111,22 @@ const LatestProposalsTable = ({ proposals }: LatestProposalsTableProps) => {
   )
 
   // Table data definition helper
-  const { accessor } = createColumnHelper<(typeof proposals)[number]>()
+  const { accessor, display } = createColumnHelper<(typeof proposals)[number]>()
   // Table columns definition
   const columns = [
     accessor('name', {
       id: 'name',
-      cell: ({ cell, row }) => (
-        <ProposalNameColumn name={cell.getValue()} proposalId={row.original.proposalId} />
-      ),
+      cell: ({ cell, row }) => {
+        const { proposalName } = splitCombinedName(cell.getValue())
+        return <ProposalNameColumn name={proposalName} proposalId={row.original.proposalId} />
+      },
     }),
-    accessor('proposer', {
-      id: 'proposer',
+    accessor('name', {
+      id: 'builderName',
       header: 'Proposal name',
       cell: ({ cell }) => {
-        const proposer = cell.getValue()
-        const short = shortAddress(proposer)
-        return <ProposalByColumn by={short} />
+        const { builderName } = splitCombinedName(cell.getValue())
+        return <ProposalByColumn by={builderName ?? 'unknown'} />
       },
     }),
     accessor('Starts', {
@@ -201,8 +201,8 @@ const LatestProposalsTable = ({ proposals }: LatestProposalsTableProps) => {
       },
     }),
     accessor('category', {
-      id: 'propType',
-      header: 'Type',
+      id: 'category',
+      header: 'Cat.',
       meta: {
         width: '0.5fr',
       },
@@ -223,6 +223,7 @@ const LatestProposalsTable = ({ proposals }: LatestProposalsTableProps) => {
   ]
 
   const searchParams = useSearchParams()
+
   // Convert 1-indexed URL page to 0-indexed internal page
   const [pagination, setPagination] = useState<PaginationState>(() => ({
     pageIndex: Math.max(parseInt(searchParams?.get('page') ?? '1') - 1, 0),
