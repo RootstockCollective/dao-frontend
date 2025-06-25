@@ -28,7 +28,7 @@ const TokenDisplay = ({
   className?: string
 }) => {
   return (
-    <div className="flex flex-row items-start gap-1 w-14">
+    <div className="flex flex-row items-start w-14">
       <TokenImage symbol={symbol} size={size} className={className} />
       <Typography className="text-sm">{displayText}</Typography>
     </div>
@@ -52,7 +52,7 @@ export const RifRbtcTooltip = ({ children, rbtcValue, rifValue, className }: Rif
         </RowContainer>
         <RowContainer>
           <FormattedValue value={rifValue} symbol={RIF} />
-          <TokenDisplay symbol={RIF} size={16} displayText="RIF" className="mx-[1.3px]" />
+          <TokenDisplay symbol={RIF} size={16} displayText="RIF" className="ml-[1.3px] mr-[3.7px]" />
         </RowContainer>
       </div>
     }
