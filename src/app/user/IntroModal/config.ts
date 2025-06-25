@@ -1,3 +1,5 @@
+import { currentLinks } from '@/lib/links'
+
 // Image paths configuration
 export const IMAGE_CONFIG = {
   1: {
@@ -42,7 +44,7 @@ export const CONTENT_CONFIG = {
     walletInfo: 'You need RBTC to pay fees & RIF to stake',
     showRbtc: true,
     showRif: true,
-    url: 'https://example.com/get-rbtc-rif',
+    url: currentLinks.rbtc,
   },
   2: {
     title: 'add RBTC to your wallet',
@@ -51,7 +53,7 @@ export const CONTENT_CONFIG = {
     walletInfo: 'You need RBTC for the transaction fees',
     showRbtc: true,
     showRif: false,
-    url: 'https://example.com/get-rbtc',
+    url: currentLinks.rbtc,
   },
   3: {
     title: 'add RIF to your wallet',
@@ -60,7 +62,7 @@ export const CONTENT_CONFIG = {
     walletInfo: 'You need RIF to stake',
     showRbtc: false,
     showRif: true,
-    url: 'https://example.com/get-rif',
+    url: currentLinks.getRif,
   },
 } as const
 
