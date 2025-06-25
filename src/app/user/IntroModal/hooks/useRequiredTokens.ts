@@ -15,28 +15,32 @@ export const useRequiredTokens = (): IntroModalStatus | null => {
       return null
     }
 
-    const hasStRif = Big(balances[stRIF].balance).gt(0)
-    const hasRif = Big(balances[RIF].balance).gt(0)
     const hasRbtc = Big(balances[RBTC].balance).gt(0)
+    const hasRif = Big(balances[RIF].balance).gt(0)
+    const hasStRif = Big(balances[stRIF].balance).gt(0)
 
-    const needRif = !hasStRif && !hasRif
     const needRbtc = !hasRbtc
+    const needRif = !hasRif && !hasStRif
+    const needStRif = !hasStRif
 
     // Determine which modal to show based on what tokens the user has
     if (needRif && needRbtc) {
-      // User has neither RIF nor RBTC
-      return 'NEED_BOTH'
-    }
-    if (needRif) {
-      // User has RIF but no RBTC
-      return 'NEED_RBTC'
+      // User has neither RIF/stRIF nor RBTC
+      return 'NEED_RBTC_RIF'
     }
     if (needRbtc) {
-      // User has RBTC but no RIF
+      // User has RIF/stRIF but no RBTC
+      return 'NEED_RBTC'
+    }
+    if (needRif) {
+      // User has RBTC but no RIF/stRIF
       return 'NEED_RIF'
     }
-
-    // User has both RIF and RBTC, don't show modal
+    if (needStRif) {
+      // User has RIF but no stRIF
+      return 'NEED_STRIF'
+    }
+    // User has both RIF/stRIF and RBTC, don't show modal
     return null
   }, [isConnected, isBalancesLoading, balances])
 }
