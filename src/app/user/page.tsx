@@ -31,11 +31,25 @@ export default function User() {
   const router = useRouter()
   const pathName = usePathname()
   const searchParams = useSearchParams()
+
   const activeTab = useMemo<TabValue>(() => {
     const currentTab = (searchParams.get('tab') ?? defaultTab) as TabValue
     // if selected tab doesn't exist display default tab
     return values.includes(currentTab) ? currentTab : defaultTab
   }, [searchParams])
+
+  const tabsContent: Record<TabValue, ReactNode> = {
+    holdings: (
+      <>
+        {searchParams.get('action') !== 'stake' && <IntroModal />}
+        <BalancesSection />
+        <DelegationSection />
+        <CommunitiesSection />
+      </>
+    ),
+    rewards: <Rewards />,
+  }
+
   return (
     <>
       {!isConnected && <HeroSection />}
@@ -49,16 +63,4 @@ export default function User() {
       </UnderlineTabs>
     </>
   )
-}
-
-const tabsContent: Record<TabValue, ReactNode> = {
-  holdings: (
-    <>
-      <IntroModal />
-      <BalancesSection />
-      <DelegationSection />
-      <CommunitiesSection />
-    </>
-  ),
-  rewards: <Rewards />,
 }
