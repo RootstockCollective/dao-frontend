@@ -1,4 +1,3 @@
-/* eslint-disable quotes */
 import { Button } from '@/components/ButtonNew'
 import { ArrowUpRightLightIcon } from '@/components/Icons'
 import { ArrowRightIcon } from '@/components/Icons/ArrowRightIcon'
@@ -8,31 +7,10 @@ import { cn } from '@/lib/utils'
 import { useModal } from '@/shared/hooks/useModal'
 import Image from 'next/image'
 import { useEffect, useState } from 'react'
+import { IMAGE_CONFIG, CONTENT_CONFIG, type IntroModalStatus, type IntroModalContent } from './config'
 
 const GLASS_STYLE =
   'rounded bg-[rgba(255,255,255,0.16)] shadow-[inset_0px_0px_14px_0px_rgba(255,255,255,0.25)] backdrop-blur-[3px]'
-
-const RBTC_RIF_BG_DESKTOP_SVG = '/images/intro/rbtc-rif-bg-desktop.svg'
-const RBTC_RIF_BG_MOBILE_SVG = '/images/intro/rbtc-rif-bg-mobile.svg'
-const RBTC_RIF_SQUARES_DESKTOP_SVG = '/images/intro/rbtc-rif-squares-desktop.svg'
-const RBTC_RIF_SQUARES_MOBILE_SVG = '/images/intro/rbtc-rif-squares-mobile.svg'
-
-const RBTC_BG_DESKTOP_SVG = '/images/intro/rbtc-bg-desktop.svg'
-const RBTC_BG_MOBILE_SVG = '/images/intro/rbtc-bg-mobile.svg'
-const RBTC_SQUARES_DESKTOP_SVG = '/images/intro/rbtc-squares-desktop.svg'
-const RBTC_SQUARES_MOBILE_SVG = '/images/intro/rbtc-squares-mobile.svg'
-
-const RIF_BG_DESKTOP_SVG = '/images/intro/rif-bg-desktop.svg'
-const RIF_BG_MOBILE_SVG = '/images/intro/rif-bg-mobile.svg'
-const RIF_SQUARES_DESKTOP_SVG = '/images/intro/rif-squares-desktop.svg'
-const RIF_SQUARES_MOBILE_SVG = '/images/intro/rif-squares-mobile.svg'
-
-const IMAGE_PATHS = [
-  RBTC_RIF_BG_DESKTOP_SVG,
-  RBTC_RIF_BG_MOBILE_SVG,
-  RBTC_RIF_SQUARES_DESKTOP_SVG,
-  RBTC_RIF_SQUARES_MOBILE_SVG,
-]
 
 const useMediaQuery = (query: string) => {
   const [matches, setMatches] = useState(false)
@@ -55,17 +33,26 @@ const useMediaQuery = (query: string) => {
 export const IntroModal = () => {
   const introModal = useModal()
   const [isLoaded, setIsLoaded] = useState(false)
+  const [status, setStatus] = useState<IntroModalStatus>(1)
   const isMobile = useMediaQuery('(max-width: 768px)')
 
+  // Preload all images
   useEffect(() => {
+    const allImagePaths = Object.values(IMAGE_CONFIG).flatMap(config => [
+      config.desktop.bg,
+      config.desktop.squares,
+      config.mobile.bg,
+      config.mobile.squares,
+    ])
+
     let loadedCount = 0
     const handleLoad = () => {
-      if (++loadedCount === IMAGE_PATHS.length) {
+      if (++loadedCount === allImagePaths.length) {
         setIsLoaded(true)
       }
     }
 
-    IMAGE_PATHS.forEach(path => {
+    allImagePaths.forEach(path => {
       const image = new window.Image()
       image.src = path
       image.onload = handleLoad
@@ -79,175 +66,80 @@ export const IntroModal = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isLoaded])
 
-  const status = 3
+  const handleContinue = () => {
+    if (status < 3) {
+      setStatus((status + 1) as IntroModalStatus)
+    } else {
+      introModal.closeModal()
+    }
+  }
+
+  const currentConfig = IMAGE_CONFIG[status]
+  const currentContent = CONTENT_CONFIG[status]
+
+  if (!introModal.isModalOpened || !isLoaded) {
+    return null
+  }
+
   return (
-    introModal.isModalOpened &&
-    isLoaded && (
-      <Modal width={920} onClose={introModal.closeModal} closeButtonColor="black" className="bg-text-80">
-        <div className="flex flex-col md:flex-row p-4 md:gap-6 relative">
-          {status === 1 && (
-            <>
-              {isMobile ? (
-                <div className="mt-12 flex flex-col gap-4">
-                  <div className="relative">
-                    <Image
-                      src={RBTC_RIF_BG_MOBILE_SVG}
-                      alt="Intro Modal"
-                      height={0}
-                      width={0}
-                      className="h-auto w-full"
-                    />
-                    <Image
-                      src={RBTC_RIF_SQUARES_MOBILE_SVG}
-                      alt="Squares Divider"
-                      width={40}
-                      height={30}
-                      className="absolute bottom-[-40px] right-0"
-                    />
-                  </div>
-                  <StakeDescription status={status} />
-                  <ContinueButton className="mt-12" />
-                </div>
-              ) : (
-                <>
-                  <Image
-                    src={RBTC_RIF_SQUARES_DESKTOP_SVG}
-                    alt="Squares Divider"
-                    width={40}
-                    height={30}
-                    className="absolute block left-1/2 top-8 -translate-x-[calc(55%)] z-10"
-                  />
-                  <div className="flex-1 relative">
-                    <div className="relative">
-                      <Image
-                        src={RBTC_RIF_BG_DESKTOP_SVG}
-                        alt="Intro Modal"
-                        height={0}
-                        width={0}
-                        className="h-auto w-full"
-                      />
-                      <YourWalletInfo status={status} />
-                    </div>
-                  </div>
-                  <div className="flex-1 flex flex-col justify-between p-4 md:p-0">
-                    <StakeDescription status={status} />
-                    <div className="flex justify-end">
-                      <ContinueButton />
-                    </div>
-                  </div>
-                </>
-              )}
-            </>
-          )}
-          {status === 2 &&
-            (isMobile ? (
-              <div className="mt-12 flex flex-col gap-4">
-                <div className="relative">
-                  <Image
-                    src={RBTC_BG_MOBILE_SVG}
-                    alt="Intro Modal"
-                    height={0}
-                    width={0}
-                    className="h-auto w-full"
-                  />
-                  <Image
-                    src={RBTC_SQUARES_MOBILE_SVG}
-                    alt="Squares Divider"
-                    width={40}
-                    height={30}
-                    className="absolute bottom-[-40px] right-0"
-                  />
-                </div>
-                <StakeDescription status={status} />
-                <ContinueButton className="mt-12" />
-              </div>
-            ) : (
-              <>
+    <Modal width={920} onClose={introModal.closeModal} closeButtonColor="black" className="bg-text-80">
+      <div className="flex flex-col md:flex-row p-4 md:gap-6 relative">
+        {isMobile ? (
+          <div className="mt-12 flex flex-col gap-4">
+            <div className="relative">
+              <Image
+                src={currentConfig.mobile.bg}
+                alt="Intro Modal"
+                height={0}
+                width={0}
+                className="h-auto w-full"
+              />
+              <Image
+                src={currentConfig.mobile.squares}
+                alt="Squares Divider"
+                width={40}
+                height={30}
+                className="absolute bottom-[-40px] right-0"
+              />
+            </div>
+            <StakeDescription content={currentContent} />
+            <ContinueButton className="mt-12" onClick={handleContinue} />
+          </div>
+        ) : (
+          <>
+            <Image
+              src={currentConfig.desktop.squares}
+              alt="Squares Divider"
+              width={40}
+              height={30}
+              className="absolute block left-1/2 top-8 -translate-x-[calc(55%)] z-10"
+            />
+            <div className="flex-1 relative">
+              <div className="relative">
                 <Image
-                  src={RBTC_SQUARES_DESKTOP_SVG}
-                  alt="Squares Divider"
-                  width={40}
-                  height={30}
-                  className="absolute block left-1/2 top-8 -translate-x-[calc(55%)] z-10"
+                  src={currentConfig.desktop.bg}
+                  alt="Intro Modal"
+                  height={0}
+                  width={0}
+                  className="h-auto w-full"
                 />
-                <div className="flex-1 relative">
-                  <div className="relative">
-                    <Image
-                      src={RBTC_BG_DESKTOP_SVG}
-                      alt="Intro Modal"
-                      height={0}
-                      width={0}
-                      className="h-auto w-full"
-                    />
-                    <YourWalletInfo status={status} />
-                  </div>
-                </div>
-                <div className="flex-1 flex flex-col justify-between p-4 md:p-0">
-                  <StakeDescription status={status} />
-                  <div className="flex justify-end">
-                    <ContinueButton />
-                  </div>
-                </div>
-              </>
-            ))}
-          {status === 3 &&
-            (isMobile ? (
-              <div className="mt-12 flex flex-col gap-4">
-                <div className="relative">
-                  <Image
-                    src={RIF_BG_MOBILE_SVG}
-                    alt="Intro Modal"
-                    height={0}
-                    width={0}
-                    className="h-auto w-full"
-                  />
-                  <Image
-                    src={RIF_SQUARES_MOBILE_SVG}
-                    alt="Squares Divider"
-                    width={40}
-                    height={30}
-                    className="absolute bottom-[-40px] right-0"
-                  />
-                </div>
-                <StakeDescription status={status} />
-                <ContinueButton className="mt-12" />
+                <YourWalletInfo content={currentContent} />
               </div>
-            ) : (
-              <>
-                <Image
-                  src={RIF_SQUARES_DESKTOP_SVG}
-                  alt="Squares Divider"
-                  width={40}
-                  height={30}
-                  className="absolute block left-1/2 top-8 -translate-x-[calc(55%)] z-10"
-                />
-                <div className="flex-1 relative">
-                  <div className="relative">
-                    <Image
-                      src={RIF_BG_DESKTOP_SVG}
-                      alt="Intro Modal"
-                      height={0}
-                      width={0}
-                      className="h-auto w-full"
-                    />
-                    <YourWalletInfo status={status} />
-                  </div>
-                </div>
-                <div className="flex-1 flex flex-col justify-between p-4 md:p-0">
-                  <StakeDescription status={status} />
-                  <div className="flex justify-end">
-                    <ContinueButton />
-                  </div>
-                </div>
-              </>
-            ))}
-        </div>
-      </Modal>
-    )
+            </div>
+            <div className="flex-1 flex flex-col justify-between p-4 md:p-0">
+              <StakeDescription content={currentContent} />
+              <div className="flex justify-end">
+                <ContinueButton onClick={handleContinue} />
+              </div>
+            </div>
+          </>
+        )}
+      </div>
+    </Modal>
   )
 }
 
-const StakeDescription = ({ status }: { status: number }) => (
+const StakeDescription = ({ content }: { content: IntroModalContent }) => (
   <div className="flex flex-1 flex-col justify-center gap-4">
     <Label variant="tag" className="text-bg-100" caps>
       STAKE
@@ -257,25 +149,14 @@ const StakeDescription = ({ status }: { status: number }) => (
         Before you stake
       </Header>
       <Header variant="e2" className="text-bg-100" caps>
-        {status === 1
-          ? 'add RBTC & RIF to your wallet'
-          : status === 2
-            ? 'add RBTC to your wallet'
-            : 'add RIF to your wallet'}
+        {content.title}
       </Header>
     </div>
-    <Paragraph className="text-bg-100">
-      {status === 1 &&
-        "RIF is the token required for staking, and RBTC is used to cover transaction fees. You'll need both to participate in the DAO."}
-      {status === 2 &&
-        "RBTC is used to cover transaction fees. You'll need both RBTC and RIF to participate in the DAO."}
-      {status === 3 &&
-        "RIF is the token required for staking. You'll need both RBTC and RIF to participate in the DAO."}
-    </Paragraph>
+    <Paragraph className="text-bg-100">{content.description}</Paragraph>
   </div>
 )
 
-const YourWalletInfo = ({ status }: { status: number }) => (
+const YourWalletInfo = ({ content }: { content: IntroModalContent }) => (
   <div
     className={cn(
       'absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2',
@@ -287,7 +168,7 @@ const YourWalletInfo = ({ status }: { status: number }) => (
       Your Wallet
     </Header>
 
-    {(status === 1 || status === 2) && (
+    {content.showRbtc && (
       <Header variant="e2" className="text-text-100 flex flex-row items-end gap-2" caps>
         <Span className="flex flex-row items-center gap-2">
           BTC
@@ -298,7 +179,7 @@ const YourWalletInfo = ({ status }: { status: number }) => (
         </Span>
       </Header>
     )}
-    {(status === 1 || status === 3) && (
+    {content.showRif && (
       <Header variant="e2" className="text-text-100 flex flex-row items-end gap-2" caps>
         <Span className="flex flex-row items-center gap-2">
           USD
@@ -310,15 +191,13 @@ const YourWalletInfo = ({ status }: { status: number }) => (
       </Header>
     )}
     <Paragraph variant="body-s" className="text-text-100 mt-2">
-      {status === 1 && 'You need RBTC to pay fees & RIF to stake'}
-      {status === 2 && 'You need RBTC for the transaction fees'}
-      {status === 3 && 'You need RIF to stake'}
+      {content.walletInfo}
     </Paragraph>
   </div>
 )
 
-const ContinueButton = ({ className }: { className?: string }) => (
-  <Button variant="secondary" className={cn('flex items-center gap-1', className)}>
+const ContinueButton = ({ className, onClick }: { className?: string; onClick: () => void }) => (
+  <Button variant="secondary" className={cn('flex items-center gap-1', className)} onClick={onClick}>
     <Span bold>Continue</Span>
     <ArrowUpRightLightIcon size={24} />
   </Button>
