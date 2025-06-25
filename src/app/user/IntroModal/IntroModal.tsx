@@ -3,17 +3,17 @@ import { ArrowUpRightLightIcon } from '@/components/Icons'
 import { ArrowRightIcon } from '@/components/Icons/ArrowRightIcon'
 import { Modal } from '@/components/Modal'
 import { Header, Label, Paragraph, Span } from '@/components/TypographyNew'
+import Big from '@/lib/big'
+import { RBTC, RIF } from '@/lib/constants'
 import { cn, formatNumberWithCommas } from '@/lib/utils'
+import { useIsMobile } from '@/shared/hooks/useIsMobile'
 import { useModal } from '@/shared/hooks/useModal'
 import Image from 'next/image'
-import { useEffect, useState } from 'react'
-import { CONTENT_CONFIG, IMAGE_CONFIG, type IntroModalContent } from './config'
-import { useMediaQuery } from './hooks/useMediaQuery'
-import { useRequiredTokens } from './hooks/useRequiredTokens'
-import { useBalancesContext } from '../Balances/context/BalancesContext'
-import { RBTC, RIF } from '@/lib/constants'
-import Big from '@/lib/big'
 import { useRouter } from 'next/navigation'
+import { useEffect, useState } from 'react'
+import { useBalancesContext } from '../Balances/context/BalancesContext'
+import { CONTENT_CONFIG, IMAGE_CONFIG, type IntroModalContent } from './config'
+import { useRequiredTokens } from './hooks/useRequiredTokens'
 
 const GLASS_STYLE =
   'rounded bg-[rgba(255,255,255,0.16)] shadow-[inset_0px_0px_14px_0px_rgba(255,255,255,0.25)] backdrop-blur-[3px]'
@@ -21,7 +21,7 @@ const GLASS_STYLE =
 export const IntroModal = () => {
   const introModal = useModal()
   const [isLoaded, setIsLoaded] = useState(false)
-  const isMobile = useMediaQuery('(max-width: 768px)')
+  const isMobile = useIsMobile()
   const tokenStatus = useRequiredTokens()
   const router = useRouter()
 

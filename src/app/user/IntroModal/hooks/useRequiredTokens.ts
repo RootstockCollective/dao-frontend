@@ -5,6 +5,15 @@ import { useMemo } from 'react'
 import { useAccount } from 'wagmi'
 import { IntroModalStatus } from '../config'
 
+/**
+ * Returns the status of the intro modal based on the user's balances.
+ * Determines which tokens (RIF, RBTC, or stRIF) a user needs to add to their wallet.
+ * Returns null if the user has all required tokens or is not connected.
+ * Returns 'NEED_RBTC_RIF' if user needs both RBTC and RIF or stRIF.
+ * Returns 'NEED_RBTC' if user only needs RBTC.
+ * Returns 'NEED_RIF' if user only needs RIF or stRIF.
+ * Returns 'NEED_STRIF' if user has RIF but needs stRIF.
+ */
 export const useRequiredTokens = (): IntroModalStatus | null => {
   const { isConnected } = useAccount()
   const { balances, isBalancesLoading } = useBalancesContext()
