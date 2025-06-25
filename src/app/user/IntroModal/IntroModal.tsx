@@ -102,9 +102,9 @@ export const IntroModal = () => {
               <Image
                 src={currentConfig.mobile.squares}
                 alt="Squares Divider"
-                width={40}
-                height={30}
-                className="absolute bottom-[-40px] right-0"
+                width={30}
+                height={20}
+                className="absolute bottom-[-30px] right-0"
               />
             </div>
             <StakeDescription content={currentContent} />
