@@ -5,51 +5,40 @@ import { Header, Label, Paragraph, Span } from '@/components/TypographyNew'
 import Big from '@/lib/big'
 import { RBTC, RIF } from '@/lib/constants'
 import { cn, formatNumberWithCommas } from '@/lib/utils'
+import { useImagePreloader } from '@/shared/hooks/useImagePreloader'
+import { useIsDesktop } from '@/shared/hooks/useIsDesktop'
 import { useModal } from '@/shared/hooks/useModal'
 import Image from 'next/image'
 import { useRouter } from 'next/navigation'
-import { useEffect, useState } from 'react'
+import { useEffect, useMemo } from 'react'
 import { useBalancesContext } from '../Balances/context/BalancesContext'
 import { CONTENT_CONFIG, IMAGE_CONFIG, type IntroModalContent } from './config'
 import { useRequiredTokens } from './hooks/useRequiredTokens'
-import { useIsDesktop } from '@/shared/hooks/useIsDesktop'
 
 const GLASS_STYLE =
   'rounded bg-[rgba(255,255,255,0.16)] shadow-[inset_0px_0px_14px_0px_rgba(255,255,255,0.25)] backdrop-blur-[3px]'
 
 export const IntroModal = () => {
   const introModal = useModal()
-  const [isLoaded, setIsLoaded] = useState(false)
   const isDesktop = useIsDesktop()
   const tokenStatus = useRequiredTokens()
   const router = useRouter()
 
-  // Preload images for current status
-  useEffect(() => {
-    if (!tokenStatus) return
+  // Get image paths for current status
+  const imagePaths = useMemo(() => {
+    if (!tokenStatus) return []
 
     const currentConfig = IMAGE_CONFIG[tokenStatus]
-    const imagePaths = [
+    return [
       currentConfig.desktop.bg,
       currentConfig.desktop.squares,
       currentConfig.mobile.bg,
       currentConfig.mobile.squares,
     ]
-
-    let loadedCount = 0
-    const handleLoad = () => {
-      if (++loadedCount === imagePaths.length) {
-        setIsLoaded(true)
-      }
-    }
-
-    setIsLoaded(false)
-    imagePaths.forEach(path => {
-      const image = new window.Image()
-      image.src = path
-      image.onload = handleLoad
-    })
   }, [tokenStatus])
+
+  // Preload images using preload hook
+  const { isLoaded } = useImagePreloader(imagePaths)
 
   useEffect(() => {
     if (isLoaded && tokenStatus !== null) {
