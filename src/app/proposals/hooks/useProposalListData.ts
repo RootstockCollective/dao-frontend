@@ -59,11 +59,13 @@ export function useProposalListData({ proposals }: Props) {
         const creationBlock = Number(proposal.blockNumber)
         const eventArgs = getEventArguments(proposal as unknown as EventArgumentsParameter)
         const { calldatasParsed } = eventArgs
-        const category: ProposalCategory = calldatasParsed
-          .filter(data => data.type === 'decoded')
-          .find(data => ['withdraw', 'withdrawERC20'].includes(data.functionName))
-          ? ProposalCategory.Grants
-          : ProposalCategory.Builder
+        const category = (
+          calldatasParsed
+            .filter(data => data.type === 'decoded')
+            .find(data => ['withdraw', 'withdrawERC20'].includes(data.functionName))
+            ? ProposalCategory.Grants
+            : ProposalCategory.Builder
+        ) as ProposalCategory
         return {
           ...proposal,
           votes: {
