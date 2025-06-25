@@ -14,15 +14,15 @@ export const TableRow: FC<TableRowProps> = ({ className, rowId, onClick, childre
   const tableContext = useContext(TableContext)
   const dispatch = useContext(TableActionsContext)
 
-  const isSelected = tableContext ? !!tableContext.selectedRows[rowId] : false
+  const isSelected = !!tableContext?.selectedRows[rowId]
 
   const handleClick = useCallback(() => {
     if (rowId) {
-      if (onClick) {
-        onClick(rowId)
-      }
       if (dispatch) {
         dispatch({ type: 'TOGGLE_ROW_SELECTION', payload: rowId })
+      }
+      if (onClick) {
+        onClick(rowId)
       }
     }
   }, [rowId, onClick, dispatch])
