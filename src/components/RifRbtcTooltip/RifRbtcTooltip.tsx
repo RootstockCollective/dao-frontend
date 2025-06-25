@@ -16,6 +16,29 @@ const RowContainer = ({ children }: { children: ReactNode }) => {
   return <div className="flex flex-row gap-2 items-center justify-between w-full">{children}</div>
 }
 
+const TokenDisplay = ({
+  symbol,
+  size,
+  displayText,
+  className,
+}: {
+  symbol: string
+  size: number
+  displayText: string
+  className?: string
+}) => {
+  return (
+    <div className="flex flex-row items-start gap-1 w-14">
+      <TokenImage symbol={symbol} size={size} className={className} />
+      <Typography className="text-sm">{displayText}</Typography>
+    </div>
+  )
+}
+
+const FormattedValue = ({ value, symbol }: { value: bigint; symbol: string }) => {
+  return <Typography className="text-lg">{formatSymbol(value, symbol)}</Typography>
+}
+
 export const RifRbtcTooltip = ({ children, rbtcValue, rifValue, className }: RifRbtcTooltipProps) => (
   <Tooltip
     side="top"
@@ -24,18 +47,12 @@ export const RifRbtcTooltip = ({ children, rbtcValue, rifValue, className }: Rif
     text={
       <div className="flex flex-col items-center rounded p-4 bg-v3-text-80 text-v3-text-0">
         <RowContainer>
-          <Typography className="text-lg">{formatSymbol(rbtcValue, RBTC)}</Typography>
-          <div className="flex flex-row items-start gap-[2px] w-14">
-            <TokenImage symbol={RBTC} size={21} />
-            <Typography className="text-sm">rBTC</Typography>
-          </div>
+          <FormattedValue value={rbtcValue} symbol={RBTC} />
+          <TokenDisplay symbol={RBTC} size={21} displayText="rBTC" />
         </RowContainer>
         <RowContainer>
-          <Typography className="text-lg">{formatSymbol(rifValue, RIF)}</Typography>
-          <div className="flex flex-row items-start gap-1 w-14">
-            <TokenImage symbol={RIF} size={16} className="mx-[1.3px]" />
-            <Typography className="text-sm">RIF</Typography>
-          </div>
+          <FormattedValue value={rifValue} symbol={RIF} />
+          <TokenDisplay symbol={RIF} size={16} displayText="RIF" className="mx-[1.3px]" />
         </RowContainer>
       </div>
     }
