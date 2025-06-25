@@ -1,11 +1,11 @@
 import { useBalancesContext } from '@/app/user/Balances/context/BalancesContext'
-import { useAccount } from 'wagmi'
-import { useMemo } from 'react'
 import Big from '@/lib/big'
-import { RIF, RBTC } from '@/lib/constants'
+import { RBTC, RIF } from '@/lib/constants'
+import { useMemo } from 'react'
+import { useAccount } from 'wagmi'
 import { IntroModalStatus } from '../config'
 
-export const useIntroModalStatus = (): IntroModalStatus | null => {
+export const useRequiredTokens = (): IntroModalStatus | null => {
   const { isConnected } = useAccount()
   const { balances, isBalancesLoading } = useBalancesContext()
 
@@ -31,7 +31,7 @@ export const useIntroModalStatus = (): IntroModalStatus | null => {
       // User has RBTC but no RIF
       return 'NEED_RIF'
     }
-    // User has both RIF and RBTC - don't show modal
+    // User has both RIF and RBTC
     return null
   }, [isConnected, isBalancesLoading, balances])
 }

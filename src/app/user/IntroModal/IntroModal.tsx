@@ -8,8 +8,8 @@ import { useModal } from '@/shared/hooks/useModal'
 import Image from 'next/image'
 import { useEffect, useState } from 'react'
 import { CONTENT_CONFIG, IMAGE_CONFIG, type IntroModalContent } from './config'
-import { useIntroModalStatus } from './hooks/useIntroModalStatus'
 import { useMediaQuery } from './hooks/useMediaQuery'
+import { useRequiredTokens } from './hooks/useRequiredTokens'
 
 const GLASS_STYLE =
   'rounded bg-[rgba(255,255,255,0.16)] shadow-[inset_0px_0px_14px_0px_rgba(255,255,255,0.25)] backdrop-blur-[3px]'
@@ -18,13 +18,13 @@ export const IntroModal = () => {
   const introModal = useModal()
   const [isLoaded, setIsLoaded] = useState(false)
   const isMobile = useMediaQuery('(max-width: 768px)')
-  const modalStatus = useIntroModalStatus()
+  const requiredTokens = useRequiredTokens()
 
   // Preload images for current status
   useEffect(() => {
-    if (!modalStatus) return
+    if (!requiredTokens) return
 
-    const currentConfig = IMAGE_CONFIG[modalStatus]
+    const currentConfig = IMAGE_CONFIG[requiredTokens]
     const imagePaths = [
       currentConfig.desktop.bg,
       currentConfig.desktop.squares,
@@ -45,31 +45,31 @@ export const IntroModal = () => {
       image.src = path
       image.onload = handleLoad
     })
-  }, [modalStatus])
+  }, [requiredTokens])
 
   useEffect(() => {
-    if (isLoaded && modalStatus !== null) {
+    if (isLoaded && requiredTokens !== null) {
       introModal.openModal()
-    } else if (modalStatus === null) {
+    } else if (requiredTokens === null) {
       introModal.closeModal()
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [isLoaded, modalStatus])
+  }, [isLoaded, requiredTokens])
 
   const handleContinue = (): void => {
-    if (modalStatus) {
-      const currentContent = CONTENT_CONFIG[modalStatus]
+    if (requiredTokens) {
+      const currentContent = CONTENT_CONFIG[requiredTokens]
       window.open(currentContent.url, '_blank', 'noopener,noreferrer')
     }
   }
 
-  // Don't render if no modal status or not loaded
-  if (!modalStatus || !isLoaded || !introModal.isModalOpened) {
+  // Don't render if no required tokens or not loaded
+  if (!requiredTokens || !isLoaded || !introModal.isModalOpened) {
     return null
   }
 
-  const currentConfig = IMAGE_CONFIG[modalStatus]
-  const currentContent = CONTENT_CONFIG[modalStatus]
+  const currentConfig = IMAGE_CONFIG[requiredTokens]
+  const currentContent = CONTENT_CONFIG[requiredTokens]
 
   return (
     <Modal width={920} onClose={introModal.closeModal} closeButtonColor="black" className="bg-text-80">
