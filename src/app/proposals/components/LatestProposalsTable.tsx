@@ -1,3 +1,4 @@
+'use client'
 import { useMemo, memo, useState, useEffect, useCallback, useRef } from 'react'
 import { motion } from 'motion/react'
 import {
@@ -9,7 +10,6 @@ import {
   getPaginationRowModel,
   PaginationState,
 } from '@tanstack/react-table'
-import { type LatestProposalResponse } from '../hooks/useFetchLatestProposals'
 import { StatusColumn } from './table-columns/StatusColumn'
 import { StatefulTable } from '@/components/Table'
 import { HeaderTitle, Typography } from '@/components/Typography'
@@ -18,11 +18,10 @@ import { ProposalNameColumn } from './table-columns/ProposalNameColumn'
 import { VotesColumn } from './table-columns/VotesColumn'
 import { TimeColumn } from './table-columns/TimeColumn'
 import { DebounceSearch } from '@/components/DebounceSearch'
-import { useProposalListData } from '../hooks/useProposalListData'
 import { Button } from '@/components/Button'
 import { useRouter, useSearchParams } from 'next/navigation'
 import Big from '@/lib/big'
-import { ProposalState } from '@/shared/types'
+import { Proposal } from '@/app/proposals/shared/types'
 import { filterOptions } from './filter/filterOptions'
 import { FilterButton } from './filter/FilterButton'
 import { FilterSideBar } from './filter/FilterSideBar'
@@ -30,21 +29,18 @@ import { cn } from '@/lib/utils'
 import { useClickOutside } from '@/shared/hooks/useClickOutside'
 
 interface LatestProposalsTableProps {
-  proposals: LatestProposalResponse[]
-  onEmitActiveProposal?: (activeProposals: number) => void
+  proposals: Proposal[]
 }
 
-const LatestProposalsTable = ({ proposals, onEmitActiveProposal }: LatestProposalsTableProps) => {
+export const LatestProposalsTable = ({ proposals }: LatestProposalsTableProps) => {
   // search textfield
   const [searchedProposal, setSearchedProposal] = useState('')
   // React-table sorting state
   const [sorting, setSorting] = useState<SortingState>([])
-  // query all proposals parameters at the Governor after receiving proposal list
-  const proposalListData = useProposalListData({ proposals })
   // filter all proposals after user typed text in the search field
   const filteredProposalList = useMemo(
     () =>
-      proposalListData.filter(({ name }) => {
+      proposals.filter(({ name }) => {
         try {
           const proposalName = String(name).toLowerCase()
           return proposalName.includes(searchedProposal.toLowerCase())
@@ -52,18 +48,8 @@ const LatestProposalsTable = ({ proposals, onEmitActiveProposal }: LatestProposa
           return false
         }
       }),
-    [proposalListData, searchedProposal],
+    [proposals, searchedProposal],
   )
-
-  useEffect(() => {
-    if (onEmitActiveProposal) {
-      onEmitActiveProposal(
-        proposalListData.filter(proposal =>
-          [ProposalState.Pending, ProposalState.Active].includes(proposal.proposalState),
-        ).length || 0,
-      )
-    }
-  }, [onEmitActiveProposal, proposalListData])
 
   // State for proposal quick filters
   const [activeFilter, setActiveFilter] = useState<number>(0)
@@ -117,7 +103,7 @@ const LatestProposalsTable = ({ proposals, onEmitActiveProposal }: LatestProposa
   )
 
   // Table data definition helper
-  const { accessor } = createColumnHelper<(typeof proposalListData)[number]>()
+  const { accessor } = createColumnHelper<(typeof proposals)[number]>()
   // Table columns definition
   const columns = [
     accessor('name', {
@@ -286,7 +272,7 @@ const LatestProposalsTable = ({ proposals, onEmitActiveProposal }: LatestProposa
           <FilterButton
             isOpen={isFilterSidebarOpen}
             setIsOpen={setIsFilterSidebarOpen}
-            disabled={proposalListData.length === 0}
+            disabled={proposals.length === 0}
             isFiltering={activeFilter > 0}
           />
         </div>
@@ -394,7 +380,6 @@ const LatestProposalsTable = ({ proposals, onEmitActiveProposal }: LatestProposa
     </div>
   )
 }
-
 export const LatestProposalsTableMemoized = memo(LatestProposalsTable)
 
 const theadRowsPropsById = {

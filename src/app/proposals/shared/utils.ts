@@ -119,7 +119,9 @@ export const getEventArguments = ({
     proposer,
     description: parsedDescription,
     proposalId: proposalId.toString(),
-    Starts: moment(parseInt(timeStamp, 16) * 1000),
+    Starts: timeStamp.startsWith('0x')
+      ? moment(parseInt(timeStamp, 16) * 1000)
+      : moment.unix(parseInt(timeStamp)),
     calldatasParsed,
     blockNumber,
   }
