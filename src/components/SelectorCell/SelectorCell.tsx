@@ -11,6 +11,8 @@ export interface SelectorCellProps {
   onClick?: () => void
 }
 
+const SIZE_ICONS_PCT = 70
+
 export function SelectorCell({
   children,
   isSelected = false,
@@ -19,7 +21,6 @@ export function SelectorCell({
   style,
   onClick,
 }: SelectorCellProps) {
-  const SIZE_ICONS_PCT = 70
 
   return (
     <div
