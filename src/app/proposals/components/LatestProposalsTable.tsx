@@ -10,14 +10,11 @@ import {
   getPaginationRowModel,
   PaginationState,
 } from '@tanstack/react-table'
-import { type LatestProposalResponse } from '../hooks/useFetchLatestProposals'
 import { GridTable } from '@/components/Table'
 import { ProposalNameColumn, ProposalByColumn } from './table-columns/ProposalNameColumn'
 import { QuorumColumn, VotesColumn } from './table-columns/VotesColumn'
 import { TimeColumn } from './table-columns/TimeColumn'
 import { DebounceSearch } from '@/components/DebounceSearch'
-import { useProposalListData } from '../hooks/useProposalListData'
-import { Button } from '@/components/Button'
 import { useRouter, useSearchParams } from 'next/navigation'
 import Big from '@/lib/big'
 import { ProposalState } from '@/shared/types'
@@ -29,7 +26,7 @@ import { useClickOutside } from '@/shared/hooks/useClickOutside'
 import { mockProposalListData } from './mockProposalData'
 import { splitCombinedName } from '../shared/utils'
 import { Status } from '@/components/Status'
-import { SearchIcon } from '@/components/Icons'
+import { SearchIconKoto } from '@/components/Icons'
 import { Tooltip } from '@/components/Tooltip'
 import { CategoryColumn } from './table-columns/CategoryColumn'
 import { KotoQuestionMarkIcon } from '@/components/Icons'
@@ -38,23 +35,20 @@ import { Paragraph } from '@/components/TypographyNew'
 import Pagination from './pagination/Pagination'
 
 interface LatestProposalsTableProps {
-  proposals: LatestProposalResponse[]
-  onEmitActiveProposal?: (activeProposals: number) => void
+  proposals: ProposalParams[]
 }
 
-const LatestProposalsTable = ({ proposals, onEmitActiveProposal }: LatestProposalsTableProps) => {
+const LatestProposalsTable = ({ proposals }: LatestProposalsTableProps) => {
   // search textfield
   const [searchedProposal, setSearchedProposal] = useState('')
   const [searchVisible, setSearchVisible] = useState(false)
   // React-table sorting state
   const [sorting, setSorting] = useState<SortingState>([])
-  // query all proposals parameters at the Governor after receiving proposal list
-  /* const proposalListData = useProposalListData({ proposals }) */
-  const proposalListData = mockProposalListData // mocked proposals
+
   // filter all proposals after user typed text in the search field
   const filteredProposalList = useMemo(
     () =>
-      proposalListData.filter(({ name }) => {
+      proposals.filter(({ name }) => {
         try {
           const proposalName = String(name).toLowerCase()
           return proposalName.includes(searchedProposal.toLowerCase())
@@ -62,18 +56,8 @@ const LatestProposalsTable = ({ proposals, onEmitActiveProposal }: LatestProposa
           return false
         }
       }),
-    [proposalListData, searchedProposal],
+    [proposals, searchedProposal],
   )
-
-  useEffect(() => {
-    if (onEmitActiveProposal) {
-      onEmitActiveProposal(
-        proposalListData.filter(proposal =>
-          [ProposalState.Pending, ProposalState.Active].includes(proposal.proposalState),
-        ).length || 0,
-      )
-    }
-  }, [onEmitActiveProposal, proposalListData])
 
   // State for proposal quick filters
   const [activeFilter, setActiveFilter] = useState<number>(0)
@@ -127,7 +111,7 @@ const LatestProposalsTable = ({ proposals, onEmitActiveProposal }: LatestProposa
   )
 
   // Table data definition helper
-  const { accessor, display } = createColumnHelper<(typeof proposalListData)[number]>()
+  const { accessor } = createColumnHelper<(typeof proposals)[number]>()
   // Table columns definition
   const columns = [
     accessor('name', {
@@ -145,10 +129,10 @@ const LatestProposalsTable = ({ proposals, onEmitActiveProposal }: LatestProposa
         return <ProposalByColumn by={builderName ?? 'unknown'} />
       },
     }),
-    accessor(row => row.Starts.unix(), {
+    accessor('Starts', {
       id: 'date',
       header: 'Date',
-      cell: info => <p>{info.row.original.Starts.format('MMM DD, YYYY')}</p>,
+      cell: ({ cell }) => <Paragraph>{cell.getValue().format('MMM DD, YYYY')}</Paragraph>,
     }),
     accessor('blocksUntilClosure', {
       id: 'timeRemaining',
@@ -163,19 +147,33 @@ const LatestProposalsTable = ({ proposals, onEmitActiveProposal }: LatestProposa
           />
         )
       },
+      sortingFn: (a, b) => {
+        return a.original.blocksUntilClosure.cmp(b.original.blocksUntilClosure)
+      },
     }),
     accessor('votes', {
       id: 'quorum',
-      header: 'Quorum',
+      header: () => (
+        <div>
+          <div className="flex items-center-safe gap-1">
+            <p className="mb-1">Quorum</p>
+            <KotoQuestionMarkIcon className="mb-1" />
+          </div>
+          <p className="text-xs font-normal text-text-40">needed | reached</p>
+        </div>
+      ),
       cell: ({ cell, row }) => {
-        const { forVotes, abstainVotes } = cell.getValue()
-        return (
-          <VotesColumn
-            forVotes={forVotes}
-            abstainVotes={abstainVotes}
-            quorumAtSnapshot={row.original.quorumAtSnapshot}
-          />
-        )
+        const { quorum } = cell.getValue()
+        return <QuorumColumn quorumVotes={quorum} quorumAtSnapshot={row.original.quorumAtSnapshot} />
+      },
+      sortingFn: (a, b) => {
+        const getQuorumPercent = (quorum: Big, quorumAtSnapshot: Big) =>
+          quorumAtSnapshot.eq(0)
+            ? Big(0)
+            : quorum.div(quorumAtSnapshot).mul(100).round(undefined, Big.roundHalfEven)
+        const percentA = getQuorumPercent(a.original.votes.quorum, a.original.quorumAtSnapshot)
+        const percentB = getQuorumPercent(b.original.votes.quorum, b.original.quorumAtSnapshot)
+        return percentA.cmp(percentB)
       },
     }),
     accessor('votes', {
@@ -184,16 +182,11 @@ const LatestProposalsTable = ({ proposals, onEmitActiveProposal }: LatestProposa
       cell: ({ cell }) => {
         const { forVotes, abstainVotes, againstVotes } = cell.getValue()
         return (
-          <div className="flex flex-wrap items-center justify-end gap-3">
-            <p>{forVotes.add(abstainVotes).add(againstVotes).toNumber().toLocaleString('en-US')}</p>
-            <PizzaChart
-              segments={[
-                { name: 'For', value: forVotes.toNumber() },
-                { name: 'Abstain', value: abstainVotes.toNumber() },
-                { name: 'Against', value: againstVotes.toNumber() },
-              ]}
-            />
-          </div>
+          <VotesColumn
+            forVotes={forVotes.toNumber()}
+            againstVotes={againstVotes.toNumber()}
+            abstainVotes={abstainVotes.toNumber()}
+          />
         )
       },
       sortingFn: (a, b) => {
@@ -213,10 +206,7 @@ const LatestProposalsTable = ({ proposals, onEmitActiveProposal }: LatestProposa
       meta: {
         width: '0.5fr',
       },
-      cell: ({ cell }) => {
-        const category = cell.getValue()
-        return <CategoryColumn category={category} />
-      },
+      cell: ({ cell }) => <CategoryColumn category={cell.getValue()} />,
     }),
     accessor('proposalState', {
       id: 'status',
@@ -232,7 +222,6 @@ const LatestProposalsTable = ({ proposals, onEmitActiveProposal }: LatestProposa
     }),
   ]
 
-  const router = useRouter()
   const searchParams = useSearchParams()
 
   // Convert 1-indexed URL page to 0-indexed internal page
@@ -240,55 +229,6 @@ const LatestProposalsTable = ({ proposals, onEmitActiveProposal }: LatestProposa
     pageIndex: Math.max(parseInt(searchParams?.get('page') ?? '1') - 1, 0),
     pageSize: 10,
   }))
-
-  // Page validation
-  useEffect(() => {
-    const totalPages = Math.ceil(filteredProposalList.length / pagination.pageSize)
-    const requestedPage = parseInt(searchParams?.get('page') ?? '1')
-
-    if (requestedPage > totalPages || requestedPage < 1) {
-      // Reset to page 1
-      const params = new URLSearchParams(searchParams?.toString() ?? '')
-      params.set('page', '1')
-      router.replace(`?${params.toString()}`, { scroll: false })
-      setPagination(prev => ({ ...prev, pageIndex: 0 }))
-    }
-  }, [searchParams, filteredProposalList.length, pagination.pageSize, router])
-
-  // Update URL with 1-indexed page number
-  useEffect(() => {
-    if (!searchParams) return
-
-    const params = new URLSearchParams(searchParams.toString())
-    params.set('page', (pagination.pageIndex + 1).toString())
-    router.replace(`?${params.toString()}`, { scroll: false })
-  }, [pagination.pageIndex, searchParams, router])
-
-  const totalPages = Math.ceil(filteredProposalList.length / pagination.pageSize) // Calculate total pages based on the filtered proposal list and page size
-
-  const maxPageButtons = 5 // Maximum number of page buttons to display
-  const currentSetStart = Math.floor(pagination.pageIndex / maxPageButtons) * maxPageButtons
-  const currentSetEnd = Math.min(currentSetStart + maxPageButtons, totalPages)
-
-  // Generate page numbers to display
-  const pageNumbers = Array.from(
-    { length: currentSetEnd - currentSetStart },
-    (_, index) => currentSetStart + index,
-  )
-
-  // Function to handle page navigation
-  const goToPage = (pageIndex: number) => {
-    setPagination(prev => ({ ...prev, pageIndex }))
-  }
-
-  // Function to handle "..." button
-  const goToNextSet = () => {
-    goToPage(Math.min(currentSetStart + maxPageButtons, totalPages - 1))
-  }
-
-  const goToPrevSet = () => {
-    goToPage(Math.max(currentSetStart - maxPageButtons, 0))
-  }
   // create table data model which is passed to the Table UI component
   const table = useReactTable({
     columns,
@@ -354,7 +294,7 @@ const LatestProposalsTable = ({ proposals, onEmitActiveProposal }: LatestProposa
                 setSearchVisible(false)
               }
             }}
-            disabled={proposalListData.length === 0}
+            disabled={proposals.length === 0}
             isFiltering={activeFilter > 0}
           />
         </div>
@@ -384,70 +324,12 @@ const LatestProposalsTable = ({ proposals, onEmitActiveProposal }: LatestProposa
                 table={table}
                 data-testid="TableProposals"
               />
-
-              <div className="flex justify-center space-x-2 mt-4">
-                {/* Previous page button */}
-                <Button
-                  onClick={() => table.previousPage()}
-                  disabled={!table.getCanPreviousPage()}
-                  className="px-4 py-2 bg-transparent"
-                >
-                  &#x2329;
-                </Button>
-
-                {/* Show "..." if there are pages before the current set */}
-                {currentSetStart > 0 && (
-                  <Button onClick={goToPrevSet} className="bg-transparent">
-                    ...
-                  </Button>
-                )}
-
-                {/* Render Page Numbers */}
-                {pageNumbers.map(page => (
-                  <Button
-                    key={page}
-                    onClick={() => goToPage(page)}
-                    className={`${
-                      page === pagination.pageIndex
-                        ? 'bg-[#E56B1A] text-white'
-                        : 'bg-transparent text-[#E56B1A]'
-                    }`}
-                  >
-                    {page + 1} {/* Convert 0-based index to 1-based page numbers */}
-                  </Button>
-                ))}
-
-                {/* Show "..." if there are pages after the current set */}
-                {currentSetEnd < totalPages && (
-                  <Button onClick={goToNextSet} className="bg-transparent">
-                    ...
-                  </Button>
-                )}
-
-                {/* Next page button */}
-                <Button
-                  onClick={() => table.nextPage()}
-                  disabled={!table.getCanNextPage()}
-                  className="bg-transparent px-4 py-2"
-                >
-                  &#x232A;
-                </Button>
-
-                {/* Page size selector */}
-                <select
-                  className="focus:outline-hidden focus:ring-0 focus:border-none hover:border-[#E56B1A] rounded-md bg-transparent hover:none text-[#E56B1A] hover:text-none "
-                  value={table.getState().pagination.pageSize}
-                  onChange={e => {
-                    table.setPageSize(Number(e.target.value))
-                  }}
-                >
-                  {[10, 20, 30, 40, 50].map(pageSize => (
-                    <option key={pageSize} value={pageSize}>
-                      {pageSize}
-                    </option>
-                  ))}
-                </select>
-              </div>
+              <Pagination
+                pagination={pagination}
+                setPagination={setPagination}
+                proposals={filteredProposalList}
+                table={table}
+              />
             </div>
           ) : (
             <p data-testid="NoProposals">No proposals found &#x1F622;</p>
