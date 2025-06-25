@@ -22,6 +22,11 @@ const RBTC_BG_MOBILE_SVG = '/images/intro/rbtc-bg-mobile.svg'
 const RBTC_SQUARES_DESKTOP_SVG = '/images/intro/rbtc-squares-desktop.svg'
 const RBTC_SQUARES_MOBILE_SVG = '/images/intro/rbtc-squares-mobile.svg'
 
+const RIF_BG_DESKTOP_SVG = '/images/intro/rif-bg-desktop.svg'
+const RIF_BG_MOBILE_SVG = '/images/intro/rif-bg-mobile.svg'
+const RIF_SQUARES_DESKTOP_SVG = '/images/intro/rif-squares-desktop.svg'
+const RIF_SQUARES_MOBILE_SVG = '/images/intro/rif-squares-mobile.svg'
+
 const IMAGE_PATHS = [
   RBTC_RIF_BG_DESKTOP_SVG,
   RBTC_RIF_BG_MOBILE_SVG,
@@ -74,7 +79,7 @@ export const IntroModal = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isLoaded])
 
-  const status = 2
+  const status = 3
   return (
     introModal.isModalOpened &&
     isLoaded && (
@@ -185,6 +190,57 @@ export const IntroModal = () => {
                 </div>
               </>
             ))}
+          {status === 3 &&
+            (isMobile ? (
+              <div className="mt-12 flex flex-col gap-4">
+                <div className="relative">
+                  <Image
+                    src={RIF_BG_MOBILE_SVG}
+                    alt="Intro Modal"
+                    height={0}
+                    width={0}
+                    className="h-auto w-full"
+                  />
+                  <Image
+                    src={RIF_SQUARES_MOBILE_SVG}
+                    alt="Squares Divider"
+                    width={40}
+                    height={30}
+                    className="absolute bottom-[-40px] right-0"
+                  />
+                </div>
+                <StakeDescription status={status} />
+                <ContinueButton className="mt-12" />
+              </div>
+            ) : (
+              <>
+                <Image
+                  src={RIF_SQUARES_DESKTOP_SVG}
+                  alt="Squares Divider"
+                  width={40}
+                  height={30}
+                  className="absolute block left-1/2 top-8 -translate-x-[calc(55%)] z-10"
+                />
+                <div className="flex-1 relative">
+                  <div className="relative">
+                    <Image
+                      src={RIF_BG_DESKTOP_SVG}
+                      alt="Intro Modal"
+                      height={0}
+                      width={0}
+                      className="h-auto w-full"
+                    />
+                    <YourWalletInfo status={status} />
+                  </div>
+                </div>
+                <div className="flex-1 flex flex-col justify-between p-4 md:p-0">
+                  <StakeDescription status={status} />
+                  <div className="flex justify-end">
+                    <ContinueButton />
+                  </div>
+                </div>
+              </>
+            ))}
         </div>
       </Modal>
     )
@@ -201,13 +257,20 @@ const StakeDescription = ({ status }: { status: number }) => (
         Before you stake
       </Header>
       <Header variant="e2" className="text-bg-100" caps>
-        {status === 1 ? 'add RBTC & RIF to your wallet' : 'add RBTC to your wallet'}
+        {status === 1
+          ? 'add RBTC & RIF to your wallet'
+          : status === 2
+            ? 'add RBTC to your wallet'
+            : 'add RIF to your wallet'}
       </Header>
     </div>
     <Paragraph className="text-bg-100">
-      {status === 1
-        ? "RIF is the token required for staking, and RBTC is used to cover transaction fees. You'll need both to participate in the DAO."
-        : "RBTC is used to cover transaction fees. You'll need both RBTC and RIF to participate in the DAO."}
+      {status === 1 &&
+        "RIF is the token required for staking, and RBTC is used to cover transaction fees. You'll need both to participate in the DAO."}
+      {status === 2 &&
+        "RBTC is used to cover transaction fees. You'll need both RBTC and RIF to participate in the DAO."}
+      {status === 3 &&
+        "RIF is the token required for staking. You'll need both RBTC and RIF to participate in the DAO."}
     </Paragraph>
   </div>
 )
@@ -223,16 +286,19 @@ const YourWalletInfo = ({ status }: { status: number }) => (
     <Header variant="e3" className="text-text-100 mb-8" caps>
       Your Wallet
     </Header>
-    <Header variant="e2" className="text-text-100 flex flex-row items-end gap-2" caps>
-      <Span className="flex flex-row items-center gap-2">
-        BTC
-        <ArrowRightIcon size={16} />
-      </Span>
-      <Span variant="e2" className="text-text-100">
-        RBTC
-      </Span>
-    </Header>
-    {status === 1 && (
+
+    {(status === 1 || status === 2) && (
+      <Header variant="e2" className="text-text-100 flex flex-row items-end gap-2" caps>
+        <Span className="flex flex-row items-center gap-2">
+          BTC
+          <ArrowRightIcon size={16} />
+        </Span>
+        <Span variant="e2" className="text-text-100">
+          RBTC
+        </Span>
+      </Header>
+    )}
+    {(status === 1 || status === 3) && (
       <Header variant="e2" className="text-text-100 flex flex-row items-end gap-2" caps>
         <Span className="flex flex-row items-center gap-2">
           USD
@@ -244,7 +310,9 @@ const YourWalletInfo = ({ status }: { status: number }) => (
       </Header>
     )}
     <Paragraph variant="body-s" className="text-text-100 mt-2">
-      {status === 1 ? 'You need RBTC to pay fees & RIF to stake' : 'You need RBTC for the transaction fees'}
+      {status === 1 && 'You need RBTC to pay fees & RIF to stake'}
+      {status === 2 && 'You need RBTC for the transaction fees'}
+      {status === 3 && 'You need RIF to stake'}
     </Paragraph>
   </div>
 )
