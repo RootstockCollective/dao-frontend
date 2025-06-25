@@ -1,10 +1,10 @@
 import { useMemo } from 'react'
 import { useBlockNumber, useReadContracts } from 'wagmi'
 import { formatEther } from 'viem'
-import { governor } from '@/lib/contracts'
-import { type LatestProposalResponse } from './useFetchLatestProposals'
-import { type EventArgumentsParameter, getEventArguments } from '../shared/utils'
+import { EventArgumentsParameter, getEventArguments } from '../shared/utils'
 import Big from '@/lib/big'
+import { LatestProposalResponse } from './useFetchLatestProposals'
+import { governor } from '@/lib/contracts'
 import { ProposalCategory, ProposalState } from '@/shared/types'
 
 interface Props {
@@ -48,8 +48,8 @@ export function useProposalListData({ proposals }: Props) {
     })),
   }) as { data?: Array<{ result: bigint }> }
 
-  return useMemo(
-    () =>
+  return useMemo(() => {
+    const proposalsResponse =
       proposals?.map((proposal, i) => {
         const votes = proposalVotes?.[i]?.result?.map(vote => Big(formatEther(vote)).round())
         const againstVotes = Big(votes?.at(0) ?? 0)
@@ -78,13 +78,15 @@ export function useProposalListData({ proposals }: Props) {
           votingPeriod: deadlineBlock.minus(creationBlock),
           quorumAtSnapshot: Big(formatEther(quorum?.[i].result ?? 0n)).round(undefined, Big.roundHalfEven),
           proposalDeadline: deadlineBlock,
-          proposalState: Number(state?.[i].result ?? 0n) as ProposalState,
+          proposalState: Big(state?.[i].result?.toString() ?? 0).toNumber() as ProposalState,
           category,
           ...eventArgs,
         }
-      }) ?? [],
-    [latestBlockNumber, proposalVotes, proposals, quorum, state],
-  )
+      }) ?? []
+    return {
+      data: proposalsResponse,
+      totalProposals: proposalsResponse.length,
+      activeProposals: proposalsResponse.filter(p => ProposalState.Active == p.proposalState).length,
+    }
+  }, [latestBlockNumber, proposalVotes, proposals, quorum, state])
 }
-
-export type ProposalParams = ReturnType<typeof useProposalListData>[number]

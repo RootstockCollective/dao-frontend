@@ -1,3 +1,4 @@
+'use client'
 import { useMemo, memo, useState, useEffect, useCallback, useRef } from 'react'
 import { AnimatePresence, motion } from 'motion/react'
 import {
@@ -24,13 +25,13 @@ import { Status } from '@/components/Status'
 import { SearchIconKoto } from '@/components/Icons'
 import { CategoryColumn } from './table-columns/CategoryColumn'
 import { KotoQuestionMarkIcon } from '@/components/Icons'
-import { ProposalParams } from '../hooks/useProposalListData'
 import { Paragraph } from '@/components/TypographyNew'
 import Pagination from './pagination/Pagination'
 import Big from 'big.js'
+import { Proposal } from '@/app/proposals/shared/types'
 
 interface LatestProposalsTableProps {
-  proposals: ProposalParams[]
+  proposals: Proposal[]
 }
 
 const LatestProposalsTable = ({ proposals }: LatestProposalsTableProps) => {
@@ -335,5 +336,4 @@ const LatestProposalsTable = ({ proposals }: LatestProposalsTableProps) => {
     </div>
   )
 }
-
 export const LatestProposalsTableMemoized = memo(LatestProposalsTable)
