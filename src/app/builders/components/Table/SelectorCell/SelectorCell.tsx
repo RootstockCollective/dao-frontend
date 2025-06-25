@@ -1,5 +1,5 @@
-import { EllipseIcon } from '../../../../../components/Icons/EllipseIcon'
-import { CheckPriorityIcon } from '../../../../../components/Icons/CheckPriority'
+import { EllipseIcon } from '@/components/Icons/EllipseIcon'
+import { CheckIcon } from '@/components/Icons/CheckIcon'
 import { CommonComponentProps } from '@/components/commonProps'
 import { cn } from '@/lib/utils'
 
@@ -33,9 +33,9 @@ export function SelectorCell({
         />
       )}
 
-      {/* Show CheckPriority icon on top when selected */}
+      {/* Show CheckIcon icon on top when selected */}
       {isSelected && (
-        <CheckPriorityIcon
+        <CheckIcon
           className="absolute top-[50%] left-[50%] transform -translate-x-1/2 -translate-y-1/2 text-v3-bg-accent-100 z-20 bg-transparent"
           style={{
             width: `${SIZE_ICONS_PCT}%`,
