@@ -18,13 +18,13 @@ export const IntroModal = () => {
   const introModal = useModal()
   const [isLoaded, setIsLoaded] = useState(false)
   const isMobile = useMediaQuery('(max-width: 768px)')
-  const requiredTokens = useRequiredTokens()
+  const tokenStatus = useRequiredTokens()
 
   // Preload images for current status
   useEffect(() => {
-    if (!requiredTokens) return
+    if (!tokenStatus) return
 
-    const currentConfig = IMAGE_CONFIG[requiredTokens]
+    const currentConfig = IMAGE_CONFIG[tokenStatus]
     const imagePaths = [
       currentConfig.desktop.bg,
       currentConfig.desktop.squares,
@@ -45,31 +45,31 @@ export const IntroModal = () => {
       image.src = path
       image.onload = handleLoad
     })
-  }, [requiredTokens])
+  }, [tokenStatus])
 
   useEffect(() => {
-    if (isLoaded && requiredTokens !== null) {
+    if (isLoaded && tokenStatus !== null) {
       introModal.openModal()
-    } else if (requiredTokens === null) {
+    } else if (tokenStatus === null) {
       introModal.closeModal()
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [isLoaded, requiredTokens])
+  }, [isLoaded, tokenStatus])
 
   const handleContinue = (): void => {
-    if (requiredTokens) {
-      const currentContent = CONTENT_CONFIG[requiredTokens]
+    if (tokenStatus) {
+      const currentContent = CONTENT_CONFIG[tokenStatus]
       window.open(currentContent.url, '_blank', 'noopener,noreferrer')
     }
   }
 
   // Don't render if no required tokens or not loaded
-  if (!requiredTokens || !isLoaded || !introModal.isModalOpened) {
+  if (!tokenStatus || !isLoaded || !introModal.isModalOpened) {
     return null
   }
 
-  const currentConfig = IMAGE_CONFIG[requiredTokens]
-  const currentContent = CONTENT_CONFIG[requiredTokens]
+  const currentConfig = IMAGE_CONFIG[tokenStatus]
+  const currentContent = CONTENT_CONFIG[tokenStatus]
 
   return (
     <Modal
