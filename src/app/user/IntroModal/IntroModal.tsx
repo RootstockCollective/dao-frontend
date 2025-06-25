@@ -108,7 +108,11 @@ export const IntroModal = () => {
               />
             </div>
             <StakeDescription content={currentContent} />
-            <ContinueButton className="mt-12" onClick={handleContinue} />
+            {currentContent.url ? (
+              <ContinueButton className="mt-12" onClick={handleContinue} />
+            ) : (
+              <ContinueToStakingButton className="mt-12" onClick={goToStake} />
+            )}
           </div>
         ) : (
           <>
@@ -134,14 +138,11 @@ export const IntroModal = () => {
             <div className="flex-1 flex flex-col justify-between p-4 md:p-0">
               <StakeDescription content={currentContent} />
               <div className="flex justify-end">
-                <Button
-                  variant="primary"
-                  className="flex items-center gap-1"
-                  onClick={goToStake}
-                  data-testid="intro-modal-continue-button"
-                >
-                  <Span bold>Continue to staking</Span>
-                </Button>
+                {currentContent.url ? (
+                  <ContinueButton className="mt-12" onClick={handleContinue} />
+                ) : (
+                  <ContinueToStakingButton className="mt-12" onClick={goToStake} />
+                )}
               </div>
             </div>
           </>
@@ -245,5 +246,11 @@ const ContinueButton = ({ className, onClick }: { className?: string; onClick: (
   >
     <Span bold>Continue</Span>
     <ArrowUpRightLightIcon size={24} />
+  </Button>
+)
+
+const ContinueToStakingButton = ({ className, onClick }: { className?: string; onClick: () => void }) => (
+  <Button variant="primary" className={cn('flex items-center gap-1', className)} onClick={onClick}>
+    <Span bold>Continue to staking</Span>
   </Button>
 )
