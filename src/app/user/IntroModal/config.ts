@@ -2,7 +2,7 @@ import { currentLinks } from '@/lib/links'
 
 // Image paths configuration
 export const IMAGE_CONFIG = {
-  1: {
+  NEED_BOTH: {
     desktop: {
       bg: '/images/intro/rbtc-rif-bg-desktop.svg',
       squares: '/images/intro/rbtc-rif-squares-desktop.svg',
@@ -12,7 +12,7 @@ export const IMAGE_CONFIG = {
       squares: '/images/intro/rbtc-rif-squares-mobile.svg',
     },
   },
-  2: {
+  NEED_RBTC: {
     desktop: {
       bg: '/images/intro/rbtc-bg-desktop.svg',
       squares: '/images/intro/rbtc-squares-desktop.svg',
@@ -22,7 +22,7 @@ export const IMAGE_CONFIG = {
       squares: '/images/intro/rbtc-squares-mobile.svg',
     },
   },
-  3: {
+  NEED_RIF: {
     desktop: {
       bg: '/images/intro/rif-bg-desktop.svg',
       squares: '/images/intro/rif-squares-desktop.svg',
@@ -37,7 +37,7 @@ export const IMAGE_CONFIG = {
 // Content configuration
 /* eslint-disable quotes */
 export const CONTENT_CONFIG = {
-  1: {
+  NEED_BOTH: {
     title: 'add RBTC & RIF to your wallet',
     description:
       "RIF is the token required for staking, and RBTC is used to cover transaction fees. You'll need both to participate in the DAO.",
@@ -46,7 +46,7 @@ export const CONTENT_CONFIG = {
     showRif: true,
     url: currentLinks.rbtc,
   },
-  2: {
+  NEED_RBTC: {
     title: 'add RBTC to your wallet',
     description:
       "RBTC is used to cover transaction fees. You'll need both RBTC and RIF to participate in the DAO.",
@@ -55,7 +55,7 @@ export const CONTENT_CONFIG = {
     showRif: false,
     url: currentLinks.rbtc,
   },
-  3: {
+  NEED_RIF: {
     title: 'add RIF to your wallet',
     description:
       "RIF is the token required for staking. You'll need both RBTC and RIF to participate in the DAO.",
