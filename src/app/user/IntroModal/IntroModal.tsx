@@ -20,28 +20,32 @@ export const IntroModal = () => {
   const isMobile = useMediaQuery('(max-width: 768px)')
   const modalStatus = useIntroModalStatus()
 
-  // Preload all images
+  // Preload images for current status
   useEffect(() => {
-    const allImagePaths = Object.values(IMAGE_CONFIG).flatMap(config => [
-      config.desktop.bg,
-      config.desktop.squares,
-      config.mobile.bg,
-      config.mobile.squares,
-    ])
+    if (!modalStatus) return
+
+    const currentConfig = IMAGE_CONFIG[modalStatus]
+    const imagePaths = [
+      currentConfig.desktop.bg,
+      currentConfig.desktop.squares,
+      currentConfig.mobile.bg,
+      currentConfig.mobile.squares,
+    ]
 
     let loadedCount = 0
     const handleLoad = () => {
-      if (++loadedCount === allImagePaths.length) {
+      if (++loadedCount === imagePaths.length) {
         setIsLoaded(true)
       }
     }
 
-    allImagePaths.forEach(path => {
+    setIsLoaded(false)
+    imagePaths.forEach(path => {
       const image = new window.Image()
       image.src = path
       image.onload = handleLoad
     })
-  }, [])
+  }, [modalStatus])
 
   useEffect(() => {
     if (isLoaded && modalStatus !== null) {
@@ -56,7 +60,6 @@ export const IntroModal = () => {
     if (modalStatus) {
       const currentContent = CONTENT_CONFIG[modalStatus]
       window.open(currentContent.url, '_blank', 'noopener,noreferrer')
-      introModal.closeModal()
     }
   }
 
