@@ -7,34 +7,18 @@ import { cn } from '@/lib/utils'
 import { useModal } from '@/shared/hooks/useModal'
 import Image from 'next/image'
 import { useEffect, useState } from 'react'
-import { IMAGE_CONFIG, CONTENT_CONFIG, type IntroModalStatus, type IntroModalContent } from './config'
+import { CONTENT_CONFIG, IMAGE_CONFIG, type IntroModalContent } from './config'
+import { useIntroModalStatus } from './hooks/useIntroModalStatus'
+import { useMediaQuery } from './hooks/useMediaQuery'
 
 const GLASS_STYLE =
   'rounded bg-[rgba(255,255,255,0.16)] shadow-[inset_0px_0px_14px_0px_rgba(255,255,255,0.25)] backdrop-blur-[3px]'
 
-const useMediaQuery = (query: string) => {
-  const [matches, setMatches] = useState(false)
-
-  useEffect(() => {
-    const media = window.matchMedia(query)
-    if (media.matches !== matches) {
-      setMatches(media.matches)
-    }
-    const listener = () => {
-      setMatches(media.matches)
-    }
-    media.addEventListener('change', listener)
-    return () => media.removeEventListener('change', listener)
-  }, [matches, query])
-
-  return matches
-}
-
 export const IntroModal = () => {
   const introModal = useModal()
   const [isLoaded, setIsLoaded] = useState(false)
-  const [status, setStatus] = useState<IntroModalStatus>(1)
   const isMobile = useMediaQuery('(max-width: 768px)')
+  const modalStatus = useIntroModalStatus()
 
   // Preload all images
   useEffect(() => {
@@ -60,23 +44,29 @@ export const IntroModal = () => {
   }, [])
 
   useEffect(() => {
-    if (isLoaded) {
+    if (isLoaded && modalStatus !== null) {
       introModal.openModal()
+    } else if (modalStatus === null) {
+      introModal.closeModal()
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [isLoaded])
+  }, [isLoaded, modalStatus])
 
   const handleContinue = (): void => {
-    const currentContent = CONTENT_CONFIG[status]
-    window.open(currentContent.url, '_blank', 'noopener,noreferrer')
+    if (modalStatus) {
+      const currentContent = CONTENT_CONFIG[modalStatus]
+      window.open(currentContent.url, '_blank', 'noopener,noreferrer')
+      introModal.closeModal()
+    }
   }
 
-  const currentConfig = IMAGE_CONFIG[status]
-  const currentContent = CONTENT_CONFIG[status]
-
-  if (!introModal.isModalOpened || !isLoaded) {
+  // Don't render if no modal status or not loaded
+  if (!modalStatus || !isLoaded || !introModal.isModalOpened) {
     return null
   }
+
+  const currentConfig = IMAGE_CONFIG[modalStatus]
+  const currentContent = CONTENT_CONFIG[modalStatus]
 
   return (
     <Modal width={920} onClose={introModal.closeModal} closeButtonColor="black" className="bg-text-80">
