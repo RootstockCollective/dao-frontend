@@ -3,12 +3,12 @@ import { FC } from 'react'
 import * as Progress from '@radix-ui/react-progress'
 import { cn } from '@/lib/utils'
 
-interface AllocationBarCellProps {
+interface AllocationCellProps {
   allocationPct: number
   className?: string
 }
 
-export const AllocationBarCell: FC<AllocationBarCellProps> = ({ allocationPct, className }) => {
+export const AllocationCell: FC<AllocationCellProps> = ({ allocationPct, className }) => {
   return (
     <div className={cn('flex items-center justify-center w-full h-full gap-2', className)}>
       <Progress.Root

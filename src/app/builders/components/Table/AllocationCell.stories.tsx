@@ -1,9 +1,9 @@
 import type { Meta, StoryObj } from '@storybook/react'
-import { AllocationBarCell } from './AllocationBarCell'
+import { AllocationCell } from './AllocationCell'
 
 const meta = {
-  title: 'Builders/Table/AllocationBarCell',
-  component: AllocationBarCell,
+  title: 'Builders/Table/AllocationCell',
+  component: AllocationCell,
   parameters: {
     layout: 'centered',
   },
@@ -21,7 +21,7 @@ const meta = {
       </div>
     ),
   ],
-} satisfies Meta<typeof AllocationBarCell>
+} satisfies Meta<typeof AllocationCell>
 
 export default meta
 
