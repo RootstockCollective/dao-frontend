@@ -1,27 +1,18 @@
-import { Button } from '@/components/ButtonNew'
-import { ArrowRightIcon, ArrowUpRightLightIcon } from '@/components/Icons'
-import { Modal } from '@/components/Modal'
-import { Header, Label, Paragraph, Span } from '@/components/TypographyNew'
-import Big from '@/lib/big'
-import { RBTC, RIF } from '@/lib/constants'
-import { cn, formatNumberWithCommas } from '@/lib/utils'
 import { useImagePreloader } from '@/shared/hooks/useImagePreloader'
 import { useIsDesktop } from '@/shared/hooks/useIsDesktop'
 import { useModal } from '@/shared/hooks/useModal'
-import Image from 'next/image'
-import { useRouter } from 'next/navigation'
 import { useEffect, useMemo } from 'react'
 import { useBalancesContext } from '../Balances/context/BalancesContext'
-import { CONTENT_CONFIG, IMAGE_CONFIG, type IntroModalContent } from './config'
+import { IMAGE_CONFIG } from './config'
 import { useRequiredTokens } from './hooks/useRequiredTokens'
-
-const GLASS_STYLE =
-  'rounded bg-[rgba(255,255,255,0.16)] shadow-[inset_0px_0px_14px_0px_rgba(255,255,255,0.25)] backdrop-blur-[3px]'
+import { useRouter } from 'next/navigation'
+import { IntroModalContent } from './IntroModalContent'
 
 export const IntroModal = () => {
   const introModal = useModal()
   const isDesktop = useIsDesktop()
   const tokenStatus = useRequiredTokens()
+  const { balances } = useBalancesContext()
   const router = useRouter()
 
   // Get image paths for current status
@@ -40,6 +31,15 @@ export const IntroModal = () => {
   // Preload images using preload hook
   const { isLoaded } = useImagePreloader(imagePaths)
 
+  const handleContinue = (url: string, external = false) => {
+    if (external) {
+      window.open(url, '_blank', 'noopener,noreferrer')
+    } else {
+      router.push(url)
+      introModal.closeModal()
+    }
+  }
+
   useEffect(() => {
     if (isLoaded && tokenStatus !== null) {
       introModal.openModal()
@@ -49,196 +49,19 @@ export const IntroModal = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isLoaded, tokenStatus])
 
-  // Don't render if no required tokens or not loaded
+  // Don't render if no required tokens or loading is not complete
   if (!tokenStatus || !isLoaded || !introModal.isModalOpened) {
     return null
   }
 
-  const currentConfig = IMAGE_CONFIG[tokenStatus]
-  const currentContent = CONTENT_CONFIG[tokenStatus]
-
-  const handleContinue = (): void => {
-    if (tokenStatus) {
-      window.open(currentContent.url, '_blank', 'noopener,noreferrer')
-    }
-  }
-
-  const goToStake = () => {
-    introModal.closeModal()
-    router.push('/user?action=stake')
-  }
-
   return (
-    <Modal
-      width={920}
+    <IntroModalContent
+      tokenStatus={tokenStatus}
+      isDesktop={isDesktop}
+      rbtcBalance={balances.RBTC.balance}
+      rifBalance={balances.RIF.balance}
       onClose={introModal.closeModal}
-      closeButtonColor="black"
-      className="bg-text-80"
-      data-testid={isDesktop ? 'intro-modal-desktop' : 'intro-modal-mobile'}
-    >
-      <div className="flex flex-col md:flex-row p-4 md:gap-6 relative">
-        {isDesktop ? (
-          <>
-            <Image
-              src={currentConfig.desktop.squares}
-              alt="Squares Divider"
-              width={40}
-              height={30}
-              className="absolute block left-1/2 top-8 -translate-x-[calc(55%)] z-10"
-            />
-            <div className="flex-1 relative">
-              <div className="relative">
-                <Image
-                  src={currentConfig.desktop.bg}
-                  alt="Intro Modal"
-                  height={0}
-                  width={0}
-                  className="h-auto w-full"
-                />
-                <YourWalletInfo content={currentContent} />
-              </div>
-            </div>
-            <div className="flex-1 flex flex-col justify-between p-4 md:p-0">
-              <StakeDescription content={currentContent} />
-              <div className="flex justify-end">
-                {currentContent.url ? (
-                  <ContinueButton className="mt-12" onClick={handleContinue} />
-                ) : (
-                  <ContinueToStakingButton className="mt-12" onClick={goToStake} />
-                )}
-              </div>
-            </div>
-          </>
-        ) : (
-          <div className="mt-12 flex flex-col gap-4">
-            <div className="relative">
-              <Image
-                src={currentConfig.mobile.bg}
-                alt="Intro Modal"
-                height={0}
-                width={0}
-                className="h-auto w-full"
-              />
-              <Image
-                src={currentConfig.mobile.squares}
-                alt="Squares Divider"
-                width={30}
-                height={20}
-                className="absolute bottom-[-30px] right-0"
-              />
-            </div>
-            <StakeDescription content={currentContent} />
-            {currentContent.url ? (
-              <ContinueButton className="mt-12" onClick={handleContinue} />
-            ) : (
-              <ContinueToStakingButton className="mt-12" onClick={goToStake} />
-            )}
-          </div>
-        )}
-      </div>
-    </Modal>
+      onContinue={handleContinue}
+    />
   )
 }
-
-const StakeDescription = ({ content }: { content: IntroModalContent }) => (
-  <div className="flex flex-1 flex-col justify-center gap-4" data-testid="stake-description">
-    <Label variant="tag" className="text-bg-100" caps data-testid="stake-label">
-      STAKE
-    </Label>
-    <div>
-      <Header variant="e2" className="text-bg-20" caps data-testid="stake-subtitle">
-        {content.title}
-      </Header>
-      <Header variant="e2" className="text-bg-100" caps data-testid="stake-title">
-        {content.subtitle}
-      </Header>
-    </div>
-    <Paragraph className="text-bg-100" data-testid="stake-description-text">
-      {content.description}
-    </Paragraph>
-  </div>
-)
-
-const YourWalletInfo = ({ content }: { content: IntroModalContent }) => {
-  const { balances } = useBalancesContext()
-  const rbtcBalance = balances[RBTC].balance
-  const rifBalance = balances[RIF].balance
-  return (
-    <div
-      className={cn(
-        'absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2',
-        'p-4 w-[360px]',
-        GLASS_STYLE,
-      )}
-      data-testid="wallet-info"
-    >
-      <Header variant="e3" className="text-text-100 mb-8" caps data-testid="wallet-info-title">
-        Your Wallet
-      </Header>
-
-      {content.showRbtc && (
-        <Header
-          variant="e2"
-          className="text-text-100 flex flex-row items-end gap-2"
-          caps
-          data-testid="wallet-info-rbtc"
-        >
-          <Span className="flex flex-row items-center gap-2">
-            BTC
-            <ArrowRightIcon size={16} />
-          </Span>
-          <Span variant="e2" className="text-text-100">
-            RBTC
-          </Span>
-        </Header>
-      )}
-      {content.showRif && (
-        <Header
-          variant="e2"
-          className="text-text-100 flex flex-row items-end gap-2"
-          caps
-          data-testid="wallet-info-rif"
-        >
-          <Span className="flex flex-row items-center gap-2">
-            USD
-            <ArrowRightIcon size={16} />
-          </Span>
-          <Span variant="e2" className="text-text-100">
-            RIF
-          </Span>
-        </Header>
-      )}
-      {content.showBalance && (
-        <div className="text-text-100 flex flex-col items-start gap-2">
-          <Header variant="e2" className="text-text-100">
-            {formatNumberWithCommas(Big(rbtcBalance).toFixedNoTrailing(6))} RBTC
-          </Header>
-          <Header variant="e2" className="text-text-100">
-            {formatNumberWithCommas(Big(rifBalance).toFixedNoTrailing(2))} RIF
-          </Header>
-        </div>
-      )}
-      <Paragraph variant="body-s" className="text-text-100 mt-2" data-testid="wallet-info-description">
-        {content.walletInfo}
-      </Paragraph>
-    </div>
-  )
-}
-
-const ContinueButton = ({ className, onClick }: { className?: string; onClick: () => void }) => (
-  <Button
-    variant="secondary"
-    className={cn('flex items-center gap-1', className)}
-    onClick={onClick}
-    data-testid="intro-modal-continue-button"
-  >
-    <Span bold>Continue</Span>
-    <ArrowUpRightLightIcon size={24} />
-  </Button>
-)
-
-const ContinueToStakingButton = ({ className, onClick }: { className?: string; onClick: () => void }) => (
-  <Button variant="primary" className={cn('flex items-center gap-1', className)} onClick={onClick}>
-    <Span bold>Continue to staking</Span>
-  </Button>
-)

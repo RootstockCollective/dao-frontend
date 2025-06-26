@@ -56,7 +56,10 @@ export const CONTENT_CONFIG = {
     showRbtc: true,
     showRif: true,
     showBalance: false,
-    url: currentLinks.rbtc,
+    action: {
+      url: currentLinks.rbtc,
+      external: true,
+    },
   },
   NEED_RBTC: {
     title: 'Before you stake',
@@ -67,7 +70,10 @@ export const CONTENT_CONFIG = {
     showRbtc: true,
     showRif: false,
     showBalance: false,
-    url: currentLinks.rbtc,
+    action: {
+      url: currentLinks.rbtc,
+      external: true,
+    },
   },
   NEED_RIF: {
     title: 'Before you stake',
@@ -78,7 +84,10 @@ export const CONTENT_CONFIG = {
     showRbtc: false,
     showRif: true,
     showBalance: false,
-    url: currentLinks.getRif,
+    action: {
+      url: currentLinks.getRif,
+      external: true,
+    },
   },
   NEED_STRIF: {
     title: 'You look ready',
@@ -88,9 +97,12 @@ export const CONTENT_CONFIG = {
     showRbtc: false,
     showRif: false,
     showBalance: true,
-    url: '',
+    action: {
+      url: '/user?action=stake',
+      external: false,
+    },
   },
 } as const
 
 export type IntroModalStatus = keyof typeof CONTENT_CONFIG
-export type IntroModalContent = (typeof CONTENT_CONFIG)[IntroModalStatus]
+export type IntroModalContentProps = (typeof CONTENT_CONFIG)[IntroModalStatus]
