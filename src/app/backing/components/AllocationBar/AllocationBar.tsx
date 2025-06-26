@@ -159,7 +159,7 @@ const AllocationBar: React.FC<AllocationBarProps> = ({
           </div>
         </SortableContext>
       </DndContext>
-      {showLegend && <Legend title="Total portfolio:" items={currentItems} />}
+      {showLegend && <Legend title="Total:" items={currentItems} />}
     </div>
   )
 }

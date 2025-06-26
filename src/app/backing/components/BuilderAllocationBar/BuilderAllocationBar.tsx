@@ -57,7 +57,7 @@ const BuilderAllocationBar = () => {
       if (key === 'unallocated') {
         return {
           key: 'unallocated',
-          label: 'available funds',
+          label: 'available backing',
           value: Number(formatEther(unallocated)),
           displayColor: '#25211E',
         }
