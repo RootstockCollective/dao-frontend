@@ -1,7 +1,6 @@
 import { FilterIcon, CloseIcon } from '@/components/Icons'
 import { cn } from '@/lib/utils'
-import { HTMLAttributes, useEffect, JSX } from 'react'
-import { Tooltip } from '@/components/Tooltip'
+import { HTMLAttributes, useEffect } from 'react'
 
 interface Props extends HTMLAttributes<HTMLButtonElement> {
   isOpen: boolean

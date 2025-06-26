@@ -2,15 +2,11 @@ import { cn } from '@/lib/utils'
 import { type HTMLAttributes } from 'react'
 import { FilterRadioItem } from './FilterRadioItem'
 
-export interface FilterOption {
-  id: number
-  name: string
-}
+const filterOptions = ['Grant', 'Activation', 'Wave 4', 'Wave 5', 'March-25']
 
 interface FilterSideBarProps extends HTMLAttributes<HTMLDivElement> {
-  filterOptions: FilterOption[]
-  currentFilter: number
-  setCurrentFilter: (optionId: number) => void
+  currentFilter: string
+  setCurrentFilter: (option: string) => void
   title?: string
 }
 
@@ -18,7 +14,6 @@ interface FilterSideBarProps extends HTMLAttributes<HTMLDivElement> {
  * Sidebar panel containing radio button filters for proposal categories
  */
 export function FilterSideBar({
-  filterOptions,
   currentFilter,
   setCurrentFilter,
   className,
@@ -34,9 +29,16 @@ export function FilterSideBar({
         {title}
       </h3>
       <ul className="pl-1 space-y-3" role="radiogroup" aria-labelledby="filter-title">
-        {filterOptions.map(({ id, name }) => (
-          <li key={id}>
-            <FilterRadioItem selected={id === currentFilter} id={id} name={name} onClick={setCurrentFilter} />
+        <li>
+          <FilterRadioItem
+            selected={!currentFilter}
+            option="All categories"
+            onClick={() => setCurrentFilter('')}
+          />
+        </li>
+        {filterOptions.map((option, i) => (
+          <li key={i}>
+            <FilterRadioItem selected={option === currentFilter} option={option} onClick={setCurrentFilter} />
           </li>
         ))}
       </ul>

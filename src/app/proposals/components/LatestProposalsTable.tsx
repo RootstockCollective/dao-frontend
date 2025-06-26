@@ -1,5 +1,5 @@
 'use client'
-import { useMemo, memo, useState, useEffect, useCallback, useRef } from 'react'
+import { useMemo, memo, useState, useRef, useCallback } from 'react'
 import { AnimatePresence, motion } from 'motion/react'
 import {
   createColumnHelper,
@@ -16,13 +16,12 @@ import { QuorumColumn, VotesColumn } from './table-columns/VotesColumn'
 import { TimeColumn } from './table-columns/TimeColumn'
 import { DebounceSearch } from '@/components/DebounceSearch'
 import { useSearchParams } from 'next/navigation'
-import { filterOptions } from './filter/filterOptions'
 import { FilterButton } from './filter/FilterButton'
 import { FilterSideBar } from './filter/FilterSideBar'
 import { cn, shortAddress } from '@/lib/utils'
 import { useClickOutside } from '@/shared/hooks/useClickOutside'
 import { Status } from '@/components/Status'
-import { SearchIconKoto } from '@/components/Icons'
+import { SearchButton } from './SearchButton'
 import { CategoryColumn } from './table-columns/CategoryColumn'
 import { KotoQuestionMarkIcon } from '@/components/Icons'
 import { Paragraph } from '@/components/TypographyNew'
@@ -35,77 +34,46 @@ interface LatestProposalsTableProps {
 }
 
 const LatestProposalsTable = ({ proposals }: LatestProposalsTableProps) => {
-  // search textfield
-  const [searchedProposal, setSearchedProposal] = useState('')
-  const [searchVisible, setSearchVisible] = useState(false)
   // React-table sorting state
   const [sorting, setSorting] = useState<SortingState>([])
 
-  // filter all proposals after user typed text in the search field
-  const filteredProposalList = useMemo(
-    () =>
-      proposals.filter(({ name }) => {
-        try {
-          const proposalName = String(name).toLowerCase()
-          return proposalName.includes(searchedProposal.toLowerCase())
-        } catch (e) {
-          return false
-        }
-      }),
-    [proposals, searchedProposal],
-  )
+  const searchParams = useSearchParams()
 
-  // State for proposal quick filters
-  const [activeFilter, setActiveFilter] = useState<number>(0)
+  // Convert 1-indexed URL page to 0-indexed internal page
+  const [pagination, setPagination] = useState<PaginationState>(() => ({
+    pageIndex: Math.max(parseInt(searchParams?.get('page') ?? '1') - 1, 0),
+    pageSize: 10,
+  }))
+  const resetPagination = () => setPagination(prev => ({ ...prev, pageIndex: 0 }))
+
+  // input field filtering
+  const [searchVisible, setSearchVisible] = useState(false)
+  const searchFieldRef = useRef<HTMLDivElement>(null)
+  useClickOutside(searchFieldRef, () => setSearchVisible(false))
+  const [searchValue, setSearchValue] = useState('')
+  const handleSearch = useCallback((value: string) => {
+    setSearchValue(value)
+    resetPagination()
+  }, [])
+
+  // filtering by category in sidebar
   const [isFilterSidebarOpen, setIsFilterSidebarOpen] = useState(false)
-  const filterSidebarRef = useRef<HTMLDivElement>(null) // ref for useClickOutside
-  const searchRef = useRef<HTMLDivElement>(null)
-  // close filter sidebar when user clicks outside of it
+  const filterSidebarRef = useRef<HTMLDivElement>(null)
   useClickOutside(filterSidebarRef, () => setIsFilterSidebarOpen(false))
-  // Ref to store the clear function from DebounceSearch
-  useClickOutside(searchRef, () => setSearchVisible(false))
+  const [activeCategory, setActiveCategory] = useState('')
+  const handleFilterToggle = useCallback((cat: string) => {
+    setActiveCategory(cat)
+    resetPagination()
+  }, [])
 
-  // Flag to prevent search updates during filter changes
-  const isFilterChanging = useRef(false)
-
-  // Handle filter button clicks
-  const handleFilterToggle = (id: number) => {
-    // Set flag to prevent search from interfering with filter change
-    isFilterChanging.current = true
-    setActiveFilter(id)
-    setPagination(prev => ({ ...prev, pageIndex: 0 })) // Reset to page 1
-    if (id === 0) return setSearchedProposal('')
-    const option = filterOptions.find(opt => opt.id === id)
-    setSearchedProposal(option?.name ?? '')
-  }
-
-  // Effect to clear search input after filter state updates
-  useEffect(() => {
-    if (isFilterChanging.current) {
-      isFilterChanging.current = false
-    }
-  }, [activeFilter, searchedProposal])
-
-  // Handle search input changes
-  const handleSearch = useCallback(
-    (value: string) => {
-      if (!value) {
-        // Only clear search if no active filter
-        if (!activeFilter) {
-          setSearchedProposal('')
-        }
-        return
-      }
-      // Only update search and clear filter if not in middle of filter change
-      if (!isFilterChanging.current) {
-        setActiveFilter(0)
-        setSearchedProposal(value)
-        // Reset to page 1
-        setPagination(prev => ({ ...prev, pageIndex: 0 }))
-      }
-    },
-    [activeFilter],
-  )
+  // filter all proposals
+  const filteredProposalList = useMemo(() => {
+    return [activeCategory, searchValue].reduce((acc, value) => {
+      if (!value) return acc
+      const lowered = value.toLowerCase()
+      return acc.filter(({ name }) => name.toLowerCase().includes(lowered))
+    }, proposals)
+  }, [proposals, activeCategory, searchValue])
 
   // Table data definition helper
   const { accessor } = createColumnHelper<(typeof proposals)[number]>()
@@ -219,13 +187,6 @@ const LatestProposalsTable = ({ proposals }: LatestProposalsTableProps) => {
     }),
   ]
 
-  const searchParams = useSearchParams()
-
-  // Convert 1-indexed URL page to 0-indexed internal page
-  const [pagination, setPagination] = useState<PaginationState>(() => ({
-    pageIndex: Math.max(parseInt(searchParams?.get('page') ?? '1') - 1, 0),
-    pageSize: 10,
-  }))
   // create table data model which is passed to the Table UI component
   const table = useReactTable({
     columns,
@@ -258,9 +219,9 @@ const LatestProposalsTable = ({ proposals }: LatestProposalsTableProps) => {
               >
                 <DebounceSearch
                   placeholder="Search a proposal"
-                  searchValue={searchedProposal}
+                  searchValue={searchValue}
                   onSearchSubmit={handleSearch}
-                  ref={searchRef}
+                  ref={searchFieldRef}
                 />
               </motion.div>
             )}
@@ -273,19 +234,18 @@ const LatestProposalsTable = ({ proposals }: LatestProposalsTableProps) => {
             className="flex items-center"
             style={{ pointerEvents: searchVisible ? 'none' : 'auto' }}
           >
-            <button
+            <SearchButton
+              isOpen={searchVisible}
+              setIsOpen={setSearchVisible}
               disabled={searchVisible}
-              className="cursor-pointer"
-              onClick={() => setSearchVisible(v => !v)}
-            >
-              <SearchIconKoto className="scale-90" />
-            </button>
+              isFiltering={!!searchValue}
+            />
           </motion.div>
           <FilterButton
             isOpen={isFilterSidebarOpen}
             setIsOpen={setIsFilterSidebarOpen}
             disabled={proposals.length === 0}
-            isFiltering={activeFilter > 0}
+            isFiltering={!!activeCategory}
           />
         </div>
       </div>
@@ -297,11 +257,7 @@ const LatestProposalsTable = ({ proposals }: LatestProposalsTableProps) => {
         >
           {/* container for useClickOutside ref */}
           <div ref={filterSidebarRef} className="pl-2 h-full">
-            <FilterSideBar
-              filterOptions={filterOptions}
-              currentFilter={activeFilter}
-              setCurrentFilter={handleFilterToggle}
-            />
+            <FilterSideBar currentFilter={activeCategory} setCurrentFilter={handleFilterToggle} />
           </div>
         </motion.div>
         <div className="grow overflow-y-auto">
