@@ -1,6 +1,7 @@
 import { Header, Paragraph, Span } from '@/components/TypographyNew'
 import { CRWhitepaperLink } from '../collective-rewards/shared/components/CRWhitepaperLinkNew'
 
+// TODO: We could refactor this part (along with others) to have one container that has the title and the content.
 const MyRewardsContainer = ({ children }: { children: React.ReactNode }) => {
   return (
     <div className="flex w-full items-start gap-3 self-stretch pt-10 pb-10 pl-6 pr-6 bg-v3-bg-accent-80 rounded">
