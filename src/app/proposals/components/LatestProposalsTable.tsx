@@ -10,15 +10,16 @@ import {
   getPaginationRowModel,
   PaginationState,
 } from '@tanstack/react-table'
+import Big from 'big.js'
 import { GridTable } from '@/components/Table'
-import { ProposalNameColumn, ProposalByColumn } from './table-columns/ProposalNameColumn'
+import { ProposalNameColumn, ProposerColumn } from './table-columns/ProposalNameColumn'
 import { QuorumColumn, VotesColumn } from './table-columns/VotesColumn'
 import { TimeColumn } from './table-columns/TimeColumn'
 import { DebounceSearch } from '@/components/DebounceSearch'
 import { useSearchParams } from 'next/navigation'
 import { FilterButton } from './filter/FilterButton'
 import { FilterSideBar } from './filter/FilterSideBar'
-import { cn, shortAddress } from '@/lib/utils'
+import { cn } from '@/lib/utils'
 import { useClickOutside } from '@/shared/hooks/useClickOutside'
 import { Status } from '@/components/Status'
 import { SearchButton } from './SearchButton'
@@ -26,7 +27,6 @@ import { CategoryColumn } from './table-columns/CategoryColumn'
 import { KotoQuestionMarkIcon } from '@/components/Icons'
 import { Paragraph } from '@/components/TypographyNew'
 import Pagination from './pagination/Pagination'
-import Big from 'big.js'
 import { Proposal } from '@/app/proposals/shared/types'
 
 interface LatestProposalsTableProps {
@@ -99,11 +99,7 @@ const LatestProposalsTable = ({ proposals }: LatestProposalsTableProps) => {
       id: 'proposer',
       header: 'Proposal name',
       sortDescFirst: false,
-      cell: ({ cell }) => {
-        const proposer = cell.getValue()
-        const short = shortAddress(proposer)
-        return <ProposalByColumn by={short} />
-      },
+      cell: ({ cell }) => <ProposerColumn by={cell.getValue()} />,
       sortingFn: (a, b) => a.original.name.localeCompare(b.original.name),
     }),
     accessor('Starts', {
