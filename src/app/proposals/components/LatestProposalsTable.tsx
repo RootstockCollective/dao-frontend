@@ -88,20 +88,24 @@ const LatestProposalsTable = ({ proposals }: LatestProposalsTableProps) => {
     accessor('proposer', {
       id: 'proposer',
       header: 'Proposal name',
+      sortDescFirst: false,
       cell: ({ cell }) => {
         const proposer = cell.getValue()
         const short = shortAddress(proposer)
         return <ProposalByColumn by={short} />
       },
+      sortingFn: (a, b) => a.original.name.localeCompare(b.original.name),
     }),
     accessor('Starts', {
       id: 'date',
       header: 'Date',
+      sortDescFirst: false,
       cell: ({ cell }) => <Paragraph>{cell.getValue().format('MMM DD, YYYY')}</Paragraph>,
     }),
     accessor('blocksUntilClosure', {
       id: 'timeRemaining',
       header: 'Vote ending in',
+      sortDescFirst: false,
       cell: info => {
         const { blocksUntilClosure, proposalDeadline, blockNumber } = info.row.original
         return (
@@ -118,6 +122,7 @@ const LatestProposalsTable = ({ proposals }: LatestProposalsTableProps) => {
     }),
     accessor('votes', {
       id: 'quorum',
+      sortDescFirst: false,
       header: () => (
         <div>
           <div className="flex items-center-safe gap-1">
@@ -144,6 +149,7 @@ const LatestProposalsTable = ({ proposals }: LatestProposalsTableProps) => {
     accessor('votes', {
       id: 'votes',
       header: 'Votes',
+      sortDescFirst: false,
       cell: ({ cell }) => {
         const { forVotes, abstainVotes, againstVotes } = cell.getValue()
         return (
@@ -168,6 +174,7 @@ const LatestProposalsTable = ({ proposals }: LatestProposalsTableProps) => {
     accessor('category', {
       id: 'propType',
       header: 'Type',
+      sortDescFirst: false,
       meta: {
         width: '0.5fr',
       },
@@ -176,6 +183,7 @@ const LatestProposalsTable = ({ proposals }: LatestProposalsTableProps) => {
     accessor('proposalState', {
       id: 'status',
       header: 'Status',
+      sortDescFirst: false,
       cell: ({ cell }) => (
         <div className="flex justify-end">
           <Status proposalState={cell.getValue()} />
