@@ -22,12 +22,12 @@ export const ProposalNameColumn = ({ name, proposalId }: ProposalNameColumnProps
 }
 
 export const ProposerColumn = ({ by: proposer }: { by: Address }) => (
-  <div className="font-rootstock-sans">
-    <span className="text-primary">by</span>&nbsp;
+  <div>
     <Tooltip text="Copy address">
-      <span>
+      <span className="font-rootstock-sans">
         <CopyButton icon={null} className="inline" copyText={proposer}>
-          {shortAddress(proposer)}
+          <span className="text-primary">by</span>&nbsp;
+          <span>{shortAddress(proposer)}</span>
         </CopyButton>
       </span>
     </Tooltip>
