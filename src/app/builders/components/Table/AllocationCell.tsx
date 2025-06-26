@@ -16,7 +16,7 @@ export const AllocationCell: FC<AllocationCellProps> = ({ allocationPct, step = 
   return (
     <div className={cn('flex items-center justify-center w-full h-full gap-2', className)}>
       <Progress.Root
-        className="relative overflow-hidden bg-v3-bg-accent-20 w-full h-[1px]"
+        className="relative overflow-hidden bg-v3-bg-accent-20 w-full h-[0.0625rem]"
         value={displayValue}
       >
         <Progress.Indicator
