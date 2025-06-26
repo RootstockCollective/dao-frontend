@@ -1,5 +1,5 @@
-import { Header, Paragraph } from '@/components/TypographyNew'
-import Link from 'next/link'
+import { Header, Paragraph, Span } from '@/components/TypographyNew'
+import { CRWhitepaperLink } from '../collective-rewards/shared/components/CRWhitepaperLinkNew'
 
 const MyRewardsContainer = ({ children }: { children: React.ReactNode }) => {
   return (
@@ -23,11 +23,10 @@ export const MyRewardsPage = () => {
             restake for higher Rewards and voting power.
           </Paragraph>
           <Paragraph className="flex flex-col items-start gap-2 flex-1 basis-0">
-            Learn more about the Collective Rewards in the Whitepaper
-            {/* FIXME: Add whitepaper link */}
-            <Link href="/whitepaper" target="_blank">
-              See the Whitepaper
-            </Link>
+            <Span>Learn more about the Collective Rewards in the Whitepaper</Span>
+            <Span>
+              See the <CRWhitepaperLink>Whitepaper</CRWhitepaperLink>
+            </Span>
           </Paragraph>
         </MyRewardsContainer>
         <MyRewardsContainer>

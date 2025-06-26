@@ -5,20 +5,33 @@ export function ArrowUpRightLightIcon({
   'aria-label': ariaLabel = 'Arrow Up Right Light Icon',
   size = 16,
   color = DEFAULT_ICON_COLOR,
-  fill = color,
+  fill = 'none',
   ...props
 }: IconProps) {
   return (
     <svg
+      xmlns="http://www.w3.org/2000/svg"
       width={size}
       height={size}
-      viewBox="0 0 256 256"
+      viewBox="0 0 20 20"
       fill={fill}
-      xmlns="http://www.w3.org/2000/svg"
-      aria-label={ariaLabel}
       {...props}
     >
-      <path d="M198,64V168a6,6,0,0,1-12,0V78.48L68.24,196.24a6,6,0,0,1-8.48-8.48L177.52,70H88a6,6,0,0,1,0-12H192A6,6,0,0,1,198,64Z" />
+      <g clip-path="url(#clip0_5261_3588)">
+        <path d="M5 15L15 5" stroke={color} strokeWidth="1.25" strokeLinecap="round" strokeLinejoin="round" />
+        <path
+          d="M6.875 5H15V13.125"
+          stroke={color}
+          strokeWidth="1.25"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+        />
+      </g>
+      <defs>
+        <clipPath id="clip0_5261_3588">
+          <rect width="20" height="20" fill="white" />
+        </clipPath>
+      </defs>
     </svg>
   )
 }
