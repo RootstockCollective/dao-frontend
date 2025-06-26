@@ -2,12 +2,11 @@ import { cn } from '@/lib/utils'
 import { type HTMLAttributes } from 'react'
 import { FilterRadioItem } from './FilterRadioItem'
 
-const filterOptions = ['Grant', 'Activation', 'Wave 4', 'Wave 5', 'March-25']
-
 interface FilterSideBarProps extends HTMLAttributes<HTMLDivElement> {
   currentFilter: string
   setCurrentFilter: (option: string) => void
   title?: string
+  filterOptions: string[]
 }
 
 /**
@@ -18,6 +17,7 @@ export function FilterSideBar({
   setCurrentFilter,
   className,
   title = 'Filter by category',
+  filterOptions,
   ...props
 }: FilterSideBarProps) {
   return (

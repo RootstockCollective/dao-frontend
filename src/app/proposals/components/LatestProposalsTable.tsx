@@ -27,6 +27,7 @@ import { CategoryColumn } from './table-columns/CategoryColumn'
 import { Paragraph } from '@/components/TypographyNew'
 import Pagination from './pagination/Pagination'
 import { Proposal } from '@/app/proposals/shared/types'
+import { filterOptions } from './filter/filterOptions'
 
 interface LatestProposalsTableProps {
   proposals: Proposal[]
@@ -270,7 +271,11 @@ const LatestProposalsTable = ({ proposals }: LatestProposalsTableProps) => {
         >
           {/* container for useClickOutside ref */}
           <div ref={filterSidebarRef} className="pl-2 h-full">
-            <FilterSideBar currentFilter={activeCategory} setCurrentFilter={handleFilterToggle} />
+            <FilterSideBar
+              filterOptions={filterOptions}
+              currentFilter={activeCategory}
+              setCurrentFilter={handleFilterToggle}
+            />
           </div>
         </motion.div>
         <div className="grow overflow-y-auto">
