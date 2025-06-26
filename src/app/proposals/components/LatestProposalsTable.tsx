@@ -1,5 +1,5 @@
 'use client'
-import { useMemo, memo, useState, useRef, useCallback } from 'react'
+import { useMemo, memo, useState, useRef, useCallback, useEffect } from 'react'
 import { AnimatePresence, motion } from 'motion/react'
 import {
   createColumnHelper,
@@ -48,13 +48,19 @@ const LatestProposalsTable = ({ proposals }: LatestProposalsTableProps) => {
 
   // input field filtering
   const [searchVisible, setSearchVisible] = useState(false)
-  const searchFieldRef = useRef<HTMLDivElement>(null)
-  useClickOutside(searchFieldRef, () => setSearchVisible(false))
+  const searchBoxRef = useRef<HTMLInputElement>(null)
+  const inputRef = useRef<HTMLInputElement>(null)
+  useClickOutside(searchBoxRef, () => setSearchVisible(false))
   const [searchValue, setSearchValue] = useState('')
   const handleSearch = useCallback((value: string) => {
     setSearchValue(value)
     resetPagination()
   }, [])
+  // show searchfield focus on SearchButton click
+  useEffect(() => {
+    if (!searchVisible) return
+    inputRef.current?.focus()
+  }, [searchVisible])
 
   // filtering by category in sidebar
   const [isFilterSidebarOpen, setIsFilterSidebarOpen] = useState(false)
@@ -236,7 +242,8 @@ const LatestProposalsTable = ({ proposals }: LatestProposalsTableProps) => {
                   placeholder="Search a proposal"
                   searchValue={searchValue}
                   onSearchSubmit={handleSearch}
-                  ref={searchFieldRef}
+                  ref={searchBoxRef}
+                  inputRef={inputRef}
                 />
               </motion.div>
             )}

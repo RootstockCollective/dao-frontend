@@ -16,7 +16,8 @@ interface ProposalSearchProps extends HTMLAttributes<HTMLDivElement> {
    */
   placeholder: string
   maxLength?: number
-  ref: RefObject<HTMLDivElement | null>
+  ref?: RefObject<HTMLDivElement | null>
+  inputRef?: RefObject<HTMLInputElement | null>
 }
 
 const SPINNER_DEBOUNCE_MS = 300 // Delay after the user stops typing before showing the spinner
@@ -39,6 +40,7 @@ export function DebounceSearch({
   searchValue,
   maxLength = 100,
   className,
+  inputRef,
   ...props
 }: ProposalSearchProps) {
   const [searchText, setSearchText] = useState(searchValue)
@@ -70,6 +72,7 @@ export function DebounceSearch({
         {isLoading ? <SpinnerIcon className="animate-spin" /> : <SearchIconKoto />}
       </div>
       <input
+        ref={inputRef}
         maxLength={maxLength}
         value={searchText}
         onChange={e => handleChange(e.target.value)}
