@@ -14,16 +14,21 @@ const AllocationBarSegmentPercent = ({
   totalValue: number
   valueDisplay: AllocationBarValueDisplay
 }) => {
-  const percent = valueToPercentage(value, totalValue).toFixed(valueDisplay.format?.percentDecimals ?? 0)
+  const { percentDecimals, valueDecimals } = valueDisplay.format ?? {}
 
-  const formattedValue = value.toLocaleString(undefined, {
-    minimumFractionDigits: valueDisplay.format?.valueDecimals ?? 0,
-    maximumFractionDigits: valueDisplay.format?.valueDecimals ?? 0,
+  const percent = valueToPercentage(value, totalValue).toLocaleString(undefined, {
+    maximumFractionDigits: percentDecimals ?? 2,
   })
 
+  const formattedValue = value.toLocaleString(undefined, {
+    maximumFractionDigits: valueDecimals ?? 2,
+  })
+
+  const { showValue, showPercent } = valueDisplay
+
   let displayValue = ''
-  if (valueDisplay.showValue) displayValue += formattedValue
-  if (valueDisplay.showPercent) displayValue += valueDisplay.showValue ? ` (${percent}%)` : `${percent}%`
+  if (showValue) displayValue += formattedValue
+  if (showPercent) displayValue += showValue ? ` (${percent}%)` : `${percent}%`
 
   return (
     <span className="absolute -top-7 left-1/2 -translate-x-1/2 pointer-events-none whitespace-nowrap font-normal leading-5 text-v3-bg-accent-0 font-rootstock-sans">

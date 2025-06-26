@@ -28,6 +28,7 @@ export interface Backer {
 }
 
 interface State {
+  resetVersion: number
   selections: Selections
   allocations: Allocations
   backer: Backer
@@ -64,6 +65,7 @@ const DEFAULT_CONTEXT: AllocationsContext = {
     allocations: {},
   },
   state: {
+    resetVersion: 0,
     selections: {},
     allocations: {},
     backer: {
@@ -91,6 +93,7 @@ export const AllocationsContextProvider: FC<{ children: ReactNode }> = ({ childr
   /**
    * Context states
    */
+  const [resetVersion, setResetVersion] = useState(DEFAULT_CONTEXT.state.resetVersion)
   const [selections, setSelections] = useState<Selections>(DEFAULT_CONTEXT.state.selections)
   const [allocations, setAllocations] = useState<Allocations>(DEFAULT_CONTEXT.state.allocations)
 
@@ -263,6 +266,7 @@ export const AllocationsContextProvider: FC<{ children: ReactNode }> = ({ childr
 
   const state: State = useMemo(() => {
     return {
+      resetVersion,
       selections,
       allocations,
       backer,
@@ -271,10 +275,19 @@ export const AllocationsContextProvider: FC<{ children: ReactNode }> = ({ childr
       getBuilder,
       isValidState,
     }
-  }, [selections, allocations, backer, isContextLoading, contextError, getBuilder, isValidState])
+  }, [
+    selections,
+    allocations,
+    backer,
+    isContextLoading,
+    contextError,
+    getBuilder,
+    isValidState,
+    resetVersion,
+  ])
 
   const actions: AllocationsActions = useMemo(
-    () => createActions(setSelections, setAllocations, setBacker, initialState),
+    () => createActions(setResetVersion, setSelections, setAllocations, setBacker, initialState),
     [initialState],
   )
 

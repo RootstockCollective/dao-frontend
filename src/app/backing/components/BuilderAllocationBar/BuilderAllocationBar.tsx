@@ -9,6 +9,7 @@ const BuilderAllocationBar = () => {
   const {
     initialState: { allocations: initialAllocations },
     state: {
+      resetVersion,
       allocations,
       backer: { balance, cumulativeAllocation },
       getBuilder,
@@ -18,6 +19,10 @@ const BuilderAllocationBar = () => {
 
   // Local order state, includes 'unallocated'
   const [orderedKeys, setOrderedKeys] = useState<string[]>([])
+
+  useEffect(() => {
+    setOrderedKeys([...Object.keys(initialAllocations), 'unallocated'])
+  }, [resetVersion, initialAllocations])
 
   // Sync keys and add new keys to left of 'unallocated'
   useEffect(() => {

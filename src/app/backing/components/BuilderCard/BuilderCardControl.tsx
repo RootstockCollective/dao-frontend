@@ -29,6 +29,7 @@ export const BuilderCardControl: FC<BuilderCardControlProps> = ({
   const {
     actions: { updateAllocation, resetAllocations },
     state: {
+      resetVersion,
       backer: { balance, cumulativeAllocation },
       allocations,
     },
@@ -70,6 +71,7 @@ export const BuilderCardControl: FC<BuilderCardControlProps> = ({
 
   return (
     <BuilderCard
+      key={resetVersion}
       {...props}
       address={builderAddress}
       isConnected={isConnected}

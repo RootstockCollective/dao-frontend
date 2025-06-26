@@ -53,7 +53,7 @@ export const AllocationInput: FC<AllocationInputProps> = ({
             autoComplete="off"
             placeholder={`max ${formatSymbol(maxAllocation, 'stRIF')}`}
             className="focus:outline-none focus-visible:outline-none text-left p-0 m-0 border-0 bg-transparent w-full text-[24px]"
-            value={allocation ? formatSymbol(allocation, 'stRIF') : ''}
+            value={formatSymbol(allocation, 'stRIF')}
             max={Number(formatSymbol(maxAllocation, 'stRIF'))}
             onValueChange={({ value }) => onAllocationChange(Number(value))}
             onFocus={() => !editing && setEditing(true)}
