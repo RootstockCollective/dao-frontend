@@ -2,10 +2,10 @@ import { useEstimatedRewards } from '../../hooks/useEstimatedRewards'
 import KotoQuestionMarkIcon from '@/components/Icons/KotoQuestionMarkIcon'
 import { Header } from '@/components/TypographyNew'
 import { formatCurrency } from '@/lib/utils'
-import { RifRbtcPopover } from '@/app/backing/components/Popovers/RifRbtcPopover'
+import { RifRbtcTooltip } from '@/components/RifRbtcTooltip/RifRbtcTooltip'
 import { Metric, MetricTitle } from '@/components/Metric'
 import { BuildersRewards } from '@/app/collective-rewards/rewards/builders/hooks/useGetBuildersRewards'
-import { DottedUnderlineLabel } from '@/app/backing/components/DottedUnderlineLabel/DottedUnderlineLabel'
+import { DottedUnderlineLabel } from '@/components/DottedUnderlineLabel/DottedUnderlineLabel'
 import { EstimatedRewardsPopover } from '@/app/backing/components/Popovers/EstimatedRewardsPopover'
 
 interface EstimatedRewardsMetricProps {
@@ -30,9 +30,9 @@ export const EstimatedRewardsMetric = ({ rewardsData }: EstimatedRewardsMetricPr
       content={
         <div className="flex flex-row items-baseline gap-2 font-rootstock-sans">
           <Header variant="h1">{formatCurrency(totalEstimatedUsd)}</Header>
-          <RifRbtcPopover totalEstimatedRbtc={totalEstimatedRbtc} totalEstimatedRif={totalEstimatedRif}>
+          <RifRbtcTooltip rbtcValue={totalEstimatedRbtc} rifValue={totalEstimatedRif}>
             <DottedUnderlineLabel className="text-lg">USD</DottedUnderlineLabel>
-          </RifRbtcPopover>
+          </RifRbtcTooltip>
         </div>
       }
     />
