@@ -4,6 +4,7 @@ import { Typography } from '@/components/TypographyNew/Typography'
 import { cn } from '@/lib/utils'
 import { FC } from 'react'
 import { CommonComponentProps } from '@/components/commonProps'
+import { CRWhitepaperLink } from '@/app/collective-rewards/shared/components/CRWhitepaperLinkNew'
 
 export const BackingBanner: FC<CommonComponentProps> = ({ className = '' }) => {
   return (
@@ -18,13 +19,18 @@ export const BackingBanner: FC<CommonComponentProps> = ({ className = '' }) => {
       <Header variant="h3">WHAT&apos;S IN IT FOR ME?</Header>
       <ul className="list-[circle] pl-6">
         <li>
-          <Typography>Earn a share of the rewards from Builders you back</Typography>
+          <Typography>You retain full ownership and access to your stRIF</Typography>
         </li>
         <li>
-          <Typography>Influence how rewards are distributed to Builders</Typography>
+          <Typography>Your allocations shape the Builders Rewards</Typography>
         </li>
         <li>
-          <Typography>Retain full ownership and access to your stRIF</Typography>
+          <Typography>You earn a portion of the backed Builders Rewards</Typography>
+        </li>
+        <li>
+          <Typography>
+            For more, see the <CRWhitepaperLink>Whitepaper</CRWhitepaperLink>
+          </Typography>
         </li>
       </ul>
     </div>
