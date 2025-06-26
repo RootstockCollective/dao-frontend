@@ -84,17 +84,15 @@ const BuilderAllocationBar = () => {
   const handleAllocationChange = useCallback(
     (change: AllocationChangeData) => {
       if (change.type === 'resize') {
-        const { values: newValues, itemsData: newItems, increasedIndex, decreasedIndex } = change
+        const { values: newValues, itemsData, increasedIndex, decreasedIndex } = change
 
         // Update allocations except for 'unallocated'
-        const changedItems = [newItems[increasedIndex], newItems[decreasedIndex]]
+        const changedItems = [itemsData[increasedIndex], itemsData[decreasedIndex]]
         changedItems.forEach(item => {
           if (item.key !== 'unallocated') {
-            updateAllocation(item.key as Address, parseEther(newValues[newItems.indexOf(item)].toString()))
+            updateAllocation(item.key as Address, parseEther(newValues[itemsData.indexOf(item)].toString()))
           }
         })
-        // Update local state for smooth UI update
-        setItemsData(newItems)
       } else if (change.type === 'reorder') {
         setItemsData(change.itemsData)
         setOrderedKeys(change.itemsData.map(item => item.key))

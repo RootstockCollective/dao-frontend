@@ -12,17 +12,14 @@ export default meta
 
 type Story = StoryObj<typeof meta>
 
-const addUnallocated = (items: AllocationItem[]): AllocationItem[] => {
+const addUnallocated = (items: AllocationItem[], totalAllocated: number): AllocationItem[] => {
   const allocatedSum = items.reduce((sum, { value }) => sum + value, 0)
-  if (allocatedSum >= 100) {
-    return items
-  }
   return [
     ...items,
     {
       key: 'uncallocated',
       label: 'available funds',
-      value: 100 - allocatedSum,
+      value: totalAllocated - allocatedSum,
       displayColor: '#25211E',
     },
   ]
@@ -48,7 +45,7 @@ const defaultItems: AllocationItem[] = [
     displayColor: '#DEFF1A',
   },
 ]
-const defaultItemsWithUnallocated = addUnallocated(defaultItems)
+const defaultItemsWithUnallocated = addUnallocated(defaultItems, 100)
 
 export const Default: Story = {
   args: {
@@ -64,26 +61,29 @@ export const Default: Story = {
 
 export const WithPercentDecimals: Story = {
   args: {
-    itemsData: addUnallocated([
-      {
-        key: 'boltz',
-        label: 'Boltz',
-        value: 20.3,
-        displayColor: '#9E76FF',
-      },
-      {
-        key: 'wallet',
-        label: '0x1D11...2D00',
-        value: 10,
-        displayColor: '#08FFD0',
-      },
-      {
-        key: 'abuilder',
-        label: 'another builder',
-        value: 10.76,
-        displayColor: '#DEFF1A',
-      },
-    ]),
+    itemsData: addUnallocated(
+      [
+        {
+          key: 'boltz',
+          label: 'Boltz',
+          value: 20.3,
+          displayColor: '#9E76FF',
+        },
+        {
+          key: 'wallet',
+          label: '0x1D11...2D00',
+          value: 10,
+          displayColor: '#08FFD0',
+        },
+        {
+          key: 'abuilder',
+          label: 'another builder',
+          value: 10.76,
+          displayColor: '#DEFF1A',
+        },
+      ],
+      100,
+    ),
     valueDisplay: {
       showPercent: true,
       format: {
@@ -95,26 +95,29 @@ export const WithPercentDecimals: Story = {
 
 export const WithValues: Story = {
   args: {
-    itemsData: addUnallocated([
-      {
-        key: 'boltz',
-        label: 'Boltz',
-        value: 20.3,
-        displayColor: '#9E76FF',
-      },
-      {
-        key: 'wallet',
-        label: '0x1D11...2D00',
-        value: 10,
-        displayColor: '#08FFD0',
-      },
-      {
-        key: 'abuilder',
-        label: 'another builder',
-        value: 10.76,
-        displayColor: '#DEFF1A',
-      },
-    ]),
+    itemsData: addUnallocated(
+      [
+        {
+          key: 'boltz',
+          label: 'Boltz',
+          value: 20.3,
+          displayColor: '#9E76FF',
+        },
+        {
+          key: 'wallet',
+          label: '0x1D11...2D00',
+          value: 10,
+          displayColor: '#08FFD0',
+        },
+        {
+          key: 'abuilder',
+          label: 'another builder',
+          value: 10.76,
+          displayColor: '#DEFF1A',
+        },
+      ],
+      100,
+    ),
     valueDisplay: {
       showValue: true,
     },
@@ -123,26 +126,29 @@ export const WithValues: Story = {
 
 export const WithValuesAndPercent: Story = {
   args: {
-    itemsData: addUnallocated([
-      {
-        key: 'boltz',
-        label: 'Boltz',
-        value: 20.3,
-        displayColor: '#9E76FF',
-      },
-      {
-        key: 'wallet',
-        label: '0x1D11...2D00',
-        value: 10,
-        displayColor: '#08FFD0',
-      },
-      {
-        key: 'abuilder',
-        label: 'another builder',
-        value: 10.76,
-        displayColor: '#DEFF1A',
-      },
-    ]),
+    itemsData: addUnallocated(
+      [
+        {
+          key: 'boltz',
+          label: 'Boltz',
+          value: 20.3,
+          displayColor: '#9E76FF',
+        },
+        {
+          key: 'wallet',
+          label: '0x1D11...2D00',
+          value: 10,
+          displayColor: '#08FFD0',
+        },
+        {
+          key: 'abuilder',
+          label: 'another builder',
+          value: 10.76,
+          displayColor: '#DEFF1A',
+        },
+      ],
+      100,
+    ),
     valueDisplay: {
       showValue: true,
       showPercent: true,
@@ -189,7 +195,7 @@ const dataWithTemp: AllocationItem[] = [
 
 export const WithTemporaryValues: Story = {
   args: {
-    itemsData: addUnallocated(dataWithTemp),
+    itemsData: addUnallocated(dataWithTemp, 100),
     valueDisplay: {
       showPercent: true,
     },
@@ -199,7 +205,7 @@ export const WithTemporaryValues: Story = {
 
 export const NotDraggable: Story = {
   args: {
-    itemsData: addUnallocated(dataWithTemp),
+    itemsData: addUnallocated(dataWithTemp, 100),
     valueDisplay: {
       showPercent: true,
     },
@@ -210,7 +216,7 @@ export const NotDraggable: Story = {
 
 export const NotResizable: Story = {
   args: {
-    itemsData: addUnallocated(dataWithTemp),
+    itemsData: addUnallocated(dataWithTemp, 100),
     valueDisplay: {
       showPercent: true,
     },
@@ -221,7 +227,7 @@ export const NotResizable: Story = {
 
 export const NotEditable: Story = {
   args: {
-    itemsData: addUnallocated(dataWithTemp),
+    itemsData: addUnallocated(dataWithTemp, 100),
     valueDisplay: {
       showPercent: true,
     },
@@ -233,7 +239,7 @@ export const NotEditable: Story = {
 
 export const WithoutUnallocatedValuesAndFixedHeight: Story = {
   args: {
-    itemsData: addUnallocated([]),
+    itemsData: addUnallocated([], 100),
     height: '1rem',
     valueDisplay: {
       showPercent: true,

@@ -104,6 +104,7 @@ const AllocationBar: React.FC<AllocationBarProps> = ({
       window.removeEventListener('mousemove', handleResize)
       window.removeEventListener('mouseup', onMouseUp)
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [dragIndex, currentValues])
 
   // dnd-kit reorder logic
