@@ -24,7 +24,6 @@ import { useClickOutside } from '@/shared/hooks/useClickOutside'
 import { Status } from '@/components/Status'
 import { SearchButton } from './SearchButton'
 import { CategoryColumn } from './table-columns/CategoryColumn'
-import { KotoQuestionMarkIcon } from '@/components/Icons'
 import { Paragraph } from '@/components/TypographyNew'
 import Pagination from './pagination/Pagination'
 import { Proposal } from '@/app/proposals/shared/types'
@@ -133,7 +132,7 @@ const LatestProposalsTable = ({ proposals }: LatestProposalsTableProps) => {
         <div>
           <div className="flex items-center-safe gap-1">
             <p className="mb-1">Quorum</p>
-            <KotoQuestionMarkIcon className="mb-1" />
+            {/* <KotoQuestionMarkIcon className="mb-1" /> */}
           </div>
           <p className="text-xs font-normal text-text-40">needed | reached</p>
         </div>
