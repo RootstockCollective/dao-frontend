@@ -72,7 +72,7 @@ export function GridTable<T>({ className, table, stackFirstColumn = false, ...pr
               return (
                 <div
                   role="cell"
-                  className={cn('overflow-hidden', { 'pb-[22px]': isStacked })}
+                  className={cn('flex items-center overflow-hidden', { 'pb-[22px]': isStacked })}
                   key={cell.id}
                   style={{
                     // stacked cells span full width, others occupy their original column

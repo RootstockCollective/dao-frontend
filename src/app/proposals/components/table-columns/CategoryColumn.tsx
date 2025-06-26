@@ -16,7 +16,7 @@ interface Props {
 
 export function CategoryColumn({ category }: Props) {
   return (
-    <div className="flex justify-center">
+    <div className="w-full flex justify-center">
       <Tooltip text={category}>
         <div>{icons[category]}</div>
       </Tooltip>

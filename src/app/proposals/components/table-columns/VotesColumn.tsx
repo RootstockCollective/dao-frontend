@@ -43,7 +43,7 @@ interface VotesColumnProps {
   abstainVotes: number
 }
 export const VotesColumn = ({ forVotes, againstVotes, abstainVotes }: VotesColumnProps) => (
-  <div className="flex flex-wrap items-center justify-end gap-3">
+  <div className="w-full flex flex-wrap items-center justify-end gap-x-3">
     <Paragraph>{forVotes + againstVotes + abstainVotes}</Paragraph>
     <PizzaChart
       segments={[
