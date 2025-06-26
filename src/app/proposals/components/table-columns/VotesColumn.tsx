@@ -29,7 +29,7 @@ export const QuorumColumn = ({ quorumVotes, quorumAtSnapshot }: QuorumColumnProp
           '-'
         ) : (
           <>
-            {formatNumberWithCommas(quorumVotes)}&nbsp;|&nbsp;
+            {formatNumberWithCommas(quorumAtSnapshot)}&nbsp;|&nbsp;
             {formatNumberWithCommas(percentage)}%
           </>
         )}

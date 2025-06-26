@@ -138,9 +138,10 @@ const LatestProposalsTable = ({ proposals }: LatestProposalsTableProps) => {
           <p className="text-xs font-normal text-text-40">needed | reached</p>
         </div>
       ),
-      cell: ({ cell, row }) => {
-        const { quorum } = cell.getValue()
-        return <QuorumColumn quorumVotes={quorum} quorumAtSnapshot={row.original.quorumAtSnapshot} />
+      cell: ({ row }) => {
+        const quorum = row.original.quorumAtSnapshot
+        const { forVotes, abstainVotes } = row.original.votes
+        return <QuorumColumn quorumVotes={forVotes.add(abstainVotes)} quorumAtSnapshot={quorum} />
       },
       sortingFn: (a, b) => {
         const getQuorumPercent = (quorum: Big, quorumAtSnapshot: Big) =>
