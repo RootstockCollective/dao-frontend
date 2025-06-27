@@ -1,7 +1,6 @@
 import type { Meta, StoryObj } from '@storybook/react'
 import { BackingCell } from './BackingCell'
 import { parseEther } from 'viem'
-import { Badge } from '@/components/Badge'
 
 const meta: Meta<typeof BackingCell> = {
   title: 'Components/BackingCell',
@@ -17,7 +16,7 @@ const meta: Meta<typeof BackingCell> = {
     price: {
       description: 'The price of stRIF in USD',
     },
-    metric: {
+    title: {
       description: 'Optional ReactNode to display as additional metric information',
     },
   },
@@ -44,13 +43,5 @@ export const SmallAmount: Story = {
   args: {
     amount: parseEther('500'),
     price: 0.0047,
-  },
-}
-
-export const WithMetric: Story = {
-  args: {
-    amount: parseEther('2500'),
-    price: 0.0047,
-    metric: <Badge content="Active" className="bg-green-100 text-green-800 px-2 py-1" />,
   },
 }

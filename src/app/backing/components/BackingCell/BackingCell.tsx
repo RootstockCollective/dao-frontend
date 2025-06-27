@@ -5,15 +5,16 @@ import { formatSymbol } from '@/app/collective-rewards/rewards/utils/formatter'
 import { BigSource } from 'big.js'
 import { AvailableBackingUSD } from '../AvailableBackingUSD/AvailableBackingUSD'
 import { StRIFToken } from '../StRIFToken/StRIFToken'
+import { Metric } from '@/components/Metric/Metric'
 
 type BackingCellProps = {
   className?: string
   amount: bigint
   price: BigSource
-  metric: ReactNode
+  title: ReactNode
 }
 
-export const BackingCell: FC<BackingCellProps> = ({ className, amount, price, metric }) => {
+export const BackingCell: FC<BackingCellProps> = ({ className, amount, price, title }) => {
   const formattedAmountOnly = formatSymbol(amount, 'stRIF')
 
   return (
@@ -25,15 +26,20 @@ export const BackingCell: FC<BackingCellProps> = ({ className, amount, price, me
       )}
       data-testid="BackingCell"
     >
-      <div className="flex flex-col items-start gap-[-2px] self-stretch">
-        <div className="flex h-10 items-center gap-1 self-stretch rounded-[4px]">
-          <Typography variant="body" className="font-medium">
-            {formattedAmountOnly}
-          </Typography>
-          <StRIFToken size={20} variant="body" bold={false} />
-        </div>
-        <AvailableBackingUSD amount={amount} price={price} />
-      </div>
+      <Metric
+        title={title}
+        content={
+          <div className="flex flex-col items-start gap-[-2px] self-stretch">
+            <div className="flex h-10 items-center gap-1 self-stretch rounded-[4px]">
+              <Typography variant="body" className="font-medium">
+                {formattedAmountOnly}
+              </Typography>
+              <StRIFToken size={20} variant="body" bold={false} />
+            </div>
+            <AvailableBackingUSD amount={amount} price={price} />
+          </div>
+        }
+      />
     </div>
   )
 }
