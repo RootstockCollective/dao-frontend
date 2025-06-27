@@ -19,6 +19,11 @@ const meta: Meta<typeof BackingCell> = {
     title: {
       description: 'Optional ReactNode to display as additional metric information',
     },
+    state: {
+      description: 'The state of the backing cell',
+      control: { type: 'select' },
+      options: ['activated', 'changing', 'deactivated'],
+    },
   },
 }
 
@@ -43,5 +48,29 @@ export const SmallAmount: Story = {
   args: {
     amount: parseEther('500'),
     price: 0.0047,
+  },
+}
+
+export const Activated: Story = {
+  args: {
+    amount: parseEther('60000'),
+    price: 0.0047,
+    state: 'activated',
+  },
+}
+
+export const Changing: Story = {
+  args: {
+    amount: parseEther('60000'),
+    price: 0.0047,
+    state: 'changing',
+  },
+}
+
+export const Deactivated: Story = {
+  args: {
+    amount: parseEther('60000'),
+    price: 0.0047,
+    state: 'deactivated',
   },
 }

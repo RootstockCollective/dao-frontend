@@ -7,21 +7,42 @@ import { AvailableBackingUSD } from '../AvailableBackingUSD/AvailableBackingUSD'
 import { StRIFToken } from '../StRIFToken/StRIFToken'
 import { Metric } from '@/components/Metric/Metric'
 
+type BackingCellState = 'activated' | 'changing' | 'deactivated'
+
 type BackingCellProps = {
   className?: string
   amount: bigint
   price: BigSource
   title: ReactNode
+  state?: BackingCellState
 }
 
-export const BackingCell: FC<BackingCellProps> = ({ className, amount, price, title }) => {
+export const BackingCell: FC<BackingCellProps> = ({
+  className,
+  amount,
+  price,
+  title,
+  state = 'activated',
+}) => {
   const formattedAmountOnly = formatSymbol(amount, 'stRIF')
+
+  const getBackgroundStyle = () => {
+    switch (state) {
+      case 'deactivated':
+        return 'bg-[var(--Background-60,#37322F)]'
+      case 'activated':
+      case 'changing':
+      default:
+        return 'bg-[var(--Background-80,#25211E)]'
+    }
+  }
 
   return (
     <div
       className={cn(
         'flex flex-col items-end gap-4 flex-1 py-3 px-2',
-        'rounded bg-[var(--Background-80,#25211E)]',
+        'rounded',
+        getBackgroundStyle(),
         className,
       )}
       data-testid="BackingCell"
