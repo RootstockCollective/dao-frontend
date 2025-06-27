@@ -30,16 +30,16 @@ export const BackingCell: FC<BackingCellProps> = ({ className, amount, price, ti
         title={title}
         content={
           <div className="flex flex-col items-start gap-[-2px] self-stretch">
-            <div className="flex h-10 items-center gap-1 self-stretch">
-              <div className="flex w-[154px] gap-2">
-                <div className="w-[76px]">
-                  <Typography variant="h2" className="leading-[30px] text-[var(--Text-100,#FFF)]">
-                    {formattedAmountOnly}
-                  </Typography>
-                </div>
-                <div className="w-[76px]"></div>
+            <div className="flex h-10 items-baseline self-stretch">
+              <div className="w-[76px] flex">
+                <Typography variant="h2" className="leading-[30px] text-[var(--Text-100,#FFF)]">
+                  {formattedAmountOnly}
+                </Typography>
               </div>
-              <StRIFToken size={20} variant="body" bold={false} />
+              <div className="w-[76px]"></div>
+              <div className="flex">
+                <StRIFToken size={20} variant="body" bold={false} />
+              </div>
             </div>
             <AvailableBackingUSD
               amount={amount}
