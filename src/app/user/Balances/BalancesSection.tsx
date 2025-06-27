@@ -8,6 +8,8 @@ import { UnstakeModal } from '@/app/user/Unstake'
 import { SectionHeader } from '@/components/SectionHeader'
 import { Table } from '@/components/Table'
 import { ModalReturn, useModal } from '@/shared/hooks/useModal'
+import { useEffect, useState } from 'react'
+import { useSearchParams } from 'next/navigation'
 
 const makeData = (stakeModal: ModalReturn, unstakeModal: ModalReturn) => [
   {
@@ -36,6 +38,16 @@ const makeData = (stakeModal: ModalReturn, unstakeModal: ModalReturn) => [
 export const BalancesSection = () => {
   const stakeModal = useModal()
   const unstakeModal = useModal()
+  const searchParams = useSearchParams()
+  const action = searchParams.get('action')
+  const [hasOpenedStakeModal, setHasOpenedStakeModal] = useState(false)
+
+  useEffect(() => {
+    if (action === 'stake' && !hasOpenedStakeModal) {
+      stakeModal.openModal()
+      setHasOpenedStakeModal(true)
+    }
+  }, [action, hasOpenedStakeModal, stakeModal])
 
   return (
     <div className="mb-[32px]">
@@ -43,8 +55,8 @@ export const BalancesSection = () => {
         name="Balances"
         description="Your tokens that can be used in the Collective are shown here together with summary total balances with the option to Stake your RIF."
       />
-      {stakeModal.isModalOpened ? <StakingFlow onCloseModal={stakeModal.closeModal} /> : null}
-      {unstakeModal.isModalOpened ? <UnstakeModal onCloseModal={unstakeModal.closeModal} /> : null}
+      {stakeModal.isModalOpened && <StakingFlow onCloseModal={stakeModal.closeModal} />}
+      {unstakeModal.isModalOpened && <UnstakeModal onCloseModal={unstakeModal.closeModal} />}
       <Table data={makeData(stakeModal, unstakeModal)} className="overflow-visible" />
     </div>
   )
