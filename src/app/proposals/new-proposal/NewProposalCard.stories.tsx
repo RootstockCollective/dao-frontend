@@ -5,7 +5,7 @@ const meta: Meta<typeof NewProposalCard> = {
   title: 'Proposals/NewProposalCard',
   component: NewProposalCard,
   parameters: {
-    layout: 'centered',
+    layout: 'fullscreen',
   },
   tags: ['autodocs'],
   argTypes: {
@@ -40,7 +40,7 @@ export default meta
 type Story = StoryObj<typeof meta>
 
 // Mock components for the blocks
-const GrantTopBlock: React.FC<HTMLElement> = () => (
+const GrantTopBlock = (
   <div className="p-6 space-y-4">
     <p className="text-gray-700">Community vote to allocate treasury funds for Grants</p>
     <p className="text-sm text-gray-600">
@@ -50,10 +50,8 @@ const GrantTopBlock: React.FC<HTMLElement> = () => (
   </div>
 )
 
-const GrantBottomBlock: React.FC<HTMLElement> = () => (
+const GrantBottomBlock = (
   <div className="p-6 space-y-6">
-    <h3 className="text-lg font-semibold text-gray-900">BEFORE YOU APPLY FOR A GRANT</h3>
-
     <div className="space-y-4">
       <div>
         <h4 className="font-medium text-gray-900 flex items-center gap-2">
@@ -83,50 +81,34 @@ const GrantBottomBlock: React.FC<HTMLElement> = () => (
   </div>
 )
 
-export const Default: Story = {
+export const Grant: Story = {
   args: {
     isOpen: false,
     image: '/images/proposals/grant-proposal.png',
     topTitle: 'GRANT',
-    bottomTitle: 'Requirements',
+    bottomTitle: 'Before you apply for a Grant',
     topBlock: GrantTopBlock,
     bottomBlock: GrantBottomBlock,
-    topButtonText: 'Cancel',
+    topButtonText: 'Apply for a Grant',
     bottomButtonText: 'Continue to details',
   },
 }
 
-export const Open: Story = {
+export const GrantOpen: Story = {
   args: {
-    ...Default.args,
+    ...Grant.args,
     isOpen: true,
   },
 }
 
-export const Closed: Story = {
+export const GrantClosed: Story = {
   args: {
-    ...Default.args,
+    ...Grant.args,
     isOpen: false,
   },
 }
 
-export const GrantProposal: Story = {
-  args: {
-    ...Default.args,
-    topTitle: 'GRANT',
-    bottomTitle: 'Requirements',
-    topButtonText: 'Cancel',
-    bottomButtonText: 'Continue to details',
-  },
-}
-
-export const CompactView: Story = {
-  args: {
-    ...Default.args,
-    isOpen: false,
-    topTitle: 'GRANT',
-    bottomTitle: '',
-    topButtonText: 'Learn More',
-    bottomButtonText: 'Apply Now',
-  },
+export const GrantAndRewards: Story = {
+  args: {},
+  render: props => <></>,
 }
