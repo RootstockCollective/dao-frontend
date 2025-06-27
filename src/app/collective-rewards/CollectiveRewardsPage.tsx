@@ -1,7 +1,9 @@
 'use client'
 
 import { Header } from '@/components/TypographyNew'
-import { InfoContainer, MetricsContainer } from '@/components/containers'
+import { ActionMetricsContainer, InfoContainer } from '@/components/containers'
+import { AnnualBackersIncentives } from './components/AnnualBackersIncentives'
+import { TotalRewardsDistributed } from './components/TotalRewardsDistributed'
 
 const NAME = 'Collective Rewards'
 export const CollectiveRewardsPage = () => {
@@ -12,8 +14,11 @@ export const CollectiveRewardsPage = () => {
       </Header>
 
       <div className="flex flex-col gap-2">
-        <MetricsContainer>Metrics</MetricsContainer>
-        <InfoContainer>Bottom content placeholder</InfoContainer>
+        <ActionMetricsContainer className="flex flex-row gap-2">
+          <AnnualBackersIncentives className="basis-1/2" />
+          <TotalRewardsDistributed className="basis-1/2" />
+        </ActionMetricsContainer>
+        <InfoContainer className="bg-v3-bg-accent-80">Bottom content placeholder</InfoContainer>
       </div>
     </div>
   )
