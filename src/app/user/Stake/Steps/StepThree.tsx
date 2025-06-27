@@ -4,7 +4,7 @@ import { Divider } from '@/components/Divider'
 import { executeTxFlow } from '@/shared/notification'
 import { useCallback } from 'react'
 import { StepActionButtons } from '../components/StepActionButtons'
-import { TokenAmountDisplay } from '../components/TokenAmountDisplay'
+import { StakeTokenAmountDisplay } from '../components/StakeTokenAmountDisplay'
 import { TransactionStatus } from '../components/TransactionStatus'
 import { useStakeRIF } from '../hooks/useStakeRIF'
 
@@ -27,14 +27,14 @@ export const StepThree = ({ onGoToStep, onCloseModal }: StepProps) => {
   return (
     <>
       <div className="flex flex-col md:flex-row md:items-start md:justify-between mb-8">
-        <TokenAmountDisplay
+        <StakeTokenAmountDisplay
           label="From"
           amount={amount}
           tokenSymbol={from.tokenSymbol}
           amountInCurrency={from.amountConvertedToCurrency}
           balance={from.balance}
         />
-        <TokenAmountDisplay
+        <StakeTokenAmountDisplay
           label="To"
           amount={amount}
           tokenSymbol={to.tokenSymbol}
