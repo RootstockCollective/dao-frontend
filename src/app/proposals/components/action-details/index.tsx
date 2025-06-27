@@ -1,4 +1,3 @@
-import { Fragment } from 'react'
 import type { ReactNode } from 'react'
 import { Header, Paragraph, Span } from '@/components/TypographyNew'
 import { ShortenAndCopy } from '@/components/ShortenAndCopy/ShortenAndCopy'

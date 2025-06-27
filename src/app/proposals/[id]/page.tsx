@@ -1,68 +1,42 @@
 'use client'
 import { useFetchAllProposals } from '@/app/proposals/hooks/useFetchLatestProposals'
-import { useGetProposalDeadline } from '@/app/proposals/hooks/useGetProposalDeadline'
 import { useGetProposalSnapshot } from '@/app/proposals/hooks/useGetProposalSnapshot'
 import { useGetProposalVotes } from '@/app/proposals/hooks/useGetProposalVotes'
-import { useVotingPower } from '@/app/proposals/hooks/useVotingPower'
 import { useVotingPowerAtSnapshot } from '@/app/proposals/hooks/useVotingPowerAtSnapshot'
-import {
-  ActionComposerMap,
-  ActionInputNameFormatMap,
-  FunctionName,
-  InputNameFormatMap,
-  InputParameterName,
-  InputParameterTypeByFnByName,
-  InputValueComponent,
-  InputValueComposerMap,
-  SupportedProposalActionName,
-} from '@/app/proposals/shared/supportedABIs'
 import { DecodedData, getEventArguments, splitCombinedName } from '@/app/proposals/shared/utils'
 import { useAlertContext } from '@/app/providers'
 import { useModal } from '@/shared/hooks/useModal'
-import { AddressOrAlias as AddressComponent } from '@/components/Address'
-import { Button } from '@/components/Button'
-import { Popover } from '@/components/Popover'
 import { Header, Paragraph, Span } from '@/components/TypographyNew'
 import { config } from '@/config'
-import { RIF, RIF_ADDRESS } from '@/lib/constants'
-import { formatNumberWithCommas, truncateMiddle, formatCurrency, shortAddress } from '@/lib/utils'
+import { RIF_ADDRESS } from '@/lib/constants'
+import { formatNumberWithCommas } from '@/lib/utils'
 import { useExecuteProposal } from '@/shared/hooks/useExecuteProposal'
 import { useQueueProposal } from '@/shared/hooks/useQueueProposal'
 import { useVoteOnProposal } from '@/shared/hooks/useVoteOnProposal'
 import { TX_MESSAGES } from '@/shared/txMessages'
 import { waitForTransactionReceipt } from '@wagmi/core'
-import { useRouter, useParams, useSearchParams } from 'next/navigation'
-import { FC, Fragment, useEffect, useMemo, useRef, useState } from 'react'
-import { MinusIcon } from '@/components/Icons'
-import { getAddress, formatEther, zeroAddress } from 'viem'
+import { useParams } from 'next/navigation'
+import { Fragment, useEffect, useMemo, useState, useRef } from 'react'
+import { formatEther } from 'viem'
 import { type BaseError, useAccount } from 'wagmi'
 import { Vote, VoteProposalModal } from '@/components/Modal/VoteProposalModal'
 import { VoteSubmittedModal } from '@/components/Modal/VoteSubmittedModal'
 import { ProposalState } from '@/shared/types'
 import { isUserRejectedTxError } from '@/components/ErrorPage/commonErrors'
-import Big from '@/lib/big'
 import { usePricesContext } from '@/shared/context/PricesContext'
-import { getCombinedFiatAmount } from '@/app/collective-rewards/utils'
-import { tokenContracts } from '@/lib/contracts'
 import { ConnectWorkflow } from '@/shared/walletConnection/connection/ConnectWorkflow'
 import { ProgressBar } from '@/components/ProgressBarNew'
 import { ButtonAction, VotingDetails } from '../components/vote-details'
-import moment from 'moment'
 import { TokenImage } from '@/components/TokenImage'
 import React from 'react'
 import { ShortenAndCopy } from '@/components/ShortenAndCopy/ShortenAndCopy'
 import { useProposalQuorumAtSnapshot } from '../hooks/useProposalQuorumAtSnapshot'
 import { ProposalType } from '../create/CreateProposalHeaderSection'
-import {
-  ParsedActionDetails,
-  ActionDetailsProps,
-  ActionType,
-  RenderWithdrawActionArgs,
-  ParamLabels,
-  ParamComponents,
-} from './types'
+import { ParsedActionDetails, ActionType } from './types'
 import { ActionDetails } from '../components/action-details'
 import type { GetPricesResult } from '@/app/user/types'
+import { ConnectButtonComponent } from '@/shared/walletConnection/components/ConnectButtonComponent'
+import { NewPopover } from '@/components/NewPopover'
 
 export default function ProposalView() {
   const { id } = useParams<{ id: string }>() ?? {}
@@ -90,14 +64,6 @@ const proposalStateToProgressMap = new Map([
   [ProposalState.Defeated, 100],
   [ProposalState.Canceled, 100],
   [undefined, 0],
-])
-
-const actionNameToProposalTypeMap = new Map<string, ProposalType>([
-  ['withdraw', ProposalType.WITHDRAW],
-  ['withdrawERC20', ProposalType.WITHDRAW],
-  ['communityApproveBuilder', ProposalType.BUILDER_ACTIVATION],
-  ['removeWhitelistedBuilder', ProposalType.BUILDER_DEACTIVATION],
-  ['dewhitelistBuilder', ProposalType.BUILDER_DEACTIVATION],
 ])
 
 const getStatusSteps = (proposalState: ProposalState) => {
@@ -194,9 +160,7 @@ const PageWithProposal = (proposal: ParsedProposal) => {
   const snapshot = useGetProposalSnapshot(proposalId)
   const { quorum } = useProposalQuorumAtSnapshot(snapshot)
 
-  const { blocksUntilClosure } = useGetProposalDeadline(proposalId)
   const { votingPowerAtSnapshot, doesUserHasEnoughThreshold } = useVotingPowerAtSnapshot(snapshot as bigint)
-  const { canCreateProposal } = useVotingPower()
 
   const {
     onVote,
@@ -216,6 +180,8 @@ const PageWithProposal = (proposal: ParsedProposal) => {
   const { onExecuteProposal } = useExecuteProposal(proposalId)
 
   const [isExecuting, setIsExecuting] = useState(false)
+  const [popoverOpen, setPopoverOpen] = useState(false)
+  const voteButtonRef = useRef<HTMLButtonElement>(null)
 
   const cannotCastVote =
     !isProposalActive ||
@@ -230,8 +196,6 @@ const PageWithProposal = (proposal: ParsedProposal) => {
   const actionName = calldatasParsed?.[0]?.type === 'decoded' ? calldatasParsed[0].functionName : undefined
   if (actionName === 'withdraw' || actionName === 'withdrawERC20') proposalTypeLabel = 'Standard'
   if (actionName === 'communityApproveBuilder') proposalTypeLabel = 'Activation'
-
-  console.log('actionName', actionName)
 
   const { proposalName, builderName } = splitCombinedName(name)
 
@@ -318,7 +282,7 @@ const PageWithProposal = (proposal: ParsedProposal) => {
     }
   }
 
-  const handleVotingExecution = async () => {
+  const handleExecuteProposal = async () => {
     try {
       setMessage(null)
       const txHash = await onExecuteProposal()
@@ -393,39 +357,56 @@ const PageWithProposal = (proposal: ParsedProposal) => {
     addressToWhitelist = calldatasParsed[0].args[1]
   }
 
+  const { prices } = usePricesContext()
+  const parsedAction = parseProposalActionDetails(calldatasParsed, prices)
+
+  // Restore handleProposalAction and getButtonActionForState
+  const handleProposalAction = (action: () => void) => (event: React.MouseEvent<HTMLButtonElement>) => {
+    if (!isConnected) {
+      setPopoverOpen(true)
+      return
+    }
+    action()
+  }
+
   const getButtonActionForState = (state: ProposalState | undefined): ButtonAction | undefined => {
     switch (state) {
       case ProposalState.Active:
         return {
           actionName: 'Vote on proposal',
-          onButtonClick: _event => {
-            handleVoting('for')
-          },
+          onButtonClick: handleProposalAction(openModal),
         }
       case ProposalState.Succeeded:
         return {
           actionName: 'Put on queue',
-          onButtonClick: _event => {
-            handleQueuingProposal()
-          },
+          onButtonClick: handleProposalAction(handleQueuingProposal),
         }
       case ProposalState.Queued:
         return {
           actionName: 'Execute',
-          onButtonClick: _event => {
-            handleVotingExecution()
-          },
+          onButtonClick: handleProposalAction(handleExecuteProposal),
         }
       default:
         return undefined
     }
   }
 
-  const { prices } = usePricesContext()
-  const parsedAction = parseProposalActionDetails(calldatasParsed, prices)
-
   return (
     <div className="min-h-screen text-white px-4 py-8 flex flex-col gap-4 w-full max-w-full">
+      {votingModal.isModalOpened && address && (
+        <VoteProposalModal
+          onSubmit={handleVoting}
+          onClose={votingModal.closeModal}
+          proposal={proposal}
+          address={address}
+          votingPower={votingPowerAtSnapshot}
+          isVoting={isVoting}
+          errorMessage={errorVoting}
+        />
+      )}
+      {submittedModal.isModalOpened && vote && (
+        <VoteSubmittedModal proposal={proposal} vote={vote} onClose={submittedModal.closeModal} />
+      )}
       <Header variant="h1" className="text-3xl text-white">
         {name}
       </Header>
@@ -549,6 +530,25 @@ const PageWithProposal = (proposal: ParsedProposal) => {
         </div>
 
         <div className="flex flex-col max-w-[376px]">
+          <NewPopover
+            open={popoverOpen}
+            onOpenChange={setPopoverOpen}
+            anchorRef={voteButtonRef}
+            className="bg-text-80 rounded-[4px] border border-text-80 p-6 shadow-lg w-72"
+            contentClassName="flex flex-col items-start bg-transparent h-full"
+            content={
+              <>
+                <Span className="mb-4 text-left text-bg-100 text-base font-normal">
+                  Connect your wallet to see your available voting power and to vote.
+                </Span>
+                <ConnectWorkflow
+                  ConnectComponent={props => (
+                    <ConnectButtonComponent {...props} textClassName="text-bg-100" />
+                  )}
+                />
+              </>
+            }
+          />
           <VotingDetails
             votingPower={votingPowerAtSnapshot.toString()}
             voteData={{
@@ -558,76 +558,12 @@ const PageWithProposal = (proposal: ParsedProposal) => {
               quorum,
             }}
             buttonAction={getButtonActionForState(proposalState)}
-            actionDisabled={cannotCastVote}
+            actionDisabled={isConnected && cannotCastVote}
+            voteButtonRef={voteButtonRef}
           />
           <ActionDetails parsedAction={parsedAction} actionType={actionType} />
         </div>
       </div>
     </div>
   )
-}
-
-const actionInputNameFormatMap: Partial<ActionInputNameFormatMap<FunctionName[number], InputParameterName>> =
-  {
-    whitelistBuilder: {
-      builder_: 'Address to be whitelisted',
-      rewardReceiver_: 'Address to receive rewards',
-    },
-    communityApproveBuilder: {
-      builder_: 'Address to be whitelisted',
-    },
-    removeWhitelistedBuilder: {
-      builder_: 'Address to be removed',
-    },
-    dewhitelistBuilder: {
-      builder_: 'Address to be de-whitelisted',
-    },
-    withdraw: {
-      to: 'To address',
-      amount: 'Amount',
-    },
-    withdrawERC20: {
-      token: 'Token',
-      to: 'To address',
-      amount: 'Amount',
-    },
-  }
-
-const AddressInputComponent: InputValueComponent<'address'> = ({ value, htmlProps }) => (
-  <AddressComponent {...htmlProps} addressOrAlias={value.toString()} />
-)
-
-const BigIntInputComponent: InputValueComponent<'bigint'> = ({ value, htmlProps }) => (
-  <Span {...(htmlProps as any)}>{formatNumberWithCommas(formatEther(BigInt(value)))}</Span>
-)
-
-const ERC20InputComponent: InputValueComponent<'bigint'> = ({ value, htmlProps }) => (
-  <Span {...(htmlProps as any)}>
-    {value.toLowerCase() === RIF_ADDRESS.toLowerCase() ? RIF : 'Unknown ERC20'}
-  </Span>
-)
-
-const actionComponentMap: Partial<ActionComposerMap> = {
-  whitelistBuilder: {
-    builder_: AddressInputComponent,
-    rewardReceiver_: AddressInputComponent,
-  },
-  removeWhitelistedBuilder: {
-    builder_: AddressInputComponent,
-  },
-  dewhitelistBuilder: {
-    builder_: AddressInputComponent,
-  },
-  communityApproveBuilder: {
-    builder_: AddressInputComponent,
-  },
-  withdraw: {
-    to: AddressInputComponent,
-    amount: BigIntInputComponent,
-  },
-  withdrawERC20: {
-    token: ERC20InputComponent,
-    to: AddressInputComponent,
-    amount: BigIntInputComponent,
-  },
 }
