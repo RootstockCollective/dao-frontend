@@ -35,26 +35,33 @@ export const BackingCell: FC<BackingCellProps> = ({
   const usdAmount = getFiatAmount(amount, rifPrice)
   const usdDisplay = `${usdAmount.toFixed(2)} USD`
 
-  const getBackgroundStyle = () =>
-    state === 'deactivated' ? 'bg-bg-60' : 'bg-bg-80'
+  const getBackgroundStyle = () => (state === 'deactivated' ? 'bg-bg-60' : 'bg-bg-80')
 
   return (
     <div
       className={cn(
-        'flex flex-col items-end gap-4 flex-1 py-3 px-2',
-        'rounded',
-        getBackgroundStyle(),
+        'flex flex-col items-end flex-1 py-3 px-2 rounded',
+        amount === 0n ? 'gap-6 bg-bg-80' : `gap-4 ${getBackgroundStyle()}`,
         className,
       )}
       data-testid="BackingCell"
     >
       <Metric
         title={title}
+        className={amount === 0n ? 'flex items-center justify-center h-full' : ''}
         content={
           <div className="flex flex-col items-start gap-[-2px] self-stretch">
-            <div className="flex h-10 items-baseline self-stretch">
+            <div
+              className={cn(
+                'flex h-10 self-stretch',
+                amount === 0n ? 'gap-1 justify-center items-center' : 'items-baseline',
+              )}
+            >
               <div className="w-20 flex">
-                <Typography variant="h2" className="leading-8 text-text-100">
+                <Typography
+                  variant="h2"
+                  className={cn('leading-8', amount > 0n ? 'text-text-100' : 'text-bg-20')}
+                >
                   {formattedAmountOnly}
                 </Typography>
               </div>
@@ -63,12 +70,14 @@ export const BackingCell: FC<BackingCellProps> = ({
                 <RIFToken size={20} textClassName="text-base text-white font-normal" />
               </div>
             </div>
-            <Typography
-              variant="body"
-              className="self-stretch font-rootstock-sans font-medium text-sm leading-5 text-bg-0"
-            >
-              {usdDisplay}
-            </Typography>
+            {amount > 0n && (
+              <Typography
+                variant="body"
+                className="self-stretch font-rootstock-sans font-medium text-sm leading-5 text-bg-0"
+              >
+                {usdDisplay}
+              </Typography>
+            )}
           </div>
         }
       />
