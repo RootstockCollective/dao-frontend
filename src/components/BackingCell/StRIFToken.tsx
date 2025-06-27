@@ -11,11 +11,11 @@ type StRIFTokenProps = {
   bold?: boolean
 }
 
-export const StRIFToken: FC<StRIFTokenProps> = ({ 
+export const StRIFToken: FC<StRIFTokenProps> = ({
   className,
   size = 24,
   variant = 'tag-s',
-  bold = false
+  bold = false,
 }) => {
   return (
     <div className={cn('flex items-center gap-1', className)}>
@@ -25,4 +25,4 @@ export const StRIFToken: FC<StRIFTokenProps> = ({
       </Typography>
     </div>
   )
-} 
+}

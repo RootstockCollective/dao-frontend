@@ -10,20 +10,13 @@ type AvailableBackingUSDProps = {
   price: BigSource
 }
 
-export const AvailableBackingUSD: FC<AvailableBackingUSDProps> = ({ 
-  className, 
-  amount, 
-  price 
-}) => {
+export const AvailableBackingUSD: FC<AvailableBackingUSDProps> = ({ className, amount, price }) => {
   const fiatAmount = getFiatAmount(amount, price)
   const formattedFiatAmount = formatFiatAmount(fiatAmount, 'USD')
 
   return (
-    <Typography 
-      variant="body-xs" 
-      className={cn('text-v3-text-60', className)}
-    >
+    <Typography variant="body-xs" className={cn('text-v3-text-60', className)}>
       {formattedFiatAmount}
     </Typography>
   )
-} 
+}
