@@ -1,9 +1,5 @@
 import { Builder } from '@/app/collective-rewards/types'
-import {
-  isBuilderDeactivated,
-  isBuilderKycRevoked,
-  isBuilderPaused,
-} from '@/app/collective-rewards/utils'
+import { isBuilderDeactivated, isBuilderKycRevoked, isBuilderPaused } from '@/app/collective-rewards/utils'
 import HourglassIcon from '@/components/Icons/HourglassIcon'
 import { ParachuteIcon } from '@/components/Icons/ParachuteIcon'
 import { WarningIcon } from '@/components/Icons/WarningIcon'
