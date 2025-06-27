@@ -1,3 +1,3 @@
 export * from './BackingCell'
-export * from '../AvailableBackingMetric/AvailableBackingUSD'
+export * from '../AvailableBackingUSD/AvailableBackingUSD'
 export * from '../StRIFToken/StRIFToken'

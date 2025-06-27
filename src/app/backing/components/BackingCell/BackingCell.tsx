@@ -3,7 +3,7 @@ import { cn } from '@/lib/utils'
 import { Typography } from '@/components/TypographyNew/Typography'
 import { formatSymbol } from '@/app/collective-rewards/rewards/utils/formatter'
 import { BigSource } from 'big.js'
-import { AvailableBackingUSD } from '../AvailableBackingMetric/AvailableBackingUSD'
+import { AvailableBackingUSD } from '../AvailableBackingUSD/AvailableBackingUSD'
 import { StRIFToken } from '../StRIFToken/StRIFToken'
 
 type BackingCellProps = {
