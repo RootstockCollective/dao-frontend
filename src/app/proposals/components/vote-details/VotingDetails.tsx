@@ -1,6 +1,6 @@
 import React from 'react'
 import { formatEther } from 'viem'
-import { Button } from '@/components/Button'
+import { Button } from '@/components/ButtonNew/Button'
 import { Popover } from '@/components/Popover'
 import { capitalizeFirstLetter } from '@/shared/utils'
 import { Header, Paragraph } from '@/components/TypographyNew'
@@ -47,6 +47,7 @@ interface VoteDetailsProps {
   buttonAction?: ButtonAction
   hasVoted?: HasVoted
   actionDisabled?: boolean
+  voteButtonRef?: React.Ref<HTMLButtonElement>
 }
 
 const colorMap = new Map([
@@ -61,6 +62,7 @@ export const VotingDetails = ({
   buttonAction,
   hasVoted,
   actionDisabled,
+  voteButtonRef,
 }: VoteDetailsProps) => {
   return (
     <div className="bg-[#25211E] p-6 rounded-[4px] w-full">
@@ -104,6 +106,7 @@ export const VotingDetails = ({
           className="mt-4"
           textClassName="text-foreground"
           disabled={actionDisabled}
+          ref={voteButtonRef}
         >
           {buttonAction.actionName}
         </Button>
