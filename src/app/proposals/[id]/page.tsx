@@ -503,6 +503,7 @@ const PageWithProposal = (proposal: ParsedProposal) => {
                 variant="body"
                 className="text-base text-white/90 whitespace-pre-line"
                 html
+                // eslint-disable-next-line react/no-children-prop
                 children={descriptionHtml}
               />
             </div>
