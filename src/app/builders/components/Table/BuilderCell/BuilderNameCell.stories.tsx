@@ -1,5 +1,6 @@
 import type { Meta, StoryObj } from '@storybook/react'
 import { BuilderNameCell } from './BuilderNameCell'
+import { Builder } from '@/app/collective-rewards/types'
 
 const meta: Meta<typeof BuilderNameCell> = {
   title: 'Builders/Table/BuilderNameCell',
@@ -21,9 +22,9 @@ const meta: Meta<typeof BuilderNameCell> = {
     },
   ],
   argTypes: {
-    builderName: {
-      control: 'text',
-      description: 'The name of the builder to display',
+    builder: {
+      control: 'object',
+      description: 'The builder object containing all builder information',
     },
     className: {
       control: 'text',
@@ -33,17 +34,9 @@ const meta: Meta<typeof BuilderNameCell> = {
       control: 'boolean',
       description: 'Whether the cell is currently being highlighted',
     },
-    hasExtraRewards: {
+    hasAirdrop: {
       control: 'boolean',
-      description: 'Whether the builder has extra rewards available',
-    },
-    hasWarning: {
-      control: 'boolean',
-      description: 'Whether the builder has a warning that requires action',
-    },
-    isPending: {
-      control: 'boolean',
-      description: 'Whether the builder is pending approval',
+      description: 'Whether the builder has an airdrop',
     },
   },
 }
@@ -52,9 +45,95 @@ export default meta
 
 type Story = StoryObj<typeof BuilderNameCell>
 
+// Mock builder objects for different states
+const activeBuilder: Builder = {
+  address: '0x1234567890123456789012345678901234567890',
+  builderName: 'Creamy',
+  proposal: {
+    id: 1n,
+    name: 'Test Proposal',
+    description: 'Test Description',
+    date: '2024-01-01',
+  },
+  stateFlags: {
+    activated: true,
+    communityApproved: true,
+    kycApproved: true,
+    paused: false,
+    revoked: false,
+  },
+  gauge: '0xabcdef1234567890abcdef1234567890abcdef12',
+}
+
+const pendingBuilder: Builder = {
+  ...activeBuilder,
+  builderName: 'Pending Builder',
+  gauge: undefined,
+  stateFlags: {
+    activated: false,
+    communityApproved: false,
+    kycApproved: false,
+    paused: false,
+    revoked: false,
+  },
+}
+
+const warningBuilder: Builder = {
+  ...activeBuilder,
+  builderName: 'Warning Builder',
+  stateFlags: {
+    activated: true,
+    communityApproved: false,
+    kycApproved: true,
+    paused: false,
+    revoked: false,
+  },
+}
+
+const pausedBuilder: Builder = {
+  ...activeBuilder,
+  builderName: 'Paused Builder',
+  stateFlags: {
+    activated: true,
+    communityApproved: true,
+    kycApproved: true,
+    paused: true,
+    revoked: false,
+  },
+}
+
 export const Default: Story = {
   args: {
-    builderName: 'Creamy',
+    builder: activeBuilder,
     builderPageLink: 'https://www.google.com',
+  },
+}
+
+export const Pending: Story = {
+  args: {
+    builder: pendingBuilder,
+    builderPageLink: 'https://www.google.com',
+  },
+}
+
+export const Warning: Story = {
+  args: {
+    builder: warningBuilder,
+    builderPageLink: 'https://www.google.com',
+  },
+}
+
+export const Paused: Story = {
+  args: {
+    builder: pausedBuilder,
+    builderPageLink: 'https://www.google.com',
+  },
+}
+
+export const Highlighted: Story = {
+  args: {
+    builder: activeBuilder,
+    builderPageLink: 'https://www.google.com',
+    isHighlighted: true,
   },
 }

@@ -1,57 +1,98 @@
-import { Paragraph } from '@/components/TypographyNew'
-import { FC } from 'react'
-import { CircleIcon } from '@/components/Icons'
-import { cn, truncate } from '@/lib/utils'
+import { Builder } from '@/app/collective-rewards/types'
+import {
+  isBuilderDeactivated,
+  isBuilderKycRevoked,
+  isBuilderPaused,
+} from '@/app/collective-rewards/utils'
+import HourglassIcon from '@/components/Icons/HourglassIcon'
 import { ParachuteIcon } from '@/components/Icons/ParachuteIcon'
 import { WarningIcon } from '@/components/Icons/WarningIcon'
-import HourglassIcon from '@/components/Icons/HourglassIcon'
-import { createElement } from 'react'
 import { Tooltip } from '@/components/Tooltip/Tooltip'
+import { Paragraph } from '@/components/TypographyNew'
+import { cn, truncate } from '@/lib/utils'
 import Link from 'next/link'
+import { createElement, FC } from 'react'
 
-// Mapping object for builder states
+// Builder states map
 const commonHoveredClassName = { className: 'text-v3-bg-accent-100' }
 const BUILDER_STATES = {
   extraRewards: {
     icon: ParachuteIcon,
-    tooltip: 'Extra rewards available',
+    tooltip: 'Builder will airdrop extra rewards',
     iconProps: { useGradient: true },
     hoveredIconProps: { ...commonHoveredClassName, useGradient: false },
   },
   warning: {
     icon: WarningIcon,
-    tooltip: 'Warning: Action required',
+    tooltip: 'The Builder was removed by the Foundation',
     iconProps: { color: '#DEFF1A' },
     hoveredIconProps: commonHoveredClassName,
   },
   pending: {
     icon: HourglassIcon,
-    tooltip: 'Pending approval',
+    tooltip: 'Builder activation is in progress',
     iconProps: { className: 'text-v3-bg-accent-0' },
     hoveredIconProps: commonHoveredClassName,
   },
-} as const
+}
+
+interface BuilderStateIconProps {
+  stateKey: keyof typeof BUILDER_STATES
+  isHighlighted?: boolean
+  className?: string
+}
+
+const BuilderStateIcon: FC<BuilderStateIconProps> = ({ stateKey, isHighlighted, className }) => {
+  const state = BUILDER_STATES[stateKey]
+  const iconPropsKey = isHighlighted ? 'hoveredIconProps' : 'iconProps'
+
+  return (
+    <Tooltip
+      side="top"
+      align="center"
+      className={cn('bg-white rounded p-6 shadow-lg text-v3-bg-accent-100', className)}
+      text={state.tooltip}
+    >
+      {createElement(state.icon, state[iconPropsKey])}
+    </Tooltip>
+  )
+}
 
 interface BuilderNameCellProps {
-  builderName: string
+  builder: Builder
   builderPageLink: string
   isHighlighted?: boolean
-  hasExtraRewards?: boolean
-  hasWarning?: boolean
-  isPending?: boolean
+  hasAirdrop?: boolean
   className?: string
 }
 
 export const BuilderNameCell: FC<BuilderNameCellProps> = ({
-  builderName,
+  builder,
   builderPageLink,
   isHighlighted,
-  hasExtraRewards = false,
-  hasWarning = false,
-  isPending = false,
+  hasAirdrop,
   className,
 }) => {
-  const iconPropsKey = isHighlighted ? 'hoveredIconProps' : 'iconProps'
+  const isDeactivated = isBuilderDeactivated(builder)
+  const isKycRevoked = isBuilderKycRevoked(builder.stateFlags)
+  const isPaused = isBuilderPaused(builder.stateFlags)
+
+  let isPending = false
+  let isInactive = false
+
+  if (!builder.stateFlags) {
+    isPending = true
+  } else if (isDeactivated || isKycRevoked) {
+    isInactive = true
+  } else {
+    const { activated, communityApproved } = builder.stateFlags
+    if (!activated || !communityApproved) {
+      isPending = true
+    } else if (isPaused) {
+      isInactive = true
+    }
+  }
+
   return (
     <div className={cn('flex items-center justify-between w-full h-full', className)}>
       <div className="flex items-center gap-2">
@@ -62,25 +103,19 @@ export const BuilderNameCell: FC<BuilderNameCellProps> = ({
               isHighlighted && 'text-v3-bg-accent-100 underline underline-offset-2',
             )}
           >
-            {truncate(builderName, 15)}
+            {truncate(builder.builderName, 18)}
           </Paragraph>
         </Link>
-        {hasExtraRewards && (
-          <Tooltip text={BUILDER_STATES.extraRewards.tooltip}>
-            {createElement(BUILDER_STATES.extraRewards.icon, BUILDER_STATES.extraRewards[iconPropsKey])}
-          </Tooltip>
+        {hasAirdrop && (
+          <BuilderStateIcon stateKey="extraRewards" isHighlighted={isHighlighted} className={className} />
         )}
       </div>
       <div className="flex items-center gap-2">
-        {hasWarning && (
-          <Tooltip text={BUILDER_STATES.warning.tooltip}>
-            {createElement(BUILDER_STATES.warning.icon, BUILDER_STATES.warning[iconPropsKey])}
-          </Tooltip>
+        {isInactive && (
+          <BuilderStateIcon stateKey="warning" isHighlighted={isHighlighted} className={className} />
         )}
         {isPending && (
-          <Tooltip text={BUILDER_STATES.pending.tooltip}>
-            {createElement(BUILDER_STATES.pending.icon, BUILDER_STATES.pending[iconPropsKey])}
-          </Tooltip>
+          <BuilderStateIcon stateKey="pending" isHighlighted={isHighlighted} className={className} />
         )}
       </div>
     </div>
