@@ -1,8 +1,9 @@
 import { Button } from '@/components/Button'
 import { Metric } from '@/components/Metric/Metric'
 import { Typography } from '@/components/TypographyNew/Typography'
+import { TokenImage } from '@/components/TokenImage'
 import { Tooltip } from '@/components/Tooltip'
-import { StRIFToken } from '@/app/backing/components/StRIFToken/StRIFToken'
+import { stRIF } from '@/lib/constants'
 import KotoQuestionMarkIcon from '@/components/Icons/KotoQuestionMarkIcon'
 
 interface AvailableBackingMetricProps {
@@ -92,7 +93,12 @@ const AvailableBackingContent = ({
               {availableForBacking}
             </Typography>
           </div>
-          <StRIFToken className="pl-2 pt-2 pb-2" />
+          <div className="flex items-center gap-1 pl-2 pt-2 pb-2">
+            <TokenImage symbol={stRIF} size={24} />
+            <Typography variant="body-l" bold className="text-white">
+              stRIF
+            </Typography>
+          </div>
         </div>
         <div className="flex items-center">
           {!hasAvailableBacking ? (

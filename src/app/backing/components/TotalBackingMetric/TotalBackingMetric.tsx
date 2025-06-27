@@ -1,6 +1,7 @@
 import { Metric } from '@/components/Metric/Metric'
 import { Typography } from '@/components/TypographyNew/Typography'
-import { StRIFToken } from '@/app/backing/components/StRIFToken/StRIFToken'
+import { TokenImage } from '@/components/TokenImage'
+import { stRIF } from '@/lib/constants'
 
 interface TotalBackingMetricProps {
   totalBacking: string
@@ -30,7 +31,12 @@ export const TotalBackingMetric = ({ totalBacking }: TotalBackingMetricProps) =>
                 >
                   {totalBacking}
                 </Typography>
-                <StRIFToken className="py-2 pl-2 pr-0 rounded" />
+                <div className="flex py-2 pl-2 pr-0 items-center gap-1 rounded">
+                  <TokenImage symbol={stRIF} size={24} />
+                  <Typography variant="body-l" bold className="text-white text-right">
+                    stRIF
+                  </Typography>
+                </div>
               </div>
             </div>
           </div>
