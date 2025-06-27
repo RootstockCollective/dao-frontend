@@ -10,6 +10,8 @@ export interface DisclaimerFlowProps {
 
 export interface ConnectButtonComponentProps {
   onClick: () => void
+  className?: string
+  textClassName?: string
 }
 
 export interface ConnectWorkflowProps {
