@@ -47,14 +47,12 @@ type Story = StoryObj<typeof meta>
 export const WithAllocation: Story = {
   args: {
     builderAddress: '0x1234567890123456789012345678901234567890',
-    title: 'My Backing',
   },
 }
 
 export const Deactivated: Story = {
   args: {
     builderAddress: '0x1234567890123456789012345678901234567890',
-    title: 'Deactivated Backing',
     state: 'deactivated',
   },
 }
@@ -62,6 +60,5 @@ export const Deactivated: Story = {
 export const NoAllocation: Story = {
   args: {
     builderAddress: '0x1111111111111111111111111111111111111111',
-    title: 'No Allocation',
   },
 }
