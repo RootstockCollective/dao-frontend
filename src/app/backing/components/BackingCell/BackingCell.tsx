@@ -1,8 +1,7 @@
 import { FC, ReactNode, useContext } from 'react'
 import { cn } from '@/lib/utils'
 import { Typography } from '@/components/TypographyNew/Typography'
-import { formatSymbol } from '@/app/collective-rewards/rewards/utils/formatter'
-import { AvailableBackingUSD } from '../AvailableBackingUSD/AvailableBackingUSD'
+import { formatSymbol, getFiatAmount } from '@/app/collective-rewards/rewards/utils/formatter'
 import { RIFToken } from '../RIFToken/RIFToken'
 import { Metric } from '@/components/Metric/Metric'
 import { AllocationsContext } from '@/app/collective-rewards/allocations/context'
@@ -33,6 +32,8 @@ export const BackingCell: FC<BackingCellProps> = ({
   const amount = allocations[builderAddress] ?? 0n
   const rifPrice = prices[RIF]?.price ?? 0
   const formattedAmountOnly = formatSymbol(amount, 'stRIF')
+  const usdAmount = getFiatAmount(amount, rifPrice)
+  const usdDisplay = `${usdAmount.toFixed(2)} USD`
 
   const getBackgroundStyle = () =>
     state === 'deactivated' ? 'bg-[var(--Background-60,#37322F)]' : 'bg-[var(--Background-80,#25211E)]'
@@ -62,11 +63,12 @@ export const BackingCell: FC<BackingCellProps> = ({
                 <RIFToken size={20} textClassName="text-base text-white font-normal" />
               </div>
             </div>
-            <AvailableBackingUSD
-              amount={amount}
-              price={rifPrice}
+            <Typography
+              variant="body"
               className="self-stretch font-rootstock-sans font-medium text-sm leading-[20.3px] text-[var(--Background-0,#ACA39D)]"
-            />
+            >
+              {usdDisplay}
+            </Typography>
           </div>
         }
       />
