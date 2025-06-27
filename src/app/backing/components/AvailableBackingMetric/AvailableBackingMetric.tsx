@@ -2,7 +2,7 @@ import { Button } from '@/components/Button'
 import { Metric } from '@/components/Metric/Metric'
 import { Typography } from '@/components/TypographyNew/Typography'
 import { Tooltip } from '@/components/Tooltip'
-import { StRIFToken } from '@/components/BackingCell/StRIFToken'
+import { StRIFToken } from '@/app/backing/components/StRIFToken/StRIFToken'
 import KotoQuestionMarkIcon from '@/components/Icons/KotoQuestionMarkIcon'
 
 interface AvailableBackingMetricProps {

@@ -1,6 +1,6 @@
 import { Metric } from '@/components/Metric/Metric'
 import { Typography } from '@/components/TypographyNew/Typography'
-import { StRIFToken } from '@/components/BackingCell/StRIFToken'
+import { StRIFToken } from '@/app/backing/components/StRIFToken/StRIFToken'
 
 interface TotalBackingMetricProps {
   totalBacking: string
