@@ -1,6 +1,20 @@
 import type { Meta, StoryObj } from '@storybook/react'
 import { BackingCell } from './BackingCell'
-import { parseEther } from 'viem'
+import { AllocationsContextProvider } from '@/app/collective-rewards/allocations/context'
+import { PricesContextProvider } from '@/shared/context/PricesContext'
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
+import { WagmiConfig, createConfig } from 'wagmi'
+import { mainnet } from 'wagmi/chains'
+import { http } from 'viem'
+
+const config = createConfig({
+  chains: [mainnet],
+  transports: {
+    [mainnet.id]: http(),
+  },
+})
+
+const queryClient = new QueryClient()
 
 const meta: Meta<typeof BackingCell> = {
   title: 'Components/BackingCell',
@@ -9,12 +23,22 @@ const meta: Meta<typeof BackingCell> = {
     layout: 'centered',
   },
   tags: ['autodocs'],
+  decorators: [
+    Story => (
+      <QueryClientProvider client={queryClient}>
+        <WagmiConfig config={config}>
+          <PricesContextProvider>
+            <AllocationsContextProvider>
+              <Story />
+            </AllocationsContextProvider>
+          </PricesContextProvider>
+        </WagmiConfig>
+      </QueryClientProvider>
+    ),
+  ],
   argTypes: {
-    amount: {
-      description: 'The amount of stRIF allocated in wei',
-    },
-    price: {
-      description: 'The price of stRIF in USD',
+    builderAddress: {
+      description: 'The address of the builder to show allocation for',
     },
     title: {
       description: 'Optional ReactNode to display as additional metric information',
@@ -32,45 +56,31 @@ type Story = StoryObj<typeof meta>
 
 export const Default: Story = {
   args: {
-    amount: parseEther('60000'),
-    price: 0.0047,
+    builderAddress: '0x1234567890123456789012345678901234567890',
+    title: 'My Backing',
   },
 }
 
-export const LargeAmount: Story = {
+export const WithState: Story = {
   args: {
-    amount: parseEther('150000'),
-    price: 0.0047,
-  },
-}
-
-export const SmallAmount: Story = {
-  args: {
-    amount: parseEther('500'),
-    price: 0.0047,
-  },
-}
-
-export const Activated: Story = {
-  args: {
-    amount: parseEther('60000'),
-    price: 0.0047,
+    builderAddress: '0x1234567890123456789012345678901234567890',
+    title: 'My Backing',
     state: 'activated',
   },
 }
 
 export const Changing: Story = {
   args: {
-    amount: parseEther('60000'),
-    price: 0.0047,
+    builderAddress: '0x1234567890123456789012345678901234567890',
+    title: 'My Backing',
     state: 'changing',
   },
 }
 
 export const Deactivated: Story = {
   args: {
-    amount: parseEther('60000'),
-    price: 0.0047,
+    builderAddress: '0x1234567890123456789012345678901234567890',
+    title: 'My Backing',
     state: 'deactivated',
   },
 }

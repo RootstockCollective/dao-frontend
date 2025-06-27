@@ -1,41 +1,41 @@
-import { FC, ReactNode } from 'react'
+import { FC, ReactNode, useContext } from 'react'
 import { cn } from '@/lib/utils'
 import { Typography } from '@/components/TypographyNew/Typography'
 import { formatSymbol } from '@/app/collective-rewards/rewards/utils/formatter'
-import { BigSource } from 'big.js'
 import { AvailableBackingUSD } from '../AvailableBackingUSD/AvailableBackingUSD'
 import { RIFToken } from '../RIFToken/RIFToken'
 import { Metric } from '@/components/Metric/Metric'
+import { AllocationsContext } from '@/app/collective-rewards/allocations/context'
+import { Address } from 'viem'
+import { usePricesContext } from '@/shared/context/PricesContext'
+import { RIF } from '@/lib/constants'
 
 type BackingCellState = 'activated' | 'changing' | 'deactivated'
 
 type BackingCellProps = {
   className?: string
-  amount: bigint
-  price: BigSource
   title: ReactNode
   state?: BackingCellState
+  builderAddress: Address
 }
 
 export const BackingCell: FC<BackingCellProps> = ({
   className,
-  amount,
-  price,
   title,
   state = 'activated',
+  builderAddress,
 }) => {
+  const { prices } = usePricesContext()
+  const {
+    state: { allocations },
+  } = useContext(AllocationsContext)
+
+  const amount = allocations[builderAddress] ?? 0n
+  const rifPrice = prices[RIF]?.price ?? 0
   const formattedAmountOnly = formatSymbol(amount, 'stRIF')
 
-  const getBackgroundStyle = () => {
-    switch (state) {
-      case 'deactivated':
-        return 'bg-[var(--Background-60,#37322F)]'
-      case 'activated':
-      case 'changing':
-      default:
-        return 'bg-[var(--Background-80,#25211E)]'
-    }
-  }
+  const getBackgroundStyle = () =>
+    state === 'deactivated' ? 'bg-[var(--Background-60,#37322F)]' : 'bg-[var(--Background-80,#25211E)]'
 
   return (
     <div
@@ -64,7 +64,7 @@ export const BackingCell: FC<BackingCellProps> = ({
             </div>
             <AvailableBackingUSD
               amount={amount}
-              price={price}
+              price={rifPrice}
               className="self-stretch font-rootstock-sans font-medium text-sm leading-[20.3px] text-[var(--Background-0,#ACA39D)]"
             />
           </div>
