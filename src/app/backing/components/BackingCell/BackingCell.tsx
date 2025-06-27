@@ -36,7 +36,7 @@ export const BackingCell: FC<BackingCellProps> = ({
   const usdDisplay = `${usdAmount.toFixed(2)} USD`
 
   const getBackgroundStyle = () =>
-    state === 'deactivated' ? 'bg-[var(--Background-60,#37322F)]' : 'bg-[var(--Background-80,#25211E)]'
+    state === 'deactivated' ? 'bg-bg-60' : 'bg-bg-80'
 
   return (
     <div
@@ -53,19 +53,19 @@ export const BackingCell: FC<BackingCellProps> = ({
         content={
           <div className="flex flex-col items-start gap-[-2px] self-stretch">
             <div className="flex h-10 items-baseline self-stretch">
-              <div className="w-[76px] flex">
-                <Typography variant="h2" className="leading-[30px] text-[var(--Text-100,#FFF)]">
+              <div className="w-20 flex">
+                <Typography variant="h2" className="leading-8 text-text-100">
                   {formattedAmountOnly}
                 </Typography>
               </div>
-              <div className="w-[76px]"></div>
+              <div className="w-20"></div>
               <div className="flex">
                 <RIFToken size={20} textClassName="text-base text-white font-normal" />
               </div>
             </div>
             <Typography
               variant="body"
-              className="self-stretch font-rootstock-sans font-medium text-sm leading-[20.3px] text-[var(--Background-0,#ACA39D)]"
+              className="self-stretch font-rootstock-sans font-medium text-sm leading-5 text-bg-0"
             >
               {usdDisplay}
             </Typography>
