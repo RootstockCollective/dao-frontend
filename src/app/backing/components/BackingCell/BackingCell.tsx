@@ -20,8 +20,8 @@ export const BackingCell: FC<BackingCellProps> = ({ className, amount, price, ti
   return (
     <div
       className={cn(
-        'flex flex-wrap items-start content-start gap-3 self-stretch p-3',
-        'rounded-b-[4px] border border-solid border-[var(--color-v3-bg-accent-40)]',
+        'flex flex-col items-end gap-4 flex-1 py-3 px-2',
+        'rounded bg-[var(--Background-80,#25211E)]',
         className,
       )}
       data-testid="BackingCell"
@@ -30,10 +30,15 @@ export const BackingCell: FC<BackingCellProps> = ({ className, amount, price, ti
         title={title}
         content={
           <div className="flex flex-col items-start gap-[-2px] self-stretch">
-            <div className="flex h-10 items-center gap-1 self-stretch rounded-[4px]">
-              <Typography variant="body" className="font-medium">
-                {formattedAmountOnly}
-              </Typography>
+            <div className="flex h-10 items-center gap-1 self-stretch">
+              <div className="flex w-[154px] gap-2">
+                <div className="w-[76px]">
+                  <Typography variant="body" className="font-medium">
+                    {formattedAmountOnly}
+                  </Typography>
+                </div>
+                <div className="w-[76px]"></div>
+              </div>
               <StRIFToken size={20} variant="body" bold={false} />
             </div>
             <AvailableBackingUSD amount={amount} price={price} />
