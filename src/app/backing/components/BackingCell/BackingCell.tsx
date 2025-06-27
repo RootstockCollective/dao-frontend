@@ -4,7 +4,7 @@ import { Typography } from '@/components/TypographyNew/Typography'
 import { formatSymbol } from '@/app/collective-rewards/rewards/utils/formatter'
 import { BigSource } from 'big.js'
 import { AvailableBackingUSD } from '../AvailableBackingUSD/AvailableBackingUSD'
-import { StRIFToken } from '../StRIFToken/StRIFToken'
+import { RIFToken } from '../RIFToken/RIFToken'
 import { Metric } from '@/components/Metric/Metric'
 
 type BackingCellState = 'activated' | 'changing' | 'deactivated'
@@ -59,7 +59,7 @@ export const BackingCell: FC<BackingCellProps> = ({
               </div>
               <div className="w-[76px]"></div>
               <div className="flex">
-                <StRIFToken size={20} variant="body" bold={false} />
+                <RIFToken size={20} textClassName="text-base text-white font-normal" />
               </div>
             </div>
             <AvailableBackingUSD
