@@ -1,12 +1,10 @@
 import { useEstimatedRewards } from '../../hooks/useEstimatedRewards'
-import KotoQuestionMarkIcon from '@/components/Icons/KotoQuestionMarkIcon'
-import { Header } from '@/components/TypographyNew'
+import { Header, Paragraph } from '@/components/TypographyNew'
 import { formatCurrency } from '@/lib/utils'
 import { RifRbtcTooltip } from '@/components/RifRbtcTooltip/RifRbtcTooltip'
 import { Metric, MetricTitle } from '@/components/Metric'
 import { BuildersRewards } from '@/app/collective-rewards/rewards/builders/hooks/useGetBuildersRewards'
 import { DottedUnderlineLabel } from '@/components/DottedUnderlineLabel/DottedUnderlineLabel'
-import { EstimatedRewardsPopover } from '@/app/backing/components/Popovers/EstimatedRewardsPopover'
 
 interface EstimatedRewardsMetricProps {
   rewardsData: BuildersRewards[]
@@ -21,20 +19,23 @@ export const EstimatedRewardsMetric = ({ rewardsData }: EstimatedRewardsMetricPr
         <MetricTitle
           title="Estimated Rewards"
           info={
-            <EstimatedRewardsPopover>
-              <KotoQuestionMarkIcon className="cursor-pointer" />
-            </EstimatedRewardsPopover>
+            <Paragraph className="text-v3-bg-accent-60 text-[14px] font-normal text-left">
+              Estimated rewards for the next Cycle available to Backers.
+              <br />
+              <br />
+              The displayed information is dynamic and may vary based on total rewards and user activity. This
+              data is for informational purposes only.
+            </Paragraph>
           }
         />
       }
-      content={
-        <div className="flex flex-row items-baseline gap-2 font-rootstock-sans">
-          <Header variant="h1">{formatCurrency(totalEstimatedUsd)}</Header>
-          <RifRbtcTooltip rbtcValue={totalEstimatedRbtc} rifValue={totalEstimatedRif}>
-            <DottedUnderlineLabel className="text-lg">USD</DottedUnderlineLabel>
-          </RifRbtcTooltip>
-        </div>
-      }
-    />
+    >
+      <div className="flex flex-row items-baseline gap-2 font-rootstock-sans">
+        <Header variant="h1">{formatCurrency(totalEstimatedUsd)}</Header>
+        <RifRbtcTooltip rbtcValue={totalEstimatedRbtc} rifValue={totalEstimatedRif}>
+          <DottedUnderlineLabel className="text-lg">USD</DottedUnderlineLabel>
+        </RifRbtcTooltip>
+      </div>
+    </Metric>
   )
 }

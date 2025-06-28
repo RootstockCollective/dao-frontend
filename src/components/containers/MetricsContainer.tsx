@@ -10,7 +10,6 @@ export const MetricsContainer: FC<MetricsContainerProps> = ({ className = '', ch
       data-testid={'MetricsContainer'}
       className={cn(
         'flex flex-col justify-center items-center gap-2 shrink-0 self-stretch grow pt-[4.06rem] pb-[4.06rem] pl-6 pr-6 rounded-sm bg-v3-bg-accent-80 divide-y divide-v3-text-20',
-
         className,
       )}
     >
