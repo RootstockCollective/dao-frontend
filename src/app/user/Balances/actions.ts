@@ -22,11 +22,9 @@ import { BackendEventByTopic0ResponseValue } from '@/shared/utils'
 import { Address, padHex } from 'viem'
 
 export const fetchAddressTokens = (address: string, chainId = 31) =>
-  axiosInstance
-    .get<GetAddressTokenResult>(
-      fetchAddressTokensEndpoint.replace('{{chainId}}', chainId.toString()).replace('{{address}}', address),
-    )
-    .then(({ data }) => data)
+  axiosInstance.get<GetAddressTokenResult>(
+    fetchAddressTokensEndpoint.replace('{{chainId}}', chainId.toString()).replace('{{address}}', address),
+  )
 
 // Prices
 
