@@ -7,7 +7,7 @@ const toggleRowSelection = (state: TableState, action: TableAction) => {
     ...state,
     selectedRows: {
       ...state.selectedRows,
-      [id]: !state.selectedRows[id],
+      [id as string]: !state.selectedRows[id as string],
     },
   }
 }
@@ -30,9 +30,11 @@ const toggleColumnVisibility = (state: TableState, action: TableAction) => {
  */
 const sortByColumn = (state: TableState, action: TableAction) => {
   if (action.type !== 'SORT_BY_COLUMN') return state
+
   const {
     payload: { id, direction },
   } = action
+
   return {
     ...state,
     sort: {
@@ -90,7 +92,7 @@ const setError = (state: TableState, action: TableAction) => {
   return { ...state, error }
 }
 
-const actionMap = {
+const actionMap: Record<TableAction['type'], (state: TableState, action: TableAction) => TableState> = {
   TOGGLE_ROW_SELECTION: toggleRowSelection,
   TOGGLE_COLUMN_VISIBILITY: toggleColumnVisibility,
   SORT_BY_COLUMN: sortByColumn,
@@ -104,5 +106,10 @@ const actionMap = {
 } as const
 
 export const tableReducer = (state: TableState, action: TableAction) => {
-  return actionMap[action.type]?.(state, action) ?? state
+  console.log('action', action)
+  console.log('state', state)
+  const newState = actionMap[action.type]?.(state, action) ?? state
+  console.log('newState', newState)
+
+  return newState
 }

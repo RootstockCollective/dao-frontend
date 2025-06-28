@@ -22,8 +22,8 @@ export const initialState: TableState = {
 
 export const TableContext = createContext<TableState | null>(null)
 
-export const useTableContext = () => {
-  const context = useContext(TableContext)
+export const useTableContext = <ColumnId extends string = string, ColumnType extends string = string>() => {
+  const context = useContext(TableContext) as TableState<ColumnId, ColumnType>
   if (!context) throw new NoContextProviderError('useTableContext', 'TableProvider')
   return context
 }

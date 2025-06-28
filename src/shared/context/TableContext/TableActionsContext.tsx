@@ -4,8 +4,11 @@ import { TableAction } from './types'
 
 export const TableActionsContext = createContext<Dispatch<TableAction> | null>(null)
 
-export const useTableActionsContext = () => {
-  const context = useContext(TableActionsContext)
+export const useTableActionsContext = <
+  ColumnId extends string = string,
+  ColumnType extends string = string,
+>() => {
+  const context = useContext(TableActionsContext) as Dispatch<TableAction<ColumnId, ColumnType>>
   if (!context) {
     throw new NoContextProviderError('useTableActionsContext', 'TableProvider')
   }
