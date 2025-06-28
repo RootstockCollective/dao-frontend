@@ -35,7 +35,7 @@ createAppKit({
   networks: [currentEnvChain],
   defaultNetwork: currentEnvChain,
   metadata: metadata,
-  enableWalletConnect: false,
+  enableWalletConnect: true,
   allWallets: 'HIDE',
   // The `featuredWalletIds` array contains hashes representing specific wallet providers.
   // These hashes are used to identify and prioritize certain wallets in the UI.
