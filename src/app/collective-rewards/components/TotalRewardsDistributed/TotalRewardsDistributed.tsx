@@ -11,6 +11,7 @@ import { formatCurrency } from '@/lib/utils'
 import { LoadingSpinner } from '@/components/LoadingSpinner'
 import { MetricTitle } from '@/components/Metric'
 import KotoQuestionMarkIcon from '@/components/Icons/KotoQuestionMarkIcon'
+import { Popover } from '@/components/Popover'
 
 interface TokenRewardsProps {
   gauges: Address[]
@@ -63,8 +64,10 @@ export const TotalRewardsDistributed = ({ className }: TotalRewardsDistributedMe
       title={
         <MetricTitle
           title="Total Rewards Distributed"
-          className="justify-start"
-          info={<KotoQuestionMarkIcon className="cursor-pointer" />}
+          info="Total rewards distributed to Builders and Backers"
+          infoButtonProps={{
+            contentSubContainerClassName: 'p-1',
+          }}
         />
       }
       className={className}
