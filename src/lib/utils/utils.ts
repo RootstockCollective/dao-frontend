@@ -29,6 +29,10 @@ export const shortAddress = (address: Address | undefined, amount = 5): string =
   return `${address.slice(0, amount + 1)}…${address.slice(-amount)}`
 }
 
+export const shortProposalId = (proposalId: string): string => {
+  return `${proposalId.slice(0, 12)}…${proposalId.slice(-12)}`
+}
+
 export const axiosInstance = axios.create({
   baseURL: RIF_WALLET_SERVICES_URL,
   params: {
