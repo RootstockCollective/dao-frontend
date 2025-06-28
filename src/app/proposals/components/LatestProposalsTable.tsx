@@ -193,7 +193,7 @@ const LatestProposalsTable = ({ proposals }: LatestProposalsTableProps) => {
         return sumA.cmp(sumB)
       },
       meta: {
-        width: '1.3fr',
+        width: '1fr',
       },
     }),
     accessor('category', {
@@ -201,7 +201,7 @@ const LatestProposalsTable = ({ proposals }: LatestProposalsTableProps) => {
       header: 'Type',
       sortDescFirst: false,
       meta: {
-        width: '0.8fr',
+        width: '0.62fr',
       },
       cell: ({ cell }) => <CategoryColumn category={cell.getValue()} />,
     }),
@@ -215,7 +215,7 @@ const LatestProposalsTable = ({ proposals }: LatestProposalsTableProps) => {
         </div>
       ),
       meta: {
-        width: '1fr',
+        width: '0.8fr',
       },
     }),
   ]
