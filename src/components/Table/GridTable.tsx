@@ -26,7 +26,7 @@ export function GridTable<T>({ className, table, stackFirstColumn = false, ...pr
       {/* Table head */}
       <div
         role="rowheader"
-        className="grid px-4 pb-[18px] border-b border-b-text-60 select-none"
+        className="grid gap-4 px-4 pb-[18px] border-b border-b-text-60 select-none"
         style={{ gridTemplateColumns }}
       >
         {/* Head cells */}
@@ -37,7 +37,7 @@ export function GridTable<T>({ className, table, stackFirstColumn = false, ...pr
             .map(header => (
               <div
                 role="columnheader"
-                className="font-medium font-rootstock-sans text-sm leading-normal overflow-hidden"
+                className="font-medium font-rootstock-sans text-sm leading-normal"
                 key={header.id}
                 onClick={header.column.getCanSort() ? () => header.column.toggleSorting() : undefined}
               >
@@ -61,7 +61,7 @@ export function GridTable<T>({ className, table, stackFirstColumn = false, ...pr
             role="row"
             key={row.id}
             className={cn(
-              'group grid gap-2 px-4 pt-6 pb-5 border-b border-b-bg-60',
+              'group grid gap-x-4 px-4 pt-6 pb-5 border-b border-b-bg-60',
               'transition-colors duration-500 ease-in-out hover:bg-text-80 hover:text-bg-100',
             )}
             style={{ gridTemplateColumns }}

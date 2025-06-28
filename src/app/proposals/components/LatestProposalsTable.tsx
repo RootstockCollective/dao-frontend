@@ -107,12 +107,18 @@ const LatestProposalsTable = ({ proposals }: LatestProposalsTableProps) => {
       sortDescFirst: false,
       cell: ({ cell }) => <ProposerColumn by={cell.getValue()} />,
       sortingFn: (a, b) => a.original.name.localeCompare(b.original.name),
+      meta: {
+        width: '1.6fr',
+      },
     }),
     accessor('Starts', {
       id: 'date',
       header: 'Date',
       sortDescFirst: false,
       cell: ({ cell }) => <Paragraph>{cell.getValue().format('MMM DD, YYYY')}</Paragraph>,
+      meta: {
+        width: '1.2fr',
+      },
     }),
     accessor('blocksUntilClosure', {
       id: 'timeRemaining',
@@ -130,6 +136,9 @@ const LatestProposalsTable = ({ proposals }: LatestProposalsTableProps) => {
       },
       sortingFn: (a, b) => {
         return a.original.blocksUntilClosure.cmp(b.original.blocksUntilClosure)
+      },
+      meta: {
+        width: '1.32fr',
       },
     }),
     accessor('votes', {
@@ -158,6 +167,9 @@ const LatestProposalsTable = ({ proposals }: LatestProposalsTableProps) => {
         const percentB = getQuorumPercent(b.original.votes.quorum, b.original.quorumAtSnapshot)
         return percentA.cmp(percentB)
       },
+      meta: {
+        width: '1.4fr',
+      },
     }),
     accessor('votes', {
       id: 'votes',
@@ -181,7 +193,7 @@ const LatestProposalsTable = ({ proposals }: LatestProposalsTableProps) => {
         return sumA.cmp(sumB)
       },
       meta: {
-        width: '0.7fr',
+        width: '1.3fr',
       },
     }),
     accessor('category', {
@@ -189,7 +201,7 @@ const LatestProposalsTable = ({ proposals }: LatestProposalsTableProps) => {
       header: 'Type',
       sortDescFirst: false,
       meta: {
-        width: '0.5fr',
+        width: '0.8fr',
       },
       cell: ({ cell }) => <CategoryColumn category={cell.getValue()} />,
     }),
@@ -198,12 +210,12 @@ const LatestProposalsTable = ({ proposals }: LatestProposalsTableProps) => {
       header: 'Status',
       sortDescFirst: false,
       cell: ({ cell }) => (
-        <div className="flex justify-end">
+        <div className="w-full flex justify-center">
           <Status proposalState={cell.getValue()} />
         </div>
       ),
       meta: {
-        width: '70px',
+        width: '1fr',
       },
     }),
   ]

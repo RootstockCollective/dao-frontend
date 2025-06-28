@@ -6,7 +6,7 @@ import { cn } from '@/lib/utils'
 import type { Color, ColoredSegment, OptionalColorSegment } from './types'
 
 // Default colors for the first three segments of Pizza chart
-const defaultColors: Color[] = ['#1BC47D', '#FF6688', '#DEFF1A']
+const defaultColors: Color[] = ['#1BC47D', '#DEFF1A', '#FF6688']
 
 interface Props extends HTMLAttributes<HTMLDivElement> {
   segments: OptionalColorSegment[]

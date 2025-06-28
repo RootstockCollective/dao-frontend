@@ -1,4 +1,4 @@
-import { formatNumberWithCommas } from '@/lib/utils'
+import { cn, formatNumberWithCommas } from '@/lib/utils'
 import Big from '@/lib/big'
 import { PizzaChart } from '@/components/PizzaChart'
 import { Paragraph } from '@/components/TypographyNew'
@@ -24,7 +24,7 @@ export const QuorumColumn = ({ quorumVotes, quorumAtSnapshot }: QuorumColumnProp
 
   return (
     <>
-      <Paragraph className={colorClass}>
+      <Paragraph className={cn(colorClass, 'w-full text-center')}>
         {quorumAtSnapshot.eq(0) ? (
           '-'
         ) : (
