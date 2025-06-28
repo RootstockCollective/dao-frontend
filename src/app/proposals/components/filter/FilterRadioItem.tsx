@@ -1,21 +1,21 @@
+import { Paragraph } from '@/components/TypographyNew'
 import { cn } from '@/lib/utils'
 
 export interface Props {
-  id: number
-  name: string
+  option: string
   selected: boolean
-  onClick: (id: number) => void
+  onClick: (option: string) => void
 }
 
 /**
  * Individual radio button item for selecting proposal filter categories
  */
-export const FilterRadioItem = ({ id, name, selected, onClick }: Props) => {
+export const FilterRadioItem = ({ option, selected, onClick }: Props) => {
   return (
     <button
       role="radio"
       aria-checked={selected}
-      onClick={() => onClick(id)}
+      onClick={() => onClick(option)}
       className={cn('group focus:outline-none focus-visible:outline-none', 'flex gap-3 items-center')}
     >
       <div
@@ -25,7 +25,7 @@ export const FilterRadioItem = ({ id, name, selected, onClick }: Props) => {
           selected ? 'border-5' : 'border-[1.5px]',
         )}
       />
-      <p className="font-rootstock-sans text-text-100">{name}</p>
+      <Paragraph>{option}</Paragraph>
     </button>
   )
 }

@@ -1,16 +1,14 @@
-import { formatNumberWithCommas } from '@/lib/utils'
+import { cn, formatNumberWithCommas } from '@/lib/utils'
 import Big from '@/lib/big'
+import { PizzaChart } from '@/components/PizzaChart'
+import { Paragraph } from '@/components/TypographyNew'
 
-interface VotesColumnProps {
-  forVotes: Big
-  abstainVotes: Big
+interface QuorumColumnProps {
+  quorumVotes: Big
   quorumAtSnapshot: Big
 }
 
-export const VotesColumn = ({ forVotes, abstainVotes, quorumAtSnapshot }: VotesColumnProps) => {
-  // Calculate the total votes considered for the quorum
-  const quorumVotes = forVotes.add(abstainVotes)
-
+export const QuorumColumn = ({ quorumVotes, quorumAtSnapshot }: QuorumColumnProps) => {
   // Calculate the percentage relative to the quorumAtSnapshot
   // If quorumAtSnapshot is 0, percentage defaults to 0
   const percentage = quorumAtSnapshot.eq(0)
@@ -24,17 +22,35 @@ export const VotesColumn = ({ forVotes, abstainVotes, quorumAtSnapshot }: VotesC
       ? 'text-st-info' // Orange for 50% to 99%
       : 'text-st-error' // Red for less than 50%
 
-  // Prepare values to display
-  const quorumToShow = quorumAtSnapshot.eq(0) ? '-' : quorumAtSnapshot // Show '-' if quorum is 0
-  const percentageToShow = quorumAtSnapshot.eq(0) ? '-' : percentage // Show '-' if percentage can't be calculated
-
   return (
     <>
-      <p className={colorClass}>
-        {formatNumberWithCommas(quorumVotes.round().toString())} (
-        {formatNumberWithCommas(percentageToShow.toString())}%)
-      </p>
-      <p>Quorum: {formatNumberWithCommas(quorumToShow.toString())}</p>
+      <Paragraph className={cn(colorClass, 'w-full text-center')}>
+        {quorumAtSnapshot.eq(0) ? (
+          '-'
+        ) : (
+          <>
+            {formatNumberWithCommas(quorumAtSnapshot)}&nbsp;|&nbsp;
+            {formatNumberWithCommas(percentage)}%
+          </>
+        )}
+      </Paragraph>
     </>
   )
 }
+interface VotesColumnProps {
+  forVotes: number
+  againstVotes: number
+  abstainVotes: number
+}
+export const VotesColumn = ({ forVotes, againstVotes, abstainVotes }: VotesColumnProps) => (
+  <div className="w-full flex flex-wrap items-center justify-end gap-x-3">
+    <Paragraph>{forVotes + againstVotes + abstainVotes}</Paragraph>
+    <PizzaChart
+      segments={[
+        { name: 'For', value: forVotes },
+        { name: 'Abstain', value: abstainVotes },
+        { name: 'Against', value: againstVotes },
+      ]}
+    />
+  </div>
+)

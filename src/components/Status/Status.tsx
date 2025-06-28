@@ -54,14 +54,14 @@ export const Status: FC<Props> = ({ proposalState, className, ...rest }) => {
   return (
     <div
       className={cn(
-        'px-1 py-[3px] w-[68px] h-[26px]',
-        'inline-flex items-center justify-center ',
+        'px-1 py-[3px] w-full max-w-[68px] h-[26px]',
+        'inline-flex items-center justify-center',
         'rounded-full text-text-100 overflow-hidden',
         classes,
       )}
       {...rest}
     >
-      <Paragraph className="text-xs">{label}</Paragraph>
+      <Paragraph className="whitespace-nowrap text-[clamp(8px,1.1vw,12px)]">{label}</Paragraph>
     </div>
   )
 }

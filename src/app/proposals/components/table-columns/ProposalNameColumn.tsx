@@ -1,5 +1,9 @@
-import { Link } from '@/components/Link'
-import { splitCombinedName } from '../../shared/utils'
+import Link from 'next/link'
+import { Address } from 'viem'
+import { Paragraph } from '@/components/TypographyNew'
+import { CopyButton } from '@/components/CopyButton'
+import { shortAddress } from '@/lib/utils'
+import { Tooltip } from '@/components/Tooltip'
 
 interface ProposalNameColumnProps {
   name: string
@@ -7,6 +11,25 @@ interface ProposalNameColumnProps {
 }
 
 export const ProposalNameColumn = ({ name, proposalId }: ProposalNameColumnProps) => {
-  const { proposalName } = splitCombinedName(name)
-  return <Link href={`/proposals/${proposalId}`}>{proposalName.slice(0, 50)}</Link>
+  return (
+    <Link
+      className="text-primary group-hover:underline group-hover:text-bg-100 group-hover:decoration-bg-40"
+      href={`/proposals/${proposalId}`}
+    >
+      <Paragraph>{name}</Paragraph>
+    </Link>
+  )
 }
+
+export const ProposerColumn = ({ by: proposer }: { by: Address }) => (
+  <div>
+    <Tooltip text="Copy address">
+      <span className="font-rootstock-sans">
+        <CopyButton icon={null} className="inline" copyText={proposer}>
+          <span className="text-primary">by</span>&nbsp;
+          <span>{shortAddress(proposer)}</span>
+        </CopyButton>
+      </span>
+    </Tooltip>
+  </div>
+)

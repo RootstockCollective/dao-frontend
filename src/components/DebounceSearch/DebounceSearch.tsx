@@ -1,24 +1,23 @@
 'use client'
 
-import { Input, type InputProps } from '@/components/Input'
-import { useState, useEffect } from 'react'
+import { useState, useEffect, HTMLAttributes, RefObject } from 'react'
 import { useDebounce } from 'use-debounce'
+import { CloseIconKoto, SearchIconKoto, SpinnerIcon } from '../Icons'
+import { cn } from '@/lib/utils'
 
-interface ProposalSearchProps extends Omit<InputProps, 'name'> {
+interface ProposalSearchProps extends HTMLAttributes<HTMLDivElement> {
   /**
    * Function to handle search input updates after debounce.
    */
   onSearchSubmit: (val: string) => void
+  searchValue: string
   /**
    * Placeholder text for the search input.
    */
   placeholder: string
-  /**
-   * Optional function to set the clear handler.
-   * This is useful when the parent component needs to clear the search input.
-   */
-  onClearHandler?: (handler: () => void) => void
   maxLength?: number
+  ref?: RefObject<HTMLDivElement | null>
+  inputRef?: RefObject<HTMLInputElement | null>
 }
 
 const SPINNER_DEBOUNCE_MS = 300 // Delay after the user stops typing before showing the spinner
@@ -38,11 +37,13 @@ const SEARCH_DEBOUNCE_MS = 700 // Additional delay before finalizing input and c
 export function DebounceSearch({
   onSearchSubmit,
   placeholder = 'Search',
-  onClearHandler,
+  searchValue,
   maxLength = 100,
+  className,
+  inputRef,
   ...props
 }: ProposalSearchProps) {
-  const [searchText, setSearchText] = useState('')
+  const [searchText, setSearchText] = useState(searchValue)
   // First debounce runs shortly after user stops typing. It launches spinner
   const [isUserStoppedTyping] = useDebounce(searchText, SPINNER_DEBOUNCE_MS)
   // Second debounce runs after the first one. When it finishes, it stops the spinner and calls on-search function
@@ -65,21 +66,27 @@ export function DebounceSearch({
   const handleChange = (val: string) => {
     setSearchText(val)
   }
-  useEffect(() => {
-    onClearHandler?.(handleClear)
-  }, [])
   return (
-    <Input
-      value={searchText}
-      onChange={handleChange}
-      name="debounceSearch"
-      placeholder={placeholder}
-      fullWidth
-      type="search"
-      onClear={searchText ? handleClear : undefined}
-      loading={isLoading}
-      inputProps={{ maxLength }}
-      {...props}
-    />
+    <div className={cn('relative bg-bg-60 rounded-sm', className)} {...props}>
+      <div className="absolute left-3 top-1/2 -translate-y-1/2">
+        {isLoading ? <SpinnerIcon className="animate-spin" /> : <SearchIconKoto />}
+      </div>
+      <input
+        ref={inputRef}
+        maxLength={maxLength}
+        value={searchText}
+        onChange={e => handleChange(e.target.value)}
+        placeholder={placeholder}
+        className="w-full h-full py-3 px-12 outline-0 text-text-100 font-rootstock-sans placeholder:text-bg-0"
+      />
+      <button
+        onClick={() => {
+          handleClear()
+        }}
+        className="absolute right-3 top-1/2 -translate-y-1/2"
+      >
+        <CloseIconKoto />
+      </button>
+    </div>
   )
 }

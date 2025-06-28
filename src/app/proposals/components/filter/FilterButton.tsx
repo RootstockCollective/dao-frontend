@@ -1,7 +1,6 @@
 import { FilterIcon, CloseIcon } from '@/components/Icons'
 import { cn } from '@/lib/utils'
-import { HTMLAttributes, useEffect, JSX } from 'react'
-import { Tooltip } from '@/components/Tooltip'
+import { HTMLAttributes, useEffect } from 'react'
 
 interface Props extends HTMLAttributes<HTMLButtonElement> {
   isOpen: boolean
@@ -27,15 +26,13 @@ export function FilterButton({
     setIsOpen(false)
   }, [disabled, setIsOpen])
   return (
-    <Tooltip disabled={disabled} text={isOpen ? 'Close filter' : 'Filter proposals'}>
-      <button
-        disabled={disabled}
-        onClick={() => setIsOpen(!isOpen)}
-        className={cn({ 'opacity-50': disabled }, className)}
-        {...props}
-      >
-        {isOpen ? <CloseIcon /> : <FilterIcon color={isFiltering ? 'var(--primary)' : undefined} />}
-      </button>
-    </Tooltip>
+    <button
+      disabled={disabled}
+      onClick={() => setIsOpen(!isOpen)}
+      className={cn({ 'opacity-50': disabled }, className)}
+      {...props}
+    >
+      {isOpen ? <CloseIcon /> : <FilterIcon color={isFiltering ? 'var(--primary)' : undefined} />}
+    </button>
   )
 }
