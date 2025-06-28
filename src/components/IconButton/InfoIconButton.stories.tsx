@@ -15,19 +15,20 @@ type Story = StoryObj<typeof meta>
 
 export const Default: Story = {
   args: {
-    info: 'This is some helpful information',
+    content: 'This is some helpful information',
   },
 }
 
 export const LongText: Story = {
   args: {
-    info: 'This is a longer piece of information that explains something in more detail. It might wrap to multiple lines in the popover.',
+    content:
+      'This is a longer piece of information that explains something in more detail. It might wrap to multiple lines in the popover.',
   },
 }
 
 export const WithCustomClassName: Story = {
   args: {
-    info: 'Information with custom styling',
+    content: 'Information with custom styling',
     className: 'bg-gray-100 p-2 rounded-md',
   },
 }
