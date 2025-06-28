@@ -16,6 +16,7 @@ import { EstimatedRewardsMetric } from '@/app/backing/components/Metrics/Estimat
 import { useGetBuildersRewards } from '@/app/collective-rewards/rewards/builders/hooks/useGetBuildersRewards'
 import { getTokens } from '@/lib/tokens'
 import { useHandleErrors } from '@/app/collective-rewards/utils'
+import { BuilderAllocationBar } from './components/BuilderAllocationBar'
 import { Header } from '@/components/TypographyNew'
 import { formatSymbol, getFiatAmount } from '@/app/collective-rewards/rewards'
 import { formatCurrency } from '@/lib/utils'
@@ -61,6 +62,8 @@ export const BackingPage = () => {
           <EstimatedRewardsMetric rewardsData={rewardsData} />
         </MetricsContainer>
       </div>
+
+      <BuilderAllocationBar />
 
       {isConnected && (
         <ActionMetricsContainer className="flex flex-col items-start w-[1144px] p-6 gap-2 rounded-[4px] bg-v3-bg-accent-80 [&>div]:w-full">

@@ -2,6 +2,7 @@ import { Dispatch, SetStateAction } from 'react'
 import { Allocations, AllocationsActions, Backer, InitialState, Selections } from './AllocationsContext'
 import { Address } from 'viem'
 export const createActions = (
+  setResetVersion: Dispatch<SetStateAction<number>>,
   setSelections: Dispatch<SetStateAction<Selections>>,
   setAllocations: Dispatch<SetStateAction<Allocations>>,
   setBacker: Dispatch<SetStateAction<Backer>>,
@@ -55,6 +56,7 @@ export const createActions = (
     }))
   },
   resetAllocations: () => {
+    setResetVersion(prev => prev + 1)
     setAllocations(initialState.allocations)
     setBacker(initialState.backer)
   },
