@@ -1,5 +1,5 @@
 import { Circle } from '@/components/Circle'
-import { cn } from '@/lib/utils'
+import { cn, truncate } from '@/lib/utils'
 
 interface LegendItem {
   key: string
@@ -25,7 +25,7 @@ export const Legend = ({ title, className, items }: LegendProps) => {
       {items.map(({ key, label, displayColor }) => (
         <span key={key} className="flex items-center space-x-2">
           <Circle color={displayColor} />
-          <span>{label}</span>
+          <span>{truncate(label, 15)}</span>
         </span>
       ))}
     </div>

@@ -11,11 +11,16 @@ export const checkerboardStyle = (): React.CSSProperties => ({
 export const clamp = (val: number, min: number, max: number) => Math.min(Math.max(val, min), max)
 
 // Calculate pixel positions for the segments being resized
-export const calculateSegmentPositions = (dragIndex: number, rect: DOMRect, values: number[]) => {
+export const calculateSegmentPositions = (
+  dragIndex: number,
+  rect: DOMRect,
+  values: number[],
+  totalValue: number,
+) => {
   let cumSum = 0
   for (let i = 0; i < dragIndex; ++i) cumSum += values[i]
-  const leftPx = (cumSum / 100) * rect.width
-  const rightPx = ((cumSum + values[dragIndex] + values[dragIndex + 1]) / 100) * rect.width
+  const leftPx = (cumSum / totalValue) * rect.width
+  const rightPx = ((cumSum + values[dragIndex] + values[dragIndex + 1]) / totalValue) * rect.width
   return { leftPx, rightPx }
 }
 
@@ -26,29 +31,38 @@ export const calculateNewSegmentValues = (
   rightPx: number,
   dragIndex: number,
   values: number[],
+  minSegmentValue: number = 0,
 ) => {
   const pairSum = values[dragIndex] + values[dragIndex + 1]
   const totalPairPx = rightPx - leftPx
-  const minLeftPx = (MIN_SEGMENT_PERCENT / pairSum) * totalPairPx
+  const minLeftPx = pairSum > 0 ? (minSegmentValue / pairSum) * totalPairPx : 0
   const maxLeftPx = totalPairPx - minLeftPx
 
   // Calculate the handle's x relative to leftPx
   let relX = clamp(x - leftPx, minLeftPx, maxLeftPx)
 
-  // Convert back to percentage and round to whole numbers
+  // Convert back to actual value
   let leftValue = Math.round((relX / totalPairPx) * pairSum)
   let rightValue = pairSum - leftValue
 
   // Ensure minimum segment sizes
-  if (leftValue < MIN_SEGMENT_PERCENT) {
-    leftValue = Math.ceil(MIN_SEGMENT_PERCENT)
+  if (leftValue < minSegmentValue) {
+    leftValue = Math.ceil(minSegmentValue)
     rightValue = pairSum - leftValue
-  } else if (rightValue < MIN_SEGMENT_PERCENT) {
-    rightValue = Math.ceil(MIN_SEGMENT_PERCENT)
+  } else if (rightValue < minSegmentValue) {
+    rightValue = Math.ceil(minSegmentValue)
     leftValue = pairSum - rightValue
   }
 
   return { leftValue, rightValue }
 }
 
-export const MIN_SEGMENT_PERCENT = 0
+// Convert actual value to percentage for display
+export const valueToPercentage = (value: number, totalValue: number): number => {
+  return totalValue > 0 && value > 0 ? (value / totalValue) * 100 : 0
+}
+
+// Calculate minimum segment value based on total value and minimum percentage
+export const calculateMinSegmentValue = (totalValue: number, minPercentage: number = 0): number => {
+  return (minPercentage / 100) * totalValue
+}

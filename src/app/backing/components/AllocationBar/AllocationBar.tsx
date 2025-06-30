@@ -1,44 +1,53 @@
-'use client'
-import React, { useEffect, useRef, useState } from 'react'
+import React, { useRef, useState, useEffect } from 'react'
 import { DndContext, PointerSensor, useSensor, useSensors, DragEndEvent, pointerWithin } from '@dnd-kit/core'
 import { SortableContext, horizontalListSortingStrategy, arrayMove } from '@dnd-kit/sortable'
 import { restrictToHorizontalAxis } from '@dnd-kit/modifiers'
 
-import { calculateNewSegmentValues, calculateSegmentPositions, clamp } from './utils'
-import { AllocationBarProps, AllocationItem } from './types'
+import {
+  calculateMinSegmentValue,
+  calculateNewSegmentValues,
+  calculateSegmentPositions,
+  clamp,
+} from './utils'
+import { AllocationBarProps } from './types'
 import { AllocationBarSegment } from './AllocationBarSegment'
 import { Legend } from '@/components/Legend'
 
 const AllocationBar: React.FC<AllocationBarProps> = ({
-  initialItemsData = [],
+  itemsData,
   height = '96px',
   isDraggable = true,
   isResizable = true,
-  showPercent = true,
+  valueDisplay = {
+    showPercent: true,
+    format: { percentDecimals: 0 },
+  },
   showLegend = true,
   className = '',
   onChange,
 }) => {
-  const initialValues = initialItemsData.map(item => item.value)
-  const [values, setValues] = useState(initialValues)
-  const [itemsData, setItemsData] = useState<AllocationItem[]>([...initialItemsData])
+  const isControlled = typeof onChange === 'function'
+  const [localItemsData, setLocalItemsData] = useState(itemsData)
+  const [localValues, setLocalValues] = useState(itemsData.map(item => item.value))
+
+  // Reactive current state
+  const currentItems = isControlled ? itemsData : localItemsData
+  const currentValues = isControlled ? itemsData.map(item => item.value) : localValues
+
+  const totalValue = currentValues.reduce((sum, v) => sum + v, 0)
+  const minSegmentValue = calculateMinSegmentValue(totalValue)
+
   const barRef = useRef<HTMLDivElement>(null)
   const [dragIndex, setDragIndex] = useState<number | null>(null)
 
   // dnd-kit sensors
   const sensors = useSensors(
-    // TODO: for now we use PointerSensor only, but we'll add TouchSensor later to support mobile
     useSensor(PointerSensor, {
       activationConstraint: { distance: 5 },
     }),
   )
 
-  // Call onChange whenever values change
-  useEffect(() => {
-    if (onChange) onChange(values)
-  }, [values, onChange])
-
-  // Start drag
+  // Start drag handler
   const onHandleMouseDown = (idx: number) => (e: React.MouseEvent) => {
     setDragIndex(idx)
     e.preventDefault()
@@ -51,17 +60,36 @@ const AllocationBar: React.FC<AllocationBarProps> = ({
     const rect = barRef.current.getBoundingClientRect()
     const x = clamp(clientX - rect.left, 0, rect.width)
 
-    const { leftPx, rightPx } = calculateSegmentPositions(dragIndex, rect, values)
-    const { leftValue, rightValue } = calculateNewSegmentValues(x, leftPx, rightPx, dragIndex, values)
+    const { leftPx, rightPx } = calculateSegmentPositions(dragIndex, rect, currentValues, totalValue)
+    const { leftValue, rightValue } = calculateNewSegmentValues(
+      x,
+      leftPx,
+      rightPx,
+      dragIndex,
+      currentValues,
+      minSegmentValue,
+    )
 
-    // Update the values
-    const newValues = [...values]
+    const newValues = [...currentValues]
     newValues[dragIndex] = leftValue
     newValues[dragIndex + 1] = rightValue
-    setValues(newValues)
+
+    const increasedIndex = leftValue > currentValues[dragIndex] ? dragIndex : dragIndex + 1
+    const decreasedIndex = increasedIndex === dragIndex ? dragIndex + 1 : dragIndex
+
+    if (isControlled) {
+      onChange?.({
+        type: 'resize',
+        values: newValues,
+        itemsData: currentItems,
+        increasedIndex,
+        decreasedIndex,
+      })
+    } else {
+      setLocalValues(newValues)
+    }
   }
 
-  // End drag
   const onMouseUp = () => setDragIndex(null)
 
   useEffect(() => {
@@ -76,37 +104,52 @@ const AllocationBar: React.FC<AllocationBarProps> = ({
       window.removeEventListener('mousemove', handleResize)
       window.removeEventListener('mouseup', onMouseUp)
     }
-    // eslint-disable-next-line
-  }, [dragIndex, values])
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [dragIndex, currentValues])
 
-  // dnd-kit sort logic
-  function handleDragEnd({ active, over }: DragEndEvent) {
+  // dnd-kit reorder logic
+  const handleDragEnd = ({ active, over }: DragEndEvent) => {
     if (!over || active.id === over.id) return
-    const oldIndex = itemsData.findIndex(item => item.key === active.id)
-    const newIndex = itemsData.findIndex(item => item.key === over.id)
-    setItemsData(arrayMove(itemsData, oldIndex, newIndex))
-    setValues(arrayMove(values, oldIndex, newIndex))
+
+    const oldIndex = currentItems.findIndex(item => item.key === active.id)
+    const newIndex = currentItems.findIndex(item => item.key === over.id)
+
+    const newItems = arrayMove(currentItems, oldIndex, newIndex)
+    const newValues = arrayMove(currentValues, oldIndex, newIndex)
+
+    if (isControlled) {
+      onChange?.({
+        type: 'reorder',
+        values: newValues,
+        itemsData: newItems,
+        increasedIndex: 0,
+        decreasedIndex: 0,
+      })
+    } else {
+      setLocalItemsData(newItems)
+      setLocalValues(newValues)
+    }
   }
 
   return (
     <div className={`w-full p-8 ${className}`}>
-      {/* Bar */}
       <DndContext
         sensors={sensors}
         collisionDetection={pointerWithin}
         onDragEnd={handleDragEnd}
         modifiers={[restrictToHorizontalAxis]}
       >
-        <SortableContext items={itemsData.map(item => item.key)} strategy={horizontalListSortingStrategy}>
+        <SortableContext items={currentItems.map(item => item.key)} strategy={horizontalListSortingStrategy}>
           <div className="flex items-center w-full mb-4 relative select-none" ref={barRef} style={{ height }}>
-            {itemsData.map((item, i) => (
+            {currentItems.map((item, i) => (
               <AllocationBarSegment
                 key={item.key}
-                value={values[i]}
+                value={currentValues[i]}
+                totalValue={totalValue}
                 item={item}
                 index={i}
-                isLast={i === itemsData.length - 1}
-                showPercent={showPercent}
+                isLast={i === currentItems.length - 1}
+                valueDisplay={valueDisplay}
                 onHandleMouseDown={onHandleMouseDown}
                 dragIndex={dragIndex}
                 isDraggable={isDraggable}
@@ -116,7 +159,7 @@ const AllocationBar: React.FC<AllocationBarProps> = ({
           </div>
         </SortableContext>
       </DndContext>
-      {showLegend && <Legend title="Total portfolio:" items={initialItemsData} />}
+      {showLegend && <Legend title="Total:" items={currentItems} />}
     </div>
   )
 }

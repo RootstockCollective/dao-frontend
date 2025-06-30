@@ -2,24 +2,48 @@ import { useSortable } from '@dnd-kit/sortable'
 import { CSS } from '@dnd-kit/utilities'
 import { AllocationBarDragHandle } from './AllocationBarDragHandle'
 import { AllocationBarResizeHandle } from './AllocationBarResizeHandle'
-import { AllocationItem } from './types'
-import { checkerboardStyle, MIN_SEGMENT_PERCENT } from './utils'
-import { formatPercentage } from '@/lib/utils'
+import { AllocationBarValueDisplay, AllocationItem } from './types'
+import { checkerboardStyle, valueToPercentage } from './utils'
 
-const AllocationBarSegmentPercent = ({ value }: { value: number }) => {
+const AllocationBarSegmentPercent = ({
+  value,
+  totalValue,
+  valueDisplay,
+}: {
+  value: number
+  totalValue: number
+  valueDisplay: AllocationBarValueDisplay
+}) => {
+  const { percentDecimals, valueDecimals } = valueDisplay.format ?? {}
+
+  const percent = valueToPercentage(value, totalValue).toLocaleString(undefined, {
+    maximumFractionDigits: percentDecimals ?? 2,
+  })
+
+  const formattedValue = value.toLocaleString(undefined, {
+    maximumFractionDigits: valueDecimals ?? 2,
+  })
+
+  const { showValue, showPercent } = valueDisplay
+
+  let displayValue = ''
+  if (showValue) displayValue += formattedValue
+  if (showPercent) displayValue += showValue ? ` (${percent}%)` : `${percent}%`
+
   return (
     <span className="absolute -top-7 left-1/2 -translate-x-1/2 pointer-events-none whitespace-nowrap font-normal leading-5 text-v3-bg-accent-0 font-rootstock-sans">
-      {formatPercentage(value)}%
+      {displayValue}
     </span>
   )
 }
 
 interface AllocationBarSegmentProps {
   value: number
+  totalValue: number
   item: AllocationItem
   index: number
   isLast: boolean
-  showPercent: boolean
+  valueDisplay: AllocationBarValueDisplay
   onHandleMouseDown: (idx: number) => (e: React.MouseEvent) => void
   dragIndex: number | null
   isDraggable: boolean
@@ -28,10 +52,11 @@ interface AllocationBarSegmentProps {
 
 export const AllocationBarSegment = ({
   value,
+  totalValue,
   item,
   index,
   isLast,
-  showPercent,
+  valueDisplay,
   onHandleMouseDown,
   dragIndex,
   isDraggable,
@@ -39,10 +64,14 @@ export const AllocationBarSegment = ({
 }: AllocationBarSegmentProps) => {
   const { attributes, listeners, setNodeRef, transform, isDragging } = useSortable({ id: item.key })
 
+  // Calculate the percentage width based on the actual value and total value
+  const percentageWidth = valueToPercentage(value, totalValue)
+
   const style: React.CSSProperties = {
     ...(item.isTemporary ? checkerboardStyle() : {}),
-    width: `${Math.max(value, MIN_SEGMENT_PERCENT)}%`,
+    width: `${percentageWidth}%`,
     transform: CSS.Translate.toString(transform),
+    backgroundColor: item.displayColor,
   }
 
   const baseClasses = 'min-w-12 h-full relative overflow-visible flex items-stretch p-0'
@@ -60,14 +89,13 @@ export const AllocationBarSegment = ({
         ${transitionClasses}
         ${dragStateClasses}
         ${borderClasses}
-        ${item.color}
       `.trim()}
     >
       {/* DRAG HANDLE (always far left) */}
       {isDraggable && <AllocationBarDragHandle attributes={attributes} listeners={listeners} />}
 
       <div className="flex-1 flex items-center justify-center relative">
-        {showPercent && <AllocationBarSegmentPercent value={value} />}
+        {<AllocationBarSegmentPercent value={value} totalValue={totalValue} valueDisplay={valueDisplay} />}
       </div>
 
       {/* RESIZE HANDLE (far right, not overlapping drag handle) */}
