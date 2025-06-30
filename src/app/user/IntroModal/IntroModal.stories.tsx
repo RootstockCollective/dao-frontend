@@ -3,7 +3,7 @@ import { IntroModalContent } from './IntroModalContent'
 import { CONTENT_CONFIG } from './config'
 
 const meta: Meta<typeof IntroModalContent> = {
-  title: 'User/IntroModal/IntroModalContent',
+  title: 'Koto/IntroModals',
   component: IntroModalContent,
   parameters: {
     layout: 'centered',
