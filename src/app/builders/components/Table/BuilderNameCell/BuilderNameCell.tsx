@@ -62,6 +62,38 @@ interface BuilderNameCellProps {
   className?: string
 }
 
+enum BuilderIconState {
+  PENDING = 'pending',
+  INACTIVE = 'inactive',
+  ACTIVE = 'active',
+}
+
+const getBuilderStateForIcon = (builder: Builder): BuilderIconState => {
+  const isDeactivated = isBuilderDeactivated(builder)
+  const isKycRevoked = isBuilderKycRevoked(builder.stateFlags)
+  const isPaused = isBuilderPaused(builder.stateFlags)
+
+  if (!builder.stateFlags) {
+    return BuilderIconState.PENDING
+  }
+
+  if (isDeactivated || isKycRevoked) {
+    return BuilderIconState.INACTIVE
+  }
+
+  const { activated, communityApproved } = builder.stateFlags
+
+  if (!activated || !communityApproved) {
+    return BuilderIconState.PENDING
+  }
+
+  if (isPaused) {
+    return BuilderIconState.INACTIVE
+  }
+
+  return BuilderIconState.ACTIVE
+}
+
 export const BuilderNameCell: FC<BuilderNameCellProps> = ({
   builder,
   builderPageLink,
@@ -69,25 +101,7 @@ export const BuilderNameCell: FC<BuilderNameCellProps> = ({
   hasAirdrop,
   className,
 }) => {
-  const isDeactivated = isBuilderDeactivated(builder)
-  const isKycRevoked = isBuilderKycRevoked(builder.stateFlags)
-  const isPaused = isBuilderPaused(builder.stateFlags)
-
-  let isPending = false
-  let isInactive = false
-
-  if (!builder.stateFlags) {
-    isPending = true
-  } else if (isDeactivated || isKycRevoked) {
-    isInactive = true
-  } else {
-    const { activated, communityApproved } = builder.stateFlags
-    if (!activated || !communityApproved) {
-      isPending = true
-    } else if (isPaused) {
-      isInactive = true
-    }
-  }
+  const builderState = getBuilderStateForIcon(builder)
 
   return (
     <div className={cn('flex items-center justify-between w-full h-full', className)}>
@@ -107,10 +121,10 @@ export const BuilderNameCell: FC<BuilderNameCellProps> = ({
         )}
       </div>
       <div className="flex items-center gap-2">
-        {isInactive && (
+        {builderState === BuilderIconState.INACTIVE && (
           <BuilderStateIcon stateKey="warning" isHighlighted={isHighlighted} className={className} />
         )}
-        {isPending && (
+        {builderState === BuilderIconState.PENDING && (
           <BuilderStateIcon stateKey="pending" isHighlighted={isHighlighted} className={className} />
         )}
       </div>
