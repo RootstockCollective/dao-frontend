@@ -6,6 +6,14 @@ interface Props {
   className?: string
 }
 
+/**
+ * @deprecated This component is deprecated. Use the CRWhitepaperLink defined in CRWhitepaperLinkNew.tsx shared folder instead.
+ * @example
+ * <CRWhitepaperLink>
+ *   Whitepaper
+ * </CRWhitepaperLink>
+ */
+
 export const CRWhitepaperLink: FC<Props> = ({ className }) => (
   <Link
     className="text-[#E56B1A]"

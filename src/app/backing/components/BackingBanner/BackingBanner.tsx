@@ -4,6 +4,7 @@ import { Typography } from '@/components/TypographyNew/Typography'
 import { cn } from '@/lib/utils'
 import { FC } from 'react'
 import { CommonComponentProps } from '@/components/commonProps'
+import { CRWhitepaperLink } from '@/app/collective-rewards/shared/components/CRWhitepaperLinkNew'
 
 export const BackingBanner: FC<CommonComponentProps> = ({ className = '' }) => {
   return (

@@ -18,7 +18,7 @@ export const BackingInfoTitle: FC<BackingInfoTitleProps> = ({
       {isConnected && !hasAllocations && (
         <Span className="font-bold">You are not backing any Builders yet. </Span>
       )}
-      <Span>Support innovative Builders by allocating your stRIF to those you align with.</Span>
+      <Span>Use your stRIF backing power to support the Builders you believe in.</Span>
     </div>
   )
 }
