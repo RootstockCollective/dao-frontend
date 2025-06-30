@@ -3,7 +3,6 @@ import { cn } from '@/lib/utils'
 import { Typography } from '@/components/TypographyNew/Typography'
 import { formatSymbol, getFiatAmount } from '@/app/collective-rewards/rewards/utils/formatter'
 import { RIFToken } from '../RIFToken/RIFToken'
-import { Metric } from '@/components/Metric/Metric'
 import { AllocationsContext } from '@/app/collective-rewards/allocations/context'
 import { Address } from 'viem'
 import { usePricesContext } from '@/shared/context/PricesContext'
@@ -33,54 +32,40 @@ export const BackingCell: FC<BackingCellProps> = ({
   const rifPrice = prices[RIF]?.price ?? 0
   const formattedAmountOnly = formatSymbol(amount, 'stRIF')
   const usdAmount = getFiatAmount(amount, rifPrice)
-  const usdDisplay = `${usdAmount.toFixed(2)} USD`
-
-  const getBackgroundStyle = () => (state === 'deactivated' ? 'bg-bg-60' : 'bg-bg-80')
 
   return (
     <div
       className={cn(
-        'flex flex-col items-end flex-1 py-3 px-2 rounded',
-        amount === 0n ? 'gap-6 bg-bg-80' : `gap-4 ${getBackgroundStyle()}`,
+        'flex justify-end items-end gap-2',
         className,
       )}
       data-testid="BackingCell"
     >
-      <Metric
-        title={title}
-        className={amount === 0n ? 'flex items-center justify-center h-full' : ''}
-        content={
-          <div className="flex flex-col items-start gap-[-2px] self-stretch">
-            <div
-              className={cn(
-                'flex h-10 self-stretch',
-                amount === 0n ? 'gap-1 justify-center items-center' : 'items-baseline',
-              )}
-            >
-              <div className="w-20 flex">
-                <Typography
-                  variant="h2"
-                  className={cn('leading-8', amount > 0n ? 'text-text-100' : 'text-bg-20')}
-                >
-                  {formattedAmountOnly}
-                </Typography>
-              </div>
-              <div className="w-20"></div>
-              <div className="flex">
-                <RIFToken size={20} textClassName="text-base text-white font-normal" />
-              </div>
-            </div>
-            {amount > 0n && (
-              <Typography
-                variant="body"
-                className="self-stretch font-rootstock-sans font-medium text-sm leading-5 text-bg-0"
-              >
-                {usdDisplay}
-              </Typography>
-            )}
-          </div>
-        }
-      />
+      <div className="flex flex-col items-end gap-[-2px]">
+        <Typography
+          variant="h2"
+          className={cn('leading-8', amount > 0n ? 'text-text-100' : 'text-bg-20')}
+        >
+          {formattedAmountOnly}
+        </Typography>
+        {amount > 0n && (
+          <Typography
+            variant="body"
+            className="font-rootstock-sans font-medium text-sm leading-5 text-bg-0"
+          >
+            {usdAmount.toFixed(2)}
+          </Typography>
+        )}
+      </div>
+      <div className="flex flex-col justify-between items-end gap-2">
+        <RIFToken size={20} textClassName="hidden" />
+        <Typography
+          variant="body"
+          className="font-rootstock-sans font-medium text-sm leading-5 text-bg-0"
+        >
+          USD
+        </Typography>
+      </div>
     </div>
   )
 }
