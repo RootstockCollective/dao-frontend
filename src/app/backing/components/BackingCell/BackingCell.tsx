@@ -43,25 +43,30 @@ export const BackingCell: FC<BackingCellProps> = ({
     >
       <div className="flex flex-col items-end gap-[-2px]">
         <Typography
-          variant="h2"
-          className={cn('leading-8', amount > 0n ? 'text-text-100' : 'text-bg-20')}
+          variant="body"
+          className={cn(
+            'font-rootstock-sans text-base font-normal leading-6 text-right',
+            amount > 0n ? 'text-text-100' : 'text-bg-20'
+          )}
         >
           {formattedAmountOnly}
         </Typography>
         {amount > 0n && (
           <Typography
             variant="body"
-            className="font-rootstock-sans font-medium text-sm leading-5 text-bg-0"
+            className="font-rootstock-sans text-xs font-normal leading-[18px] text-right text-bg-0"
           >
             {usdAmount.toFixed(2)}
           </Typography>
         )}
       </div>
-      <div className="flex flex-col justify-between items-end gap-2">
-        <RIFToken size={20} textClassName="hidden" />
+      <div className="flex flex-col items-start gap-[2px]">
+        <div className="flex w-4 h-4 p-[4.75px] justify-center items-center aspect-square rounded-[60px] bg-[#4B5CF0] flex-shrink-0">
+          <RIFToken size={6.5} textClassName="hidden" />
+        </div>
         <Typography
           variant="body"
-          className="font-rootstock-sans font-medium text-sm leading-5 text-bg-0"
+          className="font-rootstock-sans text-xs font-normal leading-[18px] text-bg-0"
         >
           USD
         </Typography>
