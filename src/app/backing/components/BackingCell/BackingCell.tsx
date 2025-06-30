@@ -1,13 +1,12 @@
-import { FC, useContext } from 'react'
-import { cn } from '@/lib/utils'
-import { Typography } from '@/components/TypographyNew/Typography'
-import { formatSymbol, getFiatAmount } from '@/app/collective-rewards/rewards/utils/formatter'
-import { formatCurrency } from '@/lib/utils'
-import { RIFToken } from '../RIFToken/RIFToken'
 import { AllocationsContext } from '@/app/collective-rewards/allocations/context'
-import { Address } from 'viem'
-import { usePricesContext } from '@/shared/context/PricesContext'
+import { formatSymbol, getFiatAmount } from '@/app/collective-rewards/rewards/utils/formatter'
+import { TokenImage } from '@/components/TokenImage'
+import { Typography } from '@/components/TypographyNew/Typography'
 import { RIF } from '@/lib/constants'
+import { cn, formatCurrency } from '@/lib/utils'
+import { usePricesContext } from '@/shared/context/PricesContext'
+import { FC, useContext } from 'react'
+import { Address } from 'viem'
 
 type BackingCellProps = {
   className?: string
@@ -23,12 +22,11 @@ export const BackingCell: FC<BackingCellProps> = ({ className, builderAddress })
   const amount = allocations[builderAddress] ?? 0n
   const rifPrice = prices[RIF]?.price ?? 0
   const formattedAmount = formatSymbol(amount, 'stRIF')
-  const usdAmount = getFiatAmount(amount, rifPrice)
-  const formattedUsdAmount = formatCurrency(usdAmount, { currency: 'USD' })
+  const formattedUsdAmount = formatCurrency(getFiatAmount(amount, rifPrice), { currency: 'USD' })
 
   return (
     <div className={cn('flex justify-end items-end gap-2', className)} data-testid="BackingCell">
-      <div className="flex flex-col items-end gap-0.5">
+      <div className="flex flex-col items-end">
         <Typography
           variant="body"
           className={cn(
@@ -47,9 +45,9 @@ export const BackingCell: FC<BackingCellProps> = ({ className, builderAddress })
           </Typography>
         )}
       </div>
-      <div className="flex flex-col items-start gap-0.5">
-        <div className="flex w-4 h-4 p-[4.75px] justify-center items-center aspect-square rounded-full bg-brand-rif-blue flex-shrink-0">
-          <RIFToken size={6.5} textClassName="hidden" />
+      <div className="flex flex-col items-start gap-1">
+        <div className="flex justify-center items-center aspect-square">
+          <TokenImage symbol={RIF} />
         </div>
         <Typography
           variant="body"
