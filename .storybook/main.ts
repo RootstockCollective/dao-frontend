@@ -28,6 +28,14 @@ const config: StorybookConfig = {
   env: (config) => ({
     ...config,
     NEXT_PUBLIC_ENV: 'testnet'
-  })
+  }),
+
+  webpackFinal: async (config, { configType }) => {
+    if (configType === 'PRODUCTION') {
+      config.output = config.output || {};
+      config.output.publicPath = process.env.BASE_PATH || '/dao-frontend/';
+    }
+    return config;
+  },
 }
 export default config;

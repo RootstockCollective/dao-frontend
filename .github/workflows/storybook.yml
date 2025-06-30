@@ -27,11 +27,9 @@ jobs:
       - name: Install dependencies
         run: npm i
       - name: Build storybook
+        env:
+          BASE_PATH: /dao-frontend/
         run: npm run build-storybook
-      - name: Fix base path for subdirectory deployment
-        run: |
-          # Replace base href in iframe.html to use the correct subdirectory path
-          sed -i 's|<base[^>]*target="_parent"[^>]*>|<base href="/dao-frontend/" target="_parent">|g' ./storybook-static/iframe.html
       - name: Upload artifact
         uses: actions/upload-pages-artifact@56afc609e74202658d3ffba0e8f6dda462b719fa #v3.0.1
         with:
