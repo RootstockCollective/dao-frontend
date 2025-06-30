@@ -40,7 +40,7 @@ export const IntroModalContent = ({
       width={920}
       onClose={onClose}
       closeButtonColor="black"
-      className="bg-text-80"
+      className="bg-text-80 overflow-y-auto"
       data-testid={isDesktop ? 'intro-modal-desktop' : 'intro-modal-mobile'}
     >
       <div className="flex flex-col md:flex-row p-4 md:gap-6 relative justify-center">
