@@ -4,6 +4,7 @@ import { Header } from '@/components/TypographyNew'
 import { ActionMetricsContainer, InfoContainer } from '@/components/containers'
 import { AnnualBackersIncentives } from './components/AnnualBackersIncentives'
 import { TotalRewardsDistributed } from './components/TotalRewardsDistributed'
+import { CallToActionSection } from './components/CallToActionSection'
 
 const NAME = 'Collective Rewards'
 export const CollectiveRewardsPage = () => {
@@ -18,7 +19,7 @@ export const CollectiveRewardsPage = () => {
           <AnnualBackersIncentives className="basis-1/2" />
           <TotalRewardsDistributed className="basis-1/2" />
         </ActionMetricsContainer>
-        <InfoContainer className="bg-v3-bg-accent-80">Bottom content placeholder</InfoContainer>
+        <CallToActionSection />
       </div>
     </div>
   )

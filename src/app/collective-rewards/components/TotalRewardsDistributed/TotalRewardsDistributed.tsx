@@ -55,7 +55,13 @@ const TokenRewards = ({ gauges, token: { address, symbol } }: TokenRewardsProps)
 interface TotalRewardsDistributedMetricProps extends CommonComponentProps {}
 
 export const TotalRewardsDistributed = ({ className }: TotalRewardsDistributedMetricProps) => {
-  const { data: allGauges } = useGetGaugesArray()
+  const { data: allGauges, isLoading, error } = useGetGaugesArray()
+
+  useHandleErrors({ error, title: 'Error loading gauges' })
+
+  if (isLoading) {
+    return <LoadingSpinner size="small" />
+  }
 
   const tokens = getTokens()
 

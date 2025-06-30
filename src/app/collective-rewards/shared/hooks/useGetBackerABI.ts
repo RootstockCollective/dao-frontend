@@ -7,14 +7,14 @@ import { useMemo } from 'react'
 import { calculateAbi } from './useGetABI'
 import { useGetCycleRewards } from './useGetCycleRewards'
 import { getCyclePayout } from './getCyclePayout'
-import { useGetEstimatedBackersRewardsPct } from './useGetEstimatedBackersRewardsPct'
+import { useGetEstimatedRewardsPct } from './useGetEstimatedRewardsPct'
 
 export const useGetBackerABI = (backer: Address) => {
   const {
     data: builders,
-    isLoading: estimatedBackerRewardsPctLoading,
-    error: estimatedBackerRewardsPctError,
-  } = useGetEstimatedBackersRewardsPct()
+    isLoading: estimatedRewardsPctLoading,
+    error: estimatedRewardsPctError,
+  } = useGetEstimatedRewardsPct()
   const gauges = builders.map(({ gauge }) => gauge)
   const {
     data: allocationOf,
@@ -75,14 +75,14 @@ export const useGetBackerABI = (backer: Address) => {
   }, [allocationOf, backerTotalAllocation, builders, cycleRewards, prices, totalAllocation])
 
   const isLoading =
-    estimatedBackerRewardsPctLoading ||
+    estimatedRewardsPctLoading ||
     allocationOfLoading ||
     totalAllocationLoading ||
     backerTotalAllocationLoading ||
     cycleRewardsLoading
 
   const error =
-    estimatedBackerRewardsPctError ??
+    estimatedRewardsPctError ??
     allocationOfError ??
     totalAllocationError ??
     backerTotalAllocationError ??
