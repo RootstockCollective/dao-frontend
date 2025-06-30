@@ -19,18 +19,13 @@ export const BackingBanner: FC<CommonComponentProps> = ({ className = '' }) => {
       <Header variant="h3">WHAT&apos;S IN IT FOR ME?</Header>
       <ul className="list-[circle] pl-6">
         <li>
-          <Typography>You retain full ownership and access to your stRIF</Typography>
+          <Typography>Earn a share of the rewards from Builders you back</Typography>
         </li>
         <li>
-          <Typography>Your allocations shape the Builders Rewards</Typography>
+          <Typography>Influence how rewards are distributed to Builders</Typography>
         </li>
         <li>
-          <Typography>You earn a portion of the backed Builders Rewards</Typography>
-        </li>
-        <li>
-          <Typography>
-            For more, see the <CRWhitepaperLink>Whitepaper</CRWhitepaperLink>
-          </Typography>
+          <Typography>Retain full ownership and access to your stRIF</Typography>
         </li>
       </ul>
     </div>
