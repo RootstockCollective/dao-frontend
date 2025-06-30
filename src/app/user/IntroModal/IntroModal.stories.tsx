@@ -38,28 +38,10 @@ export const NeedBothRBTCAndRIFDesktop: Story = {
   },
 }
 
-export const NeedBothRBTCAndRIFMobile: Story = {
-  args: {
-    tokenStatus: 'NEED_RBTC_RIF',
-    isDesktop: false,
-    onClose: () => console.log('Modal closed'),
-    onContinue: () => console.log('Continue'),
-  },
-}
-
 export const NeedRBTCDesktop: Story = {
   args: {
     tokenStatus: 'NEED_RBTC',
     isDesktop: true,
-    onClose: () => console.log('Modal closed'),
-    onContinue: () => console.log('Continue'),
-  },
-}
-
-export const NeedRBTCMobile: Story = {
-  args: {
-    tokenStatus: 'NEED_RBTC',
-    isDesktop: false,
     onClose: () => console.log('Modal closed'),
     onContinue: () => console.log('Continue'),
   },
@@ -74,21 +56,38 @@ export const NeedRIFDesktop: Story = {
   },
 }
 
-export const NeedRIFMobile: Story = {
-  args: {
-    tokenStatus: 'NEED_RIF',
-    isDesktop: false,
-    onClose: () => console.log('Modal closed'),
-    onContinue: () => console.log('Continue'),
-  },
-}
-
 export const NeedSTRIFDesktop: Story = {
   args: {
     tokenStatus: 'NEED_STRIF',
     isDesktop: true,
     rbtcBalance: '0.1234',
     rifBalance: '543.21',
+    onClose: () => console.log('Modal closed'),
+    onContinue: () => console.log('Continue'),
+  },
+}
+
+export const NeedBothRBTCAndRIFMobile: Story = {
+  args: {
+    tokenStatus: 'NEED_RBTC_RIF',
+    isDesktop: false,
+    onClose: () => console.log('Modal closed'),
+    onContinue: () => console.log('Continue'),
+  },
+}
+export const NeedRBTCMobile: Story = {
+  args: {
+    tokenStatus: 'NEED_RBTC',
+    isDesktop: false,
+    onClose: () => console.log('Modal closed'),
+    onContinue: () => console.log('Continue'),
+  },
+}
+
+export const NeedRIFMobile: Story = {
+  args: {
+    tokenStatus: 'NEED_RIF',
+    isDesktop: false,
     onClose: () => console.log('Modal closed'),
     onContinue: () => console.log('Continue'),
   },
