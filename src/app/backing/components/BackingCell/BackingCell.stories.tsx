@@ -44,21 +44,8 @@ const meta: Meta<typeof BackingCell> = {
 export default meta
 type Story = StoryObj<typeof meta>
 
-export const WithAllocation: Story = {
+export const Default: Story = {
   args: {
     builderAddress: '0x1234567890123456789012345678901234567890',
-  },
-}
-
-export const Deactivated: Story = {
-  args: {
-    builderAddress: '0x1234567890123456789012345678901234567890',
-    state: 'deactivated',
-  },
-}
-
-export const NoAllocation: Story = {
-  args: {
-    builderAddress: '0x1111111111111111111111111111111111111111',
   },
 }

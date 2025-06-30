@@ -8,21 +8,13 @@ import { Address } from 'viem'
 import { usePricesContext } from '@/shared/context/PricesContext'
 import { RIF } from '@/lib/constants'
 
-type BackingCellState = 'activated' | 'changing' | 'deactivated'
-
 type BackingCellProps = {
   className?: string
   title: ReactNode
-  state?: BackingCellState
   builderAddress: Address
 }
 
-export const BackingCell: FC<BackingCellProps> = ({
-  className,
-  title,
-  state = 'activated',
-  builderAddress,
-}) => {
+export const BackingCell: FC<BackingCellProps> = ({ className, builderAddress }) => {
   const { prices } = usePricesContext()
   const {
     state: { allocations },
@@ -34,19 +26,13 @@ export const BackingCell: FC<BackingCellProps> = ({
   const usdAmount = getFiatAmount(amount, rifPrice)
 
   return (
-    <div
-      className={cn(
-        'flex justify-end items-end gap-2',
-        className,
-      )}
-      data-testid="BackingCell"
-    >
+    <div className={cn('flex justify-end items-end gap-2', className)} data-testid="BackingCell">
       <div className="flex flex-col items-end gap-[-2px]">
         <Typography
           variant="body"
           className={cn(
             'font-rootstock-sans text-base font-normal leading-6 text-right',
-            amount > 0n ? 'text-text-100' : 'text-bg-20'
+            amount > 0n ? 'text-text-100' : 'text-bg-20',
           )}
         >
           {formattedAmountOnly}
