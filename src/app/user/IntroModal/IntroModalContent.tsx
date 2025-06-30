@@ -7,8 +7,6 @@ import { cn, formatNumberWithCommas } from '@/lib/utils'
 import Image from 'next/image'
 import { CONTENT_CONFIG, IMAGE_CONFIG, type IntroModalContentProps, type IntroModalStatus } from './config'
 
-export const ASSET_PREFIX = process.env.NODE_ENV === 'production' ? '/dao-frontend/' : ''
-
 const GLASS_STYLE =
   'rounded bg-[rgba(255,255,255,0.16)] shadow-[inset_0px_0px_14px_0px_rgba(255,255,255,0.25)] backdrop-blur-[3px]'
 
@@ -47,7 +45,7 @@ export const IntroModalContent = ({
         {isDesktop ? (
           <>
             <Image
-              src={`${ASSET_PREFIX}${currentConfig.desktop.squares}`}
+              src={`${currentConfig.desktop.squares}`}
               alt="Squares Divider"
               width={40}
               height={30}
@@ -56,7 +54,7 @@ export const IntroModalContent = ({
             <div className="flex-1 relative">
               <div className="relative">
                 <Image
-                  src={`${ASSET_PREFIX}${currentConfig.desktop.bg}`}
+                  src={`${currentConfig.desktop.bg}`}
                   alt="Intro Modal"
                   height={0}
                   width={0}
@@ -80,14 +78,14 @@ export const IntroModalContent = ({
           <div className="mt-12 flex flex-col gap-4">
             <div className="relative">
               <Image
-                src={`${ASSET_PREFIX}${currentConfig.mobile.bg}`}
+                src={`${currentConfig.mobile.bg}`}
                 alt="Intro Modal"
                 height={0}
                 width={0}
                 className="h-auto w-full"
               />
               <Image
-                src={`${ASSET_PREFIX}${currentConfig.mobile.squares}`}
+                src={`${currentConfig.mobile.squares}`}
                 alt="Squares Divider"
                 width={30}
                 height={20}
