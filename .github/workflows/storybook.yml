@@ -30,7 +30,61 @@ jobs:
         run: npm run build-storybook
       - name: Fix image paths for subdirectory deployment
         run: |
-          find ./storybook-static -maxdepth 1 -name "*.js" -exec sed -i 's|src:"/images/|src:"./images/|g' {} \;
+          echo "=== Starting image path fix process ==="
+          
+          # Check if storybook-static directory exists
+          if [ ! -d "./storybook-static" ]; then
+            echo "❌ ERROR: storybook-static directory not found!"
+            exit 1
+          fi
+          echo "✅ Found storybook-static directory"
+          
+          # Count total JS files
+          total_js_files=$(find ./storybook-static -maxdepth 1 -name "*.js" | wc -l)
+          echo "📁 Found $total_js_files JS files in storybook-static"
+          
+          # Find files with image paths BEFORE replacement
+          echo "🔍 Scanning for files with absolute image paths..."
+          files_with_images=$(find ./storybook-static -maxdepth 1 -name "*.js" -exec grep -l 'src:"/images/\|"/images/' {} \; 2>/dev/null | wc -l)
+          echo "📊 Found $files_with_images files containing absolute image paths"
+          
+          if [ $files_with_images -gt 0 ]; then
+            echo "📋 Files to be modified:"
+            find ./storybook-static -maxdepth 1 -name "*.js" -exec grep -l 'src:"/images/\|"/images/' {} \; 2>/dev/null | head -5
+          
+            echo "🔍 Sample matches before replacement:"
+            find ./storybook-static -maxdepth 1 -name "*.js" -exec grep -n 'src:"/images/\|"/images/' {} \; 2>/dev/null | head -3
+          
+            echo "🔧 Applying replacements..."
+          
+            # Replace src:"/images/ with src:"./images/
+            replaced_count1=$(find ./storybook-static -maxdepth 1 -name "*.js" -exec grep -l 'src:"/images/' {} \; 2>/dev/null | wc -l)
+            find ./storybook-static -maxdepth 1 -name "*.js" -exec sed -i 's|src:"/images/|src:"./images/|g' {} \; 2>/dev/null
+            echo "✅ Applied src: pattern replacement to $replaced_count1 files"
+          
+            # Replace "/images/ with "./images/
+            replaced_count2=$(find ./storybook-static -maxdepth 1 -name "*.js" -exec grep -l '"/images/' {} \; 2>/dev/null | wc -l)
+            find ./storybook-static -maxdepth 1 -name "*.js" -exec sed -i 's|"/images/|"./images/|g' {} \; 2>/dev/null
+            echo "✅ Applied general pattern replacement to $replaced_count2 files"
+          
+            # Verify changes
+            echo "🔍 Verifying changes - sample matches after replacement:"
+            find ./storybook-static -maxdepth 1 -name "*.js" -exec grep -n 'src:"\./images/\|"\./images/' {} \; 2>/dev/null | head -3
+          
+            # Check if any absolute paths remain
+            remaining=$(find ./storybook-static -maxdepth 1 -name "*.js" -exec grep -l 'src:"/images/\|"/images/' {} \; 2>/dev/null | wc -l)
+            if [ $remaining -eq 0 ]; then
+              echo "✅ SUCCESS: All absolute image paths have been converted to relative paths"
+            else
+              echo "⚠️  WARNING: $remaining files still contain absolute image paths"
+              find ./storybook-static -maxdepth 1 -name "*.js" -exec grep -l 'src:"/images/\|"/images/' {} \; 2>/dev/null | head -3
+            fi
+          else
+            echo "ℹ️  No files with absolute image paths found - no changes needed"
+          fi
+          
+          echo "=== Image path fix process completed ==="
+
       - name: Upload artifact
         uses: actions/upload-pages-artifact@56afc609e74202658d3ffba0e8f6dda462b719fa #v3.0.1
         with:
