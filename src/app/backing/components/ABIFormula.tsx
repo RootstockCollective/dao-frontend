@@ -4,7 +4,7 @@ export const ABIFormula = () => (
     <span className="text-base">1 +</span>
     <span className="relative flex flex-col items-center justify-center space-y-1">
       <span className="absolute inset-0 flex items-center justify-center">
-        <span className="border-t border-v3-bg-accent-100 w-full" />
+        <span className="border-t border-current w-full" />
       </span>
       <span className="text-xs">
         <span>Rewards per stRIF per Cycle</span>

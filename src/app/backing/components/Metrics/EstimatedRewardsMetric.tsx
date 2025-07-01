@@ -1,12 +1,10 @@
 import { useEstimatedRewards } from '../../hooks/useEstimatedRewards'
-import KotoQuestionMarkIcon from '@/components/Icons/KotoQuestionMarkIcon'
-import { Header } from '@/components/TypographyNew'
+import { Header, Paragraph } from '@/components/TypographyNew'
 import { formatCurrency } from '@/lib/utils'
 import { RifRbtcTooltip } from '@/components/RifRbtcTooltip/RifRbtcTooltip'
 import { Metric, MetricTitle } from '@/components/Metric'
 import { BuildersRewards } from '@/app/collective-rewards/rewards/builders/hooks/useGetBuildersRewards'
 import { DottedUnderlineLabel } from '@/components/DottedUnderlineLabel/DottedUnderlineLabel'
-import { EstimatedRewardsPopover } from '@/app/backing/components/Popovers/EstimatedRewardsPopover'
 
 interface EstimatedRewardsMetricProps {
   rewardsData: BuildersRewards[]
@@ -20,10 +18,17 @@ export const EstimatedRewardsMetric = ({ rewardsData }: EstimatedRewardsMetricPr
       title={
         <MetricTitle
           title="Estimated Rewards"
+          infoIconProps={{
+            tooltipClassName: 'max-w-sm text-sm',
+          }}
           info={
-            <EstimatedRewardsPopover>
-              <KotoQuestionMarkIcon className="cursor-pointer" />
-            </EstimatedRewardsPopover>
+            <Paragraph className="text-[14px] font-normal text-left">
+              Estimated rewards for the next Cycle available to Backers.
+              <br />
+              <br />
+              The displayed information is dynamic and may vary based on total rewards and user activity. This
+              data is for informational purposes only.
+            </Paragraph>
           }
         />
       }

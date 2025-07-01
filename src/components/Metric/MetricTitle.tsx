@@ -2,21 +2,21 @@ import { Typography } from '@/components/TypographyNew/Typography'
 import { cn } from '@/lib/utils'
 import { FC, ReactNode } from 'react'
 import { CommonComponentProps } from '../../components/commonProps'
-import { InfoIconButton } from '../IconButton/InfoIconButton'
+import { InfoIconButton, type InfoIconButtonProps } from '../IconButton/InfoIconButton'
 
-export type MetricTitleProps = CommonComponentProps & {
+export interface MetricTitleProps extends CommonComponentProps {
   title: ReactNode
   info: ReactNode
+  infoIconProps?: Omit<InfoIconButtonProps, 'info'>
 }
 
-export const MetricTitle: FC<MetricTitleProps> = ({ title, info, className = '' }) => {
+export const MetricTitle: FC<MetricTitleProps> = ({ title, info, className = '', infoIconProps }) => {
   const isTitleTextual = typeof title === 'string'
-  const isInfoTextual = typeof info === 'string'
 
   return (
     <div data-testid="MetricTitle" className={cn('flex w-full items-start justify-between gap-2', className)}>
       {isTitleTextual ? <Typography className="grow">{title}</Typography> : title}
-      {isInfoTextual ? <InfoIconButton info={info} className="cursor-pointer" /> : info}
+      <InfoIconButton info={info} className="cursor-pointer" {...infoIconProps} />
     </div>
   )
 }
