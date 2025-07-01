@@ -75,24 +75,33 @@ export const ActionDetails = ({ parsedAction, actionType }: ActionDetailsProps) 
             <Span variant="tag-s" className="text-white/70 mt-0.5">
               Amount
             </Span>
-            <div className="flex items-center gap-2 text-[18px] font-bold">
-              <Span>{formatNumberWithCommas(formatEther(parsedAction.amount || 0n))}</Span>
-              {parsedAction.tokenSymbol && (
-                <>
-                  <TokenImage symbol={parsedAction.tokenSymbol} />
-                  <Span>{parsedAction.tokenSymbol}</Span>
-                </>
-              )}
+            <div className="grid grid-cols-2 gap-x-2 w-max">
+              {/* Left column: values, right-aligned */}
+              <div className="flex flex-col items-end text-right">
+                <Span className="text-[18px] font-bold">
+                  {formatNumberWithCommas(formatEther(parsedAction.amount || 0n))}
+                </Span>
+                {parsedAction.price !== undefined && (
+                  <Span className="text-xs text-white/50 font-normal leading-none">
+                    {formatCurrency(
+                      Big(formatEther(parsedAction.amount || 0n))
+                        .times(parsedAction.price)
+                        .toNumber(),
+                    )}
+                  </Span>
+                )}
+              </div>
+              {/* Right column: symbols, left-aligned */}
+              <div className="flex flex-col items-start">
+                {parsedAction.tokenSymbol && (
+                  <div className="flex items-center">
+                    <TokenImage symbol={parsedAction.tokenSymbol} />
+                    <Span className="ml-1">{parsedAction.tokenSymbol}</Span>
+                  </div>
+                )}
+                <Span className="text-xs text-white/50 font-normal leading-none">USD</Span>
+              </div>
             </div>
-            <Paragraph variant="body-s" className="text-white/50 mt-1">
-              {parsedAction.price !== undefined
-                ? formatCurrency(
-                    Big(formatEther(parsedAction.amount || 0n))
-                      .times(parsedAction.price)
-                      .toNumber(),
-                  ) + ' USD'
-                : ''}
-            </Paragraph>
           </div>
         </>
       )
