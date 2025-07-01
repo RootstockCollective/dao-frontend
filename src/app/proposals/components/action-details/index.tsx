@@ -99,7 +99,8 @@ export const ActionDetails = ({ parsedAction, actionType }: ActionDetailsProps) 
                     <Span className="ml-1">{parsedAction.tokenSymbol}</Span>
                   </div>
                 )}
-                <Span className="text-xs text-white/50 font-normal leading-none">USD</Span>
+                //TODO: make sure USD is perfectly aligned with its value
+                <Span className="font-normal text-xs text-white/50">USD</Span>
               </div>
             </div>
           </div>
