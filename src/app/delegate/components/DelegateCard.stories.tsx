@@ -3,7 +3,7 @@ import { DelegateCard } from './DelegateCard'
 import { Address } from 'viem'
 
 const meta: Meta<typeof DelegateCard> = {
-  title: 'Components/DelegateCard',
+  title: 'KOTO/DAO/DelegateCard',
   component: DelegateCard,
   parameters: {
     layout: 'centered',
