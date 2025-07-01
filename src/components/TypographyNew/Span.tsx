@@ -1,8 +1,8 @@
 import { FC } from 'react'
-import { BodyVariants, TagVariants } from './types'
+import { BodyVariants, EmphaseVariants, TagVariants } from './types'
 import { Typography, TypographyProps } from './Typography'
 
-type SpanVariant = BodyVariants | TagVariants
+type SpanVariant = BodyVariants | TagVariants | EmphaseVariants
 
 interface Props extends Omit<TypographyProps<'span'>, 'as'> {
   variant?: SpanVariant

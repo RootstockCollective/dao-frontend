@@ -1,5 +1,5 @@
 import { Button } from '@/components/ButtonNew/Button'
-import { Paragraph } from '@/components/TypographyNew'
+import { Paragraph, Span } from '@/components/TypographyNew'
 import { CommonComponentProps } from '@/components/commonProps'
 import { cn } from '@/lib/utils'
 import { useEffect, useState } from 'react'
@@ -80,9 +80,10 @@ export const TablePager: React.FC<TablePagerProps> = ({
         data-testid="table-pager-next"
         disabled={mode === 'expandable' && isButtonDisabled}
         className="border border-v3-bg-accent-40 px-2 py-1"
-        textClassName="text-sm font-normal"
       >
-        Show next {pageSize} {pagedItemName}
+        <Span className="text-sm">
+          Show next {pageSize} {pagedItemName}
+        </Span>
       </Button>
       <PagerCount start={start} end={end} total={totalItems} itemName={pagedItemName} />
     </PagerContainer>
