@@ -1,5 +1,5 @@
 import type { Meta, StoryObj } from '@storybook/react'
-import { VotingPowerContainer } from '@/app/delegate/_components/VotingPowerContainer/VotingPowerContainer'
+import { VotingPowerContainer } from '@/app/delegate/components/VotingPowerContainer/VotingPowerContainer'
 
 const meta = {
   title: 'KOTO/DAO/VotingPowerContainer',
