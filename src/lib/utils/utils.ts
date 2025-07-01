@@ -20,13 +20,13 @@ export const SHARED_MODAL_BOX_SHADOW_STYLE = '0px 0px 16.4px 0px rgba(229,107,26
  * @param address - The address to shorten
  * @param amount - The amount of characters to keep
  * @returns The shortened address
- * @example shortAddress('0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266') // '0xf39F...92266'
+ * @example shortAddress('0xf39Fd6e51aad88F6F4ce6aB8827279cffFb29266') // '0xf39F...9266'
  */
-export const shortAddress = (address: Address | undefined, amount = 5): string => {
+export const shortAddress = (address: Address | undefined, amount = 4): string => {
   if (!address) {
     return ''
   }
-  return `${address.slice(0, amount + 1)}…${address.slice(-amount)}`
+  return `${address.slice(0, amount + 2)}…${address.slice(-amount)}`
 }
 
 export const axiosInstance = axios.create({

@@ -1,13 +1,14 @@
 import { Header } from '@/components/TypographyNew'
 import { Jdenticon } from '@/components/Header/Jdenticon'
 import { FC } from 'react'
-import { cn, truncate } from '@/lib/utils'
+import { cn, shortAddress, truncate } from '@/lib/utils'
 import Link from 'next/link'
+import { Address } from 'viem'
 
 interface BuilderHeaderProps {
-  address: string
-  name: string
-  builderPageLink: string
+  address: Address
+  name?: string
+  builderPageLink?: string
   className?: string
 }
 
@@ -29,7 +30,7 @@ export const BuilderHeader: FC<BuilderHeaderProps> = ({ address, name, builderPa
           rel="noopener noreferrer"
           className="max-w-[200px]"
         >
-          {truncate(name, 15)}
+          {name ? truncate(name, 15) : shortAddress(address)}
         </Link>
       </Header>
     </div>
