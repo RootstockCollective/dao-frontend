@@ -26,7 +26,8 @@ export const shortAddress = (address: Address | undefined, amount = 4): string =
   if (!address) {
     return ''
   }
-  return `${address.slice(0, amount + 2)}…${address.slice(-amount)}`
+  const prefixLength = amount + 2 // 2 for '0x' prefix
+  return `${address.slice(0, prefixLength)}…${address.slice(-amount)}`
 }
 
 export const axiosInstance = axios.create({
