@@ -52,19 +52,19 @@ export const ActionDetails = ({ parsedAction, actionType }: ActionDetailsProps) 
         <>
           <div className="grid grid-cols-2 text-sm max-w-[376px] mt-4">
             <div>
-              <Paragraph variant="body-s" className="text-white/70 mt-0.5">
+              <Span variant="tag-s" className="text-white/70 mt-0.5">
                 Type
-              </Paragraph>
+              </Span>
               <Paragraph variant="body">{actionType}</Paragraph>
             </div>
             <div>
-              <Paragraph variant="body-s" className="text-white/70 mt-0.5">
+              <Span variant="tag-s" className="text-white/70 mt-0.5">
                 To address
-              </Paragraph>
+              </Span>
               {parsedAction.toAddress ? (
-                <span className="text-primary">
+                <Span className="text-primary">
                   <ShortenAndCopy value={parsedAction.toAddress} />
-                </span>
+                </Span>
               ) : (
                 <Span variant="body">—</Span>
               )}
@@ -72,9 +72,9 @@ export const ActionDetails = ({ parsedAction, actionType }: ActionDetailsProps) 
           </div>
           {/* Amount block full width */}
           <div>
-            <Paragraph variant="body-s" className="text-white/70 mt-0.5">
+            <Span variant="tag-s" className="text-white/70 mt-0.5">
               Amount
-            </Paragraph>
+            </Span>
             <div className="flex items-center gap-2 text-[18px] font-bold">
               <Span>{formatNumberWithCommas(formatEther(parsedAction.amount || 0n))}</Span>
               {parsedAction.tokenSymbol && (
@@ -107,9 +107,9 @@ export const ActionDetails = ({ parsedAction, actionType }: ActionDetailsProps) 
         {
           label: rightLabel,
           value: parsedAction.builder ? (
-            <span className="text-primary">
+            <Span className="text-primary">
               <ShortenAndCopy value={parsedAction.builder} />
-            </span>
+            </Span>
           ) : (
             <Span variant="body">—</Span>
           ),

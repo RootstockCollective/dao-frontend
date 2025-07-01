@@ -418,20 +418,20 @@ const PageWithProposal = (proposal: ParsedProposal) => {
               <ProgressBar progress={proposalStateToProgressMap.get(proposalState) ?? 0} className="mt-3" />
             </div>
 
-            <div className="grid grid-cols-2 gap-x-4 gap-y-2 text-sm mt-10">
+            <div className="grid grid-cols-2 gap-x-6 gap-y-2 text-sm mt-10">
               <div>
-                <Paragraph variant="body-s" className="text-white/70" bold>
+                <Span variant="tag-s" className="text-white/70" bold>
                   Proposal type
-                </Paragraph>
-                <Paragraph variant="body">
+                </Span>
+                <Paragraph variant="body" className="flex items-center">
                   {/* For transfer actions, show amount, token image, and symbol. For others, show a label. */}
                   {parsedAction.type === ProposalType.WITHDRAW &&
                   parsedAction.amount &&
                   parsedAction.tokenSymbol ? (
                     <>
                       Transfer of {formatNumberWithCommas(formatEther(parsedAction.amount))}
-                      <Span className="inline-flex items-center ml-2 align-middle">
-                        <TokenImage symbol={parsedAction.tokenSymbol} size={20} className="ml-1" />
+                      <Span className="inline-flex ml-2">
+                        <TokenImage symbol={parsedAction.tokenSymbol} size={16} />
                         <Span className="font-bold ml-1">{parsedAction.tokenSymbol}</Span>
                       </Span>
                     </>
@@ -445,18 +445,18 @@ const PageWithProposal = (proposal: ParsedProposal) => {
                 </Paragraph>
               </div>
               <div>
-                <Paragraph variant="body-s" className="text-white/70" bold>
+                <Span variant="tag-s" className="text-white/70" bold>
                   Created on
-                </Paragraph>
+                </Span>
                 <Paragraph variant="body">{Starts ? Starts.format('DD MMM YYYY') : '—'}</Paragraph>
               </div>
               <div>
                 {actionName === 'communityApproveBuilder' ? (
-                  <Paragraph variant="body-s" className="text-white/70" bold>
+                  <Span variant="tag-s" className="text-white/70" bold>
                     Builder name
-                  </Paragraph>
+                  </Span>
                 ) : null}
-                <Paragraph variant="body-s" className="text-sm font-medium text-primary">
+                <Paragraph variant="body" className="text-sm font-medium text-primary">
                   <a href={`/builders/${addressToWhitelist}`} className="hover:underline">
                     {builderName}
                   </a>
@@ -464,25 +464,25 @@ const PageWithProposal = (proposal: ParsedProposal) => {
               </div>
               <div>
                 {actionName === 'communityApproveBuilder' ? (
-                  <Paragraph variant="body-s" className="text-white/70" bold>
+                  <Span variant="tag-s" className="text-white/70" bold>
                     Builder address
-                  </Paragraph>
+                  </Span>
                 ) : null}
                 {addressToWhitelist && actionName === 'communityApproveBuilder' ? (
                   <ShortenAndCopy value={addressToWhitelist} />
                 ) : null}
               </div>
               <div>
-                <Paragraph variant="body-s" className="text-white/70" bold>
+                <Span variant="tag-s" className="text-white/70" bold>
                   Proposed by
-                </Paragraph>
+                </Span>
                 {proposer ? <ShortenAndCopy value={proposer} /> : <Span variant="body">—</Span>}
               </div>
               <div>
-                <Paragraph variant="body-s" className="text-white/70" bold>
+                <Span variant="tag-s" className="text-white/70" bold>
                   Community discussion
-                </Paragraph>
-                <Paragraph variant="body-s" className="text-sm font-medium text-primary">
+                </Span>
+                <Paragraph variant="body" className="text-sm font-medium text-primary">
                   <a
                     href="https://rootstockcollective.xyz/discourse"
                     target="_blank"
