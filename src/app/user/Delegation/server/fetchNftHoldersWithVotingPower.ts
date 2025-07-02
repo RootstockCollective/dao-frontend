@@ -56,7 +56,7 @@ async function getNftHoldersShepherds() {
         votingPower: formatted,
       }
     })
-    .filter(({ votingPower }) => votingPower > 0)
+    .filter(({ votingPower }) => votingPower >= 0)
 }
 
 export const getCachedNftHoldersShepherds = unstable_cache(getNftHoldersShepherds, ['nft_shepherds'], {

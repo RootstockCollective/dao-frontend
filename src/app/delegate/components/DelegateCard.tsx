@@ -7,14 +7,15 @@ import { Label, Paragraph } from '@/components/TypographyNew'
 
 export interface DelegateCardProps {
   address: Address
-  name?: string
   since: string | number
   votingPower: string | number
   votingWeight: string
   totalVotes: string | number
   delegators: string | number
   onDelegate: () => void
+  name?: string
   className?: string
+  delegateButtonText?: string
 }
 
 export const DelegateCard: React.FC<DelegateCardProps> = ({
@@ -27,6 +28,7 @@ export const DelegateCard: React.FC<DelegateCardProps> = ({
   delegators,
   onDelegate,
   className,
+  delegateButtonText = 'Delegate',
 }) => {
   return (
     <div
@@ -69,7 +71,7 @@ export const DelegateCard: React.FC<DelegateCardProps> = ({
         </div>
       </div>
       <Button variant="secondary-outline" className="mt-6" onClick={onDelegate}>
-        Delegate
+        {delegateButtonText}
       </Button>
     </div>
   )
