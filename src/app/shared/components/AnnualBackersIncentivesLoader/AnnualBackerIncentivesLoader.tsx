@@ -4,39 +4,35 @@ import {
   useGetMetricsAbiWithStateSync,
 } from '@/app/collective-rewards/shared'
 import { useHandleErrors } from '@/app/collective-rewards/utils'
-import { CommonComponentProps } from '@/components/commonProps'
-import { Metric } from '@/components/Metric/Metric'
-import { LoadingSpinner } from '@/components/LoadingSpinner/LoadingSpinner'
-import { Typography } from '@/components/TypographyNew/Typography'
 import Big from 'big.js'
 import { withFallbackRetry } from '@/app/shared/components/Fallback/FallbackWithRetry'
 import { ErrorBoundary } from 'react-error-boundary'
 import { useFeatureFlags } from '@/shared/context/FeatureFlag'
-import { FC } from 'react'
+import { FC, ReactNode } from 'react'
 
-interface AnnualBackerIncentivesProps {
-  render: (props: { abiPct: Big; isLoading: boolean }) => React.ReactNode
+interface AnnualBackerIncentivesLoaderProps {
+  render: (props: { abiPct: Big; isLoading: boolean }) => ReactNode
 }
 
-const ABIFromChain = ({ render }: AnnualBackerIncentivesProps) => {
+const ABIFromChain = ({ render }: AnnualBackerIncentivesLoaderProps) => {
   const { data: abiPct, isLoading, error } = useGetABIFromChain()
   useHandleErrors({ error, title: 'Error loading ABI metrics' })
   return <>{render({ abiPct, isLoading })}</>
 }
 
-const ABIWTheGraph = ({ render }: AnnualBackerIncentivesProps) => {
+const ABIWTheGraph = ({ render }: AnnualBackerIncentivesLoaderProps) => {
   const { data: abiPct, isLoading, error } = useGetMetricsAbiWithGraph()
   if (error) throw error
   return <>{render({ abiPct, isLoading })}</>
 }
 
-const ABIWStateSync = ({ render }: AnnualBackerIncentivesProps) => {
+const ABIWStateSync = ({ render }: AnnualBackerIncentivesLoaderProps) => {
   const { data: abiPct, isLoading, error } = useGetMetricsAbiWithStateSync()
   if (error) throw error
   return <>{render({ abiPct, isLoading })}</>
 }
 
-export const AnnualBackerIncentives: FC<AnnualBackerIncentivesProps> = ({ render }) => {
+export const AnnualBackerIncentivesLoader: FC<AnnualBackerIncentivesLoaderProps> = ({ render }) => {
   const {
     flags: { use_state_sync },
   } = useFeatureFlags()

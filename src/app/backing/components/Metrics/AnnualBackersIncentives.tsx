@@ -2,12 +2,12 @@ import { ABIPopover } from '@/app/backing/components/Popovers/ABIPopover'
 import KotoQuestionMarkIcon from '@/components/Icons/KotoQuestionMarkIcon'
 import { Metric, MetricTitle } from '@/components/Metric'
 import { Header } from '@/components/TypographyNew'
-import { AnnualBackerIncentives } from '@/app/shared/components/AnnualBackersIncentives/AnnualBackerIncentives'
+import { AnnualBackerIncentivesLoader } from '@/app/shared/components/AnnualBackersIncentivesLoader'
 import { LoadingSpinner } from '@/components/LoadingSpinner'
 
 export const AnnualBackersIncentives = () => {
   return (
-    <AnnualBackerIncentives
+    <AnnualBackerIncentivesLoader
       render={({ abiPct, isLoading }) =>
         isLoading ? (
           <LoadingSpinner size="small" />
