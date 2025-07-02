@@ -8,7 +8,7 @@ import { LoadingSpinner } from '@/components/LoadingSpinner'
 export const AnnualBackersIncentives = () => {
   return (
     <AnnualBackerIncentivesLoader
-      render={({ abiPct, isLoading }) =>
+      render={({ data: abiPct, isLoading }) =>
         isLoading ? (
           <LoadingSpinner size="small" />
         ) : (

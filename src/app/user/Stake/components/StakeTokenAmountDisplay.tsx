@@ -24,15 +24,7 @@ export const StakeTokenAmountDisplay = ({
   isFlexEnd = false,
 }: Props) => {
   const formattedAmount = formatNumberWithCommas(Big(amount).toFixedNoTrailing(8))
-
-  const footer = balance ? (
-    <div className="flex items-center gap-2 mt-4">
-      <TokenImage symbol={tokenSymbol} size={12} />
-      <Paragraph variant="body-s" className="text-bg-0">
-        {tokenSymbol} Balance: {formatNumberWithCommas(Big(balance).toFixedNoTrailing(8))}
-      </Paragraph>
-    </div>
-  ) : null
+  const formattedBalance = balance ? formatNumberWithCommas(Big(balance).toFixedNoTrailing(8)) : undefined
 
   return (
     <TokenAmountDisplay
@@ -41,7 +33,7 @@ export const StakeTokenAmountDisplay = ({
       amount={formattedAmount}
       tokenSymbol={tokenSymbol}
       amountInCurrency={amountInCurrency}
-      footer={footer}
+      balance={formattedBalance}
       isFlexEnd={isFlexEnd}
     />
   )

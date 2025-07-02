@@ -1,5 +1,5 @@
 import { TokenImage } from '@/components/TokenImage'
-import { Header, Label, Span } from '@/components/TypographyNew'
+import { Header, Label, Span, Paragraph } from '@/components/TypographyNew'
 import { cn } from '@/lib/utils'
 import { ReactNode } from 'react'
 
@@ -10,7 +10,7 @@ interface Props {
   amountInCurrency?: string
   className?: string
   isFlexEnd?: boolean
-  footer?: ReactNode
+  balance?: string
   actions?: ReactNode
 }
 
@@ -21,7 +21,7 @@ export const TokenAmountDisplay = ({
   amountInCurrency,
   className = '',
   isFlexEnd = false,
-  footer,
+  balance,
   actions,
 }: Props) => {
   return (
@@ -48,7 +48,14 @@ export const TokenAmountDisplay = ({
       ) : (
         <br />
       )}
-      {footer}
+      {balance && (
+        <div className="flex items-center gap-2 mt-4">
+          <TokenImage symbol={tokenSymbol} size={12} />
+          <Paragraph variant="body-s" className="text-bg-0">
+            {tokenSymbol} Balance: {balance}
+          </Paragraph>
+        </div>
+      )}
     </div>
   )
 }

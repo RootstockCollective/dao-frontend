@@ -43,5 +43,5 @@ export const VotingPowerCard = ({ title, tooltipTitle, contentValue, isLoading }
       {isLoading && <HourglassIcon />}
     </div>
   )
-  return <Metric title={fullTitle} content={fullContent} />
+  return <Metric title={fullTitle}>{fullContent}</Metric>
 }

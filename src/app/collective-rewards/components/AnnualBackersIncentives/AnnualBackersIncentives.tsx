@@ -9,7 +9,7 @@ interface AnnualBackersIncentivesProps extends CommonComponentProps {}
 export const AnnualBackersIncentives = ({ className }: AnnualBackersIncentivesProps) => {
   return (
     <AnnualBackerIncentivesLoader
-      render={({ abiPct, isLoading }) => (
+      render={({ data: abiPct, isLoading }) => (
         <Metric title="Annual Backers Incentives" className={className}>
           <div className="flex flex-row gap-10 items-center">
             <Typography variant="e1" className="text-center">
