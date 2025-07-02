@@ -1,8 +1,9 @@
+import { ABIPopover } from '@/app/backing/components/Popovers/ABIPopover'
+import KotoQuestionMarkIcon from '@/components/Icons/KotoQuestionMarkIcon'
 import { Metric, MetricTitle } from '@/components/Metric'
-import { Header, Paragraph } from '@/components/TypographyNew'
+import { Header } from '@/components/TypographyNew'
 import { AnnualBackerIncentives } from '@/app/shared/components/AnnualBackersIncentives/AnnualBackerIncentives'
 import { LoadingSpinner } from '@/components/LoadingSpinner'
-import { ABIFormula } from '@/app/backing/components/ABIFormula'
 
 export const AnnualBackersIncentives = () => {
   return (
@@ -16,20 +17,9 @@ export const AnnualBackersIncentives = () => {
               <MetricTitle
                 title="Annual Backers Incentives"
                 info={
-                  <Paragraph className="text-v3-bg-accent-60 text-[14px] font-normal text-left">
-                    The Annual Backers Incentives (%) represents an estimate of the annualized percentage of
-                    rewards that backers could receive based on their backing allocations.
-                    <br />
-                    <br />
-                    The calculation follows the formula:
-                    <span className="flex justify-center pt-4">
-                      <ABIFormula />
-                    </span>
-                    <br />
-                    <br />
-                    This estimation is dynamic and may vary based on total rewards and user activity. This
-                    data is for informational purposes only.
-                  </Paragraph>
+                  <ABIPopover>
+                    <KotoQuestionMarkIcon className="cursor-pointer" />
+                  </ABIPopover>
                 }
               />
             }

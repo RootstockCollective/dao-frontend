@@ -99,7 +99,7 @@ export const Popover = ({
           <div
             className={cn(
               'rounded-lg bg-[#1A1A1A] border border-white/20 p-2 shadow-[10px_30px_150px_rgba(46,38,92,0.25)] mb-[10px] min-w-min',
-              background === 'light' && 'bg-white text-v3-bg-accent-60',
+              background === 'light' && 'bg-white',
               contentSubContainerClassName,
             )}
             {...contentSubcontainerProps}
