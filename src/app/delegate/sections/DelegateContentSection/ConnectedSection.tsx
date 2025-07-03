@@ -25,13 +25,12 @@ export const ConnectedSection = () => {
   } = useDelegateContext()
 
   const { address: myAddress } = useAccount()
-  const [shouldShowDelegates, setShouldShowDelegates] = useState(true)
+  const { onDelegate } = useDelegateToAddress()
+
+  const [shouldShowDelegates, setShouldShowDelegates] = useState(false)
   const [isDelegateModalOpened, setIsDelegateModalOpened] = useState(false)
   const [isReclaimModalOpened, setIsReclaimModalOpened] = useState(false)
-
-  // @TODO get from input
-  const temporaryAddress = '0xc6cc5b597f80276eae5cb80530acff3e89070a47'
-  const { onDelegate } = useDelegateToAddress()
+  const [addressToDelegate, setAddressToDelegate] = useState<Address | null>(null)
 
   const handleDelegate = useCallback(
     (address: Address) => {
@@ -60,27 +59,32 @@ export const ConnectedSection = () => {
     setShouldShowDelegates(true)
   }
 
+  const onShowDelegate = (address: Address) => {
+    setIsDelegateModalOpened(true)
+    setAddressToDelegate(address)
+  }
+
+  const onShowReclaim = () => {
+    setIsReclaimModalOpened(true)
+  }
+
   return (
     <>
-      {didIDelegateToMyself && (
-        <Button
-          variant="primary"
-          onClick={() => setIsDelegateModalOpened(true)}
-          disabled={isDelegationPending}
-        >
-          {isDelegationPending ? 'Delegating...' : 'Delegate'}
-        </Button>
-      )}
       {!didIDelegateToMyself && delegateeAddress && (
         <div className="flex flex-row bg-bg-80 p-[24px]">
           <DelegateCard
             address={delegateeAddress}
+            // @TODO fetch since
             since="May 2025"
+            // @TODO fetch voting power
             votingPower={0}
+            // @TODO fetch voting weight
+            votingWeight={0}
+            // @TODO fetch total votes
+            totalVotes={0}
+            // @TODO fetch delegators
             delegators={0}
-            votingWeight="0"
-            totalVotes="0"
-            onDelegate={() => setIsReclaimModalOpened(true)}
+            onDelegate={onShowReclaim}
             buttonText={isReclaimPending ? 'Reclaiming...' : 'Reclaim'}
             buttonVariant="primary"
           />
@@ -111,7 +115,7 @@ export const ConnectedSection = () => {
             </div>
             <Paragraph>
               You selected <span className="text-primary">{delegateeAddress}</span> to make governance your
-              behalf.{' '}
+              behalf.
             </Paragraph>
             <Paragraph>You only delegated your own voting power, not your tokens.</Paragraph>
             {/* Update delegate button here */}
@@ -127,15 +131,15 @@ export const ConnectedSection = () => {
         </div>
       )}
       {(shouldShowDelegates || didIDelegateToMyself) && (
-        <DelegatesContainer didIDelegateToMyself={didIDelegateToMyself} />
+        <DelegatesContainer didIDelegateToMyself={didIDelegateToMyself} onDelegate={onShowDelegate} />
       )}
-      {isDelegateModalOpened && (
+      {isDelegateModalOpened && addressToDelegate && (
         <DelegateModal
           onDelegate={handleDelegate}
           onClose={() => setIsDelegateModalOpened(false)}
           isLoading={isDelegationPending}
           title={`You are about to delegate your own voting power of ${formatNumberWithCommas(Number(cards.own.contentValue))} to`}
-          address={temporaryAddress}
+          address={addressToDelegate}
           actionButtonText={isDelegationPending ? 'Delegating...' : 'Delegate'}
         />
       )}
@@ -146,6 +150,7 @@ export const ConnectedSection = () => {
           isLoading={isReclaimPending}
           title={`You are about to reclaim your own voting power of ${formatNumberWithCommas(Number(cards.own.contentValue))} from`}
           address={delegateeAddress as Address}
+          // @TODO fetch since
           since="your delegate since December 31, 2024"
           actionButtonText={isReclaimPending ? 'Reclaiming...' : 'Reclaim'}
         />

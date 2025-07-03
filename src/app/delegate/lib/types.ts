@@ -3,7 +3,7 @@ import { Address } from 'viem'
 import { ReactNode } from 'react'
 
 interface CardState {
-  contentValue?: ReactNode | undefined
+  contentValue?: ReactNode | string | undefined
   isLoading?: boolean
 }
 

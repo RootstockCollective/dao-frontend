@@ -9,10 +9,10 @@ export interface DelegateCardProps {
   address: Address
   since: string | number
   votingPower: string | number
-  votingWeight: string
+  votingWeight: string | number
   totalVotes: string | number
   delegators: string | number
-  onDelegate: () => void
+  onDelegate: (address: Address) => void
   name?: string
   className?: string
   buttonText?: string
@@ -35,7 +35,7 @@ export const DelegateCard: React.FC<DelegateCardProps> = ({
   return (
     <div
       className={cn(
-        'rounded bg-bg-60 px-2 pb-6 flex flex-col items-center relative min-w-[200px]',
+        'rounded bg-bg-60 px-2 pb-6 flex flex-col items-center relative min-w-[220px]',
         className,
       )}
       data-testid="delegateCardContainer"
@@ -72,7 +72,7 @@ export const DelegateCard: React.FC<DelegateCardProps> = ({
           </div>
         </div>
       </div>
-      <Button variant={buttonVariant} className="mt-6" onClick={onDelegate}>
+      <Button variant={buttonVariant} className="mt-6" onClick={() => onDelegate(address)}>
         {buttonText}
       </Button>
     </div>

@@ -1,27 +1,32 @@
 import { DelegateCard } from '@/app/delegate/components/DelegateCard'
-import { Address } from 'viem'
+import { Address, isAddress } from 'viem'
 import { useNftHoldersWithVotingPower } from '@/app/user/Delegation/hooks/useNftHoldersWithVotingPower'
 import { Span } from '@/components/TypographyNew'
 import { Button } from '@/components/ButtonNew'
 import { useState, ChangeEvent } from 'react'
+import { cn } from '@/lib/utils'
 
 interface Props {
   didIDelegateToMyself: boolean
+  onDelegate: (address: Address) => void
 }
 
-export const DelegatesContainer = ({ didIDelegateToMyself }: Props) => {
+export const DelegatesContainer = ({ didIDelegateToMyself, onDelegate }: Props) => {
   const [addressToDelegate, setAddressToDelegate] = useState('')
+  const isAddressInvalid = !!addressToDelegate && !isAddress(addressToDelegate)
 
   const delegates = useNftHoldersWithVotingPower()
-  // @TODO execution action from context (delegate)
 
   const onDelegateChangeAddress = (e: ChangeEvent<HTMLInputElement>) => {
     setAddressToDelegate(e.target.value)
   }
 
   const onUpdateDelegate = () => {
-    // @TODO trigger modal here
+    if (isAddress(addressToDelegate)) {
+      onDelegate(addressToDelegate)
+    }
   }
+
   return (
     <div className="bg-bg-80 mt-[8px] p-[24px]">
       <div className="mb-[10px] flex flex-col items-center">
@@ -34,11 +39,19 @@ export const DelegatesContainer = ({ didIDelegateToMyself }: Props) => {
           type="text"
           name="address"
           placeholder="Delegate's RNS name or address"
-          className="w-full max-w-md bg-bg-60 placeholder:text-[16px] font-rootstock-sans px-[16px] py-[16px] mt-4 rounded text-white placeholder-bg-0"
+          className={cn(
+            'w-full max-w-md bg-bg-60 placeholder:text-[16px] font-rootstock-sans px-[16px] py-[16px] mt-4 rounded text-white placeholder-bg-0',
+            isAddressInvalid && 'border border-red-500',
+          )}
           onChange={onDelegateChangeAddress}
         />
         <div>
-          <Button variant="primary" className="mt-3 mb-[40px]" onClick={onUpdateDelegate}>
+          <Button
+            variant="primary"
+            className="mt-3 mb-[40px]"
+            onClick={onUpdateDelegate}
+            disabled={isAddressInvalid}
+          >
             {didIDelegateToMyself ? 'Delegate' : 'Update delegate'}
           </Button>
         </div>
@@ -49,14 +62,16 @@ export const DelegatesContainer = ({ didIDelegateToMyself }: Props) => {
           <DelegateCard
             key={delegate.address}
             address={delegate.address as Address}
+            // @TODO fetch since
             since="May 2025"
             votingPower={delegate.votingPower?.toString() || 0}
+            // @TODO fetch voting weight
             votingWeight=" - "
+            // @TODO fetch total votes
             totalVotes={1}
+            // @TODO fetch delegators
             delegators={89}
-            onDelegate={() =>
-              console.log('Here we should trigger modal to delegate' /* @TODO add this action */)
-            }
+            onDelegate={() => onDelegate(delegate.address as Address)}
           />
         ))}
       </div>
