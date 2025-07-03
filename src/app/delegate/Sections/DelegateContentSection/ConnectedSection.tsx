@@ -61,7 +61,11 @@ export const ConnectedSection = () => {
             </Paragraph>
             <Paragraph>You only delegated your own voting power, not your tokens.</Paragraph>
             {/* Update delegate button here */}
-            <Button variant="secondary-outline" onClick={() => {}} className="w-[fit-content] mt-[24px]">
+            <Button
+              variant="secondary-outline"
+              onClick={onShowDelegates}
+              className="w-[fit-content] mt-[24px]"
+            >
               {/* Pending edit icon here */}
               Update delegate
             </Button>
