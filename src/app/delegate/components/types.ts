@@ -15,10 +15,24 @@ export interface CardsState {
   delegated: CardState
 }
 
-// Context state interface (expandable)
-export interface DelegateContextState {
+// Data state interface
+export interface DelegateDataState {
   cards: CardsState
-  // Add other properties here as needed for expansion
   didIDelegateToMyself: boolean
   delegateeAddress?: Address
 }
+
+// UI state interface
+export interface DelegateUIState {
+  isDelegationPending: boolean
+  isReclaimPending: boolean
+}
+
+// Actions interface
+export interface DelegateActions {
+  setIsDelegationPending: (isPending: boolean) => void
+  setIsReclaimPending: (isPending: boolean) => void
+}
+
+// Combined context state interface
+export interface DelegateContextState extends DelegateDataState, DelegateUIState, DelegateActions {}

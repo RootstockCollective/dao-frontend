@@ -14,14 +14,22 @@ import { useAccount } from 'wagmi'
 import { formatNumberWithCommas } from '@/lib/utils'
 
 export const ConnectedSection = () => {
-  const { didIDelegateToMyself, delegateeAddress, cards } = useDelegateContext()
+  const {
+    didIDelegateToMyself,
+    delegateeAddress,
+    cards,
+    isDelegationPending,
+    isReclaimPending,
+    setIsDelegationPending,
+    setIsReclaimPending,
+  } = useDelegateContext()
+
+  const { address: myAddress } = useAccount()
   const [shouldShowDelegates, setShouldShowDelegates] = useState(true)
   const [isDelegateModalOpened, setIsDelegateModalOpened] = useState(false)
-  const [isDelegationPending, setIsDelegationPending] = useState(false)
-  const [isReclaimPending, setIsReclaimPending] = useState(false)
   const [isReclaimModalOpened, setIsReclaimModalOpened] = useState(false)
-  const { address: myAddress } = useAccount()
 
+  // @TODO get from input
   const temporaryAddress = '0xc6cc5b597f80276eae5cb80530acff3e89070a47'
   const { onDelegate } = useDelegateToAddress()
 
@@ -35,30 +43,23 @@ export const ConnectedSection = () => {
         action: 'delegation',
       })
     },
-    [onDelegate],
+    [onDelegate, setIsDelegationPending, setIsDelegateModalOpened],
   )
 
-  const handleReclaim = useCallback(
-    (address: Address) => {
-      setIsReclaimPending(true)
-      executeTxFlow({
-        onRequestTx: () => {
-          console.log('🚀 ~ ConnectedSection ~ address:', address)
-          return onDelegate(myAddress as Address)
-        },
-        onPending: () => setIsReclaimModalOpened(false),
-        onComplete: () => setIsReclaimPending(false),
-        action: 'reclaim',
-      })
-    },
-    [onDelegate, myAddress],
-  )
+  const handleReclaim = useCallback(() => {
+    setIsReclaimPending(true)
+    executeTxFlow({
+      onRequestTx: () => onDelegate(myAddress as Address),
+      onPending: () => setIsReclaimModalOpened(false),
+      onComplete: () => setIsReclaimPending(false),
+      action: 'reclaim',
+    })
+  }, [onDelegate, myAddress, setIsReclaimPending, setIsReclaimModalOpened])
 
   const onShowDelegates = () => {
     setShouldShowDelegates(true)
   }
 
-  // @TODO use the delegate info from the context to populate this data
   return (
     <>
       {didIDelegateToMyself && (
@@ -69,27 +70,6 @@ export const ConnectedSection = () => {
         >
           {isDelegationPending ? 'Delegating...' : 'Delegate'}
         </Button>
-      )}
-      {isDelegateModalOpened && (
-        <DelegateModal
-          onDelegate={handleDelegate}
-          onClose={() => setIsDelegateModalOpened(false)}
-          isLoading={isDelegationPending}
-          title={`You are about to delegate your own voting power of ${formatNumberWithCommas(Number(cards.own.contentValue))} to`}
-          address={temporaryAddress}
-          actionButtonText={isDelegationPending ? 'Delegating...' : 'Delegate'}
-        />
-      )}
-      {isReclaimModalOpened && (
-        <DelegateModal
-          onDelegate={handleReclaim}
-          onClose={() => setIsReclaimModalOpened(false)}
-          isLoading={isReclaimPending}
-          title={`You are about to reclaim your own voting power of ${formatNumberWithCommas(Number(cards.own.contentValue))} from`}
-          address={delegateeAddress as Address}
-          since="your delegate since December 31, 2024"
-          actionButtonText={isReclaimPending ? 'Reclaiming...' : 'Reclaim'}
-        />
       )}
       {!didIDelegateToMyself && delegateeAddress && (
         <div className="flex flex-row bg-bg-80 p-[24px]">
@@ -148,6 +128,27 @@ export const ConnectedSection = () => {
       )}
       {(shouldShowDelegates || didIDelegateToMyself) && (
         <DelegatesContainer didIDelegateToMyself={didIDelegateToMyself} />
+      )}
+      {isDelegateModalOpened && (
+        <DelegateModal
+          onDelegate={handleDelegate}
+          onClose={() => setIsDelegateModalOpened(false)}
+          isLoading={isDelegationPending}
+          title={`You are about to delegate your own voting power of ${formatNumberWithCommas(Number(cards.own.contentValue))} to`}
+          address={temporaryAddress}
+          actionButtonText={isDelegationPending ? 'Delegating...' : 'Delegate'}
+        />
+      )}
+      {isReclaimModalOpened && (
+        <DelegateModal
+          onDelegate={handleReclaim}
+          onClose={() => setIsReclaimModalOpened(false)}
+          isLoading={isReclaimPending}
+          title={`You are about to reclaim your own voting power of ${formatNumberWithCommas(Number(cards.own.contentValue))} from`}
+          address={delegateeAddress as Address}
+          since="your delegate since December 31, 2024"
+          actionButtonText={isReclaimPending ? 'Reclaiming...' : 'Reclaim'}
+        />
       )}
     </>
   )

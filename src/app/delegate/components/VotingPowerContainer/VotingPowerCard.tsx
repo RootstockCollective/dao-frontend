@@ -3,7 +3,7 @@ import { Tooltip } from '@/components/Tooltip'
 import { Paragraph, Span } from '@/components/TypographyNew'
 import KotoQuestionMarkIcon from '@/components/Icons/KotoQuestionMarkIcon'
 import { Metric } from '@/components/Metric'
-import HourglassIcon from '@/components/Icons/HourglassIcon'
+import HourglassAnimatedIcon from '@/components/Icons/HourglassAnimatedIcon'
 
 interface CardTooltipProps {
   text: ReactNode
@@ -40,7 +40,7 @@ export const VotingPowerCard = ({ title, tooltipTitle, contentValue, isLoading }
       <Paragraph className="text-[32px] font-[400] text-ellipsis">
         {contentValue !== undefined ? contentValue : ' - '}
       </Paragraph>
-      {isLoading && <HourglassIcon />}
+      {isLoading && <HourglassAnimatedIcon />}
     </div>
   )
   return <Metric title={fullTitle}>{fullContent}</Metric>

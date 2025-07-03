@@ -1,3 +1,4 @@
+'use client'
 import { DelegateCard } from '@/app/delegate/components'
 import { Address } from 'viem'
 import { useNftHoldersWithVotingPower } from '@/app/user/Delegation/hooks/useNftHoldersWithVotingPower'

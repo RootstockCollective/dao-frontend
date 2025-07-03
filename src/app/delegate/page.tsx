@@ -1,3 +1,4 @@
+'use client'
 import { DelegateContextProvider } from '@/app/delegate/components/DelegateContext'
 import { BannerSection } from '@/app/delegate/Sections/BannerSection/BannerSection'
 import { VotingPowerSection } from '@/app/delegate/Sections/VotingPowerSection/VotingPowerSection'
