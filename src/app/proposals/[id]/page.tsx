@@ -149,7 +149,7 @@ const parseProposalActionDetails = (
 
 const PageWithProposal = (proposal: ParsedProposal) => {
   const { proposalId, name, description, proposer, Starts, calldatasParsed } = proposal
-  const [vote, setVote] = useState<Vote | null>('for')
+  const [vote, setVote] = useState<Vote | undefined>('for')
   const [errorVoting, setErrorVoting] = useState('')
   const { address, isConnected } = useAccount()
   const votingModal = useModal()
@@ -558,9 +558,14 @@ const PageWithProposal = (proposal: ParsedProposal) => {
               abstain: abstainVote,
               quorum,
             }}
-            buttonAction={getButtonActionForState(proposalState)}
+            buttonAction={
+              didUserVoteAlready && proposalState !== ProposalState.Succeeded
+                ? undefined
+                : getButtonActionForState(proposalState)
+            }
             actionDisabled={isConnected && cannotCastVote}
             voteButtonRef={voteButtonRef}
+            hasVoted={vote}
           />
           <ActionDetails parsedAction={parsedAction} actionType={actionType} />
         </div>

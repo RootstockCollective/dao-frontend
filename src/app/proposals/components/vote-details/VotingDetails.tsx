@@ -6,6 +6,7 @@ import { capitalizeFirstLetter } from '@/shared/utils'
 import { Header, Paragraph } from '@/components/TypographyNew'
 import { formatNumberWithCommas } from '@/lib/utils'
 import Big from 'big.js'
+import { Vote } from '@/components/Modal/VoteProposalModal'
 
 interface VoteCounterProps {
   title: string
@@ -29,8 +30,6 @@ export const VoteCounter = ({ title, value, color, disabled }: VoteCounterProps)
   )
 }
 
-type HasVoted = 'for' | 'abstain' | 'against'
-
 export interface ButtonAction {
   onButtonClick: (event: React.MouseEvent<HTMLButtonElement>) => void
   actionName: string
@@ -45,7 +44,7 @@ interface VoteDetailsProps {
     quorum: bigint
   }
   buttonAction?: ButtonAction
-  hasVoted?: HasVoted
+  hasVoted?: Vote
   actionDisabled?: boolean
   voteButtonRef?: React.Ref<HTMLButtonElement>
 }
