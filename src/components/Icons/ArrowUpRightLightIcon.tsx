@@ -6,10 +6,12 @@ export function ArrowUpRightLightIcon({
   size = 16,
   color = DEFAULT_ICON_COLOR,
   fill = 'none',
+  strokeWidth = '1.25',
   ...props
 }: IconProps) {
   return (
     <svg
+      aria-label={ariaLabel}
       xmlns="http://www.w3.org/2000/svg"
       width={size}
       height={size}
@@ -18,11 +20,17 @@ export function ArrowUpRightLightIcon({
       {...props}
     >
       <g clip-path="url(#clip0_5261_3588)">
-        <path d="M5 15L15 5" stroke={color} strokeWidth="1.25" strokeLinecap="round" strokeLinejoin="round" />
+        <path
+          d="M5 15L15 5"
+          stroke={color}
+          strokeWidth={strokeWidth}
+          strokeLinecap="round"
+          strokeLinejoin="round"
+        />
         <path
           d="M6.875 5H15V13.125"
           stroke={color}
-          strokeWidth="1.25"
+          strokeWidth={strokeWidth}
           strokeLinecap="round"
           strokeLinejoin="round"
         />

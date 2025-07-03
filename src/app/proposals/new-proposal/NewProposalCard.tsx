@@ -1,11 +1,12 @@
 import { cn } from '@/lib/utils'
 import { motion, type HTMLMotionProps } from 'motion/react'
 import Image from 'next/image'
-import { Button } from '@/components/ButtonNew'
-import { type NewProposalCardData } from './newProposalCards.data'
+import { type NewProposalCardBaseData } from './newProposalCards.data'
+import { DotsOverlayVert } from './images/DotsOverlayVert'
+import { CardButton } from './CardButton'
 
 interface Props extends HTMLMotionProps<'div'> {
-  card: NewProposalCardData
+  card: NewProposalCardBaseData
 }
 
 export function NewProposalCard({ card, className, ...props }: Props) {
@@ -18,7 +19,7 @@ export function NewProposalCard({ card, className, ...props }: Props) {
         className,
       )}
       initial={{ opacity: 0 }}
-      animate={{ opacity: 1, transition: { duration: 1 } }}
+      animate={{ opacity: 1, transition: { duration: 1, delay: 0.05 } }}
       exit={{ opacity: 0, transition: { duration: 0.3 } }}
       {...props}
     >
@@ -27,14 +28,8 @@ export function NewProposalCard({ card, className, ...props }: Props) {
         <div className="w-full h-full overflow-hidden rounded-sm">
           <Image src={image} alt={cardTitle} className="w-full h-full object-cover" />
         </div>
-        {/* Decorative dots overlay - SVG pattern */}
         <div className="absolute -bottom-3 right-4">
-          <svg width="30" height="40" viewBox="0 0 30 40" fill="none">
-            <rect x="10" y="10" width="10" height="10" rx="1" fill="#1C1A1B" />
-            <rect x="20" y="20" width="10" height="10" rx="1" fill="#1C1A1B" />
-            <rect x="0" y="30" width="10" height="10" rx="1" fill="#1C1A1B" />
-            <rect x="10" y="0" width="10" height="10" rx="1" fill="#E4E1DA" />
-          </svg>
+          <DotsOverlayVert />
         </div>
       </div>
 
@@ -42,7 +37,7 @@ export function NewProposalCard({ card, className, ...props }: Props) {
       <div className="px-6 pb-10 flex flex-col gap-8">
         {/* Title Section */}
         <div className="flex flex-col gap-4">
-          <h2 className="text-[44px] leading-none font-normal text-bg-100 uppercase font-kk-topo">
+          <h2 className="text-3xl sm:text-[44px] leading-none font-normal text-bg-100 uppercase font-kk-topo">
             {cardTitle}
           </h2>
         </div>
@@ -54,9 +49,9 @@ export function NewProposalCard({ card, className, ...props }: Props) {
 
         {/* Button Section */}
         <div className="flex justify-end">
-          <Button variant="secondary" onClick={onButtonClick}>
+          <CardButton onClick={onButtonClick} className="text-text-100 bg-bg-100">
             {buttonText}
-          </Button>
+          </CardButton>
         </div>
       </div>
     </motion.div>

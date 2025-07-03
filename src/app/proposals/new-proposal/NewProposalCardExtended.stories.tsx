@@ -1,13 +1,13 @@
 import type { Meta, StoryObj } from '@storybook/react'
-import { NewProposalCard } from './NewProposalCard'
-import { newProposalCards, type NewProposalCardBaseData } from './newProposalCards.data'
+import { NewProposalCardExtended } from './NewProposalCardExtended'
+import { newProposalCards, type NewProposalCardExtendedData } from './newProposalCards.data'
 import { useState } from 'react'
 import { AnimatePresence } from 'motion/react'
 import { Button } from '@/components/ButtonNew'
 
-const meta: Meta<typeof NewProposalCard> = {
-  title: 'Proposals/NewProposalCard',
-  component: NewProposalCard,
+const meta: Meta<typeof NewProposalCardExtended> = {
+  title: 'Proposals/NewProposalCardExtended',
+  component: NewProposalCardExtended,
   parameters: {
     layout: 'fullscreen',
   },
@@ -17,12 +17,12 @@ const meta: Meta<typeof NewProposalCard> = {
 export default meta
 type Story = StoryObj<typeof meta>
 
-const Card = ({ card }: { card: NewProposalCardBaseData }) => {
+const Card = ({ card }: { card: NewProposalCardExtendedData }) => {
   const [visible, setVisible] = useState(false)
   return (
     <div>
       <Button onClick={() => setVisible(v => !v)}>{visible ? 'Hide' : 'Show'}</Button>
-      <AnimatePresence>{visible && <NewProposalCard card={card} />}</AnimatePresence>
+      <AnimatePresence>{visible && <NewProposalCardExtended card={card} />}</AnimatePresence>
     </div>
   )
 }
