@@ -4,18 +4,23 @@ import { useDelegateContext } from '@/app/delegate/components/DelegateContext'
 import { DelegateCard } from '@/app/delegate/components'
 import { Header, Paragraph, Span } from '@/components/TypographyNew'
 import { Button } from '@/components/ButtonNew'
-import { Address, Hash } from 'viem'
+import { Address } from 'viem'
 import { useCallback, useState } from 'react'
 import Image from 'next/image'
 import { DelegateModal } from '@/app/delegate/components/DelegateModal/DelegateModal'
 import { useDelegateToAddress } from '@/shared/hooks/useDelegateToAddress'
 import { executeTxFlow } from '@/shared/notification/executeTxFlow'
+import { useAccount } from 'wagmi'
+import { formatNumberWithCommas } from '@/lib/utils'
 
 export const ConnectedSection = () => {
   const { didIDelegateToMyself, delegateeAddress, cards } = useDelegateContext()
   const [shouldShowDelegates, setShouldShowDelegates] = useState(true)
   const [isDelegateModalOpened, setIsDelegateModalOpened] = useState(false)
   const [isDelegationPending, setIsDelegationPending] = useState(false)
+  const [isReclaimPending, setIsReclaimPending] = useState(false)
+  const [isReclaimModalOpened, setIsReclaimModalOpened] = useState(false)
+  const { address: myAddress } = useAccount()
 
   const temporaryAddress = '0xc6cc5b597f80276eae5cb80530acff3e89070a47'
   const { onDelegate } = useDelegateToAddress()
@@ -33,6 +38,22 @@ export const ConnectedSection = () => {
     [onDelegate],
   )
 
+  const handleReclaim = useCallback(
+    (address: Address) => {
+      setIsReclaimPending(true)
+      executeTxFlow({
+        onRequestTx: () => {
+          console.log('🚀 ~ ConnectedSection ~ address:', address)
+          return onDelegate(myAddress as Address)
+        },
+        onPending: () => setIsReclaimModalOpened(false),
+        onComplete: () => setIsReclaimPending(false),
+        action: 'reclaim',
+      })
+    },
+    [onDelegate, myAddress],
+  )
+
   const onShowDelegates = () => {
     setShouldShowDelegates(true)
   }
@@ -41,36 +62,46 @@ export const ConnectedSection = () => {
   return (
     <>
       {didIDelegateToMyself && (
-        <>
-          <Button
-            variant="primary"
-            onClick={() => setIsDelegateModalOpened(true)}
-            disabled={isDelegationPending}
-          >
-            {isDelegationPending ? 'Delegating...' : 'Delegate'}
-          </Button>
-          {isDelegateModalOpened && (
-            <DelegateModal
-              onDelegate={handleDelegate}
-              onClose={() => setIsDelegateModalOpened(false)}
-              isLoading={isDelegationPending}
-              amount={Number(cards.own.contentValue)}
-              address={temporaryAddress}
-            />
-          )}
-        </>
+        <Button
+          variant="primary"
+          onClick={() => setIsDelegateModalOpened(true)}
+          disabled={isDelegationPending}
+        >
+          {isDelegationPending ? 'Delegating...' : 'Delegate'}
+        </Button>
+      )}
+      {isDelegateModalOpened && (
+        <DelegateModal
+          onDelegate={handleDelegate}
+          onClose={() => setIsDelegateModalOpened(false)}
+          isLoading={isDelegationPending}
+          title={`You are about to delegate your own voting power of ${formatNumberWithCommas(Number(cards.own.contentValue))} to`}
+          address={temporaryAddress}
+          actionButtonText={isDelegationPending ? 'Delegating...' : 'Delegate'}
+        />
+      )}
+      {isReclaimModalOpened && (
+        <DelegateModal
+          onDelegate={handleReclaim}
+          onClose={() => setIsReclaimModalOpened(false)}
+          isLoading={isReclaimPending}
+          title={`You are about to reclaim your own voting power of ${formatNumberWithCommas(Number(cards.own.contentValue))} from`}
+          address={delegateeAddress as Address}
+          since="your delegate since December 31, 2024"
+          actionButtonText={isReclaimPending ? 'Reclaiming...' : 'Reclaim'}
+        />
       )}
       {!didIDelegateToMyself && delegateeAddress && (
         <div className="flex flex-row bg-bg-80 p-[24px]">
           <DelegateCard
-            address={delegateeAddress as Address}
+            address={delegateeAddress}
             since="May 2025"
             votingPower={0}
             delegators={0}
             votingWeight="0"
             totalVotes="0"
-            onDelegate={() => console.log('Here we should trigger RECLAIM')}
-            buttonText="Reclaim"
+            onDelegate={() => setIsReclaimModalOpened(true)}
+            buttonText={isReclaimPending ? 'Reclaiming...' : 'Reclaim'}
             buttonVariant="primary"
           />
           <div className="flex flex-col ml-[32px] w-full">

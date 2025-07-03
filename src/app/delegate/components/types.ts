@@ -1,4 +1,5 @@
 /** State to be used by the Context */
+import { Address } from 'viem'
 import { ReactNode } from 'react'
 
 interface CardState {
@@ -19,5 +20,5 @@ export interface DelegateContextState {
   cards: CardsState
   // Add other properties here as needed for expansion
   didIDelegateToMyself: boolean
-  delegateeAddress?: string
+  delegateeAddress?: Address
 }

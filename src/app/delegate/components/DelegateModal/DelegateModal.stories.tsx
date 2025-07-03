@@ -14,10 +14,10 @@ const meta: Meta<typeof DelegateModal> = {
 export default meta
 type Story = StoryObj<typeof DelegateModal>
 
-export const WithName: Story = {
+export const DelegateWithName: Story = {
   args: {
     onClose: () => {},
-    amount: 1000000,
+    title: 'You are about to delegate your own voting power of 1,000,000 to',
     address: '0xc6cc5b597f80276eae5cb80530acff3e89070a47',
     name: 'Boltz',
     since: 'May 2025',
@@ -42,11 +42,66 @@ export const WithName: Story = {
   },
 }
 
-export const WithAddressOnly: Story = {
+export const DelegateWithAddressOnly: Story = {
   args: {
     onClose: () => {},
-    amount: 1000000,
+    title: 'You are about to delegate your own voting power of 1,000,000 to',
     address: '0xc6cc5b597f80276eae5cb80530acff3e89070a47',
+  },
+  render: props => {
+    const [isModalOpened, setIsModalOpened] = useState(false)
+    return (
+      <>
+        <Button onClick={() => setIsModalOpened(true)}>Open</Button>
+        {isModalOpened && (
+          <DelegateModal
+            {...props}
+            onClose={() => setIsModalOpened(false)}
+            onDelegate={() => {
+              console.log('Delegating...')
+              setIsModalOpened(false)
+            }}
+          />
+        )}
+      </>
+    )
+  },
+}
+
+export const ReclaimWithName: Story = {
+  args: {
+    onClose: () => {},
+    title: 'You are about to reclaim your own voting power of 1,000,000 from',
+    address: '0xc6cc5b597f80276eae5cb80530acff3e89070a47',
+    name: 'Boltz',
+    since: 'May 2025',
+  },
+  render: props => {
+    const [isModalOpened, setIsModalOpened] = useState(false)
+    return (
+      <>
+        <Button onClick={() => setIsModalOpened(true)}>Open</Button>
+        {isModalOpened && (
+          <DelegateModal
+            {...props}
+            onClose={() => setIsModalOpened(false)}
+            onDelegate={() => {
+              console.log('Delegating...')
+              setIsModalOpened(false)
+            }}
+          />
+        )}
+      </>
+    )
+  },
+}
+
+export const ReclaimWithAddressOnly: Story = {
+  args: {
+    onClose: () => {},
+    title: 'You are about to reclaim your own voting power of 1,000,000 from',
+    address: '0xc6cc5b597f80276eae5cb80530acff3e89070a47',
+    since: 'your delegate since December 31, 2024',
   },
   render: props => {
     const [isModalOpened, setIsModalOpened] = useState(false)

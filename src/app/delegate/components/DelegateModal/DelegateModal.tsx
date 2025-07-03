@@ -1,28 +1,30 @@
 import { Button } from '@/components/ButtonNew'
 import { Jdenticon } from '@/components/Header/Jdenticon'
 import { Modal } from '@/components/Modal'
-import { Header, Label, Paragraph, Span } from '@/components/TypographyNew'
-import { formatNumberWithCommas, shortAddress } from '@/lib/utils'
+import { Header, Paragraph, Span } from '@/components/TypographyNew'
+import { shortAddress } from '@/lib/utils'
 import { Address } from 'viem'
 
 interface Props {
   onClose: () => void
   onDelegate: (address: Address) => void
-  amount: number
+  title: string
   address: Address
   name?: string
   since?: string
   isLoading?: boolean
+  actionButtonText: string
 }
 
 export const DelegateModal = ({
   onClose,
   onDelegate,
-  amount,
+  title,
   address,
   name,
   since = 'new delegate',
   isLoading = false,
+  actionButtonText,
 }: Props) => {
   return (
     <Modal
@@ -33,9 +35,7 @@ export const DelegateModal = ({
       closeButtonColor="black"
     >
       <div className="flex flex-col gap-2 items-center py-4 px-8">
-        <Paragraph className="pr-8 text-bg-100">
-          You are about to delegate your own voting power of {formatNumberWithCommas(amount)} to
-        </Paragraph>
+        <Paragraph className="pr-8 text-bg-100">{title}</Paragraph>
         {name ? (
           <>
             <div className="rounded-full bg-text-100">
@@ -68,7 +68,7 @@ export const DelegateModal = ({
             disabled={isLoading}
             className="disabled:bg-disabled-border"
           >
-            {isLoading ? 'Delegating...' : 'Delegate'}
+            {actionButtonText}
           </Button>
         </div>
       </div>
