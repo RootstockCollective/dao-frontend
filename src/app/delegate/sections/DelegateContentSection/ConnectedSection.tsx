@@ -5,7 +5,7 @@ import { DelegateCard } from '@/app/delegate/components/DelegateCard'
 import { Header, Paragraph, Span } from '@/components/TypographyNew'
 import { Button } from '@/components/ButtonNew'
 import { Address } from 'viem'
-import { useCallback, useMemo, useState } from 'react'
+import { useCallback, useState } from 'react'
 import Image from 'next/image'
 import { DelegateModal } from '@/app/delegate/components/DelegateModal/DelegateModal'
 import { useDelegateToAddress } from '@/shared/hooks/useDelegateToAddress'
@@ -135,13 +135,17 @@ export const ConnectedSection = () => {
           </div>
         </div>
       )}
-      {(shouldShowDelegates || didIDelegateToMyself) && (
+      <div
+        className={`transition-opacity duration-300 ${
+          shouldShowDelegates || didIDelegateToMyself ? 'opacity-100' : 'opacity-0'
+        }`}
+      >
         <DelegatesContainer
           didIDelegateToMyself={didIDelegateToMyself}
           onDelegate={onShowDelegate}
           onCloseClick={onHideDelegates}
         />
-      )}
+      </div>
       {isDelegateModalOpened && addressToDelegate && (
         <DelegateModal
           onDelegate={handleDelegate}
