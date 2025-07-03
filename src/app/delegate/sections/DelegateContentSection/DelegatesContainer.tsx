@@ -75,9 +75,9 @@ export const DelegatesContainer = ({ didIDelegateToMyself, onDelegate, onCloseCl
             // @TODO fetch voting weight
             votingWeight=" - "
             // @TODO fetch total votes
-            totalVotes={1}
+            totalVotes={' - '}
             // @TODO fetch delegators
-            delegators={89}
+            delegators={' - '}
             onDelegate={() => onDelegate(delegate.address as Address)}
           />
         ))}

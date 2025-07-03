@@ -127,7 +127,7 @@ export const ConnectedSection = () => {
             <Button
               variant="secondary-outline"
               onClick={onShowDelegates}
-              className="w-[fit-content] mt-[24px] font-normal gap-1"
+              className="w-[fit-content] mt-[24px] font-normal gap-1 py-[4px] py-[8px] rounded border-bg-40 hover:border-primary"
             >
               <EditIconKoto size={20} />
               <span>Update delegate</span>
