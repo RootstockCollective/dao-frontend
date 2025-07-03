@@ -1,4 +1,4 @@
-import { CardsState } from '@/app/delegate/components/types'
+import { CardsState } from '@/app/delegate/lib/types'
 import { ConnectWorkflow } from '@/shared/walletConnection/connection/ConnectWorkflow'
 import { VotingPowerContainer } from '@/app/delegate/components/VotingPowerContainer/VotingPowerContainer'
 

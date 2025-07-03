@@ -1,9 +1,7 @@
 'use client'
-import { DelegateContextProvider } from '@/app/delegate/components/DelegateContext'
-import { BannerSection } from '@/app/delegate/Sections/BannerSection/BannerSection'
-import { VotingPowerSection } from '@/app/delegate/Sections/VotingPowerSection/VotingPowerSection'
+import { DelegateContextProvider } from '@/app/delegate/contexts/DelegateContext'
+import { BannerSection, VotingPowerSection, DelegateContentSection } from '@/app/delegate/sections'
 import { Header } from '@/components/TypographyNew'
-import { DelegateContentSection } from '@/app/delegate/Sections/DelegateContentSection/DelegateContentSection'
 
 export default function Delegate() {
   return (

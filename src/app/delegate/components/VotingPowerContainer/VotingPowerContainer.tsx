@@ -1,8 +1,8 @@
 'use client'
 import { Header } from '@/components/TypographyNew'
-import { CardsState } from '../types'
+import { VOTING_POWER_CARDS_INFO } from '../../lib/constants'
+import { CardsState } from '../../lib/types'
 import { VotingPowerCard } from './VotingPowerCard'
-import { VOTING_POWER_CARDS_INFO } from './constants'
 
 interface VotingPowerContainerProps {
   cards: CardsState

@@ -1,5 +1,5 @@
 'use client'
-import { useDelegateContext } from '@/app/delegate/components/DelegateContext'
+import { useDelegateContext } from '@/app/delegate/contexts/DelegateContext'
 import { BannerDelegate } from '@/components/Banner/BannerDelegate'
 import { useAccount } from 'wagmi'
 

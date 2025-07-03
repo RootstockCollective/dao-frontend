@@ -1,26 +1,14 @@
 'use client'
-import { defaultCardsState } from '@/app/delegate/components/constants'
-import { DelegateContextState, DelegateDataState, DelegateUIState } from '@/app/delegate/components/types'
+import { initialContextState, initialDataState, initialUIState } from '@/app/delegate/lib/constants'
+import { DelegateContextState, DelegateDataState, DelegateUIState } from '@/app/delegate/lib/types'
 import { useGetExternalDelegatedAmount } from '@/shared/hooks/useGetExternalDelegatedAmount'
 import { produce } from 'immer'
 import { createContext, ReactNode, useCallback, useContext, useEffect, useState } from 'react'
 import { formatEther } from 'viem'
 import { useAccount } from 'wagmi'
 
-// Initial state
-const initialDataState: DelegateDataState = {
-  cards: defaultCardsState,
-  didIDelegateToMyself: false,
-  delegateeAddress: undefined,
-}
-
-const initialUIState: DelegateUIState = {
-  isDelegationPending: false,
-  isReclaimPending: false,
-}
-
 // Context
-const DelegateContext = createContext<DelegateContextState | undefined>(undefined)
+const DelegateContext = createContext<DelegateContextState>(initialContextState)
 
 // Custom hook to use the context
 export const useDelegateContext = (): DelegateContextState => {
