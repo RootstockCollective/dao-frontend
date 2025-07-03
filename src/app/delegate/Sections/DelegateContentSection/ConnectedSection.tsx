@@ -19,7 +19,7 @@ export const ConnectedSection = () => {
   return (
     <>
       {!didIDelegateToMyself && delegateeAddress && (
-        <div className="flex flex-row">
+        <div className="flex flex-row bg-bg-80 p-[24px]">
           <DelegateCard
             address={delegateeAddress as Address}
             since="May 2025"
