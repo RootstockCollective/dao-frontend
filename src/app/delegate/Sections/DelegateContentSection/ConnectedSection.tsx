@@ -73,7 +73,9 @@ export const ConnectedSection = () => {
           </div>
         </div>
       )}
-      {(shouldShowDelegates || didIDelegateToMyself) && <DelegatesContainer />}
+      {(shouldShowDelegates || didIDelegateToMyself) && (
+        <DelegatesContainer didIDelegateToMyself={didIDelegateToMyself} />
+      )}
     </>
   )
 }

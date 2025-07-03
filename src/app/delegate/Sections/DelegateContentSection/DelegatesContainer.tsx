@@ -5,7 +5,11 @@ import { Span } from '@/components/TypographyNew'
 import { Button } from '@/components/ButtonNew'
 import { useState, ChangeEvent } from 'react'
 
-export const DelegatesContainer = () => {
+interface Props {
+  didIDelegateToMyself: boolean
+}
+
+export const DelegatesContainer = ({ didIDelegateToMyself }: Props) => {
   const [addressToDelegate, setAddressToDelegate] = useState('')
 
   const delegates = useNftHoldersWithVotingPower()
@@ -21,7 +25,10 @@ export const DelegatesContainer = () => {
   return (
     <div className="bg-bg-80 mt-[8px] p-[24px]">
       <div className="mb-[10px] flex flex-col items-center">
-        <Span>Input delegate to make governance decisions on your behalf</Span>
+        <Span>
+          {didIDelegateToMyself && 'Input delegate to make governance decisions on your behalf'}
+          {!didIDelegateToMyself && 'Input a new delegate for your voting power'}
+        </Span>
         <input
           type="text"
           name="address"
@@ -31,7 +38,8 @@ export const DelegatesContainer = () => {
         />
         <div>
           <Button variant="primary" className="mt-3 mb-[40px]" onClick={onUpdateDelegate}>
-            Update delegate
+            {didIDelegateToMyself && 'Delegate'}
+            {!didIDelegateToMyself && 'Update delegate'}
           </Button>
         </div>
         <Span>or select one of the delegates vetted by the community</Span>
