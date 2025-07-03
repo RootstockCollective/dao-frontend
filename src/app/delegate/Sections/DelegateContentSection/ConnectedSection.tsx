@@ -1,5 +1,5 @@
 'use client'
-import { DelegatesContainer } from '@/app/delegate/sections/DelegateContentSection/DelegatesContainer'
+import { DelegatesContainer } from '@/app/delegate/Sections/DelegateContentSection/DelegatesContainer'
 import { useDelegateContext } from '@/app/delegate/contexts/DelegateContext'
 import { DelegateCard } from '@/app/delegate/components/DelgateCard'
 import { Header, Paragraph, Span } from '@/components/TypographyNew'
@@ -52,7 +52,7 @@ export const ConnectedSection = () => {
       onRequestTx: () => onDelegate(myAddress as Address),
       onPending: () => setIsReclaimModalOpened(false),
       onComplete: () => setIsReclaimPending(false),
-      action: 'reclaim',
+      action: 'reclaiming',
     })
   }, [onDelegate, myAddress, setIsReclaimPending, setIsReclaimModalOpened])
 

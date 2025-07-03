@@ -1,5 +1,5 @@
 import { DelegateContextProvider } from '@/app/delegate/contexts/DelegateContext'
-import { BannerSection, VotingPowerSection, DelegateContentSection } from '@/app/delegate/sections'
+import { BannerSection, VotingPowerSection, DelegateContentSection } from '@/app/delegate/Sections'
 import { Header } from '@/components/TypographyNew'
 
 export default function Delegate() {

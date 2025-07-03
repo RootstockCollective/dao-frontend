@@ -19,12 +19,12 @@ export const ReclaimCell = ({ onDelegateTxStarted }: Props) => {
     if (!address || isPending) return
     onDelegate(address)
       .then(txHash => {
-        setGlobalMessage(TX_MESSAGES.reclaim.pending)
+        setGlobalMessage(TX_MESSAGES.reclaiming.pending)
         onDelegateTxStarted(txHash, 'reclaiming')
       })
       .catch(err => {
         if (!isUserRejectedTxError(err)) {
-          setGlobalMessage(TX_MESSAGES.reclaim.error)
+          setGlobalMessage(TX_MESSAGES.reclaiming.error)
         }
       })
   }

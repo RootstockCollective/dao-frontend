@@ -155,7 +155,7 @@ export const TX_MESSAGES = {
       loading: false,
     },
   },
-  reclaim: {
+  reclaiming: {
     pending: {
       title: 'Reclaiming in process',
       content: 'Your transaction is in progress. It will be visible when the transaction is confirmed.',
