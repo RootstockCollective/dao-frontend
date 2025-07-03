@@ -19,7 +19,7 @@ export function ArrowUpRightLightIcon({
       fill={fill}
       {...props}
     >
-      <g clip-path="url(#clip0_5261_3588)">
+      <g clipPath="url(#clip0_5261_3588)">
         <path
           d="M5 15L15 5"
           stroke={color}

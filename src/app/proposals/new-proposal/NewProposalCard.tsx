@@ -1,3 +1,5 @@
+'use client'
+
 import { cn } from '@/lib/utils'
 import { motion, type HTMLMotionProps } from 'motion/react'
 import Image from 'next/image'
@@ -13,11 +15,7 @@ export function NewProposalCard({ card, className, ...props }: Props) {
   const { buttonText, cardTitle, image, onButtonClick, textBlock } = card
   return (
     <motion.div
-      className={cn(
-        'rounded-sm w-full max-w-[540px] bg-text-80 overflow-hidden',
-        'flex flex-col gap-6',
-        className,
-      )}
+      className={cn('rounded-sm w-full h-full bg-text-80 overflow-hidden', 'flex flex-col gap-6', className)}
       initial={{ opacity: 0 }}
       animate={{ opacity: 1, transition: { duration: 1, delay: 0.05 } }}
       exit={{ opacity: 0, transition: { duration: 0.3 } }}

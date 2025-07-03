@@ -80,7 +80,7 @@ const MenuItem = ({
   variants,
 }: (typeof menuData)[number] & { variants: Variants }) => {
   const { isSidebarOpen } = useLayoutContext()
-  const isActive = usePathname()?.substring(1) === href
+  const isActive = usePathname().split('/').at(1) === href
   return (
     <li className={cn('relative pl-3', { 'bg-v-charcoal': isSidebarOpen && isActive })}>
       <Link href={`/${href}`} data-testid={buttonProps.id}>
