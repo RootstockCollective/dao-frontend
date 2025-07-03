@@ -69,6 +69,7 @@ export const DelegatesContainer = ({ didIDelegateToMyself, onDelegate, onCloseCl
           <DelegateCard
             key={delegate.address}
             address={delegate.address as Address}
+            name={delegate.RNS || undefined}
             // @TODO fetch since
             since="May 2025"
             votingPower={delegate.votingPower?.toString() || 0}
