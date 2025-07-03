@@ -1,5 +1,5 @@
 'use client'
-import { DelegatesContainer } from '@/app/delegate/Sections/DelegateContentSection/DelegatesContainer'
+import { DelegatesContainer } from '@/app/delegate/sections/DelegateContentSection/DelegatesContainer'
 import { useDelegateContext } from '@/app/delegate/contexts/DelegateContext'
 import { DelegateCard } from '@/app/delegate/components/DelegateCard'
 import { Header, Paragraph, Span } from '@/components/TypographyNew'
