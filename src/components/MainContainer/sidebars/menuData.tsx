@@ -33,4 +33,9 @@ export const menuData = [
     text: 'Collective Rewards',
     buttonProps: { id: 'Button_CollectiveRewards', name: 'collective-rewards' },
   },
+  {
+    href: 'delegate',
+    text: 'Delegate',
+    buttonProps: { id: 'Button_Delegate', name: 'delegate' },
+  },
 ] as const satisfies MenuData[]
