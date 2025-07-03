@@ -2,7 +2,7 @@ import { Address } from 'viem'
 import { useGetDelegates } from '@/app/user/Delegation/hooks/useGetDelegates'
 import { useAccount, useReadContract } from 'wagmi'
 import { StRIFTokenAbi } from '@/lib/abis/StRIFTokenAbi'
-import { STRIF_ADDRESS } from '@/lib/constants'
+import { AVERAGE_BLOCKTIME, STRIF_ADDRESS } from '@/lib/constants'
 
 /**
  * Custom hook to calculate the amount of voting power delegated to an address by other users.
@@ -35,7 +35,7 @@ export const useGetExternalDelegatedAmount = (address: Address | undefined) => {
       functionName: 'getVotes',
       args: [ownAddress],
       query: {
-        refetchInterval: 10000,
+        refetchInterval: AVERAGE_BLOCKTIME,
       },
     },
   )
@@ -47,7 +47,7 @@ export const useGetExternalDelegatedAmount = (address: Address | undefined) => {
       functionName: 'balanceOf',
       args: [ownAddress],
       query: {
-        refetchInterval: 10000,
+        refetchInterval: AVERAGE_BLOCKTIME,
       },
     },
   )
@@ -57,17 +57,31 @@ export const useGetExternalDelegatedAmount = (address: Address | undefined) => {
   const didIDelegateToMyself = ownAddress === delegateeAddress
   const doIHaveVotingPower = (votingPower || 0n) > 0n
 
-  let amount = 0n
+  let amountDelegatedToMe = 0n
+  let delegated = 0n
+  let own = balance || 0n
+
+  if (!didIDelegateToMyself) {
+    delegated = own || 0n
+  }
 
   if (!didIDelegateToMyself && doIHaveVotingPower) {
-    amount = votingPower || 0n
+    amountDelegatedToMe = votingPower || 0n
   }
 
   if (didIDelegateToMyself && votingPower && balance) {
     if (votingPower > balance) {
-      amount = votingPower - balance
+      amountDelegatedToMe = votingPower - balance
     }
   }
 
-  return { amount, isLoading }
+  return {
+    amount: amountDelegatedToMe,
+    isLoading,
+    didIDelegateToMyself,
+    delegated,
+    own,
+    available: amountDelegatedToMe + (own - delegated),
+    delegateeAddress,
+  }
 }

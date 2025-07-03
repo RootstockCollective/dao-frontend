@@ -23,7 +23,7 @@ const CardTooltip = ({ text }: CardTooltipProps) => (
 interface CardProps {
   title: string
   tooltipTitle?: ReactNode
-  contentValue?: string
+  contentValue?: ReactNode
   isLoading?: boolean
 }
 

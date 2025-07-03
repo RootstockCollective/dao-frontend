@@ -2,6 +2,7 @@ import { StRIFTokenAbi } from '@/lib/abis/StRIFTokenAbi'
 import { tokenContracts } from '@/lib/contracts'
 import { Address } from 'viem'
 import { useReadContract } from 'wagmi'
+import { AVERAGE_BLOCKTIME } from '@/lib/constants'
 
 const stRifContract = {
   abi: StRIFTokenAbi,
@@ -15,7 +16,7 @@ export const useGetDelegates = (address: Address | undefined) => {
       functionName: 'delegates',
       args: [address],
       query: {
-        refetchInterval: 5000,
+        refetchInterval: AVERAGE_BLOCKTIME,
       },
     },
   )

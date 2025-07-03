@@ -19,6 +19,12 @@ export const ConnectButtonComponent = ({ onClick }: ConnectButtonComponentProps)
   </Button>
 )
 
+export const ConnectButtonOrangeComponent = ({ onClick }: ConnectButtonComponentProps) => (
+  <Button onClick={onClick} data-testid="ConnectWallet" variant="primary" className="px-2 py-1 border-bg-40">
+    Connect Wallet
+  </Button>
+)
+
 export const ConnectButtonComponentSecondary = ({ onClick }: ConnectButtonComponentProps) => (
   <OldButton onClick={onClick} data-testid="ConnectWallet" variant="secondary">
     Connect Wallet
