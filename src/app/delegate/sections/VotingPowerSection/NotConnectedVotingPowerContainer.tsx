@@ -6,9 +6,10 @@ export const NotConnectedVotingPowerContainer = () => {
   const cards: CardsState = {
     available: {
       contentValue: (
-        <div className="flex flex-row h-max-[32px]">
-          - <ConnectWorkflow />
-        </div>
+        <span className="flex flex-row max-h-[20px] gap-[4px] items-center" data-testid="CardConnectButton">
+          <span>-</span>
+          <ConnectWorkflow />
+        </span>
       ),
     },
     own: {},
