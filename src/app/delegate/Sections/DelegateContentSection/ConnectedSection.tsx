@@ -9,7 +9,7 @@ import Image from 'next/image'
 
 export const ConnectedSection = () => {
   const { didIDelegateToMyself, delegateeAddress } = useDelegateContext()
-  const [shouldShowDelegates, setShouldShowDelegates] = useState(true)
+  const [shouldShowDelegates, setShouldShowDelegates] = useState(false)
 
   const onShowDelegates = () => {
     setShouldShowDelegates(true)
@@ -29,6 +29,7 @@ export const ConnectedSection = () => {
             totalVotes="0"
             onDelegate={() => console.log('Here we should trigger RECLAIM')}
             delegateButtonText="Reclaim"
+            delegateButtonVariant="primary"
           />
           <div className="flex flex-col ml-[32px] w-full">
             {/* Banner here with delegation perks */}
