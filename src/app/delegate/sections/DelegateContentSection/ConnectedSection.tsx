@@ -25,7 +25,7 @@ export const ConnectedSection = () => {
     refetch,
   } = useDelegateContext()
 
-  const { address } = useAccount()
+  const { address: ownAddress } = useAccount()
   const { onDelegate } = useDelegateToAddress()
 
   const [shouldShowDelegates, setShouldShowDelegates] = useState(false)
@@ -39,7 +39,7 @@ export const ConnectedSection = () => {
       executeTxFlow({
         onRequestTx: () => onDelegate(address),
         onPending: () => setIsDelegateModalOpened(false),
-        onSuccess: refetch,
+        onSuccess: () => refetch(),
         onComplete: () => setIsDelegationPending(false),
         action: 'delegation',
       })
@@ -50,13 +50,13 @@ export const ConnectedSection = () => {
   const handleReclaim = useCallback(() => {
     setIsReclaimPending(true)
     executeTxFlow({
-      onRequestTx: () => onDelegate(address as Address),
+      onRequestTx: () => onDelegate(ownAddress as Address),
       onPending: () => setIsReclaimModalOpened(false),
-      onSuccess: refetch,
+      onSuccess: () => refetch(),
       onComplete: () => setIsReclaimPending(false),
       action: 'reclaiming',
     })
-  }, [onDelegate, address, setIsReclaimPending, setIsReclaimModalOpened, refetch])
+  }, [onDelegate, ownAddress, setIsReclaimPending, setIsReclaimModalOpened, refetch])
 
   const onShowDelegates = () => {
     setShouldShowDelegates(true)
