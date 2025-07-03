@@ -12,6 +12,7 @@ import { useDelegateToAddress } from '@/shared/hooks/useDelegateToAddress'
 import { executeTxFlow } from '@/shared/notification/executeTxFlow'
 import { useAccount } from 'wagmi'
 import { formatNumberWithCommas } from '@/lib/utils'
+import { EditIconKoto } from '@/components/Icons'
 
 export const ConnectedSection = () => {
   const {
@@ -126,10 +127,10 @@ export const ConnectedSection = () => {
             <Button
               variant="secondary-outline"
               onClick={onShowDelegates}
-              className="w-[fit-content] mt-[24px]"
+              className="w-[fit-content] mt-[24px] font-normal gap-1"
             >
-              {/* Pending edit icon here */}
-              Update delegate
+              <EditIconKoto size={20} />
+              <span>Update delegate</span>
             </Button>
           </div>
         </div>
