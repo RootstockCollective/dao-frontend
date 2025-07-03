@@ -4,20 +4,34 @@ import { useDelegateContext } from '@/app/delegate/components/DelegateContext'
 import { DelegateCard } from '@/app/delegate/components'
 import { Header, Paragraph, Span } from '@/components/TypographyNew'
 import { Button } from '@/components/ButtonNew'
-import { Address } from 'viem'
-import { useState } from 'react'
+import { Address, Hash } from 'viem'
+import { useCallback, useState } from 'react'
 import Image from 'next/image'
 import { DelegateModal } from '@/app/delegate/components/DelegateModal/DelegateModal'
 import { useDelegateToAddress } from '@/shared/hooks/useDelegateToAddress'
+import { executeTxFlow } from '@/shared/notification/executeTxFlow'
 
 export const ConnectedSection = () => {
   const { didIDelegateToMyself, delegateeAddress, cards } = useDelegateContext()
   const [shouldShowDelegates, setShouldShowDelegates] = useState(true)
   const [isDelegateModalOpened, setIsDelegateModalOpened] = useState(false)
+  const [isDelegationPending, setIsDelegationPending] = useState(false)
 
+  const temporaryAddress = '0xc6cc5b597f80276eae5cb80530acff3e89070a47'
   const { onDelegate } = useDelegateToAddress()
 
-  const address = '0xc6cc5b597f80276eae5cb80530acff3e89070a47'
+  const handleDelegate = useCallback(
+    (address: Address) => {
+      setIsDelegationPending(true)
+      executeTxFlow({
+        onRequestTx: () => onDelegate(address),
+        onPending: () => setIsDelegateModalOpened(false),
+        onComplete: () => setIsDelegationPending(false),
+        action: 'delegation',
+      })
+    },
+    [onDelegate],
+  )
 
   const onShowDelegates = () => {
     setShouldShowDelegates(true)
@@ -28,15 +42,20 @@ export const ConnectedSection = () => {
     <>
       {didIDelegateToMyself && (
         <>
-          <Button variant="primary" onClick={() => setIsDelegateModalOpened(true)}>
-            Delegate
+          <Button
+            variant="primary"
+            onClick={() => setIsDelegateModalOpened(true)}
+            disabled={isDelegationPending}
+          >
+            {isDelegationPending ? 'Delegating...' : 'Delegate'}
           </Button>
           {isDelegateModalOpened && (
             <DelegateModal
-              onDelegate={onDelegate}
+              onDelegate={handleDelegate}
               onClose={() => setIsDelegateModalOpened(false)}
+              isLoading={isDelegationPending}
               amount={Number(cards.own.contentValue)}
-              address={address}
+              address={temporaryAddress}
             />
           )}
         </>

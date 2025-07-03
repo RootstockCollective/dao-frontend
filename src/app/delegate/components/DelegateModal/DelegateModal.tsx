@@ -12,6 +12,7 @@ interface Props {
   address: Address
   name?: string
   since?: string
+  isLoading?: boolean
 }
 
 export const DelegateModal = ({
@@ -21,6 +22,7 @@ export const DelegateModal = ({
   address,
   name,
   since = 'new delegate',
+  isLoading = false,
 }: Props) => {
   return (
     <Modal
@@ -60,8 +62,13 @@ export const DelegateModal = ({
           <Button variant="secondary-outline" onClick={onClose}>
             <Span className="text-bg-100">Cancel</Span>
           </Button>
-          <Button variant="primary" onClick={() => onDelegate(address)}>
-            Delegate
+          <Button
+            variant="primary"
+            onClick={() => onDelegate(address)}
+            disabled={isLoading}
+            className="disabled:bg-disabled-border"
+          >
+            {isLoading ? 'Delegating...' : 'Delegate'}
           </Button>
         </div>
       </div>

@@ -9,7 +9,10 @@ import { Hash } from 'viem'
 
 interface Props {
   onRequestTx: () => Promise<Hash>
-  onSuccess?: () => void
+  onPending?: (txHash: Hash) => void
+  onSuccess?: (txHash: Hash) => void
+  onError?: (txHash: Hash | undefined, err: Error) => void
+  onComplete?: (txHash: Hash | undefined) => void
   action: keyof typeof TX_MESSAGES
 }
 
@@ -39,7 +42,10 @@ const createToastConfig = (
  *
  * @param props - Configuration object containing transaction parameters
  * @param props.onRequestTx - Function that initiates the transaction (e.g., contract write)
+ * @param props.onPending - Optional callback executed when the transaction is pending
  * @param props.onSuccess - Optional callback executed on successful transaction completion
+ * @param props.onError - Optional callback executed on transaction error
+ * @param props.onComplete - Optional callback executed on transaction completion
  * @param props.action - Transaction type key that maps to predefined toast messages
  *
  * @example
@@ -47,20 +53,30 @@ const createToastConfig = (
  * // Staking RIF tokens
  * const txHash = await executeTxFlow({
  *   onRequestTx: () => stakeContract.write.stake({ value: amount }),
- *   onSuccess: () => {
+ *   onPending: (txHash) => {
+ *     // Show "Loading" icon in the button
+ *   },
+ *   onSuccess: (txHash) => {
  *     // Close modal, refresh balances, etc.
  *     closeStakeModal()
  *     refetchBalances()
+ *   },
+ *   onError: (txHash, err) => {
+ *     // Stop "Loading" icon in the button
+ *   },
+ *   onComplete: (txHash) => {
+ *     // Stop "Loading" icon in the button
  *   },
  *   action: 'staking'
  * })
  *
  * // The function automatically:
- * // 1. Shows "Staking in process..." toast
+ * // 1. Shows "Transaction in process..." toast
  * // 2. Waits for blockchain confirmation
- * // 3. Updates to "Stake successful" toast
- * // 4. Calls onSuccess callback
- * // 5. Returns transaction hash
+ * // 3. Calls onPending callback
+ * // 4. Updates to "Transaction successful" or "Transaction failed" toast
+ * // 5. Calls onSuccess or onError callback
+ * // 6. Returns transaction hash
  * ```
  *
  * @remarks
@@ -69,12 +85,21 @@ const createToastConfig = (
  * - Transaction hash is used as the toast ID for consistent updates
  * - Error toasts are shown for both transaction failures and network errors
  */
-export const executeTxFlow = async ({ onRequestTx, onSuccess, action }: Props): Promise<Hash | undefined> => {
+export const executeTxFlow = async ({
+  onRequestTx,
+  onPending,
+  onSuccess,
+  onError,
+  onComplete,
+  action,
+}: Props): Promise<Hash | undefined> => {
   let txHash: Hash | undefined
   const { success, error, pending } = TX_MESSAGES[action]
 
   try {
     txHash = await onRequestTx()
+
+    onPending?.(txHash)
     showToast(createToastConfig(pending, txHash))
 
     await waitForTransactionReceipt(config, {
@@ -82,9 +107,10 @@ export const executeTxFlow = async ({ onRequestTx, onSuccess, action }: Props): 
     })
 
     updateToast(txHash, createToastConfig(success, txHash))
-    onSuccess?.()
+    onSuccess?.(txHash)
   } catch (err) {
     if (!isUserRejectedTxError(err)) {
+      onError?.(txHash, err as Error)
       console.error(`Error requesting ${action} tx`, err)
 
       // Show error toast - update existing toast if we have a hash, otherwise show new toast
@@ -95,5 +121,6 @@ export const executeTxFlow = async ({ onRequestTx, onSuccess, action }: Props): 
       }
     }
   }
+  onComplete?.(txHash)
   return txHash
 }
