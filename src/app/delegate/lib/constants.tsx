@@ -34,6 +34,7 @@ export const initialUIState: DelegateUIState = {
 export const initialActions: DelegateActions = {
   setIsDelegationPending: () => {},
   setIsReclaimPending: () => {},
+  refetch: () => {},
 }
 
 export const initialContextState: DelegateContextState = {
