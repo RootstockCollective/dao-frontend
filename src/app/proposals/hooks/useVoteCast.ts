@@ -28,7 +28,10 @@ export const useVoteCastEvent = (address: Address) => {
   })
 }
 
-export const useGetVoteForSpecificProposal = (address: Address, proposalId: string) => {
+export const useGetVoteForSpecificProposal = (
+  address: Address,
+  proposalId: string,
+): [Vote | undefined, (vote: Vote) => void] => {
   const [vote, setVote] = useState<Vote | undefined>(undefined)
 
   const { data } = useQuery({

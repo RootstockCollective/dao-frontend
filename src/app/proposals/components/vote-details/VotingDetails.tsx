@@ -6,7 +6,7 @@ import { capitalizeFirstLetter } from '@/shared/utils'
 import { Header, Paragraph } from '@/components/TypographyNew'
 import { formatNumberWithCommas } from '@/lib/utils'
 import Big from 'big.js'
-import { Vote } from '@/components/Modal/VoteProposalModal'
+import { Vote } from '@/shared/types'
 
 interface VoteCounterProps {
   title: string
