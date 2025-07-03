@@ -14,5 +14,3 @@ export function HourglassAnimatedIcon() {
     />
   )
 }
-
-export default HourglassAnimatedIcon

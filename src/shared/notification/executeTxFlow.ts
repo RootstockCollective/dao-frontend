@@ -8,12 +8,12 @@ import { Id } from 'react-toastify'
 import { Hash } from 'viem'
 
 interface Props {
+  action: keyof typeof TX_MESSAGES
   onRequestTx: () => Promise<Hash>
   onPending?: (txHash: Hash) => void
   onSuccess?: (txHash: Hash) => void
   onError?: (txHash: Hash | undefined, err: Error) => void
   onComplete?: (txHash: Hash | undefined) => void
-  action: keyof typeof TX_MESSAGES
 }
 
 /**
@@ -41,12 +41,12 @@ const createToastConfig = (
  * in the application by automatically managing toast notifications and error handling.
  *
  * @param props - Configuration object containing transaction parameters
+ * @param props.action - Transaction type key that maps to predefined toast messages
  * @param props.onRequestTx - Function that initiates the transaction (e.g., contract write)
  * @param props.onPending - Optional callback executed when the transaction is pending
  * @param props.onSuccess - Optional callback executed on successful transaction completion
  * @param props.onError - Optional callback executed on transaction error
  * @param props.onComplete - Optional callback executed on transaction completion
- * @param props.action - Transaction type key that maps to predefined toast messages
  *
  * @example
  * ```typescript
@@ -86,12 +86,12 @@ const createToastConfig = (
  * - Error toasts are shown for both transaction failures and network errors
  */
 export const executeTxFlow = async ({
+  action,
   onRequestTx,
   onPending,
   onSuccess,
   onError,
   onComplete,
-  action,
 }: Props): Promise<Hash | undefined> => {
   let txHash: Hash | undefined
   const { success, error, pending } = TX_MESSAGES[action]
