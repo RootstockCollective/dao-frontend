@@ -17,9 +17,9 @@ import { TX_MESSAGES } from '@/shared/txMessages'
 import { waitForTransactionReceipt } from '@wagmi/core'
 import { useParams } from 'next/navigation'
 import { Fragment, useEffect, useMemo, useState, useRef } from 'react'
-import { formatEther } from 'viem'
+import { formatEther, zeroAddress } from 'viem'
 import { type BaseError, useAccount } from 'wagmi'
-import { Vote, VoteProposalModal } from '@/components/Modal/VoteProposalModal'
+import { VoteProposalModal } from '@/components/Modal/VoteProposalModal'
 import { VoteSubmittedModal } from '@/components/Modal/VoteSubmittedModal'
 import { ProposalState } from '@/shared/types'
 import { isUserRejectedTxError } from '@/components/ErrorPage/commonErrors'
@@ -37,6 +37,8 @@ import { ActionDetails } from '../components/action-details'
 import type { GetPricesResult } from '@/app/user/types'
 import { ConnectButtonComponent } from '@/shared/walletConnection/components/ConnectButtonComponent'
 import { NewPopover } from '@/components/NewPopover'
+import { useGetVoteForSpecificProposal } from '../hooks/useVoteCast'
+import { Vote } from '@/shared/types'
 
 export default function ProposalView() {
   const { id } = useParams<{ id: string }>() ?? {}
@@ -148,10 +150,10 @@ const parseProposalActionDetails = (
 }
 
 const PageWithProposal = (proposal: ParsedProposal) => {
-  const { proposalId, name, description, proposer, Starts, calldatasParsed } = proposal
-  const [vote, setVote] = useState<Vote | undefined>('for')
-  const [errorVoting, setErrorVoting] = useState('')
   const { address, isConnected } = useAccount()
+  const { proposalId, name, description, proposer, Starts, calldatasParsed } = proposal
+  const [vote, setVote] = useGetVoteForSpecificProposal(address ?? zeroAddress, proposalId)
+  const [errorVoting, setErrorVoting] = useState('')
   const votingModal = useModal()
   const submittedModal = useModal()
   const { setMessage } = useAlertContext()
@@ -167,7 +169,6 @@ const PageWithProposal = (proposal: ParsedProposal) => {
     isProposalActive,
     didUserVoteAlready,
     proposalState,
-    proposalStateHuman,
     isVoting,
     isWaitingVotingReceipt,
     setVotingTxHash,
