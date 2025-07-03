@@ -247,14 +247,14 @@ const PageWithProposal = (proposal: ParsedProposal) => {
     }
   }, [isVotingConfirmed, isVotingFailed, setMessage, votingError])
 
-  const handleVoting = async (vote: Vote) => {
+  const handleVoting = async (_vote: Vote) => {
     try {
       setErrorVoting('')
       setMessage(null)
-      const txHash = await onVote(vote)
+      const txHash = await onVote(_vote)
       setMessage(TX_MESSAGES.voting.pending)
       votingModal.closeModal()
-      setVote(vote)
+      setVote(_vote)
       submittedModal.openModal()
       setVotingTxHash(txHash)
     } catch (err: any) {
