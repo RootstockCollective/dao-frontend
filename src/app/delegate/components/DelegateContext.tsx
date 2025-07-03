@@ -46,11 +46,11 @@ export const DelegateContextProvider = ({ children }: Props) => {
   useEffect(() => {
     setData(
       produce(draft => {
-        draft.cards.received.contentValue = formatEther(received)
-        draft.cards.own.contentValue = formatEther(own)
-        draft.cards.delegated.contentValue = formatEther(delegated)
+        draft.cards.received.contentValue = Number(formatEther(received)).toFixed(0)
+        draft.cards.own.contentValue = Number(formatEther(own)).toFixed(0)
+        draft.cards.delegated.contentValue = Number(formatEther(delegated)).toFixed(0)
 
-        draft.cards.available.contentValue = formatEther(available)
+        draft.cards.available.contentValue = Number(formatEther(available)).toFixed(0)
 
         draft.didIDelegateToMyself = didIDelegateToMyself
         draft.delegateeAddress = delegateeAddress
