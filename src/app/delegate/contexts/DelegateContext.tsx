@@ -38,6 +38,8 @@ export const DelegateContextProvider = ({ children }: Props) => {
     available,
     didIDelegateToMyself,
     delegateeAddress,
+    isLoading,
+    refetch,
   } = useGetExternalDelegatedAmount(address)
 
   // Actions
@@ -75,11 +77,40 @@ export const DelegateContextProvider = ({ children }: Props) => {
   useEffect(() => {
     setDataState(
       produce(draft => {
-        draft.cards.delegated.isLoading = uiState.isDelegationPending
-        draft.cards.own.isLoading = uiState.isReclaimPending
+        // loading states
+        draft.cards.delegated.isLoading = uiState.isDelegationPending || uiState.isReclaimPending
+        draft.cards.available.isLoading = uiState.isDelegationPending || uiState.isReclaimPending
+
+        const ownValue = Number(formatEther(own))
+        const delegatedValue = Number(formatEther(delegated))
+        const availableValue = Number(formatEther(available))
+
+        // content values
+        if (uiState.isDelegationPending) {
+          draft.cards.delegated.contentValue = ownValue.toFixed(0)
+          draft.cards.available.contentValue = (availableValue - ownValue).toFixed(0)
+        } else if (uiState.isReclaimPending) {
+          draft.cards.delegated.contentValue = '0'
+          draft.cards.available.contentValue = (availableValue + delegatedValue).toFixed(0)
+        } else {
+          draft.cards.delegated.contentValue = delegatedValue.toFixed(0)
+          draft.cards.available.contentValue = availableValue.toFixed(0)
+        }
       }),
     )
-  }, [uiState.isDelegationPending, uiState.isReclaimPending])
+  }, [uiState.isDelegationPending, uiState.isReclaimPending, received, delegated, own, available])
+
+  // Update loading state when refetching
+  useEffect(() => {
+    setDataState(
+      produce(draft => {
+        draft.cards.available.isLoading = isLoading
+        draft.cards.own.isLoading = isLoading
+        draft.cards.received.isLoading = isLoading
+        draft.cards.delegated.isLoading = isLoading
+      }),
+    )
+  }, [isLoading])
 
   // Combine state and actions
   const contextValue: DelegateContextState = {
@@ -87,6 +118,7 @@ export const DelegateContextProvider = ({ children }: Props) => {
     ...uiState,
     setIsDelegationPending,
     setIsReclaimPending,
+    refetch,
   }
 
   return <DelegateContext.Provider value={contextValue}>{children}</DelegateContext.Provider>

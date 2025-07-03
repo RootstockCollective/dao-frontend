@@ -5,7 +5,7 @@ import { DelegateCard } from '@/app/delegate/components/DelegateCard'
 import { Header, Paragraph, Span } from '@/components/TypographyNew'
 import { Button } from '@/components/ButtonNew'
 import { Address } from 'viem'
-import { useCallback, useState } from 'react'
+import { useCallback, useMemo, useState } from 'react'
 import Image from 'next/image'
 import { DelegateModal } from '@/app/delegate/components/DelegateModal/DelegateModal'
 import { useDelegateToAddress } from '@/shared/hooks/useDelegateToAddress'
@@ -22,9 +22,10 @@ export const ConnectedSection = () => {
     isReclaimPending,
     setIsDelegationPending,
     setIsReclaimPending,
+    refetch,
   } = useDelegateContext()
 
-  const { address: myAddress } = useAccount()
+  const { address } = useAccount()
   const { onDelegate } = useDelegateToAddress()
 
   const [shouldShowDelegates, setShouldShowDelegates] = useState(false)
@@ -38,22 +39,24 @@ export const ConnectedSection = () => {
       executeTxFlow({
         onRequestTx: () => onDelegate(address),
         onPending: () => setIsDelegateModalOpened(false),
+        onSuccess: refetch,
         onComplete: () => setIsDelegationPending(false),
         action: 'delegation',
       })
     },
-    [onDelegate, setIsDelegationPending, setIsDelegateModalOpened],
+    [onDelegate, setIsDelegationPending, setIsDelegateModalOpened, refetch],
   )
 
   const handleReclaim = useCallback(() => {
     setIsReclaimPending(true)
     executeTxFlow({
-      onRequestTx: () => onDelegate(myAddress as Address),
+      onRequestTx: () => onDelegate(address as Address),
       onPending: () => setIsReclaimModalOpened(false),
+      onSuccess: refetch,
       onComplete: () => setIsReclaimPending(false),
       action: 'reclaiming',
     })
-  }, [onDelegate, myAddress, setIsReclaimPending, setIsReclaimModalOpened])
+  }, [onDelegate, address, setIsReclaimPending, setIsReclaimModalOpened, refetch])
 
   const onShowDelegates = () => {
     setShouldShowDelegates(true)
@@ -67,6 +70,8 @@ export const ConnectedSection = () => {
   const onShowReclaim = () => {
     setIsReclaimModalOpened(true)
   }
+
+  const votingPower = formatNumberWithCommas(Number(cards.own.contentValue))
 
   return (
     <>
@@ -138,7 +143,7 @@ export const ConnectedSection = () => {
           onDelegate={handleDelegate}
           onClose={() => setIsDelegateModalOpened(false)}
           isLoading={isDelegationPending}
-          title={`You are about to delegate your own voting power of ${formatNumberWithCommas(Number(cards.own.contentValue))} to`}
+          title={`You are about to delegate your own voting power of ${votingPower} to`}
           address={addressToDelegate}
           actionButtonText={isDelegationPending ? 'Delegating...' : 'Delegate'}
         />
@@ -148,7 +153,7 @@ export const ConnectedSection = () => {
           onDelegate={handleReclaim}
           onClose={() => setIsReclaimModalOpened(false)}
           isLoading={isReclaimPending}
-          title={`You are about to reclaim your own voting power of ${formatNumberWithCommas(Number(cards.own.contentValue))} from`}
+          title={`You are about to reclaim your own voting power of ${votingPower} from`}
           address={delegateeAddress as Address}
           // @TODO fetch since
           since="your delegate since December 31, 2024"

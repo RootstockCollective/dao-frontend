@@ -14,6 +14,7 @@ interface Props {
 export const DelegatesContainer = ({ didIDelegateToMyself, onDelegate }: Props) => {
   const [addressToDelegate, setAddressToDelegate] = useState('')
   const isAddressInvalid = !!addressToDelegate && !isAddress(addressToDelegate)
+  const isAddressValid = !!addressToDelegate && isAddress(addressToDelegate)
 
   const delegates = useNftHoldersWithVotingPower()
 
@@ -22,7 +23,7 @@ export const DelegatesContainer = ({ didIDelegateToMyself, onDelegate }: Props) 
   }
 
   const onUpdateDelegate = () => {
-    if (isAddress(addressToDelegate)) {
+    if (isAddressValid) {
       onDelegate(addressToDelegate)
     }
   }
@@ -35,6 +36,7 @@ export const DelegatesContainer = ({ didIDelegateToMyself, onDelegate }: Props) 
             ? 'Input delegate to make governance decisions on your behalf'
             : 'Input a new delegate for your voting power'}
         </Span>
+        {/* @TODO support RNS */}
         <input
           type="text"
           name="address"

@@ -32,6 +32,7 @@ export interface DelegateUIState {
 export interface DelegateActions {
   setIsDelegationPending: (isPending: boolean) => void
   setIsReclaimPending: (isPending: boolean) => void
+  refetch: () => void
 }
 
 // Combined context state interface
