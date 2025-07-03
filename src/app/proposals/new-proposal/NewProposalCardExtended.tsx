@@ -1,5 +1,5 @@
+import { type HTMLAttributes } from 'react'
 import { cn } from '@/lib/utils'
-import { motion, type HTMLMotionProps } from 'motion/react'
 import Image from 'next/image'
 import { NewProposalCardExtendedData } from './newProposalCards.data'
 import { CardParagraph } from './CardParagraph'
@@ -8,23 +8,21 @@ import { DotsOverlayHoriz } from './images/DotsOverlayHoriz'
 import { DotsOverlayVert } from './images/DotsOverlayVert'
 import { CardButton } from './CardButton'
 
-interface Props extends HTMLMotionProps<'div'> {
+interface Props extends HTMLAttributes<HTMLDivElement> {
   card: NewProposalCardExtendedData
+  cancelCardSelection: () => void
 }
 
-export function NewProposalCardExtended({ card, className, ...props }: Props) {
+export function NewProposalCardExtended({ card, className, cancelCardSelection, ...props }: Props) {
   const { bigImage, cardTitle, bottomTextBlock, bottomTitle, detailsUrl, textBlock } = card
 
   return (
-    <motion.div
+    <div
       className={cn(
-        'rounded-sm w-full max-w-[1200px] bg-text-80 overflow-hidden',
+        'rounded-sm w-full max-w-[1144px] mx-auto bg-text-80 overflow-hidden',
         'flex flex-col md:flex-row p-4',
         className,
       )}
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1, transition: { duration: 1, delay: 0.05 } }}
-      exit={{ opacity: 0, transition: { duration: 0.3 } }}
       {...props}
     >
       {/* Left Side - Image Section */}
@@ -67,7 +65,7 @@ export function NewProposalCardExtended({ card, className, ...props }: Props) {
 
         {/* Action Buttons */}
         <div className="mt-8 flex justify-end gap-4">
-          <CardButton className="border border-bg-0" onClick={() => {}}>
+          <CardButton className="border border-bg-0" onClick={cancelCardSelection}>
             Cancel
           </CardButton>
           <Link href={detailsUrl}>
@@ -75,6 +73,6 @@ export function NewProposalCardExtended({ card, className, ...props }: Props) {
           </Link>
         </div>
       </div>
-    </motion.div>
+    </div>
   )
 }

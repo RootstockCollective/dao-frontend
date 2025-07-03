@@ -1,24 +1,25 @@
-'use client'
-
 import { cn } from '@/lib/utils'
-import { motion, type HTMLMotionProps } from 'motion/react'
 import Image from 'next/image'
 import { type NewProposalCardBaseData } from './newProposalCards.data'
 import { DotsOverlayVert } from './images/DotsOverlayVert'
 import { CardButton } from './CardButton'
+import { HTMLAttributes } from 'react'
 
-interface Props extends HTMLMotionProps<'div'> {
+interface Props extends HTMLAttributes<HTMLDivElement> {
   card: NewProposalCardBaseData
+  cardIndex: number
+  onSelectCard: (index: number) => void
 }
 
-export function NewProposalCard({ card, className, ...props }: Props) {
-  const { buttonText, cardTitle, image, onButtonClick, textBlock } = card
+export function NewProposalCard({ card, cardIndex, onSelectCard, className, ...props }: Props) {
+  const { buttonText, cardTitle, image, textBlock } = card
   return (
-    <motion.div
-      className={cn('rounded-sm w-full h-full bg-text-80 overflow-hidden', 'flex flex-col gap-6', className)}
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1, transition: { duration: 1, delay: 0.05 } }}
-      exit={{ opacity: 0, transition: { duration: 0.3 } }}
+    <div
+      className={cn(
+        'rounded-sm w-full max-w-[568px] h-full bg-text-80 overflow-hidden',
+        'flex flex-col gap-6',
+        className,
+      )}
       {...props}
     >
       {/* Image Section */}
@@ -47,11 +48,11 @@ export function NewProposalCard({ card, className, ...props }: Props) {
 
         {/* Button Section */}
         <div className="flex justify-end">
-          <CardButton onClick={onButtonClick} className="text-text-100 bg-bg-100">
+          <CardButton onClick={() => onSelectCard(cardIndex)} className="text-text-100 bg-bg-100">
             {buttonText}
           </CardButton>
         </div>
       </div>
-    </motion.div>
+    </div>
   )
 }

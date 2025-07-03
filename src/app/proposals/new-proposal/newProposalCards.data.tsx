@@ -12,7 +12,7 @@ interface NewProposalCardCoreProps {
 export interface NewProposalCardBaseData extends NewProposalCardCoreProps {
   image: StaticImageData
   buttonText: string
-  onButtonClick: () => void
+  extendedCardUrl: string
 }
 export interface NewProposalCardExtendedData extends NewProposalCardCoreProps {
   bigImage: StaticImageData
@@ -42,7 +42,7 @@ export const newProposalCards: NewProposalCardData[] = [
       </>
     ),
     buttonText: 'Apply for a Grant',
-    onButtonClick: () => {},
+    extendedCardUrl: '/proposals/new-proposal/grant?noScrollTop=true',
     bottomTitle: 'Before you apply for a Grant',
     bottomTextBlock: [
       {
@@ -77,7 +77,7 @@ export const newProposalCards: NewProposalCardData[] = [
       </>
     ),
     buttonText: 'Create proposal',
-    onButtonClick: () => {},
+    extendedCardUrl: '/proposals/new-proposal/builders-rewards?noScrollTop=true',
     bottomTitle: 'Before you create a proposal',
     bottomTextBlock: [
       {
