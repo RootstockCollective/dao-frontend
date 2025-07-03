@@ -1,3 +1,4 @@
+'use client'
 import { DelegatesContainer } from '@/app/delegate/Sections/DelegateContentSection/DelegatesContainer'
 import { useDelegateContext } from '@/app/delegate/components/DelegateContext'
 import { DelegateCard } from '@/app/delegate/components'
@@ -6,10 +7,17 @@ import { Button } from '@/components/ButtonNew'
 import { Address } from 'viem'
 import { useState } from 'react'
 import Image from 'next/image'
+import { DelegateModal } from '@/app/delegate/components/DelegateModal/DelegateModal'
+import { useDelegateToAddress } from '@/shared/hooks/useDelegateToAddress'
 
 export const ConnectedSection = () => {
-  const { didIDelegateToMyself, delegateeAddress } = useDelegateContext()
-  const [shouldShowDelegates, setShouldShowDelegates] = useState(false)
+  const { didIDelegateToMyself, delegateeAddress, cards } = useDelegateContext()
+  const [shouldShowDelegates, setShouldShowDelegates] = useState(true)
+  const [isDelegateModalOpened, setIsDelegateModalOpened] = useState(false)
+
+  const { onDelegate } = useDelegateToAddress()
+
+  const address = '0xc6cc5b597f80276eae5cb80530acff3e89070a47'
 
   const onShowDelegates = () => {
     setShouldShowDelegates(true)
@@ -18,6 +26,21 @@ export const ConnectedSection = () => {
   // @TODO use the delegate info from the context to populate this data
   return (
     <>
+      {didIDelegateToMyself && (
+        <>
+          <Button variant="primary" onClick={() => setIsDelegateModalOpened(true)}>
+            Delegate
+          </Button>
+          {isDelegateModalOpened && (
+            <DelegateModal
+              onDelegate={onDelegate}
+              onClose={() => setIsDelegateModalOpened(false)}
+              amount={Number(cards.own.contentValue)}
+              address={address}
+            />
+          )}
+        </>
+      )}
       {!didIDelegateToMyself && delegateeAddress && (
         <div className="flex flex-row bg-bg-80 p-[24px]">
           <DelegateCard
