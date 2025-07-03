@@ -58,9 +58,8 @@ export const ConnectedSection = () => {
     })
   }, [onDelegate, ownAddress, setIsReclaimPending, setIsReclaimModalOpened, refetch])
 
-  const onShowDelegates = () => {
-    setShouldShowDelegates(true)
-  }
+  const onShowDelegates = () => setShouldShowDelegates(true)
+  const onHideDelegates = () => setShouldShowDelegates(false)
 
   const onShowDelegate = (address: Address) => {
     setIsDelegateModalOpened(true)
@@ -136,7 +135,11 @@ export const ConnectedSection = () => {
         </div>
       )}
       {(shouldShowDelegates || didIDelegateToMyself) && (
-        <DelegatesContainer didIDelegateToMyself={didIDelegateToMyself} onDelegate={onShowDelegate} />
+        <DelegatesContainer
+          didIDelegateToMyself={didIDelegateToMyself}
+          onDelegate={onShowDelegate}
+          onCloseClick={onHideDelegates}
+        />
       )}
       {isDelegateModalOpened && addressToDelegate && (
         <DelegateModal

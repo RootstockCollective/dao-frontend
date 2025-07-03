@@ -5,13 +5,15 @@ import { Span } from '@/components/TypographyNew'
 import { Button } from '@/components/ButtonNew'
 import { useState, ChangeEvent } from 'react'
 import { cn } from '@/lib/utils'
+import { CloseIconKoto } from '@/components/Icons'
 
 interface Props {
   didIDelegateToMyself: boolean
   onDelegate: (address: Address) => void
+  onCloseClick?: () => void
 }
 
-export const DelegatesContainer = ({ didIDelegateToMyself, onDelegate }: Props) => {
+export const DelegatesContainer = ({ didIDelegateToMyself, onDelegate, onCloseClick }: Props) => {
   const [addressToDelegate, setAddressToDelegate] = useState('')
   const isAddressInvalid = !!addressToDelegate && !isAddress(addressToDelegate)
   const isAddressValid = !!addressToDelegate && isAddress(addressToDelegate)
@@ -31,6 +33,9 @@ export const DelegatesContainer = ({ didIDelegateToMyself, onDelegate }: Props) 
   return (
     <div className="bg-bg-80 mt-[8px] p-[24px]">
       <div className="mb-[10px] flex flex-col items-center">
+        {!didIDelegateToMyself && (
+          <CloseIconKoto className="self-end cursor-pointer" onClick={onCloseClick} />
+        )}
         <Span>
           {didIDelegateToMyself
             ? 'Input delegate to make governance decisions on your behalf'
