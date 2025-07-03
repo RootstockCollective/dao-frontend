@@ -15,8 +15,8 @@ export interface DelegateCardProps {
   onDelegate: () => void
   name?: string
   className?: string
-  delegateButtonText?: string
-  delegateButtonVariant?: ComponentProps<typeof Button>['variant']
+  buttonText?: string
+  buttonVariant?: ComponentProps<typeof Button>['variant']
 }
 
 export const DelegateCard: React.FC<DelegateCardProps> = ({
@@ -29,8 +29,8 @@ export const DelegateCard: React.FC<DelegateCardProps> = ({
   delegators,
   onDelegate,
   className,
-  delegateButtonText = 'Delegate',
-  delegateButtonVariant = 'secondary-outline',
+  buttonText = 'Delegate',
+  buttonVariant = 'secondary-outline',
 }) => {
   return (
     <div
@@ -72,8 +72,8 @@ export const DelegateCard: React.FC<DelegateCardProps> = ({
           </div>
         </div>
       </div>
-      <Button variant={delegateButtonVariant} className="mt-6" onClick={onDelegate}>
-        {delegateButtonText}
+      <Button variant={buttonVariant} className="mt-6" onClick={onDelegate}>
+        {buttonText}
       </Button>
     </div>
   )

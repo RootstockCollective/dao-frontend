@@ -28,8 +28,8 @@ export const ConnectedSection = () => {
             votingWeight="0"
             totalVotes="0"
             onDelegate={() => console.log('Here we should trigger RECLAIM')}
-            delegateButtonText="Reclaim"
-            delegateButtonVariant="primary"
+            buttonText="Reclaim"
+            buttonVariant="primary"
           />
           <div className="flex flex-col ml-[32px] w-full">
             {/* Banner here with delegation perks */}
