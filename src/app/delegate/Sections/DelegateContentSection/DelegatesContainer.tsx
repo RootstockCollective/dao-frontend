@@ -1,6 +1,7 @@
 import { DelegateCard } from '@/app/delegate/components'
 import { Address } from 'viem'
 import { useNftHoldersWithVotingPower } from '@/app/user/Delegation/hooks/useNftHoldersWithVotingPower'
+import { Span } from '@/components/TypographyNew'
 
 export const DelegatesContainer = () => {
   // fetch delegates
@@ -8,6 +9,8 @@ export const DelegatesContainer = () => {
   // @TODO execution action from context (delegate)
   return (
     <div className="flex flex-row flex-wrap gap-[8px]">
+      <Span>Input delegate to make governance decisions on your behalf</Span>
+      {/* @TODO new input here */}
       {delegates.map(delegate => (
         <DelegateCard
           key={delegate.address}
