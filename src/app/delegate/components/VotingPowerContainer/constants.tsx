@@ -1,8 +1,11 @@
 export const VOTING_POWER_CARDS_INFO = {
   available: {
     title: 'Available',
-    tooltipTitle:
-      'This represents: Voting power delegated to you + (your tokens - tokens you delegated to others)',
+    tooltipTitle: (
+      <>
+        This represents: <br /> Voting power delegated to you + (your tokens - tokens you delegated to others)
+      </>
+    ),
   },
   own: {
     title: 'Own',

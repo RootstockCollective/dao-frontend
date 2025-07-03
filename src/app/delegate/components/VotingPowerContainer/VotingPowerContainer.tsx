@@ -3,6 +3,7 @@ import { Header } from '@/components/TypographyNew'
 import { CardsState } from '../types'
 import { VotingPowerCard } from './VotingPowerCard'
 import { VOTING_POWER_CARDS_INFO } from './constants'
+
 interface VotingPowerContainerProps {
   cards: CardsState
 }

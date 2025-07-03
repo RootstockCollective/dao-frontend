@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { ComponentProps } from 'react'
 import { BuilderHeader } from '@/app/backing/components/BuilderHeader/BuilderHeader'
 import { Button } from '@/components/ButtonNew'
 import { cn } from '@/lib/utils'
@@ -7,14 +7,16 @@ import { Label, Paragraph } from '@/components/TypographyNew'
 
 export interface DelegateCardProps {
   address: Address
-  name?: string
   since: string | number
   votingPower: string | number
   votingWeight: string
   totalVotes: string | number
   delegators: string | number
   onDelegate: () => void
+  name?: string
   className?: string
+  buttonText?: string
+  buttonVariant?: ComponentProps<typeof Button>['variant']
 }
 
 export const DelegateCard: React.FC<DelegateCardProps> = ({
@@ -27,6 +29,8 @@ export const DelegateCard: React.FC<DelegateCardProps> = ({
   delegators,
   onDelegate,
   className,
+  buttonText = 'Delegate',
+  buttonVariant = 'secondary-outline',
 }) => {
   return (
     <div
@@ -68,8 +72,8 @@ export const DelegateCard: React.FC<DelegateCardProps> = ({
           </div>
         </div>
       </div>
-      <Button variant="secondary-outline" className="mt-6" onClick={onDelegate}>
-        Delegate
+      <Button variant={buttonVariant} className="mt-6" onClick={onDelegate}>
+        {buttonText}
       </Button>
     </div>
   )
