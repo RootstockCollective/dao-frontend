@@ -26,8 +26,9 @@ export const DelegatesContainer = ({ didIDelegateToMyself }: Props) => {
     <div className="bg-bg-80 mt-[8px] p-[24px]">
       <div className="mb-[10px] flex flex-col items-center">
         <Span>
-          {didIDelegateToMyself && 'Input delegate to make governance decisions on your behalf'}
-          {!didIDelegateToMyself && 'Input a new delegate for your voting power'}
+          {didIDelegateToMyself
+            ? 'Input delegate to make governance decisions on your behalf'
+            : 'Input a new delegate for your voting power'}
         </Span>
         <input
           type="text"
@@ -38,8 +39,7 @@ export const DelegatesContainer = ({ didIDelegateToMyself }: Props) => {
         />
         <div>
           <Button variant="primary" className="mt-3 mb-[40px]" onClick={onUpdateDelegate}>
-            {didIDelegateToMyself && 'Delegate'}
-            {!didIDelegateToMyself && 'Update delegate'}
+            {didIDelegateToMyself ? 'Delegate' : 'Update delegate'}
           </Button>
         </div>
         <Span>or select one of the delegates vetted by the community</Span>
