@@ -10,7 +10,11 @@ const stRifContract = {
 }
 
 export const useGetDelegates = (address: Address | undefined) => {
-  const { data: delegateeAddress, isLoading } = useReadContract(
+  const {
+    data: delegateeAddress,
+    isLoading,
+    refetch,
+  } = useReadContract(
     address && {
       ...stRifContract,
       functionName: 'delegates',
@@ -21,5 +25,5 @@ export const useGetDelegates = (address: Address | undefined) => {
     },
   )
 
-  return { delegateeAddress, isLoading }
+  return { delegateeAddress, isLoading, refetch }
 }

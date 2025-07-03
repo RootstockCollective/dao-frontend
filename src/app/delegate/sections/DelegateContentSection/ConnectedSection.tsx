@@ -40,7 +40,7 @@ export const ConnectedSection = () => {
       executeTxFlow({
         onRequestTx: () => onDelegate(address),
         onPending: () => setIsDelegateModalOpened(false),
-        onSuccess: () => refetch(),
+        onSuccess: refetch,
         onComplete: () => setIsDelegationPending(false),
         action: 'delegation',
       })
@@ -53,7 +53,7 @@ export const ConnectedSection = () => {
     executeTxFlow({
       onRequestTx: () => onDelegate(ownAddress as Address),
       onPending: () => setIsReclaimModalOpened(false),
-      onSuccess: () => refetch(),
+      onSuccess: refetch,
       onComplete: () => setIsReclaimPending(false),
       action: 'reclaiming',
     })
