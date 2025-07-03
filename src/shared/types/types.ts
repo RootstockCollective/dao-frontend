@@ -1,5 +1,5 @@
 import { Address } from 'viem'
-import { TX_MESSAGES } from './txMessages'
+import { TX_MESSAGES } from '../txMessages'
 
 /**
  * NFT metadata properties from JSON metadata files

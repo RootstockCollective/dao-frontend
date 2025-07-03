@@ -1,20 +1,14 @@
-import { Vote } from '@/components/Modal/VoteProposalModal'
 import { GovernorAbi } from '@/lib/abis/Governor'
 import { GovernorAddress } from '@/lib/contracts'
 import { Address } from 'viem'
 import { useAccount, useReadContract, useWaitForTransactionReceipt, useWriteContract } from 'wagmi'
 import { useProposalState } from '@/shared/hooks/useProposalState'
 import { useState } from 'react'
+import { VOTES_MAP_REVERSE, Vote } from '@/shared/types'
 
 const DEFAULT_DAO = {
   address: GovernorAddress as Address,
   abi: GovernorAbi,
-}
-
-const VOTES_MAP: Record<Vote, number> = {
-  against: 0,
-  for: 1,
-  abstain: 2,
 }
 
 export const useVoteOnProposal = (proposalId: string, shouldRefetch = true) => {
@@ -48,7 +42,7 @@ export const useVoteOnProposal = (proposalId: string, shouldRefetch = true) => {
     return castVote({
       ...DEFAULT_DAO,
       functionName: 'castVote',
-      args: [BigInt(proposalId), VOTES_MAP[vote]],
+      args: [BigInt(proposalId), VOTES_MAP_REVERSE.get(vote) as number],
     })
   }
 
