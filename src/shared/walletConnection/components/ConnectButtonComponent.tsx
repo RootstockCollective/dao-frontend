@@ -1,5 +1,4 @@
 import { Button } from '@/components/ButtonNew/Button'
-import { Button as OldButton } from '@/components/Button/Button'
 import { ConnectButtonComponentProps } from '../types'
 import { Span } from '@/components/TypographyNew'
 
@@ -26,7 +25,7 @@ export const ConnectButtonOrangeComponent = ({ onClick }: ConnectButtonComponent
 )
 
 export const ConnectButtonComponentSecondary = ({ onClick }: ConnectButtonComponentProps) => (
-  <OldButton onClick={onClick} data-testid="ConnectWallet" variant="secondary">
-    Connect Wallet
-  </OldButton>
+  <Button onClick={onClick} data-testid="ConnectWallet" variant="secondary-outline">
+    <Span className="text-v3-text-0">Connect Wallet</Span>
+  </Button>
 )

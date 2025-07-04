@@ -5,16 +5,22 @@ import { WeiPerEther } from '@/lib/constants'
 
 // Simple wrapper to convert numbers to BigInt
 const RewardsInfoWrapper: FC<
-  Omit<RewardsInfoProps, 'current' | 'next' | 'cooldownEndTime'> & {
-    current: number
-    next: number
-    cooldownEndTime: number
+  Omit<RewardsInfoProps, 'backerRewardPercentage'> & {
+    backerRewardPercentage: {
+      active: number
+      next: number
+      cooldown: number
+      previous: number
+    }
   }
-> = ({ current, next, cooldownEndTime, ...props }) => (
+> = ({ backerRewardPercentage, ...props }) => (
   <RewardsInfo
-    current={(BigInt(current) * WeiPerEther) / 100n}
-    next={(BigInt(next) * WeiPerEther) / 100n}
-    cooldownEndTime={BigInt(cooldownEndTime)}
+    backerRewardPercentage={{
+      active: (BigInt(backerRewardPercentage.active) * WeiPerEther) / 100n,
+      next: (BigInt(backerRewardPercentage.next) * WeiPerEther) / 100n,
+      cooldown: BigInt(backerRewardPercentage.cooldown),
+      previous: (BigInt(backerRewardPercentage.previous) * WeiPerEther) / 100n,
+    }}
     {...props}
   />
 )
@@ -28,9 +34,12 @@ export default meta
 type Story = StoryObj<typeof RewardsInfoWrapper>
 
 const defaultArgs = {
-  current: 50,
-  next: 50,
-  cooldownEndTime: 1717987200,
+  backerRewardPercentage: {
+    active: 50,
+    next: 50,
+    cooldown: 1717987200,
+    previous: 50,
+  },
 }
 
 export const Default: Story = {
@@ -64,7 +73,10 @@ export const WithEstimatedRewards: Story = {
 export const WithIncreaseNextRewardPct: Story = {
   args: {
     ...defaultArgs,
-    next: 60,
+    backerRewardPercentage: {
+      ...defaultArgs.backerRewardPercentage,
+      next: 60,
+    },
     estimatedRewards: {
       rif: {
         amount: {
@@ -89,7 +101,10 @@ export const WithIncreaseNextRewardPct: Story = {
 export const WithDecreaseNextRewardPct: Story = {
   args: {
     ...defaultArgs,
-    next: 40,
+    backerRewardPercentage: {
+      ...defaultArgs.backerRewardPercentage,
+      next: 40,
+    },
     estimatedRewards: {
       rif: {
         amount: {

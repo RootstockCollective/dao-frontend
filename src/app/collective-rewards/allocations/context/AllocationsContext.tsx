@@ -32,6 +32,7 @@ interface State {
   selections: Selections
   allocations: Allocations
   backer: Backer
+  builders: Builders
   isContextLoading: boolean
   contextError: Error | null
   getBuilder: (address: Address) => Builder | null
@@ -74,6 +75,7 @@ const DEFAULT_CONTEXT: AllocationsContext = {
       allocationsCount: 0,
       cumulativeAllocation: BigInt(0),
     },
+    builders: {},
     isContextLoading: true,
     contextError: null,
     getBuilder: () => null,
@@ -270,6 +272,7 @@ export const AllocationsContextProvider: FC<{ children: ReactNode }> = ({ childr
       selections,
       allocations,
       backer,
+      builders,
       isContextLoading,
       contextError,
       getBuilder,
@@ -279,6 +282,7 @@ export const AllocationsContextProvider: FC<{ children: ReactNode }> = ({ childr
     selections,
     allocations,
     backer,
+    builders,
     isContextLoading,
     contextError,
     getBuilder,

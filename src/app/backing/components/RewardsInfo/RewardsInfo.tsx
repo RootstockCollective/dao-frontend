@@ -8,22 +8,29 @@ import { BackerRewardsPercentage } from '../BackerPercentage/BackerRewardsPercen
 import { LabeledContent } from '../LabeledContent/LabeledContent'
 import { RifRbtcTooltip } from '@/components/RifRbtcTooltip/RifRbtcTooltip'
 import { DottedUnderlineLabel } from '@/components/DottedUnderlineLabel/DottedUnderlineLabel'
+import { BackerRewardsConfig } from '@/app/collective-rewards/types'
 
-export interface RewardsInfoProps extends BackerRewardPercentage {
+export interface RewardsInfoProps {
+  backerRewardPercentage?: BackerRewardsConfig
   estimatedRewards?: TokenRewards
 }
 
-export const RewardsInfo: FC<RewardsInfoProps> = ({ current, next, estimatedRewards }) => {
+export const RewardsInfo: FC<RewardsInfoProps> = ({ backerRewardPercentage, estimatedRewards }) => {
+  const { active, next } = backerRewardPercentage ?? { active: 0n, next: 0n }
+
   return (
-    <div className="flex justify-between p-3 w-full" data-testid="rewardsInfoContainer">
-      <LabeledContent label="Rewards %" className="w-1/2 pr-3">
+    <div
+      className="flex justify-between w-full border-b border-v3-bg-accent-40 p-3"
+      data-testid="rewardsInfoContainer"
+    >
+      <LabeledContent label="Rewards %" className="basis-1/2 pr-3">
         <BackerRewardsPercentage
-          currentPct={Number(weiToPercentage(current, 0))}
+          currentPct={Number(weiToPercentage(active, 0))}
           nextPct={Number(weiToPercentage(next, 0))}
         />
       </LabeledContent>
       {estimatedRewards && (
-        <LabeledContent label="Rewards (est.)" className="w-1/2">
+        <LabeledContent label="Rewards (est.)" className="basis-1/2">
           <div className="flex flex-row items-center gap-2">
             <Paragraph>
               {formatCurrency(

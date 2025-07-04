@@ -2,13 +2,16 @@ import { useGetBackersRewardPercentage } from '@/app/collective-rewards/rewards/
 import { Builder, RequiredBuilder } from '@/app/collective-rewards/types'
 import { useGetBuildersByState } from '@/app/collective-rewards/user/hooks/useGetBuildersByState'
 import { isBuilderRewardable, useHandleErrors } from '@/app/collective-rewards/utils'
-import { Button } from '@/components/Button'
 import { LoadingSpinner } from '@/components/LoadingSpinner'
 import { useRouter } from 'next/navigation'
-import { FC } from 'react'
+import { FC, useContext } from 'react'
 import { useShuffledArray } from '../../hooks/useShuffledArray'
 import { BuilderCardControl } from '../BuilderCard/BuilderCardControl'
 import { BuildersRewards } from '@/app/collective-rewards/rewards/builders/hooks/useGetBuildersRewards'
+import { Button } from '@/components/ButtonNew'
+import { BackMoreBuildersCard } from '../BuilderCard/BackMoreBuildersCard'
+import { AllocationsContext } from '@/app/collective-rewards/allocations/context'
+import { Address } from 'viem'
 
 const SPOTLIGHT_BUILDERS = 4
 
@@ -18,59 +21,59 @@ interface BuildersSpotlightProps {
 
 export const BuildersSpotlight: FC<BuildersSpotlightProps> = ({ rewardsData }) => {
   const {
-    data: builders,
-    isLoading: buildersLoading,
-    error: buildersError,
-  } = useGetBuildersByState<RequiredBuilder>()
+    state: {
+      allocations,
+      builders,
+      isContextLoading,
+      getBuilder,
+      backer: { amountToAllocate: totalOnchainAllocation },
+    },
+  } = useContext(AllocationsContext)
 
-  const buildersToShow = builders.filter(({ stateFlags }) => isBuilderRewardable(stateFlags))
+  const hasAllocations = totalOnchainAllocation > 0n
 
-  const {
-    data: buildersWithBackerRewards,
-    isLoading,
-    error: buildersWithBackerRewardsError,
-  } = useGetBackersRewardPercentage(buildersToShow.map(({ address }) => address))
+  const randomBuilders = useShuffledArray<Builder>(Object.values(builders)).filter(({ stateFlags }) =>
+    isBuilderRewardable(stateFlags),
+  )
 
-  const router = useRouter()
-  const shuffledBuilders = useShuffledArray<Builder>(buildersToShow)
-
-  useHandleErrors({
-    error: buildersWithBackerRewardsError ?? buildersError,
-    title: 'Error loading builders',
+  const allocatedBuilders = Object.entries(allocations).map(([key, value]) => {
+    const builder = getBuilder(key as Address)!
+    return {
+      ...builder,
+    }
   })
 
-  if (isLoading || buildersLoading) {
+  const buildersToShow = hasAllocations ? allocatedBuilders : randomBuilders.slice(0, SPOTLIGHT_BUILDERS)
+
+  const router = useRouter()
+
+  if (isContextLoading) {
     return <LoadingSpinner />
   }
 
-  if (!buildersWithBackerRewards || Object.keys(buildersWithBackerRewards).length === 0) {
+  if (!buildersToShow || buildersToShow.length === 0) {
     return <div className="p-4">No builders found</div>
   }
 
-  const spotlightBuilders = shuffledBuilders.map((builder: Builder) => {
+  const spotlightBuilders = buildersToShow.map((builder: Builder) => {
     const builderRewards = rewardsData.find(r => r.address === builder.address)
 
     return {
       ...builder,
-      backerRewardPct: buildersWithBackerRewards[builder.address],
       estimatedRewards: builderRewards?.estimatedRewards,
     }
   })
 
-  const visibleBuilders = spotlightBuilders.slice(0, SPOTLIGHT_BUILDERS)
-
   return (
     <>
-      <div
-        className="grid gap-2 justify-center w-full"
-        style={{ gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))' }}
-      >
-        {visibleBuilders.map(builder => (
+      <div className="grid grid-cols-4 gap-2 w-full items-stretch">
+        {spotlightBuilders.map(builder => (
           <BuilderCardControl key={builder.address} {...builder} />
         ))}
+        {hasAllocations && <BackMoreBuildersCard />}
       </div>
       <div className="flex justify-center self-center mt-6">
-        <Button variant="secondary" className="py-3 px-4" onClick={() => router.push('/builders')}>
+        <Button variant="secondary-outline" onClick={() => router.push('/builders')}>
           See all Builders
         </Button>
       </div>

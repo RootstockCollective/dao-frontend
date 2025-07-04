@@ -3,7 +3,8 @@ import { useContext, useMemo, useCallback, useEffect, useState } from 'react'
 import { Address, formatEther, parseEther } from 'viem'
 import { AllocationChangeData, AllocationItem } from '../AllocationBar/types'
 import AllocationBar from '../AllocationBar/AllocationBar'
-import { floorToUnit } from '../utils'
+import { floorToUnit, getBuilderColor } from '../utils'
+import { isBuilderRewardable } from '@/app/collective-rewards/utils'
 
 const BuilderAllocationBar = () => {
   const {
@@ -53,28 +54,36 @@ const BuilderAllocationBar = () => {
 
   // Build itemsData from orderedKeys including unallocated with its dynamic value
   const baseItems: AllocationItem[] = useMemo(() => {
-    return orderedKeys.map(key => {
-      if (key === 'unallocated') {
-        return {
-          key: 'unallocated',
-          label: 'available backing',
-          value: Number(formatEther(unallocated)),
-          displayColor: '#25211E',
+    return orderedKeys
+      .map(key => {
+        if (key === 'unallocated') {
+          return {
+            key: 'unallocated',
+            label: 'available backing',
+            value: Number(formatEther(unallocated)),
+            displayColor: '#25211E',
+          }
         }
-      }
 
-      const allocation = allocations[key as Address]
-      const builder = getBuilder(key as Address)
-      const value = allocation ? Number(formatEther(allocation)) : 0
+        const allocation = allocations[key as Address]
+        const builder = getBuilder(key as Address)
+        const isRewardable = isBuilderRewardable(builder?.stateFlags)
 
-      return {
-        key,
-        label: builder?.builderName || key,
-        value,
-        displayColor: `#${key.slice(-6).toUpperCase()}`,
-        isTemporary: initialAllocations[key as Address] !== allocation,
-      }
-    })
+        if (!isRewardable) {
+          return null
+        }
+
+        const value = allocation ? Number(formatEther(allocation)) : 0
+
+        return {
+          key,
+          label: builder?.builderName || key,
+          value,
+          displayColor: getBuilderColor(key as Address),
+          isTemporary: initialAllocations[key as Address] !== allocation,
+        }
+      })
+      .filter(item => item !== null)
   }, [orderedKeys, allocations, unallocated, initialAllocations, getBuilder])
 
   // Local state for itemsData so bar updates on interactions

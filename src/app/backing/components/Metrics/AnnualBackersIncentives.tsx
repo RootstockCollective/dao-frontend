@@ -2,7 +2,7 @@ import { Metric, MetricTitle } from '@/components/Metric'
 import { Header, Paragraph } from '@/components/TypographyNew'
 import { AnnualBackerIncentivesLoader } from '@/app/shared/components/AnnualBackersIncentivesLoader'
 import { LoadingSpinner } from '@/components/LoadingSpinner'
-import { ABIFormula } from '@/app/collective-rewards/shared/components/ABI/ABIFormula'
+import { ABIFormula } from '../ABIFormula'
 
 export const AnnualBackersIncentives = () => {
   return (

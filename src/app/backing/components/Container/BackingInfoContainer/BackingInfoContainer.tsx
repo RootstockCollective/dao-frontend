@@ -11,7 +11,7 @@ export const BackingInfoContainer: FC<BackingInfoContainerProps> = ({ className 
   return (
     <div className={cn('relative w-full bg-v3-bg-accent-80 rounded p-6', className)}>
       <div className="flex flex-col gap-[56px]">
-        <Typography className="text-v3-text-100 z-30 pt-4">{title}</Typography>
+        {title}
         {children}
       </div>
     </div>
