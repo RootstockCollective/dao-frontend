@@ -10,9 +10,18 @@ interface BuilderHeaderProps {
   name?: string
   builderPageLink?: string
   className?: string
+  showFullName?: boolean
 }
 
-export const BuilderHeader: FC<BuilderHeaderProps> = ({ address, name, builderPageLink, className }) => {
+export const BuilderHeader: FC<BuilderHeaderProps> = ({
+  address,
+  name,
+  builderPageLink,
+  className,
+  showFullName = true,
+}) => {
+  const shortedAddress = shortAddress(address)
+  const truncatedName = name ? (showFullName ? name : truncate(name, 15)) : undefined
   return (
     // TODO: do we want the whole header to redirect to the Builder page?
     <div
@@ -29,9 +38,9 @@ export const BuilderHeader: FC<BuilderHeaderProps> = ({ address, name, builderPa
           target="_blank"
           rel="noopener noreferrer"
           className="max-w-[200px] hover:relative group"
-          title={name || address}
+          title={name || shortedAddress}
         >
-          {name ? truncate(name, 18) : shortAddress(address)}
+          {truncatedName || shortedAddress}
         </Link>
       </Header>
     </div>
