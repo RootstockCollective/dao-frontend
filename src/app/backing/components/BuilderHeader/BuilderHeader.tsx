@@ -28,9 +28,10 @@ export const BuilderHeader: FC<BuilderHeaderProps> = ({ address, name, builderPa
           data-testid="builderName"
           target="_blank"
           rel="noopener noreferrer"
-          className="max-w-[200px]"
+          className="max-w-[200px] hover:relative group"
+          title={name || address}
         >
-          {name ? truncate(name, 15) : shortAddress(address)}
+          {name ? truncate(name, 18) : shortAddress(address)}
         </Link>
       </Header>
     </div>

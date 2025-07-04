@@ -77,10 +77,10 @@ axiosInstance.interceptors.request.use(
  * @example truncate('Hello, world!', 5) // 'Hello...'
  */
 export const truncate = (str: string, length: number): string => {
-  if (str.length <= length) {
-    return str
-  }
-  return str.slice(0, length) + '…'
+  if (!str) return ''
+  if (str.length <= length) return str
+  if (length <= 2) return str.slice(0, length)
+  return str.slice(0, length - 2) + '…'
 }
 
 /**
