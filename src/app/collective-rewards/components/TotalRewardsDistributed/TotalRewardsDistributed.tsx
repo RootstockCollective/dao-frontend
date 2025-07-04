@@ -11,6 +11,7 @@ import { formatCurrency } from '@/lib/utils'
 import { LoadingSpinner } from '@/components/LoadingSpinner'
 import { MetricTitle } from '@/components/Metric'
 import KotoQuestionMarkIcon from '@/components/Icons/KotoQuestionMarkIcon'
+import { Paragraph } from '@/components/TypographyNew'
 
 interface TokenRewardsProps {
   gauges: Address[]
@@ -54,25 +55,34 @@ const TokenRewards = ({ gauges, token: { address, symbol } }: TokenRewardsProps)
 interface TotalRewardsDistributedMetricProps extends CommonComponentProps {}
 
 export const TotalRewardsDistributed = ({ className }: TotalRewardsDistributedMetricProps) => {
-  const { data: allGauges } = useGetGaugesArray()
+  const { data: allGauges, isLoading, error } = useGetGaugesArray()
 
   const tokens = getTokens()
+
+  useHandleErrors({ error, title: 'Error loading gauges' })
 
   return (
     <Metric
       title={
         <MetricTitle
           title="Total Rewards Distributed"
-          className="justify-start"
-          info={<KotoQuestionMarkIcon className="cursor-pointer" />}
+          info={
+            <Paragraph className="text-[14px] font-normal text-left">
+              Total rewards distributed to Builders and Backers
+            </Paragraph>
+          }
         />
       }
       className={className}
     >
       <div className="flex flex-row gap-2">
-        {Object.values(tokens).map(token => (
-          <TokenRewards key={token.symbol} gauges={allGauges} token={token} />
-        ))}
+        {isLoading ? (
+          <LoadingSpinner size="small" />
+        ) : (
+          Object.values(tokens).map(token => (
+            <TokenRewards key={token.symbol} gauges={allGauges} token={token} />
+          ))
+        )}
       </div>
     </Metric>
   )
