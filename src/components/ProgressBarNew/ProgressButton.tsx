@@ -1,8 +1,8 @@
 import { HTMLAttributes } from 'react'
 import { AnimatedTilesLoop } from './AnimatedTiles/AnimatedTilesLoop'
-import { TimeIcon } from './icons/TimeIcon'
 import { type Color, progressBarColors } from './colors'
 import { cn } from '@/lib/utils'
+import { HourglassAnimatedIcon } from '@/components/Icons/HourglassAnimatedIcon'
 
 interface Props extends Omit<HTMLAttributes<HTMLDivElement>, 'color'> {
   tileSize?: number
@@ -22,16 +22,7 @@ export function ProgressButton({ tileSize = 12, color = 'gray', className, child
     >
       <div className="px-4 py-3 flex flex-row">
         <div className="flex items-center justify-center">
-          <TimeIcon
-            animate={{ rotate: 360 }}
-            transition={{
-              repeat: Infinity,
-              repeatType: 'loop',
-              ease: 'easeOut',
-              duration: 2,
-              repeatDelay: 1,
-            }}
-          />
+          <HourglassAnimatedIcon />
         </div>
         <div className="grow flex items-center justify-center">{children}</div>
       </div>

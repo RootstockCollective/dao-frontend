@@ -77,10 +77,10 @@ axiosInstance.interceptors.request.use(
  * @example truncate('Hello, world!', 5) // 'Hello...'
  */
 export const truncate = (str: string, length: number): string => {
-  if (str.length <= length) {
-    return str
-  }
-  return str.slice(0, length) + '…'
+  if (!str) return ''
+  if (str.length <= length) return str
+  if (length <= 2) return str.slice(0, length)
+  return str.slice(0, length - 2) + '…'
 }
 
 /**
@@ -96,6 +96,22 @@ export const truncateMiddle = (str: string, start = 10, end = 10): string => {
     return str
   }
   return str.slice(0, start) + '…' + str.slice(-end)
+}
+
+/**
+ * Truncates a string by keeping the first `length` characters and the last 3 characters
+ * @param str - The string to truncate
+ * @param length - The amount of characters to keep from the start
+ * @returns The truncated string
+ * @example truncateRns('testverylongname.rsk', 5) // 'testv…rsk'
+ * @example truncateRns('jesse.rsk', 5) // 'jesse.rsk'
+ * @example truncateRns('jesse.rsk', 4) // 'jesse.rsk'
+ * @example truncateRns('jesse.rsk', 3) // 'jes…rsk'
+ */
+export const truncateRns = (str: string, length: number): string => {
+  if (!str) return ''
+  if (str.length <= length + 5) return str
+  return str.slice(0, length) + '…' + str.slice(-3)
 }
 
 export const explorerURL = process.env.NEXT_PUBLIC_EXPLORER

@@ -10,9 +10,20 @@ interface BuilderHeaderProps {
   name?: string
   builderPageLink?: string
   className?: string
+  showFullName?: boolean
+  shouldNotRedirect?: boolean
 }
 
-export const BuilderHeader: FC<BuilderHeaderProps> = ({ address, name, builderPageLink, className }) => {
+export const BuilderHeader: FC<BuilderHeaderProps> = ({
+  address,
+  name,
+  builderPageLink,
+  className,
+  showFullName = true,
+  shouldNotRedirect = false,
+}) => {
+  const shortedAddress = shortAddress(address)
+  const truncatedName = name ? (showFullName ? name : truncate(name, 15)) : undefined
   return (
     // TODO: do we want the whole header to redirect to the Builder page?
     <div
@@ -23,15 +34,20 @@ export const BuilderHeader: FC<BuilderHeaderProps> = ({ address, name, builderPa
         <Jdenticon className="bg-v3-text-100" value={address} size="88" />
       </div>
       <Header className="mt-2 text-center text-[22px] text-v3-primary font-bold font-kk-topo">
-        <Link
-          href={builderPageLink || '#'}
-          data-testid="builderName"
-          target="_blank"
-          rel="noopener noreferrer"
-          className="max-w-[200px]"
-        >
-          {name ? truncate(name, 15) : shortAddress(address)}
-        </Link>
+        {shouldNotRedirect ? (
+          <>{truncatedName || shortedAddress}</>
+        ) : (
+          <Link
+            href={builderPageLink || '#'}
+            data-testid="builderName"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="max-w-[200px] hover:relative group"
+            title={name || shortedAddress}
+          >
+            {truncatedName || shortedAddress}
+          </Link>
+        )}
       </Header>
     </div>
   )

@@ -1,8 +1,8 @@
 'use client'
 import { Header } from '@/components/TypographyNew'
-import { CardsState } from '../types'
+import { VOTING_POWER_CARDS_INFO } from '../../lib/constants'
+import { CardsState } from '../../lib/types'
 import { VotingPowerCard } from './VotingPowerCard'
-import { VOTING_POWER_CARDS_INFO } from './constants'
 
 interface VotingPowerContainerProps {
   cards: CardsState
@@ -15,7 +15,7 @@ interface VotingPowerContainerProps {
  */
 export const VotingPowerContainer = ({ cards }: VotingPowerContainerProps) => {
   return (
-    <div className="p-[24px] bg-bg-80">
+    <div className="p-[24px] bg-bg-80" data-testid="votingPowerContainer">
       <Header variant="e3" className="mb-[24px] text-[20px]">
         VOTING POWER
       </Header>

@@ -26,9 +26,17 @@ import { AVERAGE_BLOCKTIME, STRIF_ADDRESS } from '@/lib/constants'
  */
 export const useGetExternalDelegatedAmount = (address: Address | undefined) => {
   const { address: ownAddress } = useAccount()
-  const { delegateeAddress, isLoading: isDelegateLoading } = useGetDelegates(address)
+  const {
+    delegateeAddress,
+    isLoading: isDelegateLoading,
+    refetch: refetchDelegate,
+  } = useGetDelegates(address)
 
-  const { data: votingPower, isLoading: isVotingPowerLoading } = useReadContract(
+  const {
+    data: votingPower,
+    isLoading: isVotingPowerLoading,
+    refetch: refetchVotingPower,
+  } = useReadContract(
     ownAddress && {
       abi: StRIFTokenAbi,
       address: STRIF_ADDRESS,
@@ -40,7 +48,23 @@ export const useGetExternalDelegatedAmount = (address: Address | undefined) => {
     },
   )
 
-  const { data: balance, isLoading: isBalanceLoading } = useReadContract(
+  const { data: delegateeVotingPower } = useReadContract(
+    delegateeAddress && {
+      abi: StRIFTokenAbi,
+      address: STRIF_ADDRESS,
+      functionName: 'getVotes',
+      args: [delegateeAddress],
+      query: {
+        refetchInterval: AVERAGE_BLOCKTIME,
+      },
+    },
+  )
+
+  const {
+    data: balance,
+    isLoading: isBalanceLoading,
+    refetch: refetchBalance,
+  } = useReadContract(
     ownAddress && {
       abi: StRIFTokenAbi,
       address: STRIF_ADDRESS,
@@ -75,6 +99,12 @@ export const useGetExternalDelegatedAmount = (address: Address | undefined) => {
     }
   }
 
+  const refetch = () => {
+    refetchVotingPower()
+    refetchBalance()
+    refetchDelegate()
+  }
+
   return {
     amount: amountDelegatedToMe,
     isLoading,
@@ -83,5 +113,7 @@ export const useGetExternalDelegatedAmount = (address: Address | undefined) => {
     own,
     available: amountDelegatedToMe + (own - delegated),
     delegateeAddress,
+    refetch,
+    delegateeVotingPower,
   }
 }

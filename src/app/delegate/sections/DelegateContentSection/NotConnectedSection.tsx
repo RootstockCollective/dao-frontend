@@ -2,6 +2,7 @@ import { DisconnectIcon } from '@/components/Icons'
 import { Paragraph } from '@/components/TypographyNew'
 import { ConnectWorkflow } from '@/shared/walletConnection/connection/ConnectWorkflow'
 import { ConnectButtonOrangeComponent } from '@/shared/walletConnection'
+import { ComponentProps } from 'react'
 
 export const NotConnectedSection = () => (
   <div className="flex flex-col justify-center items-center py-[80px] px-[24px] bg-bg-80">
@@ -15,7 +16,11 @@ export const NotConnectedSection = () => (
       <Paragraph className="text-text-60 mb-[24px]">
         You need to connect your wallet in order to delegate.
       </Paragraph>
-      <ConnectWorkflow ConnectComponent={ConnectButtonOrangeComponent} />
+      <ConnectWorkflow ConnectComponent={LargerConnectButton} />
     </div>
   </div>
+)
+
+const LargerConnectButton = (props: ComponentProps<typeof ConnectButtonOrangeComponent>) => (
+  <ConnectButtonOrangeComponent className="py-[12px] px-[16px]" {...props} />
 )
