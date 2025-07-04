@@ -1,25 +1,42 @@
 import React from 'react'
+import { Address } from 'viem'
+import {
+  BuilderAllTimeRewards,
+  BuilderAllTimeShare,
+  BuilderClaimableRewards,
+  BuilderEstimatedRewards,
+  BuilderLastCycleRewards,
+  BuilderRewardDetails,
+  useClaimBuilderRewards,
+} from '@/app/collective-rewards/rewards'
+import { Popover } from '@/components/Popover'
+import { Button } from '@/components/Button'
 
-// Placeholder/mock data for demonstration
-const mockRewards = {
-  rif: {
-    unclaimed: 999999999,
-    estimated: 999999999,
-    lastCycle: 999999999,
-    totalEarned: 999999999,
-    fiat: '999,999,999.99 USD',
-  },
-  rbtc: {
-    unclaimed: 9999999,
-    estimated: 9999999,
-    lastCycle: 9999999,
-    totalEarned: 9999999,
-    fiat: '999,999,999.99 USD',
-  },
-  allTimeShare: '2%',
+interface BuilderRewardsProps extends BuilderRewardDetails {
+  className?: string
 }
 
-export const BuilderRewards: React.FC<{ className?: string }> = ({ className = '' }) => {
+export const BuilderRewards: React.FC<BuilderRewardsProps> = ({ 
+  className = '',
+  builder,
+  gauge,
+  gauges,
+  tokens,
+  currency = 'USD',
+}) => {
+  const { isClaimable, claimRewards, isPaused } = useClaimBuilderRewards(builder, gauge, {
+    rif: tokens.rif.address,
+    rbtc: tokens.rbtc.address,
+  })
+
+  const rewardDetails = {
+    builder,
+    gauge,
+    gauges,
+    tokens,
+    currency,
+  }
+
   return (
     <div 
       className={`builder-rewards-container ${className}`} 
@@ -60,34 +77,39 @@ export const BuilderRewards: React.FC<{ className?: string }> = ({ className = '
           background: '#181818',
           borderRadius: '8px',
         }}>
-          <span style={{ color: '#aaa', fontSize: '14px' }}>Unclaimed</span>
-          <div>
-            <span style={{ fontWeight: 700, fontSize: '20px', color: '#fff' }}>
-              {mockRewards.rif.unclaimed.toLocaleString()} <span role="img" aria-label="RIF">🟦</span> RIF
-            </span>
-            <div style={{ color: '#aaa', fontSize: '12px' }}>{mockRewards.rif.fiat}</div>
+          <div style={{ width: '100%' }}>
+            <BuilderClaimableRewards {...rewardDetails} />
           </div>
-          <div>
-            <span style={{ fontWeight: 700, fontSize: '20px', color: '#fff' }}>
-              {mockRewards.rbtc.unclaimed.toLocaleString()} <span role="img" aria-label="rBTC">🟧</span> rBTC
-            </span>
-            <div style={{ color: '#aaa', fontSize: '12px' }}>{mockRewards.rbtc.fiat}</div>
-          </div>
-          <button 
-            style={{ 
-              marginTop: 'auto',
-              padding: '8px 16px',
-              border: '1px solid #fff',
-              borderRadius: '4px',
-              background: 'transparent',
-              color: '#fff',
-              cursor: 'pointer',
-              fontSize: '14px',
-            }}
-            onClick={() => alert('Claim Rewards (placeholder)')}
+          <Popover
+            content={
+              <div style={{ fontSize: '12px', fontWeight: 'bold', marginBottom: '4px' }}>
+                <p data-testid="adjustBackerRewardPctTooltip">You cannot be paused to claim rewards</p>
+              </div>
+            }
+            disabled={!isPaused}
           >
-            Claim Rewards
-          </button>
+            <Button
+              className="w-full mt-auto"
+              onClick={() => claimRewards()}
+              disabled={!isClaimable || isPaused}
+              variant="secondary"
+              buttonProps={{
+                style: {
+                  marginTop: 'auto',
+                  padding: '8px 16px',
+                  border: '1px solid #fff',
+                  borderRadius: '4px',
+                  background: 'transparent',
+                  color: '#fff',
+                  cursor: isClaimable && !isPaused ? 'pointer' : 'not-allowed',
+                  opacity: isClaimable && !isPaused ? 1 : 0.5,
+                  fontSize: '14px',
+                }
+              }}
+            >
+              Claim Rewards
+            </Button>
+          </Popover>
         </div>
 
         {/* Estimated this cycle */}
@@ -104,20 +126,8 @@ export const BuilderRewards: React.FC<{ className?: string }> = ({ className = '
           background: '#181818',
           borderRadius: '8px',
         }}>
-          <span style={{ color: '#aaa', fontSize: '14px' }}>
-            Estimated this cycle <span title="Info">?</span>
-          </span>
-          <div>
-            <span style={{ fontWeight: 700, fontSize: '20px', color: '#fff' }}>
-              {mockRewards.rif.estimated.toLocaleString()} <span role="img" aria-label="RIF">🟦</span> RIF
-            </span>
-            <div style={{ color: '#aaa', fontSize: '12px' }}>{mockRewards.rif.fiat}</div>
-          </div>
-          <div>
-            <span style={{ fontWeight: 700, fontSize: '20px', color: '#fff' }}>
-              {mockRewards.rbtc.estimated.toLocaleString()} <span role="img" aria-label="rBTC">🟧</span> rBTC
-            </span>
-            <div style={{ color: '#aaa', fontSize: '12px' }}>{mockRewards.rbtc.fiat}</div>
+          <div style={{ width: '100%' }}>
+            <BuilderEstimatedRewards {...rewardDetails} />
           </div>
         </div>
 
@@ -135,18 +145,8 @@ export const BuilderRewards: React.FC<{ className?: string }> = ({ className = '
           background: '#181818',
           borderRadius: '8px',
         }}>
-          <span style={{ color: '#aaa', fontSize: '14px' }}>Last cycle</span>
-          <div>
-            <span style={{ fontWeight: 700, fontSize: '20px', color: '#fff' }}>
-              {mockRewards.rif.lastCycle.toLocaleString()} <span role="img" aria-label="RIF">🟦</span> RIF
-            </span>
-            <div style={{ color: '#aaa', fontSize: '12px' }}>{mockRewards.rif.fiat}</div>
-          </div>
-          <div>
-            <span style={{ fontWeight: 700, fontSize: '20px', color: '#fff' }}>
-              {mockRewards.rbtc.lastCycle.toLocaleString()} <span role="img" aria-label="rBTC">🟧</span> rBTC
-            </span>
-            <div style={{ color: '#aaa', fontSize: '12px' }}>{mockRewards.rbtc.fiat}</div>
+          <div style={{ width: '100%' }}>
+            <BuilderLastCycleRewards {...rewardDetails} />
           </div>
         </div>
 
@@ -164,18 +164,8 @@ export const BuilderRewards: React.FC<{ className?: string }> = ({ className = '
           background: '#181818',
           borderRadius: '8px',
         }}>
-          <span style={{ color: '#aaa', fontSize: '14px' }}>Total earned</span>
-          <div>
-            <span style={{ fontWeight: 700, fontSize: '20px', color: '#fff' }}>
-              {mockRewards.rif.totalEarned.toLocaleString()} <span role="img" aria-label="RIF">🟦</span> RIF
-            </span>
-            <div style={{ color: '#aaa', fontSize: '12px' }}>{mockRewards.rif.fiat}</div>
-          </div>
-          <div>
-            <span style={{ fontWeight: 700, fontSize: '20px', color: '#fff' }}>
-              {mockRewards.rbtc.totalEarned.toLocaleString()} <span role="img" aria-label="rBTC">🟧</span> rBTC
-            </span>
-            <div style={{ color: '#aaa', fontSize: '12px' }}>{mockRewards.rbtc.fiat}</div>
+          <div style={{ width: '100%' }}>
+            <BuilderAllTimeRewards {...rewardDetails} />
           </div>
           <span style={{ 
             color: '#aaa', 
@@ -205,12 +195,9 @@ export const BuilderRewards: React.FC<{ className?: string }> = ({ className = '
           background: '#181818',
           borderRadius: '8px',
         }}>
-          <span style={{ color: '#aaa', fontSize: '14px' }}>
-            All time share <span title="Info">?</span>
-          </span>
-          <span style={{ fontWeight: 700, fontSize: '32px', color: '#fff', marginTop: '16px' }}>
-            {mockRewards.allTimeShare}
-          </span>
+          <div style={{ width: '100%' }}>
+            <BuilderAllTimeShare {...rewardDetails} />
+          </div>
         </div>
       </div>
 
