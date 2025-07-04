@@ -111,7 +111,7 @@ export const ConnectedSection = () => {
               </Header>
               <ul className="list-[circle] list-inside">
                 <li>
-                  <Span>tokens stay in your wallet</Span>
+                  <Span>your tokens stay in your wallet</Span>
                 </li>
                 <li>
                   <Span>you save on gas cost while being represented</Span>
