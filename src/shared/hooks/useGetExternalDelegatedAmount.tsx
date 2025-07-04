@@ -48,6 +48,18 @@ export const useGetExternalDelegatedAmount = (address: Address | undefined) => {
     },
   )
 
+  const { data: delegateeVotingPower } = useReadContract(
+    delegateeAddress && {
+      abi: StRIFTokenAbi,
+      address: STRIF_ADDRESS,
+      functionName: 'getVotes',
+      args: [delegateeAddress],
+      query: {
+        refetchInterval: AVERAGE_BLOCKTIME,
+      },
+    },
+  )
+
   const {
     data: balance,
     isLoading: isBalanceLoading,
@@ -102,5 +114,6 @@ export const useGetExternalDelegatedAmount = (address: Address | undefined) => {
     available: amountDelegatedToMe + (own - delegated),
     delegateeAddress,
     refetch,
+    delegateeVotingPower,
   }
 }

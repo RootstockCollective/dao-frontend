@@ -23,6 +23,7 @@ export const ConnectedSection = () => {
     isReclaimPending,
     setIsDelegationPending,
     setIsReclaimPending,
+    delegateeVotingPower,
     refetch,
   } = useDelegateContext()
 
@@ -83,14 +84,13 @@ export const ConnectedSection = () => {
             address={delegateeAddress}
             // @TODO fetch since
             since="May 2025"
-            // @TODO fetch voting power
-            votingPower={0}
+            votingPower={delegateeVotingPower ? Number(delegateeVotingPower).toFixed(0) : ' - '}
             // @TODO fetch voting weight
-            votingWeight={0}
+            votingWeight=" - "
             // @TODO fetch total votes
-            totalVotes={0}
+            totalVotes=" - "
             // @TODO fetch delegators
-            delegators={0}
+            delegators=" - "
             onDelegate={onShowReclaim}
             buttonText={isReclaimPending ? 'Reclaiming...' : 'Reclaim'}
             buttonVariant="primary"

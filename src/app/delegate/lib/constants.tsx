@@ -24,6 +24,7 @@ export const initialDataState: DelegateDataState = {
   cards: defaultCardsState,
   didIDelegateToMyself: false,
   delegateeAddress: undefined,
+  delegateeVotingPower: undefined,
 }
 
 export const initialUIState: DelegateUIState = {

@@ -20,6 +20,7 @@ export interface DelegateDataState {
   cards: CardsState
   didIDelegateToMyself: boolean
   delegateeAddress?: Address
+  delegateeVotingPower?: string
 }
 
 // UI state interface
