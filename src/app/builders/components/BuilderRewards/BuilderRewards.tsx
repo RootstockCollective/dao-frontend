@@ -8,6 +8,8 @@ import {
   BuilderRewardDetails,
 } from '@/app/collective-rewards/rewards'
 import { BuilderMetricCard } from './BuilderMetricCard'
+import { ClaimRewardsButton } from './buttons/ClaimRewardsButton'
+import { SeeRewardsHistoryButton } from './buttons/SeeRewardsHistoryButton'
 
 interface BuilderRewardsProps extends BuilderRewardDetails {
   className?: string
@@ -48,9 +50,12 @@ export const BuilderRewards: React.FC<BuilderRewardsProps> = ({
       }}>
         {/* Unclaimed */}
         <BuilderMetricCard 
-          title="Unclaimed"
-          showClaimButton
-          onClaimClick={() => alert('Claim Rewards (placeholder - to be implemented in separate task)')}
+          showButton
+          button={
+            <ClaimRewardsButton 
+              onClick={() => alert('Claim Rewards (placeholder - to be implemented in separate task)')}
+            />
+          }
         >
           <BuilderClaimableRewards 
             builder={builder}
@@ -61,7 +66,7 @@ export const BuilderRewards: React.FC<BuilderRewardsProps> = ({
         </BuilderMetricCard>
 
         {/* Estimated this cycle */}
-        <BuilderMetricCard title="Estimated this cycle ?">
+        <BuilderMetricCard>
           <BuilderEstimatedRewards 
             builder={builder}
             gauge={gauge}
@@ -71,7 +76,7 @@ export const BuilderRewards: React.FC<BuilderRewardsProps> = ({
         </BuilderMetricCard>
 
         {/* Last cycle */}
-        <BuilderMetricCard title="Last cycle">
+        <BuilderMetricCard>
           <BuilderLastCycleRewards 
             gauge={gauge}
             tokens={{ rif, rbtc }}
@@ -80,7 +85,14 @@ export const BuilderRewards: React.FC<BuilderRewardsProps> = ({
         </BuilderMetricCard>
 
         {/* Total earned */}
-        <BuilderMetricCard title="Total earned">
+        <BuilderMetricCard 
+          showButton
+          button={
+            <SeeRewardsHistoryButton 
+              onClick={() => alert('See Rewards history (placeholder - to be implemented in separate task)')}
+            />
+          }
+        >
           <BuilderAllTimeRewards 
             gauge={gauge}
             tokens={{ rif, rbtc }}
@@ -89,7 +101,7 @@ export const BuilderRewards: React.FC<BuilderRewardsProps> = ({
         </BuilderMetricCard>
 
         {/* All time share */}
-        <BuilderMetricCard title="All time share ?">
+        <BuilderMetricCard>
           <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', width: '100%' }}>
             <BuilderAllTimeShare 
               gauge={gauge}
