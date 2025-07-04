@@ -33,6 +33,7 @@ export const ConnectedSection = () => {
   const [isDelegateModalOpened, setIsDelegateModalOpened] = useState(false)
   const [isReclaimModalOpened, setIsReclaimModalOpened] = useState(false)
   const [addressToDelegate, setAddressToDelegate] = useState<Address | null>(null)
+  const [rnsToDelegate, setRnsToDelegate] = useState<string | undefined>(undefined)
 
   const handleDelegate = useCallback(
     (address: Address) => {
@@ -62,9 +63,10 @@ export const ConnectedSection = () => {
   const onShowDelegates = () => setShouldShowDelegates(true)
   const onHideDelegates = () => setShouldShowDelegates(false)
 
-  const onShowDelegate = (address: Address) => {
+  const onShowDelegate = (address: Address, rns?: string) => {
     setIsDelegateModalOpened(true)
     setAddressToDelegate(address)
+    setRnsToDelegate(rns)
   }
 
   const onShowReclaim = () => {
@@ -127,7 +129,7 @@ export const ConnectedSection = () => {
             <Button
               variant="secondary-outline"
               onClick={onShowDelegates}
-              className="w-[fit-content] mt-[24px] font-normal gap-1 py-[4px] py-[8px] rounded border-bg-40 hover:border-primary"
+              className="w-[fit-content] mt-[24px] font-normal gap-1 py-[8px] rounded border-bg-40 hover:border-primary"
             >
               <EditIconKoto size={20} />
               <span>Update delegate</span>
@@ -153,6 +155,7 @@ export const ConnectedSection = () => {
           isLoading={isDelegationPending}
           title={`You are about to delegate your own voting power of ${votingPower} to`}
           address={addressToDelegate}
+          name={rnsToDelegate}
           actionButtonText={isDelegationPending ? 'Delegating...' : 'Delegate'}
         />
       )}

@@ -12,7 +12,7 @@ export interface DelegateCardProps {
   votingWeight: string | number
   totalVotes: string | number
   delegators: string | number
-  onDelegate: (address: Address) => void
+  onDelegate: (address: Address, rns?: string) => void
   name?: string
   className?: string
   buttonText?: string
@@ -72,7 +72,7 @@ export const DelegateCard: React.FC<DelegateCardProps> = ({
           </div>
         </div>
       </div>
-      <Button variant={buttonVariant} className="mt-6" onClick={() => onDelegate(address)}>
+      <Button variant={buttonVariant} className="mt-6" onClick={() => onDelegate(address, name)}>
         {buttonText}
       </Button>
     </div>

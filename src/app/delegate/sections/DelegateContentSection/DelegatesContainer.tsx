@@ -9,7 +9,7 @@ import { CloseIconKoto } from '@/components/Icons'
 
 interface Props {
   didIDelegateToMyself: boolean
-  onDelegate: (address: Address) => void
+  onDelegate: (address: Address, rns?: string) => void
   onCloseClick?: () => void
 }
 
@@ -79,7 +79,7 @@ export const DelegatesContainer = ({ didIDelegateToMyself, onDelegate, onCloseCl
             totalVotes={' - '}
             // @TODO fetch delegators
             delegators={' - '}
-            onDelegate={() => onDelegate(delegate.address as Address)}
+            onDelegate={onDelegate}
           />
         ))}
       </div>
