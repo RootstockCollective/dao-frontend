@@ -10,7 +10,7 @@ import {
   useGetGaugesNotifyReward,
   useGetLastCycleDistribution,
 } from '@/app/collective-rewards/rewards'
-import { useGetEstimatedBackersRewardsPct } from '@/app/collective-rewards/shared'
+import { useGetEstimatedRewardsPct } from '@/app/collective-rewards/shared'
 import { RequiredBuilder } from '@/app/collective-rewards/types'
 import { WeiPerEther } from '@/lib/constants'
 import { usePricesContext } from '@/shared/context/PricesContext'
@@ -39,9 +39,9 @@ export const useGetBuildersRewards = ({ rif, rbtc }: { [token: string]: Token },
   const { data: cycle, isLoading: cycleLoading, error: cycleError } = useCycleContext()
   const {
     data: builders,
-    isLoading: estimatedBackerRewardsPctLoading,
-    error: estimatedBackerRewardsPctError,
-  } = useGetEstimatedBackersRewardsPct()
+    isLoading: estimatedRewardsPctLoading,
+    error: estimatedRewardsPctError,
+  } = useGetEstimatedRewardsPct()
 
   // get the total allocation for all the builders
   const gauges = builders.map(({ gauge }) => gauge)
@@ -86,7 +86,7 @@ export const useGetBuildersRewards = ({ rif, rbtc }: { [token: string]: Token },
   )
 
   const isLoading =
-    estimatedBackerRewardsPctLoading ||
+    estimatedRewardsPctLoading ||
     totalAllocationLoading ||
     logsLoading ||
     rewardsERC20Loading ||
@@ -95,7 +95,7 @@ export const useGetBuildersRewards = ({ rif, rbtc }: { [token: string]: Token },
     lastCycleRewardsLoading
 
   const error =
-    estimatedBackerRewardsPctError ??
+    estimatedRewardsPctError ??
     totalAllocationError ??
     logsError ??
     rewardsERC20Error ??

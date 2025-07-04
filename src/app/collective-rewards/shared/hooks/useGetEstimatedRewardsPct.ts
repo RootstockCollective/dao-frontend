@@ -1,16 +1,22 @@
-import { BackerRewardPercentage, useGetBackersRewardPercentage } from '@/app/collective-rewards/rewards'
+import {
+  BackerRewardPercentage,
+  TokenRewards,
+  useGetBackersRewardPercentage,
+} from '@/app/collective-rewards/rewards'
 import { RequiredBuilder } from '@/app/collective-rewards/types'
 import { useGetBuildersByState } from '@/app/collective-rewards/user'
 import { isBuilderRewardable } from '@/app/collective-rewards/utils'
+import { WeiPerEther } from '@/lib/constants'
 import { useReadBackersManager, useReadGauges } from '@/shared/hooks/contracts'
 import { useMemo } from 'react'
 
 export type EstimatedBackerRewards = RequiredBuilder & {
   estimatedBackerRewardsPct: bigint
+  estimatedBuilderRewardsPct: bigint
   rewardPercentage: BackerRewardPercentage
 }
 
-export const useGetEstimatedBackersRewardsPct = () => {
+export const useGetEstimatedRewardsPct = () => {
   const {
     data: builders,
     isLoading: buildersLoading,
@@ -52,11 +58,17 @@ export const useGetEstimatedBackersRewardsPct = () => {
           ? (builderRewardShares * rewardPercentageToApply) / totalPotentialRewards
           : 0n
 
+      const estimatedBuilderRewardsPct =
+        totalPotentialRewards && isRewarded
+          ? (builderRewardShares * (WeiPerEther - rewardPercentageToApply)) / totalPotentialRewards
+          : 0n
+
       return [
         ...acc,
         {
           ...builder,
           estimatedBackerRewardsPct,
+          estimatedBuilderRewardsPct,
           rewardPercentage,
         },
       ]

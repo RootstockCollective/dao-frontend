@@ -1,5 +1,5 @@
-import { type IconProps } from './types'
-import { DEFAULT_ICON_COLOR } from './constants'
+import { type IconProps } from '@/components/Icons/types'
+import { DEFAULT_ICON_COLOR } from '@/components/Icons/constants'
 
 export function DecorativeSquares({
   'aria-label': ariaLabel = 'Decorative Squares Icon',
