@@ -37,17 +37,18 @@ export default function NewProposal() {
       <AnimatePresence mode="popLayout">
         {proposalSelection === null ? (
           <motion.div key="selector" variants={variants} initial="initial" animate="animate" exit="exit">
-            <div className="flex flex-col gap-2">
-              <Paragraph className="mb-6">Select the type of proposal that you want to create:</Paragraph>
-              {/* 2 New Proposal Cards */}
-              <div className="w-full flex flex-col lg:flex-row items-center lg:items-stretch justify-center gap-2">
-                {newProposalCards.map((card, i) => (
-                  <NewProposalCard key={i} card={card} cardIndex={i} onSelectCard={onSelectProposal} />
-                ))}
-              </div>
+            <Paragraph className="mb-6 leading-snug">
+              Select the type of proposal that you want to create:
+            </Paragraph>
 
-              <Deactivation />
+            {/* 2 New Proposal Cards */}
+            <div className="mb-2 w-full flex flex-col lg:flex-row items-center lg:items-stretch justify-center gap-2">
+              {newProposalCards.map((card, i) => (
+                <NewProposalCard key={i} card={card} cardIndex={i} onSelectCard={onSelectProposal} />
+              ))}
             </div>
+
+            <Deactivation />
           </motion.div>
         ) : (
           <motion.div key="extended" variants={variants} initial="initial" animate="animate" exit="exit">
