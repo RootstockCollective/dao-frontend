@@ -5,7 +5,7 @@ import { AnimatePresence, motion, Variants } from 'motion/react'
 import { Deactivation } from './Deactivation'
 import { NewProposalCard } from './NewProposalCard'
 import { newProposalCards } from './newProposalCards.data'
-import { Paragraph, Header } from '@/components/TypographyNew'
+import { Paragraph } from '@/components/TypographyNew'
 import { NewProposalCardExtended } from './NewProposalCardExtended'
 
 const variants: Variants = {
@@ -34,31 +34,31 @@ export default function NewProposal() {
   const cancelCardSelection = useCallback(() => setProposalSelection(null), [])
   return (
     <div>
-      <Header className="mb-10 leading-tight uppercase">New Proposal</Header>
-      <Paragraph className="mb-6">Select the type of proposal that you want to create:</Paragraph>
-      <div className="flex flex-col gap-2">
-        <AnimatePresence mode="popLayout">
-          {proposalSelection === null ? (
-            <motion.div key="selector" variants={variants} initial="initial" animate="animate" exit="exit">
+      <AnimatePresence mode="popLayout">
+        {proposalSelection === null ? (
+          <motion.div key="selector" variants={variants} initial="initial" animate="animate" exit="exit">
+            <div className="flex flex-col gap-2">
+              <Paragraph className="mb-6">Select the type of proposal that you want to create:</Paragraph>
               {/* 2 New Proposal Cards */}
               <div className="w-full flex flex-col lg:flex-row items-center lg:items-stretch justify-center gap-2">
                 {newProposalCards.map((card, i) => (
                   <NewProposalCard key={i} card={card} cardIndex={i} onSelectCard={onSelectProposal} />
                 ))}
               </div>
-            </motion.div>
-          ) : (
-            <motion.div key="extended" variants={variants} initial="initial" animate="animate" exit="exit">
-              {/* One extended card */}
-              <NewProposalCardExtended
-                card={newProposalCards[proposalSelection]}
-                cancelCardSelection={cancelCardSelection}
-              />
-            </motion.div>
-          )}
-        </AnimatePresence>
-        <Deactivation />
-      </div>
+
+              <Deactivation />
+            </div>
+          </motion.div>
+        ) : (
+          <motion.div key="extended" variants={variants} initial="initial" animate="animate" exit="exit">
+            {/* One extended card */}
+            <NewProposalCardExtended
+              card={newProposalCards[proposalSelection]}
+              cancelCardSelection={cancelCardSelection}
+            />
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   )
 }

@@ -12,7 +12,7 @@ const baseClasses = 'font-rootstock-sans text-bg-100 text-base leading-normal tr
 export function CardParagraph({ header, url, children }: Props) {
   return (
     <div className="flex flex-col gap-[10px]">
-      <Link href={url}>
+      <Link href={url} target="_blank" rel="noopener noreferrer" referrerPolicy="no-referrer">
         <div className="flex gap-1 items-center">
           <h4 className={cn(baseClasses, 'font-bold')}>{header}</h4>
           <ArrowUpRightLightIcon size={20} strokeWidth="1.8" className="text-bg-100" />

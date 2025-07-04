@@ -3,11 +3,11 @@ import { useMemo } from 'react'
 import Link from 'next/link'
 import { menuData } from '../sidebars/menuData'
 
-// A map that links known URL path segments (hrefs) to human-readable breadcrumb titles.
-const breadcrumbsMap = Object.fromEntries(menuData.map(({ href, text }) => [href, text])) as {
+const menuBreadCrumbsMap = Object.fromEntries(menuData.map(({ href, text }) => [href, text])) as {
   [K in (typeof menuData)[number] as K['href']]: K['text']
 }
-
+// A map that links known URL path segments (hrefs) to human-readable breadcrumb titles.
+const breadcrumbsMap = { ...menuBreadCrumbsMap, 'new-proposal': 'New Proposal' }
 /**
  * Simple breadcrumbs component used in desktop header
  */

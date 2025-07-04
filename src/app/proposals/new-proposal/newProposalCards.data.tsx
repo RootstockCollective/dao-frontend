@@ -12,7 +12,6 @@ interface NewProposalCardCoreProps {
 export interface NewProposalCardBaseData extends NewProposalCardCoreProps {
   image: StaticImageData
   buttonText: string
-  extendedCardUrl: string
 }
 export interface NewProposalCardExtendedData extends NewProposalCardCoreProps {
   bigImage: StaticImageData
@@ -42,26 +41,25 @@ export const newProposalCards: NewProposalCardData[] = [
       </>
     ),
     buttonText: 'Apply for a Grant',
-    extendedCardUrl: '/proposals/new-proposal/grant?noScrollTop=true',
     bottomTitle: 'Before you apply for a Grant',
     bottomTextBlock: [
       {
         header: 'Align with ecosystem goals',
         text: <>Make sure that your project supports the goals of the Rootstock Ecosystem</>,
-        url: '/',
+        url: 'https://rootstockcollective.xyz/submitting-a-grant-proposal/',
       },
       {
         header: 'Post on Discourse',
         text: <>Share your proposal idea with the community for feedback</>,
-        url: '/',
+        url: 'https://gov.rootstockcollective.xyz/c/grants/5',
       },
       {
         header: 'Complete KYC',
         text: <>Start your KYC early to avoid delays if your proposal passes the vote</>,
-        url: '/',
+        url: 'https://docs.google.com/forms/d/e/1FAIpQLSd4HklyTFPFAo2I0l_N5fy_di01WZ27e4uFDG1KVy8ZIOSiow/viewform',
       },
     ],
-    detailsUrl: '/',
+    detailsUrl: '/proposals/create?contract=DAOTreasuryAbi&action=withdraw',
   },
   {
     image: rewardsImage,
@@ -77,20 +75,19 @@ export const newProposalCards: NewProposalCardData[] = [
       </>
     ),
     buttonText: 'Create proposal',
-    extendedCardUrl: '/proposals/new-proposal/builders-rewards?noScrollTop=true',
     bottomTitle: 'Before you create a proposal',
     bottomTextBlock: [
       {
         header: 'Post on Discourse',
         text: <>Create a Join Builders Rewards post off-chain</>,
-        url: '/',
+        url: 'https://gov.rootstockcollective.xyz/c/collective-rewards/7',
       },
       {
         header: 'Complete KYC',
         text: <>Start your KYC early to avoid delays if your proposal passes the vote</>,
-        url: '/',
+        url: 'https://docs.google.com/forms/d/e/1FAIpQLSd4HklyTFPFAo2I0l_N5fy_di01WZ27e4uFDG1KVy8ZIOSiow/viewform',
       },
     ],
-    detailsUrl: '/',
+    detailsUrl: '/proposals/create?contract=BuilderRegistryAbi&action=communityApproveBuilder',
   },
 ]

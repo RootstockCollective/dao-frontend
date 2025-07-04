@@ -1,20 +1,20 @@
-import { cn } from '@/lib/utils'
 import Image from 'next/image'
 import { type NewProposalCardBaseData } from './newProposalCards.data'
 import { DotsOverlayVert } from './images/DotsOverlayVert'
 import { CardButton } from './CardButton'
 import { HTMLAttributes } from 'react'
+import { cn } from '@/lib/utils'
 
 interface Props extends HTMLAttributes<HTMLDivElement> {
   card: NewProposalCardBaseData
   cardIndex: number
-  onSelectCard: (index: number) => void
+  onSelectCard: (_index: number) => void
 }
 
 export function NewProposalCard({ card, cardIndex, onSelectCard, className, ...props }: Props) {
   const { buttonText, cardTitle, image, textBlock } = card
   return (
-    <div className="rounded-sm w-full max-w-[568px] bg-text-80 overflow-hidden" {...props}>
+    <div className={cn('rounded-sm w-full max-w-[568px] bg-text-80 overflow-hidden', className)} {...props}>
       <div className="flex flex-col gap-6">
         {/* Image Section */}
         <div className="relative w-full h-[272px] p-4">
