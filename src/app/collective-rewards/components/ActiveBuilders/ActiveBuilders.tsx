@@ -6,7 +6,7 @@ import { useHandleErrors } from '../../utils'
 export const ActiveBuilders = () => {
   const { data, isLoading, error } = useQuery<{ count: number }, Error>({
     queryFn: async () => {
-      const response = await fetch('/api/metrics/builders/count')
+      const response = await fetch('/api/builders')
       if (!response.ok) {
         throw new Error('Failed to fetch ABI data')
       }

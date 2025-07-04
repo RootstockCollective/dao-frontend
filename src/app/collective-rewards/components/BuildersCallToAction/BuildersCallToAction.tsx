@@ -49,7 +49,7 @@ const BuilderCTAButton = () => {
     )
   }
 
-  // TODO: Add link to get a grant
+  // FIXME: Add link to get a grant
   return <Button variant="secondary">Get a Grant</Button>
 }
 
@@ -60,7 +60,7 @@ interface BuildersCallToActionProps {
 
 export const BuildersCallToAction: FC<BuildersCallToActionProps> = ({ rifRewards, rbtcRewards }) => {
   return (
-    <CallToActionCard title={<BuildersTitle />} banner={<BuildersBanner />}>
+    <CallToActionCard title={<BuildersTitle />} banner={<BuildersBanner />} className="bg-v3-text-80">
       <MetricsContainer className="px-6 pb-10 pt-0 bg-v3-text-80 items-start divide-y-0">
         <BuilderCTAButton />
         <Paragraph className="text-v3-text-0">

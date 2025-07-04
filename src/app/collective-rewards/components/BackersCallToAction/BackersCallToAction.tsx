@@ -71,7 +71,11 @@ interface BackersCallToActionProps {
 }
 export const BackersCallToAction: FC<BackersCallToActionProps> = ({ rifRewards, rbtcRewards }) => {
   return (
-    <CallToActionCard title={<BackersTitle />} banner={<BackersBanner />}>
+    <CallToActionCard
+      title={<BackersTitle />}
+      banner={<BackersBanner />}
+      className="bg-v3-text-80 rounded-sm"
+    >
       <MetricsContainer className="px-6 pb-10 pt-0 bg-v3-text-80 items-start divide-y-0">
         <BackerCTAButton />
         <Paragraph className="text-v3-text-0">

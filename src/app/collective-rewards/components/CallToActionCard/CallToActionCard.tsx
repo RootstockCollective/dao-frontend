@@ -9,7 +9,7 @@ interface CallToActionCardProps extends CommonComponentProps {
 
 export const CallToActionCard: FC<CallToActionCardProps> = ({ banner, title, children, className = '' }) => {
   return (
-    <div data-testid="CallToActionCard" className={cn('flex flex-col bg-v3-text-80 flex-1', className)}>
+    <div data-testid="CallToActionCard" className={cn('flex flex-col flex-1 rounded-sm', className)}>
       {banner}
       {title}
       {children}
