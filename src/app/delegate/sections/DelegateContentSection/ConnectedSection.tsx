@@ -76,6 +76,8 @@ export const ConnectedSection = () => {
 
   const votingPower = formatNumberWithCommas(Number(cards.own.contentValue))
 
+  const shouldDisableButtons = isDelegationPending || isReclaimPending
+
   return (
     <>
       {!didIDelegateToMyself && delegateeAddress && (
@@ -83,7 +85,7 @@ export const ConnectedSection = () => {
           <DelegateCard
             address={delegateeAddress}
             // @TODO fetch since
-            since="May 2025"
+            since=" - "
             votingPower={delegateeVotingPower ? Number(delegateeVotingPower).toFixed(0) : ' - '}
             // @TODO fetch voting weight
             votingWeight=" - "
@@ -95,6 +97,7 @@ export const ConnectedSection = () => {
             buttonText={isReclaimPending ? 'Reclaiming...' : 'Reclaim'}
             buttonVariant="primary"
             data-testid={`delegateCard-${delegateeAddress}`}
+            buttonDisabled={shouldDisableButtons}
           />
           <div className="flex flex-col ml-[32px] w-full">
             {/* Banner here with delegation perks */}
@@ -148,6 +151,7 @@ export const ConnectedSection = () => {
           didIDelegateToMyself={didIDelegateToMyself}
           onDelegate={onShowDelegate}
           onCloseClick={onHideDelegates}
+          shouldDisableButtons={shouldDisableButtons}
         />
       </div>
       {isDelegateModalOpened && addressToDelegate && (
@@ -170,7 +174,7 @@ export const ConnectedSection = () => {
           title={`You are about to reclaim your own voting power of ${votingPower} from`}
           address={delegateeAddress as Address}
           // @TODO fetch since
-          since="your delegate since December 31, 2024"
+          since=""
           actionButtonText={isReclaimPending ? 'Reclaiming...' : 'Reclaim'}
           data-testid="reclaimModal"
         />

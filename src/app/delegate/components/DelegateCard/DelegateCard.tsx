@@ -17,6 +17,7 @@ export interface DelegateCardProps {
   className?: string
   buttonText?: string
   buttonVariant?: ComponentProps<typeof Button>['variant']
+  buttonDisabled?: boolean
 }
 
 export const DelegateCard: React.FC<DelegateCardProps> = ({
@@ -31,6 +32,7 @@ export const DelegateCard: React.FC<DelegateCardProps> = ({
   className,
   buttonText = 'Delegate',
   buttonVariant = 'secondary-outline',
+  buttonDisabled = false,
 }) => {
   return (
     <div
@@ -45,6 +47,7 @@ export const DelegateCard: React.FC<DelegateCardProps> = ({
         name={name ? truncateRns(name, 15) : undefined}
         className="mt-8"
         showFullName
+        shouldNotRedirect
       />
       <Paragraph className="text-text-80" variant="body-xs">
         delegate since {since}
@@ -77,7 +80,12 @@ export const DelegateCard: React.FC<DelegateCardProps> = ({
           </div>
         </div>
       </div>
-      <Button variant={buttonVariant} className="mt-6" onClick={() => onDelegate(address, name)}>
+      <Button
+        variant={buttonVariant}
+        className="mt-6"
+        onClick={() => onDelegate(address, name)}
+        disabled={buttonDisabled}
+      >
         {buttonText}
       </Button>
     </div>

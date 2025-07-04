@@ -11,6 +11,7 @@ interface BuilderHeaderProps {
   builderPageLink?: string
   className?: string
   showFullName?: boolean
+  shouldNotRedirect?: boolean
 }
 
 export const BuilderHeader: FC<BuilderHeaderProps> = ({
@@ -19,6 +20,7 @@ export const BuilderHeader: FC<BuilderHeaderProps> = ({
   builderPageLink,
   className,
   showFullName = true,
+  shouldNotRedirect = false,
 }) => {
   const shortedAddress = shortAddress(address)
   const truncatedName = name ? (showFullName ? name : truncate(name, 15)) : undefined
@@ -32,16 +34,20 @@ export const BuilderHeader: FC<BuilderHeaderProps> = ({
         <Jdenticon className="bg-v3-text-100" value={address} size="88" />
       </div>
       <Header className="mt-2 text-center text-[22px] text-v3-primary font-bold font-kk-topo">
-        <Link
-          href={builderPageLink || '#'}
-          data-testid="builderName"
-          target="_blank"
-          rel="noopener noreferrer"
-          className="max-w-[200px] hover:relative group"
-          title={name || shortedAddress}
-        >
-          {truncatedName || shortedAddress}
-        </Link>
+        {shouldNotRedirect ? (
+          <>{truncatedName || shortedAddress}</>
+        ) : (
+          <Link
+            href={builderPageLink || '#'}
+            data-testid="builderName"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="max-w-[200px] hover:relative group"
+            title={name || shortedAddress}
+          >
+            {truncatedName || shortedAddress}
+          </Link>
+        )}
       </Header>
     </div>
   )

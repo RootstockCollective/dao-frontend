@@ -14,9 +14,15 @@ interface Props {
   didIDelegateToMyself: boolean
   onDelegate: (address: Address, rns?: string) => void
   onCloseClick?: () => void
+  shouldDisableButtons?: boolean
 }
 
-export const DelegatesContainer = ({ didIDelegateToMyself, onDelegate, onCloseClick }: Props) => {
+export const DelegatesContainer = ({
+  didIDelegateToMyself,
+  onDelegate,
+  onCloseClick,
+  shouldDisableButtons = false,
+}: Props) => {
   const [addressToDelegate, setAddressToDelegate] = useState({
     userInput: '',
     address: '',
@@ -134,7 +140,7 @@ export const DelegatesContainer = ({ didIDelegateToMyself, onDelegate, onCloseCl
             variant="primary"
             className="mt-3 w-[fit-content]"
             onClick={onUpdateDelegate}
-            disabled={!(addressToDelegate.status === 'valid')}
+            disabled={!(addressToDelegate.status === 'valid') || shouldDisableButtons}
             data-testid="delegateButton"
           >
             {didIDelegateToMyself ? 'Delegate' : 'Update delegate'}
@@ -161,6 +167,7 @@ export const DelegatesContainer = ({ didIDelegateToMyself, onDelegate, onCloseCl
             // @TODO fetch delegators
             delegators={' - '}
             onDelegate={onDelegate}
+            buttonDisabled={shouldDisableButtons}
           />
         ))}
       </div>
