@@ -1,9 +1,9 @@
+import { Builder } from '@/app/collective-rewards/types'
 import type { Meta, StoryObj } from '@storybook/react'
 import { BuilderNameCell } from './BuilderNameCell'
-import { Builder } from '@/app/collective-rewards/types'
 
 const meta: Meta<typeof BuilderNameCell> = {
-  title: 'Builders/Table/BuilderNameCell',
+  title: 'Koto/Builders/Table/Cell/BuilderNameCell',
   component: BuilderNameCell,
   tags: ['autodocs'],
   parameters: {
@@ -105,35 +105,30 @@ const pausedBuilder: Builder = {
 export const Default: Story = {
   args: {
     builder: activeBuilder,
-    builderPageLink: 'https://www.google.com',
   },
 }
 
 export const Pending: Story = {
   args: {
     builder: pendingBuilder,
-    builderPageLink: 'https://www.google.com',
   },
 }
 
 export const Warning: Story = {
   args: {
     builder: warningBuilder,
-    builderPageLink: 'https://www.google.com',
   },
 }
 
 export const Paused: Story = {
   args: {
     builder: pausedBuilder,
-    builderPageLink: 'https://www.google.com',
   },
 }
 
 export const Highlighted: Story = {
   args: {
     builder: activeBuilder,
-    builderPageLink: 'https://www.google.com',
     isHighlighted: true,
   },
 }

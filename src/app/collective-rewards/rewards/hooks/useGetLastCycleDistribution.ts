@@ -10,6 +10,15 @@ export const useGetLastCycleDistribution = ({ cycleStart, cycleNext }: Cycle) =>
 
   const [lastEvent] = rewardDistributionFinished.slice(-1) as Log[]
 
+  if (!cycleNext || !cycleStart) {
+    return {
+      data: {
+        fromTimestamp: 0,
+        toTimestamp: 0,
+      },
+    }
+  }
+
   let fromTimestamp = cycleNext.toSeconds()
   let toTimestamp = cycleNext.toSeconds()
 

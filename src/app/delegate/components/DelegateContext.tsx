@@ -1,11 +1,11 @@
 'use client'
-import { DelegateContextState } from '@/app/delegate/components/types'
 import { defaultCardsState } from '@/app/delegate/components/constants'
-import { createContext, ReactNode, useContext, useEffect, useState } from 'react'
-import { produce } from 'immer'
+import { DelegateContextState } from '@/app/delegate/components/types'
 import { useGetExternalDelegatedAmount } from '@/shared/hooks/useGetExternalDelegatedAmount'
-import { useAccount } from 'wagmi'
+import { produce } from 'immer'
+import { createContext, ReactNode, useContext, useEffect, useState } from 'react'
 import { formatEther } from 'viem'
+import { useAccount } from 'wagmi'
 
 const initialValue: DelegateContextState = {
   cards: defaultCardsState,
@@ -45,7 +45,7 @@ export const DelegateContextProvider = ({ children }: Props) => {
 
   useEffect(() => {
     setData(
-      produce(draft => {
+      produce((draft: DelegateContextState) => {
         draft.cards.received.contentValue = Number(formatEther(received)).toFixed(0)
         draft.cards.own.contentValue = Number(formatEther(own)).toFixed(0)
         draft.cards.delegated.contentValue = Number(formatEther(delegated)).toFixed(0)

@@ -26,7 +26,6 @@ export const Default: Story = {
     return (
       <div className="flex flex-col gap-4 w-[300px] bg-red-200 text-green-800">
         <TableHeaderCell
-          id="some-id"
           onClick={handleClick}
           data-testid="table-header-cell"
           className="outline outline-amber-400 cursor-pointer hover:bg-amber-100 transition-color"
@@ -47,7 +46,7 @@ export const Default: Story = {
 export const NotClickable: Story = {
   render: () => {
     return (
-      <TableHeaderCell id="some-id" className="outline outline-amber-400">
+      <TableHeaderCell className="outline outline-amber-400">
         <TableHeaderNode>
           <Header variant="h1">Some title</Header>
           <Header variant="h2">And a subtitle</Header>
@@ -67,7 +66,7 @@ export const ClickableWithIcon: Story = {
 
     return (
       <>
-        <TableHeaderCell id="some-id" onClick={handleClick} className="outline outline-amber-400 w-[300px]">
+        <TableHeaderCell onClick={handleClick} className="outline outline-amber-400 w-[300px]">
           {isClicked ? <PiIcon /> : <AxeIcon />}
           <TableHeaderNode>
             <Header variant="h1">Some title</Header>
@@ -112,7 +111,7 @@ export const UsedInTable: Story = {
           <tr>
             {tableData.map((item, index) => (
               <th key={index} className="bg-blue-200">
-                <TableHeaderCell id={item.id} onClick={() => handleClickForUseInTable()}>
+                <TableHeaderCell onClick={() => handleClickForUseInTable()}>
                   <PiIcon />
                   <TableHeaderNode>
                     <Header variant="h1">{item.header}</Header>

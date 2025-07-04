@@ -1,7 +1,6 @@
-import { TableColumnDropdown } from './TableColumnDropdown'
-import { withTableContext } from '@/shared/context/TableContext'
-import { useTableActionsContext } from '@/shared/context/TableContext'
+import { useTableActionsContext, withTableContext } from '@/shared/context/TableContext'
 import { useEffect } from 'react'
+import { TableColumnDropdown } from './TableColumnDropdown'
 
 const TableColumnDropdownWithContext = () => {
   const dispatch = useTableActionsContext()
@@ -10,19 +9,17 @@ const TableColumnDropdownWithContext = () => {
     dispatch({
       type: 'SET_COLUMNS',
       payload: [
-        { id: 'builder', label: 'Builder', sortable: true, hidden: false },
-        { id: 'backing', label: 'Backing', sortable: true, hidden: false },
-        { id: 'rewardsPercent', label: 'Rewards %', sortable: true, hidden: true },
-        { id: 'change', label: 'Change', sortable: true, hidden: false },
-        { id: 'rewardsPast', label: 'Rewards', sublabel: 'past cycle', sortable: true, hidden: true },
+        { id: 'builder', sortable: true, hidden: false },
+        { id: 'backing', sortable: true, hidden: false },
+        { id: 'rewardsPercent', sortable: true, hidden: true },
+        { id: 'change', sortable: true, hidden: false },
+        { id: 'rewardsPast', sortable: true, hidden: true },
         {
           id: 'rewardsUpcoming',
-          label: 'Rewards',
-          sublabel: 'upcoming cycle',
           sortable: true,
           hidden: false,
         },
-        { id: 'allocations', label: 'Allocations', sortable: true, hidden: false },
+        { id: 'allocations', sortable: true, hidden: false },
       ],
     })
   }, [dispatch])

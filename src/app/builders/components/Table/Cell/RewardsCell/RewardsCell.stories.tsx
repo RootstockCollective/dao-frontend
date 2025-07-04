@@ -2,7 +2,7 @@ import type { Meta, StoryObj } from '@storybook/react'
 import { RewardsCell } from './RewardsCell'
 
 const meta: Meta<typeof RewardsCell> = {
-  title: 'Builders/Table/RewardsCell',
+  title: 'Koto/Builders/Table/Cell/RewardsCell',
   component: RewardsCell,
   tags: ['autodocs'],
   parameters: {

@@ -1,11 +1,10 @@
-import React from 'react'
-import { Paragraph } from '@/components/TypographyNew'
 import { DottedUnderlineLabel } from '@/components/DottedUnderlineLabel/DottedUnderlineLabel'
 import { RifRbtcTooltip } from '@/components/RifRbtcTooltip/RifRbtcTooltip'
-import { formatCurrency } from '@/lib/utils'
-import { cn } from '@/lib/utils'
+import { Paragraph } from '@/components/TypographyNew'
+import { cn, formatCurrency } from '@/lib/utils'
+import React from 'react'
 
-interface RewardsCellProps {
+export interface RewardsCellProps {
   usdValue: number
   rbtcValue: bigint
   rifValue: bigint
