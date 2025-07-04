@@ -104,14 +104,14 @@ export function Typography<T extends ElementType>({
   ...props
 }: TypographyProps<T>) {
   const Component: ElementType = as
-  const cleanHtml =
-    html && typeof children === 'string'
-      ? sanitizeHtml(children, {
-          allowedAttributes: {
-            a: ['href', 'target', 'rel', 'style'],
-          },
-        })
-      : undefined
+  const isHtml = html && typeof children === 'string'
+  const cleanHtml = isHtml
+    ? sanitizeHtml(children as string, {
+        allowedAttributes: {
+          a: ['href', 'target', 'rel', 'style'],
+        },
+      })
+    : undefined
 
   // Use font-medium for bold in body-s and body-xs variants, font-bold for others
   const boldClass = /^body-(xs|s)$/.test(variant) ? 'font-medium' : 'font-bold'
@@ -120,17 +120,31 @@ export function Typography<T extends ElementType>({
     uppercase: caps,
   }
 
+  /**
+   * React best practice: never set both children and dangerouslySetInnerHTML on the same element.
+   * See: https://react.dev/reference/react-dom/components/common#dangerouslysetinnerhtml
+   * This ensures no runtime error and allows both plain text/JSX and HTML content.
+   */
+  if (isHtml) {
+    return (
+      <Component
+        className={cn(variantClasses[variant], className, modifierClasses)}
+        onClick={onClick}
+        dangerouslySetInnerHTML={{ __html: cleanHtml! }}
+        data-testid={dataTestId}
+        {...props}
+      />
+    )
+  }
+
   return (
     <Component
       className={cn(variantClasses[variant], modifierClasses, className)}
       onClick={onClick}
-      dangerouslySetInnerHTML={cleanHtml ? { __html: cleanHtml } : undefined}
       data-testid={dataTestId}
-      // All props must be forwarded to the underlying component to ensure that
-      // wrapping components (like Tooltip) function correctly.
       {...props}
     >
-      {!cleanHtml && children}
+      {children}
     </Component>
   )
 }

@@ -9,8 +9,7 @@ import { round } from '@/lib/big'
 import Image from 'next/image'
 import { Popover } from '@/components/Popover'
 import { QuestionIcon } from '@/components/Icons'
-
-export type Vote = 'for' | 'against' | 'abstain'
+import { Vote } from '@/shared/types'
 
 interface Props {
   onSubmit: (voting: Vote) => void
