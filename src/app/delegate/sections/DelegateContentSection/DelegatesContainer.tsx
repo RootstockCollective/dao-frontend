@@ -50,7 +50,7 @@ export const DelegatesContainer = ({ didIDelegateToMyself, onDelegate, onCloseCl
   const onValidateAddress = useCallback(
     debounce(async (userInput: string) => {
       // First check if the address is a valid address
-      if (!isAddress(userInput) && !userInput.endsWith('.rsk')) {
+      if (!isAddress(userInput, { strict: false }) && !userInput.endsWith('.rsk')) {
         // Not valid
         onUpdateAddressStatus('invalid', 'Invalid address')
         return
