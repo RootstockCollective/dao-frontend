@@ -11,10 +11,9 @@ import { useLayoutContext } from '@/components/MainContainer/LayoutProvider'
 import { ActionsContainer } from '@/components/containers/ActionsContainer'
 import { Button } from '@/components/ButtonNew/Button'
 import { useAllocateVotes } from '@/app/collective-rewards/allocations/hooks/useAllocateVotes'
-import { floorToUnit } from '../utils'
+import { floorToUnit, getBuilderColor } from '../utils'
 
 export interface BuilderCardControlProps extends Builder {
-  backerRewardPct: BackerRewardPercentage
   allocationTxPending?: boolean
 }
 
@@ -53,7 +52,7 @@ export const BuilderCardControl: FC<BuilderCardControlProps> = ({
       <ActionsContainer className="bg-v3-bg-accent-60">
         <div className="flex justify-center gap-2 w-full">
           <Button
-            variant="secondary"
+            variant="secondary-outline"
             onClick={() => {
               resetAllocations()
               closeDrawer()
@@ -81,6 +80,7 @@ export const BuilderCardControl: FC<BuilderCardControlProps> = ({
       allocationTxPending={allocationTxPending}
       onAllocationChange={handleAllocationChange}
       maxAllocation={unallocatedAmount}
+      topBarColor={getBuilderColor(builderAddress)}
     />
   )
 }
