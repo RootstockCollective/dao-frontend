@@ -41,7 +41,7 @@ export const HasVotedFor: Story = {
       onButtonClick: e => console.log('Allegedly call Put on queue'),
       actionName: 'Put on queue',
     },
-    hasVoted: 'for',
+    vote: 'for',
   },
 }
 
@@ -54,7 +54,7 @@ export const HasVotedButNoActionAvailable: Story = {
       quorum: BigInt('3535789'),
     },
     votingPower: 4300n,
-    hasVoted: 'for',
+    vote: 'for',
   },
 }
 
@@ -67,7 +67,7 @@ export const HasVotedAgainst: Story = {
       quorum: BigInt('777456789'),
     },
     votingPower: 4300n,
-    hasVoted: 'against',
+    vote: 'against',
   },
 }
 
@@ -77,9 +77,9 @@ export const HasVotedAbstain: Story = {
       for: BigInt('11999999'),
       against: BigInt('99999777'),
       abstain: BigInt('99555999'),
-      quorum: BigInt('333,444,789'),
+      quorum: BigInt('333444789'),
     },
     votingPower: 4300n,
-    hasVoted: 'abstain',
+    vote: 'abstain',
   },
 }
