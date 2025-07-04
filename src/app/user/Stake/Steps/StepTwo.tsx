@@ -7,7 +7,7 @@ import { executeTxFlow } from '@/shared/notification'
 import Image from 'next/image'
 import { useCallback, useEffect, useMemo, useRef } from 'react'
 import { StepActionButtons } from '../components/StepActionButtons'
-import { TokenAmountDisplay } from '../components/TokenAmountDisplay'
+import { StakeTokenAmountDisplay } from '../components/StakeTokenAmountDisplay'
 import { TransactionStatus } from '../components/TransactionStatus'
 import { useAllowance } from '../hooks/useAllowance'
 
@@ -59,7 +59,7 @@ export const StepTwo = ({ onGoNext, onGoBack }: StepProps) => {
             <Header variant="h1">{tokenToSend.symbol} smart contract</Header>
           </div>
         </div>
-        <TokenAmountDisplay
+        <StakeTokenAmountDisplay
           label="Allowance amount"
           amount={amount}
           tokenSymbol={tokenToSend.symbol}

@@ -5,6 +5,7 @@ import { TokenImage } from '@/components/TokenImage'
 import { Tooltip } from '@/components/Tooltip'
 import { stRIF } from '@/lib/constants'
 import KotoQuestionMarkIcon from '@/components/Icons/KotoQuestionMarkIcon'
+import { TokenAmountDisplay } from '@/components/TokenAmountDisplay'
 
 interface AvailableBackingMetricProps {
   availableForBacking: string
@@ -73,73 +74,26 @@ const DistributeButton = ({ onDistributeClick }: { onDistributeClick?: () => voi
   </div>
 )
 
-const AvailableBackingContent = ({
-  availableForBacking,
-  availableBackingUSD,
-  onStakeClick,
-  onDistributeClick,
-}: AvailableBackingMetricProps) => {
-  const hasAvailableBacking = availableForBacking !== '0'
-  return (
-    <div className="flex flex-col items-start gap-2 self-stretch">
-      <div className="flex h-10 items-center gap-6">
-        <div className="flex items-center gap-2">
-          <div className="flex items-center">
-            <Typography
-              variant="h1"
-              caps
-              className="text-white overflow-hidden text-ellipsis line-clamp-1 font-kk-topo text-[32px] font-normal leading-[125%]"
-            >
-              {availableForBacking}
-            </Typography>
-          </div>
-          <div className="flex items-center gap-1 pl-2 pt-2 pb-2">
-            <TokenImage symbol={stRIF} size={24} />
-            <Typography variant="body-l" bold className="text-white">
-              stRIF
-            </Typography>
-          </div>
-        </div>
-        <div className="flex items-center">
-          {!hasAvailableBacking ? (
-            <StakeButton onStakeClick={onStakeClick} />
-          ) : (
-            <DistributeButton onDistributeClick={onDistributeClick} />
-          )}
-        </div>
-      </div>
-      {hasAvailableBacking && <AvailableBackingUSD availableBackingUSD={availableBackingUSD} />}
-    </div>
-  )
-}
-
 export const AvailableBackingMetric = ({
   availableForBacking,
   availableBackingUSD,
   onStakeClick,
   onDistributeClick,
 }: AvailableBackingMetricProps) => {
+  const hasAvailableBacking = availableForBacking !== '0'
+  const actions = hasAvailableBacking ? (
+    <DistributeButton onDistributeClick={onDistributeClick} />
+  ) : (
+    <StakeButton onStakeClick={onStakeClick} />
+  )
+
   return (
-    <div className="flex flex-col items-start gap-2 self-stretch flex-1">
-      <Metric
-        title={
-          <Typography
-            variant="tag"
-            className="text-v3-bg-accent-0 text-base font-medium font-rootstock-sans leading-[150%]"
-          >
-            Available for backing
-          </Typography>
-        }
-        className="flex-1"
-        content={
-          <AvailableBackingContent
-            availableForBacking={availableForBacking}
-            availableBackingUSD={availableBackingUSD}
-            onStakeClick={onStakeClick}
-            onDistributeClick={onDistributeClick}
-          />
-        }
-      />
-    </div>
+    <TokenAmountDisplay
+      label="Available for backing"
+      amount={availableForBacking}
+      tokenSymbol={stRIF}
+      amountInCurrency={availableBackingUSD}
+      actions={actions}
+    />
   )
 }

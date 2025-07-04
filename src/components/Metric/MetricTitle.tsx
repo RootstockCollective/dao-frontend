@@ -14,8 +14,8 @@ export const MetricTitle: FC<MetricTitleProps> = ({ title, info, className = '',
   const isTitleTextual = typeof title === 'string'
 
   return (
-    <div data-testid="MetricTitle" className={cn('flex w-full items-start justify-between gap-2', className)}>
-      {isTitleTextual ? <Typography className="grow">{title}</Typography> : title}
+    <div data-testid="MetricTitle" className={cn('flex w-full items-start gap-2', className)}>
+      {isTitleTextual ? <Typography>{title}</Typography> : title}
       <InfoIconButton info={info} className="cursor-pointer" {...infoIconProps} />
     </div>
   )

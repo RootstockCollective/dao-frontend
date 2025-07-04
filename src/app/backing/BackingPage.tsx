@@ -11,7 +11,7 @@ import { BuildersSpotlight } from '@/app/backing/components/BuildersSpotlight/Bu
 import { BackingBanner } from '@/app/backing/components/BackingBanner/BackingBanner'
 import { BackingInfoContainer } from '@/app/backing/components/Container/BackingInfoContainer/BackingInfoContainer'
 import { BackingInfoTitleControl } from '@/app/backing/components/BackingInfoTitle/BackingInfoTitleControl'
-import { AnnualBackersIncentivesMetric } from '@/app/backing/components/Metrics/AnnualBackersIncentivesMetric'
+import { AnnualBackersIncentives } from '@/app/backing/components/Metrics/AnnualBackersIncentives'
 import { EstimatedRewardsMetric } from '@/app/backing/components/Metrics/EstimatedRewardsMetric'
 import { useGetBuildersRewards } from '@/app/collective-rewards/rewards/builders/hooks/useGetBuildersRewards'
 import { getTokens } from '@/lib/tokens'
@@ -45,8 +45,11 @@ export const BackingPage = () => {
   const totalBacking = formatSymbol(totalBackingBigInt, 'stRIF')
   const availableBackingUSD =
     !availableForBackingBigInt || !rifPriceUsd
-      ? formatCurrency(0)
-      : formatCurrency(getFiatAmount(availableForBackingBigInt, rifPriceUsd))
+      ? formatCurrency(0, { currency: 'USD', showCurrency: true })
+      : formatCurrency(getFiatAmount(availableForBackingBigInt, rifPriceUsd), {
+          currency: 'USD',
+          showCurrency: true,
+        })
 
   return (
     <div data-testid={NAME} className="flex flex-col items-start w-full h-full pt-[0.13rem] gap-2 rounded-sm">
@@ -58,7 +61,7 @@ export const BackingPage = () => {
           <BackingBanner />
         </BackingInfoContainer>
         <MetricsContainer className="grow-[3] h-full bg-v3-bg-accent-80">
-          <AnnualBackersIncentivesMetric />
+          <AnnualBackersIncentives />
           <EstimatedRewardsMetric rewardsData={rewardsData} />
         </MetricsContainer>
       </div>

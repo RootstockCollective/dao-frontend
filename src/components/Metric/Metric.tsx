@@ -6,12 +6,10 @@ import { MetricContent } from './MetricContent'
 
 export type MetricProps = CommonComponentProps & {
   title: ReactNode
-  content: ReactNode
 }
 
-export const Metric: FC<MetricProps> = ({ title, content, className = '' }) => {
+export const Metric: FC<MetricProps> = ({ title, children, className = '' }) => {
   const isTitleTextual = typeof title === 'string'
-  const isContentTextual = typeof content === 'string'
 
   return (
     <div data-testid="Metric" className={cn('flex items-center gap-4 w-full', className)}>
@@ -23,7 +21,7 @@ export const Metric: FC<MetricProps> = ({ title, content, className = '' }) => {
         ) : (
           title
         )}
-        {isContentTextual ? <MetricContent>{content}</MetricContent> : content}
+        <MetricContent>{children}</MetricContent>
       </div>
     </div>
   )
