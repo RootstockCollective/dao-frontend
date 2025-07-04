@@ -1,5 +1,4 @@
 import { useEstimatedRewards } from '../../hooks/useEstimatedRewards'
-import KotoQuestionMarkIcon from '@/components/Icons/KotoQuestionMarkIcon'
 import { Header, Paragraph } from '@/components/TypographyNew'
 import { formatCurrency } from '@/lib/utils'
 import { RifRbtcTooltip } from '@/components/RifRbtcTooltip/RifRbtcTooltip'

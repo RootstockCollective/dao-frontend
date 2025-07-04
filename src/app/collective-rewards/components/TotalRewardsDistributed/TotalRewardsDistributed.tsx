@@ -11,6 +11,7 @@ import { formatCurrency } from '@/lib/utils'
 import { LoadingSpinner } from '@/components/LoadingSpinner'
 import { MetricTitle } from '@/components/Metric'
 import KotoQuestionMarkIcon from '@/components/Icons/KotoQuestionMarkIcon'
+import { Paragraph } from '@/components/TypographyNew'
 
 interface TokenRewardsProps {
   gauges: Address[]
@@ -63,8 +64,11 @@ export const TotalRewardsDistributed = ({ className }: TotalRewardsDistributedMe
       title={
         <MetricTitle
           title="Total Rewards Distributed"
-          className="justify-start"
-          info={<KotoQuestionMarkIcon className="cursor-pointer" />}
+          info={
+            <Paragraph className="text-[14px] font-normal text-left">
+              Total rewards distributed to Builders and Backers
+            </Paragraph>
+          }
         />
       }
       className={className}
