@@ -62,7 +62,9 @@ export const DelegateModal = ({
         )}
         <div className="flex flex-row gap-2 justify-end w-full mt-6">
           <Button variant="secondary-outline" onClick={onClose}>
-            <Span className="text-bg-100">Cancel</Span>
+            <Span className="text-bg-100" bold>
+              Cancel
+            </Span>
           </Button>
           <Button
             variant="primary"
