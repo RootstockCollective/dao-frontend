@@ -1,3 +1,5 @@
+'use client'
+
 import { FC, PropsWithChildren, useReducer } from 'react'
 import { TableActionsContext } from './TableActionsContext'
 import { initialState, TableContext } from './TableContext'

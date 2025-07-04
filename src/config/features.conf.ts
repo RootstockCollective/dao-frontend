@@ -7,6 +7,7 @@ const features = {
   // TODO: Remove these once we have a feature flag for data source that handles multiple data sources
   use_the_graph: 'Use the graph protocol for data collection',
   use_state_sync: 'Use the state sync for data collection',
+  debug_logs: 'Enable debug logs',
 } as const
 
 type Feature = keyof typeof features
