@@ -1,11 +1,10 @@
 'use client'
+import { MouseEvent, Fragment, useEffect, useMemo, useState, useRef } from 'react'
 import { useFetchAllProposals } from '@/app/proposals/hooks/useFetchLatestProposals'
 import { useGetProposalSnapshot } from '@/app/proposals/hooks/useGetProposalSnapshot'
 import { useGetProposalVotes } from '@/app/proposals/hooks/useGetProposalVotes'
 import { useVotingPowerAtSnapshot } from '@/app/proposals/hooks/useVotingPowerAtSnapshot'
 import { DecodedData, getEventArguments, splitCombinedName } from '@/app/proposals/shared/utils'
-import { useAlertContext } from '@/app/providers'
-import { useModal } from '@/shared/hooks/useModal'
 import { Header, Paragraph, Span } from '@/components/TypographyNew'
 import { config } from '@/config'
 import { RIF_ADDRESS } from '@/lib/constants'
@@ -16,10 +15,8 @@ import { useVoteOnProposal } from '@/shared/hooks/useVoteOnProposal'
 import { TX_MESSAGES } from '@/shared/txMessages'
 import { waitForTransactionReceipt } from '@wagmi/core'
 import { useParams } from 'next/navigation'
-import { Fragment, useEffect, useMemo, useState, useRef } from 'react'
 import { formatEther, zeroAddress } from 'viem'
 import { type BaseError, useAccount } from 'wagmi'
-import { VoteProposalModal } from '@/components/Modal/VoteProposalModal'
 import { VoteSubmittedModal } from '@/components/Modal/VoteSubmittedModal'
 import { ProposalState } from '@/shared/types'
 import { isUserRejectedTxError } from '@/components/ErrorPage/commonErrors'
@@ -28,7 +25,6 @@ import { ConnectWorkflow } from '@/shared/walletConnection/connection/ConnectWor
 import { ProgressBar } from '@/components/ProgressBarNew'
 import { ButtonAction, VotingDetails } from '../components/vote-details'
 import { TokenImage } from '@/components/TokenImage'
-import React from 'react'
 import { ShortenAndCopy } from '@/components/ShortenAndCopy/ShortenAndCopy'
 import { useProposalQuorumAtSnapshot } from '../hooks/useProposalQuorumAtSnapshot'
 import { ProposalType } from '../create/CreateProposalHeaderSection'
@@ -39,6 +35,7 @@ import { ConnectButtonComponent } from '@/shared/walletConnection/components/Con
 import { NewPopover } from '@/components/NewPopover'
 import { useGetVoteForSpecificProposal } from '../hooks/useVoteCast'
 import { Vote } from '@/shared/types'
+import { executeTxFlow } from '@/shared/notification'
 
 export default function ProposalView() {
   const { id } = useParams<{ id: string }>() ?? {}
@@ -66,6 +63,15 @@ const proposalStateToProgressMap = new Map([
   [ProposalState.Defeated, 100],
   [ProposalState.Canceled, 100],
   [undefined, 0],
+])
+
+const actionNameToActionTypeMap = new Map<string, ActionType>([
+  ['withdraw', ActionType.Transfer],
+  ['withdrawERC20', ActionType.Transfer],
+  ['communityApproveBuilder', ActionType.BuilderApproval],
+  ['whitelistBuilder', ActionType.BuilderApproval],
+  ['removeWhitelistedBuilder', ActionType.RemoveBuilder],
+  ['dewhitelistBuilder', ActionType.RemoveBuilder],
 ])
 
 const getStatusSteps = (proposalState: ProposalState) => {
@@ -154,9 +160,6 @@ const PageWithProposal = (proposal: ParsedProposal) => {
   const { proposalId, name, description, proposer, Starts, calldatasParsed } = proposal
   const [vote, setVote] = useGetVoteForSpecificProposal(address ?? zeroAddress, proposalId)
   const [errorVoting, setErrorVoting] = useState('')
-  const votingModal = useModal()
-  const submittedModal = useModal()
-  const { setMessage } = useAlertContext()
 
   const [againstVote, forVote, abstainVote] = useGetProposalVotes(proposalId, true)
   const snapshot = useGetProposalSnapshot(proposalId)
@@ -191,14 +194,8 @@ const PageWithProposal = (proposal: ParsedProposal) => {
     isVoting ||
     isWaitingVotingReceipt
 
-  // Determine proposal type based on action (see ChooseProposal logic)
-  // 'withdraw' => 'Standard', 'communityApproveBuilder' => 'Activation'
-  let proposalTypeLabel = '—'
   const actionName = calldatasParsed?.[0]?.type === 'decoded' ? calldatasParsed[0].functionName : undefined
-  if (actionName === 'withdraw' || actionName === 'withdrawERC20') proposalTypeLabel = 'Standard'
-  if (actionName === 'communityApproveBuilder') proposalTypeLabel = 'Activation'
-
-  const { proposalName, builderName } = splitCombinedName(name)
+  const { builderName } = splitCombinedName(name)
 
   const cannotCastVoteReason = useMemo(() => {
     if (!isProposalActive) {
@@ -236,32 +233,27 @@ const PageWithProposal = (proposal: ParsedProposal) => {
   }, [isProposalActive, didUserVoteAlready, doesUserHasEnoughThreshold, isVoting, isWaitingVotingReceipt])
 
   useEffect(() => {
-    if (isVotingConfirmed) {
-      setMessage(TX_MESSAGES.voting.success)
-    }
     if (isVotingFailed) {
       console.error(votingError)
       const err = votingError as BaseError
       setErrorVoting(err.shortMessage || err.toString())
-      setMessage(TX_MESSAGES.voting.error)
     }
-  }, [isVotingConfirmed, isVotingFailed, setMessage, votingError])
+  }, [isVotingConfirmed, isVotingFailed, votingError])
 
   const handleVoting = async (_vote: Vote) => {
     try {
       setErrorVoting('')
-      setMessage(null)
-      const txHash = await onVote(_vote)
-      setMessage(TX_MESSAGES.voting.pending)
-      votingModal.closeModal()
       setVote(_vote)
-      submittedModal.openModal()
+      const txHash = await executeTxFlow({
+        onRequestTx: () => onVote(_vote),
+        action: 'voting',
+      })
       setVotingTxHash(txHash)
+      submittedModal.openModal()
     } catch (err: any) {
       if (!isUserRejectedTxError(err)) {
         console.error(err)
         setErrorVoting(err.shortMessage || err.toString())
-        setMessage(TX_MESSAGES.voting.error)
       }
     }
   }
@@ -310,12 +302,6 @@ const PageWithProposal = (proposal: ParsedProposal) => {
     setIsExecuting(false)
   }
 
-  const openModal = () => {
-    setErrorVoting('')
-    setMessage(null)
-    votingModal.openModal()
-  }
-
   const linkfyUrls = (description: string | undefined | null): string => {
     if (typeof description !== 'string') return ''
     const urlRegex =
@@ -327,15 +313,6 @@ const PageWithProposal = (proposal: ParsedProposal) => {
   }
 
   const descriptionHtml = linkfyUrls(description)
-
-  const actionNameToActionTypeMap = new Map<string, ActionType>([
-    ['withdraw', ActionType.Transfer],
-    ['withdrawERC20', ActionType.Transfer],
-    ['communityApproveBuilder', ActionType.BuilderApproval],
-    ['whitelistBuilder', ActionType.BuilderApproval],
-    ['removeWhitelistedBuilder', ActionType.RemoveBuilder],
-    ['dewhitelistBuilder', ActionType.RemoveBuilder],
-  ])
 
   let actionType: ActionType = ActionType.Unknown
   let addressToWhitelist = ''
@@ -361,8 +338,7 @@ const PageWithProposal = (proposal: ParsedProposal) => {
   const { prices } = usePricesContext()
   const parsedAction = parseProposalActionDetails(calldatasParsed, prices)
 
-  // Restore handleProposalAction and getButtonActionForState
-  const handleProposalAction = (action: () => void) => (event: React.MouseEvent<HTMLButtonElement>) => {
+  const handleProposalAction = (action: () => void) => (_: MouseEvent<HTMLButtonElement>) => {
     if (!isConnected) {
       setPopoverOpen(true)
       return
@@ -375,7 +351,6 @@ const PageWithProposal = (proposal: ParsedProposal) => {
       case ProposalState.Active:
         return {
           actionName: 'Vote on proposal',
-          onButtonClick: handleProposalAction(openModal),
         }
       case ProposalState.Succeeded:
         return {
@@ -394,20 +369,6 @@ const PageWithProposal = (proposal: ParsedProposal) => {
 
   return (
     <div className="min-h-screen text-white px-4 py-8 flex flex-col gap-4 w-full max-w-full">
-      {votingModal.isModalOpened && address && (
-        <VoteProposalModal
-          onSubmit={handleVoting}
-          onClose={votingModal.closeModal}
-          proposal={proposal}
-          address={address}
-          votingPower={votingPowerAtSnapshot.toString()}
-          isVoting={isVoting}
-          errorMessage={errorVoting}
-        />
-      )}
-      {submittedModal.isModalOpened && vote && (
-        <VoteSubmittedModal proposal={proposal} vote={vote} onClose={submittedModal.closeModal} />
-      )}
       <Header variant="h1" className="text-3xl text-white">
         {name}
       </Header>
@@ -566,7 +527,9 @@ const PageWithProposal = (proposal: ParsedProposal) => {
             }
             actionDisabled={isConnected && cannotCastVote}
             voteButtonRef={voteButtonRef}
-            hasVoted={vote}
+            vote={vote}
+            isVotingInProgress={isVoting || isWaitingVotingReceipt}
+            onCastVote={address && handleVoting}
           />
           <ActionDetails parsedAction={parsedAction} actionType={actionType} />
         </div>
