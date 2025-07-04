@@ -5,7 +5,9 @@ import { Header } from '@/components/TypographyNew'
 export default function Delegate() {
   return (
     <DelegateContextProvider>
-      <Header className="text-[32px] mb-[40px]">DELEGATION</Header>
+      <Header className="text-[32px] mb-[40px]" data-testid="delegatePageHeader">
+        DELEGATION
+      </Header>
       <BannerSection />
       <VotingPowerSection />
       <DelegateContentSection />

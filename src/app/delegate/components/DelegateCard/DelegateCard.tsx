@@ -38,7 +38,7 @@ export const DelegateCard: React.FC<DelegateCardProps> = ({
         'rounded bg-bg-60 px-2 pb-6 flex flex-col items-center relative min-w-[220px]',
         className,
       )}
-      data-testid="delegateCardContainer"
+      data-testid={`delegateCardContainer-${address}`}
     >
       <BuilderHeader
         address={address}

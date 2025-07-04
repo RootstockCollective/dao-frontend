@@ -14,6 +14,7 @@ interface Props {
   since?: string
   isLoading?: boolean
   actionButtonText: string
+  'data-testid'?: string
 }
 
 export const DelegateModal = ({
@@ -25,14 +26,15 @@ export const DelegateModal = ({
   since = 'new delegate',
   isLoading = false,
   actionButtonText,
+  'data-testid': dataTestId = '',
 }: Props) => {
   return (
     <Modal
       onClose={onClose}
       width={456}
       className="bg-text-80"
-      data-testid="delegate-modal"
       closeButtonColor="black"
+      data-testid={dataTestId}
     >
       <div className="flex flex-col gap-2 items-center py-4 px-8">
         <Paragraph className="pr-8 text-bg-100">{title}</Paragraph>

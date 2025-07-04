@@ -9,5 +9,9 @@ export const BannerSection = () => {
 
   const shouldShowBanner = !isConnected || didIDelegateToMyself
 
-  return <div className="mb-[8px]">{shouldShowBanner && <BannerDelegate />}</div>
+  return (
+    <div className="mb-[8px]" data-testid="delegateBannerSection">
+      {shouldShowBanner && <BannerDelegate />}
+    </div>
+  )
 }

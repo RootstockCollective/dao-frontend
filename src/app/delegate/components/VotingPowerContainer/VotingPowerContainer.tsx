@@ -15,7 +15,7 @@ interface VotingPowerContainerProps {
  */
 export const VotingPowerContainer = ({ cards }: VotingPowerContainerProps) => {
   return (
-    <div className="p-[24px] bg-bg-80">
+    <div className="p-[24px] bg-bg-80" data-testid="votingPowerContainer">
       <Header variant="e3" className="mb-[24px] text-[20px]">
         VOTING POWER
       </Header>

@@ -94,6 +94,7 @@ export const ConnectedSection = () => {
             onDelegate={onShowReclaim}
             buttonText={isReclaimPending ? 'Reclaiming...' : 'Reclaim'}
             buttonVariant="primary"
+            data-testid={`delegateCard-${delegateeAddress}`}
           />
           <div className="flex flex-col ml-[32px] w-full">
             {/* Banner here with delegation perks */}
@@ -130,6 +131,7 @@ export const ConnectedSection = () => {
               variant="secondary-outline"
               onClick={onShowDelegates}
               className="w-[fit-content] mt-[24px] font-normal gap-1 py-[8px] rounded border-bg-40 hover:border-primary"
+              data-testid="updateDelegateButton"
             >
               <EditIconKoto size={20} />
               <span>Update delegate</span>
@@ -157,6 +159,7 @@ export const ConnectedSection = () => {
           address={addressToDelegate}
           name={rnsToDelegate}
           actionButtonText={isDelegationPending ? 'Delegating...' : 'Delegate'}
+          data-testid="delegateModal"
         />
       )}
       {isReclaimModalOpened && (
@@ -169,6 +172,7 @@ export const ConnectedSection = () => {
           // @TODO fetch since
           since="your delegate since December 31, 2024"
           actionButtonText={isReclaimPending ? 'Reclaiming...' : 'Reclaim'}
+          data-testid="reclaimModal"
         />
       )}
     </>

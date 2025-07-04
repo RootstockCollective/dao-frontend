@@ -34,7 +34,11 @@ export const DelegatesContainer = ({ didIDelegateToMyself, onDelegate, onCloseCl
     <div className="bg-bg-80 mt-[8px] p-[24px]">
       <div className="mb-[10px] flex flex-col items-center">
         {!didIDelegateToMyself && (
-          <CloseIconKoto className="self-end cursor-pointer" onClick={onCloseClick} />
+          <CloseIconKoto
+            className="self-end cursor-pointer"
+            onClick={onCloseClick}
+            data-testid="closeDelegatesContainer"
+          />
         )}
         <Span>
           {didIDelegateToMyself
@@ -51,6 +55,7 @@ export const DelegatesContainer = ({ didIDelegateToMyself, onDelegate, onCloseCl
             isAddressInvalid && 'border border-red-500',
           )}
           onChange={onDelegateChangeAddress}
+          data-testid="delegateInput"
         />
         <div>
           <Button
@@ -58,6 +63,7 @@ export const DelegatesContainer = ({ didIDelegateToMyself, onDelegate, onCloseCl
             className="mt-3 mb-[40px]"
             onClick={onUpdateDelegate}
             disabled={isAddressInvalid}
+            data-testid="delegateButton"
           >
             {didIDelegateToMyself ? 'Delegate' : 'Update delegate'}
           </Button>
