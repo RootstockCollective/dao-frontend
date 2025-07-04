@@ -2,7 +2,7 @@ import { getFiatAmount } from '@/app/collective-rewards/rewards'
 import { InputNumber } from '@/components/Input/InputNumber'
 import { Paragraph } from '@/components/TypographyNew'
 import { cn } from '@/lib/utils'
-import { FC, useState } from 'react'
+import { Dispatch, FC, SetStateAction, useState } from 'react'
 import { PendingAllocation } from '../PendingAllocation/PendingAllocation'
 import { StickySlider } from '../StickySlider/StickySlider'
 import { RIFToken } from '../RIFToken/RIFToken'
@@ -13,9 +13,12 @@ interface AllocationInputProps {
   existentAllocation: bigint
   maxAllocation: bigint
   rifPriceUsd: number
+  disabled?: boolean
   allocationTxPending?: boolean
   onAllocationChange: (value: number) => void
   className?: string
+  editing?: boolean
+  setEditing?: Dispatch<SetStateAction<boolean>>
 }
 
 export const AllocationInput: FC<AllocationInputProps> = ({
@@ -23,12 +26,13 @@ export const AllocationInput: FC<AllocationInputProps> = ({
   existentAllocation,
   maxAllocation,
   rifPriceUsd,
+  disabled = false,
   allocationTxPending = false,
   onAllocationChange,
   className,
+  editing,
+  setEditing,
 }) => {
-  const [editing, setEditing] = useState(false)
-
   const allocationPercentage = maxAllocation === 0n ? 0 : Number((allocation * 100n) / maxAllocation)
   const amountUsd = Number(getFiatAmount(allocation, rifPriceUsd).toFixed(2))
 
@@ -41,7 +45,8 @@ export const AllocationInput: FC<AllocationInputProps> = ({
   return (
     <div
       className={cn(
-        'bg-v3-bg-accent-80 border border-v3-bg-accent-60 rounded-lg p-3 font-rootstock-sans',
+        'bg-v3-bg-accent-80 border border-v3-bg-accent-60 rounded-lg font-rootstock-sans',
+        disabled && 'bg-v3-bg-accent-60',
         className,
       )}
       data-testid="allocationInputContainer"
@@ -51,13 +56,13 @@ export const AllocationInput: FC<AllocationInputProps> = ({
           <InputNumber
             name="allocation"
             autoComplete="off"
-            placeholder={`max ${formatSymbol(maxAllocation, 'stRIF')}`}
+            placeholder={!disabled ? `max ${formatSymbol(maxAllocation, 'stRIF')}` : '0'}
             className="focus:outline-none focus-visible:outline-none text-left p-0 m-0 border-0 bg-transparent w-full text-[24px]"
-            value={formatSymbol(allocation, 'stRIF')}
+            value={allocation ? formatSymbol(allocation, 'stRIF') : ''}
             max={Number(formatSymbol(maxAllocation, 'stRIF'))}
             onValueChange={({ value }) => onAllocationChange(Number(value))}
-            onFocus={() => !editing && setEditing(true)}
-            disabled={allocationTxPending}
+            onFocus={() => !editing && setEditing?.(true)}
+            disabled={disabled}
             data-testid="allocationInputNumber"
           />
         </div>

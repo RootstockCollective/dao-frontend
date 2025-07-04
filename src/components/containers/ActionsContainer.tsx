@@ -15,7 +15,9 @@ export const ActionsContainer: FC<ActionsContainerProps> = ({ title, children, c
     >
       {title && (
         <div data-testid="title" className="flex w-full justify-between items-center">
-          <Header variant="h3">{title}</Header>
+          <Header variant="h3" caps>
+            {title}
+          </Header>
         </div>
       )}
       <div data-testid="content" className="flex flex-col items-start gap-4">

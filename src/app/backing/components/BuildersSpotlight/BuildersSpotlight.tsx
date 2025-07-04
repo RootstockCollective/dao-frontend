@@ -2,13 +2,14 @@ import { useGetBackersRewardPercentage } from '@/app/collective-rewards/rewards/
 import { Builder, RequiredBuilder } from '@/app/collective-rewards/types'
 import { useGetBuildersByState } from '@/app/collective-rewards/user/hooks/useGetBuildersByState'
 import { isBuilderRewardable, useHandleErrors } from '@/app/collective-rewards/utils'
-import { Button } from '@/components/Button'
 import { LoadingSpinner } from '@/components/LoadingSpinner'
 import { useRouter } from 'next/navigation'
 import { FC } from 'react'
 import { useShuffledArray } from '../../hooks/useShuffledArray'
 import { BuilderCardControl } from '../BuilderCard/BuilderCardControl'
 import { BuildersRewards } from '@/app/collective-rewards/rewards/builders/hooks/useGetBuildersRewards'
+import { Button } from '@/components/ButtonNew'
+import { BackMoreBuildersCard } from '../BuilderCard/BackMoreBuildersCard'
 
 const SPOTLIGHT_BUILDERS = 4
 
@@ -61,16 +62,13 @@ export const BuildersSpotlight: FC<BuildersSpotlightProps> = ({ rewardsData }) =
 
   return (
     <>
-      <div
-        className="grid gap-2 justify-center w-full"
-        style={{ gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))' }}
-      >
+      <div className="grid grid-cols-4 gap-2 w-full items-stretch">
         {visibleBuilders.map(builder => (
           <BuilderCardControl key={builder.address} {...builder} />
         ))}
       </div>
       <div className="flex justify-center self-center mt-6">
-        <Button variant="secondary" className="py-3 px-4" onClick={() => router.push('/builders')}>
+        <Button variant="secondary-outline" onClick={() => router.push('/builders')}>
           See all Builders
         </Button>
       </div>
