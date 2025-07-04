@@ -23,7 +23,7 @@ export const Default: Story = {
     votingPower: 4300n,
     buttonAction: {
       onButtonClick: e => console.log('Allegedly Voted for proposal', e),
-      actionName: 'Vote proposal',
+      actionName: 'Vote on proposal',
     },
   },
 }
