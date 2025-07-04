@@ -15,7 +15,10 @@ export interface RewardsInfoProps extends BackerRewardPercentage {
 
 export const RewardsInfo: FC<RewardsInfoProps> = ({ current, next, estimatedRewards }) => {
   return (
-    <div className="flex justify-between p-3 w-full" data-testid="rewardsInfoContainer">
+    <div
+      className="flex justify-between w-full border-b border-v3-bg-accent-40 p-3"
+      data-testid="rewardsInfoContainer"
+    >
       <LabeledContent label="Rewards %" className="w-1/2 pr-3">
         <BackerRewardsPercentage
           currentPct={Number(weiToPercentage(current, 0))}

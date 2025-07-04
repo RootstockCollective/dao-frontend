@@ -1,4 +1,3 @@
-import { Button } from '@/components/Button'
 import { Metric } from '@/components/Metric/Metric'
 import { Typography } from '@/components/TypographyNew/Typography'
 import { TokenImage } from '@/components/TokenImage'
@@ -6,6 +5,7 @@ import { Tooltip } from '@/components/Tooltip'
 import { stRIF } from '@/lib/constants'
 import KotoQuestionMarkIcon from '@/components/Icons/KotoQuestionMarkIcon'
 import { TokenAmountDisplay } from '@/components/TokenAmountDisplay'
+import { Button } from '@/components/ButtonNew'
 
 interface AvailableBackingMetricProps {
   availableForBacking: string
@@ -27,13 +27,9 @@ const AvailableBackingUSD = ({ availableBackingUSD }: { availableBackingUSD: str
 
 const StakeButton = ({ onStakeClick }: { onStakeClick?: () => void }) => (
   <>
-    <Button
-      variant="primary"
-      className="flex h-7 px-4 py-3 items-center gap-2 rounded bg-v3-primary hover:bg-v3-primary/90"
-      onClick={onStakeClick}
-    >
+    <Button variant="primary" className="flex h-7 px-4 py-3 items-center gap-2" onClick={onStakeClick}>
       <Typography variant="tag-s" className="text-v3-bg-accent-100">
-        Stake some RIF
+        Stake RIF
       </Typography>
     </Button>
   </>
@@ -42,8 +38,8 @@ const StakeButton = ({ onStakeClick }: { onStakeClick?: () => void }) => (
 const DistributeButton = ({ onDistributeClick }: { onDistributeClick?: () => void }) => (
   <div className="flex items-center gap-3">
     <Button
-      variant="secondary"
-      className="flex h-7 px-2 py-1 items-center gap-2 rounded border border-v3-bg-accent-40"
+      variant="secondary-outline"
+      className="flex h-7 px-2 py-1 items-center gap-2"
       onClick={onDistributeClick}
     >
       <Typography

@@ -20,6 +20,7 @@ import { BuilderAllocationBar } from './components/BuilderAllocationBar'
 import { Header } from '@/components/TypographyNew'
 import { formatSymbol, getFiatAmount } from '@/app/collective-rewards/rewards'
 import { formatCurrency } from '@/lib/utils'
+import { AnnualBackingIncentives } from './components/Metrics/AnnualBackingIncentives'
 
 const NAME = 'Backing'
 
@@ -66,25 +67,37 @@ export const BackingPage = () => {
         </MetricsContainer>
       </div>
 
-      <BuilderAllocationBar />
+      {isConnected && availableForBackingBigInt > 0 && <BuilderAllocationBar />}
 
       {isConnected && (
-        <ActionMetricsContainer className="flex flex-col items-start w-[1144px] p-6 gap-2 rounded-[4px] bg-v3-bg-accent-80 [&>div]:w-full">
-          <AvailableBackingMetric
-            availableForBacking={availableForBacking}
-            availableBackingUSD={availableBackingUSD}
-            onStakeClick={() => {
-              // FIXME: Implement staking page and update this navigation
-            }}
-            onDistributeClick={() => {
-              // FIXME: Implement distribute functionality
-            }}
-          />
-          <TotalBackingMetric totalBacking={totalBacking} />
+        <ActionMetricsContainer className="flex flex-col items-start w-[1144px] p-6 gap-2 rounded-[4px] bg-v3-bg-accent-80">
+          <div className="w-1/2">
+            <AvailableBackingMetric
+              availableForBacking={availableForBacking}
+              availableBackingUSD={availableBackingUSD}
+              onStakeClick={() => {
+                // FIXME: Implement staking page and update this navigation
+              }}
+              onDistributeClick={() => {
+                // FIXME: Implement distribute functionality
+              }}
+            />
+          </div>
+          <div className="flex items-start w-1/2 gap-14">
+            <div className="w-1/2">
+              <TotalBackingMetric totalBacking={totalBacking} />
+            </div>
+            <div className="w-1/2">
+              <AnnualBackingIncentives />
+            </div>
+          </div>
         </ActionMetricsContainer>
       )}
-      {/* </ActionMetricsContainer>} */}
-      <ActionsContainer title="BUILDERS THAT YOU MAY WANT TO BACK">
+
+      <ActionsContainer
+        title={isConnected ? 'Builders that you may want to back' : 'In the spotlight'}
+        className="bg-v3-bg-accent-80"
+      >
         <BuildersSpotlight rewardsData={rewardsData} />
       </ActionsContainer>
     </div>
