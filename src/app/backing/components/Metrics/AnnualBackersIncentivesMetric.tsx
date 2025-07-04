@@ -5,7 +5,6 @@ import {
 } from '@/app/collective-rewards/shared'
 import { useHandleErrors } from '@/app/collective-rewards/utils'
 import { withFallbackRetry } from '@/app/shared/components/Fallback/FallbackWithRetry'
-import KotoQuestionMarkIcon from '@/components/Icons/KotoQuestionMarkIcon'
 import { LoadingSpinner } from '@/components/LoadingSpinner'
 import { Metric, MetricTitle } from '@/components/Metric'
 import { Header, Paragraph } from '@/components/TypographyNew'
