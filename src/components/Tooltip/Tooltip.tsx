@@ -2,7 +2,7 @@ import { ReactNode } from 'react'
 import * as RadixTooltip from '@radix-ui/react-tooltip'
 import { cn } from '@/lib/utils'
 
-interface Props extends RadixTooltip.TooltipContentProps {
+export interface TooltipProps extends RadixTooltip.TooltipContentProps {
   text: ReactNode
   disabled?: boolean
 }
@@ -15,7 +15,7 @@ export function Tooltip({
   sideOffset = 5,
   disabled = false,
   ...props
-}: Props) {
+}: TooltipProps) {
   if (disabled) {
     return <>{children}</>
   }

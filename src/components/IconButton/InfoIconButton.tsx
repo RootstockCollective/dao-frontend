@@ -1,18 +1,27 @@
 import KotoQuestionMarkIcon from '@/components/Icons/KotoQuestionMarkIcon'
-import { Tooltip } from '@/components/Tooltip'
+import { Tooltip, type TooltipProps } from '@/components/Tooltip'
 import { cn } from '@/lib/utils'
-import { FC } from 'react'
+import { FC, ReactNode } from 'react'
 import { CommonComponentProps } from '../commonProps'
 
-interface InfoIconButtonProps extends CommonComponentProps {
-  info: string
+export interface InfoIconButtonProps extends CommonComponentProps, Omit<TooltipProps, 'text' | 'children'> {
+  info: ReactNode
+  tooltipClassName?: string
 }
 
-export const InfoIconButton: FC<InfoIconButtonProps> = ({ info, className = '' }) => (
+export const InfoIconButton: FC<InfoIconButtonProps> = ({
+  info,
+  className = '',
+  tooltipClassName = '',
+  ...tooltipProps
+}) => (
   <div data-testid="InfoIconButton" className={cn('pt-1 items-center flex gap-2', className)}>
-    <Tooltip text={info}>
+    <Tooltip
+      text={info}
+      className={cn('rounded-sm z-50 bg-v3-text-80 text-v3-bg-accent-60', tooltipClassName)}
+      {...tooltipProps}
+    >
       <KotoQuestionMarkIcon />
     </Tooltip>
-    {/* FIXME: </Popover> */}
   </div>
 )

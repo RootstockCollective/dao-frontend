@@ -1,4 +1,3 @@
-import { ABIPopover } from '@/app/backing/components/Popovers/ABIPopover'
 import {
   useGetABIFromChain,
   useGetMetricsAbiWithGraph,
@@ -6,14 +5,14 @@ import {
 } from '@/app/collective-rewards/shared'
 import { useHandleErrors } from '@/app/collective-rewards/utils'
 import { withFallbackRetry } from '@/app/shared/components/Fallback/FallbackWithRetry'
-import KotoQuestionMarkIcon from '@/components/Icons/KotoQuestionMarkIcon'
 import { LoadingSpinner } from '@/components/LoadingSpinner'
 import { Metric, MetricTitle } from '@/components/Metric'
-import { Header } from '@/components/TypographyNew'
+import { Header, Paragraph } from '@/components/TypographyNew'
 import { useFeatureFlags } from '@/shared/context/FeatureFlag'
 import { FC } from 'react'
 import { ErrorBoundary } from 'react-error-boundary'
 import Big from '@/lib/big'
+import { ABIFormula } from '../ABIFormula'
 
 interface AnnualBackersIncentivesContentProps {
   abiPct: Big
@@ -28,10 +27,24 @@ const AnnualBackersIncentivesContent: FC<AnnualBackersIncentivesContentProps> = 
       title={
         <MetricTitle
           title="Annual Backers Incentives"
+          infoIconProps={{
+            tooltipClassName: 'max-w-sm text-sm',
+          }}
           info={
-            <ABIPopover>
-              <KotoQuestionMarkIcon className="cursor-pointer" />
-            </ABIPopover>
+            <Paragraph className="text-[14px] font-normal text-left">
+              The Annual Backers Incentives (%) represents an estimate of the annualized percentage of rewards
+              that backers could receive based on their backing allocations.
+              <br />
+              <br />
+              The calculation follows the formula:
+              <span className="flex justify-center pt-4">
+                <ABIFormula />
+              </span>
+              <br />
+              <br />
+              This estimation is dynamic and may vary based on total rewards and user activity. This data is
+              for informational purposes only.
+            </Paragraph>
           }
         />
       }
