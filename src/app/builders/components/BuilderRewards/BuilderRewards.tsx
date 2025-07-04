@@ -1,5 +1,4 @@
 import React from 'react'
-import { Address } from 'viem'
 import {
   BuilderAllTimeRewards,
   BuilderAllTimeShare,
@@ -7,10 +6,7 @@ import {
   BuilderEstimatedRewards,
   BuilderLastCycleRewards,
   BuilderRewardDetails,
-  useClaimBuilderRewards,
 } from '@/app/collective-rewards/rewards'
-import { Popover } from '@/components/Popover'
-import { Button } from '@/components/Button'
 
 interface BuilderRewardsProps extends BuilderRewardDetails {
   className?: string
@@ -20,23 +16,9 @@ export const BuilderRewards: React.FC<BuilderRewardsProps> = ({
   className = '',
   builder,
   gauge,
-  gauges,
-  tokens,
-  currency = 'USD',
+  tokens: { rif, rbtc },
+  ...rest
 }) => {
-  const { isClaimable, claimRewards, isPaused } = useClaimBuilderRewards(builder, gauge, {
-    rif: tokens.rif.address,
-    rbtc: tokens.rbtc.address,
-  })
-
-  const rewardDetails = {
-    builder,
-    gauge,
-    gauges,
-    tokens,
-    currency,
-  }
-
   return (
     <div 
       className={`builder-rewards-container ${className}`} 
@@ -77,39 +59,31 @@ export const BuilderRewards: React.FC<BuilderRewardsProps> = ({
           background: '#181818',
           borderRadius: '8px',
         }}>
-          <div style={{ width: '100%' }}>
-            <BuilderClaimableRewards {...rewardDetails} />
+          <span style={{ color: '#aaa', fontSize: '14px' }}>Unclaimed</span>
+          <div style={{ flex: 1, width: '100%' }}>
+            <BuilderClaimableRewards 
+              builder={builder}
+              gauge={gauge}
+              tokens={{ rif, rbtc }}
+              {...rest}
+            />
           </div>
-          <Popover
-            content={
-              <div style={{ fontSize: '12px', fontWeight: 'bold', marginBottom: '4px' }}>
-                <p data-testid="adjustBackerRewardPctTooltip">You cannot be paused to claim rewards</p>
-              </div>
-            }
-            disabled={!isPaused}
+          <button 
+            style={{ 
+              width: '100%',
+              marginTop: 'auto',
+              padding: '8px 16px',
+              border: '1px solid #fff',
+              borderRadius: '4px',
+              background: 'transparent',
+              color: '#fff',
+              cursor: 'pointer',
+              fontSize: '14px',
+            }}
+            onClick={() => alert('Claim Rewards (placeholder - to be implemented in separate task)')}
           >
-            <Button
-              className="w-full mt-auto"
-              onClick={() => claimRewards()}
-              disabled={!isClaimable || isPaused}
-              variant="secondary"
-              buttonProps={{
-                style: {
-                  marginTop: 'auto',
-                  padding: '8px 16px',
-                  border: '1px solid #fff',
-                  borderRadius: '4px',
-                  background: 'transparent',
-                  color: '#fff',
-                  cursor: isClaimable && !isPaused ? 'pointer' : 'not-allowed',
-                  opacity: isClaimable && !isPaused ? 1 : 0.5,
-                  fontSize: '14px',
-                }
-              }}
-            >
-              Claim Rewards
-            </Button>
-          </Popover>
+            Claim Rewards
+          </button>
         </div>
 
         {/* Estimated this cycle */}
@@ -126,8 +100,16 @@ export const BuilderRewards: React.FC<BuilderRewardsProps> = ({
           background: '#181818',
           borderRadius: '8px',
         }}>
-          <div style={{ width: '100%' }}>
-            <BuilderEstimatedRewards {...rewardDetails} />
+          <span style={{ color: '#aaa', fontSize: '14px' }}>
+            Estimated this cycle <span title="Info">?</span>
+          </span>
+          <div style={{ flex: 1, width: '100%' }}>
+            <BuilderEstimatedRewards 
+              builder={builder}
+              gauge={gauge}
+              tokens={{ rif, rbtc }}
+              {...rest}
+            />
           </div>
         </div>
 
@@ -145,8 +127,13 @@ export const BuilderRewards: React.FC<BuilderRewardsProps> = ({
           background: '#181818',
           borderRadius: '8px',
         }}>
-          <div style={{ width: '100%' }}>
-            <BuilderLastCycleRewards {...rewardDetails} />
+          <span style={{ color: '#aaa', fontSize: '14px' }}>Last cycle</span>
+          <div style={{ flex: 1, width: '100%' }}>
+            <BuilderLastCycleRewards 
+              gauge={gauge}
+              tokens={{ rif, rbtc }}
+              {...rest}
+            />
           </div>
         </div>
 
@@ -164,20 +151,14 @@ export const BuilderRewards: React.FC<BuilderRewardsProps> = ({
           background: '#181818',
           borderRadius: '8px',
         }}>
-          <div style={{ width: '100%' }}>
-            <BuilderAllTimeRewards {...rewardDetails} />
+          <span style={{ color: '#aaa', fontSize: '14px' }}>Total earned</span>
+          <div style={{ flex: 1, width: '100%' }}>
+            <BuilderAllTimeRewards 
+              gauge={gauge}
+              tokens={{ rif, rbtc }}
+              {...rest}
+            />
           </div>
-          <span style={{ 
-            color: '#aaa', 
-            fontSize: '13px', 
-            marginTop: '8px', 
-            display: 'flex', 
-            alignItems: 'center', 
-            gap: '4px',
-            cursor: 'pointer',
-          }}>
-            <span role="img" aria-label="history">🕑</span> See Rewards history
-          </span>
         </div>
 
         {/* All time share */}
@@ -195,8 +176,12 @@ export const BuilderRewards: React.FC<BuilderRewardsProps> = ({
           background: '#181818',
           borderRadius: '8px',
         }}>
-          <div style={{ width: '100%' }}>
-            <BuilderAllTimeShare {...rewardDetails} />
+          <div style={{ flex: 1, width: '100%', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+            <BuilderAllTimeShare 
+              gauge={gauge}
+              tokens={{ rif, rbtc }}
+              {...rest}
+            />
           </div>
         </div>
       </div>
