@@ -1,4 +1,4 @@
-export type Color = `#${string}`
+export type Color = string
 
 // these colors are used in Motion animations and thus cannot be taken from the CSS theme
 const bg = '#25211E'
