@@ -7,10 +7,265 @@ import { mainnet } from 'wagmi/chains'
 import { AlertProvider } from '@/app/providers/AlertProvider'
 import { CycleContextProvider } from '@/app/collective-rewards/metrics/context/CycleContext'
 import { PricesContextProvider } from '@/shared/context/PricesContext'
+import React from 'react'
+import { BuilderMetricCard } from './BuilderMetricCard'
+import { ClaimRewardsButton } from './buttons/ClaimRewardsButton'
+import { SeeRewardsHistoryButton } from './buttons/SeeRewardsHistoryButton'
+import {
+  BuilderRewardDetails,
+  MetricsCard,
+  MetricsCardTitle,
+  TokenMetricsCardRow,
+  ClaimYourRewardsButton,
+} from '@/app/collective-rewards/rewards'
 
-const meta: Meta<typeof BuilderRewards> = {
+// Mock versions of the reward components that use the same UI structure
+const MockBuilderClaimableRewards: React.FC<BuilderRewardDetails> = ({ tokens: { rif, rbtc } }) => {
+  return (
+    <MetricsCard borderless>
+      <MetricsCardTitle
+        title="Claimable rewards"
+        data-testid="ClaimableRewards"
+        tooltip={{ text: 'Your rewards available to claim' }}
+      />
+      <TokenMetricsCardRow
+        amount="1,234.56"
+        fiatAmount="$2,469.12"
+      >
+        <ClaimYourRewardsButton
+          onClick={() => alert('Claim RIF rewards (mock)')}
+          disabled={false}
+        />
+      </TokenMetricsCardRow>
+      <TokenMetricsCardRow
+        amount="0.85"
+        fiatAmount="$1,700.00"
+      >
+        <ClaimYourRewardsButton
+          onClick={() => alert('Claim rBTC rewards (mock)')}
+          disabled={false}
+        />
+      </TokenMetricsCardRow>
+    </MetricsCard>
+  )
+}
+
+const MockBuilderEstimatedRewards: React.FC<BuilderRewardDetails> = ({ tokens: { rif, rbtc } }) => {
+  return (
+    <MetricsCard borderless>
+      <MetricsCardTitle
+        title="Estimated rewards"
+        data-testid="EstimatedRewards"
+        tooltip={{
+          text: (
+            <>
+              Your estimated rewards which will become claimable at the start of the next Cycle.
+              <br />
+              <br />
+              The displayed information is dynamic and may vary based on total rewards and user activity. This
+              data is for informational purposes only.
+            </>
+          ),
+          popoverProps: { size: 'medium' },
+        }}
+      />
+      <TokenMetricsCardRow
+        amount="567.89"
+        fiatAmount="$1,135.78"
+      />
+      <TokenMetricsCardRow
+        amount="0.42"
+        fiatAmount="$840.00"
+      />
+    </MetricsCard>
+  )
+}
+
+const MockBuilderLastCycleRewards: React.FC<BuilderRewardDetails> = ({ tokens: { rif, rbtc } }) => {
+  return (
+    <MetricsCard borderless>
+      <MetricsCardTitle
+        title="Last cycle rewards"
+        data-testid="LastCycleRewards"
+        tooltip={{ text: 'Your rewards from the previous cycle' }}
+      />
+      <TokenMetricsCardRow
+        amount="890.12"
+        fiatAmount="$1,780.24"
+      />
+      <TokenMetricsCardRow
+        amount="0.65"
+        fiatAmount="$1,300.00"
+      />
+    </MetricsCard>
+  )
+}
+
+const MockBuilderAllTimeRewards: React.FC<BuilderRewardDetails> = ({ tokens: { rif, rbtc } }) => {
+  return (
+    <MetricsCard borderless>
+      <MetricsCardTitle
+        title="Total earned"
+        data-testid="AllTimeRewards"
+        tooltip={{ text: 'Your total rewards earned across all cycles' }}
+      />
+      <TokenMetricsCardRow
+        amount="12,345.67"
+        fiatAmount="$24,691.34"
+      />
+      <TokenMetricsCardRow
+        amount="8.75"
+        fiatAmount="$17,500.00"
+      />
+    </MetricsCard>
+  )
+}
+
+const MockBuilderAllTimeShare: React.FC<BuilderRewardDetails> = ({ tokens: { rif, rbtc } }) => {
+  return (
+    <MetricsCard borderless>
+      <MetricsCardTitle
+        title="All time share"
+        data-testid="AllTimeShare"
+        tooltip={{ text: 'Your percentage share of total rewards across all cycles' }}
+      />
+      <div style={{ 
+        display: 'flex', 
+        flexDirection: 'column', 
+        alignItems: 'center', 
+        gap: '8px',
+        padding: '16px 0'
+      }}>
+        <div style={{ fontSize: '24px', fontWeight: 'bold', color: '#fff' }}>
+          15.7%
+        </div>
+        <div style={{ fontSize: '14px', color: '#aaa' }}>
+          of total rewards
+        </div>
+      </div>
+    </MetricsCard>
+  )
+}
+
+// Mock BuilderRewards component that uses the exact same structure as the real one
+const MockBuilderRewards: React.FC<BuilderRewardDetails & { className?: string }> = ({ 
+  className = '',
+  builder,
+  gauge,
+  tokens: { rif, rbtc },
+  ...rest
+}) => {
+  return (
+    <div 
+      className={`builder-rewards-container ${className}`} 
+      style={{ 
+        display: 'flex',
+        width: '1144px',
+        padding: '24px 24px 40px 24px',
+        flexDirection: 'column',
+        alignItems: 'flex-start',
+        gap: '40px',
+        borderRadius: '4px',
+        background: 'var(--Background-80, #25211E)',
+      }}
+    >
+      {/* Builder Rewards Text */}
+      <div style={{ width: '528px' }}>
+        <h3 style={{ margin: 0, color: '#fff' }}>BUILDER REWARDS</h3>
+      </div>
+
+      {/* Metrics Container */}
+      <div style={{ 
+        display: 'flex',
+        alignItems: 'flex-start',
+        gap: '8px',
+        alignSelf: 'stretch',
+      }}>
+        {/* Unclaimed */}
+        <BuilderMetricCard 
+          showButton
+          button={
+            <ClaimRewardsButton 
+              onClick={() => alert('Claim Rewards (placeholder - to be implemented in separate task)')}
+            />
+          }
+        >
+          <MockBuilderClaimableRewards 
+            builder={builder}
+            gauge={gauge}
+            tokens={{ rif, rbtc }}
+            {...rest}
+          />
+        </BuilderMetricCard>
+
+        {/* Estimated this cycle */}
+        <BuilderMetricCard>
+          <MockBuilderEstimatedRewards 
+            builder={builder}
+            gauge={gauge}
+            tokens={{ rif, rbtc }}
+            {...rest}
+          />
+        </BuilderMetricCard>
+
+        {/* Last cycle */}
+        <BuilderMetricCard>
+          <MockBuilderLastCycleRewards 
+            builder={builder}
+            gauge={gauge}
+            tokens={{ rif, rbtc }}
+            {...rest}
+          />
+        </BuilderMetricCard>
+
+        {/* Total earned */}
+        <BuilderMetricCard 
+          showButton
+          button={
+            <SeeRewardsHistoryButton 
+              onClick={() => alert('See Rewards history (placeholder - to be implemented in separate task)')}
+            />
+          }
+        >
+          <MockBuilderAllTimeRewards 
+            builder={builder}
+            gauge={gauge}
+            tokens={{ rif, rbtc }}
+            {...rest}
+          />
+        </BuilderMetricCard>
+
+        {/* All time share */}
+        <BuilderMetricCard>
+          <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', width: '100%' }}>
+            <MockBuilderAllTimeShare 
+              builder={builder}
+              gauge={gauge}
+              tokens={{ rif, rbtc }}
+              {...rest}
+            />
+          </div>
+        </BuilderMetricCard>
+      </div>
+
+      {/* Need to adjust backers' rewards? */}
+      <div style={{ 
+        display: 'flex',
+        alignItems: 'center',
+        gap: '4px',
+        color: '#aaa',
+        fontSize: '15px',
+      }}>
+        <span role="img" aria-label="info">💡</span>
+        Need to adjust your backers' rewards?
+      </div>
+    </div>
+  )
+}
+
+const meta: Meta<typeof MockBuilderRewards> = {
   title: 'Builders/BuilderRewards',
-  component: BuilderRewards,
+  component: MockBuilderRewards,
   parameters: {
     layout: 'centered',
     backgrounds: {
@@ -23,7 +278,7 @@ const meta: Meta<typeof BuilderRewards> = {
     docs: {
       description: {
         component:
-          'This story demonstrates the full BuilderRewards layout as per the design. All values are calculated using real data from the collective-rewards module. The Claim Rewards button is a placeholder.'
+          'This story demonstrates the full BuilderRewards layout as per the design. All values are mocked to avoid loading states while maintaining the exact same UI components and structure.'
       },
     },
   },
@@ -89,7 +344,7 @@ const mockTokens = {
   },
 }
 
-export const Default: StoryObj<typeof BuilderRewards> = {
+export const Default: StoryObj<typeof MockBuilderRewards> = {
   args: {
     builder: mockBuilderAddress,
     gauge: mockGaugeAddress,
@@ -99,7 +354,7 @@ export const Default: StoryObj<typeof BuilderRewards> = {
   },
 }
 
-export const WithCustomClass: StoryObj<typeof BuilderRewards> = {
+export const WithCustomClass: StoryObj<typeof MockBuilderRewards> = {
   args: {
     builder: mockBuilderAddress,
     gauge: mockGaugeAddress,
