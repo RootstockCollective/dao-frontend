@@ -22,7 +22,9 @@ const Card = ({ card }: { card: NewProposalCardExtendedData }) => {
   return (
     <div>
       <Button onClick={() => setVisible(v => !v)}>{visible ? 'Hide' : 'Show'}</Button>
-      <AnimatePresence>{visible && <NewProposalCardExtended card={card} />}</AnimatePresence>
+      <AnimatePresence>
+        {visible && <NewProposalCardExtended card={card} cancelCardSelection={() => setVisible(false)} />}
+      </AnimatePresence>
     </div>
   )
 }
