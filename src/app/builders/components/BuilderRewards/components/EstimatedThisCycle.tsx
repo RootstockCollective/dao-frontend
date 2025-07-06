@@ -6,14 +6,14 @@ import {
 } from '@/app/collective-rewards/rewards'
 import { FC } from 'react'
 
-type EstimatedRewardsProps = BuilderRewardDetails
+type EstimatedThisCycleProps = BuilderRewardDetails
 
-export const EstimatedRewards: FC<EstimatedRewardsProps> = ({ tokens: { rif, rbtc }, ...rest }) => {
+export const EstimatedThisCycle: FC<EstimatedThisCycleProps> = ({ tokens: { rif, rbtc }, ...rest }) => {
   return (
     <MetricsCard borderless>
       <MetricsCardTitle
-        title="Estimated rewards"
-        data-testid="EstimatedRewards"
+        title="Estimated this cycle"
+        data-testid="EstimatedThisCycle"
         tooltip={{
           text: (
             <>

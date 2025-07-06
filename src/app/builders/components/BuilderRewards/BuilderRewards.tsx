@@ -1,12 +1,6 @@
 import React from 'react'
 import { BuilderRewardDetails } from '@/app/collective-rewards/rewards'
-import {
-  AllTimeRewards,
-  AllTimeShare,
-  ClaimableRewards,
-  EstimatedRewards,
-  LastCycleRewards,
-} from './components'
+import { AllTimeRewards, AllTimeShare, Unclaimed, EstimatedThisCycle, LastCycle } from './components'
 import { BuilderMetricCard } from './BuilderMetricCard'
 import { ClaimRewardsButton } from './buttons/ClaimRewardsButton'
 import { SeeRewardsHistoryButton } from './buttons/SeeRewardsHistoryButton'
@@ -33,6 +27,7 @@ export const BuilderRewards: React.FC<BuilderRewardsProps> = ({
         flexDirection: 'column',
         alignItems: 'flex-start',
         gap: '40px',
+        flex: '1 0 0',
         borderRadius: '4px',
         background: 'var(--Background-80, #25211E)',
       }}
@@ -74,17 +69,17 @@ export const BuilderRewards: React.FC<BuilderRewardsProps> = ({
             />
           }
         >
-          <ClaimableRewards builder={builder} gauge={gauge} tokens={{ rif, rbtc }} {...rest} />
+          <Unclaimed builder={builder} gauge={gauge} tokens={{ rif, rbtc }} {...rest} />
         </BuilderMetricCard>
 
         {/* Estimated this cycle */}
         <BuilderMetricCard>
-          <EstimatedRewards builder={builder} gauge={gauge} tokens={{ rif, rbtc }} {...rest} />
+          <EstimatedThisCycle builder={builder} gauge={gauge} tokens={{ rif, rbtc }} {...rest} />
         </BuilderMetricCard>
 
         {/* Last cycle */}
         <BuilderMetricCard>
-          <LastCycleRewards gauge={gauge} tokens={{ rif, rbtc }} {...rest} />
+          <LastCycle gauge={gauge} tokens={{ rif, rbtc }} {...rest} />
         </BuilderMetricCard>
 
         {/* Total earned */}

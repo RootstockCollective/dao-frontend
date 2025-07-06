@@ -5,6 +5,7 @@ import { FC, HTMLAttributes, ReactNode } from 'react'
 import { Address } from 'viem'
 import { Tooltip, TooltipProps } from './Tooltip'
 import { TokenImage } from '@/components/TokenImage'
+import KotoQuestionMarkIcon from '@/components/Icons/KotoQuestionMarkIcon'
 
 type MetricsCardRow = {
   amount: string
@@ -98,7 +99,7 @@ export type MetricsCardProps = HTMLAttributes<HTMLDivElement> & {
   dataTestId?: string
 }
 
-const DEFAULT_CLASSES = 'h-min-[79px] w-full py-[12px] px-[12px] flex flex-col bg-foreground'
+const DEFAULT_CLASSES = 'h-min-[79px] w-full py-[12px] flex flex-col'
 
 /**
  * Card for displaying balance and corresponding (fiat) value.
@@ -114,6 +115,14 @@ export const MetricsCard: FC<MetricsCardProps> = ({
   return (
     <div
       className={cn(DEFAULT_CLASSES, borderClasses, className)}
+      style={{
+        display: 'flex',
+        flexDirection: 'column',
+        alignItems: 'flex-start',
+        gap: '16px',
+        flex: '1 0 0',
+        background: 'var(--Background-80, #25211E)',
+      }}
       data-testid={dataTestId + '_MetricsCard'}
       {...rest}
     >
@@ -145,14 +154,23 @@ export const MetricsCardTitle: FC<MetricsCardTitleProps> = ({
   children,
   ...rest
 }) => (
-  <div className="flex gap-1">
+  <div
+    style={{
+      display: 'flex',
+      height: '24px',
+      padding: '4px 0px',
+      alignItems: 'center',
+      gap: '4px',
+      alignSelf: 'stretch',
+    }}
+  >
     {customLabel ?? (
       <Typography
-        variant="tag"
-        className={cn(
-          'text-[16px] font-normal tracking-wide overflow-hidden whitespace-nowrap text-ellipsis',
-          className ?? '',
-        )}
+        variant="tag-s"
+        style={{
+          color: 'var(--Background-0, #ACA39D)',
+        }}
+        className={cn('overflow-hidden whitespace-nowrap text-ellipsis', className ?? '')}
         data-testid={`${dataTestId}_MetricsCardTitle`}
         {...rest}
       >
@@ -160,7 +178,22 @@ export const MetricsCardTitle: FC<MetricsCardTitleProps> = ({
       </Typography>
     )}
 
-    {tooltip && <Tooltip {...tooltip} />}
+    {tooltip && (
+      <Tooltip {...tooltip}>
+        <div
+          style={{
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            width: '16px',
+            height: '16px',
+            aspectRatio: '1/1',
+          }}
+        >
+          <KotoQuestionMarkIcon />
+        </div>
+      </Tooltip>
+    )}
     {children}
   </div>
 )

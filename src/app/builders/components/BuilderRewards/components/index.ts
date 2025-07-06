@@ -1,5 +1,5 @@
-export { ClaimableRewards } from './ClaimableRewards'
-export { EstimatedRewards } from './EstimatedRewards'
-export { LastCycleRewards } from './LastCycleRewards'
+export { Unclaimed } from './Unclaimed'
+export { EstimatedThisCycle } from './EstimatedThisCycle'
+export { LastCycle } from './LastCycle'
 export { AllTimeRewards } from './AllTimeRewards'
 export { AllTimeShare } from './AllTimeShare'

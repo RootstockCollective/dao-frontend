@@ -14,14 +14,28 @@ export const AllTimeShare: FC<AllTimeShareProps> = ({ tokens: { rif, rbtc }, ...
       <div
         style={{
           display: 'flex',
-          flexDirection: 'column',
           alignItems: 'center',
-          gap: '8px',
-          padding: '16px 0',
+          gap: '16px',
         }}
       >
-        <div style={{ fontSize: '24px', fontWeight: 'bold', color: '#fff' }}>15.7%</div>
-        <div style={{ fontSize: '14px', color: '#aaa' }}>of total rewards</div>
+        <div
+          style={{
+            display: '-webkit-box',
+            WebkitBoxOrient: 'vertical',
+            WebkitLineClamp: 1,
+            overflow: 'hidden',
+            color: 'var(--Text-100, #FFF)',
+            textOverflow: 'ellipsis',
+            fontFamily: 'KK-Topo',
+            fontSize: '20px',
+            fontStyle: 'normal',
+            fontWeight: '400',
+            lineHeight: '130%',
+            letterSpacing: '0.4px',
+          }}
+        >
+          15.7%
+        </div>
       </div>
     </MetricsCard>
   )
