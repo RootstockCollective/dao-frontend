@@ -1,9 +1,6 @@
 import type { Meta, StoryObj } from '@storybook/react'
-import { BuilderRewards } from './BuilderRewards'
 import { Address } from 'viem'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
-import { WagmiProvider, createConfig, http } from 'wagmi'
-import { mainnet } from 'wagmi/chains'
 import { AlertProvider } from '@/app/providers/AlertProvider'
 import { CycleContextProvider } from '@/app/collective-rewards/metrics/context/CycleContext'
 import { PricesContextProvider } from '@/shared/context/PricesContext'
@@ -12,15 +9,14 @@ import { BuilderMetricCard } from './BuilderMetricCard'
 import { ClaimRewardsButton } from './buttons/ClaimRewardsButton'
 import { SeeRewardsHistoryButton } from './buttons/SeeRewardsHistoryButton'
 import {
-  BuilderRewardDetails,
   MetricsCard,
   MetricsCardTitle,
   TokenMetricsCardRow,
   ClaimYourRewardsButton,
 } from '@/app/collective-rewards/rewards'
 
-// Mock versions of the reward components that use the same UI structure
-const MockBuilderClaimableRewards: React.FC<BuilderRewardDetails> = ({ tokens: { rif, rbtc } }) => {
+// Mock reward components that display static data
+const MockBuilderClaimableRewards: React.FC = () => {
   return (
     <MetricsCard borderless>
       <MetricsCardTitle
@@ -50,7 +46,7 @@ const MockBuilderClaimableRewards: React.FC<BuilderRewardDetails> = ({ tokens: {
   )
 }
 
-const MockBuilderEstimatedRewards: React.FC<BuilderRewardDetails> = ({ tokens: { rif, rbtc } }) => {
+const MockBuilderEstimatedRewards: React.FC = () => {
   return (
     <MetricsCard borderless>
       <MetricsCardTitle
@@ -81,7 +77,7 @@ const MockBuilderEstimatedRewards: React.FC<BuilderRewardDetails> = ({ tokens: {
   )
 }
 
-const MockBuilderLastCycleRewards: React.FC<BuilderRewardDetails> = ({ tokens: { rif, rbtc } }) => {
+const MockBuilderLastCycleRewards: React.FC = () => {
   return (
     <MetricsCard borderless>
       <MetricsCardTitle
@@ -101,7 +97,7 @@ const MockBuilderLastCycleRewards: React.FC<BuilderRewardDetails> = ({ tokens: {
   )
 }
 
-const MockBuilderAllTimeRewards: React.FC<BuilderRewardDetails> = ({ tokens: { rif, rbtc } }) => {
+const MockBuilderAllTimeRewards: React.FC = () => {
   return (
     <MetricsCard borderless>
       <MetricsCardTitle
@@ -121,7 +117,7 @@ const MockBuilderAllTimeRewards: React.FC<BuilderRewardDetails> = ({ tokens: { r
   )
 }
 
-const MockBuilderAllTimeShare: React.FC<BuilderRewardDetails> = ({ tokens: { rif, rbtc } }) => {
+const MockBuilderAllTimeShare: React.FC = () => {
   return (
     <MetricsCard borderless>
       <MetricsCardTitle
@@ -148,12 +144,8 @@ const MockBuilderAllTimeShare: React.FC<BuilderRewardDetails> = ({ tokens: { rif
 }
 
 // Mock BuilderRewards component that uses the exact same structure as the real one
-const MockBuilderRewards: React.FC<BuilderRewardDetails & { className?: string }> = ({ 
-  className = '',
-  builder,
-  gauge,
-  tokens: { rif, rbtc },
-  ...rest
+const MockBuilderRewards: React.FC<{ className?: string }> = ({ 
+  className = ''
 }) => {
   return (
     <div 
@@ -171,7 +163,17 @@ const MockBuilderRewards: React.FC<BuilderRewardDetails & { className?: string }
     >
       {/* Builder Rewards Text */}
       <div style={{ width: '528px' }}>
-        <h3 style={{ margin: 0, color: '#fff' }}>BUILDER REWARDS</h3>
+        <h3 style={{ 
+          margin: 0, 
+          color: 'var(--Text-100, #FFF)',
+          fontFamily: 'KK-Topo',
+          fontSize: '20px',
+          fontStyle: 'normal',
+          fontWeight: '400',
+          lineHeight: '130%',
+          letterSpacing: '0.4px',
+          textTransform: 'uppercase'
+        }}>BUILDER REWARDS</h3>
       </div>
 
       {/* Metrics Container */}
@@ -190,32 +192,17 @@ const MockBuilderRewards: React.FC<BuilderRewardDetails & { className?: string }
             />
           }
         >
-          <MockBuilderClaimableRewards 
-            builder={builder}
-            gauge={gauge}
-            tokens={{ rif, rbtc }}
-            {...rest}
-          />
+          <MockBuilderClaimableRewards />
         </BuilderMetricCard>
 
         {/* Estimated this cycle */}
         <BuilderMetricCard>
-          <MockBuilderEstimatedRewards 
-            builder={builder}
-            gauge={gauge}
-            tokens={{ rif, rbtc }}
-            {...rest}
-          />
+          <MockBuilderEstimatedRewards />
         </BuilderMetricCard>
 
         {/* Last cycle */}
         <BuilderMetricCard>
-          <MockBuilderLastCycleRewards 
-            builder={builder}
-            gauge={gauge}
-            tokens={{ rif, rbtc }}
-            {...rest}
-          />
+          <MockBuilderLastCycleRewards />
         </BuilderMetricCard>
 
         {/* Total earned */}
@@ -227,23 +214,13 @@ const MockBuilderRewards: React.FC<BuilderRewardDetails & { className?: string }
             />
           }
         >
-          <MockBuilderAllTimeRewards 
-            builder={builder}
-            gauge={gauge}
-            tokens={{ rif, rbtc }}
-            {...rest}
-          />
+          <MockBuilderAllTimeRewards />
         </BuilderMetricCard>
 
         {/* All time share */}
         <BuilderMetricCard>
           <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', width: '100%' }}>
-            <MockBuilderAllTimeShare 
-              builder={builder}
-              gauge={gauge}
-              tokens={{ rif, rbtc }}
-              {...rest}
-            />
+            <MockBuilderAllTimeShare />
           </div>
         </BuilderMetricCard>
       </div>
@@ -278,7 +255,7 @@ const meta: Meta<typeof MockBuilderRewards> = {
     docs: {
       description: {
         component:
-          'This story demonstrates the full BuilderRewards layout as per the design. All values are mocked to avoid loading states while maintaining the exact same UI components and structure.'
+          'This story demonstrates the BuilderRewards component with mock data for RIF, rBTC, and USD values.'
       },
     },
   },
@@ -299,25 +276,16 @@ const meta: Meta<typeof MockBuilderRewards> = {
         },
       })
 
-      const config = createConfig({
-        chains: [mainnet],
-        transports: {
-          [mainnet.id]: http(),
-        },
-      })
-
       return (
-        <WagmiProvider config={config}>
-          <QueryClientProvider client={queryClient}>
-            <AlertProvider>
-              <PricesContextProvider>
-                <CycleContextProvider>
-                  <Story />
-                </CycleContextProvider>
-              </PricesContextProvider>
-            </AlertProvider>
-          </QueryClientProvider>
-        </WagmiProvider>
+        <QueryClientProvider client={queryClient}>
+          <AlertProvider>
+            <PricesContextProvider>
+              <CycleContextProvider>
+                <Story />
+              </CycleContextProvider>
+            </PricesContextProvider>
+          </AlertProvider>
+        </QueryClientProvider>
       )
     },
   ],
@@ -325,42 +293,14 @@ const meta: Meta<typeof MockBuilderRewards> = {
 
 export default meta
 
-// Mock data for stories
-const mockBuilderAddress = '0x1234567890123456789012345678901234567890' as Address
-const mockGaugeAddress = '0x0987654321098765432109876543210987654321' as Address
-const mockGauges = [
-  '0x1111111111111111111111111111111111111111',
-  '0x2222222222222222222222222222222222222222',
-] as Address[]
-
-const mockTokens = {
-  rif: {
-    symbol: 'RIF',
-    address: '0x2acc95758f8b5f583470ba265eb685a8f45fc9d5' as Address,
-  },
-  rbtc: {
-    symbol: 'rBTC',
-    address: '0x542fda317318ebf1d3deaf76e0b632741a7e637d' as Address,
-  },
-}
-
 export const Default: StoryObj<typeof MockBuilderRewards> = {
   args: {
-    builder: mockBuilderAddress,
-    gauge: mockGaugeAddress,
-    gauges: mockGauges,
-    tokens: mockTokens,
-    currency: 'USD',
+    className: '',
   },
 }
 
 export const WithCustomClass: StoryObj<typeof MockBuilderRewards> = {
   args: {
-    builder: mockBuilderAddress,
-    gauge: mockGaugeAddress,
-    gauges: mockGauges,
-    tokens: mockTokens,
-    currency: 'USD',
     className: 'p-4 bg-gray-100 rounded-lg',
   },
 }
