@@ -1,12 +1,14 @@
 import React from 'react'
 import {
-  BuilderAllTimeRewards,
-  BuilderAllTimeShare,
-  BuilderClaimableRewards,
-  BuilderEstimatedRewards,
-  BuilderLastCycleRewards,
   BuilderRewardDetails,
 } from '@/app/collective-rewards/rewards'
+import {
+  AllTimeRewards,
+  AllTimeShare,
+  ClaimableRewards,
+  EstimatedRewards,
+  LastCycleRewards,
+} from './components'
 import { BuilderMetricCard } from './BuilderMetricCard'
 import { ClaimRewardsButton } from './buttons/ClaimRewardsButton'
 import { SeeRewardsHistoryButton } from './buttons/SeeRewardsHistoryButton'
@@ -67,7 +69,7 @@ export const BuilderRewards: React.FC<BuilderRewardsProps> = ({
             />
           }
         >
-          <BuilderClaimableRewards 
+          <ClaimableRewards 
             builder={builder}
             gauge={gauge}
             tokens={{ rif, rbtc }}
@@ -77,7 +79,7 @@ export const BuilderRewards: React.FC<BuilderRewardsProps> = ({
 
         {/* Estimated this cycle */}
         <BuilderMetricCard>
-          <BuilderEstimatedRewards 
+          <EstimatedRewards 
             builder={builder}
             gauge={gauge}
             tokens={{ rif, rbtc }}
@@ -87,7 +89,7 @@ export const BuilderRewards: React.FC<BuilderRewardsProps> = ({
 
         {/* Last cycle */}
         <BuilderMetricCard>
-          <BuilderLastCycleRewards 
+          <LastCycleRewards 
             gauge={gauge}
             tokens={{ rif, rbtc }}
             {...rest}
@@ -103,7 +105,7 @@ export const BuilderRewards: React.FC<BuilderRewardsProps> = ({
             />
           }
         >
-          <BuilderAllTimeRewards 
+          <AllTimeRewards 
             gauge={gauge}
             tokens={{ rif, rbtc }}
             {...rest}
@@ -113,11 +115,11 @@ export const BuilderRewards: React.FC<BuilderRewardsProps> = ({
         {/* All time share */}
         <BuilderMetricCard>
           <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', width: '100%' }}>
-            <BuilderAllTimeShare 
+            <AllTimeShare 
               gauge={gauge}
               tokens={{ rif, rbtc }}
               {...rest}
-            />
+          />
           </div>
         </BuilderMetricCard>
       </div>
