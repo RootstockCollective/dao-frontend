@@ -1,9 +1,10 @@
 import { withSpinner } from '@/components/LoadingSpinner/withLoadingSpinner'
-import { Typography, TypographyProps } from '@/components/Typography'
+import { Typography, TypographyProps } from '@/components/TypographyNew/Typography'
 import { cn } from '@/lib/utils'
 import { FC, HTMLAttributes, ReactNode } from 'react'
 import { Address } from 'viem'
 import { Tooltip, TooltipProps } from './Tooltip'
+import { TokenImage } from '@/components/TokenImage'
 
 type MetricsCardRow = {
   amount: string
@@ -15,7 +16,7 @@ export const TokenMetricsCardRow: FC<MetricsCardRow> = ({ amount, fiatAmount, ch
   <MetricsCardRow>
     <div className="flex-1 min-w-0">
       <Typography
-        tagVariant="h2"
+        variant="h2"
         paddingBottom="2px"
         paddingTop="10px"
         lineHeight="28.8px"
@@ -27,7 +28,7 @@ export const TokenMetricsCardRow: FC<MetricsCardRow> = ({ amount, fiatAmount, ch
       </Typography>
       {fiatAmount && (
         <Typography
-          tagVariant="label"
+          variant="tag"
           className="text-[14px] font-rootstock-sans text-disabled-primary"
           lineHeight="14px"
           data-testid="FiatAmount"
@@ -38,6 +39,46 @@ export const TokenMetricsCardRow: FC<MetricsCardRow> = ({ amount, fiatAmount, ch
     </div>
     {children}
   </MetricsCardRow>
+)
+
+export const TokenMetricsCardRowV2: FC<MetricsCardRow & { symbol: string }> = ({ amount, fiatAmount, symbol, children }) => (
+  <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-start', gap: 0 }}>
+    <div style={{ display: 'flex', alignItems: 'baseline', gap: 8 }}>
+      <Typography
+        variant="h2"
+        style={{ color: 'var(--Text-100, #FFF)' }}
+        data-testid="Amount"
+      >
+        {amount}
+      </Typography>
+      <div style={{ display: 'flex', padding: '1px 0px', alignItems: 'center', gap: 3, borderRadius: 4 }}>
+        <TokenImage symbol={symbol} size={20} />
+        <Typography
+          variant="body-s"
+          style={{ color: 'var(--Text-100, #FFF)', textAlign: 'right' }}
+        >
+          {symbol}
+        </Typography>
+      </div>
+    </div>
+    <span
+      style={{
+        alignSelf: 'stretch',
+        color: 'var(--Background-0, #ACA39D)',
+        fontFamily: 'Rootstock Sans',
+        fontSize: 12,
+        fontStyle: 'normal',
+        fontWeight: 500,
+        lineHeight: '150%',
+        marginLeft: 0,
+        marginRight: 0,
+      }}
+      data-testid="FiatAmount"
+    >
+      {fiatAmount}
+    </span>
+    {children}
+  </div>
 )
 
 export type MetricsCardProps = HTMLAttributes<HTMLDivElement> & {
@@ -78,13 +119,13 @@ export const MetricsCard: FC<MetricsCardProps> = ({
 }
 
 export type MetricsCardTitleProps =
-  | (Omit<TypographyProps, 'children'> & {
+  | (Omit<TypographyProps<'span'>, 'children'> & {
       title: string | ReactNode
       tooltip?: TooltipProps
       children?: ReactNode
       customLabel?: never
     })
-  | (Omit<TypographyProps, 'children'> & {
+  | (Omit<TypographyProps<'span'>, 'children'> & {
       customLabel: ReactNode
       tooltip?: TooltipProps
       children?: ReactNode
@@ -103,7 +144,7 @@ export const MetricsCardTitle: FC<MetricsCardTitleProps> = ({
   <div className="flex gap-1">
     {customLabel ?? (
       <Typography
-        tagVariant="label"
+        variant="tag"
         className={cn(
           'text-[16px] font-normal tracking-wide overflow-hidden whitespace-nowrap text-ellipsis',
           className ?? '',
@@ -126,7 +167,7 @@ type MetricsCardContentProps = {
 
 export const MetricsCardContent: FC<MetricsCardContentProps> = ({ children }) => (
   <Typography
-    tagVariant="h2"
+    variant="h2"
     paddingBottom="2px"
     paddingTop="10px"
     lineHeight="28.8px"

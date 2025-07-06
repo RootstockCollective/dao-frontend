@@ -3,7 +3,7 @@ import {
   ClaimYourRewardsButton,
   MetricsCard,
   MetricsCardTitle,
-  TokenMetricsCardRow,
+  TokenMetricsCardRowV2,
 } from '@/app/collective-rewards/rewards'
 import { FC } from 'react'
 
@@ -17,24 +17,26 @@ export const ClaimableRewards: FC<ClaimableRewardsProps> = ({ tokens: { rif, rbt
         data-testid="ClaimableRewards"
         tooltip={{ text: 'Your rewards available to claim' }}
       />
-      <TokenMetricsCardRow
+      <TokenMetricsCardRowV2
         amount="1,234.56"
         fiatAmount="$2,469.12"
+        symbol={rif.symbol}
       >
         <ClaimYourRewardsButton
           onClick={() => alert('Claim RIF rewards (mock)')}
           disabled={false}
         />
-      </TokenMetricsCardRow>
-      <TokenMetricsCardRow
+      </TokenMetricsCardRowV2>
+      <TokenMetricsCardRowV2
         amount="0.85"
         fiatAmount="$1,700.00"
+        symbol={rbtc.symbol}
       >
         <ClaimYourRewardsButton
           onClick={() => alert('Claim rBTC rewards (mock)')}
           disabled={false}
         />
-      </TokenMetricsCardRow>
+      </TokenMetricsCardRowV2>
     </MetricsCard>
   )
 } 

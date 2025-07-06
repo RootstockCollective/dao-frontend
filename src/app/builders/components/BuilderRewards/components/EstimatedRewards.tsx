@@ -2,7 +2,7 @@ import {
   BuilderRewardDetails,
   MetricsCard,
   MetricsCardTitle,
-  TokenMetricsCardRow,
+  TokenMetricsCardRowV2,
 } from '@/app/collective-rewards/rewards'
 import { FC } from 'react'
 
@@ -27,13 +27,15 @@ export const EstimatedRewards: FC<EstimatedRewardsProps> = ({ tokens: { rif, rbt
           popoverProps: { size: 'medium' },
         }}
       />
-      <TokenMetricsCardRow
+      <TokenMetricsCardRowV2
         amount="567.89"
         fiatAmount="$1,135.78"
+        symbol={rif.symbol}
       />
-      <TokenMetricsCardRow
+      <TokenMetricsCardRowV2
         amount="0.42"
         fiatAmount="$840.00"
+        symbol={rbtc.symbol}
       />
     </MetricsCard>
   )
