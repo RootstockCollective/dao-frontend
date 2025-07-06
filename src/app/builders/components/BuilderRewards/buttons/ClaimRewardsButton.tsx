@@ -9,15 +9,20 @@ export const ClaimRewardsButton: React.FC<ClaimRewardsButtonProps> = ({ onClick,
   return (
     <button
       style={{
-        width: '100%',
-        marginTop: 'auto',
-        padding: '8px 16px',
-        border: '1px solid #fff',
+        display: 'flex',
+        padding: '12px 16px',
+        alignItems: 'center',
+        gap: '8px',
         borderRadius: '4px',
+        border: '1px solid var(--Background-0, #ACA39D)',
         background: 'transparent',
-        color: '#fff',
+        color: 'var(--Text-100, #FFF)',
+        fontFamily: '"Rootstock-Sans"',
+        fontSize: '16px',
+        fontStyle: 'normal',
+        fontWeight: '700',
+        lineHeight: '150%',
         cursor: disabled ? 'not-allowed' : 'pointer',
-        fontSize: '14px',
         opacity: disabled ? 0.5 : 1,
       }}
       onClick={onClick}
