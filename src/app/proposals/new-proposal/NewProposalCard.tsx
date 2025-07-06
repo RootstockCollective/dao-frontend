@@ -4,14 +4,14 @@ import { DotsOverlayVert } from './images/DotsOverlayVert'
 import { CardButton } from './CardButton'
 import { HTMLAttributes } from 'react'
 import { cn } from '@/lib/utils'
+import type { ProposalCategory } from '@/shared/types'
 
 interface Props extends HTMLAttributes<HTMLDivElement> {
   card: NewProposalCardBaseData
-  cardIndex: number
-  onSelectCard: (_index: number) => void
+  onSelectCard: (_type: ProposalCategory) => void
 }
 
-export function NewProposalCard({ card, cardIndex, onSelectCard, className, ...props }: Props) {
+export function NewProposalCard({ card, onSelectCard, className, ...props }: Props) {
   const { buttonText, cardTitle, image, textBlock } = card
   return (
     <div className={cn('rounded-sm w-full max-w-[568px] bg-text-80 overflow-hidden', className)} {...props}>
@@ -42,7 +42,7 @@ export function NewProposalCard({ card, cardIndex, onSelectCard, className, ...p
 
           {/* Button Section */}
           <div className="flex justify-end">
-            <CardButton onClick={() => onSelectCard(cardIndex)} className="text-text-100 bg-bg-100">
+            <CardButton onClick={() => onSelectCard(card.type)} className="text-text-100 bg-bg-100">
               {buttonText}
             </CardButton>
           </div>

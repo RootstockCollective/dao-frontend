@@ -3,8 +3,10 @@ import grantImage from './images/grant.png'
 import rewardsImage from './images/rewards.png'
 import grantBigImage from './images/grant-big.png'
 import rewardsBigImage from './images/rewards-big.png'
+import { ProposalCategory } from '@/shared/types'
 
 interface NewProposalCardCoreProps {
+  type: ProposalCategory
   cardTitle: string
   textBlock: React.ReactNode
 }
@@ -28,6 +30,7 @@ type NewProposalCardData = NewProposalCardBaseData & NewProposalCardExtendedData
 
 export const newProposalCards: NewProposalCardData[] = [
   {
+    type: ProposalCategory.Grants,
     image: grantImage,
     bigImage: grantBigImage,
     cardTitle: 'Grant',
@@ -62,6 +65,7 @@ export const newProposalCards: NewProposalCardData[] = [
     detailsUrl: '/proposals/create?contract=DAOTreasuryAbi&action=withdraw',
   },
   {
+    type: ProposalCategory.Builder,
     image: rewardsImage,
     bigImage: rewardsBigImage,
     cardTitle: 'Builders Rewards',
