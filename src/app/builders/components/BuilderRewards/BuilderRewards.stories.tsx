@@ -7,8 +7,6 @@ import { CycleContextProvider } from '@/app/collective-rewards/metrics/context/C
 import { PricesContextProvider } from '@/shared/context/PricesContext'
 import React from 'react'
 
-
-
 const meta: Meta<typeof BuilderRewards> = {
   title: 'Builders/BuilderRewards',
   component: BuilderRewards,
@@ -24,7 +22,7 @@ const meta: Meta<typeof BuilderRewards> = {
     docs: {
       description: {
         component:
-          'This story demonstrates the BuilderRewards component with mock data for RIF, rBTC, and USD values.'
+          'This story demonstrates the BuilderRewards component with mock data for RIF, rBTC, and USD values.',
       },
     },
   },
@@ -36,7 +34,7 @@ const meta: Meta<typeof BuilderRewards> = {
     },
   },
   decorators: [
-    (Story) => {
+    Story => {
       const queryClient = new QueryClient({
         defaultOptions: {
           queries: {

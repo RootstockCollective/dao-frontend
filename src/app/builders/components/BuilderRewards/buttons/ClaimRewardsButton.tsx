@@ -5,13 +5,10 @@ interface ClaimRewardsButtonProps {
   disabled?: boolean
 }
 
-export const ClaimRewardsButton: React.FC<ClaimRewardsButtonProps> = ({ 
-  onClick, 
-  disabled = false 
-}) => {
+export const ClaimRewardsButton: React.FC<ClaimRewardsButtonProps> = ({ onClick, disabled = false }) => {
   return (
-    <button 
-      style={{ 
+    <button
+      style={{
         width: '100%',
         marginTop: 'auto',
         padding: '8px 16px',
@@ -29,4 +26,4 @@ export const ClaimRewardsButton: React.FC<ClaimRewardsButtonProps> = ({
       Claim Rewards
     </button>
   )
-} 
+}

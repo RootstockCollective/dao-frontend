@@ -5,13 +5,17 @@ interface SeeRewardsHistoryButtonProps {
   icon?: React.ReactNode
 }
 
-export const SeeRewardsHistoryButton: React.FC<SeeRewardsHistoryButtonProps> = ({ 
-  onClick, 
-  icon = <span role="img" aria-label="history">🕑</span>
+export const SeeRewardsHistoryButton: React.FC<SeeRewardsHistoryButtonProps> = ({
+  onClick,
+  icon = (
+    <span role="img" aria-label="history">
+      🕑
+    </span>
+  ),
 }) => {
   return (
-    <button 
-      style={{ 
+    <button
+      style={{
         display: 'flex',
         height: '48px',
         padding: '4px 0px',
@@ -31,4 +35,4 @@ export const SeeRewardsHistoryButton: React.FC<SeeRewardsHistoryButtonProps> = (
       See Rewards history
     </button>
   )
-} 
+}

@@ -41,22 +41,20 @@ export const TokenMetricsCardRow: FC<MetricsCardRow> = ({ amount, fiatAmount, ch
   </MetricsCardRow>
 )
 
-export const TokenMetricsCardRowV2: FC<MetricsCardRow & { symbol: string }> = ({ amount, fiatAmount, symbol, children }) => (
+export const TokenMetricsCardRowV2: FC<MetricsCardRow & { symbol: string }> = ({
+  amount,
+  fiatAmount,
+  symbol,
+  children,
+}) => (
   <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-start', gap: 0 }}>
     <div style={{ display: 'flex', alignItems: 'baseline', gap: 8 }}>
-      <Typography
-        variant="h2"
-        style={{ color: 'var(--Text-100, #FFF)' }}
-        data-testid="Amount"
-      >
+      <Typography variant="h2" style={{ color: 'var(--Text-100, #FFF)' }} data-testid="Amount">
         {amount}
       </Typography>
       <div style={{ display: 'flex', padding: '1px 0px', alignItems: 'center', gap: 3, borderRadius: 4 }}>
         <TokenImage symbol={symbol} size={20} />
-        <Typography
-          variant="body-s"
-          style={{ color: 'var(--Text-100, #FFF)', textAlign: 'right' }}
-        >
+        <Typography variant="body-s" style={{ color: 'var(--Text-100, #FFF)', textAlign: 'right' }}>
           {symbol}
         </Typography>
       </div>

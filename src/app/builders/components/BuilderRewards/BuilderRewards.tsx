@@ -1,7 +1,5 @@
 import React from 'react'
-import {
-  BuilderRewardDetails,
-} from '@/app/collective-rewards/rewards'
+import { BuilderRewardDetails } from '@/app/collective-rewards/rewards'
 import {
   AllTimeRewards,
   AllTimeShare,
@@ -18,7 +16,7 @@ interface BuilderRewardsProps extends BuilderRewardDetails {
   className?: string
 }
 
-export const BuilderRewards: React.FC<BuilderRewardsProps> = ({ 
+export const BuilderRewards: React.FC<BuilderRewardsProps> = ({
   className = '',
   builder,
   gauge,
@@ -26,9 +24,9 @@ export const BuilderRewards: React.FC<BuilderRewardsProps> = ({
   ...rest
 }) => {
   return (
-    <div 
-      className={`builder-rewards-container ${className}`} 
-      style={{ 
+    <div
+      className={`builder-rewards-container ${className}`}
+      style={{
         display: 'flex',
         width: '1144px',
         padding: '24px 24px 40px 24px',
@@ -41,92 +39,76 @@ export const BuilderRewards: React.FC<BuilderRewardsProps> = ({
     >
       {/* Builder Rewards Text */}
       <div style={{ width: '528px' }}>
-        <h3 style={{ 
-          margin: 0, 
-          color: 'var(--Text-100, #FFF)',
-          fontFamily: 'KK-Topo',
-          fontSize: '20px',
-          fontStyle: 'normal',
-          fontWeight: '400',
-          lineHeight: '130%',
-          letterSpacing: '0.4px',
-          textTransform: 'uppercase'
-        }}>BUILDER REWARDS</h3>
+        <h3
+          style={{
+            margin: 0,
+            color: 'var(--Text-100, #FFF)',
+            fontFamily: 'KK-Topo',
+            fontSize: '20px',
+            fontStyle: 'normal',
+            fontWeight: '400',
+            lineHeight: '130%',
+            letterSpacing: '0.4px',
+            textTransform: 'uppercase',
+          }}
+        >
+          BUILDER REWARDS
+        </h3>
       </div>
 
       {/* Metrics Container */}
-      <div style={{ 
-        display: 'flex',
-        alignItems: 'flex-start',
-        gap: '8px',
-        alignSelf: 'stretch',
-      }}>
+      <div
+        style={{
+          display: 'flex',
+          alignItems: 'flex-start',
+          gap: '8px',
+          alignSelf: 'stretch',
+        }}
+      >
         {/* Unclaimed */}
-        <BuilderMetricCard 
+        <BuilderMetricCard
           showButton
           button={
-            <ClaimRewardsButton 
+            <ClaimRewardsButton
               onClick={() => alert('Claim Rewards (placeholder - to be implemented in separate task)')}
             />
           }
         >
-          <ClaimableRewards 
-            builder={builder}
-            gauge={gauge}
-            tokens={{ rif, rbtc }}
-            {...rest}
-          />
+          <ClaimableRewards builder={builder} gauge={gauge} tokens={{ rif, rbtc }} {...rest} />
         </BuilderMetricCard>
 
         {/* Estimated this cycle */}
         <BuilderMetricCard>
-          <EstimatedRewards 
-            builder={builder}
-            gauge={gauge}
-            tokens={{ rif, rbtc }}
-            {...rest}
-          />
+          <EstimatedRewards builder={builder} gauge={gauge} tokens={{ rif, rbtc }} {...rest} />
         </BuilderMetricCard>
 
         {/* Last cycle */}
         <BuilderMetricCard>
-          <LastCycleRewards 
-            gauge={gauge}
-            tokens={{ rif, rbtc }}
-            {...rest}
-          />
+          <LastCycleRewards gauge={gauge} tokens={{ rif, rbtc }} {...rest} />
         </BuilderMetricCard>
 
         {/* Total earned */}
-        <BuilderMetricCard 
+        <BuilderMetricCard
           showButton
           button={
-            <SeeRewardsHistoryButton 
+            <SeeRewardsHistoryButton
               onClick={() => alert('See Rewards history (placeholder - to be implemented in separate task)')}
             />
           }
         >
-          <AllTimeRewards 
-            gauge={gauge}
-            tokens={{ rif, rbtc }}
-            {...rest}
-          />
+          <AllTimeRewards gauge={gauge} tokens={{ rif, rbtc }} {...rest} />
         </BuilderMetricCard>
 
         {/* All time share */}
         <BuilderMetricCard>
           <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', width: '100%' }}>
-            <AllTimeShare 
-              gauge={gauge}
-              tokens={{ rif, rbtc }}
-              {...rest}
-          />
+            <AllTimeShare gauge={gauge} tokens={{ rif, rbtc }} {...rest} />
           </div>
         </BuilderMetricCard>
       </div>
 
       {/* Need to adjust backers' rewards? */}
-      <AdjustBackersRewardsButton 
+      <AdjustBackersRewardsButton
         onClick={() => alert('Adjust backers rewards (placeholder - to be implemented in separate task)')}
       />
     </div>

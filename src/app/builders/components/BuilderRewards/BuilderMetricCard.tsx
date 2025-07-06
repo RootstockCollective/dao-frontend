@@ -6,30 +6,28 @@ interface BuilderMetricCardProps {
   button?: React.ReactNode
 }
 
-export const BuilderMetricCard: React.FC<BuilderMetricCardProps> = ({ 
-  children, 
-  showButton = false, 
-  button
+export const BuilderMetricCard: React.FC<BuilderMetricCardProps> = ({
+  children,
+  showButton = false,
+  button,
 }) => {
   return (
-    <div style={{ 
-      display: 'flex',
-      paddingBottom: '2px',
-      flexDirection: 'column',
-      alignItems: 'flex-start',
-      gap: '8px',
-      alignSelf: 'stretch',
-      flex: 1,
-      minWidth: 0,
-      background: '#181818',
-      borderRadius: '8px',
-    }}>
-      <div style={{ flex: 1, width: '100%' }}>
-        {children}
-      </div>
-      <span>
-        {showButton && button}
-      </span>
+    <div
+      style={{
+        display: 'flex',
+        paddingBottom: '2px',
+        flexDirection: 'column',
+        alignItems: 'flex-start',
+        gap: '8px',
+        alignSelf: 'stretch',
+        flex: 1,
+        minWidth: 0,
+        background: '#181818',
+        borderRadius: '8px',
+      }}
+    >
+      <div style={{ flex: 1, width: '100%' }}>{children}</div>
+      <span>{showButton && button}</span>
     </div>
   )
-} 
+}

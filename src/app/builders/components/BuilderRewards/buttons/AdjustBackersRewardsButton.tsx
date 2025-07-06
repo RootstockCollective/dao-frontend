@@ -8,7 +8,7 @@ interface AdjustBackersRewardsButtonProps {
 
 export const AdjustBackersRewardsButton: React.FC<AdjustBackersRewardsButtonProps> = ({
   onClick,
-  className = ''
+  className = '',
 }) => {
   return (
     <button
@@ -32,12 +32,8 @@ export const AdjustBackersRewardsButton: React.FC<AdjustBackersRewardsButtonProp
         lineHeight: '150%',
       }}
     >
-      <EditIcon 
-        size={24} 
-        fill="white" 
-        style={{ flexShrink: 0 }}
-      />
-      Need to adjust your backers' rewards?
+      <EditIcon size={24} fill="white" style={{ flexShrink: 0 }} />
+      Need to adjust your backers&apos; rewards?
     </button>
   )
-} 
+}

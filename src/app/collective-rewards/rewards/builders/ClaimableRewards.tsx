@@ -88,7 +88,14 @@ const TokenRewardsMetrics: FC<TokenRewardsMetricsProps> = ({
     <div style={mainRowStyle}>
       <div style={iconTextStyle}>
         <TokenImage symbol={symbol} size={20} />
-        <span style={{ color: 'var(--Text-100, #FFF)', fontFamily: 'Rootstock Sans', fontSize: 16, fontWeight: 500 }}>
+        <span
+          style={{
+            color: 'var(--Text-100, #FFF)',
+            fontFamily: 'Rootstock Sans',
+            fontSize: 16,
+            fontWeight: 500,
+          }}
+        >
           {symbol}
         </span>
         <span style={amountTextStyle}>{amount}</span>
