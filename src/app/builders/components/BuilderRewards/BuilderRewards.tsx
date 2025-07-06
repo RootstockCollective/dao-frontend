@@ -38,7 +38,17 @@ export const BuilderRewards: React.FC<BuilderRewardsProps> = ({
     >
       {/* Builder Rewards Text */}
       <div style={{ width: '528px' }}>
-        <h3 style={{ margin: 0, color: '#fff' }}>BUILDER REWARDS</h3>
+        <h3 style={{ 
+          margin: 0, 
+          color: 'var(--Text-100, #FFF)',
+          fontFamily: 'KK-Topo',
+          fontSize: '20px',
+          fontStyle: 'normal',
+          fontWeight: '400',
+          lineHeight: '130%',
+          letterSpacing: '0.4px',
+          textTransform: 'uppercase'
+        }}>BUILDER REWARDS</h3>
       </div>
 
       {/* Metrics Container */}
