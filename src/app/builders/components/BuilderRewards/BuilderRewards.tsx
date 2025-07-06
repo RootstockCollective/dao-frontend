@@ -12,6 +12,7 @@ import {
 import { BuilderMetricCard } from './BuilderMetricCard'
 import { ClaimRewardsButton } from './buttons/ClaimRewardsButton'
 import { SeeRewardsHistoryButton } from './buttons/SeeRewardsHistoryButton'
+import { AdjustBackersRewardsButton } from './buttons/AdjustBackersRewardsButton'
 
 interface BuilderRewardsProps extends BuilderRewardDetails {
   className?: string
@@ -125,16 +126,9 @@ export const BuilderRewards: React.FC<BuilderRewardsProps> = ({
       </div>
 
       {/* Need to adjust backers' rewards? */}
-      <div style={{ 
-        display: 'flex',
-        alignItems: 'center',
-        gap: '4px',
-        color: '#aaa',
-        fontSize: '15px',
-      }}>
-        <span role="img" aria-label="info">💡</span>
-        Need to adjust your backers' rewards?
-      </div>
+      <AdjustBackersRewardsButton 
+        onClick={() => alert('Adjust backers rewards (placeholder - to be implemented in separate task)')}
+      />
     </div>
   )
 }
