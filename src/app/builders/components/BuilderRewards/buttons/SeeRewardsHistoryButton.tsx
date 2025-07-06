@@ -1,18 +1,12 @@
 import React from 'react'
+import { HistoryIcon } from '@/components/Icons'
 
 interface SeeRewardsHistoryButtonProps {
   onClick: () => void
   icon?: React.ReactNode
 }
 
-export const SeeRewardsHistoryButton: React.FC<SeeRewardsHistoryButtonProps> = ({
-  onClick,
-  icon = (
-    <span role="img" aria-label="history">
-      🕑
-    </span>
-  ),
-}) => {
+export const SeeRewardsHistoryButton: React.FC<SeeRewardsHistoryButtonProps> = ({ onClick, icon }) => {
   return (
     <button
       style={{
@@ -24,15 +18,32 @@ export const SeeRewardsHistoryButton: React.FC<SeeRewardsHistoryButtonProps> = (
         borderRadius: '4px',
         border: 'none',
         background: 'transparent',
-        color: '#aaa',
         cursor: 'pointer',
-        fontSize: '13px',
         marginTop: '8px',
       }}
       onClick={onClick}
     >
-      {icon}
-      See Rewards history
+      <div
+        style={{
+          display: 'flex',
+          alignItems: 'center',
+          gap: '4px',
+        }}
+      >
+        {icon || <HistoryIcon size={20} color="var(--Text-100, #FFF)" />}
+        <span
+          style={{
+            color: 'var(--Text-100, #FFF)',
+            fontFamily: '"Rootstock-Sans"',
+            fontSize: '14px',
+            fontStyle: 'normal',
+            fontWeight: '500',
+            lineHeight: '145%',
+          }}
+        >
+          See rewards History
+        </span>
+      </div>
     </button>
   )
 }
