@@ -16,8 +16,8 @@ export const LastCycleRewards: FC<LastCycleRewardsProps> = ({ tokens: { rif, rbt
         data-testid="LastCycleRewards"
         tooltip={{ text: 'Your rewards from the previous cycle' }}
       />
-      <TokenMetricsCardRow amount="890.12" fiatAmount="$1,780.24" />
-      <TokenMetricsCardRow amount="0.65" fiatAmount="$1,300.00" />
+      <TokenMetricsCardRow amount="890.12" fiatAmount="1,780.24 USD" />
+      <TokenMetricsCardRow amount="0.65" fiatAmount="1,300.00 USD" />
     </MetricsCard>
   )
 }

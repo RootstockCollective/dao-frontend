@@ -27,14 +27,20 @@ export const TokenMetricsCardRow: FC<MetricsCardRow> = ({ amount, fiatAmount, ch
         {amount}
       </Typography>
       {fiatAmount && (
-        <Typography
-          variant="tag"
-          className="text-[14px] font-rootstock-sans text-disabled-primary"
-          lineHeight="14px"
+        <span
+          style={{
+            alignSelf: 'stretch',
+            color: 'var(--Background-0, #ACA39D)',
+            fontFamily: 'var(--font-rootstock-sans)',
+            fontSize: 12,
+            fontStyle: 'normal',
+            fontWeight: 500,
+            lineHeight: '150%',
+          }}
           data-testid="FiatAmount"
         >
           {fiatAmount}
-        </Typography>
+        </span>
       )}
     </div>
     {children}
@@ -63,7 +69,7 @@ export const TokenMetricsCardRowV2: FC<MetricsCardRow & { symbol: string }> = ({
       style={{
         alignSelf: 'stretch',
         color: 'var(--Background-0, #ACA39D)',
-        fontFamily: 'Rootstock Sans',
+        fontFamily: 'var(--font-rootstock-sans)',
         fontSize: 12,
         fontStyle: 'normal',
         fontWeight: 500,

@@ -27,8 +27,8 @@ export const EstimatedRewards: FC<EstimatedRewardsProps> = ({ tokens: { rif, rbt
           popoverProps: { size: 'medium' },
         }}
       />
-      <TokenMetricsCardRowV2 amount="567.89" fiatAmount="$1,135.78" symbol={rif.symbol} />
-      <TokenMetricsCardRowV2 amount="0.42" fiatAmount="$840.00" symbol={rbtc.symbol} />
+      <TokenMetricsCardRowV2 amount="567.89" fiatAmount="1,135.78 USD" symbol={rif.symbol} />
+      <TokenMetricsCardRowV2 amount="0.42" fiatAmount="840.00 USD" symbol={rbtc.symbol} />
     </MetricsCard>
   )
 }
