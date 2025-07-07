@@ -100,6 +100,7 @@ const TokenRewards: FC<TokenRewardsProps> = ({ builder, gauge, token: { id, symb
   return withSpinner(TokenMetricsCardRow, { className: 'min-h-0 grow-0', size: 'small' })({
     amount,
     fiatAmount,
+    symbol,
     isLoading:
       isRewardsLoading ||
       totalPotentialRewardsLoading ||
