@@ -1,4 +1,4 @@
-import { ENV } from '@/lib/constants'
+import { ENV, NODE_URL } from '@/lib/constants'
 import { Chain, defineChain } from 'viem'
 import { WagmiAdapter } from '@reown/appkit-adapter-wagmi'
 import { rootstock, rootstockTestnet } from '@reown/appkit/networks'
@@ -32,7 +32,7 @@ const connectors = [injected(), ledgerConnector({ chainId: currentEnvChain.id })
 export const config = createConfig({
   chains: [currentEnvChain],
   transports: {
-    [currentEnvChain.id]: http(undefined, {
+    [currentEnvChain.id]: http(NODE_URL, {
       batch: {
         // this is the default value configured in RSKj
         batchSize: 100,
@@ -51,7 +51,7 @@ export const wagmiAdapter = new WagmiAdapter({
   networks: [currentEnvChain],
   connectors,
   transports: {
-    [currentEnvChain.id]: http(undefined, {
+    [currentEnvChain.id]: http(NODE_URL, {
       batch: {
         // this is the default value configured in RSKj
         batchSize: 100,
