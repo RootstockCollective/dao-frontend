@@ -1,5 +1,6 @@
 import React from 'react'
 import { EditIcon } from '@/components/Icons'
+import { Span } from '@/components/TypographyNew'
 
 interface AdjustBackersRewardsButtonProps {
   onClick?: () => void
@@ -24,16 +25,13 @@ export const AdjustBackersRewardsButton: React.FC<AdjustBackersRewardsButtonProp
         background: 'transparent',
         border: 'none',
         cursor: 'pointer',
-        color: 'var(--Text-100, #FFF)',
-        fontFamily: 'Rootstock-Sans',
-        fontSize: '16px',
-        fontStyle: 'normal',
-        fontWeight: '400',
-        lineHeight: '150%',
+        color: 'var(--color-v3-text-100)',
       }}
     >
       <EditIcon size={24} fill="white" style={{ flexShrink: 0 }} />
-      Need to adjust your backers&apos; rewards?
+      <Span variant="body">
+        Need to adjust your backers&apos; rewards?
+      </Span>
     </button>
   )
 }

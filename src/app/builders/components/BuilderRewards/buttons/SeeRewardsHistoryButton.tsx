@@ -1,5 +1,6 @@
 import React from 'react'
 import { HistoryIcon } from '@/components/Icons'
+import { Span } from '@/components/TypographyNew'
 
 interface SeeRewardsHistoryButtonProps {
   onClick: () => void
@@ -30,19 +31,10 @@ export const SeeRewardsHistoryButton: React.FC<SeeRewardsHistoryButtonProps> = (
           gap: '4px',
         }}
       >
-        {icon || <HistoryIcon size={20} color="var(--Text-100, #FFF)" />}
-        <span
-          style={{
-            color: 'var(--Text-100, #FFF)',
-            fontFamily: '"Rootstock-Sans"',
-            fontSize: '14px',
-            fontStyle: 'normal',
-            fontWeight: '500',
-            lineHeight: '145%',
-          }}
-        >
+        {icon || <HistoryIcon size={20} color="var(--color-v3-text-100)" />}
+        <Span variant="tag-s" style={{ color: 'var(--color-v3-text-100)' }}>
           See rewards History
-        </span>
+        </Span>
       </div>
     </button>
   )

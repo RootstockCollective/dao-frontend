@@ -22,7 +22,7 @@ export const BuilderMetricCard: React.FC<BuilderMetricCardProps> = ({
         alignSelf: 'stretch',
         flex: 1,
         minWidth: 0,
-        background: 'var(--Background-80, #25211E)',
+        background: 'var(--color-v3-bg-accent-80)',
         borderRadius: '8px',
       }}
     >

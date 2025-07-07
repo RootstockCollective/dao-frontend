@@ -2,6 +2,7 @@ import { BuilderRewardDetails, MetricsCard, MetricsCardTitle } from '@/app/colle
 import { useBuilderAllTimeShare } from '../hooks'
 import { LoadingSpinner } from '@/components/LoadingSpinner'
 import { FC } from 'react'
+import { Header } from '@/components/TypographyNew'
 
 type AllTimeShareProps = Omit<BuilderRewardDetails, 'builder'> & { isMock?: boolean }
 
@@ -28,24 +29,19 @@ const AllTimeShareContent: FC<Omit<BuilderRewardDetails, 'builder'>> = ({ tokens
         {isLoading ? (
           <LoadingSpinner size="small" />
         ) : (
-          <div
+          <Header
+            variant="e3"
             style={{
               display: '-webkit-box',
               WebkitBoxOrient: 'vertical',
               WebkitLineClamp: 1,
               overflow: 'hidden',
-              color: 'var(--Text-100, #FFF)',
+              color: 'var(--color-v3-text-100)',
               textOverflow: 'ellipsis',
-              fontFamily: 'KK-Topo',
-              fontSize: '20px',
-              fontStyle: 'normal',
-              fontWeight: '400',
-              lineHeight: '130%',
-              letterSpacing: '0.4px',
             }}
           >
             {amount}
-          </div>
+          </Header>
         )}
       </div>
     </MetricsCard>
@@ -68,24 +64,19 @@ export const AllTimeShare: FC<AllTimeShareProps> = ({ isMock = false, tokens: { 
             gap: '16px',
           }}
         >
-          <div
+          <Header
+            variant="e3"
             style={{
               display: '-webkit-box',
               WebkitBoxOrient: 'vertical',
               WebkitLineClamp: 1,
               overflow: 'hidden',
-              color: 'var(--Text-100, #FFF)',
+              color: 'var(--color-v3-text-100)',
               textOverflow: 'ellipsis',
-              fontFamily: 'KK-Topo',
-              fontSize: '20px',
-              fontStyle: 'normal',
-              fontWeight: '400',
-              lineHeight: '130%',
-              letterSpacing: '0.4px',
             }}
           >
             15.7%
-          </div>
+          </Header>
         </div>
       </MetricsCard>
     )

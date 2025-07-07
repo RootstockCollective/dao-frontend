@@ -5,6 +5,7 @@ import { BuilderMetricCard } from './BuilderMetricCard'
 import { ClaimRewardsButton } from './buttons/ClaimRewardsButton'
 import { SeeRewardsHistoryButton } from './buttons/SeeRewardsHistoryButton'
 import { AdjustBackersRewardsButton } from './buttons/AdjustBackersRewardsButton'
+import { Header } from '@/components/TypographyNew'
 
 interface BuilderRewardsProps extends BuilderRewardDetails {
   className?: string
@@ -31,26 +32,14 @@ export const BuilderRewards: React.FC<BuilderRewardsProps> = ({
         gap: '40px',
         flex: '1 0 0',
         borderRadius: '4px',
-        background: 'var(--Background-80, #25211E)',
+        background: 'var(--color-v3-bg-accent-80)',
       }}
     >
       {/* Builder Rewards Text */}
       <div style={{ width: '528px' }}>
-        <h3
-          style={{
-            margin: 0,
-            color: 'var(--Text-100, #FFF)',
-            fontFamily: 'KK-Topo',
-            fontSize: '20px',
-            fontStyle: 'normal',
-            fontWeight: '400',
-            lineHeight: '130%',
-            letterSpacing: '0.4px',
-            textTransform: 'uppercase',
-          }}
-        >
+        <Header variant="e3" style={{ margin: 0, color: 'var(--color-v3-text-100)' }}>
           BUILDER REWARDS
-        </h3>
+        </Header>
       </div>
 
       {/* Metrics Container */}
