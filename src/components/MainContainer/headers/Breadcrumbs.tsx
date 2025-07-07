@@ -7,7 +7,7 @@ const menuBreadCrumbsMap = Object.fromEntries(menuData.map(({ href, text }) => [
   [K in (typeof menuData)[number] as K['href']]: K['text']
 }
 // A map that links known URL path segments (hrefs) to human-readable breadcrumb titles.
-const breadcrumbsMap = { ...menuBreadCrumbsMap, 'new-proposal': 'New Proposal' }
+const breadcrumbsMap = { ...menuBreadCrumbsMap, new: 'New Proposal' }
 /**
  * Simple breadcrumbs component used in desktop header
  */
