@@ -6,7 +6,7 @@ import {
   TotalAllocationsMetrics,
 } from '@/app/collective-rewards/metrics'
 import { useGetGaugesArray } from '@/app/collective-rewards/user'
-import { HeaderTitle } from '@/components/Typography'
+import { Header } from '@/components/TypographyNew'
 import { COINBASE_ADDRESS } from '@/lib/constants'
 import { tokenContracts } from '@/lib/contracts'
 import { getAddress } from 'viem'
@@ -29,7 +29,9 @@ export const Metrics = () => {
 
   return (
     <div>
-      <HeaderTitle className="mb-6">Metrics</HeaderTitle>
+      <Header variant="h1" className="mb-6">
+        Metrics
+      </Header>
       <CycleContextProvider>
         <div className="flex gap-4 w-full">
           <div className="flex gap-4 h-min w-3/5">

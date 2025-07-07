@@ -1,5 +1,6 @@
 import { withSpinner } from '@/components/LoadingSpinner/withLoadingSpinner'
-import { Typography, TypographyProps } from '@/components/TypographyNew/Typography'
+import { Header, Span } from '@/components/TypographyNew'
+import type { TypographyProps } from '@/components/TypographyNew/Typography'
 import { cn } from '@/lib/utils'
 import { FC, HTMLAttributes, ReactNode } from 'react'
 import { Address } from 'viem'
@@ -20,14 +21,14 @@ export const TokenMetricsCardRow: FC<MetricsCardRow & { symbol: string }> = ({
 }) => (
   <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-start', gap: 0 }}>
     <div style={{ display: 'flex', alignItems: 'baseline', gap: 8 }}>
-      <Typography variant="h2" style={{ color: 'var(--Text-100, #FFF)' }} data-testid="Amount">
+      <Header variant="h2" style={{ color: 'var(--Text-100, #FFF)' }} data-testid="Amount">
         {amount}
-      </Typography>
+      </Header>
       <div style={{ display: 'flex', padding: '1px 0px', alignItems: 'center', gap: 3, borderRadius: 4 }}>
         <TokenImage symbol={symbol} size={20} />
-        <Typography variant="body-s" style={{ color: 'var(--Text-100, #FFF)', textAlign: 'right' }}>
+        <Span variant="body-s" style={{ color: 'var(--Text-100, #FFF)', textAlign: 'right' }}>
           {symbol}
-        </Typography>
+        </Span>
       </div>
     </div>
     <span
@@ -96,13 +97,13 @@ export const MetricsCard: FC<MetricsCardProps> = ({
 }
 
 export type MetricsCardTitleProps =
-  | (Omit<TypographyProps<'span'>, 'children'> & {
+  | (Omit<TypographyProps<'span'>, 'children' | 'variant'> & {
       title: string | ReactNode
       tooltip?: Omit<TooltipProps, 'children'>
       children?: ReactNode
       customLabel?: never
     })
-  | (Omit<TypographyProps<'span'>, 'children'> & {
+  | (Omit<TypographyProps<'span'>, 'children' | 'variant'> & {
       customLabel: ReactNode
       tooltip?: Omit<TooltipProps, 'children'>
       children?: ReactNode
@@ -129,7 +130,7 @@ export const MetricsCardTitle: FC<MetricsCardTitleProps> = ({
     }}
   >
     {customLabel ?? (
-      <Typography
+      <Span
         variant="tag-s"
         style={{
           color: 'var(--Background-0, #ACA39D)',
@@ -139,7 +140,7 @@ export const MetricsCardTitle: FC<MetricsCardTitleProps> = ({
         {...rest}
       >
         {title}
-      </Typography>
+      </Span>
     )}
     {tooltip && (
       <Tooltip {...tooltip}>
@@ -166,17 +167,9 @@ type MetricsCardContentProps = {
 }
 
 export const MetricsCardContent: FC<MetricsCardContentProps> = ({ children }) => (
-  <Typography
-    variant="h2"
-    paddingBottom="2px"
-    paddingTop="10px"
-    lineHeight="28.8px"
-    fontFamily="kk-topo"
-    className="text-[48px] text-primary font-normal"
-    data-testid="Content"
-  >
+  <Header variant="h2" className="text-[48px] text-primary font-normal" data-testid="Content">
     {children}
-  </Typography>
+  </Header>
 )
 
 export const MetricsCardRow: FC<{ children: ReactNode }> = ({ children }) => (
