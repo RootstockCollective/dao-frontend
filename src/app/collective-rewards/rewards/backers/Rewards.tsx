@@ -3,7 +3,6 @@ import {
   MetricsCard,
   MetricsCardProps,
   RewardDetails,
-  Tooltip,
 } from '@/app/collective-rewards/rewards'
 import {
   ABIBackers,
@@ -16,6 +15,7 @@ import { useNFTBoosterContext } from '@/app/providers/NFT/BoosterContext'
 import { BoltSvg } from '@/components/BoltSvg'
 import { Button } from '@/components/Button'
 import { GlowingLabel } from '@/components/Label/GlowingLabel'
+import { Tooltip } from '@/components/Tooltip'
 import { Typography } from '@/components/Typography/Typography'
 import { cn } from '@/lib/utils'
 import { FC } from 'react'
@@ -38,7 +38,6 @@ const estimatedRewardsTooltipData: RewardsCardProps['titleDetails']['tooltip'] =
       </Typography>
     </>
   ),
-  popoverProps: { size: 'medium', position: 'left-bottom' },
 }
 
 const estimatedRewardsTitleData: RewardsCardProps['titleDetails'] = {
@@ -133,7 +132,6 @@ export const Rewards: FC<RewardsProps> = ({ builder, tokens }) => {
             title: 'All time rewards',
             tooltip: {
               text: 'Total of your received and claimable rewards',
-              popoverProps: { size: 'medium', position: 'bottom' },
             },
           }}
           rewardDetails={{

@@ -1,9 +1,9 @@
-import { FC } from 'react'
+import { FC, ReactNode } from 'react'
 import { TableCell } from '@/components/Table'
 import { cn } from '@/lib/utils'
-import { Popover } from '@/components/Popover'
+
 import { ArrowUpSFillIcon, ArrowDownSFillIcon, QuestionIcon } from '@/components/Icons'
-import { TooltipProps } from '@/app/collective-rewards/rewards'
+import { Tooltip } from '@/components/Tooltip'
 
 export type ISortConfig = {
   key: string
@@ -12,7 +12,7 @@ export type ISortConfig = {
 
 export type TableHeader = {
   label: string
-  tooltip?: TooltipProps
+  tooltip?: { text: ReactNode }
   className?: string
   sortKey?: string
   onSort?: (parameter: any) => void
@@ -37,15 +37,9 @@ export const TableHeaderCell: FC<TableHeader> = ({
     >
       <div className="flex flex-row">
         {tooltip && (
-          <Popover
-            content={tooltip.text}
-            className="font-normal text-sm"
-            size="small"
-            trigger="hover"
-            {...tooltip.popoverProps}
-          >
+          <Tooltip text={tooltip.text}>
             <QuestionIcon className="mr-1" />
-          </Popover>
+          </Tooltip>
         )}
         <span>{label}</span>
         {onSort && sortKey && (

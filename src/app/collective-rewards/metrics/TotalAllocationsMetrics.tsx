@@ -37,7 +37,6 @@ export const TotalAllocationsMetrics: FC<TotalAllocationsProps> = ({
         data-testid="TotalAllocations"
         tooltip={{
           text: 'Total stRIF allocation from Backers to Builders. Backers retain full ownership and access to their stRIF.',
-          popoverProps: { size: 'medium' },
         }}
       />
       <>

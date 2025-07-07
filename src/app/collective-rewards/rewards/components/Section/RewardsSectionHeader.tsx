@@ -3,7 +3,7 @@ import { BoltSvg } from '@/components/BoltSvg'
 import { GlowingLabel } from '@/components/Label/GlowingLabel'
 import { HeaderTitle, Typography } from '@/components/Typography'
 import { FC, ReactNode } from 'react'
-import { Tooltip } from '../Tooltip'
+import { Tooltip } from '@/components/Tooltip'
 
 export type RewardsSectionHeader = {
   title: string
@@ -23,7 +23,7 @@ export const RewardsSectionHeader: FC<RewardsSectionHeader> = ({ title, subtext,
             <div className="inline-flex items-center gap-1">
               <BoltSvg />
               <GlowingLabel faded>Boosted</GlowingLabel>
-              <Tooltip text="Your rewards are boosted thanks to your NFT’s superpowers." />
+              <Tooltip text="Your rewards are boosted thanks to your NFT's superpowers." />
             </div>
           )}
         </div>

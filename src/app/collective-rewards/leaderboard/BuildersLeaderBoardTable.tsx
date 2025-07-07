@@ -51,7 +51,6 @@ const defaultTable: Record<RewardsColumnKeyEnum, TableHeader> = {
           data is for informational purposes only.
         </>
       ),
-      popoverProps: { size: 'medium' },
     },
     className: 'w-[22%]',
   },
@@ -144,7 +143,9 @@ export const BuildersLeaderBoardTable: FC = () => {
                 key={key}
                 className={className}
                 label={label}
-                tooltip={tooltip}
+                tooltip={{
+                  text: 'Annual Backers Incentives (%)',
+                }}
                 sortKey={key}
                 onSort={handleSort(key)}
                 sortConfig={sortConfig}

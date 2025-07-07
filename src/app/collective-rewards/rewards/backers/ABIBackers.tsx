@@ -25,26 +25,7 @@ export const ABIBackers: FC<ABIProps> = ({ backer, ...metricsCardProps }) => {
           title="Annual Backers Incentives %"
           data-testid="backerAbiPct"
           tooltip={{
-            text: (
-              <span className="font-rootstock-sans text-sm font-normal">
-                Your Annual Backers Incentives (%) represents an estimate of the annualized percentage of
-                rewards that you could receive based on your backing allocations.
-                <br />
-                <br />
-                The calculation follows the formula:
-                <span className="flex justify-center">
-                  <ABIFormula />
-                </span>
-                <br />
-                <br />
-                This estimation is dynamic and may vary based on total rewards and user activity. This data is
-                for informational purposes only.
-              </span>
-            ),
-            popoverProps: {
-              size: 'medium',
-              position: 'left-bottom',
-            },
+            text: 'Your Annual Backers Incentives (%) represents an estimate of the annualized percentage of rewards that you could receive based on your backing allocations.',
           }}
         />
         <MetricsCardContent>{`${abiPct.toFixed(0)}%`}</MetricsCardContent>

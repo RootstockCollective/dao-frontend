@@ -27,34 +27,7 @@ const RBIContent: FC<RBIContentProps> = ({ rbiPct, isLoading, ...metricsCardProp
           title="Realized Backers Incentives %"
           data-testid="RBI"
           tooltip={{
-            text: (
-              <span className="font-rootstock-sans text-sm font-normal">
-                Your Realized Backers Incentives (%) represents the actual percentage of rewards you have
-                received so far based on your backing allocations.
-                <br />
-                <br />
-                The calculation follows the formula:
-                <span className="flex justify-center">
-                  <span className="flex items-center space-x-1">
-                    <span className="text-base">Total Staked Time *</span>
-                    <span className="relative flex flex-col items-center justify-center space-y-1">
-                      <span className="absolute inset-0 flex items-center justify-center">
-                        <span className="border-t border-white w-full" />
-                      </span>
-                      <span className="text-xs">
-                        <span>Total Rewards Earned by Backer</span>
-                      </span>
-                      <span className="text-xs">
-                        <span>Total stRIF Allocated by Backer</span>
-                      </span>
-                    </span>
-                  </span>
-                </span>
-                <br />
-                This data is for informational purposes only and does not guarantee future performance.
-              </span>
-            ),
-            popoverProps: { size: 'medium', position: 'left-bottom' },
+            text: 'RBI for Backers',
           }}
         />
         <MetricsCardContent>{`${rbiPct.toFixed(0)}%`}</MetricsCardContent>

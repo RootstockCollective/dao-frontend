@@ -36,7 +36,9 @@ const defaultTable: Record<RewardsColumnKeyEnum, TableHeader> = {
   },
   [RewardsColumnKeyEnum.claimableRewards]: {
     label: 'Claimable Rewards',
-    tooltip: { text: 'Your rewards from each Builder available to claim' },
+    tooltip: {
+      text: 'Your rewards from each Builder available to claim',
+    },
   },
   [RewardsColumnKeyEnum.estimatedRewards]: {
     label: 'Estimated Rewards',
@@ -44,12 +46,12 @@ const defaultTable: Record<RewardsColumnKeyEnum, TableHeader> = {
       text: (
         <>
           <Typography>
-            An estimate of the remainder of this Cycle’s rewards from each Builder that will become fully
-            claimable by the end of the current Cycle. These rewards gradually transition into your ‘Claimable
-            Rewards’ as the cycle progresses.
+            An estimate of the remainder of this Cycle&apos;s rewards from each Builder that will become fully
+            claimable by the end of the current Cycle. These rewards gradually transition into your
+            &apos;Claimable Rewards&apos; as the cycle progresses.
           </Typography>
           <Typography marginTop="1rem" marginBottom="1rem">
-            To check the cycle`s completion, go to Collective Rewards → Current Cycle.
+            To check the cycle&apos;s completion, go to Collective Rewards → Current Cycle.
           </Typography>
           <Typography>
             The displayed information is dynamic and may vary based on total rewards and user activity. This
@@ -57,7 +59,6 @@ const defaultTable: Record<RewardsColumnKeyEnum, TableHeader> = {
           </Typography>
         </>
       ),
-      popoverProps: { size: 'medium' },
     },
   },
   [RewardsColumnKeyEnum.allTimeRewards]: {
@@ -166,7 +167,9 @@ export const BackerRewardsTable: FC<BackerRewardsTable> = ({ builder, tokens }) 
                     hidden: !isDetailedView && isHidable(key as RewardsColumnKeyEnum),
                   })}
                   label={label}
-                  tooltip={tooltip}
+                  tooltip={{
+                    text: 'Backer rewards table',
+                  }}
                   sortKey={key}
                   onSort={handleSort(key)}
                   sortConfig={sortConfig}

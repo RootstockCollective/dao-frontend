@@ -2,7 +2,6 @@
 import { DelegateContextState } from '@/app/delegate/components/types'
 import { defaultCardsState } from '@/app/delegate/components/constants'
 import { createContext, ReactNode, useContext, useEffect, useState } from 'react'
-import { produce } from 'immer'
 import { useGetExternalDelegatedAmount } from '@/shared/hooks/useGetExternalDelegatedAmount'
 import { useAccount } from 'wagmi'
 import { formatEther } from 'viem'
@@ -44,18 +43,30 @@ export const DelegateContextProvider = ({ children }: Props) => {
   // Info such as delegated since, voting weight, delegators, voting power, total votes?
 
   useEffect(() => {
-    setData(
-      produce(draft => {
-        draft.cards.received.contentValue = Number(formatEther(received)).toFixed(0)
-        draft.cards.own.contentValue = Number(formatEther(own)).toFixed(0)
-        draft.cards.delegated.contentValue = Number(formatEther(delegated)).toFixed(0)
-
-        draft.cards.available.contentValue = Number(formatEther(available)).toFixed(0)
-
-        draft.didIDelegateToMyself = didIDelegateToMyself
-        draft.delegateeAddress = delegateeAddress
-      }),
-    )
+    setData(prevData => ({
+      ...prevData,
+      cards: {
+        ...prevData.cards,
+        received: {
+          ...prevData.cards.received,
+          contentValue: Number(formatEther(received)).toFixed(0),
+        },
+        own: {
+          ...prevData.cards.own,
+          contentValue: Number(formatEther(own)).toFixed(0),
+        },
+        delegated: {
+          ...prevData.cards.delegated,
+          contentValue: Number(formatEther(delegated)).toFixed(0),
+        },
+        available: {
+          ...prevData.cards.available,
+          contentValue: Number(formatEther(available)).toFixed(0),
+        },
+      },
+      didIDelegateToMyself,
+      delegateeAddress,
+    }))
   }, [received, delegated, own, available, didIDelegateToMyself, delegateeAddress])
 
   return <DelegateContext.Provider value={data}>{children}</DelegateContext.Provider>
