@@ -53,8 +53,8 @@ createAppKit({
   ],
   features: {
     analytics: true,
-    email: false,
-    socials: false,
+    email: true,
+    socials: ['google', 'x', 'github', 'discord', 'apple', 'facebook'],
     collapseWallets: true,
   },
 })
