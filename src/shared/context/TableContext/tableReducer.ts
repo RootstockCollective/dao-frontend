@@ -1,8 +1,8 @@
+import { getEnvFlag } from '../FeatureFlag'
 import { TableAction, TableState } from './types'
 
-const toggleRowSelection = (state: TableState, action: TableAction) => {
-  if (action.type !== 'TOGGLE_ROW_SELECTION') return state
-  const { payload: id } = action
+const toggleRowSelection = (state: TableState, { payload: id, type }: TableAction) => {
+  if (type !== 'TOGGLE_ROW_SELECTION') return state
   return {
     ...state,
     selectedRows: {
@@ -12,9 +12,8 @@ const toggleRowSelection = (state: TableState, action: TableAction) => {
   }
 }
 
-const toggleColumnVisibility = (state: TableState, action: TableAction) => {
-  if (action.type !== 'TOGGLE_COLUMN_VISIBILITY') return state
-  const { payload: id } = action
+const toggleColumnVisibility = (state: TableState, { payload: id, type }: TableAction) => {
+  if (type !== 'TOGGLE_COLUMN_VISIBILITY') return state
   return {
     ...state,
     columns: state.columns.map(column => (column.id === id ? { ...column, hidden: !column.hidden } : column)),
@@ -28,41 +27,37 @@ const toggleColumnVisibility = (state: TableState, action: TableAction) => {
  * @param action
  * @returns new state
  */
-const sortByColumn = (state: TableState, action: TableAction) => {
-  if (action.type !== 'SORT_BY_COLUMN') return state
-  const {
-    payload: { id, direction },
-  } = action
+const sortByColumn = (state: TableState, { payload, type }: TableAction) => {
+  if (type !== 'SORT_BY_COLUMN') return state
+
+  const { columnId, direction } = payload
+
   return {
     ...state,
     sort: {
-      by: id,
+      columnId,
       direction,
     },
   }
 }
 
-const setRows = (state: TableState, action: TableAction) => {
-  if (action.type !== 'SET_ROWS') return state
-  const { payload: rows } = action
+const setRows = (state: TableState, { payload: rows, type }: TableAction) => {
+  if (type !== 'SET_ROWS') return state
   return { ...state, rows }
 }
 
-const setColumns = (state: TableState, action: TableAction) => {
-  if (action.type !== 'SET_COLUMNS') return state
-  const { payload: columns } = action
+const setColumns = (state: TableState, { payload: columns, type }: TableAction) => {
+  if (type !== 'SET_COLUMNS') return state
   return { ...state, columns }
 }
 
-const setSelectedRows = (state: TableState, action: TableAction) => {
-  if (action.type !== 'SET_SELECTED_ROWS') return state
-  const { payload: selectedRows } = action
+const setSelectedRows = (state: TableState, { payload: selectedRows, type }: TableAction) => {
+  if (type !== 'SET_SELECTED_ROWS') return state
   return { ...state, selectedRows }
 }
 
-const setHiddenColumns = (state: TableState, action: TableAction) => {
-  if (action.type !== 'SET_HIDDEN_COLUMNS') return state
-  const { payload: hiddenColumnIds } = action
+const setHiddenColumns = (state: TableState, { payload: hiddenColumnIds, type }: TableAction) => {
+  if (type !== 'SET_HIDDEN_COLUMNS') return state
   return {
     ...state,
     columns: state.columns.map(column => ({
@@ -72,25 +67,22 @@ const setHiddenColumns = (state: TableState, action: TableAction) => {
   }
 }
 
-const setDefaultSort = (state: TableState, action: TableAction) => {
-  if (action.type !== 'SET_DEFAULT_SORT') return state
-  const { payload: sort } = action
+const setDefaultSort = (state: TableState, { payload: sort, type }: TableAction) => {
+  if (type !== 'SET_DEFAULT_SORT') return state
   return { ...state, defaultSort: sort }
 }
 
-const setLoading = (state: TableState, action: TableAction) => {
-  if (action.type !== 'SET_LOADING') return state
-  const { payload: loading } = action
+const setLoading = (state: TableState, { payload: loading, type }: TableAction) => {
+  if (type !== 'SET_LOADING') return state
   return { ...state, loading }
 }
 
-const setError = (state: TableState, action: TableAction) => {
-  if (action.type !== 'SET_ERROR') return state
-  const { payload: error } = action
+const setError = (state: TableState, { payload: error, type }: TableAction) => {
+  if (type !== 'SET_ERROR') return state
   return { ...state, error }
 }
 
-const actionMap = {
+const actionMap: Record<TableAction['type'], (state: TableState, action: TableAction) => TableState> = {
   TOGGLE_ROW_SELECTION: toggleRowSelection,
   TOGGLE_COLUMN_VISIBILITY: toggleColumnVisibility,
   SORT_BY_COLUMN: sortByColumn,
@@ -104,5 +96,15 @@ const actionMap = {
 } as const
 
 export const tableReducer = (state: TableState, action: TableAction) => {
-  return actionMap[action.type]?.(state, action) ?? state
+  const debugEnabled = getEnvFlag('debug_logs')
+  if (debugEnabled) {
+    console.log('action', action)
+    console.log('state', state)
+  }
+  const newState = actionMap[action.type]?.(state, action) ?? state
+  if (debugEnabled) {
+    console.log('newState', newState)
+  }
+
+  return newState
 }

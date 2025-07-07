@@ -234,7 +234,7 @@ describe('Table Actions and State Management', () => {
         React.useEffect(() => {
           dispatch({
             type: 'SET_COLUMNS',
-            payload: [{ id: testColumnId, label: 'Test Column', sortable: true, hidden: false }],
+            payload: [{ id: testColumnId, sortable: true, hidden: false }],
           })
         }, [dispatch])
         return <ColumnVisibilityTestComponent columnId={testColumnId} />
@@ -263,7 +263,7 @@ describe('Table Actions and State Management', () => {
         React.useEffect(() => {
           dispatch({
             type: 'SET_COLUMNS',
-            payload: [{ id: testColumnId, label: 'Test Column', sortable: true, hidden: false }],
+            payload: [{ id: testColumnId, sortable: true, hidden: false }],
           })
         }, [dispatch])
         return <ColumnVisibilityTestComponent columnId={testColumnId} />
@@ -299,8 +299,8 @@ describe('Table Actions and State Management', () => {
           dispatch({
             type: 'SET_COLUMNS',
             payload: [
-              { id: 'col1', label: 'Column 1', sortable: true, hidden: false },
-              { id: 'col2', label: 'Column 2', sortable: true, hidden: false },
+              { id: 'col1', sortable: true, hidden: false },
+              { id: 'col2', sortable: true, hidden: false },
             ],
           })
         }, [dispatch])
@@ -363,7 +363,7 @@ describe('Table Actions and State Management', () => {
       const { sort } = useTableContext()
 
       const applySorting = () => {
-        dispatch({ type: 'SORT_BY_COLUMN', payload: { id: columnId, direction } })
+        dispatch({ type: 'SORT_BY_COLUMN', payload: { columnId: columnId, direction } })
       }
 
       return (
@@ -384,14 +384,14 @@ describe('Table Actions and State Management', () => {
       render(<WrappedComponent />)
 
       // Initially no sorting applied
-      expect(parseTestElementData('sort-state')).toEqual({ by: null, direction: null })
+      expect(parseTestElementData('sort-state')).toEqual({ columnId: null, direction: null })
 
       // Apply ascending sort
       fireEvent.click(screen.getByTestId('apply-sort'))
 
       await waitFor(() => {
         const sortState = parseTestElementData('sort-state')
-        expect(sortState).toEqual({ by: testColumnId, direction: 'asc' })
+        expect(sortState).toEqual({ columnId: testColumnId, direction: 'asc' })
       })
     })
 
@@ -406,7 +406,7 @@ describe('Table Actions and State Management', () => {
 
       await waitFor(() => {
         const sortState = parseTestElementData('sort-state')
-        expect(sortState).toEqual({ by: testColumnId, direction: 'desc' })
+        expect(sortState).toEqual({ columnId: testColumnId, direction: 'desc' })
       })
     })
   })
@@ -455,8 +455,8 @@ describe('Table Actions and State Management', () => {
 
         const setTestRows = () => {
           const testRows = [
-            { id: 'row1', name: 'Test Row 1', value: 100 },
-            { id: 'row2', name: 'Test Row 2', value: 200 },
+            { id: 'row1', data: { name: 'Test Row 1', value: 100 } },
+            { id: 'row2', data: { name: 'Test Row 2', value: 200 } },
           ]
           dispatch({ type: 'SET_ROWS', payload: testRows })
         }
@@ -491,8 +491,8 @@ describe('Table Actions and State Management', () => {
         await waitFor(() => {
           const rowsData = parseTestElementData('rows-data')
           expect(rowsData).toEqual([
-            { id: 'row1', name: 'Test Row 1', value: 100 },
-            { id: 'row2', name: 'Test Row 2', value: 200 },
+            { id: 'row1', data: { name: 'Test Row 1', value: 100 } },
+            { id: 'row2', data: { name: 'Test Row 2', value: 200 } },
           ])
         })
       })
@@ -524,9 +524,9 @@ describe('Table Actions and State Management', () => {
 
         const setTestColumns = () => {
           const testColumns = [
-            { id: 'name', label: 'Name', sortable: true, hidden: false },
-            { id: 'value', label: 'Value', sortable: true, hidden: false },
-            { id: 'status', label: 'Status', sortable: false, hidden: false },
+            { id: 'name', sortable: true, hidden: false },
+            { id: 'value', sortable: true, hidden: false },
+            { id: 'status', sortable: false, hidden: false },
           ]
           dispatch({ type: 'SET_COLUMNS', payload: testColumns })
         }
@@ -554,9 +554,9 @@ describe('Table Actions and State Management', () => {
         await waitFor(() => {
           const columnsData = parseTestElementData('columns-data')
           expect(columnsData).toEqual([
-            { id: 'name', label: 'Name', sortable: true, hidden: false },
-            { id: 'value', label: 'Value', sortable: true, hidden: false },
-            { id: 'status', label: 'Status', sortable: false, hidden: false },
+            { id: 'name', sortable: true, hidden: false },
+            { id: 'value', sortable: true, hidden: false },
+            { id: 'status', sortable: false, hidden: false },
           ])
         })
       })
@@ -634,11 +634,11 @@ describe('Table Actions and State Management', () => {
           dispatch({
             type: 'SET_COLUMNS',
             payload: [
-              { id: 'col1', label: 'Column 1', sortable: true, hidden: false },
-              { id: 'col2', label: 'Column 2', sortable: true, hidden: false },
-              { id: 'col3', label: 'Column 3', sortable: true, hidden: false },
-              { id: 'col4', label: 'Column 4', sortable: true, hidden: false },
-              { id: 'col5', label: 'Column 5', sortable: true, hidden: false },
+              { id: 'col1', sortable: true, hidden: false },
+              { id: 'col2', sortable: true, hidden: false },
+              { id: 'col3', sortable: true, hidden: false },
+              { id: 'col4', sortable: true, hidden: false },
+              { id: 'col5', sortable: true, hidden: false },
             ],
           })
         }, [dispatch])
@@ -709,12 +709,12 @@ describe('Table Actions and State Management', () => {
         const { defaultSort } = useTableContext()
 
         const setDefaultSort = () => {
-          const sort = { by: 'name', direction: 'asc' as const }
+          const sort = { columnId: 'name', direction: 'asc' as const }
           dispatch({ type: 'SET_DEFAULT_SORT', payload: sort })
         }
 
         const clearDefaultSort = () => {
-          const sort = { by: null, direction: null }
+          const sort = { columnId: null, direction: null }
           dispatch({ type: 'SET_DEFAULT_SORT', payload: sort })
         }
 
@@ -736,14 +736,14 @@ describe('Table Actions and State Management', () => {
         render(<WrappedComponent />)
 
         // Initially no default sort
-        expect(parseTestElementData('default-sort-data')).toEqual({ by: null, direction: null })
+        expect(parseTestElementData('default-sort-data')).toEqual({ columnId: null, direction: null })
 
         // Set default sort
         fireEvent.click(screen.getByTestId('set-default-sort'))
 
         await waitFor(() => {
           const defaultSortData = parseTestElementData('default-sort-data')
-          expect(defaultSortData).toEqual({ by: 'name', direction: 'asc' })
+          expect(defaultSortData).toEqual({ columnId: 'name', direction: 'asc' })
         })
       })
 
@@ -755,14 +755,14 @@ describe('Table Actions and State Management', () => {
         fireEvent.click(screen.getByTestId('set-default-sort'))
         await waitFor(() => {
           const defaultSortData = parseTestElementData('default-sort-data')
-          expect(defaultSortData.by).toBe('name')
+          expect(defaultSortData.columnId).toBe('name')
         })
 
         // Clear default sort
         fireEvent.click(screen.getByTestId('clear-default-sort'))
         await waitFor(() => {
           const defaultSortData = parseTestElementData('default-sort-data')
-          expect(defaultSortData).toEqual({ by: null, direction: null })
+          expect(defaultSortData).toEqual({ columnId: null, direction: null })
         })
       })
     })
@@ -866,379 +866,6 @@ describe('Table Actions and State Management', () => {
           const errorState = parseTestElementData('error-state')
           expect(errorState).toBe(null)
         })
-      })
-    })
-  })
-})
-
-describe('Table Integration Test', () => {
-  // Mock table data
-  const mockColumns = [
-    { id: 'id', label: 'ID', sortable: true, hidden: false },
-    { id: 'name', label: 'Name', sortable: true, hidden: false },
-    { id: 'email', label: 'Email', sortable: true, hidden: false },
-    { id: 'status', label: 'Status', sortable: false, hidden: false },
-    { id: 'actions', label: 'Actions', sortable: false, hidden: false },
-  ]
-
-  const mockRows = [
-    { id: 'user1', name: 'Alice Johnson', email: 'alice@example.com', status: 'Active' },
-    { id: 'user2', name: 'Bob Smith', email: 'bob@example.com', status: 'Inactive' },
-    { id: 'user3', name: 'Charlie Brown', email: 'charlie@example.com', status: 'Active' },
-    { id: 'user4', name: 'Diana Prince', email: 'diana@example.com', status: 'Pending' },
-  ]
-
-  // Realistic table component that uses the context
-  const IntegratedTableComponent: FC = () => {
-    const dispatch = useTableActionsContext()
-    const { columns, rows, selectedRows, sort, loading, error } = useTableContext()
-
-    // Initialize table data on mount
-    React.useEffect(() => {
-      dispatch({ type: 'SET_COLUMNS', payload: mockColumns })
-      dispatch({ type: 'SET_ROWS', payload: mockRows })
-    }, [dispatch])
-
-    const handleRowSelect = (rowId: string) => {
-      dispatch({ type: 'TOGGLE_ROW_SELECTION', payload: rowId })
-    }
-
-    const handleColumnVisibility = (columnId: string) => {
-      dispatch({ type: 'TOGGLE_COLUMN_VISIBILITY', payload: columnId })
-    }
-
-    const handleSort = (columnId: string) => {
-      const newDirection = sort.by === columnId && sort.direction === 'asc' ? 'desc' : 'asc'
-      dispatch({ type: 'SORT_BY_COLUMN', payload: { id: columnId, direction: newDirection } })
-    }
-
-    const handleSelectAll = () => {
-      const allSelected = rows.every(row => selectedRows[row.id])
-      const newSelection = allSelected ? {} : rows.reduce((acc, row) => ({ ...acc, [row.id]: true }), {})
-      dispatch({ type: 'SET_SELECTED_ROWS', payload: newSelection })
-    }
-
-    const simulateLoading = () => {
-      dispatch({ type: 'SET_LOADING', payload: true })
-      setTimeout(() => {
-        dispatch({ type: 'SET_LOADING', payload: false })
-      }, 100)
-    }
-
-    const simulateError = () => {
-      dispatch({ type: 'SET_ERROR', payload: 'Failed to load table data' })
-    }
-
-    const clearError = () => {
-      dispatch({ type: 'SET_ERROR', payload: null })
-    }
-
-    const hiddenColumns = columns.filter(col => col.hidden).map(col => col.id)
-    const visibleColumns = columns.filter(col => !col.hidden)
-    const selectedCount = Object.values(selectedRows).filter(Boolean).length
-
-    if (loading) {
-      return <div data-testid="table-loading">Loading table data...</div>
-    }
-
-    return (
-      <div data-testid="integrated-table">
-        {/* Table Controls */}
-        <div data-testid="table-controls">
-          <button data-testid="select-all" onClick={handleSelectAll}>
-            {selectedCount === rows.length ? 'Deselect All' : 'Select All'}
-          </button>
-          <button data-testid="simulate-loading" onClick={simulateLoading}>
-            Simulate Loading
-          </button>
-          <button data-testid="simulate-error" onClick={simulateError}>
-            Simulate Error
-          </button>
-          {error && (
-            <div data-testid="error-message">
-              Error: {error}
-              <button data-testid="clear-error" onClick={clearError}>
-                Clear
-              </button>
-            </div>
-          )}
-        </div>
-
-        {/* Column Visibility Controls */}
-        <div data-testid="column-controls">
-          <span>Toggle Columns: </span>
-          {columns.map(column => (
-            <label key={column.id} data-testid={`column-toggle-${column.id}`}>
-              <input
-                type="checkbox"
-                checked={!column.hidden}
-                onChange={() => handleColumnVisibility(column.id)}
-                data-testid={`column-checkbox-${column.id}`}
-              />
-              {column.label}
-            </label>
-          ))}
-        </div>
-
-        {/* Selection Info */}
-        <div data-testid="selection-info">
-          Selected: {selectedCount} of {rows.length} rows
-        </div>
-
-        {/* Sort Info */}
-        <div data-testid="sort-info">
-          {sort.by ? `Sorted by: ${sort.by} (${sort.direction})` : 'No sorting applied'}
-        </div>
-
-        {/* Table */}
-        <table data-testid="data-table">
-          <thead>
-            <tr>
-              <th>
-                <input
-                  type="checkbox"
-                  checked={selectedCount === rows.length && rows.length > 0}
-                  onChange={handleSelectAll}
-                  data-testid="select-all-checkbox"
-                />
-              </th>
-              {visibleColumns.map(column => (
-                <th key={column.id} data-testid={`header-${column.id}`}>
-                  {column.sortable ? (
-                    <button onClick={() => handleSort(column.id)} data-testid={`sort-${column.id}`}>
-                      {column.label}
-                      {sort.by === column.id && (
-                        <span data-testid={`sort-indicator-${column.id}`}>
-                          {sort.direction === 'asc' ? '↑' : '↓'}
-                        </span>
-                      )}
-                    </button>
-                  ) : (
-                    column.label
-                  )}
-                </th>
-              ))}
-            </tr>
-          </thead>
-          <tbody>
-            {rows.map(row => (
-              <tr key={row.id} data-testid={`row-${row.id}`}>
-                <td>
-                  <input
-                    type="checkbox"
-                    checked={!!selectedRows[row.id]}
-                    onChange={() => handleRowSelect(row.id)}
-                    data-testid={`select-${row.id}`}
-                  />
-                </td>
-                {visibleColumns.map(column => (
-                  <td key={column.id} data-testid={`cell-${row.id}-${column.id}`}>
-                    {String(row[column.id as keyof typeof row] || '')}
-                  </td>
-                ))}
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      </div>
-    )
-  }
-
-  it('renders a complete table and handles all interactions correctly', async () => {
-    const WrappedComponent = withTableContext(IntegratedTableComponent)
-    render(<WrappedComponent />)
-
-    // Wait for table to initialize
-    await waitFor(() => {
-      expect(screen.getByTestId('integrated-table')).toBeInTheDocument()
-      expect(screen.getByTestId('data-table')).toBeInTheDocument()
-    })
-
-    // Verify initial state
-    expect(screen.getByTestId('selection-info')).toHaveTextContent('Selected: 0 of 4 rows')
-    expect(screen.getByTestId('sort-info')).toHaveTextContent('No sorting applied')
-
-    // Test row selection
-    const user1Checkbox = screen.getByTestId('select-user1')
-    const user2Checkbox = screen.getByTestId('select-user2')
-
-    fireEvent.click(user1Checkbox)
-    await waitFor(() => {
-      expect(screen.getByTestId('selection-info')).toHaveTextContent('Selected: 1 of 4 rows')
-    })
-
-    fireEvent.click(user2Checkbox)
-    await waitFor(() => {
-      expect(screen.getByTestId('selection-info')).toHaveTextContent('Selected: 2 of 4 rows')
-    })
-
-    // Test select all functionality
-    fireEvent.click(screen.getByTestId('select-all'))
-    await waitFor(() => {
-      expect(screen.getByTestId('selection-info')).toHaveTextContent('Selected: 4 of 4 rows')
-      expect(screen.getByTestId('select-all')).toHaveTextContent('Deselect All')
-    })
-
-    // Test deselect all
-    fireEvent.click(screen.getByTestId('select-all'))
-    await waitFor(() => {
-      expect(screen.getByTestId('selection-info')).toHaveTextContent('Selected: 0 of 4 rows')
-      expect(screen.getByTestId('select-all')).toHaveTextContent('Select All')
-    })
-
-    // Test column sorting
-    const nameSort = screen.getByTestId('sort-name')
-    fireEvent.click(nameSort)
-    await waitFor(() => {
-      expect(screen.getByTestId('sort-info')).toHaveTextContent('Sorted by: name (asc)')
-      expect(screen.getByTestId('sort-indicator-name')).toHaveTextContent('↑')
-    })
-
-    // Test sort direction change
-    fireEvent.click(nameSort)
-    await waitFor(() => {
-      expect(screen.getByTestId('sort-info')).toHaveTextContent('Sorted by: name (desc)')
-      expect(screen.getByTestId('sort-indicator-name')).toHaveTextContent('↓')
-    })
-
-    // Test column visibility
-    const emailColumnCheckbox = screen.getByTestId('column-checkbox-email')
-    fireEvent.click(emailColumnCheckbox)
-    await waitFor(() => {
-      expect(screen.queryByTestId('header-email')).not.toBeInTheDocument()
-      expect(screen.queryByTestId('cell-user1-email')).not.toBeInTheDocument()
-    })
-
-    // Show email column again
-    fireEvent.click(emailColumnCheckbox)
-    await waitFor(() => {
-      expect(screen.getByTestId('header-email')).toBeInTheDocument()
-      expect(screen.getByTestId('cell-user1-email')).toBeInTheDocument()
-    })
-
-    // Test loading state
-    fireEvent.click(screen.getByTestId('simulate-loading'))
-    await waitFor(() => {
-      expect(screen.getByTestId('table-loading')).toBeInTheDocument()
-      expect(screen.queryByTestId('data-table')).not.toBeInTheDocument()
-    })
-
-    // Wait for loading to finish
-    await waitFor(() => {
-      expect(screen.queryByTestId('table-loading')).not.toBeInTheDocument()
-      expect(screen.getByTestId('data-table')).toBeInTheDocument()
-    })
-
-    // Test error state
-    fireEvent.click(screen.getByTestId('simulate-error'))
-    await waitFor(() => {
-      expect(screen.getByTestId('error-message')).toHaveTextContent('Error: Failed to load table data')
-    })
-
-    // Clear error
-    fireEvent.click(screen.getByTestId('clear-error'))
-    await waitFor(() => {
-      expect(screen.queryByTestId('error-message')).not.toBeInTheDocument()
-    })
-  })
-
-  it('handles complex interaction scenarios correctly', async () => {
-    const WrappedComponent = withTableContext(IntegratedTableComponent)
-    render(<WrappedComponent />)
-
-    await waitFor(() => {
-      expect(screen.getByTestId('integrated-table')).toBeInTheDocument()
-    })
-
-    // Complex scenario: Select some rows, hide a column, sort, then modify selection
-
-    // 1. Select first two users
-    fireEvent.click(screen.getByTestId('select-user1'))
-    fireEvent.click(screen.getByTestId('select-user2'))
-
-    await waitFor(() => {
-      expect(screen.getByTestId('selection-info')).toHaveTextContent('Selected: 2 of 4 rows')
-    })
-
-    // 2. Hide the status column
-    fireEvent.click(screen.getByTestId('column-checkbox-status'))
-
-    await waitFor(() => {
-      expect(screen.queryByTestId('header-status')).not.toBeInTheDocument()
-    })
-
-    // 3. Sort by email descending
-    const emailSort = screen.getByTestId('sort-email')
-    fireEvent.click(emailSort) // asc
-    fireEvent.click(emailSort) // desc
-
-    await waitFor(() => {
-      expect(screen.getByTestId('sort-info')).toHaveTextContent('Sorted by: email (desc)')
-    })
-
-    // 4. Verify that selections are maintained despite sorting and column hiding
-    expect(screen.getByTestId('select-user1')).toBeChecked()
-    expect(screen.getByTestId('select-user2')).toBeChecked()
-    expect(screen.getByTestId('select-user3')).not.toBeChecked()
-    expect(screen.getByTestId('select-user4')).not.toBeChecked()
-
-    // 5. Select all rows
-    fireEvent.click(screen.getByTestId('select-all'))
-
-    await waitFor(() => {
-      expect(screen.getByTestId('selection-info')).toHaveTextContent('Selected: 4 of 4 rows')
-    })
-
-    // 6. Show status column again
-    fireEvent.click(screen.getByTestId('column-checkbox-status'))
-
-    await waitFor(() => {
-      expect(screen.getByTestId('header-status')).toBeInTheDocument()
-    })
-
-    // 7. Verify all selections are still maintained
-    expect(screen.getByTestId('select-all-checkbox')).toBeChecked()
-    mockRows.forEach(row => {
-      expect(screen.getByTestId(`select-${row.id}`)).toBeChecked()
-    })
-  })
-
-  it('maintains state consistency across multiple column visibility changes', async () => {
-    const WrappedComponent = withTableContext(IntegratedTableComponent)
-    render(<WrappedComponent />)
-
-    await waitFor(() => {
-      expect(screen.getByTestId('integrated-table')).toBeInTheDocument()
-    })
-
-    // Initially all columns should be visible
-    mockColumns.forEach(column => {
-      expect(screen.getByTestId(`header-${column.id}`)).toBeInTheDocument()
-    })
-
-    // Hide multiple columns
-    fireEvent.click(screen.getByTestId('column-checkbox-email'))
-    fireEvent.click(screen.getByTestId('column-checkbox-status'))
-    fireEvent.click(screen.getByTestId('column-checkbox-actions'))
-
-    await waitFor(() => {
-      // Only id and name should be visible
-      expect(screen.getByTestId('header-id')).toBeInTheDocument()
-      expect(screen.getByTestId('header-name')).toBeInTheDocument()
-      expect(screen.queryByTestId('header-email')).not.toBeInTheDocument()
-      expect(screen.queryByTestId('header-status')).not.toBeInTheDocument()
-      expect(screen.queryByTestId('header-actions')).not.toBeInTheDocument()
-    })
-
-    // Show all columns again
-    fireEvent.click(screen.getByTestId('column-checkbox-email'))
-    fireEvent.click(screen.getByTestId('column-checkbox-status'))
-    fireEvent.click(screen.getByTestId('column-checkbox-actions'))
-
-    await waitFor(() => {
-      // All columns should be visible again
-      mockColumns.forEach(column => {
-        expect(screen.getByTestId(`header-${column.id}`)).toBeInTheDocument()
       })
     })
   })

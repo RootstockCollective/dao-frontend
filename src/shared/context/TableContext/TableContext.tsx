@@ -11,19 +11,19 @@ export const initialState: TableState = {
   loading: false,
   error: null,
   sort: {
-    by: null,
+    columnId: null,
     direction: null,
   },
   defaultSort: {
-    by: null,
+    columnId: null,
     direction: null,
   },
 }
 
 export const TableContext = createContext<TableState | null>(null)
 
-export const useTableContext = () => {
-  const context = useContext(TableContext)
+export const useTableContext = <ColumnId extends string = string>() => {
+  const context = useContext(TableContext) as TableState<ColumnId>
   if (!context) throw new NoContextProviderError('useTableContext', 'TableProvider')
   return context
 }

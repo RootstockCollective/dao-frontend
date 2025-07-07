@@ -65,6 +65,7 @@ export const FEATURE_FLAGS: Record<Feature, string> = {
   v3_design: process.env.NEXT_PUBLIC_ENABLE_FEATURE_V3_DESIGN ?? '',
   use_the_graph: process.env.NEXT_PUBLIC_ENABLE_FEATURE_USE_THE_GRAPH ?? '',
   use_state_sync: process.env.NEXT_PUBLIC_ENABLE_FEATURE_USE_STATE_SYNC ?? '',
+  debug_logs: process.env.NEXT_PUBLIC_ENABLE_FEATURE_DEBUG_LOGS ?? '',
 }
 
 export const getFeatureEnvFlags = (): Record<Feature, string> => FEATURE_FLAGS
