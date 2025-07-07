@@ -18,7 +18,7 @@ const BannerDelegateContent = () => (
     <Header variant="e1" className="text-bg-20 text-[32px] leading-[40px]">
       TO INFLUENCE WHAT GETS BUILT
     </Header>
-    <ul className="text-bg-100 mt-[16px] list-disc list-inside">
+    <ul className="text-bg-100 mt-[16px] list-[circle] list-inside">
       <li>
         <Span>you are only delegating your own voting power</Span>
       </li>

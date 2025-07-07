@@ -1,7 +1,7 @@
 import React, { ComponentProps } from 'react'
 import { BuilderHeader } from '@/app/backing/components/BuilderHeader/BuilderHeader'
 import { Button } from '@/components/ButtonNew'
-import { cn } from '@/lib/utils'
+import { cn, truncateRns } from '@/lib/utils'
 import { Address } from 'viem'
 import { Label, Paragraph } from '@/components/TypographyNew'
 
@@ -9,14 +9,15 @@ export interface DelegateCardProps {
   address: Address
   since: string | number
   votingPower: string | number
-  votingWeight: string
+  votingWeight: string | number
   totalVotes: string | number
   delegators: string | number
-  onDelegate: () => void
+  onDelegate: (address: Address, rns?: string) => void
   name?: string
   className?: string
   buttonText?: string
   buttonVariant?: ComponentProps<typeof Button>['variant']
+  buttonDisabled?: boolean
 }
 
 export const DelegateCard: React.FC<DelegateCardProps> = ({
@@ -31,16 +32,23 @@ export const DelegateCard: React.FC<DelegateCardProps> = ({
   className,
   buttonText = 'Delegate',
   buttonVariant = 'secondary-outline',
+  buttonDisabled = false,
 }) => {
   return (
     <div
       className={cn(
-        'rounded bg-bg-60 px-2 pb-6 flex flex-col items-center relative min-w-[200px]',
+        'rounded bg-bg-60 px-2 pb-6 flex flex-col items-center relative min-w-[220px]',
         className,
       )}
-      data-testid="delegateCardContainer"
+      data-testid={`delegateCardContainer-${address}`}
     >
-      <BuilderHeader address={address} name={name} className="mt-8" />
+      <BuilderHeader
+        address={address}
+        name={name ? truncateRns(name, 15) : undefined}
+        className="mt-8"
+        showFullName
+        shouldNotRedirect
+      />
       <Paragraph className="text-text-80" variant="body-xs">
         delegate since {since}
       </Paragraph>
@@ -72,7 +80,12 @@ export const DelegateCard: React.FC<DelegateCardProps> = ({
           </div>
         </div>
       </div>
-      <Button variant={buttonVariant} className="mt-6" onClick={onDelegate}>
+      <Button
+        variant={buttonVariant}
+        className="mt-6"
+        onClick={() => onDelegate(address, name)}
+        disabled={buttonDisabled}
+      >
         {buttonText}
       </Button>
     </div>

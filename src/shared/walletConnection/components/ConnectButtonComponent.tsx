@@ -2,6 +2,7 @@ import { Button } from '@/components/ButtonNew/Button'
 import { Button as OldButton } from '@/components/Button/Button'
 import { ConnectButtonComponentProps } from '../types'
 import { Span } from '@/components/TypographyNew'
+import { cn } from '@/lib/utils'
 
 /**
  * New button that shows Connect Wallet
@@ -19,8 +20,13 @@ export const ConnectButtonComponent = ({ onClick }: ConnectButtonComponentProps)
   </Button>
 )
 
-export const ConnectButtonOrangeComponent = ({ onClick }: ConnectButtonComponentProps) => (
-  <Button onClick={onClick} data-testid="ConnectWallet" variant="primary" className="px-2 py-1 border-bg-40">
+export const ConnectButtonOrangeComponent = ({ onClick, className }: ConnectButtonComponentProps) => (
+  <Button
+    onClick={onClick}
+    data-testid="ConnectWallet"
+    variant="primary"
+    className={cn('px-2 py-1 border-bg-40', className)}
+  >
     Connect Wallet
   </Button>
 )
