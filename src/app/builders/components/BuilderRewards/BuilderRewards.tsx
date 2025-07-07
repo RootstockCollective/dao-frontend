@@ -8,10 +8,12 @@ import { AdjustBackersRewardsButton } from './buttons/AdjustBackersRewardsButton
 
 interface BuilderRewardsProps extends BuilderRewardDetails {
   className?: string
+  isMock?: boolean
 }
 
 export const BuilderRewards: React.FC<BuilderRewardsProps> = ({
   className = '',
+  isMock = false,
   builder,
   gauge,
   tokens: { rif, rbtc },
@@ -69,17 +71,23 @@ export const BuilderRewards: React.FC<BuilderRewardsProps> = ({
             />
           }
         >
-          <Unclaimed builder={builder} gauge={gauge} tokens={{ rif, rbtc }} {...rest} />
+          <Unclaimed isMock={isMock} builder={builder} gauge={gauge} tokens={{ rif, rbtc }} {...rest} />
         </BuilderMetricCard>
 
         {/* Estimated this cycle */}
         <BuilderMetricCard>
-          <EstimatedThisCycle builder={builder} gauge={gauge} tokens={{ rif, rbtc }} {...rest} />
+          <EstimatedThisCycle
+            isMock={isMock}
+            builder={builder}
+            gauge={gauge}
+            tokens={{ rif, rbtc }}
+            {...rest}
+          />
         </BuilderMetricCard>
 
         {/* Last cycle */}
         <BuilderMetricCard>
-          <LastCycle gauge={gauge} tokens={{ rif, rbtc }} {...rest} />
+          <LastCycle isMock={isMock} gauge={gauge} tokens={{ rif, rbtc }} {...rest} />
         </BuilderMetricCard>
 
         {/* Total earned */}
@@ -91,13 +99,13 @@ export const BuilderRewards: React.FC<BuilderRewardsProps> = ({
             />
           }
         >
-          <AllTimeRewards gauge={gauge} tokens={{ rif, rbtc }} {...rest} />
+          <AllTimeRewards isMock={isMock} gauge={gauge} tokens={{ rif, rbtc }} {...rest} />
         </BuilderMetricCard>
 
         {/* All time share */}
         <BuilderMetricCard>
           <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', width: '100%' }}>
-            <AllTimeShare gauge={gauge} tokens={{ rif, rbtc }} {...rest} />
+            <AllTimeShare isMock={isMock} gauge={gauge} tokens={{ rif, rbtc }} {...rest} />
           </div>
         </BuilderMetricCard>
       </div>
