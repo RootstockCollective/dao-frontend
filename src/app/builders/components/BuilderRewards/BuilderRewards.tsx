@@ -1,7 +1,6 @@
 import React from 'react'
 import { BuilderRewardDetails } from '@/app/collective-rewards/rewards'
 import { RewardCard, type RewardType } from './components'
-import { BuilderMetricCard } from './BuilderMetricCard'
 import { ClaimRewardsButton } from './buttons/ClaimRewardsButton'
 import { SeeRewardsHistoryButton } from './buttons/SeeRewardsHistoryButton'
 import { AdjustBackersRewardsButton } from './buttons/AdjustBackersRewardsButton'
@@ -89,9 +88,37 @@ export const BuilderRewards: React.FC<BuilderRewardsProps> = ({
         }}
       >
         {REWARD_CARDS_CONFIG.map(config => (
-          <BuilderMetricCard key={config.type} showButton={config.showButton} button={config.button}>
-            {config.specialLayout ? (
-              <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', width: '100%' }}>
+          <div
+            key={config.type}
+            style={{
+              display: 'flex',
+              paddingBottom: '2px',
+              flexDirection: 'column',
+              alignItems: 'flex-start',
+              gap: '8px',
+              alignSelf: 'stretch',
+              flex: 1,
+              minWidth: 0,
+              background: 'var(--color-v3-bg-accent-80)',
+              borderRadius: '8px',
+            }}
+          >
+            <div style={{ flex: 1, width: '100%' }}>
+              {config.specialLayout ? (
+                <div
+                  style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', width: '100%' }}
+                >
+                  <RewardCard
+                    type={config.type}
+                    isMock={isMock}
+                    builder={builder}
+                    tokens={{ rif, rbtc }}
+                    gauge={gauge}
+                    gauges={rest.gauges}
+                    currency={rest.currency}
+                  />
+                </div>
+              ) : (
                 <RewardCard
                   type={config.type}
                   isMock={isMock}
@@ -101,19 +128,10 @@ export const BuilderRewards: React.FC<BuilderRewardsProps> = ({
                   gauges={rest.gauges}
                   currency={rest.currency}
                 />
-              </div>
-            ) : (
-              <RewardCard
-                type={config.type}
-                isMock={isMock}
-                builder={builder}
-                tokens={{ rif, rbtc }}
-                gauge={gauge}
-                gauges={rest.gauges}
-                currency={rest.currency}
-              />
-            )}
-          </BuilderMetricCard>
+              )}
+            </div>
+            {config.showButton && <span>{config.button}</span>}
+          </div>
         ))}
       </div>
 
