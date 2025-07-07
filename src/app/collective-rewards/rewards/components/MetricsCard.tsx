@@ -26,27 +26,23 @@ export const TokenMetricsCardRow: FC<MetricsCardRow & { symbol: string }> = ({
       </Typography>
       <div style={{ display: 'flex', padding: '1px 0px', alignItems: 'center', gap: 3, borderRadius: 4 }}>
         <TokenImage symbol={symbol} size={20} />
-        <Typography variant="body-s" style={{ color: 'var(--Text-100, #FFF)', textAlign: 'right' }}>
+        <Typography variant="tag-s" style={{ color: 'var(--Text-100, #FFF)', textAlign: 'right' }}>
           {symbol}
         </Typography>
       </div>
     </div>
-    <span
+    <Typography
+      variant="tag-s"
       style={{
         alignSelf: 'stretch',
         color: 'var(--Background-0, #ACA39D)',
-        fontFamily: 'var(--font-rootstock-sans)',
-        fontSize: 12,
-        fontStyle: 'normal',
-        fontWeight: 500,
-        lineHeight: '150%',
         marginLeft: 0,
         marginRight: 0,
       }}
       data-testid="FiatAmount"
     >
       {fiatAmount}
-    </span>
+    </Typography>
     {children}
   </div>
 )
