@@ -54,7 +54,7 @@ const RBIContent: FC<RBIContentProps> = ({ rbiPct, isLoading, ...metricsCardProp
                 This data is for informational purposes only and does not guarantee future performance.
               </span>
             ),
-            popoverProps: { size: 'medium', position: 'left-bottom' },
+            side: 'bottom',
           }}
         />
         <MetricsCardContent>{`${rbiPct.toFixed(0)}%`}</MetricsCardContent>

@@ -36,7 +36,7 @@ const ABIMetricsContent = ({ abiPct, isLoading }: { abiPct: Big; isLoading: bool
                 for informational purposes only.
               </span>
             ),
-            popoverProps: { size: 'medium', position: 'left-bottom' },
+            side: 'bottom',
           }}
         />
         <>

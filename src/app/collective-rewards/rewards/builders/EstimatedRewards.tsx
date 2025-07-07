@@ -128,7 +128,7 @@ export const EstimatedRewards: FC<EstimatedRewardsProps> = ({ tokens: { rif, rbt
               data is for informational purposes only.
             </>
           ),
-          popoverProps: { size: 'medium' },
+          side: 'bottom',
         }}
       />
       <TokenRewards {...rest} token={{ ...rif, id: 'rif' }} />

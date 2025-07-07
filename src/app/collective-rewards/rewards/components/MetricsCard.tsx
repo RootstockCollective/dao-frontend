@@ -3,7 +3,7 @@ import { Typography, TypographyProps } from '@/components/TypographyNew/Typograp
 import { cn } from '@/lib/utils'
 import { FC, HTMLAttributes, ReactNode } from 'react'
 import { Address } from 'viem'
-import { Tooltip, TooltipProps } from './Tooltip'
+import { Tooltip, TooltipProps } from '@/components/Tooltip'
 import { TokenImage } from '@/components/TokenImage'
 import KotoQuestionMarkIcon from '@/components/Icons/KotoQuestionMarkIcon'
 type MetricsCardRow = {
@@ -98,13 +98,13 @@ export const MetricsCard: FC<MetricsCardProps> = ({
 export type MetricsCardTitleProps =
   | (Omit<TypographyProps<'span'>, 'children'> & {
       title: string | ReactNode
-      tooltip?: TooltipProps
+      tooltip?: Omit<TooltipProps, 'children'>
       children?: ReactNode
       customLabel?: never
     })
   | (Omit<TypographyProps<'span'>, 'children'> & {
       customLabel: ReactNode
-      tooltip?: TooltipProps
+      tooltip?: Omit<TooltipProps, 'children'>
       children?: ReactNode
       title?: never
     })

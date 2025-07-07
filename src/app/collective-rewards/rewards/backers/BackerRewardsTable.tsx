@@ -57,7 +57,7 @@ const defaultTable: Record<RewardsColumnKeyEnum, TableHeader> = {
           </Typography>
         </>
       ),
-      popoverProps: { size: 'medium' },
+      side: 'bottom',
     },
   },
   [RewardsColumnKeyEnum.allTimeRewards]: {

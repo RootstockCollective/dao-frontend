@@ -36,7 +36,10 @@ const defaultTable: Record<RewardsColumnKeyEnum, TableHeader> = {
   },
   [RewardsColumnKeyEnum.lastCycleRewards]: {
     label: 'Last Cycle Rewards',
-    tooltip: { text: 'The Backers’ share of the Builder’s rewards in the previous Cycle' },
+    tooltip: {
+      text: 'The Backers’ share of the Builder’s rewards in the previous Cycle',
+      side: 'bottom',
+    },
     className: 'w-[22%]',
   },
   [RewardsColumnKeyEnum.estimatedRewards]: {
@@ -51,14 +54,17 @@ const defaultTable: Record<RewardsColumnKeyEnum, TableHeader> = {
           data is for informational purposes only.
         </>
       ),
-      popoverProps: { size: 'medium' },
+      side: 'bottom',
     },
     className: 'w-[22%]',
   },
   [RewardsColumnKeyEnum.totalAllocationPercentage]: {
     label: 'Total Allocations',
     className: 'w-[16%]',
-    tooltip: { text: 'The Builder’s share of the total stRIF allocations' },
+    tooltip: {
+      text: 'The Builder’s share of the total stRIF allocations',
+      side: 'bottom',
+    },
   },
   [RewardsColumnKeyEnum.actions]: {
     label: 'Actions',

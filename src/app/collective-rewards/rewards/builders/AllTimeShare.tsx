@@ -62,7 +62,7 @@ export const AllTimeShare: FC<AllTimeShareProps> = ({ gauge, gauges, tokens: { r
           data-testid="AllTimeShare"
           tooltip={{
             text: 'Your share of all Builders’ rewards',
-            popoverProps: { size: 'medium', position: 'left' },
+            side: 'bottom',
           }}
         />
         <MetricsCardContent>{amount}</MetricsCardContent>
