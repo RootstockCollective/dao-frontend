@@ -14,21 +14,9 @@ export const AdjustBackersRewardsButton: React.FC<AdjustBackersRewardsButtonProp
   return (
     <button
       onClick={onClick}
-      className={`adjust-backers-rewards-button ${className}`}
-      style={{
-        display: 'flex',
-        height: '28px',
-        padding: '4px 0px',
-        alignItems: 'center',
-        gap: '8px',
-        borderRadius: '4px',
-        background: 'transparent',
-        border: 'none',
-        cursor: 'pointer',
-        color: 'var(--color-v3-text-100)',
-      }}
+      className={`adjust-backers-rewards-button flex h-7 py-1 px-0 items-center gap-2 rounded bg-transparent border-none cursor-pointer text-[var(--color-v3-text-100)] ${className}`}
     >
-      <EditIcon size={24} fill="white" style={{ flexShrink: 0 }} />
+      <EditIcon size={24} fill="var(--color-v3-text-100)" className="flex-shrink-0" />
       <Span variant="body">Need to adjust your backers&apos; rewards?</Span>
     </button>
   )

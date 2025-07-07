@@ -58,56 +58,25 @@ export const BuilderRewards: React.FC<BuilderRewardsProps> = ({
 }) => {
   return (
     <div
-      className={`builder-rewards-container ${className}`}
-      style={{
-        display: 'flex',
-        width: '1144px',
-        padding: '24px 24px 40px 24px',
-        flexDirection: 'column',
-        alignItems: 'flex-start',
-        gap: '40px',
-        flex: '1 0 0',
-        borderRadius: '4px',
-        background: 'var(--color-v3-bg-accent-80)',
-      }}
+      className={`builder-rewards-container flex flex-col items-start gap-10 flex-1 min-w-0 w-[1144px] p-6 pb-10 rounded bg-[var(--color-v3-bg-accent-80)] ${className}`}
     >
       {/* Builder Rewards Text */}
-      <div style={{ width: '528px' }}>
-        <Header variant="e3" style={{ margin: 0, color: 'var(--color-v3-text-100)' }}>
+      <div className="w-[528px]">
+        <Header variant="e3" className="m-0 text-[var(--color-v3-text-100)]">
           BUILDER REWARDS
         </Header>
       </div>
 
       {/* Metrics Container */}
-      <div
-        style={{
-          display: 'flex',
-          alignItems: 'flex-start',
-          gap: '8px',
-          alignSelf: 'stretch',
-        }}
-      >
+      <div className="flex items-start gap-2 self-stretch">
         {REWARD_CARDS_CONFIG.map(config => (
           <div
             key={config.type}
-            style={{
-              display: 'flex',
-              paddingBottom: '2px',
-              flexDirection: 'column',
-              alignItems: 'flex-start',
-              gap: '8px',
-              alignSelf: 'stretch',
-              flex: 1,
-              minWidth: 0,
-              background: 'var(--color-v3-bg-accent-80)',
-              borderRadius: '8px',
-            }}
+            className="flex flex-col items-start gap-2 self-stretch flex-1 min-w-0 pb-0.5 bg-[var(--color-v3-bg-accent-80)] rounded-lg"
           >
-            <div style={{ flex: 1, width: '100%' }}>
+            <div className="flex-1 w-full">
               {config.specialLayout ? (
-                <div
-                  style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', width: '100%' }}
-                >
+                <div className="flex flex-col items-center w-full">
                   <RewardCard
                     type={config.type}
                     isMock={isMock}

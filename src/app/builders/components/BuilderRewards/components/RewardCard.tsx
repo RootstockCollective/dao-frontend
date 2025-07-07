@@ -159,26 +159,13 @@ const RewardCardContent: FC<Omit<RewardCardProps, 'isMock'>> = ({
           data-testid={config.dataTestId}
           tooltip={{ text: config.tooltip }}
         />
-        <div
-          style={{
-            display: 'flex',
-            alignItems: 'center',
-            gap: '16px',
-          }}
-        >
+        <div className="flex items-center gap-4">
           {isLoading ? (
             <LoadingSpinner size="small" />
           ) : (
             <Header
               variant="e3"
-              style={{
-                display: '-webkit-box',
-                WebkitBoxOrient: 'vertical',
-                WebkitLineClamp: 1,
-                overflow: 'hidden',
-                color: 'var(--color-v3-text-100)',
-                textOverflow: 'ellipsis',
-              }}
+              className="overflow-hidden text-ellipsis whitespace-nowrap text-[var(--color-v3-text-100)]"
             >
               {amount}
             </Header>
@@ -240,23 +227,10 @@ export const RewardCard: FC<RewardCardProps> = ({
             data-testid={config.dataTestId}
             tooltip={{ text: config.tooltip }}
           />
-          <div
-            style={{
-              display: 'flex',
-              alignItems: 'center',
-              gap: '16px',
-            }}
-          >
+          <div className="flex items-center gap-4">
             <Header
               variant="e3"
-              style={{
-                display: '-webkit-box',
-                WebkitBoxOrient: 'vertical',
-                WebkitLineClamp: 1,
-                overflow: 'hidden',
-                color: 'var(--color-v3-text-100)',
-                textOverflow: 'ellipsis',
-              }}
+              className="overflow-hidden text-ellipsis whitespace-nowrap text-[var(--color-v3-text-100)]"
             >
               {config.mockData.share}
             </Header>

@@ -10,29 +10,12 @@ interface SeeRewardsHistoryButtonProps {
 export const SeeRewardsHistoryButton: React.FC<SeeRewardsHistoryButtonProps> = ({ onClick, icon }) => {
   return (
     <button
-      style={{
-        display: 'flex',
-        height: '48px',
-        padding: '4px 0px',
-        alignItems: 'center',
-        gap: '8px',
-        borderRadius: '4px',
-        border: 'none',
-        background: 'transparent',
-        cursor: 'pointer',
-        marginTop: '8px',
-      }}
+      className="flex h-12 py-1 px-0 items-center gap-2 rounded border-none bg-transparent cursor-pointer mt-2"
       onClick={onClick}
     >
-      <div
-        style={{
-          display: 'flex',
-          alignItems: 'center',
-          gap: '4px',
-        }}
-      >
+      <div className="flex items-center gap-1">
         {icon || <HistoryIcon size={20} color="var(--color-v3-text-100)" />}
-        <Span variant="tag-s" style={{ color: 'var(--color-v3-text-100)' }}>
+        <Span variant="tag-s" className="text-[var(--color-text-100)]">
           See rewards History
         </Span>
       </div>
