@@ -5,7 +5,8 @@ import { Address, isAddress } from 'viem'
 const DB_COMMAND_COALESCE = `
   COALESCE(
     json_agg(
-      json_build_object('gauge', convert_from("GaugeStakingHistory".gauge, 'utf8'), 
+      json_build_object(
+      'gauge', convert_from("GaugeStakingHistory".gauge, 'utf8'), 
       'accumulatedAllocationsTime', "GaugeStakingHistory"."accumulatedAllocationsTime",
       'allocation', "GaugeStakingHistory"."allocation",
       'lastBlockTimestamp', "GaugeStakingHistory"."lastBlockTimestamp"
@@ -25,11 +26,11 @@ export async function GET(request: NextRequest, { params }: { params: Promise<{ 
     const result = await db('BackerStakingHistory')
       .join('GaugeStakingHistory', 'BackerStakingHistory.id', '=', 'GaugeStakingHistory.backer')
       .select(
-        { id: db.raw('convert_from("BackerStakingHistory".id, \'utf8\')') },
-        { backerTotalAllocation: 'BackerStakingHistory.backerTotalAllocation' },
-        { accumulatedTime: 'BackerStakingHistory.accumulatedTime' },
-        { lastBlockTimestamp: 'BackerStakingHistory.lastBlockTimestamp' },
-        { gauges: db.raw(DB_COMMAND_COALESCE) },
+        'BackerStakingHistory.id',
+        'BackerStakingHistory.backerTotalAllocation',
+        'BackerStakingHistory.accumulatedTime',
+        'BackerStakingHistory.lastBlockTimestamp',
+        db.raw(DB_COMMAND_COALESCE),
       )
       .where('BackerStakingHistory.id', '=', backer.toLowerCase())
       .groupBy('BackerStakingHistory.id')

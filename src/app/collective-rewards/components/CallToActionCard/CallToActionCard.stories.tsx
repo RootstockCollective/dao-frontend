@@ -1,18 +1,18 @@
 import type { Meta, StoryObj } from '@storybook/react'
-import { CallToAction } from './CallToAction'
+import { CallToActionCard } from './CallToActionCard'
 import { BackingBanner } from '@/app/backing/components/BackingBanner/BackingBanner'
 import { Header, Paragraph } from '@/components/TypographyNew'
 import { Typography } from '@/components/TypographyNew/Typography'
 import { MetricsContainer } from '@/components/containers/MetricsContainer'
 
-const meta: Meta<typeof CallToAction> = {
-  title: 'CollectiveRewards/CallToAction',
-  component: CallToAction,
+const meta: Meta<typeof CallToActionCard> = {
+  title: 'CollectiveRewards/CallToActionCard',
+  component: CallToActionCard,
   tags: ['autodocs'],
 }
 
 export default meta
-type Story = StoryObj<typeof CallToAction>
+type Story = StoryObj<typeof CallToActionCard>
 
 export const Default: Story = {
   args: {
