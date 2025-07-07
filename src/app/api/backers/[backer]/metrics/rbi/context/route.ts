@@ -5,7 +5,8 @@ import { Address, isAddress } from 'viem'
 const DB_COMMAND_COALESCE = `
   COALESCE(
     json_agg(
-      json_build_object('gauge', convert_from("GaugeStakingHistory".gauge, 'utf8'), 
+      json_build_object(
+      'gauge', convert_from("GaugeStakingHistory".gauge, 'utf8'), 
       'accumulatedAllocationsTime', "GaugeStakingHistory"."accumulatedAllocationsTime",
       'allocation', "GaugeStakingHistory"."allocation",
       'lastBlockTimestamp', "GaugeStakingHistory"."lastBlockTimestamp"

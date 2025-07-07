@@ -7,7 +7,9 @@ export async function GET(req: Request) {
   try {
     const { page, pageSize } = parsePaginationParams(req.url || '')
 
-    const baseQuery = db('Backer').where('totalAllocation', '>', 0)
+    const baseQuery = db('Backer')
+      .select('Backer.id', 'Backer.totalAllocation', 'Backer.isBlacklisted')
+      .where('totalAllocation', '>', 0)
     const { data, count } = await paginateQuery(baseQuery, page, pageSize)
 
     return NextResponse.json({ data, count, page, pageSize })

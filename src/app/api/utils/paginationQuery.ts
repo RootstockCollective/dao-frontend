@@ -6,10 +6,9 @@ export async function paginateQuery<T = any>(
   pageSize: number,
 ): Promise<{ data: T[]; count: number }> {
   const [countResult, data] = await Promise.all([
-    baseQuery.clone().count().first(),
+    baseQuery.clone().clearSelect().count().first(),
     baseQuery
       .clone()
-      .select('*')
       .offset((page - 1) * pageSize)
       .limit(pageSize),
   ])
