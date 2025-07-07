@@ -36,7 +36,7 @@ export interface ButtonAction {
 }
 
 interface VoteDetailsProps {
-  votingPower: string
+  votingPower: bigint
   voteData: {
     for: bigint
     against: bigint
@@ -93,7 +93,9 @@ export const VotingDetails = ({
                 {'?'}
               </Popover>
             </div>
-            <Header className="font-kk-topo font-normal text-[32px]">{votingPower}</Header>
+            <Header className="font-kk-topo font-normal text-[32px]">
+              {formatNumberWithCommas(Big(formatEther(votingPower)).round(0))}
+            </Header>
           </>
         ) : (
           <Paragraph variant="body">{`You voted ${hasVoted.toUpperCase()} this proposal. ${!buttonAction ? '' : ' Take the next step now.'}`}</Paragraph>

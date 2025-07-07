@@ -400,7 +400,7 @@ const PageWithProposal = (proposal: ParsedProposal) => {
           onClose={votingModal.closeModal}
           proposal={proposal}
           address={address}
-          votingPower={votingPowerAtSnapshot}
+          votingPower={votingPowerAtSnapshot.toString()}
           isVoting={isVoting}
           errorMessage={errorVoting}
         />
@@ -552,7 +552,7 @@ const PageWithProposal = (proposal: ParsedProposal) => {
             }
           />
           <VotingDetails
-            votingPower={votingPowerAtSnapshot.toString()}
+            votingPower={votingPowerAtSnapshot}
             voteData={{
               for: forVote,
               against: againstVote,
