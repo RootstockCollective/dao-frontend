@@ -1,7 +1,6 @@
 'use client'
 
 import { AllocationsContext } from '@/app/collective-rewards/allocations/context'
-import { Token } from '@/app/collective-rewards/rewards'
 import { Builder, BuilderRewardsSummary } from '@/app/collective-rewards/types'
 import {
   isBuilderDeactivated,
@@ -10,7 +9,6 @@ import {
   isBuilderSelfPaused,
 } from '@/app/collective-rewards/utils'
 import TablePager from '@/components/TableNew/TablePager'
-import { getTokens } from '@/lib/tokens'
 import { usePricesContext, useTableActionsContext, useTableContext } from '@/shared/context'
 import { useReadGauges } from '@/shared/hooks/contracts'
 import { Suspense, useContext, useEffect, useMemo, useState } from 'react'
@@ -43,12 +41,10 @@ const filterMap: Record<BuilderFilterOptionId, (builder: Builder) => boolean> = 
 
 // FIXME: this is a temporary solution to filter builders by state.
 type PagedFilter = {
-  tokens: { [token: string]: Token }
   filterOption: BuilderFilterOptionId
   pageOptions: { start: number; end: number }
 }
 const usePagedFilteredBuildersRewards = ({
-  tokens,
   filterOption,
   pageOptions,
 }: PagedFilter): {
@@ -56,7 +52,7 @@ const usePagedFilteredBuildersRewards = ({
   isLoading: boolean
   error: Error | null
 } => {
-  const { data: buildersRewardsData, isLoading, error } = useGetBuilderRewardsSummary(tokens)
+  const { data: buildersRewardsData, isLoading, error } = useGetBuilderRewardsSummary()
   const data = useMemo(() => {
     const filtered = buildersRewardsData?.filter(filterMap[filterOption])
     const totalRewards = filtered?.length ?? 0
@@ -79,13 +75,12 @@ export const BuildersTable = ({ filterOption }: { filterOption: BuilderFilterOpt
   const [actions, setActions] = useState<Action[]>([])
   const dispatch = useTableActionsContext<ColumnId>()
 
-  const tokens = useMemo(() => getTokens(), [])
   const pageOptions = useMemo(() => ({ start: 0, end: pageEnd }), [pageEnd])
   const {
     data: { pagedRewards: buildersRewardsData, totalRewards },
     isLoading,
     error,
-  } = usePagedFilteredBuildersRewards({ tokens, filterOption, pageOptions })
+  } = usePagedFilteredBuildersRewards({ filterOption, pageOptions })
 
   const {
     data: allocations,

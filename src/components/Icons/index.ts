@@ -51,3 +51,4 @@ export { RocketIconKoto } from './RocketIconKoto'
 export { MoneyIconKoto } from './MoneyIconKoto'
 
 export * from './v3design'
+export { HistoryIcon } from './HistoryIcon'

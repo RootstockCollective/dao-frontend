@@ -15,7 +15,7 @@ export const InfoIconButton: FC<InfoIconButtonProps> = ({
   tooltipClassName = '',
   ...tooltipProps
 }) => (
-  <div data-testid="InfoIconButton" className={cn('pt-1 items-center flex gap-2', className)}>
+  <div data-testid="InfoIconButton" className={cn('items-center flex gap-2 self-center', className)}>
     <Tooltip
       text={info}
       className={cn('rounded-sm z-50 bg-v3-text-80 text-v3-bg-accent-60', tooltipClassName)}
