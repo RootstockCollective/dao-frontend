@@ -6,20 +6,11 @@ import { WeiPerEther } from '@/lib/constants'
 import { usePricesContext } from '@/shared/context'
 import { DateTime, Duration } from 'luxon'
 import { parseEther } from 'viem'
+import { useCycleContext } from '../metrics/context'
+import { useGetTotalAllocation } from '../metrics/hooks'
 import { formatSymbol } from '../rewards/utils'
 import { useGetCycleRewards } from '../shared/hooks/useGetCycleRewards'
 import { useGetGaugesArray } from '../user/hooks/useGetGaugesArray'
-import { useCycleContext } from './context'
-import { useGetTotalAllocation } from './hooks'
-
-const ColumnMetric = ({ label, children }: { label: string; children: React.ReactNode }) => {
-  return (
-    <div className="flex flex-col items-start gap-4">
-      <div>{label}</div>
-      <div>{children}</div>
-    </div>
-  )
-}
 
 const CycleEndingOn = ({ cycleNext }: { cycleNext: DateTime }) => {
   return <Metric title="Cycle ending on"> {cycleNext.toFormat('EEE, dd MMM')}</Metric>

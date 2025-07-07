@@ -6,7 +6,7 @@ import { AnnualBackersIncentives } from './components/AnnualBackersIncentives'
 import { CallToActionSection } from './components/CallToActionSection'
 import { TotalRewardsDistributed } from './components/TotalRewardsDistributed'
 import { CycleContextProvider } from './metrics'
-import { CurrentCycleMetrics } from './metrics/CurrentCycleMetrics'
+import { CurrentCycleMetrics } from './components/CurrentCycleMetrics'
 
 const NAME = 'Collective Rewards'
 export const CollectiveRewardsPage = () => {
