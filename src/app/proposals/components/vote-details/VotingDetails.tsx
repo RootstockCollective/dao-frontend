@@ -50,12 +50,15 @@ interface VoteDetailsProps {
     abstain: bigint
     quorum: bigint
   }
+  isChoosingVote?: boolean
+  isVotingInProgress?: boolean
   buttonAction?: ButtonAction
   vote?: Vote
   actionDisabled?: boolean
   voteButtonRef?: React.Ref<HTMLButtonElement>
   onCastVote?: (vote: 'for' | 'against' | 'abstain') => void
-  isVotingInProgress?: boolean
+  onCancelVote?: () => void
+  isConnected?: boolean
 }
 
 const colorMap = new Map([
@@ -74,19 +77,12 @@ export const VotingDetails = ({
   actionDisabled,
   voteButtonRef,
   onCastVote,
+  onCancelVote,
   isVotingInProgress,
+  isChoosingVote,
 }: VoteDetailsProps) => {
-  const [isChoosingVote, setIsVoting] = useState(false)
-
-  // Reset voting state if actionDisabled becomes true
-  useEffect(() => {
-    if (actionDisabled && isChoosingVote) {
-      setIsVoting(false)
-    }
-  }, [actionDisabled, isChoosingVote])
-
   return (
-    <div className="bg-[#25211E] p-6 rounded-[4px] w-full">
+    <div className="bg-[#25211E] p-6 rounded-[4px] w-full max-w-[376px]">
       <Header variant="h3" className="font-normal">
         {isChoosingVote ? 'CAST YOUR VOTE' : 'VOTE DETAILS'}
       </Header>
@@ -94,11 +90,11 @@ export const VotingDetails = ({
       {/* Vote counters or voting buttons */}
       {!isChoosingVote ? (
         <div className="grid grid-cols-2 gap-2 mt-4">
-          {VOTE_TYPES.map(key => (
+          {Object.entries(voteData).map(([key, value]) => (
             <VoteCounter
               key={key}
               title={capitalizeFirstLetter(key)}
-              value={voteData[key]}
+              value={value}
               color={colorMap.get(key)!}
               disabled={vote && vote !== key}
               isVotingInProgress={isVotingInProgress && vote === key}
@@ -148,19 +144,13 @@ export const VotingDetails = ({
       {/* Action button (Vote on proposal, custom, or Cancel) always rendered here */}
       <div>
         {isChoosingVote ? (
-          <Button variant="secondary-outline" className="mt-4" onClick={() => setIsVoting(false)}>
+          <Button variant="secondary-outline" className="mt-4" onClick={onCancelVote}>
             Cancel
           </Button>
         ) : (
           buttonAction && (
             <Button
-              onClick={e => {
-                if (buttonAction.actionName === 'Vote on proposal') {
-                  setIsVoting(true)
-                } else {
-                  buttonAction.onButtonClick?.(e)
-                }
-              }}
+              onClick={buttonAction.onButtonClick}
               className="mt-4"
               textClassName="text-foreground"
               disabled={actionDisabled}

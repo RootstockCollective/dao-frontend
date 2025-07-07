@@ -159,6 +159,7 @@ const PageWithProposal = (proposal: ParsedProposal) => {
   const { address, isConnected } = useAccount()
   const { proposalId, name, description, proposer, Starts, calldatasParsed } = proposal
   const [vote, setVote] = useGetVoteForSpecificProposal(address ?? zeroAddress, proposalId)
+  const [isChoosingVote, setIsChoosingVote] = useState<boolean>(false)
   const [errorVoting, setErrorVoting] = useState('')
 
   const [againstVote, forVote, abstainVote] = useGetProposalVotes(proposalId, true)
@@ -170,7 +171,6 @@ const PageWithProposal = (proposal: ParsedProposal) => {
   const {
     onVote,
     isProposalActive,
-    didUserVoteAlready,
     proposalState,
     isVoting,
     isWaitingVotingReceipt,
@@ -188,11 +188,7 @@ const PageWithProposal = (proposal: ParsedProposal) => {
   const voteButtonRef = useRef<HTMLButtonElement>(null)
 
   const cannotCastVote =
-    !isProposalActive ||
-    didUserVoteAlready ||
-    !doesUserHasEnoughThreshold ||
-    isVoting ||
-    isWaitingVotingReceipt
+    !isProposalActive || !!vote || !doesUserHasEnoughThreshold || isVoting || isWaitingVotingReceipt
 
   const actionName = calldatasParsed?.[0]?.type === 'decoded' ? calldatasParsed[0].functionName : undefined
   const { builderName } = splitCombinedName(name)
@@ -201,7 +197,7 @@ const PageWithProposal = (proposal: ParsedProposal) => {
     if (!isProposalActive) {
       return 'This proposal is not active'
     }
-    if (didUserVoteAlready) {
+    if (vote) {
       return 'You already voted on this proposal'
     }
     if (!doesUserHasEnoughThreshold) {
@@ -230,26 +226,30 @@ const PageWithProposal = (proposal: ParsedProposal) => {
       return 'Your vote is being confirmed'
     }
     return ''
-  }, [isProposalActive, didUserVoteAlready, doesUserHasEnoughThreshold, isVoting, isWaitingVotingReceipt])
+  }, [isProposalActive, vote, doesUserHasEnoughThreshold, isVoting, isWaitingVotingReceipt])
 
   useEffect(() => {
     if (isVotingFailed) {
       console.error(votingError)
       const err = votingError as BaseError
       setErrorVoting(err.shortMessage || err.toString())
+      setVote(undefined)
     }
   }, [isVotingConfirmed, isVotingFailed, votingError])
 
   const handleVoting = async (_vote: Vote) => {
     try {
       setErrorVoting('')
-      setVote(_vote)
+      setIsChoosingVote(false)
       const txHash = await executeTxFlow({
-        onRequestTx: () => onVote(_vote),
+        onRequestTx: async () => {
+          setVote(_vote)
+          return await onVote(_vote)
+        },
         action: 'voting',
+        onSuccess: () => setVote(_vote),
       })
       setVotingTxHash(txHash)
-      submittedModal.openModal()
     } catch (err: any) {
       if (!isUserRejectedTxError(err)) {
         console.error(err)
@@ -260,42 +260,33 @@ const PageWithProposal = (proposal: ParsedProposal) => {
 
   const handleQueuingProposal = async () => {
     try {
-      setMessage(null)
       const txHash = await onQueueProposal()
-      setMessage(TX_MESSAGES.queuing.pending)
       await waitForTransactionReceipt(config, {
         hash: txHash,
       })
-      setMessage(TX_MESSAGES.queuing.success)
     } catch (err: any) {
       if (!isUserRejectedTxError(err)) {
         console.error(err)
-        setMessage(TX_MESSAGES.queuing.error)
       }
     }
   }
 
   const handleExecuteProposal = async () => {
     try {
-      setMessage(null)
       const txHash = await onExecuteProposal()
       if (!txHash) return
       setIsExecuting(true)
-      setMessage(TX_MESSAGES.execution.pending)
       await waitForTransactionReceipt(config, {
         hash: txHash,
       })
-      setMessage(TX_MESSAGES.execution.success)
     } catch (err: any) {
       if (!isUserRejectedTxError(err)) {
         if (
           err.details?.includes('Insufficient ERC20 balance') ||
           err.details?.includes('Insufficient Balance')
         ) {
-          setMessage(TX_MESSAGES.execution.insufficientFunds)
         } else {
           console.error(err)
-          setMessage(TX_MESSAGES.execution.error)
         }
       }
     }
@@ -351,6 +342,7 @@ const PageWithProposal = (proposal: ParsedProposal) => {
       case ProposalState.Active:
         return {
           actionName: 'Vote on proposal',
+          onButtonClick: handleProposalAction(() => setIsChoosingVote(true)),
         }
       case ProposalState.Succeeded:
         return {
@@ -366,6 +358,12 @@ const PageWithProposal = (proposal: ParsedProposal) => {
         return undefined
     }
   }
+
+  const buttonAction = !isConnected
+    ? getButtonActionForState(proposalState)
+    : cannotCastVote && proposalState !== ProposalState.Succeeded
+      ? undefined
+      : getButtonActionForState(proposalState)
 
   return (
     <div className="min-h-screen text-white px-4 py-8 flex flex-col gap-4 w-full max-w-full">
@@ -520,16 +518,15 @@ const PageWithProposal = (proposal: ParsedProposal) => {
               abstain: abstainVote,
               quorum,
             }}
-            buttonAction={
-              didUserVoteAlready && proposalState !== ProposalState.Succeeded
-                ? undefined
-                : getButtonActionForState(proposalState)
-            }
+            buttonAction={buttonAction}
             actionDisabled={isConnected && cannotCastVote}
             voteButtonRef={voteButtonRef}
             vote={vote}
+            isChoosingVote={isChoosingVote}
             isVotingInProgress={isVoting || isWaitingVotingReceipt}
             onCastVote={address && handleVoting}
+            onCancelVote={() => setIsChoosingVote(false)}
+            isConnected={isConnected}
           />
           <ActionDetails parsedAction={parsedAction} actionType={actionType} />
         </div>
