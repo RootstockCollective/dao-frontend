@@ -18,9 +18,8 @@ export const ConnectButtonComponent = ({
     data-testid="ConnectWallet"
     variant="secondary-outline"
     className={`px-2 py-1 border-bg-40 ${className ?? ''}`}
-    textClassName={`text-[14px] font-normal ${textClassName ?? ''}`}
   >
-    <Span className="text-[14px] font-normal">Connect Wallet</Span>
+    <Span className={cn('text-[14px] font-normal', textClassName)}>Connect Wallet</Span>
   </Button>
 )
 
