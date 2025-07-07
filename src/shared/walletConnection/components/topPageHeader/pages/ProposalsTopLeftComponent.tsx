@@ -52,7 +52,7 @@ export const ProposalsTopLeftComponent = () => {
  */
 const CreateProposalButton = ({ disabled = false }) => {
   const { push } = useRouter()
-  const onHeaderButtonClick = () => push('/proposals/choose')
+  const onHeaderButtonClick = () => push('/proposals/new')
   return (
     <HeaderButton
       disabled={disabled}
