@@ -46,6 +46,7 @@ const UpdateBackerRewardModal = ({ onClose, className }: UpdateBackerRewardModal
     setUpdatedReward(Number(newReward))
   }
 
+  // FIXME: we should show that the backer rewards percentage has been already updated
   return (
     <UpdateBackerRewardViewModal
       className={className}

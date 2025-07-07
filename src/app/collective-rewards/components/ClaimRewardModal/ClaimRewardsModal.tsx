@@ -24,6 +24,7 @@ const getRewardTokenAddress = (value: ClaimRewardType) => {
   }
 }
 
+// FIXME: we need to change this to be reused for backers and builders
 export const ClaimRewardsModal: FC<ClaimRewardsModalProps> = ({ open, onClose }) => {
   const [selectedRewardType, setSelectedRewardType] = useState<ClaimRewardType>('all')
 

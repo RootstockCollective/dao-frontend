@@ -1,0 +1,39 @@
+import { LoadingSpinner } from '@/components/LoadingSpinner'
+import { Metric, MetricTitle } from '@/components/Metric'
+import { Paragraph } from '@/components/TypographyNew'
+import { Typography } from '@/components/TypographyNew/Typography'
+import { ReactNode } from 'react'
+
+export const RewardCard = ({
+  isLoading,
+  title,
+  info,
+  content,
+  'data-testid': dataTestId,
+}: {
+  isLoading: boolean
+  title: ReactNode
+  info: ReactNode
+  content: ReactNode
+  'data-testid'?: string
+}) => {
+  return (
+    <Metric
+      data-testid={dataTestId}
+      title={
+        <MetricTitle
+          title={
+            <Typography variant="body" className="text-v3-bg-accent-0 text-sm">
+              {title}
+            </Typography>
+          }
+          info={<Paragraph className="text-[14px] font-normal text-left">{info}</Paragraph>}
+        />
+      }
+      className="w-auto"
+      containerClassName="gap-4"
+    >
+      {isLoading ? <LoadingSpinner /> : <div className="flex flex-col gap-4 text-xl">{content}</div>}
+    </Metric>
+  )
+}
