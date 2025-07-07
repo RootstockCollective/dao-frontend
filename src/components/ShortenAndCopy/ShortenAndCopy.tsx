@@ -9,5 +9,9 @@ export const ShortenAndCopy = ({ value }: { value: string | number }) => {
   const isAddress = str.startsWith('0x') && str.length >= 10
   const display = isAddress ? shortAddress(str as Address) : shortProposalId(str)
 
-  return <CopyButton copyText={display} className="justify-start" />
+  return (
+    <CopyButton copyText={str} className="justify-start">
+      {display}
+    </CopyButton>
+  )
 }
