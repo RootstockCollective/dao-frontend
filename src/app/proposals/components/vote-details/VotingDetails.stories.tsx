@@ -20,7 +20,7 @@ export const Default: Story = {
       quorum: BigInt('55456789'),
     },
 
-    votingPower: '4,300',
+    votingPower: 4300n,
     buttonAction: {
       onButtonClick: e => console.log('Allegedly Voted for proposal', e),
       actionName: 'Vote proposal',
@@ -36,7 +36,7 @@ export const HasVotedFor: Story = {
       abstain: BigInt('99999999'),
       quorum: BigInt('564456111'),
     },
-    votingPower: '4,300',
+    votingPower: 4300n,
     buttonAction: {
       onButtonClick: e => console.log('Allegedly call Put on queue'),
       actionName: 'Put on queue',
@@ -53,7 +53,7 @@ export const HasVotedButNoActionAvailable: Story = {
       abstain: BigInt('99999555'),
       quorum: BigInt('3535789'),
     },
-    votingPower: '4,300',
+    votingPower: 4300n,
     hasVoted: 'for',
   },
 }
@@ -66,7 +66,7 @@ export const HasVotedAgainst: Story = {
       abstain: BigInt('9967890'),
       quorum: BigInt('777456789'),
     },
-    votingPower: '4,300',
+    votingPower: 4300n,
     hasVoted: 'against',
   },
 }
@@ -79,7 +79,7 @@ export const HasVotedAbstain: Story = {
       abstain: BigInt('99555999'),
       quorum: BigInt('333,444,789'),
     },
-    votingPower: '4,300',
+    votingPower: 4300n,
     hasVoted: 'abstain',
   },
 }
