@@ -1,6 +1,6 @@
 import React from 'react'
 import { BuilderRewardDetails } from '@/app/collective-rewards/rewards'
-import { AllTimeRewards, AllTimeShare, Unclaimed, EstimatedThisCycle, LastCycle } from './components'
+import { RewardCard, type RewardType } from './components'
 import { BuilderMetricCard } from './BuilderMetricCard'
 import { ClaimRewardsButton } from './buttons/ClaimRewardsButton'
 import { SeeRewardsHistoryButton } from './buttons/SeeRewardsHistoryButton'
@@ -11,6 +11,43 @@ interface BuilderRewardsProps extends BuilderRewardDetails {
   className?: string
   isMock?: boolean
 }
+
+// Configuration for each reward card with its specific props
+const REWARD_CARDS_CONFIG: Array<{
+  type: RewardType
+  showButton?: boolean
+  button?: React.ReactNode
+  specialLayout?: boolean
+}> = [
+  {
+    type: 'unclaimed',
+    showButton: true,
+    button: (
+      <ClaimRewardsButton
+        onClick={() => alert('Claim Rewards (placeholder - to be implemented in separate task)')}
+      />
+    ),
+  },
+  {
+    type: 'estimatedThisCycle',
+  },
+  {
+    type: 'lastCycle',
+  },
+  {
+    type: 'allTimeRewards',
+    showButton: true,
+    button: (
+      <SeeRewardsHistoryButton
+        onClick={() => alert('See Rewards history (placeholder - to be implemented in separate task)')}
+      />
+    ),
+  },
+  {
+    type: 'allTimeShare',
+    specialLayout: true,
+  },
+]
 
 export const BuilderRewards: React.FC<BuilderRewardsProps> = ({
   className = '',
@@ -51,52 +88,33 @@ export const BuilderRewards: React.FC<BuilderRewardsProps> = ({
           alignSelf: 'stretch',
         }}
       >
-        {/* Unclaimed */}
-        <BuilderMetricCard
-          showButton
-          button={
-            <ClaimRewardsButton
-              onClick={() => alert('Claim Rewards (placeholder - to be implemented in separate task)')}
-            />
-          }
-        >
-          <Unclaimed isMock={isMock} builder={builder} gauge={gauge} tokens={{ rif, rbtc }} {...rest} />
-        </BuilderMetricCard>
-
-        {/* Estimated this cycle */}
-        <BuilderMetricCard>
-          <EstimatedThisCycle
-            isMock={isMock}
-            builder={builder}
-            gauge={gauge}
-            tokens={{ rif, rbtc }}
-            {...rest}
-          />
-        </BuilderMetricCard>
-
-        {/* Last cycle */}
-        <BuilderMetricCard>
-          <LastCycle isMock={isMock} gauge={gauge} tokens={{ rif, rbtc }} {...rest} />
-        </BuilderMetricCard>
-
-        {/* Total earned */}
-        <BuilderMetricCard
-          showButton
-          button={
-            <SeeRewardsHistoryButton
-              onClick={() => alert('See Rewards history (placeholder - to be implemented in separate task)')}
-            />
-          }
-        >
-          <AllTimeRewards isMock={isMock} gauge={gauge} tokens={{ rif, rbtc }} {...rest} />
-        </BuilderMetricCard>
-
-        {/* All time share */}
-        <BuilderMetricCard>
-          <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', width: '100%' }}>
-            <AllTimeShare isMock={isMock} gauge={gauge} tokens={{ rif, rbtc }} {...rest} />
-          </div>
-        </BuilderMetricCard>
+        {REWARD_CARDS_CONFIG.map(config => (
+          <BuilderMetricCard key={config.type} showButton={config.showButton} button={config.button}>
+            {config.specialLayout ? (
+              <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', width: '100%' }}>
+                <RewardCard
+                  type={config.type}
+                  isMock={isMock}
+                  builder={builder}
+                  tokens={{ rif, rbtc }}
+                  gauge={gauge}
+                  gauges={rest.gauges}
+                  currency={rest.currency}
+                />
+              </div>
+            ) : (
+              <RewardCard
+                type={config.type}
+                isMock={isMock}
+                builder={builder}
+                tokens={{ rif, rbtc }}
+                gauge={gauge}
+                gauges={rest.gauges}
+                currency={rest.currency}
+              />
+            )}
+          </BuilderMetricCard>
+        ))}
       </div>
 
       {/* Need to adjust backers' rewards? */}

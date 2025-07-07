@@ -1,5 +1,1 @@
-export { Unclaimed } from './Unclaimed'
-export { EstimatedThisCycle } from './EstimatedThisCycle'
-export { LastCycle } from './LastCycle'
-export { AllTimeRewards } from './AllTimeRewards'
-export { AllTimeShare } from './AllTimeShare'
+export { RewardCard, type RewardType } from './RewardCard'
