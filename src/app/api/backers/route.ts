@@ -1,11 +1,20 @@
 import { NextResponse } from 'next/server'
 import { db } from '@/lib/db'
-import { paginateQuery } from '@/app/api/utils/paginationQuery'
-import { parsePaginationParams } from '@/app/api/utils/pagination'
+import { paginateQuery } from '@/app/api/utils/paginateQuery'
+import { parsePaginationParams } from '@/app/api/utils/parsePaginationParams'
 
 export async function GET(req: Request) {
   try {
-    const { page, pageSize } = parsePaginationParams(req.url || '')
+    const paginationResult = parsePaginationParams(req.url || '')
+
+    if (!paginationResult.success) {
+      return NextResponse.json(
+        { error: paginationResult.error.message },
+        { status: paginationResult.error.statusCode },
+      )
+    }
+
+    const { page, pageSize } = paginationResult.data
 
     const baseQuery = db('Backer')
       .select('Backer.id', 'Backer.totalAllocation', 'Backer.isBlacklisted')

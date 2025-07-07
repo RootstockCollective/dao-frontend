@@ -8,7 +8,7 @@ export const ActiveBuilders = () => {
     queryFn: async () => {
       const response = await fetch('/api/builders')
       if (!response.ok) {
-        throw new Error('Failed to fetch ABI data')
+        throw new Error('Failed to fetch active builders count')
       }
       return response.json()
     },

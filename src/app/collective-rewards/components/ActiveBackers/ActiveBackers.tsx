@@ -8,7 +8,7 @@ export const ActiveBackers = () => {
     queryFn: async () => {
       const response = await fetch('/api/backers')
       if (!response.ok) {
-        throw new Error('Failed to fetch ABI data')
+        throw new Error('Failed to fetch active backers count')
       }
       return response.json()
     },
