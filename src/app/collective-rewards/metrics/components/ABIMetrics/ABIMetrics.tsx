@@ -42,6 +42,7 @@ const ABIMetricsContent = ({ abiPct, isLoading }: { abiPct: Big; isLoading: bool
         <>
           {withSpinner(TokenMetricsCardRow, { className: 'min-h-0 grow-0', size: 'small' })({
             amount: `${abiPct.toFixed(0)}%`,
+            symbol: 'ABI',
             isLoading,
           })}
         </>

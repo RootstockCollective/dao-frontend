@@ -2,7 +2,7 @@ import {
   BuilderRewardDetails,
   MetricsCard,
   MetricsCardTitle,
-  TokenMetricsCardRowV2,
+  TokenMetricsCardRow,
 } from '@/app/collective-rewards/rewards'
 import { useBuilderEstimatedRewards } from '../hooks'
 import { withSpinner } from '@/components/LoadingSpinner/withLoadingSpinner'
@@ -16,8 +16,8 @@ const EstimatedThisCycleContent: FC<BuilderRewardDetails> = ({ tokens: { rif, rb
     tokens: { rif, rbtc },
   })
 
-  const RifRow = withSpinner(TokenMetricsCardRowV2, { size: 'small' })
-  const RbtcRow = withSpinner(TokenMetricsCardRowV2, { size: 'small' })
+  const RifRow = withSpinner(TokenMetricsCardRow, { size: 'small' })
+  const RbtcRow = withSpinner(TokenMetricsCardRow, { size: 'small' })
 
   return (
     <MetricsCard borderless>
@@ -77,8 +77,8 @@ export const EstimatedThisCycle: FC<EstimatedThisCycleProps> = ({
             popoverProps: { size: 'medium' },
           }}
         />
-        <TokenMetricsCardRowV2 amount="567.89" fiatAmount="1,135.78 USD" symbol={rif.symbol} />
-        <TokenMetricsCardRowV2 amount="0.42" fiatAmount="840.00 USD" symbol={rbtc.symbol} />
+        <TokenMetricsCardRow amount="567.89" fiatAmount="1,135.78 USD" symbol={rif.symbol} />
+        <TokenMetricsCardRow amount="0.42" fiatAmount="840.00 USD" symbol={rbtc.symbol} />
       </MetricsCard>
     )
   }

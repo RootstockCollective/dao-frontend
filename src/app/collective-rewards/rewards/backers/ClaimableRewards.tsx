@@ -39,6 +39,7 @@ const TokenRewardsMetrics: FC<TokenRewardsMetricsProps> = ({
   return withSpinner(TokenMetricsCardRow, { size: 'small' })({
     amount,
     fiatAmount,
+    symbol,
     isLoading,
     children: <ClaimYourRewardsButton onClick={() => claimRewards()} disabled={!isClaimable} />,
   })

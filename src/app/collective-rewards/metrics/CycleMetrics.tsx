@@ -48,6 +48,7 @@ export const CycleMetrics = () => {
         {withSpinner(TokenMetricsCardRow, { size: 'small' })({
           amount: `${timeRemaining.toHuman()}`,
           fiatAmount: `out of ${duration.toHuman()}. Ends ${cycleNext.toFormat('EEE, dd MMM')}`,
+          symbol: 'TIME',
           isLoading,
         })}
       </>

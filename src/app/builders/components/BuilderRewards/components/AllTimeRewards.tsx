@@ -2,7 +2,7 @@ import {
   BuilderRewardDetails,
   MetricsCard,
   MetricsCardTitle,
-  TokenMetricsCardRowV2,
+  TokenMetricsCardRow,
 } from '@/app/collective-rewards/rewards'
 import { useBuilderAllTimeRewards } from '../hooks'
 import { withSpinner } from '@/components/LoadingSpinner/withLoadingSpinner'
@@ -19,8 +19,8 @@ const AllTimeRewardsContent: FC<Omit<BuilderRewardDetails, 'builder'>> = ({
     tokens: { rif, rbtc },
   })
 
-  const RifRow = withSpinner(TokenMetricsCardRowV2, { size: 'small' })
-  const RbtcRow = withSpinner(TokenMetricsCardRowV2, { size: 'small' })
+  const RifRow = withSpinner(TokenMetricsCardRow, { size: 'small' })
+  const RbtcRow = withSpinner(TokenMetricsCardRow, { size: 'small' })
 
   return (
     <MetricsCard borderless>
@@ -58,8 +58,8 @@ export const AllTimeRewards: FC<AllTimeRewardsProps> = ({
           data-testid="AllTimeRewards"
           tooltip={{ text: 'Your total rewards earned across all cycles' }}
         />
-        <TokenMetricsCardRowV2 amount="12,345.67" fiatAmount="24,691.34 USD" symbol={rif.symbol} />
-        <TokenMetricsCardRowV2 amount="8.75" fiatAmount="17,500.00 USD" symbol={rbtc.symbol} />
+        <TokenMetricsCardRow amount="12,345.67" fiatAmount="24,691.34 USD" symbol={rif.symbol} />
+        <TokenMetricsCardRow amount="8.75" fiatAmount="17,500.00 USD" symbol={rbtc.symbol} />
       </MetricsCard>
     )
   }

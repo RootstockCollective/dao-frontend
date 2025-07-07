@@ -55,6 +55,7 @@ const TokenRewardsMetrics: FC<TokenRewardsMetricsProps> = ({
   return withSpinner(TokenMetricsCardRow, { className: 'min-h-0 grow-0', size: 'small' })({
     amount,
     fiatAmount,
+    symbol,
     isLoading: builderRewardsPerTokenLoading || claimableRewardsLoading,
   })
 }

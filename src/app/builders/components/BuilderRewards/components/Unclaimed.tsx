@@ -2,7 +2,7 @@ import {
   BuilderRewardDetails,
   MetricsCard,
   MetricsCardTitle,
-  TokenMetricsCardRowV2,
+  TokenMetricsCardRow,
 } from '@/app/collective-rewards/rewards'
 import { useBuilderUnclaimedRewards } from '../hooks'
 import { withSpinner } from '@/components/LoadingSpinner/withLoadingSpinner'
@@ -16,8 +16,8 @@ const UnclaimedContent: FC<BuilderRewardDetails> = ({ tokens: { rif, rbtc }, ...
     tokens: { rif, rbtc },
   })
 
-  const RifRow = withSpinner(TokenMetricsCardRowV2, { size: 'small' })
-  const RbtcRow = withSpinner(TokenMetricsCardRowV2, { size: 'small' })
+  const RifRow = withSpinner(TokenMetricsCardRow, { size: 'small' })
+  const RbtcRow = withSpinner(TokenMetricsCardRow, { size: 'small' })
 
   return (
     <MetricsCard borderless>
@@ -51,8 +51,8 @@ export const Unclaimed: FC<UnclaimedProps> = ({ isMock = false, tokens: { rif, r
           data-testid="Unclaimed"
           tooltip={{ text: 'Your rewards available to claim' }}
         />
-        <TokenMetricsCardRowV2 amount="1,234.56" fiatAmount="2,469.12 USD" symbol={rif.symbol} />
-        <TokenMetricsCardRowV2 amount="0.85" fiatAmount="1,700.00 USD" symbol={rbtc.symbol} />
+        <TokenMetricsCardRow amount="1,234.56" fiatAmount="2,469.12 USD" symbol={rif.symbol} />
+        <TokenMetricsCardRow amount="0.85" fiatAmount="1,700.00 USD" symbol={rbtc.symbol} />
       </MetricsCard>
     )
   }

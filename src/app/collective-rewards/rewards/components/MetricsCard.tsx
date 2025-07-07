@@ -13,42 +13,7 @@ type MetricsCardRow = {
   children?: ReactNode
 }
 
-export const TokenMetricsCardRow: FC<MetricsCardRow> = ({ amount, fiatAmount, children }) => (
-  <MetricsCardRow>
-    <div className="flex-1 min-w-0">
-      <Typography
-        variant="h2"
-        paddingBottom="2px"
-        paddingTop="10px"
-        lineHeight="28.8px"
-        fontFamily="kk-topo"
-        className="text-[24px] text-primary font-normal"
-        data-testid="Amount"
-      >
-        {amount}
-      </Typography>
-      {fiatAmount && (
-        <span
-          style={{
-            alignSelf: 'stretch',
-            color: 'var(--Background-0, #ACA39D)',
-            fontFamily: 'var(--font-rootstock-sans)',
-            fontSize: 12,
-            fontStyle: 'normal',
-            fontWeight: 500,
-            lineHeight: '150%',
-          }}
-          data-testid="FiatAmount"
-        >
-          {fiatAmount}
-        </span>
-      )}
-    </div>
-    {children}
-  </MetricsCardRow>
-)
-
-export const TokenMetricsCardRowV2: FC<MetricsCardRow & { symbol: string }> = ({
+export const TokenMetricsCardRow: FC<MetricsCardRow & { symbol: string }> = ({
   amount,
   fiatAmount,
   symbol,

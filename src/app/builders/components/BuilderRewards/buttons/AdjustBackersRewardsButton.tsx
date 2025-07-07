@@ -29,9 +29,7 @@ export const AdjustBackersRewardsButton: React.FC<AdjustBackersRewardsButtonProp
       }}
     >
       <EditIcon size={24} fill="white" style={{ flexShrink: 0 }} />
-      <Span variant="body">
-        Need to adjust your backers&apos; rewards?
-      </Span>
+      <Span variant="body">Need to adjust your backers&apos; rewards?</Span>
     </button>
   )
 }

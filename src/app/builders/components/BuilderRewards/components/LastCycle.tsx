@@ -2,7 +2,7 @@ import {
   BuilderRewardDetails,
   MetricsCard,
   MetricsCardTitle,
-  TokenMetricsCardRowV2,
+  TokenMetricsCardRow,
 } from '@/app/collective-rewards/rewards'
 import { useBuilderLastCycleRewards } from '../hooks'
 import { withSpinner } from '@/components/LoadingSpinner/withLoadingSpinner'
@@ -16,8 +16,8 @@ const LastCycleContent: FC<Omit<BuilderRewardDetails, 'builder'>> = ({ tokens: {
     tokens: { rif, rbtc },
   })
 
-  const RifRow = withSpinner(TokenMetricsCardRowV2, { size: 'small' })
-  const RbtcRow = withSpinner(TokenMetricsCardRowV2, { size: 'small' })
+  const RifRow = withSpinner(TokenMetricsCardRow, { size: 'small' })
+  const RbtcRow = withSpinner(TokenMetricsCardRow, { size: 'small' })
 
   return (
     <MetricsCard borderless>
@@ -51,8 +51,8 @@ export const LastCycle: FC<LastCycleProps> = ({ isMock = false, tokens: { rif, r
           data-testid="LastCycle"
           tooltip={{ text: 'Your rewards from the previous cycle' }}
         />
-        <TokenMetricsCardRowV2 amount="890.12" fiatAmount="1,780.24 USD" symbol={rif.symbol} />
-        <TokenMetricsCardRowV2 amount="0.65" fiatAmount="1,300.00 USD" symbol={rbtc.symbol} />
+        <TokenMetricsCardRow amount="890.12" fiatAmount="1,780.24 USD" symbol={rif.symbol} />
+        <TokenMetricsCardRow amount="0.65" fiatAmount="1,300.00 USD" symbol={rbtc.symbol} />
       </MetricsCard>
     )
   }
