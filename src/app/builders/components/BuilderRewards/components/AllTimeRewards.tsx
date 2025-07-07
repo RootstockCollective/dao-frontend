@@ -10,7 +10,10 @@ import { FC } from 'react'
 
 type AllTimeRewardsProps = Omit<BuilderRewardDetails, 'builder'> & { isMock?: boolean }
 
-const AllTimeRewardsContent: FC<Omit<BuilderRewardDetails, 'builder'>> = ({ tokens: { rif, rbtc }, ...props }) => {
+const AllTimeRewardsContent: FC<Omit<BuilderRewardDetails, 'builder'>> = ({
+  tokens: { rif, rbtc },
+  ...props
+}) => {
   const { rif: rifData, rbtc: rbtcData } = useBuilderAllTimeRewards({
     ...props,
     tokens: { rif, rbtc },
@@ -42,7 +45,11 @@ const AllTimeRewardsContent: FC<Omit<BuilderRewardDetails, 'builder'>> = ({ toke
   )
 }
 
-export const AllTimeRewards: FC<AllTimeRewardsProps> = ({ isMock = false, tokens: { rif, rbtc }, ...props }) => {
+export const AllTimeRewards: FC<AllTimeRewardsProps> = ({
+  isMock = false,
+  tokens: { rif, rbtc },
+  ...props
+}) => {
   if (isMock) {
     return (
       <MetricsCard borderless>
@@ -56,6 +63,6 @@ export const AllTimeRewards: FC<AllTimeRewardsProps> = ({ isMock = false, tokens
       </MetricsCard>
     )
   }
-  
+
   return <AllTimeRewardsContent tokens={{ rif, rbtc }} {...props} />
 }

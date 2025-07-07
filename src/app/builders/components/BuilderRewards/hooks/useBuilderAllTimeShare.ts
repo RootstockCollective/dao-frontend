@@ -41,7 +41,10 @@ export const useBuilderAllTimeShare = ({
   } = useReadGauge({ address: gauge, functionName: 'builderRewards', args: [rif.address] })
 
   useHandleErrors({ error: notifyRewardError, title: 'Error loading all time share (notify reward)' })
-  useHandleErrors({ error: builderRewardsPerTokenError, title: 'Error loading all time share (claimed logs)' })
+  useHandleErrors({
+    error: builderRewardsPerTokenError,
+    title: 'Error loading all time share (claimed logs)',
+  })
   useHandleErrors({ error: claimableRewardsError, title: 'Error loading all time share (claimable)' })
 
   // Calculate builder's claimed rewards
@@ -72,4 +75,4 @@ export const useBuilderAllTimeShare = ({
     amount,
     isLoading: notifyRewardLoading || builderRewardsPerTokenLoading || claimableRewardsLoading,
   }
-} 
+}

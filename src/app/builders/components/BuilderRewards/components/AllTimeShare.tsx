@@ -1,8 +1,4 @@
-import {
-  BuilderRewardDetails,
-  MetricsCard,
-  MetricsCardTitle,
-} from '@/app/collective-rewards/rewards'
+import { BuilderRewardDetails, MetricsCard, MetricsCardTitle } from '@/app/collective-rewards/rewards'
 import { useBuilderAllTimeShare } from '../hooks'
 import { LoadingSpinner } from '@/components/LoadingSpinner'
 import { FC } from 'react'
@@ -94,6 +90,6 @@ export const AllTimeShare: FC<AllTimeShareProps> = ({ isMock = false, tokens: { 
       </MetricsCard>
     )
   }
-  
+
   return <AllTimeShareContent tokens={{ rif }} {...props} />
 }

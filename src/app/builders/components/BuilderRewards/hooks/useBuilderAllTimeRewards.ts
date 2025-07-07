@@ -50,9 +50,18 @@ export const useBuilderAllTimeRewards = ({
     error: rbtcClaimableRewardsError,
   } = useReadGauge({ address: gauge, functionName: 'builderRewards', args: [rbtc.address] })
 
-  useHandleErrors({ error: builderRewardsPerTokenError, title: 'Error loading all time rewards (claimed logs)' })
-  useHandleErrors({ error: rifClaimableRewardsError, title: 'Error loading all time rewards (RIF claimable)' })
-  useHandleErrors({ error: rbtcClaimableRewardsError, title: 'Error loading all time rewards (rBTC claimable)' })
+  useHandleErrors({
+    error: builderRewardsPerTokenError,
+    title: 'Error loading all time rewards (claimed logs)',
+  })
+  useHandleErrors({
+    error: rifClaimableRewardsError,
+    title: 'Error loading all time rewards (RIF claimable)',
+  })
+  useHandleErrors({
+    error: rbtcClaimableRewardsError,
+    title: 'Error loading all time rewards (rBTC claimable)',
+  })
 
   // Calculate total claimed rewards for RIF
   const rifTotalClaimedRewards =
@@ -90,4 +99,4 @@ export const useBuilderAllTimeRewards = ({
       isLoading: builderRewardsPerTokenLoading || rbtcClaimableRewardsLoading,
     },
   }
-} 
+}

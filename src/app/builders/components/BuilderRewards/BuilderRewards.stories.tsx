@@ -86,7 +86,7 @@ export const Default: StoryObj<typeof BuilderRewards> = {
     gauges: mockGauges,
     tokens: mockTokens,
     currency: 'USD',
-    isMock: false,
+    isMock: true,
   },
 }
 
@@ -98,6 +98,6 @@ export const WithCustomClass: StoryObj<typeof BuilderRewards> = {
     tokens: mockTokens,
     currency: 'USD',
     className: 'p-4 bg-gray-100 rounded-lg',
-    isMock: false,
+    isMock: true,
   },
 }
