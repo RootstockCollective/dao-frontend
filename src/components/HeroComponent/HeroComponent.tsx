@@ -1,6 +1,6 @@
 'use client'
 import Image from 'next/image'
-import React, { useMemo } from 'react'
+import React, { FC, useMemo } from 'react'
 import { Header, Paragraph } from '../TypographyNew'
 import { Button } from '../ButtonNew'
 import { useImagePreloader } from '@/shared/hooks/useImagePreloader'
@@ -15,7 +15,7 @@ interface HeroComponentProps {
   buttonOnClick?: () => void
 }
 
-const HeroComponent: React.FC<HeroComponentProps> = ({
+export const HeroComponent: FC<HeroComponentProps> = ({
   imageBannerSrc,
   imageSquaresSrc,
   title,
@@ -53,10 +53,10 @@ const HeroComponent: React.FC<HeroComponentProps> = ({
       </div>
       <div className="flex flex-col justify-center w-full md:w-1/2">
         <div className="md:mt-16 flex flex-col gap-2">
-          <Header className="text-bg-100" caps>
+          <Header variant="h1" className="text-bg-100" caps>
             {title}
           </Header>
-          <Header className="text-bg-20" caps>
+          <Header variant="h1" className="text-bg-20" caps>
             {subtitle}
           </Header>
         </div>
@@ -80,5 +80,3 @@ const HeroComponent: React.FC<HeroComponentProps> = ({
     </div>
   )
 }
-
-export default HeroComponent

@@ -1,6 +1,6 @@
 import { DelegateContextProvider } from '@/app/delegate/contexts/DelegateContext'
 import { DelegateContentSection, VotingPowerSection } from '@/app/delegate/sections'
-import HeroComponent from '@/components/HeroComponent/HeroComponent'
+import { HeroComponent } from '@/components/HeroComponent'
 
 export default function Delegate() {
   return (
