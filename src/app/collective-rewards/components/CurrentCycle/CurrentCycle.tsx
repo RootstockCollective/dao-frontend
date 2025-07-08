@@ -1,7 +1,8 @@
 import { ActionsContainer } from '@/components/containers'
-import { CycleMetrics } from '../CycleMetrics'
-import { EstimatedRewards } from '../EstimatedRewards'
-import { TotalBackingLoader } from '../TotalBacking'
+import { CycleMetrics } from '@/app/collective-rewards/components/CycleMetrics'
+import { EstimatedRewards } from '@/app/collective-rewards/components/EstimatedRewards'
+import { TotalBackingLoader } from '@/app/collective-rewards/components/TotalBacking'
+import { CycleContextProvider } from '@/app/collective-rewards/metrics'
 
 export const CurrentCycle = () => {
   return (
@@ -10,7 +11,9 @@ export const CurrentCycle = () => {
       title="THE REWARDS AT WORK - CURRENT CYCLE"
     >
       <div className="flex justify-between items-start w-full">
-        <CycleMetrics />
+        <CycleContextProvider>
+          <CycleMetrics />
+        </CycleContextProvider>
         <TotalBackingLoader />
         <EstimatedRewards />
       </div>
