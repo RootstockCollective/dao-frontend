@@ -25,7 +25,7 @@ export function TopPageHeader() {
 
   return (
     <div className="grid grid-cols-[1fr_auto] gap-x-3 mb-4">
-      <div>
+      <div className="flex justify-start items-center">
         <TopPageHeaderLeftSlotStrategy />
       </div>
       <div className="flex justify-end flex-row gap-5 items-center">
