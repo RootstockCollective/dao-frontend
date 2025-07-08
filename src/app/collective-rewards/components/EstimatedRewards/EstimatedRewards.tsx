@@ -9,7 +9,15 @@ import { formatSymbol } from '@/app/collective-rewards/rewards/utils'
 import { useGetCycleRewards } from '@/app/collective-rewards/shared/hooks/useGetCycleRewards'
 import { useHandleErrors } from '@/app/collective-rewards/utils'
 
-export const TokenAmount = ({ amount, tokenSymbol, amountInFiat }: { amount: bigint; tokenSymbol: string; amountInFiat: bigint }) => {
+export const TokenAmount = ({
+  amount,
+  tokenSymbol,
+  amountInFiat,
+}: {
+  amount: bigint
+  tokenSymbol: string
+  amountInFiat: bigint
+}) => {
   return (
     <div className="flex flex-col items-start">
       <div className="flex items-center gap-2">
@@ -17,7 +25,9 @@ export const TokenAmount = ({ amount, tokenSymbol, amountInFiat }: { amount: big
         <TokenImage symbol={tokenSymbol} size={16} />
         <Span>{tokenSymbol}</Span>
       </div>
-      <Span variant="body-s" bold className="text-bg-0 mt-1">{formatSymbol(amountInFiat, 'USD')}</Span>
+      <Span variant="body-s" bold className="text-bg-0 mt-1">
+        {formatSymbol(amountInFiat, 'USD')}
+      </Span>
     </div>
   )
 }
