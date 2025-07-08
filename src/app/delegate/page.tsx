@@ -11,10 +11,10 @@ export default function Delegate() {
         title="DELEGATE YOUR VOTING POWER"
         subtitle="TO INFLUENCE WHAT GETS BUILT"
         items={[
-          'You are only delegating your own voting power',
-          'Your coins stay in your wallet',
-          'You save on gas cost while being represented',
-          'Your Rewards will keep accumulating as usual',
+          'you are only delegating your own voting power',
+          'your coins stay in your wallet',
+          'you save on gas cost while being represented',
+          'your Rewards will keep accumulating as usual',
         ]}
       />
       <VotingPowerSection />
