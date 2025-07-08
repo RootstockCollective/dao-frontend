@@ -42,22 +42,36 @@ export const BackingPage = () => {
   } = useContext(AllocationsContext)
   const rifPriceUsd = prices[RIF]?.price ?? 0
 
-  const availableForBackingBigInt = !votingPower ? 0n : votingPower - totalOnchainAllocation
+  const availableForBacking = !votingPower ? 0n : votingPower - totalOnchainAllocation
 
-  const totalBackingBigInt = !totalOnchainAllocation ? 0n : totalOnchainAllocation
+  const totalBacking = !totalOnchainAllocation ? 0n : totalOnchainAllocation
 
   const hasAllocations = totalOnchainAllocation > 0n
 
   // Format values properly using formatter functions
-  const availableForBacking = formatSymbol(availableForBackingBigInt, 'stRIF')
-  const totalBacking = formatSymbol(totalBackingBigInt, 'stRIF')
+  const availableForBackingLabel = formatSymbol(availableForBacking, 'stRIF')
+  const totalBackingLabel = formatSymbol(totalBacking, 'stRIF')
   const availableBackingUSD =
-    !availableForBackingBigInt || !rifPriceUsd
+    !availableForBacking || !rifPriceUsd
       ? formatCurrency(0, { currency: 'USD', showCurrency: true })
-      : formatCurrency(getFiatAmount(availableForBackingBigInt, rifPriceUsd), {
+      : formatCurrency(getFiatAmount(availableForBacking, rifPriceUsd), {
           currency: 'USD',
           showCurrency: true,
         })
+
+  const handleDistributeClick = () => {
+    //FIXME: Take into the inactive builders
+    updateAmountToAllocate(votingPower)
+    if (allocationsCount === 0) return
+    const newAllocations = Object.keys(allocations).reduce((acc, key) => {
+      const builderAddress = key as Address
+      const newAllocation = availableForBacking / BigInt(allocationsCount) + allocations[builderAddress]
+      acc[builderAddress] = newAllocation
+
+      return acc
+    }, {} as Allocations)
+    updateAllocations(newAllocations)
+  }
 
   return (
     <div data-testid={NAME} className="flex flex-col items-start w-full h-full pt-[0.13rem] gap-2 rounded-sm">
@@ -76,36 +90,24 @@ export const BackingPage = () => {
         </div>
       )}
 
-      {isConnected && availableForBackingBigInt > 0 && <BuilderAllocationBar />}
+      {/* FIXME: we need to change the conditions to show the BuilderAllocationBar */}
+      {isConnected && availableForBacking > 0 && <BuilderAllocationBar />}
 
       {isConnected && (
         <ActionMetricsContainer className="flex flex-col items-start w-[1144px] p-6 gap-2 rounded-[4px] bg-v3-bg-accent-80">
           <div className="basis-1/2">
             <AvailableBackingMetric
-              availableForBacking={availableForBacking}
+              availableForBacking={availableForBackingLabel}
               availableBackingUSD={availableBackingUSD}
               onStakeClick={() => {
                 // FIXME: Implement staking page and update this navigation
               }}
-              onDistributeClick={() => {
-                //FIXME: Take into the inactive builders
-                updateAmountToAllocate(votingPower)
-                if (allocationsCount === 0) return
-                const newAllocations = Object.keys(allocations).reduce((acc, key) => {
-                  const builderAddress = key as Address
-                  const newAllocation =
-                    availableForBackingBigInt / BigInt(allocationsCount) + allocations[builderAddress]
-                  acc[builderAddress] = newAllocation
-
-                  return acc
-                }, {} as Allocations)
-                updateAllocations(newAllocations)
-              }}
+              onDistributeClick={handleDistributeClick}
             />
           </div>
           <div className="flex items-start basis-1/2 gap-14">
             <div className="basis-1/2">
-              <TotalBackingMetric totalBacking={totalBacking} />
+              <TotalBackingMetric totalBacking={totalBackingLabel} />
             </div>
             {hasAllocations && (
               <div className="basis-1/2">
