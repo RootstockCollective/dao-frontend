@@ -27,7 +27,6 @@ interface UnclaimedRewardsData {
 }
 
 export const useBuilderUnclaimedRewards = ({
-  builder,
   gauge,
   tokens: { rif, rbtc },
   currency = 'USD',
