@@ -11,7 +11,7 @@ interface CreateProposalHeaderSectionProps {
 export enum ProposalType {
   BUILDER_ACTIVATION = 'Builder Activation',
   BUILDER_DEACTIVATION = 'Builder Deactivation',
-  STANDARD = 'Standard',
+  WITHDRAW = 'Transfer of',
 }
 
 export const CreateProposalHeaderSection = ({

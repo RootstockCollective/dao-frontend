@@ -26,7 +26,7 @@ export const useVotingPowerAtSnapshot = (blockNumber: bigint) => {
 
   if (isLoading || !data) {
     return {
-      votingPowerAtSnapshot: '',
+      votingPowerAtSnapshot: BigInt(0),
       doesUserHasEnoughThreshold: false,
     }
   }
@@ -34,7 +34,7 @@ export const useVotingPowerAtSnapshot = (blockNumber: bigint) => {
   const [votingPowerAtSnapshot] = data
 
   return {
-    votingPowerAtSnapshot: votingPowerAtSnapshot ? formatUnits(votingPowerAtSnapshot, 18) : '',
+    votingPowerAtSnapshot,
     doesUserHasEnoughThreshold: votingPowerAtSnapshot > 0,
   }
 }

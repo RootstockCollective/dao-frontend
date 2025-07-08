@@ -1,12 +1,16 @@
 import React from 'react'
-import { Button } from '@/components/Button'
+import { formatEther } from 'viem'
+import { Button } from '@/components/ButtonNew/Button'
 import { Popover } from '@/components/Popover'
 import { capitalizeFirstLetter } from '@/shared/utils'
 import { Header, Paragraph } from '@/components/TypographyNew'
+import { formatNumberWithCommas } from '@/lib/utils'
+import Big from 'big.js'
+import { Vote } from '@/shared/types'
 
 interface VoteCounterProps {
   title: string
-  value: string
+  value: bigint
   color: string
   disabled?: boolean
 }
@@ -20,27 +24,29 @@ export const VoteCounter = ({ title, value, color, disabled }: VoteCounterProps)
         {title}
       </Paragraph>
       <Paragraph variant="body" className={`text-lg text-${!disabled ? color : 'text-primary'}`}>
-        {value}
+        {formatNumberWithCommas(Big(formatEther(value)).round(0))}
       </Paragraph>
     </div>
   )
 }
 
-type HasVoted = 'for' | 'abstain' | 'against'
+export interface ButtonAction {
+  onButtonClick: (event: React.MouseEvent<HTMLButtonElement>) => void
+  actionName: string
+}
 
 interface VoteDetailsProps {
-  votingPower: string
+  votingPower: bigint
   voteData: {
-    for: string
-    against: string
-    abstain: string
-    quorum: string
+    for: bigint
+    against: bigint
+    abstain: bigint
+    quorum: bigint
   }
-  buttonAction?: {
-    onButtonClick: (event: React.MouseEvent<HTMLButtonElement>) => void
-    actionName: string
-  }
-  hasVoted?: HasVoted
+  buttonAction?: ButtonAction
+  hasVoted?: Vote
+  actionDisabled?: boolean
+  voteButtonRef?: React.Ref<HTMLButtonElement>
 }
 
 const colorMap = new Map([
@@ -49,9 +55,16 @@ const colorMap = new Map([
   ['against', 'st-error'],
 ])
 
-export const VotingDetails = ({ voteData, votingPower, buttonAction, hasVoted }: VoteDetailsProps) => {
+export const VotingDetails = ({
+  voteData,
+  votingPower,
+  buttonAction,
+  hasVoted,
+  actionDisabled,
+  voteButtonRef,
+}: VoteDetailsProps) => {
   return (
-    <div className="bg-[#25211E] p-6 rounded-[4px] max-w-[376px] max-h-[422px]">
+    <div className="bg-[#25211E] p-6 rounded-[4px] w-full">
       <Header variant="h3" className="font-normal">
         VOTE DETAILS
       </Header>
@@ -80,14 +93,22 @@ export const VotingDetails = ({ voteData, votingPower, buttonAction, hasVoted }:
                 {'?'}
               </Popover>
             </div>
-            <Header className="font-kk-topo font-normal text-[32px]">{votingPower}</Header>
+            <Header className="font-kk-topo font-normal text-[32px]">
+              {formatNumberWithCommas(Big(formatEther(votingPower)).round(0))}
+            </Header>
           </>
         ) : (
           <Paragraph variant="body">{`You voted ${hasVoted.toUpperCase()} this proposal. ${!buttonAction ? '' : ' Take the next step now.'}`}</Paragraph>
         )}
       </div>
       {!buttonAction ? null : (
-        <Button onClick={buttonAction.onButtonClick} className="mt-4" textClassName="text-foreground">
+        <Button
+          onClick={buttonAction.onButtonClick}
+          className="mt-4"
+          textClassName="text-foreground"
+          disabled={actionDisabled}
+          ref={voteButtonRef}
+        >
           {buttonAction.actionName}
         </Button>
       )}

@@ -1,4 +1,5 @@
 {
+  "root": true,
   "extends": ["next/core-web-vitals", "plugin:storybook/recommended", "plugin:prettier/recommended"],
   "rules": {
     "semi": [2, "never"],

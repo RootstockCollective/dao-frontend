@@ -1,53 +1,44 @@
 'use client'
 import { useFetchAllProposals } from '@/app/proposals/hooks/useFetchLatestProposals'
-import { useGetProposalDeadline } from '@/app/proposals/hooks/useGetProposalDeadline'
 import { useGetProposalSnapshot } from '@/app/proposals/hooks/useGetProposalSnapshot'
 import { useGetProposalVotes } from '@/app/proposals/hooks/useGetProposalVotes'
-import { useVotingPower } from '@/app/proposals/hooks/useVotingPower'
 import { useVotingPowerAtSnapshot } from '@/app/proposals/hooks/useVotingPowerAtSnapshot'
-import {
-  ActionComposerMap,
-  ActionInputNameFormatMap,
-  FunctionName,
-  InputNameFormatMap,
-  InputParameterName,
-  InputParameterTypeByFnByName,
-  InputValueComponent,
-  InputValueComposerMap,
-  SupportedProposalActionName,
-} from '@/app/proposals/shared/supportedABIs'
 import { DecodedData, getEventArguments, splitCombinedName } from '@/app/proposals/shared/utils'
 import { useAlertContext } from '@/app/providers'
 import { useModal } from '@/shared/hooks/useModal'
-import { AddressOrAlias as AddressComponent } from '@/components/Address'
-import { Button } from '@/components/Button'
-import { CopyButton } from '@/components/CopyButton'
-import { MetricsCard } from '@/components/MetricsCard'
-import { Popover } from '@/components/Popover'
-import { Header, Paragraph, Span, Typography } from '@/components/Typography'
-import { ProposalQuorum } from '@/app/proposals/components/ProposalQuorum'
+import { Header, Paragraph, Span } from '@/components/TypographyNew'
 import { config } from '@/config'
-import { RIF, RIF_ADDRESS } from '@/lib/constants'
-import { formatNumberWithCommas, truncateMiddle, formatCurrency } from '@/lib/utils'
+import { RIF_ADDRESS } from '@/lib/constants'
+import { formatNumberWithCommas } from '@/lib/utils'
 import { useExecuteProposal } from '@/shared/hooks/useExecuteProposal'
 import { useQueueProposal } from '@/shared/hooks/useQueueProposal'
 import { useVoteOnProposal } from '@/shared/hooks/useVoteOnProposal'
 import { TX_MESSAGES } from '@/shared/txMessages'
 import { waitForTransactionReceipt } from '@wagmi/core'
-import { useRouter, useParams } from 'next/navigation'
-import { FC, useEffect, useMemo, useRef, useState } from 'react'
-import { MinusIcon } from '@/components/Icons'
-import { getAddress, formatEther, zeroAddress } from 'viem'
+import { useParams } from 'next/navigation'
+import { Fragment, useEffect, useMemo, useState, useRef } from 'react'
+import { formatEther, zeroAddress } from 'viem'
 import { type BaseError, useAccount } from 'wagmi'
-import { Vote, VoteProposalModal } from '@/components/Modal/VoteProposalModal'
+import { VoteProposalModal } from '@/components/Modal/VoteProposalModal'
 import { VoteSubmittedModal } from '@/components/Modal/VoteSubmittedModal'
 import { ProposalState } from '@/shared/types'
 import { isUserRejectedTxError } from '@/components/ErrorPage/commonErrors'
-import Big from '@/lib/big'
 import { usePricesContext } from '@/shared/context/PricesContext'
-import { getCombinedFiatAmount } from '@/app/collective-rewards/utils'
-import { tokenContracts } from '@/lib/contracts'
 import { ConnectWorkflow } from '@/shared/walletConnection/connection/ConnectWorkflow'
+import { ProgressBar } from '@/components/ProgressBarNew'
+import { ButtonAction, VotingDetails } from '../components/vote-details'
+import { TokenImage } from '@/components/TokenImage'
+import React from 'react'
+import { ShortenAndCopy } from '@/components/ShortenAndCopy/ShortenAndCopy'
+import { useProposalQuorumAtSnapshot } from '../hooks/useProposalQuorumAtSnapshot'
+import { ProposalType } from '../create/CreateProposalHeaderSection'
+import { ParsedActionDetails, ActionType } from './types'
+import { ActionDetails } from '../components/action-details'
+import type { GetPricesResult } from '@/app/user/types'
+import { ConnectButtonComponent } from '@/shared/walletConnection/components/ConnectButtonComponent'
+import { NewPopover } from '@/components/NewPopover'
+import { useGetVoteForSpecificProposal } from '../hooks/useVoteCast'
+import { Vote } from '@/shared/types'
 
 export default function ProposalView() {
   const { id } = useParams<{ id: string }>() ?? {}
@@ -67,28 +58,117 @@ export default function ProposalView() {
 
 type ParsedProposal = ReturnType<typeof getEventArguments>
 
+const proposalStateToProgressMap = new Map([
+  [ProposalState.Active, 25],
+  [ProposalState.Succeeded, 50],
+  [ProposalState.Queued, 75],
+  [ProposalState.Executed, 100],
+  [ProposalState.Defeated, 100],
+  [ProposalState.Canceled, 100],
+  [undefined, 0],
+])
+
+const getStatusSteps = (proposalState: ProposalState) => {
+  if (proposalState === ProposalState.Defeated || proposalState === ProposalState.Canceled) {
+    return ['ACTIVE', 'FAILED']
+  }
+  return ['ACTIVE', 'SUCCEEDED', 'QUEUED', 'EXECUTED']
+}
+
+const renderStatusPath = (proposalState: ProposalState) => {
+  const steps = getStatusSteps(proposalState)
+
+  return (
+    <>
+      {steps.map((step, index) => (
+        <Fragment key={step}>
+          <Span variant="body-s">{step}</Span>
+          {index < steps.length - 1 && <Span variant="body-s">{'>'}</Span>}
+        </Fragment>
+      ))}
+    </>
+  )
+}
+
+// Utility to get token symbol from address (expandable)
+const tokenAddressToSymbol = {
+  [RIF_ADDRESS.toLowerCase()]: 'RIF',
+  // Add more tokens here
+}
+
+const parseProposalActionDetails = (
+  calldatasParsed: DecodedData[],
+  prices: GetPricesResult,
+): ParsedActionDetails => {
+  const action = calldatasParsed?.[0]
+  if (!action || action.type !== 'decoded') return { type: '-', amount: undefined, tokenSymbol: undefined }
+  const { functionName, args } = action
+  switch (functionName) {
+    case 'withdraw': {
+      const amount = typeof args[1] === 'bigint' ? args[1] : undefined
+      const toAddress = typeof args[0] === 'string' ? args[0] : undefined
+      return {
+        type: ProposalType.WITHDRAW,
+        amount,
+        tokenSymbol: 'RBTC',
+        price: prices?.RBTC?.price ?? 0,
+        toAddress,
+      }
+    }
+    case 'withdrawERC20': {
+      const tokenAddress = typeof args[0] === 'string' ? args[0].toLowerCase() : ''
+      const amount = typeof args[2] === 'bigint' ? args[2] : undefined
+      const toAddress = typeof args[1] === 'string' ? args[1] : undefined
+      const symbol = tokenAddressToSymbol[tokenAddress] || tokenAddress
+      const price = symbol === 'RIF' ? (prices?.RIF?.price ?? 0) : 0
+      return {
+        type: ProposalType.WITHDRAW,
+        amount,
+        tokenSymbol: symbol,
+        price,
+        toAddress,
+      }
+    }
+    case 'communityApproveBuilder': {
+      const builder = typeof args[0] === 'string' ? args[0] : undefined
+      return {
+        type: ProposalType.BUILDER_ACTIVATION,
+        builder,
+      }
+    }
+    case 'removeWhitelistedBuilder':
+    case 'dewhitelistBuilder': {
+      const builder = typeof args[0] === 'string' ? args[0] : undefined
+      return {
+        type: ProposalType.BUILDER_DEACTIVATION,
+        builder,
+      }
+    }
+    default:
+      return { type: '-', amount: undefined, tokenSymbol: undefined }
+  }
+}
+
 const PageWithProposal = (proposal: ParsedProposal) => {
-  const { proposalId, name, description, proposer, Starts } = proposal
-  const [vote, setVote] = useState<Vote | null>('for')
-  const [errorVoting, setErrorVoting] = useState('')
   const { address, isConnected } = useAccount()
+  const { proposalId, name, description, proposer, Starts, calldatasParsed } = proposal
+  const [vote, setVote] = useGetVoteForSpecificProposal(address ?? zeroAddress, proposalId)
+  const [errorVoting, setErrorVoting] = useState('')
   const votingModal = useModal()
   const submittedModal = useModal()
   const { setMessage } = useAlertContext()
 
   const [againstVote, forVote, abstainVote] = useGetProposalVotes(proposalId, true)
   const snapshot = useGetProposalSnapshot(proposalId)
+  const { quorum } = useProposalQuorumAtSnapshot(snapshot)
 
-  const { blocksUntilClosure } = useGetProposalDeadline(proposalId)
   const { votingPowerAtSnapshot, doesUserHasEnoughThreshold } = useVotingPowerAtSnapshot(snapshot as bigint)
-  const { canCreateProposal } = useVotingPower()
 
   const {
     onVote,
     isProposalActive,
     didUserVoteAlready,
     proposalState,
-    proposalStateHuman,
     isVoting,
     isWaitingVotingReceipt,
     setVotingTxHash,
@@ -96,13 +176,13 @@ const PageWithProposal = (proposal: ParsedProposal) => {
     isVotingFailed,
     votingError,
   } = useVoteOnProposal(proposalId)
-  const { onQueueProposal, proposalNeedsQueuing, isQueuing, isTxHashFromQueueLoading } =
-    useQueueProposal(proposalId)
+  const { onQueueProposal } = useQueueProposal(proposalId)
 
-  const { onExecuteProposal, canProposalBeExecuted, proposalEtaHumanDate, isPendingExecution } =
-    useExecuteProposal(proposalId)
+  const { onExecuteProposal } = useExecuteProposal(proposalId)
 
   const [isExecuting, setIsExecuting] = useState(false)
+  const [popoverOpen, setPopoverOpen] = useState(false)
+  const voteButtonRef = useRef<HTMLButtonElement>(null)
 
   const cannotCastVote =
     !isProposalActive ||
@@ -111,8 +191,12 @@ const PageWithProposal = (proposal: ParsedProposal) => {
     isVoting ||
     isWaitingVotingReceipt
 
-  const proposalType: SupportedProposalActionName | undefined =
-    proposal.calldatasParsed[0]?.type === 'decoded' ? proposal.calldatasParsed[0].functionName : undefined
+  // Determine proposal type based on action (see ChooseProposal logic)
+  // 'withdraw' => 'Standard', 'communityApproveBuilder' => 'Activation'
+  let proposalTypeLabel = '—'
+  const actionName = calldatasParsed?.[0]?.type === 'decoded' ? calldatasParsed[0].functionName : undefined
+  if (actionName === 'withdraw' || actionName === 'withdrawERC20') proposalTypeLabel = 'Standard'
+  if (actionName === 'communityApproveBuilder') proposalTypeLabel = 'Activation'
 
   const { proposalName, builderName } = splitCombinedName(name)
 
@@ -163,14 +247,14 @@ const PageWithProposal = (proposal: ParsedProposal) => {
     }
   }, [isVotingConfirmed, isVotingFailed, setMessage, votingError])
 
-  const handleVoting = async (vote: Vote) => {
+  const handleVoting = async (_vote: Vote) => {
     try {
       setErrorVoting('')
       setMessage(null)
-      const txHash = await onVote(vote)
+      const txHash = await onVote(_vote)
       setMessage(TX_MESSAGES.voting.pending)
       votingModal.closeModal()
-      setVote(vote)
+      setVote(_vote)
       submittedModal.openModal()
       setVotingTxHash(txHash)
     } catch (err: any) {
@@ -199,7 +283,7 @@ const PageWithProposal = (proposal: ParsedProposal) => {
     }
   }
 
-  const handleVotingExecution = async () => {
+  const handleExecuteProposal = async () => {
     try {
       setMessage(null)
       const txHash = await onExecuteProposal()
@@ -232,10 +316,8 @@ const PageWithProposal = (proposal: ParsedProposal) => {
     votingModal.openModal()
   }
 
-  const formatVoteCount = (voteCount: string) => formatNumberWithCommas(Big(voteCount).ceil().toString())
-
-  const linkfyUrls = (description: string) => {
-    // https://stackoverflow.com/questions/3809401/what-is-a-good-regular-expression-to-match-a-url
+  const linkfyUrls = (description: string | undefined | null): string => {
+    if (typeof description !== 'string') return ''
     const urlRegex =
       /(https?:\/\/(?:www\.|(?!www))[a-zA-Z0-9][a-zA-Z0-9-]+[a-zA-Z0-9]\.[^\s]{2,}|www\.[a-zA-Z0-9][a-zA-Z0-9-]+[a-zA-Z0-9]\.[^\s]{2,}|https?:\/\/(?:www\.|(?!www))[a-zA-Z0-9]+\.[^\s]{2,}|www\.[a-zA-Z0-9]+\.[^\s]{2,})/g
     return description.replace(urlRegex, url => {
@@ -244,578 +326,251 @@ const PageWithProposal = (proposal: ParsedProposal) => {
     })
   }
 
-  // @ts-ignore
-  return (
-    <div className="pl-4 grid grid-rows-1 gap-[32px] mb-[100px]">
-      <div className="flex items-center justify-between">
-        <Header className="text-3xl ">{proposalName}</Header>
-        {(proposalType === 'communityApproveBuilder' || proposalType === 'whitelistBuilder') && (
-          <DewhitelistButton
-            proposal={proposal}
-            canCreateProposal={canCreateProposal}
-            proposalState={proposalState as ProposalState}
-          />
-        )}
-      </div>
+  const descriptionHtml = linkfyUrls(description)
 
-      <div className="flex flex-row gap-4 items-baseline">
-        <div className="flex flex-row items-baseline gap-1">
-          <Paragraph className="text-sm text-gray-500">Proposed by: </Paragraph>
-          <Popover
-            content={
-              <div className="text-[12px] font-bold mb-1">
-                <p data-testid="addressTooltip">{proposer}</p>
-              </div>
-            }
-            size="small"
-            trigger="hover"
-          >
-            <CopyButton icon={null} copyText={proposer} className="text-primary font-semibold">
-              {builderName || truncateMiddle(proposer, 3, 3)}
-            </CopyButton>
-          </Popover>
-        </div>
-        <Paragraph className="text-sm text-gray-500">Created {Starts.fromNow()}</Paragraph>
-        <Popover
-          content={
-            <div className="text-[12px] font-bold mb-1">
-              <p data-testid="proposalIDTooltip">{proposalId}</p>
-            </div>
-          }
-          size="small"
-          trigger="hover"
-        >
-          <CopyButton icon={null} copyText={proposalId} className="font-semibold text-primary">
-            ID {truncateMiddle(proposalId, 3, 3)}
-          </CopyButton>
-        </Popover>
-        {blocksUntilClosure !== null && proposalState === ProposalState.Active && (
-          <Paragraph className="text-sm text-gray-500">
-            Blocks until closure: <span className="text-primary">{blocksUntilClosure.toString()}</span>
-          </Paragraph>
-        )}
-      </div>
-      <div className="flex flex-row justify-between">
-        <div className="flex flex-row gap-x-8 basis-1/2">
-          <ProposalQuorum blockNumber={proposal.blockNumber} />
-          <MetricsCard
-            title="Snapshot"
-            amount={formatNumberWithCommas(snapshot?.toString() || '-')}
-            fiatAmount="Taken at block"
-            borderless={true}
-          />
-        </div>
-        <div>
-          {!isConnected && (
-            <DisconnectedAction
-              proposalState={proposalState}
-              proposalNeedsQueuing={proposalNeedsQueuing}
-              proposalStateHuman={proposalStateHuman}
-              isExecuting={isExecuting}
-              isPendingExecution={isPendingExecution}
-            />
-          )}
-          {isConnected && proposalState === ProposalState.Active && (
-            <>
-              {cannotCastVote ? (
-                <Popover
-                  content={
-                    <div className="text-[12px] font-bold mb-1">
-                      <p data-testid="ParagraphCannotCastVote">{cannotCastVoteReason}</p>
-                    </div>
-                  }
-                  size={!doesUserHasEnoughThreshold ? 'medium' : 'small'}
-                  position={!doesUserHasEnoughThreshold ? 'left-bottom' : 'bottom'}
-                  trigger="hover"
-                >
-                  <Button disabled data-testid="VoteOnChain">
-                    Vote on chain
-                  </Button>
-                </Popover>
-              ) : (
-                <Button onClick={openModal} data-testid="VoteOnChain">
-                  Vote on chain
-                </Button>
-              )}
-            </>
-          )}
-          {isConnected && proposalNeedsQueuing && proposalStateHuman === 'Succeeded' && (
-            <Button
-              onClick={handleQueuingProposal}
-              className="mt-2"
-              disabled={isQueuing || isTxHashFromQueueLoading}
-              loading={isQueuing}
-              data-testid="PutOnQueue"
-            >
-              Put on Queue
-            </Button>
-          )}
-          {isConnected && proposalState === ProposalState.Queued && (
-            <Popover
-              size="small"
-              trigger="hover"
-              disabled={isExecuting || isPendingExecution}
-              content={
-                !canProposalBeExecuted ? (
-                  <p className="text-[12px] font-bold mb-1">
-                    The proposal is not ready to be executed yet. It should be ready on:{' '}
-                    {proposalEtaHumanDate}
-                  </p>
-                ) : isExecuting ? (
-                  <p className="text-[12px] font-bold mb-1">The proposal is being executed.</p>
-                ) : (
-                  !isPendingExecution && (
-                    <p className="text-[12px] font-bold mb-1">
-                      The proposal <br /> can be executed.
-                    </p>
-                  )
-                )
-              }
-            >
-              <Button
-                onClick={handleVotingExecution}
-                className="mt-2 ml-auto"
-                disabled={!canProposalBeExecuted || isExecuting || isPendingExecution}
-                data-testid="Execute"
-              >
-                Execute
-              </Button>
-            </Popover>
-          )}
-          {isConnected && (isExecuting || isPendingExecution) && (
-            <Span variant="light" className="inline-block mt-2">
-              Pending transaction confirmation <br />
-              to complete execution.
-            </Span>
-          )}
-          {votingModal.isModalOpened && address && (
-            <VoteProposalModal
-              onSubmit={handleVoting}
-              onClose={votingModal.closeModal}
-              proposal={proposal}
-              address={address}
-              votingPower={votingPowerAtSnapshot}
-              isVoting={isVoting}
-              errorMessage={errorVoting}
-            />
-          )}
-          {submittedModal.isModalOpened && vote && (
-            <VoteSubmittedModal proposal={proposal} vote={vote} onClose={submittedModal.closeModal} />
-          )}
-        </div>
-      </div>
-      <div className="flex flex-row gap-x-12">
-        <div className="w-2/3">
-          <Header variant="h1" className="text-[24px] mb-6">
-            Description
-          </Header>
-          <Paragraph
-            variant="normal"
-            className="text-[16px] text-justify font-light whitespace-pre-wrap"
-            html={linkfyUrls(description)}
-          />
-        </div>
-        <div className="w-1/3 flex flex-col gap-y-2">
-          <Header variant="h1" className="text-[24px]">
-            Votes
-          </Header>
-          <div className="flex flex-row justify-between border border-white/40 rounded-lg px-[16px] py-[11px]">
-            <Paragraph variant="semibold" className="text-[16px] text-st-success">
-              {formatVoteCount(forVote)}
-            </Paragraph>
-            <Paragraph variant="semibold" className="text-[16px] text-st-success">
-              For
-            </Paragraph>
-          </div>
-          <div className="flex flex-row justify-between border border-white/40 rounded-lg px-[16px] py-[11px]">
-            <Paragraph variant="semibold" className="text-[16px] text-st-error">
-              {formatVoteCount(againstVote)}
-            </Paragraph>
-            <Paragraph variant="semibold" className="text-[16px] text-st-error">
-              Against
-            </Paragraph>
-          </div>
-          <div className="flex flex-row justify-between border border-white/40 rounded-lg px-[16px] py-[11px]">
-            <Paragraph variant="semibold" className="text-[16px] text-text-light">
-              {formatVoteCount(abstainVote)}
-            </Paragraph>
-            <Paragraph variant="semibold" className="text-[16px] text-text-light">
-              Abstain
-            </Paragraph>
-          </div>
-          <Header variant="h1" className="text-[24px]">
-            Actions
-          </Header>
-          <div className="border border-white/40 rounded-lg px-[16px] py-[11px]">
-            <div className="flex flex-col">
-              {/*<div className="flex justify-between">*/}
-              {/*  <Paragraph variant="semibold" className="text-[16px]">*/}
-              {/*    Transfer*/}
-              {/*  </Paragraph>*/}
-              {/*  <Paragraph variant="normal" className="text-[16px]">*/}
-              {/*    {toFixed(formatUnits(0 || 0n, 18))}*/}
-              {/*  </Paragraph>*/}
-              {/*</div>*/}
-              {/*<div className="flex justify-between">*/}
-              {/*  <Paragraph variant="semibold" className="text-[16px]">*/}
-              {/*    To*/}
-              {/*  </Paragraph>*/}
-              {/*  <Paragraph variant="normal" className="text-[16px]">*/}
-              {/*    {truncateMiddle('123' || '')}*/}
-              {/*  </Paragraph>*/}
-              {/*</div>*/}
-              {/* @ts-ignore */}
-              <CalldataRows calldatasParsed={proposal.calldatasParsed} />
-            </div>
-            <div>
-              {/* <Paragraph variant="semibold" className="text-[16px]">
-                      {proposal.actions.amount} {proposal.actions.tokenSymbol}
-                    </Paragraph>
-                    <Paragraph variant="semibold" className="text-[16px]">
-                      {shortAddress(proposal.actions.toAddress)}
-                    </Paragraph> */}
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-  )
-}
-interface DisconnectedActionProps {
-  proposalState: number | undefined
-  proposalNeedsQueuing: boolean | undefined
-  proposalStateHuman: string
-  isExecuting: boolean
-  isPendingExecution: boolean
-}
-const DisconnectedAction = ({
-  proposalState,
-  proposalNeedsQueuing,
-  proposalStateHuman,
-  isExecuting,
-  isPendingExecution,
-}: DisconnectedActionProps) => {
-  if (proposalState === ProposalState.Active) {
-    return (
-      <ConnectWorkflow
-        ConnectComponent={({ onClick }) => (
-          <Button variant="secondary" onClick={onClick} data-testid="VoteOnChain">
-            Vote on chain
-          </Button>
-        )}
-      />
-    )
-  }
-  if (proposalNeedsQueuing && proposalStateHuman === 'Succeeded') {
-    return (
-      <ConnectWorkflow
-        ConnectComponent={({ onClick }) => (
-          <Button variant="secondary" onClick={onClick} className="mt-2" data-testid="PutOnQueue">
-            Put on Queue
-          </Button>
-        )}
-      />
-    )
-  }
-  if (proposalState === ProposalState.Queued) {
-    return (
-      <ConnectWorkflow
-        ConnectComponent={({ onClick }) => (
-          <Button variant="secondary" onClick={onClick} className="mt-2 ml-auto" data-testid="Execute">
-            Execute
-          </Button>
-        )}
-      />
-    )
-  }
-  if (isExecuting || isPendingExecution) {
-    return (
-      <Span variant="light" className="inline-block mt-2">
-        Pending transaction confirmation <br />
-        to complete execution.
-      </Span>
-    )
-  }
-  return null
-}
+  const actionNameToActionTypeMap = new Map<string, ActionType>([
+    ['withdraw', ActionType.Transfer],
+    ['withdrawERC20', ActionType.Transfer],
+    ['communityApproveBuilder', ActionType.BuilderApproval],
+    ['whitelistBuilder', ActionType.BuilderApproval],
+    ['removeWhitelistedBuilder', ActionType.RemoveBuilder],
+    ['dewhitelistBuilder', ActionType.RemoveBuilder],
+  ])
 
-interface CalldataRowsData {
-  calldatasParsed: DecodedData[]
-}
+  let actionType: ActionType = ActionType.Unknown
+  let addressToWhitelist = ''
 
-const CalldataRows = ({ calldatasParsed }: CalldataRowsData) => {
-  return calldatasParsed.map((callData, index) => <CalldataDisplay key={index} {...callData} />)
-}
+  if (actionName && actionNameToActionTypeMap.has(actionName)) {
+    actionType = actionNameToActionTypeMap.get(actionName)!
+  }
 
-const CalldataDisplay = (props: DecodedData) => {
+  if (
+    actionName === 'communityApproveBuilder' &&
+    calldatasParsed?.[0]?.type === 'decoded' &&
+    typeof calldatasParsed[0].args[0] === 'string'
+  ) {
+    addressToWhitelist = calldatasParsed[0].args[0]
+  } else if (
+    actionName === 'withdraw' &&
+    calldatasParsed?.[0]?.type === 'decoded' &&
+    typeof calldatasParsed[0].args[1] === 'string'
+  ) {
+    addressToWhitelist = calldatasParsed[0].args[1]
+  }
+
   const { prices } = usePricesContext()
-  const currentTokenSymbol = useRef('') // For tracking the token
+  const parsedAction = parseProposalActionDetails(calldatasParsed, prices)
 
-  // Process token information and create cache - at the top level
-  const usdValueCache = useMemo(() => {
-    const cache: Record<number, string> = {}
-
-    // Only process if this is the decoded case
-    if (props.type === 'decoded') {
-      const { functionName, inputs, args } = props
-
-      // First check if this is a withdraw function
-      if (functionName === 'withdraw') {
-        // For withdraw function, use ZeroAddress (RBTC) as the token
-        currentTokenSymbol.current = zeroAddress
-      } else {
-        // For other functions, try to find the token symbol
-        let foundToken = false
-        for (let i = 0; i < inputs.length; i++) {
-          const input = inputs[i]
-          const inputName = input.name
-          const functionInputNames =
-            actionInputNameFormatMap[functionName] ||
-            ({} as InputNameFormatMap<typeof functionName, typeof inputName>)
-          const formattedName = (functionInputNames[inputName as never] || inputName) as string
-
-          if (formattedName === 'token') {
-            currentTokenSymbol.current = String(args[i] || '')
-            foundToken = true
-            break
-          }
-        }
-
-        // If no token found and the function is withdrawERC20, use ZeroAddress as fallback
-        if (!foundToken && functionName === 'withdrawERC20') {
-          currentTokenSymbol.current = zeroAddress
-        }
-      }
-
-      // Then calculate USD values if we have a token
-      if (currentTokenSymbol.current && prices) {
-        const tokenSymbol =
-          Object.entries(tokenContracts).find(
-            ([key, value]) => value === currentTokenSymbol.current.toLowerCase(),
-          )?.[0] ?? ''
-
-        const tokenPrice = tokenSymbol ? prices[tokenSymbol] : undefined
-
-        if (tokenPrice && typeof tokenPrice.price === 'number') {
-          // Pre-calculate for all inputs
-          inputs.forEach((input, idx) => {
-            const inputName = input.name
-            const functionInputNames =
-              actionInputNameFormatMap[functionName] ||
-              ({} as InputNameFormatMap<typeof functionName, typeof inputName>)
-            const formattedName = (functionInputNames[inputName as never] || inputName) as string
-
-            if (formattedName === 'amount') {
-              // Use proper typing for the input value
-              const inputValue = args[idx] as InputParameterTypeByFnByName<
-                typeof functionName,
-                typeof inputName
-              >
-
-              let newPrice = getCombinedFiatAmount([
-                {
-                  value: inputValue as bigint,
-                  price: tokenPrice.price,
-                  symbol: tokenSymbol,
-                  currency: 'USD',
-                },
-              ])
-              cache[idx] = `= USD ${formatCurrency(newPrice.toNumber())}`
-            }
-          })
-        }
-      }
+  // Restore handleProposalAction and getButtonActionForState
+  const handleProposalAction = (action: () => void) => (event: React.MouseEvent<HTMLButtonElement>) => {
+    if (!isConnected) {
+      setPopoverOpen(true)
+      return
     }
-
-    return cache
-  }, [props, prices])
-
-  // Handle decoded case
-  if (props.type === 'decoded') {
-    const { functionName, inputs, args } = props
-
-    return (
-      <div>
-        <span className="flex justify-between">
-          <Paragraph variant="semibold" className="text-[16px] text-left">
-            Function:
-          </Paragraph>
-          <Span className="font-normal text-left">{functionName}</Span>
-        </span>
-
-        <Paragraph variant="semibold" className="text-[16px] mt-2">
-          Arguments:
-        </Paragraph>
-        <ul>
-          {inputs.map((input, index) => {
-            const inputName = input.name
-            const functionInputNames =
-              actionInputNameFormatMap[functionName] ||
-              ({} as InputNameFormatMap<typeof functionName, typeof inputName>)
-            const formattedInputName = (functionInputNames[inputName as never] || inputName) as string
-
-            const inputValue = args[index] as InputParameterTypeByFnByName<
-              typeof functionName,
-              typeof inputName
-            >
-
-            // If this is the token input, update the token value for rendering
-            if (formattedInputName === 'token') {
-              currentTokenSymbol.current = String(inputValue)
-            }
-
-            const inputValueComposerMap = (actionComponentMap[functionName] || {}) as InputValueComposerMap<
-              typeof functionName,
-              typeof inputName
-            >
-
-            const InputComponent = inputValueComposerMap[
-              inputName as keyof typeof inputValueComposerMap
-            ] as InputValueComponent<InputParameterTypeByFnByName<typeof functionName, typeof inputName>>
-
-            return (
-              <li key={index} className="my-2 flex justify-between">
-                <Typography tagVariant="span" className="font-semibold text-[16px] text-left">
-                  {formattedInputName}
-                </Typography>
-                <div className="flex flex-col items-end">
-                  {InputComponent && (
-                    <InputComponent
-                      value={inputValue}
-                      htmlProps={{
-                        className: 'font-normal text-right',
-                      }}
-                    />
-                  )}
-                  {formattedInputName === 'amount' && usdValueCache[index] && (
-                    <Span className="text-xs text-gray-400 mt-1">{usdValueCache[index]}</Span>
-                  )}
-                </div>
-              </li>
-            )
-          })}
-        </ul>
-      </div>
-    )
+    action()
   }
 
-  // Handle fallback case
-  const { affectedAddress, callData } = props
-  return (
-    <div>
-      <Paragraph variant="semibold" className="text-[16px] mt-2">
-        Affected Address:
-      </Paragraph>
-      <span
-        className="font-normal text-left overflow-hidden text-ellipsis whitespace-nowrap block w-full"
-        title={affectedAddress}
-      >
-        {affectedAddress}
-      </span>
+  const getButtonActionForState = (state: ProposalState | undefined): ButtonAction | undefined => {
+    switch (state) {
+      case ProposalState.Active:
+        return {
+          actionName: 'Vote on proposal',
+          onButtonClick: handleProposalAction(openModal),
+        }
+      case ProposalState.Succeeded:
+        return {
+          actionName: 'Put on queue',
+          onButtonClick: handleProposalAction(handleQueuingProposal),
+        }
+      case ProposalState.Queued:
+        return {
+          actionName: 'Execute',
+          onButtonClick: handleProposalAction(handleExecuteProposal),
+        }
+      default:
+        return undefined
+    }
+  }
 
-      <Paragraph variant="semibold" className="text-[16px] mt-2">
-        Raw Call Data:
-      </Paragraph>
-      <span
-        className="font-normal text-left overflow-hidden text-ellipsis whitespace-nowrap block w-full"
-        title={callData}
-      >
-        {callData}
-      </span>
+  return (
+    <div className="min-h-screen text-white px-4 py-8 flex flex-col gap-4 w-full max-w-full">
+      {votingModal.isModalOpened && address && (
+        <VoteProposalModal
+          onSubmit={handleVoting}
+          onClose={votingModal.closeModal}
+          proposal={proposal}
+          address={address}
+          votingPower={votingPowerAtSnapshot.toString()}
+          isVoting={isVoting}
+          errorMessage={errorVoting}
+        />
+      )}
+      {submittedModal.isModalOpened && vote && (
+        <VoteSubmittedModal proposal={proposal} vote={vote} onClose={submittedModal.closeModal} />
+      )}
+      <Header variant="h1" className="text-3xl text-white">
+        {name}
+      </Header>
+      <div className="flex flex-row gap-2 w-full max-w-full mt-10">
+        <div className="flex-1 flex flex-col min-w-0">
+          <div className="bg-bg-80 p-6 flex flex-col gap-y-6">
+            <div className="flex flex-col w-full">
+              <div className="flex flex-row justify-between w-full">{renderStatusPath(proposalState!)}</div>
+              <ProgressBar progress={proposalStateToProgressMap.get(proposalState) ?? 0} className="mt-3" />
+            </div>
+
+            <div className="grid grid-cols-2 gap-x-6 gap-y-2 text-sm mt-10">
+              <div>
+                <Span variant="tag-s" className="text-white/70" bold>
+                  Proposal type
+                </Span>
+                <Paragraph variant="body" className="flex items-center">
+                  {/* For transfer actions, show amount, token image, and symbol. For others, show a label. */}
+                  {parsedAction.type === ProposalType.WITHDRAW &&
+                  parsedAction.amount &&
+                  parsedAction.tokenSymbol ? (
+                    <>
+                      Transfer of {formatNumberWithCommas(formatEther(parsedAction.amount))}
+                      <Span className="inline-flex ml-2">
+                        <TokenImage symbol={parsedAction.tokenSymbol} size={16} />
+                        <Span className="font-bold ml-1">{parsedAction.tokenSymbol}</Span>
+                      </Span>
+                    </>
+                  ) : parsedAction.type === ProposalType.BUILDER_ACTIVATION ? (
+                    <>Builder activation</>
+                  ) : parsedAction.type === ProposalType.BUILDER_DEACTIVATION ? (
+                    <>Builder deactivation</>
+                  ) : (
+                    <>{parsedAction.type}</>
+                  )}
+                </Paragraph>
+              </div>
+              <div>
+                <Span variant="tag-s" className="text-white/70" bold>
+                  Created on
+                </Span>
+                <Paragraph variant="body">{Starts ? Starts.format('DD MMM YYYY') : '—'}</Paragraph>
+              </div>
+              <div>
+                {actionName === 'communityApproveBuilder' ? (
+                  <Span variant="tag-s" className="text-white/70" bold>
+                    Builder name
+                  </Span>
+                ) : null}
+                <Paragraph variant="body" className="text-sm font-medium text-primary">
+                  <a href={`/builders/${addressToWhitelist}`} className="hover:underline">
+                    {builderName}
+                  </a>
+                </Paragraph>
+              </div>
+              <div>
+                {actionName === 'communityApproveBuilder' ? (
+                  <Span variant="tag-s" className="text-white/70" bold>
+                    Builder address
+                  </Span>
+                ) : null}
+                {addressToWhitelist && actionName === 'communityApproveBuilder' ? (
+                  <ShortenAndCopy value={addressToWhitelist} />
+                ) : null}
+              </div>
+              <div>
+                <Span variant="tag-s" className="text-white/70" bold>
+                  Proposed by
+                </Span>
+                {proposer ? <ShortenAndCopy value={proposer} /> : <Span variant="body">—</Span>}
+              </div>
+              <div>
+                <Span variant="tag-s" className="text-white/70" bold>
+                  Community discussion
+                </Span>
+                <Paragraph variant="body" className="text-sm font-medium text-primary">
+                  <a
+                    href="https://rootstockcollective.xyz/discourse"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="hover:underline"
+                  >
+                    See on Discourse
+                  </a>
+                </Paragraph>
+              </div>
+            </div>
+
+            <div className="mt-14">
+              <Header variant="h2" className="text-xl mb-4 text-white">
+                DESCRIPTION
+              </Header>
+              <Paragraph
+                variant="body"
+                className="text-base text-white/90 whitespace-pre-line"
+                html
+                // eslint-disable-next-line react/no-children-prop
+                children={descriptionHtml}
+              />
+            </div>
+          </div>
+
+          <div className="w-full mt-2 bg-bg-80 p-6">
+            <Header variant="h3" className="text-lg mb-2">
+              TECHNICAL DETAILS
+            </Header>
+            <div className="grid grid-cols-2 gap-x-4">
+              <div>
+                <Paragraph variant="body-s" className="text-white/70" bold>
+                  Snapshot - taken at block
+                </Paragraph>
+                <Paragraph variant="body">{snapshot?.toString() || '—'}</Paragraph>
+              </div>
+              <div>
+                <Paragraph variant="body-s" className="text-white/70" bold>
+                  Proposal ID
+                </Paragraph>
+                {proposalId ? <ShortenAndCopy value={proposalId} /> : <Span variant="body">—</Span>}
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div className="flex flex-col max-w-[376px]">
+          <NewPopover
+            open={popoverOpen}
+            onOpenChange={setPopoverOpen}
+            anchorRef={voteButtonRef}
+            className="bg-text-80 rounded-[4px] border border-text-80 p-6 shadow-lg w-72"
+            contentClassName="flex flex-col items-start bg-transparent h-full"
+            content={
+              <>
+                <Span className="mb-4 text-left text-bg-100 text-base font-normal">
+                  Connect your wallet to see your available voting power and to vote.
+                </Span>
+                <ConnectWorkflow
+                  ConnectComponent={props => (
+                    <ConnectButtonComponent {...props} textClassName="text-bg-100" />
+                  )}
+                />
+              </>
+            }
+          />
+          <VotingDetails
+            votingPower={votingPowerAtSnapshot}
+            voteData={{
+              for: forVote,
+              against: againstVote,
+              abstain: abstainVote,
+              quorum,
+            }}
+            buttonAction={
+              didUserVoteAlready && proposalState !== ProposalState.Succeeded
+                ? undefined
+                : getButtonActionForState(proposalState)
+            }
+            actionDisabled={isConnected && cannotCastVote}
+            voteButtonRef={voteButtonRef}
+            hasVoted={vote}
+          />
+          <ActionDetails parsedAction={parsedAction} actionType={actionType} />
+        </div>
+      </div>
     </div>
   )
-}
-
-type DewhitelistButton = {
-  proposal: ParsedProposal
-  canCreateProposal: boolean
-  proposalState: ProposalState
-}
-
-const DewhitelistButton: FC<DewhitelistButton> = ({
-  proposal: { calldatasParsed, proposalId },
-  canCreateProposal,
-  proposalState,
-}) => {
-  const router = useRouter()
-  const builderRegistryContract = 'BuilderRegistryAbi'
-  const dewhitelistBuilderAction = 'dewhitelistBuilder'
-  const builderAddress =
-    calldatasParsed[0]?.type === 'decoded' ? getAddress(calldatasParsed[0].args[0]?.toString() || '') : ''
-  const isProposalExecuted = proposalState === ProposalState.Executed
-  const isButtonEnabled = builderAddress && isProposalExecuted
-
-  return (
-    <>
-      {isButtonEnabled && (
-        <Button
-          startIcon={<MinusIcon />}
-          onClick={() =>
-            router.push(
-              `/proposals/create?contract=${builderRegistryContract}&action=${dewhitelistBuilderAction}&builderAddress=${builderAddress}&proposalId=${proposalId}`,
-            )
-          }
-          disabled={!canCreateProposal}
-        >
-          De-whitelist
-        </Button>
-      )}
-    </>
-  )
-}
-
-const actionInputNameFormatMap: Partial<ActionInputNameFormatMap<FunctionName[number], InputParameterName>> =
-  {
-    whitelistBuilder: {
-      builder_: 'Address to be whitelisted',
-      rewardReceiver_: 'Address to receive rewards',
-    },
-    communityApproveBuilder: {
-      builder_: 'Address to be whitelisted',
-    },
-    removeWhitelistedBuilder: {
-      builder_: 'Address to be removed',
-    },
-    dewhitelistBuilder: {
-      builder_: 'Address to be de-whitelisted',
-    },
-  }
-
-const AddressInputComponent: InputValueComponent<'address'> = ({ value, htmlProps }) => (
-  <AddressComponent {...htmlProps} addressOrAlias={value.toString()} />
-)
-
-const BigIntInputComponent: InputValueComponent<'bigint'> = ({ value, htmlProps }) => (
-  <Span {...(htmlProps as any)}>{formatNumberWithCommas(formatEther(BigInt(value)))}</Span>
-)
-
-const ERC20InputComponent: InputValueComponent<'bigint'> = ({ value, htmlProps }) => (
-  <Span {...(htmlProps as any)}>
-    {value.toLowerCase() === RIF_ADDRESS.toLowerCase() ? RIF : 'Unknown ERC20'}
-  </Span>
-)
-
-const actionComponentMap: Partial<ActionComposerMap> = {
-  whitelistBuilder: {
-    builder_: AddressInputComponent,
-    rewardReceiver_: AddressInputComponent,
-  },
-  removeWhitelistedBuilder: {
-    builder_: AddressInputComponent,
-  },
-  dewhitelistBuilder: {
-    builder_: AddressInputComponent,
-  },
-  communityApproveBuilder: {
-    builder_: AddressInputComponent,
-  },
-  withdraw: {
-    to: AddressInputComponent,
-    amount: BigIntInputComponent,
-  },
-  withdrawERC20: {
-    token: ERC20InputComponent,
-    to: AddressInputComponent,
-    amount: BigIntInputComponent,
-  },
 }

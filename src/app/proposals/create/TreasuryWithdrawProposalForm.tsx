@@ -150,7 +150,7 @@ export const TreasuryWithdrawProposalForm = () => {
     <Form {...form}>
       <form onSubmit={handleSubmit(onSubmit)}>
         <CreateProposalHeaderSection
-          proposalType={ProposalType.STANDARD}
+          proposalType={ProposalType.WITHDRAW}
           disabled={!isDirty || !isValid || isPublishing}
           loading={isPublishing}
         />

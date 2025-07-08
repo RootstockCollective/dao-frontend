@@ -1,5 +1,5 @@
 import { cn } from '@/lib/utils'
-import { FC, ButtonHTMLAttributes } from 'react'
+import { FC, ButtonHTMLAttributes, RefAttributes } from 'react'
 import { Span } from '../TypographyNew'
 
 type ButtonVariant = 'primary' | 'secondary' | 'secondary-outline'
@@ -7,9 +7,10 @@ type ButtonVariant = 'primary' | 'secondary' | 'secondary-outline'
 const DEFAULT_CLASSES =
   'relative overflow-hidden px-4 py-2 rounded-sm font-bold text-base transition-all duration-150 flex items-center justify-center disabled:cursor-not-allowed'
 
-interface Props extends ButtonHTMLAttributes<HTMLButtonElement> {
+interface Props extends RefAttributes<HTMLButtonElement>, ButtonHTMLAttributes<HTMLButtonElement> {
   variant?: ButtonVariant
   'data-testid'?: string
+  textClassName?: string
 }
 
 export const Button: FC<Props> = ({
@@ -19,6 +20,7 @@ export const Button: FC<Props> = ({
   onClick,
   className,
   'data-testid': dataTestId,
+  textClassName = '',
   ...props
 }) => {
   const styles = {
@@ -40,7 +42,13 @@ export const Button: FC<Props> = ({
       // All props must be forwarded to the underlying component to ensure that wrapping components (like Tooltip) function correctly.
       {...props}
     >
-      {typeof children === 'string' ? <Span bold>{children}</Span> : children}
+      {typeof children === 'string' ? (
+        <Span className={textClassName} bold>
+          {children}
+        </Span>
+      ) : (
+        children
+      )}
     </button>
   )
 }
