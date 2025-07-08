@@ -119,6 +119,8 @@ export const executeTxFlow = async ({
       } else {
         showToast(createToastConfig(error))
       }
+    } else {
+      onError?.(txHash, { name: 'Rejected TX', message: 'User rejected transaction' })
     }
   }
   onComplete?.(txHash)

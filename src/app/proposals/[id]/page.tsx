@@ -193,50 +193,6 @@ const PageWithProposal = (proposal: ParsedProposal) => {
   const actionName = calldatasParsed?.[0]?.type === 'decoded' ? calldatasParsed[0].functionName : undefined
   const { builderName } = splitCombinedName(name)
 
-  const cannotCastVoteReason = useMemo(() => {
-    if (!isProposalActive) {
-      return 'This proposal is not active'
-    }
-    if (vote) {
-      return 'You already voted on this proposal'
-    }
-    if (!doesUserHasEnoughThreshold) {
-      return (
-        <>
-          You don&apos;t have enough voting power to vote on the this proposal. Your voting power for this
-          proposal is determined at the time this proposal was submitted. If your voting power has changed
-          since then perhaps due to the amount of stRIF you have staked, then only proposals after this will
-          take this new voting power into consideration. More details can be found in the{' '}
-          <a
-            href="https://rootstockcollective.xyz/pdfs/whitepaper.pdf"
-            target="_blank"
-            className="hover:underline"
-            style={{ color: '#0065FF' }}
-          >
-            DAO whitepaper
-          </a>
-          .
-        </>
-      )
-    }
-    if (isVoting) {
-      return 'Your vote is being processed'
-    }
-    if (isWaitingVotingReceipt) {
-      return 'Your vote is being confirmed'
-    }
-    return ''
-  }, [isProposalActive, vote, doesUserHasEnoughThreshold, isVoting, isWaitingVotingReceipt])
-
-  useEffect(() => {
-    if (isVotingFailed) {
-      console.error(votingError)
-      const err = votingError as BaseError
-      setErrorVoting(err.shortMessage || err.toString())
-      setVote(undefined)
-    }
-  }, [isVotingConfirmed, isVotingFailed, votingError])
-
   const handleVoting = async (_vote: Vote) => {
     try {
       setErrorVoting('')
@@ -248,13 +204,11 @@ const PageWithProposal = (proposal: ParsedProposal) => {
         },
         action: 'voting',
         onSuccess: () => setVote(_vote),
+        onError: () => setVote(undefined),
       })
       setVotingTxHash(txHash)
-    } catch (err: any) {
-      if (!isUserRejectedTxError(err)) {
-        console.error(err)
-        setErrorVoting(err.shortMessage || err.toString())
-      }
+    } catch (err) {
+      console.log(err)
     }
   }
 
