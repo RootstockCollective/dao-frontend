@@ -14,7 +14,6 @@ interface BuilderRewardsProps extends BuilderRewardDetails {
 const REWARD_CARDS_CONFIG: Array<{
   type: RewardType
   button?: React.ReactNode
-  specialLayout?: boolean
 }> = [
   {
     type: 'unclaimed',
@@ -32,10 +31,6 @@ const REWARD_CARDS_CONFIG: Array<{
   },
   {
     type: 'allTimeRewards',
-  },
-  {
-    type: 'allTimeShare',
-    specialLayout: true,
   },
 ]
 
@@ -66,33 +61,36 @@ export const BuilderRewards: React.FC<BuilderRewardsProps> = ({
             className="flex flex-col items-start gap-2 self-stretch flex-1 min-w-0 pb-0.5 bg-[var(--color-v3-bg-accent-80)] rounded-lg"
           >
             <div className="flex-1 w-full">
-              {config.specialLayout ? (
-                <div className="flex flex-col items-center w-full">
-                  <RewardCard
-                    type={config.type}
-                    isMock={isMock}
-                    builder={builder}
-                    tokens={{ rif, rbtc }}
-                    gauge={gauge}
-                    gauges={rest.gauges}
-                    currency={rest.currency}
-                  />
-                </div>
-              ) : (
-                <RewardCard
-                  type={config.type}
-                  isMock={isMock}
-                  builder={builder}
-                  tokens={{ rif, rbtc }}
-                  gauge={gauge}
-                  gauges={rest.gauges}
-                  currency={rest.currency}
-                />
-              )}
+              <RewardCard
+                type={config.type}
+                isMock={isMock}
+                builder={builder}
+                tokens={{ rif, rbtc }}
+                gauge={gauge}
+                gauges={rest.gauges}
+                currency={rest.currency}
+              />
             </div>
             {config.button && <span>{config.button}</span>}
           </div>
         ))}
+
+        {/* All Time Share Column with Special Layout */}
+        <div className="flex flex-col items-start gap-2 self-stretch flex-1 min-w-0 pb-0.5 bg-[var(--color-v3-bg-accent-80)] rounded-lg">
+          <div className="flex-1 w-full">
+            <div className="flex flex-col items-center w-full">
+              <RewardCard
+                type="allTimeShare"
+                isMock={isMock}
+                builder={builder}
+                tokens={{ rif, rbtc }}
+                gauge={gauge}
+                gauges={rest.gauges}
+                currency={rest.currency}
+              />
+            </div>
+          </div>
+        </div>
       </div>
 
       {/* Need to adjust backers' rewards? */}
