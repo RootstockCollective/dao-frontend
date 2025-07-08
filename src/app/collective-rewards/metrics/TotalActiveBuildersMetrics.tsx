@@ -22,7 +22,6 @@ export const TotalActiveBuildersMetrics = () => {
       <>
         {withSpinner(TokenMetricsCardRow, { className: 'min-h-0 grow-0', size: 'small' })({
           amount: activatedBuilders.length.toString(),
-          symbol: 'BUILDERS',
           isLoading,
         })}
       </>

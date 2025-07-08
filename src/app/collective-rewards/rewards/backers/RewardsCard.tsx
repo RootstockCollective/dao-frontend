@@ -55,7 +55,6 @@ export const TokenRewardsMetrics: FC<TokenRewardsMetricsProps> = ({
   })({
     amount,
     fiatAmount,
-    symbol,
     isLoading,
   })
 }

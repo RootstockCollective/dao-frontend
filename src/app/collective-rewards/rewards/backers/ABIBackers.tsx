@@ -41,7 +41,6 @@ export const ABIBackers: FC<ABIProps> = ({ backer, ...metricsCardProps }) => {
                 for informational purposes only.
               </span>
             ),
-            side: 'bottom',
           }}
         />
         <MetricsCardContent>{`${abiPct.toFixed(0)}%`}</MetricsCardContent>

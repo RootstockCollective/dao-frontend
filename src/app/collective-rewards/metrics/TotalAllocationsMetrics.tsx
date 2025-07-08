@@ -44,7 +44,6 @@ export const TotalAllocationsMetrics: FC<TotalAllocationsProps> = ({
         {withSpinner(TokenMetricsCardRow, { className: 'min-h-0 grow-0', size: 'small' })({
           amount,
           fiatAmount,
-          symbol,
           isLoading,
         })}
       </>

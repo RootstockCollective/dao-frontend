@@ -38,7 +38,6 @@ const estimatedRewardsTooltipData: RewardsCardProps['titleDetails']['tooltip'] =
       </Typography>
     </>
   ),
-  side: 'bottom',
 }
 
 const estimatedRewardsTitleData: RewardsCardProps['titleDetails'] = {

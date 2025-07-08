@@ -57,7 +57,6 @@ export const AllTimeShare: FC<AllTimeShareProps> = ({ gauges, tokens: { rif } })
           data-testid="AllTimeShare"
           tooltip={{
             text: 'Your share of all Backers’ rewards',
-            side: 'bottom',
           }}
         />
         <MetricsCardContent>{amount}</MetricsCardContent>
