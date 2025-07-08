@@ -8,6 +8,7 @@ import { formatNumberWithCommas } from '@/lib/utils'
 import Big from 'big.js'
 import { Vote } from '@/shared/types'
 import { HourglassIcon } from '@/components/Icons/HourglassIcon'
+import { HourglassAnimatedIcon } from '@/components/Icons/HourglassAnimatedIcon'
 
 interface VoteCounterProps {
   title: string
@@ -29,7 +30,9 @@ export const VoteCounter = ({ title, value, color, disabled, isVotingInProgress 
         <Paragraph variant="body" className={`text-lg text-${!disabled ? color : 'text-primary'}`}>
           {formatNumberWithCommas(Big(formatEther(value)).round(0))}
         </Paragraph>
-        {isVotingInProgress && <HourglassIcon className="ml-0.5" size={16} color="var(--disabled-border)" />}
+        {isVotingInProgress && (
+          <HourglassAnimatedIcon className="ml-0.5" size={16} color="var(--disabled-border)" />
+        )}
       </div>
     </div>
   )

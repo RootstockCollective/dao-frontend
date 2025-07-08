@@ -1,6 +1,6 @@
-import { TimeIcon } from '@/components/Icons/TimeIcon'
+import { TimeIcon, TimeIconProps } from '@/components/Icons/TimeIcon'
 
-export function HourglassAnimatedIcon() {
+export function HourglassAnimatedIcon(props: TimeIconProps) {
   return (
     <TimeIcon
       animate={{ rotate: 360 }}
@@ -11,6 +11,7 @@ export function HourglassAnimatedIcon() {
         duration: 2,
         repeatDelay: 1,
       }}
+      {...props}
     />
   )
 }
