@@ -1,9 +1,5 @@
-import {
-  BuilderRewardDetails,
-  MetricsCard,
-  MetricsCardTitle,
-  TokenMetricsCardRow,
-} from '@/app/collective-rewards/rewards'
+import { BuilderRewardDetails } from '@/app/collective-rewards/rewards'
+import { MetricsCard, MetricsCardTitle, TokenMetricsCardRow } from './BuilderMetricsCard'
 import { useBuilderAllTimeRewards } from '../hooks/useBuilderAllTimeRewards'
 import { useBuilderAllTimeShare } from '../hooks/useBuilderAllTimeShare'
 import { useBuilderLastCycleRewards } from '../hooks/useBuilderLastCycleRewards'
