@@ -6,7 +6,7 @@ import { AnnualBackersIncentives } from './components/AnnualBackersIncentives'
 import { CallToActionSection } from './components/CallToActionSection'
 import { TotalRewardsDistributed } from './components/TotalRewardsDistributed'
 import { CycleContextProvider } from './metrics'
-import { CurrentCycleMetrics } from './components/CurrentCycleMetrics'
+import { CurrentCycle } from './components/CurrentCycle'
 
 const NAME = 'Collective Rewards'
 export const CollectiveRewardsPage = () => {
@@ -22,7 +22,7 @@ export const CollectiveRewardsPage = () => {
           <TotalRewardsDistributed className="basis-1/3" />
         </ActionMetricsContainer>
         <CycleContextProvider>
-          <CurrentCycleMetrics />
+          <CurrentCycle />
         </CycleContextProvider>
         <CallToActionSection />
       </div>
