@@ -6,6 +6,8 @@ import { Button } from '../ButtonNew'
 import { useImagePreloader } from '@/shared/hooks/useImagePreloader'
 
 interface HeroComponentProps {
+  imageBannerSrc: string
+  imageSquaresSrc: string
   title: string
   subtitle: string
   items: string[]
@@ -13,17 +15,16 @@ interface HeroComponentProps {
   buttonOnClick?: () => void
 }
 
-const HERO_BANNER_PATH = '/images/hero/hero-banner.svg'
-const BANNER_SQUARES_PATH = '/images/hero/banner-squares.svg'
-
 const HeroComponent: React.FC<HeroComponentProps> = ({
+  imageBannerSrc,
+  imageSquaresSrc,
   title,
   subtitle,
   items,
   buttonText,
   buttonOnClick,
 }) => {
-  const imagePaths = useMemo(() => [BANNER_SQUARES_PATH, HERO_BANNER_PATH], [])
+  const imagePaths = useMemo(() => [imageBannerSrc, imageSquaresSrc], [imageBannerSrc, imageSquaresSrc])
   const { isLoaded } = useImagePreloader(imagePaths)
 
   return (
@@ -32,14 +33,14 @@ const HeroComponent: React.FC<HeroComponentProps> = ({
         {isLoaded ? (
           <>
             <Image
-              src={BANNER_SQUARES_PATH}
+              src={imageSquaresSrc}
               alt="Squares Divider"
               width={40}
               height={30}
               className="absolute -right-[30px] top-[20px] z-10 hidden md:block"
             />
             <Image
-              src={HERO_BANNER_PATH}
+              src={imageBannerSrc}
               alt="Hero Banner"
               width={0}
               height={0}
