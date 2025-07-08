@@ -1,3 +1,4 @@
+import { Header } from '@/components/TypographyNew'
 import {
   UserTopLeftComponent,
   ProposalDetailTopLeftComponent,
@@ -30,5 +31,6 @@ export const routePatterns = [
   { pattern: /^\/communities/, component: null },
   { pattern: /^\/proposals\/\d+$/, component: <ProposalDetailTopLeftComponent /> },
   { pattern: /^\/proposals$/, component: <ProposalsTopLeftComponent /> },
+  { pattern: /^\/delegate$/, component: <Header>DELEGATION</Header> },
   // Add more patterns as needed
 ]
