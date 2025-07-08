@@ -22,8 +22,8 @@ export const BackingInfoTitle: FC<BackingInfoTitleProps> = ({
         <Span>Use your stRIF backing power to support the Builders you believe in.</Span>
       </Typography>
 
-      {hasAllocations && (
-        <Button variant="primary" className="shrink-0">
+      {isConnected && hasAllocations && (
+        <Button variant="primary" className="shrink-0 ml-auto">
           See all Builders
         </Button>
       )}

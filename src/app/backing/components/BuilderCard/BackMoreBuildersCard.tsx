@@ -43,6 +43,7 @@ export const BackMoreBuildersCard: FC<BackMoreBuildersCardProps> = ({
         </div>
         <div className="pb-[1.5rem]">
           <Paragraph>
+            {/* FIXME: Add the correct text here */}
             Backers back an average of 30 Builders, getting an average of 123 stRIF per cycle as rewards
           </Paragraph>
         </div>

@@ -1,6 +1,4 @@
-import { Metric } from '@/components/Metric/Metric'
 import { Typography } from '@/components/TypographyNew/Typography'
-import { TokenImage } from '@/components/TokenImage'
 import { Tooltip } from '@/components/Tooltip'
 import { stRIF } from '@/lib/constants'
 import KotoQuestionMarkIcon from '@/components/Icons/KotoQuestionMarkIcon'
@@ -13,17 +11,6 @@ interface AvailableBackingMetricProps {
   onStakeClick?: () => void
   onDistributeClick?: () => void
 }
-
-const AvailableBackingUSD = ({ availableBackingUSD }: { availableBackingUSD: string }) => (
-  <div className="flex items-start self-stretch">
-    <Typography
-      variant="tag-s"
-      className="text-v3-bg-accent-0 font-rootstock-sans text-sm font-medium leading-[145%] self-stretch"
-    >
-      {availableBackingUSD}
-    </Typography>
-  </div>
-)
 
 const StakeButton = ({ onStakeClick }: { onStakeClick?: () => void }) => (
   <>

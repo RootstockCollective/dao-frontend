@@ -1,5 +1,4 @@
 import { AllocationsContext } from '@/app/collective-rewards/allocations/context'
-import { BackerRewardPercentage } from '@/app/collective-rewards/rewards/types'
 import { Builder } from '@/app/collective-rewards/types'
 import { RIF } from '@/lib/constants'
 import { usePricesContext } from '@/shared/context/PricesContext'

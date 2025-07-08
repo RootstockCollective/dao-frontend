@@ -6,6 +6,8 @@ import AllocationBar from '../AllocationBar/AllocationBar'
 import { floorToUnit, getBuilderColor } from '../utils'
 import { isBuilderRewardable } from '@/app/collective-rewards/utils'
 
+const UNALLOCATED_KEY = 'unallocated'
+
 const BuilderAllocationBar = () => {
   const {
     initialState: { allocations: initialAllocations },
@@ -22,7 +24,7 @@ const BuilderAllocationBar = () => {
   const [orderedKeys, setOrderedKeys] = useState<string[]>([])
 
   useEffect(() => {
-    setOrderedKeys([...Object.keys(initialAllocations), 'unallocated'])
+    setOrderedKeys([...Object.keys(initialAllocations), UNALLOCATED_KEY])
   }, [resetVersion, initialAllocations])
 
   // Sync keys and add new keys to left of 'unallocated'
@@ -30,11 +32,11 @@ const BuilderAllocationBar = () => {
     const allocationKeys = Object.keys(allocations)
 
     if (orderedKeys.length === 0) {
-      setOrderedKeys([...allocationKeys, 'unallocated'])
+      setOrderedKeys([...allocationKeys, UNALLOCATED_KEY])
       return
     }
 
-    const unallocatedIndex = orderedKeys.indexOf('unallocated')
+    const unallocatedIndex = orderedKeys.indexOf(UNALLOCATED_KEY)
     const missingKeys = allocationKeys.filter(k => !orderedKeys.includes(k))
 
     if (missingKeys.length > 0) {
@@ -56,17 +58,18 @@ const BuilderAllocationBar = () => {
   const baseItems: AllocationItem[] = useMemo(() => {
     return orderedKeys
       .map(key => {
-        if (key === 'unallocated') {
+        if (key === UNALLOCATED_KEY) {
           return {
-            key: 'unallocated',
+            key: UNALLOCATED_KEY,
             label: 'available backing',
             value: Number(formatEther(unallocated)),
             displayColor: '#25211E',
           }
         }
+        const addressKey = key as Address
 
-        const allocation = allocations[key as Address]
-        const builder = getBuilder(key as Address)
+        const allocation = allocations[addressKey]
+        const builder = getBuilder(addressKey)
         const isRewardable = isBuilderRewardable(builder?.stateFlags)
 
         if (!isRewardable) {
@@ -79,8 +82,8 @@ const BuilderAllocationBar = () => {
           key,
           label: builder?.builderName || key,
           value,
-          displayColor: getBuilderColor(key as Address),
-          isTemporary: initialAllocations[key as Address] !== allocation,
+          displayColor: getBuilderColor(addressKey),
+          isTemporary: initialAllocations[addressKey] !== allocation,
         }
       })
       .filter(item => item !== null)
@@ -103,7 +106,7 @@ const BuilderAllocationBar = () => {
         // Update allocations except for 'unallocated'
         const changedItems = [itemsData[increasedIndex], itemsData[decreasedIndex]]
         changedItems.forEach(item => {
-          if (item.key !== 'unallocated') {
+          if (item.key !== UNALLOCATED_KEY) {
             updateAllocation(item.key as Address, parseEther(newValues[itemsData.indexOf(item)].toString()))
           }
         })

@@ -1,17 +1,15 @@
-import { useGetBackersRewardPercentage } from '@/app/collective-rewards/rewards/hooks/useGetBackersRewardPercentage'
-import { Builder, RequiredBuilder } from '@/app/collective-rewards/types'
-import { useGetBuildersByState } from '@/app/collective-rewards/user/hooks/useGetBuildersByState'
+import { AllocationsContext } from '@/app/collective-rewards/allocations/context'
+import { BuildersRewards } from '@/app/collective-rewards/rewards/builders/hooks/useGetBuildersRewards'
+import { Builder } from '@/app/collective-rewards/types'
 import { isBuilderRewardable, useHandleErrors } from '@/app/collective-rewards/utils'
+import { Button } from '@/components/ButtonNew'
 import { LoadingSpinner } from '@/components/LoadingSpinner'
 import { useRouter } from 'next/navigation'
 import { FC, useContext } from 'react'
-import { useShuffledArray } from '../../hooks/useShuffledArray'
-import { BuilderCardControl } from '../BuilderCard/BuilderCardControl'
-import { BuildersRewards } from '@/app/collective-rewards/rewards/builders/hooks/useGetBuildersRewards'
-import { Button } from '@/components/ButtonNew'
-import { BackMoreBuildersCard } from '../BuilderCard/BackMoreBuildersCard'
-import { AllocationsContext } from '@/app/collective-rewards/allocations/context'
 import { Address } from 'viem'
+import { useShuffledArray } from '../../hooks/useShuffledArray'
+import { BackMoreBuildersCard } from '../BuilderCard/BackMoreBuildersCard'
+import { BuilderCardControl } from '../BuilderCard/BuilderCardControl'
 
 const SPOTLIGHT_BUILDERS = 4
 
@@ -27,8 +25,11 @@ export const BuildersSpotlight: FC<BuildersSpotlightProps> = ({ rewardsData }) =
       isContextLoading,
       getBuilder,
       backer: { amountToAllocate: totalOnchainAllocation },
+      contextError,
     },
   } = useContext(AllocationsContext)
+
+  useHandleErrors({ error: contextError, title: 'Error loading builders spotlight' })
 
   const hasAllocations = totalOnchainAllocation > 0n
 
@@ -36,12 +37,7 @@ export const BuildersSpotlight: FC<BuildersSpotlightProps> = ({ rewardsData }) =
     isBuilderRewardable(stateFlags),
   )
 
-  const allocatedBuilders = Object.entries(allocations).map(([key, value]) => {
-    const builder = getBuilder(key as Address)!
-    return {
-      ...builder,
-    }
-  })
+  const allocatedBuilders = Object.keys(allocations).map(key => getBuilder(key as Address)!)
 
   const buildersToShow = hasAllocations ? allocatedBuilders : randomBuilders.slice(0, SPOTLIGHT_BUILDERS)
 

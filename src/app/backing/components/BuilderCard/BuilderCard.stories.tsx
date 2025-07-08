@@ -42,7 +42,7 @@ const defaultProps = {
     previous: percentageToWei('50'),
     next: percentageToWei('50'),
     cooldown: BigInt(Math.floor(Date.now() / 1000) + 3600), // 1 hour from now
-    active: percentageToWei('50'), // 1 hour from now
+    active: percentageToWei('50'),
   },
   existentAllocation: parseEther('1000'),
   maxAllocation: parseEther('10000'),
