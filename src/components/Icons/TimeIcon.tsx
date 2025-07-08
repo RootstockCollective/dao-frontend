@@ -1,11 +1,15 @@
 import { motion, SVGMotionProps } from 'motion/react'
 
-export function TimeIcon(props: SVGMotionProps<SVGSVGElement>) {
+export interface TimeIconProps extends SVGMotionProps<SVGSVGElement> {
+  size?: number
+}
+
+export function TimeIcon({ size = 24, ...props }: TimeIconProps) {
   return (
     <motion.svg
-      width="24"
-      height="24"
-      viewBox="0 0 24 24"
+      width={size}
+      height={size}
+      viewBox={'0 0 24 24'}
       fill="none"
       xmlns="http://www.w3.org/2000/svg"
       {...props}
