@@ -7,6 +7,21 @@ import { parseEther } from 'viem'
 import { formatSymbol } from '../../rewards/utils'
 import { useGetCycleRewards } from '../../shared/hooks/useGetCycleRewards'
 import { useHandleErrors } from '../../utils'
+import { TokenImage, TokenSymbol } from '@/components/TokenImage'
+import { Span } from '@/components/TypographyNew'
+
+export const TokenAmount = ({ amount, tokenSymbol, amountInFiat }: { amount: bigint; tokenSymbol: string; amountInFiat: bigint }) => {
+  return (
+    <div className="flex flex-col items-start">
+      <div className="flex items-center gap-2">
+        <div>{formatSymbol(amount, tokenSymbol)}</div>
+        <TokenImage symbol={tokenSymbol} size={16} />
+        <Span>{tokenSymbol}</Span>
+      </div>
+      <Span variant="body-s" bold className="text-bg-0 mt-1">{formatSymbol(amountInFiat, 'USD')}</Span>
+    </div>
+  )
+}
 
 export const EstimatedRewards = () => {
   let { data: cycleRewards, isLoading: cycleRewardsLoading, error: cycleRewardsError } = useGetCycleRewards()
@@ -25,21 +40,13 @@ export const EstimatedRewards = () => {
   const rifAmountInFiat = (rifAmount * rifPriceInWei) / WeiPerEther
   const rbtcAmountInFiat = (rbtcAmount * rbtcPriceInWei) / WeiPerEther
   return (
-    <Metric title="Estimated rewards">
+    <Metric title="Estimated Rewards" className="w-auto" containerClassName="gap-4">
       {/* TODO: review this part */}
       {cycleRewardsLoading && <LoadingSpinner />}
       {!cycleRewardsLoading && (
-        <div className="flex flex-col gap-2">
-          <TokenAmountDisplay
-            amount={formatSymbol(rifAmount, 'RIF')}
-            tokenSymbol={'RIF'}
-            amountInCurrency={formatSymbol(rifAmountInFiat, 'USD')}
-          />
-          <TokenAmountDisplay
-            amount={formatSymbol(rbtcAmount, 'RBTC')}
-            tokenSymbol={'RBTC'}
-            amountInCurrency={formatSymbol(rbtcAmountInFiat, 'USD')}
-          />
+        <div className="flex flex-col gap-4">
+          <TokenAmount amount={rifAmount} tokenSymbol={TokenSymbol.RIF} amountInFiat={rifAmountInFiat} />
+          <TokenAmount amount={rbtcAmount} tokenSymbol={TokenSymbol.RBTC} amountInFiat={rbtcAmountInFiat} />
         </div>
       )}
     </Metric>

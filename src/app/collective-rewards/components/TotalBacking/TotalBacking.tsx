@@ -1,10 +1,11 @@
+import { LoadingSpinner } from '@/components/LoadingSpinner'
 import { Metric } from '@/components/Metric'
-import { formatSymbol } from '../../rewards/utils'
-import { RIFToken } from '@/app/backing/components/RIFToken/RIFToken'
+import { TokenImage, TokenSymbol } from '@/components/TokenImage'
+import { Paragraph, Span } from '@/components/TypographyNew'
 import { useGetTotalAllocation } from '../../metrics/hooks/useGetTotalAllocation'
+import { formatSymbol } from '../../rewards/utils'
 import { useGetGaugesArray } from '../../user/hooks/useGetGaugesArray'
 import { useHandleErrors } from '../../utils'
-import { LoadingSpinner } from '@/components/LoadingSpinner'
 
 export const TotalBackingLoader = () => {
   const { data: allGauges } = useGetGaugesArray()
@@ -22,9 +23,12 @@ export const TotalBackingLoader = () => {
 
 export const TotalBackingContent = ({ totalAllocations }: { totalAllocations: bigint }) => {
   return (
-    <Metric title="Total backing">
-      {' '}
-      {formatSymbol(totalAllocations, 'StRIF')} <RIFToken />{' '}
+    <Metric title="Total Backing" className="w-auto" containerClassName="gap-4">
+      <div className="flex items-center gap-2 font-kk-topo text-lg font-normal tracking-tight">
+        <Paragraph className="font-bold">{formatSymbol(totalAllocations, 'StRIF')}</Paragraph>
+        <TokenImage symbol={TokenSymbol.STRIF} size={16} />
+        <Span>{TokenSymbol.STRIF}</Span>
+      </div>
     </Metric>
   )
 }

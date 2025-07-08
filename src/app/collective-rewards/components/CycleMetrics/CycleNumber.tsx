@@ -21,5 +21,9 @@ export const CycleNumber = ({
   const now = DateTime.now()
   const totalDuration = now.diff(firstCycleStartDate, 'days')
   const cycleNumber = Math.floor(totalDuration.as('days') / durationInDays) + 1
-  return <Metric title="Cycle"> {cycleNumber}</Metric>
+  return (
+    <Metric title="Cycle" className="w-auto" containerClassName="gap-4">
+      <div className="font-kk-topo text-lg font-normal tracking-tight">{cycleNumber}</div>
+    </Metric>
+  )
 }

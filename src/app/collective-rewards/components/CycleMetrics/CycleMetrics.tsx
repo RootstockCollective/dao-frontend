@@ -1,11 +1,8 @@
-import { LoadingSpinner } from '@/components/LoadingSpinner'
-import { Metric } from '@/components/Metric'
-import { DateTime, Duration } from 'luxon'
 import { useCycleContext } from '../../metrics/context'
 import { useHandleErrors } from '../../utils'
-import { CycleNumber } from './CycleNumber'
-import { CycleEndingOn } from './CycleEndingOn'
 import { CycleDay } from './CycleDay'
+import { CycleEndingOn } from './CycleEndingOn'
+import { CycleNumber } from './CycleNumber'
 
 const CycleMetricsLoader = () => {
   const {
