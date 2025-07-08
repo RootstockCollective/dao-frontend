@@ -160,7 +160,7 @@ const RewardCardContent: FC<Omit<RewardCardProps, 'isMock'>> = ({
             <LoadingSpinner size="small" />
           ) : (
             <Header
-              variant="e3"
+              variant="h2"
               className="overflow-hidden text-ellipsis whitespace-nowrap text-[var(--color-v3-text-100)]"
             >
               {amount}
@@ -225,7 +225,7 @@ export const RewardCard: FC<RewardCardProps> = ({
           />
           <div className="flex items-center gap-4">
             <Header
-              variant="e3"
+              variant="h2"
               className="overflow-hidden text-ellipsis whitespace-nowrap text-[var(--color-v3-text-100)]"
             >
               {config.mockData.share}
