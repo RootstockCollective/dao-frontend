@@ -65,7 +65,7 @@ export const useBuilderEstimatedRewards = ({
     if (rifRewards && rifRewards.error) {
       setRifRewardsError(rifRewards.error)
     }
-    if (rifRewards) {
+    if (rifRewards && rifRewards.isLoading) {
       setIsRifRewardsLoading(rifRewards.isLoading)
     }
   }, [rifRewards])
