@@ -1,10 +1,7 @@
-import { cn } from '@/lib/utils'
-import { Typography, TypographyProps } from '@/components/Typography/Typography'
+import { Header, HeaderProps } from '../TypographyNew'
 
-const DEFAULT_CLASSES = 'text-white text-[24px] font-normal uppercase'
-
-export const HeaderTitle = ({ className, children, ...props }: Omit<TypographyProps, 'tagVariant'>) => (
-  <Typography tagVariant="h1" className={cn(DEFAULT_CLASSES, className)} fontFamily="kk-topo" {...props}>
+export const HeaderTitle = ({ children, ...props }: HeaderProps) => (
+  <Header variant="h2" caps {...props}>
     {children}
-  </Typography>
+  </Header>
 )

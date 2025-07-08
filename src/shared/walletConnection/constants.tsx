@@ -1,9 +1,9 @@
-import { Header } from '@/components/TypographyNew'
 import {
   UserTopLeftComponent,
   ProposalDetailTopLeftComponent,
   ProposalsTopLeftComponent,
 } from './components/topPageHeader/pages'
+import { HeaderTitle } from '@/components/Typography/HeaderTitle'
 
 export const disclaimerModalText = {
   modalTitle: 'DISCLAIMER',
@@ -31,6 +31,6 @@ export const routePatterns = [
   { pattern: /^\/communities/, component: null },
   { pattern: /^\/proposals\/\d+$/, component: <ProposalDetailTopLeftComponent /> },
   { pattern: /^\/proposals$/, component: <ProposalsTopLeftComponent /> },
-  { pattern: /^\/delegate$/, component: <Header>DELEGATION</Header> },
+  { pattern: /^\/delegate$/, component: <HeaderTitle variant="h1">DELEGATION</HeaderTitle> },
   // Add more patterns as needed
 ]
