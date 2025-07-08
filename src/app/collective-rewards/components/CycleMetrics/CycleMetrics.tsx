@@ -1,5 +1,5 @@
-import { useCycleContext } from '../../metrics/context'
-import { useHandleErrors } from '../../utils'
+import { useCycleContext } from '@/app/collective-rewards/metrics/context'
+import { useHandleErrors } from '@/app/collective-rewards/utils'
 import { CycleDay } from './CycleDay'
 import { CycleEndingOn } from './CycleEndingOn'
 import { CycleNumber } from './CycleNumber'
@@ -13,7 +13,7 @@ const CycleMetricsLoader = () => {
 
   useHandleErrors({ error, title: 'Error loading cycle' })
 
-  // FIXME: this is a hack to get the duration in days or hours, but I don't think we need to do it
+  // TODO: this is a hack to get the duration in days or hours, but I don't think we need to do it
   const duration =
     cycleDuration.as('days') < 1 ? cycleDuration.shiftTo('hours') : cycleDuration.shiftTo('days')
   return (

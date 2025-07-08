@@ -2,10 +2,10 @@ import { LoadingSpinner } from '@/components/LoadingSpinner'
 import { Metric } from '@/components/Metric'
 import { TokenImage, TokenSymbol } from '@/components/TokenImage'
 import { Paragraph, Span } from '@/components/TypographyNew'
-import { useGetTotalAllocation } from '../../metrics/hooks/useGetTotalAllocation'
-import { formatSymbol } from '../../rewards/utils'
-import { useGetGaugesArray } from '../../user/hooks/useGetGaugesArray'
-import { useHandleErrors } from '../../utils'
+import { useGetTotalAllocation } from '@/app/collective-rewards/metrics/hooks/useGetTotalAllocation'
+import { formatSymbol } from '@/app/collective-rewards/rewards/utils'
+import { useGetGaugesArray } from '@/app/collective-rewards/user/hooks/useGetGaugesArray'
+import { useHandleErrors } from '@/app/collective-rewards/utils'
 
 export const TotalBackingLoader = () => {
   const { data: allGauges } = useGetGaugesArray()

@@ -1,14 +1,13 @@
 import { LoadingSpinner } from '@/components/LoadingSpinner'
 import { Metric } from '@/components/Metric'
-import { TokenAmountDisplay } from '@/components/TokenAmountDisplay'
+import { TokenImage, TokenSymbol } from '@/components/TokenImage'
+import { Span } from '@/components/TypographyNew'
 import { WeiPerEther } from '@/lib/constants'
 import { usePricesContext } from '@/shared/context/PricesContext'
 import { parseEther } from 'viem'
-import { formatSymbol } from '../../rewards/utils'
-import { useGetCycleRewards } from '../../shared/hooks/useGetCycleRewards'
-import { useHandleErrors } from '../../utils'
-import { TokenImage, TokenSymbol } from '@/components/TokenImage'
-import { Span } from '@/components/TypographyNew'
+import { formatSymbol } from '@/app/collective-rewards/rewards/utils'
+import { useGetCycleRewards } from '@/app/collective-rewards/shared/hooks/useGetCycleRewards'
+import { useHandleErrors } from '@/app/collective-rewards/utils'
 
 export const TokenAmount = ({ amount, tokenSymbol, amountInFiat }: { amount: bigint; tokenSymbol: string; amountInFiat: bigint }) => {
   return (
@@ -41,9 +40,9 @@ export const EstimatedRewards = () => {
   const rbtcAmountInFiat = (rbtcAmount * rbtcPriceInWei) / WeiPerEther
   return (
     <Metric title="Estimated Rewards" className="w-auto" containerClassName="gap-4">
-      {/* TODO: review this part */}
-      {cycleRewardsLoading && <LoadingSpinner />}
-      {!cycleRewardsLoading && (
+      {cycleRewardsLoading ? (
+        <LoadingSpinner />
+      ) : (
         <div className="flex flex-col gap-4">
           <TokenAmount amount={rifAmount} tokenSymbol={TokenSymbol.RIF} amountInFiat={rifAmountInFiat} />
           <TokenAmount amount={rbtcAmount} tokenSymbol={TokenSymbol.RBTC} amountInFiat={rbtcAmountInFiat} />
