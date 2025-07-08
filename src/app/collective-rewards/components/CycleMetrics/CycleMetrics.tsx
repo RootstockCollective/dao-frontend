@@ -4,7 +4,7 @@ import { CycleDay } from './CycleDay'
 import { CycleEndingOn } from './CycleEndingOn'
 import { CycleNumber } from './CycleNumber'
 
-const CycleMetricsLoader = () => {
+export const CycleMetrics = () => {
   const {
     data: { cycleDuration, cycleNext, cycleStart },
     isLoading,
@@ -24,5 +24,3 @@ const CycleMetricsLoader = () => {
     </>
   )
 }
-
-export const CycleMetrics = CycleMetricsLoader

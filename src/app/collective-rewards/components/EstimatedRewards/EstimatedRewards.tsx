@@ -1,13 +1,12 @@
+import { formatSymbol, getFiatAmount } from '@/app/collective-rewards/rewards/utils'
+import { useGetCycleRewards } from '@/app/collective-rewards/shared/hooks/useGetCycleRewards'
+import { useHandleErrors } from '@/app/collective-rewards/utils'
 import { LoadingSpinner } from '@/components/LoadingSpinner'
 import { Metric } from '@/components/Metric'
 import { TokenImage, TokenSymbol } from '@/components/TokenImage'
 import { Span } from '@/components/TypographyNew'
-import { WeiPerEther } from '@/lib/constants'
+import { formatCurrency } from '@/lib/utils/utils'
 import { usePricesContext } from '@/shared/context/PricesContext'
-import { parseEther } from 'viem'
-import { formatSymbol } from '@/app/collective-rewards/rewards/utils'
-import { useGetCycleRewards } from '@/app/collective-rewards/shared/hooks/useGetCycleRewards'
-import { useHandleErrors } from '@/app/collective-rewards/utils'
 
 export const TokenAmount = ({
   amount,
@@ -16,7 +15,7 @@ export const TokenAmount = ({
 }: {
   amount: bigint
   tokenSymbol: string
-  amountInFiat: bigint
+  amountInFiat: string
 }) => {
   return (
     <div className="flex flex-col items-start">
@@ -26,7 +25,7 @@ export const TokenAmount = ({
         <Span>{tokenSymbol}</Span>
       </div>
       <Span variant="body-s" bold className="text-bg-0 mt-1">
-        {formatSymbol(amountInFiat, 'USD')}
+        {amountInFiat}
       </Span>
     </div>
   )
@@ -41,13 +40,16 @@ export const EstimatedRewards = () => {
   const rifPrice = prices.RIF?.price ?? 0
   const rbtcPrice = prices.RBTC?.price ?? 0
 
-  const rifPriceInWei = parseEther(rifPrice.toString())
-  const rbtcPriceInWei = parseEther(rbtcPrice.toString())
-
   const rifAmount = cycleRewards?.rifRewards ?? 0n
   const rbtcAmount = cycleRewards?.rbtcRewards ?? 0n
-  const rifAmountInFiat = (rifAmount * rifPriceInWei) / WeiPerEther
-  const rbtcAmountInFiat = (rbtcAmount * rbtcPriceInWei) / WeiPerEther
+  const rifAmountInFiat = formatCurrency(getFiatAmount(rifAmount, rifPrice), {
+    currency: 'USD',
+    showCurrency: true,
+  })
+  const rbtcAmountInFiat = formatCurrency(getFiatAmount(rbtcAmount, rbtcPrice), {
+    currency: 'USD',
+    showCurrency: true,
+  })
   return (
     <Metric title="Estimated Rewards" className="w-auto" containerClassName="gap-4">
       {cycleRewardsLoading ? (
