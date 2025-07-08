@@ -1,22 +1,18 @@
 import { LoadingSpinner } from '@/components/LoadingSpinner'
+import { withSpinner } from '@/components/LoadingSpinner/withLoadingSpinner'
 import { Metric } from '@/components/Metric'
 import { DateTime, Duration } from 'luxon'
 
 // retrieved from the first release of the dapp
 const FIRST_CYCLE_START_DATE_ISO = '2024-10-30T00:00:00Z'
 
-export const CycleNumber = ({
+export const CycleNumberContent = ({
   duration,
   firstCycleStartDate = DateTime.fromISO(FIRST_CYCLE_START_DATE_ISO),
-  isLoading,
 }: {
   duration: Duration
   firstCycleStartDate?: DateTime
-  isLoading: boolean
 }) => {
-  if (isLoading) {
-    return <LoadingSpinner />
-  }
   const durationInDays = duration.as('days')
   const now = DateTime.now()
   const totalDuration = now.diff(firstCycleStartDate, 'days')
@@ -27,3 +23,5 @@ export const CycleNumber = ({
     </Metric>
   )
 }
+
+export const CycleNumber = withSpinner(CycleNumberContent)

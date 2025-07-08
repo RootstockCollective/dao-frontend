@@ -1,11 +1,11 @@
-import { LoadingSpinner } from '@/components/LoadingSpinner'
-import { Metric } from '@/components/Metric'
-import { TokenImage, TokenSymbol } from '@/components/TokenImage'
-import { Paragraph, Span } from '@/components/TypographyNew'
 import { useGetTotalAllocation } from '@/app/collective-rewards/metrics/hooks/useGetTotalAllocation'
 import { formatSymbol } from '@/app/collective-rewards/rewards/utils'
 import { useGetGaugesArray } from '@/app/collective-rewards/user/hooks/useGetGaugesArray'
 import { useHandleErrors } from '@/app/collective-rewards/utils'
+import { withSpinner } from '@/components/LoadingSpinner/withLoadingSpinner'
+import { Metric } from '@/components/Metric'
+import { TokenImage, TokenSymbol } from '@/components/TokenImage'
+import { Paragraph, Span } from '@/components/TypographyNew'
 
 export const TotalBackingLoader = () => {
   const { data: allGauges } = useGetGaugesArray()
@@ -14,11 +14,7 @@ export const TotalBackingLoader = () => {
 
   useHandleErrors({ error, title: 'Error loading total allocations' })
 
-  if (isLoading) {
-    return <LoadingSpinner />
-  }
-
-  return <TotalBackingContent totalAllocations={totalAllocations} />
+  return <TotalBackingContentWithSpinner isLoading={isLoading} totalAllocations={totalAllocations} />
 }
 
 export const TotalBackingContent = ({ totalAllocations }: { totalAllocations: bigint }) => {
@@ -32,5 +28,7 @@ export const TotalBackingContent = ({ totalAllocations }: { totalAllocations: bi
     </Metric>
   )
 }
+
+export const TotalBackingContentWithSpinner = withSpinner(TotalBackingContent)
 
 export const TotalBacking = TotalBackingLoader
