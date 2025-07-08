@@ -2,7 +2,6 @@ import React from 'react'
 import { BuilderRewardDetails } from '@/app/collective-rewards/rewards'
 import { RewardCard, type RewardType } from './components/RewardCard'
 import { ClaimRewardsButton } from './buttons/ClaimRewardsButton'
-import { SeeRewardsHistoryButton } from './buttons/SeeRewardsHistoryButton'
 import { AdjustBackersRewardsButton } from './buttons/AdjustBackersRewardButton'
 import { Header } from '@/components/TypographyNew'
 
@@ -33,11 +32,6 @@ const REWARD_CARDS_CONFIG: Array<{
   },
   {
     type: 'allTimeRewards',
-    button: (
-      <SeeRewardsHistoryButton
-        onClick={() => alert('See Rewards history (placeholder - to be implemented in separate task)')}
-      />
-    ),
   },
   {
     type: 'allTimeShare',
