@@ -21,8 +21,9 @@ export const HeroComponent: FC<HeroComponentProps> = ({
   items,
   button,
 }) => {
-  const imagePaths = useMemo(() => [imageBannerSrc, imageSquaresSrc], [imageBannerSrc, imageSquaresSrc])
-  const { isLoaded } = useImagePreloader(imagePaths)
+  // Memoize image sources is needed to prevent unnecessary re-renders
+  const imageSources = useMemo(() => [imageBannerSrc, imageSquaresSrc], [imageBannerSrc, imageSquaresSrc])
+  const { isLoaded } = useImagePreloader(imageSources)
 
   return (
     <div className="flex flex-col md:flex-row bg-text-80 rounded-sm p-4 md:gap-8 gap-4">
