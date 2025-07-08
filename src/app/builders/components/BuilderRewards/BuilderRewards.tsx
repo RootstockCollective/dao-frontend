@@ -14,13 +14,11 @@ interface BuilderRewardsProps extends BuilderRewardDetails {
 // Configuration for each reward card with its specific props
 const REWARD_CARDS_CONFIG: Array<{
   type: RewardType
-  showButton?: boolean
   button?: React.ReactNode
   specialLayout?: boolean
 }> = [
   {
     type: 'unclaimed',
-    showButton: true,
     button: (
       <ClaimRewardsButton
         onClick={() => alert('Claim Rewards (placeholder - to be implemented in separate task)')}
@@ -35,7 +33,6 @@ const REWARD_CARDS_CONFIG: Array<{
   },
   {
     type: 'allTimeRewards',
-    showButton: true,
     button: (
       <SeeRewardsHistoryButton
         onClick={() => alert('See Rewards history (placeholder - to be implemented in separate task)')}
@@ -99,7 +96,7 @@ export const BuilderRewards: React.FC<BuilderRewardsProps> = ({
                 />
               )}
             </div>
-            {config.showButton && <span>{config.button}</span>}
+            {config.button && <span>{config.button}</span>}
           </div>
         ))}
       </div>
