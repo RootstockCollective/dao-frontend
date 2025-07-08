@@ -1,8 +1,7 @@
 'use client'
 import Image from 'next/image'
-import React, { FC, useMemo } from 'react'
+import React, { FC, ReactNode, useMemo } from 'react'
 import { Header, Paragraph } from '../TypographyNew'
-import { Button } from '../ButtonNew'
 import { useImagePreloader } from '@/shared/hooks/useImagePreloader'
 
 interface HeroComponentProps {
@@ -11,8 +10,7 @@ interface HeroComponentProps {
   title: string
   subtitle: string
   items: string[]
-  buttonText?: string
-  buttonOnClick?: () => void
+  button?: ReactNode
 }
 
 export const HeroComponent: FC<HeroComponentProps> = ({
@@ -21,8 +19,7 @@ export const HeroComponent: FC<HeroComponentProps> = ({
   title,
   subtitle,
   items,
-  buttonText,
-  buttonOnClick,
+  button,
 }) => {
   const imagePaths = useMemo(() => [imageBannerSrc, imageSquaresSrc], [imageBannerSrc, imageSquaresSrc])
   const { isLoaded } = useImagePreloader(imagePaths)
@@ -69,13 +66,7 @@ export const HeroComponent: FC<HeroComponentProps> = ({
           ))}
         </ul>
 
-        {buttonText && (
-          <div className="flex justify-start mt-2">
-            <Button variant="primary" onClick={buttonOnClick}>
-              {buttonText}
-            </Button>
-          </div>
-        )}
+        {button && <div className="flex justify-start mt-2">{button}</div>}
       </div>
     </div>
   )

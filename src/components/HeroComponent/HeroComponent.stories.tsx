@@ -1,5 +1,6 @@
 import type { Meta, StoryObj } from '@storybook/react'
 import { HeroComponent } from './HeroComponent'
+import { Button } from '../ButtonNew'
 
 const meta: Meta<typeof HeroComponent> = {
   title: 'Components/HeroComponent',
@@ -28,8 +29,7 @@ export const Proposal: Story = {
       'If your proposal passes quorum, it will be approved',
       'Complete your KYC to ensure eligibility (apply for Grants)',
     ],
-    buttonText: 'Create a proposal',
-    buttonOnClick: () => console.log('Button clicked'),
+    button: <Button>Create a proposal</Button>,
   },
 }
 
