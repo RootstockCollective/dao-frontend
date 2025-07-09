@@ -7,7 +7,6 @@ on:
   push:
     branches:
       - main
-      - DEVOPS-2263/runtime-secrets
 
 # Declare default permissions as read only.
 permissions: read-all
