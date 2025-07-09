@@ -1,11 +1,11 @@
 import { type HTMLAttributes } from 'react'
 import { cn } from '@/lib/utils'
 import Image from 'next/image'
-import { NewProposalCardExtendedData } from './newProposalCards.data'
+import { NewProposalCardExtendedData } from '../newProposalCards.data'
 import { CardParagraph } from './CardParagraph'
 import Link from 'next/link'
-import { DotsOverlayHoriz } from './images/DotsOverlayHoriz'
-import { DotsOverlayVert } from './images/DotsOverlayVert'
+import { DotsOverlayHoriz } from '../images/DotsOverlayHoriz'
+import { DotsOverlayVert } from '../images/DotsOverlayVert'
 import { CardButton } from './CardButton'
 
 interface Props extends HTMLAttributes<HTMLDivElement> {
