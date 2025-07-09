@@ -1,6 +1,6 @@
 import { HeaderTitle, Typography } from '@/components/Typography'
 import { MetricsCard } from '@/components/MetricsCard'
-import { useStRifHoldings } from './hooks/useStRifHoldings'
+import { useStRifHoldings } from '../hooks/useStRifHoldings'
 import { formatNumberWithCommas } from '@/lib/utils'
 import { Popover } from '@/components/Popover'
 import { QuestionIcon } from '@/components/Icons'

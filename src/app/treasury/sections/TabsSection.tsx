@@ -4,7 +4,7 @@ import { MetricsCard } from '@/components/MetricsCard'
 import { Typography } from '@/components/Typography'
 import { formatCurrency, formatNumberWithCommas } from '@/lib/utils'
 import Big from '@/lib/big'
-import { useTabCards } from './hooks/useTabCards'
+import { useTabCards } from '../hooks/useTabCards'
 
 /**
  * Displays a tabbed section with metrics for different treasury categories: Grant, Growth, General.
