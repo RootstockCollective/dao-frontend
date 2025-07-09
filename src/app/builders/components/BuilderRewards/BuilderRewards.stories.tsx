@@ -1,5 +1,5 @@
 import type { Meta, StoryObj } from '@storybook/react'
-import { BuilderRewardsMock } from './BuilderRewardsMock'
+import { BuilderRewardsMock } from './Mocks/BuilderRewardsMock'
 import { Address } from 'viem'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { AlertProvider } from '@/app/providers/AlertProvider'

@@ -1,6 +1,7 @@
 import React from 'react'
 import { BuilderRewardDetails } from '@/app/collective-rewards/rewards'
-import { RewardCard, type RewardType } from './components/RewardCard'
+import { RewardCard } from './components/RewardCard'
+import { type RewardType } from './components/RewardCardRenderer'
 import { ClaimRewardsButton } from './buttons/ClaimRewardsButton'
 import { AdjustBackersRewardsButton } from './buttons/AdjustBackersRewardButton'
 import { Header } from '@/components/TypographyNew'

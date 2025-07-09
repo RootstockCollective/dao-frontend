@@ -1,8 +1,9 @@
 import React from 'react'
 import { BuilderRewardDetails } from '@/app/collective-rewards/rewards'
-import { RewardCardMock, type RewardType } from './components/RewardCardMock'
-import { ClaimRewardsButton } from './buttons/ClaimRewardsButton'
-import { AdjustBackersRewardsButton } from './buttons/AdjustBackersRewardButton'
+import { RewardCardMock } from './RewardCardMock'
+import { type RewardType } from '../components/RewardCardRenderer'
+import { ClaimRewardsButton } from '../buttons/ClaimRewardsButton'
+import { AdjustBackersRewardsButton } from '../buttons/AdjustBackersRewardButton'
 import { Header } from '@/components/TypographyNew'
 
 interface BuilderRewardsMockProps extends BuilderRewardDetails {

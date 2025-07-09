@@ -1,11 +1,9 @@
 import { BuilderRewardDetails } from '@/app/collective-rewards/rewards'
-import { RewardCardRenderer, type RewardType } from './RewardCardRenderer'
-import { useRewardCardRealData } from './rewardCardDataSources'
+import { RewardCardRenderer, type RewardType } from '../components/RewardCardRenderer'
+import { getRewardCardMockData } from '../components/rewardCardDataSources'
 import { FC } from 'react'
 
-export type { RewardType }
-
-interface RewardCardProps {
+interface RewardCardMockProps {
   type: RewardType
   tokens: BuilderRewardDetails['tokens']
   builder?: BuilderRewardDetails['builder']
@@ -14,8 +12,15 @@ interface RewardCardProps {
   currency?: string
 }
 
-export const RewardCard: FC<RewardCardProps> = ({ type, tokens, builder, gauge, gauges, currency }) => {
-  const rewardData = useRewardCardRealData(type, tokens, builder, gauge, gauges, currency)
+export const RewardCardMock: FC<RewardCardMockProps> = ({
+  type,
+  tokens,
+  builder,
+  gauge,
+  gauges,
+  currency,
+}) => {
+  const rewardData = getRewardCardMockData(type)
 
   return <RewardCardRenderer type={type} tokens={tokens} rewardData={rewardData} />
 }
