@@ -26,46 +26,41 @@ interface UnclaimedRewardsData {
   rbtc: TokenRewardData
 }
 
+const useFormattedBuilderRewards = (gauge: Address, token: Token, currency = 'USD') => {
+  const { prices } = usePricesContext()
+  const {
+    data: rewards,
+    isLoading: isLoading,
+    error: error,
+  } = useReadGauge({ address: gauge, functionName: 'builderRewards', args: [token.address] })
+
+  const price = prices[token.symbol]?.price ?? 0
+  const formatted = formatMetrics(rewards ?? 0n, price, token.symbol, currency)
+
+  return {
+    amount: formatted.amount,
+    fiatAmount: formatted.fiatAmount,
+    isLoading: isLoading,
+    error: error,
+  }
+}
+
 export const useBuilderUnclaimedRewards = ({
   gauge,
   tokens: { rif, rbtc },
   currency = 'USD',
 }: UseBuilderUnclaimedRewardsProps): UnclaimedRewardsData => {
-  const { prices } = usePricesContext()
+  const { error: rifError, ...rifRest } = useFormattedBuilderRewards(gauge, rif, currency)
+  const { error: rbtcError, ...rbtcRest } = useFormattedBuilderRewards(gauge, rbtc, currency)
 
-  // RIF rewards
-  const {
-    data: rifRewards,
-    isLoading: rifLoading,
-    error: rifError,
-  } = useReadGauge({ address: gauge, functionName: 'builderRewards', args: [rif.address] })
-
-  // rBTC rewards
-  const {
-    data: rbtcRewards,
-    isLoading: rbtcLoading,
-    error: rbtcError,
-  } = useReadGauge({ address: gauge, functionName: 'builderRewards', args: [rbtc.address] })
-
-  useHandleErrors({ error: rifError, title: 'Error loading RIF rewards' })
-  useHandleErrors({ error: rbtcError, title: 'Error loading rBTC rewards' })
-
-  const rifPrice = prices[rif.symbol]?.price ?? 0
-  const rbtcPrice = prices[rbtc.symbol]?.price ?? 0
-
-  const rifFormatted = formatMetrics(rifRewards ?? 0n, rifPrice, rif.symbol, currency)
-  const rbtcFormatted = formatMetrics(rbtcRewards ?? 0n, rbtcPrice, rbtc.symbol, currency)
+  useHandleErrors({ error: rifError || rbtcError, title: 'Error loading rewards' })
 
   return {
     rif: {
-      amount: rifFormatted.amount,
-      fiatAmount: rifFormatted.fiatAmount,
-      isLoading: rifLoading,
+      ...rifRest,
     },
     rbtc: {
-      amount: rbtcFormatted.amount,
-      fiatAmount: rbtcFormatted.fiatAmount,
-      isLoading: rbtcLoading,
+      ...rbtcRest,
     },
   }
 }
