@@ -143,7 +143,7 @@ export const NumberInputWithError: Story = {
   },
 }
 
-export const MultipleFields: Story = {
+export const MultipleDisabledFields: Story = {
   render: () => {
     const [name, setName] = useState('')
     const [link, setLink] = useState('')
@@ -155,14 +155,23 @@ export const MultipleFields: Story = {
           label="Address to transfer funds to"
           value={name}
           onChange={e => setName(e.target.value)}
+          disabled
         />
 
-        <TextInput label="Discourse link" value={link} onChange={e => setLink(e.target.value)} />
+        <TextInput
+          label="Discourse link"
+          value={link}
+          onChange={e => setLink(e.target.value)}
+          errorMsg="The link should be a real URL"
+          disabled
+        />
 
         <TextArea
           label="Proposal description"
           value={description}
           onChange={e => setDescription(e.target.value)}
+          data-testid=""
+          disabled
         />
       </div>
     )

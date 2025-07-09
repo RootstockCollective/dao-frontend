@@ -1,3 +1,4 @@
+import { useId, useState } from 'react'
 import { ErrorMessage } from './ErrorMessage'
 import { FloatingLabel } from './FloatingLabel'
 import { cn } from '@/lib/utils'
@@ -9,10 +10,14 @@ interface Props extends NumericFormatProps {
 }
 
 export function NumberInput({ label, className, value = '', errorMsg, ...props }: Props) {
+  const [isFocused, setIsFocused] = useState(false)
+  const ownId = useId()
+  const id = props.id ?? ownId
   return (
     <ErrorMessage errorMsg={errorMsg}>
-      <FloatingLabel hasValue={!!value} label={label}>
+      <FloatingLabel htmlFor={id} isFloating={isFocused || !!value} label={label}>
         <NumericFormat
+          id={id}
           value={value}
           thousandSeparator=","
           allowLeadingZeros={false}
@@ -22,6 +27,14 @@ export function NumberInput({ label, className, value = '', errorMsg, ...props }
             'w-full h-16 px-4 pt-4 bg-bg-60 rounded-sm text-text-100 focus:outline-none font-rootstock-sans flex justify-end items-end',
             className,
           )}
+          onFocus={e => {
+            setIsFocused(true)
+            props.onFocus?.(e)
+          }}
+          onBlur={e => {
+            setIsFocused(false)
+            props.onBlur?.(e)
+          }}
           {...props}
         />
       </FloatingLabel>

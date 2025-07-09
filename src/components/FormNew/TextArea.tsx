@@ -1,5 +1,5 @@
 import { cn } from '@/lib/utils'
-import { type TextareaHTMLAttributes, useCallback, useEffect, useRef } from 'react'
+import { type TextareaHTMLAttributes, useCallback, useEffect, useId, useRef, useState } from 'react'
 import { FloatingLabel } from './FloatingLabel'
 import { ErrorMessage } from './ErrorMessage'
 
@@ -20,6 +20,9 @@ export function TextArea({
   onInput,
   ...props
 }: TextAreaProps) {
+  const [isFocused, setIsFocused] = useState(false)
+  const ownId = useId()
+  const id = props.id ?? ownId
   const textareaRef = useRef<HTMLTextAreaElement>(null)
 
   const adjustHeight = useCallback(() => {
@@ -37,7 +40,7 @@ export function TextArea({
     adjustHeight()
     window.addEventListener('resize', adjustHeight)
     return () => window.removeEventListener('resize', adjustHeight)
-  }, [adjustHeight])
+  }, [adjustHeight, value])
 
   const handleInput = (e: React.FormEvent<HTMLTextAreaElement>) => {
     adjustHeight()
@@ -46,14 +49,23 @@ export function TextArea({
 
   return (
     <ErrorMessage errorMsg={errorMsg}>
-      <FloatingLabel hasValue={!!value} label={label}>
+      <FloatingLabel htmlFor={id} isFloating={isFocused || !!value} label={label}>
         <div className="w-full px-4 pt-8 pb-2 bg-bg-60 rounded-sm ">
           <textarea
+            id={id}
             ref={textareaRef}
             rows={minRows}
             value={value}
             className={cn('w-full text-text-100 resize-none focus:outline-none', className)}
             onInput={handleInput}
+            onFocus={e => {
+              setIsFocused(true)
+              props.onFocus?.(e)
+            }}
+            onBlur={e => {
+              setIsFocused(false)
+              props.onBlur?.(e)
+            }}
             {...props}
           />
         </div>
