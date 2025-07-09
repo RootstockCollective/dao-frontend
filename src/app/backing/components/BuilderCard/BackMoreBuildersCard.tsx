@@ -2,6 +2,7 @@ import { Button } from '@/components/ButtonNew'
 import { BuildingBrick, CloseIconKoto } from '@/components/Icons'
 import { Paragraph } from '@/components/TypographyNew'
 import { cn } from '@/lib/utils'
+import { useRouter } from 'next/router'
 import { FC, useState } from 'react'
 
 export interface BackMoreBuildersCardProps {
@@ -16,6 +17,8 @@ export const BackMoreBuildersCard: FC<BackMoreBuildersCardProps> = ({
   className,
 }) => {
   const [isVisible, setIsVisible] = useState(true)
+
+  const router = useRouter()
 
   if (!isVisible) {
     return null
@@ -47,7 +50,9 @@ export const BackMoreBuildersCard: FC<BackMoreBuildersCardProps> = ({
             Backers back an average of 30 Builders, getting an average of 123 stRIF per cycle as rewards
           </Paragraph>
         </div>
-        <Button variant="secondary-outline">Back more Builders</Button>
+        <Button onClick={() => router.push('/builders')} variant="secondary-outline">
+          Back more Builders
+        </Button>
       </div>
     </div>
   )

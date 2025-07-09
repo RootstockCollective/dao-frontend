@@ -20,7 +20,7 @@ import { useGetBuildersRewards } from '@/app/collective-rewards/rewards/builders
 import { getTokens } from '@/lib/tokens'
 import { useHandleErrors } from '@/app/collective-rewards/utils'
 import { BuilderAllocationBar } from './components/BuilderAllocationBar'
-import { Header } from '@/components/TypographyNew'
+import { Header, Span } from '@/components/TypographyNew'
 import { formatSymbol, getFiatAmount } from '@/app/collective-rewards/rewards'
 import { formatCurrency } from '@/lib/utils'
 import { AnnualBackingIncentives } from './components/Metrics/AnnualBackingIncentives'
@@ -76,7 +76,12 @@ export const BackingPage = () => {
   return (
     <div data-testid={NAME} className="flex flex-col items-start w-full h-full pt-[0.13rem] gap-2 rounded-sm">
       <Header caps variant="h1" className="text-3xl leading-10 pb-[2.5rem]">
-        {NAME}
+        {NAME}{' '}
+        {allocationsCount > 0 && (
+          <Span variant="tag" className="text-v3-bg-accent-0 text-lg font-normal normal-case">
+            {allocationsCount} Builders
+          </Span>
+        )}
       </Header>
       {!hasAllocations && (
         <div data-testid="CenterContainer" className="flex w-full items-stretch gap-2">
