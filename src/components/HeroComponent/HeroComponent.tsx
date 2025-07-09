@@ -3,6 +3,7 @@ import Image from 'next/image'
 import React, { FC, ReactNode, useMemo } from 'react'
 import { Header, Paragraph } from '../TypographyNew'
 import { useImagePreloader } from '@/shared/hooks/useImagePreloader'
+import { cn } from '@/lib/utils'
 
 interface HeroComponentProps {
   imageBannerSrc: string
@@ -11,6 +12,7 @@ interface HeroComponentProps {
   subtitle: string
   items: string[]
   button?: ReactNode
+  className?: string
 }
 
 export const HeroComponent: FC<HeroComponentProps> = ({
@@ -20,13 +22,14 @@ export const HeroComponent: FC<HeroComponentProps> = ({
   subtitle,
   items,
   button,
+  className,
 }) => {
   // Memoize image sources is needed to prevent unnecessary re-renders
   const imageSources = useMemo(() => [imageBannerSrc, imageSquaresSrc], [imageBannerSrc, imageSquaresSrc])
   const { isLoaded } = useImagePreloader(imageSources)
 
   return (
-    <div className="flex flex-col md:flex-row bg-text-80 rounded-sm p-4 md:gap-8 gap-4">
+    <div className={cn('flex flex-col md:flex-row bg-text-80 rounded-sm p-4 md:gap-8 gap-4', className)}>
       <div className="relative w-full md:w-1/2 ">
         {isLoaded ? (
           <>
