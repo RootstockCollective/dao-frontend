@@ -2,7 +2,7 @@ import { AllocationsContext } from '@/app/collective-rewards/allocations/context
 import { Builder } from '@/app/collective-rewards/types'
 import { RIF } from '@/lib/constants'
 import { usePricesContext } from '@/shared/context/PricesContext'
-import { FC, useContext } from 'react'
+import { FC, useContext, useEffect, useState } from 'react'
 import { parseEther } from 'viem'
 import { useAccount } from 'wagmi'
 import { BuilderCard } from './BuilderCard'
@@ -33,13 +33,37 @@ export const BuilderCardControl: FC<BuilderCardControlProps> = ({
     },
     initialState: { allocations: initialAllocations },
   } = useContext(AllocationsContext)
+  const [isPendingSaveAllocations, setIsPendingSaveAllocations] = useState(false)
 
-  const { saveAllocations, canSaveAllocation } = useAllocateVotes()
+  const {
+    saveAllocations,
+    canSaveAllocation,
+    isSuccess: isSuccessSaveAllocations,
+    isPendingTx,
+  } = useAllocateVotes()
 
   const rifPriceUsd = prices[RIF]?.price ?? 0
   const allocation = allocations[builderAddress] ?? 0n
   const existentAllocation = initialAllocations[builderAddress] ?? 0n
   const unallocatedAmount = floorToUnit(balance - (cumulativeAllocation - allocation))
+
+  const onSaveAllocations = () => {
+    setIsPendingSaveAllocations(true)
+    saveAllocations()
+  }
+
+  useEffect(() => {
+    if (isSuccessSaveAllocations) {
+      closeDrawer()
+    }
+    setIsPendingSaveAllocations(false)
+  }, [isSuccessSaveAllocations, closeDrawer])
+
+  useEffect(() => {
+    if (isPendingTx) {
+      setIsPendingSaveAllocations(true)
+    }
+  }, [isPendingTx])
 
   const handleAllocationChange = (value: number) => {
     if (allocationTxPending) return
@@ -59,11 +83,17 @@ export const BuilderCardControl: FC<BuilderCardControlProps> = ({
           >
             Cancel
           </Button>
-          <Button variant="primary" onClick={saveAllocations}>
+          <Button
+            variant="primary"
+            onClick={onSaveAllocations}
+            // FIXME: disabled status to be confirmed by UX
+            disabled={isPendingSaveAllocations}
+          >
             Save new backing amounts
           </Button>
         </div>
       </ActionsContainer>,
+      true,
     )
   }
 
