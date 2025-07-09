@@ -10,7 +10,6 @@ import { WeiPerEther } from '@/lib/constants'
 import { usePricesContext } from '@/shared/context/PricesContext'
 import { useReadBackersManager, useReadBuilderRegistry } from '@/shared/hooks/contracts'
 import { useReadGauge } from '@/shared/hooks/contracts/collective-rewards/useReadGauge'
-import { useReadRewardDistributor } from '@/shared/hooks/contracts'
 import { Address } from 'viem'
 import { Token } from '@/app/collective-rewards/rewards'
 import { useEffect, useMemo, useState } from 'react'
@@ -130,14 +129,16 @@ export const useBuilderEstimatedRewards = ({
   const isRewarded = isBuilderRewardable(claimingBuilder?.stateFlags)
 
   // Handle errors
-  const error =
-    rifRewardsError ??
-    rbtcRewardsError ??
-    totalPotentialRewardsError ??
-    rewardSharesError ??
-    backerRewardsPctError ??
-    cycleError
-  useHandleErrors({ error, title: 'Error loading estimated rewards' })
+  useHandleErrors({
+    error:
+      rifRewardsError ||
+      rbtcRewardsError ||
+      totalPotentialRewardsError ||
+      rewardSharesError ||
+      backerRewardsPctError ||
+      cycleError,
+    title: 'Error loading estimated rewards',
+  })
 
   // Calculate estimated rewards for RIF
   const rifRewardsAmountCalc =

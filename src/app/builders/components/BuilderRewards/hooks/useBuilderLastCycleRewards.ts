@@ -55,10 +55,10 @@ export const useBuilderLastCycleRewards = ({
     error: rbtcRewardsError,
   } = useGetGaugeNotifyRewardLogs(gauge, rbtc.address, fromTimestamp, toTimestamp)
 
-  useHandleErrors({ error: cycleError, title: 'Error loading last cycle rewards (cycle)' })
-  useHandleErrors({ error: lastCycleRewardsError, title: 'Error loading last cycle rewards (distribution)' })
-  useHandleErrors({ error: rifRewardsError, title: 'Error loading last cycle rewards (RIF logs)' })
-  useHandleErrors({ error: rbtcRewardsError, title: 'Error loading last cycle rewards (rBTC logs)' })
+  useHandleErrors({
+    error: cycleError || lastCycleRewardsError || rifRewardsError || rbtcRewardsError,
+    title: 'Error loading last cycle rewards',
+  })
 
   const rifAmount =
     getNotifyRewardAmount(rifRewardsPerToken, rif.address, 'builderAmount_')[rif.address] ?? 0n
