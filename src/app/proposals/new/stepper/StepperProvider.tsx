@@ -11,13 +11,14 @@ export type ProposalStep = keyof typeof ProposalStep
 
 interface ProposalStepperState {
   currentStep: ProposalStep
+  setCurrentStep: (step: ProposalStep) => void
 }
 
 const ProposalStepperContext = createContext<ProposalStepperState | null>(null)
 
 export function StepperProvider({ children }: PropsWithChildren) {
   const [currentStep, setCurrentStep] = useState<ProposalStep>(ProposalStep.Type)
-  const value = useMemo(
+  const value = useMemo<ProposalStepperState>(
     () => ({
       currentStep,
       setCurrentStep,
