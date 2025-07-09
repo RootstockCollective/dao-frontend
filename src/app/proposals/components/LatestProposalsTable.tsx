@@ -25,9 +25,9 @@ import { Status } from '@/components/Status'
 import { SearchButton } from './SearchButton'
 import { CategoryColumn } from './table-columns/CategoryColumn'
 import { Paragraph } from '@/components/TypographyNew'
-import Pagination from './pagination/Pagination'
 import { Proposal } from '@/app/proposals/shared/types'
 import { filterOptions } from './filter/filterOptions'
+import { Pagination } from '@/components/Paginaton'
 
 interface LatestProposalsTableProps {
   proposals: Proposal[]
@@ -311,7 +311,7 @@ const LatestProposalsTable = ({ proposals }: LatestProposalsTableProps) => {
               <Pagination
                 pagination={pagination}
                 setPagination={setPagination}
-                proposals={filteredProposalList}
+                data={filteredProposalList}
                 table={table}
               />
             </div>
