@@ -371,9 +371,10 @@ const PageWithProposal = (proposal: ParsedProposal) => {
                   </Span>
                 ) : null}
                 <Paragraph variant="body" className="text-sm font-medium text-primary">
-                  <a href={`/builders/${addressToWhitelist}`} className="hover:underline">
-                    {builderName}
-                  </a>
+                  {/** TODO: enable later when builder profile feature is implemented */}
+                  {/* <a href={`/builders/${addressToWhitelist}`} className="hover:underline"> */}
+                  {builderName}
+                  {/* </a> */}
                 </Paragraph>
               </div>
               <div>
