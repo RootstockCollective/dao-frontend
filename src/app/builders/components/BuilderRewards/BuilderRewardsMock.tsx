@@ -1,11 +1,11 @@
 import React from 'react'
 import { BuilderRewardDetails } from '@/app/collective-rewards/rewards'
-import { RewardCard, type RewardType } from './components/RewardCard'
+import { RewardCardMock, type RewardType } from './components/RewardCardMock'
 import { ClaimRewardsButton } from './buttons/ClaimRewardsButton'
 import { AdjustBackersRewardsButton } from './buttons/AdjustBackersRewardButton'
 import { Header } from '@/components/TypographyNew'
 
-interface BuilderRewardsProps extends BuilderRewardDetails {
+interface BuilderRewardsMockProps extends BuilderRewardDetails {
   className?: string
 }
 
@@ -33,7 +33,7 @@ const REWARD_CARDS_CONFIG: Array<{
   },
 ]
 
-export const BuilderRewards: React.FC<BuilderRewardsProps> = ({
+export const BuilderRewardsMock: React.FC<BuilderRewardsMockProps> = ({
   className = '',
   builder,
   gauge,
@@ -59,7 +59,7 @@ export const BuilderRewards: React.FC<BuilderRewardsProps> = ({
             className="flex flex-col items-start gap-2 self-stretch flex-1 min-w-0 pb-0.5 bg-[var(--color-v3-bg-accent-80)] rounded-lg"
           >
             <div className="flex-1 w-full">
-              <RewardCard
+              <RewardCardMock
                 type={config.type}
                 builder={builder}
                 tokens={{ rif, rbtc }}
@@ -76,7 +76,7 @@ export const BuilderRewards: React.FC<BuilderRewardsProps> = ({
         <div className="flex flex-col items-start gap-2 self-stretch flex-1 min-w-0 pb-0.5 bg-[var(--color-v3-bg-accent-80)] rounded-lg">
           <div className="flex-1 w-full">
             <div className="flex flex-col items-center w-full">
-              <RewardCard
+              <RewardCardMock
                 type="allTimeShare"
                 builder={builder}
                 tokens={{ rif, rbtc }}

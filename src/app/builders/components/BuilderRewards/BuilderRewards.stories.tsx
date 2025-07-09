@@ -1,5 +1,5 @@
 import type { Meta, StoryObj } from '@storybook/react'
-import { BuilderRewards } from './BuilderRewards'
+import { BuilderRewardsMock } from './BuilderRewardsMock'
 import { Address } from 'viem'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { AlertProvider } from '@/app/providers/AlertProvider'
@@ -7,9 +7,9 @@ import { CycleContextProvider } from '@/app/collective-rewards/metrics/context/C
 import { PricesContextProvider } from '@/shared/context/PricesContext'
 import React from 'react'
 
-const meta: Meta<typeof BuilderRewards> = {
+const meta: Meta<typeof BuilderRewardsMock> = {
   title: 'Builders/BuilderRewards',
-  component: BuilderRewards,
+  component: BuilderRewardsMock,
   parameters: {
     layout: 'centered',
     backgrounds: {
@@ -79,18 +79,17 @@ const mockTokens = {
   },
 }
 
-export const Default: StoryObj<typeof BuilderRewards> = {
+export const Default: StoryObj<typeof BuilderRewardsMock> = {
   args: {
     builder: mockBuilderAddress,
     gauge: mockGaugeAddress,
     gauges: mockGauges,
     tokens: mockTokens,
     currency: 'USD',
-    isMock: true,
   },
 }
 
-export const WithCustomClass: StoryObj<typeof BuilderRewards> = {
+export const WithCustomClass: StoryObj<typeof BuilderRewardsMock> = {
   args: {
     builder: mockBuilderAddress,
     gauge: mockGaugeAddress,
@@ -98,6 +97,5 @@ export const WithCustomClass: StoryObj<typeof BuilderRewards> = {
     tokens: mockTokens,
     currency: 'USD',
     className: 'p-4 bg-gray-100 rounded-lg',
-    isMock: true,
   },
 }
