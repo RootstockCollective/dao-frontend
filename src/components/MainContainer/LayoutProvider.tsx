@@ -25,6 +25,10 @@ interface LayoutState {
   closeDrawer: () => void
   drawerContent: ReactNode | null
   setDrawerRef: (ref: HTMLDivElement | null) => void
+  /** Dynamic main layout subfooter content that can be set from any place in the app */
+  subfooter: ReactNode
+  /** Set react component to display in the bottom of the main layout footer */
+  setSubfooter: (sf: ReactNode) => void
 }
 
 const LayoutContext = createContext<LayoutState | null>(null)
@@ -53,6 +57,8 @@ export function LayoutProvider({ children }: PropsWithChildren) {
       closeDrawer()
     }
   }, [pathname]) // eslint-disable-line react-hooks/exhaustive-deps
+
+  const [subfooter, setSubfooter] = useState<ReactNode>(null)
 
   // Refs for layout elements
   const drawerRef = useRef<HTMLDivElement | null>(null)
@@ -136,8 +142,10 @@ export function LayoutProvider({ children }: PropsWithChildren) {
       openDrawer,
       closeDrawer,
       setDrawerRef,
+      subfooter,
+      setSubfooter,
     }),
-    [isSidebarOpen, isDrawerOpen, drawerContent],
+    [isSidebarOpen, isDrawerOpen, drawerContent, subfooter],
   )
   return <LayoutContext.Provider value={value}>{children}</LayoutContext.Provider>
 }
