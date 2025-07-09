@@ -109,10 +109,6 @@ export const BackingPage = () => {
 
       {/* FIXME: we need to change the conditions to show the BuilderAllocationBar */}
       {isConnected && <BuilderAllocationBar />}
-      <div>
-        Is connected: {isConnected ? 'true' : 'false'}, availableForBacking: {availableForBacking}{' '}
-        {votingPower} - {totalOnchainAllocation}
-      </div>
 
       {isConnected && (
         <ActionMetricsContainer className="flex flex-col items-start w-[1144px] p-6 gap-2 rounded-[4px] bg-v3-bg-accent-80">
