@@ -70,11 +70,8 @@ const BuilderAllocationBar = () => {
 
         const allocation = allocations[addressKey]
         const builder = getBuilder(addressKey)
-        const isRewardable = isBuilderRewardable(builder?.stateFlags)
-
-        if (!isRewardable) {
-          return null
-        }
+        // TODO: Add a check to see if the builder is rewardable and
+        // and change the segment to allow certain actions only (e.g.: reduce but not increase)
 
         const value = allocation ? Number(formatEther(allocation)) : 0
 
