@@ -1,23 +1,24 @@
 import { TokenImage } from '@/components/TokenImage'
 import { Header, Label, Span } from '@/components/TypographyNew'
-import { FC, HTMLProps, ReactNode } from 'react'
+import { FC, ReactNode } from 'react'
 
-interface MetricCardProps extends Omit<HTMLProps<HTMLDivElement>, 'title'> {
+interface Props {
   title: string
   titlePopover?: ReactNode
   amount: ReactNode
   symbol: string
   fiatAmount?: ReactNode
   'data-testid'?: string
+  className?: string
 }
 
-export const MetricCard: FC<MetricCardProps> = ({
+export const InfoContainer: FC<Props> = ({
   title,
   titlePopover,
   amount,
   symbol,
   fiatAmount,
-  'data-testid': dataTestId = 'MetricCard',
+  'data-testid': dataTestId = 'InfoContainer',
   className,
 }) => {
   return (
