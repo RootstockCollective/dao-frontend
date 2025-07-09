@@ -36,10 +36,7 @@ const REWARD_CARDS_CONFIG: Array<{
 
 export const BuilderRewardsMock: React.FC<BuilderRewardsMockProps> = ({
   className = '',
-  builder,
-  gauge,
   tokens: { rif, rbtc },
-  ...rest
 }) => {
   return (
     <div
@@ -62,11 +59,7 @@ export const BuilderRewardsMock: React.FC<BuilderRewardsMockProps> = ({
             <div className="flex-1 w-full">
               <RewardCardMock
                 type={config.type}
-                builder={builder}
                 tokens={{ rif, rbtc }}
-                gauge={gauge}
-                gauges={rest.gauges}
-                currency={rest.currency}
               />
             </div>
             {config.button && <span>{config.button}</span>}
@@ -79,11 +72,7 @@ export const BuilderRewardsMock: React.FC<BuilderRewardsMockProps> = ({
             <div className="flex flex-col items-center w-full">
               <RewardCardMock
                 type="allTimeShare"
-                builder={builder}
                 tokens={{ rif, rbtc }}
-                gauge={gauge}
-                gauges={rest.gauges}
-                currency={rest.currency}
               />
             </div>
           </div>
