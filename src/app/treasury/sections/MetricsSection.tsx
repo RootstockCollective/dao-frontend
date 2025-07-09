@@ -1,9 +1,10 @@
-import { HeaderTitle, Typography } from '@/components/Typography'
-import { MetricsCard } from '@/components/MetricsCard'
-import { useStRifHoldings } from '../hooks/useStRifHoldings'
-import { formatNumberWithCommas } from '@/lib/utils'
+import { KotoQuestionMarkIcon } from '@/components/Icons'
 import { Popover } from '@/components/Popover'
-import { QuestionIcon } from '@/components/Icons'
+import { HeaderTitle } from '@/components/Typography'
+import { Label } from '@/components/TypographyNew'
+import { formatNumberWithCommas } from '@/lib/utils'
+import { MetricCard } from '../components/MetricCard'
+import { useStRifHoldings } from '../hooks/useStRifHoldings'
 
 /**
  * Displays key treasury metrics including total stRIF, treasury balance,
@@ -12,45 +13,43 @@ import { QuestionIcon } from '@/components/Icons'
 export const MetricsSection = () => {
   const { stRifBalance, stRifUsdBalance, totalFundingUsd, tvlUsd } = useStRifHoldings()
   return (
-    <div>
-      <HeaderTitle className="mb-4">Metrics</HeaderTitle>
-      <div className="flex flex-row gap-4">
-        <MetricsCard
-          className="max-w-[214px] min-w-[120px]"
-          title={<Typography className="text-sm font-bold">Total stRIF</Typography>}
-          amount={`${formatNumberWithCommas(stRifBalance)} STRIF`}
-          fiatAmount={`= USD $${formatNumberWithCommas(stRifUsdBalance)}`}
-          borderless
+    <div className="bg-bg-80 p-6">
+      <HeaderTitle variant="h3" caps>
+        Metrics
+      </HeaderTitle>
+      <div className="flex flex-row gap-6 mt-10">
+        <MetricCard
+          className="max-w-[214px] min-w-[180px]"
+          title="Total stRIF"
+          amount={`${formatNumberWithCommas(stRifBalance)}`}
+          symbol="stRIF"
+          fiatAmount={`${formatNumberWithCommas(stRifUsdBalance)} USD`}
         />
-        <MetricsCard
-          className="max-w-[214px] min-w-[120px]"
-          title={<Typography className="text-sm font-bold">Treasury</Typography>}
-          amount={`${formatNumberWithCommas(totalFundingUsd)} USD`}
-          borderless
+        <MetricCard
+          className="max-w-[214px] min-w-[180px]"
+          title="Treasury"
+          amount={`${formatNumberWithCommas(totalFundingUsd)}`}
+          symbol="USD"
         />
-        <MetricsCard
-          className="max-w-[444px] min-w-[120px] overflow-visible"
-          title={
-            <div className="flex flex-row gap-2">
-              <Typography tagVariant="span" className="text-sm font-bold">
-                TVL{' '}
-              </Typography>
-              <Popover
-                contentContainerClassName="w-max"
-                trigger="hover"
-                content={
-                  <div>
-                    <Typography className="">Total value locked</Typography>
-                    <Typography className="text-sm">(Total stRIF + Treasury)</Typography>
-                  </div>
-                }
-              >
-                <QuestionIcon className="ml-1 hover:cursor-help" />
-              </Popover>
-            </div>
+        <MetricCard
+          className="max-w-[444px] min-w-[180px] overflow-visible"
+          title="TVL"
+          titlePopover={
+            <Popover
+              contentContainerClassName="w-max"
+              trigger="hover"
+              content={
+                <>
+                  <Label variant="body-s">Total value locked</Label>
+                  <Label variant="body-s"> (Total stRIF + Treasury)</Label>
+                </>
+              }
+            >
+              <KotoQuestionMarkIcon className="mb-1 hover:cursor-help" />
+            </Popover>
           }
-          amount={`${formatNumberWithCommas(tvlUsd)} USD`}
-          borderless
+          amount={`${formatNumberWithCommas(tvlUsd)}`}
+          symbol="USD"
         />
       </div>
     </div>

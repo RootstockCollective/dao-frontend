@@ -1,0 +1,50 @@
+import { TokenImage } from '@/components/TokenImage'
+import { Header, Label, Span } from '@/components/TypographyNew'
+import { FC, HTMLProps, ReactNode } from 'react'
+
+interface MetricCardProps extends Omit<HTMLProps<HTMLDivElement>, 'title'> {
+  title: string
+  titlePopover?: ReactNode
+  amount: ReactNode
+  symbol: string
+  fiatAmount?: ReactNode
+  'data-testid'?: string
+}
+
+export const MetricCard: FC<MetricCardProps> = ({
+  title,
+  titlePopover,
+  amount,
+  symbol,
+  fiatAmount,
+  'data-testid': dataTestId = 'MetricCard',
+  className,
+}) => {
+  return (
+    <div className={className} data-testid={dataTestId}>
+      <div className="flex items-center flex-row gap-2">
+        <Label variant="tag" className="text-bg-0" data-testid="Title">
+          {title}
+        </Label>
+        {titlePopover}
+      </div>
+
+      <div className="flex items-end flex-row gap-2">
+        <Header variant="h1" data-testid="Amount" className="flex items-end flex-row gap-2">
+          {amount}
+        </Header>
+        <div className="flex items-center flex-row gap-1">
+          <TokenImage symbol={symbol} size={24} />{' '}
+          <Span variant="body-l" bold>
+            {symbol}
+          </Span>
+        </div>
+      </div>
+      {fiatAmount && (
+        <Label variant="body-s" className="text-bg-0" bold data-testid="FiatAmount">
+          {fiatAmount}
+        </Label>
+      )}
+    </div>
+  )
+}
