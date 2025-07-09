@@ -11,10 +11,11 @@ import { Button } from '@/components/ButtonNew'
 import { WarningIcon } from '@/components/Icons'
 import { Paragraph } from '@/components/TypographyNew'
 import { isBuilderRewardable } from '@/app/collective-rewards/utils/isBuilderOperational'
+import { StylableComponentProps } from '@/components/commonProps'
 
-const Warning = () => {
+const Warning = ({ className }: StylableComponentProps<HTMLDivElement>) => {
   return (
-    <div className="flex items-center gap-2">
+    <div className={cn('flex items-center gap-2', className)}>
       <WarningIcon size={48} color="#DEFF1A" className="min-w-[48px] min-h-[48px]" />
       <Paragraph>Builder was deactivated by the foundation</Paragraph>
     </div>
@@ -70,11 +71,7 @@ export const BuilderCard: FC<BuilderCardProps> = ({
       />
       {/* FIXME: replace the builder page link */}
       <BuilderHeader address={address} name={builderName} builderPageLink="#" className="mt-8" />
-      {!isRewardable && (
-        <div className="pt-5">
-          <Warning />
-        </div>
-      )}
+      {!isRewardable && <Warning className="pt-3" />}
       <div className="my-6 w-full">
         <div
           className="w-full border border-v3-bg-accent-40 rounded-lg flex flex-col"
