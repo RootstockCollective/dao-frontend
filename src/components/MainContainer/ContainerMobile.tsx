@@ -8,7 +8,7 @@ import { SidebarMobile } from './sidebars/SidebarMobile'
 import { useLayoutContext } from './LayoutProvider'
 
 export default function ContainerMobile({ className, children, ...props }: HTMLAttributes<HTMLDivElement>) {
-  const { isSidebarOpen } = useLayoutContext()
+  const { isSidebarOpen, subfooter } = useLayoutContext()
   return (
     <div
       {...props}
@@ -23,6 +23,7 @@ export default function ContainerMobile({ className, children, ...props }: HTMLA
         <main className="grow mb-25">{children}</main>
         <FooterMobile />
       </div>
+      {subfooter}
     </div>
   )
 }

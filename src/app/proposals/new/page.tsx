@@ -1,6 +1,6 @@
 'use client'
 
-import { useCallback, useMemo } from 'react'
+import { useCallback, useEffect, useMemo } from 'react'
 import { AnimatePresence, motion, Variants } from 'motion/react'
 import { useRouter, useSearchParams, usePathname } from 'next/navigation'
 import { Deactivation } from './Deactivation'
@@ -9,6 +9,7 @@ import { newProposalCards } from './newProposalCards.data'
 import { Paragraph } from '@/components/TypographyNew'
 import { NewProposalCardExtended } from './NewProposalCardExtended'
 import { ProposalCategory } from '@/shared/types'
+import { useProposalStepper } from './stepper/StepperProvider'
 
 const variants: Variants = {
   initial: {
@@ -53,6 +54,12 @@ export default function NewProposal() {
     const newUrl = params.toString() ? `${path}?${params}` : path
     router.push(newUrl)
   }, [path, router, searchParams])
+
+  // set 'Type' proposal step
+  const { setCurrentStep } = useProposalStepper()
+  useEffect(() => {
+    setCurrentStep('Type')
+  }, [])
 
   return (
     <div>

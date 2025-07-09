@@ -9,7 +9,7 @@ import { ChevronIcon } from '../images/ChevronIcon'
 
 const progressMap = {
   [ProposalStep.Type]: 25,
-  [ProposalStep.Details]: 72,
+  [ProposalStep.Details]: 71,
   [ProposalStep.Review]: 100,
 }
 
