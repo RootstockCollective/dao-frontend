@@ -14,6 +14,7 @@ import { CRWhitepaperLink } from '../collective-rewards/shared/components/CRWhit
 import { BackerRewards } from './backers/components/BackerRewards'
 import { BuilderRewards } from './builder/components/BuilderRewards'
 import { NonBacker } from './components'
+import { BackerRewards } from './backers/components/BackerRewards'
 
 const Section = ({ children }: { children: ReactNode }) => {
   return (
