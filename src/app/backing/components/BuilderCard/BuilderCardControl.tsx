@@ -33,13 +33,11 @@ export const BuilderCardControl: FC<BuilderCardControlProps> = ({
     },
     initialState: { allocations: initialAllocations },
   } = useContext(AllocationsContext)
-  const [isPendingSaveAllocations, setIsPendingSaveAllocations] = useState(false)
 
   const {
     saveAllocations,
     canSaveAllocation,
     isSuccess: isSuccessSaveAllocations,
-    isPendingTx,
   } = useAllocateVotes()
 
   const rifPriceUsd = prices[RIF]?.price ?? 0
@@ -48,7 +46,6 @@ export const BuilderCardControl: FC<BuilderCardControlProps> = ({
   const unallocatedAmount = floorToUnit(balance - (cumulativeAllocation - allocation))
 
   const onSaveAllocations = () => {
-    setIsPendingSaveAllocations(true)
     saveAllocations()
   }
 
@@ -56,14 +53,8 @@ export const BuilderCardControl: FC<BuilderCardControlProps> = ({
     if (isSuccessSaveAllocations) {
       closeDrawer()
     }
-    setIsPendingSaveAllocations(false)
   }, [isSuccessSaveAllocations, closeDrawer])
-
-  useEffect(() => {
-    if (isPendingTx) {
-      setIsPendingSaveAllocations(true)
-    }
-  }, [isPendingTx])
+    
 
   const handleAllocationChange = (value: number) => {
     if (allocationTxPending) return
@@ -86,8 +77,6 @@ export const BuilderCardControl: FC<BuilderCardControlProps> = ({
           <Button
             variant="primary"
             onClick={onSaveAllocations}
-            // FIXME: disabled status to be confirmed by UX
-            disabled={isPendingSaveAllocations}
           >
             Save new backing amounts
           </Button>
