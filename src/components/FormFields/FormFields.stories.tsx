@@ -5,7 +5,7 @@ import { TextArea } from './TextArea'
 import { NumberInput } from './NumberInput'
 
 const meta: Meta<typeof TextInput> = {
-  title: 'Components/FormNew',
+  title: 'Components/FormFields',
   component: TextInput,
   parameters: {
     layout: 'fullscreen',

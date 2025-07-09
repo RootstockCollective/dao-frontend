@@ -23,6 +23,7 @@ export function NumberInput({ label, className, value = '', errorMsg, ...props }
           allowLeadingZeros={false}
           allowNegative={false}
           decimalScale={0}
+          autoComplete="off"
           className={cn(
             'w-full h-16 px-4 pt-4 bg-bg-60 rounded-sm text-text-100 focus:outline-none font-rootstock-sans flex justify-end items-end',
             className,
