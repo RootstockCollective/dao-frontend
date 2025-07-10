@@ -8,16 +8,17 @@ interface Props extends InputHTMLAttributes<HTMLInputElement> {
   errorMsg?: string
 }
 
-export function TextInput({ label, errorMsg, className, ...props }: Props) {
+export function TextInput({ id, label, errorMsg, className, value, onFocus, onBlur, ...props }: Props) {
   const ownId = useId()
-  const id = props.id ?? ownId
+  const newId = id ?? ownId
   const [isFocused, setIsFocused] = useState(false)
 
   return (
     <ErrorMessage errorMsg={errorMsg}>
-      <FloatingLabel htmlFor={id} isFloating={isFocused || !!props.value} label={label}>
+      <FloatingLabel htmlFor={newId} isFloating={isFocused || !!value} label={label}>
         <input
-          id={id}
+          id={newId}
+          value={value}
           type="text"
           className={cn(
             'w-full h-16 px-4 pt-4 bg-bg-60 rounded-sm text-text-100 focus:outline-none font-rootstock-sans flex justify-end items-end',
@@ -25,13 +26,12 @@ export function TextInput({ label, errorMsg, className, ...props }: Props) {
           )}
           onFocus={e => {
             setIsFocused(true)
-            props.onFocus?.(e)
+            onFocus?.(e)
           }}
           onBlur={e => {
             setIsFocused(false)
-            props.onBlur?.(e)
+            onBlur?.(e)
           }}
-          autoComplete="off"
           {...props}
         />
       </FloatingLabel>
