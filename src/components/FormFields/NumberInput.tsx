@@ -9,15 +9,24 @@ interface Props extends NumericFormatProps {
   errorMsg?: string
 }
 
-export function NumberInput({ label, className, value = '', errorMsg, ...props }: Props) {
+export function NumberInput({
+  id,
+  label,
+  className,
+  value = '',
+  errorMsg,
+  onBlur,
+  onFocus,
+  ...props
+}: Props) {
   const [isFocused, setIsFocused] = useState(false)
   const ownId = useId()
-  const id = props.id ?? ownId
+  const newId = id ?? ownId
   return (
     <ErrorMessage errorMsg={errorMsg}>
-      <FloatingLabel htmlFor={id} isFloating={isFocused || !!value} label={label}>
+      <FloatingLabel htmlFor={newId} isFloating={isFocused || !!value} label={label}>
         <NumericFormat
-          id={id}
+          id={newId}
           value={value}
           thousandSeparator=","
           allowLeadingZeros={false}
@@ -30,11 +39,11 @@ export function NumberInput({ label, className, value = '', errorMsg, ...props }
           )}
           onFocus={e => {
             setIsFocused(true)
-            props.onFocus?.(e)
+            onFocus?.(e)
           }}
           onBlur={e => {
             setIsFocused(false)
-            props.onBlur?.(e)
+            onBlur?.(e)
           }}
           {...props}
         />
