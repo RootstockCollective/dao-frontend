@@ -8,10 +8,7 @@ interface RewardCardMockProps {
   tokens: BuilderRewardDetails['tokens']
 }
 
-export const RewardCardMock: FC<RewardCardMockProps> = ({
-  type,
-  tokens,
-}) => {
+export const RewardCardMock: FC<RewardCardMockProps> = ({ type, tokens }) => {
   const rewardData = getRewardCardMockData(type)
 
   return <RewardCardRenderer type={type} tokens={tokens} rewardData={rewardData} />

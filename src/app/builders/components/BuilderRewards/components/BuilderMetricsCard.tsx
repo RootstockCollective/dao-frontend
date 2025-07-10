@@ -26,7 +26,7 @@ export const TokenMetricsCardRow: FC<MetricsCardRow & { symbol: string }> = ({
       </Header>
       <div style={{ display: 'flex', padding: '1px 0px', alignItems: 'center', gap: 3, borderRadius: 4 }}>
         <TokenImage symbol={symbol} size={20} />
-        <Span variant="body-s" style={{ color: 'var(--Text-100, #FFF)', textAlign: 'right' }}>
+        <Span variant="body-s" className="text-right text-[var(--Text-100,#FFF)] font-medium leading-[145%]">
           {symbol}
         </Span>
       </div>

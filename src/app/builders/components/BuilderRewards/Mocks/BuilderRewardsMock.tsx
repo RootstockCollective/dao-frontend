@@ -57,10 +57,7 @@ export const BuilderRewardsMock: React.FC<BuilderRewardsMockProps> = ({
             className="flex flex-col items-start gap-2 self-stretch flex-1 min-w-0 pb-0.5 bg-[var(--color-v3-bg-accent-80)] rounded-lg"
           >
             <div className="flex-1 w-full">
-              <RewardCardMock
-                type={config.type}
-                tokens={{ rif, rbtc }}
-              />
+              <RewardCardMock type={config.type} tokens={{ rif, rbtc }} />
             </div>
             {config.button && <span>{config.button}</span>}
           </div>
@@ -70,10 +67,7 @@ export const BuilderRewardsMock: React.FC<BuilderRewardsMockProps> = ({
         <div className="flex flex-col items-start gap-2 self-stretch flex-1 min-w-0 pb-0.5 bg-[var(--color-v3-bg-accent-80)] rounded-lg">
           <div className="flex-1 w-full">
             <div className="flex flex-col items-center w-full">
-              <RewardCardMock
-                type="allTimeShare"
-                tokens={{ rif, rbtc }}
-              />
+              <RewardCardMock type="allTimeShare" tokens={{ rif, rbtc }} />
             </div>
           </div>
         </div>
