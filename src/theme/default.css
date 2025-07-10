@@ -114,4 +114,16 @@ html[data-theme='default'] {
   [role='button']:disabled {
     cursor: not-allowed;
   }
+
+  /* Autofill styles */
+  input:is(:-webkit-autofill, :autofill),
+  input:is(:-webkit-autofill, :autofill):hover,
+  input:is(:-webkit-autofill, :autofill):focus,
+  input:is(:-webkit-autofill, :autofill):active {
+    -webkit-box-shadow: 0 0 0 1000px var(--background-60) inset !important;
+    -webkit-text-fill-color: var(--color-text-100) !important;
+    background-color: red !important;
+    color: green !important;
+    border-radius: 100rem;
+  }
 }

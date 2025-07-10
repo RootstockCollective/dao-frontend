@@ -2,9 +2,9 @@
 
 import { FC } from 'react'
 import { ReadonlyURLSearchParams, useSearchParams } from 'next/navigation'
-import { GrantsProposalForm } from './GrantsProposalForm'
-import { ActivationProposalForm } from './ActivationProposalForm'
-import { DeactivationProposalForm } from './DeactivationProposalForm'
+import { CreateBuilderProposalForm } from './CreateBuilderProposalForm'
+import { RemoveBuilderProposalForm } from './RemoveBuilderProposalForm'
+import { TreasuryWithdrawProposalForm } from './TreasuryWithdrawProposalForm'
 import { SupportedActionAbiName, SupportedProposalActionName } from '../shared/supportedABIs'
 
 export type ProposalFormByType = {
@@ -15,12 +15,12 @@ export type ProposalFormByType = {
 
 const componentByType: Partial<ProposalFormByType> = {
   DAOTreasuryAbi: {
-    withdraw: GrantsProposalForm,
-    withdrawERC20: GrantsProposalForm,
+    withdraw: TreasuryWithdrawProposalForm,
+    withdrawERC20: TreasuryWithdrawProposalForm,
   },
   BuilderRegistryAbi: {
-    communityApproveBuilder: ActivationProposalForm,
-    dewhitelistBuilder: DeactivationProposalForm,
+    communityApproveBuilder: CreateBuilderProposalForm,
+    dewhitelistBuilder: RemoveBuilderProposalForm,
   },
 }
 
@@ -38,7 +38,7 @@ export default function CreateProposal() {
   if (!componentByType[contract] || !componentByType[contract][action]) {
     // Fallback to treasury proposal form
 
-    return <GrantsProposalForm />
+    return <TreasuryWithdrawProposalForm />
   }
   const ProposalComponent: FC = componentByType[contract][action]
 

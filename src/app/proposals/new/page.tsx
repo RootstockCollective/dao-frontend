@@ -9,7 +9,7 @@ import { newProposalCards } from './newProposalCards.data'
 import { Paragraph } from '@/components/TypographyNew'
 import { NewProposalCardExtended } from './components/NewProposalCardExtended'
 import { ProposalCategory } from '@/shared/types'
-import { useProposalStepper } from './stepper/StepperProvider'
+import { useProposalStepper } from '../components/stepper/StepperProvider'
 
 const variants: Variants = {
   initial: {
