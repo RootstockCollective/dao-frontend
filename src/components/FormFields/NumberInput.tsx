@@ -9,16 +9,7 @@ interface Props extends NumericFormatProps {
   errorMsg?: string
 }
 
-export function NumberInput({
-  id,
-  label,
-  className,
-  value = '',
-  errorMsg,
-  onBlur,
-  onFocus,
-  ...props
-}: Props) {
+export function NumberInput({ id, label, className, value, errorMsg, onBlur, onFocus, ...props }: Props) {
   const [isFocused, setIsFocused] = useState(false)
   const ownId = useId()
   const newId = id ?? ownId
@@ -31,10 +22,9 @@ export function NumberInput({
           thousandSeparator=","
           allowLeadingZeros={false}
           allowNegative={false}
-          decimalScale={0}
           autoComplete="off"
           className={cn(
-            'w-full h-16 px-4 pt-4 bg-bg-60 rounded-sm text-text-100 focus:outline-none font-rootstock-sans flex justify-end items-end',
+            'w-full h-16 px-4 pt-4 bg-bg-60 rounded-sm text-text-100 focus:outline-none font-rootstock-sans flex justify-end items-end overflow-hidden',
             className,
           )}
           onFocus={e => {
