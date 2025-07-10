@@ -62,11 +62,8 @@ export const BackingPage = () => {
         })
 
   const handleDistributeClick = () => {
-    // Here previous allocations is 0.
     //FIXME: Take into the inactive builders
     updateAmountToAllocate(votingPower)
-    // allocationsCount hasn't been updated yet
-    // if (allocationsCount === 0) return
     const newAllocations = Object.keys(allocations).reduce((acc, key) => {
       const builderAddress = key as Address
       const newAllocation = availableForBacking / BigInt(allocationsCount) + allocations[builderAddress]

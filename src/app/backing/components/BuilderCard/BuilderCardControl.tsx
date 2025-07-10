@@ -2,7 +2,7 @@ import { AllocationsContext } from '@/app/collective-rewards/allocations/context
 import { Builder } from '@/app/collective-rewards/types'
 import { RIF } from '@/lib/constants'
 import { usePricesContext } from '@/shared/context/PricesContext'
-import { FC, useCallback, useContext, useEffect } from 'react'
+import { createContext, FC, useCallback, useContext, useEffect } from 'react'
 import { parseEther } from 'viem'
 import { useAccount } from 'wagmi'
 import { BuilderCard } from './BuilderCard'
@@ -20,19 +20,21 @@ export interface BuilderCardControlProps extends Builder {
 const AllocationDrawerContent = ({
   onSaveAllocations,
   onCancelAllocations,
-  isPendingTx,
 }: {
   onSaveAllocations: () => void
   onCancelAllocations: () => void
-  isPendingTx: boolean
 }) => {
+  const { isPendingTx, isLoadingReceipt } = useAllocateVotes()
+  useEffect(() => {
+    console.log('### isPendingTx', isPendingTx)
+  }, [isPendingTx])
   return (
     <ActionsContainer className="bg-v3-bg-accent-60">
       <div className="flex justify-center gap-2 w-full">
         <Button variant="secondary-outline" onClick={onCancelAllocations}>
           Cancel
         </Button>
-        {isPendingTx ? (
+        {isPendingTx || isLoadingReceipt ? (
           <TransactionInProgressButton />
         ) : (
           <Button variant="primary" onClick={onSaveAllocations}>
@@ -71,9 +73,15 @@ export const BuilderCardControl: FC<BuilderCardControlProps> = ({
 
   const onSaveAllocations = () => {
     saveAllocations()
-    if (isDrawerOpen) {
-      openOrUpdateAllocationDrawer()
-    }
+    // if (isDrawerOpen) {
+    //   openDrawer(
+    //     <AllocationDrawerContent
+    //       onSaveAllocations={onSaveAllocations}
+    //       onCancelAllocations={onCancelAllocations}
+    //     />,
+    //     true,
+    //   )
+    // }
   }
 
   const onCancelAllocations = () => {
@@ -81,11 +89,11 @@ export const BuilderCardControl: FC<BuilderCardControlProps> = ({
     closeDrawer()
   }
 
-  useEffect(() => {
-    if (isDrawerOpen) {
-      openOrUpdateAllocationDrawer()
-    }
-  }, [isPendingTx])
+  // useEffect(() => {
+  //   if (isDrawerOpen) {
+  //     openOrUpdateAllocationDrawer()
+  //   }
+  // }, [isPendingTx])
 
   useEffect(() => {
     if (isSuccess) {
@@ -93,16 +101,15 @@ export const BuilderCardControl: FC<BuilderCardControlProps> = ({
     }
   }, [isSuccess, closeDrawer])
 
-  const openOrUpdateAllocationDrawer = useCallback(() => {
-    openDrawer(
-      <AllocationDrawerContent
-        onSaveAllocations={onSaveAllocations}
-        onCancelAllocations={onCancelAllocations}
-        isPendingTx={isPendingTx || isLoadingReceipt}
-      />,
-      true,
-    )
-  }, [openDrawer, onSaveAllocations, onCancelAllocations, isPendingTx, isLoadingReceipt])
+  // const openOrUpdateAllocationDrawer = useCallback(() => {
+  //   openDrawer(
+  //     <AllocationDrawerContent
+  //       onSaveAllocations={onSaveAllocations}
+  //       onCancelAllocations={onCancelAllocations}
+  //     />,
+  //     true,
+  //   )
+  // }, [openDrawer, onSaveAllocations, onCancelAllocations, isPendingTx, isLoadingReceipt])
 
   const handleAllocationChange = (value: number) => {
     if (allocationTxPending) return
@@ -110,7 +117,13 @@ export const BuilderCardControl: FC<BuilderCardControlProps> = ({
 
     if (!canSaveAllocation) return
 
-    openOrUpdateAllocationDrawer()
+    openDrawer(
+      <AllocationDrawerContent
+        onSaveAllocations={onSaveAllocations}
+        onCancelAllocations={onCancelAllocations}
+      />,
+      true,
+    )
   }
 
   return (

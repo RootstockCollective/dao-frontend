@@ -130,8 +130,8 @@ const BuilderAllocationBar = () => {
       isDraggable={!isEmpty}
       height={isEmpty ? '1rem' : undefined}
       onChange={handleAllocationChange}
-      // TODO: review min height
-      className={`${isEmpty ? 'min-h-[210px]' : ''}`}
+      // we want the component to have the same height
+      className={`${isEmpty ? 'min-h-52' : ''}`}
     />
   )
 }
