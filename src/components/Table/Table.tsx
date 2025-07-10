@@ -1,6 +1,6 @@
 import { FC, HTMLAttributes, ReactNode } from 'react'
 import { TableHead, TableRow, TableCell, TableBody, TableCore } from './components'
-import { Span } from '../Typography'
+import { Span } from '../TypographyNew'
 
 interface SharedProps {
   'data-testid'?: string
@@ -47,17 +47,7 @@ export const Table: FC<TableProps> = ({
       <TableHead {...theadProps}>
         <TableRow>
           {header.map(headTitle => (
-            <TableCell
-              style={{
-                width,
-                fontWeight: 700,
-                fontSize: '16px',
-                borderBottom: '1px solid #2D2D2D',
-                fontFamily: 'rootstock-sans',
-              }}
-              key={headTitle}
-              className={headerClassName}
-            >
+            <TableCell style={{ width }} key={headTitle} className={headerClassName}>
               {headTitle}
             </TableCell>
           ))}
@@ -68,9 +58,7 @@ export const Table: FC<TableProps> = ({
           <TableRow key={i} className="text-[14px] border-hidden" style={{ borderTopStyle: 'solid' }}>
             {Object.values(record).map((val, j) => (
               <TableCell style={{ width }} key={j}>
-                <Span className="text-[14px]" variant="light">
-                  {val}
-                </Span>
+                <Span className="text-[14px]">{val}</Span>
               </TableCell>
             ))}
           </TableRow>
