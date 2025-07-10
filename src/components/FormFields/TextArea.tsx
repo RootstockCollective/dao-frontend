@@ -11,6 +11,7 @@ interface TextAreaProps extends TextareaHTMLAttributes<HTMLTextAreaElement> {
 }
 
 export function TextArea({
+  id,
   label,
   errorMsg,
   className,
@@ -18,11 +19,13 @@ export function TextArea({
   maxRows = 40,
   value,
   onInput,
+  onFocus,
+  onBlur,
   ...props
 }: TextAreaProps) {
   const [isFocused, setIsFocused] = useState(false)
   const ownId = useId()
-  const id = props.id ?? ownId
+  const newId = id ?? ownId
   const textareaRef = useRef<HTMLTextAreaElement>(null)
 
   const adjustHeight = useCallback(() => {
@@ -49,10 +52,10 @@ export function TextArea({
 
   return (
     <ErrorMessage errorMsg={errorMsg}>
-      <FloatingLabel htmlFor={id} isFloating={isFocused || !!value} label={label}>
+      <FloatingLabel htmlFor={newId} isFloating={isFocused || !!value} label={label}>
         <div className="w-full px-4 pt-8 pb-2 bg-bg-60 rounded-sm ">
           <textarea
-            id={id}
+            id={newId}
             ref={textareaRef}
             rows={minRows}
             value={value}
@@ -60,11 +63,11 @@ export function TextArea({
             onInput={handleInput}
             onFocus={e => {
               setIsFocused(true)
-              props.onFocus?.(e)
+              onFocus?.(e)
             }}
             onBlur={e => {
               setIsFocused(false)
-              props.onBlur?.(e)
+              onBlur?.(e)
             }}
             {...props}
           />
