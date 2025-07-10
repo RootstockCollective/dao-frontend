@@ -5,7 +5,7 @@ import { ProgressBar } from '@/components/ProgressBarNew'
 import { useProposalStepper, ProposalStep } from './StepperProvider'
 import { Paragraph } from '@/components/TypographyNew'
 import { cn } from '@/lib/utils'
-import { ChevronIcon } from '../images/ChevronIcon'
+import { ChevronIcon } from './ChevronIcon'
 
 const progressMap = {
   [ProposalStep.Type]: 25,

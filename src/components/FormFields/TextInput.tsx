@@ -31,6 +31,7 @@ export function TextInput({ label, errorMsg, className, ...props }: Props) {
             setIsFocused(false)
             props.onBlur?.(e)
           }}
+          autoComplete="off"
           {...props}
         />
       </FloatingLabel>
