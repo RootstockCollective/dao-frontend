@@ -132,7 +132,7 @@ const AllocationBar: React.FC<AllocationBarProps> = ({
   }
 
   return (
-    <div className={`w-full p-8 flex flex-col items-center justify-center ${className}`}>
+    <div className={`w-full p-8 flex flex-col ${className}`}>
       <DndContext
         sensors={sensors}
         collisionDetection={pointerWithin}
@@ -140,7 +140,11 @@ const AllocationBar: React.FC<AllocationBarProps> = ({
         modifiers={[restrictToHorizontalAxis]}
       >
         <SortableContext items={currentItems.map(item => item.key)} strategy={horizontalListSortingStrategy}>
-          <div className="flex items-center w-full mb-4 relative select-none" ref={barRef} style={{ height }}>
+          <div
+            className="flex items-end w-full mb-4 relative select-none transition-[height] duration-300 ease-in-out"
+            ref={barRef}
+            style={{ height }}
+          >
             {currentItems.map((item, i) => (
               <AllocationBarSegment
                 key={item.key}
