@@ -2,7 +2,7 @@ import { AllocationsContext } from '@/app/collective-rewards/allocations/context
 import { Builder } from '@/app/collective-rewards/types'
 import { RIF } from '@/lib/constants'
 import { usePricesContext } from '@/shared/context/PricesContext'
-import { FC, useCallback, useContext, useEffect, useState } from 'react'
+import { FC, useCallback, useContext, useEffect } from 'react'
 import { parseEther } from 'viem'
 import { useAccount } from 'wagmi'
 import { BuilderCard } from './BuilderCard'
@@ -26,8 +26,6 @@ const AllocationDrawerContent = ({
   onCancelAllocations: () => void
   isPendingTx: boolean
 }) => {
-  useEffect(() => {}, [isPendingTx])
-
   return (
     <ActionsContainer className="bg-v3-bg-accent-60">
       <div className="flex justify-center gap-2 w-full">

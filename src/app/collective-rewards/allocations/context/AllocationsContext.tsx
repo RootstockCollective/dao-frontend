@@ -10,7 +10,6 @@ import { validateAllocationsState } from './utils'
 import { useShuffledArray } from '@/app/backing/hooks/useShuffledArray'
 import { isBuilderRewardable } from '../../utils'
 
-
 const SPOTLIGHT_BUILDERS = 4
 
 export interface Allocations {
