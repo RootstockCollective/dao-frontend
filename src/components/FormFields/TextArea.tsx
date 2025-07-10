@@ -59,7 +59,7 @@ export function TextArea({
             ref={textareaRef}
             rows={minRows}
             value={value}
-            className={cn('w-full text-text-100 resize-none focus:outline-none', className)}
+            className={cn('w-full text-text-100 resize-none focus:outline-none overflow-hidden', className)}
             onInput={handleInput}
             onFocus={e => {
               setIsFocused(true)
@@ -69,6 +69,7 @@ export function TextArea({
               setIsFocused(false)
               onBlur?.(e)
             }}
+            autoComplete="off"
             {...props}
           />
         </div>

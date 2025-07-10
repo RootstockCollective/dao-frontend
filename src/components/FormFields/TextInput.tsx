@@ -21,7 +21,7 @@ export function TextInput({ id, label, errorMsg, className, value, onFocus, onBl
           value={value}
           type="text"
           className={cn(
-            'w-full h-16 px-4 pt-4 bg-bg-60 rounded-sm text-text-100 focus:outline-none font-rootstock-sans flex justify-end items-end',
+            'w-full h-16 px-4 pt-4 bg-bg-60 rounded-sm text-text-100 focus:outline-none font-rootstock-sans flex justify-end items-end overflow-hidden',
             className,
           )}
           onFocus={e => {
@@ -32,6 +32,7 @@ export function TextInput({ id, label, errorMsg, className, value, onFocus, onBl
             setIsFocused(false)
             onBlur?.(e)
           }}
+          autoComplete="off"
           {...props}
         />
       </FloatingLabel>
