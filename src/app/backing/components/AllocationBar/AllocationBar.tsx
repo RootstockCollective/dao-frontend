@@ -132,7 +132,7 @@ const AllocationBar: React.FC<AllocationBarProps> = ({
   }
 
   return (
-    <div className={`w-full p-8 ${className}`}>
+    <div className={`w-full p-8 flex flex-col items-center justify-center ${className}`}>
       <DndContext
         sensors={sensors}
         collisionDetection={pointerWithin}

@@ -2,7 +2,7 @@ import { AllocationsContext } from '@/app/collective-rewards/allocations/context
 import { Builder } from '@/app/collective-rewards/types'
 import { RIF } from '@/lib/constants'
 import { usePricesContext } from '@/shared/context/PricesContext'
-import { FC, useContext, useEffect, useState } from 'react'
+import { FC, useCallback, useContext, useEffect, useState } from 'react'
 import { parseEther } from 'viem'
 import { useAccount } from 'wagmi'
 import { BuilderCard } from './BuilderCard'
@@ -11,9 +11,39 @@ import { ActionsContainer } from '@/components/containers/ActionsContainer'
 import { Button } from '@/components/ButtonNew/Button'
 import { useAllocateVotes } from '@/app/collective-rewards/allocations/hooks/useAllocateVotes'
 import { floorToUnit, getBuilderColor } from '../utils'
+import { TransactionInProgressButton } from '@/app/user/Stake/components/TransactionInProgressButton'
 
 export interface BuilderCardControlProps extends Builder {
   allocationTxPending?: boolean
+}
+
+const AllocationDrawerContent = ({
+  onSaveAllocations,
+  onCancelAllocations,
+  isPendingTx,
+}: {
+  onSaveAllocations: () => void
+  onCancelAllocations: () => void
+  isPendingTx: boolean
+}) => {
+  useEffect(() => {}, [isPendingTx])
+
+  return (
+    <ActionsContainer className="bg-v3-bg-accent-60">
+      <div className="flex justify-center gap-2 w-full">
+        <Button variant="secondary-outline" onClick={onCancelAllocations}>
+          Cancel
+        </Button>
+        {isPendingTx ? (
+          <TransactionInProgressButton />
+        ) : (
+          <Button variant="primary" onClick={onSaveAllocations}>
+            Save new backing amounts
+          </Button>
+        )}
+      </div>
+    </ActionsContainer>
+  )
 }
 
 export const BuilderCardControl: FC<BuilderCardControlProps> = ({
@@ -23,7 +53,7 @@ export const BuilderCardControl: FC<BuilderCardControlProps> = ({
 }) => {
   const { isConnected } = useAccount()
   const { prices } = usePricesContext()
-  const { openDrawer, closeDrawer } = useLayoutContext()
+  const { openDrawer, closeDrawer, isDrawerOpen } = useLayoutContext()
   const {
     actions: { updateAllocation, resetAllocations },
     state: {
@@ -34,11 +64,7 @@ export const BuilderCardControl: FC<BuilderCardControlProps> = ({
     initialState: { allocations: initialAllocations },
   } = useContext(AllocationsContext)
 
-  const {
-    saveAllocations,
-    canSaveAllocation,
-    isSuccess: isSuccessSaveAllocations,
-  } = useAllocateVotes()
+  const { saveAllocations, canSaveAllocation, isPendingTx, isLoadingReceipt, isSuccess } = useAllocateVotes()
 
   const rifPriceUsd = prices[RIF]?.price ?? 0
   const allocation = allocations[builderAddress] ?? 0n
@@ -47,14 +73,38 @@ export const BuilderCardControl: FC<BuilderCardControlProps> = ({
 
   const onSaveAllocations = () => {
     saveAllocations()
+    if (isDrawerOpen) {
+      openOrUpdateAllocationDrawer()
+    }
+  }
+
+  const onCancelAllocations = () => {
+    resetAllocations()
+    closeDrawer()
   }
 
   useEffect(() => {
-    if (isSuccessSaveAllocations) {
+    if (isDrawerOpen) {
+      openOrUpdateAllocationDrawer()
+    }
+  }, [isPendingTx])
+
+  useEffect(() => {
+    if (isSuccess) {
       closeDrawer()
     }
-  }, [isSuccessSaveAllocations, closeDrawer])
-    
+  }, [isSuccess, closeDrawer])
+
+  const openOrUpdateAllocationDrawer = useCallback(() => {
+    openDrawer(
+      <AllocationDrawerContent
+        onSaveAllocations={onSaveAllocations}
+        onCancelAllocations={onCancelAllocations}
+        isPendingTx={isPendingTx || isLoadingReceipt}
+      />,
+      true,
+    )
+  }, [openDrawer, onSaveAllocations, onCancelAllocations, isPendingTx, isLoadingReceipt])
 
   const handleAllocationChange = (value: number) => {
     if (allocationTxPending) return
@@ -62,28 +112,7 @@ export const BuilderCardControl: FC<BuilderCardControlProps> = ({
 
     if (!canSaveAllocation) return
 
-    openDrawer(
-      <ActionsContainer className="bg-v3-bg-accent-60">
-        <div className="flex justify-center gap-2 w-full">
-          <Button
-            variant="secondary-outline"
-            onClick={() => {
-              resetAllocations()
-              closeDrawer()
-            }}
-          >
-            Cancel
-          </Button>
-          <Button
-            variant="primary"
-            onClick={onSaveAllocations}
-          >
-            Save new backing amounts
-          </Button>
-        </div>
-      </ActionsContainer>,
-      true,
-    )
+    openOrUpdateAllocationDrawer()
   }
 
   return (

@@ -10,6 +10,9 @@ import { validateAllocationsState } from './utils'
 import { useShuffledArray } from '@/app/backing/hooks/useShuffledArray'
 import { isBuilderRewardable } from '../../utils'
 
+
+const SPOTLIGHT_BUILDERS = 4
+
 export interface Allocations {
   [K: Address]: bigint
 }
@@ -174,7 +177,7 @@ export const AllocationsContextProvider: FC<{ children: ReactNode }> = ({ childr
 
   const randomBuilders = useShuffledArray<Builder>(Object.values(builders))
     .filter(({ stateFlags }) => isBuilderRewardable(stateFlags))
-    .slice(0, 4)
+    .slice(0, SPOTLIGHT_BUILDERS)
 
   /**
    * Reactive state updates

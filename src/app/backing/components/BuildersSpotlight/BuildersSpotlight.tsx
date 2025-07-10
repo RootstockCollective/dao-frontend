@@ -10,8 +10,6 @@ import { Address } from 'viem'
 import { BackMoreBuildersCard } from '../BuilderCard/BackMoreBuildersCard'
 import { BuilderCardControl } from '../BuilderCard/BuilderCardControl'
 
-const SPOTLIGHT_BUILDERS = 4
-
 interface BuildersSpotlightProps {
   rewardsData: BuildersRewards[]
 }
