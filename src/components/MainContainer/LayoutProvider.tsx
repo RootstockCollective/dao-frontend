@@ -52,7 +52,7 @@ export function LayoutProvider({ children }: PropsWithChildren) {
     if (isDrawerOpen && closeOnRouteChange) {
       closeDrawer()
     }
-  }, [closeOnRouteChange, isDrawerOpen, pathname])
+  }, [pathname]) // eslint-disable-line react-hooks/exhaustive-deps
 
   // Refs for layout elements
   const drawerRef = useRef<HTMLDivElement | null>(null)

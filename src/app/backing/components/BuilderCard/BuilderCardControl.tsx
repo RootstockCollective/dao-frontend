@@ -18,7 +18,7 @@ export interface BuilderCardControlProps extends Builder {
 }
 
 const AllocationDrawerContent = () => {
-  const { saveAllocations, isPendingTx, isLoadingReceipt, isSuccess, canSaveAllocation } = useAllocateVotes()
+  const { saveAllocations, isPendingTx, isLoadingReceipt, isSuccess } = useAllocateVotes()
 
   const { closeDrawer } = useLayoutContext()
   const {
@@ -26,8 +26,6 @@ const AllocationDrawerContent = () => {
   } = useContext(AllocationsContext)
 
   const onSaveAllocations = () => {
-    if (!canSaveAllocation) return
-
     saveAllocations()
   }
   const onCancelAllocations = () => {
