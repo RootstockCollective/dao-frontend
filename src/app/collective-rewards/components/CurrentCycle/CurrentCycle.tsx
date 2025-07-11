@@ -10,12 +10,17 @@ export const CurrentCycle = () => {
       className="flex flex-col gap-10 pl-6 pt-6 pr-6 pb-10 bg-v3-bg-accent-80"
       title="THE REWARDS AT WORK - CURRENT CYCLE"
     >
-      <div className="flex justify-between items-start w-full">
-        <CycleContextProvider>
-          <CycleMetrics />
-        </CycleContextProvider>
-        <TotalBackingLoader />
-        <EstimatedRewards />
+      <div className="flex items-start w-full gap-14">
+        <div className="flex justify-between basis-3/4">
+          <CycleContextProvider>
+            <CycleMetrics />
+          </CycleContextProvider>
+          <TotalBackingLoader />
+          <div className="w-0" aria-hidden="true" />
+        </div>
+        <div className="basis-1/4">
+          <EstimatedRewards />
+        </div>
       </div>
     </ActionsContainer>
   )
