@@ -2,7 +2,7 @@ import { Button } from '@/components/ButtonNew'
 import { BuildingBrick, CloseIconKoto } from '@/components/Icons'
 import { Paragraph } from '@/components/TypographyNew'
 import { cn } from '@/lib/utils'
-import { useRouter } from 'next/router'
+import { useRouter } from 'next/navigation'
 import { FC, useState } from 'react'
 
 export interface BackMoreBuildersCardProps {

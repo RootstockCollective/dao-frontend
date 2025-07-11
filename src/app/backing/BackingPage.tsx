@@ -37,9 +37,11 @@ export const BackingPage = () => {
     state: {
       allocations,
       backer: { balance: votingPower, amountToAllocate: totalOnchainAllocation, allocationsCount },
+      randomBuilders,
     },
     actions: { updateAllocations, updateAmountToAllocate },
   } = useContext(AllocationsContext)
+
   const rifPriceUsd = prices[RIF]?.price ?? 0
 
   const availableForBacking = !votingPower ? 0n : votingPower - totalOnchainAllocation
@@ -62,7 +64,6 @@ export const BackingPage = () => {
   const handleDistributeClick = () => {
     //FIXME: Take into the inactive builders
     updateAmountToAllocate(votingPower)
-    if (allocationsCount === 0) return
     const newAllocations = Object.keys(allocations).reduce((acc, key) => {
       const builderAddress = key as Address
       const newAllocation = availableForBacking / BigInt(allocationsCount) + allocations[builderAddress]
@@ -70,7 +71,15 @@ export const BackingPage = () => {
 
       return acc
     }, {} as Allocations)
-    updateAllocations(newAllocations)
+
+    const buildersAllocations =
+      allocationsCount > 0
+        ? newAllocations
+        : randomBuilders.reduce((acc, builder) => {
+            acc[builder.address] = availableForBacking / BigInt(randomBuilders.length)
+            return acc
+          }, {} as Allocations)
+    updateAllocations(buildersAllocations)
   }
 
   return (
@@ -96,7 +105,7 @@ export const BackingPage = () => {
       )}
 
       {/* FIXME: we need to change the conditions to show the BuilderAllocationBar */}
-      {isConnected && availableForBacking > 0 && <BuilderAllocationBar />}
+      {isConnected && <BuilderAllocationBar />}
 
       {isConnected && (
         <ActionMetricsContainer className="flex flex-col items-start w-[1144px] p-6 gap-2 rounded-[4px] bg-v3-bg-accent-80">

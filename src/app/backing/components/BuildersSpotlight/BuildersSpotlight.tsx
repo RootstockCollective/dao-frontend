@@ -1,17 +1,14 @@
 import { AllocationsContext } from '@/app/collective-rewards/allocations/context'
 import { BuildersRewards } from '@/app/collective-rewards/rewards/builders/hooks/useGetBuildersRewards'
 import { Builder } from '@/app/collective-rewards/types'
-import { isBuilderRewardable, useHandleErrors } from '@/app/collective-rewards/utils'
+import { useHandleErrors } from '@/app/collective-rewards/utils'
 import { Button } from '@/components/ButtonNew'
 import { LoadingSpinner } from '@/components/LoadingSpinner'
 import { useRouter } from 'next/navigation'
 import { FC, useContext } from 'react'
 import { Address } from 'viem'
-import { useShuffledArray } from '../../hooks/useShuffledArray'
 import { BackMoreBuildersCard } from '../BuilderCard/BackMoreBuildersCard'
 import { BuilderCardControl } from '../BuilderCard/BuilderCardControl'
-
-const SPOTLIGHT_BUILDERS = 4
 
 interface BuildersSpotlightProps {
   rewardsData: BuildersRewards[]
@@ -21,7 +18,7 @@ export const BuildersSpotlight: FC<BuildersSpotlightProps> = ({ rewardsData }) =
   const {
     state: {
       allocations,
-      builders,
+      randomBuilders,
       isContextLoading,
       getBuilder,
       backer: { amountToAllocate: totalOnchainAllocation },
@@ -33,13 +30,9 @@ export const BuildersSpotlight: FC<BuildersSpotlightProps> = ({ rewardsData }) =
 
   const hasAllocations = totalOnchainAllocation > 0n
 
-  const randomBuilders = useShuffledArray<Builder>(Object.values(builders)).filter(({ stateFlags }) =>
-    isBuilderRewardable(stateFlags),
-  )
-
   const allocatedBuilders = Object.keys(allocations).map(key => getBuilder(key as Address)!)
 
-  const buildersToShow = hasAllocations ? allocatedBuilders : randomBuilders.slice(0, SPOTLIGHT_BUILDERS)
+  const buildersToShow = hasAllocations ? allocatedBuilders : randomBuilders
 
   const router = useRouter()
 

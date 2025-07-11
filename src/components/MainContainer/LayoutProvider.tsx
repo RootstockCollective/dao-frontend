@@ -13,6 +13,7 @@ import {
   useEffect,
   useRef,
 } from 'react'
+import { usePathname } from 'next/navigation'
 
 interface LayoutState {
   isSidebarOpen: boolean
@@ -20,7 +21,7 @@ interface LayoutState {
   openSidebar: () => void
   closeSidebar: () => void
   isDrawerOpen: boolean
-  openDrawer: (content: ReactNode) => void
+  openDrawer: (content: ReactNode, closeOnRouteChange?: boolean) => void
   closeDrawer: () => void
   drawerContent: ReactNode | null
   setDrawerRef: (ref: HTMLDivElement | null) => void
@@ -44,6 +45,14 @@ export function LayoutProvider({ children }: PropsWithChildren) {
 
   const [drawerContent, setDrawerContent] = useState<ReactNode | null>(null)
   const [isDrawerOpen, setIsDrawerOpen] = useState(false)
+  const [closeOnRouteChange, setCloseOnRouteChange] = useState(false)
+
+  const pathname = usePathname()
+  useEffect(() => {
+    if (isDrawerOpen && closeOnRouteChange) {
+      closeDrawer()
+    }
+  }, [pathname]) // eslint-disable-line react-hooks/exhaustive-deps
 
   // Refs for layout elements
   const drawerRef = useRef<HTMLDivElement | null>(null)
@@ -51,9 +60,12 @@ export function LayoutProvider({ children }: PropsWithChildren) {
   const [drawerHeight, setDrawerHeight] = useState(0)
   const [showPadding, setShowPadding] = useState(false)
 
-  const openDrawer = (content: ReactNode) => {
+  const openDrawer = (content: ReactNode, closeOnRouteChange = false) => {
     setDrawerContent(content)
     setIsDrawerOpen(true)
+    if (closeOnRouteChange) {
+      setCloseOnRouteChange(true)
+    }
   }
 
   const closeDrawer = () => {
