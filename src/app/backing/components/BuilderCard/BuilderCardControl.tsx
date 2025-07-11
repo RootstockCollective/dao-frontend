@@ -1,24 +1,24 @@
 import { AllocationsContext } from '@/app/collective-rewards/allocations/context'
+import { useAllocateVotes } from '@/app/collective-rewards/allocations/hooks/useAllocateVotes'
 import { Builder } from '@/app/collective-rewards/types'
-import { RIF } from '@/lib/constants'
-import { usePricesContext } from '@/shared/context/PricesContext'
-import { createContext, FC, useCallback, useContext, useEffect } from 'react'
-import { parseEther } from 'viem'
-import { useAccount } from 'wagmi'
-import { BuilderCard } from './BuilderCard'
+import { TransactionInProgressButton } from '@/app/user/Stake/components/TransactionInProgressButton'
+import { Button } from '@/components/ButtonNew/Button'
 import { useLayoutContext } from '@/components/MainContainer/LayoutProvider'
 import { ActionsContainer } from '@/components/containers/ActionsContainer'
-import { Button } from '@/components/ButtonNew/Button'
-import { useAllocateVotes } from '@/app/collective-rewards/allocations/hooks/useAllocateVotes'
+import { RIF } from '@/lib/constants'
+import { usePricesContext } from '@/shared/context/PricesContext'
+import { FC, useContext, useEffect } from 'react'
+import { parseEther } from 'viem'
+import { useAccount } from 'wagmi'
 import { floorToUnit, getBuilderColor } from '../utils'
-import { TransactionInProgressButton } from '@/app/user/Stake/components/TransactionInProgressButton'
+import { BuilderCard } from './BuilderCard'
 
 export interface BuilderCardControlProps extends Builder {
   allocationTxPending?: boolean
 }
 
 const AllocationDrawerContent = () => {
-  const { saveAllocations, isPendingTx, isLoadingReceipt, isSuccess } = useAllocateVotes()
+  const { saveAllocations, isPendingTx, isLoadingReceipt, isSuccess, canSaveAllocation } = useAllocateVotes()
 
   const { closeDrawer } = useLayoutContext()
   const {
@@ -26,6 +26,8 @@ const AllocationDrawerContent = () => {
   } = useContext(AllocationsContext)
 
   const onSaveAllocations = () => {
+    if (!canSaveAllocation) return
+
     saveAllocations()
   }
   const onCancelAllocations = () => {
@@ -75,8 +77,6 @@ export const BuilderCardControl: FC<BuilderCardControlProps> = ({
     initialState: { allocations: initialAllocations },
   } = useContext(AllocationsContext)
 
-  const { canSaveAllocation } = useAllocateVotes()
-
   const rifPriceUsd = prices[RIF]?.price ?? 0
   const allocation = allocations[builderAddress] ?? 0n
   const existentAllocation = initialAllocations[builderAddress] ?? 0n
@@ -85,8 +85,6 @@ export const BuilderCardControl: FC<BuilderCardControlProps> = ({
   const handleAllocationChange = (value: number) => {
     if (allocationTxPending) return
     updateAllocation(builderAddress, parseEther(value.toString()))
-
-    if (!canSaveAllocation) return
 
     openDrawer(<AllocationDrawerContent />, true)
   }
