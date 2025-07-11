@@ -5,7 +5,11 @@ import { useRouter } from 'next/navigation'
 import { useLayoutContext } from '@/components/MainContainer/LayoutProvider'
 import { useIsDesktop } from '@/shared/hooks/useIsDesktop'
 
-export const Subfooter = ({ href }: { href: string }) => {
+interface Props {
+  submitForm: () => void
+}
+
+export const Subfooter = ({ submitForm }: Props) => {
   const router = useRouter()
   const { isSidebarOpen } = useLayoutContext()
   const isDesktop = useIsDesktop()
@@ -23,9 +27,7 @@ export const Subfooter = ({ href }: { href: string }) => {
         <Button onClick={router.back} variant="secondary-outline">
           Back
         </Button>
-        <Link href={href}>
-          <Button>Review proposal</Button>
-        </Link>
+        <Button onClick={submitForm}>Review proposal</Button>
       </div>
     </motion.div>
   )
