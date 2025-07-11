@@ -98,22 +98,3 @@ export const WithMockData: StoryObj<typeof BuilderRewards> = {
     },
   },
 }
-
-// Story with real data source (default behavior)
-export const WithRealData: StoryObj<typeof BuilderRewards> = {
-  args: {
-    builder: mockBuilderAddress,
-    gauge: mockGaugeAddress,
-    gauges: mockGauges,
-    tokens: mockTokens,
-    currency: 'USD',
-    // No dataSource prop - will use real data by default
-  },
-  parameters: {
-    docs: {
-      description: {
-        story: 'This story uses real data from hooks (default behavior).',
-      },
-    },
-  },
-}
