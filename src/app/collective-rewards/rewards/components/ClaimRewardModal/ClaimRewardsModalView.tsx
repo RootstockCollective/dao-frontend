@@ -3,23 +3,24 @@ import { TransactionInProgressButton } from '@/app/user/Stake/components/Transac
 import { Button } from '@/components/ButtonNew'
 import { LoadingSpinner } from '@/components/LoadingSpinner'
 import { Modal } from '@/components/Modal/Modal'
-import { TokenImage, TokenSymbol } from '@/components/TokenImage'
+import { TokenImage } from '@/components/TokenImage'
 import { Tooltip } from '@/components/Tooltip'
 import { Typography } from '@/components/TypographyNew/Typography'
-import { RBTC, RIF } from '@/lib/constants'
 import { cn, formatCurrency } from '@/lib/utils'
 import * as RadioGroup from '@radix-ui/react-radio-group'
 import { FC, ReactNode, memo } from 'react'
 import { ClaimRewardType } from './types'
+import { getTokens } from '@/lib/tokens'
+import { RBTC } from '@/lib/constants'
+
+const tokens = getTokens()
 
 interface ClaimRewardsModalViewProps {
   onClose: () => void
   selectedRewardType: ClaimRewardType
   onRewardTypeChange: (value: ClaimRewardType) => void
-  rifAmount: bigint
-  rbtcAmount: bigint
-  rifFiatAmount: number
-  rbtcFiatAmount: number
+  tokenAmounts: Record<string, bigint>
+  tokenFiatAmounts: Record<string, number>
   totalFiatAmount: number
   onClaim: () => void
   isClaimable: boolean
@@ -68,10 +69,8 @@ export const ClaimRewardsModalView: FC<ClaimRewardsModalViewProps> = ({
   onClose,
   selectedRewardType,
   onRewardTypeChange,
-  rifAmount,
-  rbtcAmount,
-  rifFiatAmount,
-  rbtcFiatAmount,
+  tokenAmounts,
+  tokenFiatAmounts,
   totalFiatAmount,
   onClaim,
   isClaimable,
@@ -89,24 +88,16 @@ export const ClaimRewardsModalView: FC<ClaimRewardsModalViewProps> = ({
       label: 'All Rewards',
       subLabel: formatCurrency(totalFiatAmount),
     },
-    {
-      value: 'rif',
+    ...Object.entries(tokens).map(([tokenKey, tokenInfo]) => ({
+      value: tokenKey as ClaimRewardType,
       label: (
         <div className="flex items-center gap-2">
-          {formatSymbol(rifAmount, RIF)} <TokenImage symbol={TokenSymbol.STRIF} size={16} />
+          {formatSymbol(tokenAmounts[tokenKey], tokenInfo.symbol)}{' '}
+          <TokenImage symbol={tokenInfo.symbol} size={tokenInfo.symbol === RBTC ? 18 : 16} />
         </div>
       ),
-      subLabel: `${formatCurrency(rifFiatAmount)} USD`,
-    },
-    {
-      value: 'rbtc',
-      label: (
-        <div className="flex items-center gap-2">
-          {formatSymbol(rbtcAmount, RBTC)} <TokenImage symbol={TokenSymbol.RBTC} size={18} />
-        </div>
-      ),
-      subLabel: formatCurrency(rbtcFiatAmount),
-    },
+      subLabel: `${formatCurrency(tokenFiatAmounts[tokenKey])} USD`,
+    })),
   ]
 
   return (
