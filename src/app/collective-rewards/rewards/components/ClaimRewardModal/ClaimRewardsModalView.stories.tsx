@@ -1,12 +1,26 @@
 import type { Meta, StoryObj } from '@storybook/react'
 import { ClaimRewardsModalView } from './ClaimRewardsModalView'
 import { getTokens } from '@/lib/tokens'
+import { useState } from 'react'
 
 const tokens = getTokens()
 
-const meta: Meta<typeof ClaimRewardsModalView> = {
+// Create a wrapper component that handles dynamic state
+const ClaimRewardsModalViewWrapper = (props: any) => {
+  const [selectedRewardType, setSelectedRewardType] = useState(props.selectedRewardType || 'all')
+  
+  return (
+    <ClaimRewardsModalView
+      {...props}
+      selectedRewardType={selectedRewardType}
+      onRewardTypeChange={setSelectedRewardType}
+    />
+  )
+}
+
+const meta: Meta<typeof ClaimRewardsModalViewWrapper> = {
   title: 'CollectiveRewards/ClaimRewardsModalView',
-  component: ClaimRewardsModalView,
+  component: ClaimRewardsModalViewWrapper,
   parameters: {
     layout: 'centered',
     backgrounds: {
@@ -42,13 +56,12 @@ const meta: Meta<typeof ClaimRewardsModalView> = {
 
 export default meta
 
-type Story = StoryObj<typeof ClaimRewardsModalView>
+type Story = StoryObj<typeof ClaimRewardsModalViewWrapper>
 
 export const Default: Story = {
   args: {
     onClose: () => alert('Modal closed'),
     selectedRewardType: 'all',
-    onRewardTypeChange: (value: string) => console.log('Selected reward type:', value),
     tokenAmounts: {
       rif: 1000000000000000000000n,
       rbtc: 5000000000000000000n,
