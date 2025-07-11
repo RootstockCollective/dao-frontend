@@ -1,5 +1,5 @@
 'use client'
-import { MouseEvent, Fragment, useEffect, useMemo, useState, useRef } from 'react'
+import { MouseEvent, Fragment, useMemo, useState, useRef } from 'react'
 import { useFetchAllProposals } from '@/app/proposals/hooks/useFetchLatestProposals'
 import { useGetProposalSnapshot } from '@/app/proposals/hooks/useGetProposalSnapshot'
 import { useGetProposalVotes } from '@/app/proposals/hooks/useGetProposalVotes'
@@ -12,12 +12,10 @@ import { formatNumberWithCommas } from '@/lib/utils'
 import { useExecuteProposal } from '@/shared/hooks/useExecuteProposal'
 import { useQueueProposal } from '@/shared/hooks/useQueueProposal'
 import { useVoteOnProposal } from '@/shared/hooks/useVoteOnProposal'
-import { TX_MESSAGES } from '@/shared/txMessages'
 import { waitForTransactionReceipt } from '@wagmi/core'
 import { useParams } from 'next/navigation'
 import { formatEther, zeroAddress } from 'viem'
-import { type BaseError, useAccount } from 'wagmi'
-import { VoteSubmittedModal } from '@/components/Modal/VoteSubmittedModal'
+import { type useAccount } from 'wagmi'
 import { ProposalState } from '@/shared/types'
 import { isUserRejectedTxError } from '@/components/ErrorPage/commonErrors'
 import { usePricesContext } from '@/shared/context/PricesContext'
@@ -168,17 +166,8 @@ const PageWithProposal = (proposal: ParsedProposal) => {
 
   const { votingPowerAtSnapshot, doesUserHasEnoughThreshold } = useVotingPowerAtSnapshot(snapshot as bigint)
 
-  const {
-    onVote,
-    isProposalActive,
-    proposalState,
-    isVoting,
-    isWaitingVotingReceipt,
-    setVotingTxHash,
-    isVotingConfirmed,
-    isVotingFailed,
-    votingError,
-  } = useVoteOnProposal(proposalId)
+  const { onVote, isProposalActive, proposalState, isVoting, isWaitingVotingReceipt, setVotingTxHash } =
+    useVoteOnProposal(proposalId)
   const { onQueueProposal } = useQueueProposal(proposalId)
 
   const { onExecuteProposal } = useExecuteProposal(proposalId)
@@ -188,7 +177,9 @@ const PageWithProposal = (proposal: ParsedProposal) => {
   const voteButtonRef = useRef<HTMLButtonElement>(null)
 
   const cannotCastVote =
-    !isProposalActive || !!vote || !doesUserHasEnoughThreshold || isVoting || isWaitingVotingReceipt
+    proposalState !== ProposalState.Succeeded &&
+    proposalState !== ProposalState.Queued &&
+    (!isProposalActive || !!vote || !doesUserHasEnoughThreshold || isVoting || isWaitingVotingReceipt)
 
   const actionName = calldatasParsed?.[0]?.type === 'decoded' ? calldatasParsed[0].functionName : undefined
   const { builderName } = splitCombinedName(name)
