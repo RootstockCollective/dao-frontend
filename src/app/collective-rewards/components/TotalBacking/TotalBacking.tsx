@@ -19,7 +19,7 @@ export const TotalBackingLoader = () => {
 
 export const TotalBackingContent = ({ totalAllocations }: { totalAllocations: bigint }) => {
   return (
-    <Metric title="Total Backing" className="w-auto" containerClassName="gap-4">
+    <Metric title="Total Backing" className="w-auto pr-12" containerClassName="gap-4">
       <div className="flex items-center gap-2 font-kk-topo text-lg font-normal tracking-tight">
         <Paragraph className="font-bold">{formatSymbol(totalAllocations, 'StRIF')}</Paragraph>
         <TokenImage symbol={TokenSymbol.STRIF} size={16} />
