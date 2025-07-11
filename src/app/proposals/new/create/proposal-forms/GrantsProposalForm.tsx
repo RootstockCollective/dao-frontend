@@ -1,15 +1,16 @@
 'use client'
 
+import { useRouter } from 'next/navigation'
+import { useCallback, useEffect } from 'react'
+import { useForm } from 'react-hook-form'
+import { z } from 'zod'
+import { Address, isAddress } from 'viem'
 import { useLayoutContext } from '@/components/MainContainer/LayoutProvider'
-import { useEffect } from 'react'
 import { Subfooter } from '../Subfooter'
 import { TextInput, NumberInput } from '@/components/FormFields'
 import { BaseProposalSchema, BaseProposalFields, TokenFieldsSchema, TokenRadioGroup } from './components'
-import { useForm, useWatch } from 'react-hook-form'
-import { z } from 'zod'
 import { zodResolver } from '@hookform/resolvers/zod'
-import { Address, isAddress } from 'viem'
-
+import { useReviewProposal } from '../../context/ReviewProposalContext'
 import { isChecksumValid } from '@/app/proposals/shared/utils'
 
 // grant limits
@@ -53,17 +54,20 @@ export const ProposalSchema = BaseProposalSchema.merge(TokenFieldsSchema)
   })
 
 export function GrantsProposalForm() {
-  // inject sticky drawer with submit button to the footer layout
-  const { setSubfooter } = useLayoutContext()
-  useEffect(() => {
-    setSubfooter(<Subfooter href="/" />)
-    return () => setSubfooter(null)
-  }, [])
+  const { form: savedForm, setForm } = useReviewProposal()
+  const router = useRouter()
 
-  const form = useForm<z.infer<typeof ProposalSchema>>({
+  const {
+    register,
+    setValue,
+    formState: { errors },
+    handleSubmit,
+    watch,
+    getValues,
+  } = useForm<z.infer<typeof ProposalSchema>>({
     mode: 'onTouched',
     resolver: zodResolver(ProposalSchema),
-    defaultValues: {
+    defaultValues: savedForm || {
       proposalName: '',
       description: '',
       discourseLink: '',
@@ -72,25 +76,35 @@ export function GrantsProposalForm() {
       transferAmount: '',
     },
   })
-  const {
-    register,
-    setValue,
-    formState: { errors },
-  } = form
-  const watch = useWatch(form)
+
+  const onSubmit = useCallback(
+    () =>
+      handleSubmit(data => {
+        setForm(data)
+        router.push('/proposals/new/review')
+      })(),
+    [handleSubmit, router, setForm],
+  )
+
+  // inject sticky drawer with submit button to the footer layout
+  const { setSubfooter } = useLayoutContext()
+  useEffect(() => {
+    setSubfooter(<Subfooter submitForm={onSubmit} />)
+    return () => setSubfooter(null)
+  }, [onSubmit, setSubfooter])
 
   return (
     <div>
       <form>
         <div className="w-full max-w-[760px] px-6 pt-6 pb-8 flex flex-col gap-10 bg-bg-80 rounded-sm">
-          <BaseProposalFields register={register} errors={errors} watch={watch} />
+          <BaseProposalFields register={register} errors={errors} watch={watch()} />
           <div className="flex flex-col gap-4">
             <h2 className="font-kk-topo text-text-100 text-2xl uppercase leading-loose tracking-wide">
               Proposal Action
             </h2>
             <TextInput
               {...register('targetAddress', { required: true })}
-              value={watch.targetAddress}
+              value={getValues('targetAddress')}
               errorMsg={errors.targetAddress?.message}
               label="Address to transfer funds to"
               data-testid="InputAddress"
@@ -99,7 +113,7 @@ export function GrantsProposalForm() {
               <div className="basis-1/2">
                 <NumberInput
                   {...register('transferAmount', { required: true })}
-                  value={watch.transferAmount}
+                  value={getValues('transferAmount')}
                   errorMsg={errors.transferAmount?.message}
                   label="Amount to be transferred"
                   data-testid="InputAmount"
@@ -109,7 +123,7 @@ export function GrantsProposalForm() {
               <TokenRadioGroup
                 register={register}
                 setValue={setValue}
-                value={watch.token || 'rBTC'}
+                value={getValues('token') || 'rBTC'}
                 errMsg={errors.token?.message}
               />
             </div>

@@ -20,7 +20,7 @@ export function BaseProposalFields<T extends BaseProposalFormData & FieldValues>
       <TextInput
         {...register('proposalName' as Path<T>)}
         value={watch.proposalName || ''}
-        errorMsg={typeof errors.proposalName?.message === 'string' ? errors.proposalName.message : undefined}
+        errorMsg={errors.proposalName?.message?.toString()}
         label="Proposal name"
         data-testid="InputName"
         autoComplete="off"
@@ -30,14 +30,12 @@ export function BaseProposalFields<T extends BaseProposalFormData & FieldValues>
         value={watch.discourseLink || ''}
         label="Discourse link"
         data-testid="InputLink"
-        errorMsg={
-          typeof errors.discourseLink?.message === 'string' ? errors.discourseLink.message : undefined
-        }
+        errorMsg={errors.discourseLink?.message?.toString()}
       />
       <TextArea
         {...register('description' as Path<T>)}
         value={watch.description || ''}
-        errorMsg={typeof errors.description?.message === 'string' ? errors.description.message : undefined}
+        errorMsg={errors.description?.message?.toString()}
         label="Short description"
         data-testid="InputDescription"
       />
