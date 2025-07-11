@@ -31,7 +31,7 @@ export const useVoteOnProposal = (proposalId: string, shouldRefetch = true) => {
   })
 
   // If everything passed ok - user can vote
-  const { writeContractAsync: castVote, isPending: isVoting } = useWriteContract()
+  const { writeContractAsync: castVote, isPending: isVoting, isError } = useWriteContract()
   const onVote = (vote: Vote) => {
     if (!isProposalActive) {
       return Promise.reject('The proposal is not active.')
@@ -66,7 +66,7 @@ export const useVoteOnProposal = (proposalId: string, shouldRefetch = true) => {
     isWaitingVotingReceipt,
     setVotingTxHash: setTxHash,
     isVotingConfirmed,
-    isVotingFailed,
+    isVotingFailed: isVotingFailed || isError,
     votingError,
   }
 }

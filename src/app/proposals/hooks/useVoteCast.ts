@@ -31,7 +31,7 @@ export const useVoteCastEvent = (address: Address) => {
 export const useGetVoteForSpecificProposal = (
   address: Address,
   proposalId: string,
-): [Vote | undefined, (vote: Vote) => void] => {
+): [Vote | undefined, (vote: Vote | undefined) => void] => {
   const [vote, setVote] = useState<Vote | undefined>(undefined)
 
   const { data } = useQuery({
@@ -43,7 +43,6 @@ export const useGetVoteForSpecificProposal = (
 
   useEffect(() => {
     if (event) {
-      console.log('EVENT IN useGetVoteForSpecificProposal', event)
       setVote(VOTES_MAP.get(event.args.support as number) as Vote)
     }
   }, [event])
