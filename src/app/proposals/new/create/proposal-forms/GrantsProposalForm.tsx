@@ -4,8 +4,7 @@ import { useLayoutContext } from '@/components/MainContainer/LayoutProvider'
 import { useEffect } from 'react'
 import { Subfooter } from '../Subfooter'
 import { TextInput, NumberInput } from '@/components/FormFields'
-import { BaseProposalFields } from './components/BaseProposalFields'
-import { BaseProposalSchema } from './components/baseProposalSchema'
+import { BaseProposalSchema, BaseProposalFields, TokenFieldsSchema, TokenRadioGroup } from './components'
 import { useForm, useWatch } from 'react-hook-form'
 import { z } from 'zod'
 import { zodResolver } from '@hookform/resolvers/zod'
@@ -13,52 +12,48 @@ import { Address, isAddress } from 'viem'
 
 import { isChecksumValid } from '@/app/proposals/shared/utils'
 
+// grant limits
 const MIN_AMOUNT = {
-  RBTC: 0.0001,
+  rBTC: 0.0001,
   RIF: 1,
 }
 
 const MAX_AMOUNT = {
-  RBTC: 21,
+  rBTC: 21,
   RIF: 1_000_000,
 }
 
-export const ProposalSchema = BaseProposalSchema.extend({
-  token: z.enum(['RBTC', 'RIF']),
+// Grant proposal form schema
+export const ProposalSchema = BaseProposalSchema.merge(TokenFieldsSchema)
+  .extend({
+    targetAddress: z
+      .string()
+      .refine(val => isAddress(val), { message: 'Invalid Rootstock address' })
+      .refine(val => isChecksumValid(val), { message: 'Address checksum is invalid' }),
+  })
+  .superRefine((data, ctx) => {
+    const num = Number(data.transferAmount)
+    const token = data.token
 
-  targetAddress: z
-    .string()
-    .refine(val => isAddress(val), { message: 'Invalid Rootstock address' })
-    .refine(val => isChecksumValid(val), { message: 'Address checksum is invalid' }),
+    if (token in MIN_AMOUNT && num < MIN_AMOUNT[token]) {
+      ctx.addIssue({
+        path: ['transferAmount'],
+        message: `Amount is below minimum for ${token}`,
+        code: z.ZodIssueCode.custom,
+      })
+    }
 
-  transferAmount: z
-    .string()
-    .trim()
-    .refine(val => !isNaN(Number(val)), {
-      message: 'Amount must be a number',
-    }),
-}).superRefine((data, ctx) => {
-  const num = Number(data.transferAmount)
-  const token = data.token
-
-  if (token in MIN_AMOUNT && num < MIN_AMOUNT[token]) {
-    ctx.addIssue({
-      path: ['transferAmount'],
-      message: `Amount is below minimum for ${token}`,
-      code: z.ZodIssueCode.custom,
-    })
-  }
-
-  if (token in MAX_AMOUNT && num > MAX_AMOUNT[token]) {
-    ctx.addIssue({
-      path: ['transferAmount'],
-      message: `Amount is above maximum for ${token}`,
-      code: z.ZodIssueCode.custom,
-    })
-  }
-})
+    if (token in MAX_AMOUNT && num > MAX_AMOUNT[token]) {
+      ctx.addIssue({
+        path: ['transferAmount'],
+        message: `Amount is above maximum for ${token}`,
+        code: z.ZodIssueCode.custom,
+      })
+    }
+  })
 
 export function GrantsProposalForm() {
+  // inject sticky drawer with submit button to the footer layout
   const { setSubfooter } = useLayoutContext()
   useEffect(() => {
     setSubfooter(<Subfooter href="/" />)
@@ -73,7 +68,7 @@ export function GrantsProposalForm() {
       description: '',
       discourseLink: '',
       targetAddress: '' as Address,
-      token: 'RBTC',
+      token: 'rBTC',
       transferAmount: '',
     },
   })
@@ -83,6 +78,7 @@ export function GrantsProposalForm() {
     formState: { errors },
   } = form
   const watch = useWatch(form)
+
   return (
     <div>
       <form>
@@ -110,6 +106,12 @@ export function GrantsProposalForm() {
                   onValueChange={({ value }) => setValue('transferAmount', value)}
                 />
               </div>
+              <TokenRadioGroup
+                register={register}
+                setValue={setValue}
+                value={watch.token || 'rBTC'}
+                errMsg={errors.token?.message}
+              />
             </div>
           </div>
         </div>
