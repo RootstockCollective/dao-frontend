@@ -3,7 +3,6 @@ import {
   MetricsCard,
   MetricsCardProps,
   RewardDetails,
-  Tooltip,
 } from '@/app/collective-rewards/rewards'
 import {
   ABIBackers,
@@ -19,6 +18,7 @@ import { GlowingLabel } from '@/components/Label/GlowingLabel'
 import { Typography } from '@/components/Typography/Typography'
 import { cn } from '@/lib/utils'
 import { FC } from 'react'
+import { Tooltip } from '@/components/Tooltip'
 import { RewardsCardProps, TokenRewardsMetrics } from './RewardsCard'
 
 const estimatedRewardsTooltipData: RewardsCardProps['titleDetails']['tooltip'] = {
@@ -38,7 +38,6 @@ const estimatedRewardsTooltipData: RewardsCardProps['titleDetails']['tooltip'] =
       </Typography>
     </>
   ),
-  popoverProps: { size: 'medium', position: 'left-bottom' },
 }
 
 const estimatedRewardsTitleData: RewardsCardProps['titleDetails'] = {
@@ -70,7 +69,9 @@ export const BoostedRewardsCard: FC<RewardsCardProps['rewardDetails'] & MetricsC
         {estimatedRewardsTitleData.title}
       </GlowingLabel>
       <div className="flex items-center gap-0">
-        <Tooltip {...estimatedRewardsTooltipData} />
+        <Tooltip {...estimatedRewardsTooltipData}>
+          <div className="w-4 h-4 bg-info rounded-full" />
+        </Tooltip>
         <BoltSvg showGlow />
       </div>
     </div>
@@ -133,7 +134,7 @@ export const Rewards: FC<RewardsProps> = ({ builder, tokens }) => {
             title: 'All time rewards',
             tooltip: {
               text: 'Total of your received and claimable rewards',
-              popoverProps: { size: 'medium', position: 'bottom' },
+              side: 'bottom',
             },
           }}
           rewardDetails={{
