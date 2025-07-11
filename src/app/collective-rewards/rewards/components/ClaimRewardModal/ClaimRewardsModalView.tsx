@@ -121,7 +121,7 @@ export const ClaimRewardsModalView: FC<ClaimRewardsModalViewProps> = ({
       <div className="p-8 flex flex-col gap-8">
         <Typography variant="h1">CLAIM REWARDS</Typography>
         <Typography>
-          Select the rewards that you want to claim then confirm the transaction in your wallet:
+          Select the rewards that you want to claim, then confirm the transaction in your wallet.
         </Typography>
         <RadioGroup.Root
           className="flex gap-2 w-full"
@@ -139,8 +139,8 @@ export const ClaimRewardsModalView: FC<ClaimRewardsModalViewProps> = ({
           ))}
         </RadioGroup.Root>
         <Typography variant="body">
-          Explain how claiming works... lorem ipsum dolor sit amet, consectetur adipis cing elit. Pellentesque
-          pharetra eleifend erat congue aliquet.
+          Claim your rewards directly to your wallet. Claimed rewards are transferred immediately, and your
+          unclaimed balance resets.
         </Typography>
         <div className="flex justify-end gap-4 mt-8">
           <Button variant="secondary-outline" onClick={onClose}>
