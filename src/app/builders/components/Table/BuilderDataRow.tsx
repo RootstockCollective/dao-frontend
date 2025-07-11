@@ -11,7 +11,7 @@ import { cn, formatCurrency } from '@/lib/utils'
 import { Row, RowData, useTableActionsContext, useTableContext } from '@/shared/context'
 import { FC, HtmlHTMLAttributes, ReactElement, useContext, useState } from 'react'
 import { Address } from 'viem'
-import { COLUMN_WIDTHS, ColumnId } from './BuilderTable.config'
+import { COLUMN_TRANFORMS, ColumnId } from './BuilderTable.config'
 import { Action, ActionCell, ActionCellProps, getActionType } from './Cell/ActionCell'
 import { AllocationCell, AllocationCellProps } from './Cell/AllocationCell'
 import { BackersPercentageCell, BackersPercentageCellProps } from './Cell/BackersPercentageCell'
@@ -106,26 +106,26 @@ const BuilderCell = (props: BuilderNameCellProps): ReactElement => {
 }
 
 export const TableCell: FC<
-  HtmlHTMLAttributes<HTMLTableCellElement> & { columnId: ColumnId; isHiddenOverride?: boolean }
-> = ({ children, className, onClick, columnId, isHiddenOverride }) => {
+  HtmlHTMLAttributes<HTMLTableCellElement> & { columnId: ColumnId; forceShow?: boolean }
+> = ({ children, className, onClick, columnId, forceShow }) => {
   const { columns } = useTableContext<ColumnId>()
-  if (isHiddenOverride ?? columns.find(col => col.id === columnId)?.hidden) {
-    return null
+  if (forceShow || !columns.find(col => col.id === columnId)?.hidden) {
+    return (
+      <td
+        className={cn('flex self-stretch items-center', COLUMN_TRANFORMS[columnId], className)}
+        onClick={onClick}
+      >
+        {children}
+      </td>
+    )
   }
 
-  return (
-    <td
-      className={cn('flex self-stretch items-center', COLUMN_WIDTHS[columnId], className)}
-      onClick={onClick}
-    >
-      {children}
-    </td>
-  )
+  return null
 }
 
 const BackerRewardsCell = (props: BackersPercentageCellProps): ReactElement => {
   return (
-    <TableCell columnId="backer_rewards" className="gap-2 flex">
+    <TableCell columnId="backer_rewards" className="gap-2 flex justify-center">
       <BackersPercentageCell {...props} />
     </TableCell>
   )
@@ -133,7 +133,7 @@ const BackerRewardsCell = (props: BackersPercentageCellProps): ReactElement => {
 
 const RewardsPastCycleCell = (props: RewardsCellProps): ReactElement => {
   return (
-    <TableCell columnId="rewards_past_cycle">
+    <TableCell columnId="rewards_past_cycle" className="justify-center">
       <RewardsCell {...props} />
     </TableCell>
   )
@@ -141,7 +141,7 @@ const RewardsPastCycleCell = (props: RewardsCellProps): ReactElement => {
 
 const RewardsUpcomingCell = (props: RewardsCellProps): ReactElement => {
   return (
-    <TableCell columnId="rewards_upcoming">
+    <TableCell columnId="rewards_upcoming" className="justify-center">
       <RewardsCell {...props} />
     </TableCell>
   )
@@ -149,7 +149,7 @@ const RewardsUpcomingCell = (props: RewardsCellProps): ReactElement => {
 
 const BuilderBackingCell = (props: BackingCellProps): ReactElement => {
   return (
-    <TableCell columnId="backing" className="flex flex-col gap-2 align-middle">
+    <TableCell columnId="backing" className="flex flex-col gap-2 align-middle justify-center">
       <BackingCell {...props} />
     </TableCell>
   )
@@ -165,16 +165,16 @@ const BuilderAllocationsCell = (props: AllocationCellProps): ReactElement => {
 
 const BuilderActionsCell = ({
   className,
-  isHiddenOverride,
+  forceShow,
   ...props
-}: ActionCellProps & { isHiddenOverride?: boolean }): ReactElement => {
+}: ActionCellProps & { forceShow?: boolean }): ReactElement => {
   return (
     <TableCell
       columnId="actions"
-      className={cn('border-solid align-center', className)}
-      isHiddenOverride={isHiddenOverride}
+      className={cn('border-solid align-center w-full', className)}
+      forceShow={forceShow}
     >
-      <ActionCell {...props} />
+      {forceShow && <ActionCell {...props} />}
     </TableCell>
   )
 }
@@ -199,7 +199,7 @@ export const BuilderDataRow: FC<BuilderDataRowProps> = ({ row }) => {
       actions,
     },
   } = row as Row<ColumnId> & { data: ColumnIdToCellPropsMap }
-  const { selectedRows, columns } = useTableContext<ColumnId>()
+  const { selectedRows } = useTableContext<ColumnId>()
 
   const [isHovered, setIsHovered] = useState(false)
   const dispatch = useTableActionsContext<ColumnId>()
@@ -231,7 +231,7 @@ export const BuilderDataRow: FC<BuilderDataRowProps> = ({ row }) => {
       <RewardsUpcomingCell {...rewards_upcoming} />
       <BuilderBackingCell {...backing} />
       {!isHovered && <BuilderAllocationsCell allocationPct={allocationPct} />}
-      {isHovered && <BuilderActionsCell {...actions} isHiddenOverride={false} />}
+      <BuilderActionsCell {...actions} forceShow={isHovered} />
       <td className="w-[24px]"></td>
     </tr>
   )

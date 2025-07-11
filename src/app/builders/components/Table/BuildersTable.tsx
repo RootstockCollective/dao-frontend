@@ -61,7 +61,7 @@ const useFilteredBuilders = (tokens: { [token: string]: Token }, filterOption: B
 
 // --- Table component ---
 export const Table = () => {
-  const { rows } = useTableContext<ColumnId>()
+  const { rows, columns } = useTableContext<ColumnId>()
 
   // FIXME: I don't think we should be using this context anymore
   const {
@@ -76,6 +76,27 @@ export const Table = () => {
       payload: selections as SelectedRows<Row<ColumnId>['id']>,
     })
   }, [selections, dispatch])
+
+  /**
+   * Set the action column header to show if the allocations column is hidden.
+   * FIXME: see if we can do this better to avoid re-rendering the table.
+  //  */
+  useEffect(() => {
+    const isAllocationsHidden = columns.find(col => col.id == 'allocations')?.hidden
+    const isActionsHidden = columns.find(col => col.id == 'actions')?.hidden
+    if (isAllocationsHidden && isActionsHidden) {
+      dispatch({
+        type: 'TOGGLE_COLUMN_VISIBILITY',
+        payload: 'actions',
+      })
+    }
+    if (!isAllocationsHidden && !isActionsHidden) {
+      dispatch({
+        type: 'TOGGLE_COLUMN_VISIBILITY',
+        payload: 'actions',
+      })
+    }
+  }, [columns, dispatch])
 
   return (
     <div className="w-full overflow-x-auto bg-v3-bg-accent-80">
@@ -131,27 +152,6 @@ const BuildersTable = () => {
   const handleAction = (action: Action, builder: Builder) => {
     console.log('handleAction', action, builder)
   }
-
-  /**
-   * Set the action column header to show if the allocations column is hidden.
-   * FIXME: see if we can do this better to avoid re-rendering the table.
-  //  */
-  useEffect(() => {
-    const isAllocationsHidden = columns.find(col => col.id == 'allocations')?.hidden
-    const isActionsHidden = columns.find(col => col.id == 'actions')?.hidden
-    if (isAllocationsHidden && isActionsHidden) {
-      dispatch({
-        type: 'TOGGLE_COLUMN_VISIBILITY',
-        payload: 'actions',
-      })
-    }
-    if (!isAllocationsHidden && !isActionsHidden) {
-      dispatch({
-        type: 'TOGGLE_COLUMN_VISIBILITY',
-        payload: 'actions',
-      })
-    }
-  }, [columns, dispatch])
 
   useEffect(() => {
     dispatch({

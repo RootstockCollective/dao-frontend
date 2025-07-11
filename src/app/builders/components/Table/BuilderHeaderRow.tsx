@@ -12,7 +12,7 @@ import { TableHeaderCell, TableHeaderNode } from '@/components/TableNew'
 import { Label, Paragraph } from '@/components/TypographyNew'
 import { cn } from '@/lib/utils'
 import { Dispatch, FC } from 'react'
-import { COLUMN_WIDTHS, ColumnId } from './BuilderTable.config'
+import { COLUMN_TRANFORMS, ColumnId } from './BuilderTable.config'
 import { SelectorHeaderCell } from './Cell/SelectorHeaderCell/SelectorHeaderCell'
 import { TableColumnDropdown } from './TableColumnDropdown'
 
@@ -69,7 +69,7 @@ const dispatchSortRoundRobin = (
   dispatch({ type: 'SORT_BY_COLUMN', payload: { columnId: nextSort ? columnId : null, direction: nextSort } })
 }
 
-const BuilderSelectorHeaderCell: FC<CommonComponentProps & { columnId: ColumnId }> = ({
+const BuilderHeaderCell: FC<CommonComponentProps & { columnId: ColumnId }> = ({
   className,
   children,
   columnId,
@@ -82,7 +82,7 @@ const BuilderSelectorHeaderCell: FC<CommonComponentProps & { columnId: ColumnId 
 
   return (
     <TableHeaderCell
-      className={cn(COLUMN_WIDTHS[columnId], className)}
+      className={cn(COLUMN_TRANFORMS[columnId], className)}
       onClick={() => isSortable && dispatchSortRoundRobin(dispatch, columnId, sort)}
       {...props}
     >
@@ -95,7 +95,7 @@ const BuilderSelectorHeaderCell: FC<CommonComponentProps & { columnId: ColumnId 
   )
 }
 
-const BuilderHeaderCell: FC<CommonComponentProps & { columnId: ColumnId }> = ({
+const HeaderCell: FC<CommonComponentProps & { columnId: ColumnId }> = ({
   className,
   children,
   columnId,
@@ -109,8 +109,8 @@ const BuilderHeaderCell: FC<CommonComponentProps & { columnId: ColumnId }> = ({
 
   const isSortable = column.sortable
 
-  // TODO: this is a hack to get the column width and justify center. Please do better than me ;)
-  const columnClassNames = COLUMN_WIDTHS[columnId]
+  // TODO: this is a temporary solution to justify center. Please do better than me ;)
+  const columnClassNames = COLUMN_TRANFORMS[columnId]
   const isJustifyCenter = columnClassNames?.match('justify-center')?.length ?? false
 
   return (
@@ -154,29 +154,33 @@ export const BuilderHeaderRow = () => {
   return (
     <Suspense fallback={<div>Loading table headers...</div>}>
       <tr className="flex border-b-1 border-b-v3-text-60 select-none gap-4">
-        <BuilderSelectorHeaderCell key="builder" columnId="builder" />
-        <BuilderHeaderCell key="backer_rewards" columnId="backer_rewards">
+        <BuilderHeaderCell key="builder" columnId="builder" />
+        <HeaderCell key="backer_rewards" columnId="backer_rewards">
           <HeaderTitle>Backer Rewards</HeaderTitle>
           <HeaderSubtitle>current % - change</HeaderSubtitle>
-        </BuilderHeaderCell>
-        <BuilderHeaderCell key="rewards_past_cycle" columnId="rewards_past_cycle">
+        </HeaderCell>
+        <HeaderCell key="rewards_past_cycle" columnId="rewards_past_cycle">
           <HeaderTitle>Rewards</HeaderTitle>
           <HeaderSubtitle>past cycle</HeaderSubtitle>
-        </BuilderHeaderCell>
-        <BuilderHeaderCell key="rewards_upcoming" columnId="rewards_upcoming">
+        </HeaderCell>
+        <HeaderCell key="rewards_upcoming" columnId="rewards_upcoming">
           <HeaderTitle>Rewards</HeaderTitle>
           <HeaderSubtitle>upcoming cycle, estimated</HeaderSubtitle>
-        </BuilderHeaderCell>
-        <BuilderHeaderCell key="backing" columnId="backing">
+        </HeaderCell>
+        <HeaderCell key="backing" columnId="backing">
           <HeaderTitle>Backing</HeaderTitle>
-        </BuilderHeaderCell>
-        <BuilderHeaderCell key="allocations" columnId="allocations">
+          <HeaderSubtitle className="h-full text-v3-bg-accent-80">balls</HeaderSubtitle>{' '}
+          {/* TODO: temporary fix to align the text to the top */}
+        </HeaderCell>
+        <HeaderCell key="allocations" columnId="allocations">
           <HeaderTitle>Backing Share</HeaderTitle>
           <HeaderSubtitle>%</HeaderSubtitle>
-        </BuilderHeaderCell>
-        <BuilderHeaderCell columnId="actions">
+        </HeaderCell>
+        <HeaderCell columnId="actions">
           <HeaderTitle>Actions</HeaderTitle>
-        </BuilderHeaderCell>
+          <HeaderSubtitle className="h-full text-v3-bg-accent-80">balls</HeaderSubtitle>{' '}
+          {/* TODO: temporary fix to align the text to the top */}
+        </HeaderCell>
         <TableColumnDropdown className="self-start" />
       </tr>
     </Suspense>

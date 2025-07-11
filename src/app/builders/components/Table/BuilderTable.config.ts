@@ -15,14 +15,14 @@ export const isColumnId = (id: string): id is ColumnId => COLUMN_IDS.includes(id
 
 export const PAGE_SIZE = 3
 
-export const COLUMN_WIDTHS: Record<ColumnId, HtmlHTMLAttributes<HTMLTableCellElement>['className']> = {
-  builder: 'flex-[1_1_200px] min-w-[200px]', // Priority column, 3x grow factor, more flexible
-  backing: 'flex-[1_1_100px] min-w-[100px]', // Compact width for backing values
-  backer_rewards: 'flex-[1_1_80px] min-w-[80px] justify-center', // Compact width for percentages
-  rewards_past_cycle: 'flex-[1_1_110px] min-w-[110px]', // Compact width for reward values
-  rewards_upcoming: 'flex-[1_1_110px] min-w-[110px]', // Compact width for reward values
-  allocations: 'flex-[1_1_100px] min-w-[100px]', // Compact width for allocation percentages
-  actions: 'flex-[1_1_100px] min-w-[100px]', // Actions column, compact width
+export const COLUMN_TRANFORMS: Record<ColumnId, HtmlHTMLAttributes<HTMLTableCellElement>['className']> = {
+  builder: 'flex-[1_1_12rem] min-w-[12rem]',
+  backing: 'flex-[1_1_6rem] min-w-[6rem] justify-center',
+  backer_rewards: 'flex-[1_1_5rem] min-w-[5rem] justify-center',
+  rewards_past_cycle: 'flex-[1_1_4rem] min-w-[4rem] justify-center',
+  rewards_upcoming: 'flex-[1_1_6rem] min-w-[6rem] justify-center',
+  allocations: 'flex-[1_1_6rem] min-w-[6rem] justify-center',
+  actions: 'flex-[1_1_6rem] min-w-[6rem] justify-center',
 }
 
 export const DEFAULT_HEADERS: Column<ColumnId>[] = [
