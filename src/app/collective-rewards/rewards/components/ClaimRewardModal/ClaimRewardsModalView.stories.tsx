@@ -8,7 +8,7 @@ const tokens = getTokens()
 // Create a wrapper component that handles dynamic state
 const ClaimRewardsModalViewWrapper = (props: any) => {
   const [selectedRewardType, setSelectedRewardType] = useState(props.selectedRewardType || 'all')
-  
+
   return (
     <ClaimRewardsModalView
       {...props}
