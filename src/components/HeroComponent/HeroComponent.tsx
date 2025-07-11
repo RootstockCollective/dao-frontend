@@ -1,47 +1,63 @@
+'use client'
 import Image from 'next/image'
-import React from 'react'
+import React, { FC, ReactNode, useMemo } from 'react'
 import { Header, Paragraph } from '../TypographyNew'
-import { Button } from '../ButtonNew'
+import { useImagePreloader } from '@/shared/hooks/useImagePreloader'
+import { cn } from '@/lib/utils'
 
 interface HeroComponentProps {
+  imageBannerSrc: string
+  imageSquaresSrc: string
   title: string
   subtitle: string
   items: string[]
-  buttonText?: string
-  buttonOnClick?: () => void
+  button?: ReactNode
+  className?: string
 }
 
-const HeroComponent: React.FC<HeroComponentProps> = ({
+export const HeroComponent: FC<HeroComponentProps> = ({
+  imageBannerSrc,
+  imageSquaresSrc,
   title,
   subtitle,
   items,
-  buttonText,
-  buttonOnClick,
+  button,
+  className,
 }) => {
+  // Memoize image sources is needed to prevent unnecessary re-renders
+  const imageSources = useMemo(() => [imageBannerSrc, imageSquaresSrc], [imageBannerSrc, imageSquaresSrc])
+  const { isLoaded } = useImagePreloader(imageSources)
+
   return (
-    <div className="flex flex-col bg-text-80 rounded-sm p-4 md:flex-row items-stretch gap-8">
-      <div className="relative">
-        <Image
-          src="/images/hero/banner-squares.svg"
-          alt="Squares Divider"
-          width={40}
-          height={30}
-          className="absolute -right-[30px] top-[20px] z-10 hidden md:block"
-        />
-        <Image
-          src="/images/hero/hero-banner.svg"
-          alt="Hero Banner"
-          width={0}
-          height={0}
-          className="w-full h-full object-cover"
-        />
+    <div className={cn('flex flex-col md:flex-row bg-text-80 rounded-sm p-4 md:gap-8 gap-4', className)}>
+      <div className="relative w-full md:w-1/2 ">
+        {isLoaded ? (
+          <>
+            <Image
+              src={imageSquaresSrc}
+              alt="Squares Divider"
+              width={40}
+              height={30}
+              className="absolute -right-[30px] top-[20px] z-10 hidden md:block"
+            />
+            <Image
+              src={imageBannerSrc}
+              alt="Hero Banner"
+              width={0}
+              height={0}
+              className="w-full h-full max-h-[180px] md:max-h-none object-cover object-right"
+            />
+          </>
+        ) : (
+          <div className="w-full h-full bg-bg-40 animate-pulse" />
+        )}
       </div>
-      <div className="flex flex-col justify-center">
-        <div className="mt-16">
-          <Header variant="e2" className="text-bg-100" caps>
+      <div className="flex flex-col justify-center w-full md:w-1/2">
+        <div className="md:mt-16 flex flex-col gap-2">
+          <Header variant="h1" className="text-bg-100" caps>
             {title}
           </Header>
-          <Header variant="e2" className="text-bg-20" caps>
+          <Header variant="h1" className="text-bg-20" caps>
             {subtitle}
           </Header>
         </div>
@@ -54,16 +70,8 @@ const HeroComponent: React.FC<HeroComponentProps> = ({
           ))}
         </ul>
 
-        {buttonText && (
-          <div className="flex justify-start mt-2">
-            <Button variant="primary" onClick={buttonOnClick}>
-              {buttonText}
-            </Button>
-          </div>
-        )}
+        {button && <div className="flex justify-start mt-2">{button}</div>}
       </div>
     </div>
   )
 }
-
-export default HeroComponent

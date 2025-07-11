@@ -17,11 +17,16 @@ const elementByVariant: Record<HeaderVariant, TypographyElement> = {
   h5: 'h5',
 }
 
-interface Props extends Omit<TypographyProps<TypographyElement>, 'as'> {
+export interface HeaderProps extends Omit<TypographyProps<TypographyElement>, 'as'> {
   variant?: HeaderVariant
 }
 
-export const Header: FC<Props> = ({ variant = 'h1', children, 'data-testid': dataTestId = '', ...rest }) => (
+export const Header: FC<HeaderProps> = ({
+  variant = 'h1',
+  children,
+  'data-testid': dataTestId = '',
+  ...rest
+}) => (
   <Typography as={elementByVariant[variant]} variant={variant} data-testid={`Header${dataTestId}`} {...rest}>
     {children}
   </Typography>

@@ -103,8 +103,8 @@ export const ConnectedSection = () => {
             {/* Banner here with delegation perks */}
             <div className="text-bg-100 p-[24px] relative mb-[110px] bg-gradient-to-r from-[#E3FFEB] via-[#66CD8E] to-[#00031E]">
               <Image
-                src="/images/banner/delegate-squares.svg"
-                alt="Squares Divider"
+                src="/images/hero/delegation-perks-pixels.svg"
+                alt="Pixels Divider"
                 width={50}
                 height={40}
                 className="absolute left-[0px] -bottom-[30px] z-10 hidden md:block"
