@@ -5,7 +5,6 @@ import { useHandleErrors } from '@/app/collective-rewards/utils'
 import { useBackerRewardsContext } from '@/app/collective-rewards/rewards/backers'
 import { getFiatAmount } from '@/app/collective-rewards/rewards/utils'
 import { ClaimRewardsModalView } from './ClaimRewardsModalView'
-import { TokenSymbol } from '@/components/TokenImage'
 import { getTokens } from '@/lib/tokens'
 import { ClaimRewardType } from './types'
 
@@ -18,13 +17,10 @@ const tokens = getTokens()
 
 const getRewardTokenAddress = (value: ClaimRewardType) => {
   switch (value) {
-    case 'rif':
-      return tokens.rif.address
-    case 'rbtc':
-      return tokens.rbtc.address
     case 'all':
-    default:
       return undefined // Claim all rewards
+    default:
+      return tokens[value]?.address
   }
 }
 
@@ -35,31 +31,32 @@ export const ClaimRewardsModal: FC<ClaimRewardsModalProps> = ({ open, onClose })
     getRewardTokenAddress(selectedRewardType),
   )
 
-  const { data, isLoading, error } = useBackerRewardsContext()
+  const { data: backerRewards, isLoading, error } = useBackerRewardsContext()
   const { prices } = usePricesContext()
 
-  const rifPrice = prices[TokenSymbol.STRIF]?.price ?? 0
-  const rbtcPrice = prices[TokenSymbol.RBTC]?.price ?? 0
+  const { tokenAmounts, tokenFiatAmounts, totalFiatAmount } = useMemo(() => {
+    const tokenAmounts: Record<string, bigint> = {}
+    const tokenFiatAmounts: Record<string, number> = {}
+    let totalFiatAmount = 0
 
-  const rifEarned = data[tokens.rif.address].earned
-  const rbtcEarned = data[tokens.rbtc.address].earned
+    // Calculate amounts and fiat values for each token
+    Object.entries(tokens).forEach(([tokenKey, tokenInfo]) => {
+      const earned = backerRewards[tokenInfo.address]?.earned || {}
+      const amount = Object.values(earned).reduce((acc, earned) => acc + earned, 0n)
+      const price = prices[tokenInfo.symbol]?.price ?? 0
+      const fiatAmount = getFiatAmount(amount, price)
 
-  const { rifAmount, rbtcAmount, rifFiatAmount, rbtcFiatAmount, totalFiatAmount } = useMemo(() => {
-    const rifAmount = Object.values(rifEarned).reduce((acc, earned) => acc + earned, 0n)
-    const rbtcAmount = Object.values(rbtcEarned).reduce((acc, earned) => acc + earned, 0n)
-
-    const rifFiatAmount = getFiatAmount(rifAmount, rifPrice)
-    const rbtcFiatAmount = getFiatAmount(rbtcAmount, rbtcPrice)
-    const totalFiatAmount = rifFiatAmount.add(rbtcFiatAmount)
+      tokenAmounts[tokenKey] = amount
+      tokenFiatAmounts[tokenKey] = fiatAmount.toNumber()
+      totalFiatAmount += fiatAmount.toNumber()
+    })
 
     return {
-      rifAmount,
-      rbtcAmount,
-      rifFiatAmount,
-      rbtcFiatAmount,
+      tokenAmounts,
+      tokenFiatAmounts,
       totalFiatAmount,
     }
-  }, [rifEarned, rbtcEarned, rifPrice, rbtcPrice])
+  }, [backerRewards, prices])
 
   useHandleErrors({ error, title: 'Error loading rewards' })
 
@@ -69,11 +66,9 @@ export const ClaimRewardsModal: FC<ClaimRewardsModalProps> = ({ open, onClose })
         onClose={onClose}
         selectedRewardType={selectedRewardType}
         onRewardTypeChange={setSelectedRewardType}
-        rifAmount={rifAmount}
-        rbtcAmount={rbtcAmount}
-        rifFiatAmount={rifFiatAmount.toNumber()}
-        rbtcFiatAmount={rbtcFiatAmount.toNumber()}
-        totalFiatAmount={totalFiatAmount.toNumber()}
+        tokenAmounts={tokenAmounts}
+        tokenFiatAmounts={tokenFiatAmounts}
+        totalFiatAmount={totalFiatAmount}
         onClaim={claimRewards}
         isClaimable={isClaimable}
         isLoading={isLoading}

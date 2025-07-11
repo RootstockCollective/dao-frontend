@@ -1,5 +1,8 @@
 import type { Meta, StoryObj } from '@storybook/react'
 import { ClaimRewardsModalView } from './ClaimRewardsModalView'
+import { getTokens } from '@/lib/tokens'
+
+const tokens = getTokens()
 
 const meta: Meta<typeof ClaimRewardsModalView> = {
   title: 'CollectiveRewards/ClaimRewardsModalView',
@@ -19,7 +22,7 @@ const meta: Meta<typeof ClaimRewardsModalView> = {
   argTypes: {
     selectedRewardType: {
       control: { type: 'radio' },
-      options: ['all', 'rif', 'rbtc'],
+      options: ['all', ...Object.keys(tokens)],
       description: 'The selected reward type for claiming',
     },
     isClaimable: {
@@ -46,10 +49,14 @@ export const Default: Story = {
     onClose: () => alert('Modal closed'),
     selectedRewardType: 'all',
     onRewardTypeChange: (value: string) => console.log('Selected reward type:', value),
-    rifAmount: 1000000000000000000000n,
-    rbtcAmount: 5000000000000000000n,
-    rifFiatAmount: 250.5,
-    rbtcFiatAmount: 125.25,
+    tokenAmounts: {
+      rif: 1000000000000000000000n,
+      rbtc: 5000000000000000000n,
+    },
+    tokenFiatAmounts: {
+      rif: 250.5,
+      rbtc: 125.25,
+    },
     totalFiatAmount: 375.75,
     onClaim: () => alert('Claiming rewards...'),
     isClaimable: true,
