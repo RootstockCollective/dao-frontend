@@ -9,6 +9,7 @@ interface Props<T> extends HTMLAttributes<HTMLDivElement> {
    * Expand the first column to full table width
    */
   stackFirstColumn?: boolean
+  rowStyles?: string
 }
 
 /**
@@ -16,7 +17,7 @@ interface Props<T> extends HTMLAttributes<HTMLDivElement> {
  * Columns can specify width via `columnDef.meta.width` (e.g. '2fr', '150px').
  * When `hasStackedColumn` is true, the first column expands to full width.
  */
-export function GridTable<T>({ className, table, stackFirstColumn = false, ...props }: Props<T>) {
+export function GridTable<T>({ className, table, stackFirstColumn = false, rowStyles, ...props }: Props<T>) {
   // Build grid template from column definitions' meta.width (fallback to 1fr)
   // Slice off the first column if it's stacked
   const headers = table.getHeaderGroups()[0].headers.slice(Number(stackFirstColumn))
@@ -63,6 +64,7 @@ export function GridTable<T>({ className, table, stackFirstColumn = false, ...pr
             className={cn(
               'group grid gap-x-4 px-4 pt-6 pb-5 border-b border-b-bg-60',
               'transition-colors duration-500 ease-in-out hover:bg-text-80 hover:text-bg-100',
+              rowStyles ?? '',
             )}
             style={{ gridTemplateColumns }}
           >
