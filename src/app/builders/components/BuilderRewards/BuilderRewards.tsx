@@ -5,9 +5,11 @@ import { type RewardType } from './components/RewardCardRenderer'
 import { ClaimRewardsButton } from './buttons/ClaimRewardsButton'
 import { AdjustBackersRewardsButton } from './buttons/AdjustBackersRewardButton'
 import { Header } from '@/components/TypographyNew'
+import { type RewardCardDataSource } from './components/rewardCardDataSources'
 
 interface BuilderRewardsProps extends BuilderRewardDetails {
   className?: string
+  dataSource?: RewardCardDataSource
 }
 
 // Configuration for each reward card with its specific props
@@ -39,6 +41,7 @@ export const BuilderRewards: React.FC<BuilderRewardsProps> = ({
   builder,
   gauge,
   tokens: { rif, rbtc },
+  dataSource,
   ...rest
 }) => {
   return (
@@ -67,6 +70,7 @@ export const BuilderRewards: React.FC<BuilderRewardsProps> = ({
                 gauge={gauge}
                 gauges={rest.gauges}
                 currency={rest.currency}
+                dataSource={dataSource}
               />
             </div>
             {config.button && <span>{config.button}</span>}
@@ -84,6 +88,7 @@ export const BuilderRewards: React.FC<BuilderRewardsProps> = ({
                 gauge={gauge}
                 gauges={rest.gauges}
                 currency={rest.currency}
+                dataSource={dataSource}
               />
             </div>
           </div>

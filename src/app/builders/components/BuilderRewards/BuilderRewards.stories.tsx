@@ -1,5 +1,6 @@
 import type { Meta, StoryObj } from '@storybook/react'
-import { BuilderRewardsMock } from './Mocks/BuilderRewardsMock'
+import { BuilderRewards } from './BuilderRewards'
+import { createMockDataSource } from './components/rewardCardDataSources'
 import { Address } from 'viem'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { AlertProvider } from '@/app/providers/AlertProvider'
@@ -7,9 +8,9 @@ import { CycleContextProvider } from '@/app/collective-rewards/metrics/context/C
 import { PricesContextProvider } from '@/shared/context/PricesContext'
 import React from 'react'
 
-const meta: Meta<typeof BuilderRewardsMock> = {
+const meta: Meta<typeof BuilderRewards> = {
   title: 'Builders/BuilderRewards',
-  component: BuilderRewardsMock,
+  component: BuilderRewards,
   parameters: {
     layout: 'centered',
     backgrounds: {
@@ -22,7 +23,7 @@ const meta: Meta<typeof BuilderRewardsMock> = {
     docs: {
       description: {
         component:
-          'This story demonstrates the BuilderRewards component with mock data for RIF, rBTC, and USD values.',
+          'This story demonstrates the BuilderRewards component with different data sources. The component can use either real data (from hooks) or mock data (for stories and testing).',
       },
     },
   },
@@ -79,23 +80,40 @@ const mockTokens = {
   },
 }
 
-export const Default: StoryObj<typeof BuilderRewardsMock> = {
+// Story with mock data source
+export const WithMockData: StoryObj<typeof BuilderRewards> = {
   args: {
     builder: mockBuilderAddress,
     gauge: mockGaugeAddress,
     gauges: mockGauges,
     tokens: mockTokens,
     currency: 'USD',
+    dataSource: createMockDataSource(),
+  },
+  parameters: {
+    docs: {
+      description: {
+        story: 'This story uses mock data for consistent display in Storybook.',
+      },
+    },
   },
 }
 
-export const WithCustomClass: StoryObj<typeof BuilderRewardsMock> = {
+// Story with real data source (default behavior)
+export const WithRealData: StoryObj<typeof BuilderRewards> = {
   args: {
     builder: mockBuilderAddress,
     gauge: mockGaugeAddress,
     gauges: mockGauges,
     tokens: mockTokens,
     currency: 'USD',
-    className: 'p-4 bg-gray-100 rounded-lg',
+    // No dataSource prop - will use real data by default
+  },
+  parameters: {
+    docs: {
+      description: {
+        story: 'This story uses real data from hooks (default behavior).',
+      },
+    },
   },
 }
