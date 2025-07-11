@@ -16,7 +16,6 @@ export const CurrentCycle = () => {
             <CycleMetrics />
           </CycleContextProvider>
           <TotalBackingLoader />
-          <div className="w-0" aria-hidden="true" />
         </div>
         <div className="basis-1/4">
           <EstimatedRewards />
