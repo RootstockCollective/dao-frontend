@@ -82,18 +82,15 @@ export const Table = () => {
    * FIXME: see if we can do this better to avoid re-rendering the table.
   //  */
   useEffect(() => {
-    const isAllocationsHidden = columns.find(col => col.id == 'allocations')?.hidden
-    const isActionsHidden = columns.find(col => col.id == 'actions')?.hidden
-    if (isAllocationsHidden && isActionsHidden) {
+    const isAllocationsHidden = columns.find(col => col.id == 'allocations')?.hidden ?? true
+    const isActionsHidden = columns.find(col => col.id == 'actions')?.hidden ?? true
+    if (isAllocationsHidden === isActionsHidden) {
       dispatch({
-        type: 'TOGGLE_COLUMN_VISIBILITY',
-        payload: 'actions',
-      })
-    }
-    if (!isAllocationsHidden && !isActionsHidden) {
-      dispatch({
-        type: 'TOGGLE_COLUMN_VISIBILITY',
-        payload: 'actions',
+        type: 'SET_COLUMN_VISIBILITY',
+        payload: {
+          columnId: 'actions',
+          hidden: !isAllocationsHidden,
+        },
       })
     }
   }, [columns, dispatch])
@@ -123,7 +120,6 @@ const BuildersTable = () => {
 
   const { address: userAddress } = useAccount()
 
-  const { columns } = useTableContext<ColumnId>()
   const dispatch = useTableActionsContext<ColumnId>()
 
   const tokens = useMemo(() => getTokens(), [])
@@ -152,6 +148,16 @@ const BuildersTable = () => {
   const handleAction = (action: Action, builder: Builder) => {
     console.log('handleAction', action, builder)
   }
+
+  useEffect(() => {
+    dispatch({
+      type: 'SET_COLUMN_VISIBILITY',
+      payload: {
+        columnId: 'backing',
+        hidden: !userAddress,
+      },
+    })
+  }, [userAddress])
 
   useEffect(() => {
     dispatch({

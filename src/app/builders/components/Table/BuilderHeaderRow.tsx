@@ -105,7 +105,10 @@ const HeaderCell: FC<CommonComponentProps & { columnId: ColumnId }> = ({
   const dispatch = useTableActionsContext()
 
   const column = columns.find(({ id }) => id === columnId)
-  if (!column || column.hidden) return null
+
+  if (!column || column.hidden) {
+    return null
+  }
 
   const isSortable = column.sortable
 

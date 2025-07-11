@@ -48,7 +48,7 @@ export const DEFAULT_HEADERS: Column<ColumnId>[] = [
   },
   {
     id: 'backing',
-    hidden: false,
+    hidden: true,
     sortable: true,
   },
   {

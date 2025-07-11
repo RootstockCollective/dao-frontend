@@ -48,6 +48,13 @@ export type TableAction<ColumnId extends Column['id'] = Column['id']> =
       payload: ColumnId
     }
   | {
+      type: 'SET_COLUMN_VISIBILITY'
+      payload: {
+        columnId: ColumnId
+        hidden: boolean
+      }
+    }
+  | {
       type: 'SORT_BY_COLUMN'
       payload: {
         columnId: ColumnId | null
