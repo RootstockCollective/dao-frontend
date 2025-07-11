@@ -12,7 +12,7 @@ import { TableHeaderCell, TableHeaderNode } from '@/components/TableNew'
 import { Label, Paragraph } from '@/components/TypographyNew'
 import { cn } from '@/lib/utils'
 import { Dispatch, FC } from 'react'
-import { COLUMN_TRANFORMS, ColumnId } from './BuilderTable.config'
+import { COLUMN_TRANSFORMS, ColumnId } from './BuilderTable.config'
 import { SelectorHeaderCell } from './Cell/SelectorHeaderCell/SelectorHeaderCell'
 import { TableColumnDropdown } from './TableColumnDropdown'
 
@@ -82,7 +82,7 @@ const BuilderHeaderCell: FC<CommonComponentProps & { columnId: ColumnId }> = ({
 
   return (
     <TableHeaderCell
-      className={cn(COLUMN_TRANFORMS[columnId], className)}
+      className={cn(COLUMN_TRANSFORMS[columnId], className)}
       onClick={() => isSortable && dispatchSortRoundRobin(dispatch, columnId, sort)}
       {...props}
     >
@@ -113,7 +113,7 @@ const HeaderCell: FC<CommonComponentProps & { columnId: ColumnId }> = ({
   const isSortable = column.sortable
 
   // TODO: this is a temporary solution to justify center. Please do better than me ;)
-  const columnClassNames = COLUMN_TRANFORMS[columnId]
+  const columnClassNames = COLUMN_TRANSFORMS[columnId]
   const isJustifyCenter = columnClassNames?.match('justify-center')?.length ?? false
 
   return (

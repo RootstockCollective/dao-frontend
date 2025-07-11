@@ -157,7 +157,7 @@ const BuildersTable = () => {
         hidden: !userAddress,
       },
     })
-  }, [userAddress])
+  }, [userAddress, dispatch])
 
   useEffect(() => {
     dispatch({

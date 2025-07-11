@@ -1,7 +1,5 @@
-import React from 'react'
 import type { Meta, StoryObj } from '@storybook/react'
 import { ActionCell } from './ActionCell'
-import { AlertProvider } from '@/app/providers/AlertProvider'
 
 const meta: Meta<typeof ActionCell> = {
   title: 'Components/TableNew/ActionCell',

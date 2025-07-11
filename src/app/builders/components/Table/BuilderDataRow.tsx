@@ -11,7 +11,7 @@ import { cn, formatCurrency } from '@/lib/utils'
 import { Row, RowData, useTableActionsContext, useTableContext } from '@/shared/context'
 import { FC, HtmlHTMLAttributes, ReactElement, useContext, useState } from 'react'
 import { Address } from 'viem'
-import { COLUMN_TRANFORMS, ColumnId } from './BuilderTable.config'
+import { COLUMN_TRANSFORMS, ColumnId } from './BuilderTable.config'
 import { Action, ActionCell, ActionCellProps, getActionType } from './Cell/ActionCell'
 import { AllocationCell, AllocationCellProps } from './Cell/AllocationCell'
 import { BackersPercentageCell, BackersPercentageCellProps } from './Cell/BackersPercentageCell'
@@ -62,12 +62,18 @@ export const convertDataToRowData = (
         rewards_past_cycle: {
           rbtcValue: builder.lastCycleRewards.rbtc.amount.value,
           rifValue: builder.lastCycleRewards.rif.amount.value,
-          usdValue: getFiatAmount(builder.lastCycleRewards.rif.amount.value, rifPrice).toNumber(),
+          usdValue: getFiatAmount(
+            builder.lastCycleRewards.rif.amount.value + builder.lastCycleRewards.rif.amount.value,
+            rifPrice,
+          ).toNumber(),
         },
         rewards_upcoming: {
           rbtcValue: builder.estimatedRewards.rbtc.amount.value,
           rifValue: builder.estimatedRewards.rif.amount.value,
-          usdValue: getFiatAmount(builder.estimatedRewards.rif.amount.value, rifPrice).toNumber(),
+          usdValue: getFiatAmount(
+            builder.estimatedRewards.rif.amount.value + builder.estimatedRewards.rif.amount.value,
+            rifPrice,
+          ).toNumber(),
         },
         backing: {
           amount: allocation,
@@ -75,7 +81,7 @@ export const convertDataToRowData = (
           formattedUsdAmount: formattedUsdAmount,
         },
         allocations: {
-          allocationPct: builder.totalAllocationPercentage,
+          allocationPct: Number(builder.totalAllocationPercentage),
         },
         actions: {
           actionType,
@@ -87,8 +93,6 @@ export const convertDataToRowData = (
     }
   })
 }
-
-/// ---------- Builder Cell ----------
 
 const BuilderCell = (props: BuilderNameCellProps): ReactElement => {
   const { selectedRows } = useTableContext<ColumnId>()
@@ -112,7 +116,7 @@ export const TableCell: FC<
   if (forceShow || !columns.find(col => col.id === columnId)?.hidden) {
     return (
       <td
-        className={cn('flex self-stretch items-center', COLUMN_TRANFORMS[columnId], className)}
+        className={cn('flex self-stretch items-center', COLUMN_TRANSFORMS[columnId], className)}
         onClick={onClick}
       >
         {children}

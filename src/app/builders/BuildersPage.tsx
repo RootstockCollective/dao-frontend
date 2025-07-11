@@ -5,6 +5,7 @@ import {
   MetricsContainer,
 } from '@/components/containers'
 import { Header } from '@/components/TypographyNew'
+import { CycleContextProvider } from '../collective-rewards/metrics'
 import { Content } from './components/Content'
 import { Metrics } from './components/Metrics'
 import { Spotlight } from './components/Spotlight'
@@ -29,7 +30,9 @@ export const BuildersPage = () => {
           <Spotlight />
         </ActionMetricsContainer>
         <ActionsContainer title={'The Collective Builders'} className="bg-v3-bg-accent-80">
-          <BuildersTable />
+          <CycleContextProvider>
+            <BuildersTable />
+          </CycleContextProvider>
         </ActionsContainer>
       </div>
     </div>

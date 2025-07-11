@@ -29,6 +29,6 @@ type Story = StoryObj<typeof meta>
 
 export const Default: Story = {
   args: {
-    allocationPct: 500000000000000000n,
+    allocationPct: 50,
   },
 }

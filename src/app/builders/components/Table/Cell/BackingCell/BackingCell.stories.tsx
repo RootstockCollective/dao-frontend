@@ -1,19 +1,6 @@
-import { AllocationsContext } from '@/app/collective-rewards/allocations/context'
-import { PricesContext } from '@/shared/context/PricesContext'
 import type { Meta, StoryObj } from '@storybook/react'
 import { parseEther } from 'viem'
 import { BackingCell } from './BackingCell'
-
-// Simple mock data
-const mockAllocations = {
-  '0x1234567890123456789012345678901234567890': parseEther('30000'),
-  '0x0987654321098765432109876543210987654321': parseEther('15000'),
-}
-
-const mockPrices = {
-  RIF: { price: 0.0047, lastUpdated: '2024-01-01' },
-  stRIF: { price: 0.0047, lastUpdated: '2024-01-01' },
-}
 
 const meta: Meta<typeof BackingCell> = {
   title: 'Koto/Builders/Table/Cell/BackingCell',
@@ -22,30 +9,47 @@ const meta: Meta<typeof BackingCell> = {
     layout: 'centered',
   },
   tags: ['autodocs'],
-  decorators: [
-    Story => (
-      <PricesContext.Provider value={{ prices: mockPrices }}>
-        <AllocationsContext.Provider
-          value={
-            {
-              state: { allocations: mockAllocations },
-              actions: {},
-              initialState: { allocations: {}, backer: {} },
-            } as any
-          }
-        >
-          <Story />
-        </AllocationsContext.Provider>
-      </PricesContext.Provider>
-    ),
-  ],
 }
 
 export default meta
 type Story = StoryObj<typeof meta>
 
+export const WithBacking: Story = {
+  args: {
+    amount: parseEther('30000'),
+    formattedAmount: '30,000 RIF',
+    formattedUsdAmount: '$141.00',
+  },
+}
+
+export const WithSmallBacking: Story = {
+  args: {
+    amount: parseEther('500'),
+    formattedAmount: '500 RIF',
+    formattedUsdAmount: '$2.35',
+  },
+}
+
+export const WithLargeBacking: Story = {
+  args: {
+    amount: parseEther('1500000'),
+    formattedAmount: '1.5M RIF',
+    formattedUsdAmount: '$7,050.00',
+  },
+}
+
+export const WithoutBacking: Story = {
+  args: {
+    amount: 0n,
+    formattedAmount: '0 RIF',
+    formattedUsdAmount: '$0.00',
+  },
+}
+
 export const Default: Story = {
   args: {
-    builderAddress: '0x1234567890123456789012345678901234567890',
+    amount: parseEther('15000'),
+    formattedAmount: '15,000 RIF',
+    formattedUsdAmount: '$70.50',
   },
 }

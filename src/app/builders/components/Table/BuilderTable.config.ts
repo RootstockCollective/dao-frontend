@@ -15,7 +15,7 @@ export const isColumnId = (id: string): id is ColumnId => COLUMN_IDS.includes(id
 
 export const PAGE_SIZE = 3
 
-export const COLUMN_TRANFORMS: Record<ColumnId, HtmlHTMLAttributes<HTMLTableCellElement>['className']> = {
+export const COLUMN_TRANSFORMS: Record<ColumnId, HtmlHTMLAttributes<HTMLTableCellElement>['className']> = {
   builder: 'flex-[1_1_12rem] min-w-[12rem]',
   backing: 'flex-[1_1_6rem] min-w-[6rem] justify-center',
   backer_rewards: 'flex-[1_1_5rem] min-w-[5rem] justify-center',
