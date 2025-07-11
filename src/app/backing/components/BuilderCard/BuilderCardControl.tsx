@@ -17,17 +17,28 @@ export interface BuilderCardControlProps extends Builder {
   allocationTxPending?: boolean
 }
 
-const AllocationDrawerContent = ({
-  onSaveAllocations,
-  onCancelAllocations,
-}: {
-  onSaveAllocations: () => void
-  onCancelAllocations: () => void
-}) => {
-  const { isPendingTx, isLoadingReceipt } = useAllocateVotes()
+const AllocationDrawerContent = () => {
+  const { saveAllocations, isPendingTx, isLoadingReceipt, isSuccess } = useAllocateVotes()
+
+  const { closeDrawer } = useLayoutContext()
+  const {
+    actions: { resetAllocations },
+  } = useContext(AllocationsContext)
+
+  const onSaveAllocations = () => {
+    saveAllocations()
+  }
+  const onCancelAllocations = () => {
+    resetAllocations()
+    closeDrawer()
+  }
+
   useEffect(() => {
-    console.log('### isPendingTx', isPendingTx)
-  }, [isPendingTx])
+    if (isSuccess) {
+      closeDrawer()
+    }
+  }, [isSuccess, closeDrawer])
+
   return (
     <ActionsContainer className="bg-v3-bg-accent-60">
       <div className="flex justify-center gap-2 w-full">
@@ -53,9 +64,9 @@ export const BuilderCardControl: FC<BuilderCardControlProps> = ({
 }) => {
   const { isConnected } = useAccount()
   const { prices } = usePricesContext()
-  const { openDrawer, closeDrawer, isDrawerOpen } = useLayoutContext()
+  const { openDrawer } = useLayoutContext()
   const {
-    actions: { updateAllocation, resetAllocations },
+    actions: { updateAllocation },
     state: {
       resetVersion,
       backer: { balance, cumulativeAllocation },
@@ -64,52 +75,12 @@ export const BuilderCardControl: FC<BuilderCardControlProps> = ({
     initialState: { allocations: initialAllocations },
   } = useContext(AllocationsContext)
 
-  const { saveAllocations, canSaveAllocation, isPendingTx, isLoadingReceipt, isSuccess } = useAllocateVotes()
+  const { canSaveAllocation } = useAllocateVotes()
 
   const rifPriceUsd = prices[RIF]?.price ?? 0
   const allocation = allocations[builderAddress] ?? 0n
   const existentAllocation = initialAllocations[builderAddress] ?? 0n
   const unallocatedAmount = floorToUnit(balance - (cumulativeAllocation - allocation))
-
-  const onSaveAllocations = () => {
-    saveAllocations()
-    // if (isDrawerOpen) {
-    //   openDrawer(
-    //     <AllocationDrawerContent
-    //       onSaveAllocations={onSaveAllocations}
-    //       onCancelAllocations={onCancelAllocations}
-    //     />,
-    //     true,
-    //   )
-    // }
-  }
-
-  const onCancelAllocations = () => {
-    resetAllocations()
-    closeDrawer()
-  }
-
-  // useEffect(() => {
-  //   if (isDrawerOpen) {
-  //     openOrUpdateAllocationDrawer()
-  //   }
-  // }, [isPendingTx])
-
-  useEffect(() => {
-    if (isSuccess) {
-      closeDrawer()
-    }
-  }, [isSuccess, closeDrawer])
-
-  // const openOrUpdateAllocationDrawer = useCallback(() => {
-  //   openDrawer(
-  //     <AllocationDrawerContent
-  //       onSaveAllocations={onSaveAllocations}
-  //       onCancelAllocations={onCancelAllocations}
-  //     />,
-  //     true,
-  //   )
-  // }, [openDrawer, onSaveAllocations, onCancelAllocations, isPendingTx, isLoadingReceipt])
 
   const handleAllocationChange = (value: number) => {
     if (allocationTxPending) return
@@ -117,13 +88,7 @@ export const BuilderCardControl: FC<BuilderCardControlProps> = ({
 
     if (!canSaveAllocation) return
 
-    openDrawer(
-      <AllocationDrawerContent
-        onSaveAllocations={onSaveAllocations}
-        onCancelAllocations={onCancelAllocations}
-      />,
-      true,
-    )
+    openDrawer(<AllocationDrawerContent />, true)
   }
 
   return (
