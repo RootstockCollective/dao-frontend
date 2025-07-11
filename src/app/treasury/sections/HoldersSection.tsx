@@ -40,7 +40,7 @@ const HolderColumn = ({ address, rns }: HolderColumnProps) => {
       className="flex items-center gap-1.5 text-white"
     >
       <Jdenticon className="rounded-full bg-white mr-1" value={address} size="30" />
-      <Span className="underline text-left overflow-hidden whitespace-nowrap text-[14px] text-text-primary">
+      <Span variant="body" className="text-left overflow-hidden whitespace-nowrap text-primary">
         {rns?.split('.')[0] || address}
       </Span>
     </a>
@@ -205,8 +205,8 @@ export const HoldersSection = () => {
       id: 'quantity',
       header: 'Quantity',
       cell: ({ row }) => (
-        <div className="flex flex-row">
-          <Span variant="body-s">{formatAmount(row.original.quantity)}</Span>
+        <div className="flex flex-row items-center">
+          <Span variant="body">{formatAmount(row.original.quantity)}</Span>
           <TokenImage size={16} symbol="RIF" className="ml-2" />
           <Span variant="tag-s" className="ml-1">
             stRIF
