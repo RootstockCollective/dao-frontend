@@ -1,5 +1,5 @@
 import { FC, useState, useMemo } from 'react'
-import { useClaimBackerRewards } from '../../backers/hooks/useClaimBackerRewards'
+import { useClaimBackerRewards } from '../../rewards/backers/hooks/useClaimBackerRewards'
 import { usePricesContext } from '@/shared/context'
 import { useHandleErrors } from '@/app/collective-rewards/utils'
 import { useBackerRewardsContext } from '@/app/collective-rewards/rewards/backers'
