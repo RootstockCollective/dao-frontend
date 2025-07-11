@@ -52,7 +52,7 @@ export function LayoutProvider({ children }: PropsWithChildren) {
     if (isDrawerOpen && closeOnRouteChange) {
       closeDrawer()
     }
-  }, [pathname])
+  }, [closeOnRouteChange, isDrawerOpen, pathname])
 
   // Refs for layout elements
   const drawerRef = useRef<HTMLDivElement | null>(null)
