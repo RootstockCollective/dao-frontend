@@ -4,8 +4,6 @@ import { TextInput, TextArea } from '@/components/FormFields'
 import { UseFormRegister, FieldErrors, FieldValues, Path } from 'react-hook-form'
 import { BaseProposalFormData } from './baseProposalSchema'
 
-type BaseProposalFields = 'proposalName' | 'discourseLink' | 'description'
-
 interface BaseProposalFieldsProps<T extends BaseProposalFormData & FieldValues> {
   register: UseFormRegister<T>
   errors: FieldErrors<T>
