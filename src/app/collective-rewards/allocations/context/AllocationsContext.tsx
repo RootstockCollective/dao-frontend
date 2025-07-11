@@ -174,6 +174,7 @@ export const AllocationsContextProvider: FC<{ children: ReactNode }> = ({ childr
     }, {} as Builders)
   }, [rawBuilders, backerRewards])
 
+  // TODO: for now we generate random builders here, but we should move this to a dedicated context
   const randomBuilders = useShuffledArray<Builder>(Object.values(builders))
     .filter(({ stateFlags }) => isBuilderRewardable(stateFlags))
     .slice(0, SPOTLIGHT_BUILDERS)
