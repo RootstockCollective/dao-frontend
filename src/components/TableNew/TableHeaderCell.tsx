@@ -14,9 +14,9 @@ export const TableHeaderCell: FC<TableHeaderCellProps> = ({
   contentClassName,
 }) => {
   return (
-    <td
+    <th
       className={cn(
-        'flex flex-col items-start gap-2',
+        'flex flex-col items-start gap-2 whitespace-nowrap',
         !!onClick ? 'cursor-pointer' : 'cursor-default',
         className,
       )}
@@ -25,6 +25,6 @@ export const TableHeaderCell: FC<TableHeaderCellProps> = ({
       <div className={cn('flex items-start self-stretch gap-1.5 cursor-[inherit]', contentClassName)}>
         {children}
       </div>
-    </td>
+    </th>
   )
 }

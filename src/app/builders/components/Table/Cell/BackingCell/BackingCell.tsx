@@ -1,29 +1,22 @@
-import { AllocationsContext } from '@/app/collective-rewards/allocations/context'
-import { formatSymbol, getFiatAmount } from '@/app/collective-rewards/rewards/utils/formatter'
+import { CommonComponentProps } from '@/components/commonProps'
 import { TokenImage } from '@/components/TokenImage'
 import { Typography } from '@/components/TypographyNew/Typography'
 import { RIF } from '@/lib/constants'
-import { cn, formatCurrency } from '@/lib/utils'
-import { usePricesContext } from '@/shared/context/PricesContext'
-import { FC, useContext } from 'react'
-import { Address } from 'viem'
+import { cn } from '@/lib/utils'
+import { FC } from 'react'
 
-type BackingCellProps = {
-  className?: string
-  builderAddress: Address
+export interface BackingCellProps extends CommonComponentProps {
+  amount: bigint
+  formattedAmount: string
+  formattedUsdAmount: string
 }
 
-export const BackingCell: FC<BackingCellProps> = ({ className, builderAddress }) => {
-  const { prices } = usePricesContext()
-  const {
-    state: { allocations },
-  } = useContext(AllocationsContext)
-
-  const amount = allocations[builderAddress] ?? 0n
-  const rifPrice = prices[RIF]?.price ?? 0
-  const formattedAmount = formatSymbol(amount, 'stRIF')
-  const formattedUsdAmount = formatCurrency(getFiatAmount(amount, rifPrice), { currency: 'USD' })
-
+export const BackingCell: FC<BackingCellProps> = ({
+  className,
+  amount,
+  formattedAmount,
+  formattedUsdAmount,
+}) => {
   return (
     <div className={cn('flex justify-end items-end gap-2', className)} data-testid="BackingCell">
       <div className="flex flex-col items-end">

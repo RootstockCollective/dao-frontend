@@ -12,7 +12,7 @@ export type Sort<ColumnId extends Column['id'] = Column['id']> = {
 }
 
 export type RowData<ColumnId extends Column['id'] = Column['id'], DT extends unknown = unknown> = {
-  [k in ColumnId]: DT
+  [k in ColumnId]: DT // FIXME: just use Record<Column['id'], DT>
 }
 
 export type Row<ColumnId extends Column['id'] = Column['id'], RowId extends BaseRowId = BaseRowId> = {
@@ -46,6 +46,13 @@ export type TableAction<ColumnId extends Column['id'] = Column['id']> =
   | {
       type: 'TOGGLE_COLUMN_VISIBILITY'
       payload: ColumnId
+    }
+  | {
+      type: 'SET_COLUMN_VISIBILITY'
+      payload: {
+        columnId: ColumnId
+        hidden: boolean
+      }
     }
   | {
       type: 'SORT_BY_COLUMN'

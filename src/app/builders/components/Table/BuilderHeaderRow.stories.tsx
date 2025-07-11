@@ -4,11 +4,11 @@ import { TableContext } from '@/shared/context/TableContext/TableContext'
 import { tableReducer } from '@/shared/context/TableContext/tableReducer'
 import type { Meta, StoryObj } from '@storybook/react'
 import { FC, PropsWithChildren, useReducer } from 'react'
-import { BuilderHeaderRow, DEFAULT_HEADERS } from './BuilderHeaderRow'
-import { ColumnId } from './BuilderTable.types'
+import { BuilderHeaderRow } from './BuilderHeaderRow'
+import { ColumnId, DEFAULT_HEADERS } from './BuilderTable.config'
 
 const meta = {
-  title: 'Koto/Builders/Components/Table/BuilderHeaderRow',
+  title: 'Koto/Builders/Table/BuilderHeaderRow',
   component: BuilderHeaderRow,
   parameters: {
     layout: 'fullscreen',

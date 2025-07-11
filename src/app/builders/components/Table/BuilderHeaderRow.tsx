@@ -2,7 +2,7 @@
 
 import { Column, Sort, TableAction, useTableActionsContext, useTableContext } from '@/shared/context'
 import { SORT_DIRECTIONS } from '@/shared/context/TableContext/types'
-import { HtmlHTMLAttributes, Suspense } from 'react'
+import { Suspense } from 'react'
 
 import { CommonComponentProps } from '@/components/commonProps'
 import { ArrowDownWFill } from '@/components/Icons/v3design/ArrowDownWFill'
@@ -12,19 +12,10 @@ import { TableHeaderCell, TableHeaderNode } from '@/components/TableNew'
 import { Label, Paragraph } from '@/components/TypographyNew'
 import { cn } from '@/lib/utils'
 import { Dispatch, FC } from 'react'
-import { ColumnId } from './BuilderTable.types'
+import { COLUMN_TRANSFORMS, ColumnId } from './BuilderTable.config'
 import { SelectorHeaderCell } from './Cell/SelectorHeaderCell/SelectorHeaderCell'
+import { TableColumnDropdown } from './TableColumnDropdown'
 
-// FIXME: Leave to the end to fix the dynamic width of the columns so that the actions column expands when other columns are hidden without affecting the builder column.
-export const COLUMN_WIDTHS: Record<ColumnId, HtmlHTMLAttributes<HTMLTableCellElement>['className']> = {
-  builder: 'grow-3 shrink-2 basis-6 pl-4',
-  backing: 'grow-1 shrink-1 basis-6 pl-4',
-  backer_rewards: 'grow-1 shrink-1 basis-6 pl-4',
-  rewards_past_cycle: 'grow-1 shrink-1 basis-6 pl-4',
-  rewards_upcoming: 'grow-1 shrink-1 basis-6 pl-4',
-  allocations: 'grow-1 shrink-0 basis-6 pl-4',
-  actions: 'grow-1 shrink-0 basis-6 pl-4',
-}
 const OrderIndicatorContainer: FC<CommonComponentProps> = ({ className, children }) => (
   <div className={cn('flex pt-1 justify-center gap-2', className)}>{children}</div>
 )
@@ -78,7 +69,7 @@ const dispatchSortRoundRobin = (
   dispatch({ type: 'SORT_BY_COLUMN', payload: { columnId: nextSort ? columnId : null, direction: nextSort } })
 }
 
-const BuilderSelectorHeaderCell: FC<CommonComponentProps & { columnId: ColumnId }> = ({
+const BuilderHeaderCell: FC<CommonComponentProps & { columnId: ColumnId }> = ({
   className,
   children,
   columnId,
@@ -91,7 +82,7 @@ const BuilderSelectorHeaderCell: FC<CommonComponentProps & { columnId: ColumnId 
 
   return (
     <TableHeaderCell
-      className={cn(COLUMN_WIDTHS[columnId], className)}
+      className={cn(COLUMN_TRANSFORMS[columnId], className)}
       onClick={() => isSortable && dispatchSortRoundRobin(dispatch, columnId, sort)}
       {...props}
     >
@@ -104,7 +95,7 @@ const BuilderSelectorHeaderCell: FC<CommonComponentProps & { columnId: ColumnId 
   )
 }
 
-const BuilderHeaderCell: FC<CommonComponentProps & { columnId: ColumnId }> = ({
+const HeaderCell: FC<CommonComponentProps & { columnId: ColumnId }> = ({
   className,
   children,
   columnId,
@@ -115,100 +106,85 @@ const BuilderHeaderCell: FC<CommonComponentProps & { columnId: ColumnId }> = ({
 
   const column = columns.find(({ id }) => id === columnId)
 
-  if (!column || column.hidden) return null
+  if (!column || column.hidden) {
+    return null
+  }
 
   const isSortable = column.sortable
 
+  // TODO: this is a temporary solution to justify center. Please do better than me ;)
+  const columnClassNames = COLUMN_TRANSFORMS[columnId]
+  const isJustifyCenter = columnClassNames?.match('justify-center')?.length ?? false
+
   return (
-    <TableHeaderCell
-      className={cn(COLUMN_WIDTHS[columnId], className)}
-      onClick={() => isSortable && dispatchSortRoundRobin(dispatch, columnId, sort)}
-      {...props}
-    >
-      {isSortable && <OrderIndicator columnId={columnId} />}
-      <TableHeaderNode className={isSortable ? 'cursor-pointer' : 'cursor-default'}>
-        {children}
-      </TableHeaderNode>
-    </TableHeaderCell>
+    <>
+      <TableHeaderCell
+        className={cn(columnClassNames, className)}
+        contentClassName={isJustifyCenter ? 'justify-center' : ''}
+        onClick={() => isSortable && dispatchSortRoundRobin(dispatch, columnId, sort)}
+        {...props}
+      >
+        {isSortable && <OrderIndicator columnId={columnId} />}
+        <TableHeaderNode className={isSortable ? 'cursor-pointer' : 'cursor-default'}>
+          {children}
+        </TableHeaderNode>
+      </TableHeaderCell>
+    </>
   )
 }
 
 const HeaderTitle: FC<CommonComponentProps> = ({ className, children }) => (
-  <Label variant="tag" className={cn('text-v3-text-100 cursor-[inherit]', className)}>
+  <Label
+    variant="tag"
+    className={cn(
+      'text-v3-text-100 cursor-[inherit] rootstock-sans text-[0.875rem] leading-5 font-normal',
+      className,
+    )}
+  >
     {children}
   </Label>
 )
 const HeaderSubtitle: FC<CommonComponentProps> = ({ className, children }) => (
-  <Paragraph variant="body-xs" className={cn('text-v3-bg-accent-40', className)}>
+  <Paragraph
+    variant="body-xs"
+    className={cn('text-v3-bg-accent-40 rootstock-sans text-xs leading-5 lowercase font-normal', className)}
+  >
     {children}
   </Paragraph>
 )
 
-export const DEFAULT_HEADERS: Column<ColumnId>[] = [
-  {
-    id: 'builder',
-    hidden: false,
-    sortable: true,
-  },
-  {
-    id: 'backer_rewards',
-    hidden: false,
-    sortable: true,
-  },
-  {
-    id: 'backing',
-    hidden: false,
-    sortable: true,
-  },
-  {
-    id: 'rewards_past_cycle',
-    hidden: false,
-    sortable: true,
-  },
-  {
-    id: 'rewards_upcoming',
-    hidden: false,
-    sortable: true,
-  },
-  {
-    id: 'allocations',
-    hidden: false,
-    sortable: true,
-  },
-  {
-    id: 'actions',
-    hidden: true,
-    sortable: false,
-  },
-]
-
 export const BuilderHeaderRow = () => {
   return (
     <Suspense fallback={<div>Loading table headers...</div>}>
-      <tr className="capitalize text-xs leading-4 flex border-b-1 border-b-v3-text-60 select-none">
-        <BuilderSelectorHeaderCell key="builder" columnId="builder" />
-        <BuilderHeaderCell key="backing" columnId="backing">
-          <HeaderTitle>Backing</HeaderTitle>
-        </BuilderHeaderCell>
-        <BuilderHeaderCell key="backer_rewards" columnId="backer_rewards">
-          <HeaderTitle>Rewards</HeaderTitle>
-          <HeaderSubtitle>%</HeaderSubtitle>
-        </BuilderHeaderCell>
-        <BuilderHeaderCell key="rewards_past_cycle" columnId="rewards_past_cycle">
+      <tr className="flex border-b-1 border-b-v3-text-60 select-none gap-4">
+        <BuilderHeaderCell key="builder" columnId="builder" />
+        <HeaderCell key="backer_rewards" columnId="backer_rewards">
+          <HeaderTitle>Backer Rewards</HeaderTitle>
+          <HeaderSubtitle>current % - change</HeaderSubtitle>
+        </HeaderCell>
+        <HeaderCell key="rewards_past_cycle" columnId="rewards_past_cycle">
           <HeaderTitle>Rewards</HeaderTitle>
           <HeaderSubtitle>past cycle</HeaderSubtitle>
-        </BuilderHeaderCell>
-        <BuilderHeaderCell key="rewards_upcoming" columnId="rewards_upcoming">
+        </HeaderCell>
+        <HeaderCell key="rewards_upcoming" columnId="rewards_upcoming">
           <HeaderTitle>Rewards</HeaderTitle>
           <HeaderSubtitle>upcoming cycle, estimated</HeaderSubtitle>
-        </BuilderHeaderCell>
-        <BuilderHeaderCell key="allocations" columnId="allocations">
-          <HeaderTitle>Allocations</HeaderTitle>
-          <HeaderSubtitle>Total</HeaderSubtitle>
-        </BuilderHeaderCell>
-        <BuilderHeaderCell columnId="actions">
+        </HeaderCell>
+        <HeaderCell key="backing" columnId="backing">
+          <HeaderTitle>Backing</HeaderTitle>
+          <HeaderSubtitle className="h-full text-v3-bg-accent-80">balls</HeaderSubtitle>{' '}
+          {/* TODO: temporary fix to align the text to the top */}
+        </HeaderCell>
+        <HeaderCell key="allocations" columnId="allocations">
+          <HeaderTitle>Backing Share</HeaderTitle>
+          <HeaderSubtitle>%</HeaderSubtitle>
+        </HeaderCell>
+        <HeaderCell columnId="actions">
           <HeaderTitle>Actions</HeaderTitle>
-        </BuilderHeaderCell>
+          <HeaderSubtitle className="h-full text-v3-bg-accent-80">balls</HeaderSubtitle>{' '}
+          {/* TODO: temporary fix to align the text to the top */}
+        </HeaderCell>
+        <TableColumnDropdown className="self-start" />
       </tr>
     </Suspense>
   )

@@ -1,6 +1,6 @@
 import { useTableActionsContext, withTableContext } from '@/shared/context/TableContext'
 import { useEffect } from 'react'
-import { ColumnId } from '../BuilderTable.types'
+import { ColumnId } from '../BuilderTable.config'
 import { TableColumnDropdown } from './TableColumnDropdown'
 
 const TableColumnDropdownWithContext = () => {
@@ -27,11 +27,11 @@ const TableColumnDropdownWithContext = () => {
 }
 
 export default {
-  title: 'Koto/Builders/Components/Table/TableColumnDropdown',
+  title: 'Koto/Builders/Table/TableColumnDropdown',
   component: TableColumnDropdown,
 }
 
+const WrappedComponent = withTableContext(TableColumnDropdownWithContext)
 export const Basic = () => {
-  const WrappedComponent = withTableContext(TableColumnDropdownWithContext)
   return <WrappedComponent />
 }
