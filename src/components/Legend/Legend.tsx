@@ -25,7 +25,7 @@ export const Legend = ({ title, className, items }: LegendProps) => {
       {items.map(({ key, label, displayColor }) => (
         <span key={key} className="flex items-center space-x-2">
           <Circle color={displayColor} />
-          <span>{truncate(label, 15)}</span>
+          <span>{truncate(label, 17)}</span>
         </span>
       ))}
     </div>

@@ -3,7 +3,10 @@ import { useContext, useMemo, useCallback, useEffect, useState } from 'react'
 import { Address, formatEther, parseEther } from 'viem'
 import { AllocationChangeData, AllocationItem } from '../AllocationBar/types'
 import AllocationBar from '../AllocationBar/AllocationBar'
-import { floorToUnit } from '../utils'
+import { floorToUnit, getBuilderColor } from '../utils'
+import { isBuilderRewardable } from '@/app/collective-rewards/utils'
+
+const UNALLOCATED_KEY = 'unallocated'
 
 const BuilderAllocationBar = () => {
   const {
@@ -21,7 +24,7 @@ const BuilderAllocationBar = () => {
   const [orderedKeys, setOrderedKeys] = useState<string[]>([])
 
   useEffect(() => {
-    setOrderedKeys([...Object.keys(initialAllocations), 'unallocated'])
+    setOrderedKeys([...Object.keys(initialAllocations), UNALLOCATED_KEY])
   }, [resetVersion, initialAllocations])
 
   // Sync keys and add new keys to left of 'unallocated'
@@ -29,11 +32,11 @@ const BuilderAllocationBar = () => {
     const allocationKeys = Object.keys(allocations)
 
     if (orderedKeys.length === 0) {
-      setOrderedKeys([...allocationKeys, 'unallocated'])
+      setOrderedKeys([...allocationKeys, UNALLOCATED_KEY])
       return
     }
 
-    const unallocatedIndex = orderedKeys.indexOf('unallocated')
+    const unallocatedIndex = orderedKeys.indexOf(UNALLOCATED_KEY)
     const missingKeys = allocationKeys.filter(k => !orderedKeys.includes(k))
 
     if (missingKeys.length > 0) {
@@ -53,28 +56,34 @@ const BuilderAllocationBar = () => {
 
   // Build itemsData from orderedKeys including unallocated with its dynamic value
   const baseItems: AllocationItem[] = useMemo(() => {
-    return orderedKeys.map(key => {
-      if (key === 'unallocated') {
-        return {
-          key: 'unallocated',
-          label: 'available backing',
-          value: Number(formatEther(unallocated)),
-          displayColor: '#25211E',
+    return orderedKeys
+      .map(key => {
+        if (key === UNALLOCATED_KEY) {
+          return {
+            key: UNALLOCATED_KEY,
+            label: 'available backing',
+            value: Number(formatEther(unallocated)),
+            displayColor: '#25211E',
+          }
         }
-      }
+        const addressKey = key as Address
 
-      const allocation = allocations[key as Address]
-      const builder = getBuilder(key as Address)
-      const value = allocation ? Number(formatEther(allocation)) : 0
+        const allocation = allocations[addressKey]
+        const builder = getBuilder(addressKey)
+        // TODO: Add a check to see if the builder is rewardable and
+        // and change the segment to allow certain actions only (e.g.: reduce but not increase)
 
-      return {
-        key,
-        label: builder?.builderName || key,
-        value,
-        displayColor: `#${key.slice(-6).toUpperCase()}`,
-        isTemporary: initialAllocations[key as Address] !== allocation,
-      }
-    })
+        const value = allocation ? Number(formatEther(allocation)) : 0
+
+        return {
+          key,
+          label: builder?.builderName || key,
+          value,
+          displayColor: getBuilderColor(addressKey),
+          isTemporary: initialAllocations[addressKey] !== allocation,
+        }
+      })
+      .filter(item => item !== null)
   }, [orderedKeys, allocations, unallocated, initialAllocations, getBuilder])
 
   // Local state for itemsData so bar updates on interactions
@@ -94,7 +103,7 @@ const BuilderAllocationBar = () => {
         // Update allocations except for 'unallocated'
         const changedItems = [itemsData[increasedIndex], itemsData[decreasedIndex]]
         changedItems.forEach(item => {
-          if (item.key !== 'unallocated') {
+          if (item.key !== UNALLOCATED_KEY) {
             updateAllocation(item.key as Address, parseEther(newValues[itemsData.indexOf(item)].toString()))
           }
         })
@@ -121,6 +130,8 @@ const BuilderAllocationBar = () => {
       isDraggable={!isEmpty}
       height={isEmpty ? '1rem' : undefined}
       onChange={handleAllocationChange}
+      // we want the component to have the same height
+      className={`${isEmpty ? 'min-h-52' : ''}`}
     />
   )
 }

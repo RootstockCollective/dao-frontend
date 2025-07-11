@@ -35,7 +35,7 @@ export const ConnectButtonOrangeComponent = ({ onClick, className }: ConnectButt
 )
 
 export const ConnectButtonComponentSecondary = ({ onClick }: ConnectButtonComponentProps) => (
-  <Button onClick={onClick} data-testid="ConnectWallet" variant="secondary">
-    Connect Wallet
+  <Button onClick={onClick} data-testid="ConnectWallet" variant="secondary-outline">
+    <Span className="text-v3-text-0">Connect Wallet</Span>
   </Button>
 )

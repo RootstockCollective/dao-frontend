@@ -7,6 +7,10 @@ import { useAccount } from 'wagmi'
 import { useBuildersWithBackerRewardPercentage } from '../hooks/useBuildersWithBackerRewardPercentage'
 import { createActions } from './allocationsActions'
 import { validateAllocationsState } from './utils'
+import { useShuffledArray } from '@/app/backing/hooks/useShuffledArray'
+import { isBuilderRewardable } from '../../utils'
+
+const SPOTLIGHT_BUILDERS = 4
 
 export interface Allocations {
   [K: Address]: bigint
@@ -32,6 +36,8 @@ interface State {
   selections: Selections
   allocations: Allocations
   backer: Backer
+  builders: Builders
+  randomBuilders: Builder[]
   isContextLoading: boolean
   contextError: Error | null
   getBuilder: (address: Address) => Builder | null
@@ -74,6 +80,8 @@ const DEFAULT_CONTEXT: AllocationsContext = {
       allocationsCount: 0,
       cumulativeAllocation: BigInt(0),
     },
+    builders: {},
+    randomBuilders: [],
     isContextLoading: true,
     contextError: null,
     getBuilder: () => null,
@@ -165,6 +173,11 @@ export const AllocationsContextProvider: FC<{ children: ReactNode }> = ({ childr
       return acc
     }, {} as Builders)
   }, [rawBuilders, backerRewards])
+
+  // TODO: for now we generate random builders here, but we should move this to a dedicated context
+  const randomBuilders = useShuffledArray<Builder>(Object.values(builders))
+    .filter(({ stateFlags }) => isBuilderRewardable(stateFlags))
+    .slice(0, SPOTLIGHT_BUILDERS)
 
   /**
    * Reactive state updates
@@ -270,6 +283,8 @@ export const AllocationsContextProvider: FC<{ children: ReactNode }> = ({ childr
       selections,
       allocations,
       backer,
+      builders,
+      randomBuilders,
       isContextLoading,
       contextError,
       getBuilder,
@@ -279,6 +294,8 @@ export const AllocationsContextProvider: FC<{ children: ReactNode }> = ({ childr
     selections,
     allocations,
     backer,
+    builders,
+    randomBuilders,
     isContextLoading,
     contextError,
     getBuilder,

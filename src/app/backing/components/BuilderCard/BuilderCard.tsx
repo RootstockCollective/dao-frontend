@@ -1,16 +1,28 @@
 import { ConnectPopover } from '@/app/backing/components/Popovers/ConnectPopover'
 import { BackerRewardPercentage, TokenRewards } from '@/app/collective-rewards/rewards/types'
 import { Builder } from '@/app/collective-rewards/types'
-import { Button } from '@/components/Button'
 import { cn } from '@/lib/utils'
-import { FC } from 'react'
+import { FC, useState } from 'react'
 import { AllocationInput } from '../AllocationInput/AllocationInput'
 import { BuilderHeader } from '../BuilderHeader/BuilderHeader'
 import { CurrentBacking } from '../CurrentBacking/CurrentBacking'
 import { RewardsInfo } from '../RewardsInfo/RewardsInfo'
+import { Button } from '@/components/ButtonNew'
+import { WarningIcon } from '@/components/Icons'
+import { Paragraph } from '@/components/TypographyNew'
+import { isBuilderRewardable } from '@/app/collective-rewards/utils/isBuilderOperational'
+import { StylableComponentProps } from '@/components/commonProps'
+
+const Warning = ({ className }: StylableComponentProps<HTMLDivElement>) => {
+  return (
+    <div className={cn('flex items-center gap-2', className)}>
+      <WarningIcon size={48} color="#DEFF1A" className="min-w-[48px] min-h-[48px]" />
+      <Paragraph>Builder was deactivated by the foundation</Paragraph>
+    </div>
+  )
+}
 
 export interface BuilderCardProps extends Builder {
-  backerRewardPct: BackerRewardPercentage
   existentAllocation: bigint
   maxAllocation: bigint
   allocation: bigint
@@ -27,10 +39,11 @@ export interface BuilderCardProps extends Builder {
 export const BuilderCard: FC<BuilderCardProps> = ({
   address,
   builderName,
+  stateFlags,
   existentAllocation,
   maxAllocation,
   allocation,
-  backerRewardPct,
+  backerRewardPercentage,
   rifPriceUsd,
   isConnected,
   estimatedRewards,
@@ -40,6 +53,9 @@ export const BuilderCard: FC<BuilderCardProps> = ({
   dataTestId = '',
   className,
 }) => {
+  const isRewardable = isBuilderRewardable(stateFlags)
+  const [editing, setEditing] = useState(false)
+
   return (
     <div
       className={cn(
@@ -55,47 +71,56 @@ export const BuilderCard: FC<BuilderCardProps> = ({
       />
       {/* FIXME: replace the builder page link */}
       <BuilderHeader address={address} name={builderName} builderPageLink="#" className="mt-8" />
-      <div
-        className="w-full mt-6 border border-v3-bg-accent-40 rounded-lg gap-3 flex flex-col divide-y divide-v3-bg-accent-40"
-        data-testid="builderCardContent"
-      >
-        <RewardsInfo {...backerRewardPct} estimatedRewards={estimatedRewards} />
-        {isConnected && (
-          <AllocationInput
-            allocation={allocation}
-            existentAllocation={existentAllocation}
-            maxAllocation={maxAllocation}
-            rifPriceUsd={rifPriceUsd}
-            allocationTxPending={allocationTxPending}
-            onAllocationChange={onAllocationChange}
-            className="px-2 py-3 mx-3"
-          />
-        )}
-        {isConnected && <CurrentBacking existentAllocation={existentAllocation} />}
-      </div>
-      {isConnected && existentAllocation !== 0n && (
-        <Button
-          variant="secondary"
-          className="border-v3-bg-accent-40 px-2 py-1 mt-6"
-          textClassName="text-[14px] font-normal"
-          onClick={() => onAllocationChange(0)}
-          data-testid="removeBackingButton"
+      {!isRewardable && <Warning className="pt-3" />}
+      <div className="my-6 w-full">
+        <div
+          className="w-full border border-v3-bg-accent-40 rounded-lg flex flex-col"
+          data-testid="builderCardContent"
         >
-          Remove backing
-        </Button>
-      )}
-      {!isConnected && (
-        <ConnectPopover>
+          {isRewardable && (
+            <RewardsInfo
+              backerRewardPercentage={backerRewardPercentage}
+              estimatedRewards={estimatedRewards}
+            />
+          )}
+
+          {isConnected && (
+            <div className="p-3">
+              <AllocationInput
+                allocation={allocation}
+                existentAllocation={existentAllocation}
+                maxAllocation={maxAllocation}
+                rifPriceUsd={rifPriceUsd}
+                allocationTxPending={allocationTxPending}
+                disabled={allocationTxPending || !isRewardable}
+                onAllocationChange={onAllocationChange}
+                editing={editing}
+                setEditing={setEditing}
+                className="px-2 py-3"
+              />
+            </div>
+          )}
+          {isConnected && editing && <CurrentBacking existentAllocation={existentAllocation} />}
+        </div>
+      </div>
+      <div>
+        {isConnected && existentAllocation !== 0n && (
           <Button
-            variant="secondary"
-            className={cn('border-v3-bg-accent-40 px-2 py-1 mt-6')}
-            textClassName="text-[14px] font-normal"
-            data-testid="backBuilderButton"
+            variant="secondary-outline"
+            onClick={() => onAllocationChange(0)}
+            data-testid="removeBackingButton"
           >
-            Back builder
+            Remove backing
           </Button>
-        </ConnectPopover>
-      )}
+        )}
+        {!isConnected && (
+          <ConnectPopover>
+            <Button variant="secondary-outline" data-testid="backBuilderButton">
+              Back builder
+            </Button>
+          </ConnectPopover>
+        )}
+      </div>
     </div>
   )
 }

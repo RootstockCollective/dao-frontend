@@ -31,10 +31,18 @@ type Story = StoryObj<typeof BuilderCard>
 const defaultProps = {
   address: getAddress('0x1234567890123456789012345678901234567890'),
   builderName: 'Example Builder',
-  backerRewardPct: {
-    current: percentageToWei('50'),
+  stateFlags: {
+    activated: true,
+    kycApproved: true,
+    communityApproved: true,
+    paused: false,
+    revoked: false,
+  },
+  backerRewardPercentage: {
+    previous: percentageToWei('50'),
     next: percentageToWei('50'),
-    cooldownEndTime: BigInt(Math.floor(Date.now() / 1000) + 3600), // 1 hour from now
+    cooldown: BigInt(Math.floor(Date.now() / 1000) + 3600), // 1 hour from now
+    active: percentageToWei('50'),
   },
   existentAllocation: parseEther('1000'),
   maxAllocation: parseEther('10000'),
@@ -93,10 +101,11 @@ export const WithAllocation: Story = {
 export const WithBuilderIncreasedRewardPct: Story = {
   args: {
     ...defaultProps,
-    backerRewardPct: {
-      current: percentageToWei('50'),
+    backerRewardPercentage: {
+      previous: percentageToWei('50'),
       next: percentageToWei('80'),
-      cooldownEndTime: BigInt(Math.floor(Date.now() / 1000) + 3600), // 1 hour from now
+      cooldown: BigInt(Math.floor(Date.now() / 1000) + 3600), // 1 hour from now
+      active: percentageToWei('30'), // 1 hour from now
     },
   },
 }
@@ -104,10 +113,11 @@ export const WithBuilderIncreasedRewardPct: Story = {
 export const WithBuilderDecreasedRewardPct: Story = {
   args: {
     ...defaultProps,
-    backerRewardPct: {
-      current: percentageToWei('50'),
+    backerRewardPercentage: {
+      previous: percentageToWei('50'),
       next: percentageToWei('30'),
-      cooldownEndTime: BigInt(Math.floor(Date.now() / 1000) + 3600), // 1 hour from now
+      cooldown: BigInt(Math.floor(Date.now() / 1000) + 3600), // 1 hour from now
+      active: percentageToWei('30'), // 1 hour from now
     },
   },
 }
@@ -116,5 +126,18 @@ export const WithAllocationPending: Story = {
   args: {
     ...defaultProps,
     allocationTxPending: true,
+  },
+}
+
+export const WithBuilderNotRewardable: Story = {
+  args: {
+    ...defaultProps,
+    stateFlags: {
+      activated: false,
+      kycApproved: false,
+      communityApproved: false,
+      paused: false,
+      revoked: false,
+    },
   },
 }

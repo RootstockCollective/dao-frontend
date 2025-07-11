@@ -1,9 +1,10 @@
 import { DecorativeSquares } from '@/app/backing/components/DecorativeSquares'
-import { Header } from '@/components/TypographyNew'
+import { Header, Span } from '@/components/TypographyNew'
 import { Typography } from '@/components/TypographyNew/Typography'
 import { cn } from '@/lib/utils'
 import { FC } from 'react'
 import { CommonComponentProps } from '@/components/commonProps'
+import { CRWhitepaperLink } from '@/app/collective-rewards/shared/components/CRWhitepaperLinkNew'
 
 export const BackingBanner: FC<CommonComponentProps> = ({ className = '' }) => {
   return (
@@ -27,6 +28,9 @@ export const BackingBanner: FC<CommonComponentProps> = ({ className = '' }) => {
           <Typography>Retain full ownership and access to your stRIF</Typography>
         </li>
       </ul>
+      <Span>
+        See the <CRWhitepaperLink>Whitepaper</CRWhitepaperLink>
+      </Span>
     </div>
   )
 }
