@@ -1,6 +1,8 @@
 import { JSX } from 'react'
 import { Address } from 'viem'
 
+export type ClaimRewardType = 'all' | 'rif' | 'rbtc'
+
 export type Token = {
   symbol: string
   address: Address
