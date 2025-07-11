@@ -44,3 +44,7 @@ export { TwitterXIcon } from './TwitterXIcon'
 export type { IconProps } from './types'
 export { UsersIcon } from './UsersIcon'
 export { XCircleIcon } from './XCircleIcon'
+
+// v3 design icons
+export * from './v3design/ListIcon'
+export * from './v3design/GridIcon'
