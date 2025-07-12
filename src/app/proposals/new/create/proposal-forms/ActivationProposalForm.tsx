@@ -14,24 +14,31 @@ import { useReviewProposal } from '../../context/ReviewProposalContext'
 import { TextInput } from '@/components/FormFields'
 import { showFormErrors } from './components/showFormErrors'
 
-const ActivationProposalSchema = BaseProposalSchema.extend({
+export const ActivationProposalSchema = BaseProposalSchema.extend({
   builderAddress: z.string().refine(val => isAddress(val), { message: 'Invalid builder address' }),
 })
+export type BuilderProposal = z.infer<typeof ActivationProposalSchema>
 
 export function ActivationProposalForm() {
   const router = useRouter()
   const { setSubfooter } = useLayoutContext()
   const { form: savedForm, setForm } = useReviewProposal()
 
-  const { handleSubmit, control } = useForm<z.infer<typeof ActivationProposalSchema>>({
+  const { handleSubmit, control } = useForm<BuilderProposal>({
     mode: 'onTouched',
     resolver: zodResolver(ActivationProposalSchema),
-    defaultValues: savedForm || {
-      proposalName: '',
-      description: '',
-      discourseLink: '',
-      builderAddress: '' as Address,
-    },
+    // use recorded proposal if it is of the same type
+    defaultValues: (() => {
+      const parsed = ActivationProposalSchema.safeParse(savedForm)
+      return parsed.success
+        ? parsed.data
+        : {
+            proposalName: '',
+            description: '',
+            discourseLink: '',
+            builderAddress: '' as Address,
+          }
+    })(),
   })
 
   const onSubmit = useCallback(

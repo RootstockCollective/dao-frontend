@@ -1,16 +1,17 @@
 'use client'
 
 import { createContext, useContext, useMemo, useState } from 'react'
+import { Proposals } from '../types/proposalTypes'
 
 interface ReviewProposalState {
-  form: unknown
-  setForm: (val: unknown) => void
+  form: Proposals
+  setForm: (val: Proposals) => void
 }
 
 const ReviewProposalContext = createContext<ReviewProposalState | null>(null)
 
 export function ReviewProposalProvider({ children }: React.PropsWithChildren) {
-  const [form, setForm] = useState<unknown>(null)
+  const [form, setForm] = useState<Proposals>(null)
   const value = useMemo<ReviewProposalState>(
     () => ({
       form,

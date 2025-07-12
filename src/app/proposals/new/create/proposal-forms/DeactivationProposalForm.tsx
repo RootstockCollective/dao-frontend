@@ -1,5 +1,75 @@
-import React from 'react'
+'use client'
+
+import { useCallback, useEffect } from 'react'
+import { useRouter } from 'next/navigation'
+import { Address, isAddress } from 'viem'
+import { useForm } from 'react-hook-form'
+import { zodResolver } from '@hookform/resolvers/zod'
+import { z } from 'zod'
+import { useLayoutContext } from '@/components/MainContainer/LayoutProvider'
+import { Subfooter } from '../../components/Subfooter'
+import { BaseProposalFields } from './components/BaseProposalFields'
+import { BaseProposalSchema } from './components/baseProposalSchema'
+import { useReviewProposal } from '../../context/ReviewProposalContext'
+import { TextInput } from '@/components/FormFields'
+import { showFormErrors } from './components/showFormErrors'
+
+const DeactivationProposalSchema = BaseProposalSchema.extend({
+  builderAddress: z
+    .string()
+    .refine(val => isAddress(val), { message: 'Invalid builder address to de-whitelist' }),
+})
+export type DeactivationProposal = z.infer<typeof DeactivationProposalSchema>
 
 export function DeactivationProposalForm() {
-  return <div>DeactivationProposalForm</div>
+  const router = useRouter()
+  const { setSubfooter } = useLayoutContext()
+  const { form: savedForm, setForm } = useReviewProposal()
+
+  const { handleSubmit, control } = useForm<DeactivationProposal>({
+    mode: 'onTouched',
+    resolver: zodResolver(DeactivationProposalSchema),
+    // use recorded proposal if it is of the same type
+    defaultValues: (() => {
+      const parsed = DeactivationProposalSchema.safeParse(savedForm)
+      return parsed.success
+        ? parsed.data
+        : {
+            proposalName: '',
+            description: '',
+            discourseLink: '',
+            builderAddress: '' as Address,
+          }
+    })(),
+  })
+
+  const onSubmit = useCallback(
+    () =>
+      handleSubmit(data => {
+        setForm(data)
+        router.push('/proposals/new/review')
+      }, showFormErrors)(),
+    [handleSubmit, router, setForm],
+  )
+
+  useEffect(() => {
+    setSubfooter(<Subfooter submitForm={onSubmit} buttonText="Review proposal" />)
+    return () => setSubfooter(null)
+  }, [])
+
+  return (
+    <div>
+      <form>
+        <div className="w-full max-w-[760px] px-6 pt-6 pb-8 flex flex-col gap-10 bg-bg-80 rounded-sm">
+          <BaseProposalFields control={control} />
+          <div className="flex flex-col gap-4">
+            <h2 className="font-kk-topo text-text-100 text-2xl uppercase leading-loose tracking-wide">
+              Proposal Action
+            </h2>
+            <TextInput control={control} name="builderAddress" label="Builder address to de-whitelist" />
+          </div>
+        </div>
+      </form>
+    </div>
+  )
 }
