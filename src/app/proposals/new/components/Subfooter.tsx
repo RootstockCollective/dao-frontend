@@ -6,9 +6,10 @@ import { useIsDesktop } from '@/shared/hooks/useIsDesktop'
 
 interface Props {
   submitForm: () => void
+  buttonText: string
 }
 
-export const Subfooter = ({ submitForm }: Props) => {
+export const Subfooter = ({ submitForm, buttonText }: Props) => {
   const router = useRouter()
   const { isSidebarOpen } = useLayoutContext()
   const isDesktop = useIsDesktop()
@@ -26,7 +27,7 @@ export const Subfooter = ({ submitForm }: Props) => {
         <Button onClick={router.back} variant="secondary-outline">
           Back
         </Button>
-        <Button onClick={submitForm}>Review proposal</Button>
+        <Button onClick={submitForm}>{buttonText}</Button>
       </div>
     </motion.div>
   )

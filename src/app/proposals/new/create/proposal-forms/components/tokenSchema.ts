@@ -11,7 +11,7 @@ export const TokenFieldsSchema = z.object({
     .string()
     .trim()
     .refine(val => !isNaN(Number(val)), {
-      message: 'Amount must be a number',
+      message: 'Grant amount must be a number',
     }),
 })
 
