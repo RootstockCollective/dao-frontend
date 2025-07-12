@@ -41,7 +41,7 @@ export function ActivationProposalForm() {
   )
 
   useEffect(() => {
-    setSubfooter(<Subfooter submitForm={onSubmit} />)
+    setSubfooter(<Subfooter submitForm={onSubmit} buttonText="Review proposal" />)
     return () => setSubfooter(null)
   }, [])
 

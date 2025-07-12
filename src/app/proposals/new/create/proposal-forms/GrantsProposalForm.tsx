@@ -11,8 +11,8 @@ import { TextInput, NumberInput } from '@/components/FormFields'
 import { BaseProposalSchema, BaseProposalFields, TokenFieldsSchema, TokenRadioGroup } from './components'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useReviewProposal } from '../../context/ReviewProposalContext'
-import { isChecksumValid } from '@/app/proposals/shared/utils'
 import { ENV } from '@/lib/constants'
+import { showFormErrors } from './components/showFormErrors'
 
 // grant limits
 const MIN_AMOUNT = {
@@ -40,10 +40,7 @@ const MAX_AMOUNT = {
 // Grant proposal form schema
 export const ProposalSchema = BaseProposalSchema.merge(TokenFieldsSchema)
   .extend({
-    targetAddress: z
-      .string()
-      .refine(val => isAddress(val), { message: 'Invalid Rootstock address' })
-      .refine(val => isChecksumValid(val), { message: 'Address checksum is invalid' }),
+    targetAddress: z.string().refine(val => isAddress(val), { message: 'Invalid Rootstock address' }),
   })
   .superRefine((data, ctx) => {
     const num = Number(data.transferAmount)
@@ -54,7 +51,7 @@ export const ProposalSchema = BaseProposalSchema.merge(TokenFieldsSchema)
     if (token in minAmount && num < minAmount[token]) {
       ctx.addIssue({
         path: ['transferAmount'],
-        message: `Amount is below minimum for ${token} (${minAmount[token]})`,
+        message: `Grant amount is below minimum for ${token} (${minAmount[token]})`,
         code: z.ZodIssueCode.custom,
       })
     }
@@ -62,7 +59,7 @@ export const ProposalSchema = BaseProposalSchema.merge(TokenFieldsSchema)
     if (token in maxAmount && num > maxAmount[token]) {
       ctx.addIssue({
         path: ['transferAmount'],
-        message: `Amount is above maximum for ${token} (${maxAmount[token]})`,
+        message: `Grant amount is above maximum for ${token} (${maxAmount[token]})`,
         code: z.ZodIssueCode.custom,
       })
     }
@@ -87,17 +84,22 @@ export function GrantsProposalForm() {
 
   const onSubmit = useCallback(
     () =>
-      handleSubmit(data => {
-        setForm(data)
-        router.push('/proposals/new/review')
-      })(),
+      handleSubmit(
+        // Success callback
+        data => {
+          setForm(data)
+          router.push('/proposals/new/review')
+        },
+        // Error callback
+        showFormErrors,
+      )(),
     [handleSubmit, router, setForm],
   )
 
   // inject sticky drawer with submit button to the footer layout
   const { setSubfooter } = useLayoutContext()
   useEffect(() => {
-    setSubfooter(<Subfooter submitForm={onSubmit} />)
+    setSubfooter(<Subfooter submitForm={onSubmit} buttonText="Review proposal" />)
     return () => setSubfooter(null)
   }, [onSubmit, setSubfooter])
 

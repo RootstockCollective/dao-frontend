@@ -1,15 +1,28 @@
 'use client'
 
-import { useEffect } from 'react'
+import { useCallback, useEffect } from 'react'
 import { useReviewProposal } from '../context/ReviewProposalContext'
+import { useLayoutContext } from '@/components/MainContainer/LayoutProvider'
+import { Subfooter } from '../components/Subfooter'
 
 export default function ReviewProposal() {
-  const { form } = useReviewProposal()
-  useEffect(() => {
-    if (!form) return
-    console.log('🚀 ~ useEffect ~ formData:', form)
-  }, [form])
+  const { form: savedForm, setForm } = useReviewProposal()
 
-  if (!form) return <h1 className="text-error text-4xl">Oops!!!</h1>
+  const onSubmit = useCallback(() => {
+    try {
+      setForm(null)
+    } catch (error) {
+      //
+    }
+  }, [])
+
+  // inject sticky drawer with submit button to the footer layout
+  const { setSubfooter } = useLayoutContext()
+  useEffect(() => {
+    setSubfooter(<Subfooter submitForm={onSubmit} buttonText="Publish proposal" />)
+    return () => setSubfooter(null)
+  }, [onSubmit, setSubfooter])
+
+  if (!savedForm) return <h1 className="text-error text-4xl">Oops!!!</h1>
   return <div>ReviewProposal</div>
 }
