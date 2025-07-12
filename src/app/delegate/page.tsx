@@ -6,8 +6,7 @@ export default function Delegate() {
   return (
     <DelegateContextProvider>
       <HeroComponent
-        imageBannerSrc="/images/hero/delegation-banner.svg"
-        imageSquaresSrc="/images/hero/delegation-squares.svg"
+        imageSrc="/images/hero/delegation-banner.png"
         title="DELEGATE YOUR VOTING POWER"
         subtitle="TO INFLUENCE WHAT GETS BUILT"
         items={[

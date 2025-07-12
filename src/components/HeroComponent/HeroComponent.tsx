@@ -1,13 +1,12 @@
 'use client'
+import { cn } from '@/lib/utils'
 import Image from 'next/image'
-import React, { FC, ReactNode, useMemo } from 'react'
+import { FC, ReactNode, useMemo } from 'react'
 import { Header, Paragraph } from '../TypographyNew'
 import { useImagePreloader } from '@/shared/hooks/useImagePreloader'
-import { cn } from '@/lib/utils'
 
 interface HeroComponentProps {
-  imageBannerSrc: string
-  imageSquaresSrc: string
+  imageSrc: string
   title: string
   subtitle: string
   items: string[]
@@ -16,8 +15,7 @@ interface HeroComponentProps {
 }
 
 export const HeroComponent: FC<HeroComponentProps> = ({
-  imageBannerSrc,
-  imageSquaresSrc,
+  imageSrc,
   title,
   subtitle,
   items,
@@ -25,31 +23,21 @@ export const HeroComponent: FC<HeroComponentProps> = ({
   className,
 }) => {
   // Memoize image sources is needed to prevent unnecessary re-renders
-  const imageSources = useMemo(() => [imageBannerSrc, imageSquaresSrc], [imageBannerSrc, imageSquaresSrc])
+  const imageSources = useMemo(() => [imageSrc], [imageSrc])
   const { isLoaded } = useImagePreloader(imageSources)
 
   return (
-    <div className={cn('flex flex-col md:flex-row bg-text-80 rounded-sm p-4 md:gap-8 gap-4', className)}>
-      <div className="relative w-full md:w-1/2 ">
+    <div className={cn('flex flex-col md:flex-row bg-text-80 rounded-sm p-4 gap-4 md:gap-0', className)}>
+      <div className="relative w-full md:w-1/2 min-h-[120px] md:min-h-0">
         {isLoaded ? (
-          <>
-            <Image
-              src={imageSquaresSrc}
-              alt="Squares Divider"
-              width={40}
-              height={30}
-              className="absolute -right-[30px] top-[20px] z-10 hidden md:block"
-            />
-            <Image
-              src={imageBannerSrc}
-              alt="Hero Banner"
-              width={0}
-              height={0}
-              className="w-full h-full max-h-[180px] md:max-h-none object-cover object-right"
-            />
-          </>
+          <Image
+            src={imageSrc}
+            alt="Hero Banner"
+            fill
+            className="w-full h-full object-cover object-top-right max-h-[120px] md:max-h-none"
+          />
         ) : (
-          <div className="w-full h-full bg-bg-40 animate-pulse" />
+          <div className="w-[96%] h-full bg-bg-40 animate-pulse" />
         )}
       </div>
       <div className="flex flex-col justify-center w-full md:w-1/2">

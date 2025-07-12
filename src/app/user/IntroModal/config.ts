@@ -4,42 +4,42 @@ import { currentLinks } from '@/lib/links'
 export const IMAGE_CONFIG = {
   NEED_RBTC_RIF: {
     desktop: {
-      bg: '/images/intro/rbtc-rif-bg-desktop.svg',
-      squares: '/images/intro/rbtc-rif-squares-desktop.svg',
+      bg: '/images/intro/rbtc-rif-bg-desktop.jpg',
+      pixels: '/images/intro/rbtc-rif-pixels-desktop.png',
     },
     mobile: {
-      bg: '/images/intro/rbtc-rif-bg-mobile.svg',
-      squares: '/images/intro/rbtc-rif-squares-mobile.svg',
+      bg: '/images/intro/rbtc-rif-bg-mobile.jpg',
+      pixels: '/images/intro/rbtc-rif-pixels-mobile.png',
     },
   },
   NEED_RBTC: {
     desktop: {
-      bg: '/images/intro/rbtc-bg-desktop.svg',
-      squares: '/images/intro/rbtc-squares-desktop.svg',
+      bg: '/images/intro/rbtc-bg-desktop.jpg',
+      pixels: '/images/intro/rbtc-pixels-desktop.png',
     },
     mobile: {
-      bg: '/images/intro/rbtc-bg-mobile.svg',
-      squares: '/images/intro/rbtc-squares-mobile.svg',
+      bg: '/images/intro/rbtc-bg-mobile.jpg',
+      pixels: '/images/intro/rbtc-pixels-mobile.png',
     },
   },
   NEED_RIF: {
     desktop: {
-      bg: '/images/intro/rif-bg-desktop.svg',
-      squares: '/images/intro/rif-squares-desktop.svg',
+      bg: '/images/intro/rif-bg-desktop.jpg',
+      pixels: '/images/intro/rif-pixels-desktop.png',
     },
     mobile: {
-      bg: '/images/intro/rif-bg-mobile.svg',
-      squares: '/images/intro/rif-squares-mobile.svg',
+      bg: '/images/intro/rif-bg-mobile.jpg',
+      pixels: '/images/intro/rif-pixels-mobile.png',
     },
   },
   NEED_STRIF: {
     desktop: {
-      bg: '/images/intro/strif-bg-desktop.svg',
-      squares: '/images/intro/strif-squares-desktop.svg',
+      bg: '/images/intro/strif-bg-desktop.jpg',
+      pixels: '/images/intro/strif-pixels-desktop.png',
     },
     mobile: {
-      bg: '/images/intro/strif-bg-mobile.svg',
-      squares: '/images/intro/strif-squares-mobile.svg',
+      bg: '/images/intro/strif-bg-mobile.jpg',
+      pixels: '/images/intro/strif-pixels-mobile.png',
     },
   },
 } as const

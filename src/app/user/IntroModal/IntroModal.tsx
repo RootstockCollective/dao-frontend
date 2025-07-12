@@ -22,9 +22,9 @@ export const IntroModal = () => {
     const currentConfig = IMAGE_CONFIG[tokenStatus]
     return [
       currentConfig.desktop.bg,
-      currentConfig.desktop.squares,
+      currentConfig.desktop.pixels,
       currentConfig.mobile.bg,
-      currentConfig.mobile.squares,
+      currentConfig.mobile.pixels,
     ]
   }, [tokenStatus])
 
