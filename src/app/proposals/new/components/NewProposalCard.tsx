@@ -15,7 +15,7 @@ export function NewProposalCard({ card, onSelectCard, className, ...props }: Pro
   const { buttonText, cardTitle, image, textBlock } = card
   return (
     <div className={cn('rounded-sm w-full max-w-[568px] bg-text-80 overflow-hidden', className)} {...props}>
-      <div className="flex flex-col gap-6">
+      <div className="h-full flex flex-col gap-6">
         {/* Image Section */}
         <div className="relative w-full h-[272px] p-4">
           <div className="w-full h-full overflow-hidden rounded-sm">
@@ -27,7 +27,7 @@ export function NewProposalCard({ card, onSelectCard, className, ...props }: Pro
         </div>
 
         {/* Content Section */}
-        <div className="px-6 pb-10 flex flex-col gap-8">
+        <div className="grow px-6 pb-10 flex flex-col gap-8">
           {/* Title Section */}
           <div className="flex flex-col gap-4">
             <h2 className="text-3xl sm:text-[44px] leading-none font-normal text-bg-100 uppercase font-kk-topo">
@@ -36,7 +36,7 @@ export function NewProposalCard({ card, onSelectCard, className, ...props }: Pro
           </div>
 
           {/* Description Section */}
-          <div className="flex flex-col gap-6 text-lg leading-snug text-bg-100 font-rootstock-sans">
+          <div className="grow flex flex-col gap-6 text-lg leading-snug text-bg-100 font-rootstock-sans">
             {textBlock}
           </div>
 
