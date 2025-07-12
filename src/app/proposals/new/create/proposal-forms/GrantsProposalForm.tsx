@@ -64,24 +64,30 @@ export const GrantProposalSchema = BaseProposalSchema.merge(TokenFieldsSchema)
       })
     }
   })
+export type GrantProposal = z.infer<typeof GrantProposalSchema>
 
 export function GrantsProposalForm() {
   const { form: savedForm, setForm } = useReviewProposal()
   const router = useRouter()
 
-  const { handleSubmit, watch, control } = useForm<z.infer<typeof GrantProposalSchema>>({
+  const { handleSubmit, watch, control } = useForm<GrantProposal>({
     mode: 'onTouched',
     resolver: zodResolver(GrantProposalSchema),
-    defaultValues: savedForm || {
-      proposalName: '',
-      description: '',
-      discourseLink: '',
-      targetAddress: '' as Address,
-      token: 'rBTC',
-      transferAmount: '',
-    },
+    defaultValues: (() => {
+      // use recorded proposal if it is of the same type
+      const parsed = GrantProposalSchema.safeParse(savedForm)
+      return parsed.success
+        ? parsed.data
+        : {
+            proposalName: '',
+            description: '',
+            discourseLink: '',
+            targetAddress: '' as Address,
+            token: 'rBTC',
+            transferAmount: '',
+          }
+    })(),
   })
-
   const onSubmit = useCallback(
     () =>
       handleSubmit(
@@ -122,7 +128,7 @@ export function GrantsProposalForm() {
               <NumberInput
                 name="transferAmount"
                 control={control}
-                prefix={`${watch().token} `}
+                prefix={watch().token ? `${watch().token} ` : undefined}
                 label="Amount to be transferred"
                 data-testid="InputAmount"
               />
