@@ -9,11 +9,8 @@ import { cn, formatCurrency } from '@/lib/utils'
 import * as RadioGroup from '@radix-ui/react-radio-group'
 import { FC, ReactNode } from 'react'
 import { ClaimRewardType } from './types'
-import { getTokens } from '@/lib/tokens'
 import { RBTC } from '@/lib/constants'
 import { ClaimRewardRadioOption } from './ClaimRewardRadioOption'
-
-const tokens = getTokens()
 
 interface ClaimRewardsModalViewProps {
   onClose: () => void
@@ -27,6 +24,7 @@ interface ClaimRewardsModalViewProps {
   isTxPending?: boolean
   isLoading?: boolean
   className?: string
+  tokens: Record<string, { symbol: string; address: string }>
 }
 
 export const ClaimRewardsModalView: FC<ClaimRewardsModalViewProps> = ({
@@ -41,6 +39,7 @@ export const ClaimRewardsModalView: FC<ClaimRewardsModalViewProps> = ({
   isTxPending = false,
   isLoading = false,
   className,
+  tokens,
 }) => {
   const radioOptions: Array<{
     value: ClaimRewardType

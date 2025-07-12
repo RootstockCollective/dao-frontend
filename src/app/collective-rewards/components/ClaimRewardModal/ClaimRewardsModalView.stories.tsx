@@ -75,6 +75,7 @@ export const Default: Story = {
     isClaimable: true,
     isLoading: false,
     isTxPending: false,
+    tokens,
   },
 }
 

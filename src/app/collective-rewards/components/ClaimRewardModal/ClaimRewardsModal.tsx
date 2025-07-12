@@ -73,6 +73,7 @@ export const ClaimRewardsModal: FC<ClaimRewardsModalProps> = ({ open, onClose })
         isClaimable={isClaimable}
         isLoading={isLoading}
         isTxPending={isPendingTx || isLoadingReceipt}
+        tokens={tokens}
       />
     )
   )
