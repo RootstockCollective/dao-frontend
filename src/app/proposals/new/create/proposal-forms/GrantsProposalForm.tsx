@@ -38,7 +38,7 @@ const MAX_AMOUNT = {
 }
 
 // Grant proposal form schema
-export const ProposalSchema = BaseProposalSchema.merge(TokenFieldsSchema)
+export const GrantProposalSchema = BaseProposalSchema.merge(TokenFieldsSchema)
   .extend({
     targetAddress: z.string().refine(val => isAddress(val), { message: 'Invalid Rootstock address' }),
   })
@@ -69,9 +69,9 @@ export function GrantsProposalForm() {
   const { form: savedForm, setForm } = useReviewProposal()
   const router = useRouter()
 
-  const { handleSubmit, watch, control } = useForm<z.infer<typeof ProposalSchema>>({
+  const { handleSubmit, watch, control } = useForm<z.infer<typeof GrantProposalSchema>>({
     mode: 'onTouched',
-    resolver: zodResolver(ProposalSchema),
+    resolver: zodResolver(GrantProposalSchema),
     defaultValues: savedForm || {
       proposalName: '',
       description: '',

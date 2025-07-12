@@ -2,6 +2,7 @@
 
 import { useCallback, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
+import { Address, isAddress } from 'viem'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
@@ -10,9 +11,11 @@ import { Subfooter } from '../../components/Subfooter'
 import { BaseProposalFields } from './components/BaseProposalFields'
 import { BaseProposalSchema } from './components/baseProposalSchema'
 import { useReviewProposal } from '../../context/ReviewProposalContext'
+import { TextInput } from '@/components/FormFields'
+import { showFormErrors } from './components/showFormErrors'
 
 const ActivationProposalSchema = BaseProposalSchema.extend({
-  targetContract: z.string().min(1, { message: 'Target contract is required' }),
+  builderAddress: z.string().refine(val => isAddress(val), { message: 'Invalid builder address' }),
 })
 
 export function ActivationProposalForm() {
@@ -27,7 +30,7 @@ export function ActivationProposalForm() {
       proposalName: '',
       description: '',
       discourseLink: '',
-      targetContract: '',
+      builderAddress: '' as Address,
     },
   })
 
@@ -36,7 +39,7 @@ export function ActivationProposalForm() {
       handleSubmit(data => {
         setForm(data)
         router.push('/proposals/new/review')
-      })(),
+      }, showFormErrors)(),
     [handleSubmit, router, setForm],
   )
 
@@ -52,9 +55,9 @@ export function ActivationProposalForm() {
           <BaseProposalFields control={control} />
           <div className="flex flex-col gap-4">
             <h2 className="font-kk-topo text-text-100 text-2xl uppercase leading-loose tracking-wide">
-              Activation Details
+              Proposal Action
             </h2>
-            {/* Здесь будут дополнительные поля для активации */}
+            <TextInput control={control} name="builderAddress" label="Builder address to whitelist" />
           </div>
         </div>
       </form>
