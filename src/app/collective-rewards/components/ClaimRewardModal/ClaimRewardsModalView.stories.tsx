@@ -1,9 +1,19 @@
 import type { Meta, StoryObj } from '@storybook/react'
 import { ClaimRewardsModalView } from './ClaimRewardsModalView'
-import { getTokens } from '@/lib/tokens'
 import { useState } from 'react'
+import { RBTC, RIF } from '@/lib/constants'
 
-const tokens = getTokens()
+// Mock tokens data to avoid reading from environment variables
+const mockTokens = {
+  rif: {
+    address: '0x2acc95758f8b5f583470ba265eb685a8f45fc9d5' as const,
+    symbol: RIF,
+  },
+  rbtc: {
+    address: '0xf7ab6cfaebbadfe8b5494022c4c6db776bd63b6b' as const,
+    symbol: RBTC,
+  },
+}
 
 // Create a wrapper component that handles dynamic state
 const ClaimRewardsModalViewWrapper = (props: any) => {
@@ -36,7 +46,7 @@ const meta: Meta<typeof ClaimRewardsModalViewWrapper> = {
   argTypes: {
     selectedRewardType: {
       control: { type: 'radio' },
-      options: ['all', ...Object.keys(tokens)],
+      options: ['all', ...Object.keys(mockTokens)],
       description: 'The selected reward type for claiming',
     },
     isClaimable: {
@@ -75,7 +85,7 @@ export const Default: Story = {
     isClaimable: true,
     isLoading: false,
     isTxPending: false,
-    tokens,
+    tokens: mockTokens,
   },
 }
 
