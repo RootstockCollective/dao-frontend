@@ -1,8 +1,28 @@
 import type { Meta, StoryObj } from '@storybook/react'
-import { useMemo, useState } from 'react'
+import { useForm, Control } from 'react-hook-form'
 import { TextInput } from './TextInput'
 import { TextArea } from './TextArea'
 import { NumberInput } from './NumberInput'
+
+// Form wrapper for stories
+function FormWrapper({
+  children,
+  defaultValues = {},
+}: {
+  children: (props: { control: Control<any> }) => React.ReactElement
+  defaultValues?: any
+}) {
+  const { control } = useForm({
+    defaultValues,
+    mode: 'onChange',
+  })
+
+  return (
+    <form>
+      <div className="w-full px-5 py-10 space-y-4">{children({ control })}</div>
+    </form>
+  )
+}
 
 const meta: Meta<typeof TextInput> = {
   title: 'Components/FormFields',
@@ -24,158 +44,93 @@ export default meta
 type Story = StoryObj<typeof meta>
 
 export const EmptyTextInput: Story = {
-  render: () => {
-    const [value, setValue] = useState('')
-    return (
-      <div className="w-full px-5 py-10">
-        <TextInput label="Proposal name" value={value} onChange={e => setValue(e.target.value)} />
-      </div>
-    )
-  },
+  render: () => (
+    <FormWrapper>
+      {({ control }) => <TextInput name="proposalName" control={control} label="Proposal name" />}
+    </FormWrapper>
+  ),
 }
 
 export const TextInputWithInitialValue: Story = {
-  render: () => {
-    const [value, setValue] = useState('Bitdeploy didn՚t succeed in simplifying smart contracts')
-    return (
-      <div className="w-full px-5 py-10">
-        <TextInput label="Proposal name" value={value} onChange={e => setValue(e.target.value)} />
-      </div>
-    )
-  },
+  render: () => (
+    <FormWrapper defaultValues={{ proposalName: 'Bitdeploy didn՚t succeed in simplifying smart contracts' }}>
+      {({ control }) => <TextInput name="proposalName" control={control} label="Proposal name" />}
+    </FormWrapper>
+  ),
 }
 
 export const TextInputWithError: Story = {
-  render: () => {
-    const [value, setValue] = useState('')
-    const errMsg = (() => {
-      if (value.length < 5) return 'Proposal name should be longer than 5 symbols'
-      return ''
-    })()
-    return (
-      <div className="w-full px-5 py-10">
-        <TextInput
-          errorMsg={errMsg}
-          label="Proposal name"
-          value={value}
-          onChange={e => setValue(e.target.value)}
-        />
-      </div>
-    )
-  },
+  render: () => (
+    <FormWrapper>
+      {({ control }) => (
+        <TextInput name="proposalName" control={control} label="Proposal name" minLength={5} />
+      )}
+    </FormWrapper>
+  ),
 }
 
 export const EmptyTextarea: Story = {
-  render: () => {
-    const [value, setValue] = useState('')
-    return (
-      <div className="w-full px-5 py-10">
-        <TextArea label="Short description" value={value} onChange={e => setValue(e.target.value)} />
-      </div>
-    )
-  },
+  render: () => (
+    <FormWrapper>
+      {({ control }) => <TextArea name="description" control={control} label="Short description" />}
+    </FormWrapper>
+  ),
 }
 
 export const TextareaWithValue: Story = {
-  render: () => {
-    const [value, setValue] = useState(descriptionText)
-    return (
-      <div className="w-full px-5 py-10">
-        <TextArea label="Short description" value={value} onChange={e => setValue(e.target.value)} />
-      </div>
-    )
-  },
+  render: () => (
+    <FormWrapper defaultValues={{ description: descriptionText }}>
+      {({ control }) => <TextArea name="description" control={control} label="Short description" />}
+    </FormWrapper>
+  ),
 }
 
 export const TextAreaWithError: Story = {
-  render: () => {
-    const [value, setValue] = useState(descriptionText)
-    const errMsg = (() => {
-      if (value.length > 100) return 'Description should be shorter than 100 symbols'
-      return ''
-    })()
-    return (
-      <div className="w-full px-5 py-10">
-        <TextArea
-          label="Short description"
-          value={value}
-          errorMsg={errMsg}
-          onChange={e => setValue(e.target.value)}
-        />
-      </div>
-    )
-  },
+  render: () => (
+    <FormWrapper defaultValues={{ description: descriptionText }}>
+      {({ control }) => (
+        <TextArea name="description" control={control} label="Short description" maxLength={100} />
+      )}
+    </FormWrapper>
+  ),
 }
 
 export const NumberInputWithValue: Story = {
-  render: () => {
-    const [value, setValue] = useState('1234567')
-    return (
-      <div className="w-full px-5 py-10">
-        <NumberInput
-          label="Amount to be transferred"
-          value={value}
-          onChange={e => setValue(e.target.value)}
-        />
-      </div>
-    )
-  },
+  render: () => (
+    <FormWrapper defaultValues={{ amount: '1234567' }}>
+      {({ control }) => <NumberInput name="amount" control={control} label="Amount to be transferred" />}
+    </FormWrapper>
+  ),
 }
 
 export const NumberInputWithError: Story = {
-  render: () => {
-    const [value, setValue] = useState('0')
-    const errMsg = useMemo(() => {
-      const num = parseInt(value)
-      if (isNaN(num) || num < 100) return 'Number should be larger than 100'
-      return ''
-    }, [value])
-    return (
-      <div className="w-full px-5 py-10">
-        <NumberInput
-          label="Amount to be transferred"
-          value={value}
-          errorMsg={errMsg}
-          onValueChange={val => setValue(val.value)}
-        />
-      </div>
-    )
-  },
+  render: () => (
+    <FormWrapper defaultValues={{ amount: '0' }}>
+      {({ control }) => (
+        <NumberInput name="amount" control={control} label="Amount to be transferred" min={100} />
+      )}
+    </FormWrapper>
+  ),
 }
 
-export const MultipleDisabledFields: Story = {
-  render: () => {
-    const [name, setName] = useState('')
-    const [link, setLink] = useState('')
-    const [description, setDescription] = useState('')
-
-    return (
-      <div className="w-full px-5 py-10 space-y-4">
-        <TextInput
-          label="Address to transfer funds to"
-          value={name}
-          onChange={e => setName(e.target.value)}
-          disabled
-        />
-
-        <TextInput
-          label="Discourse link"
-          value={link}
-          onChange={e => setLink(e.target.value)}
-          errorMsg="The link should be a real URL"
-          disabled
-        />
-
-        <TextArea
-          label="Proposal description"
-          value={description}
-          onChange={e => setDescription(e.target.value)}
-          data-testid=""
-          disabled
-        />
-      </div>
-    )
-  },
+export const MultipleFields: Story = {
+  render: () => (
+    <FormWrapper
+      defaultValues={{
+        address: '',
+        link: '',
+        description: '',
+      }}
+    >
+      {({ control }) => (
+        <>
+          <TextInput name="address" control={control} label="Address to transfer funds to" disabled />
+          <TextInput name="link" control={control} label="Discourse link" disabled />
+          <TextArea name="description" control={control} label="Proposal description" disabled />
+        </>
+      )}
+    </FormWrapper>
+  ),
 }
 
 const descriptionText = `Lorem.

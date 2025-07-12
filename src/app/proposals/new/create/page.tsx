@@ -1,46 +1,25 @@
 'use client'
 
-import { FC } from 'react'
-import { ReadonlyURLSearchParams, useSearchParams } from 'next/navigation'
+import { useSearchParams } from 'next/navigation'
 import { GrantsProposalForm } from './proposal-forms/GrantsProposalForm'
 import { ActivationProposalForm } from './proposal-forms/ActivationProposalForm'
 import { DeactivationProposalForm } from './proposal-forms/DeactivationProposalForm'
-import { SupportedActionAbiName, SupportedProposalActionName } from '../../shared/supportedABIs'
 
-export type ProposalFormByType = {
-  [key in SupportedActionAbiName]: Partial<{
-    [key in SupportedProposalActionName]: FC
-  }>
-}
-
-const componentByType: Partial<ProposalFormByType> = {
-  DAOTreasuryAbi: {
-    withdraw: GrantsProposalForm,
-    withdrawERC20: GrantsProposalForm,
-  },
-  BuilderRegistryAbi: {
-    communityApproveBuilder: ActivationProposalForm,
-    dewhitelistBuilder: DeactivationProposalForm,
-  },
-}
-
-const getProposalActionFromPath = (
-  routerParams: ReadonlyURLSearchParams | null,
-): { contract: SupportedActionAbiName; action: SupportedProposalActionName } => ({
-  contract: routerParams?.get('contract') as SupportedActionAbiName,
-  action: routerParams?.get('action') as SupportedProposalActionName,
-})
+// Map of contract/action pairs to their respective form components
+const PROPOSAL_FORMS = {
+  'DAOTreasuryAbi.withdraw': GrantsProposalForm,
+  'DAOTreasuryAbi.withdrawERC20': GrantsProposalForm,
+  'BuilderRegistryAbi.communityApproveBuilder': ActivationProposalForm,
+  'BuilderRegistryAbi.dewhitelistBuilder': DeactivationProposalForm,
+} as const satisfies Record<string, React.ElementType>
 
 export default function CreateProposal() {
-  const routerParams = useSearchParams()
+  const searchParams = useSearchParams()
+  const contract = searchParams?.get('contract')
+  const action = searchParams?.get('action')
 
-  const { contract, action } = getProposalActionFromPath(routerParams)
-  if (!componentByType[contract] || !componentByType[contract][action]) {
-    // Fallback to treasury proposal form
-
-    return <GrantsProposalForm />
-  }
-  const ProposalComponent: FC = componentByType[contract][action]
-
-  return <ProposalComponent />
+  // Find the appropriate form component or default to GrantsProposalForm
+  const key = `${contract}.${action}` as keyof typeof PROPOSAL_FORMS
+  const ProposalForm = PROPOSAL_FORMS[key] || GrantsProposalForm
+  return <ProposalForm />
 }

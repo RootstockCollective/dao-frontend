@@ -5,7 +5,7 @@ export const BaseProposalSchema = z.object({
     .string()
     .trim()
     .min(5, { message: 'Name must be at least 5 characters' })
-    .max(200, { message: 'Name must be at most 200 characters' }),
+    .max(100, { message: 'Name must be at most 100 characters' }),
   discourseLink: z.string().url({ message: 'Must be a valid URL' }),
   description: z
     .string()

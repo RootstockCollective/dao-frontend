@@ -6,8 +6,17 @@ import { menuData } from '../sidebars/menuData'
 const menuBreadCrumbsMap = Object.fromEntries(menuData.map(({ href, text }) => [href, text])) as {
   [K in (typeof menuData)[number] as K['href']]: K['text']
 }
-// A map that links known URL path segments (hrefs) to human-readable breadcrumb titles.
-const breadcrumbsMap = { ...menuBreadCrumbsMap, new: 'New Proposal' }
+
+// A map that links known URL paths to human-readable breadcrumb titles.
+// Using full paths to avoid conflicts between similar segments in different routes
+const breadcrumbsMap = {
+  ...menuBreadCrumbsMap,
+  '/proposals/new': 'New Proposal',
+  '/proposals/new/create': 'Details',
+  '/proposals/new/review': 'Review Details',
+  // Add more specific routes here as needed
+}
+
 /**
  * Simple breadcrumbs component used in desktop header
  */
@@ -17,12 +26,17 @@ export function Breadcrumbs() {
     const segments = pathname.split('/').filter(Boolean)
     const crumbs = segments.map((segment, index) => {
       const href = '/' + segments.slice(0, index + 1).join('/')
-      const title = breadcrumbsMap[segment as keyof typeof breadcrumbsMap] || decodeURIComponent(segment)
+      // First try to match the full path, then fall back to segment-based lookup
+      const title =
+        breadcrumbsMap[href as keyof typeof breadcrumbsMap] ||
+        breadcrumbsMap[segment as keyof typeof breadcrumbsMap] ||
+        decodeURIComponent(segment)
       return { href, title }
     })
 
     return [{ href: '/', title: 'Home' }, ...crumbs]
   }, [pathname])
+
   return (
     <nav aria-label="breadcrumb" className="ml-5">
       <ol className="flex gap-2">
