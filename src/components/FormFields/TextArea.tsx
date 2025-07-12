@@ -2,27 +2,28 @@ import { cn } from '@/lib/utils'
 import { type TextareaHTMLAttributes, useCallback, useEffect, useId, useRef, useState } from 'react'
 import { FloatingLabel } from './FloatingLabel'
 import { ErrorMessage } from './ErrorMessage'
+import { Controller, Control, FieldPath, FieldValues } from 'react-hook-form'
 
-interface TextAreaProps extends TextareaHTMLAttributes<HTMLTextAreaElement> {
+interface TextAreaProps<T extends FieldValues> extends TextareaHTMLAttributes<HTMLTextAreaElement> {
   label: string
   minRows?: number
   maxRows?: number
-  errorMsg?: string
+  name: FieldPath<T>
+  control: Control<T>
 }
 
-export function TextArea({
+export function TextArea<T extends FieldValues>({
   id,
   label,
-  errorMsg,
   className,
   minRows = 5,
   maxRows = 40,
-  value,
+  name,
+  control,
   onInput,
   onFocus,
-  onBlur,
   ...props
-}: TextAreaProps) {
+}: TextAreaProps<T>) {
   const [isFocused, setIsFocused] = useState(false)
   const ownId = useId()
   const newId = id ?? ownId
@@ -43,7 +44,7 @@ export function TextArea({
     adjustHeight()
     window.addEventListener('resize', adjustHeight)
     return () => window.removeEventListener('resize', adjustHeight)
-  }, [adjustHeight, value])
+  }, [adjustHeight])
 
   const handleInput = (e: React.FormEvent<HTMLTextAreaElement>) => {
     adjustHeight()
@@ -51,29 +52,61 @@ export function TextArea({
   }
 
   return (
-    <ErrorMessage errorMsg={errorMsg}>
-      <FloatingLabel htmlFor={newId} isFloating={isFocused || !!value} label={label}>
-        <div className="w-full px-4 pt-8 pb-2 bg-bg-60 rounded-sm ">
-          <textarea
-            id={newId}
-            ref={textareaRef}
-            rows={minRows}
-            value={value}
-            className={cn('w-full text-text-100 resize-none focus:outline-none overflow-hidden', className)}
-            onInput={handleInput}
-            onFocus={e => {
-              setIsFocused(true)
-              onFocus?.(e)
-            }}
-            onBlur={e => {
-              setIsFocused(false)
-              onBlur?.(e)
-            }}
-            autoComplete="off"
-            {...props}
-          />
-        </div>
-      </FloatingLabel>
-    </ErrorMessage>
+    <Controller
+      control={control}
+      name={name}
+      render={({
+        field: { name: fieldName, onBlur, onChange, value, ref, disabled },
+        fieldState: { error },
+      }) => {
+        const hasValue = value !== undefined && value !== null && value !== ''
+        const shouldFloat = isFocused || hasValue
+
+        // Combine refs
+        const setRefs = (element: HTMLTextAreaElement | null) => {
+          textareaRef.current = element
+          if (typeof ref === 'function') {
+            ref(element)
+          } else if (ref && 'current' in ref) {
+            ;(ref as React.MutableRefObject<HTMLTextAreaElement | null>).current = element
+          }
+        }
+
+        return (
+          <ErrorMessage errorMsg={error?.message}>
+            <FloatingLabel htmlFor={newId} isFloating={shouldFloat} label={label}>
+              <div className="w-full px-4 pt-8 pb-2 bg-bg-60 rounded-sm ">
+                <textarea
+                  id={newId}
+                  name={fieldName}
+                  ref={setRefs}
+                  rows={minRows}
+                  value={value || ''}
+                  disabled={disabled}
+                  className={cn(
+                    'w-full text-text-100 resize-none focus:outline-none overflow-hidden',
+                    className,
+                  )}
+                  onInput={e => {
+                    handleInput(e)
+                    onChange(e)
+                  }}
+                  onFocus={e => {
+                    setIsFocused(true)
+                    onFocus?.(e)
+                  }}
+                  onBlur={e => {
+                    setIsFocused(false)
+                    onBlur()
+                  }}
+                  autoComplete="off"
+                  {...props}
+                />
+              </div>
+            </FloatingLabel>
+          </ErrorMessage>
+        )
+      }}
+    />
   )
 }
