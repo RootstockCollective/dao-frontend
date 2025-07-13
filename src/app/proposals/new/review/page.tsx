@@ -6,11 +6,11 @@ import { useLayoutContext } from '@/components/MainContainer/LayoutProvider'
 import { Subfooter } from '../components/Subfooter'
 
 export default function ReviewProposal() {
-  const { form: savedForm, setForm } = useReviewProposal()
+  const { record, setRecord } = useReviewProposal()
 
   const onSubmit = useCallback(() => {
     try {
-      setForm(null)
+      setRecord(null)
     } catch (error) {
       //
     }
@@ -23,6 +23,10 @@ export default function ReviewProposal() {
     return () => setSubfooter(null)
   }, [onSubmit, setSubfooter])
 
-  if (!savedForm) return <h1 className="text-error text-4xl">Oops!!!</h1>
-  return <div>ReviewProposal</div>
+  if (!record) return <h1 className="text-error text-4xl">Oops!!!</h1>
+  return (
+    <div>
+      <h1>Review {record.type} proposal</h1>
+    </div>
+  )
 }

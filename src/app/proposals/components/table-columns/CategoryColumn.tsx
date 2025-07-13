@@ -2,12 +2,11 @@ import { Tooltip } from '@/components/Tooltip'
 import { GrantsIcon } from './icons/GrantsIcon'
 import { ToolsIcon } from './icons/ToolsIcon'
 import { ProposalCategory } from '@/shared/types'
-import { TreasuryIcon } from './icons/TreasuryIcon'
 
 const icons = {
   [ProposalCategory.Grants]: <GrantsIcon />,
-  [ProposalCategory.Builder]: <ToolsIcon />,
-  [ProposalCategory.Treasury]: <TreasuryIcon />,
+  [ProposalCategory.Activation]: <ToolsIcon />,
+  [ProposalCategory.Deactivation]: <ToolsIcon />,
 } as const satisfies Record<ProposalCategory, React.JSX.Element>
 
 interface Props {

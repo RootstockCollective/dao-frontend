@@ -108,7 +108,7 @@ export const mockProposalListData: Proposal[] = [
     quorumAtSnapshot: new Big('20'),
     proposalDeadline: new Big('6509851'),
     proposalState: ProposalState.Defeated,
-    category: ProposalCategory.Builder,
+    category: ProposalCategory.Activation,
   },
   // ...ещё 8 объектов, аналогично, с разными значениями...
   {
@@ -157,7 +157,7 @@ export const mockProposalListData: Proposal[] = [
     quorumAtSnapshot: new Big('10'),
     proposalDeadline: new Big('6509861'),
     proposalState: ProposalState.Pending,
-    category: ProposalCategory.Builder,
+    category: ProposalCategory.Activation,
   },
   {
     address: '0x4c1d019e675315d422eeb1564412286e629fa',
@@ -256,7 +256,7 @@ export const mockProposalListData: Proposal[] = [
     quorumAtSnapshot: new Big('30'),
     proposalDeadline: new Big('6509881'),
     proposalState: ProposalState.Canceled,
-    category: ProposalCategory.Builder,
+    category: ProposalCategory.Activation,
   },
   {
     address: '0x6e1f019e675315d422eeb1564412286e629fc',
@@ -352,7 +352,7 @@ export const mockProposalListData: Proposal[] = [
     quorumAtSnapshot: new Big('100'),
     proposalDeadline: new Big('6509901'),
     proposalState: ProposalState.Queued,
-    category: ProposalCategory.Builder,
+    category: ProposalCategory.Activation,
   },
   {
     address: '0x8f21019e675315d422eeb1564412286e629fe',
@@ -454,7 +454,7 @@ export const mockProposalListData: Proposal[] = [
     quorumAtSnapshot: new Big('100'),
     proposalDeadline: new Big('6509921'),
     proposalState: ProposalState.Executed,
-    category: ProposalCategory.Builder,
+    category: ProposalCategory.Activation,
   },
   {
     address: '0x9f22019e675315d422eeb1564412286e629ff',
@@ -505,7 +505,7 @@ export const mockProposalListData: Proposal[] = [
     quorumAtSnapshot: new Big('200'),
     proposalDeadline: new Big('6509921'),
     proposalState: ProposalState.Defeated,
-    category: ProposalCategory.Treasury,
+    category: ProposalCategory.Deactivation,
   },
   {
     address: '0x9f22019e675315d422eeb1564412286e629ff',
@@ -556,7 +556,7 @@ export const mockProposalListData: Proposal[] = [
     quorumAtSnapshot: new Big('100'),
     proposalDeadline: new Big('6509921'),
     proposalState: ProposalState.Executed,
-    category: ProposalCategory.Builder,
+    category: ProposalCategory.Activation,
   },
   {
     address: '0x9f22019e675315d422eeb1564412286e629ff',
@@ -607,6 +607,6 @@ export const mockProposalListData: Proposal[] = [
     quorumAtSnapshot: new Big('100'),
     proposalDeadline: new Big('6509921'),
     proposalState: ProposalState.Executed,
-    category: ProposalCategory.Builder,
+    category: ProposalCategory.Activation,
   },
 ] as unknown as Proposal[]

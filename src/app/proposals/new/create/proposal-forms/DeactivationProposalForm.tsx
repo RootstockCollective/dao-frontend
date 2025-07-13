@@ -2,54 +2,45 @@
 
 import { useCallback, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
-import { Address, isAddress } from 'viem'
+import { type Address } from 'viem'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
-import { z } from 'zod'
 import { useLayoutContext } from '@/components/MainContainer/LayoutProvider'
 import { Subfooter } from '../../components/Subfooter'
 import { BaseProposalFields } from './components/BaseProposalFields'
-import { BaseProposalSchema } from './components/baseProposalSchema'
 import { useReviewProposal } from '../../context/ReviewProposalContext'
+import { ProposalCategory } from '@/shared/types'
 import { TextInput } from '@/components/FormFields'
 import { showFormErrors } from './components/showFormErrors'
-
-const DeactivationProposalSchema = BaseProposalSchema.extend({
-  builderAddress: z
-    .string()
-    .refine(val => isAddress(val), { message: 'Invalid builder address to de-whitelist' }),
-})
-export type DeactivationProposal = z.infer<typeof DeactivationProposalSchema>
+import { DeactivationProposal, DeactivationProposalSchema } from './schemas/DeactivationProposalSchema'
 
 export function DeactivationProposalForm() {
   const router = useRouter()
   const { setSubfooter } = useLayoutContext()
-  const { form: savedForm, setForm } = useReviewProposal()
+  const { record, setRecord } = useReviewProposal()
 
   const { handleSubmit, control } = useForm<DeactivationProposal>({
     mode: 'onTouched',
     resolver: zodResolver(DeactivationProposalSchema),
     // use recorded proposal if it is of the same type
-    defaultValues: (() => {
-      const parsed = DeactivationProposalSchema.safeParse(savedForm)
-      return parsed.success
-        ? parsed.data
+    defaultValues:
+      record && record.type === ProposalCategory.Deactivation
+        ? record.form
         : {
             proposalName: '',
             description: '',
             discourseLink: '',
             builderAddress: '' as Address,
-          }
-    })(),
+          },
   })
 
   const onSubmit = useCallback(
     () =>
       handleSubmit(data => {
-        setForm(data)
+        setRecord({ form: data, type: ProposalCategory.Deactivation })
         router.push('/proposals/new/review')
       }, showFormErrors)(),
-    [handleSubmit, router, setForm],
+    [handleSubmit, router],
   )
 
   useEffect(() => {

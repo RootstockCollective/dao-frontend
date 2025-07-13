@@ -3,81 +3,27 @@
 import { useRouter } from 'next/navigation'
 import { useCallback, useEffect } from 'react'
 import { useForm } from 'react-hook-form'
-import { z } from 'zod'
-import { Address, isAddress } from 'viem'
+import { Address } from 'viem'
 import { useLayoutContext } from '@/components/MainContainer/LayoutProvider'
 import { Subfooter } from '../../components/Subfooter'
 import { TextInput, NumberInput } from '@/components/FormFields'
-import { BaseProposalSchema, BaseProposalFields, TokenFieldsSchema, TokenRadioGroup } from './components'
+import { BaseProposalFields, TokenRadioGroup } from './components'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useReviewProposal } from '../../context/ReviewProposalContext'
-import { ENV } from '@/lib/constants'
+import { ProposalCategory } from '@/shared/types'
 import { showFormErrors } from './components/showFormErrors'
-
-// grant limits
-const MIN_AMOUNT = {
-  mainnet: {
-    rBTC: 0.0001,
-    RIF: 10,
-  },
-  testnet: {
-    rBTC: 0.000001,
-    RIF: 1,
-  },
-}
-
-const MAX_AMOUNT = {
-  mainnet: {
-    rBTC: 21,
-    RIF: 1_000_000,
-  },
-  testnet: {
-    rBTC: 21,
-    RIF: 1_000_000,
-  },
-}
-
-// Grant proposal form schema
-export const GrantProposalSchema = BaseProposalSchema.merge(TokenFieldsSchema)
-  .extend({
-    targetAddress: z.string().refine(val => isAddress(val), { message: 'Invalid Rootstock address' }),
-  })
-  .superRefine((data, ctx) => {
-    const num = Number(data.transferAmount)
-    const token = data.token
-    const minAmount = MIN_AMOUNT[ENV]
-    const maxAmount = MAX_AMOUNT[ENV]
-
-    if (token in minAmount && num < minAmount[token]) {
-      ctx.addIssue({
-        path: ['transferAmount'],
-        message: `Grant amount is below minimum for ${token} (${minAmount[token]})`,
-        code: z.ZodIssueCode.custom,
-      })
-    }
-
-    if (token in maxAmount && num > maxAmount[token]) {
-      ctx.addIssue({
-        path: ['transferAmount'],
-        message: `Grant amount is above maximum for ${token} (${maxAmount[token]})`,
-        code: z.ZodIssueCode.custom,
-      })
-    }
-  })
-export type GrantProposal = z.infer<typeof GrantProposalSchema>
+import { GrantProposal, GrantProposalSchema } from './schemas/GrantProposalSchema'
 
 export function GrantsProposalForm() {
-  const { form: savedForm, setForm } = useReviewProposal()
+  const { record, setRecord } = useReviewProposal()
   const router = useRouter()
 
   const { handleSubmit, watch, control } = useForm<GrantProposal>({
     mode: 'onTouched',
     resolver: zodResolver(GrantProposalSchema),
-    defaultValues: (() => {
-      // use recorded proposal if it is of the same type
-      const parsed = GrantProposalSchema.safeParse(savedForm)
-      return parsed.success
-        ? parsed.data
+    defaultValues:
+      record && record.type === ProposalCategory.Grants
+        ? record.form
         : {
             proposalName: '',
             description: '',
@@ -85,21 +31,20 @@ export function GrantsProposalForm() {
             targetAddress: '' as Address,
             token: 'rBTC',
             transferAmount: '',
-          }
-    })(),
+          },
   })
   const onSubmit = useCallback(
     () =>
       handleSubmit(
         // Success callback
         data => {
-          setForm(data)
+          setRecord({ form: data, type: ProposalCategory.Grants })
           router.push('/proposals/new/review')
         },
         // Error callback
         showFormErrors,
       )(),
-    [handleSubmit, router, setForm],
+    [handleSubmit, router],
   )
 
   // inject sticky drawer with submit button to the footer layout

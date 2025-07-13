@@ -1,7 +1,7 @@
 'use client'
 
 import { Controller, Control, FieldPath } from 'react-hook-form'
-import { TOKENS, type TokenType, type TokenFormData } from './tokenSchema'
+import { TOKENS, type TokenType, type TokenFormData } from '../schemas/TokenSchema'
 import { cn } from '@/lib/utils'
 import { RbtcIcon } from './icons/rbtc'
 import { RifIcon } from './icons/rif'

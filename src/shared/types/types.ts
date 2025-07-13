@@ -99,6 +99,6 @@ export type TxAction = keyof typeof TX_MESSAGES
 
 export enum ProposalCategory {
   Grants = 'Grants',
-  Builder = 'Builder',
-  Treasury = 'Treasury',
+  Activation = 'Builder',
+  Deactivation = 'Deactivation',
 }
