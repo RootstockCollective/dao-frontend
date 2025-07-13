@@ -65,7 +65,7 @@ export const newProposalCards: NewProposalCardData[] = [
     detailsUrl: '/proposals/new/create?contract=DAOTreasuryAbi&action=withdraw',
   },
   {
-    type: ProposalCategory.Builder,
+    type: ProposalCategory.Activation,
     image: rewardsImage,
     bigImage: rewardsBigImage,
     cardTitle: 'Builders Rewards',

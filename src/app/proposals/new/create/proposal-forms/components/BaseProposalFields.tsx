@@ -2,7 +2,7 @@
 
 import { TextInput, TextArea } from '@/components/FormFields'
 import { FieldValues, Control, Path } from 'react-hook-form'
-import { BaseProposalFormData } from './baseProposalSchema'
+import { BaseProposalFormData } from '../schemas/BaseProposalSchema'
 
 interface BaseProposalFieldsProps<T extends BaseProposalFormData & FieldValues> {
   control: Control<T>

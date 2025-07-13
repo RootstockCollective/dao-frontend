@@ -1,6 +1,9 @@
 import Big from '@/lib/big'
 import { DecodedData } from '@/app/proposals/shared/utils'
 import { ProposalCategory, ProposalState } from '@/shared/types'
+import { type GrantProposal } from '../new/create/proposal-forms/schemas/GrantProposalSchema'
+import { type ActivationProposal } from '../new/create/proposal-forms/schemas/ActivationProposalSchema'
+import { type DeactivationProposal } from '../new/create/proposal-forms/schemas/DeactivationProposalSchema'
 export interface Proposal {
   votes: {
     againstVotes: Big
@@ -22,3 +25,8 @@ export interface Proposal {
   calldatasParsed: DecodedData[]
   blockNumber: string
 }
+
+export type ProposalRecord =
+  | { type: ProposalCategory.Grants; form: GrantProposal }
+  | { type: ProposalCategory.Activation; form: ActivationProposal }
+  | { type: ProposalCategory.Deactivation; form: DeactivationProposal }
