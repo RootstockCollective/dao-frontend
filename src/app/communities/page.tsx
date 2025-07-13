@@ -25,8 +25,8 @@ export default function Communities() {
       <Header>COMMUNITIES</Header>
       <div className="flex flex-col gap-2">
         <HeroComponent
-          imageBannerSrc="/images/hero/delegation-banner.svg" // @TODO
-          imageSquaresSrc="/images/hero/delegation-squares.svg"
+          imageBannerSrc="/images/hero/community-banner.png"
+          imageSquaresSrc="/images/hero/community-pixels.png"
           title="SHOW YOUR TRUE COLORS."
           subtitle="CURATED BY THE COLLECTIVE"
           items={['tbd...', 'tbd...', 'tbd...', 'tbd...']}
