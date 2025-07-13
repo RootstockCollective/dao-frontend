@@ -5,6 +5,7 @@ import { BoostedLabel } from '@/app/communities/components/BoostedLabel'
 import { CommunityItemButtonHandler } from '@/app/communities/components/CommunityItemButtonHandler'
 import { applyPinataImageOptions } from '@/lib/ipfs'
 import { cn } from '@/lib/utils'
+import { ImageDebris } from '@/app/communities/components/ImageDebris'
 
 interface CommunityItemProps {
   leftImageSrc: string
@@ -15,6 +16,7 @@ interface CommunityItemProps {
   numberOfMembers: number
   readMoreLink?: string
   variant?: 'portrait' | 'landscape'
+  enableDebris?: boolean
 }
 
 /**
@@ -28,7 +30,8 @@ export const CommunityItem = ({
   nftAddress,
   description,
   readMoreLink,
-  variant = 'portrait'
+  variant = 'portrait',
+  enableDebris = false
 }: CommunityItemProps) => {
   const isExternalImage = leftImageSrc.startsWith('http')
   const image = isExternalImage
@@ -50,6 +53,7 @@ export const CommunityItem = ({
             sizes="269px"
             fill
           />
+          {enableDebris && <ImageDebris image={image} />}
         </div>
         <div className={cn('flex gap-[20px] flex-col')}>
           {/* Title */}
