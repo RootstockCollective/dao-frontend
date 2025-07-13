@@ -239,17 +239,6 @@ export const communitiesToRender = [
   betaBuilders,
 ]
 
-export const communitiesByCategory = {
-  BADGES: [
-    earlyAdoptersCommunity,
-    ogFounders,
-    ogFoundersEcosystemPartners,
-    ogFoundersExternalContributors,
-    vanguardCommunity,
-  ],
-  CLUBS: [betaBuilders, rootstockHacktivator],
-}
-
 export const communitiesMapByContract = communitiesToRender.reduce<Record<string, CommunityItem>>(
   (prev, currentValue) => {
     prev[currentValue.nftAddress] = currentValue

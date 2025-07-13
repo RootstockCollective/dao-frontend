@@ -1,7 +1,16 @@
-import Image from 'next/image'
+import { SectionContainer } from './components/SectionContainer'
 import { CommunityItem } from '@/app/communities/CommunityItem'
-import { communitiesByCategory } from '@/app/communities/communityUtils'
-import { HeaderTitle } from '@/components/Typography'
+import {
+  betaBuilders,
+  earlyAdoptersCommunity,
+  ogFounders,
+  ogFoundersEcosystemPartners,
+  ogFoundersExternalContributors,
+  rootstockHacktivator,
+  vanguardCommunity,
+} from '@/app/communities/communityUtils'
+import { Header } from '@/components/TypographyNew'
+import { HeroComponent } from '@/components/HeroComponent'
 
 export const dynamic = 'force-static'
 
@@ -12,26 +21,45 @@ export const dynamic = 'force-static'
  */
 export default function Communities() {
   return (
-    <div className="flex flex-col ml-[24px]">
-      <div>
-        <Image
-          src="/images/communities-banner.svg"
-          alt="Communities"
-          width={0}
-          height={0}
-          className="w-full mb-[48px]"
+    <div>
+      <Header>COMMUNITIES</Header>
+      <div className="flex flex-col gap-2">
+        <HeroComponent
+          imageBannerSrc="/images/hero/delegation-banner.svg" // @TODO
+          imageSquaresSrc="/images/hero/delegation-squares.svg"
+          title="SHOW YOUR TRUE COLORS."
+          subtitle="CURATED BY THE COLLECTIVE"
+          items={['tbd...', 'tbd...', 'tbd...', 'tbd...']}
+          className="mt-6"
         />
-      </div>
-      {Object.entries(communitiesByCategory).map(([category, communities]) => (
-        <div key={category} className="mb-[51px]">
-          <HeaderTitle className="text-[32px]">{category}</HeaderTitle>
-          <div className="flex flex-wrap mt-[32px] gap-[24px]">
-            {communities.map(community => (
-              <CommunityItem key={community.title} {...community} />
-            ))}
+        <SectionContainer title="BADGES">
+          <div>
+            {/* Communities */}
+            <div className="grid grid-cols-4 gap-2">
+              <CommunityItem {...earlyAdoptersCommunity} />
+              <div className="col-span-2">
+                {/* First */}
+                <CommunityItem {...ogFounders} variant="landscape" />
+                {/* Other 2 next to each other */}
+                <div className="grid grid-cols-2 gap-2 mt-2">
+                  <CommunityItem {...ogFoundersEcosystemPartners} />
+                  <CommunityItem {...ogFoundersExternalContributors} />
+                </div>
+              </div>
+              <CommunityItem {...vanguardCommunity} />
+            </div>
           </div>
-        </div>
-      ))}
+        </SectionContainer>
+        <SectionContainer title="CLUBS">
+          <div>
+            {/* Communities */}
+            <div className="grid grid-cols-2 gap-2">
+              <CommunityItem {...betaBuilders} variant="landscape" />
+              <CommunityItem {...rootstockHacktivator} variant="landscape" />
+            </div>
+          </div>
+        </SectionContainer>
+      </div>
     </div>
   )
 }

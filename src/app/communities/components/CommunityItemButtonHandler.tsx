@@ -1,4 +1,5 @@
-import { ViewDetailsButton } from '@/app/communities/components/ViewDetailsButton'
+import { Paragraph } from '@/components/TypographyNew'
+import Link from 'next/link'
 
 interface CommunityItemButtonHandlerProps {
   nftAddress?: string
@@ -20,10 +21,8 @@ export const CommunityItemButtonHandler = ({ nftAddress, readMoreLink }: Communi
     target = '_blank'
   }
   return (
-    <ViewDetailsButton
-      href={href}
-      textForButton={readMoreLink ? 'Read more' : 'View details'}
-      target={target}
-    />
+    <Link href={href} target={target}>
+      <Paragraph>Learn more {/* Icon here */}</Paragraph>
+    </Link>
   )
 }
