@@ -6,11 +6,10 @@ import { TokenImage } from '@/components/TokenImage'
 import { Tooltip } from '@/components/Tooltip'
 import { Typography } from '@/components/TypographyNew/Typography'
 import { cn, formatCurrency } from '@/lib/utils'
-import * as RadioGroup from '@radix-ui/react-radio-group'
 import { FC, ReactNode } from 'react'
 import { ClaimRewardType } from './types'
 import { RBTC } from '@/lib/constants'
-import { ClaimRewardRadioOption } from './ClaimRewardRadioOption'
+import { ClaimRewardRadioGroup } from './ClaimRewardRadioGroup'
 
 interface ClaimRewardsModalViewProps {
   onClose: () => void
@@ -77,21 +76,12 @@ export const ClaimRewardsModalView: FC<ClaimRewardsModalViewProps> = ({
         <Typography>
           Select the rewards that you want to claim, then confirm the transaction in your wallet.
         </Typography>
-        <RadioGroup.Root
-          className="flex gap-2 w-full"
+        <ClaimRewardRadioGroup
           value={selectedRewardType}
           onValueChange={onRewardTypeChange}
-        >
-          {radioOptions.map(option => (
-            <ClaimRewardRadioOption
-              key={option.value}
-              value={option.value}
-              label={option.label}
-              subLabel={option.subLabel}
-              isLoading={isLoading}
-            />
-          ))}
-        </RadioGroup.Root>
+          options={radioOptions}
+          isLoading={isLoading}
+        />
         <Typography variant="body">
           Claim your rewards directly to your wallet. Claimed rewards are transferred immediately, and your
           unclaimed balance resets.
