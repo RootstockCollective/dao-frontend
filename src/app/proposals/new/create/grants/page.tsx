@@ -7,14 +7,16 @@ import { Address } from 'viem'
 import { useLayoutContext } from '@/components/MainContainer/LayoutProvider'
 import { Subfooter } from '../../components/Subfooter'
 import { TextInput, NumberInput } from '@/components/FormFields'
-import { BaseProposalFields, TokenRadioGroup } from './components'
+import { BaseProposalFields, TokenRadioGroup } from '../components'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useReviewProposal } from '../../context/ReviewProposalContext'
 import { ProposalCategory } from '@/shared/types'
-import { showFormErrors } from './components/showFormErrors'
-import { GrantProposal, GrantProposalSchema } from './schemas/GrantProposalSchema'
+import { showFormErrors } from '../components/showFormErrors'
+import { GrantProposal, GrantProposalSchema } from '../schemas/GrantProposalSchema'
 
-export function GrantsProposalForm() {
+//'/proposals/new/create?contract=DAOTreasuryAbi&action=withdraw'
+
+export default function GrantsProposalForm() {
   const { record, setRecord } = useReviewProposal()
   const router = useRouter()
 
@@ -39,7 +41,7 @@ export function GrantsProposalForm() {
         // Success callback
         data => {
           setRecord({ form: data, type: ProposalCategory.Grants })
-          router.push('/proposals/new/review')
+          router.push('/proposals/new/review/grants')
         },
         // Error callback
         showFormErrors,
