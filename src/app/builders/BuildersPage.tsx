@@ -1,3 +1,6 @@
+'use client'
+// TODO: I don't like the fact that this page is a client component, but otherwise many components need to be changed to accommodate this
+
 import {
   ActionMetricsContainer,
   ActionsContainer,
