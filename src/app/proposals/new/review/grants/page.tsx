@@ -1,11 +1,12 @@
 'use client'
 
-import { useCallback, useEffect } from 'react'
-import { useReviewProposal } from '../context/ReviewProposalContext'
+import { type ElementType, useCallback, useEffect } from 'react'
+import { useReviewProposal } from '../../context/ReviewProposalContext'
 import { useLayoutContext } from '@/components/MainContainer/LayoutProvider'
-import { Subfooter } from '../components/Subfooter'
+import { Subfooter } from '../../components/Subfooter'
+import { ProposalCategory } from '@/shared/types'
 
-export default function ReviewProposal() {
+export default function GrantsProposalReview() {
   const { record, setRecord } = useReviewProposal()
 
   const onSubmit = useCallback(() => {
@@ -22,11 +23,5 @@ export default function ReviewProposal() {
     setSubfooter(<Subfooter submitForm={onSubmit} buttonText="Publish proposal" />)
     return () => setSubfooter(null)
   }, [onSubmit, setSubfooter])
-
-  if (!record) return <h1 className="text-error text-4xl">Oops!!!</h1>
-  return (
-    <div>
-      <h1>Review {record.type} proposal</h1>
-    </div>
-  )
+  return <div>GrantsProposalReview</div>
 }

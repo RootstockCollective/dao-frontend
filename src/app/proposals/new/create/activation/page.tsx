@@ -2,29 +2,29 @@
 
 import { useCallback, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
-import { type Address } from 'viem'
+import { Address } from 'viem'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useLayoutContext } from '@/components/MainContainer/LayoutProvider'
 import { Subfooter } from '../../components/Subfooter'
-import { BaseProposalFields } from './components/BaseProposalFields'
+import { BaseProposalFields } from '../components/BaseProposalFields'
 import { useReviewProposal } from '../../context/ReviewProposalContext'
 import { ProposalCategory } from '@/shared/types'
 import { TextInput } from '@/components/FormFields'
-import { showFormErrors } from './components/showFormErrors'
-import { DeactivationProposal, DeactivationProposalSchema } from './schemas/DeactivationProposalSchema'
+import { showFormErrors } from '../components/showFormErrors'
+import { ActivationProposal, ActivationProposalSchema } from '../schemas/ActivationProposalSchema'
 
-export function DeactivationProposalForm() {
+export default function ActivationProposalForm() {
   const router = useRouter()
   const { setSubfooter } = useLayoutContext()
   const { record, setRecord } = useReviewProposal()
 
-  const { handleSubmit, control } = useForm<DeactivationProposal>({
+  const { handleSubmit, control } = useForm<ActivationProposal>({
     mode: 'onTouched',
-    resolver: zodResolver(DeactivationProposalSchema),
+    resolver: zodResolver(ActivationProposalSchema),
     // use recorded proposal if it is of the same type
     defaultValues:
-      record && record.type === ProposalCategory.Deactivation
+      record && record.type === ProposalCategory.Activation
         ? record.form
         : {
             proposalName: '',
@@ -37,8 +37,8 @@ export function DeactivationProposalForm() {
   const onSubmit = useCallback(
     () =>
       handleSubmit(data => {
-        setRecord({ form: data, type: ProposalCategory.Deactivation })
-        router.push('/proposals/new/review')
+        setRecord({ form: data, type: ProposalCategory.Activation })
+        router.push('/proposals/new/review/activation')
       }, showFormErrors)(),
     [handleSubmit, router],
   )
@@ -57,7 +57,7 @@ export function DeactivationProposalForm() {
             <h2 className="font-kk-topo text-text-100 text-2xl uppercase leading-loose tracking-wide">
               Proposal Action
             </h2>
-            <TextInput control={control} name="builderAddress" label="Builder address to de-whitelist" />
+            <TextInput control={control} name="builderAddress" label="Builder address to whitelist" />
           </div>
         </div>
       </form>
