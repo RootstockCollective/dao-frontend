@@ -46,8 +46,8 @@ export default function GrantsProposalReview() {
           </a>
         </Card>
         <Card title="Short description">
-          {description.split('\n').map(paragraph => (
-            <p>{paragraph}</p>
+          {description.split('\n').map((paragraph, i) => (
+            <p key={i}>{paragraph}</p>
           ))}
         </Card>
 
