@@ -35,3 +35,11 @@ const WrappedComponent = withTableContext(TableColumnDropdownWithContext)
 export const Basic = () => {
   return <WrappedComponent />
 }
+
+export const TriggerInheritsBackground = () => {
+  return (
+    <div className="w-full h-full bg-green-700">
+      <WrappedComponent />
+    </div>
+  )
+}
