@@ -1,7 +1,7 @@
 import { usePathname } from 'next/navigation'
 import { useMemo } from 'react'
 import Link from 'next/link'
-import { menuData } from '../sidebars/menuData'
+import { menuData } from '../MainContainer'
 
 const menuBreadCrumbsMap = Object.fromEntries(menuData.map(({ href, text }) => [href, text])) as {
   [K in (typeof menuData)[number] as K['href']]: K['text']
@@ -14,8 +14,17 @@ const breadcrumbsMap = {
   '/proposals/new': 'New Proposal',
   '/proposals/new/create': 'Details',
   '/proposals/new/review': 'Review Details',
+  '/proposals/new/create/grants': 'Create Grant Proposal',
+  '/proposals/new/create/activation': 'Create Activation Proposal',
+  '/proposals/new/create/deactivation': 'Create Deactivation Proposal',
+  '/proposals/new/review/grants': 'Review Grant Proposal',
+  '/proposals/new/review/activation': 'Review Activation Proposal',
+  '/proposals/new/review/deactivation': 'Review Deactivation Proposal',
   // Add more specific routes here as needed
 }
+
+// Segments that should be skipped in breadcrumbs (no clickable links)
+const skipSegments = ['/proposals/new/review', '/proposals/new/create']
 
 /**
  * Simple breadcrumbs component used in desktop header
@@ -24,15 +33,18 @@ export function Breadcrumbs() {
   const pathname = usePathname()
   const breadcrumbs = useMemo(() => {
     const segments = pathname.split('/').filter(Boolean)
-    const crumbs = segments.map((segment, index) => {
-      const href = '/' + segments.slice(0, index + 1).join('/')
-      // First try to match the full path, then fall back to segment-based lookup
-      const title =
-        breadcrumbsMap[href as keyof typeof breadcrumbsMap] ||
-        breadcrumbsMap[segment as keyof typeof breadcrumbsMap] ||
-        decodeURIComponent(segment)
-      return { href, title }
-    })
+    const crumbs = segments
+      .map((segment, index) => {
+        const href = '/' + segments.slice(0, index + 1).join('/')
+        // First try to match the full path, then fall back to segment-based lookup
+        const title =
+          breadcrumbsMap[href as keyof typeof breadcrumbsMap] ||
+          breadcrumbsMap[segment as keyof typeof breadcrumbsMap] ||
+          decodeURIComponent(segment)
+
+        return { href, title }
+      })
+      .filter(crumb => !skipSegments.includes(crumb.href))
 
     return [{ href: '/', title: 'Home' }, ...crumbs]
   }, [pathname])
