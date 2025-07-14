@@ -1,8 +1,8 @@
-import { type IconProps } from './types'
-import { DEFAULT_ICON_COLOR } from './constants'
+import { DEFAULT_ICON_COLOR } from '../constants'
+import { type IconProps } from '../types'
 
-export function AdjustBacking({
-  'aria-label': ariaLabel = 'Adjust Backing Icon',
+export function CogIcon({
+  'aria-label': ariaLabel = 'Cog Icon',
   size = 20,
   color = DEFAULT_ICON_COLOR,
   stroke = color,
