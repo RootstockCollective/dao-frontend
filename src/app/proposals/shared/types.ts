@@ -26,9 +26,10 @@ export interface Proposal {
   blockNumber: string
 }
 
+// discriminated union
 export type ProposalRecord =
-  | { type: ProposalCategory.Grants; form: GrantProposal }
-  | { type: ProposalCategory.Activation; form: ActivationProposal }
-  | { type: ProposalCategory.Deactivation; form: DeactivationProposal }
+  | { category: ProposalCategory.Grants; form: GrantProposal }
+  | { category: ProposalCategory.Activation; form: ActivationProposal }
+  | { category: ProposalCategory.Deactivation; form: DeactivationProposal }
 
 export type { GrantProposal, ActivationProposal, DeactivationProposal }

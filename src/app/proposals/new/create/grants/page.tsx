@@ -24,7 +24,7 @@ export default function GrantsProposalForm() {
     mode: 'onTouched',
     resolver: zodResolver(GrantProposalSchema),
     defaultValues:
-      record && record.type === ProposalCategory.Grants
+      record && record.category === ProposalCategory.Grants
         ? record.form
         : {
             proposalName: '',
@@ -40,7 +40,7 @@ export default function GrantsProposalForm() {
       handleSubmit(
         // Success callback
         data => {
-          setRecord({ form: data, type: ProposalCategory.Grants })
+          setRecord({ form: data, category: ProposalCategory.Grants })
           router.push('/proposals/new/review/grants')
         },
         // Error callback

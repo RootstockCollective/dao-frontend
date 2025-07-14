@@ -24,7 +24,7 @@ export default function ActivationProposalForm() {
     resolver: zodResolver(ActivationProposalSchema),
     // use recorded proposal if it is of the same type
     defaultValues:
-      record && record.type === ProposalCategory.Activation
+      record && record.category === ProposalCategory.Activation
         ? record.form
         : {
             proposalName: '',
@@ -37,7 +37,7 @@ export default function ActivationProposalForm() {
   const onSubmit = useCallback(
     () =>
       handleSubmit(data => {
-        setRecord({ form: data, type: ProposalCategory.Activation })
+        setRecord({ form: data, category: ProposalCategory.Activation })
         router.push('/proposals/new/review/activation')
       }, showFormErrors)(),
     [handleSubmit, router],
