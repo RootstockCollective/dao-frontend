@@ -20,6 +20,17 @@ const toggleColumnVisibility = (state: TableState, { payload: id, type }: TableA
   }
 }
 
+const setColumnVisibility = (state: TableState, { payload, type }: TableAction) => {
+  if (type !== 'SET_COLUMN_VISIBILITY') return state
+
+  return {
+    ...state,
+    columns: state.columns.map(column =>
+      column.id === payload.columnId ? { ...column, hidden: payload.hidden } : column,
+    ),
+  }
+}
+
 /**
  * Sorts the table by the given column id and direction.
  * Currently only one column can be sorted at a time.
@@ -85,6 +96,7 @@ const setError = (state: TableState, { payload: error, type }: TableAction) => {
 const actionMap: Record<TableAction['type'], (state: TableState, action: TableAction) => TableState> = {
   TOGGLE_ROW_SELECTION: toggleRowSelection,
   TOGGLE_COLUMN_VISIBILITY: toggleColumnVisibility,
+  SET_COLUMN_VISIBILITY: setColumnVisibility,
   SORT_BY_COLUMN: sortByColumn,
   SET_ROWS: setRows,
   SET_COLUMNS: setColumns,

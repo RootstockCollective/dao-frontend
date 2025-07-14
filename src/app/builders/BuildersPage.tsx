@@ -1,14 +1,18 @@
+'use client'
+// TODO: I don't like the fact that this page is a client component, but otherwise many components need to be changed to accommodate this
+
 import {
-  ActionsContainer,
   ActionMetricsContainer,
+  ActionsContainer,
   InfoContainer,
   MetricsContainer,
 } from '@/components/containers'
+import { Header } from '@/components/TypographyNew'
+import { CycleContextProvider } from '../collective-rewards/metrics'
 import { Content } from './components/Content'
 import { Metrics } from './components/Metrics'
 import { Spotlight } from './components/Spotlight'
-import { Table } from './components/Table'
-import { Header } from '@/components/TypographyNew'
+import BuildersTable from './components/Table/BuildersTable'
 
 const NAME = 'Builders'
 export const BuildersPage = () => {
@@ -29,7 +33,9 @@ export const BuildersPage = () => {
           <Spotlight />
         </ActionMetricsContainer>
         <ActionsContainer title={'The Collective Builders'} className="bg-v3-bg-accent-80">
-          <Table />
+          <CycleContextProvider>
+            <BuildersTable />
+          </CycleContextProvider>
         </ActionsContainer>
       </div>
     </div>

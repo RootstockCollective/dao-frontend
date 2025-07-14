@@ -26,7 +26,7 @@ type Story = StoryObj<typeof BuilderFilterDropdown>
 
 export const Default: Story = {
   args: {
-    onSelected: option => console.log('Selected:', option.id),
+    onSelected: optionId => console.log('Selected:', optionId),
   },
   render: args => (
     <div className="w-64">
