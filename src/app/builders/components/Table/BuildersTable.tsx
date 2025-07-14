@@ -17,13 +17,12 @@ import {
   usePricesContext,
   useTableActionsContext,
   useTableContext,
-  withTableContext,
 } from '@/shared/context'
 import { useReadGauges } from '@/shared/hooks/contracts'
 import { Suspense, useContext, useEffect, useMemo, useState } from 'react'
 import { Address } from 'viem'
 import { useAccount } from 'wagmi'
-import BuilderFilterDropdown, { BuilderFilterOptionId } from '../../BuilderFilterDropdown'
+import { BuilderFilterOptionId } from '../../BuilderFilterDropdown'
 import { BuilderDataRow, convertDataToRowData } from './BuilderDataRow'
 import { BuilderHeaderRow } from './BuilderHeaderRow'
 import { ColumnId, DEFAULT_HEADERS, PAGE_SIZE } from './BuilderTable.config'
@@ -114,9 +113,9 @@ export const Table = () => {
 }
 
 // ---------------- Table ----------------
-const BuildersTable = () => {
+
+export const BuildersTable = ({ filterOption }: { filterOption: BuilderFilterOptionId }) => {
   const [pageEnd, setPageEnd] = useState(10)
-  const [filterOption, setFilterOption] = useState<BuilderFilterOptionId>('all')
 
   const { address: userAddress } = useAccount()
 
@@ -197,14 +196,8 @@ const BuildersTable = () => {
     }
   }, [error, allocationsError, dispatch])
 
-  const handleFilterChange = (filterOption: BuilderFilterOptionId) => {
-    setFilterOption(filterOption)
-  }
-
   return (
     <>
-      <BuilderFilterDropdown onSelected={handleFilterChange} />
-      {/* FIXME: the filter is meant to be aligned with the section title */}
       <Table />
       <TablePager
         pageSize={pageEnd}
@@ -218,5 +211,3 @@ const BuildersTable = () => {
     </>
   )
 }
-
-export default withTableContext(BuildersTable)
