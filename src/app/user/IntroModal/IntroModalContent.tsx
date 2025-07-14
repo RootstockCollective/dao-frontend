@@ -45,25 +45,22 @@ export const IntroModalContent = ({
         {isDesktop ? (
           <>
             <Image
-              src={`${currentConfig.desktop.squares}`}
-              alt="Squares Divider"
+              src={`${currentConfig.desktop.pixels}`}
+              alt="Floating Pixels"
               width={40}
               height={30}
               className="absolute block left-1/2 top-8 -translate-x-[calc(55%)] z-10"
             />
             <div className="flex-1 relative">
-              <div className="relative">
-                <Image
-                  src={`${currentConfig.desktop.bg}`}
-                  alt="Intro Modal"
-                  height={0}
-                  width={0}
-                  className="h-auto w-full"
-                />
-                <YourWalletInfo content={currentContent} rbtcBalance={rbtcBalance} rifBalance={rifBalance} />
-              </div>
+              <Image
+                src={`${currentConfig.desktop.bg}`}
+                alt="Intro Modal"
+                fill
+                className="object-cover object-top-right"
+              />
+              <YourWalletInfo content={currentContent} rbtcBalance={rbtcBalance} rifBalance={rifBalance} />
             </div>
-            <div className="flex-1 flex flex-col justify-between p-4 md:p-0">
+            <div className="flex-1 flex flex-col justify-between p-4 md:p-0 md:pt-24">
               <StakeDescription content={currentContent} />
               <div className="flex justify-end">
                 {currentContent.action.external ? (
@@ -76,17 +73,11 @@ export const IntroModalContent = ({
           </>
         ) : (
           <div className="mt-12 flex flex-col gap-4">
-            <div className="relative">
+            <div className="relative h-40">
+              <Image src={`${currentConfig.mobile.bg}`} alt="Intro Modal" fill className="object-cover" />
               <Image
-                src={`${currentConfig.mobile.bg}`}
-                alt="Intro Modal"
-                height={0}
-                width={0}
-                className="h-auto w-full"
-              />
-              <Image
-                src={`${currentConfig.mobile.squares}`}
-                alt="Squares Divider"
+                src={`${currentConfig.mobile.pixels}`}
+                alt="Floating Pixels"
                 width={30}
                 height={20}
                 className="absolute bottom-[-30px] right-0"

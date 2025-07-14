@@ -14,11 +14,25 @@ const meta: Meta<typeof HeroComponent> = {
 export default meta
 type Story = StoryObj<typeof HeroComponent>
 
+export const Delegation: Story = {
+  args: {
+    imageSrc: '/images/hero/delegation-banner.png',
+    title: 'Delegate your voting power',
+    subtitle: 'to influence what gets built',
+    items: [
+      'You are only delegating your own voting power',
+      'Your tokens stay in your wallet',
+      'You save on gas cost while being represented',
+      'Your Rewards will keep accumulating as usual',
+    ],
+    className: 'w-full md:w-[1144px]',
+  },
+}
+
 /* eslint-disable quotes */
 export const Proposal: Story = {
   args: {
-    imageBannerSrc: '/images/hero/proposals-banner.svg',
-    imageSquaresSrc: '/images/hero/proposals-squares.svg',
+    imageSrc: '/images/hero/proposals-banner.png',
     title: 'Propose a Project,',
     subtitle: 'Get support to build it',
     items: [
@@ -30,20 +44,6 @@ export const Proposal: Story = {
       'Complete your KYC to ensure eligibility (apply for Grants)',
     ],
     button: <Button>Create a proposal</Button>,
-  },
-}
-
-export const Delegation: Story = {
-  args: {
-    imageBannerSrc: '/images/hero/delegation-banner.svg',
-    imageSquaresSrc: '/images/hero/delegation-squares.svg',
-    title: 'Delegate your voting power',
-    subtitle: 'to influence what gets built',
-    items: [
-      'You are only delegating your own voting power',
-      'Your tokens stay in your wallet',
-      'You save on gas cost while being represented',
-      'Your Rewards will keep accumulating as usual',
-    ],
+    className: 'w-full md:w-[1144px]',
   },
 }
