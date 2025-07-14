@@ -24,7 +24,7 @@ export default function DeactivationProposalForm() {
     resolver: zodResolver(DeactivationProposalSchema),
     // use recorded proposal if it is of the same type
     defaultValues:
-      record && record.type === ProposalCategory.Deactivation
+      record && record.category === ProposalCategory.Deactivation
         ? record.form
         : {
             proposalName: '',
@@ -37,7 +37,7 @@ export default function DeactivationProposalForm() {
   const onSubmit = useCallback(
     () =>
       handleSubmit(data => {
-        setRecord({ form: data, type: ProposalCategory.Deactivation })
+        setRecord({ form: data, category: ProposalCategory.Deactivation })
         router.push('/proposals/new/review/deactivation')
       }, showFormErrors)(),
     [handleSubmit, router],
