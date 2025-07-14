@@ -157,7 +157,8 @@ const PageWithProposal = (proposal: ParsedProposal) => {
   const { address, isConnected } = useAccount()
   const { proposalId, name, description, proposer, Starts, calldatasParsed } = proposal
   const [vote, setVote] = useGetVoteForSpecificProposal(address ?? zeroAddress, proposalId)
-  const [isChoosingVote, setIsChoosingVote] = useState<boolean>(false)
+  const [isChoosingVote, setIsChoosingVote] = useState(false)
+  const [votingTxIsPending, setVotingTxIsPending] = useState(false)
 
   const [againstVote, forVote, abstainVote] = useGetProposalVotes(proposalId, true)
   const snapshot = useGetProposalSnapshot(proposalId)
@@ -192,8 +193,15 @@ const PageWithProposal = (proposal: ParsedProposal) => {
           return await onVote(_vote)
         },
         action: 'voting',
-        onSuccess: () => setVote(_vote),
-        onError: () => setVote(undefined),
+        onSuccess: () => {
+          setVotingTxIsPending(false)
+          setVote(_vote)
+        },
+        onError: () => {
+          setVotingTxIsPending(false)
+          setVote(undefined)
+        },
+        onPending: () => setVotingTxIsPending(true),
       })
       setVotingTxHash(txHash)
     } catch (err) {
@@ -467,7 +475,7 @@ const PageWithProposal = (proposal: ParsedProposal) => {
             voteButtonRef={voteButtonRef}
             vote={vote}
             isChoosingVote={isChoosingVote}
-            isVotingInProgress={isVoting || isWaitingVotingReceipt}
+            isVotingInProgress={isVoting || isWaitingVotingReceipt || votingTxIsPending}
             onCastVote={address && handleVoting}
             onCancelVote={() => setIsChoosingVote(false)}
             isConnected={isConnected}
