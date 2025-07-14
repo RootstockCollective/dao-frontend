@@ -158,7 +158,6 @@ const PageWithProposal = (proposal: ParsedProposal) => {
   const { proposalId, name, description, proposer, Starts, calldatasParsed } = proposal
   const [vote, setVote] = useGetVoteForSpecificProposal(address ?? zeroAddress, proposalId)
   const [isChoosingVote, setIsChoosingVote] = useState<boolean>(false)
-  const [errorVoting, setErrorVoting] = useState('')
 
   const [againstVote, forVote, abstainVote] = useGetProposalVotes(proposalId, true)
   const snapshot = useGetProposalSnapshot(proposalId)
@@ -186,7 +185,6 @@ const PageWithProposal = (proposal: ParsedProposal) => {
 
   const handleVoting = async (_vote: Vote) => {
     try {
-      setErrorVoting('')
       setIsChoosingVote(false)
       const txHash = await executeTxFlow({
         onRequestTx: async () => {
