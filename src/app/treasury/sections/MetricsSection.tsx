@@ -3,7 +3,7 @@ import { Popover } from '@/components/Popover'
 import { HeaderTitle } from '@/components/Typography'
 import { Label } from '@/components/TypographyNew'
 import { formatNumberWithCommas } from '@/lib/utils'
-import { InfoContainer } from '../components'
+import { BalanceInfo } from '@/components/BalanceInfo'
 import { useStRifHoldings } from '../hooks/useStRifHoldings'
 
 /**
@@ -18,20 +18,20 @@ export const MetricsSection = () => {
         Metrics
       </HeaderTitle>
       <div className="flex flex-row gap-6 mt-10">
-        <InfoContainer
+        <BalanceInfo
           className="max-w-[214px] min-w-[180px]"
           title="Total stRIF"
           amount={`${formatNumberWithCommas(stRifBalance)}`}
           symbol="stRIF"
           fiatAmount={`${formatNumberWithCommas(stRifUsdBalance)} USD`}
         />
-        <InfoContainer
+        <BalanceInfo
           className="max-w-[214px] min-w-[180px]"
           title="Treasury"
           amount={`${formatNumberWithCommas(totalFundingUsd)}`}
           symbol="USD"
         />
-        <InfoContainer
+        <BalanceInfo
           className="max-w-[444px] min-w-[180px] overflow-visible"
           title="TVL"
           titlePopover={

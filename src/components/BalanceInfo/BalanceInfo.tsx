@@ -12,13 +12,13 @@ interface Props {
   className?: string
 }
 
-export const InfoContainer: FC<Props> = ({
+export const BalanceInfo: FC<Props> = ({
   title,
   titlePopover,
   amount,
   symbol,
   fiatAmount,
-  'data-testid': dataTestId = 'InfoContainer',
+  'data-testid': dataTestId = 'BalanceInfo',
   className,
 }) => {
   return (
@@ -30,7 +30,7 @@ export const InfoContainer: FC<Props> = ({
         {titlePopover}
       </div>
 
-      <div className="flex items-end flex-row gap-2">
+      <div className="flex items-end flex-row gap-2 mt-2">
         <Header variant="h1" data-testid="Amount" className="flex items-end flex-row gap-2">
           {amount}
         </Header>
