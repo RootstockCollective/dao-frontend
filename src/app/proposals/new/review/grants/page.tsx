@@ -10,6 +10,7 @@ import { cn, formatNumberWithCommas, shortAddress } from '@/lib/utils'
 import { useAccount } from 'wagmi'
 import moment from 'moment'
 import { TokenIcon } from '@/app/proposals/icons/TokenIcon'
+import PreviewLabel from '../components/PreviewLabel'
 
 export default function GrantsProposalReview() {
   const { address } = useAccount()
@@ -37,16 +38,20 @@ export default function GrantsProposalReview() {
   const tokenAmount = formatNumberWithCommas(transferAmount)
   return (
     <div>
-      <h2 className="mb-10 font-kk-topo text-text-100 text-3xl uppercase leading-10 tracking-wide">
-        {proposalName}
-      </h2>
+      <div className="mb-10 pr-2 w-full lg:flex lg:justify-between">
+        <h2 className="font-kk-topo text-text-100 text-2xl lg:text-3xl uppercase leading-relaxed tracking-wide">
+          {proposalName}
+        </h2>
+        <PreviewLabel />
+      </div>
+
       <div className="w-full flex flex-col md:flex-row gap-2">
         <div className="grow-3 max-w-[760px] overflow-hidden">
           <div className="p-6 w-full bg-bg-80 rounded-sm flex flex-col">
             <div className="mb-14 grid grid-cols-2 gap-y-6 gap-x-2">
               <Card title="Proposal type">
                 <span className="mr-2">Transfer of {tokenAmount}</span>
-                <span className="whitespace-nowrap">
+                <span>
                   <TokenIcon token={token} className="w-4 h-4 mb-[2px] mr-1" />
                   {token}
                 </span>
@@ -54,7 +59,7 @@ export default function GrantsProposalReview() {
               <Card title="Created on">{moment().format('DD MMMM YYYY')}</Card>
               <Card title="Proposed by">{shortAddress(address)}</Card>
               <Card title="Community discussion">
-                <a className="hover:underline" href={discourseLink} target="_blank">
+                <a className="hover:underline truncate block" href={discourseLink} target="_blank">
                   {discourseLink}
                 </a>
               </Card>
@@ -71,7 +76,7 @@ export default function GrantsProposalReview() {
             </div>
           </div>
         </div>
-        <div className="grow p-6 bg-bg-80 rounded-sm overflow-hidden md:self-start">
+        <div className="grow min-w-[250px] p-6 bg-bg-80 rounded-sm overflow-hidden md:self-start">
           <h3 className="mb-4 text-xl font-kk-topo text-text-100 uppercase leading-relaxed tracking-tight">
             Actions
           </h3>

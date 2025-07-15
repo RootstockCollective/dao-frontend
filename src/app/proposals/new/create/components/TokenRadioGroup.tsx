@@ -37,7 +37,10 @@ export default function TokenRadioGroup<T extends TokenFormData>({ name, control
                       value === token ? 'border-5' : 'border-[1.5px]',
                     )}
                   />
-                  <TokenIcon token={token} className="text-lg font-bold" />
+                  <span className="text-lg font-bold whitespace-nowrap">
+                    <TokenIcon token={token} className="mb-[2px] mr-1" />
+                    {token}
+                  </span>
                 </button>
               </li>
             ))}
