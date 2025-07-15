@@ -22,6 +22,9 @@ export interface ConfigResult extends ConfigObject, ExtractionResult {}
 
 type ImageSource = HTMLImageElement | string
 
+/**
+ * usePixelExtractor is a custom hook that provides functionality to extract pixel data from images.
+ */
 export const usePixelExtractor = () => {
   const canvasRef = useRef<HTMLCanvasElement | null>(null)
   const imageCache = useRef<Map<string, HTMLImageElement>>(new Map())
@@ -129,6 +132,9 @@ interface PixelConfigs {
   [key: string]: ConfigObject[]
 }
 
+/**
+ * PIXEL_CONFIGS defines various configurations for pixel extraction.
+ */
 export const PIXEL_CONFIGS: PixelConfigs = {
   topRightDiagonal: [
     { coords: (w, h) => ({ x: w - 10, y: 0 }), className: 'absolute top-[10px] -right-[10px]', size: 10 },

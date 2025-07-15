@@ -6,6 +6,11 @@ interface Props {
   image: string
 }
 
+/**
+ * ImageDebris component is used to display image debris extracted from a given image.
+ * @param image
+ * @constructor
+ */
 export const ImageDebris = ({ image }: Props) => {
   const [debris, setDebris] = useState<ConfigResult[]>([])
   const { extractPixelsByConfig } = usePixelExtractor()
