@@ -56,7 +56,7 @@ export function TabsSection() {
                         ? `${formatNumberWithCommas(Big(bucket.fiatAmount).toFixed(2))} USD`
                         : undefined
                       return (
-                        <div className="flex-1">
+                        <div className="flex-1" key={title}>
                           <BalanceInfo key={title} amount={amount} symbol={symbol} fiatAmount={fiatAmount} />
                         </div>
                       )
