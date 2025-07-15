@@ -36,7 +36,10 @@ export default function Communities() {
           ]}
           className="mt-6"
         />
-        <SectionContainer title="BADGES">
+        <SectionContainer
+          title="BADGES"
+          rightContent="These are earned for specific tasks - they are NFTs that come with functionality, some just medals of honour. Badges can unlock voting capabilities and help you earn BTC-based rewards through RootstockCollective."
+        >
           <div>
             {/* Communities */}
             <div className="grid lg:grid-cols-4 gap-2 md:grid-cols-1">
@@ -54,7 +57,10 @@ export default function Communities() {
             </div>
           </div>
         </SectionContainer>
-        <SectionContainer title="CLUBS">
+        <SectionContainer
+          title="CLUBS"
+          rightContent="These are essentially a group where people with likeminded interests can discuss ideas. Some are gated with NFTs, and in the future it may be possible to give anyone the ability to request a  club is created. The more you participate — from proposals to governance to community — the more opportunities you have to collect. "
+        >
           <div>
             {/* Communities */}
             <div className="grid lg:grid-cols-2 md:grid-cols-1 gap-2">
