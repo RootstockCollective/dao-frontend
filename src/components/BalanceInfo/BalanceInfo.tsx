@@ -3,10 +3,10 @@ import { Header, Label, Span } from '@/components/TypographyNew'
 import { FC, ReactNode } from 'react'
 
 interface Props {
-  title?: string
-  titlePopover?: ReactNode
   amount: ReactNode
   symbol: string
+  title?: string
+  titlePopover?: ReactNode
   fiatAmount?: ReactNode
   'data-testid'?: string
   className?: string
