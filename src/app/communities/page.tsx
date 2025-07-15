@@ -46,8 +46,8 @@ export default function Communities() {
                 <CommunityItem {...ogFounders} variant="landscape" enableDebris />
                 {/* Other 2 next to each other */}
                 <div className="grid lg:grid-cols-2 md:grid-cols-1 gap-2 mt-2">
-                  <CommunityItem {...ogFoundersEcosystemPartners} />
                   <CommunityItem {...ogFoundersExternalContributors} />
+                  <CommunityItem {...ogFoundersEcosystemPartners} />
                 </div>
               </div>
               <CommunityItem {...vanguardCommunity} />
