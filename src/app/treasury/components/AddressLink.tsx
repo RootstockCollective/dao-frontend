@@ -8,7 +8,7 @@ import { Address } from 'viem'
 
 const BASE_CLASSNAME = 'hover:text-text-60 transition-colors duration-100'
 
-export function AddressLink({ address }: { address: Address }) {
+export function AddressLink({ address, className }: { address: Address; className?: string }) {
   const [copied, setCopied] = useState(false)
 
   const handleCopy = async () => {
@@ -28,10 +28,10 @@ export function AddressLink({ address }: { address: Address }) {
   }, [copied])
 
   return (
-    <div className="flex flex-col md:flex-row items-center gap-4 w-full">
+    <div className={cn('flex flex-col md:flex-row items-center gap-5 w-full', className)}>
       <button
         onClick={handleCopy}
-        className="hover:cursor-pointer transition-colors duration-100 flex flex-row items-center gap-1"
+        className="hover:cursor-pointer transition-colors duration-100 flex flex-row items-center gap-1.5"
         aria-label="Copy address"
       >
         <Span variant="body-s" className={cn(BASE_CLASSNAME, 'text-bg-0')}>

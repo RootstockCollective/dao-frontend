@@ -23,7 +23,7 @@ export function SolidTabs({ tabs, activeTab, onTabChange, children, className, .
       <div className="flex flex-row items-center">
         <hr className="w-full bg-bg-60 border-none h-px mr-2" />
         <Tabs.Root value={activeTab} onValueChange={onTabChange} {...props}>
-          <div className="inline-flex bg-bg-100 rounded-md p-1">
+          <div className="inline-flex bg-bg-100 rounded-md p-0.5">
             <Tabs.List className="flex flex-row">
               {tabs.map(tab => (
                 <Tabs.Trigger
@@ -34,7 +34,9 @@ export function SolidTabs({ tabs, activeTab, onTabChange, children, className, .
                     activeTab === tab ? 'bg-bg-60' : 'text-text-60 hover:bg-bg-80',
                   )}
                 >
-                  <Label variant="body-s">{tab}</Label>
+                  <Label variant="body-s" className="cursor-pointer">
+                    {tab}
+                  </Label>
                 </Tabs.Trigger>
               ))}
             </Tabs.List>
