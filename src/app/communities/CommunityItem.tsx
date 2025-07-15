@@ -65,10 +65,12 @@ export const CommunityItem = ({
               </Header>
             </BoostedLabel>
           </div>
-          <div>
-            <Paragraph className="text-bg-0 font-[500] mb-[8px]">Special power</Paragraph>
-            <Header className="text-[20px]">{specialPower}</Header>
-          </div>
+          {specialPower && (
+            <div>
+              <Paragraph className="text-bg-0 font-[500] mb-[8px]">Special power</Paragraph>
+              <Header className="text-[20px]">{specialPower}</Header>
+            </div>
+          )}
           {/* Description */}
           <Paragraph>{description}</Paragraph>
           {/* Learn more */}
