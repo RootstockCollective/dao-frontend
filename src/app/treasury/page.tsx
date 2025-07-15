@@ -8,8 +8,10 @@ export default function Treasury() {
   return (
     <TreasuryContextProviderWithPrices>
       <div className="pl-2 flex flex-col gap-12">
-        <MetricsSection />
-        <TabsSection />
+        <div className="flex flex-col gap-10 p-6 bg-bg-80 rounded-md">
+          <MetricsSection />
+          <TabsSection />
+        </div>
         <HoldersSection />
       </div>
     </TreasuryContextProviderWithPrices>

@@ -1,57 +1,100 @@
 import { useState } from 'react'
-import { UnderlineTabs } from '@/components/Tabs'
-import { MetricsCard } from '@/components/MetricsCard'
-import { Typography } from '@/components/Typography'
+import { SolidTabs } from '@/components/Tabs'
+import { BalanceInfo } from '@/components/BalanceInfo'
 import { formatCurrency, formatNumberWithCommas } from '@/lib/utils'
 import Big from '@/lib/big'
 import { useTabCards } from '../hooks/useTabCards'
+import { Paragraph } from '@/components/TypographyNew'
 
 /**
  * Displays a tabbed section with metrics for different treasury categories: Grant, Growth, General.
- * Each tab contains a set of metric cards displaying RIF and RBTC amounts,
+ * Each tab contains a set of balance info cards displaying RIF and RBTC amounts,
  * as well as their equivalent fiat value in USD.
  */
 export function TabsSection() {
   const cards = useTabCards()
   const [activeTab, setActiveTab] = useState<keyof typeof cards>('Grants')
 
+  const handleTabChange = (value: string) => {
+    setActiveTab(value as keyof typeof cards)
+  }
+
   return (
-    <UnderlineTabs
-      layoutId="treasury-tab"
-      tabs={Object.keys(cards).map(value => ({ value: value as keyof typeof cards }))}
+    <SolidTabs
+      tabs={Object.keys(cards).map(value => value as keyof typeof cards)}
       activeTab={activeTab}
-      onTabChange={setActiveTab}
+      onTabChange={handleTabChange}
     >
-      <div className="pt-4 flex flex-row gap-4">
-        {cards[activeTab].map(({ title, bucket, contract }) => {
-          const isRif = title.toLowerCase().includes('rif')
-          return (
-            <MetricsCard
-              className="max-w-[214px] min-w-[120px]"
-              title={<Typography className="text-sm font-bold">{title}</Typography>}
-              amount={
-                isRif
-                  ? `${bucket?.amount ? formatNumberWithCommas(Big(bucket.amount).ceil()) : 0} RIF`
-                  : `${bucket?.amount ? formatNumberWithCommas(Big(bucket.amount).toFixedNoTrailing(8)) : 0} RBTC`
-              }
-              fiatAmount={`= USD ${formatCurrency(bucket?.fiatAmount || 0)}`}
-              contractAddress={contract}
-              key={`${activeTab}-${title}`}
-              borderless
-            />
-          )
-        })}
+      <div className="pt-4">
+        {/* Optional description text */}
+        <Paragraph variant="body-s" className="text-text-60 mb-10">
+          Optional text explaining each tab... aliquam tristique, ligula et sodales commodo, erat ante
+          molestie odio.
+        </Paragraph>
 
-        {/* A place for “Others” section (card) */}
+        {/* Two column layout: Total and Rewards */}
+        <div className="flex flex-row gap-8">
+          {/* Total Column */}
+          <div className="flex-1">
+            <div className="text-lg font-bold mb-4">Total</div>
+            <div className="flex flex-col gap-4">
+              {cards[activeTab].map(({ title, bucket }) => {
+                const isRif = title.toLowerCase().includes('rif')
+                const symbol = isRif ? 'RIF' : 'rBTC'
+                const amount = bucket?.amount
+                  ? isRif
+                    ? formatNumberWithCommas(Big(bucket.amount).ceil())
+                    : formatNumberWithCommas(Big(bucket.amount).toFixedNoTrailing(8))
+                  : '0'
+                const fiatAmount = bucket?.fiatAmount
+                  ? `= USD ${formatCurrency(bucket.fiatAmount)}`
+                  : undefined
 
-        {/* {activeTab === 'General' && (
-            <MetricsCard
-              className="max-w-[447px]"
-              title={<Typography className="text-sm">OTHERS</Typography>}
-              borderless
-            />
-          )} */}
+                return (
+                  <BalanceInfo
+                    key={`total-${title}`}
+                    title={title}
+                    amount={amount}
+                    symbol={symbol}
+                    fiatAmount={fiatAmount}
+                    className="max-w-[214px]"
+                  />
+                )
+              })}
+            </div>
+          </div>
+
+          {/* Rewards Column */}
+          <div className="flex-1">
+            <div className="text-lg font-bold mb-4">Rewards</div>
+            <div className="flex flex-col gap-4">
+              {cards[activeTab].map(({ title, bucket }) => {
+                const isRif = title.toLowerCase().includes('rif')
+                const symbol = isRif ? 'RIF' : 'rBTC'
+                const amount = bucket?.amount
+                  ? isRif
+                    ? formatNumberWithCommas(Big(bucket.amount).ceil())
+                    : formatNumberWithCommas(Big(bucket.amount).toFixedNoTrailing(8))
+                  : '0'
+                const fiatAmount = bucket?.fiatAmount
+                  ? `= USD ${formatCurrency(bucket.fiatAmount)}`
+                  : undefined
+
+                return (
+                  <BalanceInfo
+                    key={`rewards-${title}`}
+                    title={title}
+                    amount={amount}
+                    symbol={symbol}
+                    fiatAmount={fiatAmount}
+                    className="max-w-[214px]"
+                  />
+                )
+              })}
+            </div>
+          </div>
+        </div>
       </div>
-    </UnderlineTabs>
+    </SolidTabs>
   )
 }

@@ -14,10 +14,8 @@ const BASE_TABS_CLASSES =
   'relative px-4 py-[2px] rounded-[3px] transition-all duration-200 min-w-[80px] h-[28px] text-center flex items-center justify-center'
 
 /**
- * SolidTabs is a tab navigation component with solid background styling.
- * It utilizes Radix UI for accessibility and tab structure, with Framer Motion animations.
- * The active tab has a lighter background color and is contained within a dark container.
- * The tabs smoothly animate between states with fade and scale transitions.
+ * Accessible tab navigation component with solid styling and smooth transitions between states.
+ * Uses Radix UI for structure and Framer Motion for animations.
  */
 export function SolidTabs({ tabs, activeTab, onTabChange, children, className, ...props }: SolidTabsProps) {
   return (

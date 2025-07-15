@@ -13,11 +13,11 @@ import { useStRifHoldings } from '../hooks/useStRifHoldings'
 export const MetricsSection = () => {
   const { stRifBalance, stRifUsdBalance, totalFundingUsd, tvlUsd } = useStRifHoldings()
   return (
-    <div className="bg-bg-80 p-6">
+    <>
       <HeaderTitle variant="h3" caps>
         Metrics
       </HeaderTitle>
-      <div className="flex flex-row gap-6 mt-10">
+      <div className="flex flex-row gap-6">
         <BalanceInfo
           className="max-w-[214px] min-w-[180px]"
           title="Total stRIF"
@@ -52,6 +52,6 @@ export const MetricsSection = () => {
           symbol="USD"
         />
       </div>
-    </div>
+    </>
   )
 }
