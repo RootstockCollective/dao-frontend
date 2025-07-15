@@ -1,4 +1,6 @@
-import { ViewDetailsButton } from '@/app/communities/components/ViewDetailsButton'
+import { Paragraph } from '@/components/TypographyNew'
+import Link from 'next/link'
+import { ArrowRightIconKoto } from '@/components/Icons'
 
 interface CommunityItemButtonHandlerProps {
   nftAddress?: string
@@ -20,10 +22,11 @@ export const CommunityItemButtonHandler = ({ nftAddress, readMoreLink }: Communi
     target = '_blank'
   }
   return (
-    <ViewDetailsButton
-      href={href}
-      textForButton={readMoreLink ? 'Read more' : 'View details'}
-      target={target}
-    />
+    <Link href={href} target={target}>
+      <div className="flex flex-row gap-1 items-center">
+        <Paragraph>Learn more</Paragraph>
+        <ArrowRightIconKoto />
+      </div>
+    </Link>
   )
 }
