@@ -1,8 +1,8 @@
 import { Button } from '@/components/Button'
+import { CommonComponentProps } from '@/components/commonProps'
 
-interface HeroButtonProps {
+interface HeroButtonProps extends CommonComponentProps<HTMLButtonElement> {
   text: string
-  onClick: () => void
 }
 
 export const HeroButton = ({ text, onClick }: HeroButtonProps) => (

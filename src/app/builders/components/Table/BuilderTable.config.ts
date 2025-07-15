@@ -13,7 +13,7 @@ export const COLUMN_IDS = [
 export type ColumnId = (typeof COLUMN_IDS)[number]
 export const isColumnId = (id: string): id is ColumnId => COLUMN_IDS.includes(id as ColumnId)
 
-export const PAGE_SIZE = 3
+export const PAGE_SIZE = 20
 
 export const COLUMN_TRANSFORMS: Record<ColumnId, HtmlHTMLAttributes<HTMLTableCellElement>['className']> = {
   builder: 'flex-[1_1_12rem] min-w-[12rem]',

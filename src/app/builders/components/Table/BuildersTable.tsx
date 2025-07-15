@@ -1,7 +1,7 @@
 'use client'
 
 import { AllocationsContext } from '@/app/collective-rewards/allocations/context'
-import { Builder } from '@/app/collective-rewards/types'
+import { Builder, BuilderRewardsSummary } from '@/app/collective-rewards/types'
 import {
   isBuilderDeactivated,
   isBuilderKycRevoked,
@@ -28,6 +28,7 @@ import { ColumnId, DEFAULT_HEADERS, PAGE_SIZE } from './BuilderTable.config'
 import { Action } from './Cell/ActionCell'
 import { useGetBuilderRewardsSummary } from '../../hooks/useGetBuilderRewardsSummary'
 import { isActive } from './utils'
+import { Token } from '@/app/collective-rewards/rewards'
 
 // --- Filter builders by state ---
 const filterActive = (builder: Builder) => isActive(builder.stateFlags)
@@ -47,14 +48,30 @@ const filterMap: Record<BuilderFilterOptionId, (builder: Builder) => boolean> = 
 }
 
 // FIXME: this is a temporary solution to filter builders by state.
-const useFilteredBuilders = (filterOption: BuilderFilterOptionId) => {
-  const { data: buildersRewardsData, isLoading, error } = useGetBuilderRewardsSummary(getTokens())
-  const filteredBuilders = useMemo(
-    () => buildersRewardsData?.filter(filterMap[filterOption]),
-    [buildersRewardsData, filterOption],
-  )
+type PagedFilter = {
+  tokens: { [token: string]: Token }
+  filterOption: BuilderFilterOptionId
+  pageOptions: { start: number; end: number }
+}
+const usePagedFilteredBuildersRewards = ({
+  tokens,
+  filterOption,
+  pageOptions,
+}: PagedFilter): {
+  data: { pagedRewards: BuilderRewardsSummary[]; totalRewards: number }
+  isLoading: boolean
+  error: Error | null
+} => {
+  const { data: buildersRewardsData, isLoading, error } = useGetBuilderRewardsSummary(tokens)
+  const data = useMemo(() => {
+    const filtered = buildersRewardsData?.filter(filterMap[filterOption])
+    const totalRewards = filtered?.length ?? 0
+    const pagedRewards = filtered?.slice(pageOptions.start, pageOptions.end)
 
-  return { data: filteredBuilders, isLoading, error }
+    return { pagedRewards, totalRewards } as const
+  }, [buildersRewardsData, filterOption, pageOptions])
+
+  return { data, isLoading, error }
 }
 
 // --- Table component ---
@@ -114,13 +131,18 @@ export const Table = () => {
 // ---------------- Table ----------------
 
 export const BuildersTable = ({ filterOption }: { filterOption: BuilderFilterOptionId }) => {
-  const [pageEnd, setPageEnd] = useState(10)
+  const [pageEnd, setPageEnd] = useState(PAGE_SIZE)
 
-  const { address: userAddress } = useAccount()
+  const { address: userAddress, isConnected } = useAccount()
 
   const dispatch = useTableActionsContext<ColumnId>()
 
-  const { data: buildersRewardsData, isLoading, error } = useFilteredBuilders(filterOption)
+  const tokens = useMemo(() => getTokens(), [])
+  const {
+    data: { pagedRewards: buildersRewardsData, totalRewards },
+    isLoading,
+    error,
+  } = usePagedFilteredBuildersRewards({ tokens, filterOption, pageOptions: { start: 0, end: pageEnd } })
 
   const {
     data: allocations,
@@ -136,7 +158,7 @@ export const BuildersTable = ({ filterOption }: { filterOption: BuilderFilterOpt
       args: [userAddress as Address],
     },
     {
-      enabled: !!userAddress && !!buildersRewardsData.length,
+      enabled: isConnected && !!buildersRewardsData.length,
       placeholderData: [],
     },
   )
@@ -151,17 +173,16 @@ export const BuildersTable = ({ filterOption }: { filterOption: BuilderFilterOpt
       type: 'SET_COLUMN_VISIBILITY',
       payload: {
         columnId: 'backing',
-        hidden: !userAddress,
+        hidden: !isConnected,
       },
     })
-  }, [userAddress, dispatch])
+  }, [isConnected, dispatch])
 
   useEffect(() => {
     dispatch({
       type: 'SET_COLUMNS',
       payload: DEFAULT_HEADERS,
     })
-    setPageEnd(prev => prev + PAGE_SIZE)
   }, []) // eslint-disable-line react-hooks/exhaustive-deps
 
   useEffect(() => {
@@ -198,13 +219,13 @@ export const BuildersTable = ({ filterOption }: { filterOption: BuilderFilterOpt
     <>
       <Table />
       <TablePager
-        pageSize={pageEnd}
-        totalItems={buildersRewardsData?.length || 0}
-        onPageChange={() => {
-          setPageEnd(prev => prev + PAGE_SIZE)
+        pageSize={PAGE_SIZE}
+        totalItems={totalRewards}
+        onPageChange={({ end }) => {
+          setPageEnd(end)
         }}
-        mode="cyclic"
         pagedItemName="builders"
+        mode="expandable"
       />
     </>
   )
