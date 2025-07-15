@@ -14,6 +14,7 @@ import { AllocationsContextProvider } from '../collective-rewards/allocations/co
 import { BuilderContextProviderWithPrices } from '../collective-rewards/user'
 import { AlertProvider } from './AlertProvider'
 import { BoosterProvider } from './NFT/BoosterContext'
+import { ReviewProposalProvider } from './ReviewProposalContext'
 
 interface Props {
   children: ReactNode
@@ -73,7 +74,9 @@ export const ContextProviders = ({ children, initialState }: Props) => {
                   <BoosterProvider>
                     <AllocationsContextProvider>
                       <BalancesProvider>
-                        <TooltipProvider>{children}</TooltipProvider>
+                        <TooltipProvider>
+                          <ReviewProposalProvider>{children}</ReviewProposalProvider>
+                        </TooltipProvider>
                       </BalancesProvider>
                     </AllocationsContextProvider>
                   </BoosterProvider>
