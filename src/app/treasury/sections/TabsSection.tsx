@@ -53,7 +53,7 @@ export function TabsSection() {
                           : formatNumberWithCommas(Big(bucket.amount).toFixedNoTrailing(8))
                         : '0'
                       const fiatAmount = bucket?.fiatAmount
-                        ? `${formatCurrency(bucket.fiatAmount)}`
+                        ? `${formatNumberWithCommas(Big(bucket.fiatAmount).toFixed(2))} USD`
                         : undefined
                       return (
                         <div className="flex-1">
