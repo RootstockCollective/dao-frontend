@@ -1,0 +1,56 @@
+import * as Tabs from '@radix-ui/react-tabs'
+import { AnimatePresence, motion } from 'motion/react'
+import { cn } from '@/lib/utils'
+import { Label } from '../TypographyNew'
+
+interface SolidTabsProps extends Tabs.TabsProps {
+  tabs: string[]
+  activeTab: string
+  onTabChange: (value: string) => void
+  className?: string
+}
+
+const BASE_TABS_CLASSES =
+  'relative px-4 py-[2px] rounded-[3px] transition-all duration-200 min-w-[80px] h-[28px] text-center flex items-center justify-center'
+
+/**
+ * SolidTabs is a tab navigation component with solid background styling.
+ * It utilizes Radix UI for accessibility and tab structure, with Framer Motion animations.
+ * The active tab has a lighter background color and is contained within a dark container.
+ * The tabs smoothly animate between states with fade and scale transitions.
+ */
+export function SolidTabs({ tabs, activeTab, onTabChange, children, className, ...props }: SolidTabsProps) {
+  return (
+    <div className={className}>
+      <Tabs.Root value={activeTab} onValueChange={val => onTabChange(val)} {...props}>
+        <div className="inline-flex bg-bg-100 rounded-md p-1">
+          <Tabs.List className="flex flex-row">
+            {tabs.map(tab => (
+              <Tabs.Trigger
+                key={tab}
+                value={tab}
+                className={cn(
+                  BASE_TABS_CLASSES,
+                  activeTab === tab ? 'bg-bg-60' : 'text-text-60 hover:bg-bg-80',
+                )}
+              >
+                <Label variant="body-s">{tab}</Label>
+              </Tabs.Trigger>
+            ))}
+          </Tabs.List>
+        </div>
+      </Tabs.Root>
+      <AnimatePresence mode="wait">
+        <motion.div
+          key={activeTab}
+          initial={{ opacity: 0.05, scale: 0.99 }}
+          animate={{ opacity: 1, scale: 1 }}
+          exit={{ opacity: 0.05, scale: 0.99 }}
+          transition={{ duration: 0.3 }}
+        >
+          {children}
+        </motion.div>
+      </AnimatePresence>
+    </div>
+  )
+}
