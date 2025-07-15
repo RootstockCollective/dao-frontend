@@ -37,7 +37,18 @@ export function AddressLink({ address, className }: { address: Address; classNam
         <Span variant="body-s" className={cn(BASE_CLASSNAME, 'text-bg-0')}>
           {shortAddress(address, 6)}
         </Span>
-        <CopySvg color={copied ? '#22AD5C' : 'white'} />
+
+        <div className="relative">
+          {copied && (
+            <Span variant="body-s" className="absolute -top-6 left-1/2 -translate-x-1/2 text-success">
+              Copied!
+            </Span>
+          )}
+          <CopySvg
+            color={copied ? '#1bc47d' : 'white'}
+            className={cn('transition-all duration-200', copied && 'scale-110')}
+          />
+        </div>
       </button>
 
       <a
