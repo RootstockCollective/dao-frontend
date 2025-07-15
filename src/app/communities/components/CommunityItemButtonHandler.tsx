@@ -1,5 +1,6 @@
 import { Paragraph } from '@/components/TypographyNew'
 import Link from 'next/link'
+import { ArrowRightIconKoto } from '@/components/Icons'
 
 interface CommunityItemButtonHandlerProps {
   nftAddress?: string
@@ -22,7 +23,10 @@ export const CommunityItemButtonHandler = ({ nftAddress, readMoreLink }: Communi
   }
   return (
     <Link href={href} target={target}>
-      <Paragraph>Learn more {/* Icon here */}</Paragraph>
+      <div className="flex flex-row gap-1 items-center">
+        <Paragraph>Learn more</Paragraph>
+        <ArrowRightIconKoto />
+      </div>
     </Link>
   )
 }

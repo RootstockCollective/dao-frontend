@@ -45,6 +45,7 @@ export { TwitterXIcon } from './TwitterXIcon'
 export type { IconProps } from './types'
 export { UsersIcon } from './UsersIcon'
 export { WarningIcon } from './WarningIcon'
+export { ArrowRightIconKoto } from './ArrowRightIconKoto'
 export { XCircleIcon } from './XCircleIcon'
 
 export * from './v3design'

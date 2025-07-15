@@ -16,7 +16,12 @@ export const ImageDebris = ({ image }: Props) => {
   return (
     <>
       {debris.map(debri => (
-        <img key={debri.data} src={debri.data} className={debri.className} />
+        <img
+          key={`${debri.coordinates.x}${debri.coordinates.y}`}
+          src={debri.data}
+          className={debri.className}
+          alt="Image Debris"
+        />
       ))}
     </>
   )

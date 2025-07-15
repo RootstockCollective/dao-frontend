@@ -53,6 +53,7 @@ export const CommunityItem = ({
             alt={title}
             sizes="269px"
             fill
+            objectFit="cover"
           />
           {enableDebris && <ImageDebris image={image} />}
         </div>
