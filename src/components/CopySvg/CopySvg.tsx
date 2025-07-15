@@ -7,6 +7,7 @@ export const CopySvg = ({ color = 'white', className }: { color?: string; classN
       fill="none"
       xmlns="http://www.w3.org/2000/svg"
       className={className}
+      aria-hidden="true"
     >
       <g clipPath="url(#clip0_4759_1391)">
         <path

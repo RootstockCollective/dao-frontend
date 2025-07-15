@@ -57,7 +57,7 @@ export function TabsSection() {
                         : undefined
                       return (
                         <div className="flex-1" key={title}>
-                          <BalanceInfo key={title} amount={amount} symbol={symbol} fiatAmount={fiatAmount} />
+                          <BalanceInfo amount={amount} symbol={symbol} fiatAmount={fiatAmount} />
                         </div>
                       )
                     })}
