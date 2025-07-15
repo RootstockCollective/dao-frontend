@@ -1,0 +1,6 @@
+export * from './ArrowDownWFill'
+export * from './ArrowsUpDown'
+export * from './ArrowUpWFill'
+export * from './ChartIcon'
+export * from './CogIcon'
+export * from './HandshakeIcon'

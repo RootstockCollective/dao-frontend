@@ -117,7 +117,7 @@ export const TableCell: FC<
   if (forceShow || !columns.find(col => col.id === columnId)?.hidden) {
     return (
       <td
-        className={cn('flex self-stretch items-center', COLUMN_TRANSFORMS[columnId], className)}
+        className={cn('flex self-stretch items-center select-none', COLUMN_TRANSFORMS[columnId], className)}
         onClick={onClick}
       >
         {children}

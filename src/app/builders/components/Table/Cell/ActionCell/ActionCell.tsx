@@ -2,16 +2,14 @@
 import { Builder } from '@/app/collective-rewards/types'
 import { isBuilderActive } from '@/app/collective-rewards/utils'
 import { Button } from '@/components/ButtonNew/Button'
-import { AdjustBacking } from '@/components/Icons/AdjustBackingIcon'
-import { BackBuilder } from '@/components/Icons/BackBuilderIcon'
-import { RemoveBackingIcon } from '@/components/Icons/RemoveBackingIcon'
+import { ChartIcon, CogIcon, HandshakeIcon } from '@/components/Icons/v3design'
 import { cn } from '@/lib/utils'
 import { ReactNode } from 'react'
 
 export const ACTION_CONFIG = {
-  removeBacking: { text: 'Remove Backing', icon: <RemoveBackingIcon size={16} /> },
-  adjustBacking: { text: 'Adjust Backing', icon: <AdjustBacking size={16} /> },
-  backBuilder: { text: 'Back Builder', icon: <BackBuilder size={16} /> },
+  removeBacking: { text: 'Remove Backing', icon: <ChartIcon size={16} /> },
+  adjustBacking: { text: 'Adjust Backing', icon: <CogIcon size={16} /> },
+  backBuilder: { text: 'Back Builder', icon: <HandshakeIcon size={16} /> },
 } as const
 
 export type Action = keyof typeof ACTION_CONFIG

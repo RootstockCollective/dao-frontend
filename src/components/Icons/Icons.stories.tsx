@@ -23,7 +23,12 @@ const IconsShowcase = (args: IconProps) => (
       .map(([name, Icon]) => (
         <div key={name}>
           <h4>{name}</h4>
-          <Icon {...args} />
+          <Icon
+            {...{
+              ...args,
+              strokeWidth: typeof args.strokeWidth === 'string' ? Number(args.strokeWidth) : args.strokeWidth,
+            }}
+          />
         </div>
       ))}
   </div>

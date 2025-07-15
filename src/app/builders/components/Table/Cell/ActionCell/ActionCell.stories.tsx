@@ -38,6 +38,7 @@ type Story = StoryObj<typeof meta>
 export const RemoveBacking: Story = {
   args: {
     actionType: 'removeBacking',
+    className: 'bg-v3-text-100',
     onClick: () => alert('Remove backing action clicked'),
   },
 }
@@ -45,6 +46,7 @@ export const RemoveBacking: Story = {
 export const AdjustBacking: Story = {
   args: {
     actionType: 'adjustBacking',
+    className: 'bg-v3-text-100',
     onClick: () => alert('Adjust backing action clicked'),
   },
 }
@@ -52,6 +54,7 @@ export const AdjustBacking: Story = {
 export const BackBuilder: Story = {
   args: {
     actionType: 'backBuilder',
+    className: 'bg-v3-text-100',
     onClick: () => alert('Back builder action clicked'),
   },
 }

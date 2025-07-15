@@ -1,7 +1,7 @@
+import { ChevronDownIcon } from '@/components/Icons'
+import { cn } from '@/lib/utils'
 import * as SelectPrimitive from '@radix-ui/react-select'
 import { forwardRef } from 'react'
-import { cn } from '@/lib/utils'
-import { ChevronDownIcon } from '@/components/Icons'
 
 // Composable Dropdown components based on Radix Select primitives.
 // Usage example:
@@ -21,7 +21,7 @@ const DropdownTrigger = forwardRef<
   <SelectPrimitive.Trigger
     ref={ref}
     className={cn(
-      'group w-full px-4 py-2 font-rootstock-sans shadow focus:outline-none bg-v3-bg-accent-60 rounded flex flex-row items-center justify-between text-white gap-4 font-normal',
+      'group w-full px-4 py-2 font-rootstock-sans shadow focus:outline-none bg-v3-bg-accent-60 rounded flex flex-row items-center justify-between text-white gap-4 font-normal select-none',
       className,
     )}
     data-testid="dropdown-trigger"
@@ -30,8 +30,8 @@ const DropdownTrigger = forwardRef<
     {children}
     <SelectPrimitive.Icon asChild>
       <ChevronDownIcon
-        size={16}
-        className="flex-shrink-0 transition-transform duration-100 group-data-[state=open]:rotate-180"
+        size="1rem"
+        className="flex-shrink-0 transition-transform duration-100 group-data-[state=open]:rotate-180 p-[2px]"
         aria-hidden="true"
       />
     </SelectPrimitive.Icon>
@@ -82,4 +82,4 @@ DropdownItem.displayName = SelectPrimitive.Item.displayName
 
 const DropdownValue = SelectPrimitive.Value
 
-export { Dropdown, DropdownTrigger, DropdownContent, DropdownItem, DropdownValue }
+export { Dropdown, DropdownContent, DropdownItem, DropdownTrigger, DropdownValue }

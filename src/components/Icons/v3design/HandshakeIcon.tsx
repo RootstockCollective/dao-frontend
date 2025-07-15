@@ -1,8 +1,8 @@
-import { type IconProps } from './types'
-import { DEFAULT_ICON_COLOR } from './constants'
+import { DEFAULT_ICON_COLOR } from '../constants'
+import { type IconProps } from '../types'
 
-export function BackBuilder({
-  'aria-label': ariaLabel = 'Back Builder Icon',
+export function HandshakeIcon({
+  'aria-label': ariaLabel = 'Handshake Icon',
   size = 20,
   color = DEFAULT_ICON_COLOR,
   fill = color,

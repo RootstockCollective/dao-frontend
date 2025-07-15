@@ -1,30 +1,30 @@
 'use client'
 
-import { useAccount } from 'wagmi'
-import { useContext } from 'react'
-import { usePricesContext } from '@/shared/context/PricesContext'
+import { BackingBanner } from '@/app/backing/components/BackingBanner/BackingBanner'
+import { BackingInfoTitleControl } from '@/app/backing/components/BackingInfoTitle/BackingInfoTitleControl'
+import { BuildersSpotlight } from '@/app/backing/components/BuildersSpotlight/BuildersSpotlight'
+import { BackingInfoContainer } from '@/app/backing/components/Container/BackingInfoContainer/BackingInfoContainer'
+import { AnnualBackersIncentives } from '@/app/backing/components/Metrics/AnnualBackersIncentives'
+import { EstimatedRewardsMetric } from '@/app/backing/components/Metrics/EstimatedRewardsMetric'
 import {
   Allocations,
   AllocationsContext,
 } from '@/app/collective-rewards/allocations/context/AllocationsContext'
-import { RIF } from '@/lib/constants'
-import { AvailableBackingMetric, TotalBackingMetric } from './components'
-import { ActionMetricsContainer, ActionsContainer, MetricsContainer } from '@/components/containers'
-import { BuildersSpotlight } from '@/app/backing/components/BuildersSpotlight/BuildersSpotlight'
-import { BackingBanner } from '@/app/backing/components/BackingBanner/BackingBanner'
-import { BackingInfoContainer } from '@/app/backing/components/Container/BackingInfoContainer/BackingInfoContainer'
-import { BackingInfoTitleControl } from '@/app/backing/components/BackingInfoTitle/BackingInfoTitleControl'
-import { AnnualBackersIncentives } from '@/app/backing/components/Metrics/AnnualBackersIncentives'
-import { EstimatedRewardsMetric } from '@/app/backing/components/Metrics/EstimatedRewardsMetric'
-import { useGetBuildersRewards } from '@/app/collective-rewards/rewards/builders/hooks/useGetBuildersRewards'
-import { getTokens } from '@/lib/tokens'
-import { useHandleErrors } from '@/app/collective-rewards/utils'
-import { BuilderAllocationBar } from './components/BuilderAllocationBar'
-import { Header, Span } from '@/components/TypographyNew'
 import { formatSymbol, getFiatAmount } from '@/app/collective-rewards/rewards'
+import { useGetBuildersRewards } from '@/app/collective-rewards/rewards/builders/hooks/useGetBuildersRewards'
+import { useHandleErrors } from '@/app/collective-rewards/utils'
+import { ActionMetricsContainer, ActionsContainer, MetricsContainer } from '@/components/containers'
+import { Header, Span } from '@/components/TypographyNew'
+import { RIF } from '@/lib/constants'
+import { getTokens } from '@/lib/tokens'
 import { formatCurrency } from '@/lib/utils'
-import { AnnualBackingIncentives } from './components/Metrics/AnnualBackingIncentives'
+import { usePricesContext } from '@/shared/context/PricesContext'
+import { useContext } from 'react'
 import { Address } from 'viem'
+import { useAccount } from 'wagmi'
+import { AvailableBackingMetric, TotalBackingMetric } from './components'
+import { BuilderAllocationBar } from './components/BuilderAllocationBar'
+import { AnnualBackingIncentives } from './components/Metrics/AnnualBackingIncentives'
 
 const NAME = 'Backing'
 
@@ -133,7 +133,11 @@ export const BackingPage = () => {
       )}
 
       <ActionsContainer
-        title={isConnected ? 'Builders that you may want to back' : 'In the spotlight'}
+        title={
+          <Header variant="h3" caps>
+            {isConnected ? 'Builders that you may want to back' : 'In the spotlight'}
+          </Header>
+        }
         className="bg-v3-bg-accent-80"
       >
         <BuildersSpotlight rewardsData={rewardsData} />

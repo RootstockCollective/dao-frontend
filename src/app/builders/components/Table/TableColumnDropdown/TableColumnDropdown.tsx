@@ -71,7 +71,7 @@ export const TableColumnDropdown: FC<CommonComponentProps> = ({ className }) => 
         selected={selectedColumns}
         onChange={handleColumnChange}
         trigger={isOpen => (
-          <Button variant="secondary" className="p-0 border-none">
+          <Button variant="secondary" className="p-0 border-none bg-inherit">
             {isOpen ? <CloseIcon /> : <MoreIcon />}
           </Button>
         )}
