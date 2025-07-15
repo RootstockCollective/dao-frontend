@@ -3,7 +3,7 @@ import { Header, Label, Span } from '@/components/TypographyNew'
 import { FC, ReactNode } from 'react'
 
 interface Props {
-  title: string
+  title?: string
   titlePopover?: ReactNode
   amount: ReactNode
   symbol: string
@@ -24,9 +24,11 @@ export const BalanceInfo: FC<Props> = ({
   return (
     <div className={className} data-testid={dataTestId}>
       <div className="flex items-center flex-row gap-2">
-        <Label variant="tag" className="text-bg-0" data-testid="Title">
-          {title}
-        </Label>
+        {title && (
+          <Label variant="tag" className="text-bg-0" data-testid="Title">
+            {title}
+          </Label>
+        )}
         {titlePopover}
       </div>
 

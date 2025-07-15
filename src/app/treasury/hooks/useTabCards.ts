@@ -3,10 +3,14 @@ import { Address } from 'viem'
 import { useTreasuryContext } from '@/app/treasury/TreasuryContext'
 import { treasuryContracts } from '@/lib/contracts'
 
-interface Card {
+interface Asset {
   title: string
   bucket?: { amount: string; fiatAmount: string }
-  contract?: Address
+}
+
+interface Card {
+  assets: Asset[]
+  address: Address
 }
 
 /**
@@ -17,59 +21,80 @@ interface Card {
 export function useTabCards() {
   const { buckets } = useTreasuryContext()
 
-  return useMemo<Record<'Grants' | 'Growth' | 'General', Card[]>>(
+  return useMemo<Record<'Grants' | 'Growth' | 'General', { [key: string]: Card }>>(
     () => ({
-      Grants: [
-        {
-          title: 'RIF',
-          bucket: buckets.GRANTS?.RIF,
-          contract: treasuryContracts.GRANTS.address,
+      Grants: {
+        Grants: {
+          assets: [
+            {
+              title: 'RIF',
+              bucket: buckets.GRANTS?.RIF,
+            },
+            {
+              title: 'RBTC',
+              bucket: buckets.GRANTS?.RBTC,
+            },
+          ],
+          address: treasuryContracts.GRANTS.address,
         },
-        {
-          title: 'Active RIF',
-          bucket: buckets.GRANTS_ACTIVE?.RIF,
-          contract: treasuryContracts.GRANTS_ACTIVE.address,
+        Active: {
+          assets: [
+            {
+              title: 'RIF',
+              bucket: buckets.GRANTS_ACTIVE?.RIF,
+            },
+            {
+              title: 'RBTC',
+              bucket: buckets.GRANTS_ACTIVE?.RBTC,
+            },
+          ],
+          address: treasuryContracts.GRANTS_ACTIVE.address,
         },
-        {
-          title: 'RBTC',
-          bucket: buckets.GRANTS?.RBTC,
+      },
+      Growth: {
+        Total: {
+          assets: [
+            {
+              title: 'RIF',
+              bucket: buckets.GROWTH?.RIF,
+            },
+            {
+              title: 'RBTC',
+              bucket: buckets.GROWTH?.RBTC,
+            },
+          ],
+          address: treasuryContracts.GROWTH.address,
         },
-        {
-          title: 'Active RBTC',
-          bucket: buckets.GRANTS_ACTIVE?.RBTC,
+        Rewards: {
+          assets: [
+            {
+              title: 'RIF',
+              bucket: buckets.GROWTH_REWARDS?.RIF,
+            },
+            {
+              title: 'RBTC',
+              bucket: buckets.GROWTH_REWARDS?.RBTC,
+            },
+          ],
+          address: treasuryContracts.GROWTH_REWARDS.address,
         },
-      ],
-      Growth: [
-        {
-          title: 'RIF',
-          bucket: buckets.GROWTH?.RIF,
-          contract: treasuryContracts.GROWTH.address,
+      },
+      General: {
+        '': {
+          assets: [
+            {
+              title: 'RIF',
+              bucket: buckets.GENERAL?.RIF,
+            },
+
+            {
+              title: 'RBTC',
+              bucket: buckets.GENERAL?.RBTC,
+            },
+          ],
+          address: treasuryContracts.GENERAL.address,
         },
-        {
-          title: 'Rewards RIF',
-          bucket: buckets.GROWTH_REWARDS?.RIF,
-          contract: treasuryContracts.GROWTH_REWARDS.address,
-        },
-        {
-          title: 'RBTC',
-          bucket: buckets.GROWTH?.RBTC,
-        },
-        {
-          title: 'Rewards RBTC',
-          bucket: buckets.GROWTH_REWARDS?.RBTC,
-        },
-      ],
-      General: [
-        {
-          title: 'RIF',
-          bucket: buckets.GENERAL?.RIF,
-          contract: treasuryContracts.GENERAL.address,
-        },
-        {
-          title: 'RBTC',
-          bucket: buckets.GENERAL?.RBTC,
-        },
-      ],
+      },
     }),
     [buckets],
   )

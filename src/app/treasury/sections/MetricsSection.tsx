@@ -17,7 +17,7 @@ export const MetricsSection = () => {
       <HeaderTitle variant="h3" caps>
         Metrics
       </HeaderTitle>
-      <div className="flex flex-row gap-6">
+      <div className="flex flex-row flex-wrap gap-6">
         <BalanceInfo
           className="max-w-[214px] min-w-[180px]"
           title="Total stRIF"

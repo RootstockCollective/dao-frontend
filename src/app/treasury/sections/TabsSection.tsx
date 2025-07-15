@@ -1,10 +1,12 @@
-import { useState } from 'react'
-import { SolidTabs } from '@/components/Tabs'
+'use client'
 import { BalanceInfo } from '@/components/BalanceInfo'
-import { formatCurrency, formatNumberWithCommas } from '@/lib/utils'
+import { SolidTabs } from '@/components/Tabs'
+import { Label, Paragraph } from '@/components/TypographyNew'
 import Big from '@/lib/big'
+import { formatCurrency, formatNumberWithCommas } from '@/lib/utils'
+import { useState } from 'react'
+import { AddressLink } from '../components/AddressLink'
 import { useTabCards } from '../hooks/useTabCards'
-import { Paragraph } from '@/components/TypographyNew'
 
 /**
  * Displays a tabbed section with metrics for different treasury categories: Grant, Growth, General.
@@ -18,81 +20,42 @@ export function TabsSection() {
   const handleTabChange = (value: string) => {
     setActiveTab(value as keyof typeof cards)
   }
+  const tabs = Object.keys(cards).map(value => value as keyof typeof cards)
+  const activeTabData = cards[activeTab]
 
   return (
-    <SolidTabs
-      tabs={Object.keys(cards).map(value => value as keyof typeof cards)}
-      activeTab={activeTab}
-      onTabChange={handleTabChange}
-    >
+    <SolidTabs tabs={tabs} activeTab={activeTab} onTabChange={handleTabChange}>
       <div className="pt-4">
-        {/* Optional description text */}
-        <Paragraph variant="body-s" className="text-text-60 mb-10">
+        <Paragraph variant="body-s" className="text-text-60 text-center mb-10">
           Optional text explaining each tab... aliquam tristique, ligula et sodales commodo, erat ante
           molestie odio.
         </Paragraph>
 
-        {/* Two column layout: Total and Rewards */}
         <div className="flex flex-row gap-8">
-          {/* Total Column */}
-          <div className="flex-1">
-            <div className="text-lg font-bold mb-4">Total</div>
-            <div className="flex flex-col gap-4">
-              {cards[activeTab].map(({ title, bucket }) => {
-                const isRif = title.toLowerCase().includes('rif')
-                const symbol = isRif ? 'RIF' : 'rBTC'
-                const amount = bucket?.amount
-                  ? isRif
-                    ? formatNumberWithCommas(Big(bucket.amount).ceil())
-                    : formatNumberWithCommas(Big(bucket.amount).toFixedNoTrailing(8))
-                  : '0'
-                const fiatAmount = bucket?.fiatAmount
-                  ? `= USD ${formatCurrency(bucket.fiatAmount)}`
-                  : undefined
-
-                return (
-                  <BalanceInfo
-                    key={`total-${title}`}
-                    title={title}
-                    amount={amount}
-                    symbol={symbol}
-                    fiatAmount={fiatAmount}
-                    className="max-w-[214px]"
-                  />
-                )
-              })}
-            </div>
-          </div>
-
-          {/* Rewards Column */}
-          <div className="flex-1">
-            <div className="text-lg font-bold mb-4">Rewards</div>
-            <div className="flex flex-col gap-4">
-              {cards[activeTab].map(({ title, bucket }) => {
-                const isRif = title.toLowerCase().includes('rif')
-                const symbol = isRif ? 'RIF' : 'rBTC'
-                const amount = bucket?.amount
-                  ? isRif
-                    ? formatNumberWithCommas(Big(bucket.amount).ceil())
-                    : formatNumberWithCommas(Big(bucket.amount).toFixedNoTrailing(8))
-                  : '0'
-                const fiatAmount = bucket?.fiatAmount
-                  ? `= USD ${formatCurrency(bucket.fiatAmount)}`
-                  : undefined
-
-                return (
-                  <BalanceInfo
-                    key={`rewards-${title}`}
-                    title={title}
-                    amount={amount}
-                    symbol={symbol}
-                    fiatAmount={fiatAmount}
-                    className="max-w-[214px]"
-                  />
-                )
-              })}
-            </div>
-          </div>
+          {Object.keys(activeTabData).map(key => {
+            const { assets, address } = activeTabData[key]
+            return (
+              <div key={key} className="flex-1">
+                <Label className="text-bg-0">{key}</Label>
+                <div className="flex flex-col gap-4 mt-4">
+                  {assets.map(({ title, bucket }) => {
+                    const isRif = title.toLowerCase().includes('rif')
+                    const symbol = isRif ? 'RIF' : 'rBTC'
+                    const amount = bucket?.amount
+                      ? isRif
+                        ? formatNumberWithCommas(Big(bucket.amount).ceil())
+                        : formatNumberWithCommas(Big(bucket.amount).toFixedNoTrailing(8))
+                      : '0'
+                    const fiatAmount = bucket?.fiatAmount ? `${formatCurrency(bucket.fiatAmount)}` : undefined
+                    return <BalanceInfo key={title} amount={amount} symbol={symbol} fiatAmount={fiatAmount} />
+                  })}
+                  <div className="flex flex-row gap-2 mt-6">
+                    <AddressLink address={address} />
+                  </div>
+                </div>
+              </div>
+            )
+          })}
         </div>
       </div>
     </SolidTabs>
