@@ -5,6 +5,7 @@ import { ClassValue, clsx } from 'clsx'
 import { twMerge } from 'tailwind-merge'
 import { Address } from 'viem'
 import { CHAIN_ID, EXPLORER_URL, RIF_WALLET_SERVICES_URL } from '../constants'
+import { Duration } from 'luxon'
 
 /**
  * Merges Tailwind and clsx classes in order to avoid classes conflicts.
@@ -357,4 +358,19 @@ export const handleAmountInput = (value: string, maxDecimals = 18): string => {
 
   // Remove leading zeros while preserving decimal numbers
   return value.replace(/^0+(?=\d)/, '')
+}
+
+/**
+ * Formats a duration object to a human-readable label
+ * @param duration - The duration object to format
+ * @returns The formatted duration label
+ * @example durationToLabel(Duration.fromObject({ days: 1, hours: 2, minutes: 30 })) // '1d 2h 30m'
+ */
+export const durationToLabel = (duration: Duration | undefined): string | undefined => {
+  if (!duration) {
+    return undefined
+  }
+
+  const converted = duration.shiftTo('days', 'hours', 'minutes')
+  return `${converted.days}d ${converted.hours}h ${converted.minutes}m`
 }
