@@ -8,7 +8,7 @@ import { zodResolver } from '@hookform/resolvers/zod'
 import { useLayoutContext } from '@/components/MainContainer/LayoutProvider'
 import { Subfooter } from '../../components/Subfooter'
 import { BaseProposalFields } from '../components/BaseProposalFields'
-import { useReviewProposal } from '../../context/ReviewProposalContext'
+import { useReviewProposal } from '@/app/providers'
 import { ProposalCategory } from '@/shared/types'
 import { TextInput } from '@/components/FormFields'
 import { showFormErrors } from '../components/showFormErrors'
@@ -40,13 +40,14 @@ export default function DeactivationProposalForm() {
         setRecord({ form: data, category: ProposalCategory.Deactivation })
         router.push('/proposals/new/review/deactivation')
       }, showFormErrors)(),
+    // eslint-disable-next-line
     [handleSubmit, router],
   )
 
   useEffect(() => {
     setSubfooter(<Subfooter submitForm={onSubmit} buttonText="Review proposal" />)
     return () => setSubfooter(null)
-  }, [])
+  }, [onSubmit, setSubfooter])
 
   return (
     <div>

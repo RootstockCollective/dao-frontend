@@ -1,7 +1,9 @@
 'use client'
 
 import { PropsWithChildren, createContext, useContext, useMemo, useState } from 'react'
-import { ProposalRecord } from '../../shared/types'
+import { ProposalRecord } from '../proposals/shared/types'
+import useLocalStorageState from 'use-local-storage-state'
+
 interface ReviewProposalState {
   record: ProposalRecord | null
   setRecord: (val: ProposalRecord | null) => void
@@ -10,12 +12,15 @@ interface ReviewProposalState {
 const ReviewProposalContext = createContext<ReviewProposalState | null>(null)
 
 export function ReviewProposalProvider({ children }: PropsWithChildren) {
-  const [record, setRecord] = useState<ProposalRecord | null>(null)
+  const [record, setRecord] = useLocalStorageState<ProposalRecord | null>('review-proposal', {
+    defaultValue: null,
+  })
   const value = useMemo<ReviewProposalState>(
     () => ({
       record,
       setRecord,
     }),
+    // eslint-disable-next-line
     [record],
   )
   return <ReviewProposalContext.Provider value={value}>{children}</ReviewProposalContext.Provider>

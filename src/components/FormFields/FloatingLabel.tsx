@@ -18,7 +18,9 @@ export function FloatingLabel({ label, isFloating, children, className, ...label
       {children}
       <motion.label
         htmlFor={labelProps.htmlFor}
-        className={cn('absolute left-4 top-5 pointer-events-none origin-left font-rootstock-sans text-bg-0')}
+        className={cn(
+          'absolute left-4 top-5 pointer-events-none origin-left font-rootstock-sans text-bg-0 whitespace-nowrap',
+        )}
         initial={false}
         animate={{
           y: isFloating ? -12 : 0,

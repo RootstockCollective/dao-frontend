@@ -9,7 +9,7 @@ import { Subfooter } from '../../components/Subfooter'
 import { TextInput, NumberInput } from '@/components/FormFields'
 import { BaseProposalFields, TokenRadioGroup } from '../components'
 import { zodResolver } from '@hookform/resolvers/zod'
-import { useReviewProposal } from '../../context/ReviewProposalContext'
+import { useReviewProposal } from '@/app/providers'
 import { ProposalCategory } from '@/shared/types'
 import { showFormErrors } from '../components/showFormErrors'
 import { GrantProposal, GrantProposalSchema } from '../schemas/GrantProposalSchema'
@@ -46,6 +46,7 @@ export default function GrantsProposalForm() {
         // Error callback
         showFormErrors,
       )(),
+    // eslint-disable-next-line
     [handleSubmit, router],
   )
 
