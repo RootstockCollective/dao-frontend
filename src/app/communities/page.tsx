@@ -38,7 +38,7 @@ export default function Communities() {
               <CommunityItem {...earlyAdoptersCommunity} />
               <div className="col-span-2">
                 {/* First */}
-                <CommunityItem {...ogFounders} variant="landscape" />
+                <CommunityItem {...ogFounders} variant="landscape" enableDebris />
                 {/* Other 2 next to each other */}
                 <div className="grid grid-cols-2 gap-2 mt-2">
                   <CommunityItem {...ogFoundersEcosystemPartners} />
