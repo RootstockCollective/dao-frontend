@@ -131,8 +131,13 @@ interface PixelConfigs {
 
 export const PIXEL_CONFIGS: PixelConfigs = {
   topRightDiagonal: [
-    { coords: (w, h) => ({ x: w - 10, y: 0 }), className: 'absolute top-0 -right-[10px]', size: 10 },
-    { coords: (w, h) => ({ x: w - 20, y: 10 }), className: 'absolute top-[10px] -right-[20px]', size: 10 },
+    { coords: (w, h) => ({ x: w - 10, y: 0 }), className: 'absolute top-[10px] -right-[10px]', size: 10 },
+    { coords: (w, h) => ({ x: w - 20, y: 10 }), className: 'absolute top-[20px] -right-[20px]', size: 10 },
     { coords: (w, h) => ({ x: w - 30, y: 0 }), className: 'absolute top-0 -right-[30px]', size: 10 },
+    {
+      coords: (w, h) => ({ x: w - 20, y: 10 }),
+      className: 'absolute top-[10px] right-[0px] opacity-50',
+      size: 10,
+    },
   ],
 }
