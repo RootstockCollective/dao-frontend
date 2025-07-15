@@ -18,6 +18,7 @@ export interface CommunityItem {
   readMoreLink?: string
   discussionLink?: string
   campaignDetails?: FC<{ activation?: ReactNode }>
+  specialPower?: string
 }
 
 interface RowProps {
@@ -62,6 +63,7 @@ export const earlyAdoptersCommunity: CommunityItem = {
       </div>
     </>
   ),
+  specialPower: 'Voting Booster',
 }
 
 export const ogFounders: CommunityItem = {
@@ -88,6 +90,7 @@ export const ogFounders: CommunityItem = {
       </div>
     </>
   ),
+  specialPower: 'Voting Booster',
 }
 
 export const ogFoundersEcosystemPartners: CommunityItem = {
@@ -114,6 +117,7 @@ export const ogFoundersEcosystemPartners: CommunityItem = {
       </div>
     </>
   ),
+  specialPower: 'Voting Booster',
 }
 
 export const ogFoundersExternalContributors: CommunityItem = {
@@ -140,6 +144,7 @@ export const ogFoundersExternalContributors: CommunityItem = {
       </div>
     </>
   ),
+  specialPower: 'Delegation Kickstarter OR Voting Booster',
 }
 
 export const vanguardCommunity: CommunityItem = {
@@ -167,6 +172,7 @@ export const vanguardCommunity: CommunityItem = {
       </div>
     </>
   ),
+  specialPower: 'Voting Booster',
   additionalChecks: [
     {
       name: 'hasVoted',
@@ -215,6 +221,7 @@ export const betaBuilders: CommunityItem = {
       </div>
     </>
   ),
+  specialPower: 'Voting Booster',
   discussionLink: 'https://discord.com/channels/842021106956238848/1284160805671272458',
 }
 
