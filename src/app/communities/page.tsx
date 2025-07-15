@@ -39,13 +39,13 @@ export default function Communities() {
         <SectionContainer title="BADGES">
           <div>
             {/* Communities */}
-            <div className="grid grid-cols-4 gap-2">
+            <div className="grid lg:grid-cols-4 gap-2 md:grid-cols-1">
               <CommunityItem {...earlyAdoptersCommunity} />
               <div className="col-span-2">
                 {/* First */}
                 <CommunityItem {...ogFounders} variant="landscape" enableDebris />
                 {/* Other 2 next to each other */}
-                <div className="grid grid-cols-2 gap-2 mt-2">
+                <div className="grid lg:grid-cols-2 md:grid-cols-1 gap-2 mt-2">
                   <CommunityItem {...ogFoundersEcosystemPartners} />
                   <CommunityItem {...ogFoundersExternalContributors} />
                 </div>
@@ -57,7 +57,7 @@ export default function Communities() {
         <SectionContainer title="CLUBS">
           <div>
             {/* Communities */}
-            <div className="grid grid-cols-2 gap-2">
+            <div className="grid lg:grid-cols-2 md:grid-cols-1 gap-2">
               <CommunityItem {...betaBuilders} variant="landscape" enableDebris />
               <CommunityItem {...rootstockHacktivator} variant="landscape" enableDebris />
             </div>

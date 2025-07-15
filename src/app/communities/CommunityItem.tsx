@@ -45,7 +45,7 @@ export const CommunityItem = ({
         data-testid={`${title}Card`}
       >
         {/* image */}
-        <div className={cn('relative w-full h-auto', variant === 'portrait' ? 'aspect-square' : 'flex-1 aspect-[3/4]')}>
+        <div className={cn('relative w-full h-auto', variant === 'portrait' ? 'aspect-square' : 'flex-1 aspect-[3/4] max-w-1/2')}>
           <Image
             crossOrigin={isExternalImage ? 'anonymous' : undefined}
             unoptimized={isExternalImage}
