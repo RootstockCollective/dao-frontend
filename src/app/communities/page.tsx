@@ -53,7 +53,7 @@ export default function Communities() {
           <div>
             {/* Communities */}
             <div className="grid grid-cols-2 gap-2">
-              <CommunityItem {...betaBuilders} variant="landscape" />
+              <CommunityItem {...betaBuilders} variant="landscape" enableDebris />
               <CommunityItem {...rootstockHacktivator} variant="landscape" enableDebris />
             </div>
           </div>
