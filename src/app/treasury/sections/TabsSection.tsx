@@ -3,10 +3,10 @@ import { BalanceInfo } from '@/components/BalanceInfo'
 import { SolidTabs } from '@/components/Tabs'
 import { Label, Paragraph } from '@/components/TypographyNew'
 import Big from '@/lib/big'
-import { cn, formatCurrency, formatNumberWithCommas } from '@/lib/utils'
+import { cn, formatNumberWithCommas } from '@/lib/utils'
 import { useState } from 'react'
 import { AddressLink } from '../components/AddressLink'
-import { useTabCards } from '../hooks/useTabCards'
+import { useTreasuryTabs } from '../hooks/useTreasuryTabs'
 
 /**
  * Displays a tabbed section with metrics for different treasury categories: Grant, Growth, General.
@@ -14,37 +14,37 @@ import { useTabCards } from '../hooks/useTabCards'
  * as well as their equivalent fiat value in USD.
  */
 export function TabsSection() {
-  const cards = useTabCards()
-  const [activeTab, setActiveTab] = useState<keyof typeof cards>('Grants')
+  const tabs = useTreasuryTabs()
+  const [activeTab, setActiveTab] = useState<keyof typeof tabs>('Grants')
 
   const handleTabChange = (value: string) => {
-    setActiveTab(value as keyof typeof cards)
+    setActiveTab(value as keyof typeof tabs)
   }
-  const tabs = Object.keys(cards).map(value => value as keyof typeof cards)
-  const activeTabData = cards[activeTab]
+  const tabNames = Object.keys(tabs).map(value => value as keyof typeof tabs)
+  const activeTabData = tabs[activeTab]
+  const { description, categories } = activeTabData
 
   return (
-    <SolidTabs tabs={tabs} activeTab={activeTab} onTabChange={handleTabChange}>
+    <SolidTabs tabs={tabNames} activeTab={activeTab} onTabChange={handleTabChange}>
       <div className="pt-4">
         <Paragraph variant="body" className="text-text-100 text-center mb-10">
-          Optional text explaining each tab... aliquam tristique, ligula et sodales commodo, erat ante
-          molestie odio.
+          {description}
         </Paragraph>
 
         <div className="flex flex-row gap-8">
-          {Object.keys(activeTabData).map(key => {
-            const { assets, address } = activeTabData[key]
-            const onlyOneSection = Object.keys(activeTabData).length === 1
+          {Object.keys(categories).map(categoryName => {
+            const { buckets, address } = categories[categoryName]
+            const onlyOneCategory = Object.keys(categories).length === 1
             return (
-              <div key={key} className="flex-1">
-                <Label className="text-bg-0">{key}</Label>
+              <div key={categoryName} className="flex-1">
+                <Label className="text-bg-0">{categoryName}</Label>
                 <div className="flex flex-col gap-6 mt-4">
                   <div
                     className={cn('flex flex-col gap-4', {
-                      'flex-row gap-6': onlyOneSection,
+                      'flex-row gap-6': onlyOneCategory,
                     })}
                   >
-                    {assets.map(({ title, bucket }) => {
+                    {buckets.map(({ title, bucket }) => {
                       const isRif = title.toLowerCase().includes('rif')
                       const symbol = isRif ? 'RIF' : 'rBTC'
                       const amount = bucket?.amount
@@ -62,7 +62,7 @@ export function TabsSection() {
                       )
                     })}
                   </div>
-                  <AddressLink address={address} className={cn({ 'justify-center': onlyOneSection })} />
+                  <AddressLink address={address} className={cn({ 'justify-center': onlyOneCategory })} />
                 </div>
               </div>
             )
