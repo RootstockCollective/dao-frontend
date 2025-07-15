@@ -3,7 +3,7 @@ import { useState } from 'react'
 import { SolidTabs } from './SolidTabs'
 
 const meta = {
-  title: 'Components/Tabs/SolidTabs',
+  title: 'KOTO/DAO/SolidTabs',
   component: SolidTabs,
 } satisfies Meta<typeof SolidTabs>
 
