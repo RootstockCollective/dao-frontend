@@ -41,25 +41,24 @@ export const CommunityItem = ({
   return (
     <BoostedBox nftAddress={nftAddress}>
       <div
-        className={cn('h-full bg-bg-60 flex community-item-gradient-hover p-[16px] gap-[8px]', variant === 'portrait' ? 'flex-col' : 'flex-row')}
+        className={cn('h-full bg-bg-60 flex community-item-gradient-hover p-[16px] gap-[8px]', variant === 'portrait' ? 'flex-col' : 'flex-row gap-4')}
         data-testid={`${title}Card`}
       >
         {/* image */}
-        <div className="relative w-full flex-1">
+        <div className={cn('relative w-full h-auto', variant === 'portrait' ? 'aspect-square' : 'flex-1 aspect-[3/4]')}>
           <Image
             crossOrigin={isExternalImage ? 'anonymous' : undefined}
             unoptimized={isExternalImage}
             src={image}
             alt={title}
-            sizes="269px"
             fill
-            objectFit="cover"
+            objectFit={variant === 'portrait' ? 'contain' : 'cover'}
           />
           {enableDebris && <ImageDebris image={image} />}
         </div>
-        <div className={cn('flex gap-[20px] flex-col flex-1')}>
+        <div className="flex gap-[20px] flex-col flex-1">
           {/* Title */}
-          <div className={cn(variant === 'landscape' ? 'mt-[32px]' : '')}>
+          <div className={cn(variant === 'landscape' ? 'mt-[32px]' : 'mt-[16px]')}>
             <BoostedLabel nftAddress={nftAddress}>
               <Header variant="h3" className="uppercase break-words pt-[5px]">
                 {title}
