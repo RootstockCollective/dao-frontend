@@ -47,5 +47,6 @@ export { UsersIcon } from './UsersIcon'
 export { WarningIcon } from './WarningIcon'
 export { ArrowRightIconKoto } from './ArrowRightIconKoto'
 export { XCircleIcon } from './XCircleIcon'
+export { RocketIconKoto } from './RocketIconKoto'
 
 export * from './v3design'
