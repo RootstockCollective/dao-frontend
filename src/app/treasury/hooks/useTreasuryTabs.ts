@@ -1,22 +1,7 @@
 import { useMemo } from 'react'
-import { Address } from 'viem'
-import { useTreasuryContext } from '@/app/treasury/TreasuryContext'
+import { useTreasuryContext } from '@/app/treasury/contexts/TreasuryContext'
 import { treasuryContracts } from '@/lib/contracts'
-
-interface TreasuryAsset {
-  title: string
-  bucket: { amount: string; fiatAmount: string } | undefined
-}
-
-interface TreasurySectionData {
-  buckets: TreasuryAsset[]
-  address: Address
-}
-
-interface TreasurySection {
-  description: string
-  categories: { [key: string]: TreasurySectionData }
-}
+import { TreasurySection, TreasuryTabKey } from '../types'
 
 /**
  * useTreasuryTabs is a hook that organizes treasury bucket data into categorized tab structures.
@@ -26,7 +11,7 @@ interface TreasurySection {
 export function useTreasuryTabs() {
   const { buckets } = useTreasuryContext()
 
-  return useMemo<Record<'Grants' | 'Growth' | 'General', TreasurySection>>(
+  return useMemo<Record<TreasuryTabKey, TreasurySection>>(
     () => ({
       Grants: {
         description:
@@ -102,7 +87,6 @@ export function useTreasuryTabs() {
                 title: 'RIF',
                 bucket: buckets.GENERAL?.RIF,
               },
-
               {
                 title: 'RBTC',
                 bucket: buckets.GENERAL?.RBTC,

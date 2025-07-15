@@ -2,11 +2,12 @@
 import { BalanceInfo } from '@/components/BalanceInfo'
 import { SolidTabs } from '@/components/Tabs'
 import { Label, Paragraph } from '@/components/TypographyNew'
-import Big from '@/lib/big'
-import { cn, formatNumberWithCommas } from '@/lib/utils'
-import { useState } from 'react'
+import { cn } from '@/lib/utils'
 import { AddressLink } from '../components/AddressLink'
 import { useTreasuryTabs } from '../hooks/useTreasuryTabs'
+import { TreasuryTabKey } from '../types'
+import { formatAssetData } from '../utils'
+import { useCallback, useState } from 'react'
 
 /**
  * Displays a tabbed section with metrics for different treasury categories: Grant, Growth, General.
@@ -15,14 +16,18 @@ import { useTreasuryTabs } from '../hooks/useTreasuryTabs'
  */
 export function TabsSection() {
   const tabs = useTreasuryTabs()
-  const [activeTab, setActiveTab] = useState<keyof typeof tabs>('Grants')
+  const [activeTab, setActiveTab] = useState<TreasuryTabKey>('Grants')
 
-  const handleTabChange = (value: string) => {
-    setActiveTab(value as keyof typeof tabs)
-  }
-  const tabNames = Object.keys(tabs).map(value => value as keyof typeof tabs)
+  const tabNames = Object.keys(tabs).map(value => value as TreasuryTabKey)
   const activeTabData = tabs[activeTab]
   const { description, categories } = activeTabData
+
+  const handleTabChange = useCallback(
+    (value: string) => {
+      setActiveTab(value as TreasuryTabKey)
+    },
+    [setActiveTab],
+  )
 
   return (
     <SolidTabs tabs={tabNames} activeTab={activeTab} onTabChange={handleTabChange}>
@@ -45,16 +50,7 @@ export function TabsSection() {
                     })}
                   >
                     {buckets.map(({ title, bucket }) => {
-                      const isRif = title.toLowerCase().includes('rif')
-                      const symbol = isRif ? 'RIF' : 'rBTC'
-                      const amount = bucket?.amount
-                        ? isRif
-                          ? formatNumberWithCommas(Big(bucket.amount).ceil())
-                          : formatNumberWithCommas(Big(bucket.amount).toFixedNoTrailing(8))
-                        : '0'
-                      const fiatAmount = bucket?.fiatAmount
-                        ? `${formatNumberWithCommas(Big(bucket.fiatAmount).toFixed(2))} USD`
-                        : undefined
+                      const { amount, symbol, fiatAmount } = formatAssetData(title, bucket)
                       return (
                         <div className="flex-1" key={title}>
                           <BalanceInfo amount={amount} symbol={symbol} fiatAmount={fiatAmount} />

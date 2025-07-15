@@ -5,13 +5,14 @@ import { useReadContract } from 'wagmi'
 import { StRIFTokenAbi } from '@/lib/abis/StRIFTokenAbi'
 import { tokenContracts } from '@/lib/contracts'
 import { usePricesContext } from '@/shared/context/PricesContext'
-import { useTreasuryContext } from '@/app/treasury/TreasuryContext'
+import { useTreasuryContext } from '@/app/treasury/contexts/TreasuryContext'
+import { StRifHoldings } from '../types'
 
 /**
  * Fetches and calculates the stRIF token balance, its USD value,
  * total funding in USD, and the total value locked (TVL).
  */
-export function useStRifHoldings() {
+export function useStRifHoldings(): StRifHoldings {
   const { buckets } = useTreasuryContext()
   const { prices } = usePricesContext()
   const { data } = useReadContract({
