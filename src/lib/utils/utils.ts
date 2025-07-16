@@ -3,9 +3,11 @@ import axios from 'axios'
 import { BigSource } from 'big.js'
 import { ClassValue, clsx } from 'clsx'
 import { twMerge } from 'tailwind-merge'
-import { Address, formatEther } from 'viem'
+import { Address, formatEther, Hash } from 'viem'
 import { CHAIN_ID, EXPLORER_URL, RIF_WALLET_SERVICES_URL } from '../constants'
 import { Duration } from 'luxon'
+import { waitForTransactionReceipt, getBlock } from '@wagmi/core'
+import { config } from '@/config'
 
 /**
  * Merges Tailwind and clsx classes in order to avoid classes conflicts.
@@ -416,3 +418,16 @@ export const formatAssetData = (
 }
 export const formatAmount = (amount: string) =>
   formatNumberWithCommas(formatEther(BigInt(amount)).split('.')[0])
+export async function getTxReceipt(txHash: Hash) {
+  const receipt = await waitForTransactionReceipt(config, {
+    hash: txHash,
+  })
+  const block = await getBlock(config, {
+    blockNumber: receipt.blockNumber,
+  })
+  const timestamp = Number(block.timestamp) * 1000
+  return {
+    ...receipt,
+    timestamp,
+  }
+}

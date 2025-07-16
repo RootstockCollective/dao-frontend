@@ -1,29 +1,63 @@
 'use client'
 
-import { ReactNode, useCallback, useEffect } from 'react'
+import { useCallback, useEffect } from 'react'
 import { useReviewProposal } from '@/app/providers'
 import { useLayoutContext } from '@/components/MainContainer/LayoutProvider'
 import { Subfooter } from '../../components/Subfooter'
 import { ProposalCategory } from '@/shared/types'
 import { Card } from '../components/Card'
-import { cn, formatNumberWithCommas, shortAddress } from '@/lib/utils'
+import { formatNumberWithCommas, shortAddress } from '@/lib/utils'
 import { useAccount } from 'wagmi'
 import moment from 'moment'
 import { TokenIcon } from '@/app/proposals/icons/TokenIcon'
 import PreviewLabel from '../components/PreviewLabel'
+import { useCreateTreasuryTransferProposal } from '@/app/proposals/hooks/useCreateTreasuryTransferProposal'
+import { useRouter } from 'next/navigation'
+import { tokenContracts } from '@/lib/contracts'
+import { showToast } from '@/shared/notification'
+import { isUserRejectedTxError } from '@/components/ErrorPage'
+import { showCreateProposalToast } from '../components/showCreateProposalToast'
+import { getTxReceipt } from '@/lib/utils'
 
 export default function GrantsProposalReview() {
+  const router = useRouter()
   const { address } = useAccount()
   const { record, setRecord } = useReviewProposal()
+  const { onCreateTreasuryTransferProposal } = useCreateTreasuryTransferProposal()
 
-  const onSubmit = useCallback(() => {
+  const onSubmit = useCallback(async () => {
     try {
+      if (!record?.form || record?.category !== ProposalCategory.Grants) return
+      const { description, discourseLink, proposalName, targetAddress, token, transferAmount } = record.form
+      const tokenAddress = tokenContracts[token.toUpperCase() as keyof typeof tokenContracts]
+      if (!tokenAddress) throw new Error('GrantsProposalReview: Unknown contract address')
+      const { txHash, txId } = await onCreateTreasuryTransferProposal(
+        targetAddress,
+        transferAmount,
+        description,
+        tokenAddress,
+      )
+      const { timestamp } = await getTxReceipt(txHash)
+      // here the user will see Metamask window
+      router.push(`/proposals/${txId ?? ''}`)
       setRecord(null)
+      showCreateProposalToast({
+        proposalName,
+        timestamp,
+        txHash,
+      })
     } catch (error) {
-      //
+      if (isUserRejectedTxError(error)) return
+      showToast({
+        title: 'Proposal error',
+        severity: 'error',
+        dismissible: true,
+        closeButton: true,
+        content: error instanceof Error ? error.message : 'Error publishing proposal',
+      })
     }
     // eslint-disable-next-line
-  }, [])
+  }, [record, router])
 
   // inject sticky drawer with submit button to the footer layout
   const { setSubfooter } = useLayoutContext()
@@ -45,7 +79,7 @@ export default function GrantsProposalReview() {
         <PreviewLabel />
       </div>
 
-      <div className="w-full flex flex-col md:flex-row gap-2">
+      <div className="w-full flex flex-col lg:flex-row gap-2">
         <div className="grow-3 max-w-[760px] overflow-hidden">
           <div className="p-6 w-full bg-bg-80 rounded-sm flex flex-col">
             <div className="mb-14 grid grid-cols-2 gap-y-6 gap-x-2">
@@ -76,7 +110,7 @@ export default function GrantsProposalReview() {
             </div>
           </div>
         </div>
-        <div className="grow min-w-[250px] p-6 bg-bg-80 rounded-sm overflow-hidden md:self-start">
+        <div className="grow min-w-[250px] max-w-[760px] p-6 bg-bg-80 rounded-sm overflow-hidden lg:self-start">
           <h3 className="mb-4 text-xl font-kk-topo text-text-100 uppercase leading-relaxed tracking-tight">
             Actions
           </h3>

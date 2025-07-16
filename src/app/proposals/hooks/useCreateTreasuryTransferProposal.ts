@@ -6,6 +6,8 @@ import { GovernorAbi } from '@/lib/abis/Governor'
 import { GovernorAddress, tokenContracts, TreasuryAddress } from '@/lib/contracts'
 import { Address, encodeFunctionData, parseEther, zeroAddress } from 'viem'
 import { useWriteContract } from 'wagmi'
+import { readContract } from '@wagmi/core'
+import { config } from '@/config'
 
 const DEFAULT_DAO_CONFIG = {
   abi: GovernorAbi,
@@ -31,12 +33,19 @@ export const useCreateTreasuryTransferProposal = () => {
     } else {
       calldata = encodeTreasuryERC20Transfer(address, amount)
     }
-    const { proposal } = createProposal([TreasuryAddress], [0n], [calldata], description)
-    return propose({
-      ...DEFAULT_DAO_CONFIG,
-      functionName: 'propose',
-      args: proposal,
-    })
+    const { proposal, proposalToRunHash } = createProposal([TreasuryAddress], [0n], [calldata], description)
+    return {
+      txHash: await propose({
+        ...DEFAULT_DAO_CONFIG,
+        functionName: 'propose',
+        args: proposal,
+      }),
+      txId: await readContract(config, {
+        ...DEFAULT_DAO_CONFIG,
+        functionName: 'hashProposal',
+        args: proposalToRunHash,
+      }),
+    }
   }
   return { onCreateTreasuryTransferProposal, isPublishing }
 }
