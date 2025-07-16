@@ -21,7 +21,7 @@ function getCooldownEndTime(rewardPercentageCooldown: bigint | undefined) {
 
 const UpdateBackerRewardModal = ({ onClose, className }: UpdateBackerRewardModalProps) => {
   const {
-    current: { data: currentRewardData, isLoading: isCurrentRewardsLoading, refetch },
+    current: { data: currentRewardData, isLoading: isCurrentRewardsLoading },
     update: { setNewReward, isPending: isTxPending },
     isBuilderOperational,
   } = useBuilderSettingsContext()
