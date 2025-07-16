@@ -43,7 +43,7 @@ export default function GrantsProposalReview() {
       */
       setRecord(null)
       router.push('/proposals')
-      waitForTxInBg(txHash, proposalName)
+      waitForTxInBg(txHash, proposalName, ProposalCategory.Grants)
     } catch (error) {
       if (isUserRejectedTxError(error)) return
       showToast({
@@ -64,8 +64,13 @@ export default function GrantsProposalReview() {
     return () => setSubfooter(null)
   }, [onSubmit, setSubfooter])
 
-  // verify that the context has passed correct proposal type
-  if (!record?.form || record?.category !== ProposalCategory.Grants) return null
+  /* 
+    Verify that the context has passed correct proposal type,
+    otherwise redirect to proposal creation page
+  */
+  if (!record?.form || record?.category !== ProposalCategory.Grants) {
+    return null
+  }
   const { description, discourseLink, proposalName, targetAddress, token, transferAmount } = record.form
   const tokenAmount = formatNumberWithCommas(transferAmount)
   return (
