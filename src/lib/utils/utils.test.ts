@@ -1,5 +1,6 @@
 import Big from '@/lib/big'
-import { formatCurrency, formatNumberWithCommas, millify, splitWords } from '@/lib/utils'
+import { durationToLabel, formatCurrency, formatNumberWithCommas, millify, splitWords } from '@/lib/utils'
+import { Duration } from 'luxon'
 import { describe, expect, it } from 'vitest'
 
 describe('formatCurrency', () => {
@@ -175,5 +176,15 @@ describe('splitWords', () => {
   it('handles empty string', () => {
     expect(splitWords('')).toBe('')
     expect(splitWords(undefined)).toBe('')
+  })
+})
+
+describe('durationToLabel', () => {
+  it('formats duration to label', () => {
+    expect(durationToLabel(Duration.fromObject({ days: 1, hours: 2, minutes: 30 }))).toBe('1d 2h 30m')
+  })
+
+  it('returns undefined for undefined duration', () => {
+    expect(durationToLabel(undefined)).toBe(undefined)
   })
 })
