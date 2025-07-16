@@ -1,7 +1,7 @@
 import { Typography } from '@/components/TypographyNew/Typography'
 import { Tooltip } from '@/components/Tooltip'
 import { stRIF } from '@/lib/constants'
-import KotoQuestionMarkIcon from '@/components/Icons/KotoQuestionMarkIcon'
+import { KotoQuestionMarkIcon } from '@/components/Icons/KotoQuestionMarkIcon'
 import { TokenAmountDisplay } from '@/components/TokenAmountDisplay'
 import { Button } from '@/components/ButtonNew'
 

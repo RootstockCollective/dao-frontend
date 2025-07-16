@@ -148,7 +148,6 @@ const LatestProposalsTable = ({ proposals }: LatestProposalsTableProps) => {
         <div>
           <div className="flex items-center-safe gap-1">
             <p className="mb-1">Quorum</p>
-            {/* <KotoQuestionMarkIcon className="mb-1" /> */}
           </div>
           <p className="text-xs font-normal text-text-40">needed | reached</p>
         </div>
