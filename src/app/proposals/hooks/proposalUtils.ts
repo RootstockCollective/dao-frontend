@@ -1,5 +1,13 @@
 import { GovernorAbi } from '@/lib/abis/Governor'
-import { Abi, Address, encodeFunctionData, EncodeFunctionDataReturnType, encodePacked, keccak256 } from 'viem'
+import {
+  Abi,
+  Address,
+  encodeFunctionData,
+  EncodeFunctionDataReturnType,
+  encodePacked,
+  Hash,
+  keccak256,
+} from 'viem'
 
 export const createProposal = <T extends Abi>(
   targetAddresses: Address[],
@@ -9,7 +17,7 @@ export const createProposal = <T extends Abi>(
 ) => {
   const proposal = [targetAddresses, values, calldata, description] as const
   const descriptionHash = keccak256(encodePacked(['string'], [description]))
-  const proposalToRunHash = [...proposal.slice(3), descriptionHash]
+  const proposalToRunHash = [...proposal.slice(3), descriptionHash] as [Address[], bigint[], Hash[], Hash]
   return {
     proposal,
     proposalToRunHash,
