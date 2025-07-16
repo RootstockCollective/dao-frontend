@@ -4,7 +4,13 @@ import { useFetchAllProposals } from '@/app/proposals/hooks/useFetchLatestPropos
 import { useGetProposalSnapshot } from '@/app/proposals/hooks/useGetProposalSnapshot'
 import { useGetProposalVotes } from '@/app/proposals/hooks/useGetProposalVotes'
 import { useVotingPowerAtSnapshot } from '@/app/proposals/hooks/useVotingPowerAtSnapshot'
+<<<<<<< Updated upstream
 import { DecodedData, getEventArguments, splitCombinedName } from '@/app/proposals/shared/utils'
+=======
+import { DecodedData, getProposalEventArguments, splitCombinedName } from '@/app/proposals/shared/utils'
+import { useAlertContext } from '@/app/providers'
+import { useModal } from '@/shared/hooks/useModal'
+>>>>>>> Stashed changes
 import { Header, Paragraph, Span } from '@/components/TypographyNew'
 import { config } from '@/config'
 import { RIF_ADDRESS } from '@/lib/constants'
@@ -21,7 +27,7 @@ import { isUserRejectedTxError } from '@/components/ErrorPage/commonErrors'
 import { usePricesContext } from '@/shared/context/PricesContext'
 import { ConnectWorkflow } from '@/shared/walletConnection/connection/ConnectWorkflow'
 import { ProgressBar } from '@/components/ProgressBarNew'
-import { ButtonAction, VotingDetails } from '../components/vote-details'
+import { VotingDetails } from '../components/vote-details'
 import { TokenImage } from '@/components/TokenImage'
 import { ShortenAndCopy } from '@/components/ShortenAndCopy/ShortenAndCopy'
 import { useProposalQuorumAtSnapshot } from '../hooks/useProposalQuorumAtSnapshot'
@@ -44,13 +50,13 @@ export default function ProposalView() {
       return null
     }
     // @ts-ignore
-    return getEventArguments(proposal)
+    return getProposalEventArguments(proposal)
   }, [id, latestProposals])
 
   return <>{proposal && <PageWithProposal {...proposal} />}</>
 }
 
-type ParsedProposal = ReturnType<typeof getEventArguments>
+type ParsedProposal = ReturnType<typeof getProposalEventArguments>
 
 const proposalStateToProgressMap = new Map([
   [ProposalState.Active, 25],

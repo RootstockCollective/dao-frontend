@@ -4,7 +4,7 @@ import { useQuery } from '@tanstack/react-query'
 import { getCachedProposals, ProposalGraphQLResponse } from '@/app/proposals/actions/proposalsAction'
 import { AVERAGE_BLOCKTIME } from '@/lib/constants'
 import Big from '@/lib/big'
-import { getEventArguments } from '@/app/proposals/shared/utils'
+import { getProposalEventArguments } from '@/app/proposals/shared/utils'
 import { Address, formatEther } from 'viem'
 import { ProposalCategory, ProposalState } from '@/shared/types'
 
@@ -46,7 +46,7 @@ export function useGetProposalsWithGraph() {
     const abstainVotes = Big(proposal.votesAbstains).div(Big('1e18')).round()
     const deadlineBlock = Big(proposal.voteEnd)
     const creationBlock = Number(proposal.createdAtBlock)
-    const eventArgs = getEventArguments({
+    const eventArgs = getProposalEventArguments({
       args: {
         description: proposal.description,
         proposalId: BigInt(proposal.proposalId),
