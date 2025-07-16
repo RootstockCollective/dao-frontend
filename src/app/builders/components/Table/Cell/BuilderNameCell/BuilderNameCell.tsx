@@ -1,95 +1,98 @@
+import { isActive } from '@/app/collective-rewards/active-builders'
 import { Builder } from '@/app/collective-rewards/types'
-import { isBuilderDeactivated, isBuilderKycRevoked, isBuilderPaused } from '@/app/collective-rewards/utils'
+import {
+  isBuilderDeactivated,
+  isBuilderKycRevoked,
+  isBuilderPaused,
+  isBuilderSelfPaused,
+} from '@/app/collective-rewards/utils'
+import { CommonComponentProps } from '@/components/commonProps'
 import HourglassIcon from '@/components/Icons/HourglassIcon'
 import { ParachuteIcon } from '@/components/Icons/ParachuteIcon'
 import { WarningIcon } from '@/components/Icons/WarningIcon'
 import { Tooltip } from '@/components/Tooltip/Tooltip'
 import { Paragraph } from '@/components/TypographyNew'
 import { cn, truncate } from '@/lib/utils'
-import { createElement, FC } from 'react'
+import { FC } from 'react'
+import { BuilderState } from '../../BuilderTable.config'
 
-// Builder states map
-const commonHoveredClassName = { className: 'text-v3-bg-accent-100' }
-const BUILDER_STATES = {
-  extraRewards: {
-    icon: ParachuteIcon,
-    tooltip: 'Builder will airdrop extra rewards',
-    iconProps: { useGradient: true },
-    hoveredIconProps: { ...commonHoveredClassName, useGradient: false },
-  },
-  warning: {
-    icon: WarningIcon,
-    tooltip: 'The Builder was removed by the Foundation',
-    iconProps: { color: '#DEFF1A' },
-    hoveredIconProps: commonHoveredClassName,
-  },
-  pending: {
-    icon: HourglassIcon,
-    tooltip: 'Builder activation is in progress',
-    iconProps: { className: 'text-v3-bg-accent-0' },
-    hoveredIconProps: commonHoveredClassName,
-  },
+type DecorationOptionId = Exclude<BuilderState, 'active'> | 'extraRewards'
+type BuilderStateTooltip = Record<DecorationOptionId, string>
+
+const stateTooltips: BuilderStateTooltip = {
+  extraRewards: 'Builder will airdrop extra rewards',
+  deactivated: 'The Builder was removed by the Foundation.',
+  revoked: 'The Builder was voted out by the community.',
+  paused: "The Builder's KYC has been paused by the Foundation.",
+  inProgress: "Builder's activation is in progress.",
+  selfPaused: 'The Builder has paused their participation.',
 }
 
-interface BuilderStateIconProps {
-  stateKey: keyof typeof BUILDER_STATES
+const stateIcons: Record<DecorationOptionId, React.ReactNode> = {
+  extraRewards: <ParachuteIcon useGradient />,
+  deactivated: <WarningIcon color="#DEFF1A" />,
+  revoked: <WarningIcon color="#DEFF1A" />,
+  paused: <WarningIcon color="#DEFF1A" />,
+  inProgress: <HourglassIcon className="text-v3-bg-accent-0" />,
+  selfPaused: <WarningIcon color="#DEFF1A" />,
+}
+
+const stateHoveredIcons: Record<DecorationOptionId, React.ReactNode> = {
+  extraRewards: <ParachuteIcon useGradient className="text-v3-bg-accent-100" />,
+  deactivated: <WarningIcon color="#DEFF1A" className="text-v3-bg-accent-100" />,
+  revoked: <WarningIcon color="#DEFF1A" className="text-v3-bg-accent-100" />,
+  paused: <WarningIcon color="#DEFF1A" className="text-v3-bg-accent-100" />,
+  inProgress: <HourglassIcon className="text-v3-bg-accent-100" />,
+  selfPaused: <WarningIcon color="#DEFF1A" className="text-v3-bg-accent-100" />,
+}
+
+interface BuilderDecorationProps {
+  decorationId: DecorationOptionId
   isHighlighted?: boolean
   className?: string
 }
 
-const BuilderStateIcon: FC<BuilderStateIconProps> = ({ stateKey, isHighlighted, className }) => {
-  const state = BUILDER_STATES[stateKey]
-  const iconPropsKey = isHighlighted ? 'hoveredIconProps' : 'iconProps'
-
+const BuilderDecoration: FC<BuilderDecorationProps> = ({ decorationId, isHighlighted, className }) => {
   return (
     <Tooltip
       side="top"
       align="center"
       className={cn('bg-white rounded p-6 shadow-lg text-v3-bg-accent-100', className)}
-      text={state.tooltip}
+      text={stateTooltips[decorationId]}
     >
-      {createElement(state.icon, state[iconPropsKey])}
+      {isHighlighted ? stateHoveredIcons[decorationId] : stateIcons[decorationId]}
     </Tooltip>
   )
 }
 
-export interface BuilderNameCellProps {
+export interface BuilderNameCellProps extends CommonComponentProps {
   builder: Builder
   isHighlighted?: boolean
   hasAirdrop?: boolean
-  className?: string
 }
 
-enum BuilderIconState {
-  PENDING = 'pending',
-  INACTIVE = 'inactive',
-  ACTIVE = 'active',
-}
-
-const getBuilderStateForIcon = (builder: Builder): BuilderIconState => {
-  const isDeactivated = isBuilderDeactivated(builder)
-  const isKycRevoked = isBuilderKycRevoked(builder.stateFlags)
-  const isPaused = isBuilderPaused(builder.stateFlags)
-
-  if (!builder.stateFlags) {
-    return BuilderIconState.PENDING
+const getStateDecorationId = (builder: Builder): Exclude<DecorationOptionId, 'extraRewards'> | null => {
+  if (isBuilderDeactivated(builder)) {
+    return 'deactivated'
   }
 
-  if (isDeactivated || isKycRevoked) {
-    return BuilderIconState.INACTIVE
+  if (isBuilderKycRevoked(builder.stateFlags)) {
+    return 'revoked'
   }
 
-  const { activated, communityApproved } = builder.stateFlags
-
-  if (!activated || !communityApproved) {
-    return BuilderIconState.PENDING
+  if (isBuilderPaused(builder.stateFlags)) {
+    return 'paused'
   }
 
-  if (isPaused) {
-    return BuilderIconState.INACTIVE
+  if (isBuilderSelfPaused(builder.stateFlags)) {
+    return 'selfPaused'
   }
 
-  return BuilderIconState.ACTIVE
+  if (!isActive(builder.stateFlags)) {
+    return 'inProgress'
+  }
+
+  return null
 }
 
 export const BuilderNameCell: FC<BuilderNameCellProps> = ({
@@ -98,7 +101,7 @@ export const BuilderNameCell: FC<BuilderNameCellProps> = ({
   hasAirdrop,
   className,
 }) => {
-  const builderState = getBuilderStateForIcon(builder)
+  const stateDecorationId = getStateDecorationId(builder)
 
   return (
     <div className={cn('flex items-center justify-between w-full h-full', className)}>
@@ -112,15 +115,20 @@ export const BuilderNameCell: FC<BuilderNameCellProps> = ({
           {truncate(builder.builderName, 18)}
         </Paragraph>
         {hasAirdrop && (
-          <BuilderStateIcon stateKey="extraRewards" isHighlighted={isHighlighted} className={className} />
+          <BuilderDecoration
+            decorationId="extraRewards"
+            isHighlighted={isHighlighted}
+            className={className}
+          />
         )}
       </div>
       <div className="flex items-center gap-2">
-        {builderState === BuilderIconState.INACTIVE && (
-          <BuilderStateIcon stateKey="warning" isHighlighted={isHighlighted} className={className} />
-        )}
-        {builderState === BuilderIconState.PENDING && (
-          <BuilderStateIcon stateKey="pending" isHighlighted={isHighlighted} className={className} />
+        {stateDecorationId && (
+          <BuilderDecoration
+            decorationId={stateDecorationId}
+            isHighlighted={isHighlighted}
+            className={className}
+          />
         )}
       </div>
     </div>
