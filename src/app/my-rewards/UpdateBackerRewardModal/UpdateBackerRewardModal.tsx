@@ -10,13 +10,9 @@ interface UpdateBackerRewardModalProps {
   className?: string
 }
 
-function getCooldownEndTime(rewardPercentageCooldown: bigint | undefined) {
-  if (!rewardPercentageCooldown) return undefined
-  return Duration.fromObject({ seconds: Number(rewardPercentageCooldown) }).shiftTo(
-    'days',
-    'hours',
-    'minutes',
-  )
+function formatDuration(duration: bigint | undefined) {
+  if (!duration) return undefined
+  return Duration.fromObject({ seconds: Number(duration) }).shiftTo('days', 'hours', 'minutes')
 }
 
 const UpdateBackerRewardModal = ({ onClose, className }: UpdateBackerRewardModalProps) => {
@@ -37,7 +33,7 @@ const UpdateBackerRewardModal = ({ onClose, className }: UpdateBackerRewardModal
     functionName: 'rewardPercentageCooldown',
   })
 
-  const cooldownEndTime = getCooldownEndTime(rewardPercentageCooldown)
+  const cooldownDuration = formatDuration(rewardPercentageCooldown)
 
   const handleSave = async (updatedRewardValue: string) => {
     if (!isBuilderOperational) return
@@ -58,7 +54,7 @@ const UpdateBackerRewardModal = ({ onClose, className }: UpdateBackerRewardModal
       suggestedReward={undefined} // FIXME: Get the suggested reward. out of scope atm.
       onSave={handleSave}
       onRewardChange={handleRewardChange}
-      cooldownEndTime={cooldownEndTime}
+      cooldownDuration={cooldownDuration}
       isTxPending={isTxPending}
       isLoading={isCurrentRewardsLoading || isCooldownPending}
       isOperational={isBuilderOperational}

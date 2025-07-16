@@ -16,7 +16,7 @@ interface UpdateBackerRewardViewModalProps {
   updatedReward: number
   onRewardChange: (updatedReward: string) => void
   onSave: (updatedReward: string) => void
-  cooldownEndTime?: Duration
+  cooldownDuration?: Duration
   suggestedReward?: number
   isTxPending?: boolean
   isLoading?: boolean
@@ -30,7 +30,7 @@ const UpdateBackerRewardViewModal = ({
   updatedReward,
   onRewardChange,
   onSave,
-  cooldownEndTime,
+  cooldownDuration,
   suggestedReward,
   isTxPending,
   isLoading,
@@ -40,7 +40,7 @@ const UpdateBackerRewardViewModal = ({
     onSave(updatedReward.toString())
   }
 
-  const timeRemaining = durationToLabel(cooldownEndTime)
+  const timeRemaining = durationToLabel(cooldownDuration)
 
   return (
     <Modal
@@ -58,7 +58,7 @@ const UpdateBackerRewardViewModal = ({
         ) : (
           <>
             <Typography variant="body">
-              Any updates to the Rewards % will take effect after the {cooldownEndTime?.days} days cooling
+              Any updates to the Rewards % will take effect after the {cooldownDuration?.days} days cooling
               period.
             </Typography>
             <div className="flex gap-6 justify-between">

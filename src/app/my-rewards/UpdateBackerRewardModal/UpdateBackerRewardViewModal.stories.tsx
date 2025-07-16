@@ -1,11 +1,11 @@
 import React, { useState } from 'react'
 import UpdateBackerRewardModal from './UpdateBackerRewardViewModal'
-import { DateTime } from 'luxon'
+import { Duration } from 'luxon'
 
 // Reusable story wrapper component
 const StoryWrapper = ({
   isTxPending = false,
-  cooldownEndTime,
+  cooldownDuration,
   currentReward,
   updatedReward,
   suggestedReward,
@@ -14,7 +14,7 @@ const StoryWrapper = ({
   ...args
 }: {
   isTxPending?: boolean
-  cooldownEndTime?: string | DateTime
+  cooldownDuration?: Duration
   currentReward: number
   updatedReward: number
   suggestedReward?: number
@@ -33,13 +33,7 @@ const StoryWrapper = ({
           updatedReward={updatedReward}
           suggestedReward={suggestedReward}
           isTxPending={isTxPending}
-          cooldownEndTime={
-            cooldownEndTime
-              ? typeof cooldownEndTime === 'string'
-                ? DateTime.fromISO(cooldownEndTime)
-                : cooldownEndTime
-              : args.cooldownEndTime
-          }
+          cooldownDuration={cooldownDuration}
           onClose={() => setOpen(false)}
           onSave={reward => {
             onSave?.(reward)
@@ -82,7 +76,7 @@ export default {
     updatedReward: 20,
     suggestedReward: 22,
     isTxPending: false,
-    cooldownEndTime: DateTime.now().plus({ days: 6, hours: 24, minutes: 59 }).toISO(),
+    cooldownDuration: Duration.fromObject({ days: 6, hours: 24, minutes: 59 }),
   },
 }
 
@@ -91,12 +85,9 @@ export const Default = (args: any) => <StoryWrapper {...args} />
 export const Pending = (args: any) => <StoryWrapper {...args} isTxPending={true} />
 
 export const WithLongCooldown = (args: any) => (
-  <StoryWrapper
-    {...args}
-    cooldownEndTime={DateTime.now().plus({ days: 10, hours: 12, minutes: 30 }).toISO()}
-  />
+  <StoryWrapper {...args} cooldownDuration={Duration.fromObject({ days: 10, hours: 12, minutes: 30 })} />
 )
 
 export const WithShortCooldown = (args: any) => (
-  <StoryWrapper {...args} cooldownEndTime={DateTime.now().plus({ hours: 2, minutes: 15 }).toISO()} />
+  <StoryWrapper {...args} cooldownDuration={Duration.fromObject({ hours: 2, minutes: 15 })} />
 )
