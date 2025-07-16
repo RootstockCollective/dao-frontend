@@ -2,11 +2,10 @@
 import { BalanceInfo } from '@/components/BalanceInfo'
 import { SolidTabs } from '@/components/Tabs'
 import { Label, Paragraph } from '@/components/TypographyNew'
-import { cn } from '@/lib/utils'
+import { cn, formatAssetData } from '@/lib/utils'
 import { AddressLink } from '../components/AddressLink'
 import { useTreasuryTabs } from '../hooks/useTreasuryTabs'
 import { TreasuryTabKey } from '../types'
-import { formatAssetData } from '../utils'
 import { useCallback, useState } from 'react'
 
 /**
@@ -49,10 +48,14 @@ export function TabsSection() {
                       'flex-row gap-6': onlyOneCategory,
                     })}
                   >
-                    {buckets.map(({ title, bucket }) => {
-                      const { amount, symbol, fiatAmount } = formatAssetData(title, bucket)
+                    {buckets.map(({ title: symbol, bucket }) => {
+                      const { amount, fiatAmount } = formatAssetData(
+                        bucket?.amount,
+                        bucket?.fiatAmount,
+                        symbol,
+                      )
                       return (
-                        <div className="flex-1" key={title}>
+                        <div className="flex-1" key={symbol}>
                           <BalanceInfo amount={amount} symbol={symbol} fiatAmount={fiatAmount} />
                         </div>
                       )
