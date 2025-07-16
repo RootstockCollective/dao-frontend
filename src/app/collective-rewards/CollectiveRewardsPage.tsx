@@ -17,8 +17,8 @@ export const CollectiveRewardsPage = () => {
 
       <div className="flex flex-col gap-2">
         <ActionMetricsContainer className="flex flex-row gap-2 bg-v3-bg-accent-80">
-          <AnnualBackersIncentives className="basis-2/3" />
-          <TotalRewardsDistributed className="basis-1/3" />
+          <AnnualBackersIncentives className="basis-3/4" />
+          <TotalRewardsDistributed className="basis-1/4" />
         </ActionMetricsContainer>
         <CurrentCycle />
         <CallToActionSection />

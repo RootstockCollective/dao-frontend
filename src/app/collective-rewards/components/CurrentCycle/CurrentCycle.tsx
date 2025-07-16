@@ -15,12 +15,16 @@ export const CurrentCycle = () => {
         </Header>
       }
     >
-      <div className="flex justify-between items-start w-full">
-        <CycleContextProvider>
-          <CycleMetrics />
-        </CycleContextProvider>
-        <TotalBackingLoader />
-        <EstimatedRewards />
+      <div className="flex items-start w-full gap-14">
+        <div className="flex justify-between basis-3/4">
+          <CycleContextProvider>
+            <CycleMetrics />
+          </CycleContextProvider>
+          <TotalBackingLoader />
+        </div>
+        <div className="basis-1/4">
+          <EstimatedRewards />
+        </div>
       </div>
     </ActionsContainer>
   )
