@@ -20,7 +20,7 @@ export default function GrantsProposalForm() {
   const { record, setRecord } = useReviewProposal()
   const router = useRouter()
 
-  const { handleSubmit, watch, control, setFocus } = useForm<GrantProposal>({
+  const { handleSubmit, control, setFocus } = useForm<GrantProposal>({
     mode: 'onTouched',
     resolver: zodResolver(GrantProposalSchema),
     defaultValues:
@@ -31,7 +31,7 @@ export default function GrantsProposalForm() {
             description: '',
             discourseLink: '',
             targetAddress: '' as Address,
-            token: 'rBTC',
+            token: 'RIF',
             transferAmount: '',
           },
   })
@@ -80,7 +80,6 @@ export default function GrantsProposalForm() {
               <NumberInput
                 name="transferAmount"
                 control={control}
-                prefix={watch().token ? `${watch().token} ` : undefined}
                 label="Amount to be transferred"
                 data-testid="InputAmount"
               />
