@@ -188,20 +188,19 @@ const PageWithProposal = (proposal: ParsedProposal) => {
     try {
       setIsChoosingVote(false)
       const txHash = await executeTxFlow({
-        onRequestTx: async () => {
+        onRequestTx: () => {
           setVote(_vote)
-          return await onVote(_vote)
+          return onVote(_vote)
         },
         action: 'voting',
         onSuccess: () => {
-          setVotingTxIsPending(false)
           setVote(_vote)
         },
         onError: () => {
-          setVotingTxIsPending(false)
           setVote(undefined)
         },
         onPending: () => setVotingTxIsPending(true),
+        onComplete: () => setVotingTxIsPending(false),
       })
       setVotingTxHash(txHash)
     } catch (err) {
