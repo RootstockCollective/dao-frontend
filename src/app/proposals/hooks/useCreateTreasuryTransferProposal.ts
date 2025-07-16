@@ -4,7 +4,7 @@ import { NoVotingPowerError } from '@/app/proposals/shared/errors'
 import { DAOTreasuryAbi } from '@/lib/abis/DAOTreasuryAbi'
 import { GovernorAbi } from '@/lib/abis/Governor'
 import { GovernorAddress, tokenContracts, TreasuryAddress } from '@/lib/contracts'
-import { Address, encodeFunctionData, parseEther, zeroAddress } from 'viem'
+import { Address, encodeFunctionData, Hash, parseEther, zeroAddress } from 'viem'
 import { useWriteContract } from 'wagmi'
 import { readContract } from '@wagmi/core'
 import { config } from '@/config'
@@ -40,14 +40,22 @@ export const useCreateTreasuryTransferProposal = () => {
         functionName: 'propose',
         args: proposal,
       }),
-      txId: await readContract(config, {
-        ...DEFAULT_DAO_CONFIG,
-        functionName: 'hashProposal',
-        args: proposalToRunHash,
-      }),
+      txId: await getTxId(proposalToRunHash),
     }
   }
   return { onCreateTreasuryTransferProposal, isPublishing }
+}
+
+async function getTxId(proposal: [Address[], bigint[], Hash[], Hash]): Promise<bigint | undefined> {
+  try {
+    return await readContract(config, {
+      ...DEFAULT_DAO_CONFIG,
+      functionName: 'hashProposal',
+      args: proposal,
+    })
+  } catch (error) {
+    return undefined
+  }
 }
 
 export const encodeTreasuryERC20Transfer = (address: Address, amountToTransfer: string) => {
