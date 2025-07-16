@@ -1,44 +1,52 @@
 'use client'
 
-import { PropsWithChildren, createContext, useCallback, useContext, useMemo, useState } from 'react'
+import { PropsWithChildren, createContext, useCallback, useContext, useMemo } from 'react'
 import { ProposalRecord } from '../proposals/shared/types'
 import useLocalStorageState from 'use-local-storage-state'
 import { getTxReceipt } from '@/lib/utils'
 import { Hash } from 'viem'
-import { showCreateProposalToast } from '../proposals/new/review/components/showCreateProposalToast'
-import { showToast } from '@/shared/notification'
+import {
+  showProposalTxConfirmedToast,
+  showProposalTxCreatedToast,
+} from '../proposals/new/review/components/proposalToasts'
+import { ProposalCategory } from '@/shared/types'
 
 interface ReviewProposalState {
   record: ProposalRecord | null
   setRecord: (val: ProposalRecord | null) => void
-  waitForTxInBg: (proposalTxHash: Hash, proposalName: string) => Promise<void>
+  waitForTxInBg: (proposalTxHash: Hash, proposalName: string, category: ProposalCategory) => Promise<void>
 }
 
 const ReviewProposalContext = createContext<ReviewProposalState | null>(null)
 
+/**
+ * Provides proposal review state management for multi-step proposal creation.
+ *
+ * Persists form data in localStorage, handles navigation between steps,
+ * and monitors transaction status with background notifications.
+ */
 export function ReviewProposalProvider({ children }: PropsWithChildren) {
   const [record, setRecord] = useLocalStorageState<ProposalRecord | null>('review-proposal', {
     defaultValue: null,
   })
 
-  const waitForTxInBg = useCallback(async (proposalTxHash: Hash, proposalName: string) => {
-    showToast({
-      severity: 'info',
-      title: 'Transaction Submitted',
-      content: `Proposal "${proposalName}" has been created. Waiting for blockchain confirmation (~30 seconds).`,
-      position: 'top-center',
-      dismissible: true,
-      closeButton: true,
-      theme: 'light',
-      autoClose: 5000,
-    })
-    const receipt = await getTxReceipt(proposalTxHash)
-    showCreateProposalToast({
-      proposalName,
-      timestamp: receipt?.timestamp,
-      txHash: proposalTxHash,
-    })
-  }, [])
+  /**
+   * Monitors proposal transaction in background and shows toast notifications.
+   * Shows "created" toast immediately, waits for mining, then shows "confirmed" toast.
+   */
+  const waitForTxInBg = useCallback(
+    async (proposalTxHash: Hash, proposalName: string, proposalCategory: ProposalCategory) => {
+      showProposalTxCreatedToast({ proposalName, txHash: proposalTxHash, proposalCategory })
+      const receipt = await getTxReceipt(proposalTxHash)
+      showProposalTxConfirmedToast({
+        proposalName,
+        timestamp: receipt?.timestamp,
+        txHash: proposalTxHash,
+        proposalCategory,
+      })
+    },
+    [],
+  )
 
   const value = useMemo<ReviewProposalState>(
     () => ({
