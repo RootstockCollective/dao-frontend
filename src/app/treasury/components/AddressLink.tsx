@@ -8,6 +8,9 @@ import { Address } from 'viem'
 
 const BASE_CLASSNAME = 'hover:text-text-60 transition-colors duration-100'
 
+/**
+ * AddressLink component displays a blockchain address with copy and explorer link functionality.
+ */
 export function AddressLink({ address, className }: { address: Address; className?: string }) {
   const [copied, setCopied] = useState(false)
 
