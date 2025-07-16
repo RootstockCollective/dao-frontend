@@ -16,13 +16,11 @@ import { useRouter } from 'next/navigation'
 import { tokenContracts } from '@/lib/contracts'
 import { showToast } from '@/shared/notification'
 import { isUserRejectedTxError } from '@/components/ErrorPage'
-import { showCreateProposalToast } from '../components/showCreateProposalToast'
-import { getTxReceipt } from '@/lib/utils'
 
 export default function GrantsProposalReview() {
   const router = useRouter()
   const { address } = useAccount()
-  const { record, setRecord } = useReviewProposal()
+  const { record, setRecord, waitForTxInBg } = useReviewProposal()
   const { onCreateTreasuryTransferProposal } = useCreateTreasuryTransferProposal()
 
   const onSubmit = useCallback(async () => {
@@ -32,21 +30,20 @@ export default function GrantsProposalReview() {
       const proposalDescription = `${proposalName};${description}`
       const tokenAddress = tokenContracts[token.toUpperCase() as keyof typeof tokenContracts]
       if (!tokenAddress) throw new Error('GrantsProposalReview: Unknown contract address')
-      // here the user will see Metamask window instead of loading state
-      const { txHash, txId } = await onCreateTreasuryTransferProposal(
+      // Here the user will see Metamask window and confirm his tx
+      const txHash = await onCreateTreasuryTransferProposal(
         targetAddress,
         transferAmount,
         proposalDescription,
         tokenAddress,
       )
-      const receipt = await getTxReceipt(txHash)
-      router.push(txId ? `/proposals/${txId}` : '/proposals')
+      /* 
+      After closing Metamask, the user will be redirected to proposals page and informed
+      that the tx has been sent
+      */
       setRecord(null)
-      showCreateProposalToast({
-        proposalName,
-        timestamp: receipt?.timestamp,
-        txHash,
-      })
+      router.push('/proposals')
+      waitForTxInBg(txHash, proposalName)
     } catch (error) {
       if (isUserRejectedTxError(error)) return
       showToast({
