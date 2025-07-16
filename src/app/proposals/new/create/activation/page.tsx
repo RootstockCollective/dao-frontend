@@ -19,7 +19,7 @@ export default function ActivationProposalForm() {
   const { setSubfooter } = useLayoutContext()
   const { record, setRecord } = useReviewProposal()
 
-  const { handleSubmit, control } = useForm<ActivationProposal>({
+  const { handleSubmit, control, setFocus } = useForm<ActivationProposal>({
     mode: 'onTouched',
     resolver: zodResolver(ActivationProposalSchema),
     // use recorded proposal if it is of the same type
@@ -48,6 +48,10 @@ export default function ActivationProposalForm() {
     setSubfooter(<Subfooter submitForm={onSubmit} buttonText="Review proposal" />)
     return () => setSubfooter(null)
   }, [onSubmit, setSubfooter])
+
+  // set focus on proposal name field
+  // eslint-disable-next-line
+  useEffect(() => setFocus('proposalName'), [])
 
   return (
     <div>
