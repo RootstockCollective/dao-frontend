@@ -1,3 +1,4 @@
+import { CommonComponentProps } from '@/components/commonProps'
 import { FC, useEffect, useState } from 'react'
 import {
   Dropdown,
@@ -6,26 +7,30 @@ import {
   DropdownTrigger,
   DropdownValue,
 } from '../../components/SingleSelectDropdown/SingleSelectDropdown'
+import { BuilderState } from './components/Table/BuilderTable.config'
 
-export interface BuilderFilterDropdownProps {
-  className?: string
+export interface BuilderFilterDropdownProps extends CommonComponentProps {
   onSelected: (optionId: BuilderFilterOptionId) => void
 }
 
-const builderFilterOptions = [
+export type BuilderFilterOptionId = 'all' | Exclude<BuilderState, 'selfPaused'>
+
+export type BuilderFilterOption = {
+  id: BuilderFilterOptionId
+  content: string
+}
+
+const builderFilterOptions: BuilderFilterOption[] = [
   { id: 'all', content: 'All Builders' },
   { id: 'active', content: 'Active Builders' },
-  { id: 'inactive', content: 'Inactive Builders' },
   { id: 'deactivated', content: 'Deactivated Builders' },
   { id: 'revoked', content: 'Revoked Builders' },
   { id: 'paused', content: 'Paused Builders' },
-  { id: 'in-progress', content: 'In Progress' },
-] as const
-
-export type BuilderFilterOptionId = (typeof builderFilterOptions)[number]['id']
+  { id: 'inProgress', content: 'In Progress' },
+]
 
 export const BuilderFilterDropdown: FC<BuilderFilterDropdownProps> = ({ className, onSelected }) => {
-  const [selectedOptionId, setSelectedOptionId] = useState<string>(builderFilterOptions[0].id)
+  const [selectedOptionId, setSelectedOptionId] = useState<BuilderFilterOptionId>(builderFilterOptions[0].id)
 
   useEffect(() => {
     const selected = builderFilterOptions.find(opt => opt.id === selectedOptionId)
@@ -35,7 +40,10 @@ export const BuilderFilterDropdown: FC<BuilderFilterDropdownProps> = ({ classNam
   }, [selectedOptionId, onSelected])
 
   return (
-    <Dropdown value={selectedOptionId} onValueChange={setSelectedOptionId}>
+    <Dropdown
+      value={selectedOptionId}
+      onValueChange={value => setSelectedOptionId(value as BuilderFilterOptionId)}
+    >
       <DropdownTrigger className={className} data-testid="dropdown-trigger">
         <DropdownValue />
       </DropdownTrigger>

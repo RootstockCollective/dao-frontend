@@ -132,3 +132,10 @@ export const Highlighted: Story = {
     isHighlighted: true,
   },
 }
+
+export const WithAirdrop: Story = {
+  args: {
+    builder: activeBuilder,
+    hasAirdrop: true,
+  },
+}
