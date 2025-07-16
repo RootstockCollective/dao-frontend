@@ -20,7 +20,7 @@ export default function GrantsProposalForm() {
   const { record, setRecord } = useReviewProposal()
   const router = useRouter()
 
-  const { handleSubmit, watch, control } = useForm<GrantProposal>({
+  const { handleSubmit, watch, control, setFocus } = useForm<GrantProposal>({
     mode: 'onTouched',
     resolver: zodResolver(GrantProposalSchema),
     defaultValues:
@@ -56,6 +56,10 @@ export default function GrantsProposalForm() {
     setSubfooter(<Subfooter submitForm={onSubmit} buttonText="Review proposal" />)
     return () => setSubfooter(null)
   }, [onSubmit, setSubfooter])
+
+  // set focus on proposal name field
+  // eslint-disable-next-line
+  useEffect(() => setFocus('proposalName'), [])
 
   return (
     <form>
