@@ -10,6 +10,8 @@ import { usePathname, useSearchParams, useRouter } from 'next/navigation'
 import { useAccount } from 'wagmi'
 import { HeroSection } from './HeroSection'
 import { IntroModal } from './IntroModal'
+import { LatestCollectiveSection } from './latest-collective'
+import { useGetProposalsWithGraph } from '../proposals/hooks/useGetProposalsWithGraph'
 
 const values = ['holdings', 'rewards'] as const
 type TabValue = (typeof values)[number]
@@ -31,6 +33,7 @@ export default function User() {
   const router = useRouter()
   const pathName = usePathname()
   const searchParams = useSearchParams()
+  const { activeProposals } = useGetProposalsWithGraph()
 
   const activeTab = useMemo<TabValue>(() => {
     const currentTab = (searchParams.get('tab') ?? defaultTab) as TabValue
@@ -43,6 +46,7 @@ export default function User() {
       <>
         {searchParams.get('action') !== 'stake' && <IntroModal />}
         <BalancesSection />
+        <LatestCollectiveSection proposal={activeProposals[0]} />
         <DelegationSection />
         <CommunitiesSection />
       </>
