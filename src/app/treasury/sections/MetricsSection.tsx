@@ -34,19 +34,11 @@ export const MetricsSection = () => {
         <BalanceInfo
           className="max-w-[444px] min-w-[180px] overflow-visible"
           title="TVL"
-          titlePopover={
-            <Popover
-              contentContainerClassName="w-max"
-              trigger="hover"
-              content={
-                <>
-                  <Label variant="body-s">Total value locked</Label>
-                  <Label variant="body-s"> (Total stRIF + Treasury)</Label>
-                </>
-              }
-            >
-              <KotoQuestionMarkIcon className="mb-1 hover:cursor-help" />
-            </Popover>
+          tooltipContent={
+            <>
+              <Label variant="body-s">Total value locked</Label>
+              <Label variant="body-s"> (Total stRIF + Treasury)</Label>
+            </>
           }
           amount={`${formatNumberWithCommas(tvlUsd)}`}
           symbol="USD"

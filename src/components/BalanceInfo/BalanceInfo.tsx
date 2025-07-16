@@ -1,12 +1,14 @@
 import { TokenImage } from '@/components/TokenImage'
 import { Header, Label, Span } from '@/components/TypographyNew'
 import { FC, ReactNode } from 'react'
+import { Tooltip } from '../Tooltip'
+import { KotoQuestionMarkIcon } from '../Icons'
 
 interface Props {
   amount: ReactNode
   symbol: string
   title?: string
-  titlePopover?: ReactNode
+  tooltipContent?: ReactNode
   fiatAmount?: ReactNode
   'data-testid'?: string
   className?: string
@@ -14,7 +16,7 @@ interface Props {
 
 export const BalanceInfo: FC<Props> = ({
   title,
-  titlePopover,
+  tooltipContent,
   amount,
   symbol,
   fiatAmount,
@@ -29,7 +31,12 @@ export const BalanceInfo: FC<Props> = ({
             {title}
           </Label>
         )}
-        {titlePopover}
+
+        {tooltipContent && (
+          <Tooltip text={tooltipContent}>
+            <KotoQuestionMarkIcon className="mb-1 hover:cursor-help" />
+          </Tooltip>
+        )}
       </div>
 
       <div className="flex items-end flex-row gap-2 mt-2">

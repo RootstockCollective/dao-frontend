@@ -18,7 +18,10 @@ export interface PopoverProps extends Omit<HTMLAttributes<HTMLDivElement>, 'chil
   contentSubContainerClassName?: HTMLAttributes<HTMLDivElement>['className']
   contentSubcontainerProps?: HTMLAttributes<HTMLDivElement>
 }
-// We might have to refactor this to de-couple it a bit
+
+/**
+ * @deprecated Use Tooltip or NewPopover instead
+ */
 export const Popover = ({
   children,
   content,
