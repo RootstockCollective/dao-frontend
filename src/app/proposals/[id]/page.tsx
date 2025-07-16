@@ -4,13 +4,7 @@ import { useFetchAllProposals } from '@/app/proposals/hooks/useFetchLatestPropos
 import { useGetProposalSnapshot } from '@/app/proposals/hooks/useGetProposalSnapshot'
 import { useGetProposalVotes } from '@/app/proposals/hooks/useGetProposalVotes'
 import { useVotingPowerAtSnapshot } from '@/app/proposals/hooks/useVotingPowerAtSnapshot'
-<<<<<<< Updated upstream
-import { DecodedData, getEventArguments, splitCombinedName } from '@/app/proposals/shared/utils'
-=======
 import { DecodedData, getProposalEventArguments, splitCombinedName } from '@/app/proposals/shared/utils'
-import { useAlertContext } from '@/app/providers'
-import { useModal } from '@/shared/hooks/useModal'
->>>>>>> Stashed changes
 import { Header, Paragraph, Span } from '@/components/TypographyNew'
 import { config } from '@/config'
 import { RIF_ADDRESS } from '@/lib/constants'
