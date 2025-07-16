@@ -1,16 +1,12 @@
-import { useActivatedBuildersWithGauge, useGetVotingPower } from '@/app/collective-rewards/allocations/hooks'
-import { Builder } from '@/app/collective-rewards/types'
+import { useGetVotingPower } from '@/app/collective-rewards/allocations/hooks'
+import { Builder, CompleteBuilder } from '@/app/collective-rewards/types'
 import { useReadBackersManager, useReadGauges } from '@/shared/hooks/contracts'
 import { createContext, FC, ReactNode, useCallback, useEffect, useMemo, useState } from 'react'
 import { Address, zeroAddress } from 'viem'
 import { useAccount } from 'wagmi'
-import { useBuildersWithBackerRewardPercentage } from '../hooks/useBuildersWithBackerRewardPercentage'
 import { createActions } from './allocationsActions'
 import { validateAllocationsState } from './utils'
-import { useShuffledArray } from '@/app/backing/hooks/useShuffledArray'
-import { isBuilderRewardable } from '../../utils'
-
-const SPOTLIGHT_BUILDERS = 4
+import { filterBuildersByState, useBuilderContext } from '../../user'
 
 export interface Allocations {
   [K: Address]: bigint
@@ -36,8 +32,6 @@ interface State {
   selections: Selections
   allocations: Allocations
   backer: Backer
-  builders: Builders
-  randomBuilders: Builder[]
   isContextLoading: boolean
   contextError: Error | null
   getBuilder: (address: Address) => Builder | null
@@ -80,8 +74,6 @@ const DEFAULT_CONTEXT: AllocationsContext = {
       allocationsCount: 0,
       cumulativeAllocation: BigInt(0),
     },
-    builders: {},
-    randomBuilders: [],
     isContextLoading: true,
     contextError: null,
     getBuilder: () => null,
@@ -115,18 +107,17 @@ export const AllocationsContextProvider: FC<{ children: ReactNode }> = ({ childr
   const { data: votingPower, isLoading: isVotingPowerLoading, error: votingPowerError } = useGetVotingPower()
 
   const {
-    data: rawBuilders,
+    builders,
+    getBuilderByAddress,
     isLoading: isLoadingBuilders,
     error: buildersError,
-  } = useActivatedBuildersWithGauge()
+  } = useBuilderContext()
 
-  const gauges = useMemo(() => rawBuilders.map(builder => builder.gauge ?? zeroAddress), [rawBuilders])
-
-  const {
-    data: backerRewards,
-    isLoading: backerRewardsLoading,
-    error: backerRewardsError,
-  } = useBuildersWithBackerRewardPercentage(rawBuilders)
+  const { activeBuilders, gauges } = useMemo(() => {
+    const activeBuilders = filterBuildersByState<CompleteBuilder>(builders)
+    const gauges = activeBuilders.map(({ gauge }) => gauge)
+    return { activeBuilders, gauges }
+  }, [builders])
 
   const {
     data: rawAllocations,
@@ -139,7 +130,7 @@ export const AllocationsContextProvider: FC<{ children: ReactNode }> = ({ childr
       args: [backerAddress ?? zeroAddress],
     },
     {
-      enabled: !!backerAddress && !!rawBuilders.length,
+      enabled: !!backerAddress && !!activeBuilders.length,
     },
   )
 
@@ -158,27 +149,6 @@ export const AllocationsContextProvider: FC<{ children: ReactNode }> = ({ childr
     },
   )
 
-  const builders: Builders = useMemo(() => {
-    if (!rawBuilders || !backerRewards) return {}
-    return rawBuilders.reduce((acc, builder, index) => {
-      acc[builder.address] = {
-        ...builder,
-        backerRewardPercentage: {
-          active: backerRewards[index]?.active ?? BigInt(0),
-          previous: backerRewards[index]?.previous ?? BigInt(0),
-          next: backerRewards[index]?.next ?? BigInt(0),
-          cooldown: backerRewards[index]?.cooldown ?? BigInt(0),
-        },
-      }
-      return acc
-    }, {} as Builders)
-  }, [rawBuilders, backerRewards])
-
-  // TODO: for now we generate random builders here, but we should move this to a dedicated context
-  const randomBuilders = useShuffledArray<Builder>(Object.values(builders))
-    .filter(({ stateFlags }) => isBuilderRewardable(stateFlags))
-    .slice(0, SPOTLIGHT_BUILDERS)
-
   /**
    * Reactive state updates
    */
@@ -186,7 +156,7 @@ export const AllocationsContextProvider: FC<{ children: ReactNode }> = ({ childr
     if (!isContextLoading && backerAddress && rawAllocations) {
       const [newAllocations, newCumulativeAllocation, allocationsCount] = createInitialAllocations(
         rawAllocations,
-        rawBuilders,
+        activeBuilders,
         selections,
       )
       setAllocations(newAllocations)
@@ -203,35 +173,19 @@ export const AllocationsContextProvider: FC<{ children: ReactNode }> = ({ childr
     backerAddress,
     selections,
     isContextLoading,
-    rawBuilders,
+    activeBuilders,
     totalOnchainAllocation,
     votingPower,
   ])
 
   useEffect(() => {
-    setContextError(
-      buildersError ??
-        allRawAllocationsError ??
-        totalAllocationError ??
-        votingPowerError ??
-        backerRewardsError,
-    )
-  }, [allRawAllocationsError, buildersError, totalAllocationError, votingPowerError, backerRewardsError])
+    setContextError(buildersError ?? allRawAllocationsError ?? totalAllocationError ?? votingPowerError)
+  }, [allRawAllocationsError, buildersError, totalAllocationError, votingPowerError])
   useEffect(() => {
     setIsContextLoading(
-      isLoadingBuilders ||
-        isRawAllocationsLoading ||
-        isTotalAllocationLoading ||
-        isVotingPowerLoading ||
-        backerRewardsLoading,
+      isLoadingBuilders || isRawAllocationsLoading || isTotalAllocationLoading || isVotingPowerLoading,
     )
-  }, [
-    isLoadingBuilders,
-    isRawAllocationsLoading,
-    isTotalAllocationLoading,
-    isVotingPowerLoading,
-    backerRewardsLoading,
-  ])
+  }, [isLoadingBuilders, isRawAllocationsLoading, isTotalAllocationLoading, isVotingPowerLoading])
 
   /**
    * Memoize states
@@ -245,7 +199,7 @@ export const AllocationsContextProvider: FC<{ children: ReactNode }> = ({ childr
     }
     const [initialAllocations, initialCumulativeAllocations, allocationsCount] = createInitialAllocations(
       rawAllocations || [],
-      rawBuilders || [],
+      activeBuilders || [],
       selections || {},
     )
 
@@ -259,12 +213,23 @@ export const AllocationsContextProvider: FC<{ children: ReactNode }> = ({ childr
       },
       allocations: initialAllocations,
     }
-  }, [rawAllocations, rawBuilders, totalOnchainAllocation, selections, votingPower, isContextLoading])
+  }, [rawAllocations, activeBuilders, totalOnchainAllocation, selections, votingPower, isContextLoading])
 
   /**
    * Getters
    */
-  const getBuilder = useCallback((address: Address) => builders[address], [builders])
+  const getBuilder = useCallback(
+    (address: Address) => {
+      const builder = getBuilderByAddress(address)
+
+      if (builder && builder.gauge && builder.stateFlags?.activated) {
+        return builder
+      }
+
+      return null
+    },
+    [getBuilderByAddress],
+  )
 
   const isValidState = useCallback(
     () =>
@@ -283,8 +248,6 @@ export const AllocationsContextProvider: FC<{ children: ReactNode }> = ({ childr
       selections,
       allocations,
       backer,
-      builders,
-      randomBuilders,
       isContextLoading,
       contextError,
       getBuilder,
@@ -294,8 +257,6 @@ export const AllocationsContextProvider: FC<{ children: ReactNode }> = ({ childr
     selections,
     allocations,
     backer,
-    builders,
-    randomBuilders,
     isContextLoading,
     contextError,
     getBuilder,

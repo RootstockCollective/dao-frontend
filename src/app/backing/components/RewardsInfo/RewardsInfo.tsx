@@ -1,4 +1,4 @@
-import { BackerRewardPercentage, TokenRewards } from '@/app/collective-rewards/rewards/types'
+import { TokenRewards } from '@/app/collective-rewards/rewards/types'
 import { weiToPercentage } from '@/app/collective-rewards/settings/utils'
 import { getCombinedFiatAmount } from '@/app/collective-rewards/utils'
 import { Paragraph } from '@/components/TypographyNew'
@@ -8,15 +8,15 @@ import { BackerRewardsPercentage } from '../BackerPercentage/BackerRewardsPercen
 import { LabeledContent } from '../LabeledContent/LabeledContent'
 import { RifRbtcTooltip } from '@/components/RifRbtcTooltip/RifRbtcTooltip'
 import { DottedUnderlineLabel } from '@/components/DottedUnderlineLabel/DottedUnderlineLabel'
-import { BackerRewardsConfig } from '@/app/collective-rewards/types'
+import { BackerRewardPercentage } from '@/app/collective-rewards/types'
 
 export interface RewardsInfoProps {
-  backerRewardPercentage?: BackerRewardsConfig
+  backerRewardPercentage?: BackerRewardPercentage
   estimatedRewards?: TokenRewards
 }
 
 export const RewardsInfo: FC<RewardsInfoProps> = ({ backerRewardPercentage, estimatedRewards }) => {
-  const { active, next } = backerRewardPercentage ?? { active: 0n, next: 0n }
+  const { current, next } = backerRewardPercentage ?? { current: 0n, next: 0n }
 
   return (
     <div
@@ -25,7 +25,7 @@ export const RewardsInfo: FC<RewardsInfoProps> = ({ backerRewardPercentage, esti
     >
       <LabeledContent label="Rewards %" className="basis-1/2 pr-3">
         <BackerRewardsPercentage
-          currentPct={Number(weiToPercentage(active, 0))}
+          currentPct={Number(weiToPercentage(current, 0))}
           nextPct={Number(weiToPercentage(next, 0))}
         />
       </LabeledContent>

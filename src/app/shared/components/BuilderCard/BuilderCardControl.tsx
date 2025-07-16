@@ -7,14 +7,17 @@ import { useLayoutContext } from '@/components/MainContainer/LayoutProvider'
 import { ActionsContainer } from '@/components/containers/ActionsContainer'
 import { RIF } from '@/lib/constants'
 import { usePricesContext } from '@/shared/context/PricesContext'
-import { FC, useContext, useEffect } from 'react'
+import { FC, useContext, useEffect, useState } from 'react'
 import { parseEther } from 'viem'
 import { useAccount } from 'wagmi'
 import { floorToUnit, getBuilderColor } from '../utils'
 import { BuilderCard } from './BuilderCard'
+import { TokenRewards } from '@/app/collective-rewards/rewards'
 
 export interface BuilderCardControlProps extends Builder {
+  estimatedRewards?: TokenRewards
   allocationTxPending?: boolean
+  isInteractive?: boolean
 }
 
 const AllocationDrawerContent = () => {
@@ -79,11 +82,11 @@ export const BuilderCardControl: FC<BuilderCardControlProps> = ({
   const allocation = allocations[builderAddress] ?? 0n
   const existentAllocation = initialAllocations[builderAddress] ?? 0n
   const unallocatedAmount = floorToUnit(balance - (cumulativeAllocation - allocation))
+  const topBarColor = getBuilderColor(builderAddress)
 
   const handleAllocationChange = (value: number) => {
     if (allocationTxPending) return
     updateAllocation(builderAddress, parseEther(value.toString()))
-
     openDrawer(<AllocationDrawerContent />, true)
   }
 
@@ -99,7 +102,7 @@ export const BuilderCardControl: FC<BuilderCardControlProps> = ({
       allocationTxPending={allocationTxPending}
       onAllocationChange={handleAllocationChange}
       maxAllocation={unallocatedAmount}
-      topBarColor={getBuilderColor(builderAddress)}
+      topBarColor={allocation > 0n ? topBarColor : 'transparent'}
     />
   )
 }

@@ -1,21 +1,19 @@
-import { useGetBuildersByState } from '@/app/collective-rewards//user'
+import { filterBuildersByState, useBuilderContext } from '@/app/collective-rewards/user'
 import {
-  BackerRewardPercentage,
   RbtcSvg,
   RifSvg,
   Token,
   TokenBackerRewards,
   TokenRewards,
   useBackerRewardsContext,
-  useGetBackersRewardPercentage,
 } from '@/app/collective-rewards/rewards'
-import { RequiredBuilder } from '@/app/collective-rewards/types'
+import { BackerRewardPercentage, CompleteBuilder } from '@/app/collective-rewards/types'
 import { usePricesContext } from '@/shared/context/PricesContext'
 import { useReadGauges } from '@/shared/hooks/contracts'
 import { useMemo } from 'react'
 import { Address } from 'viem'
 
-export type BackerRewards = RequiredBuilder & {
+export type BackerRewards = CompleteBuilder & {
   totalAllocation: TokenRewards
   rewardPercentage: BackerRewardPercentage
   estimatedRewards: TokenRewards
@@ -40,18 +38,9 @@ export const useGetBackerRewards = (
   { rif, rbtc }: { [token: string]: Token },
   currency = 'USD',
 ) => {
-  const {
-    data: builders,
-    isLoading: buildersLoading,
-    error: buildersError,
-  } = useGetBuildersByState<RequiredBuilder>()
-  const buildersAddress = builders.map(({ address }) => address)
-  const gauges = builders.map(({ gauge }) => gauge)
-  const {
-    data: backersRewardsPct,
-    isLoading: backersRewardsPctLoading,
-    error: backersRewardsPctError,
-  } = useGetBackersRewardPercentage(buildersAddress)
+  const { builders, isLoading: buildersLoading, error: buildersError } = useBuilderContext()
+  const activeBuilders = filterBuildersByState<CompleteBuilder>(builders)
+  const gauges = activeBuilders.map(({ gauge }) => gauge)
   const {
     data: allocationOf,
     isLoading: allocationOfLoading,
@@ -60,12 +49,12 @@ export const useGetBackerRewards = (
   const { data: tokenRewards, isLoading: rewardsLoading, error: rewardsError } = useBackerRewardsContext()
 
   const isLoading = useMemo(
-    () => buildersLoading || backersRewardsPctLoading || allocationOfLoading || rewardsLoading,
-    [buildersLoading, backersRewardsPctLoading, allocationOfLoading, rewardsLoading],
+    () => buildersLoading || allocationOfLoading || rewardsLoading,
+    [buildersLoading, allocationOfLoading, rewardsLoading],
   )
   const error = useMemo(
-    () => buildersError ?? backersRewardsPctError ?? allocationOfError ?? rewardsError,
-    [buildersError, backersRewardsPctError, allocationOfError, rewardsError],
+    () => buildersError ?? allocationOfError ?? rewardsError,
+    [buildersError, allocationOfError, rewardsError],
   )
 
   const { prices } = usePricesContext()
@@ -73,11 +62,10 @@ export const useGetBackerRewards = (
   const rbtcPrice = prices[rbtc.symbol]?.price ?? 0
 
   const data = useMemo(() => {
-    return builders.reduce<BackerRewards[]>((acc, builder, i) => {
-      const { address, gauge } = builder
+    return activeBuilders.reduce<BackerRewards[]>((acc, builder, i) => {
+      const { address, gauge, backerRewardPct } = builder
       const backerAllocationOf = allocationOf[i] ?? 0n
 
-      const rewardPercentage = backersRewardsPct[address] ?? null
       const rifRewards = tokenRewardsMetrics(tokenRewards[rif.address], gauge)
       const rbtcRewards = tokenRewardsMetrics(tokenRewards[rbtc.address], gauge)
 
@@ -104,7 +92,7 @@ export const useGetBackerRewards = (
                 logo: RifSvg(),
               },
             },
-            rewardPercentage,
+            rewardPercentage: backerRewardPct,
             estimatedRewards: {
               rif: {
                 amount: {
@@ -170,7 +158,7 @@ export const useGetBackerRewards = (
       }
       return acc
     }, [])
-  }, [builders, allocationOf, backersRewardsPct, tokenRewards, rif, rbtc, rifPrice, rbtcPrice, currency])
+  }, [activeBuilders, allocationOf, tokenRewards, rif, rbtc, rifPrice, rbtcPrice, currency])
 
   return {
     data,

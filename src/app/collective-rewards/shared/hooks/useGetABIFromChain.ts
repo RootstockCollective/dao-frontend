@@ -2,38 +2,21 @@ import { BuilderData, useGetABI } from './useGetABI'
 import { useMemo } from 'react'
 import { useGetCycleRewards } from './useGetCycleRewards'
 import { useReadGauges } from '@/shared/hooks/contracts'
-import { useReadBuilderRegistryForMultipleArgs } from '@/shared/hooks/contracts/collective-rewards/useReadBuilderRegistryForMultipleArgs'
-import { RequiredBuilder } from '../../types'
-import { useGetBuildersByState } from '../../user'
+import { CompleteBuilder } from '../../types'
+import { filterBuildersByState, useBuilderContext } from '@/app/collective-rewards/user'
 
 export const useGetABIFromChain = () => {
-  const {
-    data: builders,
-    isLoading: buildersLoading,
-    error: buildersError,
-  } = useGetBuildersByState<RequiredBuilder>({
-    activated: true,
-    communityApproved: true,
-    kycApproved: true,
-    revoked: false,
-  })
+  const { builders, isLoading: buildersLoading, error: buildersError } = useBuilderContext()
 
-  const gauges = builders.map(({ gauge }) => gauge)
+  const activeBuilders = filterBuildersByState<CompleteBuilder>(builders)
+
+  const gauges = activeBuilders.map(({ gauge }) => gauge)
   const {
     data: totalAllocation,
     isLoading: totalAllocationLoading,
     error: totalAllocationError,
   } = useReadGauges({ addresses: gauges, functionName: 'totalAllocation' })
 
-  const buildersAddress = builders.map(({ address }) => [address] as const)
-  const {
-    data: backerRewardsPercPerBuilder,
-    isLoading: backerRewardsLoading,
-    error: backerRewardError,
-  } = useReadBuilderRegistryForMultipleArgs({
-    functionName: 'backerRewardPercentage',
-    args: buildersAddress,
-  })
   const {
     data: cycleRewards,
     isLoading: cycleRewardsLoading,
@@ -41,13 +24,11 @@ export const useGetABIFromChain = () => {
   } = useGetCycleRewards()
 
   const buildersData = useMemo(() => {
-    return builders
-      .reduce<Array<BuilderData>>((acc, { address }, i) => {
+    return activeBuilders
+      .reduce<Array<BuilderData>>((acc, { address, backerRewardPct }, i) => {
         const allocation = totalAllocation[i] ?? 0n
-        const rewardPct = backerRewardsPercPerBuilder[i]
-        const [previous, next, cooldownEndTime] = rewardPct ?? [0n, 0n, 0n]
 
-        if (!allocation || !rewardPct) {
+        if (!allocation || !backerRewardPct) {
           return acc
         }
 
@@ -57,28 +38,28 @@ export const useGetABIFromChain = () => {
           rewardShares: '0',
           backerRewardPercentage: {
             id: address,
-            next: next.toString(),
-            previous: previous.toString(),
-            cooldownEndTime: cooldownEndTime.toString(),
+            next: backerRewardPct.next.toString(),
+            previous: backerRewardPct.current.toString(),
+            cooldownEndTime: backerRewardPct.cooldownEndTime.toString(),
           },
         })
 
         return acc
       }, [])
       .sort((a, b) => (BigInt(b.totalAllocation) > BigInt(a.totalAllocation) ? 1 : -1))
-  }, [backerRewardsPercPerBuilder, builders, totalAllocation])
+  }, [activeBuilders, totalAllocation])
 
-  const isLoading = buildersLoading || cycleRewardsLoading || totalAllocationLoading || backerRewardsLoading
+  const isLoading = buildersLoading || cycleRewardsLoading || totalAllocationLoading
 
-  const error = buildersError ?? cycleRewardsError ?? totalAllocationError ?? backerRewardError
+  const error = buildersError ?? cycleRewardsError ?? totalAllocationError
 
   const abi = useGetABI({
     builders: buildersData,
     cycles: [
       {
         id: '0',
-        rewardsERC20: cycleRewards.rifRewards.toString(),
-        rewardsRBTC: cycleRewards.rbtcRewards.toString(),
+        rewardsERC20: cycleRewards.rif.toString(),
+        rewardsRBTC: cycleRewards.rbtc.toString(),
       },
     ],
   })

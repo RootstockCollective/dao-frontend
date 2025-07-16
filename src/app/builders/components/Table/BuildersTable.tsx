@@ -1,7 +1,7 @@
 'use client'
 
 import { AllocationsContext } from '@/app/collective-rewards/allocations/context'
-import { Token, useGetBuildersRewards } from '@/app/collective-rewards/rewards' // FIXME: change path so as to not import from a cousin folder
+import { Token } from '@/app/collective-rewards/rewards' // FIXME: change path so as to not import from a cousin folder
 import { Builder } from '@/app/collective-rewards/types'
 import {
   isBuilderActive,
@@ -27,6 +27,7 @@ import { BuilderDataRow, convertDataToRowData } from './BuilderDataRow'
 import { BuilderHeaderRow } from './BuilderHeaderRow'
 import { ColumnId, DEFAULT_HEADERS, PAGE_SIZE } from './BuilderTable.config'
 import { Action } from './Cell/ActionCell'
+import { useGetBuilderRewardsSummary } from '../../hooks/useGetBuilderRewardsSummary'
 
 // --- Filter builders by state ---
 const filterInactive = (builder: Builder) => !isBuilderActive(builder.stateFlags)
@@ -49,7 +50,8 @@ const filterMap: Record<BuilderFilterOptionId, (builder: Builder) => boolean> = 
 
 // FIXME: this is a temporary solution to filter builders by state.
 const useFilteredBuilders = (tokens: { [token: string]: Token }, filterOption: BuilderFilterOptionId) => {
-  const { data: buildersRewardsData, isLoading, error } = useGetBuildersRewards(tokens)
+  const { data: buildersRewardsData, isLoading, error } = useGetBuilderRewardsSummary(getTokens())
+  console.log('🚀 ~ useFilteredBuilders ~ buildersRewardsData:', buildersRewardsData)
   const filteredBuilders = useMemo(
     () => buildersRewardsData?.filter(filterMap[filterOption]),
     [buildersRewardsData, filterOption],

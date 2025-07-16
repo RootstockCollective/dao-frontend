@@ -4,7 +4,7 @@ import { Paragraph } from '@/components/TypographyNew'
 import { ConnectWorkflow } from '@/shared/walletConnection/connection/ConnectWorkflow'
 import { ConnectButtonComponentSecondary } from '@/shared/walletConnection'
 
-export const ConnectPopover = ({ children }: { children: ReactNode }) => (
+export const ConnectPopover = ({ children, disabled }: { children: ReactNode; disabled?: boolean }) => (
   // FIXME: conciliate with the new popover component once implemented (ie. remove custom styles)
   <Popover
     content={
@@ -20,6 +20,7 @@ export const ConnectPopover = ({ children }: { children: ReactNode }) => (
     position="top"
     background="light"
     contentSubContainerClassName="border-none shadow-none p-0"
+    disabled={disabled}
   >
     <div className="w-full flex flex-col items-start">{children}</div>
   </Popover>

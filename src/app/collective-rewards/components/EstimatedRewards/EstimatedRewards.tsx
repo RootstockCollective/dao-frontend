@@ -40,8 +40,8 @@ export const EstimatedRewards = () => {
   const rifPrice = prices.RIF?.price ?? 0
   const rbtcPrice = prices.RBTC?.price ?? 0
 
-  const rifAmount = cycleRewards?.rifRewards ?? 0n
-  const rbtcAmount = cycleRewards?.rbtcRewards ?? 0n
+  const rifAmount = cycleRewards?.rif ?? 0n
+  const rbtcAmount = cycleRewards?.rbtc ?? 0n
   const rifAmountInFiat = formatCurrency(getFiatAmount(rifAmount, rifPrice), {
     currency: 'USD',
     showCurrency: true,

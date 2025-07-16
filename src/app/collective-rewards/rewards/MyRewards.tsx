@@ -13,8 +13,7 @@ import {
   useIsBacker,
 } from '@/app/collective-rewards/rewards'
 import { CRWhitepaperLink } from '@/app/collective-rewards/shared'
-import { RequiredBuilder } from '@/app/collective-rewards/types'
-import { useGetBuildersByState } from '@/app/collective-rewards/user'
+import { filterBuildersByState, useBuilderContext } from '@/app/collective-rewards/user'
 import { useHandleErrors } from '@/app/collective-rewards/utils'
 import { Button } from '@/components/Button'
 import { LoadingSpinner } from '@/components/LoadingSpinner'
@@ -27,6 +26,7 @@ import { useRouter } from 'next/navigation'
 import { FC } from 'react'
 import { Address, zeroAddress } from 'viem'
 import { useAccount } from 'wagmi'
+import { CompleteBuilder } from '../types'
 
 const SubText = () => (
   <>
@@ -155,7 +155,8 @@ const BackerRewardsSection: FC<RewardDetails> = data => {
 
 export const Rewards: FC = () => {
   const { address, isConnected } = useAccount()
-  const { data: activatedBuilders, error: activatedBuildersError } = useGetBuildersByState<RequiredBuilder>({
+  const { builders, error: activatedBuildersError } = useBuilderContext()
+  const activatedBuilders = filterBuildersByState<CompleteBuilder>(builders, {
     activated: true,
   })
   const activatedGauges = activatedBuilders?.map(({ gauge }) => gauge) ?? []

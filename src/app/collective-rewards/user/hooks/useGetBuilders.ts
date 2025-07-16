@@ -1,4 +1,4 @@
-import { Builder, BuilderStateFlags } from '@/app/collective-rewards/types'
+import { BackerRewardPercentage, Builder, BuilderStateFlags } from '@/app/collective-rewards/types'
 import { useGetProposalsState } from '@/app/collective-rewards/user'
 import { useGetGaugesArray } from '@/app/collective-rewards/user/hooks/useGetGaugesArray'
 import { getMostAdvancedProposal, removeBrackets } from '@/app/collective-rewards/utils'
@@ -8,6 +8,7 @@ import { useReadBuilderRegistryForMultipleArgs } from '@/shared/hooks/contracts/
 import { DateTime } from 'luxon'
 import { useMemo } from 'react'
 import { Address, getAddress, zeroAddress } from 'viem'
+import { getBackerRewardPercentage } from '../../rewards/utils'
 
 export type UseGetBuilders = () => {
   data: Record<Address, Builder> // TODO review Builder type
@@ -56,13 +57,27 @@ export const useGetBuilders: UseGetBuilders = () => {
     [builders, gauges],
   )
 
+  const buildersAddresses = useMemo(
+    () => builders?.map(builder => [builder ?? zeroAddress] as const) ?? [],
+    [builders],
+  )
+
   const {
     data: builderStates,
     isLoading: builderStatesLoading,
     error: builderStatesError,
   } = useReadBuilderRegistryForMultipleArgs({
     functionName: 'builderState',
-    args: useMemo(() => builders?.map(builder => [builder ?? zeroAddress] as const) ?? [], [builders]),
+    args: buildersAddresses,
+  })
+
+  const {
+    data: backersRewardsPct,
+    isLoading: backersRewardsPctLoading,
+    error: backersRewardsPctError,
+  } = useReadBuilderRegistryForMultipleArgs({
+    functionName: 'backerRewardPercentage',
+    args: buildersAddresses,
   })
 
   // TODO: useFetchCreateBuilderProposals & useGetProposalsState & getMostAdvancedProposal can be joined
@@ -85,16 +100,30 @@ export const useGetBuilders: UseGetBuilders = () => {
   } = useGetProposalsState(proposalIds)
 
   const data: Record<Address, Builder> = useMemo(() => {
-    const statusByBuilder =
-      builders?.reduce<Record<Address, BuilderStateFlags>>((acc, builder, index) => {
+    const statusByBuilder = builders?.reduce<Record<Address, BuilderStateFlags>>((acc, builder, index) => {
+      if (!builder) return acc
+
+      const builderState = builderStates?.[index] ?? [false, false, false, false, false, '', '']
+      const [activated, kycApproved, communityApproved, paused, revoked] = builderState
+      acc[builder] = { activated, kycApproved, communityApproved, paused, revoked }
+
+      return acc
+    }, {})
+
+    const rewardPercentageByBuilder = builders?.reduce<Record<Address, BackerRewardPercentage>>(
+      (acc, builder, index) => {
         if (!builder) return acc
-
-        const builderState = builderStates?.[index] ?? [false, false, false, false, false, '', '']
-        const [activated, kycApproved, communityApproved, paused, revoked] = builderState
-        acc[builder] = { activated, kycApproved, communityApproved, paused, revoked }
-
+        const [previous, next, cooldownEndTime] = (backersRewardsPct?.[index] || [0n, 0n, 0n]) as [
+          bigint,
+          bigint,
+          bigint,
+        ]
+        const backerRewardPercentage = getBackerRewardPercentage(previous, next, cooldownEndTime)
+        acc[builder] = backerRewardPercentage
         return acc
-      }, {}) ?? ({} as Record<Address, BuilderStateFlags>)
+      },
+      {},
+    )
 
     return Object.entries(proposalsByBuilder ?? {}).reduce<Record<Address, Builder>>(
       (acc, [key, proposalsEvent]) => {
@@ -117,9 +146,10 @@ export const useGetBuilders: UseGetBuilders = () => {
               date: joiningDate,
             },
             stateFlags: statusByBuilder[address],
-            gauge: builderToGauge && builderToGauge[address],
+            gauge: builderToGauge[address],
             address,
             builderName: removeBrackets(builderName),
+            backerRewardPct: rewardPercentageByBuilder[address],
           }
         }
 
@@ -127,16 +157,22 @@ export const useGetBuilders: UseGetBuilders = () => {
       },
       {},
     )
-  }, [proposalsByBuilder, builderToGauge, builderStates, proposalsStateMap, builders])
+  }, [proposalsByBuilder, builderToGauge, builderStates, backersRewardsPct, proposalsStateMap, builders])
 
   const isLoading =
     isLoadingProposalsByBuilder ||
     builderStatesLoading ||
     buildersLoading ||
     gaugesLoading ||
-    proposalsStateMapLoading
+    proposalsStateMapLoading ||
+    backersRewardsPctLoading
   const error =
-    proposalsByBuilderError ?? builderStatesError ?? buildersError ?? gaugesError ?? proposalsStateMapError
+    proposalsByBuilderError ??
+    builderStatesError ??
+    buildersError ??
+    gaugesError ??
+    proposalsStateMapError ??
+    backersRewardsPctError
 
   return {
     data,

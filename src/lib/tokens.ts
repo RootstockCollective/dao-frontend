@@ -1,13 +1,9 @@
-import { Address, getAddress } from 'viem'
+import { getAddress } from 'viem'
 import { COINBASE_ADDRESS, RBTC, RIF } from './constants'
 import { tokenContracts } from './contracts'
+import { Token } from '@/app/collective-rewards/rewards/types'
 
-export interface TokenInfo {
-  address: Address
-  symbol: string
-}
-
-export const getTokens = (): { rif: TokenInfo; rbtc: TokenInfo } => ({
+export const getTokens = (): { rif: Token; rbtc: Token } => ({
   rif: {
     address: getAddress(tokenContracts.RIF),
     symbol: RIF,

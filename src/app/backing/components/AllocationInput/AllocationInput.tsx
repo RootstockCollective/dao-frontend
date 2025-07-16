@@ -60,9 +60,7 @@ export const AllocationInput: FC<AllocationInputProps> = ({
             className="focus:outline-none focus-visible:outline-none text-left p-0 m-0 border-0 bg-transparent w-full text-[24px]"
             value={allocation ? formatSymbol(allocation, 'stRIF') : ''}
             max={Number(formatSymbol(maxAllocation, 'stRIF'))}
-            onValueChange={({ value }) => {
-              if (editing) onAllocationChange(Number(value))
-            }}
+            onValueChange={({ value }) => editing && onAllocationChange(Number(value))}
             onFocus={() => !editing && setEditing?.(true)}
             disabled={disabled}
             data-testid="allocationInputNumber"

@@ -6,9 +6,12 @@ import { AnnualBackersIncentives } from './components/AnnualBackersIncentives'
 import { CallToActionSection } from './components/CallToActionSection'
 import { CurrentCycle } from './components/CurrentCycle'
 import { TotalRewardsDistributed } from './components/TotalRewardsDistributed'
+import { useRouter } from 'next/navigation'
 
 const NAME = 'Collective Rewards'
 export const CollectiveRewardsPage = () => {
+  const router = useRouter()
+
   return (
     <div className="flex flex-col">
       <Header caps variant="h1" className="text-3xl leading-10 pb-[2.5rem]">
