@@ -6,7 +6,7 @@ import Link from 'next/link'
 import { showToast } from '@/shared/notification'
 
 interface Props {
-  timestamp: number
+  timestamp?: number
   proposalName: string
   txHash: string
 }

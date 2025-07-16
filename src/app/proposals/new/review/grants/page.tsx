@@ -28,22 +28,23 @@ export default function GrantsProposalReview() {
   const onSubmit = useCallback(async () => {
     try {
       if (!record?.form || record?.category !== ProposalCategory.Grants) return
-      const { description, discourseLink, proposalName, targetAddress, token, transferAmount } = record.form
+      const { description, proposalName, targetAddress, token, transferAmount } = record.form
+      const proposalDescription = `${proposalName};${description}`
       const tokenAddress = tokenContracts[token.toUpperCase() as keyof typeof tokenContracts]
       if (!tokenAddress) throw new Error('GrantsProposalReview: Unknown contract address')
+      // here the user will see Metamask window instead of loading state
       const { txHash, txId } = await onCreateTreasuryTransferProposal(
         targetAddress,
         transferAmount,
-        description,
+        proposalDescription,
         tokenAddress,
       )
-      const { timestamp } = await getTxReceipt(txHash)
-      // here the user will see Metamask window
-      router.push(`/proposals/${txId ?? ''}`)
+      const receipt = await getTxReceipt(txHash)
+      router.push(txId ? `/proposals/${txId}` : '/proposals')
       setRecord(null)
       showCreateProposalToast({
         proposalName,
-        timestamp,
+        timestamp: receipt?.timestamp,
         txHash,
       })
     } catch (error) {

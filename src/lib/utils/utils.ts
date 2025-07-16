@@ -419,15 +419,19 @@ export const formatAssetData = (
 export const formatAmount = (amount: string) =>
   formatNumberWithCommas(formatEther(BigInt(amount)).split('.')[0])
 export async function getTxReceipt(txHash: Hash) {
-  const receipt = await waitForTransactionReceipt(config, {
-    hash: txHash,
-  })
-  const block = await getBlock(config, {
-    blockNumber: receipt.blockNumber,
-  })
-  const timestamp = Number(block.timestamp) * 1000
-  return {
-    ...receipt,
-    timestamp,
+  try {
+    const receipt = await waitForTransactionReceipt(config, {
+      hash: txHash,
+    })
+    const block = await getBlock(config, {
+      blockNumber: receipt.blockNumber,
+    })
+    const timestamp = Number(block.timestamp) * 1000
+    return {
+      ...receipt,
+      timestamp,
+    }
+  } catch (error) {
+    return undefined
   }
 }
