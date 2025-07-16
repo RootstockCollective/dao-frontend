@@ -14,8 +14,7 @@ export function useTreasuryTabs() {
   return useMemo<Record<TreasuryTabKey, TreasurySection>>(
     () => ({
       Grants: {
-        description:
-          'The Grants Treasury consists of funds allocated for community grants and active grant distributions. View total available funds and currently deployed grant amounts.',
+        description: '',
         categories: {
           Grants: {
             buckets: [
@@ -46,8 +45,7 @@ export function useTreasuryTabs() {
         },
       },
       Growth: {
-        description:
-          'The Growth Treasury is dedicated to supporting the growth of the RIF ecosystem. This includes funding for projects, initiatives, and community development.',
+        description: '',
         categories: {
           Total: {
             buckets: [
@@ -78,8 +76,7 @@ export function useTreasuryTabs() {
         },
       },
       General: {
-        description:
-          'The General Treasury is used for general operational expenses and support for the RIF ecosystem. This includes funding for projects, initiatives, and community development.',
+        description: '',
         categories: {
           '': {
             buckets: [
