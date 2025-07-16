@@ -9,7 +9,7 @@ import { newProposalCards } from './newProposalCards.data'
 import { Paragraph } from '@/components/TypographyNew'
 import { NewProposalCardExtended } from './components/NewProposalCardExtended'
 import { ProposalCategory } from '@/shared/types'
-import { useProposalStepper } from '../components/stepper/StepperProvider'
+import { ProposalStep, useProposalStepper } from '../components/stepper/StepperProvider'
 
 const variants: Variants = {
   initial: {
@@ -58,7 +58,8 @@ export default function NewProposal() {
   // set 'Type' proposal step
   const { setCurrentStep } = useProposalStepper()
   useEffect(() => {
-    setCurrentStep('Type')
+    setCurrentStep(ProposalStep.Type)
+    // eslint-disable-next-line
   }, [])
 
   return (

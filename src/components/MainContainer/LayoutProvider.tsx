@@ -14,6 +14,7 @@ import {
   useRef,
 } from 'react'
 import { usePathname } from 'next/navigation'
+import useLocalStorageState from 'use-local-storage-state'
 
 interface LayoutState {
   isSidebarOpen: boolean
@@ -42,7 +43,10 @@ const LayoutContext = createContext<LayoutState | null>(null)
 export function LayoutProvider({ children }: PropsWithChildren) {
   // on desktop the sidebar is initially open, on mobile - initially closed
   const isDesktop = useIsDesktop()
-  const [isSidebarOpen, setIsSidebarOpen] = useState(isDesktop)
+  // store sidebar state between browser reloads
+  const [isSidebarOpen, setIsSidebarOpen] = useLocalStorageState<boolean>('menu-sidebar-open', {
+    defaultValue: isDesktop,
+  })
   const toggleSidebar = () => setIsSidebarOpen(state => !state)
   const openSidebar = () => setIsSidebarOpen(true)
   const closeSidebar = () => setIsSidebarOpen(false)
