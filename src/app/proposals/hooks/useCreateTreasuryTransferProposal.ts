@@ -16,13 +16,13 @@ const DEFAULT_DAO_CONFIG = {
 }
 
 export const useCreateTreasuryTransferProposal = () => {
-  const { canCreateProposal } = useVotingPower()
+  const votingPowerData = useVotingPower()
   const { writeContractAsync: propose, isPending: isPublishing } = useWriteContract()
 
   const onCreateTreasuryTransferProposal = useCallback(
     async (address: Address, amount: string, description: string, tokenAddress: string) => {
-      console.log('🚀 ~ useCreateTreasuryTransferProposal ~ canCreateProposal:', canCreateProposal)
-      if (!canCreateProposal) {
+      // Check current voting power state directly from the hook data
+      if (!votingPowerData.canCreateProposal) {
         throw NoVotingPowerError
       }
       let calldata
@@ -31,34 +31,23 @@ export const useCreateTreasuryTransferProposal = () => {
       } else {
         calldata = encodeTreasuryERC20Transfer(address, amount)
       }
-      const { proposal, proposalToRunHash } = createProposal([TreasuryAddress], [0n], [calldata], description)
-      return {
-        txHash: await propose({
-          ...DEFAULT_DAO_CONFIG,
-          functionName: 'propose',
-          args: proposal,
-        }),
-        txId: await getProposalId(proposalToRunHash),
-      }
+      const { proposal } = createProposal([TreasuryAddress], [0n], [calldata], description)
+      return propose({
+        ...DEFAULT_DAO_CONFIG,
+        functionName: 'propose',
+        args: proposal,
+      })
     },
-    [canCreateProposal, propose],
+    [votingPowerData.canCreateProposal, propose],
   )
   return useMemo(
-    () => ({ onCreateTreasuryTransferProposal, isPublishing }),
-    [isPublishing, onCreateTreasuryTransferProposal],
+    () => ({
+      onCreateTreasuryTransferProposal,
+      isPublishing,
+      canCreateProposal: votingPowerData.canCreateProposal,
+    }),
+    [isPublishing, onCreateTreasuryTransferProposal, votingPowerData.canCreateProposal],
   )
-}
-
-async function getProposalId(proposal: [Address[], bigint[], Hash[], Hash]): Promise<bigint | undefined> {
-  try {
-    return await readContract(config, {
-      ...DEFAULT_DAO_CONFIG,
-      functionName: 'hashProposal',
-      args: proposal,
-    })
-  } catch {
-    undefined
-  }
 }
 
 export const encodeTreasuryERC20Transfer = (address: Address, amountToTransfer: string) => {
