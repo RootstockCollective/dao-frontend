@@ -4,7 +4,7 @@ import { LoadingSpinner } from '@/components/LoadingSpinner'
 import { LatestProposalsTableMemoized } from '@/app/proposals/components/LatestProposalsTable'
 
 export function ProposalsFromTheGraph() {
-  const { data, loading, error, activeProposals, totalProposals } = useGetProposalsWithGraph()
+  const { data, loading, error, activeProposalCount, totalProposalCount } = useGetProposalsWithGraph()
 
   if (error) {
     throw error
@@ -16,8 +16,8 @@ export function ProposalsFromTheGraph() {
   return (
     <>
       <ProposalsSummary
-        totalProposals={totalProposals.toString()}
-        activeProposals={activeProposals.toString()}
+        totalProposals={totalProposalCount.toString()}
+        activeProposals={activeProposalCount.toString()}
       />
       <LatestProposalsTableMemoized proposals={data} />
     </>
