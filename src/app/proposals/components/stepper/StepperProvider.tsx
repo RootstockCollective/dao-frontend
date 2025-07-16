@@ -3,6 +3,7 @@
 import { createContext, useState, useMemo, type PropsWithChildren, useContext } from 'react'
 
 export const ProposalStep = {
+  None: 'None',
   Type: 'Type',
   Details: 'Details',
   Review: 'Review',
@@ -17,7 +18,7 @@ interface ProposalStepperState {
 const ProposalStepperContext = createContext<ProposalStepperState | null>(null)
 
 export function StepperProvider({ children }: PropsWithChildren) {
-  const [currentStep, setCurrentStep] = useState<ProposalStep>(ProposalStep.Type)
+  const [currentStep, setCurrentStep] = useState<ProposalStep>(ProposalStep.None)
   const value = useMemo<ProposalStepperState>(
     () => ({
       currentStep,
