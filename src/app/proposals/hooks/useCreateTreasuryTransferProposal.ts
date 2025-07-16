@@ -33,29 +33,14 @@ export const useCreateTreasuryTransferProposal = () => {
     } else {
       calldata = encodeTreasuryERC20Transfer(address, amount)
     }
-    const { proposal, proposalToRunHash } = createProposal([TreasuryAddress], [0n], [calldata], description)
-    return {
-      txHash: await propose({
-        ...DEFAULT_DAO_CONFIG,
-        functionName: 'propose',
-        args: proposal,
-      }),
-      txId: await getTxId(proposalToRunHash),
-    }
-  }
-  return { onCreateTreasuryTransferProposal, isPublishing }
-}
-
-async function getTxId(proposal: [Address[], bigint[], Hash[], Hash]): Promise<bigint | undefined> {
-  try {
-    return await readContract(config, {
+    const { proposal } = createProposal([TreasuryAddress], [0n], [calldata], description)
+    return propose({
       ...DEFAULT_DAO_CONFIG,
-      functionName: 'hashProposal',
+      functionName: 'propose',
       args: proposal,
     })
-  } catch (error) {
-    return undefined
   }
+  return { onCreateTreasuryTransferProposal, isPublishing }
 }
 
 export const encodeTreasuryERC20Transfer = (address: Address, amountToTransfer: string) => {
