@@ -10,7 +10,7 @@ import { useHandleErrors } from '@/app/collective-rewards/utils'
 import { formatCurrency } from '@/lib/utils'
 import { LoadingSpinner } from '@/components/LoadingSpinner'
 import { MetricTitle } from '@/components/Metric'
-import KotoQuestionMarkIcon from '@/components/Icons/KotoQuestionMarkIcon'
+import { KotoQuestionMarkIcon } from '@/components/Icons/KotoQuestionMarkIcon'
 import { Paragraph } from '@/components/TypographyNew'
 
 interface TokenRewardsProps {

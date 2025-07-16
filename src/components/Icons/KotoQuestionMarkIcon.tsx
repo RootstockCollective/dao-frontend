@@ -1,7 +1,19 @@
 import * as React from 'react'
 
-const SVGComponent = (props: React.JSX.IntrinsicAttributes & React.SVGProps<SVGSVGElement>) => (
-  <svg xmlns="http://www.w3.org/2000/svg" width={16} height={16} viewBox="0 0 16 16" fill="none" {...props}>
+type SvgType = React.JSX.IntrinsicAttributes & React.SVGProps<SVGSVGElement>
+interface Props extends SvgType {
+  size?: number
+}
+
+export const KotoQuestionMarkIcon = ({ size = 16, ...props }: Props) => (
+  <svg
+    xmlns="http://www.w3.org/2000/svg"
+    width={size}
+    height={size}
+    viewBox="0 0 16 16"
+    fill="none"
+    {...props}
+  >
     <path
       d="M8 11V10.1111C10.2093 10.1111 12 8.51926 12 6.55556C12 4.59185 10.2093 3 8 3C5.79071 3 4 4.59185 4 6.55556"
       stroke="white"
@@ -15,4 +27,3 @@ const SVGComponent = (props: React.JSX.IntrinsicAttributes & React.SVGProps<SVGS
     />
   </svg>
 )
-export default SVGComponent
