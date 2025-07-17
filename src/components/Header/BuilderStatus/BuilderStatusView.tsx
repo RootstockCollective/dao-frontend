@@ -18,7 +18,7 @@ const builderStatusColorClasses: Record<BuilderState, HtmlHTMLAttributes<HTMLSpa
 export function BuilderStatusView({ builderState }: BuilderStatusProps) {
   return (
     <div
-      className={cn('flex items-center font-rootstock-sans gap-1', builderStatusColorClasses[builderState])}
+      className={cn('flex items-center font-rootstock-sans gap-2', builderStatusColorClasses[builderState])}
     >
       <SeparatorBar />
       {builderState === 'inProgress' && <HourglassIcon size={16} />}

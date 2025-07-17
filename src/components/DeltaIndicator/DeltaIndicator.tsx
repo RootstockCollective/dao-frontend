@@ -34,7 +34,7 @@ export const DeltaIndicator: FC<DeltaIndicatorProps> = ({ currentPct, nextPct })
 
   return (
     <div className={cn('flex flex-row items-center', colorClass)}>
-      <SeparatorBar />
+      <SeparatorBar className="ml-2 mr-1" />
       <Icon />
       <div>{displayValue}</div>
     </div>
