@@ -5,6 +5,7 @@ import { cn } from '@/lib/utils'
 export interface TooltipProps extends RadixTooltip.TooltipContentProps {
   text: ReactNode
   disabled?: boolean
+  delayDuration?: number
 }
 
 export function Tooltip({
@@ -14,13 +15,14 @@ export function Tooltip({
   side = 'right',
   sideOffset = 5,
   disabled = false,
+  delayDuration = 100,
   ...props
 }: TooltipProps) {
   if (disabled) {
-    return <>{children}</>
+    return children
   }
   return (
-    <RadixTooltip.Root delayDuration={300}>
+    <RadixTooltip.Root delayDuration={delayDuration}>
       <RadixTooltip.Trigger asChild>{children}</RadixTooltip.Trigger>
       <RadixTooltip.Portal>
         <RadixTooltip.Content

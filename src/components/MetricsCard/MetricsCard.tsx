@@ -36,6 +36,7 @@ const DEFAULT_CLASSES = 'h-min-[79px] w-full py-[12px] px-[12px] flex flex-col b
 
 /**
  * Card for displaying balance and corresponding (fiat) value.
+ * @deprecated Use BalanceInfo instead
  */
 export const MetricsCard: FC<MetricsCardProps> = ({
   title,

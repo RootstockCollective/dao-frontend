@@ -32,5 +32,6 @@ export const routePatterns = [
   { pattern: /^\/proposals\/\d+$/, component: <ProposalDetailTopLeftComponent /> },
   { pattern: /^\/proposals$/, component: <ProposalsTopLeftComponent /> },
   { pattern: /^\/delegate$/, component: <HeaderTitle variant="h1">DELEGATION</HeaderTitle> },
+  { pattern: /^\/treasury$/, component: <HeaderTitle variant="h1">TREASURY</HeaderTitle> },
   // Add more patterns as needed
 ]
