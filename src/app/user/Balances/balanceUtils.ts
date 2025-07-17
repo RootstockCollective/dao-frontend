@@ -6,6 +6,7 @@ const symbolsToGetFromArray = {
   RIF: { equivalentSymbols: ['tRIF', 'RIF'], currentContract: tokenContracts.RIF },
   RBTC: { equivalentSymbols: ['RBTC', 'tRBTC'], currentContract: tokenContracts.RBTC },
   stRIF: { equivalentSymbols: ['stRIF', 'FIRts'], currentContract: tokenContracts.stRIF },
+  USDRIF: { equivalentSymbols: ['USDRIF'], currentContract: tokenContracts.USDRIF },
 }
 
 export type SymbolsEquivalentKeys = keyof typeof symbolsToGetFromArray

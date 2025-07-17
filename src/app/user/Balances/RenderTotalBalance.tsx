@@ -11,6 +11,12 @@ interface Props {
   context?: string
 }
 
+/**
+ * @deprecated as we will remove the delegation section
+ * @param symbol
+ * @param context
+ * @constructor
+ */
 export const RenderTotalBalance = ({ symbol, context }: Props) => {
   const { balances, prices } = useBalancesContext()
   const { isConnected } = useAccount()
