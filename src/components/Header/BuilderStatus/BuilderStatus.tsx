@@ -1,7 +1,6 @@
 import { useBuilderContext } from '@/app/collective-rewards/user/context/BuilderContext'
 import { isActive } from '@/app/collective-rewards/active-builders'
 import { BuilderState } from '@/app/collective-rewards/types'
-import { useMemo } from 'react'
 import { Address } from 'viem'
 import { BuilderStatusView } from './BuilderStatusView'
 import { useHandleErrors } from '@/app/collective-rewards/utils'
@@ -15,20 +14,13 @@ export function BuilderStatus({ address }: BuilderStatusProps) {
 
   useHandleErrors({ error, title: 'Error loading builder status' })
 
-  const builder = useMemo(() => {
-    if (!address) {
-      return undefined
-    }
-    return getBuilderByAddress(address)
-  }, [address, getBuilderByAddress])
+  const builder = address ? getBuilderByAddress(address) : undefined
 
-  const builderState: BuilderState = useMemo(() => {
-    if (!builder?.stateFlags) {
-      return 'inProgress'
-    }
-
-    return isActive(builder.stateFlags) ? 'active' : 'inProgress'
-  }, [builder?.stateFlags])
+  const builderState: BuilderState = !builder?.stateFlags
+    ? 'inProgress'
+    : isActive(builder.stateFlags)
+      ? 'active'
+      : 'inProgress'
 
   if (isLoading || !builder) {
     return null
