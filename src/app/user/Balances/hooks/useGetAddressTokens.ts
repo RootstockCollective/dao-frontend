@@ -38,6 +38,7 @@ export const useGetAddressTokens = (address: Address, chainId?: number) => {
     contracts: [
       getTokenFunction(tokenContracts.RIF, address, 'balanceOf'),
       getTokenFunction(tokenContracts.stRIF, address, 'balanceOf'),
+      getTokenFunction(tokenContracts.USDRIF, address, 'balanceOf'),
     ],
     multicallAddress: MulticallAddress,
     query: {
@@ -62,6 +63,11 @@ export const useGetAddressTokens = (address: Address, chainId?: number) => {
     tokenData &&
     ([contracts[1], { result: tokenData[tokenContracts.stRIF].symbol }] as TokenData)
 
+  const USDRIF =
+    contracts &&
+    tokenData &&
+    ([contracts[2], { result: tokenData[tokenContracts.USDRIF].symbol }] as TokenData)
+
   return {
     data: [
       buildTokenBalanceObject('stRIF', stRIF),
@@ -71,6 +77,7 @@ export const useGetAddressTokens = (address: Address, chainId?: number) => {
         balance: rbtc?.value.toString() || '0',
         contractAddress: zeroAddress,
       },
+      buildTokenBalanceObject('USDRIF', USDRIF),
     ] as AddressToken[],
     isLoading: rbtcLoading || contractsLoading || IsTokenDataLoading,
     error: rbtcError ?? contractsError ?? tokenDataError,

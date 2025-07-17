@@ -28,7 +28,7 @@ const tokenContracts = {
   RIF: RIF_ADDRESS,
   stRIF: STRIF_ADDRESS,
   RBTC: zeroAddress,
-  USDRIF: USDRIF_ADDRESS, // @TODO: USDRIF address
+  USDRIF: USDRIF_ADDRESS,
 }
 export type SupportedTokens = keyof typeof tokenContracts
 
