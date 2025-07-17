@@ -27,6 +27,7 @@ export default function ActivationProposalForm() {
       record && record.category === ProposalCategory.Activation
         ? record.form
         : {
+            builderName: '',
             proposalName: '',
             description: '',
             discourseLink: '',
@@ -51,13 +52,22 @@ export default function ActivationProposalForm() {
 
   // set focus on proposal name field
   // eslint-disable-next-line
-  useEffect(() => setFocus('proposalName'), [])
+  useEffect(() => setFocus('builderName'), [])
 
   return (
     <div>
       <form>
         <div className="w-full max-w-[760px] px-6 pt-6 pb-8 flex flex-col gap-10 bg-bg-80 rounded-sm">
-          <BaseProposalFields control={control} />
+          <div className="flex flex-col gap-4">
+            <TextInput
+              name="builderName"
+              control={control}
+              label="Builder name"
+              data-testid="BuilderName"
+              autoComplete="off"
+            />
+            <BaseProposalFields control={control} />
+          </div>
           <div className="flex flex-col gap-4">
             <h2 className="font-kk-topo text-text-100 text-2xl uppercase leading-loose tracking-wide">
               Proposal Action

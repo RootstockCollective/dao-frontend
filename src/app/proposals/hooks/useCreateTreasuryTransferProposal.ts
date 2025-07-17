@@ -1,40 +1,14 @@
-import { createProposal } from '@/app/proposals/hooks/proposalUtils'
+import { checkCanCreateProposal, createProposal } from '@/app/proposals/hooks/proposalUtils'
 import { NoVotingPowerError } from '@/app/proposals/shared/errors'
 import { DAOTreasuryAbi } from '@/lib/abis/DAOTreasuryAbi'
 import { GovernorAbi } from '@/lib/abis/Governor'
 import { GovernorAddress, tokenContracts, TreasuryAddress } from '@/lib/contracts'
 import { Address, encodeFunctionData, parseEther, zeroAddress } from 'viem'
 import { useWriteContract, useAccount } from 'wagmi'
-import { StRIFTokenAbi } from '@/lib/abis/StRIFTokenAbi'
-import { readContracts } from '@wagmi/core'
-import { config } from '@/config'
 
 const DEFAULT_DAO_CONFIG = {
   abi: GovernorAbi,
   address: GovernorAddress,
-}
-
-/**
- * Check if user can create proposal by fetching fresh data from blockchain
- * Uses the same logic as useVotingPower: totalVotingPower >= proposalThreshold
- */
-async function checkCanCreateProposal(userAddress: Address): Promise<boolean> {
-  const [votingPower, proposalThreshold] = await readContracts(config, {
-    allowFailure: false,
-    contracts: [
-      {
-        abi: StRIFTokenAbi,
-        address: tokenContracts.stRIF,
-        functionName: 'getVotes',
-        args: [userAddress],
-      },
-      {
-        ...DEFAULT_DAO_CONFIG,
-        functionName: 'proposalThreshold',
-      },
-    ],
-  })
-  return votingPower >= proposalThreshold
 }
 
 export const useCreateTreasuryTransferProposal = () => {
@@ -47,8 +21,9 @@ export const useCreateTreasuryTransferProposal = () => {
     description: string,
     tokenAddress: string,
   ) => {
+    if (!userAddress) throw new Error('Unknown user address')
     // Check fresh voting power from blockchain
-    const canCreate = await checkCanCreateProposal(userAddress!)
+    const canCreate = await checkCanCreateProposal(userAddress)
     if (!canCreate) {
       throw NoVotingPowerError
     }
