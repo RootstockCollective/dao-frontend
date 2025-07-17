@@ -1,4 +1,5 @@
 import { ArrowDownIcon, ArrowUpIcon } from '@/components/Icons'
+import SeparatorBar from '@/components/SeparatorBar/SeparatorBar'
 import { cn } from '@/lib/utils'
 import { FC } from 'react'
 
@@ -33,7 +34,7 @@ export const DeltaIndicator: FC<DeltaIndicatorProps> = ({ currentPct, nextPct })
 
   return (
     <div className={cn('flex flex-row items-center', colorClass)}>
-      <span className="w-[2px] h-[6px] rounded-[10px] bg-v3-text-40 ml-2 mr-1" />
+      <SeparatorBar />
       <Icon />
       <div>{displayValue}</div>
     </div>
