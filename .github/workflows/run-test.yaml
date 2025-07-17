@@ -1,0 +1,25 @@
+name: Trigger DAO Dapp Automation Workflow
+
+on: 
+  pull_request:
+  workflow_dispatch:
+    inputs:
+      ENVIRONMENT:
+        description: "Environment to run the tests in"
+        required: true
+        default: "CR-QA"
+        type: string
+      TEST_TYPE:
+        description: "Type of test to run (smoke, regression)"
+        required: true
+        default: "smoke"
+        type: string
+
+jobs:
+  trigger-e2e-tests:
+    uses: ./.github/workflows/trigger-e2e-tests.yml
+    with:
+      environment: ${{ github.event.inputs.ENVIRONMENT || 'CR-QA' }}
+      test_type: ${{ github.event.inputs.TEST_TYPE || 'smoke' }}
+    secrets:
+      token: ${{ secrets.DAO_DAPP_AUTOMATION_PAT }}
