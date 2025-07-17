@@ -1,6 +1,6 @@
 import { type SVGProps } from 'react'
 
 export interface IconProps extends SVGProps<SVGSVGElement> {
-  size?: string | number
+  size?: number
   'data-testid'?: string
 }
