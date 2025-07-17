@@ -3,7 +3,7 @@ import axios from 'axios'
 import { BigSource } from 'big.js'
 import { ClassValue, clsx } from 'clsx'
 import { twMerge } from 'tailwind-merge'
-import { Address } from 'viem'
+import { Address, formatEther } from 'viem'
 import { CHAIN_ID, EXPLORER_URL, RIF_WALLET_SERVICES_URL } from '../constants'
 import { Duration } from 'luxon'
 
@@ -414,3 +414,5 @@ export const formatAssetData = (
     : undefined
   return { amount: formattedAmount, fiatAmount: formattedFiatAmount }
 }
+export const formatAmount = (amount: string) =>
+  formatNumberWithCommas(formatEther(BigInt(amount)).split('.')[0])

@@ -1,14 +1,13 @@
-import React, { useEffect, useState } from 'react'
 import { formatEther } from 'viem'
 import { Button } from '@/components/ButtonNew/Button'
 import { Popover } from '@/components/Popover'
 import { capitalizeFirstLetter } from '@/shared/utils'
 import { Header, Paragraph } from '@/components/TypographyNew'
 import { formatNumberWithCommas } from '@/lib/utils'
-import Big from 'big.js'
 import { Vote } from '@/shared/types'
-import { HourglassIcon } from '@/components/Icons/HourglassIcon'
 import { HourglassAnimatedIcon } from '@/components/Icons/HourglassAnimatedIcon'
+import Big from 'big.js'
+import { MouseEvent, Ref } from 'react'
 
 interface VoteCounterProps {
   title: string
@@ -42,7 +41,7 @@ type ActionName = 'Vote on proposal' | 'Put on queue' | 'Execute'
 
 export interface ButtonAction {
   actionName: ActionName
-  onButtonClick?: (event: React.MouseEvent<HTMLButtonElement>) => void
+  onButtonClick?: (event: MouseEvent<HTMLButtonElement>) => void
 }
 
 interface VoteDetailsProps {
@@ -58,7 +57,7 @@ interface VoteDetailsProps {
   buttonAction?: ButtonAction
   vote?: Vote
   actionDisabled?: boolean
-  voteButtonRef?: React.Ref<HTMLButtonElement>
+  voteButtonRef?: Ref<HTMLButtonElement>
   onCastVote?: (vote: 'for' | 'against' | 'abstain') => void
   onCancelVote?: () => void
   isConnected?: boolean

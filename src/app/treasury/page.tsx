@@ -2,7 +2,7 @@
 import { TreasuryContextProviderWithPrices } from '@/app/treasury/contexts/TreasuryContext'
 import { TabsSection } from '@/app/treasury/sections/TabsSection'
 import { MetricsSection } from '@/app/treasury/sections/MetricsSection'
-import { HoldersSection } from '@/app/treasury/sections/HoldersSection'
+import { HoldersSection } from '@/app/treasury/sections/holders-section'
 
 export default function Treasury() {
   return (
