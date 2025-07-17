@@ -21,9 +21,6 @@ export const VotingPowerWithActionComponent = ({
   buttonClassName,
   buttonTextClassName,
 }: Props) => {
-  console.log('Big(formatEther(votingPower)).round(0)', Big(formatEther(votingPower)).round(0))
-  const formattedVotingPower = formatNumberWithCommas(Big(formatEther(votingPower)).round(0))
-  console.log('formattedVotingPower', formattedVotingPower)
   return (
     <div className={cn('pr-5', className)}>
       <Span variant="tag" className="text-disabled-border">
