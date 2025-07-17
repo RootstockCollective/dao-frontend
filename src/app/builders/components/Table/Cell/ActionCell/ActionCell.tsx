@@ -26,6 +26,7 @@ export const getActionType = (builder: Builder, hasBackingByUser: boolean): Acti
 
   return 'adjustBacking'
 }
+
 export type ActionCellProps = {
   className?: string
   actionType: Action

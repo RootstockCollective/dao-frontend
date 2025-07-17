@@ -1,10 +1,11 @@
 import { Header, Paragraph, Span } from '@/components/TypographyNew'
 import { CRWhitepaperLink } from '../collective-rewards/shared/components/CRWhitepaperLinkNew'
+import { BackerRewards } from './backers/components/BackerRewards'
 
 // TODO: We could refactor this part (along with others) to have one container that has the title and the content.
 const MyRewardsContainer = ({ children }: { children: React.ReactNode }) => {
   return (
-    <div className="flex w-full items-start gap-3 self-stretch pt-10 pb-10 pl-6 pr-6 bg-v3-bg-accent-80 rounded">
+    <div className="flex flex-col w-full items-start gap-3 self-stretch pt-10 pb-10 pl-6 pr-6 bg-v3-bg-accent-80 rounded">
       {children}
     </div>
   )
@@ -31,10 +32,15 @@ export const MyRewardsPage = () => {
           </Paragraph>
         </MyRewardsContainer>
         <MyRewardsContainer>
-          <Header variant="h3">Builder rewards PLACEHOLDER</Header>
+          <Header variant="h3" caps>
+            Builder rewards
+          </Header>
         </MyRewardsContainer>
         <MyRewardsContainer>
-          <Header variant="h3">Backer rewards PLACEHOLDER</Header>
+          <Header variant="h3" caps>
+            Backer rewards
+          </Header>
+          <BackerRewards />
         </MyRewardsContainer>
       </div>
     </div>
