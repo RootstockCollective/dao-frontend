@@ -53,12 +53,12 @@ const LatestActiveProposalCard = ({
         {/** who(address or rns), date and category icon*/}
         <div className="flex flex-row mt-2 items-center">
           <Tooltip text="Copy address">
-            <span className="font-rootstock-sans">
+            <Span>
               <CopyButton icon={null} className="inline" copyText={proposer}>
-                <span className="text-primary">by</span>&nbsp;
-                <span>{shortAddress(proposer)}</span>
+                <Span className="text-primary">by</Span>&nbsp;
+                <Span>{shortAddress(proposer)}</Span>
               </CopyButton>
-            </span>
+            </Span>
           </Tooltip>
           <SmallLineSeparator />
           <Paragraph>{Starts.format('MMM DD, YYYY')}</Paragraph>
