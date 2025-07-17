@@ -66,7 +66,7 @@ const UserCommunities = ({ nftAddresses }: Props) => {
 
   return (
     <>
-      <SectionContainer title="YOUR COMMUNITIES" titleClassname="text-[20px]">
+      <SectionContainer title="YOUR COMMUNITIES" headerVariant="h1">
         <div className={cn('grid sm:grid-cols-1 gap-[24px]', communityGridClass)}>
           {nftsInfo.map((nftInfo, index) => (
             <NftInfo

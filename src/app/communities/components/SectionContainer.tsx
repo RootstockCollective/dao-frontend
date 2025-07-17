@@ -1,12 +1,11 @@
-import { ReactNode } from 'react'
+import { ComponentProps, ReactNode } from 'react'
 import { Header } from '@/components/TypographyNew'
-import { cn } from '@/lib/utils'
 
 interface SectionContainerProps {
   title: string
   children: ReactNode
   rightContent?: ReactNode
-  titleClassname?: string
+  headerVariant?: ComponentProps<typeof Header>['variant']
 }
 
 /**
@@ -22,11 +21,13 @@ export const SectionContainer = ({
   title,
   rightContent,
   children,
-  titleClassname = 'text-[32px]',
+  headerVariant = 'h2',
 }: SectionContainerProps) => (
   <div className="bg-bg-80 p-[24px] rounded">
     <div className="flex flex-row justify-stretch mb-[40px]">
-      <Header className={cn('flex-1', titleClassname)}>{title}</Header>
+      <Header variant={headerVariant} className="flex-1">
+        {title}
+      </Header>
       <p className="flex-1">{rightContent}</p>
     </div>
     <div data-testid="SectionContainerContent">{children}</div>
