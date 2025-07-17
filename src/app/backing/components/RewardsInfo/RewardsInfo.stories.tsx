@@ -10,6 +10,7 @@ const RewardsInfoWrapper: FC<
       current: number
       next: number
       cooldownEndTime: number
+      previous: number
     }
   }
 > = ({ backerRewardPercentage, ...props }) => (
@@ -18,6 +19,7 @@ const RewardsInfoWrapper: FC<
       current: (BigInt(backerRewardPercentage.current) * WeiPerEther) / 100n,
       next: (BigInt(backerRewardPercentage.next) * WeiPerEther) / 100n,
       cooldownEndTime: BigInt(backerRewardPercentage.cooldownEndTime),
+      previous: (BigInt(backerRewardPercentage.previous) * WeiPerEther) / 100n,
     }}
     {...props}
   />
@@ -36,6 +38,7 @@ const defaultArgs = {
     current: 50,
     next: 50,
     cooldownEndTime: 1717987200,
+    previous: 50,
   },
 }
 

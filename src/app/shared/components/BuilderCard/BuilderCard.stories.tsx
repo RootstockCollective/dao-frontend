@@ -39,6 +39,7 @@ const defaultProps = {
     revoked: false,
   },
   backerRewardPct: {
+    previous: percentageToWei('50'),
     current: percentageToWei('50'),
     next: percentageToWei('50'),
     cooldownEndTime: BigInt(Math.floor(Date.now() / 1000) + 3600), // 1 hour from now
@@ -101,6 +102,7 @@ export const WithBuilderIncreasedRewardPct: Story = {
   args: {
     ...defaultProps,
     backerRewardPct: {
+      previous: percentageToWei('50'),
       current: percentageToWei('50'),
       next: percentageToWei('80'),
       cooldownEndTime: BigInt(Math.floor(Date.now() / 1000) + 3600), // 1 hour from now
@@ -112,6 +114,7 @@ export const WithBuilderDecreasedRewardPct: Story = {
   args: {
     ...defaultProps,
     backerRewardPct: {
+      previous: percentageToWei('50'),
       current: percentageToWei('50'),
       next: percentageToWei('30'),
       cooldownEndTime: BigInt(Math.floor(Date.now() / 1000) + 3600), // 1 hour from now

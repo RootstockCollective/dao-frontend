@@ -46,6 +46,7 @@ export interface BuilderProposal {
 export interface BackerRewardPercentage {
   current: bigint
   next: bigint
+  previous: bigint
   cooldownEndTime: bigint
 }
 

@@ -22,6 +22,7 @@ describe('TableCells', () => {
   describe('BackerRewardsPercentage', () => {
     test('should render the current percentage with no delta percentage since current and next are the same', async () => {
       const backerRewardPercentage = {
+        previous: parseEther('0.1'),
         current: parseEther('0.1'),
         next: parseEther('0.1'),
         cooldownEndTime: 100n,
@@ -41,6 +42,7 @@ describe('TableCells', () => {
 
     test('should render the negative delta percentage', async () => {
       const backerRewardPercentage = {
+        previous: parseEther('0.9'),
         current: parseEther('.9'),
         next: parseEther('0.1'),
         cooldownEndTime: 100n,
@@ -60,6 +62,7 @@ describe('TableCells', () => {
     })
     test('should render the positive delta percentage', async () => {
       const backerRewardPercentage = {
+        previous: parseEther('0.2'),
         current: parseEther('0.2'),
         next: parseEther('.8'),
         cooldownEndTime: 100n,

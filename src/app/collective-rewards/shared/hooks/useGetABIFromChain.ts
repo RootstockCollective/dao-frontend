@@ -39,7 +39,7 @@ export const useGetABIFromChain = () => {
           backerRewardPercentage: {
             id: address,
             next: backerRewardPct.next.toString(),
-            previous: backerRewardPct.current.toString(),
+            previous: backerRewardPct.previous.toString(),
             cooldownEndTime: backerRewardPct.cooldownEndTime.toString(),
           },
         })

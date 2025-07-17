@@ -29,6 +29,7 @@ const mockBuildersRewards: BuilderRewardsSummary[] = [
     },
     gauge: '0x1111111111111111111111111111111111111111' as Address,
     backerRewardPct: {
+      previous: 500000000000000000n, // 50% = 50 * 10^16
       current: 500000000000000000n, // 50% = 50 * 10^16
       next: 600000000000000000n, // 60% = 60 * 10^16
       cooldownEndTime: 100n,
@@ -90,7 +91,8 @@ const mockBuildersRewards: BuilderRewardsSummary[] = [
     },
     gauge: '0x2222222222222222222222222222222222222222' as Address,
     backerRewardPct: {
-      current: 450000000000000000n, // 45% = 45 * 10^16
+      previous: 650000000000000000n, // 65% = 45 * 10^16
+      current: 650000000000000000n, // 65% = 45 * 10^16
       next: 550000000000000000n, // 55% = 55 * 10^16
       cooldownEndTime: 120n,
     },
@@ -150,6 +152,7 @@ const mockBuildersRewards: BuilderRewardsSummary[] = [
     },
     gauge: '0x3333333333333333333333333333333333333333' as Address,
     backerRewardPct: {
+      previous: 400000000000000000n, // 40% = 40 * 10^16
       current: 400000000000000000n, // 40% = 40 * 10^16
       next: 500000000000000000n, // 50% = 50 * 10^16
       cooldownEndTime: 90n,
@@ -211,6 +214,7 @@ const mockBuildersRewards: BuilderRewardsSummary[] = [
     },
     gauge: '0x4444444444444444444444444444444444444444' as Address,
     backerRewardPct: {
+      previous: 350000000000000000n, // 35% = 35 * 10^16
       current: 350000000000000000n, // 35% = 35 * 10^16
       next: 450000000000000000n, // 45% = 45 * 10^16
       cooldownEndTime: 80n,
@@ -272,6 +276,7 @@ const mockBuildersRewards: BuilderRewardsSummary[] = [
     },
     gauge: '0x5555555555555555555555555555555555555555' as Address,
     backerRewardPct: {
+      previous: 300000000000000000n, // 30% = 30 * 10^16
       current: 300000000000000000n, // 30% = 30 * 10^16
       next: 400000000000000000n, // 40% = 40 * 10^16
       cooldownEndTime: 60n,
@@ -333,6 +338,7 @@ const mockBuildersRewards: BuilderRewardsSummary[] = [
     },
     gauge: '0x6666666666666666666666666666666666666666' as Address,
     backerRewardPct: {
+      previous: 250000000000000000n, // 25% = 25 * 10^16
       current: 250000000000000000n, // 25% = 25 * 10^16
       next: 250000000000000000n, // 25% = 25 * 10^16
       cooldownEndTime: 1700000000n,
@@ -394,6 +400,7 @@ const mockBuildersRewards: BuilderRewardsSummary[] = [
     },
     gauge: '0x7777777777777777777777777777777777777777' as Address,
     backerRewardPct: {
+      previous: 200000000000000000n, // 20% = 20 * 10^16
       current: 200000000000000000n, // 20% = 20 * 10^16
       next: 300000000000000000n, // 30% = 30 * 10^16
       cooldownEndTime: 40n,
@@ -455,6 +462,7 @@ const mockBuildersRewards: BuilderRewardsSummary[] = [
     },
     gauge: '0x8888888888888888888888888888888888888888' as Address,
     backerRewardPct: {
+      previous: 150000000000000000n, // 15% = 15 * 10^16
       current: 150000000000000000n, // 15% = 15 * 10^16
       next: 250000000000000000n, // 25% = 25 * 10^16
       cooldownEndTime: 1700000000n,

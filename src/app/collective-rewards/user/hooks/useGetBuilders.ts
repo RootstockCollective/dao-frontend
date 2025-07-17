@@ -80,6 +80,15 @@ export const useGetBuilders: UseGetBuilders = () => {
     args: buildersAddresses,
   })
 
+  const {
+    data: rewardPctToApply,
+    isLoading: rewardPctToApplyLoading,
+    error: rewardPctToApplyError,
+  } = useReadBuilderRegistryForMultipleArgs({
+    functionName: 'getRewardPercentageToApply',
+    args: buildersAddresses,
+  })
+
   // TODO: useFetchCreateBuilderProposals & useGetProposalsState & getMostAdvancedProposal can be joined
   const {
     data: proposalsByBuilder,
@@ -118,7 +127,12 @@ export const useGetBuilders: UseGetBuilders = () => {
           bigint,
           bigint,
         ]
-        const backerRewardPercentage = getBackerRewardPercentage(previous, next, cooldownEndTime)
+        const backerRewardPercentage = {
+          current: rewardPctToApply[index] ?? 0n,
+          previous,
+          next,
+          cooldownEndTime,
+        }
         acc[builder] = backerRewardPercentage
         return acc
       },
@@ -157,7 +171,15 @@ export const useGetBuilders: UseGetBuilders = () => {
       },
       {},
     )
-  }, [proposalsByBuilder, builderToGauge, builderStates, backersRewardsPct, proposalsStateMap, builders])
+  }, [
+    proposalsByBuilder,
+    builderToGauge,
+    builderStates,
+    backersRewardsPct,
+    proposalsStateMap,
+    builders,
+    rewardPctToApply,
+  ])
 
   const isLoading =
     isLoadingProposalsByBuilder ||
@@ -165,14 +187,16 @@ export const useGetBuilders: UseGetBuilders = () => {
     buildersLoading ||
     gaugesLoading ||
     proposalsStateMapLoading ||
-    backersRewardsPctLoading
+    backersRewardsPctLoading ||
+    rewardPctToApplyLoading
   const error =
     proposalsByBuilderError ??
     builderStatesError ??
     buildersError ??
     gaugesError ??
     proposalsStateMapError ??
-    backersRewardsPctError
+    backersRewardsPctError ??
+    rewardPctToApplyError
 
   return {
     data,
