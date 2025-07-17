@@ -9,6 +9,9 @@ interface Props<T> extends HTMLAttributes<HTMLDivElement> {
    * Expand the first column to full table width
    */
   stackFirstColumn?: boolean
+  /**
+   * This is used to additionally style table rows
+   */
   rowStyles?: string
 }
 
