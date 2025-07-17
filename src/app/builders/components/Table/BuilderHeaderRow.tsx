@@ -2,7 +2,7 @@
 
 import { Column, Sort, TableAction, useTableActionsContext, useTableContext } from '@/shared/context'
 import { SORT_DIRECTIONS } from '@/shared/context/TableContext/types'
-import { ReactElement, Suspense } from 'react'
+import { HtmlHTMLAttributes, ReactElement, Suspense } from 'react'
 
 import { Button } from '@/components/ButtonNew/Button'
 import { CommonComponentProps } from '@/components/commonProps'
@@ -14,9 +14,9 @@ import { TableHeaderCell, TableHeaderNode } from '@/components/TableNew'
 import { Label, Paragraph, Span } from '@/components/TypographyNew'
 import { cn } from '@/lib/utils'
 import { redirect, RedirectType } from 'next/navigation'
-import { Dispatch, FC } from 'react'
+import { Dispatch, FC, ReactNode } from 'react'
 import { Address } from 'viem'
-import { COLUMN_TRANSFORMS, ColumnId } from './BuilderTable.config'
+import { COLUMN_TRANSFORMS, ColumnId, ColumnTransform, LABELS } from './BuilderTable.config'
 import { Action, ActionCell } from './Cell/ActionCell'
 import { SelectorHeaderCell } from './Cell/SelectorHeaderCell/SelectorHeaderCell'
 import { TableColumnDropdown } from './TableColumnDropdown'
@@ -62,7 +62,7 @@ const OrderIndicator: FC<CommonComponentProps & { columnId: Column['id'] }> = ({
  * @param columnId - The column id to sort.
  * @param currentSort - The current sort state.
  */
-const dispatchSortRoundRobin = (
+const dispatchSortRoundRobin = <ColumnId extends string>(
   dispatch: Dispatch<TableAction<ColumnId>>,
   columnId: ColumnId,
   currentSort: Sort<ColumnId>,
@@ -74,12 +74,15 @@ const dispatchSortRoundRobin = (
   dispatch({ type: 'SORT_BY_COLUMN', payload: { columnId: nextSort ? columnId : null, direction: nextSort } })
 }
 
-const BuilderHeaderCell: FC<CommonComponentProps & { columnId: ColumnId }> = ({
+export const BuilderHeaderCellBase = <ColumnId extends string>({
   className,
-  children,
   columnId,
+  columnTransforms,
   ...props
-}) => {
+}: CommonComponentProps & {
+  columnId: ColumnId
+  columnTransforms: Record<ColumnId, ColumnTransform>
+}): ReactElement => {
   const { sort, columns } = useTableContext<ColumnId>()
   const dispatch = useTableActionsContext()
 
@@ -87,7 +90,7 @@ const BuilderHeaderCell: FC<CommonComponentProps & { columnId: ColumnId }> = ({
 
   return (
     <TableHeaderCell
-      className={cn(COLUMN_TRANSFORMS[columnId], className)}
+      className={cn(columnTransforms[columnId], className)}
       onClick={() => isSortable && dispatchSortRoundRobin(dispatch, columnId, sort)}
       {...props}
     >
@@ -100,12 +103,34 @@ const BuilderHeaderCell: FC<CommonComponentProps & { columnId: ColumnId }> = ({
   )
 }
 
-const HeaderCell: FC<CommonComponentProps & { columnId: ColumnId }> = ({
+const BuilderHeaderCell = ({
   className,
   children,
   columnId,
   ...props
-}) => {
+}: CommonComponentProps & { columnId: ColumnId }): ReactElement => {
+  return (
+    <BuilderHeaderCellBase<ColumnId>
+      className={className}
+      columnId={columnId}
+      columnTransforms={COLUMN_TRANSFORMS}
+      {...props}
+    >
+      {children}
+    </BuilderHeaderCellBase>
+  )
+}
+
+export const HeaderCellBase = <ColumnId extends string>({
+  className,
+  children,
+  columnId,
+  columnTransforms,
+  ...props
+}: CommonComponentProps & {
+  columnId: ColumnId
+  columnTransforms: Record<ColumnId, ColumnTransform>
+}): ReactNode => {
   const { sort, columns } = useTableContext<ColumnId>()
   const dispatch = useTableActionsContext()
 
@@ -118,7 +143,7 @@ const HeaderCell: FC<CommonComponentProps & { columnId: ColumnId }> = ({
   const isSortable = column.sortable
 
   // TODO: this is a temporary solution to justify center. Please do better than me ;)
-  const columnClassNames = COLUMN_TRANSFORMS[columnId]
+  const columnClassNames = columnTransforms[columnId]
   const isJustifyCenter = columnClassNames?.match('justify-center')?.length ?? false
 
   return (
@@ -138,7 +163,25 @@ const HeaderCell: FC<CommonComponentProps & { columnId: ColumnId }> = ({
   )
 }
 
-const HeaderTitle: FC<CommonComponentProps> = ({ className, children }) => (
+const HeaderCell = ({
+  className,
+  children,
+  columnId,
+  ...props
+}: CommonComponentProps & { columnId: ColumnId }): ReactNode => {
+  return (
+    <HeaderCellBase<ColumnId>
+      className={className}
+      columnId={columnId}
+      columnTransforms={COLUMN_TRANSFORMS}
+      {...props}
+    >
+      {children}
+    </HeaderCellBase>
+  )
+}
+
+export const HeaderTitle: FC<CommonComponentProps> = ({ className, children }) => (
   <Label
     variant="tag"
     className={cn(
@@ -149,7 +192,7 @@ const HeaderTitle: FC<CommonComponentProps> = ({ className, children }) => (
     {children}
   </Label>
 )
-const HeaderSubtitle: FC<CommonComponentProps> = ({ className, children }) => (
+export const HeaderSubtitle: FC<CommonComponentProps> = ({ className, children }) => (
   <Paragraph
     variant="body-xs"
     className={cn('text-v3-bg-accent-40 rootstock-sans text-xs leading-5 lowercase font-normal', className)}
@@ -199,7 +242,7 @@ export const BuilderHeaderRow = ({ actions }: BuilderHeaderRowProps): ReactEleme
               <HeaderSubtitle className="h-full text-v3-bg-accent-80">balls</HeaderSubtitle>{' '}
             </HeaderCell>
             <th>
-              <TableColumnDropdown className="self-start" />
+              <TableColumnDropdown<ColumnId> className="self-start" labels={LABELS} />
             </th>
           </>
         )}
@@ -207,7 +250,6 @@ export const BuilderHeaderRow = ({ actions }: BuilderHeaderRowProps): ReactEleme
           <>
             <CombinedActionsHeaderCell actions={actions} />
             <TableHeaderCell contentClassName="items-start">
-              {/* <TableHeaderNode> */}
               <Button
                 variant="secondary"
                 className="p-0 border-none bg-inherit"
@@ -215,7 +257,6 @@ export const BuilderHeaderRow = ({ actions }: BuilderHeaderRowProps): ReactEleme
               >
                 <CloseIconKoto className="w-5 h-5 text-v3-text-100" />
               </Button>
-              {/* </TableHeaderNode> */}
             </TableHeaderCell>
           </>
         )}
@@ -227,7 +268,7 @@ export const BuilderHeaderRow = ({ actions }: BuilderHeaderRowProps): ReactEleme
 interface CombinedActionsHeaderCellProps extends CommonComponentProps<HTMLButtonElement> {
   actions: Action[]
 }
-const CombinedActionsHeaderCell = ({ actions }: CombinedActionsHeaderCellProps): ReactElement => {
+export const CombinedActionsHeaderCell = ({ actions }: CombinedActionsHeaderCellProps): ReactElement => {
   const { selectedRows } = useTableContext<ColumnId>()
 
   const isMultipleDifferentActions = actions.some(action => action !== actions[0])

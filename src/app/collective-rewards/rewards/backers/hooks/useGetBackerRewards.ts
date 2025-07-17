@@ -34,28 +34,25 @@ const tokenRewardsMetrics = (tokenRewards: TokenBackerRewards, gauge: Address) =
 }
 
 export const useGetBackerRewards = (
-  builder: Address,
+  backer: Address,
   { rif, rbtc }: { [token: string]: Token },
   currency = 'USD',
 ) => {
   const { builders, isLoading: buildersLoading, error: buildersError } = useBuilderContext()
-  const activeBuilders = filterBuildersByState<CompleteBuilder>(builders)
-  const gauges = activeBuilders.map(({ gauge }) => gauge)
+  const { activeBuilders, gauges } = useMemo(() => {
+    const filteredBuilders = filterBuildersByState<CompleteBuilder>(builders)
+    const builderGauges = filteredBuilders.map(({ gauge }) => gauge)
+    return { activeBuilders: filteredBuilders, gauges: builderGauges }
+  }, [builders])
   const {
     data: allocationOf,
     isLoading: allocationOfLoading,
     error: allocationOfError,
-  } = useReadGauges({ addresses: gauges, functionName: 'allocationOf', args: [builder] })
+  } = useReadGauges({ addresses: gauges, functionName: 'allocationOf', args: [backer] })
   const { data: tokenRewards, isLoading: rewardsLoading, error: rewardsError } = useBackerRewardsContext()
 
-  const isLoading = useMemo(
-    () => buildersLoading || allocationOfLoading || rewardsLoading,
-    [buildersLoading, allocationOfLoading, rewardsLoading],
-  )
-  const error = useMemo(
-    () => buildersError ?? allocationOfError ?? rewardsError,
-    [buildersError, allocationOfError, rewardsError],
-  )
+  const isLoading = buildersLoading || allocationOfLoading || rewardsLoading
+  const error = buildersError ?? allocationOfError ?? rewardsError
 
   const { prices } = usePricesContext()
   const rifPrice = prices[rif.symbol]?.price ?? 0
@@ -63,7 +60,7 @@ export const useGetBackerRewards = (
 
   const data = useMemo(() => {
     return activeBuilders.reduce<BackerRewards[]>((acc, builder, i) => {
-      const { address, gauge, backerRewardPct } = builder
+      const { gauge, backerRewardPct } = builder
       const backerAllocationOf = allocationOf[i] ?? 0n
 
       const rifRewards = tokenRewardsMetrics(tokenRewards[rif.address], gauge)
