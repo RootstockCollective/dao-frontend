@@ -50,7 +50,6 @@ export default function ActivationProposalForm() {
     return () => setSubfooter(null)
   }, [onSubmit, setSubfooter])
 
-  // set focus on proposal name field
   // eslint-disable-next-line
   useEffect(() => setFocus('builderName'), [])
 

@@ -13,15 +13,28 @@ import { ProposalCategory } from '@/shared/types'
 import { TextInput } from '@/components/FormFields'
 import { showFormErrors } from '../components/showFormErrors'
 import { DeactivationProposal, DeactivationProposalSchema } from '../schemas/DeactivationProposalSchema'
+import { useBuilderContext } from '@/app/collective-rewards/user'
 
 export default function DeactivationProposalForm() {
   const router = useRouter()
   const { setSubfooter } = useLayoutContext()
   const { record, setRecord } = useReviewProposal()
+  const { getBuilderByAddress } = useBuilderContext()
+
+  const updatedFormSchema = DeactivationProposalSchema.refine(
+    ({ builderAddress }) => {
+      const builder = getBuilderByAddress(builderAddress)
+      return builder?.stateFlags?.communityApproved ?? false
+    },
+    {
+      message: 'The address is not whitelisted',
+      path: ['builderAddress'],
+    },
+  )
 
   const { handleSubmit, control, setFocus } = useForm<DeactivationProposal>({
     mode: 'onTouched',
-    resolver: zodResolver(DeactivationProposalSchema),
+    resolver: zodResolver(updatedFormSchema),
     // use recorded proposal if it is of the same type
     defaultValues:
       record && record.category === ProposalCategory.Deactivation
@@ -49,7 +62,6 @@ export default function DeactivationProposalForm() {
     return () => setSubfooter(null)
   }, [onSubmit, setSubfooter])
 
-  // set focus on proposal name field
   // eslint-disable-next-line
   useEffect(() => setFocus('proposalName'), [])
 
