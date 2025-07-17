@@ -11,15 +11,13 @@ import { useAccount } from 'wagmi'
 import moment from 'moment'
 import PreviewLabel from '../components/PreviewLabel'
 import { useCreateBuilderWhitelistProposal } from '@/app/proposals/hooks/useCreateBuilderWhitelistProposal'
-import { useRouter } from 'next/navigation'
 import { showToast } from '@/shared/notification'
 import { isUserRejectedTxError } from '@/components/ErrorPage'
 import { DISPLAY_NAME_SEPARATOR } from '@/app/proposals/shared/utils'
 
 export default function ActivationProposalReview() {
-  const router = useRouter()
   const { address } = useAccount()
-  const { record, setRecord, waitForTxInBg } = useReviewProposal()
+  const { record, waitForTxInBg } = useReviewProposal()
   const { onCreateBuilderWhitelistProposal } = useCreateBuilderWhitelistProposal()
 
   const onSubmit = useCallback(async () => {
@@ -29,12 +27,6 @@ export default function ActivationProposalReview() {
       const proposalDescription = `${proposalName}${DISPLAY_NAME_SEPARATOR}${builderName};${description}`
       // Here the user will see Metamask window and confirm his tx
       const txHash = await onCreateBuilderWhitelistProposal(builderAddress, proposalDescription)
-      /* 
-      After closing Metamask, the user will be redirected to proposals page and informed
-      that the tx has been sent
-      */
-      setRecord(null)
-      router.push('/proposals')
       waitForTxInBg(txHash, proposalName, ProposalCategory.Activation)
     } catch (error) {
       if (isUserRejectedTxError(error)) return
@@ -46,8 +38,7 @@ export default function ActivationProposalReview() {
         content: error instanceof Error ? error.message : 'Error publishing activation proposal',
       })
     }
-    // eslint-disable-next-line
-  }, [record, router])
+  }, [record])
 
   // inject sticky drawer with submit button to the footer layout
   const { setSubfooter } = useLayoutContext()

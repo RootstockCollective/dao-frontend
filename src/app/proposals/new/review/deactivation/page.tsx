@@ -28,12 +28,6 @@ export default function DeactivationProposalReview() {
       const proposalDescription = `${proposalName};${description}`
       // Here the user will see Metamask window and confirm his tx
       const txHash = await onRemoveBuilderProposal(builderAddress, proposalDescription)
-      /* 
-      After closing Metamask, the user will be redirected to proposals page and informed
-      that the tx has been sent
-      */
-      setRecord(null)
-      router.push('/proposals')
       waitForTxInBg(txHash, proposalName, ProposalCategory.Deactivation)
     } catch (error) {
       if (isUserRejectedTxError(error)) return

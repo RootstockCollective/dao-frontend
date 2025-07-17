@@ -1,6 +1,7 @@
 'use client'
 
 import { PropsWithChildren, createContext, useCallback, useContext, useMemo } from 'react'
+import { useRouter } from 'next/navigation'
 import { ProposalRecord } from '../proposals/shared/types'
 import useLocalStorageState from 'use-local-storage-state'
 import { getTxReceipt } from '@/lib/utils'
@@ -26,6 +27,7 @@ const ReviewProposalContext = createContext<ReviewProposalState | null>(null)
  * and monitors transaction status with background notifications.
  */
 export function ReviewProposalProvider({ children }: PropsWithChildren) {
+  const router = useRouter()
   const [record, setRecord] = useLocalStorageState<ProposalRecord | null>('review-proposal', {
     defaultValue: null,
   })
@@ -36,6 +38,8 @@ export function ReviewProposalProvider({ children }: PropsWithChildren) {
    */
   const waitForTxInBg = useCallback(
     async (proposalTxHash: Hash, proposalName: string, proposalCategory: ProposalCategory) => {
+      setRecord(null)
+      router.push('/proposals')
       showProposalTxCreatedToast({ proposalName, txHash: proposalTxHash, proposalCategory })
       const receipt = await getTxReceipt(proposalTxHash)
       showProposalTxConfirmedToast({
