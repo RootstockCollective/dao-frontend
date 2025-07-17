@@ -1,13 +1,14 @@
-import { CommunityCard } from '@/app/user/Communities/CommunityCard'
-import { JoinACommunity } from '@/app/user/Communities/JoinACommunity'
 import { useCommunity } from '@/shared/hooks/useCommunity'
 import { communitiesMapByContract } from '@/app/communities/communityUtils'
-import { SectionHeader } from '@/components/SectionHeader'
 import { useAccount } from 'wagmi'
 import { useEffect, useRef, useState } from 'react'
 import { useNFTBoosterContext } from '@/app/providers/NFT/BoosterContext'
 import { Address } from 'viem'
 import { CardPlaceholder } from '@/components/loading-components'
+import { CommunityItem } from '@/app/communities/CommunityItem'
+import { cn } from '@/lib/utils'
+import { SectionContainer } from '@/app/communities/components/SectionContainer'
+import { HeroCommunitiesComponent } from '@/app/communities/components/HeroComponentCommunities'
 
 const communities: string[] = Object.keys(communitiesMapByContract)
 
@@ -57,39 +58,39 @@ const UserCommunities = ({ nftAddresses }: Props) => {
   )
 
   if (!isConnected || (!isLoadingNfts && nftsOwned === 0)) {
-    return <JoinACommunity />
+    return <HeroCommunitiesComponent />
   }
+
+  const defaultCommunityVariant = nftsOwned <= 2 ? 'landscape' : 'portrait'
+  const communityGridClass = nftsOwned <= 2 ? 'xl:grid-cols-2' : 'xl:grid-cols-4'
 
   return (
     <>
-      <SectionHeader
-        name="Communities"
-        description={
-          'When you own or earn badges as part of contributions and participation in Collective Communities they will be summarized below.'
-        }
-      />
-      <div className="flex flex-wrap gap-[24px]">
-        {nftsInfo.map((nftInfo, index) => (
-          <NftInfo
-            key={nftInfo.address}
-            nftAddress={nftInfo.address}
-            onFinishedLoading={onNftFinishedLoading(index)}
-          />
-        ))}
-      </div>
+      <SectionContainer title="YOUR COMMUNITIES" titleClassname="text-[20px]">
+        <div className={cn('grid sm:grid-cols-1 gap-[24px]', communityGridClass)}>
+          {nftsInfo.map((nftInfo, index) => (
+            <NftInfo
+              key={nftInfo.address}
+              nftAddress={nftInfo.address}
+              onFinishedLoading={onNftFinishedLoading(index)}
+              defaultCommunityVariant={defaultCommunityVariant}
+            />
+          ))}
+        </div>
+      </SectionContainer>
     </>
   )
 }
 
-const NftInfo = ({
-  nftAddress,
-  onFinishedLoading,
-}: {
+interface NftInfoProps {
   nftAddress: string
   onFinishedLoading: (isMember: boolean, imageUri?: string) => void
-}) => {
+  defaultCommunityVariant: 'portrait' | 'landscape'
+}
+
+const NftInfo = ({ nftAddress, onFinishedLoading, defaultCommunityVariant = 'portrait' }: NftInfoProps) => {
   const data = useCommunity(nftAddress as Address)
-  const { isBoosted, isCampaignActive } = useNFTBoosterContext()
+  const { isBoosted, isCampaignActive } = useNFTBoosterContext() // @TODO
   const alreadyFinishedLoading = useRef(false)
 
   useEffect(() => {
@@ -102,17 +103,18 @@ const NftInfo = ({
   if (data.isLoading) {
     return <CardPlaceholder />
   }
-
   if (data.nftName && data.isMember) {
     return (
-      <CommunityCard
-        img={data.nftMeta?.image}
+      <CommunityItem
+        leftImageSrc={data.nftMeta?.image || ''}
         title={data.nftName}
-        link={`/communities/nft/${nftAddress}`}
+        subtitle={data.nftMeta?.description || ''}
+        nftAddress={nftAddress}
         description={data.nftMeta?.description || ''}
-        members={data.membersCount.toString()}
+        variant={defaultCommunityVariant}
+        enableDebris
+        specialPower={communitiesMapByContract[nftAddress].specialPower}
         isBoosted={isCampaignActive(nftAddress) && isBoosted}
-        alt={data.nftName + ' logo'}
       />
     )
   }
