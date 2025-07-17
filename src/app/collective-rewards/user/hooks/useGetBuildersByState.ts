@@ -1,6 +1,4 @@
-import { useMemo } from 'react'
 import { Builder, BuilderStateFlags } from '@/app/collective-rewards/types'
-import { useBuilderContext } from '@/app/collective-rewards/user'
 
 export const filterBuildersByState = <T extends Builder>(
   builders: Builder[],

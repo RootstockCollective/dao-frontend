@@ -1,8 +1,7 @@
 'use client'
 
-import { AllocationsContext } from '@/app/collective-rewards/allocations/context'
 import { formatSymbol, getFiatAmount } from '@/app/collective-rewards/rewards/utils/formatter'
-import { Builder, BuilderRewardsSummary } from '@/app/collective-rewards/types'
+import { BuilderRewardsSummary } from '@/app/collective-rewards/types'
 import { getCombinedFiatAmount } from '@/app/collective-rewards/utils'
 import { GetPricesResult } from '@/app/user/types'
 import { Button } from '@/components/ButtonNew'
@@ -15,11 +14,12 @@ import { Row, RowData, useTableActionsContext, useTableContext } from '@/shared/
 import { DisclaimerFlow } from '@/shared/walletConnection'
 import { useAppKitFlow } from '@/shared/walletConnection/connection/useAppKitFlow'
 import { Tooltip, TooltipContent, TooltipPortal, TooltipTrigger } from '@radix-ui/react-tooltip'
-import { FC, HtmlHTMLAttributes, ReactElement, useContext, useState } from 'react'
+import { redirect, RedirectType } from 'next/navigation'
+import { FC, HtmlHTMLAttributes, ReactElement, useState } from 'react'
 import { Address } from 'viem'
 import { useAccount } from 'wagmi'
 import { COLUMN_TRANSFORMS, ColumnId } from './BuilderTable.config'
-import { Action, ActionCell, ActionCellProps, getActionType } from './Cell/ActionCell'
+import { ActionCell, ActionCellProps, getActionType } from './Cell/ActionCell'
 import { AllocationCell, AllocationCellProps } from './Cell/AllocationCell'
 import { BackersPercentageCell, BackersPercentageCellProps } from './Cell/BackersPercentageCell'
 import { BackingCell, BackingCellProps } from './Cell/BackingCell'
@@ -43,7 +43,6 @@ export const convertDataToRowData = (
   data: BuilderRewardsSummary[],
   userAllocations: (bigint | undefined)[],
   prices: GetPricesResult,
-  handleAction: (action: Action, builder: Builder) => void,
 ): Row<ColumnId>[] => {
   // FIXME: fix the Row type to take a generic for custom RowData type
 
@@ -93,7 +92,7 @@ export const convertDataToRowData = (
         actions: {
           actionType,
           onClick: () => {
-            handleAction(actionType, builder)
+            redirect(`/backing?builders=${builder.address}`, RedirectType.push)
           },
         },
       },
@@ -217,21 +216,14 @@ export const BuilderDataRow: FC<BuilderDataRowProps> = ({ row, ...props }) => {
 
   const [isHovered, setIsHovered] = useState(false)
   const dispatch = useTableActionsContext<ColumnId>()
-  const {
-    actions: { toggleSelectedBuilder },
-  } = useContext(AllocationsContext)
 
   const hasSelections = Object.values(selectedRows).some(Boolean)
-  const showTooltip = !isConnected && !hasSelections
 
   const handleToggleSelection = () => {
-    if (isConnected) {
-      dispatch({
-        type: 'TOGGLE_ROW_SELECTION',
-        payload: rowId,
-      })
-      toggleSelectedBuilder(rowId as Address)
-    }
+    dispatch({
+      type: 'TOGGLE_ROW_SELECTION',
+      payload: rowId,
+    })
   }
 
   return (

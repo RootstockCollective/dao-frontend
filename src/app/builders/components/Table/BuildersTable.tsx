@@ -1,6 +1,7 @@
 'use client'
 
 import { AllocationsContext } from '@/app/collective-rewards/allocations/context'
+import { Token } from '@/app/collective-rewards/rewards'
 import { Builder, BuilderRewardsSummary } from '@/app/collective-rewards/types'
 import {
   isBuilderDeactivated,
@@ -10,25 +11,18 @@ import {
 } from '@/app/collective-rewards/utils'
 import TablePager from '@/components/TableNew/TablePager'
 import { getTokens } from '@/lib/tokens'
-import {
-  Row,
-  SelectedRows,
-  usePricesContext,
-  useTableActionsContext,
-  useTableContext,
-} from '@/shared/context'
+import { usePricesContext, useTableActionsContext, useTableContext } from '@/shared/context'
 import { useReadGauges } from '@/shared/hooks/contracts'
 import { Suspense, useContext, useEffect, useMemo, useState } from 'react'
 import { Address } from 'viem'
 import { useAccount } from 'wagmi'
 import { BuilderFilterOptionId } from '../../BuilderFilterDropdown'
+import { useGetBuilderRewardsSummary } from '../../hooks/useGetBuilderRewardsSummary'
 import { BuilderDataRow, convertDataToRowData } from './BuilderDataRow'
 import { BuilderHeaderRow } from './BuilderHeaderRow'
 import { ColumnId, DEFAULT_HEADERS, PAGE_SIZE } from './BuilderTable.config'
-import { Action } from './Cell/ActionCell'
-import { useGetBuilderRewardsSummary } from '../../hooks/useGetBuilderRewardsSummary'
+import { Action, ActionCellProps } from './Cell/ActionCell'
 import { isActive } from './utils'
-import { Token } from '@/app/collective-rewards/rewards'
 
 // --- Filter builders by state ---
 const filterActive = (builder: Builder) => isActive(builder.stateFlags)
@@ -74,60 +68,6 @@ const usePagedFilteredBuildersRewards = ({
   return { data, isLoading, error }
 }
 
-// --- Table component ---
-export const Table = () => {
-  const { rows, columns } = useTableContext<ColumnId>()
-
-  // FIXME: I don't think we should be using this context anymore
-  const {
-    state: { selections },
-  } = useContext(AllocationsContext)
-
-  const dispatch = useTableActionsContext<ColumnId>()
-
-  useEffect(() => {
-    dispatch({
-      type: 'SET_SELECTED_ROWS',
-      payload: selections as SelectedRows<Row<ColumnId>['id']>,
-    })
-  }, [selections, dispatch])
-
-  /**
-   * Set the action column header to show if the allocations column is hidden.
-   * FIXME: see if we can do this better to avoid re-rendering the table.
-  //  */
-  useEffect(() => {
-    const isAllocationsHidden = columns.find(col => col.id == 'allocations')?.hidden ?? true
-    const isActionsHidden = columns.find(col => col.id == 'actions')?.hidden ?? true
-    if (isAllocationsHidden === isActionsHidden) {
-      dispatch({
-        type: 'SET_COLUMN_VISIBILITY',
-        payload: {
-          columnId: 'actions',
-          hidden: !isAllocationsHidden,
-        },
-      })
-    }
-  }, [columns, dispatch])
-
-  return (
-    <div className="w-full overflow-x-auto bg-v3-bg-accent-80">
-      <table className="w-full min-w-[700px]">
-        <thead>
-          <BuilderHeaderRow />
-        </thead>
-        <Suspense fallback={<div>Loading table data...</div>}>
-          <tbody>
-            {rows.map(row => (
-              <BuilderDataRow key={row.id} row={row} />
-            ))}
-          </tbody>
-        </Suspense>
-      </table>
-    </div>
-  )
-}
-
 // ---------------- Table ----------------
 
 export const BuildersTable = ({ filterOption }: { filterOption: BuilderFilterOptionId }) => {
@@ -135,14 +75,17 @@ export const BuildersTable = ({ filterOption }: { filterOption: BuilderFilterOpt
 
   const { address: userAddress, isConnected } = useAccount()
 
+  const { rows, columns, selectedRows } = useTableContext<ColumnId>()
+  const [actions, setActions] = useState<Action[]>([])
   const dispatch = useTableActionsContext<ColumnId>()
 
   const tokens = useMemo(() => getTokens(), [])
+  const pageOptions = useMemo(() => ({ start: 0, end: pageEnd }), [pageEnd])
   const {
     data: { pagedRewards: buildersRewardsData, totalRewards },
     isLoading,
     error,
-  } = usePagedFilteredBuildersRewards({ tokens, filterOption, pageOptions: { start: 0, end: pageEnd } })
+  } = usePagedFilteredBuildersRewards({ tokens, filterOption, pageOptions })
 
   const {
     data: allocations,
@@ -164,10 +107,6 @@ export const BuildersTable = ({ filterOption }: { filterOption: BuilderFilterOpt
   )
   const { prices } = usePricesContext()
 
-  const handleAction = (action: Action, builder: Builder) => {
-    console.log('handleAction', action, builder)
-  }
-
   useEffect(() => {
     dispatch({
       type: 'SET_COLUMN_VISIBILITY',
@@ -188,7 +127,7 @@ export const BuildersTable = ({ filterOption }: { filterOption: BuilderFilterOpt
   useEffect(() => {
     dispatch({
       type: 'SET_ROWS',
-      payload: convertDataToRowData(buildersRewardsData, allocations, prices, handleAction),
+      payload: convertDataToRowData(buildersRewardsData, allocations, prices),
     })
   }, [buildersRewardsData, allocations, prices, dispatch])
 
@@ -215,9 +154,68 @@ export const BuildersTable = ({ filterOption }: { filterOption: BuilderFilterOpt
     }
   }, [error, allocationsError, dispatch])
 
+  // FIXME: I don't think we should be using this context anymore
+  const {
+    actions: { toggleSelectedBuilder },
+    state: { selections },
+  } = useContext(AllocationsContext)
+
+  useEffect(() => {
+    // FIXME: this is a very hacky way to sync the selected rows with the allocations context.
+    // One reason to remove the allocs context (it loads (pre)selections on mount) is to avoid cleaning this up.
+    const selectedBuilderIds = Object.keys(selectedRows)
+    const selectionValues = Object.values(selectedRows)
+    const selectedAllocsValues = Object.values(selections)
+
+    selectedBuilderIds.forEach((builderId, index) => {
+      if (selectionValues[index] !== selectedAllocsValues[index]) {
+        toggleSelectedBuilder(builderId as Address)
+      }
+    })
+  }, [selections, selectedRows, toggleSelectedBuilder])
+
+  /**
+   * Set the action column header to show if the allocations column is hidden.
+   * FIXME: see if we can do this better to avoid re-rendering the table.
+  //  */
+  useEffect(() => {
+    const isAllocationsHidden = columns.find(col => col.id == 'allocations')?.hidden ?? true
+    const isActionsHidden = columns.find(col => col.id == 'actions')?.hidden ?? true
+    if (isAllocationsHidden === isActionsHidden) {
+      dispatch({
+        type: 'SET_COLUMN_VISIBILITY',
+        payload: {
+          columnId: 'actions',
+          hidden: !isAllocationsHidden,
+        },
+      })
+    }
+  }, [columns, dispatch])
+
+  useEffect(() => {
+    const actions = Object.entries(selectedRows)
+      .filter(([_, value]) => value)
+      .map(([rowId]) => (rows.find(row => row.id === rowId)?.data.actions as ActionCellProps).actionType)
+      .filter(action => action !== undefined)
+    setActions(actions)
+  }, [selectedRows, rows])
+
   return (
     <>
-      <Table />
+      <div className="w-full overflow-x-auto bg-v3-bg-accent-80">
+        <table className="w-full min-w-[700px]">
+          <thead>
+            <BuilderHeaderRow actions={actions} />
+          </thead>
+          <Suspense fallback={<div>Loading table data...</div>}>
+            <tbody>
+              {rows.map(row => (
+                <BuilderDataRow key={row.id} row={row} />
+              ))}
+            </tbody>
+          </Suspense>
+        </table>
+      </div>
       <TablePager
         pageSize={PAGE_SIZE}
         totalItems={totalRewards}

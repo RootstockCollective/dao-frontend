@@ -2,12 +2,13 @@
 import { Builder } from '@/app/collective-rewards/types'
 import { isBuilderActive } from '@/app/collective-rewards/utils'
 import { Button } from '@/components/ButtonNew/Button'
-import { ChartIcon, CogIcon, HandshakeIcon } from '@/components/Icons/v3design'
+import { CogIcon, HandshakeIcon, TrashIcon } from '@/components/Icons/v3design'
+import { CommonComponentProps } from '@/components/commonProps'
 import { cn } from '@/lib/utils'
 import { ReactNode } from 'react'
 
 export const ACTION_CONFIG = {
-  removeBacking: { text: 'Remove Backing', icon: <ChartIcon size={16} /> },
+  removeBacking: { text: 'Remove Backing', icon: <TrashIcon size={16} /> },
   adjustBacking: { text: 'Adjust Backing', icon: <CogIcon size={16} /> },
   backBuilder: { text: 'Back Builder', icon: <HandshakeIcon size={16} /> },
 } as const
@@ -26,13 +27,12 @@ export const getActionType = (builder: Builder, hasBackingByUser: boolean): Acti
 
   return 'adjustBacking'
 }
-export type ActionCellProps = {
+export type ActionCellProps = CommonComponentProps<HTMLButtonElement> & {
   className?: string
   actionType: Action
-  onClick?: () => void
 }
 
-export const ActionCell = ({ className, actionType, onClick }: ActionCellProps): ReactNode => {
+export const ActionCell = ({ className, actionType, onClick, ...props }: ActionCellProps): ReactNode => {
   const config = ACTION_CONFIG[actionType]
 
   if (!config) {
@@ -42,7 +42,7 @@ export const ActionCell = ({ className, actionType, onClick }: ActionCellProps):
   const handleClick = (e: React.MouseEvent<HTMLButtonElement>) => {
     e.stopPropagation()
     e.preventDefault()
-    onClick && onClick()
+    onClick && onClick(e)
   }
 
   return (
@@ -50,9 +50,10 @@ export const ActionCell = ({ className, actionType, onClick }: ActionCellProps):
       variant="secondary-outline"
       onClick={handleClick}
       className={cn(
-        'p-2 min-w-[40px] h-[40px] flex justify-center items-center gap-1 text-sm font-medium text-[var(--text-0)] font-rootstock-sans leading-[145%] outline-0 border-0',
+        'p-2 min-w-[40px] h-7 flex justify-center items-center gap-1 text-sm font-medium text-v3-text-0 font-rootstock-sans leading-[145%] outline-0 border-0',
         className,
       )}
+      {...props}
     >
       <span className="flex justify-center items-center gap-1">
         {config.icon} {config.text}
