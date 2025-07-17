@@ -8,8 +8,8 @@ import PaginationPageSizeSelector from './PaginationPageSizeSelector'
 interface PaginationProps {
   pagination: PaginationState
   setPagination: Dispatch<SetStateAction<PaginationState>>
-  data: any[]
-  table: Table<any>
+  data: unknown[]
+  table: Table<unknown>
 }
 
 export function Pagination({ pagination, setPagination, data, table }: PaginationProps) {
