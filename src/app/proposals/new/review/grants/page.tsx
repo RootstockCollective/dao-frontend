@@ -12,15 +12,13 @@ import moment from 'moment'
 import { TokenIcon } from '@/app/proposals/icons/TokenIcon'
 import PreviewLabel from '../components/PreviewLabel'
 import { useCreateTreasuryTransferProposal } from '@/app/proposals/hooks/useCreateTreasuryTransferProposal'
-import { useRouter } from 'next/navigation'
 import { tokenContracts } from '@/lib/contracts'
 import { showToast } from '@/shared/notification'
 import { isUserRejectedTxError } from '@/components/ErrorPage'
 
 export default function GrantsProposalReview() {
-  const router = useRouter()
   const { address } = useAccount()
-  const { record, setRecord, waitForTxInBg } = useReviewProposal()
+  const { record, waitForTxInBg } = useReviewProposal()
   const { onCreateTreasuryTransferProposal } = useCreateTreasuryTransferProposal()
 
   const onSubmit = useCallback(async () => {
@@ -37,12 +35,6 @@ export default function GrantsProposalReview() {
         proposalDescription,
         tokenAddress,
       )
-      /* 
-      After closing Metamask, the user will be redirected to proposals page and informed
-      that the tx has been sent
-      */
-      setRecord(null)
-      router.push('/proposals')
       waitForTxInBg(txHash, proposalName, ProposalCategory.Grants)
     } catch (error) {
       if (isUserRejectedTxError(error)) return
@@ -54,8 +46,7 @@ export default function GrantsProposalReview() {
         content: error instanceof Error ? error.message : 'Error publishing proposal',
       })
     }
-    // eslint-disable-next-line
-  }, [record, router])
+  }, [record])
 
   // inject sticky drawer with submit button to the footer layout
   const { setSubfooter } = useLayoutContext()
