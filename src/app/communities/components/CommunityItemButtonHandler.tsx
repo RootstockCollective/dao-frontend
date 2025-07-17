@@ -1,10 +1,12 @@
 import { Paragraph } from '@/components/TypographyNew'
 import Link from 'next/link'
 import { ArrowRightIconKoto } from '@/components/Icons'
+import { cn } from '@/lib/utils'
 
 interface CommunityItemButtonHandlerProps {
   nftAddress?: string
   readMoreLink?: string
+  color?: string
 }
 
 /**
@@ -12,9 +14,14 @@ interface CommunityItemButtonHandlerProps {
  * If we have a read more prop, we will use that link, otherwise we will use the nftAddress.
  * @param nftAddress
  * @param readMoreLink
+ * @param color
  * @constructor
  */
-export const CommunityItemButtonHandler = ({ nftAddress, readMoreLink }: CommunityItemButtonHandlerProps) => {
+export const CommunityItemButtonHandler = ({
+  nftAddress,
+  readMoreLink,
+  color = 'white',
+}: CommunityItemButtonHandlerProps) => {
   let href = nftAddress ? `/communities/nft/${nftAddress}` : '/communities'
   let target = undefined
   if (readMoreLink) {
@@ -23,9 +30,9 @@ export const CommunityItemButtonHandler = ({ nftAddress, readMoreLink }: Communi
   }
   return (
     <Link href={href} target={target}>
-      <div className="flex flex-row gap-1 items-center">
+      <div className={cn('flex flex-row gap-1 items-center', `text-${color}`)}>
         <Paragraph>Learn more</Paragraph>
-        <ArrowRightIconKoto />
+        <ArrowRightIconKoto color={color} />
       </div>
     </Link>
   )

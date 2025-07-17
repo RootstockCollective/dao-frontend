@@ -58,7 +58,7 @@ const UserCommunities = ({ nftAddresses }: Props) => {
   )
 
   if (!isConnected || (!isLoadingNfts && nftsOwned === 0)) {
-    return <HeroCommunitiesComponent />
+    return <HeroCommunitiesComponent shouldShowLearnMore />
   }
 
   const defaultCommunityVariant = nftsOwned <= 2 ? 'landscape' : 'portrait'

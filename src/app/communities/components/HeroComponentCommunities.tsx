@@ -1,6 +1,10 @@
 import { HeroComponent } from '@/components/HeroComponent'
+import { CommunityItemButtonHandler } from '@/app/communities/components/CommunityItemButtonHandler'
 
-export const HeroCommunitiesComponent = () => (
+interface Props {
+  shouldShowLearnMore?: boolean
+}
+export const HeroCommunitiesComponent = ({ shouldShowLearnMore = false }: Props) => (
   <HeroComponent
     imageSrc="/images/hero/community-banner.png"
     title="SHOW YOUR TRUE COLORS."
@@ -12,5 +16,6 @@ export const HeroCommunitiesComponent = () => (
       'these aren’t just collectibles. They are your passport to participation.',
     ]}
     className="mt-6"
+    button={shouldShowLearnMore ? <CommunityItemButtonHandler color="black" /> : undefined}
   />
 )
