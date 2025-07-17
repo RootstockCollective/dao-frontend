@@ -4,16 +4,17 @@ import { GovernorAbi } from '@/lib/abis/Governor'
 import { BuilderRegistryAbi } from '@/lib/abis/v2/BuilderRegistryAbi'
 import { BuilderRegistryAddress, GovernorAddress } from '@/lib/contracts'
 import { Address, encodeFunctionData, zeroAddress } from 'viem'
-import { useWriteContract } from 'wagmi'
+import { useAccount, useWriteContract } from 'wagmi'
 import { readContract } from 'wagmi/actions'
-import { createProposal, encodeGovernorRelayCallData } from './proposalUtils'
-import { useVotingPower } from './useVotingPower'
+import { createProposal, encodeGovernorRelayCallData, checkCanCreateProposal } from './proposalUtils'
 
 export const useCreateBuilderWhitelistProposal = () => {
-  const { canCreateProposal } = useVotingPower()
+  const { address: userAddress } = useAccount()
   const { writeContractAsync: propose, isPending: isPublishing, error: transactionError } = useWriteContract()
 
   const onCreateBuilderWhitelistProposal = async (builderAddress: Address, description: string) => {
+    if (!userAddress) throw new Error('Unknown user address')
+    const canCreateProposal = await checkCanCreateProposal(userAddress)
     if (!canCreateProposal) {
       throw NoVotingPowerError
     }

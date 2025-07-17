@@ -64,10 +64,7 @@ export default function GrantsProposalReview() {
     return () => setSubfooter(null)
   }, [onSubmit, setSubfooter])
 
-  /* 
-    Verify that the context has passed correct proposal type,
-    otherwise redirect to proposal creation page
-  */
+  // Verify that the context has passed correct proposal type
   if (!record?.form || record?.category !== ProposalCategory.Grants) {
     return null
   }
