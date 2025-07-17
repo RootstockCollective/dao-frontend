@@ -1,6 +1,6 @@
 import { type GrantProposal } from '../new/create/schemas/GrantProposalSchema'
 import { type ActivationProposal } from '../new/create/schemas/ActivationProposalSchema'
-import { type DeactivationProposal } from '../new/create/schemas/DeactivationProposalSchema';
+import { type DeactivationProposal } from '../new/create/schemas/DeactivationProposalSchema'
 
 export enum ProposalType {
   Grant = 'grant',
