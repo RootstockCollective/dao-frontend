@@ -44,13 +44,13 @@ export const FooterDesktop = ({ className, ...props }: HTMLAttributes<HTMLDivEle
     {/* Right: Social icons */}
     <div className="flex space-x-3">
       <a href="https://x.com/rootstockcoll" target="_blank" data-testid="TwitterLink">
-        <TwitterXIcon size={'1.4em'} />
+        <TwitterXIcon size={24} />
       </a>
       <a href={`https://github.com/${GITHUB_ORG}`} target="_blank" data-testid="GithubLink">
-        <GithubIcon size={'1.5em'} />
+        <GithubIcon size={24} />
       </a>
       <a href="https://t.me/rootstockcollective" target="_blank" data-testid="TelegramLink">
-        <TelegramIcon size={'1.5em'} />
+        <TelegramIcon size={24} />
       </a>
     </div>
   </footer>
