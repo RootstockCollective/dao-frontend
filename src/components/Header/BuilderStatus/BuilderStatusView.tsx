@@ -1,7 +1,6 @@
 import SeparatorBar from '@/components/SeparatorBar/SeparatorBar'
 import { HourglassIcon } from '../../Icons/HourglassIcon'
 import { Typography } from '@/components/TypographyNew/Typography'
-import { isActive } from '@/app/collective-rewards/active-builders'
 import { HtmlHTMLAttributes } from 'react'
 import { BuilderState } from '@/app/collective-rewards/types'
 import { cn } from '@/lib/utils'

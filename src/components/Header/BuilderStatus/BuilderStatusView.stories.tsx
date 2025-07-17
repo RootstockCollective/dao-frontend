@@ -35,9 +35,3 @@ export const InProgressBuilder: Story = {
   },
   render: args => <BuilderStatusView {...args} />,
 }
-
-export const Default: Story = {
-  args: {
-    builderState: 'active',
-  },
-}
