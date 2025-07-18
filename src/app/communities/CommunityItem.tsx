@@ -18,7 +18,7 @@ interface CommunityItemProps {
   variant?: 'portrait' | 'landscape'
   enableDebris?: boolean
   specialPower?: string
-  isBoosted?: boolean
+  boostedPercentage?: string
 }
 
 /**
@@ -35,7 +35,7 @@ export const CommunityItem = ({
   variant = 'portrait',
   enableDebris = false,
   specialPower,
-  isBoosted = false,
+  boostedPercentage,
 }: CommunityItemProps) => {
   const isExternalImage = leftImageSrc.startsWith('http')
   const image = isExternalImage
@@ -74,7 +74,7 @@ export const CommunityItem = ({
               <Header className="text-[20px]">{specialPower}</Header>
             </div>
           )}
-          {isBoosted && <BoostedLabelKoto text="20% REWARDS BOOST" />}
+          {boostedPercentage && <BoostedLabelKoto text={`${boostedPercentage}% REWARDS BOOST`} />}
           {/* Description */}
           <Paragraph>{description}</Paragraph>
           {/* Learn more */}

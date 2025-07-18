@@ -90,7 +90,7 @@ interface NftInfoProps {
 
 const NftInfo = ({ nftAddress, onFinishedLoading, defaultCommunityVariant = 'portrait' }: NftInfoProps) => {
   const data = useCommunity(nftAddress as Address)
-  const { isBoosted, isCampaignActive } = useNFTBoosterContext()
+  const { isBoosted, isCampaignActive, boostData } = useNFTBoosterContext()
   const alreadyFinishedLoading = useRef(false)
 
   useEffect(() => {
@@ -114,7 +114,9 @@ const NftInfo = ({ nftAddress, onFinishedLoading, defaultCommunityVariant = 'por
         variant={defaultCommunityVariant}
         enableDebris
         specialPower={communitiesMapByContract[nftAddress].specialPower}
-        isBoosted={isCampaignActive(nftAddress) && isBoosted}
+        boostedPercentage={
+          isCampaignActive(nftAddress) && isBoosted ? boostData?.boostPercentage.toString() : undefined
+        }
       />
     )
   }
