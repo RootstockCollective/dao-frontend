@@ -2,9 +2,9 @@ import { useHandleErrors } from '@/app/collective-rewards/utils'
 import { TokenAmount } from '@/components/TokenAmount'
 import { TokenSymbol } from '@/components/TokenImage'
 import { Address } from 'viem'
-import { useBuilderUnclaimedRewards } from '../hooks/useBuilderUnclaimedRewards'
-import { ClaimRewardsButton } from './ClaimRewardsButton'
-import { RewardCard } from './RewardCard'
+import { useBuilderUnclaimedRewards } from '@/app/my-rewards/builder/hooks/useBuilderUnclaimedRewards'
+import { ClaimRewardsButton } from '@/app/my-rewards/components/ClaimRewardsButton'
+import { RewardCard } from '@/app/my-rewards/components/RewardCard'
 
 export const UnclaimedRewards = ({ builder, gauge }: { builder: Address; gauge: Address }) => {
   const { rif: rifData, rbtc: rbtcData } = useBuilderUnclaimedRewards({

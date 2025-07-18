@@ -4,8 +4,8 @@ import { useHandleErrors } from '@/app/collective-rewards/utils'
 import { Span } from '@/components/TypographyNew/'
 import { TOKENS } from '@/lib/tokens'
 import { Address } from 'viem'
-import { useBuilderAllTimeShare } from '../hooks/useBuilderAllTimeShare'
-import { RewardCard } from './RewardCard'
+import { useBuilderAllTimeShare } from '@/app/my-rewards/builder/hooks/useBuilderAllTimeShare'
+import { RewardCard } from '@/app/my-rewards/components/RewardCard'
 
 export interface RewardCardAllTimeShareProps {
   isLoading: boolean

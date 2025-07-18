@@ -26,6 +26,25 @@ interface LastCycleRewardsData {
   rbtc: TokenRewardData
 }
 
+export const useGetNotifyRewardAmountFromLogs = (
+  token: Address,
+  gauge: Address,
+  fromTimestamp?: number,
+  toTimestamp?: number,
+) => {
+  const {
+    data: rewardsPerToken,
+    isLoading: logsLoading,
+    error: rewardsError,
+  } = useGetGaugeNotifyRewardLogs(gauge, token, fromTimestamp, toTimestamp)
+
+  return {
+    amount: getNotifyRewardAmount(rewardsPerToken, token, 'builderAmount_')[token] ?? 0n,
+    isLoading: logsLoading,
+    error: rewardsError,
+  }
+}
+
 export const useBuilderLastCycleRewards = ({
   gauge,
 }: UseBuilderLastCycleRewardsProps): LastCycleRewardsData => {
@@ -38,44 +57,30 @@ export const useBuilderLastCycleRewards = ({
     error: lastCycleRewardsError,
   } = useGetLastCycleDistribution(cycle)
 
-  const {
-    data: rifRewardsPerToken,
-    isLoading: rifLogsLoading,
-    error: rifRewardsError,
-  } = useGetGaugeNotifyRewardLogs(gauge, rif.address, fromTimestamp, toTimestamp)
-
-  const {
-    data: rbtcRewardsPerToken,
-    isLoading: rbtcLogsLoading,
-    error: rbtcRewardsError,
-  } = useGetGaugeNotifyRewardLogs(gauge, rbtc.address, fromTimestamp, toTimestamp)
+  const rifAmount = useGetNotifyRewardAmountFromLogs(rif.address, gauge, fromTimestamp, toTimestamp)
+  const rbtcAmount = useGetNotifyRewardAmountFromLogs(rbtc.address, gauge, fromTimestamp, toTimestamp)
 
   useHandleErrors({
-    error: cycleError ?? lastCycleRewardsError ?? rifRewardsError ?? rbtcRewardsError,
+    error: cycleError ?? lastCycleRewardsError ?? rifAmount.error ?? rbtcAmount.error,
     title: 'Error loading last cycle rewards',
   })
-
-  const rifAmount =
-    getNotifyRewardAmount(rifRewardsPerToken, rif.address, 'builderAmount_')[rif.address] ?? 0n
-  const rbtcAmount =
-    getNotifyRewardAmount(rbtcRewardsPerToken, rbtc.address, 'builderAmount_')[rbtc.address] ?? 0n
 
   const rifPrice = prices[rif.symbol]?.price ?? 0
   const rbtcPrice = prices[rbtc.symbol]?.price ?? 0
 
-  const rifFormatted = formatMetrics(rifAmount, rifPrice, rif.symbol, USD)
-  const rbtcFormatted = formatMetrics(rbtcAmount, rbtcPrice, rbtc.symbol, USD)
+  const rifFormatted = formatMetrics(rifAmount.amount, rifPrice, rif.symbol, USD)
+  const rbtcFormatted = formatMetrics(rbtcAmount.amount, rbtcPrice, rbtc.symbol, USD)
 
   return {
     rif: {
       amount: rifFormatted.amount,
       fiatAmount: rifFormatted.fiatAmount,
-      isLoading: cycleLoading || lastCycleRewardsLoading || rifLogsLoading,
+      isLoading: cycleLoading || lastCycleRewardsLoading || rifAmount.isLoading,
     },
     rbtc: {
       amount: rbtcFormatted.amount,
       fiatAmount: rbtcFormatted.fiatAmount,
-      isLoading: cycleLoading || lastCycleRewardsLoading || rbtcLogsLoading,
+      isLoading: cycleLoading || lastCycleRewardsLoading || rbtcAmount.isLoading,
     },
   }
 }

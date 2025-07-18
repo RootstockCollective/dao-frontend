@@ -31,9 +31,13 @@ export const RewardCard = ({
         />
       }
       className="w-auto"
-      containerClassName="gap-4"
+      containerClassName="gap-4 h-full"
     >
-      {isLoading ? <LoadingSpinner /> : <div className="flex flex-col gap-4 text-xl">{content}</div>}
+      {isLoading ? (
+        <LoadingSpinner size={'medium'} />
+      ) : (
+        <div className="flex flex-col gap-4 text-xl">{content}</div>
+      )}
     </Metric>
   )
 }

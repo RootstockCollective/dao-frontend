@@ -2,7 +2,7 @@
 
 import { Header, Paragraph, Span } from '@/components/TypographyNew'
 import { CRWhitepaperLink } from '../collective-rewards/shared/components/CRWhitepaperLinkNew'
-import { BuilderRewards } from './components/BuilderRewards'
+import { BuilderRewards } from './builder/components/BuilderRewards'
 import { useAccount } from 'wagmi'
 import { useReadBuilderRegistry } from '@/shared/hooks/contracts/collective-rewards/useReadBuilderRegistry'
 import { useHandleErrors } from '../collective-rewards/utils'

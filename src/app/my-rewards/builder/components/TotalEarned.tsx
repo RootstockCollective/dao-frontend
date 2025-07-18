@@ -1,20 +1,23 @@
+import { useHandleErrors } from '@/app/collective-rewards/utils'
 import { TokenAmount } from '@/components/TokenAmount'
 import { TokenSymbol } from '@/components/TokenImage'
 import { Address } from 'viem'
-import { useBuilderLastCycleRewards } from '../hooks/useBuilderLastCycleRewards'
-import { RewardCard } from './RewardCard'
+import { useBuilderAllTimeRewards } from '@/app/my-rewards/builder/hooks/useBuilderAllTimeRewards'
+import { RewardCard } from '@/app/my-rewards/components/RewardCard'
 
-export const LastCycleRewards = ({ gauge }: { gauge: Address }) => {
-  const { rif: rifData, rbtc: rbtcData } = useBuilderLastCycleRewards({
+export const TotalEarned = ({ gauge }: { gauge: Address }) => {
+  const { rif: rifData, rbtc: rbtcData } = useBuilderAllTimeRewards({
     gauge,
   })
 
+  useHandleErrors({ error: rifData.error ?? rbtcData.error, title: 'Error loading total earned' })
+
   return (
     <RewardCard
-      data-testid="last-cycle-rewards"
+      data-testid="total-earned"
       isLoading={rifData.isLoading || rbtcData.isLoading}
-      title="Last cycle"
-      info="Your rewards from the previous cycle"
+      title="Total earned"
+      info="Your total rewards earned across all cycles"
       content={
         <>
           <TokenAmount

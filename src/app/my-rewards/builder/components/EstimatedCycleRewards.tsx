@@ -2,22 +2,23 @@ import { useHandleErrors } from '@/app/collective-rewards/utils'
 import { TokenAmount } from '@/components/TokenAmount'
 import { TokenSymbol } from '@/components/TokenImage'
 import { Address } from 'viem'
-import { useBuilderAllTimeRewards } from '../hooks/useBuilderAllTimeRewards'
-import { RewardCard } from './RewardCard'
+import { useBuilderEstimatedRewards } from '@/app/my-rewards/builder/hooks/useBuilderEstimatedRewards'
+import { RewardCard } from '@/app/my-rewards/components/RewardCard'
 
-export const TotalEarned = ({ gauge }: { gauge: Address }) => {
-  const { rif: rifData, rbtc: rbtcData } = useBuilderAllTimeRewards({
+export const EstimatedCycleRewards = ({ builder, gauge }: { builder: Address; gauge: Address }) => {
+  const { rif: rifData, rbtc: rbtcData } = useBuilderEstimatedRewards({
+    builder: builder,
     gauge,
   })
 
-  useHandleErrors({ error: rifData.error ?? rbtcData.error, title: 'Error loading total earned' })
+  useHandleErrors({ error: rifData.error ?? rbtcData.error, title: 'Error loading estimated rewards' })
 
   return (
     <RewardCard
-      data-testid="total-earned"
+      data-testid="estimated-cycle-rewards"
       isLoading={rifData.isLoading || rbtcData.isLoading}
-      title="Total earned"
-      info="Your total rewards earned across all cycles"
+      title="Estimated this cycle"
+      info="Your estimated rewards which will become claimable at the start of the next Cycle."
       content={
         <>
           <TokenAmount

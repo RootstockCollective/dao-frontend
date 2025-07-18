@@ -1,7 +1,6 @@
 import { getAddress } from 'viem'
 import { COINBASE_ADDRESS, RBTC, RIF } from './constants'
 import { tokenContracts } from './contracts'
-import { Token } from '@/app/collective-rewards/rewards/types'
 
 export const TOKENS = {
   rif: {

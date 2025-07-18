@@ -7,7 +7,7 @@ import { EstimatedCycleRewards } from './EstimatedCycleRewards'
 import { LastCycleRewards } from './LastCycleRewards'
 import { TotalEarned } from './TotalEarned'
 import { UnclaimedRewards } from './UnclaimedRewards'
-import UpdateBackerRewardModal from '../UpdateBackerRewardModal/UpdateBackerRewardModal'
+import { UpdateBackerRewardModal } from '@/app/my-rewards/builder/components/UpdateBackerRewardModal'
 
 const BuilderRewardsContainer = ({ children }: { children: React.ReactNode }) => {
   return (
