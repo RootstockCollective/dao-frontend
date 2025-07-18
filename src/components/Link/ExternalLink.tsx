@@ -1,6 +1,6 @@
 import { cn } from '@/lib/utils'
 import { FC } from 'react'
-import { ArrowUpRightLightIcon } from '../Icons'
+import { ArrowRight, ArrowUpRightLightIcon } from '../Icons'
 import { ExternalLinkProps } from './types'
 
 /**
@@ -11,6 +11,7 @@ export const ExternalLink: FC<ExternalLinkProps> = ({
   children,
   variant = 'default',
   component: Component = 'a',
+  underline = true,
   // can be customized by providing additional classnames
   className,
   ...props
@@ -19,16 +20,18 @@ export const ExternalLink: FC<ExternalLinkProps> = ({
     <Component
       {...props}
       className={cn(
-        'inline-flex items-center gap-1.5 font-sora underline underline-offset-2 underline-thick hover:cursor-pointer w-fit',
+        'inline-flex items-center gap-1.5 font-sora hover:cursor-pointer w-fit',
         { 'tracking-tight leading-tight text-base': variant === 'menu' },
         { 'leading-normal text-sm': variant === 'default' },
         { 'leading-nornal text-base text-primary': variant === 'section-header' },
+        { 'underline underline-offset-2 underline-thick': underline },
         // combines hardcoded styles with classes coming from props
         className,
       )}
     >
       {children}
       {variant === 'menu' && <ArrowUpRightLightIcon />}
+      {variant === 'hero' && <ArrowRight />}
     </Component>
   )
 }
