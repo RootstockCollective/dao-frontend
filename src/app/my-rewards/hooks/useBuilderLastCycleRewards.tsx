@@ -7,7 +7,7 @@ import {
 } from '@/app/collective-rewards/rewards'
 import { useHandleErrors } from '@/app/collective-rewards/utils'
 import { USD } from '@/lib/constants'
-import { getTokens } from '@/lib/tokens'
+import { TOKENS } from '@/lib/tokens'
 import { usePricesContext } from '@/shared/context/PricesContext'
 import { Address } from 'viem'
 
@@ -29,7 +29,7 @@ interface LastCycleRewardsData {
 export const useBuilderLastCycleRewards = ({
   gauge,
 }: UseBuilderLastCycleRewardsProps): LastCycleRewardsData => {
-  const { rif, rbtc } = getTokens()
+  const { rif, rbtc } = TOKENS
   const { prices } = usePricesContext()
   const { data: cycle, isLoading: cycleLoading, error: cycleError } = useCycleContext()
   const {

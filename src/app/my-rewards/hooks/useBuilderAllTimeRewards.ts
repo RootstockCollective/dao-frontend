@@ -1,7 +1,6 @@
 import { formatMetrics, useGetBuilderRewardsClaimedLogs } from '@/app/collective-rewards/rewards'
-import { useHandleErrors } from '@/app/collective-rewards/utils'
 import { USD } from '@/lib/constants'
-import { getTokens } from '@/lib/tokens'
+import { TOKENS } from '@/lib/tokens'
 import { usePricesContext } from '@/shared/context/PricesContext'
 import { useReadGauge } from '@/shared/hooks/contracts/collective-rewards/useReadGauge'
 import { Address } from 'viem'
@@ -25,7 +24,7 @@ interface AllTimeRewardsData {
 
 export const useBuilderAllTimeRewards = ({ gauge }: UseBuilderAllTimeRewardsProps): AllTimeRewardsData => {
   const { prices } = usePricesContext()
-  const { rif, rbtc } = getTokens()
+  const { rif, rbtc } = TOKENS
 
   const {
     data: builderRewardsPerToken,

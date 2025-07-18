@@ -1,6 +1,5 @@
-import { getTokens } from '@/lib/tokens'
+import { TOKENS } from '@/lib/tokens'
 
-const tokens = getTokens()
-const tokenKeys = Object.keys(tokens) as Array<keyof typeof tokens>
+const tokenKeys = Object.keys(TOKENS) as Array<keyof typeof TOKENS>
 
 export type ClaimRewardType = 'all' | (typeof tokenKeys)[number]

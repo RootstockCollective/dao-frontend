@@ -2,7 +2,7 @@ import { CompleteBuilder } from '@/app/collective-rewards/types'
 import { filterBuildersByState, useBuilderContext } from '@/app/collective-rewards/user'
 import { useHandleErrors } from '@/app/collective-rewards/utils'
 import { Span } from '@/components/TypographyNew/'
-import { getTokens } from '@/lib/tokens'
+import { TOKENS } from '@/lib/tokens'
 import { Address } from 'viem'
 import { useBuilderAllTimeShare } from '../hooks/useBuilderAllTimeShare'
 import { RewardCard } from './RewardCard'
@@ -20,7 +20,7 @@ export const AllTimeShare = ({ gauge }: { gauge: Address }) => {
 
   const activatedGauges = activatedBuilders?.map(({ gauge }) => gauge) ?? []
 
-  const rifAddress = getTokens().rif.address
+  const rifAddress = TOKENS.rif.address
 
   const { amount, isLoading, error } = useBuilderAllTimeShare({
     gauge: gauge!,

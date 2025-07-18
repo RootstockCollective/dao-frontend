@@ -8,7 +8,7 @@ import { useAccount } from 'wagmi'
 import { useContext } from 'react'
 import { useBuilderContext } from '@/app/collective-rewards/user/context/BuilderContext'
 import { useGetBuilderEstimatedRewards } from '@/app/shared/hooks/useGetBuilderEstimatedRewards'
-import { getTokens } from '@/lib/tokens'
+import { TOKENS } from '@/lib/tokens'
 import { Address } from 'viem'
 import { LoadingSpinner } from '@/components/LoadingSpinner'
 import { useHandleErrors } from '@/app/collective-rewards/utils'
@@ -27,7 +27,7 @@ export const Spotlight = () => {
 
   const { randomBuilders } = useBuilderContext()
 
-  const { data: estimatedBuilders, isLoading, error } = useGetBuilderEstimatedRewards(getTokens())
+  const { data: estimatedBuilders, isLoading, error } = useGetBuilderEstimatedRewards(TOKENS)
 
   useHandleErrors({ error, title: 'Error loading builder estimated rewards' })
 

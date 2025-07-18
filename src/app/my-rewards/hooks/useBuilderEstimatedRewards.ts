@@ -7,7 +7,7 @@ import {
 import { useBuilderContext } from '@/app/collective-rewards/user'
 import { isBuilderRewardable } from '@/app/collective-rewards/utils'
 import { USD, WeiPerEther } from '@/lib/constants'
-import { getTokens } from '@/lib/tokens'
+import { TOKENS } from '@/lib/tokens'
 import { usePricesContext } from '@/shared/context/PricesContext'
 import { useReadBackersManager, useReadBuilderRegistry } from '@/shared/hooks/contracts'
 import { useReadGauge } from '@/shared/hooks/contracts/collective-rewards/useReadGauge'
@@ -37,7 +37,7 @@ export const useBuilderEstimatedRewards = ({
 }: UseBuilderEstimatedRewardsProps): EstimatedRewardsData => {
   const { prices } = usePricesContext()
   const { getBuilderByAddress } = useBuilderContext()
-  const { rif, rbtc } = getTokens()
+  const { rif, rbtc } = TOKENS
 
   // Get per-token rewards
   const { rif: rifRewards, rbtc: rbtcRewards } = useGetPerTokenRewards()

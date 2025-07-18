@@ -1,10 +1,9 @@
 import { formatMetrics } from '@/app/collective-rewards/rewards'
 import { usePricesContext } from '@/shared/context/PricesContext'
 import { useReadGauge } from '@/shared/hooks/contracts/collective-rewards/useReadGauge'
-import { useHandleErrors } from '@/app/collective-rewards/utils'
 import { Address } from 'viem'
 import { Token } from '@/app/collective-rewards/rewards'
-import { getTokens } from '@/lib/tokens'
+import { TOKENS } from '@/lib/tokens'
 import { USD } from '@/lib/constants'
 
 interface UseBuilderUnclaimedRewardsProps {
@@ -46,7 +45,7 @@ const useFormattedBuilderRewards = (gauge: Address, token: Token, currency = USD
 export const useBuilderUnclaimedRewards = ({
   gauge,
 }: UseBuilderUnclaimedRewardsProps): UnclaimedRewardsData => {
-  const { rif, rbtc } = getTokens()
+  const { rif, rbtc } = TOKENS
   const rifData = useFormattedBuilderRewards(gauge, rif, USD)
   const rbtcData = useFormattedBuilderRewards(gauge, rbtc, USD)
 
