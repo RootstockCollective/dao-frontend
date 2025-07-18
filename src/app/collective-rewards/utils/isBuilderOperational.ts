@@ -1,40 +1,30 @@
 import { Builder, BuilderStateFlags } from '../types'
 
 export const isBuilderOperational = (stateFlags?: BuilderStateFlags) => {
-  return !!(
-    stateFlags &&
-    stateFlags.activated &&
-    stateFlags.communityApproved &&
-    stateFlags.kycApproved &&
-    !stateFlags.paused
+  return Boolean(
+    stateFlags?.activated && stateFlags?.communityApproved && stateFlags?.kycApproved && !stateFlags?.paused,
   )
 }
 
 export const isBuilderDeactivated = ({ gauge, stateFlags }: Builder) =>
-  !!(gauge && stateFlags && !stateFlags.communityApproved)
+  Boolean(gauge && !stateFlags?.communityApproved)
 
 export const isBuilderKycRevoked = (stateFlags?: BuilderStateFlags) =>
-  !!(stateFlags && stateFlags.activated && !stateFlags.kycApproved)
+  Boolean(stateFlags?.activated && !stateFlags.kycApproved)
 
-export const isBuilderPaused = (stateFlags?: BuilderStateFlags) => !!(stateFlags && stateFlags.paused)
+export const isBuilderPaused = (stateFlags?: BuilderStateFlags) => Boolean(stateFlags?.paused)
+
+export const isBuilderSelfPaused = (stateFlags?: BuilderStateFlags) => Boolean(stateFlags?.revoked)
 
 export const isBuilderActive = (stateFlags?: BuilderStateFlags) => {
-  return !!(
-    stateFlags &&
-    stateFlags.communityApproved &&
-    stateFlags.kycApproved &&
-    !stateFlags.paused &&
-    !stateFlags.revoked
+  return Boolean(
+    stateFlags?.communityApproved && stateFlags?.kycApproved && !stateFlags?.paused && !stateFlags?.revoked,
   )
 }
 
 export const isBuilderRewardable = (stateFlags?: BuilderStateFlags) => {
-  return !!(
-    stateFlags &&
-    stateFlags.activated &&
-    stateFlags.communityApproved &&
-    stateFlags.kycApproved &&
-    !stateFlags.revoked
+  return Boolean(
+    stateFlags?.activated && stateFlags?.communityApproved && stateFlags?.kycApproved && !stateFlags?.revoked,
   )
 }
 

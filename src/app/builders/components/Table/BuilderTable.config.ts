@@ -62,3 +62,13 @@ export const DEFAULT_HEADERS: Column<ColumnId>[] = [
     sortable: false,
   },
 ]
+
+export const builderStates = [
+  'active',
+  'deactivated',
+  'revoked',
+  'paused',
+  'selfPaused',
+  'inProgress',
+] as const
+export type BuilderState = (typeof builderStates)[number]
