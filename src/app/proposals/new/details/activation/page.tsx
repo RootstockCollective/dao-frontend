@@ -13,6 +13,7 @@ import { ProposalCategory } from '@/shared/types'
 import { TextInput } from '@/components/FormFields'
 import { showFormErrors } from '../components/showFormErrors'
 import { ActivationProposal, ActivationProposalSchema } from '../schemas/ActivationProposalSchema'
+import { Header } from '@/components/TypographyNew'
 
 export default function ActivationProposalForm() {
   const router = useRouter()
@@ -68,9 +69,9 @@ export default function ActivationProposalForm() {
             <BaseProposalFields control={control} />
           </div>
           <div className="flex flex-col gap-4">
-            <h2 className="font-kk-topo text-text-100 text-2xl uppercase leading-loose tracking-wide">
+            <Header caps variant="h2" className="leading-loose tracking-wide">
               Proposal Action
-            </h2>
+            </Header>
             <TextInput control={control} name="builderAddress" label="Builder address to whitelist" />
           </div>
         </div>

@@ -14,7 +14,7 @@ import { TextInput } from '@/components/FormFields'
 import { showFormErrors } from '../components/showFormErrors'
 import { DeactivationProposal, DeactivationProposalSchema } from '../schemas/DeactivationProposalSchema'
 import { useBuilderContext } from '@/app/collective-rewards/user'
-import { Typography } from '@/components/TypographyNew/Typography'
+import { Header } from '@/components/TypographyNew'
 
 export default function DeactivationProposalForm() {
   const router = useRouter()
@@ -72,9 +72,9 @@ export default function DeactivationProposalForm() {
         <div className="w-full max-w-[760px] px-6 pt-6 pb-8 flex flex-col gap-10 bg-bg-80 rounded-sm">
           <BaseProposalFields control={control} />
           <div className="flex flex-col gap-4">
-            <Typography variant="h2" className="uppercase leading-loose tracking-wide">
+            <Header caps variant="h2" className="leading-loose tracking-wide">
               Proposal Action
-            </Typography>
+            </Header>
             <TextInput control={control} name="builderAddress" label="Builder address to de-whitelist" />
           </div>
         </div>
