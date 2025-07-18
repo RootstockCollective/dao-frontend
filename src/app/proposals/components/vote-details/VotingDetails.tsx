@@ -6,7 +6,7 @@ import { Header, Paragraph } from '@/components/TypographyNew'
 import { formatNumberWithCommas } from '@/lib/utils'
 import { Vote } from '@/shared/types'
 import { HourglassAnimatedIcon } from '@/components/Icons/HourglassAnimatedIcon'
-import Big from 'big.js'
+import Big from '@/lib/big'
 import { MouseEvent, Ref } from 'react'
 
 interface VoteCounterProps {
