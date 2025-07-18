@@ -43,8 +43,9 @@ export const BalancesSection = () => {
             <BalanceInfoForUser symbol="stRIF" />
             <UnstakeButton onClick={unstakeModal.openModal} />
           </div>
-          <BalanceInfoForUser symbol="USDRIF" />
+          {/*<BalanceInfoForUser symbol="USDRIF" /> @TODO de-scoped for now due to not fetching prices */}
           <BalanceInfoForUser symbol="RBTC" />
+          <div /> {/* @TODO empty div to occupy space - remove when USDRIF is implemented */}
         </div>
         <div>
           {stakeModal.isModalOpened && <StakingFlow onCloseModal={stakeModal.closeModal} />}
