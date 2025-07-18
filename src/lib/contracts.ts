@@ -20,6 +20,7 @@ import {
   REWARD_DISTRIBUTOR_ADDRESS,
   VANGUARD_NFT_ADDRESS,
   BB_NFT_ADDRESS,
+  USDRIF_ADDRESS,
 } from './constants'
 import { GovernorAbi } from './abis/Governor'
 
@@ -27,6 +28,7 @@ const tokenContracts = {
   RIF: RIF_ADDRESS,
   stRIF: STRIF_ADDRESS,
   RBTC: zeroAddress,
+  USDRIF: USDRIF_ADDRESS,
 }
 export type SupportedTokens = keyof typeof tokenContracts
 

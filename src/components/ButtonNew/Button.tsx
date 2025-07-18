@@ -2,7 +2,7 @@ import { cn } from '@/lib/utils'
 import { FC, ButtonHTMLAttributes, RefAttributes } from 'react'
 import { Span } from '../TypographyNew'
 
-type ButtonVariant = 'primary' | 'secondary' | 'secondary-outline'
+type ButtonVariant = 'primary' | 'secondary' | 'secondary-outline' | 'transparent'
 
 const DEFAULT_CLASSES =
   'relative overflow-hidden px-4 py-2 rounded-sm font-bold text-base transition-all duration-150 flex items-center justify-center disabled:cursor-not-allowed'
@@ -30,6 +30,8 @@ export const Button: FC<Props> = ({
       'bg-bg-100 text-text-100 border border-bg-100 disabled:opacity-80 disabled:border-disabled-primary disabled:border-opacity-80',
     'secondary-outline':
       'bg-transparent text-text-100 border border-bg-0 disabled:opacity-50 disabled:border-disabled-primary disabled:border-opacity-50',
+    transparent:
+      'bg-transparent text-text-100 border-none disabled:opacity-50 disabled:border-disabled-primary disabled:border-opacity-50',
   }
 
   return (
