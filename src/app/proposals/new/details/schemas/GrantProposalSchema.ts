@@ -2,30 +2,7 @@ import { z } from 'zod'
 import { isAddress } from 'viem'
 import { BaseProposalSchema } from './BaseProposalSchema'
 import { TokenFieldsSchema } from './TokenSchema'
-import { ENV } from '@/lib/constants'
-
-// grant limits
-const MIN_AMOUNT = {
-  mainnet: {
-    rBTC: 0.0001,
-    RIF: 10,
-  },
-  testnet: {
-    rBTC: 0.000001,
-    RIF: 1,
-  },
-}
-
-const MAX_AMOUNT = {
-  mainnet: {
-    rBTC: 21,
-    RIF: 1_000_000,
-  },
-  testnet: {
-    rBTC: 21,
-    RIF: 1_000_000,
-  },
-}
+import { GRANT_TOKEN_LIMITS } from '@/lib/constants'
 
 // Grant proposal form schema
 export const GrantProposalSchema = BaseProposalSchema.merge(TokenFieldsSchema)
@@ -35,21 +12,19 @@ export const GrantProposalSchema = BaseProposalSchema.merge(TokenFieldsSchema)
   .superRefine((data, ctx) => {
     const num = Number(data.transferAmount)
     const token = data.token
-    const minAmount = MIN_AMOUNT[ENV]
-    const maxAmount = MAX_AMOUNT[ENV]
-
-    if (token in minAmount && num < minAmount[token]) {
+    const { maxAmount, minAmount } = GRANT_TOKEN_LIMITS
+    if (num <= minAmount) {
       ctx.addIssue({
         path: ['transferAmount'],
-        message: `Grant amount is below minimum for ${token} (${minAmount[token]})`,
+        message: `Grant amount is below minimum for ${token} (${minAmount})`,
         code: z.ZodIssueCode.custom,
       })
     }
 
-    if (token in maxAmount && num > maxAmount[token]) {
+    if (num >= maxAmount) {
       ctx.addIssue({
         path: ['transferAmount'],
-        message: `Grant amount is above maximum for ${token} (${maxAmount[token]})`,
+        message: `Grant amount is above maximum for ${token} (${maxAmount})`,
         code: z.ZodIssueCode.custom,
       })
     }

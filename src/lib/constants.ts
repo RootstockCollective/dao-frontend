@@ -40,6 +40,11 @@ export const RBTC = 'RBTC'
 export const stRIF = 'stRIF'
 export const USD_SYMBOL = '$'
 
+export const GRANT_TOKEN_LIMITS = {
+  minAmount: 0.000001,
+  maxAmount: 999_999_999,
+}
+
 export const RNS_REGISTRY_ADDRESS = process.env.NEXT_PUBLIC_RNS_REGISTRY_ADDRESS as Address
 
 export const NODE_URL = process.env.NEXT_PUBLIC_NODE_URL
