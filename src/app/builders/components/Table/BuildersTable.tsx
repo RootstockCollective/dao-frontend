@@ -49,9 +49,8 @@ const filterMap: Record<BuilderFilterOptionId, (builder: Builder) => boolean> = 
 }
 
 // FIXME: this is a temporary solution to filter builders by state.
-const useFilteredBuilders = (tokens: { [token: string]: Token }, filterOption: BuilderFilterOptionId) => {
+const useFilteredBuilders = (filterOption: BuilderFilterOptionId) => {
   const { data: buildersRewardsData, isLoading, error } = useGetBuilderRewardsSummary(getTokens())
-  console.log('🚀 ~ useFilteredBuilders ~ buildersRewardsData:', buildersRewardsData)
   const filteredBuilders = useMemo(
     () => buildersRewardsData?.filter(filterMap[filterOption]),
     [buildersRewardsData, filterOption],
@@ -123,8 +122,7 @@ export const BuildersTable = ({ filterOption }: { filterOption: BuilderFilterOpt
 
   const dispatch = useTableActionsContext<ColumnId>()
 
-  const tokens = useMemo(() => getTokens(), [])
-  const { data: buildersRewardsData, isLoading, error } = useFilteredBuilders(tokens, filterOption)
+  const { data: buildersRewardsData, isLoading, error } = useFilteredBuilders(filterOption)
 
   const {
     data: allocations,

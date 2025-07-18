@@ -94,8 +94,13 @@ export const useGetBuilderRewardsSummary = ({ rif, rbtc }: { [token: string]: To
   }, [estimatedRewards, totalAllocation, notifyRewardEventLastCycle, prices, rif, rbtc, currency])
 
   const isLoading =
-    estimatedRewardsLoading || totalAllocationLoading || lastCycleRewardsLoading || logsLoading
-  const error = estimatedRewardsError || totalAllocationError || lastCycleRewardsError || logsError
+    estimatedRewardsLoading ||
+    totalAllocationLoading ||
+    lastCycleRewardsLoading ||
+    logsLoading ||
+    cycleLoading
+  const error =
+    estimatedRewardsError || totalAllocationError || lastCycleRewardsError || logsError || cycleError
 
   return {
     data,

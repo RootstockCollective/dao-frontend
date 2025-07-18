@@ -7,9 +7,12 @@ import { useGetBuilderEstimatedRewards } from '@/app/shared/hooks/useGetBuilderE
 import { getFiatAmount } from '@/app/collective-rewards/utils'
 import Big from '@/lib/big'
 import { getTokens } from '@/lib/tokens'
+import { useHandleErrors } from '@/app/collective-rewards/utils'
+import { LoadingSpinner } from '@/components/LoadingSpinner/LoadingSpinner'
 
 export const EstimatedRewardsMetric = () => {
   const { data: estimatedRewards, isLoading, error } = useGetBuilderEstimatedRewards(getTokens())
+  useHandleErrors({ error, title: 'Error fetching estimated rewards' })
 
   const { totalEstimatedRif, totalEstimatedRbtc, totalEstimatedUsd } = estimatedRewards.reduce(
     (acc: { totalEstimatedRif: bigint; totalEstimatedRbtc: bigint; totalEstimatedUsd: Big }, builder) => {
@@ -44,12 +47,16 @@ export const EstimatedRewardsMetric = () => {
         />
       }
     >
-      <div className="flex flex-row items-baseline gap-2 font-rootstock-sans">
-        <Header variant="h1">{formatCurrency(totalEstimatedUsd)}</Header>
-        <RifRbtcTooltip rbtcValue={totalEstimatedRbtc} rifValue={totalEstimatedRif}>
-          <DottedUnderlineLabel className="text-lg">USD</DottedUnderlineLabel>
-        </RifRbtcTooltip>
-      </div>
+      {isLoading ? (
+        <LoadingSpinner />
+      ) : (
+        <div className="flex flex-row items-baseline gap-2 font-rootstock-sans">
+          <Header variant="h1">{formatCurrency(totalEstimatedUsd)}</Header>
+          <RifRbtcTooltip rbtcValue={totalEstimatedRbtc} rifValue={totalEstimatedRif}>
+            <DottedUnderlineLabel className="text-lg">USD</DottedUnderlineLabel>
+          </RifRbtcTooltip>
+        </div>
+      )}
     </Metric>
   )
 }

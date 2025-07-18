@@ -10,7 +10,6 @@ import { useRouter } from 'next/navigation'
 
 const NAME = 'Collective Rewards'
 export const CollectiveRewardsPage = () => {
-  const router = useRouter()
 
   return (
     <div className="flex flex-col">

@@ -33,6 +33,7 @@ export const BuilderContextProvider: FC<BuilderProviderProps> = ({ children }) =
 
   const builders = useMemo(() => Object.values(buildersMap), [buildersMap])
 
+  // FIXME: randomBuilders need to be stored in the session storage
   const randomBuilders = useShuffledArray<Builder>(builders)
     .filter(({ stateFlags }) => isBuilderRewardable(stateFlags))
     .slice(0, SPOTLIGHT_BUILDERS)

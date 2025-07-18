@@ -8,7 +8,6 @@ import { useReadBuilderRegistryForMultipleArgs } from '@/shared/hooks/contracts/
 import { DateTime } from 'luxon'
 import { useMemo } from 'react'
 import { Address, getAddress, zeroAddress } from 'viem'
-import { getBackerRewardPercentage } from '../../rewards/utils'
 
 export type UseGetBuilders = () => {
   data: Record<Address, Builder> // TODO review Builder type

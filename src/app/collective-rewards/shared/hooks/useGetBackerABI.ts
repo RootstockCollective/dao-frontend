@@ -12,11 +12,11 @@ import { getTokens } from '@/lib/tokens'
 
 export const useGetBackerABI = (backer: Address) => {
   const {
-    data: estimatedRewards,
+    data: builderEstimatedRewards,
     isLoading: estimatedRewardsLoading,
     error: estimatedRewardsError,
   } = useGetBuilderEstimatedRewards(getTokens())
-  const gauges = estimatedRewards.map(({ gauge }) => gauge)
+  const gauges = builderEstimatedRewards.map(({ gauge }) => gauge)
   const {
     data: allocationOf,
     isLoading: allocationOfLoading,
@@ -45,7 +45,7 @@ export const useGetBackerABI = (backer: Address) => {
   const abi = useMemo(() => {
     const rifPrice = prices.RIF?.price ?? 0
 
-    const backerRewards = estimatedRewards.reduce((acc, { backerEstimatedRewardsPct }, i) => {
+    const backerRewards = builderEstimatedRewards.reduce((acc, { backerEstimatedRewardsPct }, i) => {
       const builderTotalAllocation = totalAllocation[i] ?? 0n
       const backerAllocationOf = allocationOf[i] ?? 0n
 
@@ -68,7 +68,7 @@ export const useGetBackerABI = (backer: Address) => {
     const rewardsPerStRif = (backerRewards * WeiPerEther) / backerTotalAllocation
 
     return calculateAbi(Big(rewardsPerStRif.toString()), rifPrice)
-  }, [allocationOf, backerTotalAllocation, estimatedRewards, cycleRewards, prices, totalAllocation])
+  }, [allocationOf, backerTotalAllocation, builderEstimatedRewards, cycleRewards, prices, totalAllocation])
 
   const isLoading =
     estimatedRewardsLoading ||

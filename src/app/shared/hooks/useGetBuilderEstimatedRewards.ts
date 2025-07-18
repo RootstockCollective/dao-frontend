@@ -5,14 +5,11 @@ import { filterBuildersByState } from '../../collective-rewards/user'
 import { BuilderEstimatedRewards, CompleteBuilder } from '../../collective-rewards/types'
 import { useMemo } from 'react'
 import { isBuilderRewardable } from '../../collective-rewards/utils'
-import { WeiPerEther } from '@/lib/constants'
+import { USD, WeiPerEther } from '@/lib/constants'
 import { usePricesContext } from '@/shared/context/PricesContext'
 import { Token } from '@/app/collective-rewards/rewards'
 
-export const useGetBuilderEstimatedRewards = (
-  { rif, rbtc }: { [token: string]: Token },
-  currency = 'USD',
-) => {
+export const useGetBuilderEstimatedRewards = ({ rif, rbtc }: { [token: string]: Token }, currency = USD) => {
   const { builders } = useBuilderContext()
   const activeBuilders = filterBuildersByState<CompleteBuilder>(builders)
   const gauges = activeBuilders.map(({ gauge }) => gauge)
