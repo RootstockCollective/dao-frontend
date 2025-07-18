@@ -1,11 +1,11 @@
-import { formatMetrics, useGetBuilderRewardsClaimedLogs } from '@/app/collective-rewards/rewards'
-import { USD } from '@/lib/constants'
+import { useGetBuilderRewardsClaimedLogs } from '@/app/collective-rewards/rewards'
 import { TOKENS } from '@/lib/tokens'
 import { usePricesContext } from '@/shared/context/PricesContext'
 import { useReadGauge } from '@/shared/hooks/contracts/collective-rewards/useReadGauge'
 import { Address } from 'viem'
+import { formatRewards } from '@/app/my-rewards/utils'
+import { useMemo } from 'react'
 
-// FIXME: to be reviewed
 interface UseBuilderAllTimeRewardsProps {
   gauge: Address
 }
@@ -22,6 +22,7 @@ interface AllTimeRewardsData {
   rbtc: TokenRewardData
 }
 
+// TODO: this can be split into a per-token hook
 export const useBuilderAllTimeRewards = ({ gauge }: UseBuilderAllTimeRewardsProps): AllTimeRewardsData => {
   const { prices } = usePricesContext()
   const { rif, rbtc } = TOKENS
@@ -51,6 +52,12 @@ export const useBuilderAllTimeRewards = ({ gauge }: UseBuilderAllTimeRewardsProp
       return acc + amount
     }, 0n) ?? 0n
 
+  const rifTotalRewards = useMemo(() => {
+    const rifTotalRewards = rifTotalClaimedRewards + (rifClaimableRewards ?? 0n)
+    const rifPrice = prices[rif.symbol]?.price ?? 0
+    return formatRewards(rifTotalRewards, rifPrice, rif.symbol)
+  }, [rifTotalClaimedRewards, rifClaimableRewards, prices, rif.symbol])
+
   // Calculate total claimed rewards for rBTC
   const rbtcTotalClaimedRewards =
     builderRewardsPerToken[rbtc.address]?.reduce((acc, event) => {
@@ -58,26 +65,22 @@ export const useBuilderAllTimeRewards = ({ gauge }: UseBuilderAllTimeRewardsProp
       return acc + amount
     }, 0n) ?? 0n
 
-  // Calculate total rewards (claimed + claimable)
-  const rifTotalRewards = rifTotalClaimedRewards + (rifClaimableRewards ?? 0n)
-  const rbtcTotalRewards = rbtcTotalClaimedRewards + (rbtcClaimableRewards ?? 0n)
-
-  const rifPrice = prices[rif.symbol]?.price ?? 0
-  const rbtcPrice = prices[rbtc.symbol]?.price ?? 0
-
-  const rifFormatted = formatMetrics(rifTotalRewards, rifPrice, rif.symbol, USD)
-  const rbtcFormatted = formatMetrics(rbtcTotalRewards, rbtcPrice, rbtc.symbol, USD)
+  const rbtcTotalRewards = useMemo(() => {
+    const rbtcTotalRewards = rbtcTotalClaimedRewards + (rbtcClaimableRewards ?? 0n)
+    const rbtcPrice = prices[rbtc.symbol]?.price ?? 0
+    return formatRewards(rbtcTotalRewards, rbtcPrice, rbtc.symbol)
+  }, [rbtcTotalClaimedRewards, rbtcClaimableRewards, prices, rbtc.symbol])
 
   return {
     rif: {
-      amount: rifFormatted.amount,
-      fiatAmount: rifFormatted.fiatAmount,
+      amount: rifTotalRewards.amount,
+      fiatAmount: rifTotalRewards.fiatAmount,
       isLoading: builderRewardsPerTokenLoading || rifClaimableRewardsLoading,
       error: builderRewardsPerTokenError ?? rifClaimableRewardsError,
     },
     rbtc: {
-      amount: rbtcFormatted.amount,
-      fiatAmount: rbtcFormatted.fiatAmount,
+      amount: rbtcTotalRewards.amount,
+      fiatAmount: rbtcTotalRewards.fiatAmount,
       isLoading: builderRewardsPerTokenLoading || rbtcClaimableRewardsLoading,
       error: builderRewardsPerTokenError ?? rbtcClaimableRewardsError,
     },

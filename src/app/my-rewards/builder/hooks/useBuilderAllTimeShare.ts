@@ -1,6 +1,6 @@
 import { useGetBuilderRewardsClaimedLogs, useGetGaugesNotifyReward } from '@/app/collective-rewards/rewards'
-import { useHandleErrors } from '@/app/collective-rewards/utils'
 import { useReadGauge } from '@/shared/hooks/contracts/collective-rewards/useReadGauge'
+import { useMemo } from 'react'
 import { Address } from 'viem'
 
 interface UseBuilderAllTimeShareProps {
@@ -38,29 +38,32 @@ export const useBuilderAllTimeShare = ({
     error: claimableRewardsError,
   } = useReadGauge({ address: gauge, functionName: 'builderRewards', args: [rifAddress] })
 
-  // Calculate builder's claimed rewards
-  const builderClaimedRewards =
-    builderRewardsPerToken[rifAddress]?.reduce((acc, event) => {
-      const amount = event.args.amount_
-      return acc + amount
-    }, 0n) ?? 0n
+  // Calculate the percentage using useMemo for performance optimization
+  const amount = useMemo(() => {
+    // Calculate builder's claimed rewards
+    const builderClaimedRewards =
+      builderRewardsPerToken[rifAddress]?.reduce((acc, event) => {
+        const amount = event.args.amount_
+        return acc + amount
+      }, 0n) ?? 0n
 
-  // Calculate total builder rewards (claimed + claimable)
-  const totalBuilderRewards = builderClaimedRewards + (claimableRewards ?? 0n)
+    // Calculate total builder rewards (claimed + claimable)
+    const totalBuilderRewards = builderClaimedRewards + (claimableRewards ?? 0n)
 
-  // Calculate total notify rewards across all gauges
-  const notifyRewards = Object.values(notifyReward).reduce(
-    (acc, events) =>
-      acc +
-      events.reduce(
-        (acc, { args: { backersAmount_, builderAmount_ } }) => acc + backersAmount_ + builderAmount_,
-        0n,
-      ),
-    0n,
-  )
+    // Calculate total notify rewards across all gauges
+    const notifyRewards = Object.values(notifyReward).reduce(
+      (acc, events) =>
+        acc +
+        events.reduce(
+          (acc, { args: { backersAmount_, builderAmount_ } }) => acc + backersAmount_ + builderAmount_,
+          0n,
+        ),
+      0n,
+    )
 
-  // Calculate the percentage
-  const amount = !notifyRewards ? '0%' : `${(totalBuilderRewards * 100n) / notifyRewards}%`
+    // Calculate the percentage
+    return !notifyRewards ? '0%' : `${(totalBuilderRewards * 100n) / notifyRewards}%`
+  }, [builderRewardsPerToken, claimableRewards, notifyReward, rifAddress])
 
   return {
     amount,

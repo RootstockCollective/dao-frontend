@@ -1,10 +1,9 @@
-import { formatMetrics } from '@/app/collective-rewards/rewards'
+import { Token } from '@/app/collective-rewards/rewards'
+import { formatRewards } from '@/app/my-rewards/utils'
+import { TOKENS } from '@/lib/tokens'
 import { usePricesContext } from '@/shared/context/PricesContext'
 import { useReadGauge } from '@/shared/hooks/contracts/collective-rewards/useReadGauge'
 import { Address } from 'viem'
-import { Token } from '@/app/collective-rewards/rewards'
-import { TOKENS } from '@/lib/tokens'
-import { USD } from '@/lib/constants'
 
 interface UseBuilderUnclaimedRewardsProps {
   builder: Address
@@ -23,7 +22,7 @@ interface UnclaimedRewardsData {
   rbtc: TokenRewardData
 }
 
-const useFormattedBuilderRewards = (gauge: Address, token: Token, currency = USD) => {
+const useBuilderRewardsPerToken = (gauge: Address, token: Token) => {
   const { prices } = usePricesContext()
   const {
     data: rewards,
@@ -32,13 +31,12 @@ const useFormattedBuilderRewards = (gauge: Address, token: Token, currency = USD
   } = useReadGauge({ address: gauge, functionName: 'builderRewards', args: [token.address] })
 
   const price = prices[token.symbol]?.price ?? 0
-  const formatted = formatMetrics(rewards ?? 0n, price, token.symbol, currency)
+  const formatted = formatRewards(rewards ?? 0n, price, token.symbol)
 
   return {
-    amount: formatted.amount,
-    fiatAmount: formatted.fiatAmount,
-    isLoading: isLoading,
-    error: error,
+    ...formatted,
+    isLoading,
+    error,
   }
 }
 
@@ -46,8 +44,8 @@ export const useBuilderUnclaimedRewards = ({
   gauge,
 }: UseBuilderUnclaimedRewardsProps): UnclaimedRewardsData => {
   const { rif, rbtc } = TOKENS
-  const rifData = useFormattedBuilderRewards(gauge, rif, USD)
-  const rbtcData = useFormattedBuilderRewards(gauge, rbtc, USD)
+  const rifData = useBuilderRewardsPerToken(gauge, rif)
+  const rbtcData = useBuilderRewardsPerToken(gauge, rbtc)
 
   return {
     rif: {

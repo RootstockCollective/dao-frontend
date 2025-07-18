@@ -1,15 +1,14 @@
 import { useCycleContext } from '@/app/collective-rewards/metrics/context/CycleContext'
 import {
-  formatMetrics,
   getNotifyRewardAmount,
   useGetGaugeNotifyRewardLogs,
   useGetLastCycleDistribution,
 } from '@/app/collective-rewards/rewards'
 import { useHandleErrors } from '@/app/collective-rewards/utils'
-import { USD } from '@/lib/constants'
 import { TOKENS } from '@/lib/tokens'
 import { usePricesContext } from '@/shared/context/PricesContext'
 import { Address } from 'viem'
+import { formatRewards } from '../../utils'
 
 interface UseBuilderLastCycleRewardsProps {
   gauge: Address
@@ -68,8 +67,8 @@ export const useBuilderLastCycleRewards = ({
   const rifPrice = prices[rif.symbol]?.price ?? 0
   const rbtcPrice = prices[rbtc.symbol]?.price ?? 0
 
-  const rifFormatted = formatMetrics(rifAmount.amount, rifPrice, rif.symbol, USD)
-  const rbtcFormatted = formatMetrics(rbtcAmount.amount, rbtcPrice, rbtc.symbol, USD)
+  const rifFormatted = formatRewards(rifAmount.amount, rifPrice, rif.symbol)
+  const rbtcFormatted = formatRewards(rbtcAmount.amount, rbtcPrice, rbtc.symbol)
 
   return {
     rif: {
