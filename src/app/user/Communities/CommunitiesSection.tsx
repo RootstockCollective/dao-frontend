@@ -8,7 +8,7 @@ import { CardPlaceholder } from '@/components/loading-components'
 import { CommunityItem } from '@/app/communities/CommunityItem'
 import { cn } from '@/lib/utils'
 import { SectionContainer } from '@/app/communities/components/SectionContainer'
-import { HeroCommunitiesComponent } from '@/app/communities/components/HeroComponentCommunities'
+import { HeroCommunitiesComponent } from '@/app/communities/components'
 
 const communities: string[] = Object.keys(communitiesMapByContract)
 
@@ -66,7 +66,7 @@ const UserCommunities = ({ nftAddresses }: Props) => {
 
   return (
     <>
-      <SectionContainer title="YOUR COMMUNITIES" headerVariant="h1">
+      <SectionContainer title="YOUR COMMUNITIES" headerVariant="h3">
         <div className={cn('grid sm:grid-cols-1 gap-[24px]', communityGridClass)}>
           {nftsInfo.map((nftInfo, index) => (
             <NftInfo
@@ -90,7 +90,7 @@ interface NftInfoProps {
 
 const NftInfo = ({ nftAddress, onFinishedLoading, defaultCommunityVariant = 'portrait' }: NftInfoProps) => {
   const data = useCommunity(nftAddress as Address)
-  const { isBoosted, isCampaignActive } = useNFTBoosterContext() // @TODO
+  const { isBoosted, isCampaignActive } = useNFTBoosterContext()
   const alreadyFinishedLoading = useRef(false)
 
   useEffect(() => {

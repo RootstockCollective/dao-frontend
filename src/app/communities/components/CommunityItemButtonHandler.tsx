@@ -1,7 +1,6 @@
 import { Paragraph } from '@/components/TypographyNew'
 import Link from 'next/link'
 import { ArrowRightIconKoto } from '@/components/Icons'
-import { cn } from '@/lib/utils'
 
 interface CommunityItemButtonHandlerProps {
   nftAddress?: string
@@ -30,7 +29,7 @@ export const CommunityItemButtonHandler = ({
   }
   return (
     <Link href={href} target={target}>
-      <div className={cn('flex flex-row gap-1 items-center', `text-${color}`)}>
+      <div className={'flex flex-row gap-1 items-center'} style={{ color }}>
         <Paragraph>Learn more</Paragraph>
         <ArrowRightIconKoto color={color} />
       </div>

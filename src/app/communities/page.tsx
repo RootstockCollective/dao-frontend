@@ -10,7 +10,7 @@ import {
   vanguardCommunity,
 } from '@/app/communities/communityUtils'
 import { Header } from '@/components/TypographyNew'
-import { HeroCommunitiesComponent } from '@/app/communities/components/HeroComponentCommunities'
+import { HeroCommunitiesComponent } from '@/app/communities/components'
 
 export const dynamic = 'force-static'
 
