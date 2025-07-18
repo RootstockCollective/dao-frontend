@@ -1,7 +1,7 @@
 import React from 'react'
 import InfoIcon from './InfoIcon'
 
-export default function PreviewLabel() {
+export function PreviewLabel() {
   return (
     <div className="flex gap-1 items-center justify-end flex-nowrap">
       <InfoIcon />

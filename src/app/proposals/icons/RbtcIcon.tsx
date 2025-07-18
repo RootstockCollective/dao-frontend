@@ -1,10 +1,10 @@
 import { type IconProps } from '@/components/Icons'
 
-export function RbtcIcon(props: IconProps) {
+export function RbtcIcon({ size = 30, ...props }: IconProps) {
   return (
     <svg
-      width="30"
-      height="28"
+      width={size}
+      height={+size * (14 / 15)}
       viewBox="0 0 30 28"
       fill="none"
       xmlns="http://www.w3.org/2000/svg"

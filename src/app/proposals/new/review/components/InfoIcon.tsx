@@ -1,6 +1,17 @@
-export default function InfoIcon() {
+import { DEFAULT_ICON_SIZE } from '@/components/Icons/constants'
+import { type IconProps } from '@/components/Icons'
+import { cn } from '@/lib/utils'
+
+export default function InfoIcon({ size = DEFAULT_ICON_SIZE, className, ...props }: IconProps) {
   return (
-    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" className="shrink-0">
+    <svg
+      width={size}
+      height={size}
+      viewBox="0 0 24 24"
+      fill="none"
+      className={cn(className, 'shrink-0')}
+      {...props}
+    >
       <path
         d="M11.5 9.5C12.0523 9.5 12.5 9.05228 12.5 8.5C12.5 7.94772 12.0523 7.5 11.5 7.5C10.9477 7.5 10.5 7.94772 10.5 8.5C10.5 9.05228 10.9477 9.5 11.5 9.5Z"
         fill="#ACA39D"

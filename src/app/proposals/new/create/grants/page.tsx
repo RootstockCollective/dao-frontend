@@ -14,8 +14,6 @@ import { ProposalCategory } from '@/shared/types'
 import { showFormErrors } from '../components/showFormErrors'
 import { GrantProposal, GrantProposalSchema } from '../schemas/GrantProposalSchema'
 
-//'/proposals/new/create?contract=DAOTreasuryAbi&action=withdraw'
-
 export default function GrantsProposalForm() {
   const { record, setRecord } = useReviewProposal()
   const router = useRouter()
