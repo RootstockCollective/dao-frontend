@@ -2,7 +2,7 @@
 import { HeroComponent } from '@/components/HeroComponent'
 import { useGetProposalsWithGraph } from '../proposals/hooks/useGetProposalsWithGraph'
 import { LatestCollectiveSection } from '../user/latest-collective'
-import { Header, Paragraph, Span } from '@/components/TypographyNew'
+import { Header, Paragraph } from '@/components/TypographyNew'
 import { Button } from '@/components/ButtonNew'
 import { ExternalLink } from '@/components/Link/ExternalLink'
 
@@ -40,7 +40,7 @@ const TopHeroContent = () => (
 )
 
 export default function DummyHome() {
-  const { activeProposals } = useGetProposalsWithGraph()
+  const { activeProposals, data } = useGetProposalsWithGraph()
 
   return (
     <div className="bg-bg-100 px-6">
@@ -52,8 +52,9 @@ export default function DummyHome() {
         content={<TopHeroContent />}
         button={<Button>{'Connect wallet'}</Button>}
       />
-      <LatestCollectiveSection proposal={activeProposals[0]} />
+      <LatestCollectiveSection latestProposals={data.slice(0, 3)} activeProposal={activeProposals[0]} />
       <HeroComponent
+        className="mt-2"
         imageSrc="/images/hero/home-hero-bottom.png"
         title={'BE PART OF THE COMMUNITIES'}
         subtitle="CURATED BY THE COLLECTIVE"
