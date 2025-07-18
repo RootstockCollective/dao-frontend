@@ -1,14 +1,13 @@
 'use client'
 
-import { isActive } from '@/app/collective-rewards/active-builders'
 import { AllocationsContext } from '@/app/collective-rewards/allocations/context'
 import { Token } from '@/app/collective-rewards/rewards' // FIXME: change path so as to not import from a cousin folder
 import { Builder } from '@/app/collective-rewards/types'
 import {
+  isBuilderActive,
   isBuilderDeactivated,
   isBuilderKycRevoked,
   isBuilderPaused,
-  isBuilderSelfPaused,
 } from '@/app/collective-rewards/utils'
 import TablePager from '@/components/TableNew/TablePager'
 import { getTokens } from '@/lib/tokens'
@@ -31,19 +30,21 @@ import { Action } from './Cell/ActionCell'
 import { useGetBuilderRewardsSummary } from '../../hooks/useGetBuilderRewardsSummary'
 
 // --- Filter builders by state ---
-const filterActive = (builder: Builder) => isActive(builder.stateFlags)
-const filterDeactivated = (builder: Builder) => isBuilderDeactivated(builder)
-const filterKycRevoked = (builder: Builder) => isBuilderKycRevoked(builder.stateFlags)
-const filterPaused = (builder: Builder) =>
-  isBuilderPaused(builder.stateFlags) || isBuilderSelfPaused(builder.stateFlags)
-const filterInProgress = (builder: Builder) => !isActive(builder.stateFlags)
+const filterInactive = (builder: Builder) => !isBuilderActive(builder.stateFlags)
+const filterActive = (builder: Builder) => isBuilderActive(builder.stateFlags)
+const filterDeactivated = (builder: Builder) =>
+  isBuilderDeactivated(builder) || isBuilderKycRevoked(builder.stateFlags)
+const filterRevoked = (builder: Builder) => Boolean(builder.stateFlags?.revoked)
+const filterPaused = (builder: Builder) => isBuilderPaused(builder.stateFlags)
+const filterInProgress = (builder: Builder) => !isBuilderActive(builder.stateFlags)
 
 const filterMap: Record<BuilderFilterOptionId, (builder: Builder) => boolean> = {
   active: filterActive,
+  inactive: filterInactive,
   deactivated: filterDeactivated,
-  revoked: filterKycRevoked,
+  revoked: filterRevoked,
   paused: filterPaused,
-  inProgress: filterInProgress,
+  'in-progress': filterInProgress,
   all: () => true,
 }
 
