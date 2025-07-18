@@ -11,7 +11,7 @@ interface Resources {
   allocations: string
 }
 
-const testnet: Resources = {
+const testnet = {
   registerRns: 'https://testnet.manager.rns.rifos.org/',
   tokenBridge: 'https://testnet.tokenbridge.rsk.co/',
   rif: 'https://www.coingecko.com/en/coins/rsk-infrastructure-framework/',
@@ -20,9 +20,9 @@ const testnet: Resources = {
   stakeRif: 'https://rootstockcollective.xyz/rootstockcollective-101-staking-rif/',
   forum: 'https://gov.rootstockcollective.xyz',
   allocations: 'https://rootstockcollective.xyz/collective-rewards-how-to-become-a-backer/',
-}
+} as const satisfies Resources
 
-const mainnet: Resources = {
+const mainnet = {
   registerRns: 'https://manager.rns.rifos.org/',
   tokenBridge: 'https://tokenbridge.rsk.co/',
   rif: 'https://www.coingecko.com/en/coins/rsk-infrastructure-framework/',
@@ -31,18 +31,18 @@ const mainnet: Resources = {
   stakeRif: 'https://rootstockcollective.xyz/rootstockcollective-101-staking-rif/',
   forum: 'https://gov.rootstockcollective.xyz',
   allocations: 'https://rootstockcollective.xyz/collective-rewards-how-to-become-a-backer/',
-}
+} as const satisfies Resources
 
-const regtest: Resources = {
+const regtest = {
   registerRns: '',
   tokenBridge: '',
   rif: '',
   rbtc: '',
   getRif: '',
   stakeRif: '',
-  forum: '',
+  forum: 'https://gov.rootstockcollective.xyz',
   allocations: '',
-}
+} as const satisfies Resources
 
 const environments = {
   regtest,
@@ -50,4 +50,4 @@ const environments = {
   mainnet,
 }
 
-export const currentLinks: Resources = environments[ENV as keyof typeof environments]
+export const currentLinks = environments[ENV as keyof typeof environments]
