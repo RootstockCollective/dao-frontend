@@ -10,7 +10,7 @@ import {
   vanguardCommunity,
 } from '@/app/communities/communityUtils'
 import { Header } from '@/components/TypographyNew'
-import { HeroComponent } from '@/components/HeroComponent'
+import { HeroCommunitiesComponent } from '@/app/communities/components'
 
 export const dynamic = 'force-static'
 
@@ -24,18 +24,7 @@ export default function Communities() {
     <div>
       <Header>COMMUNITIES</Header>
       <div className="flex flex-col gap-2">
-        <HeroComponent
-          imageSrc="/images/hero/community-banner.png"
-          title="SHOW YOUR TRUE COLORS."
-          subtitle="CURATED BY THE COLLECTIVE"
-          items={[
-            'collective Badges are dynamic NFTs that represent your role and impact within the DAO.',
-            'whether you’re a Builder, Backer, or Community Contributor, your badge shows that you belong.',
-            'be part of something bigger, helping shape the future of Bitcoin.',
-            'these aren’t just collectibles. They are your passport to participation.',
-          ]}
-          className="mt-6"
-        />
+        <HeroCommunitiesComponent />
         <SectionContainer
           title="BADGES"
           rightContent="These are earned for specific tasks - they are NFTs that come with functionality, some just medals of honour. Badges can unlock voting capabilities and help you earn BTC-based rewards through RootstockCollective."

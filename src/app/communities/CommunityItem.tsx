@@ -6,6 +6,7 @@ import { CommunityItemButtonHandler } from '@/app/communities/components/Communi
 import { applyPinataImageOptions } from '@/lib/ipfs'
 import { cn } from '@/lib/utils'
 import { ImageDebris } from '@/app/communities/components/ImageDebris'
+import { BoostedLabelKoto } from '@/app/communities/components/BoostedLabelKoto'
 
 interface CommunityItemProps {
   leftImageSrc: string
@@ -17,6 +18,7 @@ interface CommunityItemProps {
   variant?: 'portrait' | 'landscape'
   enableDebris?: boolean
   specialPower?: string
+  boostedPercentage?: string
 }
 
 /**
@@ -33,6 +35,7 @@ export const CommunityItem = ({
   variant = 'portrait',
   enableDebris = false,
   specialPower,
+  boostedPercentage,
 }: CommunityItemProps) => {
   const isExternalImage = leftImageSrc.startsWith('http')
   const image = isExternalImage
@@ -71,6 +74,7 @@ export const CommunityItem = ({
               <Header className="text-[20px]">{specialPower}</Header>
             </div>
           )}
+          {boostedPercentage && <BoostedLabelKoto text={`${boostedPercentage}% REWARDS BOOST`} />}
           {/* Description */}
           <Paragraph>{description}</Paragraph>
           {/* Learn more */}
