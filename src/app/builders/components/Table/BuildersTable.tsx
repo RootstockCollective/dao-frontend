@@ -1,8 +1,6 @@
 'use client'
 
-import { isActive } from '@/app/collective-rewards/active-builders'
 import { AllocationsContext } from '@/app/collective-rewards/allocations/context'
-import { Token } from '@/app/collective-rewards/rewards' // FIXME: change path so as to not import from a cousin folder
 import { Builder } from '@/app/collective-rewards/types'
 import {
   isBuilderDeactivated,
@@ -29,6 +27,7 @@ import { BuilderHeaderRow } from './BuilderHeaderRow'
 import { ColumnId, DEFAULT_HEADERS, PAGE_SIZE } from './BuilderTable.config'
 import { Action } from './Cell/ActionCell'
 import { useGetBuilderRewardsSummary } from '../../hooks/useGetBuilderRewardsSummary'
+import { isActive } from './utils'
 
 // --- Filter builders by state ---
 const filterActive = (builder: Builder) => isActive(builder.stateFlags)

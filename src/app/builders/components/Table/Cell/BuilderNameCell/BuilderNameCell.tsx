@@ -1,4 +1,3 @@
-import { isActive } from '@/app/collective-rewards/active-builders'
 import { Builder } from '@/app/collective-rewards/types'
 import {
   isBuilderDeactivated,
@@ -14,7 +13,8 @@ import { Tooltip } from '@/components/Tooltip/Tooltip'
 import { Paragraph } from '@/components/TypographyNew'
 import { cn, truncate } from '@/lib/utils'
 import { FC } from 'react'
-import { BuilderState } from '../../BuilderTable.config'
+import { BuilderState } from '@/app/builders/components/Table/BuilderTable.config'
+import { isActive } from '@/app/builders/components/Table/utils'
 
 type DecorationOptionId = Exclude<BuilderState, 'active'> | 'extraRewards'
 type BuilderStateTooltip = Record<DecorationOptionId, string>
