@@ -12,11 +12,11 @@ const menuBreadCrumbsMap = Object.fromEntries(menuData.map(({ href, text }) => [
 const breadcrumbsMap = {
   ...menuBreadCrumbsMap,
   '/proposals/new': 'New Proposal',
-  '/proposals/new/create': 'Details',
+  '/proposals/new/details': 'Details',
   '/proposals/new/review': 'Review Details',
-  '/proposals/new/create/grants': 'Create Grant Proposal',
-  '/proposals/new/create/activation': 'Create Activation Proposal',
-  '/proposals/new/create/deactivation': 'Create Deactivation Proposal',
+  '/proposals/new/details/grants': 'Create Grant Proposal',
+  '/proposals/new/details/activation': 'Create Activation Proposal',
+  '/proposals/new/details/deactivation': 'Create Deactivation Proposal',
   '/proposals/new/review/grants': 'Review Grant Proposal',
   '/proposals/new/review/activation': 'Review Activation Proposal',
   '/proposals/new/review/deactivation': 'Review Deactivation Proposal',
@@ -24,7 +24,7 @@ const breadcrumbsMap = {
 }
 
 // Segments that should be skipped in breadcrumbs (no clickable links)
-const skipSegments = ['/proposals/new/review', '/proposals/new/create']
+const skipSegments = ['/proposals/new/review', '/proposals/new/details']
 
 /**
  * Simple breadcrumbs component used in desktop header

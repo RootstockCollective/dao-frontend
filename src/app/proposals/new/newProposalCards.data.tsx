@@ -62,7 +62,7 @@ export const newProposalCards: NewProposalCardData[] = [
         url: 'https://docs.google.com/forms/d/e/1FAIpQLSd4HklyTFPFAo2I0l_N5fy_di01WZ27e4uFDG1KVy8ZIOSiow/viewform',
       },
     ],
-    detailsUrl: '/proposals/new/create/grants',
+    detailsUrl: '/proposals/new/details/grants',
   },
   {
     type: ProposalCategory.Activation,
@@ -92,6 +92,6 @@ export const newProposalCards: NewProposalCardData[] = [
         url: 'https://docs.google.com/forms/d/e/1FAIpQLSd4HklyTFPFAo2I0l_N5fy_di01WZ27e4uFDG1KVy8ZIOSiow/viewform',
       },
     ],
-    detailsUrl: '/proposals/new/create/activation',
+    detailsUrl: '/proposals/new/details/activation',
   },
 ]

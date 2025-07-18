@@ -10,7 +10,7 @@ export function Deactivation() {
         meet the Collective&apos;s criteria.
       </Paragraph>
       <div className="w-fit">
-        <Link href="/proposals/new/create/deactivation">
+        <Link href="/proposals/new/details/deactivation">
           <CardButton className="border border-bg-0 text-text-100">Propose deactivation</CardButton>
         </Link>
       </div>
