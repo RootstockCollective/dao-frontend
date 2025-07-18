@@ -1,13 +1,12 @@
 'use client'
 
 import { AllocationsContext } from '@/app/collective-rewards/allocations/context'
-import { Token } from '@/app/collective-rewards/rewards' // FIXME: change path so as to not import from a cousin folder
 import { Builder } from '@/app/collective-rewards/types'
 import {
-  isBuilderActive,
   isBuilderDeactivated,
   isBuilderKycRevoked,
   isBuilderPaused,
+  isBuilderSelfPaused,
 } from '@/app/collective-rewards/utils'
 import TablePager from '@/components/TableNew/TablePager'
 import { getTokens } from '@/lib/tokens'
@@ -28,23 +27,22 @@ import { BuilderHeaderRow } from './BuilderHeaderRow'
 import { ColumnId, DEFAULT_HEADERS, PAGE_SIZE } from './BuilderTable.config'
 import { Action } from './Cell/ActionCell'
 import { useGetBuilderRewardsSummary } from '../../hooks/useGetBuilderRewardsSummary'
+import { isActive } from './utils'
 
 // --- Filter builders by state ---
-const filterInactive = (builder: Builder) => !isBuilderActive(builder.stateFlags)
-const filterActive = (builder: Builder) => isBuilderActive(builder.stateFlags)
-const filterDeactivated = (builder: Builder) =>
-  isBuilderDeactivated(builder) || isBuilderKycRevoked(builder.stateFlags)
-const filterRevoked = (builder: Builder) => Boolean(builder.stateFlags?.revoked)
-const filterPaused = (builder: Builder) => isBuilderPaused(builder.stateFlags)
-const filterInProgress = (builder: Builder) => !isBuilderActive(builder.stateFlags)
+const filterActive = (builder: Builder) => isActive(builder.stateFlags)
+const filterDeactivated = (builder: Builder) => isBuilderDeactivated(builder)
+const filterKycRevoked = (builder: Builder) => isBuilderKycRevoked(builder.stateFlags)
+const filterPaused = (builder: Builder) =>
+  isBuilderPaused(builder.stateFlags) || isBuilderSelfPaused(builder.stateFlags)
+const filterInProgress = (builder: Builder) => !isActive(builder.stateFlags)
 
 const filterMap: Record<BuilderFilterOptionId, (builder: Builder) => boolean> = {
   active: filterActive,
-  inactive: filterInactive,
   deactivated: filterDeactivated,
-  revoked: filterRevoked,
+  revoked: filterKycRevoked,
   paused: filterPaused,
-  'in-progress': filterInProgress,
+  inProgress: filterInProgress,
   all: () => true,
 }
 
