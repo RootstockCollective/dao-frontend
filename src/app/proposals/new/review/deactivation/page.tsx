@@ -9,7 +9,7 @@ import { Card } from '../components/Card'
 import { shortAddress } from '@/lib/utils'
 import { useAccount } from 'wagmi'
 import moment from 'moment'
-import PreviewLabel from '../components/PreviewLabel'
+import { PreviewLabel } from '../components/PreviewLabel'
 import { useRouter } from 'next/navigation'
 import { showToast } from '@/shared/notification'
 import { isUserRejectedTxError } from '@/components/ErrorPage'
@@ -18,7 +18,7 @@ import { useRemoveBuilderProposal } from '@/app/proposals/hooks/useRemoveBuilder
 export default function DeactivationProposalReview() {
   const router = useRouter()
   const { address } = useAccount()
-  const { record, setRecord, waitForTxInBg } = useReviewProposal()
+  const { record, waitForTxInBg } = useReviewProposal()
   const { onRemoveBuilderProposal } = useRemoveBuilderProposal()
 
   const onSubmit = useCallback(async () => {

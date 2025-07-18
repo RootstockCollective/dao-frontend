@@ -1,5 +1,5 @@
-import { RbtcIcon } from './rbtc'
-import { RifIcon } from './rif'
+import { RbtcIcon } from './RbtcIcon'
+import { RifIcon } from './RifIcon'
 import type { TokenType } from '../new/create/components'
 import { IconProps } from '@/components/Icons'
 import { cn } from '@/lib/utils'

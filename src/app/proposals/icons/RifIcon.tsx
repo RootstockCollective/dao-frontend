@@ -1,9 +1,16 @@
 import { type IconProps } from '@/components/Icons'
-import React from 'react'
+import { DEFAULT_ICON_SIZE } from '@/components/Icons/constants'
 
-export function RifIcon(props: IconProps) {
+export function RifIcon({ size = DEFAULT_ICON_SIZE, ...props }: IconProps) {
   return (
-    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" {...props}>
+    <svg
+      width={size}
+      height={size}
+      viewBox="0 0 24 24"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+      {...props}
+    >
       <rect width="24" height="24" rx="12" fill="#4B5CF0" />
       <path
         d="M16.875 7.125V16.8451H14.7707V11.7685H13.0379C12.8356 11.7685 12.6405 11.8435 12.4904 11.9779C12.4048 12.0549 12.3378 12.1479 12.2919 12.2505C12.246 12.3531 12.2216 12.4652 12.2216 12.5796V13.7516C12.2216 14.066 11.9644 14.3215 11.6479 14.3215H10.2469C9.92986 14.3215 9.67309 14.066 9.67309 13.7516V12.3384C9.67309 12.0235 9.92986 11.7685 10.2469 11.7685H11.5063C11.6751 11.7685 11.8377 11.7091 11.9668 11.6018C12.0476 11.5344 12.1112 11.4508 12.1547 11.3577C12.1982 11.2651 12.2212 11.163 12.2212 11.0585V9.215H7.12885V7.125H16.875Z"

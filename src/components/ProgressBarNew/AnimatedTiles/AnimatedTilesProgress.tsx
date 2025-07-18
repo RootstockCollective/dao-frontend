@@ -80,7 +80,7 @@ export function AnimatedTilesProgress({
     // 1. This is the first initialization, OR
     // 2. The progress value has actually changed significantly
     const shouldAnimate =
-      lastProgressRef.current === null || Math.abs(progress - lastProgressRef.current!) > threshold
+      lastProgressRef.current === null || Math.abs(progress - (lastProgressRef.current ?? 0)) > threshold
 
     if (shouldAnimate) {
       const distance = Math.abs(progress - currentProgressValue)
