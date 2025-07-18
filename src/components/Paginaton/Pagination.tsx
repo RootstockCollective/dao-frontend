@@ -4,27 +4,26 @@ import { Dispatch, SetStateAction, useEffect, useMemo } from 'react'
 import PaginationArrowButton from './PaginationArrowButton'
 import PaginationPageNumbers from './PaginationPageNumbers'
 import PaginationPageSizeSelector from './PaginationPageSizeSelector'
-import { Proposal } from '@/app/proposals/shared/types'
 
-interface PaginationProps {
+interface PaginationProps<T> {
   pagination: PaginationState
   setPagination: Dispatch<SetStateAction<PaginationState>>
-  proposals: Proposal[]
-  table: Table<Proposal>
+  data: T[]
+  table: Table<T>
 }
 
-export default function Pagination({ pagination, setPagination, proposals, table }: PaginationProps) {
+export function Pagination<T>({ pagination, setPagination, data, table }: PaginationProps<T>) {
   const router = useRouter()
   const searchParams = useSearchParams()
 
   // Memoize calculations for readability
   const { totalPages, maxPageButtons, currentSetStart, currentSetEnd } = useMemo(() => {
-    const totalPages = Math.ceil(proposals.length / pagination.pageSize)
+    const totalPages = Math.ceil(data.length / pagination.pageSize)
     const maxPageButtons = 5
     const currentSetStart = Math.floor(pagination.pageIndex / maxPageButtons) * maxPageButtons
     const currentSetEnd = Math.min(currentSetStart + maxPageButtons, totalPages)
     return { totalPages, maxPageButtons, currentSetStart, currentSetEnd }
-  }, [proposals.length, pagination.pageSize, pagination.pageIndex])
+  }, [data.length, pagination.pageSize, pagination.pageIndex])
 
   // Page validation
   useEffect(() => {
@@ -35,7 +34,7 @@ export default function Pagination({ pagination, setPagination, proposals, table
       router.replace(`?${params.toString()}`, { scroll: false })
       setPagination(prev => ({ ...prev, pageIndex: 0 }))
     }
-  }, [searchParams, proposals.length, pagination.pageSize, router, setPagination, totalPages])
+  }, [searchParams, data.length, pagination.pageSize, router, setPagination, totalPages])
 
   // Update URL with 1-indexed page number
   useEffect(() => {
