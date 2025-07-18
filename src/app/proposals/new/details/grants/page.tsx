@@ -13,6 +13,7 @@ import { useReviewProposal } from '@/app/providers'
 import { ProposalCategory } from '@/shared/types'
 import { showFormErrors } from '../components/showFormErrors'
 import { GrantProposal, GrantProposalSchema } from '../schemas/GrantProposalSchema'
+import { Header } from '@/components/TypographyNew'
 
 export default function GrantsProposalForm() {
   const { record, setRecord } = useReviewProposal()
@@ -64,9 +65,9 @@ export default function GrantsProposalForm() {
       <div className="w-full max-w-[760px] px-6 pt-6 pb-8 flex flex-col gap-10 bg-bg-80 rounded-sm">
         <BaseProposalFields control={control} />
         <div className="flex flex-col gap-4">
-          <h2 className="font-kk-topo text-text-100 text-2xl uppercase leading-loose tracking-wide">
+          <Header caps variant="h2" className="leading-loose tracking-wide">
             Proposal Action
-          </h2>
+          </Header>
           <TextInput
             name="targetAddress"
             control={control}
