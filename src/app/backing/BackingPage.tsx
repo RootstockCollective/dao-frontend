@@ -23,6 +23,7 @@ import { AvailableBackingMetric, TotalBackingMetric } from './components'
 import { BuilderAllocationBar } from './components/BuilderAllocationBar'
 import { AnnualBackingIncentives } from './components/Metrics/AnnualBackingIncentives'
 import { Spotlight } from './components/Spotlight'
+import { useBuilderContext } from '@/app/collective-rewards/user/context/BuilderContext'
 
 const NAME = 'Backing'
 
@@ -36,6 +37,8 @@ export const BackingPage = () => {
     },
     actions: { updateAllocations, updateAmountToAllocate },
   } = useContext(AllocationsContext)
+
+  const { randomBuilders } = useBuilderContext()
 
   const rifPriceUsd = prices[RIF]?.price ?? 0
 
@@ -67,7 +70,13 @@ export const BackingPage = () => {
       return acc
     }, {} as Allocations)
 
-    const buildersAllocations = allocationsCount > 0 ? newAllocations : {}
+    const buildersAllocations =
+      allocationsCount > 0
+        ? newAllocations
+        : randomBuilders.reduce((acc, builder) => {
+            acc[builder.address] = availableForBacking / BigInt(randomBuilders.length)
+            return acc
+          }, {} as Allocations)
     updateAllocations(buildersAllocations)
   }
 
