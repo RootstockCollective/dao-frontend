@@ -1,4 +1,4 @@
-import { BackerRewardPercentage } from '@/app/collective-rewards/rewards/types'
+import { BackerRewardPercentage } from '@/app/collective-rewards/types'
 import { weiToPercentage } from '@/app/collective-rewards/settings'
 import { DeltaIndicator } from '@/components/DeltaIndicator/DeltaIndicator'
 import { cn } from '@/lib/utils'

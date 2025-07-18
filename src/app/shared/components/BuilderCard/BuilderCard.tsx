@@ -1,17 +1,16 @@
 import { ConnectPopover } from '@/app/backing/components/Popovers/ConnectPopover'
-import { BackerRewardPercentage, TokenRewards } from '@/app/collective-rewards/rewards/types'
-import { Builder } from '@/app/collective-rewards/types'
 import { cn } from '@/lib/utils'
 import { FC, useState } from 'react'
-import { AllocationInput } from '../AllocationInput/AllocationInput'
-import { BuilderHeader } from '../BuilderHeader/BuilderHeader'
-import { CurrentBacking } from '../CurrentBacking/CurrentBacking'
-import { RewardsInfo } from '../RewardsInfo/RewardsInfo'
+import { AllocationInput } from '@/app/backing/components/AllocationInput/AllocationInput'
+import { BuilderHeader } from '@/app/backing/components/BuilderHeader/BuilderHeader'
+import { CurrentBacking } from '@/app/backing/components/CurrentBacking/CurrentBacking'
+import { RewardsInfo } from '@/app/backing/components/RewardsInfo/RewardsInfo'
 import { Button } from '@/components/ButtonNew'
 import { WarningIcon } from '@/components/Icons'
 import { Paragraph } from '@/components/TypographyNew'
 import { isBuilderRewardable } from '@/app/collective-rewards/utils/isBuilderOperational'
 import { StylableComponentProps } from '@/components/commonProps'
+import { BuilderCardControlProps } from './BuilderCardControl'
 
 const Warning = ({ className }: StylableComponentProps<HTMLDivElement>) => {
   return (
@@ -22,18 +21,17 @@ const Warning = ({ className }: StylableComponentProps<HTMLDivElement>) => {
   )
 }
 
-export interface BuilderCardProps extends Builder {
+export interface BuilderCardProps extends BuilderCardControlProps {
   existentAllocation: bigint
   maxAllocation: bigint
   allocation: bigint
   onAllocationChange: (newAllocation: number) => void
   rifPriceUsd: number
   isConnected: boolean
-  estimatedRewards?: TokenRewards
-  allocationTxPending?: boolean
   dataTestId?: string
   topBarColor?: string
   className?: string
+  isInteractive?: boolean
 }
 
 export const BuilderCard: FC<BuilderCardProps> = ({
@@ -43,7 +41,7 @@ export const BuilderCard: FC<BuilderCardProps> = ({
   existentAllocation,
   maxAllocation,
   allocation,
-  backerRewardPercentage,
+  backerRewardPct,
   rifPriceUsd,
   isConnected,
   estimatedRewards,
@@ -52,6 +50,7 @@ export const BuilderCard: FC<BuilderCardProps> = ({
   topBarColor = 'transparent',
   dataTestId = '',
   className,
+  isInteractive,
 }) => {
   const isRewardable = isBuilderRewardable(stateFlags)
   const [editing, setEditing] = useState(false)
@@ -78,13 +77,10 @@ export const BuilderCard: FC<BuilderCardProps> = ({
           data-testid="builderCardContent"
         >
           {isRewardable && (
-            <RewardsInfo
-              backerRewardPercentage={backerRewardPercentage}
-              estimatedRewards={estimatedRewards}
-            />
+            <RewardsInfo backerRewardPercentage={backerRewardPct} estimatedRewards={estimatedRewards} />
           )}
 
-          {isConnected && (
+          {isInteractive && (
             <div className="p-3">
               <AllocationInput
                 allocation={allocation}
@@ -100,11 +96,11 @@ export const BuilderCard: FC<BuilderCardProps> = ({
               />
             </div>
           )}
-          {isConnected && editing && <CurrentBacking existentAllocation={existentAllocation} />}
+          {editing && <CurrentBacking existentAllocation={existentAllocation} />}
         </div>
       </div>
       <div>
-        {isConnected && existentAllocation !== 0n && (
+        {isInteractive && (
           <Button
             variant="secondary-outline"
             onClick={() => onAllocationChange(0)}
@@ -113,8 +109,8 @@ export const BuilderCard: FC<BuilderCardProps> = ({
             Remove backing
           </Button>
         )}
-        {!isConnected && (
-          <ConnectPopover>
+        {!isInteractive && (
+          <ConnectPopover disabled={isConnected}>
             <Button variant="secondary-outline" data-testid="backBuilderButton">
               Back builder
             </Button>

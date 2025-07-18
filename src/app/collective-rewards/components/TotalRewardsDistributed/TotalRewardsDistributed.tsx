@@ -2,20 +2,24 @@ import { Metric } from '@/components/Metric/Metric'
 import { TokenAmountDisplay } from '@/components/TokenAmountDisplay'
 import { CommonComponentProps } from '@/components/commonProps'
 import { usePricesContext } from '@/shared/context/PricesContext'
-import { getTokens, TokenInfo } from '@/lib/tokens'
+import { getTokens } from '@/lib/tokens'
 import { useGetGaugesArray } from '@/app/collective-rewards/user'
 import { Address } from 'viem'
-import { formatSymbol, getFiatAmount, useGetGaugesNotifyReward } from '@/app/collective-rewards/rewards'
+import {
+  formatSymbol,
+  getFiatAmount,
+  Token,
+  useGetGaugesNotifyReward,
+} from '@/app/collective-rewards/rewards'
 import { useHandleErrors } from '@/app/collective-rewards/utils'
 import { formatCurrency } from '@/lib/utils'
 import { LoadingSpinner } from '@/components/LoadingSpinner'
 import { MetricTitle } from '@/components/Metric'
-import KotoQuestionMarkIcon from '@/components/Icons/KotoQuestionMarkIcon'
 import { Paragraph } from '@/components/TypographyNew'
 
 interface TokenRewardsProps {
   gauges: Address[]
-  token: TokenInfo
+  token: Token
 }
 
 const TokenRewards = ({ gauges, token: { address, symbol } }: TokenRewardsProps) => {

@@ -7,15 +7,16 @@ import { useMemo } from 'react'
 import { calculateAbi } from './useGetABI'
 import { useGetCycleRewards } from './useGetCycleRewards'
 import { getCyclePayout } from './getCyclePayout'
-import { useGetEstimatedRewardsPct } from './useGetEstimatedRewardsPct'
+import { useGetBuilderEstimatedRewards } from '../../../shared/hooks/useGetBuilderEstimatedRewards'
+import { getTokens } from '@/lib/tokens'
 
 export const useGetBackerABI = (backer: Address) => {
   const {
-    data: builders,
-    isLoading: estimatedRewardsPctLoading,
-    error: estimatedRewardsPctError,
-  } = useGetEstimatedRewardsPct()
-  const gauges = builders.map(({ gauge }) => gauge)
+    data: builderEstimatedRewards,
+    isLoading: estimatedRewardsLoading,
+    error: estimatedRewardsError,
+  } = useGetBuilderEstimatedRewards(getTokens())
+  const gauges = builderEstimatedRewards.map(({ gauge }) => gauge)
   const {
     data: allocationOf,
     isLoading: allocationOfLoading,
@@ -44,20 +45,15 @@ export const useGetBackerABI = (backer: Address) => {
   const abi = useMemo(() => {
     const rifPrice = prices.RIF?.price ?? 0
 
-    const backerRewards = builders.reduce((acc, { estimatedBackerRewardsPct }, i) => {
+    const backerRewards = builderEstimatedRewards.reduce((acc, { backerEstimatedRewardsPct }, i) => {
       const builderTotalAllocation = totalAllocation[i] ?? 0n
       const backerAllocationOf = allocationOf[i] ?? 0n
 
       const rbtcPrice = prices.RBTC?.price ?? 0
 
-      const cyclePayout = getCyclePayout(
-        rifPrice,
-        rbtcPrice,
-        cycleRewards?.rifRewards,
-        cycleRewards?.rbtcRewards,
-      )
+      const cyclePayout = getCyclePayout(rifPrice, rbtcPrice, cycleRewards?.rif, cycleRewards?.rbtc)
 
-      const backersRewardsAmount = (estimatedBackerRewardsPct * cyclePayout) / WeiPerEther
+      const backersRewardsAmount = (backerEstimatedRewardsPct * cyclePayout) / WeiPerEther
       const backerReward = builderTotalAllocation
         ? (backersRewardsAmount * backerAllocationOf) / builderTotalAllocation
         : 0n
@@ -72,17 +68,17 @@ export const useGetBackerABI = (backer: Address) => {
     const rewardsPerStRif = (backerRewards * WeiPerEther) / backerTotalAllocation
 
     return calculateAbi(Big(rewardsPerStRif.toString()), rifPrice)
-  }, [allocationOf, backerTotalAllocation, builders, cycleRewards, prices, totalAllocation])
+  }, [allocationOf, backerTotalAllocation, builderEstimatedRewards, cycleRewards, prices, totalAllocation])
 
   const isLoading =
-    estimatedRewardsPctLoading ||
+    estimatedRewardsLoading ||
     allocationOfLoading ||
     totalAllocationLoading ||
     backerTotalAllocationLoading ||
     cycleRewardsLoading
 
   const error =
-    estimatedRewardsPctError ??
+    estimatedRewardsError ??
     allocationOfError ??
     totalAllocationError ??
     backerTotalAllocationError ??

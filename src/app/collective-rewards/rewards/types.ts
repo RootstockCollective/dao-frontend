@@ -29,9 +29,3 @@ export interface RewardDetails {
 export interface BuilderRewardDetails extends RewardDetails {
   gauge: Address
 }
-
-export interface BackerRewardPercentage {
-  current: bigint
-  next: bigint
-  cooldownEndTime: bigint
-}

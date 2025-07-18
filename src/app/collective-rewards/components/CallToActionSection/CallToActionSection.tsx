@@ -1,42 +1,34 @@
-import { useGetCycleRewards } from '../../shared/hooks/useGetCycleRewards'
-import { useGetEstimatedRewardsPct } from '../../shared'
 import { BackersCallToAction } from '../BackersCallToAction'
 import { BuildersCallToAction } from '../BuildersCallToAction'
 import { InfoContainer } from '@/components/containers'
-import { WeiPerEther } from '@/lib/constants'
 import { LoadingSpinner } from '@/components/LoadingSpinner'
 import { useHandleErrors } from '../../utils'
+import { useGetBuilderEstimatedRewards } from '@/app/shared/hooks/useGetBuilderEstimatedRewards'
+import { getTokens } from '@/lib/tokens'
 
 export const CallToActionSection = () => {
-  const { data: builders, isLoading: buildersLoading, error: buildersError } = useGetEstimatedRewardsPct()
   const {
-    data: cycleRewards,
-    isLoading: cycleRewardsLoading,
-    error: cycleRewardsError,
-  } = useGetCycleRewards()
+    data: builderEstimatedRewards,
+    isLoading: builderEstimatedRewardsLoading,
+    error: builderEstimatedRewardsError,
+  } = useGetBuilderEstimatedRewards(getTokens())
 
-  const isLoading = buildersLoading || cycleRewardsLoading
-  const error = buildersError ?? cycleRewardsError
+  const isLoading = builderEstimatedRewardsLoading
+  const error = builderEstimatedRewardsError
   useHandleErrors({ error, title: 'Error loading CTA section' })
 
-  const totalRewardsPct = builders.reduce(
-    (acc, builder) => {
-      const { estimatedBackerRewardsPct, estimatedBuilderRewardsPct } = builder
-      return {
-        estimatedBackerRewardsPct: acc.estimatedBackerRewardsPct + estimatedBackerRewardsPct,
-        estimatedBuilderRewardsPct: acc.estimatedBuilderRewardsPct + estimatedBuilderRewardsPct,
-      }
-    },
-    { estimatedBackerRewardsPct: 0n, estimatedBuilderRewardsPct: 0n },
-  )
-
-  const rifBuilderRewards =
-    (totalRewardsPct.estimatedBuilderRewardsPct * cycleRewards.rifRewards) / WeiPerEther
-  const rbtcBuilderRewards =
-    (totalRewardsPct.estimatedBuilderRewardsPct * cycleRewards.rbtcRewards) / WeiPerEther
-  const rifBackerRewards = (totalRewardsPct.estimatedBackerRewardsPct * cycleRewards.rifRewards) / WeiPerEther
-  const rbtcBackerRewards =
-    (totalRewardsPct.estimatedBackerRewardsPct * cycleRewards.rbtcRewards) / WeiPerEther
+  const { rifBackerRewards, rbtcBackerRewards, rifBuilderRewards, rbtcBuilderRewards } =
+    builderEstimatedRewards.reduce(
+      (acc, builder) => {
+        return {
+          rifBackerRewards: acc.rifBackerRewards + builder.backerEstimatedRewards.rif.amount.value,
+          rbtcBackerRewards: acc.rbtcBackerRewards + builder.backerEstimatedRewards.rbtc.amount.value,
+          rifBuilderRewards: acc.rifBuilderRewards + builder.builderEstimatedRewards.rif.amount.value,
+          rbtcBuilderRewards: acc.rbtcBuilderRewards + builder.builderEstimatedRewards.rbtc.amount.value,
+        }
+      },
+      { rifBackerRewards: 0n, rbtcBackerRewards: 0n, rifBuilderRewards: 0n, rbtcBuilderRewards: 0n },
+    )
 
   if (isLoading) {
     return <LoadingSpinner />

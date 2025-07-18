@@ -38,18 +38,18 @@ const defaultProps = {
     paused: false,
     revoked: false,
   },
-  backerRewardPercentage: {
+  backerRewardPct: {
     previous: percentageToWei('50'),
+    current: percentageToWei('50'),
     next: percentageToWei('50'),
-    cooldown: BigInt(Math.floor(Date.now() / 1000) + 3600), // 1 hour from now
-    active: percentageToWei('50'),
+    cooldownEndTime: BigInt(Math.floor(Date.now() / 1000) + 3600), // 1 hour from now
   },
   existentAllocation: parseEther('1000'),
   maxAllocation: parseEther('10000'),
   allocation: parseEther('1000'),
   rifPriceUsd: 0.1,
   isConnected: true,
-  estimatedRewards: {
+  builderEstimatedRewards: {
     rif: {
       amount: {
         value: parseEther('550'),
@@ -101,11 +101,11 @@ export const WithAllocation: Story = {
 export const WithBuilderIncreasedRewardPct: Story = {
   args: {
     ...defaultProps,
-    backerRewardPercentage: {
+    backerRewardPct: {
       previous: percentageToWei('50'),
+      current: percentageToWei('50'),
       next: percentageToWei('80'),
-      cooldown: BigInt(Math.floor(Date.now() / 1000) + 3600), // 1 hour from now
-      active: percentageToWei('30'), // 1 hour from now
+      cooldownEndTime: BigInt(Math.floor(Date.now() / 1000) + 3600), // 1 hour from now
     },
   },
 }
@@ -113,11 +113,11 @@ export const WithBuilderIncreasedRewardPct: Story = {
 export const WithBuilderDecreasedRewardPct: Story = {
   args: {
     ...defaultProps,
-    backerRewardPercentage: {
+    backerRewardPct: {
       previous: percentageToWei('50'),
+      current: percentageToWei('50'),
       next: percentageToWei('30'),
-      cooldown: BigInt(Math.floor(Date.now() / 1000) + 3600), // 1 hour from now
-      active: percentageToWei('30'), // 1 hour from now
+      cooldownEndTime: BigInt(Math.floor(Date.now() / 1000) + 3600), // 1 hour from now
     },
   },
 }

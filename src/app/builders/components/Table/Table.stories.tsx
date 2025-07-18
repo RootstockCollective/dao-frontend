@@ -1,4 +1,3 @@
-import { BackerRewardPercentage, BuildersRewards, TokenRewards } from '@/app/collective-rewards/rewards'
 import { useTableActionsContext, withTableContext } from '@/shared/context'
 import type { Meta, StoryObj } from '@storybook/react'
 import { useEffect } from 'react'
@@ -6,9 +5,11 @@ import { Address } from 'viem'
 import { DEFAULT_HEADERS } from '.'
 import { convertDataToRowData } from './BuilderDataRow'
 import { Table } from './BuildersTable'
+import { TokenRewards } from '@/app/collective-rewards/rewards'
+import { BuilderRewardsSummary } from '@/app/collective-rewards/types'
 
 // Mock data that exactly follows the BuildersRewards structure
-const mockBuildersRewards: BuildersRewards[] = [
+const mockBuildersRewards: BuilderRewardsSummary[] = [
   {
     // RequiredBuilder properties
     address: '0x1234567890123456789012345678901234567890' as Address,
@@ -27,19 +28,14 @@ const mockBuildersRewards: BuildersRewards[] = [
       revoked: false,
     },
     gauge: '0x1111111111111111111111111111111111111111' as Address,
-    backerRewardPercentage: {
+    backerRewardPct: {
       previous: 500000000000000000n, // 50% = 50 * 10^16
+      current: 500000000000000000n, // 50% = 50 * 10^16
       next: 600000000000000000n, // 60% = 60 * 10^16
-      cooldown: 100n,
-      active: 500000000000000000n, // 50% = 50 * 10^16
+      cooldownEndTime: 100n,
     },
     // BuildersRewards specific properties
     totalAllocationPercentage: 25n, // 25%
-    rewardPercentage: {
-      current: 500000000000000000n, // 50% = 50 * 10^16
-      next: 600000000000000000n, // 60% = 60 * 10^16
-      cooldownEndTime: 1700000000n,
-    } as BackerRewardPercentage,
     lastCycleRewards: {
       rif: {
         amount: {
@@ -58,7 +54,7 @@ const mockBuildersRewards: BuildersRewards[] = [
         },
       },
     } as TokenRewards,
-    estimatedRewards: {
+    builderEstimatedRewards: {
       rif: {
         amount: {
           value: 1500000000000000000n, // 1.5 RIF
@@ -76,7 +72,7 @@ const mockBuildersRewards: BuildersRewards[] = [
         },
       },
     } as TokenRewards,
-  },
+  } as BuilderRewardsSummary,
   {
     address: '0x2345678901234567890123456789012345678901' as Address,
     builderName: 'Bob Developer',
@@ -94,18 +90,13 @@ const mockBuildersRewards: BuildersRewards[] = [
       revoked: false,
     },
     gauge: '0x2222222222222222222222222222222222222222' as Address,
-    backerRewardPercentage: {
-      previous: 450000000000000000n, // 45% = 45 * 10^16
+    backerRewardPct: {
+      previous: 650000000000000000n, // 65% = 45 * 10^16
+      current: 650000000000000000n, // 65% = 45 * 10^16
       next: 550000000000000000n, // 55% = 55 * 10^16
-      cooldown: 120n,
-      active: 450000000000000000n, // 45% = 45 * 10^16
+      cooldownEndTime: 120n,
     },
     totalAllocationPercentage: 18n, // 18%
-    rewardPercentage: {
-      current: 450000000000000000n, // 45% = 45 * 10^16
-      next: 550000000000000000n, // 55% = 55 * 10^16
-      cooldownEndTime: 1700000000n,
-    } as BackerRewardPercentage,
     lastCycleRewards: {
       rif: {
         amount: {
@@ -124,7 +115,7 @@ const mockBuildersRewards: BuildersRewards[] = [
         },
       },
     } as TokenRewards,
-    estimatedRewards: {
+    builderEstimatedRewards: {
       rif: {
         amount: {
           value: 1200000000000000000n, // 1.2 RIF
@@ -142,7 +133,7 @@ const mockBuildersRewards: BuildersRewards[] = [
         },
       },
     } as TokenRewards,
-  },
+  } as BuilderRewardsSummary,
   {
     address: '0x3456789012345678901234567890123456789012' as Address,
     builderName: 'Charlie Smith',
@@ -160,18 +151,13 @@ const mockBuildersRewards: BuildersRewards[] = [
       revoked: false,
     },
     gauge: '0x3333333333333333333333333333333333333333' as Address,
-    backerRewardPercentage: {
+    backerRewardPct: {
       previous: 400000000000000000n, // 40% = 40 * 10^16
-      next: 500000000000000000n, // 50% = 50 * 10^16
-      cooldown: 90n,
-      active: 400000000000000000n, // 40% = 40 * 10^16
-    },
-    totalAllocationPercentage: 32n, // 32%
-    rewardPercentage: {
       current: 400000000000000000n, // 40% = 40 * 10^16
       next: 500000000000000000n, // 50% = 50 * 10^16
-      cooldownEndTime: 1700000000n,
-    } as BackerRewardPercentage,
+      cooldownEndTime: 90n,
+    },
+    totalAllocationPercentage: 32n, // 32%
     lastCycleRewards: {
       rif: {
         amount: {
@@ -190,7 +176,7 @@ const mockBuildersRewards: BuildersRewards[] = [
         },
       },
     } as TokenRewards,
-    estimatedRewards: {
+    builderEstimatedRewards: {
       rif: {
         amount: {
           value: 1800000000000000000n, // 1.8 RIF
@@ -208,7 +194,7 @@ const mockBuildersRewards: BuildersRewards[] = [
         },
       },
     } as TokenRewards,
-  },
+  } as BuilderRewardsSummary,
   {
     // Builder that is paused
     address: '0x4567890123456789012345678901234567890123' as Address,
@@ -227,18 +213,13 @@ const mockBuildersRewards: BuildersRewards[] = [
       revoked: false,
     },
     gauge: '0x4444444444444444444444444444444444444444' as Address,
-    backerRewardPercentage: {
+    backerRewardPct: {
       previous: 350000000000000000n, // 35% = 35 * 10^16
-      next: 450000000000000000n, // 45% = 45 * 10^16
-      cooldown: 80n,
-      active: 350000000000000000n, // 35% = 35 * 10^16
-    },
-    totalAllocationPercentage: 15n, // 15%
-    rewardPercentage: {
       current: 350000000000000000n, // 35% = 35 * 10^16
       next: 450000000000000000n, // 45% = 45 * 10^16
-      cooldownEndTime: 1700000000n,
-    } as BackerRewardPercentage,
+      cooldownEndTime: 80n,
+    },
+    totalAllocationPercentage: 15n, // 15%
     lastCycleRewards: {
       rif: {
         amount: {
@@ -257,7 +238,7 @@ const mockBuildersRewards: BuildersRewards[] = [
         },
       },
     } as TokenRewards,
-    estimatedRewards: {
+    builderEstimatedRewards: {
       rif: {
         amount: {
           value: 0n, // No upcoming rewards (paused)
@@ -275,7 +256,7 @@ const mockBuildersRewards: BuildersRewards[] = [
         },
       },
     } as TokenRewards,
-  },
+  } as BuilderRewardsSummary,
   {
     // Builder that is not activated
     address: '0x5678901234567890123456789012345678901234' as Address,
@@ -294,18 +275,13 @@ const mockBuildersRewards: BuildersRewards[] = [
       revoked: false,
     },
     gauge: '0x5555555555555555555555555555555555555555' as Address,
-    backerRewardPercentage: {
+    backerRewardPct: {
       previous: 300000000000000000n, // 30% = 30 * 10^16
-      next: 400000000000000000n, // 40% = 40 * 10^16
-      cooldown: 60n,
-      active: 300000000000000000n, // 30% = 30 * 10^16
-    },
-    totalAllocationPercentage: 12n, // 12%
-    rewardPercentage: {
       current: 300000000000000000n, // 30% = 30 * 10^16
       next: 400000000000000000n, // 40% = 40 * 10^16
-      cooldownEndTime: 1700000000n,
-    } as BackerRewardPercentage,
+      cooldownEndTime: 60n,
+    },
+    totalAllocationPercentage: 12n, // 12%
     lastCycleRewards: {
       rif: {
         amount: {
@@ -324,7 +300,7 @@ const mockBuildersRewards: BuildersRewards[] = [
         },
       },
     } as TokenRewards,
-    estimatedRewards: {
+    builderEstimatedRewards: {
       rif: {
         amount: {
           value: 0n, // No upcoming rewards (inactive)
@@ -342,7 +318,7 @@ const mockBuildersRewards: BuildersRewards[] = [
         },
       },
     } as TokenRewards,
-  },
+  } as BuilderRewardsSummary,
   {
     // Builder that is revoked
     address: '0x6789012345678901234567890123456789012345' as Address,
@@ -361,18 +337,13 @@ const mockBuildersRewards: BuildersRewards[] = [
       revoked: true, // This builder is revoked
     },
     gauge: '0x6666666666666666666666666666666666666666' as Address,
-    backerRewardPercentage: {
+    backerRewardPct: {
       previous: 250000000000000000n, // 25% = 25 * 10^16
-      next: 250000000000000000n, // 25% = 25 * 10^16
-      cooldown: 50n,
-      active: 250000000000000000n, // 25% = 25 * 10^16
-    },
-    totalAllocationPercentage: 10n, // 10%
-    rewardPercentage: {
       current: 250000000000000000n, // 25% = 25 * 10^16
       next: 250000000000000000n, // 25% = 25 * 10^16
       cooldownEndTime: 1700000000n,
-    } as BackerRewardPercentage,
+    },
+    totalAllocationPercentage: 10n, // 10%
     lastCycleRewards: {
       rif: {
         amount: {
@@ -391,7 +362,7 @@ const mockBuildersRewards: BuildersRewards[] = [
         },
       },
     } as TokenRewards,
-    estimatedRewards: {
+    builderEstimatedRewards: {
       rif: {
         amount: {
           value: 0n, // No upcoming rewards (revoked)
@@ -409,7 +380,7 @@ const mockBuildersRewards: BuildersRewards[] = [
         },
       },
     } as TokenRewards,
-  },
+  } as BuilderRewardsSummary,
   {
     // Builder without community approval
     address: '0x7890123456789012345678901234567890123456' as Address,
@@ -428,18 +399,13 @@ const mockBuildersRewards: BuildersRewards[] = [
       revoked: false,
     },
     gauge: '0x7777777777777777777777777777777777777777' as Address,
-    backerRewardPercentage: {
+    backerRewardPct: {
       previous: 200000000000000000n, // 20% = 20 * 10^16
-      next: 300000000000000000n, // 30% = 30 * 10^16
-      cooldown: 40n,
-      active: 200000000000000000n, // 20% = 20 * 10^16
-    },
-    totalAllocationPercentage: 8n, // 8%
-    rewardPercentage: {
       current: 200000000000000000n, // 20% = 20 * 10^16
       next: 300000000000000000n, // 30% = 30 * 10^16
-      cooldownEndTime: 1700000000n,
-    } as BackerRewardPercentage,
+      cooldownEndTime: 40n,
+    },
+    totalAllocationPercentage: 8n, // 8%
     lastCycleRewards: {
       rif: {
         amount: {
@@ -458,7 +424,7 @@ const mockBuildersRewards: BuildersRewards[] = [
         },
       },
     } as TokenRewards,
-    estimatedRewards: {
+    builderEstimatedRewards: {
       rif: {
         amount: {
           value: 0n, // No upcoming rewards
@@ -476,7 +442,7 @@ const mockBuildersRewards: BuildersRewards[] = [
         },
       },
     } as TokenRewards,
-  },
+  } as BuilderRewardsSummary,
   {
     // Builder without KYC approval
     address: '0x8901234567890123456789012345678901234567' as Address,
@@ -495,18 +461,13 @@ const mockBuildersRewards: BuildersRewards[] = [
       revoked: false,
     },
     gauge: '0x8888888888888888888888888888888888888888' as Address,
-    backerRewardPercentage: {
+    backerRewardPct: {
       previous: 150000000000000000n, // 15% = 15 * 10^16
-      next: 250000000000000000n, // 25% = 25 * 10^16
-      cooldown: 30n,
-      active: 150000000000000000n, // 15% = 15 * 10^16
-    },
-    totalAllocationPercentage: 6n, // 6%
-    rewardPercentage: {
       current: 150000000000000000n, // 15% = 15 * 10^16
       next: 250000000000000000n, // 25% = 25 * 10^16
       cooldownEndTime: 1700000000n,
-    } as BackerRewardPercentage,
+    },
+    totalAllocationPercentage: 6n, // 6%
     lastCycleRewards: {
       rif: {
         amount: {
@@ -525,7 +486,7 @@ const mockBuildersRewards: BuildersRewards[] = [
         },
       },
     } as TokenRewards,
-    estimatedRewards: {
+    builderEstimatedRewards: {
       rif: {
         amount: {
           value: 0n, // No upcoming rewards
@@ -543,7 +504,7 @@ const mockBuildersRewards: BuildersRewards[] = [
         },
       },
     } as TokenRewards,
-  },
+  } as BuilderRewardsSummary,
 ]
 
 // Mock user allocations for each builder - some with allocations, some without
@@ -570,7 +531,7 @@ const TableWithData = ({
   loading = false,
   error = null,
 }: {
-  mockData: BuildersRewards[]
+  mockData: BuilderRewardsSummary[]
   userAllocations?: (bigint | undefined)[]
   rifPrice?: number
   columns?: typeof DEFAULT_HEADERS

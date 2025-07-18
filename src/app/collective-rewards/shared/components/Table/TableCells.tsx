@@ -1,12 +1,6 @@
 import { AllocationsContext } from '@/app/collective-rewards/allocations/context'
-import {
-  BackerRewardPercentage,
-  formatFiatAmount,
-  formatSymbol,
-  getFiatAmount,
-  Reward,
-} from '@/app/collective-rewards/rewards'
-import { BuilderStateFlags } from '@/app/collective-rewards/types'
+import { formatFiatAmount, formatSymbol, getFiatAmount, Reward } from '@/app/collective-rewards/rewards'
+import { BackerRewardPercentage, BuilderStateFlags } from '@/app/collective-rewards/types'
 import {
   getBuilderInactiveState,
   isBuilderActive,

@@ -2,7 +2,6 @@
 
 import { BackingBanner } from '@/app/backing/components/BackingBanner/BackingBanner'
 import { BackingInfoTitleControl } from '@/app/backing/components/BackingInfoTitle/BackingInfoTitleControl'
-import { BuildersSpotlight } from '@/app/backing/components/BuildersSpotlight/BuildersSpotlight'
 import { BackingInfoContainer } from '@/app/backing/components/Container/BackingInfoContainer/BackingInfoContainer'
 import { AnnualBackersIncentives } from '@/app/backing/components/Metrics/AnnualBackersIncentives'
 import { EstimatedRewardsMetric } from '@/app/backing/components/Metrics/EstimatedRewardsMetric'
@@ -11,8 +10,6 @@ import {
   AllocationsContext,
 } from '@/app/collective-rewards/allocations/context/AllocationsContext'
 import { formatSymbol, getFiatAmount } from '@/app/collective-rewards/rewards'
-import { useGetBuildersRewards } from '@/app/collective-rewards/rewards/builders/hooks/useGetBuildersRewards'
-import { useHandleErrors } from '@/app/collective-rewards/utils'
 import { ActionMetricsContainer, ActionsContainer, MetricsContainer } from '@/components/containers'
 import { Header, Span } from '@/components/TypographyNew'
 import { RIF } from '@/lib/constants'
@@ -25,22 +22,23 @@ import { useAccount } from 'wagmi'
 import { AvailableBackingMetric, TotalBackingMetric } from './components'
 import { BuilderAllocationBar } from './components/BuilderAllocationBar'
 import { AnnualBackingIncentives } from './components/Metrics/AnnualBackingIncentives'
+import { Spotlight } from './components/Spotlight'
+import { useBuilderContext } from '@/app/collective-rewards/user/context/BuilderContext'
 
 const NAME = 'Backing'
 
 export const BackingPage = () => {
   const { isConnected } = useAccount()
-  const { data: rewardsData, error: rewardsError } = useGetBuildersRewards(getTokens())
-  useHandleErrors({ error: rewardsError, title: 'Error loading builder rewards' })
   const { prices } = usePricesContext()
   const {
     state: {
       allocations,
       backer: { balance: votingPower, amountToAllocate: totalOnchainAllocation, allocationsCount },
-      randomBuilders,
     },
     actions: { updateAllocations, updateAmountToAllocate },
   } = useContext(AllocationsContext)
+
+  const { randomBuilders } = useBuilderContext()
 
   const rifPriceUsd = prices[RIF]?.price ?? 0
 
@@ -99,7 +97,7 @@ export const BackingPage = () => {
           </BackingInfoContainer>
           <MetricsContainer className="grow-[3] h-full bg-v3-bg-accent-80">
             <AnnualBackersIncentives />
-            <EstimatedRewardsMetric rewardsData={rewardsData} />
+            <EstimatedRewardsMetric />
           </MetricsContainer>
         </div>
       )}
@@ -140,7 +138,7 @@ export const BackingPage = () => {
         }
         className="bg-v3-bg-accent-80"
       >
-        <BuildersSpotlight rewardsData={rewardsData} />
+        <Spotlight />
       </ActionsContainer>
     </div>
   )

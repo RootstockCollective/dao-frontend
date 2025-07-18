@@ -2,6 +2,7 @@ import { ProposalState } from '@/shared/types'
 import { AbiFunction, Address } from 'viem'
 import { BuilderRegistryAbi } from '@/lib/abis/v2/BuilderRegistryAbi'
 import { Dispatch, SetStateAction } from 'react'
+import { TokenRewards } from './rewards'
 
 export type Builder = {
   proposal: BuilderProposal
@@ -9,8 +10,19 @@ export type Builder = {
   gauge?: Address
   address: Address
   builderName: string
-  // TODO: do we want to keep it here?
-  backerRewardPercentage?: BackerRewardsConfig
+  backerRewardPct?: BackerRewardPercentage
+}
+
+export interface BuilderEstimatedRewards extends CompleteBuilder {
+  builderEstimatedRewardsPct: bigint
+  backerEstimatedRewardsPct: bigint
+  builderEstimatedRewards: TokenRewards
+  backerEstimatedRewards: TokenRewards
+}
+
+export interface BuilderRewardsSummary extends BuilderEstimatedRewards {
+  totalAllocationPercentage: bigint
+  lastCycleRewards: TokenRewards
 }
 
 type BuilderFunctionOutputs = Extract<
@@ -24,18 +36,18 @@ export type BuilderStateFlags = {
   [key in Exclude<BuilderFunctionOutputs[number]['name'], 'pausedReason' | 'reserved'>]: boolean
 }
 
-export type BuilderProposal = {
+export interface BuilderProposal {
   id: bigint
   name: string
   description: string
   date: string
 }
 
-export type BackerRewardsConfig = {
-  previous: bigint
+export interface BackerRewardPercentage {
+  current: bigint
   next: bigint
-  cooldown: bigint
-  active: bigint
+  previous: bigint
+  cooldownEndTime: bigint
 }
 
 export type ProposalByBuilder = Record<Address, BuilderProposal>
@@ -44,7 +56,7 @@ export type ProposalsToState = Record<string, ProposalState>
 
 export type BuilderState = 'active' | 'inProgress'
 
-export type RequiredBuilder = Required<Builder>
+export type CompleteBuilder = Required<Builder>
 
 export type StateWithUpdate<T> = {
   value: T

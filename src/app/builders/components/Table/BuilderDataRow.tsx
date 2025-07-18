@@ -1,9 +1,8 @@
 'use client'
 
 import { AllocationsContext } from '@/app/collective-rewards/allocations/context'
-import { BuildersRewards } from '@/app/collective-rewards/rewards' // FIXME: change path so as to not import from a cousin folder
 import { formatSymbol, getFiatAmount } from '@/app/collective-rewards/rewards/utils/formatter'
-import { Builder } from '@/app/collective-rewards/types'
+import { Builder, BuilderRewardsSummary } from '@/app/collective-rewards/types'
 import { getCombinedFiatAmount } from '@/app/collective-rewards/utils'
 import { GetPricesResult } from '@/app/user/types'
 import { Jdenticon } from '@/components/Header/Jdenticon'
@@ -34,7 +33,7 @@ export type ColumnIdToCellPropsMap = {
 export type BuilderRowData = RowData<ColumnId, ColumnIdToCellPropsMap[ColumnId]>
 
 export const convertDataToRowData = (
-  data: BuildersRewards[],
+  data: BuilderRewardsSummary[],
   userAllocations: (bigint | undefined)[],
   prices: GetPricesResult,
   handleAction: (action: Action, builder: Builder) => void,
@@ -58,7 +57,7 @@ export const convertDataToRowData = (
           builder,
         },
         backer_rewards: {
-          percentage: builder.rewardPercentage ?? { current: 50n, next: 30n, cooldownEndTime: 100n },
+          percentage: builder.backerRewardPct,
         },
         rewards_past_cycle: {
           rbtcValue: builder.lastCycleRewards.rbtc.amount.value,
@@ -69,11 +68,11 @@ export const convertDataToRowData = (
           ]).toNumber(),
         },
         rewards_upcoming: {
-          rbtcValue: builder.estimatedRewards.rbtc.amount.value,
-          rifValue: builder.estimatedRewards.rif.amount.value,
+          rbtcValue: builder.builderEstimatedRewards.rbtc.amount.value,
+          rifValue: builder.builderEstimatedRewards.rif.amount.value,
           usdValue: getCombinedFiatAmount([
-            builder.estimatedRewards.rif.amount,
-            builder.estimatedRewards.rif.amount,
+            builder.builderEstimatedRewards.rif.amount,
+            builder.builderEstimatedRewards.rbtc.amount,
           ]).toNumber(),
         },
         backing: {

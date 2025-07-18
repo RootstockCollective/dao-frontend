@@ -14,8 +14,8 @@ export const useGetCycleRewards = () => {
 
   return {
     data: {
-      rifRewards: rifRewards ?? 0n,
-      rbtcRewards: rbtcRewards ?? 0n,
+      rif: rifRewards ?? 0n,
+      rbtc: rbtcRewards ?? 0n,
     },
     isLoading: rifRewardsLoading || rbtcRewardsLoading,
     error: rifRewardsError ?? rbtcRewardsError ?? null,

@@ -14,7 +14,7 @@ export const useIsBacker = (address: Address) => {
     args: [address],
   })
 
-  const { data: builders, isLoading: isBuildersLoading, error: buildersError } = useBuilderContext()
+  const { builders, isLoading: isBuildersLoading, error: buildersError } = useBuilderContext()
 
   const gauges = builders.reduce<Address[]>((acc, { gauge }) => {
     if (gauge) {

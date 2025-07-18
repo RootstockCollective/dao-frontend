@@ -3,8 +3,7 @@ import { useContext, useMemo, useCallback, useEffect, useState } from 'react'
 import { Address, formatEther, parseEther } from 'viem'
 import { AllocationChangeData, AllocationItem } from '../AllocationBar/types'
 import AllocationBar from '../AllocationBar/AllocationBar'
-import { floorToUnit, getBuilderColor } from '../utils'
-import { isBuilderRewardable } from '@/app/collective-rewards/utils'
+import { floorToUnit, getBuilderColor } from '@/app/shared/components/utils'
 
 const UNALLOCATED_KEY = 'unallocated'
 
@@ -115,7 +114,7 @@ const BuilderAllocationBar = () => {
     [updateAllocation],
   )
 
-  const isEmpty = cumulativeAllocation === 0n
+  const isEmpty = cumulativeAllocation === 0n && Object.keys(allocations).length === 0
 
   return (
     <AllocationBar

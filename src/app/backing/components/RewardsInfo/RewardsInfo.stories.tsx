@@ -7,18 +7,18 @@ import { WeiPerEther } from '@/lib/constants'
 const RewardsInfoWrapper: FC<
   Omit<RewardsInfoProps, 'backerRewardPercentage'> & {
     backerRewardPercentage: {
-      active: number
+      current: number
       next: number
-      cooldown: number
+      cooldownEndTime: number
       previous: number
     }
   }
 > = ({ backerRewardPercentage, ...props }) => (
   <RewardsInfo
     backerRewardPercentage={{
-      active: (BigInt(backerRewardPercentage.active) * WeiPerEther) / 100n,
+      current: (BigInt(backerRewardPercentage.current) * WeiPerEther) / 100n,
       next: (BigInt(backerRewardPercentage.next) * WeiPerEther) / 100n,
-      cooldown: BigInt(backerRewardPercentage.cooldown),
+      cooldownEndTime: BigInt(backerRewardPercentage.cooldownEndTime),
       previous: (BigInt(backerRewardPercentage.previous) * WeiPerEther) / 100n,
     }}
     {...props}
@@ -35,9 +35,9 @@ type Story = StoryObj<typeof RewardsInfoWrapper>
 
 const defaultArgs = {
   backerRewardPercentage: {
-    active: 50,
+    current: 50,
     next: 50,
-    cooldown: 1717987200,
+    cooldownEndTime: 1717987200,
     previous: 50,
   },
 }
