@@ -1,5 +1,5 @@
-import { RequiredBuilder } from '@/app/collective-rewards/types'
-import { useGetBuildersByState } from '@/app/collective-rewards/user'
+import { CompleteBuilder } from '@/app/collective-rewards/types'
+import { filterBuildersByState, useBuilderContext } from '@/app/collective-rewards/user'
 import { useHandleErrors } from '@/app/collective-rewards/utils'
 import { Span } from '@/components/TypographyNew/'
 import { getTokens } from '@/lib/tokens'
@@ -13,12 +13,12 @@ export interface RewardCardAllTimeShareProps {
 }
 
 export const AllTimeShare = ({ gauge }: { gauge: Address }) => {
-  const { data: activatedBuilders, error: activatedBuildersError } = useGetBuildersByState<RequiredBuilder>({
+  const { builders, isLoading: isBuildersLoading, error: buildersError } = useBuilderContext()
+  const activatedBuilders = filterBuildersByState<CompleteBuilder>(builders, {
     activated: true,
   })
-  const activatedGauges = activatedBuilders?.map(({ gauge }) => gauge) ?? []
 
-  useHandleErrors({ error: activatedBuildersError, title: 'Error loading gauges' })
+  const activatedGauges = activatedBuilders?.map(({ gauge }) => gauge) ?? []
 
   const rifAddress = getTokens().rif.address
 
@@ -28,11 +28,11 @@ export const AllTimeShare = ({ gauge }: { gauge: Address }) => {
     rifAddress,
   })
 
-  useHandleErrors({ error, title: 'Error loading all time share' })
+  useHandleErrors({ error: buildersError || error, title: 'Error loading all time share' })
   return (
     <RewardCard
       data-testid="all-time-share"
-      isLoading={isLoading}
+      isLoading={isBuildersLoading || isLoading}
       title="All time share"
       info="Your percentage share of total rewards across all cycles"
       content={
