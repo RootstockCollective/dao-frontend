@@ -57,7 +57,7 @@ export function Breadcrumbs() {
           return (
             <li key={href} className="flex items-center gap-2">
               {isLast ? (
-                <span className="text-sm text-white">{title}</span>
+                <span className="text-sm text-text-100 truncate inline-block max-w-[150px]">{title}</span>
               ) : (
                 <>
                   <Link href={href} className="text-sm text-warm-gray hover:underline">
