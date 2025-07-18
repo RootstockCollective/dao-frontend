@@ -416,22 +416,5 @@ export const formatAssetData = (
     : undefined
   return { amount: formattedAmount, fiatAmount: formattedFiatAmount }
 }
-export const formatAmount = (amount: string) =>
-  formatNumberWithCommas(formatEther(BigInt(amount)).split('.')[0])
-export async function getTxReceipt(txHash: Hash) {
-  try {
-    const receipt = await waitForTransactionReceipt(config, {
-      hash: txHash,
-    })
-    const block = await getBlock(config, {
-      blockNumber: receipt.blockNumber,
-    })
-    const timestamp = Number(block.timestamp) * 1000
-    return {
-      ...receipt,
-      timestamp,
-    }
-  } catch (error) {
-    return undefined
-  }
-}
+// prettier-ignore
+export const formatAmount = (amount: string) => formatNumberWithCommas(formatEther(BigInt(amount)).split('.')[0])
