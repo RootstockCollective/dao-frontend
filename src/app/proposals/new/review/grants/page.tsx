@@ -1,6 +1,6 @@
 'use client'
 
-import { useCallback, useEffect } from 'react'
+import { useCallback, useEffect, useState } from 'react'
 import { useReviewProposal } from '@/app/providers'
 import { useLayoutContext } from '@/components/MainContainer/LayoutProvider'
 import { Subfooter } from '../../components/Subfooter'
@@ -21,8 +21,10 @@ export default function GrantsProposalReview() {
   const { address } = useAccount()
   const { record, waitForTxInBg } = useReviewProposal()
   const { onCreateTreasuryTransferProposal } = useCreateTreasuryTransferProposal()
+  const [loading, setLoading] = useState(false)
 
   const onSubmit = useCallback(async () => {
+    setLoading(true)
     try {
       if (!record?.form || record?.category !== ProposalCategory.Grants) return
       const { description, proposalName, targetAddress, token, transferAmount } = record.form
@@ -36,7 +38,8 @@ export default function GrantsProposalReview() {
         proposalDescription,
         tokenAddress,
       )
-      waitForTxInBg(txHash, proposalName, ProposalCategory.Grants)
+      const onComplete = () => setLoading(false)
+      waitForTxInBg(txHash, proposalName, ProposalCategory.Grants, onComplete)
     } catch (error) {
       if (isUserRejectedTxError(error)) return
       showToast({
@@ -46,15 +49,17 @@ export default function GrantsProposalReview() {
         closeButton: true,
         content: error instanceof Error ? error.message : 'Error publishing proposal',
       })
+      setLoading(false)
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [record])
 
   // inject sticky drawer with submit button to the footer layout
   const { setSubfooter } = useLayoutContext()
   useEffect(() => {
-    setSubfooter(<Subfooter submitForm={onSubmit} buttonText="Publish proposal" />)
+    setSubfooter(<Subfooter submitForm={onSubmit} buttonText="Publish proposal" disabled={loading} />)
     return () => setSubfooter(null)
-  }, [onSubmit, setSubfooter])
+  }, [loading, onSubmit, setSubfooter])
 
   // Verify that the context has passed correct proposal type
   if (!record?.form || record?.category !== ProposalCategory.Grants) {
