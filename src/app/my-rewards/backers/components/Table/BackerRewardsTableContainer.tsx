@@ -1,0 +1,25 @@
+import { ActionsContainer } from '@/components/containers'
+import { Header } from '@/components/TypographyNew'
+import { withTableContext } from '@/shared/context'
+import { ReactElement } from 'react'
+import { BackerRewardsTable } from './BackerRewardsTable'
+
+const Title = () => {
+  return (
+    <>
+      <Header variant="h3" caps className="text-nowrap">
+        Rewards Details
+      </Header>
+    </>
+  )
+}
+
+const BackerRewardsTableContainer = (): ReactElement => {
+  return (
+    <ActionsContainer title={<Title />} className="bg-v3-bg-accent-80">
+      <BackerRewardsTable />
+    </ActionsContainer>
+  )
+}
+
+export default withTableContext(BackerRewardsTableContainer)

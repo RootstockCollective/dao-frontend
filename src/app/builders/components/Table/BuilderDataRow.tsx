@@ -222,7 +222,6 @@ export const BuilderDataRow: FC<BuilderDataRowProps> = ({ row, ...props }) => {
   } = useContext(AllocationsContext)
 
   const hasSelections = Object.values(selectedRows).some(Boolean)
-  const showTooltip = !isConnected && !hasSelections
 
   const handleToggleSelection = () => {
     if (isConnected) {
