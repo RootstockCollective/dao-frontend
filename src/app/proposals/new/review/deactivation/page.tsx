@@ -1,6 +1,6 @@
 'use client'
 
-import { useCallback, useEffect } from 'react'
+import { useCallback, useEffect, useState } from 'react'
 import { useReviewProposal } from '@/app/providers'
 import { useLayoutContext } from '@/components/MainContainer/LayoutProvider'
 import { Subfooter } from '../../components/Subfooter'
@@ -21,15 +21,18 @@ export default function DeactivationProposalReview() {
   const { address } = useAccount()
   const { record, waitForTxInBg } = useReviewProposal()
   const { onRemoveBuilderProposal } = useRemoveBuilderProposal()
+  const [loading, setLoading] = useState(false)
 
   const onSubmit = useCallback(async () => {
+    setLoading(true)
     try {
       if (!record?.form || record?.category !== ProposalCategory.Deactivation) return
       const { proposalName, builderAddress, description } = record.form
       const proposalDescription = `${proposalName};${description}`
       // Here the user will see Metamask window and confirm his tx
       const txHash = await onRemoveBuilderProposal(builderAddress, proposalDescription)
-      waitForTxInBg(txHash, proposalName, ProposalCategory.Deactivation)
+      const onComplete = () => setLoading(false)
+      waitForTxInBg(txHash, proposalName, ProposalCategory.Deactivation, onComplete)
     } catch (error) {
       if (isUserRejectedTxError(error)) return
       showToast({
@@ -39,6 +42,7 @@ export default function DeactivationProposalReview() {
         closeButton: true,
         content: error instanceof Error ? error.message : 'Error publishing deactivation proposal',
       })
+      setLoading(false)
     }
     // eslint-disable-next-line
   }, [record, router])
@@ -46,9 +50,9 @@ export default function DeactivationProposalReview() {
   // inject sticky drawer with submit button to the footer layout
   const { setSubfooter } = useLayoutContext()
   useEffect(() => {
-    setSubfooter(<Subfooter submitForm={onSubmit} buttonText="Publish proposal" />)
+    setSubfooter(<Subfooter submitForm={onSubmit} buttonText="Publish proposal" disabled={loading} />)
     return () => setSubfooter(null)
-  }, [onSubmit, setSubfooter])
+  }, [onSubmit, setSubfooter, loading])
 
   // Verify that the context was passed the correct proposal type
   if (!record?.form || record?.category !== ProposalCategory.Deactivation) {

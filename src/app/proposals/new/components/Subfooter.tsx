@@ -7,9 +7,10 @@ import { useIsDesktop } from '@/shared/hooks/useIsDesktop'
 interface Props {
   submitForm: () => void
   buttonText: string
+  disabled?: boolean
 }
 
-export const Subfooter = ({ submitForm, buttonText }: Props) => {
+export const Subfooter = ({ submitForm, disabled, buttonText }: Props) => {
   const router = useRouter()
   const { isSidebarOpen } = useLayoutContext()
   const isDesktop = useIsDesktop()
@@ -24,10 +25,12 @@ export const Subfooter = ({ submitForm, buttonText }: Props) => {
       className="sticky bottom-0 z-40"
     >
       <div className="h-[96px] flex items-center justify-center gap-2 bg-bg-60">
-        <Button onClick={router.back} variant="secondary-outline">
+        <Button disabled={disabled} onClick={router.back} variant="secondary-outline">
           Back
         </Button>
-        <Button onClick={submitForm}>{buttonText}</Button>
+        <Button disabled={disabled} onClick={submitForm}>
+          {buttonText}
+        </Button>
       </div>
     </motion.div>
   )

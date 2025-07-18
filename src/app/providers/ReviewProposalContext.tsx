@@ -15,7 +15,12 @@ import { isUserRejectedTxError } from '@/components/ErrorPage/commonErrors'
 interface ReviewProposalState {
   record: ProposalRecord | null
   setRecord: (val: ProposalRecord | null) => void
-  waitForTxInBg: (proposalTxHash: Hash, proposalName: string, category: ProposalCategory) => Promise<void>
+  waitForTxInBg: (
+    proposalTxHash: Hash,
+    proposalName: string,
+    category: ProposalCategory,
+    onComplete?: () => void,
+  ) => Promise<void>
 }
 
 const ReviewProposalContext = createContext<ReviewProposalState | null>(null)
@@ -37,7 +42,12 @@ export function ReviewProposalProvider({ children }: PropsWithChildren) {
    * Shows pending toast immediately, waits for confirmation, then shows success toast.
    */
   const waitForTxInBg = useCallback(
-    async (proposalTxHash: Hash, _proposalName: string, _proposalCategory: ProposalCategory) => {
+    async (
+      proposalTxHash: Hash,
+      _proposalName: string,
+      _proposalCategory: ProposalCategory,
+      onComplete?: () => void,
+    ) => {
       const { success, error, pending } = TX_MESSAGES.proposal
 
       try {
@@ -77,6 +87,8 @@ export function ReviewProposalProvider({ children }: PropsWithChildren) {
             toastId: proposalTxHash,
           })
         }
+      } finally {
+        onComplete?.()
       }
     },
     [router, setRecord],

@@ -1,6 +1,6 @@
 'use client'
 
-import { useCallback, useEffect } from 'react'
+import { useCallback, useEffect, useState } from 'react'
 import moment from 'moment'
 import { useReviewProposal } from '@/app/providers'
 import { useLayoutContext } from '@/components/MainContainer/LayoutProvider'
@@ -20,15 +20,18 @@ export default function ActivationProposalReview() {
   const { address } = useAccount()
   const { record, waitForTxInBg } = useReviewProposal()
   const { onCreateBuilderWhitelistProposal } = useCreateBuilderWhitelistProposal()
+  const [loading, setLoading] = useState(false)
 
   const onSubmit = useCallback(async () => {
+    setLoading(true)
     try {
       if (!record?.form || record?.category !== ProposalCategory.Activation) return
       const { proposalName, builderAddress, description, builderName } = record.form
       const proposalDescription = `${proposalName}${DISPLAY_NAME_SEPARATOR}${builderName};${description}`
       // Here the user will see Metamask window and confirm his tx
       const txHash = await onCreateBuilderWhitelistProposal(builderAddress, proposalDescription)
-      waitForTxInBg(txHash, proposalName, ProposalCategory.Activation)
+      const onComplete = () => setLoading(false)
+      waitForTxInBg(txHash, proposalName, ProposalCategory.Activation, onComplete)
     } catch (error) {
       if (isUserRejectedTxError(error)) return
       showToast({
@@ -38,6 +41,7 @@ export default function ActivationProposalReview() {
         closeButton: true,
         content: error instanceof Error ? error.message : 'Error publishing activation proposal',
       })
+      setLoading(false)
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [record])
@@ -45,9 +49,9 @@ export default function ActivationProposalReview() {
   // inject sticky drawer with submit button to the footer layout
   const { setSubfooter } = useLayoutContext()
   useEffect(() => {
-    setSubfooter(<Subfooter submitForm={onSubmit} buttonText="Publish proposal" />)
+    setSubfooter(<Subfooter submitForm={onSubmit} buttonText="Publish proposal" disabled={loading} />)
     return () => setSubfooter(null)
-  }, [onSubmit, setSubfooter])
+  }, [loading, onSubmit, setSubfooter])
 
   // Verify that the context has passed correct proposal type
   if (!record?.form || record?.category !== ProposalCategory.Activation) {

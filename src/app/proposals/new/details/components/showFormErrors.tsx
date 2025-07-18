@@ -1,3 +1,4 @@
+import { Paragraph } from '@/components/TypographyNew'
 import { showToast } from '@/shared/notification'
 
 export function showFormErrors(formErrors: Record<string, { message?: string }>) {
@@ -8,7 +9,7 @@ export function showFormErrors(formErrors: Record<string, { message?: string }>)
     title: 'Form validation failed',
     content: (
       <div>
-        <p className="mb-2">Please fix the following errors:</p>
+        <Paragraph className="mb-2">Please fix the following errors:</Paragraph>
         <ul className="list-disc list-inside space-y-1">
           {errorMessages.map((message, index) => (
             <li key={index} className="text-xs">
