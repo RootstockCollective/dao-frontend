@@ -15,6 +15,7 @@ import { useCreateTreasuryTransferProposal } from '@/app/proposals/hooks/useCrea
 import { tokenContracts } from '@/lib/contracts'
 import { showToast } from '@/shared/notification'
 import { isUserRejectedTxError } from '@/components/ErrorPage'
+import { Typography } from '@/components/TypographyNew/Typography'
 
 export default function GrantsProposalReview() {
   const { address } = useAccount()
@@ -64,9 +65,9 @@ export default function GrantsProposalReview() {
   return (
     <div>
       <div className="mb-10 pr-2 w-full lg:flex lg:justify-between">
-        <h2 className="font-kk-topo text-text-100 text-2xl lg:text-3xl uppercase leading-relaxed tracking-wide">
+        <Typography variant="h3" className="text-2xl lg:text-3xl uppercase leading-relaxed tracking-wide">
           {proposalName}
-        </h2>
+        </Typography>
         <PreviewLabel />
       </div>
 
@@ -89,9 +90,9 @@ export default function GrantsProposalReview() {
                 </a>
               </Card>
             </div>
-            <h3 className="mb-10 text-xl font-kk-topo text-text-100 uppercase leading-none tracking-tight">
+            <Typography variant="h3" className="mb-10 uppercase leading-none tracking-tight">
               Description
-            </h3>
+            </Typography>
             <div className="font-rootstock-sans text-text-100 leading-normal">
               {description.split('\n').map((paragraph, i) => (
                 <p className="mb-8" key={i}>
