@@ -14,7 +14,7 @@ import { useRouter } from 'next/navigation'
 import { showToast } from '@/shared/notification'
 import { isUserRejectedTxError } from '@/components/ErrorPage'
 import { useRemoveBuilderProposal } from '@/app/proposals/hooks/useRemoveBuilderProposal'
-import { Typography } from '@/components/TypographyNew/Typography'
+import { Header } from '@/components/TypographyNew'
 
 export default function DeactivationProposalReview() {
   const router = useRouter()
@@ -58,9 +58,9 @@ export default function DeactivationProposalReview() {
   return (
     <div>
       <div className="mb-10 pr-2 w-full lg:flex lg:justify-between">
-        <Typography variant="h3" className="text-2xl lg:text-3xl uppercase leading-relaxed tracking-wide">
+        <Header caps variant="h3" className="text-2xl lg:text-3xl leading-relaxed tracking-wide">
           {proposalName}
-        </Typography>
+        </Header>
         <PreviewLabel />
       </div>
       <div className="w-full flex flex-col lg:flex-row gap-2">
@@ -77,9 +77,9 @@ export default function DeactivationProposalReview() {
                 </a>
               </Card>
             </div>
-            <Typography variant="h3" className="mb-10 uppercase leading-none tracking-tight">
+            <Header caps variant="h3" className="mb-10 leading-none tracking-tight">
               Description
-            </Typography>
+            </Header>
             <div className="font-rootstock-sans text-text-100 leading-normal">
               {description.split('\n').map((paragraph, i) => (
                 <p className="mb-8" key={i}>
@@ -90,9 +90,9 @@ export default function DeactivationProposalReview() {
           </div>
         </div>
         <div className="grow min-w-[250px] max-w-[760px] p-6 bg-bg-80 rounded-sm overflow-hidden lg:self-start">
-          <h3 className="mb-4 text-xl font-kk-topo text-text-100 uppercase leading-relaxed tracking-tight">
+          <Header caps className="mb-4 text-xl leading-relaxed tracking-tight">
             Actions
-          </h3>
+          </Header>
           <div className="grid grid-cols-2 gap-y-4">
             <Card title="Type">Builder deactivation</Card>
             <Card title="Address to de-whitelist">{shortAddress(builderAddress)}</Card>
