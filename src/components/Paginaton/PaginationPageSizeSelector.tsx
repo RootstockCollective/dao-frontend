@@ -2,12 +2,12 @@ import { Chevron } from './Chevron'
 import { cn } from '@/lib/utils'
 import type { Table } from '@tanstack/react-table'
 
-interface PaginationPageSizeSelectorProps {
-  table: Table<unknown>
+interface PaginationPageSizeSelectorProps<T> {
+  table: Table<T>
 }
 
 // Dropdown for selecting page size in pagination
-export default function PaginationPageSizeSelector({ table }: PaginationPageSizeSelectorProps) {
+export default function PaginationPageSizeSelector<T>({ table }: PaginationPageSizeSelectorProps<T>) {
   return (
     <div className="relative ml-1">
       <select

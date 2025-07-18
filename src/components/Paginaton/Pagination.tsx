@@ -5,14 +5,14 @@ import PaginationArrowButton from './PaginationArrowButton'
 import PaginationPageNumbers from './PaginationPageNumbers'
 import PaginationPageSizeSelector from './PaginationPageSizeSelector'
 
-interface PaginationProps {
+interface PaginationProps<T> {
   pagination: PaginationState
   setPagination: Dispatch<SetStateAction<PaginationState>>
-  data: unknown[]
-  table: Table<unknown>
+  data: T[]
+  table: Table<T>
 }
 
-export function Pagination({ pagination, setPagination, data, table }: PaginationProps) {
+export function Pagination<T>({ pagination, setPagination, data, table }: PaginationProps<T>) {
   const router = useRouter()
   const searchParams = useSearchParams()
 
