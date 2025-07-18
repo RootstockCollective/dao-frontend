@@ -4,14 +4,14 @@ import { InfoContainer } from '@/components/containers'
 import { LoadingSpinner } from '@/components/LoadingSpinner'
 import { useHandleErrors } from '../../utils'
 import { useGetBuilderEstimatedRewards } from '@/app/shared/hooks/useGetBuilderEstimatedRewards'
-import { getTokens } from '@/lib/tokens'
+import { TOKENS } from '@/lib/tokens'
 
 export const CallToActionSection = () => {
   const {
     data: builderEstimatedRewards,
     isLoading: builderEstimatedRewardsLoading,
     error: builderEstimatedRewardsError,
-  } = useGetBuilderEstimatedRewards(getTokens())
+  } = useGetBuilderEstimatedRewards(TOKENS)
 
   const isLoading = builderEstimatedRewardsLoading
   const error = builderEstimatedRewardsError

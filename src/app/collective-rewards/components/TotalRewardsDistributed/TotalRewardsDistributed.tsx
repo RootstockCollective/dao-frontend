@@ -2,7 +2,7 @@ import { Metric } from '@/components/Metric/Metric'
 import { TokenAmountDisplay } from '@/components/TokenAmountDisplay'
 import { CommonComponentProps } from '@/components/commonProps'
 import { usePricesContext } from '@/shared/context/PricesContext'
-import { getTokens } from '@/lib/tokens'
+import { TOKENS } from '@/lib/tokens'
 import { useGetGaugesArray } from '@/app/collective-rewards/user'
 import { Address } from 'viem'
 import {
@@ -67,8 +67,6 @@ export const TotalRewardsDistributed = ({ className }: TotalRewardsDistributedMe
     return <LoadingSpinner size="small" />
   }
 
-  const tokens = getTokens()
-
   return (
     <Metric
       title={
@@ -84,7 +82,7 @@ export const TotalRewardsDistributed = ({ className }: TotalRewardsDistributedMe
       className={className}
     >
       <div className="flex flex-col gap-2">
-        {Object.values(tokens).map(token => (
+        {Object.values(TOKENS).map(token => (
           <TokenRewards key={token.symbol} gauges={allGauges} token={token} />
         ))}
       </div>

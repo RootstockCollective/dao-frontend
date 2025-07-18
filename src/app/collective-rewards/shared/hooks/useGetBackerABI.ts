@@ -8,14 +8,14 @@ import { calculateAbi } from './useGetABI'
 import { useGetCycleRewards } from './useGetCycleRewards'
 import { getCyclePayout } from './getCyclePayout'
 import { useGetBuilderEstimatedRewards } from '../../../shared/hooks/useGetBuilderEstimatedRewards'
-import { getTokens } from '@/lib/tokens'
+import { TOKENS } from '@/lib/tokens'
 
 export const useGetBackerABI = (backer: Address) => {
   const {
     data: builderEstimatedRewards,
     isLoading: estimatedRewardsLoading,
     error: estimatedRewardsError,
-  } = useGetBuilderEstimatedRewards(getTokens())
+  } = useGetBuilderEstimatedRewards(TOKENS)
   const gauges = builderEstimatedRewards.map(({ gauge }) => gauge)
   const {
     data: allocationOf,

@@ -9,7 +9,7 @@ import {
   isBuilderSelfPaused,
 } from '@/app/collective-rewards/utils'
 import TablePager from '@/components/TableNew/TablePager'
-import { getTokens } from '@/lib/tokens'
+import { TOKENS } from '@/lib/tokens'
 import {
   Row,
   SelectedRows,
@@ -137,12 +137,15 @@ export const BuildersTable = ({ filterOption }: { filterOption: BuilderFilterOpt
 
   const dispatch = useTableActionsContext<ColumnId>()
 
-  const tokens = useMemo(() => getTokens(), [])
   const {
     data: { pagedRewards: buildersRewardsData, totalRewards },
     isLoading,
     error,
-  } = usePagedFilteredBuildersRewards({ tokens, filterOption, pageOptions: { start: 0, end: pageEnd } })
+  } = usePagedFilteredBuildersRewards({
+    tokens: TOKENS,
+    filterOption,
+    pageOptions: { start: 0, end: pageEnd },
+  })
 
   const {
     data: allocations,

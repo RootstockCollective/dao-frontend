@@ -50,3 +50,4 @@ export { XCircleIcon } from './XCircleIcon'
 export { RocketIconKoto } from './RocketIconKoto'
 
 export * from './v3design'
+export { HistoryIcon } from './HistoryIcon'
