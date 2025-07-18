@@ -1,11 +1,10 @@
-import { createProposal } from '@/app/proposals/hooks/proposalUtils'
-import { useVotingPower } from '@/app/proposals/hooks/useVotingPower'
+import { checkCanCreateProposal, createProposal } from '@/app/proposals/hooks/proposalUtils'
 import { NoVotingPowerError } from '@/app/proposals/shared/errors'
 import { DAOTreasuryAbi } from '@/lib/abis/DAOTreasuryAbi'
 import { GovernorAbi } from '@/lib/abis/Governor'
 import { GovernorAddress, tokenContracts, TreasuryAddress } from '@/lib/contracts'
 import { Address, encodeFunctionData, parseEther, zeroAddress } from 'viem'
-import { useWriteContract } from 'wagmi'
+import { useWriteContract, useAccount } from 'wagmi'
 
 const DEFAULT_DAO_CONFIG = {
   abi: GovernorAbi,
@@ -13,7 +12,7 @@ const DEFAULT_DAO_CONFIG = {
 }
 
 export const useCreateTreasuryTransferProposal = () => {
-  const { canCreateProposal } = useVotingPower()
+  const { address: userAddress } = useAccount()
   const { writeContractAsync: propose, isPending: isPublishing } = useWriteContract()
 
   const onCreateTreasuryTransferProposal = async (
@@ -22,7 +21,10 @@ export const useCreateTreasuryTransferProposal = () => {
     description: string,
     tokenAddress: string,
   ) => {
-    if (!canCreateProposal) {
+    if (!userAddress) throw new Error('Unknown user address')
+    // Check fresh voting power from blockchain
+    const canCreate = await checkCanCreateProposal(userAddress)
+    if (!canCreate) {
       throw NoVotingPowerError
     }
     let calldata

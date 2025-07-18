@@ -1,5 +1,9 @@
 // Types for proposal action parsing and details
-import { ProposalType } from '../create/CreateProposalHeaderSection'
+export enum ProposalType {
+  BUILDER_ACTIVATION = 'Builder Activation',
+  BUILDER_DEACTIVATION = 'Builder Deactivation',
+  WITHDRAW = 'Transfer of',
+}
 
 export interface ParsedActionDetails {
   type: ProposalType | string

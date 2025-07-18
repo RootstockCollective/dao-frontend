@@ -1,6 +1,6 @@
 import type { Meta, StoryObj } from '@storybook/react'
 import { NewProposalCard } from './NewProposalCard'
-import { newProposalCards, type NewProposalCardBaseData } from './newProposalCards.data'
+import { newProposalCards, type NewProposalCardBaseData } from '../newProposalCards.data'
 import { useState } from 'react'
 import { AnimatePresence } from 'motion/react'
 import { Button } from '@/components/ButtonNew'

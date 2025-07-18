@@ -1,17 +1,22 @@
-import { createProposal, encodeGovernorRelayCallData } from '@/app/proposals/hooks/proposalUtils'
-import { useVotingPower } from '@/app/proposals/hooks/useVotingPower'
+import {
+  checkCanCreateProposal,
+  createProposal,
+  encodeGovernorRelayCallData,
+} from '@/app/proposals/hooks/proposalUtils'
 import { NoVotingPowerError } from '@/app/proposals/shared/errors'
 import { GovernorAbi } from '@/lib/abis/Governor'
 import { BuilderRegistryAbi } from '@/lib/abis/v2/BuilderRegistryAbi'
 import { BuilderRegistryAddress, GovernorAddress } from '@/lib/contracts'
 import { Address, encodeFunctionData } from 'viem'
-import { useWriteContract } from 'wagmi'
+import { useAccount, useWriteContract } from 'wagmi'
 
 export const useRemoveBuilderProposal = () => {
-  const { canCreateProposal } = useVotingPower()
+  const { address: userAddress } = useAccount()
   const { writeContractAsync: propose, isPending: isPublishing, error: transactionError } = useWriteContract()
 
   const onRemoveBuilderProposal = async (builderAddress: Address, description: string) => {
+    if (!userAddress) throw new Error('Unknown user address')
+    const canCreateProposal = await checkCanCreateProposal(userAddress)
     if (!canCreateProposal) {
       throw NoVotingPowerError
     }

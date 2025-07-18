@@ -6,15 +6,16 @@ import { HeaderMobile } from './headers/HeaderMobile'
 import { FooterMobile } from './footers/FooterMobile'
 import { SidebarMobile } from './sidebars/SidebarMobile'
 import { useLayoutContext } from './LayoutProvider'
+import { AnimatePresence } from 'motion/react'
 
 export default function ContainerMobile({ className, children, ...props }: HTMLAttributes<HTMLDivElement>) {
-  const { isSidebarOpen } = useLayoutContext()
+  const { isSidebarOpen, subfooter } = useLayoutContext()
   return (
     <div
       {...props}
       className={cn(
         'flex flex-col w-full',
-        isSidebarOpen ? 'overflow-y-hidden h-[calc(100dvh-var(--header-height))]' : 'min-h-screen',
+        isSidebarOpen ? 'overflow-hidden h-[calc(100dvh-var(--header-height))]' : 'min-h-screen',
       )}
     >
       <HeaderMobile />
@@ -23,6 +24,7 @@ export default function ContainerMobile({ className, children, ...props }: HTMLA
         <main className="grow mb-25">{children}</main>
         <FooterMobile />
       </div>
+      <AnimatePresence>{subfooter}</AnimatePresence>
     </div>
   )
 }
