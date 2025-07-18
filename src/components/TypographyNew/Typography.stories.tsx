@@ -10,6 +10,13 @@ const meta = {
   parameters: {
     layout: 'padded',
   },
+  argTypes: {
+    as: {
+      control: 'select',
+      options: ['p', 'span', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'label'],
+      description: 'The HTML element to render',
+    },
+  },
 } satisfies Meta<typeof Typography>
 
 export default meta
@@ -20,6 +27,7 @@ type Story = StoryObj<typeof meta>
 export const TypographyStory: Story = {
   args: {
     children: 'Pack my box with five dozen liquor jugs',
+    as: 'span',
     variant: 'body',
     caps: false,
   },
