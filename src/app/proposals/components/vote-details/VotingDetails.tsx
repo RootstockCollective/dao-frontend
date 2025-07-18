@@ -2,13 +2,12 @@ import { MouseEvent, Ref } from 'react'
 import { formatEther } from 'viem'
 import { Button } from '@/components/ButtonNew/Button'
 import { capitalizeFirstLetter } from '@/shared/utils'
-import { Header, Paragraph, Span } from '@/components/TypographyNew'
+import { Header, Paragraph } from '@/components/TypographyNew'
 import { formatNumberWithCommas } from '@/lib/utils'
 import { Vote } from '@/shared/types'
 import { HourglassAnimatedIcon } from '@/components/Icons/HourglassAnimatedIcon'
 import Big from '@/lib/big'
-import { Tooltip } from '@/components/Tooltip'
-import { KotoQuestionMarkIcon } from '@/components/Icons'
+import { BalanceInfo } from '@/components/BalanceInfo'
 
 interface VoteCounterProps {
   title: string
@@ -126,19 +125,11 @@ export const VotingDetails = ({
       {/* Voting power block (always rendered once) */}
       <div className="mt-6">
         {!vote ? (
-          <>
-            <div className="flex items-center text-sm">
-              <Span variant="tag" className="text-disabled-border">
-                Your available voting power
-              </Span>
-              <Tooltip text={'How much power is available for this proposal'}>
-                <KotoQuestionMarkIcon size={16} className="ml-2" />
-              </Tooltip>
-            </div>
-            <Header variant="h1" className="mt-4">
-              {formatNumberWithCommas(Big(formatEther(votingPower)).round(0))}
-            </Header>
-          </>
+          <BalanceInfo
+            title={'Your available voting power'}
+            tooltipContent={'How much power is available for this proposal'}
+            amount={formatNumberWithCommas(Big(formatEther(votingPower)).round(0))}
+          />
         ) : (
           <Paragraph variant="body">{`You voted ${vote.toUpperCase()} this proposal. ${!buttonAction ? '' : ' Take the next step now.'}`}</Paragraph>
         )}
