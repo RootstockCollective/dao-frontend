@@ -27,3 +27,17 @@ export const useAlertContext = () => {
   }
   return context
 }
+
+export const withAlertContext = <P extends object>(Component: React.ComponentType<P>) => {
+  const WrappedComponent = (props: P) => {
+    return (
+      <AlertProvider>
+        <Component {...props} />
+      </AlertProvider>
+    )
+  }
+
+  WrappedComponent.displayName = `withAlertContext(${Component.displayName || Component.name || 'Component'})`
+
+  return WrappedComponent
+}

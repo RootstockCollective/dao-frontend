@@ -1,7 +1,7 @@
 import { Button } from '@/components/ButtonNew/Button'
-import { ConnectButtonComponentProps } from '../types'
 import { Span } from '@/components/TypographyNew'
 import { cn } from '@/lib/utils'
+import { ConnectButtonComponentProps } from '../types'
 
 /**
  * New button that shows Connect Wallet

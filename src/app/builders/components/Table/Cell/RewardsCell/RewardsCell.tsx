@@ -2,7 +2,7 @@ import { DottedUnderlineLabel } from '@/components/DottedUnderlineLabel/DottedUn
 import { RifRbtcTooltip } from '@/components/RifRbtcTooltip/RifRbtcTooltip'
 import { Paragraph } from '@/components/TypographyNew'
 import { cn, formatCurrency } from '@/lib/utils'
-import React from 'react'
+import { ReactNode } from 'react'
 
 export interface RewardsCellProps {
   usdValue: number
@@ -11,12 +11,16 @@ export interface RewardsCellProps {
   className?: string
 }
 
-export const RewardsCell: React.FC<RewardsCellProps> = ({
+export const RewardsCell = ({
   usdValue,
   rbtcValue,
   rifValue,
   className = '',
-}) => {
+}: RewardsCellProps): ReactNode => {
+  if (usdValue === 0) {
+    return null
+  }
+
   return (
     <div className={cn('flex flex-row items-baseline justify-center gap-1 font-rootstock-sans', className)}>
       <Paragraph>{formatCurrency(usdValue)}</Paragraph>

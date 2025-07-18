@@ -1,5 +1,4 @@
 import { MultipleSelectDropdown, SelectorOption } from '@/app/builders/components/MultipleSelectDropdown'
-import { Button } from '@/components/ButtonNew/Button'
 import { CommonComponentProps } from '@/components/commonProps'
 import { CloseIcon } from '@/components/Icons/CloseIcon'
 import { MoreIcon } from '@/components/Icons/MoreIcon'
@@ -71,9 +70,7 @@ export const TableColumnDropdown: FC<CommonComponentProps> = ({ className }) => 
         selected={selectedColumns}
         onChange={handleColumnChange}
         trigger={isOpen => (
-          <Button variant="secondary" className="p-0 border-none bg-inherit">
-            {isOpen ? <CloseIcon /> : <MoreIcon />}
-          </Button>
+          <div className="p-0 border-none bg-inherit">{isOpen ? <CloseIcon /> : <MoreIcon />}</div>
         )}
       />
     </div>

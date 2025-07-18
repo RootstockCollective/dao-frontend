@@ -1,3 +1,4 @@
+import { withAlertContext } from '@/app/providers'
 import { useTableActionsContext, withTableContext } from '@/shared/context'
 import type { Meta, StoryObj } from '@storybook/react'
 import { useEffect } from 'react'
@@ -580,7 +581,7 @@ const meta: Meta<typeof TableWithData> = {
   tags: ['autodocs'],
   decorators: [
     Story => {
-      const WrappedStory = withTableContext(Story)
+      const WrappedStory = withTableContext(withAlertContext(Story))
       return <WrappedStory />
     },
   ],

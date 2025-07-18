@@ -1,17 +1,16 @@
 /******************
  * Components Types
  *******************/
-import { ComponentType } from 'react'
+import { CommonComponentProps } from '@/components/commonProps'
+import { ComponentType, HTMLAttributes } from 'react'
 
 export interface DisclaimerFlowProps {
   onAgree: () => void
   onClose: () => void
 }
 
-export interface ConnectButtonComponentProps {
-  onClick: () => void
-  className?: string
-  textClassName?: string
+export interface ConnectButtonComponentProps extends CommonComponentProps<HTMLButtonElement> {
+  textClassName?: HTMLAttributes<HTMLSpanElement>['className']
 }
 
 export interface ConnectWorkflowProps {

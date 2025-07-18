@@ -184,7 +184,9 @@ export const BuilderHeaderRow = () => {
           <HeaderSubtitle className="h-full text-v3-bg-accent-80">balls</HeaderSubtitle>{' '}
           {/* TODO: temporary fix to align the text to the top */}
         </HeaderCell>
-        <TableColumnDropdown className="self-start" />
+        <th>
+          <TableColumnDropdown className="self-start" />
+        </th>
       </tr>
     </Suspense>
   )

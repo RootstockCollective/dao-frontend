@@ -5,5 +5,6 @@ export type StylableComponentProps<T extends Element> = {
   style?: HTMLAttributes<T>['style']
 }
 
-export type CommonComponentProps<T extends Element = HTMLDivElement> = StylableComponentProps<T> &
-  PropsWithChildren
+export type CommonComponentProps<T extends Element | null = null> = T extends Element
+  ? StylableComponentProps<T> & HTMLAttributes<T> & PropsWithChildren
+  : StylableComponentProps<HTMLDivElement> & PropsWithChildren

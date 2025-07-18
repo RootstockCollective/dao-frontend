@@ -1,9 +1,8 @@
-import { Typography } from '@/components/TypographyNew/Typography'
+import { CommonComponentProps } from '@/components/commonProps'
 import { cn } from '@/lib/utils'
 import { FC, ReactNode } from 'react'
-import { CommonComponentProps } from '@/components/commonProps'
 
-export type BackingInfoContainerProps = CommonComponentProps & {
+export interface BackingInfoContainerProps extends CommonComponentProps {
   title: ReactNode
 }
 

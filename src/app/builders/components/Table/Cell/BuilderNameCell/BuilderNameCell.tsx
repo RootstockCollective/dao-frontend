@@ -15,6 +15,7 @@ import { cn, truncate } from '@/lib/utils'
 import { FC } from 'react'
 import { BuilderState } from '@/app/builders/components/Table/BuilderTable.config'
 import { isActive } from '@/app/builders/components/Table/utils'
+import Link from 'next/link'
 
 type DecorationOptionId = Exclude<BuilderState, 'active'> | 'extraRewards'
 type BuilderStateTooltip = Record<DecorationOptionId, string>
@@ -102,18 +103,21 @@ export const BuilderNameCell: FC<BuilderNameCellProps> = ({
   className,
 }) => {
   const stateDecorationId = getStateDecorationId(builder)
+  const builderPageLink = `/proposals/${builder.proposal.id}`
 
   return (
     <div className={cn('flex items-center justify-between w-full h-full', className)}>
       <div className="flex items-center gap-2">
-        <Paragraph
-          className={cn(
-            'text-v3-primary font-rootstock-sans',
-            isHighlighted && 'text-v3-bg-accent-100 underline underline-offset-2',
-          )}
-        >
-          {truncate(builder.builderName, 18)}
-        </Paragraph>
+        <Link href={builderPageLink} data-testid="builderName" target="_blank" rel="noopener noreferrer">
+          <Paragraph
+            className={cn(
+              'text-v3-primary font-rootstock-sans',
+              isHighlighted && 'text-v3-bg-accent-100 underline underline-offset-2',
+            )}
+          >
+            {truncate(builder.builderName, 18)}
+          </Paragraph>
+        </Link>
         {hasAirdrop && (
           <BuilderDecoration
             decorationId="extraRewards"
