@@ -2,6 +2,8 @@
 import { Jdenticon } from '@/components/Header/Jdenticon'
 import { CopyButton } from '../CopyButton'
 import { ChevronDown } from 'lucide-react'
+import { Address } from 'viem'
+import { BuilderStatus } from '@/components/Header'
 
 interface Props {
   address: string | undefined
@@ -41,6 +43,7 @@ export const AccountAddress = ({ address, shortAddress, onLogoutClick, withCopy 
         ) : (
           <span className="underline underline-offset-1 select-none">{shortAddress}</span>
         )}
+        <BuilderStatus address={address as Address} />
         <div className="bg-bg-60 p-1 rounded">
           <ChevronDown size={16} onClick={onLogoutClick} id="logOut" data-testid="Logout_Icon" />
         </div>
