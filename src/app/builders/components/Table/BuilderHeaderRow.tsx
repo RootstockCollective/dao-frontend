@@ -2,17 +2,22 @@
 
 import { Column, Sort, TableAction, useTableActionsContext, useTableContext } from '@/shared/context'
 import { SORT_DIRECTIONS } from '@/shared/context/TableContext/types'
-import { Suspense } from 'react'
+import { ReactElement, Suspense } from 'react'
 
+import { Button } from '@/components/ButtonNew/Button'
 import { CommonComponentProps } from '@/components/commonProps'
+import { CloseIconKoto } from '@/components/Icons'
 import { ArrowDownWFill } from '@/components/Icons/v3design/ArrowDownWFill'
 import { ArrowsUpDown } from '@/components/Icons/v3design/ArrowsUpDown'
 import { ArrowUpWFill } from '@/components/Icons/v3design/ArrowUpWFill'
 import { TableHeaderCell, TableHeaderNode } from '@/components/TableNew'
-import { Label, Paragraph } from '@/components/TypographyNew'
+import { Label, Paragraph, Span } from '@/components/TypographyNew'
 import { cn } from '@/lib/utils'
+import { redirect, RedirectType } from 'next/navigation'
 import { Dispatch, FC } from 'react'
+import { Address } from 'viem'
 import { COLUMN_TRANSFORMS, ColumnId } from './BuilderTable.config'
+import { Action, ActionCell } from './Cell/ActionCell'
 import { SelectorHeaderCell } from './Cell/SelectorHeaderCell/SelectorHeaderCell'
 import { TableColumnDropdown } from './TableColumnDropdown'
 
@@ -153,41 +158,102 @@ const HeaderSubtitle: FC<CommonComponentProps> = ({ className, children }) => (
   </Paragraph>
 )
 
-export const BuilderHeaderRow = () => {
+export type BuilderHeaderRowProps = {
+  actions: Action[]
+}
+export const BuilderHeaderRow = ({ actions }: BuilderHeaderRowProps): ReactElement => {
+  const dispatch = useTableActionsContext()
+  const handleCancelActions = () => {
+    dispatch({ type: 'SET_SELECTED_ROWS', payload: {} })
+  }
+  const actionCount = actions.length
+
   return (
     <Suspense fallback={<div>Loading table headers...</div>}>
       <tr className="flex border-b-1 border-b-v3-text-60 select-none gap-4">
         <BuilderHeaderCell key="builder" columnId="builder" />
-        <HeaderCell key="backer_rewards" columnId="backer_rewards">
-          <HeaderTitle>Backer Rewards</HeaderTitle>
-          <HeaderSubtitle>current % - change</HeaderSubtitle>
-        </HeaderCell>
-        <HeaderCell key="rewards_past_cycle" columnId="rewards_past_cycle">
-          <HeaderTitle>Rewards</HeaderTitle>
-          <HeaderSubtitle>past cycle</HeaderSubtitle>
-        </HeaderCell>
-        <HeaderCell key="rewards_upcoming" columnId="rewards_upcoming">
-          <HeaderTitle>Rewards</HeaderTitle>
-          <HeaderSubtitle>upcoming cycle, estimated</HeaderSubtitle>
-        </HeaderCell>
-        <HeaderCell key="backing" columnId="backing">
-          <HeaderTitle>Backing</HeaderTitle>
-          <HeaderSubtitle className="h-full text-v3-bg-accent-80">balls</HeaderSubtitle>{' '}
-          {/* TODO: temporary fix to align the text to the top */}
-        </HeaderCell>
-        <HeaderCell key="allocations" columnId="allocations">
-          <HeaderTitle>Backing Share</HeaderTitle>
-          <HeaderSubtitle>%</HeaderSubtitle>
-        </HeaderCell>
-        <HeaderCell columnId="actions">
-          <HeaderTitle>Actions</HeaderTitle>
-          <HeaderSubtitle className="h-full text-v3-bg-accent-80">balls</HeaderSubtitle>{' '}
-          {/* TODO: temporary fix to align the text to the top */}
-        </HeaderCell>
-        <th>
-          <TableColumnDropdown className="self-start" />
-        </th>
+        {actionCount <= 1 && (
+          <>
+            <HeaderCell key="backer_rewards" columnId="backer_rewards">
+              <HeaderTitle>Backer Rewards</HeaderTitle>
+              <HeaderSubtitle>current % - change</HeaderSubtitle>
+            </HeaderCell>
+            <HeaderCell key="rewards_past_cycle" columnId="rewards_past_cycle">
+              <HeaderTitle>Rewards</HeaderTitle>
+              <HeaderSubtitle>past cycle</HeaderSubtitle>
+            </HeaderCell>
+            <HeaderCell key="rewards_upcoming" columnId="rewards_upcoming">
+              <HeaderTitle>Rewards</HeaderTitle>
+              <HeaderSubtitle>upcoming cycle, estimated</HeaderSubtitle>
+            </HeaderCell>
+            <HeaderCell key="backing" columnId="backing">
+              <HeaderTitle>Backing</HeaderTitle>
+              <HeaderSubtitle className="h-full text-v3-bg-accent-80">balls</HeaderSubtitle>{' '}
+            </HeaderCell>
+            <HeaderCell key="allocations" columnId="allocations">
+              <HeaderTitle>Backing Share</HeaderTitle>
+              <HeaderSubtitle>%</HeaderSubtitle>
+            </HeaderCell>
+            <HeaderCell columnId="actions">
+              <HeaderTitle>Actions</HeaderTitle>
+              <HeaderSubtitle className="h-full text-v3-bg-accent-80">balls</HeaderSubtitle>{' '}
+            </HeaderCell>
+            <th>
+              <TableColumnDropdown className="self-start" />
+            </th>
+          </>
+        )}
+        {actionCount > 1 && (
+          <>
+            <CombinedActionsHeaderCell actions={actions} />
+            <TableHeaderCell contentClassName="items-start">
+              {/* <TableHeaderNode> */}
+              <Button
+                variant="secondary"
+                className="p-0 border-none bg-inherit"
+                onClick={handleCancelActions}
+              >
+                <CloseIconKoto className="w-5 h-5 text-v3-text-100" />
+              </Button>
+              {/* </TableHeaderNode> */}
+            </TableHeaderCell>
+          </>
+        )}
       </tr>
     </Suspense>
+  )
+}
+
+interface CombinedActionsHeaderCellProps extends CommonComponentProps<HTMLButtonElement> {
+  actions: Action[]
+}
+const CombinedActionsHeaderCell = ({ actions }: CombinedActionsHeaderCellProps): ReactElement => {
+  const { selectedRows } = useTableContext<ColumnId>()
+
+  const isMultipleDifferentActions = actions.some(action => action !== actions[0])
+  const showAction = isMultipleDifferentActions ? 'adjustBacking' : actions[0]
+
+  const handleClick = () => {
+    const selectedBuilderIds = Object.keys(selectedRows) as Address[]
+
+    redirect(`/backing?builders=${selectedBuilderIds.join(',')}`, RedirectType.push)
+  }
+
+  return (
+    <TableHeaderCell>
+      <TableHeaderNode>
+        <HeaderTitle className="flex flex-row gap-2">
+          <ActionCell
+            actionType={showAction}
+            onClick={handleClick}
+            className="flex justify-center items-center gap-1 font-rootstock-sans border-0 text-v3-text-100 font-light p-[inherit] h-[inherit] w-[inherit]"
+          />
+          <Span variant="tag-s" className="text-v3-bg-accent-0">
+            {actions.length}
+          </Span>
+        </HeaderTitle>
+        <HeaderSubtitle className="h-full text-v3-bg-accent-80">balls</HeaderSubtitle>{' '}
+      </TableHeaderNode>
+    </TableHeaderCell>
   )
 }

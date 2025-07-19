@@ -55,7 +55,10 @@ const CustomTableProvider: FC<PropsWithChildren<{ initialState: TableState<Colum
 }
 
 export const Default: Story = {
-  render: () => (
+  args: {
+    actions: [],
+  },
+  render: ({ actions }) => (
     <CustomTableProvider
       initialState={{
         columns: DEFAULT_HEADERS.map(col => ({
@@ -70,7 +73,7 @@ export const Default: Story = {
         error: null,
       }}
     >
-      <BuilderHeaderRow />
+      <BuilderHeaderRow actions={actions} />
     </CustomTableProvider>
   ),
 }

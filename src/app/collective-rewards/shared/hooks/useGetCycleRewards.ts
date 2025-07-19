@@ -1,4 +1,5 @@
 import { useReadRewardDistributor } from '@/shared/hooks/contracts'
+import { useMemo } from 'react'
 
 export const useGetCycleRewards = () => {
   const {
@@ -13,10 +14,13 @@ export const useGetCycleRewards = () => {
   } = useReadRewardDistributor({ functionName: 'defaultRewardCoinbaseAmount' })
 
   return {
-    data: {
-      rif: rifRewards ?? 0n,
-      rbtc: rbtcRewards ?? 0n,
-    },
+    data: useMemo(
+      () => ({
+        rif: rifRewards ?? 0n,
+        rbtc: rbtcRewards ?? 0n,
+      }),
+      [rifRewards, rbtcRewards],
+    ),
     isLoading: rifRewardsLoading || rbtcRewardsLoading,
     error: rifRewardsError ?? rbtcRewardsError ?? null,
   }
