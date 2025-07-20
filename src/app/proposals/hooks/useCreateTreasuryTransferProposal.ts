@@ -18,7 +18,6 @@ export const useCreateTreasuryTransferProposal = () => {
 
   const onCreateTreasuryTransferProposal = useCallback(
     async (address: Address, amount: string, description: string, tokenAddress: string) => {
-      console.log('🚀 ~ useRemoveBuilderProposal ~ userAddress:', userAddress)
       if (!userAddress) throw new Error('Unknown user address')
       // Check fresh voting power from blockchain
       const canCreate = await checkCanCreateProposal(userAddress)
