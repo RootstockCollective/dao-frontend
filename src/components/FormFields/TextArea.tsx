@@ -32,18 +32,38 @@ export function TextArea<T extends FieldValues>({
   const adjustHeight = useCallback(() => {
     if (!textareaRef.current) return
     const textarea = textareaRef.current
+
+    // Save current scroll position and cursor position
+    const scrollTop = document.documentElement.scrollTop || document.body.scrollTop
+    const cursorPosition = textarea.selectionStart
+
     textarea.style.height = 'auto'
     const lineHeight = parseInt(window.getComputedStyle(textarea).lineHeight)
     const rows = Math.floor(textarea.scrollHeight / lineHeight)
     const clampedRows = Math.max(minRows, Math.min(maxRows, rows))
     textarea.style.height = `${clampedRows * lineHeight}px`
     textarea.style.overflowY = rows > maxRows ? 'auto' : 'hidden'
+
+    // Restore scroll position and cursor
+    window.scrollTo(0, scrollTop)
+    textarea.setSelectionRange(cursorPosition, cursorPosition)
   }, [maxRows, minRows])
 
   useEffect(() => {
     adjustHeight()
-    window.addEventListener('resize', adjustHeight)
-    return () => window.removeEventListener('resize', adjustHeight)
+
+    // Debounce resize handler to prevent excessive calls
+    let resizeTimeout: NodeJS.Timeout
+    const debouncedAdjustHeight = () => {
+      clearTimeout(resizeTimeout)
+      resizeTimeout = setTimeout(adjustHeight, 100)
+    }
+
+    window.addEventListener('resize', debouncedAdjustHeight)
+    return () => {
+      window.removeEventListener('resize', debouncedAdjustHeight)
+      clearTimeout(resizeTimeout)
+    }
   }, [adjustHeight])
 
   const handleInput = (e: React.FormEvent<HTMLTextAreaElement>) => {
