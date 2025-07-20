@@ -8,9 +8,17 @@ interface Props {
   submitForm: () => void
   buttonText: string
   disabled?: boolean
+  nextDisabled?: boolean
+  backDisabled?: boolean
 }
 
-export const Subfooter = ({ submitForm, disabled, buttonText }: Props) => {
+export const Subfooter = ({
+  submitForm,
+  disabled = false,
+  nextDisabled = false,
+  backDisabled = false,
+  buttonText,
+}: Props) => {
   const router = useRouter()
   const { isSidebarOpen } = useLayoutContext()
   const isDesktop = useIsDesktop()
@@ -25,10 +33,10 @@ export const Subfooter = ({ submitForm, disabled, buttonText }: Props) => {
       className="sticky bottom-0 z-40"
     >
       <div className="h-[96px] flex items-center justify-center gap-2 bg-bg-60">
-        <Button disabled={disabled} onClick={router.back} variant="secondary-outline">
+        <Button disabled={backDisabled || disabled} onClick={router.back} variant="secondary-outline">
           Back
         </Button>
-        <Button disabled={disabled} onClick={submitForm}>
+        <Button disabled={nextDisabled || disabled} onClick={submitForm}>
           {buttonText}
         </Button>
       </div>

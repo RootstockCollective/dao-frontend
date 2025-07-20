@@ -11,7 +11,6 @@ import { BaseProposalFields, TokenRadioGroup } from '../components'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useReviewProposal } from '@/app/providers'
 import { ProposalCategory } from '@/shared/types'
-import { showFormErrors } from '../components/showFormErrors'
 import { GrantProposal, GrantProposalSchema } from '../schemas/GrantProposalSchema'
 import { Header } from '@/components/TypographyNew'
 
@@ -19,7 +18,7 @@ export default function GrantsProposalForm() {
   const { record, setRecord } = useReviewProposal()
   const router = useRouter()
 
-  const { handleSubmit, control, setFocus } = useForm<GrantProposal>({
+  const { handleSubmit, control, setFocus, formState } = useForm<GrantProposal>({
     mode: 'onTouched',
     resolver: zodResolver(GrantProposalSchema),
     defaultValues:
@@ -42,8 +41,6 @@ export default function GrantsProposalForm() {
           setRecord({ form: data, category: ProposalCategory.Grants })
           router.push('/proposals/new/review/grants')
         },
-        // Error callback
-        showFormErrors,
       )(),
     // eslint-disable-next-line
     [handleSubmit, router],
@@ -52,9 +49,11 @@ export default function GrantsProposalForm() {
   // inject sticky drawer with submit button to the footer layout
   const { setSubfooter } = useLayoutContext()
   useEffect(() => {
-    setSubfooter(<Subfooter submitForm={onSubmit} buttonText="Review proposal" />)
+    setSubfooter(
+      <Subfooter submitForm={onSubmit} buttonText="Review proposal" nextDisabled={!formState.isValid} />,
+    )
     return () => setSubfooter(null)
-  }, [onSubmit, setSubfooter])
+  }, [onSubmit, setSubfooter, formState.isValid])
 
   // set focus on proposal name field
   // eslint-disable-next-line

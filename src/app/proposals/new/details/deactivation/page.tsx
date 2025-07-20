@@ -11,7 +11,6 @@ import { BaseProposalFields } from '../components/BaseProposalFields'
 import { useReviewProposal } from '@/app/providers'
 import { ProposalCategory } from '@/shared/types'
 import { TextInput } from '@/components/FormFields'
-import { showFormErrors } from '../components/showFormErrors'
 import { DeactivationProposal, DeactivationProposalSchema } from '../schemas/DeactivationProposalSchema'
 import { useBuilderContext } from '@/app/collective-rewards/user'
 import { Header } from '@/components/TypographyNew'
@@ -33,7 +32,7 @@ export default function DeactivationProposalForm() {
     },
   )
 
-  const { handleSubmit, control, setFocus } = useForm<DeactivationProposal>({
+  const { handleSubmit, control, setFocus, formState } = useForm<DeactivationProposal>({
     mode: 'onTouched',
     resolver: zodResolver(updatedFormSchema),
     // use recorded proposal if it is of the same type
@@ -53,15 +52,17 @@ export default function DeactivationProposalForm() {
       handleSubmit(data => {
         setRecord({ form: data, category: ProposalCategory.Deactivation })
         router.push('/proposals/new/review/deactivation')
-      }, showFormErrors)(),
+      })(),
     // eslint-disable-next-line
     [handleSubmit, router],
   )
 
   useEffect(() => {
-    setSubfooter(<Subfooter submitForm={onSubmit} buttonText="Review proposal" />)
+    setSubfooter(
+      <Subfooter submitForm={onSubmit} buttonText="Review proposal" nextDisabled={!formState.isValid} />,
+    )
     return () => setSubfooter(null)
-  }, [onSubmit, setSubfooter])
+  }, [onSubmit, setSubfooter, formState.isValid])
 
   // eslint-disable-next-line
   useEffect(() => setFocus('proposalName'), [])

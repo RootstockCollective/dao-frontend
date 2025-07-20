@@ -11,7 +11,6 @@ import { BaseProposalFields } from '../components/BaseProposalFields'
 import { useReviewProposal } from '@/app/providers'
 import { ProposalCategory } from '@/shared/types'
 import { TextInput } from '@/components/FormFields'
-import { showFormErrors } from '../components/showFormErrors'
 import { ActivationProposal, ActivationProposalSchema } from '../schemas/ActivationProposalSchema'
 import { Header } from '@/components/TypographyNew'
 
@@ -20,7 +19,7 @@ export default function ActivationProposalForm() {
   const { setSubfooter } = useLayoutContext()
   const { record, setRecord } = useReviewProposal()
 
-  const { handleSubmit, control, setFocus } = useForm<ActivationProposal>({
+  const { handleSubmit, control, setFocus, formState } = useForm<ActivationProposal>({
     mode: 'onTouched',
     resolver: zodResolver(ActivationProposalSchema),
     // use recorded proposal if it is of the same type
@@ -41,15 +40,17 @@ export default function ActivationProposalForm() {
       handleSubmit(data => {
         setRecord({ form: data, category: ProposalCategory.Activation })
         router.push('/proposals/new/review/activation')
-      }, showFormErrors)(),
+      })(),
     // eslint-disable-next-line
     [handleSubmit, router],
   )
 
   useEffect(() => {
-    setSubfooter(<Subfooter submitForm={onSubmit} buttonText="Review proposal" />)
+    setSubfooter(
+      <Subfooter submitForm={onSubmit} buttonText="Review proposal" nextDisabled={!formState.isValid} />,
+    )
     return () => setSubfooter(null)
-  }, [onSubmit, setSubfooter])
+  }, [onSubmit, setSubfooter, formState.isValid])
 
   // eslint-disable-next-line
   useEffect(() => setFocus('builderName'), [])
