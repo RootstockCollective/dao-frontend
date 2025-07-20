@@ -34,6 +34,7 @@ export default function DeactivationProposalForm() {
 
   const { handleSubmit, control, setFocus, formState } = useForm<DeactivationProposal>({
     mode: 'onTouched',
+    reValidateMode: 'onChange',
     resolver: zodResolver(updatedFormSchema),
     // use recorded proposal if it is of the same type
     defaultValues:
@@ -62,7 +63,7 @@ export default function DeactivationProposalForm() {
       <Subfooter submitForm={onSubmit} buttonText="Review proposal" nextDisabled={!formState.isValid} />,
     )
     return () => setSubfooter(null)
-  }, [onSubmit, setSubfooter, formState.isValid])
+  }, [formState.isValid, onSubmit, setSubfooter])
 
   // eslint-disable-next-line
   useEffect(() => setFocus('proposalName'), [])

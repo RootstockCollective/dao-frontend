@@ -21,6 +21,7 @@ export default function ActivationProposalForm() {
 
   const { handleSubmit, control, setFocus, formState } = useForm<ActivationProposal>({
     mode: 'onTouched',
+    reValidateMode: 'onChange',
     resolver: zodResolver(ActivationProposalSchema),
     // use recorded proposal if it is of the same type
     defaultValues:
@@ -50,7 +51,7 @@ export default function ActivationProposalForm() {
       <Subfooter submitForm={onSubmit} buttonText="Review proposal" nextDisabled={!formState.isValid} />,
     )
     return () => setSubfooter(null)
-  }, [onSubmit, setSubfooter, formState.isValid])
+  }, [formState.isValid, onSubmit, setSubfooter])
 
   // eslint-disable-next-line
   useEffect(() => setFocus('builderName'), [])

@@ -20,6 +20,7 @@ export default function GrantsProposalForm() {
 
   const { handleSubmit, control, setFocus, formState } = useForm<GrantProposal>({
     mode: 'onTouched',
+    reValidateMode: 'onChange',
     resolver: zodResolver(GrantProposalSchema),
     defaultValues:
       record && record.category === ProposalCategory.Grants
@@ -35,13 +36,10 @@ export default function GrantsProposalForm() {
   })
   const onSubmit = useCallback(
     () =>
-      handleSubmit(
-        // Success callback
-        data => {
-          setRecord({ form: data, category: ProposalCategory.Grants })
-          router.push('/proposals/new/review/grants')
-        },
-      )(),
+      handleSubmit(data => {
+        setRecord({ form: data, category: ProposalCategory.Grants })
+        router.push('/proposals/new/review/grants')
+      })(),
     // eslint-disable-next-line
     [handleSubmit, router],
   )
@@ -53,7 +51,7 @@ export default function GrantsProposalForm() {
       <Subfooter submitForm={onSubmit} buttonText="Review proposal" nextDisabled={!formState.isValid} />,
     )
     return () => setSubfooter(null)
-  }, [onSubmit, setSubfooter, formState.isValid])
+  }, [formState.isValid, onSubmit, setSubfooter])
 
   // set focus on proposal name field
   // eslint-disable-next-line
