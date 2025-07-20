@@ -1,21 +1,22 @@
 'use client'
 
 import { useCallback, useEffect, useState } from 'react'
+import moment from 'moment'
+import { useAccount } from 'wagmi'
 import { useReviewProposal } from '@/app/providers'
 import { useLayoutContext } from '@/components/MainContainer/LayoutProvider'
 import { Subfooter } from '../../components/Subfooter'
 import { ProposalCategory } from '@/shared/types'
 import { Card } from '../components/Card'
 import { formatNumberWithCommas, shortAddress } from '@/lib/utils'
-import { useAccount } from 'wagmi'
-import moment from 'moment'
 import { TokenIcon } from '@/app/proposals/icons/TokenIcon'
 import { PreviewLabel } from '../components/PreviewLabel'
 import { useCreateTreasuryTransferProposal } from '@/app/proposals/hooks/useCreateTreasuryTransferProposal'
 import { tokenContracts } from '@/lib/contracts'
 import { showToast } from '@/shared/notification'
 import { isUserRejectedTxError } from '@/components/ErrorPage'
-import { Header } from '@/components/TypographyNew/Header'
+import { Header, Paragraph } from '@/components/TypographyNew'
+import { CopyButton } from '@/components/CopyButton'
 
 export default function GrantsProposalReview() {
   const { address, isConnected } = useAccount()
@@ -90,9 +91,24 @@ export default function GrantsProposalReview() {
                 </span>
               </Card>
               <Card title="Created on">{moment().format('DD MMMM YYYY')}</Card>
-              <Card title="Proposed by">{shortAddress(address)}</Card>
+              {address && (
+                <Card title="Proposed by">
+                  <CopyButton
+                    className="justify-start w-fit"
+                    copyText={address}
+                    successLabel="Address copied"
+                  >
+                    {shortAddress(address, 5)}
+                  </CopyButton>
+                </Card>
+              )}
               <Card title="Community discussion">
-                <a className="hover:underline truncate block" href={discourseLink} target="_blank">
+                <a
+                  className="hover:underline truncate block"
+                  href={discourseLink}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
                   {discourseLink}
                 </a>
               </Card>
@@ -102,9 +118,9 @@ export default function GrantsProposalReview() {
             </Header>
             <div className="font-rootstock-sans text-text-100 leading-normal">
               {description.split('\n').map((paragraph, i) => (
-                <p className="mb-8" key={i}>
+                <Paragraph className="mb-8" key={i}>
                   {paragraph}
-                </p>
+                </Paragraph>
               ))}
             </div>
           </div>

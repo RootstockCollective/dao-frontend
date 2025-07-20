@@ -1,23 +1,22 @@
 'use client'
 
 import { useCallback, useEffect, useState } from 'react'
+import moment from 'moment'
+import { useAccount } from 'wagmi'
 import { useReviewProposal } from '@/app/providers'
 import { useLayoutContext } from '@/components/MainContainer/LayoutProvider'
 import { Subfooter } from '../../components/Subfooter'
 import { ProposalCategory } from '@/shared/types'
 import { Card } from '../components/Card'
 import { shortAddress } from '@/lib/utils'
-import { useAccount } from 'wagmi'
-import moment from 'moment'
 import { PreviewLabel } from '../components/PreviewLabel'
-import { useRouter } from 'next/navigation'
 import { showToast } from '@/shared/notification'
 import { isUserRejectedTxError } from '@/components/ErrorPage'
 import { useRemoveBuilderProposal } from '@/app/proposals/hooks/useRemoveBuilderProposal'
-import { Header } from '@/components/TypographyNew'
+import { Header, Paragraph } from '@/components/TypographyNew'
+import { CopyButton } from '@/components/CopyButton'
 
 export default function DeactivationProposalReview() {
-  const router = useRouter()
   const { address, isConnected } = useAccount()
   const { record, waitForTxInBg } = useReviewProposal()
   const { onRemoveBuilderProposal } = useRemoveBuilderProposal()
@@ -45,7 +44,7 @@ export default function DeactivationProposalReview() {
       setLoading(false)
     }
     // eslint-disable-next-line
-  }, [record, router, onRemoveBuilderProposal])
+  }, [record, onRemoveBuilderProposal])
 
   // inject sticky drawer with submit button to the footer layout
   const { setSubfooter } = useLayoutContext()
@@ -76,9 +75,24 @@ export default function DeactivationProposalReview() {
               <Card title="Proposal type">Builder deactivation</Card>
               <Card title="Created on">{moment().format('DD MMMM YYYY')}</Card>
               <Card title="Builder address">{shortAddress(builderAddress)}</Card>
-              <Card title="Proposed by">{shortAddress(address)}</Card>
+              {address && (
+                <Card title="Proposed by">
+                  <CopyButton
+                    className="justify-start w-fit"
+                    copyText={address}
+                    successLabel="Address copied"
+                  >
+                    {shortAddress(address, 5)}
+                  </CopyButton>
+                </Card>
+              )}
               <Card title="Community discussion">
-                <a className="hover:underline truncate block" href={discourseLink} target="_blank">
+                <a
+                  className="hover:underline truncate block"
+                  href={discourseLink}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
                   {discourseLink}
                 </a>
               </Card>
@@ -88,9 +102,9 @@ export default function DeactivationProposalReview() {
             </Header>
             <div className="font-rootstock-sans text-text-100 leading-normal">
               {description.split('\n').map((paragraph, i) => (
-                <p className="mb-8" key={i}>
+                <Paragraph className="mb-8" key={i}>
                   {paragraph}
-                </p>
+                </Paragraph>
               ))}
             </div>
           </div>
