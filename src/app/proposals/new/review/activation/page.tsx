@@ -119,7 +119,15 @@ export default function ActivationProposalReview() {
           </Header>
           <div className="grid grid-cols-2 gap-y-4">
             <Card title="Type">Builder approval</Card>
-            <Card title="Address to whitelist">{shortAddress(builderAddress)}</Card>
+            <Card title="Address to whitelist">
+              <CopyButton
+                className="justify-start w-fit"
+                copyText={builderAddress}
+                successLabel="Address copied"
+              >
+                {shortAddress(builderAddress, 5)}
+              </CopyButton>
+            </Card>
           </div>
         </div>
       </div>
