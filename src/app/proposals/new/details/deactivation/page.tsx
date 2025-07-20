@@ -75,7 +75,12 @@ export default function DeactivationProposalForm() {
             <Header caps variant="h2" className="leading-loose tracking-wide">
               Proposal Action
             </Header>
-            <TextInput control={control} name="builderAddress" label="Builder address to de-whitelist" />
+            <TextInput
+              control={control}
+              name="builderAddress"
+              label="Builder address to de-whitelist"
+              maxLength={42}
+            />
           </div>
         </div>
       </form>

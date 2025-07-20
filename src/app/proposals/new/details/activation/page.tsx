@@ -72,7 +72,12 @@ export default function ActivationProposalForm() {
             <Header caps variant="h2" className="leading-loose tracking-wide">
               Proposal Action
             </Header>
-            <TextInput control={control} name="builderAddress" label="Builder address to whitelist" />
+            <TextInput
+              control={control}
+              name="builderAddress"
+              label="Builder address to whitelist"
+              maxLength={42}
+            />
           </div>
         </div>
       </form>

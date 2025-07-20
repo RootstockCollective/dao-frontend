@@ -1,5 +1,5 @@
 import { z } from 'zod'
-import { isAddress } from 'viem'
+import { getAddress, isAddress } from 'viem'
 import { BaseProposalSchema } from './BaseProposalSchema'
 import { TokenFieldsSchema } from './TokenSchema'
 import { GRANT_TOKEN_LIMITS } from '@/lib/constants'
@@ -7,7 +7,11 @@ import { GRANT_TOKEN_LIMITS } from '@/lib/constants'
 // Grant proposal form schema
 export const GrantProposalSchema = BaseProposalSchema.merge(TokenFieldsSchema)
   .extend({
-    targetAddress: z.string().refine(val => isAddress(val), { message: 'Invalid Rootstock address' }),
+    targetAddress: z
+      .string()
+      .trim()
+      .refine(value => isAddress(value, { strict: false }), 'Invalid Rootstock address')
+      .transform(value => getAddress(value)),
   })
   .superRefine((data, ctx) => {
     const num = Number(data.transferAmount)

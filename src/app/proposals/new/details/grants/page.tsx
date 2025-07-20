@@ -73,6 +73,7 @@ export default function GrantsProposalForm() {
             control={control}
             label="Address to transfer funds to"
             data-testid="InputAddress"
+            maxLength={42}
           />
           <div className="flex items-center justify-start gap-6">
             <div className="basis-1/2">
