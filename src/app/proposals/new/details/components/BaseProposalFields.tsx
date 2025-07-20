@@ -2,7 +2,7 @@
 
 import { TextInput, TextArea } from '@/components/FormFields'
 import { FieldValues, Control, Path } from 'react-hook-form'
-import { BaseProposalFormData, PROPOSAL_LIMITS } from '../schemas/BaseProposalSchema'
+import { BaseProposalFormData, BASE_PROPOSAL_LIMITS } from '../schemas/BaseProposalSchema'
 
 interface BaseProposalFieldsProps<T extends BaseProposalFormData & FieldValues> {
   control: Control<T>
@@ -19,21 +19,21 @@ export function BaseProposalFields<T extends BaseProposalFormData & FieldValues>
         label="Proposal name"
         data-testid="InputName"
         autoComplete="off"
-        maxLength={PROPOSAL_LIMITS.proposalName.max}
+        maxLength={BASE_PROPOSAL_LIMITS.proposalName.max}
       />
       <TextInput
         name={'discourseLink' as Path<T>}
         control={control}
         label="Discourse link"
         data-testid="InputLink"
-        maxLength={PROPOSAL_LIMITS.discourseLink.max}
+        maxLength={BASE_PROPOSAL_LIMITS.discourseLink.max}
       />
       <TextArea
         name={'description' as Path<T>}
         control={control}
         label="Short description"
         data-testid="InputDescription"
-        maxLength={PROPOSAL_LIMITS.description.max}
+        maxLength={BASE_PROPOSAL_LIMITS.description.max}
       />
     </div>
   )

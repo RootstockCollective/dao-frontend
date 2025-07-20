@@ -12,7 +12,9 @@ import { zodResolver } from '@hookform/resolvers/zod'
 import { useReviewProposal } from '@/app/providers'
 import { ProposalCategory } from '@/shared/types'
 import { GrantProposal, GrantProposalSchema } from '../schemas/GrantProposalSchema'
+import { TOKEN_FIELD_LIMITS } from '../schemas/TokenSchema'
 import { Header } from '@/components/TypographyNew'
+import { BASE_PROPOSAL_LIMITS } from '../schemas/BaseProposalSchema'
 
 export default function GrantsProposalForm() {
   const { record, setRecord } = useReviewProposal()
@@ -70,7 +72,7 @@ export default function GrantsProposalForm() {
             control={control}
             label="Address to transfer funds to"
             data-testid="InputAddress"
-            maxLength={42}
+            maxLength={BASE_PROPOSAL_LIMITS.address.max}
           />
           <div className="flex items-center justify-start gap-6">
             <div className="basis-1/2">
@@ -79,6 +81,7 @@ export default function GrantsProposalForm() {
                 control={control}
                 label="Amount to be transferred"
                 data-testid="InputAmount"
+                maxLength={TOKEN_FIELD_LIMITS.transferAmount.maxLength}
               />
             </div>
             <TokenRadioGroup name="token" control={control} />

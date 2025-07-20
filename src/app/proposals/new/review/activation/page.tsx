@@ -17,7 +17,7 @@ import { DISPLAY_NAME_SEPARATOR } from '@/app/proposals/shared/utils'
 import { Header } from '@/components/TypographyNew'
 
 export default function ActivationProposalReview() {
-  const { address } = useAccount()
+  const { address, isConnected } = useAccount()
   const { record, waitForTxInBg } = useReviewProposal()
   const { onCreateBuilderWhitelistProposal } = useCreateBuilderWhitelistProposal()
   const [loading, setLoading] = useState(false)
@@ -33,7 +33,7 @@ export default function ActivationProposalReview() {
       const onComplete = () => setLoading(false)
       waitForTxInBg(txHash, proposalName, ProposalCategory.Activation, onComplete)
     } catch (error) {
-      if (isUserRejectedTxError(error)) return
+      if (isUserRejectedTxError(error)) return setLoading(false)
       showToast({
         title: 'Proposal error',
         severity: 'error',
@@ -44,14 +44,16 @@ export default function ActivationProposalReview() {
       setLoading(false)
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [record])
+  }, [record, onCreateBuilderWhitelistProposal])
 
   // inject sticky drawer with submit button to the footer layout
   const { setSubfooter } = useLayoutContext()
   useEffect(() => {
-    setSubfooter(<Subfooter submitForm={onSubmit} buttonText="Publish proposal" disabled={loading} />)
+    setSubfooter(
+      <Subfooter submitForm={onSubmit} buttonText="Publish proposal" disabled={loading || !isConnected} />,
+    )
     return () => setSubfooter(null)
-  }, [loading, onSubmit, setSubfooter])
+  }, [isConnected, loading, onSubmit, setSubfooter])
 
   // Verify that the context has passed correct proposal type
   if (!record?.form || record?.category !== ProposalCategory.Activation) {

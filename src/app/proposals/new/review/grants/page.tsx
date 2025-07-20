@@ -18,7 +18,7 @@ import { isUserRejectedTxError } from '@/components/ErrorPage'
 import { Header } from '@/components/TypographyNew/Header'
 
 export default function GrantsProposalReview() {
-  const { address } = useAccount()
+  const { address, isConnected } = useAccount()
   const { record, waitForTxInBg } = useReviewProposal()
   const { onCreateTreasuryTransferProposal } = useCreateTreasuryTransferProposal()
   const [loading, setLoading] = useState(false)
@@ -41,7 +41,7 @@ export default function GrantsProposalReview() {
       const onComplete = () => setLoading(false)
       waitForTxInBg(txHash, proposalName, ProposalCategory.Grants, onComplete)
     } catch (error) {
-      if (isUserRejectedTxError(error)) return
+      if (isUserRejectedTxError(error)) return setLoading(false)
       showToast({
         title: 'Proposal error',
         severity: 'error',
@@ -52,14 +52,16 @@ export default function GrantsProposalReview() {
       setLoading(false)
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [record])
+  }, [record, onCreateTreasuryTransferProposal])
 
   // inject sticky drawer with submit button to the footer layout
   const { setSubfooter } = useLayoutContext()
   useEffect(() => {
-    setSubfooter(<Subfooter submitForm={onSubmit} buttonText="Publish proposal" disabled={loading} />)
+    setSubfooter(
+      <Subfooter submitForm={onSubmit} buttonText="Publish proposal" disabled={loading || !isConnected} />,
+    )
     return () => setSubfooter(null)
-  }, [loading, onSubmit, setSubfooter])
+  }, [loading, onSubmit, setSubfooter, isConnected])
 
   // Verify that the context has passed correct proposal type
   if (!record?.form || record?.category !== ProposalCategory.Grants) {

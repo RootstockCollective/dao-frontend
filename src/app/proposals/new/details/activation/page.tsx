@@ -11,7 +11,12 @@ import { BaseProposalFields } from '../components/BaseProposalFields'
 import { useReviewProposal } from '@/app/providers'
 import { ProposalCategory } from '@/shared/types'
 import { TextInput } from '@/components/FormFields'
-import { ActivationProposal, ActivationProposalSchema } from '../schemas/ActivationProposalSchema'
+import {
+  ACTIVATION_PROPOSAL_LIMITS,
+  ActivationProposal,
+  ActivationProposalSchema,
+} from '../schemas/ActivationProposalSchema'
+import { BASE_PROPOSAL_LIMITS } from '../schemas/BaseProposalSchema'
 import { Header } from '@/components/TypographyNew'
 
 export default function ActivationProposalForm() {
@@ -67,6 +72,7 @@ export default function ActivationProposalForm() {
               label="Builder name"
               data-testid="BuilderName"
               autoComplete="off"
+              maxLength={ACTIVATION_PROPOSAL_LIMITS.builderName.max}
             />
             <BaseProposalFields control={control} />
           </div>
@@ -78,7 +84,7 @@ export default function ActivationProposalForm() {
               control={control}
               name="builderAddress"
               label="Builder address to whitelist"
-              maxLength={42}
+              maxLength={BASE_PROPOSAL_LIMITS.address.max}
             />
           </div>
         </div>

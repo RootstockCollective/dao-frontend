@@ -1,3 +1,4 @@
+import { useCallback } from 'react'
 import { AddressAlreadyWhitelistedError, NoVotingPowerError } from '@/app/proposals/shared/errors'
 import { config } from '@/config'
 import { GovernorAbi } from '@/lib/abis/Governor'
@@ -12,34 +13,37 @@ export const useCreateBuilderWhitelistProposal = () => {
   const { address: userAddress } = useAccount()
   const { writeContractAsync: propose, isPending: isPublishing, error: transactionError } = useWriteContract()
 
-  const onCreateBuilderWhitelistProposal = async (builderAddress: Address, description: string) => {
-    if (!userAddress) throw new Error('Unknown user address')
-    const canCreateProposal = await checkCanCreateProposal(userAddress)
-    if (!canCreateProposal) {
-      throw NoVotingPowerError
-    }
-    const builderGauge = await readContract(config, {
-      address: BuilderRegistryAddress,
-      abi: BuilderRegistryAbi,
-      functionName: 'builderToGauge',
-      args: [builderAddress],
-    })
-    if (builderGauge !== zeroAddress) {
-      // TODO: maybe we can use a different error here
-      throw AddressAlreadyWhitelistedError
-    }
-    const calldata = encodeWhitelistBuilderCalldata(builderAddress)
-    const relayCallData = encodeGovernorRelayCallData(BuilderRegistryAddress, calldata)
+  const onCreateBuilderWhitelistProposal = useCallback(
+    async (builderAddress: Address, description: string) => {
+      if (!userAddress) throw new Error('Unknown user address')
+      const canCreateProposal = await checkCanCreateProposal(userAddress)
+      if (!canCreateProposal) {
+        throw NoVotingPowerError
+      }
+      const builderGauge = await readContract(config, {
+        address: BuilderRegistryAddress,
+        abi: BuilderRegistryAbi,
+        functionName: 'builderToGauge',
+        args: [builderAddress],
+      })
+      if (builderGauge !== zeroAddress) {
+        // TODO: maybe we can use a different error here
+        throw AddressAlreadyWhitelistedError
+      }
+      const calldata = encodeWhitelistBuilderCalldata(builderAddress)
+      const relayCallData = encodeGovernorRelayCallData(BuilderRegistryAddress, calldata)
 
-    const { proposal } = createProposal([GovernorAddress], [0n], [relayCallData], description)
+      const { proposal } = createProposal([GovernorAddress], [0n], [relayCallData], description)
 
-    return await propose({
-      abi: GovernorAbi,
-      address: GovernorAddress,
-      functionName: 'propose',
-      args: proposal,
-    })
-  }
+      return await propose({
+        abi: GovernorAbi,
+        address: GovernorAddress,
+        functionName: 'propose',
+        args: proposal,
+      })
+    },
+    [propose, userAddress],
+  )
   return { onCreateBuilderWhitelistProposal, isPublishing, transactionError }
 }
 

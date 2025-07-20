@@ -17,7 +17,7 @@ export const GrantProposalSchema = BaseProposalSchema.merge(TokenFieldsSchema)
     const num = Number(data.transferAmount)
     const token = data.token
     const { maxAmount, minAmount } = GRANT_TOKEN_LIMITS
-    if (num <= minAmount) {
+    if (num < minAmount) {
       ctx.addIssue({
         path: ['transferAmount'],
         message: `Grant amount is below minimum for ${token} (${minAmount})`,
@@ -25,7 +25,7 @@ export const GrantProposalSchema = BaseProposalSchema.merge(TokenFieldsSchema)
       })
     }
 
-    if (num >= maxAmount) {
+    if (num > maxAmount) {
       ctx.addIssue({
         path: ['transferAmount'],
         message: `Grant amount is above maximum for ${token} (${maxAmount})`,

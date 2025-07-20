@@ -1,3 +1,4 @@
+import { useCallback, useMemo } from 'react'
 import { checkCanCreateProposal, createProposal } from '@/app/proposals/hooks/proposalUtils'
 import { NoVotingPowerError } from '@/app/proposals/shared/errors'
 import { DAOTreasuryAbi } from '@/lib/abis/DAOTreasuryAbi'
@@ -15,32 +16,34 @@ export const useCreateTreasuryTransferProposal = () => {
   const { address: userAddress } = useAccount()
   const { writeContractAsync: propose, isPending: isPublishing } = useWriteContract()
 
-  const onCreateTreasuryTransferProposal = async (
-    address: Address,
-    amount: string,
-    description: string,
-    tokenAddress: string,
-  ) => {
-    if (!userAddress) throw new Error('Unknown user address')
-    // Check fresh voting power from blockchain
-    const canCreate = await checkCanCreateProposal(userAddress)
-    if (!canCreate) {
-      throw NoVotingPowerError
-    }
-    let calldata
-    if (tokenAddress === zeroAddress) {
-      calldata = encodeTreasuryTransfer(address, amount)
-    } else {
-      calldata = encodeTreasuryERC20Transfer(address, amount)
-    }
-    const { proposal } = createProposal([TreasuryAddress], [0n], [calldata], description)
-    return propose({
-      ...DEFAULT_DAO_CONFIG,
-      functionName: 'propose',
-      args: proposal,
-    })
-  }
-  return { onCreateTreasuryTransferProposal, isPublishing }
+  const onCreateTreasuryTransferProposal = useCallback(
+    async (address: Address, amount: string, description: string, tokenAddress: string) => {
+      console.log('🚀 ~ useRemoveBuilderProposal ~ userAddress:', userAddress)
+      if (!userAddress) throw new Error('Unknown user address')
+      // Check fresh voting power from blockchain
+      const canCreate = await checkCanCreateProposal(userAddress)
+      if (!canCreate) {
+        throw NoVotingPowerError
+      }
+      let calldata
+      if (tokenAddress === zeroAddress) {
+        calldata = encodeTreasuryTransfer(address, amount)
+      } else {
+        calldata = encodeTreasuryERC20Transfer(address, amount)
+      }
+      const { proposal } = createProposal([TreasuryAddress], [0n], [calldata], description)
+      return propose({
+        ...DEFAULT_DAO_CONFIG,
+        functionName: 'propose',
+        args: proposal,
+      })
+    },
+    [propose, userAddress],
+  )
+  return useMemo(
+    () => ({ onCreateTreasuryTransferProposal, isPublishing }),
+    [isPublishing, onCreateTreasuryTransferProposal],
+  )
 }
 
 export const encodeTreasuryERC20Transfer = (address: Address, amountToTransfer: string) => {

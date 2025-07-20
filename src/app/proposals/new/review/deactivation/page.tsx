@@ -18,7 +18,7 @@ import { Header } from '@/components/TypographyNew'
 
 export default function DeactivationProposalReview() {
   const router = useRouter()
-  const { address } = useAccount()
+  const { address, isConnected } = useAccount()
   const { record, waitForTxInBg } = useReviewProposal()
   const { onRemoveBuilderProposal } = useRemoveBuilderProposal()
   const [loading, setLoading] = useState(false)
@@ -34,7 +34,7 @@ export default function DeactivationProposalReview() {
       const onComplete = () => setLoading(false)
       waitForTxInBg(txHash, proposalName, ProposalCategory.Deactivation, onComplete)
     } catch (error) {
-      if (isUserRejectedTxError(error)) return
+      if (isUserRejectedTxError(error)) return setLoading(false)
       showToast({
         title: 'Proposal error',
         severity: 'error',
@@ -45,14 +45,16 @@ export default function DeactivationProposalReview() {
       setLoading(false)
     }
     // eslint-disable-next-line
-  }, [record, router])
+  }, [record, router, onRemoveBuilderProposal])
 
   // inject sticky drawer with submit button to the footer layout
   const { setSubfooter } = useLayoutContext()
   useEffect(() => {
-    setSubfooter(<Subfooter submitForm={onSubmit} buttonText="Publish proposal" disabled={loading} />)
+    setSubfooter(
+      <Subfooter submitForm={onSubmit} buttonText="Publish proposal" disabled={loading || !isConnected} />,
+    )
     return () => setSubfooter(null)
-  }, [onSubmit, setSubfooter, loading])
+  }, [onSubmit, setSubfooter, loading, isConnected])
 
   // Verify that the context was passed the correct proposal type
   if (!record?.form || record?.category !== ProposalCategory.Deactivation) {

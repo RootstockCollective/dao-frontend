@@ -14,6 +14,7 @@ import { TextInput } from '@/components/FormFields'
 import { DeactivationProposal, DeactivationProposalSchema } from '../schemas/DeactivationProposalSchema'
 import { useBuilderContext } from '@/app/collective-rewards/user'
 import { Header } from '@/components/TypographyNew'
+import { BASE_PROPOSAL_LIMITS } from '../schemas/BaseProposalSchema'
 
 export default function DeactivationProposalForm() {
   const router = useRouter()
@@ -81,7 +82,7 @@ export default function DeactivationProposalForm() {
               control={control}
               name="builderAddress"
               label="Builder address to de-whitelist"
-              maxLength={42}
+              maxLength={BASE_PROPOSAL_LIMITS.address.max}
             />
           </div>
         </div>
