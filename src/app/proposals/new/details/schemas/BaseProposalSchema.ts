@@ -3,15 +3,23 @@ import { currentLinks } from '@/lib/links'
 
 const discourseLink = new URL(currentLinks.forum)
 
+// Constants for field limits
+export const PROPOSAL_LIMITS = {
+  proposalName: { min: 5, max: 100 },
+  description: { min: 10, max: 3000 },
+  discourseLink: { max: 500 }, // Reasonable limit for URLs
+} as const
+
 export const BaseProposalSchema = z.object({
   proposalName: z
     .string()
     .trim()
-    .min(5, { message: 'Proposal name must be at least 5 characters' })
-    .max(100, { message: 'Proposal name must be at most 100 characters' }),
+    .min(PROPOSAL_LIMITS.proposalName.min, { message: 'Proposal name must be at least 5 characters' })
+    .max(PROPOSAL_LIMITS.proposalName.max, { message: 'Proposal name must be at most 100 characters' }),
   discourseLink: z
     .string()
     .trim()
+    .max(PROPOSAL_LIMITS.discourseLink.max, { message: 'Discourse link is too long (max 500 characters)' })
     .url({ message: 'Discourse link must be a valid URL' })
     .refine(
       url => {
@@ -31,8 +39,8 @@ export const BaseProposalSchema = z.object({
   description: z
     .string()
     .trim()
-    .min(10, { message: 'Description must be at least 10 characters' })
-    .max(3000, { message: 'Description must be at most 3000 characters' }),
+    .min(PROPOSAL_LIMITS.description.min, { message: 'Description must be at least 10 characters' })
+    .max(PROPOSAL_LIMITS.description.max, { message: 'Description must be at most 3000 characters' }),
 })
 
 export type BaseProposalFormData = z.infer<typeof BaseProposalSchema>
