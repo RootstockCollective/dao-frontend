@@ -86,7 +86,7 @@ export default function ActivationProposalReview() {
                     copyText={address}
                     successLabel="Address copied"
                   >
-                    {shortAddress(address, 5)}
+                    {shortAddress(address)}
                   </CopyButton>
                 </Card>
               )}
@@ -125,7 +125,7 @@ export default function ActivationProposalReview() {
                 copyText={builderAddress}
                 successLabel="Address copied"
               >
-                {shortAddress(builderAddress, 5)}
+                {shortAddress(builderAddress)}
               </CopyButton>
             </Card>
           </div>

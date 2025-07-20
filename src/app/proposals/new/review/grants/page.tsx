@@ -98,7 +98,7 @@ export default function GrantsProposalReview() {
                     copyText={address}
                     successLabel="Address copied"
                   >
-                    {shortAddress(address, 5)}
+                    {shortAddress(address)}
                   </CopyButton>
                 </Card>
               )}
@@ -131,7 +131,15 @@ export default function GrantsProposalReview() {
           </Header>
           <div className="grid grid-cols-2 gap-y-4">
             <Card title="Type">Transfer</Card>
-            <Card title="To address">{shortAddress(targetAddress)}</Card>
+            <Card title="To address">
+              <CopyButton
+                className="justify-start w-fit"
+                copyText={targetAddress}
+                successLabel="Address copied"
+              >
+                {shortAddress(targetAddress)}
+              </CopyButton>
+            </Card>
             <Card title="Amount">
               <span className="mr-2">{tokenAmount}</span>
               <span className="whitespace-nowrap">
