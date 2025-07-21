@@ -11,6 +11,7 @@ export enum TokenSymbol {
   RIF = 'RIF',
   TRIF = 'tRIF',
   STRIF = 'stRIF',
+  USDRIF = 'USDRIF',
   TRBTC = 'TRBTC',
   RBTC = 'RBTC',
 }
@@ -24,6 +25,8 @@ export const getIconSource = (symbol: string | undefined): string | null => {
     case 'TRIF':
     case 'STRIF':
       return '/images/rif-logo.png'
+    case 'USDRIF':
+      return '/images/usdrif-logo.png'
     case 'RBTC':
     case 'TRBTC':
       return '/images/rbtc-icon.svg'

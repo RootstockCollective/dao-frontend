@@ -1,41 +1,17 @@
-import { RenderTokenPrice } from '@/app/user/Balances/RenderTokenPrice'
-import { RenderTokenSymbol } from '@/app/user/Balances/RenderTokenSymbol'
-import { RenderTotalBalance } from '@/app/user/Balances/RenderTotalBalance'
-import { StakeRIFCell } from '@/app/user/Balances/StakeRIFCell'
-import { UnStakeRIFCell } from '@/app/user/Balances/UnStakeRIFCell'
+import { BalanceInfoForUser } from '@/app/user/Balances/BalanceInfoForUser'
 import { StakingFlow } from '@/app/user/Stake'
 import { UnstakeModal } from '@/app/user/Unstake'
-import { SectionHeader } from '@/components/SectionHeader'
-import { Table } from '@/components/Table'
-import { ModalReturn, useModal } from '@/shared/hooks/useModal'
+import { useModal } from '@/shared/hooks/useModal'
 import { useEffect, useState } from 'react'
 import { useSearchParams } from 'next/navigation'
-
-const makeData = (stakeModal: ModalReturn, unstakeModal: ModalReturn) => [
-  {
-    token: 'Rootstock Infrastructure Framework',
-    symbol: <RenderTokenSymbol symbol="RIF" />,
-    'Token Price': <RenderTokenPrice symbol="RIF" />,
-    'Total Balance': <RenderTotalBalance symbol="RIF" />,
-    actions: <StakeRIFCell stakeModal={stakeModal} />,
-  },
-  {
-    token: 'Staked Rootstock Infrastructure Framework',
-    symbol: <RenderTokenSymbol symbol="stRIF" />,
-    'Token Price': <RenderTokenPrice symbol="stRIF" />,
-    'Total Balance': <RenderTotalBalance symbol="stRIF" />,
-    actions: <UnStakeRIFCell unstakeModal={unstakeModal} />,
-  },
-  {
-    token: 'Rootstock Bitcoin',
-    symbol: <RenderTokenSymbol symbol="RBTC" />,
-    'Token Price': <RenderTokenPrice symbol="RBTC" />,
-    'Total Balance': <RenderTotalBalance symbol="RBTC" />,
-    actions: '',
-  },
-]
+import { SectionContainer } from '@/app/communities/components/SectionContainer'
+import { useBalancesContext } from '@/app/user/Balances/context/BalancesContext'
+import { useAccount } from 'wagmi'
+import { Button } from '@/components/ButtonNew'
+import { MoneyIconKoto } from '@/components/Icons'
 
 export const BalancesSection = () => {
+  const isUserBuilder = false // @TODO
   const stakeModal = useModal()
   const unstakeModal = useModal()
   const searchParams = useSearchParams()
@@ -49,15 +25,68 @@ export const BalancesSection = () => {
     }
   }, [action, hasOpenedStakeModal, stakeModal])
 
+  const balancesText = isUserBuilder ? 'MY ACTIVITY & BALANCES' : 'MY BALANCES'
   return (
     <div className="mb-[32px]">
-      <SectionHeader
-        name="Balances"
-        description="Your tokens that can be used in the Collective are shown here together with summary total balances with the option to Stake your RIF."
-      />
-      {stakeModal.isModalOpened && <StakingFlow onCloseModal={stakeModal.closeModal} />}
-      {unstakeModal.isModalOpened && <UnstakeModal onCloseModal={unstakeModal.closeModal} />}
-      <Table data={makeData(stakeModal, unstakeModal)} className="overflow-visible" />
+      <SectionContainer title={balancesText}>
+        {isUserBuilder && (
+          <p>
+            Placehloder for TOK {/* @TODO */} <hr />
+          </p>
+        )}
+        <div className="flex flex-row justify-between mb-6">
+          <div className="flex flex-col gap-4">
+            <BalanceInfoForUser symbol="RIF" />
+            <StakeButton onClick={stakeModal.openModal} />
+          </div>
+          <div className="flex flex-col gap-4">
+            <BalanceInfoForUser symbol="stRIF" />
+            <UnstakeButton onClick={unstakeModal.openModal} />
+          </div>
+          <BalanceInfoForUser symbol="USDRIF" />
+          <BalanceInfoForUser symbol="RBTC" />
+        </div>
+        <div>
+          {stakeModal.isModalOpened && <StakingFlow onCloseModal={stakeModal.closeModal} />}
+          {unstakeModal.isModalOpened && <UnstakeModal onCloseModal={unstakeModal.closeModal} />}
+        </div>
+      </SectionContainer>
     </div>
+  )
+}
+
+const StakeButton = ({ onClick }: { onClick: () => void }) => {
+  const { isConnected } = useAccount()
+  const { balances } = useBalancesContext()
+  const { balance } = balances['RIF']
+  const hasEnoughBalance = Number(balance) > 0
+  return (
+    <Button
+      onClick={hasEnoughBalance ? onClick : undefined}
+      disabled={!hasEnoughBalance}
+      data-testid="StakeRIF"
+      variant="secondary-outline"
+    >
+      Stake RIF{/* TODO dynamic symbol here */}
+    </Button>
+  )
+}
+
+const UnstakeButton = ({ onClick }: { onClick: () => void }) => {
+  const { isConnected } = useAccount()
+  const { balances } = useBalancesContext()
+  const { balance } = balances['stRIF']
+  const hasEnoughBalance = Number(balance) > 0
+  return (
+    <Button
+      onClick={hasEnoughBalance ? onClick : undefined}
+      disabled={!hasEnoughBalance}
+      data-testid="UnstakeRIF"
+      className="flex flex-row gap-2 pl-0"
+      variant="transparent"
+    >
+      <span>Unstake stRIF</span>
+      <MoneyIconKoto />
+    </Button>
   )
 }

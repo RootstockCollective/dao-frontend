@@ -9,6 +9,7 @@ export const BUILD_ID = process.env.NEXT_PUBLIC_BUILD_ID as string
 
 export const RIF_ADDRESS = process.env.NEXT_PUBLIC_RIF_ADDRESS as Address
 export const STRIF_ADDRESS = process.env.NEXT_PUBLIC_STRIF_ADDRESS as Address
+export const USDRIF_ADDRESS = process.env.NEXT_PUBLIC_USDRIF_ADDRESS as Address
 export const GOVERNOR_ADDRESS = process.env.NEXT_PUBLIC_GOVERNOR_ADDRESS as Address
 // NFTs
 export const EA_NFT_ADDRESS = process.env.NEXT_PUBLIC_EA_NFT_ADDRESS?.toLowerCase() as Address
@@ -38,6 +39,7 @@ export const RIF = 'RIF'
 export const USD = 'USD'
 export const RBTC = 'RBTC'
 export const stRIF = 'stRIF'
+export const USDRIF = 'USDRIF'
 export const USD_SYMBOL = '$'
 
 export const GRANT_TOKEN_LIMITS = {
