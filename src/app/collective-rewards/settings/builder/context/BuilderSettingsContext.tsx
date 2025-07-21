@@ -1,3 +1,5 @@
+'use client'
+
 import {
   SetBackerRewardsForBuilder,
   useSetBackerRewardsForBuilder,
@@ -66,4 +68,16 @@ export const BuilderSettingsProvider: FC<{ children: ReactNode }> = ({ children 
   }
 
   return <BuilderSettingsContext.Provider value={contextValue}>{children}</BuilderSettingsContext.Provider>
+}
+
+export const withBuilderSettingsProvider = <P extends object>(Component: FC<P>) => {
+  const WrappedComponent = (props: P) => {
+    return (
+      <BuilderSettingsProvider>
+        <Component {...props} />
+      </BuilderSettingsProvider>
+    )
+  }
+  WrappedComponent.displayName = `withBuilderSettingsProvider(${Component.displayName || Component.name || 'Component'})`
+  return WrappedComponent
 }

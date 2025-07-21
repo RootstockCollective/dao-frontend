@@ -2,7 +2,7 @@ import { useBuilderContext } from '@/app/collective-rewards/user'
 import { COINBASE_ADDRESS } from '@/lib/constants'
 import { useReadBackersManager, useReadGauges } from '@/shared/hooks/contracts'
 import { useMemo } from 'react'
-import { Address } from 'viem'
+import { Address, zeroAddress } from 'viem'
 
 export const useIsBacker = (address: Address) => {
   const {
@@ -27,11 +27,16 @@ export const useIsBacker = (address: Address) => {
     data: backerRewardPerTokenPaidResults,
     isLoading: backerRewardPerTokenPaidLoading,
     error: backerRewardPerTokenPaidError,
-  } = useReadGauges({
-    addresses: gauges,
-    functionName: 'backerRewardPerTokenPaid',
-    args: [COINBASE_ADDRESS, address],
-  })
+  } = useReadGauges(
+    {
+      addresses: gauges,
+      functionName: 'backerRewardPerTokenPaid',
+      args: [COINBASE_ADDRESS, address],
+    },
+    {
+      enabled: !!address && address !== zeroAddress && !!gauges.length,
+    },
+  )
 
   const data = useMemo<boolean>(() => {
     if (backerTotalAllocation && backerTotalAllocation > 0n) return true
