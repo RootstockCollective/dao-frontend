@@ -9,6 +9,7 @@ import { ContainerDesktop } from './ContainerDesktop'
 import ContainerMobile from './ContainerMobile'
 import { LayoutProvider } from './LayoutProvider'
 import { ToastContainer } from 'react-toastify'
+import { StepperProvider } from '@/app/proposals/components/stepper/StepperProvider'
 
 export const MainContainer: FC<PropsWithChildren> = ({ children }) => {
   const isDesktop = useIsDesktop()
@@ -19,16 +20,18 @@ export const MainContainer: FC<PropsWithChildren> = ({ children }) => {
     <DelayedRender>
       <LayoutProvider>
         <ToastContainer />
-        {shouldDisplayContent && (
-          <>
-            <Scroll />
-            {isDesktop ? (
-              <ContainerDesktop>{children}</ContainerDesktop>
-            ) : (
-              <ContainerMobile>{children}</ContainerMobile>
-            )}
-          </>
-        )}
+        <StepperProvider>
+          {shouldDisplayContent ? (
+            <>
+              <Scroll />
+              {isDesktop ? (
+                <ContainerDesktop key="container">{children}</ContainerDesktop>
+              ) : (
+                <ContainerMobile key="container">{children}</ContainerMobile>
+              )}
+            </>
+          ) : null}
+        </StepperProvider>
       </LayoutProvider>
     </DelayedRender>
   )

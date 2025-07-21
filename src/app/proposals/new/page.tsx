@@ -1,14 +1,15 @@
 'use client'
 
-import { useCallback, useMemo } from 'react'
+import { useCallback, useEffect, useMemo } from 'react'
 import { AnimatePresence, motion, Variants } from 'motion/react'
 import { useRouter, useSearchParams, usePathname } from 'next/navigation'
-import { Deactivation } from './Deactivation'
-import { NewProposalCard } from './NewProposalCard'
+import { Deactivation } from './components/Deactivation'
+import { NewProposalCard } from './components/NewProposalCard'
 import { newProposalCards } from './newProposalCards.data'
 import { Paragraph } from '@/components/TypographyNew'
-import { NewProposalCardExtended } from './NewProposalCardExtended'
+import { NewProposalCardExtended } from './components/NewProposalCardExtended'
 import { ProposalCategory } from '@/shared/types'
+import { ProposalStep, useProposalStepper } from '../components/stepper/StepperProvider'
 
 const variants: Variants = {
   initial: {
@@ -53,6 +54,13 @@ export default function NewProposal() {
     const newUrl = params.toString() ? `${path}?${params}` : path
     router.push(newUrl)
   }, [path, router, searchParams])
+
+  // set 'Type' proposal step
+  const { setCurrentStep } = useProposalStepper()
+  useEffect(() => {
+    setCurrentStep(ProposalStep.Type)
+    // eslint-disable-next-line
+  }, [])
 
   return (
     <div>

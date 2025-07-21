@@ -5,7 +5,7 @@ import { TokenImage } from '@/components/TokenImage'
 import Big from '@/lib/big'
 import { formatNumberWithCommas, formatCurrency } from '@/lib/utils'
 import { formatEther } from 'viem'
-import { ProposalType } from '../../create/CreateProposalHeaderSection'
+import { ProposalType } from '../../[id]/types'
 
 export interface InfoGridItem {
   label: string

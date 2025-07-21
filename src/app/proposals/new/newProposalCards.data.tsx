@@ -62,10 +62,10 @@ export const newProposalCards: NewProposalCardData[] = [
         url: 'https://docs.google.com/forms/d/e/1FAIpQLSd4HklyTFPFAo2I0l_N5fy_di01WZ27e4uFDG1KVy8ZIOSiow/viewform',
       },
     ],
-    detailsUrl: '/proposals/create?contract=DAOTreasuryAbi&action=withdraw',
+    detailsUrl: '/proposals/new/details/grants',
   },
   {
-    type: ProposalCategory.Builder,
+    type: ProposalCategory.Activation,
     image: rewardsImage,
     bigImage: rewardsBigImage,
     cardTitle: 'Builders Rewards',
@@ -92,6 +92,6 @@ export const newProposalCards: NewProposalCardData[] = [
         url: 'https://docs.google.com/forms/d/e/1FAIpQLSd4HklyTFPFAo2I0l_N5fy_di01WZ27e4uFDG1KVy8ZIOSiow/viewform',
       },
     ],
-    detailsUrl: '/proposals/create?contract=BuilderRegistryAbi&action=communityApproveBuilder',
+    detailsUrl: '/proposals/new/details/activation',
   },
 ]

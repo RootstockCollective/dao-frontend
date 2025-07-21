@@ -64,7 +64,7 @@ export function useProposalListData({ proposals }: Props) {
             .filter(data => data.type === 'decoded')
             .find(data => ['withdraw', 'withdrawERC20'].includes(data.functionName))
             ? ProposalCategory.Grants
-            : ProposalCategory.Builder
+            : ProposalCategory.Activation
         ) as ProposalCategory
         return {
           ...proposal,

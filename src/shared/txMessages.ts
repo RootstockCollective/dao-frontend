@@ -17,7 +17,7 @@ export const TX_MESSAGES = {
     success: {
       title: 'Proposal successfully created',
       content:
-        'Proposal successfully created. Your proposal has been published successfully! It is now visible to the community for review and feedback. Thank you for your contribution.',
+        'Your proposal has been published successfully! It is now visible to the community for voting. Thank you for your contribution to the Collective.',
       severity: 'success',
       loading: false,
     },

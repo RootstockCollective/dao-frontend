@@ -14,6 +14,7 @@ import {
   useRef,
 } from 'react'
 import { usePathname } from 'next/navigation'
+import useLocalStorageState from 'use-local-storage-state'
 
 interface LayoutState {
   isSidebarOpen: boolean
@@ -25,6 +26,10 @@ interface LayoutState {
   closeDrawer: () => void
   drawerContent: ReactNode | null
   setDrawerRef: (ref: HTMLDivElement | null) => void
+  /** Dynamic main layout subfooter content that can be set from any place in the app */
+  subfooter: ReactNode
+  /** Set react component to display in the bottom of the main layout footer */
+  setSubfooter: (sf: ReactNode) => void
 }
 
 const LayoutContext = createContext<LayoutState | null>(null)
@@ -38,7 +43,10 @@ const LayoutContext = createContext<LayoutState | null>(null)
 export function LayoutProvider({ children }: PropsWithChildren) {
   // on desktop the sidebar is initially open, on mobile - initially closed
   const isDesktop = useIsDesktop()
-  const [isSidebarOpen, setIsSidebarOpen] = useState(isDesktop)
+  // store sidebar state between browser reloads
+  const [isSidebarOpen, setIsSidebarOpen] = useLocalStorageState<boolean>('menu-sidebar-open', {
+    defaultValue: isDesktop,
+  })
   const toggleSidebar = () => setIsSidebarOpen(state => !state)
   const openSidebar = () => setIsSidebarOpen(true)
   const closeSidebar = () => setIsSidebarOpen(false)
@@ -53,6 +61,8 @@ export function LayoutProvider({ children }: PropsWithChildren) {
       closeDrawer()
     }
   }, [pathname]) // eslint-disable-line react-hooks/exhaustive-deps
+
+  const [subfooter, setSubfooter] = useState<ReactNode>(null)
 
   // Refs for layout elements
   const drawerRef = useRef<HTMLDivElement | null>(null)
@@ -136,8 +146,10 @@ export function LayoutProvider({ children }: PropsWithChildren) {
       openDrawer,
       closeDrawer,
       setDrawerRef,
+      subfooter,
+      setSubfooter,
     }),
-    [isSidebarOpen, isDrawerOpen, drawerContent],
+    [isSidebarOpen, isDrawerOpen, drawerContent, subfooter],
   )
   return <LayoutContext.Provider value={value}>{children}</LayoutContext.Provider>
 }

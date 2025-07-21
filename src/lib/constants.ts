@@ -2,7 +2,7 @@ import { Feature } from '@/config/features.conf'
 import { Address } from 'viem'
 
 export const GITHUB_ORG = 'RootstockCollective'
-export const ENV = process.env.NEXT_PUBLIC_ENV as string
+export const ENV = process.env.NEXT_PUBLIC_ENV as 'mainnet' | 'testnet'
 export const RIF_WALLET_SERVICES_URL = process.env.NEXT_PUBLIC_RIF_WALLET_SERVICES
 export const EXPLORER_URL = process.env.NEXT_PUBLIC_EXPLORER
 export const BUILD_ID = process.env.NEXT_PUBLIC_BUILD_ID as string
@@ -39,6 +39,11 @@ export const USD = 'USD'
 export const RBTC = 'RBTC'
 export const stRIF = 'stRIF'
 export const USD_SYMBOL = '$'
+
+export const GRANT_TOKEN_LIMITS = {
+  minAmount: 0.000001,
+  maxAmount: 999_999_999,
+}
 
 export const RNS_REGISTRY_ADDRESS = process.env.NEXT_PUBLIC_RNS_REGISTRY_ADDRESS as Address
 
