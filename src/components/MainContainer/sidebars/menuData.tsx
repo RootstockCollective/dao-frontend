@@ -45,7 +45,7 @@ export const menuData = [
     type: 'category',
   },
   {
-    href: 'dummy-home',
+    href: 'home',
     text: 'Home',
     buttonProps: { id: 'Button_Home', name: 'home' },
   },
