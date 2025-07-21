@@ -10,7 +10,7 @@ import {
   getPaginationRowModel,
   PaginationState,
 } from '@tanstack/react-table'
-import Big from '@lib/big'
+import Big from '@/lib/big'
 import { GridTable } from '@/components/Table'
 import { ProposalNameColumn, ProposerColumn } from './table-columns/ProposalNameColumn'
 import { QuorumColumn, VotesColumn } from './table-columns/VotesColumn'
