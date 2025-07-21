@@ -50,12 +50,12 @@ export const ActionCell = ({ className, actionType, onClick, ...props }: ActionC
       variant="secondary-outline"
       onClick={handleClick}
       className={cn(
-        'p-2 min-w-[40px] h-7 flex justify-center items-center gap-1 text-sm font-medium text-v3-text-0 font-rootstock-sans leading-[145%] outline-0 border-0',
+        'p-2 min-w-[40px] h-7 flex justify-center items-center gap-1 text-sm font-medium text-v3-text-0 font-rootstock-sans leading-[145%] outline-0 border-0 overflow-visible',
         className,
       )}
       {...props}
     >
-      <span className="flex justify-center items-center gap-1">
+      <span className="flex justify-center text-nowrap items-center gap-1">
         {config.icon} {config.text}
       </span>
     </Button>

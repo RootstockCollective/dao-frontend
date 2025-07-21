@@ -178,13 +178,15 @@ const BuilderActionsCell = ({
   forceShow,
   ...props
 }: ActionCellProps & { forceShow?: boolean }): ReactElement => {
+  const { isConnected } = useAccount()
+
   return (
     <TableCell
       columnId="actions"
       className={cn('border-solid align-center w-full', className)}
       forceShow={forceShow}
     >
-      {forceShow && <ActionCell {...props} />}
+      {forceShow && <ActionCell {...props} hidden={!isConnected} />}
     </TableCell>
   )
 }
@@ -220,6 +222,10 @@ export const BuilderDataRow: FC<BuilderDataRowProps> = ({ row, ...props }) => {
   const hasSelections = Object.values(selectedRows).some(Boolean)
 
   const handleToggleSelection = () => {
+    if (!isConnected) {
+      return
+    }
+
     dispatch({
       type: 'TOGGLE_ROW_SELECTION',
       payload: rowId,
@@ -245,8 +251,8 @@ export const BuilderDataRow: FC<BuilderDataRowProps> = ({ row, ...props }) => {
             <RewardsPastCycleCell {...rewards_past_cycle} />
             <RewardsUpcomingCell {...rewards_upcoming} />
             <BuilderBackingCell {...backing} />
-            {!isHovered && <BuilderAllocationsCell allocationPct={allocationPct} />}
-            <BuilderActionsCell {...actions} forceShow={isHovered} />
+            {!(isHovered && isConnected) && <BuilderAllocationsCell allocationPct={allocationPct} />}
+            <BuilderActionsCell {...actions} forceShow={isHovered && isConnected} />
             <td className="w-[24px]"></td>
           </tr>
         </TooltipTrigger>

@@ -109,16 +109,6 @@ export const BuildersTable = ({ filterOption }: { filterOption: BuilderFilterOpt
 
   useEffect(() => {
     dispatch({
-      type: 'SET_COLUMN_VISIBILITY',
-      payload: {
-        columnId: 'backing',
-        hidden: !isConnected,
-      },
-    })
-  }, [isConnected, dispatch])
-
-  useEffect(() => {
-    dispatch({
       type: 'SET_COLUMNS',
       payload: DEFAULT_HEADERS,
     })
@@ -199,6 +189,25 @@ export const BuildersTable = ({ filterOption }: { filterOption: BuilderFilterOpt
       .filter(action => action !== undefined)
     setActions(actions)
   }, [selectedRows, rows])
+
+  useEffect(() => {
+    if (!isConnected) {
+      dispatch({
+        type: 'SET_SELECTED_ROWS',
+        payload: {},
+      })
+    }
+  }, [isConnected, dispatch])
+
+  useEffect(() => {
+    dispatch({
+      type: 'SET_COLUMN_VISIBILITY',
+      payload: {
+        columnId: 'backing',
+        hidden: !isConnected,
+      },
+    })
+  }, [isConnected, dispatch])
 
   return (
     <>
