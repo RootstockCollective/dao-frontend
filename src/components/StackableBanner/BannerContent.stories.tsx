@@ -122,10 +122,6 @@ export const stepsListArgs = {
   buttonOnClick: () => console.log('CTA label clicked!'),
 }
 
-// Helper function to create BannerContent components
-export const createBannerContent = (args: typeof getRbtcArgs) => <BannerContent {...args} />
-
-// Story definitions using the args
 export const WithGetRbtc: Story = {
   args: getRbtcArgs,
 }
