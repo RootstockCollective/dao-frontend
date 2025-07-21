@@ -1,18 +1,21 @@
-import { useReadBackersManager, useReadGauges } from '@/shared/hooks/contracts'
-import { useBuilderContext } from '../../collective-rewards/user/context/BuilderContext'
-import { useGetCycleRewards } from '../../collective-rewards/shared/hooks/useGetCycleRewards'
-import { filterBuildersByState } from '../../collective-rewards/user'
-import { BuilderEstimatedRewards, CompleteBuilder } from '../../collective-rewards/types'
-import { useMemo } from 'react'
-import { isBuilderRewardable } from '../../collective-rewards/utils'
+import { Token } from '@/app/collective-rewards/rewards'
+import { useGetCycleRewards } from '@/app/collective-rewards/shared/hooks/useGetCycleRewards'
+import { BuilderEstimatedRewards, CompleteBuilder } from '@/app/collective-rewards/types'
+import { filterBuildersByState } from '@/app/collective-rewards/user'
+import { useBuilderContext } from '@/app/collective-rewards/user/context/BuilderContext'
+import { isBuilderRewardable } from '@/app/collective-rewards/utils'
 import { USD, WeiPerEther } from '@/lib/constants'
 import { usePricesContext } from '@/shared/context/PricesContext'
-import { Token } from '@/app/collective-rewards/rewards'
+import { useReadBackersManager, useReadGauges } from '@/shared/hooks/contracts'
+import { useMemo } from 'react'
 
 export const useGetBuilderEstimatedRewards = ({ rif, rbtc }: { [token: string]: Token }, currency = USD) => {
   const { builders } = useBuilderContext()
-  const activeBuilders = filterBuildersByState<CompleteBuilder>(builders)
-  const gauges = activeBuilders.map(({ gauge }) => gauge)
+  const { activeBuilders, gauges } = useMemo(() => {
+    const filteredBuilders = filterBuildersByState<CompleteBuilder>(builders)
+    const builderGauges = filteredBuilders.map(({ gauge }) => gauge)
+    return { activeBuilders: filteredBuilders, gauges: builderGauges }
+  }, [builders])
 
   const {
     data: totalPotentialRewards,
