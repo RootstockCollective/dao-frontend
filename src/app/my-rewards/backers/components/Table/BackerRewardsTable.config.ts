@@ -1,5 +1,6 @@
+import { ColumnTransforms } from '@/app/builders/components/Table/BuilderTable.config'
+import { TableColumnDropdownLabels } from '@/app/builders/components/Table/TableColumnDropdown/TableColumnDropdown'
 import { Column } from '@/shared/context'
-import { HtmlHTMLAttributes } from 'react'
 
 export const COLUMN_IDS = [
   'builder',
@@ -15,7 +16,7 @@ export const isColumnId = (id: string): id is ColumnId => COLUMN_IDS.includes(id
 
 export const PAGE_SIZE = 3
 
-export const LABELS = {
+export const LABELS: TableColumnDropdownLabels<Exclude<ColumnId, 'builder' | 'actions'>> = {
   backer_rewards: {
     label: 'Backer Rewards %',
   },
@@ -34,7 +35,7 @@ export const LABELS = {
   },
 }
 
-export const COLUMN_TRANSFORMS: Record<ColumnId, HtmlHTMLAttributes<HTMLTableCellElement>['className']> = {
+export const COLUMN_TRANSFORMS: ColumnTransforms<ColumnId> = {
   builder: 'flex-[1_1_12rem] min-w-[12rem]',
   backer_rewards: 'flex-[1_1_5rem] min-w-[5rem] justify-center',
   unclaimed: 'flex-[1_1_4rem] min-w-[4rem] justify-center',

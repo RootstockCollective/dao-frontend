@@ -2,11 +2,11 @@
 
 import { NoContextProviderError } from '@/lib/errors/ContextError'
 import { createContext, Dispatch, useContext } from 'react'
-import { TableAction } from './types'
+import { BaseColumnId, TableAction } from './types'
 
 export const TableActionsContext = createContext<Dispatch<TableAction> | null>(null)
 
-export const useTableActionsContext = <ColumnId extends string = string>() => {
+export const useTableActionsContext = <ColumnId extends BaseColumnId = BaseColumnId>() => {
   const context = useContext(TableActionsContext) as Dispatch<TableAction<ColumnId>>
   if (!context) {
     throw new NoContextProviderError('useTableActionsContext', 'TableProvider')

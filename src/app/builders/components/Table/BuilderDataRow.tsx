@@ -10,7 +10,7 @@ import { Jdenticon } from '@/components/Header/Jdenticon'
 import { Paragraph, Span } from '@/components/TypographyNew'
 import { RIF } from '@/lib/constants'
 import { cn, formatCurrency } from '@/lib/utils'
-import { Row, RowData, useTableActionsContext, useTableContext } from '@/shared/context'
+import { BaseColumnId, Row, RowData, useTableActionsContext, useTableContext } from '@/shared/context'
 import { DisclaimerFlow } from '@/shared/walletConnection'
 import { useAppKitFlow } from '@/shared/walletConnection/connection/useAppKitFlow'
 import { Tooltip, TooltipContent, TooltipPortal, TooltipTrigger } from '@radix-ui/react-tooltip'
@@ -18,7 +18,7 @@ import { redirect, RedirectType } from 'next/navigation'
 import { FC, HtmlHTMLAttributes, ReactElement, ReactNode, useState } from 'react'
 import { Address } from 'viem'
 import { useAccount } from 'wagmi'
-import { COLUMN_TRANSFORMS, ColumnId, ColumnTransform } from './BuilderTable.config'
+import { COLUMN_TRANSFORMS, ColumnId, ColumnTransforms } from './BuilderTable.config'
 import { ActionCell, ActionCellProps, getActionType } from './Cell/ActionCell'
 import { AllocationCell, AllocationCellProps } from './Cell/AllocationCell'
 import { BackersPercentageCell, BackersPercentageCellProps } from './Cell/BackersPercentageCell'
@@ -100,7 +100,7 @@ export const convertDataToRowData = (
   })
 }
 
-const BuilderCell = (props: BuilderNameCellProps): ReactElement => {
+export const BuilderCell = (props: BuilderNameCellProps): ReactElement => {
   const { selectedRows } = useTableContext<ColumnId>()
   const isSelected = selectedRows[props.builder.address]
 
@@ -115,7 +115,8 @@ const BuilderCell = (props: BuilderNameCellProps): ReactElement => {
   )
 }
 
-export const TableCellBase = <ColumnId extends string>({
+// TODO: @refactor move to app/components/Table/Cell/TableCell.tsx
+export const TableCellBase = <CID extends BaseColumnId = BaseColumnId>({
   children,
   className,
   onClick,
@@ -123,11 +124,11 @@ export const TableCellBase = <ColumnId extends string>({
   forceShow,
   columnTransforms,
 }: HtmlHTMLAttributes<HTMLTableCellElement> & {
-  columnId: ColumnId
+  columnId: CID
   forceShow?: boolean
-  columnTransforms: Record<ColumnId, ColumnTransform>
+  columnTransforms: ColumnTransforms<CID>
 }): ReactNode => {
-  const { columns } = useTableContext<ColumnId>()
+  const { columns } = useTableContext<CID>()
   if (forceShow || !columns.find(col => col.id === columnId)?.hidden) {
     return (
       <td
@@ -186,7 +187,7 @@ const RewardsUpcomingCell = (props: RewardsCellProps): ReactElement => {
   )
 }
 
-const BuilderBackingCell = (props: BackingCellProps): ReactElement => {
+export const BuilderBackingCell = (props: BackingCellProps): ReactElement => {
   return (
     <TableCell columnId="backing" className="flex flex-col gap-2 align-middle justify-center">
       <BackingCell {...props} />

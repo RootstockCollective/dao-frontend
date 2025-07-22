@@ -2,17 +2,28 @@ import { MultipleSelectDropdown, SelectorOption } from '@/app/builders/component
 import { CommonComponentProps } from '@/components/commonProps'
 import { CloseIconKoto } from '@/components/Icons'
 import { MoreIcon } from '@/components/Icons/MoreIcon'
-import { useTableActionsContext, useTableContext } from '@/shared/context/TableContext'
+import { BaseColumnId, useTableActionsContext, useTableContext } from '@/shared/context/TableContext'
 
-export const TableColumnDropdown = <ColumnId extends string>({
+type ColumnLabel = {
+  label: string
+  sublabel?: string
+}
+
+export type TableColumnDropdownLabels<ColumnId extends BaseColumnId = BaseColumnId> = Record<
+  ColumnId,
+  ColumnLabel
+>
+
+export type TableColumnDropdownProps<ColumnId extends BaseColumnId = BaseColumnId> = CommonComponentProps & {
+  labels: TableColumnDropdownLabels<ColumnId>
+}
+
+export const TableColumnDropdown = <ColumnId extends BaseColumnId = BaseColumnId>({
   className,
   labels,
-}: CommonComponentProps & {
-  labels: Partial<Record<ColumnId, { label: string; sublabel?: string }>>
-}) => {
-  // Tell useTableContext the generic too!
+}: TableColumnDropdownProps<ColumnId>) => {
   const { columns } = useTableContext<ColumnId>()
-  const dispatch = useTableActionsContext()
+  const dispatch = useTableActionsContext<ColumnId>()
 
   const handleColumnChange = (newSelected: ColumnId[]) => {
     // Hidden are columns whose IDs are NOT in newSelected
@@ -20,7 +31,7 @@ export const TableColumnDropdown = <ColumnId extends string>({
     dispatch({ type: 'SET_HIDDEN_COLUMNS', payload: hiddenColumns })
   }
 
-  // Build selector options by filtering columns for those with labels provided
+  // Filter out columns without labels
   const columnOptions: SelectorOption<ColumnId>[] = columns.reduce((acc, col) => {
     const labelInfo = labels[col.id]
     if (!labelInfo) return acc
@@ -33,7 +44,7 @@ export const TableColumnDropdown = <ColumnId extends string>({
     return acc
   }, [] as SelectorOption<ColumnId>[])
 
-  // Columns currently visible (not hidden)
+  // Currently visible (not hidden) columns
   const selectedColumns = columns.filter(col => !col.hidden).map(col => col.id)
 
   return (

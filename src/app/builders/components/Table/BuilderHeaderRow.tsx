@@ -2,7 +2,7 @@
 
 import { Column, Sort, TableAction, useTableActionsContext, useTableContext } from '@/shared/context'
 import { SORT_DIRECTIONS } from '@/shared/context/TableContext/types'
-import { HtmlHTMLAttributes, ReactElement, Suspense } from 'react'
+import { ReactElement, Suspense } from 'react'
 
 import { Button } from '@/components/ButtonNew/Button'
 import { CommonComponentProps } from '@/components/commonProps'
@@ -16,7 +16,7 @@ import { cn } from '@/lib/utils'
 import { redirect, RedirectType } from 'next/navigation'
 import { Dispatch, FC, ReactNode } from 'react'
 import { Address } from 'viem'
-import { COLUMN_TRANSFORMS, ColumnId, ColumnTransform, LABELS } from './BuilderTable.config'
+import { COLUMN_TRANSFORMS, ColumnId, ColumnTransforms, LABELS } from './BuilderTable.config'
 import { Action, ActionCell } from './Cell/ActionCell'
 import { SelectorHeaderCell } from './Cell/SelectorHeaderCell/SelectorHeaderCell'
 import { TableColumnDropdown } from './TableColumnDropdown'
@@ -81,7 +81,7 @@ export const BuilderHeaderCellBase = <ColumnId extends string>({
   ...props
 }: CommonComponentProps & {
   columnId: ColumnId
-  columnTransforms: Record<ColumnId, ColumnTransform>
+  columnTransforms: ColumnTransforms<ColumnId>
 }): ReactElement => {
   const { sort, columns } = useTableContext<ColumnId>()
   const dispatch = useTableActionsContext()
@@ -129,7 +129,7 @@ export const HeaderCellBase = <ColumnId extends string>({
   ...props
 }: CommonComponentProps & {
   columnId: ColumnId
-  columnTransforms: Record<ColumnId, ColumnTransform>
+  columnTransforms: ColumnTransforms<ColumnId>
 }): ReactNode => {
   const { sort, columns } = useTableContext<ColumnId>()
   const dispatch = useTableActionsContext()
@@ -242,7 +242,10 @@ export const BuilderHeaderRow = ({ actions }: BuilderHeaderRowProps): ReactEleme
               <HeaderSubtitle className="h-full text-v3-bg-accent-80">balls</HeaderSubtitle>{' '}
             </HeaderCell>
             <th>
-              <TableColumnDropdown<ColumnId> className="self-start" labels={LABELS} />
+              <TableColumnDropdown<Exclude<ColumnId, 'builder' | 'actions'>>
+                className="self-start"
+                labels={LABELS}
+              />
             </th>
           </>
         )}

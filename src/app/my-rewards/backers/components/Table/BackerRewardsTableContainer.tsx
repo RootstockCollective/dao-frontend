@@ -7,7 +7,7 @@ import { BackerRewardsTable } from './BackerRewardsTable'
 const Title = () => {
   return (
     <>
-      <Header variant="h3" caps className="text-nowrap">
+      <Header variant="h4" caps className="text-nowrap">
         Rewards Details
       </Header>
     </>

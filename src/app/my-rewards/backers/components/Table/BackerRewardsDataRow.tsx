@@ -1,34 +1,33 @@
 'use client'
 
-import { AllocationsContext } from '@/app/collective-rewards/allocations/context'
+import {
+  ActionsCell,
+  BackerRewardsCell,
+  BuilderBackingCell,
+  BuilderCell,
+  SelectBuildersTooltip,
+  selectedRowStyle,
+  TableCellBase,
+  unselectedRowStyle,
+} from '@/app/builders/components/Table'
+import { ActionCellProps, getActionType } from '@/app/builders/components/Table/Cell/ActionCell'
+import { BackersPercentageCellProps } from '@/app/builders/components/Table/Cell/BackersPercentageCell'
+import { BackingCellProps } from '@/app/builders/components/Table/Cell/BackingCell'
+import { BuilderNameCellProps } from '@/app/builders/components/Table/Cell/BuilderNameCell'
+import { RewardsCell, RewardsCellProps } from '@/app/builders/components/Table/Cell/RewardsCell'
+import { BackerRewards } from '@/app/collective-rewards/rewards/backers/hooks'
 import { formatSymbol, getFiatAmount } from '@/app/collective-rewards/rewards/utils/formatter'
 import { getCombinedFiatAmount } from '@/app/collective-rewards/utils'
 import { GetPricesResult } from '@/app/user/types'
 import { RIF } from '@/lib/constants'
 import { cn, formatCurrency } from '@/lib/utils'
 import { Row, RowData, useTableActionsContext, useTableContext } from '@/shared/context'
-import { FC, HtmlHTMLAttributes, ReactElement, ReactNode, useContext, useState } from 'react'
-import { Address } from 'viem'
-import { COLUMN_TRANSFORMS, ColumnId } from './BackerRewardsTable.config'
-import { ActionCellProps, getActionType } from '@/app/builders/components/Table/Cell/ActionCell'
-import { BackersPercentageCellProps } from '@/app/builders/components/Table/Cell/BackersPercentageCell'
-import { BackingCell, BackingCellProps } from '@/app/builders/components/Table/Cell/BackingCell'
-import { BuilderNameCell, BuilderNameCellProps } from '@/app/builders/components/Table/Cell/BuilderNameCell'
-import { RewardsCell, RewardsCellProps } from '@/app/builders/components/Table/Cell/RewardsCell'
-import { BackerRewards } from '@/app/collective-rewards/rewards/backers/hooks'
 import { Tooltip, TooltipTrigger } from '@radix-ui/react-tooltip'
 import { redirect, RedirectType } from 'next/navigation'
+import { FC, HtmlHTMLAttributes, ReactElement, ReactNode, useState } from 'react'
+import { Address } from 'viem'
 import { useAccount } from 'wagmi'
-import {
-  ActionsCell,
-  BackerRewardsCell,
-  SelectBuildersTooltip,
-  selectedRowStyle,
-  TableCellBase,
-  unselectedRowStyle,
-} from '@/app/builders/components/Table'
-import { SelectorCell } from '@/app/builders/components/Table/Cell/SelectorCell'
-import { Jdenticon } from '@/components/Header/Jdenticon'
+import { COLUMN_TRANSFORMS, ColumnId } from './BackerRewardsTable.config'
 
 export type ColumnIdToCellPropsMap = {
   builder: BuilderNameCellProps
@@ -104,21 +103,6 @@ export const convertDataToRowData = (data: BackerRewards[], prices: GetPricesRes
   })
 }
 
-const BuilderCell = (props: BuilderNameCellProps): ReactElement => {
-  const { selectedRows } = useTableContext<ColumnId>()
-  const isSelected = selectedRows[props.builder.address]
-
-  return (
-    <TableCell key="builder" columnId="builder" className="justify-start gap-4">
-      <SelectorCell isHovered={props.isHighlighted} isSelected={isSelected} className="pt-3 pb-3">
-        <Jdenticon className="rounded-full bg-white w-10" value={props.builder.address} />
-      </SelectorCell>
-
-      <BuilderNameCell {...props} />
-    </TableCell>
-  )
-}
-
 const TableCell = ({
   children,
   className,
@@ -163,14 +147,6 @@ const TotalCell = (props: RewardsCellProps): ReactElement => {
   )
 }
 
-const BuilderBackingCell = (props: BackingCellProps): ReactElement => {
-  return (
-    <TableCell columnId="backing" className="flex flex-col gap-2 align-middle justify-center">
-      <BackingCell {...props} />
-    </TableCell>
-  )
-}
-
 interface BackerRewardsDataRowProps {
   row: Row<ColumnId>
 }
@@ -184,9 +160,6 @@ export const BackerRewardsDataRow: FC<BackerRewardsDataRowProps> = ({ row, ...pr
   const { isConnected } = useAccount()
   const [isHovered, setIsHovered] = useState(false)
   const dispatch = useTableActionsContext<ColumnId>()
-  const {
-    actions: { toggleSelectedBuilder },
-  } = useContext(AllocationsContext)
 
   const hasSelections = Object.values(selectedRows).some(Boolean)
 

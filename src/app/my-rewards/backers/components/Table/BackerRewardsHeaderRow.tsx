@@ -1,13 +1,5 @@
 'use client'
 
-import { useTableActionsContext } from '@/shared/context'
-import { ReactElement, ReactNode, Suspense } from 'react'
-import { CommonComponentProps } from '@/components/commonProps'
-import { TableHeaderCell } from '@/components/TableNew'
-import { COLUMN_TRANSFORMS, ColumnId, LABELS } from './BackerRewardsTable.config'
-import { Action } from '@/app/builders/components/Table/Cell/ActionCell'
-import { Button } from '@/components/ButtonNew'
-import { CloseIconKoto } from '@/components/Icons'
 import {
   BuilderHeaderCellBase,
   CombinedActionsHeaderCell,
@@ -16,6 +8,14 @@ import {
   HeaderTitle,
   TableColumnDropdown,
 } from '@/app/builders/components/Table'
+import { Action } from '@/app/builders/components/Table/Cell/ActionCell'
+import { Button } from '@/components/ButtonNew'
+import { CommonComponentProps } from '@/components/commonProps'
+import { CloseIconKoto } from '@/components/Icons'
+import { TableHeaderCell } from '@/components/TableNew'
+import { useTableActionsContext } from '@/shared/context'
+import { ReactElement, ReactNode, Suspense } from 'react'
+import { COLUMN_TRANSFORMS, ColumnId, LABELS } from './BackerRewardsTable.config'
 
 const HeaderCell = ({
   className,
@@ -96,7 +96,7 @@ export const BackerRewardsHeaderRow = ({ actions }: BackerRewardsHeaderRowProps)
               {/* TODO: temporary fix to align the text to the top */}
             </HeaderCell>
             <th>
-              <TableColumnDropdown<ColumnId> className="self-start" labels={LABELS} />
+              <TableColumnDropdown className="self-start" labels={LABELS} />
             </th>
           </>
         )}

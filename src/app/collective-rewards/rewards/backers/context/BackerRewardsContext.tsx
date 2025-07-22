@@ -93,7 +93,7 @@ const getEarnedAddresses = (rewards: Record<Address, bigint>) =>
 
 export const BackerRewardsContextProvider: FC<BackerRewardsProviderProps> = ({ children, backer }) => {
   const { builders, isLoading: buildersLoading, error: buildersError } = useBuilderContext()
-  const { activeBuilders, gauges } = useMemo(() => {
+  const { gauges } = useMemo(() => {
     const filteredBuilders = filterBuildersByState<CompleteBuilder>(builders)
     const builderGauges = filteredBuilders.map(({ gauge }) => gauge)
     return { activeBuilders: filteredBuilders, gauges: builderGauges }

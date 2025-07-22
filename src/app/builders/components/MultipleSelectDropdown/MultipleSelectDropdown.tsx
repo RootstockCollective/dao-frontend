@@ -1,17 +1,18 @@
 import { Label } from '@/components/TypographyNew'
 import { cn } from '@/lib/utils'
+import { BaseColumnId } from '@/shared/context/TableContext'
 import * as DropdownMenuPrimitive from '@radix-ui/react-dropdown-menu'
 import { motion } from 'motion/react'
 import { ReactNode, useState } from 'react'
 import { MultipleSelectDropdownItem } from './MultipleSelectDropdownItem'
 
-export interface SelectorOption<ColumnId extends string = string> {
+export interface SelectorOption<ColumnId extends BaseColumnId = BaseColumnId> {
   id: ColumnId
   label: string
   sublabel?: string
 }
 
-export interface MultipleSelectDropdownProps<ColumnId extends string = string> {
+export interface MultipleSelectDropdownProps<ColumnId extends BaseColumnId = BaseColumnId> {
   title: string
   options: SelectorOption<ColumnId>[]
   selected: ColumnId[]
@@ -21,7 +22,7 @@ export interface MultipleSelectDropdownProps<ColumnId extends string = string> {
   align?: 'start' | 'center' | 'end'
 }
 
-export const MultipleSelectDropdown = <ColumnId extends string = string>({
+export const MultipleSelectDropdown = <ColumnId extends BaseColumnId = BaseColumnId>({
   title,
   options,
   selected,
@@ -80,7 +81,7 @@ export const MultipleSelectDropdown = <ColumnId extends string = string>({
             >
               {options.map(item => (
                 <DropdownMenuPrimitive.Item
-                  key={item.id}
+                  key={String(item.id)}
                   className="outline-none"
                   onSelect={e => {
                     e.preventDefault()
@@ -88,7 +89,7 @@ export const MultipleSelectDropdown = <ColumnId extends string = string>({
                   }}
                   role="option"
                   aria-selected={selected.includes(item.id)}
-                  data-testid={`dropdown-selector-item-${item.id}`}
+                  data-testid={`dropdown-selector-item-${String(item.id)}`}
                 >
                   <MultipleSelectDropdownItem
                     label={item.label}
