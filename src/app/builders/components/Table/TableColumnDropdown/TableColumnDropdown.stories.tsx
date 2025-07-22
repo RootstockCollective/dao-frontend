@@ -1,6 +1,6 @@
 import { useTableActionsContext, withTableContext } from '@/shared/context/TableContext'
 import { useEffect } from 'react'
-import { ColumnId } from '../BuilderTable.config'
+import { ColumnId, LABELS } from '../BuilderTable.config'
 import { TableColumnDropdown } from './TableColumnDropdown'
 
 const TableColumnDropdownWithContext = () => {
@@ -22,7 +22,10 @@ const TableColumnDropdownWithContext = () => {
   }, [dispatch])
 
   return (
-    <TableColumnDropdown className="flex justify-end items-start p-10 min-h-[200px] w-[500px] relative" />
+    <TableColumnDropdown
+      className="flex justify-end items-start p-10 min-h-[200px] w-[500px] relative"
+      labels={LABELS}
+    />
   )
 }
 

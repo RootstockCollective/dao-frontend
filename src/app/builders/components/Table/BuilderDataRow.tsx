@@ -10,15 +10,15 @@ import { Jdenticon } from '@/components/Header/Jdenticon'
 import { Paragraph, Span } from '@/components/TypographyNew'
 import { RIF } from '@/lib/constants'
 import { cn, formatCurrency } from '@/lib/utils'
-import { Row, RowData, useTableActionsContext, useTableContext } from '@/shared/context'
+import { BaseColumnId, Row, RowData, useTableActionsContext, useTableContext } from '@/shared/context'
 import { DisclaimerFlow } from '@/shared/walletConnection'
 import { useAppKitFlow } from '@/shared/walletConnection/connection/useAppKitFlow'
 import { Tooltip, TooltipContent, TooltipPortal, TooltipTrigger } from '@radix-ui/react-tooltip'
 import { redirect, RedirectType } from 'next/navigation'
-import { FC, HtmlHTMLAttributes, ReactElement, useState } from 'react'
+import { FC, HtmlHTMLAttributes, ReactElement, ReactNode, useState } from 'react'
 import { Address } from 'viem'
 import { useAccount } from 'wagmi'
-import { COLUMN_TRANSFORMS, ColumnId } from './BuilderTable.config'
+import { COLUMN_TRANSFORMS, ColumnId, ColumnTransforms } from './BuilderTable.config'
 import { ActionCell, ActionCellProps, getActionType } from './Cell/ActionCell'
 import { AllocationCell, AllocationCellProps } from './Cell/AllocationCell'
 import { BackersPercentageCell, BackersPercentageCellProps } from './Cell/BackersPercentageCell'
@@ -100,7 +100,7 @@ export const convertDataToRowData = (
   })
 }
 
-const BuilderCell = (props: BuilderNameCellProps): ReactElement => {
+export const BuilderCell = (props: BuilderNameCellProps): ReactElement => {
   const { selectedRows } = useTableContext<ColumnId>()
   const isSelected = selectedRows[props.builder.address]
 
@@ -115,14 +115,24 @@ const BuilderCell = (props: BuilderNameCellProps): ReactElement => {
   )
 }
 
-export const TableCell: FC<
-  HtmlHTMLAttributes<HTMLTableCellElement> & { columnId: ColumnId; forceShow?: boolean }
-> = ({ children, className, onClick, columnId, forceShow }) => {
-  const { columns } = useTableContext<ColumnId>()
+// TODO: @refactor move to app/components/Table/Cell/TableCell.tsx
+export const TableCellBase = <CID extends BaseColumnId = BaseColumnId>({
+  children,
+  className,
+  onClick,
+  columnId,
+  forceShow,
+  columnTransforms,
+}: HtmlHTMLAttributes<HTMLTableCellElement> & {
+  columnId: CID
+  forceShow?: boolean
+  columnTransforms: ColumnTransforms<CID>
+}): ReactNode => {
+  const { columns } = useTableContext<CID>()
   if (forceShow || !columns.find(col => col.id === columnId)?.hidden) {
     return (
       <td
-        className={cn('flex self-stretch items-center select-none', COLUMN_TRANSFORMS[columnId], className)}
+        className={cn('flex self-stretch items-center select-none', columnTransforms[columnId], className)}
         onClick={onClick}
       >
         {children}
@@ -133,7 +143,27 @@ export const TableCell: FC<
   return null
 }
 
-const BackerRewardsCell = (props: BackersPercentageCellProps): ReactElement => {
+const TableCell = ({
+  children,
+  className,
+  onClick,
+  columnId,
+  forceShow,
+}: HtmlHTMLAttributes<HTMLTableCellElement> & { columnId: ColumnId; forceShow?: boolean }): ReactNode => {
+  return (
+    <TableCellBase<ColumnId>
+      className={className}
+      onClick={onClick}
+      columnId={columnId}
+      forceShow={forceShow}
+      columnTransforms={COLUMN_TRANSFORMS}
+    >
+      {children}
+    </TableCellBase>
+  )
+}
+
+export const BackerRewardsCell = (props: BackersPercentageCellProps): ReactElement => {
   return (
     <TableCell columnId="backer_rewards" className="gap-2 flex justify-center">
       <BackersPercentageCell {...props} />
@@ -157,7 +187,7 @@ const RewardsUpcomingCell = (props: RewardsCellProps): ReactElement => {
   )
 }
 
-const BuilderBackingCell = (props: BackingCellProps): ReactElement => {
+export const BuilderBackingCell = (props: BackingCellProps): ReactElement => {
   return (
     <TableCell columnId="backing" className="flex flex-col gap-2 align-middle justify-center">
       <BackingCell {...props} />
@@ -173,7 +203,7 @@ const BuilderAllocationsCell = (props: AllocationCellProps): ReactElement => {
   )
 }
 
-const BuilderActionsCell = ({
+export const ActionsCell = ({
   className,
   forceShow,
   ...props
@@ -195,8 +225,8 @@ interface BuilderDataRowProps extends CommonComponentProps<HTMLTableRowElement> 
   row: Row<ColumnId>
 }
 
-const selectedRowStyle = 'bg-v3-text-80 text-v3-bg-accent-100'
-const unselectedRowStyle = 'bg-v3-bg-accent-80 text-v3-primary-100'
+export const selectedRowStyle = 'bg-v3-text-80 text-v3-bg-accent-100'
+export const unselectedRowStyle = 'bg-v3-bg-accent-80 text-v3-primary-100'
 
 export const BuilderDataRow: FC<BuilderDataRowProps> = ({ row, ...props }) => {
   const {
@@ -252,7 +282,7 @@ export const BuilderDataRow: FC<BuilderDataRowProps> = ({ row, ...props }) => {
             <RewardsUpcomingCell {...rewards_upcoming} />
             <BuilderBackingCell {...backing} />
             {!(isHovered && isConnected) && <BuilderAllocationsCell allocationPct={allocationPct} />}
-            <BuilderActionsCell {...actions} forceShow={isHovered && isConnected} />
+            <ActionsCell {...actions} forceShow={isHovered && isConnected} />
             <td className="w-[24px]"></td>
           </tr>
         </TooltipTrigger>
@@ -295,7 +325,7 @@ const ConnectWalletTooltip = ({ onClick }: ConnectWalletTooltipProps) => {
   )
 }
 
-const SelectBuildersTooltip = () => {
+export const SelectBuildersTooltip = () => {
   return (
     <TooltipPortal>
       <TooltipContent id={'select-builders-tooltip'} side="top" align="start" className="ml-16">

@@ -1,5 +1,6 @@
-import { Column } from '@/shared/context'
+import { BaseColumnId, Column } from '@/shared/context'
 import { HtmlHTMLAttributes } from 'react'
+import { TableColumnDropdownLabels } from './TableColumnDropdown/TableColumnDropdown'
 
 export const COLUMN_IDS = [
   'builder',
@@ -15,7 +16,32 @@ export const isColumnId = (id: string): id is ColumnId => COLUMN_IDS.includes(id
 
 export const PAGE_SIZE = 20
 
-export const COLUMN_TRANSFORMS: Record<ColumnId, HtmlHTMLAttributes<HTMLTableCellElement>['className']> = {
+export const LABELS: TableColumnDropdownLabels<Exclude<ColumnId, 'builder' | 'actions'>> = {
+  backer_rewards: {
+    label: 'Backer Rewards %',
+  },
+  rewards_past_cycle: {
+    label: 'Rewards',
+    sublabel: 'past cycle',
+  },
+  rewards_upcoming: {
+    label: 'Rewards',
+    sublabel: 'upcoming cycle',
+  },
+  backing: {
+    label: 'Backing',
+  },
+  allocations: {
+    label: 'Backing share',
+  },
+}
+
+export type ColumnTransforms<CID extends BaseColumnId = BaseColumnId> = Record<
+  CID,
+  HtmlHTMLAttributes<HTMLTableCellElement>['className']
+> // TODO: @refactor move to app/components/Table/types.ts (and rename to ColumnTransforms)
+
+export const COLUMN_TRANSFORMS: ColumnTransforms<ColumnId> = {
   builder: 'flex-[1_1_12rem] min-w-[12rem]',
   backing: 'flex-[1_1_6rem] min-w-[6rem] justify-center',
   backer_rewards: 'flex-[1_1_5rem] min-w-[5rem] justify-center',

@@ -2,7 +2,7 @@
 
 import { NoContextProviderError } from '@/lib/errors/ContextError'
 import { createContext, useContext } from 'react'
-import { TableState } from '.'
+import { BaseColumnId, TableState } from '.'
 
 export const initialState: TableState = {
   columns: [],
@@ -22,7 +22,7 @@ export const initialState: TableState = {
 
 export const TableContext = createContext<TableState | null>(null)
 
-export const useTableContext = <ColumnId extends string = string>() => {
+export const useTableContext = <ColumnId extends BaseColumnId = BaseColumnId>() => {
   const context = useContext(TableContext) as TableState<ColumnId>
   if (!context) throw new NoContextProviderError('useTableContext', 'TableProvider')
   return context

@@ -3,9 +3,12 @@ import {
   Token,
   useGetGaugesBackerRewardsClaimed,
 } from '@/app/collective-rewards/rewards'
-import { StateWithUpdate } from '@/app/collective-rewards/types'
+import { CompleteBuilder, StateWithUpdate } from '@/app/collective-rewards/types'
+import { useBuilderContext } from '@/app/collective-rewards/user/context'
+import { filterBuildersByState } from '@/app/collective-rewards/user/hooks'
+import { TOKENS } from '@/lib/tokens'
 import { useReadGauges } from '@/shared/hooks/contracts'
-import { createContext, FC, ReactNode, useContext, useState } from 'react'
+import { createContext, FC, ReactNode, useContext, useMemo, useState } from 'react'
 import { Address } from 'viem'
 
 export type TokenBackerRewards = {
@@ -38,7 +41,6 @@ export const BackerRewardsContext = createContext<BackerRewardsContextValue>({
 type BackerRewardsProviderProps = {
   children: ReactNode
   backer: Address
-  gauges: Address[]
   tokens: {
     [token: string]: Token
   }
@@ -89,12 +91,15 @@ const useGetTokenRewards = (backer: Address, token: Token, gauges: Address[]) =>
 const getEarnedAddresses = (rewards: Record<Address, bigint>) =>
   Object.keys(rewards).filter(key => rewards[key as Address] > 0n) as Address[]
 
-export const BackerRewardsContextProvider: FC<BackerRewardsProviderProps> = ({
-  children,
-  backer,
-  gauges,
-  tokens: { rif, rbtc },
-}) => {
+export const BackerRewardsContextProvider: FC<BackerRewardsProviderProps> = ({ children, backer }) => {
+  const { builders, isLoading: buildersLoading, error: buildersError } = useBuilderContext()
+  const { gauges } = useMemo(() => {
+    const filteredBuilders = filterBuildersByState<CompleteBuilder>(builders)
+    const builderGauges = filteredBuilders.map(({ gauge }) => gauge)
+    return { activeBuilders: filteredBuilders, gauges: builderGauges }
+  }, [builders])
+  const { rif, rbtc } = TOKENS
+
   const { data: rifRewards, isLoading: rifLoading, error: rifError } = useGetTokenRewards(backer, rif, gauges)
   const {
     data: rbtcRewards,
@@ -103,8 +108,8 @@ export const BackerRewardsContextProvider: FC<BackerRewardsProviderProps> = ({
   } = useGetTokenRewards(backer, rbtc, gauges)
   const [isDetailedView, setIsDetailedView] = useState(false)
 
-  const isLoading = rifLoading || rbtcLoading
-  const error = rifError ?? rbtcError
+  const isLoading = buildersLoading || rifLoading || rbtcLoading
+  const error = buildersError ?? rifError ?? rbtcError
 
   const data: { [token: string]: TokenBackerRewards } = {
     [rif.address]: rifRewards,

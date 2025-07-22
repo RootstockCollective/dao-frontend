@@ -3,7 +3,6 @@
 import { CycleContextProvider } from '@/app/collective-rewards/metrics'
 import { useIsBacker } from '@/app/collective-rewards/rewards'
 import { withBuilderSettingsProvider } from '@/app/collective-rewards/settings'
-import { CRWhitepaperLink } from '@/app/collective-rewards/shared/components/CRWhitepaperLinkNew'
 import { useHandleErrors } from '@/app/collective-rewards/utils'
 import { LoadingSpinner } from '@/components/LoadingSpinner'
 import { Header, Paragraph, Span } from '@/components/TypographyNew'
@@ -11,12 +10,14 @@ import { useReadBuilderRegistry } from '@/shared/hooks/contracts'
 import { ReactNode } from 'react'
 import { zeroAddress } from 'viem'
 import { useAccount } from 'wagmi'
+import { CRWhitepaperLink } from '../collective-rewards/shared/components/CRWhitepaperLinkNew'
+import { BackerRewards } from './backers/components/BackerRewards'
 import { BuilderRewards } from './builder/components/BuilderRewards'
 import { NonBacker } from './components'
 
 const Section = ({ children }: { children: ReactNode }) => {
   return (
-    <div className="flex w-full items-start gap-3 self-stretch pt-10 pb-10 pl-6 pr-6 bg-v3-bg-accent-80 rounded">
+    <div className="flex flex-col w-full items-start gap-3 self-stretch pt-10 pb-10 pl-6 pr-6 bg-v3-bg-accent-80 rounded">
       {children}
     </div>
   )
@@ -67,8 +68,9 @@ export const MyRewardsPage = () => {
             <BuilderRewards address={userAddress} gauge={gauge} />
           )}
           <Section>
+            {!isConnected && 'PLACEHOLDER for non-connected user'}
             {isConnected && !isBacker && <NonBacker />}
-            {isConnected && isBacker && 'Backer rewards PLACEHOLDER'}
+            {isConnected && isBacker && <BackerRewards />}
           </Section>
         </div>
       </div>
