@@ -21,6 +21,7 @@ export type GetAddressTokenResult = AddressToken[]
 export type TokenBalance = {
   balance: string
   symbol: string
+  formattedBalance: string
 }
 
 export type TokenBalanceRecord = Record<string, TokenBalance>

@@ -52,7 +52,7 @@ const getBucketBalance = (
   USDRIF: {
     amount: bucketBalance.USDRIF.balance,
     fiatAmount: bucketBalance.USDRIF.balance,
-    formattedAmount: formatNumberWithCommas(Big(bucketBalance.USDRIF.balance).toFixed(2)),
+    formattedAmount: formatNumberWithCommas(Big(bucketBalance.USDRIF.balance).toFixed(4)),
   },
   RBTC: {
     amount: bucketBalance.RBTC.balance,
