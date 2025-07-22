@@ -28,6 +28,9 @@ export const RewardCard = ({
             </Typography>
           }
           info={<Paragraph className="text-[14px] font-normal text-left">{info}</Paragraph>}
+          infoIconProps={{
+            tooltipClassName: 'max-w-sm text-sm',
+          }}
         />
       }
       className="w-auto"

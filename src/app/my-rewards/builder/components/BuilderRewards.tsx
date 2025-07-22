@@ -24,7 +24,7 @@ export const BuilderRewards = ({ address, gauge }: { address: Address; gauge: Ad
   return (
     <ActionsContainer
       title={
-        <Header variant="e3" className="m-0 text-v3-text-100" data-testid="builder-rewards-header">
+        <Header variant="h3" className="m-0 text-v3-text-100" data-testid="builder-rewards-header">
           BUILDER REWARDS
         </Header>
       }

@@ -4,9 +4,7 @@ import {
   useGetGaugesBackerRewardsClaimed,
 } from '@/app/collective-rewards/rewards'
 import { CompleteBuilder, StateWithUpdate } from '@/app/collective-rewards/types'
-import { useBuilderContext } from '@/app/collective-rewards/user/context'
-import { filterBuildersByState } from '@/app/collective-rewards/user/hooks'
-import { TOKENS } from '@/lib/tokens'
+import { filterBuildersByState, useBuilderContext } from '@/app/collective-rewards/user'
 import { useReadGauges } from '@/shared/hooks/contracts'
 import { createContext, FC, ReactNode, useContext, useMemo, useState } from 'react'
 import { Address } from 'viem'
@@ -91,14 +89,16 @@ const useGetTokenRewards = (backer: Address, token: Token, gauges: Address[]) =>
 const getEarnedAddresses = (rewards: Record<Address, bigint>) =>
   Object.keys(rewards).filter(key => rewards[key as Address] > 0n) as Address[]
 
-export const BackerRewardsContextProvider: FC<BackerRewardsProviderProps> = ({ children, backer }) => {
+export const BackerRewardsContextProvider: FC<BackerRewardsProviderProps> = ({
+  children,
+  backer,
+  tokens: { rif, rbtc },
+}) => {
   const { builders, isLoading: buildersLoading, error: buildersError } = useBuilderContext()
-  const { gauges } = useMemo(() => {
+  const gauges = useMemo(() => {
     const filteredBuilders = filterBuildersByState<CompleteBuilder>(builders)
-    const builderGauges = filteredBuilders.map(({ gauge }) => gauge)
-    return { activeBuilders: filteredBuilders, gauges: builderGauges }
+    return filteredBuilders.map(({ gauge }) => gauge)
   }, [builders])
-  const { rif, rbtc } = TOKENS
 
   const { data: rifRewards, isLoading: rifLoading, error: rifError } = useGetTokenRewards(backer, rif, gauges)
   const {

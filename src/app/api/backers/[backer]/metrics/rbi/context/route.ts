@@ -30,7 +30,7 @@ export async function GET(request: NextRequest, { params }: { params: Promise<{ 
         'BackerStakingHistory.backerTotalAllocation',
         'BackerStakingHistory.accumulatedTime',
         'BackerStakingHistory.lastBlockTimestamp',
-        db.raw(DB_COMMAND_COALESCE),
+        { gauges: db.raw(DB_COMMAND_COALESCE) },
       )
       .where('BackerStakingHistory.id', '=', backer.toLowerCase())
       .groupBy('BackerStakingHistory.id')
