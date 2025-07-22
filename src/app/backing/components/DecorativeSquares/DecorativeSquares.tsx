@@ -18,15 +18,13 @@ export function DecorativeSquares({
       xmlns="http://www.w3.org/2000/svg"
       {...props}
     >
-      <rect width="50" height="40" fill="#1E1E1E" />
+      <rect width="50" height="40" />
       <g clipPath="url(#clip0_2219_1646)">
-        <rect width="1440" height="1196" transform="translate(-292 -290)" fill="#171412" />
-        <rect x="-24" y="-90" width="856" height="322" rx="4" fill="#25211E" />
-        <rect width="808" height="178" transform="translate(0 30)" fill="url(#paint0_linear_2219_1646)" />
+        <rect width="606" height="178" transform="translate(10 30)" fill={color} />
+        <rect width="10" height="10" transform="matrix(-1 0 0 1 30 20)" fill={color} />
+        <rect width="10" height="10" transform="matrix(-1 0 0 1 50 0)" fill={color} />
         <rect width="10" height="10" transform="matrix(-1 0 0 1 10 30)" fill="#25211E" />
-        <rect width="10" height="10" transform="matrix(-1 0 0 1 30 20)" fill="#D2FAF4" />
-        <rect width="10" height="10" transform="matrix(-1 0 0 1 50 0)" fill="#D2FAF4" />
-        <rect width="10" height="10" transform="matrix(-1 0 0 1 20 10.5)" fill="#D2FAF4" />
+        <rect width="10" height="10" transform="matrix(-1 0 0 1 20 10.5)" fill={color} />
       </g>
       <defs>
         <linearGradient
