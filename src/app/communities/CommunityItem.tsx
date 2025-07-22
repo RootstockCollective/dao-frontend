@@ -44,7 +44,7 @@ export const CommunityItem = ({
   return (
     <BoostedBox nftAddress={nftAddress}>
       <div
-        className={cn('h-full bg-bg-60 flex community-item-gradient-hover p-[16px] gap-[8px]', variant === 'portrait' ? 'flex-col' : 'flex-row gap-4')}
+        className={cn('h-full bg-bg-60 flex p-[16px] gap-[8px]', variant === 'portrait' ? 'flex-col' : 'flex-row gap-4')}
         data-testid={`${title}Card`}
       >
         {/* image */}
