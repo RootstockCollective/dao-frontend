@@ -1,6 +1,7 @@
 'use client'
 
 import {
+  BuilderHeaderCell,
   BuilderHeaderCellBase,
   CombinedActionsHeaderCell,
   HeaderCellBase,
@@ -14,7 +15,7 @@ import { CommonComponentProps } from '@/components/commonProps'
 import { CloseIconKoto } from '@/components/Icons'
 import { TableHeaderCell } from '@/components/TableNew'
 import { useTableActionsContext } from '@/shared/context'
-import { ReactElement, ReactNode, Suspense } from 'react'
+import { ReactNode, Suspense } from 'react'
 import { COLUMN_TRANSFORMS, ColumnId, LABELS } from './BackerRewardsTable.config'
 
 const HeaderCell = ({
@@ -32,24 +33,6 @@ const HeaderCell = ({
     >
       {children}
     </HeaderCellBase>
-  )
-}
-
-const BuilderHeaderCell = ({
-  className,
-  children,
-  columnId,
-  ...props
-}: CommonComponentProps & { columnId: ColumnId }): ReactElement => {
-  return (
-    <BuilderHeaderCellBase<ColumnId>
-      className={className}
-      columnId={columnId}
-      columnTransforms={COLUMN_TRANSFORMS}
-      {...props}
-    >
-      {children}
-    </BuilderHeaderCellBase>
   )
 }
 

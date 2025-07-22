@@ -103,7 +103,7 @@ export const BuilderHeaderCellBase = <ColumnId extends string>({
   )
 }
 
-const BuilderHeaderCell = ({
+export const BuilderHeaderCell = ({
   className,
   children,
   columnId,
