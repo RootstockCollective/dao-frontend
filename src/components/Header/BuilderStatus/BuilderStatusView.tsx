@@ -8,7 +8,6 @@ import { WarningIcon } from '@/components/Icons'
 
 interface BuilderStatusProps {
   builderState: ExtendedBuilderState
-  iconSize?: number
 }
 
 const builderStatusConfig: Record<
@@ -39,7 +38,7 @@ const builderStatusConfig: Record<
   },
 }
 
-export function BuilderStatusView({ builderState, iconSize }: BuilderStatusProps) {
+export function BuilderStatusView({ builderState }: BuilderStatusProps) {
   const config = builderStatusConfig[builderState]
   const IconComponent = config.icon
   const size = config.iconSize
