@@ -1,7 +1,7 @@
 import { useMemo } from 'react'
 import { useBlockNumber, useReadContracts } from 'wagmi'
 import { formatEther } from 'viem'
-import { EventArgumentsParameter, getEventArguments } from '../shared/utils'
+import { EventArgumentsParameter, getProposalEventArguments } from '../shared/utils'
 import Big from '@/lib/big'
 import { LatestProposalResponse } from './useFetchLatestProposals'
 import { governor } from '@/lib/contracts'
@@ -57,7 +57,7 @@ export function useProposalListData({ proposals }: Props) {
         const abstainVotes = Big(votes?.at(2) ?? 0)
         const deadlineBlock = Big(proposal.args.voteEnd.toString())
         const creationBlock = Number(proposal.blockNumber)
-        const eventArgs = getEventArguments(proposal as unknown as EventArgumentsParameter)
+        const eventArgs = getProposalEventArguments(proposal as unknown as EventArgumentsParameter)
         const { calldatasParsed } = eventArgs
         const category = (
           calldatasParsed

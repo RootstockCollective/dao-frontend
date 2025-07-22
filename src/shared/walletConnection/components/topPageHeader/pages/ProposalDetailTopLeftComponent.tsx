@@ -1,7 +1,7 @@
 import { useParams } from 'next/navigation'
 import { useFetchAllProposals } from '@/app/proposals/hooks/useFetchLatestProposals'
 import { FC, useMemo } from 'react'
-import { getEventArguments, splitCombinedName } from '@/app/proposals/shared/utils'
+import { getProposalEventArguments, splitCombinedName } from '@/app/proposals/shared/utils'
 import {
   Breadcrumb,
   BreadcrumbItem,
@@ -22,7 +22,7 @@ export const ProposalDetailTopLeftComponent = () => {
       return null
     }
     // @ts-ignore
-    return getEventArguments(proposal)
+    return getProposalEventArguments(proposal)
   }, [id, latestProposals])
   if (!proposal) {
     return null

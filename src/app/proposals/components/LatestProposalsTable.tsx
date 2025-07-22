@@ -10,7 +10,7 @@ import {
   getPaginationRowModel,
   PaginationState,
 } from '@tanstack/react-table'
-import Big from 'big.js'
+import Big from '@/lib/big'
 import { GridTable } from '@/components/Table'
 import { ProposalNameColumn, ProposerColumn } from './table-columns/ProposalNameColumn'
 import { QuorumColumn, VotesColumn } from './table-columns/VotesColumn'
@@ -148,7 +148,6 @@ const LatestProposalsTable = ({ proposals }: LatestProposalsTableProps) => {
         <div>
           <div className="flex items-center-safe gap-1">
             <p className="mb-1">Quorum</p>
-            {/* <KotoQuestionMarkIcon className="mb-1" /> */}
           </div>
           <p className="text-xs font-normal text-text-40">needed | reached</p>
         </div>

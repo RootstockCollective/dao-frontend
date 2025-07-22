@@ -1,13 +1,13 @@
+import { MouseEvent, Ref } from 'react'
 import { formatEther } from 'viem'
 import { Button } from '@/components/ButtonNew/Button'
-import { Popover } from '@/components/Popover'
 import { capitalizeFirstLetter } from '@/shared/utils'
 import { Header, Paragraph } from '@/components/TypographyNew'
 import { formatNumberWithCommas } from '@/lib/utils'
 import { Vote } from '@/shared/types'
 import { HourglassAnimatedIcon } from '@/components/Icons/HourglassAnimatedIcon'
 import Big from '@/lib/big'
-import { MouseEvent, Ref } from 'react'
+import { BalanceInfo } from '@/components/BalanceInfo'
 
 interface VoteCounterProps {
   title: string
@@ -37,7 +37,7 @@ export const VoteCounter = ({ title, value, color, disabled, isVotingInProgress 
   )
 }
 
-type ActionName = 'Vote on proposal' | 'Put on queue' | 'Execute'
+type ActionName = 'Vote on proposal' | 'Put on queue' | 'Execute' | 'View proposal'
 
 export interface ButtonAction {
   actionName: ActionName
@@ -125,19 +125,11 @@ export const VotingDetails = ({
       {/* Voting power block (always rendered once) */}
       <div className="mt-6">
         {!vote ? (
-          <>
-            <div className="flex items-center text-sm">
-              <Paragraph className="mr-2 text-[16px] text-disabled-border">
-                Your available voting power
-              </Paragraph>
-              <Popover position="top" content={'How much power is available for this proposal'}>
-                {'?'}
-              </Popover>
-            </div>
-            <Header className="font-kk-topo font-normal text-[32px]">
-              {formatNumberWithCommas(Big(formatEther(votingPower)).round(0))}
-            </Header>
-          </>
+          <BalanceInfo
+            title={'Your available voting power'}
+            tooltipContent={'How much power is available for this proposal'}
+            amount={formatNumberWithCommas(Big(formatEther(votingPower)).round(0))}
+          />
         ) : (
           <Paragraph variant="body">{`You voted ${vote.toUpperCase()} this proposal. ${!buttonAction ? '' : ' Take the next step now.'}`}</Paragraph>
         )}
@@ -146,14 +138,14 @@ export const VotingDetails = ({
       {/* Action button (Vote on proposal, custom, or Cancel) always rendered here */}
       <div>
         {isChoosingVote ? (
-          <Button variant="secondary-outline" className="mt-4" onClick={onCancelVote}>
+          <Button variant="secondary-outline" className="mt-6" onClick={onCancelVote}>
             Cancel
           </Button>
         ) : (
           buttonAction && (
             <Button
               onClick={buttonAction.onButtonClick}
-              className="mt-4"
+              className="mt-6"
               textClassName="text-foreground"
               disabled={actionDisabled}
               ref={voteButtonRef}

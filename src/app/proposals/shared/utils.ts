@@ -81,7 +81,7 @@ const tryDecode = (data: string): DecodedData | undefined => {
  * @param timeStamp
  * @param blockNumber
  */
-export const getEventArguments = ({
+export const getProposalEventArguments = ({
   args: { description, proposalId, proposer, targets, calldatas },
   timeStamp,
   blockNumber,

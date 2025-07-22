@@ -14,6 +14,11 @@ export const menuData = [
     buttonProps: { id: 'Button_User', name: 'user' },
   },
   {
+    href: 'dummy-home',
+    text: 'Home',
+    buttonProps: { id: 'Button_Home', name: 'home' },
+  },
+  {
     href: 'treasury',
     text: 'Treasury',
     buttonProps: { id: 'Button_Treasury', name: 'treasury' },

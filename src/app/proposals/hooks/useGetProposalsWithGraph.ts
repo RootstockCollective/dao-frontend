@@ -4,9 +4,10 @@ import { useQuery } from '@tanstack/react-query'
 import { getCachedProposals, ProposalGraphQLResponse } from '@/app/proposals/actions/proposalsAction'
 import { AVERAGE_BLOCKTIME } from '@/lib/constants'
 import Big from '@/lib/big'
-import { getEventArguments } from '@/app/proposals/shared/utils'
+import { getProposalEventArguments } from '@/app/proposals/shared/utils'
 import { Address, formatEther } from 'viem'
 import { ProposalCategory, ProposalState } from '@/shared/types'
+import { Proposal } from '../shared/types'
 
 export function useGetProposalsWithGraph() {
   const {
@@ -25,8 +26,8 @@ export function useGetProposalsWithGraph() {
     },
   })
 
-  const activeProposals = useMemo(() => {
-    if (!proposalsData || !latestBlockNumber) return '0'
+  const activeProposalCount = useMemo(() => {
+    if (!proposalsData || !latestBlockNumber) return []
     return proposalsData.proposals
       .filter(
         (proposal: ProposalGraphQLResponse) =>
@@ -35,10 +36,13 @@ export function useGetProposalsWithGraph() {
       .length.toString()
   }, [proposalsData, latestBlockNumber])
 
-  const totalProposals = useMemo(() => {
+  const totalProposalCount = useMemo(() => {
     if (!proposalsData) return '0'
     return proposalsData.counters.find(e => e.id === 'proposals')?.count || '0'
   }, [proposalsData])
+
+  const activeProposals: Proposal[] = []
+  const inactiveProposals: Proposal[] = []
 
   const proposalResponse = proposalsData?.proposals.map(proposal => {
     const againstVotes = Big(proposal.votesAgainst).div(Big('1e18')).round()
@@ -46,7 +50,7 @@ export function useGetProposalsWithGraph() {
     const abstainVotes = Big(proposal.votesAbstains).div(Big('1e18')).round()
     const deadlineBlock = Big(proposal.voteEnd)
     const creationBlock = Number(proposal.createdAtBlock)
-    const eventArgs = getEventArguments({
+    const eventArgs = getProposalEventArguments({
       args: {
         description: proposal.description,
         proposalId: BigInt(proposal.proposalId),
@@ -66,7 +70,8 @@ export function useGetProposalsWithGraph() {
       .find(data => ['withdraw', 'withdrawERC20'].includes(data.functionName))
       ? ProposalCategory.Grants
       : ProposalCategory.Activation
-    return {
+
+    const proposalData = {
       ...proposal,
       votes: {
         againstVotes,
@@ -82,14 +87,24 @@ export function useGetProposalsWithGraph() {
       category,
       ...eventArgs,
     }
+
+    if (proposalData.proposalState === ProposalState.Active) {
+      activeProposals.push(proposalData)
+    } else {
+      inactiveProposals.push(proposalData)
+    }
+
+    return proposalData
   })
 
   return {
     data: proposalResponse ?? [],
     loading: proposalDataIsLoading,
     error: proposalsDataError,
+    inactiveProposals,
     activeProposals,
-    totalProposals,
+    activeProposalCount,
+    totalProposalCount,
   }
 }
 

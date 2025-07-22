@@ -44,6 +44,7 @@ export const useVotingPower = () => {
   return {
     isLoading: false,
     votingPower: formatUnits(balance, stRIFDecimals),
+    votingPowerRaw: balance,
     canCreateProposal: totalVotingPower >= BigInt(proposalThreshold),
     threshold: formatUnits(BigInt(proposalThreshold), stRIFDecimals),
     totalVotingPower: formatUnits(totalVotingPower, stRIFDecimals),

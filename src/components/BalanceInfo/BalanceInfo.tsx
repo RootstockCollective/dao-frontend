@@ -6,7 +6,7 @@ import { KotoQuestionMarkIcon } from '../Icons'
 
 interface Props {
   amount: ReactNode
-  symbol: string
+  symbol?: string
   title?: string
   tooltipContent?: ReactNode
   fiatAmount?: ReactNode
@@ -39,16 +39,18 @@ export const BalanceInfo: FC<Props> = ({
         )}
       </div>
 
-      <div className="flex items-end flex-row gap-2 mt-2">
+      <div className="flex items-end flex-row gap-2 mt-4">
         <Header variant="h1" data-testid="Amount" className="flex items-end flex-row gap-2">
           {amount}
         </Header>
-        <div className="flex items-center flex-row gap-1">
-          <TokenImage symbol={symbol} size={24} />{' '}
-          <Span variant="body-l" bold>
-            {symbol}
-          </Span>
-        </div>
+        {symbol ? (
+          <div className="flex items-center flex-row gap-1">
+            <TokenImage symbol={symbol} size={24} />{' '}
+            <Span variant="body-l" bold>
+              {symbol}
+            </Span>
+          </div>
+        ) : null}
       </div>
       {fiatAmount && (
         <Label variant="body-s" className="text-bg-0" bold data-testid="FiatAmount">

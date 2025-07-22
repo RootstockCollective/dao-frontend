@@ -3,6 +3,7 @@ import moment from 'moment'
 import { DEFAULT_NUMBER_OF_SECONDS_PER_BLOCK } from '@/lib/constants'
 import Big from '@/lib/big'
 import { cn } from '@/lib/utils'
+import { ClassNameValue } from 'tailwind-merge'
 
 const convertToTimeRemaining = (seconds: number) => {
   const duration = moment.duration(seconds, 'seconds')
@@ -29,9 +30,15 @@ interface TimeColumnProps {
   blocksUntilClosure: Big
   proposalDeadline: Big
   proposalBlockNumber: string
+  className?: ClassNameValue
 }
 
-export function TimeColumn({ blocksUntilClosure, proposalDeadline, proposalBlockNumber }: TimeColumnProps) {
+export function TimeColumn({
+  blocksUntilClosure,
+  proposalDeadline,
+  proposalBlockNumber,
+  className,
+}: TimeColumnProps) {
   const votingPeriod = proposalDeadline.minus(Number(proposalBlockNumber))
   const ratio = votingPeriod.eq(0) ? Big(0) : blocksUntilClosure.div(votingPeriod)
 
@@ -42,5 +49,5 @@ export function TimeColumn({ blocksUntilClosure, proposalDeadline, proposalBlock
   const timeRemainingMsg = blocksUntilClosure.gt(0)
     ? convertToTimeRemaining(timeRemainingSec.toNumber())
     : '-'
-  return <Paragraph className={cn(colorClass, 'w-full text-center')}>{timeRemainingMsg}</Paragraph>
+  return <Paragraph className={cn(colorClass, 'w-full text-center', className)}>{timeRemainingMsg}</Paragraph>
 }

@@ -30,7 +30,7 @@ const DropdownTrigger = forwardRef<
     {children}
     <SelectPrimitive.Icon asChild>
       <ChevronDownIcon
-        size="1rem"
+        size={16}
         className="flex-shrink-0 transition-transform duration-100 group-data-[state=open]:rotate-180 p-[2px]"
         aria-hidden="true"
       />
