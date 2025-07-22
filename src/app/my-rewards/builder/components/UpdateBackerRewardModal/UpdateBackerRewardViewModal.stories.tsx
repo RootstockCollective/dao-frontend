@@ -1,93 +1,118 @@
-import React, { useState } from 'react'
-import UpdateBackerRewardModal from './UpdateBackerRewardViewModal'
+import type { Meta, StoryObj } from '@storybook/react'
+import UpdateBackerRewardViewModal from './UpdateBackerRewardViewModal'
+import { Button } from '@/components/ButtonNew'
+import { useState } from 'react'
 import { Duration } from 'luxon'
 
-// Reusable story wrapper component
-const StoryWrapper = ({
-  isTxPending = false,
-  cooldownDuration,
-  currentReward,
-  updatedReward,
-  suggestedReward,
-  onSave,
-  onRewardChange,
-  ...args
-}: {
-  isTxPending?: boolean
-  cooldownDuration?: Duration
-  currentReward: number
-  updatedReward: number
-  suggestedReward?: number
-  onSave?: (reward: string) => void
-  onRewardChange: (reward: string) => void
-  [key: string]: any
-}) => {
-  const [open, setOpen] = useState(false)
+const meta: Meta<typeof UpdateBackerRewardViewModal> = {
+  title: 'MyRewards/UpdateBackerRewardViewModal',
+  component: UpdateBackerRewardViewModal,
+  parameters: {
+    layout: 'centered',
+  },
+}
+
+export default meta
+type Story = StoryObj<typeof UpdateBackerRewardViewModal>
+
+// Base configuration for all stories
+const baseArgs = {
+  onClose: () => {},
+  currentReward: 15,
+  updatedReward: 20,
+  onRewardChange: () => {},
+  onSave: () => {},
+  cooldownDuration: Duration.fromObject({ days: 7 }),
+  suggestedReward: 18,
+  isOperational: true,
+}
+
+// Common render function for interactive stories
+const InteractiveStory = ({ props, buttonText }: { props: any; buttonText: string }) => {
+  const [isModalOpened, setIsModalOpened] = useState(false)
+  const [updatedReward, setUpdatedReward] = useState(props.updatedReward)
 
   return (
-    <div className="p-8 min-h-screen bg-black flex flex-col items-center justify-center">
-      <button onClick={() => setOpen(true)}>Open Modal</button>
-      {open && (
-        <UpdateBackerRewardModal
-          currentReward={currentReward}
+    <>
+      <Button onClick={() => setIsModalOpened(true)}>{buttonText}</Button>
+      {isModalOpened && (
+        <UpdateBackerRewardViewModal
+          {...props}
           updatedReward={updatedReward}
-          suggestedReward={suggestedReward}
-          isTxPending={isTxPending}
-          cooldownDuration={cooldownDuration}
-          onClose={() => setOpen(false)}
-          onSave={reward => {
-            onSave?.(reward)
-            setOpen(false)
+          onClose={() => setIsModalOpened(false)}
+          onRewardChange={(value: string) => setUpdatedReward(Number(value))}
+          onSave={() => {
+            setIsModalOpened(false)
           }}
-          onRewardChange={onRewardChange}
-          {...args}
         />
       )}
-    </div>
+    </>
   )
 }
 
-export default {
-  title: 'MyRewards/UpdateBackerRewardModal',
-  component: UpdateBackerRewardModal,
-  argTypes: {
-    currentReward: {
-      control: { type: 'number', min: 0, max: 100 },
-      description: 'Current reward percentage',
-    },
-    initialUpdatedReward: {
-      control: { type: 'text' },
-      description: 'Initial value for the updated reward input',
-    },
-    suggestedReward: {
-      control: { type: 'number', min: 0, max: 100 },
-      description: 'Suggested reward percentage',
-    },
-    isTxPending: {
-      control: { type: 'boolean' },
-      description: 'Whether the save operation is pending',
-    },
-    onClose: { action: 'closed' },
-    onSave: { action: 'saved' },
-    onRewardChange: { action: 'reward changed' },
-  },
-  args: {
-    currentReward: 20,
-    updatedReward: 20,
-    suggestedReward: 22,
-    isTxPending: false,
-    cooldownDuration: Duration.fromObject({ days: 6, hours: 24, minutes: 59 }),
-  },
+export const Default: Story = {
+  args: baseArgs,
+  render: (props: any) => <InteractiveStory props={props} buttonText="Open Update Backer Reward Modal" />,
 }
 
-export const Default = (args: any) => <StoryWrapper {...args} />
+export const WithCooldownPeriod: Story = {
+  args: {
+    ...baseArgs,
+    currentReward: 10,
+    updatedReward: 25,
+    cooldownDuration: Duration.fromObject({ days: 14, hours: 6 }),
+    suggestedReward: 22,
+  },
+  render: (props: any) => <InteractiveStory props={props} buttonText="Open with 14-day Cooldown" />,
+}
 
-export const Pending = (args: any) => <StoryWrapper {...args} isTxPending={true} />
+export const NotOperational: Story = {
+  args: {
+    ...baseArgs,
+    currentReward: 12,
+    updatedReward: 18,
+    suggestedReward: 15,
+    isOperational: false,
+  },
+  render: (props: any) => <InteractiveStory props={props} buttonText="Open (Not Operational)" />,
+}
 
-export const WithLongCooldown = (args: any) => (
-  <StoryWrapper {...args} cooldownDuration={Duration.fromObject({ days: 10, hours: 12, minutes: 30 })} />
-)
+export const AlreadySubmitted: Story = {
+  args: {
+    ...baseArgs,
+    currentReward: 8,
+    updatedReward: 8,
+    alreadySubmitted: true,
+    suggestedReward: 10,
+  },
+  render: (props: any) => <InteractiveStory props={props} buttonText="Open (Already Submitted)" />,
+}
 
-export const WithShortCooldown = (args: any) => (
-  <StoryWrapper {...args} cooldownDuration={Duration.fromObject({ hours: 2, minutes: 15 })} />
-)
+export const TransactionPending: Story = {
+  args: {
+    ...baseArgs,
+    currentReward: 20,
+    updatedReward: 25,
+    suggestedReward: 23,
+    isTxPending: true,
+  },
+  render: (props: any) => <InteractiveStory props={props} buttonText="Open (Transaction Pending)" />,
+}
+
+export const Loading: Story = {
+  args: {
+    ...baseArgs,
+    isLoading: true,
+  },
+  render: (props: any) => <InteractiveStory props={props} buttonText="Open (Loading)" />,
+}
+
+export const NoSuggestedReward: Story = {
+  args: {
+    ...baseArgs,
+    currentReward: 5,
+    updatedReward: 8,
+    suggestedReward: undefined,
+  },
+  render: (props: any) => <InteractiveStory props={props} buttonText="Open (No Suggested Reward)" />,
+}

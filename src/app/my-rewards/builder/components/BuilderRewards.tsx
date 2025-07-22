@@ -58,12 +58,11 @@ export const BuilderRewards = ({ address, gauge }: { address: Address; gauge: Ad
         data-testid="adjust-backers-rewards-button"
       />
 
-      {isUpdateBackersRewardsModalOpen && (
-        <UpdateBackerRewardModal
-          onClose={() => setIsUpdateBackersRewardsModalOpen(false)}
-          data-testid="update-backer-reward-modal"
-        />
-      )}
+      <UpdateBackerRewardModal
+        isOpen={isUpdateBackersRewardsModalOpen}
+        onClose={() => setIsUpdateBackersRewardsModalOpen(false)}
+        data-testid="update-backer-reward-modal"
+      />
     </ActionsContainer>
   )
 }

@@ -14,6 +14,7 @@ interface UpdateBackerRewardViewModalProps {
   className?: string
   currentReward: number
   updatedReward: number
+  alreadySubmitted?: boolean
   onRewardChange: (updatedReward: string) => void
   onSave: (updatedReward: string) => void
   cooldownDuration?: Duration
@@ -28,6 +29,7 @@ const UpdateBackerRewardViewModal = ({
   className,
   currentReward,
   updatedReward,
+  alreadySubmitted,
   onRewardChange,
   onSave,
   cooldownDuration,
@@ -41,6 +43,18 @@ const UpdateBackerRewardViewModal = ({
   }
 
   const timeRemaining = durationToLabel(cooldownDuration)
+
+  const getSaveButtonTooltipText = () => {
+    if (!isOperational) {
+      return 'You need to be operational to adjust your backer reward %'
+    }
+    if (alreadySubmitted) {
+      return "You can't submit the same backer reward %"
+    }
+    return undefined
+  }
+
+  const saveButtonTooltipText = getSaveButtonTooltipText()
 
   return (
     <Modal
@@ -116,11 +130,11 @@ const UpdateBackerRewardViewModal = ({
             <TransactionInProgressButton />
           ) : (
             <Tooltip
-              text="You need to be operational to adjust your backer reward %"
-              className={cn('rounded-sm z-50 bg-v3-text-80 text-v3-bg-accent-60 p-6 text-sm')}
+              text={saveButtonTooltipText}
+              className="rounded-sm z-50 bg-v3-text-80 text-v3-bg-accent-60 p-6 text-sm"
               side="top"
               align="center"
-              disabled={isOperational}
+              disabled={saveButtonTooltipText === undefined}
             >
               <Button onClick={handleSave}>Save changes</Button>
             </Tooltip>
