@@ -50,6 +50,7 @@ createAppKit({
     '38f5d18bd8522c244bdd70cb4a68e0e718865155811c043f052fb9f1c51de662', // Bitget
     '9ce87712b99b3eb57396cc8621db8900ac983c712236f48fb70ad28760be3f6a', // SubWallet
     '0cb0c532b518aa842786d5167e13df22046bc9301b6677808d7134c3d7366a9d', // WigWam
+    'fb6ed96272ec885008e896c6146002048d8dc88c0b7e0e6fa42bcadf052a1569', // Enkrypt
     'io.trezor.hardware-wallet', // Add Trezor's EIP-6963 UUID
   ],
   features: {
