@@ -22,10 +22,10 @@ export const UpdateBackerRewardModal = ({ onClose, className }: UpdateBackerRewa
     isBuilderOperational,
   } = useBuilderSettingsContext()
 
-  const isCooldownElapsed = rewardData?.cooldownEndTime.toSeconds() < DateTime.now().toSeconds()
+  const isCooldownActive = rewardData?.cooldownEndTime.toSeconds() > DateTime.now().toSeconds()
   const previousReward = rewardData ? Number(weiToPercentage(rewardData.previous, 0)) : 0
   const nextReward = rewardData ? Number(weiToPercentage(rewardData.next, 0)) : 0
-  const currentReward = isCooldownElapsed ? nextReward : previousReward
+  const currentReward = isCooldownActive ? previousReward : nextReward
 
   const [updatedReward, setUpdatedReward] = useState<number>(0)
 
