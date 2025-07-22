@@ -2,7 +2,7 @@ import { useBuilderSettingsContext } from '@/app/collective-rewards/settings/bui
 import { percentageToWei, weiToPercentage } from '@/app/collective-rewards/settings/utils/weiUtils'
 import UpdateBackerRewardViewModal from './UpdateBackerRewardViewModal'
 import { useReadBuilderRegistry } from '@/shared/hooks/contracts'
-import { Duration } from 'luxon'
+import { DateTime, Duration } from 'luxon'
 import { useState, useEffect } from 'react'
 
 interface UpdateBackerRewardModalProps {
@@ -17,26 +17,32 @@ function formatDuration(duration: bigint | undefined) {
 
 export const UpdateBackerRewardModal = ({ onClose, className }: UpdateBackerRewardModalProps) => {
   const {
-    current: { data: currentRewardData, isLoading: isCurrentRewardsLoading },
+    current: { data: rewardData, isLoading: isRewardsLoading },
     update: { setNewReward, isPending: isTxPending },
     isBuilderOperational,
   } = useBuilderSettingsContext()
 
-  const currentReward = currentRewardData ? Number(weiToPercentage(currentRewardData.previous, 0)) : 0
+  const isCooldownElapsed = rewardData?.cooldownEndTime.toSeconds() < DateTime.now().toSeconds()
+  const previousReward = rewardData ? Number(weiToPercentage(rewardData.previous, 0)) : 0
+  const nextReward = rewardData ? Number(weiToPercentage(rewardData.next, 0)) : 0
+  const currentReward = isCooldownElapsed ? nextReward : previousReward
+
   const [updatedReward, setUpdatedReward] = useState<number>(0)
 
   useEffect(() => {
-    setUpdatedReward(currentReward)
-  }, [currentReward])
+    setUpdatedReward(nextReward || previousReward)
+  }, [nextReward, previousReward])
 
   const { data: rewardPercentageCooldown, isPending: isCooldownPending } = useReadBuilderRegistry({
     functionName: 'rewardPercentageCooldown',
   })
 
   const cooldownDuration = formatDuration(rewardPercentageCooldown)
+  const alreadySubmitted = updatedReward === currentReward
 
   const handleSave = async (updatedRewardValue: string) => {
     if (!isBuilderOperational) return
+    if (alreadySubmitted) return
 
     await setNewReward(percentageToWei(updatedRewardValue))
     onClose()
@@ -51,12 +57,13 @@ export const UpdateBackerRewardModal = ({ onClose, className }: UpdateBackerRewa
       className={className}
       currentReward={currentReward}
       updatedReward={updatedReward}
+      alreadySubmitted={alreadySubmitted}
       suggestedReward={undefined} // FIXME: Get the suggested reward. out of scope atm.
       onSave={handleSave}
       onRewardChange={handleRewardChange}
       cooldownDuration={cooldownDuration}
       isTxPending={isTxPending}
-      isLoading={isCurrentRewardsLoading || isCooldownPending}
+      isLoading={isRewardsLoading || isCooldownPending}
       isOperational={isBuilderOperational}
       onClose={onClose}
     />
