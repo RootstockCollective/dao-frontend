@@ -66,7 +66,10 @@ export const MyRewardsPage = () => {
           {gauge && gauge !== zeroAddress && userAddress && (
             <BuilderRewards address={userAddress} gauge={gauge} />
           )}
-          <Section>{isConnected && !isBacker && <NonBacker />}</Section>
+          <Section>
+            {isConnected && !isBacker && <NonBacker />}
+            {isConnected && isBacker && 'Backer rewards PLACEHOLDER'}
+          </Section>
         </div>
       </div>
     </CycleContextProvider>
