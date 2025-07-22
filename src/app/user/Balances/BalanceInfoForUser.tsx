@@ -20,7 +20,7 @@ export const BalanceInfoForUser = ({ symbol }: Props) => {
   const symbolToUse = balances[symbol]?.symbol
   const price = prices[symbol]?.price || 0
   const userBalance = Big(balances[symbol]?.balance || 0)
-  const usd = formatCurrency(userBalance.mul(price), { showCurrency: true })
+  const fiatAmount = formatCurrency(userBalance.mul(price), { showCurrency: true })
 
   return (
     <BalanceInfo
@@ -28,7 +28,7 @@ export const BalanceInfoForUser = ({ symbol }: Props) => {
       amount={balances[symbol]?.formattedBalance}
       symbol={symbolToUse}
       tooltipContent={`Token Price: ${formatCurrency(price)}`}
-      fiatAmount={usd}
+      fiatAmount={fiatAmount}
     />
   )
 }
