@@ -1,8 +1,20 @@
 import { Address } from 'viem'
 
+export type BucketItem = {
+  amount: string
+  fiatAmount: string
+  formattedAmount: string
+}
+
+export type Bucket = {
+  RIF: BucketItem
+  USDRIF: BucketItem
+  RBTC: BucketItem
+}
+
 export interface TreasuryAsset {
   title: string
-  bucket: { amount: string; fiatAmount: string } | undefined
+  bucket: BucketItem | undefined
 }
 
 export interface TreasurySectionData {
