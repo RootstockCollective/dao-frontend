@@ -1,7 +1,8 @@
-import { RewardCard } from '@/app/my-rewards/components/RewardCard'
+import { useHandleErrors } from '@/app/collective-rewards/utils'
+import { Metric, MetricTitle } from '@/components/Metric'
 import { TokenAmount } from '@/components/TokenAmount'
 import { TokenSymbol } from '@/components/TokenImage'
-import { useHandleErrors } from '@/app/collective-rewards/utils'
+import { Paragraph } from '@/components/TypographyNew'
 import { useBackersEstimatedRewards } from '../hooks/useBackersEstimatedRewards'
 
 export const BackersEstimatedRewards = () => {
@@ -13,17 +14,30 @@ export const BackersEstimatedRewards = () => {
   })
 
   return (
-    <RewardCard
-      isLoading={rifData.isLoading || rbtcData.isLoading}
-      title="Estimated this cycle"
-      info="Your rewards available to claim"
+    <Metric
+      title={
+        <MetricTitle
+          title="Estimated this cycle"
+          info={
+            <Paragraph className="text-[14px] font-normal text-left">
+              Your rewards available to claim
+            </Paragraph>
+          }
+        />
+      }
     >
-      <TokenAmount amount={rifData.amount} tokenSymbol={TokenSymbol.RIF} amountInFiat={rifData.fiatAmount} />
-      <TokenAmount
-        amount={rbtcData.amount}
-        tokenSymbol={TokenSymbol.RBTC}
-        amountInFiat={rbtcData.fiatAmount}
-      />
-    </RewardCard>
+      <div className="flex flex-col gap-2">
+        <TokenAmount
+          amount={rifData.amount}
+          tokenSymbol={TokenSymbol.RIF}
+          amountInFiat={rifData.fiatAmount}
+        />
+        <TokenAmount
+          amount={rbtcData.amount}
+          tokenSymbol={TokenSymbol.RBTC}
+          amountInFiat={rbtcData.fiatAmount}
+        />
+      </div>
+    </Metric>
   )
 }

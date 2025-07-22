@@ -1,7 +1,6 @@
+import { AnnualBackersIncentives } from '@/app/shared/components/AnnualBackersIncentives'
 import { Header } from '@/components/TypographyNew'
-
 import { BackersEstimatedRewards } from './BackersEstimatedRewards'
-import { ABI } from './ABI'
 
 export const BackerRewardsNotConnected = () => {
   return (
@@ -16,10 +15,10 @@ export const BackerRewardsNotConnected = () => {
         </Header>
       </div>
 
-      <div className="flex items-start" data-testid="backer-rewards-cards-container-not-connected">
-        <BackersEstimatedRewards />
-        <div className="ml-[10rem]">
-          <ABI />
+      <div className="flex items-start gap-10" data-testid="backer-rewards-cards-container-not-connected">
+        <AnnualBackersIncentives className="basis-3/4" />
+        <div className="basis-1/4">
+          <BackersEstimatedRewards />
         </div>
       </div>
     </div>
