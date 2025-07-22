@@ -4,9 +4,15 @@ import { CommonComponentProps } from '../commonProps'
 
 export type ActionsContainerProps = CommonComponentProps & {
   title?: ReactNode
+  containerClassName?: string
 }
 
-export const ActionsContainer: FC<ActionsContainerProps> = ({ title, children, className = '' }) => {
+export const ActionsContainer: FC<ActionsContainerProps> = ({
+  title,
+  children,
+  className = '',
+  containerClassName = '',
+}) => {
   return (
     <div
       data-testid="ActionsContainer"
@@ -17,7 +23,7 @@ export const ActionsContainer: FC<ActionsContainerProps> = ({ title, children, c
           {title}
         </div>
       )}
-      <div data-testid="content" className="flex flex-col items-start gap-4">
+      <div data-testid="content" className={cn('flex flex-col items-start gap-4', containerClassName)}>
         {children}
       </div>
     </div>

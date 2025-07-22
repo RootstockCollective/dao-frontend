@@ -67,7 +67,7 @@ export const useGetGaugeNotifyRewardLogs = (
         eventName: 'NotifyReward',
       })
     },
-    queryKey: ['notifyRewardLogs', gauge, rewardToken],
+    queryKey: ['notifyRewardLogs', gauge],
     refetchInterval: AVERAGE_BLOCKTIME,
     initialData: [],
   })

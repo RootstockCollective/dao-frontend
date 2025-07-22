@@ -1,15 +1,16 @@
-import { Token } from '@/app/collective-rewards/rewards'
 import { useGetCycleRewards } from '@/app/collective-rewards/shared/hooks/useGetCycleRewards'
 import { BuilderEstimatedRewards, CompleteBuilder } from '@/app/collective-rewards/types'
 import { filterBuildersByState } from '@/app/collective-rewards/user'
 import { useBuilderContext } from '@/app/collective-rewards/user/context/BuilderContext'
 import { isBuilderRewardable } from '@/app/collective-rewards/utils'
 import { USD, WeiPerEther } from '@/lib/constants'
+import { TOKENS } from '@/lib/tokens'
 import { usePricesContext } from '@/shared/context/PricesContext'
 import { useReadBackersManager, useReadGauges } from '@/shared/hooks/contracts'
 import { useMemo } from 'react'
 
-export const useGetBuilderEstimatedRewards = ({ rif, rbtc }: { [token: string]: Token }, currency = USD) => {
+export const useGetBuilderEstimatedRewards = (currency = USD) => {
+  const { rif, rbtc } = TOKENS
   const { builders } = useBuilderContext()
   const { activeBuilders, gauges } = useMemo(() => {
     const filteredBuilders = filterBuildersByState<CompleteBuilder>(builders)

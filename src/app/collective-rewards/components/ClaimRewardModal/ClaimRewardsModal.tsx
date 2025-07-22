@@ -5,7 +5,7 @@ import { useHandleErrors } from '@/app/collective-rewards/utils'
 import { useBackerRewardsContext } from '@/app/collective-rewards/rewards/backers'
 import { getFiatAmount } from '@/app/collective-rewards/rewards/utils'
 import { ClaimRewardsModalView } from './ClaimRewardsModalView'
-import { getTokens } from '@/lib/tokens'
+import { TOKENS } from '@/lib/tokens'
 import { ClaimRewardType } from './types'
 
 interface ClaimRewardsModalProps {
@@ -13,17 +13,16 @@ interface ClaimRewardsModalProps {
   onClose: () => void
 }
 
-const tokens = getTokens()
-
 const getRewardTokenAddress = (value: ClaimRewardType) => {
   switch (value) {
     case 'all':
       return undefined // Claim all rewards
     default:
-      return tokens[value]?.address
+      return TOKENS[value as keyof typeof TOKENS]?.address
   }
 }
 
+// FIXME: we need to change this to be reused for backers and builders
 export const ClaimRewardsModal: FC<ClaimRewardsModalProps> = ({ open, onClose }) => {
   const [selectedRewardType, setSelectedRewardType] = useState<ClaimRewardType>('all')
 
@@ -40,7 +39,7 @@ export const ClaimRewardsModal: FC<ClaimRewardsModalProps> = ({ open, onClose })
     let totalFiatAmount = 0
 
     // Calculate amounts and fiat values for each token
-    Object.entries(tokens).forEach(([tokenKey, tokenInfo]) => {
+    Object.entries(TOKENS).forEach(([tokenKey, tokenInfo]) => {
       const earned = backerRewards[tokenInfo.address]?.earned || {}
       const amount = Object.values(earned).reduce((acc, earned) => acc + earned, 0n)
       const price = prices[tokenInfo.symbol]?.price ?? 0
@@ -73,7 +72,7 @@ export const ClaimRewardsModal: FC<ClaimRewardsModalProps> = ({ open, onClose })
         isClaimable={isClaimable}
         isLoading={isLoading}
         isTxPending={isPendingTx || isLoadingReceipt}
-        tokens={tokens}
+        tokens={TOKENS}
       />
     )
   )

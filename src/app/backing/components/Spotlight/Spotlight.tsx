@@ -6,7 +6,6 @@ import { BuildersSpotlight } from '@/app/shared/components/BuildersSpotlight'
 import { useGetBuilderEstimatedRewards } from '@/app/shared/hooks/useGetBuilderEstimatedRewards'
 import { Button } from '@/components/ButtonNew'
 import { LoadingSpinner } from '@/components/LoadingSpinner'
-import { getTokens } from '@/lib/tokens'
 import { useRouter, useSearchParams } from 'next/navigation'
 import { useContext, useEffect, useMemo } from 'react'
 import { Address } from 'viem'
@@ -29,7 +28,7 @@ export const Spotlight = () => {
 
   const { randomBuilders } = useBuilderContext()
 
-  const { data: estimatedBuilders, isLoading, error } = useGetBuilderEstimatedRewards(getTokens())
+  const { data: estimatedBuilders, isLoading, error } = useGetBuilderEstimatedRewards()
 
   useHandleErrors({ error, title: 'Error loading builder estimated rewards' })
 

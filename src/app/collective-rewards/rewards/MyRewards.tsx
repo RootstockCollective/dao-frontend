@@ -19,7 +19,7 @@ import { Button } from '@/components/Button'
 import { LoadingSpinner } from '@/components/LoadingSpinner'
 import { Switch, SwitchThumb } from '@/components/Switch'
 import { Typography } from '@/components/Typography'
-import { getTokens } from '@/lib/tokens'
+import { TOKENS } from '@/lib/tokens'
 import { useReadBuilderRegistry } from '@/shared/hooks/contracts'
 import Image from 'next/image'
 import { useRouter } from 'next/navigation'
@@ -171,7 +171,7 @@ export const Rewards: FC = () => {
   const data: RewardDetails = {
     builder: address!,
     gauges: activatedGauges,
-    tokens: getTokens(),
+    tokens: TOKENS,
   }
 
   return (

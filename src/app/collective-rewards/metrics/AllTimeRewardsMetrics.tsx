@@ -11,13 +11,11 @@ import { FC } from 'react'
 import { useHandleErrors } from '@/app/collective-rewards/utils'
 import { withSpinner } from '@/components/LoadingSpinner/withLoadingSpinner'
 import { usePricesContext } from '@/shared/context/PricesContext'
-
 type TokenRewardsMetricsProps = {
   gauges: Address[]
   currency?: string
   token: Token
 }
-
 const TokenRewardsMetrics: FC<TokenRewardsMetricsProps> = ({
   gauges,
   token: { symbol, address },
@@ -38,10 +36,8 @@ const TokenRewardsMetrics: FC<TokenRewardsMetricsProps> = ({
       ),
     0n,
   )
-
   const price = prices[symbol]?.price ?? 0
   const { amount, fiatAmount } = formatMetrics(totalRewards, price, symbol, currency)
-
   return withSpinner(TokenMetricsCardRow, { className: 'min-h-0 grow-0', size: 'small' })({
     amount,
     fiatAmount,

@@ -1,6 +1,6 @@
 import { useBuilderSettingsContext } from '@/app/collective-rewards/settings/builder/context'
 import { percentageToWei, weiToPercentage } from '@/app/collective-rewards/settings/utils/weiUtils'
-import UpdateBackerRewardViewModal from '@/app/my-rewards/UpdateBackerRewardModal/UpdateBackerRewardViewModal'
+import UpdateBackerRewardViewModal from './UpdateBackerRewardViewModal'
 import { useReadBuilderRegistry } from '@/shared/hooks/contracts'
 import { Duration } from 'luxon'
 import { useState, useEffect } from 'react'
@@ -15,7 +15,7 @@ function formatDuration(duration: bigint | undefined) {
   return Duration.fromObject({ seconds: Number(duration) }).shiftTo('days', 'hours', 'minutes')
 }
 
-const UpdateBackerRewardModal = ({ onClose, className }: UpdateBackerRewardModalProps) => {
+export const UpdateBackerRewardModal = ({ onClose, className }: UpdateBackerRewardModalProps) => {
   const {
     current: { data: currentRewardData, isLoading: isCurrentRewardsLoading },
     update: { setNewReward, isPending: isTxPending },

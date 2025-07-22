@@ -41,10 +41,6 @@ export const ABIBackers: FC<ABIProps> = ({ backer, ...metricsCardProps }) => {
                 for informational purposes only.
               </span>
             ),
-            popoverProps: {
-              size: 'medium',
-              position: 'left-bottom',
-            },
           }}
         />
         <MetricsCardContent>{`${abiPct.toFixed(0)}%`}</MetricsCardContent>

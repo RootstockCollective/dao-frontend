@@ -1,9 +1,10 @@
 import { withSpinner } from '@/components/LoadingSpinner/withLoadingSpinner'
-import { Typography, TypographyProps } from '@/components/Typography'
+import { Header, Label } from '@/components/TypographyNew'
+
 import { cn } from '@/lib/utils'
 import { FC, HTMLAttributes, ReactNode } from 'react'
 import { Address } from 'viem'
-import { Tooltip, TooltipProps } from './Tooltip'
+import { Tooltip, TooltipProps } from '@/components/Tooltip'
 
 type MetricsCardRow = {
   amount: string
@@ -14,28 +15,24 @@ type MetricsCardRow = {
 export const TokenMetricsCardRow: FC<MetricsCardRow> = ({ amount, fiatAmount, children }) => (
   <MetricsCardRow>
     <div className="flex-1 min-w-0">
-      <Typography
-        tagVariant="h2"
-        paddingBottom="2px"
-        paddingTop="10px"
-        lineHeight="28.8px"
-        fontFamily="kk-topo"
-        className="text-[24px] text-primary font-normal"
+      <Header
+        variant="h2"
+        className="text-[24px] text-primary font-normal pb-[2px] pt-[10px]"
         data-testid="Amount"
       >
         {amount}
-      </Typography>
+      </Header>
       {fiatAmount && (
-        <Typography
-          tagVariant="label"
+        <Label
+          variant="body-s"
           className="text-[14px] font-rootstock-sans text-disabled-primary"
-          lineHeight="14px"
           data-testid="FiatAmount"
         >
           {fiatAmount}
-        </Typography>
+        </Label>
       )}
     </div>
+
     {children}
   </MetricsCardRow>
 )
@@ -78,13 +75,13 @@ export const MetricsCard: FC<MetricsCardProps> = ({
 }
 
 export type MetricsCardTitleProps =
-  | (Omit<TypographyProps, 'children'> & {
+  | (Omit<React.ComponentProps<typeof Label>, 'children'> & {
       title: string | ReactNode
       tooltip?: TooltipProps
       children?: ReactNode
       customLabel?: never
     })
-  | (Omit<TypographyProps, 'children'> & {
+  | (Omit<React.ComponentProps<typeof Label>, 'children'> & {
       customLabel: ReactNode
       tooltip?: TooltipProps
       children?: ReactNode
@@ -102,8 +99,8 @@ export const MetricsCardTitle: FC<MetricsCardTitleProps> = ({
 }) => (
   <div className="flex gap-1">
     {customLabel ?? (
-      <Typography
-        tagVariant="label"
+      <Label
+        variant="body"
         className={cn(
           'text-[16px] font-normal tracking-wide overflow-hidden whitespace-nowrap text-ellipsis',
           className ?? '',
@@ -112,7 +109,7 @@ export const MetricsCardTitle: FC<MetricsCardTitleProps> = ({
         {...rest}
       >
         {title}
-      </Typography>
+      </Label>
     )}
 
     {tooltip && <Tooltip {...tooltip} />}
@@ -125,17 +122,13 @@ type MetricsCardContentProps = {
 }
 
 export const MetricsCardContent: FC<MetricsCardContentProps> = ({ children }) => (
-  <Typography
-    tagVariant="h2"
-    paddingBottom="2px"
-    paddingTop="10px"
-    lineHeight="28.8px"
-    fontFamily="kk-topo"
-    className="text-[48px] text-primary font-normal"
+  <Header
+    variant="h2"
+    className="text-[48px] text-primary font-normal pb-[2px] pt-[10px]"
     data-testid="Content"
   >
     {children}
-  </Typography>
+  </Header>
 )
 
 export const MetricsCardRow: FC<{ children: ReactNode }> = ({ children }) => (

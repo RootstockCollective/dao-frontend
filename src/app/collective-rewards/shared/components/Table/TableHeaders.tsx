@@ -3,7 +3,7 @@ import { TableCell } from '@/components/Table'
 import { cn } from '@/lib/utils'
 import { Popover } from '@/components/Popover'
 import { ArrowUpSFillIcon, ArrowDownSFillIcon, QuestionIcon } from '@/components/Icons'
-import { TooltipProps } from '@/app/collective-rewards/rewards'
+import { Tooltip, TooltipProps } from '@/components/Tooltip'
 
 export type ISortConfig = {
   key: string
@@ -37,15 +37,9 @@ export const TableHeaderCell: FC<TableHeader> = ({
     >
       <div className="flex flex-row">
         {tooltip && (
-          <Popover
-            content={tooltip.text}
-            className="font-normal text-sm"
-            size="small"
-            trigger="hover"
-            {...tooltip.popoverProps}
-          >
+          <Tooltip {...tooltip}>
             <QuestionIcon className="mr-1" />
-          </Popover>
+          </Tooltip>
         )}
         <span>{label}</span>
         {onSort && sortKey && (

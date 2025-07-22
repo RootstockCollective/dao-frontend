@@ -6,12 +6,11 @@ import { DottedUnderlineLabel } from '@/components/DottedUnderlineLabel/DottedUn
 import { useGetBuilderEstimatedRewards } from '@/app/shared/hooks/useGetBuilderEstimatedRewards'
 import { getFiatAmount } from '@/app/collective-rewards/utils'
 import Big from '@/lib/big'
-import { getTokens } from '@/lib/tokens'
 import { useHandleErrors } from '@/app/collective-rewards/utils'
 import { LoadingSpinner } from '@/components/LoadingSpinner/LoadingSpinner'
 
 export const EstimatedRewardsMetric = () => {
-  const { data: estimatedRewards, isLoading, error } = useGetBuilderEstimatedRewards(getTokens())
+  const { data: estimatedRewards, isLoading, error } = useGetBuilderEstimatedRewards()
   useHandleErrors({ error, title: 'Error fetching estimated rewards' })
 
   const { totalEstimatedRif, totalEstimatedRbtc, totalEstimatedUsd } = estimatedRewards.reduce(
