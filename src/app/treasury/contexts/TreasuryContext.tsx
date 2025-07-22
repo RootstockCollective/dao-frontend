@@ -47,19 +47,22 @@ const getBucketBalance = (
     fiatAmount: Big(bucketBalance.RIF.balance)
       .mul(prices.RIF?.price ?? 0)
       .toString(),
-    formattedAmount: formatNumberWithCommas(Big(bucketBalance.RIF.balance).ceil()),
+    formattedAmount: bucketBalance.RIF.formattedBalance,
   },
   USDRIF: {
     amount: bucketBalance.USDRIF.balance,
-    fiatAmount: bucketBalance.USDRIF.balance,
-    formattedAmount: formatNumberWithCommas(Big(bucketBalance.USDRIF.balance).toFixed(4)),
+    // Assuming 1:1 USD parity for USDRIF. Using the pricing system for consistency.
+    fiatAmount: Big(bucketBalance.USDRIF.balance)
+      .mul(prices.USDRIF?.price ?? 1) // Default to 1 if price is unavailable
+      .toString(),
+    formattedAmount: bucketBalance.USDRIF.formattedBalance,
   },
   RBTC: {
     amount: bucketBalance.RBTC.balance,
     fiatAmount: Big(bucketBalance.RBTC.balance)
       .mul(prices.RBTC?.price ?? 0)
       .toString(),
-    formattedAmount: formatNumberWithCommas(Big(bucketBalance.RBTC.balance).toFixedNoTrailing(8)),
+    formattedAmount: bucketBalance.RBTC.formattedBalance,
   },
 })
 
