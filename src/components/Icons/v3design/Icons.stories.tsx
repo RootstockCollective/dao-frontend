@@ -1,6 +1,6 @@
 import { Meta, StoryObj } from '@storybook/react'
+import * as iconsV3 from '.'
 import type { IconProps } from '../types'
-import * as iconsV3 from './'
 
 const meta: Meta = {
   title: 'Icons/V3 Design Icons',
@@ -123,4 +123,9 @@ export const ArrowUpWFillIcon: Story = {
   args: {
     size: 24,
   },
+}
+
+export const HeartBrokenIcon: Story = {
+  render: args => <iconsV3.HeartBroken {...args} />,
+  args: {},
 }

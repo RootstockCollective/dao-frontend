@@ -1,15 +1,18 @@
 'use client'
 
-import { Header, Paragraph, Span } from '@/components/TypographyNew'
-import { CRWhitepaperLink } from '../collective-rewards/shared/components/CRWhitepaperLinkNew'
-import { BuilderRewards } from './builder/components/BuilderRewards'
-import { useAccount } from 'wagmi'
-import { useReadBuilderRegistry } from '@/shared/hooks/contracts/collective-rewards/useReadBuilderRegistry'
-import { useHandleErrors } from '../collective-rewards/utils'
-import { zeroAddress } from 'viem'
+import { CycleContextProvider } from '@/app/collective-rewards/metrics'
+import { useIsBacker } from '@/app/collective-rewards/rewards'
+import { withBuilderSettingsProvider } from '@/app/collective-rewards/settings'
+import { CRWhitepaperLink } from '@/app/collective-rewards/shared/components/CRWhitepaperLinkNew'
+import { useHandleErrors } from '@/app/collective-rewards/utils'
 import { LoadingSpinner } from '@/components/LoadingSpinner'
+import { Header, Paragraph, Span } from '@/components/TypographyNew'
+import { useReadBuilderRegistry } from '@/shared/hooks/contracts'
 import { ReactNode } from 'react'
-import { CycleContextProvider } from '@/app/collective-rewards/metrics/context/CycleContext'
+import { zeroAddress } from 'viem'
+import { useAccount } from 'wagmi'
+import { BuilderRewards } from './builder/components/BuilderRewards'
+import { NonBacker } from './components'
 
 const Section = ({ children }: { children: ReactNode }) => {
   return (
@@ -21,7 +24,8 @@ const Section = ({ children }: { children: ReactNode }) => {
 
 const NAME = 'My Rewards'
 export const MyRewardsPage = () => {
-  const { address, isConnected } = useAccount()
+  const { address: userAddress, isConnected } = useAccount()
+  const { data: isBacker } = useIsBacker(userAddress ?? zeroAddress)
 
   const {
     data: gauge,
@@ -29,17 +33,12 @@ export const MyRewardsPage = () => {
     error: gaugeError,
   } = useReadBuilderRegistry({
     functionName: 'builderToGauge',
-    args: [address || zeroAddress],
+    args: [userAddress || zeroAddress],
   })
 
   useHandleErrors({ error: gaugeError, title: 'Error loading gauge' })
   if (gaugeLoading) {
     return <LoadingSpinner size="large" />
-  }
-
-  if (!isConnected && !address) {
-    //FIXME: we need to show a different component here
-    return <div>PLACEHOLDER: Not connected</div>
   }
 
   return (
@@ -64,12 +63,17 @@ export const MyRewardsPage = () => {
               </Span>
             </Paragraph>
           </Section>
-          {gauge && gauge !== zeroAddress && <BuilderRewards address={address!} gauge={gauge} />}
+          {gauge && gauge !== zeroAddress && userAddress && (
+            <BuilderRewards address={userAddress} gauge={gauge} />
+          )}
           <Section>
-            <Header variant="h3">Backer rewards PLACEHOLDER</Header>
+            {isConnected && !isBacker && <NonBacker />}
+            {isConnected && isBacker && 'Backer rewards PLACEHOLDER'}
           </Section>
         </div>
       </div>
     </CycleContextProvider>
   )
 }
+
+export default withBuilderSettingsProvider(MyRewardsPage)
