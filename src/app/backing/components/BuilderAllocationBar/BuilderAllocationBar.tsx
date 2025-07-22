@@ -1,13 +1,13 @@
 import { AllocationsContext } from '@/app/collective-rewards/allocations/context'
-import { useContext, useMemo, useCallback, useEffect, useState } from 'react'
-import { Address, formatEther, parseEther } from 'viem'
-import { AllocationChangeData, AllocationItem } from '../AllocationBar/types'
-import AllocationBar from '../AllocationBar/AllocationBar'
 import { floorToUnit, getBuilderColor } from '@/app/shared/components/utils'
+import { useCallback, useContext, useEffect, useMemo, useState } from 'react'
+import { Address, formatEther, parseEther } from 'viem'
+import AllocationBar from '../AllocationBar/AllocationBar'
+import { AllocationBarProps, AllocationChangeData, AllocationItem } from '../AllocationBar/types'
 
 const UNALLOCATED_KEY = 'unallocated'
 
-const BuilderAllocationBar = () => {
+const BuilderAllocationBar = ({ barOverrides }: { barOverrides?: Partial<AllocationBarProps> }) => {
   const {
     initialState: { allocations: initialAllocations },
     state: {
@@ -62,7 +62,7 @@ const BuilderAllocationBar = () => {
             key: UNALLOCATED_KEY,
             label: 'available backing',
             value: Number(formatEther(unallocated)),
-            displayColor: '#25211E',
+            displayColor: 'var(--background-40)',
           }
         }
         const addressKey = key as Address
@@ -116,6 +116,31 @@ const BuilderAllocationBar = () => {
 
   const isEmpty = cumulativeAllocation === 0n && Object.keys(allocations).length === 0
 
+  if (balance === 0n && isEmpty) {
+    return (
+      <AllocationBar
+        itemsData={[
+          {
+            key: 'unallocated',
+            label: 'available backing',
+            value: 1,
+            displayColor: 'var(--background-60)',
+            isTemporary: true,
+          },
+        ]}
+        valueDisplay={{
+          showPercent: false,
+        }}
+        isResizable={false}
+        isDraggable={false}
+        height="1rem"
+        onChange={() => {}}
+        className="min-h-52"
+        {...barOverrides}
+      />
+    )
+  }
+
   return (
     <AllocationBar
       itemsData={itemsData}
@@ -131,6 +156,7 @@ const BuilderAllocationBar = () => {
       onChange={handleAllocationChange}
       // we want the component to have the same height
       className={`${isEmpty ? 'min-h-52' : ''}`}
+      {...barOverrides}
     />
   )
 }

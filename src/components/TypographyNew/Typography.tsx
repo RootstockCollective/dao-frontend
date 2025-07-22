@@ -128,7 +128,7 @@ export function Typography<T extends ElementType>({
   if (isHtml) {
     return (
       <Component
-        className={cn(variantClasses[variant], className, modifierClasses)}
+        className={cn(variantClasses[variant], modifierClasses, className)}
         onClick={onClick}
         dangerouslySetInnerHTML={{ __html: cleanHtml! }}
         data-testid={dataTestId}

@@ -7,6 +7,7 @@ import { MetricContent } from './MetricContent'
 export type MetricProps = CommonComponentProps & {
   title: ReactNode
   containerClassName?: string
+  contentClassName?: string // TODO: @refactor antipattern MetricContent should be passed as children
   'data-testid'?: string
 }
 
@@ -15,6 +16,7 @@ export const Metric: FC<MetricProps> = ({
   children,
   className = '',
   containerClassName = '',
+  contentClassName = '',
   'data-testid': dataTestId = 'Metric',
 }) => {
   const isTitleTextual = typeof title === 'string'
@@ -29,7 +31,7 @@ export const Metric: FC<MetricProps> = ({
         ) : (
           title
         )}
-        <MetricContent>{children}</MetricContent>
+        <MetricContent className={contentClassName}>{children}</MetricContent>
       </div>
     </div>
   )
