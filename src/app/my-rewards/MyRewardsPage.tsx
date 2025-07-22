@@ -14,7 +14,7 @@ import { CRWhitepaperLink } from '../collective-rewards/shared/components/CRWhit
 import { BackerRewards } from './backers/components/BackerRewards'
 import { BuilderRewards } from './builder/components/BuilderRewards'
 import { NonBacker } from './components'
-import { BackerRewards } from './backers/components/BackerRewards'
+import { BackerRewardsNotConnected } from './backers/components/BackerRewardsNotConnected'
 
 const Section = ({ children }: { children: ReactNode }) => {
   return (
@@ -68,11 +68,21 @@ export const MyRewardsPage = () => {
           {gauge && gauge !== zeroAddress && userAddress && (
             <BuilderRewards address={userAddress} gauge={gauge} />
           )}
-          <Section>
-            {!isConnected && 'PLACEHOLDER for non-connected user'}
-            {isConnected && !isBacker && <NonBacker />}
-            {isConnected && isBacker && <BackerRewards />}
-          </Section>
+          {isConnected && !isBacker && (
+            <>
+              <Section>
+                <NonBacker />
+              </Section>
+              <Section>
+                <BackerRewardsNotConnected />
+              </Section>
+            </>
+          )}
+          {isConnected && isBacker && userAddress && (
+            <Section>
+              <BackerRewards backer={userAddress} />
+            </Section>
+          )}
         </div>
       </div>
     </CycleContextProvider>

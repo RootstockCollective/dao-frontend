@@ -1,5 +1,5 @@
 import { Header } from '@/components/TypographyNew'
-import { FC, ReactNode, useMemo } from 'react'
+import { ReactNode } from 'react'
 import { useBackerRewardsContext } from '@/app/collective-rewards/rewards/backers/context/BackerRewardsContext'
 import { UnclaimedRewards } from './UnclaimedRewards'
 import { BackerEstimatedRewards } from './BackerEstimatedRewards'
