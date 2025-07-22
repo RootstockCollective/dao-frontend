@@ -36,17 +36,15 @@ export const BackerRewardsMetrics = ({ backer }: { backer: Address }) => {
   return (
     <div className="flex flex-col w-full gap-10" data-testid="backer-rewards">
       <div className="flex justify-between">
-        <Header variant="e3" className="m-0 text-v3-text-100" data-testid="backer-rewards-header">
+        <Header variant="h3" className="m-0 text-v3-text-100" data-testid="backer-rewards-header">
           BACKER REWARDS
         </Header>
         {!backerRewardsLoading && (
-          <div className="flex  items-center gap-y-[9px] w-[142px]">
+          <div className="flex items-center gap-3">
             <Switch checked={isDetailedView} onCheckedChange={() => setIsDetailedView(!isDetailedView)}>
               <SwitchThumb />
             </Switch>
-            <Typography tagVariant="label" className="text-xs font-normal font-rootstock-sans">
-              Detailed View
-            </Typography>
+            <Typography variant="body-s">Detailed View</Typography>
           </div>
         )}
       </div>

@@ -95,10 +95,9 @@ export const BackerRewardsContextProvider: FC<BackerRewardsProviderProps> = ({
   tokens: { rif, rbtc },
 }) => {
   const { builders, isLoading: buildersLoading, error: buildersError } = useBuilderContext()
-  const { activeBuilders, gauges } = useMemo(() => {
+  const gauges = useMemo(() => {
     const filteredBuilders = filterBuildersByState<CompleteBuilder>(builders)
-    const builderGauges = filteredBuilders.map(({ gauge }) => gauge)
-    return { activeBuilders: filteredBuilders, gauges: builderGauges }
+    return filteredBuilders.map(({ gauge }) => gauge)
   }, [builders])
 
   const { data: rifRewards, isLoading: rifLoading, error: rifError } = useGetTokenRewards(backer, rif, gauges)

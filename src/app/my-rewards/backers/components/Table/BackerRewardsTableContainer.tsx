@@ -7,8 +7,8 @@ import { BackerRewardsTable } from './BackerRewardsTable'
 const Title = () => {
   return (
     <>
-      <Header variant="h4" caps className="text-nowrap">
-        Rewards Details
+      <Header variant="h4" className="text-nowrap">
+        REWARDS DETAILS
       </Header>
     </>
   )
@@ -16,7 +16,7 @@ const Title = () => {
 
 const BackerRewardsTableContainer = (): ReactElement => {
   return (
-    <ActionsContainer title={<Title />} className="bg-v3-bg-accent-80">
+    <ActionsContainer title={<Title />} className="bg-v3-bg-accent-80 p-0">
       <BackerRewardsTable />
     </ActionsContainer>
   )
