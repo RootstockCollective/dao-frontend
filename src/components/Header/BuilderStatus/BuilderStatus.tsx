@@ -3,20 +3,17 @@ import { Builder, BuilderState } from '@/app/collective-rewards/types'
 import { Address } from 'viem'
 import { BuilderStatusView } from './BuilderStatusView'
 import { isBuilderDeactivated, isBuilderKycRevoked, useHandleErrors } from '@/app/collective-rewards/utils'
+import { ExtendedBuilderState } from './types'
 
 interface BuilderStatusProps {
   address: Address | undefined
 }
-
-const getBuilderState = (builder: Builder): BuilderState | undefined => {
-  const { stateFlags } = builder
-  if (!stateFlags) return 'inProgress'
-  if (isBuilderDeactivated(builder) || isBuilderKycRevoked(stateFlags)) {
-    return undefined
-  }
-  const { paused, activated, communityApproved } = stateFlags
+const getBuilderState = (builder: Builder): ExtendedBuilderState => {
+  if (!builder.stateFlags) return 'inProgress'
+  if (isBuilderDeactivated(builder) || isBuilderKycRevoked(builder.stateFlags)) return 'deactivated'
+  const { paused, activated, communityApproved } = builder.stateFlags
   if (!activated || !communityApproved) return 'inProgress'
-  return paused ? undefined : 'active'
+  return paused ? 'paused' : 'active'
 }
 
 export function BuilderStatus({ address }: BuilderStatusProps) {
@@ -30,7 +27,6 @@ export function BuilderStatus({ address }: BuilderStatusProps) {
   if (!builder) return null
 
   const builderState = getBuilderState(builder)
-  if (!builderState) return null
 
   return <BuilderStatusView builderState={builderState} />
 }

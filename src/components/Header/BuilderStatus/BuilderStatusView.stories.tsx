@@ -12,7 +12,7 @@ const meta: Meta<typeof BuilderStatusView> = {
   argTypes: {
     builderState: {
       control: { type: 'select' },
-      options: ['active', 'inProgress'],
+      options: ['active', 'inProgress', 'deactivated', 'paused'],
       description: 'The current state of the builder',
     },
   },
@@ -32,6 +32,20 @@ export const ActiveBuilder: Story = {
 export const InProgressBuilder: Story = {
   args: {
     builderState: 'inProgress',
+  },
+  render: args => <BuilderStatusView {...args} />,
+}
+
+export const DeactivatedBuilder: Story = {
+  args: {
+    builderState: 'deactivated',
+  },
+  render: args => <BuilderStatusView {...args} />,
+}
+
+export const PausedBuilder: Story = {
+  args: {
+    builderState: 'paused',
   },
   render: args => <BuilderStatusView {...args} />,
 }
