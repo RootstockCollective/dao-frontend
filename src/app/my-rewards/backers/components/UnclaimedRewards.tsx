@@ -1,7 +1,7 @@
 import { RewardCard } from '@/app/my-rewards/components/RewardCard'
 import { TokenAmount } from '@/components/TokenAmount'
 
-import { useBackerUnclaimedRewards } from '../hooks/useBackerUnclaimedRewards'
+import { useBackerUnclaimedRewards } from '@/app/my-rewards/backers/hooks/useBackerUnclaimedRewards'
 import { ClaimRewardsButton } from '@/app/my-rewards/components/ClaimRewardsButton'
 import { TokenSymbol } from '@/components/TokenImage'
 import { useHandleErrors } from '@/app/collective-rewards/utils'

@@ -1,6 +1,6 @@
 import { Token, useBackerRewardsContext } from '@/app/collective-rewards/rewards'
 import { usePricesContext } from '@/shared/context'
-import { formatRewards } from '../../utils'
+import { formatRewards } from '@/app/my-rewards/utils'
 import { TOKENS } from '@/lib/tokens'
 
 const useBackerRewardsPerToken = ({ symbol, address }: Token) => {

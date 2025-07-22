@@ -4,7 +4,7 @@ import { BackersEstimatedRewards } from './BackersEstimatedRewards'
 
 export const BackerRewardsNotConnected = () => {
   return (
-    <div className="flex flex-col w-full gap-10" data-testid="backer-rewards">
+    <div className="flex flex-col w-full gap-10" data-testid="backer-rewards-not-connected">
       <div className="flex justify-between">
         <Header
           variant="e3"

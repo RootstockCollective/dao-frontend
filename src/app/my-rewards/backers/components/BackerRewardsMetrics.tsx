@@ -10,6 +10,8 @@ import { Switch, SwitchThumb } from '@/components/Switch'
 import { Typography } from '@/components/TypographyNew/Typography'
 import { Address } from 'viem'
 import { TOKENS } from '@/lib/tokens'
+import { useHandleErrors } from '@/app/collective-rewards/utils'
+import { LoadingSpinner } from '@/components/LoadingSpinner'
 
 const Container = ({ children, className }: { children: ReactNode; className?: string }) => {
   return (
@@ -24,11 +26,12 @@ const InnerContainer = ({ children }: { children: ReactNode }) => {
 }
 
 export const BackerRewardsMetrics = ({ backer }: { backer: Address }) => {
-  const {
+  let {
     detailedView: { value: isDetailedView, onChange: setIsDetailedView },
     isLoading: backerRewardsLoading,
     error: backerRewardsError,
   } = useBackerRewardsContext()
+  useHandleErrors({ error: backerRewardsError, title: 'Error loading backer rewards' })
 
   return (
     <div className="flex flex-col w-full gap-10" data-testid="backer-rewards">
@@ -36,33 +39,38 @@ export const BackerRewardsMetrics = ({ backer }: { backer: Address }) => {
         <Header variant="e3" className="m-0 text-v3-text-100" data-testid="backer-rewards-header">
           BACKER REWARDS
         </Header>
-        <div className="flex  items-center gap-y-[9px] w-[142px]">
-          <Switch checked={isDetailedView} onCheckedChange={() => setIsDetailedView(!isDetailedView)}>
-            <SwitchThumb />
-          </Switch>
-          <Typography tagVariant="label" className="text-xs font-normal font-rootstock-sans">
-            Detailed View
-          </Typography>
+        {!backerRewardsLoading && (
+          <div className="flex  items-center gap-y-[9px] w-[142px]">
+            <Switch checked={isDetailedView} onCheckedChange={() => setIsDetailedView(!isDetailedView)}>
+              <SwitchThumb />
+            </Switch>
+            <Typography tagVariant="label" className="text-xs font-normal font-rootstock-sans">
+              Detailed View
+            </Typography>
+          </div>
+        )}
+      </div>
+      {backerRewardsLoading ? (
+        <LoadingSpinner size="large" />
+      ) : (
+        <div className="flex items-start gap-2 self-stretch" data-testid="backer-rewards-cards-container">
+          <Container>
+            <UnclaimedRewards />
+          </Container>
+          <Container>
+            <InnerContainer>
+              <BackerEstimatedRewards />
+              <BackerABI backer={backer} />
+            </InnerContainer>
+          </Container>
+          <Container className={isDetailedView ? 'visible' : 'invisible'}>
+            <InnerContainer>
+              <TotalEarned />
+              <RBI backer={backer} tokens={TOKENS} />
+            </InnerContainer>
+          </Container>
         </div>
-      </div>
-
-      <div className="flex items-start gap-2 self-stretch" data-testid="backer-rewards-cards-container">
-        <Container>
-          <UnclaimedRewards />
-        </Container>
-        <Container>
-          <InnerContainer>
-            <BackerEstimatedRewards />
-            <BackerABI backer={backer} />
-          </InnerContainer>
-        </Container>
-        <Container className={isDetailedView ? 'visible' : 'invisible'}>
-          <InnerContainer>
-            <TotalEarned />
-            <RBI backer={backer} tokens={TOKENS} />
-          </InnerContainer>
-        </Container>
-      </div>
+      )}
     </div>
   )
 }
