@@ -1,9 +1,8 @@
-import { Token, useBackerRewardsContext } from '@/app/collective-rewards/rewards'
+import { Token } from '@/app/collective-rewards/rewards'
+import { useGetBuilderEstimatedRewards } from '@/app/shared/hooks/useGetBuilderEstimatedRewards'
+import { TOKENS } from '@/lib/tokens'
 import { usePricesContext } from '@/shared/context'
 import { formatRewards } from '../../utils'
-import { getTokens } from '@/lib/tokens'
-import { useGetBuilderEstimatedRewards } from '@/app/shared/hooks/useGetBuilderEstimatedRewards'
-import { BuilderEstimatedRewards } from '@/app/collective-rewards/types'
 
 const useBackerRewardsPerToken = ({ symbol }: Token, estimatedRewards: bigint) => {
   const { prices } = usePricesContext()
@@ -13,8 +12,8 @@ const useBackerRewardsPerToken = ({ symbol }: Token, estimatedRewards: bigint) =
 }
 
 export const useBackersEstimatedRewards = () => {
-  const tokens = getTokens()
-  const { data: estimatedRewards, isLoading, error } = useGetBuilderEstimatedRewards(tokens)
+  const tokens = TOKENS
+  const { data: estimatedRewards, isLoading, error } = useGetBuilderEstimatedRewards()
   const { totalEstimatedRif, totalEstimatedRbtc } = estimatedRewards.reduce(
     (acc: { totalEstimatedRif: bigint; totalEstimatedRbtc: bigint }, builder) => {
       return {

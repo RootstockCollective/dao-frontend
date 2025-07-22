@@ -14,20 +14,13 @@ export const TotalEarned = () => {
       isLoading={rifData.isLoading || rbtcData.isLoading}
       title="Total earned"
       info="Total of your received and claimable rewards"
-      content={
-        <>
-          <TokenAmount
-            amount={rifData.amount}
-            tokenSymbol={TokenSymbol.RIF}
-            amountInFiat={rifData.fiatAmount}
-          />
-          <TokenAmount
-            amount={rbtcData.amount}
-            tokenSymbol={TokenSymbol.RBTC}
-            amountInFiat={rbtcData.fiatAmount}
-          />
-        </>
-      }
-    />
+    >
+      <TokenAmount amount={rifData.amount} tokenSymbol={TokenSymbol.RIF} amountInFiat={rifData.fiatAmount} />
+      <TokenAmount
+        amount={rbtcData.amount}
+        tokenSymbol={TokenSymbol.RBTC}
+        amountInFiat={rbtcData.fiatAmount}
+      />
+    </RewardCard>
   )
 }

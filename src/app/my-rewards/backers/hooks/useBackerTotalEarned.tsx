@@ -1,7 +1,7 @@
 import { Token, useBackerRewardsContext } from '@/app/collective-rewards/rewards'
 import { usePricesContext } from '@/shared/context'
 import { formatRewards } from '../../utils'
-import { getTokens } from '@/lib/tokens'
+import { TOKENS } from '@/lib/tokens'
 
 const useBackerRewardsPerToken = ({ symbol, address }: Token) => {
   const { data: backerRewards, isLoading, error } = useBackerRewardsContext()
@@ -26,7 +26,7 @@ const useBackerRewardsPerToken = ({ symbol, address }: Token) => {
 }
 
 export const useBackerTotalEarned = () => {
-  const { rif, rbtc } = getTokens()
+  const { rif, rbtc } = TOKENS
 
   const rifData = useBackerRewardsPerToken(rif)
   const rbtcData = useBackerRewardsPerToken(rbtc)

@@ -48,8 +48,9 @@ const RBIContent: FC<RBIContentProps> = ({ rbiPct, isLoading }) => {
           This data is for informational purposes only and does not guarantee future performance.
         </span>
       }
-      content={`${rbiPct.toFixed(2)}%`}
-    />
+    >
+      {`${rbiPct.toFixed(2)}%`}
+    </RewardCard>
   )
 }
 

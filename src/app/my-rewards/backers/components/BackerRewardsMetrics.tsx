@@ -2,15 +2,14 @@ import { Header } from '@/components/TypographyNew'
 import { FC, ReactNode, useMemo } from 'react'
 import { useBackerRewardsContext } from '@/app/collective-rewards/rewards/backers/context/BackerRewardsContext'
 import { UnclaimedRewards } from './UnclaimedRewards'
-import { getTokens } from '@/lib/tokens'
 import { BackerEstimatedRewards } from './BackerEstimatedRewards'
 import { BackerABI } from './BackerABI'
-import { useAccount } from 'wagmi'
 import { TotalEarned } from './TotalEarned'
 import { RBI } from './RBI'
 import { Switch, SwitchThumb } from '@/components/Switch'
 import { Typography } from '@/components/TypographyNew/Typography'
 import { Address } from 'viem'
+import { TOKENS } from '@/lib/tokens'
 
 const Container = ({ children, className }: { children: ReactNode; className?: string }) => {
   return (
@@ -25,7 +24,6 @@ const InnerContainer = ({ children }: { children: ReactNode }) => {
 }
 
 export const BackerRewardsMetrics = ({ backer }: { backer: Address }) => {
-  const tokens = useMemo(() => getTokens(), [])
   const {
     detailedView: { value: isDetailedView, onChange: setIsDetailedView },
     isLoading: backerRewardsLoading,
@@ -61,7 +59,7 @@ export const BackerRewardsMetrics = ({ backer }: { backer: Address }) => {
         <Container className={isDetailedView ? 'visible' : 'invisible'}>
           <InnerContainer>
             <TotalEarned />
-            <RBI backer={backer} tokens={tokens} />
+            <RBI backer={backer} tokens={TOKENS} />
           </InnerContainer>
         </Container>
       </div>

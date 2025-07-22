@@ -17,20 +17,13 @@ export const BackersEstimatedRewards = () => {
       isLoading={rifData.isLoading || rbtcData.isLoading}
       title="Estimated this cycle"
       info="Your rewards available to claim"
-      content={
-        <>
-          <TokenAmount
-            amount={rifData.amount}
-            tokenSymbol={TokenSymbol.RIF}
-            amountInFiat={rifData.fiatAmount}
-          />
-          <TokenAmount
-            amount={rbtcData.amount}
-            tokenSymbol={TokenSymbol.RBTC}
-            amountInFiat={rbtcData.fiatAmount}
-          />
-        </>
-      }
-    />
+    >
+      <TokenAmount amount={rifData.amount} tokenSymbol={TokenSymbol.RIF} amountInFiat={rifData.fiatAmount} />
+      <TokenAmount
+        amount={rbtcData.amount}
+        tokenSymbol={TokenSymbol.RBTC}
+        amountInFiat={rbtcData.fiatAmount}
+      />
+    </RewardCard>
   )
 }
