@@ -1,8 +1,6 @@
-import Image from 'next/image'
 import { Address } from 'viem'
 import { useFetchNftHolders } from '@/shared/hooks/useFetchNftHolders'
 import { LoadingSpinner } from '@/components/LoadingSpinner'
-import { EXPLORER_URL } from '@/lib/constants'
 import { truncateMiddle } from '@/lib/utils'
 import { useState } from 'react'
 import { applyPinataImageOptions, ipfsGatewayUrl } from '@/lib/ipfs'
@@ -16,26 +14,11 @@ import {
   getCoreRowModel,
   getPaginationRowModel,
 } from '@tanstack/react-table'
-import { HoldersTable } from '../_components/HoldersTable'
+import { NftHoldersTable } from '../_components/NftHoldersTable'
 import { NftCard } from '../_components/NftCard'
 import { Pagination } from '@/components/Paginaton'
 import { type NftHolderItem } from '@/app/user/Balances/types'
-
-const defaultImage = ipfsGatewayUrl('QmUSCZPeHVUtdScnnBfFbxUA5ndC3xw3oNBZ83BnfEKMyK/36.png')
-
-const CardView = ({ nfts }: { nfts: NftHolderItem[] }) => (
-  <div className="grid grid-cols-4 gap-2 grid-flow-dense">
-    {nfts.map(({ image_url, id, owner, ens_domain_name }, i) => (
-      <NftCard
-        key={id}
-        image={image_url}
-        id={id}
-        holderAddress={ens_domain_name || truncateMiddle(owner, 5, 5)}
-        format={i % 6 ? 'small' : 'big'}
-      />
-    ))}
-  </div>
-)
+import { NftHolderTableCell } from '../_components/NftHolderTableCell'
 
 export const NftHoldersSection = ({ address }: { address: Address }) => {
   const [sorting, setSorting] = useState<SortingState>([])
@@ -51,45 +34,16 @@ export const NftHoldersSection = ({ address }: { address: Address }) => {
     accessor(({ ens_domain_name, owner }) => ens_domain_name ?? truncateMiddle(owner, 4, 4), {
       header: 'Holder',
       cell: ({ row, cell }) => {
-        const icon = applyPinataImageOptions(row.original.image_url ?? defaultImage, {
+        const icon = applyPinataImageOptions(row.original.image_url, {
           width: 120,
           height: 120,
         })
-        return (
-          <div className="flex gap-4 items-center">
-            <div className="relative shrink-0 w-25 md:w-30 aspect-square rounded-sm overflow-hidden">
-              <Image
-                unoptimized
-                src={icon}
-                alt={row.original.metadata.name}
-                fill
-                className="object-contain"
-                crossOrigin="anonymous"
-              />
-            </div>
-            <a
-              href={`${EXPLORER_URL}/address/${row.original.owner}`}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="hover:underline decoration-primary"
-            >
-              <Paragraph className="text-primary first-letter:capitalize truncate">
-                {cell.getValue()}
-              </Paragraph>
-            </a>
-          </div>
-        )
-      },
-      meta: {
-        width: '1fr',
+        return <NftHolderTableCell icon={icon} row={row} cell={cell} />
       },
     }),
     accessor('id', {
       header: 'ID Number',
       cell: ({ cell }) => <Paragraph>{cell.getValue()}</Paragraph>,
-      meta: {
-        width: 'max-content',
-      },
     }),
   ]
   const table = useReactTable({
@@ -126,8 +80,10 @@ export const NftHoldersSection = ({ address }: { address: Address }) => {
       {isLoading && <LoadingSpinner />}
       {!isLoading && currentResults.length > 0 && (
         <>
-          {view === 'table' && <HoldersTable table={table} />}
-          {view === 'images' && <CardView nfts={table.getRowModel().rows.map(({ original }) => original)} />}
+          {view === 'table' && <NftHoldersTable table={table} />}
+          {view === 'images' && (
+            <NftCardView nfts={table.getRowModel().rows.map(({ original }) => original)} />
+          )}
           <div className="mt-6">
             <Pagination
               pagination={pagination}
@@ -142,3 +98,17 @@ export const NftHoldersSection = ({ address }: { address: Address }) => {
     </div>
   )
 }
+
+const NftCardView = ({ nfts }: { nfts: NftHolderItem[] }) => (
+  <div className="grid grid-cols-4 gap-2 grid-flow-dense">
+    {nfts.map(({ image_url, id, owner, ens_domain_name }, i) => (
+      <NftCard
+        key={id}
+        image={image_url}
+        id={id}
+        holderAddress={ens_domain_name || truncateMiddle(owner, 5, 5)}
+        format={i % 6 ? 'small' : 'big'}
+      />
+    ))}
+  </div>
+)

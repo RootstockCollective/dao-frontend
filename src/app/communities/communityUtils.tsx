@@ -12,6 +12,7 @@ export interface CommunityItem {
   nftAddress: string
   numberOfMembers: number
   longDescription: FC<{ activation?: ReactNode }>
+  /** Default NFT image for the community */
   cover?: string
   isMintable?: boolean
   additionalChecks?: { name: string; check: (data: any) => boolean; alertMessage: string }[]

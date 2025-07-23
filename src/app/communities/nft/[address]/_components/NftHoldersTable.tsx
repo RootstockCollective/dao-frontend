@@ -31,7 +31,7 @@ interface Props<T> extends TableHTMLAttributes<HTMLTableElement> {
   table: ReactTable<T>
 }
 
-export function HoldersTable<T>({ table, ...props }: Props<T>) {
+export function NftHoldersTable<T>({ table, ...props }: Props<T>) {
   return (
     <table className="w-full border-collapse" {...props}>
       <thead>
