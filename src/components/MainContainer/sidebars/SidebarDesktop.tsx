@@ -53,9 +53,9 @@ export const SidebarDesktop = () => {
       >
         <div>
           {/* Logo link */}
-          <Link href="/" className="m-6 block w-fit">
+          <div className="m-6 w-fit">
             <RootstockLogoIcon />
-          </Link>
+          </div>
           {/* Menu */}
           <ul className="px-3">
             {menuDataToUse.map(data => (

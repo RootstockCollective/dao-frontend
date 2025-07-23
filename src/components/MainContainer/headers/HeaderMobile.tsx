@@ -18,9 +18,9 @@ export function HeaderMobile({ className, ...props }: HTMLAttributes<HTMLDivElem
         </Tooltip>
       </div>
       <div className="flex-1/3 flex items-center justify-center">
-        <Link href="/" onClick={closeSidebar}>
+        <div className="m-6 w-fit">
           <RootstockLogoIcon />
-        </Link>
+        </div>
       </div>
       <div className="flex-1/3 flex gap-3 justify-end">
         {/* Favourites star  */}
