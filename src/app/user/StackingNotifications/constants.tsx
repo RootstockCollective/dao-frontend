@@ -76,7 +76,7 @@ export const BANNER_CONFIGS: BannerConfigMap = {
     description: 'Use RIF to stake and RBTC to pay for transactions fees.',
     category: 'TOKEN',
     action: {
-      url: '/user?action=stake',
+      url: router => router?.push(`/user?action=stake&reopen=${Date.now()}`),
       external: false,
     },
   },

@@ -1,4 +1,5 @@
 import { AppRouterInstance } from 'next/dist/shared/lib/app-router-context.shared-runtime'
+import { BannerConfig } from '@/app/user/StackingNotifications/types'
 
 /**
  * Handles the click action for banner buttons.
@@ -25,15 +26,16 @@ import { AppRouterInstance } from 'next/dist/shared/lib/app-router-context.share
  * })
  * ```
  */
-export const handleActionClick = (
-  content: { action: { external: boolean; url: string } },
-  router: AppRouterInstance,
-) => {
-  if (content.action.external) {
+export const handleActionClick = (content: { action: BannerConfig['action'] }, router: AppRouterInstance) => {
+  if (content.action.external && typeof content.action.url === 'string') {
     // Open external links in a new tab/window
     window.open(content.action.url, '_blank')
   } else {
     // Navigate to internal routes within the same application
-    router.push(content.action.url)
+    if (typeof content.action.url === 'function') {
+      content.action.url(router)
+    } else {
+      router.push(content.action.url)
+    }
   }
 }
