@@ -23,8 +23,8 @@ export const SectionContainer = ({
   children,
   headerVariant = 'h2',
 }: SectionContainerProps) => (
-  <div className="bg-bg-80 p-[24px] rounded">
-    <div className="flex flex-row justify-stretch mb-[40px]">
+  <div className="bg-bg-80 p-6 rounded">
+    <div className="flex flex-row justify-stretch mb-10">
       <Header variant={headerVariant} className="flex-1">
         {title}
       </Header>
