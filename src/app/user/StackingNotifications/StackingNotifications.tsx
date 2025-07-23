@@ -3,6 +3,7 @@ import {
   NEED_RBTC,
   NEED_RIF,
   NEED_STRIF,
+  NEED_RBTC_RIF,
 } from '@/app/user/IntroModal/hooks/useRequiredTokens'
 import { StackableBanner } from '@/components/StackableBanner/StackableBanner'
 import { BannerContent } from '@/components/StackableBanner/BannerContent'
@@ -38,6 +39,18 @@ import { BannerConfigMap, BannerConfig } from './types'
 // Static token images - created once outside component to avoid re-renders
 const rbtcImage = <TokenImage symbol={RBTC} size={26} className="inline-block mt-[-0.2rem]" />
 const rifImage = <TokenImage symbol={RIF} size={24} className="inline-block mt-[-0.2rem]" />
+
+const NEED_RBTC_AND_RIF = {
+  title: <span>GET {rbtcImage} rBTC</span>,
+  buttonText: 'Get rBTC',
+  description:
+    "RBTC is used to cover transaction fees. You'll need both RBTC and RIF to participate in the DAO.",
+  category: 'TOKEN',
+  action: {
+    url: currentLinks.rbtc,
+    external: true,
+  },
+}
 
 /**
  * BANNER CONFIGURATION REGISTRY
@@ -76,17 +89,8 @@ const rifImage = <TokenImage symbol={RIF} size={24} className="inline-block mt-[
  * - Appropriate categorization
  */
 const BANNER_CONFIGS: BannerConfigMap = {
-  [NEED_RBTC]: {
-    title: <span>GET {rbtcImage} rBTC</span>,
-    buttonText: 'Get rBTC',
-    description:
-      "RBTC is used to cover transaction fees. You'll need both RBTC and RIF to participate in the DAO.",
-    category: 'TOKEN',
-    action: {
-      url: currentLinks.rbtc,
-      external: true,
-    },
-  },
+  [NEED_RBTC]: NEED_RBTC_AND_RIF,
+  [NEED_RBTC_RIF]: NEED_RBTC_AND_RIF,
   [NEED_RIF]: {
     title: <span>GET {rifImage} RIF</span>,
     buttonText: 'Get RIF',
@@ -268,7 +272,7 @@ export const StackingNotifications = () => {
   // ===============================
   // DEPENDENCY LOADING MANAGEMENT
   // ===============================
-
+  console.log({ missingTokenType })
   // Track loading states to ensure we don't show banners prematurely
   const dependencies = [
     missingTokenType !== undefined,
