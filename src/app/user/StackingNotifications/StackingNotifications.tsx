@@ -17,7 +17,7 @@ const rbtcImage = <TokenImage symbol={RBTC} size={26} className="inline-block mt
 const rifImage = <TokenImage symbol={RIF} size={24} className="inline-block mt-[-0.2rem]" />
 
 // Banner configuration with integrated link config and categories
-const bannerConfig: BannerConfigMap = {
+const BANNER_CONFIGS: BannerConfigMap = {
   [NEED_RBTC]: {
     title: <span>GET {rbtcImage} rBTC</span>,
     buttonText: 'Get rBTC',
@@ -56,7 +56,7 @@ const bannerConfig: BannerConfigMap = {
  * Groups banner configs by category and randomly selects one from each category
  * Returns up to 2 banner configs (one per category)
  */
-const getConditionsByCategory = (bannerConfigs: BannerConfig[]): BannerConfig[] => {
+const selectBannerConfigsByCategory = (bannerConfigs: BannerConfig[]): BannerConfig[] => {
   // Dynamically group by categories that actually exist in the configs
   const configsByCategory: Record<string, BannerConfig[]> = {}
 
@@ -82,16 +82,16 @@ const getConditionsByCategory = (bannerConfigs: BannerConfig[]): BannerConfig[] 
 }
 
 // Condition functions that return banner configs or null
-const getTokenStatusCondition = (tokenStatus: string | null) => {
-  if (!tokenStatus) return null
-  return bannerConfig[tokenStatus] ? bannerConfig[tokenStatus] : null
+const getBannerConfigForTokenStatus = (missingTokenType: string | null) => {
+  if (!missingTokenType) return null
+  return BANNER_CONFIGS[missingTokenType] ? BANNER_CONFIGS[missingTokenType] : null
 }
 
 export const StackingNotifications = () => {
-  const tokenStatus = useRequiredTokens()
+  const missingTokenType = useRequiredTokens()
 
   // Load all dependencies here
-  const dependencies = [tokenStatus !== undefined]
+  const dependencies = [missingTokenType !== undefined]
 
   // Are all dependencies loaded? No = null; yes = continue
   const areDependenciesLoaded = dependencies.every(dependency => dependency)
@@ -101,22 +101,22 @@ export const StackingNotifications = () => {
   }
 
   // Calculate all conditions that are met
-  const metConditions = [getTokenStatusCondition(tokenStatus)].filter(Boolean) as BannerConfig[]
+  const activeBannerConfigs = [getBannerConfigForTokenStatus(missingTokenType)].filter(Boolean) as BannerConfig[]
 
-  if (metConditions.length === 0) {
+  if (activeBannerConfigs.length === 0) {
     return null
   }
 
   // Get banner configs by category (up to 2, one per category)
-  const selectedBannerConfigs = getConditionsByCategory(metConditions)
+  const bannerConfigsForDisplay = selectBannerConfigsByCategory(activeBannerConfigs)
 
-  if (selectedBannerConfigs.length === 0) {
+  if (bannerConfigsForDisplay.length === 0) {
     return null
   }
 
   return (
     <>
-      {selectedBannerConfigs.map((config, index) => (
+      {bannerConfigsForDisplay.map((config, index) => (
         <StackableBanner key={`banner-${index}`}>
           <BannerContent
             title={config.title}
