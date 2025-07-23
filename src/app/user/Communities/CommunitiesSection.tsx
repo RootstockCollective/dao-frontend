@@ -59,20 +59,18 @@ export const CommunitiesSection = ({ heroComponentConfig }: Props) => {
   const communityGridClass = nftsOwned <= 2 ? 'xl:grid-cols-2' : 'xl:grid-cols-4'
 
   return (
-    <>
-      <SectionContainer title="YOUR COMMUNITIES" headerVariant="h3">
-        <div className={cn('grid sm:grid-cols-1 gap-[24px]', communityGridClass)}>
-          {nftsInfo.map((nftInfo, index) => (
-            <NftInfo
-              key={nftInfo.address}
-              nftAddress={nftInfo.address}
-              onFinishedLoading={onNftFinishedLoading(index)}
-              defaultCommunityVariant={defaultCommunityVariant}
-            />
-          ))}
-        </div>
-      </SectionContainer>
-    </>
+    <SectionContainer title="YOUR COMMUNITIES" headerVariant="h3">
+      <div className={cn('grid sm:grid-cols-1 gap-[24px]', communityGridClass)}>
+        {nftsInfo.map((nftInfo, index) => (
+          <NftInfo
+            key={nftInfo.address}
+            nftAddress={nftInfo.address}
+            onFinishedLoading={onNftFinishedLoading(index)}
+            defaultCommunityVariant={defaultCommunityVariant}
+          />
+        ))}
+      </div>
+    </SectionContainer>
   )
 }
 

@@ -35,32 +35,30 @@ export const BalancesSection = () => {
 
   const balancesText = isUserBuilder ? 'MY ACTIVITY & BALANCES' : 'MY BALANCES'
   return (
-    <div className="mb-8">
-      <SectionContainer title={balancesText} headerVariant="h3">
-        {isUserBuilder && (
-          <>
-            <p className="mb-4">Placehloder for TOK {/* @TODO */}</p>
-            <hr className="w-full bg-bg-60 border-none h-px my-10" />
-          </>
-        )}
-        <div className="flex flex-row justify-between mb-6">
-          <div className="flex flex-col gap-4">
-            <BalanceInfoForUser symbol="RIF" />
-            <StakeButton onClick={stakeModal.openModal} />
-          </div>
-          <div className="flex flex-col gap-4">
-            <BalanceInfoForUser symbol="stRIF" />
-            <UnstakeButton onClick={unstakeModal.openModal} />
-          </div>
-          <BalanceInfoForUser symbol="USDRIF" />
-          <BalanceInfoForUser symbol="RBTC" />
+    <SectionContainer title={balancesText} headerVariant="h3">
+      {isUserBuilder && (
+        <>
+          <p className="mb-4">Placehloder for TOK {/* @TODO */}</p>
+          <hr className="w-full bg-bg-60 border-none h-px my-10" />
+        </>
+      )}
+      <div className="flex flex-row justify-between mb-6">
+        <div className="flex flex-col gap-4">
+          <BalanceInfoForUser symbol="RIF" />
+          <StakeButton onClick={stakeModal.openModal} />
         </div>
-        <div>
-          {stakeModal.isModalOpened && <StakingFlow onCloseModal={stakeModal.closeModal} />}
-          {unstakeModal.isModalOpened && <UnstakeModal onCloseModal={unstakeModal.closeModal} />}
+        <div className="flex flex-col gap-4">
+          <BalanceInfoForUser symbol="stRIF" />
+          <UnstakeButton onClick={unstakeModal.openModal} />
         </div>
-      </SectionContainer>
-    </div>
+        <BalanceInfoForUser symbol="USDRIF" />
+        <BalanceInfoForUser symbol="RBTC" />
+      </div>
+      <div>
+        {stakeModal.isModalOpened && <StakingFlow onCloseModal={stakeModal.closeModal} />}
+        {unstakeModal.isModalOpened && <UnstakeModal onCloseModal={unstakeModal.closeModal} />}
+      </div>
+    </SectionContainer>
   )
 }
 
