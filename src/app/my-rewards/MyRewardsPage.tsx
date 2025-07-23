@@ -7,14 +7,15 @@ import { useHandleErrors } from '@/app/collective-rewards/utils'
 import { LoadingSpinner } from '@/components/LoadingSpinner'
 import { Header, Paragraph, Span } from '@/components/TypographyNew'
 import { useReadBuilderRegistry } from '@/shared/hooks/contracts'
-import { ReactNode } from 'react'
+import { useRouter } from 'next/navigation'
+import { ReactNode, useEffect } from 'react'
 import { zeroAddress } from 'viem'
 import { useAccount } from 'wagmi'
 import { CRWhitepaperLink } from '../collective-rewards/shared/components/CRWhitepaperLinkNew'
 import { BackerRewards } from './backers/components/BackerRewards'
+import { BackerRewardsNotConnected } from './backers/components/BackerRewardsNotConnected'
 import { BuilderRewards } from './builder/components/BuilderRewards'
 import { NonBacker } from './components'
-import { BackerRewardsNotConnected } from './backers/components/BackerRewardsNotConnected'
 
 const Section = ({ children }: { children: ReactNode }) => {
   return (
@@ -28,6 +29,7 @@ const NAME = 'My Rewards'
 export const MyRewardsPage = () => {
   const { address: userAddress, isConnected } = useAccount()
   const { data: isBacker } = useIsBacker(userAddress ?? zeroAddress)
+  const router = useRouter()
 
   const {
     data: gauge,
@@ -39,6 +41,13 @@ export const MyRewardsPage = () => {
   })
 
   useHandleErrors({ error: gaugeError, title: 'Error loading gauge' })
+
+  useEffect(() => {
+    if (!isConnected) {
+      router.push('/')
+    }
+  }, [isConnected, router])
+
   if (gaugeLoading) {
     return <LoadingSpinner size="large" />
   }
