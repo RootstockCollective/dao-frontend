@@ -106,7 +106,7 @@
     "eslint-config-next": "14.2.3",
     "eslint-config-prettier": "^10.1.1",
     "eslint-plugin-prettier": "^5.1.3",
-    "eslint-plugin-storybook": "^0.12.0",
+    "eslint-plugin-storybook": "^9.0.18",
     "http-proxy-middleware": "^3.0.0",
     "jsdom": "^26.0.0",
     "pino-pretty": "^11.2.1",
