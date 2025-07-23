@@ -38,7 +38,7 @@ export const LatestActiveProposalCard = ({
   } = proposal
   return (
     <div className={cn('flex flex-row bg-bg-60 p-6 pr-16', className)}>
-      <div className="flex flex-col flex-1">
+      <div className="flex flex-col flex-1 min-w-0 pr-8">
         <Link
           className="text-primary group-hover:underline group-hover:text-bg-100 group-hover:decoration-bg-40"
           href={`/proposals/${proposalId}`}
