@@ -27,7 +27,7 @@ import { CategoryColumn } from './table-columns/CategoryColumn'
 import { Paragraph } from '@/components/TypographyNew'
 import { Proposal } from '@/app/proposals/shared/types'
 import { filterOptions } from './filter/filterOptions'
-import { Pagination } from '@/components/Paginaton'
+import { Pagination } from '@/components/Pagination'
 
 interface LatestProposalsTableProps {
   proposals: Proposal[]

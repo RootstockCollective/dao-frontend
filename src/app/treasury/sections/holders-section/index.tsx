@@ -13,7 +13,7 @@ import {
   SortingState,
   useReactTable,
 } from '@tanstack/react-table'
-import { Pagination } from '@/components/Paginaton'
+import { Pagination } from '@/components/Pagination'
 import { useState } from 'react'
 import { PaginationState } from '@tanstack/react-table'
 import { useSearchParams } from 'next/navigation'
