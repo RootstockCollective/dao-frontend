@@ -53,8 +53,15 @@ const BANNER_CONFIGS: BannerConfigMap = {
 }
 
 /**
- * Groups banner configs by category and randomly selects one from each category
- * Returns up to 2 banner configs (one per category)
+ * Groups banner configs by category and randomly selects one from each category.
+ * This ensures we display at most one banner per category to avoid overwhelming the user.
+ * 
+ * @param bannerConfigs - Array of banner configurations to process
+ * @returns Array of banner configs with at most one per category, randomly selected
+ * 
+ * @example
+ * // If you have 3 DAO banners and 2 TOK banners, this will return
+ * // 2 banners total (1 random DAO + 1 random TOK)
  */
 const selectBannerConfigsByCategory = (bannerConfigs: BannerConfig[]): BannerConfig[] => {
   // Dynamically group by categories that actually exist in the configs
@@ -81,12 +88,35 @@ const selectBannerConfigsByCategory = (bannerConfigs: BannerConfig[]): BannerCon
   return selectedConfigs
 }
 
-// Condition functions that return banner configs or null
-const getBannerConfigForTokenStatus = (missingTokenType: string | null) => {
+/**
+ * Maps a missing token type to its corresponding banner configuration.
+ * Returns null if no token is missing or if no banner config exists for the token type.
+ * 
+ * @param missingTokenType - The type of token the user is missing (NEED_RBTC, NEED_RIF, NEED_STRIF, or null)
+ * @returns BannerConfig if a banner should be shown for the missing token, null otherwise
+ * 
+ * @example
+ * getBannerConfigForTokenStatus(NEED_RBTC) // Returns rBTC banner config
+ * getBannerConfigForTokenStatus(null) // Returns null
+ */
+const getBannerConfigForTokenStatus = (missingTokenType: string | null): BannerConfig | null => {
   if (!missingTokenType) return null
   return BANNER_CONFIGS[missingTokenType] ? BANNER_CONFIGS[missingTokenType] : null
 }
 
+/**
+ * StackingNotifications Component
+ * 
+ * Displays contextual banner notifications to guide users on what tokens they need
+ * to participate in the DAO. The component:
+ * 
+ * 1. Checks what tokens the user is missing (rBTC, RIF, or staking)
+ * 2. Shows relevant banner(s) with action buttons to help users acquire missing tokens
+ * 3. Groups banners by category and randomly selects one per category to avoid clutter
+ * 4. Only renders when there are actual missing tokens to address
+ * 
+ * @returns JSX.Element with banner notifications or null if no banners should be shown
+ */
 export const StackingNotifications = () => {
   const missingTokenType = useRequiredTokens()
 
