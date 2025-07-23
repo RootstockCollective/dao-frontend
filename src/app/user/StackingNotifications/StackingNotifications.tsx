@@ -217,23 +217,15 @@ export const StackingNotifications = () => {
   // Apply category-based selection (max 1 banner per category)
   const bannerConfigsForDisplay = selectBannerConfigsByCategory(activeBannerConfigs)
 
-  if (bannerConfigsForDisplay.length === 0) {
-    return null
-  }
-
   // Render the selected banners
-  return (
-    <>
-      {bannerConfigsForDisplay.map((config, index) => (
-        <StackableBanner key={`banner-${index}`}>
-          <BannerContent
-            title={config.title}
-            description={config.description}
-            buttonText={config.buttonText}
-            buttonOnClick={() => handleActionClick(config, router)}
-          />
-        </StackableBanner>
-      ))}
-    </>
-  )
+  return bannerConfigsForDisplay.map((config, index) => (
+    <StackableBanner key={`banner-${index}`}>
+      <BannerContent
+        title={config.title}
+        description={config.description}
+        buttonText={config.buttonText}
+        buttonOnClick={() => handleActionClick(config, router)}
+      />
+    </StackableBanner>
+  ))
 }
