@@ -7,22 +7,21 @@ import { cn } from '@/lib/utils'
 interface SortIndicatorProps extends PropsWithChildren {
   sortDirection: SortDirection | false
   sortEnabled?: boolean
+  toggleSorting: () => void
 }
 
-export function SortIndicator({ children, sortDirection, sortEnabled = true }: SortIndicatorProps) {
+export function SortIndicator({ children, sortDirection, toggleSorting }: SortIndicatorProps) {
   return (
-    <div className="flex items-center gap-1 cursor-pointer">
-      {sortEnabled && (
-        <div className="flex items-center">
-          {sortDirection === 'asc' ? (
-            <ArrowIcon />
-          ) : sortDirection === 'desc' ? (
-            <ArrowIcon className="rotate-180" />
-          ) : (
-            <DoubleArrowIcon />
-          )}
-        </div>
-      )}
+    <div className="w-fit flex items-center gap-1 cursor-pointer" onClick={toggleSorting}>
+      <div className="flex items-center">
+        {sortDirection === 'asc' ? (
+          <ArrowIcon />
+        ) : sortDirection === 'desc' ? (
+          <ArrowIcon className="rotate-180" />
+        ) : (
+          <DoubleArrowIcon />
+        )}
+      </div>
       <div className="grow">{children}</div>
     </div>
   )
@@ -34,19 +33,12 @@ interface Props<T> extends TableHTMLAttributes<HTMLTableElement> {
 
 export function HoldersTable<T>({ table, ...props }: Props<T>) {
   return (
-    <table className="w-full">
+    <table className="w-full" {...props}>
       <thead>
         <tr>
           {table.getHeaderGroups().map(headerGroup =>
             headerGroup.headers.map((header, index) => (
               <td
-                onClick={
-                  header.column.getCanSort()
-                    ? () => {
-                        header.column.toggleSorting()
-                      }
-                    : undefined
-                }
                 key={header.id}
                 className={cn(
                   'pb-10 text-text-100 text-sm font-medium font-rootstock-sans leading-tight border-b-[0.5px] border-text-60',
@@ -56,8 +48,8 @@ export function HoldersTable<T>({ table, ...props }: Props<T>) {
                 )}
               >
                 <SortIndicator
-                  sortEnabled={header.column.getCanSort()}
                   sortDirection={header.column.getIsSorted()}
+                  toggleSorting={() => header.column.toggleSorting()}
                 >
                   {header.isPlaceholder
                     ? null

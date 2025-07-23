@@ -10,6 +10,7 @@ export interface UsePaginatedQueryOptions<T> {
 
 export interface UsePaginatedQueryResult<T> extends Omit<UseQueryResult<T[]>, 'data'> {
   currentResults: T[]
+  allItems: T[]
   tablePage: number
   totalPages: number
   nextTablePage: () => void
@@ -58,6 +59,7 @@ export function usePagination<T>({
 
   return {
     currentResults,
+    allItems,
     totalPages,
     tablePage,
     nextTablePage,
