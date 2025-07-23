@@ -8,8 +8,6 @@ import { NavIcon } from '../icons/NavIcon'
 import { menuData, menuDataNotConnected } from './menuData'
 import { cn } from '@/lib/utils'
 import styles from './styles.module.css'
-import { ClassValue } from 'clsx'
-import { Span } from '@/components/TypographyNew'
 import { useAccount } from 'wagmi'
 
 export function SidebarMobile() {

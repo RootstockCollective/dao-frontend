@@ -69,7 +69,7 @@ export const SidebarDesktop = () => {
                       'className' in data.buttonProps && (data.buttonProps.className as ClassValue),
                     )}
                   >
-                    <Span variant="tag">{data.text}</Span>
+                    {isSidebarOpen && <Span variant="tag">{data.text}</Span>}
                   </li>
                 ) : (
                   <MenuItem variants={variants} key={data.href} {...data} />
