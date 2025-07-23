@@ -12,6 +12,7 @@ import { isBuilderRewardable } from '@/app/collective-rewards/utils/isBuilderOpe
 import { StylableComponentProps } from '@/components/commonProps'
 import { BuilderCardControlProps } from './BuilderCardControl'
 import { AnimatePresence, motion } from 'motion/react'
+import { WindshieldWiperAnimation } from './WindshieldWiperAnimation'
 
 const Warning = ({ className }: StylableComponentProps<HTMLDivElement>) => {
   return (
@@ -33,6 +34,7 @@ export interface BuilderCardProps extends BuilderCardControlProps {
   topBarColor?: string
   className?: string
   isInteractive?: boolean
+  showAnimation?: boolean
 }
 
 export const BuilderCard: FC<BuilderCardProps> = ({
@@ -53,6 +55,7 @@ export const BuilderCard: FC<BuilderCardProps> = ({
   dataTestId = '',
   className,
   isInteractive,
+  showAnimation,
 }) => {
   const isRewardable = isBuilderRewardable(stateFlags)
   const [editing, setEditing] = useState(false)
@@ -64,83 +67,88 @@ export const BuilderCard: FC<BuilderCardProps> = ({
   }, [allocation, existentAllocation, setEditing])
 
   return (
-    <div
-      className={cn(
-        'rounded bg-v3-bg-accent-60 px-2 pb-6 flex flex-col items-center relative min-w-[200px]',
-        className,
-      )}
-      data-testid={`builderCardContainer${dataTestId}`}
+    <WindshieldWiperAnimation
+      backgroundColor="bg-v3-bg-accent-60"
+      animatedBackgroundColor="bg-v3-bg-accent-100"
+      showAnimation={showAnimation}
     >
       <div
-        className="absolute top-0 left-0 w-full h-[8px] rounded-t"
-        style={{ backgroundColor: topBarColor }}
-        data-testid="builderCardTopBar"
-      />
-      <BuilderHeader
-        address={address}
-        name={builderName}
-        builderPageLink={builderPageLink}
-        className="mt-8"
-        showFullName={false}
-      />
-      {!isRewardable && <Warning className="pt-3" />}
-      <div className="my-6 w-full">
+        className={cn(
+          'rounded px-2 pb-6 flex flex-col items-center relative min-w-[200px] h-full',
+          className,
+        )}
+        data-testid={`builderCardContainer${dataTestId}`}
+      >
         <div
-          className="w-full border border-v3-bg-accent-40 rounded-lg flex flex-col"
-          data-testid="builderCardContent"
-        >
-          {isRewardable && (
-            <RewardsInfo backerRewardPercentage={backerRewardPct} estimatedRewards={estimatedRewards} />
-          )}
-
-          {isInteractive && (
-            <div className="p-3">
-              <AllocationInput
-                allocation={allocation}
-                existentAllocation={existentAllocation}
-                maxAllocation={maxAllocation}
-                rifPriceUsd={rifPriceUsd}
-                allocationTxPending={allocationTxPending}
-                disabled={allocationTxPending || !isRewardable}
-                onAllocationChange={onAllocationChange}
-                editing={editing}
-                setEditing={setEditing}
-                className="px-2 py-3"
-              />
-            </div>
-          )}
-          <AnimatePresence>
-            {editing && (
-              <motion.div
-                initial={{ opacity: 0, height: 0 }}
-                animate={{ opacity: 1, height: 'auto' }}
-                exit={{ opacity: 0, height: 0 }}
-                transition={{ duration: 0.3, ease: 'easeInOut' }}
-              >
-                <CurrentBacking existentAllocation={existentAllocation} />
-              </motion.div>
+          className="absolute top-0 left-0 w-full h-[8px] rounded-t"
+          style={{ backgroundColor: topBarColor }}
+          data-testid="builderCardTopBar"
+        />
+        <BuilderHeader
+          address={address}
+          name={builderName}
+          builderPageLink={builderPageLink}
+          className="mt-8"
+        />
+        {!isRewardable && <Warning className="pt-3" />}
+        <div className="my-6 w-full">
+          <div
+            className="w-full border border-v3-bg-accent-40 rounded-lg flex flex-col"
+            data-testid="builderCardContent"
+          >
+            {isRewardable && (
+              <RewardsInfo backerRewardPercentage={backerRewardPct} estimatedRewards={estimatedRewards} />
             )}
-          </AnimatePresence>
+
+            {isInteractive && (
+              <div className="p-3">
+                <AllocationInput
+                  allocation={allocation}
+                  existentAllocation={existentAllocation}
+                  maxAllocation={maxAllocation}
+                  rifPriceUsd={rifPriceUsd}
+                  allocationTxPending={allocationTxPending}
+                  disabled={allocationTxPending || !isRewardable}
+                  onAllocationChange={onAllocationChange}
+                  editing={editing}
+                  setEditing={setEditing}
+                  className="px-2 py-3"
+                />
+              </div>
+            )}
+            <AnimatePresence>
+              {editing && (
+                <motion.div
+                  initial={{ opacity: 0, height: 0 }}
+                  animate={{ opacity: 1, height: 'auto' }}
+                  exit={{ opacity: 0, height: 0 }}
+                  transition={{ duration: 0.3, ease: 'easeInOut' }}
+                >
+                  <CurrentBacking existentAllocation={existentAllocation} />
+                </motion.div>
+              )}
+            </AnimatePresence>
+          </div>
+        </div>
+        <div>
+          {isInteractive && (
+            <Button
+              variant="secondary-outline"
+              onClick={() => onAllocationChange(0)}
+              data-testid="removeBackingButton"
+            >
+              Remove backing
+            </Button>
+          )}
+          {!isInteractive && (
+            <ConnectPopover disabled={isConnected}>
+              <Button variant="secondary-outline" data-testid="backBuilderButton">
+                Back builder
+              </Button>
+            </ConnectPopover>
+          )}
         </div>
       </div>
-      <div>
-        {isInteractive && (
-          <Button
-            variant="secondary-outline"
-            onClick={() => onAllocationChange(0)}
-            data-testid="removeBackingButton"
-          >
-            Remove backing
-          </Button>
-        )}
-        {!isInteractive && (
-          <ConnectPopover disabled={isConnected}>
-            <Button variant="secondary-outline" data-testid="backBuilderButton">
-              Back builder
-            </Button>
-          </ConnectPopover>
-        )}
-      </div>
-    </div>
+    </WindshieldWiperAnimation>
   )
 }
