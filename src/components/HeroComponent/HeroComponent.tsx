@@ -5,7 +5,7 @@ import { FC, ReactNode, useMemo } from 'react'
 import { Header, Paragraph, Span } from '../TypographyNew'
 import { useImagePreloader } from '@/shared/hooks/useImagePreloader'
 
-interface HeroComponentProps {
+export interface HeroComponentProps {
   imageSrc: string
   title: string
   subtitle: string

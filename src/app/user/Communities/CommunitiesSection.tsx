@@ -8,21 +8,15 @@ import { CardPlaceholder } from '@/components/loading-components'
 import { CommunityItem } from '@/app/communities/CommunityItem'
 import { cn } from '@/lib/utils'
 import { SectionContainer } from '@/app/communities/components/SectionContainer'
-import { HeroCommunitiesComponent } from '@/app/communities/components'
+import { HeroCommunitiesComponent, HeroCommuntiesSectionProps } from '@/app/communities/components'
 
-const communities: string[] = Object.keys(communitiesMapByContract)
-
-export const CommunitiesSection = () => (
-  <div>
-    <UserCommunities nftAddresses={communities} />
-  </div>
-)
+const nftAddresses: string[] = Object.keys(communitiesMapByContract)
 
 interface Props {
-  nftAddresses: string[]
+  heroComponentConfig?: HeroCommuntiesSectionProps
 }
 
-const UserCommunities = ({ nftAddresses }: Props) => {
+export const CommunitiesSection = ({ heroComponentConfig }: Props) => {
   const { isConnected } = useAccount()
 
   // For each NFT address, fetch the info
@@ -58,7 +52,7 @@ const UserCommunities = ({ nftAddresses }: Props) => {
   )
 
   if (!isConnected || (!isLoadingNfts && nftsOwned === 0)) {
-    return <HeroCommunitiesComponent shouldShowLearnMore />
+    return <HeroCommunitiesComponent shouldShowLearnMore {...heroComponentConfig} />
   }
 
   const defaultCommunityVariant = nftsOwned <= 2 ? 'landscape' : 'portrait'

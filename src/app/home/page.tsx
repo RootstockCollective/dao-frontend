@@ -1,12 +1,10 @@
 'use client'
-import { HeroComponent } from '@/components/HeroComponent'
 import { useGetProposalsWithGraph } from '../proposals/hooks/useGetProposalsWithGraph'
 import { LatestCollectiveSection } from '../user/latest-collective'
-import { Paragraph } from '@/components/TypographyNew'
-import { ExternalLink } from '@/components/Link/ExternalLink'
 import { TreasuryContextProviderWithPrices } from '../treasury/contexts/TreasuryContext'
 import { useAccount } from 'wagmi'
 import { TopHeroComponentNotConnected, CollectiveBalancesSection } from './components'
+import { CommunitiesSection } from '../user/Communities/CommunitiesSection'
 
 export default function Home() {
   const { isConnected } = useAccount()
@@ -27,24 +25,19 @@ export default function Home() {
         activeProposal={isConnected ? activeProposals[0] : undefined}
       />
       {!isConnected ? (
-        <HeroComponent
-          className="mt-2"
-          imageSrc="/images/hero/home-hero-bottom.png"
-          title={'BE PART OF THE COMMUNITIES'}
-          subtitle="CURATED BY THE COLLECTIVE"
-          items={[
-            'Collective Badges are dynamic NFTs that represent your role and impact within the DAO.',
-            'Whether you’re a Builder, Backer, or Community Contributor, your badge shows that you belong.',
-            'Be part of something bigger, helping shape the future of Bitcoin.',
-            'These aren’t just collectibles. They are your passport to participation.',
-          ]}
-          button={
-            <ExternalLink href="/communities" variant="hero" underline={false}>
-              <Paragraph variant="body-s" className="text-black">
-                Learn more
-              </Paragraph>
-            </ExternalLink>
-          }
+        <CommunitiesSection
+          heroComponentConfig={{
+            className: 'mt-2',
+            imageSrc: '/images/hero/home-hero-bottom.png',
+            title: 'BE PART OF THE COMMUNITIES',
+            subtitle: 'CURATED BY THE COLLECTIVE',
+            items: [
+              'Collective Badges are dynamic NFTs that represent your role and impact within the DAO.',
+              'Whether you’re a Builder, Backer, or Community Contributor, your badge shows that you belong.',
+              'Be part of something bigger, helping shape the future of Bitcoin.',
+              'These aren’t just collectibles. They are your passport to participation.',
+            ],
+          }}
         />
       ) : null}
     </div>
