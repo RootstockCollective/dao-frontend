@@ -1,4 +1,4 @@
-import { ProposalDetailTopLeftComponent, ProposalsTopLeftComponent } from './components/topPageHeader'
+import { ProposalDetailTopLeftComponent, ProposalsTopLeftComponent } from './components/topPageHeader/pages'
 import { HeaderTitle } from '@/components/Typography'
 
 export const disclaimerModalText = {
