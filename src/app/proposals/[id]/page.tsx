@@ -169,7 +169,7 @@ const PageWithProposal = (proposal: ParsedProposal) => {
     useVoteOnProposal(proposalId)
   const { onQueueProposal } = useQueueProposal(proposalId)
 
-  const { onExecuteProposal } = useExecuteProposal(proposalId)
+  const { onExecuteProposal, canProposalBeExecuted } = useExecuteProposal(proposalId)
 
   const [isExecuting, setIsExecuting] = useState(false)
   const [popoverOpen, setPopoverOpen] = useState(false)
@@ -469,7 +469,7 @@ const PageWithProposal = (proposal: ParsedProposal) => {
               quorum,
             }}
             buttonAction={buttonAction}
-            actionDisabled={isConnected && cannotCastVote}
+            actionDisabled={isConnected && (cannotCastVote || !canProposalBeExecuted)}
             voteButtonRef={voteButtonRef}
             vote={vote}
             isChoosingVote={isChoosingVote}
