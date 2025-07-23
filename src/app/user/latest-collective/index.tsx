@@ -43,7 +43,7 @@ export const LatestCollectiveSection = ({
       ) : (
         <div className="flex gap-2 mt-4">
           {latestProposals.map(p => (
-            <LatestProposalCard proposal={p} />
+            <LatestProposalCard key={p.proposalId} proposal={p} />
           ))}
         </div>
       )}
