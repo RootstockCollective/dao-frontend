@@ -60,7 +60,7 @@ export const CommunitiesSection = ({ heroComponentConfig }: Props) => {
 
   return (
     <SectionContainer title="YOUR COMMUNITIES" headerVariant="h3">
-      <div className={cn('grid sm:grid-cols-1 gap-[24px]', communityGridClass)}>
+      <div className={cn('grid sm:grid-cols-1 gap-6', communityGridClass)}>
         {nftsInfo.map((nftInfo, index) => (
           <NftInfo
             key={nftInfo.address}

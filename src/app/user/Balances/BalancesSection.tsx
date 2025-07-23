@@ -38,7 +38,7 @@ export const BalancesSection = () => {
     <SectionContainer title={balancesText} headerVariant="h3">
       {isUserBuilder && (
         <>
-          <p className="mb-4">Placehloder for TOK {/* @TODO */}</p>
+          <p className="mb-4">Placeholder for TOK {/* @TODO */}</p>
           <hr className="w-full bg-bg-60 border-none h-px my-10" />
         </>
       )}
