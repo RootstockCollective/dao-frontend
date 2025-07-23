@@ -55,8 +55,10 @@ createAppKit({
   ],
   features: {
     analytics: true,
-    email: true,
-    socials: ['google', 'x', 'github', 'discord', 'apple', 'facebook'],
+    /* email: true,
+    /*socials: ['google', 'x', 'github', 'discord', 'apple', 'facebook'], De-scoped for now */
+    email: false,
+    socials: false,
     collapseWallets: true,
   },
 })
