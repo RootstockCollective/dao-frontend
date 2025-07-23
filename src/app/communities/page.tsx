@@ -22,7 +22,6 @@ export const dynamic = 'force-static'
 export default function Communities() {
   return (
     <div>
-      <Header>COMMUNITIES</Header>
       <div className="flex flex-col gap-2">
         <HeroCommunitiesComponent />
         <SectionContainer
