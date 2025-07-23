@@ -9,6 +9,7 @@ import { useBalancesContext } from '@/app/user/Balances/context/BalancesContext'
 import { useAccount } from 'wagmi'
 import { Button } from '@/components/ButtonNew'
 import { MoneyIconKoto } from '@/components/Icons'
+import { useRef } from 'react'
 
 export const BalancesSection = () => {
   const isUserBuilder = false // @TODO
@@ -16,14 +17,21 @@ export const BalancesSection = () => {
   const unstakeModal = useModal()
   const searchParams = useSearchParams()
   const action = searchParams.get('action')
+  const shouldReopen = searchParams.get('reopen') // ID number
   const [hasOpenedStakeModal, setHasOpenedStakeModal] = useState(false)
+  const reopenId = useRef('0')
 
   useEffect(() => {
-    if (action === 'stake' && !hasOpenedStakeModal) {
+    if (action === 'stake' && !hasOpenedStakeModal && !shouldReopen) {
       stakeModal.openModal()
       setHasOpenedStakeModal(true)
     }
-  }, [action, hasOpenedStakeModal, stakeModal])
+    if (action === 'stake' && shouldReopen && shouldReopen !== reopenId.current) {
+      stakeModal.openModal()
+      setHasOpenedStakeModal(true)
+      reopenId.current = shouldReopen
+    }
+  }, [action, hasOpenedStakeModal, shouldReopen, stakeModal])
 
   const balancesText = isUserBuilder ? 'MY ACTIVITY & BALANCES' : 'MY BALANCES'
   return (
