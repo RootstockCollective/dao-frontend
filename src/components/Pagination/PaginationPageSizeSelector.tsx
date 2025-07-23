@@ -4,10 +4,14 @@ import type { Table } from '@tanstack/react-table'
 
 interface PaginationPageSizeSelectorProps<T> {
   table: Table<T>
+  pageSizes?: number[]
 }
 
 // Dropdown for selecting page size in pagination
-export default function PaginationPageSizeSelector<T>({ table }: PaginationPageSizeSelectorProps<T>) {
+export default function PaginationPageSizeSelector<T>({
+  table,
+  pageSizes = [10, 20, 30, 40, 50],
+}: PaginationPageSizeSelectorProps<T>) {
   return (
     <div className="relative ml-1">
       <select
@@ -23,7 +27,7 @@ export default function PaginationPageSizeSelector<T>({ table }: PaginationPageS
           table.setPageSize(Number(e.target.value))
         }}
       >
-        {[10, 20, 30, 40, 50].map(pageSize => (
+        {pageSizes.map(pageSize => (
           <option key={pageSize} value={pageSize}>
             {pageSize}
           </option>

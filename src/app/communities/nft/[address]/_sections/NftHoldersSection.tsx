@@ -24,7 +24,7 @@ import { type NftHolderItem } from '@/app/user/Balances/types'
 const defaultImage = ipfsGatewayUrl('QmUSCZPeHVUtdScnnBfFbxUA5ndC3xw3oNBZ83BnfEKMyK/36.png')
 
 const CardView = ({ nfts }: { nfts: NftHolderItem[] }) => (
-  <div className="grid grid-cols-4 gap-2">
+  <div className="grid grid-cols-4 gap-2 grid-flow-dense">
     {nfts.map(({ image_url, id, owner, ens_domain_name }, i) => (
       <NftCard
         key={id}
@@ -129,7 +129,13 @@ export const NftHoldersSection = ({ address }: { address: Address }) => {
           {view === 'table' && <HoldersTable table={table} />}
           {view === 'images' && <CardView nfts={table.getRowModel().rows.map(({ original }) => original)} />}
           <div className="mt-6">
-            <Pagination pagination={pagination} setPagination={setPagination} data={allItems} table={table} />
+            <Pagination
+              pagination={pagination}
+              setPagination={setPagination}
+              data={allItems}
+              table={table}
+              pageSizes={[15, 30, 50, 100]}
+            />
           </div>
         </>
       )}

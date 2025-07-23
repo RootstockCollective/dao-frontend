@@ -10,9 +10,11 @@ interface PaginationProps<T> {
   setPagination: Dispatch<SetStateAction<PaginationState>>
   data: T[]
   table: Table<T>
+  /** Provide optional page sizes e.g. [15, 30, 50] */
+  pageSizes?: number[]
 }
 
-export function Pagination<T>({ pagination, setPagination, data, table }: PaginationProps<T>) {
+export function Pagination<T>({ pagination, setPagination, data, table, pageSizes }: PaginationProps<T>) {
   const router = useRouter()
   const searchParams = useSearchParams()
 
@@ -69,7 +71,7 @@ export function Pagination<T>({ pagination, setPagination, data, table }: Pagina
         disabled={!table.getCanNextPage()}
         onClick={() => table.nextPage()}
       />
-      <PaginationPageSizeSelector table={table} />
+      <PaginationPageSizeSelector table={table} pageSizes={pageSizes} />
     </div>
   )
 }
