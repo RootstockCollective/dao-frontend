@@ -1,9 +1,4 @@
-/**
- * Utility functions for StackingNotifications component
- *
- * This module contains helper functions for handling banner actions and other
- * utility operations related to the notification banner system.
- */
+import { AppRouterInstance } from 'next/dist/shared/lib/app-router-context.shared-runtime'
 
 /**
  * Handles the click action for banner buttons.
@@ -12,6 +7,7 @@
  * or navigate to an internal route within the same application.
  *
  * @param content - Banner configuration object containing action details
+ * @param router
  * @param content.action - Action configuration
  * @param content.action.external - Whether the link is external (true) or internal (false)
  * @param content.action.url - The target URL (internal route or external link)
@@ -29,12 +25,15 @@
  * })
  * ```
  */
-export const handleActionClick = (content: { action: { external: boolean; url: string } }) => {
+export const handleActionClick = (
+  content: { action: { external: boolean; url: string } },
+  router: AppRouterInstance,
+) => {
   if (content.action.external) {
     // Open external links in a new tab/window
     window.open(content.action.url, '_blank')
   } else {
     // Navigate to internal routes within the same application
-    window.location.href = content.action.url
+    router.push(content.action.url)
   }
 }
