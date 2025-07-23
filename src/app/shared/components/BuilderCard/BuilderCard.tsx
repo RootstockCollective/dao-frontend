@@ -11,6 +11,7 @@ import { Paragraph } from '@/components/TypographyNew'
 import { isBuilderRewardable } from '@/app/collective-rewards/utils/isBuilderOperational'
 import { StylableComponentProps } from '@/components/commonProps'
 import { BuilderCardControlProps } from './BuilderCardControl'
+import { AnimatePresence, motion } from 'motion/react'
 
 const Warning = ({ className }: StylableComponentProps<HTMLDivElement>) => {
   return (
@@ -59,11 +60,7 @@ export const BuilderCard: FC<BuilderCardProps> = ({
   const builderPageLink = `/proposals/${proposal.id}`
 
   useEffect(() => {
-    if (allocation !== existentAllocation) {
-      setEditing(true)
-    } else {
-      setEditing(false)
-    }
+    allocation !== existentAllocation && setEditing(true)
   }, [allocation, existentAllocation, setEditing])
 
   return (
@@ -111,7 +108,18 @@ export const BuilderCard: FC<BuilderCardProps> = ({
               />
             </div>
           )}
-          {editing && <CurrentBacking existentAllocation={existentAllocation} />}
+          <AnimatePresence>
+            {editing && (
+              <motion.div
+                initial={{ opacity: 0, height: 0 }}
+                animate={{ opacity: 1, height: 'auto' }}
+                exit={{ opacity: 0, height: 0 }}
+                transition={{ duration: 0.3, ease: 'easeInOut' }}
+              >
+                <CurrentBacking existentAllocation={existentAllocation} />
+              </motion.div>
+            )}
+          </AnimatePresence>
         </div>
       </div>
       <div>

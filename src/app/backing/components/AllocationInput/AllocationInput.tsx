@@ -2,7 +2,7 @@ import { getFiatAmount } from '@/app/collective-rewards/rewards'
 import { InputNumber } from '@/components/Input/InputNumber'
 import { Paragraph } from '@/components/TypographyNew'
 import { cn, formatCurrency } from '@/lib/utils'
-import { Dispatch, FC, SetStateAction, useState } from 'react'
+import { Dispatch, FC, SetStateAction } from 'react'
 import { PendingAllocation } from '../PendingAllocation/PendingAllocation'
 import { StickySlider } from '../StickySlider/StickySlider'
 import { RIFToken } from '../RIFToken/RIFToken'
@@ -46,6 +46,12 @@ export const AllocationInput: FC<AllocationInputProps> = ({
     onAllocationChange(newAllocation)
   }
 
+  const onMouseLeave = () => {
+    if (editing && allocation === existentAllocation) {
+      setEditing?.(false)
+    }
+  }
+
   return (
     <div
       className={cn(
@@ -85,7 +91,12 @@ export const AllocationInput: FC<AllocationInputProps> = ({
       </Paragraph>
       {editing && !allocationTxPending && (
         <div data-testid="allocationInputSlider">
-          <StickySlider value={[allocationPercentage]} step={1} onValueChange={handleSliderChange} />
+          <StickySlider
+            value={[allocationPercentage]}
+            step={1}
+            onValueChange={handleSliderChange}
+            onMouseLeave={onMouseLeave}
+          />
           <Paragraph className="text-[12px] text-v3-text-60 mt-2" data-testid="allocationInputPercentage">
             {allocationPercentage.toFixed(0)}% of total backing power
           </Paragraph>

@@ -12,6 +12,8 @@ export interface StickySliderProps {
   thumbSize?: string
   ticksEdgesSize?: number
   stickyThreshold?: number
+  // TODO: we should refactor this to directly expose its component to improve flexibility and composability
+  onMouseLeave?: () => void
 }
 
 export const StickySlider: React.FC<StickySliderProps> = ({
@@ -24,6 +26,7 @@ export const StickySlider: React.FC<StickySliderProps> = ({
   thumbSize = '1rem',
   ticksEdgesSize = 8,
   stickyThreshold = 2,
+  onMouseLeave,
 }) => {
   // Snap to nearest tick during drag to have a magnetic effect
   const handleValueChange = (val: number[]) => {
@@ -95,6 +98,7 @@ export const StickySlider: React.FC<StickySliderProps> = ({
             height: thumbSize,
           }}
           data-testid="sliderThumb"
+          onMouseLeave={onMouseLeave}
         />
       </div>
     </SliderPrimitive.Root>
