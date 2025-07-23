@@ -4,7 +4,6 @@ import { useGetTreasuryBucketBalance } from '@/app/treasury/hooks/useGetTreasury
 import { treasuryContracts } from '@/lib/contracts'
 import { GetPricesResult } from '@/app/user/types'
 import Big from '@/lib/big'
-import { formatNumberWithCommas } from '@/lib/utils/utils'
 import { Bucket } from '../types'
 
 interface TreasuryContextProps {
@@ -51,7 +50,6 @@ const getBucketBalance = (
   },
   USDRIF: {
     amount: bucketBalance.USDRIF.balance,
-    // Assuming 1:1 USD parity for USDRIF. Using the pricing system for consistency.
     fiatAmount: Big(bucketBalance.USDRIF.balance)
       .mul(prices.USDRIF?.price ?? 1) // Default to 1 if price is unavailable
       .toString(),

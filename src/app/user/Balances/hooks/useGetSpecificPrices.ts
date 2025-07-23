@@ -21,7 +21,7 @@ export const useGetSpecificPrices = (): GetPricesResult => {
       RBTC: getDefaultPriceObject('RBTC', query.data),
       stRIF: getDefaultPriceObject('RIF', query.data), // stRIF price is the same as RIF
       USDRIF: {
-        price: 1,
+        price: 1, // Assuming 1:1 USD parity for USDRIF.
         lastUpdated: new Date().toISOString(),
       },
     }),
