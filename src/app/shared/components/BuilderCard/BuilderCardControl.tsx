@@ -93,14 +93,13 @@ export const BuilderCardControl: FC<BuilderCardControlProps> = ({
     // Compare initialAllocations and allocations
     // Find differences between initial and current allocations for this builder
     if (Object.keys(allocations).length === 0) return
-    const initialAllocationsKeys = Object.keys(initialAllocations)
-    let hasChanged = false
-    for (const builderAddress of initialAllocationsKeys) {
-      if (initialAllocations[builderAddress as Address] !== allocations[builderAddress as Address]) {
-        hasChanged = true
-        break
-      }
-    }
+    const uniqueAddresses = [...new Set([...Object.keys(initialAllocations), ...Object.keys(allocations)])]
+    const hasChanged = uniqueAddresses.some(
+      builderAddress =>
+        (initialAllocations[builderAddress as Address] || 0n) !==
+        (allocations[builderAddress as Address] || 0n),
+    )
+
     if (hasChanged) {
       openDrawer(<AllocationDrawerContent />, true)
     } else {
