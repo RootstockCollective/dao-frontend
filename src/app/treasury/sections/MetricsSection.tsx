@@ -1,8 +1,6 @@
-import { KotoQuestionMarkIcon } from '@/components/Icons'
-import { Popover } from '@/components/Popover'
 import { HeaderTitle } from '@/components/Typography'
 import { Label } from '@/components/TypographyNew'
-import { formatNumberWithCommas } from '@/lib/utils'
+import { formatCurrency, formatNumberWithCommas } from '@/lib/utils'
 import { BalanceInfo } from '@/components/BalanceInfo'
 import { useStRifHoldings } from '../hooks/useStRifHoldings'
 
@@ -23,7 +21,7 @@ export const MetricsSection = () => {
           title="Total stRIF"
           amount={`${formatNumberWithCommas(stRifBalance)}`}
           symbol="stRIF"
-          fiatAmount={`${formatNumberWithCommas(stRifUsdBalance)} USD`}
+          fiatAmount={formatCurrency(stRifUsdBalance, { showCurrency: true })}
         />
         <BalanceInfo
           className="max-w-[214px] min-w-[180px]"

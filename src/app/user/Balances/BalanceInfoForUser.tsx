@@ -1,9 +1,8 @@
 import { useBalancesContext } from '@/app/user/Balances/context/BalancesContext'
-import { tokenContracts, SupportedTokens } from '@/lib/contracts'
-import { useWalletClient } from 'wagmi'
+import { SupportedTokens } from '@/lib/contracts'
 import { BalanceInfo } from '@/components/BalanceInfo'
 import Big from '@/lib/big'
-import { formatCurrency, formatNumberWithCommas } from '@/lib/utils'
+import { formatCurrency } from '@/lib/utils'
 
 interface Props {
   symbol: SupportedTokens
@@ -17,37 +16,19 @@ interface Props {
  */
 export const BalanceInfoForUser = ({ symbol }: Props) => {
   const { balances, prices } = useBalancesContext()
-  const { data: walletClient } = useWalletClient()
 
-  const onAdd = () => {
-    if (walletClient) {
-      walletClient.watchAsset({
-        type: 'ERC20',
-        options: {
-          address: tokenContracts[symbol],
-          decimals: 18,
-          symbol: balances[symbol].symbol,
-        },
-      })
-    }
-  }
-
-  const symbolToUse = balances[symbol]?.symbol || ''
-
+  const symbolToUse = balances[symbol]?.symbol
   const price = prices[symbol]?.price || 0
-
   const userBalance = Big(balances[symbol]?.balance || 0)
-  const tokenBalanceRounded = symbol === 'RBTC' ? userBalance.toFixed(8) : userBalance.floor()
-
-  const usd = formatCurrency(userBalance.mul(price)) ?? 0
+  const fiatAmount = formatCurrency(userBalance.mul(price), { showCurrency: true })
 
   return (
     <BalanceInfo
       title={symbolToUse}
-      amount={formatNumberWithCommas(tokenBalanceRounded)}
+      amount={balances[symbol]?.formattedBalance}
       symbol={symbolToUse}
-      tooltipContent={`Token Price: ${price}`}
-      fiatAmount={`${usd} USD`}
+      tooltipContent={`Token Price: ${formatCurrency(price)}`}
+      fiatAmount={fiatAmount}
     />
   )
 }

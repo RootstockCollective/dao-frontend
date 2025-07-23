@@ -12,7 +12,6 @@ const getDefaultPriceObject = (symbol: string, data?: GetPricesResult) => {
   return null
 }
 
-// TODO get RBTC and stRIF prices
 export const useGetSpecificPrices = (): GetPricesResult => {
   const query = useFetchPrices()
 
@@ -21,6 +20,10 @@ export const useGetSpecificPrices = (): GetPricesResult => {
       RIF: getDefaultPriceObject('RIF', query.data),
       RBTC: getDefaultPriceObject('RBTC', query.data),
       stRIF: getDefaultPriceObject('RIF', query.data), // stRIF price is the same as RIF
+      USDRIF: {
+        price: 1, // Assuming 1:1 USD parity for USDRIF.
+        lastUpdated: new Date().toISOString(),
+      },
     }),
     [query.data],
   )

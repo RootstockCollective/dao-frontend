@@ -4,16 +4,7 @@ import { useGetTreasuryBucketBalance } from '@/app/treasury/hooks/useGetTreasury
 import { treasuryContracts } from '@/lib/contracts'
 import { GetPricesResult } from '@/app/user/types'
 import Big from '@/lib/big'
-
-type BucketItem = {
-  amount: string
-  fiatAmount: string
-}
-
-type Bucket = {
-  RIF: BucketItem
-  RBTC: BucketItem
-}
+import { Bucket } from '../types'
 
 interface TreasuryContextProps {
   buckets: Partial<Record<keyof typeof treasuryContracts, ReturnType<typeof getBucketBalance>>>
@@ -23,11 +14,13 @@ interface TreasuryContextProps {
 const getAllBucketsHoldings = (buckets: Bucket[]) => {
   const totalBalance = {
     RIF: Big(0),
+    USDRIF: Big(0),
     RBTC: Big(0),
   }
 
   buckets.forEach(bucket => {
     totalBalance.RIF = totalBalance.RIF.plus(bucket.RIF.amount)
+    totalBalance.USDRIF = totalBalance.USDRIF.plus(bucket.USDRIF.amount)
     totalBalance.RBTC = totalBalance.RBTC.plus(bucket.RBTC.amount)
   })
   return totalBalance
@@ -35,7 +28,7 @@ const getAllBucketsHoldings = (buckets: Bucket[]) => {
 
 const TreasuryContext = createContext<TreasuryContextProps>({
   buckets: {},
-  bucketsTotal: { RIF: Big(0), RBTC: Big(0) },
+  bucketsTotal: { RIF: Big(0), USDRIF: Big(0), RBTC: Big(0) },
 })
 
 interface Props {
@@ -53,12 +46,21 @@ const getBucketBalance = (
     fiatAmount: Big(bucketBalance.RIF.balance)
       .mul(prices.RIF?.price ?? 0)
       .toString(),
+    formattedAmount: bucketBalance.RIF.formattedBalance,
+  },
+  USDRIF: {
+    amount: bucketBalance.USDRIF.balance,
+    fiatAmount: Big(bucketBalance.USDRIF.balance)
+      .mul(prices.USDRIF?.price ?? 1) // Default to 1 if price is unavailable
+      .toString(),
+    formattedAmount: bucketBalance.USDRIF.formattedBalance,
   },
   RBTC: {
     amount: bucketBalance.RBTC.balance,
     fiatAmount: Big(bucketBalance.RBTC.balance)
       .mul(prices.RBTC?.price ?? 0)
       .toString(),
+    formattedAmount: bucketBalance.RBTC.formattedBalance,
   },
 })
 

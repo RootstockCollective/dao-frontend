@@ -1,7 +1,8 @@
-import { TokenBalance } from '@/app/user/types'
 import { Address } from 'viem'
 
-export type StakingToken = TokenBalance & {
+export type StakingToken = {
+  balance: string
+  symbol: string
   price: string | undefined
   contract: Address
 }

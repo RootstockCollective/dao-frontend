@@ -9,6 +9,7 @@ export const useGetTreasuryBucketBalance = (address: Address) => {
 
   return {
     RIF: getTokenBalance('RIF', query.data),
+    USDRIF: getTokenBalance('USDRIF', query.data),
     RBTC: getTokenBalance('RBTC', query.data),
   }
 }

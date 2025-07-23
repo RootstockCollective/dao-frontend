@@ -1,12 +1,5 @@
 import Big from '@/lib/big'
-import {
-  durationToLabel,
-  formatAssetData,
-  formatCurrency,
-  formatNumberWithCommas,
-  millify,
-  splitWords,
-} from '@/lib/utils'
+import { durationToLabel, formatCurrency, formatNumberWithCommas, millify, splitWords } from '@/lib/utils'
 import { Duration } from 'luxon'
 import { describe, expect, it } from 'vitest'
 
@@ -193,31 +186,5 @@ describe('durationToLabel', () => {
 
   it('returns undefined for undefined duration', () => {
     expect(durationToLabel(undefined)).toBe(undefined)
-  })
-})
-
-describe('formatAssetData', () => {
-  it('formats RIF amounts correctly', () => {
-    const result = formatAssetData('1234.56', '500.789', 'RIF')
-    expect(result.amount).toBe('1,235')
-    expect(result.fiatAmount).toBe('500.79 USD')
-  })
-
-  it('formats rBTC amounts correctly', () => {
-    const result = formatAssetData('1.23456789', '5000.789', 'rBTC')
-    expect(result.amount).toBe('1.23456789')
-    expect(result.fiatAmount).toBe('5,000.79 USD')
-  })
-
-  it('handles undefined values', () => {
-    const result = formatAssetData(undefined, undefined, 'RIF')
-    expect(result.amount).toBe('0')
-    expect(result.fiatAmount).toBeUndefined()
-  })
-
-  it('defaults to non-RIF formatting when no token symbol provided', () => {
-    const result = formatAssetData('1.23456789', '100', '')
-    expect(result.amount).toBe('1.23456789')
-    expect(result.fiatAmount).toBe('100.00 USD')
   })
 })

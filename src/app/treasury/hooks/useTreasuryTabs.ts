@@ -1,7 +1,7 @@
 import { useMemo } from 'react'
 import { useTreasuryContext } from '@/app/treasury/contexts/TreasuryContext'
 import { treasuryContracts } from '@/lib/contracts'
-import { TreasurySection, TreasuryTabKey } from '../types'
+import { Bucket, TreasurySection, TreasuryTabKey } from '../types'
 
 /**
  * useTreasuryTabs is a hook that organizes treasury bucket data into categorized tab structures.
@@ -11,84 +11,54 @@ import { TreasurySection, TreasuryTabKey } from '../types'
 export function useTreasuryTabs() {
   const { buckets } = useTreasuryContext()
 
+  const createBucketList = (bucketGroup: Bucket | undefined) => [
+    {
+      title: 'RIF',
+      bucket: bucketGroup?.RIF,
+    },
+    {
+      title: 'USDRIF',
+      bucket: bucketGroup?.USDRIF,
+    },
+    {
+      title: 'RBTC',
+      bucket: bucketGroup?.RBTC,
+    },
+  ]
+
   return useMemo<Record<TreasuryTabKey, TreasurySection>>(
     () => ({
       Grants: {
-        description: '',
+        description: '', // TODO: add description
         categories: {
           Grants: {
-            buckets: [
-              {
-                title: 'RIF',
-                bucket: buckets.GRANTS?.RIF,
-              },
-              {
-                title: 'RBTC',
-                bucket: buckets.GRANTS?.RBTC,
-              },
-            ],
+            buckets: createBucketList(buckets.GRANTS),
             address: treasuryContracts.GRANTS.address,
           },
           Active: {
-            buckets: [
-              {
-                title: 'RIF',
-                bucket: buckets.GRANTS_ACTIVE?.RIF,
-              },
-              {
-                title: 'RBTC',
-                bucket: buckets.GRANTS_ACTIVE?.RBTC,
-              },
-            ],
+            buckets: createBucketList(buckets.GRANTS_ACTIVE),
             address: treasuryContracts.GRANTS_ACTIVE.address,
           },
         },
       },
       Growth: {
-        description: '',
+        description: '', // TODO: add description
         categories: {
           Total: {
-            buckets: [
-              {
-                title: 'RIF',
-                bucket: buckets.GROWTH?.RIF,
-              },
-              {
-                title: 'RBTC',
-                bucket: buckets.GROWTH?.RBTC,
-              },
-            ],
+            buckets: createBucketList(buckets.GROWTH),
             address: treasuryContracts.GROWTH.address,
           },
           Rewards: {
-            buckets: [
-              {
-                title: 'RIF',
-                bucket: buckets.GROWTH_REWARDS?.RIF,
-              },
-              {
-                title: 'RBTC',
-                bucket: buckets.GROWTH_REWARDS?.RBTC,
-              },
-            ],
+            buckets: createBucketList(buckets.GROWTH_REWARDS),
             address: treasuryContracts.GROWTH_REWARDS.address,
           },
         },
       },
       General: {
-        description: '',
+        description: '', // TODO: add description
         categories: {
           '': {
-            buckets: [
-              {
-                title: 'RIF',
-                bucket: buckets.GENERAL?.RIF,
-              },
-              {
-                title: 'RBTC',
-                bucket: buckets.GENERAL?.RBTC,
-              },
-            ],
+            buckets: createBucketList(buckets.GENERAL),
             address: treasuryContracts.GENERAL.address,
           },
         },

@@ -377,44 +377,5 @@ export const durationToLabel = (duration: Duration | undefined): string | undefi
   return `${converted.days}d ${converted.hours}h ${converted.minutes}m`
 }
 
-/**
- * Formats asset amounts and their fiat equivalents with proper number formatting.
- * Handles RIF and rBTC tokens differently - RIF amounts are ceiled while rBTC keeps 8 decimal places.
- *
- * @param amount - The asset amount to format
- * @param fiatAmount - The fiat equivalent amount in USD
- * @param tokenSymbol - The token symbol to determine formatting rules ('RIF' or 'rBTC')
- * @returns Object containing formatted amount and fiat amount strings
- *
- * @example
- * // For RIF token
- * formatAssetData('1234.56', '500.789', 'RIF')
- * // Returns { amount: '1,235', fiatAmount: '500.79 USD' }
- *
- * // For rBTC token
- * formatAssetData('1.23456789', '5000.789', 'rBTC')
- * // Returns { amount: '1.23456789', fiatAmount: '5,000.79 USD' }
- *
- * // Handling undefined values
- * formatAssetData(undefined, undefined, 'RIF')
- * // Returns { amount: '0', fiatAmount: undefined }
- */
-export const formatAssetData = (
-  amount: string | undefined,
-  fiatAmount: string | undefined,
-  tokenSymbol = '',
-) => {
-  const isRif = tokenSymbol.toLowerCase().includes('rif')
-  const formattedAmount = amount
-    ? isRif
-      ? formatNumberWithCommas(Big(amount).ceil())
-      : formatNumberWithCommas(Big(amount).toFixedNoTrailing(8))
-    : '0'
-
-  const formattedFiatAmount = fiatAmount
-    ? `${formatNumberWithCommas(Big(fiatAmount).toFixed(2))} USD`
-    : undefined
-  return { amount: formattedAmount, fiatAmount: formattedFiatAmount }
-}
 // prettier-ignore
 export const formatAmount = (amount: string) => formatNumberWithCommas(formatEther(BigInt(amount)).split('.')[0])
