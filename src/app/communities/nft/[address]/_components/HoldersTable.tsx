@@ -33,18 +33,16 @@ interface Props<T> extends TableHTMLAttributes<HTMLTableElement> {
 
 export function HoldersTable<T>({ table, ...props }: Props<T>) {
   return (
-    <table className="w-full" {...props}>
+    <table className="w-full border-collapse" {...props}>
       <thead>
         <tr>
           {table.getHeaderGroups().map(headerGroup =>
-            headerGroup.headers.map((header, index) => (
+            headerGroup.headers.map(header => (
               <td
                 key={header.id}
                 className={cn(
-                  'pb-10 text-text-100 text-sm font-medium font-rootstock-sans leading-tight border-b-[0.5px] border-text-60',
-                  header.id === 'id' ? 'w-3/5' : 'w-2/5',
-                  index === 0 ? 'pl-4' : '',
-                  index === headerGroup.headers.length - 1 ? 'pr-4' : '',
+                  'pb-10 pl-4 border-b-[0.5px] border-text-60 first:w-2/5 last:w-3/5', // layout
+                  'text-text-100 text-sm font-medium font-rootstock-sans leading-tight', // font
                 )}
               >
                 <SortIndicator
@@ -63,15 +61,8 @@ export function HoldersTable<T>({ table, ...props }: Props<T>) {
       <tbody>
         {table.getRowModel().rows.map(row => (
           <tr key={row.id}>
-            {row.getVisibleCells().map((cell, index) => (
-              <td
-                key={cell.id}
-                className={cn(
-                  'py-3 border-b border-bg-60',
-                  index === 0 ? 'pl-4 w-2/5' : '',
-                  index === row.getVisibleCells().length - 1 ? 'pr-4 w-3/5' : '',
-                )}
-              >
+            {row.getVisibleCells().map(cell => (
+              <td key={cell.id} className={cn('py-3 pl-4 border-b border-bg-60 first:w-2/5 last:w-3/5')}>
                 {flexRender(cell.column.columnDef.cell, cell.getContext())}
               </td>
             ))}
