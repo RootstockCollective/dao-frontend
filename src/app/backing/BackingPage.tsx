@@ -23,6 +23,7 @@ import { BuilderAllocationBar } from './components/BuilderAllocationBar'
 import { AnnualBackingIncentives } from './components/Metrics/AnnualBackingIncentives'
 import { Spotlight } from './components/Spotlight'
 import { useBuilderContext } from '@/app/collective-rewards/user/context/BuilderContext'
+import { useRouter } from 'next/navigation'
 
 const NAME = 'Backing'
 
@@ -38,6 +39,7 @@ export const BackingPage = () => {
   } = useContext(AllocationsContext)
 
   const { randomBuilders } = useBuilderContext()
+  const router = useRouter()
 
   const rifPriceUsd = prices[RIF]?.price ?? 0
 
@@ -112,9 +114,7 @@ export const BackingPage = () => {
                 <AvailableBackingMetric
                   availableForBacking={availableForBackingLabel}
                   availableBackingUSD={availableBackingUSD}
-                  onStakeClick={() => {
-                    // FIXME: Implement staking page and update this navigation
-                  }}
+                  onStakeClick={() => router.push('/user?action=stake')}
                   onDistributeClick={handleDistributeClick}
                 />
               </div>
