@@ -10,6 +10,7 @@ import { usePathname, useSearchParams, useRouter } from 'next/navigation'
 import { useAccount } from 'wagmi'
 import { HeroSection } from './HeroSection'
 import { IntroModal } from './IntroModal'
+import { StackingNotifications } from '@/app/user/StackingNotifications/StackingNotifications'
 
 const values = ['holdings', 'rewards'] as const
 type TabValue = (typeof values)[number]
@@ -52,6 +53,7 @@ export default function User() {
 
   return (
     <>
+      {isConnected && <StackingNotifications />}
       {!isConnected && <HeroSection />}
       <UnderlineTabs
         layoutId="user-tab"

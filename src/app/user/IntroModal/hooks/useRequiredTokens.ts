@@ -5,6 +5,12 @@ import { useMemo } from 'react'
 import { useAccount } from 'wagmi'
 import { IntroModalStatus } from '../config'
 
+// export each of the IntroModalStatus as a constant
+export const NEED_RBTC_RIF = 'NEED_RBTC_RIF'
+export const NEED_RBTC = 'NEED_RBTC'
+export const NEED_RIF = 'NEED_RIF'
+export const NEED_STRIF = 'NEED_STRIF'
+
 /**
  * Returns the status of the intro modal based on the user's balances.
  * Determines which tokens (RIF, RBTC, or stRIF) a user needs to add to their wallet.
@@ -35,19 +41,19 @@ export const useRequiredTokens = (): IntroModalStatus | null => {
     // Determine which modal to show based on what tokens the user has
     if (needRif && needRbtc) {
       // User has neither RIF/stRIF nor RBTC
-      return 'NEED_RBTC_RIF'
+      return NEED_RBTC_RIF
     }
     if (needRbtc) {
       // User has RIF/stRIF but no RBTC
-      return 'NEED_RBTC'
+      return NEED_RBTC
     }
     if (needRif) {
       // User has RBTC but no RIF/stRIF
-      return 'NEED_RIF'
+      return NEED_RIF
     }
     if (needStRif) {
       // User has RIF but no stRIF
-      return 'NEED_STRIF'
+      return NEED_STRIF
     }
     // User has both RIF/stRIF and RBTC, don't show modal
     return null
