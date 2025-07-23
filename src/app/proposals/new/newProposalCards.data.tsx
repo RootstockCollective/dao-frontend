@@ -36,10 +36,14 @@ export const newProposalCards: NewProposalCardData[] = [
     cardTitle: 'Grant',
     textBlock: (
       <>
-        <p>Community vote to allocate treasury funds for Grants</p>
         <p>
-          What&apos;s in it for the user, short explanation&hellip; Lorem ipsum dolor sit amet, consectetur
-          adipisicing elit. Amet, velit itaque consequatur cupiditate aliquid neque.
+          Community backed - your proposal is voted on inside the DAO, aligning funding with ecosystem
+          priorities.
+        </p>
+        <p>
+          When you pass through community voting your funding is unlocked as you achieve your milestones!
+          Receive funding as you deliver on clear, measurable goals - all with full transparency and community
+          oversight at every stage.
         </p>
       </>
     ),
@@ -52,14 +56,14 @@ export const newProposalCards: NewProposalCardData[] = [
         url: 'https://rootstockcollective.xyz/submitting-a-grant-proposal/',
       },
       {
-        header: 'Post on Discourse',
-        text: <>Share your proposal idea with the community for feedback</>,
-        url: 'https://gov.rootstockcollective.xyz/c/grants/5',
-      },
-      {
         header: 'Complete KYC',
         text: <>Start your KYC early to avoid delays if your proposal passes the vote</>,
         url: 'https://docs.google.com/forms/d/e/1FAIpQLSd4HklyTFPFAo2I0l_N5fy_di01WZ27e4uFDG1KVy8ZIOSiow/viewform',
+      },
+      {
+        header: 'Post on Discourse',
+        text: <>Share your proposal idea with the community for feedback</>,
+        url: 'https://gov.rootstockcollective.xyz/c/grants/5',
       },
     ],
     detailsUrl: '/proposals/new/details/grants',
