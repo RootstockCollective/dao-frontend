@@ -37,6 +37,7 @@ export interface BuilderCardProps extends BuilderCardControlProps {
 export const BuilderCard: FC<BuilderCardProps> = ({
   address,
   builderName,
+  proposal,
   stateFlags,
   existentAllocation,
   maxAllocation,
@@ -55,6 +56,8 @@ export const BuilderCard: FC<BuilderCardProps> = ({
   const isRewardable = isBuilderRewardable(stateFlags)
   const [editing, setEditing] = useState(false)
 
+  const builderPageLink = `/proposals/${proposal.id}`
+
   return (
     <div
       className={cn(
@@ -68,8 +71,12 @@ export const BuilderCard: FC<BuilderCardProps> = ({
         style={{ backgroundColor: topBarColor }}
         data-testid="builderCardTopBar"
       />
-      {/* FIXME: replace the builder page link */}
-      <BuilderHeader address={address} name={builderName} builderPageLink="#" className="mt-8" />
+      <BuilderHeader
+        address={address}
+        name={builderName}
+        builderPageLink={builderPageLink}
+        className="mt-8"
+      />
       {!isRewardable && <Warning className="pt-3" />}
       <div className="my-6 w-full">
         <div
