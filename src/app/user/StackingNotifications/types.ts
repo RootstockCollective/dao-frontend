@@ -15,4 +15,4 @@ export interface BannerConfig {
 
 export type BannerConfigMap = {
   [key: string]: BannerConfig
-} 
+}

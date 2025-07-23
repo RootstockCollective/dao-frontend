@@ -59,7 +59,7 @@ const bannerConfig: BannerConfigMap = {
 const getConditionsByCategory = (bannerConfigs: BannerConfig[]): BannerConfig[] => {
   // Dynamically group by categories that actually exist in the configs
   const configsByCategory: Record<string, BannerConfig[]> = {}
-  
+
   bannerConfigs.forEach(config => {
     if (!configsByCategory[config.category]) {
       configsByCategory[config.category] = []
@@ -70,7 +70,7 @@ const getConditionsByCategory = (bannerConfigs: BannerConfig[]): BannerConfig[] 
   const selectedConfigs: BannerConfig[] = []
 
   // Randomly select one banner config from each category
-  Object.entries(configsByCategory).forEach(([category, categoryConfigs]) => {
+  Object.entries(configsByCategory).forEach(([_, categoryConfigs]) => {
     if (categoryConfigs.length > 0) {
       // Randomly pick one banner config from this category
       const randomIndex = Math.floor(Math.random() * categoryConfigs.length)
@@ -94,16 +94,14 @@ export const StackingNotifications = () => {
   const dependencies = [tokenStatus !== undefined]
 
   // Are all dependencies loaded? No = null; yes = continue
-  const areDependenciesLoaded = dependencies.every(dependency => dependency === true)
+  const areDependenciesLoaded = dependencies.every(dependency => dependency)
 
   if (!areDependenciesLoaded) {
     return null
   }
 
   // Calculate all conditions that are met
-  const metConditions = [
-    getTokenStatusCondition(tokenStatus),
-  ].filter(Boolean) as BannerConfig[]
+  const metConditions = [getTokenStatusCondition(tokenStatus)].filter(Boolean) as BannerConfig[]
 
   if (metConditions.length === 0) {
     return null
