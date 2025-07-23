@@ -6,10 +6,13 @@ import { UsefulLinks } from './UsefulLinks'
 import styles from './styles.module.css'
 import { cn } from '@/lib/utils'
 import { NavIcon } from '../icons/NavIcon'
-import { menuData } from './menuData'
+import { menuData, menuDataNotConnected } from './menuData'
 import { RootstockLogoIcon } from '@/components/Icons'
 import { useLayoutContext } from '../LayoutProvider'
 import { Tooltip } from '@/components/Tooltip'
+import { Span } from '@/components/TypographyNew'
+import { ClassValue } from 'clsx'
+import { useAccount } from 'wagmi'
 
 const transition: Transition = { duration: 0.3, ease: 'circOut' }
 
@@ -18,7 +21,7 @@ export const SIDEBAR_CLOSED_WIDTH = 79
 
 export const SidebarDesktop = () => {
   const { isSidebarOpen } = useLayoutContext()
-
+  const { isConnected } = useAccount()
   // Animation variants for the sidebar UI states
   const variants = useMemo<Variants>(
     () => ({
@@ -30,6 +33,9 @@ export const SidebarDesktop = () => {
     }),
     [isSidebarOpen],
   )
+
+  const menuDataToUse = isConnected ? menuData : menuDataNotConnected
+
   return (
     <motion.aside
       variants={variants}
@@ -47,13 +53,28 @@ export const SidebarDesktop = () => {
       >
         <div>
           {/* Logo link */}
-          <Link href="/" className="m-6 block w-fit">
+          <div className="m-6 w-fit">
             <RootstockLogoIcon />
-          </Link>
+          </div>
           {/* Menu */}
           <ul className="px-3">
-            {menuData.map(data => (
-              <MenuItem variants={variants} key={data.href} {...data} />
+            {menuDataToUse.map(data => (
+              <>
+                {'type' in data && data.type === 'category' ? (
+                  <li
+                    key={data.href}
+                    {...data.buttonProps}
+                    className={cn(
+                      'text-bg-0 px-3 py-2',
+                      'className' in data.buttonProps && (data.buttonProps.className as ClassValue),
+                    )}
+                  >
+                    {isSidebarOpen && <Span variant="tag">{data.text}</Span>}
+                  </li>
+                ) : (
+                  <MenuItem variants={variants} key={data.href} {...data} />
+                )}
+              </>
             ))}
           </ul>
         </div>
@@ -78,7 +99,7 @@ const MenuItem = ({
   text,
   buttonProps,
   variants,
-}: (typeof menuData)[number] & { variants: Variants }) => {
+}: (typeof menuData | typeof menuDataNotConnected)[number] & { variants: Variants }) => {
   const { isSidebarOpen } = useLayoutContext()
   const isActive = usePathname().split('/').at(1) === href
   return (

@@ -5,12 +5,14 @@ import { usePathname } from 'next/navigation'
 import { useLayoutContext } from '../LayoutProvider'
 import { UsefulLinks } from './UsefulLinks'
 import { NavIcon } from '../icons/NavIcon'
-import { menuData } from './menuData'
+import { menuData, menuDataNotConnected } from './menuData'
 import { cn } from '@/lib/utils'
 import styles from './styles.module.css'
+import { useAccount } from 'wagmi'
 
 export function SidebarMobile() {
   const { isSidebarOpen, closeSidebar } = useLayoutContext()
+  const { isConnected } = useAccount()
   const variants = useMemo<Variants>(
     () => ({
       drawer: {
@@ -19,6 +21,8 @@ export function SidebarMobile() {
     }),
     [isSidebarOpen],
   )
+
+  const menuDataToUse = isConnected ? menuData : menuDataNotConnected
   return (
     <motion.div
       variants={variants}
@@ -33,8 +37,14 @@ export function SidebarMobile() {
     >
       <div className="h-full flex flex-col justify-between gap-4">
         <ul className="w-fit">
-          {menuData.map(data => (
-            <MenuItem key={data.href} {...data} />
+          {menuDataToUse.map(data => (
+            <>
+              {'type' in data && data.type === 'category' ? (
+                <div className="m-3" />
+              ) : (
+                <MenuItem key={data.href} {...data} />
+              )}
+            </>
           ))}
         </ul>
         <UsefulLinks className="ml-4" />
@@ -43,7 +53,7 @@ export function SidebarMobile() {
   )
 }
 
-const MenuItem = ({ text, href }: (typeof menuData)[number]) => {
+const MenuItem = ({ text, href }: (typeof menuData | typeof menuDataNotConnected)[number]) => {
   const isActive = usePathname()?.substring(1) === href
   const { closeSidebar } = useLayoutContext()
   return (
