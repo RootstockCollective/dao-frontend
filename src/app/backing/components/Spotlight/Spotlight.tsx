@@ -36,7 +36,15 @@ export const Spotlight = () => {
 
   useEffect(() => {
     if (userSelections) {
+      // include the new user selections into the selections object
       userSelections.forEach(builder => !selections[builder] && toggleSelectedBuilder(builder))
+      // remove the old user selections if they are not in the new user selections
+      Object.keys(selections).forEach(
+        builder =>
+          !userSelections.includes(builder as Address) &&
+          selections[builder as Address] &&
+          toggleSelectedBuilder(builder as Address),
+      )
     }
   }, [userSelections, toggleSelectedBuilder, selections])
 

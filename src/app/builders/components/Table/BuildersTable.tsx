@@ -39,7 +39,7 @@ const filterMap: Record<BuilderFilterOptionId, (builder: Builder) => boolean> = 
   all: () => true,
 }
 
-// FIXME: this is a temporary solution to filter builders by state.
+// TODO: this is a temporary solution to filter builders by state.
 type PagedFilter = {
   filterOption: BuilderFilterOptionId
   pageOptions: { start: number; end: number }
@@ -139,14 +139,14 @@ export const BuildersTable = ({ filterOption }: { filterOption: BuilderFilterOpt
     }
   }, [error, allocationsError, dispatch])
 
-  // FIXME: I don't think we should be using this context anymore
+  // TODO: I don't think we should be using this context anymore
   const {
     actions: { toggleSelectedBuilder },
     state: { selections },
   } = useContext(AllocationsContext)
 
   useEffect(() => {
-    // FIXME: this is a very hacky way to sync the selected rows with the allocations context.
+    // TODO: this is a very hacky way to sync the selected rows with the allocations context.
     // One reason to remove the allocs context (it loads (pre)selections on mount) is to avoid cleaning this up.
     const selectedBuilderIds = Object.keys(selectedRows)
     const selectionValues = Object.values(selectedRows)
@@ -161,8 +161,8 @@ export const BuildersTable = ({ filterOption }: { filterOption: BuilderFilterOpt
 
   /**
    * Set the action column header to show if the allocations column is hidden.
-   * FIXME: see if we can do this better to avoid re-rendering the table.
-  //  */
+   * TODO: see if we can do this better to avoid re-rendering the table.
+   */
   useEffect(() => {
     const isAllocationsHidden = columns.find(col => col.id == 'allocations')?.hidden ?? true
     const isActionsHidden = columns.find(col => col.id == 'actions')?.hidden ?? true

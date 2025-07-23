@@ -1,6 +1,6 @@
 import { ConnectPopover } from '@/app/backing/components/Popovers/ConnectPopover'
 import { cn } from '@/lib/utils'
-import { FC, useState } from 'react'
+import { FC, useEffect, useState } from 'react'
 import { AllocationInput } from '@/app/backing/components/AllocationInput/AllocationInput'
 import { BuilderHeader } from '@/app/backing/components/BuilderHeader/BuilderHeader'
 import { CurrentBacking } from '@/app/backing/components/CurrentBacking/CurrentBacking'
@@ -57,6 +57,14 @@ export const BuilderCard: FC<BuilderCardProps> = ({
   const [editing, setEditing] = useState(false)
 
   const builderPageLink = `/proposals/${proposal.id}`
+
+  useEffect(() => {
+    if (allocation !== existentAllocation) {
+      setEditing(true)
+    } else {
+      setEditing(false)
+    }
+  }, [allocation, existentAllocation, setEditing])
 
   return (
     <div
