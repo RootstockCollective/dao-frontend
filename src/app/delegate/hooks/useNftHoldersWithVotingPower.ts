@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react'
-import { getCachedNftHoldersShepherds } from '@/app/user/Delegation/server/fetchNftHoldersWithVotingPower'
+import { getCachedNftHoldersShepherds } from '@/app/delegate/server/fetchNftHoldersWithVotingPower'
 
 export interface NftHolder {
   address: string

@@ -1,5 +1,5 @@
 import { Address } from 'viem'
-import { useGetDelegates } from '@/app/user/Delegation/hooks/useGetDelegates'
+import { useGetDelegates } from './useGetDelegates'
 import { useAccount, useReadContract } from 'wagmi'
 import { StRIFTokenAbi } from '@/lib/abis/StRIFTokenAbi'
 import { AVERAGE_BLOCKTIME, STRIF_ADDRESS } from '@/lib/constants'

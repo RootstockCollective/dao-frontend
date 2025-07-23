@@ -4,7 +4,6 @@ import { ReactNode, useMemo } from 'react'
 import { Rewards } from '@/app/collective-rewards/rewards/MyRewards'
 import { BalancesSection } from '@/app/user/Balances/BalancesSection'
 import { CommunitiesSection } from '@/app/user/Communities/CommunitiesSection'
-import { DelegationSection } from '@/app/user/Delegation'
 import { UnderlineTabs, BaseTab } from '@/components/Tabs'
 import { usePathname, useSearchParams, useRouter } from 'next/navigation'
 import { useAccount } from 'wagmi'
@@ -44,7 +43,6 @@ export default function User() {
       <>
         {searchParams.get('action') !== 'stake' && <IntroModal />}
         <BalancesSection />
-        <DelegationSection />
         <CommunitiesSection />
       </>
     ),
