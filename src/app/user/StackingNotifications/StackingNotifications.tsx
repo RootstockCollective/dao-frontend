@@ -12,11 +12,69 @@ import { currentLinks } from '@/lib/links'
 import { handleActionClick } from './utils'
 import { BannerConfigMap, BannerConfig } from './types'
 
-// Static token images - created once outside component
+/*
+ * =====================================================================================
+ * STACKING NOTIFICATIONS COMPONENT - DEVELOPER GUIDE
+ * =====================================================================================
+ *
+ * This component displays contextual banner notifications to guide users through
+ * various actions in the DAO. The system is designed to be modular and extensible.
+ *
+ * QUICK START - Adding a New Banner:
+ * 1. Add your banner config to BANNER_CONFIGS below
+ * 2. Create a detection function (see examples below)
+ * 3. Add your detection to the activeBannerConfigs array
+ * 4. Add any async dependencies to the dependencies array
+ *
+ * ARCHITECTURE OVERVIEW:
+ * - BANNER_CONFIGS: Static configuration mapping banner types to display properties
+ * - Detection Functions: Determine when banners should be shown based on user state
+ * - Category System: Groups banners to avoid overwhelming users (max 1 per category)
+ * - Action Handling: Unified system for handling banner button clicks
+ *
+ * =====================================================================================
+ */
+
+// Static token images - created once outside component to avoid re-renders
 const rbtcImage = <TokenImage symbol={RBTC} size={26} className="inline-block mt-[-0.2rem]" />
 const rifImage = <TokenImage symbol={RIF} size={24} className="inline-block mt-[-0.2rem]" />
 
-// Banner configuration with integrated link config and categories
+/**
+ * BANNER CONFIGURATION REGISTRY
+ * =============================
+ *
+ * This object maps banner keys to their display configuration. Each banner config
+ * defines how a notification should appear and behave when shown to users.
+ *
+ * TO ADD A NEW BANNER CONFIG:
+ *
+ * 1. Choose a unique key (e.g., 'CLAIM_REWARDS', 'VOTE_PROPOSAL')
+ * 2. Define the configuration following this pattern:
+ *
+ * ```typescript
+ * YOUR_BANNER_KEY: {
+ *   title: <span>Your Banner Title</span>,              // Can include JSX/icons
+ *   buttonText: 'Action Button Text',                   // Clear call-to-action
+ *   description: 'Helpful explanation for the user.',   // Context about the action
+ *   category: 'YOUR_CATEGORY',                          // For grouping (see below)
+ *   action: {
+ *     url: '/your-route-or-external-url',               // Target destination
+ *     external: false,                                  // true = new tab, false = same tab
+ *   },
+ * },
+ * ```
+ *
+ * CATEGORY GUIDELINES:
+ * - 'TOKEN': Token-related actions (getting tokens, staking, etc.)
+ * - 'REWARDS': Reward claiming and reward-related actions
+ * - Create new categories only for fundamentally different action types
+ *
+ * EXAMPLES OF GOOD BANNER CONFIGS:
+ * - Clear, actionable titles with visual elements (icons, token images)
+ * - Descriptive but concise explanations
+ * - Strong call-to-action button text
+ * - Appropriate categorization
+ */
 const BANNER_CONFIGS: BannerConfigMap = {
   [NEED_RBTC]: {
     title: <span>GET {rbtcImage} rBTC</span>,
@@ -50,6 +108,34 @@ const BANNER_CONFIGS: BannerConfigMap = {
       external: false,
     },
   },
+  /*
+   * ADD YOUR NEW BANNER CONFIGS HERE
+   * ================================
+   *
+   * Example - Rewards Banner:
+   * CLAIM_REWARDS: {
+   *   title: <span>🎁 Claim Your Rewards</span>,
+   *   buttonText: 'Claim Now',
+   *   description: 'You have unclaimed rewards available. Claim them now to earn your tokens.',
+   *   category: 'REWARDS',
+   *   action: {
+   *     url: '/rewards?action=claim',
+   *     external: false,
+   *   },
+   * },
+   *
+   * Example - Governance Banner:
+   * ACTIVE_PROPOSAL: {
+   *   title: <span>📊 Active Proposal</span>,
+   *   buttonText: 'Vote Now',
+   *   description: 'There is an active proposal that needs your vote. Participate in governance.',
+   *   category: 'GOVERNANCE',
+   *   action: {
+   *     url: '/proposals',
+   *     external: false,
+   *   },
+   * },
+   */
 }
 
 /**
@@ -104,45 +190,147 @@ const getBannerConfigForTokenStatus = (missingTokenType: string | null): BannerC
   return BANNER_CONFIGS[missingTokenType] ? BANNER_CONFIGS[missingTokenType] : null
 }
 
+/*
+ * ADD YOUR DETECTION FUNCTIONS HERE
+ * =================================
+ *
+ * Follow this pattern for new detection functions:
+ *
+ * const getBannerConfigForYourUseCase = (userData: YourDataType): BannerConfig | null => {
+ *   // Handle loading states
+ *   if (!userData || userData.isLoading) return null
+ *
+ *   // Define clear conditions
+ *   const shouldShowBanner = userData.someCondition && !userData.hasCompletedAction
+ *
+ *   // Return appropriate config or null
+ *   if (shouldShowBanner) {
+ *     return BANNER_CONFIGS.YOUR_BANNER_KEY
+ *   }
+ *   return null
+ * }
+ *
+ * Examples:
+ *
+ * // Rewards detection
+ * const getBannerConfigForUnclaimedRewards = (rewardsData: any): BannerConfig | null => {
+ *   if (!rewardsData || rewardsData.isLoading) return null
+ *
+ *   if (rewardsData.hasUnclaimedRewards && rewardsData.amount > 0) {
+ *     return BANNER_CONFIGS.CLAIM_REWARDS
+ *   }
+ *   return null
+ * }
+ *
+ */
+
 /**
  * StackingNotifications Component
  *
- * Displays contextual banner notifications to guide users.
+ * Displays contextual banner notifications to guide users through various DAO actions.
  *
- * 1. Shows relevant banner(s) with action buttons to help users
- * 2. Groups banners by category and randomly selects one per category to avoid clutter
+ * COMPONENT BEHAVIOR:
+ * 1. Loads user state data from various hooks
+ * 2. Determines which banners should be shown based on detection functions
+ * 3. Groups banners by category and randomly selects one per category
+ * 4. Renders the selected banners with action buttons
+ *
+ * EXTENDING THIS COMPONENT:
+ * 1. Add your banner config to BANNER_CONFIGS above
+ * 2. Create a detection function following the patterns above
+ * 3. Add your detection function to the activeBannerConfigs array below
+ * 4. If your detection depends on async data, add loading state to dependencies array
+ *
+ * Check BannerContent.stories.tsx to see banners config
  *
  * @returns JSX.Element with banner notifications or null if no banners should be shown
  */
 export const StackingNotifications = () => {
+  // ===============================
+  // DATA LOADING AND STATE HOOKS
+  // ===============================
+
+  // Existing hooks for token requirements
   const missingTokenType = useRequiredTokens()
 
-  // Load all dependencies here
-  const dependencies = [missingTokenType !== undefined]
+  /*
+   * ADD YOUR DATA HOOKS HERE
+   * ========================
+   *
+   * Add any hooks needed for your banner detection logic:
+   *
+   * const rewardsData = useUnclaimedRewards()
+   * const proposalsData = useActiveProposals()
+   * const stakingData = useStakingStatus()
+   * const governanceData = useGovernanceParticipation()
+   */
 
-  // Are all dependencies loaded? No = null; yes = continue
+  // ===============================
+  // DEPENDENCY LOADING MANAGEMENT
+  // ===============================
+
+  // Track loading states to ensure we don't show banners prematurely
+  const dependencies = [
+    missingTokenType !== undefined,
+
+    /*
+     * ADD YOUR LOADING DEPENDENCIES HERE
+     * ==================================
+     *
+     * Add loading state checks for your data:
+     *
+     * !rewardsData?.isLoading,
+     * !proposalsData?.isLoading,
+     * !stakingData?.isLoading,
+     */
+  ]
+
+  // Wait for all dependencies to load before proceeding
   const areDependenciesLoaded = dependencies.every(dependency => dependency)
 
   if (!areDependenciesLoaded) {
     return null
   }
 
-  // Calculate all banner configs. Add more here (like checking if user has rewards, etc)
-  const activeBannerConfigs = [getBannerConfigForTokenStatus(missingTokenType)].filter(
-    Boolean,
-  ) as BannerConfig[]
+  // ===============================
+  // BANNER DETECTION LOGIC
+  // ===============================
 
+  // Calculate all banner configs that should be shown based on current user state
+  const activeBannerConfigs = [
+    // Existing detection functions
+    getBannerConfigForTokenStatus(missingTokenType),
+
+    /*
+     * ADD YOUR DETECTION FUNCTIONS HERE
+     * =================================
+     *
+     * Add calls to your detection functions:
+     *
+     * getBannerConfigForUnclaimedRewards(rewardsData),
+     * getBannerConfigForActiveProposals(proposalsData),
+     * getBannerConfigForStakingOpportunities(stakingData),
+     * getBannerConfigForGovernanceParticipation(governanceData),
+     */
+  ].filter(Boolean) as BannerConfig[]
+
+  // Early return if no banners should be shown
   if (activeBannerConfigs.length === 0) {
     return null
   }
 
-  // Get banner configs by category (up to 2, one per category)
+  // ===============================
+  // BANNER SELECTION AND RENDERING
+  // ===============================
+
+  // Apply category-based selection (max 1 banner per category)
   const bannerConfigsForDisplay = selectBannerConfigsByCategory(activeBannerConfigs)
 
   if (bannerConfigsForDisplay.length === 0) {
     return null
   }
 
+  // Render the selected banners
   return (
     <>
       {bannerConfigsForDisplay.map((config, index) => (
