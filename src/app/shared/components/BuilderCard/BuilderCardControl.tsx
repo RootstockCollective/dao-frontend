@@ -106,6 +106,7 @@ export const BuilderCardControl: FC<BuilderCardControlProps> = ({
     } else {
       closeDrawer()
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [initialAllocations, allocations])
 
   return (
