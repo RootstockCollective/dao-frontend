@@ -15,7 +15,7 @@ import { Header, Span } from '@/components/TypographyNew'
 import { RIF, stRIF, USD } from '@/lib/constants'
 import { formatCurrency } from '@/lib/utils'
 import { usePricesContext } from '@/shared/context/PricesContext'
-import { useContext } from 'react'
+import { useContext, useMemo } from 'react'
 import { Address } from 'viem'
 import { useAccount } from 'wagmi'
 import { AvailableBackingMetric, TotalBackingMetric } from './components'
@@ -23,7 +23,7 @@ import { BuilderAllocationBar } from './components/BuilderAllocationBar'
 import { AnnualBackingIncentives } from './components/Metrics/AnnualBackingIncentives'
 import { Spotlight } from './components/Spotlight'
 import { useBuilderContext } from '@/app/collective-rewards/user/context/BuilderContext'
-import { useRouter } from 'next/navigation'
+import { useRouter, useSearchParams } from 'next/navigation'
 
 const NAME = 'Backing'
 
@@ -41,13 +41,16 @@ export const BackingPage = () => {
   const { randomBuilders } = useBuilderContext()
   const router = useRouter()
 
+  const searchParams = useSearchParams()
+  const userSelections = useMemo(() => searchParams.get('builders')?.split(',') as Address[], [searchParams])
+
   const rifPriceUsd = prices[RIF]?.price ?? 0
 
   const availableForBacking = !votingPower ? 0n : votingPower - totalOnchainAllocation
 
   const totalBacking = !totalOnchainAllocation ? 0n : totalOnchainAllocation
 
-  const hasAllocations = totalOnchainAllocation > 0n
+  const hasAllocations = useMemo(() => totalOnchainAllocation > 0n, [totalOnchainAllocation])
 
   // Format values properly using formatter functions
   const availableForBackingLabel = formatSymbol(availableForBacking, stRIF)
@@ -129,12 +132,12 @@ export const BackingPage = () => {
                 )}
               </div>
             </div>
-            {hasAllocations && <Spotlight />}
+            {(hasAllocations || userSelections) && <Spotlight />}
           </div>
         </ActionMetricsContainer>
       )}
 
-      {!hasAllocations && (
+      {!hasAllocations && !userSelections && (
         <ActionsContainer
           title={
             <Header variant="h3" caps>

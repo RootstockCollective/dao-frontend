@@ -54,14 +54,28 @@ export const Spotlight = () => {
     console.warn('😈 ~ BuildersSpotlight.tsx ~ selections:', selections)
   }, [userSelections, selections])
 
-  const hasAllocations = totalOnchainAllocation > 0n
+  const hasAllocations = useMemo(() => totalOnchainAllocation > 0n, [totalOnchainAllocation])
 
-  const allocatedBuilders = hasAllocations
-    ? Object.keys(allocations).map(key => getBuilder(key as Address)!)
-    : randomBuilders
-  const spotlightBuilders = estimatedBuilders.filter(builder =>
-    allocatedBuilders.map(b => b.address).includes(builder.address),
-  )
+  const spotlightBuilders = useMemo(() => {
+    // Get builders based on allocation or selection state
+    let builderKeys: Address[] = []
+
+    if (hasAllocations) {
+      builderKeys = Object.keys(allocations) as Address[]
+    } else if (userSelections?.length) {
+      builderKeys = userSelections
+    }
+
+    // Resolve builder objects from keys or fallback to random builders
+    const resolvedBuilders = builderKeys.length
+      ? builderKeys.map(key => getBuilder(key)).filter(builder => !!builder)
+      : randomBuilders
+
+    const resolvedAddresses = resolvedBuilders.map(({ address }) => address)
+
+    // Return only estimated builders that match resolved addresses
+    return estimatedBuilders.filter(({ address }) => resolvedAddresses.includes(address))
+  }, [estimatedBuilders, hasAllocations, allocations, getBuilder, randomBuilders, userSelections])
 
   if (isLoading) {
     return (
