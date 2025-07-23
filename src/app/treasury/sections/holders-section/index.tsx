@@ -63,6 +63,7 @@ export const HoldersSection = () => {
       id: 'holder',
       header: 'Holder',
       cell: ({ row }) => <HolderColumn address={row.original.holder.address} rns={row.original.holder.rns} />,
+      sortDescFirst: false,
     }),
     accessor('quantity', {
       id: 'quantity',
