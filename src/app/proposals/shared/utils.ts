@@ -86,7 +86,7 @@ export const getProposalEventArguments = ({
   timeStamp,
   blockNumber,
 }: EventArgumentsParameter) => {
-  const { name, description: parsedDescription } = parseProposalDescription(description)
+  const { name, description: parsedDescription, fullProposalName } = parseProposalDescription(description)
 
   const calldatasParsed = calldatas.reduce<DecodedData[]>((acc, cd, index) => {
     try {
@@ -124,6 +124,7 @@ export const getProposalEventArguments = ({
       : moment.unix(parseInt(timeStamp)),
     calldatasParsed,
     blockNumber,
+    fullProposalName,
   }
 }
 
@@ -162,6 +163,7 @@ interface ParsedDescription {
   name: string
   description: string
   source: ProposalSource
+  fullProposalName?: string // Used to parse builder name
 }
 
 const parseProposalDescription = (description: string): ParsedDescription => {
@@ -179,6 +181,7 @@ const parseProposalDescription = (description: string): ParsedDescription => {
       name: name.substring(0, MAX_NAME_LENGTH_FOR_PROPOSAL),
       description: rest.join(';').trim(),
       source: 'DAO',
+      fullProposalName: name,
     }
   }
 
@@ -196,6 +199,7 @@ const parseProposalDescription = (description: string): ParsedDescription => {
       name: description.substring(0, nameEndIndex).substring(0, MAX_NAME_LENGTH_FOR_PROPOSAL),
       description: description,
       source: 'TALLY',
+      fullProposalName: description.substring(0, nameEndIndex),
     }
   }
 
@@ -204,5 +208,6 @@ const parseProposalDescription = (description: string): ParsedDescription => {
     name: description.substring(0, MAX_NAME_LENGTH_FOR_PROPOSAL),
     description: description,
     source: 'UNKNOWN',
+    fullProposalName: description,
   }
 }

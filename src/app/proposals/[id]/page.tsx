@@ -154,7 +154,7 @@ const parseProposalActionDetails = (
 
 const PageWithProposal = (proposal: ParsedProposal) => {
   const { address, isConnected } = useAccount()
-  const { proposalId, name, description, proposer, Starts, calldatasParsed } = proposal
+  const { proposalId, name, description, proposer, Starts, calldatasParsed, fullProposalName } = proposal
   const [vote, setVote] = useGetVoteForSpecificProposal(address ?? zeroAddress, proposalId)
   const [isChoosingVote, setIsChoosingVote] = useState(false)
   const [votingTxIsPending, setVotingTxIsPending] = useState(false)
@@ -181,7 +181,7 @@ const PageWithProposal = (proposal: ParsedProposal) => {
     (!isProposalActive || !!vote || !doesUserHasEnoughThreshold || isVoting || isWaitingVotingReceipt)
 
   const actionName = calldatasParsed?.[0]?.type === 'decoded' ? calldatasParsed[0].functionName : undefined
-  const { builderName } = splitCombinedName(name)
+  const { builderName } = splitCombinedName(fullProposalName || name)
 
   const handleVoting = async (_vote: Vote) => {
     try {
