@@ -42,16 +42,7 @@ export function SidebarMobile() {
           {menuDataToUse.map(data => (
             <>
               {'type' in data && data.type === 'category' ? (
-                <li
-                  key={data.href}
-                  {...data.buttonProps}
-                  className={cn(
-                    'text-bg-0 px-3 py-2',
-                    'className' in data.buttonProps && (data.buttonProps.className as ClassValue),
-                  )}
-                >
-                  <Span variant="tag">{data.text}</Span>
-                </li>
+                <div className="m-3" />
               ) : (
                 <MenuItem key={data.href} {...data} />
               )}
