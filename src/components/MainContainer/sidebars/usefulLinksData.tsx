@@ -43,4 +43,9 @@ export const usefulLinksData: UsefulLink[] = [
     testId: 'GetRNSDomainLink',
     content: 'Get RNS Domain',
   },
+  {
+    href: currentLinks.feedbackForm,
+    testId: 'SubmitFeedbackLink',
+    content: 'Submit Feedback',
+  },
 ]
