@@ -23,6 +23,9 @@ export const WindshieldWiperAnimation = ({
 }: WindshieldWiperAnimationProps) => {
   // Animation delay multiplier in ms
   const DELAY_PER_INDEX = 1000 // ms
+  const ANIMATION_DURATION = 0.8 // s
+  const FIRST_SWEEP_DELAY = 0.3 // s
+  const SECOND_SWEEP_DELAY = 1.3 // s
   const [show, setShow] = useState(false)
 
   // Only run effect if showAnimation changes or index changes
@@ -44,7 +47,8 @@ export const WindshieldWiperAnimation = ({
           <div
             className={cn(
               WINDSHIELD_WIPER_CLASSNAME,
-              'animate-[windshield-wiper-left-to-right_0.8s_linear_0.3s_forwards] z-2',
+              `animate-[windshield-wiper-left-to-right_${ANIMATION_DURATION}s_ease-out_${FIRST_SWEEP_DELAY}s_forwards]`,
+              'z-2',
               backgroundColor,
             )}
           />
@@ -52,7 +56,8 @@ export const WindshieldWiperAnimation = ({
           <div
             className={cn(
               WINDSHIELD_WIPER_CLASSNAME,
-              'animate-[windshield-wiper-left-to-right_0.8s_linear_1.3s_forwards] z-1',
+              `animate-[windshield-wiper-left-to-right_${ANIMATION_DURATION}s_ease-in_${SECOND_SWEEP_DELAY}s_forwards]`,
+              'z-1',
               animatedBackgroundColor,
             )}
           />
