@@ -49,15 +49,17 @@ export const CommunityItem = ({
       >
         {/* image */}
         <div className={cn('relative w-full h-auto', variant === 'portrait' ? 'aspect-square' : 'flex-1 aspect-[3/4] max-w-1/2')}>
-          <Image
-            crossOrigin={isExternalImage ? 'anonymous' : undefined}
-            unoptimized={isExternalImage}
-            src={image}
-            alt={title}
-            fill
-            objectFit={variant === 'portrait' ? 'contain' : 'cover'}
-          />
-          {enableDebris && <ImageDebris image={image} />}
+          {image && (
+            <Image
+              crossOrigin={isExternalImage ? 'anonymous' : undefined}
+              unoptimized={isExternalImage}
+              src={image}
+              alt={title}
+              fill
+              className={variant === 'portrait' ? 'object-contain' : 'object-cover'}
+            />
+          )}
+          {enableDebris && image && <ImageDebris image={image} />}
         </div>
         <div className="flex gap-[20px] flex-col flex-1">
           {/* Title */}
