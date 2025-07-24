@@ -1,6 +1,6 @@
 import { Paragraph } from '@/components/TypographyNew'
 import { Typography } from '@/components/TypographyNew/Typography'
-import { Button } from '@/components/Button/Button'
+import { Button } from '@/components/ButtonNew'
 import Image from 'next/image'
 import CollapsibleWithPreview from '@/components/CollapsibleWithPreview/CollapsibleWithPreview'
 import { FC } from 'react'
