@@ -1,6 +1,6 @@
 import { ConnectPopover } from '@/app/backing/components/Popovers/ConnectPopover'
 import { cn } from '@/lib/utils'
-import { FC, useState } from 'react'
+import { FC, useEffect, useState } from 'react'
 import { AllocationInput } from '@/app/backing/components/AllocationInput/AllocationInput'
 import { BuilderHeader } from '@/app/backing/components/BuilderHeader/BuilderHeader'
 import { CurrentBacking } from '@/app/backing/components/CurrentBacking/CurrentBacking'
@@ -11,6 +11,7 @@ import { Paragraph } from '@/components/TypographyNew'
 import { isBuilderRewardable } from '@/app/collective-rewards/utils/isBuilderOperational'
 import { StylableComponentProps } from '@/components/commonProps'
 import { BuilderCardControlProps } from './BuilderCardControl'
+import { AnimatePresence, motion } from 'motion/react'
 
 const Warning = ({ className }: StylableComponentProps<HTMLDivElement>) => {
   return (
@@ -37,6 +38,7 @@ export interface BuilderCardProps extends BuilderCardControlProps {
 export const BuilderCard: FC<BuilderCardProps> = ({
   address,
   builderName,
+  proposal,
   stateFlags,
   existentAllocation,
   maxAllocation,
@@ -55,6 +57,12 @@ export const BuilderCard: FC<BuilderCardProps> = ({
   const isRewardable = isBuilderRewardable(stateFlags)
   const [editing, setEditing] = useState(false)
 
+  const builderPageLink = `/proposals/${proposal.id}`
+
+  useEffect(() => {
+    allocation !== existentAllocation && setEditing(true)
+  }, [allocation, existentAllocation, setEditing])
+
   return (
     <div
       className={cn(
@@ -68,8 +76,13 @@ export const BuilderCard: FC<BuilderCardProps> = ({
         style={{ backgroundColor: topBarColor }}
         data-testid="builderCardTopBar"
       />
-      {/* FIXME: replace the builder page link */}
-      <BuilderHeader address={address} name={builderName} builderPageLink="#" className="mt-8" />
+      <BuilderHeader
+        address={address}
+        name={builderName}
+        builderPageLink={builderPageLink}
+        className="mt-8"
+        showFullName={false}
+      />
       {!isRewardable && <Warning className="pt-3" />}
       <div className="my-6 w-full">
         <div
@@ -96,7 +109,18 @@ export const BuilderCard: FC<BuilderCardProps> = ({
               />
             </div>
           )}
-          {editing && <CurrentBacking existentAllocation={existentAllocation} />}
+          <AnimatePresence>
+            {editing && (
+              <motion.div
+                initial={{ opacity: 0, height: 0 }}
+                animate={{ opacity: 1, height: 'auto' }}
+                exit={{ opacity: 0, height: 0 }}
+                transition={{ duration: 0.3, ease: 'easeInOut' }}
+              >
+                <CurrentBacking existentAllocation={existentAllocation} />
+              </motion.div>
+            )}
+          </AnimatePresence>
         </div>
       </div>
       <div>

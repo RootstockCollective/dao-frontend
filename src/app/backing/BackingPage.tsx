@@ -12,10 +12,10 @@ import {
 import { formatSymbol, getFiatAmount } from '@/app/collective-rewards/rewards'
 import { ActionMetricsContainer, ActionsContainer, MetricsContainer } from '@/components/containers'
 import { Header, Span } from '@/components/TypographyNew'
-import { RIF } from '@/lib/constants'
+import { RIF, stRIF, USD } from '@/lib/constants'
 import { formatCurrency } from '@/lib/utils'
 import { usePricesContext } from '@/shared/context/PricesContext'
-import { useContext } from 'react'
+import { useContext, useMemo } from 'react'
 import { Address } from 'viem'
 import { useAccount } from 'wagmi'
 import { AvailableBackingMetric, TotalBackingMetric } from './components'
@@ -23,6 +23,7 @@ import { BuilderAllocationBar } from './components/BuilderAllocationBar'
 import { AnnualBackingIncentives } from './components/Metrics/AnnualBackingIncentives'
 import { Spotlight } from './components/Spotlight'
 import { useBuilderContext } from '@/app/collective-rewards/user/context/BuilderContext'
+import { useRouter, useSearchParams } from 'next/navigation'
 
 const NAME = 'Backing'
 
@@ -38,6 +39,10 @@ export const BackingPage = () => {
   } = useContext(AllocationsContext)
 
   const { randomBuilders } = useBuilderContext()
+  const router = useRouter()
+
+  const searchParams = useSearchParams()
+  const userSelections = useMemo(() => searchParams.get('builders')?.split(',') as Address[], [searchParams])
 
   const rifPriceUsd = prices[RIF]?.price ?? 0
 
@@ -45,16 +50,16 @@ export const BackingPage = () => {
 
   const totalBacking = !totalOnchainAllocation ? 0n : totalOnchainAllocation
 
-  const hasAllocations = totalOnchainAllocation > 0n
+  const hasAllocations = useMemo(() => totalOnchainAllocation > 0n, [totalOnchainAllocation])
 
   // Format values properly using formatter functions
-  const availableForBackingLabel = formatSymbol(availableForBacking, 'stRIF')
-  const totalBackingLabel = formatSymbol(totalBacking, 'stRIF')
+  const availableForBackingLabel = formatSymbol(availableForBacking, stRIF)
+  const totalBackingLabel = formatSymbol(totalBacking, stRIF)
   const availableBackingUSD =
     !availableForBacking || !rifPriceUsd
-      ? formatCurrency(0, { currency: 'USD', showCurrency: true })
+      ? formatCurrency(0, { currency: USD, showCurrency: true })
       : formatCurrency(getFiatAmount(availableForBacking, rifPriceUsd), {
-          currency: 'USD',
+          currency: USD,
           showCurrency: true,
         })
 
@@ -83,7 +88,7 @@ export const BackingPage = () => {
     <div data-testid={NAME} className="flex flex-col items-start w-full h-full pt-[0.13rem] gap-2 rounded-sm">
       <Header caps variant="h1" className="text-3xl leading-10 pb-[2.5rem]">
         {NAME}{' '}
-        {allocationsCount > 0 && (
+        {isConnected && allocationsCount > 0 && (
           <Span variant="tag" className="text-v3-bg-accent-0 text-lg font-normal normal-case">
             {allocationsCount} Builders
           </Span>
@@ -106,39 +111,44 @@ export const BackingPage = () => {
 
       {isConnected && (
         <ActionMetricsContainer className="flex flex-col items-start w-[1144px] p-6 gap-2 rounded-[4px] bg-v3-bg-accent-80">
-          <div className="basis-1/2">
-            <AvailableBackingMetric
-              availableForBacking={availableForBackingLabel}
-              availableBackingUSD={availableBackingUSD}
-              onStakeClick={() => {
-                // FIXME: Implement staking page and update this navigation
-              }}
-              onDistributeClick={handleDistributeClick}
-            />
-          </div>
-          <div className="flex items-start basis-1/2 gap-14">
-            <div className="basis-1/2">
-              <TotalBackingMetric totalBacking={totalBackingLabel} />
-            </div>
-            {hasAllocations && (
+          <div className="flex flex-col items-center gap-10 w-full">
+            <div className="flex items-start gap-14 w-full">
               <div className="basis-1/2">
-                <AnnualBackingIncentives />
+                <AvailableBackingMetric
+                  availableForBacking={availableForBackingLabel}
+                  availableBackingUSD={availableBackingUSD}
+                  onStakeClick={() => router.push('/user?action=stake')}
+                  onDistributeClick={handleDistributeClick}
+                />
               </div>
-            )}
+              <div className="flex items-start basis-1/2 gap-14">
+                <div className="basis-1/2">
+                  <TotalBackingMetric totalBacking={totalBackingLabel} />
+                </div>
+                {hasAllocations && (
+                  <div className="basis-1/2">
+                    <AnnualBackingIncentives />
+                  </div>
+                )}
+              </div>
+            </div>
+            {(hasAllocations || userSelections) && <Spotlight />}
           </div>
         </ActionMetricsContainer>
       )}
 
-      <ActionsContainer
-        title={
-          <Header variant="h3" caps>
-            {isConnected ? 'Builders that you may want to back' : 'In the spotlight'}
-          </Header>
-        }
-        className="bg-v3-bg-accent-80"
-      >
-        <Spotlight />
-      </ActionsContainer>
+      {!hasAllocations && !userSelections && (
+        <ActionsContainer
+          title={
+            <Header variant="h3" caps>
+              {isConnected ? 'Builders that you may want to back' : 'In the spotlight'}
+            </Header>
+          }
+          className="bg-v3-bg-accent-80"
+        >
+          <Spotlight />
+        </ActionsContainer>
+      )}
     </div>
   )
 }

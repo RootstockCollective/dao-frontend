@@ -8,7 +8,7 @@ import { ActionsContainer } from '@/components/containers/ActionsContainer'
 import { RIF } from '@/lib/constants'
 import { usePricesContext } from '@/shared/context/PricesContext'
 import { FC, useContext, useEffect } from 'react'
-import { parseEther } from 'viem'
+import { Address, parseEther } from 'viem'
 import { useAccount } from 'wagmi'
 import { floorToUnit, getBuilderColor } from '../utils'
 import { BuilderCard } from './BuilderCard'
@@ -67,7 +67,7 @@ export const BuilderCardControl: FC<BuilderCardControlProps> = ({
 }) => {
   const { isConnected } = useAccount()
   const { prices } = usePricesContext()
-  const { openDrawer } = useLayoutContext()
+  const { openDrawer, closeDrawer } = useLayoutContext()
   const {
     actions: { updateAllocation },
     state: {
@@ -87,8 +87,26 @@ export const BuilderCardControl: FC<BuilderCardControlProps> = ({
   const handleAllocationChange = (value: number) => {
     if (allocationTxPending) return
     updateAllocation(builderAddress, parseEther(value.toString()))
-    openDrawer(<AllocationDrawerContent />, true)
   }
+
+  useEffect(() => {
+    // Compare initialAllocations and allocations
+    // Find differences between initial and current allocations for this builder
+    if (Object.keys(allocations).length === 0) return
+    const uniqueAddresses = [...new Set([...Object.keys(initialAllocations), ...Object.keys(allocations)])]
+    const hasChanged = uniqueAddresses.some(
+      builderAddress =>
+        (initialAllocations[builderAddress as Address] || 0n) !==
+        (allocations[builderAddress as Address] || 0n),
+    )
+
+    if (hasChanged) {
+      openDrawer(<AllocationDrawerContent />, true)
+    } else {
+      closeDrawer()
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [initialAllocations, allocations])
 
   return (
     <BuilderCard

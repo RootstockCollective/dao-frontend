@@ -1,12 +1,13 @@
 import { getFiatAmount } from '@/app/collective-rewards/rewards'
 import { InputNumber } from '@/components/Input/InputNumber'
 import { Paragraph } from '@/components/TypographyNew'
-import { cn } from '@/lib/utils'
-import { Dispatch, FC, SetStateAction, useState } from 'react'
+import { cn, formatCurrency } from '@/lib/utils'
+import { Dispatch, FC, SetStateAction } from 'react'
 import { PendingAllocation } from '../PendingAllocation/PendingAllocation'
 import { StickySlider } from '../StickySlider/StickySlider'
 import { RIFToken } from '../RIFToken/RIFToken'
 import { formatSymbol } from '@/app/collective-rewards/rewards/utils/formatter'
+import { USD } from '@/lib/constants'
 
 interface AllocationInputProps {
   allocation: bigint
@@ -34,12 +35,21 @@ export const AllocationInput: FC<AllocationInputProps> = ({
   setEditing,
 }) => {
   const allocationPercentage = maxAllocation === 0n ? 0 : Number((allocation * 100n) / maxAllocation)
-  const amountUsd = Number(getFiatAmount(allocation, rifPriceUsd).toFixed(2))
+  const amountUsd = formatCurrency(getFiatAmount(allocation, rifPriceUsd), {
+    currency: USD,
+    showCurrency: true,
+  })
 
   const handleSliderChange = (value: number[]) => {
     const percent = value[0]
     const newAllocation = Math.round((percent / 100) * Number(formatSymbol(maxAllocation, 'stRIF')))
     onAllocationChange(newAllocation)
+  }
+
+  const onMouseLeave = () => {
+    if (editing && allocation === existentAllocation) {
+      setEditing?.(false)
+    }
   }
 
   return (
@@ -77,11 +87,16 @@ export const AllocationInput: FC<AllocationInputProps> = ({
         </div>
       </div>
       <Paragraph className="text-[14px] text-v3-text-60" data-testid="allocationInputUsd">
-        {amountUsd} USD
+        {amountUsd}
       </Paragraph>
       {editing && !allocationTxPending && (
         <div data-testid="allocationInputSlider">
-          <StickySlider value={[allocationPercentage]} step={1} onValueChange={handleSliderChange} />
+          <StickySlider
+            value={[allocationPercentage]}
+            step={1}
+            onValueChange={handleSliderChange}
+            onMouseLeave={onMouseLeave}
+          />
           <Paragraph className="text-[12px] text-v3-text-60 mt-2" data-testid="allocationInputPercentage">
             {allocationPercentage.toFixed(0)}% of total backing power
           </Paragraph>

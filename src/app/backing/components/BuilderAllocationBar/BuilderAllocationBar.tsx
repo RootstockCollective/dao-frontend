@@ -102,8 +102,9 @@ const BuilderAllocationBar = () => {
         // Update allocations except for 'unallocated'
         const changedItems = [itemsData[increasedIndex], itemsData[decreasedIndex]]
         changedItems.forEach(item => {
+          const newValue = newValues[itemsData.indexOf(item)]
           if (item.key !== UNALLOCATED_KEY) {
-            updateAllocation(item.key as Address, parseEther(newValues[itemsData.indexOf(item)].toString()))
+            updateAllocation(item.key as Address, newValue > 0 ? parseEther(newValue.toString()) : 0n)
           }
         })
       } else if (change.type === 'reorder') {
