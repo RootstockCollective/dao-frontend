@@ -18,6 +18,7 @@ export interface BuilderCardControlProps extends Builder {
   estimatedRewards?: TokenRewards
   allocationTxPending?: boolean
   isInteractive?: boolean
+  index?: number
 }
 
 const AllocationDrawerContent = () => {
@@ -63,6 +64,7 @@ const AllocationDrawerContent = () => {
 export const BuilderCardControl: FC<BuilderCardControlProps> = ({
   allocationTxPending = false,
   address: builderAddress,
+  index,
   ...props
 }) => {
   const { isConnected } = useAccount()
@@ -121,6 +123,7 @@ export const BuilderCardControl: FC<BuilderCardControlProps> = ({
       onAllocationChange={handleAllocationChange}
       maxAllocation={unallocatedAmount}
       topBarColor={allocation > 0n ? topBarColor : 'transparent'}
+      index={index}
     />
   )
 }

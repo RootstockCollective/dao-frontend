@@ -1,11 +1,13 @@
 import { CommonComponentProps } from '@/components/commonProps'
 import { cn } from '@/lib/utils'
+import { useEffect, useState } from 'react'
 
 interface WindshieldWiperAnimationProps extends CommonComponentProps {
   className?: string
   showAnimation?: boolean
   backgroundColor?: string
   animatedBackgroundColor?: string
+  index?: number
 }
 
 const WINDSHIELD_WIPER_CLASSNAME =
@@ -17,10 +19,26 @@ export const WindshieldWiperAnimation = ({
   showAnimation,
   backgroundColor,
   animatedBackgroundColor,
+  index,
 }: WindshieldWiperAnimationProps) => {
+  // Animation delay multiplier in ms
+  const DELAY_PER_INDEX = 1000 // ms
+  const [show, setShow] = useState(false)
+
+  // Only run effect if showAnimation changes or index changes
+  useEffect(() => {
+    if (!showAnimation) {
+      setShow(false)
+      return
+    }
+
+    const timeout = setTimeout(() => setShow(true), (index ?? 0) * DELAY_PER_INDEX)
+    return () => clearTimeout(timeout)
+  }, [showAnimation, index])
+
   return (
     <div className={cn('relative overflow-hidden rounded-inherit', backgroundColor, className)}>
-      {showAnimation && (
+      {showAnimation && show && (
         <>
           {/* First Sweep */}
           <div

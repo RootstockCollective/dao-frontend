@@ -89,8 +89,8 @@ export const Spotlight = () => {
     <>
       {isConnected ? (
         <div className="grid grid-cols-4 gap-2 w-full items-stretch">
-          {spotlightBuilders.map(builder => (
-            <BuilderCardControl key={builder.address} {...builder} isInteractive={true} />
+          {spotlightBuilders.map((builder, index) => (
+            <BuilderCardControl key={builder.address} {...builder} isInteractive={true} index={index} />
           ))}
           {hasAllocations && <BackMoreBuildersCard />}
         </div>

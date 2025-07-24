@@ -35,6 +35,7 @@ export interface BuilderCardProps extends BuilderCardControlProps {
   className?: string
   isInteractive?: boolean
   showAnimation?: boolean
+  index?: number
 }
 
 export const BuilderCard: FC<BuilderCardProps> = ({
@@ -56,6 +57,7 @@ export const BuilderCard: FC<BuilderCardProps> = ({
   className,
   isInteractive,
   showAnimation,
+  index,
 }) => {
   const isRewardable = isBuilderRewardable(stateFlags)
   const [editing, setEditing] = useState(false)
@@ -71,6 +73,7 @@ export const BuilderCard: FC<BuilderCardProps> = ({
       backgroundColor="bg-v3-bg-accent-60"
       animatedBackgroundColor="bg-v3-bg-accent-100"
       showAnimation={showAnimation}
+      index={index}
     >
       <div
         className={cn(
