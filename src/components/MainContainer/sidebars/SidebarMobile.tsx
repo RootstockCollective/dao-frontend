@@ -5,10 +5,11 @@ import { usePathname } from 'next/navigation'
 import { useLayoutContext } from '../LayoutProvider'
 import { UsefulLinks } from './UsefulLinks'
 import { NavIcon } from '../icons/NavIcon'
-import { menuData, menuDataNotConnected } from './menuData'
+import { MenuData, menuData, menuDataNotConnected } from './menuData'
 import { cn } from '@/lib/utils'
 import styles from './styles.module.css'
 import { useAccount } from 'wagmi'
+import Image from 'next/image'
 
 export function SidebarMobile() {
   const { isSidebarOpen, closeSidebar } = useLayoutContext()
@@ -53,14 +54,14 @@ export function SidebarMobile() {
   )
 }
 
-const MenuItem = ({ text, href }: (typeof menuData | typeof menuDataNotConnected)[number]) => {
+const MenuItem = ({ text, href, iconUrl }: MenuData) => {
   const isActive = usePathname()?.substring(1) === href
   const { closeSidebar } = useLayoutContext()
   return (
     <li className={cn('relative pl-3 pr-16', { 'bg-v-charcoal': isActive })}>
       <Link href={`/${href}`} onClick={closeSidebar}>
         <div className={cn('h-10 flex flex-nowrap gap-2 items-center', { [styles['nav-active']]: isActive })}>
-          <NavIcon />
+          {iconUrl ? <Image src={iconUrl} width={20} height={20} alt="Icon" /> : <NavIcon />}
           <p className="text-sm font-light font-rootstock-sans">{text}</p>
         </div>
       </Link>
