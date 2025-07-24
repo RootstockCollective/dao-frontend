@@ -6,6 +6,7 @@ import { Header } from '@/components/TypographyNew'
 import { Content } from './components/Content'
 import { Metrics } from './components/Metrics'
 import { Spotlight } from './components/Spotlight'
+import BecomeBuilderCollapsible from './components/BecomeBuilderBanner/BecomeBuilderBanner'
 import BuildersTableContainer from './components/Table/BuildersTableContainer'
 
 const NAME = 'Builders'
@@ -26,6 +27,7 @@ export const BuildersPage = () => {
         <ActionMetricsContainer className="bg-v3-bg-accent-80">
           <Spotlight />
         </ActionMetricsContainer>
+        <BecomeBuilderCollapsible className="flex p-4 items-start gap-8 flex-1 self-stretch rounded bg-v3-text-80" />
         <BuildersTableContainer />
       </div>
     </div>

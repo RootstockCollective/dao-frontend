@@ -5,7 +5,11 @@ import Image from 'next/image'
 import CollapsibleWithPreview from '@/components/CollapsibleWithPreview/CollapsibleWithPreview'
 import { FC } from 'react'
 
-const BecomeBuilderCollapsible: FC = () => {
+interface BecomeBuilderCollapsibleProps {
+  className?: string
+}
+
+const BecomeBuilderCollapsible: FC<BecomeBuilderCollapsibleProps> = ({ className }) => {
   const handleBecomeBuilder = () => {
     // FIXME: Implement become builder functionality
   }
@@ -105,6 +109,7 @@ const BecomeBuilderCollapsible: FC = () => {
         chevronColor: 'text-v3-text-100',
       }}
       defaultOpen={true}
+      className={className}
     />
   )
 }
