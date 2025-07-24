@@ -25,4 +25,3 @@ export type TokenBalance = {
 }
 
 export type TokenBalanceRecord = Record<string, TokenBalance>
-
