@@ -22,7 +22,7 @@ const testnet = {
   forum: 'https://gov.rootstockcollective.xyz',
   allocations: 'https://rootstockcollective.xyz/collective-rewards-how-to-become-a-backer/',
   feedbackForm:
-    'https://docs.google.com/forms/d/e/1FAIpQLSeCzwut4WppI-YPc0AwNdbi5FVyOXGsTroZO5y-W7KVnpgS5A/viewform?usp=sharing&ouid=108559399286825656764'
+    'https://docs.google.com/forms/d/e/1FAIpQLSeCzwut4WppI-YPc0AwNdbi5FVyOXGsTroZO5y-W7KVnpgS5A/viewform?usp=sharing&ouid=108559399286825656764',
 } as const satisfies Resources
 
 const mainnet = {
@@ -35,7 +35,7 @@ const mainnet = {
   forum: 'https://gov.rootstockcollective.xyz',
   allocations: 'https://rootstockcollective.xyz/collective-rewards-how-to-become-a-backer/',
   feedbackForm:
-    'https://docs.google.com/forms/d/e/1FAIpQLSeCzwut4WppI-YPc0AwNdbi5FVyOXGsTroZO5y-W7KVnpgS5A/viewform?usp=sharing&ouid=108559399286825656764'
+    'https://docs.google.com/forms/d/e/1FAIpQLSeCzwut4WppI-YPc0AwNdbi5FVyOXGsTroZO5y-W7KVnpgS5A/viewform?usp=sharing&ouid=108559399286825656764',
 } as const satisfies Resources
 
 const regtest = {
@@ -48,7 +48,7 @@ const regtest = {
   forum: 'https://gov.rootstockcollective.xyz',
   allocations: '',
   feedbackForm:
-    'https://docs.google.com/forms/d/e/1FAIpQLSeCzwut4WppI-YPc0AwNdbi5FVyOXGsTroZO5y-W7KVnpgS5A/viewform?usp=sharing&ouid=108559399286825656764'
+    'https://docs.google.com/forms/d/e/1FAIpQLSeCzwut4WppI-YPc0AwNdbi5FVyOXGsTroZO5y-W7KVnpgS5A/viewform?usp=sharing&ouid=108559399286825656764',
 } as const satisfies Resources
 
 const environments = {
