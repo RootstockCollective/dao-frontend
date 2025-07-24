@@ -67,8 +67,14 @@ export const Spotlight = () => {
 
     const resolvedAddresses = resolvedBuilders.map(({ address }) => address)
 
-    // Return only estimated builders that match resolved addresses
-    return estimatedBuilders.filter(({ address }) => resolvedAddresses.includes(address))
+    // Place builders from userSelections first, then the rest
+    const sortedAddresses = [...new Set([...(userSelections ?? []), ...resolvedAddresses])]
+    return (
+      sortedAddresses
+        // this is inefficient, but it's the only way to get the builders in the order we want
+        .map(address => estimatedBuilders.find(b => b.address === address))
+        .filter(builder => !!builder)
+    )
   }, [estimatedBuilders, hasAllocations, allocations, getBuilder, randomBuilders, userSelections])
 
   const isBuilderSelected = useCallback(
