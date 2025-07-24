@@ -22,7 +22,7 @@ export const WindshieldWiperAnimation = ({
   index,
 }: WindshieldWiperAnimationProps) => {
   // Animation delay multiplier in ms
-  const DELAY_PER_INDEX = 1000 // ms
+  const DELAY_PER_INDEX = 0 // ms
   const ANIMATION_DURATION = 0.8 // s
   const FIRST_SWEEP_DELAY = 0.3 // s
   const SECOND_SWEEP_DELAY = 1.3 // s
