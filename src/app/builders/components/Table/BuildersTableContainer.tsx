@@ -55,6 +55,7 @@ const BuildersTableContainer = (): ReactElement => {
 
   // Filter out options that have no builders
   const availableOptions = useMemo(() => {
+    // TODO: we could count the builders by filter option first
     return builderFilterOptions.filter(option => {
       if (option.id === 'all') return true // Always include 'all' option
       const builderCount = builders.filter(filterMap[option.id]).length
