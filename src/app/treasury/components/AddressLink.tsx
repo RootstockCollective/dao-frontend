@@ -60,7 +60,7 @@ export function AddressLink({ address, className }: { address: Address; classNam
         rel="noopener noreferrer"
         className="underline underline-offset-2 underline-thick flex flex-row items-center gap-1"
       >
-        <Span variant="body-s">View details in Explorer</Span>
+        <Span variant="body-s">View in Explorer</Span>
         <ArrowUpRightLightIcon size={20} />
       </a>
     </div>
