@@ -2,6 +2,7 @@ import { Cycle } from '@/app/collective-rewards/metrics'
 import { BANNER_CONFIGS, CYCLE_ENDED, CYCLE_ENDING, KYC_ONLY, NOT_BACKING, START_BUILDING } from './constants'
 import { BannerConfig } from './types'
 import { Typography } from '@/components/TypographyNew/Typography'
+import { DateTime } from 'luxon'
 
 /**
  * Randomly shuffles banner configs and returns at most 2 banners.
@@ -71,6 +72,6 @@ export const getBannerConfigForCycleEnding = (cycle: Cycle): BannerConfig | null
 
 export const getBannerConfigForCycleEnded = (cycle: Cycle): BannerConfig | null => {
   if (!cycle || !cycle.cycleStart) return null
-  const isCycleEnded = cycle.cycleStart.diffNow().as('days') < 3
+  const isCycleEnded = DateTime.now().diff(cycle.cycleStart).as('days') < 3
   return isCycleEnded && BANNER_CONFIGS[CYCLE_ENDED] ? BANNER_CONFIGS[CYCLE_ENDED] : null
 }

@@ -1,9 +1,8 @@
-import { useCycleContext } from '@/app/collective-rewards/metrics'
+import { CycleContextProvider, useCycleContext } from '@/app/collective-rewards/metrics'
 import { useHandleErrors } from '@/app/collective-rewards/utils'
 import { useRequiredTokens } from '@/app/user/IntroModal/hooks/useRequiredTokens'
 import { BannerContent } from '@/components/StackableBanner/BannerContent'
 import { StackableBanner } from '@/components/StackableBanner/StackableBanner'
-import { DateTime, Duration } from 'luxon'
 import { useRouter } from 'next/navigation'
 import { useMemo } from 'react'
 import { zeroAddress } from 'viem'
@@ -100,7 +99,7 @@ import { handleActionClick } from './utils'
  *
  * @returns JSX.Element with banner notifications or null if no banners should be shown
  */
-export const StackingNotifications = () => {
+const StackingNotificationsContent = () => {
   const router = useRouter()
   const { address } = useAccount()
   // ===============================
@@ -242,5 +241,13 @@ export const StackingNotifications = () => {
         ))}
       </StackableBanner>
     </>
+  )
+}
+
+export const StackingNotifications = () => {
+  return (
+    <CycleContextProvider>
+      <StackingNotificationsContent />
+    </CycleContextProvider>
   )
 }
