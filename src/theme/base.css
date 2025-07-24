@@ -69,6 +69,9 @@
   --animate-fade-out-slide-out: fade-out-slide-out 800ms;
   --animate-fade-in-slide-in: fade-in-slide-in 800ms;
 
+  --animate-windshield-wiper-sweep-1: windshield-wiper-left-to-right 0.8s ease-out 0.3s forwards;
+  --animate-windshield-wiper-sweep-2: windshield-wiper-left-to-right 0.8s ease-in 1.3s forwards;
+
   /* TODO: replace these main layout colors with New Design 2025 colors */
   --color-v-charcoal: var(--v-charcoal);
   --color-warm-gray: var(--warm-gray);
