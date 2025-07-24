@@ -18,7 +18,7 @@ import { RewardsCell, RewardsCellProps } from '@/app/builders/components/Table/C
 import { BackerRewards } from '@/app/collective-rewards/rewards/backers/hooks'
 import { formatSymbol, getFiatAmount } from '@/app/collective-rewards/rewards/utils/formatter'
 import { getCombinedFiatAmount } from '@/app/collective-rewards/utils'
-import { GetPricesResult } from '@/app/user/types'
+import { GetPricesResult } from '@/shared/types'
 import { RIF } from '@/lib/constants'
 import { cn, formatCurrency } from '@/lib/utils'
 import { Row, RowData, useTableActionsContext, useTableContext } from '@/shared/context'

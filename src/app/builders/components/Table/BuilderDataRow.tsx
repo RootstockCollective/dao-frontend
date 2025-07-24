@@ -3,7 +3,7 @@
 import { formatSymbol, getFiatAmount } from '@/app/collective-rewards/rewards/utils/formatter'
 import { BuilderRewardsSummary } from '@/app/collective-rewards/types'
 import { getCombinedFiatAmount } from '@/app/collective-rewards/utils'
-import { GetPricesResult } from '@/app/user/types'
+import { GetPricesResult } from '@/shared/types'
 import { Button } from '@/components/ButtonNew'
 import { CommonComponentProps } from '@/components/commonProps'
 import { Jdenticon } from '@/components/Header/Jdenticon'

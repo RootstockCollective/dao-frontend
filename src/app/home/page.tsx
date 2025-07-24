@@ -1,10 +1,10 @@
 'use client'
 import { useGetProposalsWithGraph } from '../proposals/hooks/useGetProposalsWithGraph'
-import { LatestCollectiveSection } from '../user/latest-collective'
+import { LatestCollectiveSection } from '../my-holdings/sections/latest-collective'
 import { TreasuryContextProviderWithPrices } from '../treasury/contexts/TreasuryContext'
 import { useAccount } from 'wagmi'
 import { TopHeroComponentNotConnected, CollectiveBalancesSection } from './components'
-import { CommunitiesSection } from '../user/Communities/CommunitiesSection'
+import { CommunitiesSection } from '../my-holdings/sections/Communities/CommunitiesSection'
 
 export default function Home() {
   const { isConnected } = useAccount()

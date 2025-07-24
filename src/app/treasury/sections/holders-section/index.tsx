@@ -21,7 +21,7 @@ import { getPaginationRowModel } from '@tanstack/react-table'
 import { TokenImage } from '@/components/TokenImage'
 import Big from '@/lib/big'
 import { HolderCard, HolderColumn, ListSwitch } from './components'
-import { useGetSpecificPrices } from '@/app/user/Balances/hooks/useGetSpecificPrices'
+import { useGetSpecificPrices } from '@/shared/hooks/useGetSpecificPrices'
 
 interface HolderData {
   holder: {

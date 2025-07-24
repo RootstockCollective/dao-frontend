@@ -1,7 +1,7 @@
 import { governor } from '@/lib/contracts'
 import { useQuery } from '@tanstack/react-query'
 import { Address, Log, parseEventLogs } from 'viem'
-import { fetchVoteCastEventByAccountAddress } from '@/app/user/Balances/actions'
+import { fetchVoteCastEventByAccountAddress } from '@/app/my-holdings/sections/MyActivitiesAndBalances/components/Balances/actions'
 import { Vote, VOTES_MAP } from '@/shared/types'
 import { useEffect, useState } from 'react'
 

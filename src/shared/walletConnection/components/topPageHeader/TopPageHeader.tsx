@@ -1,7 +1,7 @@
 import { TopPageHeaderLeftSlotStrategy } from './TopPageHeaderLeftSlotStrategy'
 import { BecomeABuilderButton } from '@/app/collective-rewards/user'
 import { useAccount } from 'wagmi'
-import { useCollapseContext } from '@/app/user/HeroSection/HeroCollapseContext'
+import { useCollapseContext } from '@/app/my-holdings/sections/HeroSection/HeroCollapseContext'
 import { usePathname } from 'next/navigation'
 import { AnimatePresence, motion } from 'motion/react'
 import { SelfContainedNFTBoosterCard } from '@/app/shared/components/NFTBoosterCard/SelfContainedNFTBoosterCard'

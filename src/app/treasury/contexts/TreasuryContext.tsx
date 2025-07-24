@@ -2,7 +2,7 @@ import { createContext, ReactNode, useContext, useMemo } from 'react'
 import { usePricesContext, withPricesContextProvider } from '@/shared/context/PricesContext'
 import { useGetTreasuryBucketBalance } from '@/app/treasury/hooks/useGetTreasuryBucketBalance'
 import { treasuryContracts } from '@/lib/contracts'
-import { GetPricesResult } from '@/app/user/types'
+import { GetPricesResult } from '@/shared/types'
 import Big from '@/lib/big'
 import { Bucket } from '../types'
 

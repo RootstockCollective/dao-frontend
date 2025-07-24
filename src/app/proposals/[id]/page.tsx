@@ -27,11 +27,10 @@ import { ShortenAndCopy } from '@/components/ShortenAndCopy/ShortenAndCopy'
 import { useProposalQuorumAtSnapshot } from '../hooks/useProposalQuorumAtSnapshot'
 import { ParsedActionDetails, ActionType, ProposalType } from './types'
 import { ActionDetails } from '../components/action-details'
-import type { GetPricesResult } from '@/app/user/types'
 import { ConnectButtonComponent } from '@/shared/walletConnection/components/ConnectButtonComponent'
 import { NewPopover } from '@/components/NewPopover'
 import { useGetVoteForSpecificProposal } from '../hooks/useVoteCast'
-import { Vote } from '@/shared/types'
+import { Vote, GetPricesResult } from '@/shared/types'
 import { executeTxFlow } from '@/shared/notification'
 
 export default function ProposalView() {

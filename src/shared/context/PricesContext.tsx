@@ -1,7 +1,7 @@
 'use client'
 
-import { useGetSpecificPrices } from '@/app/user/Balances/hooks/useGetSpecificPrices'
-import { GetPricesResult } from '@/app/user/types'
+import { useGetSpecificPrices } from '@/shared/hooks/useGetSpecificPrices'
+import { GetPricesResult } from '@/shared/types'
 import { createContext, FC, ReactNode, useContext, useMemo } from 'react'
 
 interface PricesContextProps {

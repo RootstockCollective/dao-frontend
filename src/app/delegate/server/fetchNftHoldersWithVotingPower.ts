@@ -1,6 +1,6 @@
 'use server'
 
-import { fetchNftHoldersOfAddress } from '@/app/user/Balances/actions'
+import { fetchNftHoldersOfAddress } from '@/app/my-holdings/sections/MyActivitiesAndBalances/components/Balances/actions'
 import { OG_CONTRIBUTORS_NFT_ADDRESS } from '@/lib/constants'
 import { stRif } from '@/lib/contracts'
 import { publicClient } from '@/lib/viemPublicClient'
