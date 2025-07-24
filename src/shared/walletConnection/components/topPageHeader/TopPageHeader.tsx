@@ -1,9 +1,5 @@
 import { TopPageHeaderLeftSlotStrategy } from './TopPageHeaderLeftSlotStrategy'
-import { BecomeABuilderButton } from '@/app/collective-rewards/user'
-import { useAccount } from 'wagmi'
-import { useCollapseContext } from '@/app/user/HeroSection/HeroCollapseContext'
 import { usePathname } from 'next/navigation'
-import { AnimatePresence, motion } from 'motion/react'
 import { SelfContainedNFTBoosterCard } from '@/app/shared/components/NFTBoosterCard/SelfContainedNFTBoosterCard'
 import { collectiveRewards, home } from '@/shared/constants'
 import { useNFTBoosterContext } from '@/app/providers/NFT/BoosterContext'
@@ -15,8 +11,6 @@ import { useNFTBoosterContext } from '@/app/providers/NFT/BoosterContext'
  * @constructor
  */
 export function TopPageHeader() {
-  const { address, isConnected } = useAccount()
-  const { isCollapsed } = useCollapseContext()
   const pathname = usePathname()
   const isMyCollective = pathname === home
   const isCollectiveRewards = pathname === collectiveRewards
@@ -30,18 +24,6 @@ export function TopPageHeader() {
       </div>
       <div className="flex justify-end flex-row gap-5 items-center">
         <SelfContainedNFTBoosterCard forceRender={forceRender} />
-        <AnimatePresence mode="sync">
-          {(isCollapsed || !isMyCollective || (isMyCollective && isConnected)) && (
-            <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              transition={{ duration: 0.2 }}
-            >
-              <BecomeABuilderButton address={address!} />
-            </motion.div>
-          )}
-        </AnimatePresence>
         {/* Commented buttons to test reown  */}
         {/*<appkit-account-button />*/}
         {/*<appkit-network-button />*/}
