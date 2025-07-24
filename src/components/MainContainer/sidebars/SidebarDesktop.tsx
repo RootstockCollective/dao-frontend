@@ -1,4 +1,4 @@
-import { useMemo } from 'react'
+import { Fragment, useMemo } from 'react'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { motion, type Transition, type Variants } from 'motion/react'
@@ -59,10 +59,9 @@ export const SidebarDesktop = () => {
           {/* Menu */}
           <ul className="px-3">
             {menuDataToUse.map(data => (
-              <>
+              <Fragment key={data.href}>
                 {'type' in data && data.type === 'category' ? (
                   <li
-                    key={data.href}
                     {...data.buttonProps}
                     className={cn(
                       'text-bg-0 px-3 py-2',
@@ -72,9 +71,9 @@ export const SidebarDesktop = () => {
                     {isSidebarOpen && <Span variant="tag">{data.text}</Span>}
                   </li>
                 ) : (
-                  <MenuItem variants={variants} key={data.href} {...data} />
+                  <MenuItem variants={variants} {...data} />
                 )}
-              </>
+              </Fragment>
             ))}
           </ul>
         </div>
