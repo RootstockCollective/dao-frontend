@@ -31,20 +31,20 @@ const stateTooltips: BuilderStateTooltip = {
 
 const stateIcons: Record<DecorationOptionId, React.ReactNode> = {
   extraRewards: <ParachuteIcon useGradient />,
-  deactivated: <WarningIcon color="#DEFF1A" />,
-  revoked: <WarningIcon color="#DEFF1A" />,
-  paused: <WarningIcon color="#DEFF1A" />,
-  inProgress: <HourglassIcon className="text-v3-bg-accent-0" />,
-  selfPaused: <WarningIcon color="#DEFF1A" />,
+  deactivated: <WarningIcon className="text-brand-rootstock-lime" />,
+  revoked: <WarningIcon className="text-brand-rootstock-lime" />,
+  paused: <WarningIcon className="text-brand-rootstock-lime" />,
+  inProgress: <HourglassIcon className="text-v3-bg-accent-0" size={18} />,
+  selfPaused: <WarningIcon className="text-brand-rootstock-lime" />,
 }
 
 const stateHoveredIcons: Record<DecorationOptionId, React.ReactNode> = {
   extraRewards: <ParachuteIcon useGradient className="text-v3-bg-accent-100" />,
-  deactivated: <WarningIcon color="#DEFF1A" className="text-v3-bg-accent-100" />,
-  revoked: <WarningIcon color="#DEFF1A" className="text-v3-bg-accent-100" />,
-  paused: <WarningIcon color="#DEFF1A" className="text-v3-bg-accent-100" />,
-  inProgress: <HourglassIcon className="text-v3-bg-accent-100" />,
-  selfPaused: <WarningIcon color="#DEFF1A" className="text-v3-bg-accent-100" />,
+  deactivated: <WarningIcon className="text-v3-bg-accent-100" />,
+  revoked: <WarningIcon className="text-v3-bg-accent-100" />,
+  paused: <WarningIcon className="text-v3-bg-accent-100" />,
+  inProgress: <HourglassIcon className="text-v3-bg-accent-100" size={18}/>,
+  selfPaused: <WarningIcon className="text-v3-bg-accent-100" />,
 }
 
 interface BuilderDecorationProps {
