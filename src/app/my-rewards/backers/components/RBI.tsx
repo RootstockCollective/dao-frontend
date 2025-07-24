@@ -49,7 +49,7 @@ const RBIContent: FC<RBIContentProps> = ({ rbiPct, isLoading }) => {
         </span>
       }
     >
-      {`${rbiPct.toFixed(2)}%`}
+      {`${rbiPct.toFixed(0)}%`}
     </RewardCard>
   )
 }
