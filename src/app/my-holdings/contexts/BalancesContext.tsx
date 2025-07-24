@@ -6,6 +6,7 @@ import { TokenBalanceRecord } from '@/app/my-holdings/types'
 import { GetPricesResult } from '@/shared/types'
 import { RBTC, RIF, stRIF, USDRIF } from '@/lib/constants'
 import { getTokenBalance } from '../sections/Balances/balanceUtils'
+import { NoContextProviderError } from '@/lib/errors/ContextError'
 
 interface BalancesContextValue {
   balances: TokenBalanceRecord
@@ -39,4 +40,10 @@ export const BalancesProvider: FC<BalancesProviderProps> = ({ children }) => {
   )
 }
 
-export const useBalancesContext = () => useContext(BalancesContext)
+export const useBalancesContext = () => {
+  const context = useContext(BalancesContext)
+  if (!context) {
+    throw new NoContextProviderError('useBalancesContext', 'BalancesProvider')
+  }
+  return context
+}
