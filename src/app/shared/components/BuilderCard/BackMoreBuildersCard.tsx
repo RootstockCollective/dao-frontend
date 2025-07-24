@@ -1,6 +1,7 @@
 import { Button } from '@/components/ButtonNew'
 import { BuildingBrick, CloseIconKoto } from '@/components/Icons'
 import { Paragraph } from '@/components/TypographyNew'
+import { Typography } from '@/components/TypographyNew/Typography'
 import { cn } from '@/lib/utils'
 import { useRouter } from 'next/navigation'
 import { FC, useState } from 'react'
@@ -40,16 +41,16 @@ export const BackMoreBuildersCard: FC<BackMoreBuildersCardProps> = ({
       <button type="button" className="absolute top-0 right-0 -translate-x-5 translate-y-5">
         <CloseIconKoto size={24} onClick={() => setIsVisible(false)} />
       </button>
-      <div className="flex flex-col items-center">
-        <div className="pb-[2rem]">
+      <div className="flex flex-col items-center gap-8">
+        <div className="">
           <BuildingBrick color="none" />
         </div>
-        <div className="pb-[1.5rem]">
-          <Paragraph>
-            {/* FIXME: Add the correct text here */}
-            Backers back an average of 30 Builders, getting an average of 123 stRIF per cycle as rewards
-          </Paragraph>
-        </div>
+        <Typography variant="h3" className="text-v3-text-100">
+          Grow your impact
+        </Typography>
+        <Paragraph className="pb-2 text-center">
+          Backing more Builders helps diversify your support across the ecosystem.
+        </Paragraph>
         <Button onClick={() => router.push('/builders')} variant="secondary-outline">
           Back more Builders
         </Button>
