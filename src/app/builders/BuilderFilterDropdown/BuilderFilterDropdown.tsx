@@ -6,28 +6,12 @@ import {
   DropdownItem,
   DropdownTrigger,
   DropdownValue,
-} from '../../components/SingleSelectDropdown/SingleSelectDropdown'
-import { BuilderState } from './components/Table/BuilderTable.config'
+} from '../../../components/SingleSelectDropdown/SingleSelectDropdown'
+import { builderFilterOptions, type BuilderFilterOption, type BuilderFilterOptionId } from './constants'
 
 export interface BuilderFilterDropdownProps extends CommonComponentProps {
   onSelected: (optionId: BuilderFilterOptionId) => void
 }
-
-export type BuilderFilterOptionId = 'all' | Exclude<BuilderState, 'selfPaused'>
-
-export type BuilderFilterOption = {
-  id: BuilderFilterOptionId
-  content: string
-}
-
-const builderFilterOptions: BuilderFilterOption[] = [
-  { id: 'all', content: 'All Builders' },
-  { id: 'active', content: 'Active Builders' },
-  { id: 'deactivated', content: 'Deactivated Builders' },
-  { id: 'revoked', content: 'Revoked Builders' },
-  { id: 'paused', content: 'Paused Builders' },
-  { id: 'inProgress', content: 'In Progress' },
-]
 
 export const BuilderFilterDropdown: FC<BuilderFilterDropdownProps> = ({ className, onSelected }) => {
   const [selectedOptionId, setSelectedOptionId] = useState<BuilderFilterOptionId>(builderFilterOptions[0].id)
