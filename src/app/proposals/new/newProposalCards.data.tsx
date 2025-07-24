@@ -4,6 +4,7 @@ import rewardsImage from './images/rewards.png'
 import grantBigImage from './images/grant-big.png'
 import rewardsBigImage from './images/rewards-big.png'
 import { ProposalCategory } from '@/shared/types'
+import { Paragraph } from '@/components/TypographyNew'
 
 interface NewProposalCardCoreProps {
   type: ProposalCategory
@@ -36,15 +37,15 @@ export const newProposalCards: NewProposalCardData[] = [
     cardTitle: 'Grant',
     textBlock: (
       <>
-        <p>
+        <Paragraph>
           Community backed - your proposal is voted on inside the DAO, aligning funding with ecosystem
           priorities.
-        </p>
-        <p>
+        </Paragraph>
+        <Paragraph>
           When you pass through community voting your funding is unlocked as you achieve your milestones!
           Receive funding as you deliver on clear, measurable goals - all with full transparency and community
           oversight at every stage.
-        </p>
+        </Paragraph>
       </>
     ),
     buttonText: 'Apply for a Grant',
@@ -52,17 +53,19 @@ export const newProposalCards: NewProposalCardData[] = [
     bottomTextBlock: [
       {
         header: 'Align with ecosystem goals',
-        text: <>Make sure that your project supports the goals of the Rootstock Ecosystem</>,
+        text: (
+          <Paragraph>Make sure that your project supports the goals of the Rootstock Ecosystem</Paragraph>
+        ),
         url: 'https://rootstockcollective.xyz/submitting-a-grant-proposal/',
       },
       {
         header: 'Complete KYC',
-        text: <>Start your KYC early to avoid delays if your proposal passes the vote</>,
+        text: <Paragraph>Start your KYC early to avoid delays if your proposal passes the vote</Paragraph>,
         url: 'https://docs.google.com/forms/d/e/1FAIpQLSd4HklyTFPFAo2I0l_N5fy_di01WZ27e4uFDG1KVy8ZIOSiow/viewform',
       },
       {
         header: 'Post on Discourse',
-        text: <>Share your proposal idea with the community for feedback</>,
+        text: <Paragraph>Share your proposal idea with the community for feedback</Paragraph>,
         url: 'https://gov.rootstockcollective.xyz/c/grants/5',
       },
     ],
@@ -75,24 +78,27 @@ export const newProposalCards: NewProposalCardData[] = [
     cardTitle: 'Builders Rewards',
     textBlock: (
       <>
-        <p>Community vote to add a Builder, granting access to Rewards</p>
-        <p>
-          What&apos;s in it for the user, short explanation&hellip; Lorem ipsum dolor sit amet, consectetur
-          adipisicing elit. Amet, velit itaque consequatur cupiditate aliquid neque.
-        </p>
+        <Paragraph>
+          This program aims to create a decentralized and community-driven mechanism to reward builders.
+        </Paragraph>
+        <Paragraph>
+          Builders in this context are developers or projects who are members of the RootstockCollective and
+          constant contributors to the Rootstock ecosystem who have been approved by the community to receive
+          Collective Rewards on a regular basis.
+        </Paragraph>
       </>
     ),
-    buttonText: 'Create proposal',
+    buttonText: 'Join Builders Rewards',
     bottomTitle: 'Before you create a proposal',
     bottomTextBlock: [
       {
         header: 'Post on Discourse',
-        text: <>Create a Join Builders Rewards post off-chain</>,
+        text: <Paragraph>Create a Join Builders Rewards post off-chain</Paragraph>,
         url: 'https://gov.rootstockcollective.xyz/c/collective-rewards/7',
       },
       {
         header: 'Complete KYC',
-        text: <>Start your KYC early to avoid delays if your proposal passes the vote</>,
+        text: <Paragraph>Start your KYC early to avoid delays if your proposal passes the vote</Paragraph>,
         url: 'https://docs.google.com/forms/d/e/1FAIpQLSd4HklyTFPFAo2I0l_N5fy_di01WZ27e4uFDG1KVy8ZIOSiow/viewform',
       },
     ],

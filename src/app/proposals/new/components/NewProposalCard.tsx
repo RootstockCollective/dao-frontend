@@ -5,6 +5,7 @@ import { CardButton } from './CardButton'
 import { HTMLAttributes } from 'react'
 import { cn } from '@/lib/utils'
 import type { ProposalCategory } from '@/shared/types'
+import { Header } from '@/components/TypographyNew'
 
 interface Props extends HTMLAttributes<HTMLDivElement> {
   card: NewProposalCardBaseData
@@ -30,9 +31,9 @@ export function NewProposalCard({ card, onSelectCard, className, ...props }: Pro
         <div className="grow px-6 pb-10 flex flex-col gap-8">
           {/* Title Section */}
           <div className="flex flex-col gap-4">
-            <h2 className="text-3xl sm:text-[44px] leading-none font-normal text-bg-100 uppercase font-kk-topo">
+            <Header variant="e2" className="text-bg-100 text-3xl md:text-11" caps>
               {cardTitle}
-            </h2>
+            </Header>
           </div>
 
           {/* Description Section */}
