@@ -11,7 +11,7 @@ import { useCallback, useContext, useEffect, useMemo } from 'react'
 import { Address } from 'viem'
 import { useAccount } from 'wagmi'
 
-export const Spotlight = () => {
+export const Spotlight = ({ isInteractive = false }: { isInteractive?: boolean }) => {
   const router = useRouter()
   const searchParams = useSearchParams()
   const { isConnected } = useAccount()
@@ -94,8 +94,8 @@ export const Spotlight = () => {
 
   return (
     <>
-      {isConnected ? (
-        <div className="grid grid-cols-4 gap-2 w-full items-stretch">
+      {isConnected && isInteractive ? (
+        <div className="grid grid-cols-4 gap-2 w-full items-stretch mt-4">
           {spotlightBuilders.map((builder, index) => (
             <BuilderCardControl
               key={builder.address}

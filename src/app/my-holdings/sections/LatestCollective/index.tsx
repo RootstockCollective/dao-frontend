@@ -51,10 +51,6 @@ export const LatestCollectiveSection = ({
           </div>
         )}
       </div>
-      {/** @TODO: paste BUILDER SPOTLIGHT HERE */}
-      {/* <Header variant="h4" className="mt-10">
-        BUILDERS IN THE SPOTLIGHT
-      </Header> */}
       <ActionsContainer
         title={
           <Header variant="h4" caps>
@@ -62,7 +58,7 @@ export const LatestCollectiveSection = ({
           </Header>
         }
       >
-        <Spotlight />
+        <Spotlight isInteractive={false} />
       </ActionsContainer>
     </div>
   )
