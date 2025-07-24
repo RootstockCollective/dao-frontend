@@ -209,13 +209,23 @@ const PageWithProposal = (proposal: ParsedProposal) => {
 
   const handleQueuingProposal = async () => {
     try {
-      const txHash = await onQueueProposal()
-      await waitForTransactionReceipt(config, {
-        hash: txHash,
+      await executeTxFlow({
+        onRequestTx: () => onQueueProposal(),
+        action: 'queuing', // You'll need to add this to TX_MESSAGES if it doesn't exist
+        onSuccess: txHash => {
+          // Any additional success handling if needed
+          console.log('Proposal queued successfully:', txHash)
+        },
+        onError: (txHash, err) => {
+          // Handle error if needed (executeTxFlow already handles toast notifications)
+          console.error('Error queuing proposal:', err)
+        },
       })
     } catch (err: any) {
+      // executeTxFlow already handles user rejection, so this catch might be redundant
+      // but keeping it for any unexpected errors
       if (!isUserRejectedTxError(err)) {
-        console.error(err)
+        console.error('Unexpected error in handleQueuingProposal:', err)
       }
     }
   }
