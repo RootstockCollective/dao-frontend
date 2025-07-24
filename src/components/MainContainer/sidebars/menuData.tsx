@@ -23,6 +23,7 @@ export const menuData = [
     href: '',
     text: 'Holdings',
     buttonProps: { id: 'Button_Holdings', name: 'holdings' },
+    iconUrl: '/images/sidemenukoto/Holdings.svg',
   },
   {
     href: 'my-rewards',
@@ -40,6 +41,7 @@ export const menuData = [
     href: 'delegate',
     text: 'Delegation',
     buttonProps: { id: 'Button_Delegate', name: 'delegate' },
+    iconUrl: '/images/sidemenukoto/Delegation.svg',
   },
   {
     href: '-',
@@ -95,6 +97,7 @@ export const menuDataNotConnected = [
     href: '',
     text: 'Holdings',
     buttonProps: { id: 'Button_User', name: 'user' },
+    iconUrl: '/images/sidemenukoto/Holdings.svg',
   },
   {
     href: 'backing',
@@ -106,6 +109,7 @@ export const menuDataNotConnected = [
     href: 'delegate',
     text: 'Delegation',
     buttonProps: { id: 'Button_Delegate', name: 'delegate' },
+    iconUrl: '/images/sidemenukoto/Delegation.svg',
   },
   {
     href: '',
