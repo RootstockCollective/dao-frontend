@@ -1,10 +1,26 @@
+import { useCycleContext } from '@/app/collective-rewards/metrics'
+import { useHandleErrors } from '@/app/collective-rewards/utils'
 import { useRequiredTokens } from '@/app/user/IntroModal/hooks/useRequiredTokens'
-import { StackableBanner } from '@/components/StackableBanner/StackableBanner'
 import { BannerContent } from '@/components/StackableBanner/BannerContent'
-import { handleActionClick } from './utils'
-import { BannerConfig } from './types'
+import { StackableBanner } from '@/components/StackableBanner/StackableBanner'
+import { DateTime, Duration } from 'luxon'
 import { useRouter } from 'next/navigation'
-import { BANNER_CONFIGS } from './constants'
+import { useMemo } from 'react'
+import { zeroAddress } from 'viem'
+import { useAccount } from 'wagmi'
+import {
+  getBannerConfigForBacking,
+  getBannerConfigForCycleEnded,
+  getBannerConfigForCycleEnding,
+  getBannerConfigForKycOnly,
+  getBannerConfigForStartBuilding,
+  getBannerConfigForTokenStatus,
+  selectBannerConfigsByCategory,
+} from './configs'
+import { useGetBuilderState } from './hooks/useGetBuilderState'
+import { useHasAvailableBacking } from './hooks/useHasAvailableForBacking'
+import { BannerConfig } from './types'
+import { handleActionClick } from './utils'
 
 /*
  * =====================================================================================
@@ -15,7 +31,7 @@ import { BANNER_CONFIGS } from './constants'
  * various actions in the DAO. The system is designed to be modular and extensible.
  *
  * QUICK START - Adding a New Banner:
- * 1. Add your banner config to BANNER_CONFIGS below
+ * 1. Add your banner config to BANNER_CONFIGS
  * 2. Create a detection function (see examples below)
  * 3. Add your detection to the activeBannerConfigs array
  * 4. Add any async dependencies to the dependencies array
@@ -28,58 +44,6 @@ import { BANNER_CONFIGS } from './constants'
  *
  * =====================================================================================
  */
-
-/**
- * Groups banner configs by category and randomly selects one from each category.
- * This ensures we display at most one banner per category to avoid overwhelming the user.
- *
- * @param bannerConfigs - Array of banner configurations to process
- * @returns Array of banner configs with at most one per category, randomly selected
- *
- * @example
- * // If you have 3 TOKEN banners and 2 REWARDS banners, this will return
- * // 2 banners total (1 random TOKEN + 1 random REWARDS)
- */
-const selectBannerConfigsByCategory = (bannerConfigs: BannerConfig[]): BannerConfig[] => {
-  // Dynamically group by categories that actually exist in the configs
-  const configsByCategory: Record<string, BannerConfig[]> = {}
-
-  bannerConfigs.forEach(config => {
-    if (!configsByCategory[config.category]) {
-      configsByCategory[config.category] = []
-    }
-    configsByCategory[config.category].push(config)
-  })
-
-  const selectedConfigs: BannerConfig[] = []
-
-  // Randomly select one banner config from each category
-  Object.entries(configsByCategory).forEach(([_, categoryConfigs]) => {
-    if (categoryConfigs.length > 0) {
-      // Randomly pick one banner config from this category
-      const randomIndex = Math.floor(Math.random() * categoryConfigs.length)
-      selectedConfigs.push(categoryConfigs[randomIndex])
-    }
-  })
-
-  return selectedConfigs
-}
-
-/**
- * Maps a missing token type to its corresponding banner configuration.
- * Returns null if no token is missing or if no banner config exists for the token type.
- *
- * @param missingTokenType - The type of token the user is missing (NEED_RBTC, NEED_RIF, NEED_STRIF, or null)
- * @returns BannerConfig if a banner should be shown for the missing token, null otherwise
- *
- * @example
- * getBannerConfigForTokenStatus(NEED_RBTC) // Returns rBTC banner config
- * getBannerConfigForTokenStatus(null) // Returns null
- */
-const getBannerConfigForTokenStatus = (missingTokenType: string | null): BannerConfig | null => {
-  if (!missingTokenType) return null
-  return BANNER_CONFIGS[missingTokenType] ? BANNER_CONFIGS[missingTokenType] : null
-}
 
 /*
  * ADD YOUR DETECTION FUNCTIONS HERE
@@ -138,12 +102,41 @@ const getBannerConfigForTokenStatus = (missingTokenType: string | null): BannerC
  */
 export const StackingNotifications = () => {
   const router = useRouter()
+  const { address } = useAccount()
   // ===============================
   // DATA LOADING AND STATE HOOKS
   // ===============================
 
   // Existing hooks for token requirements
   const missingTokenType = useRequiredTokens()
+  const {
+    hasAvailableBacking,
+    isLoading: isAvailableBackingLoading,
+    error: availableBackingError,
+  } = useHasAvailableBacking(address ?? zeroAddress)
+
+  const { builderState, isLoading: isBuilderStateLoading, error: builderStateError } = useGetBuilderState()
+
+  const isOnlyKycApproved =
+    builderState.kycApproved &&
+    builderState.activated &&
+    !builderState.communityApproved &&
+    !builderState.paused &&
+    !builderState.revoked
+
+  const isStartBuilding =
+    builderState.kycApproved &&
+    builderState.activated &&
+    builderState.communityApproved &&
+    !builderState.paused &&
+    !builderState.revoked
+
+  const { data: cycle, isLoading: isCycleLoading, error: cycleError } = useCycleContext()
+
+  useHandleErrors({
+    error: cycleError || builderStateError || availableBackingError,
+    title: 'Error loading the banner content',
+  })
 
   /*
    * ADD YOUR DATA HOOKS HERE
@@ -163,6 +156,9 @@ export const StackingNotifications = () => {
   // Track loading states to ensure we don't show banners prematurely
   const dependencies = [
     missingTokenType !== undefined,
+    !isAvailableBackingLoading,
+    !isBuilderStateLoading,
+    !isCycleLoading,
 
     /*
      * ADD YOUR LOADING DEPENDENCIES HERE
@@ -176,34 +172,43 @@ export const StackingNotifications = () => {
      */
   ]
 
+  // ===============================
+  // BANNER DETECTION LOGIC
+  // ===============================
+
+  // Calculate all banner configs that should be shown based on current user state
+  const activeBannerConfigs = useMemo(
+    () =>
+      [
+        // Existing detection functions
+        getBannerConfigForTokenStatus(missingTokenType),
+        getBannerConfigForBacking(hasAvailableBacking),
+        getBannerConfigForKycOnly(isOnlyKycApproved),
+        getBannerConfigForStartBuilding(isStartBuilding),
+        getBannerConfigForCycleEnding(cycle),
+        getBannerConfigForCycleEnded(cycle),
+
+        /*
+         * ADD YOUR DETECTION FUNCTIONS HERE
+         * =================================
+         *
+         * Add calls to your detection functions:
+         *
+         * getBannerConfigForUnclaimedRewards(rewardsData),
+         * getBannerConfigForActiveProposals(proposalsData),
+         * getBannerConfigForStakingOpportunities(stakingData),
+         * getBannerConfigForGovernanceParticipation(governanceData),
+         */
+      ].filter(Boolean) as BannerConfig[],
+    [missingTokenType, hasAvailableBacking, isOnlyKycApproved, isStartBuilding, cycle],
+  )
+
   // Wait for all dependencies to load before proceeding
   const areDependenciesLoaded = dependencies.every(dependency => dependency)
 
   if (!areDependenciesLoaded) {
     return null
   }
-
-  // ===============================
-  // BANNER DETECTION LOGIC
-  // ===============================
-
-  // Calculate all banner configs that should be shown based on current user state
-  const activeBannerConfigs = [
-    // Existing detection functions
-    getBannerConfigForTokenStatus(missingTokenType),
-
-    /*
-     * ADD YOUR DETECTION FUNCTIONS HERE
-     * =================================
-     *
-     * Add calls to your detection functions:
-     *
-     * getBannerConfigForUnclaimedRewards(rewardsData),
-     * getBannerConfigForActiveProposals(proposalsData),
-     * getBannerConfigForStakingOpportunities(stakingData),
-     * getBannerConfigForGovernanceParticipation(governanceData),
-     */
-  ].filter(Boolean) as BannerConfig[]
 
   // Early return if no banners should be shown
   if (activeBannerConfigs.length === 0) {
@@ -224,16 +229,18 @@ export const StackingNotifications = () => {
   // Render the selected banners
   return (
     <>
-      {bannerConfigsForDisplay.map((config, index) => (
-        <StackableBanner key={`banner-${index}`}>
+      <StackableBanner>
+        {bannerConfigsForDisplay.map((config, index) => (
           <BannerContent
+            key={`banner-${index}`}
             title={config.title}
             description={config.description}
             buttonText={config.buttonText}
             buttonOnClick={() => handleActionClick(config, router)}
+            rightContent={config.rightContent}
           />
-        </StackableBanner>
-      ))}
+        ))}
+      </StackableBanner>
     </>
   )
 }

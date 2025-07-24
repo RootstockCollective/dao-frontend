@@ -8,12 +8,17 @@ import { BannerConfigMap } from './types'
 const rbtcImage = <TokenImage symbol={RBTC} size={26} className="inline-block mt-[-0.2rem]" />
 const rifImage = <TokenImage symbol={RIF} size={24} className="inline-block mt-[-0.2rem]" />
 
+export const NOT_BACKING = 'NOT_BACKING'
+export const KYC_ONLY = 'KYC_ONLY'
+export const START_BUILDING = 'START_BUILDING'
+export const CYCLE_ENDING = 'CYCLE_ENDING'
+export const CYCLE_ENDED = 'CYCLE_ENDED'
+
 const NEED_RBTC_AND_RIF = {
   title: <span>GET {rbtcImage} rBTC</span>,
   buttonText: 'Get rBTC',
   description:
     "RBTC is used to cover transaction fees. You'll need both RBTC and RIF to participate in the DAO.",
-  category: 'TOKEN',
   action: {
     url: currentLinks.rbtc,
     external: true,
@@ -64,7 +69,6 @@ export const BANNER_CONFIGS: BannerConfigMap = {
     buttonText: 'Get RIF',
     description:
       "RIF is the token required for staking. You'll need both RBTC and RIF to participate in the DAO.",
-    category: 'TOKEN',
     action: {
       url: currentLinks.getRif,
       external: true,
@@ -74,9 +78,58 @@ export const BANNER_CONFIGS: BannerConfigMap = {
     title: <span>STAKE {rifImage} RIF</span>,
     buttonText: 'Stake RIF',
     description: 'Use RIF to stake and RBTC to pay for transactions fees.',
-    category: 'TOKEN',
     action: {
       url: router => router?.push(`/user?action=stake&reopen=${Date.now()}`),
+      external: false,
+    },
+  },
+  [NOT_BACKING]: {
+    title: <span>BACK</span>,
+    buttonText: 'See all Builders',
+    description: 'Back Builders to start earning rewards.',
+    action: {
+      url: '/builders',
+      external: false,
+    },
+  },
+  [KYC_ONLY]: {
+    title: <span>TAKE THE NEXT STEP</span>,
+    buttonText: 'Create Proposal',
+    description:
+      'Your application to join Collective Rewards is nearly there. Create your proposal to complete your activation.',
+    action: {
+      url: '/proposals',
+      external: false,
+    },
+  },
+  [START_BUILDING]: {
+    title: <span>START BUILDING</span>,
+    buttonText: 'See all Builders',
+    description:
+      'You’re now a Collective Builder. Keep building and see your presence among the Collective Builders.',
+    action: {
+      url: '/builders',
+      external: false,
+    },
+  },
+  [CYCLE_ENDING]: {
+    title: <span>NEW CYCLE STARTING SOON</span>,
+    buttonText: 'Back Builders',
+    description: 'New Cycle Starting Soon',
+    // rightContent will be managed dynamically as it depends on the cycle data
+    rightContent: undefined,
+    action: {
+      url: '/backing',
+      external: false,
+    },
+  },
+  [CYCLE_ENDED]: {
+    title: <span>CYCLE JUST ENDED</span>,
+    buttonText: 'Claim Rewards',
+    description:
+      'The cycle has ended. Claim your rewards and re-stake them to earn more rewards in the next cycle.',
+    action: {
+      url: '/my-rewards',
       external: false,
     },
   },
