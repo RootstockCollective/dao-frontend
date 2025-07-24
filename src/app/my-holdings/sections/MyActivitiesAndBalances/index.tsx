@@ -1,6 +1,6 @@
 import { SectionContainer } from '@/app/communities/components/SectionContainer'
-import { MyBacking } from './components/MyActivities'
-import { MyBalances } from './components/Balances/MyBalances'
+import { MyBacking } from '../MyActivities'
+import { MyBalances } from '../Balances'
 
 const Separator = () => <hr className="w-full bg-bg-60 border-none h-px my-10" />
 

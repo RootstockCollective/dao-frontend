@@ -12,7 +12,7 @@ import {
   NftHolderItem,
   ServerResponseV2,
   TokenHoldersResponse,
-} from '@/app/my-holdings/sections/MyActivitiesAndBalances/components/Balances/types'
+} from '@/app/my-holdings/sections/Balances/types'
 import { GetPricesResult } from '@/shared/types'
 
 export const fetchAddressTokens = (address: string, chainId = 31) =>

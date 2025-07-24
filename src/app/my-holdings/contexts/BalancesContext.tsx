@@ -5,7 +5,7 @@ import { useGetSpecificPrices } from '@/shared/hooks/useGetSpecificPrices'
 import { TokenBalanceRecord } from '@/app/my-holdings/types'
 import { GetPricesResult } from '@/shared/types'
 import { RBTC, RIF, stRIF, USDRIF } from '@/lib/constants'
-import { getTokenBalance } from '../sections/MyActivitiesAndBalances/components/Balances/balanceUtils'
+import { getTokenBalance } from '../sections/Balances/balanceUtils'
 
 interface BalancesContextValue {
   balances: TokenBalanceRecord

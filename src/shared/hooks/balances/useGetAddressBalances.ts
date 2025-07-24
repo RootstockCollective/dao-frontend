@@ -1,6 +1,6 @@
 import { useGetAddressTokens } from '@/shared/hooks/balances/useGetAddressTokens'
 import { useMemo } from 'react'
-import { getTokenBalance } from '@/app/my-holdings/sections/MyActivitiesAndBalances/components/Balances/balanceUtils'
+import { getTokenBalance } from '@/app/my-holdings/sections/Balances/balanceUtils'
 import { useAccount } from 'wagmi'
 import { Address } from 'viem'
 import { RBTC, RIF, stRIF, USDRIF } from '@/lib/constants'

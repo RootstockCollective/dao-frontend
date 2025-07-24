@@ -1,9 +1,6 @@
 import { fetchTokenHoldersOfAddress } from '@/shared/api/balances'
 import { Address } from 'viem'
-import {
-  NextPageParams,
-  TokenHoldersResponse,
-} from '@/app/my-holdings/sections/MyActivitiesAndBalances/components/Balances/types'
+import { NextPageParams, TokenHoldersResponse } from '@/app/my-holdings/sections/Balances/types'
 import { usePaginationUi } from '@/shared/hooks/usePaginationUi'
 import { useInfinitePagination } from '@/shared/hooks/useInfinitePagination'
 

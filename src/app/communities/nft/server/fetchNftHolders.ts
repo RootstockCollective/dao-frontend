@@ -1,9 +1,6 @@
 'use server'
 import { fetchNftHoldersOfAddress } from '@/shared/api/balances'
-import {
-  NextPageParams,
-  NftHolderItem,
-} from '@/app/my-holdings/sections/MyActivitiesAndBalances/components/Balances/types'
+import { NextPageParams, NftHolderItem } from '@/app/my-holdings/sections/Balances/types'
 import { ipfsGatewayUrl } from '@/lib/ipfs'
 import { unstable_cache } from 'next/cache'
 

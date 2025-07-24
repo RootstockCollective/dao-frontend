@@ -1,5 +1,5 @@
 import { getCachedNftHolders } from '@/app/communities/nft/server/fetchNftHolders'
-import { NftHolderItem } from '@/app/my-holdings/sections/MyActivitiesAndBalances/components/Balances/types'
+import { NftHolderItem } from '@/app/my-holdings/sections/Balances/types'
 import { usePagination } from '@/shared/hooks/usePagination'
 import { usePaginationUi } from '@/shared/hooks/usePaginationUi'
 import { Address } from 'viem'
