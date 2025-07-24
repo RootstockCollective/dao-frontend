@@ -11,17 +11,32 @@ import { builderFilterOptions, type BuilderFilterOption, type BuilderFilterOptio
 
 export interface BuilderFilterDropdownProps extends CommonComponentProps {
   onSelected: (optionId: BuilderFilterOptionId) => void
+  options?: BuilderFilterOption[]
 }
 
-export const BuilderFilterDropdown: FC<BuilderFilterDropdownProps> = ({ className, onSelected }) => {
-  const [selectedOptionId, setSelectedOptionId] = useState<BuilderFilterOptionId>(builderFilterOptions[0].id)
+export const BuilderFilterDropdown: FC<BuilderFilterDropdownProps> = ({
+  className,
+  onSelected,
+  options = builderFilterOptions,
+}) => {
+  const [selectedOptionId, setSelectedOptionId] = useState<BuilderFilterOptionId>(options[0].id)
 
   useEffect(() => {
-    const selected = builderFilterOptions.find(opt => opt.id === selectedOptionId)
-    if (selected) {
-      onSelected(selected.id)
+    const isCurrentOptionAvailable = options.some(opt => opt.id === selectedOptionId)
+
+    if (!isCurrentOptionAvailable && options.length > 0) {
+      // If current option is not available, set to first option
+      const newOptionId = options[0].id
+      setSelectedOptionId(newOptionId)
+      onSelected(newOptionId)
+    } else {
+      // If current option is available, call onSelected with current selection
+      const selected = options.find(opt => opt.id === selectedOptionId)
+      if (selected) {
+        onSelected(selected.id)
+      }
     }
-  }, [selectedOptionId, onSelected])
+  }, [options, selectedOptionId, onSelected])
 
   return (
     <Dropdown
@@ -32,7 +47,7 @@ export const BuilderFilterDropdown: FC<BuilderFilterDropdownProps> = ({ classNam
         <DropdownValue />
       </DropdownTrigger>
       <DropdownContent>
-        {builderFilterOptions.map(opt => (
+        {options.map(opt => (
           <DropdownItem key={opt.id} value={opt.id} data-testid={`dropdown-option-${opt.id}`}>
             {opt.content}
           </DropdownItem>
