@@ -92,6 +92,7 @@ export const BuilderCard: FC<BuilderCardProps> = ({
           name={builderName}
           builderPageLink={builderPageLink}
           className="mt-8"
+          showFullName={false}
         />
         {!isRewardable && <Warning className="pt-3" />}
         <div className="my-6 w-full">

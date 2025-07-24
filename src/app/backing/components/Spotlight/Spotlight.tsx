@@ -7,7 +7,7 @@ import { useGetBuilderEstimatedRewards } from '@/app/shared/hooks/useGetBuilderE
 import { Button } from '@/components/ButtonNew'
 import { LoadingSpinner } from '@/components/LoadingSpinner'
 import { useRouter, useSearchParams } from 'next/navigation'
-import { useContext, useEffect, useMemo } from 'react'
+import { useCallback, useContext, useEffect, useMemo } from 'react'
 import { Address } from 'viem'
 import { useAccount } from 'wagmi'
 
@@ -48,12 +48,6 @@ export const Spotlight = () => {
     }
   }, [userSelections, toggleSelectedBuilder, selections])
 
-  useEffect(() => {
-    // TODO: remove this after implementing the highlight builders feature
-    console.warn('😈 ~ BuildersSpotlight.tsx ~ Highlighted builders:', userSelections)
-    console.warn('😈 ~ BuildersSpotlight.tsx ~ selections:', selections)
-  }, [userSelections, selections])
-
   const hasAllocations = useMemo(() => totalOnchainAllocation > 0n, [totalOnchainAllocation])
 
   const spotlightBuilders = useMemo(() => {
@@ -77,6 +71,13 @@ export const Spotlight = () => {
     return estimatedBuilders.filter(({ address }) => resolvedAddresses.includes(address))
   }, [estimatedBuilders, hasAllocations, allocations, getBuilder, randomBuilders, userSelections])
 
+  const isBuilderSelected = useCallback(
+    (builderAddress: Address) => {
+      return userSelections?.includes(builderAddress) ?? false
+    },
+    [userSelections],
+  )
+
   if (isLoading) {
     return (
       <div className="flex justify-center self-center mt-6">
@@ -90,7 +91,13 @@ export const Spotlight = () => {
       {isConnected ? (
         <div className="grid grid-cols-4 gap-2 w-full items-stretch">
           {spotlightBuilders.map((builder, index) => (
-            <BuilderCardControl key={builder.address} {...builder} isInteractive={true} index={index} />
+            <BuilderCardControl
+              key={builder.address}
+              {...builder}
+              isInteractive={true}
+              index={index}
+              showAnimation={isBuilderSelected(builder.address)}
+            />
           ))}
           {hasAllocations && <BackMoreBuildersCard />}
         </div>
