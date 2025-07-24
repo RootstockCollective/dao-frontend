@@ -1,5 +1,5 @@
 'use server'
-import { fetchNftHoldersOfAddress } from '@/app/my-holdings/sections/MyActivitiesAndBalances/components/Balances/actions'
+import { fetchNftHoldersOfAddress } from '@/shared/api/balances'
 import {
   NextPageParams,
   NftHolderItem,

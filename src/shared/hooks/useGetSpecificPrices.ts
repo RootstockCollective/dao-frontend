@@ -1,5 +1,5 @@
 import { useMemo } from 'react'
-import { useFetchPrices } from '@/app/my-holdings/sections/MyActivitiesAndBalances/components/Balances/hooks/useFetchPrices'
+import { useFetchPrices } from '@/shared/hooks/balances'
 import { GetPricesResult } from '@/shared/types'
 
 const getDefaultPriceObject = (symbol: string, data?: GetPricesResult) => {

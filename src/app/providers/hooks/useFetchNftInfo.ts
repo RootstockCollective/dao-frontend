@@ -1,4 +1,4 @@
-import { fetchNftInfo } from '@/app/my-holdings/sections/MyActivitiesAndBalances/components/Balances/actions'
+import { fetchNftInfo } from '@/shared/api/nfts'
 import { useQuery } from '@tanstack/react-query'
 
 export const useFetchNftInfo = (nftAddress: string) => {

@@ -1,6 +1,6 @@
 'use client'
 import { createContext, FC, ReactNode, useContext } from 'react'
-import { useGetAddressBalances } from '@/app/my-holdings/sections/MyActivitiesAndBalances/components/Balances/hooks/useGetAddressBalances'
+import { useGetAddressBalances } from '@/shared/hooks/balances'
 import { useGetSpecificPrices } from '@/shared/hooks/useGetSpecificPrices'
 import { TokenBalanceRecord } from '@/app/my-holdings/types'
 import { GetPricesResult } from '@/shared/types'

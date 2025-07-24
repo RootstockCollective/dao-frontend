@@ -1,4 +1,4 @@
-import { fetchTokenHoldersOfAddress } from '@/app/my-holdings/sections/MyActivitiesAndBalances/components/Balances/actions'
+import { fetchTokenHoldersOfAddress } from '@/shared/api/balances'
 import { Address } from 'viem'
 import {
   NextPageParams,

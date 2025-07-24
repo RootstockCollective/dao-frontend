@@ -1,5 +1,5 @@
 import { useQuery } from '@tanstack/react-query'
-import { fetchNftsOwnedByAddressAndNFTAddress } from '@/app/my-holdings/sections/MyActivitiesAndBalances/components/Balances/actions'
+import { fetchNftsOwnedByAddressAndNFTAddress } from '@/shared/api/nfts'
 
 export const useFetchNFTsOwned = (address: string, nftAddress: string) => {
   return useQuery({

@@ -1,4 +1,4 @@
-import { useGetAddressTokens } from '@/app/my-holdings/sections/MyActivitiesAndBalances/components/Balances/hooks/useGetAddressTokens'
+import { useGetAddressTokens } from '@/shared/hooks/balances'
 import { useAccount } from 'wagmi'
 import { getTokenBalance } from '@/app/my-holdings/sections/MyActivitiesAndBalances/components/Balances/balanceUtils'
 import { Address } from 'viem'

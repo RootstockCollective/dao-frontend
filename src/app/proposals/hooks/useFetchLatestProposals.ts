@@ -1,4 +1,4 @@
-import { fetchProposalsCreatedCached } from '@/app/my-holdings/sections/MyActivitiesAndBalances/components/Balances/actions'
+import { fetchProposalsCreatedCached } from '@/shared/api/proposals'
 import { GovernorAbi } from '@/lib/abis/Governor'
 import { SimplifiedRewardDistributorAbi } from '@/lib/abis/SimplifiedRewardDistributorAbi'
 import { useQuery, UseQueryResult } from '@tanstack/react-query'

@@ -1,4 +1,4 @@
-import { fetchProposalCreated } from '@/app/my-holdings/sections/MyActivitiesAndBalances/components/Balances/actions'
+import { fetchProposalCreated } from '@/shared/api/proposals'
 import { NextRequest } from 'next/server'
 import { BackendEventByTopic0ResponseValue, CachedData, handleCachedGetRequest } from '@/shared/utils'
 

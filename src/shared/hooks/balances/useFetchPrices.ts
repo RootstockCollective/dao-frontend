@@ -1,5 +1,5 @@
 import { useQuery } from '@tanstack/react-query'
-import { fetchPrices } from '@/app/my-holdings/sections/MyActivitiesAndBalances/components/Balances/actions'
+import { fetchPrices } from '@/shared/api/balances/actions'
 
 export const useFetchPrices = () => {
   return useQuery({
