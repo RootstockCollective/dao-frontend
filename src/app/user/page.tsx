@@ -53,3 +53,5 @@ export const MyHoldings = () => {
     </div>
   )
 }
+
+export default MyHoldings
