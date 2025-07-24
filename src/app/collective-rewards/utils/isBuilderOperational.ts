@@ -22,6 +22,13 @@ export const isBuilderActive = (stateFlags?: BuilderStateFlags) => {
   )
 }
 
+export const isBuilderInProgress = (builder: Builder) => {
+  const builderFlags = builder.stateFlags
+  if (!builderFlags) return true
+  if (isBuilderDeactivated(builder) || isBuilderKycRevoked(builderFlags)) return false
+  return !builderFlags.activated || !builderFlags.communityApproved
+}
+
 export const isBuilderRewardable = (stateFlags?: BuilderStateFlags) => {
   return Boolean(
     stateFlags?.activated && stateFlags?.communityApproved && stateFlags?.kycApproved && !stateFlags?.revoked,

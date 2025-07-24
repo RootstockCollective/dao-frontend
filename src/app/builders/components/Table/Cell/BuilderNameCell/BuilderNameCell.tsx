@@ -1,8 +1,8 @@
 import { BuilderState } from '@/app/builders/components/Table/BuilderTable.config'
-import { isActive } from '@/app/builders/components/Table/utils'
 import { Builder } from '@/app/collective-rewards/types'
 import {
   isBuilderDeactivated,
+  isBuilderInProgress,
   isBuilderKycRevoked,
   isBuilderPaused,
   isBuilderSelfPaused,
@@ -43,7 +43,7 @@ const stateHoveredIcons: Record<DecorationOptionId, React.ReactNode> = {
   deactivated: <WarningIcon className="text-v3-bg-accent-100" />,
   revoked: <WarningIcon className="text-v3-bg-accent-100" />,
   paused: <WarningIcon className="text-v3-bg-accent-100" />,
-  inProgress: <HourglassIcon className="text-v3-bg-accent-100" size={18}/>,
+  inProgress: <HourglassIcon className="text-v3-bg-accent-100" size={18} />,
   selfPaused: <WarningIcon className="text-v3-bg-accent-100" />,
 }
 
@@ -89,7 +89,7 @@ const getStateDecorationId = (builder: Builder): Exclude<DecorationOptionId, 'ex
     return 'selfPaused'
   }
 
-  if (!isActive(builder.stateFlags)) {
+  if (isBuilderInProgress(builder)) {
     return 'inProgress'
   }
 
