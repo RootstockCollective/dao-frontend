@@ -1,15 +1,15 @@
 import type { Meta, StoryObj } from '@storybook/react'
-import BecomeBuilderCollapsible from './BecomeBuilderBanner'
+import BecomeBuilderBanner from './BecomeBuilderBanner'
 
-const meta: Meta<typeof BecomeBuilderCollapsible> = {
+const meta: Meta<typeof BecomeBuilderBanner> = {
   title: 'Builders/BecomeBuilderBanner',
-  component: BecomeBuilderCollapsible,
+  component: BecomeBuilderBanner,
   parameters: {
     layout: 'fullscreen',
   },
 }
 
 export default meta
-type Story = StoryObj<typeof BecomeBuilderCollapsible>
+type Story = StoryObj<typeof BecomeBuilderBanner>
 
 export const Default: Story = {}
