@@ -57,6 +57,7 @@ export const LatestCollectiveSection = ({
             Builders in the spotlight
           </Header>
         }
+        containerClassName="mt-4"
       >
         <Spotlight isInteractive={false} />
       </ActionsContainer>

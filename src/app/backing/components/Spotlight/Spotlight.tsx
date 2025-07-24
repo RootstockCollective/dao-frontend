@@ -95,7 +95,7 @@ export const Spotlight = ({ isInteractive = false }: { isInteractive?: boolean }
   return (
     <>
       {isConnected && isInteractive ? (
-        <div className="grid grid-cols-4 gap-2 w-full items-stretch mt-4">
+        <div className="grid grid-cols-4 gap-2 w-full items-stretch">
           {spotlightBuilders.map((builder, index) => (
             <BuilderCardControl
               key={builder.address}
