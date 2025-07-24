@@ -21,13 +21,15 @@ export const BuildersPage = () => {
         <MetricsContainer className="bg-v3-bg-accent-80">
           <Metrics />
         </MetricsContainer>
+        <div className="flex p-4 items-start gap-8 flex-1 self-stretch rounded bg-v3-text-80">
+          <BecomeBuilderCollapsible />
+        </div>
         <InfoContainer className="grow-[3] bg-v3-bg-accent-80">
           <Content />
         </InfoContainer>
         <ActionMetricsContainer className="bg-v3-bg-accent-80">
           <Spotlight />
         </ActionMetricsContainer>
-        <BecomeBuilderCollapsible className="flex p-4 items-start gap-8 flex-1 self-stretch rounded bg-v3-text-80" />
         <BuildersTableContainer />
       </div>
     </div>
