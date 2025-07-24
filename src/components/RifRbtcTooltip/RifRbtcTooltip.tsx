@@ -43,7 +43,7 @@ export const RifRbtcTooltip = ({ children, rbtcValue, rifValue, className }: Rif
   <Tooltip
     side="top"
     align="center"
-    className={cn('bg-white rounded-[4px] shadow-lg p-0 cursor-pointer', className)}
+    className={cn('bg-v3-text-80 rounded-[4px] shadow-lg p-0 cursor-pointer', className)}
     text={
       <div className="flex flex-col items-center rounded p-4 bg-v3-text-80 text-v3-text-0">
         <RowContainer>

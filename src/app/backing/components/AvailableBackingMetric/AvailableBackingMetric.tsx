@@ -49,7 +49,7 @@ const DistributeButton = ({ onDistributeClick }: { onDistributeClick?: () => voi
         align="center"
         alignOffset={-60}
         sideOffset={10}
-        className="bg-white rounded-[4px] shadow-lg"
+        className="bg-v3-text-80 rounded-[4px] shadow-lg"
       >
         <KotoQuestionMarkIcon />
       </Tooltip>
