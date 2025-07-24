@@ -1,9 +1,11 @@
+'use client'
+
 import { Address } from 'viem'
 import { useFetchNftHolders } from '@/shared/hooks/useFetchNftHolders'
 import { LoadingSpinner } from '@/components/LoadingSpinner'
 import { truncateMiddle } from '@/lib/utils'
 import { useState } from 'react'
-import { applyPinataImageOptions, ipfsGatewayUrl } from '@/lib/ipfs'
+import { applyPinataImageOptions } from '@/lib/ipfs'
 import { Paragraph, Header, Span } from '@/components/TypographyNew'
 import { ViewIconHandler, type ViewState } from './ViewIconHandler'
 import {
@@ -16,7 +18,7 @@ import {
 } from '@tanstack/react-table'
 import { NftHoldersTable } from '../_components/NftHoldersTable'
 import { NftCard } from '../_components/NftCard'
-import { Pagination } from '@/components/Paginaton'
+import { Pagination } from '@/components/Pagination'
 import { type NftHolderItem } from '@/app/user/Balances/types'
 import { NftHolderTableCell } from '../_components/NftHolderTableCell'
 

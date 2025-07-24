@@ -164,8 +164,8 @@ export function CommunityNFTProvider({ children, nftAddress }: CommunityNFTProvi
     title: nftInfo?.title || '',
     name: nftMeta?.name || 'Early Adopters NFT',
     image: applyPinataImageOptions(nftMeta?.image || nftInfo?.cover, {
-      width: 300,
-      height: 300,
+      width: 600,
+      height: 600,
     }),
     description: nftMeta?.description || '',
 

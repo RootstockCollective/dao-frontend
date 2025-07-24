@@ -13,7 +13,7 @@ export interface CommunityItem {
   numberOfMembers: number
   longDescription: FC<{ activation?: ReactNode }>
   /** Default NFT image for the community */
-  cover?: string
+  cover: string
   isMintable?: boolean
   additionalChecks?: { name: string; check: (data: any) => boolean; alertMessage: string }[]
   readMoreLink?: string
@@ -236,6 +236,7 @@ export const rootstockHacktivator: CommunityItem = {
   isMintable: false,
   longDescription: () => '',
   readMoreLink: 'https://dev.rootstock.io/resources/contribute/hacktivator/',
+  cover: '',
 }
 
 export const communitiesToRender = [
