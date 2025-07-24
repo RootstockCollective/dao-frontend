@@ -202,6 +202,16 @@ const StackingNotificationsContent = () => {
     [missingTokenType, hasAvailableBacking, isOnlyKycApproved, isStartBuilding, cycle],
   )
 
+  // ===============================
+  // BANNER SELECTION AND RENDERING
+  // ===============================
+
+  // Apply category-based selection (max 1 banner per category)
+  const bannerConfigsForDisplay = useMemo(
+    () => selectBannerConfigsByCategory(activeBannerConfigs),
+    [activeBannerConfigs],
+  )
+
   // Wait for all dependencies to load before proceeding
   const areDependenciesLoaded = dependencies.every(dependency => dependency)
 
@@ -213,13 +223,6 @@ const StackingNotificationsContent = () => {
   if (activeBannerConfigs.length === 0) {
     return null
   }
-
-  // ===============================
-  // BANNER SELECTION AND RENDERING
-  // ===============================
-
-  // Apply category-based selection (max 1 banner per category)
-  const bannerConfigsForDisplay = selectBannerConfigsByCategory(activeBannerConfigs)
 
   // Render the selected banners
   return (
