@@ -2,12 +2,10 @@ import Big from '@/lib/big'
 import axios from 'axios'
 import { BigSource } from 'big.js'
 import { ClassValue, clsx } from 'clsx'
-import { twMerge } from 'tailwind-merge'
-import { Address, formatEther, Hash } from 'viem'
-import { CHAIN_ID, EXPLORER_URL, RIF_WALLET_SERVICES_URL } from '../constants'
 import { Duration } from 'luxon'
-import { waitForTransactionReceipt, getBlock } from '@wagmi/core'
-import { config } from '@/config'
+import { twMerge } from 'tailwind-merge'
+import { Address, formatEther } from 'viem'
+import { CHAIN_ID, EXPLORER_URL, RIF_WALLET_SERVICES_URL } from '../constants'
 
 /**
  * Merges Tailwind and clsx classes in order to avoid classes conflicts.
@@ -162,6 +160,7 @@ export const sanitizeInputNumber = (num: number) => {
 type FormatCurrencyProps = {
   currency?: string
   showCurrency?: boolean
+  showCurrencySymbol?: boolean
 }
 
 /**
@@ -179,7 +178,7 @@ type FormatCurrencyProps = {
  */
 export const formatCurrency = (
   amount: BigSource,
-  { currency = 'USD', showCurrency = false }: FormatCurrencyProps = {},
+  { currency = 'USD', showCurrency = false, showCurrencySymbol = true }: FormatCurrencyProps = {},
 ): string => {
   if (isNaN(Number(amount))) {
     return ''
@@ -196,7 +195,7 @@ export const formatCurrency = (
   amount = isBelowMinimumDisplay ? 0.01 : amount
 
   const formattedAmount = new Intl.NumberFormat('en-US', {
-    style: 'currency',
+    style: showCurrencySymbol ? 'currency' : 'decimal',
     currency,
     minimumFractionDigits: 2,
     maximumFractionDigits: 2,
