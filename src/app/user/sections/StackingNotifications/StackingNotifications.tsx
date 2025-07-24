@@ -14,7 +14,7 @@ import {
   getBannerConfigForKycOnly,
   getBannerConfigForStartBuilding,
   getBannerConfigForTokenStatus,
-  selectBannerConfigsByCategory,
+  selectRandomBannerConfigs,
 } from './configs'
 import { useGetBuilderState } from './hooks/useGetBuilderState'
 import { useHasAvailableBacking } from './hooks/useHasAvailableForBacking'
@@ -206,9 +206,8 @@ const StackingNotificationsContent = () => {
   // BANNER SELECTION AND RENDERING
   // ===============================
 
-  // Apply category-based selection (max 1 banner per category)
   const bannerConfigsForDisplay = useMemo(
-    () => selectBannerConfigsByCategory(activeBannerConfigs),
+    () => selectRandomBannerConfigs(activeBannerConfigs),
     [activeBannerConfigs],
   )
 
