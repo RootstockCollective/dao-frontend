@@ -1,5 +1,6 @@
 'use client'
-import { HeroCollapseProvider } from '@/app/my-holdings/sections/HeroSection/HeroCollapseContext'
+import { BalancesProvider } from '@/app/user/contexts/BalancesContext'
+import { HeroCollapseProvider } from '@/app/user/sections/HeroSection/HeroCollapseContext'
 import { GlobalErrorBoundary } from '@/components/ErrorPage/GlobalErrorBoundary'
 import { currentEnvChain, wagmiAdapter, wagmiAdapterConfig } from '@/config'
 import { REOWN_METADATA_URL, REOWN_PROJECT_ID } from '@/lib/constants'
@@ -75,9 +76,11 @@ export const ContextProviders = ({ children, initialState }: Props) => {
                 <BuilderContextProviderWithPrices>
                   <BoosterProvider>
                     <AllocationsContextProvider>
-                      <TooltipProvider>
-                        <ReviewProposalProvider>{children}</ReviewProposalProvider>
-                      </TooltipProvider>
+                      <BalancesProvider>
+                        <TooltipProvider>
+                          <ReviewProposalProvider>{children}</ReviewProposalProvider>
+                        </TooltipProvider>
+                      </BalancesProvider>
                     </AllocationsContextProvider>
                   </BoosterProvider>
                 </BuilderContextProviderWithPrices>

@@ -2,10 +2,10 @@ import { useBalance, useReadContracts } from 'wagmi'
 import { Address, zeroAddress } from 'viem'
 import { RIFTokenAbi } from '@/lib/abis/RIFTokenAbi'
 import { tokenContracts, MulticallAddress } from '@/lib/contracts'
-import { AddressToken } from '@/app/my-holdings/types'
+import { AddressToken } from '@/app/user/types'
 import { useQuery } from '@tanstack/react-query'
 import { axiosInstance } from '@/lib/utils'
-import { TokenInfoReturnType } from '@/app/my-holdings/api/tokens/route'
+import { TokenInfoReturnType } from '@/app/user/api/tokens/route'
 import { AVERAGE_BLOCKTIME } from '@/lib/constants'
 
 const getTokenFunction = (

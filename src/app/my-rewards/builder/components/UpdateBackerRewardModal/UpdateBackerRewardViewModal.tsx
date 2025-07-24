@@ -1,4 +1,4 @@
-import { TransactionInProgressButton } from '@/app/my-holdings/sections/Stake/components/TransactionInProgressButton'
+import { TransactionInProgressButton } from '@/app/user/sections/Stake/components/TransactionInProgressButton'
 import { Button } from '@/components/ButtonNew/Button'
 import { KotoQuestionMarkIcon } from '@/components/Icons'
 import { InputNumber } from '@/components/Input/InputNumber'

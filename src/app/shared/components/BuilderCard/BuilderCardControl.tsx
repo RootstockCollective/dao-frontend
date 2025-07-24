@@ -1,7 +1,7 @@
 import { AllocationsContext } from '@/app/collective-rewards/allocations/context'
 import { useAllocateVotes } from '@/app/collective-rewards/allocations/hooks/useAllocateVotes'
 import { Builder } from '@/app/collective-rewards/types'
-import { TransactionInProgressButton } from '@/app/my-holdings/sections/Stake/components/TransactionInProgressButton'
+import { TransactionInProgressButton } from '@/app/user/sections/Stake/components/TransactionInProgressButton'
 import { Button } from '@/components/ButtonNew/Button'
 import { useLayoutContext } from '@/components/MainContainer/LayoutProvider'
 import { ActionsContainer } from '@/components/containers/ActionsContainer'

@@ -1,5 +1,5 @@
 import { formatSymbol } from '@/app/collective-rewards/rewards/utils'
-import { TransactionInProgressButton } from '@/app/my-holdings/sections/Stake/components/TransactionInProgressButton'
+import { TransactionInProgressButton } from '@/app/user/sections/Stake/components/TransactionInProgressButton'
 import { Button } from '@/components/ButtonNew'
 import { Modal } from '@/components/Modal/Modal'
 import { TokenImage } from '@/components/TokenImage'

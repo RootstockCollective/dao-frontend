@@ -1,4 +1,4 @@
-import { GetAddressTokenResult } from '@/app/my-holdings/types'
+import { GetAddressTokenResult } from '@/app/user/types'
 import { axiosInstance } from '@/lib/utils'
 import {
   fetchAddressTokensEndpoint,
@@ -12,7 +12,7 @@ import {
   NftHolderItem,
   ServerResponseV2,
   TokenHoldersResponse,
-} from '@/app/my-holdings/sections/Balances/types'
+} from '@/app/user/sections/Balances/types'
 import { GetPricesResult } from '@/shared/types'
 
 export const fetchAddressTokens = (address: string, chainId = 31) =>

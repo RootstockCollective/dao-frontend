@@ -9,7 +9,7 @@ import { config } from '@/config'
 import Big from '@/lib/big'
 import { useQuery } from '@tanstack/react-query'
 import { axiosInstance, splitWords } from '@/lib/utils'
-import { NftDataFromAddressesReturnType } from '@/app/my-holdings/api/communities/route'
+import { NftDataFromAddressesReturnType } from '@/app/user/api/communities/route'
 import { communitiesMapByContract } from '@/app/communities/communityUtils'
 
 /**

@@ -1,6 +1,6 @@
 import { useGetAddressTokens } from '@/shared/hooks/balances'
 import { useAccount } from 'wagmi'
-import { getTokenBalance } from '@/app/my-holdings/sections/Balances/balanceUtils'
+import { getTokenBalance } from '@/app/user/sections/Balances/balanceUtils'
 import { Address } from 'viem'
 
 export const useGetTreasuryBucketBalance = (address: Address) => {
