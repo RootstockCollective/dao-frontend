@@ -90,11 +90,11 @@ export const Gallery: Story = {
     <div className="flex flex-wrap gap-6 p-4 justify-center">
       <div className="text-center">
         <h3 className="text-sm font-semibold mb-2">Tiny holes</h3>
-        <ImageMask imgUrl="/images/intro/rbtc-bg-desktop.jpg" width={200} height={200} squareSize={18} />
+        <ImageMask imgUrl="/images/intro/rbtc-bg-desktop.jpg" width={200} height={200} squareSize={2} />
       </div>
       <div className="text-center">
         <h3 className="text-sm font-semibold mb-2">Medium holes</h3>
-        <ImageMask imgUrl="/images/intro/rif-bg-desktop.jpg" width={200} height={200} squareSize={18} />
+        <ImageMask imgUrl="/images/intro/rif-bg-desktop.jpg" width={200} height={200} squareSize={8} />
       </div>
       <div className="text-center">
         <h3 className="text-sm font-semibold mb-2">Large holes</h3>
