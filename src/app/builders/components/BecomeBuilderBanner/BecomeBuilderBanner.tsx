@@ -3,17 +3,12 @@ import { Typography } from '@/components/TypographyNew/Typography'
 import { Button } from '@/components/ButtonNew'
 import Image from 'next/image'
 import CollapsibleWithPreview from '@/components/CollapsibleWithPreview/CollapsibleWithPreview'
+import { useRouter } from 'next/navigation'
 
-const BecomeBuilderBanner = () => {
-  const handleBecomeBuilder = () => {
-    // FIXME: Implement become builder functionality
-  }
+const ExpandedContent = () => {
+  const router = useRouter()
 
-  const handleApplyGrant = () => {
-    // FIXME: Implement apply for grant functionality
-  }
-
-  const expandedContent = (
+  return (
     <div className="flex flex-col md:flex-row gap-0 items-start h-full">
       {/* Left: Image */}
       <div className="relative overflow-hidden h-full min-h-[304px] basis-1/4 md:basis-1/4 flex-shrink-0 w-full transition-all duration-300 ease-in-out">
@@ -43,10 +38,14 @@ const BecomeBuilderBanner = () => {
           grants, earn rewards, and grow with the Collective.
         </Paragraph>
         <div className="flex gap-4 mt-2">
-          <Button variant="primary" onClick={handleBecomeBuilder}>
+          <Button variant="primary" onClick={() => router.push('/proposals/new?type=Builder')}>
             Join Builder Rewards
           </Button>
-          <Button variant="secondary-outline" onClick={handleApplyGrant} textClassName="text-bg-100">
+          <Button
+            variant="secondary-outline"
+            onClick={() => router.push('/proposals/new?type=Grants')}
+            textClassName="text-bg-100"
+          >
             Apply for a Grant
           </Button>
         </div>
@@ -70,30 +69,32 @@ const BecomeBuilderBanner = () => {
       </div>
     </div>
   )
+}
 
-  const collapsedContent = (
-    <div className="flex items-center basis-3/4 justify-start">
-      <div className="relative overflow-hidden h-full basis-1/4 md:basis-1/4 flex-shrink-0 w-full">
-        <div className="relative w-full h-[56px]">
-          <Image
-            src="/images/become-a-builder-banner-small.png"
-            alt="Become a Builder Banner"
-            fill
-            className="object-fill"
-            priority
-          />
-        </div>
+const CollapsedContent = () => (
+  <div className="flex items-center basis-3/4 justify-start">
+    <div className="relative overflow-hidden h-full basis-1/4 md:basis-1/4 flex-shrink-0 w-full">
+      <div className="relative w-full h-[56px]">
+        <Image
+          src="/images/become-a-builder-banner-small.png"
+          alt="Become a Builder Banner"
+          fill
+          className="object-fill"
+          priority
+        />
       </div>
-      <Paragraph className="text-v3-text-100 ml-1">
-        Learn how you can become a Collective Builder and how to apply for a Grant
-      </Paragraph>
     </div>
-  )
+    <Paragraph className="text-v3-text-100 ml-1">
+      Learn how you can become a Collective Builder and how to apply for a Grant
+    </Paragraph>
+  </div>
+)
 
+const BecomeBuilderBanner = () => {
   return (
     <CollapsibleWithPreview
-      expandedContent={expandedContent}
-      collapsedContent={collapsedContent}
+      expandedContent={<ExpandedContent />}
+      collapsedContent={<CollapsedContent />}
       expandedState={{
         backgroundColor: 'bg-v3-text-80',
         chevronColor: 'text-v3-bg-accent-100',
