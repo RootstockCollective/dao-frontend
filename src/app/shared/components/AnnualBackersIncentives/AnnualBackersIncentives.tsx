@@ -20,7 +20,7 @@ export const AnnualBackersIncentives = ({ className }: AnnualBackersIncentivesPr
                 tooltipClassName: 'max-w-sm text-sm',
               }}
               info={
-                <Paragraph className="text-[14px] font-normal text-left">
+                <Paragraph className="text-sm font-normal text-left">
                   The Annual Backers Incentives (%) represents an estimate of the annualized percentage of
                   rewards that backers could receive based on their backing allocations.
                   <br />

@@ -49,7 +49,6 @@ const BuilderCTAButton = () => {
     )
   }
 
-  // FIXME: Add link to get a grant
   return (
     <Button
       variant="secondary"
