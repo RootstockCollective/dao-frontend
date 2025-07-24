@@ -29,7 +29,7 @@ export function Tooltip({
           side={side}
           sideOffset={sideOffset}
           className={cn(
-            'rounded-full bg-dark-gray px-2 py-1 text-warm-gray text-xs font-normal shadow-lg font-rootstock-sans',
+            'rounded-sm bg-v3-text-80 text-v3-bg-accent-60 px-2 py-1 text-xs font-normal shadow-lg font-rootstock-sans',
             /* Mixing in new classes (not replacing all the default classes) */
             className,
           )}
