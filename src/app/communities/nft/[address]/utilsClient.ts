@@ -35,19 +35,37 @@ const updateNFTInWalletLocalStorage = (data: NFTWalletLocalStorage) => {
   return data
 }
 
+// name of event emitted on adding NFT to wallet
+const nftAddedToWalletEvent = 'nftAddedToWallet'
 export const useCurrentUserNFTInWallet = () => {
   const [isNFTInWalletLoading, setIsLoading] = useState(true)
   const [nftsInWallet, setNftsInWallet] = useState<NFTWalletLocalStorage>(getNFTInWalletLocalStorage())
+
   useEffect(() => {
     const data = getNFTInWalletLocalStorage()
     setNftsInWallet(data)
     setIsLoading(false)
+
+    // Listen for wallet updates from other components
+    const handleWalletUpdate = () => {
+      const updatedData = getNFTInWalletLocalStorage()
+      setNftsInWallet(updatedData)
+    }
+
+    window.addEventListener(nftAddedToWalletEvent, handleWalletUpdate)
+    return () => window.removeEventListener(nftAddedToWalletEvent, handleWalletUpdate)
   }, [])
 
   const onUpdateNftInWalletData = (nftAddress: Address, tokenId: number) => {
     setNftsInWallet(old => {
       const data = { ...old, [nftAddress]: { ...old[nftAddress as Address], [tokenId]: true } }
       updateNFTInWalletLocalStorage(data)
+      // Dispatch custom event to sync between components
+      window.dispatchEvent(
+        new CustomEvent(nftAddedToWalletEvent, {
+          detail: { nftAddress, tokenId },
+        }),
+      )
       return data
     })
   }

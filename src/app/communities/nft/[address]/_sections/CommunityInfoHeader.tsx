@@ -3,23 +3,49 @@
 import { useCommunityNFT } from '../CommunityNFTContext'
 import { type Address } from 'viem'
 import { communitiesMapByContract } from '@/app/communities/communityUtils'
-import { useMemo } from 'react'
-import { ipfsGatewayUrl } from '@/lib/ipfs'
+import { useMemo, useState } from 'react'
+import { cn } from '@/lib/utils'
+import { ImageMask } from '@/components/ImageMask'
+import { useCurrentUserNFTInWallet } from '../utilsClient'
+import { AddToWalletButton } from '../_components/AddToWalletButton'
+import { Button } from '@/components/ButtonNew'
+import { Header, Paragraph } from '@/components/TypographyNew'
 
 interface Props {
   address: Address
 }
 
 export function CommunityInfoHeader({ address: nftAddress }: Props) {
-  const { isMember, image } = useCommunityNFT()
-  const community = useMemo(() => communitiesMapByContract[nftAddress.toLowerCase()], [nftAddress])
+  const [isMember, setIsMember] = useState(false)
+  const { image, tokenId = 0 } = useCommunityNFT()
+  const { nftsInWallet, isNFTInWalletLoading } = useCurrentUserNFTInWallet()
+  const { title, subtitle, cover } = useMemo(
+    () => communitiesMapByContract[nftAddress.toLowerCase()],
+    [nftAddress],
+  )
+
   //const { isCampaignActive, boostData } = useNFTBoosterContext()
   //const showNFTBoost = isCampaignActive(nftAddress)
 
-  console.log('🚀 ~ CommunityInfoHeader ~ defaultImage:', image)
   return (
-    <div className="p-4 rounded-sm bg-bg-80">
-      {community.title} {isMember ? 'member' : 'not member'}
+    <div className={cn('p-4 rounded-sm bg-bg-80', 'flex flex-col sm:flex-row')}>
+      <div className={cn('transition-all duration-300', isMember ? 'sm:flex-[3]' : 'flex-1')}>
+        <ImageMask
+          src={image}
+          fallbackSrc={cover}
+          width={525}
+          height={525}
+          squareSize={10}
+          className="w-full h-fit"
+        />
+      </div>
+      <div className={cn('transition-all duration-300', isMember ? 'sm:flex-1' : 'flex-1')}>
+        <Header>{title}</Header>
+        {/* <AddToWalletButton /> */} {/* временно для тестов */}
+        <Button className="whitespace-nowrap" onClick={() => setIsMember(st => !st)}>
+          Add to wallet
+        </Button>
+      </div>
     </div>
   )
 }

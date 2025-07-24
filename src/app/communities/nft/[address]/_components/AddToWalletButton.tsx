@@ -1,6 +1,6 @@
 'use client'
 import { requestProviderToAddNFT, useCurrentUserNFTInWallet } from '../utilsClient'
-import { Button } from '@/components/Button'
+import { Button } from '@/components/ButtonNew'
 import { Address } from 'viem'
 import { useAlertContext } from '@/app/providers'
 import { useState } from 'react'
@@ -74,7 +74,7 @@ export const AddToWalletButton = () => {
   const isLoading = isNFTInWalletLoading || isAdding
 
   return (
-    <Button onClick={() => onAddToWallet()} className="mb-4" loading={isLoading} disabled={isLoading}>
+    <Button onClick={() => onAddToWallet()} className="mb-4" disabled={isLoading}>
       Add to wallet
     </Button>
   )

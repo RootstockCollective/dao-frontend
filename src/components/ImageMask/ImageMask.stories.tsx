@@ -17,12 +17,16 @@ const meta: Meta<typeof ImageMask> = {
     width: 300,
     height: 300,
     squareSize: 5,
-    imgUrl: '/images/intro/rbtc-bg-desktop.jpg',
+    src: '/images/intro/rbtc-bg-desktop.jpg',
   },
   argTypes: {
-    imgUrl: {
+    src: {
       control: 'text',
       description: 'Image URL to display',
+    },
+    fallbackSrc: {
+      control: 'text',
+      description: 'Fallback image URL to display if main image fails to load',
     },
     width: {
       control: { type: 'range', min: 100, max: 600, step: 25 },
@@ -47,14 +51,14 @@ export const Basic: Story = {}
 export const SmallHoles: Story = {
   args: {
     squareSize: 2,
-    imgUrl: '/images/intro/rif-bg-desktop.jpg',
+    src: '/images/intro/rif-bg-desktop.jpg',
   },
 }
 
 export const LargeHoles: Story = {
   args: {
     squareSize: 15,
-    imgUrl: '/images/intro/strif-bg-desktop.jpg',
+    src: '/images/intro/strif-bg-desktop.jpg',
   },
 }
 
@@ -63,7 +67,7 @@ export const WideImage: Story = {
     width: 450,
     height: 200,
     squareSize: 8,
-    imgUrl: '/images/intro/rbtc-rif-bg-desktop.jpg',
+    src: '/images/intro/rbtc-rif-bg-desktop.jpg',
   },
 }
 
@@ -72,7 +76,7 @@ export const SquareImage: Story = {
     width: 250,
     height: 250,
     squareSize: 6,
-    imgUrl: '/images/intro/strif-bg-desktop.jpg',
+    src: '/images/intro/strif-bg-desktop.jpg',
   },
 }
 
@@ -81,7 +85,74 @@ export const TallImage: Story = {
     width: 200,
     height: 350,
     squareSize: 4,
-    imgUrl: '/images/intro/rbtc-bg-mobile.jpg',
+    src: '/images/intro/rbtc-bg-mobile.jpg',
+  },
+}
+
+export const SlowLoading: Story = {
+  args: {
+    src: 'https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=800&q=80', // External image to simulate slow loading
+    fallbackSrc: '/images/nfts/empty-nft-cover.png',
+    width: 300,
+    height: 300,
+    squareSize: 8,
+  },
+  parameters: {
+    docs: {
+      description: {
+        story: 'Shows placeholder behavior while image loads with fallback support',
+      },
+    },
+  },
+}
+
+export const WithFallback: Story = {
+  args: {
+    src: '/images/intro/rbtc-bg-desktop.jpg',
+    fallbackSrc: '/images/nfts/empty-nft-cover.png',
+    width: 300,
+    height: 300,
+    squareSize: 6,
+  },
+  parameters: {
+    docs: {
+      description: {
+        story: 'Shows working image with fallback configured',
+      },
+    },
+  },
+}
+
+export const BrokenImageWithFallback: Story = {
+  args: {
+    src: 'https://broken-url-that-does-not-exist.jpg',
+    fallbackSrc: '/images/nfts/empty-nft-cover.png',
+    width: 300,
+    height: 300,
+    squareSize: 8,
+  },
+  parameters: {
+    docs: {
+      description: {
+        story: 'Shows fallback image when main image fails to load',
+      },
+    },
+  },
+}
+
+export const BrokenImageWithoutFallback: Story = {
+  args: {
+    src: 'https://another-broken-url.jpg',
+    width: 300,
+    height: 300,
+    squareSize: 8,
+  },
+  parameters: {
+    docs: {
+      description: {
+        story: 'Shows nothing when both main image fails and no fallback provided',
+      },
+    },
   },
 }
 
@@ -89,23 +160,35 @@ export const Gallery: Story = {
   render: () => (
     <div className="flex flex-wrap gap-6 p-4 justify-center">
       <div className="text-center">
-        <h3 className="text-sm font-semibold mb-2">Tiny holes</h3>
-        <ImageMask imgUrl="/images/intro/rbtc-bg-desktop.jpg" width={200} height={200} squareSize={2} />
+        <h3 className="text-sm font-semibold mb-2">Normal image</h3>
+        <ImageMask src="/images/intro/rbtc-bg-desktop.jpg" width={200} height={200} squareSize={2} />
       </div>
       <div className="text-center">
-        <h3 className="text-sm font-semibold mb-2">Medium holes</h3>
-        <ImageMask imgUrl="/images/intro/rif-bg-desktop.jpg" width={200} height={200} squareSize={8} />
+        <h3 className="text-sm font-semibold mb-2">With fallback</h3>
+        <ImageMask
+          src="/images/intro/rif-bg-desktop.jpg"
+          fallbackSrc="/images/nfts/empty-nft-cover.png"
+          width={200}
+          height={200}
+          squareSize={8}
+        />
       </div>
       <div className="text-center">
-        <h3 className="text-sm font-semibold mb-2">Large holes</h3>
-        <ImageMask imgUrl="/images/intro/strif-bg-desktop.jpg" width={200} height={200} squareSize={18} />
+        <h3 className="text-sm font-semibold mb-2">Broken + fallback</h3>
+        <ImageMask
+          src="https://broken-image-url.jpg"
+          fallbackSrc="/images/nfts/empty-nft-cover.png"
+          width={200}
+          height={200}
+          squareSize={12}
+        />
       </div>
     </div>
   ),
   parameters: {
     docs: {
       description: {
-        story: 'Examples with different hole sizes',
+        story: 'Examples with different scenarios including fallback images',
       },
     },
   },
