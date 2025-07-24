@@ -310,7 +310,7 @@ const PageWithProposal = (proposal: ParsedProposal) => {
 
   const buttonAction = !isConnected
     ? getButtonActionForState(proposalState)
-    : cannotCastVote && !canProposalBeExecuted
+    : cannotCastVote || !canProposalBeExecuted
       ? undefined
       : getButtonActionForState(proposalState)
 
