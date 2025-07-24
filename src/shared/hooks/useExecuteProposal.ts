@@ -44,7 +44,7 @@ export const useExecuteProposal = (proposalId: string) => {
   const proposalEtaHumanDate = getBigIntTimestampAsHuman(proposalEta)
   return {
     onExecuteProposal,
-    canProposalBeExecuted: proposalEta && currentTime >= proposalEta,
+    canProposalBeExecuted: proposalEta ? currentTime >= proposalEta : false,
     proposalEta,
     proposalEtaHumanDate,
     isPendingExecution,

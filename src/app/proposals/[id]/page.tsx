@@ -1,5 +1,5 @@
 'use client'
-import { MouseEvent, Fragment, useMemo, useState, useRef } from 'react'
+import { MouseEvent, Fragment, useMemo, useState, useRef, useEffect } from 'react'
 import { useFetchAllProposals } from '@/app/proposals/hooks/useFetchLatestProposals'
 import { useGetProposalSnapshot } from '@/app/proposals/hooks/useGetProposalSnapshot'
 import { useGetProposalVotes } from '@/app/proposals/hooks/useGetProposalVotes'
@@ -286,19 +286,28 @@ const PageWithProposal = (proposal: ParsedProposal) => {
     action()
   }
 
-  const getButtonActionForState = (state: ProposalState | undefined): ButtonAction | undefined => {
+  const getButtonActionForState = (
+    state?: ProposalState,
+    _canProposalBeExecuted?: boolean,
+    _cannotCastVote?: boolean,
+  ): ButtonAction | undefined => {
     switch (state) {
       case ProposalState.Active:
+        if (_cannotCastVote) return undefined
         return {
           actionName: 'Vote on proposal',
           onButtonClick: handleProposalAction(() => setIsChoosingVote(true)),
         }
+
       case ProposalState.Succeeded:
         return {
           actionName: 'Put on queue',
           onButtonClick: handleProposalAction(handleQueuingProposal),
         }
+
       case ProposalState.Queued:
+        if (!_canProposalBeExecuted) return undefined
+
         return {
           actionName: 'Execute',
           onButtonClick: handleProposalAction(handleExecuteProposal),
@@ -307,12 +316,6 @@ const PageWithProposal = (proposal: ParsedProposal) => {
         return undefined
     }
   }
-
-  const buttonAction = !isConnected
-    ? getButtonActionForState(proposalState)
-    : cannotCastVote || !canProposalBeExecuted
-      ? undefined
-      : getButtonActionForState(proposalState)
 
   return (
     <div className="min-h-screen text-white px-4 py-8 flex flex-col gap-4 w-full max-w-full">
@@ -468,8 +471,11 @@ const PageWithProposal = (proposal: ParsedProposal) => {
               abstain: abstainVote,
               quorum,
             }}
-            buttonAction={buttonAction}
-            actionDisabled={isConnected && (cannotCastVote || !canProposalBeExecuted)}
+            buttonAction={getButtonActionForState(
+              proposalState,
+              canProposalBeExecuted,
+              !isConnected ? false : cannotCastVote,
+            )}
             voteButtonRef={voteButtonRef}
             vote={vote}
             isChoosingVote={isChoosingVote}
