@@ -68,9 +68,13 @@ export const useGetABI = (abiData: AbiData | undefined) => {
 
     // We use the multiplication with the current backer rewards % to avoid losing precision
     // Thats why we don't need to multiply by 100
-    const weightedAverageBuilderRewardsPct = builders
-      .slice(0, 5)
-      .reduce<Big>((acc, { backerRewardPercentage, totalAllocation }) => {
+    const top5Builders = builders.slice(0, 5)
+    const top5BuildersTotalAllocation = top5Builders.reduce<Big>(
+      (acc, { totalAllocation }) => acc.plus(Big(totalAllocation)),
+      Big(0),
+    )
+    const weightedAverageBuilderRewardsPct = top5Builders.reduce<Big>(
+      (acc, { backerRewardPercentage, totalAllocation }) => {
         const currentBackerRewardPercentage = backerRewardPercentage
           ? getBackerRewardPercentage(
               BigInt(backerRewardPercentage.previous ?? 0n),
@@ -78,8 +82,12 @@ export const useGetABI = (abiData: AbiData | undefined) => {
               BigInt(backerRewardPercentage.cooldownEndTime ?? 0n),
             ).current.toString()
           : 0
-        return acc.plus(Big(totalAllocation).mul(Big(currentBackerRewardPercentage)).div(sumTotalAllocation))
-      }, Big(0))
+        return acc.plus(
+          Big(totalAllocation).mul(Big(currentBackerRewardPercentage)).div(top5BuildersTotalAllocation),
+        )
+      },
+      Big(0),
+    )
 
     const rewardsPerStRif = cyclePayout.mul(weightedAverageBuilderRewardsPct).div(sumTotalAllocation)
 
