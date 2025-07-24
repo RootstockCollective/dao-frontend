@@ -15,6 +15,7 @@ import { TOKENS } from '@/lib/tokens'
 import { formatCurrency } from '@/lib/utils'
 import { usePricesContext } from '@/shared/context'
 import { ReactElement, useMemo } from 'react'
+import { USD } from '@/lib/constants'
 
 export const UnclaimedRewardsMetric = ({ currency = 'USD' }: { currency?: string }): ReactElement => {
   const { prices } = usePricesContext()
@@ -47,7 +48,7 @@ export const UnclaimedRewardsMetric = ({ currency = 'USD' }: { currency?: string
   return (
     <div className="flex flex-col w-64 gap-4 items-start ">
       <div className="flex flex-col items-start gap-2 self-stretch">
-        <Span variant="tag-m" className="text-v3-bg-accent-0 font-rootstock-sans">
+        <Span variant="tag-m" className="text-v3-bg-accent-0 font-rootstock-sans text-base">
           Unclaimed Rewards
         </Span>
         <div className="flex items-center gap-2">
@@ -66,7 +67,7 @@ export const UnclaimedRewardsMetric = ({ currency = 'USD' }: { currency?: string
                 textUnderlinePosition: 'from-font',
               }}
             >
-              USD
+              {USD}
             </DottedUnderlineLabel>
           </RifRbtcTooltip>
         </div>
