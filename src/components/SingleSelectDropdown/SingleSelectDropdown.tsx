@@ -53,7 +53,7 @@ const DropdownContent = forwardRef<
       {...props}
     >
       <SelectPrimitive.Viewport
-        className={cn('p-1', position === 'popper' && 'w-full min-w-[var(--radix-select-trigger-width)]')}
+        className={cn(position === 'popper' && 'w-full min-w-[var(--radix-select-trigger-width)]')}
         data-testid="dropdown-option-container"
       >
         {children}
