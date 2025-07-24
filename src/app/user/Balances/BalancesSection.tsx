@@ -4,15 +4,13 @@ import { UnstakeModal } from '@/app/user/Unstake'
 import { useModal } from '@/shared/hooks/useModal'
 import { useEffect, useState } from 'react'
 import { useSearchParams } from 'next/navigation'
-import { SectionContainer } from '@/app/communities/components/SectionContainer'
 import { useBalancesContext } from '@/app/user/Balances/context/BalancesContext'
-import { useAccount } from 'wagmi'
 import { Button } from '@/components/ButtonNew'
 import { MoneyIconKoto } from '@/components/Icons'
 import { useRef } from 'react'
+import { Span } from '@/components/TypographyNew'
 
 export const BalancesSection = () => {
-  const isUserBuilder = false // @TODO
   const stakeModal = useModal()
   const unstakeModal = useModal()
   const searchParams = useSearchParams()
@@ -33,38 +31,29 @@ export const BalancesSection = () => {
     }
   }, [action, hasOpenedStakeModal, shouldReopen, stakeModal])
 
-  const balancesText = isUserBuilder ? 'MY ACTIVITY & BALANCES' : 'MY BALANCES'
   return (
-    <div className="mb-[32px]">
-      <SectionContainer title={balancesText}>
-        {isUserBuilder && (
-          <p>
-            Placehloder for TOK {/* @TODO */} <hr />
-          </p>
-        )}
-        <div className="flex flex-row justify-between mb-6">
-          <div className="flex flex-col gap-4">
-            <BalanceInfoForUser symbol="RIF" />
-            <StakeButton onClick={stakeModal.openModal} />
-          </div>
-          <div className="flex flex-col gap-4">
-            <BalanceInfoForUser symbol="stRIF" />
-            <UnstakeButton onClick={unstakeModal.openModal} />
-          </div>
-          <BalanceInfoForUser symbol="USDRIF" />
-          <BalanceInfoForUser symbol="RBTC" />
+    <>
+      <div className="flex flex-row justify-between mb-6">
+        <div className="flex flex-col gap-4">
+          <BalanceInfoForUser symbol="RIF" />
+          <StakeButton onClick={stakeModal.openModal} />
         </div>
-        <div>
-          {stakeModal.isModalOpened && <StakingFlow onCloseModal={stakeModal.closeModal} />}
-          {unstakeModal.isModalOpened && <UnstakeModal onCloseModal={unstakeModal.closeModal} />}
+        <div className="flex flex-col gap-4">
+          <BalanceInfoForUser symbol="stRIF" />
+          <UnstakeButton onClick={unstakeModal.openModal} />
         </div>
-      </SectionContainer>
-    </div>
+        <BalanceInfoForUser symbol="USDRIF" />
+        <BalanceInfoForUser symbol="RBTC" />
+      </div>
+      <div>
+        {stakeModal.isModalOpened && <StakingFlow onCloseModal={stakeModal.closeModal} />}
+        {unstakeModal.isModalOpened && <UnstakeModal onCloseModal={unstakeModal.closeModal} />}
+      </div>
+    </>
   )
 }
 
 const StakeButton = ({ onClick }: { onClick: () => void }) => {
-  const { isConnected } = useAccount()
   const { balances } = useBalancesContext()
   const { balance } = balances['RIF']
   const hasEnoughBalance = Number(balance) > 0
@@ -81,7 +70,6 @@ const StakeButton = ({ onClick }: { onClick: () => void }) => {
 }
 
 const UnstakeButton = ({ onClick }: { onClick: () => void }) => {
-  const { isConnected } = useAccount()
   const { balances } = useBalancesContext()
   const { balance } = balances['stRIF']
   const hasEnoughBalance = Number(balance) > 0
@@ -93,7 +81,7 @@ const UnstakeButton = ({ onClick }: { onClick: () => void }) => {
       className="flex flex-row gap-2 pl-0"
       variant="transparent"
     >
-      <span>Unstake stRIF</span>
+      <Span>Unstake stRIF</Span>
       <MoneyIconKoto />
     </Button>
   )

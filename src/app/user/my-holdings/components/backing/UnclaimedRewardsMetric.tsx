@@ -48,7 +48,7 @@ export const UnclaimedRewardsMetric = ({ currency = 'USD' }: { currency?: string
   return (
     <div className="flex flex-col w-64 gap-4 items-start ">
       <div className="flex flex-col items-start gap-2 self-stretch">
-        <Span variant="tag-m" className="text-v3-bg-accent-0 font-rootstock-sans text-base">
+        <Span variant="tag" className="text-v3-bg-accent-0">
           Unclaimed Rewards
         </Span>
         <div className="flex items-center gap-2">
