@@ -125,10 +125,10 @@ export const ConnectedSection = () => {
               </ul>
             </div>
             <Paragraph>
-              You selected <span className="text-primary">{delegateeAddress}</span> to make governance your
-              behalf.
+              You have chosen <span className="text-primary">{delegateeAddress}</span> to take part in
+              governance decisions on your behalf.
             </Paragraph>
-            <Paragraph>You only delegated your own voting power, not your tokens.</Paragraph>
+            <Paragraph>You only delegated your own voting power, not your tokens 😅</Paragraph>
             {/* Update delegate button here */}
             <Button
               variant="secondary-outline"

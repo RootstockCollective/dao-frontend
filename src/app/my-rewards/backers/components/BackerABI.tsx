@@ -33,7 +33,7 @@ export const BackerABI: FC<BackerABIProps> = ({ backer }) => {
         </span>
       }
     >
-      {`${abiPct.toFixed(2)}%`}
+      {`${abiPct.toFixed(0)}%`}
     </RewardCard>
   )
 }

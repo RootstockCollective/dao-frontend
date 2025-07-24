@@ -6,13 +6,14 @@ import { UsefulLinks } from './UsefulLinks'
 import styles from './styles.module.css'
 import { cn } from '@/lib/utils'
 import { NavIcon } from '../icons/NavIcon'
-import { menuData, menuDataNotConnected } from './menuData'
+import { MenuData, menuData, menuDataNotConnected } from './menuData'
 import { RootstockLogoIcon } from '@/components/Icons'
 import { useLayoutContext } from '../LayoutProvider'
 import { Tooltip } from '@/components/Tooltip'
 import { Span } from '@/components/TypographyNew'
 import { ClassValue } from 'clsx'
 import { useAccount } from 'wagmi'
+import Image from 'next/image'
 
 const transition: Transition = { duration: 0.3, ease: 'circOut' }
 
@@ -94,12 +95,7 @@ export const SidebarDesktop = () => {
   )
 }
 
-const MenuItem = ({
-  href,
-  text,
-  buttonProps,
-  variants,
-}: (typeof menuData | typeof menuDataNotConnected)[number] & { variants: Variants }) => {
+const MenuItem = ({ href, text, buttonProps, variants, iconUrl }: MenuData & { variants: Variants }) => {
   const { isSidebarOpen } = useLayoutContext()
   const isActive = usePathname().split('/').at(1) === href
   return (
@@ -111,9 +107,15 @@ const MenuItem = ({
             isActive && styles['nav-active'],
           )}
         >
-          <motion.div variants={variants} initial="icon" animate="icon" transition={transition}>
+          <motion.div
+            variants={variants}
+            initial="icon"
+            animate="icon"
+            transition={transition}
+            className={iconUrl ? 'flex-shrink-0' : ''}
+          >
             <Tooltip text={text} disabled={isSidebarOpen}>
-              <NavIcon />
+              {iconUrl ? <Image src={iconUrl} width={20} height={20} alt="Icon" /> : <NavIcon />}
             </Tooltip>
           </motion.div>
 

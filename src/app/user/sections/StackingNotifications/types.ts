@@ -14,7 +14,6 @@ import { AppRouterInstance } from 'next/dist/shared/lib/app-router-context.share
  *   title: <span>GET <TokenImage symbol="RIF" /> RIF</span>,
  *   buttonText: 'Get RIF',
  *   description: 'RIF is required for staking in the DAO.',
- *   category: 'TOKEN',
  *   action: {
  *     url: 'https://exchange.example.com',
  *     external: true,
@@ -23,16 +22,6 @@ import { AppRouterInstance } from 'next/dist/shared/lib/app-router-context.share
  * ```
  */
 export interface BannerConfig extends Omit<BannerContentProps, 'buttonOnClick'> {
-  /**
-   * Category used for grouping banners. The system shows at most one banner per category
-   * to avoid overwhelming users. Use existing categories when possible:
-   * - 'TOKEN': Token-related actions (getting tokens, staking, etc.)
-   * - 'REWARDS': Reward-related notifications
-   * - 'GOVERNANCE': Governance participation prompts
-   * - 'STAKING': Staking-specific actions
-   */
-  category: string
-
   /**
    * Action configuration that defines what happens when the user clicks the banner button.
    */
