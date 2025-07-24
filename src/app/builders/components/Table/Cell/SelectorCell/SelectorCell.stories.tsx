@@ -30,6 +30,14 @@ type Story = StoryObj<typeof meta>
 
 export const Default: Story = {
   args: {
+    children: <div className="w-20 h-20 bg-yellow-500" />,
+    isSelected: false,
+    isHovered: false,
+  },
+}
+
+export const Rounded: Story = {
+  args: {
     children: <div className="w-20 h-20 bg-yellow-500 rounded-full" />,
     isSelected: false,
     isHovered: false,
