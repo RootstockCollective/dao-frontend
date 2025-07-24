@@ -1,10 +1,10 @@
 'use client'
 // TODO: I don't like the fact that this page is a client component, but otherwise many components need to be changed to accommodate this
 
-import {MetricsContainer } from '@/components/containers'
+import { MetricsContainer } from '@/components/containers'
 import { Header } from '@/components/TypographyNew'
 import { Metrics } from './components/Metrics'
-import BecomeBuilderCollapsible from './components/BecomeBuilderBanner/BecomeBuilderBanner'
+import BecomeBuilderBanner from './components/BecomeBuilderBanner/BecomeBuilderBanner'
 import BuildersTableContainer from './components/Table/BuildersTableContainer'
 
 const NAME = 'Builders'
@@ -19,7 +19,7 @@ export const BuildersPage = () => {
         <MetricsContainer className="bg-v3-bg-accent-80">
           <Metrics />
         </MetricsContainer>
-        <BecomeBuilderCollapsible />
+        <BecomeBuilderBanner />
         <BuildersTableContainer />
       </div>
     </div>

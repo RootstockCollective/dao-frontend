@@ -3,9 +3,8 @@ import { Typography } from '@/components/TypographyNew/Typography'
 import { Button } from '@/components/ButtonNew'
 import Image from 'next/image'
 import CollapsibleWithPreview from '@/components/CollapsibleWithPreview/CollapsibleWithPreview'
-import { FC } from 'react'
 
-const BecomeBuilderCollapsible: FC = () => {
+const BecomeBuilderBanner = () => {
   const handleBecomeBuilder = () => {
     // FIXME: Implement become builder functionality
   }
@@ -30,22 +29,24 @@ const BecomeBuilderCollapsible: FC = () => {
       <div className="flex flex-col text-base justify-center gap-4 basis-1/2 md:basis-1/2 mt-16">
         <div>
           <Typography variant="h1" className="text-v3-text-0">
-            BECOME A COLLECTIVE BUILDER,
+            BECOME A COLLECTIVE BUILDER.
           </Typography>
           <br />
-          <Typography variant="h1" className="text-v3-text-60 mt-2">
-            GET RICH AND FAMOUS
+          <Typography variant="h1" className="text-v3-bg-accent-20 mt-2">
+            SECURE FUNDING. EARN
+            <br />
+            CONTINUOUSLY.
           </Typography>
         </div>
         <Paragraph className="text-v3-text-0">
-          Lorem ipsum dolor sit amet, consectetur adipiscing elit. Maecenas dictum dignissim libero, eu
-          imperdiet neque dignissim non.
+          Join a growing network of innovators building the future of decentralised infrastructure. Get
+          grants, earn rewards, and grow with the Collective.
         </Paragraph>
         <div className="flex gap-4 mt-2">
           <Button variant="primary" onClick={handleBecomeBuilder}>
-            Become a Builder
+            Join Builder Rewards
           </Button>
-          <Button variant="secondary" onClick={handleApplyGrant}>
+          <Button variant="secondary-outline" onClick={handleApplyGrant} textClassName="text-bg-100">
             Apply for a Grant
           </Button>
         </div>
@@ -57,16 +58,13 @@ const BecomeBuilderCollapsible: FC = () => {
         </Typography>
         <ul className="list-[circle] pl-4 text-v3-text-0">
           <li>
-            <Paragraph>Lorem ipsum dolor sit amet</Paragraph>
+            <Paragraph>join a mission-aligned network</Paragraph>
           </li>
           <li>
-            <Paragraph>Consectetur adipiscing</Paragraph>
+            <Paragraph>earn performance-based rewards</Paragraph>
           </li>
           <li>
-            <Paragraph>Elit maecenas dictum eu</Paragraph>
-          </li>
-          <li>
-            <Paragraph>Imperdiet neque dignissim</Paragraph>
+            <Paragraph>access grants to kickstart your project</Paragraph>
           </li>
         </ul>
       </div>
@@ -109,4 +107,4 @@ const BecomeBuilderCollapsible: FC = () => {
   )
 }
 
-export default BecomeBuilderCollapsible
+export default BecomeBuilderBanner
