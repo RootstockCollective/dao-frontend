@@ -106,7 +106,11 @@ export const BuilderCell = (props: BuilderNameCellProps): ReactElement => {
 
   return (
     <TableCell key="builder" columnId="builder" className="justify-start gap-4">
-      <SelectorCell isHovered={props.isHighlighted} isSelected={isSelected} className="pt-3 pb-3">
+      <SelectorCell
+        isHovered={props.isHighlighted}
+        isSelected={isSelected}
+        className="pt-3 pb-3 rounded-full"
+      >
         <Jdenticon className="rounded-full bg-white w-10" value={props.builder.address} />
       </SelectorCell>
 
