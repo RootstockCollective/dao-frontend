@@ -1,17 +1,17 @@
-import { FC, useState, useMemo } from 'react'
-import { useClaimBackerRewards } from '../../rewards/backers/hooks/useClaimBackerRewards'
-import { usePricesContext } from '@/shared/context'
-import { useHandleErrors } from '@/app/collective-rewards/utils'
 import { useBackerRewardsContext } from '@/app/collective-rewards/rewards/backers'
 import { getFiatAmount } from '@/app/collective-rewards/rewards/utils'
-import { ClaimRewardsModalView } from './ClaimRewardsModalView'
+import { useHandleErrors } from '@/app/collective-rewards/utils'
 import { TOKENS } from '@/lib/tokens'
+import { usePricesContext } from '@/shared/context'
+import { useReadBuilderRegistry } from '@/shared/hooks/contracts'
+import { useReadGauge } from '@/shared/hooks/contracts/collective-rewards/useReadGauge'
+import { ReactElement, ReactNode, useMemo, useState } from 'react'
+import { Address } from 'viem'
+import { useAccount } from 'wagmi'
+import { useClaimBackerRewards } from '../../rewards/backers/hooks/useClaimBackerRewards'
+import { useClaimBuilderRewards } from '../../rewards/builders/hooks/useClaimBuilderRewards'
+import { ClaimRewardsModalView } from './ClaimRewardsModalView'
 import { ClaimRewardType } from './types'
-
-interface ClaimRewardsModalProps {
-  open: boolean
-  onClose: () => void
-}
 
 const getRewardTokenAddress = (value: ClaimRewardType) => {
   switch (value) {
@@ -22,8 +22,7 @@ const getRewardTokenAddress = (value: ClaimRewardType) => {
   }
 }
 
-// FIXME: we need to change this to be reused for backers and builders
-export const ClaimRewardsModal: FC<ClaimRewardsModalProps> = ({ open, onClose }) => {
+const ClaimBackerRewardsModal = ({ open, onClose }: Omit<ClaimRewardsModalProps, 'isBacker'>): ReactNode => {
   const [selectedRewardType, setSelectedRewardType] = useState<ClaimRewardType>('all')
 
   const { claimRewards, isClaimable, isLoadingReceipt, isPendingTx } = useClaimBackerRewards(
@@ -78,4 +77,110 @@ export const ClaimRewardsModal: FC<ClaimRewardsModalProps> = ({ open, onClose })
   )
 }
 
-export default ClaimRewardsModal
+const ClaimBuilderRewardsModal = ({ open, onClose }: Omit<ClaimRewardsModalProps, 'isBacker'>): ReactNode => {
+  const { address: builderAddress } = useAccount()
+  const { prices } = usePricesContext()
+  const {
+    data: buildersGauge,
+    isLoading: isLoadingGauge,
+    error: errorGauge,
+  } = useReadBuilderRegistry(
+    {
+      functionName: 'builderToGauge',
+      args: [builderAddress as Address],
+    },
+    {
+      enabled: !!builderAddress,
+    },
+  )
+  const [selectedRewardType, setSelectedRewardType] = useState<ClaimRewardType>('all')
+
+  const {
+    data: rifRewards,
+    isLoading: isLoadingRif,
+    error: errorRif,
+  } = useReadGauge(
+    { address: buildersGauge as Address, functionName: 'builderRewards', args: [TOKENS.rif.address] },
+    {
+      enabled: !!buildersGauge,
+      initialData: 0n,
+    },
+  )
+  const {
+    data: rbtcRewards,
+    isLoading: isLoadingRbtc,
+    error: errorRbtc,
+  } = useReadGauge(
+    { address: buildersGauge as Address, functionName: 'builderRewards', args: [TOKENS.rbtc.address] },
+    {
+      enabled: !!buildersGauge,
+      initialData: 0n,
+    },
+  )
+
+  const { tokenAmounts, tokenFiatAmounts, totalFiatAmount } = useMemo(() => {
+    const tokenAmounts: Record<string, bigint> = {
+      rif: rifRewards ?? 0n,
+      rbtc: rbtcRewards ?? 0n,
+    }
+    const tokenFiatAmounts: Record<string, number> = {
+      rif: getFiatAmount(rifRewards ?? 0n, prices[TOKENS.rif.symbol]?.price ?? 0).toNumber(),
+      rbtc: getFiatAmount(rbtcRewards ?? 0n, prices[TOKENS.rbtc.symbol]?.price ?? 0).toNumber(),
+    }
+    let totalFiatAmount = tokenFiatAmounts.rif + tokenFiatAmounts.rbtc
+
+    return {
+      tokenAmounts,
+      tokenFiatAmounts,
+      totalFiatAmount,
+    }
+  }, [rifRewards, rbtcRewards, prices])
+
+  const {
+    claimRewards,
+    isClaimable,
+    isLoadingReceipt,
+    isPendingTx,
+    error: errorClaim,
+  } = useClaimBuilderRewards(builderAddress as Address, buildersGauge as Address, {
+    rif: TOKENS.rif.address,
+    rbtc: TOKENS.rbtc.address,
+  })
+
+  useHandleErrors({ error: errorGauge, title: 'Error fetching builder gauge' })
+  useHandleErrors({ error: errorRif, title: 'Error fetching builder rewards' })
+  useHandleErrors({ error: errorRbtc, title: 'Error fetching builder rewards' })
+  useHandleErrors({ error: errorClaim, title: 'Error claiming rewards' })
+
+  return (
+    open && (
+      <ClaimRewardsModalView
+        onClose={onClose}
+        selectedRewardType={selectedRewardType}
+        onRewardTypeChange={setSelectedRewardType}
+        tokenAmounts={tokenAmounts}
+        tokenFiatAmounts={tokenFiatAmounts}
+        totalFiatAmount={totalFiatAmount}
+        onClaim={claimRewards}
+        isClaimable={isClaimable}
+        isLoading={isLoadingRif || isLoadingRbtc || isLoadingGauge}
+        isTxPending={isPendingTx || isLoadingReceipt}
+        tokens={TOKENS}
+      />
+    )
+  )
+}
+
+export interface ClaimRewardsModalProps {
+  open: boolean
+  onClose: () => void
+  isBacker: boolean
+}
+
+export default function ClaimRewardsModal({ open, onClose, isBacker }: ClaimRewardsModalProps): ReactElement {
+  if (isBacker) {
+    return <ClaimBackerRewardsModal open={open} onClose={onClose} />
+  }
+
+  return <ClaimBuilderRewardsModal open={open} onClose={onClose} />
+}

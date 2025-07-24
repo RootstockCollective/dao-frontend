@@ -20,6 +20,8 @@ interface TokenRewardData {
 interface UnclaimedRewardsData {
   rif: TokenRewardData
   rbtc: TokenRewardData
+  isLoading: boolean
+  error: Error | null
 }
 
 const useGetBuilderRewardsPerToken = (gauge: Address, token: Token) => {
@@ -54,5 +56,7 @@ export const useGetBuilderUnclaimedRewards = ({
     rbtc: {
       ...rbtcData,
     },
+    isLoading: rifData.isLoading || rbtcData.isLoading,
+    error: rifData.error || rbtcData.error,
   }
 }
