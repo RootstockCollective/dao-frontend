@@ -44,11 +44,17 @@ export const BackingPage = () => {
   const searchParams = useSearchParams()
   const userSelections = useMemo(() => searchParams.get('builders')?.split(',') as Address[], [searchParams])
 
-  const rifPriceUsd = prices[RIF]?.price ?? 0
+  const rifPriceUsd = useMemo(() => prices[RIF]?.price ?? 0, [prices])
 
-  const availableForBacking = !votingPower ? 0n : votingPower - totalOnchainAllocation
+  const availableForBacking = useMemo(
+    () => (!votingPower ? 0n : votingPower - totalOnchainAllocation),
+    [votingPower, totalOnchainAllocation],
+  )
 
-  const totalBacking = !totalOnchainAllocation ? 0n : totalOnchainAllocation
+  const totalBacking = useMemo(
+    () => (!totalOnchainAllocation ? 0n : totalOnchainAllocation),
+    [totalOnchainAllocation],
+  )
 
   const hasAllocations = useMemo(() => totalOnchainAllocation > 0n, [totalOnchainAllocation])
 
