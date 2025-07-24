@@ -67,14 +67,18 @@ export const AllocationBarSegment = ({
   // Calculate the percentage width based on the actual value and total value
   const percentageWidth = valueToPercentage(value, totalValue)
 
+  // For segments with very small values, ensure they have a minimum visible width
+  // but only if the value is actually greater than 0
+  const effectiveWidth = value > 0 && percentageWidth < 0.5 ? 0.5 : percentageWidth
+
   const style: React.CSSProperties = {
     ...(item.isTemporary ? checkerboardStyle() : {}),
-    width: `${percentageWidth}%`,
+    width: `${effectiveWidth}%`,
     transform: CSS.Translate.toString(transform),
     backgroundColor: item.displayColor,
   }
 
-  const baseClasses = 'min-w-12 h-full relative overflow-visible flex items-stretch p-0'
+  const baseClasses = 'h-full relative overflow-visible flex items-stretch p-0'
   const transitionClasses =
     dragIndex !== null ? 'transition-none' : 'transition-transform duration-200 ease-out'
   const dragStateClasses = isDragging ? 'opacity-60 z-[99]' : 'opacity-100 z-1'
