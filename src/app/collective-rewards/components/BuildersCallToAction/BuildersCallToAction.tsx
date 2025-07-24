@@ -41,16 +41,24 @@ const BuilderCTAButton = () => {
       <Button
         variant="secondary"
         onClick={() => {
-          router.push('/builders')
+          router.push('/proposals/new?type=Builder')
         }}
       >
-        Become a Builder
+        Join Builders Rewards
       </Button>
     )
   }
 
-  // FIXME: Add link to get a grant
-  return <Button variant="secondary">Get a Grant</Button>
+  return (
+    <Button
+      variant="secondary"
+      onClick={() => {
+        router.push('/proposals/new?type=Grants')
+      }}
+    >
+      Apply for a Grant
+    </Button>
+  )
 }
 
 interface BuildersCallToActionProps {
