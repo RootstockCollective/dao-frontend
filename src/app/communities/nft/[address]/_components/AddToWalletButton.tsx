@@ -1,12 +1,12 @@
 'use client'
 import { requestProviderToAddNFT, useCurrentUserNFTInWallet } from '../utilsClient'
-import { Button } from '@/components/Button'
+import { Button } from '@/components/ButtonNew'
 import { Address } from 'viem'
-import { useAlertContext } from '@/app/providers'
 import { useState } from 'react'
 import { isUserRejectedTxError } from '@/components/ErrorPage'
 import { nftAlertMessages } from '@/app/communities/nft/[address]/constants'
 import { useCommunityNFT } from '@/app/communities/nft/[address]/CommunityNFTContext'
+import { showToast } from '@/shared/notification/toastUtils'
 
 /**
  * Component that encapsulates the logic of the add to wallet
@@ -16,7 +16,6 @@ import { useCommunityNFT } from '@/app/communities/nft/[address]/CommunityNFTCon
 export const AddToWalletButton = () => {
   const { tokenId = 0, nftAddress, nftSymbol, image } = useCommunityNFT()
   const { nftsInWallet, isNFTInWalletLoading, onUpdateNftInWalletData } = useCurrentUserNFTInWallet()
-  const { setMessage } = useAlertContext()
   const [isAdding, setIsAdding] = useState(false)
 
   const userHasWalletInstalled = !!window.ethereum
@@ -33,7 +32,7 @@ export const AddToWalletButton = () => {
         image,
       })
       // We assume it was successful from now
-      setMessage(nftAlertMessages.ADDED_SUCCESSFULLY(tokenId || 0))
+      showToast(nftAlertMessages.ADDED_SUCCESSFULLY(tokenId))
       // Update the local storage
       onUpdateNftInWalletData(nftAddress as Address, tokenId)
     } catch (error) {
@@ -44,11 +43,11 @@ export const AddToWalletButton = () => {
           await new Promise(res => setTimeout(res, 3000))
           return onAddToWallet(retryCount + 1) // Retry after 3s?
         } else {
-          setMessage(nftAlertMessages.ERROR_ON_OWNERSHIP())
+          showToast(nftAlertMessages.ERROR_ON_OWNERSHIP())
         }
       }
       if (isUserRejectedTxError(error)) {
-        setMessage(nftAlertMessages.ERROR_ON_TX_REJECTED(tokenId || 0))
+        showToast(nftAlertMessages.ERROR_ON_TX_REJECTED(tokenId || 0))
       }
       if (
         typeof error === 'object' &&
@@ -60,7 +59,7 @@ export const AddToWalletButton = () => {
         if (error.message.includes('spam')) {
           errorToSend = 'Please try again in a bit (too many requests in a short time).'
         }
-        setMessage(nftAlertMessages.ERROR_GENERIC(tokenId, errorToSend))
+        showToast(nftAlertMessages.ERROR_GENERIC(tokenId, errorToSend))
       }
     } finally {
       setIsAdding(false)
@@ -74,7 +73,7 @@ export const AddToWalletButton = () => {
   const isLoading = isNFTInWalletLoading || isAdding
 
   return (
-    <Button onClick={() => onAddToWallet()} className="mb-4" loading={isLoading} disabled={isLoading}>
+    <Button onClick={() => onAddToWallet()} className="mb-4" disabled={isLoading}>
       Add to wallet
     </Button>
   )

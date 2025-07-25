@@ -6,6 +6,7 @@ import { NoContextProviderError } from '@/lib/errors/ContextError'
 import { applyPinataImageOptions } from '@/lib/ipfs'
 import { useCommunity } from '@/shared/hooks/useCommunity'
 import { useStRif } from '@/shared/hooks/useStRIf'
+import { showToast } from '@/shared/notification'
 import { useRouter } from 'next/navigation'
 import { createContext, ReactNode, useContext, useState } from 'react'
 import { Address } from 'viem'
@@ -66,7 +67,6 @@ interface CommunityNFTProviderProps {
  */
 export function CommunityNFTProvider({ children, nftAddress }: CommunityNFTProviderProps) {
   const router = useRouter()
-  const { setMessage } = useAlertContext()
   const { address } = useAccount()
   const {
     tokensAvailable,
@@ -118,7 +118,7 @@ export function CommunityNFTProvider({ children, nftAddress }: CommunityNFTProvi
         const result = check(data)
         if (!result) {
           setIsChecking(false)
-          setMessage(nftAlertMessages.NFT_ALERT_GENERIC(alertMessage))
+          showToast(nftAlertMessages.NFT_ALERT_GENERIC(alertMessage))
           return false
         }
       } catch (err) {
@@ -131,12 +131,14 @@ export function CommunityNFTProvider({ children, nftAddress }: CommunityNFTProvi
 
   const handleMinting = async () => {
     // check if user's stRIF Balance is more than required threshold to get a reward NFT
-    if (stRifBalance < (stRifThreshold ?? 0n))
-      return setMessage(
+    if (stRifBalance < (stRifThreshold ?? 0n)) {
+      showToast(
         nftAlertMessages.NFT_BALANCE_ALERT(nftInfo?.title, stRifThreshold as bigint, () =>
           router.push('/user?action=stake'),
         ),
       )
+      return
+    }
 
     if (nftInfo.additionalChecks) {
       const result = await doAdditionalChecks(nftInfo.additionalChecks)
@@ -145,12 +147,12 @@ export function CommunityNFTProvider({ children, nftAddress }: CommunityNFTProvi
 
     onMintNFT()
       .then(() => {
-        setMessage(nftAlertMessages.REQUESTED_TX_SENT())
+        showToast(nftAlertMessages.REQUESTED_TX_SENT())
       })
       .catch(err => {
         if (err.cause?.name !== 'UserRejectedRequestError') {
           console.error('ERROR', err)
-          setMessage(nftAlertMessages.ERROR_CLAIMING_REWARD())
+          showToast(nftAlertMessages.ERROR_CLAIMING_REWARD())
         }
       })
   }
@@ -164,8 +166,8 @@ export function CommunityNFTProvider({ children, nftAddress }: CommunityNFTProvi
     title: nftInfo?.title || '',
     name: nftMeta?.name || 'Early Adopters NFT',
     image: applyPinataImageOptions(nftMeta?.image || nftInfo?.cover, {
-      width: 300,
-      height: 300,
+      width: 600,
+      height: 600,
     }),
     description: nftMeta?.description || '',
 

@@ -1,22 +1,26 @@
 'use client'
-import { Button } from '@/components/Button'
+import { Button } from '@/components/ButtonNew'
+import { Span, Paragraph } from '@/components/TypographyNew'
 import { useCommunityNFT } from '@/app/communities/nft/[address]/CommunityNFTContext'
 import { useAccount } from 'wagmi'
+import { HTMLAttributes } from 'react'
 
-export const ClaimItButton = () => {
+export const ClaimItButton = (props: HTMLAttributes<HTMLButtonElement>) => {
   const { handleMinting, tokensAvailable, isClaiming, isChecking } = useCommunityNFT()
   const { address } = useAccount()
 
   return (
     <Button
       variant="primary"
-      className="my-[16px] h-[58px]"
       onClick={handleMinting}
       disabled={!tokensAvailable || !address || isClaiming || isChecking}
-      loading={isClaiming || isChecking}
       data-testid="claimButton"
+      {...props}
     >
-      Claim NFT
+      <Paragraph className="leading-none">
+        <Span className="font-bold mr-1 whitespace-nowrap">Claim badge</Span>
+        <Span className="whitespace-nowrap">{tokensAvailable} left</Span>
+      </Paragraph>
     </Button>
   )
 }

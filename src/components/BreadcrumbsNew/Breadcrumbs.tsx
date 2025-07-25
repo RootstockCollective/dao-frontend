@@ -2,6 +2,7 @@ import { usePathname } from 'next/navigation'
 import { useMemo } from 'react'
 import Link from 'next/link'
 import { menuData } from '../MainContainer'
+import { communitiesToRender } from '@/app/communities/communityUtils'
 
 const menuBreadCrumbsMap = Object.fromEntries(menuData.map(({ href, text }) => [href, text])) as {
   [K in (typeof menuData)[number] as K['href']]: K['text']
@@ -20,11 +21,15 @@ const breadcrumbsMap = {
   '/proposals/new/review/grants': 'Review Grant Proposal',
   '/proposals/new/review/activation': 'Review Activation Proposal',
   '/proposals/new/review/deactivation': 'Review Deactivation Proposal',
+  // community URLs
+  ...Object.fromEntries(
+    communitiesToRender.map(({ nftAddress, title }) => [`/communities/nft/${nftAddress}`, title]),
+  ),
   // Add more specific routes here as needed
 }
 
 // Segments that should be skipped in breadcrumbs (no clickable links)
-const skipSegments = ['/proposals/new/review', '/proposals/new/details']
+const skipSegments = ['/proposals/new/review', '/proposals/new/details', '/communities/nft']
 
 /**
  * Simple breadcrumbs component used in desktop header
