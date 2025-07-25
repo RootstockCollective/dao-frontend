@@ -179,6 +179,8 @@ export const BackerRewardsTable: FC<BackerRewardsTable> = ({ builder, tokens }) 
               ({
                 address,
                 builderName,
+                proposal,
+                gauge,
                 stateFlags,
                 rewardPercentage,
                 estimatedRewards,
@@ -187,7 +189,11 @@ export const BackerRewardsTable: FC<BackerRewardsTable> = ({ builder, tokens }) 
                 allTimeRewards,
               }) => (
                 <TableRow key={address} className="text-[14px] border-hidden">
-                  <BuilderNameCell builderName={builderName} address={address} stateFlags={stateFlags} />
+                  <BuilderNameCell
+                    builderName={builderName}
+                    address={address}
+                    builder={{ address, builderName, proposal, stateFlags, gauge }}
+                  />
                   <BackerRewardsPercentage percentage={rewardPercentage} />
                   <LazyRewardCell rewards={[claimableRewards.rbtc, claimableRewards.rif]} />
                   <LazyRewardCell rewards={[estimatedRewards.rbtc, estimatedRewards.rif]} />

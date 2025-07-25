@@ -1,11 +1,9 @@
 import { BuilderState } from '@/app/builders/components/Table/BuilderTable.config'
 import { Builder } from '@/app/collective-rewards/types'
 import {
-  isBuilderDeactivated,
+  builderInactiveStateMessage,
+  getBuilderInactiveState,
   isBuilderInProgress,
-  isBuilderKycRevoked,
-  isBuilderPaused,
-  isBuilderSelfPaused,
 } from '@/app/collective-rewards/utils'
 import { CommonComponentProps } from '@/components/commonProps'
 import HourglassIcon from '@/components/Icons/HourglassIcon'
@@ -21,12 +19,9 @@ type DecorationOptionId = Exclude<BuilderState, 'active'> | 'extraRewards'
 type BuilderStateTooltip = Record<DecorationOptionId, string>
 
 const stateTooltips: BuilderStateTooltip = {
-  extraRewards: 'Builder will airdrop extra rewards',
-  deactivated: 'The Builder was removed by the Foundation.',
-  revoked: 'The Builder was voted out by the community.',
-  paused: "The Builder's KYC has been paused by the Foundation.",
   inProgress: "Builder's activation is in progress.",
-  selfPaused: 'The Builder has paused their participation.',
+  extraRewards: 'Builder will airdrop extra rewards',
+  ...builderInactiveStateMessage,
 }
 
 const stateConfig = {
@@ -42,7 +37,7 @@ const stateConfig = {
     defaultColor: 'text-brand-rootstock-lime',
     highlightColor: 'text-v3-bg-accent-100',
   },
-  revoked: {
+  kycRevoked: {
     icon: WarningIcon,
     props: {},
     defaultColor: 'text-brand-rootstock-lime',
@@ -102,21 +97,8 @@ export interface BuilderNameCellProps extends CommonComponentProps {
 }
 
 const getStateDecorationId = (builder: Builder): Exclude<DecorationOptionId, 'extraRewards'> | null => {
-  if (isBuilderDeactivated(builder)) {
-    return 'deactivated'
-  }
-
-  if (isBuilderKycRevoked(builder.stateFlags)) {
-    return 'revoked'
-  }
-
-  if (isBuilderPaused(builder.stateFlags)) {
-    return 'paused'
-  }
-
-  if (isBuilderSelfPaused(builder.stateFlags)) {
-    return 'selfPaused'
-  }
+  const inactiveState = getBuilderInactiveState(builder)
+  if (inactiveState) return inactiveState
 
   if (isBuilderInProgress(builder)) {
     return 'inProgress'
