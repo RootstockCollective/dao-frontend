@@ -17,6 +17,7 @@ import { ConnectButtonComponentProps } from '@/shared/walletConnection'
 import { ConnectWorkflow } from '@/shared/walletConnection/connection/ConnectWorkflow'
 import { ClaimItButton } from '../_components/ClaimItButton'
 import { ArrowUpRightLightIcon } from '@/components/Icons'
+import { BoostedLabelKoto } from '@/app/communities/components'
 
 export function CommunityInfoHeader({ address: nftAddress }: { address: Address }) {
   const { isConnected } = useAccount()
@@ -80,6 +81,20 @@ export function CommunityInfoHeader({ address: nftAddress }: { address: Address 
             </div>
           )}
         </div>
+        {/* Boost label */}
+        {showNFTBoost && (
+          <BoostedLabelKoto
+            text={
+              <div className="">
+                <Paragraph caps className="tracking-wider font-medium">
+                  {boostData?.boostPercentage}% rewards boost
+                </Paragraph>
+                <Paragraph className="normal-case">Take it while it lasts!</Paragraph>
+              </div>
+            }
+            className="mt-6 w-full max-w-[441px]"
+          />
+        )}
         {/* Eligibility requirements block */}
         {!isMember && (
           <div className="my-10 grid grid-cols-1 gap-2">
@@ -107,43 +122,3 @@ const ConnectButton = (props: ConnectButtonComponentProps) => (
     Connect wallet to check eligibility
   </Button>
 )
-/* 
-import { BoltSvg } from '@/components/BoltSvg'
-import { Chip } from '@/components/Chip/Chip'
-import { GlowingLabel } from '@/components/Label/GlowingLabel'
-import { MembershipNFTSection } from './_sections/MembershipNFTSection'
-import { NFTMiscData } from '@/app/communities/nft/[address]/_components/NFTMiscData'
-
-<div className="flex flex-col xl:flex-row justify-between pl-4 gap-8">
-        50%: NFT INFO
-        <div className="flex-1">
-
-
-          <div className="mb-[24px] font-extralight">
-            <>
-              {nftInfo?.campaignDetails &&
-                nftInfo.campaignDetails({
-                  activation: showNFTBoost
-                    ? DateTime.fromSeconds(Number(boostData?.timestamp) ?? 0)
-                        .toFormat('MMM yyyy')
-                        .toUpperCase()
-                    : undefined,
-                })}
-            </>
-          </div>
-
-          {showNFTBoost && (
-            <div className="inline-flex items-center gap-1 pb-6">
-              <BoltSvg />
-              <GlowingLabel faded>Active Boost {boostData!.boostPercentage}%</GlowingLabel>
-            </div>
-          )}
-          
-          <NFTMiscData />
-        </div>
-        50%: NFT Image and Membership
-        <MembershipNFTSection />
-      </div>
-      Holders list
-      
-*/
