@@ -297,7 +297,7 @@ export const BuilderDataRow: FC<BuilderDataRowProps> = ({ row, ...props }) => {
           onMouseEnter={() => setIsHovered(true)}
           onMouseLeave={() => setIsHovered(false)}
         >
-          <BuilderCell {...builder} isHighlighted={isHovered} />
+          <BuilderCell {...builder} isHighlighted={isHovered || selectedRows[rowId]} />
           <BackerRewardsCell {...backer_rewards} />
           <RewardsPastCycleCell {...rewards_past_cycle} />
           <RewardsUpcomingCell {...rewards_upcoming} />
