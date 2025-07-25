@@ -15,10 +15,7 @@ export function ProposalsFromTheGraph() {
   }
   return (
     <>
-      <ProposalsSummary
-        totalProposals={totalProposalCount.toString()}
-        activeProposals={activeProposalCount.toString()}
-      />
+      <ProposalsSummary totalProposals={totalProposalCount.toString()} />
       <LatestProposalsTableMemoized proposals={data} />
     </>
   )
