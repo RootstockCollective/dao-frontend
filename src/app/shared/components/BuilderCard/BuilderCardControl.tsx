@@ -8,7 +8,7 @@ import { ActionsContainer } from '@/components/containers/ActionsContainer'
 import { RIF } from '@/lib/constants'
 import { usePricesContext } from '@/shared/context/PricesContext'
 import { FC, useContext, useEffect } from 'react'
-import { Address, parseEther } from 'viem'
+import { Address } from 'viem'
 import { useAccount } from 'wagmi'
 import { floorToUnit, getBuilderColor } from '../utils'
 import { BuilderCard } from './BuilderCard'
@@ -88,9 +88,9 @@ export const BuilderCardControl: FC<BuilderCardControlProps> = ({
   const unallocatedAmount = floorToUnit(balance - (cumulativeAllocation - allocation))
   const topBarColor = getBuilderColor(builderAddress)
 
-  const handleAllocationChange = (value: number) => {
+  const handleAllocationChange = (value: bigint) => {
     if (allocationTxPending) return
-    updateAllocation(builderAddress, parseEther(value.toString()))
+    updateAllocation(builderAddress, value)
   }
 
   useEffect(() => {

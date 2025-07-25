@@ -27,7 +27,7 @@ export interface BuilderCardProps extends BuilderCardControlProps {
   existentAllocation: bigint
   maxAllocation: bigint
   allocation: bigint
-  onAllocationChange: (newAllocation: number) => void
+  onAllocationChange: (newAllocation: bigint) => void
   rifPriceUsd: number
   isConnected: boolean
   dataTestId?: string
@@ -138,7 +138,7 @@ export const BuilderCard: FC<BuilderCardProps> = ({
           {isInteractive && (
             <Button
               variant="secondary-outline"
-              onClick={() => onAllocationChange(0)}
+              onClick={() => onAllocationChange(0n)}
               data-testid="removeBackingButton"
             >
               Remove backing

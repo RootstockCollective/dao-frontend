@@ -15,7 +15,7 @@ import { Header, Span } from '@/components/TypographyNew'
 import { RIF, stRIF, USD } from '@/lib/constants'
 import { formatCurrency } from '@/lib/utils'
 import { usePricesContext } from '@/shared/context/PricesContext'
-import { useContext, useMemo } from 'react'
+import { useCallback, useContext, useMemo } from 'react'
 import { Address } from 'viem'
 import { useAccount } from 'wagmi'
 import { AvailableBackingMetric, TotalBackingMetric } from './components'
@@ -72,13 +72,16 @@ export const BackingPage = () => {
   const handleDistributeClick = () => {
     //FIXME: Take into the inactive builders
     updateAmountToAllocate(votingPower)
-    const newAllocations = Object.keys(allocations).reduce((acc, key) => {
-      const builderAddress = key as Address
-      const newAllocation = availableForBacking / BigInt(allocationsCount) + allocations[builderAddress]
-      acc[builderAddress] = newAllocation
+    let newAllocations: Allocations = {}
+    if (allocationsCount > 0) {
+      newAllocations = Object.keys(allocations).reduce((acc, key) => {
+        const builderAddress = key as Address
+        const newAllocation = availableForBacking / BigInt(allocationsCount) + allocations[builderAddress]
+        acc[builderAddress] = newAllocation
 
-      return acc
-    }, {} as Allocations)
+        return acc
+      }, {} as Allocations)
+    }
 
     const buildersAllocations =
       allocationsCount > 0
