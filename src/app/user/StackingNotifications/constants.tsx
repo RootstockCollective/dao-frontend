@@ -115,7 +115,7 @@ export const BANNER_CONFIGS: BannerConfigMap = {
   [CYCLE_ENDING]: {
     title: <span>NEW CYCLE STARTING SOON</span>,
     buttonText: 'Back Builders',
-    description: 'New Cycle Starting Soon',
+    description: 'Adjust your backing to make the most of the upcoming rewards.',
     // rightContent will be managed dynamically as it depends on the cycle data
     rightContent: undefined,
     action: {
