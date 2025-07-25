@@ -1,19 +1,19 @@
-import { ConnectPopover } from '@/app/backing/components/Popovers/ConnectPopover'
-import { cn } from '@/lib/utils'
-import { FC, useEffect, useState } from 'react'
 import { AllocationInput } from '@/app/backing/components/AllocationInput/AllocationInput'
 import { BuilderHeader } from '@/app/backing/components/BuilderHeader/BuilderHeader'
 import { CurrentBacking } from '@/app/backing/components/CurrentBacking/CurrentBacking'
 import { RewardsInfo } from '@/app/backing/components/RewardsInfo/RewardsInfo'
+import { isBuilderRewardable } from '@/app/collective-rewards/utils/isBuilderOperational'
+import { ConnectButton } from '@/app/components/Button/ConnectButton/ConnectButton'
 import { Button } from '@/components/ButtonNew'
+import { StylableComponentProps } from '@/components/commonProps'
 import { WarningIcon } from '@/components/Icons'
 import { Paragraph } from '@/components/TypographyNew'
-import { isBuilderRewardable } from '@/app/collective-rewards/utils/isBuilderOperational'
-import { StylableComponentProps } from '@/components/commonProps'
-import { BuilderCardControlProps } from './BuilderCardControl'
+import { cn } from '@/lib/utils'
 import { AnimatePresence, motion } from 'motion/react'
-import { WindshieldWiperAnimation } from './WindshieldWiperAnimation'
 import { useRouter } from 'next/navigation'
+import { FC, useEffect, useState } from 'react'
+import { BuilderCardControlProps } from './BuilderCardControl'
+import { WindshieldWiperAnimation } from './WindshieldWiperAnimation'
 
 const Warning = ({ className }: StylableComponentProps<HTMLDivElement>) => {
   return (
@@ -145,15 +145,13 @@ export const BuilderCard: FC<BuilderCardProps> = ({
             </Button>
           )}
           {!isInteractive && (
-            <ConnectPopover disabled={isConnected}>
-              <Button
-                variant="secondary-outline"
-                data-testid="backBuilderButton"
-                onClick={() => isConnected && router.push(`/backing?builders=${address}`)}
-              >
-                Back builder
-              </Button>
-            </ConnectPopover>
+            <ConnectButton
+              tooltipContent="Connect your wallet and get RIF before backing a Builder"
+              data-testid="backBuilderButton"
+              onClick={() => isConnected && router.push(`/backing?builders=${address}`)}
+            >
+              Back builder
+            </ConnectButton>
           )}
         </div>
       </div>

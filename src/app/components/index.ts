@@ -1,2 +1,2 @@
-export * from './AlwaysEnabledButton/AlwaysEnabledButton'
-export * from './ConditionalTooltip/ConditionalTooltip'
+export * from './Button/AlwaysEnabledButton/AlwaysEnabledButton'
+export * from './Tooltip/ConditionalTooltip/ConditionalTooltip'

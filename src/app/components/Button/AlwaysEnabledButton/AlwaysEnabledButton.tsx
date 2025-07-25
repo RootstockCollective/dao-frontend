@@ -1,4 +1,4 @@
-import { ConditionalTooltip, TooltipConditionPair } from '@/app/components/ConditionalTooltip'
+import { ConditionalTooltip, TooltipConditionPair } from '@/app/components/Tooltip/ConditionalTooltip'
 import { Button, ButtonProps } from '@/components/ButtonNew'
 import { TooltipProps } from '@/components/Tooltip'
 
