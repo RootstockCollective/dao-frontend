@@ -2,7 +2,7 @@ import { useWaitForTransactionReceipt, useWriteContract } from 'wagmi'
 import { useAwaitedTxReporting } from '@/app/collective-rewards/shared/hooks'
 import { BackersManagerAbi } from '@/lib/abis/v2/BackersManagerAbi'
 import { BackersManagerAddress } from '@/lib/contracts'
-import { useContext } from 'react'
+import { useContext, useEffect } from 'react'
 import { AllocationsContext } from '../context'
 import { getVoteAllocations } from '../context/utils'
 
@@ -11,7 +11,8 @@ export const useAllocateVotes = () => {
 
   const {
     initialState: { allocations: initialAllocations },
-    state: { allocations, getBuilder, isValidState },
+    state: { allocations, getBuilder, isValidState, resetVersion },
+    actions: { refreshData },
   } = useContext(AllocationsContext)
 
   const canSaveAllocation = isValidState()
@@ -19,6 +20,13 @@ export const useAllocateVotes = () => {
   const { isLoading, isSuccess, data, error: receiptError } = useWaitForTransactionReceipt({ hash })
 
   const error = executionError ?? receiptError
+
+  // Trigger data refresh after successful transaction
+  useEffect(() => {
+    if (isSuccess) {
+      refreshData()
+    }
+  }, [isSuccess, refreshData])
 
   const saveAllocations = () => {
     const [gauges, allocs] = getVoteAllocations({

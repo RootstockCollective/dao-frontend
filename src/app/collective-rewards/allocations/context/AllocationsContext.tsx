@@ -44,6 +44,7 @@ export interface AllocationsActions {
   updateAllocations: (newAllocations: Allocations) => void
   updateAmountToAllocate: (value: bigint) => void
   resetAllocations: () => void
+  refreshData: () => void
 }
 
 export type InitialState = Pick<State, 'backer' | 'allocations'>
@@ -85,6 +86,7 @@ const DEFAULT_CONTEXT: AllocationsContext = {
     updateAllocations: () => {},
     updateAmountToAllocate: () => {},
     resetAllocations: () => {},
+    refreshData: () => {},
   },
 }
 export const AllocationsContext = createContext<AllocationsContext>(DEFAULT_CONTEXT)
