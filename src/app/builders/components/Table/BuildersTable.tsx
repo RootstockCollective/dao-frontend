@@ -1,6 +1,5 @@
 'use client'
 
-import { AllocationsContext } from '@/app/collective-rewards/allocations/context'
 import { Builder, BuilderRewardsSummary } from '@/app/collective-rewards/types'
 import {
   isBuilderActive,
@@ -13,7 +12,7 @@ import {
 import TablePager from '@/components/TableNew/TablePager'
 import { usePricesContext, useTableActionsContext, useTableContext } from '@/shared/context'
 import { useReadGauges } from '@/shared/hooks/contracts'
-import { Suspense, useContext, useEffect, useMemo, useState } from 'react'
+import { Suspense, useEffect, useMemo, useState } from 'react'
 import { Address } from 'viem'
 import { useAccount } from 'wagmi'
 import { BuilderFilterOptionId } from '../../BuilderFilterDropdown'
@@ -139,26 +138,6 @@ export const BuildersTable = ({ filterOption }: { filterOption: BuilderFilterOpt
       })
     }
   }, [error, allocationsError, dispatch])
-
-  // TODO: I don't think we should be using this context anymore
-  const {
-    actions: { toggleSelectedBuilder },
-    state: { selections },
-  } = useContext(AllocationsContext)
-
-  useEffect(() => {
-    // TODO: this is a very hacky way to sync the selected rows with the allocations context.
-    // One reason to remove the allocs context (it loads (pre)selections on mount) is to avoid cleaning this up.
-    const selectedBuilderIds = Object.keys(selectedRows)
-    const selectionValues = Object.values(selectedRows)
-    const selectedAllocsValues = Object.values(selections)
-
-    selectedBuilderIds.forEach((builderId, index) => {
-      if (selectionValues[index] !== selectedAllocsValues[index]) {
-        toggleSelectedBuilder(builderId as Address)
-      }
-    })
-  }, [selections, selectedRows, toggleSelectedBuilder])
 
   /**
    * Set the action column header to show if the allocations column is hidden.
