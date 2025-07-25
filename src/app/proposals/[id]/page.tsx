@@ -17,7 +17,6 @@ import { useParams } from 'next/navigation'
 import { formatEther, zeroAddress } from 'viem'
 import { useAccount } from 'wagmi'
 import { ProposalState } from '@/shared/types'
-import { isUserRejectedTxError } from '@/components/ErrorPage/commonErrors'
 import { usePricesContext } from '@/shared/context/PricesContext'
 import { ConnectWorkflow } from '@/shared/walletConnection/connection/ConnectWorkflow'
 import { ProgressBar } from '@/components/ProgressBarNew'
@@ -236,6 +235,7 @@ const PageWithProposal = (proposal: ParsedProposal) => {
         setIsExecuting(true)
         return onExecuteProposal()
       },
+      action: 'execution',
       onComplete: () => {
         setIsExecuting(false)
       },

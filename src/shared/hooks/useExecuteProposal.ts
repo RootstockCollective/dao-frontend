@@ -31,14 +31,11 @@ export const useExecuteProposal = (proposalId: string) => {
   const { writeContractAsync: execute, isPending: isPendingExecution } = useWriteContract()
 
   const onExecuteProposal = () => {
-    if (proposalEta && getCurrentTimeInMsAsBigInt() >= proposalEta) {
-      return execute({
-        ...DAO_DEFAULT_PARAMS,
-        functionName: 'execute',
-        args: [BigInt(proposalId)],
-      })
-    }
-    return null
+    return execute({
+      ...DAO_DEFAULT_PARAMS,
+      functionName: 'execute',
+      args: [BigInt(proposalId)],
+    })
   }
 
   const proposalEtaHumanDate = getBigIntTimestampAsHuman(proposalEta)
