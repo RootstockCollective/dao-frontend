@@ -60,7 +60,7 @@ export const SidebarDesktop = () => {
           {/* Menu */}
           <ul className="px-3">
             {menuDataToUse.map(data => (
-              <Fragment key={data.href}>
+              <Fragment key={data.text}>
                 {'type' in data && data.type === 'category' ? (
                   <li
                     {...data.buttonProps}
