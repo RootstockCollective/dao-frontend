@@ -8,6 +8,8 @@ import { StickySlider } from '../StickySlider/StickySlider'
 import { RIFToken } from '../RIFToken/RIFToken'
 import { formatSymbol } from '@/app/collective-rewards/rewards/utils/formatter'
 import { USD } from '@/lib/constants'
+import { parseEther } from 'viem'
+import { NumberFormatValues } from 'react-number-format'
 
 interface AllocationInputProps {
   allocation: bigint
@@ -16,7 +18,7 @@ interface AllocationInputProps {
   rifPriceUsd: number
   disabled?: boolean
   allocationTxPending?: boolean
-  onAllocationChange: (value: number) => void
+  onAllocationChange: (value: bigint) => void
   className?: string
   editing?: boolean
   setEditing?: Dispatch<SetStateAction<boolean>>
@@ -42,7 +44,10 @@ export const AllocationInput: FC<AllocationInputProps> = ({
 
   const handleSliderChange = (value: number[]) => {
     const percent = value[0]
-    const newAllocation = Math.round((percent / 100) * Number(formatSymbol(maxAllocation, 'stRIF')))
+    // Scale percent to avoid floating point math
+    const scaledPercent = (BigInt(percent) * BigInt(10 ** 18)) / BigInt(100)
+    // maxAllocation is already a bigint (e.g., in wei)
+    const newAllocation = (maxAllocation * scaledPercent) / BigInt(10 ** 18)
     onAllocationChange(newAllocation)
   }
 
@@ -50,6 +55,26 @@ export const AllocationInput: FC<AllocationInputProps> = ({
     if (editing && allocation === existentAllocation) {
       setEditing?.(false)
     }
+  }
+
+  const isAllowed = ({ value }: NumberFormatValues) => {
+    if (!editing) return false
+    let parsedValue = 0n
+    try {
+      parsedValue = parseEther(value)
+    } catch (error) {
+      console.error('### Error parsing value', error)
+      return false
+    }
+    if (parsedValue > maxAllocation) {
+      return false
+    }
+    return true
+  }
+
+  const onValueChange = ({ value }: NumberFormatValues) => {
+    // Checks are performed in isAllowed
+    onAllocationChange(parseEther(value))
   }
 
   return (
@@ -66,11 +91,12 @@ export const AllocationInput: FC<AllocationInputProps> = ({
           <InputNumber
             name="allocation"
             autoComplete="off"
+            decimalScale={0}
             placeholder={!disabled ? `max ${formatSymbol(maxAllocation, 'stRIF')}` : '0'}
             className="focus:outline-none focus-visible:outline-none text-left p-0 m-0 border-0 bg-transparent w-full text-[24px]"
             value={allocation ? formatSymbol(allocation, 'stRIF') : ''}
-            max={Number(formatSymbol(maxAllocation, 'stRIF'))}
-            onValueChange={({ value }) => editing && onAllocationChange(Number(value))}
+            onValueChange={onValueChange}
+            isAllowed={isAllowed}
             onFocus={() => !editing && setEditing?.(true)}
             disabled={disabled}
             data-testid="allocationInputNumber"
