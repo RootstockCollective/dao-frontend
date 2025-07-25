@@ -108,7 +108,8 @@ const NftCardView = ({ nfts }: { nfts: NftHolderItem[] }) => (
         key={id}
         image={image_url}
         id={id}
-        holderAddress={ens_domain_name || truncateMiddle(owner, 5, 5)}
+        ensDomain={ens_domain_name}
+        holderAddress={owner}
         format={i % 6 ? 'small' : 'big'}
       />
     ))}

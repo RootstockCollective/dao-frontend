@@ -1,5 +1,5 @@
 import Image from 'next/image'
-import { cn } from '@/lib/utils'
+import { cn, truncateMiddle } from '@/lib/utils'
 import { applyPinataImageOptions } from '@/lib/ipfs'
 import { EXPLORER_URL } from '@/lib/constants'
 import { Paragraph, Header } from '@/components/TypographyNew'
@@ -8,10 +8,11 @@ interface NftCardProps {
   image: string
   id: string
   holderAddress: string
+  ensDomain?: string
   format?: 'big' | 'small'
 }
 
-export function NftCard({ image, id, holderAddress, format }: NftCardProps) {
+export function NftCard({ image, id, holderAddress, ensDomain, format }: NftCardProps) {
   const optimizedImageUrl = applyPinataImageOptions(image, { width: 600, height: 600 })
 
   return (
@@ -42,7 +43,7 @@ export function NftCard({ image, id, holderAddress, format }: NftCardProps) {
             variant="h3"
             className="text-primary text-sm sm:text-base md:text-lg lg:text-xl leading-relaxed tracking-tight truncate first-letter:uppercase"
           >
-            {holderAddress}
+            {ensDomain ?? truncateMiddle(holderAddress, 5, 5)}
           </Header>
         </a>
         <Paragraph className="text-xs md:text-sm lg:text-base">ID #{id}</Paragraph>
