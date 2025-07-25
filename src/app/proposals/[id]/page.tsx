@@ -1,5 +1,5 @@
 'use client'
-import { MouseEvent, Fragment, useMemo, useState, useRef, useEffect } from 'react'
+import { MouseEvent, Fragment, useMemo, useState, useRef } from 'react'
 import { useFetchAllProposals } from '@/app/proposals/hooks/useFetchLatestProposals'
 import { useGetProposalSnapshot } from '@/app/proposals/hooks/useGetProposalSnapshot'
 import { useGetProposalVotes } from '@/app/proposals/hooks/useGetProposalVotes'
@@ -8,7 +8,7 @@ import {
   DecodedData,
   getDiscourseLinkFromProposalDescription,
   getProposalEventArguments,
-  splitCombinedName
+  splitCombinedName,
 } from '@/app/proposals/shared/utils'
 import { Header, Paragraph, Span } from '@/components/TypographyNew'
 import { config } from '@/config'
