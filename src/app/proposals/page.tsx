@@ -6,10 +6,11 @@ import { ProposalsFromTheGraph } from '@/app/proposals/ProposalsFromTheGraph'
 import { HeroComponent } from '@/components/HeroComponent'
 import { Button } from '@/components/ButtonNew'
 import { useRouter } from 'next/navigation'
+import { useAccount } from 'wagmi'
+import { ConnectWorkflow } from '@/shared/walletConnection/connection/ConnectWorkflow'
+import { ConnectButtonComponentProps } from '@/shared/walletConnection'
 
 export default function ProposalsPage() {
-  const { push } = useRouter()
-
   return (
     <>
       <HeroComponent
@@ -24,7 +25,7 @@ export default function ProposalsPage() {
           'If your proposal passes quorum, it will be approved',
           'Complete your KYC to ensure eligibility (apply for Grants)',
         ]}
-        button={<Button onClick={() => push('/proposals/new')}>Create a proposal</Button>}
+        button={<CreateProposalFlow />}
       />
       <ErrorBoundary fallbackRender={withFallbackRetry(<ProposalsFromChain />)}>
         <ProposalsFromTheGraph />
@@ -32,3 +33,21 @@ export default function ProposalsPage() {
     </>
   )
 }
+
+/**
+ * This will determine whether the user is connected to a wallet or not.
+ * @constructor
+ */
+const CreateProposalFlow = () => {
+  const { isConnected } = useAccount()
+  const { push } = useRouter()
+
+  if (!isConnected) {
+    return <ConnectWorkflow ConnectComponent={CreateProposalButton} />
+  }
+  return <CreateProposalButton onClick={() => push('/proposals/new')} />
+}
+
+const CreateProposalButton = ({ onClick }: ConnectButtonComponentProps) => (
+  <Button onClick={onClick}>Create a proposal</Button>
+)
