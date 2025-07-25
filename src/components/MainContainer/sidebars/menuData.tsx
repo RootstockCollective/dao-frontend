@@ -50,11 +50,6 @@ export const menuData = [
     type: 'category',
   },
   {
-    href: 'home',
-    text: 'Home',
-    buttonProps: { id: 'Button_Home', name: 'home' },
-  },
-  {
     href: 'treasury',
     text: 'Treasury',
     buttonProps: { id: 'Button_Treasury', name: 'treasury' },
