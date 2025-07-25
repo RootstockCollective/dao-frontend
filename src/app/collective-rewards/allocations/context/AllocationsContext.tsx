@@ -36,6 +36,7 @@ interface State {
   contextError: Error | null
   getBuilder: (address: Address) => Builder | null
   isValidState: () => boolean
+  refetchRawAllocations: () => void
 }
 
 export interface AllocationsActions {
@@ -78,6 +79,7 @@ const DEFAULT_CONTEXT: AllocationsContext = {
     contextError: null,
     getBuilder: () => null,
     isValidState: () => false,
+    refetchRawAllocations: () => {},
   },
   actions: {
     toggleSelectedBuilder: () => {},
@@ -121,6 +123,7 @@ export const AllocationsContextProvider: FC<{ children: ReactNode }> = ({ childr
 
   const {
     data: rawAllocations,
+    refetch: refetchRawAllocations,
     isLoading: isRawAllocationsLoading,
     error: allRawAllocationsError,
   } = useReadGauges(
@@ -181,6 +184,7 @@ export const AllocationsContextProvider: FC<{ children: ReactNode }> = ({ childr
   useEffect(() => {
     setContextError(buildersError ?? allRawAllocationsError ?? totalAllocationError ?? votingPowerError)
   }, [allRawAllocationsError, buildersError, totalAllocationError, votingPowerError])
+
   useEffect(() => {
     setIsContextLoading(
       isLoadingBuilders || isRawAllocationsLoading || isTotalAllocationLoading || isVotingPowerLoading,
@@ -252,6 +256,7 @@ export const AllocationsContextProvider: FC<{ children: ReactNode }> = ({ childr
       contextError,
       getBuilder,
       isValidState,
+      refetchRawAllocations,
     }
   }, [
     selections,
@@ -262,6 +267,7 @@ export const AllocationsContextProvider: FC<{ children: ReactNode }> = ({ childr
     getBuilder,
     isValidState,
     resetVersion,
+    refetchRawAllocations,
   ])
 
   const actions: AllocationsActions = useMemo(
