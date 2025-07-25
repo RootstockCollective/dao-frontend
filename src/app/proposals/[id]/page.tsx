@@ -1,5 +1,5 @@
 'use client'
-import { MouseEvent, Fragment, useMemo, useState, useRef } from 'react'
+import { MouseEvent, Fragment, useMemo, useState, useRef, useEffect } from 'react'
 import { useFetchAllProposals } from '@/app/proposals/hooks/useFetchLatestProposals'
 import { useGetProposalSnapshot } from '@/app/proposals/hooks/useGetProposalSnapshot'
 import { useGetProposalVotes } from '@/app/proposals/hooks/useGetProposalVotes'
@@ -17,7 +17,6 @@ import { useParams } from 'next/navigation'
 import { formatEther, zeroAddress } from 'viem'
 import { useAccount } from 'wagmi'
 import { ProposalState } from '@/shared/types'
-import { isUserRejectedTxError } from '@/components/ErrorPage/commonErrors'
 import { usePricesContext } from '@/shared/context/PricesContext'
 import { ConnectWorkflow } from '@/shared/walletConnection/connection/ConnectWorkflow'
 import { ProgressBar } from '@/components/ProgressBarNew'
@@ -167,11 +166,12 @@ const PageWithProposal = (proposal: ParsedProposal) => {
 
   const { onVote, isProposalActive, proposalState, isVoting, isWaitingVotingReceipt, setVotingTxHash } =
     useVoteOnProposal(proposalId)
+  const [isQueueing, setIsQueueing] = useState<boolean>()
   const { onQueueProposal } = useQueueProposal(proposalId)
 
-  const { onExecuteProposal } = useExecuteProposal(proposalId)
-
+  const { onExecuteProposal, canProposalBeExecuted } = useExecuteProposal(proposalId)
   const [isExecuting, setIsExecuting] = useState(false)
+
   const [popoverOpen, setPopoverOpen] = useState(false)
   const voteButtonRef = useRef<HTMLButtonElement>(null)
 
@@ -208,38 +208,44 @@ const PageWithProposal = (proposal: ParsedProposal) => {
   }
 
   const handleQueuingProposal = async () => {
-    try {
-      const txHash = await onQueueProposal()
+    const txHash = await executeTxFlow({
+      onRequestTx: () => {
+        setIsQueueing(true)
+        return onQueueProposal()
+      },
+      action: 'queuing',
+      onComplete: () => {
+        setIsQueueing(false)
+      },
+      onError: err => {
+        console.log('ERROR', err)
+      },
+    })
+
+    if (txHash) {
       await waitForTransactionReceipt(config, {
         hash: txHash,
       })
-    } catch (err: any) {
-      if (!isUserRejectedTxError(err)) {
-        console.error(err)
-      }
     }
   }
 
   const handleExecuteProposal = async () => {
-    try {
-      const txHash = await onExecuteProposal()
-      if (!txHash) return
-      setIsExecuting(true)
+    const txHash = await executeTxFlow({
+      onRequestTx: () => {
+        setIsExecuting(true)
+        return onExecuteProposal()
+      },
+      action: 'execution',
+      onComplete: () => {
+        setIsExecuting(false)
+      },
+    })
+
+    if (txHash) {
       await waitForTransactionReceipt(config, {
         hash: txHash,
       })
-    } catch (err: any) {
-      if (!isUserRejectedTxError(err)) {
-        if (
-          err.details?.includes('Insufficient ERC20 balance') ||
-          err.details?.includes('Insufficient Balance')
-        ) {
-        } else {
-          console.error(err)
-        }
-      }
     }
-    setIsExecuting(false)
   }
 
   const linkfyUrls = (description: string | undefined | null): string => {
@@ -286,19 +292,28 @@ const PageWithProposal = (proposal: ParsedProposal) => {
     action()
   }
 
-  const getButtonActionForState = (state: ProposalState | undefined): ButtonAction | undefined => {
+  const getButtonActionForState = (
+    state?: ProposalState,
+    _canProposalBeExecuted?: boolean,
+    _cannotCastVote?: boolean,
+  ): ButtonAction | undefined => {
     switch (state) {
       case ProposalState.Active:
+        if (_cannotCastVote) return undefined
         return {
           actionName: 'Vote on proposal',
           onButtonClick: handleProposalAction(() => setIsChoosingVote(true)),
         }
+
       case ProposalState.Succeeded:
         return {
           actionName: 'Put on queue',
           onButtonClick: handleProposalAction(handleQueuingProposal),
         }
+
       case ProposalState.Queued:
+        if (!_canProposalBeExecuted) return undefined
+
         return {
           actionName: 'Execute',
           onButtonClick: handleProposalAction(handleExecuteProposal),
@@ -307,12 +322,6 @@ const PageWithProposal = (proposal: ParsedProposal) => {
         return undefined
     }
   }
-
-  const buttonAction = !isConnected
-    ? getButtonActionForState(proposalState)
-    : cannotCastVote && proposalState !== ProposalState.Succeeded
-      ? undefined
-      : getButtonActionForState(proposalState)
 
   return (
     <div className="min-h-screen text-white px-4 py-8 flex flex-col gap-4 w-full max-w-full">
@@ -468,8 +477,11 @@ const PageWithProposal = (proposal: ParsedProposal) => {
               abstain: abstainVote,
               quorum,
             }}
-            buttonAction={buttonAction}
-            actionDisabled={isConnected && cannotCastVote}
+            buttonAction={getButtonActionForState(
+              proposalState,
+              canProposalBeExecuted,
+              !isConnected ? false : cannotCastVote,
+            )}
             voteButtonRef={voteButtonRef}
             vote={vote}
             isChoosingVote={isChoosingVote}
@@ -477,6 +489,7 @@ const PageWithProposal = (proposal: ParsedProposal) => {
             onCastVote={address && handleVoting}
             onCancelVote={() => setIsChoosingVote(false)}
             isConnected={isConnected}
+            actionDisabled={isQueueing || isExecuting}
           />
           <ActionDetails parsedAction={parsedAction} actionType={actionType} />
         </div>
