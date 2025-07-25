@@ -105,7 +105,7 @@ export const Spotlight = ({ isInteractive = true }: { isInteractive?: boolean })
               showAnimation={isBuilderSelected(builder.address)}
             />
           ))}
-          {hasAllocations && <BackMoreBuildersCard />}
+          {hasAllocations && spotlightBuilders.length < 4 && <BackMoreBuildersCard />}
         </div>
       ) : (
         <BuildersSpotlight builders={spotlightBuilders} />
