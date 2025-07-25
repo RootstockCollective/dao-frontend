@@ -104,7 +104,7 @@ export const BuilderCardControl: FC<BuilderCardControlProps> = ({
         (allocations[builderAddress as Address] || 0n),
     )
 
-    if (hasChanged) {
+    if (hasChanged && isConnected) {
       openDrawer(<AllocationDrawerContent />, true)
     } else {
       closeDrawer()
@@ -124,7 +124,7 @@ export const BuilderCardControl: FC<BuilderCardControlProps> = ({
       allocationTxPending={allocationTxPending}
       onAllocationChange={handleAllocationChange}
       maxAllocation={unallocatedAmount}
-      topBarColor={allocation > 0n ? topBarColor : 'transparent'}
+      topBarColor={allocation > 0n && isConnected ? topBarColor : 'transparent'}
       index={index}
       showAnimation={showAnimation}
     />
