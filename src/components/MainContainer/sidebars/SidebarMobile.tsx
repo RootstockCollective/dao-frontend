@@ -1,4 +1,4 @@
-import { useMemo } from 'react'
+import { Fragment, useMemo } from 'react'
 import { motion, type Variants } from 'motion/react'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
@@ -39,13 +39,13 @@ export function SidebarMobile() {
       <div className="h-full flex flex-col justify-between gap-4">
         <ul className="w-fit">
           {menuDataToUse.map(data => (
-            <>
+            <Fragment key={data.href}>
               {'type' in data && data.type === 'category' ? (
                 <div className="m-3" />
               ) : (
                 <MenuItem key={data.href} {...data} />
               )}
-            </>
+            </Fragment>
           ))}
         </ul>
         <UsefulLinks className="ml-4" />
