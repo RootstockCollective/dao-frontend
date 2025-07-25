@@ -1,68 +1,57 @@
 'use client'
 
-import { ReactNode, useMemo } from 'react'
-import { Rewards } from '@/app/collective-rewards/rewards/MyRewards'
-import { BalancesSection } from '@/app/user/Balances/BalancesSection'
 import { CommunitiesSection } from '@/app/user/Communities/CommunitiesSection'
-import { DelegationSection } from '@/app/user/Delegation'
-import { UnderlineTabs, BaseTab } from '@/components/Tabs'
-import { usePathname, useSearchParams, useRouter } from 'next/navigation'
+import { useSearchParams } from 'next/navigation'
 import { useAccount } from 'wagmi'
-import { HeroSection } from './HeroSection'
 import { IntroModal } from './IntroModal'
 import { StackingNotifications } from '@/app/user/StackingNotifications/StackingNotifications'
-
-const values = ['holdings', 'rewards'] as const
-type TabValue = (typeof values)[number]
-const [defaultTab] = values
-
-const tabs: BaseTab<TabValue>[] = [
-  {
-    value: 'holdings',
-    label: 'My Holdings',
-  },
-  {
-    value: 'rewards',
-    label: 'My Rewards',
-  },
-]
+import { TreasuryContextProviderWithPrices } from '../treasury/contexts/TreasuryContext'
+import { MyActivityAndBalances } from './my-holdings/MyActivityAndBalances'
+import { TopHeroComponentNotConnected } from '../home/components/top-hero'
+import { CollectiveBalancesSection } from '../home/components/collective-balances-section'
+import { LatestCollectiveSection } from './latest-collective'
+import { useGetProposalsWithGraph } from '../proposals/hooks/useGetProposalsWithGraph'
 
 export default function User() {
   const { isConnected } = useAccount()
-  const router = useRouter()
-  const pathName = usePathname()
   const searchParams = useSearchParams()
-
-  const activeTab = useMemo<TabValue>(() => {
-    const currentTab = (searchParams.get('tab') ?? defaultTab) as TabValue
-    // if selected tab doesn't exist display default tab
-    return values.includes(currentTab) ? currentTab : defaultTab
-  }, [searchParams])
-
-  const tabsContent: Record<TabValue, ReactNode> = {
-    holdings: (
-      <>
-        {searchParams.get('action') !== 'stake' && <IntroModal />}
-        <BalancesSection />
-        <DelegationSection />
-        <CommunitiesSection />
-      </>
-    ),
-    rewards: <Rewards />,
-  }
+  const { activeProposals, data: proposals } = useGetProposalsWithGraph()
 
   return (
-    <>
-      {isConnected && <StackingNotifications />}
-      {!isConnected && <HeroSection />}
-      <UnderlineTabs
-        layoutId="user-tab"
-        tabs={tabs}
-        activeTab={activeTab}
-        onTabChange={(newTab: TabValue) => router.push(`${pathName}?${new URLSearchParams({ tab: newTab })}`)}
-      >
-        <div className="pt-4">{tabsContent[activeTab]}</div>
-      </UnderlineTabs>
-    </>
+    <div className="flex flex-col gap-2">
+      {searchParams.get('action') !== 'stake' && <IntroModal />}
+
+      {isConnected ? (
+        <>
+          <StackingNotifications />
+          <MyActivityAndBalances />
+        </>
+      ) : (
+        <>
+          <TopHeroComponentNotConnected />
+          <TreasuryContextProviderWithPrices>
+            <CollectiveBalancesSection />
+          </TreasuryContextProviderWithPrices>
+        </>
+      )}
+      <LatestCollectiveSection
+        latestProposals={proposals.slice(0, 3)}
+        activeProposal={isConnected ? activeProposals[0] : undefined}
+      />
+      <CommunitiesSection
+        heroComponentConfig={{
+          className: 'mt-2',
+          imageSrc: '/images/hero/home-hero-bottom.png',
+          title: 'BE PART OF THE COMMUNITIES',
+          subtitle: 'CURATED BY THE COLLECTIVE',
+          items: [
+            'Collective Badges are dynamic NFTs that represent your role and impact within the DAO.',
+            'Whether you’re a Builder, Backer, or Community Contributor, your badge shows that you belong.',
+            'Be part of something bigger, helping shape the future of Bitcoin.',
+            'These aren’t just collectibles. They are your passport to participation.',
+          ],
+        }}
+      />
+    </div>
   )
 }

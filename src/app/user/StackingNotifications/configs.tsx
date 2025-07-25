@@ -15,7 +15,7 @@ import { DateTime } from 'luxon'
  * // If you have 5 banner configs, this will return 2 randomly selected ones
  * // If you have 1 or fewer configs, returns them as-is
  */
-export const selectBannerConfigsByCategory = (bannerConfigs: BannerConfig[]): BannerConfig[] => {
+export const selectRandomBannerConfigs = (bannerConfigs: BannerConfig[]): BannerConfig[] => {
   // Dynamically group by categories that actually exist in the configs
   if (bannerConfigs.length <= 1) {
     return bannerConfigs

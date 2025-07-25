@@ -14,7 +14,7 @@ import {
   getBannerConfigForKycOnly,
   getBannerConfigForStartBuilding,
   getBannerConfigForTokenStatus,
-  selectBannerConfigsByCategory,
+  selectRandomBannerConfigs,
 } from './configs'
 import { useGetBuilderState } from './hooks/useGetBuilderState'
 import { useHasAvailableBacking } from './hooks/useHasAvailableForBacking'
@@ -202,6 +202,15 @@ const StackingNotificationsContent = () => {
     [missingTokenType, hasAvailableBacking, isOnlyKycApproved, isStartBuilding, cycle],
   )
 
+  // ===============================
+  // BANNER SELECTION AND RENDERING
+  // ===============================
+
+  const bannerConfigsForDisplay = useMemo(
+    () => selectRandomBannerConfigs(activeBannerConfigs),
+    [activeBannerConfigs],
+  )
+
   // Wait for all dependencies to load before proceeding
   const areDependenciesLoaded = dependencies.every(dependency => dependency)
 
@@ -214,33 +223,24 @@ const StackingNotificationsContent = () => {
     return null
   }
 
-  // ===============================
-  // BANNER SELECTION AND RENDERING
-  // ===============================
-
-  // Apply category-based selection (max 1 banner per category)
-  const bannerConfigsForDisplay = selectBannerConfigsByCategory(activeBannerConfigs)
-
   if (bannerConfigsForDisplay.length === 0) {
     return null
   }
 
   // Render the selected banners
   return (
-    <>
-      <StackableBanner>
-        {bannerConfigsForDisplay.map((config, index) => (
-          <BannerContent
-            key={`banner-${index}`}
-            title={config.title}
-            description={config.description}
-            buttonText={config.buttonText}
-            buttonOnClick={() => handleActionClick(config, router)}
-            rightContent={config.rightContent}
-          />
-        ))}
-      </StackableBanner>
-    </>
+    <StackableBanner>
+      {bannerConfigsForDisplay.map((config, index) => (
+        <BannerContent
+          key={`banner-${index}`}
+          title={config.title}
+          description={config.description}
+          buttonText={config.buttonText}
+          buttonOnClick={() => handleActionClick(config, router)}
+          rightContent={config.rightContent}
+        />
+      ))}
+    </StackableBanner>
   )
 }
 

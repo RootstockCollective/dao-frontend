@@ -1,8 +1,4 @@
-import {
-  UserTopLeftComponent,
-  ProposalDetailTopLeftComponent,
-  ProposalsTopLeftComponent,
-} from './components/topPageHeader/pages'
+import { ProposalDetailTopLeftComponent, ProposalsTopLeftComponent } from './components/topPageHeader/pages'
 import { HeaderTitle } from '@/components/Typography/HeaderTitle'
 
 export const disclaimerModalText = {
@@ -27,8 +23,7 @@ export const disclaimerModalText = {
 
 // Define route patterns and their components
 export const routePatterns = [
-  { pattern: /^(\/|\/user)$/, component: <UserTopLeftComponent /> },
-  { pattern: /^\/communities/, component: null },
+  { pattern: /^\/communities/, component: <HeaderTitle variant="h1">COMMUNITIES</HeaderTitle> },
   { pattern: /^\/proposals\/\d+$/, component: <ProposalDetailTopLeftComponent /> },
   { pattern: /^\/proposals$/, component: <ProposalsTopLeftComponent /> },
   { pattern: /^\/delegate$/, component: <HeaderTitle variant="h1">DELEGATION</HeaderTitle> },

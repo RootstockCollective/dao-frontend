@@ -4,6 +4,8 @@ import { Proposal } from '@/app/proposals/shared/types'
 import { Header } from '@/components/TypographyNew'
 import { useRouter } from 'next/navigation'
 import { LatestActiveProposalCard, LatestProposalCard } from './components'
+import { ActionsContainer } from '@/components/containers/ActionsContainer'
+import { Spotlight } from '@/app/backing/components/Spotlight'
 
 interface LatestCollectiveSectionProps {
   latestProposals: Proposal[]
@@ -47,10 +49,16 @@ export const LatestCollectiveSection = ({
           ))}
         </div>
       )}
-      {/** @TODO: paste BUILDER SPOTLIGHT HERE */}
-      <Header variant="h4" className="mt-10">
-        BUILDERS IN THE SPOTLIGHT
-      </Header>
+      <ActionsContainer
+        title={
+          <Header variant="h4" caps>
+            Builders in the spotlight
+          </Header>
+        }
+        className="mt-10 p-0 gap-4"
+      >
+        <Spotlight isInteractive={false} />
+      </ActionsContainer>
     </div>
   )
 }
