@@ -36,6 +36,7 @@ interface State {
   contextError: Error | null
   getBuilder: (address: Address) => Builder | null
   isValidState: () => boolean
+  refetchRawAllocations: () => void
 }
 
 export interface AllocationsActions {
@@ -44,7 +45,6 @@ export interface AllocationsActions {
   updateAllocations: (newAllocations: Allocations) => void
   updateAmountToAllocate: (value: bigint) => void
   resetAllocations: () => void
-  refreshData: () => void
 }
 
 export type InitialState = Pick<State, 'backer' | 'allocations'>
@@ -79,6 +79,7 @@ const DEFAULT_CONTEXT: AllocationsContext = {
     contextError: null,
     getBuilder: () => null,
     isValidState: () => false,
+    refetchRawAllocations: () => {},
   },
   actions: {
     toggleSelectedBuilder: () => {},
@@ -86,7 +87,6 @@ const DEFAULT_CONTEXT: AllocationsContext = {
     updateAllocations: () => {},
     updateAmountToAllocate: () => {},
     resetAllocations: () => {},
-    refreshData: () => {},
   },
 }
 export const AllocationsContext = createContext<AllocationsContext>(DEFAULT_CONTEXT)
@@ -123,6 +123,7 @@ export const AllocationsContextProvider: FC<{ children: ReactNode }> = ({ childr
 
   const {
     data: rawAllocations,
+    refetch: refetchRawAllocations,
     isLoading: isRawAllocationsLoading,
     error: allRawAllocationsError,
   } = useReadGauges(
@@ -183,6 +184,7 @@ export const AllocationsContextProvider: FC<{ children: ReactNode }> = ({ childr
   useEffect(() => {
     setContextError(buildersError ?? allRawAllocationsError ?? totalAllocationError ?? votingPowerError)
   }, [allRawAllocationsError, buildersError, totalAllocationError, votingPowerError])
+
   useEffect(() => {
     setIsContextLoading(
       isLoadingBuilders || isRawAllocationsLoading || isTotalAllocationLoading || isVotingPowerLoading,
@@ -254,6 +256,7 @@ export const AllocationsContextProvider: FC<{ children: ReactNode }> = ({ childr
       contextError,
       getBuilder,
       isValidState,
+      refetchRawAllocations,
     }
   }, [
     selections,
@@ -264,6 +267,7 @@ export const AllocationsContextProvider: FC<{ children: ReactNode }> = ({ childr
     getBuilder,
     isValidState,
     resetVersion,
+    refetchRawAllocations,
   ])
 
   const actions: AllocationsActions = useMemo(

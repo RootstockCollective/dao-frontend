@@ -60,7 +60,4 @@ export const createActions = (
     setAllocations(initialState.allocations)
     setBacker(initialState.backer)
   },
-  refreshData: () => {
-    setResetVersion(prev => prev + 1)
-  },
 })

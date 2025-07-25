@@ -27,6 +27,7 @@ const AllocationDrawerContent = () => {
 
   const { closeDrawer } = useLayoutContext()
   const {
+    state: { refetchRawAllocations },
     actions: { resetAllocations },
   } = useContext(AllocationsContext)
 
@@ -40,9 +41,10 @@ const AllocationDrawerContent = () => {
 
   useEffect(() => {
     if (isSuccess) {
+      refetchRawAllocations()
       closeDrawer()
     }
-  }, [isSuccess, closeDrawer])
+  }, [isSuccess, closeDrawer, refetchRawAllocations])
 
   return (
     <ActionsContainer className="bg-v3-bg-accent-60">
