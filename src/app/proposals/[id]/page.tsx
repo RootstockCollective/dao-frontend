@@ -167,11 +167,12 @@ const PageWithProposal = (proposal: ParsedProposal) => {
 
   const { onVote, isProposalActive, proposalState, isVoting, isWaitingVotingReceipt, setVotingTxHash } =
     useVoteOnProposal(proposalId)
+  const [isQueueing, setIsQueueing] = useState<boolean>()
   const { onQueueProposal } = useQueueProposal(proposalId)
 
   const { onExecuteProposal, canProposalBeExecuted } = useExecuteProposal(proposalId)
-
   const [isExecuting, setIsExecuting] = useState(false)
+
   const [popoverOpen, setPopoverOpen] = useState(false)
   const voteButtonRef = useRef<HTMLButtonElement>(null)
 
@@ -208,38 +209,43 @@ const PageWithProposal = (proposal: ParsedProposal) => {
   }
 
   const handleQueuingProposal = async () => {
-    try {
-      const txHash = await onQueueProposal()
+    const txHash = await executeTxFlow({
+      onRequestTx: () => {
+        setIsQueueing(true)
+        return onQueueProposal()
+      },
+      action: 'queuing',
+      onComplete: () => {
+        setIsQueueing(false)
+      },
+      onError: err => {
+        console.log('ERROR', err)
+      },
+    })
+
+    if (txHash) {
       await waitForTransactionReceipt(config, {
         hash: txHash,
       })
-    } catch (err: any) {
-      if (!isUserRejectedTxError(err)) {
-        console.error(err)
-      }
     }
   }
 
   const handleExecuteProposal = async () => {
-    try {
-      const txHash = await onExecuteProposal()
-      if (!txHash) return
-      setIsExecuting(true)
+    const txHash = await executeTxFlow({
+      onRequestTx: () => {
+        setIsExecuting(true)
+        return onExecuteProposal()
+      },
+      onComplete: () => {
+        setIsExecuting(false)
+      },
+    })
+
+    if (txHash) {
       await waitForTransactionReceipt(config, {
         hash: txHash,
       })
-    } catch (err: any) {
-      if (!isUserRejectedTxError(err)) {
-        if (
-          err.details?.includes('Insufficient ERC20 balance') ||
-          err.details?.includes('Insufficient Balance')
-        ) {
-        } else {
-          console.error(err)
-        }
-      }
     }
-    setIsExecuting(false)
   }
 
   const linkfyUrls = (description: string | undefined | null): string => {
@@ -483,6 +489,7 @@ const PageWithProposal = (proposal: ParsedProposal) => {
             onCastVote={address && handleVoting}
             onCancelVote={() => setIsChoosingVote(false)}
             isConnected={isConnected}
+            actionDisabled={isQueueing || isExecuting}
           />
           <ActionDetails parsedAction={parsedAction} actionType={actionType} />
         </div>
