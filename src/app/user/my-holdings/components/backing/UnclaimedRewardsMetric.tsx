@@ -8,14 +8,15 @@ import {
   useClaimBackerRewards,
 } from '@/app/collective-rewards/rewards'
 import { useHandleErrors } from '@/app/collective-rewards/utils'
+import { ConditionalTooltip } from '@/app/components'
 import { Button } from '@/components/ButtonNew'
 import { DottedUnderlineLabel } from '@/components/DottedUnderlineLabel/DottedUnderlineLabel'
 import { RifRbtcTooltip } from '@/components/RifRbtcTooltip/RifRbtcTooltip'
+import { USD } from '@/lib/constants'
 import { TOKENS } from '@/lib/tokens'
 import { formatCurrency } from '@/lib/utils'
 import { usePricesContext } from '@/shared/context'
 import { ReactElement, useMemo } from 'react'
-import { USD } from '@/lib/constants'
 
 export const UnclaimedRewardsMetric = ({ currency = 'USD' }: { currency?: string }): ReactElement => {
   const { prices } = usePricesContext()
@@ -72,15 +73,23 @@ export const UnclaimedRewardsMetric = ({ currency = 'USD' }: { currency?: string
           </RifRbtcTooltip>
         </div>
       </div>
-      <Button
-        variant="secondary-outline"
-        className="font-rootstock-sans w-fit"
-        textClassName="text-v3-text-100"
-        onClick={() => claimRewards()}
-        disabled={!isClaimable}
+      <ConditionalTooltip
+        conditionPairs={[
+          {
+            condition: () => !isClaimable,
+            lazyContent: () => 'Rewards are not claimable',
+          },
+        ]}
       >
-        Claim Rewards
-      </Button>
+        <Button
+          variant="secondary-outline"
+          className="font-rootstock-sans w-fit"
+          textClassName="text-v3-text-100"
+          onClick={() => claimRewards()}
+        >
+          Claim Rewards
+        </Button>
+      </ConditionalTooltip>
     </div>
   )
 }

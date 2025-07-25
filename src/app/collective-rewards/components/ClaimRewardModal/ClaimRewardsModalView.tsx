@@ -1,15 +1,15 @@
 import { formatSymbol } from '@/app/collective-rewards/rewards/utils'
+import { ConditionalTooltip } from '@/app/components'
 import { TransactionInProgressButton } from '@/app/user/Stake/components/TransactionInProgressButton'
 import { Button } from '@/components/ButtonNew'
 import { Modal } from '@/components/Modal/Modal'
 import { TokenImage } from '@/components/TokenImage'
-import { Tooltip } from '@/components/Tooltip'
 import { Typography } from '@/components/TypographyNew/Typography'
+import { RBTC } from '@/lib/constants'
 import { cn, formatCurrency } from '@/lib/utils'
 import { FC, ReactNode } from 'react'
-import { ClaimRewardType } from './types'
-import { RBTC } from '@/lib/constants'
 import { ClaimRewardRadioGroup } from './ClaimRewardRadioGroup'
+import { ClaimRewardType } from './types'
 
 interface ClaimRewardsModalViewProps {
   onClose: () => void
@@ -93,16 +93,20 @@ export const ClaimRewardsModalView: FC<ClaimRewardsModalViewProps> = ({
           {isTxPending ? (
             <TransactionInProgressButton />
           ) : (
-            <Tooltip
-              text="Current rewards are not claimable"
-              disabled={isClaimable}
+            <ConditionalTooltip
+              conditionPairs={[
+                {
+                  condition: () => !isClaimable,
+                  lazyContent: () => 'Current rewards are not claimable',
+                },
+              ]}
               className="z-50"
               side="left"
             >
               <Button variant="primary" onClick={() => isClaimable && onClaim()}>
                 Claim now
               </Button>
-            </Tooltip>
+            </ConditionalTooltip>
           )}
         </div>
       </div>

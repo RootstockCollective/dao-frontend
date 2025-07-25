@@ -3,17 +3,17 @@
 import { formatSymbol, getFiatAmount } from '@/app/collective-rewards/rewards/utils/formatter'
 import { BuilderRewardsSummary } from '@/app/collective-rewards/types'
 import { getCombinedFiatAmount } from '@/app/collective-rewards/utils'
+import { ConditionalTooltip } from '@/app/components'
+import { ConnectTooltipContent } from '@/app/components/Tooltip/ConnectTooltip/ConnectTooltipContent'
 import { GetPricesResult } from '@/app/user/types'
-import { Button } from '@/components/ButtonNew'
 import { CommonComponentProps } from '@/components/commonProps'
 import { Jdenticon } from '@/components/Header/Jdenticon'
-import { Paragraph, Span } from '@/components/TypographyNew'
+import { Paragraph } from '@/components/TypographyNew'
 import { RIF } from '@/lib/constants'
 import { cn, formatCurrency } from '@/lib/utils'
 import { BaseColumnId, Row, RowData, useTableActionsContext, useTableContext } from '@/shared/context'
 import { DisclaimerFlow } from '@/shared/walletConnection'
 import { useAppKitFlow } from '@/shared/walletConnection/connection/useAppKitFlow'
-import { Tooltip, TooltipContent, TooltipPortal, TooltipTrigger } from '@radix-ui/react-tooltip'
 import { redirect, RedirectType } from 'next/navigation'
 import { FC, HtmlHTMLAttributes, ReactElement, ReactNode, useState } from 'react'
 import { Address } from 'viem'
@@ -268,31 +268,45 @@ export const BuilderDataRow: FC<BuilderDataRowProps> = ({ row, ...props }) => {
 
   return (
     <>
-      <Tooltip>
-        <TooltipTrigger asChild>
-          <tr
-            {...props}
-            className={cn(
-              'flex border-b-v3-bg-accent-60 border-b-1 gap-4',
-              selectedRows[rowId] || isHovered ? selectedRowStyle : unselectedRowStyle,
-            )}
-            onClick={handleToggleSelection}
-            onMouseEnter={() => setIsHovered(true)}
-            onMouseLeave={() => setIsHovered(false)}
-          >
-            <BuilderCell {...builder} isHighlighted={isHovered} />
-            <BackerRewardsCell {...backer_rewards} />
-            <RewardsPastCycleCell {...rewards_past_cycle} />
-            <RewardsUpcomingCell {...rewards_upcoming} />
-            <BuilderBackingCell {...backing} />
-            {!(isHovered && isConnected) && <BuilderAllocationsCell allocationPct={allocationPct} />}
-            <ActionsCell {...actions} forceShow={isHovered && isConnected} />
-            <td className="w-[24px]"></td>
-          </tr>
-        </TooltipTrigger>
-        {!isConnected && <ConnectWalletTooltip onClick={onConnectWalletButtonClick} />}
-        {isConnected && !hasSelections && <SelectBuildersTooltip />}
-      </Tooltip>
+      <ConditionalTooltip
+        side="top"
+        align="start"
+        className="p-0 ml-16"
+        conditionPairs={[
+          {
+            condition: () => !isConnected,
+            lazyContent: () => (
+              <ConnectTooltipContent onClick={onConnectWalletButtonClick}>
+                Connect your wallet to select Builders, back and adjust their backing.
+              </ConnectTooltipContent>
+            ),
+          },
+          {
+            condition: () => !hasSelections,
+            lazyContent: () => <SelectBuildersTooltipContent />,
+          },
+        ]}
+      >
+        <tr
+          {...props}
+          className={cn(
+            'flex border-b-v3-bg-accent-60 border-b-1 gap-4',
+            selectedRows[rowId] || isHovered ? selectedRowStyle : unselectedRowStyle,
+          )}
+          onClick={handleToggleSelection}
+          onMouseEnter={() => setIsHovered(true)}
+          onMouseLeave={() => setIsHovered(false)}
+        >
+          <BuilderCell {...builder} isHighlighted={isHovered} />
+          <BackerRewardsCell {...backer_rewards} />
+          <RewardsPastCycleCell {...rewards_past_cycle} />
+          <RewardsUpcomingCell {...rewards_upcoming} />
+          <BuilderBackingCell {...backing} />
+          {!(isHovered && isConnected) && <BuilderAllocationsCell allocationPct={allocationPct} />}
+          <ActionsCell {...actions} forceShow={isHovered && isConnected} />
+          <td className="w-[24px]"></td>
+        </tr>
+      </ConditionalTooltip>
 
       {!!intermediateStep && (
         <DisclaimerFlow onAgree={handleConnectWallet} onClose={handleCloseIntermediateStep} />
@@ -301,46 +315,14 @@ export const BuilderDataRow: FC<BuilderDataRowProps> = ({ row, ...props }) => {
   )
 }
 
-type ConnectWalletTooltipProps = CommonComponentProps<HTMLButtonElement>
-
-const ConnectWalletTooltip = ({ onClick }: ConnectWalletTooltipProps) => {
+export const SelectBuildersTooltipContent = () => {
   return (
-    <TooltipPortal>
-      <TooltipContent id={'connect-wallet-tooltip'} side="top" align="start" className="ml-16">
-        <div className="flex justify-center">
-          <div className="bg-v3-text-80 rounded-sm shadow-sm w-64 flex flex-col items-start p-6 gap-2">
-            <Paragraph className="text-v3-bg-accent-100 text-sm w-full font-normal leading-5 rootstock-sans self-stretch">
-              Connect your wallet to select Builders, back and adjust their backing.
-            </Paragraph>
-            <Button
-              onClick={onClick}
-              data-testid="ConnectWallet"
-              variant="secondary-outline"
-              className="px-2 py-1 gap-2 border-v3-bg-accent-40"
-            >
-              <Span className="text-v3-bg-accent-100 text-sm font-light leading-5 rootstock-sans">
-                Connect wallet
-              </Span>
-            </Button>
-          </div>
-        </div>
-      </TooltipContent>
-    </TooltipPortal>
-  )
-}
-
-export const SelectBuildersTooltip = () => {
-  return (
-    <TooltipPortal>
-      <TooltipContent id={'select-builders-tooltip'} side="top" align="start" className="ml-16">
-        <div className="flex justify-center">
-          <div className="bg-v3-text-80 rounded-sm shadow-sm w-64 flex flex-col items-start p-6 gap-2">
-            <Paragraph className="text-v3-bg-accent-100 text-sm w-full font-normal leading-5 rootstock-sans self-stretch">
-              Click table line to select the Builder(s) that you’d like to back
-            </Paragraph>
-          </div>
-        </div>
-      </TooltipContent>
-    </TooltipPortal>
+    <div className="flex justify-center">
+      <div className="bg-v3-text-80 rounded-sm shadow-sm w-64 flex flex-col items-start p-6 gap-2">
+        <Paragraph className="text-v3-bg-accent-100 text-sm w-full font-normal leading-5 rootstock-sans self-stretch">
+          Click table line to select the Builder(s) that you would like to back
+        </Paragraph>
+      </div>
+    </div>
   )
 }

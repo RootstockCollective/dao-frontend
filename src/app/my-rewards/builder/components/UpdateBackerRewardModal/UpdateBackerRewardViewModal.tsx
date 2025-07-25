@@ -1,3 +1,4 @@
+import { AlwaysEnabledButton } from '@/app/components'
 import { TransactionInProgressButton } from '@/app/user/Stake/components/TransactionInProgressButton'
 import { Button } from '@/components/ButtonNew/Button'
 import { KotoQuestionMarkIcon } from '@/components/Icons'
@@ -43,18 +44,6 @@ const UpdateBackerRewardViewModal = ({
   }
 
   const timeRemaining = durationToLabel(cooldownDuration)
-
-  const getSaveButtonTooltipText = () => {
-    if (!isOperational) {
-      return 'You need to be operational to adjust your backer reward %'
-    }
-    if (alreadySubmitted) {
-      return "You can't submit the same backer reward %"
-    }
-    return undefined
-  }
-
-  const saveButtonTooltipText = getSaveButtonTooltipText()
 
   return (
     <Modal
@@ -129,15 +118,21 @@ const UpdateBackerRewardViewModal = ({
           {isTxPending ? (
             <TransactionInProgressButton />
           ) : (
-            <Tooltip
-              text={saveButtonTooltipText}
-              className="rounded-sm z-50 bg-v3-text-80 text-v3-bg-accent-60 p-6 text-sm"
-              side="top"
-              align="center"
-              disabled={saveButtonTooltipText === undefined}
+            <AlwaysEnabledButton
+              onClick={handleSave}
+              conditionPairs={[
+                {
+                  condition: () => !isOperational,
+                  lazyContent: () => 'You need to be operational to adjust your backer reward %',
+                },
+                {
+                  condition: () => !!alreadySubmitted,
+                  lazyContent: () => "You can't submit the same backer reward %",
+                },
+              ]}
             >
-              <Button onClick={handleSave}>Save changes</Button>
-            </Tooltip>
+              Save changes
+            </AlwaysEnabledButton>
           )}
         </div>
       </div>

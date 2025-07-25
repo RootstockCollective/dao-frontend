@@ -10,20 +10,20 @@ import {
   AllocationsContext,
 } from '@/app/collective-rewards/allocations/context/AllocationsContext'
 import { formatSymbol, getFiatAmount } from '@/app/collective-rewards/rewards'
+import { useBuilderContext } from '@/app/collective-rewards/user/context/BuilderContext'
 import { ActionMetricsContainer, ActionsContainer, MetricsContainer } from '@/components/containers'
 import { Header, Span } from '@/components/TypographyNew'
 import { RIF, stRIF, USD } from '@/lib/constants'
 import { formatCurrency } from '@/lib/utils'
 import { usePricesContext } from '@/shared/context/PricesContext'
-import { useCallback, useContext, useMemo } from 'react'
+import { useRouter, useSearchParams } from 'next/navigation'
+import { useContext, useMemo } from 'react'
 import { Address } from 'viem'
 import { useAccount } from 'wagmi'
 import { AvailableBackingMetric, TotalBackingMetric } from './components'
 import { BuilderAllocationBar } from './components/BuilderAllocationBar'
 import { AnnualBackingIncentives } from './components/Metrics/AnnualBackingIncentives'
 import { Spotlight } from './components/Spotlight'
-import { useBuilderContext } from '@/app/collective-rewards/user/context/BuilderContext'
-import { useRouter, useSearchParams } from 'next/navigation'
 
 const NAME = 'Backing'
 
@@ -119,7 +119,7 @@ export const BackingPage = () => {
       {isConnected && <BuilderAllocationBar />}
 
       {isConnected && (
-        <ActionMetricsContainer className="flex flex-col items-start w-[1144px] p-6 gap-2 rounded-[4px] bg-v3-bg-accent-80">
+        <ActionMetricsContainer className="flex flex-col w-full items-start p-6 gap-2 rounded-[4px] bg-v3-bg-accent-80">
           <div className="flex flex-col items-center gap-10 w-full">
             <div className="flex items-start gap-14 w-full">
               <div className="basis-1/2">

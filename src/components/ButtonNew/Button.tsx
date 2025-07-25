@@ -1,5 +1,5 @@
 import { cn } from '@/lib/utils'
-import { FC, ButtonHTMLAttributes, RefAttributes } from 'react'
+import { ButtonHTMLAttributes, FC, RefAttributes } from 'react'
 import { Span } from '../TypographyNew'
 
 type ButtonVariant = 'primary' | 'secondary' | 'secondary-outline' | 'transparent'
@@ -54,3 +54,5 @@ export const Button: FC<Props> = ({
     </button>
   )
 }
+
+export type ButtonProps = Props
