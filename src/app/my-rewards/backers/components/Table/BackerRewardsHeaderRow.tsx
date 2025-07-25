@@ -80,7 +80,16 @@ export const BackerRewardsHeaderRow = ({ actions }: BackerRewardsHeaderRowProps)
               <HeaderTitle>Estimated</HeaderTitle>
               <HeaderSubtitle>this cycle</HeaderSubtitle>
             </HeaderCell>
-            <HeaderCell key="total" columnId="total" columnTransforms={COLUMN_TRANSFORMS}>
+            <HeaderCell
+              key="total"
+              columnId="total"
+              columnTransforms={COLUMN_TRANSFORMS}
+              tooltip={{
+                text: 'The total of your received and claimable rewards for each Builder',
+                side: 'top',
+                sideOffset: 10,
+              }}
+            >
               <HeaderTitle>Total</HeaderTitle>
               <HeaderSubtitle>lifetime</HeaderSubtitle>
             </HeaderCell>
