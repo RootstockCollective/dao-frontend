@@ -17,6 +17,7 @@ import { showToast } from '@/shared/notification'
 import { isUserRejectedTxError } from '@/components/ErrorPage'
 import { Header, Paragraph } from '@/components/TypographyNew'
 import { CopyButton } from '@/components/CopyButton'
+import { DISCOURSE_LINK_SEPARATOR } from '@/app/proposals/shared/utils'
 
 export default function GrantsProposalReview() {
   const { address, isConnected } = useAccount()
@@ -28,8 +29,8 @@ export default function GrantsProposalReview() {
     setLoading(true)
     try {
       if (!record?.form || record?.category !== ProposalCategory.Grants) return
-      const { description, proposalName, targetAddress, token, transferAmount } = record.form
-      const proposalDescription = `${proposalName};${description}`
+      const { description, proposalName, targetAddress, token, transferAmount, discourseLink } = record.form
+      const proposalDescription = `${proposalName};${description} ${DISCOURSE_LINK_SEPARATOR}${discourseLink} `
       const tokenAddress = tokenContracts[token.toUpperCase() as keyof typeof tokenContracts]
       if (!tokenAddress) throw new Error('GrantsProposalReview: Unknown contract address')
       // Here the user will see Metamask window and confirm his tx
