@@ -148,7 +148,6 @@ export const BuilderCard: FC<BuilderCardProps> = ({
             <ConnectButton
               tooltipContent="Connect your wallet and get RIF before backing a Builder"
               data-testid="backBuilderButton"
-              onClick={() => isConnected && router.push(`/backing?builders=${address}`)}
             >
               Back builder
             </ConnectButton>
