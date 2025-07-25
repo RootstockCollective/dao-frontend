@@ -5,12 +5,7 @@ import { VotingPowerContainer } from '@/app/delegate/components/VotingPowerConta
 export const NotConnectedVotingPowerContainer = () => {
   const cards: CardsState = {
     available: {
-      contentValue: (
-        <span className="flex flex-row max-h-[20px] gap-[4px] items-center" data-testid="CardConnectButton">
-          <span>-</span>
-          <ConnectWorkflow />
-        </span>
-      ),
+      contentValue: <NotConnectedContent />,
     },
     own: {},
     received: {},
@@ -19,3 +14,10 @@ export const NotConnectedVotingPowerContainer = () => {
 
   return <VotingPowerContainer cards={cards} />
 }
+
+export const NotConnectedContent = () => (
+  <span className="flex flex-row max-h-[20px] gap-[4px] items-center" data-testid="CardConnectButton">
+    <span>-</span>
+    <ConnectWorkflow />
+  </span>
+)
