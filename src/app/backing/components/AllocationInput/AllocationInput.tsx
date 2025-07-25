@@ -8,6 +8,7 @@ import { StickySlider } from '../StickySlider/StickySlider'
 import { RIFToken } from '../RIFToken/RIFToken'
 import { formatSymbol } from '@/app/collective-rewards/rewards/utils/formatter'
 import { USD } from '@/lib/constants'
+import { formatEther } from 'viem'
 
 interface AllocationInputProps {
   allocation: bigint
@@ -42,7 +43,7 @@ export const AllocationInput: FC<AllocationInputProps> = ({
 
   const handleSliderChange = (value: number[]) => {
     const percent = value[0]
-    const newAllocation = Math.round((percent / 100) * Number(formatSymbol(maxAllocation, 'stRIF')))
+    const newAllocation = Math.round((percent / 100) * Number(formatEther(maxAllocation)))
     onAllocationChange(newAllocation)
   }
 
