@@ -66,7 +66,9 @@ export const BuilderCard: FC<BuilderCardProps> = ({
 
   const builderPageLink = `/proposals/${proposal.id}`
 
-  useEffect(() => setEditing(allocation !== existentAllocation), [allocation, existentAllocation])
+  useEffect(() => {
+    setEditing(allocation !== existentAllocation && isConnected)
+  }, [allocation, existentAllocation, isConnected])
 
   return (
     <WindshieldWiperAnimation

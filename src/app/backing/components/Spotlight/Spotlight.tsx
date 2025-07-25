@@ -48,7 +48,9 @@ export const Spotlight = ({ isInteractive = true }: { isInteractive?: boolean })
     }
   }, [userSelections, toggleSelectedBuilder, selections])
 
-  const hasAllocations = useMemo(() => totalOnchainAllocation > 0n, [totalOnchainAllocation])
+  const hasAllocations = useMemo(() => {
+    return isConnected && totalOnchainAllocation > 0n
+  }, [totalOnchainAllocation, isConnected])
 
   const spotlightBuilders = useMemo(() => {
     // Get builders based on allocation or selection state

@@ -56,19 +56,24 @@ export const BackingPage = () => {
     [totalOnchainAllocation],
   )
 
-  const hasAllocations = useMemo(() => totalOnchainAllocation > 0n, [totalOnchainAllocation])
+  const hasAllocations = useMemo(() => {
+    return isConnected && totalOnchainAllocation > 0n
+  }, [totalOnchainAllocation, isConnected])
 
   // Format values properly using formatter functions
-  const availableForBackingLabel = formatSymbol(availableForBacking, stRIF)
-  const totalBackingLabel = formatSymbol(totalBacking, stRIF)
-  const availableBackingUSD =
-    !availableForBacking || !rifPriceUsd
+  const availableForBackingLabel = useMemo(
+    () => formatSymbol(availableForBacking, stRIF),
+    [availableForBacking],
+  )
+  const totalBackingLabel = useMemo(() => formatSymbol(totalBacking, stRIF), [totalBacking])
+  const availableBackingUSD = useMemo(() => {
+    return !availableForBacking || !rifPriceUsd
       ? formatCurrency(0, { currency: USD, showCurrency: true })
       : formatCurrency(getFiatAmount(availableForBacking, rifPriceUsd), {
           currency: USD,
           showCurrency: true,
         })
-
+  }, [availableForBacking, rifPriceUsd])
   const handleDistributeClick = () => {
     //FIXME: Take into the inactive builders
     updateAmountToAllocate(votingPower)
