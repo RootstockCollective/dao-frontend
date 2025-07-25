@@ -13,6 +13,7 @@ import { StylableComponentProps } from '@/components/commonProps'
 import { BuilderCardControlProps } from './BuilderCardControl'
 import { AnimatePresence, motion } from 'motion/react'
 import { WindshieldWiperAnimation } from './WindshieldWiperAnimation'
+import { useRouter } from 'next/navigation'
 
 const Warning = ({ className }: StylableComponentProps<HTMLDivElement>) => {
   return (
@@ -61,12 +62,11 @@ export const BuilderCard: FC<BuilderCardProps> = ({
 }) => {
   const isRewardable = isBuilderRewardable(stateFlags)
   const [editing, setEditing] = useState(false)
+  const router = useRouter()
 
   const builderPageLink = `/proposals/${proposal.id}`
 
-  useEffect(() => {
-    allocation !== existentAllocation && setEditing(true)
-  }, [allocation, existentAllocation, setEditing])
+  useEffect(() => setEditing(allocation !== existentAllocation), [allocation, existentAllocation])
 
   return (
     <WindshieldWiperAnimation
@@ -146,7 +146,11 @@ export const BuilderCard: FC<BuilderCardProps> = ({
           )}
           {!isInteractive && (
             <ConnectPopover disabled={isConnected}>
-              <Button variant="secondary-outline" data-testid="backBuilderButton">
+              <Button
+                variant="secondary-outline"
+                data-testid="backBuilderButton"
+                onClick={() => isConnected && router.push(`/backing?builders=${address}`)}
+              >
                 Back builder
               </Button>
             </ConnectPopover>

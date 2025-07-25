@@ -1,9 +1,9 @@
-import { BuilderEstimatedRewards } from '@/app/collective-rewards/types'
+import { Builder } from '@/app/collective-rewards/types'
 import { FC } from 'react'
 import { BuilderCardControl } from '../BuilderCard'
 
 interface BuildersSpotlightProps {
-  builders: BuilderEstimatedRewards[]
+  builders: Builder[]
 }
 
 export const BuildersSpotlight: FC<BuildersSpotlightProps> = ({ builders }) => (
