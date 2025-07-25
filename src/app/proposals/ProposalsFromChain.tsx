@@ -12,10 +12,7 @@ export function ProposalsFromChain() {
   const memoizedProposals = useMemo(() => data, [data])
   return (
     <>
-      <ProposalsSummary
-        totalProposals={totalProposals.toString()}
-        activeProposals={activeProposals.toString()}
-      />
+      <ProposalsSummary totalProposals={totalProposals.toString()} />
       <LatestProposalsTableMemoized proposals={memoizedProposals} />
     </>
   )
