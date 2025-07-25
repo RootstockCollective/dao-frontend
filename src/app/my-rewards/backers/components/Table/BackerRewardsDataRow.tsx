@@ -5,7 +5,7 @@ import {
   BackerRewardsCell,
   BuilderBackingCell,
   BuilderCell,
-  SelectBuildersTooltip,
+  SelectBuildersTooltipContent,
   selectedRowStyle,
   TableCellBase,
   unselectedRowStyle,
@@ -18,11 +18,11 @@ import { RewardsCell, RewardsCellProps } from '@/app/builders/components/Table/C
 import { BackerRewards } from '@/app/collective-rewards/rewards/backers/hooks'
 import { formatSymbol, getFiatAmount } from '@/app/collective-rewards/rewards/utils/formatter'
 import { getCombinedFiatAmount } from '@/app/collective-rewards/utils'
+import { ConditionalTooltip } from '@/app/components/Tooltip/ConditionalTooltip'
 import { GetPricesResult } from '@/app/user/types'
 import { RIF } from '@/lib/constants'
 import { cn, formatCurrency } from '@/lib/utils'
 import { Row, RowData, useTableActionsContext, useTableContext } from '@/shared/context'
-import { Tooltip, TooltipTrigger } from '@radix-ui/react-tooltip'
 import { redirect, RedirectType } from 'next/navigation'
 import { FC, HtmlHTMLAttributes, ReactElement, ReactNode, useState } from 'react'
 import { Address } from 'viem'
@@ -175,31 +175,36 @@ export const BackerRewardsDataRow: FC<BackerRewardsDataRowProps> = ({ row, ...pr
   }
 
   return (
-    <>
-      <Tooltip>
-        <TooltipTrigger asChild>
-          <tr
-            {...props}
-            className={cn(
-              'flex border-b-v3-bg-accent-60 border-b-1 gap-4',
-              selectedRows[rowId] || isHovered ? selectedRowStyle : unselectedRowStyle,
-            )}
-            onClick={handleToggleSelection}
-            onMouseEnter={() => setIsHovered(true)}
-            onMouseLeave={() => setIsHovered(false)}
-          >
-            <BuilderCell {...builder} isHighlighted={isHovered} />
-            <BackerRewardsCell {...backer_rewards} />
-            <UnclaimedCell {...unclaimed} />
-            <EstimatedCell {...estimated} />
-            <TotalCell {...total} />
-            {!isHovered && isConnected && <BuilderBackingCell {...backing} />}
-            <ActionsCell {...actions} forceShow={isHovered} />
-            <td className="w-[24px]"></td>
-          </tr>
-        </TooltipTrigger>
-        {!hasSelections && <SelectBuildersTooltip />}
-      </Tooltip>
-    </>
+    <ConditionalTooltip
+      side="top"
+      align="start"
+      className="p-0 ml-16"
+      conditionPairs={[
+        {
+          condition: () => !hasSelections,
+          lazyContent: () => <SelectBuildersTooltipContent />,
+        },
+      ]}
+    >
+      <tr
+        {...props}
+        className={cn(
+          'flex border-b-v3-bg-accent-60 border-b-1 gap-4',
+          selectedRows[rowId] || isHovered ? selectedRowStyle : unselectedRowStyle,
+        )}
+        onClick={handleToggleSelection}
+        onMouseEnter={() => setIsHovered(true)}
+        onMouseLeave={() => setIsHovered(false)}
+      >
+        <BuilderCell {...builder} isHighlighted={isHovered} />
+        <BackerRewardsCell {...backer_rewards} />
+        <UnclaimedCell {...unclaimed} />
+        <EstimatedCell {...estimated} />
+        <TotalCell {...total} />
+        {!isHovered && isConnected && <BuilderBackingCell {...backing} />}
+        <ActionsCell {...actions} forceShow={isHovered} />
+        <td className="w-[24px]"></td>
+      </tr>
+    </ConditionalTooltip>
   )
 }
