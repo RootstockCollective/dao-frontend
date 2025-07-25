@@ -5,7 +5,7 @@ import { FC, ReactNode } from 'react'
 import { createPortal } from 'react-dom'
 import { CloseIcon } from '../Icons'
 
-interface Props {
+export interface ModalProps {
   children: ReactNode
   onClose: () => void
   className?: string
@@ -15,7 +15,7 @@ interface Props {
   'data-testid'?: string
 }
 
-export const Modal: FC<Props> = ({
+export const Modal: FC<ModalProps> = ({
   children,
   onClose,
   className,
@@ -62,5 +62,3 @@ export const Modal: FC<Props> = ({
     document.body,
   )
 }
-
-export type ModalProps = Props
