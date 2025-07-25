@@ -1,7 +1,11 @@
 import { BaseColumnId, Column } from '@/shared/context'
 import { HtmlHTMLAttributes } from 'react'
 import { TableColumnDropdownLabels } from './TableColumnDropdown/TableColumnDropdown'
-import { builderInactiveStates } from '@/app/collective-rewards/utils'
+import {
+  BUILDER_ACTIVE,
+  BUILDER_IN_PROGRESS,
+  builderInactiveStates,
+} from '@/app/collective-rewards/utils/isBuilderOperational'
 
 export const COLUMN_IDS = [
   'builder',
@@ -90,5 +94,5 @@ export const DEFAULT_HEADERS: Column<ColumnId>[] = [
   },
 ]
 
-export const builderStates = ['inProgress', 'active', ...builderInactiveStates] as const
+export const builderStates = [BUILDER_IN_PROGRESS, BUILDER_ACTIVE, ...builderInactiveStates] as const
 export type BuilderState = (typeof builderStates)[number]
