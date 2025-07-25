@@ -167,18 +167,12 @@ interface ParsedDescription {
 }
 
 const parseProposalDescription = (description: string): ParsedDescription => {
-  // Default result
-  let result: ParsedDescription = {
-    name: '',
-    description: description,
-    source: 'UNKNOWN',
-  }
-
   // If the proposal description contains semicolon, we will automatically assume it's ours (for now)
   if (description.includes(';')) {
     const [name, ...rest] = description.split(';')
+    const { proposalName } = splitCombinedName(name)
     return {
-      name: name.substring(0, MAX_NAME_LENGTH_FOR_PROPOSAL),
+      name: proposalName.substring(0, MAX_NAME_LENGTH_FOR_PROPOSAL),
       description: rest.join(';').trim(),
       source: 'DAO',
       fullProposalName: name,
