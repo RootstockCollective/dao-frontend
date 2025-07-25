@@ -6,8 +6,8 @@ import { cn } from '@/lib/utils'
 
 interface SortIndicatorProps extends PropsWithChildren {
   sortDirection: SortDirection | false
-  sortEnabled?: boolean
   toggleSorting: () => void
+  sortEnabled?: boolean
 }
 
 export function SortIndicator({ children, sortDirection, toggleSorting }: SortIndicatorProps) {

@@ -13,14 +13,14 @@ export interface CommunityItem {
   numberOfMembers: number
   /** Default NFT image for the community */
   cover: string
+  detailedDescription: ReactNode
+  specialPower: string
+  requirement: string
   isMintable?: boolean
   additionalChecks?: { name: string; check: (data: any) => boolean; alertMessage: string }[]
   readMoreLink?: string
   discussionLink?: string
   campaignDetails?: FC<{ activation?: ReactNode }>
-  detailedDescription: ReactNode
-  specialPower: string
-  requirement: string
 }
 
 interface RowProps {

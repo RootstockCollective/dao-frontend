@@ -1,6 +1,5 @@
 import { cn } from '@/lib/utils'
-import { GridIcon } from '@/app/communities/icons/GridIcon'
-import { TableIcon } from '@/app/communities/icons/TableIcon'
+import { GridIcon, ListIcon } from '@/components/Icons'
 
 export type ViewState = 'images' | 'table'
 
@@ -54,7 +53,7 @@ export const ViewIconHandler = ({ view, onChangeView }: ViewIconHandlerProps) =>
           }
         }}
       >
-        <TableIcon color={color(view === 'table')} />
+        <ListIcon color={color(view === 'table')} />
       </div>
     </div>
   )
