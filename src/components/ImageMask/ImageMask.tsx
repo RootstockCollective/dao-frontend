@@ -69,6 +69,7 @@ export function ImageMask({
         height={height}
         preserveAspectRatio="xMidYMid slice"
         mask={`url(#${maskId}-complete)`}
+        crossOrigin="anonymous"
       />
     </svg>
   )
