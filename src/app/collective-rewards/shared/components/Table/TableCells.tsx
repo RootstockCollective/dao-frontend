@@ -1,6 +1,6 @@
 import { AllocationsContext } from '@/app/collective-rewards/allocations/context'
 import { formatFiatAmount, formatSymbol, getFiatAmount, Reward } from '@/app/collective-rewards/rewards'
-import { BackerRewardPercentage, BuilderStateFlags } from '@/app/collective-rewards/types'
+import { BackerRewardPercentage, Builder, BuilderStateFlags } from '@/app/collective-rewards/types'
 import {
   getBuilderInactiveState,
   isBuilderActive,
@@ -76,17 +76,17 @@ export const LazyRewardCell = memo(
 )
 
 type BuilderStatusFlagProps = {
-  stateFlags: BuilderStateFlags
+  builder: Builder
 }
-const getStatusColor = (isActive: boolean, builderInactiveState: string) => {
-  if (isActive) return 'transparent'
-  if (builderInactiveState === 'Paused') return '#F9E1FF'
+const getStatusColor = (isActive: boolean, builderInactiveState: string | null) => {
+  if (isActive || builderInactiveState === null) return 'transparent'
+  if (builderInactiveState === 'paused') return '#F9E1FF'
   return '#932309'
 }
 
-const BuilderStatusFlag: FC<BuilderStatusFlagProps> = ({ stateFlags }) => {
-  const builderInactiveState = getBuilderInactiveState(stateFlags)
-  const isActive = isBuilderActive(stateFlags)
+const BuilderStatusFlag: FC<BuilderStatusFlagProps> = ({ builder }) => {
+  const builderInactiveState = getBuilderInactiveState(builder)
+  const isActive = isBuilderActive(builder.stateFlags)
 
   const color = getStatusColor(isActive, builderInactiveState)
 
@@ -108,12 +108,12 @@ type BuilderCellProps = TableCellProps & {
   address: Address
 } & BuilderStatusFlagProps
 
-export const BuilderNameCell: FC<BuilderCellProps> = ({ className, builderName, address, stateFlags }) => {
+export const BuilderNameCell: FC<BuilderCellProps> = ({ className, builderName, address, builder }) => {
   const shortenAddress = shortAddress(address)
   return (
     <TableCell className={cn(className, 'border-solid')}>
       <div className="flex flex-row gap-x-1 items-center">
-        <BuilderStatusFlag stateFlags={stateFlags} />
+        <BuilderStatusFlag builder={builder} />
         <Jdenticon className="rounded-md bg-white min-w-6" value={address} size="24" />
         <div className="w-32">
           <Popover

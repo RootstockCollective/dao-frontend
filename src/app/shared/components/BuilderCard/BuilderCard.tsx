@@ -2,7 +2,12 @@ import { AllocationInput } from '@/app/backing/components/AllocationInput/Alloca
 import { BuilderHeader } from '@/app/backing/components/BuilderHeader/BuilderHeader'
 import { CurrentBacking } from '@/app/backing/components/CurrentBacking/CurrentBacking'
 import { RewardsInfo } from '@/app/backing/components/RewardsInfo/RewardsInfo'
-import { isBuilderRewardable } from '@/app/collective-rewards/utils/isBuilderOperational'
+import {
+  BuilderInactiveState,
+  builderInactiveStateMessage,
+  getBuilderInactiveState,
+  isBuilderRewardable,
+} from '@/app/collective-rewards/utils/isBuilderOperational'
 import { ConnectButton } from '@/app/components/Button/ConnectButton/ConnectButton'
 import { Button } from '@/components/ButtonNew'
 import { StylableComponentProps } from '@/components/commonProps'
@@ -10,16 +15,19 @@ import { WarningIcon } from '@/components/Icons'
 import { Paragraph } from '@/components/TypographyNew'
 import { cn } from '@/lib/utils'
 import { AnimatePresence, motion } from 'motion/react'
-import { useRouter } from 'next/navigation'
 import { FC, useEffect, useState } from 'react'
 import { BuilderCardControlProps } from './BuilderCardControl'
 import { WindshieldWiperAnimation } from './WindshieldWiperAnimation'
+import { useRouter } from 'next/router'
 
-const Warning = ({ className }: StylableComponentProps<HTMLDivElement>) => {
+const Warning = ({
+  className,
+  builderInactiveState,
+}: StylableComponentProps<HTMLDivElement> & { builderInactiveState: BuilderInactiveState }) => {
   return (
     <div className={cn('flex items-center gap-2', className)}>
       <WarningIcon size={48} color="#DEFF1A" className="min-w-[48px] min-h-[48px]" />
-      <Paragraph>Builder was deactivated by the foundation</Paragraph>
+      <Paragraph>{builderInactiveStateMessage[builderInactiveState]}</Paragraph>
     </div>
   )
 }
@@ -42,14 +50,15 @@ export interface BuilderCardProps extends BuilderCardControlProps {
 export const BuilderCard: FC<BuilderCardProps> = ({
   address,
   builderName,
+  gauge,
   proposal,
   stateFlags,
+  isConnected,
   existentAllocation,
   maxAllocation,
   allocation,
   backerRewardPct,
   rifPriceUsd,
-  isConnected,
   estimatedRewards,
   allocationTxPending,
   onAllocationChange,
@@ -61,6 +70,7 @@ export const BuilderCard: FC<BuilderCardProps> = ({
   index,
 }) => {
   const isRewardable = isBuilderRewardable(stateFlags)
+  const builderInactiveState = getBuilderInactiveState({ address, builderName, proposal, stateFlags, gauge })
   const [editing, setEditing] = useState(false)
   const router = useRouter()
 
@@ -96,7 +106,9 @@ export const BuilderCard: FC<BuilderCardProps> = ({
           className="mt-8"
           showFullName={false}
         />
-        {!isRewardable && <Warning className="pt-3" />}
+        {!isRewardable && builderInactiveState && (
+          <Warning className="pt-3" builderInactiveState={builderInactiveState} />
+        )}
         <div className="my-6 w-full">
           <div
             className="w-full border border-v3-bg-accent-40 rounded-lg flex flex-col"

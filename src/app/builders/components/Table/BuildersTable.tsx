@@ -34,7 +34,7 @@ const filterInProgress = (builder: Builder) => isBuilderInProgress(builder)
 const filterMap: Record<BuilderFilterOptionId, (builder: Builder) => boolean> = {
   active: filterActive,
   deactivated: filterDeactivated,
-  revoked: filterKycRevoked,
+  kycRevoked: filterKycRevoked,
   paused: filterPaused,
   inProgress: filterInProgress,
   all: () => true,

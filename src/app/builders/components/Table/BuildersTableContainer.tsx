@@ -19,7 +19,7 @@ import {
 const filterMap: Record<BuilderFilterOptionId, (builder: Builder) => boolean> = {
   active: (builder: Builder) => isBuilderActive(builder.stateFlags),
   deactivated: (builder: Builder) => isBuilderDeactivated(builder),
-  revoked: (builder: Builder) => isBuilderKycRevoked(builder.stateFlags),
+  kycRevoked: (builder: Builder) => isBuilderKycRevoked(builder.stateFlags),
   paused: (builder: Builder) =>
     isBuilderPaused(builder.stateFlags) || isBuilderSelfPaused(builder.stateFlags),
   inProgress: (builder: Builder) => !isBuilderActive(builder.stateFlags),

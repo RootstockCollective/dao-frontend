@@ -11,7 +11,7 @@ export const builderFilterOptions: BuilderFilterOption[] = [
   { id: 'all', content: 'All Builders' },
   { id: 'active', content: 'Active Builders' },
   { id: 'deactivated', content: 'Deactivated Builders' },
-  { id: 'revoked', content: 'Revoked Builders' },
+  { id: 'kycRevoked', content: 'Revoked Builders' },
   { id: 'paused', content: 'Paused Builders' },
   { id: 'inProgress', content: 'In Progress' },
 ]

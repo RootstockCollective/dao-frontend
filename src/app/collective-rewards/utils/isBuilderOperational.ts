@@ -35,11 +35,19 @@ export const isBuilderRewardable = (stateFlags?: BuilderStateFlags) => {
   )
 }
 
-const inactiveStates = ['Deactivated', 'Paused', 'Revoked'] as const
-export type InactiveState = (typeof inactiveStates)[number]
-export const getBuilderInactiveState = (state: BuilderStateFlags): InactiveState => {
-  if (!state.communityApproved) return 'Deactivated'
-  if (!state.kycApproved) return 'Deactivated'
-  if (state.revoked) return 'Revoked'
-  return 'Paused'
+export const builderInactiveStates = ['deactivated', 'paused', 'selfPaused', 'kycRevoked'] as const
+export type BuilderInactiveState = (typeof builderInactiveStates)[number]
+export const getBuilderInactiveState = (builder: Builder): BuilderInactiveState | null => {
+  if (isBuilderDeactivated(builder)) return 'deactivated'
+  if (isBuilderKycRevoked(builder.stateFlags)) return 'kycRevoked'
+  if (isBuilderPaused(builder.stateFlags)) return 'paused'
+  if (isBuilderSelfPaused(builder.stateFlags)) return 'selfPaused'
+  return null
 }
+
+export const builderInactiveStateMessage: Record<BuilderInactiveState, string> = {
+  deactivated: 'The Builder was voted out by the community.',
+  kycRevoked: 'The Builder was removed by the Foundation.',
+  paused: 'The Builder’s KYC has been paused by the Foundation.',
+  selfPaused: 'The Builder has paused their participation.',
+} as const
