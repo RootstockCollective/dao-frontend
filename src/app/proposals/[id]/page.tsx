@@ -4,7 +4,12 @@ import { useFetchAllProposals } from '@/app/proposals/hooks/useFetchLatestPropos
 import { useGetProposalSnapshot } from '@/app/proposals/hooks/useGetProposalSnapshot'
 import { useGetProposalVotes } from '@/app/proposals/hooks/useGetProposalVotes'
 import { useVotingPowerAtSnapshot } from '@/app/proposals/hooks/useVotingPowerAtSnapshot'
-import { DecodedData, getProposalEventArguments, splitCombinedName } from '@/app/proposals/shared/utils'
+import {
+  DecodedData,
+  getDiscourseLinkFromProposalDescription,
+  getProposalEventArguments,
+  splitCombinedName
+} from '@/app/proposals/shared/utils'
 import { Header, Paragraph, Span } from '@/components/TypographyNew'
 import { config } from '@/config'
 import { RIF_ADDRESS } from '@/lib/constants'
@@ -323,6 +328,8 @@ const PageWithProposal = (proposal: ParsedProposal) => {
     }
   }
 
+  const discourseLink = getDiscourseLinkFromProposalDescription(proposal.description)
+
   return (
     <div className="min-h-screen text-white px-4 py-8 flex flex-col gap-4 w-full max-w-full">
       <Header variant="h1" className="text-3xl text-white">
@@ -401,16 +408,18 @@ const PageWithProposal = (proposal: ParsedProposal) => {
                 <Span variant="tag-s" className="text-white/70" bold>
                   Community discussion
                 </Span>
-                <Paragraph variant="body" className="text-sm font-medium text-primary">
-                  <a
-                    href="https://rootstockcollective.xyz/discourse"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="hover:underline"
-                  >
-                    See on Discourse
-                  </a>
-                </Paragraph>
+                {discourseLink && (
+                  <Paragraph variant="body" className="text-sm font-medium text-primary">
+                    <a
+                      href={discourseLink}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="hover:underline"
+                    >
+                      See on Discourse
+                    </a>
+                  </Paragraph>
+                )}
               </div>
             </div>
 

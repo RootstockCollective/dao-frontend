@@ -13,7 +13,7 @@ import { PreviewLabel } from '../components/PreviewLabel'
 import { useCreateBuilderWhitelistProposal } from '@/app/proposals/hooks/useCreateBuilderWhitelistProposal'
 import { showToast } from '@/shared/notification'
 import { isUserRejectedTxError } from '@/components/ErrorPage'
-import { DISPLAY_NAME_SEPARATOR } from '@/app/proposals/shared/utils'
+import { DISCOURSE_LINK_SEPARATOR, DISPLAY_NAME_SEPARATOR } from '@/app/proposals/shared/utils'
 import { Header, Paragraph } from '@/components/TypographyNew'
 import { CopyButton } from '@/components/CopyButton'
 
@@ -27,8 +27,8 @@ export default function ActivationProposalReview() {
     setLoading(true)
     try {
       if (!record?.form || record?.category !== ProposalCategory.Activation) return
-      const { proposalName, builderAddress, description, builderName } = record.form
-      const proposalDescription = `${proposalName}${DISPLAY_NAME_SEPARATOR}${builderName};${description}`
+      const { proposalName, builderAddress, description, builderName, discourseLink } = record.form
+      const proposalDescription = `${proposalName}${DISPLAY_NAME_SEPARATOR}${builderName};${description} ${DISCOURSE_LINK_SEPARATOR}:${discourseLink} `
       // Here the user will see Metamask window and confirm his tx
       const txHash = await onCreateBuilderWhitelistProposal(builderAddress, proposalDescription)
       const onComplete = () => setLoading(false)

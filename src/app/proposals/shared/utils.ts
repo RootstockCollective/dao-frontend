@@ -139,9 +139,29 @@ export const actionFormatterMap = {
 }
 
 export const DISPLAY_NAME_SEPARATOR = 'D15PL4Y_N4M3:'
+export const DISCOURSE_LINK_SEPARATOR = 'DiscourseLink:'
+
 export const splitCombinedName = (name: string) => {
   const [proposalName, builderName] = name.split(DISPLAY_NAME_SEPARATOR)
   return { proposalName, builderName }
+}
+
+export const getDiscourseLinkFromProposalDescription = (description: string): string | undefined => {
+  const startIndex = description.indexOf(DISCOURSE_LINK_SEPARATOR)
+
+  if (startIndex === -1) {
+    return undefined
+  }
+
+  const afterLink = startIndex + DISCOURSE_LINK_SEPARATOR.length
+  const lastSpaceIndex = description.lastIndexOf(' ')
+
+  // If there's no space after the link, take everything to the end
+  if (lastSpaceIndex <= afterLink) {
+    return description.substring(afterLink).trim()
+  }
+
+  return description.substring(afterLink, lastSpaceIndex).trim()
 }
 
 // each parameter uses 32 bytes in the calldata but we only need the address which is 20 bytes
