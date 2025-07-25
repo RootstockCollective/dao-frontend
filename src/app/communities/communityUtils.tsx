@@ -1,7 +1,7 @@
 /* eslint-disable quotes */
 import { nftContracts } from '@/lib/contracts'
 import { FC, ReactNode } from 'react'
-import { Header, Paragraph } from '@/components/Typography'
+import { Header, Paragraph } from '@/components/TypographyNew'
 import { ipfsGatewayUrl } from '@/lib/ipfs'
 
 export interface CommunityItem {
@@ -11,7 +11,6 @@ export interface CommunityItem {
   description: string
   nftAddress: string
   numberOfMembers: number
-  longDescription: FC<{ activation?: ReactNode }>
   /** Default NFT image for the community */
   cover: string
   isMintable?: boolean
@@ -19,7 +18,9 @@ export interface CommunityItem {
   readMoreLink?: string
   discussionLink?: string
   campaignDetails?: FC<{ activation?: ReactNode }>
-  specialPower?: string
+  detailedDescription: ReactNode
+  specialPower: string
+  requirement: string
 }
 
 interface RowProps {
@@ -48,23 +49,15 @@ export const earlyAdoptersCommunity: CommunityItem = {
   numberOfMembers: 0,
   cover: ipfsGatewayUrl('QmUSCZPeHVUtdScnnBfFbxUA5ndC3xw3oNBZ83BnfEKMyK/101.png'),
   isMintable: true,
-  longDescription: (
-    { activation = 'JUL 2025' }: { activation?: ReactNode }, // DAO TODO: the whole object should be properly typed
-  ) => (
+  detailedDescription: (
     <>
-      <p className="mt-4">
-        The Early Adopters badge symbolizes foresight and commitment, awarded to the first pioneers who saw
-        the potential of RootstockCollective and staked their claim early. These digital trailblazers embody
-        the spirit of innovation and are the foundation of the community.
-      </p>
-      <div className={DEFAULT_CLASS_FOR_ROW_CONTAINER}>
-        <Row leftText="SPECIAL POWER" rightText="Voting Booster" />
-        <Row leftText="REQUIREMENT" rightText="First 150 stakers with 1 stRIF, Self-Claim" />
-        <Row leftText="ACTIVATION" rightText={activation} />
-      </div>
+      The Early Adopters badge symbolizes foresight and commitment, awarded to the first pioneers who saw the
+      potential of RootstockCollective and staked their claim early. These digital trailblazers embody the
+      spirit of innovation and are the foundation of the community.
     </>
   ),
   specialPower: 'Voting Booster',
+  requirement: 'First 150 stakers with 1 stRIF, Self-Claim',
 }
 
 export const ogFounders: CommunityItem = {
@@ -77,21 +70,14 @@ export const ogFounders: CommunityItem = {
   numberOfMembers: 0,
   cover: ipfsGatewayUrl('QmQ5roZkJfCYe7MwajxjVcLE958A6dY7FMSNTZzXChma7p'),
   isMintable: false,
-  longDescription: ({ activation = 'MAY 2025' }) => (
+  detailedDescription: (
     <>
-      <p className="mt-4">
-        The OG Founders badge celebrates the visionaries who laid the groundwork for
-        RootstockCollective&apos;s success. These early supporters are recognized as the architects of the
-        DAO&apos;s future.
-      </p>
-      <div className={DEFAULT_CLASS_FOR_ROW_CONTAINER}>
-        <Row leftText="SPECIAL POWER" rightText="Voting Booster" />
-        <Row leftText="REQUIREMENT" rightText="1 stRIF on 23rd Sept 2024, Self-Claim" />
-        <Row leftText="ACTIVATION" rightText={activation} />
-      </div>
+      The OG Founders badge celebrates the visionaries who laid the groundwork for RootstockCollective&apos;s
+      success. These early supporters are recognized as the architects of the DAO&apos;s future.
     </>
   ),
   specialPower: 'Voting Booster',
+  requirement: '1 stRIF on 23rd Sept 2024, Self-Claim',
 }
 
 export const ogFoundersEcosystemPartners: CommunityItem = {
@@ -104,21 +90,15 @@ export const ogFoundersEcosystemPartners: CommunityItem = {
   numberOfMembers: 0,
   cover: ipfsGatewayUrl('QmY7WQm4uGDg7xkq1fMJuUaTHEUw3UpoEg24nhpFZG8WcT'),
   isMintable: false,
-  longDescription: ({ activation = 'JUN 2025' }) => (
+  detailedDescription: (
     <>
-      <p className="mt-4">
-        The OG Partners badge honors external collaborators who joined RootstockCollective in its early days.
-        This badge represents their invaluable contributions to the ecosystem&apos;s growth and their role in
-        shaping its trajectory.
-      </p>
-      <div className={DEFAULT_CLASS_FOR_ROW_CONTAINER}>
-        <Row leftText="SPECIAL POWER" rightText="Voting Booster" />
-        <Row leftText="REQUIREMENT" rightText="Recognised Community contributions, 25k stRIF, Air-Drop" />
-        <Row leftText="ACTIVATION" rightText={activation} />
-      </div>
+      The OG Partners badge honors external collaborators who joined RootstockCollective in its early days.
+      This badge represents their invaluable contributions to the ecosystem&apos;s growth and their role in
+      shaping its trajectory.
     </>
   ),
   specialPower: 'Voting Booster',
+  requirement: 'Recognized Community contributions, 25k stRIF, Air-Drop',
 }
 
 export const ogFoundersExternalContributors: CommunityItem = {
@@ -131,21 +111,15 @@ export const ogFoundersExternalContributors: CommunityItem = {
   numberOfMembers: 0,
   cover: ipfsGatewayUrl('QmVqzzZ5eNR4abJydJVQp7dNcGBxWs698par1FxmyW37PH'),
   isMintable: false,
-  longDescription: ({ activation = 'MAR 2025' }) => (
+  detailedDescription: (
     <>
-      <p className="mt-4">
-        Awarded to those who demonstrated exceptional contributions during the collective&apos;s formative
-        stages. The OG Contributors badge recognizes the efforts of individuals who went above and beyond to
-        support the DAO&apos;s vision, starting with the Shepherds.
-      </p>
-      <div className={DEFAULT_CLASS_FOR_ROW_CONTAINER}>
-        <Row leftText="SPECIAL POWER" rightText="Delegation Kickstarter OR Voting Booster" />
-        <Row leftText="REQUIREMENT" rightText="Recognised Community contributions, Air-Drop" />
-        <Row leftText="ACTIVATION" rightText={activation} />
-      </div>
+      Awarded to those who demonstrated exceptional contributions during the collective&apos;s formative
+      stages. The OG Contributors badge recognizes the efforts of individuals who went above and beyond to
+      support the DAO&apos;s vision, starting with the Shepherds.
     </>
   ),
   specialPower: 'Delegation Kickstarter OR Voting Booster',
+  requirement: 'Recognized Community contributions, Air-Drop',
 }
 
 export const vanguardCommunity: CommunityItem = {
@@ -158,22 +132,14 @@ export const vanguardCommunity: CommunityItem = {
   numberOfMembers: 0,
   cover: ipfsGatewayUrl('QmZaxudWS9U6ozvbCVRHP4ksMPHDLX71yAT1mAz5xMKvzi/2.png'),
   isMintable: true,
-  longDescription: (
-    { activation = 'APR 2025' }: { activation?: ReactNode }, // DAO TODO: the whole object should be properly typed
-  ) => (
+  detailedDescription: (
     <>
-      <p className="mt-4">
-        The Vanguard badge celebrates the governance pioneers who actively participate in shaping the DAO.
-        These members are the guiding stars, lighting the path toward shared prosperity.
-      </p>
-      <div className={DEFAULT_CLASS_FOR_ROW_CONTAINER}>
-        <Row leftText="SPECIAL POWER" rightText="Voting Booster" />
-        <Row leftText="REQUIREMENT" rightText="Voted on 1 of the last 3 proposals, Self-Claim" />
-        <Row leftText="ACTIVATION" rightText={activation} />
-      </div>
+      The Vanguard badge celebrates the governance pioneers who actively participate in shaping the DAO. These
+      members are the guiding stars, lighting the path toward shared prosperity.
     </>
   ),
   specialPower: 'Voting Booster',
+  requirement: 'Voted on 1 of the last 3 proposals, Self-Claim',
   additionalChecks: [
     {
       name: 'hasVoted',
@@ -204,15 +170,6 @@ export const betaBuilders: CommunityItem = {
   numberOfMembers: 0,
   cover: ipfsGatewayUrl('bafybeibkzvkxkticjh26dngcym35mlzf6mwb3d24z3fgi5ty3pgbojcmme/41.jpg'),
   isMintable: false,
-  longDescription: () => (
-    <>
-      <p className="mt-4">
-        Beta Builders are the innovation heroes, creating the dApps and protocols that define our ecosystem.
-        This badge is a testament to their contributions to advancing Bitcoin&apos;s utility through
-        cutting-edge development.
-      </p>
-    </>
-  ),
   campaignDetails: ({ activation = 'MAY 2025' }) => (
     <>
       <div className={DEFAULT_CLASS_FOR_ROW_CONTAINER}>
@@ -222,7 +179,15 @@ export const betaBuilders: CommunityItem = {
       </div>
     </>
   ),
+  detailedDescription: (
+    <>
+      Beta Builders are the innovation heroes, creating the dApps and protocols that define our ecosystem.
+      This badge is a testament to their contributions to advancing Bitcoin&apos;s utility through
+      cutting-edge development.
+    </>
+  ),
   specialPower: 'Voting Booster',
+  requirement: 'First 50 CollectiveRewards Builders, Air-Drop',
   discussionLink: 'https://discord.com/channels/842021106956238848/1284160805671272458',
 }
 
@@ -234,9 +199,11 @@ export const rootstockHacktivator: CommunityItem = {
   nftAddress: '', // It's just a LINK - not an actual NFT
   numberOfMembers: 0,
   isMintable: false,
-  longDescription: () => '',
   readMoreLink: 'https://dev.rootstock.io/resources/contribute/hacktivator/',
   cover: '',
+  detailedDescription: <></>,
+  specialPower: '',
+  requirement: '',
 }
 
 export const communitiesToRender = [
@@ -248,10 +215,6 @@ export const communitiesToRender = [
   betaBuilders,
 ]
 
-export const communitiesMapByContract = communitiesToRender.reduce<Record<string, CommunityItem>>(
-  (prev, currentValue) => {
-    prev[currentValue.nftAddress] = currentValue
-    return prev
-  },
-  {},
+export const communitiesMapByContract = Object.fromEntries(
+  communitiesToRender.map(community => [community.nftAddress, community]),
 )

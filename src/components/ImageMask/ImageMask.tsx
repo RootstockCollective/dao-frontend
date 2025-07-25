@@ -85,6 +85,7 @@ function useLoadImage(imageUrl?: string) {
     img.onload = () => setImage(img)
     img.onerror = () => setImage(null)
     img.src = imageUrl
+    img.crossOrigin = 'anonymous'
 
     return () => {
       img.onload = null
