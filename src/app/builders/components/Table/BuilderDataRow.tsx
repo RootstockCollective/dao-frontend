@@ -14,7 +14,6 @@ import { cn, formatCurrency } from '@/lib/utils'
 import { BaseColumnId, Row, RowData, useTableActionsContext, useTableContext } from '@/shared/context'
 import { DisclaimerFlow } from '@/shared/walletConnection'
 import { useAppKitFlow } from '@/shared/walletConnection/connection/useAppKitFlow'
-import { TooltipContent, TooltipPortal } from '@radix-ui/react-tooltip'
 import { redirect, RedirectType } from 'next/navigation'
 import { FC, HtmlHTMLAttributes, ReactElement, ReactNode, useState } from 'react'
 import { Address } from 'viem'
@@ -288,7 +287,7 @@ export const BuilderDataRow: FC<BuilderDataRowProps> = ({ row, ...props }) => {
               <div className="flex justify-center">
                 <div className="bg-v3-text-80 rounded-sm shadow-sm w-64 flex flex-col items-start p-6 gap-2">
                   <Paragraph className="text-v3-bg-accent-100 text-sm w-full font-normal leading-5 rootstock-sans self-stretch">
-                    Click table line to select the Builder(s) that you’d like to back
+                    Click table line to select the Builder(s) that you would like to back
                   </Paragraph>
                 </div>
               </div>
@@ -321,18 +320,5 @@ export const BuilderDataRow: FC<BuilderDataRowProps> = ({ row, ...props }) => {
         <DisclaimerFlow onAgree={handleConnectWallet} onClose={handleCloseIntermediateStep} />
       )}
     </>
-  )
-}
-
-export const SelectBuildersTooltip = () => {
-  return (
-    <TooltipPortal>
-      <TooltipContent
-        id={'select-builders-tooltip'}
-        side="top"
-        align="start"
-        className="ml-16"
-      ></TooltipContent>
-    </TooltipPortal>
   )
 }
