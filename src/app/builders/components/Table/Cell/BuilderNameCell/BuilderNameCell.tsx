@@ -1,8 +1,8 @@
 import { BuilderState } from '@/app/builders/components/Table/BuilderTable.config'
-import { isActive } from '@/app/builders/components/Table/utils'
 import { Builder } from '@/app/collective-rewards/types'
 import {
   isBuilderDeactivated,
+  isBuilderInProgress,
   isBuilderKycRevoked,
   isBuilderPaused,
   isBuilderSelfPaused,
@@ -29,22 +29,51 @@ const stateTooltips: BuilderStateTooltip = {
   selfPaused: 'The Builder has paused their participation.',
 }
 
-const stateIcons: Record<DecorationOptionId, React.ReactNode> = {
-  extraRewards: <ParachuteIcon useGradient />,
-  deactivated: <WarningIcon color="#DEFF1A" />,
-  revoked: <WarningIcon color="#DEFF1A" />,
-  paused: <WarningIcon color="#DEFF1A" />,
-  inProgress: <HourglassIcon className="text-v3-bg-accent-0" />,
-  selfPaused: <WarningIcon color="#DEFF1A" />,
-}
+const stateConfig = {
+  extraRewards: {
+    icon: ParachuteIcon,
+    props: { useGradient: true },
+    defaultColor: '',
+    hoverColor: 'text-v3-bg-accent-100',
+  },
+  deactivated: {
+    icon: WarningIcon,
+    props: {},
+    defaultColor: 'text-brand-rootstock-lime',
+    hoverColor: 'text-v3-bg-accent-100',
+  },
+  revoked: {
+    icon: WarningIcon,
+    props: {},
+    defaultColor: 'text-brand-rootstock-lime',
+    hoverColor: 'text-v3-bg-accent-100',
+  },
+  paused: {
+    icon: WarningIcon,
+    props: {},
+    defaultColor: 'text-brand-rootstock-lime',
+    hoverColor: 'text-v3-bg-accent-100',
+  },
+  inProgress: {
+    icon: HourglassIcon,
+    props: { size: 18 },
+    defaultColor: 'text-v3-bg-accent-0',
+    hoverColor: 'text-v3-bg-accent-100',
+  },
+  selfPaused: {
+    icon: WarningIcon,
+    props: {},
+    defaultColor: 'text-brand-rootstock-lime',
+    hoverColor: 'text-v3-bg-accent-100',
+  },
+} as const
 
-const stateHoveredIcons: Record<DecorationOptionId, React.ReactNode> = {
-  extraRewards: <ParachuteIcon useGradient className="text-v3-bg-accent-100" />,
-  deactivated: <WarningIcon color="#DEFF1A" className="text-v3-bg-accent-100" />,
-  revoked: <WarningIcon color="#DEFF1A" className="text-v3-bg-accent-100" />,
-  paused: <WarningIcon color="#DEFF1A" className="text-v3-bg-accent-100" />,
-  inProgress: <HourglassIcon className="text-v3-bg-accent-100" />,
-  selfPaused: <WarningIcon color="#DEFF1A" className="text-v3-bg-accent-100" />,
+const createIcon = (decorationId: DecorationOptionId, isHovered: boolean) => {
+  const config = stateConfig[decorationId]
+  const IconComponent = config.icon
+  const colorClass = isHovered ? config.hoverColor : config.defaultColor
+
+  return <IconComponent {...config.props} className={colorClass} />
 }
 
 interface BuilderDecorationProps {
@@ -61,7 +90,7 @@ const BuilderDecoration: FC<BuilderDecorationProps> = ({ decorationId, isHighlig
       className={cn('rounded-sm z-50 bg-v3-text-80 text-v3-bg-accent-60 p-6 text-sm', className)}
       text={stateTooltips[decorationId]}
     >
-      {isHighlighted ? stateHoveredIcons[decorationId] : stateIcons[decorationId]}
+      {createIcon(decorationId, Boolean(isHighlighted))}
     </Tooltip>
   )
 }
@@ -89,7 +118,7 @@ const getStateDecorationId = (builder: Builder): Exclude<DecorationOptionId, 'ex
     return 'selfPaused'
   }
 
-  if (!isActive(builder.stateFlags)) {
+  if (isBuilderInProgress(builder)) {
     return 'inProgress'
   }
 

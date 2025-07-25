@@ -3,7 +3,9 @@
 import { AllocationsContext } from '@/app/collective-rewards/allocations/context'
 import { Builder, BuilderRewardsSummary } from '@/app/collective-rewards/types'
 import {
+  isBuilderActive,
   isBuilderDeactivated,
+  isBuilderInProgress,
   isBuilderKycRevoked,
   isBuilderPaused,
   isBuilderSelfPaused,
@@ -20,15 +22,14 @@ import { BuilderDataRow, convertDataToRowData } from './BuilderDataRow'
 import { BuilderHeaderRow } from './BuilderHeaderRow'
 import { ColumnId, DEFAULT_HEADERS, PAGE_SIZE } from './BuilderTable.config'
 import { Action, ActionCellProps } from './Cell/ActionCell'
-import { isActive } from './utils'
 
 // --- Filter builders by state ---
-const filterActive = (builder: Builder) => isActive(builder.stateFlags)
+const filterActive = (builder: Builder) => isBuilderActive(builder.stateFlags)
 const filterDeactivated = (builder: Builder) => isBuilderDeactivated(builder)
 const filterKycRevoked = (builder: Builder) => isBuilderKycRevoked(builder.stateFlags)
 const filterPaused = (builder: Builder) =>
   isBuilderPaused(builder.stateFlags) || isBuilderSelfPaused(builder.stateFlags)
-const filterInProgress = (builder: Builder) => !isActive(builder.stateFlags)
+const filterInProgress = (builder: Builder) => isBuilderInProgress(builder)
 
 const filterMap: Record<BuilderFilterOptionId, (builder: Builder) => boolean> = {
   active: filterActive,

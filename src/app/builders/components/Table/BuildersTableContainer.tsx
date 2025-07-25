@@ -9,20 +9,20 @@ import { useGetBuilders } from '@/app/collective-rewards/user'
 import { BuilderFilterOption, builderFilterOptions } from '../../BuilderFilterDropdown/constants'
 import { Builder } from '@/app/collective-rewards/types'
 import {
+  isBuilderActive,
   isBuilderDeactivated,
   isBuilderKycRevoked,
   isBuilderPaused,
   isBuilderSelfPaused,
 } from '@/app/collective-rewards/utils'
-import { isActive } from './utils'
 
 const filterMap: Record<BuilderFilterOptionId, (builder: Builder) => boolean> = {
-  active: (builder: Builder) => isActive(builder.stateFlags),
+  active: (builder: Builder) => isBuilderActive(builder.stateFlags),
   deactivated: (builder: Builder) => isBuilderDeactivated(builder),
   revoked: (builder: Builder) => isBuilderKycRevoked(builder.stateFlags),
   paused: (builder: Builder) =>
     isBuilderPaused(builder.stateFlags) || isBuilderSelfPaused(builder.stateFlags),
-  inProgress: (builder: Builder) => !isActive(builder.stateFlags),
+  inProgress: (builder: Builder) => !isBuilderActive(builder.stateFlags),
   all: () => true,
 }
 
