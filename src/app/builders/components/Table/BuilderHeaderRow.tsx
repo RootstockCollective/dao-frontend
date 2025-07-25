@@ -6,11 +6,12 @@ import { ReactElement, Suspense } from 'react'
 
 import { Button } from '@/components/ButtonNew/Button'
 import { CommonComponentProps } from '@/components/commonProps'
-import { CloseIconKoto } from '@/components/Icons'
+import { CloseIconKoto, KotoQuestionMarkIcon } from '@/components/Icons'
 import { ArrowDownWFill } from '@/components/Icons/v3design/ArrowDownWFill'
 import { ArrowsUpDown } from '@/components/Icons/v3design/ArrowsUpDown'
 import { ArrowUpWFill } from '@/components/Icons/v3design/ArrowUpWFill'
 import { TableHeaderCell, TableHeaderNode } from '@/components/TableNew'
+import { Tooltip, TooltipProps } from '@/components/Tooltip'
 import { Label, Paragraph, Span } from '@/components/TypographyNew'
 import { cn } from '@/lib/utils'
 import { redirect, RedirectType } from 'next/navigation'
@@ -121,15 +122,28 @@ export const BuilderHeaderCell = ({
   )
 }
 
-export const HeaderCellBase = <ColumnId extends string>({
+const QuestionTooltip = ({ className, ...props }: Omit<TooltipProps, 'children'>) => {
+  return (
+    <Tooltip
+      className={cn('rounded-sm z-50 bg-v3-text-80 text-v3-bg-accent-60 p-6 text-sm', className)}
+      {...props}
+    >
+      <KotoQuestionMarkIcon />
+    </Tooltip>
+  )
+}
+
+export const HeaderCell = <ColumnId extends string>({
   className,
   children,
   columnId,
   columnTransforms,
+  tooltip,
   ...props
 }: CommonComponentProps & {
   columnId: ColumnId
   columnTransforms: ColumnTransforms<ColumnId>
+  tooltip?: Omit<TooltipProps, 'children'>
 }): ReactNode => {
   const { sort, columns } = useTableContext<ColumnId>()
   const dispatch = useTableActionsContext()
@@ -158,26 +172,9 @@ export const HeaderCellBase = <ColumnId extends string>({
         <TableHeaderNode className={isSortable ? 'cursor-pointer' : 'cursor-default'}>
           {children}
         </TableHeaderNode>
+        {tooltip && <QuestionTooltip {...tooltip} />}
       </TableHeaderCell>
     </>
-  )
-}
-
-const HeaderCell = ({
-  className,
-  children,
-  columnId,
-  ...props
-}: CommonComponentProps & { columnId: ColumnId }): ReactNode => {
-  return (
-    <HeaderCellBase<ColumnId>
-      className={className}
-      columnId={columnId}
-      columnTransforms={COLUMN_TRANSFORMS}
-      {...props}
-    >
-      {children}
-    </HeaderCellBase>
   )
 }
 
@@ -217,27 +214,35 @@ export const BuilderHeaderRow = ({ actions }: BuilderHeaderRowProps): ReactEleme
         <BuilderHeaderCell key="builder" columnId="builder" />
         {actionCount <= 1 && (
           <>
-            <HeaderCell key="backer_rewards" columnId="backer_rewards">
+            <HeaderCell key="backer_rewards" columnId="backer_rewards" columnTransforms={COLUMN_TRANSFORMS}>
               <HeaderTitle>Backer Rewards</HeaderTitle>
               <HeaderSubtitle>current % - change</HeaderSubtitle>
             </HeaderCell>
-            <HeaderCell key="rewards_past_cycle" columnId="rewards_past_cycle">
+            <HeaderCell
+              key="rewards_past_cycle"
+              columnId="rewards_past_cycle"
+              columnTransforms={COLUMN_TRANSFORMS}
+            >
               <HeaderTitle>Rewards</HeaderTitle>
               <HeaderSubtitle>past cycle</HeaderSubtitle>
             </HeaderCell>
-            <HeaderCell key="rewards_upcoming" columnId="rewards_upcoming">
+            <HeaderCell
+              key="rewards_upcoming"
+              columnId="rewards_upcoming"
+              columnTransforms={COLUMN_TRANSFORMS}
+            >
               <HeaderTitle>Rewards</HeaderTitle>
               <HeaderSubtitle>upcoming cycle, estimated</HeaderSubtitle>
             </HeaderCell>
-            <HeaderCell key="backing" columnId="backing">
+            <HeaderCell key="backing" columnId="backing" columnTransforms={COLUMN_TRANSFORMS}>
               <HeaderTitle>Backing</HeaderTitle>
               <HeaderSubtitle className="h-full text-v3-bg-accent-80">balls</HeaderSubtitle>{' '}
             </HeaderCell>
-            <HeaderCell key="allocations" columnId="allocations">
+            <HeaderCell key="allocations" columnId="allocations" columnTransforms={COLUMN_TRANSFORMS}>
               <HeaderTitle>Backing Share</HeaderTitle>
               <HeaderSubtitle>%</HeaderSubtitle>
             </HeaderCell>
-            <HeaderCell columnId="actions">
+            <HeaderCell columnId="actions" columnTransforms={COLUMN_TRANSFORMS}>
               <HeaderTitle>Actions</HeaderTitle>
               <HeaderSubtitle className="h-full text-v3-bg-accent-80">balls</HeaderSubtitle>{' '}
             </HeaderCell>
