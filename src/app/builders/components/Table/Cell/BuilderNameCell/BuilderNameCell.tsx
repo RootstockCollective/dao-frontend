@@ -1,3 +1,5 @@
+import { BuilderState } from '@/app/builders/components/Table/BuilderTable.config'
+import { isActive } from '@/app/builders/components/Table/utils'
 import { Builder } from '@/app/collective-rewards/types'
 import {
   isBuilderDeactivated,
@@ -12,10 +14,8 @@ import { WarningIcon } from '@/components/Icons/WarningIcon'
 import { Tooltip } from '@/components/Tooltip/Tooltip'
 import { Paragraph } from '@/components/TypographyNew'
 import { cn, truncate } from '@/lib/utils'
-import { FC } from 'react'
-import { BuilderState } from '@/app/builders/components/Table/BuilderTable.config'
-import { isActive } from '@/app/builders/components/Table/utils'
 import Link from 'next/link'
+import { FC } from 'react'
 
 type DecorationOptionId = Exclude<BuilderState, 'active'> | 'extraRewards'
 type BuilderStateTooltip = Record<DecorationOptionId, string>
@@ -58,7 +58,7 @@ const BuilderDecoration: FC<BuilderDecorationProps> = ({ decorationId, isHighlig
     <Tooltip
       side="top"
       align="center"
-      className={cn('bg-white rounded p-6 shadow-lg text-v3-bg-accent-100', className)}
+      className={cn('rounded-sm z-50 bg-v3-text-80 text-v3-bg-accent-60 p-6 text-sm', className)}
       text={stateTooltips[decorationId]}
     >
       {isHighlighted ? stateHoveredIcons[decorationId] : stateIcons[decorationId]}
