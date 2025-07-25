@@ -11,8 +11,7 @@ export const useAllocateVotes = () => {
 
   const {
     initialState: { allocations: initialAllocations },
-    state: { allocations, getBuilder, isValidState, resetVersion },
-    actions: { refreshData },
+    state: { allocations, getBuilder, isValidState, refetchRawAllocations },
   } = useContext(AllocationsContext)
 
   const canSaveAllocation = isValidState()
@@ -24,9 +23,9 @@ export const useAllocateVotes = () => {
   // Trigger data refresh after successful transaction
   useEffect(() => {
     if (isSuccess) {
-      refreshData()
+      refetchRawAllocations()
     }
-  }, [isSuccess, refreshData])
+  }, [isSuccess, refetchRawAllocations])
 
   const saveAllocations = () => {
     const [gauges, allocs] = getVoteAllocations({

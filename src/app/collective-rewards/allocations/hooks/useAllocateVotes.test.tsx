@@ -47,8 +47,7 @@ describe('useAllocateVotes', () => {
     beforeEach(() => {
       vi.mocked(useContext).mockReturnValue({
         initialState: {},
-        state: { isValidState: isValidStateMock.mockReturnValue(true) },
-        actions: { refreshData: vi.fn() },
+        state: { isValidState: isValidStateMock.mockReturnValue(true), refetchRawAllocations: vi.fn() },
       } as unknown as ReturnType<typeof useContext>)
 
       vi.mocked(useWriteContract).mockReturnValue({
