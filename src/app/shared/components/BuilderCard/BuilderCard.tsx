@@ -18,7 +18,7 @@ import { AnimatePresence, motion } from 'motion/react'
 import { FC, useEffect, useState } from 'react'
 import { BuilderCardControlProps } from './BuilderCardControl'
 import { WindshieldWiperAnimation } from './WindshieldWiperAnimation'
-import { useRouter } from 'next/router'
+import { useRouter } from 'next/navigation'
 
 const Warning = ({
   className,
