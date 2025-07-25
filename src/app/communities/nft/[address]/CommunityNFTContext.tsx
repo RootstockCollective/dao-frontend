@@ -67,7 +67,6 @@ interface CommunityNFTProviderProps {
  */
 export function CommunityNFTProvider({ children, nftAddress }: CommunityNFTProviderProps) {
   const router = useRouter()
-  const { setMessage } = useAlertContext()
   const { address } = useAccount()
   const {
     tokensAvailable,
@@ -119,7 +118,7 @@ export function CommunityNFTProvider({ children, nftAddress }: CommunityNFTProvi
         const result = check(data)
         if (!result) {
           setIsChecking(false)
-          setMessage(nftAlertMessages.NFT_ALERT_GENERIC(alertMessage))
+          showToast(nftAlertMessages.NFT_ALERT_GENERIC(alertMessage))
           return false
         }
       } catch (err) {

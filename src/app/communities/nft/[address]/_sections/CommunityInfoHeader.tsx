@@ -16,12 +16,13 @@ import { useNFTBoosterContext } from '@/app/providers/NFT/BoosterContext'
 import { ConnectButtonComponentProps } from '@/shared/walletConnection'
 import { ConnectWorkflow } from '@/shared/walletConnection/connection/ConnectWorkflow'
 import { ClaimItButton } from '../_components/ClaimItButton'
+import { ArrowUpRightLightIcon } from '@/components/Icons'
 
 export function CommunityInfoHeader({ address: nftAddress }: { address: Address }) {
   const { isConnected } = useAccount()
   const { image, tokenId = 0, isMember, isMintable, tokensAvailable } = useCommunityNFT()
 
-  const { title, specialPower, requirement, detailedDescription } = useMemo(
+  const { title, specialPower, requirement, detailedDescription, discussionLink } = useMemo(
     () => communitiesMapByContract[nftAddress.toLowerCase()],
     [nftAddress],
   )
@@ -48,7 +49,16 @@ export function CommunityInfoHeader({ address: nftAddress }: { address: Address 
         </div>
         {/* Description block */}
         <Paragraph className="mt-12">{detailedDescription}</Paragraph>
-        {/* Table */}
+        {/* Discussion button */}
+        {discussionLink && (
+          <a href={discussionLink} target="_blank" rel="noopener noreferrer">
+            <Button variant="secondary-outline" className="mt-4 flex gap-1 font-rootstock-sans">
+              Join the discussion
+              <ArrowUpRightLightIcon size={20} />
+            </Button>
+          </a>
+        )}
+        {/* Little table */}
         <div className={cn('mt-6 flex gap-4', isMember ? 'flex-col' : 'flex-row')}>
           {/* Special power column */}
           <div className="flex flex-col gap-2">
@@ -109,19 +119,6 @@ import { NFTMiscData } from '@/app/communities/nft/[address]/_components/NFTMisc
         <div className="flex-1">
 
 
-          Conditionally render Discussion button
-          {discussionLink && (
-            <div className="mb-[24px]">
-              <a
-                href={discussionLink}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="inline-block px-4 py-2 bg-white text-black rounded-md hover:bg-gray-200 transition-colors font-bold"
-              >
-                Discussion
-              </a>
-            </div>
-          )}
           <div className="mb-[24px] font-extralight">
             <>
               {nftInfo?.campaignDetails &&
