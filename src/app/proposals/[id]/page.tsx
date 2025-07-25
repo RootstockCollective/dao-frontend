@@ -408,7 +408,7 @@ const PageWithProposal = (proposal: ParsedProposal) => {
                 <Span variant="tag-s" className="text-white/70" bold>
                   Community discussion
                 </Span>
-                {discourseLink && (
+                {discourseLink ? (
                   <Paragraph variant="body" className="text-sm font-medium text-primary">
                     <a
                       href={discourseLink}
@@ -419,6 +419,8 @@ const PageWithProposal = (proposal: ParsedProposal) => {
                       See on Discourse
                     </a>
                   </Paragraph>
+                ) : (
+                  ' - '
                 )}
               </div>
             </div>

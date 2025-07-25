@@ -28,7 +28,7 @@ export default function ActivationProposalReview() {
     try {
       if (!record?.form || record?.category !== ProposalCategory.Activation) return
       const { proposalName, builderAddress, description, builderName, discourseLink } = record.form
-      const proposalDescription = `${proposalName}${DISPLAY_NAME_SEPARATOR}${builderName};${description} ${DISCOURSE_LINK_SEPARATOR}:${discourseLink} `
+      const proposalDescription = `${proposalName}${DISPLAY_NAME_SEPARATOR}${builderName};${description} ${DISCOURSE_LINK_SEPARATOR}${discourseLink} `
       // Here the user will see Metamask window and confirm his tx
       const txHash = await onCreateBuilderWhitelistProposal(builderAddress, proposalDescription)
       const onComplete = () => setLoading(false)
