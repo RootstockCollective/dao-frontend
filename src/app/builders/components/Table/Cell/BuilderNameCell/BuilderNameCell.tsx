@@ -34,44 +34,44 @@ const stateConfig = {
     icon: ParachuteIcon,
     props: { useGradient: true },
     defaultColor: '',
-    hoverColor: 'text-v3-bg-accent-100',
+    highlightColor: 'text-v3-bg-accent-100',
   },
   deactivated: {
     icon: WarningIcon,
     props: {},
     defaultColor: 'text-brand-rootstock-lime',
-    hoverColor: 'text-v3-bg-accent-100',
+    highlightColor: 'text-v3-bg-accent-100',
   },
   revoked: {
     icon: WarningIcon,
     props: {},
     defaultColor: 'text-brand-rootstock-lime',
-    hoverColor: 'text-v3-bg-accent-100',
+    highlightColor: 'text-v3-bg-accent-100',
   },
   paused: {
     icon: WarningIcon,
     props: {},
     defaultColor: 'text-brand-rootstock-lime',
-    hoverColor: 'text-v3-bg-accent-100',
+    highlightColor: 'text-v3-bg-accent-100',
   },
   inProgress: {
     icon: HourglassIcon,
     props: { size: 18 },
     defaultColor: 'text-v3-bg-accent-0',
-    hoverColor: 'text-v3-bg-accent-100',
+    highlightColor: 'text-v3-bg-accent-100',
   },
   selfPaused: {
     icon: WarningIcon,
     props: {},
     defaultColor: 'text-brand-rootstock-lime',
-    hoverColor: 'text-v3-bg-accent-100',
+    highlightColor: 'text-v3-bg-accent-100',
   },
 } as const
 
-const createIcon = (decorationId: DecorationOptionId, isHovered: boolean) => {
+const createIcon = (decorationId: DecorationOptionId, isHighlighted: boolean) => {
   const config = stateConfig[decorationId]
   const IconComponent = config.icon
-  const colorClass = isHovered ? config.hoverColor : config.defaultColor
+  const colorClass = isHighlighted ? config.highlightColor : config.defaultColor
 
   return <IconComponent {...config.props} className={colorClass} />
 }
