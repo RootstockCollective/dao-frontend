@@ -3,11 +3,7 @@ import { VotingPowerCard } from '@/app/delegate/components/VotingPowerContainer/
 import { NotConnectedContent } from '@/app/delegate/sections/VotingPowerSection/NotConnectedVotingPowerContainer'
 import { useAccount } from 'wagmi'
 
-export function ProposalsSummary({
-  totalProposals,
-}: {
-  totalProposals: string
-}) {
+export function ProposalsSummary({ totalProposals }: { totalProposals: string }) {
   const { isConnected } = useAccount()
   return (
     <>
