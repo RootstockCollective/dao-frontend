@@ -7,8 +7,9 @@ import { usePricesContext } from '@/shared/context'
 import { useReadGauges } from '@/shared/hooks/contracts'
 import { useMemo } from 'react'
 import { TOKENS } from '@/lib/tokens'
+import { Address } from 'viem'
 
-export const useGetBuilderRewardsSummary = (currency = 'USD') => {
+export const useGetBuilderRewardsSummary = (backer?: Address, currency = 'USD') => {
   const { rif, rbtc } = TOKENS
   const {
     data: estimatedRewards,
@@ -38,6 +39,21 @@ export const useGetBuilderRewardsSummary = (currency = 'USD') => {
     isLoading: logsLoading,
     error: logsError,
   } = useGetGaugesNotifyReward(gauges, undefined, fromTimestamp, toTimestamp)
+
+  const {
+    data: allocationOf,
+    isLoading: allocationOfLoading,
+    error: allocationOfError,
+  } = useReadGauges(
+    {
+      addresses: gauges,
+      functionName: 'allocationOf',
+      args: [backer as Address],
+    },
+    {
+      enabled: !!backer,
+    },
+  )
 
   const { prices } = usePricesContext()
 
@@ -70,8 +86,11 @@ export const useGetBuilderRewardsSummary = (currency = 'USD') => {
       const rifLastCycleRewardsAmount = rifBuildersRewardsAmount[gauge] ?? 0n
       const rbtcLastCycleRewardsAmount = rbtcBuildersRewardsAmount[gauge] ?? 0n
 
+      const backerAllocation = allocationOf[index] ?? 0n
+
       return {
         ...builder,
+        backerAllocation,
         totalAllocationPercentage,
         lastCycleRewards: {
           rif: {
@@ -93,16 +112,31 @@ export const useGetBuilderRewardsSummary = (currency = 'USD') => {
         },
       }
     })
-  }, [estimatedRewards, totalAllocation, notifyRewardEventLastCycle, prices, rif, rbtc, currency])
+  }, [
+    estimatedRewards,
+    totalAllocation,
+    notifyRewardEventLastCycle,
+    prices,
+    rif,
+    rbtc,
+    currency,
+    allocationOf,
+  ])
 
   const isLoading =
     estimatedRewardsLoading ||
+    allocationOfLoading ||
     totalAllocationLoading ||
     lastCycleRewardsLoading ||
     logsLoading ||
     cycleLoading
   const error =
-    estimatedRewardsError || totalAllocationError || lastCycleRewardsError || logsError || cycleError
+    estimatedRewardsError ||
+    allocationOfError ||
+    totalAllocationError ||
+    lastCycleRewardsError ||
+    logsError ||
+    cycleError
 
   return {
     data,

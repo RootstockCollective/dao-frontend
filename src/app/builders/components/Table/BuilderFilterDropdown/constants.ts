@@ -5,7 +5,7 @@ import {
   BUILDER_KYC_REVOKED,
   BUILDER_PAUSED,
 } from '@/app/collective-rewards/utils/isBuilderOperational'
-import { BuilderState } from '../components/Table/BuilderTable.config'
+import { BuilderState } from '../BuilderTable.config'
 
 export type BuilderFilterOptionId = 'all' | Exclude<BuilderState, 'selfPaused'>
 

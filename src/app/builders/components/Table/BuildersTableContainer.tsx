@@ -3,10 +3,14 @@ import { ActionsContainer } from '@/components/containers'
 import { Header } from '@/components/TypographyNew'
 import { withTableContext } from '@/shared/context'
 import { ReactElement, useState, useMemo } from 'react'
-import { BuilderFilterDropdown, BuilderFilterOptionId } from '../../BuilderFilterDropdown'
+import {
+  BuilderFilterDropdown,
+  BuilderFilterOptionId,
+  BuilderFilterOption,
+  builderFilterOptions,
+} from './BuilderFilterDropdown'
 import { BuildersTable } from './BuildersTable'
 import { useGetBuilders } from '@/app/collective-rewards/user'
-import { BuilderFilterOption, builderFilterOptions } from '../../BuilderFilterDropdown/constants'
 import { Builder } from '@/app/collective-rewards/types'
 import {
   isBuilderActive,

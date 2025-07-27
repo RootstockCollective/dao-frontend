@@ -6,7 +6,7 @@ import {
   DropdownItem,
   DropdownTrigger,
   DropdownValue,
-} from '../../../components/SingleSelectDropdown/SingleSelectDropdown'
+} from '@/components/SingleSelectDropdown/SingleSelectDropdown'
 import { builderFilterOptions, type BuilderFilterOption, type BuilderFilterOptionId } from './constants'
 
 export interface BuilderFilterDropdownProps extends CommonComponentProps {

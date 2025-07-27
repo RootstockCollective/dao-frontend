@@ -1,7 +1,7 @@
 'use client'
 
 import { Column, Sort, TableAction, useTableActionsContext, useTableContext } from '@/shared/context'
-import { SORT_DIRECTIONS } from '@/shared/context/TableContext/types'
+import { SORT_DIRECTION_ASC, SORT_DIRECTIONS } from '@/shared/context/TableContext/types'
 import { ReactElement, Suspense } from 'react'
 
 import { Button } from '@/components/ButtonNew/Button'
@@ -68,6 +68,13 @@ const dispatchSortRoundRobin = <ColumnId extends string>(
   columnId: ColumnId,
   currentSort: Sort<ColumnId>,
 ) => {
+  // If the column is different, we want to sort by the column in ascending order.
+  const isSameColumn = currentSort.columnId === columnId
+  if (!isSameColumn) {
+    dispatch({ type: 'SORT_BY_COLUMN', payload: { columnId, direction: SORT_DIRECTION_ASC } })
+    return
+  }
+  // If the column is the same as the current sort, we want to toggle the sort direction.
   const currentSortIndex = SORT_DIRECTIONS.indexOf(currentSort.direction)
   const nextSortIndex = (currentSortIndex + 1) % SORT_DIRECTIONS.length
   const nextSort = SORT_DIRECTIONS[nextSortIndex]
