@@ -41,15 +41,14 @@ export type BuilderRowData = RowData<ColumnId, ColumnIdToCellPropsMap[ColumnId]>
 
 export const convertDataToRowData = (
   data: BuilderRewardsSummary[],
-  userAllocations: (bigint | undefined)[],
   prices: GetPricesResult,
 ): Row<ColumnId>[] => {
   // FIXME: fix the Row type to take a generic for custom RowData type
 
   if (!data.length) return []
 
-  return data.map<{ id: Address; data: ColumnIdToCellPropsMap }>((builder, index) => {
-    const allocation = userAllocations[index] ?? 0n
+  return data.map<{ id: Address; data: ColumnIdToCellPropsMap }>(builder => {
+    const allocation = builder.backerAllocation ?? 0n
     const actionType = getActionType(builder, allocation > 0n)
 
     const rifPrice = prices[RIF]?.price ?? 0

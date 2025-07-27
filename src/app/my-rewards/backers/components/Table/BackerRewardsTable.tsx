@@ -12,16 +12,21 @@ import { useAccount } from 'wagmi'
 import { BackerRewardsDataRow, convertDataToRowData } from './BackerRewardsDataRow'
 import { BackerRewardsHeaderRow } from './BackerRewardsHeaderRow'
 import { ColumnId, DEFAULT_HEADERS, PAGE_SIZE } from './BackerRewardsTable.config'
+import { Sort } from '@/shared/context/TableContext/types'
+import { getCombinedFiatAmount } from '@/app/collective-rewards/utils'
+import { Big } from 'big.js'
 
 type PagedFilter = {
   backer: Address
   tokens: { [token: string]: Token }
   pageOptions: { start: number; end: number }
+  sort: Sort<ColumnId>
 }
 const usePagedFilteredBackerRewards = ({
   backer,
   tokens,
   pageOptions,
+  sort,
 }: PagedFilter): {
   data: { pagedRewards: BackerRewards[]; totalRewards: number }
   isLoading: boolean
@@ -29,11 +34,46 @@ const usePagedFilteredBackerRewards = ({
 } => {
   const { data: backerRewards, isLoading, error } = useGetBackerRewards(backer, tokens)
   const data = useMemo(() => {
-    const totalRewards = backerRewards?.length ?? 0
-    const pagedRewards = backerRewards?.slice(pageOptions.start, pageOptions.end)
+    const { columnId, direction } = sort
+
+    const comparators: Partial<Record<ColumnId, (a: BackerRewards, b: BackerRewards) => number>> = {
+      builder: (a, b) => (a.builderName || '').localeCompare(b.builderName || ''),
+
+      backer_rewards: (a, b) => Number(a.backerRewardPct.current - b.backerRewardPct.current),
+
+      backing: (a, b) => {
+        const aValue = getCombinedFiatAmount([a.totalAllocation.rif.amount])
+        const bValue = getCombinedFiatAmount([b.totalAllocation.rif.amount])
+        return Big(aValue).sub(bValue).toNumber()
+      },
+      estimated: (a, b) => {
+        const aValue = getCombinedFiatAmount([a.estimatedRewards.rif.amount, a.estimatedRewards.rbtc.amount])
+        const bValue = getCombinedFiatAmount([b.estimatedRewards.rif.amount, b.estimatedRewards.rbtc.amount])
+        return Big(aValue).sub(bValue).toNumber()
+      },
+      unclaimed: (a, b) => {
+        const aValue = getCombinedFiatAmount([a.claimableRewards.rif.amount, a.claimableRewards.rbtc.amount])
+        const bValue = getCombinedFiatAmount([b.claimableRewards.rif.amount, b.claimableRewards.rbtc.amount])
+        return Big(aValue).sub(bValue).toNumber()
+      },
+      total: (a, b) => {
+        const aValue = getCombinedFiatAmount([a.allTimeRewards.rif.amount, a.allTimeRewards.rbtc.amount])
+        const bValue = getCombinedFiatAmount([b.allTimeRewards.rif.amount, b.allTimeRewards.rbtc.amount])
+        return Big(aValue).sub(bValue).toNumber()
+      },
+    }
+
+    const sortFn = columnId && comparators[columnId]
+
+    const sorted = sortFn
+      ? [...backerRewards].sort((a, b) => (direction === 'asc' ? sortFn(a, b) : sortFn(b, a)))
+      : backerRewards
+
+    const totalRewards = backerRewards.length
+    const pagedRewards = sorted.slice(pageOptions.start, pageOptions.end)
 
     return { pagedRewards, totalRewards } as const
-  }, [backerRewards, pageOptions])
+  }, [backerRewards, pageOptions, sort])
 
   return { data, isLoading, error }
 }
@@ -45,7 +85,7 @@ export const BackerRewardsTable = () => {
 
   const { address: userAddress } = useAccount()
 
-  const { rows, columns, selectedRows } = useTableContext<ColumnId>()
+  const { rows, columns, selectedRows, sort } = useTableContext<ColumnId>()
   const [actions, setActions] = useState<Action[]>([])
   const dispatch = useTableActionsContext<ColumnId>()
 
@@ -58,6 +98,7 @@ export const BackerRewardsTable = () => {
     backer: userAddress!,
     tokens: TOKENS,
     pageOptions,
+    sort,
   })
 
   const { prices } = usePricesContext()

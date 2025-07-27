@@ -11,16 +11,18 @@ import {
 } from '@/app/collective-rewards/utils'
 import TablePager from '@/components/TableNew/TablePager'
 import { usePricesContext, useTableActionsContext, useTableContext } from '@/shared/context'
-import { useReadGauges } from '@/shared/hooks/contracts'
 import { Suspense, useEffect, useMemo, useState } from 'react'
 import { Address } from 'viem'
 import { useAccount } from 'wagmi'
-import { BuilderFilterOptionId } from '../../BuilderFilterDropdown'
+import { BuilderFilterOptionId } from './BuilderFilterDropdown'
 import { useGetBuilderRewardsSummary } from '../../hooks/useGetBuilderRewardsSummary'
 import { BuilderDataRow, convertDataToRowData } from './BuilderDataRow'
 import { BuilderHeaderRow } from './BuilderHeaderRow'
 import { ColumnId, DEFAULT_HEADERS, PAGE_SIZE } from './BuilderTable.config'
 import { Action, ActionCellProps } from './Cell/ActionCell'
+import { Sort } from '@/shared/context/TableContext/types'
+import { getCombinedFiatAmount } from '@/app/collective-rewards/utils/getCombinedFiatAmount'
+import { Big } from 'big.js'
 
 // --- Filter builders by state ---
 const filterActive = (builder: Builder) => isBuilderActive(builder.stateFlags)
@@ -41,25 +43,70 @@ const filterMap: Record<BuilderFilterOptionId, (builder: Builder) => boolean> = 
 
 // TODO: this is a temporary solution to filter builders by state.
 type PagedFilter = {
+  backer?: Address
   filterOption: BuilderFilterOptionId
   pageOptions: { start: number; end: number }
+  sort: Sort<ColumnId>
 }
 const usePagedFilteredBuildersRewards = ({
+  backer,
   filterOption,
   pageOptions,
+  sort,
 }: PagedFilter): {
   data: { pagedRewards: BuilderRewardsSummary[]; totalRewards: number }
   isLoading: boolean
   error: Error | null
 } => {
-  const { data: buildersRewardsData, isLoading, error } = useGetBuilderRewardsSummary()
+  const { data: buildersRewardsData, isLoading, error } = useGetBuilderRewardsSummary(backer)
+
   const data = useMemo(() => {
-    const filtered = buildersRewardsData?.filter(filterMap[filterOption])
-    const totalRewards = filtered?.length ?? 0
-    const pagedRewards = filtered?.slice(pageOptions.start, pageOptions.end)
+    const { columnId, direction } = sort
+
+    const filtered = buildersRewardsData.filter(filterMap[filterOption])
+
+    // Comparator map
+    const comparators: Partial<
+      Record<ColumnId, (a: BuilderRewardsSummary, b: BuilderRewardsSummary) => number>
+    > = {
+      builder: (a, b) => (a.builderName || '').localeCompare(b.builderName || ''),
+
+      backer_rewards: (a, b) => Number(a.backerRewardPct.current - b.backerRewardPct.current),
+
+      rewards_past_cycle: (a, b) => {
+        const aValue = getCombinedFiatAmount([a.lastCycleRewards.rif.amount, a.lastCycleRewards.rbtc.amount])
+        const bValue = getCombinedFiatAmount([b.lastCycleRewards.rif.amount, b.lastCycleRewards.rbtc.amount])
+        return Big(aValue).sub(bValue).toNumber()
+      },
+
+      rewards_upcoming: (a, b) => {
+        const aValue = getCombinedFiatAmount([
+          a.builderEstimatedRewards.rif.amount,
+          a.builderEstimatedRewards.rbtc.amount,
+        ])
+        const bValue = getCombinedFiatAmount([
+          b.builderEstimatedRewards.rif.amount,
+          b.builderEstimatedRewards.rbtc.amount,
+        ])
+        return Big(aValue).sub(bValue).toNumber()
+      },
+
+      backing: (a, b) => Number((a.backerAllocation ?? 0n) - (b.backerAllocation ?? 0n)),
+
+      allocations: (a, b) => Number(a.totalAllocationPercentage - b.totalAllocationPercentage),
+    }
+
+    const sortFn = columnId && comparators[columnId]
+
+    const sorted = sortFn
+      ? [...filtered].sort((a, b) => (direction === 'asc' ? sortFn(a, b) : sortFn(b, a)))
+      : filtered
+
+    const totalRewards = buildersRewardsData.length
+    const pagedRewards = sorted.slice(pageOptions.start, pageOptions.end)
 
     return { pagedRewards, totalRewards } as const
-  }, [buildersRewardsData, filterOption, pageOptions])
+  }, [buildersRewardsData, filterOption, pageOptions, sort])
 
   return { data, isLoading, error }
 }
@@ -71,7 +118,7 @@ export const BuildersTable = ({ filterOption }: { filterOption: BuilderFilterOpt
 
   const { address: userAddress, isConnected } = useAccount()
 
-  const { rows, columns, selectedRows } = useTableContext<ColumnId>()
+  const { rows, columns, selectedRows, sort } = useTableContext<ColumnId>()
   const [actions, setActions] = useState<Action[]>([])
   const dispatch = useTableActionsContext<ColumnId>()
 
@@ -80,26 +127,8 @@ export const BuildersTable = ({ filterOption }: { filterOption: BuilderFilterOpt
     data: { pagedRewards: buildersRewardsData, totalRewards },
     isLoading,
     error,
-  } = usePagedFilteredBuildersRewards({ filterOption, pageOptions })
+  } = usePagedFilteredBuildersRewards({ backer: userAddress, filterOption, pageOptions, sort })
 
-  const {
-    data: allocations,
-    isLoading: isAllocationsLoading,
-    error: allocationsError,
-  } = useReadGauges(
-    {
-      addresses: useMemo(
-        () => buildersRewardsData?.map(builder => builder.gauge) ?? [],
-        [buildersRewardsData],
-      ),
-      functionName: 'allocationOf',
-      args: [userAddress as Address],
-    },
-    {
-      enabled: isConnected && !!buildersRewardsData.length,
-      placeholderData: [],
-    },
-  )
   const { prices } = usePricesContext()
 
   useEffect(() => {
@@ -112,32 +141,26 @@ export const BuildersTable = ({ filterOption }: { filterOption: BuilderFilterOpt
   useEffect(() => {
     dispatch({
       type: 'SET_ROWS',
-      payload: convertDataToRowData(buildersRewardsData, allocations, prices),
+      payload: convertDataToRowData(buildersRewardsData, prices),
     })
-  }, [buildersRewardsData, allocations, prices, dispatch])
+  }, [buildersRewardsData, prices, dispatch])
 
   useEffect(() => {
     dispatch({
       type: 'SET_LOADING',
-      payload: isLoading || isAllocationsLoading || false,
+      payload: isLoading,
     })
-  }, [isLoading, isAllocationsLoading, dispatch])
+  }, [isLoading, dispatch])
 
   useEffect(() => {
-    if (!error && !allocationsError) return
+    if (!error) return
     if (error) {
       dispatch({
         type: 'SET_ERROR',
         payload: error.message,
       })
     }
-    if (allocationsError) {
-      dispatch({
-        type: 'SET_ERROR',
-        payload: allocationsError.message,
-      })
-    }
-  }, [error, allocationsError, dispatch])
+  }, [error, dispatch])
 
   /**
    * Set the action column header to show if the allocations column is hidden.
