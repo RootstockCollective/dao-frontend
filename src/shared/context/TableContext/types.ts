@@ -1,4 +1,6 @@
-export const SORT_DIRECTIONS = [null, 'asc', 'desc'] as const
+export const SORT_DIRECTION_ASC = 'asc'
+export const SORT_DIRECTION_DESC = 'desc'
+export const SORT_DIRECTIONS = [null, SORT_DIRECTION_ASC, SORT_DIRECTION_DESC] as const
 
 export type SortDirection = (typeof SORT_DIRECTIONS)[number]
 
