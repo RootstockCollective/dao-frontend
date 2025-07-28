@@ -18,6 +18,7 @@ interface UseInfinitePaginatedQueryOptions<T> {
 export interface UseInfinitePaginatedQueryResult<T>
   extends Omit<UseInfiniteQueryResult<InfiniteData<PaginatedResponse<T>>>, 'data'> {
   currentResults: T[]
+  allItems: T[]
   tablePage: number
   totalPages: number
   nextTablePage: () => void
@@ -49,9 +50,7 @@ export function useInfinitePagination<T>({
     refetchOnWindowFocus: false,
   })
 
-  const allItems = useMemo(() => {
-    return data?.pages.flatMap(page => page.items) || []
-  }, [data])
+  const allItems = useMemo(() => data?.pages.flatMap(page => page.items) || [], [data])
 
   const totalItems = allItems.length
   const totalPages = Math.ceil(totalItems / resultsPerTablePage)
@@ -99,6 +98,7 @@ export function useInfinitePagination<T>({
 
   return {
     currentResults,
+    allItems,
     totalPages,
     tablePage,
     nextTablePage,
