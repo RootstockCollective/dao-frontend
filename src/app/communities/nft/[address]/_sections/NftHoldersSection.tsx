@@ -87,13 +87,7 @@ export const NftHoldersSection = ({ address }: { address: Address }) => {
             <NftCardView nfts={table.getRowModel().rows.map(({ original }) => original)} />
           )}
           <div className="mt-6">
-            <Pagination
-              pagination={pagination}
-              setPagination={setPagination}
-              data={allItems}
-              table={table}
-              pageSizes={[15, 30, 50, 100]}
-            />
+            <Pagination pagination={pagination} setPagination={setPagination} data={allItems} table={table} />
           </div>
         </>
       )}
