@@ -9,7 +9,7 @@ export const ActiveBuilders = () => {
   if (isLoading) return <LoadingSpinner size="medium" />
   return (
     <Metric title="Total active Builders">
-      <div className="text-3xl font-bold text-white">{data?.count}</div>
+      <div className="text-3xl font-bold text-white">{data?.count ?? 0}</div>
     </Metric>
   )
 }
