@@ -4,9 +4,13 @@ import { TotalBacking } from './TotalBacking'
 
 export const Metrics = () => {
   return (
-    <div className="grid grid-cols-4 gap-8 w-full items-start">
-      <TotalBacking />
-      <ActiveBuilders />
+    <div className="flex gap-12 w-full">
+      <div className="flex basis-1/5">
+        <TotalBacking />
+      </div>
+      <div className="flex basis-1/5">
+        <ActiveBuilders />
+      </div>
       <EstimatedRewards />
     </div>
   )

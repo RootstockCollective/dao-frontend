@@ -36,7 +36,7 @@ export const EstimatedRewardsMetric = () => {
           }}
           info={
             <Paragraph className="text-[14px] font-normal text-left">
-              Estimated rewards for the next Cycle available to Backers.
+              The estimated rewards Backers will receive in the next Cycle.
               <br />
               <br />
               The displayed information is dynamic and may vary based on total rewards and user activity. This

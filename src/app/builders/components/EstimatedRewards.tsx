@@ -58,7 +58,7 @@ export const EstimatedRewards = () => {
     },
   )
   return (
-    <>
+    <div className="flex basis-3/5">
       {builderEstimatedRewardsLoading ? (
         <LoadingSpinner size="medium" />
       ) : (
@@ -66,9 +66,16 @@ export const EstimatedRewards = () => {
           title={
             <MetricTitle
               title="Estimated Rewards for Builders"
+              infoIconProps={{
+                tooltipClassName: 'max-w-sm text-sm',
+              }}
               info={
                 <Paragraph className="text-sm font-normal text-left">
-                  Rewards that will be distributed to the Active Builders in the next cycle
+                  The estimated rewards Builders will receive in the next Cycle.
+                  <br />
+                  <br />
+                  The displayed information is dynamic and may vary based on total rewards and user activity.
+                  This data is for informational purposes only.
                 </Paragraph>
               }
             />
@@ -81,12 +88,21 @@ export const EstimatedRewards = () => {
         <LoadingSpinner size="medium" />
       ) : (
         <Metric
+          className="justify-end"
+          containerClassName="w-auto"
           title={
             <MetricTitle
               title="Estimated Rewards for Backers"
+              infoIconProps={{
+                tooltipClassName: 'max-w-sm text-sm',
+              }}
               info={
                 <Paragraph className="text-sm font-normal text-left">
-                  Rewards that will be distributed to the Backers in the next cycle
+                  The estimated rewards Backers will receive in the next Cycle.
+                  <br />
+                  <br />
+                  The displayed information is dynamic and may vary based on total rewards and user activity.
+                  This data is for informational purposes only.
                 </Paragraph>
               }
             />
@@ -95,6 +111,6 @@ export const EstimatedRewards = () => {
           <USDWithTokensRewards usd={usdBackerRewards} rif={rifBackerRewards} rbtc={rbtcBackerRewards} />
         </Metric>
       )}
-    </>
+    </div>
   )
 }
