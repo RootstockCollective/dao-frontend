@@ -29,9 +29,9 @@ export const NftHoldersSection = ({ address }: { address: Address }) => {
     pageSize: 15,
   }))
   const [view, setView] = useState<ViewState>('table')
-  const { currentResults, isLoading, isError, allItems } = useFetchNftHolders(address)
+  const { isLoading, isError, allItems } = useFetchNftHolders(address)
   // Define NFT holders table
-  const { accessor } = createColumnHelper<(typeof currentResults)[number]>()
+  const { accessor } = createColumnHelper<(typeof allItems)[number]>()
   const columns = [
     accessor(({ ens_domain_name, owner }) => ens_domain_name ?? truncateMiddle(owner, 4, 4), {
       header: 'Holder',
@@ -64,7 +64,7 @@ export const NftHoldersSection = ({ address }: { address: Address }) => {
   })
 
   // Early return: If not loading and either there are no holders or there's an error, don't render anything
-  if (!isLoading && (currentResults.length === 0 || isError)) {
+  if (!isLoading && (allItems.length === 0 || isError)) {
     return null
   }
 
@@ -75,12 +75,16 @@ export const NftHoldersSection = ({ address }: { address: Address }) => {
           <Header caps className="text-xl inline mr-2">
             Holders
           </Header>
-          {currentResults.length > 0 && <Span className="text-lg text-bg-0">{currentResults.length}</Span>}
+          {allItems.length > 0 && (
+            <Span variant="body-l" className="text-bg-0">
+              {allItems.length}
+            </Span>
+          )}
         </div>
-        {currentResults.length > 0 && <ViewIconHandler view={view} onChangeView={setView} />}
+        {allItems.length > 0 && <ViewIconHandler view={view} onChangeView={setView} />}
       </div>
       {isLoading && <LoadingSpinner />}
-      {!isLoading && currentResults.length > 0 && (
+      {!isLoading && allItems.length > 0 && (
         <>
           {view === 'table' && <NftHoldersTable table={table} />}
           {view === 'images' && (
