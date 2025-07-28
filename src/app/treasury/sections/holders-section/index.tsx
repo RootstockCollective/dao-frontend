@@ -34,9 +34,9 @@ interface HolderData {
 export const HoldersSection = () => {
   const prices = useGetSpecificPrices()
   // Fetch st rif holders
-  const { currentResults, isLoading, isError } = useFetchTokenHolders(STRIF_ADDRESS)
+  const { isLoading, isError, allItems, hasMorePages } = useFetchTokenHolders(STRIF_ADDRESS)
 
-  const holders: HolderData[] = currentResults.map(({ address, value }) => ({
+  const holders: HolderData[] = allItems.map(({ address, value }) => ({
     holder: {
       address: address.hash,
       rns: address.ens_domain_name,
@@ -64,6 +64,7 @@ export const HoldersSection = () => {
       header: 'Holder',
       cell: ({ row }) => <HolderColumn address={row.original.holder.address} rns={row.original.holder.rns} />,
       sortDescFirst: false,
+      enableSorting: !hasMorePages,
     }),
     accessor('quantity', {
       id: 'quantity',
@@ -83,6 +84,7 @@ export const HoldersSection = () => {
 
         return quantityA.cmp(quantityB)
       },
+      enableSorting: !hasMorePages,
     }),
   ]
 
