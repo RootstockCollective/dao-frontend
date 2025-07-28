@@ -132,7 +132,7 @@ const AllocationBar: React.FC<AllocationBarProps> = ({
   }
 
   return (
-    <div className={`w-full p-8 flex flex-col ${className}`}>
+    <div className={`w-full p-8 flex flex-col ${className} gap-6`}>
       <DndContext
         sensors={sensors}
         collisionDetection={pointerWithin}
@@ -142,7 +142,7 @@ const AllocationBar: React.FC<AllocationBarProps> = ({
         <SortableContext items={currentItems.map(item => item.key)} strategy={horizontalListSortingStrategy}>
           {/* TODO: this should grow from the bottom to the top, but now it grows from the top to the bottom */}
           <div
-            className="flex items-end w-full mb-4 relative select-none transition-[height] duration-300 ease-in-out"
+            className="flex items-end w-full relative select-none transition-[height] duration-300 ease-in-out"
             ref={barRef}
             style={{ height }}
           >
