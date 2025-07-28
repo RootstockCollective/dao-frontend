@@ -12,9 +12,7 @@ export const CallToActionSection = () => {
     error: builderEstimatedRewardsError,
   } = useGetBuilderEstimatedRewards()
 
-  const isLoading = builderEstimatedRewardsLoading
-  const error = builderEstimatedRewardsError
-  useHandleErrors({ error, title: 'Error loading CTA section' })
+  useHandleErrors({ error: builderEstimatedRewardsError, title: 'Error loading CTA section' })
 
   const { rifBackerRewards, rbtcBackerRewards, rifBuilderRewards, rbtcBuilderRewards } =
     builderEstimatedRewards.reduce(
@@ -29,7 +27,7 @@ export const CallToActionSection = () => {
       { rifBackerRewards: 0n, rbtcBackerRewards: 0n, rifBuilderRewards: 0n, rbtcBuilderRewards: 0n },
     )
 
-  if (isLoading) {
+  if (builderEstimatedRewardsLoading) {
     return <LoadingSpinner />
   }
 
