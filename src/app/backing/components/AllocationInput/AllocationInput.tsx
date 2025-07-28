@@ -1,15 +1,15 @@
 import { getFiatAmount } from '@/app/collective-rewards/rewards'
+import { formatSymbol } from '@/app/collective-rewards/rewards/utils/formatter'
 import { InputNumber } from '@/components/Input/InputNumber'
 import { Paragraph } from '@/components/TypographyNew'
+import { USD } from '@/lib/constants'
 import { cn, formatCurrency } from '@/lib/utils'
 import { Dispatch, FC, SetStateAction } from 'react'
-import { PendingAllocation } from '../PendingAllocation/PendingAllocation'
-import { StickySlider } from '../StickySlider/StickySlider'
-import { RIFToken } from '../RIFToken/RIFToken'
-import { formatSymbol } from '@/app/collective-rewards/rewards/utils/formatter'
-import { USD } from '@/lib/constants'
-import { parseEther } from 'viem'
 import { NumberFormatValues } from 'react-number-format'
+import { parseEther } from 'viem'
+import { PendingAllocation } from '../PendingAllocation/PendingAllocation'
+import { RIFToken } from '../RIFToken/RIFToken'
+import { StickySlider } from '../StickySlider/StickySlider'
 
 interface AllocationInputProps {
   allocation: bigint
@@ -124,7 +124,7 @@ export const AllocationInput: FC<AllocationInputProps> = ({
             onMouseLeave={onMouseLeave}
           />
           <Paragraph className="text-[12px] text-v3-text-60 mt-2" data-testid="allocationInputPercentage">
-            {allocationPercentage.toFixed(0)}% of total backing power
+            {allocationPercentage.toFixed(0)}% of available stRIF for backing
           </Paragraph>
         </div>
       )}
