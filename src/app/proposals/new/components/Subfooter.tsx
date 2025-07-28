@@ -50,10 +50,8 @@ export const Subfooter = ({
       setShowModal(true)
 
       pageToStayOnRef.current = pathname
-      console.log("[Subfooter] 'Back' button clicked on details page, showing modal.")
     } else {
       router.back()
-      console.log("[Subfooter] 'Back' button clicked, performing regular router.back().")
     }
   }, [pathname, router, shouldIntercept])
 
@@ -63,11 +61,7 @@ export const Subfooter = ({
       const currentBrowserPath = window.location.pathname
       const pathBeforePop = lastCommittedPathRef.current
 
-      console.log(`[Popstate Event Fired!] New: ${currentBrowserPath}, Before: ${pathBeforePop}`)
-
       if (shouldIntercept(pathBeforePop, currentBrowserPath) && !showModal) {
-        console.log('[Detector] Browser back from details detected! Actively Intercepting.')
-
         window.history.pushState(
           { intercepted: true, originalPath: pathBeforePop },
           '',
@@ -80,11 +74,9 @@ export const Subfooter = ({
     }
 
     window.addEventListener('popstate', handlePopState)
-    console.log('[Popstate Listener] Added.')
 
     return () => {
       window.removeEventListener('popstate', handlePopState)
-      console.log('[Popstate Listener] Removed.')
     }
   }, [showModal, shouldIntercept])
 
@@ -95,7 +87,6 @@ export const Subfooter = ({
     setShowModal(false)
     router.push('/proposals/new') // Navigate to /proposals/new
     pageToStayOnRef.current = null // Clear
-    console.log('[Modal Action] Proceeding with exit to /proposals/new.')
   }, [router])
 
   // "Take me back" (orange button / X): User cancels leaving, stay on the *details page*
@@ -106,10 +97,8 @@ export const Subfooter = ({
 
     if (targetStayPath && targetStayPath.startsWith('/proposals/new/details')) {
       router.replace(targetStayPath) // Replace current history entry to keep URL clean and correct
-      console.log(`[Modal Action] Staying on original details page: ${targetStayPath}`)
     } else {
       router.replace(window.location.pathname) // Fallback to current URL (shouldn't happen here)
-      console.log(`[Modal Action] Fallback: Staying on current URL: ${window.location.pathname}`)
     }
   }, [router])
 
