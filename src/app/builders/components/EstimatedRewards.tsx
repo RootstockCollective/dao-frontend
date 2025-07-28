@@ -2,9 +2,9 @@ import { getFiatAmount, useHandleErrors } from '@/app/collective-rewards/utils'
 import { useGetBuilderEstimatedRewards } from '@/app/shared/hooks/useGetBuilderEstimatedRewards'
 import { DottedUnderlineLabel } from '@/components/DottedUnderlineLabel/DottedUnderlineLabel'
 import { LoadingSpinner } from '@/components/LoadingSpinner'
-import { Metric } from '@/components/Metric'
+import { Metric, MetricTitle } from '@/components/Metric'
 import { RifRbtcTooltip } from '@/components/RifRbtcTooltip/RifRbtcTooltip'
-import { Header } from '@/components/TypographyNew'
+import { Header, Paragraph } from '@/components/TypographyNew'
 import { formatCurrency } from '@/lib/utils'
 import Big from 'big.js'
 
@@ -62,14 +62,36 @@ export const EstimatedRewards = () => {
       {builderEstimatedRewardsLoading ? (
         <LoadingSpinner size="medium" />
       ) : (
-        <Metric title="Estimated Rewards for Builders">
+        <Metric
+          title={
+            <MetricTitle
+              title="Estimated Rewards for Builders"
+              info={
+                <Paragraph className="text-sm font-normal text-left">
+                  Rewards that will be distributed to the Active Builders in the next cycle
+                </Paragraph>
+              }
+            />
+          }
+        >
           <USDWithTokensRewards usd={usdBuilderRewards} rif={rifBuilderRewards} rbtc={rbtcBuilderRewards} />
         </Metric>
       )}
       {builderEstimatedRewardsLoading ? (
         <LoadingSpinner size="medium" />
       ) : (
-        <Metric title="Estimated Rewards for Backers">
+        <Metric
+          title={
+            <MetricTitle
+              title="Estimated Rewards for Backers"
+              info={
+                <Paragraph className="text-sm font-normal text-left">
+                  Rewards that will be distributed to the Backers in the next cycle
+                </Paragraph>
+              }
+            />
+          }
+        >
           <USDWithTokensRewards usd={usdBackerRewards} rif={rifBackerRewards} rbtc={rbtcBackerRewards} />
         </Metric>
       )}
