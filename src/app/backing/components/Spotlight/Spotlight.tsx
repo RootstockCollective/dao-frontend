@@ -102,6 +102,7 @@ export const Spotlight = ({ isInteractive = true }: { isInteractive?: boolean })
             <BuilderCardControl
               key={builder.address}
               {...builder}
+              estimatedRewards={builder.backerEstimatedRewards}
               isInteractive={true}
               index={index}
               showAnimation={isBuilderSelected(builder.address)}
