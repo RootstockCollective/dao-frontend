@@ -9,7 +9,7 @@ export const ActiveBuilders = () => {
 
   return (
     <CountMetric title="Active Builders" isLoading={isLoading}>
-      {data?.count}
+      {data?.count ?? 0}
     </CountMetric>
   )
 }

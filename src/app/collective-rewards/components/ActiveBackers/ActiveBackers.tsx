@@ -20,7 +20,7 @@ export const ActiveBackers = () => {
 
   return (
     <CountMetric title="Active Backers" isLoading={isLoading}>
-      {data?.count}
+      {data?.count ?? 0}
     </CountMetric>
   )
 }

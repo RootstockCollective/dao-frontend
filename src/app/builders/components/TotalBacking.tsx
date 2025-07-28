@@ -1,21 +1,26 @@
 import { useGetTotalAllocation } from '@/app/collective-rewards/metrics/hooks/useGetTotalAllocation'
 import { formatSymbol } from '@/app/collective-rewards/rewards'
-import { useGetGaugesArray } from '@/app/collective-rewards/user/hooks/useGetGaugesArray'
+import { useBuilderContext } from '@/app/collective-rewards/user'
 import { useHandleErrors } from '@/app/collective-rewards/utils'
 import { LoadingSpinner } from '@/components/LoadingSpinner'
 import { Metric, MetricTitle } from '@/components/Metric'
 import { TokenImage, TokenSymbol } from '@/components/TokenImage'
 import { Paragraph } from '@/components/TypographyNew/Paragraph'
 import { Span } from '@/components/TypographyNew/Span'
+import { Address } from 'viem'
 
 export const TotalBacking = () => {
-  const { data: allGauges } = useGetGaugesArray()
-  const gauges = allGauges ?? []
-  const { data: totalAllocations, isLoading, error } = useGetTotalAllocation(gauges)
+  const { builders, isLoading: isLoadingBuilders, error: errorBuilders } = useBuilderContext()
+  const gauges = builders.map(b => b.gauge).filter(Boolean) as Address[]
+  const {
+    data: totalAllocations,
+    isLoading: isLoadingTotalAllocations,
+    error: errorTotalAllocations,
+  } = useGetTotalAllocation(gauges)
 
-  useHandleErrors({ error, title: 'Error loading total allocations' })
+  useHandleErrors({ error: errorBuilders ?? errorTotalAllocations, title: 'Error loading total allocations' })
 
-  if (isLoading) return <LoadingSpinner size="medium" />
+  if (isLoadingBuilders || isLoadingTotalAllocations) return <LoadingSpinner size="medium" />
 
   return (
     <Metric
