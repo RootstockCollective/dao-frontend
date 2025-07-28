@@ -1,26 +1,15 @@
-import { AVERAGE_BLOCKTIME } from '@/lib/constants'
-import { useQuery } from '@tanstack/react-query'
-import { CountMetric } from '../CountMetric'
-import { useHandleErrors } from '../../utils'
+import { useGetActiveBuildersCount } from '@/app/collective-rewards/shared/hooks/useGetActiveBuildersCount'
+import { CountMetric } from '@/app/collective-rewards/components/CountMetric'
+import { useHandleErrors } from '@/app/collective-rewards/utils'
 
 export const ActiveBuilders = () => {
-  const { data, isLoading, error } = useQuery<{ count: number }, Error>({
-    queryFn: async () => {
-      const response = await fetch('/api/builders')
-      if (!response.ok) {
-        throw new Error('Failed to fetch active builders count')
-      }
-      return response.json()
-    },
-    queryKey: ['activeBuilders'],
-    refetchInterval: AVERAGE_BLOCKTIME,
-  })
+  const { data, isLoading, error } = useGetActiveBuildersCount()
 
   useHandleErrors({ error, title: 'Error loading active builders' })
 
   return (
     <CountMetric title="Active Builders" isLoading={isLoading}>
-      {data?.count}
+      {data?.count ?? 0}
     </CountMetric>
   )
 }
