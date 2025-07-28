@@ -17,20 +17,19 @@ export interface RewardsInfoProps {
 
 export const RewardsInfo: FC<RewardsInfoProps> = ({ backerRewardPercentage, estimatedRewards }) => {
   const { current, next } = backerRewardPercentage ?? { current: 0n, next: 0n }
-
   return (
     <div
-      className="flex justify-between w-full border-b border-v3-bg-accent-40 p-3"
+      className="flex justify-between w-full border-b border-v3-bg-accent-40 p-3 gap-3"
       data-testid="rewardsInfoContainer"
     >
-      <LabeledContent label="Rewards %" className="basis-1/2 pr-3">
+      <LabeledContent label="Rewards %" className="basis-1/2">
         <BackerRewardsPercentage
           currentPct={Number(weiToPercentage(current, 0))}
           nextPct={Number(weiToPercentage(next, 0))}
         />
       </LabeledContent>
       {estimatedRewards && (
-        <LabeledContent label="Rewards (est.)" className="basis-1/2">
+        <LabeledContent label="Rewards (est.)" className="">
           <div className="flex flex-row items-center gap-2">
             <Paragraph>
               {formatCurrency(
