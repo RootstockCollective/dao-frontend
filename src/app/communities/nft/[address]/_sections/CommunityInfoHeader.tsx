@@ -23,7 +23,7 @@ export function CommunityInfoHeader({ address: nftAddress }: { address: Address 
   const { isConnected } = useAccount()
   const { image, tokenId = 0, isMember, isMintable, tokensAvailable } = useCommunityNFT()
 
-  const { title, specialPower, requirement, detailedDescription, discussionLink } = useMemo(
+  const { title, specialPower, activation, requirement, detailedDescription, discussionLink } = useMemo(
     () => communitiesMapByContract[nftAddress.toLowerCase()],
     [nftAddress],
   )
@@ -69,9 +69,7 @@ export function CommunityInfoHeader({ address: nftAddress }: { address: Address 
           {/* Activation time column */}
           <div className="flex flex-col gap-2">
             <Paragraph className="text-text-60 font-medium">Activation</Paragraph>
-            <Paragraph className="font-kk-topo">
-              {DateTime.fromSeconds(Number(boostData?.timestamp) ?? 0).toFormat('MMMM yyyy')}
-            </Paragraph>
+            <Paragraph className="font-kk-topo">{activation}</Paragraph>
           </div>
           {/* NFT ID column - showing only to member */}
           {isMember && (
