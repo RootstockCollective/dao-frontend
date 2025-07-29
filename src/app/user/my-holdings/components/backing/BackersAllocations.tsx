@@ -12,7 +12,7 @@ export const BackersAllocations = () => {
           height: '1rem',
           isResizable: false,
           isDraggable: false,
-          className: 'px-0 py-0',
+          className: 'px-0 py-0 gap-3',
         }}
       />
       <div

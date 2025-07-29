@@ -12,6 +12,7 @@ import {
 import { AllocationBarProps } from './types'
 import { AllocationBarSegment } from './AllocationBarSegment'
 import { Legend } from '@/components/Legend'
+import { cn } from '@/lib/utils'
 
 const AllocationBar: React.FC<AllocationBarProps> = ({
   itemsData,
@@ -132,7 +133,7 @@ const AllocationBar: React.FC<AllocationBarProps> = ({
   }
 
   return (
-    <div className={`w-full p-8 flex flex-col ${className}`}>
+    <div className={cn('w-full p-8 flex flex-col gap-6', className)}>
       <DndContext
         sensors={sensors}
         collisionDetection={pointerWithin}
@@ -142,7 +143,7 @@ const AllocationBar: React.FC<AllocationBarProps> = ({
         <SortableContext items={currentItems.map(item => item.key)} strategy={horizontalListSortingStrategy}>
           {/* TODO: this should grow from the bottom to the top, but now it grows from the top to the bottom */}
           <div
-            className="flex items-end w-full mb-4 relative select-none transition-[height] duration-300 ease-in-out"
+            className="flex items-end w-full relative select-none transition-[height] duration-300 ease-in-out"
             ref={barRef}
             style={{ height }}
           >
