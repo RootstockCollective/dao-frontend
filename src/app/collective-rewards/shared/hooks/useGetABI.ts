@@ -5,6 +5,7 @@ import { useMemo } from 'react'
 import { Address } from 'viem'
 import { getBackerRewardPercentage } from '@/app/collective-rewards/rewards'
 import { getCyclePayout } from './getCyclePayout'
+import { isBuilderRewardable } from '../../utils'
 
 export type CycleData = {
   id: string
@@ -68,7 +69,7 @@ export const useGetABI = (abiData: AbiData | undefined) => {
 
     // We use the multiplication with the current backer rewards % to avoid losing precision
     // Thats why we don't need to multiply by 100
-    const top5Builders = builders.slice(0, 5)
+    const top5Builders = builders.filter(b => isBuilderRewardable).slice(0, 5)
     const top5BuildersTotalAllocation = top5Builders.reduce<Big>(
       (acc, { totalAllocation }) => acc.plus(Big(totalAllocation)),
       Big(0),

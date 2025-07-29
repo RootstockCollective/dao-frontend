@@ -52,12 +52,12 @@ export const useGetBuilderEstimatedRewards = (currency = USD) => {
       const isRewarded = isBuilderRewardable(stateFlags)
       const builderEstimatedRewardsPct =
         totalPotentialRewards && isRewarded
-          ? (builderRewardShares * rewardPercentageToApply) / totalPotentialRewards
+          ? (builderRewardShares * (WeiPerEther - rewardPercentageToApply)) / totalPotentialRewards
           : 0n
 
       const backerEstimatedRewardsPct =
         totalPotentialRewards && isRewarded
-          ? (builderRewardShares * (WeiPerEther - rewardPercentageToApply)) / totalPotentialRewards
+          ? (builderRewardShares * rewardPercentageToApply) / totalPotentialRewards
           : 0n
 
       const builderRifEstimatedRewards = (builderEstimatedRewardsPct * rifAmount) / WeiPerEther

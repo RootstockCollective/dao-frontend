@@ -7,7 +7,7 @@ import { AbiData } from './hooks/useGetABI'
 const query = apolloGQL`
   query AbiMetricsData {
     builders(
-      where: { state_: { kycApproved: true, communityApproved: true, initialized: true, selfPaused: false } }
+      where: { state_: { initialized: true } }
       orderBy: totalAllocation
       orderDirection: desc
     ) {

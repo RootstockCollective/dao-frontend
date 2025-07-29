@@ -73,11 +73,11 @@ export const convertDataToRowData = (
           ]).toNumber(),
         },
         rewards_upcoming: {
-          rbtcValue: builder.builderEstimatedRewards.rbtc.amount.value,
-          rifValue: builder.builderEstimatedRewards.rif.amount.value,
+          rbtcValue: builder.backerEstimatedRewards.rbtc.amount.value,
+          rifValue: builder.backerEstimatedRewards.rif.amount.value,
           usdValue: getCombinedFiatAmount([
-            builder.builderEstimatedRewards.rif.amount,
-            builder.builderEstimatedRewards.rbtc.amount,
+            builder.backerEstimatedRewards.rif.amount,
+            builder.backerEstimatedRewards.rbtc.amount,
           ]).toNumber(),
         },
         backing: {

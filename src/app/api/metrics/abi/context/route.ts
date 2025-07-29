@@ -21,10 +21,7 @@ export async function GET() {
         .select('Builder.id', 'Builder.totalAllocation', {
           backerRewardPercentage: db.raw(DB_COMMAND_COALESCE),
         })
-        .where('BuilderState.kycApproved', '=', true)
-        .where('BuilderState.communityApproved', '=', true)
         .where('BuilderState.initialized', '=', true)
-        .where('BuilderState.selfPaused', '=', false)
         .orderByRaw('"Builder"."totalAllocation"::numeric DESC'),
       db('Cycle').select('Cycle.id', 'Cycle.rewardsERC20', 'Cycle.rewardsRBTC').orderBy('id', 'desc'),
     ])
