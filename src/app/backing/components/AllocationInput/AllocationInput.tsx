@@ -4,7 +4,7 @@ import { InputNumber } from '@/components/Input/InputNumber'
 import { Paragraph } from '@/components/TypographyNew'
 import { USD } from '@/lib/constants'
 import { cn, formatCurrency } from '@/lib/utils'
-import { Dispatch, FC, SetStateAction } from 'react'
+import { Dispatch, FC, SetStateAction, useRef, useEffect } from 'react'
 import { NumberFormatValues } from 'react-number-format'
 import { parseEther } from 'viem'
 import { PendingAllocation } from '../PendingAllocation/PendingAllocation'
@@ -36,11 +36,34 @@ export const AllocationInput: FC<AllocationInputProps> = ({
   editing,
   setEditing,
 }) => {
+  const containerRef = useRef<HTMLDivElement>(null)
   const allocationPercentage = maxAllocation === 0n ? 0 : Number((allocation * 100n) / maxAllocation)
   const amountUsd = formatCurrency(getFiatAmount(allocation, rifPriceUsd), {
     currency: USD,
     showCurrency: true,
   })
+
+  // Handle click outside to collapse if allocation hasn't changed
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (
+        editing &&
+        containerRef.current &&
+        !containerRef.current.contains(event.target as Node) &&
+        allocation === existentAllocation
+      ) {
+        setEditing?.(false)
+      }
+    }
+
+    if (editing) {
+      document.addEventListener('mousedown', handleClickOutside)
+    }
+
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside)
+    }
+  }, [editing, allocation, existentAllocation, setEditing])
 
   const handleSliderChange = (value: number[]) => {
     const percent = value[0]
@@ -49,12 +72,6 @@ export const AllocationInput: FC<AllocationInputProps> = ({
     // maxAllocation is already a bigint (e.g., in wei)
     const newAllocation = (maxAllocation * scaledPercent) / BigInt(10 ** 18)
     onAllocationChange(newAllocation)
-  }
-
-  const onMouseLeave = () => {
-    if (editing && allocation === existentAllocation) {
-      setEditing?.(false)
-    }
   }
 
   const isAllowed = ({ value }: NumberFormatValues) => {
@@ -79,6 +96,7 @@ export const AllocationInput: FC<AllocationInputProps> = ({
 
   return (
     <div
+      ref={containerRef}
       className={cn(
         'bg-v3-bg-accent-80 border border-v3-bg-accent-60 rounded-lg font-rootstock-sans',
         disabled && 'bg-v3-bg-accent-60',
@@ -121,7 +139,6 @@ export const AllocationInput: FC<AllocationInputProps> = ({
             value={[allocationPercentage]}
             step={1}
             onValueChange={handleSliderChange}
-            onMouseLeave={onMouseLeave}
           />
           <Paragraph className="text-[12px] text-v3-text-60 mt-2" data-testid="allocationInputPercentage">
             {allocationPercentage.toFixed(0)}% of available stRIF for backing
