@@ -48,8 +48,7 @@ export const BackerRewardsHeaderRow = ({ actions }: BackerRewardsHeaderRowProps)
               }}
             >
               <HeaderTitle>Unclaimed</HeaderTitle>
-              <HeaderSubtitle className="h-full text-v3-bg-accent-80">balls</HeaderSubtitle>
-              {/* TODO: temporary fix to align the text to the top */}
+              {/* Empty subtitle to align the text vertically */}
               <HeaderSubtitle></HeaderSubtitle>
             </HeaderCell>
             <HeaderCell
