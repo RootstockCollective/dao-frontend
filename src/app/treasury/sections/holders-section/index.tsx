@@ -13,7 +13,6 @@ import {
   SortingState,
   useReactTable,
 } from '@tanstack/react-table'
-import { Pagination } from '@/components/Pagination'
 import { useState } from 'react'
 import { PaginationState } from '@tanstack/react-table'
 import { useSearchParams } from 'next/navigation'
@@ -34,7 +33,7 @@ interface HolderData {
 export const HoldersSection = () => {
   const prices = useGetSpecificPrices()
   // Fetch st rif holders
-  const { currentResults, isLoading, isError } = useFetchTokenHolders(STRIF_ADDRESS)
+  const { currentResults, isLoading, isError, paginationElement } = useFetchTokenHolders(STRIF_ADDRESS)
 
   const holders: HolderData[] = currentResults.map(({ address, value }) => ({
     holder: {
@@ -63,7 +62,7 @@ export const HoldersSection = () => {
       id: 'holder',
       header: 'Holder',
       cell: ({ row }) => <HolderColumn address={row.original.holder.address} rns={row.original.holder.rns} />,
-      sortDescFirst: false,
+      enableSorting: false,
     }),
     accessor('quantity', {
       id: 'quantity',
@@ -77,6 +76,7 @@ export const HoldersSection = () => {
           </Span>
         </div>
       ),
+      enableSorting: false,
       sortingFn: (a, b) => {
         const quantityA = Big(a.original.quantity)
         const quantityB = Big(b.original.quantity)
@@ -132,8 +132,7 @@ export const HoldersSection = () => {
               ))}
             </div>
           )}
-
-          <Pagination pagination={pagination} setPagination={setPagination} data={holders} table={table} />
+          {paginationElement}
         </>
       )}
       {isLoading && <LoadingSpinner />}

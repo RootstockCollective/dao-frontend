@@ -1,6 +1,8 @@
 import { ReactNode, useMemo, useState } from 'react'
 import { Button } from '@/components/Button'
 import { ChevronLeft, ChevronRight } from 'lucide-react'
+import PaginationArrowButton from '@/components/Pagination/PaginationArrowButton'
+import PaginationPageNumbers from '@/components/Pagination/PaginationPageNumbers'
 
 interface UseSimplePaginationResult<T> {
   paginationElement: ReactNode
@@ -44,24 +46,28 @@ export function usePaginationUi<T>(
       return pages
     }
 
+    const maxPageButtons = 5
+    const currentSetStart = Math.floor(tablePage / maxPageButtons) * maxPageButtons
+    const currentSetEnd = Math.min(currentSetStart + maxPageButtons, totalPages)
+
     return (
-      <div className="flex gap-x-1 items-center justify-center">
-        <PaginationButton
-          text={<ChevronLeft />}
+      <div className="flex justify-center items-center space-x-2 mt-4">
+        <PaginationArrowButton
+          direction="prev"
           onClick={previousTablePage}
           disabled={tablePage === 0 || isLoading}
         />
-        {getPageNumbers().map(pageNumber => (
-          <PaginationButton
-            key={pageNumber}
-            onClick={() => goToTablePage(pageNumber)}
-            disabled={isLoading}
-            text={pageNumber + 1}
-            isActive={pageNumber === tablePage}
-          />
-        ))}
-        <PaginationButton
-          text={<ChevronRight />}
+        <PaginationPageNumbers
+          goToPage={goToTablePage}
+          pagination={{
+            pageIndex: tablePage,
+            pageSize: 10, // or whatever your page size is
+          }}
+          currentSetStart={currentSetStart}
+          currentSetEnd={currentSetEnd}
+        />
+        <PaginationArrowButton
+          direction="next"
           onClick={nextTablePage}
           disabled={tablePage === totalPages - 1 || isLoading}
         />
