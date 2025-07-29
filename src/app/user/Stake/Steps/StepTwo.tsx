@@ -123,7 +123,10 @@ const HelpPopoverContent = () => {
           Why request the allowance?
         </Span>
         <Paragraph variant="body-s" className="mt-2 text-bg-60">
-          Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor.
+          Token allowances are the crypto equivalent to spending caps. You grant permissions for the dApp or
+          smart contract to spend a specific amount of your tokens and not go over this amount without further
+          approval. The Collective implements these as an industry standard to help protect you and the
+          community.
         </Paragraph>
       </div>
       <div>
@@ -131,7 +134,9 @@ const HelpPopoverContent = () => {
           What is stRIF?
         </Span>
         <Paragraph variant="body-s" className="mt-2 text-bg-60">
-          Ipsum dolor sit amet, consectetur adipiscing elit.
+          The Governance token used in the Collective. You can stake any amount of RIF tokens and receive an
+          equivalent amount of staked RIF as stRIF tokens (in a 1:1 ratio) and this is how you take part in
+          the Collective. This is the way.
         </Paragraph>
       </div>
     </div>
