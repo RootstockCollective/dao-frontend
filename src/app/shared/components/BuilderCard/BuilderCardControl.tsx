@@ -1,18 +1,15 @@
 import { AllocationsContext } from '@/app/collective-rewards/allocations/context'
 import { useAllocateVotes } from '@/app/collective-rewards/allocations/hooks/useAllocateVotes'
+import { TokenRewards } from '@/app/collective-rewards/rewards'
 import { Builder } from '@/app/collective-rewards/types'
 import { TransactionInProgressButton } from '@/app/user/Stake/components/TransactionInProgressButton'
 import { Button } from '@/components/ButtonNew/Button'
 import { useLayoutContext } from '@/components/MainContainer/LayoutProvider'
 import { ActionsContainer } from '@/components/containers/ActionsContainer'
-import { RIF } from '@/lib/constants'
-import { usePricesContext } from '@/shared/context/PricesContext'
 import { FC, useContext, useEffect } from 'react'
 import { Address } from 'viem'
 import { useAccount } from 'wagmi'
-import { floorToUnit, getBuilderColor } from '../utils'
 import { BuilderCard } from './BuilderCard'
-import { TokenRewards } from '@/app/collective-rewards/rewards'
 
 export interface BuilderCardControlProps extends Builder {
   estimatedRewards?: TokenRewards
@@ -70,28 +67,11 @@ export const BuilderCardControl: FC<BuilderCardControlProps> = ({
   ...props
 }) => {
   const { isConnected } = useAccount()
-  const { prices } = usePricesContext()
   const { openDrawer, closeDrawer } = useLayoutContext()
   const {
-    actions: { updateAllocation },
-    state: {
-      resetVersion,
-      backer: { balance, cumulativeAllocation },
-      allocations,
-    },
+    state: { resetVersion, allocations },
     initialState: { allocations: initialAllocations },
   } = useContext(AllocationsContext)
-
-  const rifPriceUsd = prices[RIF]?.price ?? 0
-  const allocation = allocations[builderAddress] ?? 0n
-  const existentAllocation = initialAllocations[builderAddress] ?? 0n
-  const unallocatedAmount = floorToUnit(balance - (cumulativeAllocation - allocation))
-  const topBarColor = getBuilderColor(builderAddress)
-
-  const handleAllocationChange = (value: bigint) => {
-    if (allocationTxPending) return
-    updateAllocation(builderAddress, value)
-  }
 
   useEffect(() => {
     // Compare initialAllocations and allocations
@@ -117,14 +97,7 @@ export const BuilderCardControl: FC<BuilderCardControlProps> = ({
       key={resetVersion}
       {...props}
       address={builderAddress}
-      isConnected={isConnected}
-      rifPriceUsd={rifPriceUsd}
-      allocation={allocation}
-      existentAllocation={existentAllocation}
       allocationTxPending={allocationTxPending}
-      onAllocationChange={handleAllocationChange}
-      maxAllocation={unallocatedAmount}
-      topBarColor={allocation > 0n && isConnected ? topBarColor : 'transparent'}
       index={index}
       showAnimation={showAnimation}
     />
