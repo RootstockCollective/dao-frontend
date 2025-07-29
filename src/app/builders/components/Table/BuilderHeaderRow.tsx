@@ -217,7 +217,7 @@ export const BuilderHeaderRow = ({ actions }: BuilderHeaderRowProps): ReactEleme
 
   return (
     <Suspense fallback={<div>Loading table headers...</div>}>
-      <tr className="flex border-b-1 border-b-v3-text-60 select-none gap-4">
+      <tr className="flex border-b-1 border-b-v3-text-60 select-none gap-4 pb-4">
         <BuilderHeaderCell key="builder" columnId="builder" />
         {actionCount <= 1 && (
           <>
