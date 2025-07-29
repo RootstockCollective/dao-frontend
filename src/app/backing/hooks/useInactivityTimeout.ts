@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useRef } from 'react'
+import { useCallback, useEffect, useMemo, useRef } from 'react'
 
 interface UseInactivityTimeoutOptions {
   condition: boolean
@@ -14,29 +14,38 @@ export function useInactivityTimeout({
   throttleDelay = 300,
 }: UseInactivityTimeoutOptions) {
   const timeoutRef = useRef<NodeJS.Timeout | null>(null)
-  const lastCallTimeRef = useRef<number>(0)
-
-  const reset = useCallback(() => {
+  const start = useCallback(() => {
     if (!condition) return
-
-    const now = Date.now()
-    if (now - lastCallTimeRef.current < throttleDelay) return
-    lastCallTimeRef.current = now
-
-    if (timeoutRef.current) {
-      clearTimeout(timeoutRef.current)
-    }
+    if (timeoutRef.current) clearTimeout(timeoutRef.current)
 
     timeoutRef.current = setTimeout(() => {
       onInactive()
     }, timeout)
-  }, [condition, onInactive, timeout, throttleDelay])
+  }, [condition, onInactive, timeout])
 
-  useEffect(() => {
-    return () => {
-      if (timeoutRef.current) clearTimeout(timeoutRef.current)
+  const cancel = useCallback(() => {
+    if (timeoutRef.current) {
+      clearTimeout(timeoutRef.current)
+      timeoutRef.current = null
     }
   }, [])
 
-  return reset
+  const throttledStart = useMemo(() => {
+    let timeoutId: NodeJS.Timeout | null = null
+    return () => {
+      if (timeoutId) return
+      timeoutId = setTimeout(() => {
+        timeoutId = null
+        start()
+      }, throttleDelay)
+    }
+  }, [start, throttleDelay])
+
+  useEffect(() => {
+    return () => {
+      cancel()
+    }
+  }, [cancel])
+
+  return { start: throttledStart, cancel }
 }

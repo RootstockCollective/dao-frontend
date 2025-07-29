@@ -44,6 +44,7 @@ export const AllocationInput: FC<AllocationInputProps> = ({
   })
 
   const inputRef = useRef<HTMLInputElement>(null)
+  const isMouseInside = useRef(false)
 
   const handleInactive = () => {
     if (allocation === existentAllocation) {
@@ -52,7 +53,7 @@ export const AllocationInput: FC<AllocationInputProps> = ({
     }
   }
 
-  const resetInactivity = useInactivityTimeout({
+  const { start: startInactivityTimer, cancel: cancelInactivityTimer } = useInactivityTimeout({
     condition: !!editing,
     onInactive: handleInactive,
     timeout: 1500,
@@ -64,7 +65,7 @@ export const AllocationInput: FC<AllocationInputProps> = ({
     const scaledPercent = (BigInt(percent) * BigInt(10 ** 18)) / BigInt(100)
     const newAllocation = (maxAllocation * scaledPercent) / BigInt(10 ** 18)
     onAllocationChange(newAllocation)
-    resetInactivity()
+    cancelInactivityTimer()
   }
 
   const isAllowed = ({ value }: NumberFormatValues) => {
@@ -81,7 +82,7 @@ export const AllocationInput: FC<AllocationInputProps> = ({
 
   const onValueChange = ({ value }: NumberFormatValues) => {
     onAllocationChange(parseEther(value))
-    resetInactivity()
+    cancelInactivityTimer()
   }
 
   return (
@@ -92,9 +93,19 @@ export const AllocationInput: FC<AllocationInputProps> = ({
         className,
       )}
       data-testid="allocationInputContainer"
-      onMouseMove={resetInactivity}
-      onKeyDown={resetInactivity}
-      onClick={resetInactivity}
+      onMouseEnter={() => {
+        isMouseInside.current = true
+        cancelInactivityTimer()
+      }}
+      onMouseLeave={() => {
+        isMouseInside.current = false
+        startInactivityTimer()
+      }}
+      onMouseMove={() => {
+        if (isMouseInside.current) cancelInactivityTimer()
+      }}
+      onKeyDown={cancelInactivityTimer}
+      onClick={cancelInactivityTimer}
     >
       <div className="flex items-center justify-between w-full" data-testid="allocationInputContent">
         <div className="flex-grow min-w-0" data-testid="allocationInputValue">
