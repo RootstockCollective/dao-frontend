@@ -4,12 +4,13 @@ import { InputNumber } from '@/components/Input/InputNumber'
 import { Paragraph } from '@/components/TypographyNew'
 import { USD } from '@/lib/constants'
 import { cn, formatCurrency } from '@/lib/utils'
-import { Dispatch, FC, SetStateAction } from 'react'
+import { Dispatch, FC, SetStateAction, useRef } from 'react'
 import { NumberFormatValues } from 'react-number-format'
 import { parseEther } from 'viem'
 import { PendingAllocation } from '../PendingAllocation/PendingAllocation'
 import { RIFToken } from '../RIFToken/RIFToken'
 import { StickySlider } from '../StickySlider/StickySlider'
+import { useInactivityTimeout } from '@/app/backing/hooks/useInactivityTimeout'
 
 interface AllocationInputProps {
   allocation: bigint
@@ -42,19 +43,28 @@ export const AllocationInput: FC<AllocationInputProps> = ({
     showCurrency: true,
   })
 
-  const handleSliderChange = (value: number[]) => {
-    const percent = value[0]
-    // Scale percent to avoid floating point math
-    const scaledPercent = (BigInt(percent) * BigInt(10 ** 18)) / BigInt(100)
-    // maxAllocation is already a bigint (e.g., in wei)
-    const newAllocation = (maxAllocation * scaledPercent) / BigInt(10 ** 18)
-    onAllocationChange(newAllocation)
+  const inputRef = useRef<HTMLInputElement>(null)
+
+  const handleInactive = () => {
+    if (allocation === existentAllocation) {
+      setEditing?.(false)
+      inputRef.current?.blur()
+    }
   }
 
-  const onMouseLeave = () => {
-    if (editing && allocation === existentAllocation) {
-      setEditing?.(false)
-    }
+  const resetInactivity = useInactivityTimeout({
+    condition: !!editing,
+    onInactive: handleInactive,
+    timeout: 1500,
+    throttleDelay: 300,
+  })
+
+  const handleSliderChange = (value: number[]) => {
+    const percent = value[0]
+    const scaledPercent = (BigInt(percent) * BigInt(10 ** 18)) / BigInt(100)
+    const newAllocation = (maxAllocation * scaledPercent) / BigInt(10 ** 18)
+    onAllocationChange(newAllocation)
+    resetInactivity()
   }
 
   const isAllowed = ({ value }: NumberFormatValues) => {
@@ -66,15 +76,12 @@ export const AllocationInput: FC<AllocationInputProps> = ({
       console.error('### Error parsing value', error)
       return false
     }
-    if (parsedValue > maxAllocation) {
-      return false
-    }
-    return true
+    return parsedValue <= maxAllocation
   }
 
   const onValueChange = ({ value }: NumberFormatValues) => {
-    // Checks are performed in isAllowed
     onAllocationChange(parseEther(value))
+    resetInactivity()
   }
 
   return (
@@ -85,6 +92,9 @@ export const AllocationInput: FC<AllocationInputProps> = ({
         className,
       )}
       data-testid="allocationInputContainer"
+      onMouseMove={resetInactivity}
+      onKeyDown={resetInactivity}
+      onClick={resetInactivity}
     >
       <div className="flex items-center justify-between w-full" data-testid="allocationInputContent">
         <div className="flex-grow min-w-0" data-testid="allocationInputValue">
@@ -100,6 +110,7 @@ export const AllocationInput: FC<AllocationInputProps> = ({
             onFocus={() => !editing && setEditing?.(true)}
             disabled={disabled}
             data-testid="allocationInputNumber"
+            ref={inputRef}
           />
         </div>
         <div className="flex items-center gap-1 flex-shrink-0" data-testid="allocationInputActions">
@@ -117,12 +128,7 @@ export const AllocationInput: FC<AllocationInputProps> = ({
       </Paragraph>
       {editing && !allocationTxPending && (
         <div data-testid="allocationInputSlider">
-          <StickySlider
-            value={[allocationPercentage]}
-            step={1}
-            onValueChange={handleSliderChange}
-            onMouseLeave={onMouseLeave}
-          />
+          <StickySlider value={[allocationPercentage]} step={1} onValueChange={handleSliderChange} />
           <Paragraph className="text-[12px] text-v3-text-60 mt-2" data-testid="allocationInputPercentage">
             {allocationPercentage.toFixed(0)}% of available stRIF for backing
           </Paragraph>
