@@ -8,7 +8,7 @@ export const useFetchNftHolders = (address: Address) => {
   const query = usePagination<NftHolderItem>({
     queryKey: ['nft_holders'],
     queryFn: () => getCachedNftHolders(address),
-    resultsPerTablePage: 15,
+    resultsPerTablePage: 10,
   })
 
   const ui = usePaginationUi(query)
