@@ -10,7 +10,7 @@ import { parseEther } from 'viem'
 import { PendingAllocation } from '../PendingAllocation/PendingAllocation'
 import { RIFToken } from '../RIFToken/RIFToken'
 import { StickySlider } from '../StickySlider/StickySlider'
-import { useInactivityTimeout } from '@/app/backing/hooks/useInactivityTimeout'
+import { useExitOnOutsideClick } from '@/app/backing/hooks/useExitOnOutsideClick'
 
 interface AllocationInputProps {
   allocation: bigint
@@ -44,20 +44,15 @@ export const AllocationInput: FC<AllocationInputProps> = ({
   })
 
   const inputRef = useRef<HTMLInputElement>(null)
-  const isMouseInside = useRef(false)
+  const containerRef = useRef<HTMLDivElement>(null)
 
-  const handleInactive = () => {
-    if (allocation === existentAllocation) {
+  useExitOnOutsideClick({
+    containerRef,
+    condition: !!editing && allocation === existentAllocation,
+    onExit: () => {
       setEditing?.(false)
       inputRef.current?.blur()
-    }
-  }
-
-  const { start: startInactivityTimer, cancel: cancelInactivityTimer } = useInactivityTimeout({
-    condition: !!editing,
-    onInactive: handleInactive,
-    timeout: 1500,
-    throttleDelay: 300,
+    },
   })
 
   const handleSliderChange = (value: number[]) => {
@@ -65,7 +60,6 @@ export const AllocationInput: FC<AllocationInputProps> = ({
     const scaledPercent = (BigInt(percent) * BigInt(10 ** 18)) / BigInt(100)
     const newAllocation = (maxAllocation * scaledPercent) / BigInt(10 ** 18)
     onAllocationChange(newAllocation)
-    cancelInactivityTimer()
   }
 
   const isAllowed = ({ value }: NumberFormatValues) => {
@@ -82,30 +76,17 @@ export const AllocationInput: FC<AllocationInputProps> = ({
 
   const onValueChange = ({ value }: NumberFormatValues) => {
     onAllocationChange(parseEther(value))
-    cancelInactivityTimer()
   }
 
   return (
     <div
+      ref={containerRef}
       className={cn(
         'bg-v3-bg-accent-80 border border-v3-bg-accent-60 rounded-lg font-rootstock-sans',
         disabled && 'bg-v3-bg-accent-60',
         className,
       )}
       data-testid="allocationInputContainer"
-      onMouseEnter={() => {
-        isMouseInside.current = true
-        cancelInactivityTimer()
-      }}
-      onMouseLeave={() => {
-        isMouseInside.current = false
-        startInactivityTimer()
-      }}
-      onMouseMove={() => {
-        if (isMouseInside.current) cancelInactivityTimer()
-      }}
-      onKeyDown={cancelInactivityTimer}
-      onClick={cancelInactivityTimer}
     >
       <div className="flex items-center justify-between w-full" data-testid="allocationInputContent">
         <div className="flex-grow min-w-0" data-testid="allocationInputValue">
