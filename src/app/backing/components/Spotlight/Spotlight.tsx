@@ -17,11 +17,9 @@ export const Spotlight = ({ isInteractive = true }: { isInteractive?: boolean })
   const { isConnected } = useAccount()
 
   const {
-    state: {
-      allocations,
-      selections,
+    state: { allocations, selections, getBuilder },
+    initialState: {
       backer: { amountToAllocate: totalOnchainAllocation },
-      getBuilder,
     },
     actions: { toggleSelectedBuilder },
   } = useContext(AllocationsContext)
@@ -101,7 +99,7 @@ export const Spotlight = ({ isInteractive = true }: { isInteractive?: boolean })
           {spotlightBuilders.map((builder, index) => (
             <BuilderCardControl
               key={builder.address}
-              {...builder}
+              builder={builder}
               estimatedRewards={builder.backerEstimatedRewards}
               isInteractive={true}
               index={index}

@@ -1,78 +1,130 @@
-import { formatMetrics, formatSymbol } from '@/app/collective-rewards/rewards/utils/formatter'
+import { useExitOnOutsideClick } from '@/app/backing/hooks/useExitOnOutsideClick'
+import { formatSymbol, getFiatAmount } from '@/app/collective-rewards/rewards/utils/formatter'
+import { useHandleErrors } from '@/app/collective-rewards/utils'
+import { GetPricesResult } from '@/app/user/types'
+import { CommonComponentProps } from '@/components/commonProps'
 import { InputNumber } from '@/components/Input/InputNumber'
 import { Paragraph } from '@/components/Typography'
-import { cn } from '@/lib/utils'
-import { Dispatch, FC, SetStateAction, useRef } from 'react'
+import { RIF, STRIF } from '@/lib/constants'
+import { cn, formatCurrency } from '@/lib/utils'
+import { useRef, useState } from 'react'
 import { NumberFormatValues } from 'react-number-format'
-import { parseEther } from 'viem'
+import { Address, parseEther } from 'viem'
 import { PendingAllocation } from '../PendingAllocation/PendingAllocation'
 import { RIFToken } from '../RIFToken/RIFToken'
 import { StickySlider } from '../StickySlider/StickySlider'
-import { useExitOnOutsideClick } from '@/app/backing/hooks/useExitOnOutsideClick'
-import { STRIF } from '@/lib/constants'
 
-interface AllocationInputProps {
-  allocation: bigint
-  existentAllocation: bigint
-  maxAllocation: bigint
-  rifPriceUsd: number
-  disabled?: boolean
-  allocationTxPending?: boolean
-  onAllocationChange: (value: bigint) => void
-  className?: string
-  editing?: boolean
-  setEditing?: Dispatch<SetStateAction<boolean>>
+interface OnchainBackingState {
+  builderBacking: bigint
+  cumulativeBacking: bigint
 }
 
-export const AllocationInput: FC<AllocationInputProps> = ({
-  allocation,
-  existentAllocation,
-  maxAllocation,
-  rifPriceUsd,
-  disabled = false,
+export interface UpdatedBackingState extends OnchainBackingState {
+  cumulativeBackingReductions: bigint
+}
+
+export interface AllocationInputProps extends CommonComponentProps {
+  builderAddress: Address
+  balance: bigint
+  onchainBackingState: OnchainBackingState
+  updatedBackingState: UpdatedBackingState
+  allocationTxPending?: boolean
+  disabled?: boolean
+  prices: GetPricesResult
+  updateBacking: (value: bigint) => void
+  onEdit?: (editing: boolean) => void
+}
+
+export const AllocationInput = ({
+  builderAddress,
+  balance,
+  onchainBackingState: { builderBacking: onchainBacking, cumulativeBacking: onchainCumulativeBacking },
+  updatedBackingState: {
+    builderBacking: updatedBacking,
+    cumulativeBacking: updatedCumulativeBacking,
+    cumulativeBackingReductions: updatedBackingReductions,
+  },
+  updateBacking,
   allocationTxPending = false,
-  onAllocationChange,
+  disabled = false,
+  prices,
   className,
-  editing,
-  setEditing,
-}) => {
-  const allocationPercentage = maxAllocation === 0n ? 0 : Number((allocation * 100n) / maxAllocation)
-  const { fiatAmount: amountUsd } = formatMetrics(allocation, rifPriceUsd, STRIF)
+  onEdit,
+}: AllocationInputProps): React.ReactElement => {
+  const [editing, setEditing] = useState(false)
+  const [parsingError, setParsingError] = useState<Error | null>(null)
+
+  const onchainAvailableBalance = balance - onchainCumulativeBacking
+
+  const totalAvailableBalance = onchainAvailableBalance + updatedBackingReductions
+
+  const availableForBacking = balance - updatedCumulativeBacking
+
+  const isNegativeBacking = updatedBacking < onchainBacking
+  const additionalBacking = isNegativeBacking ? 0n : updatedBacking - onchainBacking
+
+  const amountUsd = formatCurrency(getFiatAmount(additionalBacking, prices[RIF]?.price ?? 0))
 
   const inputRef = useRef<HTMLInputElement>(null)
   const containerRef = useRef<HTMLDivElement>(null)
 
   useExitOnOutsideClick({
     containerRef,
-    condition: !!editing && allocation === existentAllocation,
+    condition: !!editing && builderAddress && updatedBacking <= onchainBacking,
     onExit: () => {
-      setEditing?.(false)
+      setEditing(false)
+      onEdit?.(false)
       inputRef.current?.blur()
     },
   })
+  const sliderValue =
+    additionalBacking > 0n && totalAvailableBalance > 0n
+      ? Number((additionalBacking * 100n) / totalAvailableBalance)
+      : 0
 
-  const handleSliderChange = (value: number[]) => {
-    const percent = value[0]
-    const scaledPercent = (BigInt(percent) * BigInt(10 ** 18)) / BigInt(100)
-    const newAllocation = (maxAllocation * scaledPercent) / BigInt(10 ** 18)
-    onAllocationChange(newAllocation)
+  const onSliderChange = (value: number[]) => {
+    const [percent] = value
+    const newBacking = onchainBacking + (BigInt(percent ?? 0) * totalAvailableBalance) / 100n
+    if (isNegativeBacking) {
+      return
+    }
+
+    if (isValidBalanceFraction(newBacking, updatedCumulativeBacking, updatedBacking, balance)) {
+      return updateBacking(newBacking)
+    }
+
+    updateBacking(balance - updatedCumulativeBacking + updatedBacking)
   }
 
   const isAllowed = ({ value }: NumberFormatValues) => {
     if (!editing) return false
+
     let parsedValue = 0n
     try {
       parsedValue = parseEther(value)
     } catch (error) {
-      console.error('### Error parsing value', error)
+      setParsingError(error as Error)
       return false
     }
-    return parsedValue <= maxAllocation
+
+    if (!isValidBalanceFraction(parsedValue, updatedCumulativeBacking, updatedBacking, balance)) {
+      return false
+    }
+
+    return true
   }
 
-  const onValueChange = ({ value }: NumberFormatValues) => {
-    onAllocationChange(parseEther(value))
+  const onInputValueChange = ({ value }: NumberFormatValues) => {
+    try {
+      updateBacking(parseEther(value))
+    } catch (error) {
+      setParsingError(error as Error)
+    }
   }
+  useHandleErrors({
+    error: parsingError,
+    title: 'Error parsing value',
+  })
 
   return (
     <div
@@ -90,12 +142,15 @@ export const AllocationInput: FC<AllocationInputProps> = ({
             name="allocation"
             autoComplete="off"
             decimalScale={0}
-            placeholder={!disabled ? `max ${formatSymbol(maxAllocation, STRIF)}` : '0'}
+            placeholder={!disabled ? `max ${formatSymbol(availableForBacking, STRIF)}` : '0'}
             className="focus:outline-none focus-visible:outline-none text-left p-0 m-0 border-0 bg-transparent w-full text-[24px]"
-            value={allocation ? formatSymbol(allocation, STRIF) : ''}
-            onValueChange={onValueChange}
+            value={updatedBacking > 0n ? formatSymbol(updatedBacking, STRIF) : ''}
+            onValueChange={onInputValueChange}
             isAllowed={isAllowed}
-            onFocus={() => !editing && setEditing?.(true)}
+            onFocus={() => {
+              setEditing(true)
+              onEdit?.(true)
+            }}
             disabled={disabled}
             data-testid="allocationInputNumber"
             ref={inputRef}
@@ -104,24 +159,35 @@ export const AllocationInput: FC<AllocationInputProps> = ({
         <div className="flex items-center gap-1 flex-shrink-0" data-testid="allocationInputActions">
           {allocationTxPending && (
             <PendingAllocation
-              pendingBacking={formatSymbol(allocation, STRIF)}
-              currentBacking={formatSymbol(existentAllocation, STRIF)}
+              pendingBacking={formatSymbol(updatedBacking, STRIF)}
+              currentBacking={formatSymbol(onchainBacking, STRIF)}
             />
           )}
           <RIFToken />
         </div>
       </div>
-      <Paragraph className="text-[14px] text-v3-text-60" data-testid="allocationInputUsd">
-        {amountUsd}
-      </Paragraph>
-      {editing && !allocationTxPending && (
+      {!isNegativeBacking && (
+        <Paragraph className="text-[14px] text-v3-text-60" data-testid="allocationInputUsd">
+          {amountUsd}
+        </Paragraph>
+      )}
+      {editing && !isNegativeBacking && !allocationTxPending && (
         <div data-testid="allocationInputSlider">
-          <StickySlider value={[allocationPercentage]} step={1} onValueChange={handleSliderChange} />
+          <StickySlider value={[sliderValue]} max={100} step={1} onValueChange={onSliderChange} />
           <Paragraph className="text-[12px] text-v3-text-60 mt-2" data-testid="allocationInputPercentage">
-            {allocationPercentage.toFixed(0)}% of available stRIF for backing
+            {Number(sliderValue).toFixed(0)}% of available {STRIF} for backing
           </Paragraph>
         </div>
       )}
     </div>
   )
+}
+
+function isValidBalanceFraction(
+  parsedValue: bigint,
+  updatedCumulativeBacking: bigint,
+  updatedBacking: bigint,
+  balance: bigint,
+): boolean {
+  return parsedValue + updatedCumulativeBacking - updatedBacking <= balance
 }
