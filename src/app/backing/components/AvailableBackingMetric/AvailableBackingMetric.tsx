@@ -1,9 +1,20 @@
-import { Typography } from '@/components/TypographyNew/Typography'
-import { Tooltip } from '@/components/Tooltip'
-import { stRIF } from '@/lib/constants'
+import {
+  Allocations,
+  AllocationsContext,
+} from '@/app/collective-rewards/allocations/context/AllocationsContext'
+import { formatSymbol, getFiatAmount } from '@/app/collective-rewards/rewards'
+import { useBuilderContext } from '@/app/collective-rewards/user'
+import { Button } from '@/components/ButtonNew'
 import { KotoQuestionMarkIcon } from '@/components/Icons/KotoQuestionMarkIcon'
 import { TokenAmountDisplay } from '@/components/TokenAmountDisplay'
-import { Button } from '@/components/ButtonNew'
+import { Tooltip } from '@/components/Tooltip'
+import { Typography } from '@/components/TypographyNew/Typography'
+import { RIF, stRIF, USD } from '@/lib/constants'
+import { formatCurrency } from '@/lib/utils/utils'
+import { usePricesContext } from '@/shared/context'
+import { useRouter } from 'next/navigation'
+import { useContext, useMemo } from 'react'
+import { Address } from 'viem'
 
 interface AvailableBackingMetricProps {
   availableForBacking: string
@@ -57,23 +68,66 @@ const DistributeButton = ({ onDistributeClick }: { onDistributeClick?: () => voi
   </div>
 )
 
-export const AvailableBackingMetric = ({
-  availableForBacking,
-  availableBackingUSD,
-  onStakeClick,
-  onDistributeClick,
-}: AvailableBackingMetricProps) => {
-  const hasAvailableBacking = availableForBacking !== '0'
-  const actions = hasAvailableBacking ? (
-    <DistributeButton onDistributeClick={onDistributeClick} />
-  ) : (
-    <StakeButton onStakeClick={onStakeClick} />
-  )
+export const AvailableBackingMetric = () => {
+  const {
+    state: {
+      backer: { balance, allocationsCount, cumulativeAllocation },
+      allocations,
+    },
+    initialState: {
+      backer: { balance: totalVotingPower },
+    },
+    actions: { updateAllocations },
+  } = useContext(AllocationsContext)
+  const { randomBuilders } = useBuilderContext()
+  const { prices } = usePricesContext()
+  const router = useRouter()
+
+  const availableForBacking = balance - cumulativeAllocation
+  const availableBackingUSD = useMemo(() => {
+    const rifPriceUsd = prices[RIF]?.price ?? 0
+
+    return !availableForBacking || !rifPriceUsd
+      ? formatCurrency(0, { currency: USD, showCurrency: true })
+      : formatCurrency(getFiatAmount(availableForBacking, rifPriceUsd), {
+          currency: USD,
+          showCurrency: true,
+        })
+  }, [availableForBacking, prices[RIF]])
+
+  const handleDistributeClick = () => {
+    //FIXME: Take into the inactive builders
+    let newAllocations: Allocations = {}
+    if (allocationsCount > 0) {
+      newAllocations = Object.keys(allocations).reduce((acc, key) => {
+        const builderAddress = key as Address
+        const newAllocation = availableForBacking / BigInt(allocationsCount) + allocations[builderAddress]
+        acc[builderAddress] = newAllocation
+
+        return acc
+      }, {} as Allocations)
+    }
+    const buildersAllocations =
+      allocationsCount > 0
+        ? newAllocations
+        : randomBuilders.reduce((acc, builder) => {
+            acc[builder.address] = availableForBacking / BigInt(randomBuilders.length)
+            return acc
+          }, {} as Allocations)
+    updateAllocations(buildersAllocations)
+  }
+
+  const actions =
+    availableForBacking > 0n ? (
+      <DistributeButton onDistributeClick={handleDistributeClick} />
+    ) : (
+      <StakeButton onStakeClick={() => router.push('/user?action=stake')} />
+    )
 
   return (
     <TokenAmountDisplay
       label="Available for backing"
-      amount={availableForBacking}
+      amount={formatSymbol(availableForBacking, stRIF)}
       tokenSymbol={stRIF}
       amountInCurrency={availableBackingUSD}
       actions={actions}
