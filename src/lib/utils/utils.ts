@@ -5,7 +5,7 @@ import { ClassValue, clsx } from 'clsx'
 import { Duration } from 'luxon'
 import { twMerge } from 'tailwind-merge'
 import { Address, formatEther } from 'viem'
-import { CHAIN_ID, EXPLORER_URL, RIF_WALLET_SERVICES_URL } from '../constants'
+import { CHAIN_ID, RIF_WALLET_SERVICES_URL } from '../constants'
 
 /**
  * Merges Tailwind and clsx classes in order to avoid classes conflicts.
