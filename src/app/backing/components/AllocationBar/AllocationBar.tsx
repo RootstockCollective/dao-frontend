@@ -12,6 +12,7 @@ import {
 import { AllocationBarProps } from './types'
 import { AllocationBarSegment } from './AllocationBarSegment'
 import { Legend } from '@/components/Legend'
+import { cn } from '@/lib/utils'
 
 const AllocationBar: React.FC<AllocationBarProps> = ({
   itemsData,
@@ -132,7 +133,7 @@ const AllocationBar: React.FC<AllocationBarProps> = ({
   }
 
   return (
-    <div className={`w-full p-8 flex flex-col ${className} gap-6`}>
+    <div className={cn('w-full p-8 flex flex-col gap-6', className)}>
       <DndContext
         sensors={sensors}
         collisionDetection={pointerWithin}
