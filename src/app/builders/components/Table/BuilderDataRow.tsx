@@ -263,10 +263,6 @@ export const BuilderDataRow: FC<BuilderDataRowProps> = ({ row, ...props }) => {
   const hasAllocations = backing.amount > 0n
 
   const canAllocate = !isInProgress && (!hasInactiveState || hasAllocations)
-  console.log('isInProgress: ', isInProgress)
-  console.log('hasInactiveState: ', hasInactiveState)
-  console.log('hasAllocations: ', hasAllocations)
-  console.log('canAllocate: ', canAllocate)
 
   const handleToggleSelection = () => {
     if (!isConnected) {
