@@ -129,7 +129,7 @@ const usePagedFilteredBuildersRewards = ({
       ? [...filtered].sort((a, b) => (direction === 'asc' ? sortFn(a, b) : sortFn(b, a)))
       : filtered
 
-    const totalRewards = allBuilders.length
+    const totalRewards = filtered.length
     const pagedRewards = sorted.slice(pageOptions.start, pageOptions.end)
 
     return { pagedRewards, totalRewards } as const
