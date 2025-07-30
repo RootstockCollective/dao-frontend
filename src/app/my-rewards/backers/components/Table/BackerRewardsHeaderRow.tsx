@@ -48,7 +48,6 @@ export const BackerRewardsHeaderRow = ({ actions }: BackerRewardsHeaderRowProps)
               }}
             >
               <HeaderTitle>Unclaimed</HeaderTitle>
-              <HeaderSubtitle/>
             </HeaderCell>
             <HeaderCell
               key="estimated"
@@ -93,11 +92,9 @@ export const BackerRewardsHeaderRow = ({ actions }: BackerRewardsHeaderRowProps)
             </HeaderCell>
             <HeaderCell key="backing" columnId="backing" columnTransforms={COLUMN_TRANSFORMS}>
               <HeaderTitle>Backing</HeaderTitle>
-              <HeaderSubtitle/>
             </HeaderCell>
             <HeaderCell columnId="actions" columnTransforms={COLUMN_TRANSFORMS}>
               <HeaderTitle>Actions</HeaderTitle>
-              <HeaderSubtitle/>
             </HeaderCell>
             <th>
               <TableColumnDropdown className="self-start" labels={LABELS} />

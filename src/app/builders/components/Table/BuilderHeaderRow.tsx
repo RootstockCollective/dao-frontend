@@ -170,7 +170,7 @@ export const HeaderCell = <ColumnId extends string>({
   return (
     <>
       <TableHeaderCell
-        className={cn(columnClassNames, className)}
+        className={cn('h-full', columnClassNames, className)}
         contentClassName={isJustifyCenter ? 'justify-center' : ''}
         onClick={() => isSortable && dispatchSortRoundRobin(dispatch, columnId, sort)}
         {...props}
@@ -196,14 +196,13 @@ export const HeaderTitle: FC<CommonComponentProps> = ({ className, children }) =
     {children}
   </Label>
 )
-const emptyPlaceholder = '\u00A0'
+
 export const HeaderSubtitle: FC<CommonComponentProps> = ({ className, children }) => (
   <Paragraph
     variant="body-xs"
     className={cn('text-v3-bg-accent-40 rootstock-sans text-xs leading-5 lowercase font-normal', className)}
   >
-    {/* Renders non-breaking space when no children to maintain consistent vertical spacing */}
-    {children || emptyPlaceholder}
+    {children}
   </Paragraph>
 )
 
@@ -245,7 +244,6 @@ export const BuilderHeaderRow = ({ actions }: BuilderHeaderRowProps): ReactEleme
             </HeaderCell>
             <HeaderCell key="backing" columnId="backing" columnTransforms={COLUMN_TRANSFORMS}>
               <HeaderTitle>Backing</HeaderTitle>
-              <HeaderSubtitle/>
             </HeaderCell>
             <HeaderCell key="allocations" columnId="allocations" columnTransforms={COLUMN_TRANSFORMS}>
               <HeaderTitle>Backing Share</HeaderTitle>
@@ -253,7 +251,6 @@ export const BuilderHeaderRow = ({ actions }: BuilderHeaderRowProps): ReactEleme
             </HeaderCell>
             <HeaderCell columnId="actions" columnTransforms={COLUMN_TRANSFORMS}>
               <HeaderTitle>Actions</HeaderTitle>
-              <HeaderSubtitle/>
             </HeaderCell>
             <th>
               <TableColumnDropdown<Exclude<ColumnId, 'builder' | 'actions'>>
@@ -310,7 +307,6 @@ export const CombinedActionsHeaderCell = ({ actions }: CombinedActionsHeaderCell
             {actions.length}
           </Span>
         </HeaderTitle>
-        <HeaderSubtitle/>
       </TableHeaderNode>
     </TableHeaderCell>
   )
