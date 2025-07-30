@@ -102,16 +102,16 @@ const usePagedFilteredBuildersRewards = ({
       },
 
       rewards_upcoming: (a, b) => {
-        const aValue = a.builderEstimatedRewards
+        const aValue = a.backerEstimatedRewards
           ? getCombinedFiatAmount([
-              a.builderEstimatedRewards.rif.amount,
-              a.builderEstimatedRewards.rbtc.amount,
+              a.backerEstimatedRewards.rif.amount,
+              a.backerEstimatedRewards.rbtc.amount,
             ]).toNumber()
           : 0
-        const bValue = b.builderEstimatedRewards
+        const bValue = b.backerEstimatedRewards
           ? getCombinedFiatAmount([
-              b.builderEstimatedRewards.rif.amount,
-              b.builderEstimatedRewards.rbtc.amount,
+              b.backerEstimatedRewards.rif.amount,
+              b.backerEstimatedRewards.rbtc.amount,
             ]).toNumber()
           : 0
         return Big(aValue).sub(bValue).toNumber()
