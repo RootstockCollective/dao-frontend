@@ -69,9 +69,9 @@ export const convertDataToRowData = (
           percentage: builder.backerRewardPct,
         },
         rewards_past_cycle: {
-          rbtcValue: builder?.lastCycleRewards?.rbtc.amount.value ?? 0n,
-          rifValue: builder?.lastCycleRewards?.rif.amount.value ?? 0n,
-          usdValue: builder?.lastCycleRewards
+          rbtcValue: builder.lastCycleRewards?.rbtc.amount.value ?? 0n,
+          rifValue: builder.lastCycleRewards?.rif.amount.value ?? 0n,
+          usdValue: builder.lastCycleRewards
             ? getCombinedFiatAmount([
                 builder.lastCycleRewards.rif.amount,
                 builder.lastCycleRewards.rbtc.amount,
@@ -79,9 +79,9 @@ export const convertDataToRowData = (
             : 0,
         },
         rewards_upcoming: {
-          rbtcValue: builder?.backerEstimatedRewards?.rbtc.amount.value ?? 0n,
-          rifValue: builder?.backerEstimatedRewards?.rif.amount.value ?? 0n,
-          usdValue: builder?.backerEstimatedRewards
+          rbtcValue: builder.backerEstimatedRewards?.rbtc.amount.value ?? 0n,
+          rifValue: builder.backerEstimatedRewards?.rif.amount.value ?? 0n,
+          usdValue: builder.backerEstimatedRewards
             ? getCombinedFiatAmount([
                 builder.backerEstimatedRewards.rif.amount,
                 builder.backerEstimatedRewards.rbtc.amount,
