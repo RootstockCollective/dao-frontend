@@ -69,20 +69,24 @@ export const convertDataToRowData = (
           percentage: builder.backerRewardPct,
         },
         rewards_past_cycle: {
-          rbtcValue: builder.lastCycleRewards.rbtc.amount.value,
-          rifValue: builder.lastCycleRewards.rif.amount.value,
-          usdValue: getCombinedFiatAmount([
-            builder.lastCycleRewards.rif.amount,
-            builder.lastCycleRewards.rbtc.amount,
-          ]).toNumber(),
+          rbtcValue: builder.lastCycleRewards?.rbtc.amount.value ?? 0n,
+          rifValue: builder.lastCycleRewards?.rif.amount.value ?? 0n,
+          usdValue: builder.lastCycleRewards
+            ? getCombinedFiatAmount([
+                builder.lastCycleRewards.rif.amount,
+                builder.lastCycleRewards.rbtc.amount,
+              ]).toNumber()
+            : 0,
         },
         rewards_upcoming: {
-          rbtcValue: builder.backerEstimatedRewards.rbtc.amount.value,
-          rifValue: builder.backerEstimatedRewards.rif.amount.value,
-          usdValue: getCombinedFiatAmount([
-            builder.backerEstimatedRewards.rif.amount,
-            builder.backerEstimatedRewards.rbtc.amount,
-          ]).toNumber(),
+          rbtcValue: builder.backerEstimatedRewards?.rbtc.amount.value ?? 0n,
+          rifValue: builder.backerEstimatedRewards?.rif.amount.value ?? 0n,
+          usdValue: builder.backerEstimatedRewards
+            ? getCombinedFiatAmount([
+                builder.backerEstimatedRewards.rif.amount,
+                builder.backerEstimatedRewards.rbtc.amount,
+              ]).toNumber()
+            : 0,
         },
         backing: {
           amount: allocation,
@@ -90,7 +94,9 @@ export const convertDataToRowData = (
           formattedUsdAmount: formattedUsdAmount,
         },
         allocations: {
-          allocationPct: Number(builder.totalAllocationPercentage),
+          allocationPct: builder.totalAllocationPercentage
+            ? Number(builder.totalAllocationPercentage)
+            : undefined,
         },
         actions: {
           actionType,

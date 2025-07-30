@@ -5,13 +5,13 @@ import { cn } from '@/lib/utils'
 import { FC } from 'react'
 
 export interface BackersPercentageCellProps {
-  percentage: BackerRewardPercentage
+  percentage?: BackerRewardPercentage
   className?: string
 }
 
 export const BackersPercentageCell: FC<BackersPercentageCellProps> = ({ className, percentage }) => {
-  const currentPct = weiToPercentage(percentage.current, 0)
-  const nextPct = weiToPercentage(percentage.next, 0)
+  const currentPct = weiToPercentage(percentage?.current ?? 0n, 0)
+  const nextPct = weiToPercentage(percentage?.next ?? 0n, 0)
   return (
     <div className={cn('border-b-0', className)}>
       <div className="flex flex-row gap-x-1 font-rootstock-sans self-center items-center justify-around gap-1">
