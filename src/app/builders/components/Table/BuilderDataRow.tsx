@@ -2,7 +2,11 @@
 
 import { formatSymbol, getFiatAmount } from '@/app/collective-rewards/rewards/utils/formatter'
 import { BuilderRewardsSummary } from '@/app/collective-rewards/types'
-import { getCombinedFiatAmount } from '@/app/collective-rewards/utils'
+import {
+  getCombinedFiatAmount,
+  isBuilderInProgress,
+  getBuilderInactiveState,
+} from '@/app/collective-rewards/utils'
 import { ConditionalTooltip } from '@/app/components'
 import { ConnectTooltipContent } from '@/app/components/Tooltip/ConnectTooltip/ConnectTooltipContent'
 import { GetPricesResult } from '@/app/user/types'
@@ -254,8 +258,23 @@ export const BuilderDataRow: FC<BuilderDataRowProps> = ({ row, ...props }) => {
 
   const hasSelections = Object.values(selectedRows).some(Boolean)
 
+  const isInProgress = isBuilderInProgress(builder.builder)
+  const hasInactiveState = getBuilderInactiveState(builder.builder) !== null
+  const hasAllocations = backing.amount > 0n
+
+  const canAllocate = !isInProgress && (!hasInactiveState || hasAllocations)
+  console.log('isInProgress: ', isInProgress)
+  console.log('hasInactiveState: ', hasInactiveState)
+  console.log('hasAllocations: ', hasAllocations)
+  console.log('canAllocate: ', canAllocate)
+
   const handleToggleSelection = () => {
     if (!isConnected) {
+      return
+    }
+
+    if (!canAllocate) {
+      // do not allow selection of builders that are in progress
       return
     }
 
@@ -281,6 +300,10 @@ export const BuilderDataRow: FC<BuilderDataRowProps> = ({ row, ...props }) => {
             ),
           },
           {
+            condition: () => !canAllocate,
+            lazyContent: () => <NonHoverableBuilderTooltipContent />,
+          },
+          {
             condition: () => !hasSelections,
             lazyContent: () => <SelectBuildersTooltipContent />,
           },
@@ -293,7 +316,7 @@ export const BuilderDataRow: FC<BuilderDataRowProps> = ({ row, ...props }) => {
             selectedRows[rowId] || isHovered ? selectedRowStyle : unselectedRowStyle,
           )}
           onClick={handleToggleSelection}
-          onMouseEnter={() => setIsHovered(true)}
+          onMouseEnter={() => canAllocate && setIsHovered(true)}
           onMouseLeave={() => setIsHovered(false)}
         >
           <BuilderCell {...builder} isHighlighted={isHovered || selectedRows[rowId]} />
@@ -320,6 +343,18 @@ export const SelectBuildersTooltipContent = () => {
       <div className="bg-v3-text-80 rounded-sm shadow-sm w-64 flex flex-col items-start p-6 gap-2">
         <Paragraph className="text-v3-bg-accent-100 text-sm w-full font-normal leading-5 rootstock-sans self-stretch">
           Select Builders you want to back
+        </Paragraph>
+      </div>
+    </div>
+  )
+}
+
+export const NonHoverableBuilderTooltipContent = () => {
+  return (
+    <div className="flex justify-center">
+      <div className="bg-v3-text-80 rounded-sm shadow-sm w-64 flex flex-col items-start p-6 gap-2">
+        <Paragraph className="text-v3-bg-accent-100 text-sm w-full font-normal leading-5 rootstock-sans self-stretch">
+          This Builder state does not allow allocations
         </Paragraph>
       </div>
     </div>
