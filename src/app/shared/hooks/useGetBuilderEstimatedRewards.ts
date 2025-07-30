@@ -8,6 +8,11 @@ import { TOKENS } from '@/lib/tokens'
 import { usePricesContext } from '@/shared/context/PricesContext'
 import { useReadBackersManager, useReadGauges } from '@/shared/hooks/contracts'
 import { useMemo } from 'react'
+import { Address } from 'viem'
+
+type BuilderEstimatedRewardsWithGauges = Required<BuilderEstimatedRewards> & {
+  gauge: Address
+}
 
 export const useGetBuilderEstimatedRewards = (currency = USD) => {
   const { rif, rbtc } = TOKENS
@@ -39,7 +44,7 @@ export const useGetBuilderEstimatedRewards = (currency = USD) => {
   } = useGetCycleRewards()
 
   const { prices } = usePricesContext()
-  const estimatedRewards: BuilderEstimatedRewards[] = useMemo(() => {
+  const estimatedRewards: BuilderEstimatedRewardsWithGauges[] = useMemo(() => {
     const rifAmount = cycleRewards?.rif ?? 0n
     const rbtcAmount = cycleRewards?.rbtc ?? 0n
     const rifPrice = prices.RIF?.price ?? 0
