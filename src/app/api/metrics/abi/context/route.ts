@@ -18,9 +18,27 @@ export async function GET() {
       db('Builder')
         .join('BuilderState', 'Builder.id', '=', 'BuilderState.builder')
         .join('BackerRewardPercentage', 'Builder.id', '=', 'BackerRewardPercentage.builder')
-        .select('Builder.id', 'Builder.totalAllocation', {
-          backerRewardPercentage: db.raw(DB_COMMAND_COALESCE),
-        })
+        .select(
+          'Builder.id',
+          'Builder.totalAllocation',
+          {
+            backerRewardPercentage: db.raw(DB_COMMAND_COALESCE),
+          },
+          {
+            state: db.raw(`
+              COALESCE(
+                json_build_object(
+                  'activated', "BuilderState"."initialized",
+                  'kycApproved', "BuilderState"."kycApproved",
+                  'communityApproved', "BuilderState"."communityApproved",
+                  'revoked', "BuilderState"."kycPaused",
+                  'paused', "BuilderState"."selfPaused"
+                ),
+                '{}'
+              )
+            `),
+          },
+        )
         .where('BuilderState.initialized', '=', true)
         .orderByRaw('"Builder"."totalAllocation"::numeric DESC'),
       db('Cycle').select('Cycle.id', 'Cycle.rewardsERC20', 'Cycle.rewardsRBTC').orderBy('id', 'desc'),

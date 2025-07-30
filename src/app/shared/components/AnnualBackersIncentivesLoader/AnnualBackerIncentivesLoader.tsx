@@ -20,9 +20,10 @@ const useFallbackWithErrors = () => {
 }
 
 export const AnnualBackerIncentivesLoader: FC<AnnualBackerIncentivesLoaderProps> = ({ render }) => {
-  const {
+  let {
     flags: { use_state_sync },
   } = useFeatureFlags()
+  use_state_sync = false
 
   const usePrimary = use_state_sync ? useGetMetricsAbiWithStateSync : useGetMetricsAbiWithGraph
 

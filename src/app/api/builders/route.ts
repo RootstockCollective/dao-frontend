@@ -30,15 +30,14 @@ export async function GET(req: Request) {
               '{}'
           )
         `),
-        builderState: db.raw(`
+        state: db.raw(`
           COALESCE(
             json_build_object(
-              'initialized', "BuilderState"."initialized",
+              'activated', "BuilderState"."initialized",
               'kycApproved', "BuilderState"."kycApproved",
               'communityApproved', "BuilderState"."communityApproved",
-              'kycPaused', "BuilderState"."kycPaused",
-              'selfPaused', "BuilderState"."selfPaused",
-              'pausedReason', convert_from("BuilderState"."pausedReason", 'utf8')
+              'revoked', "BuilderState"."kycPaused",
+              'paused', "BuilderState"."selfPaused"
             ),
             '{}'
           )
