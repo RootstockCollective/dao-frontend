@@ -48,8 +48,7 @@ export const BackerRewardsHeaderRow = ({ actions }: BackerRewardsHeaderRowProps)
               }}
             >
               <HeaderTitle>Unclaimed</HeaderTitle>
-              {/* Empty subtitle to align the text vertically */}
-              <HeaderSubtitle></HeaderSubtitle>
+              <HeaderSubtitle/>
             </HeaderCell>
             <HeaderCell
               key="estimated"
@@ -94,13 +93,11 @@ export const BackerRewardsHeaderRow = ({ actions }: BackerRewardsHeaderRowProps)
             </HeaderCell>
             <HeaderCell key="backing" columnId="backing" columnTransforms={COLUMN_TRANSFORMS}>
               <HeaderTitle>Backing</HeaderTitle>
-              <HeaderSubtitle className="h-full text-v3-bg-accent-80">balls</HeaderSubtitle>
-              {/* TODO: temporary fix to align the text to the top */}
+              <HeaderSubtitle/>
             </HeaderCell>
             <HeaderCell columnId="actions" columnTransforms={COLUMN_TRANSFORMS}>
               <HeaderTitle>Actions</HeaderTitle>
-              <HeaderSubtitle className="h-full text-v3-bg-accent-80">balls</HeaderSubtitle>
-              {/* TODO: temporary fix to align the text to the top */}
+              <HeaderSubtitle/>
             </HeaderCell>
             <th>
               <TableColumnDropdown className="self-start" labels={LABELS} />
