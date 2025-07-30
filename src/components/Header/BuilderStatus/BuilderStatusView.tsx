@@ -15,7 +15,6 @@ const builderStatusConfig: Record<
   {
     className: HtmlHTMLAttributes<HTMLSpanElement>['className']
     icon?: React.ComponentType<{ size?: number }>
-    iconSize?: number
   }
 > = {
   active: {
@@ -24,30 +23,28 @@ const builderStatusConfig: Record<
   inProgress: {
     className: 'text-v3-primary',
     icon: HourglassIcon,
-    iconSize: 16,
   },
   deactivated: {
     className: 'text-brand-rootstock-lime',
     icon: WarningIcon,
-    iconSize: 18,
   },
   paused: {
     className: 'text-brand-rootstock-lime',
     icon: WarningIcon,
-    iconSize: 18,
   },
 }
 
 export function BuilderStatusView({ builderState }: BuilderStatusProps) {
   const config = builderStatusConfig[builderState]
   const IconComponent = config.icon
-  const size = config.iconSize
 
   return (
-    <div className={cn('flex items-center font-rootstock-sans gap-2', config.className)}>
-      <SeparatorBar />
-      {IconComponent && <IconComponent size={size} />}
-      <Typography variant="body-xs">BUILDER</Typography>
+    <div className={cn('flex items-center font-rootstock-sans', config.className)}>
+      <SeparatorBar className="mr-2" />
+      {IconComponent && <IconComponent />}
+      <Typography variant="body-xs" className="ml-[2px]">
+        BUILDER
+      </Typography>
     </div>
   )
 }
