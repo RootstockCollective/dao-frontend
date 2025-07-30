@@ -77,8 +77,13 @@ export const BuilderCard: FC<BuilderCardProps> = ({
   const builderPageLink = `/proposals/${proposal.id}`
 
   useEffect(() => {
+    // do not disable editing if the allocation is the same as the on-chain one
+    if (allocation === existentAllocation && editing) {
+      return
+    }
+
     setEditing(allocation !== existentAllocation && isConnected)
-  }, [allocation, existentAllocation, isConnected])
+  }, [allocation, existentAllocation, isConnected, editing])
 
   return (
     <WindshieldWiperAnimation
