@@ -25,7 +25,7 @@ export const useGetABIFromChain = () => {
 
   const buildersData = useMemo(() => {
     return activeBuilders
-      .reduce<Array<BuilderData>>((acc, { address, backerRewardPct }, i) => {
+      .reduce<Array<BuilderData>>((acc, { address, backerRewardPct, stateFlags }, i) => {
         const allocation = totalAllocation[i] ?? 0n
 
         if (!allocation || !backerRewardPct) {
@@ -33,15 +33,14 @@ export const useGetABIFromChain = () => {
         }
 
         acc.push({
-          id: address,
+          address,
           totalAllocation: allocation.toString(),
-          rewardShares: '0',
-          backerRewardPercentage: {
-            id: address,
+          backerRewardPct: {
             next: backerRewardPct.next.toString(),
             previous: backerRewardPct.previous.toString(),
             cooldownEndTime: backerRewardPct.cooldownEndTime.toString(),
           },
+          stateFlags,
         })
 
         return acc
