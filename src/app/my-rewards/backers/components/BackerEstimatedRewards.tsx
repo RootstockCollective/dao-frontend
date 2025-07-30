@@ -15,20 +15,20 @@ export const BackerEstimatedRewards = () => {
       isLoading={rifData.isLoading || rbtcData.isLoading}
       title="Estimated this cycle"
       info={
-        <div className="flex flex-col gap-2 text-wrap max-w-[35rem]">
-          <Paragraph>
+        <span className="flex flex-col gap-2 text-wrap max-w-[35rem]">
+          <span>
             An estimate of the remainder of this Cycle&apos;s rewards that will become fully claimable by the
             end of the current Cycle. These rewards gradually transition into your &apos;Claimable
             Rewards&apos; as the cycle progresses.
-          </Paragraph>
-          <Paragraph className="mt-2 mb-2">
+          </span>
+          <span className="mt-2 mb-2">
             To check the cycle&apos;s completion, go to Collective Rewards → Current Cycle.
-          </Paragraph>
-          <Paragraph>
+          </span>
+          <span>
             The displayed information is dynamic and may vary based on total rewards and user activity. This
             data is for informational purposes only.
-          </Paragraph>
-        </div>
+          </span>
+        </span>
       }
     >
       <TokenAmount amount={rifData.amount} tokenSymbol={TokenSymbol.RIF} amountInFiat={rifData.fiatAmount} />
