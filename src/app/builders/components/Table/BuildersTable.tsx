@@ -23,6 +23,7 @@ import { Action, ActionCellProps } from './Cell/ActionCell'
 import { Sort } from '@/shared/context/TableContext/types'
 import { getCombinedFiatAmount } from '@/app/collective-rewards/utils/getCombinedFiatAmount'
 import { Big } from 'big.js'
+import { useBuilderContext } from '@/app/collective-rewards/user/context/BuilderContext'
 
 // --- Filter builders by state ---
 const filterActive = (builder: Builder) => isBuilderActive(builder.stateFlags)
@@ -59,11 +60,27 @@ const usePagedFilteredBuildersRewards = ({
   error: Error | null
 } => {
   const { data: buildersRewardsData, isLoading, error } = useGetBuilderRewardsSummary(backer)
+  const { builders } = useBuilderContext()
+
+  // we want also the builders without gauges
+  const allBuilders = useMemo(() => {
+    const buildersRewardsDataMap = buildersRewardsData.reduce(
+      (acc, builder) => {
+        acc[builder.address] = builder
+        return acc
+      },
+      {} as Record<Address, BuilderRewardsSummary>,
+    )
+    return builders.map(builder => ({
+      ...builder,
+      ...buildersRewardsDataMap[builder.address],
+    }))
+  }, [builders, buildersRewardsData])
 
   const data = useMemo(() => {
     const { columnId, direction } = sort
 
-    const filtered = buildersRewardsData.filter(filterMap[filterOption])
+    const filtered = allBuilders.filter(filterMap[filterOption])
 
     // Comparator map
     const comparators: Partial<
@@ -71,29 +88,39 @@ const usePagedFilteredBuildersRewards = ({
     > = {
       builder: (a, b) => (a.builderName || '').localeCompare(b.builderName || ''),
 
-      backer_rewards: (a, b) => Number(a.backerRewardPct.current - b.backerRewardPct.current),
+      backer_rewards: (a, b) =>
+        Number((a.backerRewardPct?.current ?? 0n) - (b.backerRewardPct?.current ?? 0n)),
 
       rewards_past_cycle: (a, b) => {
-        const aValue = getCombinedFiatAmount([a.lastCycleRewards.rif.amount, a.lastCycleRewards.rbtc.amount])
-        const bValue = getCombinedFiatAmount([b.lastCycleRewards.rif.amount, b.lastCycleRewards.rbtc.amount])
+        const aValue = a.lastCycleRewards
+          ? getCombinedFiatAmount([a.lastCycleRewards.rif.amount, a.lastCycleRewards.rbtc.amount]).toNumber()
+          : 0
+        const bValue = b.lastCycleRewards
+          ? getCombinedFiatAmount([b.lastCycleRewards.rif.amount, b.lastCycleRewards.rbtc.amount]).toNumber()
+          : 0
         return Big(aValue).sub(bValue).toNumber()
       },
 
       rewards_upcoming: (a, b) => {
-        const aValue = getCombinedFiatAmount([
-          a.builderEstimatedRewards.rif.amount,
-          a.builderEstimatedRewards.rbtc.amount,
-        ])
-        const bValue = getCombinedFiatAmount([
-          b.builderEstimatedRewards.rif.amount,
-          b.builderEstimatedRewards.rbtc.amount,
-        ])
+        const aValue = a.builderEstimatedRewards
+          ? getCombinedFiatAmount([
+              a.builderEstimatedRewards.rif.amount,
+              a.builderEstimatedRewards.rbtc.amount,
+            ]).toNumber()
+          : 0
+        const bValue = b.builderEstimatedRewards
+          ? getCombinedFiatAmount([
+              b.builderEstimatedRewards.rif.amount,
+              b.builderEstimatedRewards.rbtc.amount,
+            ]).toNumber()
+          : 0
         return Big(aValue).sub(bValue).toNumber()
       },
 
       backing: (a, b) => Number((a.backerAllocation ?? 0n) - (b.backerAllocation ?? 0n)),
 
-      allocations: (a, b) => Number(a.totalAllocationPercentage - b.totalAllocationPercentage),
+      allocations: (a, b) =>
+        Number((a.totalAllocationPercentage ?? 0n) - (b.totalAllocationPercentage ?? 0n)),
     }
 
     const sortFn = columnId && comparators[columnId]
@@ -102,11 +129,11 @@ const usePagedFilteredBuildersRewards = ({
       ? [...filtered].sort((a, b) => (direction === 'asc' ? sortFn(a, b) : sortFn(b, a)))
       : filtered
 
-    const totalRewards = buildersRewardsData.length
+    const totalRewards = allBuilders.length
     const pagedRewards = sorted.slice(pageOptions.start, pageOptions.end)
 
     return { pagedRewards, totalRewards } as const
-  }, [buildersRewardsData, filterOption, pageOptions, sort])
+  }, [allBuilders, filterOption, pageOptions, sort])
 
   return { data, isLoading, error }
 }
