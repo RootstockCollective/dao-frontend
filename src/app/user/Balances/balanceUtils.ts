@@ -23,8 +23,8 @@ const formatTokenBalance = (balance: string, symbol: SymbolsEquivalentKeys): str
       // RIF and stRIF show whole numbers (floor)
       return formatNumberWithCommas(balanceBig.floor())
     case 'USDRIF':
-      // USDRIF shows up to 4 decimal places
-      return formatNumberWithCommas(balanceBig.toFixedNoTrailing(4))
+      // USDRIF shows up to 2 decimal places
+      return formatNumberWithCommas(balanceBig.toFixedNoTrailing(2))
     case 'RBTC':
     default:
       // RBTC shows 8 decimal places
