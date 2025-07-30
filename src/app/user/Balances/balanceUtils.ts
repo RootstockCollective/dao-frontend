@@ -14,7 +14,7 @@ const symbolsToGetFromArray = {
 export type SymbolsEquivalentKeys = keyof typeof symbolsToGetFromArray
 
 // Token-specific formatting functions
-const formatTokenBalance = (balance: string, symbol: SymbolsEquivalentKeys): string => {
+export const formatTokenBalance = (balance: string, symbol: SymbolsEquivalentKeys): string => {
   const balanceBig = Big(balance)
 
   switch (symbol) {
@@ -27,8 +27,8 @@ const formatTokenBalance = (balance: string, symbol: SymbolsEquivalentKeys): str
       return formatNumberWithCommas(balanceBig.toFixedNoTrailing(2))
     case 'RBTC':
     default:
-      // RBTC shows 8 decimal places
-      return formatNumberWithCommas(balanceBig.toFixedNoTrailing(8))
+      // RBTC shows 5 decimal places
+      return formatNumberWithCommas(balanceBig.toFixedNoTrailing(5))
   }
 }
 
