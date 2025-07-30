@@ -14,7 +14,7 @@ export const AllocationCell: FC<AllocationCellProps> = ({ allocationPct, step = 
     return <div className={cn('flex items-center justify-center w-full h-full gap-2', className)}></div>
   }
   // Round to the nearest step
-  const displayValue = step > 0 ? Math.round(allocationPct ?? 0 / step) * step : allocationPct
+  const displayValue = step > 0 ? Math.round((allocationPct ?? 0) / step) * step : allocationPct
 
   return (
     <div className={cn('flex items-center justify-center w-full h-full gap-2', className)}>
