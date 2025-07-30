@@ -29,7 +29,7 @@ export const BackerRewardsHeaderRow = ({ actions }: BackerRewardsHeaderRowProps)
 
   return (
     <Suspense fallback={<div>Loading table headers...</div>}>
-      <tr className="flex border-b-1 border-b-v3-text-60 select-none gap-4">
+      <tr className="flex border-b-1 border-b-v3-text-60 select-none gap-4 pb-4">
         <BuilderHeaderCell key="builder" columnId="builder" />
         {actionCount <= 1 && (
           <>
@@ -48,9 +48,6 @@ export const BackerRewardsHeaderRow = ({ actions }: BackerRewardsHeaderRowProps)
               }}
             >
               <HeaderTitle>Unclaimed</HeaderTitle>
-              <HeaderSubtitle className="h-full text-v3-bg-accent-80">balls</HeaderSubtitle>
-              {/* TODO: temporary fix to align the text to the top */}
-              <HeaderSubtitle></HeaderSubtitle>
             </HeaderCell>
             <HeaderCell
               key="estimated"
@@ -95,13 +92,9 @@ export const BackerRewardsHeaderRow = ({ actions }: BackerRewardsHeaderRowProps)
             </HeaderCell>
             <HeaderCell key="backing" columnId="backing" columnTransforms={COLUMN_TRANSFORMS}>
               <HeaderTitle>Backing</HeaderTitle>
-              <HeaderSubtitle className="h-full text-v3-bg-accent-80">balls</HeaderSubtitle>
-              {/* TODO: temporary fix to align the text to the top */}
             </HeaderCell>
             <HeaderCell columnId="actions" columnTransforms={COLUMN_TRANSFORMS}>
               <HeaderTitle>Actions</HeaderTitle>
-              <HeaderSubtitle className="h-full text-v3-bg-accent-80">balls</HeaderSubtitle>
-              {/* TODO: temporary fix to align the text to the top */}
             </HeaderCell>
             <th>
               <TableColumnDropdown className="self-start" labels={LABELS} />

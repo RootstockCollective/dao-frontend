@@ -170,7 +170,7 @@ export const HeaderCell = <ColumnId extends string>({
   return (
     <>
       <TableHeaderCell
-        className={cn(columnClassNames, className)}
+        className={cn('h-full', columnClassNames, className)}
         contentClassName={isJustifyCenter ? 'justify-center' : ''}
         onClick={() => isSortable && dispatchSortRoundRobin(dispatch, columnId, sort)}
         {...props}
@@ -196,6 +196,7 @@ export const HeaderTitle: FC<CommonComponentProps> = ({ className, children }) =
     {children}
   </Label>
 )
+
 export const HeaderSubtitle: FC<CommonComponentProps> = ({ className, children }) => (
   <Paragraph
     variant="body-xs"
@@ -217,7 +218,7 @@ export const BuilderHeaderRow = ({ actions }: BuilderHeaderRowProps): ReactEleme
 
   return (
     <Suspense fallback={<div>Loading table headers...</div>}>
-      <tr className="flex border-b-1 border-b-v3-text-60 select-none gap-4">
+      <tr className="flex border-b-1 border-b-v3-text-60 select-none gap-4 pb-4">
         <BuilderHeaderCell key="builder" columnId="builder" />
         {actionCount <= 1 && (
           <>
@@ -243,7 +244,6 @@ export const BuilderHeaderRow = ({ actions }: BuilderHeaderRowProps): ReactEleme
             </HeaderCell>
             <HeaderCell key="backing" columnId="backing" columnTransforms={COLUMN_TRANSFORMS}>
               <HeaderTitle>Backing</HeaderTitle>
-              <HeaderSubtitle className="h-full text-v3-bg-accent-80">balls</HeaderSubtitle>{' '}
             </HeaderCell>
             <HeaderCell key="allocations" columnId="allocations" columnTransforms={COLUMN_TRANSFORMS}>
               <HeaderTitle>Backing Share</HeaderTitle>
@@ -251,7 +251,6 @@ export const BuilderHeaderRow = ({ actions }: BuilderHeaderRowProps): ReactEleme
             </HeaderCell>
             <HeaderCell columnId="actions" columnTransforms={COLUMN_TRANSFORMS}>
               <HeaderTitle>Actions</HeaderTitle>
-              <HeaderSubtitle className="h-full text-v3-bg-accent-80">balls</HeaderSubtitle>{' '}
             </HeaderCell>
             <th>
               <TableColumnDropdown<Exclude<ColumnId, 'builder' | 'actions'>>
@@ -308,7 +307,6 @@ export const CombinedActionsHeaderCell = ({ actions }: CombinedActionsHeaderCell
             {actions.length}
           </Span>
         </HeaderTitle>
-        <HeaderSubtitle className="h-full text-v3-bg-accent-80">balls</HeaderSubtitle>{' '}
       </TableHeaderNode>
     </TableHeaderCell>
   )
