@@ -2,8 +2,9 @@ import { useTreasuryContext } from '@/app/treasury/contexts/TreasuryContext'
 import { useStRifHoldings } from '@/app/treasury/hooks/useStRifHoldings'
 import { BalanceInfo } from '@/components/BalanceInfo'
 import { Header } from '@/components/TypographyNew'
-import { formatCurrency, formatNumberWithCommas } from '@/lib/utils'
+import { formatCurrency } from '@/lib/utils'
 import Big from '@/lib/big'
+import { formatTokenBalance } from '@/app/user/Balances/balanceUtils'
 
 export const CollectiveBalancesSection = () => {
   const { stRifBalance, stRifUsdBalance } = useStRifHoldings()
@@ -51,7 +52,7 @@ export const CollectiveBalancesSection = () => {
         <BalanceInfo
           className="max-w-[214px] min-w-[180px]"
           title={'RIF total'}
-          amount={formatNumberWithCommas(rifTotal.toString())}
+          amount={formatTokenBalance(rifTotal.toString(), 'RIF')}
           symbol="RIF"
           fiatAmount={formatCurrency(rifFiatTotal, { showCurrency: true })}
           tooltipContent={'This is the grand total of RIF in all parts of the Collective.'}
@@ -60,14 +61,14 @@ export const CollectiveBalancesSection = () => {
           className="max-w-[214px] min-w-[180px]"
           title={'stRIF total'}
           symbol="stRIF"
-          amount={formatNumberWithCommas(stRifBalance)}
+          amount={formatTokenBalance(stRifBalance.toString(), 'stRIF')}
           fiatAmount={stRifUsdBalance + ' USD'}
           tooltipContent={'This is the grand total of stRIF in all parts of the Collective.'}
         />
         <BalanceInfo
           className="max-w-[214px] min-w-[180px]"
           title={'USDRIF total'}
-          amount={formatNumberWithCommas(usdRifTotal.toFixed(2).toString())}
+          amount={formatTokenBalance(usdRifTotal.toString(), 'USDRIF')}
           symbol="USDRIF"
           fiatAmount={formatCurrency(usdRifTotal, { showCurrency: true })}
           tooltipContent={'This is the grand total of USDRIF in all parts of the Collective.'}
@@ -76,7 +77,7 @@ export const CollectiveBalancesSection = () => {
           className="max-w-[214px] min-w-[180px]"
           title={'rBTC total'}
           symbol="RBTC"
-          amount={formatNumberWithCommas(rbtcTotal)}
+          amount={formatTokenBalance(rbtcTotal.toString(), 'RBTC')}
           fiatAmount={formatCurrency(rbtcFiatTotal, { showCurrency: true })}
           tooltipContent={'This is the grand total of rBTC in all parts of the Collective.'}
         />
