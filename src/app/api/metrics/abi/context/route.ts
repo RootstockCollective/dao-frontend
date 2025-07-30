@@ -12,14 +12,27 @@ const DB_COMMAND_COALESCE = `
   )
 `
 
+// TODO: Update flags after migration
 export async function GET() {
   try {
     const [builders, cycles] = await Promise.all([
       db('Builder')
         .join('BuilderState', 'Builder.id', '=', 'BuilderState.builder')
         .join('BackerRewardPercentage', 'Builder.id', '=', 'BackerRewardPercentage.builder')
-        .select('Builder.id', 'Builder.totalAllocation', {
-          backerRewardPercentage: db.raw(DB_COMMAND_COALESCE),
+        .select({ address: 'Builder.id' }, 'Builder.totalAllocation', {
+          backerRewardPct: db.raw(DB_COMMAND_COALESCE),
+          stateFlags: db.raw(`
+            COALESCE(
+              json_build_object(
+                'activated', "BuilderState"."initialized",
+                'kycApproved', "BuilderState"."kycApproved",
+                'communityApproved', "BuilderState"."communityApproved",
+                'paused', "BuilderState"."kycPaused",
+                'revoked', "BuilderState"."selfPaused"
+              ),
+              '{}'
+            )
+          `),
         })
         .where('BuilderState.initialized', '=', true)
         .orderByRaw('"Builder"."totalAllocation"::numeric DESC'),

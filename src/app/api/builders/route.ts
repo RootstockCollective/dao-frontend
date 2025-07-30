@@ -3,6 +3,7 @@ import { db } from '@/lib/db'
 import { paginateQuery } from '@/app/api/utils/paginateQuery'
 import { parsePaginationParams } from '@/app/api/utils/parsePaginationParams'
 
+// TODO: Update flags after migration
 export async function GET(req: Request) {
   try {
     const paginationResult = parsePaginationParams(req.url || '')
@@ -19,8 +20,8 @@ export async function GET(req: Request) {
     const baseQuery = db('Builder')
       .join('BackerRewardPercentage', 'Builder.id', '=', 'BackerRewardPercentage.builder')
       .join('BuilderState', 'Builder.id', '=', 'BuilderState.builder')
-      .select('Builder.id', 'Builder.totalAllocation', {
-        backerRewardPercentage: db.raw(`
+      .select({ address: 'Builder.id' }, 'Builder.totalAllocation', {
+        backerRewardPct: db.raw(`
           COALESCE(
               json_build_object(
                 'next', "BackerRewardPercentage"."next",
@@ -30,15 +31,14 @@ export async function GET(req: Request) {
               '{}'
           )
         `),
-        builderState: db.raw(`
+        stateFlags: db.raw(`
           COALESCE(
             json_build_object(
-              'initialized', "BuilderState"."initialized",
+              'activated', "BuilderState"."initialized",
               'kycApproved', "BuilderState"."kycApproved",
               'communityApproved', "BuilderState"."communityApproved",
-              'kycPaused', "BuilderState"."kycPaused",
-              'selfPaused', "BuilderState"."selfPaused",
-              'pausedReason', convert_from("BuilderState"."pausedReason", 'utf8')
+              'paused', "BuilderState"."kycPaused",
+              'revoked', "BuilderState"."selfPaused"
             ),
             '{}'
           )
