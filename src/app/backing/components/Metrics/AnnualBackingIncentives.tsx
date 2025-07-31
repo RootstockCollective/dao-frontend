@@ -24,7 +24,7 @@ export const AnnualBackingIncentives = () => {
               variant="tag"
               className="text-v3-bg-accent-0 text-base font-medium font-rootstock-sans leading-[150%]"
             >
-              Annual Backing Incentives
+              Annual Backers Incentives
             </Typography>
           }
           infoIconProps={{
@@ -32,7 +32,7 @@ export const AnnualBackingIncentives = () => {
           }}
           info={
             <Typography>
-              Your Annual Backing Incentives (%) represents an estimate of the annualized percentage of
+              Your Annual Backers Incentives (%) represents an estimate of the annualized percentage of
               rewards that you could receive based on your backing allocations.
               <br />
               <br />
