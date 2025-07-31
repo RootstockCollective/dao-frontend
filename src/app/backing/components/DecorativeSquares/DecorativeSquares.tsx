@@ -46,5 +46,3 @@ export function DecorativeSquares({
     </svg>
   )
 }
-
-export default DecorativeSquares
