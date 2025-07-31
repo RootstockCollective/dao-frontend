@@ -9,7 +9,7 @@ import {
   isBuilderPaused,
   isBuilderSelfPaused,
 } from '@/app/collective-rewards/utils'
-import TablePager from '@/components/TableNew/TablePager'
+import { TablePager } from '@/components/TableNew'
 import { usePricesContext, useTableActionsContext, useTableContext } from '@/shared/context'
 import { Suspense, useEffect, useMemo, useState } from 'react'
 import { Address } from 'viem'

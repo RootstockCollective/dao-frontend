@@ -56,5 +56,3 @@ export const BuilderFilterDropdown: FC<BuilderFilterDropdownProps> = ({
     </Dropdown>
   )
 }
-
-export default BuilderFilterDropdown

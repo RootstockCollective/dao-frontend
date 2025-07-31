@@ -3,7 +3,7 @@
 import { Action, ActionCellProps } from '@/app/builders/components/Table/Cell/ActionCell'
 import { Token } from '@/app/collective-rewards/rewards'
 import { BackerRewards, useGetBackerRewards } from '@/app/collective-rewards/rewards/backers/hooks'
-import TablePager from '@/components/TableNew/TablePager'
+import { TablePager } from '@/components/TableNew'
 import { TOKENS } from '@/lib/tokens'
 import { usePricesContext, useTableActionsContext, useTableContext } from '@/shared/context'
 import { Suspense, useEffect, useMemo, useState } from 'react'

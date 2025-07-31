@@ -47,5 +47,3 @@ export function SelectorCell({
     </div>
   )
 }
-
-export default SelectorCell

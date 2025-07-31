@@ -24,5 +24,3 @@ export function EllipseIcon({
     </svg>
   )
 }
-
-export default EllipseIcon

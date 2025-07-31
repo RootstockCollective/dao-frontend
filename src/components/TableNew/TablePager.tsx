@@ -136,5 +136,3 @@ export const TablePager: React.FC<TablePagerProps> = ({
     </div>
   )
 }
-
-export default TablePager

@@ -32,5 +32,3 @@ export function CheckboxChecked({
     </svg>
   )
 }
-
-export default CheckboxChecked

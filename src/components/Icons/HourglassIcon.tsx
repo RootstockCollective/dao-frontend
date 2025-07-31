@@ -33,5 +33,3 @@ export function HourglassIcon({
     </svg>
   )
 }
-
-export default HourglassIcon

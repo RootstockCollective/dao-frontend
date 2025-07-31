@@ -44,5 +44,3 @@ export const StackableBanner: FC<StackableBannerProps> = ({
     </div>
   )
 }
-
-export default StackableBanner

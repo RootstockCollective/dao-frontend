@@ -25,5 +25,3 @@ export function BackersDecorativeSquares({
     </svg>
   )
 }
-
-export default BackersDecorativeSquares

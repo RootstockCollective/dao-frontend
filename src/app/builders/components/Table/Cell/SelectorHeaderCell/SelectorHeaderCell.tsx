@@ -1,6 +1,6 @@
 import { CommonComponentProps } from '@/components/commonProps'
-import CheckboxChecked from '@/components/Icons/CheckboxChecked'
-import CheckboxUnchecked from '@/components/Icons/CheckboxUnchecked'
+import { CheckboxChecked } from '@/components/Icons/CheckboxChecked'
+import { CheckboxUnchecked } from '@/components/Icons/CheckboxUnchecked'
 import { cn } from '@/lib/utils'
 import { useTableContext } from '@/shared/context'
 import { FC } from 'react'

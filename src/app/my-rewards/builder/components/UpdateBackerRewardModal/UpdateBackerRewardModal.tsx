@@ -79,5 +79,3 @@ export const UpdateBackerRewardModal = ({ isOpen, onClose, className }: UpdateBa
     )
   )
 }
-
-export default UpdateBackerRewardModal

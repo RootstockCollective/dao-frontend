@@ -48,5 +48,3 @@ export function BuilderStatusView({ builderState }: BuilderStatusProps) {
     </div>
   )
 }
-
-export default BuilderStatusView

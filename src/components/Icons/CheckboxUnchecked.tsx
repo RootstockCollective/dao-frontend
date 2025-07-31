@@ -35,5 +35,3 @@ export function CheckboxUnchecked({
     </svg>
   )
 }
-
-export default CheckboxUnchecked
