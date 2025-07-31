@@ -1,7 +1,5 @@
 import { filterBuildersByState, useBuilderContext } from '@/app/collective-rewards/user'
 import {
-  RbtcSvg,
-  RifSvg,
   Token,
   TokenBackerRewards,
   TokenRewards,
@@ -86,7 +84,6 @@ export const useGetBackerRewards = (
                   price: rifPrice,
                   currency,
                 },
-                logo: RifSvg(),
               },
             },
             rewardPercentage: backerRewardPct,
@@ -98,7 +95,6 @@ export const useGetBackerRewards = (
                   price: rifPrice,
                   currency,
                 },
-                logo: RifSvg(),
               },
               rbtc: {
                 amount: {
@@ -107,7 +103,6 @@ export const useGetBackerRewards = (
                   price: rbtcPrice,
                   currency,
                 },
-                logo: RbtcSvg(),
               },
             },
             claimableRewards: {
@@ -118,7 +113,6 @@ export const useGetBackerRewards = (
                   price: rifPrice,
                   currency,
                 },
-                logo: RifSvg(),
               },
               rbtc: {
                 amount: {
@@ -127,7 +121,6 @@ export const useGetBackerRewards = (
                   price: rbtcPrice,
                   currency,
                 },
-                logo: RbtcSvg(),
               },
             },
             allTimeRewards: {
@@ -138,7 +131,6 @@ export const useGetBackerRewards = (
                   price: rifPrice,
                   currency,
                 },
-                logo: RifSvg(),
               },
               rbtc: {
                 amount: {
@@ -147,7 +139,6 @@ export const useGetBackerRewards = (
                   price: rbtcPrice,
                   currency,
                 },
-                logo: RbtcSvg(),
               },
             },
           },

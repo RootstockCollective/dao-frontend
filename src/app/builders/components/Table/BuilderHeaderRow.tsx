@@ -19,7 +19,7 @@ import { Dispatch, FC, ReactNode } from 'react'
 import { Address } from 'viem'
 import { COLUMN_TRANSFORMS, ColumnId, ColumnTransforms, LABELS } from './BuilderTable.config'
 import { Action, ActionCell } from './Cell/ActionCell'
-import { SelectorHeaderCell } from './Cell/SelectorHeaderCell/SelectorHeaderCell'
+import { SelectorHeaderCell } from './Cell/SelectorHeaderCell'
 import { TableColumnDropdown } from './TableColumnDropdown'
 
 const OrderIndicatorContainer: FC<CommonComponentProps> = ({ className, children }) => (
@@ -82,7 +82,7 @@ const dispatchSortRoundRobin = <ColumnId extends string>(
   dispatch({ type: 'SORT_BY_COLUMN', payload: { columnId: nextSort ? columnId : null, direction: nextSort } })
 }
 
-export const BuilderHeaderCellBase = <ColumnId extends string>({
+const BuilderHeaderCellBase = <ColumnId extends string>({
   className,
   columnId,
   columnTransforms,
