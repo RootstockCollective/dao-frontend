@@ -14,8 +14,6 @@ import { CHAIN_ID, EXPLORER_URL, RIF_WALLET_SERVICES_URL } from '../constants'
  */
 export const cn = (...inputs: ClassValue[]) => twMerge(clsx(inputs))
 
-export const SHARED_MODAL_BOX_SHADOW_STYLE = '0px 0px 16.4px 0px rgba(229,107,26,0.68)'
-
 /**
  * Shortens the address by keeping the first and last `amount` characters
  * @param address - The address to shorten
@@ -119,44 +117,6 @@ export const truncateRns = (str: string, length: number): string => {
   return str.slice(0, length) + '…' + str.slice(-3)
 }
 
-export const explorerURL = process.env.NEXT_PUBLIC_EXPLORER
-
-export const goToExplorerWithTxHash = (hash: string) => window.open(`${EXPLORER_URL}/tx/${hash}`, '_blank')
-
-/**
- * Sanitizes a number to a string representation
- * @param num - The number to sanitize
- * @returns The sanitized string representation of the number
- */
-export const sanitizeInputNumber = (num: number) => {
-  // If the number is not in scientific notation, return its standard string representation
-  if (!/\d+\.?\d*e[+-]*\d+/i.test(num.toString())) {
-    return num.toString()
-  }
-
-  // Convert the number to a string in standard form with a maximum of 18 decimal places
-  // and remove trailing zeros
-  let str = num.toFixed(18).replace(/\.?0+$/, '')
-
-  // If the number is very small and gets converted to "0" after toFixed, handle it separately
-  if (str === '0') {
-    // Find the exponent to estimate the number of zeros
-    const match = num.toString().match(/e-(\d+)/)
-    const zeros = match ? parseInt(match[1], 10) - 1 : 0
-
-    // Construct the string representation manually for very small numbers
-    str =
-      '0.' +
-      '0'.repeat(zeros) +
-      num
-        .toString()
-        .replace(/.*e-?\d+$/, '')
-        .replace('.', '')
-  }
-
-  return str
-}
-
 type FormatCurrencyProps = {
   currency?: string
   showCurrency?: boolean
@@ -220,37 +180,6 @@ export function formatNumberWithCommas(num: BigSource): string {
   const parts = num.toString().split('.')
   parts[0] = new Intl.NumberFormat('en-US').format(Number(parts[0]))
   return parts.join('.')
-}
-
-/**
- * Creates a debounced version of a function that delays its execution until after a specified wait time
- * has elapsed since the last time it was called.
- * @param func - The function to debounce
- * @param {number} wait - The number of milliseconds to delay execution
- * @param {boolean} [immediate=false] - If true,  function executes immediately on the first call, then waits for the delay before allowing subsequent calls
- */
-export function debounce<T extends (...args: any[]) => void>(
-  func: T,
-  wait: number,
-  immediate: boolean = false,
-): (...args: Parameters<T>) => void {
-  let timeout: NodeJS.Timeout | null = null
-
-  return function (this: any, ...args: Parameters<T>): void {
-    const context = this
-
-    const later = () => {
-      timeout = null
-      if (!immediate) func.apply(context, args)
-    }
-
-    const callNow = immediate && !timeout
-
-    if (timeout) clearTimeout(timeout)
-    timeout = setTimeout(later, wait)
-
-    if (callNow) func.apply(context, args)
-  }
 }
 
 interface Denomination {
