@@ -1,6 +1,7 @@
 import { NextRequest } from 'next/server'
 import './utils.css'
 import { AxiosResponse } from 'axios'
+import { EIP1193Provider, WatchAssetParams } from 'viem'
 // Had to be done this way because tailwind css is not dynamically rendering the image on build
 export const BG_IMG_CLASSES = 'background-logo'
 
@@ -84,4 +85,103 @@ const fetchFunction = (
 export const capitalizeFirstLetter = (string: string): string => {
   if (!string) return '' // Handle empty or null strings
   return string.charAt(0).toUpperCase() + string.slice(1).toLowerCase()
+}
+
+interface WalletWatchAssetOptions {
+  address: string
+  symbol: string
+  image?: string
+  decimals?: number // Required for ERC20
+  tokenId?: string // Required for ERC721
+}
+
+// Define the specific parameters structure for wallet_watchAsset method
+interface WalletWatchAssetRequestParams {
+  type: 'ERC20' | 'ERC721'
+  options: WalletWatchAssetOptions
+}
+
+// Define specific types for ERC-20 and ERC-721 arguments
+interface AddERC20ToWalletArgument {
+  tokenType: 'ERC20'
+  address: string
+  symbol: string
+  decimals: number
+  image?: string
+}
+
+interface AddERC721ToWalletArgument {
+  tokenType: 'ERC721'
+  address: string
+  symbol: string
+  tokenId: string | number // tokenId is mandatory for ERC721
+  image?: string
+}
+
+// Union type to allow passing either ERC-20 or ERC-721 arguments
+type AddToWalletArgument = AddERC20ToWalletArgument | AddERC721ToWalletArgument
+
+/**
+ * Requests the provider (e.g., MetaMask) to add a token (ERC-20 or ERC-721) to the wallet.
+ * @param arg - An object containing token details specific to ERC-20 or ERC-721.
+ * @returns A Promise that resolves when the request is sent to the provider.
+ */
+export const requestProviderToAddToken: (arg: AddToWalletArgument) => Promise<unknown> = async arg => {
+  // Ensure window.ethereum (MetaMask provider) is available
+  if (
+    typeof window === 'undefined' ||
+    !(window as any).ethereum ||
+    typeof (window as any).ethereum.request !== 'function'
+  ) {
+    console.error('MetaMask (window.ethereum) is not detected.')
+    throw new Error('MetaMask is not installed or not available.')
+  }
+
+  const { tokenType, address, symbol, image } = arg
+
+  // Declare params with the specific type for wallet_watchAsset
+  let params: WalletWatchAssetRequestParams
+
+  // Conditionally build the params object based on tokenType
+  if (tokenType === 'ERC20') {
+    const { decimals } = arg as AddERC20ToWalletArgument
+    params = {
+      type: 'ERC20',
+      options: {
+        address,
+        symbol,
+        decimals,
+        image: image || '', // Provide an empty string if image is undefined for ERC20
+      },
+    }
+  } else if (tokenType === 'ERC721') {
+    const { tokenId } = arg as AddERC721ToWalletArgument
+    params = {
+      type: 'ERC721',
+      options: {
+        address,
+        symbol,
+        image: image || '', // Provide an empty string if image is undefined for ERC721
+        tokenId: String(tokenId), // Ensure tokenId is always a string as required by MetaMask
+      },
+    }
+  } else {
+    // This case should ideally not be reached due to TypeScript union type,
+    // but good for runtime safety.
+    console.error('Unsupported token type provided:', tokenType)
+    throw new Error('Unsupported token type provided.')
+  }
+
+  try {
+    const provider = window.ethereum as unknown as EIP1193Provider
+    const result = await provider.request({
+      method: 'wallet_watchAsset',
+      params: params as unknown as WatchAssetParams,
+    })
+    console.log('Token added successfully:', result)
+    return result
+  } catch (error) {
+    console.error('Failed to add token:', error)
+    throw error
+  }
 }
