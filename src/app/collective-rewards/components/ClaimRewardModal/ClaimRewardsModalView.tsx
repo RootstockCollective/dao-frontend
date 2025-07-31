@@ -1,5 +1,5 @@
-import { formatSymbol } from '@/app/collective-rewards/rewards/utils'
 import { ConditionalTooltip } from '@/app/components'
+import { formatSymbol } from '@/app/utils'
 import { TransactionInProgressButton } from '@/app/user/Stake/components/TransactionInProgressButton'
 import { Button } from '@/components/ButtonNew'
 import { Modal } from '@/components/Modal/Modal'

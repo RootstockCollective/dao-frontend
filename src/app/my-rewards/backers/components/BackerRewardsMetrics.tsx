@@ -1,6 +1,6 @@
 import { Header } from '@/components/TypographyNew'
 import { ReactNode } from 'react'
-import { useBackerRewardsContext } from '@/app/collective-rewards/rewards/backers/context/BackerRewardsContext'
+import { useBackerRewardsContext } from '@/app/context/backer-rewards/BackerRewardsContext'
 import { UnclaimedRewards } from './UnclaimedRewards'
 import { BackerEstimatedRewards } from './BackerEstimatedRewards'
 import { BackerABI } from './BackerABI'
@@ -10,7 +10,7 @@ import { Switch, SwitchThumb } from '@/components/Switch'
 import { Typography } from '@/components/TypographyNew/Typography'
 import { Address } from 'viem'
 import { TOKENS } from '@/lib/tokens'
-import { useHandleErrors } from '@/app/collective-rewards/utils'
+import { useHandleErrors } from '@/app/utils'
 import { LoadingSpinner } from '@/components/LoadingSpinner'
 
 const Container = ({ children, className }: { children: ReactNode; className?: string }) => {

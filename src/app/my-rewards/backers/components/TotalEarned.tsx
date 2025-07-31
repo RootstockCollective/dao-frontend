@@ -2,7 +2,7 @@ import { RewardCard } from '@/app/my-rewards/components/RewardCard'
 import { TokenAmount } from '@/components/TokenAmount'
 
 import { TokenSymbol } from '@/components/TokenImage'
-import { useHandleErrors } from '@/app/collective-rewards/utils'
+import { useHandleErrors } from '@/app/utils'
 import { useBackerTotalEarned } from '../hooks/useBackerTotalEarned'
 
 export const TotalEarned = () => {

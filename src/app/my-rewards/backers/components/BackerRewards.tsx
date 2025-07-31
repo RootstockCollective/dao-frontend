@@ -1,4 +1,4 @@
-import { BackerRewardsContextProvider } from '@/app/collective-rewards/rewards/backers/context/BackerRewardsContext'
+import { BackerRewardsContextProvider } from '@/app/context/backer-rewards/BackerRewardsContext'
 import { TOKENS } from '@/lib/tokens'
 import { FC } from 'react'
 import { Address } from 'viem'

@@ -1,0 +1,23 @@
+import { BackerRewardPercentage } from '@/app/types'
+import { weiToPercentage } from '@/app/utils'
+import { DeltaIndicator } from '@/components/DeltaIndicator/DeltaIndicator'
+import { cn } from '@/lib/utils'
+import { FC } from 'react'
+
+export interface BackersPercentageCellProps {
+  percentage: BackerRewardPercentage
+  className?: string
+}
+
+export const BackersPercentageCell: FC<BackersPercentageCellProps> = ({ className, percentage }) => {
+  const currentPct = weiToPercentage(percentage.current, 0)
+  const nextPct = weiToPercentage(percentage.next, 0)
+  return (
+    <div className={cn('border-b-0', className)}>
+      <div className="flex flex-row gap-x-1 font-rootstock-sans self-center items-center justify-around gap-1">
+        {percentage && <div>{currentPct}</div>}
+        <DeltaIndicator currentPct={Number(currentPct)} nextPct={Number(nextPct)} />
+      </div>
+    </div>
+  )
+}

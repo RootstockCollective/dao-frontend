@@ -1,11 +1,7 @@
-import { BaseColumnId, Column } from '@/shared/context'
-import { HtmlHTMLAttributes } from 'react'
-import { TableColumnDropdownLabels } from './TableColumnDropdown/TableColumnDropdown'
-import {
-  BUILDER_ACTIVE,
-  BUILDER_IN_PROGRESS,
-  builderInactiveStates,
-} from '@/app/collective-rewards/utils/isBuilderOperational'
+import { Column } from '@/shared/context'
+import { TableColumnDropdownLabels } from '@/app/components'
+import { BUILDER_ACTIVE, BUILDER_IN_PROGRESS, builderInactiveStates } from '@/app/utils'
+import { ColumnTransforms } from '@/app/components/Table/types'
 
 export const COLUMN_IDS = [
   'builder',
@@ -40,11 +36,6 @@ export const LABELS: TableColumnDropdownLabels<Exclude<ColumnId, 'builder' | 'ac
     label: 'Backing share',
   },
 }
-
-export type ColumnTransforms<CID extends BaseColumnId = BaseColumnId> = Record<
-  CID,
-  HtmlHTMLAttributes<HTMLTableCellElement>['className']
-> // TODO: @refactor move to app/components/Table/types.ts (and rename to ColumnTransforms)
 
 export const COLUMN_TRANSFORMS: ColumnTransforms<ColumnId> = {
   builder: 'flex-[1_1_12rem] min-w-[12rem]',

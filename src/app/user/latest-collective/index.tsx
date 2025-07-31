@@ -5,8 +5,8 @@ import { Header } from '@/components/TypographyNew'
 import { useRouter } from 'next/navigation'
 import { LatestActiveProposalCard, LatestProposalCard } from './components'
 import { ActionsContainer } from '@/components/containers/ActionsContainer'
-import { BuildersSpotlight } from '@/app/shared/components/BuildersSpotlight'
-import { useBuilderContext } from '@/app/collective-rewards/user/context/BuilderContext'
+import { useBuilderContext } from '@/app/context/builder/BuilderContext'
+import { BuildersSpotlight } from '@/app/components'
 
 interface LatestCollectiveSectionProps {
   latestProposals: Proposal[]

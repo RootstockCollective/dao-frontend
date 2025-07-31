@@ -1,8 +1,8 @@
 'use client'
 
-import { Action, ActionCellProps } from '@/app/builders/components/Table/Cell/ActionCell'
-import { Token } from '@/app/collective-rewards/rewards'
-import { BackerRewards, useGetBackerRewards } from '@/app/collective-rewards/rewards/backers/hooks'
+import { Action, ActionCellProps } from '@/app/components/Table/Cell/ActionCell'
+import { Token } from '@/app/types'
+import { BackerRewards, useGetBackerRewards } from '@/app/hooks'
 import TablePager from '@/components/TableNew/TablePager'
 import { TOKENS } from '@/lib/tokens'
 import { usePricesContext, useTableActionsContext, useTableContext } from '@/shared/context'
@@ -13,7 +13,7 @@ import { BackerRewardsDataRow, convertDataToRowData } from './BackerRewardsDataR
 import { BackerRewardsHeaderRow } from './BackerRewardsHeaderRow'
 import { ColumnId, DEFAULT_HEADERS, PAGE_SIZE } from './BackerRewardsTable.config'
 import { Sort } from '@/shared/context/TableContext/types'
-import { getCombinedFiatAmount } from '@/app/collective-rewards/utils'
+import { getCombinedFiatAmount } from '@/app/utils'
 import { Big } from 'big.js'
 
 type PagedFilter = {

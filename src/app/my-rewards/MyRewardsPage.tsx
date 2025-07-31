@@ -1,9 +1,9 @@
 'use client'
 
-import { CycleContextProvider } from '@/app/collective-rewards/metrics'
-import { useIsBacker } from '@/app/collective-rewards/rewards'
-import { withBuilderSettingsProvider } from '@/app/collective-rewards/settings'
-import { useHandleErrors } from '@/app/collective-rewards/utils'
+import { CycleContextProvider } from '@/app/context'
+import { useIsBacker } from '@/app/hooks'
+import { withBuilderSettingsProvider } from '@/app/my-rewards/builder/context'
+import { useHandleErrors } from '@/app/utils'
 import { LoadingSpinner } from '@/components/LoadingSpinner'
 import { Header, Paragraph, Span } from '@/components/TypographyNew'
 import { useReadBuilderRegistry } from '@/shared/hooks/contracts'
@@ -11,11 +11,11 @@ import { useRouter } from 'next/navigation'
 import { ReactNode, useEffect } from 'react'
 import { zeroAddress } from 'viem'
 import { useAccount } from 'wagmi'
-import { CRWhitepaperLink } from '../collective-rewards/shared/components/CRWhitepaperLinkNew'
 import { BackerRewards } from './backers/components/BackerRewards'
 import { BackerRewardsNotConnected } from './backers/components/BackerRewardsNotConnected'
 import { BuilderRewards } from './builder/components/BuilderRewards'
 import { NonBacker } from './components'
+import { CRWhitepaperLink } from '@/app/components'
 
 const Section = ({ children }: { children: ReactNode }) => {
   return (

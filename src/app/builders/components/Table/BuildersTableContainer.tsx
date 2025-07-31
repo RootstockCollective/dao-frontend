@@ -1,4 +1,4 @@
-import { CycleContextProvider } from '@/app/collective-rewards/metrics'
+import { CycleContextProvider } from '@/app/context'
 import { ActionsContainer } from '@/components/containers'
 import { Header } from '@/components/TypographyNew'
 import { withTableContext } from '@/shared/context'
@@ -10,15 +10,15 @@ import {
   builderFilterOptions,
 } from './BuilderFilterDropdown'
 import { BuildersTable } from './BuildersTable'
-import { useGetBuilders } from '@/app/collective-rewards/user'
-import { Builder } from '@/app/collective-rewards/types'
+import { useGetBuilders } from '@/app/hooks/useGetBuilders'
+import { Builder } from '@/app/types'
 import {
   isBuilderActive,
   isBuilderDeactivated,
   isBuilderKycRevoked,
   isBuilderPaused,
   isBuilderSelfPaused,
-} from '@/app/collective-rewards/utils'
+} from '@/app/utils'
 
 const filterMap: Record<BuilderFilterOptionId, (builder: Builder) => boolean> = {
   active: (builder: Builder) => isBuilderActive(builder.stateFlags),

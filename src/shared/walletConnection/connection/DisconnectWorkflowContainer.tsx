@@ -4,8 +4,7 @@ import { useAccount, useDisconnect } from 'wagmi'
 import { shortAddress } from '@/lib/utils'
 import { DisconnectWorkflowPresentation } from './DisconnectWorkflowPresentation'
 import { useLayoutContext } from '@/components/MainContainer/LayoutProvider'
-import { AllocationsContext } from '@/app/collective-rewards/allocations/context'
-import { useContext } from 'react'
+import { useAllocationsContext } from '@/app/context'
 
 /**
  * Container component in charge of disconnecting the user logic
@@ -18,7 +17,7 @@ export const DisconnectWorkflowContainer = () => {
   const { closeDrawer } = useLayoutContext()
   const {
     actions: { resetAllocations },
-  } = useContext(AllocationsContext)
+  } = useAllocationsContext()
 
   const handleDisconnect = () => {
     disconnect()

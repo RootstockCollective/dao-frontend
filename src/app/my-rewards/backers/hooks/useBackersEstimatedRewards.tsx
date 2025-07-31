@@ -1,5 +1,5 @@
-import { Token } from '@/app/collective-rewards/rewards'
-import { useGetBuilderEstimatedRewards } from '@/app/shared/hooks/useGetBuilderEstimatedRewards'
+import { Token } from '@/app/types'
+import { useGetBuilderEstimatedRewards } from '@/app/hooks/useGetBuilderEstimatedRewards'
 import { TOKENS } from '@/lib/tokens'
 import { usePricesContext } from '@/shared/context'
 import { formatRewards } from '@/app/my-rewards/utils'

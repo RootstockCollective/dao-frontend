@@ -1,6 +1,6 @@
-import { useGetActiveBuildersCount } from '@/app/collective-rewards/shared/hooks/useGetActiveBuildersCount'
+import { useGetActiveBuildersCount } from '@/app/hooks/useGetActiveBuildersCount'
 import { CountMetric } from '@/app/collective-rewards/components/CountMetric'
-import { useHandleErrors } from '@/app/collective-rewards/utils'
+import { useHandleErrors } from '@/app/utils'
 
 export const ActiveBuilders = () => {
   const { data, isLoading, error } = useGetActiveBuildersCount()

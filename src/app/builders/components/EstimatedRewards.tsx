@@ -1,5 +1,5 @@
-import { getFiatAmount, useHandleErrors } from '@/app/collective-rewards/utils'
-import { useGetBuilderEstimatedRewards } from '@/app/shared/hooks/useGetBuilderEstimatedRewards'
+import { getFiatAmount, useHandleErrors } from '@/app/utils'
+import { useGetBuilderEstimatedRewards } from '@/app/hooks/useGetBuilderEstimatedRewards'
 import { DottedUnderlineLabel } from '@/components/DottedUnderlineLabel/DottedUnderlineLabel'
 import { LoadingSpinner } from '@/components/LoadingSpinner'
 import { Metric, MetricTitle } from '@/components/Metric'
@@ -39,13 +39,33 @@ export const EstimatedRewards = () => {
         rifBackerRewards: acc.rifBackerRewards + builder.backerEstimatedRewards.rif.amount.value,
         rbtcBackerRewards: acc.rbtcBackerRewards + builder.backerEstimatedRewards.rbtc.amount.value,
         usdBackerRewards: acc.usdBackerRewards
-          .add(getFiatAmount(builder.backerEstimatedRewards.rif.amount))
-          .add(getFiatAmount(builder.backerEstimatedRewards.rbtc.amount)),
+          .add(
+            getFiatAmount(
+              builder.backerEstimatedRewards.rif.amount.value,
+              builder.backerEstimatedRewards.rif.amount.price,
+            ),
+          )
+          .add(
+            getFiatAmount(
+              builder.backerEstimatedRewards.rbtc.amount.value,
+              builder.backerEstimatedRewards.rbtc.amount.price,
+            ),
+          ),
         rifBuilderRewards: acc.rifBuilderRewards + builder.builderEstimatedRewards.rif.amount.value,
         rbtcBuilderRewards: acc.rbtcBuilderRewards + builder.builderEstimatedRewards.rbtc.amount.value,
         usdBuilderRewards: acc.usdBuilderRewards
-          .add(getFiatAmount(builder.builderEstimatedRewards.rif.amount))
-          .add(getFiatAmount(builder.builderEstimatedRewards.rbtc.amount)),
+          .add(
+            getFiatAmount(
+              builder.builderEstimatedRewards.rif.amount.value,
+              builder.builderEstimatedRewards.rif.amount.price,
+            ),
+          )
+          .add(
+            getFiatAmount(
+              builder.builderEstimatedRewards.rbtc.amount.value,
+              builder.builderEstimatedRewards.rbtc.amount.price,
+            ),
+          ),
       }
     },
     {

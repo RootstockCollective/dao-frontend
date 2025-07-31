@@ -1,4 +1,4 @@
-import { DeltaIndicator } from '../../../../components/DeltaIndicator/DeltaIndicator'
+import { DeltaIndicator } from '@/components/DeltaIndicator'
 import { cn } from '@/lib/utils'
 import { FC } from 'react'
 

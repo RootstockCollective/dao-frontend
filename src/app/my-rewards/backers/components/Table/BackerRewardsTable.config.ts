@@ -1,5 +1,5 @@
-import { ColumnTransforms } from '@/app/builders/components/Table/BuilderTable.config'
-import { TableColumnDropdownLabels } from '@/app/builders/components/Table/TableColumnDropdown/TableColumnDropdown'
+import { TableColumnDropdownLabels } from '@/app/components'
+import { ColumnTransforms } from '@/app/components/Table/types'
 import { Column } from '@/shared/context'
 
 export const COLUMN_IDS = [

@@ -1,12 +1,11 @@
-import { useGetTotalAllocation } from '@/app/collective-rewards/metrics/hooks/useGetTotalAllocation'
-import { formatSymbol } from '@/app/collective-rewards/rewards/utils'
-import { useHandleErrors } from '@/app/collective-rewards/utils'
+import { useGetTotalAllocation } from '@/app/hooks/useGetTotalAllocation'
+import { useHandleErrors, formatSymbol } from '@/app/utils'
 import { withSpinner } from '@/components/LoadingSpinner/withLoadingSpinner'
 import { Metric } from '@/components/Metric'
 import { TokenImage, TokenSymbol } from '@/components/TokenImage'
 import { Paragraph, Span } from '@/components/TypographyNew'
 import { Address } from 'viem'
-import { useBuilderContext } from '../../user/context/BuilderContext'
+import { useBuilderContext } from '../../../context/builder/BuilderContext'
 
 export const TotalBackingLoader = () => {
   const { builders, isLoading: isLoadingBuilders, error: errorBuilders } = useBuilderContext()

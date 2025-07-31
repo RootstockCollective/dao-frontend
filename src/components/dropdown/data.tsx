@@ -10,7 +10,7 @@ import Big from 'big.js'
 import { TokenBalanceRecord } from '@/app/user/types'
 import { Address } from 'viem'
 import { parseVoteCastEvents } from '@/app/proposals/hooks/useVoteCast'
-import { parseNewAllocationEvent } from '@/app/collective-rewards/allocations/hooks/useNewAllocationEvent'
+import { parseNewAllocationEvent } from '@/app/hooks/useNewAllocationEvent'
 
 export type SVGIconType = ComponentType<SVGAttributes<SVGSVGElement> & Record<string, any>>
 

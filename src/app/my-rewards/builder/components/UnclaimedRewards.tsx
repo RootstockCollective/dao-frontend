@@ -1,5 +1,5 @@
-import ClaimRewardsModal from '@/app/collective-rewards/components/ClaimRewardModal/ClaimRewardsModal'
-import { useHandleErrors } from '@/app/collective-rewards/utils'
+import ClaimRewardsModal from '@/app/collective-rewards/components/ClaimRewardModal/ClaimRewardsModal' // TODO: move this to parent folder
+import { useHandleErrors } from '@/app/utils'
 import { useGetBuilderUnclaimedRewards } from '@/app/my-rewards/builder/hooks/useGetBuilderUnclaimedRewards'
 import { ClaimRewardsButton } from '@/app/my-rewards/components/ClaimRewardsButton'
 import { RewardCard } from '@/app/my-rewards/components/RewardCard'

@@ -3,7 +3,7 @@ import { TokenAmount } from '@/components/TokenAmount'
 
 import { TokenSymbol } from '@/components/TokenImage'
 import { useBackerEstimatedRewards } from '../hooks/useBackerEstimatedRewards'
-import { useHandleErrors } from '@/app/collective-rewards/utils'
+import { useHandleErrors } from '@/app/utils'
 import { Paragraph } from '@/components/TypographyNew'
 
 export const BackerEstimatedRewards = () => {

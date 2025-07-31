@@ -1,5 +1,4 @@
-import { formatSymbol } from '@/app/collective-rewards/rewards'
-import { getFiatAmount } from '@/app/collective-rewards/rewards'
+import { formatSymbol, getFiatAmount } from '@/app/utils'
 import { formatCurrency } from '@/lib/utils'
 import { USD } from '@/lib/constants'
 

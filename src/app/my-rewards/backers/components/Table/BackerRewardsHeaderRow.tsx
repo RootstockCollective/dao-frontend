@@ -6,9 +6,9 @@ import {
   HeaderCell,
   HeaderSubtitle,
   HeaderTitle,
-  TableColumnDropdown,
 } from '@/app/builders/components/Table'
-import { Action } from '@/app/builders/components/Table/Cell/ActionCell'
+import { TableColumnDropdown } from '@/app/components'
+import { Action } from '@/app/components/Table/Cell/ActionCell'
 import { Button } from '@/components/ButtonNew'
 import { CloseIconKoto } from '@/components/Icons'
 import { TableHeaderCell } from '@/components/TableNew'

@@ -1,6 +1,6 @@
-import { formatMetrics } from '@/app/collective-rewards/rewards/utils'
-import { useGetCycleRewards } from '@/app/collective-rewards/shared/hooks/useGetCycleRewards'
-import { useHandleErrors } from '@/app/collective-rewards/utils'
+import { useGetCycleRewards } from '@/app/hooks/useGetCycleRewards'
+import { useHandleErrors } from '@/app/utils'
+import { formatMetrics } from '@/app/utils'
 import { LoadingSpinner } from '@/components/LoadingSpinner'
 import { Metric } from '@/components/Metric'
 import { TokenAmount } from '@/components/TokenAmount'
@@ -9,7 +9,11 @@ import { USD } from '@/lib/constants'
 import { usePricesContext } from '@/shared/context/PricesContext'
 
 export const EstimatedRewards = () => {
-  let { data: cycleRewards, isLoading: cycleRewardsLoading, error: cycleRewardsError } = useGetCycleRewards()
+  const {
+    data: cycleRewards,
+    isLoading: cycleRewardsLoading,
+    error: cycleRewardsError,
+  } = useGetCycleRewards()
 
   const { prices } = usePricesContext()
 
@@ -17,8 +21,8 @@ export const EstimatedRewards = () => {
   const rifPrice = prices.RIF?.price ?? 0
   const rbtcPrice = prices.RBTC?.price ?? 0
 
-  const rifData = formatMetrics(cycleRewards?.rif ?? 0n, rifPrice, TokenSymbol.RIF, USD)
-  const rbtcData = formatMetrics(cycleRewards?.rbtc ?? 0n, rbtcPrice, TokenSymbol.RBTC, USD)
+  const rifData = formatMetrics(cycleRewards.rif, rifPrice, TokenSymbol.RIF, USD)
+  const rbtcData = formatMetrics(cycleRewards.rbtc, rbtcPrice, TokenSymbol.RBTC, USD)
 
   return (
     // FIXME: reuse this component

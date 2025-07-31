@@ -2,8 +2,8 @@ import { BackersCallToAction } from '../BackersCallToAction'
 import { BuildersCallToAction } from '../BuildersCallToAction'
 import { InfoContainer } from '@/components/containers'
 import { LoadingSpinner } from '@/components/LoadingSpinner'
-import { useHandleErrors } from '../../utils'
-import { useGetBuilderEstimatedRewards } from '@/app/shared/hooks/useGetBuilderEstimatedRewards'
+import { useHandleErrors } from '@/app/utils'
+import { useGetBuilderEstimatedRewards } from '@/app/hooks/useGetBuilderEstimatedRewards'
 
 export const CallToActionSection = () => {
   const {

@@ -1,3 +1,3 @@
-import { BuilderState } from '@/app/collective-rewards/types'
+import { BuilderState } from '@/app/types'
 
 export type ExtendedBuilderState = BuilderState | 'deactivated' | 'paused'

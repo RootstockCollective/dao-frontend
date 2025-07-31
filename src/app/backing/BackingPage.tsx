@@ -5,12 +5,8 @@ import { BackingInfoTitleControl } from '@/app/backing/components/BackingInfoTit
 import { BackingInfoContainer } from '@/app/backing/components/Container/BackingInfoContainer/BackingInfoContainer'
 import { AnnualBackersIncentives } from '@/app/backing/components/Metrics/AnnualBackersIncentives'
 import { EstimatedRewardsMetric } from '@/app/backing/components/Metrics/EstimatedRewardsMetric'
-import {
-  Allocations,
-  AllocationsContext,
-} from '@/app/collective-rewards/allocations/context/AllocationsContext'
-import { formatSymbol, getFiatAmount } from '@/app/collective-rewards/rewards'
-import { useBuilderContext } from '@/app/collective-rewards/user/context/BuilderContext'
+import { Allocations, useAllocationsContext, useBuilderContext } from '@/app/context'
+import { formatSymbol, getFiatAmount } from '@/app/utils'
 import { ActionMetricsContainer, ActionsContainer, MetricsContainer } from '@/components/containers'
 import { Header, Span } from '@/components/TypographyNew'
 import { RIF, stRIF, USD } from '@/lib/constants'
@@ -36,7 +32,7 @@ export const BackingPage = () => {
       backer: { balance: votingPower, amountToAllocate: totalOnchainAllocation, allocationsCount },
     },
     actions: { updateAllocations, updateAmountToAllocate },
-  } = useContext(AllocationsContext)
+  } = useAllocationsContext()
 
   const { randomBuilders } = useBuilderContext()
   const router = useRouter()

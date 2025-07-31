@@ -1,4 +1,4 @@
-import { useGetBuilderRewardsClaimedLogs, useGetGaugesNotifyReward } from '@/app/collective-rewards/rewards'
+import { useGetBuilderRewardsClaimedLogs, useGetGaugesNotifyReward } from '@/app/hooks'
 import { useReadGauge } from '@/shared/hooks/contracts/collective-rewards/useReadGauge'
 import { useMemo } from 'react'
 import { Address } from 'viem'

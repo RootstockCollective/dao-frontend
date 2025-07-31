@@ -1,6 +1,6 @@
-import { TokenRewards } from '@/app/collective-rewards/rewards/types'
-import { weiToPercentage } from '@/app/collective-rewards/settings/utils'
-import { getCombinedFiatAmount } from '@/app/collective-rewards/utils'
+import { TokenRewards } from '@/app/types'
+import { weiToPercentage } from '@/app/utils'
+import { getCombinedFiatAmount } from '@/app/utils'
 import { Paragraph } from '@/components/TypographyNew'
 import { formatCurrency } from '@/lib/utils'
 import { FC } from 'react'
@@ -8,7 +8,7 @@ import { BackerRewardsPercentage } from '../BackerPercentage/BackerRewardsPercen
 import { LabeledContent } from '../LabeledContent/LabeledContent'
 import { RifRbtcTooltip } from '@/components/RifRbtcTooltip/RifRbtcTooltip'
 import { DottedUnderlineLabel } from '@/components/DottedUnderlineLabel/DottedUnderlineLabel'
-import { BackerRewardPercentage } from '@/app/collective-rewards/types'
+import { BackerRewardPercentage } from '@/app/types'
 
 export interface RewardsInfoProps {
   backerRewardPercentage?: BackerRewardPercentage

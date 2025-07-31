@@ -1,4 +1,4 @@
-import { useGetVotingPower } from '@/app/collective-rewards/allocations/hooks'
+import { useGetVotingPower } from '@/app/hooks'
 import { useReadBackersManager } from '@/shared/hooks/contracts'
 import { useMemo } from 'react'
 import { Address, zeroAddress } from 'viem'

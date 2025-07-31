@@ -1,8 +1,8 @@
 'use client'
 
+import { AnnualBackersIncentives } from '@/app/components'
 import { Header } from '@/components/TypographyNew'
 import { ActionMetricsContainer } from '@/components/containers'
-import { AnnualBackersIncentives } from '@/app/shared/components/AnnualBackersIncentives'
 import { CallToActionSection } from './components/CallToActionSection'
 import { CurrentCycle } from './components/CurrentCycle'
 import { TotalRewardsDistributed } from './components/TotalRewardsDistributed'

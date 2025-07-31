@@ -1,6 +1,6 @@
 import { Metric, MetricTitle } from '@/components/Metric'
 import { Header, Paragraph } from '@/components/TypographyNew'
-import { AnnualBackerIncentivesLoader } from '@/app/shared/components/AnnualBackersIncentivesLoader'
+import { AnnualBackerIncentivesLoader } from '@/app/components'
 import { LoadingSpinner } from '@/components/LoadingSpinner'
 import { ABIFormula } from '../ABIFormula'
 

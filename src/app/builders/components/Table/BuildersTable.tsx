@@ -1,6 +1,6 @@
 'use client'
 
-import { Builder, BuilderRewardsSummary } from '@/app/collective-rewards/types'
+import { Builder, BuilderRewardsSummary } from '@/app/types'
 import {
   isBuilderActive,
   isBuilderDeactivated,
@@ -8,7 +8,8 @@ import {
   isBuilderKycRevoked,
   isBuilderPaused,
   isBuilderSelfPaused,
-} from '@/app/collective-rewards/utils'
+  getCombinedFiatAmount,
+} from '@/app/utils'
 import TablePager from '@/components/TableNew/TablePager'
 import { usePricesContext, useTableActionsContext, useTableContext } from '@/shared/context'
 import { Suspense, useEffect, useMemo, useState } from 'react'
@@ -19,9 +20,8 @@ import { useGetBuilderRewardsSummary } from '../../hooks/useGetBuilderRewardsSum
 import { BuilderDataRow, convertDataToRowData } from './BuilderDataRow'
 import { BuilderHeaderRow } from './BuilderHeaderRow'
 import { ColumnId, DEFAULT_HEADERS, PAGE_SIZE } from './BuilderTable.config'
-import { Action, ActionCellProps } from './Cell/ActionCell'
+import { Action, ActionCellProps } from '../../../components/Table/Cell/ActionCell'
 import { Sort } from '@/shared/context/TableContext/types'
-import { getCombinedFiatAmount } from '@/app/collective-rewards/utils/getCombinedFiatAmount'
 import { Big } from 'big.js'
 
 // --- Filter builders by state ---

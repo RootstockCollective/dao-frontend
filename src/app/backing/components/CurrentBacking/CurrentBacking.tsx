@@ -1,7 +1,7 @@
 import { Label } from '@/components/TypographyNew'
 import { FC } from 'react'
 import { RIFToken } from '../RIFToken/RIFToken'
-import { formatSymbol } from '@/app/collective-rewards/rewards/utils/formatter'
+import { formatSymbol } from '@/app/utils'
 
 interface CurrentBackingProps {
   existentAllocation: bigint

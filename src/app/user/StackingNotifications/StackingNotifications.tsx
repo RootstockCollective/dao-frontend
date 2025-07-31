@@ -1,5 +1,5 @@
-import { CycleContextProvider, useCycleContext } from '@/app/collective-rewards/metrics'
-import { useHandleErrors } from '@/app/collective-rewards/utils'
+import { CycleContextProvider, useCycleContext } from '@/app/context'
+import { useHandleErrors } from '@/app/utils'
 import { useRequiredTokens } from '@/app/user/IntroModal/hooks/useRequiredTokens'
 import { BannerContent } from '@/components/StackableBanner/BannerContent'
 import { StackableBanner } from '@/components/StackableBanner/StackableBanner'

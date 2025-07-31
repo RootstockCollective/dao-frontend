@@ -1,4 +1,4 @@
-import { useGetBuilderRewardsClaimedLogs } from '@/app/collective-rewards/rewards'
+import { useGetBuilderRewardsClaimedLogs } from '@/app/hooks'
 import { TOKENS } from '@/lib/tokens'
 import { usePricesContext } from '@/shared/context/PricesContext'
 import { useReadGauge } from '@/shared/hooks/contracts/collective-rewards/useReadGauge'

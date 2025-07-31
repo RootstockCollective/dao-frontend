@@ -1,4 +1,4 @@
-import { Cycle } from '@/app/collective-rewards/metrics'
+import { Cycle } from '@/app/context'
 import { BANNER_CONFIGS, CYCLE_ENDED, CYCLE_ENDING, KYC_ONLY, NOT_BACKING, START_BUILDING } from './constants'
 import { BannerConfig } from './types'
 import { Typography } from '@/components/TypographyNew/Typography'

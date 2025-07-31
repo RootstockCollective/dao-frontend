@@ -1,5 +1,5 @@
-import { useCycleContext } from '@/app/collective-rewards/metrics/context'
-import { useHandleErrors } from '@/app/collective-rewards/utils'
+import { useCycleContext } from '@/app/context'
+import { useHandleErrors } from '@/app/utils'
 import { CycleDay } from './CycleDay'
 import { CycleEndingOn } from './CycleEndingOn'
 import { CycleNumber } from './CycleNumber'

@@ -1,8 +1,7 @@
 'use client'
 
-import { formatSymbol, getFiatAmount } from '@/app/collective-rewards/rewards/utils/formatter'
-import { BuilderRewardsSummary } from '@/app/collective-rewards/types'
-import { getCombinedFiatAmount } from '@/app/collective-rewards/utils'
+import { BuilderRewardsSummary } from '@/app/types'
+import { formatSymbol, getFiatAmount, getCombinedFiatAmount } from '@/app/utils'
 import { ConditionalTooltip } from '@/app/components'
 import { ConnectTooltipContent } from '@/app/components/Tooltip/ConnectTooltip/ConnectTooltipContent'
 import { GetPricesResult } from '@/app/user/types'
@@ -18,14 +17,18 @@ import { redirect, RedirectType } from 'next/navigation'
 import { FC, HtmlHTMLAttributes, ReactElement, ReactNode, useState } from 'react'
 import { Address } from 'viem'
 import { useAccount } from 'wagmi'
-import { COLUMN_TRANSFORMS, ColumnId, ColumnTransforms } from './BuilderTable.config'
-import { ActionCell, ActionCellProps, getActionType } from './Cell/ActionCell'
-import { AllocationCell, AllocationCellProps } from './Cell/AllocationCell'
-import { BackersPercentageCell, BackersPercentageCellProps } from './Cell/BackersPercentageCell'
-import { BackingCell, BackingCellProps } from './Cell/BackingCell'
-import { BuilderNameCell, BuilderNameCellProps } from './Cell/BuilderNameCell'
-import { RewardsCell, RewardsCellProps } from './Cell/RewardsCell'
-import { SelectorCell } from './Cell/SelectorCell'
+import { COLUMN_TRANSFORMS, ColumnId } from './BuilderTable.config'
+import { ActionCell, ActionCellProps, getActionType } from '../../../components/Table/Cell/ActionCell'
+import { AllocationCell, AllocationCellProps } from '../../../components/Table/Cell/AllocationCell'
+import {
+  BackersPercentageCell,
+  BackersPercentageCellProps,
+} from '../../../components/Table/Cell/BackersPercentageCell'
+import { BackingCell, BackingCellProps } from '../../../components/Table/Cell/BackingCell'
+import { BuilderNameCell, BuilderNameCellProps } from '../../../components/Table/Cell/BuilderNameCell'
+import { RewardsCell, RewardsCellProps } from '../../../components/Table/Cell/RewardsCell'
+import { SelectorCell } from '../../../components/Table/Cell/SelectorCell'
+import { ColumnTransforms } from '@/app/components/Table/types'
 
 export type ColumnIdToCellPropsMap = {
   builder: BuilderNameCellProps

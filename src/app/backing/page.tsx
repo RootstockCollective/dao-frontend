@@ -1,6 +1,6 @@
 'use client'
 
-import { CycleContextProvider } from '@/app/collective-rewards/metrics'
+import { CycleContextProvider } from '@/app/context'
 import { withFeatureFlag } from '@/shared/context/FeatureFlag'
 import { BackingPage } from './BackingPage'
 

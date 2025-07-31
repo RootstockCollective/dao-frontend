@@ -1,8 +1,6 @@
-import { useHandleErrors } from '@/app/collective-rewards/utils'
-import { Metric, MetricTitle } from '@/components/Metric'
+import { useHandleErrors } from '@/app/utils'
 import { TokenAmount } from '@/components/TokenAmount'
 import { TokenSymbol } from '@/components/TokenImage'
-import { Paragraph } from '@/components/TypographyNew'
 import { useBackersEstimatedRewards } from '../hooks/useBackersEstimatedRewards'
 import { RewardCard } from '../../components/RewardCard'
 

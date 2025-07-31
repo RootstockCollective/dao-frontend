@@ -1,6 +1,6 @@
 import { TopPageHeaderLeftSlotStrategy } from './TopPageHeaderLeftSlotStrategy'
 import { usePathname } from 'next/navigation'
-import { SelfContainedNFTBoosterCard } from '@/app/shared/components/NFTBoosterCard/SelfContainedNFTBoosterCard'
+import { SelfContainedNFTBoosterCard } from '@/app/components'
 import { collectiveRewards, home } from '@/shared/constants'
 import { useNFTBoosterContext } from '@/app/providers/NFT/BoosterContext'
 /**

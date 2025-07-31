@@ -1,10 +1,6 @@
-import { useCycleContext } from '@/app/collective-rewards/metrics/context/CycleContext'
-import {
-  getNotifyRewardAmount,
-  useGetGaugeNotifyRewardLogs,
-  useGetLastCycleDistribution,
-} from '@/app/collective-rewards/rewards'
-import { useHandleErrors } from '@/app/collective-rewards/utils'
+import { useCycleContext } from '@/app/context'
+import { getNotifyRewardAmount, useGetGaugeNotifyRewardLogs, useGetLastCycleDistribution } from '@/app/hooks'
+import { useHandleErrors } from '@/app/utils'
 import { TOKENS } from '@/lib/tokens'
 import { usePricesContext } from '@/shared/context/PricesContext'
 import { Address } from 'viem'

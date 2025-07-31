@@ -1,7 +1,7 @@
 import { CycleMetrics } from '@/app/collective-rewards/components/CycleMetrics'
 import { EstimatedRewards } from '@/app/collective-rewards/components/EstimatedRewards'
 import { TotalBackingLoader } from '@/app/collective-rewards/components/TotalBacking'
-import { CycleContextProvider } from '@/app/collective-rewards/metrics'
+import { CycleContextProvider } from '@/app/context'
 import { ActionsContainer } from '@/components/containers'
 import { Header } from '@/components/TypographyNew'
 

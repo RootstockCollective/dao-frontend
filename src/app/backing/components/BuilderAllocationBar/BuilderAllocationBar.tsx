@@ -1,9 +1,9 @@
-import { AllocationsContext } from '@/app/collective-rewards/allocations/context'
-import { floorToUnit, getBuilderColor } from '@/app/shared/components/utils'
-import { useCallback, useContext, useEffect, useMemo, useState } from 'react'
+import { floorToUnit, getBuilderColor } from '@/app/utils'
+import { useCallback, useEffect, useMemo, useState } from 'react'
 import { Address, formatEther, parseEther } from 'viem'
 import AllocationBar from '../AllocationBar/AllocationBar'
 import { AllocationBarProps, AllocationChangeData, AllocationItem } from '../AllocationBar/types'
+import { useAllocationsContext } from '@/app/context'
 
 const UNALLOCATED_KEY = 'unallocated'
 
@@ -17,7 +17,7 @@ const BuilderAllocationBar = ({ barOverrides }: { barOverrides?: Partial<Allocat
       getBuilder,
     },
     actions: { updateAllocation },
-  } = useContext(AllocationsContext)
+  } = useAllocationsContext()
 
   // Local order state, includes 'unallocated'
   const [orderedKeys, setOrderedKeys] = useState<string[]>([])

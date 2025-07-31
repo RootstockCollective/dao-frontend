@@ -1,5 +1,3 @@
-import React from 'react'
-
 export const Content = () => {
   return (
     <div className="flex flex-col w-full">

@@ -3,19 +3,16 @@ import { TokenAmountDisplay } from '@/components/TokenAmountDisplay'
 import { CommonComponentProps } from '@/components/commonProps'
 import { usePricesContext } from '@/shared/context/PricesContext'
 import { TOKENS } from '@/lib/tokens'
-import { useGetGaugesArray } from '@/app/collective-rewards/user'
+import { useGetGaugesArray } from '@/app/hooks/useGetGaugesArray'
 import { Address } from 'viem'
-import {
-  formatSymbol,
-  getFiatAmount,
-  Token,
-  useGetGaugesNotifyReward,
-} from '@/app/collective-rewards/rewards'
-import { useHandleErrors } from '@/app/collective-rewards/utils'
+import { useGetGaugesNotifyReward } from '@/app/hooks/useGetGaugesNotifyReward'
+import { useHandleErrors } from '@/app/utils'
 import { formatCurrency } from '@/lib/utils'
 import { LoadingSpinner } from '@/components/LoadingSpinner'
 import { MetricTitle } from '@/components/Metric'
 import { Paragraph } from '@/components/TypographyNew'
+import { Token } from '@/app/types'
+import { formatSymbol, getFiatAmount } from '@/app/utils'
 
 interface TokenRewardsProps {
   gauges: Address[]

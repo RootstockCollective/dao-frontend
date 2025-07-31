@@ -1,5 +1,5 @@
-import { useGetBackerABI } from '@/app/collective-rewards/shared'
-import { useHandleErrors } from '@/app/collective-rewards/utils'
+import { useGetBackerABI } from '@/app/hooks'
+import { useHandleErrors } from '@/app/utils'
 import { Address } from 'viem'
 import { useAccount } from 'wagmi'
 import { LoadingSpinner } from '@/components/LoadingSpinner'

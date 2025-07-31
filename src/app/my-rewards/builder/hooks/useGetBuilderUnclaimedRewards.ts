@@ -1,4 +1,4 @@
-import { Token } from '@/app/collective-rewards/rewards'
+import { Token } from '@/app/types'
 import { formatRewards } from '@/app/my-rewards/utils'
 import { TOKENS } from '@/lib/tokens'
 import { usePricesContext } from '@/shared/context/PricesContext'

@@ -1,9 +1,9 @@
-import { useHandleErrors } from '@/app/collective-rewards/utils'
+import { useHandleErrors } from '@/app/utils'
 import { TokenAmount } from '@/components/TokenAmount'
 import { TokenSymbol } from '@/components/TokenImage'
 import { Address } from 'viem'
-import { useGetBuilderEstimatedRewards } from '@/app/my-rewards/builder/hooks/useGetBuilderEstimatedRewards'
 import { RewardCard } from '@/app/my-rewards/components/RewardCard'
+import { useGetBuilderEstimatedRewards } from '../hooks'
 
 export const EstimatedCycleRewards = ({ builder, gauge }: { builder: Address; gauge: Address }) => {
   const { rif: rifData, rbtc: rbtcData } = useGetBuilderEstimatedRewards({

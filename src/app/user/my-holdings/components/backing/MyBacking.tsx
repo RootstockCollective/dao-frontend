@@ -2,7 +2,7 @@
 
 import { useAccount } from 'wagmi'
 
-import { BackerRewardsContextProvider } from '@/app/collective-rewards/rewards'
+import { BackerRewardsContextProvider } from '@/app/context'
 import { TOKENS } from '@/lib/tokens'
 import { ReactElement } from 'react'
 import { zeroAddress } from 'viem'

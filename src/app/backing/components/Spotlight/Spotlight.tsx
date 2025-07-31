@@ -1,9 +1,7 @@
-import { AllocationsContext } from '@/app/collective-rewards/allocations/context/AllocationsContext'
-import { useBuilderContext } from '@/app/collective-rewards/user/context/BuilderContext'
-import { useHandleErrors } from '@/app/collective-rewards/utils'
-import { BackMoreBuildersCard, BuilderCardControl } from '@/app/shared/components/BuilderCard'
-import { BuildersSpotlight } from '@/app/shared/components/BuildersSpotlight'
-import { useGetBuilderEstimatedRewards } from '@/app/shared/hooks/useGetBuilderEstimatedRewards'
+import { useAllocationsContext, useBuilderContext } from '@/app/context'
+import { useHandleErrors } from '@/app/utils'
+import { BackMoreBuildersCard, BuilderCardControl, BuildersSpotlight } from '@/app/components'
+import { useGetBuilderEstimatedRewards } from '@/app/hooks/useGetBuilderEstimatedRewards'
 import { Button } from '@/components/ButtonNew'
 import { LoadingSpinner } from '@/components/LoadingSpinner'
 import { useRouter, useSearchParams } from 'next/navigation'
@@ -24,7 +22,7 @@ export const Spotlight = ({ isInteractive = true }: { isInteractive?: boolean })
       getBuilder,
     },
     actions: { toggleSelectedBuilder },
-  } = useContext(AllocationsContext)
+  } = useAllocationsContext()
 
   const { randomBuilders } = useBuilderContext()
 

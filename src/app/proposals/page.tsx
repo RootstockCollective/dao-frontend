@@ -1,6 +1,6 @@
 'use client'
 import { ErrorBoundary } from 'react-error-boundary'
-import { withFallbackRetry } from '@/app/shared/components/Fallback/FallbackWithRetry'
+import { withFallbackRetry } from '@/app/components'
 import { ProposalsFromChain } from '@/app/proposals/ProposalsFromChain'
 import { ProposalsFromTheGraph } from '@/app/proposals/ProposalsFromTheGraph'
 import { HeroComponent } from '@/components/HeroComponent'

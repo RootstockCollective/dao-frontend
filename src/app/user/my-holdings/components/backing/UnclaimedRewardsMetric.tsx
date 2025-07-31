@@ -2,12 +2,9 @@
 
 import { Span } from '@/components/TypographyNew'
 
-import {
-  getFiatAmount,
-  useBackerRewardsContext,
-  useClaimBackerRewards,
-} from '@/app/collective-rewards/rewards'
-import { useHandleErrors } from '@/app/collective-rewards/utils'
+import { useClaimBackerRewards } from '@/app/hooks'
+import { useBackerRewardsContext } from '@/app/context'
+import { getFiatAmount, useHandleErrors } from '@/app/utils'
 import { ConditionalTooltip } from '@/app/components'
 import { Button } from '@/components/ButtonNew'
 import { DottedUnderlineLabel } from '@/components/DottedUnderlineLabel/DottedUnderlineLabel'

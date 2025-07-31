@@ -4,7 +4,7 @@ import {
   BUILDER_IN_PROGRESS,
   BUILDER_KYC_REVOKED,
   BUILDER_PAUSED,
-} from '@/app/collective-rewards/utils/isBuilderOperational'
+} from '@/app/utils'
 import { BuilderState } from '../BuilderTable.config'
 
 export type BuilderFilterOptionId = 'all' | Exclude<BuilderState, 'selfPaused'>

@@ -1,6 +1,6 @@
-import { useHandleErrors } from '@/app/collective-rewards/utils'
+import { useGetActiveBuildersCount } from '@/app/hooks/useGetActiveBuildersCount'
+import { useHandleErrors } from '@/app/utils'
 import { Metric } from '@/components/Metric'
-import { useGetActiveBuildersCount } from '@/app/collective-rewards/shared/hooks/useGetActiveBuildersCount'
 import { LoadingSpinner } from '@/components/LoadingSpinner'
 
 export const ActiveBuilders = () => {

@@ -1,5 +1,5 @@
-import { useBuilderSettingsContext } from '@/app/collective-rewards/settings/builder/context'
-import { percentageToWei, weiToPercentage } from '@/app/collective-rewards/settings/utils/weiUtils'
+import { useBuilderSettingsContext } from '@/app/my-rewards/builder/context'
+import { percentageToWei, weiToPercentage } from '@/app/utils'
 import UpdateBackerRewardViewModal from './UpdateBackerRewardViewModal'
 import { useReadBuilderRegistry } from '@/shared/hooks/contracts'
 import { DateTime, Duration } from 'luxon'

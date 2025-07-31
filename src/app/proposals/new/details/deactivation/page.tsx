@@ -12,7 +12,7 @@ import { useReviewProposal } from '@/app/providers'
 import { ProposalCategory } from '@/shared/types'
 import { TextInput } from '@/components/FormFields'
 import { DeactivationProposal, DeactivationProposalSchema } from '../schemas/DeactivationProposalSchema'
-import { useBuilderContext } from '@/app/collective-rewards/user'
+import { useBuilderContext } from '@/app/context'
 import { Header } from '@/components/TypographyNew'
 import { BASE_PROPOSAL_LIMITS } from '../schemas/BaseProposalSchema'
 

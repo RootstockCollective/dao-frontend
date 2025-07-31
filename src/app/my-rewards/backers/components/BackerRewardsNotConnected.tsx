@@ -1,4 +1,4 @@
-import { AnnualBackersIncentives } from '@/app/shared/components/AnnualBackersIncentives'
+import { AnnualBackersIncentives } from '@/app/components'
 import { Header } from '@/components/TypographyNew'
 import { BackersEstimatedRewards } from './BackersEstimatedRewards'
 

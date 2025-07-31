@@ -1,11 +1,10 @@
 import { Header, Paragraph } from '@/components/TypographyNew'
 import { MetricsContainer } from '@/components/containers'
 import { Button } from '@/components/ButtonNew/Button'
-import { useContext } from 'react'
 import { useAccount } from 'wagmi'
 import { Banner } from '../Banner'
 import { BackersDecorativeSquares } from '../DecorativeSquares'
-import { AllocationsContext } from '../../allocations/context'
+import { useAllocationsContext } from '@/app/context'
 import { CallToActionCard } from '../CallToActionCard'
 import { ActiveBackers } from '../ActiveBackers/ActiveBackers'
 import { FC } from 'react'
@@ -36,7 +35,7 @@ const BackerCTAButton = () => {
     state: {
       backer: { balance: votingPower },
     },
-  } = useContext(AllocationsContext)
+  } = useAllocationsContext()
 
   const hasStRIF = votingPower && votingPower > 0n
 

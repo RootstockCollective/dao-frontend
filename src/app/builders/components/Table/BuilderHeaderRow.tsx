@@ -17,10 +17,10 @@ import { cn } from '@/lib/utils'
 import { redirect, RedirectType } from 'next/navigation'
 import { Dispatch, FC, ReactNode } from 'react'
 import { Address } from 'viem'
-import { COLUMN_TRANSFORMS, ColumnId, ColumnTransforms, LABELS } from './BuilderTable.config'
-import { Action, ActionCell } from './Cell/ActionCell'
-import { SelectorHeaderCell } from './Cell/SelectorHeaderCell/SelectorHeaderCell'
-import { TableColumnDropdown } from './TableColumnDropdown'
+import { COLUMN_TRANSFORMS, ColumnId, LABELS } from './BuilderTable.config'
+import { Action, ActionCell, SelectorHeaderCell } from '@/app/components/Table/Cell'
+import { TableColumnDropdown } from '@/app/components'
+import { ColumnTransforms } from '@/app/components/Table/types'
 
 const OrderIndicatorContainer: FC<CommonComponentProps> = ({ className, children }) => (
   <div className={cn('flex pt-1 justify-center gap-2', className)}>{children}</div>

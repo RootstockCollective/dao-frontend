@@ -1,7 +1,6 @@
-import { useCycleContext } from '@/app/collective-rewards/metrics/context/CycleContext'
-import { getBackerRewardPercentage, useGetPerTokenRewards } from '@/app/collective-rewards/rewards'
-import { useBuilderContext } from '@/app/collective-rewards/user'
-import { isBuilderRewardable } from '@/app/collective-rewards/utils'
+import { useCycleContext } from '@/app/context'
+import { useBuilderContext } from '@/app/context'
+import { isBuilderRewardable, getBackerRewardPercentage } from '@/app/utils'
 import { formatRewards } from '@/app/my-rewards/utils'
 import { WeiPerEther } from '@/lib/constants'
 import { TOKENS } from '@/lib/tokens'
@@ -10,6 +9,7 @@ import { useReadBackersManager, useReadBuilderRegistry } from '@/shared/hooks/co
 import { useReadGauge } from '@/shared/hooks/contracts/collective-rewards/useReadGauge'
 import { useMemo } from 'react'
 import { Address } from 'viem'
+import { useGetCycleRewards } from '@/app/hooks'
 
 interface UseBuilderEstimatedRewardsProps {
   builder: Address
@@ -36,7 +36,11 @@ export const useGetBuilderEstimatedRewards = ({
   const { getBuilderByAddress } = useBuilderContext()
   const { rif, rbtc } = TOKENS
 
-  const { rif: rifTokenReward, rbtc: rbtcTokenReward } = useGetPerTokenRewards()
+  const {
+    data: cycleRewards,
+    isLoading: cycleRewardsLoading,
+    error: cycleRewardsError,
+  } = useGetCycleRewards()
 
   const {
     data: totalPotentialRewards,
@@ -88,13 +92,13 @@ export const useGetBuilderEstimatedRewards = ({
   const rifFormatted = useMemo(() => {
     const rifRewardsAmountCalc =
       isRewarded && rewardShares && totalPotentialRewards
-        ? (rifTokenReward.data ?? 0n * rewardShares) / totalPotentialRewards
+        ? (cycleRewards.rif ?? 0n * rewardShares) / totalPotentialRewards
         : 0n
     const rifEstimatedRewards = (rifRewardsAmountCalc * (WeiPerEther - rewardPercentageToApply)) / WeiPerEther
     const rifPrice = prices[rif.symbol]?.price ?? 0
     return formatRewards(rifEstimatedRewards, rifPrice, rif.symbol)
   }, [
-    rifTokenReward.data,
+    cycleRewards.rif,
     rewardShares,
     totalPotentialRewards,
     isRewarded,
@@ -107,14 +111,14 @@ export const useGetBuilderEstimatedRewards = ({
   const rbtcFormatted = useMemo(() => {
     const rbtcRewardsAmountCalc =
       isRewarded && rewardShares && totalPotentialRewards
-        ? (rbtcTokenReward.data ?? 0n * rewardShares) / totalPotentialRewards
+        ? (cycleRewards.rbtc ?? 0n * rewardShares) / totalPotentialRewards
         : 0n
     const rbtcEstimatedRewards =
       (rbtcRewardsAmountCalc * (WeiPerEther - rewardPercentageToApply)) / WeiPerEther
     const rbtcPrice = prices[rbtc.symbol]?.price ?? 0
     return formatRewards(rbtcEstimatedRewards, rbtcPrice, rbtc.symbol)
   }, [
-    rbtcTokenReward.data,
+    cycleRewards.rbtc,
     rewardShares,
     totalPotentialRewards,
     isRewarded,
@@ -128,13 +132,13 @@ export const useGetBuilderEstimatedRewards = ({
       amount: rifFormatted.amount,
       fiatAmount: rifFormatted.fiatAmount,
       isLoading:
-        rifTokenReward.isLoading ||
+        cycleRewardsLoading ||
         totalPotentialRewardsLoading ||
         rewardSharesLoading ||
         backerRewardsPctLoading ||
         cycleLoading,
       error:
-        rifTokenReward.error ??
+        cycleRewardsError ??
         totalPotentialRewardsError ??
         rewardSharesError ??
         backerRewardsPctError ??
@@ -144,13 +148,13 @@ export const useGetBuilderEstimatedRewards = ({
       amount: rbtcFormatted.amount,
       fiatAmount: rbtcFormatted.fiatAmount,
       isLoading:
-        rbtcTokenReward.isLoading ||
+        cycleRewardsLoading ||
         totalPotentialRewardsLoading ||
         rewardSharesLoading ||
         backerRewardsPctLoading ||
         cycleLoading,
       error:
-        rbtcTokenReward.error ??
+        cycleRewardsError ??
         totalPotentialRewardsError ??
         rewardSharesError ??
         backerRewardsPctError ??

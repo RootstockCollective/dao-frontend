@@ -1,8 +1,8 @@
-import { useBuilderContext } from '@/app/collective-rewards/user/context/BuilderContext'
-import { Builder, BuilderState } from '@/app/collective-rewards/types'
+import { useBuilderContext } from '@/app/context/builder/BuilderContext'
+import { Builder } from '@/app/types'
 import { Address } from 'viem'
 import { BuilderStatusView } from './BuilderStatusView'
-import { isBuilderDeactivated, isBuilderKycRevoked, useHandleErrors } from '@/app/collective-rewards/utils'
+import { isBuilderDeactivated, isBuilderKycRevoked, useHandleErrors } from '@/app/utils'
 import { ExtendedBuilderState } from './types'
 
 interface BuilderStatusProps {

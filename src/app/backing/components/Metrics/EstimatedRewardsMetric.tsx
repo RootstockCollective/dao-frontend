@@ -3,10 +3,9 @@ import { formatCurrency } from '@/lib/utils'
 import { RifRbtcTooltip } from '@/components/RifRbtcTooltip/RifRbtcTooltip'
 import { Metric, MetricTitle } from '@/components/Metric'
 import { DottedUnderlineLabel } from '@/components/DottedUnderlineLabel/DottedUnderlineLabel'
-import { useGetBuilderEstimatedRewards } from '@/app/shared/hooks/useGetBuilderEstimatedRewards'
-import { getFiatAmount } from '@/app/collective-rewards/utils'
+import { useGetBuilderEstimatedRewards } from '@/app/hooks/useGetBuilderEstimatedRewards'
+import { getFiatAmount, useHandleErrors } from '@/app/utils'
 import Big from '@/lib/big'
-import { useHandleErrors } from '@/app/collective-rewards/utils'
 import { LoadingSpinner } from '@/components/LoadingSpinner/LoadingSpinner'
 
 export const EstimatedRewardsMetric = () => {
@@ -19,8 +18,18 @@ export const EstimatedRewardsMetric = () => {
         totalEstimatedRif: acc.totalEstimatedRif + builder.backerEstimatedRewards.rif.amount.value,
         totalEstimatedRbtc: acc.totalEstimatedRbtc + builder.backerEstimatedRewards.rbtc.amount.value,
         totalEstimatedUsd: acc.totalEstimatedUsd
-          .add(getFiatAmount(builder.backerEstimatedRewards.rif.amount))
-          .add(getFiatAmount(builder.backerEstimatedRewards.rbtc.amount)),
+          .add(
+            getFiatAmount(
+              builder.backerEstimatedRewards.rif.amount.value,
+              builder.backerEstimatedRewards.rif.amount.price,
+            ),
+          )
+          .add(
+            getFiatAmount(
+              builder.backerEstimatedRewards.rbtc.amount.value,
+              builder.backerEstimatedRewards.rbtc.amount.price,
+            ),
+          ),
       }
     },
     { totalEstimatedRif: 0n, totalEstimatedRbtc: 0n, totalEstimatedUsd: Big(0) },
