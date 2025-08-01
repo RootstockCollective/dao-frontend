@@ -1,5 +1,4 @@
 import { DraggableAttributes } from '@dnd-kit/core/dist/hooks/useDraggable'
-import { FourDotsIcon } from '@/components/Icons/FourDotsIcon'
 import { SyntheticListenerMap } from '@dnd-kit/core/dist/hooks/utilities/useSyntheticListeners'
 
 export const AllocationBarDragHandle = ({
@@ -13,11 +12,9 @@ export const AllocationBarDragHandle = ({
     <div
       {...attributes}
       {...listeners}
-      className="cursor-grab flex items-center px-1 select-none user-select-none h-full align-self-stretch bg-[rgba(255,255,255,0.06)]"
+      className="cursor-grab flex items-center px-1 select-none user-select-none h-full w-full"
       aria-label="Drag to reorder"
       tabIndex={0}
-    >
-      <FourDotsIcon />
-    </div>
+    />
   )
 }
