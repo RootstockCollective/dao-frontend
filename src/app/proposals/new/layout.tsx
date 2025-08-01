@@ -1,17 +1,24 @@
-import { Header } from '@/components/TypographyNew'
-import { type Metadata } from 'next'
-import { ProposalStepper } from '../components/stepper/ProposalStepper'
+'use client'
 
-export const metadata: Metadata = {
-  title: 'RootstockCollective — Create New Proposal',
-}
+import { Header } from '@/components/TypographyNew'
+import { ProposalStepper } from '../components/stepper/ProposalStepper'
+import { useVotingPowerRedirect } from '../hooks/useVotingPowerRedirect'
+import { VotingPowerLoading } from '@/components/LoadingSpinner'
 
 export default function Layout({ children }: React.PropsWithChildren) {
+  const { isVotingPowerLoading, canCreateProposal } = useVotingPowerRedirect()
+
   return (
     <div className="w-full lg:max-w-[1144px] mx-auto">
       <Header className="mb-4 leading-tight uppercase">New Proposal</Header>
-      <ProposalStepper />
-      {children}
+      {isVotingPowerLoading || !canCreateProposal ? (
+        <VotingPowerLoading />
+      ) : (
+        <>
+          <ProposalStepper />
+          {children}
+        </>
+      )}
     </div>
   )
 }
