@@ -22,7 +22,7 @@ import { ConditionalTooltip } from '@/app/components/Tooltip/ConditionalTooltip'
 import { GetPricesResult } from '@/app/user/types'
 import { RIF } from '@/lib/constants'
 import { cn, formatCurrency } from '@/lib/utils'
-import { Row, RowData, useTableActionsContext, useTableContext } from '@/shared/context'
+import { Row, useTableActionsContext, useTableContext } from '@/shared/context'
 import { redirect, RedirectType } from 'next/navigation'
 import { FC, HtmlHTMLAttributes, ReactElement, ReactNode, useState } from 'react'
 import { Address } from 'viem'
@@ -79,7 +79,6 @@ export const convertDataToRowData = (data: BackerRewards[], prices: GetPricesRes
           formattedAmount: formatSymbol(builder.totalAllocation.rif.amount.value, 'stRIF'),
           formattedUsdAmount: formatCurrency(
             getFiatAmount(builder.totalAllocation.rif.amount.value, rifPrice),
-            { currency: 'USD' },
           ),
         },
         total: {

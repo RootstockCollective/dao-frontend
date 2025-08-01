@@ -6,6 +6,7 @@ import { TOKENS } from '@/lib/tokens'
 import { useGetGaugesArray } from '@/app/collective-rewards/user'
 import { Address } from 'viem'
 import {
+  formatMetrics,
   formatSymbol,
   getFiatAmount,
   Token,
@@ -47,11 +48,7 @@ const TokenRewards = ({ gauges, token: { address, symbol } }: TokenRewardsProps)
   )
 
   const price = prices[symbol]?.price ?? 0
-  const amount = formatSymbol(totalRewards, symbol)
-  const fiatAmount = formatCurrency(getFiatAmount(totalRewards, price), {
-    currency: 'USD',
-    showCurrency: true,
-  })
+  const { amount, fiatAmount } = formatMetrics(totalRewards, price, symbol)
 
   return <TokenAmountDisplay amount={amount} tokenSymbol={symbol} amountInCurrency={fiatAmount} />
 }

@@ -1,8 +1,11 @@
 import { useCycleContext } from '@/app/collective-rewards/metrics/context/CycleContext'
-import { getBackerRewardPercentage, useGetPerTokenRewards } from '@/app/collective-rewards/rewards'
+import {
+  formatMetrics,
+  getBackerRewardPercentage,
+  useGetPerTokenRewards,
+} from '@/app/collective-rewards/rewards'
 import { useBuilderContext } from '@/app/collective-rewards/user'
 import { isBuilderRewardable } from '@/app/collective-rewards/utils'
-import { formatRewards } from '@/app/my-rewards/utils'
 import { WeiPerEther } from '@/lib/constants'
 import { TOKENS } from '@/lib/tokens'
 import { usePricesContext } from '@/shared/context/PricesContext'
@@ -92,7 +95,7 @@ export const useGetBuilderEstimatedRewards = ({
         : 0n
     const rifEstimatedRewards = (rifRewardsAmountCalc * (WeiPerEther - rewardPercentageToApply)) / WeiPerEther
     const rifPrice = prices[rif.symbol]?.price ?? 0
-    return formatRewards(rifEstimatedRewards, rifPrice, rif.symbol)
+    return formatMetrics(rifEstimatedRewards, rifPrice, rif.symbol)
   }, [
     rifTokenReward.data,
     rewardShares,
@@ -112,7 +115,7 @@ export const useGetBuilderEstimatedRewards = ({
     const rbtcEstimatedRewards =
       (rbtcRewardsAmountCalc * (WeiPerEther - rewardPercentageToApply)) / WeiPerEther
     const rbtcPrice = prices[rbtc.symbol]?.price ?? 0
-    return formatRewards(rbtcEstimatedRewards, rbtcPrice, rbtc.symbol)
+    return formatMetrics(rbtcEstimatedRewards, rbtcPrice, rbtc.symbol)
   }, [
     rbtcTokenReward.data,
     rewardShares,

@@ -127,7 +127,7 @@ const ClaimBuilderRewardsModal = ({ open, onClose }: Omit<ClaimRewardsModalProps
       rif: getFiatAmount(rifRewards ?? 0n, prices[TOKENS.rif.symbol]?.price ?? 0).toNumber(),
       rbtc: getFiatAmount(rbtcRewards ?? 0n, prices[TOKENS.rbtc.symbol]?.price ?? 0).toNumber(),
     }
-    let totalFiatAmount = tokenFiatAmounts.rif + tokenFiatAmounts.rbtc
+    const totalFiatAmount = tokenFiatAmounts.rif + tokenFiatAmounts.rbtc
 
     return {
       tokenAmounts,

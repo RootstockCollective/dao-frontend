@@ -9,7 +9,11 @@ import { USD } from '@/lib/constants'
 import { usePricesContext } from '@/shared/context/PricesContext'
 
 export const EstimatedRewards = () => {
-  let { data: cycleRewards, isLoading: cycleRewardsLoading, error: cycleRewardsError } = useGetCycleRewards()
+  const {
+    data: cycleRewards,
+    isLoading: cycleRewardsLoading,
+    error: cycleRewardsError,
+  } = useGetCycleRewards()
 
   const { prices } = usePricesContext()
 

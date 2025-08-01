@@ -48,7 +48,7 @@ export const ClaimRewardsModalView: FC<ClaimRewardsModalViewProps> = ({
     {
       value: 'all',
       label: 'All Rewards',
-      subLabel: formatCurrency(totalFiatAmount),
+      subLabel: formatCurrency(totalFiatAmount, { showCurrency: true, showCurrencySymbol: false }),
     },
     ...Object.entries(tokens).map(([tokenKey, tokenInfo]) => ({
       value: tokenKey as ClaimRewardType,
@@ -58,7 +58,7 @@ export const ClaimRewardsModalView: FC<ClaimRewardsModalViewProps> = ({
           <TokenImage symbol={tokenInfo.symbol} size={tokenInfo.symbol === RBTC ? 18 : 16} />
         </div>
       ),
-      subLabel: `${formatCurrency(tokenFiatAmounts[tokenKey])} USD`,
+      subLabel: `${formatCurrency(tokenFiatAmounts[tokenKey], { showCurrency: true, showCurrencySymbol: false })}`,
     })),
   ]
 

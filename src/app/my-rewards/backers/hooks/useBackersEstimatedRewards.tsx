@@ -1,14 +1,13 @@
-import { Token } from '@/app/collective-rewards/rewards'
+import { formatMetrics, Token } from '@/app/collective-rewards/rewards'
 import { useGetBuilderEstimatedRewards } from '@/app/shared/hooks/useGetBuilderEstimatedRewards'
 import { TOKENS } from '@/lib/tokens'
 import { usePricesContext } from '@/shared/context'
-import { formatRewards } from '@/app/my-rewards/utils'
 
 const useBackerRewardsPerToken = ({ symbol }: Token, estimatedRewards: bigint) => {
   const { prices } = usePricesContext()
 
   const price = prices[symbol]?.price ?? 0
-  return formatRewards(estimatedRewards, price, symbol)
+  return formatMetrics(estimatedRewards, price, symbol)
 }
 
 export const useBackersEstimatedRewards = () => {
