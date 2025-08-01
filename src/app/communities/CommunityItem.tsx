@@ -80,9 +80,7 @@ export const CommunityItem = ({
           {/* Description */}
           <Paragraph>{description}</Paragraph>
           {/* Learn more */}
-          <div>
-            <CommunityItemButtonHandler nftAddress={nftAddress} readMoreLink={readMoreLink} />
-          </div>
+          <CommunityItemButtonHandler nftAddress={nftAddress} readMoreLink={readMoreLink} data-testid={`LearnMoreLink-${title}`} />
         </div>
       </div>
     </BoostedBox>
