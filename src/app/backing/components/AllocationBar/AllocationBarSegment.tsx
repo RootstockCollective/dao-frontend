@@ -4,7 +4,6 @@ import { AllocationBarDragHandle } from './AllocationBarDragHandle'
 import { AllocationBarResizeHandle } from './AllocationBarResizeHandle'
 import { AllocationBarValueDisplay, AllocationItem } from './types'
 import { checkerboardStyle, valueToPercentage } from './utils'
-import { DotsOverlayVert } from '../../../proposals/new/images/DotsOverlayVert'
 import { Tooltip } from '../../../../components/Tooltip'
 import MoreIcon from '@/components/Icons/MoreIcon'
 
@@ -37,8 +36,8 @@ const AllocationBarSegmentPercent = ({
 
   if (showDots) {
     return (
-      <Tooltip text={displayValue} side="top" align="center" className="p-4 z-50">
-        <MoreIcon size={16} className="absolute -top-7 left-1/2 -translate-x-1/2 cursor-pointer z-10" />
+      <Tooltip text={displayValue} side="top" align="center" className="p-4 z-10 text-lg">
+        <MoreIcon size={16} className="absolute -top-7 left-1/2 -translate-x-1/2  cursor-pointer z-10" />
       </Tooltip>
     )
   }
@@ -112,19 +111,17 @@ export const AllocationBarSegment = ({
         ${positionClasses}
       `.trim()}
     >
-      {/* DRAG HANDLE (always far left) */}
+      {/* DRAG HANDLE of the size of the segment */}
       {isDraggable && <AllocationBarDragHandle attributes={attributes} listeners={listeners} />}
 
-      <div className="flex-1 flex items-center justify-center relative">
-        {
-          <AllocationBarSegmentPercent
-            value={value}
-            totalValue={totalValue}
-            valueDisplay={valueDisplay}
-            showDots={showDots}
-          />
-        }
-      </div>
+      {
+        <AllocationBarSegmentPercent
+          value={value}
+          totalValue={totalValue}
+          valueDisplay={valueDisplay}
+          showDots={showDots}
+        />
+      }
 
       {/* RESIZE HANDLE (far right, not overlapping drag handle) */}
       {!isLast && isResizable && (
