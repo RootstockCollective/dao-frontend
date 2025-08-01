@@ -14,7 +14,7 @@ export const NotConnectedSection = () => (
         Your wallet is not connected
       </Paragraph>
       <Paragraph className="text-text-60 mb-[24px]">
-        You need to connect your wallet in order to delegate.
+        Select a delegate to make governance decisions on your behalf.
       </Paragraph>
       <ConnectWorkflow ConnectComponent={LargerConnectButton} />
     </div>

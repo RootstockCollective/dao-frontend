@@ -8,6 +8,7 @@ import {
 import { CommonComponentProps } from '@/components/commonProps'
 import HourglassIcon from '@/components/Icons/HourglassIcon'
 import { ParachuteIcon } from '@/components/Icons/ParachuteIcon'
+import { IconProps } from '@/components/Icons/types'
 import { WarningIcon } from '@/components/Icons/WarningIcon'
 import { Tooltip } from '@/components/Tooltip/Tooltip'
 import { Paragraph } from '@/components/TypographyNew'
@@ -18,57 +19,61 @@ import { FC } from 'react'
 type DecorationOptionId = Exclude<BuilderState, 'active'> | 'extraRewards'
 type BuilderStateTooltip = Record<DecorationOptionId, string>
 
+type StateConfig = {
+  [K in DecorationOptionId]: {
+    icon: React.ComponentType<IconProps & { useGradient?: boolean }>
+    defaultColor: string
+    highlightColor: string
+    useGradient?: boolean
+  }
+}
+
 const stateTooltips: BuilderStateTooltip = {
   inProgress: "Builder's activation is in progress.",
   extraRewards: 'Builder will airdrop extra rewards',
   ...builderInactiveStateMessage,
 }
 
-const stateConfig = {
+const stateConfig: StateConfig = {
   extraRewards: {
     icon: ParachuteIcon,
-    props: { useGradient: true },
+    useGradient: true,
     defaultColor: '',
     highlightColor: 'text-v3-bg-accent-100',
   },
   deactivated: {
     icon: WarningIcon,
-    props: {},
     defaultColor: 'text-brand-rootstock-lime',
     highlightColor: 'text-v3-bg-accent-100',
   },
   kycRevoked: {
     icon: WarningIcon,
-    props: {},
     defaultColor: 'text-brand-rootstock-lime',
     highlightColor: 'text-v3-bg-accent-100',
   },
   paused: {
     icon: WarningIcon,
-    props: {},
     defaultColor: 'text-brand-rootstock-lime',
     highlightColor: 'text-v3-bg-accent-100',
   },
   inProgress: {
     icon: HourglassIcon,
-    props: { size: 18 },
     defaultColor: 'text-v3-bg-accent-0',
     highlightColor: 'text-v3-bg-accent-100',
   },
   selfPaused: {
     icon: WarningIcon,
-    props: {},
     defaultColor: 'text-brand-rootstock-lime',
     highlightColor: 'text-v3-bg-accent-100',
   },
-} as const
+}
 
 const createIcon = (decorationId: DecorationOptionId, isHighlighted: boolean) => {
   const config = stateConfig[decorationId]
   const IconComponent = config.icon
   const colorClass = isHighlighted ? config.highlightColor : config.defaultColor
 
-  return <IconComponent {...config.props} className={colorClass} />
+  return <IconComponent useGradient={config.useGradient} className={colorClass} />
 }
 
 interface BuilderDecorationProps {

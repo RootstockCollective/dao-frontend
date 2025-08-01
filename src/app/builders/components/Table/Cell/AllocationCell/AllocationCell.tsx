@@ -4,14 +4,17 @@ import * as Progress from '@radix-ui/react-progress'
 import { FC } from 'react'
 
 export interface AllocationCellProps {
-  allocationPct: number
+  allocationPct?: number
   step?: number
   className?: string
 }
 
 export const AllocationCell: FC<AllocationCellProps> = ({ allocationPct, step = 1, className }) => {
+  if (allocationPct === undefined) {
+    return <div className={cn('flex items-center justify-center w-full h-full gap-2', className)}></div>
+  }
   // Round to the nearest step
-  const displayValue = step > 0 ? Math.round(allocationPct / step) * step : allocationPct
+  const displayValue = step > 0 ? Math.round((allocationPct ?? 0) / step) * step : allocationPct
 
   return (
     <div className={cn('flex items-center justify-center w-full h-full gap-2', className)}>

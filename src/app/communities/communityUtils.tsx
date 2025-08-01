@@ -15,6 +15,7 @@ export interface CommunityItem {
   cover: string
   detailedDescription: ReactNode
   specialPower: string
+  activation: string
   requirement: string
   isMintable?: boolean
   additionalChecks?: { name: string; check: (data: any) => boolean; alertMessage: string }[]
@@ -57,6 +58,7 @@ export const earlyAdoptersCommunity: CommunityItem = {
     </>
   ),
   specialPower: 'Voting Booster',
+  activation: 'July 2025',
   requirement: 'First 150 stakers with 1 stRIF, Self-Claim',
 }
 
@@ -77,6 +79,7 @@ export const ogFounders: CommunityItem = {
     </>
   ),
   specialPower: 'Voting Booster',
+  activation: 'H2 2025',
   requirement: '1 stRIF on 23rd Sept 2024, Self-Claim',
 }
 
@@ -98,6 +101,7 @@ export const ogFoundersEcosystemPartners: CommunityItem = {
     </>
   ),
   specialPower: 'Voting Booster',
+  activation: 'H2 2025',
   requirement: 'Recognized Community contributions, 25k stRIF, Air-Drop',
 }
 
@@ -119,6 +123,7 @@ export const ogFoundersExternalContributors: CommunityItem = {
     </>
   ),
   specialPower: 'Delegation Kickstarter OR Voting Booster',
+  activation: 'March 2025',
   requirement: 'Recognized Community contributions, Air-Drop',
 }
 
@@ -139,6 +144,7 @@ export const vanguardCommunity: CommunityItem = {
     </>
   ),
   specialPower: 'Voting Booster',
+  activation: 'April 2025',
   requirement: 'Voted on 1 of the last 3 proposals, Self-Claim',
   additionalChecks: [
     {
@@ -187,6 +193,7 @@ export const betaBuilders: CommunityItem = {
     </>
   ),
   specialPower: 'Voting Booster',
+  activation: 'H2 2025',
   requirement: 'First 50 CollectiveRewards Builders, Air-Drop',
   discussionLink: 'https://discord.com/channels/842021106956238848/1284160805671272458',
 }
@@ -203,6 +210,7 @@ export const rootstockHacktivator: CommunityItem = {
   cover: '',
   detailedDescription: <></>,
   specialPower: '',
+  activation: '',
   requirement: '',
 }
 

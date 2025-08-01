@@ -13,7 +13,7 @@ export type Builder = {
   backerRewardPct?: BackerRewardPercentage
 }
 
-export interface BuilderEstimatedRewards extends CompleteBuilder {
+export interface BuilderEstimatedRewards extends Builder {
   builderEstimatedRewardsPct: bigint
   backerEstimatedRewardsPct: bigint
   builderEstimatedRewards: TokenRewards

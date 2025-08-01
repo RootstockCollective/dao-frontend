@@ -4,20 +4,27 @@ import { client } from '@/shared/components/ApolloClient'
 import { gql as apolloGQL } from '@apollo/client'
 import { AbiData } from './hooks/useGetABI'
 
+// TODO: Update flags after migration
 const query = apolloGQL`
   query AbiMetricsData {
     builders(
-      where: { state_: { kycApproved: true, communityApproved: true, initialized: true, selfPaused: false } }
+      where: { state_: { initialized: true } }
       orderBy: totalAllocation
       orderDirection: desc
     ) {
-      id
+      address: id
       totalAllocation
-      backerRewardPercentage {
-        id
+      backerRewardPct: backerRewardPercentage {
         next
         previous
         cooldownEndTime
+      }
+      stateFlags: state {
+        communityApproved
+        activated: initialized
+        kycApproved
+        paused: kycPaused
+        revoked: selfPaused
       }
     }
     cycles(first: 1, orderBy: id, orderDirection: desc) {
