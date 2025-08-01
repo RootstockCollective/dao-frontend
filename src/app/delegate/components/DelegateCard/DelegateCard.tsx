@@ -5,7 +5,7 @@ import { cn, truncateRns } from '@/lib/utils'
 import { Address } from 'viem'
 import { Label, Paragraph } from '@/components/TypographyNew'
 
-export interface DelegateCardProps {
+interface DelegateCardProps {
   address: Address
   since: string | number
   votingPower: string | number

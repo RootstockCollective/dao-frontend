@@ -29,7 +29,7 @@ export const validateAllocationsState = ({
   return true
 }
 
-export type GetVoteAllocationsParams = {
+type GetVoteAllocationsParams = {
   initialAllocations: Allocations
   currentAllocations: Allocations
   getBuilder: (address: Address) => Builder | null

@@ -1,6 +1,6 @@
 import { DelegateActions, DelegateContextState, DelegateDataState, DelegateUIState } from './types'
 
-export const defaultCardsState = {
+const defaultCardsState = {
   available: {
     contentValue: '4000',
     isLoading: false,
@@ -32,7 +32,7 @@ export const initialUIState: DelegateUIState = {
   isReclaimPending: false,
 }
 
-export const initialActions: DelegateActions = {
+const initialActions: DelegateActions = {
   setIsDelegationPending: () => {},
   setIsReclaimPending: () => {},
   refetch: () => {},

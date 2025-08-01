@@ -9,14 +9,11 @@ export interface TokenImageProps {
 
 export enum TokenSymbol {
   RIF = 'RIF',
-  TRIF = 'tRIF',
   STRIF = 'stRIF',
-  USDRIF = 'USDRIF',
-  TRBTC = 'TRBTC',
   RBTC = 'RBTC',
 }
 
-export const getIconSource = (symbol: string | undefined): string | null => {
+const getIconSource = (symbol: string | undefined): string | null => {
   if (!symbol) {
     return null
   }

@@ -2,7 +2,7 @@ import { cn } from '@/lib/utils'
 import { FC } from 'react'
 import { CommonComponentProps } from '../commonProps'
 
-export interface TableHeaderCellProps extends CommonComponentProps<HTMLTableCellElement> {
+interface TableHeaderCellProps extends CommonComponentProps<HTMLTableCellElement> {
   contentClassName?: string
 }
 

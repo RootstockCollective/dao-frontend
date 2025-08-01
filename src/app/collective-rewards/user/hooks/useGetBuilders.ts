@@ -9,7 +9,7 @@ import { DateTime } from 'luxon'
 import { useMemo } from 'react'
 import { Address, getAddress, zeroAddress } from 'viem'
 
-export type UseGetBuilders = () => {
+type UseGetBuilders = () => {
   data: Record<Address, Builder> // TODO review Builder type
   isLoading: boolean
   // TODO: review error type

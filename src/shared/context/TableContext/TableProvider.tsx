@@ -6,7 +6,7 @@ import { TableActionsContext } from './TableActionsContext'
 import { initialState, TableContext } from './TableContext'
 import { tableReducer } from './tableReducer'
 
-export const TableProvider = <ColumnId extends string = string, Action extends string = string>({
+const TableProvider = <ColumnId extends string = string, Action extends string = string>({
   children,
 }: CommonComponentProps): ReactElement => {
   const [state, dispatch] = useReducer(tableReducer, initialState)

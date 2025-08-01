@@ -9,7 +9,7 @@ import {
 } from '@/components/SingleSelectDropdown/SingleSelectDropdown'
 import { builderFilterOptions, type BuilderFilterOption, type BuilderFilterOptionId } from './constants'
 
-export interface BuilderFilterDropdownProps extends CommonComponentProps {
+interface BuilderFilterDropdownProps extends CommonComponentProps {
   onSelected: (optionId: BuilderFilterOptionId) => void
   options?: BuilderFilterOption[]
 }

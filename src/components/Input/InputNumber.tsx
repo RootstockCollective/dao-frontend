@@ -1,7 +1,7 @@
 import { forwardRef } from 'react'
 import { InputAttributes, NumericFormat, NumericFormatProps } from 'react-number-format'
 
-export const MAX_INPUT_NUMBER_AMOUNT = 999999999
+const MAX_INPUT_NUMBER_AMOUNT = 999999999
 
 interface Props extends NumericFormatProps<InputAttributes> {
   prefix?: string

@@ -11,7 +11,7 @@ export type BackerStakingHistory = {
   gauges: GaugeStakingHistory[]
 }
 
-export type GaugeStakingHistory = {
+type GaugeStakingHistory = {
   allocation: string
   gauge: Address
   accumulatedAllocationsTime: string

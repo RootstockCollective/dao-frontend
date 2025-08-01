@@ -1,7 +1,7 @@
 import { Paragraph } from '@/components/TypographyNew'
 import { cn } from '@/lib/utils'
 
-export interface Props {
+interface Props {
   option: string
   selected: boolean
   onClick: (option: string) => void

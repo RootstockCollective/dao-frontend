@@ -32,7 +32,7 @@ const Warning = ({
   )
 }
 
-export interface BuilderCardProps extends BuilderCardControlProps {
+interface BuilderCardProps extends BuilderCardControlProps {
   existentAllocation: bigint
   maxAllocation: bigint
   allocation: bigint

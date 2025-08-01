@@ -171,7 +171,7 @@ const ClaimBuilderRewardsModal = ({ open, onClose }: Omit<ClaimRewardsModalProps
   )
 }
 
-export interface ClaimRewardsModalProps {
+interface ClaimRewardsModalProps {
   open: boolean
   onClose: () => void
   isBacker: boolean

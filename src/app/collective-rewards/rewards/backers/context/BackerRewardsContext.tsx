@@ -27,7 +27,7 @@ type BackerRewardsContextValue = {
   detailedView: StateWithUpdate<boolean>
 }
 
-export const BackerRewardsContext = createContext<BackerRewardsContextValue>({
+const BackerRewardsContext = createContext<BackerRewardsContextValue>({
   data: {},
   isLoading: false,
   error: null,

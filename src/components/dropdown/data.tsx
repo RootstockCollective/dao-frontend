@@ -12,7 +12,7 @@ import { Address } from 'viem'
 import { parseVoteCastEvents } from '@/app/proposals/hooks/useVoteCast'
 import { parseNewAllocationEvent } from '@/app/collective-rewards/allocations/hooks/useNewAllocationEvent'
 
-export type SVGIconType = ComponentType<SVGAttributes<SVGSVGElement> & Record<string, any>>
+type SVGIconType = ComponentType<SVGAttributes<SVGSVGElement> & Record<string, any>>
 
 type TokenImageWithPreconfigutedSymbol = Omit<TokenImageProps, 'symbol'>
 
@@ -31,9 +31,9 @@ export interface DropdownTopic {
   topic?: string
 }
 
-export const VOTE = 'VOTE'
-export const ALLOCATIONS = 'ALLOCATIONS'
-export const COMPLETED = 'COMPLETED'
+const VOTE = 'VOTE'
+const ALLOCATIONS = 'ALLOCATIONS'
+const COMPLETED = 'COMPLETED'
 
 const onExternal = (linkUrl: string) => window.open(linkUrl, '_blank', 'noopener,noreferrer')
 
@@ -218,9 +218,3 @@ const getStartedData = (router: AppRouterInstance): DropdownItem[] => [
     onClick: () => onExternal(currentLinks.allocations),
   },
 ]
-
-export const getGetStartedData = (
-  router: AppRouterInstance,
-  balances: TokenBalanceRecord,
-  address: Address,
-) => checkEvents(getStartedData(router), address, balances)

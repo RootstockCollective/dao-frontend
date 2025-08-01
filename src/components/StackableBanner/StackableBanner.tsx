@@ -3,7 +3,7 @@ import { cn } from '@/lib/utils'
 import { FC, ReactNode } from 'react'
 import { CommonComponentProps } from '@/components/commonProps'
 
-export interface StackableBannerProps extends CommonComponentProps {
+interface StackableBannerProps extends CommonComponentProps {
   children: ReactNode | ReactNode[]
   background?: string
   decorativeImageColor?: string

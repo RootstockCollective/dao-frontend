@@ -5,17 +5,8 @@ import {
   fetchBackerRewardsClaimedLogsByAddress,
   fetchBuilderRewardsClaimedLogsByAddress,
   fetchGaugeNotifyRewardLogsByAddress,
-  fetchNotifyRewardLogsByAddress,
   fetchRewardDistributionFinishedLogsByAddress,
 } from '@/lib/endpoints'
-
-export const fetchNotifyRewardLogs = (fromBlock = 0) => {
-  return axiosInstance.get(
-    fetchNotifyRewardLogsByAddress
-      .replace('{{address}}', BackersManagerAddress)
-      .replace('{{fromBlock}}', fromBlock.toString()),
-  )
-}
 
 export const fetchGaugeNotifyRewardLogs = (gaugeAddress: Address, fromBlock = 0) => {
   return axiosInstance.get(

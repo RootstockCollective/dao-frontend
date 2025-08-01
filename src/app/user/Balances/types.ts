@@ -1,4 +1,4 @@
-export interface TokenHolderAddress {
+interface TokenHolderAddress {
   ens_domain_name: string
   hash: string
   implementations: any[]
@@ -12,7 +12,7 @@ export interface TokenHolderAddress {
   watchlist_names: any[]
 }
 
-export interface TokenHolderToken {
+interface TokenHolderToken {
   address: string
   circulating_market_cap: null
   decimals: string
@@ -62,7 +62,7 @@ export type NftHolderItem = {
   ens_domain_name?: string
 }
 
-export type Metadata = {
+type Metadata = {
   creator: string
   description: string
   external_url: string

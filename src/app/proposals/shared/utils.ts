@@ -128,16 +128,6 @@ export const getProposalEventArguments = ({
   }
 }
 
-export const actionFormatterMap = {
-  token: (tokenAddress: Address) =>
-    ({
-      [zeroAddress]: 'RBTC',
-      [RIF_ADDRESS.toLowerCase()]: 'RIF',
-    })[tokenAddress.toLowerCase()] || tokenAddress.toString(),
-  to: (address: Address) => address.toString(),
-  amount: (amount: bigint) => formatEther(amount),
-}
-
 export const DISPLAY_NAME_SEPARATOR = 'D15PL4Y_N4M3:'
 export const DISCOURSE_LINK_SEPARATOR = 'DiscourseLink:'
 

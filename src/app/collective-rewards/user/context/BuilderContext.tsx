@@ -16,7 +16,7 @@ type BuilderContextValue = {
   getBuilderByAddress: (address: Address) => Builder | undefined
 }
 
-export const BuilderContext = createContext<BuilderContextValue>({
+const BuilderContext = createContext<BuilderContextValue>({
   builders: [],
   randomBuilders: [],
   isLoading: false,
@@ -28,7 +28,7 @@ interface BuilderProviderProps {
   children: ReactNode
 }
 
-export const BuilderContextProvider: FC<BuilderProviderProps> = ({ children }) => {
+const BuilderContextProvider: FC<BuilderProviderProps> = ({ children }) => {
   const { data: buildersMap, isLoading, error } = useGetBuilders()
 
   const builders = useMemo(() => Object.values(buildersMap), [buildersMap])
@@ -59,7 +59,7 @@ export const BuilderContextProvider: FC<BuilderProviderProps> = ({ children }) =
 
 export const useBuilderContext = () => useContext(BuilderContext)
 
-export const withBuilderContextProvider = <P extends object>(Component: FC<P>) => {
+const withBuilderContextProvider = <P extends object>(Component: FC<P>) => {
   return function WrapperComponent(props: P) {
     return (
       <BuilderContextProvider>

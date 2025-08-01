@@ -4,7 +4,7 @@ import { Paragraph } from '@/components/TypographyNew'
 import { cn } from '@/lib/utils'
 import { FC } from 'react'
 
-export interface MultipleSelectDropdownItemProps {
+interface MultipleSelectDropdownItemProps {
   label: string
   sublabel?: string
   checked: boolean

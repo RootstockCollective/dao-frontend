@@ -47,7 +47,7 @@ export const useCreateBuilderWhitelistProposal = () => {
   return { onCreateBuilderWhitelistProposal, isPublishing, transactionError }
 }
 
-export const encodeWhitelistBuilderCalldata = (builderAddress: Address) => {
+const encodeWhitelistBuilderCalldata = (builderAddress: Address) => {
   return encodeFunctionData({
     abi: BuilderRegistryAbi,
     functionName: 'communityApproveBuilder',

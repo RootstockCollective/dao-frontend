@@ -7,7 +7,7 @@ import { CommonComponentProps } from '@/components/commonProps'
 import { cn } from '@/lib/utils'
 import { ReactNode } from 'react'
 
-export const ACTION_CONFIG = {
+const ACTION_CONFIG = {
   removeBacking: { text: 'Remove Backing', icon: <TrashIcon size={16} /> },
   adjustBacking: { text: 'Adjust Backing', icon: <CogIcon size={16} /> },
   backBuilder: { text: 'Back Builder', icon: <HandshakeIcon size={16} /> },

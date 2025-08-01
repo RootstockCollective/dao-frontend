@@ -1,7 +1,7 @@
 import { AlertProps } from '@/components/Alert'
 import { formatEther } from 'viem'
 
-export const GENERIC_ERROR_TITLE = 'Error adding NFT to Wallet'
+const GENERIC_ERROR_TITLE = 'Error adding NFT to Wallet'
 
 export const nftAlertMessages = {
   ADDED_SUCCESSFULLY: (tokenId: number): AlertProps => ({

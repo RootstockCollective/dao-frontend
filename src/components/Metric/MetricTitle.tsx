@@ -4,7 +4,7 @@ import { FC, ReactNode } from 'react'
 import { CommonComponentProps } from '../../components/commonProps'
 import { InfoIconButton, type InfoIconButtonProps } from '../IconButton/InfoIconButton'
 
-export interface MetricTitleProps extends CommonComponentProps {
+interface MetricTitleProps extends CommonComponentProps {
   title: ReactNode
   info: ReactNode
   infoIconProps?: Omit<InfoIconButtonProps, 'info'>

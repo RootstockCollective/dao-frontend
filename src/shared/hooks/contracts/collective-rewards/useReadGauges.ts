@@ -7,7 +7,7 @@ import { UseReadContractsConfig, ViewPureFunctionName } from '../types'
 
 type GaugeFunctionName = ViewPureFunctionName<GaugeAbi>
 
-export type ReadGaugesConfig<TFunctionName extends GaugeFunctionName> = UseReadContractsConfig<
+type ReadGaugesConfig<TFunctionName extends GaugeFunctionName> = UseReadContractsConfig<
   GaugeAbi,
   TFunctionName
 >

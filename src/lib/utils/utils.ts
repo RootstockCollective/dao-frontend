@@ -187,16 +187,6 @@ interface Denomination {
   symbol: string
 }
 /**
- * A list of full-text denominations for large numbers, used when a more descriptive output is needed.
- * Example: `1,000,000` → `"Millions"`
- */
-export const fullDenominations: Denomination[] = [
-  { value: 1e12, symbol: 'Trillions' },
-  { value: 1e9, symbol: 'Billions' },
-  { value: 1e6, symbol: 'Millions' },
-  { value: 1e3, symbol: 'Thousand' },
-]
-/**
  * A list of short-form denominations for large numbers, used for compact display.
  * Example: `1,000,000` → `"1M"`
  */

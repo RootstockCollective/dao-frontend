@@ -90,12 +90,10 @@ export enum ProposalState {
   Executed,
 }
 
-export type TxMessage =
+type TxMessage =
   (typeof TX_MESSAGES)[keyof typeof TX_MESSAGES][keyof (typeof TX_MESSAGES)[keyof typeof TX_MESSAGES]]
 
 export type TxStatus = 'info' | 'success' | 'error'
-
-export type TxAction = keyof typeof TX_MESSAGES
 
 export enum ProposalCategory {
   Grants = 'Grants',

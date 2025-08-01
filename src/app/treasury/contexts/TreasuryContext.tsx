@@ -35,7 +35,7 @@ interface Props {
   children: ReactNode
 }
 
-export type TreasurySymbolsSupported = keyof ReturnType<typeof useGetTreasuryBucketBalance>
+type TreasurySymbolsSupported = keyof ReturnType<typeof useGetTreasuryBucketBalance>
 
 const getBucketBalance = (
   bucketBalance: ReturnType<typeof useGetTreasuryBucketBalance>,

@@ -8,7 +8,7 @@ export type Color = CSSProperties['color']
 /**
  * Pizza slice
  */
-export interface Segment {
+interface Segment {
   name: string // Label for the segment
   value: number // Numeric value for the segment
 }

@@ -17,7 +17,7 @@ import { useTableActionsContext } from '@/shared/context'
 import { Suspense } from 'react'
 import { COLUMN_TRANSFORMS, LABELS } from './BackerRewardsTable.config'
 
-export type BackerRewardsHeaderRowProps = {
+type BackerRewardsHeaderRowProps = {
   actions: Action[]
 }
 export const BackerRewardsHeaderRow = ({ actions }: BackerRewardsHeaderRowProps) => {

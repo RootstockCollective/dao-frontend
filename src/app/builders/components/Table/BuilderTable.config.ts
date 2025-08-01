@@ -7,7 +7,7 @@ import {
   builderInactiveStates,
 } from '@/app/collective-rewards/utils/isBuilderOperational'
 
-export const COLUMN_IDS = [
+const COLUMN_IDS = [
   'builder',
   'backing',
   'backer_rewards',
@@ -17,7 +17,6 @@ export const COLUMN_IDS = [
   'actions',
 ] as const
 export type ColumnId = (typeof COLUMN_IDS)[number]
-export const isColumnId = (id: string): id is ColumnId => COLUMN_IDS.includes(id as ColumnId)
 
 export const PAGE_SIZE = 20
 
@@ -94,5 +93,5 @@ export const DEFAULT_HEADERS: Column<ColumnId>[] = [
   },
 ]
 
-export const builderStates = [BUILDER_IN_PROGRESS, BUILDER_ACTIVE, ...builderInactiveStates] as const
+const builderStates = [BUILDER_IN_PROGRESS, BUILDER_ACTIVE, ...builderInactiveStates] as const
 export type BuilderState = (typeof builderStates)[number]

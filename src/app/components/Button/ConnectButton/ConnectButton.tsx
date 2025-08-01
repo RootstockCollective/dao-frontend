@@ -5,7 +5,7 @@ import { ReactElement, ReactNode } from 'react'
 import { ConnectTooltip } from '../../Tooltip/ConnectTooltip/ConnectTooltip'
 import { ConnectTooltipContent } from '../../Tooltip/ConnectTooltip/ConnectTooltipContent'
 
-export type ConnectButtonProps = ButtonProps & {
+type ConnectButtonProps = ButtonProps & {
   tooltipContent: ReactNode
 }
 

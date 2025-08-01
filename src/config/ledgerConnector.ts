@@ -2,7 +2,7 @@ import { createConnector } from 'wagmi'
 import { Chain, Address, UserRejectedRequestError, SwitchChainError } from 'viem'
 import { showToast, ToastAlertOptions } from '@/shared/notification'
 
-export interface LedgerConnectorOptions {
+interface LedgerConnectorOptions {
   chainId?: number
 }
 

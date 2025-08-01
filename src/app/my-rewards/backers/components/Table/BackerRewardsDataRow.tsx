@@ -29,7 +29,7 @@ import { Address } from 'viem'
 import { useAccount } from 'wagmi'
 import { COLUMN_TRANSFORMS, ColumnId } from './BackerRewardsTable.config'
 
-export type ColumnIdToCellPropsMap = {
+type ColumnIdToCellPropsMap = {
   builder: BuilderNameCellProps
   backing: BackingCellProps
   backer_rewards: BackersPercentageCellProps
@@ -38,8 +38,6 @@ export type ColumnIdToCellPropsMap = {
   total: RewardsCellProps
   actions: ActionCellProps
 }
-
-export type BackerRewardsRowData = RowData<ColumnId, ColumnIdToCellPropsMap[ColumnId]>
 
 export const convertDataToRowData = (data: BackerRewards[], prices: GetPricesResult): Row<ColumnId>[] => {
   // FIXME: fix the Row type to take a generic for custom RowData type

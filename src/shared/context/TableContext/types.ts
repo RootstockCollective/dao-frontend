@@ -1,12 +1,12 @@
 export const SORT_DIRECTION_ASC = 'asc'
-export const SORT_DIRECTION_DESC = 'desc'
+const SORT_DIRECTION_DESC = 'desc'
 export const SORT_DIRECTIONS = [null, SORT_DIRECTION_ASC, SORT_DIRECTION_DESC] as const
 
-export type SortDirection = (typeof SORT_DIRECTIONS)[number]
+type SortDirection = (typeof SORT_DIRECTIONS)[number]
 
 export type BaseColumnId = string | number | symbol
 
-export type BaseRowId = Exclude<React.Key, bigint>
+type BaseRowId = Exclude<React.Key, bigint>
 
 export type Sort<ColumnId extends Column['id'] = Column['id']> = {
   columnId: ColumnId | null // For now only one column can be sorted at a time
@@ -22,7 +22,7 @@ export type Row<ColumnId extends Column['id'] = Column['id'], RowId extends Base
   data: RowData<ColumnId>
 }
 
-export type SelectedRows<RowId extends Row['id'] = Row['id']> = Record<RowId, boolean>
+type SelectedRows<RowId extends Row['id'] = Row['id']> = Record<RowId, boolean>
 
 export type Column<ColumnId extends BaseColumnId = BaseColumnId> = {
   id: ColumnId

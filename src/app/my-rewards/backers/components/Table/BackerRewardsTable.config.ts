@@ -2,7 +2,7 @@ import { ColumnTransforms } from '@/app/builders/components/Table/BuilderTable.c
 import { TableColumnDropdownLabels } from '@/app/builders/components/Table/TableColumnDropdown/TableColumnDropdown'
 import { Column } from '@/shared/context'
 
-export const COLUMN_IDS = [
+const COLUMN_IDS = [
   'builder',
   'backer_rewards',
   'unclaimed',
@@ -12,7 +12,6 @@ export const COLUMN_IDS = [
   'actions',
 ] as const
 export type ColumnId = (typeof COLUMN_IDS)[number]
-export const isColumnId = (id: string): id is ColumnId => COLUMN_IDS.includes(id as ColumnId)
 
 export const PAGE_SIZE = 3
 

@@ -7,10 +7,10 @@ import { UseReadContractForMultipleArgsConfig, ViewPureFunctionName } from '../t
 
 type BuilderRegistryFunctionName = ViewPureFunctionName<BuilderRegistryAbi>
 
-export type ReadBuilderRegistriesConfig<TFunctionName extends BuilderRegistryFunctionName> =
+type ReadBuilderRegistriesConfig<TFunctionName extends BuilderRegistryFunctionName> =
   UseReadContractForMultipleArgsConfig<BuilderRegistryAbi, TFunctionName>
 
-export type ReadBuilderRegistriesReturnType<
+type ReadBuilderRegistriesReturnType<
   TAbi extends BuilderRegistryAbi,
   TFunctionName extends ViewPureFunctionName<TAbi>,
 > = UseReadContractReturnType<TAbi, TFunctionName>['data']

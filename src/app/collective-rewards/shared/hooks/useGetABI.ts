@@ -8,13 +8,13 @@ import { getCyclePayout } from './getCyclePayout'
 import { isBuilderRewardable } from '../../utils'
 import { BuilderStateFlags } from '../../types'
 
-export type CycleData = {
+type CycleData = {
   id: string
   rewardsERC20: string
   rewardsRBTC: string
 }
 
-export type BackerRewardPercentageData = {
+type BackerRewardPercentageData = {
   next: string
   previous: string
   cooldownEndTime: string

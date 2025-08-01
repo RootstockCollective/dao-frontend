@@ -26,7 +26,7 @@ const Section = ({ children }: { children: ReactNode }) => {
 }
 
 const NAME = 'My Rewards'
-export const MyRewardsPage = () => {
+const MyRewardsPage = () => {
   const { address: userAddress, isConnected } = useAccount()
   const { data: isBacker } = useIsBacker(userAddress ?? zeroAddress)
   const router = useRouter()

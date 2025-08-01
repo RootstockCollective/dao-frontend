@@ -4,11 +4,11 @@ import { Address, getAddress, parseEventLogs } from 'viem'
 import { GaugeAbi } from '@/lib/abis/v2/GaugeAbi'
 import { AVERAGE_BLOCKTIME } from '@/lib/constants'
 
-export type BuilderRewardsClaimedEventLog = ReturnType<
+type BuilderRewardsClaimedEventLog = ReturnType<
   typeof parseEventLogs<typeof GaugeAbi, true, 'BuilderRewardsClaimed'>
 >
 
-export type BuilderRewardsClaimedPerToken = Record<Address, BuilderRewardsClaimedEventLog>
+type BuilderRewardsClaimedPerToken = Record<Address, BuilderRewardsClaimedEventLog>
 
 export const useGetBuilderRewardsClaimedLogs = (gauge: Address) => {
   const { data, error, isLoading } = useQuery({

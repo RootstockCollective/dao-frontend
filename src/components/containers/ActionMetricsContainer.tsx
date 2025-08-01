@@ -2,7 +2,7 @@ import { cn } from '@/lib/utils'
 import { FC } from 'react'
 import { CommonComponentProps } from '../commonProps'
 
-export type ActionMetricsContainerProps = CommonComponentProps
+type ActionMetricsContainerProps = CommonComponentProps
 
 export const ActionMetricsContainer: FC<ActionMetricsContainerProps> = ({ className = '', children }) => {
   return (

@@ -4,7 +4,7 @@ import { HTMLAttributes, ReactNode, useEffect, useRef, useState } from 'react'
 
 type Position = 'top' | 'bottom' | 'right' | 'left' | 'left-bottom' | 'left-top' | 'top-expand-left'
 
-export interface PopoverProps extends Omit<HTMLAttributes<HTMLDivElement>, 'children' | 'content'> {
+interface PopoverProps extends Omit<HTMLAttributes<HTMLDivElement>, 'children' | 'content'> {
   children: ReactNode
   content?: ReactNode
   customContent?: ReactNode

@@ -1,6 +1,6 @@
 import { Address } from 'viem'
 
-export type BucketItem = {
+type BucketItem = {
   amount: string
   fiatAmount: string
   formattedAmount: string
@@ -12,12 +12,12 @@ export type Bucket = {
   RBTC: BucketItem
 }
 
-export interface TreasuryAsset {
+interface TreasuryAsset {
   title: string
   bucket: BucketItem | undefined
 }
 
-export interface TreasurySectionData {
+interface TreasurySectionData {
   buckets: TreasuryAsset[]
   address: Address
 }

@@ -19,7 +19,7 @@ type AwaitedReceiptProps = Rename<
 
 type MergedProps = Merge<AwaitedTxProps, AwaitedReceiptProps>
 
-export type UseAwaitedTxReportingProps = Merge<
+type UseAwaitedTxReportingProps = Merge<
   MergedProps,
   {
     error: Error | null

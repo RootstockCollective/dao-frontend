@@ -39,4 +39,4 @@ export const TotalBackingContent = ({ totalAllocations }: { totalAllocations: bi
   )
 }
 
-export const TotalBackingContentWithSpinner = withSpinner(TotalBackingContent)
+const TotalBackingContentWithSpinner = withSpinner(TotalBackingContent)

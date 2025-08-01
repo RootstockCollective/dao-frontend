@@ -8,7 +8,7 @@ interface PricesContextProps {
   prices: GetPricesResult
 }
 
-export const PricesContext = createContext<PricesContextProps>({
+const PricesContext = createContext<PricesContextProps>({
   prices: {},
 })
 
@@ -16,7 +16,7 @@ interface Props {
   children: ReactNode
 }
 
-export const PricesContextProvider = ({ children }: Props) => {
+const PricesContextProvider = ({ children }: Props) => {
   const prices = useGetSpecificPrices()
 
   const valueOfContext = useMemo(() => ({ prices }), [prices])

@@ -11,7 +11,7 @@ interface BalancesContextValue {
   prices: GetPricesResult
 }
 
-export const BalancesContext = createContext<BalancesContextValue>({
+const BalancesContext = createContext<BalancesContextValue>({
   balances: {
     [RBTC]: getTokenBalance(RBTC),
     [RIF]: getTokenBalance(RIF),

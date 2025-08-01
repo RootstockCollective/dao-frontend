@@ -31,7 +31,7 @@ import { BuilderNameCell, BuilderNameCellProps } from './Cell/BuilderNameCell'
 import { RewardsCell, RewardsCellProps } from './Cell/RewardsCell'
 import { SelectorCell } from './Cell/SelectorCell'
 
-export type ColumnIdToCellPropsMap = {
+type ColumnIdToCellPropsMap = {
   builder: BuilderNameCellProps
   backing: BackingCellProps
   backer_rewards: BackersPercentageCellProps
@@ -41,7 +41,7 @@ export type ColumnIdToCellPropsMap = {
   actions: ActionCellProps
 }
 
-export type BuilderRowData = RowData<ColumnId, ColumnIdToCellPropsMap[ColumnId]>
+type BuilderRowData = RowData<ColumnId, ColumnIdToCellPropsMap[ColumnId]>
 
 export const convertDataToRowData = (
   data: BuilderRewardsSummary[],

@@ -19,7 +19,7 @@ type BackerReward = {
   cooldownEndTime: DateTime
 }
 
-export type BackerRewardsPercentageContext = {
+type BackerRewardsPercentageContext = {
   update: SetBackerRewardsForBuilder
   current: Modify<UseReadContractReturnType, { data: BackerReward }>
   rewardPercentageToApply: Modify<UseReadContractReturnType, { data: bigint | undefined }>
@@ -32,7 +32,7 @@ const BuilderSettingsContext = createContext<BackerRewardsPercentageContext>(
 
 export const useBuilderSettingsContext = () => useContext(BuilderSettingsContext)
 
-export const BuilderSettingsProvider: FC<{ children: ReactNode }> = ({ children }) => {
+const BuilderSettingsProvider: FC<{ children: ReactNode }> = ({ children }) => {
   const { getBuilderByAddress } = useBuilderContext()
   const { address } = useAccount()
   const { data: rawCurrentRewardData, ...restCurrentResponse } = useReadBuilderRegistry({

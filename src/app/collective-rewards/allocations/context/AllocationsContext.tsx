@@ -11,11 +11,6 @@ import { filterBuildersByState, useBuilderContext } from '../../user'
 export interface Allocations {
   [K: Address]: bigint
 }
-
-export interface Builders {
-  [K: Address]: Builder
-}
-
 export interface Selections {
   [K: Address]: boolean
 }

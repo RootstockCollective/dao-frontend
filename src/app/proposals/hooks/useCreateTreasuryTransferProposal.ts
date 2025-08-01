@@ -45,7 +45,7 @@ export const useCreateTreasuryTransferProposal = () => {
   )
 }
 
-export const encodeTreasuryERC20Transfer = (address: Address, amountToTransfer: string) => {
+const encodeTreasuryERC20Transfer = (address: Address, amountToTransfer: string) => {
   return encodeFunctionData({
     abi: DAOTreasuryAbi,
     functionName: 'withdrawERC20',
@@ -53,7 +53,7 @@ export const encodeTreasuryERC20Transfer = (address: Address, amountToTransfer: 
   })
 }
 
-export const encodeTreasuryTransfer = (address: Address, amountToTransfer: string) => {
+const encodeTreasuryTransfer = (address: Address, amountToTransfer: string) => {
   return encodeFunctionData({
     abi: DAOTreasuryAbi,
     functionName: 'withdraw',

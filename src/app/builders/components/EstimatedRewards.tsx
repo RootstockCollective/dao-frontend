@@ -8,7 +8,7 @@ import { Header, Paragraph } from '@/components/TypographyNew'
 import { formatCurrency } from '@/lib/utils'
 import Big from 'big.js'
 
-export const USDWithTokensRewards = ({ usd, rif, rbtc }: { usd: Big; rif: bigint; rbtc: bigint }) => (
+const USDWithTokensRewards = ({ usd, rif, rbtc }: { usd: Big; rif: bigint; rbtc: bigint }) => (
   <div className="flex flex-row items-baseline gap-2 font-rootstock-sans">
     <Header variant="h1">{formatCurrency(usd)}</Header>
     <RifRbtcTooltip rbtcValue={rbtc} rifValue={rif}>
