@@ -83,6 +83,7 @@ export const AllocationBarSegment = ({
     dragIndex !== null ? 'transition-none' : 'transition-transform duration-200 ease-out'
   const dragStateClasses = isDragging ? 'opacity-60 z-[99]' : 'opacity-100 z-1'
   const borderClasses = `${index === 0 ? 'rounded-l-sm' : ''} ${isLast ? 'rounded-r-sm' : ''}`
+  const positionClasses = !isLast ? 'mr-2' : ''
 
   return (
     <div
@@ -93,6 +94,7 @@ export const AllocationBarSegment = ({
         ${transitionClasses}
         ${dragStateClasses}
         ${borderClasses}
+        ${positionClasses}
       `.trim()}
     >
       {/* DRAG HANDLE (always far left) */}
