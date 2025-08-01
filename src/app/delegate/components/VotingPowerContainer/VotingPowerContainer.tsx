@@ -20,10 +20,22 @@ export const VotingPowerContainer = ({ cards }: VotingPowerContainerProps) => {
         VOTING POWER
       </Header>
       <div className="flex flex-col gap-[8px] sm:flex-row">
-        <VotingPowerCard {...VOTING_POWER_CARDS_INFO.available} {...cards.available} />
-        <VotingPowerCard {...VOTING_POWER_CARDS_INFO.own} {...cards.own} />
-        <VotingPowerCard {...VOTING_POWER_CARDS_INFO.received} {...cards.received} />
-        <VotingPowerCard {...VOTING_POWER_CARDS_INFO.delegated} {...cards.delegated} />
+        <VotingPowerCard
+          {...VOTING_POWER_CARDS_INFO.available}
+          {...cards.available}
+          data-testid="AvailableVotingPowerCard"
+        />
+        <VotingPowerCard {...VOTING_POWER_CARDS_INFO.own} {...cards.own} data-testid="OwnVotingPowerCard" />
+        <VotingPowerCard
+          {...VOTING_POWER_CARDS_INFO.received}
+          {...cards.received}
+          data-testid="ReceivedVotingPowerCard"
+        />
+        <VotingPowerCard
+          {...VOTING_POWER_CARDS_INFO.delegated}
+          {...cards.delegated}
+          data-testid="DelegatedVotingPowerCard"
+        />
       </div>
     </div>
   )

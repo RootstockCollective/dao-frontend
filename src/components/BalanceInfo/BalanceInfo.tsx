@@ -40,7 +40,7 @@ export const BalanceInfo: FC<Props> = ({
       </div>
 
       <div className="flex items-end flex-row gap-2 mt-4">
-        <Header variant="h1" data-testid="Amount" className="flex items-end flex-row gap-2">
+        <Header variant="h1" className="flex items-end flex-row gap-2" data-testid={`Amount-${symbol}`}>
           {amount}
         </Header>
         {symbol ? (
@@ -53,7 +53,7 @@ export const BalanceInfo: FC<Props> = ({
         ) : null}
       </div>
       {fiatAmount && (
-        <Label variant="body-s" className="text-bg-0" bold data-testid="FiatAmount">
+        <Label variant="body-s" className="text-bg-0" bold data-testid={`FiatAmount-${symbol}`}>
           {fiatAmount}
         </Label>
       )}

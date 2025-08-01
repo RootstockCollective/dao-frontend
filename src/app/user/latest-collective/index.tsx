@@ -46,8 +46,8 @@ export const LatestCollectiveSection = ({
         />
       ) : (
         <div className="flex gap-2 mt-4">
-          {latestProposals.map(p => (
-            <LatestProposalCard key={p.proposalId} proposal={p} />
+          {latestProposals.map((p, index) => (
+            <LatestProposalCard key={p.proposalId} proposal={p} data-testid={`LatestProposalCard-${index}`} />
           ))}
         </div>
       )}

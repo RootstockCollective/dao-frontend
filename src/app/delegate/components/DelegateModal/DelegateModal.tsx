@@ -61,7 +61,7 @@ export const DelegateModal = ({
           </>
         )}
         <div className="flex flex-row gap-2 justify-end w-full mt-6">
-          <Button variant="secondary-outline" onClick={onClose}>
+          <Button variant="secondary-outline" onClick={onClose} data-testid="CancelButton">
             <Span className="text-bg-100" bold>
               Cancel
             </Span>
@@ -71,6 +71,7 @@ export const DelegateModal = ({
             onClick={() => onDelegate(address)}
             disabled={isLoading}
             className="disabled:bg-disabled-border"
+            data-testid={`${actionButtonText}Button`}
           >
             {actionButtonText}
           </Button>

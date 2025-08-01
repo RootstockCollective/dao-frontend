@@ -37,13 +37,8 @@ export interface HeaderProps extends Omit<TypographyProps<TypographyElement>, 'a
  * - h4: font-size: 16px; font-family: font-rootstock-sans
  * - h5: font-size: 12px; font-family: font-rootstock-sans
  */
-export const Header: FC<HeaderProps> = ({
-  variant = 'h1',
-  children,
-  'data-testid': dataTestId = '',
-  ...rest
-}) => (
-  <Typography as={elementByVariant[variant]} variant={variant} data-testid={`Header${dataTestId}`} {...rest}>
+export const Header: FC<HeaderProps> = ({ variant = 'h1', children, 'data-testid': dataTestId, ...rest }) => (
+  <Typography as={elementByVariant[variant]} variant={variant} data-testid={dataTestId} {...rest}>
     {children}
   </Typography>
 )

@@ -16,7 +16,7 @@ export const DisclaimerFlow = ({ onAgree, onClose }: DisclaimerFlowProps) => {
       onDecline={onClose}
       onAccept={onAgree}
     >
-      {disclaimerModalText.modalDescription()}
+      {disclaimerModalText.modalDescription}
     </ConfirmationModal>
   )
 }

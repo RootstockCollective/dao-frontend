@@ -6,6 +6,7 @@ interface CommunityItemButtonHandlerProps {
   nftAddress?: string
   readMoreLink?: string
   color?: string
+  'data-testid'?: string
 }
 
 /**
@@ -20,6 +21,7 @@ export const CommunityItemButtonHandler = ({
   nftAddress,
   readMoreLink,
   color = 'white',
+  'data-testid': dataTestId,
 }: CommunityItemButtonHandlerProps) => {
   let href = nftAddress ? `/communities/nft/${nftAddress}` : '/communities'
   let target = undefined
@@ -28,7 +30,7 @@ export const CommunityItemButtonHandler = ({
     target = '_blank'
   }
   return (
-    <Link href={href} target={target}>
+    <Link href={href} target={target} data-testid={dataTestId}>
       <div className={'flex flex-row gap-1 items-center'} style={{ color }}>
         <Paragraph>Learn more</Paragraph>
         <ArrowRightIconKoto color={color} />
