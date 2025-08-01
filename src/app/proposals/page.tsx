@@ -9,6 +9,9 @@ import { useRouter } from 'next/navigation'
 import { useAccount } from 'wagmi'
 import { ConnectWorkflow } from '@/shared/walletConnection/connection/ConnectWorkflow'
 import { ConnectButtonComponentProps } from '@/shared/walletConnection'
+import { useVotingPower } from '@/app/proposals/hooks/useVotingPower'
+import { Tooltip } from '@/components/Tooltip'
+import { Span } from '@/components/TypographyNew'
 
 export default function ProposalsPage() {
   return (
@@ -48,6 +51,23 @@ const CreateProposalFlow = () => {
   return <CreateProposalButton onClick={() => push('/proposals/new')} />
 }
 
-const CreateProposalButton = ({ onClick }: ConnectButtonComponentProps) => (
-  <Button onClick={onClick}>Create a proposal</Button>
-)
+const CreateProposalButton = ({ onClick }: ConnectButtonComponentProps) => {
+  const { isLoading, canCreateProposal, threshold } = useVotingPower()
+
+  if (isLoading || !canCreateProposal) {
+    const text = isLoading
+      ? 'Loading...'
+      : `You need at least ${threshold} Voting Power to create a proposal. The easiest way to get more Voting Power is to Stake more RIF.`
+    return (
+      <Tooltip text={text} side="right" className="max-w-[200px]">
+        <Button variant="secondary-outline" disabled>
+          <Span bold className="text-bg-100">
+            Create a proposal
+          </Span>
+        </Button>
+      </Tooltip>
+    )
+  }
+
+  return <Button onClick={onClick}>Create a proposal</Button>
+}
