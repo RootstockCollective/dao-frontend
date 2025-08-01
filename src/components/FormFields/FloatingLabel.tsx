@@ -1,7 +1,7 @@
 import { motion } from 'motion/react'
 import { cn } from '@/lib/utils'
 
-export interface FloatingLabelProps extends React.LabelHTMLAttributes<HTMLLabelElement> {
+interface FloatingLabelProps extends React.LabelHTMLAttributes<HTMLLabelElement> {
   label: string
   isFloating: boolean
   children: React.ReactNode

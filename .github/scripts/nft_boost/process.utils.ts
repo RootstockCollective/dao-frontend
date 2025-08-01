@@ -1,8 +1,8 @@
 import { config as envConfig } from 'dotenv'
 import { Address, getAddress } from 'viem'
 
-export const [, , ...args] = process.argv
-export type Args = {
+const [, , ...args] = process.argv
+type Args = {
   nftContractAddress: Address
   boostPercentage: number
   env: string
@@ -44,4 +44,4 @@ envConfig({
   path: `.env.${env}`,
 })
 
-export { boostPercentage, env, nftContractAddress }
+export { boostPercentage, nftContractAddress }

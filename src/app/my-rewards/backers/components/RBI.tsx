@@ -1,7 +1,6 @@
 import { FC } from 'react'
 import {
   useGetBackerRBI,
-  MetricsCardProps,
   Token,
   useGetBackerStakingHistoryWithStateSync,
   useGetBackerStakingHistoryWithGraph,
@@ -11,7 +10,7 @@ import { Address } from 'viem'
 import { useFeatureFlags } from '@/shared/context/FeatureFlag'
 import { RewardCard } from '../../components/RewardCard'
 
-interface RBIContentProps extends MetricsCardProps {
+interface RBIContentProps {
   rbiPct: Big
   isLoading: boolean
 }
@@ -54,7 +53,7 @@ const RBIContent: FC<RBIContentProps> = ({ rbiPct, isLoading }) => {
   )
 }
 
-const RBIWStateSync: FC<RBIProps> = ({ backer, tokens, ...metricsCardProps }) => {
+const RBIWStateSync: FC<RBIProps> = ({ backer, tokens }) => {
   const {
     data: backerStakingHistory,
     isLoading: backerStakingHistoryLoading,
@@ -71,10 +70,10 @@ const RBIWStateSync: FC<RBIProps> = ({ backer, tokens, ...metricsCardProps }) =>
 
   useHandleErrors({ error, title: 'Error loading RBI with state sync' })
 
-  return <RBIContent rbiPct={rbiPct} isLoading={isLoading} {...metricsCardProps} />
+  return <RBIContent rbiPct={rbiPct} isLoading={isLoading} />
 }
 
-const RBIWTheGraph: FC<RBIProps> = ({ backer, tokens, ...metricsCardProps }) => {
+const RBIWTheGraph: FC<RBIProps> = ({ backer, tokens }) => {
   const {
     data: backerStakingHistory,
     isLoading: backerStakingHistoryLoading,
@@ -90,10 +89,10 @@ const RBIWTheGraph: FC<RBIProps> = ({ backer, tokens, ...metricsCardProps }) => 
   const error = backerStakingHistoryError ?? rbiPctError
   useHandleErrors({ error, title: 'Error loading RBI with the graph' })
 
-  return <RBIContent rbiPct={rbiPct} isLoading={isLoading} {...metricsCardProps} />
+  return <RBIContent rbiPct={rbiPct} isLoading={isLoading} />
 }
 
-interface RBIProps extends MetricsCardProps {
+interface RBIProps {
   backer: Address
   tokens: Record<string, Token>
 }

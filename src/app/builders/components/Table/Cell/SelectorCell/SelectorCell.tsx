@@ -3,7 +3,7 @@ import { CheckIcon } from '@/components/Icons/CheckIcon'
 import { CommonComponentProps } from '@/components/commonProps'
 import { cn } from '@/lib/utils'
 
-export interface SelectorCellProps extends CommonComponentProps {
+interface SelectorCellProps extends CommonComponentProps {
   isSelected?: boolean
   isHovered?: boolean
   onClick?: () => void
@@ -47,5 +47,3 @@ export function SelectorCell({
     </div>
   )
 }
-
-export default SelectorCell

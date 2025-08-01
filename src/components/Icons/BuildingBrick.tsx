@@ -51,5 +51,3 @@ export function BuildingBrick({
     </svg>
   )
 }
-
-export default BuildingBrick

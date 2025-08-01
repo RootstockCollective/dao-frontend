@@ -1,4 +1,4 @@
-export interface CommunityCardProps {
+interface CommunityCardProps {
   title: string
   description: string
   members: string
@@ -26,7 +26,7 @@ export type TokenBalance = {
 
 export type TokenBalanceRecord = Record<string, TokenBalance>
 
-export type Price = {
+type Price = {
   price: number
   lastUpdated: string
 }

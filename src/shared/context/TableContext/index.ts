@@ -1,5 +1,4 @@
 export { useTableActionsContext } from './TableActionsContext'
 export { useTableContext } from './TableContext'
 export { withTableContext } from './TableProvider'
-export { tableReducer } from './tableReducer'
 export type * from './types'

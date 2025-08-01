@@ -6,7 +6,7 @@ import {
   isBuilderInProgress,
 } from '@/app/collective-rewards/utils'
 import { CommonComponentProps } from '@/components/commonProps'
-import HourglassIcon from '@/components/Icons/HourglassIcon'
+import { HourglassIcon } from '@/components/Icons/HourglassIcon'
 import { ParachuteIcon } from '@/components/Icons/ParachuteIcon'
 import { IconProps } from '@/components/Icons/types'
 import { WarningIcon } from '@/components/Icons/WarningIcon'

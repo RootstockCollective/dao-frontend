@@ -12,7 +12,7 @@ export interface SelectorOption<ColumnId extends BaseColumnId = BaseColumnId> {
   sublabel?: string
 }
 
-export interface MultipleSelectDropdownProps<ColumnId extends BaseColumnId = BaseColumnId> {
+interface MultipleSelectDropdownProps<ColumnId extends BaseColumnId = BaseColumnId> {
   title: string
   options: SelectorOption<ColumnId>[]
   selected: ColumnId[]

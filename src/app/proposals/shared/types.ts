@@ -31,5 +31,3 @@ export type ProposalRecord =
   | { category: ProposalCategory.Grants; form: GrantProposal }
   | { category: ProposalCategory.Activation; form: ActivationProposal }
   | { category: ProposalCategory.Deactivation; form: DeactivationProposal }
-
-export type { GrantProposal, ActivationProposal, DeactivationProposal }

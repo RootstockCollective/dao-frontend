@@ -8,7 +8,7 @@ export type FeatureHandleConfig = {
   redirectTo?: string
 }
 
-export const DefaultFallback: FC = () => <></>
+const DefaultFallback: FC = () => <></>
 
 export const DEFAULT_CONFIG: Partial<FeatureHandleConfig> = {
   fallback: <DefaultFallback />,

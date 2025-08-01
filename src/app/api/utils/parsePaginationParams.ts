@@ -1,19 +1,17 @@
 import { MAX_PAGE_SIZE } from '@/lib/constants'
 
-export type ValidationError = {
+type ValidationError = {
   type: 'ValidationError'
   message: string
   statusCode: number
 }
 
-export type PaginationParams = {
+type PaginationParams = {
   page: number
   pageSize: number
 }
 
-export type PaginationResult =
-  | { success: true; data: PaginationParams }
-  | { success: false; error: ValidationError }
+type PaginationResult = { success: true; data: PaginationParams } | { success: false; error: ValidationError }
 
 export function parsePaginationParams(url: string): PaginationResult {
   const { searchParams } = new URL(url)

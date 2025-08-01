@@ -2,7 +2,7 @@ import { ConditionalTooltip, TooltipConditionPair } from '@/app/components/Toolt
 import { Button, ButtonProps } from '@/components/ButtonNew'
 import { TooltipProps } from '@/components/Tooltip'
 
-export type ButtonWithTipProps = ButtonProps & {
+type ButtonWithTipProps = ButtonProps & {
   conditionPairs: TooltipConditionPair[]
   tooltipProps?: Omit<TooltipProps, 'text' | 'disabled'>
 }

@@ -40,5 +40,3 @@ export function MoreIcon({
     </svg>
   )
 }
-
-export default MoreIcon

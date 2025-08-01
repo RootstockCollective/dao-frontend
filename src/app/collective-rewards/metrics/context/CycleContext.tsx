@@ -17,7 +17,7 @@ type CycleContextValue = {
   error: Error | null
 }
 
-export const CycleContext = createContext<CycleContextValue>({
+const CycleContext = createContext<CycleContextValue>({
   data: {} as Cycle,
   isLoading: false,
   error: null,

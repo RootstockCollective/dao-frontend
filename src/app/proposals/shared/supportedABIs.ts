@@ -5,13 +5,6 @@ import { BuilderRegistryAbi } from '@/lib/abis/v2/BuilderRegistryAbi'
 import { HTMLProps, JSX } from 'react'
 import { AbiFunction, AbiParameterToPrimitiveType } from 'viem'
 
-export const abiNames = [
-  'DAOTreasuryAbi',
-  'RIFTokenAbi',
-  'BuilderRegistryAbi',
-  // CR MVP: To keep compatibility with the MVP logs
-  'SimplifiedRewardDistributorAbi',
-] as const
 export const abis = [
   DAOTreasuryAbi,
   RIFTokenAbi,
@@ -20,7 +13,7 @@ export const abis = [
   SimplifiedRewardDistributorAbi,
 ] as const
 
-export const supportedProposalActions = [
+const supportedProposalActions = [
   'withdraw',
   'withdrawERC20',
   'communityApproveBuilder',
@@ -30,59 +23,57 @@ export const supportedProposalActions = [
   'whitelistBuilder',
 ] as const
 
-export type SupportedActionAbiName = (typeof abiNames)[number]
-
 export type SupportedActionAbi = (typeof abis)[number]
 
-export type AbiEntry = SupportedActionAbi[number]
+type AbiEntry = SupportedActionAbi[number]
 
 export type FunctionEntry = Extract<AbiEntry, AbiFunction>
 
-export type FunctionName = FunctionEntry['name']
+type FunctionName = FunctionEntry['name']
 
 export type FunctionInputs = FunctionEntry['inputs']
 
-export type InputParameter = FunctionInputs[number]
+type InputParameter = FunctionInputs[number]
 
-export type InputParameterName = InputParameter['name']
+type InputParameterName = InputParameter['name']
 
-export type FunctionEntryByName<F = FunctionName> = Extract<FunctionEntry, { name: F }>
+type FunctionEntryByName<F = FunctionName> = Extract<FunctionEntry, { name: F }>
 
-export type SupportedProposalAction = FunctionEntryByName<(typeof supportedProposalActions)[number]>
+type SupportedProposalAction = FunctionEntryByName<(typeof supportedProposalActions)[number]>
 
 export type SupportedProposalActionName = SupportedProposalAction['name']
 
-export type InputParameterByFnByName<F = SupportedProposalActionName, I = InputParameterName> = Extract<
+type InputParameterByFnByName<F = SupportedProposalActionName, I = InputParameterName> = Extract<
   FunctionEntryByName<F>['inputs'][number],
   { name: I }
 >
 
-export type InputParameterTypeByFnByName<
+type InputParameterTypeByFnByName<
   F = SupportedProposalActionName,
   I = InputParameterName,
 > = AbiParameterToPrimitiveType<InputParameterByFnByName<F, I>>
 
-export type InputNameFormatMap<FN = SupportedProposalActionName, InputName = InputParameterName> = {
+type InputNameFormatMap<FN = SupportedProposalActionName, InputName = InputParameterName> = {
   [I in InputParameterByFnByName<FN, InputName> as I['name']]: string
 }
 
-export type ActionInputNameFormatMap<FN = SupportedProposalActionName, InputName = InputParameterName> = {
+type ActionInputNameFormatMap<FN = SupportedProposalActionName, InputName = InputParameterName> = {
   [F in FunctionEntryByName<FN>['name']]: InputNameFormatMap<F, InputName>
 }
 
-export type InputValueComponentProps<T, E> = {
+type InputValueComponentProps<T, E> = {
   value: T
   htmlProps?: HTMLProps<E>
 }
 
-export type InputValueComponent<T, E = JSX.Element> = (props: InputValueComponentProps<T, E>) => E
+type InputValueComponent<T, E = JSX.Element> = (props: InputValueComponentProps<T, E>) => E
 
-export type InputValueComposerMap<F = SupportedProposalActionName, InputName = InputParameterName> = {
+type InputValueComposerMap<F = SupportedProposalActionName, InputName = InputParameterName> = {
   [I in InputParameterByFnByName<F, InputName> as I['name']]: InputValueComponent<
     InputParameterTypeByFnByName<F, I>
   >
 }
 
-export type ActionComposerMap<FN = SupportedProposalActionName, InputName = InputParameterName> = {
+type ActionComposerMap<FN = SupportedProposalActionName, InputName = InputParameterName> = {
   [F in FunctionEntryByName<FN>['name']]: InputValueComposerMap<F, InputName>
 }

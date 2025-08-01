@@ -119,7 +119,7 @@ function pizzaSlice(size: number, startAngle: number, endAngle: number) {
 }
 
 // Converts polar coordinates (angle, radius) to cartesian (x, y)
-export function polarToCartesian(centerX: number, centerY: number, r: number, angleInDegrees: number) {
+function polarToCartesian(centerX: number, centerY: number, r: number, angleInDegrees: number) {
   const angleInRadians = (angleInDegrees - 90) * (Math.PI / 180)
   return {
     x: centerX + r * Math.cos(angleInRadians),

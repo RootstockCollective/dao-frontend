@@ -68,7 +68,7 @@ const query = apolloGQL`
   }
 `
 
-export interface GraphQLResponse {
+interface GraphQLResponse {
   proposals: ProposalGraphQLResponse[]
   counters: Counter[]
 }
@@ -96,12 +96,12 @@ export interface ProposalGraphQLResponse {
   rawState: number
 }
 
-export interface Counter {
+interface Counter {
   id: string
   count: string
 }
 
-export async function fetchProposals() {
+async function fetchProposals() {
   const { data } = await daoClient.query<GraphQLResponse>({ query, fetchPolicy: 'no-cache' })
   return data
 }

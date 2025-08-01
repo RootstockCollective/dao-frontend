@@ -6,7 +6,7 @@ import { cn } from '@/lib/utils'
 import { useRouter } from 'next/navigation'
 import { FC, useState } from 'react'
 
-export interface BackMoreBuildersCardProps {
+interface BackMoreBuildersCardProps {
   dataTestId?: string
   topBarColor?: string
   className?: string

@@ -10,7 +10,7 @@ import { DropdownItem, DropdownTopic } from './data'
  * Custom dropdown menu with smooth animation
  */
 
-export interface DropdownProps extends HTMLAttributes<HTMLDivElement> {
+interface DropdownProps extends HTMLAttributes<HTMLDivElement> {
   title: string
   description: string
   data: DropdownTopic[]
@@ -18,7 +18,7 @@ export interface DropdownProps extends HTMLAttributes<HTMLDivElement> {
   footer?: ReactNode
 }
 
-export const DropdownItemComponent = ({ id, onClick, title, text, Icon, TitleIcon }: DropdownItem) => {
+const DropdownItemComponent = ({ id, onClick, title, text, Icon, TitleIcon }: DropdownItem) => {
   return (
     <div
       key={id}

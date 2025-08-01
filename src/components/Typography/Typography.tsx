@@ -21,7 +21,7 @@ interface Props {
   'data-testid'?: string
 }
 
-export type TypographyProps = Props & CSSProperties
+type TypographyProps = Props & CSSProperties
 
 /** @deprecated Use TypographyNew/Typography instead */
 export const Typography: FC<TypographyProps> = ({

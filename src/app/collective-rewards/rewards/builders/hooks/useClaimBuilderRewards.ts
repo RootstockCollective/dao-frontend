@@ -74,7 +74,7 @@ export const useClaimBuilderRewards = (
   }
 }
 
-export const useClaimBuilderRewardsPerToken = (builder: Address, gauge: Address, rewardToken: Address) => {
+const useClaimBuilderRewardsPerToken = (builder: Address, gauge: Address, rewardToken: Address) => {
   const { error: claimBuilderRewardError, ...rest } = useClaimBuilderReward(builder, gauge, rewardToken)
   const {
     data: rewards,

@@ -34,5 +34,3 @@ export function ArrowRightIcon({
     </svg>
   )
 }
-
-export default ArrowRightIcon

@@ -34,10 +34,6 @@ export const getTokenHoldersOfAddress = `/address/{{address}}/holders?${CHAIN_ID
 
 export const getNftHolders = `/nfts/{{address}}/holders?${CHAIN_ID_PARAM}`
 
-// keccak256('NotifyReward(address,address,uint256)')
-const NOTIFY_REWARD_EVENT = '0xf70d5c697de7ea828df48e5c4573cb2194c659f1901f70110c52b066dcf50826'
-export const fetchNotifyRewardLogsByAddress = `/address/{{address}}/eventsByTopic0?topic0=${NOTIFY_REWARD_EVENT}&${CHAIN_ID_PARAM}&${FROM_BLOCK_PARAM}`
-
 // keccak256('NotifyReward(address,uint256,uint256)')
 const GAUGE_NOTIFY_REWARD_EVENT = '0x3c0f5c48b0ffa2c570c1a0f4fbf7b0f8982213afff9eb42cd258ead865cf3c9d'
 export const fetchGaugeNotifyRewardLogsByAddress = `/address/{{address}}/eventsByTopic0?topic0=${GAUGE_NOTIFY_REWARD_EVENT}&${CHAIN_ID_PARAM}&${FROM_BLOCK_PARAM}`

@@ -7,12 +7,12 @@ import { formatNumberWithCommas, formatCurrency } from '@/lib/utils'
 import { formatEther } from 'viem'
 import { ProposalType } from '../../[id]/types'
 
-export interface InfoGridItem {
+interface InfoGridItem {
   label: string
   value: ReactNode
 }
 
-export interface ActionDetailsProps {
+interface ActionDetailsProps {
   parsedAction: {
     type: string
     amount?: bigint

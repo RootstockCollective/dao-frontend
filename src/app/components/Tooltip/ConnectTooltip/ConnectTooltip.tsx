@@ -3,7 +3,7 @@ import { CommonComponentProps } from '@/components/commonProps'
 import { ReactElement, ReactNode } from 'react'
 import { useAccount } from 'wagmi'
 
-export interface ConnectTooltipProps extends CommonComponentProps {
+interface ConnectTooltipProps extends CommonComponentProps {
   tooltipContent: ReactNode
 }
 

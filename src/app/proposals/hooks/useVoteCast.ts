@@ -21,13 +21,6 @@ export const parseVoteCastEvents = (address: Address) => async () => {
   }
 }
 
-export const useVoteCastEvent = (address: Address) => {
-  return useQuery({
-    queryFn: parseVoteCastEvents(address),
-    queryKey: ['VoteCast'],
-  })
-}
-
 export const useGetVoteForSpecificProposal = (
   address: Address,
   proposalId: string,

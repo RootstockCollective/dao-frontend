@@ -1,1 +1,0 @@
-export { PasteButton } from './PasteButton'

@@ -2,7 +2,7 @@ import { cn } from '@/lib/utils'
 import * as SliderPrimitive from '@radix-ui/react-slider'
 import React from 'react'
 
-export interface StickySliderProps {
+interface StickySliderProps {
   value: number[]
   onValueChange: (value: number[]) => void
   max?: number

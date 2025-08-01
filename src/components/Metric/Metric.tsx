@@ -4,7 +4,7 @@ import { FC, ReactNode } from 'react'
 import { CommonComponentProps } from '../../components/commonProps'
 import { MetricContent } from './MetricContent'
 
-export type MetricProps = CommonComponentProps & {
+type MetricProps = CommonComponentProps & {
   title: ReactNode
   containerClassName?: string
   contentClassName?: string // TODO: @refactor antipattern MetricContent should be passed as children

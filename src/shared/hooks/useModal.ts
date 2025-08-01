@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { useScrollLock } from './useScrollLock'
 
-export interface ModalReturn {
+interface ModalReturn {
   isModalOpened: boolean
   toggleModal: () => void
   closeModal: () => void

@@ -37,7 +37,7 @@ export type BuilderStateFlags = {
   [key in Exclude<BuilderFunctionOutputs[number]['name'], 'pausedReason' | 'reserved'>]: boolean
 }
 
-export interface BuilderProposal {
+interface BuilderProposal {
   id: bigint
   name: string
   description: string
@@ -50,8 +50,6 @@ export interface BackerRewardPercentage {
   previous: bigint
   cooldownEndTime: bigint
 }
-
-export type ProposalByBuilder = Record<Address, BuilderProposal>
 
 export type ProposalsToState = Record<string, ProposalState>
 

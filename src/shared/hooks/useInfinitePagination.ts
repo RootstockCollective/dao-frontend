@@ -1,7 +1,7 @@
 import { InfiniteData, useInfiniteQuery, UseInfiniteQueryResult } from '@tanstack/react-query'
 import { useState, useCallback, useMemo, useEffect } from 'react'
 
-export interface PaginatedResponse<T> {
+interface PaginatedResponse<T> {
   items: T[]
   [key: string]: any
 }
@@ -15,7 +15,7 @@ interface UseInfinitePaginatedQueryOptions<T> {
   hasMorePagesProperty: keyof PaginatedResponse<T>
 }
 
-export interface UseInfinitePaginatedQueryResult<T>
+interface UseInfinitePaginatedQueryResult<T>
   extends Omit<UseInfiniteQueryResult<InfiniteData<PaginatedResponse<T>>>, 'data'> {
   currentResults: T[]
   tablePage: number

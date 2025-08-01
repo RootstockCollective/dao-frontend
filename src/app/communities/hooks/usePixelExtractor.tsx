@@ -135,7 +135,7 @@ interface PixelConfigs {
 /**
  * PIXEL_CONFIGS defines various configurations for pixel extraction.
  */
-export const PIXEL_CONFIGS: PixelConfigs = {
+const PIXEL_CONFIGS: PixelConfigs = {
   topRightDiagonal: [
     { coords: (w, h) => ({ x: w - 10, y: 0 }), className: 'absolute top-[10px] -right-[10px]', size: 10 },
     { coords: (w, h) => ({ x: w - 20, y: 10 }), className: 'absolute top-[20px] -right-[20px]', size: 10 },

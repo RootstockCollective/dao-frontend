@@ -23,6 +23,4 @@ export const TokenFieldsSchema = z.object({
     .nonempty({ message: 'Please enter transfer amount' }),
 })
 
-export const TokenSchema = TokenFieldsSchema
-
 export type TokenFormData = z.infer<typeof TokenFieldsSchema>

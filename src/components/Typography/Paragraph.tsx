@@ -22,7 +22,7 @@ type PropsWithHTML = BaseProps & {
 }
 
 // either children or html is required, but not both
-export type Props = PropsWithChildren | PropsWithHTML
+type Props = PropsWithChildren | PropsWithHTML
 
 const DEFAULT_CLASSES = 'text-[1.4rem]'
 

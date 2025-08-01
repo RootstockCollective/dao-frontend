@@ -33,7 +33,7 @@ const useNftMeta = (nftUri?: string) => {
 /**
  * Hook for reading NFT contract view functions
  */
-export const useContractData = (nftAddress?: Address) => {
+const useContractData = (nftAddress?: Address) => {
   const { address } = useAccount()
   const contract = {
     // verifying `nftAddress` later in `useReadContracts` params

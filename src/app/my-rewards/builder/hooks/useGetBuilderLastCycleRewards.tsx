@@ -25,7 +25,7 @@ interface LastCycleRewardsData {
   rbtc: TokenRewardData
 }
 
-export const useGetNotifyRewardAmountFromLogs = (
+const useGetNotifyRewardAmountFromLogs = (
   token: Address,
   gauge: Address,
   fromTimestamp?: number,

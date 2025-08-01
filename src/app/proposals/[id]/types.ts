@@ -15,12 +15,6 @@ export interface ParsedActionDetails {
   // Add more fields as needed for other action types
 }
 
-export interface ActionDetailsProps {
-  calldatasParsed: any
-  actionType: any
-  parsedAction: ParsedActionDetails
-}
-
 export enum ActionType {
   BuilderApproval = 'Builder approval',
   TreasuryWithdrawal = 'Treasury withdrawal',
@@ -30,14 +24,3 @@ export enum ActionType {
   DewhitelistBuilder = 'De-whitelist builder',
   Unknown = '—',
 }
-
-export interface RenderWithdrawActionArgs {
-  toAddress: string
-  amount: bigint
-  currencySymbol: string
-  price: number
-  paramLabels: Record<string, string>
-}
-
-export type ParamLabels = Record<string, string>
-export type ParamComponents = Record<string, React.ComponentType<any>>

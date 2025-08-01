@@ -12,10 +12,6 @@ export class BaseError extends Error {
   }
 }
 
-export const isBaseError = (error: any): boolean => {
-  return error?.isBaseError === true
-}
-
 export const isUserRejectedTxError = (error: any): boolean => {
   return (
     (error && typeof error.message === 'string' && error.message.includes('User rejected the request')) ||

@@ -17,7 +17,7 @@ interface VoteCounterProps {
   isVotingInProgress?: boolean
 }
 
-export const VoteCounter = ({ title, value, color, disabled, isVotingInProgress }: VoteCounterProps) => {
+const VoteCounter = ({ title, value, color, disabled, isVotingInProgress }: VoteCounterProps) => {
   return (
     <div
       className={`bg-[#37322F] pl-4 pb-3 rounded-[4px] flex flex-col items-start justify-center w-40 border-t-4 border-${!disabled ? color : 'disabled-border'}`}

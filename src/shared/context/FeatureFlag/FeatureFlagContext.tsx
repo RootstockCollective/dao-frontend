@@ -48,7 +48,7 @@ const readLocalStorage = (item: string): Partial<FeatureFlags> => {
   return {}
 }
 
-export const cleanUserFlags = (userFlags: Partial<FeatureFlags>, features: Feature[]) => {
+const cleanUserFlags = (userFlags: Partial<FeatureFlags>, features: Feature[]) => {
   const envFlags = getEnvFlags()
   return Object.entries(userFlags).reduce((acc, [key, value]) => {
     if (!features?.includes(key as FeatureFlag) || key == USER_FLAGS_FEATURE) {
@@ -64,7 +64,7 @@ export const cleanUserFlags = (userFlags: Partial<FeatureFlags>, features: Featu
   }, {})
 }
 
-export const combineUserFlags = (userFlags: Partial<FeatureFlags>): FeatureFlags => {
+const combineUserFlags = (userFlags: Partial<FeatureFlags>): FeatureFlags => {
   if (!getEnvFlags() || !userFlags) {
     return {}
   }

@@ -81,7 +81,7 @@ export function usePaginationUi<T>(
   }
 }
 
-export function useBasicPaginationUi(totalPages: number) {
+function useBasicPaginationUi(totalPages: number) {
   const [currentPage, setCurrentPage] = useState(0)
   const maxVisiblePages = 5
 

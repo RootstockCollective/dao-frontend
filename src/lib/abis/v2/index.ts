@@ -16,15 +16,15 @@ export type CycleTimeKeeperAbi = typeof CycleTimeKeeperAbi
 export type GaugeAbi = typeof GaugeAbi
 export type RewardDistributorAbi = typeof RewardDistributorAbi
 
-export const abis = {
+const abis = {
   BackersManagerAbi,
   BuilderRegistryAbi,
   CycleTimeKeeperAbi,
   GaugeAbi,
   RewardDistributorAbi,
 } as const
-export type CollectiveRewardsAbis = typeof abis
-export type CollectiveRewardsAbiName = keyof CollectiveRewardsAbis
-export type CollectiveRewardsAbi = CollectiveRewardsAbis[CollectiveRewardsAbiName]
+type CollectiveRewardsAbis = typeof abis
+type CollectiveRewardsAbiName = keyof CollectiveRewardsAbis
+type CollectiveRewardsAbi = CollectiveRewardsAbis[CollectiveRewardsAbiName]
 
 export const getAbi = (abiName: CollectiveRewardsAbiName): CollectiveRewardsAbi => abis[abiName]

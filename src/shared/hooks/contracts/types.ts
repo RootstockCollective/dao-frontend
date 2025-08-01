@@ -2,7 +2,7 @@ import { Abi, Address, ContractFunctionArgs, ContractFunctionName } from 'viem'
 
 export type ViewPureFunctionName<TAbi extends Abi> = ContractFunctionName<TAbi, 'view' | 'pure'>
 
-export type FunctionParams<
+type FunctionParams<
   TAbi extends Abi,
   TFunctionName extends ViewPureFunctionName<TAbi>,
 > = ContractFunctionArgs<TAbi, 'view' | 'pure', TFunctionName>

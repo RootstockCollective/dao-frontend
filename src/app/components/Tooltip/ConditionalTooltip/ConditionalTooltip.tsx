@@ -7,7 +7,7 @@ export type TooltipConditionPair = {
   lazyContent: () => ReactNode
 }
 
-export type ConditionalTooltipProps = Omit<TooltipProps, 'text' | 'disabled'> & {
+type ConditionalTooltipProps = Omit<TooltipProps, 'text' | 'disabled'> & {
   conditionPairs: TooltipConditionPair[]
 }
 

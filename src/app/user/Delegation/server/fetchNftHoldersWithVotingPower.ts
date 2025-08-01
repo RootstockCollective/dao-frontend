@@ -9,7 +9,7 @@ import Big from '@/lib/big'
 import { unstable_cache } from 'next/cache'
 import { resolveRnsDomain } from '@/lib/rns'
 
-export async function fetchNftHoldersShepherds() {
+async function fetchNftHoldersShepherds() {
   const holders = await fetchNftHoldersOfAddress(OG_CONTRIBUTORS_NFT_ADDRESS, null)
 
   // Clean the data from any duplicates

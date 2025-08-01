@@ -30,5 +30,3 @@ export function BuilderStatus({ address }: BuilderStatusProps) {
 
   return <BuilderStatusView builderState={builderState} />
 }
-
-export default BuilderStatus

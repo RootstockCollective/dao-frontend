@@ -18,8 +18,8 @@ focus-visible:ring-1 focus-visible:ring-ring
 focus-visible:ring-white/50
 `
 
-export type InputType = 'text' | 'number' | 'search'
-export interface InputProps {
+type InputType = 'text' | 'number' | 'search'
+interface InputProps {
   name: string
   fullWidth?: boolean
   value?: string

@@ -7,7 +7,7 @@ import { Address } from 'viem'
 import { useGetBuilderAllTimeShare } from '@/app/my-rewards/builder/hooks/useGetBuilderAllTimeShare'
 import { RewardCard } from '@/app/my-rewards/components/RewardCard'
 
-export interface RewardCardAllTimeShareProps {
+interface RewardCardAllTimeShareProps {
   isLoading: boolean
   amount: string
 }

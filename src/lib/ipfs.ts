@@ -6,7 +6,7 @@ import { NftMeta } from '@/shared/types'
  * For detailed parameters description visit:
  * @see https://docs.pinata.cloud/gateways/image-optimizations
  */
-export interface PinataImageOptions {
+interface PinataImageOptions {
   width?: number
   height?: number
   dpr?: number

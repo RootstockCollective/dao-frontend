@@ -1,6 +1,6 @@
 import { FC, SVGProps } from 'react'
 
-export type BoltSvgProps = SVGProps<SVGSVGElement> & {
+type BoltSvgProps = SVGProps<SVGSVGElement> & {
   showGlow?: boolean
 }
 export const BoltSvg: FC<BoltSvgProps> = ({ showGlow, ...rest }) => (

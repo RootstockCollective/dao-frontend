@@ -7,7 +7,7 @@ interface SeeRewardsHistoryButtonProps {
   icon?: ReactNode
 }
 
-// TODO: not used yet
+// TODO: not used yet, Im not sure if we need it
 export const SeeRewardsHistoryButton: React.FC<SeeRewardsHistoryButtonProps> = ({ onClick, icon }) => {
   return (
     <button

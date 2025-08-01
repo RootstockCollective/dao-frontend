@@ -28,5 +28,3 @@ export function ArrowUpIcon({
     </svg>
   )
 }
-
-export default ArrowUpIcon

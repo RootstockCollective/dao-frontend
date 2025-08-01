@@ -2,13 +2,13 @@ import { AVERAGE_BLOCKTIME } from '@/lib/constants'
 import { useQuery, UseQueryResult } from '@tanstack/react-query'
 import { useCallback, useMemo, useState } from 'react'
 
-export interface UsePaginatedQueryOptions<T> {
+interface UsePaginatedQueryOptions<T> {
   queryKey: string[]
   queryFn: (pageParam: any) => Promise<T[]>
   resultsPerTablePage: number
 }
 
-export interface UsePaginatedQueryResult<T> extends Omit<UseQueryResult<T[]>, 'data'> {
+interface UsePaginatedQueryResult<T> extends Omit<UseQueryResult<T[]>, 'data'> {
   currentResults: T[]
   allItems: T[]
   tablePage: number

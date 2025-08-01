@@ -14,7 +14,7 @@ export type TableColumnDropdownLabels<ColumnId extends BaseColumnId = BaseColumn
   ColumnLabel
 >
 
-export type TableColumnDropdownProps<ColumnId extends BaseColumnId = BaseColumnId> = CommonComponentProps & {
+type TableColumnDropdownProps<ColumnId extends BaseColumnId = BaseColumnId> = CommonComponentProps & {
   labels: TableColumnDropdownLabels<ColumnId>
 }
 

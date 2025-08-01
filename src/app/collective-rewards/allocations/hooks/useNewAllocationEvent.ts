@@ -16,10 +16,3 @@ export const parseNewAllocationEvent = (address: Address) => async () => {
 
   return events
 }
-
-export const useNewAllocationEvent = (address: Address) => {
-  return useQuery({
-    queryFn: parseNewAllocationEvent(address),
-    queryKey: [NEW_ALLOCATION],
-  })
-}

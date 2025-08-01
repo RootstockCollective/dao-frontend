@@ -11,7 +11,7 @@ const symbolsToGetFromArray = {
   USDRIF: { equivalentSymbols: ['USDRIF'], currentContract: tokenContracts.USDRIF },
 }
 
-export type SymbolsEquivalentKeys = keyof typeof symbolsToGetFromArray
+type SymbolsEquivalentKeys = keyof typeof symbolsToGetFromArray
 
 // Token-specific formatting functions
 export const formatTokenBalance = (balance: string, symbol: SymbolsEquivalentKeys): string => {

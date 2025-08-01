@@ -10,7 +10,7 @@ export function seededShuffle<T>(array: T[], seed: number): T[] {
 }
 
 // Simple seeded random number generator (Mulberry32)
-export function mulberry32(seed: number) {
+function mulberry32(seed: number) {
   return function () {
     let t = (seed += 0x6d2b79f5)
     t = Math.imul(t ^ (t >>> 15), t | 1)

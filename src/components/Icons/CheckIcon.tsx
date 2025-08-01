@@ -31,5 +31,3 @@ export function CheckIcon({
     </svg>
   )
 }
-
-export default CheckIcon

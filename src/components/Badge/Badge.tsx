@@ -1,7 +1,7 @@
 import { Span } from '@/components/Typography'
 import { HtmlHTMLAttributes } from 'react'
 
-export type BadgeProps = { content: string; className: HtmlHTMLAttributes<HTMLSpanElement>['className'] }
+type BadgeProps = { content: string; className: HtmlHTMLAttributes<HTMLSpanElement>['className'] }
 
 export const Badge = ({ content, className }: BadgeProps) => {
   return (

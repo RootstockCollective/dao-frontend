@@ -64,12 +64,12 @@ type ElementType<T> = T extends (infer U)[] ? U : never
 type EventLog = ElementType<ReturnType<typeof parseEventLogs<typeof GovernorAbi, true, 'ProposalCreated'>>>
 export type CreateBuilderProposalEventLog = EventLog & { timeStamp: number }
 
-export type CrProposalCachedEvent = {
+type CrProposalCachedEvent = {
   event: CreateBuilderProposalEventLog
   builder: string
 }
 
-export type ProposalsPerBuilder = Record<CrProposalCachedEvent['builder'], CreateBuilderProposalEventLog[]>
+type ProposalsPerBuilder = Record<CrProposalCachedEvent['builder'], CreateBuilderProposalEventLog[]>
 
 export type ProposalQueryResult<Data> = Omit<Partial<UseQueryResult<Data>>, 'isLoading'> & {
   isLoading: boolean

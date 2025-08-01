@@ -10,7 +10,7 @@ interface SortIndicatorProps extends PropsWithChildren {
   sortEnabled?: boolean
 }
 
-export function SortIndicator({ children, sortDirection, toggleSorting }: SortIndicatorProps) {
+function SortIndicator({ children, sortDirection, toggleSorting }: SortIndicatorProps) {
   return (
     <div className="w-fit flex items-center gap-1 cursor-pointer" onClick={toggleSorting}>
       <div className="flex items-center">

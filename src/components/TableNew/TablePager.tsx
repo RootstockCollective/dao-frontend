@@ -5,7 +5,7 @@ import { cn } from '@/lib/utils'
 import { useEffect, useState } from 'react'
 
 const modes = ['cyclic', 'expandable'] as const
-export type Mode = (typeof modes)[number]
+type Mode = (typeof modes)[number]
 const isMode = (mode: string): mode is Mode => modes.includes(mode as Mode)
 const isExpandable = (mode: Mode) => mode === 'expandable'
 const isCyclic = (mode: Mode) => mode === 'cyclic'
@@ -136,5 +136,3 @@ export const TablePager: React.FC<TablePagerProps> = ({
     </div>
   )
 }
-
-export default TablePager
