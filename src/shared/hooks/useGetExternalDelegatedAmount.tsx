@@ -78,7 +78,7 @@ export const useGetExternalDelegatedAmount = (address: Address | undefined) => {
 
   const isLoading = isDelegateLoading || isVotingPowerLoading || isBalanceLoading
 
-  const didIDelegateToMyself = ownAddress === delegateeAddress
+  const didIDelegateToMyself = ownAddress?.toLowerCase() === delegateeAddress?.toLowerCase()
   const doIHaveVotingPower = (votingPower || 0n) > 0n
 
   let amountDelegatedToMe = 0n
