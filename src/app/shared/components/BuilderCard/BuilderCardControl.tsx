@@ -96,7 +96,6 @@ export const BuilderCardControl: FC<BuilderCardControlProps> = ({
   useEffect(() => {
     // Compare initialAllocations and allocations
     // Find differences between initial and current allocations for this builder
-    if (Object.keys(allocations).length === 0) return
     const uniqueAddresses = [...new Set([...Object.keys(initialAllocations), ...Object.keys(allocations)])]
     const hasChanged = uniqueAddresses.some(
       builderAddress =>
