@@ -48,13 +48,13 @@ const CreateProposalFlow = () => {
   if (!isConnected) {
     return <ConnectWorkflow ConnectComponent={CreateProposalButton} />
   }
-  return <CreateProposalButton onClick={() => push('/proposals/new')} />
+  return <CreateProposalButton onClick={() => push('/proposals/new')} isConnected />
 }
 
-const CreateProposalButton = ({ onClick }: ConnectButtonComponentProps) => {
+const CreateProposalButton = ({ onClick, isConnected = false }: ConnectButtonComponentProps) => {
   const { isLoading, canCreateProposal, threshold } = useVotingPower()
 
-  if (isLoading || !canCreateProposal) {
+  if (isConnected && (isLoading || !canCreateProposal)) {
     const text = isLoading
       ? 'Loading...'
       : `You need at least ${threshold} Voting Power to create a proposal. The easiest way to get more Voting Power is to Stake more RIF.`
