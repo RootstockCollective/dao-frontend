@@ -15,10 +15,11 @@ interface TooltipComponentProps {
     symbol: string
     decimals: number
   }
+  isRBTC: boolean
   error?: string
 }
 
-const TooltipComponent = ({ text, token }: TooltipComponentProps) => {
+const TooltipComponent = ({ text, token, isRBTC }: TooltipComponentProps) => {
   const [error, setError] = useState<string | null>(null)
 
   const addTokenToWallet = async () => {
@@ -34,7 +35,7 @@ const TooltipComponent = ({ text, token }: TooltipComponentProps) => {
   return (
     <div className="p-6">
       <Paragraph variant="body-s">{text}</Paragraph>
-      {!error ? (
+      {!error && !isRBTC ? (
         <Button
           className="mt-2 border-[1px] border-solid border-bg-100"
           variant="transparent"
@@ -77,6 +78,7 @@ export const BalanceInfoForUser = ({ symbol }: Props) => {
         <TooltipComponent
           text={`Token Price: ${formatCurrency(price)}`}
           token={{ symbol: symbolToUse, decimals: 18, address: tokenContracts[symbol] }}
+          isRBTC={symbol === 'RBTC'}
         />
       }
       fiatAmount={fiatAmount}
