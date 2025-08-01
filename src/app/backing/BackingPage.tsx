@@ -3,7 +3,7 @@
 import { BackingBanner } from '@/app/backing/components/BackingBanner/BackingBanner'
 import { BackingInfoTitleControl } from '@/app/backing/components/BackingInfoTitle/BackingInfoTitleControl'
 import { BackingInfoContainer } from '@/app/backing/components/Container/BackingInfoContainer/BackingInfoContainer'
-import { AnnualBackersIncentives } from '@/app/backing/components/Metrics/AnnualBackersIncentives'
+import { GlobalAnnualBackersIncentives } from '@/app/backing/components/Metrics/GlobalAnnualBackersIncentives'
 import { EstimatedRewardsMetric } from '@/app/backing/components/Metrics/EstimatedRewardsMetric'
 import {
   Allocations,
@@ -22,7 +22,7 @@ import { Address } from 'viem'
 import { useAccount } from 'wagmi'
 import { AvailableBackingMetric, TotalBackingMetric } from './components'
 import { BuilderAllocationBar } from './components/BuilderAllocationBar'
-import { AnnualBackingIncentives } from './components/Metrics/AnnualBackingIncentives'
+import { BackerAnnualBackersIncentives } from './components/Metrics/BackerAnnualBackersIncentives'
 import { Spotlight } from './components/Spotlight'
 
 const NAME = 'Backing'
@@ -114,7 +114,7 @@ export const BackingPage = () => {
             <BackingBanner />
           </BackingInfoContainer>
           <MetricsContainer className="grow-[3] h-full bg-v3-bg-accent-80">
-            <AnnualBackersIncentives />
+            <GlobalAnnualBackersIncentives />
             <EstimatedRewardsMetric />
           </MetricsContainer>
         </div>
@@ -141,7 +141,7 @@ export const BackingPage = () => {
                 </div>
                 {hasAllocations && (
                   <div className="basis-1/2">
-                    <AnnualBackingIncentives />
+                    <BackerAnnualBackersIncentives />
                   </div>
                 )}
               </div>

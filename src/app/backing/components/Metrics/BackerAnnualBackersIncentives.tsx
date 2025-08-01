@@ -8,7 +8,7 @@ import { Header } from '@/components/TypographyNew'
 import { Typography } from '@/components/TypographyNew/Typography'
 import { ABIFormula } from '../ABIFormula'
 
-export const AnnualBackingIncentives = () => {
+export const BackerAnnualBackersIncentives = () => {
   const { address: backer } = useAccount()
   const { data: abiPct, isLoading, error } = useGetBackerABI(backer as Address)
   useHandleErrors({ error, title: 'Error loading backers abi' })

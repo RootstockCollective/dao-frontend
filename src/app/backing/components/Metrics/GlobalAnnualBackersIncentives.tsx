@@ -4,7 +4,7 @@ import { AnnualBackerIncentivesLoader } from '@/app/shared/components/AnnualBack
 import { LoadingSpinner } from '@/components/LoadingSpinner'
 import { ABIFormula } from '../ABIFormula'
 
-export const AnnualBackersIncentives = () => {
+export const GlobalAnnualBackersIncentives = () => {
   return (
     <AnnualBackerIncentivesLoader
       render={({ data: abiPct, isLoading }) =>
