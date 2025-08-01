@@ -7,7 +7,7 @@ export const formatMetrics = (amount: bigint, price: BigSource, symbol: string, 
   const fiatAmount = getFiatAmount(amount, price)
 
   return {
-    amount: `${formatSymbol(amount, symbol)} ${symbol}`,
+    amount: `${formatSymbol(amount, symbol)}`,
     fiatAmount: formatFiatAmount(fiatAmount, currency),
   }
 }
