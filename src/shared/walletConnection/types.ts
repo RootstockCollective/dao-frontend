@@ -11,6 +11,7 @@ export interface DisclaimerFlowProps {
 
 export interface ConnectButtonComponentProps extends CommonComponentProps<HTMLButtonElement> {
   textClassName?: HTMLAttributes<HTMLSpanElement>['className']
+  isConnected?: boolean
 }
 
 export interface ConnectWorkflowProps {
