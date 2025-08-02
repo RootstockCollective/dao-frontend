@@ -54,6 +54,7 @@
     "moment": "^2.30.1",
     "motion": "^12.0.11",
     "next": "^15.4.5",
+    "next-navigation-guard": "^0.2.0",
     "pg": "^8.16.0",
     "react": "^19.1.0",
     "react-dom": "^19.1.0",
