@@ -10,7 +10,7 @@ import { MenuData, menuData, menuDataNotConnected } from './menuData'
 import { RootstockLogoIcon } from '@/components/Icons'
 import { useLayoutContext } from '../LayoutProvider'
 import { Tooltip } from '@/components/Tooltip'
-import { Span } from '@/components/TypographyNew'
+import { Label } from '@/components/TypographyNew'
 import { ClassValue } from 'clsx'
 import { useAccount } from 'wagmi'
 import Image from 'next/image'
@@ -69,7 +69,7 @@ export const SidebarDesktop = () => {
                       'className' in data.buttonProps && (data.buttonProps.className as ClassValue),
                     )}
                   >
-                    {isSidebarOpen && <Span variant="tag">{data.text}</Span>}
+                    {isSidebarOpen && <Label variant="tag">{data.text}</Label>}
                   </li>
                 ) : (
                   <MenuItem variants={variants} {...data} />

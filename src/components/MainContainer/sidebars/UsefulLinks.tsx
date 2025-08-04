@@ -1,12 +1,14 @@
-import { Paragraph } from '@/components/Typography/Paragraph'
 import { Link } from '@/components/Link'
 import { usefulLinksData } from './usefulLinksData'
 import { HTMLAttributes } from 'react'
+import { Label, Span } from '@/components/TypographyNew'
 
 export const UsefulLinks = (props: HTMLAttributes<HTMLDivElement>) => (
   <div {...props}>
-    <Paragraph className="text-base font-medium text-warm-gray">Useful links</Paragraph>
-    <ul className="mt-6 space-y-2">
+    <Label variant="tag" className="text-warm-gray">
+      Useful links
+    </Label>
+    <ul className="mt-2 space-y-1">
       {usefulLinksData.map(({ href, testId, content }) => (
         <li key={href}>
           <Link
@@ -16,7 +18,9 @@ export const UsefulLinks = (props: HTMLAttributes<HTMLDivElement>) => (
             target="_blank"
             data-testid={testId}
           >
-            {content}
+            <Span variant="body-s" bold>
+              {content}
+            </Span>
           </Link>
         </li>
       ))}
