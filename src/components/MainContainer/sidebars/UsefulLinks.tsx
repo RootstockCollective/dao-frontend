@@ -1,13 +1,13 @@
 import { Link } from '@/components/Link'
 import { usefulLinksData } from './usefulLinksData'
 import { HTMLAttributes } from 'react'
-import { Label, Span } from '@/components/TypographyNew'
+import { Span } from '@/components/TypographyNew'
 
 export const UsefulLinks = (props: HTMLAttributes<HTMLDivElement>) => (
   <div {...props}>
-    <Label variant="tag" className="text-warm-gray">
+    <Span variant="tag" className="text-warm-gray">
       Useful links
-    </Label>
+    </Span>
     <ul className="mt-2 space-y-1">
       {usefulLinksData.map(({ href, testId, content }) => (
         <li key={href}>
