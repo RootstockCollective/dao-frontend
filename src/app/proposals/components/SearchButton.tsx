@@ -21,6 +21,7 @@ export function SearchButton({
       disabled={disabled}
       onClick={() => setIsOpen(!isOpen)}
       className={cn({ 'opacity-50': disabled }, className)}
+      data-testid="SearchButton"
       {...props}
     >
       <SearchIconKoto className="scale-90" color={isFiltering ? 'var(--color-primary)' : undefined} />
