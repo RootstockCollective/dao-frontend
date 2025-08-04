@@ -16,11 +16,12 @@ export const ImageDebris = ({ image }: Props) => {
   const { extractPixelsByConfig } = usePixelExtractor()
   useEffect(() => {
     extractPixelsByConfig(image).then(data => setDebris(data))
-  }, [])
+  }, []) // eslint-disable-line react-hooks/exhaustive-deps
 
   return (
     <>
       {debris.map(debri => (
+        // eslint-disable-next-line @next/next/no-img-element
         <img
           key={`${debri.coordinates.x}${debri.coordinates.y}${debri.className}`}
           src={debri.data}

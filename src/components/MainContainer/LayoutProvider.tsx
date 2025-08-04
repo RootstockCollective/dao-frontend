@@ -12,6 +12,7 @@ import {
   useState,
   useEffect,
   useRef,
+  useCallback,
 } from 'react'
 import { usePathname } from 'next/navigation'
 import useLocalStorageState from 'use-local-storage-state'
@@ -47,9 +48,9 @@ export function LayoutProvider({ children }: PropsWithChildren) {
   const [isSidebarOpen, setIsSidebarOpen] = useLocalStorageState<boolean>('menu-sidebar-open', {
     defaultValue: isDesktop,
   })
-  const toggleSidebar = () => setIsSidebarOpen(state => !state)
-  const openSidebar = () => setIsSidebarOpen(true)
-  const closeSidebar = () => setIsSidebarOpen(false)
+  const toggleSidebar = useCallback(() => setIsSidebarOpen(state => !state), [setIsSidebarOpen])
+  const openSidebar = useCallback(() => setIsSidebarOpen(true), [setIsSidebarOpen])
+  const closeSidebar = useCallback(() => setIsSidebarOpen(false), [setIsSidebarOpen])
 
   const [drawerContent, setDrawerContent] = useState<ReactNode | null>(null)
   const [isDrawerOpen, setIsDrawerOpen] = useState(false)
@@ -149,7 +150,7 @@ export function LayoutProvider({ children }: PropsWithChildren) {
       subfooter,
       setSubfooter,
     }),
-    [isSidebarOpen, isDrawerOpen, drawerContent, subfooter],
+    [isSidebarOpen, isDrawerOpen, drawerContent, subfooter, toggleSidebar, openSidebar, closeSidebar],
   )
   return <LayoutContext.Provider value={value}>{children}</LayoutContext.Provider>
 }

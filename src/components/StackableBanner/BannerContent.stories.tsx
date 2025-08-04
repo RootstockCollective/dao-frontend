@@ -9,6 +9,7 @@ const meta: Meta<typeof BannerContent> = {
   title: 'Components/StackableBanner/BannerContent',
   component: BannerContent,
   tags: ['autodocs'],
+  excludeStories: /.*Args$/,
   decorators: [
     Story => (
       <div className="bg-white">
