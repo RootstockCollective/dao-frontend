@@ -34,11 +34,17 @@ export function FilterSideBar({
             selected={!currentFilter}
             option="All categories"
             onClick={() => setCurrentFilter('')}
+            data-testid="AllCategories"
           />
         </li>
         {filterOptions.map((option, i) => (
           <li key={i}>
-            <FilterRadioItem selected={option === currentFilter} option={option} onClick={setCurrentFilter} />
+            <FilterRadioItem
+              selected={option === currentFilter}
+              option={option}
+              onClick={setCurrentFilter}
+              data-testid={`FilterOption-${option}`}
+            />
           </li>
         ))}
       </ul>
