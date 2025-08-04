@@ -24,7 +24,7 @@ export const usefulLinksData: UsefulLink[] = [
     content: (
       <div className="inline-flex">
         Get RIF
-        <TokenImage className={'ml-[4px]'} symbol={'RIF'} size={16} />
+        <TokenImage className="ml-1" symbol="RIF" size={16} />
       </div>
     ),
   },
@@ -33,8 +33,8 @@ export const usefulLinksData: UsefulLink[] = [
     testId: 'GetRBTCLink',
     content: (
       <div className="inline-flex">
-        Get RBTC
-        <TokenImage className={'ml-[4px]'} symbol={'RBTC'} size={16} />
+        Get rBTC
+        <TokenImage className="ml-1" symbol="RBTC" size={16} />
       </div>
     ),
   },
