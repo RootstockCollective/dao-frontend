@@ -179,7 +179,7 @@ const getStartedData = (router: AppRouterInstance): DropdownItem[] => [
   {
     id: RBTC,
     Icon: props => <NumberIcon number="1" {...props} />,
-    title: 'GET RBTC',
+    title: 'GET rBTC',
     text: 'Learn more about rBTC',
     onClick: () => onExternal(currentLinks.rbtc),
     TitleIcon: (props: TokenImageWithPreconfigutedSymbol) => (
