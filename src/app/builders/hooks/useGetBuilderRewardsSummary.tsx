@@ -7,9 +7,8 @@ import { usePricesContext } from '@/shared/context'
 import { useReadGauges } from '@/shared/hooks/contracts'
 import { useMemo } from 'react'
 import { TOKENS } from '@/lib/tokens'
-import { Address } from 'viem'
 
-export const useGetBuilderRewardsSummary = (backer?: Address, currency = 'USD') => {
+export const useGetBuilderRewardsSummary = (currency = 'USD') => {
   const { rif, rbtc } = TOKENS
   const {
     data: estimatedRewards,
@@ -40,21 +39,6 @@ export const useGetBuilderRewardsSummary = (backer?: Address, currency = 'USD') 
     error: logsError,
   } = useGetGaugesNotifyReward(gauges, undefined, fromTimestamp, toTimestamp)
 
-  const {
-    data: allocationOf,
-    isLoading: allocationOfLoading,
-    error: allocationOfError,
-  } = useReadGauges(
-    {
-      addresses: gauges,
-      functionName: 'allocationOf',
-      args: [backer as Address],
-    },
-    {
-      enabled: !!backer,
-    },
-  )
-
   const { prices } = usePricesContext()
 
   const data: BuilderRewardsSummary[] = useMemo(() => {
@@ -78,19 +62,17 @@ export const useGetBuilderRewardsSummary = (backer?: Address, currency = 'USD') 
     return estimatedRewards.map((builder, index) => {
       const { gauge } = builder
 
-      const builderTotalAllocation = totalAllocation[index] ?? 0n
+      const builderAllocation = totalAllocation[index] ?? 0n
       const totalAllocationPercentage = sumTotalAllocation
-        ? (builderTotalAllocation * 100n) / sumTotalAllocation
+        ? (builderAllocation * 100n) / sumTotalAllocation
         : 0n
 
       const rifLastCycleRewardsAmount = rifBuildersRewardsAmount[gauge] ?? 0n
       const rbtcLastCycleRewardsAmount = rbtcBuildersRewardsAmount[gauge] ?? 0n
 
-      const backerAllocation = allocationOf[index] ?? 0n
-
       return {
         ...builder,
-        backerAllocation,
+        totalAllocation: builderAllocation,
         totalAllocationPercentage,
         lastCycleRewards: {
           rif: {
@@ -112,31 +94,16 @@ export const useGetBuilderRewardsSummary = (backer?: Address, currency = 'USD') 
         },
       }
     })
-  }, [
-    estimatedRewards,
-    totalAllocation,
-    notifyRewardEventLastCycle,
-    prices,
-    rif,
-    rbtc,
-    currency,
-    allocationOf,
-  ])
+  }, [estimatedRewards, totalAllocation, notifyRewardEventLastCycle, prices, rif, rbtc, currency])
 
   const isLoading =
     estimatedRewardsLoading ||
-    allocationOfLoading ||
     totalAllocationLoading ||
     lastCycleRewardsLoading ||
     logsLoading ||
     cycleLoading
   const error =
-    estimatedRewardsError ||
-    allocationOfError ||
-    totalAllocationError ||
-    lastCycleRewardsError ||
-    logsError ||
-    cycleError
+    estimatedRewardsError || totalAllocationError || lastCycleRewardsError || logsError || cycleError
 
   return {
     data,

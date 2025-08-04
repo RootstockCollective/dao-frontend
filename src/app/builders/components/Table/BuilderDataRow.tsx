@@ -52,7 +52,7 @@ export const convertDataToRowData = (
   if (!data.length) return []
 
   return data.map<{ id: Address; data: ColumnIdToCellPropsMap }>(builder => {
-    const allocation = builder.backerAllocation ?? 0n
+    const allocation = builder.totalAllocation ?? 0n
     const actionType = getActionType(builder, allocation > 0n)
 
     const rifPrice = prices[RIF]?.price ?? 0
