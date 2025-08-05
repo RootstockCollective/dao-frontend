@@ -1,6 +1,6 @@
 import { HeaderTitle } from '@/components/Typography'
 import { Label } from '@/components/TypographyNew'
-import { formatCurrency, formatNumberWithCommas } from '@/lib/utils'
+import { formatCurrencyWithLabel, formatNumberWithCommas } from '@/lib/utils'
 import { BalanceInfo } from '@/components/BalanceInfo'
 import { useStRifHoldings } from '../hooks/useStRifHoldings'
 
@@ -21,7 +21,7 @@ export const MetricsSection = () => {
           title="Total stRIF"
           amount={`${formatNumberWithCommas(stRifBalance)}`}
           symbol="stRIF"
-          fiatAmount={formatCurrency(stRifUsdBalance, { showCurrency: true })}
+          fiatAmount={formatCurrencyWithLabel(stRifUsdBalance)}
         />
         <BalanceInfo
           className="max-w-[214px] min-w-[180px]"

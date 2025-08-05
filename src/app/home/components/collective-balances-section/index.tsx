@@ -2,7 +2,7 @@ import { useTreasuryContext } from '@/app/treasury/contexts/TreasuryContext'
 import { useStRifHoldings } from '@/app/treasury/hooks/useStRifHoldings'
 import { BalanceInfo } from '@/components/BalanceInfo'
 import { Header } from '@/components/TypographyNew'
-import { formatCurrency } from '@/lib/utils'
+import { formatCurrencyWithLabel } from '@/lib/utils'
 import Big from '@/lib/big'
 import { formatTokenBalance } from '@/app/user/Balances/balanceUtils'
 
@@ -54,7 +54,7 @@ export const CollectiveBalancesSection = () => {
           title={'RIF total'}
           amount={formatTokenBalance(rifTotal.toString(), 'RIF')}
           symbol="RIF"
-          fiatAmount={formatCurrency(rifFiatTotal, { showCurrency: true })}
+          fiatAmount={formatCurrencyWithLabel(rifFiatTotal)}
           tooltipContent={'This is the grand total of RIF in all parts of the Collective.'}
         />
         <BalanceInfo
@@ -70,7 +70,7 @@ export const CollectiveBalancesSection = () => {
           title={'USDRIF total'}
           amount={formatTokenBalance(usdRifTotal.toString(), 'USDRIF')}
           symbol="USDRIF"
-          fiatAmount={formatCurrency(usdRifTotal, { showCurrency: true })}
+          fiatAmount={formatCurrencyWithLabel(usdRifTotal)}
           tooltipContent={'This is the grand total of USDRIF in all parts of the Collective.'}
         />
         <BalanceInfo
@@ -78,7 +78,7 @@ export const CollectiveBalancesSection = () => {
           title={'rBTC total'}
           symbol="RBTC"
           amount={formatTokenBalance(rbtcTotal.toString(), 'RBTC')}
-          fiatAmount={formatCurrency(rbtcFiatTotal, { showCurrency: true })}
+          fiatAmount={formatCurrencyWithLabel(rbtcFiatTotal)}
           tooltipContent={'This is the grand total of rBTC in all parts of the Collective.'}
         />
       </div>

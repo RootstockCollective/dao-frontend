@@ -1,9 +1,8 @@
-import { useGetBuilderRewardsClaimedLogs } from '@/app/collective-rewards/rewards'
+import { formatMetrics, useGetBuilderRewardsClaimedLogs } from '@/app/collective-rewards/rewards'
 import { TOKENS } from '@/lib/tokens'
 import { usePricesContext } from '@/shared/context/PricesContext'
 import { useReadGauge } from '@/shared/hooks/contracts/collective-rewards/useReadGauge'
 import { Address } from 'viem'
-import { formatRewards } from '@/app/my-rewards/utils'
 import { useMemo } from 'react'
 
 interface UseBuilderAllTimeRewardsProps {
@@ -54,7 +53,7 @@ export const useGetBuilderAllTimeRewards = ({ gauge }: UseBuilderAllTimeRewardsP
   const rifTotalRewards = useMemo(() => {
     const rifTotalRewards = rifTotalClaimedRewards + (rifClaimableRewards ?? 0n)
     const rifPrice = prices[rif.symbol]?.price ?? 0
-    return formatRewards(rifTotalRewards, rifPrice, rif.symbol)
+    return formatMetrics(rifTotalRewards, rifPrice, rif.symbol)
   }, [rifTotalClaimedRewards, rifClaimableRewards, prices, rif.symbol])
 
   // Calculate total claimed rewards for rBTC
@@ -67,7 +66,7 @@ export const useGetBuilderAllTimeRewards = ({ gauge }: UseBuilderAllTimeRewardsP
   const rbtcTotalRewards = useMemo(() => {
     const rbtcTotalRewards = rbtcTotalClaimedRewards + (rbtcClaimableRewards ?? 0n)
     const rbtcPrice = prices[rbtc.symbol]?.price ?? 0
-    return formatRewards(rbtcTotalRewards, rbtcPrice, rbtc.symbol)
+    return formatMetrics(rbtcTotalRewards, rbtcPrice, rbtc.symbol)
   }, [rbtcTotalClaimedRewards, rbtcClaimableRewards, prices, rbtc.symbol])
 
   return {

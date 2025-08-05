@@ -5,14 +5,8 @@ import { usePricesContext } from '@/shared/context/PricesContext'
 import { TOKENS } from '@/lib/tokens'
 import { useGetGaugesArray } from '@/app/collective-rewards/user'
 import { Address } from 'viem'
-import {
-  formatSymbol,
-  getFiatAmount,
-  Token,
-  useGetGaugesNotifyReward,
-} from '@/app/collective-rewards/rewards'
+import { formatMetrics, Token, useGetGaugesNotifyReward } from '@/app/collective-rewards/rewards'
 import { useHandleErrors } from '@/app/collective-rewards/utils'
-import { formatCurrency } from '@/lib/utils'
 import { LoadingSpinner } from '@/components/LoadingSpinner'
 import { MetricTitle } from '@/components/Metric'
 import { Paragraph } from '@/components/TypographyNew'
@@ -47,11 +41,7 @@ const TokenRewards = ({ gauges, token: { address, symbol } }: TokenRewardsProps)
   )
 
   const price = prices[symbol]?.price ?? 0
-  const amount = formatSymbol(totalRewards, symbol)
-  const fiatAmount = formatCurrency(getFiatAmount(totalRewards, price), {
-    currency: 'USD',
-    showCurrency: true,
-  })
+  const { amount, fiatAmount } = formatMetrics(totalRewards, price, symbol)
 
   return <TokenAmountDisplay amount={amount} tokenSymbol={symbol} amountInCurrency={fiatAmount} />
 }

@@ -119,7 +119,7 @@ export const truncateRns = (str: string, length: number): string => {
 
 type FormatCurrencyProps = {
   currency?: string
-  showCurrency?: boolean
+  showCurrencyLabel?: boolean
   showCurrencySymbol?: boolean
 }
 
@@ -138,7 +138,7 @@ type FormatCurrencyProps = {
  */
 export const formatCurrency = (
   amount: BigSource,
-  { currency = 'USD', showCurrency = false, showCurrencySymbol = true }: FormatCurrencyProps = {},
+  { currency = 'USD', showCurrencyLabel = false, showCurrencySymbol = true }: FormatCurrencyProps = {},
 ): string => {
   if (isNaN(Number(amount))) {
     return ''
@@ -162,7 +162,11 @@ export const formatCurrency = (
   }).format(amount.toString() as never)
 
   const result = isBelowMinimumDisplay ? `<${formattedAmount}` : formattedAmount
-  return showCurrency ? `${result} ${currency}` : result
+  return showCurrencyLabel ? `${result} ${currency}` : result
+}
+
+export const formatCurrencyWithLabel = (amount: BigSource, props: FormatCurrencyProps = {}): string => {
+  return formatCurrency(amount, { showCurrencyLabel: true, ...props })
 }
 
 /**
