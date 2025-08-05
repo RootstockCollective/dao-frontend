@@ -5,9 +5,13 @@ import { fetchVoteCastEventByAccountAddress } from '@/app/user/Balances/actions'
 import { Vote, VOTES_MAP } from '@/shared/types'
 import { useEffect, useState } from 'react'
 
-export const parseVoteCastEvents = (address: Address) => async () => {
+export const parseVoteCastEvents = async (address: Address) => {
   try {
     const { data } = await fetchVoteCastEventByAccountAddress(address)
+
+    if (!data) {
+      return []
+    }
 
     const events = parseEventLogs({
       abi: governor.abi,
@@ -18,6 +22,7 @@ export const parseVoteCastEvents = (address: Address) => async () => {
     return events
   } catch (err) {
     console.log('ERROR in parseVoteCastEvents', err)
+    throw new Error('Failed to fetch vote cast events.')
   }
 }
 
@@ -27,16 +32,20 @@ export const useGetVoteForSpecificProposal = (
 ): [Vote | undefined, (vote: Vote | undefined) => void] => {
   const [vote, setVote] = useState<Vote | undefined>(undefined)
 
-  const { data } = useQuery({
-    queryFn: parseVoteCastEvents(address),
-    queryKey: ['VoteCast'],
+  const { data: voteEvents } = useQuery({
+    queryFn: () => parseVoteCastEvents(address),
+    queryKey: ['VoteCast', address],
+    enabled: !!address && !!proposalId, // Query will only run if both address and proposalId are present
   })
 
-  const event = data?.find(event => event.args.proposalId.toString() === proposalId)
+  const event = voteEvents?.find(event => event.args.proposalId.toString() === proposalId)
 
   useEffect(() => {
-    if (event) {
+    if (event?.args?.support !== undefined) {
       setVote(VOTES_MAP.get(event.args.support as number) as Vote)
+    } else {
+      // If no event is found for the given proposalId, ensure the vote state is reset.
+      setVote(undefined)
     }
   }, [event])
 
