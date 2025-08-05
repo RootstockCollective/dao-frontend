@@ -21,6 +21,8 @@ export const ImageDebris = ({ image }: Props) => {
   return (
     <>
       {debris.map(debri => (
+        // We're using a plain <img> tag instead of next/image because the image debris have unknown dimensions,
+        // making it impossible to leverage next/image's optimization features like resizing or lazy loading.
         // eslint-disable-next-line @next/next/no-img-element
         <img
           key={`${debri.coordinates.x}${debri.coordinates.y}${debri.className}`}

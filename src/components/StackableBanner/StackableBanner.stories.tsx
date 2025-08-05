@@ -12,7 +12,7 @@ import {
   currentCycleEndingSoonArgs,
   cycleJustEndedArgs,
   stepsListArgs,
-} from './BannerContent.stories'
+} from './story-utils'
 
 const meta: Meta<typeof StackableBanner> = {
   title: 'Components/StackableBanner',
