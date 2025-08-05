@@ -13,8 +13,8 @@ import { formatSymbol, getFiatAmount } from '@/app/collective-rewards/rewards'
 import { useBuilderContext } from '@/app/collective-rewards/user/context/BuilderContext'
 import { ActionMetricsContainer, ActionsContainer, MetricsContainer } from '@/components/containers'
 import { Header, Span } from '@/components/TypographyNew'
-import { RIF, stRIF, USD } from '@/lib/constants'
-import { formatCurrency } from '@/lib/utils'
+import { RIF, stRIF } from '@/lib/constants'
+import { formatCurrencyWithCode } from '@/lib/utils'
 import { usePricesContext } from '@/shared/context/PricesContext'
 import { useRouter, useSearchParams } from 'next/navigation'
 import { useContext, useMemo } from 'react'
@@ -68,11 +68,8 @@ export const BackingPage = () => {
   const totalBackingLabel = useMemo(() => formatSymbol(totalBacking, stRIF), [totalBacking])
   const availableBackingUSD = useMemo(() => {
     return !availableForBacking || !rifPriceUsd
-      ? formatCurrency(0, { currency: USD, showCurrency: true })
-      : formatCurrency(getFiatAmount(availableForBacking, rifPriceUsd), {
-          currency: USD,
-          showCurrency: true,
-        })
+      ? formatCurrencyWithCode(0)
+      : formatCurrencyWithCode(getFiatAmount(availableForBacking, rifPriceUsd))
   }, [availableForBacking, rifPriceUsd])
   const handleDistributeClick = () => {
     //FIXME: Take into the inactive builders

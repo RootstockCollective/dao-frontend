@@ -18,7 +18,7 @@ import { formatCurrency } from '@/lib/utils'
 import { usePricesContext } from '@/shared/context'
 import { ReactElement, useMemo } from 'react'
 
-export const UnclaimedRewardsMetric = ({ currency = 'USD' }: { currency?: string }): ReactElement => {
+export const UnclaimedRewardsMetric = (): ReactElement => {
   const { prices } = usePricesContext()
   const { data, error } = useBackerRewardsContext()
   const unclaimedRewardsPerToken = useMemo(
@@ -54,11 +54,7 @@ export const UnclaimedRewardsMetric = ({ currency = 'USD' }: { currency?: string
         </Span>
         <div className="flex items-center gap-2">
           <span className="overflow-hidden text-v3-text-100 text-ellipsis font-kk-topo text-[2rem] not-italic font-normal leading-[2.5rem] uppercase">
-            {formatCurrency(usdValue, {
-              currency,
-              showCurrency: false,
-              showCurrencySymbol: false,
-            })}
+            {formatCurrency(usdValue)}
           </span>
           <RifRbtcTooltip rbtcValue={rbtcEarnings} rifValue={rifEarnings}>
             <DottedUnderlineLabel

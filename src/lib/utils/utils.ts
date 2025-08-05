@@ -165,6 +165,10 @@ export const formatCurrency = (
   return showCurrency ? `${result} ${currency}` : result
 }
 
+export const formatCurrencyWithCode = (amount: BigSource, props: FormatCurrencyProps = {}): string => {
+  return formatCurrency(amount, { showCurrency: true, ...props })
+}
+
 /**
  * Formats a number with commas
  * @param num - The number to format

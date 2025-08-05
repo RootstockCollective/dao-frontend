@@ -5,7 +5,7 @@ import Big from '@/lib/big'
 import { formatCurrency } from '@/lib/utils'
 
 const formatAmountWithCurrency = (amount: string, currency: string, currencySymbol = '') =>
-  `${amount} ${currency}`
+  `${currencySymbol}${amount} ${currency}`
 
 describe('formatter', () => {
   const oneEther = parseEther('1')
@@ -102,7 +102,7 @@ describe('formatter', () => {
         price: 10,
         symbol,
         currency,
-        expected: { amount: '<1', fiatAmount: formatAmountWithCurrency('<0.01', currency) },
+        expected: { amount: '<1', fiatAmount: formatAmountWithCurrency('<$0.01', currency) },
       },
     ])(
       'formatMetrics($amount, $price, $symbol, $currency) -> $expected.amount, $expected.fiatAmount',
@@ -140,7 +140,7 @@ describe('formatter', () => {
         price: 10,
         symbol,
         currency,
-        expected: { amount: '<0.00001', fiatAmount: formatAmountWithCurrency('<0.01', currency) },
+        expected: { amount: '<0.00001', fiatAmount: formatAmountWithCurrency('<$0.01', currency) },
       },
       {
         amount: oneEther,
@@ -208,7 +208,7 @@ describe('formatter', () => {
         price: 10,
         symbol,
         currency,
-        expected: { amount: '<1', fiatAmount: formatAmountWithCurrency('<0.01', currency) },
+        expected: { amount: '<1', fiatAmount: formatAmountWithCurrency('<€0.01', currency) },
       },
     ])(
       'formatMetrics($amount, $price, $symbol, $currency) -> $expected.amount, $expected.fiatAmount',

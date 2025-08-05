@@ -5,15 +5,8 @@ import { usePricesContext } from '@/shared/context/PricesContext'
 import { TOKENS } from '@/lib/tokens'
 import { useGetGaugesArray } from '@/app/collective-rewards/user'
 import { Address } from 'viem'
-import {
-  formatMetrics,
-  formatSymbol,
-  getFiatAmount,
-  Token,
-  useGetGaugesNotifyReward,
-} from '@/app/collective-rewards/rewards'
+import { formatMetrics, Token, useGetGaugesNotifyReward } from '@/app/collective-rewards/rewards'
 import { useHandleErrors } from '@/app/collective-rewards/utils'
-import { formatCurrency } from '@/lib/utils'
 import { LoadingSpinner } from '@/components/LoadingSpinner'
 import { MetricTitle } from '@/components/Metric'
 import { Paragraph } from '@/components/TypographyNew'
