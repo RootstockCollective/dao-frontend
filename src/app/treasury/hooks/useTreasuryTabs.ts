@@ -21,7 +21,7 @@ export function useTreasuryTabs() {
       bucket: bucketGroup?.USDRIF,
     },
     {
-      title: 'RBTC',
+      title: 'rBTC',
       bucket: bucketGroup?.RBTC,
     },
   ]
