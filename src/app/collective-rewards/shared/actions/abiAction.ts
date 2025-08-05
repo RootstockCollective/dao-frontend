@@ -2,7 +2,9 @@
 
 import { client } from '@/shared/components/ApolloClient'
 import { gql as apolloGQL } from '@apollo/client'
-import { AbiData } from './hooks/useGetABI'
+import { AbiData } from '../hooks/useGetABI'
+import { unstable_cache } from 'next/cache'
+import { AVERAGE_BLOCKTIME } from '@/lib/constants'
 
 // TODO: Update flags after migration
 const query = apolloGQL`
@@ -35,8 +37,13 @@ const query = apolloGQL`
   }
 `
 
-export async function fetchABIData() {
-  const { data: abiData } = await client.query<AbiData>({ query })
+async function fetchABIData() {
+  const { data } = await client.query<AbiData>({ query })
 
-  return abiData
+  return data
 }
+
+export const getCachedABIData = unstable_cache(fetchABIData, ['cached_abi_data'], {
+  revalidate: AVERAGE_BLOCKTIME,
+  tags: ['cached_abi_data'],
+})
