@@ -2,7 +2,7 @@ import { useBalancesContext } from '@/app/user/Balances/context/BalancesContext'
 import { SupportedTokens } from '@/lib/contracts'
 import { BalanceInfo } from '@/components/BalanceInfo'
 import Big from '@/lib/big'
-import { formatCurrency } from '@/lib/utils'
+import { formatCurrency, formatCurrencyWithLabel } from '@/lib/utils'
 
 interface Props {
   symbol: SupportedTokens
@@ -20,7 +20,7 @@ export const BalanceInfoForUser = ({ symbol }: Props) => {
   const symbolToUse = balances[symbol]?.symbol
   const price = prices[symbol]?.price || 0
   const userBalance = Big(balances[symbol]?.balance || 0)
-  const fiatAmount = formatCurrency(userBalance.mul(price), { showCurrency: true })
+  const fiatAmount = formatCurrencyWithLabel(userBalance.mul(price))
 
   return (
     <BalanceInfo

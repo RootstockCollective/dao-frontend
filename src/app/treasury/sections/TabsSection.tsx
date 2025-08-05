@@ -2,7 +2,7 @@
 import { BalanceInfo } from '@/components/BalanceInfo'
 import { SolidTabs } from '@/components/Tabs'
 import { Label, Paragraph } from '@/components/TypographyNew'
-import { cn, formatCurrency } from '@/lib/utils'
+import { cn, formatCurrencyWithLabel } from '@/lib/utils'
 import { AddressLink } from '../components/AddressLink'
 import { useTreasuryTabs } from '../hooks/useTreasuryTabs'
 import { TreasuryTabKey } from '../types'
@@ -53,7 +53,7 @@ export function TabsSection() {
                         <BalanceInfo
                           amount={bucket?.formattedAmount}
                           symbol={symbol}
-                          fiatAmount={formatCurrency(bucket?.fiatAmount ?? 0, { showCurrency: true })}
+                          fiatAmount={formatCurrencyWithLabel(bucket?.fiatAmount ?? 0)}
                         />
                       </div>
                     ))}
