@@ -43,21 +43,21 @@ const getBucketBalance = (
   [RIF]: {
     amount: bucketBalance[RIF].balance,
     fiatAmount: Big(bucketBalance[RIF].balance)
-      .mul(prices.RIF?.price ?? 0)
+      .mul(prices[RIF]?.price ?? 0)
       .toString(),
     formattedAmount: bucketBalance[RIF].formattedBalance,
   },
   [USDRIF]: {
     amount: bucketBalance[USDRIF].balance,
     fiatAmount: Big(bucketBalance[USDRIF].balance)
-      .mul(prices.USDRIF?.price ?? 1) // Default to 1 if price is unavailable
+      .mul(prices[USDRIF]?.price ?? 1) // Default to 1 if price is unavailable
       .toString(),
     formattedAmount: bucketBalance[USDRIF].formattedBalance,
   },
   [RBTC]: {
     amount: bucketBalance[RBTC].balance,
     fiatAmount: Big(bucketBalance[RBTC].balance)
-      .mul(prices.RBTC?.price ?? 0)
+      .mul(prices[RBTC]?.price ?? 0)
       .toString(),
     formattedAmount: bucketBalance[RBTC].formattedBalance,
   },
