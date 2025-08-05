@@ -1,7 +1,7 @@
 import { AVERAGE_BLOCKTIME } from '@/lib/constants'
 import { useQuery } from '@tanstack/react-query'
 import { Address } from 'viem'
-import { fetchBackerStakingHistory } from '../actions/backerStakingHistoryAction'
+import { fetchBackerStakingHistory } from '../actions/fetchBackerStakingHistory'
 
 export type BackerStakingHistory = {
   id: Address

@@ -1,5 +1,5 @@
 import { useQuery } from '@tanstack/react-query'
-import { getCachedABIData } from '../actions/abiAction'
+import { getCachedABIData } from '../actions/fetchABIData'
 import { AVERAGE_BLOCKTIME } from '@/lib/constants'
 import { useGetABI } from './useGetABI'
 
