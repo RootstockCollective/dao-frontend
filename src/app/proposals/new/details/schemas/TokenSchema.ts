@@ -1,9 +1,9 @@
-import { RIF, RBTC } from '@/lib/constants'
+import { RBTC, RIF, USDRIF } from '@/lib/constants'
 import { z } from 'zod'
 
 // list of available tokens
-export const TOKENS = [RIF, RBTC] as const
-export type TokenType = (typeof TOKENS)[number]
+export const SYMBOLS = [RIF, USDRIF, RBTC] as const
+export type TokenType = (typeof SYMBOLS)[number]
 
 // Constants for token field limits
 export const TOKEN_FIELD_LIMITS = {
@@ -12,7 +12,7 @@ export const TOKEN_FIELD_LIMITS = {
 
 // Base schema for token form field
 export const TokenFieldsSchema = z.object({
-  token: z.enum(TOKENS, {
+  token: z.enum(SYMBOLS, {
     errorMap: () => ({ message: 'Please select a token' }),
   }),
   transferAmount: z
