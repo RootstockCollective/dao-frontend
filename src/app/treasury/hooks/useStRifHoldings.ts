@@ -24,7 +24,7 @@ export function useStRifHoldings(): StRifHoldings {
     const balance = Big(formatEther(data ?? 0n))
     const usdBalance = Big(prices.stRIF?.price ?? 0).mul(balance)
     const totalFunding = Object.values(buckets).reduce(
-      (acc, { RIF, RBTC, USDRIF }) => acc.add(RIF.fiatAmount).add(RBTC.fiatAmount).add(USDRIF.fiatAmount),
+      (acc, { RIF, rBTC, USDRIF }) => acc.add(RIF.fiatAmount).add(rBTC.fiatAmount).add(USDRIF.fiatAmount),
       Big(0),
     )
     return {
