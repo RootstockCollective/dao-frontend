@@ -5,12 +5,14 @@ import { CreatorRowComponent } from './CreatorRowComponent'
 
 interface LatestProposalCardProps {
   proposal: Proposal
+  'data-testid'?: string
 }
 
 export const LatestProposalCard = ({
   proposal: { proposalId, name, category, Starts, proposer },
+  'data-testid': dataTestId,
 }: LatestProposalCardProps) => (
-  <div className="p-6 w-[360px] h-[156px] bg-bg-60">
+  <div className="p-6 w-[360px] h-[156px] bg-bg-60" data-testid={dataTestId}>
     <Link
       className="text-primary group-hover:underline group-hover:text-bg-100 group-hover:decoration-bg-40"
       href={`/proposals/${proposalId}`}

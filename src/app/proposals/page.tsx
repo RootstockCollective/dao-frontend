@@ -60,7 +60,7 @@ const CreateProposalButton = ({ onClick, isConnected = false }: ConnectButtonCom
       : `You need at least ${threshold} Voting Power to create a proposal. The easiest way to get more Voting Power is to Stake more RIF.`
     return (
       <Tooltip text={text} side="right" className="max-w-[200px]">
-        <Button variant="secondary-outline" disabled>
+        <Button variant="secondary-outline" disabled data-testid="CreateProposalButton">
           <Span bold className="text-bg-100">
             Create a proposal
           </Span>
@@ -69,5 +69,9 @@ const CreateProposalButton = ({ onClick, isConnected = false }: ConnectButtonCom
     )
   }
 
-  return <Button onClick={onClick}>Create a proposal</Button>
+  return (
+    <Button onClick={onClick} data-testid="CreateProposalButton">
+      Create a proposal
+    </Button>
+  )
 }

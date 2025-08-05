@@ -124,7 +124,7 @@ export const ConnectedSection = () => {
                 </li>
               </ul>
             </div>
-            <Paragraph>
+            <Paragraph data-testid="DelegateeAddress">
               You have chosen <span className="text-primary">{delegateeAddress}</span> to take part in
               governance decisions on your behalf.
             </Paragraph>
