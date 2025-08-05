@@ -245,7 +245,7 @@ export const BuilderHeaderRow = ({ actions }: BuilderHeaderRowProps): ReactEleme
             <HeaderCell key="backing" columnId="backing" columnTransforms={COLUMN_TRANSFORMS}>
               <HeaderTitle>Backing</HeaderTitle>
             </HeaderCell>
-            <HeaderCell key="allocations" columnId="allocations" columnTransforms={COLUMN_TRANSFORMS}>
+            <HeaderCell key="backingShare" columnId="backingShare" columnTransforms={COLUMN_TRANSFORMS}>
               <HeaderTitle>Backing Share</HeaderTitle>
               <HeaderSubtitle>%</HeaderSubtitle>
             </HeaderCell>
