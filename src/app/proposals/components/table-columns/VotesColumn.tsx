@@ -8,9 +8,15 @@ interface QuorumColumnProps {
   quorumVotes: Big
   quorumAtSnapshot: Big
   className?: ClassNameValue
+  hideQuorumTarget?: boolean
 }
 
-export const QuorumColumn = ({ quorumVotes, quorumAtSnapshot, className }: QuorumColumnProps) => {
+export const QuorumColumn = ({
+  quorumVotes,
+  quorumAtSnapshot,
+  className,
+  hideQuorumTarget,
+}: QuorumColumnProps) => {
   // Calculate the percentage relative to the quorumAtSnapshot
   // If quorumAtSnapshot is 0, percentage defaults to 0
   const percentage = quorumAtSnapshot.eq(0)
@@ -31,7 +37,7 @@ export const QuorumColumn = ({ quorumVotes, quorumAtSnapshot, className }: Quoru
           '-'
         ) : (
           <>
-            {formatNumberWithCommas(quorumAtSnapshot)}&nbsp;|&nbsp;
+            {!hideQuorumTarget && formatNumberWithCommas(quorumAtSnapshot) + ' | '}
             {formatNumberWithCommas(percentage)}%
           </>
         )}

@@ -149,13 +149,21 @@ const LatestProposalsTable = ({ proposals }: LatestProposalsTableProps) => {
           <div className="flex items-center-safe gap-1">
             <p className="mb-1">Quorum</p>
           </div>
-          <p className="text-xs font-normal text-text-40">needed | reached</p>
+          <Paragraph variant="body-xs" className="text-text-40">
+            {isFilterSidebarOpen ? 'reached' : 'needed | reached'}
+          </Paragraph>
         </div>
       ),
       cell: ({ row }) => {
         const quorum = row.original.quorumAtSnapshot
         const { forVotes, abstainVotes } = row.original.votes
-        return <QuorumColumn quorumVotes={forVotes.add(abstainVotes)} quorumAtSnapshot={quorum} />
+        return (
+          <QuorumColumn
+            quorumVotes={forVotes.add(abstainVotes)}
+            quorumAtSnapshot={quorum}
+            hideQuorumTarget={isFilterSidebarOpen}
+          />
+        )
       },
       sortingFn: (a, b) => {
         const getQuorumPercent = (quorum: Big, quorumAtSnapshot: Big) =>
