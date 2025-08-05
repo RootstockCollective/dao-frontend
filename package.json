@@ -41,8 +41,6 @@
     "@tanstack/react-query": "^5.63.0",
     "@tanstack/react-table": "^8.20.5",
     "@trezor/connect-web": "^9.5.5",
-    "@types/big.js": "^6.2.2",
-    "@types/lodash": "^4.17.15",
     "axios": "1.8.4",
     "big.js": "^6.2.2",
     "clsx": "^2.1.1",
@@ -87,8 +85,10 @@
     "@testing-library/dom": "^10.4.0",
     "@testing-library/jest-dom": "^6.5.0",
     "@testing-library/react": "^16.2.0",
+    "@types/big.js": "^6.2.2",
+    "@types/lodash": "^4.17.20",
     "@types/luxon": "^3.4.2",
-    "@types/node": "^22",
+    "@types/node": "^24",
     "@types/pg": "^8.15.2",
     "@types/react": "^19.1.2",
     "@types/react-dom": "^19.1.2",
@@ -117,6 +117,6 @@
     "axios": "1.8.4"
   },
   "engines": {
-    "node": "^22.0.0"
+    "node": "^24.0.0"
   }
 }
