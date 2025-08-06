@@ -9,6 +9,7 @@ import { Button } from '@/components/ButtonNew'
 import { MoneyIconKoto } from '@/components/Icons'
 import { useRef } from 'react'
 import { Span } from '@/components/TypographyNew'
+import { RBTC, RIF, STRIF, USDRIF } from '@/lib/constants'
 
 export const BalancesSection = () => {
   const stakeModal = useModal()
@@ -35,15 +36,15 @@ export const BalancesSection = () => {
     <>
       <div className="flex flex-row justify-between mb-6">
         <div className="flex flex-col gap-4">
-          <BalanceInfoForUser symbol="RIF" />
+          <BalanceInfoForUser symbol={RIF} />
           <StakeButton onClick={stakeModal.openModal} />
         </div>
         <div className="flex flex-col gap-4">
-          <BalanceInfoForUser symbol="stRIF" />
+          <BalanceInfoForUser symbol={STRIF} />
           <UnstakeButton onClick={unstakeModal.openModal} />
         </div>
-        <BalanceInfoForUser symbol="USDRIF" />
-        <BalanceInfoForUser symbol="RBTC" />
+        <BalanceInfoForUser symbol={USDRIF} />
+        <BalanceInfoForUser symbol={RBTC} />
       </div>
       <div>
         {stakeModal.isModalOpened && <StakingFlow onCloseModal={stakeModal.closeModal} />}
@@ -55,7 +56,7 @@ export const BalancesSection = () => {
 
 const StakeButton = ({ onClick }: { onClick: () => void }) => {
   const { balances } = useBalancesContext()
-  const { balance } = balances['RIF']
+  const { balance } = balances[RIF]
   const hasEnoughBalance = Number(balance) > 0
   return (
     <Button
@@ -71,7 +72,7 @@ const StakeButton = ({ onClick }: { onClick: () => void }) => {
 
 const UnstakeButton = ({ onClick }: { onClick: () => void }) => {
   const { balances } = useBalancesContext()
-  const { balance } = balances['stRIF']
+  const { balance } = balances[STRIF]
   const hasEnoughBalance = Number(balance) > 0
   return (
     <Button

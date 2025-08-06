@@ -7,6 +7,7 @@ import { IMAGE_CONFIG } from './config'
 import { useRequiredTokens } from './hooks/useRequiredTokens'
 import { useRouter } from 'next/navigation'
 import { IntroModalContent } from './IntroModalContent'
+import { RBTC, RIF } from '@/lib/constants'
 
 export const IntroModal = () => {
   const introModal = useModal()
@@ -58,8 +59,8 @@ export const IntroModal = () => {
     <IntroModalContent
       tokenStatus={tokenStatus}
       isDesktop={isDesktop}
-      rbtcBalance={balances.RBTC.balance}
-      rifBalance={balances.RIF.balance}
+      rbtcBalance={balances[RBTC].balance}
+      rifBalance={balances[RIF].balance}
       onClose={introModal.closeModal}
       onContinue={handleContinue}
     />

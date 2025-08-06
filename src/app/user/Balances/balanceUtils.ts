@@ -3,12 +3,13 @@ import { tokenContracts } from '@/lib/contracts'
 import { formatEther } from 'viem'
 import { formatNumberWithCommas } from '@/lib/utils'
 import Big from '@/lib/big'
+import { RIF, RBTC, STRIF, USDRIF } from '@/lib/constants'
 
 const symbolsToGetFromArray = {
-  RIF: { equivalentSymbols: ['tRIF', 'RIF'], currentContract: tokenContracts.RIF },
-  RBTC: { equivalentSymbols: ['RBTC', 'tRBTC'], currentContract: tokenContracts.RBTC },
-  stRIF: { equivalentSymbols: ['stRIF', 'FIRts'], currentContract: tokenContracts.stRIF },
-  USDRIF: { equivalentSymbols: ['USDRIF'], currentContract: tokenContracts.USDRIF },
+  [RIF]: { equivalentSymbols: ['tRIF', 'RIF'], currentContract: tokenContracts[RIF] },
+  [RBTC]: { equivalentSymbols: ['rBTC', 'RBTC', 'tRBTC'], currentContract: tokenContracts[RBTC] },
+  [STRIF]: { equivalentSymbols: ['stRIF', 'FIRts'], currentContract: tokenContracts[STRIF] },
+  [USDRIF]: { equivalentSymbols: ['USDRIF'], currentContract: tokenContracts[USDRIF] },
 }
 
 type SymbolsEquivalentKeys = keyof typeof symbolsToGetFromArray
@@ -18,16 +19,13 @@ export const formatTokenBalance = (balance: string, symbol: SymbolsEquivalentKey
   const balanceBig = Big(balance)
 
   switch (symbol) {
-    case 'RIF':
-    case 'stRIF':
-      // RIF and stRIF show whole numbers (floor)
+    case RIF:
+    case STRIF:
       return formatNumberWithCommas(balanceBig.floor())
-    case 'USDRIF':
-      // USDRIF shows up to 2 decimal places
+    case USDRIF:
       return formatNumberWithCommas(balanceBig.toFixedNoTrailing(2))
-    case 'RBTC':
+    case RBTC:
     default:
-      // RBTC shows 5 decimal places
       return formatNumberWithCommas(balanceBig.toFixedNoTrailing(5))
   }
 }

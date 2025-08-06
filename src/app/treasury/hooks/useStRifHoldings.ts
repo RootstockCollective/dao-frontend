@@ -7,6 +7,7 @@ import { tokenContracts } from '@/lib/contracts'
 import { usePricesContext } from '@/shared/context/PricesContext'
 import { useTreasuryContext } from '@/app/treasury/contexts/TreasuryContext'
 import { StRifHoldings } from '../types'
+import { RBTC, RIF, USDRIF } from '@/lib/constants'
 
 /**
  * Fetches and calculates the stRIF token balance, its USD value,
@@ -24,7 +25,7 @@ export function useStRifHoldings(): StRifHoldings {
     const balance = Big(formatEther(data ?? 0n))
     const usdBalance = Big(prices.stRIF?.price ?? 0).mul(balance)
     const totalFunding = Object.values(buckets).reduce(
-      (acc, { RIF, RBTC, USDRIF }) => acc.add(RIF.fiatAmount).add(RBTC.fiatAmount).add(USDRIF.fiatAmount),
+      (acc, b) => acc.add(b[RIF].fiatAmount).add(b[RBTC].fiatAmount).add(b[USDRIF].fiatAmount),
       Big(0),
     )
     return {

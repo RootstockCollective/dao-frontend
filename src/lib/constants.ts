@@ -37,8 +37,8 @@ export const CACHE_REVALIDATE_SECONDS = 20
 
 export const RIF = 'RIF'
 export const USD = 'USD'
-export const RBTC = 'RBTC'
-export const stRIF = 'stRIF'
+export const RBTC = 'rBTC'
+export const STRIF = 'stRIF'
 export const USDRIF = 'USDRIF'
 
 export const GRANT_TOKEN_LIMITS = {

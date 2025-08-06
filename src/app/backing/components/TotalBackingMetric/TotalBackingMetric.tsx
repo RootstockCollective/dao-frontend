@@ -1,4 +1,4 @@
-import { stRIF } from '@/lib/constants'
+import { STRIF } from '@/lib/constants'
 import { TokenAmountDisplay } from '@/components/TokenAmountDisplay'
 
 interface TotalBackingMetricProps {
@@ -6,5 +6,5 @@ interface TotalBackingMetricProps {
 }
 
 export const TotalBackingMetric = ({ totalBacking }: TotalBackingMetricProps) => {
-  return <TokenAmountDisplay label="Total backing" amount={totalBacking} tokenSymbol={stRIF} />
+  return <TokenAmountDisplay label="Total backing" amount={totalBacking} tokenSymbol={STRIF} />
 }

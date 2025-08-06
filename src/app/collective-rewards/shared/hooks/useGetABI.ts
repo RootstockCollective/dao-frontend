@@ -1,5 +1,5 @@
 import Big from '@/lib/big'
-import { WeiPerEther } from '@/lib/constants'
+import { RBTC, RIF, WeiPerEther } from '@/lib/constants'
 import { usePricesContext } from '@/shared/context/PricesContext'
 import { useMemo } from 'react'
 import { Address } from 'viem'
@@ -51,8 +51,8 @@ export const useGetABI = (abiData: AbiData | undefined) => {
     const { builders, cycles } = abiData
     const [{ rewardsERC20, rewardsRBTC }] = cycles
 
-    const rifPrice = prices.RIF?.price ?? 0
-    const rbtcPrice = prices.RBTC?.price ?? 0
+    const rifPrice = prices[RIF]?.price ?? 0
+    const rbtcPrice = prices[RBTC]?.price ?? 0
 
     const cyclePayout = Big(
       getCyclePayout(rifPrice, rbtcPrice, BigInt(rewardsERC20), BigInt(rewardsRBTC)).toString(),

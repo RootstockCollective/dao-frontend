@@ -1,4 +1,4 @@
-import { RBTC, RIF, stRIF } from '@/lib/constants'
+import { RBTC, RIF, STRIF } from '@/lib/constants'
 import { currentLinks } from '@/lib/links'
 import { TokenImage, TokenImageProps } from '../TokenImage'
 import { BulbIcon } from './icons/bulb'
@@ -74,7 +74,7 @@ export const prepareProposalsData: DropdownTopic[] = [
  */
 
 const checkBalancesSteps = (items: DropdownItem[], balances: TokenBalanceRecord) => {
-  if (Big(balances[stRIF].balance).gt(0)) {
+  if (Big(balances[STRIF].balance).gt(0)) {
     return items.splice(0, 3)
   }
 
@@ -197,7 +197,7 @@ const getStartedData = (router: AppRouterInstance): DropdownItem[] => [
     ),
   },
   {
-    id: stRIF,
+    id: STRIF,
     Icon: props => <NumberIcon number="3" {...props} />,
     title: 'STAKE RIF',
     text: 'Learn more about staking',

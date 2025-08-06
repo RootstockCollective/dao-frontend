@@ -1,6 +1,6 @@
 import { Typography } from '@/components/TypographyNew/Typography'
 import { Tooltip } from '@/components/Tooltip'
-import { stRIF } from '@/lib/constants'
+import { STRIF } from '@/lib/constants'
 import { KotoQuestionMarkIcon } from '@/components/Icons/KotoQuestionMarkIcon'
 import { TokenAmountDisplay } from '@/components/TokenAmountDisplay'
 import { Button } from '@/components/ButtonNew'
@@ -74,7 +74,7 @@ export const AvailableBackingMetric = ({
     <TokenAmountDisplay
       label="Available for backing"
       amount={availableForBacking}
-      tokenSymbol={stRIF}
+      tokenSymbol={STRIF}
       amountInCurrency={availableBackingUSD}
       actions={actions}
     />

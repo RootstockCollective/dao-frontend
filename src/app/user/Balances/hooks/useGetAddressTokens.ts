@@ -6,7 +6,7 @@ import { AddressToken } from '@/app/user/types'
 import { useQuery } from '@tanstack/react-query'
 import { axiosInstance } from '@/lib/utils'
 import { TokenInfoReturnType } from '@/app/user/api/tokens/route'
-import { AVERAGE_BLOCKTIME } from '@/lib/constants'
+import { AVERAGE_BLOCKTIME, RBTC } from '@/lib/constants'
 
 const getTokenFunction = (
   tokenAddress: Address,
@@ -73,9 +73,9 @@ export const useGetAddressTokens = (address: Address, chainId?: number) => {
       buildTokenBalanceObject('stRIF', stRIF),
       buildTokenBalanceObject('RIF', RIF),
       {
-        symbol: rbtc?.symbol || 'RBTC',
+        symbol: RBTC,
         balance: rbtc?.value.toString() || '0',
-        contractAddress: zeroAddress,
+        contractAddress: tokenContracts[RBTC],
       },
       buildTokenBalanceObject('USDRIF', USDRIF),
     ] as AddressToken[],

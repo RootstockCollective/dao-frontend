@@ -1,4 +1,5 @@
 import { Address } from 'viem'
+import { RIF, USDRIF, RBTC } from '@/lib/constants'
 
 type BucketItem = {
   amount: string
@@ -7,9 +8,9 @@ type BucketItem = {
 }
 
 export type Bucket = {
-  RIF: BucketItem
-  USDRIF: BucketItem
-  RBTC: BucketItem
+  [RIF]: BucketItem
+  [USDRIF]: BucketItem
+  [RBTC]: BucketItem
 }
 
 interface TreasuryAsset {
