@@ -108,6 +108,7 @@ async function fetchProposals() {
 }
 
 export const getCachedProposals = unstable_cache(fetchProposals, ['cached_proposals'], {
-  revalidate: AVERAGE_BLOCKTIME,
+  // TODO: we may want to reduce this to 20 seconds
+  revalidate: 60,
   tags: ['cached_proposals'],
 })
