@@ -4,8 +4,12 @@ import { BalanceInfo } from '@/components/BalanceInfo'
 import { Header } from '@/components/TypographyNew'
 import { formatCurrencyWithLabel } from '@/lib/utils'
 import Big from '@/lib/big'
-import { formatTokenBalance } from '@/app/user/Balances/balanceUtils'
+import { formatTokenBalance, getTokenBalance } from '@/app/user/Balances/balanceUtils'
 import { RBTC, RIF, STRIF, USDRIF } from '@/lib/constants'
+import { useGetAddressTokens } from '@/app/user/Balances/hooks/useGetAddressTokens'
+import { useAccount } from 'wagmi'
+import { useMemo } from 'react'
+import { treasuryContracts } from '@/lib/contracts'
 
 type BucketTokenSymbol = typeof RBTC | typeof RIF | typeof USDRIF
 type BucketTokenType = 'amount' | 'fiatAmount'
@@ -13,6 +17,19 @@ type BucketTokenType = 'amount' | 'fiatAmount'
 export const CollectiveBalancesSection = () => {
   const { stRifBalance, stRifUsdBalance } = useStRifHoldings()
   const { buckets } = useTreasuryContext()
+  const { chainId } = useAccount()
+
+  // Get token data to determine the actual symbol using the GRANTS bucket address
+  const { data: tokenData } = useGetAddressTokens(treasuryContracts.GRANTS.address, chainId as number)
+
+  // Get the actual symbol for RIF
+  const rifSymbol = useMemo(() => {
+    if (tokenData) {
+      const rifBalance = getTokenBalance(RIF, tokenData)
+      return rifBalance.symbol || RIF
+    }
+    return RIF
+  }, [tokenData])
 
   const calculateTotal = (symbol: BucketTokenSymbol, type: BucketTokenType) =>
     Object.values(buckets).reduce((total, bucket) => {
@@ -32,11 +49,11 @@ export const CollectiveBalancesSection = () => {
       <div className="flex flex-row flex-wrap gap-6 mt-10">
         <BalanceInfo
           className="max-w-[214px] min-w-[180px]"
-          title="RIF total"
+          title={`${rifSymbol} total`}
           amount={formatTokenBalance(rifTotal.toString(), RIF)}
-          symbol={RIF}
+          symbol={rifSymbol}
           fiatAmount={formatCurrencyWithLabel(rifFiatTotal)}
-          tooltipContent={'This is the grand total of RIF in all parts of the Collective.'}
+          tooltipContent={`This is the grand total of ${rifSymbol} in all parts of the Collective.`}
         />
         <BalanceInfo
           className="max-w-[214px] min-w-[180px]"
