@@ -4,7 +4,7 @@ import { client } from '@/shared/components/ApolloClient'
 import { gql as apolloGQL } from '@apollo/client'
 import { AbiData } from '../hooks/useGetABI'
 import { unstable_cache } from 'next/cache'
-import { AVERAGE_BLOCKTIME, CACHE_REVALIDATE_SECONDS } from '@/lib/constants'
+import { CACHE_REVALIDATE_SECONDS } from '@/lib/constants'
 
 // TODO: Update flags after migration
 const query = apolloGQL`
