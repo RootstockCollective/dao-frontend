@@ -30,16 +30,21 @@ export const Subfooter = ({
   const isDesktop = useIsDesktop()
 
   const [showModal, setShowModal] = useState(false)
+  const [isBackPressed, setIsBackPressed] = useState(false)
 
   const { active, accept, reject } = useNavigationGuard({
-    enabled: pathname.startsWith('/proposals/new/details'),
+    enabled: true,
   })
 
   useEffect(() => {
-    if (active) {
+    if (active && isBackPressed && pathname.startsWith('/proposals/new/details')) {
       setShowModal(true)
     }
-  }, [active])
+    // If the active state is true but we are not on the guarded page, we accept navigation
+    else if (active && !pathname.startsWith('/proposals/new/details')) {
+      accept()
+    }
+  }, [active, isBackPressed, accept, pathname])
 
   // --- Modal Button Handlers ---
 
@@ -53,6 +58,17 @@ export const Subfooter = ({
     reject()
   }, [reject])
 
+  const handleBack = useCallback(() => {
+    setIsBackPressed(true)
+    router.back()
+  }, [router])
+
+  const handleNext = () => {
+    setIsBackPressed(false)
+    accept()
+    submitForm()
+  }
+
   if (!isDesktop && isSidebarOpen) return null
 
   return (
@@ -64,10 +80,10 @@ export const Subfooter = ({
       className="sticky bottom-0 z-40"
     >
       <div className="h-[96px] flex items-center justify-center gap-2 bg-bg-60">
-        <Button disabled={backDisabled || disabled} onClick={router.back} variant="secondary-outline">
+        <Button disabled={backDisabled || disabled} onClick={handleBack} variant="secondary-outline">
           Back
         </Button>
-        <Button disabled={nextDisabled || disabled} onClick={submitForm}>
+        <Button disabled={nextDisabled || disabled} onClick={handleNext}>
           {buttonText}
         </Button>
       </div>
