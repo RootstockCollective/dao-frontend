@@ -1,5 +1,7 @@
 import { ComponentProps, ReactNode } from 'react'
 import { Header } from '@/components/TypographyNew'
+import { LoadingSpinner } from '@/components/LoadingSpinner'
+import { withSpinner } from '@/components/LoadingSpinner/withLoadingSpinner'
 
 interface SectionContainerProps {
   title: string
@@ -33,3 +35,5 @@ export const SectionContainer = ({
     <div data-testid="SectionContainerContent">{children}</div>
   </div>
 )
+
+export const SectionContainerWithSpinner = withSpinner(SectionContainer)
