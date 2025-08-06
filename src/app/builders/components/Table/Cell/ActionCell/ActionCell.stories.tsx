@@ -1,4 +1,4 @@
-import type { Meta, StoryObj } from '@storybook/react'
+import type { Meta, StoryObj } from '@storybook/nextjs'
 import { ActionCell } from './ActionCell'
 
 const meta: Meta<typeof ActionCell> = {

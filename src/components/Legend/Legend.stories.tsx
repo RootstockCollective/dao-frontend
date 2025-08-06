@@ -1,4 +1,4 @@
-import type { Meta, StoryObj } from '@storybook/react'
+import type { Meta, StoryObj } from '@storybook/nextjs'
 import { Legend } from './Legend'
 
 const meta: Meta<typeof Legend> = {

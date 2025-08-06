@@ -1,4 +1,4 @@
-import type { Meta, StoryObj } from '@storybook/react'
+import type { Meta, StoryObj } from '@storybook/nextjs'
 import { NewProposalCardExtended } from './NewProposalCardExtended'
 import { newProposalCards, type NewProposalCardExtendedData } from '../newProposalCards.data'
 import { useState } from 'react'

@@ -1,7 +1,7 @@
 // Modal.stories.tsx
 import { Modal } from '@/components/Modal/Modal'
 import { useModal } from '@/shared/hooks/useModal'
-import type { Meta, StoryObj } from '@storybook/react'
+import type { Meta, StoryObj } from '@storybook/nextjs'
 import { useEffect } from 'react'
 
 const meta: Meta<typeof Modal> = {

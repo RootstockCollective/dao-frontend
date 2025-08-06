@@ -1,6 +1,6 @@
 import { TooltipProvider } from '@radix-ui/react-tooltip'
-import type { Meta, StoryObj } from '@storybook/react'
-import { expect, within } from '@storybook/test'
+import type { Meta, StoryObj } from '@storybook/nextjs'
+import { expect, within } from 'storybook/test'
 import { MetricTitle } from './MetricTitle'
 
 const meta: Meta<typeof MetricTitle> = {

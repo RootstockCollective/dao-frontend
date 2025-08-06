@@ -1,5 +1,5 @@
 import { CycleDay } from './CycleDay'
-import type { Meta, StoryObj } from '@storybook/react'
+import type { Meta, StoryObj } from '@storybook/nextjs'
 import { DateTime, Duration } from 'luxon'
 
 const meta: Meta<typeof CycleDay> = {

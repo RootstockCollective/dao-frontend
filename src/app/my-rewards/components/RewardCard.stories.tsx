@@ -1,5 +1,5 @@
 import { RewardCard } from './RewardCard'
-import type { Meta, StoryObj } from '@storybook/react'
+import type { Meta, StoryObj } from '@storybook/nextjs'
 
 const meta: Meta<typeof RewardCard> = {
   title: 'Components/MyRewards/RewardCard',

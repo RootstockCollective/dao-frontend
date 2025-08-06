@@ -1,4 +1,4 @@
-import type { Meta, StoryObj } from '@storybook/react'
+import type { Meta, StoryObj } from '@storybook/nextjs'
 import { BackingInfoTitle } from './BackingInfoTitle'
 import { ContextProviders } from '@/app/providers/ContextProviders'
 

@@ -1,4 +1,4 @@
-import type { Meta, StoryObj } from '@storybook/react'
+import type { Meta, StoryObj } from '@storybook/nextjs'
 import AllocationBar from './AllocationBar'
 import { AllocationChangeData, AllocationItem } from './types'
 import { useState } from 'react'

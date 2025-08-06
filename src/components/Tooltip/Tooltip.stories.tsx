@@ -1,5 +1,5 @@
 import React from 'react'
-import type { Meta, StoryObj } from '@storybook/react'
+import type { Meta, StoryObj } from '@storybook/nextjs'
 import { Tooltip } from './Tooltip'
 import { Button } from '../ButtonNew/Button'
 import { Paragraph } from '../TypographyNew'

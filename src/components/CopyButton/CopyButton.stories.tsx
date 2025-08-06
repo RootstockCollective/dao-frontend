@@ -1,10 +1,10 @@
 import { FC } from 'react'
-import { Meta, StoryObj } from '@storybook/react'
+import { Meta, StoryObj } from '@storybook/nextjs'
 import { CopyButton, CopyButtonProps } from './CopyButton'
 import { shortAddress } from '@/lib/utils'
 import { BsCopyIcon } from '../Icons'
-import { action } from '@storybook/addon-actions'
-import { spyOn } from '@storybook/test'
+import { action } from 'storybook/actions'
+import { spyOn } from 'storybook/test'
 
 const meta = {
   title: 'Components/CopyButton',

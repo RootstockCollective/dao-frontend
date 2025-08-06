@@ -1,4 +1,4 @@
-import type { Meta, StoryObj } from '@storybook/react'
+import type { Meta, StoryObj } from '@storybook/nextjs'
 import CollapsibleWithPreview from './CollapsibleWithPreview'
 
 const meta: Meta<typeof CollapsibleWithPreview> = {

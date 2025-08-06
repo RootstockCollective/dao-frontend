@@ -1,5 +1,5 @@
 import { CycleEndingOn } from './CycleEndingOn'
-import type { Meta, StoryObj } from '@storybook/react'
+import type { Meta, StoryObj } from '@storybook/nextjs'
 import { DateTime } from 'luxon'
 
 const meta: Meta<typeof CycleEndingOn> = {
