@@ -7,7 +7,6 @@ import { GovernorAbi } from '@/lib/abis/Governor'
 import { unstable_cache } from 'next/cache'
 import { gql as apolloGQL } from '@apollo/client'
 import { daoClient } from '@/shared/components/ApolloClient'
-import { AVERAGE_BLOCKTIME } from '@/lib/constants'
 
 const fetchProposalSharedDetails = async () => {
   // Proposal Threshold (from governor)
