@@ -29,8 +29,8 @@ type Story = StoryObj<typeof meta>
 
 export const Default: Story = {
   args: {
-    rbtcValue: '1000000000000000000', // 1 RBTC in wei
-    rifValue: '500000000000000000000', // 500 RIF in wei
+    rbtcValue: BigInt('1000000000000000000'), // 1 RBTC in wei
+    rifValue: BigInt('500000000000000000000'), // 500 RIF in wei
     children: 'Hover me to see tooltip',
   },
 }

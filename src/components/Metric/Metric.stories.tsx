@@ -34,7 +34,7 @@ export const Default: Story = {
         info="The total value of all assets locked in the protocol"
       />
     ),
-    content: (
+    children: (
       <div className="flex items-baseline gap-2">
         <Typography className="text-2xl font-bold">123,456.78</Typography>
         <Typography className="text-sm font-bold">USD</Typography>
@@ -52,7 +52,7 @@ export const WithIcon: Story = {
         info="Number of users who have interacted with the protocol in the last 30 days"
       />
     ),
-    content: (
+    children: (
       <div className="flex items-center gap-2">
         <BedIcon className="w-6 h-6" />
         <span className="text-2xl font-bold">1,234</span>
@@ -64,7 +64,7 @@ export const WithIcon: Story = {
 export const WithCustomContent: Story = {
   args: {
     title: <MetricTitle title="Custom Metric" info="This is a custom metric with complex content" />,
-    content: (
+    children: (
       <div className="flex flex-col gap-1">
         <div className="text-2xl font-bold">$50,000</div>
         <div className="text-sm text-gray-500">+12% from last month</div>
@@ -76,7 +76,7 @@ export const WithCustomContent: Story = {
 export const SimpleTextTitle: Story = {
   args: {
     title: 'Simple Text Title',
-    content: <div className="text-2xl font-bold">$1,234,567</div>,
+    children: <div className="text-2xl font-bold">$1,234,567</div>,
   },
 }
 
@@ -88,7 +88,7 @@ export const WithMetricContent: Story = {
         info="This example uses the MetricContent component"
       />
     ),
-    content: (
+    children: (
       <MetricContent>
         <div className="text-2xl font-bold">$1,234,567</div>
       </MetricContent>
@@ -99,7 +99,7 @@ export const WithMetricContent: Story = {
 export const WithTrendingMetric: Story = {
   args: {
     title: <MetricTitle title="Growth Rate" info="Monthly growth rate of the protocol" />,
-    content: (
+    children: (
       <div className="flex items-center gap-2">
         <TrendingUpIcon className="w-6 h-6 text-green-500" />
         <span className="text-2xl font-bold text-green-500">+15.3%</span>
@@ -118,7 +118,7 @@ export const WithMultipleIcons: Story = {
         </Typography>
       </div>
     ),
-    content: (
+    children: (
       <div className="flex items-center gap-2">
         <DollarSignIcon className="w-5 h-5" />
         <span className="text-2xl font-bold">$2.5M</span>
@@ -136,7 +136,7 @@ export const WithCustomStyling: Story = {
         className="bg-gray-100 p-2 rounded"
       />
     ),
-    content: (
+    children: (
       <div className="bg-blue-50 p-4 rounded-lg">
         <div className="text-2xl font-bold text-blue-600">$75,000</div>
         <div className="text-sm text-blue-400">Custom styled content</div>
@@ -153,7 +153,7 @@ export const WithLongContent: Story = {
         info="This metric shows detailed statistics with multiple lines of information"
       />
     ),
-    content: (
+    children: (
       <div className="flex flex-col gap-2">
         <div className="text-2xl font-bold">$1,234,567</div>
         <div className="text-sm text-gray-500">Total Value Locked</div>
@@ -167,7 +167,7 @@ export const WithLongContent: Story = {
 export const Tested: Story = {
   args: {
     title: <MetricTitle title="Test Metric" info="Test info" />,
-    content: <div>Test content</div>,
+    children: <div>Test content</div>,
   },
   play: async ({ canvasElement }) => {
     const canvas = within(canvasElement)
