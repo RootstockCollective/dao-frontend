@@ -13,7 +13,7 @@ import { GetPricesResult } from '@/app/user/types'
 import { CommonComponentProps } from '@/components/commonProps'
 import { Jdenticon } from '@/components/Header/Jdenticon'
 import { Paragraph } from '@/components/TypographyNew'
-import { RIF, stRIF } from '@/lib/constants'
+import { RIF, STRIF } from '@/lib/constants'
 import { cn } from '@/lib/utils'
 import { BaseColumnId, Row, RowData, useTableActionsContext, useTableContext } from '@/shared/context'
 import { DisclaimerFlow } from '@/shared/walletConnection'
@@ -59,7 +59,7 @@ export const convertDataToRowData = (
     const { amount: formattedAmount, fiatAmount: formattedUsdAmount } = formatMetrics(
       allocation,
       rifPrice,
-      stRIF,
+      STRIF,
     )
 
     return {

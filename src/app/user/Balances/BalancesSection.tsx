@@ -9,7 +9,7 @@ import { Button } from '@/components/ButtonNew'
 import { MoneyIconKoto } from '@/components/Icons'
 import { useRef } from 'react'
 import { Span } from '@/components/TypographyNew'
-import { RBTC, RIF, stRIF, USDRIF } from '@/lib/constants'
+import { RBTC, RIF, STRIF, USDRIF } from '@/lib/constants'
 
 export const BalancesSection = () => {
   const stakeModal = useModal()
@@ -40,7 +40,7 @@ export const BalancesSection = () => {
           <StakeButton onClick={stakeModal.openModal} />
         </div>
         <div className="flex flex-col gap-4">
-          <BalanceInfoForUser symbol={stRIF} />
+          <BalanceInfoForUser symbol={STRIF} />
           <UnstakeButton onClick={unstakeModal.openModal} />
         </div>
         <BalanceInfoForUser symbol={USDRIF} />
@@ -72,7 +72,7 @@ const StakeButton = ({ onClick }: { onClick: () => void }) => {
 
 const UnstakeButton = ({ onClick }: { onClick: () => void }) => {
   const { balances } = useBalancesContext()
-  const { balance } = balances[stRIF]
+  const { balance } = balances[STRIF]
   const hasEnoughBalance = Number(balance) > 0
   return (
     <Button

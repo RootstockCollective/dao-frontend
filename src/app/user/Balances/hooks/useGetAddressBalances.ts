@@ -3,7 +3,7 @@ import { useMemo } from 'react'
 import { getTokenBalance } from '@/app/user/Balances/balanceUtils'
 import { useAccount } from 'wagmi'
 import { Address } from 'viem'
-import { RBTC, RIF, stRIF, USDRIF } from '@/lib/constants'
+import { RBTC, RIF, STRIF, USDRIF } from '@/lib/constants'
 
 export const useGetAddressBalances = () => {
   const { address, chainId } = useAccount()
@@ -15,7 +15,7 @@ export const useGetAddressBalances = () => {
       balances: {
         [RIF]: getTokenBalance(RIF, data),
         [RBTC]: getTokenBalance(RBTC, data),
-        [stRIF]: getTokenBalance(stRIF, data),
+        [STRIF]: getTokenBalance(STRIF, data),
         [USDRIF]: getTokenBalance(USDRIF, data),
       },
     }),

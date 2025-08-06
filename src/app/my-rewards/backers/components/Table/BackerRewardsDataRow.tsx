@@ -20,7 +20,7 @@ import { formatSymbol, getFiatAmount } from '@/app/collective-rewards/rewards/ut
 import { getCombinedFiatAmount } from '@/app/collective-rewards/utils'
 import { ConditionalTooltip } from '@/app/components/Tooltip/ConditionalTooltip'
 import { GetPricesResult } from '@/app/user/types'
-import { RIF, stRIF } from '@/lib/constants'
+import { RIF, STRIF } from '@/lib/constants'
 import { cn, formatCurrencyWithLabel } from '@/lib/utils'
 import { Row, useTableActionsContext, useTableContext } from '@/shared/context'
 import { redirect, RedirectType } from 'next/navigation'
@@ -77,7 +77,7 @@ export const convertDataToRowData = (data: BackerRewards[], prices: GetPricesRes
         },
         backing: {
           amount: builder.totalAllocation.rif.amount.value,
-          formattedAmount: formatSymbol(builder.totalAllocation.rif.amount.value, stRIF),
+          formattedAmount: formatSymbol(builder.totalAllocation.rif.amount.value, STRIF),
           formattedUsdAmount: formatCurrencyWithLabel(
             getFiatAmount(builder.totalAllocation.rif.amount.value, rifPrice),
           ),

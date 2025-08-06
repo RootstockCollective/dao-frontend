@@ -22,7 +22,7 @@ import {
   BB_NFT_ADDRESS,
   USDRIF_ADDRESS,
   RIF,
-  stRIF,
+  STRIF,
   RBTC,
   USDRIF,
 } from './constants'
@@ -30,7 +30,7 @@ import { GovernorAbi } from './abis/Governor'
 
 const tokenContracts = {
   [RIF]: RIF_ADDRESS,
-  [stRIF]: STRIF_ADDRESS,
+  [STRIF]: STRIF_ADDRESS,
   [RBTC]: zeroAddress,
   [USDRIF]: USDRIF_ADDRESS,
 }

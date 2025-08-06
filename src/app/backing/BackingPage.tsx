@@ -13,7 +13,7 @@ import { formatSymbol, getFiatAmount } from '@/app/collective-rewards/rewards'
 import { useBuilderContext } from '@/app/collective-rewards/user/context/BuilderContext'
 import { ActionMetricsContainer, ActionsContainer, MetricsContainer } from '@/components/containers'
 import { Header, Span } from '@/components/TypographyNew'
-import { RIF, stRIF } from '@/lib/constants'
+import { RIF, STRIF } from '@/lib/constants'
 import { formatCurrencyWithLabel } from '@/lib/utils'
 import { usePricesContext } from '@/shared/context/PricesContext'
 import { useRouter, useSearchParams } from 'next/navigation'
@@ -62,10 +62,10 @@ export const BackingPage = () => {
 
   // Format values properly using formatter functions
   const availableForBackingLabel = useMemo(
-    () => formatSymbol(availableForBacking, stRIF),
+    () => formatSymbol(availableForBacking, STRIF),
     [availableForBacking],
   )
-  const totalBackingLabel = useMemo(() => formatSymbol(totalBacking, stRIF), [totalBacking])
+  const totalBackingLabel = useMemo(() => formatSymbol(totalBacking, STRIF), [totalBacking])
   const availableBackingUSD = useMemo(() => {
     return !availableForBacking || !rifPriceUsd
       ? formatCurrencyWithLabel(0)

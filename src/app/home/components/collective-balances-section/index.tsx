@@ -5,7 +5,7 @@ import { Header } from '@/components/TypographyNew'
 import { formatCurrencyWithLabel } from '@/lib/utils'
 import Big from '@/lib/big'
 import { formatTokenBalance } from '@/app/user/Balances/balanceUtils'
-import { RBTC, RIF, stRIF, USDRIF } from '@/lib/constants'
+import { RBTC, RIF, STRIF, USDRIF } from '@/lib/constants'
 
 type BucketTokenSymbol = typeof RBTC | typeof RIF | typeof USDRIF
 type BucketTokenType = 'amount' | 'fiatAmount'
@@ -41,8 +41,8 @@ export const CollectiveBalancesSection = () => {
         <BalanceInfo
           className="max-w-[214px] min-w-[180px]"
           title="stRIF total"
-          symbol={stRIF}
-          amount={formatTokenBalance(stRifBalance.toString(), stRIF)}
+          symbol={STRIF}
+          amount={formatTokenBalance(stRifBalance.toString(), STRIF)}
           fiatAmount={formatCurrencyWithLabel(stRifUsdBalance)}
           tooltipContent={'This is the grand total of stRIF in all parts of the Collective.'}
         />

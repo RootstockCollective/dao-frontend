@@ -9,7 +9,7 @@ import { PendingAllocation } from '../PendingAllocation/PendingAllocation'
 import { RIFToken } from '../RIFToken/RIFToken'
 import { StickySlider } from '../StickySlider/StickySlider'
 import { useExitOnOutsideClick } from '@/app/backing/hooks/useExitOnOutsideClick'
-import { stRIF } from '@/lib/constants'
+import { STRIF } from '@/lib/constants'
 
 interface AllocationInputProps {
   allocation: bigint
@@ -37,7 +37,7 @@ export const AllocationInput: FC<AllocationInputProps> = ({
   setEditing,
 }) => {
   const allocationPercentage = maxAllocation === 0n ? 0 : Number((allocation * 100n) / maxAllocation)
-  const { fiatAmount: amountUsd } = formatMetrics(allocation, rifPriceUsd, stRIF)
+  const { fiatAmount: amountUsd } = formatMetrics(allocation, rifPriceUsd, STRIF)
 
   const inputRef = useRef<HTMLInputElement>(null)
   const containerRef = useRef<HTMLDivElement>(null)
@@ -90,9 +90,9 @@ export const AllocationInput: FC<AllocationInputProps> = ({
             name="allocation"
             autoComplete="off"
             decimalScale={0}
-            placeholder={!disabled ? `max ${formatSymbol(maxAllocation, stRIF)}` : '0'}
+            placeholder={!disabled ? `max ${formatSymbol(maxAllocation, STRIF)}` : '0'}
             className="focus:outline-none focus-visible:outline-none text-left p-0 m-0 border-0 bg-transparent w-full text-[24px]"
-            value={allocation ? formatSymbol(allocation, stRIF) : ''}
+            value={allocation ? formatSymbol(allocation, STRIF) : ''}
             onValueChange={onValueChange}
             isAllowed={isAllowed}
             onFocus={() => !editing && setEditing?.(true)}
@@ -104,8 +104,8 @@ export const AllocationInput: FC<AllocationInputProps> = ({
         <div className="flex items-center gap-1 flex-shrink-0" data-testid="allocationInputActions">
           {allocationTxPending && (
             <PendingAllocation
-              pendingBacking={formatSymbol(allocation, stRIF)}
-              currentBacking={formatSymbol(existentAllocation, stRIF)}
+              pendingBacking={formatSymbol(allocation, STRIF)}
+              currentBacking={formatSymbol(existentAllocation, STRIF)}
             />
           )}
           <RIFToken />

@@ -1,7 +1,7 @@
 import { useMemo } from 'react'
 import { useFetchPrices } from '@/app/user/Balances/hooks/useFetchPrices'
 import { GetPricesResult } from '@/app/user/types'
-import { RIF, RBTC, stRIF, USDRIF } from '@/lib/constants'
+import { RIF, RBTC, STRIF, USDRIF } from '@/lib/constants'
 
 type TokenSymbol = typeof RIF | typeof RBTC
 
@@ -22,7 +22,7 @@ export const useGetSpecificPrices = (): GetPricesResult => {
     () => ({
       [RIF]: getDefaultPriceObject(RIF, query.data),
       [RBTC]: getDefaultPriceObject(RBTC, query.data),
-      [stRIF]: getDefaultPriceObject(RIF, query.data), // stRIF price is the same as RIF
+      [STRIF]: getDefaultPriceObject(RIF, query.data), // stRIF price is the same as RIF
       [USDRIF]: {
         price: 1, // Assuming 1:1 USD parity for USDRIF.
         lastUpdated: new Date().toISOString(),

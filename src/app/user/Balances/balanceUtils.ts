@@ -3,12 +3,12 @@ import { tokenContracts } from '@/lib/contracts'
 import { formatEther } from 'viem'
 import { formatNumberWithCommas } from '@/lib/utils'
 import Big from '@/lib/big'
-import { RIF, RBTC, stRIF, USDRIF } from '@/lib/constants'
+import { RIF, RBTC, STRIF, USDRIF } from '@/lib/constants'
 
 const symbolsToGetFromArray = {
   [RIF]: { equivalentSymbols: ['tRIF', 'RIF'], currentContract: tokenContracts[RIF] },
   [RBTC]: { equivalentSymbols: ['rBTC', 'RBTC', 'tRBTC'], currentContract: tokenContracts[RBTC] },
-  [stRIF]: { equivalentSymbols: ['stRIF', 'FIRts'], currentContract: tokenContracts[stRIF] },
+  [STRIF]: { equivalentSymbols: ['stRIF', 'FIRts'], currentContract: tokenContracts[STRIF] },
   [USDRIF]: { equivalentSymbols: ['USDRIF'], currentContract: tokenContracts[USDRIF] },
 }
 
@@ -20,7 +20,7 @@ export const formatTokenBalance = (balance: string, symbol: SymbolsEquivalentKey
 
   switch (symbol) {
     case RIF:
-    case stRIF:
+    case STRIF:
       return formatNumberWithCommas(balanceBig.floor())
     case USDRIF:
       return formatNumberWithCommas(balanceBig.toFixedNoTrailing(2))

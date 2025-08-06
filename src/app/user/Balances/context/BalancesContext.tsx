@@ -2,7 +2,7 @@ import { createContext, FC, ReactNode, useContext } from 'react'
 import { useGetAddressBalances } from '@/app/user/Balances/hooks/useGetAddressBalances'
 import { useGetSpecificPrices } from '@/app/user/Balances/hooks/useGetSpecificPrices'
 import { GetPricesResult, TokenBalanceRecord } from '@/app/user/types'
-import { RBTC, RIF, stRIF, USDRIF } from '@/lib/constants'
+import { RBTC, RIF, STRIF, USDRIF } from '@/lib/constants'
 import { getTokenBalance } from '../balanceUtils'
 
 interface BalancesContextValue {
@@ -15,7 +15,7 @@ const BalancesContext = createContext<BalancesContextValue>({
   balances: {
     [RBTC]: getTokenBalance(RBTC),
     [RIF]: getTokenBalance(RIF),
-    [stRIF]: getTokenBalance(stRIF),
+    [STRIF]: getTokenBalance(STRIF),
     [USDRIF]: getTokenBalance(USDRIF),
   },
   isBalancesLoading: true,

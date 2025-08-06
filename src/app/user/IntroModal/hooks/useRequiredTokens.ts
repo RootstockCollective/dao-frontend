@@ -1,6 +1,6 @@
 import { useBalancesContext } from '@/app/user/Balances/context/BalancesContext'
 import Big from '@/lib/big'
-import { RBTC, RIF, stRIF } from '@/lib/constants'
+import { RBTC, RIF, STRIF } from '@/lib/constants'
 import { useMemo } from 'react'
 import { useAccount } from 'wagmi'
 import { IntroModalStatus } from '../config'
@@ -32,7 +32,7 @@ export const useRequiredTokens = (): IntroModalStatus | null => {
 
     const hasRbtc = Big(balances[RBTC].balance).gt(0)
     const hasRif = Big(balances[RIF].balance).gt(0)
-    const hasStRif = Big(balances[stRIF].balance).gt(0)
+    const hasStRif = Big(balances[STRIF].balance).gt(0)
 
     const needRbtc = !hasRbtc
     const needRif = !hasRif && !hasStRif
