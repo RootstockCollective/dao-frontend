@@ -33,6 +33,7 @@ export const REWARD_DISTRIBUTOR_ADDRESS = process.env.NEXT_PUBLIC_REWARD_DISTRIB
 export const NFT_BOOSTER_DATA_URL = (process.env.NEXT_PUBLIC_NFT_BOOSTER_DATA_URL as string) ?? ''
 
 export const AVERAGE_BLOCKTIME = 60_000
+export const CACHE_REVALIDATE_SECONDS = 20
 
 export const RIF = 'RIF'
 export const USD = 'USD'
