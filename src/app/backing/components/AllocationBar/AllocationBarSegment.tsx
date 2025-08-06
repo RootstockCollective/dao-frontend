@@ -4,7 +4,7 @@ import { AllocationBarDragHandle } from './AllocationBarDragHandle'
 import { AllocationBarResizeHandle } from './AllocationBarResizeHandle'
 import { AllocationBarValueDisplay, AllocationItem } from './types'
 import { checkerboardStyle, valueToPercentage } from './utils'
-import { Tooltip } from '../../../../components/Tooltip'
+import { Tooltip } from '@/components/Tooltip'
 import MoreIcon from '@/components/Icons/MoreIcon'
 
 const AllocationBarSegmentPercent = ({
