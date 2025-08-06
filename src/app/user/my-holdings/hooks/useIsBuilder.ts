@@ -4,7 +4,11 @@ import { zeroAddress } from 'viem'
 
 export const useIsBuilder = () => {
   const { address } = useAccount()
-  const { data: gauge } = useReadBuilderRegistry(
+  const {
+    data: gauge,
+    isLoading,
+    error,
+  } = useReadBuilderRegistry(
     {
       functionName: 'builderToGauge',
       args: [address ?? zeroAddress],
@@ -18,5 +22,7 @@ export const useIsBuilder = () => {
     isUserBuilder,
     gauge,
     address,
+    isLoading,
+    error,
   }
 }
