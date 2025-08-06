@@ -8,11 +8,31 @@ import {
   calculateNewSegmentValues,
   calculateSegmentPositions,
   clamp,
+  valueToPercentage,
 } from './utils'
 import { AllocationBarProps } from './types'
 import { AllocationBarSegment } from './AllocationBarSegment'
 import { Legend } from '@/components/Legend'
 import { cn } from '@/lib/utils'
+
+const getSegmentsToShowDots = (values: number[], totalValue: number): boolean[] => {
+  const NEIGHBOR_SUM_THRESHOLD = 8 // 8%
+  const segmentsToShowDots = new Array(values.length).fill(false)
+
+  for (let i = 0; i < values.length; i++) {
+    const currentPercentage = valueToPercentage(values[i], totalValue)
+
+    // Check if current segment has a neighbor and their sum is up to the threshold
+    const hasSmallNeighborSum =
+      (i > 0 && currentPercentage + valueToPercentage(values[i - 1], totalValue) <= NEIGHBOR_SUM_THRESHOLD) ||
+      (i < values.length - 1 &&
+        currentPercentage + valueToPercentage(values[i + 1], totalValue) <= NEIGHBOR_SUM_THRESHOLD)
+
+    segmentsToShowDots[i] = hasSmallNeighborSum
+  }
+
+  return segmentsToShowDots
+}
 
 const AllocationBar: React.FC<AllocationBarProps> = ({
   itemsData,
@@ -37,6 +57,9 @@ const AllocationBar: React.FC<AllocationBarProps> = ({
 
   const totalValue = currentValues.reduce((sum, v) => sum + v, 0)
   const minSegmentValue = calculateMinSegmentValue(totalValue)
+
+  // Calculate which segments should show dots
+  const segmentsToShowDots = getSegmentsToShowDots(currentValues, totalValue)
 
   const barRef = useRef<HTMLDivElement>(null)
   const [dragIndex, setDragIndex] = useState<number | null>(null)
@@ -160,6 +183,7 @@ const AllocationBar: React.FC<AllocationBarProps> = ({
                 dragIndex={dragIndex}
                 isDraggable={isDraggable}
                 isResizable={isResizable}
+                showDots={segmentsToShowDots[i]}
               />
             ))}
           </div>
