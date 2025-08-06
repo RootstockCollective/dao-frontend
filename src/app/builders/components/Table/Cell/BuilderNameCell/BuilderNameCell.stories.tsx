@@ -1,5 +1,5 @@
 import { Builder } from '@/app/collective-rewards/types'
-import type { Meta, StoryObj } from '@storybook/react'
+import type { Meta, StoryObj } from '@storybook/nextjs'
 import { BuilderNameCell } from './BuilderNameCell'
 
 const meta: Meta<typeof BuilderNameCell> = {

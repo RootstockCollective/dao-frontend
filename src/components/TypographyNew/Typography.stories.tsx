@@ -2,7 +2,7 @@ import { Header } from './Header'
 import { Label } from './Label'
 import { Paragraph } from './Paragraph'
 import { Typography } from './Typography'
-import type { Meta, StoryObj } from '@storybook/react'
+import type { Meta, StoryObj } from '@storybook/nextjs'
 
 const meta = {
   title: 'Components/TypographyNew',

@@ -1,4 +1,4 @@
-import type { Meta, StoryObj } from '@storybook/react'
+import type { Meta, StoryObj } from '@storybook/nextjs'
 import { ConfirmationModal } from '.'
 import { Button } from '../Button'
 import { useModal } from '@/shared/hooks/useModal'

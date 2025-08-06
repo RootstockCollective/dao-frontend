@@ -1,4 +1,4 @@
-import type { Meta, StoryObj } from '@storybook/react'
+import type { Meta, StoryObj } from '@storybook/nextjs'
 import { AxeIcon, PiIcon } from 'lucide-react'
 import { useState } from 'react'
 import { TableHeaderCell, TableHeaderNode } from '.'

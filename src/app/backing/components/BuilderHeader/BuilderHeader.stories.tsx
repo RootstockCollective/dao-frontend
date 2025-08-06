@@ -1,5 +1,5 @@
 import { BuilderHeader } from './BuilderHeader'
-import type { Meta, StoryObj } from '@storybook/react'
+import type { Meta, StoryObj } from '@storybook/nextjs'
 
 const meta: Meta<typeof BuilderHeader> = {
   title: 'Backing/BuilderHeader',

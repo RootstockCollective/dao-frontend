@@ -1,5 +1,5 @@
 import { RewardsInfo, RewardsInfoProps } from './RewardsInfo'
-import type { Meta, StoryObj } from '@storybook/react'
+import type { Meta, StoryObj } from '@storybook/nextjs'
 import { FC } from 'react'
 import { WeiPerEther } from '@/lib/constants'
 

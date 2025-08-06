@@ -1,4 +1,4 @@
-import type { Meta, StoryObj } from '@storybook/react'
+import type { Meta, StoryObj } from '@storybook/nextjs'
 import { RifRbtcTooltip } from './RifRbtcTooltip'
 
 const meta: Meta<typeof RifRbtcTooltip> = {

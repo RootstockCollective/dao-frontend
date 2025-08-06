@@ -1,4 +1,4 @@
-import type { Meta, StoryObj } from '@storybook/react'
+import type { Meta, StoryObj } from '@storybook/nextjs'
 import { Banner } from './Banner'
 import { BuildersDecorativeSquares } from '../DecorativeSquares'
 import { BackersDecorativeSquares } from '../DecorativeSquares'

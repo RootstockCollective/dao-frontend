@@ -1,7 +1,7 @@
 import { Status } from '@/components/Status'
 import { ProposalState } from '@/shared/types'
-import type { Meta, StoryObj } from '@storybook/react'
-import { expect, spyOn, userEvent, within } from '@storybook/test'
+import type { Meta, StoryObj } from '@storybook/nextjs'
+import { expect, spyOn, userEvent, within } from 'storybook/test'
 
 const meta = {
   title: 'Components/Status',

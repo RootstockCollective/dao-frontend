@@ -1,4 +1,4 @@
-import type { Meta, StoryObj } from '@storybook/react'
+import type { Meta, StoryObj } from '@storybook/nextjs'
 import { HeroComponent } from './HeroComponent'
 import { Button } from '../ButtonNew'
 

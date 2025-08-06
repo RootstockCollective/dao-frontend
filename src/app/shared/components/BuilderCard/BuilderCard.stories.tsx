@@ -1,6 +1,6 @@
 import { percentageToWei } from '@/app/collective-rewards/settings/utils/weiUtils'
 import { AlertProvider } from '@/app/providers/AlertProvider'
-import type { Meta, StoryObj } from '@storybook/react'
+import type { Meta, StoryObj } from '@storybook/nextjs'
 import { getAddress, parseEther } from 'viem'
 import { BuilderCard } from './BuilderCard'
 

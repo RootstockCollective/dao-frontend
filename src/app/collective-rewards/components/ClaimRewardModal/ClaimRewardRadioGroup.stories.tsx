@@ -1,4 +1,4 @@
-import type { Meta, StoryObj } from '@storybook/react'
+import type { Meta, StoryObj } from '@storybook/nextjs'
 import { ClaimRewardRadioGroup } from './ClaimRewardRadioGroup'
 import { useState } from 'react'
 import { RBTC, RIF } from '@/lib/constants'
