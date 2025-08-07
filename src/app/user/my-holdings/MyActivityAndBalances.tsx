@@ -1,11 +1,10 @@
 'use client'
 
 import { MyBacking } from './components/backing'
-import { SectionContainer, SectionContainerWithSpinner } from '@/app/communities/components/SectionContainer'
+import { SectionContainerWithSpinner } from '@/app/communities/components/SectionContainer'
 import { BalancesSection } from '../Balances/BalancesSection'
 import { useIsBuilder } from './hooks/useIsBuilder'
 import { useHandleErrors } from '@/app/collective-rewards/utils'
-import { LoadingSpinner } from '@/components/LoadingSpinner'
 
 const Separator = () => <hr className="w-full bg-bg-60 border-none h-px my-10" />
 
