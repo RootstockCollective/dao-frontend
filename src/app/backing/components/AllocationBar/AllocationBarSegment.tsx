@@ -4,6 +4,7 @@ import { AllocationBarDragHandle } from './AllocationBarDragHandle'
 import { AllocationBarResizeHandle } from './AllocationBarResizeHandle'
 import { AllocationBarValueDisplay, AllocationItem } from './types'
 import { checkerboardStyle, valueToPercentage } from './utils'
+import { AllocationBarTooltip } from './AllocationBarTooltip'
 
 const AllocationBarSegmentPercent = ({
   value,
@@ -81,7 +82,7 @@ export const AllocationBarSegment = ({
   const baseClasses = 'h-full relative overflow-visible flex items-stretch p-0'
   const transitionClasses =
     dragIndex !== null ? 'transition-none' : 'transition-transform duration-200 ease-out'
-  const dragStateClasses = isDragging ? 'opacity-60 z-[99]' : 'opacity-100 z-1'
+  const dragStateClasses = isDragging ? 'opacity-60' : 'opacity-100'
   const borderClasses = `${index === 0 ? 'rounded-l-sm' : ''} ${isLast ? 'rounded-r-sm' : ''}`
 
   return (
@@ -98,8 +99,9 @@ export const AllocationBarSegment = ({
       {/* DRAG HANDLE (always far left) */}
       {isDraggable && <AllocationBarDragHandle attributes={attributes} listeners={listeners} />}
 
-      <div className="flex-1 flex items-center justify-center relative">
+      <div className="flex-1 flex items-center justify-center relative group">
         {<AllocationBarSegmentPercent value={value} totalValue={totalValue} valueDisplay={valueDisplay} />}
+        <AllocationBarTooltip builderAddress={item.key} currentBacking={value} />
       </div>
 
       {/* RESIZE HANDLE (far right, not overlapping drag handle) */}
