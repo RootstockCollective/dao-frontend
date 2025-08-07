@@ -52,6 +52,7 @@ export default function GrantsProposalForm() {
     setSubfooter(
       <Subfooter submitForm={onSubmit} buttonText="Review proposal" nextDisabled={!formState.isValid} />,
     )
+    // to make sure in the Subfooter isBackPressed can be catched and inteceptor can work
     return () => {
       setTimeout(() => setSubfooter(null), 100)
     }
