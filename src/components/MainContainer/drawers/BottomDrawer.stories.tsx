@@ -1,4 +1,4 @@
-import { Meta, StoryObj } from '@storybook/react'
+import { Meta, StoryObj } from '@storybook/nextjs'
 import { BottomDrawer } from './BottomDrawer'
 import { LayoutProvider, useLayoutContext } from '@/components/MainContainer/LayoutProvider'
 import { Button } from '@/components/ButtonNew/Button'

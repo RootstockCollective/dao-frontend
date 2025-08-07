@@ -1,6 +1,5 @@
-import { Token, useBackerRewardsContext } from '@/app/collective-rewards/rewards'
+import { formatMetrics, Token, useBackerRewardsContext } from '@/app/collective-rewards/rewards'
 import { usePricesContext } from '@/shared/context'
-import { formatRewards } from '@/app/my-rewards/utils'
 import { TOKENS } from '@/lib/tokens'
 
 const useBackerRewardsPerToken = ({ symbol, address }: Token) => {
@@ -10,7 +9,7 @@ const useBackerRewardsPerToken = ({ symbol, address }: Token) => {
   const { estimated } = backerRewards[address]
   const totalEstimated = Object.values(estimated).reduce((acc, estimated) => acc + estimated, 0n)
   const price = prices[symbol]?.price ?? 0
-  const formatted = formatRewards(totalEstimated, price, symbol)
+  const formatted = formatMetrics(totalEstimated, price, symbol)
 
   return {
     ...formatted,

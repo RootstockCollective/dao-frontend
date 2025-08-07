@@ -5,17 +5,21 @@ import { LoadingSpinner } from '@/components/LoadingSpinner'
 import { Metric } from '@/components/Metric'
 import { TokenAmount } from '@/components/TokenAmount'
 import { TokenSymbol } from '@/components/TokenImage'
-import { USD } from '@/lib/constants'
+import { RBTC, RIF, USD } from '@/lib/constants'
 import { usePricesContext } from '@/shared/context/PricesContext'
 
 export const EstimatedRewards = () => {
-  let { data: cycleRewards, isLoading: cycleRewardsLoading, error: cycleRewardsError } = useGetCycleRewards()
+  const {
+    data: cycleRewards,
+    isLoading: cycleRewardsLoading,
+    error: cycleRewardsError,
+  } = useGetCycleRewards()
 
   const { prices } = usePricesContext()
 
   useHandleErrors({ error: cycleRewardsError, title: 'Error loading cycle rewards' })
-  const rifPrice = prices.RIF?.price ?? 0
-  const rbtcPrice = prices.RBTC?.price ?? 0
+  const rifPrice = prices[RIF]?.price ?? 0
+  const rbtcPrice = prices[RBTC]?.price ?? 0
 
   const rifData = formatMetrics(cycleRewards?.rif ?? 0n, rifPrice, TokenSymbol.RIF, USD)
   const rbtcData = formatMetrics(cycleRewards?.rbtc ?? 0n, rbtcPrice, TokenSymbol.RBTC, USD)

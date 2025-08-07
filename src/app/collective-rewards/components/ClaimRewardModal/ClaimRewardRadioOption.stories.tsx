@@ -1,4 +1,4 @@
-import type { Meta, StoryObj } from '@storybook/react'
+import type { Meta, StoryObj } from '@storybook/nextjs'
 import { ClaimRewardRadioOption } from './ClaimRewardRadioOption'
 import { useState } from 'react'
 import { ClaimRewardType } from './types'

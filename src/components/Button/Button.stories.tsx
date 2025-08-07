@@ -1,7 +1,7 @@
-import type { Meta, StoryObj } from '@storybook/react'
+import type { Meta, StoryObj } from '@storybook/nextjs'
 import { Button } from '@/components/Button'
 import { LinkIcon } from '@/components/Icons'
-import { userEvent, within, expect, spyOn } from '@storybook/test'
+import { userEvent, within, expect, spyOn } from 'storybook/test'
 
 const meta = {
   title: 'Components/Button',

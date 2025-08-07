@@ -78,12 +78,14 @@ export function DebounceSearch({
         onChange={e => handleChange(e.target.value)}
         placeholder={placeholder}
         className="w-full h-full py-3 px-12 outline-0 text-text-100 font-rootstock-sans placeholder:text-bg-0"
+        data-testid="SearchInput"
       />
       <button
         onClick={() => {
           handleClear()
         }}
         className="absolute right-3 top-1/2 -translate-y-1/2"
+        data-testid="SearchClearButton"
       >
         <CloseIconKoto />
       </button>

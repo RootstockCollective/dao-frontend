@@ -4,7 +4,7 @@ This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next
 
 The following tools are required to be installed:
 
-- [Node.js](https://nodejs.org/en/download) - Version 22 (LTS).
+- [Node.js](https://nodejs.org/en/download) - Version 24 (LTS).
 
 ## Optional development tools
 

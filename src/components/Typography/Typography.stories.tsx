@@ -1,4 +1,4 @@
-import type { Meta, StoryObj } from '@storybook/react'
+import type { Meta, StoryObj } from '@storybook/nextjs'
 import { Span, Typography } from '@/components/Typography'
 import { Paragraph } from '@/components/Typography/Paragraph'
 import { Header } from '@/components/Typography/Header'

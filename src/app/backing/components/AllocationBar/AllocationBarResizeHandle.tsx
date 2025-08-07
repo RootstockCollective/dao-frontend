@@ -9,7 +9,7 @@ export const AllocationBarResizeHandle = ({
 }) => {
   return (
     <div
-      className="w-2 cursor-ew-resize h-full flex items-center justify-center z-10 ml-1 mr-1 bg-transparent absolute -right-0.5 top-0 bottom-0"
+      className="w-2 cursor-ew-resize h-full flex items-center justify-center z-10 ml-1 mr-1 bg-transparent absolute -right-3 top-0 bottom-0"
       onMouseDown={onHandleMouseDown(index)}
     >
       <div

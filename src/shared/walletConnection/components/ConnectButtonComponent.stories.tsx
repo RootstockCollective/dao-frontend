@@ -1,6 +1,6 @@
-import type { Meta, StoryObj } from '@storybook/react'
+import type { Meta, StoryObj } from '@storybook/nextjs'
 import { ConnectButtonComponent, ConnectButtonComponentSecondary } from './ConnectButtonComponent'
-import { userEvent, within, expect } from '@storybook/test'
+import { userEvent, within, expect } from 'storybook/test'
 
 const meta = {
   title: 'Koto/DAO/ConnectButtonComponent',

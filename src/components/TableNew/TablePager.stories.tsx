@@ -1,4 +1,4 @@
-import { Meta, StoryObj } from '@storybook/react'
+import { Meta, StoryObj } from '@storybook/nextjs'
 import { useEffect, useState } from 'react'
 import { Range, TablePager, TablePagerProps } from './TablePager'
 

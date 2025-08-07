@@ -30,6 +30,7 @@ export function FilterButton({
       disabled={disabled}
       onClick={() => setIsOpen(!isOpen)}
       className={cn({ 'opacity-50': disabled }, className)}
+      data-testid="FilterButton"
       {...props}
     >
       {isOpen ? <CloseIcon /> : <FilterIcon color={isFiltering ? 'var(--primary)' : undefined} />}

@@ -1,4 +1,4 @@
-import type { Meta, StoryObj } from '@storybook/react'
+import type { Meta, StoryObj } from '@storybook/nextjs'
 import { useForm, Control } from 'react-hook-form'
 import { TextInput } from './TextInput'
 import { TextArea } from './TextArea'

@@ -1,5 +1,4 @@
-import { Token } from '@/app/collective-rewards/rewards'
-import { formatRewards } from '@/app/my-rewards/utils'
+import { formatMetrics, Token } from '@/app/collective-rewards/rewards'
 import { TOKENS } from '@/lib/tokens'
 import { usePricesContext } from '@/shared/context/PricesContext'
 import { useReadGauge } from '@/shared/hooks/contracts/collective-rewards/useReadGauge'
@@ -33,7 +32,7 @@ const useGetBuilderRewardsPerToken = (gauge: Address, token: Token) => {
   } = useReadGauge({ address: gauge, functionName: 'builderRewards', args: [token.address] })
 
   const price = prices[token.symbol]?.price ?? 0
-  const formatted = formatRewards(rewards ?? 0n, price, token.symbol)
+  const formatted = formatMetrics(rewards ?? 0n, price, token.symbol)
 
   return {
     ...formatted,

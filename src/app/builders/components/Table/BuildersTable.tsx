@@ -44,13 +44,11 @@ const filterMap: Record<BuilderFilterOptionId, (builder: Builder) => boolean> = 
 
 // TODO: this is a temporary solution to filter builders by state.
 type PagedFilter = {
-  backer?: Address
   filterOption: BuilderFilterOptionId
   pageOptions: { start: number; end: number }
   sort: Sort<ColumnId>
 }
 const usePagedFilteredBuildersRewards = ({
-  backer,
   filterOption,
   pageOptions,
   sort,
@@ -59,7 +57,7 @@ const usePagedFilteredBuildersRewards = ({
   isLoading: boolean
   error: Error | null
 } => {
-  const { data: buildersRewardsData, isLoading, error } = useGetBuilderRewardsSummary(backer)
+  const { data: buildersRewardsData, isLoading, error } = useGetBuilderRewardsSummary()
   const { builders } = useBuilderContext()
 
   // we want also the builders without gauges
@@ -86,7 +84,7 @@ const usePagedFilteredBuildersRewards = ({
     const comparators: Partial<
       Record<ColumnId, (a: BuilderRewardsSummary, b: BuilderRewardsSummary) => number>
     > = {
-      builder: (a, b) => (a.builderName || '').localeCompare(b.builderName || ''),
+      builder: (a, b) => a.builderName.localeCompare(b.builderName),
 
       backer_rewards: (a, b) =>
         Number((a.backerRewardPct?.current ?? 0n) - (b.backerRewardPct?.current ?? 0n)),
@@ -117,7 +115,7 @@ const usePagedFilteredBuildersRewards = ({
         return Big(aValue).sub(bValue).toNumber()
       },
 
-      backing: (a, b) => Number((a.backerAllocation ?? 0n) - (b.backerAllocation ?? 0n)),
+      backing: (a, b) => Number((a.totalAllocation ?? 0n) - (b.totalAllocation ?? 0n)),
 
       allocations: (a, b) =>
         Number((a.totalAllocationPercentage ?? 0n) - (b.totalAllocationPercentage ?? 0n)),
@@ -143,7 +141,7 @@ const usePagedFilteredBuildersRewards = ({
 export const BuildersTable = ({ filterOption }: { filterOption: BuilderFilterOptionId }) => {
   const [pageEnd, setPageEnd] = useState(PAGE_SIZE)
 
-  const { address: userAddress, isConnected } = useAccount()
+  const { isConnected } = useAccount()
 
   const { rows, columns, selectedRows, sort } = useTableContext<ColumnId>()
   const [actions, setActions] = useState<Action[]>([])
@@ -154,7 +152,7 @@ export const BuildersTable = ({ filterOption }: { filterOption: BuilderFilterOpt
     data: { pagedRewards: buildersRewardsData, totalRewards },
     isLoading,
     error,
-  } = usePagedFilteredBuildersRewards({ backer: userAddress, filterOption, pageOptions, sort })
+  } = usePagedFilteredBuildersRewards({ filterOption, pageOptions, sort })
 
   const { prices } = usePricesContext()
 

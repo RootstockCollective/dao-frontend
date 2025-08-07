@@ -10,13 +10,14 @@ interface Props {
 /**
  * Individual radio button item for selecting proposal filter categories
  */
-export const FilterRadioItem = ({ option, selected, onClick }: Props) => {
+export const FilterRadioItem = ({ option, selected, onClick, ...props }: Props) => {
   return (
     <button
       role="radio"
       aria-checked={selected}
       onClick={() => onClick(option)}
       className={cn('group focus:outline-none focus-visible:outline-none', 'flex gap-3 items-center')}
+      {...props}
     >
       <div
         className={cn(

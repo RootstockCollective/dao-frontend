@@ -21,7 +21,7 @@ export interface BuilderEstimatedRewards extends Builder {
 }
 
 export interface BuilderRewardsSummary extends BuilderEstimatedRewards {
-  backerAllocation?: bigint
+  totalAllocation: bigint
   totalAllocationPercentage: bigint
   lastCycleRewards: TokenRewards
 }

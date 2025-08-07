@@ -1,4 +1,4 @@
-import type { Meta, StoryObj } from '@storybook/react'
+import type { Meta, StoryObj } from '@storybook/nextjs'
 import { MultipleSelectDropdown } from './MultipleSelectDropdown'
 import { SelectorOption } from './MultipleSelectDropdown'
 import { Button } from '@/components/Button'

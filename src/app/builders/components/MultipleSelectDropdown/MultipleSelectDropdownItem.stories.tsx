@@ -1,5 +1,5 @@
 import { MultipleSelectDropdownItem } from '@/app/builders/components/MultipleSelectDropdown/MultipleSelectDropdownItem'
-import type { Meta, StoryObj } from '@storybook/react'
+import type { Meta, StoryObj } from '@storybook/nextjs'
 
 const meta = {
   title: 'Builders/MultipleSelectDropdownItem',

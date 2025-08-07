@@ -1,6 +1,6 @@
 'use client'
 
-import { formatSymbol, getFiatAmount } from '@/app/collective-rewards/rewards/utils/formatter'
+import { formatMetrics } from '@/app/collective-rewards/rewards/utils'
 import { BuilderRewardsSummary } from '@/app/collective-rewards/types'
 import {
   getCombinedFiatAmount,
@@ -13,8 +13,8 @@ import { GetPricesResult } from '@/app/user/types'
 import { CommonComponentProps } from '@/components/commonProps'
 import { Jdenticon } from '@/components/Header/Jdenticon'
 import { Paragraph } from '@/components/TypographyNew'
-import { RIF } from '@/lib/constants'
-import { cn, formatCurrency } from '@/lib/utils'
+import { RIF, STRIF } from '@/lib/constants'
+import { cn } from '@/lib/utils'
 import { BaseColumnId, Row, RowData, useTableActionsContext, useTableContext } from '@/shared/context'
 import { DisclaimerFlow } from '@/shared/walletConnection'
 import { useAppKitFlow } from '@/shared/walletConnection/connection/useAppKitFlow'
@@ -52,12 +52,15 @@ export const convertDataToRowData = (
   if (!data.length) return []
 
   return data.map<{ id: Address; data: ColumnIdToCellPropsMap }>(builder => {
-    const allocation = builder.backerAllocation ?? 0n
+    const allocation = builder.totalAllocation ?? 0n
     const actionType = getActionType(builder, allocation > 0n)
 
     const rifPrice = prices[RIF]?.price ?? 0
-    const formattedAmount = formatSymbol(allocation, 'stRIF')
-    const formattedUsdAmount = formatCurrency(getFiatAmount(allocation, rifPrice), { currency: 'USD' })
+    const { amount: formattedAmount, fiatAmount: formattedUsdAmount } = formatMetrics(
+      allocation,
+      rifPrice,
+      STRIF,
+    )
 
     return {
       id: builder.address,

@@ -1,4 +1,4 @@
-import type { Meta, StoryObj } from '@storybook/react'
+import type { Meta, StoryObj } from '@storybook/nextjs'
 import { BackerRewardsPercentage } from './BackerRewardsPercentage'
 
 const meta: Meta<typeof BackerRewardsPercentage> = {

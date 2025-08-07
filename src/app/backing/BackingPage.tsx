@@ -3,7 +3,7 @@
 import { BackingBanner } from '@/app/backing/components/BackingBanner/BackingBanner'
 import { BackingInfoTitleControl } from '@/app/backing/components/BackingInfoTitle/BackingInfoTitleControl'
 import { BackingInfoContainer } from '@/app/backing/components/Container/BackingInfoContainer/BackingInfoContainer'
-import { AnnualBackersIncentives } from '@/app/backing/components/Metrics/AnnualBackersIncentives'
+import { GlobalAnnualBackersIncentives } from '@/app/backing/components/Metrics/GlobalAnnualBackersIncentives'
 import { EstimatedRewardsMetric } from '@/app/backing/components/Metrics/EstimatedRewardsMetric'
 import {
   Allocations,
@@ -13,8 +13,8 @@ import { formatSymbol, getFiatAmount } from '@/app/collective-rewards/rewards'
 import { useBuilderContext } from '@/app/collective-rewards/user/context/BuilderContext'
 import { ActionMetricsContainer, ActionsContainer, MetricsContainer } from '@/components/containers'
 import { Header, Span } from '@/components/TypographyNew'
-import { RIF, stRIF, USD } from '@/lib/constants'
-import { formatCurrency } from '@/lib/utils'
+import { RIF, STRIF } from '@/lib/constants'
+import { formatCurrencyWithLabel } from '@/lib/utils'
 import { usePricesContext } from '@/shared/context/PricesContext'
 import { useRouter, useSearchParams } from 'next/navigation'
 import { useContext, useMemo } from 'react'
@@ -22,7 +22,7 @@ import { Address } from 'viem'
 import { useAccount } from 'wagmi'
 import { AvailableBackingMetric, TotalBackingMetric } from './components'
 import { BuilderAllocationBar } from './components/BuilderAllocationBar'
-import { AnnualBackingIncentives } from './components/Metrics/AnnualBackingIncentives'
+import { BackerAnnualBackersIncentives } from './components/Metrics/BackerAnnualBackersIncentives'
 import { Spotlight } from './components/Spotlight'
 
 const NAME = 'Backing'
@@ -62,17 +62,14 @@ export const BackingPage = () => {
 
   // Format values properly using formatter functions
   const availableForBackingLabel = useMemo(
-    () => formatSymbol(availableForBacking, stRIF),
+    () => formatSymbol(availableForBacking, STRIF),
     [availableForBacking],
   )
-  const totalBackingLabel = useMemo(() => formatSymbol(totalBacking, stRIF), [totalBacking])
+  const totalBackingLabel = useMemo(() => formatSymbol(totalBacking, STRIF), [totalBacking])
   const availableBackingUSD = useMemo(() => {
     return !availableForBacking || !rifPriceUsd
-      ? formatCurrency(0, { currency: USD, showCurrency: true })
-      : formatCurrency(getFiatAmount(availableForBacking, rifPriceUsd), {
-          currency: USD,
-          showCurrency: true,
-        })
+      ? formatCurrencyWithLabel(0)
+      : formatCurrencyWithLabel(getFiatAmount(availableForBacking, rifPriceUsd))
   }, [availableForBacking, rifPriceUsd])
   const handleDistributeClick = () => {
     //FIXME: Take into the inactive builders
@@ -114,7 +111,7 @@ export const BackingPage = () => {
             <BackingBanner />
           </BackingInfoContainer>
           <MetricsContainer className="grow-[3] h-full bg-v3-bg-accent-80">
-            <AnnualBackersIncentives />
+            <GlobalAnnualBackersIncentives />
             <EstimatedRewardsMetric />
           </MetricsContainer>
         </div>
@@ -141,7 +138,7 @@ export const BackingPage = () => {
                 </div>
                 {hasAllocations && (
                   <div className="basis-1/2">
-                    <AnnualBackingIncentives />
+                    <BackerAnnualBackersIncentives />
                   </div>
                 )}
               </div>

@@ -3,7 +3,7 @@ import { BuilderEstimatedRewards, CompleteBuilder } from '@/app/collective-rewar
 import { filterBuildersByState } from '@/app/collective-rewards/user'
 import { useBuilderContext } from '@/app/collective-rewards/user/context/BuilderContext'
 import { isBuilderRewardable } from '@/app/collective-rewards/utils'
-import { USD, WeiPerEther } from '@/lib/constants'
+import { USD, WeiPerEther, RIF, RBTC } from '@/lib/constants'
 import { TOKENS } from '@/lib/tokens'
 import { usePricesContext } from '@/shared/context/PricesContext'
 import { useReadBackersManager, useReadGauges } from '@/shared/hooks/contracts'
@@ -47,8 +47,8 @@ export const useGetBuilderEstimatedRewards = (currency = USD) => {
   const estimatedRewards: BuilderEstimatedRewardsWithGauges[] = useMemo(() => {
     const rifAmount = cycleRewards?.rif ?? 0n
     const rbtcAmount = cycleRewards?.rbtc ?? 0n
-    const rifPrice = prices.RIF?.price ?? 0
-    const rbtcPrice = prices.RBTC?.price ?? 0
+    const rifPrice = prices[RIF]?.price ?? 0
+    const rbtcPrice = prices[RBTC]?.price ?? 0
 
     return activeBuilders.map((builder, index) => {
       const { backerRewardPct, stateFlags } = builder

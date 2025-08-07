@@ -1,4 +1,4 @@
-import type { Meta, StoryObj } from '@storybook/react'
+import type { Meta, StoryObj } from '@storybook/nextjs'
 import { StackableBanner } from './StackableBanner'
 import { BannerContent } from './BannerContent'
 import {
@@ -12,7 +12,7 @@ import {
   currentCycleEndingSoonArgs,
   cycleJustEndedArgs,
   stepsListArgs,
-} from './BannerContent.stories'
+} from './story-utils'
 
 const meta: Meta<typeof StackableBanner> = {
   title: 'Components/StackableBanner',

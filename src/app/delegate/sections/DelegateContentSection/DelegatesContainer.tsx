@@ -3,7 +3,7 @@ import { Address, isAddress } from 'viem'
 import { useNftHoldersWithVotingPower } from '@/app/user/Delegation/hooks/useNftHoldersWithVotingPower'
 import { Span } from '@/components/TypographyNew'
 import { Button } from '@/components/ButtonNew'
-import { useState, ChangeEvent, useEffect, useCallback } from 'react'
+import { useState, ChangeEvent, useEffect, useCallback, useMemo } from 'react'
 import { cn } from '@/lib/utils'
 import { CloseIconKoto } from '@/components/Icons'
 import { produce } from 'immer'
@@ -53,46 +53,40 @@ export const DelegatesContainer = ({
     )
   }
 
-  const onValidateAddress = useCallback(
-    debounce(async (userInput: string) => {
-      // First check if the address is a valid address
-      if (!isAddress(userInput, { strict: false }) && !userInput.endsWith('.rsk')) {
-        // Not valid
-        onUpdateAddressStatus('invalid', 'Invalid address')
+  const validateAddress = useCallback(async (userInput: string) => {
+    if (!isAddress(userInput, { strict: false }) && !userInput.endsWith('.rsk')) {
+      onUpdateAddressStatus('invalid', 'Invalid address')
+      return
+    }
+
+    if (userInput.endsWith('.rsk')) {
+      onUpdateAddressStatus('pending', 'Validating RNS domain...')
+      const isValidRNS = await validateRnsDomain(userInput)
+      if (!isValidRNS.valid) {
+        onUpdateAddressStatus('invalid', isValidRNS.error || 'Invalid RNS domain')
         return
       }
 
-      if (userInput.endsWith('.rsk')) {
-        onUpdateAddressStatus('pending', 'Validating RNS domain...')
-        const isValidRNS = await validateRnsDomain(userInput)
-        if (!isValidRNS.valid) {
-          onUpdateAddressStatus('invalid', isValidRNS.error || 'Invalid RNS domain')
-          return
-        }
-        if (isValidRNS.valid) {
-          setAddressToDelegate(
-            produce(draft => {
-              draft.address = isValidRNS.address
-              draft.rns = isValidRNS.domain
-              draft.status = 'valid'
-              draft.statusMessage = 'Valid RNS domain'
-            }),
-          )
-          return
-        }
-      } else {
-        // If we reach this point, this means the address is not RNS and is valid
-        setAddressToDelegate(
-          produce(draft => {
-            draft.status = 'valid'
-            draft.statusMessage = ''
-            draft.address = userInput
-          }),
-        )
-      }
-    }, 1000), // Debounce for 1 second
-    [],
-  )
+      setAddressToDelegate(
+        produce(draft => {
+          draft.address = isValidRNS.address
+          draft.rns = isValidRNS.domain
+          draft.status = 'valid'
+          draft.statusMessage = 'Valid RNS domain'
+        }),
+      )
+    } else {
+      setAddressToDelegate(
+        produce(draft => {
+          draft.status = 'valid'
+          draft.statusMessage = ''
+          draft.address = userInput
+        }),
+      )
+    }
+  }, [])
+
+  const onValidateAddress = useMemo(() => debounce(validateAddress, 1000), [validateAddress])
 
   const onUpdateDelegate = () => {
     if (addressToDelegate.status === 'valid') {

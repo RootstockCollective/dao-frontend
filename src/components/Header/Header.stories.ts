@@ -1,6 +1,6 @@
-import { within, expect } from '@storybook/test'
+import { within, expect } from 'storybook/test'
 import { Header } from '@/components/Header'
-import { Meta, StoryObj } from '@storybook/react'
+import { Meta, StoryObj } from '@storybook/nextjs'
 
 const meta = {
   title: 'Components/Header',

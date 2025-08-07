@@ -6,7 +6,7 @@ import { Modal } from '@/components/Modal/Modal'
 import { TokenImage } from '@/components/TokenImage'
 import { Typography } from '@/components/TypographyNew/Typography'
 import { RBTC } from '@/lib/constants'
-import { cn, formatCurrency } from '@/lib/utils'
+import { cn, formatCurrencyWithLabel } from '@/lib/utils'
 import { FC, ReactNode } from 'react'
 import { ClaimRewardRadioGroup } from './ClaimRewardRadioGroup'
 import { ClaimRewardType } from './types'
@@ -48,7 +48,7 @@ export const ClaimRewardsModalView: FC<ClaimRewardsModalViewProps> = ({
     {
       value: 'all',
       label: 'All Rewards',
-      subLabel: formatCurrency(totalFiatAmount),
+      subLabel: formatCurrencyWithLabel(totalFiatAmount),
     },
     ...Object.entries(tokens).map(([tokenKey, tokenInfo]) => ({
       value: tokenKey as ClaimRewardType,
@@ -58,7 +58,7 @@ export const ClaimRewardsModalView: FC<ClaimRewardsModalViewProps> = ({
           <TokenImage symbol={tokenInfo.symbol} size={tokenInfo.symbol === RBTC ? 18 : 16} />
         </div>
       ),
-      subLabel: `${formatCurrency(tokenFiatAmounts[tokenKey])} USD`,
+      subLabel: `${formatCurrencyWithLabel(tokenFiatAmounts[tokenKey])}`,
     })),
   ]
 

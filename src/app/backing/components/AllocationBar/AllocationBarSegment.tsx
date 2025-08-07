@@ -5,15 +5,19 @@ import { AllocationBarResizeHandle } from './AllocationBarResizeHandle'
 import { AllocationBarValueDisplay, AllocationItem } from './types'
 import { checkerboardStyle, valueToPercentage } from './utils'
 import { AllocationBarTooltip } from './AllocationBarTooltip'
+import { Tooltip } from '@/components/Tooltip'
+import { MoreIcon } from '@/components/Icons/MoreIcon'
 
 const AllocationBarSegmentPercent = ({
   value,
   totalValue,
   valueDisplay,
+  showDots = false,
 }: {
   value: number
   totalValue: number
   valueDisplay: AllocationBarValueDisplay
+  showDots?: boolean
 }) => {
   const { percentDecimals, valueDecimals } = valueDisplay.format ?? {}
 
@@ -30,6 +34,14 @@ const AllocationBarSegmentPercent = ({
   let displayValue = ''
   if (showValue) displayValue += formattedValue
   if (showPercent) displayValue += showValue ? ` (${percent}%)` : `${percent}%`
+
+  if (showDots) {
+    return (
+      <Tooltip text={displayValue} side="top" align="center" className="p-4 z-10 text-lg">
+        <MoreIcon size={16} className="absolute -top-7 left-1/2 -translate-x-1/2  cursor-pointer z-10" />
+      </Tooltip>
+    )
+  }
 
   return (
     <span className="absolute -top-7 left-1/2 -translate-x-1/2 pointer-events-none whitespace-nowrap font-normal leading-5 text-v3-bg-accent-0 font-rootstock-sans">
@@ -49,6 +61,7 @@ interface AllocationBarSegmentProps {
   dragIndex: number | null
   isDraggable: boolean
   isResizable: boolean
+  showDots?: boolean
 }
 
 export const AllocationBarSegment = ({
@@ -62,6 +75,7 @@ export const AllocationBarSegment = ({
   dragIndex,
   isDraggable,
   isResizable,
+  showDots,
 }: AllocationBarSegmentProps) => {
   const { attributes, listeners, setNodeRef, transform, isDragging } = useSortable({ id: item.key })
 
@@ -79,11 +93,12 @@ export const AllocationBarSegment = ({
     backgroundColor: item.displayColor,
   }
 
-  const baseClasses = 'h-full relative overflow-visible flex items-stretch p-0'
+  const baseClasses = 'h-full relative overflow-visible flex items-stretch p-0 group'
   const transitionClasses =
     dragIndex !== null ? 'transition-none' : 'transition-transform duration-200 ease-out'
   const dragStateClasses = isDragging ? 'opacity-60' : 'opacity-100'
   const borderClasses = `${index === 0 ? 'rounded-l-sm' : ''} ${isLast ? 'rounded-r-sm' : ''}`
+  const positionClasses = !isLast ? 'mr-2' : ''
 
   return (
     <div
@@ -94,13 +109,19 @@ export const AllocationBarSegment = ({
         ${transitionClasses}
         ${dragStateClasses}
         ${borderClasses}
+        ${positionClasses}
       `.trim()}
     >
-      {/* DRAG HANDLE (always far left) */}
+      {/* DRAG HANDLE of the size of the segment */}
       {isDraggable && <AllocationBarDragHandle attributes={attributes} listeners={listeners} />}
 
-      <div className="flex-1 flex items-center justify-center relative group">
-        {<AllocationBarSegmentPercent value={value} totalValue={totalValue} valueDisplay={valueDisplay} />}
+      <div className="flex-1 flex items-center justify-center">
+        <AllocationBarSegmentPercent
+          value={value}
+          totalValue={totalValue}
+          valueDisplay={valueDisplay}
+          showDots={showDots}
+        />
         <AllocationBarTooltip builderAddress={item.key} currentBacking={value} />
       </div>
 

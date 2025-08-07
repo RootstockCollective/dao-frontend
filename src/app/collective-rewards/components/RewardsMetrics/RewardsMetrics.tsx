@@ -1,13 +1,13 @@
 import { RifRbtcTooltip } from '@/components/RifRbtcTooltip/RifRbtcTooltip'
 import { DottedUnderlineLabel } from '@/components/DottedUnderlineLabel/DottedUnderlineLabel'
-import { formatCurrency } from '@/lib/utils'
 import { Typography } from '@/components/TypographyNew/Typography'
 import { Header } from '@/components/TypographyNew'
 import { Metric } from '@/components/Metric'
 import { FC } from 'react'
-import { WeiPerEther } from '@/lib/constants'
+import { RBTC, RIF, WeiPerEther } from '@/lib/constants'
 import { usePricesContext } from '@/shared/context/PricesContext'
 import Big from 'big.js'
+import { formatCurrency } from '@/lib/utils'
 
 interface RewardsMetricsProps {
   title: string
@@ -18,8 +18,8 @@ interface RewardsMetricsProps {
 export const RewardsMetrics: FC<RewardsMetricsProps> = ({ title, rbtcRewards, rifRewards }) => {
   const { prices } = usePricesContext()
   const estimatedRewards = Big(rifRewards.toString())
-    .mul(prices.RIF?.price ?? 0)
-    .plus(Big(rbtcRewards.toString()).mul(prices.RBTC?.price ?? 0))
+    .mul(prices[RIF]?.price ?? 0)
+    .plus(Big(rbtcRewards.toString()).mul(prices[RBTC]?.price ?? 0))
     .div(WeiPerEther.toString())
     .toString()
 

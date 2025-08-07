@@ -3,7 +3,7 @@
   "extends": ["next/core-web-vitals", "plugin:storybook/recommended", "plugin:prettier/recommended"],
   "rules": {
     "semi": [2, "never"],
-    "quotes": [1, "single"],
+    "quotes": "off",
     "object-curly-spacing": [2, "always"],
     "eol-last": [2, "always"]
   }

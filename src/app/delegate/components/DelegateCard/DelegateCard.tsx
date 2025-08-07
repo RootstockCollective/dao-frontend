@@ -85,6 +85,7 @@ export const DelegateCard: React.FC<DelegateCardProps> = ({
         className="mt-6"
         onClick={() => onDelegate(address, name)}
         disabled={buttonDisabled}
+        data-testid={`${buttonText}Button`}
       >
         {buttonText}
       </Button>

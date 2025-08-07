@@ -1,4 +1,4 @@
-import { WeiPerEther } from '@/lib/constants'
+import { RBTC, RIF, WeiPerEther } from '@/lib/constants'
 import { usePricesContext } from '@/shared/context/PricesContext'
 import { useReadGauges, useReadBackersManager } from '@/shared/hooks/contracts'
 import Big from 'big.js'
@@ -42,13 +42,13 @@ export const useGetBackerABI = (backer: Address) => {
   const { prices } = usePricesContext()
 
   const abi = useMemo(() => {
-    const rifPrice = prices.RIF?.price ?? 0
+    const rifPrice = prices[RIF]?.price ?? 0
 
     const backerRewards = builderEstimatedRewards.reduce((acc, { backerEstimatedRewardsPct }, i) => {
       const builderTotalAllocation = totalAllocation[i] ?? 0n
       const backerAllocationOf = allocationOf[i] ?? 0n
 
-      const rbtcPrice = prices.RBTC?.price ?? 0
+      const rbtcPrice = prices[RBTC]?.price ?? 0
 
       const cyclePayout = getCyclePayout(rifPrice, rbtcPrice, cycleRewards?.rif, cycleRewards?.rbtc)
 
