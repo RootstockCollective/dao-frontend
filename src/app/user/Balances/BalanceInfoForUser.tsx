@@ -7,6 +7,7 @@ import { Paragraph } from '@/components/TypographyNew'
 import { Button } from '@/components/ButtonNew'
 import { useState } from 'react'
 import { requestProviderToAddToken } from '@/shared/utils'
+import { RBTC } from '@/lib/constants'
 
 interface TooltipComponentProps {
   text: string
@@ -78,7 +79,7 @@ export const BalanceInfoForUser = ({ symbol }: Props) => {
         <TooltipComponent
           text={`Token Price: ${formatCurrency(price)}`}
           token={{ symbol: symbolToUse, decimals: 18, address: tokenContracts[symbol] }}
-          isRBTC={symbol === 'RBTC'}
+          isRBTC={symbol === RBTC}
         />
       }
       fiatAmount={fiatAmount}
