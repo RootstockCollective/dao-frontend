@@ -33,18 +33,23 @@ export const ProposalSubfooter = ({
   const [isBackPressed, setIsBackPressed] = useState(false)
 
   const { active, accept, reject } = useNavigationGuard({
-    enabled: true,
+    enabled: isBackPressed && pathname.startsWith('/proposals/new/details'),
   })
 
   useEffect(() => {
-    if (active && isBackPressed && pathname.startsWith('/proposals/new/details')) {
+    console.log('IS ACTIVE', active)
+    if (active) {
       setShowModal(true)
     }
-    // If the active state is true but we are not on the guarded page, we accept navigation
-    else if (active && !pathname.startsWith('/proposals/new/details')) {
-      accept()
+  }, [active])
+
+  useEffect(() => {
+    const handlePopState = () => {
+      setIsBackPressed(true)
     }
-  }, [active, isBackPressed, accept, pathname])
+    window.addEventListener('popstate', handlePopState)
+    return () => window.removeEventListener('popstate', handlePopState)
+  }, [pathname])
 
   // --- Modal Button Handlers ---
 
