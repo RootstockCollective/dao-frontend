@@ -1,8 +1,55 @@
 import { useBalancesContext } from '@/app/user/Balances/context/BalancesContext'
-import { SupportedTokens } from '@/lib/contracts'
+import { SupportedTokens, tokenContracts } from '@/lib/contracts'
 import { BalanceInfo } from '@/components/BalanceInfo'
 import Big from '@/lib/big'
 import { formatCurrency, formatCurrencyWithLabel } from '@/lib/utils'
+import { Paragraph } from '@/components/TypographyNew'
+import { Button } from '@/components/ButtonNew'
+import { useState } from 'react'
+import { requestProviderToAddToken } from '@/shared/utils'
+
+interface TooltipComponentProps {
+  text: string
+  token: {
+    address: string
+    symbol: string
+    decimals: number
+  }
+  isRBTC: boolean
+  error?: string
+}
+
+const TooltipComponent = ({ text, token, isRBTC }: TooltipComponentProps) => {
+  const [error, setError] = useState<string | null>(null)
+
+  const addTokenToWallet = async () => {
+    try {
+      const { address, symbol, decimals } = token
+      await requestProviderToAddToken({ address, symbol, decimals, tokenType: 'ERC20' })
+    } catch (err) {
+      console.log('ERROR', err)
+      setError('Cannot add token to the wallet')
+    }
+  }
+
+  return (
+    <div className="p-6">
+      <Paragraph variant="body-s">{text}</Paragraph>
+      {!error && !isRBTC ? (
+        <Button
+          className="mt-2 border-[1px] border-solid border-bg-100"
+          variant="transparent"
+          onClick={addTokenToWallet}
+          textClassName="text-bg-100"
+        >
+          {'Add to wallet'}
+        </Button>
+      ) : (
+        <Paragraph variant="body-s">{error}</Paragraph>
+      )}
+    </div>
+  )
+}
 
 interface Props {
   symbol: SupportedTokens
@@ -27,7 +74,13 @@ export const BalanceInfoForUser = ({ symbol }: Props) => {
       title={symbolToUse}
       amount={balances[symbol]?.formattedBalance}
       symbol={symbolToUse}
-      tooltipContent={`Token Price: ${formatCurrency(price)}`}
+      tooltipContent={
+        <TooltipComponent
+          text={`Token Price: ${formatCurrency(price)}`}
+          token={{ symbol: symbolToUse, decimals: 18, address: tokenContracts[symbol] }}
+          isRBTC={symbol === 'RBTC'}
+        />
+      }
       fiatAmount={fiatAmount}
     />
   )
