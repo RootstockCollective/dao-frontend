@@ -16,6 +16,7 @@ export default function Delegate() {
           'your Rewards will keep accumulating as usual',
         ]}
         className="mt-6"
+        dataTestId="HeroDelegateComponent"
       />
       <VotingPowerSection />
       <DelegateContentSection />
