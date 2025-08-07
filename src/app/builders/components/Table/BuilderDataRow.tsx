@@ -19,7 +19,7 @@ import { BaseColumnId, Row, RowData, useTableActionsContext, useTableContext } f
 import { DisclaimerFlow } from '@/shared/walletConnection'
 import { useAppKitFlow } from '@/shared/walletConnection/connection/useAppKitFlow'
 import { redirect, RedirectType } from 'next/navigation'
-import { FC, HtmlHTMLAttributes, ReactElement, ReactNode, useState } from 'react'
+import { FC, HtmlHTMLAttributes, ReactElement, ReactNode } from 'react'
 import { Address } from 'viem'
 import { useAccount } from 'wagmi'
 import { COLUMN_TRANSFORMS, ColumnId, ColumnTransforms } from './BuilderTable.config'
@@ -112,15 +112,15 @@ export const convertDataToRowData = (
   })
 }
 
-export const BuilderCell = (props: BuilderNameCellProps): ReactElement => {
+export const BuilderCell = (props: BuilderNameCellProps & { canHover?: boolean }): ReactElement => {
   const { selectedRows } = useTableContext<ColumnId>()
   const isSelected = selectedRows[props.builder.address]
 
   return (
     <TableCell key="builder" columnId="builder" className="justify-start gap-4">
       <SelectorCell
-        isHovered={props.isHighlighted}
         isSelected={isSelected}
+        canHover={props.canHover}
         className="pt-3 pb-3 rounded-full"
       >
         <Jdenticon className="rounded-full bg-white w-10" value={props.builder.address} />
@@ -211,9 +211,9 @@ export const BuilderBackingCell = (props: BackingCellProps): ReactElement => {
   )
 }
 
-const BuilderAllocationsCell = (props: AllocationCellProps): ReactElement => {
+const BuilderAllocationsCell = (props: AllocationCellProps & { className?: string }): ReactElement => {
   return (
-    <TableCell columnId="allocations" className="justify-center">
+    <TableCell columnId="allocations" className={cn("justify-center", props.className)}>
       <AllocationCell {...props} className="w-[60%] justify-center" />
     </TableCell>
   )
@@ -223,16 +223,16 @@ export const ActionsCell = ({
   className,
   forceShow,
   ...props
-}: ActionCellProps & { forceShow?: boolean }): ReactElement => {
+}: ActionCellProps & { forceShow?: boolean; className?: string }): ReactElement => {
   const { isConnected } = useAccount()
 
   return (
     <TableCell
       columnId="actions"
-      className={cn('border-solid align-center w-full', className)}
+      className={cn('justify-center', className)}
       forceShow={forceShow}
     >
-      {forceShow && <ActionCell {...props} hidden={!isConnected} />}
+      {isConnected && <ActionCell {...props} />}
     </TableCell>
   )
 }
@@ -243,6 +243,7 @@ interface BuilderDataRowProps extends CommonComponentProps<HTMLTableRowElement> 
 
 export const selectedRowStyle = 'bg-v3-text-80 text-v3-bg-accent-100'
 export const unselectedRowStyle = 'bg-v3-bg-accent-80 text-v3-primary-100'
+export const hoverableRowStyle = 'hover:bg-v3-text-80 hover:text-v3-bg-accent-100 transition-colors duration-150'
 
 export const BuilderDataRow: FC<BuilderDataRowProps> = ({ row, ...props }) => {
   const {
@@ -262,7 +263,6 @@ export const BuilderDataRow: FC<BuilderDataRowProps> = ({ row, ...props }) => {
   const { intermediateStep, handleConnectWallet, handleCloseIntermediateStep, onConnectWalletButtonClick } =
     useAppKitFlow()
 
-  const [isHovered, setIsHovered] = useState(false)
   const dispatch = useTableActionsContext<ColumnId>()
 
   const hasSelections = Object.values(selectedRows).some(Boolean)
@@ -317,20 +317,26 @@ export const BuilderDataRow: FC<BuilderDataRowProps> = ({ row, ...props }) => {
         <tr
           {...props}
           className={cn(
-            'flex border-b-v3-bg-accent-60 border-b-1 gap-4',
-            selectedRows[rowId] || isHovered ? selectedRowStyle : unselectedRowStyle,
+            'flex border-b-v3-bg-accent-60 border-b-1 gap-4 group',
+            selectedRows[rowId] ? selectedRowStyle : unselectedRowStyle,
+            canAllocate && hoverableRowStyle,
           )}
           onClick={handleToggleSelection}
-          onMouseEnter={() => canAllocate && setIsHovered(true)}
-          onMouseLeave={() => setIsHovered(false)}
         >
-          <BuilderCell {...builder} isHighlighted={isHovered || selectedRows[rowId]} />
+          <BuilderCell {...builder} canHover={canAllocate} />
           <BackerRewardsCell {...backer_rewards} />
           <RewardsPastCycleCell {...rewards_past_cycle} />
           <RewardsUpcomingCell {...rewards_upcoming} />
           <BuilderBackingCell {...backing} />
-          {!(isHovered && isConnected) && <BuilderAllocationsCell allocationPct={allocationPct} />}
-          <ActionsCell {...actions} forceShow={isHovered && isConnected} />
+          <BuilderAllocationsCell 
+            allocationPct={allocationPct} 
+            className={canAllocate ? "group-hover:hidden" : ""} 
+          />
+          <ActionsCell 
+            {...actions} 
+            forceShow={true} 
+            className={canAllocate ? "hidden group-hover:block" : "hidden"} 
+          />
           <td className="w-[24px]"></td>
         </tr>
       </ConditionalTooltip>
