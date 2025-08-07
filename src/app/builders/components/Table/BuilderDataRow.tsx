@@ -15,14 +15,19 @@ import { Jdenticon } from '@/components/Header/Jdenticon'
 import { Paragraph } from '@/components/TypographyNew'
 import { RIF, STRIF } from '@/lib/constants'
 import { cn } from '@/lib/utils'
-import { BaseColumnId, Row, useTableActionsContext, useTableContext } from '@/shared/context'
+import { useTableActionsContext, useTableContext } from '@/shared/context'
 import { DisclaimerFlow } from '@/shared/walletConnection'
 import { useAppKitFlow } from '@/shared/walletConnection/connection/useAppKitFlow'
 import { redirect, RedirectType } from 'next/navigation'
 import { FC, HtmlHTMLAttributes, ReactElement, ReactNode, useState } from 'react'
-import { Address } from 'viem'
 import { useAccount } from 'wagmi'
-import { COLUMN_TRANSFORMS, ColumnId, ColumnTransforms } from './BuilderTable.config'
+import {
+  BuilderCellDataMap,
+  BuilderTable,
+  COLUMN_TRANSFORMS,
+  ColumnId,
+  ColumnTransforms,
+} from './BuilderTable.config'
 import { ActionCell, ActionCellProps, getActionType } from './Cell/ActionCell'
 import { BackersPercentageCell, BackersPercentageCellProps } from './Cell/BackersPercentageCell'
 import { BackingCell, BackingCellProps } from './Cell/BackingCell'
@@ -31,25 +36,13 @@ import { BuilderNameCell, BuilderNameCellProps } from './Cell/BuilderNameCell'
 import { RewardsCell, RewardsCellProps } from './Cell/RewardsCell'
 import { SelectorCell } from './Cell/SelectorCell'
 
-type ColumnIdToCellPropsMap = {
-  builder: BuilderNameCellProps
-  backing: BackingCellProps
-  backer_rewards: BackersPercentageCellProps
-  rewards_past_cycle: RewardsCellProps
-  rewards_upcoming: RewardsCellProps
-  backingShare: BackingShareCellProps
-  actions: ActionCellProps
-}
-
 export const convertDataToRowData = (
   data: BuilderRewardsSummary[],
   prices: GetPricesResult,
-): Row<ColumnId>[] => {
-  // FIXME: fix the Row type to take a generic for custom RowData type
-
+): BuilderTable['Row'][] => {
   if (!data.length) return []
 
-  return data.map<{ id: Address; data: ColumnIdToCellPropsMap }>(builder => {
+  return data.map<BuilderTable['Row']>(builder => {
     const backing = builder.totalAllocation ?? 0n
     const actionType = getActionType(builder, backing > 0n)
 
@@ -111,7 +104,7 @@ export const convertDataToRowData = (
 }
 
 export const BuilderCell = (props: BuilderNameCellProps): ReactElement => {
-  const { selectedRows } = useTableContext<ColumnId>()
+  const { selectedRows } = useTableContext<ColumnId, BuilderCellDataMap>()
   const isSelected = selectedRows[props.builder.address]
 
   return (
@@ -130,7 +123,7 @@ export const BuilderCell = (props: BuilderNameCellProps): ReactElement => {
 }
 
 // TODO: @refactor move to app/components/Table/Cell/TableCell.tsx
-export const TableCellBase = <CID extends BaseColumnId = BaseColumnId>({
+export const TableCellBase = ({
   children,
   className,
   onClick,
@@ -138,11 +131,11 @@ export const TableCellBase = <CID extends BaseColumnId = BaseColumnId>({
   forceShow,
   columnTransforms,
 }: HtmlHTMLAttributes<HTMLTableCellElement> & {
-  columnId: CID
+  columnId: ColumnId
   forceShow?: boolean
-  columnTransforms: ColumnTransforms<CID>
+  columnTransforms: ColumnTransforms<ColumnId>
 }): ReactNode => {
-  const { columns } = useTableContext<CID>()
+  const { columns } = useTableContext<ColumnId, BuilderCellDataMap>()
   if (forceShow || !columns.find(col => col.id === columnId)?.hidden) {
     return (
       <td
@@ -165,7 +158,7 @@ const TableCell = ({
   forceShow,
 }: HtmlHTMLAttributes<HTMLTableCellElement> & { columnId: ColumnId; forceShow?: boolean }): ReactNode => {
   return (
-    <TableCellBase<ColumnId>
+    <TableCellBase
       className={className}
       onClick={onClick}
       columnId={columnId}
@@ -236,7 +229,7 @@ export const ActionsCell = ({
 }
 
 interface BuilderDataRowProps extends CommonComponentProps<HTMLTableRowElement> {
-  row: Row<ColumnId>
+  row: BuilderTable['Row']
 }
 
 export const selectedRowStyle = 'bg-v3-text-80 text-v3-bg-accent-100'
@@ -254,14 +247,14 @@ export const BuilderDataRow: FC<BuilderDataRowProps> = ({ row, ...props }) => {
       backingShare: { backingPercentage },
       actions,
     },
-  } = row as Row<ColumnId> & { data: ColumnIdToCellPropsMap }
-  const { selectedRows } = useTableContext<ColumnId>()
+  }: BuilderTable['Row'] = row
+  const { selectedRows } = useTableContext<ColumnId, BuilderCellDataMap>()
   const { isConnected } = useAccount()
   const { intermediateStep, handleConnectWallet, handleCloseIntermediateStep, onConnectWalletButtonClick } =
     useAppKitFlow()
 
   const [isHovered, setIsHovered] = useState(false)
-  const dispatch = useTableActionsContext<ColumnId>()
+  const dispatch = useTableActionsContext<ColumnId, BuilderCellDataMap>()
 
   const hasSelections = Object.values(selectedRows).some(Boolean)
 

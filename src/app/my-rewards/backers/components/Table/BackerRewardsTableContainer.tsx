@@ -3,6 +3,7 @@ import { Header } from '@/components/TypographyNew'
 import { withTableContext } from '@/shared/context'
 import { ReactElement } from 'react'
 import { BackerRewardsTable } from './BackerRewardsTable'
+import { BackerRewardsCellDataMap, ColumnId } from './BackerRewardsTable.config'
 
 const Title = () => {
   return (
@@ -22,4 +23,4 @@ const BackerRewardsTableContainer = (): ReactElement => {
   )
 }
 
-export default withTableContext(BackerRewardsTableContainer)
+export default withTableContext<ColumnId, BackerRewardsCellDataMap>(BackerRewardsTableContainer)
