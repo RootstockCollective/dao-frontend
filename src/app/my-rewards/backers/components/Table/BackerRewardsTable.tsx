@@ -3,18 +3,18 @@
 import { Action, ActionCellProps } from '@/app/builders/components/Table/Cell/ActionCell'
 import { Token } from '@/app/collective-rewards/rewards'
 import { BackerRewards, useGetBackerRewards } from '@/app/collective-rewards/rewards/backers/hooks'
+import { getCombinedFiatAmount } from '@/app/collective-rewards/utils'
 import { TablePager } from '@/components/TableNew'
 import { TOKENS } from '@/lib/tokens'
 import { usePricesContext, useTableActionsContext, useTableContext } from '@/shared/context'
+import { Sort } from '@/shared/context/TableContext/types'
+import { Big } from 'big.js'
 import { Suspense, useEffect, useMemo, useState } from 'react'
 import { Address } from 'viem'
 import { useAccount } from 'wagmi'
 import { BackerRewardsDataRow, convertDataToRowData } from './BackerRewardsDataRow'
 import { BackerRewardsHeaderRow } from './BackerRewardsHeaderRow'
-import { ColumnId, DEFAULT_HEADERS, PAGE_SIZE } from './BackerRewardsTable.config'
-import { Sort } from '@/shared/context/TableContext/types'
-import { getCombinedFiatAmount } from '@/app/collective-rewards/utils'
-import { Big } from 'big.js'
+import { BackerRewardsCellDataMap, ColumnId, DEFAULT_HEADERS, PAGE_SIZE } from './BackerRewardsTable.config'
 
 type PagedFilter = {
   backer: Address
@@ -85,9 +85,9 @@ export const BackerRewardsTable = () => {
 
   const { address: userAddress } = useAccount()
 
-  const { rows, columns, selectedRows, sort } = useTableContext<ColumnId>()
+  const { rows, columns, selectedRows, sort } = useTableContext<ColumnId, BackerRewardsCellDataMap>()
   const [actions, setActions] = useState<Action[]>([])
-  const dispatch = useTableActionsContext<ColumnId>()
+  const dispatch = useTableActionsContext<ColumnId, BackerRewardsCellDataMap>()
 
   const pageOptions = useMemo(() => ({ start: 0, end: pageEnd }), [pageEnd])
   const {
@@ -137,7 +137,7 @@ export const BackerRewardsTable = () => {
   useEffect(() => {
     const actions = Object.entries(selectedRows)
       .filter(([_, value]) => value)
-      .map(([rowId]) => (rows.find(row => row.id === rowId)?.data.actions as ActionCellProps).actionType)
+      .map(([rowId]) => (rows.find(({ id }) => id === rowId)?.data.actions as ActionCellProps).actionType)
       .filter(action => action !== undefined)
     setActions(actions)
   }, [selectedRows, rows])
@@ -154,8 +154,8 @@ export const BackerRewardsTable = () => {
    * FIXME: see if we can do this better to avoid re-rendering the table.
   //  */
   useEffect(() => {
-    const isBackingHidden = columns.find(col => col.id == 'backing')?.hidden ?? true
-    const isActionsHidden = columns.find(col => col.id == 'actions')?.hidden ?? true
+    const isBackingHidden = columns.find(({ id }) => id == 'backing')?.hidden ?? true
+    const isActionsHidden = columns.find(({ id }) => id == 'actions')?.hidden ?? true
     if (isBackingHidden === isActionsHidden) {
       dispatch({
         type: 'SET_COLUMN_VISIBILITY',

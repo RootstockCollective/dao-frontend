@@ -3,8 +3,14 @@ import {
   BUILDER_IN_PROGRESS,
   builderInactiveStates,
 } from '@/app/collective-rewards/utils/isBuilderOperational'
-import { BaseColumnId, Column } from '@/shared/context'
+import { BaseColumnId, Column, TypedTable } from '@/shared/context'
 import { HtmlHTMLAttributes } from 'react'
+import { ActionCellProps } from './Cell/ActionCell'
+import { BackersPercentageCellProps } from './Cell/BackersPercentageCell'
+import { BackingCellProps } from './Cell/BackingCell'
+import { BackingShareCellProps } from './Cell/BackingShareCell'
+import { BuilderNameCellProps } from './Cell/BuilderNameCell'
+import { RewardsCellProps } from './Cell/RewardsCell'
 import { TableColumnDropdownLabels } from './TableColumnDropdown/TableColumnDropdown'
 
 const COLUMN_IDS = [
@@ -95,3 +101,16 @@ export const DEFAULT_HEADERS: Column<ColumnId>[] = [
 
 const builderStates = [BUILDER_IN_PROGRESS, BUILDER_ACTIVE, ...builderInactiveStates] as const
 export type BuilderState = (typeof builderStates)[number]
+
+// Typed table configuration for BuildersTable
+export type BuilderCellDataMap = {
+  builder: BuilderNameCellProps
+  backing: BackingCellProps
+  backer_rewards: BackersPercentageCellProps
+  rewards_past_cycle: RewardsCellProps
+  rewards_upcoming: RewardsCellProps
+  backingShare: BackingShareCellProps
+  actions: ActionCellProps
+}
+
+export type BuilderTable = TypedTable<ColumnId, BuilderCellDataMap>

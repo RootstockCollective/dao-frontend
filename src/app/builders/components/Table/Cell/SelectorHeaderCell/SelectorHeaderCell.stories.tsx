@@ -1,6 +1,7 @@
 import { withTableContext } from '@/shared/context'
 import type { Meta, StoryObj } from '@storybook/nextjs'
 import { useState } from 'react'
+import { BuilderCellDataMap, ColumnId } from '../../BuilderTable.config'
 import { SelectorHeaderCell } from './SelectorHeaderCell'
 
 const meta: Meta<typeof SelectorHeaderCell> = {
@@ -17,7 +18,7 @@ export default meta
 type Story = StoryObj<typeof SelectorHeaderCell>
 
 export const Default: Story = {
-  render: withTableContext(() => {
+  render: withTableContext<ColumnId, BuilderCellDataMap>(() => {
     const [hasSelections, setHasSelections] = useState(false)
 
     return (
@@ -35,7 +36,7 @@ export const Default: Story = {
 }
 
 export const WithSelections: Story = {
-  render: withTableContext(() => (
+  render: withTableContext<ColumnId, BuilderCellDataMap>(() => (
     <div className="w-[300px] p-4 bg-[#37322F]">
       <SelectorHeaderCell className="p-2" />
     </div>
@@ -43,7 +44,7 @@ export const WithSelections: Story = {
 }
 
 export const WithoutSelections: Story = {
-  render: withTableContext(() => (
+  render: withTableContext<ColumnId, BuilderCellDataMap>(() => (
     <div className="w-[300px] p-4 bg-[#37322F]">
       <SelectorHeaderCell className="p-2" />
     </div>
@@ -51,7 +52,7 @@ export const WithoutSelections: Story = {
 }
 
 export const InTable: Story = {
-  render: withTableContext(() => {
+  render: withTableContext<ColumnId, BuilderCellDataMap>(() => {
     const [selections, setSelections] = useState<string[]>([])
 
     return (

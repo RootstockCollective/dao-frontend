@@ -22,7 +22,7 @@ import { useGetBuilderRewardsSummary } from '../../hooks/useGetBuilderRewardsSum
 import { BuilderDataRow, convertDataToRowData } from './BuilderDataRow'
 import { BuilderFilterOptionId } from './BuilderFilterDropdown'
 import { BuilderHeaderRow } from './BuilderHeaderRow'
-import { ColumnId, DEFAULT_HEADERS, PAGE_SIZE } from './BuilderTable.config'
+import { BuilderCellDataMap, ColumnId, DEFAULT_HEADERS, PAGE_SIZE } from './BuilderTable.config'
 import { Action, ActionCellProps } from './Cell/ActionCell'
 
 // --- Filter builders by state ---
@@ -143,9 +143,9 @@ export const BuildersTable = ({ filterOption }: { filterOption: BuilderFilterOpt
 
   const { isConnected } = useAccount()
 
-  const { rows, columns, selectedRows, sort } = useTableContext<ColumnId>()
+  const { rows, columns, selectedRows, sort } = useTableContext<ColumnId, BuilderCellDataMap>()
   const [actions, setActions] = useState<Action[]>([])
-  const dispatch = useTableActionsContext<ColumnId>()
+  const dispatch = useTableActionsContext<ColumnId, BuilderCellDataMap>()
 
   const pageOptions = useMemo(() => ({ start: 0, end: pageEnd }), [pageEnd])
   const {
@@ -208,7 +208,7 @@ export const BuildersTable = ({ filterOption }: { filterOption: BuilderFilterOpt
   useEffect(() => {
     const actions = Object.entries(selectedRows)
       .filter(([_, value]) => value)
-      .map(([rowId]) => (rows.find(row => row.id === rowId)?.data.actions as ActionCellProps).actionType)
+      .map(([rowId]) => (rows.find(({ id }) => id === rowId)?.data.actions as ActionCellProps).actionType)
       .filter(action => action !== undefined)
     setActions(actions)
   }, [selectedRows, rows])
