@@ -37,7 +37,6 @@ export const Subfooter = ({
   })
 
   useEffect(() => {
-    console.log('IS ACTIVE', active)
     if (active) {
       setShowModal(true)
     }
