@@ -29,6 +29,7 @@ export default function ProposalsPage() {
           'Complete your KYC to ensure eligibility (apply for Grants)',
         ]}
         button={<CreateProposalFlow />}
+        dataTestId="ProposalsHeroComponent"
       />
       <ErrorBoundary fallbackRender={withFallbackRetry(<ProposalsFromChain />)}>
         <ProposalsFromTheGraph />
