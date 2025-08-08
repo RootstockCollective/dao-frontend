@@ -77,3 +77,5 @@ const FEATURE_FLAGS: Record<Feature, string> = {
 export const getFeatureEnvFlags = (): Record<Feature, string> => FEATURE_FLAGS
 
 export const MAX_PAGE_SIZE = 100
+
+export const BLOCKSCOUT_URL = process.env.NEXT_PUBLIC_BLOCKSCOUT_URL as string

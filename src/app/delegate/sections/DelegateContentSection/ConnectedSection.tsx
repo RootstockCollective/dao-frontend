@@ -24,6 +24,7 @@ export const ConnectedSection = () => {
     setIsDelegationPending,
     setIsReclaimPending,
     delegateeVotingPower,
+    delegateeRns,
     refetch,
   } = useDelegateContext()
 
@@ -84,6 +85,7 @@ export const ConnectedSection = () => {
         <div className="flex flex-row bg-bg-80 p-[24px]">
           <DelegateCard
             address={delegateeAddress}
+            name={delegateeRns}
             // @TODO fetch since
             since=" - "
             votingPower={delegateeVotingPower ? Number(delegateeVotingPower).toFixed(0) : ' - '}
