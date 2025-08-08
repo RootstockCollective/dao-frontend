@@ -21,12 +21,6 @@ ENV CYPRESS_INSTALL_BINARY 0
 # Disable telemetry
 ENV NEXT_TELEMETRY_DISABLED 1
 
-# Install dependencies
-RUN npm install --verbose
-
-# Copy the rest of the application code
-COPY . .
-
 # If CI=1 and cached artifacts exist, use them; otherwise install/build normally
 ARG CI=0
 RUN if [ "$CI" = "1" ] && [ -d "node_modules" ]; then \
@@ -34,7 +28,13 @@ RUN if [ "$CI" = "1" ] && [ -d "node_modules" ]; then \
     else \
         echo "Installing dependencies..."; \
         npm ci --prefer-offline --no-audit --no-fund; \
-    fi
+    fi \
+
+# Install dependencies
+RUN npm install --verbose
+
+# Copy the rest of the application code
+COPY . .
 
 # Set the build argument 
 ARG PROFILE
