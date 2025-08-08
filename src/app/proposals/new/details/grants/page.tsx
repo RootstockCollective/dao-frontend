@@ -52,7 +52,10 @@ export default function GrantsProposalForm() {
     setSubfooter(
       <Subfooter submitForm={onSubmit} buttonText="Review proposal" nextDisabled={!formState.isValid} />,
     )
-    return () => setSubfooter(null)
+    // to make sure in the Subfooter isBackPressed can be catched and inteceptor can work
+    return () => {
+      setTimeout(() => setSubfooter(null), 100)
+    }
   }, [formState.isValid, onSubmit, setSubfooter])
 
   // set focus on proposal name field

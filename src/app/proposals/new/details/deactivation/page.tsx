@@ -63,7 +63,10 @@ export default function DeactivationProposalForm() {
     setSubfooter(
       <Subfooter submitForm={onSubmit} buttonText="Review proposal" nextDisabled={!formState.isValid} />,
     )
-    return () => setSubfooter(null)
+    // to make sure in the Subfooter isBackPressed can be catched and inteceptor can work
+    return () => {
+      setTimeout(() => setSubfooter(null), 100)
+    }
   }, [formState.isValid, onSubmit, setSubfooter])
 
   // eslint-disable-next-line
