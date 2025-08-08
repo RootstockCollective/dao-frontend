@@ -184,6 +184,25 @@ jobs:
           restore-keys: |
             next-
 
+      - name: Debug cache restoration
+        run: |
+          echo "=== Cache Debug Info ==="
+          echo "Current directory: $(pwd)"
+          echo "Cache key: ${{ steps.cache-keys.outputs.next-key }}"
+          echo "Node key: ${{ steps.cache-keys.outputs.node-key }}"
+          echo ""
+          echo "=== Directory contents ==="
+          ls -la
+          echo ""
+          echo "=== .next directory ==="
+          ls -la .next/ 2>/dev/null || echo ".next directory not found"
+          echo ""
+          echo "=== .next/cache directory ==="
+          ls -la .next/cache/ 2>/dev/null || echo ".next/cache directory not found"
+          echo ""
+          echo "=== node_modules directory ==="
+          ls -la node_modules/ 2>/dev/null || echo "node_modules directory not found"
+
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@7474bc4690e29a8392af63c5b98e7449536d5c3a #v4.3.1
         with:
