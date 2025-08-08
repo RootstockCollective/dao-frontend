@@ -46,6 +46,7 @@ export const BuilderHeader: FC<BuilderHeaderProps> = ({
             height={88}
             className="w-full h-full object-cover"
             onError={() => setImageError(true)}
+            crossOrigin="anonymous"
           />
         ) : (
           <Jdenticon className="bg-v3-text-100" value={address} size="88" />
