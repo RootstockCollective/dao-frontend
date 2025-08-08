@@ -1,6 +1,5 @@
 'use client'
-import { MouseEvent, Fragment, useMemo, useState, useRef } from 'react'
-import { useFetchAllProposals } from '@/app/proposals/hooks/useFetchLatestProposals'
+import { MouseEvent, Fragment, useState, useRef } from 'react'
 import { useGetProposalSnapshot } from '@/app/proposals/hooks/useGetProposalSnapshot'
 import { useGetProposalVotes } from '@/app/proposals/hooks/useGetProposalVotes'
 import { useVotingPowerAtSnapshot } from '@/app/proposals/hooks/useVotingPowerAtSnapshot'
@@ -12,7 +11,7 @@ import {
 } from '@/app/proposals/shared/utils'
 import { Header, Paragraph, Span } from '@/components/TypographyNew'
 import { config } from '@/config'
-import { RBTC, RIF, RIF_ADDRESS } from '@/lib/constants'
+import { RIF, RIF_ADDRESS } from '@/lib/constants'
 import { formatNumberWithCommas } from '@/lib/utils'
 import { useExecuteProposal } from '@/shared/hooks/useExecuteProposal'
 import { useQueueProposal } from '@/shared/hooks/useQueueProposal'
@@ -37,24 +36,15 @@ import { NewPopover } from '@/components/NewPopover'
 import { useGetVoteForSpecificProposal } from '../hooks/useVoteCast'
 import { Vote } from '@/shared/types'
 import { executeTxFlow } from '@/shared/notification'
+import { useProposalById } from '../context'
+import { Proposal } from '../shared/types'
 
 export default function ProposalView() {
   const { id } = useParams<{ id: string }>() ?? {}
-  const { latestProposals } = useFetchAllProposals()
-
-  const proposal = useMemo(() => {
-    const proposal = latestProposals.find(proposal => proposal.args.proposalId.toString() === id)
-    if (!proposal) {
-      return null
-    }
-    // @ts-ignore
-    return getProposalEventArguments(proposal)
-  }, [id, latestProposals])
+  const proposal = useProposalById(id)
 
   return <>{proposal && <PageWithProposal {...proposal} />}</>
 }
-
-type ParsedProposal = ReturnType<typeof getProposalEventArguments>
 
 const proposalStateToProgressMap = new Map([
   [ProposalState.Active, 25],
@@ -117,8 +107,8 @@ const parseProposalActionDetails = (
       return {
         type: ProposalType.WITHDRAW,
         amount,
-        tokenSymbol: RBTC,
-        price: prices?.[RBTC]?.price ?? 0,
+        tokenSymbol: 'RBTC',
+        price: prices?.RBTC?.price ?? 0,
         toAddress,
       }
     }
@@ -127,7 +117,7 @@ const parseProposalActionDetails = (
       const amount = typeof args[2] === 'bigint' ? args[2] : undefined
       const toAddress = typeof args[1] === 'string' ? args[1] : undefined
       const symbol = tokenAddressToSymbol[tokenAddress] || tokenAddress
-      const price = symbol === RIF ? (prices?.[RIF]?.price ?? 0) : 0
+      const price = symbol === RIF ? (prices?.RIF?.price ?? 0) : 0
       return {
         type: ProposalType.WITHDRAW,
         amount,
@@ -156,9 +146,9 @@ const parseProposalActionDetails = (
   }
 }
 
-const PageWithProposal = (proposal: ParsedProposal) => {
+const PageWithProposal = (proposal: Proposal) => {
   const { address, isConnected } = useAccount()
-  const { proposalId, name, description, proposer, Starts, calldatasParsed, fullProposalName } = proposal
+  const { proposalId, name, description, proposer, Starts, calldatasParsed } = proposal
   const [vote, setVote] = useGetVoteForSpecificProposal(address ?? zeroAddress, proposalId)
   const [isChoosingVote, setIsChoosingVote] = useState(false)
   const [votingTxIsPending, setVotingTxIsPending] = useState(false)
@@ -186,7 +176,7 @@ const PageWithProposal = (proposal: ParsedProposal) => {
     (!isProposalActive || !!vote || !doesUserHasEnoughThreshold || isVoting || isWaitingVotingReceipt)
 
   const actionName = calldatasParsed?.[0]?.type === 'decoded' ? calldatasParsed[0].functionName : undefined
-  const { builderName } = splitCombinedName(fullProposalName || name)
+  const { builderName } = splitCombinedName(name)
 
   const handleVoting = async (_vote: Vote) => {
     try {
@@ -328,7 +318,7 @@ const PageWithProposal = (proposal: ParsedProposal) => {
     }
   }
 
-  const discourseLink = getDiscourseLinkFromProposalDescription(proposal.description)
+  const discourseLink = description ? getDiscourseLinkFromProposalDescription(description) : undefined
 
   return (
     <div className="min-h-screen text-white px-4 py-8 flex flex-col gap-4 w-full max-w-full">
