@@ -132,6 +132,28 @@ jobs:
       - name: Checkout
         uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 #v4.2.2
 
+      - name: Generate cache keys
+        id: cache-keys
+        run: |
+          echo "node-key=node-$(sha256sum package-lock.json | cut -d' ' -f1)" >> $GITHUB_OUTPUT
+          echo "next-key=next-$(sha256sum package-lock.json src/**/*.{ts,tsx,js,jsx} | sha256sum | cut -d' ' -f1)" >> $GITHUB_OUTPUT
+
+      - name: Restore node_modules cache
+        uses: actions/cache@v4
+        with:
+          path: node_modules
+          key: ${{ steps.cache-keys.outputs.node-key }}
+          restore-keys: |
+            node-
+
+      - name: Restore .next cache
+        uses: actions/cache@v4
+        with:
+          path: .next/cache
+          key: ${{ steps.cache-keys.outputs.next-key }}
+          restore-keys: |
+            next-
+
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@7474bc4690e29a8392af63c5b98e7449536d5c3a #v4.3.1
         with:
