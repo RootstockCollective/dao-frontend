@@ -1,4 +1,4 @@
-import type { Meta, StoryObj } from '@storybook/nextjs'
+import type { Meta, StoryObj } from '@storybook/react'
 import { LatestProposalCard } from './LatestProposalCard'
 import { ProposalCategory, ProposalState } from '@/shared/types'
 import { Proposal } from '@/app/proposals/shared/types'
