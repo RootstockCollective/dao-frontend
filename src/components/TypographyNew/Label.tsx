@@ -17,7 +17,7 @@ interface Props extends Omit<TypographyProps<'label'>, 'as'> {
  * - tag-s: font-size: 14px; font-weight: 600; font-family: font-rootstock-sans
  * - tag-m: font-size: 14px; font-weight: 600; font-family: font-rootstock-sans
  * - body-l: font-size: 18px; font-weight: 400; font-family: font-rootstock-sans
- * - body: font-size: 16px; font-weight: 400; font-family: font-rootstock-sans
+ * - body (default): font-size: 16px; font-weight: 400; font-family: font-rootstock-sans
  * - body-s: font-size: 14px; font-weight: 400; font-family: font-rootstock-sans
  * - body-xs: font-size: 12px; font-weight: 400; font-family: font-rootstock-sans
  */

@@ -30,7 +30,7 @@ export interface HeaderProps extends Omit<TypographyProps<TypographyElement>, 'a
  * - e2: font-size: 44px; font-family: font-kk-topo
  * - e2m: font-size: 40px; font-family: font-kk-topo
  * - e3: font-size: 16px; font-family: font-kk-topo
- * - h1: font-size: 32px; font-family: font-kk-topo
+ * - h1 (default): font-size: 32px; font-family: font-kk-topo
  * - h1m: font-size: 28px; font-family: font-kk-topo
  * - h2: font-size: 24px; font-family: font-kk-topo
  * - h3: font-size: 20px; font-family: font-kk-topo
