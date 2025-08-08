@@ -100,7 +100,7 @@ const checkVoted = async (items: DropdownItem[], address: Address): Promise<Drop
   try {
     // returned previous votes from VoteCast
     // address for testing: '0x81Df35317DF983e419630908eF6CB2BB48cE21Ca'
-    const votingEvents = await parseVoteCastEvents(address)()
+    const votingEvents = await parseVoteCastEvents(address)
 
     if (votingEvents && votingEvents.length >= 1) {
       return items.filter(item => item.id === VOTE)[0]
