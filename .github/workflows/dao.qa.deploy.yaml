@@ -93,6 +93,34 @@ jobs:
         run: |
           echo "value=$(sha256sum package-lock.json src/**/*.{ts,tsx,js,jsx} | sha256sum | cut -d' ' -f1)" >> $GITHUB_OUTPUT
 
+      - name: Check cache age
+        id: cache-age
+        run: |
+          # Check if cache exists and get its age
+          CACHE_EXISTS=false
+          CACHE_AGE=0
+          
+          # Try to restore cache to check if it exists
+          if [ -d ".next/cache" ]; then
+            CACHE_EXISTS=true
+            # Get the modification time of the cache directory
+            CACHE_TIME=$(stat -c %Y .next/cache 2>/dev/null || echo 0)
+            CURRENT_TIME=$(date +%s)
+            CACHE_AGE=$((CURRENT_TIME - CACHE_TIME))
+          fi
+          
+          # Cache is considered stale if it's older than 1 day (86400 seconds)
+          STALE_THRESHOLD=86400
+          
+          if [ "$CACHE_EXISTS" = "false" ] || [ $CACHE_AGE -gt $STALE_THRESHOLD ]; then
+            echo "should-build=true" >> $GITHUB_OUTPUT
+          else
+            echo "should-build=false" >> $GITHUB_OUTPUT
+          fi
+          
+          echo "cache-exists=$CACHE_EXISTS" >> $GITHUB_OUTPUT
+          echo "cache-age=$CACHE_AGE" >> $GITHUB_OUTPUT
+
       - name: Restore .next cache
         id: restore-next
         uses: actions/cache@v4
@@ -103,11 +131,13 @@ jobs:
             next-
 
       - name: Build application
+        if: steps.cache-age.outputs.should-build == 'true'
         env:
           NEXT_TELEMETRY_DISABLED: 1
         run: npm run build
 
       - name: Cache .next
+        if: steps.cache-age.outputs.should-build == 'true'
         uses: actions/cache@v4
         with:
           path: .next/cache

@@ -28,10 +28,7 @@ RUN if [ "$CI" = "1" ] && [ -d "node_modules" ]; then \
     else \
         echo "Installing dependencies..."; \
         npm ci --prefer-offline --no-audit --no-fund; \
-    fi \
-
-# Install dependencies
-RUN npm install --verbose
+    fi
 
 # Copy the rest of the application code
 COPY . .
