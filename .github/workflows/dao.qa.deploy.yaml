@@ -27,9 +27,96 @@ env:
   PROFILE: dao.qa
 
 jobs:
+  cache-dependencies:
+    name: Cache Dependencies
+    runs-on: ubuntu-latest
+    outputs:
+      cache-key: ${{ steps.cache-key.outputs.value }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+          cache: 'npm'
+
+      - name: Generate cache key
+        id: cache-key
+        run: |
+          echo "value=$(sha256sum package-lock.json | cut -d' ' -f1)" >> $GITHUB_OUTPUT
+
+      - name: Restore node_modules cache
+        id: restore-node
+        uses: actions/cache@v4
+        with:
+          path: node_modules
+          key: node-${{ steps.cache-key.outputs.value }}
+          restore-keys: |
+            node-
+
+      - name: Install dependencies
+        if: steps.restore-node.outputs.cache-hit != 'true'
+        run: npm ci
+
+      - name: Cache node_modules
+        uses: actions/cache@v4
+        with:
+          path: node_modules
+          key: node-${{ steps.cache-key.outputs.value }}
+
+  cache-build:
+    name: Cache Build
+    runs-on: ubuntu-latest
+    needs: cache-dependencies
+    outputs:
+      build-cache-key: ${{ steps.build-cache-key.outputs.value }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+          cache: 'npm'
+
+      - name: Restore node_modules
+        uses: actions/cache@v4
+        with:
+          path: node_modules
+          key: node-${{ needs.cache-dependencies.outputs.cache-key }}
+
+      - name: Generate build cache key
+        id: build-cache-key
+        run: |
+          echo "value=$(sha256sum package-lock.json src/**/*.{ts,tsx,js,jsx} | sha256sum | cut -d' ' -f1)" >> $GITHUB_OUTPUT
+
+      - name: Restore .next cache
+        id: restore-next
+        uses: actions/cache@v4
+        with:
+          path: .next/cache
+          key: next-${{ steps.build-cache-key.outputs.value }}
+          restore-keys: |
+            next-
+
+      - name: Build application
+        env:
+          NEXT_TELEMETRY_DISABLED: 1
+        run: npm run build
+
+      - name: Cache .next
+        uses: actions/cache@v4
+        with:
+          path: .next/cache
+          key: next-${{ steps.build-cache-key.outputs.value }}
+  
   deploy:
     name: Deploy
     runs-on: ubuntu-latest
+    needs: [cache-dependencies, cache-build]
     if: |
       github.event_name == 'workflow_dispatch' || github.event.label.name == 'deploy to DAO QA'
 
@@ -64,7 +151,7 @@ jobs:
           # Build a docker container and
           # push it to ECR so that it can
           # be deployed to ECS.
-          docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG --build-arg PROFILE="$PROFILE" --build-arg NEXT_PUBLIC_BUILD_ID=${{ github.sha }} --build-arg THE_GRAPH_API_KEY=${{ secrets.THE_GRAPH_API_KEY }} --build-arg DB_CONNECTION_STRING=${{ secrets.DB_CONNECTION_STRING }} --build-arg DAO_GRAPH_API_KEY=${{ secrets.DAO_GRAPH_API_KEY }} --no-cache .
+          docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG --build-arg PROFILE="$PROFILE" --build-arg NEXT_PUBLIC_BUILD_ID=${{ github.sha }} --build-arg THE_GRAPH_API_KEY=${{ secrets.THE_GRAPH_API_KEY }} --build-arg DB_CONNECTION_STRING=${{ secrets.DB_CONNECTION_STRING }} --build-arg CI=1 --build-arg DAO_GRAPH_API_KEY=${{ secrets.DAO_GRAPH_API_KEY }} --no-cache .
           docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
           echo "::set-output name=image::$ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG"
 

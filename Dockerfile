@@ -18,6 +18,8 @@ COPY package*.json ./
 
 # Skip cypress install
 ENV CYPRESS_INSTALL_BINARY 0
+# Disable telemetry
+ENV NEXT_TELEMETRY_DISABLED 1
 
 # Install dependencies
 RUN npm install --verbose
@@ -25,8 +27,14 @@ RUN npm install --verbose
 # Copy the rest of the application code
 COPY . .
 
-# Disable telemetry
-ENV NEXT_TELEMETRY_DISABLED 1
+# If CI=1 and cached artifacts exist, use them; otherwise install/build normally
+ARG CI=0
+RUN if [ "$CI" = "1" ] && [ -d "node_modules" ]; then \
+        echo "Using cached node_modules"; \
+    else \
+        echo "Installing dependencies..."; \
+        npm ci --prefer-offline --no-audit --no-fund; \
+    fi
 
 # Set the build argument 
 ARG PROFILE
@@ -44,8 +52,14 @@ ENV THE_GRAPH_API_KEY=${THE_GRAPH_API_KEY}
 ENV DB_CONNECTION_STRING=${DB_CONNECTION_STRING}
 ENV DAO_GRAPH_API_KEY=${DAO_GRAPH_API_KEY}
 
-# Build the Next.js application
-RUN npm run build
+# Build the Next.js application (use cached .next/cache if available)
+RUN if [ "$CI" = "1" ] && [ -d ".next/cache" ]; then \
+        echo "Using cached .next/cache"; \
+        npm run build; \
+    else \
+        echo "Building without cache..."; \
+        npm run build; \
+    fi
 
 # Clean node_modules for production after build
 RUN npm prune --production
