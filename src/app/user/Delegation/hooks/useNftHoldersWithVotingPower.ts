@@ -5,6 +5,7 @@ interface NftHolder {
   address: string
   RNS: string | null
   votingPower?: number
+  imageIpfs?: string | null
 }
 
 /**

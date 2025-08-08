@@ -27,9 +27,9 @@ async function fetchNftHoldersShepherds() {
         if (!rns) {
           rns = await resolveRnsDomain(holder.owner)
         }
-        return { address: holder.owner, RNS: rns }
+        return { address: holder.owner, RNS: rns, imageIpfs: holder.image_url }
       } catch {
-        return { address: holder.owner, RNS: null }
+        return { address: holder.owner, RNS: null, imageIpfs: holder.image_url }
       }
     }),
   )
