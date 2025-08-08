@@ -29,10 +29,12 @@ export interface EventArgumentsParameter {
 
 type DecodedFunctionData = DecodeFunctionDataReturnType<SupportedActionAbi>
 
+export type DecodedFunctionName = DecodedFunctionData['functionName'] & SupportedProposalActionName
+
 // Separate types for successful decode and fallback
 type DecodedSuccessData = {
   type: 'decoded'
-  functionName: DecodedFunctionData['functionName'] & SupportedProposalActionName
+  functionName: DecodedFunctionName
   args: DecodedFunctionData['args']
   inputs: FunctionInputs
 }
