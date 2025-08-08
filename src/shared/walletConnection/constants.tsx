@@ -1,4 +1,4 @@
-import { ProposalDetailTopLeftComponent, ProposalsTopLeftComponent } from './components/topPageHeader/pages'
+import { ProposalDetailTopLeftComponent } from './components/topPageHeader/pages'
 import { HeaderTitle } from '@/components/Typography/HeaderTitle'
 import { Paragraph } from '@/components/TypographyNew'
 
