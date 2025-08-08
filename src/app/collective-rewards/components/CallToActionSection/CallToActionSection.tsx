@@ -33,8 +33,12 @@ export const CallToActionSection = () => {
 
   return (
     <InfoContainer className="flex-row p-0 pt-1">
-      <BackersCallToAction rifRewards={rifBackerRewards} rbtcRewards={rbtcBackerRewards} />
-      <BuildersCallToAction rifRewards={rifBuilderRewards} rbtcRewards={rbtcBuilderRewards} />
+      <BackersCallToAction rifRewards={rifBackerRewards} rbtcRewards={rbtcBackerRewards} className="w-1/2" />
+      <BuildersCallToAction
+        rifRewards={rifBuilderRewards}
+        rbtcRewards={rbtcBuilderRewards}
+        className="w-1/2"
+      />
     </InfoContainer>
   )
 }
