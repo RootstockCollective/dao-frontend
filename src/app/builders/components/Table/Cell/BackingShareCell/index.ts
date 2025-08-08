@@ -1,1 +1,1 @@
-export * from './BackingShare'
+export * from './BackingShareCell'

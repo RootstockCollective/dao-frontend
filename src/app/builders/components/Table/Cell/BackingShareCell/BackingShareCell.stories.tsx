@@ -1,5 +1,5 @@
 import type { Meta, StoryObj } from '@storybook/nextjs'
-import { BackingShareCell } from './BackingShare'
+import { BackingShareCell } from './BackingShareCell'
 
 const meta = {
   title: 'Koto/Builders/Table/Cell/BackingShareCell',
