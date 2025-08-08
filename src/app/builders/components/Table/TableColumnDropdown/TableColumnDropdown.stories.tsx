@@ -15,7 +15,7 @@ const TableColumnDropdownWithContext = () => {
         { id: 'backer_rewards', sortable: true, hidden: false },
         { id: 'rewards_past_cycle', sortable: true, hidden: false },
         { id: 'rewards_upcoming', sortable: true, hidden: false },
-        { id: 'allocations', sortable: true, hidden: false },
+        { id: 'backingShare', sortable: true, hidden: false },
         { id: 'actions', sortable: false, hidden: true }, // should not be shown
       ],
     })
