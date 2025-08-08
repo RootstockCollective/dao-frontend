@@ -1,17 +1,6 @@
 import { CycleContextProvider } from '@/app/collective-rewards/metrics'
-import { ActionsContainer } from '@/components/containers'
-import { Header } from '@/components/TypographyNew'
-import { withTableContext } from '@/shared/context'
-import { ReactElement, useState, useMemo } from 'react'
-import {
-  BuilderFilterDropdown,
-  BuilderFilterOptionId,
-  BuilderFilterOption,
-  builderFilterOptions,
-} from './BuilderFilterDropdown'
-import { BuildersTable } from './BuildersTable'
-import { useGetBuilders } from '@/app/collective-rewards/user'
 import { Builder } from '@/app/collective-rewards/types'
+import { useGetBuilders } from '@/app/collective-rewards/user'
 import {
   isBuilderActive,
   isBuilderDeactivated,
@@ -19,6 +8,18 @@ import {
   isBuilderPaused,
   isBuilderSelfPaused,
 } from '@/app/collective-rewards/utils'
+import { ActionsContainer } from '@/components/containers'
+import { Header } from '@/components/TypographyNew'
+import { withTableContext } from '@/shared/context'
+import { ReactElement, useMemo, useState } from 'react'
+import {
+  BuilderFilterDropdown,
+  BuilderFilterOption,
+  BuilderFilterOptionId,
+  builderFilterOptions,
+} from './BuilderFilterDropdown'
+import { BuildersTable } from './BuildersTable'
+import { BuilderCellDataMap, ColumnId } from './BuilderTable.config'
 
 const filterMap: Record<BuilderFilterOptionId, (builder: Builder) => boolean> = {
   active: (builder: Builder) => isBuilderActive(builder.stateFlags),
@@ -83,4 +84,4 @@ const BuildersTableContainer = (): ReactElement => {
   )
 }
 
-export default withTableContext(BuildersTableContainer)
+export default withTableContext<ColumnId, BuilderCellDataMap>(BuildersTableContainer)
