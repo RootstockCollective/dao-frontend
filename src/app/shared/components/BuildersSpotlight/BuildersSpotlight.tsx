@@ -9,7 +9,7 @@ interface BuildersSpotlightProps {
 export const BuildersSpotlight: FC<BuildersSpotlightProps> = ({ builders }) => (
   <div className="grid grid-cols-4 gap-2 w-full items-stretch">
     {builders.map(builder => (
-      <BuilderCardControl key={builder.address} {...builder} />
+      <BuilderCardControl key={builder.address} builder={builder} />
     ))}
   </div>
 )

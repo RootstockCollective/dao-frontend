@@ -1,5 +1,5 @@
 import { TokenImage } from '@/components/TokenImage'
-import { Header, Label, Span, Paragraph } from '@/components/TypographyNew'
+import { Header, Label, Paragraph, Span } from '@/components/TypographyNew'
 import { cn } from '@/lib/utils'
 import { ReactNode } from 'react'
 
@@ -11,7 +11,7 @@ interface Props {
   className?: string
   isFlexEnd?: boolean
   balance?: string
-  actions?: ReactNode
+  actions?: ReactNode // TODO: @analyse could be children
 }
 
 export const TokenAmountDisplay = ({
