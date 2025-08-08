@@ -16,6 +16,12 @@ WORKDIR /app
 # Copy package.json and package-lock.json
 COPY package*.json ./
 
+# Copy node_modules from build context (will fail silently if not present)
+COPY node_modules ./node_modules
+
+# Copy .next/cache from build context (will fail silently if not present)
+COPY .next/cache ./.next/cache
+
 # Skip cypress install
 ENV CYPRESS_INSTALL_BINARY 0
 # Disable telemetry
@@ -26,7 +32,7 @@ ARG CI=0
 RUN if [ "$CI" = "1" ] && [ -d "node_modules" ]; then \
         echo "Using cached node_modules"; \
     else \
-        echo "Installing dependencies..."; \
+        echo "Non-CI mode: installing dependencies..."; \
         npm ci --prefer-offline --no-audit --no-fund; \
     fi
 
