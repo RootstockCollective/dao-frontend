@@ -73,11 +73,15 @@ const BuilderAllocationBar = ({ barOverrides }: { barOverrides?: Partial<Allocat
         // and change the segment to allow certain actions only (e.g.: reduce but not increase)
 
         const value = allocation ? Number(formatEther(allocation)) : 0
+        const initialValue = initialAllocations[addressKey]
+          ? Number(formatEther(initialAllocations[addressKey]))
+          : 0
 
         return {
           key,
           label: builder?.builderName || key,
           value,
+          initialValue,
           displayColor: getBuilderColor(addressKey),
           isTemporary: initialAllocations[addressKey] !== allocation,
         }
@@ -125,6 +129,7 @@ const BuilderAllocationBar = ({ barOverrides }: { barOverrides?: Partial<Allocat
             key: 'unallocated',
             label: 'available backing',
             value: 1,
+            initialValue: 1,
             displayColor: 'var(--background-60)',
             isTemporary: true,
           },
