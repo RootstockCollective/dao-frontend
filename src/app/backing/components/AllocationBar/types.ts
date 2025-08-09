@@ -4,6 +4,7 @@ export interface AllocationItem {
   value: number // actual value (not percentage)
   displayColor: string
   isTemporary?: boolean // true: it shows a checkerboard pattern on the segment
+  initialValue?: number
 }
 
 export interface AllocationChangeData {
