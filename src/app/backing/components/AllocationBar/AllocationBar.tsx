@@ -174,6 +174,7 @@ const AllocationBar: React.FC<AllocationBarProps> = ({
               <AllocationBarSegment
                 key={item.key}
                 value={currentValues[i]}
+                initialValue={currentItems[i].initialValue ?? 0}
                 totalValue={totalValue}
                 item={item}
                 index={i}
