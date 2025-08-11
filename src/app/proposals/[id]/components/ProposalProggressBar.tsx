@@ -1,6 +1,6 @@
 import { Fragment } from 'react'
 import { Span } from '@/components/Typography'
-import { ProgressBar as ProgressBarComponent } from '@/components/ProgressBarNew'
+import { ProgressBar } from '@/components/ProgressBarNew'
 import { ProposalState } from '@/shared/types'
 
 interface ProgressBarProps {
@@ -39,11 +39,11 @@ const renderStatusPath = (proposalState: ProposalState) => {
   )
 }
 
-export const ProgressBar = ({ proposalState }: ProgressBarProps) => {
+export const ProposalProggressBar = ({ proposalState }: ProgressBarProps) => {
   return (
     <div className="flex flex-col w-full">
       <div className="flex flex-row justify-between w-full">{renderStatusPath(proposalState!)}</div>
-      <ProgressBarComponent progress={proposalStateToProgressMap.get(proposalState) ?? 0} className="mt-3" />
+      <ProgressBar progress={proposalStateToProgressMap.get(proposalState) ?? 0} className="mt-3" />
     </div>
   )
 }

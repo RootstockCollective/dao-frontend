@@ -6,8 +6,14 @@ import { useParams } from 'next/navigation'
 import { usePricesContext } from '@/shared/context/PricesContext'
 import { ParsedActionDetails, ProposalType } from './types'
 import type { GetPricesResult } from '@/app/user/types'
-import { TechnicalDetails, ProgressBar, Description, VotingDetails, ProposalDetails } from './components'
 import { RBTC, RIF, RIF_ADDRESS, USDRIF, USDRIF_ADDRESS, TRIF, ENV } from '@/lib/constants'
+import {
+  TechnicalDetails,
+  ProposalProggressBar,
+  Description,
+  VotingDetails,
+  ProposalDetails,
+} from './components'
 import { useVoteOnProposal } from '@/shared/hooks/useVoteOnProposal'
 import { useProposalById } from '../context'
 import { Category } from '../components/category'
@@ -106,7 +112,7 @@ const PageWithProposal = (proposal: Proposal) => {
       <div className="flex flex-row gap-2 w-full max-w-full mt-10">
         <div className="flex-1 flex flex-col min-w-0">
           <div className="bg-bg-80 p-6 flex flex-col gap-y-6">
-            <ProgressBar proposalState={voteOnProposalData.proposalState} />
+            <ProposalProggressBar proposalState={voteOnProposalData.proposalState} />
             <ProposalDetails
               name={name}
               description={description}
