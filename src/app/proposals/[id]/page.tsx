@@ -12,7 +12,7 @@ import {
 } from '@/app/proposals/shared/utils'
 import { Header, Paragraph, Span } from '@/components/TypographyNew'
 import { config } from '@/config'
-import { RBTC, RIF, RIF_ADDRESS } from '@/lib/constants'
+import { RIF, RBTC, RIF_ADDRESS, USDRIF, USDRIF_ADDRESS } from '@/lib/constants'
 import { formatNumberWithCommas } from '@/lib/utils'
 import { useExecuteProposal } from '@/shared/hooks/useExecuteProposal'
 import { useQueueProposal } from '@/shared/hooks/useQueueProposal'
@@ -100,6 +100,7 @@ const renderStatusPath = (proposalState: ProposalState) => {
 // Utility to get token symbol from address (expandable)
 const tokenAddressToSymbol = {
   [RIF_ADDRESS.toLowerCase()]: RIF,
+  [USDRIF_ADDRESS.toLowerCase()]: USDRIF,
   // Add more tokens here
 }
 
@@ -127,7 +128,8 @@ const parseProposalActionDetails = (
       const amount = typeof args[2] === 'bigint' ? args[2] : undefined
       const toAddress = typeof args[1] === 'string' ? args[1] : undefined
       const symbol = tokenAddressToSymbol[tokenAddress] || tokenAddress
-      const price = symbol === RIF ? (prices?.[RIF]?.price ?? 0) : 0
+      const price = prices[symbol]?.price ?? 0
+
       return {
         type: ProposalType.WITHDRAW,
         amount,

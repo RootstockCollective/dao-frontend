@@ -17,7 +17,7 @@ export const useCreateTreasuryTransferProposal = () => {
   const { writeContractAsync: propose, isPending: isPublishing } = useWriteContract()
 
   const onCreateTreasuryTransferProposal = useCallback(
-    async (address: Address, amount: string, description: string, tokenAddress: string) => {
+    async (address: Address, amount: string, description: string, tokenAddress: Address) => {
       if (!userAddress) throw new Error('Unknown user address')
       // Check fresh voting power from blockchain
       const canCreate = await checkCanCreateProposal(userAddress)
@@ -28,7 +28,7 @@ export const useCreateTreasuryTransferProposal = () => {
       if (tokenAddress === zeroAddress) {
         calldata = encodeTreasuryTransfer(address, amount)
       } else {
-        calldata = encodeTreasuryERC20Transfer(address, amount)
+        calldata = encodeTreasuryERC20Transfer(tokenAddress, address, amount)
       }
       const { proposal } = createProposal([TreasuryAddress], [0n], [calldata], description)
       return propose({
@@ -45,11 +45,11 @@ export const useCreateTreasuryTransferProposal = () => {
   )
 }
 
-const encodeTreasuryERC20Transfer = (address: Address, amountToTransfer: string) => {
+const encodeTreasuryERC20Transfer = (tokenAddress: Address, address: Address, amountToTransfer: string) => {
   return encodeFunctionData({
     abi: DAOTreasuryAbi,
     functionName: 'withdrawERC20',
-    args: [tokenContracts.RIF, address, parseEther(amountToTransfer)],
+    args: [tokenAddress, address, parseEther(amountToTransfer)],
   })
 }
 
