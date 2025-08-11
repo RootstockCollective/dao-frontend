@@ -15,7 +15,7 @@ interface ProposalDetailsProps {
   name: string
   description: string | null
   proposer: string
-  Starts: Moment
+  startsAt: Moment
   fullProposalName?: string
   parsedAction: ParsedActionDetails
   actionName: DecodedFunctionName | undefined
@@ -73,7 +73,7 @@ export const ProposalDetails = ({
         <Span variant="tag-s" className="text-white/70" bold>
           Created on
         </Span>
-        <Paragraph variant="body">{Starts ? Starts.format('DD MMM YYYY') : '—'}</Paragraph>
+        <Paragraph variant="body">{startsAt ? startsAt.format('DD MMM YYYY') : '—'}</Paragraph>
       </div>
       <div>
         {isCommunityApproveBuilderAction ? (
