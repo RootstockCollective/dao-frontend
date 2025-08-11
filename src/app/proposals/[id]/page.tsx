@@ -85,7 +85,7 @@ const PageWithProposal = (proposal: Proposal) => {
   const { proposalId, name, description, proposer, Starts, calldatasParsed, proposalDeadline, voteStart, category } = proposal
   const { prices } = usePricesContext()
   const parsedAction = parseProposalActionDetails(calldatasParsed, prices)
-  const { proposalState } = useVoteOnProposal(proposalId)
+  const voteOnProposalData = useVoteOnProposal(proposalId)
   const snapshot = useGetProposalSnapshot(proposalId)
 
   const actionName = calldatasParsed?.[0]?.type === 'decoded' ? calldatasParsed[0].functionName : undefined
@@ -106,7 +106,7 @@ const PageWithProposal = (proposal: Proposal) => {
       <div className="flex flex-row gap-2 w-full max-w-full mt-10">
         <div className="flex-1 flex flex-col min-w-0">
           <div className="bg-bg-80 p-6 flex flex-col gap-y-6">
-            <ProgressBar proposalState={proposalState} />
+            <ProgressBar proposalState={voteOnProposalData.proposalState} />
             <ProposalDetails
               name={name}
               description={description}
@@ -126,6 +126,7 @@ const PageWithProposal = (proposal: Proposal) => {
           snapshot={snapshot}
           proposalDeadline={proposalDeadline}
           voteStart={voteStart}
+          voteOnProposalData={voteOnProposalData}
         />
       </div>
     </div>

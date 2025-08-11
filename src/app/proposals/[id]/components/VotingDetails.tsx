@@ -39,9 +39,18 @@ interface VotingDetailsProps {
   snapshot: bigint | undefined,
   proposalDeadline: Big,
   voteStart: string | undefined,
+  voteOnProposalData: ReturnType<typeof useVoteOnProposal>
 }
 
-export const VotingDetails = ({ proposalId, parsedAction, actionName, snapshot, proposalDeadline, voteStart }: VotingDetailsProps) => {
+export const VotingDetails = ({
+  proposalId,
+  parsedAction,
+  actionName,
+  snapshot,
+  proposalDeadline,
+  voteStart,
+  voteOnProposalData,
+}: VotingDetailsProps) => {
   const { address, isConnected } = useAccount()
   const [vote, setVote] = useGetVoteForSpecificProposal(address ?? zeroAddress, proposalId)
   const [isChoosingVote, setIsChoosingVote] = useState(false)
@@ -52,7 +61,8 @@ export const VotingDetails = ({ proposalId, parsedAction, actionName, snapshot, 
   const { votingPowerAtSnapshot, doesUserHasEnoughThreshold } = useVotingPowerAtSnapshot(snapshot as bigint)
 
   const { onVote, isProposalActive, proposalState, isVoting, isWaitingVotingReceipt, setVotingTxHash } =
-    useVoteOnProposal(proposalId, false)
+    voteOnProposalData
+
   const [isQueueing, setIsQueueing] = useState<boolean>()
   const { onQueueProposal } = useQueueProposal(proposalId)
 
