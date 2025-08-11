@@ -21,6 +21,25 @@ interface ProposalDetailsProps {
   actionName: DecodedFunctionName | undefined
 }
 
+interface DetailItemProps {
+  label: string
+  children: React.ReactNode
+  show?: boolean
+}
+
+const DetailItem = ({ label, children, show = true }: DetailItemProps) => {
+  if (!show) return null
+
+  return (
+    <div>
+      <Span variant="tag-s" className="text-white/70" bold>
+        {label}
+      </Span>
+      {children}
+    </div>
+  )
+}
+
 export const ProposalDetails = ({
   name,
   description,
@@ -61,53 +80,37 @@ export const ProposalDetails = ({
 
   return (
     <div className="grid grid-cols-2 gap-x-6 gap-y-2 text-sm mt-10">
-      <div>
-        <Span variant="tag-s" className="text-white/70" bold>
-          Proposal type
-        </Span>
+      <DetailItem label="Proposal type">
         <Paragraph variant="body" className="flex items-center">
           {getProposalTypeLabel()}
         </Paragraph>
-      </div>
-      <div>
-        <Span variant="tag-s" className="text-white/70" bold>
-          Created on
-        </Span>
+      </DetailItem>
+
+      <DetailItem label="Created on">
         <Paragraph variant="body">{startsAt ? startsAt.format('DD MMM YYYY') : '—'}</Paragraph>
-      </div>
-      <div>
-        {isCommunityApproveBuilderAction ? (
-          <Span variant="tag-s" className="text-white/70" bold>
-            Builder name
-          </Span>
-        ) : null}
+      </DetailItem>
+
+      <DetailItem label="Builder name" show={isCommunityApproveBuilderAction}>
+        <Span variant="tag-s" className="text-white/70" bold>
+          Builder name
+        </Span>
         <Paragraph variant="body" className="text-sm font-medium text-primary">
           {/** TODO: enable later when builder profile feature is implemented */}
           {/* <a href={`/builders/${addressToWhitelist}`} className="hover:underline"> */}
           {builderName}
           {/* </a> */}
         </Paragraph>
-      </div>
-      <div>
-        {isCommunityApproveBuilderAction ? (
-          <Span variant="tag-s" className="text-white/70" bold>
-            Builder address
-          </Span>
-        ) : null}
-        {addressToWhitelist && isCommunityApproveBuilderAction ? (
-          <ShortenAndCopy value={addressToWhitelist} />
-        ) : null}
-      </div>
-      <div>
-        <Span variant="tag-s" className="text-white/70" bold>
-          Proposed by
-        </Span>
+      </DetailItem>
+
+      <DetailItem label="Builder address" show={isCommunityApproveBuilderAction && !!addressToWhitelist}>
+        <ShortenAndCopy value={addressToWhitelist!} />
+      </DetailItem>
+
+      <DetailItem label="Proposed by">
         {proposer ? <ShortenAndCopy value={proposer} /> : <Span variant="body">—</Span>}
-      </div>
-      <div>
-        <Span variant="tag-s" className="text-white/70" bold>
-          Community discussion
-        </Span>
+      </DetailItem>
+
+      <DetailItem label="Community discussion">
         {discourseLink ? (
           <Paragraph variant="body" className="text-sm font-medium text-primary">
             <a href={discourseLink} target="_blank" rel="noopener noreferrer" className="hover:underline">
@@ -115,9 +118,9 @@ export const ProposalDetails = ({
             </a>
           </Paragraph>
         ) : (
-          ' - '
+          <Span variant="body">—</Span>
         )}
-      </div>
+      </DetailItem>
     </div>
   )
 }
