@@ -1,6 +1,6 @@
 import { governor } from '@/lib/contracts'
 import { useQuery } from '@tanstack/react-query'
-import { Address, Log, parseEventLogs } from 'viem'
+import { Address, Log, parseEventLogs, zeroAddress } from 'viem'
 import { fetchVoteCastEventByAccountAddress } from '@/app/user/Balances/actions'
 import { Vote, VOTES_MAP } from '@/shared/types'
 import { useEffect, useState } from 'react'
@@ -27,7 +27,7 @@ export const parseVoteCastEvents = async (address: Address) => {
 }
 
 export const useGetVoteForSpecificProposal = (
-  address: Address,
+  address: Address = zeroAddress,
   proposalId: string,
 ): [Vote | undefined, (vote: Vote | undefined) => void] => {
   const [vote, setVote] = useState<Vote | undefined>(undefined)
@@ -41,13 +41,13 @@ export const useGetVoteForSpecificProposal = (
   const event = voteEvents?.find(event => event.args.proposalId.toString() === proposalId)
 
   useEffect(() => {
-    if (event?.args?.support !== undefined) {
+    if (address !== zeroAddress && event?.args?.support !== undefined) {
       setVote(VOTES_MAP.get(event.args.support as number) as Vote)
     } else {
       // If no event is found for the given proposalId, ensure the vote state is reset.
       setVote(undefined)
     }
-  }, [event])
+  }, [address, event])
 
   return [vote, setVote]
 }

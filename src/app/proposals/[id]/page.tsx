@@ -150,7 +150,7 @@ const parseProposalActionDetails = (
 const PageWithProposal = (proposal: Proposal) => {
   const { address, isConnected } = useAccount()
   const { proposalId, name, description, proposer, Starts, calldatasParsed } = proposal
-  const [vote, setVote] = useGetVoteForSpecificProposal(address ?? zeroAddress, proposalId)
+  const [vote, setVote] = useGetVoteForSpecificProposal(address, proposalId)
   const [isChoosingVote, setIsChoosingVote] = useState(false)
   const [votingTxIsPending, setVotingTxIsPending] = useState(false)
 
