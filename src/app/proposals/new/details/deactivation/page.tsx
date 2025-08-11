@@ -6,7 +6,7 @@ import { type Address } from 'viem'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useLayoutContext } from '@/components/MainContainer/LayoutProvider'
-import { Subfooter } from '../../components/Subfooter'
+import { ProposalSubfooter } from '../../components/ProposalSubfooter'
 import { BaseProposalFields } from '../components/BaseProposalFields'
 import { useReviewProposal } from '@/app/providers'
 import { ProposalCategory } from '@/shared/types'
@@ -18,7 +18,7 @@ import { BASE_PROPOSAL_LIMITS } from '../schemas/BaseProposalSchema'
 
 export default function DeactivationProposalForm() {
   const router = useRouter()
-  const { setSubfooter } = useLayoutContext()
+  const { openDrawer, closeDrawer } = useLayoutContext()
   const { record, setRecord } = useReviewProposal()
   const { getBuilderByAddress } = useBuilderContext()
 
@@ -60,11 +60,15 @@ export default function DeactivationProposalForm() {
   )
 
   useEffect(() => {
-    setSubfooter(
-      <Subfooter submitForm={onSubmit} buttonText="Review proposal" nextDisabled={!formState.isValid} />,
+    openDrawer(
+      <ProposalSubfooter
+        submitForm={onSubmit}
+        buttonText="Review proposal"
+        nextDisabled={!formState.isValid}
+      />,
     )
-    return () => setSubfooter(null)
-  }, [formState.isValid, onSubmit, setSubfooter])
+    return () => closeDrawer()
+  }, [formState.isValid, onSubmit, openDrawer, closeDrawer])
 
   // eslint-disable-next-line
   useEffect(() => setFocus('proposalName'), [])

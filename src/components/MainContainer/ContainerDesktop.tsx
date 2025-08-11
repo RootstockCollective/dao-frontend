@@ -8,12 +8,9 @@ import { HeaderDesktop } from './headers/HeaderDesktop'
 import { cn } from '@/lib/utils'
 import { BottomDrawer } from './drawers/BottomDrawer'
 import { MAIN_CONTAINER_ID } from '@/lib/constants'
-import { useLayoutContext } from './LayoutProvider'
-import { AnimatePresence } from 'motion/react'
 
 export const MAIN_CONTAINER_MAX_WIDTH = '1440px'
 export function ContainerDesktop({ children, className, ...props }: HTMLAttributes<HTMLDivElement>) {
-  const { subfooter } = useLayoutContext()
 
   return (
     <div
@@ -33,7 +30,6 @@ export function ContainerDesktop({ children, className, ...props }: HTMLAttribut
             </main>
             <BottomDrawer />
             <FooterDesktop />
-            <AnimatePresence>{subfooter}</AnimatePresence>
           </div>
         </div>
       </div>

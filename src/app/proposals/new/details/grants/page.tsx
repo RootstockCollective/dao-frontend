@@ -10,7 +10,7 @@ import { useRouter } from 'next/navigation'
 import { useCallback, useEffect } from 'react'
 import { useForm } from 'react-hook-form'
 import { Address } from 'viem'
-import { Subfooter } from '../../components/Subfooter'
+import { ProposalSubfooter } from '../../components/ProposalSubfooter'
 import { BaseProposalFields, ProposalInfoSidebar, TokenRadioGroup } from '../components'
 import { BASE_PROPOSAL_LIMITS } from '../schemas/BaseProposalSchema'
 import { GrantProposal, GrantProposalSchema } from '../schemas/GrantProposalSchema'
@@ -47,13 +47,17 @@ export default function GrantsProposalForm() {
   )
 
   // inject sticky drawer with submit button to the footer layout
-  const { setSubfooter } = useLayoutContext()
+  const { openDrawer, closeDrawer } = useLayoutContext()
   useEffect(() => {
-    setSubfooter(
-      <Subfooter submitForm={onSubmit} buttonText="Review proposal" nextDisabled={!formState.isValid} />,
+    openDrawer(
+      <ProposalSubfooter
+        submitForm={onSubmit}
+        buttonText="Review proposal"
+        nextDisabled={!formState.isValid}
+      />,
     )
-    return () => setSubfooter(null)
-  }, [formState.isValid, onSubmit, setSubfooter])
+    return () => closeDrawer()
+  }, [formState.isValid, onSubmit, openDrawer, closeDrawer])
 
   // set focus on proposal name field
   // eslint-disable-next-line

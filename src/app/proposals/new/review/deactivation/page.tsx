@@ -5,7 +5,7 @@ import moment from 'moment'
 import { useAccount } from 'wagmi'
 import { useReviewProposal } from '@/app/providers'
 import { useLayoutContext } from '@/components/MainContainer/LayoutProvider'
-import { Subfooter } from '../../components/Subfooter'
+import { ProposalSubfooter } from '../../components/ProposalSubfooter'
 import { ProposalCategory } from '@/shared/types'
 import { Card } from '../components/Card'
 import { shortAddress } from '@/lib/utils'
@@ -47,13 +47,17 @@ export default function DeactivationProposalReview() {
   }, [record, onRemoveBuilderProposal])
 
   // inject sticky drawer with submit button to the footer layout
-  const { setSubfooter } = useLayoutContext()
+  const { openDrawer, closeDrawer } = useLayoutContext()
   useEffect(() => {
-    setSubfooter(
-      <Subfooter submitForm={onSubmit} buttonText="Publish proposal" disabled={loading || !isConnected} />,
+    openDrawer(
+      <ProposalSubfooter
+        submitForm={onSubmit}
+        buttonText="Publish proposal"
+        disabled={loading || !isConnected}
+      />,
     )
-    return () => setSubfooter(null)
-  }, [onSubmit, setSubfooter, loading, isConnected])
+    return () => closeDrawer()
+  }, [onSubmit, openDrawer, closeDrawer, loading, isConnected])
 
   // Verify that the context was passed the correct proposal type
   if (!record?.form || record?.category !== ProposalCategory.Deactivation) {

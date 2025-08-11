@@ -9,7 +9,7 @@ import { useLayoutContext } from './LayoutProvider'
 import { AnimatePresence } from 'motion/react'
 
 export default function ContainerMobile({ className, children, ...props }: HTMLAttributes<HTMLDivElement>) {
-  const { isSidebarOpen, subfooter } = useLayoutContext()
+  const { isSidebarOpen } = useLayoutContext()
   return (
     <div
       {...props}
@@ -24,7 +24,6 @@ export default function ContainerMobile({ className, children, ...props }: HTMLA
         <main className="grow mb-25">{children}</main>
         <FooterMobile />
       </div>
-      <AnimatePresence>{subfooter}</AnimatePresence>
     </div>
   )
 }
