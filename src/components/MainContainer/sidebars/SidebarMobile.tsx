@@ -39,11 +39,11 @@ export function SidebarMobile() {
       <div className="h-full flex flex-col justify-between gap-4 ">
         <ul className="w-fit">
           {menuDataToUse.map(data => (
-            <Fragment key={data.href}>
+            <Fragment key={data.buttonProps.id}>
               {'type' in data && data.type === 'category' ? (
                 <div className="m-3" />
               ) : (
-                <MenuItem key={data.href} {...data} />
+                <MenuItem key={data.buttonProps.id} {...data} />
               )}
             </Fragment>
           ))}

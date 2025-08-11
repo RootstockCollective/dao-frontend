@@ -91,7 +91,7 @@ export const menuDataNotConnected = [
   {
     href: '',
     text: 'Holdings',
-    buttonProps: { id: 'Button_User', name: 'user' },
+    buttonProps: { id: 'Button_Holdings_Not_Connected', name: 'holdings' },
     iconUrl: '/images/sidemenukoto/Holdings.svg',
   },
   {
