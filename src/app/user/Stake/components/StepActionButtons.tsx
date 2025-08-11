@@ -1,4 +1,4 @@
-import { Button } from '@/components/Button/Button'
+import { Button } from '@/components/Button'
 import { cn } from '@/lib/utils'
 import { ReactNode } from 'react'
 import { TransactionInProgressButton } from './TransactionInProgressButton'

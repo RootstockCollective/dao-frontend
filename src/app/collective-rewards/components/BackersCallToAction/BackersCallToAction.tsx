@@ -1,6 +1,6 @@
 import { Header, Paragraph } from '@/components/TypographyNew'
 import { MetricsContainer } from '@/components/containers'
-import { Button } from '@/components/Button/Button'
+import { Button } from '@/components/Button'
 import { useContext } from 'react'
 import { useAccount } from 'wagmi'
 import { Banner } from '../Banner'

@@ -1,4 +1,4 @@
-import { Button } from '@/components/Button/Button'
+import { Button } from '@/components/Button'
 import { Divider } from '@/components/Divider'
 import { Hash } from 'viem'
 import { TransactionInProgressButton } from '@/app/user/Stake/components/TransactionInProgressButton'

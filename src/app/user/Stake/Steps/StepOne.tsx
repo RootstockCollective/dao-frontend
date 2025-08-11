@@ -1,5 +1,5 @@
 import { StakeInput } from '@/app/user/Stake/StakeInputNew'
-import { Button } from '@/components/Button/Button'
+import { Button } from '@/components/Button'
 import { Divider } from '@/components/Divider'
 import { TokenImage } from '@/components/TokenImage'
 import { Label, Span } from '@/components/TypographyNew'

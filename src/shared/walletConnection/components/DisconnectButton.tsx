@@ -1,4 +1,4 @@
-import { Button } from '@/components/Button/Button'
+import { Button } from '@/components/Button'
 import { PowerIconKoto } from '@/components/Icons'
 
 interface Props {

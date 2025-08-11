@@ -1,6 +1,6 @@
 import { MouseEvent, Ref } from 'react'
 import { formatEther } from 'viem'
-import { Button } from '@/components/Button/Button'
+import { Button } from '@/components/Button'
 import { capitalizeFirstLetter } from '@/shared/utils'
 import { Header, Paragraph } from '@/components/TypographyNew'
 import { formatNumberWithCommas } from '@/lib/utils'

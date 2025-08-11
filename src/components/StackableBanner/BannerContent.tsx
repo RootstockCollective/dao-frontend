@@ -1,6 +1,6 @@
 import { FC, ReactNode } from 'react'
 import { cn } from '@/lib/utils'
-import { Button } from '@/components/Button/Button'
+import { Button } from '@/components/Button'
 import { Typography } from '@/components/TypographyNew/Typography'
 
 export interface BannerContentProps {

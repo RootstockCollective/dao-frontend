@@ -1,4 +1,4 @@
-import { Button } from '@/components/Button/Button'
+import { Button } from '@/components/Button'
 import { Span } from '@/components/TypographyNew'
 
 interface Props {
