@@ -35,6 +35,30 @@ export const ProposalDetails = ({
 
   const isCommunityApproveBuilderAction = actionName === 'communityApproveBuilder'
 
+  const getProposalTypeLabel = () => {
+    if (parsedAction.type === ProposalType.WITHDRAW && parsedAction.amount && parsedAction.tokenSymbol) {
+      return (
+        <>
+          Transfer of {formatNumberWithCommas(formatEther(parsedAction.amount))}
+          <Span className="inline-flex ml-2">
+            <TokenImage symbol={parsedAction.tokenSymbol} size={16} />
+            <Span className="font-bold ml-1">{parsedAction.tokenSymbol}</Span>
+          </Span>
+        </>
+      )
+    }
+
+    if (parsedAction.type === ProposalType.BUILDER_ACTIVATION) {
+      return 'Builder activation'
+    }
+
+    if (parsedAction.type === ProposalType.BUILDER_DEACTIVATION) {
+      return 'Builder deactivation'
+    }
+
+    return parsedAction.type
+  }
+
   return (
     <div className="grid grid-cols-2 gap-x-6 gap-y-2 text-sm mt-10">
       <div>
@@ -42,22 +66,7 @@ export const ProposalDetails = ({
           Proposal type
         </Span>
         <Paragraph variant="body" className="flex items-center">
-          {/* For transfer actions, show amount, token image, and symbol. For others, show a label. */}
-          {parsedAction.type === ProposalType.WITHDRAW && parsedAction.amount && parsedAction.tokenSymbol ? (
-            <>
-              Transfer of {formatNumberWithCommas(formatEther(parsedAction.amount))}
-              <Span className="inline-flex ml-2">
-                <TokenImage symbol={parsedAction.tokenSymbol} size={16} />
-                <Span className="font-bold ml-1">{parsedAction.tokenSymbol}</Span>
-              </Span>
-            </>
-          ) : parsedAction.type === ProposalType.BUILDER_ACTIVATION ? (
-            <>Builder activation</>
-          ) : parsedAction.type === ProposalType.BUILDER_DEACTIVATION ? (
-            <>Builder deactivation</>
-          ) : (
-            <>{parsedAction.type}</>
-          )}
+          {getProposalTypeLabel()}
         </Paragraph>
       </div>
       <div>
