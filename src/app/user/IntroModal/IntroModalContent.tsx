@@ -1,4 +1,4 @@
-import { Button } from '@/components/ButtonNew'
+import { Button } from '@/components/Button'
 import { ArrowRightIcon, ArrowUpRightLightIcon } from '@/components/Icons'
 import { Modal } from '@/components/Modal'
 import { Header, Label, Paragraph, Span } from '@/components/TypographyNew'

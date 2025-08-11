@@ -1,7 +1,7 @@
 import { Meta, StoryObj } from '@storybook/nextjs'
 import { BottomDrawer } from './BottomDrawer'
 import { LayoutProvider, useLayoutContext } from '@/components/MainContainer/LayoutProvider'
-import { Button } from '@/components/ButtonNew/Button'
+import { Button } from '@/components/Button/Button'
 import { ActionsContainer } from '@/components/containers/ActionsContainer'
 import { MAIN_CONTAINER_ID } from '@/lib/constants'
 

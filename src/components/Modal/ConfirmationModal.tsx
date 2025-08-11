@@ -6,7 +6,7 @@ import { createPortal } from 'react-dom'
 import modalBg from './images/modal-bg.svg'
 import { cn } from '@/lib/utils'
 import { Header, Span } from '../TypographyNew'
-import { Button } from '../ButtonNew'
+import { Button } from '../Button'
 import { useClickOutside } from '@/shared/hooks/useClickOutside'
 import { useScrollLock } from '@/shared/hooks/useScrollLock'
 

@@ -1,6 +1,6 @@
 'use client'
 import { useCurrentUserNFTInWallet } from '../utilsClient'
-import { Button } from '@/components/ButtonNew'
+import { Button } from '@/components/Button'
 import { Address } from 'viem'
 import { useState } from 'react'
 import { isUserRejectedTxError } from '@/components/ErrorPage'

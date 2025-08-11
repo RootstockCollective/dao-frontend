@@ -2,7 +2,7 @@ import { Meta, StoryObj } from '@storybook/nextjs'
 import { Button } from './Button'
 
 const meta: Meta<typeof Button> = {
-  title: 'Components/ButtonNew',
+  title: 'Components/Button',
   component: Button,
   argTypes: {
     onClick: { action: 'clicked' },

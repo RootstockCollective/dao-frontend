@@ -1,5 +1,5 @@
 import { Header, Paragraph, Span } from '@/components/TypographyNew'
-import { Button } from '@/components/ButtonNew'
+import { Button } from '@/components/Button'
 import { Modal } from '@/components/Modal/Modal'
 import { FC } from 'react'
 

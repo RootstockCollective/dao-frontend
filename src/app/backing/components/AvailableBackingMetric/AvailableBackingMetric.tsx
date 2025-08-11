@@ -3,7 +3,7 @@ import { Tooltip } from '@/components/Tooltip'
 import { STRIF } from '@/lib/constants'
 import { KotoQuestionMarkIcon } from '@/components/Icons/KotoQuestionMarkIcon'
 import { TokenAmountDisplay } from '@/components/TokenAmountDisplay'
-import { Button } from '@/components/ButtonNew'
+import { Button } from '@/components/Button'
 
 interface AvailableBackingMetricProps {
   availableForBacking: string

@@ -3,7 +3,7 @@ import { ErrorBoundary } from 'react-error-boundary'
 import { cn } from '@/lib/utils'
 import { BG_IMG_CLASSES } from '@/shared/utils'
 import { HeaderText } from '@/components/HeaderText/HeaderText'
-import { Button } from '@/components/ButtonNew'
+import { Button } from '@/components/Button'
 import { checkForCommonErrors } from './commonErrors'
 import { Header, Paragraph } from '../TypographyNew'
 

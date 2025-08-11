@@ -3,7 +3,7 @@ import { DelegatesContainer } from '@/app/delegate/sections/DelegateContentSecti
 import { useDelegateContext } from '@/app/delegate/contexts/DelegateContext'
 import { DelegateCard } from '@/app/delegate/components/DelegateCard'
 import { Header, Paragraph, Span } from '@/components/TypographyNew'
-import { Button } from '@/components/ButtonNew'
+import { Button } from '@/components/Button'
 import { Address } from 'viem'
 import { useCallback, useState } from 'react'
 import Image from 'next/image'

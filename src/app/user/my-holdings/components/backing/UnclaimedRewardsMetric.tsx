@@ -9,7 +9,7 @@ import {
 } from '@/app/collective-rewards/rewards'
 import { useHandleErrors } from '@/app/collective-rewards/utils'
 import { ConditionalTooltip } from '@/app/components'
-import { Button } from '@/components/ButtonNew'
+import { Button } from '@/components/Button'
 import { DottedUnderlineLabel } from '@/components/DottedUnderlineLabel/DottedUnderlineLabel'
 import { RifRbtcTooltip } from '@/components/RifRbtcTooltip/RifRbtcTooltip'
 import { USD } from '@/lib/constants'
