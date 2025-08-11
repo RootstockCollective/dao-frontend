@@ -149,7 +149,17 @@ const parseProposalActionDetails = (
 
 const PageWithProposal = (proposal: Proposal) => {
   const { address, isConnected } = useAccount()
-  const { proposalId, name, description, proposer, Starts, calldatasParsed } = proposal
+  const {
+    proposalId,
+    name,
+    description,
+    proposer,
+    Starts,
+    calldatasParsed,
+    blocksUntilClosure,
+    blockNumber,
+    proposalDeadline,
+  } = proposal
   const [vote, setVote] = useGetVoteForSpecificProposal(address, proposalId)
   const [isChoosingVote, setIsChoosingVote] = useState(false)
   const [votingTxIsPending, setVotingTxIsPending] = useState(false)
@@ -492,6 +502,12 @@ const PageWithProposal = (proposal: Proposal) => {
             onCancelVote={() => setIsChoosingVote(false)}
             isConnected={isConnected}
             actionDisabled={isQueueing || isExecuting}
+            eta={{
+              type: proposalState === ProposalState.Active ? 'vote end in' : 'queue ends in',
+              blocksUntilClosure,
+              blockNumber,
+              proposalDeadline,
+            }}
           />
           <ActionDetails parsedAction={parsedAction} actionType={actionType} />
         </div>

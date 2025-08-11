@@ -27,6 +27,13 @@ export interface Proposal {
   blockNumber: string
 }
 
+export interface Eta {
+  type: 'vote end in' | 'queue ends in'
+  blocksUntilClosure: Big
+  proposalDeadline: Big
+  blockNumber: string
+}
+
 // discriminated union
 export type ProposalRecord =
   | { category: ProposalCategory.Grants; form: GrantProposal }

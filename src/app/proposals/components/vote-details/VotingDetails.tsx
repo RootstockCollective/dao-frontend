@@ -8,6 +8,8 @@ import { Vote } from '@/shared/types'
 import { HourglassAnimatedIcon } from '@/components/Icons/HourglassAnimatedIcon'
 import Big from '@/lib/big'
 import { BalanceInfo } from '@/components/BalanceInfo'
+import { Eta } from '@/app/proposals/shared/types'
+import { TimeColumn } from '../table-columns/TimeColumn'
 
 interface VoteCounterProps {
   title: string
@@ -61,6 +63,7 @@ interface VoteDetailsProps {
   onCastVote?: (vote: 'for' | 'against' | 'abstain') => void
   onCancelVote?: () => void
   isConnected?: boolean
+  eta?: Eta
 }
 
 const colorMap = new Map([
@@ -82,6 +85,7 @@ export const VotingDetails = ({
   onCancelVote,
   isVotingInProgress,
   isChoosingVote,
+  eta,
 }: VoteDetailsProps) => {
   return (
     <div className="bg-[#25211E] p-6 rounded-[4px] w-full max-w-[376px]">
@@ -141,17 +145,27 @@ export const VotingDetails = ({
           <Button variant="secondary-outline" className="mt-6" onClick={onCancelVote}>
             Cancel
           </Button>
+        ) : buttonAction ? (
+          <Button
+            onClick={buttonAction.onButtonClick}
+            className="mt-6"
+            textClassName="text-foreground"
+            disabled={actionDisabled}
+            ref={voteButtonRef}
+          >
+            {buttonAction.actionName}
+          </Button>
         ) : (
-          buttonAction && (
-            <Button
-              onClick={buttonAction.onButtonClick}
-              className="mt-6"
-              textClassName="text-foreground"
-              disabled={actionDisabled}
-              ref={voteButtonRef}
-            >
-              {buttonAction.actionName}
-            </Button>
+          eta && (
+            <div className="flex mt-6 items-center">
+              <Paragraph variant="body-s">{capitalizeFirstLetter(eta.type)}</Paragraph>
+              <TimeColumn
+                className="w-auto ml-4"
+                blocksUntilClosure={eta.blocksUntilClosure}
+                proposalBlockNumber={eta.blockNumber}
+                proposalDeadline={eta.proposalDeadline}
+              />
+            </div>
           )
         )}
       </div>
