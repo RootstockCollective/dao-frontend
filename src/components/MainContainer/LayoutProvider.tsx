@@ -27,10 +27,6 @@ interface LayoutState {
   closeDrawer: () => void
   drawerContent: ReactNode | null
   setDrawerRef: (ref: HTMLDivElement | null) => void
-  /** Dynamic main layout subfooter content that can be set from any place in the app */
-  subfooter: ReactNode
-  /** Set react component to display in the bottom of the main layout footer */
-  setSubfooter: (sf: ReactNode) => void
 }
 
 const LayoutContext = createContext<LayoutState | null>(null)
@@ -63,26 +59,24 @@ export function LayoutProvider({ children }: PropsWithChildren) {
     }
   }, [pathname]) // eslint-disable-line react-hooks/exhaustive-deps
 
-  const [subfooter, setSubfooter] = useState<ReactNode>(null)
-
   // Refs for layout elements
   const drawerRef = useRef<HTMLDivElement | null>(null)
   const mainContainerRef = useRef<HTMLDivElement | null>(null)
   const [drawerHeight, setDrawerHeight] = useState(0)
   const [showPadding, setShowPadding] = useState(false)
 
-  const openDrawer = (content: ReactNode, closeOnRouteChange = false) => {
+  const openDrawer = useCallback((content: ReactNode, closeOnRouteChange = false) => {
     setDrawerContent(content)
     setIsDrawerOpen(true)
     if (closeOnRouteChange) {
       setCloseOnRouteChange(true)
     }
-  }
+  }, [])
 
-  const closeDrawer = () => {
+  const closeDrawer = useCallback(() => {
     setIsDrawerOpen(false)
     setDrawerContent(null)
-  }
+  }, [])
 
   const setDrawerRef = (ref: HTMLDivElement | null) => {
     drawerRef.current = ref
@@ -147,10 +141,17 @@ export function LayoutProvider({ children }: PropsWithChildren) {
       openDrawer,
       closeDrawer,
       setDrawerRef,
-      subfooter,
-      setSubfooter,
     }),
-    [isSidebarOpen, isDrawerOpen, drawerContent, subfooter, toggleSidebar, openSidebar, closeSidebar],
+    [
+      isSidebarOpen,
+      isDrawerOpen,
+      drawerContent,
+      toggleSidebar,
+      openSidebar,
+      closeSidebar,
+      openDrawer,
+      closeDrawer,
+    ],
   )
   return <LayoutContext.Provider value={value}>{children}</LayoutContext.Provider>
 }
