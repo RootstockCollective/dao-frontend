@@ -26,6 +26,28 @@ export interface Proposal {
   blockNumber: string
 }
 
+export type ProposalApiResponse = {
+  votes?: {
+    againstVotes: string
+    forVotes: string
+    abstainVotes: string
+    quorum: string
+  }
+  blocksUntilClosure?: string
+  votingPeriod: string
+  quorumAtSnapshot?: string
+  proposalDeadline: string
+  proposalState?: string
+  category: string
+  name: string
+  proposer: `0x${string}`
+  description: string
+  proposalId: string
+  Starts: string
+  calldatasParsed: any[]
+  blockNumber: string
+}
+
 // discriminated union
 export type ProposalRecord =
   | { category: ProposalCategory.Grants; form: GrantProposal }
