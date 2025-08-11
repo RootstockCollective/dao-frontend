@@ -44,14 +44,9 @@ export const SidebarDesktop = () => {
       animate="sidebar"
       whileInView={{ opacity: 1 }}
       transition={transition}
-      className={cn('overflow-hidden shrink-0 border-r border-dark-gray')}
+      className={cn('overflow-hidden shrink-0 border-r border-dark-gray sticky top-0 h-screen')}
     >
-      <div
-        className={cn(
-          'h-[calc(100vh-var(--header-height))]',
-          'flex flex-col justify-between whitespace-nowrap',
-        )}
-      >
+      <div className={cn('h-full', 'flex flex-col justify-between whitespace-nowrap', '')}>
         <div>
           {/* Logo link */}
           <div className="m-6 w-fit">
@@ -60,7 +55,7 @@ export const SidebarDesktop = () => {
           {/* Menu */}
           <ul className="px-3">
             {menuDataToUse.map(data => (
-              <Fragment key={data.text}>
+              <Fragment key={data.buttonProps.id}>
                 {'type' in data && data.type === 'category' ? (
                   <li
                     {...data.buttonProps}
@@ -85,7 +80,7 @@ export const SidebarDesktop = () => {
           animate="text"
           transition={{ duration: transition.duration, ease: 'easeOut' }}
           /* Hide transparent links */
-          className={cn('fixed bottom-8', { 'pointer-events-none': !isSidebarOpen })}
+          className={cn('pb-8', { 'pointer-events-none': !isSidebarOpen })}
         >
           <UsefulLinks className="ml-6" />
         </motion.div>
