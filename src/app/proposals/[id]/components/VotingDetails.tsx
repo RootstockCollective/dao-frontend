@@ -19,6 +19,7 @@ import { NewPopover } from '@/components/NewPopover'
 import { VotingDetails as VotingDetailsComponent, ButtonAction } from '../../components/vote-details'
 import { ActionDetails } from '../../components/action-details'
 import { ParsedActionDetails, ActionType } from '../types'
+import { Span } from '@/components/TypographyNew'
 
 const actionNameToActionTypeMap = new Map<string, ActionType>([
   ['withdraw', ActionType.Transfer],
@@ -183,9 +184,9 @@ export const VotingDetails = ({ proposalId, parsedAction, actionName, snapshot }
         contentClassName="flex flex-col items-start bg-transparent h-full"
         content={
           <>
-            <span className="mb-4 text-left text-bg-100 text-base font-normal">
+            <Span className="mb-4 text-left text-bg-100">
               Connect your wallet to see your available voting power and to vote.
-            </span>
+            </Span>
             <ConnectWorkflow
               ConnectComponent={props => <ConnectButtonComponent {...props} textClassName="text-bg-100" />}
             />
