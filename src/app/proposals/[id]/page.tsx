@@ -107,8 +107,8 @@ const parseProposalActionDetails = (
       return {
         type: ProposalType.WITHDRAW,
         amount,
-        tokenSymbol: 'RBTC',
-        price: prices?.RBTC?.price ?? 0,
+        tokenSymbol: RBTC,
+        price: prices?.[RBTC]?.price ?? 0,
         toAddress,
       }
     }
