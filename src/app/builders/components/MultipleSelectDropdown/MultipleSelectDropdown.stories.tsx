@@ -1,7 +1,7 @@
 import type { Meta, StoryObj } from '@storybook/nextjs'
 import { MultipleSelectDropdown } from './MultipleSelectDropdown'
 import { SelectorOption } from './MultipleSelectDropdown'
-import { Button } from '@/components/Button'
+import { Button } from '@/components/ButtonNew'
 import { useState } from 'react'
 
 const meta: Meta<typeof MultipleSelectDropdown> = {

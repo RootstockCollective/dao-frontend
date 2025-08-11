@@ -1,6 +1,6 @@
 import type { Meta, StoryObj } from '@storybook/nextjs'
 import { ConfirmationModal } from '.'
-import { Button } from '../Button'
+import { Button } from '../ButtonNew'
 import { useModal } from '@/shared/hooks/useModal'
 
 const meta = {
