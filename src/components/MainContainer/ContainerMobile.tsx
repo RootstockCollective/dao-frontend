@@ -7,6 +7,7 @@ import { FooterMobile } from './footers/FooterMobile'
 import { SidebarMobile } from './sidebars/SidebarMobile'
 import { useLayoutContext } from './LayoutProvider'
 import { AnimatePresence } from 'motion/react'
+import { BottomDrawer } from '@/components/MainContainer/drawers/BottomDrawer'
 
 export default function ContainerMobile({ className, children, ...props }: HTMLAttributes<HTMLDivElement>) {
   const { isSidebarOpen } = useLayoutContext()
@@ -22,6 +23,7 @@ export default function ContainerMobile({ className, children, ...props }: HTMLA
       <div className="relative p-4 grow flex flex-col">
         <SidebarMobile />
         <main className="grow mb-25">{children}</main>
+        <BottomDrawer />
         <FooterMobile />
       </div>
     </div>
