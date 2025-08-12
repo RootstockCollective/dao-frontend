@@ -208,7 +208,11 @@ export const BuildersTable = ({ filterOption }: { filterOption: BuilderFilterOpt
   useEffect(() => {
     const actions = Object.entries(selectedRows)
       .filter(([_, value]) => value)
-      .map(([rowId]) => (rows.find(({ id }) => id === rowId)?.data.actions as ActionCellProps).actionType)
+      .map(([rowId]) => {
+        const row = rows.find(row => row.id === rowId)
+        const actionCell = row?.data?.actions as ActionCellProps
+        return actionCell?.actionType
+      })
       .filter(action => action !== undefined)
     setActions(actions)
   }, [selectedRows, rows])
