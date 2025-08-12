@@ -1,4 +1,4 @@
-import { Button } from '@/components/ButtonNew'
+import { Button } from '@/components/Button'
 import { Jdenticon } from '@/components/Header/Jdenticon'
 import { Modal } from '@/components/Modal'
 import { Header, Paragraph, Span } from '@/components/TypographyNew'

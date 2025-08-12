@@ -1,88 +1,59 @@
-import type { Meta, StoryObj } from '@storybook/nextjs'
-import { Button } from '@/components/Button'
-import { LinkIcon } from '@/components/Icons'
-import { userEvent, within, expect, spyOn } from 'storybook/test'
+import { Meta, StoryObj } from '@storybook/nextjs'
+import { Button } from './Button'
 
-const meta = {
+const meta: Meta<typeof Button> = {
   title: 'Components/Button',
   component: Button,
   argTypes: {
-    variant: {
-      options: ['default', 'green'],
-    },
-  },
-} satisfies Meta<typeof Button>
-
-export default meta
-
-type Story = StoryObj<typeof meta>
-
-export const Default: Story = {
-  args: {
-    children: 'Custom Action',
-    fullWidth: false,
-    onClick: () => console.log('Clicked'),
+    onClick: { action: 'clicked' },
   },
 }
 
-export const PrimaryWithIcon: Story = {
+export default meta
+
+type Story = StoryObj<typeof Button>
+
+export const Primary: Story = {
   args: {
-    children: 'Connect wallet',
-    fullWidth: false,
-    onClick: () => console.log('Clicked'),
-    startIcon: <LinkIcon size={16} />,
+    variant: 'primary',
+    children: 'Primary Button',
+  },
+}
+
+export const PrimaryDisabled: Story = {
+  args: {
+    variant: 'primary',
+    children: 'Primary Button',
+    disabled: true,
   },
 }
 
 export const Secondary: Story = {
   args: {
-    children: 'Delegate',
     variant: 'secondary',
-    onClick: () => console.log('Clicked'),
+    children: 'Secondary Button',
   },
 }
 
-export const SecondaryWithIcon: Story = {
+export const SecondaryDisabled: Story = {
   args: {
-    children: 'Explore Communities',
     variant: 'secondary',
-    onClick: () => console.log('Clicked'),
-    startIcon: <LinkIcon size={16} fill="var(--color-secondary)" />,
-  },
-}
-
-export const Disabled: Story = {
-  args: {
-    children: 'Save & Continue',
+    children: 'Secondary Button',
     disabled: true,
-    onClick: () => console.log('Clicked'),
   },
 }
 
-export const Borderless: Story = {
+export const SecondaryOutline: Story = {
   args: {
-    children: 'Treasury',
-    variant: 'borderless',
-    onClick: () => console.log('Clicked'),
+    variant: 'secondary-outline',
+    children: 'Secondary Outline Button',
   },
 }
 
-export const Tested: Story = {
+export const SecondaryOutlineDisabled: Story = {
   args: {
-    children: 'Custom Action',
-    fullWidth: false,
-    onClick: () => console.log('Clicked'),
-  },
-  play: async ({ canvasElement }) => {
-    const consoleLogSpy = spyOn(console, 'log')
-
-    const canvas = within(canvasElement)
-    const button = canvas.getByText('Custom Action')
-    await userEvent.click(button)
-
-    await expect(consoleLogSpy).toHaveBeenCalledOnce()
-    await expect(consoleLogSpy).toHaveBeenCalledWith('Clicked')
-
-    consoleLogSpy.mockRestore()
+    variant: 'secondary-outline',
+    children: 'Secondary Outline Button',
+    disabled: true,
   },
 }

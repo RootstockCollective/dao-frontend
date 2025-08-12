@@ -1,6 +1,6 @@
 'use client'
 
-import { Button } from '@/components/ButtonNew'
+import { Button } from '@/components/Button'
 import { motion } from 'motion/react'
 import { useRouter, usePathname } from 'next/navigation' // Import usePathname
 import { useLayoutContext } from '@/components/MainContainer/LayoutProvider'

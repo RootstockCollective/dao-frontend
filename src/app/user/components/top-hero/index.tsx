@@ -1,4 +1,4 @@
-import { Button } from '@/components/ButtonNew'
+import { Button } from '@/components/Button'
 import { HeroComponent } from '@/components/HeroComponent'
 import { Header, Paragraph } from '@/components/TypographyNew'
 import { ConnectWorkflow } from '@/shared/walletConnection/connection/ConnectWorkflow'

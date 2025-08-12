@@ -1,6 +1,6 @@
 import type { Meta, StoryObj } from '@storybook/nextjs'
 import { DelegateModal } from './DelegateModal'
-import { Button } from '@/components/ButtonNew'
+import { Button } from '@/components/Button'
 import { useState } from 'react'
 
 const meta: Meta<typeof DelegateModal> = {

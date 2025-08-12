@@ -9,7 +9,7 @@ import {
   isBuilderRewardable,
 } from '@/app/collective-rewards/utils/isBuilderOperational'
 import { ConnectButton } from '@/app/components/Button/ConnectButton/ConnectButton'
-import { Button } from '@/components/ButtonNew'
+import { Button } from '@/components/Button'
 import { StylableComponentProps } from '@/components/commonProps'
 import { WarningIcon } from '@/components/Icons'
 import { Paragraph } from '@/components/TypographyNew'

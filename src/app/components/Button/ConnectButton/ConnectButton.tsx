@@ -1,4 +1,4 @@
-import { Button, ButtonProps } from '@/components/ButtonNew'
+import { Button, ButtonProps } from '@/components/Button'
 import { DisclaimerFlow } from '@/shared/walletConnection'
 import { useAppKitFlow } from '@/shared/walletConnection/connection/useAppKitFlow'
 import { ReactElement, ReactNode } from 'react'

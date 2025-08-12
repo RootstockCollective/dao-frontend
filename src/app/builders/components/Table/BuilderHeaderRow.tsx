@@ -4,7 +4,7 @@ import { Column, Sort, TableAction, useTableActionsContext, useTableContext } fr
 import { SORT_DIRECTION_ASC, SORT_DIRECTIONS } from '@/shared/context/TableContext/types'
 import { ReactElement, Suspense } from 'react'
 
-import { Button } from '@/components/ButtonNew/Button'
+import { Button } from '@/components/Button'
 import { CommonComponentProps } from '@/components/commonProps'
 import { CloseIconKoto, KotoQuestionMarkIcon } from '@/components/Icons'
 import { ArrowDownWFill } from '@/components/Icons/v3design/ArrowDownWFill'

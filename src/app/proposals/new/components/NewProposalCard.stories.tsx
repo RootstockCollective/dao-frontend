@@ -3,7 +3,7 @@ import { NewProposalCard } from './NewProposalCard'
 import { newProposalCards, type NewProposalCardBaseData } from '../newProposalCards.data'
 import { useState } from 'react'
 import { AnimatePresence } from 'motion/react'
-import { Button } from '@/components/ButtonNew'
+import { Button } from '@/components/Button'
 
 const meta: Meta<typeof NewProposalCard> = {
   title: 'Proposals/NewProposalCard',
