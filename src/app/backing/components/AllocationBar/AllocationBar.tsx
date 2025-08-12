@@ -15,7 +15,7 @@ import { AllocationBarSegment } from './AllocationBarSegment'
 import { Legend } from '@/components/Legend'
 import { cn } from '@/lib/utils'
 
-const getSegmentsToShowDots = (values: number[], totalValue: number): boolean[] => {
+const getSegmentsToShowDots = (values: bigint[], totalValue: bigint): boolean[] => {
   const NEIGHBOR_SUM_THRESHOLD = 8 // 8%
   const segmentsToShowDots = new Array(values.length).fill(false)
 
@@ -55,7 +55,7 @@ const AllocationBar: React.FC<AllocationBarProps> = ({
   const currentItems = isControlled ? itemsData : localItemsData
   const currentValues = isControlled ? itemsData.map(item => item.value) : localValues
 
-  const totalValue = currentValues.reduce((sum, v) => sum + v, 0)
+  const totalValue = currentValues.reduce((sum, v) => sum + v, 0n)
   const minSegmentValue = calculateMinSegmentValue(totalValue)
 
   // Calculate which segments should show dots
@@ -174,7 +174,7 @@ const AllocationBar: React.FC<AllocationBarProps> = ({
               <AllocationBarSegment
                 key={item.key}
                 value={currentValues[i]}
-                initialValue={currentItems[i].initialValue ?? 0}
+                initialValue={item.initialValue ?? 0n}
                 totalValue={totalValue}
                 item={item}
                 index={i}

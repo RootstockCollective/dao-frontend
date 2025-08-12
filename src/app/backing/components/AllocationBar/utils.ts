@@ -14,13 +14,14 @@ export const clamp = (val: number, min: number, max: number) => Math.min(Math.ma
 export const calculateSegmentPositions = (
   dragIndex: number,
   rect: DOMRect,
-  values: number[],
-  totalValue: number,
+  values: bigint[],
+  totalValue: bigint,
 ) => {
-  let cumSum = 0
+  let cumSum = 0n
   for (let i = 0; i < dragIndex; ++i) cumSum += values[i]
-  const leftPx = (cumSum / totalValue) * rect.width
-  const rightPx = ((cumSum + values[dragIndex] + values[dragIndex + 1]) / totalValue) * rect.width
+  const leftPx = (Number(cumSum) / Number(totalValue)) * rect.width
+  const rightPx = (Number(cumSum + values[dragIndex] + values[dragIndex + 1]) / Number(totalValue)) * rect.width
+
   return { leftPx, rightPx }
 }
 
@@ -30,39 +31,38 @@ export const calculateNewSegmentValues = (
   leftPx: number,
   rightPx: number,
   dragIndex: number,
-  values: number[],
-  minSegmentValue: number = 0,
+  values: bigint[],
+  minSegmentValue: bigint = 0n,
 ) => {
   const pairSum = values[dragIndex] + values[dragIndex + 1]
   const totalPairPx = rightPx - leftPx
-  const minLeftPx = pairSum > 0 ? (minSegmentValue / pairSum) * totalPairPx : 0
+  const minLeftPx = pairSum > 0n ? (Number(minSegmentValue) / Number(pairSum)) * totalPairPx : 0
   const maxLeftPx = totalPairPx - minLeftPx
-
   // Calculate the handle's x relative to leftPx
   let relX = clamp(x - leftPx, minLeftPx, maxLeftPx)
-
   // Convert back to actual value
-  let leftValue = Math.round((relX / totalPairPx) * pairSum)
+  let leftValue = BigInt(Math.round((relX / totalPairPx) * Number(pairSum)))
   let rightValue = pairSum - leftValue
 
   // Ensure minimum segment sizes
   if (leftValue < minSegmentValue) {
-    leftValue = Math.ceil(minSegmentValue)
+    leftValue = minSegmentValue
     rightValue = pairSum - leftValue
   } else if (rightValue < minSegmentValue) {
-    rightValue = Math.ceil(minSegmentValue)
+    rightValue = minSegmentValue
     leftValue = pairSum - rightValue
   }
-
+  
   return { leftValue, rightValue }
 }
 
 // Convert actual value to percentage for display
-export const valueToPercentage = (value: number, totalValue: number): number => {
-  return totalValue > 0 && value > 0 ? (value / totalValue) * 100 : 0
+export const valueToPercentage = (value: bigint, totalValue: bigint): number => {
+  return totalValue > 0n && value > 0n ? (Number(value) / Number(totalValue)) * 100 : 0
 }
 
 // Calculate minimum segment value based on total value and minimum percentage
-export const calculateMinSegmentValue = (totalValue: number, minPercentage: number = 0): number => {
-  return (minPercentage / 100) * totalValue
+export const calculateMinSegmentValue = (totalValue: bigint, minPercentage: bigint = 0n): bigint => {
+  return (minPercentage / 100n) * totalValue
 }
+

@@ -1,15 +1,15 @@
 export interface AllocationItem {
   key: string
   label: string
-  value: number // actual value (not percentage)
+  value: bigint // actual value (not percentage)
   displayColor: string
   isTemporary?: boolean // true: it shows a checkerboard pattern on the segment
-  initialValue?: number
+  initialValue?: bigint
 }
 
 export interface AllocationChangeData {
   type: 'resize' | 'reorder'
-  values: number[]
+  values: bigint[]
   itemsData: AllocationItem[]
   increasedIndex: number
   decreasedIndex: number
