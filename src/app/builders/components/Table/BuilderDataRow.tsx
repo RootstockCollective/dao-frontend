@@ -320,8 +320,15 @@ export const BuilderDataRow: FC<BuilderDataRowProps> = ({ row, ...props }) => {
           <RewardsPastCycleCell {...rewards_past_cycle} />
           <RewardsUpcomingCell {...rewards_upcoming} />
           <BuilderBackingCell {...backing} />
-          {!(isHovered && isConnected) && <BuilderBackingShareCell backingPercentage={backingPercentage} />}
-          <ActionsCell {...actions} forceShow={isHovered && isConnected} />
+          <BuilderBackingShareCell
+            backingPercentage={backingPercentage}
+            className={isHovered ? 'hidden' : 'visible'}
+          />
+          <ActionsCell
+            {...actions}
+            forceShow={isHovered && isConnected}
+            className={isHovered ? 'visible' : 'hidden'}
+          />
           <td className="w-[24px]"></td>
         </tr>
       </ConditionalTooltip>
