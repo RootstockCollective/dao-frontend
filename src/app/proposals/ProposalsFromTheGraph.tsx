@@ -1,10 +1,10 @@
 import { ProposalsSummary } from '@/app/proposals/ProposalsSummary'
-import { useGetProposalsWithGraph } from '@/app/proposals/hooks/useGetProposalsWithGraph'
+import { useProposalsContext } from '@/app/proposals/context'
 import { LoadingSpinner } from '@/components/LoadingSpinner'
 import { LatestProposalsTableMemoized } from '@/app/proposals/components/LatestProposalsTable'
 
 export function ProposalsFromTheGraph() {
-  const { data, loading, error, activeProposalCount, totalProposalCount } = useGetProposalsWithGraph()
+  const { proposals, loading, error, totalProposalCount } = useProposalsContext()
 
   if (error) {
     throw error
@@ -16,7 +16,7 @@ export function ProposalsFromTheGraph() {
   return (
     <>
       <ProposalsSummary totalProposals={totalProposalCount.toString()} />
-      <LatestProposalsTableMemoized proposals={data} />
+      <LatestProposalsTableMemoized proposals={proposals} />
     </>
   )
 }
