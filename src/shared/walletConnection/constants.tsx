@@ -1,5 +1,5 @@
 import { ProposalDetailTopLeftComponent } from './components/topPageHeader/pages'
-import { HeaderTitle } from '@/components/Typography/HeaderTitle'
+import { HeaderTitle } from '@/components/TypographyNew/HeaderTitle'
 import { Paragraph } from '@/components/TypographyNew'
 
 export const disclaimerModalText = {
