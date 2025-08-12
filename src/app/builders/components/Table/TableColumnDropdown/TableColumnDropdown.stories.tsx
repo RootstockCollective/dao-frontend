@@ -1,10 +1,10 @@
-import { useTableActionsContext, withTableContext } from '@/shared/context/TableContext'
+import { useTableActionsContext, withTableContext } from '@/shared/context'
 import { useEffect } from 'react'
-import { ColumnId, LABELS } from '../BuilderTable.config'
+import { BuilderCellDataMap, ColumnId, LABELS } from '../BuilderTable.config'
 import { TableColumnDropdown } from './TableColumnDropdown'
 
 const TableColumnDropdownWithContext = () => {
-  const dispatch = useTableActionsContext<ColumnId>()
+  const dispatch = useTableActionsContext<ColumnId, BuilderCellDataMap>()
 
   useEffect(() => {
     dispatch({
@@ -34,7 +34,7 @@ export default {
   component: TableColumnDropdown,
 }
 
-const WrappedComponent = withTableContext(TableColumnDropdownWithContext)
+const WrappedComponent = withTableContext<ColumnId, BuilderCellDataMap>(TableColumnDropdownWithContext)
 export const Basic = () => {
   return <WrappedComponent />
 }
