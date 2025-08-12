@@ -2,7 +2,7 @@ import type { Meta, StoryObj } from '@storybook/nextjs'
 import { ErrorMessageAlert } from './ErrorMessageAlert'
 
 const meta: Meta<typeof ErrorMessageAlert> = {
-  title: 'Components/ErrorMessageAlert',
+  title: 'KOTO/DAO/ErrorMessageAlert',
   component: ErrorMessageAlert,
   tags: ['autodocs'],
 }
