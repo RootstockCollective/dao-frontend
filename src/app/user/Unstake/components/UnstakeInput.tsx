@@ -1,4 +1,4 @@
-import { StakeInput } from '@/app/user/Stake/StakeInputNew'
+import { StakeInput } from '@/app/user/Stake/StakeInput'
 import { TokenImage } from '@/components/TokenImage'
 import { Label } from '@/components/TypographyNew'
 import { StakingToken } from '@/app/user/Stake/types'
