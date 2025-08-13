@@ -11,7 +11,7 @@ import { ActiveBackers } from '../ActiveBackers'
 import { FC } from 'react'
 import { RewardsMetrics } from '../RewardsMetrics'
 import { useRouter } from 'next/navigation'
-import { cn } from '@/lib/utils'
+import { StylableComponentProps } from '@/components/commonProps'
 
 const BackersBanner = () => (
   <Banner
@@ -30,7 +30,7 @@ const BackersTitle = () => {
   )
 }
 
-const BackerCTAButton = () => {
+const BackerCTAButton = ({ className }: StylableComponentProps<HTMLButtonElement>) => {
   const router = useRouter()
   const { isConnected } = useAccount()
   const {
@@ -48,6 +48,7 @@ const BackerCTAButton = () => {
         onClick={() => {
           router.push('/backing')
         }}
+        className={className}
       >
         Back Builders
       </Button>
@@ -60,6 +61,7 @@ const BackerCTAButton = () => {
       onClick={() => {
         router.push('/')
       }}
+      className={className}
     >
       Stake RIF
     </Button>
@@ -71,20 +73,25 @@ interface BackersCallToActionProps {
   rbtcRewards: bigint
   className?: string
 }
-export const BackersCallToAction: FC<BackersCallToActionProps> = ({ rifRewards, rbtcRewards, className }) => {
+export const BackersCallToAction: FC<BackersCallToActionProps> = ({ rifRewards, rbtcRewards }) => {
+  const collapsibleContent = (
+    <Paragraph className="text-v3-text-0 order-2 px-6 pb-6">
+      Support the projects you believe in by backing Builders with your stRIF. Earn rewards while helping
+      shape the future of Bitcoin Layer 2.
+    </Paragraph>
+  )
+
   return (
     <CallToActionCard
       title={<BackersTitle />}
       banner={<BackersBanner />}
-      className={cn('bg-v3-text-80 rounded-sm w-full', className)}
+      className="bg-v3-text-80 rounded-sm"
+      collapsibleContent={collapsibleContent}
+      defaultOpen={true}
     >
-      <MetricsContainer className="px-6 pb-10 pt-0 bg-v3-text-80 items-start divide-y-0">
-        <BackerCTAButton />
-        <Paragraph className="text-v3-text-0">
-          Support the projects you believe in by backing Builders with your stRIF. Earn rewards while helping
-          shape the future of Bitcoin Layer 2.
-        </Paragraph>
-        <div className="flex flex-row gap-2 w-full">
+      <MetricsContainer className="px-6 pb-10 pt-0 bg-v3-text-80 items-start divide-y-0 gap-6 md:gap-8">
+        <BackerCTAButton className="order-3 md:order-1" />
+        <div className="flex flex-col md:flex-row gap-6 md:gap-10 w-full order-2">
           <RewardsMetrics
             title="Upcoming Rewards for Backers"
             rbtcRewards={rbtcRewards}

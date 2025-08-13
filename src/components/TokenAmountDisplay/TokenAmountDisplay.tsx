@@ -35,7 +35,7 @@ export const TokenAmountDisplay = ({
         <Header variant="h1" className="font-bold" data-testid={`${label}Amount`}>
           {amount}
         </Header>
-        <TokenImage symbol={tokenSymbol} size={24} />
+        <TokenImage symbol={tokenSymbol} className="w-4 h-4 md:w-6 md:h-6" />
         <Span variant="body-l" bold data-testid={`${label}Symbol`}>
           {tokenSymbol}
         </Span>
