@@ -108,7 +108,7 @@ const PageWithProposal = (proposal: Proposal) => {
               name={name}
               description={description}
               proposer={proposer}
-              Starts={Starts}
+              startsAt={Starts}
               parsedAction={parsedAction}
               actionName={actionName}
             />

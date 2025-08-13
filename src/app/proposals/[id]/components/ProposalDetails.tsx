@@ -44,7 +44,7 @@ export const ProposalDetails = ({
   name,
   description,
   proposer,
-  Starts,
+  startsAt,
   parsedAction,
   actionName,
 }: ProposalDetailsProps) => {
