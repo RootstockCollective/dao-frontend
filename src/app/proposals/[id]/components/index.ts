@@ -1,0 +1,5 @@
+export { TechnicalDetails } from './TechnicalDetails'
+export { ProposalProggressBar } from './ProposalProggressBar'
+export { Description } from './Description'
+export { ProposalDetails } from './ProposalDetails'
+export { VotingDetails } from './VotingDetails'
