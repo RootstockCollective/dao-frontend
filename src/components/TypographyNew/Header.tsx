@@ -24,7 +24,7 @@ export interface HeaderProps extends Omit<TypographyProps<TypographyElement>, 'a
 /**
  * Header Component
  *
- * Renders a <h1>, <h2>, <h3>, <h4>, <h5> element with consistent styling.
+ * Renders a h1, h2, h3, h4, h5 element with consistent styling.
  * Supports the following variants:
  * - e1: font-size: 60px; font-family: font-kk-topo
  * - e2: font-size: 44px; font-family: font-kk-topo

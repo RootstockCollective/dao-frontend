@@ -3,7 +3,6 @@
 import { useNFTBoosterContext } from '@/app/providers/NFT/BoosterContext'
 import { BoltSvg } from '@/components/BoltSvg'
 import { GlowingLabel } from '@/components/Label/GlowingLabel'
-import { Span } from '@/components/Typography'
 import { ReactNode } from 'react'
 
 interface BoostedLabelProps {
@@ -25,6 +24,6 @@ export function BoostedLabel({ nftAddress, children }: BoostedLabelProps) {
       <BoltSvg showGlow />
     </div>
   ) : (
-    <Span className="text-[15px] font-bold">{children}</Span>
+    children
   )
 }

@@ -65,7 +65,7 @@ export const CommunityItem = ({
           {/* Title */}
           <div className={cn(variant === 'landscape' ? 'mt-[32px]' : 'mt-[16px]')}>
             <BoostedLabel nftAddress={nftAddress}>
-              <Header variant="h3" className="uppercase break-words pt-[5px]">
+              <Header variant="h3" caps className="break-words pt-[5px]">
                 {title}
               </Header>
             </BoostedLabel>
