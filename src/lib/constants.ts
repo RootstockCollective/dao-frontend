@@ -40,7 +40,7 @@ export const USD = 'USD'
 export const RBTC = 'rBTC'
 export const STRIF = 'stRIF'
 export const USDRIF = 'USDRIF'
-export const tRIF = 'tRIF'
+export const TRIF = 'tRIF'
 
 export const GRANT_TOKEN_LIMITS = {
   minAmount: 0.000001,
