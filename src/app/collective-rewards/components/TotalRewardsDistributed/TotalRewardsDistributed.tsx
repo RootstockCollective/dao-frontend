@@ -9,7 +9,7 @@ import { formatMetrics, Token, useGetGaugesNotifyReward } from '@/app/collective
 import { useHandleErrors } from '@/app/collective-rewards/utils'
 import { LoadingSpinner } from '@/components/LoadingSpinner'
 import { MetricTitle } from '@/components/Metric'
-import { Paragraph } from '@/components/TypographyNew'
+import { Paragraph } from '@/components/Typography'
 
 interface TokenRewardsProps {
   gauges: Address[]

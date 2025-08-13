@@ -11,7 +11,7 @@ import { ConnectWorkflow } from '@/shared/walletConnection/connection/ConnectWor
 import { ConnectButtonComponentProps } from '@/shared/walletConnection'
 import { useVotingPower } from '@/app/proposals/hooks/useVotingPower'
 import { Tooltip } from '@/components/Tooltip'
-import { Span } from '@/components/TypographyNew'
+import { Span } from '@/components/Typography'
 
 export default function ProposalsPage() {
   return (

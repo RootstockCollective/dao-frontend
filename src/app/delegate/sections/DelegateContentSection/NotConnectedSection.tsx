@@ -1,5 +1,5 @@
 import { DisconnectIcon } from '@/components/Icons'
-import { Paragraph } from '@/components/TypographyNew'
+import { Paragraph } from '@/components/Typography'
 import { ConnectWorkflow } from '@/shared/walletConnection/connection/ConnectWorkflow'
 import { ConnectButtonOrangeComponent } from '@/shared/walletConnection'
 import { ComponentProps } from 'react'

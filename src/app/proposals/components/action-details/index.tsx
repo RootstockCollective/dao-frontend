@@ -1,5 +1,5 @@
 import type { ReactNode } from 'react'
-import { Header, Paragraph, Span } from '@/components/TypographyNew'
+import { Header, Paragraph, Span } from '@/components/Typography'
 import { ShortenAndCopy } from '@/components/ShortenAndCopy/ShortenAndCopy'
 import { TokenImage } from '@/components/TokenImage'
 import Big from '@/lib/big'

@@ -3,7 +3,7 @@ import { EstimatedRewards } from '@/app/collective-rewards/components/EstimatedR
 import { TotalBackingLoader } from '@/app/collective-rewards/components/TotalBacking'
 import { CycleContextProvider } from '@/app/collective-rewards/metrics'
 import { ActionsContainer } from '@/components/containers'
-import { Header } from '@/components/TypographyNew'
+import { Header } from '@/components/Typography'
 
 export const CurrentCycle = () => {
   return (

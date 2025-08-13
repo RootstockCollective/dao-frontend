@@ -4,7 +4,7 @@ import { TokenAmount } from '@/components/TokenAmount'
 import { TokenSymbol } from '@/components/TokenImage'
 import { useBackerEstimatedRewards } from '../hooks/useBackerEstimatedRewards'
 import { useHandleErrors } from '@/app/collective-rewards/utils'
-import { Paragraph } from '@/components/TypographyNew'
+import { Paragraph } from '@/components/Typography'
 
 export const BackerEstimatedRewards = () => {
   const { rif: rifData, rbtc: rbtcData } = useBackerEstimatedRewards()

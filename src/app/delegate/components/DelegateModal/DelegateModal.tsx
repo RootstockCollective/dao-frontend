@@ -1,7 +1,7 @@
 import { Button } from '@/components/Button'
 import { Jdenticon } from '@/components/Header/Jdenticon'
 import { Modal } from '@/components/Modal'
-import { Header, Paragraph, Span } from '@/components/TypographyNew'
+import { Header, Paragraph, Span } from '@/components/Typography'
 import { shortAddress } from '@/lib/utils'
 import { Address } from 'viem'
 

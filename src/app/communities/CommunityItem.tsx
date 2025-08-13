@@ -1,4 +1,4 @@
-import { Paragraph, Header } from '@/components/TypographyNew'
+import { Paragraph, Header } from '@/components/Typography'
 import Image from 'next/image'
 import { BoostedBox } from './components/BoostedBox'
 import { BoostedLabel } from '@/app/communities/components/BoostedLabel'

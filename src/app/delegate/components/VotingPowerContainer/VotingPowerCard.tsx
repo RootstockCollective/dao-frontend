@@ -1,6 +1,6 @@
 import { ReactNode } from 'react'
 import { Tooltip } from '@/components/Tooltip'
-import { Paragraph, Span } from '@/components/TypographyNew'
+import { Paragraph, Span } from '@/components/Typography'
 import { KotoQuestionMarkIcon } from '@/components/Icons/KotoQuestionMarkIcon'
 import { Metric } from '@/components/Metric'
 import { HourglassAnimatedIcon } from '@/components/Icons/HourglassAnimatedIcon'

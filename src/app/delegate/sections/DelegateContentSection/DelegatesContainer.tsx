@@ -1,7 +1,7 @@
 import { DelegateCard } from '@/app/delegate/components/DelegateCard'
 import { Address, isAddress } from 'viem'
 import { useNftHoldersWithVotingPower } from '@/app/user/Delegation/hooks/useNftHoldersWithVotingPower'
-import { Span } from '@/components/TypographyNew'
+import { Span } from '@/components/Typography'
 import { Button } from '@/components/Button'
 import { useState, ChangeEvent, useEffect, useCallback, useMemo } from 'react'
 import { cn } from '@/lib/utils'

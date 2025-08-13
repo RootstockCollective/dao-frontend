@@ -2,7 +2,7 @@ import { TokenImage } from '@/components/TokenImage'
 import { RIF } from '@/lib/constants'
 import { cn } from '@/lib/utils'
 import { FC } from 'react'
-import { Typography } from '@/components/TypographyNew/Typography'
+import { Typography } from '@/components/Typography/Typography'
 
 export const RIFToken: FC<{ size?: number; className?: string; textClassName?: string }> = ({
   className,

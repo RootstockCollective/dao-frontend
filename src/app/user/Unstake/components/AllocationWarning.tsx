@@ -1,5 +1,5 @@
 import { TokenImage } from '@/components/TokenImage'
-import { Paragraph, Span } from '@/components/TypographyNew'
+import { Paragraph, Span } from '@/components/Typography'
 import Image from 'next/image'
 import { formatEther } from 'viem'
 

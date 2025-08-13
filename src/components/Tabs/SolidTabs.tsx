@@ -1,7 +1,7 @@
 import * as Tabs from '@radix-ui/react-tabs'
 import { AnimatePresence, motion } from 'motion/react'
 import { cn } from '@/lib/utils'
-import { Label } from '../TypographyNew'
+import { Label } from '../Typography'
 
 interface SolidTabsProps extends Tabs.TabsProps {
   tabs: string[]

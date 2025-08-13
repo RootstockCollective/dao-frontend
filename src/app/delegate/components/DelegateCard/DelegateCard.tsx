@@ -3,7 +3,7 @@ import { BuilderHeader } from '@/app/backing/components/BuilderHeader/BuilderHea
 import { Button } from '@/components/Button'
 import { cn, truncateRns } from '@/lib/utils'
 import { Address } from 'viem'
-import { Label, Paragraph } from '@/components/TypographyNew'
+import { Label, Paragraph } from '@/components/Typography'
 
 interface DelegateCardProps {
   address: Address

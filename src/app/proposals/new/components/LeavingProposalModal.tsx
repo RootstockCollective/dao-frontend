@@ -1,7 +1,7 @@
 import { Button } from '@/components/Button'
 import { Modal } from '@/components/Modal'
 import { ModalProps } from '@/components/Modal/Modal'
-import { Paragraph } from '@/components/TypographyNew'
+import { Paragraph } from '@/components/Typography'
 import { cn } from '@/lib/utils'
 import { Separator } from '@radix-ui/react-select'
 

@@ -1,7 +1,7 @@
 import type { Meta } from '@storybook/nextjs'
 import { createColumnHelper, getCoreRowModel, getSortedRowModel, useReactTable } from '@tanstack/react-table'
 import { GridTable } from './GridTable'
-import { Paragraph, Span } from '../TypographyNew'
+import { Paragraph, Span } from '../Typography'
 
 const meta: Meta = {
   title: 'Components/Table/GridTable',

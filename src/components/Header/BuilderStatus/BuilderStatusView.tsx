@@ -1,6 +1,6 @@
 import SeparatorBar from '@/components/SeparatorBar/SeparatorBar'
 import { HourglassIcon } from '../../Icons/HourglassIcon'
-import { Typography } from '@/components/TypographyNew/Typography'
+import { Typography } from '@/components/Typography/Typography'
 import { HtmlHTMLAttributes } from 'react'
 import { cn } from '@/lib/utils'
 import { ExtendedBuilderState } from './types'

@@ -1,4 +1,4 @@
-import { Typography } from '@/components/TypographyNew/Typography'
+import { Typography } from '@/components/Typography/Typography'
 import { cn } from '@/lib/utils'
 import { FC, ReactNode } from 'react'
 import { CommonComponentProps } from '../../components/commonProps'

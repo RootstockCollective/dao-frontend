@@ -1,5 +1,5 @@
 import { TokenImage } from '@/components/TokenImage'
-import { Span } from '@/components/TypographyNew'
+import { Span } from '@/components/Typography'
 
 // FIXME: create the stories for this component
 export const TokenAmount = ({

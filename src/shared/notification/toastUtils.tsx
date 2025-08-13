@@ -1,4 +1,4 @@
-import { Paragraph, Span } from '@/components/TypographyNew'
+import { Paragraph, Span } from '@/components/Typography'
 import { ReactNode } from 'react'
 import { Bounce, Id, toast, ToastOptions } from 'react-toastify'
 import { TxStatus } from '../types'

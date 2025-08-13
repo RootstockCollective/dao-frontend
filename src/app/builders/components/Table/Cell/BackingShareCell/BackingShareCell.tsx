@@ -1,4 +1,4 @@
-import { Paragraph } from '@/components/TypographyNew'
+import { Paragraph } from '@/components/Typography'
 import { cn } from '@/lib/utils'
 import * as Progress from '@radix-ui/react-progress'
 import { FC } from 'react'

@@ -1,8 +1,8 @@
 import type { Meta, StoryObj } from '@storybook/nextjs'
 import { CallToActionCard } from './CallToActionCard'
 import { BackingBanner } from '@/app/backing/components/BackingBanner/BackingBanner'
-import { Header, Paragraph } from '@/components/TypographyNew'
-import { Typography } from '@/components/TypographyNew/Typography'
+import { Header, Paragraph } from '@/components/Typography'
+import { Typography } from '@/components/Typography/Typography'
 import { MetricsContainer } from '@/components/containers/MetricsContainer'
 
 const meta: Meta<typeof CallToActionCard> = {

@@ -3,7 +3,7 @@
 import { Fragment } from 'react'
 import { ProgressBar } from '@/components/ProgressBarNew'
 import { useProposalStepper, ProposalStep } from './StepperProvider'
-import { Paragraph } from '@/components/TypographyNew'
+import { Paragraph } from '@/components/Typography'
 import { cn } from '@/lib/utils'
 import { ChevronIcon } from './ChevronIcon'
 

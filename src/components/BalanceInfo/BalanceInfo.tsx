@@ -1,5 +1,5 @@
 import { TokenImage } from '@/components/TokenImage'
-import { Header, Label, Span } from '@/components/TypographyNew'
+import { Header, Label, Span } from '@/components/Typography'
 import { FC, ReactNode } from 'react'
 import { Tooltip } from '../Tooltip'
 import { KotoQuestionMarkIcon } from '../Icons'

@@ -1,5 +1,5 @@
 import { Button } from '@/components/Button'
-import { Span } from '@/components/TypographyNew'
+import { Span } from '@/components/Typography'
 
 interface Props {
   onPercentageClick: (percentage: number) => void

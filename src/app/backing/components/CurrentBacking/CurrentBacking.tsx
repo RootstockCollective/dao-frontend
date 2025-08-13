@@ -1,4 +1,4 @@
-import { Label } from '@/components/TypographyNew'
+import { Label } from '@/components/Typography'
 import { FC } from 'react'
 import { RIFToken } from '../RIFToken/RIFToken'
 import { formatSymbol } from '@/app/collective-rewards/rewards/utils/formatter'

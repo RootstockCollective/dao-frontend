@@ -1,7 +1,7 @@
 import { useTreasuryContext } from '@/app/treasury/contexts/TreasuryContext'
 import { useStRifHoldings } from '@/app/treasury/hooks/useStRifHoldings'
 import { BalanceInfo } from '@/components/BalanceInfo'
-import { Header } from '@/components/TypographyNew'
+import { Header } from '@/components/Typography'
 import { formatCurrencyWithLabel } from '@/lib/utils'
 import Big from '@/lib/big'
 import { formatTokenBalance, getTokenBalance } from '@/app/user/Balances/balanceUtils'

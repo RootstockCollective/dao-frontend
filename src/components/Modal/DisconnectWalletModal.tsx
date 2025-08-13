@@ -1,4 +1,4 @@
-import { Header, Paragraph, Span } from '@/components/TypographyNew'
+import { Header, Paragraph, Span } from '@/components/Typography'
 import { Button } from '@/components/Button'
 import { Modal } from '@/components/Modal/Modal'
 import { FC } from 'react'

@@ -5,7 +5,7 @@ import { BG_IMG_CLASSES } from '@/shared/utils'
 import { HeaderText } from '@/components/HeaderText/HeaderText'
 import { Button } from '@/components/Button'
 import { checkForCommonErrors } from './commonErrors'
-import { Header, Paragraph } from '../TypographyNew'
+import { Header, Paragraph } from '../Typography'
 
 interface ErrorFallbackProps {
   error: Error

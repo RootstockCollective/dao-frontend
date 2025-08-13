@@ -1,7 +1,7 @@
 import { Link } from '@/components/Link'
 import { usefulLinksData } from './usefulLinksData'
 import { HTMLAttributes } from 'react'
-import { Span } from '@/components/TypographyNew'
+import { Span } from '@/components/Typography'
 
 export const UsefulLinks = (props: HTMLAttributes<HTMLDivElement>) => (
   <div {...props}>

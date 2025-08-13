@@ -1,5 +1,5 @@
 import { Proposal } from '@/app/proposals/shared/types'
-import { Paragraph } from '@/components/TypographyNew'
+import { Paragraph } from '@/components/Typography'
 import Link from 'next/link'
 import { CreatorRowComponent } from './CreatorRowComponent'
 

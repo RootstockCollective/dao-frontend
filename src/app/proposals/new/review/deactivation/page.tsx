@@ -13,7 +13,7 @@ import { PreviewLabel } from '../components/PreviewLabel'
 import { showToast } from '@/shared/notification'
 import { isUserRejectedTxError } from '@/components/ErrorPage'
 import { useRemoveBuilderProposal } from '@/app/proposals/hooks/useRemoveBuilderProposal'
-import { Header, Paragraph } from '@/components/TypographyNew'
+import { Header, Paragraph } from '@/components/Typography'
 import { CopyButton } from '@/components/CopyButton'
 
 export default function DeactivationProposalReview() {

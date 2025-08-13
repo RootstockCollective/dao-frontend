@@ -5,7 +5,7 @@ import { Typography } from './Typography'
 import type { Meta, StoryObj } from '@storybook/nextjs'
 
 const meta = {
-  title: 'Components/TypographyNew',
+  title: 'Components/Typography',
   component: Typography,
   parameters: {
     layout: 'padded',

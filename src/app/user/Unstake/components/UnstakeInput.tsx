@@ -1,6 +1,6 @@
 import { StakeInput } from '@/app/user/Stake/StakeInput'
 import { TokenImage } from '@/components/TokenImage'
-import { Label } from '@/components/TypographyNew'
+import { Label } from '@/components/Typography'
 import { StakingToken } from '@/app/user/Stake/types'
 import { formatCurrency } from '@/lib/utils'
 import Big from '@/lib/big'

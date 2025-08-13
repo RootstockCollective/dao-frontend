@@ -9,7 +9,7 @@ import {
   isBuilderSelfPaused,
 } from '@/app/collective-rewards/utils'
 import { ActionsContainer } from '@/components/containers'
-import { Header } from '@/components/TypographyNew'
+import { Header } from '@/components/Typography'
 import { withTableContext } from '@/shared/context'
 import { ReactElement, useMemo, useState } from 'react'
 import {

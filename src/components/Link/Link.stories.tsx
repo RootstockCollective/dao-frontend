@@ -1,6 +1,6 @@
 import type { Meta, StoryObj } from '@storybook/nextjs'
 import { Link } from './Link'
-import { Paragraph } from '../TypographyNew'
+import { Paragraph } from '../Typography'
 
 const meta = {
   title: 'Components/Link',

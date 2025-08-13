@@ -1,6 +1,6 @@
 import { DecorativeSquares } from '@/app/backing/components/DecorativeSquares'
-import { Header, Span } from '@/components/TypographyNew'
-import { Typography } from '@/components/TypographyNew/Typography'
+import { Header, Span } from '@/components/Typography'
+import { Typography } from '@/components/Typography/Typography'
 import { cn } from '@/lib/utils'
 import { FC } from 'react'
 import { CommonComponentProps } from '@/components/commonProps'

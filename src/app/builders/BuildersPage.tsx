@@ -2,7 +2,7 @@
 // TODO: I don't like the fact that this page is a client component, but otherwise many components need to be changed to accommodate this
 
 import { MetricsContainer } from '@/components/containers'
-import { Header } from '@/components/TypographyNew'
+import { Header } from '@/components/Typography'
 import { Metrics } from './components/Metrics'
 import BecomeBuilderBanner from './components/BecomeBuilderBanner/BecomeBuilderBanner'
 import BuildersTableContainer from './components/Table/BuildersTableContainer'

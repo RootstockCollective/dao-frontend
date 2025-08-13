@@ -14,7 +14,7 @@ import { useCreateTreasuryTransferProposal } from '@/app/proposals/hooks/useCrea
 import { tokenContracts } from '@/lib/contracts'
 import { showToast } from '@/shared/notification'
 import { isUserRejectedTxError } from '@/components/ErrorPage'
-import { Header, Paragraph } from '@/components/TypographyNew'
+import { Header, Paragraph } from '@/components/Typography'
 import { CopyButton } from '@/components/CopyButton'
 import { DISCOURSE_LINK_SEPARATOR } from '@/app/proposals/shared/utils'
 import { TokenImage } from '@/components/TokenImage'

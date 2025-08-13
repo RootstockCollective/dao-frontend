@@ -1,4 +1,4 @@
-import { Typography } from '@/components/TypographyNew/Typography'
+import { Typography } from '@/components/Typography/Typography'
 import { TooltipProvider } from '@radix-ui/react-tooltip'
 import type { Meta, StoryObj } from '@storybook/nextjs'
 import { expect, within } from 'storybook/test'
