@@ -1,12 +1,12 @@
 'use client'
 
-import { Button } from '@/components/ButtonNew'
 import { useRouter, usePathname } from 'next/navigation'
 import { useLayoutContext } from '@/components/MainContainer/LayoutProvider'
 import { useIsDesktop } from '@/shared/hooks/useIsDesktop'
 import { useState, useCallback, useEffect, useRef } from 'react'
 import { LeavingProposalModal } from './LeavingProposalModal'
 import { ActionsContainer } from '@/components/containers/ActionsContainer'
+import { Button } from '@/components/Button'
 
 interface Props {
   submitForm: () => void
