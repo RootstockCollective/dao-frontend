@@ -24,7 +24,7 @@ export const RewardsMetrics: FC<RewardsMetricsProps> = ({ title, rbtcRewards, ri
     .toString()
 
   return (
-    <Metric className="text-v3-text-0" title={<Typography variant="body">{title}</Typography>}>
+    <Metric className="text-v3-text-0" title={<Typography variant="body" className="text-v3-bg-accent-40">{title}</Typography>}>
       <div className="flex flex-row items-baseline gap-2 font-rootstock-sans">
         <Header>{formatCurrency(estimatedRewards)}</Header>
         <RifRbtcTooltip rbtcValue={rbtcRewards} rifValue={rifRewards}>
