@@ -11,7 +11,6 @@ import { MAIN_CONTAINER_ID } from '@/lib/constants'
 
 export const MAIN_CONTAINER_MAX_WIDTH = '1440px'
 export function ContainerDesktop({ children, className, ...props }: HTMLAttributes<HTMLDivElement>) {
-
   return (
     <div
       {...props}
