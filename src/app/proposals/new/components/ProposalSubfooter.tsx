@@ -1,12 +1,12 @@
 'use client'
 
-import { Button } from '@/components/Button'
-import { motion } from 'motion/react'
-import { useRouter, usePathname } from 'next/navigation' // Import usePathname
+import { useRouter, usePathname } from 'next/navigation'
 import { useLayoutContext } from '@/components/MainContainer/LayoutProvider'
 import { useIsDesktop } from '@/shared/hooks/useIsDesktop'
 import { useState, useCallback, useEffect, useRef } from 'react'
 import { LeavingProposalModal } from './LeavingProposalModal'
+import { ActionsContainer } from '@/components/containers/ActionsContainer'
+import { Button } from '@/components/Button'
 
 interface Props {
   submitForm: () => void
@@ -16,7 +16,7 @@ interface Props {
   backDisabled?: boolean
 }
 
-export const Subfooter = ({
+export const ProposalSubfooter = ({
   submitForm,
   disabled = false,
   nextDisabled = false,
@@ -80,7 +80,7 @@ export const Subfooter = ({
     }
   }, [showModal, shouldIntercept])
 
-  // --- Modal Button Handlers (Now within Subfooter) ---
+  // --- Modal Button Handlers ---
 
   // "Cancel proposal" (white button): User confirms leaving, proceed to '/proposals/new'
   const handleProceedWithExit = useCallback(() => {
@@ -105,29 +105,25 @@ export const Subfooter = ({
   if (!isDesktop && isSidebarOpen) return null
 
   return (
-    <motion.div
-      initial={{ y: 96 }}
-      animate={{ y: 0 }}
-      exit={{ y: 96 }}
-      transition={{ ease: 'easeOut', duration: 0.3 }}
-      className="sticky bottom-0 z-40"
-    >
-      <div className="h-[96px] flex items-center justify-center gap-2 bg-bg-60">
-        <Button
-          disabled={backDisabled || disabled}
-          onClick={handleSubfooterBackClick} // Custom handler
-          variant="secondary-outline"
-        >
-          Back
-        </Button>
-        <Button disabled={nextDisabled || disabled} onClick={submitForm}>
-          {buttonText}
-        </Button>
-      </div>
+    <>
+      <ActionsContainer className="bg-bg-60" containerClassName="items-center">
+        <div className="flex items-center justify-center gap-2">
+          <Button
+            disabled={backDisabled || disabled}
+            onClick={handleSubfooterBackClick}
+            variant="secondary-outline"
+          >
+            Back
+          </Button>
+          <Button disabled={nextDisabled || disabled} onClick={submitForm}>
+            {buttonText}
+          </Button>
+        </div>
+      </ActionsContainer>
 
       {showModal && (
         <LeavingProposalModal onStay={handleStayOnPage} onProceedWithExit={handleProceedWithExit} />
       )}
-    </motion.div>
+    </>
   )
 }
