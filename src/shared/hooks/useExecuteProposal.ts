@@ -1,6 +1,8 @@
+import { useMemo } from 'react'
+import { useReadContract, useWriteContract } from 'wagmi'
 import { GovernorAddress } from '@/lib/contracts'
 import { GovernorAbi } from '@/lib/abis/Governor'
-import { useReadContract, useWriteContract } from 'wagmi'
+import { TimelockControllerAbi } from '@/lib/abis/TimelockController'
 import Big from '@/lib/big'
 
 const DAO_DEFAULT_PARAMS = {
@@ -23,12 +25,38 @@ export const useExecuteProposal = (proposalId: string) => {
     functionName: 'proposalEta',
     args: [BigInt(proposalId)],
     query: {
-      refetchInterval: 5000,
+      refetchInterval: 10000, // Refetch every 10 seconds
+      staleTime: 1000,
     },
   })
-  const currentTime = getCurrentTimeInMsAsBigInt()
+
+  const { data: timelockAddress } = useReadContract({
+    ...DAO_DEFAULT_PARAMS,
+    functionName: 'timelock',
+  })
+
+  const { data: minDelay } = useReadContract({
+    abi: TimelockControllerAbi,
+    address: timelockAddress,
+    functionName: 'getMinDelay',
+    query: {
+      enabled: !!timelockAddress,
+      staleTime: 60000, // Timelock delay rarely changes
+    },
+  })
 
   const { writeContractAsync: execute, isPending: isPendingExecution } = useWriteContract()
+
+  // Memoized calculations
+  const proposalQueuedTime = useMemo(() => {
+    if (!proposalEta || !minDelay) return undefined
+    return Big(proposalEta.toString()).minus(minDelay.toString())
+  }, [proposalEta, minDelay])
+
+  const canProposalBeExecuted = useMemo(() => {
+    if (!proposalEta) return false
+    return getCurrentTimeInMsAsBigInt() >= proposalEta
+  }, [proposalEta])
 
   const onExecuteProposal = () => {
     return execute({
@@ -39,11 +67,13 @@ export const useExecuteProposal = (proposalId: string) => {
   }
 
   const proposalEtaHumanDate = getBigIntTimestampAsHuman(proposalEta)
+
   return {
     onExecuteProposal,
-    canProposalBeExecuted: proposalEta ? currentTime >= proposalEta : false,
-    proposalEta,
+    canProposalBeExecuted,
+    proposalEta: proposalEta ? Big(proposalEta.toString() || 0) : undefined,
     proposalEtaHumanDate,
+    proposalQueuedTime,
     isPendingExecution,
   }
 }

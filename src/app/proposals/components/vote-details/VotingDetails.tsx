@@ -10,6 +10,7 @@ import Big from '@/lib/big'
 import { BalanceInfo } from '@/components/BalanceInfo'
 import { Eta } from '@/app/proposals/shared/types'
 import { TimeColumn } from '../table-columns/TimeColumn'
+import { Countdown } from '@/components/Countdown'
 
 interface VoteCounterProps {
   title: string
@@ -159,11 +160,12 @@ export const VotingDetails = ({
           eta && (
             <div className="flex mt-6 items-center">
               <Paragraph variant="body-s">{capitalizeFirstLetter(eta.type)}</Paragraph>
-              <TimeColumn
+              <Countdown
+                end={eta.end}
+                timeSource={eta.timeSource}
+                referenceStart={eta.referenceStart}
+                colorDirection={eta.colorDirection}
                 className="w-auto ml-4"
-                blocksUntilClosure={eta.blocksUntilClosure}
-                proposalBlockNumber={eta.blockNumber}
-                proposalDeadline={eta.proposalDeadline}
               />
             </div>
           )

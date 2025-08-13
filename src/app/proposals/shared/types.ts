@@ -1,9 +1,10 @@
 import Big from '@/lib/big'
-import { DecodedData } from '@/app/proposals/shared/utils'
+import { DecodedData, getProposalEventArguments } from '@/app/proposals/shared/utils'
 import { ProposalCategory, ProposalState } from '@/shared/types'
 import { type GrantProposal } from '../new/details/schemas/GrantProposalSchema'
 import { type ActivationProposal } from '../new/details/schemas/ActivationProposalSchema'
 import { type DeactivationProposal } from '../new/details/schemas/DeactivationProposalSchema'
+import { CountdownProps } from '@/components/Countdown'
 
 export interface Proposal {
   votes: {
@@ -25,13 +26,24 @@ export interface Proposal {
   Starts: moment.Moment
   calldatasParsed: DecodedData[]
   blockNumber: string
+  // Fields from getProposalEventArguments
+  fullProposalName: string
+  // Fields from GraphQL proposal object
+  createdAt: string
+  createdAtBlock: string
+  voteStart: string
+  voteEnd: string
+  targets: string[]
+  values: bigint[]
+  calldatas: string[]
+  votesAgainst: string
+  votesFor: string
+  votesAbstains: string
+  quorum?: bigint
 }
 
-export interface Eta {
+export interface Eta extends Omit<CountdownProps, 'className'> {
   type: 'vote end in' | 'queue ends in'
-  blocksUntilClosure: Big
-  proposalDeadline: Big
-  blockNumber: string
 }
 
 // discriminated union
