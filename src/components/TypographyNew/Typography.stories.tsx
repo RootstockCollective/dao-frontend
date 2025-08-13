@@ -17,6 +17,13 @@ const meta = {
       description: 'The HTML element to render',
     },
   },
+  decorators: [
+    Story => (
+      <div className="bg-[#222] p-4">
+        <Story />
+      </div>
+    ),
+  ],
 } satisfies Meta<typeof Typography>
 
 export default meta

@@ -1,4 +1,4 @@
-import { InputNew } from '@/components/Input'
+import { Input } from '@/components/Input'
 import { TokenImage } from '@/components/TokenImage'
 import { Paragraph } from '@/components/TypographyNew'
 import { variantClasses } from '@/components/TypographyNew/Typography'
@@ -21,7 +21,7 @@ export const StakeInput = forwardRef<HTMLInputElement, Props>(
       <div className="flex flex-col py-3 px-4 rounded-1 w-full bg-bg-60">
         {labelText && <Paragraph className="mb-3">{labelText}</Paragraph>}
         <div className="flex gap-2">
-          <InputNew
+          <Input
             ref={ref}
             name="amount-stake"
             type="number"
