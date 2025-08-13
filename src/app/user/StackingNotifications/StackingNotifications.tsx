@@ -4,7 +4,7 @@ import { useRequiredTokens } from '@/app/user/IntroModal/hooks/useRequiredTokens
 import { BannerContent } from '@/components/StackableBanner/BannerContent'
 import { StackableBanner } from '@/components/StackableBanner/StackableBanner'
 import { useRouter } from 'next/navigation'
-import { useMemo } from 'react'
+import { useMemo, useEffect, useState } from 'react'
 import { zeroAddress } from 'viem'
 import { useAccount } from 'wagmi'
 import {
@@ -214,8 +214,17 @@ const StackingNotificationsContent = () => {
   // Wait for all dependencies to load before proceeding
   const areDependenciesLoaded = dependencies.every(dependency => dependency)
 
-  if (!areDependenciesLoaded) {
-    return null
+  // Only block rendering on FIRST load, not on subsequent polling updates
+  const [hasLoadedOnce, setHasLoadedOnce] = useState(false)
+
+  useEffect(() => {
+    if (areDependenciesLoaded && !hasLoadedOnce) {
+      setHasLoadedOnce(true)
+    }
+  }, [areDependenciesLoaded, hasLoadedOnce])
+
+  if (!hasLoadedOnce) {
+    return null // Only return null before first successful load
   }
 
   // Early return if no banners should be shown
