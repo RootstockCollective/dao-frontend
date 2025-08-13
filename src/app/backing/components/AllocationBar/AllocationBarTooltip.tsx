@@ -20,11 +20,17 @@ export const AllocationBarTooltip = ({
 }: AllocationBarTooltipProps) => {
   return (
     <div className="w-[230px] p-3">
-      <div className='inline-flex items-center gap-1'>
-      <Typography variant="tag-s" className="text-foreground">
-        {builderAddress === 'unallocated' ? 'Unallocated' : shortAddress(builderAddress as Address)} 
-      </Typography>
-      {percentage ? <Typography variant="tag-s" className="font-light">({percentage})</Typography> : ``}
+      <div className="inline-flex items-center gap-1">
+        <Typography variant="tag-s" className="text-foreground">
+          {builderAddress === 'unallocated' ? 'Unallocated' : shortAddress(builderAddress as Address)}
+        </Typography>
+        {percentage ? (
+          <Typography variant="tag-s" className="font-light">
+            ({percentage})
+          </Typography>
+        ) : (
+          ``
+        )}
       </div>
       <div className="flex flex-col gap-1 mt-2">
         {pendingBacking > 0n && builderAddress !== 'unallocated' && (

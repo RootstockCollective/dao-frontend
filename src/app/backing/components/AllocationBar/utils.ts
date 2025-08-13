@@ -20,7 +20,8 @@ export const calculateSegmentPositions = (
   let cumSum = 0n
   for (let i = 0; i < dragIndex; ++i) cumSum += values[i]
   const leftPx = (Number(cumSum) / Number(totalValue)) * rect.width
-  const rightPx = (Number(cumSum + values[dragIndex] + values[dragIndex + 1]) / Number(totalValue)) * rect.width
+  const rightPx =
+    (Number(cumSum + values[dragIndex] + values[dragIndex + 1]) / Number(totalValue)) * rect.width
 
   return { leftPx, rightPx }
 }
@@ -52,7 +53,7 @@ export const calculateNewSegmentValues = (
     rightValue = minSegmentValue
     leftValue = pairSum - rightValue
   }
-  
+
   return { leftValue, rightValue }
 }
 
@@ -65,4 +66,3 @@ export const valueToPercentage = (value: bigint, totalValue: bigint): number => 
 export const calculateMinSegmentValue = (totalValue: bigint, minPercentage: bigint = 0n): bigint => {
   return (minPercentage / 100n) * totalValue
 }
-
