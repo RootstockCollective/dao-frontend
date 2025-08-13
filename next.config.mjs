@@ -46,7 +46,7 @@ const nextConfig = {
 
     return config
   },
-  // TODO: temporary patch. investigate
+  turbopack: {},
   images: {
     remotePatterns: [
       {

@@ -2,7 +2,8 @@
   "name": "dao-frontend",
   "version": "1.11.0",
   "scripts": {
-    "dev": "next dev",
+    "dev": "next dev --turbo",
+    "dev:webpack": "next dev",
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
@@ -10,8 +11,8 @@
     "lint-tsc": "tsc --noEmit",
     "storybook": "storybook dev -p 6006",
     "build-storybook": "storybook build",
-    "e2e-open": "start-server-and-test dev http://localhost:3000 \"cypress open --e2e\"",
-    "e2e-test": "start-server-and-test dev http://localhost:3000 \"cypress run --e2e\"",
+    "e2e-open": "start-server-and-test dev:webpack http://localhost:3000 \"cypress open --e2e\"",
+    "e2e-test": "start-server-and-test dev:webpack http://localhost:3000 \"cypress run --e2e\"",
     "test": "vitest",
     "build:start": "next build && next start"
   },
