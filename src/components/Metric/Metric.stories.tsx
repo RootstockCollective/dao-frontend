@@ -1,4 +1,4 @@
-import { Typography } from '@/components/Typography/Typography'
+import { BaseTypography } from '@/components/Typography/Typography'
 import { TooltipProvider } from '@radix-ui/react-tooltip'
 import type { Meta, StoryObj } from '@storybook/nextjs'
 import { expect, within } from 'storybook/test'
@@ -36,8 +36,8 @@ export const Default: Story = {
     ),
     children: (
       <div className="flex items-baseline gap-2">
-        <Typography className="text-2xl font-bold">123,456.78</Typography>
-        <Typography className="text-sm font-bold">USD</Typography>
+        <BaseTypography className="text-2xl font-bold">123,456.78</BaseTypography>
+        <BaseTypography className="text-sm font-bold">USD</BaseTypography>
       </div>
     ),
     className: 'bg-v3-bg-accent-80',
@@ -113,9 +113,9 @@ export const WithMultipleIcons: Story = {
     title: (
       <div className="flex items-center gap-2">
         <UsersIcon className="w-5 h-5" />
-        <Typography variant="body" className="grow not-italic leading-6 text-v3-bg-accent-0">
+        <BaseTypography variant="body" className="grow not-italic leading-6 text-v3-bg-accent-0">
           Community Stats
-        </Typography>
+        </BaseTypography>
       </div>
     ),
     children: (

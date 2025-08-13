@@ -1,6 +1,6 @@
 import SeparatorBar from '@/components/SeparatorBar/SeparatorBar'
 import { HourglassIcon } from '../../Icons/HourglassIcon'
-import { Typography } from '@/components/Typography/Typography'
+import { BaseTypography } from '@/components/Typography/Typography'
 import { HtmlHTMLAttributes } from 'react'
 import { cn } from '@/lib/utils'
 import { ExtendedBuilderState } from './types'
@@ -42,9 +42,9 @@ export function BuilderStatusView({ builderState }: BuilderStatusProps) {
     <div className={cn('flex items-center font-rootstock-sans', config.className)}>
       <SeparatorBar className="mr-2" />
       {IconComponent && <IconComponent />}
-      <Typography variant="body-xs" className="ml-[2px]">
+      <BaseTypography variant="body-xs" className="ml-[2px]">
         BUILDER
-      </Typography>
+      </BaseTypography>
     </div>
   )
 }

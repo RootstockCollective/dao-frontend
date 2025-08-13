@@ -1,10 +1,10 @@
 import { FC } from 'react'
 import { BodyVariants, EmphaseVariants, TagVariants } from './types'
-import { Typography, TypographyProps } from './Typography'
+import { BaseTypography, BaseTypographyProps } from './Typography'
 
 type SpanVariant = BodyVariants | TagVariants | EmphaseVariants
 
-interface Props extends Omit<TypographyProps<'span'>, 'as'> {
+interface Props extends Omit<BaseTypographyProps<'span'>, 'as'> {
   variant?: SpanVariant
 }
 
@@ -26,7 +26,7 @@ interface Props extends Omit<TypographyProps<'span'>, 'as'> {
  * - e3: font-size: 16px; font-family: font-kk-topo
  */
 export const Span: FC<Props> = ({ variant = 'body', children, ...rest }) => (
-  <Typography as="span" variant={variant} {...rest}>
+  <BaseTypography as="span" variant={variant} {...rest}>
     {children}
-  </Typography>
+  </BaseTypography>
 )

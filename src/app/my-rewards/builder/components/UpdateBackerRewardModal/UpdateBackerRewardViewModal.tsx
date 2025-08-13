@@ -6,7 +6,7 @@ import { InputNumber } from '@/components/Input/InputNumber'
 import { LoadingSpinner } from '@/components/LoadingSpinner'
 import { Modal } from '@/components/Modal/Modal'
 import { Tooltip } from '@/components/Tooltip'
-import { Typography } from '@/components/Typography/Typography'
+import { BaseTypography } from '@/components/Typography/Typography'
 import { cn, durationToLabel } from '@/lib/utils'
 import { Duration } from 'luxon'
 
@@ -55,28 +55,28 @@ const UpdateBackerRewardViewModal = ({
       className={cn('font-rootstock-sans shadow-[0px_0px_40px_0px_rgba(255,255,255,0.10)]', className)}
     >
       <div className="relative flex flex-col gap-8 min-w-[500px] p-6">
-        <Typography variant="h1">MY BACKERS&apos; REWARDS</Typography>
+        <BaseTypography variant="h1">MY BACKERS&apos; REWARDS</BaseTypography>
         {isLoading ? (
           <LoadingSpinner />
         ) : (
           <>
-            <Typography variant="body">
+            <BaseTypography variant="body">
               Any updates to the Rewards % will take effect after the {cooldownDuration?.days} days cooling
               period.
-            </Typography>
+            </BaseTypography>
             <div className="flex gap-6 justify-between">
               <div className="flex flex-col items-start gap-2">
-                <Typography variant="body" className="text-bg-0">
+                <BaseTypography variant="body" className="text-bg-0">
                   Current Rewards %
-                </Typography>
-                <Typography variant="h1">{currentReward}%</Typography>
+                </BaseTypography>
+                <BaseTypography variant="h1">{currentReward}%</BaseTypography>
               </div>
               <div className="flex flex-col items-center gap-2 w-[60%]">
                 <div className="flex flex-row items-center justify-between px-4 py-3 bg-input-bg w-full">
                   <div className="flex flex-col">
-                    <Typography variant="body-xs" className="text-bg-0">
+                    <BaseTypography variant="body-xs" className="text-bg-0">
                       Updated Rewards %
-                    </Typography>
+                    </BaseTypography>
                     <InputNumber
                       name="updatedReward"
                       value={updatedReward}
@@ -87,9 +87,9 @@ const UpdateBackerRewardViewModal = ({
                     />
                   </div>
                   {timeRemaining && (
-                    <Typography variant="body" className="text-brand-rootstock-lime text-sm self-end">
+                    <BaseTypography variant="body" className="text-brand-rootstock-lime text-sm self-end">
                       Effective in {timeRemaining}
-                    </Typography>
+                    </BaseTypography>
                   )}
                 </div>
                 <div className="flex items-center gap-2 w-full justify-end">

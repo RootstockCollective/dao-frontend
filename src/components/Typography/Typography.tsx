@@ -11,7 +11,7 @@ import type { BodyVariants, EmphaseVariants, HeaderVariants, TagVariants } from 
 type TypographyVariant = EmphaseVariants | HeaderVariants | BodyVariants | TagVariants
 
 /**
- * Props for the Typography component.
+ * Props for the BaseTypography component.
  * @template T - The HTML element type to render (defaults to 'span')
  * @property {T} [as] - The HTML element to render (e.g., 'div', 'p', 'span')
  * @property {TypographyVariant} [variant='body'] - The typography style variant to apply
@@ -21,7 +21,7 @@ type TypographyVariant = EmphaseVariants | HeaderVariants | BodyVariants | TagVa
  * @property {string} [data-testid] - Test ID for testing purposes
  * @extends {ComponentPropsWithoutRef<T>} - Inherits all props from the underlying HTML element
  */
-export type TypographyProps<T extends ElementType> = {
+export type BaseTypographyProps<T extends ElementType> = {
   as?: T
   variant?: TypographyVariant
   html?: boolean
@@ -55,7 +55,7 @@ export const variantClasses: Record<TypographyVariant, string> = {
 }
 
 /**
- * Typography Component
+ * BaseTypography Component
  *
  * A flexible typography component that provides consistent text styling across the application.
  * This is an abstract base component that should not be used directly. Instead, use one of the following
@@ -83,7 +83,7 @@ export const variantClasses: Record<TypographyVariant, string> = {
  * - html: Allows rendering sanitized HTML content
  *
  * @template T - The HTML element type to render
- * @param {TypographyProps<T>} props - Component props
+ * @param {BaseTypographyProps<T>} props - Component props
  * @returns {JSX.Element} Rendered typography component
  *
  * @internal
@@ -91,7 +91,7 @@ export const variantClasses: Record<TypographyVariant, string> = {
  * Direct usage is discouraged in favor of the specific variant components.
  * Please DO NOT use this component directly, use the specific variant components instead.
  */
-export function Typography<T extends ElementType>({
+export function BaseTypography<T extends ElementType>({
   children,
   as = 'span' as T,
   variant = 'body',
@@ -102,7 +102,7 @@ export function Typography<T extends ElementType>({
   'data-testid': dataTestId,
   onClick,
   ...props
-}: TypographyProps<T>) {
+}: BaseTypographyProps<T>) {
   const Component: ElementType = as
   const isHtml = html && typeof children === 'string'
   const cleanHtml = isHtml

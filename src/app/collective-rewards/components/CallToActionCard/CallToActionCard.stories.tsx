@@ -2,7 +2,7 @@ import type { Meta, StoryObj } from '@storybook/nextjs'
 import { CallToActionCard } from './CallToActionCard'
 import { BackingBanner } from '@/app/backing/components/BackingBanner/BackingBanner'
 import { Header, Paragraph } from '@/components/Typography'
-import { Typography } from '@/components/Typography/Typography'
+import { BaseTypography } from '@/components/Typography/Typography'
 import { MetricsContainer } from '@/components/containers/MetricsContainer'
 
 const meta: Meta<typeof CallToActionCard> = {
@@ -38,7 +38,7 @@ export const Default: Story = {
     ),
     children: (
       <MetricsContainer className="px-6 pb-10 pt-0">
-        <Typography className="text-v3-text-0">Default container content</Typography>
+        <BaseTypography className="text-v3-text-0">Default container content</BaseTypography>
       </MetricsContainer>
     ),
   },
@@ -55,7 +55,7 @@ export const CustomStyles: Story = {
     ),
     children: (
       <MetricsContainer className="mx-4 ">
-        <Typography>Customized container content</Typography>
+        <BaseTypography>Customized container content</BaseTypography>
       </MetricsContainer>
     ),
   },

@@ -1,5 +1,5 @@
 import { Paragraph } from '@/components/Typography'
-import { Typography } from '@/components/Typography/Typography'
+import { BaseTypography } from '@/components/Typography/Typography'
 import { Button } from '@/components/Button'
 import Image from 'next/image'
 import CollapsibleWithPreview from '@/components/CollapsibleWithPreview/CollapsibleWithPreview'
@@ -23,15 +23,15 @@ const ExpandedContent = () => {
       {/* Center: Main Content */}
       <div className="flex flex-col text-base justify-center gap-4 basis-1/2 md:basis-1/2 mt-16">
         <div>
-          <Typography variant="h1" className="text-v3-text-0">
+          <BaseTypography variant="h1" className="text-v3-text-0">
             BECOME A COLLECTIVE BUILDER.
-          </Typography>
+          </BaseTypography>
           <br />
-          <Typography variant="h1" className="text-v3-bg-accent-20 mt-2">
+          <BaseTypography variant="h1" className="text-v3-bg-accent-20 mt-2">
             SECURE FUNDING. EARN
             <br />
             CONTINUOUSLY.
-          </Typography>
+          </BaseTypography>
         </div>
         <Paragraph className="text-v3-text-0">
           Join a growing network of innovators building the future of decentralised infrastructure. Get
@@ -52,9 +52,9 @@ const ExpandedContent = () => {
       </div>
       {/* Right: Why Become a Builder */}
       <div className="flex flex-col justify-center bg-transparent basis-1/4 md:basis-1/4 w-full md:pl-8 mt-16">
-        <Typography variant="h3" className="text-v3-text-0 mb-4">
+        <BaseTypography variant="h3" className="text-v3-text-0 mb-4">
           WHY BECOME A BUILDER?
-        </Typography>
+        </BaseTypography>
         <ul className="list-[circle] pl-4 text-v3-text-0">
           <li>
             <Paragraph>join a mission-aligned network</Paragraph>

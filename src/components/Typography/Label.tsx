@@ -1,10 +1,10 @@
 import { FC } from 'react'
 import { BodyVariants, TagVariants } from './types'
-import { Typography, TypographyProps } from './Typography'
+import { BaseTypography, BaseTypographyProps } from './Typography'
 
 type LabelVariant = BodyVariants | TagVariants
 
-interface Props extends Omit<TypographyProps<'label'>, 'as'> {
+interface Props extends Omit<BaseTypographyProps<'label'>, 'as'> {
   variant?: LabelVariant
 }
 
@@ -22,7 +22,7 @@ interface Props extends Omit<TypographyProps<'label'>, 'as'> {
  * - body-xs: font-size: 12px; font-weight: 400; font-family: font-rootstock-sans
  */
 export const Label: FC<Props> = ({ children, variant = 'body', 'data-testid': dataTestId = '', ...rest }) => (
-  <Typography as="label" variant={variant} data-testid={dataTestId} {...rest}>
+  <BaseTypography as="label" variant={variant} data-testid={dataTestId} {...rest}>
     {children}
-  </Typography>
+  </BaseTypography>
 )
