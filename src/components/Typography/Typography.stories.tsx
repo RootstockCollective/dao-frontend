@@ -1,12 +1,12 @@
 import { Header } from './Header'
 import { Label } from './Label'
 import { Paragraph } from './Paragraph'
-import { Typography } from './Typography'
+import { BaseTypography } from './Typography'
 import type { Meta, StoryObj } from '@storybook/nextjs'
 
 const meta = {
   title: 'Components/TypographyNew',
-  component: Typography,
+  component: BaseTypography,
   parameters: {
     layout: 'padded',
   },
@@ -24,7 +24,7 @@ const meta = {
       </div>
     ),
   ],
-} satisfies Meta<typeof Typography>
+} satisfies Meta<typeof BaseTypography>
 
 export default meta
 

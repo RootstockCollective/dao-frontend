@@ -4,7 +4,7 @@ import { TransactionInProgressButton } from '@/app/user/Stake/components/Transac
 import { Button } from '@/components/Button'
 import { Modal } from '@/components/Modal/Modal'
 import { TokenImage } from '@/components/TokenImage'
-import { Typography } from '@/components/Typography/Typography'
+import { BaseTypography } from '@/components/Typography/Typography'
 import { RBTC } from '@/lib/constants'
 import { cn, formatCurrencyWithLabel } from '@/lib/utils'
 import { FC, ReactNode } from 'react'
@@ -72,20 +72,20 @@ export const ClaimRewardsModalView: FC<ClaimRewardsModalViewProps> = ({
       className={cn('font-rootstock-sans shadow-[0px_0px_40px_0px_rgba(255,255,255,0.10)]', className)}
     >
       <div className="p-8 flex flex-col gap-8">
-        <Typography variant="h1">CLAIM REWARDS</Typography>
-        <Typography>
+        <BaseTypography variant="h1">CLAIM REWARDS</BaseTypography>
+        <BaseTypography>
           Select the rewards that you want to claim, then confirm the transaction in your wallet.
-        </Typography>
+        </BaseTypography>
         <ClaimRewardRadioGroup
           value={selectedRewardType}
           onValueChange={onRewardTypeChange}
           options={radioOptions}
           isLoading={isLoading}
         />
-        <Typography variant="body">
+        <BaseTypography variant="body">
           Claim your rewards directly to your wallet. Claimed rewards are transferred immediately, and your
           unclaimed balance resets.
-        </Typography>
+        </BaseTypography>
         <div className="flex justify-end gap-4 mt-8">
           <Button variant="secondary-outline" onClick={onClose}>
             Cancel

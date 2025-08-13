@@ -1,4 +1,4 @@
-import { Typography } from '@/components/Typography/Typography'
+import { BaseTypography } from '@/components/Typography/Typography'
 import { cn } from '@/lib/utils'
 import { FC, ReactNode } from 'react'
 import { CommonComponentProps } from '../../components/commonProps'
@@ -16,9 +16,9 @@ export const MetricTitle: FC<MetricTitleProps> = ({ title, info, className = '',
   return (
     <div data-testid="MetricTitle" className={cn('flex w-full items-start gap-2', className)}>
       {isTitleTextual ? (
-        <Typography variant="body" className="text-v3-bg-accent-0">
+        <BaseTypography variant="body" className="text-v3-bg-accent-0">
           {title}
-        </Typography>
+        </BaseTypography>
       ) : (
         title
       )}
