@@ -286,11 +286,30 @@ All typography components support these modifiers:
 
 ## 🔍 How to Find the Right Variant
 
-1. **Go to Figma and find the comment** - Look for comments like `/* Header/H3 */`, `/* Body/B Regular */`, `/* Body/BS Regular */`
-2. **Use the comment to pick the right variant** - The comment tells you exactly which component and variant to use
-3. **Don't extract other properties** - Font-size, line-height, etc. are already implemented in our components
-4. **Use the Typography Stories** - Run `npm run storybook` and check the Typography section for examples
-5. **Check the Notion page** - Reference the [DAO TOK Way of Working](https://www.notion.so/rootstock/DAO-TOK-Way-of-Working-Ver-2-1cac132873f980f89871c436df29ac85?source=copy_link#211c132873f980e78e37c1aab07ca96a)
+### **Step-by-Step Figma Process:**
+
+1. **Enable Dev Mode** in Figma (it's the last button at the bottom of the toolbar - looks like `</>`)
+2. **Select the text element** you want to inspect
+3. **Look at the right sidebar** for the "Typography" section
+4. **Find the comment** like `/* Header/H3 */`, `/* Body/B Regular */`, `/* Body/BS Regular */`
+5. **Use the comment to pick the right variant** - The comment tells you exactly which component and variant to use
+
+### **Important Notes:**
+
+- **Don't extract other properties** - Font-size, line-height, etc. are already implemented in our components
+- **Only the comment matters** - That's your key to finding the right variant
+- **Use the Typography Stories** - Run `npm run storybook` and check the Typography section for examples
+- **Check the Notion page** - Reference the [DAO TOK Way of Working](https://www.notion.so/rootstock/DAO-TOK-Way-of-Working-Ver-2-1cac132873f980f89871c436df29ac85?source=copy_link#211c132873f980e78e37c1aab07ca96a)
+
+### **What You'll See in Figma:**
+
+When you select a text element in Dev Mode, the right sidebar will show:
+
+- **Typography section** with the variant comment (e.g., `/* Header/H3 */`)
+- **CSS properties** (font-size, line-height, etc.) - **IGNORE THESE**
+- **Color information** - **USE THIS** if you need custom colors
+
+**Remember:** Only copy the comment from the Typography section, not the individual CSS properties!
 
 ## 📋 Variant Mapping Reference
 
