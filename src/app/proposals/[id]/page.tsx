@@ -342,7 +342,7 @@ const PageWithProposal = (proposal: Proposal) => {
           type: 'vote end in',
           end: proposalDeadline,
           timeSource: 'blocks',
-          referenceStart: Big(voteStart),
+          referenceStart: voteStart ? Big(voteStart) : undefined,
         }
       default:
         return undefined

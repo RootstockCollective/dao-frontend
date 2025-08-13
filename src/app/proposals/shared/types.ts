@@ -26,20 +26,20 @@ export interface Proposal {
   Starts: moment.Moment
   calldatasParsed: DecodedData[]
   blockNumber: string
+  // Fields from GraphQL proposal object (optional for backend API proposals)
+  createdAt?: string
+  createdAtBlock?: string
+  voteStart?: string
+  voteEnd?: string
+  targets?: string[]
+  values?: string[]
+  calldatas?: string[]
+  votesAgainst?: string
+  votesFor?: string
+  votesAbstains?: string
+  quorum?: string
   // Fields from getProposalEventArguments
-  fullProposalName: string
-  // Fields from GraphQL proposal object
-  createdAt: string
-  createdAtBlock: string
-  voteStart: string
-  voteEnd: string
-  targets: string[]
-  values: bigint[]
-  calldatas: string[]
-  votesAgainst: string
-  votesFor: string
-  votesAbstains: string
-  quorum?: bigint
+  fullProposalName?: string
 }
 
 export interface Eta extends Omit<CountdownProps, 'className'> {
