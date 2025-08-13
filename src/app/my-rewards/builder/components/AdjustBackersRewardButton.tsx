@@ -1,6 +1,6 @@
 import React from 'react'
 import { EditIconKoto } from '@/components/Icons'
-import { Span } from '@/components/TypographyNew'
+import { Span } from '@/components/Typography'
 
 interface AdjustBackersRewardsButtonProps {
   onClick?: () => void

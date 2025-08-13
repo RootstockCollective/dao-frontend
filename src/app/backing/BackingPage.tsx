@@ -12,7 +12,7 @@ import {
 import { formatSymbol, getFiatAmount } from '@/app/collective-rewards/rewards'
 import { useBuilderContext } from '@/app/collective-rewards/user/context/BuilderContext'
 import { ActionMetricsContainer, ActionsContainer, MetricsContainer } from '@/components/containers'
-import { Header, Span } from '@/components/TypographyNew'
+import { Header, Span } from '@/components/Typography'
 import { RIF, STRIF } from '@/lib/constants'
 import { formatCurrencyWithLabel } from '@/lib/utils'
 import { usePricesContext } from '@/shared/context/PricesContext'

@@ -4,8 +4,8 @@ import { Address } from 'viem'
 import { useAccount } from 'wagmi'
 import { LoadingSpinner } from '@/components/LoadingSpinner'
 import { Metric, MetricTitle } from '@/components/Metric'
-import { Header } from '@/components/TypographyNew'
-import { Typography } from '@/components/TypographyNew/Typography'
+import { Header } from '@/components/Typography'
+import { Typography } from '@/components/Typography/Typography'
 import { ABIFormula } from '../ABIFormula'
 
 export const BackerAnnualBackersIncentives = () => {

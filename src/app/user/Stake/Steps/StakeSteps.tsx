@@ -1,5 +1,5 @@
 import { CaretRight } from '@/components/Icons/CaretRight'
-import { Span } from '@/components/TypographyNew'
+import { Span } from '@/components/Typography'
 
 interface Props {
   currentStep: number

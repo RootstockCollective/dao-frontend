@@ -2,7 +2,7 @@
 
 import { Button } from '@/components/Button'
 import { HeartBroken } from '@/components/Icons/v3design'
-import { Paragraph } from '@/components/TypographyNew'
+import { Paragraph } from '@/components/Typography'
 import { useRouter } from 'next/navigation'
 
 export const NonBacker = () => {

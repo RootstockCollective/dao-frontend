@@ -1,7 +1,7 @@
 import { LoadingSpinner } from '@/components/LoadingSpinner'
 import { Metric, MetricTitle } from '@/components/Metric'
-import { Paragraph } from '@/components/TypographyNew'
-import { Typography } from '@/components/TypographyNew/Typography'
+import { Paragraph } from '@/components/Typography'
+import { Typography } from '@/components/Typography/Typography'
 import { ReactNode } from 'react'
 
 export const RewardCard = ({

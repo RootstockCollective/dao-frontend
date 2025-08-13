@@ -3,7 +3,7 @@
 import { useReviewProposal } from '@/app/providers'
 import { NumberInput, TextInput } from '@/components/FormFields'
 import { useLayoutContext } from '@/components/MainContainer/LayoutProvider'
-import { Header } from '@/components/TypographyNew'
+import { Header } from '@/components/Typography'
 import { ProposalCategory } from '@/shared/types'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useRouter } from 'next/navigation'

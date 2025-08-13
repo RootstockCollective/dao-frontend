@@ -1,4 +1,4 @@
-import { Paragraph } from '@/components/TypographyNew'
+import { Paragraph } from '@/components/Typography'
 import Link from 'next/link'
 import { ArrowRightIconKoto } from '@/components/Icons'
 

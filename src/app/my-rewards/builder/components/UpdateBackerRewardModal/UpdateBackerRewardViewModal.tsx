@@ -6,7 +6,7 @@ import { InputNumber } from '@/components/Input/InputNumber'
 import { LoadingSpinner } from '@/components/LoadingSpinner'
 import { Modal } from '@/components/Modal/Modal'
 import { Tooltip } from '@/components/Tooltip'
-import { Typography } from '@/components/TypographyNew/Typography'
+import { Typography } from '@/components/Typography/Typography'
 import { cn, durationToLabel } from '@/lib/utils'
 import { Duration } from 'luxon'
 

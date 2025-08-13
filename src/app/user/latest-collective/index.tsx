@@ -1,7 +1,7 @@
 import { ButtonAction } from '@/app/proposals/components/vote-details'
 import { useVotingPower } from '@/app/proposals/hooks/useVotingPower'
 import { Proposal } from '@/app/proposals/shared/types'
-import { Header } from '@/components/TypographyNew'
+import { Header } from '@/components/Typography'
 import { useRouter } from 'next/navigation'
 import { LatestActiveProposalCard, LatestProposalCard } from './components'
 import { ActionsContainer } from '@/components/containers/ActionsContainer'

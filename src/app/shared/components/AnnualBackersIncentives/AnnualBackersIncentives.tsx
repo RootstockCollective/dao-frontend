@@ -1,9 +1,9 @@
 import { CommonComponentProps } from '@/components/commonProps'
 import { LoadingSpinner } from '@/components/LoadingSpinner/LoadingSpinner'
-import { Typography } from '@/components/TypographyNew/Typography'
+import { Typography } from '@/components/Typography/Typography'
 import { AnnualBackerIncentivesLoader } from '@/app/shared/components/AnnualBackersIncentivesLoader/AnnualBackerIncentivesLoader'
 import { Metric, MetricTitle } from '@/components/Metric'
-import { Paragraph } from '@/components/TypographyNew'
+import { Paragraph } from '@/components/Typography'
 import { ABIFormula } from '@/app/backing/components/ABIFormula'
 
 interface AnnualBackersIncentivesProps extends CommonComponentProps {}

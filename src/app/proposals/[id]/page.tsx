@@ -8,7 +8,7 @@ import {
   getDiscourseLinkFromProposalDescription,
   splitCombinedName,
 } from '@/app/proposals/shared/utils'
-import { Header, Paragraph, Span } from '@/components/TypographyNew'
+import { Header, Paragraph, Span } from '@/components/Typography'
 import { config } from '@/config'
 import { RIF, RBTC, RIF_ADDRESS, USDRIF, USDRIF_ADDRESS } from '@/lib/constants'
 import { formatNumberWithCommas } from '@/lib/utils'

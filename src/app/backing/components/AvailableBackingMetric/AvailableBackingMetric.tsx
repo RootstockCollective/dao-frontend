@@ -1,4 +1,4 @@
-import { Typography } from '@/components/TypographyNew/Typography'
+import { Typography } from '@/components/Typography/Typography'
 import { Tooltip } from '@/components/Tooltip'
 import { STRIF } from '@/lib/constants'
 import { KotoQuestionMarkIcon } from '@/components/Icons/KotoQuestionMarkIcon'

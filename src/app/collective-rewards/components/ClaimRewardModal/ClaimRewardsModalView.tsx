@@ -4,7 +4,7 @@ import { TransactionInProgressButton } from '@/app/user/Stake/components/Transac
 import { Button } from '@/components/Button'
 import { Modal } from '@/components/Modal/Modal'
 import { TokenImage } from '@/components/TokenImage'
-import { Typography } from '@/components/TypographyNew/Typography'
+import { Typography } from '@/components/Typography/Typography'
 import { RBTC } from '@/lib/constants'
 import { cn, formatCurrencyWithLabel } from '@/lib/utils'
 import { FC, ReactNode } from 'react'

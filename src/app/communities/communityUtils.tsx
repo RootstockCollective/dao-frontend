@@ -1,7 +1,7 @@
 /* eslint-disable quotes */
 import { nftContracts } from '@/lib/contracts'
 import { FC, ReactNode } from 'react'
-import { Header, Paragraph } from '@/components/TypographyNew'
+import { Header, Paragraph } from '@/components/Typography'
 import { ipfsGatewayUrl } from '@/lib/ipfs'
 
 export interface CommunityItem {

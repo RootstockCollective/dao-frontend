@@ -1,5 +1,5 @@
-import { Paragraph } from '@/components/TypographyNew'
-import { Typography } from '@/components/TypographyNew/Typography'
+import { Paragraph } from '@/components/Typography'
+import { Typography } from '@/components/Typography/Typography'
 import { Button } from '@/components/Button'
 import Image from 'next/image'
 import CollapsibleWithPreview from '@/components/CollapsibleWithPreview/CollapsibleWithPreview'

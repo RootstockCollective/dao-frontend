@@ -12,7 +12,7 @@ import { ConnectButton } from '@/app/components/Button/ConnectButton/ConnectButt
 import { Button } from '@/components/Button'
 import { StylableComponentProps } from '@/components/commonProps'
 import { WarningIcon } from '@/components/Icons'
-import { Paragraph } from '@/components/TypographyNew'
+import { Paragraph } from '@/components/Typography'
 import { cn } from '@/lib/utils'
 import { AnimatePresence, motion } from 'motion/react'
 import { FC, useEffect, useState } from 'react'

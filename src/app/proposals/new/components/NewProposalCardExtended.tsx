@@ -7,7 +7,7 @@ import Link from 'next/link'
 import { DotsOverlayHoriz } from '../images/DotsOverlayHoriz'
 import { DotsOverlayVert } from '../images/DotsOverlayVert'
 import { CardButton } from './CardButton'
-import { Header } from '@/components/TypographyNew'
+import { Header } from '@/components/Typography'
 
 interface Props extends HTMLAttributes<HTMLDivElement> {
   card: NewProposalCardExtendedData

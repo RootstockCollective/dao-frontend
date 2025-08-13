@@ -1,6 +1,6 @@
 import { CommonComponentProps } from '@/components/commonProps'
 import { TokenImage } from '@/components/TokenImage'
-import { Typography } from '@/components/TypographyNew/Typography'
+import { Typography } from '@/components/Typography/Typography'
 import { RIF } from '@/lib/constants'
 import { cn } from '@/lib/utils'
 import { ReactNode } from 'react'

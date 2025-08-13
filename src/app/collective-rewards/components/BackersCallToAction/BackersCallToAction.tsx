@@ -1,4 +1,4 @@
-import { Header, Paragraph } from '@/components/TypographyNew'
+import { Header, Paragraph } from '@/components/Typography'
 import { MetricsContainer } from '@/components/containers'
 import { Button } from '@/components/Button'
 import { useContext } from 'react'

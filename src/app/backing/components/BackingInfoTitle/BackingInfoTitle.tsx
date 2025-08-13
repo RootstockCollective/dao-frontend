@@ -1,6 +1,6 @@
 import { Button } from '@/components/Button'
-import { Span } from '@/components/TypographyNew'
-import { Typography } from '@/components/TypographyNew/Typography'
+import { Span } from '@/components/Typography'
+import { Typography } from '@/components/Typography/Typography'
 import { CommonComponentProps } from '@/components/commonProps'
 import { cn } from '@/lib/utils'
 import { FC } from 'react'

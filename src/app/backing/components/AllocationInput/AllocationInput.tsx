@@ -1,6 +1,6 @@
 import { formatMetrics, formatSymbol } from '@/app/collective-rewards/rewards/utils/formatter'
 import { InputNumber } from '@/components/Input/InputNumber'
-import { Paragraph } from '@/components/TypographyNew'
+import { Paragraph } from '@/components/Typography'
 import { cn } from '@/lib/utils'
 import { Dispatch, FC, SetStateAction, useRef } from 'react'
 import { NumberFormatValues } from 'react-number-format'

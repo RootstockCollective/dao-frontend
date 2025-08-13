@@ -1,5 +1,5 @@
 'use client'
-import { Header } from '@/components/TypographyNew'
+import { Header } from '@/components/Typography'
 import { VOTING_POWER_CARDS_INFO } from '../../lib/constants'
 import { CardsState } from '../../lib/types'
 import { VotingPowerCard } from './VotingPowerCard'

@@ -1,5 +1,5 @@
 import { AnnualBackersIncentives } from '@/app/shared/components/AnnualBackersIncentives'
-import { Header } from '@/components/TypographyNew'
+import { Header } from '@/components/Typography'
 import { BackersEstimatedRewards } from './BackersEstimatedRewards'
 
 export const BackerRewardsNotConnected = () => {

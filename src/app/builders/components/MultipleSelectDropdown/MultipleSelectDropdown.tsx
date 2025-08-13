@@ -1,4 +1,4 @@
-import { Label } from '@/components/TypographyNew'
+import { Label } from '@/components/Typography'
 import { cn } from '@/lib/utils'
 import { BaseColumnId } from '@/shared/context/TableContext'
 import * as DropdownMenuPrimitive from '@radix-ui/react-dropdown-menu'

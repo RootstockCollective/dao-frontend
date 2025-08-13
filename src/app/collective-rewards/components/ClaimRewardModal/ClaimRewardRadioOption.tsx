@@ -1,5 +1,5 @@
 import { LoadingSpinner } from '@/components/LoadingSpinner'
-import { Typography } from '@/components/TypographyNew/Typography'
+import { Typography } from '@/components/Typography/Typography'
 import * as RadioGroup from '@radix-ui/react-radio-group'
 import { FC, ReactNode } from 'react'
 import { ClaimRewardType } from './types'
