@@ -12,14 +12,27 @@ interface Props extends Omit<BaseTypographyProps<'label'>, 'as'> {
  * Label Component
  *
  * Renders a <label> element with consistent styling.
+ *
+ * @example
+ * ```tsx
+ * <Label variant="tag">Username</Label>
+ * <Label variant="body-s" bold>Status</Label>
+ * ```
+ *
  * Supports the following variants:
- * - tag: font-size: 16px; font-weight: 600; font-family: font-rootstock-sans
- * - tag-s: font-size: 14px; font-weight: 600; font-family: font-rootstock-sans
- * - tag-m: font-size: 14px; font-weight: 600; font-family: font-rootstock-sans
- * - body-l: font-size: 18px; font-weight: 400; font-family: font-rootstock-sans
- * - body (default): font-size: 16px; font-weight: 400; font-family: font-rootstock-sans
- * - body-s: font-size: 14px; font-weight: 400; font-family: font-rootstock-sans
- * - body-xs: font-size: 12px; font-weight: 400; font-family: font-rootstock-sans
+ *
+ * **Tag Variants:**
+ * - tag: font-size: 16px; font-weight: 600; font-family: font-rootstock-sans - **Figma: Tags/T Regular**
+ * - tag-s: font-size: 14px; font-weight: 600; font-family: font-rootstock-sans - **Figma: Tags/TS**
+ * - tag-m: font-size: 14px; font-weight: 600; font-family: font-rootstock-sans - **Figma: Mobile/Tags/M T regular**
+ *
+ * **Body Variants:**
+ * - body-l: font-size: 18px; font-weight: 400; font-family: font-rootstock-sans - **Figma: Body/BL Regular**
+ * - body (default): font-size: 16px; font-weight: 400; font-family: font-rootstock-sans - **Figma: Body/B Regular**
+ * - body-s: font-size: 14px; font-weight: 400; font-family: font-rootstock-sans - **Figma: Body/BS Regular**
+ * - body-xs: font-size: 12px; font-weight: 400; font-family: font-rootstock-sans - **Figma: Body/BXS Regular**
+ *
+ * All variants support the `bold`, `caps`, and `html` props.
  */
 export const Label: FC<Props> = ({ children, variant = 'body', 'data-testid': dataTestId = '', ...rest }) => (
   <BaseTypography as="label" variant={variant} data-testid={dataTestId} {...rest}>

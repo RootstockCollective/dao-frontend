@@ -25,17 +25,24 @@ export interface HeaderProps extends Omit<BaseTypographyProps<TypographyElement>
  * Header Component
  *
  * Renders a h1, h2, h3, h4, h5 element with consistent styling.
+ *
+ * @example
+ * ```tsx
+ * <Header variant="h1" caps>PROPOSALS</Header>
+ * <Header variant="h3" className="text-white">LATEST PROPOSALS</Header>
+ * ```
+ *
  * Supports the following variants:
- * - e1: font-size: 60px; font-family: font-kk-topo
- * - e2: font-size: 44px; font-family: font-kk-topo
- * - e2m: font-size: 40px; font-family: font-kk-topo
- * - e3: font-size: 16px; font-family: font-kk-topo
- * - h1 (default): font-size: 32px; font-family: font-kk-topo
- * - h1m: font-size: 28px; font-family: font-kk-topo
- * - h2: font-size: 24px; font-family: font-kk-topo
- * - h3: font-size: 20px; font-family: font-kk-topo
- * - h4: font-size: 16px; font-family: font-rootstock-sans
- * - h5: font-size: 12px; font-family: font-rootstock-sans
+ * - e1: font-size: 60px; font-family: font-kk-topo - **Figma: Emphase/E1**
+ * - e2: font-size: 44px; font-family: font-kk-topo - **Figma: Emphase/E2**
+ * - e2m: font-size: 40px; font-family: font-kk-topo - **Figma: Mobile/Emphase/M E2**
+ * - e3: font-size: 16px; font-family: font-kk-topo - **Figma: Emphase/E3**
+ * - h1 (default): font-size: 32px; font-family: font-kk-topo - **Figma: Header/H1**
+ * - h1m: font-size: 28px; font-family: font-kk-topo - **Figma: Header/H1M**
+ * - h2: font-size: 24px; font-family: font-kk-topo - **Figma: Header/H2**
+ * - h3: font-size: 20px; font-family: font-kk-topo - **Figma: Header/H3**
+ * - h4: font-size: 16px; font-family: font-rootstock-sans - **Figma: Header/H4**
+ * - h5: font-size: 12px; font-family: font-rootstock-sans - **Figma: Header/H5**
  */
 export const Header: FC<HeaderProps> = ({ variant = 'h1', children, 'data-testid': dataTestId, ...rest }) => (
   <BaseTypography as={elementByVariant[variant]} variant={variant} data-testid={dataTestId} {...rest}>
