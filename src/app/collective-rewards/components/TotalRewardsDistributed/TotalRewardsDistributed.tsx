@@ -43,7 +43,9 @@ const TokenRewards = ({ gauges, token: { address, symbol } }: TokenRewardsProps)
   const price = prices[symbol]?.price ?? 0
   const { amount, fiatAmount } = formatMetrics(totalRewards, price, symbol)
 
-  return <TokenAmountDisplay amount={amount} tokenSymbol={symbol} amountInCurrency={fiatAmount} />
+  return (
+    <TokenAmountDisplay amount={amount} tokenSymbol={symbol} amountInCurrency={fiatAmount} className="mb-0" />
+  )
 }
 
 interface TotalRewardsDistributedMetricProps extends CommonComponentProps {}
@@ -71,7 +73,7 @@ export const TotalRewardsDistributed = ({ className }: TotalRewardsDistributedMe
       }
       className={className}
     >
-      <div className="flex flex-col gap-2">
+      <div className="flex flex-row md:flex-col justify-between w-full gap-2">
         {Object.values(TOKENS).map(token => (
           <TokenRewards key={token.symbol} gauges={allGauges} token={token} />
         ))}

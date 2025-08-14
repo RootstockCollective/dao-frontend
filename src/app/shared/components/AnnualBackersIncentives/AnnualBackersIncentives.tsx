@@ -39,7 +39,7 @@ export const AnnualBackersIncentives = ({ className }: AnnualBackersIncentivesPr
           }
           className={className}
         >
-          <div className="flex flex-row gap-10 items-center">
+          <div className="flex flex-col md:flex-row gap-4 md:gap-10 items-start md:items-center">
             <Typography variant="e1" className="text-center">
               {isLoading ? <LoadingSpinner size="small" /> : `${abiPct.toFixed(0)}%`}
             </Typography>
