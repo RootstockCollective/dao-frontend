@@ -146,6 +146,8 @@ All typography components support these modifiers:
 - `caps` - Transforms text to uppercase
 - `html` - Allows rendering sanitized HTML content
 
+**Note:** Tag variants (`tag` and `tag-s`) have special tracking behavior when using the `caps` prop - they get enhanced letter spacing following the definition in the Figma file.
+
 ### Bold Text
 
 ```tsx
