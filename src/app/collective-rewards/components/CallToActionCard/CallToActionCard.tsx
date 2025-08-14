@@ -32,7 +32,10 @@ export const CallToActionCard: FC<CallToActionCardProps> = ({
   const showChevron = collapsibleContent !== undefined
 
   return (
-    <div data-testid="CallToActionCard" className={cn('flex flex-col flex-1 rounded-sm relative', className)}>
+    <div
+      data-testid="CallToActionCard"
+      className={cn('flex flex-col flex-1 rounded-sm relative p-4 w-full', className)}
+    >
       {banner && <div className="hidden md:block">{banner}</div>}
 
       {showChevron && (

@@ -36,7 +36,7 @@ export const TokenAmountDisplay = ({
           {amount}
         </Header>
         <Span variant="body-l" bold>
-        <TokenImage symbol={tokenSymbol} className="w-4 h-4 md:w-6 md:h-6" />
+          <TokenImage symbol={tokenSymbol} className="w-4 h-4 md:w-6 md:h-6" />
           {tokenSymbol}
         </Span>
         {actions}
