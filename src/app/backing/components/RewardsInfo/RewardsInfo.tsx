@@ -1,7 +1,7 @@
 import { TokenRewards } from '@/app/collective-rewards/rewards/types'
 import { weiToPercentage } from '@/app/collective-rewards/settings/utils'
 import { getCombinedFiatAmount } from '@/app/collective-rewards/utils'
-import { Paragraph } from '@/components/TypographyNew'
+import { Paragraph } from '@/components/Typography'
 import { formatCurrency } from '@/lib/utils'
 import { FC } from 'react'
 import { BackerRewardsPercentage } from '../BackerPercentage/BackerRewardsPercentage'

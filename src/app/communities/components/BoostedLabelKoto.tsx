@@ -1,4 +1,4 @@
-import { Paragraph } from '@/components/TypographyNew'
+import { Paragraph } from '@/components/Typography'
 import { RocketIconKoto } from '@/components/Icons'
 import { HTMLAttributes, ReactNode } from 'react'
 import { cn } from '@/lib/utils'

@@ -1,5 +1,5 @@
 import { ErrorIcon } from '../Icons'
-import { HeaderTitle, Paragraph } from '@/components/TypographyNew'
+import { HeaderTitle, Paragraph } from '@/components/Typography'
 
 interface ErrorMessageAlertProps {
   title?: string

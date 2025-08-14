@@ -1,4 +1,4 @@
-import { Paragraph } from '../TypographyNew'
+import { Paragraph } from '../Typography'
 import { cn } from '@/lib/utils'
 import { FC, JSX } from 'react'
 import { ProposalState } from '@/shared/types'

@@ -1,5 +1,5 @@
 import { ProgressButton } from '@/components/ProgressBarNew'
-import { Span } from '@/components/TypographyNew'
+import { Span } from '@/components/Typography'
 
 export const TransactionInProgressButton = () => (
   <ProgressButton className="whitespace-nowrap">

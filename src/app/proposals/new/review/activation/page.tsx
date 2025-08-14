@@ -14,7 +14,7 @@ import { useCreateBuilderWhitelistProposal } from '@/app/proposals/hooks/useCrea
 import { showToast } from '@/shared/notification'
 import { isUserRejectedTxError } from '@/components/ErrorPage'
 import { DISCOURSE_LINK_SEPARATOR, DISPLAY_NAME_SEPARATOR } from '@/app/proposals/shared/utils'
-import { Header, Paragraph } from '@/components/TypographyNew'
+import { Header, Paragraph } from '@/components/Typography'
 import { CopyButton } from '@/components/CopyButton'
 
 export default function ActivationProposalReview() {

@@ -4,7 +4,7 @@ import { DottedUnderlineLabel } from '@/components/DottedUnderlineLabel/DottedUn
 import { LoadingSpinner } from '@/components/LoadingSpinner'
 import { Metric, MetricTitle } from '@/components/Metric'
 import { RifRbtcTooltip } from '@/components/RifRbtcTooltip/RifRbtcTooltip'
-import { Header, Paragraph } from '@/components/TypographyNew'
+import { Header, Paragraph } from '@/components/Typography'
 import { formatCurrency } from '@/lib/utils'
 import Big from 'big.js'
 

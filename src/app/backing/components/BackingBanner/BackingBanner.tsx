@@ -1,6 +1,6 @@
 import { DecorativeSquares } from '@/app/backing/components/DecorativeSquares'
-import { Header, Span } from '@/components/TypographyNew'
-import { Typography } from '@/components/TypographyNew/Typography'
+import { Header, Span } from '@/components/Typography'
+import { BaseTypography } from '@/components/Typography/Typography'
 import { cn } from '@/lib/utils'
 import { FC } from 'react'
 import { CommonComponentProps } from '@/components/commonProps'
@@ -19,13 +19,13 @@ export const BackingBanner: FC<CommonComponentProps> = ({ className = '' }) => {
       <Header variant="h3">WHAT&apos;S IN IT FOR ME?</Header>
       <ul className="list-[circle] pl-6">
         <li>
-          <Typography>Earn a share of the rewards from Builders you back</Typography>
+          <BaseTypography>Earn a share of the rewards from Builders you back</BaseTypography>
         </li>
         <li>
-          <Typography>Influence how rewards are distributed to Builders</Typography>
+          <BaseTypography>Influence how rewards are distributed to Builders</BaseTypography>
         </li>
         <li>
-          <Typography>Retain full ownership and access to your stRIF</Typography>
+          <BaseTypography>Retain full ownership and access to your stRIF</BaseTypography>
         </li>
       </ul>
       <Span>

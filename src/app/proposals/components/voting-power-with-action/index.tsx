@@ -1,6 +1,6 @@
 import { formatEther } from 'viem'
 import Big from 'big.js'
-import { Header, Span } from '@/components/TypographyNew'
+import { Header, Span } from '@/components/Typography'
 import { cn, formatNumberWithCommas } from '@/lib/utils'
 import { Button } from '@/components/Button'
 import { ClassNameValue } from 'tailwind-merge'

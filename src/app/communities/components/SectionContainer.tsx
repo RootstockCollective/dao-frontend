@@ -1,5 +1,5 @@
 import { ComponentProps, ReactNode } from 'react'
-import { Header } from '@/components/TypographyNew'
+import { Header } from '@/components/Typography'
 
 interface SectionContainerProps {
   title: string

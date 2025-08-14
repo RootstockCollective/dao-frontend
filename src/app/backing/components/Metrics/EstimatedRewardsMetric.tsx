@@ -1,4 +1,4 @@
-import { Header, Paragraph } from '@/components/TypographyNew'
+import { Header, Paragraph } from '@/components/Typography'
 import { formatCurrency } from '@/lib/utils'
 import { RifRbtcTooltip } from '@/components/RifRbtcTooltip/RifRbtcTooltip'
 import { Metric, MetricTitle } from '@/components/Metric'

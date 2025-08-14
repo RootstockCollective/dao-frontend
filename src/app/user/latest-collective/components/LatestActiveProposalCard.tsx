@@ -1,6 +1,6 @@
 import { ButtonAction } from '@/app/proposals/components/vote-details'
 import { Proposal } from '@/app/proposals/shared/types'
-import { Paragraph, Span } from '@/components/TypographyNew'
+import { Paragraph, Span } from '@/components/Typography'
 import Link from 'next/link'
 import { ClassNameValue } from 'tailwind-merge'
 import { CreatorRowComponent } from './CreatorRowComponent'

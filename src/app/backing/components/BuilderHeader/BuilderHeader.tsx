@@ -1,4 +1,4 @@
-import { Header } from '@/components/TypographyNew'
+import { Header } from '@/components/Typography'
 import { Jdenticon } from '@/components/Header/Jdenticon'
 import { FC } from 'react'
 import { cn, shortAddress, truncate } from '@/lib/utils'

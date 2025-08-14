@@ -1,5 +1,5 @@
 import Image from 'next/image'
-import { Paragraph } from '@/components/TypographyNew/Paragraph'
+import { Paragraph } from '@/components/Typography/Paragraph'
 import { EXPLORER_URL } from '@/lib/constants'
 import type { Row, Cell } from '@tanstack/react-table'
 import { type NftHolderItem } from '@/app/user/Balances/types'

@@ -1,4 +1,4 @@
-import { Header } from '@/components/TypographyNew'
+import { Header } from '@/components/Typography'
 import React, { useState } from 'react'
 import { Address } from 'viem'
 import { AdjustBackersRewardsButton } from './AdjustBackersRewardButton'

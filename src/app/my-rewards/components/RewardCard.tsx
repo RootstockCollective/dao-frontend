@@ -1,7 +1,7 @@
 import { LoadingSpinner } from '@/components/LoadingSpinner'
 import { Metric, MetricTitle } from '@/components/Metric'
-import { Paragraph } from '@/components/TypographyNew'
-import { Typography } from '@/components/TypographyNew/Typography'
+import { Paragraph } from '@/components/Typography'
+import { BaseTypography } from '@/components/Typography/Typography'
 import { ReactNode } from 'react'
 
 export const RewardCard = ({
@@ -23,9 +23,9 @@ export const RewardCard = ({
       title={
         <MetricTitle
           title={
-            <Typography variant="body" className="text-v3-bg-accent-0 text-sm">
+            <BaseTypography variant="body" className="text-v3-bg-accent-0 text-sm">
               {title}
-            </Typography>
+            </BaseTypography>
           }
           info={<Paragraph className="text-[14px] font-normal text-left">{info}</Paragraph>}
           infoIconProps={{

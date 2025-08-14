@@ -13,7 +13,7 @@ import { ProposalCategory } from '@/shared/types'
 import { TextInput } from '@/components/FormFields'
 import { DeactivationProposal, DeactivationProposalSchema } from '../schemas/DeactivationProposalSchema'
 import { useBuilderContext } from '@/app/collective-rewards/user'
-import { Header } from '@/components/TypographyNew'
+import { Header } from '@/components/Typography'
 import { BASE_PROPOSAL_LIMITS } from '../schemas/BaseProposalSchema'
 
 export default function DeactivationProposalForm() {

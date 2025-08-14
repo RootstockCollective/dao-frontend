@@ -1,6 +1,6 @@
 import type { Meta, StoryObj } from '@storybook/nextjs'
 import { Link } from './Link'
-import { Typography } from '../Typography'
+import { Paragraph } from '../Typography'
 
 const meta = {
   title: 'Components/Link',
@@ -33,13 +33,9 @@ export const DefaultInText: Story = {
     href: '/home',
   },
   render: () => (
-    <Typography tagVariant="p">
-      This is a{' '}
-      <Link className="text-[1rem]" href="/home">
-        Link with modified font size
-      </Link>{' '}
-      inside a paragraph of Typography text.
-    </Typography>
+    <Paragraph>
+      This is a <Link href="/home">Link with modified font size</Link> inside a paragraph of Typography text.
+    </Paragraph>
   ),
 }
 export const MenuInList: Story = {
@@ -50,12 +46,12 @@ export const MenuInList: Story = {
     <ul>
       <li>
         <Link variant="menu" href="/home">
-          <Typography tagVariant="p">Register RNS Domain</Typography>
+          <Paragraph>Register RNS Domain</Paragraph>
         </Link>
       </li>
       <li>
         <Link variant="menu" href="/home">
-          <Typography tagVariant="p">Token Bridge dApp</Typography>
+          <Paragraph>Token Bridge dApp</Paragraph>
         </Link>
       </li>
     </ul>

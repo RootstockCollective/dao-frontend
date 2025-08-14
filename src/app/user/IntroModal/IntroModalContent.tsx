@@ -1,7 +1,7 @@
 import { Button } from '@/components/Button'
 import { ArrowRightIcon, ArrowUpRightLightIcon } from '@/components/Icons'
 import { Modal } from '@/components/Modal'
-import { Header, Label, Paragraph, Span } from '@/components/TypographyNew'
+import { Header, Label, Paragraph, Span } from '@/components/Typography'
 import Big from '@/lib/big'
 import { cn, formatNumberWithCommas } from '@/lib/utils'
 import Image from 'next/image'

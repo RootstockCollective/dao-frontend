@@ -1,6 +1,6 @@
 import { TokenAmountDisplay } from '@/components/TokenAmountDisplay'
 import { TokenImage } from '@/components/TokenImage'
-import { Header, Label, Paragraph, Span } from '@/components/TypographyNew'
+import { Header, Label, Paragraph, Span } from '@/components/Typography'
 import Big from '@/lib/big'
 import { cn, formatNumberWithCommas } from '@/lib/utils'
 

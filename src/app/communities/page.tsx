@@ -9,7 +9,7 @@ import {
   rootstockHacktivator,
   vanguardCommunity,
 } from '@/app/communities/communityUtils'
-import { Header } from '@/components/TypographyNew'
+import { Header } from '@/components/Typography'
 import { HeroCommunitiesComponent } from '@/app/communities/components'
 
 export const dynamic = 'force-static'

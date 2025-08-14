@@ -4,8 +4,8 @@ import { Address } from 'viem'
 import { useAccount } from 'wagmi'
 import { LoadingSpinner } from '@/components/LoadingSpinner'
 import { Metric, MetricTitle } from '@/components/Metric'
-import { Header } from '@/components/TypographyNew'
-import { Typography } from '@/components/TypographyNew/Typography'
+import { Header } from '@/components/Typography'
+import { BaseTypography } from '@/components/Typography/Typography'
 import { ABIFormula } from '../ABIFormula'
 
 export const BackerAnnualBackersIncentives = () => {
@@ -20,18 +20,18 @@ export const BackerAnnualBackersIncentives = () => {
       title={
         <MetricTitle
           title={
-            <Typography
+            <BaseTypography
               variant="tag"
               className="text-v3-bg-accent-0 text-base font-medium font-rootstock-sans leading-[150%]"
             >
               Annual Backers Incentives
-            </Typography>
+            </BaseTypography>
           }
           infoIconProps={{
             tooltipClassName: 'max-w-sm text-sm',
           }}
           info={
-            <Typography>
+            <BaseTypography>
               Your Annual Backers Incentives (%) represents an estimate of the annualized percentage of
               rewards that you could receive based on your backing allocations.
               <br />
@@ -44,13 +44,13 @@ export const BackerAnnualBackersIncentives = () => {
               <br />
               This estimation is dynamic and may vary based on total rewards and user activity. This data is
               for informational purposes only.
-            </Typography>
+            </BaseTypography>
           }
         />
       }
     >
       <Header variant="h1">
-        {abiPct.toFixed(0)} <Typography variant="body-l">% (estimated)</Typography>
+        {abiPct.toFixed(0)} <BaseTypography variant="body-l">% (estimated)</BaseTypography>
       </Header>
     </Metric>
   )

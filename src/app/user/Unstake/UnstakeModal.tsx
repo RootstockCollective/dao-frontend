@@ -1,7 +1,7 @@
 import { useBalancesContext } from '@/app/user/Balances/context/BalancesContext'
 import { StakingToken } from '@/app/user/Stake/types'
 import { Modal } from '@/components/Modal'
-import { Header } from '@/components/TypographyNew'
+import { Header } from '@/components/Typography'
 import Big from '@/lib/big'
 import { tokenContracts } from '@/lib/contracts'
 import { handleAmountInput } from '@/lib/utils'

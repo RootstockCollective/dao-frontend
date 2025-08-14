@@ -8,7 +8,7 @@ import { useBalancesContext } from '@/app/user/Balances/context/BalancesContext'
 import { Button } from '@/components/Button'
 import { MoneyIconKoto } from '@/components/Icons'
 import { useRef } from 'react'
-import { Span } from '@/components/TypographyNew'
+import { Span } from '@/components/Typography'
 import { RBTC, RIF, STRIF, USDRIF } from '@/lib/constants'
 
 export const BalancesSection = () => {

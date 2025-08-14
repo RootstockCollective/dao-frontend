@@ -5,8 +5,8 @@ import { useHandleErrors } from '@/app/collective-rewards/utils'
 import { LoadingSpinner } from '@/components/LoadingSpinner'
 import { Metric, MetricTitle } from '@/components/Metric'
 import { TokenImage, TokenSymbol } from '@/components/TokenImage'
-import { Paragraph } from '@/components/TypographyNew/Paragraph'
-import { Span } from '@/components/TypographyNew/Span'
+import { Paragraph } from '@/components/Typography/Paragraph'
+import { Span } from '@/components/Typography/Span'
 import { Address } from 'viem'
 
 export const TotalBacking = () => {

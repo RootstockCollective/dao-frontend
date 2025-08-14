@@ -2,7 +2,7 @@ import { useHandleErrors } from '@/app/collective-rewards/utils'
 import { Metric, MetricTitle } from '@/components/Metric'
 import { TokenAmount } from '@/components/TokenAmount'
 import { TokenSymbol } from '@/components/TokenImage'
-import { Paragraph } from '@/components/TypographyNew'
+import { Paragraph } from '@/components/Typography'
 import { useBackersEstimatedRewards } from '../hooks/useBackersEstimatedRewards'
 import { RewardCard } from '../../components/RewardCard'
 

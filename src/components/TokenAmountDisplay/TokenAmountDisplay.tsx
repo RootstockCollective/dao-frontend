@@ -1,5 +1,5 @@
 import { TokenImage } from '@/components/TokenImage'
-import { Header, Label, Span, Paragraph } from '@/components/TypographyNew'
+import { Header, Label, Span, Paragraph } from '@/components/Typography'
 import { cn } from '@/lib/utils'
 import { ReactNode } from 'react'
 

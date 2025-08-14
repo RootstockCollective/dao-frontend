@@ -1,6 +1,6 @@
 import React, { ReactNode } from 'react'
 import { HistoryIcon } from '@/components/Icons'
-import { Span } from '@/components/TypographyNew'
+import { Span } from '@/components/Typography'
 
 interface SeeRewardsHistoryButtonProps {
   onClick: () => void

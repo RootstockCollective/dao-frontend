@@ -1,6 +1,6 @@
 'use client'
 
-import { Header } from '@/components/TypographyNew'
+import { Header } from '@/components/Typography'
 import { ActionMetricsContainer } from '@/components/containers'
 import { AnnualBackersIncentives } from '@/app/shared/components/AnnualBackersIncentives'
 import { CallToActionSection } from './components/CallToActionSection'

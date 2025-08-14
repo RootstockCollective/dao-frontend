@@ -2,7 +2,7 @@
 import { DelegatesContainer } from '@/app/delegate/sections/DelegateContentSection/DelegatesContainer'
 import { useDelegateContext } from '@/app/delegate/contexts/DelegateContext'
 import { DelegateCard } from '@/app/delegate/components/DelegateCard'
-import { Header, Paragraph, Span } from '@/components/TypographyNew'
+import { Header, Paragraph, Span } from '@/components/Typography'
 import { Button } from '@/components/Button'
 import { Address } from 'viem'
 import { useCallback, useState } from 'react'

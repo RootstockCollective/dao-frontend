@@ -1,6 +1,6 @@
 import { ProposalDetailTopLeftComponent } from './components/topPageHeader/pages'
-import { HeaderTitle } from '@/components/TypographyNew/HeaderTitle'
-import { Paragraph } from '@/components/TypographyNew'
+import { HeaderTitle } from '@/components/Typography/HeaderTitle'
+import { Paragraph } from '@/components/Typography'
 
 export const disclaimerModalText = {
   modalTitle: 'DISCLAIMER',

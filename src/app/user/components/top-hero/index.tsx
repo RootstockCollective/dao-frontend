@@ -1,6 +1,6 @@
 import { Button } from '@/components/Button'
 import { HeroComponent } from '@/components/HeroComponent'
-import { Header, Paragraph } from '@/components/TypographyNew'
+import { Header, Paragraph } from '@/components/Typography'
 import { ConnectWorkflow } from '@/shared/walletConnection/connection/ConnectWorkflow'
 
 interface TopHeroPossibilityProps {

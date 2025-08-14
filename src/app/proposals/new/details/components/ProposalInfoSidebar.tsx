@@ -1,4 +1,4 @@
-import { Paragraph, Span } from '@/components/TypographyNew'
+import { Paragraph, Span } from '@/components/Typography'
 import { ExternalLink } from '@/components/Link/ExternalLink'
 import InfoIcon from '../../review/components/InfoIcon'
 

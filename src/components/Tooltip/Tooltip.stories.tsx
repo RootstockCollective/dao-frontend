@@ -2,7 +2,7 @@ import React from 'react'
 import type { Meta, StoryObj } from '@storybook/nextjs'
 import { Tooltip } from './Tooltip'
 import { Button } from '../Button'
-import { Paragraph } from '../TypographyNew'
+import { Paragraph } from '../Typography'
 
 const meta: Meta<typeof Tooltip> = {
   title: 'Components/Tooltip',

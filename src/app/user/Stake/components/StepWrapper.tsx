@@ -1,4 +1,4 @@
-import { Header, Paragraph } from '@/components/TypographyNew'
+import { Header, Paragraph } from '@/components/Typography'
 import { ProgressBar } from '@/components/ProgressBarNew'
 import { ReactNode } from 'react'
 import { StakeSteps } from '../Steps/StakeSteps'

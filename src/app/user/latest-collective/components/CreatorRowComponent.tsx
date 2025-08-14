@@ -2,7 +2,7 @@ import { CategoryColumn } from '@/app/proposals/components/table-columns/Categor
 import { CopyButton } from '@/components/CopyButton'
 import { SmallLineSeparator } from '@/components/Separators/SmallLineSeparator'
 import { Tooltip } from '@/components/Tooltip'
-import { Paragraph, Span } from '@/components/TypographyNew'
+import { Paragraph, Span } from '@/components/Typography'
 import { cn, shortAddress } from '@/lib/utils'
 import { ProposalCategory } from '@/shared/types'
 import { Moment } from 'moment'
