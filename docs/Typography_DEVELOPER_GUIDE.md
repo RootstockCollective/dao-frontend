@@ -347,26 +347,26 @@ When you select a text element in Dev Mode, the right sidebar will show:
 
 ## 📋 Variant Mapping Reference
 
-| Figma Comment            | Component                 | Variant            | Font Size (Mobile/Desktop) | Font Family    | Notes                 |
-| ------------------------ | ------------------------- | ------------------ | -------------------------- | -------------- | --------------------- |
-| `/* Header/H1 */`        | `<Header>`                | `h1`               | 28px / 32px                | KK-Topo        | Responsive sizing     |
-| `/* Header/H2 */`        | `<Header>`                | `h2`               | 24px                       | KK-Topo        |                       |
-| `/* Header/H3 */`        | `<Header>`                | `h3`               | 20px                       | KK-Topo        |                       |
-| `/* Header/H4 */`        | `<Header>`                | `h4`               | 16px                       | Rootstock Sans |                       |
-| `/* Header/H5 */`        | `<Header>`                | `h5`               | 12px                       | Rootstock Sans |                       |
-| `/* Emphase/E1 */`       | `<Header>` or `<Span>`    | `e1`               | 52px / 60px                | KK-Topo        | Responsive sizing     |
-| `/* Emphase/E2 */`       | `<Header>` or `<Span>`    | `e2`               | 40px / 44px                | KK-Topo        | Responsive sizing     |
-| `/* Emphase/E3 */`       | `<Header>` or `<Span>`    | `e3`               | 32px / 16px                | KK-Topo        | Responsive sizing     |
-| `/* Body/B Regular */`   | `<Paragraph>` or `<Span>` | `body`             | 16px                       | Rootstock Sans |                       |
-| `/* Body/B Bold */`      | `<Paragraph>` or `<Span>` | `body` + `bold`    | 16px                       | Rootstock Sans |                       |
-| `/* Body/BL Regular */`  | `<Paragraph>` or `<Span>` | `body-l`           | 18px                       | Rootstock Sans |                       |
-| `/* Body/BL Bold */`     | `<Paragraph>` or `<Span>` | `body-l` + `bold`  | 18px                       | Rootstock Sans |                       |
-| `/* Body/BS Regular */`  | `<Paragraph>` or `<Span>` | `body-s`           | 14px                       | Rootstock Sans |                       |
-| `/* Body/BS Bold */`     | `<Paragraph>` or `<Span>` | `body-s` + `bold`  | 14px                       | Rootstock Sans | font-medium when bold |
-| `/* Body/BXS Regular */` | `<Paragraph>` or `<Span>` | `body-xs`          | 12px                       | Rootstock Sans |                       |
-| `/* Body/BXS Bold */`    | `<Paragraph>` or `<Span>` | `body-xs` + `bold` | 12px                       | Rootstock Sans | font-medium when bold |
-| `/* Tags/T Regular */`   | `<Span>` or `<Label>`     | `tag`              | 16px                       | Rootstock Sans |                       |
-| `/* Tags/TS */`          | `<Span>` or `<Label>`     | `tag-s`            | 14px                       | Rootstock Sans |                       |
+| Figma Comment            | Component                 | Variant            | Font Size (Mobile/Desktop) | Font Family    |
+| ------------------------ | ------------------------- | ------------------ | -------------------------- | -------------- |
+| `/* Header/H1 */`        | `<Header>` or `<Span>`    | `h1`               | 28px / 32px                | KK-Topo        |
+| `/* Header/H2 */`        | `<Header>` or `<Span>`    | `h2`               | 24px                       | KK-Topo        |
+| `/* Header/H3 */`        | `<Header>` or `<Span>`    | `h3`               | 20px                       | KK-Topo        |
+| `/* Header/H4 */`        | `<Header>` or `<Span>`    | `h4`               | 16px                       | Rootstock Sans |
+| `/* Header/H5 */`        | `<Header>` or `<Span>`    | `h5`               | 12px                       | Rootstock Sans |
+| `/* Emphase/E1 */`       | `<Header>` or `<Span>`    | `e1`               | 52px / 60px                | KK-Topo        |
+| `/* Emphase/E2 */`       | `<Header>` or `<Span>`    | `e2`               | 40px / 44px                | KK-Topo        |
+| `/* Emphase/E3 */`       | `<Header>` or `<Span>`    | `e3`               | 32px / 16px                | KK-Topo        |
+| `/* Body/B Regular */`   | `<Paragraph>` or `<Span>` | `body`             | 16px                       | Rootstock Sans |
+| `/* Body/B Bold */`      | `<Paragraph>` or `<Span>` | `body` + `bold`    | 16px                       | Rootstock Sans |
+| `/* Body/BL Regular */`  | `<Paragraph>` or `<Span>` | `body-l`           | 18px                       | Rootstock Sans |
+| `/* Body/BL Bold */`     | `<Paragraph>` or `<Span>` | `body-l` + `bold`  | 18px                       | Rootstock Sans |
+| `/* Body/BS Regular */`  | `<Paragraph>` or `<Span>` | `body-s`           | 14px                       | Rootstock Sans |
+| `/* Body/BS Bold */`     | `<Paragraph>` or `<Span>` | `body-s` + `bold`  | 14px                       | Rootstock Sans |
+| `/* Body/BXS Regular */` | `<Paragraph>` or `<Span>` | `body-xs`          | 12px                       | Rootstock Sans |
+| `/* Body/BXS Bold */`    | `<Paragraph>` or `<Span>` | `body-xs` + `bold` | 12px                       | Rootstock Sans |
+| `/* Tags/T Regular */`   | `<Label>` or `<Span>`     | `tag`              | 16px                       | Rootstock Sans |
+| `/* Tags/TS */`          | `<Label>` or `<Span>`     | `tag-s`            | 14px                       | Rootstock Sans |
 
 ## 🚫 What NOT to do
 
