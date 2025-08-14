@@ -14,12 +14,33 @@ export async function GET(req: Request) {
       )
     }
 
-    const { page, pageSize } = paginationResult.data
+    const { page, pageSize, sortDirection, sortBy } = paginationResult.data
 
-    const baseQuery = db('Backer')
-      .select('Backer.id', 'Backer.totalAllocation', 'Backer.isBlacklisted')
-      .where('totalAllocation', '>', 0)
-    const { data, count } = await paginateQuery(baseQuery, { page, pageSize })
+    const baseQuery = db('Cycle').select(
+      'id',
+      'rewardsERC20',
+      'rewardsRBTC',
+      'cycleStart',
+      'cycleDuration',
+      'distributionDuration',
+      'onDistributionPeriod',
+    )
+
+    const { data, count } = await paginateQuery(baseQuery, {
+      page,
+      pageSize,
+      sortBy,
+      sortDirection,
+      allowedSortColumns: [
+        'id',
+        'rewardsERC20',
+        'rewardsRBTC',
+        'cycleStart',
+        'cycleDuration',
+        'distributionDuration',
+        'onDistributionPeriod',
+      ],
+    })
 
     return NextResponse.json({ data, count, page, pageSize })
   } catch (err) {

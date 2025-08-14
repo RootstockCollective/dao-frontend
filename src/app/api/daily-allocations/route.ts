@@ -14,12 +14,17 @@ export async function GET(req: Request) {
       )
     }
 
-    const { page, pageSize } = paginationResult.data
+    const { page, pageSize, sortDirection, sortBy } = paginationResult.data
 
-    const baseQuery = db('Backer')
-      .select('Backer.id', 'Backer.totalAllocation', 'Backer.isBlacklisted')
-      .where('totalAllocation', '>', 0)
-    const { data, count } = await paginateQuery(baseQuery, { page, pageSize })
+    const baseQuery = db('DailyAllocation').select('id', 'day', 'totalAllocation')
+
+    const { data, count } = await paginateQuery(baseQuery, {
+      page,
+      pageSize,
+      sortBy,
+      sortDirection,
+      allowedSortColumns: ['id', 'day', 'totalAllocation'],
+    })
 
     return NextResponse.json({ data, count, page, pageSize })
   } catch (err) {
