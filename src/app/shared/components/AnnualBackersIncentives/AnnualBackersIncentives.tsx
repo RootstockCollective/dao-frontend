@@ -39,9 +39,7 @@ export const AnnualBackersIncentives = ({ className }: AnnualBackersIncentivesPr
           className={className}
         >
           <div className="flex flex-row gap-10 items-center">
-            <Paragraph>
-              {isLoading ? <LoadingSpinner size="small" /> : `${abiPct.toFixed(0)}%`}
-            </Paragraph>
+            <Paragraph>{isLoading ? <LoadingSpinner size="small" /> : `${abiPct.toFixed(0)}%`}</Paragraph>
             <Paragraph>
               Collective Rewards is a shared incentive system that lets Backers earn by supporting Builders,
               and Builders earn by delivering impact — all powered by stRIF.

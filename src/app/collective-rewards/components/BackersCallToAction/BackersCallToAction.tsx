@@ -23,7 +23,7 @@ const BackersBanner = () => (
 
 const BackersTitle = () => {
   return (
-    <Header caps variant="e2" className="px-6 py-4">
+    <Header caps variant="e2" className="pt-2 pb-4 md:py-4 px-0 md:px-2">
       <div className="text-v3-text-0">Back Builders</div>
       <div className="text-v3-bg-accent-20">and be rewarded</div>
     </Header>
@@ -75,7 +75,7 @@ interface BackersCallToActionProps {
 }
 export const BackersCallToAction: FC<BackersCallToActionProps> = ({ rifRewards, rbtcRewards }) => {
   const collapsibleContent = (
-    <Paragraph className="text-v3-text-0 order-2 px-6 pb-6">
+    <Paragraph className="text-v3-text-0 order-2 pb-6 px-0 md:px-2">
       Support the projects you believe in by backing Builders with your stRIF. Earn rewards while helping
       shape the future of Bitcoin Layer 2.
     </Paragraph>
@@ -89,7 +89,7 @@ export const BackersCallToAction: FC<BackersCallToActionProps> = ({ rifRewards, 
       collapsibleContent={collapsibleContent}
       defaultOpen={true}
     >
-      <MetricsContainer className="px-6 pb-10 pt-0 bg-v3-text-80 items-start divide-y-0 gap-6 md:gap-8">
+      <MetricsContainer className="pb-0 md:pb-10 pt-0 bg-v3-text-80 items-start divide-y-0 gap-6 md:gap-8 px-0 md:px-2">
         <BackerCTAButton className="order-3 md:order-1" />
         <div className="flex flex-col md:flex-row gap-6 md:gap-10 w-full order-2">
           <RewardsMetrics
