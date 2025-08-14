@@ -34,7 +34,7 @@ export const BalanceInfo: FC<Props> = ({
 
         {tooltipContent && (
           <Tooltip text={tooltipContent}>
-            <KotoQuestionMarkIcon className="mb-1 hover:cursor-help" />
+            <KotoQuestionMarkIcon className="mb-1 hover:cursor-help" data-testid="TooltipIcon" />
           </Tooltip>
         )}
       </div>
