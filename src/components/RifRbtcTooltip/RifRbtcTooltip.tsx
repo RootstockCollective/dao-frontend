@@ -1,5 +1,5 @@
 import { ReactNode } from 'react'
-import { Typography } from '@/components/Typography/Typography'
+import { BaseTypography } from '@/components/Typography/Typography'
 import { TokenImage } from '@/components/TokenImage'
 import { RBTC, RIF } from '@/lib/constants'
 import { formatSymbol } from '@/app/collective-rewards/rewards/utils/formatter'
@@ -30,13 +30,13 @@ const TokenDisplay = ({
   return (
     <div className="flex flex-row items-start w-14">
       <TokenImage symbol={symbol} size={size} className={className} />
-      <Typography className="text-sm">{displayText}</Typography>
+      <BaseTypography className="text-sm">{displayText}</BaseTypography>
     </div>
   )
 }
 
 const FormattedValue = ({ value, symbol }: { value: bigint; symbol: string }) => {
-  return <Typography className="text-lg">{formatSymbol(value, symbol)}</Typography>
+  return <BaseTypography className="text-lg">{formatSymbol(value, symbol)}</BaseTypography>
 }
 
 export const RifRbtcTooltip = ({ children, rbtcValue, rifValue, className }: RifRbtcTooltipProps) => (

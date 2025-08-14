@@ -1,12 +1,12 @@
 import { Header } from './Header'
 import { Label } from './Label'
 import { Paragraph } from './Paragraph'
-import { Typography } from './Typography'
+import { BaseTypography } from './Typography'
 import type { Meta, StoryObj } from '@storybook/nextjs'
 
 const meta = {
   title: 'Components/Typography',
-  component: Typography,
+  component: BaseTypography,
   parameters: {
     layout: 'padded',
   },
@@ -24,7 +24,7 @@ const meta = {
       </div>
     ),
   ],
-} satisfies Meta<typeof Typography>
+} satisfies Meta<typeof BaseTypography>
 
 export default meta
 
@@ -40,24 +40,30 @@ export const TypographyStory: Story = {
   },
 }
 
+export const EmphaseVariations: Story = {
+  args: {
+    children: '',
+  },
+  render: () => (
+    <div className="space-y-8">
+      <Header variant="e1">Emphase Level 1</Header>
+      <Header variant="e2">Emphase Level 2</Header>
+      <Header variant="e3">Emphase Level 3</Header>
+    </div>
+  ),
+}
+
 export const HeaderVariations: Story = {
   args: {
     children: '',
   },
   render: () => (
     <div className="space-y-8">
-      <Header variant="h1">
-        This is a long heading text to demonstrate the H1 size and how it wraps across multiple lines when the
-        content is longer
-      </Header>
-      <Header variant="h1m">
-        This is a long heading text to demonstrate the H1 Medium size and how it wraps across multiple lines
-        when the content is longer
-      </Header>
-      <Header variant="h2">Heading Level 2</Header>
-      <Header variant="h3">Heading Level 3</Header>
-      <Header variant="h4">Heading Level 4</Header>
-      <Header variant="h5">Heading Level 5</Header>
+      <Header variant="h1">Header Level 1</Header>
+      <Header variant="h2">Header Level 2</Header>
+      <Header variant="h3">Header Level 3</Header>
+      <Header variant="h4">Header Level 4</Header>
+      <Header variant="h5">Header Level 5</Header>
     </div>
   ),
 }
@@ -69,13 +75,10 @@ export const HeaderVariationsWithCaps: Story = {
   render: () => (
     <div className="space-y-8">
       <Header variant="h1" caps>
-        This is a long heading text with caps to demonstrate the H1 size
-      </Header>
-      <Header variant="h1m" caps>
-        This is a long heading text with caps to demonstrate the H1 Medium size
+        Header Level 1 With Caps
       </Header>
       <Header variant="h2" caps>
-        Heading Level 2 With Caps
+        Header Level 2 With Caps
       </Header>
       <Header variant="h3" caps>
         Heading Level 3 With Caps
@@ -177,11 +180,6 @@ export const LabelVariations: Story = {
         </Label>
         <br />
         <Label variant="tag-s">This is a Tag Small variant (ts)</Label>
-        <br />
-        <Label variant="tag-m">
-          This is a Tag Medium variant (tm) with longer text to demonstrate the uppercase transformation and
-          letter spacing
-        </Label>
       </div>
     </div>
   ),
@@ -200,10 +198,6 @@ export const LabelVariationsWithCaps: Story = {
         <br />
         <Label variant="tag-s" caps>
           This is a Tag Small variant (ts) with caps
-        </Label>
-        <br />
-        <Label variant="tag-m" caps>
-          This is a Tag Medium variant (tm) with caps to show both uppercase and caps
         </Label>
       </div>
     </div>

@@ -1,4 +1,4 @@
-import { Typography } from '@/components/Typography/Typography'
+import { BaseTypography } from '@/components/Typography/Typography'
 import { Tooltip } from '@/components/Tooltip'
 import { STRIF } from '@/lib/constants'
 import { KotoQuestionMarkIcon } from '@/components/Icons/KotoQuestionMarkIcon'
@@ -15,9 +15,9 @@ interface AvailableBackingMetricProps {
 const StakeButton = ({ onStakeClick }: { onStakeClick?: () => void }) => (
   <>
     <Button variant="primary" className="flex h-7 px-4 py-3 items-center gap-2" onClick={onStakeClick}>
-      <Typography variant="tag-s" className="text-v3-bg-accent-100">
+      <BaseTypography variant="tag-s" className="text-v3-bg-accent-100">
         Stake RIF
-      </Typography>
+      </BaseTypography>
     </Button>
   </>
 )
@@ -29,20 +29,20 @@ const DistributeButton = ({ onDistributeClick }: { onDistributeClick?: () => voi
       className="flex h-7 px-2 py-1 items-center gap-2"
       onClick={onDistributeClick}
     >
-      <Typography
+      <BaseTypography
         variant="tag-s"
         className="text-white font-rootstock-sans text-sm font-normal leading-[145%]"
       >
         Distribute equally
-      </Typography>
+      </BaseTypography>
     </Button>
     <div className="flex w-4 py-[6px] flex-col justify-center items-center self-stretch aspect-square">
       <Tooltip
         text={
           <div className="flex w-[269px] p-6 flex-col items-start gap-2">
-            <Typography className="self-stretch text-v3-bg-accent-100 font-rootstock-sans text-[14px] font-normal leading-[145%]">
+            <BaseTypography className="self-stretch text-v3-bg-accent-100 font-rootstock-sans text-[14px] font-normal leading-[145%]">
               You&apos;ll be distributing equally to each of the Builders below
-            </Typography>
+            </BaseTypography>
           </div>
         }
         side="top"

@@ -2,7 +2,7 @@ import { TokenImage } from '@/components/TokenImage'
 import { RIF } from '@/lib/constants'
 import { cn } from '@/lib/utils'
 import { FC } from 'react'
-import { Typography } from '@/components/Typography/Typography'
+import { BaseTypography } from '@/components/Typography/Typography'
 
 export const RIFToken: FC<{ size?: number; className?: string; textClassName?: string }> = ({
   className,
@@ -15,7 +15,7 @@ export const RIFToken: FC<{ size?: number; className?: string; textClassName?: s
       data-testid="currentBackingToken"
     >
       <TokenImage symbol={RIF} size={size} />
-      <Typography className={cn('text-xs text-v3-text-100', textClassName)}>stRIF</Typography>
+      <BaseTypography className={cn('text-xs text-v3-text-100', textClassName)}>stRIF</BaseTypography>
     </div>
   )
 }

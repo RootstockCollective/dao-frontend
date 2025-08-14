@@ -6,12 +6,12 @@ import type { BodyVariants, EmphaseVariants, HeaderVariants, TagVariants } from 
 /**
  * Type definition for all available typography variants.
  * Includes emphasis (e1-e3), headers (h1-h5), body text (body, body-l, body-s, body-xs),
- * and tag variants (tag, tag-s, tag-m).
+ * and tag variants (tag, tag-s).
  */
 type TypographyVariant = EmphaseVariants | HeaderVariants | BodyVariants | TagVariants
 
 /**
- * Props for the Typography component.
+ * Props for the BaseTypography component.
  * @template T - The HTML element type to render (defaults to 'span')
  * @property {T} [as] - The HTML element to render (e.g., 'div', 'p', 'span')
  * @property {TypographyVariant} [variant='body'] - The typography style variant to apply
@@ -21,7 +21,7 @@ type TypographyVariant = EmphaseVariants | HeaderVariants | BodyVariants | TagVa
  * @property {string} [data-testid] - Test ID for testing purposes
  * @extends {ComponentPropsWithoutRef<T>} - Inherits all props from the underlying HTML element
  */
-export type TypographyProps<T extends ElementType> = {
+export type BaseTypographyProps<T extends ElementType> = {
   as?: T
   variant?: TypographyVariant
   html?: boolean
@@ -35,34 +35,31 @@ export type TypographyProps<T extends ElementType> = {
  * Each variant defines specific font family, size, line height, and tracking (letter spacing).
  */
 export const variantClasses: Record<TypographyVariant, string> = {
-  e1: 'font-kk-topo font-normal text-6xl leading-[63.6px] tracking-normal uppercase',
-  e2: 'font-kk-topo font-normal text-[2.75rem] leading-[47.52px] tracking-normal uppercase',
-  e2m: 'font-kk-topo font-normal text-[2.5rem] leading-[44px] tracking-normal uppercase',
-  e3: 'font-kk-topo font-normal text-base leading-[20px] tracking-[0.02em] uppercase',
-  h1: 'font-kk-topo font-normal text-[2rem] leading-[30px] tracking-normal',
-  h1m: 'font-kk-topo font-normal text-[28px] leading-[35.84px] tracking-normal',
-  h2: 'font-kk-topo font-normal text-2xl leading-[25px] tracking-[0.02em]',
-  h3: 'font-kk-topo font-normal text-xl leading-[23.4px] tracking-[0.02em]',
-  h4: 'font-rootstock-sans font-medium text-base leading-[24px] tracking-[0.08em]',
-  h5: 'font-rootstock-sans font-medium text-xs leading-[18px] tracking-[0.05em]',
-  'body-l': 'font-rootstock-sans font-normal text-lg leading-[23.94px] tracking-normal',
-  body: 'font-rootstock-sans font-normal text-base leading-[24px] tracking-normal',
-  'body-s': 'font-rootstock-sans font-normal text-sm leading-[20.3px] tracking-normal',
-  'body-xs': 'font-rootstock-sans font-normal text-xs leading-[18px] tracking-normal',
-  tag: 'font-rootstock-sans font-medium text-base leading-[24px] tracking-normal',
-  'tag-s': 'font-rootstock-sans font-medium text-sm leading-[20.3px] tracking-normal',
-  'tag-m': 'font-rootstock-sans font-medium text-sm leading-[20.3px] tracking-[0.08em]',
+  e1: 'font-kk-topo font-normal text-[3.25rem] md:text-6xl leading-[108%] md:leading-[106%] uppercase',
+  e2: 'font-kk-topo font-normal text-[2.5rem] md:text-[2.75rem] leading-[110%] md:leading-[108%] uppercase',
+  e3: 'font-kk-topo font-normal text-[2rem] md:text-base leading-[110%] md:leading-[125%] md:tracking-[0.02em] uppercase',
+  h1: 'font-kk-topo font-normal text-[1.75rem] md:text-[2rem] leading-[128%] md:leading-[125%]',
+  h2: 'font-kk-topo font-normal text-2xl leading-[128%] md:leading-[125%] md:tracking-[0.02em]',
+  h3: 'font-kk-topo font-normal text-xl leading-[128%] md:leading-[130%] md:tracking-[0.02em]',
+  h4: 'font-rootstock-sans font-medium text-base leading-[150%] tracking-[0.08em]',
+  h5: 'font-rootstock-sans font-medium text-xs leading-[150%] tracking-[0.05em]',
+  'body-l': 'font-rootstock-sans font-normal text-lg leading-[118%] md:leading-[133%]',
+  body: 'font-rootstock-sans font-normal text-base leading-[150%]',
+  'body-s': 'font-rootstock-sans font-normal text-sm leading-[145%]',
+  'body-xs': 'font-rootstock-sans font-normal text-xs leading-[150%]',
+  tag: 'font-rootstock-sans font-medium text-base leading-[150%]',
+  'tag-s': 'font-rootstock-sans font-medium text-sm leading-[145%]',
 }
 
 /**
- * Typography Component
+ * BaseTypography Component
  *
  * A flexible typography component that provides consistent text styling across the application.
  * This is an abstract base component that should not be used directly. Instead, use one of the following
  * specific components based on your needs:
  *
  * 1. For headings (h1-h5): Use the <Header> component
- *    - Supports variants: h1, h1m, h2, h3, h4, h5, e1, e2, e2m, e3
+ *    - Supports variants: h1, h2, h3, h4, h5, e1, e2, e3
  *    - Example: <Header variant="h1">Main Title</Header>
  *
  * 2. For paragraphs: Use the <Paragraph> component
@@ -70,11 +67,11 @@ export const variantClasses: Record<TypographyVariant, string> = {
  *    - Example: <Paragraph variant="body">Regular paragraph text</Paragraph>
  *
  * 3. For inline text: Use the <Span> component
- *    - Supports variants: body-l, body, body-s, body-xs, tag, tag-s, tag-m
+ *    - Supports variants: body-l, body, body-s, body-xs, tag, tag-s
  *    - Example: <Span variant="body-s">Small inline text</Span>
  *
  * 4. For labels: Use the <Label> component
- *    - Supports variants: tag, tag-s, tag-m
+ *    - Supports variants: tag, tag-s
  *    - Example: <Label variant="tag">Form Label</Label>
  *
  * Each component supports additional modifiers:
@@ -83,7 +80,7 @@ export const variantClasses: Record<TypographyVariant, string> = {
  * - html: Allows rendering sanitized HTML content
  *
  * @template T - The HTML element type to render
- * @param {TypographyProps<T>} props - Component props
+ * @param {BaseTypographyProps<T>} props - Component props
  * @returns {JSX.Element} Rendered typography component
  *
  * @internal
@@ -91,7 +88,7 @@ export const variantClasses: Record<TypographyVariant, string> = {
  * Direct usage is discouraged in favor of the specific variant components.
  * Please DO NOT use this component directly, use the specific variant components instead.
  */
-export function Typography<T extends ElementType>({
+export function BaseTypography<T extends ElementType>({
   children,
   as = 'span' as T,
   variant = 'body',
@@ -102,7 +99,7 @@ export function Typography<T extends ElementType>({
   'data-testid': dataTestId,
   onClick,
   ...props
-}: TypographyProps<T>) {
+}: BaseTypographyProps<T>) {
   const Component: ElementType = as
   const isHtml = html && typeof children === 'string'
   const cleanHtml = isHtml
@@ -118,6 +115,7 @@ export function Typography<T extends ElementType>({
   const modifierClasses = {
     [boldClass]: bold,
     uppercase: caps,
+    'tracking-[0.07em] md:tracking-[0.08em] leading-[145%] md:leading-[150%]': variant === 'tag' && caps,
   }
 
   /**
