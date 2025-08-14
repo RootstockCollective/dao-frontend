@@ -36,7 +36,7 @@ export const CallToActionCard: FC<CallToActionCardProps> = ({
       {banner && <div className="hidden md:block">{banner}</div>}
 
       {showChevron && (
-        <div className="absolute top-4 right-4 cursor-pointer z-10">
+        <div className="block md:hidden w-full flex justify-end items-center h-6 py-2 cursor-pointer">
           <motion.div
             animate={{ rotate: isOpen ? 180 : 0 }}
             transition={{ duration: 0.3, ease: 'easeInOut' }}
