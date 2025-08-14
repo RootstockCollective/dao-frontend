@@ -25,14 +25,14 @@ import { Header } from '@/components/Typography/Header'
 
 **Available variants:**
 
-- `h1` - 32px, KK-Topo font (default) - **Figma: Header/H1**
+- `h1` - 28px (mobile) / 32px (desktop), KK-Topo font (default) - **Figma: Header/H1**
 - `h2` - 24px, KK-Topo font - **Figma: Header/H2**
 - `h3` - 20px, KK-Topo font - **Figma: Header/H3**
 - `h4` - 16px, Rootstock Sans font - **Figma: Header/H4**
 - `h5` - 12px, Rootstock Sans font - **Figma: Header/H5**
-- `e1` - 60px, KK-Topo font (emphasis) - **Figma: Emphase/E1**
-- `e2` - 44px, KK-Topo font (emphasis) - **Figma: Emphase/E2**
-- `e3` - 16px, KK-Topo font (emphasis) - **Figma: Emphase/E3**
+- `e1` - 52px (mobile) / 60px (desktop), KK-Topo font (emphasis) - **Figma: Emphase/E1**
+- `e2` - 40px (mobile) / 44px (desktop), KK-Topo font (emphasis) - **Figma: Emphase/E2**
+- `e3` - 32px (mobile) / 16px (desktop), KK-Topo font (emphasis) - **Figma: Emphase/E3**
 
 ### 2. Paragraph Component (`<Paragraph>`)
 
@@ -73,7 +73,7 @@ import { Paragraph } from '@/components/Typography/Paragraph'
 
 ### 3. Span Component (`<Span>`)
 
-Use for inline text elements.
+Use for inline text elements. **Note: This component also supports emphasis variants.**
 
 ```tsx
 import { Span } from '@/components/Typography/Span'
@@ -84,6 +84,11 @@ import { Span } from '@/components/Typography/Span'
 // Tag-like text
 <Span variant="tag">Tag Text</Span>
 
+// Emphasis variants (same as Header)
+<Span variant="e1">Large emphasis text</Span>
+<Span variant="e2">Medium emphasis text</Span>
+<Span variant="e3">Small emphasis text</Span>
+
 // Bold inline text variants
 <Span variant="body" bold>Bold inline text</Span>
 <Span variant="body-l" bold>Bold large inline text</Span>
@@ -91,14 +96,20 @@ import { Span } from '@/components/Typography/Span'
 <Span variant="tag" bold>Bold tag text</Span>
 ```
 
-**Available variants:** Same as Paragraph + tag variants
+**Available variants:** Same as Paragraph + tag variants + emphasis variants
 
 **Tag variants:**
 
-- `tag` - **Figma: Tags/T Regular**
-- `tag-s` - **Figma: Tags/TS**
+- `tag` - 16px, Rootstock Sans font - **Figma: Tags/T Regular**
+- `tag-s` - 14px, Rootstock Sans font - **Figma: Tags/TS**
 
-**Note:** All tag variants support the `bold` prop.
+**Emphasis variants:**
+
+- `e1` - 52px (mobile) / 60px (desktop), KK-Topo font - **Figma: Emphase/E1**
+- `e2` - 40px (mobile) / 44px (desktop), KK-Topo font - **Figma: Emphase/E2**
+- `e3` - 32px (mobile) / 16px (desktop), KK-Topo font - **Figma: Emphase/E3**
+
+**Note:** All tag and emphasis variants support the `bold` prop.
 
 ### 4. Label Component (`<Label>`)
 
@@ -116,12 +127,12 @@ import { Label } from '@/components/Typography/Label'
 
 **Available variants:**
 
-- `tag` - **Figma: Tags/T Regular**
-- `tag-s` - **Figma: Tags/TS**
-- `body-l` - **Figma: Body/BL Regular**
-- `body` - **Figma: Body/B Regular**
-- `body-s` - **Figma: Body/BS Regular**
-- `body-xs` - **Figma: Body/BXS Regular**
+- `tag` - 16px - **Figma: Tags/T Regular**
+- `tag-s` - 14px - **Figma: Tags/TS**
+- `body-l` - 18px - **Figma: Body/BL Regular**
+- `body` - 16px - **Figma: Body/B Regular**
+- `body-s` - 14px - **Figma: Body/BS Regular**
+- `body-xs` - 12px - **Figma: Body/BXS Regular**
 
 **Note:** All variants support the `bold` prop.
 
@@ -131,7 +142,7 @@ All typography components support these modifiers:
 
 **Important:** All variants support these props:
 
-- `bold` - Makes the text bold regardless of the base variant weight
+- `bold` - Makes the text bold (uses `font-medium` for `body-s`/`body-xs`, `font-bold` for others)
 - `caps` - Transforms text to uppercase
 - `html` - Allows rendering sanitized HTML content
 
@@ -141,6 +152,10 @@ All typography components support these modifiers:
 // Make any variant bold
 <Header variant="h3" bold>Bold Heading</Header>
 <Paragraph variant="body" bold>Bold paragraph text</Paragraph>
+
+// Note: body-s and body-xs use font-medium, others use font-bold
+<Span variant="body-s" bold>Medium weight small text</Span>
+<Span variant="body" bold>Bold weight regular text</Span>
 ```
 
 ### Uppercase Text
@@ -149,6 +164,9 @@ All typography components support these modifiers:
 // Transform text to uppercase
 <Header variant="h1" caps>PROPOSALS</Header>
 <Span variant="tag" caps>STATUS</Span>
+
+// Special tracking for tag variants when using caps
+<Span variant="tag" caps>Special spacing for tags</Span>
 ```
 
 ### Custom Colors
@@ -280,6 +298,26 @@ All typography components support these modifiers:
 <Label variant="body" bold className="text-[#171412]">Vote proposal</Label>
 ```
 
+### Example 7: Emphasis Text (E1)
+
+**Instead of extracting from Figma:**
+
+```tsx
+// ❌ DON'T DO THIS - Don't extract properties from Figma
+<div className="font-kk-topo text-[60px] font-normal leading-[108%] uppercase text-white">
+  HERO TITLE
+</div>
+
+// ❌ DON'T DO THIS - Don't use BaseTypography directly
+<BaseTypography variant="e1" className="text-white">HERO TITLE</BaseTypography>
+
+// ✅ DO THIS - Use the Header component
+<Header variant="e1" className="text-white">HERO TITLE</Header>
+
+// Or use the Span component for inline emphasis
+<Span variant="e1" className="text-white">HERO TITLE</Span>
+```
+
 ## 🔍 How to Find the Right Variant
 
 ### **Step-by-Step Figma Process:**
@@ -309,26 +347,26 @@ When you select a text element in Dev Mode, the right sidebar will show:
 
 ## 📋 Variant Mapping Reference
 
-| Figma Comment            | Component                 | Variant            | Font Size | Font Family    |
-| ------------------------ | ------------------------- | ------------------ | --------- | -------------- |
-| `/* Header/H1 */`        | `<Header>`                | `h1`               | 32px      | KK-Topo        |
-| `/* Header/H2 */`        | `<Header>`                | `h2`               | 24px      | KK-Topo        |
-| `/* Header/H3 */`        | `<Header>`                | `h3`               | 20px      | KK-Topo        |
-| `/* Header/H4 */`        | `<Header>`                | `h4`               | 16px      | Rootstock Sans |
-| `/* Header/H5 */`        | `<Header>`                | `h5`               | 12px      | Rootstock Sans |
-| `/* Emphase/E1 */`       | `<Header>`                | `e1`               | 60px      | KK-Topo        |
-| `/* Emphase/E2 */`       | `<Header>`                | `e2`               | 44px      | KK-Topo        |
-| `/* Emphase/E3 */`       | `<Header>`                | `e3`               | 16px      | KK-Topo        |
-| `/* Body/B Regular */`   | `<Paragraph>` or `<Span>` | `body`             | 16px      | Rootstock Sans |
-| `/* Body/B Bold */`      | `<Paragraph>` or `<Span>` | `body` + `bold`    | 16px      | Rootstock Sans |
-| `/* Body/BL Regular */`  | `<Paragraph>` or `<Span>` | `body-l`           | 18px      | Rootstock Sans |
-| `/* Body/BL Bold */`     | `<Paragraph>` or `<Span>` | `body-l` + `bold`  | 18px      | Rootstock Sans |
-| `/* Body/BS Regular */`  | `<Paragraph>` or `<Span>` | `body-s`           | 14px      | Rootstock Sans |
-| `/* Body/BS Bold */`     | `<Paragraph>` or `<Span>` | `body-s` + `bold`  | 14px      | Rootstock Sans |
-| `/* Body/BXS Regular */` | `<Paragraph>` or `<Span>` | `body-xs`          | 12px      | Rootstock Sans |
-| `/* Body/BXS Bold */`    | `<Paragraph>` or `<Span>` | `body-xs` + `bold` | 12px      | Rootstock Sans |
-| `/* Tags/T Regular */`   | `<Span>` or `<Label>`     | `tag`              | 16px      | Rootstock Sans |
-| `/* Tags/TS */`          | `<Span>` or `<Label>`     | `tag-s`            | 14px      | Rootstock Sans |
+| Figma Comment            | Component                 | Variant            | Font Size (Mobile/Desktop) | Font Family    | Notes                 |
+| ------------------------ | ------------------------- | ------------------ | -------------------------- | -------------- | --------------------- |
+| `/* Header/H1 */`        | `<Header>`                | `h1`               | 28px / 32px                | KK-Topo        | Responsive sizing     |
+| `/* Header/H2 */`        | `<Header>`                | `h2`               | 24px                       | KK-Topo        |                       |
+| `/* Header/H3 */`        | `<Header>`                | `h3`               | 20px                       | KK-Topo        |                       |
+| `/* Header/H4 */`        | `<Header>`                | `h4`               | 16px                       | Rootstock Sans |                       |
+| `/* Header/H5 */`        | `<Header>`                | `h5`               | 12px                       | Rootstock Sans |                       |
+| `/* Emphase/E1 */`       | `<Header>` or `<Span>`    | `e1`               | 52px / 60px                | KK-Topo        | Responsive sizing     |
+| `/* Emphase/E2 */`       | `<Header>` or `<Span>`    | `e2`               | 40px / 44px                | KK-Topo        | Responsive sizing     |
+| `/* Emphase/E3 */`       | `<Header>` or `<Span>`    | `e3`               | 32px / 16px                | KK-Topo        | Responsive sizing     |
+| `/* Body/B Regular */`   | `<Paragraph>` or `<Span>` | `body`             | 16px                       | Rootstock Sans |                       |
+| `/* Body/B Bold */`      | `<Paragraph>` or `<Span>` | `body` + `bold`    | 16px                       | Rootstock Sans |                       |
+| `/* Body/BL Regular */`  | `<Paragraph>` or `<Span>` | `body-l`           | 18px                       | Rootstock Sans |                       |
+| `/* Body/BL Bold */`     | `<Paragraph>` or `<Span>` | `body-l` + `bold`  | 18px                       | Rootstock Sans |                       |
+| `/* Body/BS Regular */`  | `<Paragraph>` or `<Span>` | `body-s`           | 14px                       | Rootstock Sans |                       |
+| `/* Body/BS Bold */`     | `<Paragraph>` or `<Span>` | `body-s` + `bold`  | 14px                       | Rootstock Sans | font-medium when bold |
+| `/* Body/BXS Regular */` | `<Paragraph>` or `<Span>` | `body-xs`          | 12px                       | Rootstock Sans |                       |
+| `/* Body/BXS Bold */`    | `<Paragraph>` or `<Span>` | `body-xs` + `bold` | 12px                       | Rootstock Sans | font-medium when bold |
+| `/* Tags/T Regular */`   | `<Span>` or `<Label>`     | `tag`              | 16px                       | Rootstock Sans |                       |
+| `/* Tags/TS */`          | `<Span>` or `<Label>`     | `tag-s`            | 14px                       | Rootstock Sans |                       |
 
 ## 🚫 What NOT to do
 
@@ -344,7 +382,7 @@ When you select a text element in Dev Mode, the right sidebar will show:
 - ✅ Use the comment to pick the right component and variant
 - ✅ Use the appropriate typography component (`<Header>`, `<Paragraph>`, `<Span>`, `<Label>`)
 - ✅ Apply the correct variant based on the Figma comment
-- ✅ Use the `bold` prop for bold text
+- ✅ Use the `bold` prop for bold text (note: body-s/body-xs use font-medium, others use font-bold)
 - ✅ Use the `caps` prop for uppercase text
 - ✅ Apply custom colors using `className`
 - ✅ Check the typography stories for examples
