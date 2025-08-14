@@ -24,7 +24,6 @@ interface Props extends Omit<BaseTypographyProps<'label'>, 'as'> {
  * **Tag Variants:**
  * - tag: font-size: 16px; font-weight: 600; font-family: font-rootstock-sans - **Figma: Tags/T Regular**
  * - tag-s: font-size: 14px; font-weight: 600; font-family: font-rootstock-sans - **Figma: Tags/TS**
- * - tag-m: font-size: 14px; font-weight: 600; font-family: font-rootstock-sans - **Figma: Mobile/Tags/M T regular**
  *
  * **Body Variants:**
  * - body-l: font-size: 18px; font-weight: 400; font-family: font-rootstock-sans - **Figma: Body/BL Regular**
