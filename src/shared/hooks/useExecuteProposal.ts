@@ -53,10 +53,7 @@ export const useExecuteProposal = (proposalId: string) => {
     return Big(proposalEta.toString()).minus(minDelay.toString())
   }, [proposalEta, minDelay])
 
-  const canProposalBeExecuted = useMemo(() => {
-    if (!proposalEta) return false
-    return getCurrentTimeInMsAsBigInt() >= proposalEta
-  }, [proposalEta])
+  const canProposalBeExecuted = proposalEta ? getCurrentTimeInMsAsBigInt() >= proposalEta : false
 
   const onExecuteProposal = () => {
     return execute({
