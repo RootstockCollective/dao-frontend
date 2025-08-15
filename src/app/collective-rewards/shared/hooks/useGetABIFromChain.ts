@@ -1,9 +1,9 @@
-import { BuilderData, useGetABI } from './useGetABI'
-import { useMemo } from 'react'
-import { useGetCycleRewards } from './useGetCycleRewards'
-import { useReadGauges } from '@/shared/hooks/contracts'
-import { CompleteBuilder } from '../../types'
 import { filterBuildersByState, useBuilderContext } from '@/app/collective-rewards/user'
+import { useReadGauges } from '@/shared/hooks/contracts'
+import { useMemo } from 'react'
+import { CompleteBuilder } from '../../types'
+import { BuilderData, useGetABI } from './useGetABI'
+import { useGetCycleRewards } from './useGetCycleRewards'
 
 export const useGetABIFromChain = () => {
   const { builders, isLoading: buildersLoading, error: buildersError } = useBuilderContext()
