@@ -37,7 +37,7 @@ export const CACHE_REVALIDATE_SECONDS = 20
 
 export const RIF = 'RIF'
 export const USD = 'USD'
-export const RBTC = 'rBTC'
+export const RBTC = ENV === 'mainnet' ? 'rBTC' : 'tRBTC'
 export const STRIF = 'stRIF'
 export const USDRIF = 'USDRIF'
 

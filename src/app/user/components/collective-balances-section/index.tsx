@@ -73,7 +73,7 @@ export const CollectiveBalancesSection = () => {
         />
         <BalanceInfo
           className="max-w-[214px] min-w-[180px]"
-          title="rBTC total"
+          title={`${RBTC} total`}
           symbol={RBTC}
           amount={formatTokenBalance(rbtcTotal.toString(), RBTC)}
           fiatAmount={formatCurrencyWithLabel(rbtcFiatTotal)}
