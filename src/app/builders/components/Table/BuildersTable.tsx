@@ -24,6 +24,7 @@ import { BuilderFilterOptionId } from './BuilderFilterDropdown'
 import { BuilderHeaderRow } from './BuilderHeaderRow'
 import { BuilderCellDataMap, ColumnId, DEFAULT_HEADERS, PAGE_SIZE } from './BuilderTable.config'
 import { Action, ActionCellProps } from './Cell/ActionCell'
+import { useReadGauges } from '@/shared/hooks/contracts/collective-rewards/useReadGauges'
 
 // --- Filter builders by state ---
 const filterActive = (builder: Builder) => isBuilderActive(builder.stateFlags)
@@ -141,7 +142,7 @@ const usePagedFilteredBuildersRewards = ({
 export const BuildersTable = ({ filterOption }: { filterOption: BuilderFilterOptionId }) => {
   const [pageEnd, setPageEnd] = useState(PAGE_SIZE)
 
-  const { isConnected } = useAccount()
+  const { isConnected, address: backer } = useAccount()
 
   const { rows, columns, selectedRows, sort } = useTableContext<ColumnId, BuilderCellDataMap>()
   const [actions, setActions] = useState<Action[]>([])
@@ -155,6 +156,37 @@ export const BuildersTable = ({ filterOption }: { filterOption: BuilderFilterOpt
   } = usePagedFilteredBuildersRewards({ filterOption, pageOptions, sort })
 
   const { prices } = usePricesContext()
+
+  const gauges = useMemo(
+    () => buildersRewardsData.filter(builder => builder.gauge).map(builder => builder.gauge as Address),
+    [buildersRewardsData],
+  )
+
+  const {
+    data: allocationOf,
+    isLoading: allocationOfLoading,
+    error: allocationOfError,
+  } = useReadGauges(
+    {
+      addresses: gauges,
+      functionName: 'allocationOf',
+      args: [backer as Address],
+    },
+    {
+      enabled: !!backer && !!buildersRewardsData.length,
+    },
+  )
+
+  const allocationOfByGauge = useMemo(() => {
+    return gauges.reduce(
+      (acc, gauge, index) => {
+        const allocation = allocationOf[index] ?? 0n
+        acc[gauge] = allocation
+        return acc
+      },
+      {} as Record<Address, bigint>,
+    )
+  }, [allocationOf, gauges])
 
   useEffect(() => {
     dispatch({
@@ -173,19 +205,25 @@ export const BuildersTable = ({ filterOption }: { filterOption: BuilderFilterOpt
   useEffect(() => {
     dispatch({
       type: 'SET_LOADING',
-      payload: isLoading,
+      payload: isLoading || allocationOfLoading,
     })
-  }, [isLoading, dispatch])
+  }, [isLoading, allocationOfLoading, dispatch])
 
   useEffect(() => {
-    if (!error) return
+    if (!error && !allocationOfError) return
     if (error) {
       dispatch({
         type: 'SET_ERROR',
         payload: error.message,
       })
     }
-  }, [error, dispatch])
+    if (allocationOfError) {
+      dispatch({
+        type: 'SET_ERROR',
+        payload: allocationOfError.message,
+      })
+    }
+  }, [error, allocationOfError, dispatch])
 
   /**
    * Set the action column header to show if the backing share column is hidden.
@@ -245,9 +283,11 @@ export const BuildersTable = ({ filterOption }: { filterOption: BuilderFilterOpt
           </thead>
           <Suspense fallback={<div>Loading table data...</div>}>
             <tbody>
-              {rows.map(row => (
-                <BuilderDataRow key={row.id} row={row} />
-              ))}
+              {rows.map((row, index) => {
+                const gauge = buildersRewardsData[index]?.gauge
+                const userBacking = gauge ? (allocationOfByGauge[gauge] ?? 0n) : 0n
+                return <BuilderDataRow key={row.id} row={row} userBacking={userBacking} />
+              })}
             </tbody>
           </Suspense>
         </table>
