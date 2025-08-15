@@ -11,7 +11,7 @@
 Use for headings and titles. Automatically renders the correct HTML element (h1, h2, h3, etc.).
 
 ```tsx
-import { Header } from '@/components/Typography/Header'
+import { Header } from '@/components/Typography'
 
 // Main page title
 <Header variant="h1">PROPOSALS</Header>
@@ -39,7 +39,7 @@ import { Header } from '@/components/Typography/Header'
 Use for body text and longer content blocks.
 
 ```tsx
-import { Paragraph } from '@/components/Typography/Paragraph'
+import { Paragraph } from '@/components/Typography'
 
 // Regular body text
 <Paragraph variant="body">This is regular body text for paragraphs.</Paragraph>
@@ -76,7 +76,7 @@ import { Paragraph } from '@/components/Typography/Paragraph'
 Use for inline text elements. **Note: This component also supports emphasis variants.**
 
 ```tsx
-import { Span } from '@/components/Typography/Span'
+import { Span } from '@/components/Typography'
 
 // Inline text with custom styling
 <Span variant="body-s">Small inline text</Span>
@@ -116,7 +116,7 @@ import { Span } from '@/components/Typography/Span'
 Use for form labels and small text elements.
 
 ```tsx
-import { Label } from '@/components/Typography/Label'
+import { Label } from '@/components/Typography'
 
 // Form label
 <Label variant="tag">Username</Label>
