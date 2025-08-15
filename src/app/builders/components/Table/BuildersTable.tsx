@@ -15,7 +15,7 @@ import { TablePager } from '@/components/TableNew'
 import { usePricesContext, useTableActionsContext, useTableContext } from '@/shared/context'
 import { Sort } from '@/shared/context/TableContext/types'
 import { Big } from 'big.js'
-import { Suspense, useEffect, useMemo, useState } from 'react'
+import { Suspense, useContext, useEffect, useMemo, useState } from 'react'
 import { Address } from 'viem'
 import { useAccount } from 'wagmi'
 import { useGetBuilderRewardsSummary } from '../../hooks/useGetBuilderRewardsSummary'
@@ -24,7 +24,7 @@ import { BuilderFilterOptionId } from './BuilderFilterDropdown'
 import { BuilderHeaderRow } from './BuilderHeaderRow'
 import { BuilderCellDataMap, ColumnId, DEFAULT_HEADERS, PAGE_SIZE } from './BuilderTable.config'
 import { Action, ActionCellProps } from './Cell/ActionCell'
-import { useReadGauges } from '@/shared/hooks/contracts/collective-rewards/useReadGauges'
+import { AllocationsContext } from '@/app/collective-rewards/allocations/context/AllocationsContext'
 
 // --- Filter builders by state ---
 const filterActive = (builder: Builder) => isBuilderActive(builder.stateFlags)
@@ -157,36 +157,10 @@ export const BuildersTable = ({ filterOption }: { filterOption: BuilderFilterOpt
 
   const { prices } = usePricesContext()
 
-  const gauges = useMemo(
-    () => buildersRewardsData.filter(builder => builder.gauge).map(builder => builder.gauge as Address),
-    [buildersRewardsData],
-  )
-
   const {
-    data: allocationOf,
-    isLoading: allocationOfLoading,
-    error: allocationOfError,
-  } = useReadGauges(
-    {
-      addresses: gauges,
-      functionName: 'allocationOf',
-      args: [backer as Address],
-    },
-    {
-      enabled: !!backer && !!buildersRewardsData.length,
-    },
-  )
-
-  const allocationOfByGauge = useMemo(() => {
-    return gauges.reduce(
-      (acc, gauge, index) => {
-        const allocation = allocationOf[index] ?? 0n
-        acc[gauge] = allocation
-        return acc
-      },
-      {} as Record<Address, bigint>,
-    )
-  }, [allocationOf, gauges])
+    initialState: { allocations },
+    state: { isContextLoading },
+  } = useContext(AllocationsContext)
 
   useEffect(() => {
     dispatch({
@@ -205,25 +179,19 @@ export const BuildersTable = ({ filterOption }: { filterOption: BuilderFilterOpt
   useEffect(() => {
     dispatch({
       type: 'SET_LOADING',
-      payload: isLoading || allocationOfLoading,
+      payload: isLoading || isContextLoading,
     })
-  }, [isLoading, allocationOfLoading, dispatch])
+  }, [isLoading, isContextLoading, dispatch])
 
   useEffect(() => {
-    if (!error && !allocationOfError) return
+    if (!error) return
     if (error) {
       dispatch({
         type: 'SET_ERROR',
         payload: error.message,
       })
     }
-    if (allocationOfError) {
-      dispatch({
-        type: 'SET_ERROR',
-        payload: allocationOfError.message,
-      })
-    }
-  }, [error, allocationOfError, dispatch])
+  }, [error, dispatch])
 
   /**
    * Set the action column header to show if the backing share column is hidden.
@@ -284,9 +252,9 @@ export const BuildersTable = ({ filterOption }: { filterOption: BuilderFilterOpt
           <Suspense fallback={<div>Loading table data...</div>}>
             <tbody>
               {rows.map((row, index) => {
-                const gauge = buildersRewardsData[index]?.gauge
-                const userBacking = gauge ? (allocationOfByGauge[gauge] ?? 0n) : 0n
-                return <BuilderDataRow key={row.id} row={row} userBacking={userBacking} />
+                return (
+                  <BuilderDataRow key={row.id} row={row} userBacking={allocations[row.id as Address] ?? 0n} />
+                )
               })}
             </tbody>
           </Suspense>
