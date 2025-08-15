@@ -1,4 +1,4 @@
-import { Paragraph } from '@/components/TypographyNew'
+import { Paragraph } from '@/components/Typography'
 import moment from 'moment'
 import { DEFAULT_NUMBER_OF_SECONDS_PER_BLOCK } from '@/lib/constants'
 import { cn } from '@/lib/utils'
