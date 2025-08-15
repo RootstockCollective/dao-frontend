@@ -15,7 +15,7 @@ import { TablePager } from '@/components/TableNew'
 import { usePricesContext, useTableActionsContext, useTableContext } from '@/shared/context'
 import { Sort } from '@/shared/context/TableContext/types'
 import { Big } from 'big.js'
-import { Suspense, useEffect, useMemo, useState } from 'react'
+import { Suspense, useContext, useEffect, useMemo, useState } from 'react'
 import { Address } from 'viem'
 import { useAccount } from 'wagmi'
 import { useGetBuilderRewardsSummary } from '../../hooks/useGetBuilderRewardsSummary'
@@ -24,6 +24,7 @@ import { BuilderFilterOptionId } from './BuilderFilterDropdown'
 import { BuilderHeaderRow } from './BuilderHeaderRow'
 import { BuilderCellDataMap, ColumnId, DEFAULT_HEADERS, PAGE_SIZE } from './BuilderTable.config'
 import { Action, ActionCellProps } from './Cell/ActionCell'
+import { AllocationsContext } from '@/app/collective-rewards/allocations/context/AllocationsContext'
 
 // --- Filter builders by state ---
 const filterActive = (builder: Builder) => isBuilderActive(builder.stateFlags)
@@ -141,7 +142,7 @@ const usePagedFilteredBuildersRewards = ({
 export const BuildersTable = ({ filterOption }: { filterOption: BuilderFilterOptionId }) => {
   const [pageEnd, setPageEnd] = useState(PAGE_SIZE)
 
-  const { isConnected } = useAccount()
+  const { isConnected, address: backer } = useAccount()
 
   const { rows, columns, selectedRows, sort } = useTableContext<ColumnId, BuilderCellDataMap>()
   const [actions, setActions] = useState<Action[]>([])
@@ -155,6 +156,11 @@ export const BuildersTable = ({ filterOption }: { filterOption: BuilderFilterOpt
   } = usePagedFilteredBuildersRewards({ filterOption, pageOptions, sort })
 
   const { prices } = usePricesContext()
+
+  const {
+    initialState: { allocations },
+    state: { isContextLoading },
+  } = useContext(AllocationsContext)
 
   useEffect(() => {
     dispatch({
@@ -173,9 +179,9 @@ export const BuildersTable = ({ filterOption }: { filterOption: BuilderFilterOpt
   useEffect(() => {
     dispatch({
       type: 'SET_LOADING',
-      payload: isLoading,
+      payload: isLoading || isContextLoading,
     })
-  }, [isLoading, dispatch])
+  }, [isLoading, isContextLoading, dispatch])
 
   useEffect(() => {
     if (!error) return
@@ -245,9 +251,11 @@ export const BuildersTable = ({ filterOption }: { filterOption: BuilderFilterOpt
           </thead>
           <Suspense fallback={<div>Loading table data...</div>}>
             <tbody>
-              {rows.map(row => (
-                <BuilderDataRow key={row.id} row={row} />
-              ))}
+              {rows.map((row, index) => {
+                return (
+                  <BuilderDataRow key={row.id} row={row} userBacking={allocations[row.id as Address] ?? 0n} />
+                )
+              })}
             </tbody>
           </Suspense>
         </table>
