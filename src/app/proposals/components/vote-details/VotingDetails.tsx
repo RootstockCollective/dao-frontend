@@ -9,7 +9,6 @@ import { HourglassAnimatedIcon } from '@/components/Icons/HourglassAnimatedIcon'
 import Big from '@/lib/big'
 import { BalanceInfo } from '@/components/BalanceInfo'
 import { Eta } from '@/app/proposals/shared/types'
-import { TimeColumn } from '../table-columns/TimeColumn'
 import { Countdown } from '@/components/Countdown'
 
 interface VoteCounterProps {
