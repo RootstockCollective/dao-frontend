@@ -10,7 +10,10 @@ interface CountMetricProps extends CommonComponentProps {
 }
 export const CountMetric: FC<CountMetricProps> = ({ title, children, isLoading }) => {
   return (
-    <Metric className="text-v3-text-0" title={<Label className="text-v3-bg-accent-60">{title}</Label>}>
+    <Metric
+      className="text-v3-text-0 items-start"
+      title={<Label className="text-v3-bg-accent-40">{title}</Label>}
+    >
       {isLoading ? <LoadingSpinner size="small" /> : <Header>{children}</Header>}
     </Metric>
   )

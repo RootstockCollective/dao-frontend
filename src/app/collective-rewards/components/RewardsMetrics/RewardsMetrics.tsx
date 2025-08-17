@@ -1,12 +1,10 @@
-import { RifRbtcTooltip } from '@/components/RifRbtcTooltip/RifRbtcTooltip'
-import { DottedUnderlineLabel } from '@/components/DottedUnderlineLabel/DottedUnderlineLabel'
-import { Header, Label } from '@/components/Typography'
+import { Label } from '@/components/Typography'
 import { Metric } from '@/components/Metric'
 import { FC } from 'react'
-import { RBTC, RIF, WeiPerEther } from '@/lib/constants'
+import { RBTC, RIF } from '@/lib/constants'
 import { usePricesContext } from '@/shared/context/PricesContext'
-import Big from 'big.js'
-import { formatCurrency } from '@/lib/utils'
+import { formatMetrics } from '../../rewards'
+import { TokenAmountDisplay } from '@/components/TokenAmountDisplay'
 
 interface RewardsMetricsProps {
   title: string
@@ -16,19 +14,17 @@ interface RewardsMetricsProps {
 
 export const RewardsMetrics: FC<RewardsMetricsProps> = ({ title, rbtcRewards, rifRewards }) => {
   const { prices } = usePricesContext()
-  const estimatedRewards = Big(rifRewards.toString())
-    .mul(prices[RIF]?.price ?? 0)
-    .plus(Big(rbtcRewards.toString()).mul(prices[RBTC]?.price ?? 0))
-    .div(WeiPerEther.toString())
-    .toString()
+  const rifPrice = prices[RIF]?.price ?? 0
+  const { amount: rifAmount, fiatAmount: rifFiatAmount } = formatMetrics(rifRewards, rifPrice, RIF)
+
+  const rbtcPrice = prices[RBTC]?.price ?? 0
+  const { amount: rbtcAmount, fiatAmount: rbtcFiatAmount } = formatMetrics(rbtcRewards, rbtcPrice, RBTC)
 
   return (
-    <Metric className="text-v3-text-0" title={<Label className="text-v3-bg-accent-60">{title}</Label>}>
-      <div className="flex flex-row items-baseline gap-2 font-rootstock-sans">
-        <Header>{formatCurrency(estimatedRewards)}</Header>
-        <RifRbtcTooltip rbtcValue={rbtcRewards} rifValue={rifRewards}>
-          <DottedUnderlineLabel className="text-lg">USD</DottedUnderlineLabel>
-        </RifRbtcTooltip>
+    <Metric className="text-v3-text-0" title={<Label className="text-v3-bg-accent-40">{title}</Label>}>
+      <div className="flex flow-row md:flex-col items-baseline gap-2 font-rootstock-sans justify-between w-full">
+        <TokenAmountDisplay amount={rifAmount} tokenSymbol={RIF} amountInCurrency={rifFiatAmount} />
+        <TokenAmountDisplay amount={rbtcAmount} tokenSymbol={RBTC} amountInCurrency={rbtcFiatAmount} />
       </div>
     </Metric>
   )

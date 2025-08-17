@@ -1,5 +1,4 @@
 import { Header, Paragraph } from '@/components/Typography'
-import { MetricsContainer } from '@/components/containers'
 import { Button } from '@/components/Button'
 import { useAccount } from 'wagmi'
 import { zeroAddress } from 'viem'
@@ -80,16 +79,22 @@ export const BuildersCallToAction: FC<BuildersCallToActionProps> = ({ rifRewards
   )
 
   return (
-    <CallToActionCard
-      title={<BuildersTitle />}
-      banner={<BuildersBanner />}
-      className="bg-v3-text-80"
-      collapsibleContent={collapsibleContent}
-      defaultOpen={true}
-    >
-      <MetricsContainer className="pb-0 md:pb-10 pt-0 bg-v3-text-80 items-start divide-y-0 px-0 md:px-2">
-        <BuilderCTAButton className="order-3 md:order-1" />
-        <div className="flex flex-col md:flex-row gap-6 md:gap-10 w-full order-2">
+    <CallToActionCard className="bg-v3-text-80 rounded-sm p-4" defaultOpen={true}>
+      <CallToActionCard.Banner>
+        <BuildersBanner />
+      </CallToActionCard.Banner>
+      <CallToActionCard.Toggle />
+      <CallToActionCard.Content>
+        <BuildersTitle />
+      </CallToActionCard.Content>
+      <CallToActionCard.Content className="order-3 md:order-1 pt-6 md:pb-8 md:pt-0">
+        <BuilderCTAButton />
+      </CallToActionCard.Content>
+      <CallToActionCard.Collapsible className="order-1 md:order-2">
+        {collapsibleContent}
+      </CallToActionCard.Collapsible>
+      <CallToActionCard.Content className="order-2 md:order-3">
+        <div className="flex flex-col md:flex-row gap-6 md:gap-10 w-full">
           <RewardsMetrics
             title="Upcoming Rewards for Builders"
             rbtcRewards={rbtcRewards}
@@ -97,7 +102,7 @@ export const BuildersCallToAction: FC<BuildersCallToActionProps> = ({ rifRewards
           />
           <ActiveBuilders />
         </div>
-      </MetricsContainer>
+      </CallToActionCard.Content>
     </CallToActionCard>
   )
 }
