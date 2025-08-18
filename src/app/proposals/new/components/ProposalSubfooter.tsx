@@ -3,10 +3,11 @@
 import { useRouter, usePathname } from 'next/navigation'
 import { useLayoutContext } from '@/components/MainContainer/LayoutProvider'
 import { useIsDesktop } from '@/shared/hooks/useIsDesktop'
-import { useState, useCallback, useEffect, useRef } from 'react'
+import { useState, useCallback, useEffect } from 'react'
 import { LeavingProposalModal } from './LeavingProposalModal'
 import { ActionsContainer } from '@/components/containers/ActionsContainer'
 import { Button } from '@/components/Button'
+import { useNavigationGuard } from 'next-navigation-guard'
 
 interface Props {
   submitForm: () => void
@@ -29,78 +30,48 @@ export const ProposalSubfooter = ({
   const isDesktop = useIsDesktop()
 
   const [showModal, setShowModal] = useState(false)
-  const pageToStayOnRef = useRef<string | null>(null)
+  const [isBackPressed, setIsBackPressed] = useState(false)
 
-  const lastCommittedPathRef = useRef(pathname)
+  const { active, accept, reject } = useNavigationGuard({
+    enabled: isBackPressed && pathname.startsWith('/proposals/new/details'),
+  })
 
-  if (lastCommittedPathRef.current !== pathname) {
-    // Conditional update
-    lastCommittedPathRef.current = pathname
-  }
-
-  const shouldIntercept = useCallback((currentUrl: string, prevUrl: string | null): boolean => {
-    return currentUrl.startsWith('/proposals/new/details') && prevUrl === '/proposals/new'
-  }, [])
-
-  const handleSubfooterBackClick = useCallback(() => {
-    const wouldGoToNew = '/proposals/new'
-
-    // Use current pathname as the 'from' path
-    if (shouldIntercept(pathname, wouldGoToNew)) {
+  useEffect(() => {
+    if (active) {
       setShowModal(true)
-
-      pageToStayOnRef.current = pathname
-    } else {
-      router.back()
     }
-  }, [pathname, router, shouldIntercept])
+  }, [active])
 
-  // --- Browser Back Button (popstate) Interception ---
   useEffect(() => {
     const handlePopState = () => {
-      const currentBrowserPath = window.location.pathname
-      const pathBeforePop = lastCommittedPathRef.current
-
-      if (shouldIntercept(pathBeforePop, currentBrowserPath) && !showModal) {
-        window.history.pushState(
-          { intercepted: true, originalPath: pathBeforePop },
-          '',
-          pathBeforePop || window.location.href,
-        )
-
-        setShowModal(true)
-        pageToStayOnRef.current = pathBeforePop
-      }
+      setIsBackPressed(true)
     }
-
     window.addEventListener('popstate', handlePopState)
-
-    return () => {
-      window.removeEventListener('popstate', handlePopState)
-    }
-  }, [showModal, shouldIntercept])
+    return () => window.removeEventListener('popstate', handlePopState)
+  }, [pathname])
 
   // --- Modal Button Handlers ---
 
-  // "Cancel proposal" (white button): User confirms leaving, proceed to '/proposals/new'
   const handleProceedWithExit = useCallback(() => {
     setShowModal(false)
-    router.push('/proposals/new') // Navigate to /proposals/new
-    pageToStayOnRef.current = null // Clear
-  }, [router])
+    accept()
+  }, [accept])
 
-  // "Take me back" (orange button / X): User cancels leaving, stay on the *details page*
   const handleStayOnPage = useCallback(() => {
     setShowModal(false)
-    const targetStayPath = pageToStayOnRef.current // This holds the details page path from when modal triggered
-    pageToStayOnRef.current = null
+    reject()
+  }, [reject])
 
-    if (targetStayPath && targetStayPath.startsWith('/proposals/new/details')) {
-      router.replace(targetStayPath) // Replace current history entry to keep URL clean and correct
-    } else {
-      router.replace(window.location.pathname) // Fallback to current URL (shouldn't happen here)
-    }
+  const handleBack = useCallback(() => {
+    setIsBackPressed(true)
+    router.back()
   }, [router])
+
+  const handleNext = () => {
+    setIsBackPressed(false)
+    accept()
+    submitForm()
+  }
 
   if (!isDesktop && isSidebarOpen) return null
 
@@ -108,14 +79,10 @@ export const ProposalSubfooter = ({
     <>
       <ActionsContainer className="bg-bg-60" containerClassName="items-center">
         <div className="flex items-center justify-center gap-2">
-          <Button
-            disabled={backDisabled || disabled}
-            onClick={handleSubfooterBackClick}
-            variant="secondary-outline"
-          >
+          <Button disabled={backDisabled || disabled} onClick={handleBack} variant="secondary-outline">
             Back
           </Button>
-          <Button disabled={nextDisabled || disabled} onClick={submitForm}>
+          <Button disabled={nextDisabled || disabled} onClick={handleNext}>
             {buttonText}
           </Button>
         </div>
