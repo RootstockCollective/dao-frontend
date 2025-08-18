@@ -14,6 +14,7 @@ interface DelegateCardProps {
   delegators: string | number
   onDelegate: (address: Address, rns?: string) => void
   name?: string
+  imageIpfs?: string | null
   className?: string
   buttonText?: string
   buttonVariant?: ComponentProps<typeof Button>['variant']
@@ -23,6 +24,7 @@ interface DelegateCardProps {
 export const DelegateCard: React.FC<DelegateCardProps> = ({
   address,
   name,
+  imageIpfs,
   since,
   votingPower,
   votingWeight,
@@ -45,6 +47,7 @@ export const DelegateCard: React.FC<DelegateCardProps> = ({
       <BuilderHeader
         address={address}
         name={name ? truncateRns(name, 15) : undefined}
+        imageIpfs={imageIpfs}
         className="mt-8"
         showFullName
         shouldNotRedirect
