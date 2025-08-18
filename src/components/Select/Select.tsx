@@ -65,13 +65,7 @@ export function SelectDropdown({
   }
   const isVisible = isOpen && !isAnimating
   return (
-    <Select.Root
-      open={isOpen}
-      onOpenChange={handleOpenChange}
-      value={value}
-      onValueChange={handleItemSelect}
-      disabled={isAnimating}
-    >
+    <Select.Root open={isOpen} onOpenChange={handleOpenChange} value={value} disabled={isAnimating}>
       <Select.Trigger
         className={cn(
           'h-14 pl-3 w-full bg-bg-60',
@@ -117,6 +111,7 @@ export function SelectDropdown({
                 const isSelected = value === option && value !== '' && value !== undefined
                 return (
                   <Select.Item
+                    onClick={() => handleItemSelect(option)}
                     disabled={isAnimating}
                     value={option}
                     key={`${option}-${i}`}
