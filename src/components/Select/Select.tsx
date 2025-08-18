@@ -107,32 +107,29 @@ export function SelectDropdown({
             transition={{ duration: animationDuration, ease: 'easeOut' }}
           >
             <Select.Viewport className="py-2">
-              {options?.map((option, i) => {
-                const isSelected = value === option && value !== '' && value !== undefined
-                return (
-                  <Select.Item
-                    onClick={() => handleItemSelect(option)}
-                    disabled={isAnimating}
-                    value={option}
-                    key={`${option}-${i}`}
-                    className={cn(
-                      'px-4 py-2 h-10', // size
-                      // bg highlighting
-                      'hover:bg-text-80 hover:text-text-0 transition-colors duration-300 ',
-                      'data-[highlighted]:bg-text-80 data-[highlighted]:text-text-0',
-                      'text-text-100 font-rootstock-sans leading-none', // text
-                      'flex items-center justify-between', // flex
-                      'focus:outline-none hover:outline-0 cursor-pointer', // decorations
-                      { 'bg-bg-40/30': isSelected },
-                    )}
-                  >
-                    <Select.ItemText>{option}</Select.ItemText>
-                    <Select.ItemIndicator>
-                      <CheckIcon className="w-4 h-4" />
-                    </Select.ItemIndicator>
-                  </Select.Item>
-                )
-              })}
+              {options?.map((option, i) => (
+                <Select.Item
+                  onClick={() => handleItemSelect(option)}
+                  disabled={isAnimating}
+                  value={option}
+                  key={`${option}-${i}`}
+                  className={cn(
+                    'px-4 py-2 h-10', // size
+                    // bg highlighting
+                    'hover:bg-text-80 hover:text-text-0 transition-colors duration-300 ',
+                    'data-[highlighted]:bg-text-80 data-[highlighted]:text-text-0',
+                    'text-text-100 font-rootstock-sans leading-none', // text
+                    'flex items-center justify-between', // flex
+                    'focus:outline-none hover:outline-0 cursor-pointer', // decorations
+                    { 'bg-bg-40/30': value && value === option },
+                  )}
+                >
+                  <Select.ItemText>{option}</Select.ItemText>
+                  <Select.ItemIndicator>
+                    <CheckIcon className="w-4 h-4" />
+                  </Select.ItemIndicator>
+                </Select.Item>
+              ))}
             </Select.Viewport>
           </motion.div>
         </Select.Content>
