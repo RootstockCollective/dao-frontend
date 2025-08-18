@@ -1,13 +1,13 @@
-import { useCallback } from 'react'
 import { AddressAlreadyWhitelistedError, NoVotingPowerError } from '@/app/proposals/shared/errors'
 import { config } from '@/config'
 import { GovernorAbi } from '@/lib/abis/Governor'
 import { BuilderRegistryAbi } from '@/lib/abis/v2/BuilderRegistryAbi'
 import { BuilderRegistryAddress, GovernorAddress } from '@/lib/contracts'
-import { Address, encodeFunctionData, zeroAddress } from 'viem'
+import { useCallback } from 'react'
+import { Address, encodeFunctionData, getAddress, zeroAddress } from 'viem'
 import { useAccount, useWriteContract } from 'wagmi'
 import { readContract } from 'wagmi/actions'
-import { createProposal, encodeGovernorRelayCallData, checkCanCreateProposal } from './proposalUtils'
+import { checkCanCreateProposal, createProposal, encodeGovernorRelayCallData } from './proposalUtils'
 
 export const useCreateBuilderWhitelistProposal = () => {
   const { address: userAddress } = useAccount()
@@ -15,6 +15,7 @@ export const useCreateBuilderWhitelistProposal = () => {
 
   const onCreateBuilderWhitelistProposal = useCallback(
     async (builderAddress: Address, description: string) => {
+      const cleanBuilderAddress = getAddress(builderAddress)
       if (!userAddress) throw new Error('Unknown user address')
       const canCreateProposal = await checkCanCreateProposal(userAddress)
       if (!canCreateProposal) {
@@ -24,13 +25,17 @@ export const useCreateBuilderWhitelistProposal = () => {
         address: BuilderRegistryAddress,
         abi: BuilderRegistryAbi,
         functionName: 'builderToGauge',
-        args: [builderAddress],
+        args: [cleanBuilderAddress],
       })
       if (builderGauge !== zeroAddress) {
         // TODO: maybe we can use a different error here
         throw AddressAlreadyWhitelistedError
       }
-      const calldata = encodeWhitelistBuilderCalldata(builderAddress)
+      const calldata = encodeFunctionData({
+        abi: BuilderRegistryAbi,
+        functionName: 'communityApproveBuilder',
+        args: [cleanBuilderAddress],
+      })
       const relayCallData = encodeGovernorRelayCallData(BuilderRegistryAddress, calldata)
 
       const { proposal } = createProposal([GovernorAddress], [0n], [relayCallData], description)
@@ -45,12 +50,4 @@ export const useCreateBuilderWhitelistProposal = () => {
     [propose, userAddress],
   )
   return { onCreateBuilderWhitelistProposal, isPublishing, transactionError }
-}
-
-const encodeWhitelistBuilderCalldata = (builderAddress: Address) => {
-  return encodeFunctionData({
-    abi: BuilderRegistryAbi,
-    functionName: 'communityApproveBuilder',
-    args: [builderAddress.toLocaleLowerCase() as Address],
-  })
 }
