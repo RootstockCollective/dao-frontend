@@ -23,8 +23,18 @@ export const RewardsMetrics: FC<RewardsMetricsProps> = ({ title, rbtcRewards, ri
   return (
     <Metric className="text-v3-text-0" title={<Label className="text-v3-bg-accent-40">{title}</Label>}>
       <div className="flex flow-row md:flex-col items-baseline gap-2 font-rootstock-sans justify-between w-full">
-        <TokenAmountDisplay amount={rifAmount} tokenSymbol={RIF} amountInCurrency={rifFiatAmount} />
-        <TokenAmountDisplay amount={rbtcAmount} tokenSymbol={RBTC} amountInCurrency={rbtcFiatAmount} />
+        <TokenAmountDisplay
+          amount={rifAmount}
+          tokenSymbol={RIF}
+          amountInCurrency={rifFiatAmount}
+          amountInCurrencyClassName="text-v3-bg-accent-40"
+        />
+        <TokenAmountDisplay
+          amount={rbtcAmount}
+          tokenSymbol={RBTC}
+          amountInCurrency={rbtcFiatAmount}
+          amountInCurrencyClassName="text-v3-bg-accent-40"
+        />
       </div>
     </Metric>
   )

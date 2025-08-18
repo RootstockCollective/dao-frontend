@@ -8,6 +8,7 @@ interface Props {
   amount: string
   tokenSymbol: string
   amountInCurrency?: string
+  amountInCurrencyClassName?: string
   className?: string
   isFlexEnd?: boolean
   balance?: string
@@ -20,6 +21,7 @@ export const TokenAmountDisplay = ({
   tokenSymbol,
   amountInCurrency,
   className = '',
+  amountInCurrencyClassName = '',
   isFlexEnd = false,
   balance,
   actions,
@@ -42,7 +44,12 @@ export const TokenAmountDisplay = ({
         {actions}
       </div>
       {amountInCurrency ? (
-        <Span variant="body-s" bold className="text-bg-0 mt-1" data-testid={`${label}Currency`}>
+        <Span
+          variant="body-s"
+          bold
+          className={cn('text-bg-0 mt-1', amountInCurrencyClassName)}
+          data-testid={`${label}Currency`}
+        >
           {amountInCurrency}
         </Span>
       ) : (
