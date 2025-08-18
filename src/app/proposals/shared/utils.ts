@@ -9,6 +9,7 @@ import {
 } from '@/app/proposals/shared/supportedABIs'
 import { GovernorAbi } from '@/lib/abis/Governor'
 import { MAX_NAME_LENGTH_FOR_PROPOSAL, TALLY_DESCRIPTION_SEPARATOR } from '@/lib/constants'
+import { ProposalCategory } from '@/shared/types'
 
 export interface EventArgumentsParameter {
   args: {
@@ -204,4 +205,29 @@ const parseProposalDescription = (description: string): ParsedDescription => {
     source: 'UNKNOWN',
     fullProposalName: description,
   }
+}
+
+// Helper function to determine proposal category
+export function getProposalCategory(calldatasParsed: any[]): string {
+  const hasWithdrawAction = calldatasParsed
+    .filter(data => data.type === 'decoded')
+    .find(data => ['withdraw', 'withdrawERC20'].includes(data.functionName))
+
+  return hasWithdrawAction ? ProposalCategory.Grants : ProposalCategory.Activation
+}
+
+export function serializeBigInts(obj: any): any {
+  if (typeof obj === 'bigint') {
+    return obj.toString()
+  }
+
+  if (Array.isArray(obj)) {
+    return obj.map(serializeBigInts)
+  }
+
+  if (obj !== null && typeof obj === 'object') {
+    return Object.fromEntries(Object.entries(obj).map(([key, value]) => [key, serializeBigInts(value)]))
+  }
+
+  return obj
 }

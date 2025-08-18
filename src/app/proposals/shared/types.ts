@@ -47,25 +47,25 @@ export interface Eta extends Omit<CountdownProps, 'className'> {
 }
 
 export type ProposalApiResponse = {
+  blockNumber: string
+  calldatasParsed: any[]
+  category: string
+  description: string
+  name: string
+  proposalDeadline: string
+  proposalId: string
+  proposer: `0x${string}`
+  Starts: string
+  blocksUntilClosure?: string
+  votingPeriod: string
+  proposalState?: string
+  quorumAtSnapshot?: string
   votes?: {
     againstVotes: string
     forVotes: string
     abstainVotes: string
     quorum: string
   }
-  blocksUntilClosure?: string
-  votingPeriod: string
-  quorumAtSnapshot?: string
-  proposalDeadline: string
-  proposalState?: string
-  category: string
-  name: string
-  proposer: `0x${string}`
-  description: string
-  proposalId: string
-  Starts: string
-  calldatasParsed: any[]
-  blockNumber: string
 }
 
 // discriminated union
