@@ -15,7 +15,7 @@ export default meta
 
 type Story = StoryObj<typeof LatestActiveProposalCard>
 
-const mockProposal: Proposal = {
+const baseMockProposal: Proposal = {
   proposalId: '0x1234567890abcdef',
   name: 'This is a sample proposal name that is long enough to test line clamping in the card component. It should be truncated after three lines.',
   description: 'Sample description for the proposal.',
@@ -35,6 +35,17 @@ const mockProposal: Proposal = {
   blockNumber: '44444444',
   proposalState: ProposalState.Active,
   calldatasParsed: [],
+  createdAt: '1234567890',
+  createdAtBlock: '12345678',
+  voteStart: '1234567890',
+  voteEnd: '1234567890',
+  targets: [],
+  values: [],
+  calldatas: [],
+  votesAgainst: '3000000000000000000000',
+  votesFor: '2000000000000000000000',
+  votesAbstains: '4000000000000000000000',
+  quorum: '5000000000000000000000',
 }
 
 const mockButtonAction: ButtonAction = {
@@ -44,7 +55,7 @@ const mockButtonAction: ButtonAction = {
 
 export const Default: Story = {
   args: {
-    proposal: mockProposal,
+    proposal: baseMockProposal,
     votingPower: BigInt(1234),
     buttonAction: mockButtonAction,
   },

@@ -14,7 +14,7 @@ import Big from '@/lib/big'
 import { GridTable } from '@/components/Table'
 import { ProposalNameColumn, ProposerColumn } from './table-columns/ProposalNameColumn'
 import { QuorumColumn, VotesColumn } from './table-columns/VotesColumn'
-import { TimeColumn } from './table-columns/TimeColumn'
+import { Countdown } from '@/components/Countdown'
 import { DebounceSearch } from '@/components/DebounceSearch'
 import { useSearchParams } from 'next/navigation'
 import { FilterButton } from './filter/FilterButton'
@@ -125,12 +125,13 @@ const LatestProposalsTable = ({ proposals }: LatestProposalsTableProps) => {
       header: 'Vote ending in',
       sortDescFirst: false,
       cell: info => {
-        const { blocksUntilClosure, proposalDeadline, blockNumber } = info.row.original
+        const { proposalDeadline, blockNumber } = info.row.original
         return (
-          <TimeColumn
-            blocksUntilClosure={blocksUntilClosure}
-            proposalDeadline={proposalDeadline}
-            proposalBlockNumber={blockNumber}
+          <Countdown
+            end={proposalDeadline}
+            timeSource="blocks"
+            referenceStart={Big(blockNumber)}
+            colorDirection="normal"
           />
         )
       },

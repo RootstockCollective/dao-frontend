@@ -1,5 +1,5 @@
 import moment from 'moment'
-import { Address, checksumAddress, decodeFunctionData, DecodeFunctionDataReturnType, Hash } from 'viem'
+import { Address, decodeFunctionData, DecodeFunctionDataReturnType, Hash } from 'viem'
 import {
   SupportedActionAbi,
   abis,
@@ -8,8 +8,7 @@ import {
   SupportedProposalActionName,
 } from '@/app/proposals/shared/supportedABIs'
 import { GovernorAbi } from '@/lib/abis/Governor'
-import { formatEther, zeroAddress } from 'viem'
-import { MAX_NAME_LENGTH_FOR_PROPOSAL, RIF_ADDRESS, TALLY_DESCRIPTION_SEPARATOR } from '@/lib/constants'
+import { MAX_NAME_LENGTH_FOR_PROPOSAL, TALLY_DESCRIPTION_SEPARATOR } from '@/lib/constants'
 
 export interface EventArgumentsParameter {
   args: {
