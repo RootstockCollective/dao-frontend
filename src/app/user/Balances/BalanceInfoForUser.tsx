@@ -34,7 +34,7 @@ const TooltipComponent = ({ text, token, isRBTC }: TooltipComponentProps) => {
   }
 
   return (
-    <div className="p-6">
+    <div className="p-1" data-testid="TokenPriceTooltip">
       <Paragraph variant="body-s">{text}</Paragraph>
       {!error && !isRBTC ? (
         <Button
@@ -42,8 +42,9 @@ const TooltipComponent = ({ text, token, isRBTC }: TooltipComponentProps) => {
           variant="transparent"
           onClick={addTokenToWallet}
           textClassName="text-bg-100"
+          data-testid="AddToWalletButton"
         >
-          {'Add to wallet'}
+          Add to wallet
         </Button>
       ) : (
         <Paragraph variant="body-s">{error}</Paragraph>
