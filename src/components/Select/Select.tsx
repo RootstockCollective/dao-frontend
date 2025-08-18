@@ -32,7 +32,7 @@ const animationDuration = 0.3
  */
 export function SelectDropdown({
   className,
-  options,
+  options = [],
   onValueChange,
   placeholder = 'Select...',
   value,
@@ -40,11 +40,6 @@ export function SelectDropdown({
 }: SelectDropdownProps) {
   const [isOpen, setIsOpen] = useState(false)
   const [isAnimating, setIsAnimating] = useState(false)
-
-  // Validate options array
-  if (!options || options.length === 0) {
-    console.warn('SelectDropdown: options array is empty or undefined')
-  }
 
   const handleOpenChange = (open: boolean) => {
     // Block changes during animation
@@ -70,7 +65,13 @@ export function SelectDropdown({
   }
   const isVisible = isOpen && !isAnimating
   return (
-    <Select.Root open={isOpen} onOpenChange={handleOpenChange} value={value} disabled={isAnimating}>
+    <Select.Root
+      open={isOpen}
+      onOpenChange={handleOpenChange}
+      value={value}
+      onValueChange={handleItemSelect}
+      disabled={isAnimating}
+    >
       <Select.Trigger
         className={cn(
           'h-14 pl-3 w-full bg-bg-60',
@@ -119,7 +120,6 @@ export function SelectDropdown({
                     disabled={isAnimating}
                     value={option}
                     key={`${option}-${i}`}
-                    onClick={() => handleItemSelect(option)}
                     className={cn(
                       'px-4 py-2 h-10', // size
                       // bg highlighting
