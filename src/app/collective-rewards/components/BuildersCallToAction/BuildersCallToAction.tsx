@@ -23,7 +23,7 @@ const BuildersBanner = () => (
 
 const BuildersTitle = () => {
   return (
-    <Header caps variant="e2" className="pt-2 pb-4 md:py-4">
+    <Header caps variant="e2" className="pt-2 pb-4 md:py-4 text-[2rem] md:text-[2.75rem]">
       <div className="text-v3-bg-accent-20">Be rewarded</div>
       <div className="text-v3-text-0">for building</div>
     </Header>

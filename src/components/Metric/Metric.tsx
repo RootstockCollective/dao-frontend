@@ -23,9 +23,9 @@ export const Metric: FC<MetricProps> = ({
 
   return (
     <div data-testid={dataTestId} className={cn('flex items-center gap-4 w-full', className)}>
-      <div className={cn('w-full flex flex-col gap-2', containerClassName)}>
+      <div className={cn('w-full flex flex-col gap-0 md:gap-2', containerClassName)}>
         {isTitleTextual ? (
-          <BaseTypography variant="body" className="text-v3-bg-accent-0">
+          <BaseTypography variant="body-s" className="text-v3-bg-accent-0 md:text-base">
             {title}
           </BaseTypography>
         ) : (

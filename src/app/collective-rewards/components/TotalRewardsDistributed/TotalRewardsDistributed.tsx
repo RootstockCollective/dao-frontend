@@ -10,6 +10,7 @@ import { useHandleErrors } from '@/app/collective-rewards/utils'
 import { LoadingSpinner } from '@/components/LoadingSpinner'
 import { MetricTitle } from '@/components/Metric'
 import { Paragraph } from '@/components/Typography'
+import { cn } from '@/lib/utils'
 
 interface TokenRewardsProps {
   gauges: Address[]
@@ -70,6 +71,7 @@ export const TotalRewardsDistributed = ({ className }: TotalRewardsDistributedMe
         />
       }
       className={className}
+      containerClassName="gap-0 md:gap-2"
     >
       <div className="flex flex-row md:flex-col justify-between w-full gap-2">
         {Object.values(TOKENS).map(token => (

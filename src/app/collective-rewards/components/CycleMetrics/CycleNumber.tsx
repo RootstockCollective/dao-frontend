@@ -19,7 +19,7 @@ const CycleNumberContent = ({
   const cycleNumber = Math.floor(totalDuration.as('days') / durationInDays) + 1
   return (
     <Metric title="Cycle" className="w-auto" containerClassName="gap-0 md:gap-4">
-      <div className="font-kk-topo text-lg font-normal tracking-tight">{cycleNumber}</div>
+      <div className="font-kk-topo font-normal tracking-tight text-xl">{cycleNumber}</div>
     </Metric>
   )
 }
