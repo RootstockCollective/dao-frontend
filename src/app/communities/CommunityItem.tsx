@@ -19,6 +19,7 @@ interface CommunityItemProps {
   enableDebris?: boolean
   specialPower?: string
   boostedPercentage?: string
+  isExternal?: boolean
 }
 
 /**
@@ -36,6 +37,7 @@ export const CommunityItem = ({
   enableDebris = false,
   specialPower,
   boostedPercentage,
+  isExternal,
 }: CommunityItemProps) => {
   const isExternalImage = leftImageSrc.startsWith('http')
   const image = isExternalImage
@@ -80,7 +82,12 @@ export const CommunityItem = ({
           {/* Description */}
           <Paragraph>{description}</Paragraph>
           {/* Learn more */}
-          <CommunityItemButtonHandler nftAddress={nftAddress} readMoreLink={readMoreLink} data-testid={`LearnMoreLink-${title}`} />
+          <CommunityItemButtonHandler
+            nftAddress={nftAddress}
+            readMoreLink={readMoreLink}
+            data-testid={`LearnMoreLink-${title}`}
+            isExternal={isExternal}
+          />
         </div>
       </div>
     </BoostedBox>

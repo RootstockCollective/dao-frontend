@@ -22,6 +22,7 @@ export interface CommunityItem {
   readMoreLink?: string
   discussionLink?: string
   campaignDetails?: FC<{ activation?: ReactNode }>
+  isExternal?: boolean
 }
 
 interface RowProps {
@@ -212,6 +213,7 @@ export const rootstockHacktivator: CommunityItem = {
   specialPower: '',
   activation: '',
   requirement: '',
+  isExternal: true,
 }
 
 export const communitiesToRender = [

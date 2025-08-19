@@ -1,11 +1,12 @@
 import { Paragraph } from '@/components/Typography'
 import Link from 'next/link'
-import { ArrowRightIconKoto } from '@/components/Icons'
+import { ArrowRightIconKoto, ArrowUpRightLightIcon } from '@/components/Icons'
 
 interface CommunityItemButtonHandlerProps {
   nftAddress?: string
   readMoreLink?: string
   color?: string
+  isExternal?: boolean
   'data-testid'?: string
 }
 
@@ -21,6 +22,7 @@ export const CommunityItemButtonHandler = ({
   nftAddress,
   readMoreLink,
   color = 'white',
+  isExternal = false,
   'data-testid': dataTestId,
 }: CommunityItemButtonHandlerProps) => {
   let href = nftAddress ? `/communities/nft/${nftAddress}` : '/communities'
@@ -33,7 +35,7 @@ export const CommunityItemButtonHandler = ({
     <Link href={href} target={target} data-testid={dataTestId}>
       <div className={'flex flex-row gap-1 items-center'} style={{ color }}>
         <Paragraph>Learn more</Paragraph>
-        <ArrowRightIconKoto color={color} />
+        {isExternal ? <ArrowUpRightLightIcon color={color} /> : <ArrowRightIconKoto color={color} />}
       </div>
     </Link>
   )
