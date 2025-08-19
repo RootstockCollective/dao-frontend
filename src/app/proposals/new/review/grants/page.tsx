@@ -8,18 +8,22 @@ import { useLayoutContext } from '@/components/MainContainer/LayoutProvider'
 import { ProposalSubfooter } from '../../components/ProposalSubfooter'
 import { ProposalCategory } from '@/shared/types'
 import { Card } from '../components/Card'
-import { formatNumberWithCommas, shortAddress } from '@/lib/utils'
+import { formatCurrencyWithLabel, formatNumberWithCommas, shortAddress } from '@/lib/utils'
 import { PreviewLabel } from '../components/PreviewLabel'
 import { useCreateTreasuryTransferProposal } from '@/app/proposals/hooks/useCreateTreasuryTransferProposal'
 import { tokenContracts } from '@/lib/contracts'
 import { showToast } from '@/shared/notification'
 import { isUserRejectedTxError } from '@/components/ErrorPage'
-import { Header, Paragraph } from '@/components/Typography'
+import { Header, Paragraph, Span } from '@/components/Typography'
 import { CopyButton } from '@/components/CopyButton'
 import { DISCOURSE_LINK_SEPARATOR } from '@/app/proposals/shared/utils'
 import { TokenImage } from '@/components/TokenImage'
+import { usePricesContext } from '@/shared/context'
+import Big from '@/lib/big'
 
 export default function GrantsProposalReview() {
+  const { prices } = usePricesContext()
+
   const { address, isConnected } = useAccount()
   const { record, waitForTxInBg } = useReviewProposal()
   const { onCreateTreasuryTransferProposal } = useCreateTreasuryTransferProposal()
@@ -76,6 +80,8 @@ export default function GrantsProposalReview() {
   }
   const { description, discourseLink, proposalName, targetAddress, token, transferAmount } = record.form
   const tokenAmount = formatNumberWithCommas(transferAmount)
+
+  const tokenPrice = prices?.[token]?.price ?? 0
   return (
     <div>
       <div className="mb-10 pr-2 w-full lg:flex lg:justify-between">
@@ -147,11 +153,22 @@ export default function GrantsProposalReview() {
               </CopyButton>
             </Card>
             <Card title="Amount">
-              <span className="mr-2">{tokenAmount}</span>
-              <span className="whitespace-nowrap">
-                <TokenImage symbol={token} className="inline-block w-4 h-4 mr-1 mb-[2px]" />
-                {token}
-              </span>
+              <div className="inline-block">
+                <div className="flex items-center">
+                  <span className="mr-2">{tokenAmount}</span>
+                  <span className="whitespace-nowrap">
+                    <TokenImage symbol={token} className="inline-block w-4 h-4 mr-1 mb-[2px]" />
+                    {token}
+                  </span>
+                </div>
+                {transferAmount !== undefined && tokenPrice !== undefined && (
+                  <div className="text-right">
+                    <Span className="text-xs text-white/50 font-normal leading-none">
+                      {formatCurrencyWithLabel(Big(transferAmount).times(tokenPrice).toNumber())}
+                    </Span>
+                  </div>
+                )}
+              </div>
             </Card>
           </div>
         </div>
