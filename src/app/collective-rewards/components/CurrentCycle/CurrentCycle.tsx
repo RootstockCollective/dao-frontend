@@ -4,6 +4,7 @@ import { TotalBackingLoader } from '@/app/collective-rewards/components/TotalBac
 import { CycleContextProvider } from '@/app/collective-rewards/metrics'
 import { ActionsContainer } from '@/components/containers'
 import { Header } from '@/components/Typography'
+import { DemoDualAxisChart } from '@/app/collective-rewards/components/DualAxisChart/DualAxisChart'
 
 export const CurrentCycle = () => {
   return (
@@ -15,16 +16,15 @@ export const CurrentCycle = () => {
         </Header>
       }
     >
-      <div className="flex items-start w-full gap-14">
-        <div className="flex justify-between basis-3/4">
-          <CycleContextProvider>
-            <CycleMetrics />
-          </CycleContextProvider>
-          <TotalBackingLoader />
+      <div className="w-full flex flex-col gap-10">
+        <div className="flex items-start w-full justify-between md:w-[90%] mx-auto">
+            <CycleContextProvider>
+              <CycleMetrics />
+            </CycleContextProvider>
+            <TotalBackingLoader />
+            <EstimatedRewards />
         </div>
-        <div className="basis-1/4">
-          <EstimatedRewards />
-        </div>
+        <DemoDualAxisChart />
       </div>
     </ActionsContainer>
   )
