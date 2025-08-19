@@ -99,4 +99,7 @@ export enum ProposalCategory {
   Grants = 'Grants',
   Activation = 'Builder',
   Deactivation = 'Deactivation',
+  FirstMilestone = 'First Milestone',
+  SecondMilestone = 'Second Milestone',
+  ThirdMilestone = 'Third Milestone',
 }
