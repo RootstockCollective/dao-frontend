@@ -23,7 +23,7 @@ const BuildersBanner = () => (
 
 const BuildersTitle = () => {
   return (
-    <Header caps variant="e2" className="pt-2 pb-4 md:py-4 px-0 md:px-2">
+    <Header caps variant="e2" className="pt-2 pb-4 md:py-4">
       <div className="text-v3-bg-accent-20">Be rewarded</div>
       <div className="text-v3-text-0">for building</div>
     </Header>
@@ -72,7 +72,7 @@ interface BuildersCallToActionProps {
 
 export const BuildersCallToAction: FC<BuildersCallToActionProps> = ({ rifRewards, rbtcRewards }) => {
   const collapsibleContent = (
-    <Paragraph className="text-v3-text-0 order-2 pb-6 px-0 md:px-2">
+    <Paragraph className="text-v3-text-0 order-2 pb-6">
       Join the Collective as a Builder and earn for delivering impact. Be part of Bitcoin&apos;s most aligned
       innovation network.
     </Paragraph>
@@ -84,25 +84,27 @@ export const BuildersCallToAction: FC<BuildersCallToActionProps> = ({ rifRewards
         <BuildersBanner />
       </CallToActionCard.Banner>
       <CallToActionCard.Toggle />
-      <CallToActionCard.Content>
-        <BuildersTitle />
-      </CallToActionCard.Content>
-      <CallToActionCard.Content className="order-3 md:order-1 pt-6 md:pb-8 md:pt-0">
-        <BuilderCTAButton />
-      </CallToActionCard.Content>
-      <CallToActionCard.Collapsible className="order-1 md:order-2">
-        {collapsibleContent}
-      </CallToActionCard.Collapsible>
-      <CallToActionCard.Content className="order-2 md:order-3">
-        <div className="flex flex-col md:flex-row gap-6 md:gap-10 w-full">
-          <RewardsMetrics
-            title="Upcoming Rewards for Builders"
-            rbtcRewards={rbtcRewards}
-            rifRewards={rifRewards}
-          />
-          <ActiveBuilders />
-        </div>
-      </CallToActionCard.Content>
+      <div className="flex flex-col px-0 md:px-2">
+        <CallToActionCard.Content>
+          <BuildersTitle />
+        </CallToActionCard.Content>
+        <CallToActionCard.Content className="order-3 md:order-1 pt-6 md:pb-8 md:pt-0">
+          <BuilderCTAButton />
+        </CallToActionCard.Content>
+        <CallToActionCard.Collapsible className="order-1 md:order-2">
+          {collapsibleContent}
+        </CallToActionCard.Collapsible>
+        <CallToActionCard.Content className="order-2 md:order-3">
+          <div className="flex flex-col md:flex-row gap-6 md:gap-10 w-full">
+            <RewardsMetrics
+              title="Upcoming Rewards for Builders"
+              rbtcRewards={rbtcRewards}
+              rifRewards={rifRewards}
+            />
+            <ActiveBuilders />
+          </div>
+        </CallToActionCard.Content>
+      </div>
     </CallToActionCard>
   )
 }
