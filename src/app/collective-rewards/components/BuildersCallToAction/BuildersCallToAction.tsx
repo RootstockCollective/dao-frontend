@@ -70,14 +70,14 @@ interface BuildersCallToActionProps {
   className?: string
 }
 
-export const BuildersCallToAction: FC<BuildersCallToActionProps> = ({ rifRewards, rbtcRewards }) => {
-  const collapsibleContent = (
-    <Paragraph className="text-v3-text-0 order-2 pb-6">
-      Join the Collective as a Builder and earn for delivering impact. Be part of Bitcoin&apos;s most aligned
-      innovation network.
-    </Paragraph>
-  )
+const collapsibleContent = (
+  <Paragraph className="text-v3-text-0 order-2 pb-6">
+    Join the Collective as a Builder and earn for delivering impact. Be part of Bitcoin&apos;s most aligned
+    innovation network.
+  </Paragraph>
+)
 
+export const BuildersCallToAction: FC<BuildersCallToActionProps> = ({ rifRewards, rbtcRewards }) => {
   return (
     <CallToActionCard className="bg-v3-text-80 rounded-sm p-4" defaultOpen={false}>
       <CallToActionCard.Banner>

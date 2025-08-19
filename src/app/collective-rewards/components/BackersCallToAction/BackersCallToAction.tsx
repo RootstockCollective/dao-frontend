@@ -73,14 +73,15 @@ interface BackersCallToActionProps {
   rbtcRewards: bigint
   className?: string
 }
-export const BackersCallToAction: FC<BackersCallToActionProps> = ({ rifRewards, rbtcRewards }) => {
-  const collapsibleContent = (
-    <Paragraph className="text-v3-text-0 pb-6">
-      Support the projects you believe in by backing Builders with your stRIF. Earn rewards while helping
-      shape the future of Bitcoin Layer 2.
-    </Paragraph>
-  )
 
+const collapsibleContent = (
+  <Paragraph className="text-v3-text-0 pb-6">
+    Support the projects you believe in by backing Builders with your stRIF. Earn rewards while helping shape
+    the future of Bitcoin Layer 2.
+  </Paragraph>
+)
+
+export const BackersCallToAction: FC<BackersCallToActionProps> = ({ rifRewards, rbtcRewards }) => {
   return (
     <CallToActionCard className="bg-v3-text-80 rounded-sm p-4" defaultOpen={false}>
       <CallToActionCard.Banner>
