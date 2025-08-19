@@ -46,6 +46,28 @@ export interface Eta extends Omit<CountdownProps, 'className'> {
   type: 'vote end in' | 'queue ends in'
 }
 
+export type ProposalApiResponse = {
+  blockNumber: string
+  calldatasParsed: any[]
+  category: string
+  description: string
+  name: string
+  proposalDeadline: string
+  proposalId: string
+  proposer: `0x${string}`
+  Starts: string
+  blocksUntilClosure?: string
+  votingPeriod: string
+  proposalState?: string
+  quorumAtSnapshot?: string
+  votes?: {
+    againstVotes: string
+    forVotes: string
+    abstainVotes: string
+    quorum: string
+  }
+}
+
 // discriminated union
 export type ProposalRecord =
   | { category: ProposalCategory.Grants; form: GrantProposal }
