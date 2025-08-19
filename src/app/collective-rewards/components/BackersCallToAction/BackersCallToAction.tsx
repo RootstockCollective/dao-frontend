@@ -82,7 +82,7 @@ export const BackersCallToAction: FC<BackersCallToActionProps> = ({ rifRewards, 
   )
 
   return (
-    <CallToActionCard className="bg-v3-text-80 rounded-sm p-4" defaultOpen={true}>
+    <CallToActionCard className="bg-v3-text-80 rounded-sm p-4" defaultOpen={false}>
       <CallToActionCard.Banner>
         <BackersBanner />
       </CallToActionCard.Banner>
