@@ -28,12 +28,14 @@ export const RewardsMetrics: FC<RewardsMetricsProps> = ({ title, rbtcRewards, ri
           tokenSymbol={RIF}
           amountInCurrency={rifFiatAmount}
           amountInCurrencyClassName="text-v3-bg-accent-40"
+          isFlexEnd
         />
         <TokenAmountDisplay
           amount={rbtcAmount}
           tokenSymbol={RBTC}
           amountInCurrency={rbtcFiatAmount}
           amountInCurrencyClassName="text-v3-bg-accent-40"
+          isFlexEnd
         />
       </div>
     </Metric>

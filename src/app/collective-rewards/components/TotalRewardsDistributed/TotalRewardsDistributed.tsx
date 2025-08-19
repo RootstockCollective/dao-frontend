@@ -43,7 +43,7 @@ const TokenRewards = ({ gauges, token: { address, symbol } }: TokenRewardsProps)
   const price = prices[symbol]?.price ?? 0
   const { amount, fiatAmount } = formatMetrics(totalRewards, price, symbol)
 
-  return <TokenAmountDisplay amount={amount} tokenSymbol={symbol} amountInCurrency={fiatAmount} />
+  return <TokenAmountDisplay amount={amount} tokenSymbol={symbol} amountInCurrency={fiatAmount} isFlexEnd />
 }
 
 interface TotalRewardsDistributedMetricProps extends CommonComponentProps {}
