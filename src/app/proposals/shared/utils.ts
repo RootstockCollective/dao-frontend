@@ -129,6 +129,7 @@ export const getProposalEventArguments = ({
 
 export const DISPLAY_NAME_SEPARATOR = 'D15PL4Y_N4M3:'
 export const DISCOURSE_LINK_SEPARATOR = 'DiscourseLink:'
+export const MILESTONE_SEPARATOR = 'M1lestone:'
 
 export const splitCombinedName = (name: string) => {
   const [proposalName, builderName] = name.split(DISPLAY_NAME_SEPARATOR)
