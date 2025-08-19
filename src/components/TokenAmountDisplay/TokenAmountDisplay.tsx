@@ -8,7 +8,6 @@ interface Props {
   amount: string
   tokenSymbol: string
   amountInCurrency?: string
-  amountInCurrencyClassName?: string
   className?: string
   isFlexEnd?: boolean
   balance?: string
@@ -21,7 +20,6 @@ export const TokenAmountDisplay = ({
   tokenSymbol,
   amountInCurrency,
   className = '',
-  amountInCurrencyClassName = '',
   isFlexEnd = false,
   balance,
   actions,
@@ -33,23 +31,18 @@ export const TokenAmountDisplay = ({
           {label}
         </Label>
       )}
-      <div className="flex items-center gap-2 mt-0 md:mt-2">
-        <Header className="text-xl md:text-2xl" data-testid={`${label}Amount`}>
+      <div className="flex items-center gap-2 mt-2">
+        <Header variant="h1" className="font-bold" data-testid={`${label}Amount`}>
           {amount}
         </Header>
-        <div className="flex items-center gap-1">
-          <TokenImage symbol={tokenSymbol} className="w-4 h-4 md:w-6 md:h-6" />
-          <Span data-testid={`${label}Symbol`} className="text-sm md:text-base">
-            {tokenSymbol}
-          </Span>
-        </div>
+        <TokenImage symbol={tokenSymbol} size={24} />
+        <Span variant="body-l" bold data-testid={`${label}Symbol`}>
+          {tokenSymbol}
+        </Span>
         {actions}
       </div>
       {amountInCurrency ? (
-        <Span
-          className={cn('text-bg-0 mt-1 text-xs md:text-sm', amountInCurrencyClassName)}
-          data-testid={`${label}Currency`}
-        >
+        <Span variant="body-s" bold className="text-bg-0 mt-1" data-testid={`${label}Currency`}>
           {amountInCurrency}
         </Span>
       ) : (
