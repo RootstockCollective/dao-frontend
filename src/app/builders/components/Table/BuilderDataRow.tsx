@@ -194,17 +194,20 @@ const RewardsUpcomingCell = (props: RewardsCellProps): ReactElement => {
   )
 }
 
-export const BuilderBackingCell = (props: BackingCellProps): ReactElement => {
+export const BuilderBackingCell = ({ className, ...props }: BackingCellProps): ReactElement => {
   return (
-    <TableCell columnId="backing" className="flex flex-col gap-2 align-middle justify-center">
+    <TableCell
+      columnId="backing"
+      className={cn('flex flex-col gap-2 align-middle justify-center', className)}
+    >
       <BackingCell {...props} />
     </TableCell>
   )
 }
 
-const BuilderBackingShareCell = (props: BackingShareCellProps): ReactElement => {
+const BuilderBackingShareCell = ({ className, ...props }: BackingShareCellProps): ReactElement => {
   return (
-    <TableCell columnId="backingShare" className="justify-center">
+    <TableCell columnId="backingShare" className={cn('justify-center', className)}>
       <BackingShareCell {...props} className="w-[60%] justify-center" />
     </TableCell>
   )
@@ -322,13 +325,9 @@ export const BuilderDataRow: FC<BuilderDataRowProps> = ({ row, ...props }) => {
           <BuilderBackingCell {...backing} />
           <BuilderBackingShareCell
             backingPercentage={backingPercentage}
-            className={isHovered ? 'hidden' : 'visible'}
+            className={isHovered && isConnected ? 'hidden' : 'visible'}
           />
-          <ActionsCell
-            {...actions}
-            forceShow={isHovered && isConnected}
-            className={isHovered ? 'visible' : 'hidden'}
-          />
+          <ActionsCell {...actions} forceShow={isHovered && isConnected} />
           <td className="w-[24px]"></td>
         </tr>
       </ConditionalTooltip>

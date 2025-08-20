@@ -210,7 +210,7 @@ export const BackerRewardsDataRow: FC<BackerRewardsDataRowProps> = ({ row, ...pr
         <EstimatedCell {...estimated} />
         <TotalCell {...total} />
         <BuilderBackingCell {...backing} className={isHovered ? 'hidden' : 'visible'} />
-        <ActionsCell {...actions} forceShow={isHovered} className={isHovered ? 'visible' : 'hidden'} />
+        <ActionsCell {...actions} forceShow={isHovered} />
         <td className="w-[24px]"></td>
       </tr>
     </ConditionalTooltip>
