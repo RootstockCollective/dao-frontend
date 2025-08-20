@@ -20,7 +20,7 @@ import { useParams } from 'next/navigation'
 import { formatEther, zeroAddress } from 'viem'
 import { useAccount } from 'wagmi'
 import Big from '@/lib/big'
-import { ProposalState } from '@/shared/types'
+import { ProposalCategory, ProposalState } from '@/shared/types'
 import { usePricesContext } from '@/shared/context/PricesContext'
 import { ConnectWorkflow } from '@/shared/walletConnection/connection/ConnectWorkflow'
 import { ProgressBar } from '@/components/ProgressBarNew'
@@ -38,6 +38,7 @@ import { Vote } from '@/shared/types'
 import { executeTxFlow } from '@/shared/notification'
 import { useProposalById } from '../context'
 import { Eta, Proposal } from '../shared/types'
+import { CategoryColumn } from '../components/table-columns/CategoryColumn'
 
 export default function ProposalView() {
   const { id } = useParams<{ id: string }>() ?? {}
@@ -150,8 +151,17 @@ const parseProposalActionDetails = (
 
 const PageWithProposal = (proposal: Proposal) => {
   const { address, isConnected } = useAccount()
-  const { proposalId, name, description, proposer, Starts, calldatasParsed, proposalDeadline, voteStart } =
-    proposal
+  const {
+    proposalId,
+    name,
+    description,
+    proposer,
+    Starts,
+    calldatasParsed,
+    proposalDeadline,
+    voteStart,
+    category,
+  } = proposal
   const [vote, setVote] = useGetVoteForSpecificProposal(address ?? zeroAddress, proposalId)
   const [isChoosingVote, setIsChoosingVote] = useState(false)
   const [votingTxIsPending, setVotingTxIsPending] = useState(false)
@@ -353,9 +363,17 @@ const PageWithProposal = (proposal: Proposal) => {
 
   return (
     <div className="min-h-screen text-white px-4 py-8 flex flex-col gap-4 w-full max-w-full">
-      <Header variant="h1" className="text-3xl text-white">
-        {name}
-      </Header>
+      <div className="flex items-baseline">
+        <Header variant="h1" className="max-w-[56%] text-3xl text-white">
+          {name}
+        </Header>
+        <div className="flex items-center ml-6">
+          <CategoryColumn className="max-w-fit mb-0.5" category={category} hasGradient />
+          <Paragraph variant="body-l" className="min-w-fit ml-1 text-bg-0">
+            {category}
+          </Paragraph>
+        </div>
+      </div>
       <div className="flex flex-row gap-2 w-full max-w-full mt-10">
         <div className="flex-1 flex flex-col min-w-0">
           <div className="bg-bg-80 p-6 flex flex-col gap-y-6">
