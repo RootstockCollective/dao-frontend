@@ -1,6 +1,7 @@
 import type { Meta, StoryObj } from '@storybook/nextjs'
 import { FilterSideBar } from './FilterSideBar'
 import { useState } from 'react'
+import { FilterOption } from './filterOptions'
 
 const meta: Meta<typeof FilterSideBar> = {
   title: 'Proposals/FilterSideBar',
@@ -12,17 +13,17 @@ export default meta
 
 type Story = StoryObj<typeof FilterSideBar>
 
-const filterOptions = [
-  'Proposals I can vote',
-  'Builder proposals',
-  'Treasury proposals',
-  'Grants',
-  'My proposals',
+const filterOptions: FilterOption[] = [
+  { label: 'Proposals I can vote', value: 'Proposals I can vote' },
+  { label: 'Builder proposals', value: 'Builder proposals' },
+  { label: 'Treasury proposals', value: 'Treasury proposals' },
+  { label: 'Grants', value: 'Grants' },
+  { label: 'My proposals', value: 'My proposals' },
 ]
 
 export const Default: Story = {
   render() {
-    const [currentFilter, setCurrentFilter] = useState(filterOptions[0])
+    const [currentFilter, setCurrentFilter] = useState(filterOptions[0].value)
     return (
       <div>
         <FilterSideBar
