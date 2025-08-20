@@ -17,7 +17,7 @@ interface CreatorRowComponentProps {
 }
 
 export const CreatorRowComponent = ({ proposer, Starts, category, className }: CreatorRowComponentProps) => (
-  <div className={cn('flex flex-row flex-nowrap mt-2 items-center w-full min-h-0', className)}>
+  <div className={cn('flex flex-row mt-2 items-center', className)}>
     <Tooltip text="Copy address">
       <Span>
         <CopyButton icon={null} className="inline" copyText={proposer}>

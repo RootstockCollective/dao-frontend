@@ -17,7 +17,7 @@ export const LatestProposalCard = ({
       className="text-primary group-hover:underline group-hover:text-bg-100 group-hover:decoration-bg-40"
       href={`/proposals/${proposalId}`}
     >
-      <Paragraph className="w-full line-clamp-3">{name}</Paragraph>
+      <Paragraph className="w-full line-clamp-3 h-[72px]">{name}</Paragraph>
     </Link>
     <CreatorRowComponent className={'mt-3'} category={category} Starts={Starts} proposer={proposer} />
   </div>
