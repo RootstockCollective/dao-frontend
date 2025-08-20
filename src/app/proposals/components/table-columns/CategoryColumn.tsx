@@ -1,5 +1,5 @@
 import { Tooltip } from '@/components/Tooltip'
-import { GrantsIcon, ToolsIcon, Milestone1Icon, Milestone2Icon, Milestone3Icon } from './icons'
+import { GrantsIcon, ToolsIcon, Milestone1Icon, Milestone2Icon, Milestone3Icon } from '../icons'
 import { ProposalCategory } from '@/shared/types'
 import { ClassNameValue } from 'tailwind-merge'
 import { cn } from '@/lib/utils'
