@@ -16,6 +16,7 @@ import { BASE_PROPOSAL_LIMITS } from '../schemas/BaseProposalSchema'
 import { GrantProposal, GrantProposalSchema } from '../schemas/GrantProposalSchema'
 import { TOKEN_FIELD_LIMITS } from '../schemas/TokenSchema'
 import { labeledMilestones } from '@/app/proposals/shared/utils'
+import { MilestoneInfoSidebar } from '../components/MilestoneInfoSidebar'
 
 export default function GrantsProposalForm() {
   const { record, setRecord } = useReviewProposal()
@@ -107,7 +108,12 @@ export default function GrantsProposalForm() {
         </div>
       </form>
       <div className="flex flex-row gap-2 basis-1/4 items-start">
-        <ProposalInfoSidebar kycLink="https://gov.rootstockcollective.xyz/t/general-guidelines-for-grant-applications/94/7" />
+        <div>
+          <ProposalInfoSidebar kycLink="https://gov.rootstockcollective.xyz/t/general-guidelines-for-grant-applications/94/7" />
+        </div>
+        <div className="mb-50">
+          <MilestoneInfoSidebar />
+        </div>
       </div>
     </div>
   )

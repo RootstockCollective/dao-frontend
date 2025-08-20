@@ -8,7 +8,7 @@ interface ProposalInfoSidebarProps {
 
 export const ProposalInfoSidebar = ({ kycLink }: ProposalInfoSidebarProps) => {
   return (
-    <>
+    <div className="flex flex-row gap-2">
       <InfoIcon className="w-5 h-5 text-bg-0" />
       <div className="flex flex-col gap-2">
         <Paragraph className="text-bg-0">
@@ -31,6 +31,6 @@ export const ProposalInfoSidebar = ({ kycLink }: ProposalInfoSidebarProps) => {
           Builders who skip these steps often receive overwhelmingly negative votes.
         </Paragraph>
       </div>
-    </>
+    </div>
   )
 }
