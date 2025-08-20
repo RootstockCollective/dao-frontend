@@ -252,7 +252,28 @@ export function getProposalCategoryFromParsedData(
   calldatasParsed: DecodedData[],
   description: string,
 ): ProposalCategory {
-  // Check for milestone first (highest priority)
+  // Extract all decoded function names once
+  const decodedFunctionNames = calldatasParsed
+    .filter(data => data.type === 'decoded')
+    .map(data => data.functionName)
+
+  // Map function names to their categories
+  const functionCategoryMap = new Map<string, ProposalCategory>([
+    ['communityApproveBuilder', ProposalCategory.Activation],
+    ['whitelistBuilder', ProposalCategory.Activation],
+    ['dewhitelistBuilder', ProposalCategory.Deactivation],
+    ['removeWhitelistedBuilder', ProposalCategory.Deactivation],
+  ])
+
+  // Check for builder functions first
+  for (const functionName of decodedFunctionNames) {
+    const category = functionCategoryMap.get(functionName)
+    if (category) {
+      return category
+    }
+  }
+
+  // Then check for milestone (only if not a builder function)
   if (description.includes(MILESTONE_SEPARATOR)) {
     const milestoneNumber = description.split(MILESTONE_SEPARATOR)[1]
     switch (milestoneNumber) {
@@ -265,12 +286,8 @@ export function getProposalCategoryFromParsedData(
     }
   }
 
-  // Check for grant functions
-  const hasGrantFunction = calldatasParsed
-    .filter(data => data.type === 'decoded')
-    .some(data => ['withdraw', 'withdrawERC20'].includes(data.functionName))
-
-  return hasGrantFunction ? ProposalCategory.Grants : ProposalCategory.Activation
+  // If not builder functions and not milestone, it must be a grant
+  return ProposalCategory.Grants
 }
 
 export function serializeBigInts(obj: any): any {

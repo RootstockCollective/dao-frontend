@@ -6,7 +6,7 @@ import { AVERAGE_BLOCKTIME } from '@/lib/constants'
 import Big from '@/lib/big'
 import { getProposalEventArguments, getProposalCategoryFromParsedData } from '@/app/proposals/shared/utils'
 import { Address, formatEther } from 'viem'
-import { ProposalCategory, ProposalState } from '@/shared/types'
+import { ProposalState } from '@/shared/types'
 import { Proposal } from '../shared/types'
 
 export function useGetProposalsWithGraph() {
