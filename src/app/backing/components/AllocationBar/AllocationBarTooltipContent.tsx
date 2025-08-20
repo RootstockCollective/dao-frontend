@@ -23,7 +23,7 @@ export const AllocationBarTooltipContent = ({
   return (
     <div className="w-[230px] p-4">
       <div className="inline-flex items-center gap-1">
-        <BaseTypography variant="tag-s" className="text-foreground">
+        <BaseTypography variant="tag-s">
           {isUnallocated ? 'Unallocated' : shortAddress(builderAddress as Address)}
         </BaseTypography>
         {percentage && (
@@ -38,7 +38,7 @@ export const AllocationBarTooltipContent = ({
             <BaseTypography variant="body-s">Pending</BaseTypography>
             <span className="inline-flex items-center gap-1">
               <HourglassIcon className="size-4" color="var(--background-40)" />
-              <BaseTypography variant="tag">{formatSymbol(pendingBacking, STRIF)}</BaseTypography>
+              <BaseTypography variant="body">{formatSymbol(pendingBacking, STRIF)}</BaseTypography>
             </span>
           </div>
         )}
@@ -46,7 +46,7 @@ export const AllocationBarTooltipContent = ({
           <BaseTypography variant="body-s">
             {isUnallocated ? 'Unallocated backing' : 'Current backing'}
           </BaseTypography>
-          <BaseTypography variant="tag">{formatSymbol(currentBacking, STRIF)}</BaseTypography>
+          <BaseTypography variant="body">{formatSymbol(currentBacking, STRIF)}</BaseTypography>
         </div>
       </div>
     </div>
