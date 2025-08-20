@@ -5,7 +5,7 @@ import { FilterOption } from './filterOptions'
 interface Props {
   option: FilterOption
   selected: boolean
-  onClick: (option: string) => void
+  onClick: (option: FilterOption['value']) => void
 }
 
 /**
