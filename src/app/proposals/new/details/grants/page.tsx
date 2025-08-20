@@ -15,7 +15,7 @@ import { BaseProposalFields, ProposalInfoSidebar, TokenRadioGroup } from '../com
 import { BASE_PROPOSAL_LIMITS } from '../schemas/BaseProposalSchema'
 import { GrantProposal, GrantProposalSchema } from '../schemas/GrantProposalSchema'
 import { TOKEN_FIELD_LIMITS } from '../schemas/TokenSchema'
-import { Milestones } from '@/app/proposals/shared/types'
+import { labeledMilestones } from '@/app/proposals/shared/utils'
 
 export default function GrantsProposalForm() {
   const { record, setRecord } = useReviewProposal()
@@ -76,10 +76,9 @@ export default function GrantsProposalForm() {
           <SelectField
             name="milestone"
             control={control}
-            options={Object.values(Milestones)}
+            options={labeledMilestones}
             placeholder="Proposal milestone"
             className="max-w-[336px]"
-            nullDisplayValue="No milestone"
           />
         </div>
         <div className="flex flex-col gap-4">

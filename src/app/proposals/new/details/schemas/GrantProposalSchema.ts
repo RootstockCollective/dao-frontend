@@ -3,16 +3,14 @@ import { getAddress, isAddress } from 'viem'
 import { BaseProposalSchema } from './BaseProposalSchema'
 import { TokenFieldsSchema } from './TokenSchema'
 import { GRANT_TOKEN_LIMITS } from '@/lib/constants'
-import { Milestones } from '@/app/proposals/shared/types'
+import { Milestones } from '@/app/proposals/shared/utils'
 
 // Grant proposal form schema
 export const GrantProposalSchema = BaseProposalSchema.merge(TokenFieldsSchema)
   .extend({
-    milestone: z
-      .union([z.nativeEnum(Milestones), z.null(), z.undefined()])
-      .refine(value => value !== undefined, {
-        message: 'Please select a milestone option',
-      }),
+    milestone: z.union([z.nativeEnum(Milestones), z.undefined()]).refine(value => value !== undefined, {
+      message: 'Please select a milestone option',
+    }),
 
     targetAddress: z
       .string()

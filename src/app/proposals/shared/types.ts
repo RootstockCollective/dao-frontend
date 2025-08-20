@@ -73,9 +73,3 @@ export type ProposalRecord =
   | { category: ProposalCategory.Grants; form: GrantProposal }
   | { category: ProposalCategory.Activation; form: ActivationProposal }
   | { category: ProposalCategory.Deactivation; form: DeactivationProposal }
-
-export enum Milestones {
-  MILESTONE_1 = 'Milestone 1',
-  MILESTONE_2 = 'Milestone 2',
-  MILESTONE_3 = 'Milestone 3',
-}

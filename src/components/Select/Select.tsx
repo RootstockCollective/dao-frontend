@@ -8,7 +8,12 @@ interface SelectProps extends Select.SelectTriggerProps {
   /**
    * Array of options to display in the dropdown
    */
-  options: string[]
+  options:
+    | {
+        value: string
+        label: string
+      }[]
+    | string[]
   /**
    * Callback function called when the selected value changes
    * Receives empty string when deselected
@@ -111,28 +116,32 @@ function SelectDropdown({
             onAnimationComplete={() => setShowShadow(isOpen)}
           >
             <Select.Viewport className="py-2">
-              {options?.map((option, i) => (
-                <Select.Item
-                  disabled={isAnimating}
-                  value={option}
-                  key={`${option}-${i}`}
-                  className={cn(
-                    'px-4 py-2 h-10', // size
-                    // bg highlighting
-                    'hover:bg-text-80 hover:text-text-0 transition-colors duration-300 ',
-                    'data-[highlighted]:bg-text-80 data-[highlighted]:text-text-0',
-                    'text-text-100 font-rootstock-sans leading-none', // text
-                    'flex items-center justify-between', // flex
-                    'focus:outline-none hover:outline-0 cursor-pointer', // decorations
-                    { 'bg-bg-40/30': value && value === option },
-                  )}
-                >
-                  <Select.ItemText>{option}</Select.ItemText>
-                  <Select.ItemIndicator>
-                    <CheckIcon className="w-4 h-4" />
-                  </Select.ItemIndicator>
-                </Select.Item>
-              ))}
+              {options?.map((option, i) => {
+                const [optValue, label] =
+                  typeof option === 'string' ? [option, option] : [option.value, option.label]
+                return (
+                  <Select.Item
+                    disabled={isAnimating}
+                    value={optValue}
+                    key={`${optValue}-${i}`}
+                    className={cn(
+                      'px-4 py-2 h-10', // size
+                      // bg highlighting
+                      'hover:bg-text-80 hover:text-text-0 transition-colors duration-300 ',
+                      'data-[highlighted]:bg-text-80 data-[highlighted]:text-text-0',
+                      'text-text-100 font-rootstock-sans leading-none', // text
+                      'flex items-center justify-between', // flex
+                      'focus:outline-none hover:outline-0 cursor-pointer', // decorations
+                      { 'bg-bg-40/30': value && value === optValue },
+                    )}
+                  >
+                    <Select.ItemText>{label}</Select.ItemText>
+                    <Select.ItemIndicator>
+                      <CheckIcon className="w-4 h-4" />
+                    </Select.ItemIndicator>
+                  </Select.Item>
+                )
+              })}
             </Select.Viewport>
           </motion.div>
         </Select.Content>
