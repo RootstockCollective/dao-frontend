@@ -173,8 +173,8 @@ const AllocationBar: React.FC<AllocationBarProps> = ({
             {currentItems.map((item, i) => (
               <AllocationBarSegment
                 key={item.key}
-                value={currentValues[i]}
-                initialValue={item.initialValue ?? 0n}
+                pendingBacking={currentValues[i]}
+                currentBacking={item.initialValue ?? 0n}
                 totalValue={totalValue}
                 item={item}
                 index={i}

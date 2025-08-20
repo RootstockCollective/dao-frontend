@@ -13,7 +13,7 @@ export default meta
 type Story = StoryObj<typeof meta>
 
 const addUnallocated = (items: AllocationItem[], totalAllocated: bigint): AllocationItem[] => {
-  const allocatedSum = items.reduce((sum, { value }) => sum + BigInt(value), BigInt(0))
+  const allocatedSum = items.reduce((sum, { value }) => sum + value, 0n)
   return [
     ...items,
     {

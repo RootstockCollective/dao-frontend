@@ -12,24 +12,24 @@ interface AllocationBarTooltipProps {
   percentage?: string
 }
 
-export const AllocationBarTooltip = ({
+export const AllocationBarTooltipContent = ({
   builderAddress,
   currentBacking,
   pendingBacking,
   percentage = '',
 }: AllocationBarTooltipProps) => {
+  const isUnallocated = builderAddress === 'unallocated'
+  
   return (
     <div className="w-[230px] p-3">
       <div className="inline-flex items-center gap-1">
         <Typography variant="tag-s" className="text-foreground">
-          {builderAddress === 'unallocated' ? 'Unallocated' : shortAddress(builderAddress as Address)}
+          {isUnallocated ? 'Unallocated' : shortAddress(builderAddress as Address)}
         </Typography>
-        {percentage ? (
+        {percentage && (
           <Typography variant="tag-s" className="font-light">
             ({percentage})
           </Typography>
-        ) : (
-          ``
         )}
       </div>
       <div className="flex flex-col gap-1 mt-2">
@@ -44,7 +44,7 @@ export const AllocationBarTooltip = ({
         )}
         <div className="flex justify-between items-center text-secondary gap-5">
           <Typography>
-            {builderAddress === 'unallocated' ? 'Unallocated backing' : 'Current backing'}
+            {isUnallocated ? 'Unallocated backing' : 'Current backing'}
           </Typography>
           <Typography>{formatSymbol(currentBacking, STRIF)}</Typography>
         </div>
