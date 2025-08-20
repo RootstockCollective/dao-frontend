@@ -12,9 +12,9 @@ interface Props {
 
 export function CategoryColumn({ category, className, hasGradient = false }: Props) {
   const icons = {
-    [ProposalCategory.Grants]: <GrantsIcon />,
-    [ProposalCategory.Activation]: <ToolsIcon />,
-    [ProposalCategory.Deactivation]: <ToolsIcon />,
+    [ProposalCategory.Grants]: <GrantsIcon hasGradient={hasGradient} />,
+    [ProposalCategory.Activation]: <ToolsIcon hasGradient={hasGradient} />,
+    [ProposalCategory.Deactivation]: <ToolsIcon hasGradient={hasGradient} />,
     [ProposalCategory.Milestone1]: <Milestone1Icon hasGradient={hasGradient} />,
     [ProposalCategory.Milestone2]: <Milestone2Icon hasGradient={hasGradient} />,
     [ProposalCategory.Milestone3]: <Milestone3Icon hasGradient={hasGradient} />,
