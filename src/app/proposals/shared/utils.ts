@@ -10,6 +10,7 @@ import {
 import { GovernorAbi } from '@/lib/abis/Governor'
 import { MAX_NAME_LENGTH_FOR_PROPOSAL, TALLY_DESCRIPTION_SEPARATOR } from '@/lib/constants'
 import { ProposalCategory } from '@/shared/types'
+import { Milestones } from './types'
 
 export interface EventArgumentsParameter {
   args: {
@@ -239,6 +240,37 @@ export function getProposalCategory(calldatasParsed: any[]): string {
     .find(data => ['withdraw', 'withdrawERC20'].includes(data.functionName))
 
   return hasWithdrawAction ? ProposalCategory.Grants : ProposalCategory.Activation
+}
+
+/**
+ * Extracts proposal category from parsed calldata and description
+ * @param calldatasParsed - Array of decoded calldata
+ * @param description - Original proposal description for milestone detection
+ * @returns ProposalCategory
+ */
+export function getProposalCategoryFromParsedData(
+  calldatasParsed: DecodedData[],
+  description: string,
+): ProposalCategory {
+  // Check for milestone first (highest priority)
+  if (description.includes(MILESTONE_SEPARATOR)) {
+    const milestoneNumber = description.split(MILESTONE_SEPARATOR)[1]
+    switch (milestoneNumber) {
+      case Milestones.FIRST:
+        return ProposalCategory.Milestone1
+      case Milestones.SECOND:
+        return ProposalCategory.Milestone2
+      case Milestones.THIRD:
+        return ProposalCategory.Milestone3
+    }
+  }
+
+  // Check for grant functions
+  const hasGrantFunction = calldatasParsed
+    .filter(data => data.type === 'decoded')
+    .some(data => ['withdraw', 'withdrawERC20'].includes(data.functionName))
+
+  return hasGrantFunction ? ProposalCategory.Grants : ProposalCategory.Activation
 }
 
 export function serializeBigInts(obj: any): any {
