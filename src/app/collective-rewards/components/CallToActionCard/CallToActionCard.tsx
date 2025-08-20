@@ -11,6 +11,20 @@ interface CallToActionCardContext {
 
 const CallToActionCardContext = createContext<CallToActionCardContext | null>(null)
 
+interface CallToActionCardProviderProps {
+  defaultOpen?: boolean
+  children: ReactNode
+}
+
+const CallToActionCardProvider = ({ defaultOpen = true, children }: CallToActionCardProviderProps) => {
+  const [isOpen, setIsOpen] = useState(defaultOpen)
+  const toggle = () => setIsOpen(prev => !prev)
+
+  return (
+    <CallToActionCardContext.Provider value={{ isOpen, toggle }}>{children}</CallToActionCardContext.Provider>
+  )
+}
+
 interface CallToActionCardProps extends CommonComponentProps {
   defaultOpen?: boolean
   children: ReactNode
@@ -18,13 +32,10 @@ interface CallToActionCardProps extends CommonComponentProps {
 }
 
 export const CallToActionCard = ({ defaultOpen = true, children, className = '' }: CallToActionCardProps) => {
-  const [isOpen, setIsOpen] = useState(defaultOpen)
-  const toggle = () => setIsOpen(prev => !prev)
-
   return (
-    <CallToActionCardContext.Provider value={{ isOpen, toggle }}>
+    <CallToActionCardProvider defaultOpen={defaultOpen}>
       <div className={cn('flex flex-col flex-1 w-full', className)}>{children}</div>
-    </CallToActionCardContext.Provider>
+    </CallToActionCardProvider>
   )
 }
 
