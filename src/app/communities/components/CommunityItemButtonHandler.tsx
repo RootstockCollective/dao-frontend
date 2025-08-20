@@ -1,4 +1,4 @@
-import { Paragraph } from '@/components/Typography'
+import { Span } from '@/components/Typography'
 import Link from 'next/link'
 import { ArrowRightIconKoto, ArrowUpRightLightIcon } from '@/components/Icons'
 
@@ -31,10 +31,13 @@ export const CommunityItemButtonHandler = ({
     href = readMoreLink
     target = '_blank'
   }
+  const textClassColor = color === 'black' ? 'text-bg-100' : 'text-text-100'
   return (
     <Link href={href} target={target} data-testid={dataTestId}>
       <div className={'flex flex-row gap-1 items-center'} style={{ color }}>
-        <Paragraph>Learn more</Paragraph>
+        <Span variant="body-s" bold className={textClassColor}>
+          Learn more
+        </Span>
         {isExternal ? <ArrowUpRightLightIcon color={color} /> : <ArrowRightIconKoto color={color} />}
       </div>
     </Link>
