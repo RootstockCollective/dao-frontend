@@ -97,7 +97,7 @@ export default function GrantsProposalReview() {
           </Header>
           {milestone && (
             <div className="flex items-baseline-last gap-2">
-              <MilestoneIcon digit={milestone.match(/\d+/)?.[0] ?? '0'} className="" />
+              <MilestoneIcon digit={milestone.match(/\d+/)?.[0] ?? '0'} />
               <Paragraph className=" text-lg text-bg-0">{milestone}</Paragraph>
             </div>
           )}
