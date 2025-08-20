@@ -1,10 +1,10 @@
 import type { Meta, StoryObj } from '@storybook/nextjs'
-import { SelectDropdown } from './Select'
+import { Select } from './Select'
 import { useState } from 'react'
 
-const meta: Meta<typeof SelectDropdown> = {
+const meta: Meta<typeof Select> = {
   title: 'KOTO/Components/Select',
-  component: SelectDropdown,
+  component: Select,
   parameters: {
     layout: 'padded',
   },
@@ -49,7 +49,7 @@ export const Default: Story = {
     const [value, setValue] = useState<string | undefined>()
     return (
       <div className="max-w-80">
-        <SelectDropdown onValueChange={setValue} options={options} value={value} />
+        <Select onValueChange={setValue} options={options} value={value} />
         <p className="mt-4 text-sm text-gray-600">Selected value: {value || 'None'}</p>
       </div>
     )
@@ -65,7 +65,7 @@ export const WithPreselectedValue: Story = {
     const [value, setValue] = useState<string>('consectetur')
     return (
       <div>
-        <SelectDropdown className="max-w-80" onValueChange={setValue} options={options} value={value} />
+        <Select className="max-w-80" onValueChange={setValue} options={options} value={value} />
         <p className="mt-4 text-sm text-gray-600">Selected value: {value}</p>
       </div>
     )
@@ -81,7 +81,7 @@ export const CustomPlaceholder: Story = {
     const [value, setValue] = useState<string | undefined>()
     return (
       <div className="max-w-80">
-        <SelectDropdown
+        <Select
           onValueChange={setValue}
           options={['React', 'Vue', 'Angular', 'Svelte', 'Next.js']}
           value={value}
@@ -108,7 +108,7 @@ export const LongOptions: Story = {
     const [value, setValue] = useState<string | undefined>()
     return (
       <div className="max-w-80">
-        <SelectDropdown
+        <Select
           onValueChange={setValue}
           options={[
             'This is a very long option that might overflow',
@@ -121,33 +121,6 @@ export const LongOptions: Story = {
           placeholder="Select a very long option..."
         />
         <p className="mt-4 text-sm text-gray-600">Selected value: {value || 'None'}</p>
-      </div>
-    )
-  },
-}
-
-export const WithDeselectFunction: Story = {
-  args: {
-    placeholder: 'Click selected item to deselect...',
-    options: ['Apple', 'Banana', 'Cherry', 'Date', 'Elderberry'],
-  },
-  render() {
-    const [value, setValue] = useState<string>('Banana')
-    const handleValueChange = (newValue: string) => {
-      setValue(newValue === '' ? '' : newValue)
-    }
-    return (
-      <div className="max-w-80">
-        <SelectDropdown
-          onValueChange={handleValueChange}
-          options={['Apple', 'Banana', 'Cherry', 'Date', 'Elderberry']}
-          value={value}
-          placeholder="Click selected item to deselect..."
-        />
-        <p className="mt-4 text-sm text-gray-600">
-          Selected value: {value || 'None'}
-          <span className="text-xs block mt-1">💡 Click on the selected item to deselect it</span>
-        </p>
       </div>
     )
   },

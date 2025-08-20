@@ -20,6 +20,8 @@ import { DISCOURSE_LINK_SEPARATOR } from '@/app/proposals/shared/utils'
 import { TokenImage } from '@/components/TokenImage'
 import { usePricesContext } from '@/shared/context'
 import Big from '@/lib/big'
+import { MilestoneIcon } from '@/app/proposals/components/MilestoneIcon'
+import { MILESTONE_SEPARATOR, Milestones, labeledMilestones } from '@/app/proposals/shared/utils'
 
 export default function GrantsProposalReview() {
   const { prices } = usePricesContext()
@@ -33,8 +35,11 @@ export default function GrantsProposalReview() {
     setLoading(true)
     try {
       if (!record?.form || record?.category !== ProposalCategory.Grants) return
-      const { description, proposalName, targetAddress, token, transferAmount, discourseLink } = record.form
-      const proposalDescription = `${proposalName};${description} ${DISCOURSE_LINK_SEPARATOR}${discourseLink} `
+      const { description, proposalName, targetAddress, token, transferAmount, discourseLink, milestone } =
+        record.form
+      const milestoneString =
+        milestone !== Milestones.NO_MILESTONE ? `${MILESTONE_SEPARATOR + milestone} ` : ''
+      const proposalDescription = `${proposalName};${description} ${DISCOURSE_LINK_SEPARATOR}${discourseLink} ${milestoneString}`
       const tokenAddress = tokenContracts[token.toUpperCase() as keyof typeof tokenContracts]
       if (!tokenAddress) throw new Error('GrantsProposalReview: Unknown contract address')
 
@@ -78,16 +83,26 @@ export default function GrantsProposalReview() {
   if (!record?.form || record?.category !== ProposalCategory.Grants) {
     return null
   }
-  const { description, discourseLink, proposalName, targetAddress, token, transferAmount } = record.form
+  const { description, discourseLink, proposalName, targetAddress, token, transferAmount, milestone } =
+    record.form
   const tokenAmount = formatNumberWithCommas(transferAmount)
 
   const tokenPrice = prices?.[token]?.price ?? 0
+  const milestoneLabel = labeledMilestones.find(({ value }) => value === milestone)?.label
   return (
     <div>
       <div className="mb-10 pr-2 w-full lg:flex lg:justify-between">
-        <Header caps variant="h3" className="text-2xl lg:text-3xl leading-relaxed tracking-wide">
-          {proposalName}
-        </Header>
+        <div className="flex items-baseline gap-4">
+          <Header caps variant="h3" className="text-2xl lg:text-3xl leading-relaxed tracking-wide">
+            {proposalName}
+          </Header>
+          {milestone !== Milestones.NO_MILESTONE && milestoneLabel && (
+            <div className="flex items-baseline-last gap-2">
+              <MilestoneIcon digit={milestone[0]} />
+              <Paragraph className=" text-lg text-bg-0">{milestoneLabel}</Paragraph>
+            </div>
+          )}
+        </div>
         <PreviewLabel />
       </div>
 

@@ -1,1 +1,1 @@
-export { SelectDropdown as Select } from './Select'
+export { Select, type SelectProps } from './Select'

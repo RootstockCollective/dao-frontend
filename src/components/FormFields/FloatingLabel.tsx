@@ -19,7 +19,7 @@ export function FloatingLabel({ label, isFloating, children, className, ...label
       <motion.label
         htmlFor={labelProps.htmlFor}
         className={cn(
-          'absolute left-4 top-5 pointer-events-none origin-left font-rootstock-sans text-bg-0 whitespace-nowrap',
+          'absolute w-[calc(100%-2rem)] left-4 top-5 pointer-events-none origin-left font-rootstock-sans text-bg-0 truncate ',
         )}
         initial={false}
         animate={{

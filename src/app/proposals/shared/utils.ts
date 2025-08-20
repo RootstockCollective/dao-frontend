@@ -131,6 +131,30 @@ export const getProposalEventArguments = ({
 export const DISPLAY_NAME_SEPARATOR = 'D15PL4Y_N4M3:'
 export const DISCOURSE_LINK_SEPARATOR = 'DiscourseLink:'
 export const MILESTONE_SEPARATOR = 'M1lestone:'
+export enum Milestones {
+  MILESTONE_1 = '1',
+  MILESTONE_2 = '2',
+  MILESTONE_3 = '3',
+  NO_MILESTONE = '0',
+}
+export const labeledMilestones = [
+  {
+    value: Milestones.MILESTONE_1,
+    label: 'Milestone 1',
+  },
+  {
+    value: Milestones.MILESTONE_2,
+    label: 'Milestone 2',
+  },
+  {
+    value: Milestones.MILESTONE_3,
+    label: 'Milestone 3',
+  },
+  {
+    value: Milestones.NO_MILESTONE,
+    label: 'No milestone',
+  },
+]
 
 export const splitCombinedName = (name: string) => {
   const [proposalName, builderName] = name.split(DISPLAY_NAME_SEPARATOR)

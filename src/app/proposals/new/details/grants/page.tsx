@@ -1,7 +1,7 @@
 'use client'
 
 import { useReviewProposal } from '@/app/providers'
-import { NumberInput, TextInput } from '@/components/FormFields'
+import { NumberInput, SelectField, TextInput } from '@/components/FormFields'
 import { useLayoutContext } from '@/components/MainContainer/LayoutProvider'
 import { Header } from '@/components/Typography'
 import { ProposalCategory } from '@/shared/types'
@@ -15,6 +15,7 @@ import { BaseProposalFields, ProposalInfoSidebar, TokenRadioGroup } from '../com
 import { BASE_PROPOSAL_LIMITS } from '../schemas/BaseProposalSchema'
 import { GrantProposal, GrantProposalSchema } from '../schemas/GrantProposalSchema'
 import { TOKEN_FIELD_LIMITS } from '../schemas/TokenSchema'
+import { labeledMilestones } from '@/app/proposals/shared/utils'
 
 export default function GrantsProposalForm() {
   const { record, setRecord } = useReviewProposal()
@@ -34,6 +35,7 @@ export default function GrantsProposalForm() {
             targetAddress: '' as Address,
             token: 'RIF',
             transferAmount: '',
+            milestone: undefined,
           },
   })
   const onSubmit = useCallback(
@@ -64,9 +66,21 @@ export default function GrantsProposalForm() {
   useEffect(() => setFocus('proposalName'), [])
 
   return (
-    <div className="flex gap-6">
-      <form className="w-2/3 px-6 pt-6 pb-8 flex flex-col gap-10 bg-bg-80 rounded-sm">
+    <div className="flex flex-col-reverse lg:flex-row gap-6">
+      <form className="px-6 pt-6 pb-8 flex flex-col gap-10 basis-3/4 bg-bg-80 rounded-sm">
         <BaseProposalFields control={control} />
+        <div className="flex flex-col gap-4">
+          <Header caps variant="h2" className="leading-loose tracking-wide">
+            Milestone Selection
+          </Header>
+          <SelectField
+            name="milestone"
+            control={control}
+            options={labeledMilestones}
+            placeholder="Proposal milestone"
+            className="max-w-[336px]"
+          />
+        </div>
         <div className="flex flex-col gap-4">
           <Header caps variant="h2" className="leading-loose tracking-wide">
             Proposal Action
@@ -78,7 +92,7 @@ export default function GrantsProposalForm() {
             data-testid="InputAddress"
             maxLength={BASE_PROPOSAL_LIMITS.address.max}
           />
-          <div className="flex items-center justify-start gap-6">
+          <div className="flex items-center justify-start gap-6 @container">
             <div className="basis-1/2">
               <NumberInput
                 name="transferAmount"
@@ -92,7 +106,7 @@ export default function GrantsProposalForm() {
           </div>
         </div>
       </form>
-      <div className="w-1/3 flex flex-row gap-2 items-start">
+      <div className="flex flex-row gap-2 basis-1/4 items-start">
         <ProposalInfoSidebar kycLink="https://gov.rootstockcollective.xyz/t/general-guidelines-for-grant-applications/94/7" />
       </div>
     </div>
