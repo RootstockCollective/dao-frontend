@@ -162,7 +162,6 @@ export const VotingDetails = ({
     _canProposalBeExecuted?: boolean,
     _cannotCastVote?: boolean,
   ): ButtonAction | undefined => {
-    console.log('state: ', state)
     switch (state) {
       case ProposalState.Active:
         if (_cannotCastVote) return undefined
