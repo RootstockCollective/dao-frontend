@@ -194,5 +194,3 @@ export function DualAxisChart({
     </div>
   )
 }
-
-
