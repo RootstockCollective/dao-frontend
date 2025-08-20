@@ -1,3 +1,4 @@
+import React from 'react'
 import { formatSymbol } from '@/app/collective-rewards/rewards/utils'
 import { HourglassIcon } from '@/components/Icons/HourglassIcon'
 import { Typography } from '@/components/TypographyNew/Typography'
@@ -19,7 +20,7 @@ export const AllocationBarTooltipContent = ({
   percentage = '',
 }: AllocationBarTooltipProps) => {
   const isUnallocated = builderAddress === 'unallocated'
-  
+
   return (
     <div className="w-[230px] p-3">
       <div className="inline-flex items-center gap-1">
@@ -43,9 +44,7 @@ export const AllocationBarTooltipContent = ({
           </div>
         )}
         <div className="flex justify-between items-center text-secondary gap-5">
-          <Typography>
-            {isUnallocated ? 'Unallocated backing' : 'Current backing'}
-          </Typography>
+          <Typography>{isUnallocated ? 'Unallocated backing' : 'Current backing'}</Typography>
           <Typography>{formatSymbol(currentBacking, STRIF)}</Typography>
         </div>
       </div>

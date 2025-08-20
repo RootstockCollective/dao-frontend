@@ -10,7 +10,6 @@ export const checkerboardStyle = (): React.CSSProperties => ({
 
 export const clamp = (val: number, min: number, max: number) => Math.min(Math.max(val, min), max)
 
-// Calculate pixel positions for the segments being resized
 export const calculateSegmentPositions = (
   dragIndex: number,
   rect: DOMRect,
@@ -20,12 +19,13 @@ export const calculateSegmentPositions = (
   let cumSum = 0n
   for (let i = 0; i < dragIndex; ++i) cumSum += values[i]
   const leftPx = Number((cumSum * BigInt(rect.width)) / totalValue)
-  const rightPx = Number(((cumSum + values[dragIndex] + values[dragIndex + 1]) * BigInt(rect.width)) / totalValue)
+  const rightPx = Number(
+    ((cumSum + values[dragIndex] + values[dragIndex + 1]) * BigInt(rect.width)) / totalValue,
+  )
 
   return { leftPx, rightPx }
 }
 
-// Calculate the new values for the segments being resized
 export const calculateNewSegmentValues = (
   x: number,
   leftPx: number,
@@ -38,13 +38,12 @@ export const calculateNewSegmentValues = (
   const totalPairPx = rightPx - leftPx
   const minLeftPx = pairSum > 0n ? (Number(minSegmentValue) / Number(pairSum)) * totalPairPx : 0
   const maxLeftPx = totalPairPx - minLeftPx
-  // Calculate the handle's x relative to leftPx
+
   let relX = clamp(x - leftPx, minLeftPx, maxLeftPx)
-  // Convert back to actual value
+
   let leftValue = BigInt(Math.round((relX / totalPairPx) * Number(pairSum)))
   let rightValue = pairSum - leftValue
 
-  // Ensure minimum segment sizes
   if (leftValue < minSegmentValue) {
     leftValue = minSegmentValue
     rightValue = pairSum - leftValue
@@ -58,10 +57,10 @@ export const calculateNewSegmentValues = (
 
 // Convert actual value to percentage for display
 export const valueToPercentage = (value: bigint, totalValue: bigint): number => {
-  if (totalValue === 0n || value === 0n) return 0;
-  
-  const percentage = (value * 10000n) / totalValue; 
-  return Number(percentage) / 100; 
+  if (totalValue === 0n || value === 0n) return 0
+
+  const percentage = (value * 10000n) / totalValue
+  return Number(percentage) / 100
 }
 
 // Calculate minimum segment value based on total value and minimum percentage
