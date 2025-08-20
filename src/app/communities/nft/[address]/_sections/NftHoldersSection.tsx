@@ -28,7 +28,7 @@ export const NftHoldersSection = ({ address }: { address: Address }) => {
     pageIndex: 0,
     pageSize: 15,
   }))
-  const [view, setView] = useState<ViewState>('table')
+  const [view, setView] = useState<ViewState>('images')
   const { isLoading, isError, allItems } = useFetchNftHolders(address)
   // Define NFT holders table
   const { accessor } = createColumnHelper<(typeof allItems)[number]>()
