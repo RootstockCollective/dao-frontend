@@ -142,7 +142,7 @@ const usePagedFilteredBuildersRewards = ({
 export const BuildersTable = ({ filterOption }: { filterOption: BuilderFilterOptionId }) => {
   const [pageEnd, setPageEnd] = useState(PAGE_SIZE)
 
-  const { isConnected, address: backer } = useAccount()
+  const { isConnected } = useAccount()
 
   const { rows, columns, selectedRows, sort } = useTableContext<ColumnId, BuilderCellDataMap>()
   const [actions, setActions] = useState<Action[]>([])
@@ -251,11 +251,9 @@ export const BuildersTable = ({ filterOption }: { filterOption: BuilderFilterOpt
           </thead>
           <Suspense fallback={<div>Loading table data...</div>}>
             <tbody>
-              {rows.map((row, index) => {
-                return (
-                  <BuilderDataRow key={row.id} row={row} userBacking={allocations[row.id as Address] ?? 0n} />
-                )
-              })}
+              {rows.map(row => (
+                <BuilderDataRow key={row.id} row={row} userBacking={allocations[row.id as Address] ?? 0n} />
+              ))}
             </tbody>
           </Suspense>
         </table>
