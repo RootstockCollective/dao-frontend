@@ -106,7 +106,7 @@ const BuilderAllocationBar = ({ barOverrides }: { barOverrides?: Partial<Allocat
         changedItems.forEach(item => {
           const newValue = newValues[itemsData.indexOf(item)]
           if (item.key !== UNALLOCATED_KEY) {
-            updateAllocation(item.key as Address, newValue > 0 ? newValue : 0n)
+            updateAllocation(item.key as Address, newValue)
           }
         })
       } else if (change.type === 'reorder') {
