@@ -1,8 +1,7 @@
 import type { Meta } from '@storybook/nextjs'
 import { createColumnHelper, getCoreRowModel, getSortedRowModel, useReactTable } from '@tanstack/react-table'
 import { GridTable } from './GridTable'
-import { Badge } from '../Badge'
-import { Paragraph } from '../TypographyNew'
+import { Paragraph, Span } from '../Typography'
 
 const meta: Meta = {
   title: 'Components/Table/GridTable',
@@ -71,7 +70,14 @@ const columns = [
   }),
   columnHelper.accessor('status', {
     header: 'Role',
-    cell: context => <Badge content={context.getValue()} className="bg-bg-60 text-text-100 px-2 py-1" />,
+    cell: context => (
+      <Span variant="body-s" className="inline-block rounded bg-bg-60 text-text-100 px-2 py-1">
+        {context.getValue()}
+      </Span>
+    ),
+    meta: {
+      width: '150px',
+    },
   }),
 ]
 /* Ready table object */

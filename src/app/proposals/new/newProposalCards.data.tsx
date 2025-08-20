@@ -4,7 +4,7 @@ import rewardsImage from './images/rewards.png'
 import grantBigImage from './images/grant-big.png'
 import rewardsBigImage from './images/rewards-big.png'
 import { ProposalCategory } from '@/shared/types'
-import { Paragraph } from '@/components/TypographyNew'
+import { Paragraph } from '@/components/Typography'
 
 interface NewProposalCardCoreProps {
   type: ProposalCategory

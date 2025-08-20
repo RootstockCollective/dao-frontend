@@ -1,4 +1,4 @@
-import { Header, Paragraph } from '@/components/TypographyNew'
+import { Header, Paragraph } from '@/components/Typography'
 import { MetricsContainer } from '@/components/containers'
 import { Button } from '@/components/Button'
 import { useAccount } from 'wagmi'
@@ -11,6 +11,7 @@ import { ActiveBuilders } from '../ActiveBuilders'
 import { FC } from 'react'
 import { RewardsMetrics } from '../RewardsMetrics'
 import { useRouter } from 'next/navigation'
+import { cn } from '@/lib/utils'
 
 const BuildersBanner = () => (
   <Banner
@@ -64,11 +65,20 @@ const BuilderCTAButton = () => {
 interface BuildersCallToActionProps {
   rifRewards: bigint
   rbtcRewards: bigint
+  className?: string
 }
 
-export const BuildersCallToAction: FC<BuildersCallToActionProps> = ({ rifRewards, rbtcRewards }) => {
+export const BuildersCallToAction: FC<BuildersCallToActionProps> = ({
+  rifRewards,
+  rbtcRewards,
+  className,
+}) => {
   return (
-    <CallToActionCard title={<BuildersTitle />} banner={<BuildersBanner />} className="bg-v3-text-80">
+    <CallToActionCard
+      title={<BuildersTitle />}
+      banner={<BuildersBanner />}
+      className={cn('bg-v3-text-80 w-full', className)}
+    >
       <MetricsContainer className="px-6 pb-10 pt-0 bg-v3-text-80 items-start divide-y-0">
         <BuilderCTAButton />
         <Paragraph className="text-v3-text-0">

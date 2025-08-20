@@ -1,5 +1,5 @@
 import { ActionsContainer } from '@/components/containers'
-import { Header } from '@/components/TypographyNew'
+import { Header } from '@/components/Typography'
 import { withTableContext } from '@/shared/context'
 import { ReactElement } from 'react'
 import { BackerRewardsTable } from './BackerRewardsTable'

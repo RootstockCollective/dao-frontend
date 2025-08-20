@@ -1,5 +1,5 @@
 import { TokenImage } from '@/components/TokenImage'
-import { Header, Label, Span } from '@/components/TypographyNew'
+import { Header, Label, Span } from '@/components/Typography'
 import { FC, ReactNode } from 'react'
 import { Tooltip } from '../Tooltip'
 import { KotoQuestionMarkIcon } from '../Icons'
@@ -34,7 +34,7 @@ export const BalanceInfo: FC<Props> = ({
 
         {tooltipContent && (
           <Tooltip text={tooltipContent}>
-            <KotoQuestionMarkIcon className="mb-1 hover:cursor-help" />
+            <KotoQuestionMarkIcon className="mb-1 hover:cursor-help" data-testid="TooltipIcon" />
           </Tooltip>
         )}
       </div>

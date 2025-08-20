@@ -6,7 +6,7 @@ import { LoadingSpinner } from '@/components/LoadingSpinner'
 import { truncateMiddle } from '@/lib/utils'
 import { useState } from 'react'
 import { applyPinataImageOptions } from '@/lib/ipfs'
-import { Paragraph, Header, Span } from '@/components/TypographyNew'
+import { Paragraph, Header, Span } from '@/components/Typography'
 import { ViewIconHandler, type ViewState } from './ViewIconHandler'
 import {
   createColumnHelper,

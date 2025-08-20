@@ -2,7 +2,7 @@ import type { Meta, StoryObj } from '@storybook/nextjs'
 import { AxeIcon, PiIcon } from 'lucide-react'
 import { useState } from 'react'
 import { TableHeaderCell, TableHeaderNode } from '.'
-import { Header } from '../TypographyNew'
+import { Header } from '../Typography'
 
 const meta: Meta<typeof TableHeaderCell> = {
   title: 'Components/TableNew/TableHeaderCell',

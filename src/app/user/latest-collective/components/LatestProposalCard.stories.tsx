@@ -14,7 +14,7 @@ export default meta
 
 type Story = StoryObj<typeof LatestProposalCard>
 
-const mockProposal: Proposal = {
+const baseMockProposal: Proposal = {
   proposalId: '0x1234567890abcdef',
   name: 'This is a sample proposal name that is long enough to test line clamping in the card component. It should be truncated after three lines.',
   description:
@@ -35,52 +35,30 @@ const mockProposal: Proposal = {
   blockNumber: '44444444',
   proposalState: ProposalState.Active,
   calldatasParsed: [],
+  createdAt: '1234567890',
+  createdAtBlock: '12345678',
+  voteStart: '1234567890',
+  voteEnd: '1234567890',
+  targets: [],
+  values: [],
+  calldatas: [],
+  votesAgainst: '3000000000000000000000',
+  votesFor: '2000000000000000000000',
+  votesAbstains: '4000000000000000000000',
+  quorum: '5000000000000000000000',
 }
 
+const mockProposal: Proposal = { ...baseMockProposal }
+
 const mockProposal2: Proposal = {
-  proposalId: '0x1234567890abcdef',
+  ...baseMockProposal,
   name: 'Simple and short name for the proposal',
-  description:
-    'asjfbiasfonsaofnsahifbojasnfihsabfoas fguhsanfdoas guhjdniaso fhiasbnfihsa bfjhsaf ahis fuhjasbfiasbfjhsabfnksabfiksab fk',
-  category: ProposalCategory.Grants,
-  Starts: moment(),
-  proposer: '0xabcdefabcdefabcdefabcdefabcdefabcdef',
-  votes: {
-    forVotes: Big(2000),
-    againstVotes: Big(3000),
-    abstainVotes: Big(4000),
-    quorum: Big(5000),
-  },
-  blocksUntilClosure: Big(0),
-  votingPeriod: Big(0),
-  quorumAtSnapshot: Big(0),
-  proposalDeadline: Big(0),
-  blockNumber: '44444444',
-  proposalState: ProposalState.Active,
-  calldatasParsed: [],
 }
 
 const mockProposal3: Proposal = {
-  proposalId: '0x1234567890abcdef',
+  ...baseMockProposal,
   name: 'Different Category',
-  description:
-    'asjfbiasfonsaofnsahifbojasnfihsabfoas fguhsanfdoas guhjdniaso fhiasbnfihsa bfjhsaf ahis fuhjasbfiasbfjhsabfnksabfiksab fk',
   category: ProposalCategory.Activation,
-  Starts: moment(),
-  proposer: '0xabcdefabcdefabcdefabcdefabcdefabcdef',
-  votes: {
-    forVotes: Big(2000),
-    againstVotes: Big(3000),
-    abstainVotes: Big(4000),
-    quorum: Big(5000),
-  },
-  blocksUntilClosure: Big(0),
-  votingPeriod: Big(0),
-  quorumAtSnapshot: Big(0),
-  proposalDeadline: Big(0),
-  blockNumber: '44444444',
-  proposalState: ProposalState.Active,
-  calldatasParsed: [],
 }
 
 export const Default: Story = {

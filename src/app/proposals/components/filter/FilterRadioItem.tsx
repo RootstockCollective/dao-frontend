@@ -1,4 +1,4 @@
-import { Paragraph } from '@/components/TypographyNew'
+import { Paragraph } from '@/components/Typography'
 import { cn } from '@/lib/utils'
 
 interface Props {

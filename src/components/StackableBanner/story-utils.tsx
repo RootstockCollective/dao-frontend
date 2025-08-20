@@ -1,4 +1,4 @@
-import { Typography } from '@/components/TypographyNew/Typography'
+import { BaseTypography } from '@/components/Typography/Typography'
 import { TokenImage } from '@/components/TokenImage'
 import { RBTC, RIF } from '@/lib/constants'
 import { ArrowRight } from 'lucide-react'
@@ -59,15 +59,15 @@ export const startBuildingArgs = {
 export const currentCycleEndingSoonArgs = {
   title: 'CURRENT CYCLE ENDING SOON',
   description: (
-    <Typography size="sm" className="flex items-center gap-1">
+    <BaseTypography size="sm" className="flex items-center gap-1">
       Learn how cycles work <ArrowRight />
-    </Typography>
+    </BaseTypography>
   ),
   buttonOnClick: () => console.log('Learn more clicked!'),
   rightContent: (
-    <Typography variant="h1" className="text-white">
+    <BaseTypography variant="h1" className="text-white">
       23h 59m
-    </Typography>
+    </BaseTypography>
   ),
 }
 
@@ -82,20 +82,22 @@ export const stepsListArgs = {
   title: 'TITLE ONLY IF NEEDED',
   description: (
     <div>
-      <Typography size="sm" className="mb-3">
+      <BaseTypography size="sm" className="mb-3">
         Lorem ipsum dolor sit amet consectetur adipiscing elit
-      </Typography>
+      </BaseTypography>
       <ul className="space-y-2 list-disc list-inside">
         <li>
-          <Typography size="sm">step 1... lorem ipsum dolor sit amet, consectetur adipiscing elit</Typography>
+          <BaseTypography size="sm">
+            step 1... lorem ipsum dolor sit amet, consectetur adipiscing elit
+          </BaseTypography>
         </li>
         <li>
-          <Typography size="sm">
+          <BaseTypography size="sm">
             step 2... proin suscipit scelerisque ipsum placerat velit sed quam
-          </Typography>
+          </BaseTypography>
         </li>
         <li>
-          <Typography size="sm">step 3... venenatis, non commodo risus fringilla</Typography>
+          <BaseTypography size="sm">step 3... venenatis, non commodo risus fringilla</BaseTypography>
         </li>
       </ul>
     </div>

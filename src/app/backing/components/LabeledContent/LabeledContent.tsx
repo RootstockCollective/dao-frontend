@@ -1,4 +1,4 @@
-import { Label } from '@/components/TypographyNew'
+import { Label } from '@/components/Typography'
 import { cn } from '@/lib/utils'
 import { FC, ReactNode } from 'react'
 

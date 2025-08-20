@@ -1,4 +1,4 @@
-import { Paragraph, Header } from '@/components/TypographyNew'
+import { Paragraph, Header } from '@/components/Typography'
 import Image from 'next/image'
 import { BoostedBox } from './components/BoostedBox'
 import { BoostedLabel } from '@/app/communities/components/BoostedLabel'
@@ -19,6 +19,7 @@ interface CommunityItemProps {
   enableDebris?: boolean
   specialPower?: string
   boostedPercentage?: string
+  isExternal?: boolean
 }
 
 /**
@@ -36,6 +37,7 @@ export const CommunityItem = ({
   enableDebris = false,
   specialPower,
   boostedPercentage,
+  isExternal,
 }: CommunityItemProps) => {
   const isExternalImage = leftImageSrc.startsWith('http')
   const image = isExternalImage
@@ -65,7 +67,7 @@ export const CommunityItem = ({
           {/* Title */}
           <div className={cn(variant === 'landscape' ? 'mt-[32px]' : 'mt-[16px]')}>
             <BoostedLabel nftAddress={nftAddress}>
-              <Header variant="h3" className="uppercase break-words pt-[5px]">
+              <Header variant="h3" caps className="break-words pt-[5px]">
                 {title}
               </Header>
             </BoostedLabel>
@@ -80,7 +82,12 @@ export const CommunityItem = ({
           {/* Description */}
           <Paragraph>{description}</Paragraph>
           {/* Learn more */}
-          <CommunityItemButtonHandler nftAddress={nftAddress} readMoreLink={readMoreLink} data-testid={`LearnMoreLink-${title}`} />
+          <CommunityItemButtonHandler
+            nftAddress={nftAddress}
+            readMoreLink={readMoreLink}
+            data-testid={`LearnMoreLink-${title}`}
+            isExternal={isExternal}
+          />
         </div>
       </div>
     </BoostedBox>

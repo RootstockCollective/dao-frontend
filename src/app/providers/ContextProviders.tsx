@@ -1,14 +1,16 @@
 'use client'
+import { ReactNode } from 'react'
+import { TooltipProvider } from '@radix-ui/react-tooltip'
+import { createAppKit } from '@reown/appkit/react'
+import { State, WagmiProvider } from 'wagmi'
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
+import { NavigationGuardProvider } from 'next-navigation-guard'
+
 import { BalancesProvider } from '@/app/user/Balances/context/BalancesContext'
 import { GlobalErrorBoundary } from '@/components/ErrorPage/GlobalErrorBoundary'
 import { currentEnvChain, wagmiAdapter, wagmiAdapterConfig } from '@/config'
 import { REOWN_METADATA_URL, REOWN_PROJECT_ID } from '@/lib/constants'
 import { FeatureFlagProvider } from '@/shared/context/FeatureFlag'
-import { TooltipProvider } from '@radix-ui/react-tooltip'
-import { createAppKit } from '@reown/appkit/react'
-import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
-import { ReactNode } from 'react'
-import { State, WagmiProvider } from 'wagmi'
 import { AllocationsContextProvider } from '../collective-rewards/allocations/context'
 import { BuilderContextProviderWithPrices } from '../collective-rewards/user'
 import { BoosterProvider } from './NFT/BoosterContext'
@@ -72,7 +74,9 @@ export const ContextProviders = ({ children, initialState }: Props) => {
                 <AllocationsContextProvider>
                   <BalancesProvider>
                     <TooltipProvider>
-                      <ReviewProposalProvider>{children}</ReviewProposalProvider>
+                      <ReviewProposalProvider>
+                        <NavigationGuardProvider>{children}</NavigationGuardProvider>
+                      </ReviewProposalProvider>
                     </TooltipProvider>
                   </BalancesProvider>
                 </AllocationsContextProvider>

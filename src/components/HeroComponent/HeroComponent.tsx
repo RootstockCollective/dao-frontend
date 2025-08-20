@@ -2,7 +2,7 @@
 import { cn } from '@/lib/utils'
 import Image from 'next/image'
 import { FC, ReactNode, useMemo } from 'react'
-import { Header, Paragraph, Span } from '../TypographyNew'
+import { Header, Paragraph, Span } from '../Typography'
 import { useImagePreloader } from '@/shared/hooks/useImagePreloader'
 
 export interface HeroComponentProps {

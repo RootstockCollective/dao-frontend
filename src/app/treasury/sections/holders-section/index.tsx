@@ -1,11 +1,11 @@
 import { GridTable } from '@/components/Table'
-import { Header } from '@/components/TypographyNew'
+import { Header } from '@/components/Typography'
 import { RIF, STRIF_ADDRESS } from '@/lib/constants'
 import { useFetchTokenHolders } from '@/app/treasury/hooks/useFetchTokenHolders'
 import { LoadingSpinner } from '@/components/LoadingSpinner'
 import { ErrorMessageAlert } from '@/components/ErrorMessageAlert/ErrorMessageAlert'
 import { formatAmount } from '@/lib/utils'
-import { Span } from '@/components/TypographyNew'
+import { Span } from '@/components/Typography'
 import {
   createColumnHelper,
   getCoreRowModel,

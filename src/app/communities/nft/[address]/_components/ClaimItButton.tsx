@@ -1,6 +1,6 @@
 'use client'
 import { Button } from '@/components/Button'
-import { Span, Paragraph } from '@/components/TypographyNew'
+import { Span, Paragraph } from '@/components/Typography'
 import { useCommunityNFT } from '@/app/communities/nft/[address]/CommunityNFTContext'
 import { useAccount } from 'wagmi'
 import { HTMLAttributes } from 'react'

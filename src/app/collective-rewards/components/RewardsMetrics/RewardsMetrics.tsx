@@ -1,7 +1,7 @@
 import { RifRbtcTooltip } from '@/components/RifRbtcTooltip/RifRbtcTooltip'
 import { DottedUnderlineLabel } from '@/components/DottedUnderlineLabel/DottedUnderlineLabel'
-import { Typography } from '@/components/TypographyNew/Typography'
-import { Header } from '@/components/TypographyNew'
+import { BaseTypography } from '@/components/Typography/Typography'
+import { Header } from '@/components/Typography'
 import { Metric } from '@/components/Metric'
 import { FC } from 'react'
 import { RBTC, RIF, WeiPerEther } from '@/lib/constants'
@@ -24,7 +24,7 @@ export const RewardsMetrics: FC<RewardsMetricsProps> = ({ title, rbtcRewards, ri
     .toString()
 
   return (
-    <Metric className="text-v3-text-0" title={<Typography variant="body">{title}</Typography>}>
+    <Metric className="text-v3-text-0" title={<BaseTypography variant="body">{title}</BaseTypography>}>
       <div className="flex flex-row items-baseline gap-2 font-rootstock-sans">
         <Header>{formatCurrency(estimatedRewards)}</Header>
         <RifRbtcTooltip rbtcValue={rbtcRewards} rifValue={rifRewards}>

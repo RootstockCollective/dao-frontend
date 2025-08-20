@@ -2,7 +2,7 @@ import Image from 'next/image'
 import { cn, truncateMiddle } from '@/lib/utils'
 import { applyPinataImageOptions } from '@/lib/ipfs'
 import { EXPLORER_URL } from '@/lib/constants'
-import { Paragraph, Header } from '@/components/TypographyNew'
+import { Paragraph, Header } from '@/components/Typography'
 
 interface NftCardProps {
   image: string

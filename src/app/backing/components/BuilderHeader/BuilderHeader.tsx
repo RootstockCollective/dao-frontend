@@ -1,13 +1,16 @@
-import { Header } from '@/components/TypographyNew'
+import { Header } from '@/components/Typography'
 import { Jdenticon } from '@/components/Header/Jdenticon'
-import { FC } from 'react'
+import { FC, useState } from 'react'
 import { cn, shortAddress, truncate } from '@/lib/utils'
 import Link from 'next/link'
+import Image from 'next/image'
 import { Address } from 'viem'
+import { ipfsGatewayUrl } from '@/lib/ipfs'
 
 interface BuilderHeaderProps {
   address: Address
   name?: string
+  imageIpfs?: string | null
   builderPageLink?: string
   className?: string
   showFullName?: boolean
@@ -17,6 +20,7 @@ interface BuilderHeaderProps {
 export const BuilderHeader: FC<BuilderHeaderProps> = ({
   address,
   name,
+  imageIpfs,
   builderPageLink,
   className,
   showFullName = true,
@@ -24,6 +28,9 @@ export const BuilderHeader: FC<BuilderHeaderProps> = ({
 }) => {
   const shortedAddress = shortAddress(address)
   const truncatedName = name ? (showFullName ? name : truncate(name, 15)) : undefined
+  const imageUrl = imageIpfs ? ipfsGatewayUrl(imageIpfs) : null
+  const [imageError, setImageError] = useState(false)
+
   return (
     // TODO: do we want the whole header to redirect to the Builder page?
     <div
@@ -31,7 +38,20 @@ export const BuilderHeader: FC<BuilderHeaderProps> = ({
       data-testid="builderHeaderContainer"
     >
       <div className="rounded-full overflow-hidden inline-block size-[88px]" data-testid="builderAvatar">
-        <Jdenticon className="bg-v3-text-100" value={address} size="88" />
+        {imageUrl && !imageError ? (
+          <Image
+            src={imageUrl}
+            alt={name || shortedAddress}
+            width={88}
+            height={88}
+            className="w-full h-full object-cover"
+            onError={() => setImageError(true)}
+            crossOrigin="anonymous"
+            unoptimized
+          />
+        ) : (
+          <Jdenticon className="bg-v3-text-100" value={address} size="88" />
+        )}
       </div>
       <Header className="mt-2 text-center text-[22px] text-v3-primary font-bold font-kk-topo">
         {shouldNotRedirect ? (

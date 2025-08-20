@@ -1,13 +1,14 @@
 import { ButtonAction } from '@/app/proposals/components/vote-details'
 import { Proposal } from '@/app/proposals/shared/types'
-import { Paragraph, Span } from '@/components/TypographyNew'
+import { Paragraph, Span } from '@/components/Typography'
 import Link from 'next/link'
 import { ClassNameValue } from 'tailwind-merge'
 import { CreatorRowComponent } from './CreatorRowComponent'
-import { TimeColumn } from '@/app/proposals/components/table-columns/TimeColumn'
+import { Countdown } from '@/components/Countdown'
 import { cn } from '@/lib/utils'
 import { QuorumColumn, VotesColumn } from '@/app/proposals/components/table-columns/VotesColumn'
 import { VotingPowerWithActionComponent } from '@/app/proposals/components/voting-power-with-action'
+import Big from '@/lib/big'
 
 interface LatestActiveProposalCardProps {
   votingPower: bigint
@@ -29,7 +30,6 @@ export const LatestActiveProposalCard = ({
     name,
     proposer,
     Starts,
-    blocksUntilClosure,
     proposalDeadline,
     blockNumber,
     votes: { forVotes, abstainVotes, againstVotes },
@@ -53,11 +53,12 @@ export const LatestActiveProposalCard = ({
             <Span variant="tag" className="text-bg-0">
               Vote ending in
             </Span>
-            <TimeColumn
+            <Countdown
               className="w-auto mt-2"
-              blocksUntilClosure={blocksUntilClosure}
-              proposalDeadline={proposalDeadline}
-              proposalBlockNumber={blockNumber}
+              end={proposalDeadline}
+              timeSource="blocks"
+              referenceStart={Big(blockNumber)}
+              colorDirection="normal"
             />
           </div>
           {/** quorum column */}

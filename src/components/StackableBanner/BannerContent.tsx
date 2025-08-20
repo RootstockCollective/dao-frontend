@@ -1,7 +1,7 @@
 import { FC, ReactNode } from 'react'
 import { cn } from '@/lib/utils'
 import { Button } from '@/components/Button'
-import { Typography } from '@/components/TypographyNew/Typography'
+import { BaseTypography } from '@/components/Typography/Typography'
 
 export interface BannerContentProps {
   title: ReactNode
@@ -23,8 +23,8 @@ export const BannerContent: FC<BannerContentProps> = ({
   return (
     <div className={cn('text-v3-text-0 w-full flex flex-row gap-2 items-center justify-between', className)}>
       <div className="flex flex-col gap-2 w-1/2">
-        <Typography variant="h3">{title}</Typography>
-        <Typography>{description}</Typography>
+        <BaseTypography variant="h3">{title}</BaseTypography>
+        <BaseTypography>{description}</BaseTypography>
         {buttonText && (
           <Button variant="primary" onClick={buttonOnClick} className="w-fit">
             {buttonText}

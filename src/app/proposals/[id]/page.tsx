@@ -8,7 +8,7 @@ import {
   getDiscourseLinkFromProposalDescription,
   splitCombinedName,
 } from '@/app/proposals/shared/utils'
-import { Header, Paragraph, Span } from '@/components/TypographyNew'
+import { Header, Paragraph, Span } from '@/components/Typography'
 import { config } from '@/config'
 import { RIF, RBTC, RIF_ADDRESS, USDRIF, USDRIF_ADDRESS } from '@/lib/constants'
 import { formatNumberWithCommas } from '@/lib/utils'
@@ -19,6 +19,7 @@ import { waitForTransactionReceipt } from '@wagmi/core'
 import { useParams } from 'next/navigation'
 import { formatEther, zeroAddress } from 'viem'
 import { useAccount } from 'wagmi'
+import Big from '@/lib/big'
 import { ProposalState } from '@/shared/types'
 import { usePricesContext } from '@/shared/context/PricesContext'
 import { ConnectWorkflow } from '@/shared/walletConnection/connection/ConnectWorkflow'
@@ -36,7 +37,7 @@ import { useGetVoteForSpecificProposal } from '../hooks/useVoteCast'
 import { Vote } from '@/shared/types'
 import { executeTxFlow } from '@/shared/notification'
 import { useProposalById } from '../context'
-import { Proposal } from '../shared/types'
+import { Eta, Proposal } from '../shared/types'
 
 export default function ProposalView() {
   const { id } = useParams<{ id: string }>() ?? {}
@@ -149,7 +150,8 @@ const parseProposalActionDetails = (
 
 const PageWithProposal = (proposal: Proposal) => {
   const { address, isConnected } = useAccount()
-  const { proposalId, name, description, proposer, Starts, calldatasParsed } = proposal
+  const { proposalId, name, description, proposer, Starts, calldatasParsed, proposalDeadline, voteStart } =
+    proposal
   const [vote, setVote] = useGetVoteForSpecificProposal(address ?? zeroAddress, proposalId)
   const [isChoosingVote, setIsChoosingVote] = useState(false)
   const [votingTxIsPending, setVotingTxIsPending] = useState(false)
@@ -165,7 +167,8 @@ const PageWithProposal = (proposal: Proposal) => {
   const [isQueueing, setIsQueueing] = useState<boolean>()
   const { onQueueProposal } = useQueueProposal(proposalId)
 
-  const { onExecuteProposal, canProposalBeExecuted } = useExecuteProposal(proposalId)
+  const { onExecuteProposal, canProposalBeExecuted, proposalEta, proposalQueuedTime } =
+    useExecuteProposal(proposalId)
   const [isExecuting, setIsExecuting] = useState(false)
 
   const [popoverOpen, setPopoverOpen] = useState(false)
@@ -313,6 +316,33 @@ const PageWithProposal = (proposal: Proposal) => {
         return {
           actionName: 'Execute',
           onButtonClick: handleProposalAction(handleExecuteProposal),
+        }
+      default:
+        return undefined
+    }
+  }
+
+  const getEta = (_proposalState?: ProposalState): Eta | undefined => {
+    switch (_proposalState) {
+      case ProposalState.Canceled:
+      case ProposalState.Defeated:
+      case ProposalState.Succeeded:
+        return undefined
+      case ProposalState.Queued:
+        if (!proposalEta) return undefined
+        return {
+          type: 'queue ends in',
+          end: proposalEta,
+          timeSource: 'timestamp',
+          referenceStart: proposalQueuedTime,
+          colorDirection: 'reversed',
+        }
+      case ProposalState.Active:
+        return {
+          type: 'vote end in',
+          end: proposalDeadline,
+          timeSource: 'blocks',
+          referenceStart: voteStart ? Big(voteStart) : undefined,
         }
       default:
         return undefined
@@ -492,6 +522,7 @@ const PageWithProposal = (proposal: Proposal) => {
             onCancelVote={() => setIsChoosingVote(false)}
             isConnected={isConnected}
             actionDisabled={isQueueing || isExecuting}
+            eta={getEta(proposalState)}
           />
           <ActionDetails parsedAction={parsedAction} actionType={actionType} />
         </div>

@@ -101,7 +101,7 @@ interface Counter {
   count: string
 }
 
-async function fetchProposals() {
+export async function fetchProposals(): Promise<GraphQLResponse> {
   const { data } = await daoClient.query<GraphQLResponse>({ query, fetchPolicy: 'no-cache' })
   return data
 }

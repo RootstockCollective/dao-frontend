@@ -1,5 +1,5 @@
 import { LoadingSpinner } from '@/components/LoadingSpinner'
-import { Typography } from '@/components/TypographyNew/Typography'
+import { BaseTypography } from '@/components/Typography/Typography'
 import * as RadioGroup from '@radix-ui/react-radio-group'
 import { FC, ReactNode } from 'react'
 import { ClaimRewardType } from './types'
@@ -32,10 +32,10 @@ export const ClaimRewardRadioOption: FC<ClaimRewardRadioOptionProps> = ({
             <RadioGroup.Indicator className="w-full h-full rounded-full border-4 border-white" />
           </span>
           <div className="flex flex-col items-start gap-2 justify-start text-left w-full">
-            <Typography variant="h3">{label}</Typography>
-            <Typography variant="body" className="text-v3-bg-accent-0">
+            <BaseTypography variant="h3">{label}</BaseTypography>
+            <BaseTypography variant="body" className="text-v3-bg-accent-0">
               {subLabel}
-            </Typography>
+            </BaseTypography>
           </div>
         </div>
       )}

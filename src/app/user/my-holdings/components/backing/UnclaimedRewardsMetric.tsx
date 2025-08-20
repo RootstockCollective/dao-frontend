@@ -1,6 +1,6 @@
 'use client'
 
-import { Span } from '@/components/TypographyNew'
+import { Span } from '@/components/Typography'
 
 import {
   getFiatAmount,

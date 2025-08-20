@@ -1,6 +1,6 @@
 import type { Meta, StoryObj } from '@storybook/nextjs'
 import { BalanceInfo } from './BalanceInfo'
-import { Label } from '@/components/TypographyNew'
+import { Label } from '@/components/Typography'
 
 const meta: Meta<typeof BalanceInfo> = {
   title: 'Koto/DAO/BalanceInfo',

@@ -1,7 +1,7 @@
 /* eslint-disable quotes */
 import { nftContracts } from '@/lib/contracts'
 import { FC, ReactNode } from 'react'
-import { Header, Paragraph } from '@/components/TypographyNew'
+import { Header, Paragraph } from '@/components/Typography'
 import { ipfsGatewayUrl } from '@/lib/ipfs'
 
 export interface CommunityItem {
@@ -22,6 +22,7 @@ export interface CommunityItem {
   readMoreLink?: string
   discussionLink?: string
   campaignDetails?: FC<{ activation?: ReactNode }>
+  isExternal?: boolean
 }
 
 interface RowProps {
@@ -212,6 +213,7 @@ export const rootstockHacktivator: CommunityItem = {
   specialPower: '',
   activation: '',
   requirement: '',
+  isExternal: true,
 }
 
 export const communitiesToRender = [

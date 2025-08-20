@@ -4,7 +4,7 @@ import { useHandleErrors } from '@/app/collective-rewards/utils'
 import { withSpinner } from '@/components/LoadingSpinner/withLoadingSpinner'
 import { Metric } from '@/components/Metric'
 import { TokenImage, TokenSymbol } from '@/components/TokenImage'
-import { Paragraph, Span } from '@/components/TypographyNew'
+import { Paragraph, Span } from '@/components/Typography'
 import { Address } from 'viem'
 import { useBuilderContext } from '../../user/context/BuilderContext'
 

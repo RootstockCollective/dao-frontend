@@ -12,7 +12,7 @@ import { ConnectTooltipContent } from '@/app/components/Tooltip/ConnectTooltip/C
 import { GetPricesResult } from '@/app/user/types'
 import { CommonComponentProps } from '@/components/commonProps'
 import { Jdenticon } from '@/components/Header/Jdenticon'
-import { Paragraph } from '@/components/TypographyNew'
+import { Paragraph } from '@/components/Typography'
 import { RIF, STRIF } from '@/lib/constants'
 import { cn } from '@/lib/utils'
 import { useTableActionsContext, useTableContext } from '@/shared/context'

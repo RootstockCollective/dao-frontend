@@ -1,7 +1,7 @@
 import { DelegateCard } from '@/app/delegate/components/DelegateCard'
 import { Address, isAddress } from 'viem'
 import { useNftHoldersWithVotingPower } from '@/app/user/Delegation/hooks/useNftHoldersWithVotingPower'
-import { Span } from '@/components/TypographyNew'
+import { Span } from '@/components/Typography'
 import { Button } from '@/components/Button'
 import { useState, ChangeEvent, useEffect, useCallback, useMemo } from 'react'
 import { cn } from '@/lib/utils'
@@ -151,6 +151,7 @@ export const DelegatesContainer = ({
             key={delegate.address}
             address={delegate.address as Address}
             name={delegate.RNS || undefined}
+            imageIpfs={delegate.imageIpfs}
             // @TODO fetch since
             since="May 2025"
             votingPower={delegate.votingPower?.toString() || 0}

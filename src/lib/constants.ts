@@ -37,7 +37,7 @@ export const CACHE_REVALIDATE_SECONDS = 20
 
 export const RIF = 'RIF'
 export const USD = 'USD'
-export const RBTC = 'rBTC'
+export const RBTC = ENV === 'mainnet' ? 'rBTC' : 'tRBTC'
 export const STRIF = 'stRIF'
 export const USDRIF = 'USDRIF'
 
@@ -79,3 +79,9 @@ export const getFeatureEnvFlags = (): Record<Feature, string> => FEATURE_FLAGS
 export const MAX_PAGE_SIZE = 100
 
 export const BLOCKSCOUT_URL = process.env.NEXT_PUBLIC_BLOCKSCOUT_URL as string
+
+const DEFAULT_STATE_SYNC_BLOCK_STALENESS_THRESHOLD = 100
+export const STATE_SYNC_BLOCK_STALENESS_THRESHOLD = Number(
+  process.env.NEXT_PUBLIC_STATE_SYNC_BLOCK_STALENESS_THRESHOLD ??
+    DEFAULT_STATE_SYNC_BLOCK_STALENESS_THRESHOLD,
+)

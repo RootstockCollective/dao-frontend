@@ -1,4 +1,4 @@
-import { Header, Paragraph } from '@/components/TypographyNew'
+import { Header, Paragraph } from '@/components/Typography'
 import { MetricsContainer } from '@/components/containers'
 import { Button } from '@/components/Button'
 import { useContext } from 'react'
@@ -11,6 +11,7 @@ import { ActiveBackers } from '../ActiveBackers'
 import { FC } from 'react'
 import { RewardsMetrics } from '../RewardsMetrics'
 import { useRouter } from 'next/navigation'
+import { cn } from '@/lib/utils'
 
 const BackersBanner = () => (
   <Banner
@@ -68,13 +69,14 @@ const BackerCTAButton = () => {
 interface BackersCallToActionProps {
   rifRewards: bigint
   rbtcRewards: bigint
+  className?: string
 }
-export const BackersCallToAction: FC<BackersCallToActionProps> = ({ rifRewards, rbtcRewards }) => {
+export const BackersCallToAction: FC<BackersCallToActionProps> = ({ rifRewards, rbtcRewards, className }) => {
   return (
     <CallToActionCard
       title={<BackersTitle />}
       banner={<BackersBanner />}
-      className="bg-v3-text-80 rounded-sm"
+      className={cn('bg-v3-text-80 rounded-sm w-full', className)}
     >
       <MetricsContainer className="px-6 pb-10 pt-0 bg-v3-text-80 items-start divide-y-0">
         <BackerCTAButton />

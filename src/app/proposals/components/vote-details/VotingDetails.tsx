@@ -2,12 +2,14 @@ import { MouseEvent, Ref } from 'react'
 import { formatEther } from 'viem'
 import { Button } from '@/components/Button'
 import { capitalizeFirstLetter } from '@/shared/utils'
-import { Header, Paragraph } from '@/components/TypographyNew'
+import { Header, Paragraph } from '@/components/Typography'
 import { formatNumberWithCommas } from '@/lib/utils'
 import { Vote } from '@/shared/types'
 import { HourglassAnimatedIcon } from '@/components/Icons/HourglassAnimatedIcon'
 import Big from '@/lib/big'
 import { BalanceInfo } from '@/components/BalanceInfo'
+import { Eta } from '@/app/proposals/shared/types'
+import { Countdown } from '@/components/Countdown'
 
 interface VoteCounterProps {
   title: string
@@ -61,6 +63,7 @@ interface VoteDetailsProps {
   onCastVote?: (vote: 'for' | 'against' | 'abstain') => void
   onCancelVote?: () => void
   isConnected?: boolean
+  eta?: Eta
 }
 
 const colorMap = new Map([
@@ -82,6 +85,7 @@ export const VotingDetails = ({
   onCancelVote,
   isVotingInProgress,
   isChoosingVote,
+  eta,
 }: VoteDetailsProps) => {
   return (
     <div className="bg-[#25211E] p-6 rounded-[4px] w-full max-w-[376px]">
@@ -141,17 +145,28 @@ export const VotingDetails = ({
           <Button variant="secondary-outline" className="mt-6" onClick={onCancelVote}>
             Cancel
           </Button>
+        ) : buttonAction ? (
+          <Button
+            onClick={buttonAction.onButtonClick}
+            className="mt-6"
+            textClassName="text-foreground"
+            disabled={actionDisabled}
+            ref={voteButtonRef}
+          >
+            {buttonAction.actionName}
+          </Button>
         ) : (
-          buttonAction && (
-            <Button
-              onClick={buttonAction.onButtonClick}
-              className="mt-6"
-              textClassName="text-foreground"
-              disabled={actionDisabled}
-              ref={voteButtonRef}
-            >
-              {buttonAction.actionName}
-            </Button>
+          eta && (
+            <div className="flex mt-6 items-center">
+              <Paragraph variant="body-s">{capitalizeFirstLetter(eta.type)}</Paragraph>
+              <Countdown
+                end={eta.end}
+                timeSource={eta.timeSource}
+                referenceStart={eta.referenceStart}
+                colorDirection={eta.colorDirection}
+                className="w-auto ml-4"
+              />
+            </div>
           )
         )}
       </div>

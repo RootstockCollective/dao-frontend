@@ -1,7 +1,7 @@
 import { cn, formatNumberWithCommas } from '@/lib/utils'
 import Big from '@/lib/big'
 import { PizzaChart } from '@/components/PizzaChart'
-import { Paragraph } from '@/components/TypographyNew'
+import { Paragraph } from '@/components/Typography'
 import { ClassNameValue } from 'tailwind-merge'
 
 interface QuorumColumnProps {

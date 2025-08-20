@@ -1,5 +1,5 @@
 import type { Meta, StoryObj } from '@storybook/nextjs'
-import { Header } from '../TypographyNew'
+import { Header } from '../Typography'
 import { TableHeaderNode, TableHeaderNodeProps } from './TableHeaderNode'
 
 const meta: Meta<typeof TableHeaderNode> = {

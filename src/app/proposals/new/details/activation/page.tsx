@@ -17,7 +17,7 @@ import {
   ActivationProposalSchema,
 } from '../schemas/ActivationProposalSchema'
 import { BASE_PROPOSAL_LIMITS } from '../schemas/BaseProposalSchema'
-import { Header } from '@/components/TypographyNew'
+import { Header } from '@/components/Typography'
 
 export default function ActivationProposalForm() {
   const router = useRouter()

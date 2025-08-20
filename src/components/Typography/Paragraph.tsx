@@ -1,62 +1,37 @@
-import { ParagraphVariants, SizeVariants } from './types'
-import { Typography } from './Typography'
-import { cn } from '@/lib/utils'
 import { FC } from 'react'
+import { BodyVariants } from './types'
+import { BaseTypography, BaseTypographyProps } from './Typography'
 
-interface BaseProps {
-  variant?: ParagraphVariants
-  size?: SizeVariants
-  className?: string
-  fontFamily?: 'sora' | 'kk-topo' | 'rootstock-sans'
-  'data-testid'?: string
+interface Props extends Omit<BaseTypographyProps<'p'>, 'as'> {
+  variant?: BodyVariants
 }
 
-type PropsWithChildren = BaseProps & {
-  children: React.ReactNode
-  html?: never
-}
-
-type PropsWithHTML = BaseProps & {
-  html: string
-  children?: never
-}
-
-// either children or html is required, but not both
-type Props = PropsWithChildren | PropsWithHTML
-
-const DEFAULT_CLASSES = 'text-[1.4rem]'
-
-const classesByVariant: Record<ParagraphVariants, string> = {
-  normal: '',
-  bold: 'font-bold',
-  semibold: 'font-[600]',
-  light: 'opacity-60',
-  error: 'text-st-error',
-}
-
-const classesBySize: Record<SizeVariants, string> = {
-  small: 'text-[14px]',
-  medium: 'text-[16px]',
-  large: 'text-[18px]',
-}
-
-/** @deprecated Use TypographyNew/Paragraph instead */
+/**
+ * Paragraph Component
+ *
+ * Renders a <p> element with consistent styling.
+ *
+ * @example
+ * ```tsx
+ * <Paragraph variant="body">Regular paragraph text</Paragraph>
+ * <Paragraph variant="body-s" bold>Bold small text</Paragraph>
+ * ```
+ *
+ * Supports the following variants:
+ * - body-l: font-size: 18px; font-family: font-rootstock-sans - **Figma: Body/BL Regular**
+ * - body (default): font-size: 16px; font-family: font-rootstock-sans - **Figma: Body/B Regular**
+ * - body-s: font-size: 14px; font-family: font-rootstock-sans - **Figma: Body/BS Regular**
+ * - body-xs: font-size: 12px; font-family: font-rootstock-sans - **Figma: Body/BXS Regular**
+ *
+ * All variants support the `bold` prop for bold text.
+ */
 export const Paragraph: FC<Props> = ({
-  variant = 'normal',
-  size = 'medium',
-  className,
+  variant = 'body',
   children,
-  fontFamily = 'rootstock-sans',
-  'data-testid': dataTestId,
-  ...props
+  'data-testid': dataTestId = '',
+  ...rest
 }) => (
-  <Typography
-    tagVariant="p"
-    className={cn(DEFAULT_CLASSES, classesByVariant[variant], classesBySize[size], className)}
-    fontFamily={fontFamily}
-    data-testid={`Paragraph${dataTestId || ''}`}
-    {...props}
-  >
+  <BaseTypography as="p" variant={variant} data-testid={`Paragraph${dataTestId}`} {...rest}>
     {children}
-  </Typography>
+  </BaseTypography>
 )

@@ -1,6 +1,6 @@
 import { BuilderHeader } from '@/app/backing/components/BuilderHeader/BuilderHeader'
 import { TokenImage } from '@/components/TokenImage'
-import { Header, Span } from '@/components/TypographyNew'
+import { Header, Span } from '@/components/Typography'
 import Big from '@/lib/big'
 import { formatAmount } from '@/lib/utils'
 import { Address, formatEther } from 'viem'
