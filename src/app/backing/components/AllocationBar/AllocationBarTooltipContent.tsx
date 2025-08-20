@@ -1,7 +1,6 @@
-import React from 'react'
 import { formatSymbol } from '@/app/collective-rewards/rewards/utils'
 import { HourglassIcon } from '@/components/Icons/HourglassIcon'
-import { Typography } from '@/components/TypographyNew/Typography'
+import { Typography } from '@/components/TypographyNew'
 import { STRIF } from '@/lib/constants'
 import { shortAddress } from '@/lib/utils'
 import { Address } from 'viem'
