@@ -1,6 +1,7 @@
 import { ArrowRightIcon } from '@/components/Icons/ArrowRightIcon'
+import { ExternalLink } from '@/components/Link'
 import { Modal } from '@/components/Modal'
-import { Label, Paragraph } from '@/components/Typography'
+import { Label, Paragraph, Span } from '@/components/Typography'
 import { useState } from 'react'
 import InfoIcon from '../../review/components/InfoIcon'
 
@@ -35,22 +36,44 @@ const MilestoneModal = ({ onClose }: { onClose: () => void }) => {
     {
       title: 'MILESTONE 1',
       description:
-        'Great for testnet projects or taking the first step towards a mainnet outcome in the future. Typically paid in advance.',
+        'This is great for testnet projects or for taking the first step towards a mainnet outcome in the future and is typically paid in advance 😅',
     },
     {
       title: 'MILESTONE 2',
-      description:
-        'If your proposal is to go live with a dApp or protocol on Rootstock mainnet, this is the milestone for you. Typically used for mainnet outcomes.',
+      description: (
+        <>
+          Typically used for <Span bold>mainnet outcomes</Span> if for example your proposal is to go live
+          with a dapp or protocol on Rootstock mainnet this is the milestone for you 👌
+        </>
+      ),
     },
     {
       title: 'MILESTONE 3',
-      description:
-        'This is where your project can really take off and grow on Rootstock. Often used for growth following a mainnet outcome and initial traction.',
+      description: (
+        <>
+          This is often used for <Span bold>growth</Span> following a mainnet outcome and initial traction,
+          this is where your project can really take off and grow on Rootstock 🚀
+        </>
+      ),
     },
     {
       title: 'NO MILESTONE',
-      description:
-        'Not all proposals will perfectly fit the milestone criteria and after discussion on the community forum you may need to choose the non milestone option. This is used less frequently.',
+      description: (
+        <>
+          The Collective appreciates that not all proposals will perfectly fit the milestone criteria and
+          after discussion on the community forum you may need to choose the no milestone option. This is used
+          less frequently. Please check the{' '}
+          <ExternalLink
+            className="text-v3-primary"
+            href="https://gov.rootstockcollective.xyz/t/general-guidelines-for-grant-applications/94"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            <Span>Grants Framework guidelines</Span>
+          </ExternalLink>{' '}
+          for further details or discuss with a Community Delegate 🙏
+        </>
+      ),
     },
   ]
 
@@ -65,7 +88,6 @@ const MilestoneModal = ({ onClose }: { onClose: () => void }) => {
             </div>
           ))}
         </div>
-        <Paragraph>Please check the Grants Framework guidelines for further details.</Paragraph>
       </div>
     </Modal>
   )
