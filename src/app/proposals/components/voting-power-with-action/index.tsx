@@ -2,7 +2,7 @@ import { formatEther } from 'viem'
 import Big from 'big.js'
 import { Header, Span } from '@/components/TypographyNew'
 import { cn, formatNumberWithCommas } from '@/lib/utils'
-import { Button } from '@/components/ButtonNew'
+import { Button } from '@/components/Button'
 import { ClassNameValue } from 'tailwind-merge'
 import { ButtonAction } from '../vote-details'
 

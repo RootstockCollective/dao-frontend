@@ -3,6 +3,8 @@ import { useGetDelegates } from '@/app/user/Delegation/hooks/useGetDelegates'
 import { useAccount, useReadContract } from 'wagmi'
 import { StRIFTokenAbi } from '@/lib/abis/StRIFTokenAbi'
 import { AVERAGE_BLOCKTIME, STRIF_ADDRESS } from '@/lib/constants'
+import { useEffect, useState } from 'react'
+import { getEnsDomainName } from '@/lib/rns'
 
 /**
  * Custom hook to calculate the amount of voting power delegated to an address by other users.
@@ -32,6 +34,13 @@ export const useGetExternalDelegatedAmount = (address: Address | undefined) => {
     refetch: refetchDelegate,
   } = useGetDelegates(address)
 
+  const [delegateeRns, setDelegateeRns] = useState<string | undefined>(undefined)
+
+  useEffect(() => {
+    if (delegateeAddress) {
+      getEnsDomainName(delegateeAddress).then(ens => setDelegateeRns(ens))
+    }
+  }, [delegateeAddress])
   const {
     data: votingPower,
     isLoading: isVotingPowerLoading,
@@ -115,5 +124,6 @@ export const useGetExternalDelegatedAmount = (address: Address | undefined) => {
     delegateeAddress,
     refetch,
     delegateeVotingPower,
+    delegateeRns,
   }
 }

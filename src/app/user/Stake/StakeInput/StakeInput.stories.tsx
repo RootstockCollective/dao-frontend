@@ -2,7 +2,7 @@ import type { Meta, StoryObj } from '@storybook/nextjs'
 import { StakeInput } from './StakeInput'
 
 const meta = {
-  title: 'Components/StakeInputNew',
+  title: 'KOTO/DAO/StakeInput',
   component: StakeInput,
 } satisfies Meta<typeof StakeInput>
 

@@ -1,12 +1,13 @@
 'use client'
-import { requestProviderToAddNFT, useCurrentUserNFTInWallet } from '../utilsClient'
-import { Button } from '@/components/ButtonNew'
+import { useCurrentUserNFTInWallet } from '../utilsClient'
+import { Button } from '@/components/Button'
 import { Address } from 'viem'
 import { useState } from 'react'
 import { isUserRejectedTxError } from '@/components/ErrorPage'
 import { nftAlertMessages } from '@/app/communities/nft/[address]/constants'
 import { useCommunityNFT } from '@/app/communities/nft/[address]/CommunityNFTContext'
 import { showToast } from '@/shared/notification/toastUtils'
+import { requestProviderToAddToken } from '@/shared/utils'
 
 /**
  * Component that encapsulates the logic of the add to wallet
@@ -25,11 +26,12 @@ export const AddToWalletButton = () => {
   const onAddToWallet = async (retryCount = 0) => {
     try {
       setIsAdding(true)
-      await requestProviderToAddNFT({
-        nftAddress,
-        nftSymbol: nftSymbol || '',
+      await requestProviderToAddToken({
+        address: nftAddress,
+        symbol: nftSymbol || '',
         tokenId: tokenId.toString(),
         image,
+        tokenType: 'ERC721',
       })
       // We assume it was successful from now
       showToast(nftAlertMessages.ADDED_SUCCESSFULLY(tokenId))

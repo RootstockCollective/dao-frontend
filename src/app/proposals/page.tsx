@@ -4,7 +4,7 @@ import { withFallbackRetry } from '@/app/shared/components/Fallback/FallbackWith
 import { ProposalsFromChain } from '@/app/proposals/ProposalsFromChain'
 import { ProposalsFromTheGraph } from '@/app/proposals/ProposalsFromTheGraph'
 import { HeroComponent } from '@/components/HeroComponent'
-import { Button } from '@/components/ButtonNew'
+import { Button } from '@/components/Button'
 import { useRouter } from 'next/navigation'
 import { useAccount } from 'wagmi'
 import { ConnectWorkflow } from '@/shared/walletConnection/connection/ConnectWorkflow'
@@ -29,6 +29,7 @@ export default function ProposalsPage() {
           'Complete your KYC to ensure eligibility (apply for Grants)',
         ]}
         button={<CreateProposalFlow />}
+        dataTestId="ProposalsHeroComponent"
       />
       <ErrorBoundary fallbackRender={withFallbackRetry(<ProposalsFromChain />)}>
         <ProposalsFromTheGraph />

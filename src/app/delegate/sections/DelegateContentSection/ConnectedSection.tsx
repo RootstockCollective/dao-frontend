@@ -3,7 +3,7 @@ import { DelegatesContainer } from '@/app/delegate/sections/DelegateContentSecti
 import { useDelegateContext } from '@/app/delegate/contexts/DelegateContext'
 import { DelegateCard } from '@/app/delegate/components/DelegateCard'
 import { Header, Paragraph, Span } from '@/components/TypographyNew'
-import { Button } from '@/components/ButtonNew'
+import { Button } from '@/components/Button'
 import { Address } from 'viem'
 import { useCallback, useState } from 'react'
 import Image from 'next/image'
@@ -24,6 +24,7 @@ export const ConnectedSection = () => {
     setIsDelegationPending,
     setIsReclaimPending,
     delegateeVotingPower,
+    delegateeRns,
     refetch,
   } = useDelegateContext()
 
@@ -84,6 +85,7 @@ export const ConnectedSection = () => {
         <div className="flex flex-row bg-bg-80 p-[24px]">
           <DelegateCard
             address={delegateeAddress}
+            name={delegateeRns}
             // @TODO fetch since
             since=" - "
             votingPower={delegateeVotingPower ? Number(delegateeVotingPower).toFixed(0) : ' - '}

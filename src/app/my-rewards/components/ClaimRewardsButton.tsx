@@ -1,4 +1,4 @@
-import { Button } from '@/components/ButtonNew'
+import { Button } from '@/components/Button'
 import React from 'react'
 
 interface ClaimRewardsButtonProps {

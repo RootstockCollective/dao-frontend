@@ -1,4 +1,4 @@
-import { Button } from '@/components/ButtonNew'
+import { Button } from '@/components/Button'
 import { Modal } from '@/components/Modal'
 import { ModalProps } from '@/components/Modal/Modal'
 import { Paragraph } from '@/components/TypographyNew'

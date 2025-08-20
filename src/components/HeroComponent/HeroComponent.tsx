@@ -14,6 +14,7 @@ export interface HeroComponentProps {
   content?: ReactNode
   button?: ReactNode
   className?: string
+  dataTestId?: string
 }
 
 export const HeroComponent: FC<HeroComponentProps> = ({
@@ -25,13 +26,17 @@ export const HeroComponent: FC<HeroComponentProps> = ({
   content,
   button,
   className,
+  dataTestId,
 }) => {
   // Memoize image sources is needed to prevent unnecessary re-renders
   const imageSources = useMemo(() => [imageSrc], [imageSrc])
   const { isLoaded } = useImagePreloader(imageSources)
 
   return (
-    <div className={cn('flex flex-col md:flex-row bg-text-80 rounded-sm p-4 gap-4 md:gap-0', className)}>
+    <div
+      className={cn('flex flex-col md:flex-row bg-text-80 rounded-sm p-4 gap-4 md:gap-0', className)}
+      data-testid={dataTestId}
+    >
       <div className="relative w-full md:w-1/2 min-h-[120px] md:min-h-0">
         {isLoaded ? (
           <Image

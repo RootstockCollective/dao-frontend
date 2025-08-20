@@ -1,6 +1,11 @@
 import { ColumnTransforms } from '@/app/builders/components/Table/BuilderTable.config'
+import { ActionCellProps } from '@/app/builders/components/Table/Cell/ActionCell'
+import { BackersPercentageCellProps } from '@/app/builders/components/Table/Cell/BackersPercentageCell'
+import { BackingCellProps } from '@/app/builders/components/Table/Cell/BackingCell'
+import { BuilderNameCellProps } from '@/app/builders/components/Table/Cell/BuilderNameCell'
+import { RewardsCellProps } from '@/app/builders/components/Table/Cell/RewardsCell'
 import { TableColumnDropdownLabels } from '@/app/builders/components/Table/TableColumnDropdown/TableColumnDropdown'
-import { Column } from '@/shared/context'
+import { Column, TypedTable } from '@/shared/context'
 
 const COLUMN_IDS = [
   'builder',
@@ -81,3 +86,16 @@ export const DEFAULT_HEADERS: Column<ColumnId>[] = [
     sortable: false,
   },
 ]
+
+// Typed table configuration for BackerRewardsTable
+export type BackerRewardsCellDataMap = {
+  builder: BuilderNameCellProps
+  backing: BackingCellProps
+  backer_rewards: BackersPercentageCellProps
+  unclaimed: RewardsCellProps
+  estimated: RewardsCellProps
+  total: RewardsCellProps
+  actions: ActionCellProps
+}
+
+export type BackerRewardsTable = TypedTable<ColumnId, BackerRewardsCellDataMap>

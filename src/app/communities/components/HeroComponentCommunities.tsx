@@ -26,6 +26,7 @@ export const HeroCommunitiesComponent = ({
         'these aren’t just collectibles. They are your passport to participation.',
       ]
     }
-    button={shouldShowLearnMore ? <CommunityItemButtonHandler color="black" /> : undefined}
+    button={shouldShowLearnMore && <CommunityItemButtonHandler color="black" data-testid="LearnMoreButton" />}
+    dataTestId="HeroCommunitiesComponent"
   />
 )

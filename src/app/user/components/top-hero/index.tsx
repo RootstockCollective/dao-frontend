@@ -1,4 +1,4 @@
-import { Button } from '@/components/ButtonNew'
+import { Button } from '@/components/Button'
 import { HeroComponent } from '@/components/HeroComponent'
 import { Header, Paragraph } from '@/components/TypographyNew'
 import { ConnectWorkflow } from '@/shared/walletConnection/connection/ConnectWorkflow'
@@ -39,10 +39,19 @@ const TopHeroContent = () => (
 export const TopHeroComponentNotConnected = () => (
   <HeroComponent
     imageSrc="/images/hero/home-hero-top.png"
-    title={'THE COLLECTIVE'}
-    subtitle={'POSSIBILITIES'}
+    title="THE COLLECTIVE"
+    subtitle="POSSIBILITIES"
     topText="DON'T MISS"
     content={<TopHeroContent />}
-    button={<ConnectWorkflow ConnectComponent={props => <Button {...props}>{'Connect wallet'}</Button>} />}
+    button={
+      <ConnectWorkflow
+        ConnectComponent={props => (
+          <Button {...props} data-testid="ConnectButton">
+            Connect wallet
+          </Button>
+        )}
+      />
+    }
+    dataTestId="TopHeroNotConnected"
   />
 )

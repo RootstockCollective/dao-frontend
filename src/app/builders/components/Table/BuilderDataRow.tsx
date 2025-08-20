@@ -3,9 +3,9 @@
 import { formatMetrics } from '@/app/collective-rewards/rewards/utils'
 import { BuilderRewardsSummary } from '@/app/collective-rewards/types'
 import {
+  getBuilderInactiveState,
   getCombinedFiatAmount,
   isBuilderInProgress,
-  getBuilderInactiveState,
 } from '@/app/collective-rewards/utils'
 import { ConditionalTooltip } from '@/app/components'
 import { ConnectTooltipContent } from '@/app/components/Tooltip/ConnectTooltip/ConnectTooltipContent'
@@ -15,49 +15,40 @@ import { Jdenticon } from '@/components/Header/Jdenticon'
 import { Paragraph } from '@/components/TypographyNew'
 import { RIF, STRIF } from '@/lib/constants'
 import { cn } from '@/lib/utils'
-import { BaseColumnId, Row, RowData, useTableActionsContext, useTableContext } from '@/shared/context'
+import { useTableActionsContext, useTableContext } from '@/shared/context'
 import { DisclaimerFlow } from '@/shared/walletConnection'
 import { useAppKitFlow } from '@/shared/walletConnection/connection/useAppKitFlow'
 import { redirect, RedirectType } from 'next/navigation'
 import { FC, HtmlHTMLAttributes, ReactElement, ReactNode, useState } from 'react'
-import { Address } from 'viem'
 import { useAccount } from 'wagmi'
-import { COLUMN_TRANSFORMS, ColumnId, ColumnTransforms } from './BuilderTable.config'
+import {
+  BuilderCellDataMap,
+  BuilderTable,
+  COLUMN_TRANSFORMS,
+  ColumnId,
+  ColumnTransforms,
+} from './BuilderTable.config'
 import { ActionCell, ActionCellProps, getActionType } from './Cell/ActionCell'
-import { AllocationCell, AllocationCellProps } from './Cell/AllocationCell'
 import { BackersPercentageCell, BackersPercentageCellProps } from './Cell/BackersPercentageCell'
 import { BackingCell, BackingCellProps } from './Cell/BackingCell'
+import { BackingShareCell, BackingShareCellProps } from './Cell/BackingShareCell'
 import { BuilderNameCell, BuilderNameCellProps } from './Cell/BuilderNameCell'
 import { RewardsCell, RewardsCellProps } from './Cell/RewardsCell'
 import { SelectorCell } from './Cell/SelectorCell'
 
-type ColumnIdToCellPropsMap = {
-  builder: BuilderNameCellProps
-  backing: BackingCellProps
-  backer_rewards: BackersPercentageCellProps
-  rewards_past_cycle: RewardsCellProps
-  rewards_upcoming: RewardsCellProps
-  allocations: AllocationCellProps
-  actions: ActionCellProps
-}
-
-type BuilderRowData = RowData<ColumnId, ColumnIdToCellPropsMap[ColumnId]>
-
 export const convertDataToRowData = (
   data: BuilderRewardsSummary[],
   prices: GetPricesResult,
-): Row<ColumnId>[] => {
-  // FIXME: fix the Row type to take a generic for custom RowData type
-
+): BuilderTable['Row'][] => {
   if (!data.length) return []
 
-  return data.map<{ id: Address; data: ColumnIdToCellPropsMap }>(builder => {
-    const allocation = builder.totalAllocation ?? 0n
-    const actionType = getActionType(builder, allocation > 0n)
+  return data.map<BuilderTable['Row']>(builder => {
+    const backing = builder.totalAllocation ?? 0n
+    const actionType = getActionType(builder, backing > 0n)
 
     const rifPrice = prices[RIF]?.price ?? 0
     const { amount: formattedAmount, fiatAmount: formattedUsdAmount } = formatMetrics(
-      allocation,
+      backing,
       rifPrice,
       STRIF,
     )
@@ -92,12 +83,12 @@ export const convertDataToRowData = (
             : 0,
         },
         backing: {
-          amount: allocation,
+          amount: backing,
           formattedAmount: formattedAmount,
           formattedUsdAmount: formattedUsdAmount,
         },
-        allocations: {
-          allocationPct: builder.totalAllocationPercentage
+        backingShare: {
+          backingPercentage: builder.totalAllocationPercentage
             ? Number(builder.totalAllocationPercentage)
             : undefined,
         },
@@ -113,7 +104,7 @@ export const convertDataToRowData = (
 }
 
 export const BuilderCell = (props: BuilderNameCellProps): ReactElement => {
-  const { selectedRows } = useTableContext<ColumnId>()
+  const { selectedRows } = useTableContext<ColumnId, BuilderCellDataMap>()
   const isSelected = selectedRows[props.builder.address]
 
   return (
@@ -132,7 +123,7 @@ export const BuilderCell = (props: BuilderNameCellProps): ReactElement => {
 }
 
 // TODO: @refactor move to app/components/Table/Cell/TableCell.tsx
-export const TableCellBase = <CID extends BaseColumnId = BaseColumnId>({
+export const TableCellBase = ({
   children,
   className,
   onClick,
@@ -140,11 +131,11 @@ export const TableCellBase = <CID extends BaseColumnId = BaseColumnId>({
   forceShow,
   columnTransforms,
 }: HtmlHTMLAttributes<HTMLTableCellElement> & {
-  columnId: CID
+  columnId: ColumnId
   forceShow?: boolean
-  columnTransforms: ColumnTransforms<CID>
+  columnTransforms: ColumnTransforms<ColumnId>
 }): ReactNode => {
-  const { columns } = useTableContext<CID>()
+  const { columns } = useTableContext<ColumnId, BuilderCellDataMap>()
   if (forceShow || !columns.find(col => col.id === columnId)?.hidden) {
     return (
       <td
@@ -167,7 +158,7 @@ const TableCell = ({
   forceShow,
 }: HtmlHTMLAttributes<HTMLTableCellElement> & { columnId: ColumnId; forceShow?: boolean }): ReactNode => {
   return (
-    <TableCellBase<ColumnId>
+    <TableCellBase
       className={className}
       onClick={onClick}
       columnId={columnId}
@@ -211,10 +202,10 @@ export const BuilderBackingCell = (props: BackingCellProps): ReactElement => {
   )
 }
 
-const BuilderAllocationsCell = (props: AllocationCellProps): ReactElement => {
+const BuilderBackingShareCell = (props: BackingShareCellProps): ReactElement => {
   return (
-    <TableCell columnId="allocations" className="justify-center">
-      <AllocationCell {...props} className="w-[60%] justify-center" />
+    <TableCell columnId="backingShare" className="justify-center">
+      <BackingShareCell {...props} className="w-[60%] justify-center" />
     </TableCell>
   )
 }
@@ -238,7 +229,7 @@ export const ActionsCell = ({
 }
 
 interface BuilderDataRowProps extends CommonComponentProps<HTMLTableRowElement> {
-  row: Row<ColumnId>
+  row: BuilderTable['Row']
 }
 
 export const selectedRowStyle = 'bg-v3-text-80 text-v3-bg-accent-100'
@@ -253,32 +244,32 @@ export const BuilderDataRow: FC<BuilderDataRowProps> = ({ row, ...props }) => {
       backer_rewards,
       rewards_past_cycle,
       rewards_upcoming,
-      allocations: { allocationPct },
+      backingShare: { backingPercentage },
       actions,
     },
-  } = row as Row<ColumnId> & { data: ColumnIdToCellPropsMap }
-  const { selectedRows } = useTableContext<ColumnId>()
+  }: BuilderTable['Row'] = row
+  const { selectedRows } = useTableContext<ColumnId, BuilderCellDataMap>()
   const { isConnected } = useAccount()
   const { intermediateStep, handleConnectWallet, handleCloseIntermediateStep, onConnectWalletButtonClick } =
     useAppKitFlow()
 
   const [isHovered, setIsHovered] = useState(false)
-  const dispatch = useTableActionsContext<ColumnId>()
+  const dispatch = useTableActionsContext<ColumnId, BuilderCellDataMap>()
 
   const hasSelections = Object.values(selectedRows).some(Boolean)
 
   const isInProgress = isBuilderInProgress(builder.builder)
   const hasInactiveState = getBuilderInactiveState(builder.builder) !== null
-  const hasAllocations = backing.amount > 0n
+  const hasBacking = backing.amount > 0n
 
-  const canAllocate = !isInProgress && (!hasInactiveState || hasAllocations)
+  const canBack = !isInProgress && (!hasInactiveState || hasBacking)
 
   const handleToggleSelection = () => {
     if (!isConnected) {
       return
     }
 
-    if (!canAllocate) {
+    if (!canBack) {
       // do not allow selection of builders that are in progress
       return
     }
@@ -305,7 +296,7 @@ export const BuilderDataRow: FC<BuilderDataRowProps> = ({ row, ...props }) => {
             ),
           },
           {
-            condition: () => !canAllocate,
+            condition: () => !canBack,
             lazyContent: () => <NonHoverableBuilderTooltipContent />,
           },
           {
@@ -321,7 +312,7 @@ export const BuilderDataRow: FC<BuilderDataRowProps> = ({ row, ...props }) => {
             selectedRows[rowId] || isHovered ? selectedRowStyle : unselectedRowStyle,
           )}
           onClick={handleToggleSelection}
-          onMouseEnter={() => canAllocate && setIsHovered(true)}
+          onMouseEnter={() => canBack && setIsHovered(true)}
           onMouseLeave={() => setIsHovered(false)}
         >
           <BuilderCell {...builder} isHighlighted={isHovered || selectedRows[rowId]} />
@@ -329,8 +320,15 @@ export const BuilderDataRow: FC<BuilderDataRowProps> = ({ row, ...props }) => {
           <RewardsPastCycleCell {...rewards_past_cycle} />
           <RewardsUpcomingCell {...rewards_upcoming} />
           <BuilderBackingCell {...backing} />
-          {!(isHovered && isConnected) && <BuilderAllocationsCell allocationPct={allocationPct} />}
-          <ActionsCell {...actions} forceShow={isHovered && isConnected} />
+          <BuilderBackingShareCell
+            backingPercentage={backingPercentage}
+            className={isHovered ? 'hidden' : 'visible'}
+          />
+          <ActionsCell
+            {...actions}
+            forceShow={isHovered && isConnected}
+            className={isHovered ? 'visible' : 'hidden'}
+          />
           <td className="w-[24px]"></td>
         </tr>
       </ConditionalTooltip>
@@ -359,7 +357,7 @@ export const NonHoverableBuilderTooltipContent = () => {
     <div className="flex justify-center">
       <div className="bg-v3-text-80 rounded-sm shadow-sm w-64 flex flex-col items-start p-6 gap-2">
         <Paragraph className="text-v3-bg-accent-100 text-sm w-full font-normal leading-5 rootstock-sans self-stretch">
-          This Builder state does not allow allocations
+          This Builder state does not allow backing
         </Paragraph>
       </div>
     </div>

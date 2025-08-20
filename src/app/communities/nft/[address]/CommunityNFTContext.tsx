@@ -1,7 +1,6 @@
 'use client'
 import { communitiesMapByContract, CommunityItem } from '@/app/communities/communityUtils'
 import { nftAlertMessages } from '@/app/communities/nft/[address]/constants'
-import { useAlertContext } from '@/app/providers'
 import { NoContextProviderError } from '@/lib/errors/ContextError'
 import { applyPinataImageOptions } from '@/lib/ipfs'
 import { useCommunity } from '@/shared/hooks/useCommunity'

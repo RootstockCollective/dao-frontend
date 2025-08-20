@@ -1,20 +1,20 @@
 'use client'
 
+import { useReviewProposal } from '@/app/providers'
+import { NumberInput, TextInput } from '@/components/FormFields'
+import { useLayoutContext } from '@/components/MainContainer/LayoutProvider'
+import { Header } from '@/components/TypographyNew'
+import { ProposalCategory } from '@/shared/types'
+import { zodResolver } from '@hookform/resolvers/zod'
 import { useRouter } from 'next/navigation'
 import { useCallback, useEffect } from 'react'
 import { useForm } from 'react-hook-form'
 import { Address } from 'viem'
-import { useLayoutContext } from '@/components/MainContainer/LayoutProvider'
-import { Subfooter } from '../../components/Subfooter'
-import { TextInput, NumberInput } from '@/components/FormFields'
-import { BaseProposalFields, TokenRadioGroup } from '../components'
-import { zodResolver } from '@hookform/resolvers/zod'
-import { useReviewProposal } from '@/app/providers'
-import { ProposalCategory } from '@/shared/types'
+import { ProposalSubfooter } from '../../components/ProposalSubfooter'
+import { BaseProposalFields, ProposalInfoSidebar, TokenRadioGroup } from '../components'
+import { BASE_PROPOSAL_LIMITS } from '../schemas/BaseProposalSchema'
 import { GrantProposal, GrantProposalSchema } from '../schemas/GrantProposalSchema'
 import { TOKEN_FIELD_LIMITS } from '../schemas/TokenSchema'
-import { Header } from '@/components/TypographyNew'
-import { BASE_PROPOSAL_LIMITS } from '../schemas/BaseProposalSchema'
 
 export default function GrantsProposalForm() {
   const { record, setRecord } = useReviewProposal()
@@ -47,21 +47,25 @@ export default function GrantsProposalForm() {
   )
 
   // inject sticky drawer with submit button to the footer layout
-  const { setSubfooter } = useLayoutContext()
+  const { openDrawer, closeDrawer } = useLayoutContext()
   useEffect(() => {
-    setSubfooter(
-      <Subfooter submitForm={onSubmit} buttonText="Review proposal" nextDisabled={!formState.isValid} />,
+    openDrawer(
+      <ProposalSubfooter
+        submitForm={onSubmit}
+        buttonText="Review proposal"
+        nextDisabled={!formState.isValid}
+      />,
     )
-    return () => setSubfooter(null)
-  }, [formState.isValid, onSubmit, setSubfooter])
+    return () => closeDrawer()
+  }, [formState.isValid, onSubmit, openDrawer, closeDrawer])
 
   // set focus on proposal name field
   // eslint-disable-next-line
   useEffect(() => setFocus('proposalName'), [])
 
   return (
-    <form>
-      <div className="w-full max-w-[760px] px-6 pt-6 pb-8 flex flex-col gap-10 bg-bg-80 rounded-sm">
+    <div className="flex gap-6">
+      <form className="w-2/3 px-6 pt-6 pb-8 flex flex-col gap-10 bg-bg-80 rounded-sm">
         <BaseProposalFields control={control} />
         <div className="flex flex-col gap-4">
           <Header caps variant="h2" className="leading-loose tracking-wide">
@@ -87,7 +91,10 @@ export default function GrantsProposalForm() {
             <TokenRadioGroup name="token" control={control} />
           </div>
         </div>
+      </form>
+      <div className="w-1/3 flex flex-row gap-2 items-start">
+        <ProposalInfoSidebar kycLink="https://gov.rootstockcollective.xyz/t/general-guidelines-for-grant-applications/94/7" />
       </div>
-    </form>
+    </div>
   )
 }

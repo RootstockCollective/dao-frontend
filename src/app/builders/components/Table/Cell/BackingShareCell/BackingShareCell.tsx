@@ -3,13 +3,17 @@ import { cn } from '@/lib/utils'
 import * as Progress from '@radix-ui/react-progress'
 import { FC } from 'react'
 
-export interface AllocationCellProps {
-  allocationPct?: number
+export interface BackingShareCellProps {
+  backingPercentage?: number
   step?: number
   className?: string
 }
 
-export const AllocationCell: FC<AllocationCellProps> = ({ allocationPct, step = 1, className }) => {
+export const BackingShareCell: FC<BackingShareCellProps> = ({
+  backingPercentage: allocationPct,
+  step = 1,
+  className,
+}) => {
   if (allocationPct === undefined) {
     return <div className={cn('flex items-center justify-center w-full h-full gap-2', className)}></div>
   }

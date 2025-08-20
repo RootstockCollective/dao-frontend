@@ -1,17 +1,17 @@
 import type { Meta, StoryObj } from '@storybook/nextjs'
-import { AllocationCell } from './AllocationCell'
+import { BackingShareCell } from './BackingShareCell'
 
 const meta = {
-  title: 'Koto/Builders/Table/Cell/AllocationCell',
-  component: AllocationCell,
+  title: 'Koto/Builders/Table/Cell/BackingShareCell',
+  component: BackingShareCell,
   parameters: {
     layout: 'centered',
   },
   tags: ['autodocs'],
   argTypes: {
-    allocationPct: {
+    backingPercentage: {
       control: { type: 'range', min: 0, max: 100, step: 0.01 },
-      description: 'Allocation percentage (0-100)',
+      description: 'Backing share percentage (0-100)',
     },
   },
   decorators: [
@@ -21,7 +21,7 @@ const meta = {
       </div>
     ),
   ],
-} satisfies Meta<typeof AllocationCell>
+} satisfies Meta<typeof BackingShareCell>
 
 export default meta
 
@@ -29,6 +29,6 @@ type Story = StoryObj<typeof meta>
 
 export const Default: Story = {
   args: {
-    allocationPct: 50,
+    backingPercentage: 50,
   },
 }

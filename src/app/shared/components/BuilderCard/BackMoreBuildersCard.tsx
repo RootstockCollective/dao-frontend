@@ -1,4 +1,4 @@
-import { Button } from '@/components/ButtonNew'
+import { Button } from '@/components/Button'
 import { BuildingBrick, CloseIconKoto } from '@/components/Icons'
 import { Paragraph } from '@/components/TypographyNew'
 import { Typography } from '@/components/TypographyNew/Typography'

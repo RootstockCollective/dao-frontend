@@ -12,7 +12,7 @@ interface Props extends Omit<TypographyProps<'p'>, 'as'> {
  * Renders a <p> element with consistent styling.
  * Supports the following variants:
  * - body-l: font-size: 18px; font-family: font-rootstock-sans
- * - body: font-size: 16px; font-family: font-rootstock-sans
+ * - body (default): font-size: 16px; font-family: font-rootstock-sans
  * - body-s: font-size: 14px; font-family: font-rootstock-sans
  * - body-xs: font-size: 12px; font-family: font-rootstock-sans
  */

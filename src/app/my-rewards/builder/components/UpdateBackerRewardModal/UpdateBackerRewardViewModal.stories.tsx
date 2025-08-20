@@ -1,6 +1,6 @@
 import type { Meta, StoryObj } from '@storybook/nextjs'
 import UpdateBackerRewardViewModal from './UpdateBackerRewardViewModal'
-import { Button } from '@/components/ButtonNew'
+import { Button } from '@/components/Button'
 import { useState } from 'react'
 import { Duration } from 'luxon'
 

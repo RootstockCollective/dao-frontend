@@ -11,7 +11,6 @@ import { ReactNode } from 'react'
 import { State, WagmiProvider } from 'wagmi'
 import { AllocationsContextProvider } from '../collective-rewards/allocations/context'
 import { BuilderContextProviderWithPrices } from '../collective-rewards/user'
-import { AlertProvider } from './AlertProvider'
 import { BoosterProvider } from './NFT/BoosterContext'
 import { ReviewProposalProvider } from './ReviewProposalContext'
 
@@ -68,19 +67,17 @@ export const ContextProviders = ({ children, initialState }: Props) => {
       <FeatureFlagProvider>
         <WagmiProvider config={wagmiAdapterConfig} initialState={initialState}>
           <QueryClientProvider client={queryClient}>
-            <AlertProvider>
-              <BuilderContextProviderWithPrices>
-                <BoosterProvider>
-                  <AllocationsContextProvider>
-                    <BalancesProvider>
-                      <TooltipProvider>
-                        <ReviewProposalProvider>{children}</ReviewProposalProvider>
-                      </TooltipProvider>
-                    </BalancesProvider>
-                  </AllocationsContextProvider>
-                </BoosterProvider>
-              </BuilderContextProviderWithPrices>
-            </AlertProvider>
+            <BuilderContextProviderWithPrices>
+              <BoosterProvider>
+                <AllocationsContextProvider>
+                  <BalancesProvider>
+                    <TooltipProvider>
+                      <ReviewProposalProvider>{children}</ReviewProposalProvider>
+                    </TooltipProvider>
+                  </BalancesProvider>
+                </AllocationsContextProvider>
+              </BoosterProvider>
+            </BuilderContextProviderWithPrices>
           </QueryClientProvider>
         </WagmiProvider>
       </FeatureFlagProvider>

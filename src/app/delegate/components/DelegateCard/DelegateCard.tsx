@@ -1,6 +1,6 @@
 import React, { ComponentProps } from 'react'
 import { BuilderHeader } from '@/app/backing/components/BuilderHeader/BuilderHeader'
-import { Button } from '@/components/ButtonNew'
+import { Button } from '@/components/Button'
 import { cn, truncateRns } from '@/lib/utils'
 import { Address } from 'viem'
 import { Label, Paragraph } from '@/components/TypographyNew'

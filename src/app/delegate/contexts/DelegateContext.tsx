@@ -40,6 +40,7 @@ export const DelegateContextProvider = ({ children }: Props) => {
     delegateeAddress,
     isLoading,
     delegateeVotingPower,
+    delegateeRns,
     refetch,
   } = useGetExternalDelegatedAmount(address)
 
@@ -70,10 +71,20 @@ export const DelegateContextProvider = ({ children }: Props) => {
         draft.cards.available.contentValue = Number(formatEther(available)).toFixed(0)
         draft.didIDelegateToMyself = didIDelegateToMyself
         draft.delegateeAddress = delegateeAddress
+        draft.delegateeRns = delegateeRns
         draft.delegateeVotingPower = delegateeVotingPower ? formatEther(delegateeVotingPower) : undefined
       }),
     )
-  }, [received, delegated, own, available, didIDelegateToMyself, delegateeAddress, delegateeVotingPower])
+  }, [
+    received,
+    delegated,
+    own,
+    available,
+    didIDelegateToMyself,
+    delegateeAddress,
+    delegateeVotingPower,
+    delegateeRns,
+  ])
 
   // Update loading state when UI state changes
   useEffect(() => {

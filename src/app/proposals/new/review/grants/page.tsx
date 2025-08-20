@@ -5,11 +5,10 @@ import moment from 'moment'
 import { useAccount } from 'wagmi'
 import { useReviewProposal } from '@/app/providers'
 import { useLayoutContext } from '@/components/MainContainer/LayoutProvider'
-import { Subfooter } from '../../components/Subfooter'
+import { ProposalSubfooter } from '../../components/ProposalSubfooter'
 import { ProposalCategory } from '@/shared/types'
 import { Card } from '../components/Card'
 import { formatNumberWithCommas, shortAddress } from '@/lib/utils'
-import { TokenIcon } from '@/app/proposals/icons/TokenIcon'
 import { PreviewLabel } from '../components/PreviewLabel'
 import { useCreateTreasuryTransferProposal } from '@/app/proposals/hooks/useCreateTreasuryTransferProposal'
 import { tokenContracts } from '@/lib/contracts'
@@ -18,6 +17,7 @@ import { isUserRejectedTxError } from '@/components/ErrorPage'
 import { Header, Paragraph } from '@/components/TypographyNew'
 import { CopyButton } from '@/components/CopyButton'
 import { DISCOURSE_LINK_SEPARATOR } from '@/app/proposals/shared/utils'
+import { TokenImage } from '@/components/TokenImage'
 
 export default function GrantsProposalReview() {
   const { address, isConnected } = useAccount()
@@ -33,6 +33,7 @@ export default function GrantsProposalReview() {
       const proposalDescription = `${proposalName};${description} ${DISCOURSE_LINK_SEPARATOR}${discourseLink} `
       const tokenAddress = tokenContracts[token.toUpperCase() as keyof typeof tokenContracts]
       if (!tokenAddress) throw new Error('GrantsProposalReview: Unknown contract address')
+
       // Here the user will see Metamask window and confirm his tx
       const txHash = await onCreateTreasuryTransferProposal(
         targetAddress,
@@ -57,13 +58,17 @@ export default function GrantsProposalReview() {
   }, [record, onCreateTreasuryTransferProposal])
 
   // inject sticky drawer with submit button to the footer layout
-  const { setSubfooter } = useLayoutContext()
+  const { openDrawer, closeDrawer } = useLayoutContext()
   useEffect(() => {
-    setSubfooter(
-      <Subfooter submitForm={onSubmit} buttonText="Publish proposal" disabled={loading || !isConnected} />,
+    openDrawer(
+      <ProposalSubfooter
+        submitForm={onSubmit}
+        buttonText="Publish proposal"
+        disabled={loading || !isConnected}
+      />,
     )
-    return () => setSubfooter(null)
-  }, [loading, onSubmit, setSubfooter, isConnected])
+    return () => closeDrawer()
+  }, [loading, onSubmit, openDrawer, closeDrawer, isConnected])
 
   // Verify that the context has passed correct proposal type
   if (!record?.form || record?.category !== ProposalCategory.Grants) {
@@ -87,7 +92,7 @@ export default function GrantsProposalReview() {
               <Card title="Proposal type">
                 <span className="mr-2">Transfer of {tokenAmount}</span>
                 <span>
-                  <TokenIcon token={token} className="w-4 h-4 mb-[2px] mr-1" />
+                  <TokenImage symbol={token} className="inline-block w-4 h-4 mb-[2px] mr-1" />
                   {token}
                 </span>
               </Card>
@@ -144,7 +149,7 @@ export default function GrantsProposalReview() {
             <Card title="Amount">
               <span className="mr-2">{tokenAmount}</span>
               <span className="whitespace-nowrap">
-                <TokenIcon token={token} className="w-4 h-4 mr-1 mb-[2px]" />
+                <TokenImage symbol={token} className="inline-block w-4 h-4 mr-1 mb-[2px]" />
                 {token}
               </span>
             </Card>

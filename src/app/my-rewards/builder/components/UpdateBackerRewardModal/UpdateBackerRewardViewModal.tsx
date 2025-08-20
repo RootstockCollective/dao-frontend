@@ -1,6 +1,6 @@
 import { AlwaysEnabledButton } from '@/app/components'
 import { TransactionInProgressButton } from '@/app/user/Stake/components/TransactionInProgressButton'
-import { Button } from '@/components/ButtonNew/Button'
+import { Button } from '@/components/Button'
 import { KotoQuestionMarkIcon } from '@/components/Icons'
 import { InputNumber } from '@/components/Input/InputNumber'
 import { LoadingSpinner } from '@/components/LoadingSpinner'

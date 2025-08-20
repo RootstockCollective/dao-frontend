@@ -31,19 +31,19 @@ export function SidebarMobile() {
       animate="drawer"
       className={cn(
         'h-[calc(100dvh-var(--header-height))] w-full pl-10 py-12',
-        'absolute inset-0 z-40 bg-l-black',
+        'fixed inset-0 z-40 bg-l-black',
       )}
       transition={{ duration: 0.3, ease: 'circOut' }}
       onClick={closeSidebar}
     >
-      <div className="h-full flex flex-col justify-between gap-4">
+      <div className="h-full flex flex-col justify-between gap-4 ">
         <ul className="w-fit">
           {menuDataToUse.map(data => (
-            <Fragment key={data.href}>
+            <Fragment key={data.buttonProps.id}>
               {'type' in data && data.type === 'category' ? (
                 <div className="m-3" />
               ) : (
-                <MenuItem key={data.href} {...data} />
+                <MenuItem key={data.buttonProps.id} {...data} />
               )}
             </Fragment>
           ))}

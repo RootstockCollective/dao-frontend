@@ -1,7 +1,7 @@
 import { formatSymbol } from '@/app/collective-rewards/rewards/utils'
 import { ConditionalTooltip } from '@/app/components'
 import { TransactionInProgressButton } from '@/app/user/Stake/components/TransactionInProgressButton'
-import { Button } from '@/components/ButtonNew'
+import { Button } from '@/components/Button'
 import { Modal } from '@/components/Modal/Modal'
 import { TokenImage } from '@/components/TokenImage'
 import { Typography } from '@/components/TypographyNew/Typography'

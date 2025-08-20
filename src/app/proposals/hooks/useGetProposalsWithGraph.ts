@@ -27,7 +27,8 @@ export function useGetProposalsWithGraph() {
   })
 
   const activeProposalCount = useMemo(() => {
-    if (!proposalsData || !latestBlockNumber) return []
+    if (!proposalsData || !latestBlockNumber) return '0'
+
     return proposalsData.proposals
       .filter(
         (proposal: ProposalGraphQLResponse) =>

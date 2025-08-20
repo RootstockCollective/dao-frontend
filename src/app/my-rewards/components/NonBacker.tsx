@@ -1,6 +1,6 @@
 'use client'
 
-import { Button } from '@/components/ButtonNew'
+import { Button } from '@/components/Button'
 import { HeartBroken } from '@/components/Icons/v3design'
 import { Paragraph } from '@/components/TypographyNew'
 import { useRouter } from 'next/navigation'

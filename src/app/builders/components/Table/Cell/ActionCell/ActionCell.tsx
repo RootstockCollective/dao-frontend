@@ -1,7 +1,7 @@
 // FIXME: move to @/app/builders/components/Table folder
 import { Builder } from '@/app/collective-rewards/types'
 import { isBuilderActive } from '@/app/collective-rewards/utils'
-import { Button } from '@/components/ButtonNew/Button'
+import { Button } from '@/components/Button'
 import { CogIcon, HandshakeIcon, TrashIcon } from '@/components/Icons/v3design'
 import { CommonComponentProps } from '@/components/commonProps'
 import { cn } from '@/lib/utils'

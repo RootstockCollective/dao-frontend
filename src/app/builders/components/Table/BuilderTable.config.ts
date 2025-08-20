@@ -1,11 +1,17 @@
-import { BaseColumnId, Column } from '@/shared/context'
-import { HtmlHTMLAttributes } from 'react'
-import { TableColumnDropdownLabels } from './TableColumnDropdown/TableColumnDropdown'
 import {
   BUILDER_ACTIVE,
   BUILDER_IN_PROGRESS,
   builderInactiveStates,
 } from '@/app/collective-rewards/utils/isBuilderOperational'
+import { BaseColumnId, Column, TypedTable } from '@/shared/context'
+import { HtmlHTMLAttributes } from 'react'
+import { ActionCellProps } from './Cell/ActionCell'
+import { BackersPercentageCellProps } from './Cell/BackersPercentageCell'
+import { BackingCellProps } from './Cell/BackingCell'
+import { BackingShareCellProps } from './Cell/BackingShareCell'
+import { BuilderNameCellProps } from './Cell/BuilderNameCell'
+import { RewardsCellProps } from './Cell/RewardsCell'
+import { TableColumnDropdownLabels } from './TableColumnDropdown/TableColumnDropdown'
 
 const COLUMN_IDS = [
   'builder',
@@ -13,7 +19,7 @@ const COLUMN_IDS = [
   'backer_rewards',
   'rewards_past_cycle',
   'rewards_upcoming',
-  'allocations',
+  'backingShare',
   'actions',
 ] as const
 export type ColumnId = (typeof COLUMN_IDS)[number]
@@ -35,7 +41,7 @@ export const LABELS: TableColumnDropdownLabels<Exclude<ColumnId, 'builder' | 'ac
   backing: {
     label: 'Backing',
   },
-  allocations: {
+  backingShare: {
     label: 'Backing share',
   },
 }
@@ -51,7 +57,7 @@ export const COLUMN_TRANSFORMS: ColumnTransforms<ColumnId> = {
   backer_rewards: 'flex-[1_1_5rem] min-w-[5rem] justify-center',
   rewards_past_cycle: 'flex-[1_1_4rem] min-w-[4rem] justify-center',
   rewards_upcoming: 'flex-[1_1_6rem] min-w-[6rem] justify-center',
-  allocations: 'flex-[1_1_6rem] min-w-[6rem] justify-center',
+  backingShare: 'flex-[1_1_6rem] min-w-[6rem] justify-center',
   actions: 'flex-[1_1_6rem] min-w-[6rem] justify-center',
 }
 
@@ -82,7 +88,7 @@ export const DEFAULT_HEADERS: Column<ColumnId>[] = [
     sortable: true,
   },
   {
-    id: 'allocations',
+    id: 'backingShare',
     hidden: false,
     sortable: true,
   },
@@ -95,3 +101,16 @@ export const DEFAULT_HEADERS: Column<ColumnId>[] = [
 
 const builderStates = [BUILDER_IN_PROGRESS, BUILDER_ACTIVE, ...builderInactiveStates] as const
 export type BuilderState = (typeof builderStates)[number]
+
+// Typed table configuration for BuildersTable
+export type BuilderCellDataMap = {
+  builder: BuilderNameCellProps
+  backing: BackingCellProps
+  backer_rewards: BackersPercentageCellProps
+  rewards_past_cycle: RewardsCellProps
+  rewards_upcoming: RewardsCellProps
+  backingShare: BackingShareCellProps
+  actions: ActionCellProps
+}
+
+export type BuilderTable = TypedTable<ColumnId, BuilderCellDataMap>

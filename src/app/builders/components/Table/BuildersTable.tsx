@@ -1,6 +1,7 @@
 'use client'
 
 import { Builder, BuilderRewardsSummary } from '@/app/collective-rewards/types'
+import { useBuilderContext } from '@/app/collective-rewards/user/context/BuilderContext'
 import {
   isBuilderActive,
   isBuilderDeactivated,
@@ -9,21 +10,20 @@ import {
   isBuilderPaused,
   isBuilderSelfPaused,
 } from '@/app/collective-rewards/utils'
+import { getCombinedFiatAmount } from '@/app/collective-rewards/utils/getCombinedFiatAmount'
 import { TablePager } from '@/components/TableNew'
 import { usePricesContext, useTableActionsContext, useTableContext } from '@/shared/context'
+import { Sort } from '@/shared/context/TableContext/types'
+import { Big } from 'big.js'
 import { Suspense, useEffect, useMemo, useState } from 'react'
 import { Address } from 'viem'
 import { useAccount } from 'wagmi'
-import { BuilderFilterOptionId } from './BuilderFilterDropdown'
 import { useGetBuilderRewardsSummary } from '../../hooks/useGetBuilderRewardsSummary'
 import { BuilderDataRow, convertDataToRowData } from './BuilderDataRow'
+import { BuilderFilterOptionId } from './BuilderFilterDropdown'
 import { BuilderHeaderRow } from './BuilderHeaderRow'
-import { ColumnId, DEFAULT_HEADERS, PAGE_SIZE } from './BuilderTable.config'
+import { BuilderCellDataMap, ColumnId, DEFAULT_HEADERS, PAGE_SIZE } from './BuilderTable.config'
 import { Action, ActionCellProps } from './Cell/ActionCell'
-import { Sort } from '@/shared/context/TableContext/types'
-import { getCombinedFiatAmount } from '@/app/collective-rewards/utils/getCombinedFiatAmount'
-import { Big } from 'big.js'
-import { useBuilderContext } from '@/app/collective-rewards/user/context/BuilderContext'
 
 // --- Filter builders by state ---
 const filterActive = (builder: Builder) => isBuilderActive(builder.stateFlags)
@@ -117,7 +117,7 @@ const usePagedFilteredBuildersRewards = ({
 
       backing: (a, b) => Number((a.totalAllocation ?? 0n) - (b.totalAllocation ?? 0n)),
 
-      allocations: (a, b) =>
+      backingShare: (a, b) =>
         Number((a.totalAllocationPercentage ?? 0n) - (b.totalAllocationPercentage ?? 0n)),
     }
 
@@ -143,9 +143,9 @@ export const BuildersTable = ({ filterOption }: { filterOption: BuilderFilterOpt
 
   const { isConnected } = useAccount()
 
-  const { rows, columns, selectedRows, sort } = useTableContext<ColumnId>()
+  const { rows, columns, selectedRows, sort } = useTableContext<ColumnId, BuilderCellDataMap>()
   const [actions, setActions] = useState<Action[]>([])
-  const dispatch = useTableActionsContext<ColumnId>()
+  const dispatch = useTableActionsContext<ColumnId, BuilderCellDataMap>()
 
   const pageOptions = useMemo(() => ({ start: 0, end: pageEnd }), [pageEnd])
   const {
@@ -188,18 +188,18 @@ export const BuildersTable = ({ filterOption }: { filterOption: BuilderFilterOpt
   }, [error, dispatch])
 
   /**
-   * Set the action column header to show if the allocations column is hidden.
+   * Set the action column header to show if the backing share column is hidden.
    * TODO: see if we can do this better to avoid re-rendering the table.
    */
   useEffect(() => {
-    const isAllocationsHidden = columns.find(col => col.id == 'allocations')?.hidden ?? true
+    const isBackingShareHidden = columns.find(col => col.id == 'backingShare')?.hidden ?? true
     const isActionsHidden = columns.find(col => col.id == 'actions')?.hidden ?? true
-    if (isAllocationsHidden === isActionsHidden) {
+    if (isBackingShareHidden === isActionsHidden) {
       dispatch({
         type: 'SET_COLUMN_VISIBILITY',
         payload: {
           columnId: 'actions',
-          hidden: !isAllocationsHidden,
+          hidden: !isBackingShareHidden,
         },
       })
     }
@@ -208,7 +208,11 @@ export const BuildersTable = ({ filterOption }: { filterOption: BuilderFilterOpt
   useEffect(() => {
     const actions = Object.entries(selectedRows)
       .filter(([_, value]) => value)
-      .map(([rowId]) => (rows.find(row => row.id === rowId)?.data.actions as ActionCellProps).actionType)
+      .map(([rowId]) => {
+        const row = rows.find(row => row.id === rowId)
+        const actionCell = row?.data?.actions as ActionCellProps
+        return actionCell?.actionType
+      })
       .filter(action => action !== undefined)
     setActions(actions)
   }, [selectedRows, rows])

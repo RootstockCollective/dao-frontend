@@ -7,13 +7,9 @@ import {
   BuilderCell,
   SelectBuildersTooltipContent,
   selectedRowStyle,
-  TableCellBase,
   unselectedRowStyle,
 } from '@/app/builders/components/Table'
-import { ActionCellProps, getActionType } from '@/app/builders/components/Table/Cell/ActionCell'
-import { BackersPercentageCellProps } from '@/app/builders/components/Table/Cell/BackersPercentageCell'
-import { BackingCellProps } from '@/app/builders/components/Table/Cell/BackingCell'
-import { BuilderNameCellProps } from '@/app/builders/components/Table/Cell/BuilderNameCell'
+import { getActionType } from '@/app/builders/components/Table/Cell/ActionCell'
 import { RewardsCell, RewardsCellProps } from '@/app/builders/components/Table/Cell/RewardsCell'
 import { BackerRewards } from '@/app/collective-rewards/rewards/backers/hooks'
 import { formatSymbol, getFiatAmount } from '@/app/collective-rewards/rewards/utils'
@@ -22,29 +18,49 @@ import { ConditionalTooltip } from '@/app/components/Tooltip/ConditionalTooltip'
 import { GetPricesResult } from '@/app/user/types'
 import { RIF, STRIF } from '@/lib/constants'
 import { cn, formatCurrencyWithLabel } from '@/lib/utils'
-import { Row, useTableActionsContext, useTableContext } from '@/shared/context'
+import { useTableActionsContext, useTableContext } from '@/shared/context'
 import { redirect, RedirectType } from 'next/navigation'
 import { FC, HtmlHTMLAttributes, ReactElement, ReactNode, useState } from 'react'
-import { Address } from 'viem'
 import { useAccount } from 'wagmi'
-import { COLUMN_TRANSFORMS, ColumnId } from './BackerRewardsTable.config'
+import {
+  BackerRewardsCellDataMap,
+  BackerRewardsTable,
+  COLUMN_TRANSFORMS,
+  ColumnId,
+} from './BackerRewardsTable.config'
 
-type ColumnIdToCellPropsMap = {
-  builder: BuilderNameCellProps
-  backing: BackingCellProps
-  backer_rewards: BackersPercentageCellProps
-  unclaimed: RewardsCellProps
-  estimated: RewardsCellProps
-  total: RewardsCellProps
-  actions: ActionCellProps
+// Local TableCellBase for backer rewards table
+const BackerTableCellBase = ({
+  children,
+  className,
+  onClick,
+  columnId,
+  forceShow,
+}: HtmlHTMLAttributes<HTMLTableCellElement> & {
+  columnId: ColumnId
+  forceShow?: boolean
+}): ReactNode => {
+  const { columns } = useTableContext<ColumnId, BackerRewardsCellDataMap>()
+  if (forceShow || !columns.find(col => col.id === columnId)?.hidden) {
+    return (
+      <td
+        className={cn('flex self-stretch items-center select-none', COLUMN_TRANSFORMS[columnId], className)}
+        onClick={onClick}
+      >
+        {children}
+      </td>
+    )
+  }
+  return null
 }
 
-export const convertDataToRowData = (data: BackerRewards[], prices: GetPricesResult): Row<ColumnId>[] => {
-  // FIXME: fix the Row type to take a generic for custom RowData type
-
+export const convertDataToRowData = (
+  data: BackerRewards[],
+  prices: GetPricesResult,
+): BackerRewardsTable['Row'][] => {
   if (!data.length) return []
 
-  return data.map<{ id: Address; data: ColumnIdToCellPropsMap }>(builder => {
+  return data.map<BackerRewardsTable['Row']>(builder => {
     const hasAllocations = builder.totalAllocation.rif.amount.value > 0n
     const actionType = getActionType(builder, hasAllocations)
 
@@ -109,15 +125,9 @@ const TableCell = ({
   forceShow,
 }: HtmlHTMLAttributes<HTMLTableCellElement> & { columnId: ColumnId; forceShow?: boolean }): ReactNode => {
   return (
-    <TableCellBase<ColumnId>
-      className={className}
-      onClick={onClick}
-      columnId={columnId}
-      forceShow={forceShow}
-      columnTransforms={COLUMN_TRANSFORMS}
-    >
+    <BackerTableCellBase className={className} onClick={onClick} columnId={columnId} forceShow={forceShow}>
       {children}
-    </TableCellBase>
+    </BackerTableCellBase>
   )
 }
 
@@ -146,18 +156,18 @@ const TotalCell = (props: RewardsCellProps): ReactElement => {
 }
 
 interface BackerRewardsDataRowProps {
-  row: Row<ColumnId>
+  row: BackerRewardsTable['Row']
 }
 
 export const BackerRewardsDataRow: FC<BackerRewardsDataRowProps> = ({ row, ...props }) => {
   const {
     id: rowId,
     data: { builder, backing, backer_rewards, unclaimed, estimated, total, actions },
-  } = row as Row<ColumnId> & { data: ColumnIdToCellPropsMap }
-  const { selectedRows } = useTableContext<ColumnId>()
+  }: BackerRewardsTable['Row'] = row
+  const { selectedRows } = useTableContext<ColumnId, BackerRewardsCellDataMap>()
   const { isConnected } = useAccount()
   const [isHovered, setIsHovered] = useState(false)
-  const dispatch = useTableActionsContext<ColumnId>()
+  const dispatch = useTableActionsContext<ColumnId, BackerRewardsCellDataMap>()
 
   const hasSelections = Object.values(selectedRows).some(Boolean)
 
@@ -199,8 +209,8 @@ export const BackerRewardsDataRow: FC<BackerRewardsDataRowProps> = ({ row, ...pr
         <UnclaimedCell {...unclaimed} />
         <EstimatedCell {...estimated} />
         <TotalCell {...total} />
-        {!isHovered && isConnected && <BuilderBackingCell {...backing} />}
-        <ActionsCell {...actions} forceShow={isHovered} />
+        <BuilderBackingCell {...backing} className={isHovered ? 'hidden' : 'visible'} />
+        <ActionsCell {...actions} forceShow={isHovered} className={isHovered ? 'visible' : 'hidden'} />
         <td className="w-[24px]"></td>
       </tr>
     </ConditionalTooltip>

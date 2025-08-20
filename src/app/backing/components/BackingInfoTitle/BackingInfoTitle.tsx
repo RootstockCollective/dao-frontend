@@ -1,4 +1,4 @@
-import { Button } from '@/components/ButtonNew'
+import { Button } from '@/components/Button'
 import { Span } from '@/components/TypographyNew'
 import { Typography } from '@/components/TypographyNew/Typography'
 import { CommonComponentProps } from '@/components/commonProps'

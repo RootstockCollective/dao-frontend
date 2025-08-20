@@ -1,4 +1,4 @@
-import { HeaderTitle } from '@/components/Typography'
+import { HeaderTitle } from '@/components/TypographyNew'
 import { Label } from '@/components/TypographyNew'
 import { formatCurrencyWithLabel, formatNumberWithCommas } from '@/lib/utils'
 import { BalanceInfo } from '@/components/BalanceInfo'
