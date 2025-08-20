@@ -32,7 +32,7 @@ const getIconSource = (symbol: string | undefined): string | null => {
   }
 }
 
-export const TokenImage = ({ symbol, size = 48, className }: TokenImageProps) => {
+export const TokenImage = ({ symbol, size = 16, className }: TokenImageProps) => {
   const imageSource = getIconSource(symbol)
   if (!imageSource) {
     return null
