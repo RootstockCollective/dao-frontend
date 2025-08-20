@@ -20,7 +20,7 @@ export function SelectField<T extends FieldValues>({
   ...selectProps
 }: Props<T>) {
   // Auto-add nullDisplayValue to options if provided
-  const finalOptions = nullDisplayValue ? [nullDisplayValue, ...options] : options
+  const finalOptions = nullDisplayValue ? [...options, nullDisplayValue] : options
 
   return (
     <Controller
