@@ -75,7 +75,7 @@ export type ProposalRecord =
   | { category: ProposalCategory.Deactivation; form: DeactivationProposal }
 
 export enum Milestones {
-  FIRST = 'Milestone 1',
-  SECOND = 'Milestone 2',
-  THIRD = 'Milestone 3',
+  MILESTONE_1 = 'Milestone 1',
+  MILESTONE_2 = 'Milestone 2',
+  MILESTONE_3 = 'Milestone 3',
 }
