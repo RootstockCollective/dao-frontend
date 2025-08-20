@@ -21,7 +21,7 @@ export const AllocationBarTooltipContent = ({
   const isUnallocated = builderAddress === 'unallocated'
 
   return (
-    <div className="w-[230px] p-3">
+    <div className="w-[230px] p-4">
       <div className="inline-flex items-center gap-1">
         <Typography variant="tag-s" className="text-foreground">
           {isUnallocated ? 'Unallocated' : shortAddress(builderAddress as Address)}
@@ -35,16 +35,16 @@ export const AllocationBarTooltipContent = ({
       <div className="flex flex-col gap-1 mt-2">
         {pendingBacking > 0n && builderAddress !== 'unallocated' && (
           <div className="flex justify-between items-center text-secondary gap-5">
-            <Typography>Pending</Typography>
+            <Typography variant='body-s'>Pending</Typography>
             <span className="inline-flex items-center gap-1">
-              <HourglassIcon className="size-5" color="var(--background-40)" />
-              <Typography>{formatSymbol(pendingBacking, STRIF)}</Typography>
+              <HourglassIcon className="size-4" color="var(--background-40)" />
+              <Typography variant="tag">{formatSymbol(pendingBacking, STRIF)}</Typography>
             </span>
           </div>
         )}
         <div className="flex justify-between items-center text-secondary gap-5">
-          <Typography>{isUnallocated ? 'Unallocated backing' : 'Current backing'}</Typography>
-          <Typography>{formatSymbol(currentBacking, STRIF)}</Typography>
+          <Typography variant='body-s'>{isUnallocated ? 'Unallocated backing' : 'Current backing'}</Typography>
+          <Typography variant='tag'>{formatSymbol(currentBacking, STRIF)}</Typography>
         </div>
       </div>
     </div>
