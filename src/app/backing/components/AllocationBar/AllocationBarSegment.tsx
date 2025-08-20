@@ -10,14 +10,14 @@ import { MoreIcon } from '@/components/Icons/MoreIcon'
 
 const AllocationBarSegmentPercent = ({
   pendingBacking,
-  totalValue,
+  totalBacking,
   valueDisplay,
   showDots = false,
   item,
   currentBacking,
 }: {
   pendingBacking: bigint
-  totalValue: bigint
+  totalBacking: bigint
   valueDisplay: AllocationBarValueDisplay
   showDots?: boolean
   item: AllocationItem
@@ -25,7 +25,7 @@ const AllocationBarSegmentPercent = ({
 }) => {
   const { percentDecimals, valueDecimals } = valueDisplay.format ?? {}
 
-  const percent = valueToPercentage(pendingBacking, totalValue).toLocaleString(undefined, {
+  const percent = valueToPercentage(pendingBacking, totalBacking).toLocaleString(undefined, {
     maximumFractionDigits: percentDecimals ?? 2,
   })
 
@@ -69,7 +69,7 @@ const AllocationBarSegmentPercent = ({
 interface AllocationBarSegmentProps {
   pendingBacking: bigint
   currentBacking: bigint
-  totalValue: bigint
+  totalBacking: bigint
   item: AllocationItem
   index: number
   isLast: boolean
@@ -84,7 +84,7 @@ interface AllocationBarSegmentProps {
 export const AllocationBarSegment = ({
   pendingBacking,
   currentBacking,
-  totalValue,
+  totalBacking,
   item,
   index,
   isLast,
@@ -98,7 +98,7 @@ export const AllocationBarSegment = ({
   const { attributes, listeners, setNodeRef, transform, isDragging } = useSortable({ id: item.key })
 
   // Calculate the percentage width based on the actual value and total value
-  const percentageWidth = valueToPercentage(pendingBacking, totalValue)
+  const percentageWidth = valueToPercentage(pendingBacking, totalBacking)
 
   // console.log(item.label, percentageWidth);
 
@@ -139,7 +139,7 @@ export const AllocationBarSegment = ({
         <div className="flex-1 flex items-center justify-center">
           <AllocationBarSegmentPercent
             pendingBacking={pendingBacking}
-            totalValue={totalValue}
+            totalBacking={totalBacking}
             valueDisplay={valueDisplay}
             showDots={showDots}
             item={item}
@@ -188,7 +188,7 @@ export const AllocationBarSegment = ({
         <div className="flex-1 flex items-center justify-center">
           <AllocationBarSegmentPercent
             pendingBacking={pendingBacking}
-            totalValue={totalValue}
+            totalBacking={totalBacking}
             valueDisplay={valueDisplay}
             showDots={showDots}
             item={item}
