@@ -39,20 +39,20 @@ export const Deactivation: Story = {
   },
 }
 
-export const FirstMilestone: Story = {
+export const Milestone1: Story = {
   args: {
-    category: ProposalCategory.FirstMilestone,
+    category: ProposalCategory.Milestone1,
   },
 }
 
-export const SecondMilestone: Story = {
+export const Milestone2: Story = {
   args: {
-    category: ProposalCategory.SecondMilestone,
+    category: ProposalCategory.Milestone2,
   },
 }
 
-export const ThirdMilestone: Story = {
+export const Milestone3: Story = {
   args: {
-    category: ProposalCategory.ThirdMilestone,
+    category: ProposalCategory.Milestone3,
   },
 }

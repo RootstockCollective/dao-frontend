@@ -1,6 +1,6 @@
 import { IconProps } from '@/components/Icons/types'
 
-export const SecondMilestoneIcon = ({ width = 24, height = 24, ...props }: IconProps) => {
+export const Milestone2Icon = ({ width = 24, height = 24, ...props }: IconProps) => {
   return (
     <svg
       xmlns="http://www.w3.org/2000/svg"

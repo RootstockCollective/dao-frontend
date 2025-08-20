@@ -1,5 +1,5 @@
 import { Tooltip } from '@/components/Tooltip'
-import { GrantsIcon, ToolsIcon, FirstMilestoneIcon, SecondMilestoneIcon, ThirdMilestoneIcon } from './icons'
+import { GrantsIcon, ToolsIcon, Milestone1Icon, Milestone2Icon, Milestone3Icon } from './icons'
 import { ProposalCategory } from '@/shared/types'
 import { ClassNameValue } from 'tailwind-merge'
 import { cn } from '@/lib/utils'
@@ -8,9 +8,9 @@ const icons = {
   [ProposalCategory.Grants]: <GrantsIcon />,
   [ProposalCategory.Activation]: <ToolsIcon />,
   [ProposalCategory.Deactivation]: <ToolsIcon />,
-  [ProposalCategory.FirstMilestone]: <FirstMilestoneIcon />,
-  [ProposalCategory.SecondMilestone]: <SecondMilestoneIcon />,
-  [ProposalCategory.ThirdMilestone]: <ThirdMilestoneIcon />,
+  [ProposalCategory.Milestone1]: <Milestone1Icon />,
+  [ProposalCategory.Milestone2]: <Milestone2Icon />,
+  [ProposalCategory.Milestone3]: <Milestone3Icon />,
 } as const satisfies Record<ProposalCategory, React.JSX.Element>
 
 interface Props {
