@@ -57,7 +57,5 @@ jobs:
           IMAGE_TAG: ${{ github.sha }}
           PROFILE: testnet.local
         run: |
-          # Build a docker container and
-          # push it to ECR so that it can
-          # be deployed to ECS.
+          # Build a docker container to test build passes
           docker build --build-arg PROFILE="$PROFILE" --build-arg NEXT_PUBLIC_BUILD_ID=${{ github.sha }} --no-cache .
