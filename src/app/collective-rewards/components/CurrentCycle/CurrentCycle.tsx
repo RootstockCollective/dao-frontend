@@ -4,7 +4,6 @@ import { TotalBackingLoader } from '@/app/collective-rewards/components/TotalBac
 import { CycleContextProvider } from '@/app/collective-rewards/metrics'
 import { ActionsContainer } from '@/components/containers'
 import { Header } from '@/components/Typography'
-import { MockDataChart } from '../DualAxisChart/MockChart'
 
 export const CurrentCycle = () => {
   return (
@@ -24,7 +23,6 @@ export const CurrentCycle = () => {
           <TotalBackingLoader />
           <EstimatedRewards />
         </div>
-        <MockDataChart />
       </div>
     </ActionsContainer>
   )
