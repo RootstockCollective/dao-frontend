@@ -23,7 +23,7 @@ import { cn } from '@/lib/utils'
 import { useClickOutside } from '@/shared/hooks/useClickOutside'
 import { Status } from '@/components/Status'
 import { SearchButton } from './SearchButton'
-import { CategoryColumn } from './table-columns/CategoryColumn'
+import { Category } from '../components/category'
 import { Paragraph } from '@/components/Typography'
 import { Proposal } from '@/app/proposals/shared/types'
 import { filterOptions } from './filter/filterOptions'
@@ -214,7 +214,7 @@ const LatestProposalsTable = ({ proposals }: LatestProposalsTableProps) => {
       meta: {
         width: '0.62fr',
       },
-      cell: ({ cell }) => <CategoryColumn category={cell.getValue()} />,
+      cell: ({ cell }) => <Category category={cell.getValue()} />,
     }),
     accessor('proposalState', {
       id: 'status',

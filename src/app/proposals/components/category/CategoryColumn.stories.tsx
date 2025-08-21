@@ -1,10 +1,10 @@
 import type { Meta, StoryObj } from '@storybook/nextjs'
-import { CategoryColumn } from './CategoryColumn'
+import { Category } from './Category'
 import { ProposalCategory } from '@/shared/types'
 
-const meta: Meta<typeof CategoryColumn> = {
-  title: 'Proposals/CategoryColumn',
-  component: CategoryColumn,
+const meta: Meta<typeof Category> = {
+  title: 'Proposals/Category',
+  component: Category,
   parameters: {
     layout: 'centered',
   },

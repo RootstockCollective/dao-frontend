@@ -38,7 +38,7 @@ import { Vote } from '@/shared/types'
 import { executeTxFlow } from '@/shared/notification'
 import { useProposalById } from '../context'
 import { Eta, Proposal } from '../shared/types'
-import { CategoryColumn } from '../components/table-columns/CategoryColumn'
+import { Category } from '../components/category'
 
 export default function ProposalView() {
   const { id } = useParams<{ id: string }>() ?? {}
@@ -362,14 +362,14 @@ const PageWithProposal = (proposal: Proposal) => {
   const discourseLink = description ? getDiscourseLinkFromProposalDescription(description) : undefined
 
   return (
-    <div className="min-h-screen text-white px-4 py-8 flex flex-col gap-4 w-full max-w-full">
-      <div className="flex items-baseline">
-        <Header variant="h1" className="max-w-[56%] text-3xl text-white">
+    <div className="min-h-screen px-4 py-8 flex flex-col gap-4 w-full max-w-full">
+      <div className="flex items-end gap-4">
+        <Header variant="h3" className="text-2xl lg:text-3xl !leading-[0.9]">
           {name}
         </Header>
-        <div className="flex items-center ml-6">
-          <CategoryColumn className="max-w-fit mb-0.5" category={category} hasGradient />
-          <Paragraph variant="body-l" className="min-w-fit ml-1 text-bg-0">
+        <div className="flex gap-2 items-end">
+          <Category className="mb-0.5" category={category} hasGradient />
+          <Paragraph variant="body-l" className="text-bg-0 !leading-none">
             {category}
           </Paragraph>
         </div>
