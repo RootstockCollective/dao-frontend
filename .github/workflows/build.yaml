@@ -18,13 +18,17 @@ jobs:
         with:
           node-version: '24'
 
-      - name: Cache node_modules & .next/cache
+      - name: Cache node_modules
         uses: actions/cache@v4
         with:
-          path: |
-            node_modules
-            .next/cache
+          path: node_modules
           key: node-modules-${{ hashFiles('package-lock.json') }}
+
+      - name: Cache .next/cache
+        uses: actions/cache@v4
+        with:
+          path: .next/cache
+          key: next-cache-${{ hashFiles('package-lock.json') }}
 
       - name: Install dependencies
         run: npm install
@@ -47,17 +51,26 @@ jobs:
         with:
           path: node_modules
           key: node-modules-${{ hashFiles('package-lock.json') }}
+      - name: Restore .next/cache cache
+        uses: actions/cache@v4
+        with:
+          path: node_modules
+          key: next-cache-${{ hashFiles('package-lock.json') }}
       - name: Prepare Docker context with cache
         run: |
-          # Log cache size
+          # Log cache sizes
           echo "node_modules size: $(du -sh node_modules 2>/dev/null | cut -f1 || echo '0')"
+          echo ".next/cache size: $(du -sh .next/cache 2>/dev/null | cut -f1 || echo '0')"
           
           # Backup and modify .dockerignore
           cp .dockerignore .dockerignore.backup
           sed -i '/^node_modules$/d' .dockerignore
+          sed -i '/^\.next$/d' .dockerignore
           
-          # Ensure directory exists
+          # Ensure directories exist
           mkdir -p node_modules
+          mkdir -p .next/cache
+
       - name: Build
         id: build-image
         env:

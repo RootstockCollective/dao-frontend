@@ -18,6 +18,7 @@ COPY package*.json ./
 # Copy node_modules from the host to the container
 # This is useful for CI/CD environments where node_modules are pre-installed
 COPY node_modules node_modules
+COPY .next/cache .next/cache
 # Skip cypress install
 ENV CYPRESS_INSTALL_BINARY 0
 # Debug node_modules are being copied in CI CD
