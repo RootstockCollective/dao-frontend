@@ -47,12 +47,12 @@ jobs:
       - name: Checkout
         uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 #v4.2.2
       - name: Restore node_modules cache
-        uses: actions/cache@v4
+        uses: actions/cache/restore@v4
         with:
           path: node_modules
           key: node-modules-${{ hashFiles('package-lock.json') }}
       - name: Restore .next/cache cache
-        uses: actions/cache@v4
+        uses: actions/cache/restore@v4
         with:
           path: .next/cache
           key: next-cache-${{ hashFiles('package-lock.json') }}
