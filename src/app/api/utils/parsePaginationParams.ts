@@ -1,4 +1,5 @@
 import { MAX_PAGE_SIZE } from '@/lib/constants'
+import { DEFAULT_PAGE_NUMBER, DEFAULT_PAGE_SIZE, DEFAULT_SORT_DIRECTION } from './constants'
 
 type ValidationError = {
   type: 'ValidationError'
@@ -6,50 +7,85 @@ type ValidationError = {
   statusCode: number
 }
 
+const SORT_DIRECTION_ASC = 'asc' as const
+const SORT_DIRECTION_DESC = 'desc' as const
+const SORT_DIRECTIONS = [SORT_DIRECTION_ASC, SORT_DIRECTION_DESC] as const
+type SortDirection = (typeof SORT_DIRECTIONS)[number]
 type PaginationParams = {
   page: number
   pageSize: number
-  sortDirection: 'asc' | 'desc'
+  sortDirection: SortDirection
   sortBy?: string
 }
 
 type PaginationResult = { success: true; data: PaginationParams } | { success: false; error: ValidationError }
 
-export function parsePaginationParams(url: string): PaginationResult {
+type ParamKey = keyof PaginationParams
+
+const paramConfigs: Record<
+  ParamKey,
+  {
+    name: string
+    parse: (value: string | null) => any
+    validate?: (value: any) => boolean
+    errorMessage?: string
+  }
+> = {
+  page: {
+    name: 'page',
+    parse: v => parseInt(v ?? DEFAULT_PAGE_NUMBER, 10),
+    validate: v => !isNaN(v) && v >= 1,
+    errorMessage: 'Invalid page parameter',
+  },
+  pageSize: {
+    name: 'pageSize',
+    parse: v => parseInt(v ?? DEFAULT_PAGE_SIZE, 10),
+    validate: v => !isNaN(v) && v >= 1 && v <= MAX_PAGE_SIZE,
+    errorMessage: 'Invalid pageSize parameter',
+  },
+  sortDirection: {
+    name: 'sortDirection',
+    parse: v => v ?? DEFAULT_SORT_DIRECTION,
+    validate: v => SORT_DIRECTIONS.includes(v),
+    errorMessage: 'Invalid sortDirection parameter',
+  },
+  sortBy: {
+    name: 'sortBy',
+    parse: v => v ?? undefined,
+    // sortBy validation is handled separately
+  },
+}
+
+export function parsePaginationParams(url: string, allowedSortColumns?: string[]): PaginationResult {
   const { searchParams } = new URL(url)
-  const page = parseInt(searchParams.get('page') || '1', 10)
-  const pageSize = parseInt(searchParams.get('pageSize') || '10', 10)
-  const sortDirection = searchParams.get('sortDirection') || 'asc'
-  const sortBy = searchParams.get('sortBy') || undefined
+  const result: Partial<PaginationParams> = {}
 
-  if (isNaN(page) || page < 1) {
-    return {
-      success: false,
-      error: {
-        type: 'ValidationError',
-        message: 'Invalid page parameter',
-        statusCode: 400,
-      },
+  for (const key of Object.keys(paramConfigs) as ParamKey[]) {
+    const config = paramConfigs[key]
+    const rawValue = searchParams.get(config.name)
+    const parsed = config.parse(rawValue)
+
+    if (config.validate && !config.validate(parsed)) {
+      return {
+        success: false,
+        error: {
+          type: 'ValidationError',
+          message: config.errorMessage || `Invalid ${key} parameter`,
+          statusCode: 400,
+        },
+      }
     }
+
+    result[key] = parsed
   }
 
-  if (isNaN(pageSize) || pageSize < 1 || pageSize > MAX_PAGE_SIZE) {
+  // Extra validation for sortBy
+  if (result.sortBy && !allowedSortColumns?.includes(result.sortBy)) {
     return {
       success: false,
       error: {
         type: 'ValidationError',
-        message: 'Invalid pageSize parameter',
-        statusCode: 400,
-      },
-    }
-  }
-
-  if (sortDirection !== 'asc' && sortDirection !== 'desc') {
-    return {
-      success: false,
-      error: {
-        type: 'ValidationError',
-        message: 'Invalid sort parameter',
+        message: 'Invalid sortBy parameter',
         statusCode: 400,
       },
     }
@@ -57,6 +93,6 @@ export function parsePaginationParams(url: string): PaginationResult {
 
   return {
     success: true,
-    data: { page, pageSize, sortDirection, sortBy },
+    data: result as PaginationParams,
   }
 }

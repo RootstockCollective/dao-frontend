@@ -2,10 +2,13 @@ import { NextResponse } from 'next/server'
 import { db } from '@/lib/db'
 import { paginateQuery } from '@/app/api/utils/paginateQuery'
 import { parsePaginationParams } from '@/app/api/utils/parsePaginationParams'
+import { sortConfig } from './sortConfig'
 
 export async function GET(req: Request) {
   try {
-    const paginationResult = parsePaginationParams(req.url || '')
+    const { allowedColumns, castedSortFieldsMap } = sortConfig
+
+    const paginationResult = parsePaginationParams(req.url || '', allowedColumns)
 
     if (!paginationResult.success) {
       return NextResponse.json(
@@ -23,7 +26,7 @@ export async function GET(req: Request) {
       pageSize,
       sortBy,
       sortDirection,
-      allowedSortColumns: ['id', 'day', 'totalAllocation'],
+      castedSortFieldsMap,
     })
 
     return NextResponse.json({ data, count, page, pageSize })
