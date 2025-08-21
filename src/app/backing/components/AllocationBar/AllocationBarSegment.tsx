@@ -7,6 +7,7 @@ import { checkerboardStyle, valueToPercentage } from './utils'
 import { AllocationBarTooltipContent } from './AllocationBarTooltipContent'
 import { Tooltip } from '@/components/Tooltip'
 import { MoreIcon } from '@/components/Icons/MoreIcon'
+import { cn } from '@/lib/utils'
 
 const AllocationBarSegmentPercent = ({
   pendingBacking,
@@ -100,8 +101,6 @@ export const AllocationBarSegment = ({
   // Calculate the percentage width based on the actual value and total value
   const percentageWidth = valueToPercentage(pendingBacking, totalBacking)
 
-  // console.log(item.label, percentageWidth);
-
   // For segments with very small values, ensure they have a minimum visible width
   // but only if the value is actually greater than 0
   const effectiveWidth = pendingBacking > 0n && percentageWidth < 0.5 ? 0.5 : percentageWidth
@@ -125,13 +124,7 @@ export const AllocationBarSegment = ({
       <div
         ref={setNodeRef}
         style={style}
-        className={`
-        ${baseClasses}
-        ${transitionClasses}
-        ${dragStateClasses}
-        ${borderClasses}
-        ${positionClasses}
-      `.trim()}
+        className={cn(baseClasses, transitionClasses, dragStateClasses, borderClasses, positionClasses)}
       >
         {/* DRAG HANDLE of the size of the segment */}
         {isDraggable && <AllocationBarDragHandle attributes={attributes} listeners={listeners} />}
@@ -174,13 +167,7 @@ export const AllocationBarSegment = ({
       <div
         ref={setNodeRef}
         style={style}
-        className={`
-        ${baseClasses}
-        ${transitionClasses}
-        ${dragStateClasses}
-        ${borderClasses}
-        ${positionClasses}
-      `.trim()}
+        className={cn(baseClasses, transitionClasses, dragStateClasses, borderClasses, positionClasses)}
       >
         {/* DRAG HANDLE of the size of the segment */}
         {isDraggable && <AllocationBarDragHandle attributes={attributes} listeners={listeners} />}
