@@ -54,7 +54,7 @@ jobs:
       - name: Restore .next/cache cache
         uses: actions/cache@v4
         with:
-          path: node_modules
+          path: .next/cache
           key: next-cache-${{ hashFiles('package-lock.json') }}
       - name: Prepare Docker context with cache
         run: |
