@@ -75,8 +75,11 @@ const LatestProposalsTable = ({ proposals }: LatestProposalsTableProps) => {
   // filter all proposals
   const filteredProposalList = useMemo(() => {
     return proposals
-      .filter(proposal =>
-        activeCategory ? proposal.name?.toLowerCase()?.includes(activeCategory.toLowerCase()) : true,
+      .filter(
+        proposal =>
+          !activeCategory ||
+          proposal.name?.toLowerCase()?.includes(activeCategory.toLowerCase()) ||
+          proposal.description?.toLowerCase()?.includes(activeCategory.toLowerCase()),
       )
       .filter(proposal => {
         if (!searchValue) return true

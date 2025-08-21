@@ -14,7 +14,7 @@ type Story = StoryObj<typeof FilterRadioItem>
 
 export const Default: Story = {
   args: {
-    option: 'Default item',
+    option: { label: 'Default item', value: 'default-item' },
     selected: false,
     onClick: (option: string) => {
       // eslint-disable-next-line no-console
@@ -25,7 +25,7 @@ export const Default: Story = {
 
 export const Selected: Story = {
   args: {
-    option: 'Selected item',
+    option: { label: 'Selected item', value: 'selected-item' },
     selected: true,
     onClick: (id: string) => {
       // eslint-disable-next-line no-console
@@ -40,6 +40,6 @@ export const Interactive: Story = {
     return <FilterRadioItem {...args} selected={selected} onClick={() => setSelected(s => !s)} />
   },
   args: {
-    option: 'Interactive item',
+    option: { label: 'Interactive item', value: 'interactive-item' },
   },
 }
