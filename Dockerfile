@@ -1,3 +1,4 @@
+# syntax=docker/dockerfile:1.7-labs
 FROM node:24-alpine@sha256:e8e882c692a08878d55ec8ff6c5a4a71b3edca25eda0af4406e2a160d8a93cf2 AS builder
 
 # Install required dependencies for Trezor (and possibly Ledger)
@@ -30,7 +31,7 @@ RUN echo "=== Checking cached directories in container ===" && \
 RUN npm install --verbose
 
 # Copy the rest of the application code
-COPY . .
+COPY --exclude=node_modules --exclude=package-lock.json --exclude=package.json . .
 
 # Disable telemetry
 ENV NEXT_TELEMETRY_DISABLED 1
