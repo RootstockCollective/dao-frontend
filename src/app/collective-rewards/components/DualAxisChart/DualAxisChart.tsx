@@ -86,7 +86,8 @@ export function DualAxisChart({
             axisLine={true}
             tickLine={false}
             interval={0}
-            tick={{ fill: 'var(--background-0)', fontSize: 12 }}
+            tick={{ fill: 'var(--background-0)' }}
+            className="font-rootstock-sans text-sm"
             tickCount={10}
           />
 
