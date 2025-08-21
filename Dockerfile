@@ -21,10 +21,10 @@ COPY node_modules node_modules
 COPY .next/cache .next/cache
 # Skip cypress install
 ENV CYPRESS_INSTALL_BINARY 0
-# Debug node_modules are being copied in CI CD
-RUN echo "=== Checking node_modules in container ===" && \
-    ls -la node_modules/ || echo "No node_modules directory found" && \
-    echo "node_modules size: $(du -sh node_modules 2>/dev/null | cut -f1 || echo '0')"
+# Debug: Check if cached directories made it into the container
+RUN echo "=== Checking cached directories in container ===" && \
+    echo "node_modules size: $(du -sh node_modules 2>/dev/null | cut -f1 || echo '0')" && \
+    echo ".next/cache size: $(du -sh .next/cache 2>/dev/null | cut -f1 || echo '0')"
 
 # Install dependencies
 RUN npm install --verbose
