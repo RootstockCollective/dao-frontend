@@ -17,12 +17,12 @@ interface CreatorRowComponentProps {
 }
 
 export const CreatorRowComponent = ({ proposer, Starts, category, className }: CreatorRowComponentProps) => (
-  <div className={cn('flex flex-row mt-2 items-center', className)}>
+  <div className={cn('flex flex-row mt-2 items-center whitespace-nowrap flex-shrink-0', className)}>
     <Tooltip text="Copy address">
       <Span>
         <CopyButton icon={null} className="inline" copyText={proposer}>
-          <Span className="text-primary">by</Span>&nbsp;
-          <Span>{shortAddress(proposer)}</Span>
+          <Span>by</Span>&nbsp;
+          <Span className="text-primary">{shortAddress(proposer)}</Span>
         </CopyButton>
       </Span>
     </Tooltip>
