@@ -16,8 +16,8 @@ import {
 } from './components'
 import { useVoteOnProposal } from '@/shared/hooks/useVoteOnProposal'
 import { useProposalById } from '../context'
+import { Eta, Proposal } from '../shared/types'
 import { Category } from '../components/category'
-import { Proposal } from '../shared/types'
 
 export default function ProposalView() {
   const { id } = useParams<{ id: string }>() ?? {}
@@ -112,9 +112,9 @@ const PageWithProposal = (proposal: Proposal) => {
         <Header variant="h3" className="text-2xl lg:text-3xl !leading-[0.9]">
           {name}
         </Header>
-        <div className="flex gap-2 items-end">
-          <Category className="mb-0.5" category={category} hasGradient />
-          <Paragraph variant="body-l" className="text-bg-0 !leading-none whitespace-nowrap">
+        <div className="flex items-center ml-6">
+          <Category className="max-w-fit mb-0.5" category={category} hasGradient />
+          <Paragraph variant="body-l" className="min-w-fit ml-1 text-bg-0">
             {category}
           </Paragraph>
         </div>

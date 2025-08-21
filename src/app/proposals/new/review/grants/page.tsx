@@ -98,11 +98,9 @@ export default function GrantsProposalReview() {
             {proposalName}
           </Header>
           {milestone !== Milestones.NO_MILESTONE && milestoneLabel && (
-            <div className="flex gap-2 items-end">
-              <MilestoneIcon milestone={milestone} hasGradient className="mb-0.5" />
-              <Paragraph variant="body-l" className="text-bg-0 !leading-none whitespace-nowrap">
-                {milestoneLabel}
-              </Paragraph>
+            <div className="flex items-baseline-last gap-2">
+              <MilestoneIcon milestone={milestone[0] as Milestones} />
+              <Paragraph className=" text-lg text-bg-0">{milestoneLabel}</Paragraph>
             </div>
           )}
         </div>
