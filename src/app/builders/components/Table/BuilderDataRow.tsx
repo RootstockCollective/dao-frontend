@@ -230,24 +230,25 @@ export const ActionsCell = ({
 
 interface BuilderDataRowProps extends CommonComponentProps<HTMLTableRowElement> {
   row: BuilderTable['Row']
+  userBacking: bigint
 }
 
 export const selectedRowStyle = 'bg-v3-text-80 text-v3-bg-accent-100'
 export const unselectedRowStyle = 'bg-v3-bg-accent-80 text-v3-primary-100'
 
-export const BuilderDataRow: FC<BuilderDataRowProps> = ({ row, ...props }) => {
+export const BuilderDataRow: FC<BuilderDataRowProps> = ({ row, userBacking, ...props }) => {
+  const { id: rowId, data }: BuilderTable['Row'] = row
+
   const {
-    id: rowId,
-    data: {
-      builder,
-      backing,
-      backer_rewards,
-      rewards_past_cycle,
-      rewards_upcoming,
-      backingShare: { backingPercentage },
-      actions,
-    },
-  }: BuilderTable['Row'] = row
+    builder,
+    backing,
+    backer_rewards,
+    rewards_past_cycle,
+    rewards_upcoming,
+    backingShare: { backingPercentage },
+    actions,
+  } = data as BuilderCellDataMap
+
   const { selectedRows } = useTableContext<ColumnId, BuilderCellDataMap>()
   const { isConnected } = useAccount()
   const { intermediateStep, handleConnectWallet, handleCloseIntermediateStep, onConnectWalletButtonClick } =
@@ -259,8 +260,9 @@ export const BuilderDataRow: FC<BuilderDataRowProps> = ({ row, ...props }) => {
   const hasSelections = Object.values(selectedRows).some(Boolean)
 
   const isInProgress = isBuilderInProgress(builder.builder)
-  const hasInactiveState = getBuilderInactiveState(builder.builder) !== null
-  const hasBacking = backing.amount > 0n
+  const inactiveState = getBuilderInactiveState(builder.builder)
+  const hasInactiveState = inactiveState !== null
+  const hasBacking = userBacking > 0n
 
   const canBack = !isInProgress && (!hasInactiveState || hasBacking)
 
