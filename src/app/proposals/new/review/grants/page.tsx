@@ -21,7 +21,8 @@ import { TokenImage } from '@/components/TokenImage'
 import { usePricesContext } from '@/shared/context'
 import Big from '@/lib/big'
 import { MilestoneIcon } from '@/app/proposals/components/MilestoneIcon'
-import { MILESTONE_SEPARATOR, Milestones, labeledMilestones } from '@/app/proposals/shared/utils'
+import { MILESTONE_SEPARATOR, labeledMilestones } from '@/app/proposals/shared/utils'
+import { Milestones } from '@/app/proposals/shared/types'
 
 export default function GrantsProposalReview() {
   const { prices } = usePricesContext()

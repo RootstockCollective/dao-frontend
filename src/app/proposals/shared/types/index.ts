@@ -81,7 +81,15 @@ export enum ProposalType {
 }
 
 export enum Milestones {
+  MILESTONE_1 = '1',
+  MILESTONE_2 = '2',
+  MILESTONE_3 = '3',
+  NO_MILESTONE = '0',
+}
+
+export enum MilestoneLabels {
   FIRST = 'Milestone 1',
   SECOND = 'Milestone 2',
   THIRD = 'Milestone 3',
+  NO_MILESTONE = 'No milestone',
 }

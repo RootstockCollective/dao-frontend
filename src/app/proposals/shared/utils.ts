@@ -10,7 +10,7 @@ import {
 import { GovernorAbi } from '@/lib/abis/Governor'
 import { MAX_NAME_LENGTH_FOR_PROPOSAL, TALLY_DESCRIPTION_SEPARATOR } from '@/lib/constants'
 import { ProposalCategory } from '@/shared/types'
-import { Milestones } from './types'
+import { MilestoneLabels, Milestones } from './types'
 
 export interface EventArgumentsParameter {
   args: {
@@ -132,28 +132,23 @@ export const getProposalEventArguments = ({
 export const DISPLAY_NAME_SEPARATOR = 'D15PL4Y_N4M3:'
 export const DISCOURSE_LINK_SEPARATOR = 'DiscourseLink:'
 export const MILESTONE_SEPARATOR = 'M1lestone:'
-export enum Milestones {
-  MILESTONE_1 = '1',
-  MILESTONE_2 = '2',
-  MILESTONE_3 = '3',
-  NO_MILESTONE = '0',
-}
+
 export const labeledMilestones = [
   {
     value: Milestones.MILESTONE_1,
-    label: 'Milestone 1',
+    label: MilestoneLabels.FIRST,
   },
   {
     value: Milestones.MILESTONE_2,
-    label: 'Milestone 2',
+    label: MilestoneLabels.SECOND,
   },
   {
     value: Milestones.MILESTONE_3,
-    label: 'Milestone 3',
+    label: MilestoneLabels.THIRD,
   },
   {
     value: Milestones.NO_MILESTONE,
-    label: 'No milestone',
+    label: MilestoneLabels.NO_MILESTONE,
   },
 ]
 
@@ -274,14 +269,17 @@ export function getProposalCategoryFromParsedData(
   }
 
   // Then check for milestone (only if not a builder function)
-  if (description.includes(MILESTONE_SEPARATOR)) {
-    const milestoneNumber = description.split(MILESTONE_SEPARATOR)[1]
+  const milestoneRegex = new RegExp(`${MILESTONE_SEPARATOR}(\\S+)`, 'i')
+  const milestoneMatch = description.match(milestoneRegex)
+
+  if (milestoneMatch) {
+    const milestoneNumber = milestoneMatch[1]
     switch (milestoneNumber) {
-      case Milestones.FIRST:
+      case Milestones.MILESTONE_1:
         return ProposalCategory.Milestone1
-      case Milestones.SECOND:
+      case Milestones.MILESTONE_2:
         return ProposalCategory.Milestone2
-      case Milestones.THIRD:
+      case Milestones.MILESTONE_3:
         return ProposalCategory.Milestone3
     }
   }
