@@ -18,23 +18,21 @@ jobs:
         with:
           node-version: '24'
 
-      - name: Cache node_modules
+      - name: Cache node_modules & .next/cache
         uses: actions/cache@v4
         with:
-          path: node_modules
+          path: |
+            node_modules
+            .next/cache
           key: node-modules-${{ hashFiles('package-lock.json') }}
-
-      - name: Cache .next/cache
-        uses: actions/cache@v4
-        with:
-          path: .next/cache
-          key: next-cache-${{ hashFiles('package-lock.json') }}
 
       - name: Install dependencies
         run: npm install
 
       - name: Build Next.js
-        run: npm run build
+        run: |
+          cp .env.dao.qa .env.local
+          npm run build
 
 
   build_test:
