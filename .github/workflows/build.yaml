@@ -35,7 +35,7 @@ jobs:
 
       - name: Build Next.js
         run: |
-          cp .env.dao.qa .env.local
+          cp .env.testnet.local .env.local
           npm run build
 
 
