@@ -57,7 +57,7 @@ export function useGetProposalsWithGraph() {
         proposalId: BigInt(proposal.proposalId),
         proposer: proposal.proposer.id as Address,
         targets: proposal.targets,
-        values: proposal.values as unknown as bigint[],
+        values: proposal.values.map(value => (value ? BigInt(value) : 0n)),
         calldatas: proposal.calldatas,
         voteStart: BigInt(proposal.voteStart),
         voteEnd: BigInt(proposal.voteEnd),

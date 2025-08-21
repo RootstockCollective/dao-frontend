@@ -132,7 +132,7 @@ export function CommunityNFTProvider({ children, nftAddress }: CommunityNFTProvi
     // check if user's stRIF Balance is more than required threshold to get a reward NFT
     if (stRifBalance < (stRifThreshold ?? 0n)) {
       showToast(
-        nftAlertMessages.NFT_BALANCE_ALERT(nftInfo?.title, stRifThreshold as bigint, () =>
+        nftAlertMessages.NFT_BALANCE_ALERT(nftInfo?.title, stRifThreshold ?? 0n, () =>
           router.push('/user?action=stake'),
         ),
       )
