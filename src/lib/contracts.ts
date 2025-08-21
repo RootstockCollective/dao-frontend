@@ -34,6 +34,11 @@ const tokenContracts = {
   [RBTC]: zeroAddress,
   [USDRIF]: USDRIF_ADDRESS,
 }
+// Needed when creating proposal - uppercase [avoid case sensitive search]
+export const uppercasedTokenContracts = Object.fromEntries(
+  Object.entries(tokenContracts).map(([key, value]) => [key.toUpperCase(), value]),
+)
+
 export type SupportedTokens = keyof typeof tokenContracts
 
 const nftContracts = {

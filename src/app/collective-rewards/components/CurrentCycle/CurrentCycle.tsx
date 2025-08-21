@@ -8,7 +8,7 @@ import { Header } from '@/components/Typography'
 export const CurrentCycle = () => {
   return (
     <ActionsContainer
-      className="flex flex-col gap-10 pl-6 pt-6 pr-6 pb-10 bg-v3-bg-accent-80"
+      className="flex flex-col gap-10 px-4 py-8 md:px-6 md:pt-6 md:pb-10 bg-v3-bg-accent-80"
       title={
         <Header variant="h3" caps>
           THE REWARDS AT WORK - CURRENT CYCLE

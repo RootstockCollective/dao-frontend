@@ -1,10 +1,9 @@
 import { CommonComponentProps } from '@/components/commonProps'
 import { LoadingSpinner } from '@/components/LoadingSpinner/LoadingSpinner'
-import { BaseTypography } from '@/components/Typography/Typography'
 import { AnnualBackerIncentivesLoader } from '@/app/shared/components/AnnualBackersIncentivesLoader/AnnualBackerIncentivesLoader'
 import { Metric, MetricTitle } from '@/components/Metric'
-import { Paragraph } from '@/components/Typography'
 import { ABIFormula } from '@/app/backing/components/ABIFormula'
+import { Header, Paragraph } from '@/components/Typography'
 
 interface AnnualBackersIncentivesProps extends CommonComponentProps {}
 
@@ -39,14 +38,14 @@ export const AnnualBackersIncentives = ({ className }: AnnualBackersIncentivesPr
           }
           className={className}
         >
-          <div className="flex flex-row gap-10 items-center">
-            <BaseTypography variant="e1" className="text-center">
+          <div className="flex flex-col md:flex-row md:items-center gap-4 md:gap-10">
+            <Header variant="e1">
               {isLoading ? <LoadingSpinner size="small" /> : `${abiPct.toFixed(0)}%`}
-            </BaseTypography>
-            <BaseTypography>
+            </Header>
+            <Paragraph>
               Collective Rewards is a shared incentive system that lets Backers earn by supporting Builders,
               and Builders earn by delivering impact — all powered by stRIF.
-            </BaseTypography>
+            </Paragraph>
           </div>
         </Metric>
       )}

@@ -11,7 +11,7 @@ import { Card } from '../components/Card'
 import { formatCurrencyWithLabel, formatNumberWithCommas, shortAddress } from '@/lib/utils'
 import { PreviewLabel } from '../components/PreviewLabel'
 import { useCreateTreasuryTransferProposal } from '@/app/proposals/hooks/useCreateTreasuryTransferProposal'
-import { tokenContracts } from '@/lib/contracts'
+import { tokenContracts, uppercasedTokenContracts } from '@/lib/contracts'
 import { showToast } from '@/shared/notification'
 import { isUserRejectedTxError } from '@/components/ErrorPage'
 import { Header, Paragraph, Span } from '@/components/Typography'
@@ -41,7 +41,7 @@ export default function GrantsProposalReview() {
       const milestoneString =
         milestone !== Milestones.NO_MILESTONE ? `${MILESTONE_SEPARATOR + milestone} ` : ''
       const proposalDescription = `${proposalName};${description} ${DISCOURSE_LINK_SEPARATOR}${discourseLink} ${milestoneString}`
-      const tokenAddress = tokenContracts[token.toUpperCase() as keyof typeof tokenContracts]
+      const tokenAddress = uppercasedTokenContracts[token.toUpperCase() as keyof typeof tokenContracts]
       if (!tokenAddress) throw new Error('GrantsProposalReview: Unknown contract address')
 
       // Here the user will see Metamask window and confirm his tx
@@ -93,14 +93,16 @@ export default function GrantsProposalReview() {
   return (
     <div>
       <div className="mb-10 pr-2 w-full lg:flex lg:justify-between">
-        <div className="flex items-baseline gap-4">
-          <Header caps variant="h3" className="text-2xl lg:text-3xl leading-relaxed tracking-wide">
+        <div className="flex items-end gap-4">
+          <Header caps variant="h3" className="text-2xl lg:text-3xl !leading-[0.9]">
             {proposalName}
           </Header>
           {milestone !== Milestones.NO_MILESTONE && milestoneLabel && (
-            <div className="flex items-baseline-last gap-2">
-              <MilestoneIcon digit={milestone[0]} />
-              <Paragraph className=" text-lg text-bg-0">{milestoneLabel}</Paragraph>
+            <div className="flex gap-2 items-end">
+              <MilestoneIcon milestone={milestone} hasGradient className="mb-0.5" />
+              <Paragraph variant="body-l" className="text-bg-0 !leading-none">
+                {milestoneLabel}
+              </Paragraph>
             </div>
           )}
         </div>

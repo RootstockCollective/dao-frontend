@@ -21,7 +21,7 @@ function transformGraphQLProposal(proposal: ProposalGraphQLResponse): ProposalAp
       proposalId: BigInt(proposal.proposalId),
       proposer: proposal.proposer.id as `0x${string}`,
       targets: proposal.targets,
-      values: proposal.values as unknown as bigint[],
+      values: proposal.values.map(value => (value ? BigInt(value) : 0n)),
       calldatas: proposal.calldatas,
       voteStart: BigInt(proposal.voteStart),
       voteEnd: BigInt(proposal.voteEnd),

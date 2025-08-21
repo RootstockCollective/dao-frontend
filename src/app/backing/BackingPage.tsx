@@ -3,79 +3,129 @@
 import { BackingBanner } from '@/app/backing/components/BackingBanner/BackingBanner'
 import { BackingInfoTitleControl } from '@/app/backing/components/BackingInfoTitle/BackingInfoTitleControl'
 import { BackingInfoContainer } from '@/app/backing/components/Container/BackingInfoContainer/BackingInfoContainer'
-import { GlobalAnnualBackersIncentives } from '@/app/backing/components/Metrics/GlobalAnnualBackersIncentives'
 import { EstimatedRewardsMetric } from '@/app/backing/components/Metrics/EstimatedRewardsMetric'
+import { GlobalAnnualBackersIncentives } from '@/app/backing/components/Metrics/GlobalAnnualBackersIncentives'
 import {
   Allocations,
   AllocationsContext,
 } from '@/app/collective-rewards/allocations/context/AllocationsContext'
-import { formatSymbol, getFiatAmount } from '@/app/collective-rewards/rewards'
-import { useBuilderContext } from '@/app/collective-rewards/user/context/BuilderContext'
+import { Button, ButtonProps } from '@/components/Button'
 import { ActionMetricsContainer, ActionsContainer, MetricsContainer } from '@/components/containers'
-import { Header, Span } from '@/components/Typography'
+import { KotoQuestionMarkIcon } from '@/components/Icons'
+import { TokenAmountDisplay } from '@/components/TokenAmountDisplay'
+import { Tooltip } from '@/components/Tooltip'
+import { Header, Label, Span } from '@/components/Typography'
 import { RIF, STRIF } from '@/lib/constants'
-import { formatCurrencyWithLabel } from '@/lib/utils'
-import { usePricesContext } from '@/shared/context/PricesContext'
+import { formatCurrency } from '@/lib/utils'
+import { usePricesContext } from '@/shared/context'
 import { useRouter, useSearchParams } from 'next/navigation'
 import { useContext, useMemo } from 'react'
 import { Address } from 'viem'
 import { useAccount } from 'wagmi'
-import { AvailableBackingMetric, TotalBackingMetric } from './components'
+import { formatSymbol, getFiatAmount } from '../collective-rewards/rewards'
+import { useBuilderContext } from '../collective-rewards/user'
 import { BuilderAllocationBar } from './components/BuilderAllocationBar'
 import { BackerAnnualBackersIncentives } from './components/Metrics/BackerAnnualBackersIncentives'
 import { Spotlight } from './components/Spotlight'
+import { useBalancesContext } from '@/app/user/Balances/context/BalancesContext'
+import { currentLinks } from '@/lib/links'
 
 const NAME = 'Backing'
 
+const StakeButton = () => {
+  const router = useRouter()
+  const { balances } = useBalancesContext()
+
+  const { hasRifBalance, getRifLink } = useMemo(() => {
+    const rifBalance = Number(balances[RIF]?.balance ?? 0)
+    const getRifLink = new URL(currentLinks.getRif)
+
+    return {
+      hasRifBalance: rifBalance > 0,
+      getRifLink: getRifLink.toString(),
+    }
+  }, [balances])
+
+  const { onClick, text } = hasRifBalance
+    ? {
+        onClick: () => router.push('/user?action=stake'),
+        text: 'Stake RIF',
+      }
+    : {
+        onClick: () => window.open(getRifLink.toString(), '_blank'),
+        text: 'Get RIF',
+      }
+
+  return (
+    <>
+      <Button variant="primary" className="flex h-7 px-4 py-3 items-center gap-2" onClick={onClick}>
+        <Span variant="body-s" bold>
+          {text}
+        </Span>
+      </Button>
+    </>
+  )
+}
+
+const DistributeButton = ({ onClick }: ButtonProps) => (
+  <div className="flex items-center gap-3">
+    <Button variant="secondary-outline" className="flex h-7 px-2 py-1 items-center gap-2" onClick={onClick}>
+      <Label variant="tag-s" className="text-white font-rootstock-sans text-sm font-normal leading-[145%]">
+        Distribute equally
+      </Label>
+    </Button>
+    <div className="flex w-4 py-[6px] flex-col justify-center items-center self-stretch aspect-square">
+      <Tooltip
+        text={
+          <div className="flex w-[269px] p-6 flex-col items-start gap-2">
+            <Label className="self-stretch text-v3-bg-accent-100 font-rootstock-sans text-[14px] font-normal leading-[145%]">
+              You&apos;ll be distributing equally to each of the Builders below
+            </Label>
+          </div>
+        }
+        side="top"
+        align="center"
+        alignOffset={-60}
+        sideOffset={10}
+        className="bg-v3-text-80 rounded-[4px] shadow-lg"
+      >
+        <KotoQuestionMarkIcon />
+      </Tooltip>
+    </div>
+  </div>
+)
+
 export const BackingPage = () => {
+  const searchParams = useSearchParams()
   const { isConnected } = useAccount()
-  const { prices } = usePricesContext()
   const {
     state: {
+      backer: { balance, allocationsCount, cumulativeAllocation },
       allocations,
-      backer: { balance: votingPower, amountToAllocate: totalOnchainAllocation, allocationsCount },
     },
-    actions: { updateAllocations, updateAmountToAllocate },
+    initialState: {
+      backer: { amountToAllocate: totalOnchainAllocation, balance: totalVotingPower },
+    },
+    actions: { updateAllocations },
   } = useContext(AllocationsContext)
 
   const { randomBuilders } = useBuilderContext()
+  const { prices } = usePricesContext()
   const router = useRouter()
 
-  const searchParams = useSearchParams()
-  const userSelections = useMemo(() => searchParams.get('builders')?.split(',') as Address[], [searchParams])
-
-  const rifPriceUsd = useMemo(() => prices[RIF]?.price ?? 0, [prices])
-
-  const availableForBacking = useMemo(
-    () => (!votingPower ? 0n : votingPower - totalOnchainAllocation),
-    [votingPower, totalOnchainAllocation],
-  )
-
-  const totalBacking = useMemo(
-    () => (!totalOnchainAllocation ? 0n : totalOnchainAllocation),
-    [totalOnchainAllocation],
-  )
-
-  const hasAllocations = useMemo(() => {
-    return isConnected && totalOnchainAllocation > 0n
-  }, [totalOnchainAllocation, isConnected])
-
-  // Format values properly using formatter functions
-  const availableForBackingLabel = useMemo(
-    () => formatSymbol(availableForBacking, STRIF),
-    [availableForBacking],
-  )
-  const totalBackingLabel = useMemo(() => formatSymbol(totalBacking, STRIF), [totalBacking])
+  const availableForBacking = balance - cumulativeAllocation
   const availableBackingUSD = useMemo(() => {
+    const rifPriceUsd = prices[RIF]?.price ?? 0
+
     return !availableForBacking || !rifPriceUsd
-      ? formatCurrencyWithLabel(0)
-      : formatCurrencyWithLabel(getFiatAmount(availableForBacking, rifPriceUsd))
-  }, [availableForBacking, rifPriceUsd])
-  const handleDistributeClick = () => {
-    //FIXME: Take into the inactive builders
-    updateAmountToAllocate(votingPower)
+      ? formatCurrency(0)
+      : formatCurrency(getFiatAmount(availableForBacking, rifPriceUsd))
+  }, [availableForBacking, prices])
+
+  const distributeBackingEqually = () => {
+    //FIXME: Take into account the inactive builders
     let newAllocations: Allocations = {}
-    if (allocationsCount > 0) {
+    if (allocationsCount) {
       newAllocations = Object.keys(allocations).reduce((acc, key) => {
         const builderAddress = key as Address
         const newAllocation = availableForBacking / BigInt(allocationsCount) + allocations[builderAddress]
@@ -83,23 +133,28 @@ export const BackingPage = () => {
 
         return acc
       }, {} as Allocations)
+
+      return updateAllocations(newAllocations)
     }
 
-    const buildersAllocations =
-      allocationsCount > 0
-        ? newAllocations
-        : randomBuilders.reduce((acc, builder) => {
-            acc[builder.address] = availableForBacking / BigInt(randomBuilders.length)
-            return acc
-          }, {} as Allocations)
-    updateAllocations(buildersAllocations)
+    updateAllocations(
+      randomBuilders.reduce((acc, builder) => {
+        acc[builder.address] = availableForBacking / BigInt(randomBuilders.length)
+
+        return acc
+      }, {} as Allocations),
+    )
   }
+
+  const userSelections = useMemo(() => searchParams.get('builders')?.split(',') as Address[], [searchParams])
+
+  const hasAllocations = isConnected && totalOnchainAllocation > 0n
 
   return (
     <div data-testid={NAME} className="flex flex-col items-start w-full h-full pt-[0.13rem] gap-2 rounded-sm">
       <Header caps variant="h1" className="text-3xl leading-10 pb-[2.5rem]">
         {NAME}{' '}
-        {isConnected && allocationsCount > 0 && (
+        {isConnected && allocationsCount && (
           <Span variant="tag" className="text-v3-bg-accent-0 text-lg font-normal normal-case">
             {allocationsCount} Builders
           </Span>
@@ -125,16 +180,27 @@ export const BackingPage = () => {
           <div className="flex flex-col items-center gap-10 w-full">
             <div className="flex items-start gap-14 w-full">
               <div className="basis-1/2">
-                <AvailableBackingMetric
-                  availableForBacking={availableForBackingLabel}
-                  availableBackingUSD={availableBackingUSD}
-                  onStakeClick={() => router.push('/user?action=stake')}
-                  onDistributeClick={handleDistributeClick}
+                <TokenAmountDisplay
+                  label="Available for backing"
+                  amount={formatSymbol(availableForBacking, STRIF)}
+                  tokenSymbol={STRIF}
+                  amountInCurrency={availableBackingUSD}
+                  actions={
+                    availableForBacking > 0n ? (
+                      <DistributeButton onClick={distributeBackingEqually} />
+                    ) : (
+                      <StakeButton />
+                    )
+                  }
                 />
               </div>
               <div className="flex items-start basis-1/2 gap-14">
                 <div className="basis-1/2">
-                  <TotalBackingMetric totalBacking={totalBackingLabel} />
+                  <TokenAmountDisplay
+                    label="Total backing"
+                    amount={formatSymbol(cumulativeAllocation, STRIF)}
+                    tokenSymbol={STRIF}
+                  />
                 </div>
                 {hasAllocations && (
                   <div className="basis-1/2">
