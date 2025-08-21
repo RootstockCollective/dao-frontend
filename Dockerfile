@@ -15,7 +15,9 @@ WORKDIR /app
 
 # Copy package.json and package-lock.json
 COPY package*.json ./
-COPY node_modules ./
+# Copy node_modules from the host to the container
+# This is useful for CI/CD environments where node_modules are pre-installed
+COPY node_modules node_modules
 # Skip cypress install
 ENV CYPRESS_INSTALL_BINARY 0
 # Debug node_modules are being copied in CI CD
