@@ -363,13 +363,13 @@ const PageWithProposal = (proposal: Proposal) => {
 
   return (
     <div className="min-h-screen px-4 py-8 flex flex-col gap-4 w-full max-w-full">
-      <div className="flex items-end gap-4">
+      <div className="flex items-center gap-4">
         <Header variant="h3" className="text-2xl lg:text-3xl !leading-[0.9]">
           {name}
         </Header>
         <div className="flex gap-2 items-end">
           <Category className="mb-0.5" category={category} hasGradient />
-          <Paragraph variant="body-l" className="text-bg-0 !leading-none">
+          <Paragraph variant="body-l" className="text-bg-0 !leading-none whitespace-nowrap">
             {category}
           </Paragraph>
         </div>
