@@ -24,8 +24,17 @@ jobs:
           path: node_modules
           key: node-modules-${{ hashFiles('package-lock.json') }}
 
+      - name: Cache .next/cache
+        uses: actions/cache@v4
+        with:
+          path: .next/cache
+          key: next-cache-${{ hashFiles('package-lock.json') }}
+
       - name: Install dependencies
         run: npm install
+
+      - name: Build Next.js
+        run: npm run build
 
 
   build_test:
