@@ -1,5 +1,4 @@
 import { Header, Paragraph } from '@/components/Typography'
-import { MetricsContainer } from '@/components/containers'
 import { Button } from '@/components/Button'
 import { useAccount } from 'wagmi'
 import { zeroAddress } from 'viem'
@@ -11,6 +10,7 @@ import { ActiveBuilders } from '../ActiveBuilders'
 import { FC } from 'react'
 import { RewardsMetrics } from '../RewardsMetrics'
 import { useRouter } from 'next/navigation'
+import { StylableComponentProps } from '@/components/commonProps'
 import { cn } from '@/lib/utils'
 
 const BuildersBanner = () => (
@@ -23,14 +23,14 @@ const BuildersBanner = () => (
 
 const BuildersTitle = () => {
   return (
-    <Header caps variant="e2" className="px-6 py-4">
+    <Header caps variant="e2" className="pt-2 pb-4 md:py-4 text-[2rem] md:text-[2.75rem]">
       <div className="text-v3-bg-accent-20">Be rewarded</div>
       <div className="text-v3-text-0">for building</div>
     </Header>
   )
 }
 
-const BuilderCTAButton = () => {
+const BuilderCTAButton = ({ className }: StylableComponentProps<HTMLButtonElement>) => {
   const router = useRouter()
   const { isConnected, address } = useAccount()
   const { getBuilderByAddress, isLoading: builderLoading, error: builderLoadingError } = useBuilderContext()
@@ -44,6 +44,7 @@ const BuilderCTAButton = () => {
         onClick={() => {
           router.push('/proposals/new?type=Builder')
         }}
+        className={cn(className, 'w-full md:w-auto')}
       >
         Join Builders Rewards
       </Button>
@@ -56,6 +57,7 @@ const BuilderCTAButton = () => {
       onClick={() => {
         router.push('/proposals/new?type=Grants')
       }}
+      className={cn(className, 'w-full md:w-auto')}
     >
       Apply for a Grant
     </Button>
@@ -68,32 +70,41 @@ interface BuildersCallToActionProps {
   className?: string
 }
 
-export const BuildersCallToAction: FC<BuildersCallToActionProps> = ({
-  rifRewards,
-  rbtcRewards,
-  className,
-}) => {
+const collapsibleContent = (
+  <Paragraph className="text-v3-text-0 order-2 pb-6">
+    Join the Collective as a Builder and earn for delivering impact. Be part of Bitcoin&apos;s most aligned
+    innovation network.
+  </Paragraph>
+)
+
+export const BuildersCallToAction: FC<BuildersCallToActionProps> = ({ rifRewards, rbtcRewards }) => {
   return (
-    <CallToActionCard
-      title={<BuildersTitle />}
-      banner={<BuildersBanner />}
-      className={cn('bg-v3-text-80 w-full', className)}
-    >
-      <MetricsContainer className="px-6 pb-10 pt-0 bg-v3-text-80 items-start divide-y-0">
-        <BuilderCTAButton />
-        <Paragraph className="text-v3-text-0">
-          Join the Collective as a Builder and earn for delivering impact. Be part of Bitcoin’s most aligned
-          innovation network.
-        </Paragraph>
-        <div className="flex flex-row gap-2 w-full">
-          <RewardsMetrics
-            title="Upcoming Rewards for Builders"
-            rbtcRewards={rbtcRewards}
-            rifRewards={rifRewards}
-          />
-          <ActiveBuilders />
-        </div>
-      </MetricsContainer>
+    <CallToActionCard className="bg-v3-text-80 rounded-sm p-4" defaultOpen={false}>
+      <CallToActionCard.Banner>
+        <BuildersBanner />
+      </CallToActionCard.Banner>
+      <CallToActionCard.Toggle />
+      <div className="flex flex-col px-0 md:px-2">
+        <CallToActionCard.Content>
+          <BuildersTitle />
+        </CallToActionCard.Content>
+        <CallToActionCard.Content className="order-3 md:order-1 pt-6 md:pb-8 md:pt-0">
+          <BuilderCTAButton />
+        </CallToActionCard.Content>
+        <CallToActionCard.Collapsible className="order-1 md:order-2">
+          {collapsibleContent}
+        </CallToActionCard.Collapsible>
+        <CallToActionCard.Content className="order-2 md:order-3">
+          <div className="flex flex-col md:flex-row gap-6 md:gap-10 w-full">
+            <RewardsMetrics
+              title="Upcoming Rewards for Builders"
+              rbtcRewards={rbtcRewards}
+              rifRewards={rifRewards}
+            />
+            <ActiveBuilders />
+          </div>
+        </CallToActionCard.Content>
+      </div>
     </CallToActionCard>
   )
 }

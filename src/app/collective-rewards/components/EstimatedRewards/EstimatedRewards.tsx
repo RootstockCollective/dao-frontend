@@ -26,11 +26,11 @@ export const EstimatedRewards = () => {
 
   return (
     // FIXME: reuse this component
-    <Metric title="Estimated Rewards" className="w-auto" containerClassName="gap-4">
+    <Metric title="Estimated Rewards" className="w-auto" containerClassName="gap-1 md:gap-4">
       {cycleRewardsLoading ? (
         <LoadingSpinner />
       ) : (
-        <div className="flex flex-col gap-4">
+        <div className="flex flex-row md:flex-col justify-between w-full gap-4">
           <TokenAmount
             amount={rifData.amount}
             tokenSymbol={TokenSymbol.RIF}
