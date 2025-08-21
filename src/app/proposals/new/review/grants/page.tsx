@@ -99,7 +99,7 @@ export default function GrantsProposalReview() {
           </Header>
           {milestone !== Milestones.NO_MILESTONE && milestoneLabel && (
             <div className="flex items-baseline-last gap-2">
-              <MilestoneIcon digit={milestone[0]} />
+              <MilestoneIcon milestone={milestone[0] as Milestones} />
               <Paragraph className=" text-lg text-bg-0">{milestoneLabel}</Paragraph>
             </div>
           )}

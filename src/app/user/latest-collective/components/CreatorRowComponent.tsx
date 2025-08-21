@@ -1,4 +1,4 @@
-import { CategoryColumn } from '@/app/proposals/components/table-columns/CategoryColumn'
+import { Category } from '@/app/proposals/components/category'
 import { CopyButton } from '@/components/CopyButton'
 import { SmallLineSeparator } from '@/components/Separators/SmallLineSeparator'
 import { Tooltip } from '@/components/Tooltip'
@@ -29,6 +29,6 @@ export const CreatorRowComponent = ({ proposer, Starts, category, className }: C
     <SmallLineSeparator />
     <Paragraph>{Starts.format('MMM DD, YYYY')}</Paragraph>
     <SmallLineSeparator />
-    <CategoryColumn category={category} className="w-auto" />
+    <Category category={category} className="w-auto" />
   </div>
 )

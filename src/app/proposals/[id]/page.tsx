@@ -38,7 +38,7 @@ import { Vote } from '@/shared/types'
 import { executeTxFlow } from '@/shared/notification'
 import { useProposalById } from '../context'
 import { Eta, Proposal } from '../shared/types'
-import { CategoryColumn } from '../components/table-columns/CategoryColumn'
+import { Category } from '../components/category'
 
 export default function ProposalView() {
   const { id } = useParams<{ id: string }>() ?? {}
@@ -368,7 +368,7 @@ const PageWithProposal = (proposal: Proposal) => {
           {name}
         </Header>
         <div className="flex items-center ml-6">
-          <CategoryColumn className="max-w-fit mb-0.5" category={category} hasGradient />
+          <Category className="max-w-fit mb-0.5" category={category} hasGradient />
           <Paragraph variant="body-l" className="min-w-fit ml-1 text-bg-0">
             {category}
           </Paragraph>
