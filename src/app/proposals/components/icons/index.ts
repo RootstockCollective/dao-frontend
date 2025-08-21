@@ -1,5 +1,6 @@
 export * from './GrantsIcon'
 export * from './ToolsIcon'
+export * from './HammerIcon'
 export * from './Milestone1'
 export * from './Milestone2'
 export * from './Milestone3'

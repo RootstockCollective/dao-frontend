@@ -4,9 +4,9 @@ import { useQuery } from '@tanstack/react-query'
 import { getCachedProposals, ProposalGraphQLResponse } from '@/app/proposals/actions/proposalsAction'
 import { AVERAGE_BLOCKTIME } from '@/lib/constants'
 import Big from '@/lib/big'
-import { getProposalEventArguments } from '@/app/proposals/shared/utils'
+import { getProposalEventArguments, getProposalCategoryFromParsedData } from '@/app/proposals/shared/utils'
 import { Address, formatEther } from 'viem'
-import { ProposalCategory, ProposalState } from '@/shared/types'
+import { ProposalState } from '@/shared/types'
 import { Proposal } from '../shared/types'
 
 export function useGetProposalsWithGraph() {
@@ -66,11 +66,7 @@ export function useGetProposalsWithGraph() {
       blockNumber: proposal.createdAtBlock,
     })
     const { calldatasParsed } = eventArgs
-    const category = calldatasParsed
-      .filter(data => data.type === 'decoded')
-      .find(data => ['withdraw', 'withdrawERC20'].includes(data.functionName))
-      ? ProposalCategory.Grants
-      : ProposalCategory.Activation
+    const category = getProposalCategoryFromParsedData(calldatasParsed, proposal.description)
 
     const proposalData = {
       ...proposal,

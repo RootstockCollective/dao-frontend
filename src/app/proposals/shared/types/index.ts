@@ -1,9 +1,9 @@
 import Big from '@/lib/big'
-import { DecodedData, getProposalEventArguments } from '@/app/proposals/shared/utils'
+import { DecodedData } from '@/app/proposals/shared/utils'
 import { ProposalCategory, ProposalState } from '@/shared/types'
-import { type GrantProposal } from '../new/details/schemas/GrantProposalSchema'
-import { type ActivationProposal } from '../new/details/schemas/ActivationProposalSchema'
-import { type DeactivationProposal } from '../new/details/schemas/DeactivationProposalSchema'
+import { type GrantProposal } from '../../new/details/schemas/GrantProposalSchema'
+import { type ActivationProposal } from '../../new/details/schemas/ActivationProposalSchema'
+import { type DeactivationProposal } from '../../new/details/schemas/DeactivationProposalSchema'
 import { CountdownProps } from '@/components/Countdown'
 
 export interface Proposal {
@@ -73,3 +73,23 @@ export type ProposalRecord =
   | { category: ProposalCategory.Grants; form: GrantProposal }
   | { category: ProposalCategory.Activation; form: ActivationProposal }
   | { category: ProposalCategory.Deactivation; form: DeactivationProposal }
+
+export enum ProposalType {
+  Grant = 'grant',
+  Activation = 'activation',
+  Deactivation = 'deactivation',
+}
+
+export enum Milestones {
+  MILESTONE_1 = '1',
+  MILESTONE_2 = '2',
+  MILESTONE_3 = '3',
+  NO_MILESTONE = '0',
+}
+
+export enum MilestoneLabels {
+  FIRST = 'Milestone 1',
+  SECOND = 'Milestone 2',
+  THIRD = 'Milestone 3',
+  NO_MILESTONE = 'No milestone',
+}
