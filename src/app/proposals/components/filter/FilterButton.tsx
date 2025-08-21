@@ -20,10 +20,8 @@ export function FilterButton({
   isFiltering = false,
   ...props
 }: Props) {
-  // close filter bar if disabled
   useEffect(() => {
-    if (!disabled) return
-    setIsOpen(false)
+    if (disabled) setIsOpen(false)
   }, [disabled, setIsOpen])
   return (
     <button
@@ -33,7 +31,7 @@ export function FilterButton({
       data-testid="FilterButton"
       {...props}
     >
-      {isOpen ? <CloseIcon /> : <FilterIcon color={isFiltering ? 'var(--primary)' : undefined} />}
+      {isOpen ? <CloseIcon /> : <FilterIcon color={isFiltering ? 'var(--color-primary)' : undefined} />}
     </button>
   )
 }
