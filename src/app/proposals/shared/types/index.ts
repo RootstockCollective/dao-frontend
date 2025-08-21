@@ -56,15 +56,16 @@ export type ProposalApiResponse = {
   proposalId: string
   proposer: `0x${string}`
   Starts: string
-  blocksUntilClosure?: string
+  voteStart: string
+  voteEnd: string
   votingPeriod: string
+  blocksUntilClosure?: string
   proposalState?: string
   quorumAtSnapshot?: string
   votes?: {
     againstVotes: string
     forVotes: string
     abstainVotes: string
-    quorum: string
   }
 }
 

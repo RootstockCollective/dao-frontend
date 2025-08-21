@@ -37,8 +37,9 @@ function transformGraphQLProposal(proposal: ProposalGraphQLResponse): ProposalAp
       againstVotes: againstVotes.toString(),
       forVotes: forVotes.toString(),
       abstainVotes: abstainVotes.toString(),
-      quorum: forVotes.add(abstainVotes).toString(),
     },
+    voteStart: proposal.voteStart,
+    voteEnd: proposal.voteEnd,
     votingPeriod: deadlineBlock.minus(creationBlock).toString(),
     quorumAtSnapshot: Big(formatEther(BigInt(proposal.quorum ?? 0n)))
       .round(undefined, Big.roundHalfEven)
