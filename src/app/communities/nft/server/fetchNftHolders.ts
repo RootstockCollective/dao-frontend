@@ -10,11 +10,15 @@ import { unstable_cache } from 'next/cache'
 const getAllNftHolders = async (nftAddress: string) => {
   let nextPageParams: NextPageParams | null = null
   let allData: NftHolderItem[] = []
-  do {
-    const { items, next_page_params: next } = await fetchNftHoldersOfAddress(nftAddress, nextPageParams)
-    allData = allData.concat(items)
-    nextPageParams = next
-  } while (nextPageParams)
+  try {
+    do {
+      const { items, next_page_params: next } = await fetchNftHoldersOfAddress(nftAddress, nextPageParams)
+      allData = allData.concat(items)
+      nextPageParams = next
+    } while (nextPageParams)
+  } catch (err) {
+    console.log('getAllNftHolders No holders found', err)
+  }
   return (
     allData
       // convert IPFS URLs to HTTP gateway URLs
