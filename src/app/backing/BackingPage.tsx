@@ -27,18 +27,45 @@ import { useBuilderContext } from '../collective-rewards/user'
 import { BuilderAllocationBar } from './components/BuilderAllocationBar'
 import { BackerAnnualBackersIncentives } from './components/Metrics/BackerAnnualBackersIncentives'
 import { Spotlight } from './components/Spotlight'
+import { useBalancesContext } from '@/app/user/Balances/context/BalancesContext'
+import { currentLinks } from '@/lib/links'
 
 const NAME = 'Backing'
 
-const StakeButton = ({ onStakeClick }: { onStakeClick?: () => void }) => (
-  <>
-    <Button variant="primary" className="flex h-7 px-4 py-3 items-center gap-2" onClick={onStakeClick}>
-      <Label variant="tag-s" className="text-v3-bg-accent-100">
-        Stake RIF
-      </Label>
-    </Button>
-  </>
-)
+const StakeButton = () => {
+  const router = useRouter()
+  const { balances } = useBalancesContext()
+
+  const { hasRifBalance, getRifLink } = useMemo(() => {
+    const rifBalance = Number(balances[RIF]?.balance ?? 0)
+    const getRifLink = new URL(currentLinks.getRif)
+
+    return {
+      hasRifBalance: rifBalance > 0,
+      getRifLink: getRifLink.toString(),
+    }
+  }, [balances])
+
+  const { onClick, text } = hasRifBalance
+    ? {
+        onClick: () => router.push('/user?action=stake'),
+        text: 'Stake RIF',
+      }
+    : {
+        onClick: () => window.open(getRifLink.toString(), '_blank'),
+        text: 'Get RIF',
+      }
+
+  return (
+    <>
+      <Button variant="primary" className="flex h-7 px-4 py-3 items-center gap-2" onClick={onClick}>
+        <Span variant="body-s" bold>
+          {text}
+        </Span>
+      </Button>
+    </>
+  )
+}
 
 const DistributeButton = ({ onClick }: ButtonProps) => (
   <div className="flex items-center gap-3">
@@ -162,7 +189,7 @@ export const BackingPage = () => {
                     availableForBacking > 0n ? (
                       <DistributeButton onClick={distributeBackingEqually} />
                     ) : (
-                      <StakeButton onStakeClick={() => router.push('/user?action=stake')} />
+                      <StakeButton />
                     )
                   }
                 />
