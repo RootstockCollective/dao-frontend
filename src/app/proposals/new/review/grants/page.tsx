@@ -92,7 +92,7 @@ export default function GrantsProposalReview() {
   const milestoneLabel = labeledMilestones.find(({ value }) => value === milestone)?.label
   return (
     <div>
-      <div className="mb-10 pr-2 w-full lg:flex lg:justify-between">
+      <div className="mb-10 pr-2 w-full lg:flex lg:justify-between gap-2">
         <div className="flex items-center gap-4">
           <Header caps variant="h3" className="text-2xl lg:text-3xl !leading-[0.9]">
             {proposalName}
