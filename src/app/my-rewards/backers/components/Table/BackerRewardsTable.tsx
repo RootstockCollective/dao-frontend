@@ -137,7 +137,7 @@ export const BackerRewardsTable = () => {
   useEffect(() => {
     const actions = Object.entries(selectedRows)
       .filter(([_, value]) => value)
-      .map(([rowId]) => (rows.find(({ id }) => id === rowId)?.data.actions as ActionCellProps).actionType)
+      .map(([rowId]) => rows.find(({ id }) => id === rowId)?.data.actions?.actionType)
       .filter(action => action !== undefined)
     setActions(actions)
   }, [selectedRows, rows])
