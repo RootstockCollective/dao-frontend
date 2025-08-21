@@ -51,6 +51,7 @@ export const DelegateCard: React.FC<DelegateCardProps> = ({
         className="mt-8"
         showFullName
         shouldNotRedirect
+        headerProps={{ variant: 'h2', className: 'text-primary mt-2' }}
       />
       <Paragraph className="text-text-80" variant="body-xs">
         delegate since {since}
