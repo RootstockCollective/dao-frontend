@@ -92,15 +92,17 @@ export default function GrantsProposalReview() {
   const milestoneLabel = labeledMilestones.find(({ value }) => value === milestone)?.label
   return (
     <div>
-      <div className="mb-10 pr-2 w-full lg:flex lg:justify-between gap-2">
-        <div className="flex items-center gap-4">
-          <Header caps variant="h3" className="text-2xl lg:text-3xl !leading-[0.9]">
+      <div className="mb-10 pr-2 w-full lg:flex lg:justify-between">
+        <div className="flex items-end gap-4">
+          <Header caps variant="h3" className="text-2xl lg:text-3xl !leading-none !tracking-none">
             {proposalName}
           </Header>
           {milestone !== Milestones.NO_MILESTONE && milestoneLabel && (
-            <div className="flex items-baseline-last gap-2">
-              <MilestoneIcon milestone={milestone[0] as Milestones} />
-              <Paragraph className=" text-lg text-bg-0">{milestoneLabel}</Paragraph>
+            <div className="flex gap-2 ">
+              <MilestoneIcon milestone={milestone[0] as Milestones} hasGradient />
+              <Paragraph variant="body-l" className="text-bg-0">
+                {milestoneLabel}
+              </Paragraph>
             </div>
           )}
         </div>
