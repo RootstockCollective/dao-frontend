@@ -197,7 +197,7 @@ export const BackerRewardsDataRow: FC<BackerRewardsDataRowProps> = ({ row, ...pr
       <tr
         {...props}
         className={cn(
-          'flex border-b-v3-bg-accent-60 border-b-1 gap-4',
+          'flex border-b-v3-bg-accent-60 border-b-1 gap-4 pl-4',
           selectedRows[rowId] || isHovered ? selectedRowStyle : unselectedRowStyle,
         )}
         onClick={handleToggleSelection}
