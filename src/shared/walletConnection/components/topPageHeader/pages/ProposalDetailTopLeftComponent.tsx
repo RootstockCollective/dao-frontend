@@ -11,23 +11,13 @@ import {
   BreadcrumbSeparator,
 } from '@/components/Breadcrumb'
 import { HomeIcon } from '@/components/Icons/HomeIcon'
+import { useProposalById } from '@/app/proposals/context'
 
 export const ProposalDetailTopLeftComponent = () => {
   const { id } = useParams<{ id: string }>() ?? {}
-  const { latestProposals } = useFetchAllProposals()
+  const proposal = useProposalById(id)
 
-  const proposal = useMemo(() => {
-    const proposal = latestProposals.find(proposal => proposal.args.proposalId.toString() === id)
-    if (!proposal) {
-      return null
-    }
-    // @ts-ignore
-    return getProposalEventArguments(proposal)
-  }, [id, latestProposals])
-  if (!proposal) {
-    return null
-  }
-  const { proposalName } = splitCombinedName(proposal.name)
+  const { proposalName } = splitCombinedName(proposal?.name ?? '')
   return <BreadcrumbSection title={proposalName} />
 }
 
