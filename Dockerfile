@@ -15,7 +15,7 @@ WORKDIR /app
 
 # Copy package.json and package-lock.json
 COPY package*.json ./
-COPY node_modules .
+COPY node_modules ./
 # Skip cypress install
 ENV CYPRESS_INSTALL_BINARY 0
 # Debug node_modules are being copied in CI CD
