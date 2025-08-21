@@ -48,7 +48,7 @@ type BackerRewardsProviderProps = {
 
 function mapToRecord(rewardsAmount: (bigint | undefined)[], gauges: `0x${string}`[]) {
   return rewardsAmount.reduce<Record<Address, bigint>>((acc, value, i) => {
-    acc[gauges[i]] = value as bigint
+    acc[gauges[i]] = value ?? 0n
     return acc
   }, {})
 }
