@@ -166,7 +166,8 @@ export const WithDescription: Story = {
                 • <span className="text-v3-rif-blue">Blue area</span>: Total backing amount (left axis)
               </p>
               <p>
-                • <span className="text-brand-rootstock-lime">Lime area</span>: Rewards distributed in USD (right axis)
+                • <span className="text-brand-rootstock-lime">Lime area</span>: Rewards distributed in USD
+                (right axis)
               </p>
               <p>• Shaded regions represent different reward cycles</p>
               <p>• Data spans approximately 490 days across 3 cycles</p>
@@ -214,7 +215,7 @@ export const SingleCycle: Story = {
 
     const rewardsSeries: RewardsPoint[] = backingSeries.map(({ day }, i) => ({
       day,
-      rewards: { rif: 0, rbtc: 0, usd: 150_000 + i * 500 + Math.sin(i / 15) * 10_000 }
+      rewards: { rif: 0, rbtc: 0, usd: 150_000 + i * 500 + Math.sin(i / 15) * 10_000 },
     }))
 
     return (
@@ -270,11 +271,11 @@ export const ManyCycles: Story = {
 
     const rewardsSeries: RewardsPoint[] = backingSeries.map(({ day, backing }, i) => ({
       day,
-      rewards: { 
-        rif: 0, 
-        rbtc: 0, 
-        usd: Math.floor(Number(backing) * 0.0003) + Math.sin(i / 20) * 20_000 
-      }
+      rewards: {
+        rif: 0,
+        rbtc: 0,
+        usd: Math.floor(Number(backing) * 0.0003) + Math.sin(i / 20) * 20_000,
+      },
     }))
 
     return (
@@ -328,7 +329,6 @@ export const CustomColors: Story = {
     )
   },
 }
-
 
 export const SmallHeight: Story = {
   render: () => {
