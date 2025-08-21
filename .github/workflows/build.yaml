@@ -6,6 +6,28 @@ on: pull_request
 permissions: read-all
 
 jobs:
+  cache_dependencies:
+    name: Cache Dependencies
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 #v4.2.2
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+
+      - name: Cache node_modules
+        uses: actions/cache@v4
+        with:
+          path: node_modules
+          key: node-modules-${{ hashFiles('package-lock.json') }}
+
+      - name: Install dependencies
+        run: npm install
+
+
   build_test:
     name: Build
     runs-on: ubuntu-latest
@@ -13,7 +35,22 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 #v4.2.2
-
+      - name: Restore node_modules cache
+        uses: actions/cache@v4
+        with:
+          path: node_modules
+          key: node-modules-${{ hashFiles('package-lock.json') }}
+      - name: Prepare Docker context with cache
+        run: |
+          # Log cache size
+          echo "node_modules size: $(du -sh node_modules 2>/dev/null | cut -f1 || echo '0')"
+          
+          # Backup and modify .dockerignore
+          cp .dockerignore .dockerignore.backup
+          sed -i '/^node_modules$/d' .dockerignore
+          
+          # Ensure directory exists
+          mkdir -p node_modules
       - name: Build
         id: build-image
         env:

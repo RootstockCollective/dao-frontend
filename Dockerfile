@@ -15,9 +15,13 @@ WORKDIR /app
 
 # Copy package.json and package-lock.json
 COPY package*.json ./
-
+COPY node_modules .
 # Skip cypress install
 ENV CYPRESS_INSTALL_BINARY 0
+# Debug node_modules are being copied in CI CD
+RUN echo "=== Checking node_modules in container ===" && \
+    ls -la node_modules/ || echo "No node_modules directory found" && \
+    echo "node_modules size: $(du -sh node_modules 2>/dev/null | cut -f1 || echo '0')"
 
 # Install dependencies
 RUN npm install --verbose
