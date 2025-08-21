@@ -1,6 +1,7 @@
-import { ReactNode } from 'react'
+import { ReactNode, useEffect, useState } from 'react'
 import * as RadixTooltip from '@radix-ui/react-tooltip'
 import { cn } from '@/lib/utils'
+import { useIsDesktop } from '@/shared/hooks/useIsDesktop'
 
 export interface TooltipProps extends RadixTooltip.TooltipContentProps {
   text: ReactNode
@@ -21,12 +22,18 @@ export function Tooltip({
   if (disabled) {
     return children
   }
+  const [open, setOpen] = useState(false)
+
+  const isDesktop = useIsDesktop()
+
   return (
-    <RadixTooltip.Root delayDuration={delayDuration}>
-      <RadixTooltip.Trigger asChild>{children}</RadixTooltip.Trigger>
+    <RadixTooltip.Root delayDuration={delayDuration} open={open} onOpenChange={setOpen}>
+      <RadixTooltip.Trigger asChild>
+        <div onMouseEnter={() => setOpen(true)}>{children}</div>
+      </RadixTooltip.Trigger>
       <RadixTooltip.Portal>
         <RadixTooltip.Content
-          side={side}
+          side={isDesktop ? side : 'bottom'}
           sideOffset={sideOffset}
           className={cn(
             'rounded-sm bg-v3-text-80 text-v3-bg-accent-60 px-2 py-1 text-xs font-normal shadow-lg font-rootstock-sans',
