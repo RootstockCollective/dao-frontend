@@ -88,7 +88,17 @@ const parseProposalActionDetails = (
 }
 
 const PageWithProposal = (proposal: Proposal) => {
-  const { proposalId, name, description, proposer, Starts, calldatasParsed, proposalDeadline, voteStart, category } = proposal
+  const {
+    proposalId,
+    name,
+    description,
+    proposer,
+    Starts,
+    calldatasParsed,
+    proposalDeadline,
+    voteStart,
+    category,
+  } = proposal
   const { prices } = usePricesContext()
   const parsedAction = parseProposalActionDetails(calldatasParsed, prices)
   const voteOnProposalData = useVoteOnProposal(proposalId)

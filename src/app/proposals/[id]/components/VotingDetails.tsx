@@ -36,9 +36,9 @@ interface VotingDetailsProps {
   proposalId: string
   parsedAction: ParsedActionDetails
   actionName: string | undefined
-  snapshot: bigint | undefined,
-  proposalDeadline: Big,
-  voteStart: string | undefined,
+  snapshot: bigint | undefined
+  proposalDeadline: Big
+  voteStart: string | undefined
   voteOnProposalData: ReturnType<typeof useVoteOnProposal>
 }
 
@@ -66,7 +66,8 @@ export const VotingDetails = ({
   const [isQueueing, setIsQueueing] = useState<boolean>()
   const { onQueueProposal } = useQueueProposal(proposalId)
 
-  const { onExecuteProposal, canProposalBeExecuted, proposalEta, proposalQueuedTime } = useExecuteProposal(proposalId)
+  const { onExecuteProposal, canProposalBeExecuted, proposalEta, proposalQueuedTime } =
+    useExecuteProposal(proposalId)
   const [isExecuting, setIsExecuting] = useState(false)
 
   const [popoverOpen, setPopoverOpen] = useState(false)
