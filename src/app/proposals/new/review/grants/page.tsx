@@ -11,7 +11,7 @@ import { Card } from '../components/Card'
 import { formatCurrencyWithLabel, formatNumberWithCommas, shortAddress } from '@/lib/utils'
 import { PreviewLabel } from '../components/PreviewLabel'
 import { useCreateTreasuryTransferProposal } from '@/app/proposals/hooks/useCreateTreasuryTransferProposal'
-import { tokenContracts } from '@/lib/contracts'
+import { tokenContracts, uppercasedTokenContracts } from '@/lib/contracts'
 import { showToast } from '@/shared/notification'
 import { isUserRejectedTxError } from '@/components/ErrorPage'
 import { Header, Paragraph, Span } from '@/components/Typography'
@@ -40,7 +40,7 @@ export default function GrantsProposalReview() {
       const milestoneString =
         milestone !== Milestones.NO_MILESTONE ? `${MILESTONE_SEPARATOR + milestone} ` : ''
       const proposalDescription = `${proposalName};${description} ${DISCOURSE_LINK_SEPARATOR}${discourseLink} ${milestoneString}`
-      const tokenAddress = tokenContracts[token.toUpperCase() as keyof typeof tokenContracts]
+      const tokenAddress = uppercasedTokenContracts[token.toUpperCase() as keyof typeof tokenContracts]
       if (!tokenAddress) throw new Error('GrantsProposalReview: Unknown contract address')
 
       // Here the user will see Metamask window and confirm his tx
