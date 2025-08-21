@@ -1,3 +1,4 @@
+import { type ComponentProps } from 'react'
 import { Tooltip } from '@/components/Tooltip'
 import { GrantsIcon, HammerIcon } from '../icons'
 import { ProposalCategory } from '@/shared/types'
@@ -6,13 +7,12 @@ import { cn } from '@/lib/utils'
 import { MilestoneIcon } from '../MilestoneIcon'
 import { Milestones } from '../../shared/types'
 
-interface Props {
+interface Props extends ComponentProps<'div'> {
   category: ProposalCategory
-  className?: ClassNameValue
   hasGradient?: boolean
 }
 
-export function Category({ category, className, hasGradient = false }: Props) {
+export function Category({ category, hasGradient = false, className, ...props }: Props) {
   const icons = {
     [ProposalCategory.Grants]: <GrantsIcon hasGradient={hasGradient} />,
     [ProposalCategory.Activation]: <HammerIcon hasGradient={hasGradient} />,
@@ -29,10 +29,10 @@ export function Category({ category, className, hasGradient = false }: Props) {
   } as const satisfies Record<ProposalCategory, React.JSX.Element>
 
   return (
-    <div className={cn('w-full flex justify-center', className)}>
-      <Tooltip text={category}>
-        <div>{icons[category]}</div>
-      </Tooltip>
-    </div>
+    <Tooltip text={category}>
+      <div className={cn('cursor-default', className)} {...props}>
+        {icons[category]}
+      </div>
+    </Tooltip>
   )
 }
