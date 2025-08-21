@@ -44,10 +44,7 @@ export const Modal: FC<ModalProps> = ({
           height === 'auto'
             ? 'h-full md:h-auto' // Auto on desktop, full on mobile when no height specified
             : 'h-full', // Full height when specific height provided
-          'md:max-w-[97vw]',
-          'bg-bg-80',
-          'rounded-[4px]',
-          'overflow-hidden',
+          'md:max-w-[97vw] bg-bg-80 rounded overflow-y-auto',
           className,
         )}
       >
