@@ -19,12 +19,12 @@ export function Tooltip({
   delayDuration = 100,
   ...props
 }: TooltipProps) {
-  if (disabled) {
-    return children
-  }
   const [open, setOpen] = useState(false)
 
   const isDesktop = useIsDesktop()
+  if (disabled) {
+    return children
+  }
 
   return (
     <RadixTooltip.Root delayDuration={delayDuration} open={open} onOpenChange={setOpen}>
