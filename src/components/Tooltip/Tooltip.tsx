@@ -1,4 +1,4 @@
-import React, { ReactNode, useState } from 'react'
+import React, { ReactNode, useEffect, useState } from 'react'
 import * as RadixTooltip from '@radix-ui/react-tooltip'
 import { cn } from '@/lib/utils'
 import { useIsDesktop } from '@/shared/hooks/useIsDesktop'
@@ -75,6 +75,23 @@ export function Tooltip({
   const hasHover = useHasHover()
   const isMobile = !hasHover && supportMobileTap
 
+  useEffect(() => {
+    if (!open || !isMobile) return
+
+    const handlePopState = () => setOpen(false)
+
+    window.history.pushState({ tooltip: true }, '')
+    window.addEventListener('popstate', handlePopState)
+
+    return () => {
+      window.removeEventListener('popstate', handlePopState)
+      // If still on the tooltip state, go back
+      if (window.history.state?.tooltip) {
+        window.history.back()
+      }
+    }
+  }, [open, isMobile])
+
   if (disabled) {
     return children
   }
@@ -85,8 +102,9 @@ export function Tooltip({
         <TooltipTrigger asChild>{children}</TooltipTrigger>
         <RadixTooltip.Portal>
           <RadixTooltip.Content
-            side={isMobile ? 'bottom' : side}
+            side={isMobile ? 'top' : side} // always top for mobile; it switches to bottom automatically if it's not enough space
             sideOffset={sideOffset}
+            collisionPadding={16}
             className={cn(
               'rounded-sm bg-v3-text-80 text-v3-bg-accent-60 px-2 py-1 text-xs font-normal shadow-lg font-rootstock-sans',
               /* Mixing in new classes (not replacing all the default classes) */
@@ -94,7 +112,7 @@ export function Tooltip({
             )}
             {...props}
           >
-            {text}
+            <div className="max-w-[calc(100vw-64px)]">{text}</div>
           </RadixTooltip.Content>
         </RadixTooltip.Portal>
       </TooltipTriggerContext.Provider>
