@@ -56,7 +56,7 @@ const paramConfigs: Record<
   },
 }
 
-export function parsePaginationParams(url: string, allowedSortColumns?: string[]): PaginationResult {
+export function parsePaginationParams(url: string, allowedColumns?: string[]): PaginationResult {
   const { searchParams } = new URL(url)
   const result: Partial<PaginationParams> = {}
 
@@ -80,7 +80,7 @@ export function parsePaginationParams(url: string, allowedSortColumns?: string[]
   }
 
   // Extra validation for sortBy
-  if (result.sortBy && !allowedSortColumns?.includes(result.sortBy)) {
+  if (result.sortBy && !allowedColumns?.includes(result.sortBy)) {
     return {
       success: false,
       error: {

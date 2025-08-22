@@ -2,13 +2,20 @@ import { NextResponse } from 'next/server'
 import { db } from '@/lib/db'
 import { paginateQuery } from '@/app/api/utils/paginateQuery'
 import { parsePaginationParams } from '@/app/api/utils/parsePaginationParams'
-import { sortConfig } from './sortConfig'
+
+const COLUMNS = [
+  'id',
+  'rewardsERC20',
+  'rewardsRBTC',
+  'cycleStart',
+  'cycleDuration',
+  'distributionDuration',
+  'onDistributionPeriod',
+]
 
 export async function GET(req: Request) {
   try {
-    const { allowedColumns, castedSortFieldsMap } = sortConfig
-
-    const paginationResult = parsePaginationParams(req.url || '', allowedColumns)
+    const paginationResult = parsePaginationParams(req.url || '', COLUMNS)
 
     if (!paginationResult.success) {
       return NextResponse.json(
@@ -19,22 +26,13 @@ export async function GET(req: Request) {
 
     const { page, pageSize, sortDirection, sortBy } = paginationResult.data
 
-    const baseQuery = db('Cycle').select(
-      'id',
-      'rewardsERC20',
-      'rewardsRBTC',
-      'cycleStart',
-      'cycleDuration',
-      'distributionDuration',
-      'onDistributionPeriod',
-    )
+    const baseQuery = db('Cycle').select(COLUMNS)
 
     const { data, count } = await paginateQuery(baseQuery, {
       page,
       pageSize,
       sortBy,
       sortDirection,
-      castedSortFieldsMap,
     })
 
     return NextResponse.json({ data, count, page, pageSize })

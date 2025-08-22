@@ -6,14 +6,13 @@ interface PaginateOptions {
   pageSize: number
   sortBy?: string
   sortDirection?: 'asc' | 'desc'
-  castedSortFieldsMap?: Record<string, CastType>
 }
 
 export async function paginateQuery<T extends Record<string, unknown>>(
   baseQuery: Knex.QueryBuilder<T, T[]>,
   options: PaginateOptions,
 ): Promise<{ data: T[]; count: number }> {
-  const { page, pageSize, sortBy, sortDirection, castedSortFieldsMap = {} } = options
+  const { page, pageSize, sortBy, sortDirection } = options
 
   const [countResult, data] = await Promise.all([
     baseQuery.clone().clearSelect().count().first(),
@@ -21,13 +20,7 @@ export async function paginateQuery<T extends Record<string, unknown>>(
       .clone()
       .modify(qb => {
         if (sortBy) {
-          const castType = castedSortFieldsMap[sortBy]
-
-          if (castType) {
-            qb.orderByRaw(`CAST(?? AS ${castType}) ${sortDirection}`, [sortBy])
-          } else {
-            qb.orderBy(sortBy, sortDirection)
-          }
+          qb.orderBy(sortBy, sortDirection)
         }
       })
       .offset((page - 1) * pageSize)
