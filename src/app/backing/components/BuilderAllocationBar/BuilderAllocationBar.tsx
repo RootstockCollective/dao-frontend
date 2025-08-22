@@ -61,7 +61,7 @@ const BuilderAllocationBar = ({ barOverrides }: { barOverrides?: Partial<Allocat
           return {
             key: UNALLOCATED_KEY,
             label: 'available backing',
-            value: Number(formatEther(unallocated)),
+            value: unallocated,
             displayColor: 'var(--background-40)',
           }
         }
@@ -72,12 +72,14 @@ const BuilderAllocationBar = ({ barOverrides }: { barOverrides?: Partial<Allocat
         // TODO: Add a check to see if the builder is rewardable and
         // and change the segment to allow certain actions only (e.g.: reduce but not increase)
 
-        const value = allocation ? Number(formatEther(allocation)) : 0
+        const value = allocation || 0n
+        const initialValue = initialAllocations[addressKey] || 0n
 
         return {
           key,
           label: builder?.builderName || key,
           value,
+          initialValue,
           displayColor: getBuilderColor(addressKey),
           isTemporary: initialAllocations[addressKey] !== allocation,
         }
@@ -104,7 +106,7 @@ const BuilderAllocationBar = ({ barOverrides }: { barOverrides?: Partial<Allocat
         changedItems.forEach(item => {
           const newValue = newValues[itemsData.indexOf(item)]
           if (item.key !== UNALLOCATED_KEY) {
-            updateAllocation(item.key as Address, newValue > 0 ? parseEther(newValue.toString()) : 0n)
+            updateAllocation(item.key as Address, newValue)
           }
         })
       } else if (change.type === 'reorder') {
@@ -124,7 +126,8 @@ const BuilderAllocationBar = ({ barOverrides }: { barOverrides?: Partial<Allocat
           {
             key: 'unallocated',
             label: 'available backing',
-            value: 1,
+            value: 1n,
+            initialValue: 1n,
             displayColor: 'var(--background-60)',
             isTemporary: true,
           },

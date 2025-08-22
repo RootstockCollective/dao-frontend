@@ -55,10 +55,7 @@ export const BuilderHeader: FC<BuilderHeaderProps> = ({
           <Jdenticon className="bg-v3-text-100" value={address} size="88" />
         )}
       </div>
-      <Header
-        className="mt-2 text-center text-[22px] text-v3-primary font-bold font-kk-topo"
-        {...headerProps}
-      >
+      <Header className="mt-2 text-center text-v3-primary font-kk-topo" variant="h2" {...headerProps}>
         {shouldNotRedirect ? (
           <>{truncatedName || shortedAddress}</>
         ) : (

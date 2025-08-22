@@ -15,7 +15,7 @@ import { AllocationBarSegment } from './AllocationBarSegment'
 import { Legend } from '@/components/Legend'
 import { cn } from '@/lib/utils'
 
-const getSegmentsToShowDots = (values: number[], totalValue: number): boolean[] => {
+const getSegmentsToShowDots = (values: bigint[], totalValue: bigint): boolean[] => {
   const NEIGHBOR_SUM_THRESHOLD = 8 // 8%
   const segmentsToShowDots = new Array(values.length).fill(false)
 
@@ -55,11 +55,11 @@ const AllocationBar: React.FC<AllocationBarProps> = ({
   const currentItems = isControlled ? itemsData : localItemsData
   const currentValues = isControlled ? itemsData.map(item => item.value) : localValues
 
-  const totalValue = currentValues.reduce((sum, v) => sum + v, 0)
-  const minSegmentValue = calculateMinSegmentValue(totalValue)
+  const totalBacking = currentValues.reduce((sum, v) => sum + v, 0n)
+  const minSegmentValue = calculateMinSegmentValue(totalBacking)
 
   // Calculate which segments should show dots
-  const segmentsToShowDots = getSegmentsToShowDots(currentValues, totalValue)
+  const segmentsToShowDots = getSegmentsToShowDots(currentValues, totalBacking)
 
   const barRef = useRef<HTMLDivElement>(null)
   const [dragIndex, setDragIndex] = useState<number | null>(null)
@@ -84,7 +84,7 @@ const AllocationBar: React.FC<AllocationBarProps> = ({
     const rect = barRef.current.getBoundingClientRect()
     const x = clamp(clientX - rect.left, 0, rect.width)
 
-    const { leftPx, rightPx } = calculateSegmentPositions(dragIndex, rect, currentValues, totalValue)
+    const { leftPx, rightPx } = calculateSegmentPositions(dragIndex, rect, currentValues, totalBacking)
     const { leftValue, rightValue } = calculateNewSegmentValues(
       x,
       leftPx,
@@ -173,8 +173,9 @@ const AllocationBar: React.FC<AllocationBarProps> = ({
             {currentItems.map((item, i) => (
               <AllocationBarSegment
                 key={item.key}
-                value={currentValues[i]}
-                totalValue={totalValue}
+                pendingBacking={currentValues[i]}
+                currentBacking={item.initialValue ?? 0n}
+                totalBacking={totalBacking}
                 item={item}
                 index={i}
                 isLast={i === currentItems.length - 1}
