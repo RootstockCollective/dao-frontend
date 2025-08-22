@@ -51,15 +51,16 @@ export function Tooltip({
       </RadixTooltip.Trigger>
       <RadixTooltip.Portal>
         <RadixTooltip.Content
-          side={isDesktop ? side : 'top'} // for mobile we use top side; it switches to bottom automatically if it's not enough space
+          side={isDesktop ? side : 'top'} // always top for mobile; it switches to bottom automatically if it's not enough space
           sideOffset={sideOffset}
+          collisionPadding={16}
           className={cn(
             'rounded-sm bg-v3-text-80 text-v3-bg-accent-60 px-2 py-1 text-xs font-normal shadow-lg font-rootstock-sans',
             className,
           )}
           {...props}
         >
-          {text}
+          <div className="max-w-[calc(100vw-64px)]">{text}</div>
         </RadixTooltip.Content>
       </RadixTooltip.Portal>
     </RadixTooltip.Root>
