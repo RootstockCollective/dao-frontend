@@ -16,8 +16,12 @@ export default function TokenRadioGroup<T extends TokenFormData>({ name, control
       control={control}
       name={name}
       render={({ field: { onChange, value }, fieldState: { error } }) => (
-        <div className="flex flex-col gap-2">
-          <ul className="flex gap-6" role="radiogroup" aria-label="Select token">
+        <>
+          <ul
+            className="flex gap-2 flex-col @md:flex-row @md:gap-6"
+            role="radiogroup"
+            aria-label="Select token"
+          >
             {SYMBOLS.map(symbol => (
               <li key={symbol}>
                 <button
@@ -32,7 +36,7 @@ export default function TokenRadioGroup<T extends TokenFormData>({ name, control
                 >
                   <div
                     className={cn(
-                      'w-4 h-4 rounded-full transition-all border-text-100',
+                      'w-4 h-4 rounded-full transition-all border-text-100 shrink-0',
                       value !== symbol && 'group-focus:outline group-focus:outline-text-100',
                       value === symbol ? 'border-5' : 'border-[1.5px]',
                     )}
@@ -46,7 +50,7 @@ export default function TokenRadioGroup<T extends TokenFormData>({ name, control
             ))}
           </ul>
           {error && <span className="text-xs text-error font-rootstock-sans">{error.message}</span>}
-        </div>
+        </>
       )}
     />
   )

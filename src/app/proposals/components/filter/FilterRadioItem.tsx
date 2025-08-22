@@ -1,10 +1,11 @@
 import { Paragraph } from '@/components/Typography'
 import { cn } from '@/lib/utils'
+import { FilterOption } from './filterOptions'
 
 interface Props {
-  option: string
+  option: FilterOption
   selected: boolean
-  onClick: (option: string) => void
+  onClick: (option: FilterOption['value']) => void
 }
 
 /**
@@ -15,7 +16,7 @@ export const FilterRadioItem = ({ option, selected, onClick, ...props }: Props) 
     <button
       role="radio"
       aria-checked={selected}
-      onClick={() => onClick(option)}
+      onClick={() => onClick(option.value)}
       className={cn('group focus:outline-none focus-visible:outline-none', 'flex gap-3 items-center')}
       {...props}
     >
@@ -26,7 +27,7 @@ export const FilterRadioItem = ({ option, selected, onClick, ...props }: Props) 
           selected ? 'border-5' : 'border-[1.5px]',
         )}
       />
-      <Paragraph>{option}</Paragraph>
+      <Paragraph>{option.label}</Paragraph>
     </button>
   )
 }

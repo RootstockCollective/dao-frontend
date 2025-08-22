@@ -1,27 +1,27 @@
 import { AllocationsContext } from '@/app/collective-rewards/allocations/context'
 import { useAllocateVotes } from '@/app/collective-rewards/allocations/hooks/useAllocateVotes'
+import { TokenRewards } from '@/app/collective-rewards/rewards'
 import { Builder } from '@/app/collective-rewards/types'
 import { TransactionInProgressButton } from '@/app/user/Stake/components/TransactionInProgressButton'
 import { Button } from '@/components/Button'
 import { useLayoutContext } from '@/components/MainContainer/LayoutProvider'
 import { ActionsContainer } from '@/components/containers/ActionsContainer'
-import { RIF } from '@/lib/constants'
-import { usePricesContext } from '@/shared/context/PricesContext'
+import { usePricesContext } from '@/shared/context'
+import { useRouter } from 'next/navigation'
 import { FC, useContext, useEffect } from 'react'
 import { Address } from 'viem'
 import { useAccount } from 'wagmi'
-import { floorToUnit, getBuilderColor } from '../utils'
 import { BuilderCard } from './BuilderCard'
-import { TokenRewards } from '@/app/collective-rewards/rewards'
 
-export interface BuilderCardControlProps extends Builder {
+export interface BuilderCardControlProps {
+  builder: Builder
   estimatedRewards?: TokenRewards
-  allocationTxPending?: boolean
   isInteractive?: boolean
   index?: number
   showAnimation?: boolean
 }
 
+// TODO: this component should really create its own context and stop prop drilling
 const AllocationDrawerContent = () => {
   const { saveAllocations, isPendingTx, isLoadingReceipt, isSuccess } = useAllocateVotes()
 
@@ -63,8 +63,7 @@ const AllocationDrawerContent = () => {
 }
 
 export const BuilderCardControl: FC<BuilderCardControlProps> = ({
-  allocationTxPending = false,
-  address: builderAddress,
+  builder,
   index,
   showAnimation = false,
   ...props
@@ -72,26 +71,30 @@ export const BuilderCardControl: FC<BuilderCardControlProps> = ({
   const { isConnected } = useAccount()
   const { prices } = usePricesContext()
   const { openDrawer, closeDrawer } = useLayoutContext()
+  const router = useRouter()
   const {
-    actions: { updateAllocation },
     state: {
       resetVersion,
-      backer: { balance, cumulativeAllocation },
       allocations,
+      backer: { balance, cumulativeAllocation: cumulativeBacking },
     },
-    initialState: { allocations: initialAllocations },
+    initialState: {
+      allocations: initialAllocations,
+      backer: { cumulativeAllocation: totalOnchainAllocation },
+    },
+    actions: { updateAllocation },
   } = useContext(AllocationsContext)
 
-  const rifPriceUsd = prices[RIF]?.price ?? 0
-  const allocation = allocations[builderAddress] ?? 0n
-  const existentAllocation = initialAllocations[builderAddress] ?? 0n
-  const unallocatedAmount = floorToUnit(balance - (cumulativeAllocation - allocation))
-  const topBarColor = getBuilderColor(builderAddress)
+  const cumulativeBackingReductions = Object.entries(allocations).reduce((acc, [address, allocation]) => {
+    const onchainAllocation = initialAllocations[address as Address] ?? 0n
+    if (onchainAllocation > allocation) {
+      acc += onchainAllocation - allocation
+    }
 
-  const handleAllocationChange = (value: bigint) => {
-    if (allocationTxPending) return
-    updateAllocation(builderAddress, value)
-  }
+    return acc
+  }, 0n)
+  const updatedBacking = allocations[builder.address] ?? 0n
+  const currentBacking = initialAllocations[builder.address] ?? 0n
 
   useEffect(() => {
     // Compare initialAllocations and allocations
@@ -115,17 +118,27 @@ export const BuilderCardControl: FC<BuilderCardControlProps> = ({
     <BuilderCard
       key={resetVersion}
       {...props}
-      address={builderAddress}
-      isConnected={isConnected}
-      rifPriceUsd={rifPriceUsd}
-      allocation={allocation}
-      existentAllocation={existentAllocation}
-      allocationTxPending={allocationTxPending}
-      onAllocationChange={handleAllocationChange}
-      maxAllocation={unallocatedAmount}
-      topBarColor={allocation > 0n && isConnected ? topBarColor : 'transparent'}
+      builder={builder}
       index={index}
       showAnimation={showAnimation}
+      onConnect={() => router.push(`/backing?builders=${builder.address}`) /* 🤢 */}
+      allocationInputProps={{
+        builderAddress: builder.address,
+        allocationTxPending: false, // TODO: this is not currently used on main
+        disabled: false,
+        balance,
+        prices,
+        onchainBackingState: {
+          builderBacking: currentBacking,
+          cumulativeBacking: totalOnchainAllocation,
+        },
+        updatedBackingState: {
+          builderBacking: updatedBacking,
+          cumulativeBacking,
+          cumulativeBackingReductions: cumulativeBackingReductions,
+        },
+        updateBacking: (value: bigint) => updateAllocation(builder.address, value),
+      }}
     />
   )
 }

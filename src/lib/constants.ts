@@ -40,6 +40,7 @@ export const USD = 'USD'
 export const RBTC = ENV === 'mainnet' ? 'rBTC' : 'tRBTC'
 export const STRIF = 'stRIF'
 export const USDRIF = 'USDRIF'
+export const TRIF = 'tRIF'
 
 export const GRANT_TOKEN_LIMITS = {
   minAmount: 0.000001,

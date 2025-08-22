@@ -194,17 +194,20 @@ const RewardsUpcomingCell = (props: RewardsCellProps): ReactElement => {
   )
 }
 
-export const BuilderBackingCell = (props: BackingCellProps): ReactElement => {
+export const BuilderBackingCell = ({ className, ...props }: BackingCellProps): ReactElement => {
   return (
-    <TableCell columnId="backing" className="flex flex-col gap-2 align-middle justify-center">
+    <TableCell
+      columnId="backing"
+      className={cn('flex flex-col gap-2 align-middle justify-center', className)}
+    >
       <BackingCell {...props} />
     </TableCell>
   )
 }
 
-const BuilderBackingShareCell = (props: BackingShareCellProps): ReactElement => {
+const BuilderBackingShareCell = ({ className, ...props }: BackingShareCellProps): ReactElement => {
   return (
-    <TableCell columnId="backingShare" className="justify-center">
+    <TableCell columnId="backingShare" className={cn('justify-center', className)}>
       <BackingShareCell {...props} className="w-[60%] justify-center" />
     </TableCell>
   )
@@ -230,24 +233,25 @@ export const ActionsCell = ({
 
 interface BuilderDataRowProps extends CommonComponentProps<HTMLTableRowElement> {
   row: BuilderTable['Row']
+  userBacking: bigint
 }
 
 export const selectedRowStyle = 'bg-v3-text-80 text-v3-bg-accent-100'
 export const unselectedRowStyle = 'bg-v3-bg-accent-80 text-v3-primary-100'
 
-export const BuilderDataRow: FC<BuilderDataRowProps> = ({ row, ...props }) => {
+export const BuilderDataRow: FC<BuilderDataRowProps> = ({ row, userBacking, ...props }) => {
+  const { id: rowId, data }: BuilderTable['Row'] = row
+
   const {
-    id: rowId,
-    data: {
-      builder,
-      backing,
-      backer_rewards,
-      rewards_past_cycle,
-      rewards_upcoming,
-      backingShare: { backingPercentage },
-      actions,
-    },
-  }: BuilderTable['Row'] = row
+    builder,
+    backing,
+    backer_rewards,
+    rewards_past_cycle,
+    rewards_upcoming,
+    backingShare: { backingPercentage },
+    actions,
+  } = data as BuilderCellDataMap
+
   const { selectedRows } = useTableContext<ColumnId, BuilderCellDataMap>()
   const { isConnected } = useAccount()
   const { intermediateStep, handleConnectWallet, handleCloseIntermediateStep, onConnectWalletButtonClick } =
@@ -259,8 +263,9 @@ export const BuilderDataRow: FC<BuilderDataRowProps> = ({ row, ...props }) => {
   const hasSelections = Object.values(selectedRows).some(Boolean)
 
   const isInProgress = isBuilderInProgress(builder.builder)
-  const hasInactiveState = getBuilderInactiveState(builder.builder) !== null
-  const hasBacking = backing.amount > 0n
+  const inactiveState = getBuilderInactiveState(builder.builder)
+  const hasInactiveState = inactiveState !== null
+  const hasBacking = userBacking > 0n
 
   const canBack = !isInProgress && (!hasInactiveState || hasBacking)
 
@@ -308,7 +313,7 @@ export const BuilderDataRow: FC<BuilderDataRowProps> = ({ row, ...props }) => {
         <tr
           {...props}
           className={cn(
-            'flex border-b-v3-bg-accent-60 border-b-1 gap-4',
+            'flex border-b-v3-bg-accent-60 border-b-1 gap-4 pl-4',
             selectedRows[rowId] || isHovered ? selectedRowStyle : unselectedRowStyle,
           )}
           onClick={handleToggleSelection}
@@ -322,13 +327,9 @@ export const BuilderDataRow: FC<BuilderDataRowProps> = ({ row, ...props }) => {
           <BuilderBackingCell {...backing} />
           <BuilderBackingShareCell
             backingPercentage={backingPercentage}
-            className={isHovered ? 'hidden' : 'visible'}
+            className={isHovered && isConnected ? 'hidden' : 'visible'}
           />
-          <ActionsCell
-            {...actions}
-            forceShow={isHovered && isConnected}
-            className={isHovered ? 'visible' : 'hidden'}
-          />
+          <ActionsCell {...actions} forceShow={isHovered && isConnected} />
           <td className="w-[24px]"></td>
         </tr>
       </ConditionalTooltip>

@@ -8,18 +8,25 @@ import { useLayoutContext } from '@/components/MainContainer/LayoutProvider'
 import { ProposalSubfooter } from '../../components/ProposalSubfooter'
 import { ProposalCategory } from '@/shared/types'
 import { Card } from '../components/Card'
-import { formatNumberWithCommas, shortAddress } from '@/lib/utils'
+import { formatCurrencyWithLabel, formatNumberWithCommas, shortAddress } from '@/lib/utils'
 import { PreviewLabel } from '../components/PreviewLabel'
 import { useCreateTreasuryTransferProposal } from '@/app/proposals/hooks/useCreateTreasuryTransferProposal'
-import { tokenContracts } from '@/lib/contracts'
+import { tokenContracts, uppercasedTokenContracts } from '@/lib/contracts'
 import { showToast } from '@/shared/notification'
 import { isUserRejectedTxError } from '@/components/ErrorPage'
-import { Header, Paragraph } from '@/components/Typography'
+import { Header, Paragraph, Span } from '@/components/Typography'
 import { CopyButton } from '@/components/CopyButton'
 import { DISCOURSE_LINK_SEPARATOR } from '@/app/proposals/shared/utils'
 import { TokenImage } from '@/components/TokenImage'
+import { usePricesContext } from '@/shared/context'
+import Big from '@/lib/big'
+import { MilestoneIcon } from '@/app/proposals/components/MilestoneIcon'
+import { MILESTONE_SEPARATOR, labeledMilestones } from '@/app/proposals/shared/utils'
+import { Milestones } from '@/app/proposals/shared/types'
 
 export default function GrantsProposalReview() {
+  const { prices } = usePricesContext()
+
   const { address, isConnected } = useAccount()
   const { record, waitForTxInBg } = useReviewProposal()
   const { onCreateTreasuryTransferProposal } = useCreateTreasuryTransferProposal()
@@ -29,9 +36,12 @@ export default function GrantsProposalReview() {
     setLoading(true)
     try {
       if (!record?.form || record?.category !== ProposalCategory.Grants) return
-      const { description, proposalName, targetAddress, token, transferAmount, discourseLink } = record.form
-      const proposalDescription = `${proposalName};${description} ${DISCOURSE_LINK_SEPARATOR}${discourseLink} `
-      const tokenAddress = tokenContracts[token.toUpperCase() as keyof typeof tokenContracts]
+      const { description, proposalName, targetAddress, token, transferAmount, discourseLink, milestone } =
+        record.form
+      const milestoneString =
+        milestone !== Milestones.NO_MILESTONE ? `${MILESTONE_SEPARATOR + milestone} ` : ''
+      const proposalDescription = `${proposalName};${description} ${DISCOURSE_LINK_SEPARATOR}${discourseLink} ${milestoneString}`
+      const tokenAddress = uppercasedTokenContracts[token.toUpperCase() as keyof typeof tokenContracts]
       if (!tokenAddress) throw new Error('GrantsProposalReview: Unknown contract address')
 
       // Here the user will see Metamask window and confirm his tx
@@ -74,14 +84,28 @@ export default function GrantsProposalReview() {
   if (!record?.form || record?.category !== ProposalCategory.Grants) {
     return null
   }
-  const { description, discourseLink, proposalName, targetAddress, token, transferAmount } = record.form
+  const { description, discourseLink, proposalName, targetAddress, token, transferAmount, milestone } =
+    record.form
   const tokenAmount = formatNumberWithCommas(transferAmount)
+
+  const tokenPrice = prices?.[token]?.price ?? 0
+  const milestoneLabel = labeledMilestones.find(({ value }) => value === milestone)?.label
   return (
     <div>
-      <div className="mb-10 pr-2 w-full lg:flex lg:justify-between">
-        <Header caps variant="h3" className="text-2xl lg:text-3xl leading-relaxed tracking-wide">
-          {proposalName}
-        </Header>
+      <div className="mb-10 pr-2 w-full lg:flex lg:justify-between gap-2">
+        <div className="flex items-center gap-4">
+          <Header caps variant="h3" className="text-2xl lg:text-3xl !leading-[0.9]">
+            {proposalName}
+          </Header>
+          {milestone !== Milestones.NO_MILESTONE && milestoneLabel && (
+            <div className="flex gap-2 items-end">
+              <MilestoneIcon milestone={milestone} hasGradient className="mb-0.5" />
+              <Paragraph variant="body-l" className="text-bg-0 !leading-none whitespace-nowrap">
+                {milestoneLabel}
+              </Paragraph>
+            </div>
+          )}
+        </div>
         <PreviewLabel />
       </div>
 
@@ -147,11 +171,22 @@ export default function GrantsProposalReview() {
               </CopyButton>
             </Card>
             <Card title="Amount">
-              <span className="mr-2">{tokenAmount}</span>
-              <span className="whitespace-nowrap">
-                <TokenImage symbol={token} className="inline-block w-4 h-4 mr-1 mb-[2px]" />
-                {token}
-              </span>
+              <div className="inline-block">
+                <div className="flex items-center">
+                  <span className="mr-2">{tokenAmount}</span>
+                  <span className="whitespace-nowrap">
+                    <TokenImage symbol={token} className="inline-block w-4 h-4 mr-1 mb-[2px]" />
+                    {token}
+                  </span>
+                </div>
+                {transferAmount !== undefined && tokenPrice !== undefined && (
+                  <div className="text-right">
+                    <Span className="text-xs text-white/50 font-normal leading-none">
+                      {formatCurrencyWithLabel(Big(transferAmount).times(tokenPrice).toNumber())}
+                    </Span>
+                  </div>
+                )}
+              </div>
             </Card>
           </div>
         </div>

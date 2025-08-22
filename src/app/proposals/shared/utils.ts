@@ -10,6 +10,7 @@ import {
 import { GovernorAbi } from '@/lib/abis/Governor'
 import { MAX_NAME_LENGTH_FOR_PROPOSAL, TALLY_DESCRIPTION_SEPARATOR } from '@/lib/constants'
 import { ProposalCategory } from '@/shared/types'
+import { MilestoneLabels, Milestones } from './types'
 
 export interface EventArgumentsParameter {
   args: {
@@ -132,6 +133,25 @@ export const DISPLAY_NAME_SEPARATOR = 'D15PL4Y_N4M3:'
 export const DISCOURSE_LINK_SEPARATOR = 'DiscourseLink:'
 export const MILESTONE_SEPARATOR = 'M1lestone:'
 
+export const labeledMilestones = [
+  {
+    value: Milestones.MILESTONE_1,
+    label: MilestoneLabels.FIRST,
+  },
+  {
+    value: Milestones.MILESTONE_2,
+    label: MilestoneLabels.SECOND,
+  },
+  {
+    value: Milestones.MILESTONE_3,
+    label: MilestoneLabels.THIRD,
+  },
+  {
+    value: Milestones.NO_MILESTONE,
+    label: MilestoneLabels.NO_MILESTONE,
+  },
+]
+
 export const splitCombinedName = (name: string) => {
   const [proposalName, builderName] = name.split(DISPLAY_NAME_SEPARATOR)
   return { proposalName, builderName }
@@ -215,6 +235,57 @@ export function getProposalCategory(calldatasParsed: any[]): string {
     .find(data => ['withdraw', 'withdrawERC20'].includes(data.functionName))
 
   return hasWithdrawAction ? ProposalCategory.Grants : ProposalCategory.Activation
+}
+
+/**
+ * Extracts proposal category from parsed calldata and description
+ * @param calldatasParsed - Array of decoded calldata
+ * @param description - Original proposal description for milestone detection
+ * @returns ProposalCategory
+ */
+export function getProposalCategoryFromParsedData(
+  calldatasParsed: DecodedData[],
+  description: string,
+): ProposalCategory {
+  // Extract all decoded function names once
+  const decodedFunctionNames = calldatasParsed
+    .filter(data => data.type === 'decoded')
+    .map(data => data.functionName)
+
+  // Map function names to their categories
+  const functionCategoryMap = new Map<string, ProposalCategory>([
+    ['communityApproveBuilder', ProposalCategory.Activation],
+    ['whitelistBuilder', ProposalCategory.Activation],
+    ['dewhitelistBuilder', ProposalCategory.Deactivation],
+    ['removeWhitelistedBuilder', ProposalCategory.Deactivation],
+  ])
+
+  // Check for builder functions first
+  for (const functionName of decodedFunctionNames) {
+    const category = functionCategoryMap.get(functionName)
+    if (category) {
+      return category
+    }
+  }
+
+  // Then check for milestone (only if not a builder function)
+  const milestoneRegex = new RegExp(`${MILESTONE_SEPARATOR}(\\S+)`, 'i')
+  const milestoneMatch = description.match(milestoneRegex)
+
+  if (milestoneMatch) {
+    const milestoneNumber = milestoneMatch[1]
+    switch (milestoneNumber) {
+      case Milestones.MILESTONE_1:
+        return ProposalCategory.Milestone1
+      case Milestones.MILESTONE_2:
+        return ProposalCategory.Milestone2
+      case Milestones.MILESTONE_3:
+        return ProposalCategory.Milestone3
+    }
+  }
+
+  // If not builder functions and not milestone, it must be a grant
+  return ProposalCategory.Grants
 }
 
 export function serializeBigInts(obj: any): any {

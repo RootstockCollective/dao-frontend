@@ -1,4 +1,4 @@
-import { CategoryColumn } from '@/app/proposals/components/table-columns/CategoryColumn'
+import { Category } from '@/app/proposals/components/category'
 import { CopyButton } from '@/components/CopyButton'
 import { SmallLineSeparator } from '@/components/Separators/SmallLineSeparator'
 import { Tooltip } from '@/components/Tooltip'
@@ -17,18 +17,18 @@ interface CreatorRowComponentProps {
 }
 
 export const CreatorRowComponent = ({ proposer, Starts, category, className }: CreatorRowComponentProps) => (
-  <div className={cn('flex flex-row mt-2 items-center', className)}>
+  <div className={cn('flex flex-row mt-2 items-center whitespace-nowrap flex-shrink-0', className)}>
     <Tooltip text="Copy address">
       <Span>
         <CopyButton icon={null} className="inline" copyText={proposer}>
-          <Span className="text-primary">by</Span>&nbsp;
-          <Span>{shortAddress(proposer)}</Span>
+          <Span>by</Span>&nbsp;
+          <Span className="text-primary">{shortAddress(proposer)}</Span>
         </CopyButton>
       </Span>
     </Tooltip>
     <SmallLineSeparator />
     <Paragraph>{Starts.format('MMM DD, YYYY')}</Paragraph>
     <SmallLineSeparator />
-    <CategoryColumn category={category} className="w-auto" />
+    <Category category={category} className="w-auto" />
   </div>
 )

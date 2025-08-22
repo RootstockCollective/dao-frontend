@@ -9,14 +9,14 @@ interface BannerProps {
 
 export const Banner = ({ imageSrc, altText, DecorativeComponent }: BannerProps) => {
   return (
-    <div className="relative p-4">
-      <div className="w-full h-[240px] overflow-hidden relative">
+    <div className="relative">
+      <div className="h-[240px] overflow-hidden relative">
         <Image src={imageSrc} alt={altText} fill />
       </div>
       <DecorativeComponent
         width={50}
         height={40}
-        className="absolute bottom-0 right-0 translate-x-[-6px] translate-y-[14px] z-20"
+        className="absolute bottom-0 right-0 translate-x-[10px] translate-y-[30px] z-20"
       />
     </div>
   )

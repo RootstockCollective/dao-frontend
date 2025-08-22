@@ -1,6 +1,6 @@
 import { Header } from '@/components/Typography'
 import { Jdenticon } from '@/components/Header/Jdenticon'
-import { FC, useState } from 'react'
+import { ComponentProps, FC, useState } from 'react'
 import { cn, shortAddress, truncate } from '@/lib/utils'
 import Link from 'next/link'
 import Image from 'next/image'
@@ -15,6 +15,7 @@ interface BuilderHeaderProps {
   className?: string
   showFullName?: boolean
   shouldNotRedirect?: boolean
+  headerProps?: ComponentProps<typeof Header>
 }
 
 export const BuilderHeader: FC<BuilderHeaderProps> = ({
@@ -25,6 +26,7 @@ export const BuilderHeader: FC<BuilderHeaderProps> = ({
   className,
   showFullName = true,
   shouldNotRedirect = false,
+  headerProps,
 }) => {
   const shortedAddress = shortAddress(address)
   const truncatedName = name ? (showFullName ? name : truncate(name, 15)) : undefined
@@ -53,7 +55,7 @@ export const BuilderHeader: FC<BuilderHeaderProps> = ({
           <Jdenticon className="bg-v3-text-100" value={address} size="88" />
         )}
       </div>
-      <Header className="mt-2 text-center text-v3-primary font-kk-topo" variant="h2">
+      <Header className="mt-2 text-center text-v3-primary font-kk-topo" variant="h2" {...headerProps}>
         {shouldNotRedirect ? (
           <>{truncatedName || shortedAddress}</>
         ) : (

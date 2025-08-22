@@ -236,7 +236,7 @@ export const AllocationsContextProvider: FC<{ children: ReactNode }> = ({ childr
         backer,
         initialAllocations: initialState.allocations,
         currentAllocations: allocations,
-        totalOnchainAllocation: totalOnchainAllocation as bigint,
+        totalOnchainAllocation: totalOnchainAllocation ?? 0n,
       }),
     [backer, allocations, totalOnchainAllocation, initialState.allocations],
   )

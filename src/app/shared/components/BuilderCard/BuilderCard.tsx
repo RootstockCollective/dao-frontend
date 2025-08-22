@@ -1,7 +1,12 @@
-import { AllocationInput } from '@/app/backing/components/AllocationInput/AllocationInput'
+import {
+  AllocationInput,
+  AllocationInputProps,
+} from '@/app/backing/components/AllocationInput/AllocationInput'
 import { BuilderHeader } from '@/app/backing/components/BuilderHeader/BuilderHeader'
 import { CurrentBacking } from '@/app/backing/components/CurrentBacking/CurrentBacking'
 import { RewardsInfo } from '@/app/backing/components/RewardsInfo/RewardsInfo'
+import { TokenRewards } from '@/app/collective-rewards/rewards'
+import { Builder } from '@/app/collective-rewards/types'
 import {
   BuilderInactiveState,
   builderInactiveStateMessage,
@@ -10,20 +15,21 @@ import {
 } from '@/app/collective-rewards/utils/isBuilderOperational'
 import { ConnectButton } from '@/app/components/Button/ConnectButton/ConnectButton'
 import { Button } from '@/components/Button'
-import { StylableComponentProps } from '@/components/commonProps'
+import { CommonComponentProps, StylableComponentProps } from '@/components/commonProps'
 import { WarningIcon } from '@/components/Icons'
 import { Paragraph } from '@/components/Typography'
 import { cn } from '@/lib/utils'
 import { AnimatePresence, motion } from 'motion/react'
-import { FC, useEffect, useState } from 'react'
-import { BuilderCardControlProps } from './BuilderCardControl'
+import { useState } from 'react'
+import { getBuilderColor } from '../utils'
 import { WindshieldWiperAnimation } from './WindshieldWiperAnimation'
-import { useRouter } from 'next/navigation'
 
 const Warning = ({
   className,
   builderInactiveState,
-}: StylableComponentProps<HTMLDivElement> & { builderInactiveState: BuilderInactiveState }) => {
+}: StylableComponentProps<HTMLDivElement> & {
+  builderInactiveState: BuilderInactiveState
+}): React.ReactElement => {
   return (
     <div className={cn('flex items-center gap-2', className)}>
       <WarningIcon size={48} color="#DEFF1A" className="min-w-[48px] min-h-[48px]" />
@@ -32,58 +38,33 @@ const Warning = ({
   )
 }
 
-interface BuilderCardProps extends BuilderCardControlProps {
-  existentAllocation: bigint
-  maxAllocation: bigint
-  allocation: bigint
-  onAllocationChange: (newAllocation: bigint) => void
-  rifPriceUsd: number
-  isConnected: boolean
+export interface BuilderCardProps {
   dataTestId?: string
-  topBarColor?: string
-  className?: string
   isInteractive?: boolean
   showAnimation?: boolean
   index?: number
+  builder: Builder
+  allocationInputProps: Omit<AllocationInputProps, 'onEdit'>
+  estimatedRewards?: TokenRewards
+  hasPendingTx?: boolean
+  onConnect?: () => void
 }
 
-export const BuilderCard: FC<BuilderCardProps> = ({
-  address,
-  builderName,
-  gauge,
-  proposal,
-  stateFlags,
-  isConnected,
-  existentAllocation,
-  maxAllocation,
-  allocation,
-  backerRewardPct,
-  rifPriceUsd,
+export const BuilderCard = ({
+  builder: { address, builderName, gauge, proposal, stateFlags, backerRewardPct },
+  allocationInputProps,
   estimatedRewards,
-  allocationTxPending,
-  onAllocationChange,
-  topBarColor = 'transparent',
   dataTestId = '',
   className,
   isInteractive,
   showAnimation,
   index,
-}) => {
-  const isRewardable = isBuilderRewardable(stateFlags)
-  const builderInactiveState = getBuilderInactiveState({ address, builderName, proposal, stateFlags, gauge })
+  onConnect,
+}: BuilderCardProps & CommonComponentProps): React.ReactElement => {
   const [editing, setEditing] = useState(false)
-  const router = useRouter()
-
+  const builderInactiveState = getBuilderInactiveState({ address, builderName, proposal, stateFlags, gauge })
+  const isRewardable = isBuilderRewardable(stateFlags)
   const builderPageLink = `/proposals/${proposal.id}`
-
-  useEffect(() => {
-    // do not disable editing if the allocation is the same as the on-chain one
-    if (allocation === existentAllocation && editing) {
-      return
-    }
-
-    setEditing(allocation !== existentAllocation && isConnected)
-  }, [allocation, existentAllocation, isConnected, editing])
 
   return (
     <WindshieldWiperAnimation
@@ -101,7 +82,12 @@ export const BuilderCard: FC<BuilderCardProps> = ({
       >
         <div
           className="absolute top-0 left-0 w-full h-[8px] rounded-t"
-          style={{ backgroundColor: topBarColor }}
+          style={{
+            backgroundColor:
+              allocationInputProps.updatedBackingState.builderBacking > 0n && !!address
+                ? getBuilderColor(address)
+                : 'transparent',
+          }}
           data-testid="builderCardTopBar"
         />
         <BuilderHeader
@@ -126,16 +112,10 @@ export const BuilderCard: FC<BuilderCardProps> = ({
             {isInteractive && (
               <div className="p-3">
                 <AllocationInput
-                  allocation={allocation}
-                  existentAllocation={existentAllocation}
-                  maxAllocation={maxAllocation}
-                  rifPriceUsd={rifPriceUsd}
-                  allocationTxPending={allocationTxPending}
-                  disabled={allocationTxPending || !isRewardable}
-                  onAllocationChange={onAllocationChange}
-                  editing={editing}
-                  setEditing={setEditing}
                   className="px-2 py-3"
+                  {...allocationInputProps}
+                  onEdit={setEditing}
+                  disabled={allocationInputProps.disabled || !isRewardable}
                 />
               </div>
             )}
@@ -147,7 +127,9 @@ export const BuilderCard: FC<BuilderCardProps> = ({
                   exit={{ opacity: 0, height: 0 }}
                   transition={{ duration: 0.3, ease: 'easeInOut' }}
                 >
-                  <CurrentBacking existentAllocation={existentAllocation} />
+                  <CurrentBacking
+                    existentAllocation={allocationInputProps.onchainBackingState.builderBacking}
+                  />
                 </motion.div>
               )}
             </AnimatePresence>
@@ -157,7 +139,7 @@ export const BuilderCard: FC<BuilderCardProps> = ({
           {isInteractive && (
             <Button
               variant="secondary-outline"
-              onClick={() => onAllocationChange(0n)}
+              onClick={() => allocationInputProps.updateBacking(0n)}
               data-testid="removeBackingButton"
             >
               Remove backing
@@ -167,9 +149,7 @@ export const BuilderCard: FC<BuilderCardProps> = ({
             <ConnectButton
               tooltipContent="Connect your wallet and get RIF before backing a Builder"
               data-testid="backBuilderButton"
-              onClick={() => {
-                isConnected && router.push(`/backing?builders=${address}`)
-              }}
+              onClick={onConnect}
             >
               Back builder
             </ConnectButton>

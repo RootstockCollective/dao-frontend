@@ -10,7 +10,7 @@ import {
 } from '@/app/proposals/shared/utils'
 import { Header, Paragraph, Span } from '@/components/Typography'
 import { config } from '@/config'
-import { RIF, RBTC, RIF_ADDRESS, USDRIF, USDRIF_ADDRESS } from '@/lib/constants'
+import { RIF, RBTC, RIF_ADDRESS, USDRIF, USDRIF_ADDRESS, TRIF, ENV } from '@/lib/constants'
 import { formatNumberWithCommas } from '@/lib/utils'
 import { useExecuteProposal } from '@/shared/hooks/useExecuteProposal'
 import { useQueueProposal } from '@/shared/hooks/useQueueProposal'
@@ -38,6 +38,7 @@ import { Vote } from '@/shared/types'
 import { executeTxFlow } from '@/shared/notification'
 import { useProposalById } from '../context'
 import { Eta, Proposal } from '../shared/types'
+import { Category } from '../components/category'
 
 export default function ProposalView() {
   const { id } = useParams<{ id: string }>() ?? {}
@@ -89,7 +90,7 @@ const renderStatusPath = (proposalState: ProposalState) => {
 
 // Utility to get token symbol from address (expandable)
 const tokenAddressToSymbol = {
-  [RIF_ADDRESS.toLowerCase()]: RIF,
+  [RIF_ADDRESS.toLowerCase()]: ENV === 'testnet' ? TRIF : RIF,
   [USDRIF_ADDRESS.toLowerCase()]: USDRIF,
   // Add more tokens here
 }
@@ -117,8 +118,8 @@ const parseProposalActionDetails = (
       const tokenAddress = typeof args[0] === 'string' ? args[0].toLowerCase() : ''
       const amount = typeof args[2] === 'bigint' ? args[2] : undefined
       const toAddress = typeof args[1] === 'string' ? args[1] : undefined
-      const symbol = tokenAddressToSymbol[tokenAddress] || tokenAddress
-      const price = prices[symbol]?.price ?? 0
+      const symbol = tokenAddressToSymbol[tokenAddress] || 'unknown symbol'
+      const price = prices?.[symbol]?.price || 0
 
       return {
         type: ProposalType.WITHDRAW,
@@ -150,8 +151,17 @@ const parseProposalActionDetails = (
 
 const PageWithProposal = (proposal: Proposal) => {
   const { address, isConnected } = useAccount()
-  const { proposalId, name, description, proposer, Starts, calldatasParsed, proposalDeadline, voteStart } =
-    proposal
+  const {
+    proposalId,
+    name,
+    description,
+    proposer,
+    Starts,
+    calldatasParsed,
+    proposalDeadline,
+    voteStart,
+    category,
+  } = proposal
   const [vote, setVote] = useGetVoteForSpecificProposal(address ?? zeroAddress, proposalId)
   const [isChoosingVote, setIsChoosingVote] = useState(false)
   const [votingTxIsPending, setVotingTxIsPending] = useState(false)
@@ -352,10 +362,18 @@ const PageWithProposal = (proposal: Proposal) => {
   const discourseLink = description ? getDiscourseLinkFromProposalDescription(description) : undefined
 
   return (
-    <div className="min-h-screen text-white px-4 py-8 flex flex-col gap-4 w-full max-w-full">
-      <Header variant="h1" className="text-3xl text-white">
-        {name}
-      </Header>
+    <div className="min-h-screen px-4 py-8 flex flex-col gap-4 w-full max-w-full">
+      <div className="flex items-center gap-4">
+        <Header variant="h3" className="text-2xl lg:text-3xl !leading-[0.9]">
+          {name}
+        </Header>
+        <div className="flex gap-2 items-end">
+          <Category className="mb-0.5" category={category} hasGradient />
+          <Paragraph variant="body-l" className="text-bg-0 !leading-none whitespace-nowrap">
+            {category}
+          </Paragraph>
+        </div>
+      </div>
       <div className="flex flex-row gap-2 w-full max-w-full mt-10">
         <div className="flex-1 flex flex-col min-w-0">
           <div className="bg-bg-80 p-6 flex flex-col gap-y-6">

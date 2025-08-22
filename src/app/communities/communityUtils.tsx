@@ -60,7 +60,7 @@ export const earlyAdoptersCommunity: CommunityItem = {
   ),
   specialPower: 'Voting Booster',
   activation: 'July 2025',
-  requirement: 'First 150 stakers with 1 stRIF, Self-Claim',
+  requirement: 'First 101 stakers with 1 stRIF, Self-Claim',
 }
 
 export const ogFounders: CommunityItem = {
