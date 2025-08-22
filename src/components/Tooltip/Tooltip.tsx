@@ -28,8 +28,8 @@ export function Tooltip({
 
   return (
     <RadixTooltip.Root delayDuration={delayDuration} open={open} onOpenChange={setOpen}>
-      <RadixTooltip.Trigger asChild>
-        <div onMouseEnter={() => setOpen(true)}>{children}</div>
+      <RadixTooltip.Trigger onMouseEnter={() => setOpen(true)} asChild>
+        {children}
       </RadixTooltip.Trigger>
       <RadixTooltip.Portal>
         <RadixTooltip.Content
