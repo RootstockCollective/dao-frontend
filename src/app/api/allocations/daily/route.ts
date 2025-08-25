@@ -2,12 +2,11 @@ import { NextResponse } from 'next/server'
 import { db } from '@/lib/db'
 import { paginateQuery } from '@/app/api/utils/paginateQuery'
 import { parsePaginationParams } from '@/app/api/utils/parsePaginationParams'
-
-const COLUMNS = ['id', 'day', 'totalAllocation']
+import { ALLOCATIONS_DAILY_COLUMNS } from '@/app/api/db/constants'
 
 export async function GET(req: Request) {
   try {
-    const paginationResult = parsePaginationParams(req.url || '', COLUMNS)
+    const paginationResult = parsePaginationParams(req.url || '', ALLOCATIONS_DAILY_COLUMNS)
 
     if (!paginationResult.success) {
       return NextResponse.json(
@@ -18,7 +17,7 @@ export async function GET(req: Request) {
 
     const { page, pageSize, sortDirection, sortBy } = paginationResult.data
 
-    const baseQuery = db('DailyAllocation').select(COLUMNS)
+    const baseQuery = db('DailyAllocation').select(ALLOCATIONS_DAILY_COLUMNS)
 
     const { data, count } = await paginateQuery(baseQuery, {
       page,

@@ -1,5 +1,15 @@
 import { MAX_PAGE_SIZE } from '@/lib/constants'
-import { DEFAULT_PAGE_NUMBER, DEFAULT_PAGE_SIZE, DEFAULT_SORT_DIRECTION } from './constants'
+import {
+  DEFAULT_PAGE_NUMBER,
+  DEFAULT_PAGE_SIZE,
+  DEFAULT_SORT_DIRECTION,
+  SORT_DIRECTION_ASC,
+  SORT_DIRECTION_DESC,
+  PAGE_PARAM_NAME,
+  PAGE_SIZE_PARAM_NAME,
+  SORT_DIRECTION_PARAM_NAME,
+  SORT_BY_PARAM_NAME,
+} from './constants'
 
 type ValidationError = {
   type: 'ValidationError'
@@ -7,8 +17,6 @@ type ValidationError = {
   statusCode: number
 }
 
-const SORT_DIRECTION_ASC = 'asc' as const
-const SORT_DIRECTION_DESC = 'desc' as const
 const SORT_DIRECTIONS = [SORT_DIRECTION_ASC, SORT_DIRECTION_DESC] as const
 type SortDirection = (typeof SORT_DIRECTIONS)[number]
 type PaginationParams = {
@@ -32,25 +40,25 @@ const paramConfigs: Record<
   }
 > = {
   page: {
-    name: 'page',
+    name: PAGE_PARAM_NAME,
     parse: v => parseInt(v ?? DEFAULT_PAGE_NUMBER, 10),
     validate: v => !isNaN(v) && v >= 1,
     errorMessage: 'Invalid page parameter',
   },
   pageSize: {
-    name: 'pageSize',
+    name: PAGE_SIZE_PARAM_NAME,
     parse: v => parseInt(v ?? DEFAULT_PAGE_SIZE, 10),
     validate: v => !isNaN(v) && v >= 1 && v <= MAX_PAGE_SIZE,
     errorMessage: 'Invalid pageSize parameter',
   },
   sortDirection: {
-    name: 'sortDirection',
+    name: SORT_DIRECTION_PARAM_NAME,
     parse: v => v ?? DEFAULT_SORT_DIRECTION,
     validate: v => SORT_DIRECTIONS.includes(v),
     errorMessage: 'Invalid sortDirection parameter',
   },
   sortBy: {
-    name: 'sortBy',
+    name: SORT_BY_PARAM_NAME,
     parse: v => v ?? undefined,
     // sortBy validation is handled separately
   },
@@ -58,10 +66,9 @@ const paramConfigs: Record<
 
 export function parsePaginationParams(url: string, allowedColumns?: string[]): PaginationResult {
   const { searchParams } = new URL(url)
-  const result: Partial<PaginationParams> = {}
+  const parsedParams: Partial<PaginationParams> = {}
 
-  for (const key of Object.keys(paramConfigs) as ParamKey[]) {
-    const config = paramConfigs[key]
+  for (const [key, config] of Object.entries(paramConfigs)) {
     const rawValue = searchParams.get(config.name)
     const parsed = config.parse(rawValue)
 
@@ -76,11 +83,11 @@ export function parsePaginationParams(url: string, allowedColumns?: string[]): P
       }
     }
 
-    result[key] = parsed
+    parsedParams[key as ParamKey] = parsed
   }
 
   // Extra validation for sortBy
-  if (result.sortBy && !allowedColumns?.includes(result.sortBy)) {
+  if (parsedParams.sortBy && !allowedColumns?.includes(parsedParams.sortBy)) {
     return {
       success: false,
       error: {
@@ -93,6 +100,6 @@ export function parsePaginationParams(url: string, allowedColumns?: string[]): P
 
   return {
     success: true,
-    data: result as PaginationParams,
+    data: parsedParams as PaginationParams,
   }
 }

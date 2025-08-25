@@ -1,11 +1,11 @@
 import type { Knex } from 'knex'
-import { CastType } from '../types'
+import { SORT_DIRECTION_ASC, SORT_DIRECTION_DESC } from './constants'
 
 interface PaginateOptions {
   page: number
   pageSize: number
   sortBy?: string
-  sortDirection?: 'asc' | 'desc'
+  sortDirection?: typeof SORT_DIRECTION_ASC | typeof SORT_DIRECTION_DESC
 }
 
 export async function paginateQuery<T extends Record<string, unknown>>(
