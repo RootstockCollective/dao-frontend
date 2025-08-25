@@ -1,13 +1,40 @@
 import { useMemo } from 'react'
 import { useBlockNumber } from 'wagmi'
-import { useQuery } from '@tanstack/react-query'
-import { getCachedProposals, ProposalGraphQLResponse } from '@/app/proposals/actions/proposalsAction'
+import { keepPreviousData, useQuery } from '@tanstack/react-query'
+import { useReadContracts } from 'wagmi'
 import { AVERAGE_BLOCKTIME } from '@/lib/constants'
 import Big from '@/lib/big'
-import { getProposalEventArguments, getProposalCategoryFromParsedData } from '@/app/proposals/shared/utils'
-import { Address, formatEther } from 'viem'
-import { ProposalState } from '@/shared/types'
+import { ProposalState, ProposalCategory } from '@/shared/types'
 import { Proposal } from '../shared/types'
+import { ProposalApiResponse } from '@/app/proposals/shared/types'
+import moment from 'moment'
+import { GovernorAbi } from '@/lib/abis/Governor'
+import { GOVERNOR_ADDRESS } from '@/lib/constants'
+import { formatEther } from 'viem'
+
+function proposalStateToRawState(proposalState: string): number {
+  const stateMap: Record<string, number> = {
+    Pending: ProposalState.Pending,
+    Active: ProposalState.Active,
+    Succeeded: ProposalState.Succeeded,
+    Defeated: ProposalState.Defeated,
+    Executed: ProposalState.Executed,
+    Canceled: ProposalState.Canceled,
+    Queued: ProposalState.Queued,
+    Expired: ProposalState.Expired,
+  }
+
+  return stateMap[proposalState] || ProposalState.Pending
+}
+
+async function fetchProposalsFromAPI(): Promise<ProposalApiResponse[]> {
+  console.log('fetching proposals from API')
+  const response = await fetch('/api/proposals/v1')
+  if (!response.ok) {
+    throw new Error(`Failed to fetch proposals: ${response.statusText}`)
+  }
+  return response.json()
+}
 
 export function useGetProposalsWithGraph() {
   const {
@@ -15,10 +42,85 @@ export function useGetProposalsWithGraph() {
     isLoading: proposalDataIsLoading,
     error: proposalsDataError,
   } = useQuery({
-    queryFn: () => getCachedProposals(),
+    queryFn: fetchProposalsFromAPI,
     queryKey: ['proposals'],
     refetchInterval: AVERAGE_BLOCKTIME,
   })
+
+  const proposalsFromNode = useMemo(
+    () =>
+      proposalsData?.filter(
+        proposal => !proposal.votes || !proposal.proposalState || !proposal.quorumAtSnapshot,
+      ) || [],
+    [proposalsData],
+  )
+
+  const { data: proposalVotes } = useReadContracts({
+    contracts:
+      proposalsFromNode.map(proposal => ({
+        address: GOVERNOR_ADDRESS,
+        abi: GovernorAbi,
+        functionName: 'proposalVotes',
+        args: [proposal.proposalId],
+      })) || [],
+    query: {
+      enabled: proposalsFromNode.length > 0,
+      staleTime: AVERAGE_BLOCKTIME,
+    },
+  }) as { data?: Array<{ status: string; result: bigint[] }> }
+
+  // @ts-ignore - Suppress "Type instantiation is excessively deep" error
+
+  const { data: quorum } = useReadContracts({
+    contracts:
+      proposalsFromNode.map(proposal => ({
+        address: GOVERNOR_ADDRESS,
+        abi: GovernorAbi,
+        functionName: 'quorum',
+        args: [proposal.blockNumber],
+      })) || [],
+    query: {
+      enabled: proposalsFromNode.length > 0,
+      staleTime: 24 * 60 * 60 * 1000,
+    },
+  }) as { data?: Array<{ status: string; result: bigint }> }
+
+  const { data: state } = useReadContracts({
+    contracts:
+      proposalsFromNode.map(proposal => ({
+        address: GOVERNOR_ADDRESS,
+        abi: GovernorAbi,
+        functionName: 'state',
+        args: [proposal.proposalId],
+      })) || [],
+    query: {
+      enabled: proposalsFromNode.length > 0,
+      staleTime: AVERAGE_BLOCKTIME,
+    },
+  }) as { data?: Array<{ status: string; result: bigint }> }
+
+  const blockchainData = useMemo(() => {
+    if (!proposalVotes || !quorum || !state || !proposalsFromNode) return []
+
+    return proposalsFromNode.map((proposal, index) => {
+      const votes = proposalVotes?.[index]?.result?.map(vote => Big(formatEther(vote)).round())
+      const againstVotes = Big(votes?.at(0) ?? 0)
+      const forVotes = Big(votes?.at(1) ?? 0)
+      const abstainVotes = Big(votes?.at(2) ?? 0)
+
+      return {
+        proposalId: proposal.proposalId,
+        votes: {
+          againstVotes,
+          forVotes,
+          abstainVotes,
+        },
+        quorum: Big(formatEther(quorum[index].result).toString()).round(undefined, Big.roundHalfEven),
+        rawState: Big(state?.[index].result?.toString() ?? 0).toNumber() as ProposalState,
+      }
+    })
+  }, [proposalVotes, quorum, state, proposalsFromNode])
+
   const { data: latestBlockNumber } = useBlockNumber({
     query: {
       refetchInterval: AVERAGE_BLOCKTIME,
@@ -29,9 +131,9 @@ export function useGetProposalsWithGraph() {
   const activeProposalCount = useMemo(() => {
     if (!proposalsData || !latestBlockNumber) return '0'
 
-    return proposalsData.proposals
+    return proposalsData
       .filter(
-        (proposal: ProposalGraphQLResponse) =>
+        (proposal: ProposalApiResponse) =>
           handleProposalState(proposal, latestBlockNumber) === ProposalState.Active,
       )
       .length.toString()
@@ -39,50 +141,48 @@ export function useGetProposalsWithGraph() {
 
   const totalProposalCount = useMemo(() => {
     if (!proposalsData) return '0'
-    return proposalsData.counters.find(e => e.id === 'proposals')?.count || '0'
+    return proposalsData.length.toString()
   }, [proposalsData])
 
   const activeProposals: Proposal[] = []
   const inactiveProposals: Proposal[] = []
 
-  const proposalResponse = proposalsData?.proposals.map(proposal => {
-    const againstVotes = Big(proposal.votesAgainst).div(Big('1e18')).round()
-    const forVotes = Big(proposal.votesFor).div(Big('1e18')).round()
-    const abstainVotes = Big(proposal.votesAbstains).div(Big('1e18')).round()
-    const deadlineBlock = Big(proposal.voteEnd)
-    const creationBlock = Number(proposal.createdAtBlock)
-    const eventArgs = getProposalEventArguments({
-      args: {
-        description: proposal.description,
-        proposalId: BigInt(proposal.proposalId),
-        proposer: proposal.proposer.id as Address,
-        targets: proposal.targets,
-        values: proposal.values.map(value => (value ? BigInt(value) : 0n)),
-        calldatas: proposal.calldatas,
-        voteStart: BigInt(proposal.voteStart),
-        voteEnd: BigInt(proposal.voteEnd),
-      },
-      timeStamp: proposal.createdAt,
-      blockNumber: proposal.createdAtBlock,
-    })
-    const { calldatasParsed } = eventArgs
-    const category = getProposalCategoryFromParsedData(calldatasParsed, proposal.description)
+  const proposalResponse = proposalsData?.map((proposal: ProposalApiResponse) => {
+    const blockchainInfo = blockchainData?.find(b => b.proposalId === proposal.proposalId)
 
-    const proposalData = {
-      ...proposal,
+    const votes = proposal.votes || blockchainInfo?.votes
+    const quorum = proposal.quorumAtSnapshot || blockchainInfo?.quorum
+    const rawState = blockchainInfo?.rawState
+
+    const againstVotes = Big(votes?.againstVotes || '0')
+    const forVotes = Big(votes?.forVotes || '0')
+    const abstainVotes = Big(votes?.abstainVotes || '0')
+    const deadlineBlock = Big(proposal.proposalDeadline || '0')
+
+    const blockNumberDecimal = proposal.blockNumber?.startsWith('0x')
+      ? parseInt(proposal.blockNumber, 16).toString()
+      : proposal.blockNumber
+
+    const proposalData: Proposal = {
       votes: {
         againstVotes,
         forVotes,
         abstainVotes,
-        quorum: forVotes.add(abstainVotes),
+        quorum: Big(quorum || '0'),
       },
-      blocksUntilClosure: deadlineBlock.minus(latestBlockNumber?.toString() || 0),
-      votingPeriod: deadlineBlock.minus(creationBlock),
-      quorumAtSnapshot: Big(formatEther(BigInt(proposal.quorum ?? 0n))).round(undefined, Big.roundHalfEven),
+      blocksUntilClosure: Big(proposal.proposalDeadline).minus(Big(latestBlockNumber?.toString() || '')),
+      votingPeriod: Big(proposal.votingPeriod || '0'),
+      quorumAtSnapshot: Big(quorum || '0'),
       proposalDeadline: deadlineBlock,
-      proposalState: handleProposalState(proposal, latestBlockNumber ?? 0n),
-      category,
-      ...eventArgs,
+      proposalState: handleProposalState(proposal, latestBlockNumber ?? 0n, rawState),
+      category: proposal.category as ProposalCategory,
+      name: proposal.name,
+      proposer: proposal.proposer,
+      description: proposal.description,
+      proposalId: proposal.proposalId,
+      Starts: moment(proposal.Starts),
+      calldatasParsed: proposal.calldatasParsed as any,
+      blockNumber: blockNumberDecimal,
     }
 
     if (proposalData.proposalState === ProposalState.Active) {
@@ -105,13 +205,22 @@ export function useGetProposalsWithGraph() {
   }
 }
 
-function handleProposalState(proposal: ProposalGraphQLResponse, blockNumber?: bigint): ProposalState {
+function handleProposalState(
+  proposal: ProposalApiResponse,
+  blockNumber?: bigint,
+  rawState?: number,
+): ProposalState {
+  if (rawState) {
+    return rawState as ProposalState
+  }
   if (!blockNumber) {
-    return proposal.rawState as ProposalState
+    return proposalStateToRawState(proposal.proposalState || 'Pending')
   }
-  if (proposal.rawState != ProposalState.Pending && proposal.rawState != ProposalState.Active) {
-    return proposal.rawState as ProposalState
+
+  if (!proposal.votes || !proposal.quorumAtSnapshot) {
+    return ProposalState.Pending
   }
+
   let block = Big(blockNumber.toString())
   if (Big(proposal.voteStart).gte(block)) {
     return ProposalState.Pending
@@ -120,8 +229,8 @@ function handleProposalState(proposal: ProposalGraphQLResponse, blockNumber?: bi
     return ProposalState.Active
   }
   if (
-    Big(proposal.quorum).gt(Big(proposal.votesFor)) ||
-    Big(proposal.votesAgainst).gt(Big(proposal.votesFor))
+    Big(proposal.quorumAtSnapshot).gt(Big(proposal.votes.forVotes)) ||
+    Big(proposal.votes.againstVotes).gt(Big(proposal.votes.forVotes))
   ) {
     return ProposalState.Defeated
   }

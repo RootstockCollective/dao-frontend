@@ -26,7 +26,7 @@ export const disclaimerModalText = {
 // Define route patterns and their components
 export const routePatterns = [
   { pattern: /^\/communities/, component: <HeaderTitle variant="h1">COMMUNITIES</HeaderTitle> },
-  { pattern: /^\/proposals\/\d+$/, component: <ProposalDetailTopLeftComponent /> },
+  // { pattern: /^\/proposals\/\d+$/, component: <ProposalDetailTopLeftComponent /> },
   { pattern: /^\/proposals$/, component: <HeaderTitle variant="h1">PROPOSALS</HeaderTitle> },
   { pattern: /^\/delegate$/, component: <HeaderTitle variant="h1">DELEGATION</HeaderTitle> },
   { pattern: /^\/treasury$/, component: <HeaderTitle variant="h1">TREASURY</HeaderTitle> },
