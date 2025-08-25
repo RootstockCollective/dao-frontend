@@ -107,7 +107,7 @@ const PageWithProposal = (proposal: Proposal) => {
   const actionName = calldatasParsed?.[0]?.type === 'decoded' ? calldatasParsed[0].functionName : undefined
 
   return (
-    <div className="min-h-screen px-4 py-8 flex flex-col gap-4 w-full max-w-full">
+    <div className="min-h-screen flex flex-col gap-4 w-full max-w-full">
       <div className="flex items-center gap-4">
         <Header variant="h3" className="text-2xl lg:text-3xl !leading-[0.9]">
           {name}
@@ -119,7 +119,7 @@ const PageWithProposal = (proposal: Proposal) => {
           </Paragraph>
         </div>
       </div>
-      <div className="flex flex-row gap-2 w-full max-w-full mt-10">
+      <div className="flex flex-row gap-2 w-full max-w-full mt-6">
         <div className="flex-1 flex flex-col min-w-0">
           <div className="bg-bg-80 p-6 flex flex-col gap-y-6">
             <ProposalProggressBar proposalState={voteOnProposalData.proposalState} />

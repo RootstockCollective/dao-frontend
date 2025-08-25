@@ -2,7 +2,7 @@
 
 import { HTMLAttributes } from 'react'
 import { FooterDesktop } from './footers/FooterDesktop'
-import { TopPageHeader } from '@/shared/walletConnection/components/topPageHeader/TopPageHeader'
+import { TopPageHeader } from '@/shared/walletConnection/components/topPageHeader'
 import { SidebarDesktop } from './sidebars/SidebarDesktop'
 import { HeaderDesktop } from './headers/HeaderDesktop'
 import { cn } from '@/lib/utils'

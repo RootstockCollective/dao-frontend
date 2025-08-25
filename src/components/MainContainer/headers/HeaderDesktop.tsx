@@ -4,7 +4,7 @@ import { UserConnectionManager } from '@/shared/walletConnection'
 import { cn } from '@/lib/utils'
 import { useLayoutContext } from '../LayoutProvider'
 import { Tooltip } from '@/components/Tooltip'
-import { Breadcrumbs } from '@/components/BreadcrumbsNew'
+import { Breadcrumbs } from '@/components/Breadcrumbs'
 
 export function HeaderDesktop({ className, ...props }: HTMLAttributes<HTMLDivElement>) {
   const { isSidebarOpen, toggleSidebar } = useLayoutContext()
