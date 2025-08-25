@@ -1,11 +1,12 @@
 import { AllocationsContext } from '@/app/collective-rewards/allocations/context'
 import { floorToUnit, getBuilderColor } from '@/app/shared/components/utils'
 import { useCallback, useContext, useEffect, useMemo, useState } from 'react'
-import { Address, formatEther, parseEther } from 'viem'
+import { Address } from 'viem'
 import AllocationBar from '../AllocationBar/AllocationBar'
 import { AllocationBarProps, AllocationChangeData, AllocationItem } from '../AllocationBar/types'
 
 const UNALLOCATED_KEY = 'unallocated'
+const UNALLOCATED_LABEL = 'Available backing'
 
 const BuilderAllocationBar = ({ barOverrides }: { barOverrides?: Partial<AllocationBarProps> }) => {
   const {
@@ -60,7 +61,7 @@ const BuilderAllocationBar = ({ barOverrides }: { barOverrides?: Partial<Allocat
         if (key === UNALLOCATED_KEY) {
           return {
             key: UNALLOCATED_KEY,
-            label: 'available backing',
+            label: UNALLOCATED_LABEL,
             value: unallocated,
             displayColor: 'var(--background-40)',
           }
@@ -124,8 +125,8 @@ const BuilderAllocationBar = ({ barOverrides }: { barOverrides?: Partial<Allocat
       <AllocationBar
         itemsData={[
           {
-            key: 'unallocated',
-            label: 'available backing',
+            key: UNALLOCATED_KEY,
+            label: UNALLOCATED_LABEL,
             value: 1n,
             initialValue: 1n,
             displayColor: 'var(--background-60)',

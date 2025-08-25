@@ -24,7 +24,7 @@ export const AllocationBarTooltipContent = ({
     <div className="w-[230px] p-4">
       <div className="inline-flex items-center gap-1">
         <BaseTypography variant="tag-s">
-          {isUnallocated ? 'Unallocated' : shortAddress(builderAddress as Address)}
+          {isUnallocated ? 'Available' : shortAddress(builderAddress as Address)}
         </BaseTypography>
         {percentage && (
           <BaseTypography variant="tag-s" className="font-light">
@@ -46,7 +46,7 @@ export const AllocationBarTooltipContent = ({
         )}
         <div className="flex justify-between items-center text-secondary gap-5">
           <BaseTypography variant="body-s">
-            {isUnallocated ? 'Unallocated backing' : 'Current backing'}
+            {isUnallocated ? 'Available backing' : 'Current backing'}
           </BaseTypography>
           <BaseTypography variant="body" className="text-lg">
             {formatSymbol(currentBacking, STRIF)}
