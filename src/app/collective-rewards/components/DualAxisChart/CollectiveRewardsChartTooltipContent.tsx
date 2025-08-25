@@ -6,7 +6,7 @@ import { BaseTypography } from '@/components/Typography/Typography'
 import { formatSymbol } from '@/app/collective-rewards/rewards/utils'
 import { Span } from '@/components/Typography/Span'
 
-export const ChartTooltipContent = ({ active, payload, label }: any) => {
+export const CollectiveRewardsChartTooltipContent = ({ active, payload, label }: any) => {
   if (!active || !payload?.length) return null
   const d = payload[0]?.payload?.day as Date
   const backingVal = 13320000000000000000000n

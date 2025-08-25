@@ -12,10 +12,10 @@ import {
   ReferenceLine,
   CartesianGrid,
 } from 'recharts'
-import { ChartTooltipContent } from './ChartTooltipContent'
 import { BackingPoint, CycleWindow, RewardsPoint } from '@/app/collective-rewards/types'
 import { convertToTimestamp, formatShort } from '@/app/collective-rewards/utils/chartUtils'
 import { useMergedSeries } from '@/app/collective-rewards/shared/hooks/useMergeSeries'
+import { CollectiveRewardsChartTooltipContent } from './CollectiveRewardsChartTooltipContent'
 
 interface DualAxisChartProps {
   backingSeries: BackingPoint[]
@@ -129,7 +129,7 @@ export function CollectiveRewardsDualAxisChart({
             className="font-rootstock-sans text-sm"
           />
 
-          <Tooltip content={<ChartTooltipContent />} wrapperStyle={{ outline: 'none' }} />
+          <Tooltip content={<CollectiveRewardsChartTooltipContent />} wrapperStyle={{ outline: 'none' }} />
 
           <Area
             type="monotone"
