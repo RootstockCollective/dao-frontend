@@ -1,1 +1,1 @@
-export * from './DualAxisChart'
+export * from './CollectiveRewardsDualAxisChart'

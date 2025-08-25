@@ -31,7 +31,7 @@ interface DualAxisChartProps {
   stackRewards?: boolean
 }
 
-export function DualAxisChart({
+export function CollectiveRewardsDualAxisChart({
   backingSeries,
   rewardsSeries,
   colors = {

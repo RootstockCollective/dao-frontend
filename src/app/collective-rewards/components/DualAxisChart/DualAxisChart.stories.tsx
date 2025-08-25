@@ -1,6 +1,6 @@
 import { Meta, StoryObj } from '@storybook/nextjs'
 import { BackingPoint, CycleWindow, RewardsPoint } from '@/app/collective-rewards/types'
-import { DualAxisChart } from './DualAxisChart'
+import { CollectiveRewardsDualAxisChart } from './CollectiveRewardsDualAxisChart'
 
 // Mock data generation function
 function generateMockData() {
@@ -69,9 +69,9 @@ function generateMockData() {
   return { backingSeries, rewardsSeries, cycles }
 }
 
-const meta: Meta<typeof DualAxisChart> = {
+const meta: Meta<typeof CollectiveRewardsDualAxisChart> = {
   title: 'Collective Rewards/DualAxisChart',
-  component: DualAxisChart,
+  component: CollectiveRewardsDualAxisChart,
   parameters: {
     layout: 'fullscreen',
     backgrounds: {
@@ -92,7 +92,7 @@ const meta: Meta<typeof DualAxisChart> = {
 
 export default meta
 
-type Story = StoryObj<typeof DualAxisChart>
+type Story = StoryObj<typeof CollectiveRewardsDualAxisChart>
 
 export const Default: Story = {
   render: () => {
@@ -103,7 +103,7 @@ export const Default: Story = {
         <div className="max-w-6xl mx-auto">
           <h1 className="text-2xl font-bold text-white mb-6">Dual Axis Chart with Mock Data</h1>
           <div className="p-6 pt-10 text-white rounded-2xl">
-            <DualAxisChart
+            <CollectiveRewardsDualAxisChart
               backingSeries={backingSeries}
               rewardsSeries={rewardsSeries}
               cycles={cycles}
@@ -130,7 +130,7 @@ export const Compact: Story = {
       <div className="bg-gray-900 p-4">
         <div className="max-w-4xl mx-auto">
           <div className="p-6 pt-10 text-white rounded-2xl">
-            <DualAxisChart
+            <CollectiveRewardsDualAxisChart
               backingSeries={backingSeries}
               rewardsSeries={rewardsSeries}
               cycles={cycles}
@@ -174,7 +174,7 @@ export const WithDescription: Story = {
             </div>
           </div>
           <div className="p-6 pt-10 text-white rounded-2xl">
-            <DualAxisChart
+            <CollectiveRewardsDualAxisChart
               backingSeries={backingSeries}
               rewardsSeries={rewardsSeries}
               cycles={cycles}
@@ -223,7 +223,7 @@ export const SingleCycle: Story = {
         <div className="max-w-4xl mx-auto">
           <h2 className="text-xl font-bold text-white mb-4">Single Cycle View</h2>
           <div className="p-6 pt-10 text-white rounded-2xl">
-            <DualAxisChart
+            <CollectiveRewardsDualAxisChart
               backingSeries={backingSeries}
               rewardsSeries={rewardsSeries}
               cycles={cycles}
@@ -283,7 +283,7 @@ export const ManyCycles: Story = {
         <div className="max-w-6xl mx-auto">
           <h2 className="text-xl font-bold text-white mb-4">Many Cycles (2 Years)</h2>
           <div className="p-6 pt-10 text-white rounded-2xl">
-            <DualAxisChart
+            <CollectiveRewardsDualAxisChart
               backingSeries={backingSeries}
               rewardsSeries={rewardsSeries}
               cycles={cycles}
@@ -311,7 +311,7 @@ export const CustomColors: Story = {
         <div className="max-w-4xl mx-auto">
           <h2 className="text-xl font-bold text-white mb-4">Custom Color Scheme</h2>
           <div className="p-6 pt-10 text-white rounded-2xl">
-            <DualAxisChart
+            <CollectiveRewardsDualAxisChart
               backingSeries={backingSeries}
               rewardsSeries={rewardsSeries}
               cycles={cycles}
@@ -339,7 +339,7 @@ export const SmallHeight: Story = {
         <div className="max-w-4xl mx-auto">
           <h2 className="text-xl font-bold text-white mb-4">Compact Height (250px)</h2>
           <div className="p-6 pt-10 text-white rounded-2xl">
-            <DualAxisChart
+            <CollectiveRewardsDualAxisChart
               backingSeries={backingSeries}
               rewardsSeries={rewardsSeries}
               cycles={cycles}
