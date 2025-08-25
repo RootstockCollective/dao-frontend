@@ -2,9 +2,14 @@ import { NextResponse } from 'next/server'
 import { type HealthCheckType, runHealthCheck } from './healthCheck'
 import { WrongHealthCheckTypeError } from './healthCheck.errors'
 
-export async function GET(_: Request, { params }: { params: Promise<{ type?: HealthCheckType }> }) {
+export async function GET(
+  _: Request,
+  { params }: { params: Promise<{ type?: HealthCheckType; args?: unknown[] }> },
+) {
   const healthCheckType: HealthCheckType = (await params)?.type ?? 'all'
-  return runHealthCheck(healthCheckType)
+  const healthCheckArgs = (await params)?.args ?? []
+
+  return runHealthCheck(healthCheckType, ...healthCheckArgs)
     .then(result => NextResponse.json(result, { status: 200 }))
     .catch(err => {
       if (err instanceof WrongHealthCheckTypeError) {

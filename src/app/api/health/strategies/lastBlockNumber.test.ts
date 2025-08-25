@@ -3,7 +3,7 @@ import { db } from '@/lib/db'
 import mockKnex from 'mock-knex'
 import { afterAll, afterEach, beforeAll, describe, expect, it, vi } from 'vitest'
 import { getBlockNumber } from 'wagmi/actions'
-import { _lastBlockNumber } from './healthCheck.utils'
+import { _lastBlockNumber } from './lastBlockNumber'
 
 vi.mock('wagmi/actions', () => ({
   getBlockNumber: vi.fn(),
@@ -47,7 +47,7 @@ describe('_lastBlockNumber health check', {}, () => {
     getBlockNumberMock.mockResolvedValue(latestBlockNumberOnChain)
 
     tracker.once('query', ({ response }) => {
-      const tooOld = latestBlockNumberOnChain - BigInt(STATE_SYNC_BLOCK_STALENESS_THRESHOLD) - 10n
+      const tooOld = latestBlockNumberOnChain - BigInt(STATE_SYNC_BLOCK_STALENESS_THRESHOLD) - 1n
       response([{ blockNumber: tooOld.toString() }])
     })
 
