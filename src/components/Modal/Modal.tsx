@@ -3,7 +3,7 @@
 import { cn } from '@/lib/utils'
 import { FC, ReactNode } from 'react'
 import { createPortal } from 'react-dom'
-import { CloseIcon } from '../Icons'
+import { CloseIconKoto } from '../Icons'
 
 export interface ModalProps {
   children: ReactNode
@@ -50,7 +50,7 @@ export const Modal: FC<ModalProps> = ({
       >
         {/* Close Button */}
         <button onClick={onClose} className="absolute top-4 right-4 z-10" data-testid="CloseButton">
-          <CloseIcon size={24} aria-label="Close" color={closeButtonColor} />
+          <CloseIconKoto size={24} aria-label="Close" color={closeButtonColor} />
         </button>
 
         {children}
