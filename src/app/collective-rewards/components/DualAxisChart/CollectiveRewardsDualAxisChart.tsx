@@ -17,6 +17,66 @@ import { convertToTimestamp, formatShort } from '@/app/collective-rewards/utils/
 import { useMergedSeries } from '@/app/collective-rewards/shared/hooks/useMergeSeries'
 import { CollectiveRewardsChartTooltipContent } from './CollectiveRewardsChartTooltipContent'
 
+/**
+ * Custom cursor component that draws a vertical line from the X-axis to the backing data point.
+ * Created because Recharts' default cursor goes full height.
+ * Calculates the backing Y position using the actual data value and chart scale.
+ * Also renders active dots with higher z-index to appear above the line.
+ */
+interface CustomCursorProps {
+  points?: Array<{ x: number; y: number }>
+  top?: number
+  height?: number
+  payload?: Array<{ dataKey: string; value: number; color?: string }>
+  backingMaxDomain: number
+  rewardsMaxDomain: number
+}
+
+const CustomCursor = (props: CustomCursorProps) => {
+  const { points, top, height, payload, backingMaxDomain, rewardsMaxDomain } = props
+  if (!points || points.length < 2 || !top || !height || !payload) return null
+
+  const x = points[0].x
+  const chartBottom = top + height
+
+  const backingValue = payload[0]?.value || 0
+  const valueRatio = backingValue / backingMaxDomain
+  const backingY = chartBottom - valueRatio * height
+
+  return (
+    <g style={{ pointerEvents: 'none' }}>
+      <line x1={x} y1={chartBottom} x2={x} y2={backingY} stroke="black" strokeOpacity={0.6} strokeWidth={1} />
+
+      {/* Active dots with higher z-index */}
+      {payload.map((payloadItem, index) => {
+        if (!payloadItem) return null
+
+        let calculatedY: number
+        if (payloadItem.dataKey === 'backing') {
+          const ratio = payloadItem.value / backingMaxDomain
+          calculatedY = chartBottom - ratio * height
+        } else {
+          const ratio = payloadItem.value / rewardsMaxDomain
+          calculatedY = chartBottom - ratio * height
+        }
+
+        return (
+          <circle
+            key={`active-dot-${index}`}
+            cx={x}
+            cy={calculatedY}
+            r={8}
+            fill={payloadItem.color}
+            stroke="var(--background-100)"
+            strokeWidth={6}
+            style={{ zIndex: 1000 }}
+          />
+        )
+      })}
+    </g>
+  )
+}
+
 interface DualAxisChartProps {
   backingSeries: BackingPoint[]
   rewardsSeries: RewardsPoint[]
@@ -44,6 +104,12 @@ export function CollectiveRewardsDualAxisChart({
   height = 420,
 }: DualAxisChartProps) {
   const data = useMergedSeries(backingSeries, rewardsSeries)
+
+  const backingMaxDomain = useMemo(() => {
+    if (!data.length) return 100
+    const maxBacking = Math.max(...data.map(d => d.backing || 0))
+    return maxBacking * 1.1 // 10% buffer for the cursor dot to work as expected
+  }, [data])
 
   const rewardsMaxDomain = useMemo<[number, number]>(() => {
     if (!data.length) return [0, 100]
@@ -106,7 +172,7 @@ export function CollectiveRewardsDualAxisChart({
               fill: '#7C89F5',
               fontSize: 12,
             }}
-            domain={[0, 'auto']}
+            domain={[0, backingMaxDomain]}
             className="font-rootstock-sans text-sm"
           />
 
@@ -129,8 +195,6 @@ export function CollectiveRewardsDualAxisChart({
             className="font-rootstock-sans text-sm"
           />
 
-          <Tooltip content={<CollectiveRewardsChartTooltipContent />} wrapperStyle={{ outline: 'none' }} />
-
           <Area
             type="monotone"
             yAxisId="left"
@@ -140,7 +204,7 @@ export function CollectiveRewardsDualAxisChart({
             strokeWidth={2}
             fillOpacity={1}
             dot={false}
-            activeDot={{ r: 6 }}
+            activeDot={false}
           />
 
           <Area
@@ -152,7 +216,7 @@ export function CollectiveRewardsDualAxisChart({
             strokeWidth={2}
             fillOpacity={1}
             dot={false}
-            activeDot={{ r: 6 }}
+            activeDot={false}
           />
 
           <CartesianGrid fill="var(--background-40)" fillOpacity={0.1} stroke="transparent" />
@@ -190,6 +254,16 @@ export function CollectiveRewardsDualAxisChart({
               }}
             />
           ))}
+
+          <Tooltip
+            content={<CollectiveRewardsChartTooltipContent />}
+            wrapperStyle={{ outline: 'none' }}
+            offset={15}
+            cursor={
+              <CustomCursor backingMaxDomain={backingMaxDomain} rewardsMaxDomain={rewardsMaxDomain[1]} />
+            }
+            trigger="hover"
+          />
         </AreaChart>
       </ResponsiveContainer>
     </div>

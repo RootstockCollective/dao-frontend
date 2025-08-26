@@ -64,41 +64,48 @@ export const CollectiveRewardsChartTooltipContent = ({
           >
             <Paragraph className="font-kk-topo text-bg-100 text-xl">{day}</Paragraph>
           </Metric>
+
+          <div className="flex items-start gap-2">
+            <div className="size-3 mt-1.5 rounded-full bg-v3-rif-blue" />
+            <Metric
+              title={
+                <BaseTypography variant="tag" className="text-bg-40">
+                  Total Backing
+                </BaseTypography>
+              }
+              className="w-auto text-bg-40 whitespace-nowrap"
+              containerClassName="gap-1"
+            >
+              <div className="flex items-center gap-2 text-bg-100">
+                <Paragraph className="text-xl font-kk-topo">{formatSymbol(backingVal, 'StRIF')}</Paragraph>
+                <TokenImage symbol={TokenSymbol.STRIF} size={16} />
+                <Span variant="tag-s" className="">
+                  {TokenSymbol.STRIF}
+                </Span>
+              </div>
+            </Metric>
+          </div>
+        </div>
+
+        <div className="flex items-start gap-2">
+          <div className="size-3 rounded-full mt-1.5 bg-brand-rootstock-lime border-[1px] border-bg-100" />
           <Metric
             title={
               <BaseTypography variant="tag" className="text-bg-40">
-                Total Backing
+                Rewards distributed this cycle
               </BaseTypography>
             }
             className="w-auto text-bg-40 whitespace-nowrap"
             containerClassName="gap-1"
           >
-            <div className="flex items-center gap-2 text-bg-100">
-              <Paragraph className="text-xl font-kk-topo">{formatSymbol(backingVal, 'StRIF')}</Paragraph>
-              <TokenImage symbol={TokenSymbol.STRIF} size={16} />
-              <Span variant="tag-s" className="">
-                {TokenSymbol.STRIF}
+            <div className="flex items-end gap-2 text-bg-100">
+              <Paragraph className="text-xl font-kk-topo">{formatSymbol(rewardsUsd, 'USD')}</Paragraph>
+              <Span variant="tag-s" className="font-bold mb-0.5">
+                USD
               </Span>
             </div>
           </Metric>
         </div>
-
-        <Metric
-          title={
-            <BaseTypography variant="tag" className="text-bg-40">
-              Rewards distributed this cycle
-            </BaseTypography>
-          }
-          className="w-auto text-bg-40 whitespace-nowrap"
-          containerClassName="gap-1"
-        >
-          <div className="flex items-end gap-2 text-bg-100">
-            <Paragraph className="text-xl font-kk-topo">{formatSymbol(rewardsUsd, 'USD')}</Paragraph>
-            <Span variant="tag-s" className="font-bold mb-0.5">
-              USD
-            </Span>
-          </div>
-        </Metric>
       </div>
     </div>
   )
