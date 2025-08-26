@@ -13,10 +13,10 @@ const GLASS_STYLE =
 interface Props {
   tokenStatus: IntroModalStatus
   isDesktop: boolean
-  rbtcBalance?: string
-  rifBalance?: string
   onClose: () => void
   onContinue: (url: string, external: boolean) => void
+  rbtcBalance?: string
+  rifBalance?: string
 }
 
 export const IntroModalContent = ({
