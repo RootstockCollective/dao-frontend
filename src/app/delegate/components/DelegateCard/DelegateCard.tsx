@@ -39,7 +39,8 @@ export const DelegateCard: React.FC<DelegateCardProps> = ({
   return (
     <div
       className={cn(
-        'rounded bg-bg-60 px-2 pb-6 flex flex-col items-center relative min-w-[220px]',
+        'rounded bg-bg-60 px-4 pb-6 flex flex-col items-center relative',
+        'w-full md:min-w-[220px]',
         className,
       )}
       data-testid={`delegateCardContainer-${address}`}
