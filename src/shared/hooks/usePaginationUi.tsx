@@ -41,6 +41,7 @@ export function usePaginationUi<T>(
           direction="prev"
           onClick={previousTablePage}
           disabled={tablePage === 0 || isLoading}
+          data-testid="PaginationPrev"
         />
         <PaginationPageNumbers
           goToPage={goToTablePage}
@@ -55,6 +56,7 @@ export function usePaginationUi<T>(
           direction="next"
           onClick={nextTablePage}
           disabled={tablePage === totalPages - 1 || isLoading}
+          data-testid="PaginationNext"
         />
       </div>
     )

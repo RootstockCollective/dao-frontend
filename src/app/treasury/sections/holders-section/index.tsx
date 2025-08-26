@@ -118,9 +118,9 @@ export const HoldersSection = () => {
       {!isError && holders?.length > 0 && (
         <>
           {!isGridMode ? (
-            <GridTable table={table} className="mt-8" rowStyles="py-2" />
+            <GridTable table={table} className="mt-8" rowStyles="py-2" data-testid="HoldersTable" />
           ) : (
-            <div className="grid gap-2 grid-cols-4 mt-8">
+            <div className="grid gap-2 grid-cols-4 mt-8" data-testid="HoldersGrid">
               {holders.map(h => (
                 <HolderCard
                   key={h.holder.address}
