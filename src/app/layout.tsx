@@ -18,6 +18,7 @@ const openSans = Open_Sans({
 export const metadata: Metadata = {
   title: 'RootstockCollective',
   description: 'RootstockCollective DAO dApp',
+  viewport: 'width=device-width, initial-scale=1',
 }
 
 interface Props {

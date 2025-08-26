@@ -32,6 +32,12 @@
   box-sizing: border-box;
 }
 
+html,
+body {
+  overflow-x: hidden;
+  max-width: 100vw;
+}
+
 body {
   color: var(--text-primary);
   background-color: var(--l-black);
