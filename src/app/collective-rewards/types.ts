@@ -64,7 +64,7 @@ export type StateWithUpdate<T> = {
 
 export type BackingPoint = {
   day: Date | number | string
-  backing: number | bigint
+  backing: bigint
 }
 
 export type RewardsPoint = {
@@ -80,4 +80,20 @@ export type CycleWindow = {
   label: string
   start: Date | number | string
   end: Date | number | string
+}
+
+interface ChartDataPoint {
+  day: Date
+  backing?: bigint
+  rewardsUSD?: bigint
+  rewardsRif?: bigint
+  rewardsRbtc?: bigint
+}
+
+export interface TooltipPayload {
+  payload: ChartDataPoint
+  value: number
+  name: string
+  color: string
+  dataKey: string
 }

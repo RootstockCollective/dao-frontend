@@ -45,7 +45,7 @@ function generateMockData() {
     const backing = Math.max(candidate, prevBacking + 50_000)
     prevBacking = backing
 
-    backingSeries.push({ day, backing })
+    backingSeries.push({ day, backing: BigInt(backing) })
   }
 
   const rewardsSeries: RewardsPoint[] = backingSeries.map(({ day, backing }, i) => {
@@ -210,7 +210,7 @@ export const SingleCycle: Story = {
     for (let i = 0; i < days; i++) {
       const day = new Date(start + i * 24 * 3600 * 1000)
       const backing = 400_000_000 + i * 1_000_000 + Math.sin(i / 10) * 5_000_000
-      backingSeries.push({ day, backing })
+      backingSeries.push({ day, backing: BigInt(backing) })
     }
 
     const rewardsSeries: RewardsPoint[] = backingSeries.map(({ day }, i) => ({
@@ -266,7 +266,7 @@ export const ManyCycles: Story = {
       const growth = prevBacking * 0.0005 // 0.05% daily growth
       const backing = prevBacking + growth + Math.sin(i / 30) * 10_000_000
       prevBacking = backing
-      backingSeries.push({ day, backing })
+      backingSeries.push({ day, backing: BigInt(backing) })
     }
 
     const rewardsSeries: RewardsPoint[] = backingSeries.map(({ day, backing }, i) => ({
