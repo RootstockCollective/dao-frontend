@@ -104,7 +104,7 @@ export const DelegatesContainer = ({
   const isAddressInvalid = addressToDelegate.status === 'invalid'
 
   return (
-    <div className="bg-bg-80 mt-[8px] p-[24px]">
+    <div className="bg-bg-80 mt-2 p-6 md:p-6">
       <div className="mb-[10px] flex flex-col items-center">
         {!didIDelegateToMyself && (
           <CloseIconKoto
@@ -145,7 +145,7 @@ export const DelegatesContainer = ({
         </div>
         <Span>or select one of the delegates vetted by the community</Span>
       </div>
-      <div className="flex flex-row flex-wrap gap-[8px] justify-center mt-6">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-2 mt-6">
         {delegates.map(delegate => (
           <DelegateCard
             key={delegate.address}
