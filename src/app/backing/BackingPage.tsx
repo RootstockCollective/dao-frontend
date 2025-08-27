@@ -111,7 +111,6 @@ export const BackingPage = () => {
 
   const { randomBuilders } = useBuilderContext()
   const { prices } = usePricesContext()
-  const router = useRouter()
 
   const availableForBacking = balance - cumulativeAllocation
   const availableBackingUSD = useMemo(() => {

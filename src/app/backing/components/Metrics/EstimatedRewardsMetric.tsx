@@ -16,11 +16,11 @@ export const EstimatedRewardsMetric = () => {
   const { totalEstimatedRif, totalEstimatedRbtc, totalEstimatedUsd } = estimatedRewards.reduce(
     (acc: { totalEstimatedRif: bigint; totalEstimatedRbtc: bigint; totalEstimatedUsd: Big }, builder) => {
       return {
-        totalEstimatedRif: acc.totalEstimatedRif + builder.backerEstimatedRewards.rif.amount.value,
-        totalEstimatedRbtc: acc.totalEstimatedRbtc + builder.backerEstimatedRewards.rbtc.amount.value,
+        totalEstimatedRif: acc.totalEstimatedRif + builder.backersEstimatedRewards.rif.amount.value,
+        totalEstimatedRbtc: acc.totalEstimatedRbtc + builder.backersEstimatedRewards.rbtc.amount.value,
         totalEstimatedUsd: acc.totalEstimatedUsd
-          .add(getFiatAmount(builder.backerEstimatedRewards.rif.amount))
-          .add(getFiatAmount(builder.backerEstimatedRewards.rbtc.amount)),
+          .add(getFiatAmount(builder.backersEstimatedRewards.rif.amount))
+          .add(getFiatAmount(builder.backersEstimatedRewards.rbtc.amount)),
       }
     },
     { totalEstimatedRif: 0n, totalEstimatedRbtc: 0n, totalEstimatedUsd: Big(0) },
