@@ -3,13 +3,13 @@ import { useBuilderContext } from '@/app/collective-rewards/user/context/Builder
 import { useHandleErrors } from '@/app/collective-rewards/utils'
 import { BackMoreBuildersCard, BuilderCardControl } from '@/app/shared/components/BuilderCard'
 import { BuildersSpotlight } from '@/app/shared/components/BuildersSpotlight'
-import { useGetBuilderEstimatedRewards } from '@/app/shared/hooks/useGetBuilderEstimatedRewards'
 import { Button } from '@/components/Button'
 import { LoadingSpinner } from '@/components/LoadingSpinner'
 import { useRouter, useSearchParams } from 'next/navigation'
 import { useCallback, useContext, useEffect, useMemo } from 'react'
 import { Address } from 'viem'
 import { useAccount } from 'wagmi'
+import { useBackingContext } from '../../../shared/context/BackingContext'
 
 export const Spotlight = ({ isInteractive = true }: { isInteractive?: boolean }) => {
   const router = useRouter()
@@ -26,9 +26,16 @@ export const Spotlight = ({ isInteractive = true }: { isInteractive?: boolean })
 
   const { randomBuilders } = useBuilderContext()
 
-  const { data: estimatedBuilders, isLoading, error } = useGetBuilderEstimatedRewards()
+  const {
+    data: backingData,
+    isLoading: isBackingDataLoading,
+    error: isBackingDataError,
+  } = useBackingContext()
 
-  useHandleErrors({ error, title: 'Error loading builder estimated rewards' })
+  const isLoading = isBackingDataLoading
+  const error = isBackingDataError
+
+  useHandleErrors({ error, title: 'Error loading backing data' })
 
   const userSelections = useMemo(() => searchParams.get('builders')?.split(',') as Address[], [searchParams])
 
@@ -72,10 +79,10 @@ export const Spotlight = ({ isInteractive = true }: { isInteractive?: boolean })
     return (
       sortedAddresses
         // this is inefficient, but it's the only way to get the builders in the order we want
-        .map(address => estimatedBuilders.find(b => b.address === address))
+        .map(address => backingData.find(b => b.address === address))
         .filter(builder => !!builder)
     )
-  }, [estimatedBuilders, hasAllocations, allocations, getBuilder, randomBuilders, userSelections])
+  }, [backingData, hasAllocations, allocations, getBuilder, randomBuilders, userSelections])
 
   const isBuilderSelected = useCallback(
     (builderAddress: Address) => {
