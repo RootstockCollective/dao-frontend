@@ -8,11 +8,6 @@ import { TOKENS } from '@/lib/tokens'
 import { usePricesContext } from '@/shared/context/PricesContext'
 import { useReadBackersManager, useReadGauges } from '@/shared/hooks/contracts'
 import { useMemo } from 'react'
-import { Address } from 'viem'
-
-type BuilderEstimatedRewardsWithGauges = Required<BuilderEstimatedRewards> & {
-  gauge: Address
-}
 
 export const useGetBuilderEstimatedRewards = (currency = USD) => {
   const { rif, rbtc } = TOKENS
@@ -44,7 +39,7 @@ export const useGetBuilderEstimatedRewards = (currency = USD) => {
   } = useGetCycleRewards()
 
   const { prices } = usePricesContext()
-  const estimatedRewards: BuilderEstimatedRewardsWithGauges[] = useMemo(() => {
+  const estimatedRewards: BuilderEstimatedRewards[] = useMemo(() => {
     const rifAmount = cycleRewards?.rif ?? 0n
     const rbtcAmount = cycleRewards?.rbtc ?? 0n
     const rifPrice = prices[RIF]?.price ?? 0
@@ -60,21 +55,22 @@ export const useGetBuilderEstimatedRewards = (currency = USD) => {
           ? (builderRewardShares * (WeiPerEther - rewardPercentageToApply)) / totalPotentialRewards
           : 0n
 
-      const backerEstimatedRewardsPct =
+      const backersEstimatedRewardsPct =
         totalPotentialRewards && isRewarded
           ? (builderRewardShares * rewardPercentageToApply) / totalPotentialRewards
           : 0n
 
       const builderRifEstimatedRewards = (builderEstimatedRewardsPct * rifAmount) / WeiPerEther
       const builderRbtcEstimatedRewards = (builderEstimatedRewardsPct * rbtcAmount) / WeiPerEther
-      const backerRifEstimatedRewards = (backerEstimatedRewardsPct * rifAmount) / WeiPerEther
-      const backerRbtcEstimatedRewards = (backerEstimatedRewardsPct * rbtcAmount) / WeiPerEther
+      const backerRifEstimatedRewards = (backersEstimatedRewardsPct * rifAmount) / WeiPerEther
+      const backerRbtcEstimatedRewards = (backersEstimatedRewardsPct * rbtcAmount) / WeiPerEther
 
       return {
         ...builder,
+        rewardShares: builderRewardShares,
         builderEstimatedRewardsPct,
-        backerEstimatedRewardsPct,
-        backerEstimatedRewards: {
+        backersEstimatedRewardsPct,
+        backersEstimatedRewards: {
           rif: {
             amount: {
               value: backerRifEstimatedRewards,
