@@ -32,10 +32,13 @@
   box-sizing: border-box;
 }
 
-html,
-body {
-  overflow-x: hidden;
-  max-width: 100vw;
+/* Mobile-specific horizontal scroll prevention */
+@media (max-width: 768px) {
+  html,
+  body {
+    overflow-x: hidden;
+    max-width: 100vw;
+  }
 }
 
 body {
