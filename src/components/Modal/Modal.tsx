@@ -26,25 +26,27 @@ export const Modal: FC<ModalProps> = ({
 }) => {
   return createPortal(
     <div
-      className="fixed inset-0 flex items-center justify-center align-center z-50"
+      className="fixed inset-0 flex items-center justify-center z-50 p-4 max-w-screen max-h-screen overflow-hidden"
       data-testid={dataTestId}
     >
       {/* Backdrop */}
-      <div className="fixed inset-0 bg-bg-100/50 backdrop-blur-xs"></div>
+      <div className="fixed inset-0 bg-bg-100/50 backdrop-blur-xs max-w-screen max-h-screen overflow-hidden"></div>
 
       {/* Modal Container */}
       <div
         style={{
           width: width ? `${width}px` : undefined,
           height: height !== 'auto' ? `${height}px` : undefined,
+          maxWidth: '100vw',
+          maxHeight: '100vh',
         }}
         className={cn(
           'relative',
-          width ? 'w-full' : 'w-[380px] md:w-[600px]', // Default responsive width
+          width ? 'w-full max-w-[95vw]' : 'w-[95vw] max-w-[380px] md:w-[600px] md:max-w-[97vw]', // Responsive width with proper viewport constraints
           height === 'auto'
             ? 'h-full md:h-auto' // Auto on desktop, full on mobile when no height specified
             : 'h-full', // Full height when specific height provided
-          'md:max-w-[97vw] bg-bg-80 rounded overflow-y-auto',
+          'bg-bg-80 rounded overflow-y-auto min-w-0',
           className,
         )}
       >
