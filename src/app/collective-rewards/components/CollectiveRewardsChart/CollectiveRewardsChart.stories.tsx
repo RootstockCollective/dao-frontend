@@ -1,6 +1,6 @@
 import { Meta, StoryObj } from '@storybook/nextjs'
 import { BackingPoint, CycleWindow, RewardsPoint } from '@/app/collective-rewards/types'
-import { CollectiveRewardsDualAxisChart } from './CollectiveRewardsDualAxisChart'
+import { CollectiveRewardsDualAxisChart } from './CollectiveRewardsChart'
 
 // Mock data generation function
 function generateMockData() {

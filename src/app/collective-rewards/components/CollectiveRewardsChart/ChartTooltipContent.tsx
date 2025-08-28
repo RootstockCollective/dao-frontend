@@ -7,7 +7,7 @@ import { formatSymbol } from '@/app/collective-rewards/rewards/utils'
 import { Span } from '@/components/Typography/Span'
 import { TooltipPayload } from '@/app/collective-rewards/types'
 
-interface CollectiveRewardsChartTooltipProps {
+interface ChartTooltipProps {
   active?: boolean
   payload?: TooltipPayload[]
   label?: string | number
@@ -15,13 +15,13 @@ interface CollectiveRewardsChartTooltipProps {
   day?: string
 }
 
-export const CollectiveRewardsChartTooltipContent = ({
+export const ChartTooltipContent = ({
   active,
   payload,
   label,
   cycle = 21,
   day = '5/12',
-}: CollectiveRewardsChartTooltipProps) => {
+}: ChartTooltipProps) => {
   if (!active || !payload?.length) return null
   const d = payload[0]?.payload?.day as Date
   const backingVal = payload[0]?.payload?.backing ?? 0n

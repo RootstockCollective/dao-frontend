@@ -15,7 +15,7 @@ import {
 import { BackingPoint, CycleWindow, RewardsPoint } from '@/app/collective-rewards/types'
 import { convertToTimestamp, formatShort } from '@/app/collective-rewards/utils/chartUtils'
 import { useMergedSeries } from '@/app/collective-rewards/shared/hooks/useMergeSeries'
-import { CollectiveRewardsChartTooltipContent } from './CollectiveRewardsChartTooltipContent'
+import { ChartTooltipContent } from './ChartTooltipContent'
 
 /**
  * Custom cursor component that draws a vertical line from the X-axis to the backing data point.
@@ -256,7 +256,7 @@ export function CollectiveRewardsDualAxisChart({
           ))}
 
           <Tooltip
-            content={<CollectiveRewardsChartTooltipContent />}
+            content={<ChartTooltipContent />}
             wrapperStyle={{ outline: 'none' }}
             offset={15}
             cursor={
