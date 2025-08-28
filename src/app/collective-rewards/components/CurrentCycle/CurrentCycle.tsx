@@ -15,14 +15,12 @@ export const CurrentCycle = () => {
         </Header>
       }
     >
-      <div className="flex flex-col md:flex-row items-start w-full gap-4 md:gap-14">
-        <div className="flex justify-between flex-col md:flex-row w-full md:basis-3/4 gap-4 md:gap-0">
+      <div className="w-full flex flex-col gap-10">
+        <div className="flex items-start w-full justify-between md:w-[90%] mx-auto">
           <CycleContextProvider>
             <CycleMetrics />
           </CycleContextProvider>
           <TotalBackingLoader />
-        </div>
-        <div className="w-full md:basis-1/4">
           <EstimatedRewards />
         </div>
       </div>

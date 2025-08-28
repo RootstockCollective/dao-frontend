@@ -61,3 +61,39 @@ export type StateWithUpdate<T> = {
   value: T
   onChange: Dispatch<SetStateAction<T>>
 }
+
+export type BackingPoint = {
+  day: Date | number | string
+  backing: bigint
+}
+
+export type RewardsPoint = {
+  day: Date | number | string
+  rewards: {
+    rif: number | bigint
+    rbtc: number | bigint
+    usd?: number
+  }
+}
+
+export type CycleWindow = {
+  label: string
+  start: Date | number | string
+  end: Date | number | string
+}
+
+interface ChartDataPoint {
+  day: Date
+  backing?: bigint
+  rewardsUSD?: bigint
+  rewardsRif?: bigint
+  rewardsRbtc?: bigint
+}
+
+export interface TooltipPayload {
+  payload: ChartDataPoint
+  value: number
+  name: string
+  color: string
+  dataKey: string
+}
