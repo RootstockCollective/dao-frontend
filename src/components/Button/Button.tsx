@@ -5,7 +5,7 @@ import { Span } from '../Typography'
 type ButtonVariant = 'primary' | 'secondary' | 'secondary-outline' | 'transparent'
 
 const DEFAULT_CLASSES =
-  'relative overflow-hidden px-4 py-2 rounded-sm font-bold text-base transition-all duration-150 flex items-center justify-center disabled:cursor-not-allowed'
+  'relative overflow-hidden px-4 py-2 rounded-sm font-bold text-base transition-all duration-150 flex items-center justify-center disabled:cursor-not-allowed w-full md:w-auto'
 
 interface Props extends RefAttributes<HTMLButtonElement>, ButtonHTMLAttributes<HTMLButtonElement> {
   variant?: ButtonVariant
