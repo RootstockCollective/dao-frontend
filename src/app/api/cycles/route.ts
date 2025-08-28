@@ -2,10 +2,11 @@ import { NextResponse } from 'next/server'
 import { db } from '@/lib/db'
 import { paginateQuery } from '@/app/api/utils/paginateQuery'
 import { parsePaginationParams } from '@/app/api/utils/parsePaginationParams'
+import { CYCLE_COLUMNS } from '@/app/api/db/constants'
 
 export async function GET(req: Request) {
   try {
-    const paginationResult = parsePaginationParams(req.url || '')
+    const paginationResult = parsePaginationParams(req.url || '', CYCLE_COLUMNS)
 
     if (!paginationResult.success) {
       return NextResponse.json(
@@ -14,12 +15,16 @@ export async function GET(req: Request) {
       )
     }
 
-    const { page, pageSize } = paginationResult.data
+    const { page, pageSize, sortDirection, sortBy } = paginationResult.data
 
-    const baseQuery = db('Backer')
-      .select('Backer.id', 'Backer.totalAllocation', 'Backer.isBlacklisted')
-      .where('totalAllocation', '>', 0)
-    const { data, count } = await paginateQuery(baseQuery, { page, pageSize })
+    const baseQuery = db('Cycle').select(CYCLE_COLUMNS)
+
+    const { data, count } = await paginateQuery(baseQuery, {
+      page,
+      pageSize,
+      sortBy,
+      sortDirection,
+    })
 
     return NextResponse.json({ data, count, page, pageSize })
   } catch (err) {

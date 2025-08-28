@@ -51,7 +51,7 @@ export async function GET(req: Request) {
         'BuilderState.selfPaused': false,
       })
 
-    const { data, count } = await paginateQuery(baseQuery, page, pageSize)
+    const { data, count } = await paginateQuery(baseQuery, { page, pageSize })
 
     return NextResponse.json({ data, count, page, pageSize })
   } catch (err) {

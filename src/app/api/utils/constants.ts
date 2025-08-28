@@ -1,0 +1,9 @@
+export const DEFAULT_PAGE_NUMBER = '1'
+export const DEFAULT_PAGE_SIZE = '10'
+export const SORT_DIRECTION_ASC = 'asc' as const
+export const SORT_DIRECTION_DESC = 'desc' as const
+export const DEFAULT_SORT_DIRECTION = SORT_DIRECTION_ASC
+export const PAGE_PARAM_NAME = 'page'
+export const PAGE_SIZE_PARAM_NAME = 'pageSize'
+export const SORT_DIRECTION_PARAM_NAME = 'sortDirection'
+export const SORT_BY_PARAM_NAME = 'sortBy'
