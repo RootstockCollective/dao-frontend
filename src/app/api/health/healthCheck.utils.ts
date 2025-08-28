@@ -1,16 +1,15 @@
 import strategies from './strategies'
 
-const HEALTH_CHECK_TYPE = ['lastBlockNumber', 'lastGraphUpdate'] as const
+const HEALTH_CHECK_TYPE = ['lastBlockNumber'] as const
 
 type HealthCheckType = (typeof HEALTH_CHECK_TYPE)[number] | 'all'
 
 type HealthCheckResult = boolean
 
-type HealthCheckFunction = (...args: any[]) => Promise<boolean> | boolean
+type HealthCheckFunction = (...args: unknown[]) => Promise<boolean> | boolean
 
 const HEALTH_CHECKS: Record<Exclude<HealthCheckType, 'all'>, HealthCheckFunction> = {
   lastBlockNumber: strategies.lastBlockNumber,
-  lastGraphUpdate: strategies.lastGraphUpdate,
 }
 
 const _checkAll = async (): Promise<boolean> => {

@@ -1,13 +1,22 @@
 export class WrongHealthCheckTypeError extends Error {
+  name: string = 'WrongHealthCheckTypeError'
   constructor(type: string) {
     super(`Health check type "${type}" is not defined`)
-    this.name = 'WrongHealthCheckTypeError'
   }
 }
 
 export class BlockNumberFetchError extends Error {
+  name: string = 'BlockNumberFetchError'
   constructor() {
     super(`Failed to fetch block number`)
-    this.name = 'BlockNumberFetchError'
+  }
+}
+
+export class UnexpectedBehaviourError extends Error {
+  name: string = 'FalsyLastBlockNumberError'
+  constructor(error?: Error) {
+    super(`Unexpected behaviour occurred: ${error?.message}`, {
+      cause: error?.cause,
+    })
   }
 }

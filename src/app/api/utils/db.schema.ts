@@ -1,6 +1,6 @@
-export interface BlockChangeLog {
-  id: string
-  blockNumber: bigint
+export interface LastProcessedBlock {
+  id: boolean
+  hash: string
+  number: bigint
   timestamp: Date
-  updatedEntities: string[]
 }

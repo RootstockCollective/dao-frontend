@@ -3,6 +3,7 @@ import { db } from '@/lib/db'
 import mockKnex from 'mock-knex'
 import { afterAll, afterEach, beforeAll, describe, expect, it, vi } from 'vitest'
 import { getBlockNumber } from 'wagmi/actions'
+import { BlockNumberFetchError, UnexpectedBehaviourError } from '../healthCheck.errors'
 import { _lastBlockNumber } from './lastBlockNumber'
 
 vi.mock('wagmi/actions', () => ({
@@ -34,7 +35,7 @@ describe('_lastBlockNumber health check', {}, () => {
     getBlockNumberMock.mockResolvedValue(latestBlockNumberOnChain)
 
     tracker.once('query', ({ response }) => {
-      response([{ blockNumber: latestBlockNumberOnChain.toString() }])
+      response([{ number: latestBlockNumberOnChain.toString(), id: 1 }])
     })
 
     const result = await _lastBlockNumber()
@@ -48,11 +49,45 @@ describe('_lastBlockNumber health check', {}, () => {
 
     tracker.once('query', ({ response }) => {
       const tooOld = latestBlockNumberOnChain - BigInt(STATE_SYNC_BLOCK_STALENESS_THRESHOLD) - 1n
-      response([{ blockNumber: tooOld.toString() }])
+      response([{ number: tooOld.toString(), id: 1 }])
     })
 
     const result = await _lastBlockNumber()
 
     expect(result).toBe(false)
+  })
+
+  it('should throw an UnexpectedBehaviourError if the lastProcessedBlock id is falsy', {}, async () => {
+    const latestBlockNumberOnChain = 12345n
+    getBlockNumberMock.mockResolvedValue(latestBlockNumberOnChain)
+
+    tracker.once('query', ({ response }) => {
+      response([{ number: latestBlockNumberOnChain.toString(), id: 0 }])
+    })
+
+    await expect(_lastBlockNumber()).rejects.toThrow(UnexpectedBehaviourError)
+  })
+
+  it('should return false if there is no lastProcessedBlock record', {}, async () => {
+    const latestBlockNumberOnChain = 12345n
+    getBlockNumberMock.mockResolvedValue(latestBlockNumberOnChain)
+
+    tracker.once('query', ({ response }) => {
+      response([])
+    })
+
+    const result = await _lastBlockNumber()
+
+    expect(result).toBe(false)
+  })
+
+  it('should throw a BlockNumberFetchError if fetching the block number fails', {}, async () => {
+    getBlockNumberMock.mockResolvedValue(undefined as any)
+
+    tracker.once('query', ({ response }) => {
+      response([{ number: 12345n.toString(), id: 1 }])
+    })
+
+    await expect(_lastBlockNumber()).rejects.toThrow(BlockNumberFetchError)
   })
 })
