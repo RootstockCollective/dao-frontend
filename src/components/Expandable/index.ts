@@ -1,0 +1,13 @@
+export { Expandable } from './Expandable'
+export { ExpandableHeader } from './Expandable'
+export { ExpandableContent } from './Expandable'
+export { ExpandableFooter } from './Expandable'
+export { ExpandableTrigger } from './Expandable'
+export { ExpandableComponent } from './Expandable'
+
+export type { Expandable as ExpandableProps } from './Expandable'
+export type { ExpandableHeader as ExpandableHeaderProps } from './Expandable'
+export type { ExpandableContent as ExpandableContentProps } from './Expandable'
+export type { ExpandableFooter as ExpandableFooterProps } from './Expandable'
+export type { ExpandableTrigger as ExpandableTriggerProps } from './Expandable'
+export type { ExpandableComponent as ExpandableStructureProps } from './Expandable'

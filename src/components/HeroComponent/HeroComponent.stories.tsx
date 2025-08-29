@@ -57,8 +57,8 @@ export const TopHeroNotConnected: Story = {
     subtitle: 'POSSIBILITIES',
     topText: "DON'T MISS",
     content: (
-      <div className="pt-4 pb-10">
-        <div className="flex flex-col mt-6">
+      <div className="flex flex-col gap-6">
+        <div className="flex flex-col">
           <Header variant="h2" className="text-black">
             BUILD
           </Header>
@@ -67,7 +67,7 @@ export const TopHeroNotConnected: Story = {
             development tools.
           </Paragraph>
         </div>
-        <div className="flex flex-col mt-6">
+        <div className="flex flex-col">
           <Header variant="h2" className="text-black">
             EARN
           </Header>
@@ -76,7 +76,7 @@ export const TopHeroNotConnected: Story = {
             process.
           </Paragraph>
         </div>
-        <div className="flex flex-col mt-6">
+        <div className="flex flex-col">
           <Header variant="h2" className="text-black">
             PARTICIPATE
           </Header>
