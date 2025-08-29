@@ -81,6 +81,10 @@ export const MAX_PAGE_SIZE = 100
 
 export const BLOCKSCOUT_URL = process.env.NEXT_PUBLIC_BLOCKSCOUT_URL as string
 
+/**
+ * State sync config constants
+ */
+
 const DEFAULT_STATE_SYNC_BLOCK_STALENESS_THRESHOLD = 100
 export const STATE_SYNC_BLOCK_STALENESS_THRESHOLD = Number(
   process.env.NEXT_PUBLIC_STATE_SYNC_BLOCK_STALENESS_THRESHOLD ??
