@@ -21,9 +21,9 @@ export function KotoChevronDownIcon({
         <path
           d="M19 8L12 16L5 8"
           stroke={color}
-          stroke-width="1.25"
-          stroke-linecap="round"
-          stroke-linejoin="round"
+          strokeWidth="1.25"
+          strokeLinecap="round"
+          strokeLinejoin="round"
         />
       </g>
       <defs>
