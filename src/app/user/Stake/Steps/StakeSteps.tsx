@@ -18,7 +18,7 @@ export const StakeSteps = ({ currentStep }: Props) => {
 
   return (
     <div
-      className="relative overflow-hidden w-screen -ml-6 flex items-center transition-transform duration-600 ease-in-out whitespace-nowrap flex-nowrap"
+      className="relative w-screen -ml-6 flex items-center transition-transform duration-600 ease-in-out whitespace-nowrap flex-nowrap"
       style={{
         transform: `translateX(${getTransformOffset()}%)`,
       }}
