@@ -16,9 +16,7 @@ WORKDIR /app
 
 # Copy package.json and package-lock.json
 COPY package*.json ./
-# Copy node_modules from the host to the container
-# This is useful for CI/CD environments where node_modules are pre-installed
-COPY node_modules node_modules
+# Copy .next/cache if it exists to leverage caching
 COPY .next/cache .next/cache
 # Skip cypress install
 ENV CYPRESS_INSTALL_BINARY 0
@@ -27,7 +25,7 @@ ENV CYPRESS_INSTALL_BINARY 0
 RUN npm install --verbose
 
 # Copy the rest of the application code
-COPY --exclude=node_modules --exclude=package-lock.json --exclude=package.json . .
+COPY . .
 
 # Disable telemetry
 ENV NEXT_TELEMETRY_DISABLED 1

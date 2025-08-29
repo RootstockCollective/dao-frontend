@@ -18,11 +18,12 @@ jobs:
         with:
           node-version: '24'
 
-      - name: Cache node_modules
+      - name: Cache npm global cache
         uses: actions/cache@v4
         with:
-          path: node_modules
-          key: node-modules-${{ hashFiles('package-lock.json') }}
+          path: ~/.npm
+          key: npm-${{ hashFiles('package-lock.json') }}
+          restore-keys: npm-
 
       - name: Cache .next/cache
         uses: actions/cache@v4
@@ -46,29 +47,31 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 #v4.2.2
-      - name: Restore node_modules cache
+
+      - name: Restore npm cache
         uses: actions/cache/restore@v4
         with:
-          path: node_modules
-          key: node-modules-${{ hashFiles('package-lock.json') }}
+          path: ~/.npm
+          key: npm-${{ hashFiles('package-lock.json') }}
+          restore-keys: npm-
+
       - name: Restore .next/cache cache
         uses: actions/cache/restore@v4
         with:
           path: .next/cache
           key: next-cache-${{ hashFiles('package-lock.json') }}
+
       - name: Prepare Docker context with cache
         run: |
           # Log cache sizes
-          echo "node_modules size: $(du -sh node_modules 2>/dev/null | cut -f1 || echo '0')"
+          echo "npm cache size: $(du -sh ~/.npm 2>/dev/null | cut -f1 || echo '0')"
           echo ".next/cache size: $(du -sh .next/cache 2>/dev/null | cut -f1 || echo '0')"
-          
+
           # Backup and modify .dockerignore
           cp .dockerignore .dockerignore.backup
-          sed -i '/^node_modules$/d' .dockerignore
           sed -i '/^\.next$/d' .dockerignore
-          
+
           # Ensure directories exist
-          mkdir -p node_modules
           mkdir -p .next/cache
 
       - name: Build
@@ -77,5 +80,9 @@ jobs:
           IMAGE_TAG: ${{ github.sha }}
           PROFILE: testnet.local
         run: |
-          # Build a docker container to test build passes
-          docker build --build-arg PROFILE="$PROFILE" --build-arg NEXT_PUBLIC_BUILD_ID=${{ github.sha }} --no-cache .
+          # Build docker container with npm cache mount
+          docker build \
+            --build-arg PROFILE="$PROFILE" \
+            --build-arg NEXT_PUBLIC_BUILD_ID=${{ github.sha }} \
+            --volume $HOME/.npm:/root/.npm \
+            .
