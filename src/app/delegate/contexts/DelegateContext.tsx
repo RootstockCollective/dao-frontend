@@ -2,8 +2,9 @@
 import { initialContextState, initialDataState, initialUIState } from '@/app/delegate/lib/constants'
 import { DelegateContextState, DelegateDataState, DelegateUIState } from '@/app/delegate/lib/types'
 import { useGetExternalDelegatedAmount } from '@/shared/hooks/useGetExternalDelegatedAmount'
+import { useNftHoldersWithVotingPower } from '@/app/user/Delegation/hooks/useNftHoldersWithVotingPower'
 import { produce } from 'immer'
-import { createContext, ReactNode, useCallback, useContext, useEffect, useState } from 'react'
+import { createContext, ReactNode, useCallback, useContext, useEffect, useState, useMemo } from 'react'
 import { formatEther } from 'viem'
 import { useAccount } from 'wagmi'
 
@@ -44,6 +45,16 @@ export const DelegateContextProvider = ({ children }: Props) => {
     refetch,
   } = useGetExternalDelegatedAmount(address)
 
+  // Fetch all delegates to get image data for current delegatee
+  const allDelegates = useNftHoldersWithVotingPower()
+
+  // Find current delegatee's image data efficiently
+  const delegateeImageIpfs = useMemo(() => {
+    if (!delegateeAddress) return undefined
+    const delegatee = allDelegates.find(delegate => delegate.address === delegateeAddress)
+    return delegatee?.imageIpfs || undefined
+  }, [delegateeAddress, allDelegates])
+
   // Actions
   const setIsDelegationPending = useCallback((isPending: boolean) => {
     setUIState(
@@ -73,6 +84,7 @@ export const DelegateContextProvider = ({ children }: Props) => {
         draft.delegateeAddress = delegateeAddress
         draft.delegateeRns = delegateeRns
         draft.delegateeVotingPower = delegateeVotingPower ? formatEther(delegateeVotingPower) : undefined
+        draft.delegateeImageIpfs = delegateeImageIpfs
       }),
     )
   }, [
@@ -84,6 +96,7 @@ export const DelegateContextProvider = ({ children }: Props) => {
     delegateeAddress,
     delegateeVotingPower,
     delegateeRns,
+    delegateeImageIpfs,
   ])
 
   // Update loading state when UI state changes
