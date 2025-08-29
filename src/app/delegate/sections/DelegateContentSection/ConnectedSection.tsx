@@ -26,6 +26,7 @@ export const ConnectedSection = () => {
     setIsReclaimPending,
     delegateeVotingPower,
     delegateeRns,
+    delegateeImageIpfs,
     refetch,
   } = useDelegateContext()
 
@@ -41,6 +42,7 @@ export const ConnectedSection = () => {
   const delegateCardRef = useRef<HTMLDivElement>(null)
   const delegatesContainerRef = useRef<HTMLDivElement>(null)
   const updateDelegateButtonRef = useRef<HTMLButtonElement>(null)
+  const [imageIpfsToDelegate, setImageIpfsToDelegate] = useState<string | null | undefined>(undefined)
 
   const handleDelegate = useCallback(
     (address: Address) => {
@@ -82,10 +84,18 @@ export const ConnectedSection = () => {
     }
   }
 
-  const onShowDelegate = (address: Address, rns?: string) => {
+  const onShowDelegate = (address: Address, rns?: string, imageIpfs?: string | null) => {
     setIsDelegateModalOpened(true)
     setAddressToDelegate(address)
     setRnsToDelegate(rns)
+    setImageIpfsToDelegate(imageIpfs)
+  }
+
+  const onCloseDelegateModal = () => {
+    setIsDelegateModalOpened(false)
+    setAddressToDelegate(null)
+    setRnsToDelegate(undefined)
+    setImageIpfsToDelegate(undefined)
   }
 
   const onShowReclaim = () => {
@@ -104,6 +114,7 @@ export const ConnectedSection = () => {
           <DelegateCard
             address={delegateeAddress}
             name={delegateeRns}
+            imageIpfs={delegateeImageIpfs}
             // @TODO fetch since
             since=" - "
             votingPower={delegateeVotingPower ? Number(delegateeVotingPower).toFixed(0) : ' - '}
@@ -183,11 +194,12 @@ export const ConnectedSection = () => {
       {isDelegateModalOpened && addressToDelegate && (
         <DelegateModal
           onDelegate={handleDelegate}
-          onClose={() => setIsDelegateModalOpened(false)}
+          onClose={onCloseDelegateModal}
           isLoading={isDelegationPending}
           title={`You are about to delegate your own voting power of ${votingPower} to`}
           address={addressToDelegate}
           name={rnsToDelegate}
+          imageIpfs={imageIpfsToDelegate}
           actionButtonText={isDelegationPending ? 'Delegating...' : 'Delegate'}
           data-testid="delegateModal"
         />
@@ -201,6 +213,7 @@ export const ConnectedSection = () => {
           address={delegateeAddress as Address}
           // @TODO fetch since
           since=""
+          imageIpfs={delegateeImageIpfs}
           actionButtonText={isReclaimPending ? 'Reclaiming...' : 'Reclaim'}
           data-testid="reclaimModal"
         />
