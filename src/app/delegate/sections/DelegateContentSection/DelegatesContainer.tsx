@@ -12,7 +12,7 @@ import { debounce } from 'lodash'
 
 interface Props {
   didIDelegateToMyself: boolean
-  onDelegate: (address: Address, rns?: string) => void
+  onDelegate: (address: Address, rns?: string, imageIpfs?: string | null) => void
   onCloseClick?: () => void
   shouldDisableButtons?: boolean
 }
@@ -90,7 +90,7 @@ export const DelegatesContainer = ({
 
   const onUpdateDelegate = () => {
     if (addressToDelegate.status === 'valid') {
-      onDelegate(addressToDelegate.address as Address, addressToDelegate.rns)
+      onDelegate(addressToDelegate.address as Address, addressToDelegate.rns, undefined)
     }
   }
 
