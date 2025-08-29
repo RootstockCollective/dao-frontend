@@ -16,6 +16,12 @@ import { BackingPoint, CycleWindow, RewardsPoint } from '@/app/collective-reward
 import { convertToTimestamp, formatShort } from '@/app/collective-rewards/utils/chartUtils'
 import { useMergedSeries } from '@/app/collective-rewards/shared/hooks/useMergeSeries'
 import { ChartTooltipContent } from './ChartTooltipContent'
+import {
+  CHART_BUFFER_PERCENTAGE,
+  REWARDS_DOMAIN_BUFFER,
+  DEFAULT_CHART_HEIGHT,
+  ONE_MONTH_IN_MS,
+} from '@/app/collective-rewards/constants/chartConstants'
 
 /**
  * Custom cursor component that draws a vertical line from the X-axis to the backing data point.
@@ -39,17 +45,36 @@ const CustomCursor = (props: CustomCursorProps) => {
   const x = points[0].x
   const chartBottom = top + height
 
-  const backingValue = payload[0]?.value || 0
+  const backingPayload = payload.find(p => p.dataKey === 'backing')
+  const backingValue = backingPayload?.value || 0
+  const hasBackingData = backingValue > 0
+
   const valueRatio = backingValue / backingMaxDomain
   const backingY = chartBottom - valueRatio * height
 
   return (
     <g style={{ pointerEvents: 'none' }}>
-      <line x1={x} y1={chartBottom} x2={x} y2={backingY} stroke="black" strokeOpacity={0.6} strokeWidth={1} />
+      {hasBackingData && (
+        <line
+          x1={x}
+          y1={chartBottom}
+          x2={x}
+          y2={backingY}
+          stroke="black"
+          strokeOpacity={0.6}
+          strokeWidth={1}
+        />
+      )}
 
       {/* Active dots with higher z-index */}
       {payload.map((payloadItem, index) => {
-        if (!payloadItem) return null
+        if (
+          !payloadItem ||
+          payloadItem.value === null ||
+          payloadItem.value === undefined ||
+          payloadItem.value === 0
+        )
+          return null
 
         let calculatedY: number
         if (payloadItem.dataKey === 'backing') {
@@ -101,14 +126,14 @@ export function CollectiveRewardsDualAxisChart({
   cycles = [],
   yLeftLabel = 'BACKING',
   yRightLabel = 'REWARDS',
-  height = 420,
+  height = DEFAULT_CHART_HEIGHT,
 }: DualAxisChartProps) {
   const data = useMergedSeries(backingSeries, rewardsSeries)
 
   const backingMaxDomain = useMemo(() => {
     if (!data.length) return 100
     const maxBacking = Math.max(...data.map(d => d.backing || 0))
-    return maxBacking * 1.1 // 10% buffer for the cursor dot to work as expected
+    return maxBacking * CHART_BUFFER_PERCENTAGE
   }, [data])
 
   const rewardsMaxDomain = useMemo<[number, number]>(() => {
@@ -124,7 +149,7 @@ export function CollectiveRewardsDualAxisChart({
       }),
     )
 
-    const maxWithBuffer = maxRewards * 3
+    const maxWithBuffer = maxRewards * REWARDS_DOMAIN_BUFFER
     return [0, maxWithBuffer]
   }, [data])
 
@@ -135,8 +160,7 @@ export function CollectiveRewardsDualAxisChart({
       data[data.length - 1].day instanceof Date
         ? data[data.length - 1].day.getTime()
         : +new Date(data[data.length - 1].day)
-    const oneMonthInMs = 30 * 24 * 60 * 60 * 1000
-    return [first, last + oneMonthInMs]
+    return [first, last + ONE_MONTH_IN_MS]
   }, [data])
 
   return (
@@ -258,7 +282,7 @@ export function CollectiveRewardsDualAxisChart({
           <Tooltip
             content={<ChartTooltipContent />}
             wrapperStyle={{ outline: 'none' }}
-            offset={15}
+            offset={25}
             cursor={
               <CustomCursor backingMaxDomain={backingMaxDomain} rewardsMaxDomain={rewardsMaxDomain[1]} />
             }
