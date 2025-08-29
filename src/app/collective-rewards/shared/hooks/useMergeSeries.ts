@@ -1,10 +1,11 @@
 import { BackingPoint, RewardsPoint } from '@/app/collective-rewards/types'
 import { useMemo } from 'react'
-import { toDate } from '@/app/collective-rewards/utils/chartUtils'
+import { ISO_DATE_LENGTH } from '@/app/collective-rewards/constants/chartConstants'
 
 type MergedDataPoint = {
   day: Date
   backing?: number
+  backingWei?: bigint
   rewardsUSD?: number
   rewardsRif?: number
   rewardsRbtc?: number
@@ -12,20 +13,19 @@ type MergedDataPoint = {
 
 export function useMergedSeries(backing: BackingPoint[], rewards: RewardsPoint[]) {
   return useMemo(() => {
-    // Length of "YYYY-MM-DD" portion of ISO string for daily grouping
-    const ISO_DATE_LENGTH = 10
     const map = new Map<string, MergedDataPoint>()
 
     for (const b of backing) {
-      const date = toDate(b.day)
+      const date = new Date(b.day)
       const key = date.toISOString().slice(0, ISO_DATE_LENGTH)
       const entry = map.get(key) ?? { day: new Date(key) }
       entry.backing = Number(b.backing)
+      entry.backingWei = b.backingWei || b.backing
       map.set(key, entry)
     }
 
     for (const r of rewards) {
-      const date = toDate(r.day)
+      const date = new Date(r.day)
       const key = date.toISOString().slice(0, ISO_DATE_LENGTH)
       const entry = map.get(key) ?? { day: new Date(key) }
       entry.rewardsUSD = r.rewards?.usd ?? 0

@@ -6,6 +6,7 @@ import { BaseTypography } from '@/components/Typography/Typography'
 import { formatSymbol } from '@/app/collective-rewards/rewards/utils'
 import { Span } from '@/components/Typography/Span'
 import { TooltipPayload } from '@/app/collective-rewards/types'
+import { formatAmount, formatCurrency } from '@/lib/utils'
 
 interface ChartTooltipProps {
   active?: boolean
@@ -24,7 +25,7 @@ export const ChartTooltipContent = ({
 }: ChartTooltipProps) => {
   if (!active || !payload?.length) return null
   const d = payload[0]?.payload?.day as Date
-  const backingVal = payload[0]?.payload?.backing ?? 0n
+  const backingVal = payload[0]?.payload?.backingWei ?? payload[0]?.payload?.backing ?? 0n
   const rewardsUsd = payload[0]?.payload?.rewardsUSD ?? 0n
 
   return (
@@ -77,7 +78,7 @@ export const ChartTooltipContent = ({
               containerClassName="gap-1"
             >
               <div className="flex items-center gap-2 text-bg-100">
-                <Paragraph className="text-xl font-kk-topo">{formatSymbol(backingVal, 'StRIF')}</Paragraph>
+                <Paragraph className="text-xl font-kk-topo">{formatSymbol(backingVal, 'strif')}</Paragraph>
                 <TokenImage symbol={TokenSymbol.STRIF} size={16} />
                 <Span variant="tag-s" className="">
                   {TokenSymbol.STRIF}
@@ -99,7 +100,7 @@ export const ChartTooltipContent = ({
             containerClassName="gap-1"
           >
             <div className="flex items-end gap-2 text-bg-100">
-              <Paragraph className="text-xl font-kk-topo">{formatSymbol(rewardsUsd, 'USD')}</Paragraph>
+              <Paragraph className="text-xl font-kk-topo">{formatCurrency(rewardsUsd.toString())}</Paragraph>
               <Span variant="tag-s" className="font-bold mb-0.5">
                 USD
               </Span>
