@@ -1,3 +1,4 @@
+# syntax=docker/dockerfile:1.7-labs
 FROM node:24-alpine@sha256:e8e882c692a08878d55ec8ff6c5a4a71b3edca25eda0af4406e2a160d8a93cf2 AS builder
 
 # Install required dependencies for Trezor (and possibly Ledger)
@@ -15,7 +16,8 @@ WORKDIR /app
 
 # Copy package.json and package-lock.json
 COPY package*.json ./
-
+# Copy .next/cache if it exists to leverage caching
+COPY .next/cache .next/cache
 # Skip cypress install
 ENV CYPRESS_INSTALL_BINARY 0
 
