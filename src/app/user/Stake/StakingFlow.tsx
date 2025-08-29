@@ -41,7 +41,7 @@ export const StakingFlow = ({ onCloseModal }: Props) => {
 
   return (
     <StakingProvider tokenToSend={tokenToSend} tokenToReceive={tokenToReceive}>
-      <Modal width={688} onClose={onCloseModal}>
+      <Modal onClose={onCloseModal} fullscreen>
         <StepWrapper currentStep={step} progress={currentStep.progress} description={currentStep.description}>
           <StepComponent {...stepFunctions} onCloseModal={onCloseModal} />
         </StepWrapper>
