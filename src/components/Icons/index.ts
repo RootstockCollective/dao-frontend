@@ -48,6 +48,6 @@ export { ArrowRightIconKoto } from './ArrowRightIconKoto'
 export { XCircleIcon } from './XCircleIcon'
 export { RocketIconKoto } from './RocketIconKoto'
 export { MoneyIconKoto } from './MoneyIconKoto'
-
+export { KotoChevronDownIcon } from './KotoChevronDownIcon'
 export * from './v3design'
 export { HistoryIcon } from './HistoryIcon'
