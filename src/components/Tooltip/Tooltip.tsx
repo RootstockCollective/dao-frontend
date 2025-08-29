@@ -22,6 +22,24 @@ export function Tooltip({
   const [open, setOpen] = useState(false)
 
   const isDesktop = useIsDesktop()
+
+  useEffect(() => {
+    if (!open || isDesktop) return
+
+    const handlePopState = () => setOpen(false)
+
+    window.history.pushState({ tooltip: true }, '')
+    window.addEventListener('popstate', handlePopState)
+
+    return () => {
+      window.removeEventListener('popstate', handlePopState)
+      // If still on the tooltip state, go back
+      if (window.history.state?.tooltip) {
+        window.history.back()
+      }
+    }
+  }, [open, isDesktop])
+
   if (disabled) {
     return children
   }
@@ -33,16 +51,16 @@ export function Tooltip({
       </RadixTooltip.Trigger>
       <RadixTooltip.Portal>
         <RadixTooltip.Content
-          side={isDesktop ? side : 'bottom'}
+          side={isDesktop ? side : 'top'} // always top for mobile; it switches to bottom automatically if it's not enough space
           sideOffset={sideOffset}
+          collisionPadding={16}
           className={cn(
             'rounded-sm bg-v3-text-80 text-v3-bg-accent-60 px-2 py-1 text-xs font-normal shadow-lg font-rootstock-sans',
-            /* Mixing in new classes (not replacing all the default classes) */
             className,
           )}
           {...props}
         >
-          {text}
+          <div className="max-w-[calc(100vw-64px)]">{text}</div>
         </RadixTooltip.Content>
       </RadixTooltip.Portal>
     </RadixTooltip.Root>
