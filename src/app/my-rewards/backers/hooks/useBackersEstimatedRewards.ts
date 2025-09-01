@@ -16,8 +16,8 @@ export const useBackersEstimatedRewards = () => {
   const { totalEstimatedRif, totalEstimatedRbtc } = estimatedRewards.reduce(
     (acc: { totalEstimatedRif: bigint; totalEstimatedRbtc: bigint }, builder) => {
       return {
-        totalEstimatedRif: acc.totalEstimatedRif + builder.backersEstimatedRewards.rif.amount.value,
-        totalEstimatedRbtc: acc.totalEstimatedRbtc + builder.backersEstimatedRewards.rbtc.amount.value,
+        totalEstimatedRif: acc.totalEstimatedRif + builder.backerEstimatedRewards.rif.amount.value,
+        totalEstimatedRbtc: acc.totalEstimatedRbtc + builder.backerEstimatedRewards.rbtc.amount.value,
       }
     },
     { totalEstimatedRif: 0n, totalEstimatedRbtc: 0n },

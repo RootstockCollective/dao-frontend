@@ -1,13 +1,12 @@
-import { Header, Paragraph } from '@/components/Typography'
-import { formatCurrency } from '@/lib/utils'
-import { RifRbtcTooltip } from '@/components/RifRbtcTooltip/RifRbtcTooltip'
-import { Metric, MetricTitle } from '@/components/Metric'
-import { DottedUnderlineLabel } from '@/components/DottedUnderlineLabel/DottedUnderlineLabel'
+import { getFiatAmount, useHandleErrors } from '@/app/collective-rewards/utils'
 import { useGetBuilderEstimatedRewards } from '@/app/shared/hooks/useGetBuilderEstimatedRewards'
-import { getFiatAmount } from '@/app/collective-rewards/utils'
-import Big from '@/lib/big'
-import { useHandleErrors } from '@/app/collective-rewards/utils'
+import { DottedUnderlineLabel } from '@/components/DottedUnderlineLabel/DottedUnderlineLabel'
 import { LoadingSpinner } from '@/components/LoadingSpinner/LoadingSpinner'
+import { Metric, MetricTitle } from '@/components/Metric'
+import { RifRbtcTooltip } from '@/components/RifRbtcTooltip/RifRbtcTooltip'
+import { Header, Paragraph } from '@/components/Typography'
+import Big from '@/lib/big'
+import { formatCurrency } from '@/lib/utils'
 
 export const EstimatedRewardsMetric = () => {
   const { data: estimatedRewards, isLoading, error } = useGetBuilderEstimatedRewards()
@@ -16,11 +15,11 @@ export const EstimatedRewardsMetric = () => {
   const { totalEstimatedRif, totalEstimatedRbtc, totalEstimatedUsd } = estimatedRewards.reduce(
     (acc: { totalEstimatedRif: bigint; totalEstimatedRbtc: bigint; totalEstimatedUsd: Big }, builder) => {
       return {
-        totalEstimatedRif: acc.totalEstimatedRif + builder.backersEstimatedRewards.rif.amount.value,
-        totalEstimatedRbtc: acc.totalEstimatedRbtc + builder.backersEstimatedRewards.rbtc.amount.value,
+        totalEstimatedRif: acc.totalEstimatedRif + builder.backerEstimatedRewards.rif.amount.value,
+        totalEstimatedRbtc: acc.totalEstimatedRbtc + builder.backerEstimatedRewards.rbtc.amount.value,
         totalEstimatedUsd: acc.totalEstimatedUsd
-          .add(getFiatAmount(builder.backersEstimatedRewards.rif.amount))
-          .add(getFiatAmount(builder.backersEstimatedRewards.rbtc.amount)),
+          .add(getFiatAmount(builder.backerEstimatedRewards.rif.amount))
+          .add(getFiatAmount(builder.backerEstimatedRewards.rbtc.amount)),
       }
     },
     { totalEstimatedRif: 0n, totalEstimatedRbtc: 0n, totalEstimatedUsd: Big(0) },

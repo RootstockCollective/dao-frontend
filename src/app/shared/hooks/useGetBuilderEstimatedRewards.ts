@@ -3,7 +3,7 @@ import { BuilderEstimatedRewards, CompleteBuilder } from '@/app/collective-rewar
 import { filterBuildersByState } from '@/app/collective-rewards/user'
 import { useBuilderContext } from '@/app/collective-rewards/user/context/BuilderContext'
 import { isBuilderRewardable } from '@/app/collective-rewards/utils'
-import { USD, WeiPerEther, RIF, RBTC } from '@/lib/constants'
+import { RBTC, RIF, USD, WeiPerEther } from '@/lib/constants'
 import { TOKENS } from '@/lib/tokens'
 import { usePricesContext } from '@/shared/context/PricesContext'
 import { useReadBackersManager, useReadGauges } from '@/shared/hooks/contracts'
@@ -55,22 +55,22 @@ export const useGetBuilderEstimatedRewards = (currency = USD) => {
           ? (builderRewardShares * (WeiPerEther - rewardPercentageToApply)) / totalPotentialRewards
           : 0n
 
-      const backersEstimatedRewardsPct =
+      const backerEstimatedRewardsPct =
         totalPotentialRewards && isRewarded
           ? (builderRewardShares * rewardPercentageToApply) / totalPotentialRewards
           : 0n
 
       const builderRifEstimatedRewards = (builderEstimatedRewardsPct * rifAmount) / WeiPerEther
       const builderRbtcEstimatedRewards = (builderEstimatedRewardsPct * rbtcAmount) / WeiPerEther
-      const backerRifEstimatedRewards = (backersEstimatedRewardsPct * rifAmount) / WeiPerEther
-      const backerRbtcEstimatedRewards = (backersEstimatedRewardsPct * rbtcAmount) / WeiPerEther
+      const backerRifEstimatedRewards = (backerEstimatedRewardsPct * rifAmount) / WeiPerEther
+      const backerRbtcEstimatedRewards = (backerEstimatedRewardsPct * rbtcAmount) / WeiPerEther
 
       return {
         ...builder,
         rewardShares: builderRewardShares,
         builderEstimatedRewardsPct,
-        backersEstimatedRewardsPct,
-        backersEstimatedRewards: {
+        backerEstimatedRewardsPct,
+        backerEstimatedRewards: {
           rif: {
             amount: {
               value: backerRifEstimatedRewards,

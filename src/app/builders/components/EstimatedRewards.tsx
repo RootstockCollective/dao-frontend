@@ -38,11 +38,11 @@ export const EstimatedRewards = () => {
   } = builderEstimatedRewards.reduce(
     (acc, builder) => {
       return {
-        rifBackerRewards: acc.rifBackerRewards + builder.backersEstimatedRewards.rif.amount.value,
-        rbtcBackerRewards: acc.rbtcBackerRewards + builder.backersEstimatedRewards.rbtc.amount.value,
+        rifBackerRewards: acc.rifBackerRewards + builder.backerEstimatedRewards.rif.amount.value,
+        rbtcBackerRewards: acc.rbtcBackerRewards + builder.backerEstimatedRewards.rbtc.amount.value,
         usdBackerRewards: acc.usdBackerRewards
-          .add(getFiatAmount(builder.backersEstimatedRewards.rif.amount))
-          .add(getFiatAmount(builder.backersEstimatedRewards.rbtc.amount)),
+          .add(getFiatAmount(builder.backerEstimatedRewards.rif.amount))
+          .add(getFiatAmount(builder.backerEstimatedRewards.rbtc.amount)),
         rifBuilderRewards: acc.rifBuilderRewards + builder.builderEstimatedRewards.rif.amount.value,
         rbtcBuilderRewards: acc.rbtcBuilderRewards + builder.builderEstimatedRewards.rbtc.amount.value,
         usdBuilderRewards: acc.usdBuilderRewards

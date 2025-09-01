@@ -2,8 +2,8 @@ import { useReadGauges } from '@/shared/hooks/contracts'
 import { createContext, FC, ReactNode, useContext, useMemo } from 'react'
 
 import { AllocationsContext } from '@/app/collective-rewards/allocations/context'
-import { useGetBuilderEstimatedRewards } from '@/app/shared/hooks/useGetBuilderEstimatedRewards'
 import { BackerEstimatedRewards } from '@/app/collective-rewards/types'
+import { useGetBuilderEstimatedRewards } from '@/app/shared/hooks/useGetBuilderEstimatedRewards'
 
 type BackingContextValue = {
   data: BackerEstimatedRewards[]
@@ -49,7 +49,7 @@ export const BackingContextProvider: FC<BackingProviderProps> = ({
 
   const data: BackerEstimatedRewards[] = useMemo(() => {
     return estimatedBuilders.map((builder, index) => {
-      const { address, backersEstimatedRewards } = builder
+      const { address, backerEstimatedRewards: backersEstimatedRewards } = builder
 
       const allocation = dynamicAllocations
         ? (allocations[address] ?? 0n)
