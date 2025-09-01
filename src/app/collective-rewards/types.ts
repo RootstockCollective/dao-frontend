@@ -1,7 +1,7 @@
-import { ProposalState } from '@/shared/types'
-import { AbiFunction, Address } from 'viem'
 import { BuilderRegistryAbi } from '@/lib/abis/v2/BuilderRegistryAbi'
+import { ProposalState } from '@/shared/types'
 import { Dispatch, SetStateAction } from 'react'
+import { AbiFunction, Address } from 'viem'
 import { TokenRewards } from './rewards'
 
 export type Builder = {
@@ -19,9 +19,9 @@ export interface BuilderWithRewardShares extends Required<Builder> {
 
 export interface BuilderEstimatedRewards extends BuilderWithRewardShares {
   builderEstimatedRewardsPct: bigint
-  backersEstimatedRewardsPct: bigint
+  backerEstimatedRewardsPct: bigint
   builderEstimatedRewards: TokenRewards
-  backersEstimatedRewards: TokenRewards
+  backerEstimatedRewards: TokenRewards
 }
 
 export interface BackerEstimatedRewards extends Required<Builder> {

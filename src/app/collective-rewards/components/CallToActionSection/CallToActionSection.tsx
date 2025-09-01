@@ -1,9 +1,9 @@
-import { BackersCallToAction } from '../BackersCallToAction'
-import { BuildersCallToAction } from '../BuildersCallToAction'
+import { useGetBuilderEstimatedRewards } from '@/app/shared/hooks/useGetBuilderEstimatedRewards'
 import { InfoContainer } from '@/components/containers'
 import { LoadingSpinner } from '@/components/LoadingSpinner'
 import { useHandleErrors } from '../../utils'
-import { useGetBuilderEstimatedRewards } from '@/app/shared/hooks/useGetBuilderEstimatedRewards'
+import { BackersCallToAction } from '../BackersCallToAction'
+import { BuildersCallToAction } from '../BuildersCallToAction'
 
 export const CallToActionSection = () => {
   const {
@@ -18,8 +18,8 @@ export const CallToActionSection = () => {
     builderEstimatedRewards.reduce(
       (acc, builder) => {
         return {
-          rifBackerRewards: acc.rifBackerRewards + builder.backersEstimatedRewards.rif.amount.value,
-          rbtcBackerRewards: acc.rbtcBackerRewards + builder.backersEstimatedRewards.rbtc.amount.value,
+          rifBackerRewards: acc.rifBackerRewards + builder.backerEstimatedRewards.rif.amount.value,
+          rbtcBackerRewards: acc.rbtcBackerRewards + builder.backerEstimatedRewards.rbtc.amount.value,
           rifBuilderRewards: acc.rifBuilderRewards + builder.builderEstimatedRewards.rif.amount.value,
           rbtcBuilderRewards: acc.rbtcBuilderRewards + builder.builderEstimatedRewards.rbtc.amount.value,
         }
