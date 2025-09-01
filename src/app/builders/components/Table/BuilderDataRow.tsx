@@ -69,12 +69,12 @@ export const convertDataToRowData = (
             : 0,
         },
         rewards_upcoming: {
-          rbtcValue: builder.backersEstimatedRewards?.rbtc.amount.value ?? 0n,
-          rifValue: builder.backersEstimatedRewards?.rif.amount.value ?? 0n,
-          usdValue: builder.backersEstimatedRewards
+          rbtcValue: builder.backerEstimatedRewards?.rbtc.amount.value ?? 0n,
+          rifValue: builder.backerEstimatedRewards?.rif.amount.value ?? 0n,
+          usdValue: builder.backerEstimatedRewards
             ? getCombinedFiatAmount([
-                builder.backersEstimatedRewards.rif.amount,
-                builder.backersEstimatedRewards.rbtc.amount,
+                builder.backerEstimatedRewards.rif.amount,
+                builder.backerEstimatedRewards.rbtc.amount,
               ]).toNumber()
             : 0,
         },
