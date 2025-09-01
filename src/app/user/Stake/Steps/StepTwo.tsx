@@ -1,12 +1,11 @@
 import { useStakingContext } from '@/app/user/Stake/StakingContext'
 import { StepProps } from '@/app/user/Stake/types'
-import { Divider } from '@/components/Divider'
 import { Popover } from '@/components/Popover'
 import { Header, Label, Paragraph, Span } from '@/components/Typography'
 import { executeTxFlow } from '@/shared/notification'
 import Image from 'next/image'
 import { useCallback, useEffect, useMemo, useRef } from 'react'
-import { StepActionButtons } from '../components/StepActionButtons'
+import { StepLayout } from '../components/StepLayout'
 import { StakeTokenAmountDisplay } from '../components/StakeTokenAmountDisplay'
 import { TransactionStatus } from '../components/TransactionStatus'
 import { useAllowance } from '../hooks/useAllowance'
@@ -49,7 +48,21 @@ export const StepTwo = ({ onGoNext, onGoBack }: StepProps) => {
   }, [onRequestAllowance, onGoNext])
 
   return (
-    <>
+    <StepLayout
+      primaryButton={{
+        label: primaryButtonLabel,
+        onClick: handleRequestAllowance,
+        disabled: isAllowanceReadLoading || !amount || Number(amount) <= 0,
+      }}
+      secondaryButton={{
+        label: 'Back',
+        onClick: onGoBack,
+        disabled: isAllowanceReadLoading,
+      }}
+      isTxPending={isTxPending}
+      isRequesting={isRequesting}
+      additionalContent={<HelpPopover />}
+    >
       <div className="flex flex-col md:flex-row md:items-start md:justify-between mb-8">
         <div className="flex-1 mb-4 md:mb-0">
           <Label variant="tag" className="text-bg-0">
@@ -78,25 +91,7 @@ export const StepTwo = ({ onGoNext, onGoBack }: StepProps) => {
       <div className="block md:hidden mb-4">
         <HelpPopover />
       </div>
-
-      <Divider />
-
-      <StepActionButtons
-        primaryButton={{
-          label: primaryButtonLabel,
-          onClick: handleRequestAllowance,
-          disabled: isAllowanceReadLoading || !amount || Number(amount) <= 0,
-        }}
-        secondaryButton={{
-          label: 'Back',
-          onClick: onGoBack,
-          disabled: isAllowanceReadLoading,
-        }}
-        isTxPending={isTxPending}
-        isRequesting={isRequesting}
-        additionalContent={<HelpPopover />}
-      />
-    </>
+    </StepLayout>
   )
 }
 

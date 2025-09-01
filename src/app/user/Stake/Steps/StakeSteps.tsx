@@ -7,11 +7,8 @@ interface Props {
 }
 
 export const StakeSteps = ({ currentStep }: Props) => {
-  // Calculate the transform offset to match the screenshot positioning
-  // Step 1 should be on the left, Step 2 partially visible, Step 3 showing just the beginning
   const getTransformOffset = () => {
     const stepIndex = currentStep
-
     const offsets = [0, -18, -36]
     return offsets[stepIndex] || 0
   }

@@ -11,7 +11,7 @@ interface Props {
 }
 
 export const StepWrapper = ({ currentStep, progress, description, children }: Props) => (
-  <div className="p-6">
+  <div className="p-6 h-full flex flex-col">
     <Header className="mt-16 mb-4">STAKE</Header>
 
     <div className="mb-12">
@@ -25,6 +25,6 @@ export const StepWrapper = ({ currentStep, progress, description, children }: Pr
       </Paragraph>
     )}
 
-    {children}
+    <div className="flex-1">{children}</div>
   </div>
 )

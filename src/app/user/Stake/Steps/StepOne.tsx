@@ -1,6 +1,5 @@
 import { StakeInput } from '@/app/user/Stake/StakeInput'
 import { Button } from '@/components/Button'
-import { Divider } from '@/components/Divider'
 import { TokenImage } from '@/components/TokenImage'
 import { Label, Span } from '@/components/Typography'
 import Big from '@/lib/big'
@@ -8,6 +7,7 @@ import { formatCurrency, handleAmountInput } from '@/lib/utils'
 import { useCallback, useEffect, useMemo, useRef } from 'react'
 import { useStakingContext } from '../StakingContext'
 import { StepProps } from '../types'
+import { StepLayout } from '../components/StepLayout'
 
 export const StepOne = ({ onGoNext }: StepProps) => {
   const { amount, onAmountChange, tokenToSend } = useStakingContext()
@@ -47,7 +47,13 @@ export const StepOne = ({ onGoNext }: StepProps) => {
   }, [])
 
   return (
-    <>
+    <StepLayout
+      primaryButton={{
+        label: 'Continue',
+        onClick: onGoNext,
+        disabled: !canGoNext,
+      }}
+    >
       <StakeInput
         ref={inputRef}
         onChange={handleAmountChange}
@@ -76,20 +82,6 @@ export const StepOne = ({ onGoNext }: StepProps) => {
           <Span variant="body-s">Max</Span>
         </Button>
       </div>
-
-      <Divider className="mt-8" />
-
-      <div className="flex md:justify-end">
-        <Button
-          variant="primary"
-          onClick={onGoNext}
-          disabled={!canGoNext}
-          data-testid="ContinueButton"
-          className="w-full md:w-auto"
-        >
-          Continue
-        </Button>
-      </div>
-    </>
+    </StepLayout>
   )
 }

@@ -11,7 +11,7 @@ interface ButtonProps {
 
 interface Props {
   primaryButton: ButtonProps
-  secondaryButton: ButtonProps
+  secondaryButton?: ButtonProps
   isTxPending?: boolean
   isRequesting?: boolean
   additionalContent?: ReactNode
@@ -34,14 +34,16 @@ export const StepActionButtons = ({
     >
       {additionalContent && <div className="hidden md:inline">{additionalContent}</div>}
       <div className="flex gap-4">
-        <Button
-          variant="secondary-outline"
-          onClick={secondaryButton.onClick}
-          data-testid={secondaryButton.label}
-          disabled={secondaryButton.disabled || isRequesting || isTxPending}
-        >
-          {secondaryButton.label}
-        </Button>
+        {secondaryButton && (
+          <Button
+            variant="secondary-outline"
+            onClick={secondaryButton.onClick}
+            data-testid={secondaryButton.label}
+            disabled={secondaryButton.disabled || isRequesting || isTxPending}
+          >
+            {secondaryButton.label}
+          </Button>
+        )}
         {isTxPending ? (
           <TransactionInProgressButton />
         ) : (
