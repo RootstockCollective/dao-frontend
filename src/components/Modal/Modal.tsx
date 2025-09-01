@@ -40,25 +40,20 @@ export const Modal: FC<ModalProps> = ({
 
       {/* Modal Container */}
       <div
-        style={{
-          width: fullscreen ? '100vw' : width ? `${width}px` : undefined,
-          height: fullscreen ? '100vh' : height !== 'auto' ? `${height}px` : undefined,
-          maxWidth: fullscreen ? '100vw' : '100vw',
-          maxHeight: fullscreen ? '100vh' : '100vh',
-        }}
         className={cn(
-          'relative',
+          'relative overflow-x-hidden bg-bg-80 rounded overflow-y-auto min-w-0',
+          // Width logic
           fullscreen
-            ? 'w-screen h-screen' // Fullscreen: use viewport units
+            ? 'w-screen' // Fullscreen: use viewport units
             : width
-              ? 'w-full max-w-[95vw]'
-              : 'w-[95vw] max-w-[380px] md:w-[600px] md:max-w-[97vw]', // Responsive width with proper viewport constraints
+              ? `w-[${width}px] max-w-[95vw]` // Fixed width with viewport constraint
+              : 'w-[95vw] max-w-[380px] md:w-[600px] md:max-w-[97vw]', // Responsive width
+          // Height logic
           fullscreen
-            ? '' // Fullscreen: no height constraints
+            ? 'h-screen' // Fullscreen: use viewport units
             : height === 'auto'
               ? 'h-full md:h-auto' // Auto on desktop, full on mobile when no height specified
-              : 'h-full', // Full height when specific height provided
-          'bg-bg-80 rounded overflow-y-auto min-w-0',
+              : `h-[${height}px]`, // Fixed height
           className,
         )}
       >

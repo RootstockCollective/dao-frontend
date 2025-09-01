@@ -15,7 +15,7 @@ export const StakeSteps = ({ currentStep }: Props) => {
 
   return (
     <div
-      className="relative w-screen -ml-6 flex items-center transition-transform duration-600 ease-in-out whitespace-nowrap flex-nowrap"
+      className="relative w-screen -mx-6 flex items-center transition-transform duration-600 ease-in-out whitespace-nowrap flex-nowrap px-6"
       style={{
         transform: `translateX(${getTransformOffset()}%)`,
       }}
@@ -25,8 +25,8 @@ export const StakeSteps = ({ currentStep }: Props) => {
         variant="tag"
         caps
         className={cn(
-          'transition-all duration-400 ease-out whitespace-nowrap flex-shrink-0 mr-2',
-          'text-text-100 scale-100 ml-6',
+          'transition-all duration-400 ease-out whitespace-nowrap flex-shrink-0 mr-1',
+          'text-text-100 scale-100',
         )}
       >
         SELECT AMOUNT
@@ -34,7 +34,7 @@ export const StakeSteps = ({ currentStep }: Props) => {
 
       <CaretRight
         className={cn(
-          'flex-shrink-0 transition-all duration-400 ease-out mr-2',
+          'flex-shrink-0 transition-all duration-400 ease-out mr-1',
           currentStep >= 1 ? 'opacity-100 scale-100' : 'opacity-60 scale-98',
         )}
       />
@@ -44,7 +44,7 @@ export const StakeSteps = ({ currentStep }: Props) => {
         variant="tag"
         caps
         className={cn(
-          'transition-all duration-400 ease-out whitespace-nowrap flex-shrink-0 mr-2',
+          'transition-all duration-400 ease-out whitespace-nowrap flex-shrink-0 mr-1',
           currentStep >= 1 ? 'text-text-100 scale-100' : 'text-text-60 scale-98',
         )}
       >
@@ -53,7 +53,7 @@ export const StakeSteps = ({ currentStep }: Props) => {
 
       <CaretRight
         className={cn(
-          'flex-shrink-0 transition-all duration-400 ease-out mr-2',
+          'flex-shrink-0 transition-all duration-400 ease-out mr-1',
           currentStep >= 2 ? 'opacity-100 scale-100' : 'opacity-60 scale-98',
         )}
       />
