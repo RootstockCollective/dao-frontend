@@ -8,7 +8,13 @@ interface ClaimRewardsButtonProps {
 
 export const ClaimRewardsButton: React.FC<ClaimRewardsButtonProps> = ({ onClick, disabled = false }) => {
   return (
-    <Button variant="secondary-outline" onClick={onClick} disabled={disabled} className="font-rootstock-sans">
+    <Button
+      variant="secondary-outline"
+      onClick={onClick}
+      disabled={disabled}
+      className="font-rootstock-sans"
+      textClassName="font-normal sm:font-bold whitespace-nowrap"
+    >
       Claim Rewards
     </Button>
   )

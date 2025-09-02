@@ -19,6 +19,7 @@ export const EstimatedCycleRewards = ({ builder, gauge }: { builder: Address; ga
       isLoading={rifData.isLoading || rbtcData.isLoading}
       title="Estimated this cycle"
       info="Your estimated rewards which will become claimable at the start of the next Cycle."
+      className="flex-row sm:flex-col justify-between w-full sm:w-auto"
     >
       <TokenAmount amount={rifData.amount} tokenSymbol={TokenSymbol.RIF} amountInFiat={rifData.fiatAmount} />
       <TokenAmount
