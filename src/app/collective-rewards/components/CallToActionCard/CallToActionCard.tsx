@@ -75,18 +75,23 @@ const Collapsible = ({ children, className }: ChildProps) => {
   )
 }
 
-const Toggle = () => {
+interface ToggleProps {
+  className?: string
+  iconClassName?: string
+}
+
+const Toggle = ({ className, iconClassName }: ToggleProps) => {
   const ctx = useContext(CallToActionCardContext)
   if (!ctx) throw new Error('CallToActionCard.Toggle must be used within CallToActionCard')
 
   return (
-    <div className="flex md:hidden w-full justify-end items-center h-6 py-2 cursor-pointer">
+    <div className={cn('flex md:hidden w-full items-center h-6 py-2 cursor-pointer', className)}>
       <motion.div
         animate={{ rotate: ctx.isOpen ? 180 : 0 }}
         transition={{ duration: 0.3, ease: 'easeInOut' }}
         onClick={ctx.toggle}
       >
-        <ChevronDownIcon className="w-6 h-6 text-gray-600 hover:text-gray-800" />
+        <ChevronDownIcon className={cn('w-6 h-6 text-gray-600 hover:text-gray-800', iconClassName)} />
       </motion.div>
     </div>
   )
