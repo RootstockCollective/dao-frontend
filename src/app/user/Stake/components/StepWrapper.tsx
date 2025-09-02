@@ -7,12 +7,15 @@ import { stepConfig } from '../Steps/stepConfig'
 import { useSteps } from '../hooks/useSteps'
 import { StepActionButtons } from './StepActionButtons'
 import { Divider } from '@/components/Divider'
+import { useIsDesktop } from '@/shared/hooks/useIsDesktop'
 
 interface StepWrapperProps {
   onCloseModal: () => void
 }
 
 export const StepWrapper = ({ onCloseModal }: StepWrapperProps) => {
+  const isDesktop = useIsDesktop()
+
   // UI Logic: Handle step management internally
   const { step, ...stepFunctions } = useSteps(stepConfig.length)
 
@@ -23,7 +26,7 @@ export const StepWrapper = ({ onCloseModal }: StepWrapperProps) => {
   const { progress, description, showDivider } = stepConfigItem
 
   return (
-    <Modal onClose={onCloseModal} fullscreen>
+    <Modal onClose={onCloseModal} fullscreen={!isDesktop}>
       <div className="p-4 h-full flex flex-col">
         <Header className="mt-16 mb-4">STAKE</Header>
 
