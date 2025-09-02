@@ -3,20 +3,37 @@ import Big from '@/lib/big'
 import { formatCurrencyWithLabel } from '@/lib/utils'
 import { createContext, FC, ReactNode, useCallback, useContext, useMemo, useState } from 'react'
 
-type StakePreviewToken = {
+interface StakePreviewToken {
   amount: string
   amountConvertedToCurrency: string
   balance: string
   tokenSymbol: string
 }
 
-interface StakingContextProps {
+interface ButtonAction {
+  label: string
+  onClick: () => void
+  disabled?: boolean
+  loading?: boolean
+  isTxPending?: boolean
+}
+
+interface ButtonActions {
+  primary: ButtonAction
+  secondary?: ButtonAction
+}
+
+export interface StakingContextProps {
   amount: string
   onAmountChange: (amount: string) => void
   tokenToSend: StakingToken
   tokenToReceive: StakingToken
   stakePreviewFrom: StakePreviewToken
   stakePreviewTo: StakePreviewToken
+
+  // Button action management
+  buttonActions: ButtonActions
+  setButtonActions: (actions: ButtonActions) => void
 }
 
 const DEFAULT_STAKE_PREVIEW_TOKEN = {
@@ -26,6 +43,16 @@ const DEFAULT_STAKE_PREVIEW_TOKEN = {
   amountConvertedToCurrency: formatCurrencyWithLabel(0),
 }
 
+const DEFAULT_BUTTON_ACTIONS: ButtonActions = {
+  primary: {
+    label: 'Continue',
+    onClick: () => {},
+    disabled: false,
+    loading: false,
+    isTxPending: false,
+  },
+}
+
 const StakingContext = createContext<StakingContextProps>({
   amount: '0',
   onAmountChange: () => {},
@@ -33,6 +60,8 @@ const StakingContext = createContext<StakingContextProps>({
   tokenToReceive: { balance: '', symbol: '', price: '', contract: '0x0' },
   stakePreviewFrom: { ...DEFAULT_STAKE_PREVIEW_TOKEN },
   stakePreviewTo: { ...DEFAULT_STAKE_PREVIEW_TOKEN },
+  buttonActions: DEFAULT_BUTTON_ACTIONS,
+  setButtonActions: () => {},
 })
 
 interface Props {
@@ -43,6 +72,7 @@ interface Props {
 
 export const StakingProvider: FC<Props> = ({ tokenToSend, tokenToReceive, children }) => {
   const [stakeData, setStakeData] = useState({ amount: '' })
+  const [buttonActions, setButtonActions] = useState<ButtonActions>(DEFAULT_BUTTON_ACTIONS)
 
   const onAmountChange = useCallback((amount: string) => {
     if (amount !== '.') {
@@ -98,8 +128,10 @@ export const StakingProvider: FC<Props> = ({ tokenToSend, tokenToReceive, childr
       tokenToReceive,
       stakePreviewFrom,
       stakePreviewTo,
+      buttonActions,
+      setButtonActions,
     }),
-    [stakeData.amount, onAmountChange, tokenToSend, tokenToReceive, stakePreviewFrom, stakePreviewTo],
+    [stakeData.amount, tokenToSend, tokenToReceive, stakePreviewFrom, stakePreviewTo, buttonActions],
   )
 
   return <StakingContext.Provider value={data}>{children}</StakingContext.Provider>
