@@ -11,8 +11,9 @@ import { DelegateModal } from '@/app/delegate/components/DelegateModal'
 import { useDelegateToAddress } from '@/shared/hooks/useDelegateToAddress'
 import { executeTxFlow } from '@/shared/notification/executeTxFlow'
 import { useAccount } from 'wagmi'
-import { formatNumberWithCommas } from '@/lib/utils'
+import { cn, formatNumberWithCommas, shortAddress } from '@/lib/utils'
 import { EditIconKoto } from '@/components/Icons'
+import { useIsDesktop } from '@/shared/hooks/useIsDesktop'
 
 export const ConnectedSection = () => {
   const {
@@ -30,6 +31,7 @@ export const ConnectedSection = () => {
 
   const { address: ownAddress } = useAccount()
   const { onDelegate } = useDelegateToAddress()
+  const isDesktop = useIsDesktop()
 
   const [shouldShowDelegates, setShouldShowDelegates] = useState(false)
   const [isDelegateModalOpened, setIsDelegateModalOpened] = useState(false)
@@ -78,11 +80,12 @@ export const ConnectedSection = () => {
   const votingPower = formatNumberWithCommas(Number(cards.own.contentValue))
 
   const shouldDisableButtons = isDelegationPending || isReclaimPending
+  const chosenAddress = isDesktop ? delegateeAddress : shortAddress(delegateeAddress)
 
   return (
     <>
       {!didIDelegateToMyself && delegateeAddress && (
-        <div className="flex flex-row bg-bg-80 p-[24px]">
+        <div className="flex flex-col md:flex-row gap-8 bg-bg-80 p-6">
           <DelegateCard
             address={delegateeAddress}
             name={delegateeRns}
@@ -101,19 +104,20 @@ export const ConnectedSection = () => {
             data-testid={`delegateCard-${delegateeAddress}`}
             buttonDisabled={shouldDisableButtons}
           />
-          <div className="flex flex-col ml-[32px] w-full">
+          <div className="flex w-full flex-col-reverse md:flex-col gap-6">
             {/* Banner here with delegation perks */}
-            <div className="text-bg-100 p-[24px] relative mb-[110px] bg-gradient-to-r from-[#E3FFEB] via-[#66CD8E] to-[#00031E]">
+            <div className="text-bg-100 p-6 mt-10 md:mt-0 md:mb-10 relative bg-gradient-to-r from-[#E3FFEB] via-[#66CD8E] to-[#00031E]">
               <Image
                 src="/images/hero/delegation-perks-pixels.svg"
                 alt="Pixels Divider"
                 width={50}
                 height={40}
-                className="absolute left-[0px] -bottom-[30px] z-10 hidden md:block"
+                className={cn(
+                  'absolute left-0 z-10 md:left-0 scale-y-[-1] md:scale-y-100',
+                  isDesktop ? '-bottom-[30px]' : '-top-[30px]',
+                )}
               />
-              <Header variant="e3" className="text-bg-100 leading-[40px] text-[20px]">
-                DELEGATION PERKS
-              </Header>
+              <Header variant="h3">DELEGATION PERKS</Header>
               <ul className="list-[circle] list-inside">
                 <li>
                   <Span>your tokens stay in your wallet</Span>
@@ -126,21 +130,24 @@ export const ConnectedSection = () => {
                 </li>
               </ul>
             </div>
-            <Paragraph data-testid="DelegateeAddress">
-              You have chosen <span className="text-primary">{delegateeAddress}</span> to take part in
-              governance decisions on your behalf.
-            </Paragraph>
-            <Paragraph>You only delegated your own voting power, not your tokens 😅</Paragraph>
-            {/* Update delegate button here */}
-            <Button
-              variant="secondary-outline"
-              onClick={onShowDelegates}
-              className="w-[fit-content] mt-[24px] font-normal gap-1 py-[8px] rounded border-bg-40 hover:border-primary"
-              data-testid="updateDelegateButton"
-            >
-              <EditIconKoto size={20} />
-              <span>Update delegate</span>
-            </Button>
+            <div className="flex flex-col gap-6">
+              <div className="flex flex-col gap-1">
+                <Paragraph data-testid="DelegateeAddress">
+                  You have chosen <span className="text-primary">{delegateeRns || chosenAddress}</span> to
+                  take part in governance decisions on your behalf.
+                </Paragraph>
+                <Paragraph>You only delegated your own voting power, not your tokens.</Paragraph>
+              </div>
+              <Button
+                variant="secondary-outline"
+                onClick={onShowDelegates}
+                className="w-full md:w-fit gap-1 hover:border-primary"
+                data-testid="updateDelegateButton"
+              >
+                <EditIconKoto size={20} />
+                <Span variant="body-s">Update delegate</Span>
+              </Button>
+            </div>
           </div>
         </div>
       )}
