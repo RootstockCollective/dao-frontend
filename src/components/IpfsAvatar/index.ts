@@ -1,0 +1,1 @@
+export { IpfsAvatar } from './IpfsAvatar'
