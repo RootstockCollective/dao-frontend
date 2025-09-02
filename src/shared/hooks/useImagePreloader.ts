@@ -11,7 +11,6 @@ export function useImagePreloader(imagePaths: string[]) {
 
   useEffect(() => {
     if (!imagePaths.length) {
-      setIsLoaded(true)
       return
     }
 

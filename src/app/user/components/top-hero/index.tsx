@@ -9,7 +9,7 @@ interface TopHeroPossibilityProps {
 }
 
 const TopHeroPossibility = ({ title, desc }: TopHeroPossibilityProps) => (
-  <div className="flex flex-col mt-6">
+  <div className="flex flex-col">
     <Header variant="h2" className="text-black">
       {title.toUpperCase()}
     </Header>
@@ -20,7 +20,7 @@ const TopHeroPossibility = ({ title, desc }: TopHeroPossibilityProps) => (
 )
 
 const TopHeroContent = () => (
-  <div className="pt-4 pb-10">
+  <div className="flex flex-col gap-6">
     <TopHeroPossibility
       title="build"
       desc="Become a builder on the Rootstock blockchain by leveraging its EVM compatibility and familiar development tools."

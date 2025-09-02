@@ -1,6 +1,8 @@
 import type { Meta, StoryObj } from '@storybook/nextjs'
 import { HeroComponent } from './HeroComponent'
 import { Button } from '../Button'
+import { Header, Paragraph } from '../Typography'
+import { CommunityItemButtonHandler } from '@/app/communities/components/CommunityItemButtonHandler'
 
 const meta: Meta<typeof HeroComponent> = {
   title: 'Components/HeroComponent',
@@ -45,5 +47,64 @@ export const Proposal: Story = {
     ],
     button: <Button>Create a proposal</Button>,
     className: 'w-full md:w-[1144px]',
+  },
+}
+
+export const TopHeroNotConnected: Story = {
+  args: {
+    imageSrc: '/images/hero/home-hero-top.png',
+    title: 'THE COLLECTIVE',
+    subtitle: 'POSSIBILITIES',
+    topText: "DON'T MISS",
+    content: (
+      <div className="flex flex-col gap-6">
+        <div className="flex flex-col">
+          <Header variant="h2" className="text-black">
+            BUILD
+          </Header>
+          <Paragraph variant="body" className="text-black">
+            Become a builder on the Rootstock blockchain by leveraging its EVM compatibility and familiar
+            development tools.
+          </Paragraph>
+        </div>
+        <div className="flex flex-col">
+          <Header variant="h2" className="text-black">
+            EARN
+          </Header>
+          <Paragraph variant="body" className="text-black">
+            Stake RIF and get voting rights and participation in the DAO&apos;s governance and decision-making
+            process.
+          </Paragraph>
+        </div>
+        <div className="flex flex-col">
+          <Header variant="h2" className="text-black">
+            PARTICIPATE
+          </Header>
+          <Paragraph variant="body" className="text-black">
+            Community proposals are discussed and voted on, determining actions such as grants or governance
+            changes.
+          </Paragraph>
+        </div>
+      </div>
+    ),
+    button: <Button data-testid="ConnectButton">Connect wallet</Button>,
+    className: 'w-full md:w-[1144px]',
+  },
+}
+
+export const CommunitiesSection: Story = {
+  args: {
+    className: 'mt-2',
+    imageSrc: '/images/hero/home-hero-bottom.png',
+    title: 'BE PART OF THE COMMUNITIES',
+    subtitle: 'CURATED BY THE COLLECTIVE',
+    items: [
+      'Collective Badges are dynamic NFTs that represent your role and impact within the DAO.',
+      "Whether you're a Builder, Backer, or Community Contributor, your badge shows that you belong.",
+      'Be part of something bigger, helping shape the future of Bitcoin.',
+      "These aren't just collectibles. They are your passport to participation.",
+    ],
+    button: <CommunityItemButtonHandler color="black" data-testid="LearnMoreButton" />,
+    dataTestId: 'HeroCommunitiesComponent',
   },
 }
