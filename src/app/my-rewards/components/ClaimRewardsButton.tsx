@@ -13,7 +13,7 @@ export const ClaimRewardsButton: React.FC<ClaimRewardsButtonProps> = ({ onClick,
       onClick={onClick}
       disabled={disabled}
       className="font-rootstock-sans"
-      textClassName="font-normal sm:font-bold whitespace-nowrap"
+      textClassName="font-normal text-sm sm:text-base sm:font-bold whitespace-nowrap"
     >
       Claim Rewards
     </Button>
