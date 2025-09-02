@@ -5,7 +5,7 @@ import { DelegateCard } from '@/app/delegate/components/DelegateCard'
 import { Header, Paragraph, Span } from '@/components/Typography'
 import { Button } from '@/components/Button'
 import { Address } from 'viem'
-import { useCallback, useState } from 'react'
+import { useCallback, useRef, useState } from 'react'
 import Image from 'next/image'
 import { DelegateModal } from '@/app/delegate/components/DelegateModal'
 import { useDelegateToAddress } from '@/shared/hooks/useDelegateToAddress'
@@ -38,6 +38,9 @@ export const ConnectedSection = () => {
   const [isReclaimModalOpened, setIsReclaimModalOpened] = useState(false)
   const [addressToDelegate, setAddressToDelegate] = useState<Address | null>(null)
   const [rnsToDelegate, setRnsToDelegate] = useState<string | undefined>(undefined)
+  const delegateCardRef = useRef<HTMLDivElement>(null)
+  const delegatesContainerRef = useRef<HTMLDivElement>(null)
+  const updateDelegateButtonRef = useRef<HTMLButtonElement>(null)
 
   const handleDelegate = useCallback(
     (address: Address) => {
@@ -64,8 +67,20 @@ export const ConnectedSection = () => {
     })
   }, [onDelegate, ownAddress, setIsReclaimPending, setIsReclaimModalOpened, refetch])
 
-  const onShowDelegates = () => setShouldShowDelegates(true)
-  const onHideDelegates = () => setShouldShowDelegates(false)
+  const onShowDelegates = () => {
+    setShouldShowDelegates(true)
+    if (!isDesktop) {
+      setTimeout(() => {
+        delegatesContainerRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' })
+      }, 1)
+    }
+  }
+  const onHideDelegates = () => {
+    setShouldShowDelegates(false)
+    if (!isDesktop) {
+      updateDelegateButtonRef.current?.scrollIntoView({ behavior: 'smooth', block: 'end' })
+    }
+  }
 
   const onShowDelegate = (address: Address, rns?: string) => {
     setIsDelegateModalOpened(true)
@@ -85,7 +100,7 @@ export const ConnectedSection = () => {
   return (
     <>
       {!didIDelegateToMyself && delegateeAddress && (
-        <div className="flex flex-col md:flex-row gap-8 bg-bg-80 p-6">
+        <div ref={delegateCardRef} className="flex flex-col md:flex-row gap-8 bg-bg-80 p-6">
           <DelegateCard
             address={delegateeAddress}
             name={delegateeRns}
@@ -139,6 +154,7 @@ export const ConnectedSection = () => {
                 <Paragraph>You only delegated your own voting power, not your tokens.</Paragraph>
               </div>
               <Button
+                ref={updateDelegateButtonRef}
                 variant="secondary-outline"
                 onClick={onShowDelegates}
                 className="w-full md:w-fit gap-1 hover:border-primary"
@@ -152,6 +168,7 @@ export const ConnectedSection = () => {
         </div>
       )}
       <div
+        ref={delegatesContainerRef}
         className={`transition-all duration-300 overflow-hidden ${
           shouldShowDelegates || didIDelegateToMyself ? 'max-h-[100%] opacity-100' : 'max-h-0 opacity-0'
         }`}
