@@ -12,7 +12,7 @@ import { Address } from 'viem'
 import { TOKENS } from '@/lib/tokens'
 import { useHandleErrors } from '@/app/collective-rewards/utils'
 import { LoadingSpinner } from '@/components/LoadingSpinner'
-import { CallToActionCard } from '@/app/collective-rewards/components/CallToActionCard/CallToActionCard'
+import { Collapsible } from '@/components/Collapsible'
 
 const Container = ({ children, className }: { children: ReactNode; className?: string }) => {
   return (
@@ -52,42 +52,40 @@ export const BackerRewardsMetrics = ({ backer }: { backer: Address }) => {
       {backerRewardsLoading ? (
         <LoadingSpinner size="large" />
       ) : (
-        <CallToActionCard defaultOpen={false}>
-          <CallToActionCard.Content>
-            <div
-              className="flex flex-col sm:flex-row sm:items-start gap-6 sm:gap-2 self-stretch"
-              data-testid="backer-rewards-cards-container"
-            >
-              <Container>
-                <UnclaimedRewards />
-              </Container>
-              <Container>
-                <InnerContainer>
-                  <BackerEstimatedRewards />
-                  <BackerABI backer={backer} />
-                </InnerContainer>
-              </Container>
-              <Container className={`${isDetailedView ? 'visible' : 'invisible'} hidden md:block`}>
-                <InnerContainer>
-                  <TotalEarned />
-                  <RBI backer={backer} tokens={TOKENS} />
-                </InnerContainer>
-              </Container>
-            </div>
-          </CallToActionCard.Content>
-          <CallToActionCard.Collapsible>
+        <Collapsible.Root defaultOpen={false}>
+          <div
+            className="flex flex-col sm:flex-row sm:items-start gap-6 sm:gap-2 self-stretch"
+            data-testid="backer-rewards-cards-container"
+          >
+            <Container>
+              <UnclaimedRewards />
+            </Container>
+            <Container>
+              <InnerContainer>
+                <BackerEstimatedRewards />
+                <BackerABI backer={backer} />
+              </InnerContainer>
+            </Container>
+            <Container className={`${isDetailedView ? 'visible' : 'invisible'} hidden md:block`}>
+              <InnerContainer>
+                <TotalEarned />
+                <RBI backer={backer} tokens={TOKENS} />
+              </InnerContainer>
+            </Container>
+          </div>
+          <Collapsible.Content>
             <Container className="block md:hidden mt-6">
               <InnerContainer>
                 <TotalEarned />
                 <RBI backer={backer} tokens={TOKENS} />
               </InnerContainer>
             </Container>
-          </CallToActionCard.Collapsible>
-          <CallToActionCard.Toggle
+          </Collapsible.Content>
+          <Collapsible.Toggle
             className="justify-center my-3 md:hidden"
             iconClassName="size-6 text-background-0 hover:text-background-20"
           />
-        </CallToActionCard>
+        </Collapsible.Root>
       )}
     </div>
   )

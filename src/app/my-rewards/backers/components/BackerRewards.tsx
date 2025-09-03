@@ -10,7 +10,7 @@ export const BackerRewards: FC<{ backer: Address }> = ({ backer }) => {
     <div className="flex flex-col w-full gap-10">
       <BackerRewardsContextProvider backer={backer} tokens={TOKENS}>
         <BackerRewardsMetrics backer={backer} />
-        {/* Temporary hiding of the table on mobile */}
+        {/* FIXME: Temporary hiding of the table on mobile */}
         <div className="hidden md:block">
           <BackerRewardsTableContainer />
         </div>

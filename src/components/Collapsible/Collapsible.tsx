@@ -4,38 +4,39 @@ import { ChevronDownIcon } from 'lucide-react'
 import { motion, AnimatePresence } from 'motion/react'
 import { createContext, FC, ReactNode, useContext, useState } from 'react'
 
-interface CallToActionCardContext {
+// TODO: this component can be replaced by Radix Collapsible
+// https://www.radix-ui.com/primitives/docs/components/collapsible
+
+interface CollapsibleContext {
   isOpen: boolean
   toggle: () => void
 }
 
-const CallToActionCardContext = createContext<CallToActionCardContext | null>(null)
+const CollapsibleContext = createContext<CollapsibleContext | null>(null)
 
-interface CallToActionCardProviderProps {
+interface CollapsibleProviderProps {
   defaultOpen?: boolean
   children: ReactNode
 }
 
-const CallToActionCardProvider = ({ defaultOpen = true, children }: CallToActionCardProviderProps) => {
+const CollapsibleProvider = ({ defaultOpen = true, children }: CollapsibleProviderProps) => {
   const [isOpen, setIsOpen] = useState(defaultOpen)
   const toggle = () => setIsOpen(prev => !prev)
 
-  return (
-    <CallToActionCardContext.Provider value={{ isOpen, toggle }}>{children}</CallToActionCardContext.Provider>
-  )
+  return <CollapsibleContext.Provider value={{ isOpen, toggle }}>{children}</CollapsibleContext.Provider>
 }
 
-interface CallToActionCardProps extends CommonComponentProps {
+export interface CollapsibleProps extends CommonComponentProps {
   defaultOpen?: boolean
   children: ReactNode
   className?: string
 }
 
-export const CallToActionCard = ({ defaultOpen = true, children, className = '' }: CallToActionCardProps) => {
+const Root: FC<CollapsibleProps> = ({ defaultOpen = true, children, className = '' }) => {
   return (
-    <CallToActionCardProvider defaultOpen={defaultOpen}>
+    <CollapsibleProvider defaultOpen={defaultOpen}>
       <div className={cn('flex flex-col flex-1 w-full', className)}>{children}</div>
-    </CallToActionCardProvider>
+    </CollapsibleProvider>
   )
 }
 
@@ -44,13 +45,9 @@ interface ChildProps {
   className?: string
 }
 
-const Banner = ({ children }: { children: ReactNode }) => <div className="hidden md:block">{children}</div>
-
-const Content = ({ children, className }: ChildProps) => <div className={className}>{children}</div>
-
-const Collapsible = ({ children, className }: ChildProps) => {
-  const ctx = useContext(CallToActionCardContext)
-  if (!ctx) throw new Error('CallToActionCard.Collapsible must be used within CallToActionCard')
+const Content = ({ children, className }: ChildProps) => {
+  const ctx = useContext(CollapsibleContext)
+  if (!ctx) throw new Error('Collapsible.Content must be used within Collapsible')
 
   return (
     <AnimatePresence>
@@ -81,8 +78,8 @@ interface ToggleProps {
 }
 
 const Toggle = ({ className, iconClassName }: ToggleProps) => {
-  const ctx = useContext(CallToActionCardContext)
-  if (!ctx) throw new Error('CallToActionCard.Toggle must be used within CallToActionCard')
+  const ctx = useContext(CollapsibleContext)
+  if (!ctx) throw new Error('Collapsible.Toggle must be used within Collapsible')
 
   return (
     <div className={cn('flex md:hidden w-full items-center h-6 py-2 cursor-pointer', className)}>
@@ -97,7 +94,8 @@ const Toggle = ({ className, iconClassName }: ToggleProps) => {
   )
 }
 
-CallToActionCard.Banner = Banner
-CallToActionCard.Content = Content
-CallToActionCard.Collapsible = Collapsible
-CallToActionCard.Toggle = Toggle
+export const Collapsible = {
+  Root,
+  Content,
+  Toggle,
+}

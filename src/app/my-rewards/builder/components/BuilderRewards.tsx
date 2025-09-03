@@ -9,8 +9,8 @@ import { TotalEarned } from './TotalEarned'
 import { UnclaimedRewards } from './UnclaimedRewards'
 import { UpdateBackerRewardModal } from '@/app/my-rewards/builder/components/UpdateBackerRewardModal'
 import { ActionsContainer } from '@/components/containers/ActionsContainer'
-import { CallToActionCard } from '@/app/collective-rewards/components/CallToActionCard/CallToActionCard'
 import { cn } from '@/lib/utils'
+import { Collapsible } from '@/components/Collapsible'
 
 const BuilderRewardsContainer = ({
   children,
@@ -44,35 +44,33 @@ export const BuilderRewards = ({ address, gauge }: { address: Address; gauge: Ad
       className="bg-v3-bg-accent-80 pb-10"
       containerClassName="gap-10"
     >
-      <CallToActionCard defaultOpen={false}>
-        <CallToActionCard.Content>
-          <div
-            className="flex flex-col sm:flex-row sm:items-start gap-6 sm:gap-2 self-stretch"
-            data-testid="builder-rewards-cards-container"
-          >
-            <BuilderRewardsContainer>
-              <UnclaimedRewards builder={address} gauge={gauge} />
-            </BuilderRewardsContainer>
+      <Collapsible.Root defaultOpen={false}>
+        <div
+          className="flex flex-col sm:flex-row sm:items-start gap-6 sm:gap-2 self-stretch"
+          data-testid="builder-rewards-cards-container"
+        >
+          <BuilderRewardsContainer>
+            <UnclaimedRewards builder={address} gauge={gauge} />
+          </BuilderRewardsContainer>
 
-            <BuilderRewardsContainer>
-              <EstimatedCycleRewards builder={address} gauge={gauge} />
-            </BuilderRewardsContainer>
+          <BuilderRewardsContainer>
+            <EstimatedCycleRewards builder={address} gauge={gauge} />
+          </BuilderRewardsContainer>
 
-            <BuilderRewardsContainer className="hidden md:block">
-              <LastCycleRewards gauge={gauge} />
-            </BuilderRewardsContainer>
+          <BuilderRewardsContainer className="hidden md:block">
+            <LastCycleRewards gauge={gauge} />
+          </BuilderRewardsContainer>
 
-            <BuilderRewardsContainer className="hidden md:block">
-              <TotalEarned gauge={gauge} />
-            </BuilderRewardsContainer>
+          <BuilderRewardsContainer className="hidden md:block">
+            <TotalEarned gauge={gauge} />
+          </BuilderRewardsContainer>
 
-            <BuilderRewardsContainer>
-              <AllTimeShare gauge={gauge} />
-            </BuilderRewardsContainer>
-          </div>
-        </CallToActionCard.Content>
+          <BuilderRewardsContainer>
+            <AllTimeShare gauge={gauge} />
+          </BuilderRewardsContainer>
+        </div>
 
-        <CallToActionCard.Collapsible>
+        <Collapsible.Content>
           <div className="flex flex-col sm:flex-row gap-6 mt-6 md:hidden">
             <BuilderRewardsContainer>
               <LastCycleRewards gauge={gauge} />
@@ -82,13 +80,13 @@ export const BuilderRewards = ({ address, gauge }: { address: Address; gauge: Ad
               <TotalEarned gauge={gauge} />
             </BuilderRewardsContainer>
           </div>
-        </CallToActionCard.Collapsible>
+        </Collapsible.Content>
 
-        <CallToActionCard.Toggle
+        <Collapsible.Toggle
           className="justify-center my-3"
           iconClassName="size-6 text-background-0 hover:text-background-20"
         />
-      </CallToActionCard>
+      </Collapsible.Root>
 
       <AdjustBackersRewardsButton
         onClick={() => setIsUpdateBackersRewardsModalOpen(true)}
