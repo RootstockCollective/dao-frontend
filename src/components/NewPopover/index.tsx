@@ -14,6 +14,8 @@ interface NewPopoverProps {
   contentStyle?: CSSProperties
   sideOffset?: number
   alignOffset?: number
+  side?: 'top' | 'right' | 'bottom' | 'left'
+  align?: 'start' | 'center' | 'end'
 }
 
 export const NewPopover: React.FC<NewPopoverProps> = ({
@@ -29,6 +31,8 @@ export const NewPopover: React.FC<NewPopoverProps> = ({
   contentStyle = {},
   sideOffset = -8,
   alignOffset = -24,
+  side = 'top',
+  align = 'end',
 }) => {
   // If anchorRef is provided, create a hidden span and move it to the anchorRef's position
   const hiddenAnchorRef = useRef<HTMLSpanElement>(null)
@@ -69,11 +73,11 @@ export const NewPopover: React.FC<NewPopoverProps> = ({
       <Popover.Portal>
         <Popover.Content
           forceMount
-          side="top"
-          align="end"
+          side={side}
+          align={align}
           sideOffset={sideOffset}
           alignOffset={offsetWidth ? offsetWidth + alignOffset : -alignOffset}
-          className={`bg-white shadow-lg rounded-[4px] p-4 ${className}`}
+          className={`shadow-lg rounded-[4px] p-4 z-[9999] ${className}`}
           style={style}
         >
           <div className={contentClassName} style={contentStyle}>

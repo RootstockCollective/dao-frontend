@@ -1,14 +1,20 @@
 import { Button } from '@/components/Button'
 import { TransactionInProgressButton } from './TransactionInProgressButton'
 import { useStakingContext } from '../StakingContext'
+import { ReactNode } from 'react'
 
-export const StepActionButtons = () => {
+interface Props {
+  leftContent?: ReactNode
+}
+
+export const StepActionButtons = ({ leftContent }: Props) => {
   const {
     buttonActions: { primary, secondary },
   } = useStakingContext()
 
   return (
-    <div className="flex flex-col gap-4 mt-8 md:flex-row md:items-center md:justify-end">
+    <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
+      <div className="justify-start">{leftContent}</div>
       <div className="flex gap-4">
         {secondary && (
           <Button

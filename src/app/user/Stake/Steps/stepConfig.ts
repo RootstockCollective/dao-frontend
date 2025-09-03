@@ -7,7 +7,6 @@ interface StepConfig {
   component: React.ComponentType<StepProps>
   description: string
   progress: number
-  showDivider: boolean
 }
 
 export const stepConfig: StepConfig[] = [
@@ -15,18 +14,15 @@ export const stepConfig: StepConfig[] = [
     component: StepOne,
     description: '',
     progress: 28,
-    showDivider: false,
   },
   {
     component: StepTwo,
     description: 'Before you can stake, you must first approve the allowance in your wallet.',
     progress: 68,
-    showDivider: true,
   },
   {
     component: StepThree,
     description: 'Make sure that everything is correct before continuing:',
     progress: 100,
-    showDivider: true,
   },
 ]

@@ -47,7 +47,7 @@ export const Modal: FC<ModalProps> = ({
             ? 'w-screen' // Fullscreen: use viewport units
             : width
               ? `w-[${width}px] max-w-[95vw]` // Fixed width with viewport constraint
-              : 'w-[95vw] max-w-[380px] md:w-[600px] md:max-w-[97vw]', // Responsive width
+              : 'w-[95vw] max-w-[380px] md:w-[688px] md:max-w-[97vw]', // Responsive width
           // Height logic
           fullscreen
             ? 'h-screen' // Fullscreen: use viewport units
