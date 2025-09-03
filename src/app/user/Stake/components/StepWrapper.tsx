@@ -106,7 +106,7 @@ const HelpPopoverContent = () => {
       className={cn(
         'bg-text-80 rounded-lg p-4 flex flex-col gap-4',
         // Desktop: max-width with text wrapping, Mobile: full-width
-        isDesktop ? 'max-w-[400px]' : 'w-screen',
+        isDesktop ? 'max-w-[400px]' : 'max-w-[calc(100vw-2rem)]',
       )}
     >
       <div>
