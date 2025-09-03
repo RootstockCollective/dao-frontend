@@ -2,7 +2,7 @@ import { CommonComponentProps } from '@/components/commonProps'
 import { cn } from '@/lib/utils'
 import { ChevronDownIcon } from 'lucide-react'
 import { motion, AnimatePresence } from 'motion/react'
-import { createContext, FC, ReactNode, useContext, useState } from 'react'
+import { createContext, ReactNode, useContext, useState } from 'react'
 
 // TODO: this component can be replaced by Radix Collapsible
 // https://www.radix-ui.com/primitives/docs/components/collapsible
@@ -32,7 +32,7 @@ export interface CollapsibleProps extends CommonComponentProps {
   className?: string
 }
 
-const Root: FC<CollapsibleProps> = ({ defaultOpen = true, children, className = '' }) => {
+const Root = ({ defaultOpen = true, children, className = '' }: CollapsibleProps) => {
   return (
     <CollapsibleProvider defaultOpen={defaultOpen}>
       <div className={cn('flex flex-col flex-1 w-full', className)}>{children}</div>

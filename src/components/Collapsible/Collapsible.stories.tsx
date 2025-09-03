@@ -5,7 +5,7 @@ import { Header, Paragraph } from '@/components/Typography'
 import { BaseTypography } from '@/components/Typography/Typography'
 import { MetricsContainer } from '@/components/containers/MetricsContainer'
 
-const meta: Meta<typeof Collapsible> = {
+const meta: Meta<typeof Collapsible.Root> = {
   title: 'Components/Collapsible',
   component: Collapsible.Root,
   tags: ['autodocs'],
