@@ -12,7 +12,7 @@ interface VotingPowerContainerProps {
   cards: CardsState
 }
 
-type CardsProps = VotingPowerCardProps & {
+interface CardsProps extends VotingPowerCardProps {
   dataTestId: string
   shouldDisplay: boolean
 }
@@ -53,7 +53,7 @@ export const VotingPowerContainer = ({ cards }: VotingPowerContainerProps) => {
           dataTestId: 'DelegatedVotingPowerCard',
           shouldDisplay: isConnected || isDesktop,
         },
-      ].filter(card => isDesktop || card.shouldDisplay),
+      ].filter(card => card.shouldDisplay),
     [cards, isDesktop, isConnected],
   )
 
