@@ -1,7 +1,7 @@
 import { DelegateCard } from '@/app/delegate/components/DelegateCard'
 import { Address, isAddress } from 'viem'
 import { useNftHoldersWithVotingPower } from '@/app/user/Delegation/hooks/useNftHoldersWithVotingPower'
-import { Span } from '@/components/Typography'
+import { Paragraph, Span } from '@/components/Typography'
 import { Button } from '@/components/Button'
 import { useState, ChangeEvent, useEffect, useCallback, useMemo } from 'react'
 import { cn } from '@/lib/utils'
@@ -9,6 +9,7 @@ import { CloseIconKoto } from '@/components/Icons'
 import { produce } from 'immer'
 import { validateRnsDomain } from '@/app/delegate/lib/utils'
 import { debounce } from 'lodash'
+import { useIsDesktop } from '@/shared/hooks/useIsDesktop'
 
 interface Props {
   didIDelegateToMyself: boolean
@@ -23,6 +24,7 @@ export const DelegatesContainer = ({
   onCloseClick,
   shouldDisableButtons = false,
 }: Props) => {
+  const isDesktop = useIsDesktop()
   const [addressToDelegate, setAddressToDelegate] = useState({
     userInput: '',
     address: '',
@@ -105,7 +107,7 @@ export const DelegatesContainer = ({
 
   return (
     <div className="bg-bg-80 mt-2 p-6 md:p-6">
-      <div className="mb-[10px] flex flex-col items-center">
+      <div className="flex flex-col items-center">
         {!didIDelegateToMyself && (
           <CloseIconKoto
             className="self-end cursor-pointer"
@@ -113,37 +115,44 @@ export const DelegatesContainer = ({
             data-testid="closeDelegatesContainer"
           />
         )}
-        <Span>
-          {didIDelegateToMyself
-            ? 'Input delegate to make governance decisions on your behalf'
-            : 'Input a new delegate for your voting power'}
-        </Span>
-        <input
-          type="text"
-          name="address"
-          placeholder="Delegate's RNS name or address"
-          className={cn(
-            'w-full max-w-md bg-bg-60 placeholder:text-[16px] font-rootstock-sans px-[16px] py-[16px] mt-4 rounded text-white placeholder-bg-0',
-            isAddressInvalid && 'border border-red-500',
-          )}
-          onChange={onDelegateChangeAddress}
-          data-testid="delegateInput"
-        />
-        <div className="flex flex-col items-center gap-2 mb-[40px]">
+        <div className="flex flex-col items-center gap-3 w-full">
+          <Span>
+            {didIDelegateToMyself
+              ? 'Input delegate to make governance decisions on your behalf'
+              : 'Input a new delegate for your voting power'}
+          </Span>
+          <input
+            type="text"
+            name="address"
+            placeholder="Delegate's RNS name or address"
+            className={cn(
+              'w-full max-w-md bg-bg-60 placeholder:text-base font-rootstock-sans p-4 mt-1 rounded text-white placeholder-bg-0',
+              isAddressInvalid && 'border border-red-500',
+            )}
+            onChange={onDelegateChangeAddress}
+            data-testid="delegateInput"
+          />
           <Button
             variant="primary"
-            className="mt-3 w-[fit-content]"
+            className="w-full md:w-fit"
             onClick={onUpdateDelegate}
             disabled={!(addressToDelegate.status === 'valid') || shouldDisableButtons}
             data-testid="delegateButton"
           >
             {didIDelegateToMyself ? 'Delegate' : 'Update delegate'}
           </Button>
-          {addressToDelegate.status === 'pending' && <p>Validating...</p>}
-          {isAddressInvalid && <p>Error: {addressToDelegate.statusMessage}</p>}
-          {addressToDelegate.rns && <p>RNS Valid! Address: {addressToDelegate.address}</p>}
+          <div className="flex flex-col items-center gap-2">
+            {addressToDelegate.status === 'pending' && <Paragraph>Validating...</Paragraph>}
+            {isAddressInvalid && <Paragraph>Error: {addressToDelegate.statusMessage}</Paragraph>}
+            {addressToDelegate.rns && (
+              <Paragraph>
+                RNS Valid! Address: <br className="md:hidden" />
+                <Span variant={isDesktop ? 'body-s' : 'body-xs'}>{addressToDelegate.address}</Span>
+              </Paragraph>
+            )}
+          </div>
         </div>
-        <Span>or select one of the delegates vetted by the community</Span>
+        <Span className="mt-8 md:mt-10">or select one of the delegates vetted by the community</Span>
       </div>
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-2 mt-6">
         {delegates.map(delegate => (
