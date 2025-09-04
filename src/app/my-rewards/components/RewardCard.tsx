@@ -45,9 +45,7 @@ export const RewardCard = ({
       {isLoading ? (
         <LoadingSpinner size={'medium'} />
       ) : (
-        <div className={cn('flex flex-row justify-between md:flex-col gap-4 text-xl w-full', className)}>
-          {children}
-        </div>
+        <div className={cn('flex flex-col justify-between gap-4 text-xl w-full', className)}>{children}</div>
       )}
     </Metric>
   )
