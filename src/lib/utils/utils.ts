@@ -101,7 +101,7 @@ export const truncateMiddle = (str: string, start = 10, end = 10): string => {
   return str.slice(0, start) + '…' + str.slice(-end)
 }
 
-type FormatCurrencyProps = {
+interface FormatCurrencyProps {
   currency?: string
   showCurrencyLabel?: boolean
   showCurrencySymbol?: boolean
