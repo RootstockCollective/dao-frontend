@@ -54,11 +54,14 @@ export const StepWrapper = ({ onCloseModal }: StepWrapperProps) => {
         {/* Footer with buttons */}
         <div className="mt-8">
           {/* Help Popover - above divider on mobile, left of buttons on desktop */}
-          {!isDesktop && <HelpPopover open={helpPopoverOpen} onOpenChange={setHelpPopoverOpen} />}
+          {!isDesktop && step === 1 && (
+            <HelpPopover open={helpPopoverOpen} onOpenChange={setHelpPopoverOpen} />
+          )}
           <Divider />
           <StepActionButtons
             leftContent={
-              isDesktop && <HelpPopover open={helpPopoverOpen} onOpenChange={setHelpPopoverOpen} />
+              isDesktop &&
+              step === 1 && <HelpPopover open={helpPopoverOpen} onOpenChange={setHelpPopoverOpen} />
             }
           />
         </div>
@@ -67,7 +70,12 @@ export const StepWrapper = ({ onCloseModal }: StepWrapperProps) => {
   )
 }
 
-const HelpPopover = ({ open, onOpenChange }: { open: boolean; onOpenChange: (open: boolean) => void }) => {
+interface HelpPopoverProps {
+  open: boolean
+  onOpenChange: (open: boolean) => void
+}
+
+const HelpPopover = ({ open, onOpenChange }: HelpPopoverProps) => {
   const isDesktop = useIsDesktop()
 
   return (
