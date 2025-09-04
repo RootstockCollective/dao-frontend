@@ -1,6 +1,7 @@
 import { CardsState } from '@/app/delegate/lib/types'
 import { ConnectWorkflow } from '@/shared/walletConnection/connection/ConnectWorkflow'
 import { VotingPowerContainer } from '@/app/delegate/components/VotingPowerContainer/VotingPowerContainer'
+import { useIsDesktop } from '@/shared/hooks/useIsDesktop'
 
 export const NotConnectedVotingPowerContainer = () => {
   const cards: CardsState = {
@@ -15,9 +16,12 @@ export const NotConnectedVotingPowerContainer = () => {
   return <VotingPowerContainer cards={cards} />
 }
 
-export const NotConnectedContent = () => (
-  <span className="flex flex-row max-h-[20px] gap-[4px] items-center" data-testid="CardConnectButton">
-    <span>-</span>
-    <ConnectWorkflow />
-  </span>
-)
+export const NotConnectedContent = () => {
+  const isDesktop = useIsDesktop()
+  return (
+    <span className="flex flex-row gap-1 items-center" data-testid="CardConnectButton">
+      {isDesktop && '-'}
+      <ConnectWorkflow />
+    </span>
+  )
+}

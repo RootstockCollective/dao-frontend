@@ -1,9 +1,10 @@
 import { ReactNode } from 'react'
 import { Tooltip } from '@/components/Tooltip'
-import { Paragraph, Span } from '@/components/Typography'
+import { Span } from '@/components/Typography'
 import { KotoQuestionMarkIcon } from '@/components/Icons/KotoQuestionMarkIcon'
 import { Metric } from '@/components/Metric'
 import { HourglassAnimatedIcon } from '@/components/Icons/HourglassAnimatedIcon'
+import { useIsDesktop } from '@/shared/hooks/useIsDesktop'
 
 interface CardTooltipProps {
   text: ReactNode
@@ -14,38 +15,36 @@ const CardTooltip = ({ text }: CardTooltipProps) => (
     text={<Span className="text-bg-100">{text}</Span>}
     side="top"
     align="center"
-    className="bg-text-80 rounded-[4px] shadow-lg"
+    className="bg-text-80 rounded-sm shadow-lg max-w-[240px] md:max-w-none"
   >
     <KotoQuestionMarkIcon />
   </Tooltip>
 )
 
-interface CardProps {
+export interface VotingPowerCardProps {
   title: string
   tooltipTitle?: ReactNode
   contentValue?: ReactNode
   isLoading?: boolean
 }
 
-export const VotingPowerCard = ({ title, tooltipTitle, contentValue, isLoading }: CardProps) => {
+export const VotingPowerCard = ({ title, tooltipTitle, contentValue, isLoading }: VotingPowerCardProps) => {
+  const isDesktop = useIsDesktop()
   const fullTitle = (
-    <div className="text-bg-0 flex gap-[4px] items-center">
+    <div className="text-bg-0 flex gap-1 items-center">
       <Span>{title}</Span>
       {tooltipTitle && <CardTooltip text={tooltipTitle} />}
     </div>
   )
 
-  const fullContent = (
-    <div className="flex items-center gap-[4px]">
-      <Paragraph className="text-[32px] font-[400] text-ellipsis">
-        {contentValue !== undefined ? contentValue : ' - '}
-      </Paragraph>
-      {isLoading && <HourglassAnimatedIcon />}
-    </div>
-  )
   return (
     <Metric title={fullTitle} className="items-stretch">
-      {fullContent}
+      <div className="flex items-center gap-1">
+        <Span variant={isDesktop ? 'h1' : 'h3'} className="text-ellipsis">
+          {contentValue || ' - '}
+        </Span>
+        {isLoading && <HourglassAnimatedIcon />}
+      </div>
     </Metric>
   )
 }
