@@ -3,12 +3,13 @@ import { cn } from '@/lib/utils'
 import { FC, ReactNode } from 'react'
 import { Header, Paragraph, Span } from '../Typography'
 import { Expandable, ExpandableHeader, ExpandableContent, ExpandableFooter } from '@/components/Expandable'
+import { BulletPoint } from './BulletPoint'
 
 export interface HeroComponentMobileProps {
   title: string
   subtitle: string
   topText?: string
-  items?: string[]
+  items?: (ReactNode | string)[]
   content?: ReactNode
   button?: ReactNode
   className?: string
@@ -49,7 +50,8 @@ export const HeroComponentMobile: FC<HeroComponentMobileProps> = ({
             {items.map((item, idx) => (
               <li key={idx} className="flex items-start gap-2 text-sm text-bg-100">
                 <span className="inline-block mt-2 w-[6px] h-[6px] rounded-[32px] border border-bg-80 bg-transparent flex-shrink-0" />
-                <Paragraph className="text-bg-100">{item}</Paragraph>
+                <BulletPoint />
+                {typeof item === 'string' ? <Paragraph className="text-bg-100">{item}</Paragraph> : item}
               </li>
             ))}
           </ul>

@@ -9,7 +9,7 @@ export interface HeroComponentProps {
   title: string
   subtitle: string
   topText?: string
-  items?: string[]
+  items?: (ReactNode | string)[]
   content?: ReactNode
   button?: ReactNode
   className?: string
