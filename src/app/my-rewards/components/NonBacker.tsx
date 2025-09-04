@@ -19,7 +19,7 @@ export const NonBacker = () => {
           Support builders by allocating your stRIF and start earning rewards.
         </Paragraph>
       </div>
-      <Button variant="primary" onClick={() => router.push('/builders')}>
+      <Button className="w-full md:w-auto" variant="primary" onClick={() => router.push('/builders')}>
         See all Builders
       </Button>
     </div>

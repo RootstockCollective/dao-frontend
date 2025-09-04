@@ -1,8 +1,19 @@
+import { useHandleErrors } from '@/app/collective-rewards/utils'
 import { AnnualBackersIncentives } from '@/app/shared/components/AnnualBackersIncentives'
+import { TokenAmount } from '@/components/TokenAmount'
+import { TokenSymbol } from '@/components/TokenImage'
 import { Header } from '@/components/Typography'
-import { BackersEstimatedRewards } from './BackersEstimatedRewards'
+import { RewardCard } from '../../components/RewardCard'
+import { useBackersEstimatedRewards } from '../hooks/useBackersEstimatedRewards'
 
 export const BackerRewardsNotConnected = () => {
+  const { rif: rifData, rbtc: rbtcData } = useBackersEstimatedRewards()
+
+  useHandleErrors({
+    error: rifData.error ?? rbtcData.error,
+    title: 'Error loading backers estimated rewards',
+  })
+
   return (
     <div className="flex flex-col w-full gap-10" data-testid="backer-rewards-not-connected">
       <div className="flex justify-between">
@@ -15,10 +26,36 @@ export const BackerRewardsNotConnected = () => {
         </Header>
       </div>
 
-      <div className="flex items-start gap-10" data-testid="backer-rewards-cards-container-not-connected">
+      <div
+        className="flex flex-col md:flex-row items-start gap-10"
+        data-testid="backer-rewards-cards-container-not-connected"
+      >
         <AnnualBackersIncentives className="basis-3/4" />
-        <div className="basis-1/4">
-          <BackersEstimatedRewards />
+        <div className="basis-1/4 w-full">
+          <RewardCard
+            isLoading={rifData.isLoading || rbtcData.isLoading}
+            title="Estimated this cycle"
+            info={
+              <span className="text-[14px] font-normal text-left">
+                Estimated rewards for the next Cycle available to Backers.
+                <br />
+                <br />
+                The displayed information is dynamic and may vary based on total rewards and user activity.
+                This data is for informational purposes only.
+              </span>
+            }
+          >
+            <TokenAmount
+              amount={rifData.amount}
+              tokenSymbol={TokenSymbol.RIF}
+              amountInFiat={rifData.fiatAmount}
+            />
+            <TokenAmount
+              amount={rbtcData.amount}
+              tokenSymbol={TokenSymbol.RBTC}
+              amountInFiat={rbtcData.fiatAmount}
+            />
+          </RewardCard>
         </div>
       </div>
     </div>
