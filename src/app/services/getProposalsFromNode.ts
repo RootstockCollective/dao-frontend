@@ -17,6 +17,8 @@ function transformEventLogProposal(proposal: any): ProposalApiResponse {
   return {
     votingPeriod: Big(proposal.args.voteEnd.toString()).minus(Number(proposal.blockNumber)).toString(),
     proposalDeadline: proposal.args.voteEnd.toString(),
+    voteStart: proposal.args.voteStart.toString(),
+    voteEnd: proposal.args.voteEnd.toString(),
     category,
     proposer: proposal.args.proposer,
     description: proposal.args.description,
