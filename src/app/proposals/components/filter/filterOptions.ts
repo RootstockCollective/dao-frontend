@@ -1,8 +1,8 @@
 import { MILESTONE_SEPARATOR } from '../../shared/utils'
 
 export const filterOptions = [
-  { label: 'Grant', value: 'Grant' },
-  { label: 'Activation', value: 'Activation' },
+  { label: 'Grants', value: 'Grants' },
+  { label: 'Builder', value: 'Builder' },
   { label: 'Wave 4', value: 'Wave 4' },
   { label: 'Wave 5', value: 'Wave 5' },
   { label: 'March-25', value: 'March-25' },

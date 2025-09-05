@@ -23,13 +23,20 @@ const filterOptions: FilterOption[] = [
 
 export const Default: Story = {
   render() {
-    const [currentFilter, setCurrentFilter] = useState(filterOptions[0].value)
+    const [activeFilters, setActiveFilters] = useState<string[]>([])
     return (
       <div>
         <FilterSideBar
           filterOptions={filterOptions}
-          currentFilter={currentFilter}
-          setCurrentFilter={setCurrentFilter}
+          activeFilters={activeFilters}
+          onAddFilter={filter => {
+            if (filter.value) {
+              setActiveFilters(prev => [...prev, filter.value])
+            }
+          }}
+          onRemoveFilter={value => {
+            setActiveFilters(prev => prev.filter(v => v !== value))
+          }}
         />
       </div>
     )
