@@ -112,6 +112,28 @@ const getStateDecorationId = (builder: Builder): Exclude<DecorationOptionId, 'ex
   return null
 }
 
+//TODO: move builderName to a separate file
+export interface BuilderNameProps {
+  builder: Builder
+  isHighlighted?: boolean
+  builderPageLink: string
+}
+
+export const BuilderName = ({ builder, isHighlighted, builderPageLink }: BuilderNameProps) => {
+  return (
+    <Link href={builderPageLink} data-testid="builderName" target="_blank" rel="noopener noreferrer">
+      <Paragraph
+        className={cn(
+          'text-v3-primary font-rootstock-sans',
+          isHighlighted && 'text-v3-bg-accent-100 underline underline-offset-2',
+        )}
+      >
+        {truncate(builder.builderName, 18)}
+      </Paragraph>
+    </Link>
+  )
+}
+
 export const BuilderNameCell: FC<BuilderNameCellProps> = ({
   builder,
   isHighlighted,
@@ -124,16 +146,7 @@ export const BuilderNameCell: FC<BuilderNameCellProps> = ({
   return (
     <div className={cn('flex items-center justify-between w-full h-full', className)}>
       <div className="flex items-center gap-2">
-        <Link href={builderPageLink} data-testid="builderName" target="_blank" rel="noopener noreferrer">
-          <Paragraph
-            className={cn(
-              'text-v3-primary font-rootstock-sans',
-              isHighlighted && 'text-v3-bg-accent-100 underline underline-offset-2',
-            )}
-          >
-            {truncate(builder.builderName, 18)}
-          </Paragraph>
-        </Link>
+        <BuilderName builder={builder} isHighlighted={isHighlighted} builderPageLink={builderPageLink} />
         {hasAirdrop && (
           <BuilderDecoration
             decorationId="extraRewards"

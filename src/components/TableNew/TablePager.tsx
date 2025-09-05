@@ -108,7 +108,7 @@ export const TablePager: React.FC<TablePagerProps> = ({
   return (
     <div
       className={cn(
-        'w-full flex items-center mt-6',
+        'w-full flex items-center mt-6 flex-col md:flex-row gap-4 md:gap-0',
         isNextExpandableButtonVisible || isNextCyclicButtonVisible ? 'justify-between' : 'justify-end',
         className,
       )}

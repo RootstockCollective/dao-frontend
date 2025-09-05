@@ -1,13 +1,13 @@
 'use client'
 
-import { Action, ActionCellProps } from '@/app/builders/components/Table/Cell/ActionCell'
+import { Action } from '@/app/builders/components/Table/Cell/ActionCell'
 import { Token } from '@/app/collective-rewards/rewards'
 import { BackerRewards, useGetBackerRewards } from '@/app/collective-rewards/rewards/backers/hooks'
 import { getCombinedFiatAmount } from '@/app/collective-rewards/utils'
 import { TablePager } from '@/components/TableNew'
 import { TOKENS } from '@/lib/tokens'
 import { usePricesContext, useTableActionsContext, useTableContext } from '@/shared/context'
-import { Sort } from '@/shared/context/TableContext/types'
+import { Row, Sort } from '@/shared/context/TableContext/types'
 import { Big } from 'big.js'
 import { Suspense, useEffect, useMemo, useState } from 'react'
 import { Address } from 'viem'
@@ -15,6 +15,50 @@ import { useAccount } from 'wagmi'
 import { BackerRewardsDataRow, convertDataToRowData } from './BackerRewardsDataRow'
 import { BackerRewardsHeaderRow } from './BackerRewardsHeaderRow'
 import { BackerRewardsCellDataMap, ColumnId, DEFAULT_HEADERS, PAGE_SIZE } from './BackerRewardsTable.config'
+import { useIsDesktop } from '@/shared/hooks/useIsDesktop'
+import { Jdenticon } from '@/components/Header/Jdenticon'
+import { BuilderName } from '@/app/builders/components/Table/Cell/BuilderNameCell'
+import { Collapsible } from '@/components/Collapsible'
+
+const RewardDetailsItem = ({ row }: { row: Row<ColumnId, Row['id'], BackerRewardsCellDataMap> }) => {
+  return (
+    <div className="flex flex-col align-start gap-4 px-0 py-5">
+      <Collapsible.Root defaultOpen={false}>
+        <div className="flex justify-between align-start align-self-stretch">
+          <div className="flex align-items-center gap-3 place-items-center">
+            <Jdenticon className="rounded-full bg-white w-10" value={row.data.builder.builder.address} />
+            <BuilderName
+              builder={row.data.builder.builder}
+              isHighlighted={false}
+              builderPageLink={`/proposals/${row.data.builder.builder.proposal.id}`}
+            />
+          </div>
+
+          <Collapsible.Toggle className="w-auto" />
+        </div>
+        <div className="flex align-start align-self-stretch gap-6">
+          <div>fixed content</div>
+        </div>
+        <Collapsible.Content>
+          <div className="flex align-start align-self-stretch gap-6">collapsible content</div>
+        </Collapsible.Content>
+      </Collapsible.Root>
+    </div>
+  )
+}
+// TODO: move to a separate file
+const MobileRewardsDetails = ({ rows }: { rows: Row<ColumnId, Row['id'], BackerRewardsCellDataMap>[] }) => {
+  return (
+    <>
+      <Suspense fallback={<div>Loading table data...</div>}></Suspense>
+      <div className="flex flex-col align-start w-full">
+        {rows.map(row => (
+          <RewardDetailsItem key={row.id} row={row} />
+        ))}
+      </div>
+    </>
+  )
+}
 
 type PagedFilter = {
   backer: Address
@@ -78,9 +122,36 @@ const usePagedFilteredBackerRewards = ({
   return { data, isLoading, error }
 }
 
-// ---------------- Table ----------------
+// TODO: move to a separate file
+const DesktopRewardsDetails = ({
+  rows,
+  actions,
+}: {
+  rows: Row<ColumnId, Row['id'], BackerRewardsCellDataMap>[]
+  actions: Action[]
+}) => {
+  return (
+    <div className="hidden md:block">
+      <div className="w-full overflow-x-auto bg-v3-bg-accent-80">
+        <table className="w-full min-w-[700px]">
+          <thead>
+            <BackerRewardsHeaderRow actions={actions} />
+          </thead>
+          <Suspense fallback={<div>Loading table data...</div>}>
+            <tbody>
+              {rows.map(row => (
+                <BackerRewardsDataRow key={row.id} row={row} />
+              ))}
+            </tbody>
+          </Suspense>
+        </table>
+      </div>
+    </div>
+  )
+}
 
 export const BackerRewardsTable = () => {
+  const isDesktop = useIsDesktop()
   const [pageEnd, setPageEnd] = useState(PAGE_SIZE)
 
   const { address: userAddress } = useAccount()
@@ -169,27 +240,15 @@ export const BackerRewardsTable = () => {
 
   return (
     <>
-      <div className="w-full overflow-x-auto bg-v3-bg-accent-80">
-        <table className="w-full min-w-[700px]">
-          <thead>
-            <BackerRewardsHeaderRow actions={actions} />
-          </thead>
-          <Suspense fallback={<div>Loading table data...</div>}>
-            <tbody>
-              {rows.map(row => (
-                <BackerRewardsDataRow key={row.id} row={row} />
-              ))}
-            </tbody>
-          </Suspense>
-        </table>
-      </div>
+      {isDesktop && <DesktopRewardsDetails rows={rows} actions={actions} />}
+      {!isDesktop && <MobileRewardsDetails rows={rows} />}
       <TablePager
         pageSize={PAGE_SIZE}
         totalItems={totalRewards}
         onPageChange={({ end }) => {
           setPageEnd(end)
         }}
-        pagedItemName="builders"
+        pagedItemName="Builders"
         mode="expandable"
       />
     </>
