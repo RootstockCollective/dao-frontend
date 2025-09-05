@@ -1,19 +1,20 @@
 import { useStakingContext } from '@/app/user/Stake/StakingContext'
 import { StepProps } from '@/app/user/Stake/types'
-import { Divider } from '@/components/Divider'
-import { Popover } from '@/components/Popover'
-import { Header, Label, Paragraph, Span } from '@/components/Typography'
+import { Header, Label } from '@/components/Typography'
 import { executeTxFlow } from '@/shared/notification'
-import Image from 'next/image'
-import { useCallback, useEffect, useMemo, useRef } from 'react'
-import { StepActionButtons } from '../components/StepActionButtons'
+import { useCallback, useEffect, useRef } from 'react'
 import { StakeTokenAmountDisplay } from '../components/StakeTokenAmountDisplay'
 import { TransactionStatus } from '../components/TransactionStatus'
 import { useAllowance } from '../hooks/useAllowance'
 
 export const StepTwo = ({ onGoNext, onGoBack }: StepProps) => {
-  const { amount, tokenToSend, tokenToReceive, stakePreviewFrom: from } = useStakingContext()
-
+  const {
+    amount,
+    tokenToSend,
+    tokenToReceive,
+    stakePreviewFrom: from,
+    setButtonActions,
+  } = useStakingContext()
   const {
     isAllowanceEnough,
     isAllowanceReadLoading,
@@ -34,12 +35,6 @@ export const StepTwo = ({ onGoNext, onGoBack }: StepProps) => {
     }
   }, [isAllowanceEnough, onGoNext])
 
-  const primaryButtonLabel = useMemo(() => {
-    if (isAllowanceReadLoading) return 'Fetching allowance...'
-    if (isRequesting) return 'Requesting...'
-    return 'Request allowance'
-  }, [isAllowanceReadLoading, isRequesting])
-
   const handleRequestAllowance = useCallback(() => {
     executeTxFlow({
       onRequestTx: onRequestAllowance,
@@ -47,6 +42,33 @@ export const StepTwo = ({ onGoNext, onGoBack }: StepProps) => {
       action: 'allowance',
     })
   }, [onRequestAllowance, onGoNext])
+
+  // Set button actions directly
+  useEffect(() => {
+    setButtonActions({
+      primary: {
+        label: isRequesting ? 'Requesting...' : 'Request allowance',
+        onClick: handleRequestAllowance,
+        disabled: isAllowanceReadLoading || !amount || Number(amount) <= 0,
+        loading: isRequesting,
+        isTxPending: isTxPending,
+      },
+      secondary: {
+        label: 'Back',
+        onClick: onGoBack,
+        disabled: isAllowanceReadLoading,
+        loading: false,
+      },
+    })
+  }, [
+    isAllowanceReadLoading,
+    isRequesting,
+    isTxPending,
+    amount,
+    onGoBack,
+    handleRequestAllowance,
+    setButtonActions,
+  ])
 
   return (
     <>
@@ -73,72 +95,6 @@ export const StepTwo = ({ onGoNext, onGoBack }: StepProps) => {
         isTxFailed={isTxFailed}
         failureMessage="Allowance TX failed."
       />
-
-      {/* Mobile: Show HelpPopover above hr */}
-      <div className="block md:hidden mb-4">
-        <HelpPopover />
-      </div>
-
-      <Divider />
-
-      <StepActionButtons
-        primaryButton={{
-          label: primaryButtonLabel,
-          onClick: handleRequestAllowance,
-          disabled: isAllowanceReadLoading || !amount || Number(amount) <= 0,
-        }}
-        secondaryButton={{
-          label: 'Back',
-          onClick: onGoBack,
-          disabled: isAllowanceReadLoading,
-        }}
-        isTxPending={isTxPending}
-        isRequesting={isRequesting}
-        additionalContent={<HelpPopover />}
-      />
     </>
-  )
-}
-
-const HelpPopover = () => {
-  return (
-    <Popover
-      customContent={<HelpPopoverContent />}
-      position="top"
-      contentSubContainerClassName="rounded-none p-6"
-    >
-      <div className="flex items-center gap-1">
-        <Image src="/images/info-icon-sm.svg" alt="info" width={20} height={20} />
-        <Span variant="tag-s">Help, I don&apos;t understand</Span>
-      </div>
-    </Popover>
-  )
-}
-
-const HelpPopoverContent = () => {
-  return (
-    <div className="bg-text-80 rounded-lg p-4 max-w-xs flex flex-col gap-4">
-      <div>
-        <Span variant="body-s" bold className="text-bg-100">
-          Why request the allowance?
-        </Span>
-        <Paragraph variant="body-s" className="mt-2 text-bg-60">
-          Token allowances are the crypto equivalent to spending caps. You grant permissions for the dApp or
-          smart contract to spend a specific amount of your tokens and not go over this amount without further
-          approval. The Collective implements these as an industry standard to help protect you and the
-          community.
-        </Paragraph>
-      </div>
-      <div>
-        <Span variant="body-s" bold className="text-bg-100">
-          What is stRIF?
-        </Span>
-        <Paragraph variant="body-s" className="mt-2 text-bg-60">
-          The Governance token used in the Collective. You can stake any amount of RIF tokens and receive an
-          equivalent amount of staked RIF as stRIF tokens (in a 1:1 ratio) and this is how you take part in
-          the Collective. This is the way.
-        </Paragraph>
-      </div>
-    </div>
   )
 }

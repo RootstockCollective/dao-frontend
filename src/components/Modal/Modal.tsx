@@ -12,6 +12,8 @@ export interface ModalProps {
   width?: number
   height?: number | 'auto'
   closeButtonColor?: 'white' | 'black'
+  /** When true, modal takes full viewport width and height, bypassing width/height constraints */
+  fullscreen?: boolean
   'data-testid'?: string
 }
 
@@ -22,11 +24,15 @@ export const Modal: FC<ModalProps> = ({
   width,
   height = 'auto',
   closeButtonColor = 'white',
+  fullscreen,
   'data-testid': dataTestId,
 }) => {
   return createPortal(
     <div
-      className="fixed inset-0 flex items-center justify-center z-50 p-4 max-w-screen max-h-screen overflow-hidden"
+      className={cn(
+        'fixed inset-0 flex items-center justify-center z-50 max-w-screen max-h-screen overflow-hidden',
+        fullscreen ? '' : 'p-4',
+      )}
       data-testid={dataTestId}
     >
       {/* Backdrop */}
@@ -34,19 +40,20 @@ export const Modal: FC<ModalProps> = ({
 
       {/* Modal Container */}
       <div
-        style={{
-          width: width ? `${width}px` : undefined,
-          height: height !== 'auto' ? `${height}px` : undefined,
-          maxWidth: '100vw',
-          maxHeight: '100vh',
-        }}
         className={cn(
-          'relative',
-          width ? 'w-full max-w-[95vw]' : 'w-[95vw] max-w-[380px] md:w-[600px] md:max-w-[97vw]', // Responsive width with proper viewport constraints
-          height === 'auto'
-            ? 'h-full md:h-auto' // Auto on desktop, full on mobile when no height specified
-            : 'h-full', // Full height when specific height provided
-          'bg-bg-80 rounded overflow-y-auto min-w-0',
+          'relative overflow-x-hidden bg-bg-80 rounded overflow-y-auto min-w-0',
+          // Width logic
+          fullscreen
+            ? 'w-screen' // Fullscreen: use viewport units
+            : width
+              ? `w-[${width}px] max-w-[95vw]` // Fixed width with viewport constraint
+              : 'w-[95vw] max-w-[380px] md:w-[688px] md:max-w-[97vw]', // Responsive width
+          // Height logic
+          fullscreen
+            ? 'h-screen' // Fullscreen: use viewport units
+            : height === 'auto'
+              ? 'h-full md:h-auto' // Auto on desktop, full on mobile when no height specified
+              : `h-[${height}px]`, // Fixed height
           className,
         )}
       >

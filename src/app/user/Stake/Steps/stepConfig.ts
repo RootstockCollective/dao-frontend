@@ -1,8 +1,15 @@
+import { StepProps } from '../types'
 import { StepOne } from './StepOne'
 import { StepThree } from './StepThree'
 import { StepTwo } from './StepTwo'
 
-export const stakingSteps = [
+interface StepConfig {
+  component: React.ComponentType<StepProps>
+  description: string
+  progress: number
+}
+
+export const stepConfig: StepConfig[] = [
   {
     component: StepOne,
     description: '',
