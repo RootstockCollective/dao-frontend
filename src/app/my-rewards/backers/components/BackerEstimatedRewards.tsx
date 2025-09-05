@@ -30,6 +30,7 @@ export const BackerEstimatedRewards = () => {
           </span>
         </span>
       }
+      className="flex-row sm:flex-col justify-between w-full sm:w-auto"
     >
       <TokenAmount amount={rifData.amount} tokenSymbol={TokenSymbol.RIF} amountInFiat={rifData.fiatAmount} />
       <TokenAmount

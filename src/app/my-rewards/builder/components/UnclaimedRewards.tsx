@@ -22,13 +22,20 @@ export const UnclaimedRewards = ({ builder, gauge }: { builder: Address; gauge: 
       isLoading={rifData.isLoading || rbtcData.isLoading}
       title="Unclaimed"
       info="Your rewards available to claim"
+      className="w-full sm:w-auto"
     >
-      <TokenAmount amount={rifData.amount} tokenSymbol={TokenSymbol.RIF} amountInFiat={rifData.fiatAmount} />
-      <TokenAmount
-        amount={rbtcData.amount}
-        tokenSymbol={TokenSymbol.RBTC}
-        amountInFiat={rbtcData.fiatAmount}
-      />
+      <div className="flex sm:flex-col justify-between w-full">
+        <TokenAmount
+          amount={rifData.amount}
+          tokenSymbol={TokenSymbol.RIF}
+          amountInFiat={rifData.fiatAmount}
+        />
+        <TokenAmount
+          amount={rbtcData.amount}
+          tokenSymbol={TokenSymbol.RBTC}
+          amountInFiat={rbtcData.fiatAmount}
+        />
+      </div>
       <div className="flex justify-start">
         <ClaimRewardsButton onClick={() => setClaimRewardsModalOpen(true)} />
       </div>

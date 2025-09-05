@@ -24,6 +24,7 @@ export const RewardCard = ({
 }: RewardCardProps) => {
   return (
     <Metric
+      contentClassName="w-full"
       data-testid={dataTestId}
       title={
         <MetricTitle
@@ -44,7 +45,7 @@ export const RewardCard = ({
       {isLoading ? (
         <LoadingSpinner size={'medium'} />
       ) : (
-        <div className="flex flex-row justify-between md:flex-col gap-4 text-xl w-full">{children}</div>
+        <div className={cn('flex flex-col justify-between gap-4 text-xl w-full', className)}>{children}</div>
       )}
     </Metric>
   )

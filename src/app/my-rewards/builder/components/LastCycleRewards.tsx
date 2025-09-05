@@ -15,6 +15,7 @@ export const LastCycleRewards = ({ gauge }: { gauge: Address }) => {
       isLoading={rifData.isLoading || rbtcData.isLoading}
       title="Last cycle"
       info="Your rewards from the previous cycle"
+      className="flex-row sm:flex-col justify-between w-full sm:w-auto"
     >
       <TokenAmount amount={rifData.amount} tokenSymbol={TokenSymbol.RIF} amountInFiat={rifData.fiatAmount} />
       <TokenAmount

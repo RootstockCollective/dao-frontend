@@ -1,17 +1,16 @@
-import { Header, Paragraph } from '@/components/Typography'
 import { Button } from '@/components/Button'
-import { useContext } from 'react'
+import { Collapsible } from '@/components/Collapsible'
+import { StylableComponentProps } from '@/components/commonProps'
+import { Header, Paragraph } from '@/components/Typography'
+import { cn } from '@/lib/utils'
+import { useRouter } from 'next/navigation'
+import { FC, useContext } from 'react'
 import { useAccount } from 'wagmi'
+import { AllocationsContext } from '../../allocations/context'
+import { ActiveBackers } from '../ActiveBackers'
 import { Banner } from '../Banner'
 import { BackersDecorativeSquares } from '../DecorativeSquares'
-import { AllocationsContext } from '../../allocations/context'
-import { CallToActionCard } from '../CallToActionCard'
-import { ActiveBackers } from '../ActiveBackers'
-import { FC } from 'react'
 import { RewardsMetrics } from '../RewardsMetrics'
-import { useRouter } from 'next/navigation'
-import { StylableComponentProps } from '@/components/commonProps'
-import { cn } from '@/lib/utils'
 
 const BackersBanner = () => (
   <Banner
@@ -83,22 +82,20 @@ const collapsibleContent = (
 
 export const BackersCallToAction: FC<BackersCallToActionProps> = ({ rifRewards, rbtcRewards }) => {
   return (
-    <CallToActionCard className="bg-v3-text-80 rounded-sm p-4" defaultOpen={false}>
-      <CallToActionCard.Banner>
+    <Collapsible.Root className="bg-v3-text-80 rounded-sm p-4" defaultOpen={false}>
+      <div className="hidden md:block">
         <BackersBanner />
-      </CallToActionCard.Banner>
-      <CallToActionCard.Toggle />
+      </div>
+      <Collapsible.Toggle className="justify-end" />
       <div className="flex flex-col px-0 md:px-2">
-        <CallToActionCard.Content>
+        <div>
           <BackersTitle />
-        </CallToActionCard.Content>
-        <CallToActionCard.Content className="order-3 md:order-1 pt-6 md:pb-8 md:pt-0">
+        </div>
+        <div className="order-3 md:order-1 pt-6 md:pb-8 md:pt-0">
           <BackerCTAButton />
-        </CallToActionCard.Content>
-        <CallToActionCard.Collapsible className="order-1 md:order-2">
-          {collapsibleContent}
-        </CallToActionCard.Collapsible>
-        <CallToActionCard.Content className="order-2 md:order-3">
+        </div>
+        <Collapsible.Content className="order-1 md:order-2">{collapsibleContent}</Collapsible.Content>
+        <div className="order-2 md:order-3">
           <div className="flex flex-col md:flex-row gap-6 md:gap-10 w-full">
             <RewardsMetrics
               title="Upcoming Rewards for Backers"
@@ -107,8 +104,8 @@ export const BackersCallToAction: FC<BackersCallToActionProps> = ({ rifRewards, 
             />
             <ActiveBackers />
           </div>
-        </CallToActionCard.Content>
+        </div>
       </div>
-    </CallToActionCard>
+    </Collapsible.Root>
   )
 }

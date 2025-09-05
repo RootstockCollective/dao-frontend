@@ -15,10 +15,10 @@ export const BackerRewardsNotConnected = () => {
   })
 
   return (
-    <div className="flex flex-col w-full gap-10" data-testid="backer-rewards-not-connected">
+    <div className="flex flex-col w-full gap-8 md:gap-10" data-testid="backer-rewards-not-connected">
       <div className="flex justify-between">
         <Header
-          variant="e3"
+          variant="h3"
           className="m-0 text-v3-text-100"
           data-testid="backer-rewards-header-not-connected"
         >
@@ -31,7 +31,7 @@ export const BackerRewardsNotConnected = () => {
         data-testid="backer-rewards-cards-container-not-connected"
       >
         <AnnualBackersIncentives className="basis-3/4" />
-        <div className="basis-1/4 w-full">
+        <div className="sm:basis-1/4 w-full">
           <RewardCard
             isLoading={rifData.isLoading || rbtcData.isLoading}
             title="Estimated this cycle"
@@ -44,6 +44,7 @@ export const BackerRewardsNotConnected = () => {
                 This data is for informational purposes only.
               </span>
             }
+            className="flex-row sm:flex-col justify-between w-full sm:w-auto"
           >
             <TokenAmount
               amount={rifData.amount}

@@ -18,6 +18,7 @@ export const TotalEarned = ({ gauge }: { gauge: Address }) => {
       isLoading={rifData.isLoading || rbtcData.isLoading}
       title="Total earned"
       info="Your total rewards earned across all cycles"
+      className="flex-row sm:flex-col justify-between w-full sm:w-auto"
     >
       <TokenAmount amount={rifData.amount} tokenSymbol={TokenSymbol.RIF} amountInFiat={rifData.fiatAmount} />
       <TokenAmount
