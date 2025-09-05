@@ -1,7 +1,7 @@
 import React, { ComponentProps } from 'react'
 import { BuilderHeader } from '@/app/backing/components/BuilderHeader/BuilderHeader'
 import { Button } from '@/components/Button'
-import { cn, truncateRns } from '@/lib/utils'
+import { cn, truncate } from '@/lib/utils'
 import { Address } from 'viem'
 import { Label, Paragraph } from '@/components/Typography'
 
@@ -47,10 +47,10 @@ export const DelegateCard: React.FC<DelegateCardProps> = ({
     >
       <BuilderHeader
         address={address}
-        name={name ? truncateRns(name, 15) : undefined}
+        name={name}
         imageIpfs={imageIpfs}
         className="mt-8"
-        showFullName
+        showFullName={false}
         shouldNotRedirect
         headerProps={{ variant: 'h2', className: 'text-primary mt-2' }}
       />

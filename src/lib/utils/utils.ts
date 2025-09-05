@@ -101,23 +101,7 @@ export const truncateMiddle = (str: string, start = 10, end = 10): string => {
   return str.slice(0, start) + '…' + str.slice(-end)
 }
 
-/**
- * Truncates a string by keeping the first `length` characters and the last 3 characters
- * @param str - The string to truncate
- * @param length - The amount of characters to keep from the start
- * @returns The truncated string
- * @example truncateRns('testverylongname.rsk', 5) // 'testv…rsk'
- * @example truncateRns('jesse.rsk', 5) // 'jesse.rsk'
- * @example truncateRns('jesse.rsk', 4) // 'jesse.rsk'
- * @example truncateRns('jesse.rsk', 3) // 'jes…rsk'
- */
-export const truncateRns = (str: string, length: number): string => {
-  if (!str) return ''
-  if (str.length <= length + 5) return str
-  return str.slice(0, length) + '…' + str.slice(-3)
-}
-
-type FormatCurrencyProps = {
+interface FormatCurrencyProps {
   currency?: string
   showCurrencyLabel?: boolean
   showCurrencySymbol?: boolean
