@@ -5,8 +5,9 @@ import { FilterOption } from './filterOptions'
 
 interface FilterSideBarProps extends HTMLAttributes<HTMLDivElement> {
   filterOptions: FilterOption[]
-  currentFilter: string
-  setCurrentFilter: (option: string) => void
+  activeFilters: string[]
+  onAddFilter: (filter: { type: 'category'; label: string; value: string }) => void
+  onRemoveFilter: (value: string) => void
   title?: string
 }
 
@@ -15,12 +16,25 @@ interface FilterSideBarProps extends HTMLAttributes<HTMLDivElement> {
  */
 export function FilterSideBar({
   filterOptions,
-  currentFilter,
-  setCurrentFilter,
+  activeFilters,
+  onAddFilter,
+  onRemoveFilter,
   className,
   title = 'Filter by category',
   ...props
 }: FilterSideBarProps) {
+  const handleFilterToggle = (option: FilterOption) => {
+    if (activeFilters.includes(option.value)) {
+      onRemoveFilter(option.value)
+    } else {
+      onAddFilter({ type: 'category', label: option.label, value: option.value })
+    }
+  }
+
+  const handleClearAll = () => {
+    activeFilters.forEach(value => onRemoveFilter(value))
+  }
+
   return (
     <div className={cn('w-[256px] h-full pt-[56px] pb-4 px-6 bg-bg-60 rounded-sm', className)} {...props}>
       <h3
@@ -29,21 +43,21 @@ export function FilterSideBar({
       >
         {title}
       </h3>
-      <ul className="pl-1 space-y-3" role="radiogroup" aria-labelledby="filter-title">
+      <ul className="pl-1 space-y-3" role="group" aria-labelledby="filter-title">
         <li>
           <FilterRadioItem
-            selected={!currentFilter}
+            selected={activeFilters.length === 0}
             option={{ label: 'All categories', value: '' }}
-            onClick={() => setCurrentFilter('')}
+            onClick={() => handleClearAll()}
             data-testid="AllCategories"
           />
         </li>
         {filterOptions.map((option, i) => (
           <li key={i}>
             <FilterRadioItem
-              selected={option.value === currentFilter}
+              selected={activeFilters.includes(option.value)}
               option={option}
-              onClick={setCurrentFilter}
+              onClick={() => handleFilterToggle(option)}
               data-testid={`FilterOption-${option.label}`}
             />
           </li>
