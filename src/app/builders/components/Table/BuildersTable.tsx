@@ -1,5 +1,6 @@
 'use client'
 
+import { AllocationsContext } from '@/app/collective-rewards/allocations/context/AllocationsContext'
 import { Builder, BuilderRewardsSummary } from '@/app/collective-rewards/types'
 import { useBuilderContext } from '@/app/collective-rewards/user/context/BuilderContext'
 import {
@@ -24,7 +25,6 @@ import { BuilderFilterOptionId } from './BuilderFilterDropdown'
 import { BuilderHeaderRow } from './BuilderHeaderRow'
 import { BuilderCellDataMap, ColumnId, DEFAULT_HEADERS, PAGE_SIZE } from './BuilderTable.config'
 import { Action, ActionCellProps } from './Cell/ActionCell'
-import { AllocationsContext } from '@/app/collective-rewards/allocations/context/AllocationsContext'
 
 // --- Filter builders by state ---
 const filterActive = (builder: Builder) => isBuilderActive(builder.stateFlags)
