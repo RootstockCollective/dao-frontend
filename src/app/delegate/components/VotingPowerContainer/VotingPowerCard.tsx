@@ -30,7 +30,13 @@ export interface VotingPowerCardProps {
   className?: string
 }
 
-export const VotingPowerCard = ({ title, tooltipTitle, contentValue, isLoading, className }: CardProps) => {
+export const VotingPowerCard = ({
+  title,
+  tooltipTitle,
+  contentValue,
+  isLoading,
+  className,
+}: VotingPowerCardProps) => {
   const isDesktop = useIsDesktop()
 
   const fullTitle = (
