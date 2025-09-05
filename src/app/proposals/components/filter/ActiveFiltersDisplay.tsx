@@ -26,7 +26,7 @@ export const ActiveFiltersDisplay = ({
   const categoryFilters = activeFilters.filter(f => f.type === 'category')
 
   return (
-    <div className={cn('mb-4 space-y-3 md:hidden', className)} data-testid="ActiveFiltersDisplay">
+    <div className={cn('mb-4 md:hidden', className)} data-testid="ActiveFiltersDisplay">
       {/* Category Filters */}
       {categoryFilters.length > 0 && (
         <div className="flex items-center gap-2 overflow-x-auto mt-4">
