@@ -1,6 +1,6 @@
 export interface FilterItem {
   id: string
-  type: 'search' | 'category'
+  type: 'search' | 'category' | 'status' | 'time'
   label: string
   value: string
 }

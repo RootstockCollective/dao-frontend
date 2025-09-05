@@ -1,4 +1,4 @@
-import { useState, useCallback, useMemo } from 'react'
+import { useState, useCallback } from 'react'
 import { FilterItem, FilterState, FilterActions } from './types'
 
 export const useFilters = (): FilterState & FilterActions => {
