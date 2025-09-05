@@ -26,14 +26,13 @@ import { SearchButton } from './SearchButton'
 import { Category } from '../components/category'
 import { Header, Paragraph } from '@/components/Typography'
 import { Proposal } from '@/app/proposals/shared/types'
-import { filterOptions } from './filter/filterOptions'
+import { useFilters } from './filter/useFilters'
+import { ActiveFiltersDisplay } from './filter/ActiveFiltersDisplay'
+import { ProposalCategory, ProposalState } from '@/shared/types'
+import { MILESTONE_SEPARATOR } from '../shared/utils'
 import { Pagination } from '@/components/Pagination'
 import { useIsDesktop } from '@/shared/hooks/useIsDesktop'
 import { useStickyHeader } from '@/shared/hooks'
-import { useFilters } from './filter/useFilters'
-import { ActiveFiltersDisplay } from './filter/ActiveFiltersDisplay'
-import { ProposalCategory } from '@/shared/types'
-import { MILESTONE_SEPARATOR } from '../shared/utils'
 
 interface LatestProposalsTableProps {
   proposals: Proposal[]
@@ -93,14 +92,8 @@ const LatestProposalsTable = ({ proposals }: LatestProposalsTableProps) => {
   // filtering by category in sidebar
   const [isFilterSidebarOpen, setIsFilterSidebarOpen] = useState(false)
   const filterSidebarRef = useRef<HTMLDivElement>(null)
-  useClickOutside(filterSidebarRef, () => setIsFilterSidebarOpen(false))
-
-  const handleFilterToggle = useCallback(
-    (cat: string) => {
-      resetPagination()
-    },
-    [resetPagination],
-  )
+  // Only apply click outside on desktop - mobile uses Modal component
+  useClickOutside(filterSidebarRef, () => isDesktop && setIsFilterSidebarOpen(false))
 
   // filter all proposals
   const filteredProposalList = useMemo(() => {
@@ -138,6 +131,50 @@ const LatestProposalsTable = ({ proposals }: LatestProposalsTableProps) => {
         if (!categoryMatch) return false
       }
 
+      // Apply status filters
+      const statusFilters = activeFilters.filter(f => f.type === 'status' && f.value)
+      if (statusFilters.length > 0) {
+        const statusMatch = statusFilters.some(statusFilter => {
+          const status = statusFilter.value
+          return (
+            proposal.proposalState !== undefined &&
+            ProposalState[proposal.proposalState]?.toLowerCase() === status.toLowerCase()
+          )
+        })
+        if (!statusMatch) return false
+      }
+
+      // Apply time filters
+      const timeFilters = activeFilters.filter(f => f.type === 'time' && f.value)
+      if (timeFilters.length > 0) {
+        const timeMatch = timeFilters.some(timeFilter => {
+          const filterValue = timeFilter.value
+          const now = new Date()
+
+          switch (filterValue) {
+            case 'last-week':
+              const weekAgo = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000)
+              return proposal.createdAt ? new Date(proposal.createdAt) >= weekAgo : false
+            case 'last-month':
+              const monthAgo = new Date(now.getTime() - 30 * 24 * 60 * 60 * 1000)
+              return proposal.createdAt ? new Date(proposal.createdAt) >= monthAgo : false
+            case 'last-90-days':
+              const days90Ago = new Date(now.getTime() - 90 * 24 * 60 * 60 * 1000)
+              return proposal.createdAt ? new Date(proposal.createdAt) >= days90Ago : false
+            case 'Wave 4':
+            case 'Wave 5':
+            case 'March-25':
+              // For wave filters, check if the proposal name or description contains the wave
+              return (
+                proposal.name?.toLowerCase().includes(filterValue.toLowerCase()) ||
+                proposal.description?.toLowerCase().includes(filterValue.toLowerCase())
+              )
+            default:
+              return true
+          }
+        })
+        if (!timeMatch) return false
+      }
       return true
     })
   }, [proposals, activeFilters])
@@ -341,7 +378,9 @@ const LatestProposalsTable = ({ proposals }: LatestProposalsTableProps) => {
               isOpen={isFilterSidebarOpen}
               setIsOpen={setIsFilterSidebarOpen}
               disabled={proposals.length === 0}
-              isFiltering={activeFilters.some(f => f.type === 'category')}
+              isFiltering={activeFilters.some(
+                f => f.type === 'category' || f.type === 'status' || f.type === 'time',
+              )}
             />
           </div>
         </div>
@@ -362,8 +401,9 @@ const LatestProposalsTable = ({ proposals }: LatestProposalsTableProps) => {
           {/* container for useClickOutside ref */}
           <div ref={filterSidebarRef} className="pl-2 h-full">
             <FilterSideBar
-              filterOptions={filterOptions}
-              activeFilters={activeFilters.filter(f => f.type === 'category').map(f => f.value)}
+              isOpen={isFilterSidebarOpen}
+              onClose={() => setIsFilterSidebarOpen(false)}
+              activeFilters={activeFilters.map(f => f.value)}
               onAddFilter={addFilter}
               onRemoveFilter={removeFilterByValue}
             />

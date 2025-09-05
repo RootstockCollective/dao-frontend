@@ -23,18 +23,18 @@ export const ActiveFiltersDisplay = ({
 
   // Group filters by type for better organization
   const searchFilters = activeFilters.filter(f => f.type === 'search')
-  const categoryFilters = activeFilters.filter(f => f.type === 'category')
+  const nonSearchFilters = activeFilters.filter(f => f.type !== 'search')
 
   return (
-    <div className={cn('mb-4 md:hidden', className)} data-testid="ActiveFiltersDisplay">
-      {/* Category Filters */}
-      {categoryFilters.length > 0 && (
-        <div className="flex items-center gap-2 overflow-x-auto mt-4">
+    <div className={cn('space-y-3 md:hidden', className)} data-testid="ActiveFiltersDisplay">
+      {/* All Non-Search Filters (Category, Status, Time) */}
+      {nonSearchFilters.length > 0 && (
+        <div className="flex items-center gap-2 overflow-x-auto">
           <Header variant="h5" className="text-text-40 whitespace-nowrap flex-shrink-0">
-            FILTERING BY:
+            FILTERED BY:
           </Header>
           <div className="flex items-center gap-2 min-w-0">
-            {categoryFilters.map(filter => (
+            {nonSearchFilters.map(filter => (
               <FilterChip key={filter.id} filter={filter} onRemove={onRemoveFilter} />
             ))}
           </div>
@@ -43,7 +43,7 @@ export const ActiveFiltersDisplay = ({
 
       {/* Search Filters */}
       {searchFilters.length > 0 && (
-        <div className="flex items-center gap-2 overflow-x-auto mt-4">
+        <div className="flex items-center gap-2 overflow-x-auto">
           <Header variant="h5" className="text-text-40 whitespace-nowrap flex-shrink-0">
             SEARCHED FOR:
           </Header>

@@ -16,7 +16,10 @@ export const FilterRadioItem = ({ option, selected, onClick, ...props }: Props) 
     <button
       role="radio"
       aria-checked={selected}
-      onClick={() => onClick(option.value)}
+      onClick={e => {
+        e.stopPropagation()
+        onClick(option.value)
+      }}
       className={cn('group focus:outline-none focus-visible:outline-none', 'flex gap-3 items-center')}
       {...props}
     >
