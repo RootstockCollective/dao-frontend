@@ -7,6 +7,7 @@ import { TokenImage } from '@/components/TokenImage'
 import { BaseTypography } from '@/components/Typography/Typography'
 import { RBTC } from '@/lib/constants'
 import { cn, formatCurrencyWithLabel } from '@/lib/utils'
+import { Separator } from '@radix-ui/react-select'
 import { FC, ReactNode } from 'react'
 import { ClaimRewardRadioGroup } from './ClaimRewardRadioGroup'
 import { ClaimRewardType } from './types'
@@ -71,7 +72,7 @@ export const ClaimRewardsModalView: FC<ClaimRewardsModalViewProps> = ({
       data-testid="ClaimRewardsModalView"
       className={cn('font-rootstock-sans shadow-[0px_0px_40px_0px_rgba(255,255,255,0.10)]', className)}
     >
-      <div className="p-8 flex flex-col gap-8">
+      <div className="p-8 flex flex-col gap-8 h-full justify-start">
         <BaseTypography variant="h1">CLAIM REWARDS</BaseTypography>
         <BaseTypography>
           Select the rewards that you want to claim, then confirm the transaction in your wallet.
@@ -86,28 +87,36 @@ export const ClaimRewardsModalView: FC<ClaimRewardsModalViewProps> = ({
           Claim your rewards directly to your wallet. Claimed rewards are transferred immediately, and your
           unclaimed balance resets.
         </BaseTypography>
-        <div className="flex justify-end gap-4 mt-8">
-          <Button variant="secondary-outline" onClick={onClose}>
-            Cancel
-          </Button>
-          {isTxPending ? (
-            <TransactionInProgressButton />
-          ) : (
-            <ConditionalTooltip
-              conditionPairs={[
-                {
-                  condition: () => !isClaimable,
-                  lazyContent: () => 'Current rewards are not claimable',
-                },
-              ]}
-              className="z-50"
-              side="left"
-            >
-              <Button variant="primary" onClick={() => isClaimable && onClaim()}>
-                Claim now
-              </Button>
-            </ConditionalTooltip>
-          )}
+
+        <div className="mt-8 flex flex-col w-full gap-8 justify-end h-full">
+          <Separator className="bg-v3-bg-accent-60 h-[1px] w-full" />
+          <div className="w-full flex justify-stretch md:justify-end gap-4">
+            <Button variant="secondary-outline" className="w-full md:w-auto" onClick={onClose}>
+              Cancel
+            </Button>
+            {isTxPending ? (
+              <TransactionInProgressButton />
+            ) : (
+              <ConditionalTooltip
+                conditionPairs={[
+                  {
+                    condition: () => !isClaimable,
+                    lazyContent: () => 'Current rewards are not claimable',
+                  },
+                ]}
+                className="z-50"
+                side="left"
+              >
+                <Button
+                  variant="primary"
+                  className="w-full md:w-auto"
+                  onClick={() => isClaimable && onClaim()}
+                >
+                  Claim now
+                </Button>
+              </ConditionalTooltip>
+            )}
+          </div>
         </div>
       </div>
     </Modal>
