@@ -5,7 +5,7 @@ import { FC, ReactNode, useMemo } from 'react'
 import { Header, Paragraph, Span } from '../Typography'
 import { useImagePreloader } from '@/shared/hooks/useImagePreloader'
 import { BulletPoint } from './BulletPoint'
-import { HeroComponentProps } from './type'
+import { HeroComponentProps } from './types'
 
 export const HeroComponentDesktop: FC<HeroComponentProps> = ({
   imageSrc,

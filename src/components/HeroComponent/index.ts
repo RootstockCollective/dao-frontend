@@ -1,2 +1,2 @@
 export * from './HeroComponent'
-export * from './type'
+export * from './types'

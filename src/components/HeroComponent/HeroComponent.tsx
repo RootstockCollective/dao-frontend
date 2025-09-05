@@ -2,7 +2,7 @@
 import { useIsDesktop } from '@/shared/hooks/useIsDesktop'
 import { HeroComponentMobile } from './HeroComponentMobile'
 import { HeroComponentDesktop } from './HeroComponentDesktop'
-import { HeroComponentProps } from './type'
+import { HeroComponentProps } from './types'
 
 export const HeroComponent = (props: HeroComponentProps) => {
   const isDesktop = useIsDesktop()
