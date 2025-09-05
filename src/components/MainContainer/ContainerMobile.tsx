@@ -6,7 +6,6 @@ import { HeaderMobile } from './headers/HeaderMobile'
 import { FooterMobile } from './footers/FooterMobile'
 import { SidebarMobile } from './sidebars/SidebarMobile'
 import { useLayoutContext } from './LayoutProvider'
-import { AnimatePresence } from 'motion/react'
 import { BottomDrawer } from '@/components/MainContainer/drawers/BottomDrawer'
 
 export default function ContainerMobile({ className, children, ...props }: HTMLAttributes<HTMLDivElement>) {

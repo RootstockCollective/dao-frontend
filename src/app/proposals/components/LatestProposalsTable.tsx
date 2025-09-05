@@ -24,18 +24,27 @@ import { useClickOutside } from '@/shared/hooks/useClickOutside'
 import { Status } from '@/components/Status'
 import { SearchButton } from './SearchButton'
 import { Category } from '../components/category'
-import { Paragraph } from '@/components/Typography'
+import { Header, Paragraph } from '@/components/Typography'
 import { Proposal } from '@/app/proposals/shared/types'
 import { filterOptions } from './filter/filterOptions'
 import { Pagination } from '@/components/Pagination'
+import { useIsDesktop } from '@/shared/hooks/useIsDesktop'
+import { useStickyHeader } from '@/shared/hooks'
 
 interface LatestProposalsTableProps {
   proposals: Proposal[]
 }
 
 const LatestProposalsTable = ({ proposals }: LatestProposalsTableProps) => {
+  const isDesktop = useIsDesktop()
   // React-table sorting state
   const [sorting, setSorting] = useState<SortingState>([])
+
+  // Sticky header hook - only enabled on mobile/tablet
+  const { headerRef } = useStickyHeader({
+    isEnabled: !isDesktop,
+    backgroundColor: 'var(--color-bg-80)',
+  })
 
   const searchParams = useSearchParams()
 
@@ -250,8 +259,10 @@ const LatestProposalsTable = ({ proposals }: LatestProposalsTableProps) => {
 
   return (
     <div className="py-4 px-6 rounded-sm bg-bg-80">
-      <div className="mb-8 w-full flex items-center gap-4">
-        <h2 className="font-kk-topo text-xl leading-tight uppercase tracking-wide">Latest Proposals</h2>
+      <div ref={headerRef} className="mb-8 w-full flex items-center gap-4">
+        <Header variant={'h3'} className={'uppercase'}>
+          Latest Proposals
+        </Header>
         <div className="grow h-[50px] flex justify-end">
           <AnimatePresence>
             {searchVisible && (
