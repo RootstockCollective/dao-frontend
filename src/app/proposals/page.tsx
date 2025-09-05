@@ -26,7 +26,7 @@ export default function ProposalsPage() {
           <Paragraph key="proposals-page-item-1">
             Clarify your project&apos;s purpose on{' '}
             <ExternalLink
-              href="https://gov.rootstockcollective.xyz/c/grants/5"
+              href="https://gov.rootstockcollective.xyz"
               target="_blank"
               rel="noopener noreferrer"
             >
