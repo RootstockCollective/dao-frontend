@@ -1,6 +1,36 @@
-import { BackingPoint, RewardsPoint } from '@/app/collective-rewards/types'
+import { BackingPoint, CycleWindow, RewardsPoint } from '@/app/collective-rewards/types'
 import { useMemo } from 'react'
-import { ISO_DATE_LENGTH } from '@/app/collective-rewards/constants/chartConstants'
+import {
+  CYCLE_DURATION_DAYS,
+  ISO_DATE_LENGTH,
+  MS_PER_DAY,
+} from '@/app/collective-rewards/constants/chartConstants'
+import { convertToTimestamp } from '@/app/collective-rewards/utils/chartUtils'
+
+const calculateCycleDay = (date: Date, cycles: CycleWindow[]) => {
+  const targetTime = date.getTime()
+
+  for (const [index, cycle] of cycles.entries()) {
+    const startTime = convertToTimestamp(cycle.start)
+    const endTime = convertToTimestamp(cycle.end)
+
+    if (targetTime >= startTime && targetTime < endTime) {
+      const daysElapsed = Math.floor((targetTime - startTime) / MS_PER_DAY)
+      const displayDay = daysElapsed + 1
+
+      return {
+        cycle: index + 1,
+        dayInCycle: `${displayDay}/${CYCLE_DURATION_DAYS}`,
+      }
+    }
+  }
+
+  // Fallback: if date does not belong to any cycle, return null values
+  return {
+    cycle: null,
+    dayInCycle: null,
+  }
+}
 
 type MergedDataPoint = {
   day: Date
@@ -9,9 +39,11 @@ type MergedDataPoint = {
   rewardsUSD?: number
   rewardsRif?: number
   rewardsRbtc?: number
+  cycle?: number | null
+  dayInCycle?: string | null
 }
 
-export function useMergedSeries(backing: BackingPoint[], rewards: RewardsPoint[]) {
+export function useMergedSeries(backing: BackingPoint[], rewards: RewardsPoint[], cycles: CycleWindow[]) {
   return useMemo(() => {
     const map = new Map<string, MergedDataPoint>()
 
@@ -19,8 +51,12 @@ export function useMergedSeries(backing: BackingPoint[], rewards: RewardsPoint[]
       const date = new Date(b.day)
       const key = date.toISOString().slice(0, ISO_DATE_LENGTH)
       const entry = map.get(key) ?? { day: new Date(key) }
+      const cycleInfo = calculateCycleDay(date, cycles)
+
       entry.backing = Number(b.backing)
       entry.backingWei = b.backingWei || b.backing
+      entry.cycle = cycleInfo.cycle
+      entry.dayInCycle = cycleInfo.dayInCycle
       map.set(key, entry)
     }
 
@@ -28,12 +64,16 @@ export function useMergedSeries(backing: BackingPoint[], rewards: RewardsPoint[]
       const date = new Date(r.day)
       const key = date.toISOString().slice(0, ISO_DATE_LENGTH)
       const entry = map.get(key) ?? { day: new Date(key) }
+      const cycleInfo = calculateCycleDay(date, cycles)
+
       entry.rewardsUSD = r.rewards?.usd ?? 0
       entry.rewardsRif = Number(r.rewards.rif)
       entry.rewardsRbtc = Number(r.rewards.rbtc)
+      entry.cycle = cycleInfo.cycle
+      entry.dayInCycle = cycleInfo.dayInCycle
       map.set(key, entry)
     }
 
     return Array.from(map.values()).sort((a, b) => a.day.getTime() - b.day.getTime())
-  }, [backing, rewards])
+  }, [backing, rewards, cycles])
 }

@@ -21,6 +21,7 @@ import {
   REWARDS_DOMAIN_BUFFER,
   DEFAULT_CHART_HEIGHT,
   ONE_MONTH_IN_MS,
+  MS_PER_DAY,
 } from '@/app/collective-rewards/constants/chartConstants'
 
 /**
@@ -128,7 +129,7 @@ export function CollectiveRewardsDualAxisChart({
   yRightLabel = 'REWARDS',
   height = DEFAULT_CHART_HEIGHT,
 }: DualAxisChartProps) {
-  const data = useMergedSeries(backingSeries, rewardsSeries)
+  const data = useMergedSeries(backingSeries, rewardsSeries, cycles)
 
   const backingMaxDomain = useMemo(() => {
     if (!data.length) return 100
@@ -251,8 +252,8 @@ export function CollectiveRewardsDualAxisChart({
             return (
               <ReferenceArea
                 key={`shade-${i}`}
-                x1={c.start instanceof Date ? c.start.getTime() : +new Date(c.start)}
-                x2={c.end instanceof Date ? c.end.getTime() : +new Date(c.end)}
+                x1={c.start.getTime() - MS_PER_DAY}
+                x2={c.end.getTime() - MS_PER_DAY}
                 y1={0}
                 y2={9999999}
                 fill="var(--background-100)"

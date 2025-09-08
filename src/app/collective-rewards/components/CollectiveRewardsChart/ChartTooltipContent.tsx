@@ -6,27 +6,23 @@ import { BaseTypography } from '@/components/Typography/Typography'
 import { formatSymbol } from '@/app/collective-rewards/rewards/utils'
 import { Span } from '@/components/Typography/Span'
 import { TooltipPayload } from '@/app/collective-rewards/types'
-import { formatAmount, formatCurrency } from '@/lib/utils'
+import { formatCurrency } from '@/lib/utils'
 
 interface ChartTooltipProps {
   active?: boolean
   payload?: TooltipPayload[]
   label?: string | number
-  cycle?: number
-  day?: string
 }
 
-export const ChartTooltipContent = ({
-  active,
-  payload,
-  label,
-  cycle = 21,
-  day = '5/12',
-}: ChartTooltipProps) => {
+export const ChartTooltipContent = ({ active, payload, label }: ChartTooltipProps) => {
   if (!active || !payload?.length) return null
+
   const d = payload[0]?.payload?.day as Date
   const backingVal = payload[0]?.payload?.backingWei ?? payload[0]?.payload?.backing ?? 0n
   const rewardsUsd = payload[0]?.payload?.rewardsUSD ?? 0n
+
+  const cycleNumber = payload[0]?.payload?.cycle ?? 'N/A'
+  const dayInCycle = payload[0]?.payload?.dayInCycle ?? 'N/A'
 
   return (
     <div className="p-4 bg-text-80 shadow-xl rounded flex flex-col gap-2">
@@ -52,7 +48,7 @@ export const ChartTooltipContent = ({
             className="w-auto text-bg-40"
             containerClassName="gap-1"
           >
-            <Paragraph className="font-kk-topo text-bg-100 text-xl">{cycle}</Paragraph>
+            <Paragraph className="font-kk-topo text-bg-100 text-xl">{cycleNumber}</Paragraph>
           </Metric>
           <Metric
             title={
@@ -63,7 +59,7 @@ export const ChartTooltipContent = ({
             className="w-auto text-bg-40"
             containerClassName="gap-1"
           >
-            <Paragraph className="font-kk-topo text-bg-100 text-xl">{day}</Paragraph>
+            <Paragraph className="font-kk-topo text-bg-100 text-xl">{dayInCycle}</Paragraph>
           </Metric>
 
           <div className="flex items-start gap-2">
