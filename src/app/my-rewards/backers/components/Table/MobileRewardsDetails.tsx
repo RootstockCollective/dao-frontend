@@ -62,21 +62,6 @@ const RewardDetailsItem = ({ row }: { row: Row<ColumnId, Row['id'], BackerReward
             <div className="flex align-start align-self-stretch gap-6">
               <RewardDetailsMetric>
                 <Span variant="h5" className="text-v3-text-40">
-                  Backer rewards %
-                </Span>
-                <BackersPercentage className="self-start" percentage={row.data.backer_rewards.percentage} />
-              </RewardDetailsMetric>
-              <RewardDetailsMetric>
-                <Span variant="h5" className="text-v3-text-40">
-                  Earned this cycle
-                </Span>
-                {/* FIXME: to be decided */}
-                NOT IMPLEMENTED YET
-              </RewardDetailsMetric>
-            </div>
-            <div className="flex align-start align-self-stretch gap-6">
-              <RewardDetailsMetric>
-                <Span variant="h5" className="text-v3-text-40">
                   Total - lifetime
                 </Span>
                 <RewardsCell
@@ -93,6 +78,15 @@ const RewardDetailsItem = ({ row }: { row: Row<ColumnId, Row['id'], BackerReward
                 <BackingCell {...row.data.backing} />
               </RewardDetailsMetric>
             </div>
+            <div className="flex align-start align-self-stretch gap-6">
+              <RewardDetailsMetric>
+                <Span variant="h5" className="text-v3-text-40">
+                  Backer rewards %
+                </Span>
+                <BackersPercentage className="self-start" percentage={row.data.backer_rewards.percentage} />
+              </RewardDetailsMetric>
+            </div>
+
             <Button
               variant="transparent"
               className="flex w-full items-center gap-1"
