@@ -1,17 +1,17 @@
-import { BackersPercentageCell } from '@/app/builders/components/Table/Cell/BackersPercentageCell/BackersPercentageCell'
+import { BackersPercentage } from '@/app/builders/components/Table/Cell/BackersPercentageCell/BackersPercentageCell'
 import { BackingCell } from '@/app/builders/components/Table/Cell/BackingCell/BackingCell'
 import { BuilderName } from '@/app/builders/components/Table/Cell/BuilderNameCell/BuilderName'
 import { RewardsCell } from '@/app/builders/components/Table/Cell/RewardsCell/RewardsCell'
+import { Button } from '@/components/Button'
 import { Collapsible } from '@/components/Collapsible'
+import { Divider } from '@/components/Divider'
 import { Jdenticon } from '@/components/Header/Jdenticon'
+import { CogIcon } from '@/components/Icons/v3design/CogIcon'
 import { Span } from '@/components/Typography'
 import { Row } from '@/shared/context/TableContext/types'
+import { useRouter } from 'next/navigation'
 import { ReactNode, Suspense } from 'react'
 import { BackerRewardsCellDataMap, ColumnId } from './BackerRewardsTable.config'
-import { Button } from '@/components/Button'
-import { CogIcon } from '@/components/Icons/v3design/CogIcon'
-import { Divider } from '@/components/Divider'
-import { useRouter } from 'next/navigation'
 
 const RewardDetailsMetric = ({ children }: { children: ReactNode }) => {
   return <div className="flex flex-1 flex-col align-items-start gap-0.5">{children}</div>
@@ -41,6 +41,7 @@ const RewardDetailsItem = ({ row }: { row: Row<ColumnId, Row['id'], BackerReward
                 Unclaimed
               </Span>
               <RewardsCell
+                className="justify-start"
                 usdValue={row.data.unclaimed.usdValue}
                 rbtcValue={row.data.unclaimed.rbtcValue}
                 rifValue={row.data.unclaimed.rifValue}
@@ -63,7 +64,7 @@ const RewardDetailsItem = ({ row }: { row: Row<ColumnId, Row['id'], BackerReward
                 <Span variant="h5" className="text-v3-text-40">
                   Backer rewards %
                 </Span>
-                <BackersPercentageCell percentage={row.data.backer_rewards.percentage} />
+                <BackersPercentage className="self-start" percentage={row.data.backer_rewards.percentage} />
               </RewardDetailsMetric>
               <RewardDetailsMetric>
                 <Span variant="h5" className="text-v3-text-40">
@@ -79,6 +80,7 @@ const RewardDetailsItem = ({ row }: { row: Row<ColumnId, Row['id'], BackerReward
                   Total - lifetime
                 </Span>
                 <RewardsCell
+                  className="justify-start"
                   usdValue={row.data.total.usdValue}
                   rbtcValue={row.data.total.rbtcValue}
                   rifValue={row.data.total.rifValue}

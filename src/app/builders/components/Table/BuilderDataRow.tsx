@@ -29,7 +29,7 @@ import {
   ColumnTransforms,
 } from './BuilderTable.config'
 import { ActionCell, ActionCellProps, getActionType } from './Cell/ActionCell'
-import { BackersPercentageCell, BackersPercentageCellProps } from './Cell/BackersPercentageCell'
+import { BackersPercentageCell, BackersPercentageProps } from './Cell/BackersPercentageCell'
 import { BackingCell, BackingCellProps } from './Cell/BackingCell'
 import { BackingShareCell, BackingShareCellProps } from './Cell/BackingShareCell'
 import { BuilderNameCell, BuilderNameCellProps } from './Cell/BuilderNameCell'
@@ -170,7 +170,7 @@ const TableCell = ({
   )
 }
 
-export const BackerRewardsCell = (props: BackersPercentageCellProps): ReactElement => {
+export const BackerRewardsCell = (props: BackersPercentageProps): ReactElement => {
   return (
     <TableCell columnId="backer_rewards" className="gap-2 flex justify-center">
       <BackersPercentageCell {...props} />

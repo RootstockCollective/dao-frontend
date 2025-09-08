@@ -1,6 +1,6 @@
 import { ColumnTransforms } from '@/app/builders/components/Table/BuilderTable.config'
 import { ActionCellProps } from '@/app/builders/components/Table/Cell/ActionCell'
-import { BackersPercentageCellProps } from '@/app/builders/components/Table/Cell/BackersPercentageCell'
+import { BackersPercentageProps } from '@/app/builders/components/Table/Cell/BackersPercentageCell'
 import { BackingCellProps } from '@/app/builders/components/Table/Cell/BackingCell'
 import { BuilderNameCellProps } from '@/app/builders/components/Table/Cell/BuilderNameCell'
 import { RewardsCellProps } from '@/app/builders/components/Table/Cell/RewardsCell'
@@ -91,7 +91,7 @@ export const DEFAULT_HEADERS: Column<ColumnId>[] = [
 export type BackerRewardsCellDataMap = {
   builder: BuilderNameCellProps
   backing: BackingCellProps
-  backer_rewards: BackersPercentageCellProps
+  backer_rewards: BackersPercentageProps
   unclaimed: RewardsCellProps
   estimated: RewardsCellProps
   total: RewardsCellProps
