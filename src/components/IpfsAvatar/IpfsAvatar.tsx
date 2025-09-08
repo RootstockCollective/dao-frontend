@@ -6,14 +6,14 @@ import { ipfsGatewayUrl } from '@/lib/ipfs'
 import { cn } from '@/lib/utils'
 
 interface IpfsAvatarProps {
-  imageIpfs?: string | null
   address: Address
+  imageIpfs?: string | null
   name?: string
   size?: number
   className?: string
 }
 
-export const IpfsAvatar: FC<IpfsAvatarProps> = ({ imageIpfs, address, name, size = 88, className }) => {
+export const IpfsAvatar = ({ imageIpfs, address, name, size = 88, className }: IpfsAvatarProps) => {
   const imageUrl = imageIpfs ? ipfsGatewayUrl(imageIpfs) : null
   const [imageError, setImageError] = useState(false)
 
