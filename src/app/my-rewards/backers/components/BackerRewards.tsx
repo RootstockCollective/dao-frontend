@@ -3,7 +3,7 @@ import { TOKENS } from '@/lib/tokens'
 import { FC } from 'react'
 import { Address } from 'viem'
 import { BackerRewardsMetrics } from './BackerRewardsMetrics'
-import { BackerRewardsTableContainer } from './Table'
+import { BackerRewardsTableContainer } from './TableDesktop'
 
 export const BackerRewards: FC<{ backer: Address }> = ({ backer }) => {
   return (

@@ -4,7 +4,7 @@ export type SortDirection = (typeof SORT_DIRECTIONS)[number]
 
 export type BaseColumnId = string | number | symbol
 
-type BaseRowId = Exclude<React.Key, bigint>
+export type BaseRowId = Exclude<React.Key, bigint>
 
 export type Sort<ColumnId extends Column['id'] = Column['id']> = {
   columnId: ColumnId | null // For now only one column can be sorted at a time
@@ -16,8 +16,8 @@ export type RowData<
   ColumnId extends Column['id'] = Column['id'],
   CellDataMap extends Record<ColumnId, unknown> = Record<ColumnId, unknown>,
 > = {
-  [K in ColumnId]: K extends keyof CellDataMap ? CellDataMap[K] : unknown
-}
+    [K in ColumnId]: K extends keyof CellDataMap ? CellDataMap[K] : unknown
+  }
 
 export type Row<
   ColumnId extends Column['id'] = Column['id'],
@@ -54,55 +54,55 @@ export type TableAction<
   CellDataMap extends Record<ColumnId, unknown> = Record<ColumnId, unknown>,
 > =
   | {
-      type: 'TOGGLE_ROW_SELECTION'
-      payload: Row<ColumnId, BaseRowId, CellDataMap>['id']
-    }
+    type: 'TOGGLE_ROW_SELECTION'
+    payload: Row<ColumnId, BaseRowId, CellDataMap>['id']
+  }
   | {
-      type: 'TOGGLE_COLUMN_VISIBILITY'
-      payload: ColumnId
-    }
+    type: 'TOGGLE_COLUMN_VISIBILITY'
+    payload: ColumnId
+  }
   | {
-      type: 'SET_COLUMN_VISIBILITY'
-      payload: {
-        columnId: ColumnId
-        hidden: boolean
-      }
+    type: 'SET_COLUMN_VISIBILITY'
+    payload: {
+      columnId: ColumnId
+      hidden: boolean
     }
+  }
   | {
-      type: 'SORT_BY_COLUMN'
-      payload: {
-        columnId: ColumnId | null
-        direction: SortDirection | null
-      }
+    type: 'SORT_BY_COLUMN'
+    payload: {
+      columnId: ColumnId | null
+      direction: SortDirection | null
     }
+  }
   | {
-      type: 'SET_ROWS'
-      payload: Row<ColumnId, BaseRowId, CellDataMap>[]
-    }
+    type: 'SET_ROWS'
+    payload: Row<ColumnId, BaseRowId, CellDataMap>[]
+  }
   | {
-      type: 'SET_COLUMNS'
-      payload: Column<ColumnId>[]
-    }
+    type: 'SET_COLUMNS'
+    payload: Column<ColumnId>[]
+  }
   | {
-      type: 'SET_DEFAULT_SORT'
-      payload: Sort<ColumnId>
-    }
+    type: 'SET_DEFAULT_SORT'
+    payload: Sort<ColumnId>
+  }
   | {
-      type: 'SET_LOADING'
-      payload: boolean
-    }
+    type: 'SET_LOADING'
+    payload: boolean
+  }
   | {
-      type: 'SET_ERROR'
-      payload: string | null
-    }
+    type: 'SET_ERROR'
+    payload: string | null
+  }
   | {
-      type: 'SET_SELECTED_ROWS'
-      payload: SelectedRows<Row<ColumnId, BaseRowId, CellDataMap>['id']>
-    }
+    type: 'SET_SELECTED_ROWS'
+    payload: SelectedRows<Row<ColumnId, BaseRowId, CellDataMap>['id']>
+  }
   | {
-      type: 'SET_HIDDEN_COLUMNS'
-      payload: ColumnId[]
-    }
+    type: 'SET_HIDDEN_COLUMNS'
+    payload: ColumnId[]
+  }
 
 /**
  * Helper type to create a strongly typed table configuration
