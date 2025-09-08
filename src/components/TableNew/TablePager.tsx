@@ -108,7 +108,7 @@ export const TablePager: React.FC<TablePagerProps> = ({
   return (
     <div
       className={cn(
-        'w-full flex items-center mt-6 flex-col md:flex-row gap-4 md:gap-0',
+        'w-full flex items-center mt-6',
         isNextExpandableButtonVisible || isNextCyclicButtonVisible ? 'justify-between' : 'justify-end',
         className,
       )}
@@ -120,7 +120,7 @@ export const TablePager: React.FC<TablePagerProps> = ({
           aria-label={`Show next ${pageSize} ${pagedItemName}`}
           data-testid="table-pager-next"
           disabled={isExpandable(mode) && end >= totalItems}
-          className="border border-v3-bg-accent-40 px-2 py-1"
+          className="border border-v3-bg-accent-40 px-2 py-1 w-auto md:w-full"
         >
           <Span className="text-sm">
             Show next {pageSize} {pagedItemName}

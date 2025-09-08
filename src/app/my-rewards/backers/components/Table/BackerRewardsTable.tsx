@@ -178,7 +178,7 @@ export const BackerRewardsTable = () => {
         onPageChange={({ end }) => {
           setPageEnd(end)
         }}
-        pagedItemName="Builders"
+        pagedItemName={isDesktop ? 'Builders' : ''}
         mode="expandable"
         className={isDesktop ? '' : 'mt-0'}
       />
