@@ -11,10 +11,9 @@ import { ParachuteIcon } from '@/components/Icons/ParachuteIcon'
 import { IconProps } from '@/components/Icons/types'
 import { WarningIcon } from '@/components/Icons/WarningIcon'
 import { Tooltip } from '@/components/Tooltip/Tooltip'
-import { Paragraph } from '@/components/Typography'
-import { cn, truncate } from '@/lib/utils'
-import Link from 'next/link'
+import { cn } from '@/lib/utils'
 import { FC } from 'react'
+import { BuilderName } from './BuilderName'
 
 type DecorationOptionId = Exclude<BuilderState, 'active'> | 'extraRewards'
 type BuilderStateTooltip = Record<DecorationOptionId, string>
@@ -110,28 +109,6 @@ const getStateDecorationId = (builder: Builder): Exclude<DecorationOptionId, 'ex
   }
 
   return null
-}
-
-//TODO: move builderName to a separate file
-export interface BuilderNameProps {
-  builder: Builder
-  isHighlighted?: boolean
-  builderPageLink: string
-}
-
-export const BuilderName = ({ builder, isHighlighted, builderPageLink }: BuilderNameProps) => {
-  return (
-    <Link href={builderPageLink} data-testid="builderName" target="_blank" rel="noopener noreferrer">
-      <Paragraph
-        className={cn(
-          'text-v3-primary font-rootstock-sans',
-          isHighlighted && 'text-v3-bg-accent-100 underline underline-offset-2',
-        )}
-      >
-        {truncate(builder.builderName, 18)}
-      </Paragraph>
-    </Link>
-  )
 }
 
 export const BuilderNameCell: FC<BuilderNameCellProps> = ({
