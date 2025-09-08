@@ -11,7 +11,9 @@ import { ConnectWorkflow } from '@/shared/walletConnection/connection/ConnectWor
 import { ConnectButtonComponentProps } from '@/shared/walletConnection'
 import { useVotingPower } from '@/app/proposals/hooks/useVotingPower'
 import { Tooltip } from '@/components/Tooltip'
-import { Span } from '@/components/Typography'
+import { Paragraph, Span } from '@/components/Typography'
+import { ExternalLink } from '@/components/Link'
+import { ArrowUpRightLightIcon } from '@/components/Icons'
 
 export default function ProposalsPage() {
   return (
@@ -21,7 +23,17 @@ export default function ProposalsPage() {
         title="Propose a Project,"
         subtitle="Get support to build it"
         items={[
-          "Clarify your project's purpose on Discourse",
+          <Paragraph key="proposals-page-item-1">
+            Clarify your project&apos;s purpose on{' '}
+            <ExternalLink
+              href="https://gov.rootstockcollective.xyz"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              Discourse
+              <ArrowUpRightLightIcon />
+            </ExternalLink>
+          </Paragraph>,
           'Submit a proposal to suggest a change or fund a project',
           'The community will view and discuss it',
           'The community will use their stRIF or delegated power to vote',

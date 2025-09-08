@@ -3,12 +3,13 @@ import { cn } from '@/lib/utils'
 import { FC, ReactNode } from 'react'
 import { Header, Paragraph, Span } from '../Typography'
 import { Expandable, ExpandableHeader, ExpandableContent, ExpandableFooter } from '@/components/Expandable'
+import { BulletPoint } from './BulletPoint'
 
 export interface HeroComponentMobileProps {
   title: string
   subtitle: string
   topText?: string
-  items?: string[]
+  items?: ReactNode[]
   content?: ReactNode
   button?: ReactNode
   className?: string
@@ -25,6 +26,7 @@ export const HeroComponentMobile: FC<HeroComponentMobileProps> = ({
   className,
   dataTestId,
 }) => {
+  const hasExpandableContent = content || items.length > 0
   return (
     <Expandable className={cn('bg-text-80 rounded-sm p-4', className)} dataTestId={dataTestId}>
       <ExpandableHeader>
@@ -43,16 +45,19 @@ export const HeroComponentMobile: FC<HeroComponentMobileProps> = ({
         </div>
       </ExpandableHeader>
 
-      {(items.length > 0 || content) && (
+      {hasExpandableContent && (
         <ExpandableContent>
-          <ul className="list-none mb-4">
-            {items.map((item, idx) => (
-              <li key={idx} className="flex items-start gap-2 text-sm text-bg-100">
-                <span className="inline-block mt-2 w-[6px] h-[6px] rounded-[32px] border border-bg-80 bg-transparent flex-shrink-0" />
-                <Paragraph className="text-bg-100">{item}</Paragraph>
-              </li>
-            ))}
-          </ul>
+          {items.length > 0 && (
+            <ul className="list-none mb-4">
+              {items.map((item: ReactNode, idx: number) => (
+                <li key={idx} className="flex items-start gap-2 text-sm text-bg-100">
+                  <span className="inline-block mt-2 w-[6px] h-[6px] rounded-[32px] border border-bg-80 bg-transparent flex-shrink-0" />
+                  <BulletPoint />
+                  {typeof item === 'string' ? <Paragraph className="text-bg-100">{item}</Paragraph> : item}
+                </li>
+              ))}
+            </ul>
+          )}
           {content}
         </ExpandableContent>
       )}

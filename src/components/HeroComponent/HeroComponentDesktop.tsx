@@ -4,20 +4,10 @@ import Image from 'next/image'
 import { FC, ReactNode, useMemo } from 'react'
 import { Header, Paragraph, Span } from '../Typography'
 import { useImagePreloader } from '@/shared/hooks/useImagePreloader'
+import { BulletPoint } from './BulletPoint'
+import { HeroComponentProps } from './types'
 
-export interface HeroComponentDesktopProps {
-  imageSrc: string
-  title: string
-  subtitle: string
-  topText?: string
-  items?: string[]
-  content?: ReactNode
-  button?: ReactNode
-  className?: string
-  dataTestId?: string
-}
-
-export const HeroComponentDesktop: FC<HeroComponentDesktopProps> = ({
+export const HeroComponentDesktop: FC<HeroComponentProps> = ({
   imageSrc,
   title,
   subtitle,
@@ -64,16 +54,18 @@ export const HeroComponentDesktop: FC<HeroComponentDesktopProps> = ({
           </div>
         </div>
 
-        <div className="mt-4">
-          <ul className="list-none">
-            {items.map((item, idx) => (
-              <li key={idx} className="flex items-start gap-2 text-base text-bg-100">
-                <span className="inline-block mt-2 w-[6px] h-[6px] rounded-[32px] border border-bg-80 bg-transparent flex-shrink-0" />
-                <Paragraph className="text-bg-100">{item}</Paragraph>
-              </li>
-            ))}
-          </ul>
-        </div>
+        {items.length > 0 && (
+          <div className="mt-4">
+            <ul className="list-none">
+              {items.map((item: ReactNode, idx: number) => (
+                <li key={idx} className="flex items-start gap-2 text-base text-bg-100">
+                  <BulletPoint />
+                  {typeof item === 'string' ? <Paragraph className="text-bg-100">{item}</Paragraph> : item}
+                </li>
+              ))}
+            </ul>
+          </div>
+        )}
 
         {content}
         {button && <div className="flex justify-start mt-6">{button}</div>}

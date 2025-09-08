@@ -3,6 +3,8 @@ import { HeroComponent } from './HeroComponent'
 import { Button } from '../Button'
 import { Header, Paragraph } from '../Typography'
 import { CommunityItemButtonHandler } from '@/app/communities/components/CommunityItemButtonHandler'
+import { ArrowUpRightLightIcon } from '../Icons'
+import { ExternalLink } from '../Link'
 
 const meta: Meta<typeof HeroComponent> = {
   title: 'Components/HeroComponent',
@@ -38,7 +40,13 @@ export const Proposal: Story = {
     title: 'Propose a Project,',
     subtitle: 'Get support to build it',
     items: [
-      "Clarify your project's purpose on Discourse",
+      <Paragraph key="proposals-page-item-1">
+        Clarify your project&apos;s purpose on{' '}
+        <ExternalLink>
+          Discourse
+          <ArrowUpRightLightIcon />
+        </ExternalLink>
+      </Paragraph>,
       'Submit a proposal to suggest a change or fund a project',
       'The community will view and discuss it',
       'The community will use their stRIF or delegated power to vote',
