@@ -10,11 +10,11 @@ interface Props {
   onDelegate: (address: Address) => void
   title: string
   address: Address
+  actionButtonText: string
   name?: string
   imageIpfs?: string | null
   since?: string
   isLoading?: boolean
-  actionButtonText: string
   'data-testid'?: string
 }
 
