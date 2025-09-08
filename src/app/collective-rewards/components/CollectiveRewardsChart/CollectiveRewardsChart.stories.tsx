@@ -10,18 +10,18 @@ function generateMockData() {
   const cycles: CycleWindow[] = [
     {
       label: 'cycle 21',
-      start: '2024-03-01',
-      end: '2025-01-15',
+      start: new Date('2024-03-01'),
+      end: new Date('2025-01-15'),
     },
     {
       label: 'cycle 22',
-      start: '2025-01-15',
-      end: '2025-06-15',
+      start: new Date('2025-01-15'),
+      end: new Date('2025-06-15'),
     },
     {
       label: 'cycle 23',
-      start: '2025-06-15',
-      end: '2025-07-31',
+      start: new Date('2025-06-15'),
+      end: new Date('2025-07-31'),
     },
   ]
 
@@ -201,8 +201,8 @@ export const SingleCycle: Story = {
     const cycles: CycleWindow[] = [
       {
         label: 'cycle 24',
-        start: '2024-06-01',
-        end: '2024-08-30',
+        start: new Date('2024-06-01'),
+        end: new Date('2024-08-30'),
       },
     ]
 
@@ -248,14 +248,14 @@ export const ManyCycles: Story = {
     const days = 730 // 2 years
 
     const cycles: CycleWindow[] = [
-      { label: 'cycle 18', start: '2023-01-01', end: '2023-04-01' },
-      { label: 'cycle 19', start: '2023-04-01', end: '2023-07-01' },
-      { label: 'cycle 20', start: '2023-07-01', end: '2023-10-01' },
-      { label: 'cycle 21', start: '2023-10-01', end: '2024-01-01' },
-      { label: 'cycle 22', start: '2024-01-01', end: '2024-04-01' },
-      { label: 'cycle 23', start: '2024-04-01', end: '2024-07-01' },
-      { label: 'cycle 24', start: '2024-07-01', end: '2024-10-01' },
-      { label: 'cycle 25', start: '2024-10-01', end: '2024-12-31' },
+      { label: 'cycle 18', start: new Date('2023-01-01'), end: new Date('2023-04-01') },
+      { label: 'cycle 19', start: new Date('2023-04-01'), end: new Date('2023-07-01') },
+      { label: 'cycle 20', start: new Date('2023-07-01'), end: new Date('2023-10-01') },
+      { label: 'cycle 21', start: new Date('2023-10-01'), end: new Date('2024-01-01') },
+      { label: 'cycle 22', start: new Date('2024-01-01'), end: new Date('2024-04-01') },
+      { label: 'cycle 23', start: new Date('2024-04-01'), end: new Date('2024-07-01') },
+      { label: 'cycle 24', start: new Date('2024-07-01'), end: new Date('2024-10-01') },
+      { label: 'cycle 25', start: new Date('2024-10-01'), end: new Date('2024-12-31') },
     ]
 
     const backingSeries: BackingPoint[] = []

@@ -104,8 +104,8 @@ export type RewardsPoint = {
 
 export type CycleWindow = {
   label: string
-  start: Date | number | string
-  end: Date | number | string
+  start: Date
+  end: Date
 }
 
 interface ChartDataPoint {
@@ -115,6 +115,8 @@ interface ChartDataPoint {
   rewardsUSD?: bigint
   rewardsRif?: bigint
   rewardsRbtc?: bigint
+  cycle?: number | null
+  dayInCycle?: string | null
 }
 
 export interface TooltipPayload {

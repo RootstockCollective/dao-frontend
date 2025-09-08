@@ -11,3 +11,7 @@ export const DEFAULT_CHART_HEIGHT = 420
 export const ISO_DATE_LENGTH = 10
 
 export const ONE_MONTH_IN_MS = 30 * 24 * 60 * 60 * 1000
+
+export const CYCLE_DURATION_DAYS = 14
+
+export const MS_PER_DAY = 1000 * 60 * 60 * 24

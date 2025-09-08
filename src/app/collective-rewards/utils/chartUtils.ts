@@ -114,7 +114,25 @@ const transformRewardsData = (
   if (!rewardsData || !Array.isArray(rewardsData)) return []
 
   const sortedData = [...rewardsData].sort((a, b) => Number(a.cycleStart) - Number(b.cycleStart))
-  const interpolatedData = interpolateCycleRewardsData(sortedData)
+
+  let cumulativeRifRewards = BigInt(0)
+  let cumulativeRbtcRewards = BigInt(0)
+
+  const accumulatedCycleRewards = sortedData.map((item, index) => {
+    const currentRifRewards = BigInt(item.rewardsERC20)
+    const currentRbtcRewards = BigInt(item.rewardsRBTC)
+
+    cumulativeRifRewards += currentRifRewards
+    cumulativeRbtcRewards += currentRbtcRewards
+
+    return {
+      ...item,
+      rewardsERC20: cumulativeRifRewards.toString(),
+      rewardsRBTC: cumulativeRbtcRewards.toString(),
+    }
+  })
+
+  const interpolatedData = interpolateCycleRewardsData(accumulatedCycleRewards)
 
   return interpolatedData.map(item => ({
     day: new Date(Number(item.cycleStart) * 1000),
@@ -156,8 +174,7 @@ export const transformApiDataToChartData = (
 
   const rewardsSeries: RewardsPoint[] = transformRewardsData(rewardsData, rifPrice, rbtcPrice)
 
-  // const cycles: CycleWindow[] = rewardsData ? transformCyclesData(rewardsData) : []
-  const cycles: CycleWindow[] = []
+  const cycles: CycleWindow[] = transformCyclesData(rewardsData)
 
   return { backingSeries, rewardsSeries, cycles }
 }
