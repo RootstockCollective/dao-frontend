@@ -26,7 +26,7 @@ export const BannerContent: FC<BannerContentProps> = ({
         <BaseTypography variant="h3">{title}</BaseTypography>
         <BaseTypography>{description}</BaseTypography>
         {buttonText && (
-          <Button variant="primary" onClick={buttonOnClick} className="w-fit">
+          <Button variant="primary" onClick={buttonOnClick}>
             {buttonText}
           </Button>
         )}
