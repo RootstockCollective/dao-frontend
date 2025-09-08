@@ -7,58 +7,16 @@ import { getCombinedFiatAmount } from '@/app/collective-rewards/utils'
 import { TablePager } from '@/components/TableNew'
 import { TOKENS } from '@/lib/tokens'
 import { usePricesContext, useTableActionsContext, useTableContext } from '@/shared/context'
-import { Row, Sort } from '@/shared/context/TableContext/types'
+import { Sort } from '@/shared/context/TableContext/types'
+import { useIsDesktop } from '@/shared/hooks/useIsDesktop'
 import { Big } from 'big.js'
-import { Suspense, useEffect, useMemo, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { Address } from 'viem'
 import { useAccount } from 'wagmi'
-import { BackerRewardsDataRow, convertDataToRowData } from './BackerRewardsDataRow'
-import { BackerRewardsHeaderRow } from './BackerRewardsHeaderRow'
+import { convertDataToRowData } from './BackerRewardsDataRow'
 import { BackerRewardsCellDataMap, ColumnId, DEFAULT_HEADERS, PAGE_SIZE } from './BackerRewardsTable.config'
-import { useIsDesktop } from '@/shared/hooks/useIsDesktop'
-import { Jdenticon } from '@/components/Header/Jdenticon'
-import { BuilderName } from '@/app/builders/components/Table/Cell/BuilderNameCell'
-import { Collapsible } from '@/components/Collapsible'
-
-const RewardDetailsItem = ({ row }: { row: Row<ColumnId, Row['id'], BackerRewardsCellDataMap> }) => {
-  return (
-    <div className="flex flex-col align-start gap-4 px-0 py-5">
-      <Collapsible.Root defaultOpen={false}>
-        <div className="flex justify-between align-start align-self-stretch">
-          <div className="flex align-items-center gap-3 place-items-center">
-            <Jdenticon className="rounded-full bg-white w-10" value={row.data.builder.builder.address} />
-            <BuilderName
-              builder={row.data.builder.builder}
-              isHighlighted={false}
-              builderPageLink={`/proposals/${row.data.builder.builder.proposal.id}`}
-            />
-          </div>
-
-          <Collapsible.Toggle className="w-auto" />
-        </div>
-        <div className="flex align-start align-self-stretch gap-6">
-          <div>fixed content</div>
-        </div>
-        <Collapsible.Content>
-          <div className="flex align-start align-self-stretch gap-6">collapsible content</div>
-        </Collapsible.Content>
-      </Collapsible.Root>
-    </div>
-  )
-}
-// TODO: move to a separate file
-const MobileRewardsDetails = ({ rows }: { rows: Row<ColumnId, Row['id'], BackerRewardsCellDataMap>[] }) => {
-  return (
-    <>
-      <Suspense fallback={<div>Loading table data...</div>}></Suspense>
-      <div className="flex flex-col align-start w-full">
-        {rows.map(row => (
-          <RewardDetailsItem key={row.id} row={row} />
-        ))}
-      </div>
-    </>
-  )
-}
+import { DesktopRewardsDetails } from './DesktopRewardsDetails'
+import { MobileRewardsDetails } from './MobileRewardsDetails'
 
 type PagedFilter = {
   backer: Address
@@ -120,34 +78,6 @@ const usePagedFilteredBackerRewards = ({
   }, [backerRewards, pageOptions, sort])
 
   return { data, isLoading, error }
-}
-
-// TODO: move to a separate file
-const DesktopRewardsDetails = ({
-  rows,
-  actions,
-}: {
-  rows: Row<ColumnId, Row['id'], BackerRewardsCellDataMap>[]
-  actions: Action[]
-}) => {
-  return (
-    <div className="hidden md:block">
-      <div className="w-full overflow-x-auto bg-v3-bg-accent-80">
-        <table className="w-full min-w-[700px]">
-          <thead>
-            <BackerRewardsHeaderRow actions={actions} />
-          </thead>
-          <Suspense fallback={<div>Loading table data...</div>}>
-            <tbody>
-              {rows.map(row => (
-                <BackerRewardsDataRow key={row.id} row={row} />
-              ))}
-            </tbody>
-          </Suspense>
-        </table>
-      </div>
-    </div>
-  )
 }
 
 export const BackerRewardsTable = () => {
@@ -250,6 +180,7 @@ export const BackerRewardsTable = () => {
         }}
         pagedItemName="Builders"
         mode="expandable"
+        className={isDesktop ? '' : 'mt-0'}
       />
     </>
   )
