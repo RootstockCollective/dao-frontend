@@ -3,7 +3,7 @@ import { HourglassIcon } from '@/components/Icons/HourglassIcon'
 import { BaseTypography } from '@/components/Typography/Typography'
 import { STRIF } from '@/lib/constants'
 import { shortAddress } from '@/lib/utils'
-import { Address } from 'viem'
+import { Address, zeroAddress } from 'viem'
 
 interface AllocationBarTooltipProps {
   builderAddress: string
@@ -18,7 +18,7 @@ export const AllocationBarTooltipContent = ({
   pendingBacking,
   percentage = '',
 }: AllocationBarTooltipProps) => {
-  const isUnallocated = builderAddress === 'unallocated'
+  const isUnallocated = builderAddress === zeroAddress
 
   return (
     <div className="w-[230px] p-4">
@@ -33,7 +33,7 @@ export const AllocationBarTooltipContent = ({
         )}
       </div>
       <div className="flex flex-col gap-1 mt-2">
-        {pendingBacking > 0n && builderAddress !== 'unallocated' && (
+        {pendingBacking > 0n && !isUnallocated && (
           <div className="flex justify-between items-center text-secondary gap-5">
             <BaseTypography variant="body-s">Pending</BaseTypography>
             <span className="inline-flex items-center gap-1">

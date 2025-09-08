@@ -1,13 +1,13 @@
+import { MoreIcon } from '@/components/Icons/MoreIcon'
+import { Tooltip } from '@/components/Tooltip'
+import { cn } from '@/lib/utils'
 import { useSortable } from '@dnd-kit/sortable'
 import { CSS } from '@dnd-kit/utilities'
 import { AllocationBarDragHandle } from './AllocationBarDragHandle'
 import { AllocationBarResizeHandle } from './AllocationBarResizeHandle'
+import { AllocationBarTooltipContent } from './AllocationBarTooltipContent'
 import { AllocationBarValueDisplay, AllocationItem } from './types'
 import { checkerboardStyle, valueToPercentage } from './utils'
-import { AllocationBarTooltipContent } from './AllocationBarTooltipContent'
-import { Tooltip } from '@/components/Tooltip'
-import { MoreIcon } from '@/components/Icons/MoreIcon'
-import { cn } from '@/lib/utils'
 
 const AllocationBarSegmentPercent = ({
   pendingBacking,
@@ -46,7 +46,7 @@ const AllocationBarSegmentPercent = ({
         text={
           <AllocationBarTooltipContent
             builderAddress={item.key}
-            currentBacking={item.key === 'unallocated' ? pendingBacking : currentBacking}
+            currentBacking={currentBacking}
             pendingBacking={item.isTemporary ? pendingBacking : 0n}
             percentage={displayValue}
           />
@@ -157,7 +157,7 @@ export const AllocationBarSegment = ({
       text={
         <AllocationBarTooltipContent
           builderAddress={item.key}
-          currentBacking={item.key === 'unallocated' ? pendingBacking : currentBacking}
+          currentBacking={currentBacking}
           pendingBacking={item.isTemporary ? pendingBacking : 0n}
         />
       }

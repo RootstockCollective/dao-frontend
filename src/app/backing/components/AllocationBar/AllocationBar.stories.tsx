@@ -1,7 +1,8 @@
 import type { Meta, StoryObj } from '@storybook/nextjs'
+import { useState } from 'react'
+import { zeroAddress } from 'viem'
 import AllocationBar from './AllocationBar'
 import { AllocationChangeData, AllocationItem } from './types'
-import { useState } from 'react'
 
 const meta = {
   title: 'KOTO/Backing/Components/AllocationBar',
@@ -17,7 +18,7 @@ const addUnallocated = (items: AllocationItem[], totalAllocated: bigint): Alloca
   return [
     ...items,
     {
-      key: 'unallocated',
+      key: zeroAddress,
       label: 'available funds',
       value: totalAllocated - allocatedSum,
       displayColor: '#25211E',

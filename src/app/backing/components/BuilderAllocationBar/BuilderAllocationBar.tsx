@@ -1,11 +1,10 @@
 import { AllocationsContext } from '@/app/collective-rewards/allocations/context'
 import { floorToUnit, getBuilderColor } from '@/app/shared/components/utils'
 import { useCallback, useContext, useEffect, useMemo, useState } from 'react'
-import { Address } from 'viem'
+import { Address, zeroAddress } from 'viem'
 import AllocationBar from '../AllocationBar/AllocationBar'
 import { AllocationBarProps, AllocationChangeData, AllocationItem } from '../AllocationBar/types'
 
-const UNALLOCATED_KEY = 'unallocated'
 const UNALLOCATED_LABEL = 'Available backing'
 
 const BuilderAllocationBar = ({ barOverrides }: { barOverrides?: Partial<AllocationBarProps> }) => {
@@ -20,23 +19,23 @@ const BuilderAllocationBar = ({ barOverrides }: { barOverrides?: Partial<Allocat
     actions: { updateAllocation },
   } = useContext(AllocationsContext)
 
-  // Local order state, includes 'unallocated'
-  const [orderedKeys, setOrderedKeys] = useState<string[]>([])
+  // Local order state, includes zeroAddress for unallocated segment
+  const [orderedKeys, setOrderedKeys] = useState<string[]>([zeroAddress])
 
   useEffect(() => {
-    setOrderedKeys([...Object.keys(initialAllocations), UNALLOCATED_KEY])
+    setOrderedKeys([...Object.keys(initialAllocations), zeroAddress])
   }, [resetVersion, initialAllocations])
 
-  // Sync keys and add new keys to left of 'unallocated'
+  // Sync keys and add new keys to left of unallocated (zeroAddress)
   useEffect(() => {
     const allocationKeys = Object.keys(allocations)
 
     if (orderedKeys.length === 0) {
-      setOrderedKeys([...allocationKeys, UNALLOCATED_KEY])
+      setOrderedKeys([...allocationKeys, zeroAddress])
       return
     }
 
-    const unallocatedIndex = orderedKeys.indexOf(UNALLOCATED_KEY)
+    const unallocatedIndex = orderedKeys.indexOf(zeroAddress)
     const missingKeys = allocationKeys.filter(k => !orderedKeys.includes(k))
 
     if (missingKeys.length > 0) {
@@ -58,9 +57,9 @@ const BuilderAllocationBar = ({ barOverrides }: { barOverrides?: Partial<Allocat
   const baseItems: AllocationItem[] = useMemo(() => {
     return orderedKeys
       .map(key => {
-        if (key === UNALLOCATED_KEY) {
+        if (key === zeroAddress) {
           return {
-            key: UNALLOCATED_KEY,
+            key: zeroAddress,
             label: UNALLOCATED_LABEL,
             value: unallocated,
             displayColor: 'var(--background-40)',
@@ -102,11 +101,11 @@ const BuilderAllocationBar = ({ barOverrides }: { barOverrides?: Partial<Allocat
       if (change.type === 'resize') {
         const { values: newValues, itemsData, increasedIndex, decreasedIndex } = change
 
-        // Update allocations except for 'unallocated'
+        // Update allocations except for unallocated (zeroAddress)
         const changedItems = [itemsData[increasedIndex], itemsData[decreasedIndex]]
         changedItems.forEach(item => {
           const newValue = newValues[itemsData.indexOf(item)]
-          if (item.key !== UNALLOCATED_KEY) {
+          if (item.key !== zeroAddress) {
             updateAllocation(item.key as Address, newValue)
           }
         })
@@ -125,7 +124,7 @@ const BuilderAllocationBar = ({ barOverrides }: { barOverrides?: Partial<Allocat
       <AllocationBar
         itemsData={[
           {
-            key: UNALLOCATED_KEY,
+            key: zeroAddress,
             label: UNALLOCATED_LABEL,
             value: 1n,
             initialValue: 1n,
