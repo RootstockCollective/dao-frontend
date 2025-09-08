@@ -1,6 +1,6 @@
 import { BackersPercentageCell } from '@/app/builders/components/Table/Cell/BackersPercentageCell/BackersPercentageCell'
 import { BackingCell } from '@/app/builders/components/Table/Cell/BackingCell/BackingCell'
-import { BuilderName } from '@/app/builders/components/Table/Cell/BuilderNameCell'
+import { BuilderName } from '@/app/builders/components/Table/Cell/BuilderNameCell/BuilderName'
 import { RewardsCell } from '@/app/builders/components/Table/Cell/RewardsCell/RewardsCell'
 import { Collapsible } from '@/components/Collapsible'
 import { Jdenticon } from '@/components/Header/Jdenticon'
