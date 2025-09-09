@@ -120,7 +120,7 @@ export const TablePager: React.FC<TablePagerProps> = ({
           aria-label={`Show next ${pageSize} ${pagedItemName}`}
           data-testid="table-pager-next"
           disabled={isExpandable(mode) && end >= totalItems}
-          className="border border-v3-bg-accent-40 px-2 py-1 w-auto md:w-full"
+          className="border border-v3-bg-accent-40 px-2 py-1 w-auto"
         >
           <Span className="text-sm">
             Show next {pageSize} {pagedItemName}

@@ -17,6 +17,10 @@ const RewardDetailsMetric = ({ children }: { children: ReactNode }) => {
   return <div className="flex flex-1 flex-col align-items-start gap-0.5">{children}</div>
 }
 
+const EmptyPlaceholder = () => {
+  return <>-</>
+}
+
 const RewardDetailsItem = ({ row }: { row: Row<ColumnId, Row['id'], BackerRewardsCellDataMap> }) => {
   const router = useRouter()
   return (
@@ -45,6 +49,7 @@ const RewardDetailsItem = ({ row }: { row: Row<ColumnId, Row['id'], BackerReward
                 usdValue={row.data.unclaimed.usdValue}
                 rbtcValue={row.data.unclaimed.rbtcValue}
                 rifValue={row.data.unclaimed.rifValue}
+                emptyPlaceholder={<EmptyPlaceholder />}
               />
             </RewardDetailsMetric>
             <RewardDetailsMetric>
@@ -55,6 +60,7 @@ const RewardDetailsItem = ({ row }: { row: Row<ColumnId, Row['id'], BackerReward
                 usdValue={row.data.estimated.usdValue}
                 rbtcValue={row.data.estimated.rbtcValue}
                 rifValue={row.data.estimated.rifValue}
+                emptyPlaceholder={<EmptyPlaceholder />}
               />
             </RewardDetailsMetric>
           </div>
@@ -69,13 +75,14 @@ const RewardDetailsItem = ({ row }: { row: Row<ColumnId, Row['id'], BackerReward
                   usdValue={row.data.total.usdValue}
                   rbtcValue={row.data.total.rbtcValue}
                   rifValue={row.data.total.rifValue}
+                  emptyPlaceholder={<EmptyPlaceholder />}
                 />
               </RewardDetailsMetric>
               <RewardDetailsMetric>
                 <Span variant="h5" className="text-v3-text-40">
                   Backing
                 </Span>
-                <BackingCell {...row.data.backing} />
+                <BackingCell {...row.data.backing} emptyPlaceholder={<EmptyPlaceholder />} />
               </RewardDetailsMetric>
             </div>
             <div className="flex align-start align-self-stretch gap-6">
