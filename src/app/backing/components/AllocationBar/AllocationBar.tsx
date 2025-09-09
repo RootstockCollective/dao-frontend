@@ -1,8 +1,12 @@
-import React, { useRef, useState, useEffect } from 'react'
-import { DndContext, PointerSensor, useSensor, useSensors, DragEndEvent, pointerWithin } from '@dnd-kit/core'
-import { SortableContext, horizontalListSortingStrategy, arrayMove } from '@dnd-kit/sortable'
+import { DndContext, DragEndEvent, PointerSensor, pointerWithin, useSensor, useSensors } from '@dnd-kit/core'
 import { restrictToHorizontalAxis } from '@dnd-kit/modifiers'
+import { SortableContext, arrayMove, horizontalListSortingStrategy } from '@dnd-kit/sortable'
+import React, { useEffect, useRef, useState } from 'react'
 
+import { Legend } from '@/components/Legend'
+import { cn } from '@/lib/utils'
+import { AllocationBarSegment } from './AllocationBarSegment'
+import { AllocationBarProps } from './types'
 import {
   calculateMinSegmentValue,
   calculateNewSegmentValues,
@@ -10,10 +14,6 @@ import {
   clamp,
   valueToPercentage,
 } from './utils'
-import { AllocationBarProps } from './types'
-import { AllocationBarSegment } from './AllocationBarSegment'
-import { Legend } from '@/components/Legend'
-import { cn } from '@/lib/utils'
 
 const getSegmentsToShowDots = (values: bigint[], totalValue: bigint): boolean[] => {
   const NEIGHBOR_SUM_THRESHOLD = 8 // 8%
@@ -173,8 +173,8 @@ const AllocationBar: React.FC<AllocationBarProps> = ({
             {currentItems.map((item, i) => (
               <AllocationBarSegment
                 key={item.key}
-                pendingBacking={currentValues[i]}
-                currentBacking={item.initialValue ?? 0n}
+                pendingValue={currentValues[i]}
+                onchainValue={item.initialValue ?? 0n}
                 totalBacking={totalBacking}
                 item={item}
                 index={i}
