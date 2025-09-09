@@ -180,7 +180,6 @@ export const BackerRewardsTable = () => {
         }}
         pagedItemName={isDesktop ? 'Builders' : ''}
         mode="expandable"
-        className={isDesktop ? '' : 'mt-0'}
       />
     </>
   )

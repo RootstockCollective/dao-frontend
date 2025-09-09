@@ -21,7 +21,13 @@ const EmptyPlaceholder = () => {
   return <>-</>
 }
 
-const RewardDetailsItem = ({ row }: { row: Row<ColumnId, Row['id'], BackerRewardsCellDataMap> }) => {
+const RewardDetailsItem = ({
+  row: {
+    data: { unclaimed, estimated, total, backing, backer_rewards, builder },
+  },
+}: {
+  row: Row<ColumnId, Row['id'], BackerRewardsCellDataMap>
+}) => {
   const router = useRouter()
   return (
     <>
@@ -46,9 +52,9 @@ const RewardDetailsItem = ({ row }: { row: Row<ColumnId, Row['id'], BackerReward
               </Span>
               <RewardsCell
                 className="justify-start"
-                usdValue={row.data.unclaimed.usdValue}
-                rbtcValue={row.data.unclaimed.rbtcValue}
-                rifValue={row.data.unclaimed.rifValue}
+                usdValue={unclaimed.usdValue}
+                rbtcValue={unclaimed.rbtcValue}
+                rifValue={unclaimed.rifValue}
                 emptyPlaceholder={<EmptyPlaceholder />}
               />
             </RewardDetailsMetric>
@@ -57,9 +63,9 @@ const RewardDetailsItem = ({ row }: { row: Row<ColumnId, Row['id'], BackerReward
                 Estimated this cycle
               </Span>
               <RewardsCell
-                usdValue={row.data.estimated.usdValue}
-                rbtcValue={row.data.estimated.rbtcValue}
-                rifValue={row.data.estimated.rifValue}
+                usdValue={estimated.usdValue}
+                rbtcValue={estimated.rbtcValue}
+                rifValue={estimated.rifValue}
                 emptyPlaceholder={<EmptyPlaceholder />}
               />
             </RewardDetailsMetric>
@@ -72,9 +78,9 @@ const RewardDetailsItem = ({ row }: { row: Row<ColumnId, Row['id'], BackerReward
                 </Span>
                 <RewardsCell
                   className="justify-start"
-                  usdValue={row.data.total.usdValue}
-                  rbtcValue={row.data.total.rbtcValue}
-                  rifValue={row.data.total.rifValue}
+                  usdValue={total.usdValue}
+                  rbtcValue={total.rbtcValue}
+                  rifValue={total.rifValue}
                   emptyPlaceholder={<EmptyPlaceholder />}
                 />
               </RewardDetailsMetric>
@@ -82,7 +88,7 @@ const RewardDetailsItem = ({ row }: { row: Row<ColumnId, Row['id'], BackerReward
                 <Span variant="h5" className="text-v3-text-40">
                   Backing
                 </Span>
-                <BackingCell {...row.data.backing} emptyPlaceholder={<EmptyPlaceholder />} />
+                <BackingCell {...backing} emptyPlaceholder={<EmptyPlaceholder />} />
               </RewardDetailsMetric>
             </div>
             <div className="flex align-start align-self-stretch gap-6">
@@ -90,14 +96,14 @@ const RewardDetailsItem = ({ row }: { row: Row<ColumnId, Row['id'], BackerReward
                 <Span variant="h5" className="text-v3-text-40">
                   Backer rewards %
                 </Span>
-                <BackersPercentage className="self-start" percentage={row.data.backer_rewards.percentage} />
+                <BackersPercentage className="self-start" percentage={backer_rewards.percentage} />
               </RewardDetailsMetric>
             </div>
 
             <Button
               variant="transparent"
               className="flex w-full items-center gap-1"
-              onClick={() => router.push(`/backing?builders=${row.data.builder.builder.address}`)}
+              onClick={() => router.push(`/backing?builders=${builder.builder.address}`)}
             >
               <CogIcon size={20} /> <Span className="text-[0.875rem] font-normal">Adjust backing</Span>
             </Button>
