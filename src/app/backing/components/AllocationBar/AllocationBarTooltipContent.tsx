@@ -3,28 +3,28 @@ import { HourglassIcon } from '@/components/Icons/HourglassIcon'
 import { BaseTypography } from '@/components/Typography/Typography'
 import { STRIF } from '@/lib/constants'
 import { shortAddress } from '@/lib/utils'
-import { Address } from 'viem'
+import { Address, zeroAddress } from 'viem'
 
 interface AllocationBarTooltipProps {
-  builderAddress: string
-  currentBacking: bigint
-  pendingBacking: bigint
+  builderAddress: Address
+  onchainValue: bigint
+  pendingValue: bigint
   percentage?: string
 }
 
 export const AllocationBarTooltipContent = ({
   builderAddress,
-  currentBacking,
-  pendingBacking,
+  onchainValue,
+  pendingValue,
   percentage = '',
 }: AllocationBarTooltipProps) => {
-  const isUnallocated = builderAddress === 'unallocated'
+  const isUnallocated = builderAddress === zeroAddress
 
   return (
     <div className="w-[230px] p-4">
       <div className="inline-flex items-center gap-1">
         <BaseTypography variant="tag-s">
-          {isUnallocated ? 'Available' : shortAddress(builderAddress as Address)}
+          {isUnallocated ? 'Available' : shortAddress(builderAddress)}
         </BaseTypography>
         {percentage && (
           <BaseTypography variant="tag-s" className="font-light">
@@ -33,23 +33,21 @@ export const AllocationBarTooltipContent = ({
         )}
       </div>
       <div className="flex flex-col gap-1 mt-2">
-        {pendingBacking > 0n && builderAddress !== 'unallocated' && (
+        {pendingValue > 0n && (
           <div className="flex justify-between items-center text-secondary gap-5">
             <BaseTypography variant="body-s">Pending</BaseTypography>
             <span className="inline-flex items-center gap-1">
               <HourglassIcon className="size-4" color="var(--background-40)" />
               <BaseTypography variant="body" className="text-lg">
-                {formatSymbol(pendingBacking, STRIF)}
+                {formatSymbol(pendingValue, STRIF)}
               </BaseTypography>
             </span>
           </div>
         )}
         <div className="flex justify-between items-center text-secondary gap-5">
-          <BaseTypography variant="body-s">
-            {isUnallocated ? 'Available backing' : 'Current backing'}
-          </BaseTypography>
+          <BaseTypography variant="body-s">{isUnallocated ? 'Onchain' : 'Current backing'}</BaseTypography>
           <BaseTypography variant="body" className="text-lg">
-            {formatSymbol(currentBacking, STRIF)}
+            {formatSymbol(onchainValue, STRIF)}
           </BaseTypography>
         </div>
       </div>

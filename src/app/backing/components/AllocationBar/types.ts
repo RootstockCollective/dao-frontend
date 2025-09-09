@@ -1,7 +1,7 @@
 import { Address } from 'viem'
 
 export interface AllocationItem {
-  key: Address | string
+  key: Address
   label: string
   value: bigint // actual value (not percentage)
   displayColor: string
