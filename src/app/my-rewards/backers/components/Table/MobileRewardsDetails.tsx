@@ -63,6 +63,7 @@ const RewardDetailsItem = ({
                 Estimated this cycle
               </Span>
               <RewardsCell
+                className="justify-start"
                 usdValue={estimated.usdValue}
                 rbtcValue={estimated.rbtcValue}
                 rifValue={estimated.rifValue}
@@ -88,7 +89,7 @@ const RewardDetailsItem = ({
                 <Span variant="h5" className="text-v3-text-40">
                   Backing
                 </Span>
-                <BackingCell {...backing} emptyPlaceholder={<EmptyPlaceholder />} />
+                <BackingCell className="justify-start" {...backing} emptyPlaceholder={<EmptyPlaceholder />} />
               </RewardDetailsMetric>
             </div>
             <div className="flex align-start align-self-stretch gap-6">
