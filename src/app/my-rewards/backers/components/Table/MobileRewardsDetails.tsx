@@ -35,11 +35,11 @@ const RewardDetailsItem = ({
         <Collapsible.Root className="gap-4" defaultOpen={false}>
           <div className="flex justify-between align-start align-self-stretch">
             <div className="flex align-items-center gap-3 place-items-center">
-              <Jdenticon className="rounded-full bg-white w-10" value={row.data.builder.builder.address} />
+              <Jdenticon className="rounded-full bg-white w-10" value={builder.builder.address} />
               <BuilderName
-                builder={row.data.builder.builder}
+                builder={builder.builder}
                 isHighlighted={false}
-                builderPageLink={`/proposals/${row.data.builder.builder.proposal.id}`}
+                builderPageLink={`/proposals/${builder.builder.proposal.id}`}
               />
             </div>
 
