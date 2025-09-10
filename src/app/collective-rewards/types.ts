@@ -15,8 +15,10 @@ export interface CycleRewardsItem {
   id: string
   rewardsERC20: string
   rewardsRBTC: string
-  cycleStart: string
-  cycleDuration: string
+  currentCycleStart: string
+  currentCycleDuration: string
+  previousCycleStart: string
+  previousCycleDuration: string
   distributionDuration: string
   onDistributionPeriod: boolean
 }
@@ -106,6 +108,7 @@ export type CycleWindow = {
   label: string
   start: Date
   end: Date
+  cycleNumber?: number
 }
 
 interface ChartDataPoint {
