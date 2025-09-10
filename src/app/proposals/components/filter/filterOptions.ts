@@ -103,7 +103,7 @@ const filterTimeOptions: FilterItem[] = [
   createTimeFilter('Last 90 days', 90),
 ]
 
-export const filterOptions = {
+export const filterOptions: Record<string, FilterItem[]> = {
   [FilterType.CATEGORY]: filterCategoryOptions,
   [FilterType.STATUS]: filterStatusOptions,
   [FilterType.TIME]: filterTimeOptions,

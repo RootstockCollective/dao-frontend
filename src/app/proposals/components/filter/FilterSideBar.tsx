@@ -1,11 +1,11 @@
+import { Header } from '@/components/Typography'
 import { cn } from '@/lib/utils'
 import { type HTMLAttributes } from 'react'
 import { FilterRadioItem } from './FilterRadioItem'
-import { filterOptions } from './filterOptions'
 import { FilterItem } from './types'
-import { Header } from '@/components/Typography'
 
 interface FilterSideBarProps extends HTMLAttributes<HTMLDivElement> {
+  filterOptions: Record<string, FilterItem[]>
   activeFilters: FilterItem[]
   onAddFilter: (filter: FilterItem) => void
   onRemoveFilter: (id: string) => void
@@ -15,6 +15,7 @@ interface FilterSideBarProps extends HTMLAttributes<HTMLDivElement> {
  * Sidebar panel containing radio button filters for proposal categories
  */
 export function FilterSideBar({
+  filterOptions,
   activeFilters,
   onAddFilter,
   onRemoveFilter,
@@ -47,7 +48,7 @@ export function FilterSideBar({
               <li key={option.id} data-testid={`FilterOption-${option.label}`}>
                 <FilterRadioItem
                   selected={activeFilters.some(f => f.id === option.id)}
-                  option={option}
+                  label={option.label}
                   onClick={() => handleFilterToggle(option)}
                 />
               </li>

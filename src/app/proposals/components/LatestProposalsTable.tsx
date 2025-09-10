@@ -32,6 +32,7 @@ import { useStickyHeader } from '@/shared/hooks'
 import { ActiveFiltersDisplay } from './filter/ActiveFiltersDisplay'
 import { useProposalFilters } from './filter/useProposalFilters'
 import { FilterType } from './filter/types'
+import { filterOptions } from './filter/filterOptions'
 
 interface LatestProposalsTableProps {
   proposals: Proposal[]
@@ -324,6 +325,7 @@ const LatestProposalsTable = ({ proposals }: LatestProposalsTableProps) => {
           {/* container for useClickOutside ref */}
           <div ref={filterSidebarRef} className="pl-2 h-full">
             <FilterSideBar
+              filterOptions={filterOptions}
               activeFilters={activeFilters}
               onAddFilter={addFilter}
               onRemoveFilter={removeFilter}

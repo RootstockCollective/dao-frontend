@@ -1,7 +1,7 @@
 import type { Meta, StoryObj } from '@storybook/nextjs'
 import { FilterSideBar } from './FilterSideBar'
 import { useState } from 'react'
-import { FilterOption } from './filterOptions'
+import { FilterItem, FilterType } from './types'
 
 const meta: Meta<typeof FilterSideBar> = {
   title: 'Proposals/FilterSideBar',
@@ -13,29 +13,48 @@ export default meta
 
 type Story = StoryObj<typeof FilterSideBar>
 
-const filterOptions: FilterOption[] = [
-  { label: 'Proposals I can vote', value: 'Proposals I can vote' },
-  { label: 'Builder proposals', value: 'Builder proposals' },
-  { label: 'Treasury proposals', value: 'Treasury proposals' },
-  { label: 'Grants', value: 'Grants' },
-  { label: 'My proposals', value: 'My proposals' },
-]
+const createFilterItem = (label: string): FilterItem => ({
+  id: `filter-${label}`,
+  type: FilterType.CATEGORY,
+  label,
+  value: label,
+  validate: () => true,
+})
+
+const filterOptions: Record<string, FilterItem[]> = {
+  [FilterType.CATEGORY]: [
+    createFilterItem('Proposals I can vote'),
+    createFilterItem('Builder proposals'),
+    createFilterItem('Treasury proposals'),
+    createFilterItem('Grants'),
+    createFilterItem('My proposals'),
+  ],
+  [FilterType.STATUS]: [
+    createFilterItem('Pending'),
+    createFilterItem('Active'),
+    createFilterItem('Executed'),
+    createFilterItem('Defeated'),
+  ],
+  [FilterType.TIME]: [
+    createFilterItem('Last week'),
+    createFilterItem('Last month'),
+    createFilterItem('Last 90 days'),
+  ],
+}
 
 export const Default: Story = {
   render() {
-    const [activeFilters, setActiveFilters] = useState<string[]>([])
+    const [activeFilters, setActiveFilters] = useState<FilterItem[]>([])
     return (
       <div>
         <FilterSideBar
           filterOptions={filterOptions}
           activeFilters={activeFilters}
           onAddFilter={filter => {
-            if (filter.value) {
-              setActiveFilters(prev => [...prev, filter.value])
-            }
+            setActiveFilters(prev => [...prev, filter])
           }}
-          onRemoveFilter={value => {
-            setActiveFilters(prev => prev.filter(v => v !== value))
+          onRemoveFilter={id => {
+            setActiveFilters(prev => prev.filter(v => v.id !== id))
           }}
         />
       </div>
