@@ -20,8 +20,8 @@ import {
   CHART_BUFFER_PERCENTAGE,
   REWARDS_DOMAIN_BUFFER,
   DEFAULT_CHART_HEIGHT,
-  ONE_MONTH_IN_MS,
-  MS_PER_DAY,
+  X_DOMAIN_BUFFER,
+  ONE_DAY_IN_MS,
 } from '@/app/collective-rewards/constants/chartConstants'
 
 /**
@@ -145,7 +145,6 @@ export function CollectiveRewardsDualAxisChart({
         const usd = d.rewardsUSD || 0
         const rif = d.rewardsRif || 0
         const rbtc = d.rewardsRbtc || 0
-        // Use USD if available, otherwise sum RIF + RBTC
         return usd > 0 ? usd : rif + rbtc
       }),
     )
@@ -161,7 +160,7 @@ export function CollectiveRewardsDualAxisChart({
       data[data.length - 1].day instanceof Date
         ? data[data.length - 1].day.getTime()
         : +new Date(data[data.length - 1].day)
-    return [first, last + ONE_MONTH_IN_MS]
+    return [first, last + X_DOMAIN_BUFFER]
   }, [data])
 
   return (
@@ -179,7 +178,7 @@ export function CollectiveRewardsDualAxisChart({
             interval={0}
             tick={{ fill: 'var(--background-0)' }}
             className="font-rootstock-sans text-sm"
-            tickCount={10}
+            tickCount={5}
           />
 
           <YAxis
@@ -252,8 +251,8 @@ export function CollectiveRewardsDualAxisChart({
             return (
               <ReferenceArea
                 key={`shade-${i}`}
-                x1={c.start.getTime() - MS_PER_DAY}
-                x2={c.end.getTime() - MS_PER_DAY}
+                x1={c.start.getTime() - ONE_DAY_IN_MS}
+                x2={c.end.getTime() - ONE_DAY_IN_MS}
                 y1={0}
                 y2={9999999}
                 fill="var(--background-100)"
@@ -271,11 +270,11 @@ export function CollectiveRewardsDualAxisChart({
               label={{
                 value: c.label,
                 position: 'insideBottomLeft',
-                offset: 15,
+                offset: 5,
                 fill: 'white',
-                fontSize: 11,
+                fontSize: 12,
                 fontFamily: 'var(--font-rootstock-sans)',
-                style: { mixBlendMode: 'exclusion' },
+                style: { mixBlendMode: 'exclusion', marginBottom: 10 },
               }}
             />
           ))}

@@ -1,5 +1,11 @@
 import { BackingPoint, RewardsPoint, CycleWindow, DailyAllocationItem, CycleRewardsItem } from '../types'
-import { WEI_DIVISOR, ONE_DAY_IN_SECONDS } from '../constants/chartConstants'
+import {
+  WEI_DIVISOR,
+  ONE_DAY_IN_SECONDS,
+  FIVE_MONTHS_IN_MS,
+  FIRST_CYCLE_START_SECONDS,
+  CYCLE_DURATION_SECONDS,
+} from '../constants/chartConstants'
 
 export const convertToTimestamp = (d: Date | number | string): number => new Date(d).getTime()
 
@@ -12,10 +18,23 @@ export const formatShort = (n: number) => {
 }
 
 /**
+ * Filter data to show only the last 5 months
+ */
+const filterToLastFiveMonths = <T extends { day: Date | number | string }>(data: T[]): T[] => {
+  const now = Date.now()
+  const fiveMonthsAgo = now - FIVE_MONTHS_IN_MS
+
+  return data.filter(item => {
+    const itemTime = convertToTimestamp(item.day)
+    return itemTime >= fiveMonthsAgo
+  })
+}
+
+/**
  * Generic function to fill gaps between dates with the last known value
  * Creates daily data points from sparse data using functional approach
  */
-const interpolateDataByDay = <T extends { day?: number; cycleStart?: string }>(
+const interpolateDataByDay = <T extends { day?: number; currentCycleStart?: string }>(
   data: T[],
   getTimestamp: (item: T) => number,
   createInterpolatedItem: (day: number, lastKnownItem: T) => T,
@@ -63,14 +82,29 @@ const interpolateDailyBackingData = (data: DailyAllocationItem[]): DailyAllocati
 /**
  * Fills gaps between dates with the last known value for CycleRewardsItem
  */
-const interpolateCycleRewardsData = (data: CycleRewardsItem[]): CycleRewardsItem[] => {
+const interpolateCycleRewardsData = (data: CycleRewardsItem[], targetEndDate: number): CycleRewardsItem[] => {
+  if (!data || data.length === 0) return []
+
+  const sortedData = [...data].sort((a, b) => Number(a.currentCycleStart) - Number(b.currentCycleStart))
+  const lastItem = sortedData[sortedData.length - 1]
+
+  const extendedTargetEndDate = targetEndDate + ONE_DAY_IN_SECONDS
+
+  const syntheticEndItem: CycleRewardsItem = {
+    ...lastItem,
+    id: `synthetic-end-${extendedTargetEndDate}`,
+    currentCycleStart: extendedTargetEndDate.toString(),
+  }
+
+  const extendedData = [...sortedData, syntheticEndItem]
+
   return interpolateDataByDay(
-    data,
-    item => Number(item.cycleStart),
+    extendedData,
+    item => Number(item.currentCycleStart),
     (day, lastKnownItem) => ({
       ...lastKnownItem,
       id: `interpolated-${day}`,
-      cycleStart: day.toString(),
+      currentCycleStart: day.toString(),
     }),
   )
 }
@@ -110,15 +144,18 @@ const transformRewardsData = (
   rewardsData: CycleRewardsItem[],
   rifPrice: number,
   rbtcPrice: number,
+  backingData: DailyAllocationItem[],
 ): RewardsPoint[] => {
   if (!rewardsData || !Array.isArray(rewardsData)) return []
 
-  const sortedData = [...rewardsData].sort((a, b) => Number(a.cycleStart) - Number(b.cycleStart))
+  const sortedData = [...rewardsData].sort(
+    (a, b) => Number(a.currentCycleStart) - Number(b.currentCycleStart),
+  )
 
   let cumulativeRifRewards = BigInt(0)
   let cumulativeRbtcRewards = BigInt(0)
 
-  const accumulatedCycleRewards = sortedData.map((item, index) => {
+  const accumulatedCycleRewards = sortedData.map((item, _) => {
     const currentRifRewards = BigInt(item.rewardsERC20)
     const currentRbtcRewards = BigInt(item.rewardsRBTC)
 
@@ -132,10 +169,13 @@ const transformRewardsData = (
     }
   })
 
-  const interpolatedData = interpolateCycleRewardsData(accumulatedCycleRewards)
+  const sortedBacking = [...backingData].sort((a, b) => a.day - b.day)
+  const targetEndDate = sortedBacking[sortedBacking.length - 1].day
+
+  const interpolatedData = interpolateCycleRewardsData(accumulatedCycleRewards, targetEndDate)
 
   return interpolatedData.map(item => ({
-    day: new Date(Number(item.cycleStart) * 1000),
+    day: new Date(Number(item.currentCycleStart) * 1000),
     rewards: {
       rif: BigInt(Math.floor(Number(item.rewardsERC20) / WEI_DIVISOR)),
       rbtc: BigInt(Math.floor(Number(item.rewardsRBTC) / WEI_DIVISOR)),
@@ -150,16 +190,22 @@ const transformRewardsData = (
 const transformCyclesData = (rewardsData: CycleRewardsItem[]): CycleWindow[] => {
   if (!rewardsData || !Array.isArray(rewardsData)) return []
 
-  const sortedData = [...rewardsData].sort((a, b) => Number(a.cycleStart) - Number(b.cycleStart))
+  const sortedData = [...rewardsData].sort(
+    (a, b) => Number(a.currentCycleStart) - Number(b.currentCycleStart),
+  )
 
-  return sortedData.map((item, index) => {
-    const startDate = new Date(Number(item.cycleStart) * 1000)
-    const endDate = new Date((Number(item.cycleStart) + Number(item.cycleDuration)) * 1000)
+  return sortedData.map(item => {
+    const startDate = new Date(Number(item.currentCycleStart) * 1000)
+    const endDate = new Date((Number(item.currentCycleStart) + Number(item.currentCycleDuration)) * 1000)
+
+    const cycleNumber =
+      Math.floor((Number(item.currentCycleStart) - FIRST_CYCLE_START_SECONDS) / CYCLE_DURATION_SECONDS) + 1
 
     return {
       start: startDate,
       end: endDate,
-      label: `Cycle ${index + 1}`,
+      label: `cycle ${cycleNumber}`,
+      cycleNumber,
     }
   })
 }
@@ -171,10 +217,20 @@ export const transformApiDataToChartData = (
   rbtcPrice: number,
 ) => {
   const backingSeries: BackingPoint[] = transformBackingData(backingData)
-
-  const rewardsSeries: RewardsPoint[] = transformRewardsData(rewardsData, rifPrice, rbtcPrice)
-
+  const rewardsSeries: RewardsPoint[] = transformRewardsData(rewardsData, rifPrice, rbtcPrice, backingData)
   const cycles: CycleWindow[] = transformCyclesData(rewardsData)
 
-  return { backingSeries, rewardsSeries, cycles }
+  const filteredBackingSeries = filterToLastFiveMonths(backingSeries)
+  const filteredRewardsSeries = filterToLastFiveMonths(rewardsSeries)
+  const filteredCycles = cycles.filter(cycle => {
+    const cycleTime = convertToTimestamp(cycle.start)
+    const fiveMonthsAgo = Date.now() - FIVE_MONTHS_IN_MS
+    return cycleTime >= fiveMonthsAgo
+  })
+
+  return {
+    backingSeries: filteredBackingSeries,
+    rewardsSeries: filteredRewardsSeries,
+    cycles: filteredCycles,
+  }
 }

@@ -2,33 +2,39 @@ import { BackingPoint, CycleWindow, RewardsPoint } from '@/app/collective-reward
 import { useMemo } from 'react'
 import {
   CYCLE_DURATION_DAYS,
+  CYCLE_DURATION_MS,
+  FIRST_CYCLE_START_MS,
   ISO_DATE_LENGTH,
-  MS_PER_DAY,
+  ONE_DAY_IN_MS,
 } from '@/app/collective-rewards/constants/chartConstants'
 import { convertToTimestamp } from '@/app/collective-rewards/utils/chartUtils'
 
 const calculateCycleDay = (date: Date, cycles: CycleWindow[]) => {
   const targetTime = date.getTime()
 
-  for (const [index, cycle] of cycles.entries()) {
+  for (const cycle of cycles) {
     const startTime = convertToTimestamp(cycle.start)
     const endTime = convertToTimestamp(cycle.end)
 
     if (targetTime >= startTime && targetTime < endTime) {
-      const daysElapsed = Math.floor((targetTime - startTime) / MS_PER_DAY)
+      const daysElapsed = Math.floor((targetTime - startTime) / ONE_DAY_IN_MS)
       const displayDay = daysElapsed + 1
 
       return {
-        cycle: index + 1,
+        cycle: cycle.cycleNumber || null,
         dayInCycle: `${displayDay}/${CYCLE_DURATION_DAYS}`,
       }
     }
   }
 
-  // Fallback: if date does not belong to any cycle, return null values
+  const timeSinceFirstCycle = targetTime - FIRST_CYCLE_START_MS
+  const cycleNumber = Math.floor(timeSinceFirstCycle / CYCLE_DURATION_MS) + 1
+  const timeInCurrentCycle = timeSinceFirstCycle % CYCLE_DURATION_MS
+  const dayInCycle = Math.floor(timeInCurrentCycle / ONE_DAY_IN_MS) + 1
+
   return {
-    cycle: null,
-    dayInCycle: null,
+    cycle: cycleNumber,
+    dayInCycle: `${dayInCycle}/${CYCLE_DURATION_DAYS}`,
   }
 }
 
