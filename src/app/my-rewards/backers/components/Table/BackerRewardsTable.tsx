@@ -7,7 +7,7 @@ import { getCombinedFiatAmount } from '@/app/collective-rewards/utils'
 import { TablePager } from '@/components/TableNew'
 import { TOKENS } from '@/lib/tokens'
 import { usePricesContext, useTableActionsContext, useTableContext } from '@/shared/context'
-import { Sort } from '@/shared/context/TableContext/types'
+import { Row, Sort } from '@/shared/context/TableContext/types'
 import { useIsDesktop } from '@/shared/hooks/useIsDesktop'
 import { Big } from 'big.js'
 import { useEffect, useMemo, useState } from 'react'
@@ -17,6 +17,21 @@ import { convertDataToRowData } from './BackerRewardsDataRow'
 import { BackerRewardsCellDataMap, ColumnId, DEFAULT_HEADERS, PAGE_SIZE } from './BackerRewardsTable.config'
 import { DesktopRewardsDetails } from './DesktopRewardsDetails'
 import { MobileRewardsDetails } from './MobileRewardsDetails'
+
+const RewardsDetails = ({
+  rows,
+  actions,
+}: {
+  rows: Row<ColumnId, Row['id'], BackerRewardsCellDataMap>[]
+  actions: Action[]
+}) => {
+  const isDesktop = useIsDesktop()
+  return isDesktop ? (
+    <DesktopRewardsDetails rows={rows} actions={actions} />
+  ) : (
+    <MobileRewardsDetails rows={rows} />
+  )
+}
 
 type PagedFilter = {
   backer: Address
@@ -170,8 +185,7 @@ export const BackerRewardsTable = () => {
 
   return (
     <>
-      {isDesktop && <DesktopRewardsDetails rows={rows} actions={actions} />}
-      {!isDesktop && <MobileRewardsDetails rows={rows} />}
+      <RewardsDetails rows={rows} actions={actions} />
       <TablePager
         pageSize={PAGE_SIZE}
         totalItems={totalRewards}
