@@ -17,7 +17,7 @@ import { getCombinedFiatAmount } from '@/app/collective-rewards/utils'
 import { ConditionalTooltip } from '@/app/components/Tooltip/ConditionalTooltip'
 import { GetPricesResult } from '@/app/user/types'
 import { RIF, STRIF } from '@/lib/constants'
-import { cn, formatCurrencyWithLabel } from '@/lib/utils'
+import { cn, formatCurrency } from '@/lib/utils'
 import { useTableActionsContext, useTableContext } from '@/shared/context'
 import { redirect, RedirectType } from 'next/navigation'
 import { FC, HtmlHTMLAttributes, ReactElement, ReactNode, useState } from 'react'
@@ -94,7 +94,7 @@ export const convertDataToRowData = (
         backing: {
           amount: builder.totalAllocation.rif.amount.value,
           formattedAmount: formatSymbol(builder.totalAllocation.rif.amount.value, STRIF),
-          formattedUsdAmount: formatCurrencyWithLabel(
+          formattedUsdAmount: formatCurrency(
             getFiatAmount(builder.totalAllocation.rif.amount.value, rifPrice),
           ),
         },
