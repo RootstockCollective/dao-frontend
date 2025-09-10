@@ -157,7 +157,7 @@ export const ConnectedSection = () => {
                 ref={updateDelegateButtonRef}
                 variant="secondary-outline"
                 onClick={onShowDelegates}
-                className="w-full md:w-fit gap-1 hover:border-primary"
+                className="gap-1 hover:border-primary"
                 data-testid="updateDelegateButton"
               >
                 <EditIconKoto size={20} />
