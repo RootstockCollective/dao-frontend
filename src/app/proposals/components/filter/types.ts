@@ -3,13 +3,13 @@ import { Proposal } from '@/app/proposals/shared/types'
 export enum FilterType {
   SEARCH = 'search',
   CATEGORY = 'category',
-  // Add more filter types here
+  STATUS = 'status',
+  TIME = 'time',
 }
 
-export interface FilterItemProps {
-  type: FilterType
+export interface CategoryFilterItem {
   label: string
-  value: string
+  value?: string
   exclusive?: boolean
 }
 
@@ -17,7 +17,7 @@ export interface FilterItem {
   id: string
   type: FilterType
   label: string
-  value: string
+  value?: string
   exclusive?: boolean
   validate(proposal: Proposal): boolean
 }

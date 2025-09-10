@@ -1,6 +1,7 @@
 import { MILESTONE_SEPARATOR } from '@/app/proposals/shared/utils'
 import { FilterItem, FilterType } from './types'
 import { Proposal } from '../../shared/types'
+import { ProposalState } from '@/shared/types'
 
 export const createSearchFilter = (value: string): FilterItem => ({
   id: `search-${value}-${Date.now()}`,
@@ -18,24 +19,18 @@ export const createSearchFilter = (value: string): FilterItem => ({
   },
 })
 
-interface CategoryFilterItem {
-  value: string
-  label: string
-  exclusive?: boolean
-}
-
-export const createCategoryFilter = ({ value, label, exclusive }: CategoryFilterItem): FilterItem => ({
+const createCategoryFilter = (value: string, exclusive?: boolean): FilterItem => ({
   id: `category-${value}-${Date.now()}`,
   type: FilterType.CATEGORY,
-  label,
+  label: value,
   value,
   exclusive,
   validate: (proposal: Proposal) => {
-    return proposal.category?.toLowerCase().includes(value.toLowerCase())
+    return exclusive || proposal.category?.toLowerCase().includes(value.toLowerCase())
   },
 })
 
-export const createMilestoneFilter = ({ value, label }: CategoryFilterItem): FilterItem => ({
+const createMilestoneFilter = (label: string, value: string): FilterItem => ({
   id: `milestone-${value}-${Date.now()}`,
   type: FilterType.CATEGORY,
   label,
@@ -45,20 +40,71 @@ export const createMilestoneFilter = ({ value, label }: CategoryFilterItem): Fil
   },
 })
 
-export const filterCategoryOptions: FilterItem[] = [
-  createCategoryFilter({ label: 'All categories', value: '', exclusive: true }),
-  createCategoryFilter({ label: 'Grants', value: 'Grants' }),
-  createCategoryFilter({ label: 'Builder', value: 'Builder' }),
-  createCategoryFilter({ label: 'Wave 4', value: 'Wave 4' }),
-  createCategoryFilter({ label: 'Wave 5', value: 'Wave 5' }),
-  createCategoryFilter({ label: 'March-25', value: 'March-25' }),
-  createMilestoneFilter({ label: 'Grant - all milestones', value: MILESTONE_SEPARATOR }),
-  createMilestoneFilter({ label: 'Grants - milestone 1', value: `${MILESTONE_SEPARATOR}1` }),
-  createMilestoneFilter({ label: 'Grants - milestone 2', value: `${MILESTONE_SEPARATOR}2` }),
-  createMilestoneFilter({ label: 'Grants - milestone 3', value: `${MILESTONE_SEPARATOR}3` }),
+const createStatusFilter = (label: string, value: ProposalState, exclusive?: boolean): FilterItem => {
+  return {
+    id: `status-${label}-${Date.now()}`,
+    type: FilterType.STATUS,
+    label,
+    value: value.toString(),
+    exclusive,
+    validate: (proposal: Proposal) => {
+      return exclusive || proposal.proposalState === value
+    },
+  }
+}
+
+const createTimeFilter = (label: string, days: number, exclusive?: boolean): FilterItem => ({
+  id: `time-${label}-${Date.now()}`,
+  type: FilterType.TIME,
+  label,
+  value: label.toLowerCase(),
+  exclusive,
+  validate: (proposal: Proposal) => {
+    if (exclusive) {
+      return true
+    }
+
+    if (!proposal.createdAt) {
+      return false
+    }
+
+    const now = new Date()
+    const proposalDate = new Date(Number(proposal.createdAt) * 1000)
+    const diffTime = Math.abs(now.getTime() - proposalDate.getTime())
+    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24))
+    return diffDays <= days
+  },
+})
+const filterCategoryOptions: FilterItem[] = [
+  createCategoryFilter('All categories', true),
+  createCategoryFilter('Grants'),
+  createCategoryFilter('Builder'),
+  createCategoryFilter('Wave 4'),
+  createCategoryFilter('Wave 5'),
+  createCategoryFilter('March-25'),
+  createMilestoneFilter('Grant - all milestones', MILESTONE_SEPARATOR),
+  createMilestoneFilter('Grants - milestone 1', `${MILESTONE_SEPARATOR}1`),
+  createMilestoneFilter('Grants - milestone 2', `${MILESTONE_SEPARATOR}2`),
+  createMilestoneFilter('Grants - milestone 3', `${MILESTONE_SEPARATOR}3`),
+]
+
+const filterStatusOptions: FilterItem[] = [
+  createStatusFilter('All statuses', ProposalState.None, true),
+  createStatusFilter('Pending', ProposalState.Pending),
+  createStatusFilter('Active', ProposalState.Active),
+  createStatusFilter('Executed', ProposalState.Executed),
+  createStatusFilter('Defeated', ProposalState.Defeated),
+]
+
+const filterTimeOptions: FilterItem[] = [
+  createTimeFilter('All proposals', 0, true),
+  createTimeFilter('Last week', 7),
+  createTimeFilter('Last month', 30),
+  createTimeFilter('Last 90 days', 90),
 ]
 
 export const filterOptions = {
   [FilterType.CATEGORY]: filterCategoryOptions,
-  // Add more filter types here
+  [FilterType.STATUS]: filterStatusOptions,
+  [FilterType.TIME]: filterTimeOptions,
 }

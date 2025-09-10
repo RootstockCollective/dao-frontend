@@ -86,17 +86,19 @@ const LatestProposalsTable = ({ proposals }: LatestProposalsTableProps) => {
   const filterSidebarRef = useRef<HTMLDivElement>(null)
   useClickOutside(filterSidebarRef, () => setIsFilterSidebarOpen(false))
 
+  const filterGroups = useMemo(() => {
+    const searchFilters = activeFilters.filter(f => f.type === FilterType.SEARCH)
+    const categoryFilters = activeFilters.filter(f => f.type === FilterType.CATEGORY)
+    const statusFilters = activeFilters.filter(f => f.type === FilterType.STATUS)
+    const timeFilters = activeFilters.filter(f => f.type === FilterType.TIME)
+    return [searchFilters, categoryFilters, statusFilters, timeFilters].filter(f => f.length > 0)
+  }, [activeFilters])
+
   const filteredProposalList = useMemo(() => {
     return proposals.filter(proposal => {
-      const searchFilters = activeFilters.filter(f => f.type === FilterType.SEARCH)
-      const categoryFilters = activeFilters.filter(f => f.type === FilterType.CATEGORY)
-
-      // If a filter group is empty, consider it as passing
-      return [searchFilters, categoryFilters]
-        .filter(filters => filters.length > 0)
-        .every(filters => filters.some(f => f.validate(proposal)))
+      return filterGroups.every(filters => filters.some(f => f.validate(proposal)))
     })
-  }, [proposals, activeFilters])
+  }, [proposals, filterGroups])
 
   const hasSelectedFilters = useMemo(() => {
     return activeFilters.filter(f => !f.exclusive && f.type !== FilterType.SEARCH).length > 0
@@ -307,7 +309,7 @@ const LatestProposalsTable = ({ proposals }: LatestProposalsTableProps) => {
         </div>
         {/* Active Filters Display */}
         <ActiveFiltersDisplay
-          activeFilters={activeFilters}
+          activeFilters={activeFilters.filter(f => !f.exclusive)}
           onRemoveFilter={removeFilter}
           onClearAll={clearAllFilters}
         />
