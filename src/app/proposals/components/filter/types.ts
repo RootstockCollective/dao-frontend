@@ -1,8 +1,25 @@
-export interface FilterItem {
-  id: string
-  type: 'search' | 'category'
+import { Proposal } from '@/app/proposals/shared/types'
+
+export enum FilterType {
+  SEARCH = 'search',
+  CATEGORY = 'category',
+  // Add more filter types here
+}
+
+export interface FilterItemProps {
+  type: FilterType
   label: string
   value: string
+  exclusive?: boolean
+}
+
+export interface FilterItem {
+  id: string
+  type: FilterType
+  label: string
+  value: string
+  exclusive?: boolean
+  validate(proposal: Proposal): boolean
 }
 
 export interface FilterState {
@@ -11,9 +28,8 @@ export interface FilterState {
 }
 
 export interface FilterActions {
-  addFilter: (filter: Omit<FilterItem, 'id'>) => void
+  addFilter: (f: FilterItem) => void
   removeFilter: (id: string) => void
-  removeFilterByValue: (value: string) => void
   clearAllFilters: () => void
   updateSearchValue: (value: string) => void
 }

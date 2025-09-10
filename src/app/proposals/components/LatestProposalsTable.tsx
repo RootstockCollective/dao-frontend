@@ -26,14 +26,12 @@ import { SearchButton } from './SearchButton'
 import { Category } from '../components/category'
 import { Header, Paragraph } from '@/components/Typography'
 import { Proposal } from '@/app/proposals/shared/types'
-import { filterOptions } from './filter/filterOptions'
 import { Pagination } from '@/components/Pagination'
 import { useIsDesktop } from '@/shared/hooks/useIsDesktop'
 import { useStickyHeader } from '@/shared/hooks'
-import { useFilters } from './filter/useFilters'
 import { ActiveFiltersDisplay } from './filter/ActiveFiltersDisplay'
-import { ProposalCategory } from '@/shared/types'
-import { MILESTONE_SEPARATOR } from '../shared/utils'
+import { useProposalFilters } from './filter/useProposalFilters'
+import { FilterType } from './filter/types'
 
 interface LatestProposalsTableProps {
   proposals: Proposal[]
@@ -60,15 +58,8 @@ const LatestProposalsTable = ({ proposals }: LatestProposalsTableProps) => {
   const resetPagination = useCallback(() => setPagination(prev => ({ ...prev, pageIndex: 0 })), [])
 
   // Enhanced filtering system
-  const {
-    activeFilters,
-    searchValue,
-    addFilter,
-    removeFilter,
-    removeFilterByValue,
-    clearAllFilters,
-    updateSearchValue,
-  } = useFilters()
+  const { activeFilters, searchValue, addFilter, removeFilter, clearAllFilters, updateSearchValue } =
+    useProposalFilters()
 
   // input field filtering
   const [searchVisible, setSearchVisible] = useState(false)
@@ -95,52 +86,21 @@ const LatestProposalsTable = ({ proposals }: LatestProposalsTableProps) => {
   const filterSidebarRef = useRef<HTMLDivElement>(null)
   useClickOutside(filterSidebarRef, () => setIsFilterSidebarOpen(false))
 
-  const handleFilterToggle = useCallback(
-    (cat: string) => {
-      resetPagination()
-    },
-    [resetPagination],
-  )
-
-  // filter all proposals
   const filteredProposalList = useMemo(() => {
     return proposals.filter(proposal => {
-      // Apply search filter
-      const searchFilters = activeFilters.filter(f => f.type === 'search')
-      if (searchFilters.length > 0) {
-        const searchMatch = searchFilters.some(searchFilter => {
-          const lowered = searchFilter.value.toLowerCase()
-          return [
-            proposal.name,
-            proposal.description,
-            proposal.category,
-            proposal.proposer,
-            proposal.proposalId,
-          ].some(param => param?.toLowerCase()?.includes(lowered))
-        })
-        if (!searchMatch) return false
-      }
+      const searchFilters = activeFilters.filter(f => f.type === FilterType.SEARCH)
+      const categoryFilters = activeFilters.filter(f => f.type === FilterType.CATEGORY)
 
-      // Apply category filters
-      const categoryFilters = activeFilters.filter(f => f.type === 'category' && f.value)
-      if (categoryFilters.length > 0) {
-        const categoryMatch = categoryFilters.some(categoryFilter => {
-          const filterValue = categoryFilter.value
-
-          // Special case for milestone-related filters - check description
-          if (filterValue === MILESTONE_SEPARATOR || filterValue.startsWith(MILESTONE_SEPARATOR)) {
-            return proposal.description?.toLowerCase().includes(filterValue.toLowerCase())
-          }
-
-          // For all other category filters, only check the category field
-          return proposal.category?.toLowerCase()?.includes(filterValue.toLowerCase())
-        })
-        if (!categoryMatch) return false
-      }
-
-      return true
+      // If a filter group is empty, consider it as passing
+      return [searchFilters, categoryFilters]
+        .filter(filters => filters.length > 0)
+        .every(filters => filters.some(f => f.validate(proposal)))
     })
   }, [proposals, activeFilters])
+
+  const hasSelectedFilters = useMemo(() => {
+    return activeFilters.filter(f => !f.exclusive && f.type !== FilterType.SEARCH).length > 0
+  }, [activeFilters])
 
   // Table data definition helper
   const { accessor } = createColumnHelper<(typeof proposals)[number]>()
@@ -334,14 +294,14 @@ const LatestProposalsTable = ({ proposals }: LatestProposalsTableProps) => {
                 isOpen={searchVisible}
                 setIsOpen={setSearchVisible}
                 disabled={searchVisible}
-                isFiltering={activeFilters.some(f => f.type === 'search')}
+                isFiltering={activeFilters.some(f => f.type === FilterType.SEARCH)}
               />
             </motion.div>
             <FilterButton
               isOpen={isFilterSidebarOpen}
               setIsOpen={setIsFilterSidebarOpen}
               disabled={proposals.length === 0}
-              isFiltering={activeFilters.some(f => f.type === 'category')}
+              isFiltering={hasSelectedFilters}
             />
           </div>
         </div>
@@ -362,10 +322,9 @@ const LatestProposalsTable = ({ proposals }: LatestProposalsTableProps) => {
           {/* container for useClickOutside ref */}
           <div ref={filterSidebarRef} className="pl-2 h-full">
             <FilterSideBar
-              filterOptions={filterOptions}
-              activeFilters={activeFilters.filter(f => f.type === 'category').map(f => f.value)}
+              activeFilters={activeFilters}
               onAddFilter={addFilter}
-              onRemoveFilter={removeFilterByValue}
+              onRemoveFilter={removeFilter}
             />
           </div>
         </motion.div>
