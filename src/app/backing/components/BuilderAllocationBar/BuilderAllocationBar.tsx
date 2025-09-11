@@ -1,4 +1,5 @@
 import { AllocationsContext } from '@/app/collective-rewards/allocations/context'
+import { isBuilderOperational } from '@/app/collective-rewards/utils'
 import { floorToUnit, getBuilderColor } from '@/app/shared/components/utils'
 import { useCallback, useContext, useEffect, useMemo, useState } from 'react'
 import { Address, zeroAddress } from 'viem'
@@ -20,6 +21,7 @@ function createUnallocatedItem(
   value: bigint
   displayColor: 'var(--background-40)'
   isTemporary: boolean
+  isEditable: true
 } {
   const { balance, cumulativeAllocation: initialCumulativeAllocation } = initialData
   return {
@@ -29,6 +31,7 @@ function createUnallocatedItem(
     value: balance > cumulativeAllocation ? floorToUnit(balance - cumulativeAllocation) : 0n,
     displayColor: 'var(--background-40)',
     isTemporary: initialData.cumulativeAllocation != cumulativeAllocation,
+    isEditable: true,
   }
 }
 
@@ -107,6 +110,7 @@ const BuilderAllocationBar = ({ barOverrides }: { barOverrides?: Partial<Allocat
           initialValue,
           displayColor: getBuilderColor(key),
           isTemporary: initialData.allocations[key] !== allocation,
+          isEditable: isBuilderOperational(builder?.stateFlags),
         }
       })
       .filter(item => item !== null)
@@ -155,6 +159,7 @@ const BuilderAllocationBar = ({ barOverrides }: { barOverrides?: Partial<Allocat
             initialValue: 1n,
             displayColor: 'var(--background-60)',
             isTemporary: true,
+            isEditable: false,
           },
         ]}
         valueDisplay={{

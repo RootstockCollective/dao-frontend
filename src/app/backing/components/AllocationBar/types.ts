@@ -7,6 +7,7 @@ export interface AllocationItem {
   displayColor: string
   isTemporary?: boolean // true: it shows a checkerboard pattern on the segment
   initialValue?: bigint
+  isEditable: boolean
 }
 
 export interface AllocationChangeData {

@@ -5,6 +5,7 @@ import React, { useEffect, useRef, useState } from 'react'
 
 import { Legend } from '@/components/Legend'
 import { cn } from '@/lib/utils'
+import { toast } from 'react-toastify'
 import { AllocationBarSegment } from './AllocationBarSegment'
 import { AllocationBarProps } from './types'
 import {
@@ -80,6 +81,16 @@ const AllocationBar: React.FC<AllocationBarProps> = ({
   // Handle resize logic
   const handleResize = ({ clientX }: MouseEvent) => {
     if (dragIndex === null || !barRef.current) return
+
+    const leftSegment = currentItems.at(dragIndex - 1) // as the resize handle is on the left (WARNING: entanglement/tight coupling)
+    const rightSegment = currentItems.at(dragIndex)
+
+    if (!leftSegment?.isEditable || !rightSegment?.isEditable) {
+      toast.error(`${!leftSegment?.isEditable ? leftSegment?.label : rightSegment?.label} is not editable`, {
+        toastId: 'resize-error',
+      })
+      return
+    }
 
     const rect = barRef.current.getBoundingClientRect()
     const x = clamp(clientX - rect.left, 0, rect.width)
@@ -182,8 +193,8 @@ const AllocationBar: React.FC<AllocationBarProps> = ({
                 valueDisplay={valueDisplay}
                 onHandleMouseDown={onHandleMouseDown}
                 dragIndex={dragIndex}
-                isDraggable={isDraggable}
-                isResizable={isResizable}
+                isDraggable={item.isEditable && isDraggable}
+                isResizable={item.isEditable && isResizable}
                 showDots={segmentsToShowDots[i]}
               />
             ))}
