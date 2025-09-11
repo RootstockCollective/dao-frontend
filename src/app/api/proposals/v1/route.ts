@@ -1,5 +1,5 @@
-import { getProposalsFromNode } from '@/app/services/getProposalsFromNode'
-import { getProposalsFromTheGraph } from '@/app/services/getProposalsFromTheGraph'
+import { getProposalsFromNode } from '@/app/proposals/actions/getProposalsFromNode'
+import { getProposalsFromTheGraph } from '@/app/proposals/actions/getProposalsFromTheGraph'
 
 export const revalidate = 60
 
