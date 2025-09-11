@@ -1,13 +1,13 @@
 import { Metric } from '@/components/Metric'
 import { TokenSymbol } from '@/components/TokenImage'
 import { TokenImage } from '@/components/TokenImage'
-import { Paragraph } from '@/components/Typography/Paragraph'
-import { BaseTypography } from '@/components/Typography/Typography'
-import { formatSymbol } from '@/app/collective-rewards/rewards/utils'
 import { Span } from '@/components/Typography/Span'
+import { Label } from '@/components/Typography/Label'
+import { formatSymbol } from '@/app/collective-rewards/rewards/utils'
 import { TooltipPayload } from '@/app/collective-rewards/types'
 import { formatCurrency } from '@/lib/utils'
 import { ONE_DAY_IN_MS } from '../../constants/chartConstants'
+import { Header } from '@/components/Typography'
 
 interface ChartTooltipProps {
   active?: boolean
@@ -30,7 +30,7 @@ export const ChartTooltipContent = ({ active, payload, label }: ChartTooltipProp
 
   return (
     <div className="p-4 bg-text-80 shadow-xl rounded flex flex-col gap-2">
-      <BaseTypography variant="body-xs" className="text-bg-100">
+      <Span variant="body-xs" className="text-bg-100">
         {displayDate instanceof Date
           ? displayDate
               .toLocaleDateString('en-US', {
@@ -40,49 +40,53 @@ export const ChartTooltipContent = ({ active, payload, label }: ChartTooltipProp
               })
               .toUpperCase()
           : String(label)}
-      </BaseTypography>
+      </Span>
+
       <div className="flex flex-col gap-4">
         <div className="flex items-center gap-6">
           <Metric
             title={
-              <BaseTypography variant="tag" className="text-bg-40">
+              <Label variant="tag" className="text-bg-40">
                 Cycle
-              </BaseTypography>
+              </Label>
             }
             className="w-auto text-bg-40"
             containerClassName="gap-1"
           >
-            <Paragraph className="font-kk-topo text-bg-100 text-xl">{cycleNumber}</Paragraph>
+            <Header variant="h3" className="text-bg-100">
+              {cycleNumber}
+            </Header>
           </Metric>
+
           <Metric
             title={
-              <BaseTypography variant="tag" className="text-bg-40">
+              <Label variant="tag" className="text-bg-40">
                 Day
-              </BaseTypography>
+              </Label>
             }
             className="w-auto text-bg-40"
             containerClassName="gap-1"
           >
-            <Paragraph className="font-kk-topo text-bg-100 text-xl">{dayInCycle}</Paragraph>
+            <Header variant="h3" className="text-bg-100">
+              {dayInCycle}
+            </Header>
           </Metric>
 
           <div className="flex items-start gap-2">
             <div className="size-3 mt-1.5 rounded-full bg-v3-rif-blue" />
             <Metric
               title={
-                <BaseTypography variant="tag" className="text-bg-40">
+                <Label variant="tag" className="text-bg-40">
                   Total Backing
-                </BaseTypography>
+                </Label>
               }
               className="w-auto text-bg-40 whitespace-nowrap"
               containerClassName="gap-1"
             >
               <div className="flex items-center gap-2 text-bg-100">
-                <Paragraph className="text-xl font-kk-topo">{formatSymbol(backingVal, 'strif')}</Paragraph>
+                <Header variant="h3">{formatSymbol(backingVal, 'strif')}</Header>
                 <TokenImage symbol={TokenSymbol.STRIF} size={16} />
-                <Span variant="tag-s" className="">
-                  {TokenSymbol.STRIF}
-                </Span>
+                <Span variant="tag-s">{TokenSymbol.STRIF}</Span>
               </div>
             </Metric>
           </div>
@@ -92,16 +96,16 @@ export const ChartTooltipContent = ({ active, payload, label }: ChartTooltipProp
           <div className="size-3 rounded-full mt-1.5 bg-brand-rootstock-lime border-[1px] border-bg-100" />
           <Metric
             title={
-              <BaseTypography variant="tag" className="text-bg-40">
+              <Label variant="tag" className="text-bg-40">
                 Rewards distributed this cycle
-              </BaseTypography>
+              </Label>
             }
             className="w-auto text-bg-40 whitespace-nowrap"
             containerClassName="gap-1"
           >
             <div className="flex items-end gap-2 text-bg-100">
-              <Paragraph className="text-xl font-kk-topo">{formatCurrency(rewardsUsd.toString())}</Paragraph>
-              <Span variant="tag-s" className="font-bold mb-0.5">
+              <Header variant="h3">{formatCurrency(rewardsUsd.toString())}</Header>
+              <Span variant="tag" bold className="mb">
                 USD
               </Span>
             </div>

@@ -26,6 +26,10 @@ export const CollectiveRewardsChartContainer = () => {
     title: 'Error loading collective rewards chart data',
   })
 
+  if (backingError || rewardsError) {
+    return null
+  }
+
   return (
     <CollectiveRewardsChartContentWithSpinner
       isLoading={isBackingLoading || isRewardsLoading}
