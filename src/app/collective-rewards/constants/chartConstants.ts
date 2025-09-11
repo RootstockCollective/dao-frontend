@@ -1,4 +1,4 @@
-export const WEI_DIVISOR = 10 ** 18
+export const WEI_PER_ETHER = 10 ** 18
 
 export const ONE_DAY_IN_SECONDS = 24 * 60 * 60
 export const ONE_DAY_IN_MS = 1000 * 60 * 60 * 24

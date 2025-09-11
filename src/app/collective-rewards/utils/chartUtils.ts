@@ -1,11 +1,12 @@
 import { BackingPoint, RewardsPoint, CycleWindow, DailyAllocationItem, CycleRewardsItem } from '../types'
 import {
-  WEI_DIVISOR,
+  WEI_PER_ETHER,
   ONE_DAY_IN_SECONDS,
   FIVE_MONTHS_IN_MS,
   FIRST_CYCLE_START_SECONDS,
   CYCLE_DURATION_SECONDS,
 } from '../constants/chartConstants'
+import Big from '@/lib/big'
 
 export const convertToTimestamp = (d: Date | number | string): number => new Date(d).getTime()
 
@@ -39,8 +40,6 @@ const interpolateDataByDay = <T extends { day?: number; currentCycleStart?: stri
   getTimestamp: (item: T) => number,
   createInterpolatedItem: (day: number, lastKnownItem: T) => T,
 ): T[] => {
-  if (!data || data.length === 0) return []
-
   const sortedData = [...data].sort((a, b) => getTimestamp(a) - getTimestamp(b))
   const startDate = getTimestamp(sortedData[0])
   const endDate = getTimestamp(sortedData[sortedData.length - 1])
@@ -83,10 +82,7 @@ const interpolateDailyBackingData = (data: DailyAllocationItem[]): DailyAllocati
  * Fills gaps between dates with the last known value for CycleRewardsItem
  */
 const interpolateCycleRewardsData = (data: CycleRewardsItem[], targetEndDate: number): CycleRewardsItem[] => {
-  if (!data || data.length === 0) return []
-
-  const sortedData = [...data].sort((a, b) => Number(a.currentCycleStart) - Number(b.currentCycleStart))
-  const lastItem = sortedData[sortedData.length - 1]
+  const lastItem = data[data.length - 1]
 
   const extendedTargetEndDate = targetEndDate + ONE_DAY_IN_SECONDS
 
@@ -96,7 +92,7 @@ const interpolateCycleRewardsData = (data: CycleRewardsItem[], targetEndDate: nu
     currentCycleStart: extendedTargetEndDate.toString(),
   }
 
-  const extendedData = [...sortedData, syntheticEndItem]
+  const extendedData = [...data, syntheticEndItem]
 
   return interpolateDataByDay(
     extendedData,
@@ -118,21 +114,19 @@ const calculateRewardsUSD = (
   rifPrice: number,
   rbtcPrice: number,
 ): number => {
-  const rifTokens = Number(rifAmountWei) / WEI_DIVISOR
-  const rbtcTokens = Number(rbtcAmountWei) / WEI_DIVISOR
-  return rifTokens * rifPrice + rbtcTokens * rbtcPrice
+  const rifTokens = Big(rifAmountWei).div(WEI_PER_ETHER)
+  const rbtcTokens = Big(rbtcAmountWei).div(WEI_PER_ETHER)
+  return rifTokens.mul(rifPrice).add(rbtcTokens.mul(rbtcPrice)).toNumber()
 }
 
 /**
  * Transform backing data to BackingPoint format with interpolation
  */
 const transformBackingData = (backingData: DailyAllocationItem[]): BackingPoint[] => {
-  if (!backingData || !Array.isArray(backingData)) return []
-
   const interpolatedData = interpolateDailyBackingData(backingData)
   return interpolatedData.map(item => ({
     day: new Date(item.day * 1000),
-    backing: BigInt(Math.floor(Number(item.totalAllocation) / WEI_DIVISOR)),
+    backing: BigInt(Big(item.totalAllocation).div(WEI_PER_ETHER).toFixed(0)),
     backingWei: BigInt(item.totalAllocation),
   }))
 }
@@ -146,16 +140,10 @@ const transformRewardsData = (
   rbtcPrice: number,
   backingData: DailyAllocationItem[],
 ): RewardsPoint[] => {
-  if (!rewardsData || !Array.isArray(rewardsData)) return []
+  let cumulativeRifRewards = 0n
+  let cumulativeRbtcRewards = 0n
 
-  const sortedData = [...rewardsData].sort(
-    (a, b) => Number(a.currentCycleStart) - Number(b.currentCycleStart),
-  )
-
-  let cumulativeRifRewards = BigInt(0)
-  let cumulativeRbtcRewards = BigInt(0)
-
-  const accumulatedCycleRewards = sortedData.map((item, _) => {
+  const accumulatedCycleRewards = rewardsData.map((item, _) => {
     const currentRifRewards = BigInt(item.rewardsERC20)
     const currentRbtcRewards = BigInt(item.rewardsRBTC)
 
@@ -169,16 +157,15 @@ const transformRewardsData = (
     }
   })
 
-  const sortedBacking = [...backingData].sort((a, b) => a.day - b.day)
-  const targetEndDate = sortedBacking[sortedBacking.length - 1].day
+  const targetEndDate = backingData[backingData.length - 1].day
 
   const interpolatedData = interpolateCycleRewardsData(accumulatedCycleRewards, targetEndDate)
 
   return interpolatedData.map(item => ({
     day: new Date(Number(item.currentCycleStart) * 1000),
     rewards: {
-      rif: BigInt(Math.floor(Number(item.rewardsERC20) / WEI_DIVISOR)),
-      rbtc: BigInt(Math.floor(Number(item.rewardsRBTC) / WEI_DIVISOR)),
+      rif: BigInt(Big(item.rewardsERC20).div(WEI_PER_ETHER).toFixed(0)),
+      rbtc: BigInt(Big(item.rewardsRBTC).div(WEI_PER_ETHER).toFixed(0)),
       usd: calculateRewardsUSD(item.rewardsERC20, item.rewardsRBTC, rifPrice, rbtcPrice),
     },
   }))
@@ -188,13 +175,7 @@ const transformRewardsData = (
  * Transform cycle rewards data to CycleWindow format
  */
 const transformCyclesData = (rewardsData: CycleRewardsItem[]): CycleWindow[] => {
-  if (!rewardsData || !Array.isArray(rewardsData)) return []
-
-  const sortedData = [...rewardsData].sort(
-    (a, b) => Number(a.currentCycleStart) - Number(b.currentCycleStart),
-  )
-
-  return sortedData.map(item => {
+  return rewardsData.map(item => {
     const startDate = new Date(Number(item.currentCycleStart) * 1000)
     const endDate = new Date((Number(item.currentCycleStart) + Number(item.currentCycleDuration)) * 1000)
 
@@ -216,17 +197,30 @@ export const transformApiDataToChartData = (
   rifPrice: number,
   rbtcPrice: number,
 ) => {
+  if (backingData.length === 0 || rewardsData.length === 0)
+    return {
+      backingSeries: [],
+      rewardsSeries: [],
+      cycles: [],
+    }
+
+  const sortedBackingData = [...backingData].sort((a, b) => a.day - b.day)
+  const sortedRewardsData = [...rewardsData].sort(
+    (a, b) => Number(a.currentCycleStart) - Number(b.currentCycleStart),
+  )
+
   const backingSeries: BackingPoint[] = transformBackingData(backingData)
-  const rewardsSeries: RewardsPoint[] = transformRewardsData(rewardsData, rifPrice, rbtcPrice, backingData)
-  const cycles: CycleWindow[] = transformCyclesData(rewardsData)
+  const rewardsSeries: RewardsPoint[] = transformRewardsData(
+    sortedRewardsData,
+    rifPrice,
+    rbtcPrice,
+    sortedBackingData,
+  )
+  const cycles: CycleWindow[] = transformCyclesData(sortedRewardsData)
 
   const filteredBackingSeries = filterToLastFiveMonths(backingSeries)
   const filteredRewardsSeries = filterToLastFiveMonths(rewardsSeries)
-  const filteredCycles = cycles.filter(cycle => {
-    const cycleTime = convertToTimestamp(cycle.start)
-    const fiveMonthsAgo = Date.now() - FIVE_MONTHS_IN_MS
-    return cycleTime >= fiveMonthsAgo
-  })
+  const filteredCycles = filterToLastFiveMonths(cycles.map(cycle => ({ ...cycle, day: cycle.start })))
 
   return {
     backingSeries: filteredBackingSeries,
