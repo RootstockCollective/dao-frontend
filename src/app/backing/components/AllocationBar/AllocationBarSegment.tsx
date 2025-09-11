@@ -15,7 +15,7 @@ const AllocationBarSegmentPercent = ({
   totalBacking,
   valueDisplay,
   showDots = false,
-  item: { key, isTemporary },
+  item: { key, isTemporary, isEditable },
   onchainValue,
 }: {
   pendingValue: bigint
