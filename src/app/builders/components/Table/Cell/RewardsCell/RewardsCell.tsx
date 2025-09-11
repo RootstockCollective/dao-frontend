@@ -8,6 +8,7 @@ export interface RewardsCellProps {
   usdValue: number
   rbtcValue: bigint
   rifValue: bigint
+  emptyPlaceholder?: ReactNode
   className?: string
 }
 
@@ -16,9 +17,10 @@ export const RewardsCell = ({
   rbtcValue,
   rifValue,
   className = '',
+  emptyPlaceholder = null,
 }: RewardsCellProps): ReactNode => {
   if (usdValue === 0) {
-    return null
+    return emptyPlaceholder
   }
 
   return (

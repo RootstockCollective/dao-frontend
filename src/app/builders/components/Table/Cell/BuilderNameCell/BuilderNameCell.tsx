@@ -11,10 +11,9 @@ import { ParachuteIcon } from '@/components/Icons/ParachuteIcon'
 import { IconProps } from '@/components/Icons/types'
 import { WarningIcon } from '@/components/Icons/WarningIcon'
 import { Tooltip } from '@/components/Tooltip/Tooltip'
-import { Paragraph } from '@/components/Typography'
-import { cn, truncate } from '@/lib/utils'
-import Link from 'next/link'
+import { cn } from '@/lib/utils'
 import { FC } from 'react'
+import { BuilderName } from './BuilderName'
 
 type DecorationOptionId = Exclude<BuilderState, 'active'> | 'extraRewards'
 type BuilderStateTooltip = Record<DecorationOptionId, string>
@@ -124,16 +123,7 @@ export const BuilderNameCell: FC<BuilderNameCellProps> = ({
   return (
     <div className={cn('flex items-center justify-between w-full h-full', className)}>
       <div className="flex items-center gap-2">
-        <Link href={builderPageLink} data-testid="builderName" target="_blank" rel="noopener noreferrer">
-          <Paragraph
-            className={cn(
-              'text-v3-primary font-rootstock-sans',
-              isHighlighted && 'text-v3-bg-accent-100 underline underline-offset-2',
-            )}
-          >
-            {truncate(builder.builderName, 18)}
-          </Paragraph>
-        </Link>
+        <BuilderName builder={builder} isHighlighted={isHighlighted} builderPageLink={builderPageLink} />
         {hasAirdrop && (
           <BuilderDecoration
             decorationId="extraRewards"

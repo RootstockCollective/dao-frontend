@@ -1,20 +1,37 @@
 'use client'
 
-import { Action, ActionCellProps } from '@/app/builders/components/Table/Cell/ActionCell'
+import { Action } from '@/app/builders/components/Table/Cell/ActionCell'
 import { Token } from '@/app/collective-rewards/rewards'
 import { BackerRewards, useGetBackerRewards } from '@/app/collective-rewards/rewards/backers/hooks'
 import { getCombinedFiatAmount } from '@/app/collective-rewards/utils'
 import { TablePager } from '@/components/TableNew'
 import { TOKENS } from '@/lib/tokens'
 import { usePricesContext, useTableActionsContext, useTableContext } from '@/shared/context'
-import { Sort } from '@/shared/context/TableContext/types'
+import { Row, Sort } from '@/shared/context/TableContext/types'
+import { useIsDesktop } from '@/shared/hooks/useIsDesktop'
 import { Big } from 'big.js'
-import { Suspense, useEffect, useMemo, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { Address } from 'viem'
 import { useAccount } from 'wagmi'
-import { BackerRewardsDataRow, convertDataToRowData } from './BackerRewardsDataRow'
-import { BackerRewardsHeaderRow } from './BackerRewardsHeaderRow'
+import { convertDataToRowData } from './BackerRewardsDataRow'
 import { BackerRewardsCellDataMap, ColumnId, DEFAULT_HEADERS, PAGE_SIZE } from './BackerRewardsTable.config'
+import { DesktopRewardsDetails } from './DesktopRewardsDetails'
+import { MobileRewardsDetails } from './MobileRewardsDetails'
+
+const RewardsDetails = ({
+  rows,
+  actions,
+}: {
+  rows: Row<ColumnId, Row['id'], BackerRewardsCellDataMap>[]
+  actions: Action[]
+}) => {
+  const isDesktop = useIsDesktop()
+  return isDesktop ? (
+    <DesktopRewardsDetails rows={rows} actions={actions} />
+  ) : (
+    <MobileRewardsDetails rows={rows} />
+  )
+}
 
 type PagedFilter = {
   backer: Address
@@ -78,9 +95,8 @@ const usePagedFilteredBackerRewards = ({
   return { data, isLoading, error }
 }
 
-// ---------------- Table ----------------
-
 export const BackerRewardsTable = () => {
+  const isDesktop = useIsDesktop()
   const [pageEnd, setPageEnd] = useState(PAGE_SIZE)
 
   const { address: userAddress } = useAccount()
@@ -169,27 +185,14 @@ export const BackerRewardsTable = () => {
 
   return (
     <>
-      <div className="w-full overflow-x-auto bg-v3-bg-accent-80">
-        <table className="w-full min-w-[700px]">
-          <thead>
-            <BackerRewardsHeaderRow actions={actions} />
-          </thead>
-          <Suspense fallback={<div>Loading table data...</div>}>
-            <tbody>
-              {rows.map(row => (
-                <BackerRewardsDataRow key={row.id} row={row} />
-              ))}
-            </tbody>
-          </Suspense>
-        </table>
-      </div>
+      <RewardsDetails rows={rows} actions={actions} />
       <TablePager
         pageSize={PAGE_SIZE}
         totalItems={totalRewards}
         onPageChange={({ end }) => {
           setPageEnd(end)
         }}
-        pagedItemName="builders"
+        pagedItemName={isDesktop ? 'Builders' : ''}
         mode="expandable"
       />
     </>

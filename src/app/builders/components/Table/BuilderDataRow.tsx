@@ -1,10 +1,11 @@
 'use client'
 
-import { formatMetrics } from '@/app/collective-rewards/rewards/utils'
+import { formatSymbol } from '@/app/collective-rewards/rewards/utils'
 import { BuilderRewardsSummary } from '@/app/collective-rewards/types'
 import {
   getBuilderInactiveState,
   getCombinedFiatAmount,
+  getFiatAmount,
   isBuilderInProgress,
 } from '@/app/collective-rewards/utils'
 import { ConditionalTooltip } from '@/app/components'
@@ -13,8 +14,8 @@ import { GetPricesResult } from '@/app/user/types'
 import { CommonComponentProps } from '@/components/commonProps'
 import { Jdenticon } from '@/components/Header/Jdenticon'
 import { Paragraph } from '@/components/Typography'
-import { RIF, STRIF } from '@/lib/constants'
-import { cn } from '@/lib/utils'
+import { RIF, STRIF, USD } from '@/lib/constants'
+import { cn, formatCurrency } from '@/lib/utils'
 import { useTableActionsContext, useTableContext } from '@/shared/context'
 import { DisclaimerFlow } from '@/shared/walletConnection'
 import { useAppKitFlow } from '@/shared/walletConnection/connection/useAppKitFlow'
@@ -29,7 +30,7 @@ import {
   ColumnTransforms,
 } from './BuilderTable.config'
 import { ActionCell, ActionCellProps, getActionType } from './Cell/ActionCell'
-import { BackersPercentageCell, BackersPercentageCellProps } from './Cell/BackersPercentageCell'
+import { BackersPercentageCell, BackersPercentageProps } from './Cell/BackersPercentageCell'
 import { BackingCell, BackingCellProps } from './Cell/BackingCell'
 import { BackingShareCell, BackingShareCellProps } from './Cell/BackingShareCell'
 import { BuilderNameCell, BuilderNameCellProps } from './Cell/BuilderNameCell'
@@ -47,11 +48,6 @@ export const convertDataToRowData = (
     const actionType = getActionType(builder, backing > 0n)
 
     const rifPrice = prices[RIF]?.price ?? 0
-    const { amount: formattedAmount, fiatAmount: formattedUsdAmount } = formatMetrics(
-      backing,
-      rifPrice,
-      STRIF,
-    )
 
     return {
       id: builder.address,
@@ -84,8 +80,10 @@ export const convertDataToRowData = (
         },
         backing: {
           amount: backing,
-          formattedAmount: formattedAmount,
-          formattedUsdAmount: formattedUsdAmount,
+          formattedAmount: formatSymbol(backing, STRIF),
+          formattedUsdAmount: formatCurrency(
+            getFiatAmount({ value: backing, price: rifPrice, symbol: STRIF, currency: USD }),
+          ),
         },
         backingShare: {
           backingPercentage: builder.totalAllocationPercentage
@@ -170,7 +168,7 @@ const TableCell = ({
   )
 }
 
-export const BackerRewardsCell = (props: BackersPercentageCellProps): ReactElement => {
+export const BackerRewardsCell = (props: BackersPercentageProps): ReactElement => {
   return (
     <TableCell columnId="backer_rewards" className="gap-2 flex justify-center">
       <BackersPercentageCell {...props} />

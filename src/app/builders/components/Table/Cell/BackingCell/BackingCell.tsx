@@ -9,6 +9,7 @@ export interface BackingCellProps extends CommonComponentProps {
   amount: bigint
   formattedAmount: string
   formattedUsdAmount: string
+  emptyPlaceholder?: ReactNode
 }
 
 export const BackingCell = ({
@@ -16,9 +17,10 @@ export const BackingCell = ({
   amount,
   formattedAmount,
   formattedUsdAmount,
+  emptyPlaceholder = null,
 }: BackingCellProps): ReactNode => {
   if (amount === 0n) {
-    return null
+    return emptyPlaceholder
   }
 
   return (

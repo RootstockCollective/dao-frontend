@@ -6,7 +6,7 @@ import {
 import { BaseColumnId, Column, TypedTable } from '@/shared/context'
 import { HtmlHTMLAttributes } from 'react'
 import { ActionCellProps } from './Cell/ActionCell'
-import { BackersPercentageCellProps } from './Cell/BackersPercentageCell'
+import { BackersPercentageProps } from './Cell/BackersPercentageCell'
 import { BackingCellProps } from './Cell/BackingCell'
 import { BackingShareCellProps } from './Cell/BackingShareCell'
 import { BuilderNameCellProps } from './Cell/BuilderNameCell'
@@ -106,7 +106,7 @@ export type BuilderState = (typeof builderStates)[number]
 export type BuilderCellDataMap = {
   builder: BuilderNameCellProps
   backing: BackingCellProps
-  backer_rewards: BackersPercentageCellProps
+  backer_rewards: BackersPercentageProps
   rewards_past_cycle: RewardsCellProps
   rewards_upcoming: RewardsCellProps
   backingShare: BackingShareCellProps
