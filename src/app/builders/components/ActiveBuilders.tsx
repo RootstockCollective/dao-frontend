@@ -2,6 +2,7 @@ import { useHandleErrors } from '@/app/collective-rewards/utils'
 import { Metric } from '@/components/Metric'
 import { useGetActiveBuildersCount } from '@/app/collective-rewards/shared/hooks/useGetActiveBuildersCount'
 import { LoadingSpinner } from '@/components/LoadingSpinner'
+import { Header } from '@/components/Typography'
 
 export const ActiveBuilders = () => {
   const { data, isLoading, error } = useGetActiveBuildersCount()
@@ -9,7 +10,9 @@ export const ActiveBuilders = () => {
   if (isLoading) return <LoadingSpinner size="medium" />
   return (
     <Metric title="Total active Builders">
-      <div className="text-3xl font-bold text-white">{data?.count ?? 0}</div>
+      <Header variant="h3" bold>
+        {data?.count ?? 0}
+      </Header>
     </Metric>
   )
 }
