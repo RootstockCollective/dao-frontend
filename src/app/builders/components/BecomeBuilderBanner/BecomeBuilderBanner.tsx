@@ -119,19 +119,29 @@ const CollapsedContent = () => {
 
 const BecomeBuilderBanner = () => {
   return (
-    <CollapsibleWithPreview
-      expandedContent={<ExpandedContent />}
-      collapsedContent={<CollapsedContent />}
-      expandedState={{
-        backgroundColor: 'bg-v3-text-80',
-        chevronColor: 'text-v3-bg-accent-100',
-      }}
-      collapsedState={{
-        backgroundColor: 'bg-v3-text-80',
-        chevronColor: 'text-v3-bg-accent-100',
-      }}
-      defaultOpen={true}
-    />
+    <>
+      {/* Desktop version - always expanded, not collapsible */}
+      <div className="hidden lg:block bg-v3-text-80 rounded-sm p-4">
+        <ExpandedContent />
+      </div>
+
+      {/* Mobile/Tablet version - collapsible */}
+      <div className="lg:hidden w-full">
+        <CollapsibleWithPreview
+          expandedContent={<ExpandedContent />}
+          collapsedContent={<CollapsedContent />}
+          expandedState={{
+            backgroundColor: 'bg-v3-text-80',
+            chevronColor: 'text-v3-bg-accent-100',
+          }}
+          collapsedState={{
+            backgroundColor: 'bg-v3-text-80',
+            chevronColor: 'text-v3-bg-accent-100',
+          }}
+          defaultOpen={true}
+        />
+      </div>
+    </>
   )
 }
 
