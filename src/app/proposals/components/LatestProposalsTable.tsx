@@ -87,16 +87,23 @@ const LatestProposalsTable = ({ proposals }: LatestProposalsTableProps) => {
   const filterSidebarRef = useRef<HTMLDivElement>(null)
   useClickOutside(filterSidebarRef, () => setIsFilterSidebarOpen(false))
 
+  // Filters are grouped by type
   const filterGroups = useMemo(() => {
-    const searchFilters = activeFilters.filter(f => f.type === FilterType.SEARCH)
-    const categoryFilters = activeFilters.filter(f => f.type === FilterType.CATEGORY)
-    const statusFilters = activeFilters.filter(f => f.type === FilterType.STATUS)
-    const timeFilters = activeFilters.filter(f => f.type === FilterType.TIME)
-    return [searchFilters, categoryFilters, statusFilters, timeFilters].filter(f => f.length > 0)
+    const filtersByType = activeFilters.reduce(
+      (acc, f) => {
+        if (!acc[f.type]) acc[f.type] = []
+        acc[f.type].push(f)
+        return acc
+      },
+      {} as Record<FilterType, typeof activeFilters>,
+    )
+
+    return Object.values(filtersByType).filter(filters => filters.length > 0)
   }, [activeFilters])
 
   const filteredProposalList = useMemo(() => {
     return proposals.filter(proposal => {
+      // Checks for at least one filter group to be true
       return filterGroups.every(filters => filters.some(f => f.validate(proposal)))
     })
   }, [proposals, filterGroups])

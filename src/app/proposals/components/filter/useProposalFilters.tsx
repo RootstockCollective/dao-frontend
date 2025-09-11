@@ -26,8 +26,23 @@ export const useProposalFilters = (): FilterState & FilterActions => {
   const removeFilter = useCallback(
     (id: string) => {
       const filter = activeFilters.find(f => f.id === id)
-      if (!filter?.exclusive) {
-        setActiveFilters(prev => prev.filter(f => f.id !== id))
+      if (filter && !filter.exclusive) {
+        setActiveFilters(prev => {
+          const result = prev.filter(f => f.id !== id)
+
+          // Check if there are any remaining filters of the same type
+          const hasFiltersOfSameType = result.some(f => f.type === filter.type)
+
+          // If no filters of this type remain, add back the exclusive filter
+          if (!hasFiltersOfSameType) {
+            const exclusiveFilter = filterOptions[filter.type]?.find(f => f.exclusive)
+            if (exclusiveFilter) {
+              result.push(exclusiveFilter as FilterItem)
+            }
+          }
+
+          return result
+        })
       }
     },
     [activeFilters],
