@@ -4,7 +4,7 @@ import { getProposalsFromTheGraph } from '@/app/proposals/actions/getProposalsFr
 export const revalidate = 60
 
 export async function GET() {
-  const proposalsSources = [getProposalsFromNode]
+  const proposalsSources = [getProposalsFromTheGraph, getProposalsFromNode]
   for (const source of proposalsSources) {
     try {
       const proposals = await source()

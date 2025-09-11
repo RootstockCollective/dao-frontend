@@ -39,7 +39,7 @@ function convertVotesToBigNumbers(votes: ProposalApiResponse['votes']) {
   const againstVotes = Big(votes?.againstVotes || '0')
   const forVotes = Big(votes?.forVotes || '0')
   const abstainVotes = Big(votes?.abstainVotes || '0')
-  
+
   return {
     againstVotes,
     forVotes,
@@ -49,15 +49,13 @@ function convertVotesToBigNumbers(votes: ProposalApiResponse['votes']) {
 
 function parseBlockNumber(blockNumber: string | undefined): string {
   if (!blockNumber) return ''
-  return blockNumber.startsWith('0x')
-    ? parseInt(blockNumber, 16).toString()
-    : blockNumber
+  return blockNumber.startsWith('0x') ? parseInt(blockNumber, 16).toString() : blockNumber
 }
 
 function transformProposalsData(
   proposalsData: ProposalApiResponse[] | undefined,
   blockchainData: any[] | undefined,
-  latestBlockNumber: bigint | undefined
+  latestBlockNumber: bigint | undefined,
 ) {
   if (!proposalsData) {
     return {
@@ -72,7 +70,7 @@ function transformProposalsData(
 
   const transformedProposals = proposalsData.map((proposal: ProposalApiResponse) => {
     const blockchainInfo = blockchainData?.find(b => b.proposalId === proposal.proposalId)
-    
+
     const votes = proposal.votes || blockchainInfo?.votes
     const quorum = proposal.quorumAtSnapshot || blockchainInfo?.quorum
     const rawState = blockchainInfo?.rawState
@@ -210,7 +208,7 @@ export function useGetProposalsWithGraph() {
       const forVotes = Big(votes?.at(1) ?? 0)
       const abstainVotes = Big(votes?.at(2) ?? 0)
 
-      const quorumValue = quorum?.[index]?.result 
+      const quorumValue = quorum?.[index]?.result
         ? Big(formatEther(quorum[index].result).toString()).round(undefined, Big.roundHalfEven)
         : Big(0)
 
@@ -229,9 +227,10 @@ export function useGetProposalsWithGraph() {
     })
   }, [proposalVotes, quorum, state, proposalsFromNode])
 
-  const { transformedProposals, activeProposals, inactiveProposals } = useMemo(() => 
-    transformProposalsData(proposalsData, blockchainData, latestBlockNumber)
-  , [proposalsData, blockchainData, latestBlockNumber])
+  const { transformedProposals, activeProposals, inactiveProposals } = useMemo(
+    () => transformProposalsData(proposalsData, blockchainData, latestBlockNumber),
+    [proposalsData, blockchainData, latestBlockNumber],
+  )
 
   return {
     data: transformedProposals ?? [],
@@ -250,7 +249,7 @@ function handleProposalState(
   rawState?: number,
 ): ProposalState {
   if (proposal.proposalId === '93114685443285925243283394517435877751023305600815989070198792396783407351507')
-  console.log('proposal', { proposal, blockNumber, rawState })
+    console.log('proposal', { proposal, blockNumber, rawState })
   if (rawState) {
     return rawState as ProposalState
   }
