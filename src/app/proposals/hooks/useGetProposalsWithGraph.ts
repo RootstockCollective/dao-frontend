@@ -28,12 +28,93 @@ function proposalStateToRawState(proposalState: string): number {
 }
 
 async function fetchProposalsFromAPI(): Promise<ProposalApiResponse[]> {
-  console.log('fetching proposals from API')
   const response = await fetch('/api/proposals/v1')
   if (!response.ok) {
     throw new Error(`Failed to fetch proposals: ${response.statusText}`)
   }
   return response.json()
+}
+
+function convertVotesToBigNumbers(votes: ProposalApiResponse['votes']) {
+  const againstVotes = Big(votes?.againstVotes || '0')
+  const forVotes = Big(votes?.forVotes || '0')
+  const abstainVotes = Big(votes?.abstainVotes || '0')
+  
+  return {
+    againstVotes,
+    forVotes,
+    abstainVotes,
+  }
+}
+
+function parseBlockNumber(blockNumber: string | undefined): string {
+  if (!blockNumber) return ''
+  return blockNumber.startsWith('0x')
+    ? parseInt(blockNumber, 16).toString()
+    : blockNumber
+}
+
+function transformProposalsData(
+  proposalsData: ProposalApiResponse[] | undefined,
+  blockchainData: any[] | undefined,
+  latestBlockNumber: bigint | undefined
+) {
+  if (!proposalsData) {
+    return {
+      transformedProposals: [],
+      activeProposals: [],
+      inactiveProposals: [],
+    }
+  }
+
+  const activeProposals: Proposal[] = []
+  const inactiveProposals: Proposal[] = []
+
+  const transformedProposals = proposalsData.map((proposal: ProposalApiResponse) => {
+    const blockchainInfo = blockchainData?.find(b => b.proposalId === proposal.proposalId)
+    
+    const votes = proposal.votes || blockchainInfo?.votes
+    const quorum = proposal.quorumAtSnapshot || blockchainInfo?.quorum
+    const rawState = blockchainInfo?.rawState
+
+    const voteData = convertVotesToBigNumbers(votes)
+    const deadlineBlock = Big(proposal.proposalDeadline || '0')
+    const blockNumber = parseBlockNumber(proposal.blockNumber)
+
+    const proposalData: Proposal = {
+      votes: {
+        ...voteData,
+        quorum: Big(quorum || '0'),
+      },
+      blocksUntilClosure: Big(proposal.proposalDeadline).minus(Big(latestBlockNumber?.toString() || '')),
+      votingPeriod: Big(proposal.votingPeriod || '0'),
+      quorumAtSnapshot: Big(quorum || '0'),
+      proposalDeadline: deadlineBlock,
+      proposalState: handleProposalState(proposal, latestBlockNumber ?? 0n, rawState),
+      category: proposal.category as ProposalCategory,
+      name: proposal.name,
+      proposer: proposal.proposer,
+      description: proposal.description,
+      proposalId: proposal.proposalId,
+      Starts: moment(proposal.Starts),
+      calldatasParsed: proposal.calldatasParsed as any,
+      blockNumber,
+    }
+
+    if (proposalData.proposalState === ProposalState.Active) {
+      activeProposals.push(proposalData)
+    } else {
+      inactiveProposals.push(proposalData)
+    }
+
+    return proposalData
+  })
+
+  return {
+    transformedProposals,
+    activeProposals,
+    inactiveProposals,
+  }
 }
 
 export function useGetProposalsWithGraph() {
@@ -121,7 +202,7 @@ export function useGetProposalsWithGraph() {
   }) as { data?: Array<{ status: string; result: bigint }> }
 
   const blockchainData = useMemo(() => {
-    if (!proposalVotes || !quorum || !state || !proposalsFromNode) return []
+    if (!proposalsFromNode) return []
 
     return proposalsFromNode.map((proposal, index) => {
       const votes = proposalVotes?.[index]?.result?.map(vote => Big(formatEther(vote)).round())
@@ -129,6 +210,12 @@ export function useGetProposalsWithGraph() {
       const forVotes = Big(votes?.at(1) ?? 0)
       const abstainVotes = Big(votes?.at(2) ?? 0)
 
+      const quorumValue = quorum?.[index]?.result 
+        ? Big(formatEther(quorum[index].result).toString()).round(undefined, Big.roundHalfEven)
+        : Big(0)
+
+      const proposalState = state?.[index]?.result ?? 0
+
       return {
         proposalId: proposal.proposalId,
         votes: {
@@ -136,93 +223,15 @@ export function useGetProposalsWithGraph() {
           forVotes,
           abstainVotes,
         },
-        quorum: Big(formatEther(quorum[index].result).toString()).round(undefined, Big.roundHalfEven),
-        rawState: Big(state?.[index].result?.toString() ?? 0).toNumber() as ProposalState,
+        quorum: quorumValue,
+        rawState: Big(proposalState.toString()).toNumber() as ProposalState,
       }
     })
   }, [proposalVotes, quorum, state, proposalsFromNode])
 
-  const activeProposalCount = useMemo(() => {
-    if (!proposalsData || !latestBlockNumber) return '0'
-
-    return proposalsData
-      .filter(
-        (proposal: ProposalApiResponse) =>
-          handleProposalState(proposal, latestBlockNumber) === ProposalState.Active,
-      )
-      .length.toString()
-  }, [proposalsData, latestBlockNumber])
-
-  const totalProposalCount = useMemo(() => {
-    if (!proposalsData) return '0'
-    return proposalsData.length.toString()
-  }, [proposalsData])
-
-  const { transformedProposals, activeProposals, inactiveProposals } = useMemo(() => {
-    if (!proposalsData) {
-      return {
-        transformedProposals: [],
-        activeProposals: [],
-        inactiveProposals: [],
-      }
-    }
-
-    const activeProposals: Proposal[] = []
-    const inactiveProposals: Proposal[] = []
-
-    const transformedProposals = proposalsData.map((proposal: ProposalApiResponse) => {
-      const blockchainInfo = blockchainData?.find(b => b.proposalId === proposal.proposalId)
-
-      const votes = proposal.votes || blockchainInfo?.votes
-      const quorum = proposal.quorumAtSnapshot || blockchainInfo?.quorum
-      const rawState = blockchainInfo?.rawState
-
-      const againstVotes = Big(votes?.againstVotes || '0')
-      const forVotes = Big(votes?.forVotes || '0')
-      const abstainVotes = Big(votes?.abstainVotes || '0')
-      const deadlineBlock = Big(proposal.proposalDeadline || '0')
-
-      const blockNumberDecimal = proposal.blockNumber?.startsWith('0x')
-        ? parseInt(proposal.blockNumber, 16).toString()
-        : proposal.blockNumber
-
-      const proposalData: Proposal = {
-        votes: {
-          againstVotes,
-          forVotes,
-          abstainVotes,
-          quorum: Big(quorum || '0'),
-        },
-        blocksUntilClosure: Big(proposal.proposalDeadline).minus(Big(latestBlockNumber?.toString() || '')),
-        votingPeriod: Big(proposal.votingPeriod || '0'),
-        quorumAtSnapshot: Big(quorum || '0'),
-        proposalDeadline: deadlineBlock,
-        proposalState: handleProposalState(proposal, latestBlockNumber ?? 0n, rawState),
-        category: proposal.category as ProposalCategory,
-        name: proposal.name,
-        proposer: proposal.proposer,
-        description: proposal.description,
-        proposalId: proposal.proposalId,
-        Starts: moment(proposal.Starts),
-        calldatasParsed: proposal.calldatasParsed as any,
-        blockNumber: blockNumberDecimal,
-      }
-
-      if (proposalData.proposalState === ProposalState.Active) {
-        activeProposals.push(proposalData)
-      } else {
-        inactiveProposals.push(proposalData)
-      }
-
-      return proposalData
-    })
-
-    return {
-      transformedProposals,
-      activeProposals,
-      inactiveProposals,
-    }
-  }, [proposalsData, blockchainData, latestBlockNumber])
+  const { transformedProposals, activeProposals, inactiveProposals } = useMemo(() => 
+    transformProposalsData(proposalsData, blockchainData, latestBlockNumber)
+  , [proposalsData, blockchainData, latestBlockNumber])
 
   return {
     data: transformedProposals ?? [],
@@ -230,8 +239,8 @@ export function useGetProposalsWithGraph() {
     error: proposalsDataError,
     inactiveProposals,
     activeProposals,
-    activeProposalCount,
-    totalProposalCount,
+    activeProposalCount: activeProposals.length.toString(),
+    totalProposalCount: transformedProposals.length.toString(),
   }
 }
 
@@ -240,11 +249,18 @@ function handleProposalState(
   blockNumber?: bigint,
   rawState?: number,
 ): ProposalState {
+  if (proposal.proposalId === '93114685443285925243283394517435877751023305600815989070198792396783407351507')
+  console.log('proposal', { proposal, blockNumber, rawState })
   if (rawState) {
     return rawState as ProposalState
   }
+  const proposalState = proposalStateToRawState(proposal.proposalState || 'Pending')
   if (!blockNumber) {
-    return proposalStateToRawState(proposal.proposalState || 'Pending')
+    return proposalState as ProposalState
+  }
+
+  if (proposalState != ProposalState.Pending && proposalState != ProposalState.Active) {
+    return proposalState as ProposalState
   }
 
   if (!proposal.votes || !proposal.quorumAtSnapshot) {
