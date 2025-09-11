@@ -7,6 +7,7 @@ import { formatSymbol } from '@/app/collective-rewards/rewards/utils'
 import { Span } from '@/components/Typography/Span'
 import { TooltipPayload } from '@/app/collective-rewards/types'
 import { formatCurrency } from '@/lib/utils'
+import { ONE_DAY_IN_MS } from '../../constants/chartConstants'
 
 interface ChartTooltipProps {
   active?: boolean
@@ -24,11 +25,14 @@ export const ChartTooltipContent = ({ active, payload, label }: ChartTooltipProp
   const cycleNumber = payload[0]?.payload?.cycle ?? 'N/A'
   const dayInCycle = payload[0]?.payload?.dayInCycle ?? 'N/A'
 
+  // Add one day to align tooltip date with actual data dates
+  const displayDate = new Date(d.getTime() + ONE_DAY_IN_MS)
+
   return (
     <div className="p-4 bg-text-80 shadow-xl rounded flex flex-col gap-2">
       <BaseTypography variant="body-xs" className="text-bg-100">
-        {d instanceof Date
-          ? d
+        {displayDate instanceof Date
+          ? displayDate
               .toLocaleDateString('en-US', {
                 month: 'short',
                 day: 'numeric',

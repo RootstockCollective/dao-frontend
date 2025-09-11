@@ -178,7 +178,7 @@ export function CollectiveRewardsDualAxisChart({
             interval={0}
             tick={{ fill: 'var(--background-0)' }}
             className="font-rootstock-sans text-sm"
-            tickCount={5}
+            tickCount={6}
           />
 
           <YAxis
