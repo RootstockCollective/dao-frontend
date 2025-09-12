@@ -6,22 +6,26 @@ import { CollectiveRewardsDualAxisChart } from './CollectiveRewardsChart'
 function generateMockData() {
   const start = new Date('2024-03-01').getTime()
   const days = 490
+  const cycleDuration = 60 * 60 * 24 * 30 // 30 days
 
   const cycles: CycleWindow[] = [
     {
       label: 'cycle 21',
       start: new Date('2024-03-01'),
       end: new Date('2025-01-15'),
+      cycleDuration,
     },
     {
       label: 'cycle 22',
       start: new Date('2025-01-15'),
       end: new Date('2025-06-15'),
+      cycleDuration,
     },
     {
       label: 'cycle 23',
       start: new Date('2025-06-15'),
       end: new Date('2025-07-31'),
+      cycleDuration,
     },
   ]
 
@@ -197,12 +201,14 @@ export const SingleCycle: Story = {
   render: () => {
     const start = new Date('2024-06-01').getTime()
     const days = 90
+    const cycleDuration = 60 * 60 * 24 * 30 // 30 days
 
     const cycles: CycleWindow[] = [
       {
         label: 'cycle 24',
         start: new Date('2024-06-01'),
         end: new Date('2024-08-30'),
+        cycleDuration,
       },
     ]
 
@@ -246,16 +252,17 @@ export const ManyCycles: Story = {
   render: () => {
     const start = new Date('2023-01-01').getTime()
     const days = 730 // 2 years
+    const cycleDuration = 60 * 60 * 24 * 30 // 30 days
 
     const cycles: CycleWindow[] = [
-      { label: 'cycle 18', start: new Date('2023-01-01'), end: new Date('2023-04-01') },
-      { label: 'cycle 19', start: new Date('2023-04-01'), end: new Date('2023-07-01') },
-      { label: 'cycle 20', start: new Date('2023-07-01'), end: new Date('2023-10-01') },
-      { label: 'cycle 21', start: new Date('2023-10-01'), end: new Date('2024-01-01') },
-      { label: 'cycle 22', start: new Date('2024-01-01'), end: new Date('2024-04-01') },
-      { label: 'cycle 23', start: new Date('2024-04-01'), end: new Date('2024-07-01') },
-      { label: 'cycle 24', start: new Date('2024-07-01'), end: new Date('2024-10-01') },
-      { label: 'cycle 25', start: new Date('2024-10-01'), end: new Date('2024-12-31') },
+      { label: 'cycle 18', start: new Date('2023-01-01'), end: new Date('2023-04-01'), cycleDuration },
+      { label: 'cycle 19', start: new Date('2023-04-01'), end: new Date('2023-07-01'), cycleDuration },
+      { label: 'cycle 20', start: new Date('2023-07-01'), end: new Date('2023-10-01'), cycleDuration },
+      { label: 'cycle 21', start: new Date('2023-10-01'), end: new Date('2024-01-01'), cycleDuration },
+      { label: 'cycle 22', start: new Date('2024-01-01'), end: new Date('2024-04-01'), cycleDuration },
+      { label: 'cycle 23', start: new Date('2024-04-01'), end: new Date('2024-07-01'), cycleDuration },
+      { label: 'cycle 24', start: new Date('2024-07-01'), end: new Date('2024-10-01'), cycleDuration },
+      { label: 'cycle 25', start: new Date('2024-10-01'), end: new Date('2024-12-31'), cycleDuration },
     ]
 
     const backingSeries: BackingPoint[] = []
