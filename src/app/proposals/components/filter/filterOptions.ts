@@ -20,14 +20,14 @@ export const createSearchFilter = (value: string): FilterItem => ({
   },
 })
 
-const createCategoryFilter = (value: string, exclusive?: boolean): FilterItem => ({
+const createCategoryFilter = (value: string, isAll?: boolean): FilterItem => ({
   id: `category-${value}-${Date.now()}`,
   type: FilterType.CATEGORY,
   label: value,
   value,
-  exclusive,
+  isAll,
   validate: (proposal: Proposal) => {
-    return exclusive || proposal.category?.toLowerCase().includes(value.toLowerCase())
+    return isAll || proposal.category?.toLowerCase().includes(value.toLowerCase())
   },
 })
 
@@ -41,27 +41,28 @@ const createMilestoneFilter = (label: string, value: string): FilterItem => ({
   },
 })
 
-const createStatusFilter = (label: string, value: ProposalState, exclusive?: boolean): FilterItem => {
+const createStatusFilter = (label: string, value: ProposalState, isAll?: boolean): FilterItem => {
   return {
     id: `status-${label}-${Date.now()}`,
     type: FilterType.STATUS,
     label,
     value: value.toString(),
-    exclusive,
+    isAll,
     validate: (proposal: Proposal) => {
-      return exclusive || proposal.proposalState === value
+      return isAll || proposal.proposalState === value
     },
   }
 }
 
-const createTimeFilter = (label: string, days: number, exclusive?: boolean): FilterItem => ({
+const createTimeFilter = (label: string, days: number, isAll?: boolean): FilterItem => ({
   id: `time-${label}-${Date.now()}`,
   type: FilterType.TIME,
   label,
   value: label.toLowerCase(),
-  exclusive,
+  exclusive: true,
+  isAll,
   validate: (proposal: Proposal) => {
-    if (exclusive) {
+    if (isAll) {
       return true
     }
 

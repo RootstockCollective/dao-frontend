@@ -18,6 +18,7 @@ export interface FilterItem {
   type: FilterType
   label: string
   value?: string
+  isAll?: boolean
   exclusive?: boolean
   validate(proposal: Proposal): boolean
 }

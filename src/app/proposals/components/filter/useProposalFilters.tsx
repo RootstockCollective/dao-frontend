@@ -6,7 +6,7 @@ import { FilterActions, FilterItem, FilterState, FilterType } from './types'
 
 const initialFilters = Object.values(filterOptions)
   .flat()
-  .filter(f => f.exclusive)
+  .filter(f => f.isAll)
 
 export const useProposalFilters = (): FilterState & FilterActions => {
   const [activeFilters, setActiveFilters] = useState<FilterItem[]>(initialFilters)
@@ -14,11 +14,13 @@ export const useProposalFilters = (): FilterState & FilterActions => {
 
   const addFilter = useCallback((newFilter: FilterItem) => {
     setActiveFilters(prev => {
-      if (newFilter.exclusive) {
+      // if new filter is "all" or exclusive, remove other filters of same type and add this one
+      if (newFilter.isAll || newFilter.exclusive) {
         return prev.filter(f => f.type !== newFilter.type).concat(newFilter)
       }
+      // else, add the new filter and remove any "all" filter of the same type
       return prev
-        .filter(f => f.type !== newFilter.type || (!f.exclusive && f.id !== newFilter.id))
+        .filter(f => f.type !== newFilter.type || (!f.isAll && f.id !== newFilter.id))
         .concat(newFilter)
     })
   }, [])
@@ -26,18 +28,20 @@ export const useProposalFilters = (): FilterState & FilterActions => {
   const removeFilter = useCallback(
     (id: string) => {
       const filter = activeFilters.find(f => f.id === id)
-      if (filter && !filter.exclusive) {
+      if (filter && !filter.isAll) {
         setActiveFilters(prev => {
+          // remove the current filter
           const result = prev.filter(f => f.id !== id)
 
-          // Check if there are any remaining filters of the same type
+          // check if there are any remaining filters of the same type
           const hasFiltersOfSameType = result.some(f => f.type === filter.type)
 
-          // If no filters of this type remain, add back the exclusive filter
+          // if no remaining filters of this type exist, restore the "all" filter
           if (!hasFiltersOfSameType) {
-            const exclusiveFilter = filterOptions[filter.type]?.find(f => f.exclusive)
-            if (exclusiveFilter) {
-              result.push(exclusiveFilter as FilterItem)
+            const isAllFilter = filterOptions[filter.type]?.find(f => f.isAll)
+            // check if "all" filter exists because "search" type has no "all" filter
+            if (isAllFilter) {
+              result.push(isAllFilter as FilterItem)
             }
           }
 

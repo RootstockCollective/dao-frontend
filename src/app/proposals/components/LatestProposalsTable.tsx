@@ -109,7 +109,7 @@ const LatestProposalsTable = ({ proposals }: LatestProposalsTableProps) => {
   }, [proposals, filterGroups])
 
   const hasSelectedFilters = useMemo(() => {
-    return activeFilters.filter(f => !f.exclusive && f.type !== FilterType.SEARCH).length > 0
+    return activeFilters.filter(f => !f.isAll && f.type !== FilterType.SEARCH).length > 0
   }, [activeFilters])
 
   // Table data definition helper
@@ -317,7 +317,7 @@ const LatestProposalsTable = ({ proposals }: LatestProposalsTableProps) => {
         </div>
         {/* Active Filters Display */}
         <ActiveFiltersDisplay
-          activeFilters={activeFilters.filter(f => !f.exclusive)}
+          activeFilters={activeFilters.filter(f => !f.isAll)}
           onRemoveFilter={removeFilter}
           onClearAll={clearAllFilters}
         />
