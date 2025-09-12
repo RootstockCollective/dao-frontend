@@ -28,19 +28,9 @@ const calculateCycleDay = (date: Date, cycles: CycleWindow[]) => {
     }
   }
 
-  // If date does not match any cycle, return fallback value
-  const referenceCycle = cycles[0]
-  const cycleDurationMs = referenceCycle.cycleDuration * 1000 // Convert seconds to milliseconds
-  const timeSinceFirstCycle = targetTime - FIRST_CYCLE_START_MS
-  const cycleNumber = Math.floor(timeSinceFirstCycle / cycleDurationMs) + 1
-  const timeInCurrentCycle = timeSinceFirstCycle % cycleDurationMs
-
-  const dayInCycle = Math.floor(timeInCurrentCycle / ONE_DAY_IN_MS) + 1
-  const fallbackCycleDurationDays = Math.ceil(cycleDurationMs / ONE_DAY_IN_MS)
-
   return {
-    cycle: cycleNumber,
-    dayInCycle: `${dayInCycle}/${fallbackCycleDurationDays}`,
+    cycle: null,
+    dayInCycle: null,
   }
 }
 

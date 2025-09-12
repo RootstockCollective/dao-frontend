@@ -21,7 +21,7 @@ export const formatShort = (n: number) => {
 /**
  * Filter data to show only the last 5 months
  */
-const filterToLastFiveMonths = <T extends { day: Date | number | string }>(
+const filterToLastFiveMonths = <T extends { day?: Date | number | string; start?: Date; end?: Date }>(
   data: T[],
   customMinDate?: number,
 ): T[] => {
@@ -30,8 +30,19 @@ const filterToLastFiveMonths = <T extends { day: Date | number | string }>(
   const minDate = customMinDate || fiveMonthsAgo
 
   return data.filter(item => {
-    const itemTime = convertToTimestamp(item.day)
-    return itemTime >= minDate
+    // For cycles
+    if (item.start && item.end) {
+      const cycleEnd = convertToTimestamp(item.end)
+      return cycleEnd >= minDate
+    }
+
+    // For backing and rewards
+    if (item.day) {
+      const itemTime = convertToTimestamp(item.day)
+      return itemTime >= minDate
+    }
+
+    return false
   })
 }
 
@@ -226,10 +237,9 @@ export const transformApiDataToChartData = (
   const cycles: CycleWindow[] = transformCyclesData(sortedRewardsData)
 
   const filteredRewardsSeries = filterToLastFiveMonths(rewardsSeries)
-  const filteredCycles = filterToLastFiveMonths(cycles.map(cycle => ({ ...cycle, day: cycle.start })))
+  const filteredCycles = filterToLastFiveMonths(cycles)
 
   const minDate = convertToTimestamp(filteredRewardsSeries[0].day) - ONE_DAY_IN_MS
-
   const filteredBackingSeries = filterToLastFiveMonths(backingSeries, minDate)
 
   return {
