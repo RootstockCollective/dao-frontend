@@ -1,24 +1,22 @@
 import { Paragraph } from '@/components/Typography'
 import { cn } from '@/lib/utils'
-import { FilterOption } from './filterOptions'
 
 interface Props {
-  option: FilterOption
+  label: string
   selected: boolean
-  onClick: (option: FilterOption['value']) => void
+  onClick: (label: string) => void
 }
 
 /**
  * Individual radio button item for selecting proposal filter categories
  */
-export const FilterRadioItem = ({ option, selected, onClick, ...props }: Props) => {
+export const FilterRadioItem = ({ label, selected, onClick }: Props) => {
   return (
     <button
       role="radio"
       aria-checked={selected}
-      onClick={() => onClick(option.value)}
+      onClick={() => onClick(label)}
       className={cn('group focus:outline-none focus-visible:outline-none', 'flex gap-3 items-center')}
-      {...props}
     >
       <div
         className={cn(
@@ -27,7 +25,7 @@ export const FilterRadioItem = ({ option, selected, onClick, ...props }: Props) 
           selected ? 'border-5' : 'border-[1.5px]',
         )}
       />
-      <Paragraph>{option.label}</Paragraph>
+      <Paragraph>{label}</Paragraph>
     </button>
   )
 }

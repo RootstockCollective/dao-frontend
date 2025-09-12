@@ -1,14 +1,14 @@
+import { Header } from '@/components/Typography'
 import { cn } from '@/lib/utils'
 import { type HTMLAttributes } from 'react'
 import { FilterRadioItem } from './FilterRadioItem'
-import { FilterOption } from './filterOptions'
+import { FilterItem } from './types'
 
 interface FilterSideBarProps extends HTMLAttributes<HTMLDivElement> {
-  filterOptions: FilterOption[]
-  activeFilters: string[]
-  onAddFilter: (filter: { type: 'category'; label: string; value: string }) => void
-  onRemoveFilter: (value: string) => void
-  title?: string
+  filterOptions: Record<string, FilterItem[]>
+  activeFilters: FilterItem[]
+  onAddFilter: (filter: FilterItem) => void
+  onRemoveFilter: (id: string) => void
 }
 
 /**
@@ -20,49 +20,42 @@ export function FilterSideBar({
   onAddFilter,
   onRemoveFilter,
   className,
-  title = 'Filter by category',
   ...props
 }: FilterSideBarProps) {
-  const handleFilterToggle = (option: FilterOption) => {
-    if (activeFilters.includes(option.value)) {
-      onRemoveFilter(option.value)
+  const handleFilterToggle = (option: FilterItem) => {
+    if (activeFilters.some(f => f.id === option.id)) {
+      onRemoveFilter(option.id)
     } else {
-      onAddFilter({ type: 'category', label: option.label, value: option.value })
+      onAddFilter(option)
     }
   }
 
-  const handleClearAll = () => {
-    activeFilters.forEach(value => onRemoveFilter(value))
-  }
-
   return (
-    <div className={cn('w-[256px] h-full pt-[56px] pb-4 px-6 bg-bg-60 rounded-sm', className)} {...props}>
-      <h3
-        id="filter-title"
-        className="mb-4 font-rootstock-sans text-xs font-medium tracking-wider uppercase text-text-40"
-      >
-        {title}
-      </h3>
-      <ul className="pl-1 space-y-3" role="group" aria-labelledby="filter-title">
-        <li>
-          <FilterRadioItem
-            selected={activeFilters.length === 0}
-            option={{ label: 'All categories', value: '' }}
-            onClick={() => handleClearAll()}
-            data-testid="AllCategories"
-          />
-        </li>
-        {filterOptions.map((option, i) => (
-          <li key={i}>
-            <FilterRadioItem
-              selected={activeFilters.includes(option.value)}
-              option={option}
-              onClick={() => handleFilterToggle(option)}
-              data-testid={`FilterOption-${option.label}`}
-            />
-          </li>
-        ))}
-      </ul>
+    <div
+      className={cn(
+        'flex flex-col w-[256px] h-full pt-[56px] pb-4 px-6 bg-bg-60 rounded-sm gap-10',
+        className,
+      )}
+      {...props}
+    >
+      {Object.keys(filterOptions).map(type => (
+        <div key={type} className="flex flex-col gap-4">
+          <Header id="filter-title" variant="h5" className="text-text-40" caps>
+            Filter by {type}
+          </Header>
+          <ul className="pl-1 space-y-3" role="group" aria-labelledby="filter-title">
+            {(filterOptions[type as keyof typeof filterOptions] as FilterItem[]).map(option => (
+              <li key={option.id} data-testid={`FilterOption-${option.label}`}>
+                <FilterRadioItem
+                  selected={activeFilters.some(f => f.id === option.id)}
+                  label={option.label}
+                  onClick={() => handleFilterToggle(option)}
+                />
+              </li>
+            ))}
+          </ul>
+        </div>
+      ))}
     </div>
   )
 }

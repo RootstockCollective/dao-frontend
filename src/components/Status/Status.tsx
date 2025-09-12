@@ -40,12 +40,14 @@ const VARIANTS = {
     label: 'Pending',
     classes: 'bg-bg-40',
   },
+  [ProposalState.None]: {
+    label: 'Unknown',
+    classes: 'bg-bg-40 text-text-100',
+  },
 } satisfies Record<ProposalState, { label: string; classes: string }>
 
 const getVariants = (proposalState?: ProposalState): (typeof VARIANTS)[keyof typeof VARIANTS] => {
-  return proposalState === undefined
-    ? { label: 'Unknown', classes: 'bg-bg-40 text-text-100' }
-    : VARIANTS[proposalState]
+  return proposalState ? VARIANTS[proposalState] : VARIANTS[ProposalState.None]
 }
 
 export const Status: FC<Props> = ({ proposalState, className, ...rest }) => {

@@ -88,6 +88,7 @@ export enum ProposalState {
   Queued,
   Expired,
   Executed,
+  None,
 }
 
 type TxMessage =
