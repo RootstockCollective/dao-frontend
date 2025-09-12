@@ -95,6 +95,7 @@ export const BuilderCard = ({
           name={builderName}
           builderPageLink={builderPageLink}
           className="mt-8"
+          showFullName={false}
         />
         {!isRewardable && builderInactiveState && (
           <Warning className="pt-3" builderInactiveState={builderInactiveState} />

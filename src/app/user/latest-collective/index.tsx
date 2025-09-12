@@ -5,7 +5,7 @@ import { Header } from '@/components/Typography'
 import { useRouter } from 'next/navigation'
 import { LatestActiveProposalCard, LatestProposalCard } from './components'
 import { ActionsContainer } from '@/components/containers/ActionsContainer'
-import { BuildersSpotlight } from '@/app/shared/components/BuildersSpotlight'
+import { SpotlightBuildersGrid } from '@/app/shared/components/SpotlightBuildersGrid'
 import { useBuilderContext } from '@/app/collective-rewards/user/context/BuilderContext'
 
 interface LatestCollectiveSectionProps {
@@ -59,7 +59,7 @@ export const LatestCollectiveSection = ({
         }
         className="mt-10 p-0 gap-4"
       >
-        <BuildersSpotlight builders={randomBuilders} />
+        <SpotlightBuildersGrid builders={randomBuilders} />
       </ActionsContainer>
     </div>
   )

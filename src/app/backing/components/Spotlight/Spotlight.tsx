@@ -1,8 +1,7 @@
 import { AllocationsContext } from '@/app/collective-rewards/allocations/context/AllocationsContext'
 import { useBuilderContext } from '@/app/collective-rewards/user/context/BuilderContext'
 import { useHandleErrors } from '@/app/collective-rewards/utils'
-import { BackMoreBuildersCard, BuilderCardControl } from '@/app/shared/components/BuilderCard'
-import { BuildersSpotlight } from '@/app/shared/components/BuildersSpotlight'
+import { SpotlightBuildersGrid } from '@/app/shared/components/SpotlightBuildersGrid'
 import { Button } from '@/components/Button'
 import { LoadingSpinner } from '@/components/LoadingSpinner'
 import { useRouter, useSearchParams } from 'next/navigation'
@@ -102,21 +101,18 @@ export const Spotlight = ({ isInteractive = true }: { isInteractive?: boolean })
   return (
     <>
       {isConnected && isInteractive ? (
-        <div className="grid grid-cols-4 gap-2 w-full items-stretch">
-          {spotlightBuilders.map((builder, index) => (
-            <BuilderCardControl
-              key={builder.address}
-              builder={builder}
-              estimatedRewards={builder.backerEstimatedRewards}
-              isInteractive={true}
-              index={index}
-              showAnimation={isBuilderSelected(builder.address)}
-            />
-          ))}
-          {hasAllocations && spotlightBuilders.length < 4 && <BackMoreBuildersCard />}
-        </div>
+        <SpotlightBuildersGrid
+          builders={spotlightBuilders.map((builder, index) => ({
+            ...builder,
+            index,
+            estimatedRewards: builder.backerEstimatedRewards,
+            showAnimation: isBuilderSelected(builder.address),
+          }))}
+          isInteractive
+          showBackMoreBuildersCard={hasAllocations && spotlightBuilders.length < 4}
+        />
       ) : (
-        <BuildersSpotlight builders={spotlightBuilders} />
+        <SpotlightBuildersGrid builders={spotlightBuilders} />
       )}
       <div className="flex justify-center self-center mt-6">
         <Button variant="secondary-outline" onClick={() => router.push('/builders')}>
