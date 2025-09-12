@@ -167,6 +167,11 @@ export const BuildersTable = ({ filterOption }: { filterOption: BuilderFilterOpt
       type: 'SET_COLUMNS',
       payload: DEFAULT_HEADERS,
     })
+    // Set default sorting to backer_rewards (descending)
+    dispatch({
+      type: 'SET_DEFAULT_SORT',
+      payload: { columnId: 'backer_rewards', direction: 'desc' },
+    })
   }, []) // eslint-disable-line react-hooks/exhaustive-deps
 
   useEffect(() => {
