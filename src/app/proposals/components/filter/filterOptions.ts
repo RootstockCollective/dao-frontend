@@ -2,6 +2,7 @@ import { MILESTONE_SEPARATOR } from '@/app/proposals/shared/utils'
 import { FilterItem, FilterType } from './types'
 import { Proposal } from '../../shared/types'
 import { ProposalState } from '@/shared/types'
+import moment from 'moment'
 
 export const createSearchFilter = (value: string): FilterItem => ({
   id: `search-${value}-${Date.now()}`,
@@ -64,15 +65,12 @@ const createTimeFilter = (label: string, days: number, exclusive?: boolean): Fil
       return true
     }
 
-    if (!proposal.createdAt) {
+    if (!proposal.Starts) {
       return false
     }
 
-    const now = new Date()
-    const proposalDate = new Date(Number(proposal.createdAt) * 1000)
-    const diffTime = Math.abs(now.getTime() - proposalDate.getTime())
-    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24))
-    return diffDays <= days
+    const now = moment()
+    return now.diff(proposal.Starts, 'days') <= days
   },
 })
 const filterCategoryOptions: FilterItem[] = [
