@@ -4,7 +4,7 @@ import {
   ONE_DAY_IN_SECONDS,
   FIVE_MONTHS_IN_MS,
   FIRST_CYCLE_START_SECONDS,
-  CYCLE_DURATION_SECONDS,
+  ONE_DAY_IN_MS,
 } from '../constants/chartConstants'
 import Big from '@/lib/big'
 
@@ -21,13 +21,17 @@ export const formatShort = (n: number) => {
 /**
  * Filter data to show only the last 5 months
  */
-const filterToLastFiveMonths = <T extends { day: Date | number | string }>(data: T[]): T[] => {
+const filterToLastFiveMonths = <T extends { day: Date | number | string }>(
+  data: T[],
+  customMinDate?: number,
+): T[] => {
   const now = Date.now()
   const fiveMonthsAgo = now - FIVE_MONTHS_IN_MS
+  const minDate = customMinDate || fiveMonthsAgo
 
   return data.filter(item => {
     const itemTime = convertToTimestamp(item.day)
-    return itemTime >= fiveMonthsAgo
+    return itemTime >= minDate
   })
 }
 
@@ -180,12 +184,15 @@ const transformCyclesData = (rewardsData: CycleRewardsItem[]): CycleWindow[] => 
     const endDate = new Date((Number(item.currentCycleStart) + Number(item.currentCycleDuration)) * 1000)
 
     const cycleNumber =
-      Math.floor((Number(item.currentCycleStart) - FIRST_CYCLE_START_SECONDS) / CYCLE_DURATION_SECONDS) + 1
+      Math.floor(
+        (Number(item.currentCycleStart) - FIRST_CYCLE_START_SECONDS) / Number(item.currentCycleDuration),
+      ) + 1
 
     return {
       start: startDate,
       end: endDate,
       label: `cycle ${cycleNumber}`,
+      cycleDuration: Number(item.currentCycleDuration),
       cycleNumber,
     }
   })
@@ -218,9 +225,12 @@ export const transformApiDataToChartData = (
   )
   const cycles: CycleWindow[] = transformCyclesData(sortedRewardsData)
 
-  const filteredBackingSeries = filterToLastFiveMonths(backingSeries)
   const filteredRewardsSeries = filterToLastFiveMonths(rewardsSeries)
   const filteredCycles = filterToLastFiveMonths(cycles.map(cycle => ({ ...cycle, day: cycle.start })))
+
+  const minDate = convertToTimestamp(filteredRewardsSeries[0].day) - ONE_DAY_IN_MS
+
+  const filteredBackingSeries = filterToLastFiveMonths(backingSeries, minDate)
 
   return {
     backingSeries: filteredBackingSeries,

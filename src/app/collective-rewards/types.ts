@@ -100,6 +100,7 @@ export type CycleWindow = {
   label: string
   start: Date
   end: Date
+  cycleDuration: number
   cycleNumber?: number
 }
 
