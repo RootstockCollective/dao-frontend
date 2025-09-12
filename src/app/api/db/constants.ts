@@ -1,8 +1,10 @@
 const COLUMN_ID = 'id'
 const REWARDS_ERC20 = 'rewardsERC20'
 const REWARDS_RBTC = 'rewardsRBTC'
-const CYCLE_START = 'cycleStart'
-const CYCLE_DURATION = 'cycleDuration'
+const CURRENT_CYCLE_START = 'currentCycleStart'
+const CURRENT_CYCLE_DURATION = 'currentCycleDuration'
+const PREVIOUS_CYCLE_START = 'previousCycleStart'
+const PREVIOUS_CYCLE_DURATION = 'previousCycleDuration'
 const DISTRIBUTION_DURATION = 'distributionDuration'
 const ON_DISTRIBUTION_PERIOD = 'onDistributionPeriod'
 
@@ -10,8 +12,10 @@ export const CYCLE_COLUMNS = [
   COLUMN_ID,
   REWARDS_ERC20,
   REWARDS_RBTC,
-  CYCLE_START,
-  CYCLE_DURATION,
+  CURRENT_CYCLE_START,
+  CURRENT_CYCLE_DURATION,
+  PREVIOUS_CYCLE_START,
+  PREVIOUS_CYCLE_DURATION,
   DISTRIBUTION_DURATION,
   ON_DISTRIBUTION_PERIOD,
 ]
