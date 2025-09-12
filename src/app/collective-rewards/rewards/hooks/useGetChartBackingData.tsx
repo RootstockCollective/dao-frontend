@@ -5,7 +5,7 @@ import { DailyAllocationItem } from '@/app/collective-rewards/types'
 export const useGetChartBackingData = () => {
   const { data, isLoading, error } = useQuery<DailyAllocationItem[], Error>({
     queryFn: async (): Promise<DailyAllocationItem[]> => {
-      const response = await fetch(`/api/allocations/daily`)
+      const response = await fetch(`/api/allocations/daily?sortBy=day&sortDirection=desc&pageSize=1000`)
 
       if (!response.ok) {
         throw new Error('Failed to fetch chart data')
