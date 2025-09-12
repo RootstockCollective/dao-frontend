@@ -9,7 +9,7 @@ import { RIF, STRIF } from '@/lib/constants'
 import { cn, formatCurrency } from '@/lib/utils'
 import { useRef, useState } from 'react'
 import { NumberFormatValues } from 'react-number-format'
-import { Address, parseEther } from 'viem'
+import { Address, formatEther, parseEther } from 'viem'
 import { PendingAllocation } from '../PendingAllocation/PendingAllocation'
 import { RIFToken } from '../RIFToken/RIFToken'
 import { StickySlider } from '../StickySlider/StickySlider'
@@ -115,8 +115,10 @@ export const AllocationInput = ({
   }
 
   const onInputValueChange = ({ value }: NumberFormatValues) => {
+    if (!editing) return
+
     try {
-      updateBacking(parseEther(value))
+      updateBacking(normaliseBackingValue(onchainBacking, value))
     } catch (error) {
       setParsingError(error as Error)
     }
@@ -181,6 +183,11 @@ export const AllocationInput = ({
       )}
     </div>
   )
+}
+
+// A little bit of a hacky way to check that the input is equal to the on-chain backing in the integer part and if so it should be set to that to prevent accidental fractions.
+function normaliseBackingValue(onchainBacking: bigint, value: string) {
+  return Number(formatEther(onchainBacking)).toFixed(0) === value ? onchainBacking : parseEther(value)
 }
 
 function isValidBalanceFraction(
