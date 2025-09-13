@@ -1,24 +1,19 @@
 import { CycleContextProvider } from '@/app/collective-rewards/metrics'
 import { useGetBuilders } from '@/app/collective-rewards/user'
 import { ActionsContainer } from '@/components/containers'
-import { Header, Span } from '@/components/Typography'
 import { withTableContext, useTableContext, useTableActionsContext } from '@/shared/context'
 import { ReactElement, useMemo, useState } from 'react'
-import {
-  BuilderFilterDropdown,
-  BuilderFilterOption,
-  BuilderFilterOptionId,
-  builderFilterOptions,
-} from './BuilderFilterDropdown'
+import { BuilderFilterOption, BuilderFilterOptionId, builderFilterOptions } from './BuilderFilterDropdown'
 import { BuildersTable } from './BuildersTable'
 import { BuilderCellDataMap, ColumnId } from './BuilderTable.config'
 import { useIsDesktop } from '@/shared/hooks/useIsDesktop'
-import { FilterIcon, TrashIcon } from '@/components/Icons'
 import { MobileFilterModal } from './MobileFilterModal'
 import { builderFilterMap } from './utils/builderFilters'
 import { useModal } from '@/shared/hooks/useModal'
+import { BuildersTableTitle } from './BuildersTableTitle'
+import { MobileFilterBanner } from './MobileFilterBanner'
 
-const Title = ({
+const BuildersTableHeader = ({
   onSelected,
   builderFilterOptions,
   currentFilter,
@@ -33,34 +28,19 @@ const Title = ({
 
   return (
     <div className="flex flex-col gap-2 w-full">
-      <div className="flex items-center justify-between">
-        <Header variant="h3" caps className="text-nowrap">
-          The Collective Builders
-        </Header>
-        {isDesktop ? (
-          <BuilderFilterDropdown
-            onSelected={onSelected}
-            options={builderFilterOptions}
-            className="md:w-1/4 text-nowrap font-rootstock-sans font-normal text-base leading-6 text-v3-text-100 not-italic py-4 px-3"
-          />
-        ) : (
-          <FilterIcon className="w-6 h-6 cursor-pointer" onClick={onOpenModal} />
-        )}
-      </div>
+      <BuildersTableTitle
+        onFilterSelected={onSelected}
+        builderFilterOptions={builderFilterOptions}
+        currentFilter={currentFilter}
+        onOpenModal={onOpenModal}
+      />
 
       {/* Active Filter Banner - Mobile Only */}
-      {!isDesktop && currentFilter !== 'all' && (
-        <div className="w-full flex items-center justify-left">
-          <Span variant="body-xs" className="text-v3-text-40">
-            FILTERING BY:
-          </Span>
-          <TrashIcon
-            size={16}
-            className="text-v3-text-100 cursor-pointer ml-4 mr-1"
-            onClick={() => onSelected('all')}
-          />
-          <Span variant="body-s">{builderFilterOptions.find(opt => opt.id === currentFilter)?.label}</Span>
-        </div>
+      {!isDesktop && (
+        <MobileFilterBanner
+          currentFilterOption={builderFilterOptions.find(opt => opt.id === currentFilter) || null}
+          onClearFilter={() => onSelected('all')}
+        />
       )}
     </div>
   )
@@ -112,7 +92,7 @@ const BuildersTableContainer = (): ReactElement => {
   return (
     <ActionsContainer
       title={
-        <Title
+        <BuildersTableHeader
           onSelected={handleFilterChange}
           builderFilterOptions={availableOptions}
           currentFilter={filterOption}
