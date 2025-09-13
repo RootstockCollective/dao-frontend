@@ -16,6 +16,7 @@ import { useIsDesktop } from '@/shared/hooks/useIsDesktop'
 import { FilterIcon, TrashIcon } from '@/components/Icons'
 import { MobileFilterModal } from './MobileFilterModal'
 import { builderFilterMap } from './utils/builderFilters'
+import { useModal } from '@/shared/hooks/useModal'
 
 const Title = ({
   onSelected,
@@ -67,7 +68,7 @@ const Title = ({
 
 const BuildersTableContainer = (): ReactElement => {
   const [filterOption, setFilterOption] = useState<BuilderFilterOptionId>('all')
-  const [isFilterModalOpen, setIsFilterModalOpen] = useState(false)
+  const { isModalOpened: isFilterModalOpen, openModal: openFilterModal, closeModal } = useModal()
 
   // Access table context for sorting
   const { sort } = useTableContext<ColumnId, BuilderCellDataMap>()
@@ -90,14 +91,6 @@ const BuildersTableContainer = (): ReactElement => {
     setFilterOption(filterOption)
   }
 
-  const openFilterModal = () => {
-    setIsFilterModalOpen(true)
-  }
-
-  const closeModal = () => {
-    setIsFilterModalOpen(false)
-  }
-
   const handleApplyFilter = (filter: BuilderFilterOptionId, sortColumn: ColumnId | null) => {
     setFilterOption(filter)
     // Apply sorting
@@ -106,14 +99,14 @@ const BuildersTableContainer = (): ReactElement => {
     } else {
       dispatch({ type: 'SORT_BY_COLUMN', payload: { columnId: null, direction: null } })
     }
-    setIsFilterModalOpen(false)
+    closeModal()
   }
 
   const handleResetFilter = () => {
     setFilterOption('all')
     // Reset sorting in table context
     dispatch({ type: 'SORT_BY_COLUMN', payload: { columnId: null, direction: null } })
-    setIsFilterModalOpen(false)
+    closeModal()
   }
 
   return (
