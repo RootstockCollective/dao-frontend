@@ -1,6 +1,6 @@
 import { cn } from '@/lib/utils'
 import { type HTMLAttributes } from 'react'
-import { FilterRadioItem } from './FilterRadioItem'
+import { SelectableItem } from '@/components/SelectableItem'
 import { FilterOption } from './filterOptions'
 
 interface FilterSideBarProps extends HTMLAttributes<HTMLDivElement> {
@@ -45,20 +45,22 @@ export function FilterSideBar({
       </h3>
       <ul className="pl-1 space-y-3" role="group" aria-labelledby="filter-title">
         <li>
-          <FilterRadioItem
+          <SelectableItem
             selected={activeFilters.length === 0}
             option={{ label: 'All categories', value: '' }}
             onClick={() => handleClearAll()}
             data-testid="AllCategories"
+            variant="round"
           />
         </li>
         {filterOptions.map((option, i) => (
           <li key={i}>
-            <FilterRadioItem
+            <SelectableItem
               selected={activeFilters.includes(option.value)}
               option={option}
               onClick={() => handleFilterToggle(option)}
               data-testid={`FilterOption-${option.label}`}
+              variant="round"
             />
           </li>
         ))}

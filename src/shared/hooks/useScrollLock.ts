@@ -1,7 +1,5 @@
 import { useEffect } from 'react'
 
-let scrollLockCount = 0
-
 /**
  * Disables page scrolling while the provided condition is true.
  *
@@ -17,21 +15,28 @@ export function useScrollLock(lock: boolean) {
   useEffect(() => {
     if (typeof document === 'undefined') return
 
+    const preventScroll = (e: TouchEvent) => {
+      e.preventDefault()
+    }
+
+    const preventWheel = (e: WheelEvent) => {
+      e.preventDefault()
+    }
+
     if (lock) {
-      scrollLockCount++
-      if (scrollLockCount === 1) {
-        document.body.style.overflow = 'hidden'
+      document.addEventListener('touchmove', preventScroll, { passive: false })
+      document.addEventListener('wheel', preventWheel, { passive: false })
+
+      return () => {
+        document.removeEventListener('touchmove', preventScroll)
+        document.removeEventListener('wheel', preventWheel)
       }
     }
 
+    // Return cleanup function for non-first locks
     return () => {
-      if (lock) {
-        scrollLockCount--
-        if (scrollLockCount <= 0) {
-          document.body.style.overflow = ''
-          scrollLockCount = 0
-        }
-      }
+      document.removeEventListener('touchmove', preventScroll)
+      document.removeEventListener('wheel', preventWheel)
     }
   }, [lock])
 }
