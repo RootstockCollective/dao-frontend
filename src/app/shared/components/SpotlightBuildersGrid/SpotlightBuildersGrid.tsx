@@ -18,7 +18,7 @@ export const SpotlightBuildersGrid = ({
       max-sm:flex max-sm:overflow-x-auto max-sm:gap-4 
       max-sm:[-webkit-overflow-scrolling:auto]
       max-sm:snap-x max-sm:snap-proximity
-      scrollbar-none"
+      scrollbar-none px-4"
   >
     {builders.map((builder, index) => (
       <div key={builder.address} className="max-sm:flex-shrink-0 max-sm:snap-center max-sm:w-64 flex w-full">

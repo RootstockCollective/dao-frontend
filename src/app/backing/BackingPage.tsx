@@ -170,9 +170,9 @@ export const BackingPage = () => {
       {isConnected && <BuilderAllocationBar />}
 
       {isConnected && (
-        <ActionMetricsContainer className="flex flex-col w-full items-start p-6 gap-2 rounded-[4px] bg-v3-bg-accent-80">
+        <ActionMetricsContainer className="flex flex-col w-full items-start px-0 py-6 gap-2 rounded-[4px] bg-v3-bg-accent-80">
           <div className="flex flex-col items-center gap-10 w-full">
-            <div className="flex items-start gap-14 w-full">
+            <div className="flex items-start gap-14 w-full px-6">
               <div className="basis-1/2">
                 <TokenAmountDisplay
                   label="Available for backing"
@@ -209,14 +209,10 @@ export const BackingPage = () => {
       )}
 
       {!hasAllocations && !userSelections && (
-        <ActionsContainer
-          title={
-            <Header variant="h3" caps>
-              {isConnected ? 'Builders that you may want to back' : 'In the spotlight'}
-            </Header>
-          }
-          className="bg-v3-bg-accent-80"
-        >
+        <ActionsContainer className="bg-v3-bg-accent-80 px-0">
+          <Header variant="h3" caps className="px-6">
+            {isConnected ? 'Builders that you may want to back' : 'In the spotlight'}
+          </Header>
           <Spotlight />
         </ActionsContainer>
       )}

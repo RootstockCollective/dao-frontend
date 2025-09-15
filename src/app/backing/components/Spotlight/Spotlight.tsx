@@ -98,22 +98,24 @@ export const Spotlight = ({ isInteractive = true }: { isInteractive?: boolean })
     )
   }
 
+  let builders = spotlightBuilders
+
+  if (isConnected && isInteractive) {
+    builders = spotlightBuilders.map((builder, index) => ({
+      ...builder,
+      index,
+      estimatedRewards: builder.backerEstimatedRewards,
+      showAnimation: isBuilderSelected(builder.address),
+    }))
+  }
+
   return (
     <>
-      {isConnected && isInteractive ? (
-        <SpotlightBuildersGrid
-          builders={spotlightBuilders.map((builder, index) => ({
-            ...builder,
-            index,
-            estimatedRewards: builder.backerEstimatedRewards,
-            showAnimation: isBuilderSelected(builder.address),
-          }))}
-          isInteractive
-          showBackMoreBuildersCard={hasAllocations && spotlightBuilders.length < 4}
-        />
-      ) : (
-        <SpotlightBuildersGrid builders={spotlightBuilders} />
-      )}
+      <SpotlightBuildersGrid
+        builders={builders}
+        isInteractive={isInteractive}
+        showBackMoreBuildersCard={hasAllocations && spotlightBuilders.length < 4}
+      />
       <div className="flex justify-center self-center mt-6">
         <Button variant="secondary-outline" onClick={() => router.push('/builders')}>
           See all Builders
