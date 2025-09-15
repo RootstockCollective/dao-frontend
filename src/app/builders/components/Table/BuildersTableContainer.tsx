@@ -12,7 +12,7 @@ import { MobileFilterModal } from './MobileFilterModal'
 import { builderFilterMap } from './utils/builderFilters'
 import { useModal } from '@/shared/hooks/useModal'
 import { BuildersTableTitle } from './BuildersTableTitle'
-import { MobileFilterBanner } from './MobileFilterBanner'
+import { MobileCurrentFilter } from './MobileCurrentFilter'
 
 const BuildersTableHeader = ({
   onSelected,
@@ -38,7 +38,7 @@ const BuildersTableHeader = ({
 
       {/* Active Filter Banner - Mobile Only */}
       {!isDesktop && (
-        <MobileFilterBanner
+        <MobileCurrentFilter
           currentFilterOption={builderFilterOptions.find(opt => opt.id === currentFilter) || null}
           onClearFilter={() => onSelected('all')}
         />

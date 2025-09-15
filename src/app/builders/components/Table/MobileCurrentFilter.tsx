@@ -2,12 +2,12 @@ import { Span } from '@/components/Typography'
 import { TrashIcon } from '@/components/Icons'
 import { BuilderFilterOption } from './BuilderFilterDropdown'
 
-interface MobileFilterBannerProps {
+interface MobileCurrentFilterProps {
   currentFilterOption: BuilderFilterOption | null
   onClearFilter: () => void
 }
 
-export const MobileFilterBanner = ({ currentFilterOption, onClearFilter }: MobileFilterBannerProps) => {
+export const MobileCurrentFilter = ({ currentFilterOption, onClearFilter }: MobileCurrentFilterProps) => {
   if (!currentFilterOption || currentFilterOption.id === 'all') return null
 
   return (
