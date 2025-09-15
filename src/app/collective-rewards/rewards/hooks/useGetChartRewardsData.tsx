@@ -5,7 +5,7 @@ import { CycleRewardsItem } from '@/app/collective-rewards/types'
 export const useGetChartRewardsData = () => {
   const { data, isLoading, error } = useQuery<CycleRewardsItem[], Error>({
     queryFn: async (): Promise<CycleRewardsItem[]> => {
-      const response = await fetch(`/api/cycles`)
+      const response = await fetch(`/api/cycles?sortBy=currentCycleStart&sortDirection=desc&pageSize=100`)
 
       if (!response.ok) {
         throw new Error('Failed to fetch rewards chart data')

@@ -1,7 +1,6 @@
 import { BackingPoint, CycleWindow, RewardsPoint } from '@/app/collective-rewards/types'
 import { useMemo } from 'react'
 import {
-  FIRST_CYCLE_START_MS,
   ISO_DATE_LENGTH,
   ONE_DAY_IN_MS,
   ONE_DAY_IN_SECONDS,
