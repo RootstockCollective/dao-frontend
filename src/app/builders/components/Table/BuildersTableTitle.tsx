@@ -1,13 +1,22 @@
 import { Header } from '@/components/Typography'
 import { FilterIcon } from '@/components/Icons'
 import { useIsDesktop } from '@/shared/hooks/useIsDesktop'
+import { useTableContext } from '@/shared/context'
 import { BuilderFilterDropdown, BuilderFilterOption, BuilderFilterOptionId } from './BuilderFilterDropdown'
+import { BuilderCellDataMap, ColumnId } from './BuilderTable.config'
 
 interface BuildersTableTitleProps {
   onFilterSelected: (value: BuilderFilterOptionId) => void
   builderFilterOptions: BuilderFilterOption[]
   currentFilter: BuilderFilterOptionId
   onOpenModal: () => void
+}
+
+const isSortChanged = (
+  currentSort: { columnId: ColumnId | null; direction: string | null },
+  defaultSort: { columnId: ColumnId | null; direction: string | null },
+) => {
+  return currentSort.columnId !== defaultSort.columnId || currentSort.direction !== defaultSort.direction
 }
 
 export const BuildersTableTitle = ({
@@ -17,7 +26,11 @@ export const BuildersTableTitle = ({
   onOpenModal,
 }: BuildersTableTitleProps) => {
   const isDesktop = useIsDesktop()
-  const isSorted = false //TODO: sort.columnId !== null
+  const { sort, defaultSort } = useTableContext<ColumnId, BuilderCellDataMap>()
+
+  const hasFilterChanges = currentFilter !== 'all'
+  const hasSortChanges = isSortChanged(sort, defaultSort)
+  const isHighlighted = hasFilterChanges || hasSortChanges
 
   return (
     <div className="flex items-center justify-between">
@@ -31,11 +44,7 @@ export const BuildersTableTitle = ({
           className="md:w-1/4 text-nowrap font-rootstock-sans font-normal text-base leading-6 text-v3-text-100 not-italic py-4 px-3"
         />
       ) : (
-        <FilterIcon
-          className="w-6 h-6 cursor-pointer"
-          onClick={onOpenModal}
-          highlighted={currentFilter !== 'all' || isSorted}
-        />
+        <FilterIcon className="w-6 h-6 cursor-pointer" onClick={onOpenModal} highlighted={isHighlighted} />
       )}
     </div>
   )
