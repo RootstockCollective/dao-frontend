@@ -138,7 +138,7 @@ const BecomeBuilderBanner = () => {
             backgroundColor: 'bg-v3-text-80',
             chevronColor: 'text-v3-bg-accent-100',
           }}
-          defaultOpen={true}
+          defaultOpen={false}
         />
       </div>
     </>
