@@ -52,7 +52,7 @@ const BuildersTableContainer = (): ReactElement => {
   const { isModalOpened: isFilterModalOpen, openModal: openFilterModal, closeModal } = useModal()
 
   // Access table context for sorting
-  const { sort } = useTableContext<ColumnId, BuilderCellDataMap>()
+  const { sort, defaultSort } = useTableContext<ColumnId, BuilderCellDataMap>()
   const dispatch = useTableActionsContext<ColumnId, BuilderCellDataMap>()
 
   const { data: buildersData } = useGetBuilders()
@@ -78,19 +78,19 @@ const BuildersTableContainer = (): ReactElement => {
     sortDirection: SortDirection | null,
   ) => {
     setFilterOption(filter)
-    // Apply sorting
-    if (sortColumn && sortDirection) {
-      dispatch({ type: 'SORT_BY_COLUMN', payload: { columnId: sortColumn, direction: sortDirection } })
-    } else {
-      dispatch({ type: 'SORT_BY_COLUMN', payload: { columnId: null, direction: null } })
-    }
+    const sort = sortColumn ?? defaultSort.columnId
+    const direction = sortDirection ?? defaultSort.direction
+    dispatch({ type: 'SORT_BY_COLUMN', payload: { columnId: sort, direction } })
     closeModal()
   }
 
   const handleResetFilter = () => {
     setFilterOption('all')
-    // Reset sorting in table context
-    dispatch({ type: 'SORT_BY_COLUMN', payload: { columnId: null, direction: null } })
+    // Reset sorting to default
+    dispatch({
+      type: 'SORT_BY_COLUMN',
+      payload: { columnId: defaultSort.columnId, direction: defaultSort.direction },
+    })
     closeModal()
   }
 
