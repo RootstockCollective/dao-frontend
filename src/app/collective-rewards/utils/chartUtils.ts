@@ -1,14 +1,16 @@
 import { BackingPoint, RewardsPoint, CycleWindow, DailyAllocationItem, CycleRewardsItem } from '../types'
 import {
-  WEI_PER_ETHER,
   ONE_DAY_IN_SECONDS,
   FIVE_MONTHS_IN_MS,
   FIRST_CYCLE_START_SECONDS,
   ONE_DAY_IN_MS,
 } from '../constants/chartConstants'
 import Big from '@/lib/big'
+import { WeiPerEther } from '@/lib/constants'
 
 export const convertToTimestamp = (d: Date | number | string): number => new Date(d).getTime()
+
+const WeiPerEtherString = WeiPerEther.toString()
 
 export const formatShort = (n: number) => {
   const abs = Math.abs(n)
@@ -129,8 +131,8 @@ const calculateRewardsUSD = (
   rifPrice: number,
   rbtcPrice: number,
 ): number => {
-  const rifTokens = Big(rifAmountWei).div(WEI_PER_ETHER)
-  const rbtcTokens = Big(rbtcAmountWei).div(WEI_PER_ETHER)
+  const rifTokens = Big(rifAmountWei).div(WeiPerEtherString)
+  const rbtcTokens = Big(rbtcAmountWei).div(WeiPerEtherString)
   return rifTokens.mul(rifPrice).add(rbtcTokens.mul(rbtcPrice)).toNumber()
 }
 
@@ -141,7 +143,7 @@ const transformBackingData = (backingData: DailyAllocationItem[]): BackingPoint[
   const interpolatedData = interpolateDailyBackingData(backingData)
   return interpolatedData.map(item => ({
     day: new Date(item.day * 1000),
-    backing: BigInt(Big(item.totalAllocation).div(WEI_PER_ETHER).toFixed(0)),
+    backing: BigInt(Big(item.totalAllocation).div(WeiPerEtherString).toFixed(0)),
     backingWei: BigInt(item.totalAllocation),
   }))
 }
@@ -179,8 +181,8 @@ const transformRewardsData = (
   return interpolatedData.map(item => ({
     day: new Date(Number(item.currentCycleStart) * 1000),
     rewards: {
-      rif: BigInt(Big(item.rewardsERC20).div(WEI_PER_ETHER).toFixed(0)),
-      rbtc: BigInt(Big(item.rewardsRBTC).div(WEI_PER_ETHER).toFixed(0)),
+      rif: BigInt(Big(item.rewardsERC20).div(WeiPerEtherString).toFixed(0)),
+      rbtc: BigInt(Big(item.rewardsRBTC).div(WeiPerEtherString).toFixed(0)),
       usd: calculateRewardsUSD(item.rewardsERC20, item.rewardsRBTC, rifPrice, rbtcPrice),
     },
   }))

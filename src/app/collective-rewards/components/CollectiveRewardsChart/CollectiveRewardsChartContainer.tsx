@@ -26,7 +26,7 @@ export const CollectiveRewardsChartContainer = () => {
     title: 'Error loading collective rewards chart data',
   })
 
-  if (backingError || rewardsError) {
+  if (backingError || rewardsError || !backingData || !rewardsData) {
     return null
   }
 
@@ -54,8 +54,6 @@ export const CollectiveRewardsChartContent = ({
   rifPrice,
   rbtcPrice,
 }: CollectiveRewardsChartContentProps) => {
-  if (!backingData) return null
-
   const { backingSeries, rewardsSeries, cycles } = transformApiDataToChartData(
     backingData,
     rewardsData,

@@ -84,7 +84,7 @@ export const ChartTooltipContent = ({ active, payload, label }: ChartTooltipProp
               containerClassName="gap-1"
             >
               <div className="flex items-center gap-2 text-bg-100">
-                <Header variant="h3">{formatSymbol(backingVal, 'strif')}</Header>
+                <Header variant="h3">{formatSymbol(backingVal, TokenSymbol.STRIF)}</Header>
                 <TokenImage symbol={TokenSymbol.STRIF} size={16} />
                 <Span variant="tag-s">{TokenSymbol.STRIF}</Span>
               </div>

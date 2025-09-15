@@ -6,26 +6,28 @@ import { CollectiveRewardsDualAxisChart } from './CollectiveRewardsChart'
 function generateMockData() {
   const start = new Date('2024-03-01').getTime()
   const days = 490
-  const cycleDuration = 60 * 60 * 24 * 30 // 30 days
 
   const cycles: CycleWindow[] = [
     {
       label: 'cycle 21',
       start: new Date('2024-03-01'),
       end: new Date('2025-01-15'),
-      cycleDuration,
+      cycleDuration: Math.floor((new Date('2025-01-15').getTime() - new Date('2024-03-01').getTime()) / 1000),
+      cycleNumber: 21,
     },
     {
       label: 'cycle 22',
       start: new Date('2025-01-15'),
       end: new Date('2025-06-15'),
-      cycleDuration,
+      cycleDuration: Math.floor((new Date('2025-06-15').getTime() - new Date('2025-01-15').getTime()) / 1000),
+      cycleNumber: 22,
     },
     {
       label: 'cycle 23',
       start: new Date('2025-06-15'),
       end: new Date('2025-07-31'),
-      cycleDuration,
+      cycleDuration: Math.floor((new Date('2025-07-31').getTime() - new Date('2025-06-15').getTime()) / 1000),
+      cycleNumber: 23,
     },
   ]
 
@@ -49,7 +51,7 @@ function generateMockData() {
     const backing = Math.max(candidate, prevBacking + 50_000)
     prevBacking = backing
 
-    backingSeries.push({ day, backing: BigInt(backing) })
+    backingSeries.push({ day, backing: BigInt(backing), backingWei: BigInt(backing) * BigInt(10 ** 18) })
   }
 
   const rewardsSeries: RewardsPoint[] = backingSeries.map(({ day, backing }, i) => {
@@ -201,22 +203,24 @@ export const SingleCycle: Story = {
   render: () => {
     const start = new Date('2024-06-01').getTime()
     const days = 90
-    const cycleDuration = 60 * 60 * 24 * 30 // 30 days
 
     const cycles: CycleWindow[] = [
       {
         label: 'cycle 24',
         start: new Date('2024-06-01'),
         end: new Date('2024-08-30'),
-        cycleDuration,
+        cycleDuration: Math.floor(
+          (new Date('2024-08-30').getTime() - new Date('2024-06-01').getTime()) / 1000,
+        ),
+        cycleNumber: 24,
       },
     ]
 
     const backingSeries: BackingPoint[] = []
     for (let i = 0; i < days; i++) {
       const day = new Date(start + i * 24 * 3600 * 1000)
-      const backing = 400_000_000 + i * 1_000_000 + Math.sin(i / 10) * 5_000_000
-      backingSeries.push({ day, backing: BigInt(backing) })
+      const backing = Math.round(400_000_000 + i * 1_000_000 + Math.sin(i / 10) * 5_000_000)
+      backingSeries.push({ day, backing: BigInt(backing), backingWei: BigInt(backing) * BigInt(10 ** 18) })
     }
 
     const rewardsSeries: RewardsPoint[] = backingSeries.map(({ day }, i) => ({
@@ -252,17 +256,80 @@ export const ManyCycles: Story = {
   render: () => {
     const start = new Date('2023-01-01').getTime()
     const days = 730 // 2 years
-    const cycleDuration = 60 * 60 * 24 * 30 // 30 days
 
     const cycles: CycleWindow[] = [
-      { label: 'cycle 18', start: new Date('2023-01-01'), end: new Date('2023-04-01'), cycleDuration },
-      { label: 'cycle 19', start: new Date('2023-04-01'), end: new Date('2023-07-01'), cycleDuration },
-      { label: 'cycle 20', start: new Date('2023-07-01'), end: new Date('2023-10-01'), cycleDuration },
-      { label: 'cycle 21', start: new Date('2023-10-01'), end: new Date('2024-01-01'), cycleDuration },
-      { label: 'cycle 22', start: new Date('2024-01-01'), end: new Date('2024-04-01'), cycleDuration },
-      { label: 'cycle 23', start: new Date('2024-04-01'), end: new Date('2024-07-01'), cycleDuration },
-      { label: 'cycle 24', start: new Date('2024-07-01'), end: new Date('2024-10-01'), cycleDuration },
-      { label: 'cycle 25', start: new Date('2024-10-01'), end: new Date('2024-12-31'), cycleDuration },
+      {
+        label: 'cycle 18',
+        start: new Date('2023-01-01'),
+        end: new Date('2023-04-01'),
+        cycleDuration: Math.floor(
+          (new Date('2023-04-01').getTime() - new Date('2023-01-01').getTime()) / 1000,
+        ),
+        cycleNumber: 18,
+      },
+      {
+        label: 'cycle 19',
+        start: new Date('2023-04-01'),
+        end: new Date('2023-07-01'),
+        cycleDuration: Math.floor(
+          (new Date('2023-07-01').getTime() - new Date('2023-04-01').getTime()) / 1000,
+        ),
+        cycleNumber: 19,
+      },
+      {
+        label: 'cycle 20',
+        start: new Date('2023-07-01'),
+        end: new Date('2023-10-01'),
+        cycleDuration: Math.floor(
+          (new Date('2023-10-01').getTime() - new Date('2023-07-01').getTime()) / 1000,
+        ),
+        cycleNumber: 20,
+      },
+      {
+        label: 'cycle 21',
+        start: new Date('2023-10-01'),
+        end: new Date('2024-01-01'),
+        cycleDuration: Math.floor(
+          (new Date('2024-01-01').getTime() - new Date('2023-10-01').getTime()) / 1000,
+        ),
+        cycleNumber: 21,
+      },
+      {
+        label: 'cycle 22',
+        start: new Date('2024-01-01'),
+        end: new Date('2024-04-01'),
+        cycleDuration: Math.floor(
+          (new Date('2024-04-01').getTime() - new Date('2024-01-01').getTime()) / 1000,
+        ),
+        cycleNumber: 22,
+      },
+      {
+        label: 'cycle 23',
+        start: new Date('2024-04-01'),
+        end: new Date('2024-07-01'),
+        cycleDuration: Math.floor(
+          (new Date('2024-07-01').getTime() - new Date('2024-04-01').getTime()) / 1000,
+        ),
+        cycleNumber: 23,
+      },
+      {
+        label: 'cycle 24',
+        start: new Date('2024-07-01'),
+        end: new Date('2024-10-01'),
+        cycleDuration: Math.floor(
+          (new Date('2024-10-01').getTime() - new Date('2024-07-01').getTime()) / 1000,
+        ),
+        cycleNumber: 24,
+      },
+      {
+        label: 'cycle 25',
+        start: new Date('2024-10-01'),
+        end: new Date('2024-12-31'),
+        cycleDuration: Math.floor(
+          (new Date('2024-12-31').getTime() - new Date('2024-10-01').getTime()) / 1000,
+        ),
+        cycleNumber: 25,
+      },
     ]
 
     const backingSeries: BackingPoint[] = []
@@ -271,9 +338,9 @@ export const ManyCycles: Story = {
     for (let i = 0; i < days; i++) {
       const day = new Date(start + i * 24 * 3600 * 1000)
       const growth = prevBacking * 0.0005 // 0.05% daily growth
-      const backing = prevBacking + growth + Math.sin(i / 30) * 10_000_000
+      const backing = Math.round(prevBacking + growth + Math.sin(i / 30) * 10_000_000)
       prevBacking = backing
-      backingSeries.push({ day, backing: BigInt(backing) })
+      backingSeries.push({ day, backing: BigInt(backing), backingWei: BigInt(backing) * BigInt(10 ** 18) })
     }
 
     const rewardsSeries: RewardsPoint[] = backingSeries.map(({ day, backing }, i) => ({
