@@ -2,6 +2,7 @@ import { CycleContextProvider } from '@/app/collective-rewards/metrics'
 import { useGetBuilders } from '@/app/collective-rewards/user'
 import { ActionsContainer } from '@/components/containers'
 import { withTableContext, useTableContext, useTableActionsContext } from '@/shared/context'
+import { SortDirection } from '@/shared/context/TableContext/types'
 import { ReactElement, useMemo, useState } from 'react'
 import { BuilderFilterOption, BuilderFilterOptionId, builderFilterOptions } from './BuilderFilterDropdown'
 import { BuildersTable } from './BuildersTable'
@@ -71,11 +72,15 @@ const BuildersTableContainer = (): ReactElement => {
     setFilterOption(filterOption)
   }
 
-  const handleApplyFilter = (filter: BuilderFilterOptionId, sortColumn: ColumnId | null) => {
+  const handleApplyFilter = (
+    filter: BuilderFilterOptionId,
+    sortColumn: ColumnId | null,
+    sortDirection: SortDirection | null,
+  ) => {
     setFilterOption(filter)
     // Apply sorting
-    if (sortColumn) {
-      dispatch({ type: 'SORT_BY_COLUMN', payload: { columnId: sortColumn, direction: 'desc' } })
+    if (sortColumn && sortDirection) {
+      dispatch({ type: 'SORT_BY_COLUMN', payload: { columnId: sortColumn, direction: sortDirection } })
     } else {
       dispatch({ type: 'SORT_BY_COLUMN', payload: { columnId: null, direction: null } })
     }
@@ -110,6 +115,7 @@ const BuildersTableContainer = (): ReactElement => {
         filterOptions={availableOptions}
         currentFilter={filterOption}
         currentSort={sort.columnId}
+        currentSortDirection={sort.direction}
         onClose={closeModal}
         onApply={handleApplyFilter}
         onReset={handleResetFilter}
