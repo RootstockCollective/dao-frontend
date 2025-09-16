@@ -1,5 +1,6 @@
 'use client'
 
+import { AllocationsContext } from '@/app/collective-rewards/allocations/context/AllocationsContext'
 import { Builder, BuilderRewardsSummary } from '@/app/collective-rewards/types'
 import { useBuilderContext } from '@/app/collective-rewards/user/context/BuilderContext'
 import { getCombinedFiatAmount } from '@/app/collective-rewards/utils/getCombinedFiatAmount'
@@ -16,8 +17,32 @@ import { BuilderFilterOptionId } from './BuilderFilterDropdown'
 import { BuilderHeaderRow } from './BuilderHeaderRow'
 import { BuilderCellDataMap, ColumnId, DEFAULT_HEADERS, PAGE_SIZE } from './BuilderTable.config'
 import { Action, ActionCellProps } from './Cell/ActionCell'
-import { AllocationsContext } from '@/app/collective-rewards/allocations/context/AllocationsContext'
+import {
+  isBuilderActive,
+  isBuilderDeactivated,
+  isBuilderInProgress,
+  isBuilderKycRevoked,
+  isBuilderPaused,
+  isBuilderSelfPaused,
+} from '@/app/collective-rewards/utils/isBuilderOperational'
 import { builderFilterMap } from './utils/builderFilters'
+
+// --- Filter builders by state ---
+const filterActive = (builder: Builder) => isBuilderActive(builder.stateFlags)
+const filterDeactivated = (builder: Builder) => isBuilderDeactivated(builder)
+const filterKycRevoked = (builder: Builder) => isBuilderKycRevoked(builder.stateFlags)
+const filterPaused = (builder: Builder) =>
+  isBuilderPaused(builder.stateFlags) || isBuilderSelfPaused(builder.stateFlags)
+const filterInProgress = (builder: Builder) => isBuilderInProgress(builder)
+
+const filterMap: Record<BuilderFilterOptionId, (builder: Builder) => boolean> = {
+  active: filterActive,
+  deactivated: filterDeactivated,
+  kycRevoked: filterKycRevoked,
+  paused: filterPaused,
+  inProgress: filterInProgress,
+  all: () => true,
+}
 
 // TODO: this is a temporary solution to filter builders by state.
 type PagedFilter = {

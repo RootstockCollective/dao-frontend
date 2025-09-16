@@ -22,6 +22,6 @@ export const useGetCycleRewards = () => {
       [rifRewards, rbtcRewards],
     ),
     isLoading: rifRewardsLoading || rbtcRewardsLoading,
-    error: rifRewardsError ?? rbtcRewardsError ?? null,
+    error: rifRewardsError ?? rbtcRewardsError,
   }
 }

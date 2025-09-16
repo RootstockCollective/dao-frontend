@@ -1,13 +1,12 @@
-import { Header, Paragraph } from '@/components/Typography'
-import { formatCurrency } from '@/lib/utils'
-import { RifRbtcTooltip } from '@/components/RifRbtcTooltip/RifRbtcTooltip'
-import { Metric, MetricTitle } from '@/components/Metric'
-import { DottedUnderlineLabel } from '@/components/DottedUnderlineLabel/DottedUnderlineLabel'
+import { getFiatAmount, useHandleErrors } from '@/app/collective-rewards/utils'
 import { useGetBuilderEstimatedRewards } from '@/app/shared/hooks/useGetBuilderEstimatedRewards'
-import { getFiatAmount } from '@/app/collective-rewards/utils'
-import Big from '@/lib/big'
-import { useHandleErrors } from '@/app/collective-rewards/utils'
+import { DottedUnderlineLabel } from '@/components/DottedUnderlineLabel/DottedUnderlineLabel'
 import { LoadingSpinner } from '@/components/LoadingSpinner/LoadingSpinner'
+import { Metric, MetricTitle } from '@/components/Metric'
+import { RifRbtcTooltip } from '@/components/RifRbtcTooltip/RifRbtcTooltip'
+import { Header, Paragraph } from '@/components/Typography'
+import Big from '@/lib/big'
+import { formatCurrency } from '@/lib/utils'
 
 export const EstimatedRewardsMetric = () => {
   const { data: estimatedRewards, isLoading, error } = useGetBuilderEstimatedRewards()
