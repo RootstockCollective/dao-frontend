@@ -8,6 +8,7 @@ import { TooltipPayload } from '@/app/collective-rewards/types'
 import { formatCurrency } from '@/lib/utils'
 import { ONE_DAY_IN_MS } from '../../constants/chartConstants'
 import { Header } from '@/components/Typography'
+import { USD } from '@/lib/constants'
 
 interface ChartTooltipProps {
   active?: boolean
@@ -105,8 +106,8 @@ export const ChartTooltipContent = ({ active, payload, label }: ChartTooltipProp
           >
             <div className="flex items-end gap-2 text-bg-100">
               <Header variant="h3">{formatCurrency(rewardsUsd.toString())}</Header>
-              <Span variant="tag" bold className="mb">
-                USD
+              <Span variant="tag" bold>
+                {USD}
               </Span>
             </div>
           </Metric>
