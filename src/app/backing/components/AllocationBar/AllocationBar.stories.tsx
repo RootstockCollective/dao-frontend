@@ -1,7 +1,8 @@
 import type { Meta, StoryObj } from '@storybook/nextjs'
+import { useState } from 'react'
+import { zeroAddress } from 'viem'
 import AllocationBar from './AllocationBar'
 import { AllocationChangeData, AllocationItem } from './types'
-import { useState } from 'react'
 
 const meta = {
   title: 'KOTO/Backing/Components/AllocationBar',
@@ -17,7 +18,7 @@ const addUnallocated = (items: AllocationItem[], totalAllocated: bigint): Alloca
   return [
     ...items,
     {
-      key: 'unallocated',
+      key: zeroAddress,
       label: 'available funds',
       value: totalAllocated - allocatedSum,
       displayColor: '#25211E',
@@ -27,24 +28,25 @@ const addUnallocated = (items: AllocationItem[], totalAllocated: bigint): Alloca
 
 const defaultItems: AllocationItem[] = [
   {
-    key: 'boltz',
+    key: '0xB0bB0000000000000000000000000000000000b0',
     label: 'Boltz',
     value: 20n,
     displayColor: '#9E76FF',
   },
   {
-    key: 'wallet',
+    key: '0x1D11000000000000000000000000000000002D00',
     label: '0x1D11...2D00',
     value: 10n,
     displayColor: '#08FFD0',
   },
   {
-    key: 'abuilder',
+    key: '0xABu1100000000000000000000000000000000b1d',
     label: 'another builder',
     value: 10n,
     displayColor: '#DEFF1A',
   },
 ]
+
 const defaultItemsWithUnallocated = addUnallocated(defaultItems, 100n)
 
 export const Default: Story = {
@@ -64,19 +66,19 @@ export const WithPercentDecimals: Story = {
     itemsData: addUnallocated(
       [
         {
-          key: 'boltz',
+          key: '0xB0bB0000000000000000000000000000000000b0',
           label: 'Boltz',
           value: 20n,
           displayColor: '#9E76FF',
         },
         {
-          key: 'wallet',
+          key: '0x1D11000000000000000000000000000000002D00',
           label: '0x1D11...2D00',
           value: 10n,
           displayColor: '#08FFD0',
         },
         {
-          key: 'abuilder',
+          key: '0xABu1100000000000000000000000000000000b1d',
           label: 'another builder',
           value: 11n,
           displayColor: '#DEFF1A',
@@ -98,19 +100,19 @@ export const WithValues: Story = {
     itemsData: addUnallocated(
       [
         {
-          key: 'boltz',
+          key: '0xB0bB0000000000000000000000000000000000b0',
           label: 'Boltz',
           value: 20n,
           displayColor: '#9E76FF',
         },
         {
-          key: 'wallet',
+          key: '0x1D11000000000000000000000000000000002D00',
           label: '0x1D11...2D00',
           value: 10n,
           displayColor: '#08FFD0',
         },
         {
-          key: 'abuilder',
+          key: '0xABu1100000000000000000000000000000000b1d',
           label: 'another builder',
           value: 11n,
           displayColor: '#DEFF1A',
@@ -129,19 +131,19 @@ export const WithValuesAndPercent: Story = {
     itemsData: addUnallocated(
       [
         {
-          key: 'boltz',
+          key: '0xB0bB0000000000000000000000000000000000b0',
           label: 'Boltz',
           value: 20n,
           displayColor: '#9E76FF',
         },
         {
-          key: 'wallet',
+          key: '0x1D11000000000000000000000000000000002D00',
           label: '0x1D11...2D00',
           value: 10n,
           displayColor: '#08FFD0',
         },
         {
-          key: 'abuilder',
+          key: '0xABu1100000000000000000000000000000000b1d',
           label: 'another builder',
           value: 11n,
           displayColor: '#DEFF1A',
@@ -185,7 +187,7 @@ export const WithoutLegendAndPercent: Story = {
 const dataWithTemp: AllocationItem[] = [
   ...defaultItems,
   {
-    key: 'money-on-chain',
+    key: '0xM0C0000000000000000000000000000000000c01',
     label: 'MoneyOnChain',
     value: 35n,
     displayColor: '#4ade80',

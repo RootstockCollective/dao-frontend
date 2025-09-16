@@ -1,36 +1,37 @@
+import { MoreIcon } from '@/components/Icons/MoreIcon'
+import { Tooltip } from '@/components/Tooltip'
+import { cn } from '@/lib/utils'
 import { useSortable } from '@dnd-kit/sortable'
 import { CSS } from '@dnd-kit/utilities'
+import { zeroAddress } from 'viem'
 import { AllocationBarDragHandle } from './AllocationBarDragHandle'
 import { AllocationBarResizeHandle } from './AllocationBarResizeHandle'
+import { AllocationBarTooltipContent } from './AllocationBarTooltipContent'
 import { AllocationBarValueDisplay, AllocationItem } from './types'
 import { checkerboardStyle, valueToPercentage } from './utils'
-import { AllocationBarTooltipContent } from './AllocationBarTooltipContent'
-import { Tooltip } from '@/components/Tooltip'
-import { MoreIcon } from '@/components/Icons/MoreIcon'
-import { cn } from '@/lib/utils'
 
 const AllocationBarSegmentPercent = ({
-  pendingBacking,
+  pendingValue,
   totalBacking,
   valueDisplay,
   showDots = false,
-  item,
-  currentBacking,
+  item: { key, isTemporary },
+  onchainValue,
 }: {
-  pendingBacking: bigint
+  pendingValue: bigint
   totalBacking: bigint
   valueDisplay: AllocationBarValueDisplay
   showDots?: boolean
   item: AllocationItem
-  currentBacking: bigint
+  onchainValue: bigint
 }) => {
   const { percentDecimals, valueDecimals } = valueDisplay.format ?? {}
 
-  const percent = valueToPercentage(pendingBacking, totalBacking).toLocaleString(undefined, {
+  const percent = valueToPercentage(pendingValue, totalBacking).toLocaleString(undefined, {
     maximumFractionDigits: percentDecimals ?? 2,
   })
 
-  const formattedValue = pendingBacking.toLocaleString(undefined, {
+  const formattedValue = pendingValue.toLocaleString(undefined, {
     maximumFractionDigits: valueDecimals ?? 2,
   })
 
@@ -45,9 +46,9 @@ const AllocationBarSegmentPercent = ({
       <Tooltip
         text={
           <AllocationBarTooltipContent
-            builderAddress={item.key}
-            currentBacking={item.key === 'unallocated' ? pendingBacking : currentBacking}
-            pendingBacking={item.isTemporary ? pendingBacking : 0n}
+            builderAddress={key}
+            onchainValue={key === zeroAddress ? pendingValue : onchainValue}
+            pendingValue={isTemporary ? pendingValue : 0n}
             percentage={displayValue}
           />
         }
@@ -68,8 +69,8 @@ const AllocationBarSegmentPercent = ({
 }
 
 interface AllocationBarSegmentProps {
-  pendingBacking: bigint
-  currentBacking: bigint
+  pendingValue: bigint
+  onchainValue: bigint
   totalBacking: bigint
   item: AllocationItem
   index: number
@@ -83,8 +84,8 @@ interface AllocationBarSegmentProps {
 }
 
 export const AllocationBarSegment = ({
-  pendingBacking,
-  currentBacking,
+  pendingValue,
+  onchainValue,
   totalBacking,
   item,
   index,
@@ -99,11 +100,11 @@ export const AllocationBarSegment = ({
   const { attributes, listeners, setNodeRef, transform, isDragging } = useSortable({ id: item.key })
 
   // Calculate the percentage width based on the actual value and total value
-  const percentageWidth = valueToPercentage(pendingBacking, totalBacking)
+  const percentageWidth = valueToPercentage(pendingValue, totalBacking)
 
   // For segments with very small values, ensure they have a minimum visible width
   // but only if the value is actually greater than 0
-  const effectiveWidth = pendingBacking > 0n && percentageWidth < 0.5 ? 0.5 : percentageWidth
+  const effectiveWidth = pendingValue > 0n && percentageWidth < 0.5 ? 0.5 : percentageWidth
 
   const style: React.CSSProperties = {
     ...(item.isTemporary ? checkerboardStyle() : {}),
@@ -131,12 +132,12 @@ export const AllocationBarSegment = ({
 
         <div className="flex-1 flex items-center justify-center">
           <AllocationBarSegmentPercent
-            pendingBacking={pendingBacking}
+            pendingValue={pendingValue}
             totalBacking={totalBacking}
             valueDisplay={valueDisplay}
             showDots={showDots}
             item={item}
-            currentBacking={currentBacking}
+            onchainValue={onchainValue}
           />
         </div>
 
@@ -157,8 +158,8 @@ export const AllocationBarSegment = ({
       text={
         <AllocationBarTooltipContent
           builderAddress={item.key}
-          currentBacking={item.key === 'unallocated' ? pendingBacking : currentBacking}
-          pendingBacking={item.isTemporary ? pendingBacking : 0n}
+          onchainValue={onchainValue}
+          pendingValue={item.isTemporary ? pendingValue : 0n}
         />
       }
       side="top"
@@ -174,12 +175,12 @@ export const AllocationBarSegment = ({
 
         <div className="flex-1 flex items-center justify-center">
           <AllocationBarSegmentPercent
-            pendingBacking={pendingBacking}
+            pendingValue={pendingValue}
             totalBacking={totalBacking}
             valueDisplay={valueDisplay}
             showDots={showDots}
             item={item}
-            currentBacking={currentBacking}
+            onchainValue={onchainValue}
           />
         </div>
 
