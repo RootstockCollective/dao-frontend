@@ -80,6 +80,7 @@ interface AllocationBarSegmentProps {
   dragIndex: number | null
   isDraggable: boolean
   isResizable: boolean
+  isEditable: boolean
   showDots?: boolean
 }
 
@@ -95,6 +96,7 @@ export const AllocationBarSegment = ({
   dragIndex,
   isDraggable,
   isResizable,
+  isEditable,
   showDots,
 }: AllocationBarSegmentProps) => {
   const { attributes, listeners, setNodeRef, transform, isDragging } = useSortable({ id: item.key })
@@ -145,6 +147,7 @@ export const AllocationBarSegment = ({
         {!isLast && isResizable && (
           <AllocationBarResizeHandle
             onHandleMouseDown={onHandleMouseDown}
+            isEditable={isEditable}
             dragIndex={dragIndex}
             index={index}
           />
@@ -188,6 +191,7 @@ export const AllocationBarSegment = ({
         {!isLast && isResizable && (
           <AllocationBarResizeHandle
             onHandleMouseDown={onHandleMouseDown}
+            isEditable={isEditable}
             dragIndex={dragIndex}
             index={index}
           />

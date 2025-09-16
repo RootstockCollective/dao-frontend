@@ -5,7 +5,6 @@ import React, { useEffect, useRef, useState } from 'react'
 
 import { Legend } from '@/components/Legend'
 import { cn } from '@/lib/utils'
-import { toast } from 'react-toastify'
 import { AllocationBarSegment } from './AllocationBarSegment'
 import { AllocationBarProps } from './types'
 import {
@@ -74,6 +73,14 @@ const AllocationBar: React.FC<AllocationBarProps> = ({
 
   // Start drag handler
   const onHandleMouseDown = (idx: number) => (e: React.MouseEvent) => {
+    const leftSegment = currentItems.at(idx - 1) // as the resize handle is on the left (WARNING: tight coupling of the event to the items order!)
+    const rightSegment = currentItems.at(idx)
+
+    // Prevent resizing if either of the involved segments is not editable
+    if (!leftSegment?.isEditable || !rightSegment?.isEditable) {
+      return
+    }
+
     setDragIndex(idx)
     e.preventDefault()
   }
@@ -82,13 +89,11 @@ const AllocationBar: React.FC<AllocationBarProps> = ({
   const handleResize = ({ clientX }: MouseEvent) => {
     if (dragIndex === null || !barRef.current) return
 
-    const leftSegment = currentItems.at(dragIndex - 1) // as the resize handle is on the left (WARNING: entanglement/tight coupling)
+    const leftSegment = currentItems.at(dragIndex - 1) // as the resize handle is on the left (WARNING: tight coupling of the event to the items order!)
     const rightSegment = currentItems.at(dragIndex)
 
+    // Prevent resizing if either of the involved segments is not editable
     if (!leftSegment?.isEditable || !rightSegment?.isEditable) {
-      toast.error(`${!leftSegment?.isEditable ? leftSegment?.label : rightSegment?.label} is not editable`, {
-        toastId: 'resize-error',
-      })
       return
     }
 
@@ -193,8 +198,9 @@ const AllocationBar: React.FC<AllocationBarProps> = ({
                 valueDisplay={valueDisplay}
                 onHandleMouseDown={onHandleMouseDown}
                 dragIndex={dragIndex}
-                isDraggable={item.isEditable && isDraggable}
-                isResizable={item.isEditable && isResizable}
+                isDraggable={isDraggable}
+                isResizable={isResizable}
+                isEditable={item.isEditable}
                 showDots={segmentsToShowDots[i]}
               />
             ))}
