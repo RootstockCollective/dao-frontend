@@ -2,14 +2,6 @@
 
 import { Builder, BuilderRewardsSummary } from '@/app/collective-rewards/types'
 import { useBuilderContext } from '@/app/collective-rewards/user/context/BuilderContext'
-import {
-  isBuilderActive,
-  isBuilderDeactivated,
-  isBuilderInProgress,
-  isBuilderKycRevoked,
-  isBuilderPaused,
-  isBuilderSelfPaused,
-} from '@/app/collective-rewards/utils'
 import { getCombinedFiatAmount } from '@/app/collective-rewards/utils/getCombinedFiatAmount'
 import { TablePager } from '@/components/TableNew'
 import { usePricesContext, useTableActionsContext, useTableContext } from '@/shared/context'
@@ -25,23 +17,7 @@ import { BuilderHeaderRow } from './BuilderHeaderRow'
 import { BuilderCellDataMap, ColumnId, DEFAULT_HEADERS, PAGE_SIZE } from './BuilderTable.config'
 import { Action, ActionCellProps } from './Cell/ActionCell'
 import { AllocationsContext } from '@/app/collective-rewards/allocations/context/AllocationsContext'
-
-// --- Filter builders by state ---
-const filterActive = (builder: Builder) => isBuilderActive(builder.stateFlags)
-const filterDeactivated = (builder: Builder) => isBuilderDeactivated(builder)
-const filterKycRevoked = (builder: Builder) => isBuilderKycRevoked(builder.stateFlags)
-const filterPaused = (builder: Builder) =>
-  isBuilderPaused(builder.stateFlags) || isBuilderSelfPaused(builder.stateFlags)
-const filterInProgress = (builder: Builder) => isBuilderInProgress(builder)
-
-const filterMap: Record<BuilderFilterOptionId, (builder: Builder) => boolean> = {
-  active: filterActive,
-  deactivated: filterDeactivated,
-  kycRevoked: filterKycRevoked,
-  paused: filterPaused,
-  inProgress: filterInProgress,
-  all: () => true,
-}
+import { builderFilterMap } from './utils/builderFilters'
 
 // TODO: this is a temporary solution to filter builders by state.
 type PagedFilter = {
@@ -79,7 +55,7 @@ const usePagedFilteredBuildersRewards = ({
   const data = useMemo(() => {
     const { columnId, direction } = sort
 
-    const filtered = allBuilders.filter(filterMap[filterOption])
+    const filtered = allBuilders.filter(builderFilterMap[filterOption])
 
     // Comparator map
     const comparators: Partial<
@@ -166,6 +142,11 @@ export const BuildersTable = ({ filterOption }: { filterOption: BuilderFilterOpt
     dispatch({
       type: 'SET_COLUMNS',
       payload: DEFAULT_HEADERS,
+    })
+    // Set default sorting to backer_rewards (descending)
+    dispatch({
+      type: 'SET_DEFAULT_SORT',
+      payload: { columnId: 'backer_rewards', direction: 'desc' },
     })
   }, []) // eslint-disable-line react-hooks/exhaustive-deps
 

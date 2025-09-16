@@ -49,7 +49,7 @@ export const BuilderFilterDropdown: FC<BuilderFilterDropdownProps> = ({
       <DropdownContent>
         {options.map(opt => (
           <DropdownItem key={opt.id} value={opt.id} data-testid={`dropdown-option-${opt.id}`}>
-            {opt.content}
+            {opt.label}
           </DropdownItem>
         ))}
       </DropdownContent>
