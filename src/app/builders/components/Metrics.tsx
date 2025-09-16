@@ -4,7 +4,7 @@ import { TotalBacking } from './TotalBacking'
 
 export const Metrics = () => {
   return (
-    <div className="flex gap-12 w-full">
+    <div className="flex flex-col md:flex-row gap-4 md:gap-12 w-full items-start">
       <div className="flex basis-1/5">
         <TotalBacking />
       </div>

@@ -4,15 +4,17 @@ import { DottedUnderlineLabel } from '@/components/DottedUnderlineLabel/DottedUn
 import { LoadingSpinner } from '@/components/LoadingSpinner'
 import { Metric, MetricTitle } from '@/components/Metric'
 import { RifRbtcTooltip } from '@/components/RifRbtcTooltip/RifRbtcTooltip'
-import { Header, Paragraph } from '@/components/Typography'
+import { Header, Paragraph, Span } from '@/components/Typography'
 import { formatCurrency } from '@/lib/utils'
 import Big from 'big.js'
 
 const USDWithTokensRewards = ({ usd, rif, rbtc }: { usd: Big; rif: bigint; rbtc: bigint }) => (
   <div className="flex flex-row items-baseline gap-2 font-rootstock-sans">
-    <Header variant="h1">{formatCurrency(usd)}</Header>
+    <Header className="text-xl md:text-[2rem]">{formatCurrency(usd)}</Header>
     <RifRbtcTooltip rbtcValue={rbtc} rifValue={rif}>
-      <DottedUnderlineLabel className="text-lg">USD</DottedUnderlineLabel>
+      <DottedUnderlineLabel>
+        <Span className="text-sm md:text-lg">USD</Span>
+      </DottedUnderlineLabel>
     </RifRbtcTooltip>
   </div>
 )
@@ -58,7 +60,7 @@ export const EstimatedRewards = () => {
     },
   )
   return (
-    <div className="flex basis-3/5">
+    <div className="flex flex-col gap-4 md:gap-0 md:flex-row basis-3/5">
       {builderEstimatedRewardsLoading ? (
         <LoadingSpinner size="medium" />
       ) : (
@@ -88,7 +90,7 @@ export const EstimatedRewards = () => {
         <LoadingSpinner size="medium" />
       ) : (
         <Metric
-          className="justify-end"
+          className="md:justify-end"
           containerClassName="w-auto"
           title={
             <MetricTitle
