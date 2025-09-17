@@ -66,15 +66,14 @@ const interpolateDataByDay = <T extends { day?: number; currentCycleStart?: stri
   const totalDays = Math.floor((endDate - startDate) / ONE_DAY_IN_SECONDS) + 1
   const allDays = Array.from({ length: totalDays }, (_, i) => startDate + i * ONE_DAY_IN_SECONDS)
 
-  let lastKnownItem = sortedData[0]
-
   return allDays.map(day => {
     const actualData = dataMap.get(day)
 
     if (actualData) {
-      lastKnownItem = actualData
       return actualData
     }
+
+    const lastKnownItem = sortedData.filter(item => getTimestamp(item) <= day).pop() || sortedData[0]
 
     return createInterpolatedItem(day, lastKnownItem)
   })
@@ -113,7 +112,7 @@ const interpolateDailyBackingData = (data: DailyAllocationItem[]): DailyAllocati
  */
 const interpolateCycleRewardsData = (data: CycleRewardsItem[], targetEndDate: number): CycleRewardsItem[] => {
   const lastItem = data[data.length - 1]
-  const extendedTargetEndDate = targetEndDate + ONE_DAY_IN_SECONDS
+  const extendedTargetEndDate = targetEndDate
 
   const syntheticEndItem: CycleRewardsItem = {
     ...lastItem,
@@ -190,6 +189,8 @@ const transformRewardsData = (
 
   const interpolatedData = interpolateCycleRewardsData(accumulatedCycleRewards, targetEndDate)
 
+  console.log('interpolatedData', interpolatedData)
+
   return interpolatedData.map(item => ({
     day: new Date(Number(item.currentCycleStart) * 1000),
     rewards: {
@@ -253,7 +254,7 @@ export const transformApiDataToChartData = (
   const filteredRewardsSeries = filterToLastFiveMonths(rewardsSeries)
   const filteredCycles = filterToLastFiveMonths(cycles)
 
-  const minDate = convertToTimestamp(filteredRewardsSeries[0].day) - ONE_DAY_IN_MS
+  const minDate = convertToTimestamp(filteredRewardsSeries[0].day)
   const filteredBackingSeries = filterToLastFiveMonths(backingSeries, minDate)
 
   return {
