@@ -7,6 +7,7 @@ import { Legend } from '@/components/Legend'
 import { cn } from '@/lib/utils'
 import { AllocationBarResizeHandle } from './AllocationBarResizeHandle'
 import { AllocationBarSegment } from './AllocationBarSegment'
+import { AllocationBarTooltipContent } from './AllocationBarTooltipContent'
 import { AllocationBarProps } from './types'
 import {
   calculateMinSegmentValue,
@@ -16,24 +17,21 @@ import {
   valueToPercentage,
 } from './utils'
 
-const getSegmentsToShowDots = (values: bigint[], totalValue: bigint): boolean[] => {
-  const NEIGHBOR_SUM_THRESHOLD = 8 // 8%
-  const segmentsToShowDots = new Array(values.length).fill(false)
+const COLLAPSE_SEGMENT_SIZE_THRESHOLD = 8 // 8%
+const getSegmentsToCollapse = (values: bigint[], totalValue: bigint): number[] =>
+  values
+    .filter((value, i) => {
+      const currentPercentage = valueToPercentage(value, totalValue)
 
-  for (let i = 0; i < values.length; i++) {
-    const currentPercentage = valueToPercentage(values[i], totalValue)
-
-    // Check if current segment has a neighbor and their sum is up to the threshold
-    const hasSmallNeighborSum =
-      (i > 0 && currentPercentage + valueToPercentage(values[i - 1], totalValue) <= NEIGHBOR_SUM_THRESHOLD) ||
-      (i < values.length - 1 &&
-        currentPercentage + valueToPercentage(values[i + 1], totalValue) <= NEIGHBOR_SUM_THRESHOLD)
-
-    segmentsToShowDots[i] = hasSmallNeighborSum
-  }
-
-  return segmentsToShowDots
-}
+      return (
+        (i > 0 &&
+          currentPercentage + valueToPercentage(values[i - 1], totalValue) <=
+            COLLAPSE_SEGMENT_SIZE_THRESHOLD) ||
+        (i < values.length - 1 &&
+          currentPercentage + valueToPercentage(values[i + 1], totalValue) <= COLLAPSE_SEGMENT_SIZE_THRESHOLD)
+      )
+    })
+    .map((_, i) => i)
 
 const AllocationBar: React.FC<AllocationBarProps> = ({
   itemsData,
@@ -58,9 +56,6 @@ const AllocationBar: React.FC<AllocationBarProps> = ({
 
   const totalBacking = currentValues.reduce((sum, v) => sum + v, 0n)
   const minSegmentValue = calculateMinSegmentValue(totalBacking)
-
-  // Calculate which segments should show dots
-  const segmentsToShowDots = getSegmentsToShowDots(currentValues, totalBacking)
 
   const barRef = useRef<HTMLDivElement>(null)
   const [dragIndex, setDragIndex] = useState<number | null>(null)
@@ -166,6 +161,7 @@ const AllocationBar: React.FC<AllocationBarProps> = ({
     }
   }
 
+  const segmentsToCollapse: number[] = getSegmentsToCollapse(currentValues, totalBacking)
   return (
     <div className={cn('w-full p-8 flex flex-col gap-6', className)}>
       <DndContext
@@ -191,6 +187,22 @@ const AllocationBar: React.FC<AllocationBarProps> = ({
                 index={i}
                 isLast={i === currentItems.length - 1}
                 valueDisplay={valueDisplay}
+                isCollapsed={segmentsToCollapse.includes(i)}
+                tooltip={() => (
+                  <AllocationBarTooltipContent
+                    builderAddress={item.key}
+                    displayColor={item.displayColor}
+                    onchainValue={item.initialValue ?? 0n}
+                    pendingValue={currentValues[i]}
+                    percentage={
+                      valueDisplay.showPercent
+                        ? `${valueToPercentage(currentValues[i], totalBacking).toFixed(
+                            valueDisplay.format?.percentDecimals ?? 0,
+                          )}%`
+                        : ''
+                    }
+                  />
+                )}
                 resizeHandle={() => {
                   const nextIndex = i + 1
                   if (!isResizable || nextIndex >= currentItems.length) {
@@ -208,7 +220,6 @@ const AllocationBar: React.FC<AllocationBarProps> = ({
                 }}
                 dragIndex={dragIndex}
                 isDraggable={isDraggable}
-                showDots={segmentsToShowDots[i]}
               />
             ))}
           </div>
