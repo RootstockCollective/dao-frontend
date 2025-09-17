@@ -6,10 +6,11 @@ export const AllocationBarResizeHandle = ({
 }: {
   onHandleMouseDown: (idx: number) => (e: React.MouseEvent) => void
   dragIndex: number | null
-  isEditable: boolean
+  isEditable: boolean | (() => boolean)
   index: number
 }) => {
-  const cursorClass = isEditable ? 'cursor-ew-resize' : 'cursor-not-allowed'
+  const canEdit = typeof isEditable === 'function' ? isEditable() : isEditable
+  const cursorClass = canEdit ? 'cursor-ew-resize' : 'cursor-not-allowed'
   return (
     <div
       className={`w-2 h-full flex items-center justify-center z-10 ml-1 mr-1 bg-transparent absolute -right-3 top-0 bottom-0 ${cursorClass}`}
