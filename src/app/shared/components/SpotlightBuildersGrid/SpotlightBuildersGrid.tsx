@@ -1,15 +1,13 @@
-import { Builder } from '@/app/collective-rewards/types'
-import { FC } from 'react'
-import { BackMoreBuildersCard, BuilderCardControl } from '../BuilderCard'
+import { BackMoreBuildersCard, BuilderCardControl, BuilderCardControlProps } from '../BuilderCard'
 
 interface SpotlightBuildersGridProps {
-  builders: Builder[]
+  builderCardControls: BuilderCardControlProps[]
   isInteractive?: boolean
   showBackMoreBuildersCard?: boolean
 }
 
 export const SpotlightBuildersGrid = ({
-  builders,
+  builderCardControls,
   isInteractive = false,
   showBackMoreBuildersCard,
 }: SpotlightBuildersGridProps) => (
@@ -20,9 +18,14 @@ export const SpotlightBuildersGrid = ({
       max-sm:snap-x max-sm:snap-proximity
       scrollbar-none px-4"
   >
-    {builders.map((builder, index) => (
+    {builderCardControls.map(({ builder, showAnimation }, index) => (
       <div key={builder.address} className="max-sm:flex-shrink-0 max-sm:snap-center max-sm:w-64 flex w-full">
-        <BuilderCardControl builder={builder} isInteractive={isInteractive} index={index} />
+        <BuilderCardControl
+          builder={builder}
+          isInteractive={isInteractive}
+          index={index}
+          showAnimation={showAnimation}
+        />
       </div>
     ))}
     {showBackMoreBuildersCard && (

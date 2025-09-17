@@ -1,6 +1,7 @@
 import { AllocationsContext } from '@/app/collective-rewards/allocations/context/AllocationsContext'
 import { useBuilderContext } from '@/app/collective-rewards/user/context/BuilderContext'
 import { useHandleErrors } from '@/app/collective-rewards/utils'
+import { BuilderCardControlProps } from '@/app/shared/components/BuilderCard'
 import { SpotlightBuildersGrid } from '@/app/shared/components/SpotlightBuildersGrid'
 import { Button } from '@/components/Button'
 import { LoadingSpinner } from '@/components/LoadingSpinner'
@@ -98,12 +99,18 @@ export const Spotlight = ({ isInteractive = true }: { isInteractive?: boolean })
     )
   }
 
-  let builders = spotlightBuilders
+  // TODO: type needs to be reviewed
+  let builders: BuilderCardControlProps[] = spotlightBuilders.map(builder => ({
+    builder: {
+      ...builder,
+    },
+  }))
 
   if (isConnected && isInteractive) {
-    builders = spotlightBuilders.map((builder, index) => ({
-      ...builder,
-      index,
+    builders = spotlightBuilders.map(builder => ({
+      builder: {
+        ...builder,
+      },
       estimatedRewards: builder.backerEstimatedRewards,
       showAnimation: isBuilderSelected(builder.address),
     }))
@@ -112,7 +119,7 @@ export const Spotlight = ({ isInteractive = true }: { isInteractive?: boolean })
   return (
     <>
       <SpotlightBuildersGrid
-        builders={builders}
+        builderCardControls={builders}
         isInteractive={isInteractive}
         showBackMoreBuildersCard={hasAllocations && spotlightBuilders.length < 4}
       />
