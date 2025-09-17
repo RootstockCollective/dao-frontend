@@ -1,4 +1,5 @@
 import { formatSymbol } from '@/app/collective-rewards/rewards/utils'
+import { Circle } from '@/components/Circle'
 import { HourglassIcon } from '@/components/Icons/HourglassIcon'
 import { BaseTypography } from '@/components/Typography/Typography'
 import { STRIF } from '@/lib/constants'
@@ -7,6 +8,7 @@ import { Address, zeroAddress } from 'viem'
 
 interface AllocationBarTooltipProps {
   builderAddress: Address
+  displayColor?: string
   onchainValue: bigint
   pendingValue: bigint
   percentage?: string
@@ -14,6 +16,7 @@ interface AllocationBarTooltipProps {
 
 export const AllocationBarTooltipContent = ({
   builderAddress,
+  displayColor,
   onchainValue,
   pendingValue,
   percentage = '',
@@ -24,6 +27,7 @@ export const AllocationBarTooltipContent = ({
     <div className="w-[230px] p-4">
       <div className="inline-flex items-center gap-1">
         <BaseTypography variant="tag-s">
+          {displayColor && <Circle color={displayColor} />}
           {isUnallocated ? 'Available' : shortAddress(builderAddress)}
         </BaseTypography>
         {percentage && (
