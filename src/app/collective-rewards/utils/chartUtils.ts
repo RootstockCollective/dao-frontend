@@ -84,8 +84,21 @@ const interpolateDataByDay = <T extends { day?: number; currentCycleStart?: stri
  * Fills gaps between dates with the last known value for DailyAllocationItem
  */
 const interpolateDailyBackingData = (data: DailyAllocationItem[]): DailyAllocationItem[] => {
+  const lastDataPoint = data[data.length - 1]
+  const todayTimestamp = Math.floor(Date.now() / 1000)
+
+  let extendedData = data
+  if (lastDataPoint.day < todayTimestamp) {
+    const syntheticTodayItem: DailyAllocationItem = {
+      ...lastDataPoint,
+      id: `extended-to-today-${todayTimestamp}`,
+      day: todayTimestamp,
+    }
+    extendedData = [...data, syntheticTodayItem]
+  }
+
   return interpolateDataByDay(
-    data,
+    extendedData,
     item => item.day,
     (day, lastKnownItem) => ({
       id: `interpolated-${day}`,
@@ -100,7 +113,6 @@ const interpolateDailyBackingData = (data: DailyAllocationItem[]): DailyAllocati
  */
 const interpolateCycleRewardsData = (data: CycleRewardsItem[], targetEndDate: number): CycleRewardsItem[] => {
   const lastItem = data[data.length - 1]
-
   const extendedTargetEndDate = targetEndDate + ONE_DAY_IN_SECONDS
 
   const syntheticEndItem: CycleRewardsItem = {
@@ -174,7 +186,7 @@ const transformRewardsData = (
     }
   })
 
-  const targetEndDate = backingData[backingData.length - 1].day
+  const targetEndDate = Math.floor(Date.now() / 1000) // today
 
   const interpolatedData = interpolateCycleRewardsData(accumulatedCycleRewards, targetEndDate)
 
