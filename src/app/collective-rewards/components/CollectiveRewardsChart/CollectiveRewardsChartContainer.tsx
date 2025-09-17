@@ -48,7 +48,7 @@ interface CollectiveRewardsChartContentProps {
   rbtcPrice: number
 }
 
-export const CollectiveRewardsChartContent = ({
+const CollectiveRewardsChartContent = ({
   backingData,
   rewardsData,
   rifPrice,

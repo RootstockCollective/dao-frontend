@@ -1,12 +1,9 @@
 import { BackingPoint, RewardsPoint, CycleWindow, DailyAllocationItem, CycleRewardsItem } from '../types'
-import {
-  ONE_DAY_IN_SECONDS,
-  FIVE_MONTHS_IN_MS,
-  FIRST_CYCLE_START_SECONDS,
-  ONE_DAY_IN_MS,
-} from '../constants/chartConstants'
+import { ONE_DAY_IN_SECONDS, FIVE_MONTHS_IN_MS, FIRST_CYCLE_START_SECONDS } from '../constants/chartConstants'
 import Big from '@/lib/big'
-import { WeiPerEther } from '@/lib/constants'
+import { USD, WeiPerEther } from '@/lib/constants'
+import { getCombinedFiatAmount } from './getCombinedFiatAmount'
+import { TokenSymbol } from '@/components/TokenImage'
 
 export const convertToTimestamp = (d: Date | number | string): number => new Date(d).getTime()
 
@@ -21,14 +18,15 @@ export const formatShort = (n: number) => {
 }
 
 /**
- * Filter data to show only the last 5 months
+ * Filter data to show only the last n months
  */
-const filterToLastFiveMonths = <T extends { day?: Date | number | string; start?: Date; end?: Date }>(
+const filterToLastMonths = <T extends { day?: Date | number | string; start?: Date; end?: Date }>(
   data: T[],
   customMinDate?: number,
+  monthsInMs: number = FIVE_MONTHS_IN_MS,
 ): T[] => {
   const now = Date.now()
-  const fiveMonthsAgo = now - FIVE_MONTHS_IN_MS
+  const fiveMonthsAgo = now - monthsInMs
   const minDate = customMinDate || fiveMonthsAgo
 
   return data.filter(item => {
@@ -59,7 +57,7 @@ const interpolateDataByDay = <T extends { day?: number; currentCycleStart?: stri
 ): T[] => {
   const sortedData = [...data].sort((a, b) => getTimestamp(a) - getTimestamp(b))
   const startDate = getTimestamp(sortedData[0])
-  const endDate = getTimestamp(sortedData[sortedData.length - 1])
+  const endDate = Date.now() / 1000 + ONE_DAY_IN_SECONDS
 
   const dataMap = new Map(sortedData.map(item => [getTimestamp(item), item]))
 
@@ -80,61 +78,7 @@ const interpolateDataByDay = <T extends { day?: number; currentCycleStart?: stri
 }
 
 /**
- * Fills gaps between dates with the last known value for DailyAllocationItem
- */
-const interpolateDailyBackingData = (data: DailyAllocationItem[]): DailyAllocationItem[] => {
-  const lastDataPoint = data[data.length - 1]
-  const todayTimestamp = Math.floor(Date.now() / 1000)
-
-  let extendedData = data
-  if (lastDataPoint.day < todayTimestamp) {
-    const syntheticTodayItem: DailyAllocationItem = {
-      ...lastDataPoint,
-      id: `extended-to-today-${todayTimestamp}`,
-      day: todayTimestamp,
-    }
-    extendedData = [...data, syntheticTodayItem]
-  }
-
-  return interpolateDataByDay(
-    extendedData,
-    item => item.day,
-    (day, lastKnownItem) => ({
-      id: `interpolated-${day}`,
-      day,
-      totalAllocation: lastKnownItem.totalAllocation,
-    }),
-  )
-}
-
-/**
- * Fills gaps between dates with the last known value for CycleRewardsItem
- */
-const interpolateCycleRewardsData = (data: CycleRewardsItem[], targetEndDate: number): CycleRewardsItem[] => {
-  const lastItem = data[data.length - 1]
-  const extendedTargetEndDate = targetEndDate
-
-  const syntheticEndItem: CycleRewardsItem = {
-    ...lastItem,
-    id: `synthetic-end-${extendedTargetEndDate}`,
-    currentCycleStart: extendedTargetEndDate.toString(),
-  }
-
-  const extendedData = [...data, syntheticEndItem]
-
-  return interpolateDataByDay(
-    extendedData,
-    item => Number(item.currentCycleStart),
-    (day, lastKnownItem) => ({
-      ...lastKnownItem,
-      id: `interpolated-${day}`,
-      currentCycleStart: day.toString(),
-    }),
-  )
-}
-
-/**
- * Calculate USD value from RIF and RBTC rewards
+ * Calculate USD value from RIF and RBTC rewards using getCombinedFiatAmount
  */
 const calculateRewardsUSD = (
   rifAmountWei: string,
@@ -142,16 +86,38 @@ const calculateRewardsUSD = (
   rifPrice: number,
   rbtcPrice: number,
 ): number => {
-  const rifTokens = Big(rifAmountWei).div(WeiPerEtherString)
-  const rbtcTokens = Big(rbtcAmountWei).div(WeiPerEtherString)
-  return rifTokens.mul(rifPrice).add(rbtcTokens.mul(rbtcPrice)).toNumber()
+  const rewardAmounts = [
+    {
+      value: BigInt(rifAmountWei),
+      price: rifPrice,
+      symbol: TokenSymbol.RIF,
+      currency: USD,
+    },
+    {
+      value: BigInt(rbtcAmountWei),
+      price: rbtcPrice,
+      symbol: TokenSymbol.RBTC,
+      currency: USD,
+    },
+  ]
+
+  return getCombinedFiatAmount(rewardAmounts).toNumber()
 }
 
 /**
  * Transform backing data to BackingPoint format with interpolation
  */
 const transformBackingData = (backingData: DailyAllocationItem[]): BackingPoint[] => {
-  const interpolatedData = interpolateDailyBackingData(backingData)
+  const interpolatedData = interpolateDataByDay(
+    backingData,
+    item => item.day,
+    (day, lastKnownItem) => ({
+      id: `interpolated-${day}`,
+      day,
+      totalAllocation: lastKnownItem.totalAllocation,
+    }),
+  )
+
   return interpolatedData.map(item => ({
     day: new Date(item.day * 1000),
     backing: BigInt(Big(item.totalAllocation).div(WeiPerEtherString).toFixed(0)),
@@ -166,7 +132,6 @@ const transformRewardsData = (
   rewardsData: CycleRewardsItem[],
   rifPrice: number,
   rbtcPrice: number,
-  backingData: DailyAllocationItem[],
 ): RewardsPoint[] => {
   let cumulativeRifRewards = 0n
   let cumulativeRbtcRewards = 0n
@@ -185,11 +150,15 @@ const transformRewardsData = (
     }
   })
 
-  const targetEndDate = Math.floor(Date.now() / 1000) // today
-
-  const interpolatedData = interpolateCycleRewardsData(accumulatedCycleRewards, targetEndDate)
-
-  console.log('interpolatedData', interpolatedData)
+  const interpolatedData = interpolateDataByDay(
+    accumulatedCycleRewards,
+    item => Number(item.currentCycleStart),
+    (day, lastKnownItem) => ({
+      ...lastKnownItem,
+      id: `interpolated-${day}`,
+      currentCycleStart: day.toString(),
+    }),
+  )
 
   return interpolatedData.map(item => ({
     day: new Date(Number(item.currentCycleStart) * 1000),
@@ -242,20 +211,15 @@ export const transformApiDataToChartData = (
     (a, b) => Number(a.currentCycleStart) - Number(b.currentCycleStart),
   )
 
-  const backingSeries: BackingPoint[] = transformBackingData(backingData)
-  const rewardsSeries: RewardsPoint[] = transformRewardsData(
-    sortedRewardsData,
-    rifPrice,
-    rbtcPrice,
-    sortedBackingData,
-  )
+  const backingSeries: BackingPoint[] = transformBackingData(sortedBackingData)
+  const rewardsSeries: RewardsPoint[] = transformRewardsData(sortedRewardsData, rifPrice, rbtcPrice)
   const cycles: CycleWindow[] = transformCyclesData(sortedRewardsData)
 
-  const filteredRewardsSeries = filterToLastFiveMonths(rewardsSeries)
-  const filteredCycles = filterToLastFiveMonths(cycles)
+  const filteredRewardsSeries = filterToLastMonths(rewardsSeries)
+  const filteredCycles = filterToLastMonths(cycles)
 
   const minDate = convertToTimestamp(filteredRewardsSeries[0].day)
-  const filteredBackingSeries = filterToLastFiveMonths(backingSeries, minDate)
+  const filteredBackingSeries = filterToLastMonths(backingSeries, minDate)
 
   return {
     backingSeries: filteredBackingSeries,

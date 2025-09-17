@@ -1,9 +1,7 @@
 import { withSpinner } from '@/components/LoadingSpinner/withLoadingSpinner'
 import { Metric } from '@/components/Metric'
 import { DateTime, Duration } from 'luxon'
-
-// retrieved from the first release of the dapp
-export const FIRST_CYCLE_START_DATE_ISO = '2024-10-30T00:00:00Z'
+import { FIRST_CYCLE_START_DATE_ISO } from '../../constants/chartConstants'
 
 const CycleNumberContent = ({
   duration,

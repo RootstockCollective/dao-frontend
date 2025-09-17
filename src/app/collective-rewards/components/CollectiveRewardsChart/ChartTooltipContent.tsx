@@ -26,21 +26,18 @@ export const ChartTooltipContent = ({ active, payload, label }: ChartTooltipProp
   const cycleNumber = payload[0]?.payload?.cycle ?? 'N/A'
   const dayInCycle = payload[0]?.payload?.dayInCycle ?? 'N/A'
 
-  // Add one day to align tooltip date with actual data dates
   const displayDate = new Date(d.getTime())
 
   return (
     <div className="p-4 bg-text-80 shadow-xl rounded flex flex-col gap-2">
       <Span variant="body-xs" className="text-bg-100">
-        {displayDate instanceof Date
-          ? displayDate
-              .toLocaleDateString('en-US', {
-                month: 'short',
-                day: 'numeric',
-                year: 'numeric',
-              })
-              .toUpperCase()
-          : String(label)}
+        {displayDate
+          .toLocaleDateString('en-US', {
+            month: 'short',
+            day: 'numeric',
+            year: 'numeric',
+          })
+          .toUpperCase()}
       </Span>
 
       <div className="flex flex-col gap-4">

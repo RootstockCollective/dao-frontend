@@ -112,10 +112,7 @@ export type CycleWindow = {
   cycleNumber?: number
 }
 
-interface ChartDataPoint {
-  day: Date
-  backing?: bigint
-  backingWei?: bigint
+interface ChartDataPoint extends BackingPoint {
   rewardsUSD?: bigint
   rewardsRif?: bigint
   rewardsRbtc?: bigint
