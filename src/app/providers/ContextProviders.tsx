@@ -58,6 +58,7 @@ createAppKit({
     email: false,
     socials: ['google', 'x', 'github', 'discord', 'apple', 'facebook'],
     collapseWallets: true,
+    onramp: true,
   },
 })
 
