@@ -27,7 +27,7 @@ export const ChartTooltipContent = ({ active, payload, label }: ChartTooltipProp
   const dayInCycle = payload[0]?.payload?.dayInCycle ?? 'N/A'
 
   // Add one day to align tooltip date with actual data dates
-  const displayDate = new Date(d.getTime() + ONE_DAY_IN_MS)
+  const displayDate = new Date(d.getTime())
 
   return (
     <div className="p-4 bg-text-80 shadow-xl rounded flex flex-col gap-2">
