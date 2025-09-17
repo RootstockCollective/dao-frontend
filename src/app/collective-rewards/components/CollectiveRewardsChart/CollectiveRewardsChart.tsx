@@ -69,13 +69,7 @@ const CustomCursor = (props: CustomCursorProps) => {
 
       {/* Active dots with higher z-index */}
       {payload.map((payloadItem, index) => {
-        if (
-          !payloadItem ||
-          payloadItem.value === null ||
-          payloadItem.value === undefined ||
-          payloadItem.value === 0
-        )
-          return null
+        if ([null, undefined, 0].includes(payloadItem.value)) return null
 
         let calculatedY: number
         if (payloadItem.dataKey === 'backing') {

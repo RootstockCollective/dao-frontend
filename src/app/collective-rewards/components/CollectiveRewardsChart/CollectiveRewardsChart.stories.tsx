@@ -1,6 +1,49 @@
 import { Meta, StoryObj } from '@storybook/nextjs'
 import { BackingPoint, CycleWindow, RewardsPoint } from '@/app/collective-rewards/types'
 import { CollectiveRewardsDualAxisChart } from './CollectiveRewardsChart'
+import { WeiPerEther } from '@/lib/constants'
+import { ONE_DAY_IN_MS } from '@/app/collective-rewards/constants/chartConstants'
+
+// Mock data constants
+const MOCK_DATA_CONSTANTS = {
+  // Backing amounts
+  BACKING_START: 350_000_000,
+  BACKING_END: 780_000_000,
+  BACKING_WOBBLE_AMPLITUDE: 2_000_000,
+  BACKING_MIN_INCREMENT: 50_000,
+
+  // Simple backing data
+  SIMPLE_BACKING_BASE: 400_000_000,
+  SIMPLE_BACKING_DAILY_GROWTH: 1_000_000,
+  SIMPLE_BACKING_WOBBLE: 5_000_000,
+
+  // Growing backing data
+  GROWING_BACKING_START: 200_000_000,
+  GROWING_BACKING_DAILY_RATE: 0.0005, // 0.05% daily growth
+  GROWING_BACKING_WOBBLE: 10_000_000,
+
+  // Rewards USD amounts
+  REWARDS_C21_BASE: 80_000,
+  REWARDS_C22_BASE: 120_000,
+  REWARDS_C23_BASE: 180_000,
+  REWARDS_MIN_USD: 120_000,
+  REWARDS_WOBBLE_AMPLITUDE: 10_000,
+  REWARDS_SIMPLE_BASE: 150_000,
+  REWARDS_SIMPLE_DAILY_GROWTH: 500,
+  REWARDS_SIMPLE_WOBBLE: 10_000,
+
+  // Time and oscillation parameters
+  WOBBLE_FREQUENCY_BACKING: 28,
+  WOBBLE_FREQUENCY_REWARDS: 20,
+  WOBBLE_FREQUENCY_SIMPLE_BACKING: 10,
+  WOBBLE_FREQUENCY_SIMPLE_REWARDS: 15,
+  WOBBLE_FREQUENCY_GROWING: 30,
+  WOBBLE_FREQUENCY_GROWING_REWARDS: 20,
+
+  // Reward calculation multipliers
+  REWARDS_BACKING_MULTIPLIER: 0.0003,
+  REWARDS_GROWING_WOBBLE: 20_000,
+} as const
 
 // Mock data generation function
 function generateMockData() {
@@ -31,27 +74,29 @@ function generateMockData() {
     },
   ]
 
-  const backingStart = 350_000_000
-  const backingEnd = 780_000_000
+  const backingStart = MOCK_DATA_CONSTANTS.BACKING_START
+  const backingEnd = MOCK_DATA_CONSTANTS.BACKING_END
 
   const backingSeries: BackingPoint[] = []
-  let prevBacking = backingStart
+  let prevBacking: number = backingStart
 
   for (let i = 0; i < days; i++) {
-    const day = new Date(start + i * 24 * 3600 * 1000)
+    const day = new Date(start + i * ONE_DAY_IN_MS)
     const t = i / (days - 1) // 0..1
 
     // ease-in-out-ish curve + tiny wobble
     const curve = backingStart + (backingEnd - backingStart) * (0.5 - 0.5 * Math.cos(Math.PI * t))
-    const wobble = Math.sin(i / 28) * 2_000_000
+    const wobble =
+      Math.sin(i / MOCK_DATA_CONSTANTS.WOBBLE_FREQUENCY_BACKING) *
+      MOCK_DATA_CONSTANTS.BACKING_WOBBLE_AMPLITUDE
 
     const candidate = Math.round(curve + wobble)
 
     // ensure strictly non-decreasing
-    const backing = Math.max(candidate, prevBacking + 50_000)
+    const backing = Math.max(candidate, prevBacking + MOCK_DATA_CONSTANTS.BACKING_MIN_INCREMENT)
     prevBacking = backing
 
-    backingSeries.push({ day, backing: BigInt(backing), backingWei: BigInt(backing) * BigInt(10 ** 18) })
+    backingSeries.push({ day, backing: BigInt(backing), backingWei: BigInt(backing) * WeiPerEther })
   }
 
   const rewardsSeries: RewardsPoint[] = backingSeries.map(({ day, backing }, i) => {
@@ -59,11 +104,17 @@ function generateMockData() {
     const inC21 = ts < new Date('2025-01-15').getTime()
     const inC22 = ts >= new Date('2025-01-15').getTime() && ts < new Date('2025-06-15').getTime()
 
-    const base = inC21 ? 80_000 : inC22 ? 120_000 : 180_000
+    const base = inC21
+      ? MOCK_DATA_CONSTANTS.REWARDS_C21_BASE
+      : inC22
+        ? MOCK_DATA_CONSTANTS.REWARDS_C22_BASE
+        : MOCK_DATA_CONSTANTS.REWARDS_C23_BASE
 
     const drift = inC21 ? i * 120 : inC22 ? (i - 320) * 220 : (i - 450) * 240
-    const wobble = Math.sin(i / 20) * 10_000
-    let usd = Math.max(120_000, Math.round(base + drift * 0.25 + wobble))
+    const wobble =
+      Math.sin(i / MOCK_DATA_CONSTANTS.WOBBLE_FREQUENCY_REWARDS) *
+      MOCK_DATA_CONSTANTS.REWARDS_WOBBLE_AMPLITUDE
+    let usd = Math.max(MOCK_DATA_CONSTANTS.REWARDS_MIN_USD, Math.round(base + drift * 0.25 + wobble))
 
     const backingNum = Number(backing)
     const cap = Math.floor(backingNum * 0.00055)
@@ -218,14 +269,27 @@ export const SingleCycle: Story = {
 
     const backingSeries: BackingPoint[] = []
     for (let i = 0; i < days; i++) {
-      const day = new Date(start + i * 24 * 3600 * 1000)
-      const backing = Math.round(400_000_000 + i * 1_000_000 + Math.sin(i / 10) * 5_000_000)
-      backingSeries.push({ day, backing: BigInt(backing), backingWei: BigInt(backing) * BigInt(10 ** 18) })
+      const day = new Date(start + i * ONE_DAY_IN_MS)
+      const backing = Math.round(
+        MOCK_DATA_CONSTANTS.SIMPLE_BACKING_BASE +
+          i * MOCK_DATA_CONSTANTS.SIMPLE_BACKING_DAILY_GROWTH +
+          Math.sin(i / MOCK_DATA_CONSTANTS.WOBBLE_FREQUENCY_SIMPLE_BACKING) *
+            MOCK_DATA_CONSTANTS.SIMPLE_BACKING_WOBBLE,
+      )
+      backingSeries.push({ day, backing: BigInt(backing), backingWei: BigInt(backing) * WeiPerEther })
     }
 
     const rewardsSeries: RewardsPoint[] = backingSeries.map(({ day }, i) => ({
       day,
-      rewards: { rif: 0, rbtc: 0, usd: 150_000 + i * 500 + Math.sin(i / 15) * 10_000 },
+      rewards: {
+        rif: 0,
+        rbtc: 0,
+        usd:
+          MOCK_DATA_CONSTANTS.REWARDS_SIMPLE_BASE +
+          i * MOCK_DATA_CONSTANTS.REWARDS_SIMPLE_DAILY_GROWTH +
+          Math.sin(i / MOCK_DATA_CONSTANTS.WOBBLE_FREQUENCY_SIMPLE_REWARDS) *
+            MOCK_DATA_CONSTANTS.REWARDS_SIMPLE_WOBBLE,
+      },
     }))
 
     return (
@@ -333,14 +397,19 @@ export const ManyCycles: Story = {
     ]
 
     const backingSeries: BackingPoint[] = []
-    let prevBacking = 200_000_000
+    let prevBacking: number = MOCK_DATA_CONSTANTS.GROWING_BACKING_START
 
     for (let i = 0; i < days; i++) {
-      const day = new Date(start + i * 24 * 3600 * 1000)
-      const growth = prevBacking * 0.0005 // 0.05% daily growth
-      const backing = Math.round(prevBacking + growth + Math.sin(i / 30) * 10_000_000)
+      const day = new Date(start + i * ONE_DAY_IN_MS)
+      const growth = prevBacking * MOCK_DATA_CONSTANTS.GROWING_BACKING_DAILY_RATE // 0.05% daily growth
+      const backing = Math.round(
+        prevBacking +
+          growth +
+          Math.sin(i / MOCK_DATA_CONSTANTS.WOBBLE_FREQUENCY_GROWING) *
+            MOCK_DATA_CONSTANTS.GROWING_BACKING_WOBBLE,
+      )
       prevBacking = backing
-      backingSeries.push({ day, backing: BigInt(backing), backingWei: BigInt(backing) * BigInt(10 ** 18) })
+      backingSeries.push({ day, backing: BigInt(backing), backingWei: BigInt(backing) * WeiPerEther })
     }
 
     const rewardsSeries: RewardsPoint[] = backingSeries.map(({ day, backing }, i) => ({
@@ -348,7 +417,10 @@ export const ManyCycles: Story = {
       rewards: {
         rif: 0,
         rbtc: 0,
-        usd: Math.floor(Number(backing) * 0.0003) + Math.sin(i / 20) * 20_000,
+        usd:
+          Math.floor(Number(backing) * MOCK_DATA_CONSTANTS.REWARDS_BACKING_MULTIPLIER) +
+          Math.sin(i / MOCK_DATA_CONSTANTS.WOBBLE_FREQUENCY_GROWING_REWARDS) *
+            MOCK_DATA_CONSTANTS.REWARDS_GROWING_WOBBLE,
       },
     }))
 
