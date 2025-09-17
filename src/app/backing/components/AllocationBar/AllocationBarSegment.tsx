@@ -5,7 +5,6 @@ import { useSortable } from '@dnd-kit/sortable'
 import { CSS } from '@dnd-kit/utilities'
 import { zeroAddress } from 'viem'
 import { AllocationBarDragHandle } from './AllocationBarDragHandle'
-import { AllocationBarResizeHandle } from './AllocationBarResizeHandle'
 import { AllocationBarTooltipContent } from './AllocationBarTooltipContent'
 import { AllocationBarValueDisplay, AllocationItem } from './types'
 import { checkerboardStyle, valueToPercentage } from './utils'
@@ -76,11 +75,9 @@ interface AllocationBarSegmentProps {
   index: number
   isLast: boolean
   valueDisplay: AllocationBarValueDisplay
-  onHandleMouseDown: (idx: number) => (e: React.MouseEvent) => void
+  resizeHandle?: () => React.ReactNode
   dragIndex: number | null
   isDraggable: boolean
-  isResizable: boolean
-  isEditable: boolean
   showDots?: boolean
 }
 
@@ -92,15 +89,14 @@ export const AllocationBarSegment = ({
   index,
   isLast,
   valueDisplay,
-  onHandleMouseDown,
+  resizeHandle = () => null,
   dragIndex,
   isDraggable,
-  isResizable,
-  isEditable,
   showDots,
 }: AllocationBarSegmentProps) => {
   const { attributes, listeners, setNodeRef, transform, isDragging } = useSortable({ id: item.key })
 
+  const ResizeHandle = resizeHandle()
   // Calculate the percentage width based on the actual value and total value
   const percentageWidth = valueToPercentage(pendingValue, totalBacking)
 
@@ -142,16 +138,7 @@ export const AllocationBarSegment = ({
             onchainValue={onchainValue}
           />
         </div>
-
-        {/* RESIZE HANDLE (far right, not overlapping drag handle) */}
-        {!isLast && isResizable && (
-          <AllocationBarResizeHandle
-            onHandleMouseDown={onHandleMouseDown}
-            isEditable={isEditable}
-            dragIndex={dragIndex}
-            index={index}
-          />
-        )}
+        {ResizeHandle}
       </div>
     )
   }
@@ -186,16 +173,7 @@ export const AllocationBarSegment = ({
             onchainValue={onchainValue}
           />
         </div>
-
-        {/* RESIZE HANDLE (far right, not overlapping drag handle) */}
-        {!isLast && isResizable && (
-          <AllocationBarResizeHandle
-            onHandleMouseDown={onHandleMouseDown}
-            isEditable={isEditable}
-            dragIndex={dragIndex}
-            index={index}
-          />
-        )}
+        {ResizeHandle}
       </div>
     </Tooltip>
   )

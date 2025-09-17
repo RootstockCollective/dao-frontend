@@ -5,6 +5,7 @@ import React, { useEffect, useRef, useState } from 'react'
 
 import { Legend } from '@/components/Legend'
 import { cn } from '@/lib/utils'
+import { AllocationBarResizeHandle } from './AllocationBarResizeHandle'
 import { AllocationBarSegment } from './AllocationBarSegment'
 import { AllocationBarProps } from './types'
 import {
@@ -72,28 +73,22 @@ const AllocationBar: React.FC<AllocationBarProps> = ({
   )
 
   // Start drag handler
-  const onHandleMouseDown = (idx: number) => (e: React.MouseEvent) => {
-    const leftSegment = currentItems.at(idx - 1) // as the resize handle is on the left (WARNING: tight coupling of the event to the items order!)
-    const rightSegment = currentItems.at(idx)
-
-    // Prevent resizing if either of the involved segments is not editable
-    if (!leftSegment?.isEditable || !rightSegment?.isEditable) {
-      return
+  const onHandleMouseDown = (idx: number) => {
+    return (e: React.MouseEvent) => {
+      e.preventDefault()
+      setDragIndex(idx)
     }
-
-    setDragIndex(idx)
-    e.preventDefault()
   }
 
   // Handle resize logic
   const handleResize = ({ clientX }: MouseEvent) => {
     if (dragIndex === null || !barRef.current) return
 
-    const leftSegment = currentItems.at(dragIndex - 1) // as the resize handle is on the left (WARNING: tight coupling of the event to the items order!)
-    const rightSegment = currentItems.at(dragIndex)
+    const targetSegment = currentItems.at(dragIndex)
+    const adjecentSegment = currentItems.at(dragIndex + 1)
 
     // Prevent resizing if either of the involved segments is not editable
-    if (!leftSegment?.isEditable || !rightSegment?.isEditable) {
+    if (!(adjecentSegment?.isEditable && targetSegment?.isEditable)) {
       return
     }
 
@@ -101,7 +96,7 @@ const AllocationBar: React.FC<AllocationBarProps> = ({
     const x = clamp(clientX - rect.left, 0, rect.width)
 
     const { leftPx, rightPx } = calculateSegmentPositions(dragIndex, rect, currentValues, totalBacking)
-    const { leftValue, rightValue } = calculateNewSegmentValues(
+    const { leftValue: targetSegmentValue, rightValue: adjecentSegmentValue } = calculateNewSegmentValues(
       x,
       leftPx,
       rightPx,
@@ -111,10 +106,10 @@ const AllocationBar: React.FC<AllocationBarProps> = ({
     )
 
     const newValues = [...currentValues]
-    newValues[dragIndex] = leftValue
-    newValues[dragIndex + 1] = rightValue
+    newValues[dragIndex] = targetSegmentValue
+    newValues[dragIndex + 1] = adjecentSegmentValue
 
-    const increasedIndex = leftValue > currentValues[dragIndex] ? dragIndex : dragIndex + 1
+    const increasedIndex = targetSegmentValue > currentValues[dragIndex] ? dragIndex : dragIndex + 1
     const decreasedIndex = increasedIndex === dragIndex ? dragIndex + 1 : dragIndex
 
     if (isControlled) {
@@ -196,11 +191,23 @@ const AllocationBar: React.FC<AllocationBarProps> = ({
                 index={i}
                 isLast={i === currentItems.length - 1}
                 valueDisplay={valueDisplay}
-                onHandleMouseDown={onHandleMouseDown}
+                resizeHandle={() => {
+                  const nextIndex = i + 1
+                  if (!isResizable || nextIndex >= currentItems.length) {
+                    return null
+                  }
+
+                  return (
+                    <AllocationBarResizeHandle
+                      onHandleMouseDown={onHandleMouseDown}
+                      isEditable={item.isEditable && currentItems[nextIndex].isEditable}
+                      dragIndex={dragIndex}
+                      index={i}
+                    />
+                  )
+                }}
                 dragIndex={dragIndex}
                 isDraggable={isDraggable}
-                isResizable={isResizable}
-                isEditable={item.isEditable}
                 showDots={segmentsToShowDots[i]}
               />
             ))}
