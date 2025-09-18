@@ -59,14 +59,4 @@ const BuilderContextProvider: FC<BuilderProviderProps> = ({ children }) => {
 
 export const useBuilderContext = () => useContext(BuilderContext)
 
-const withBuilderContextProvider = <P extends object>(Component: FC<P>) => {
-  return function WrapperComponent(props: P) {
-    return (
-      <BuilderContextProvider>
-        <Component {...props} />
-      </BuilderContextProvider>
-    )
-  }
-}
-
 export const BuilderContextProviderWithPrices = withPricesContextProvider(BuilderContextProvider)
