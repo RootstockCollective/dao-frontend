@@ -1,7 +1,6 @@
 import { AllocationsContext } from '@/app/collective-rewards/allocations/context/AllocationsContext'
 import { useBuilderContext } from '@/app/collective-rewards/user/context/BuilderContext'
 import { useHandleErrors } from '@/app/collective-rewards/utils'
-import { BuilderCardControlProps } from '@/app/shared/components/BuilderCard'
 import { SpotlightBuildersGrid } from '@/app/shared/components/SpotlightBuildersGrid'
 import { Button } from '@/components/Button'
 import { LoadingSpinner } from '@/components/LoadingSpinner'
@@ -10,6 +9,7 @@ import { useCallback, useContext, useEffect, useMemo } from 'react'
 import { Address } from 'viem'
 import { useAccount } from 'wagmi'
 import { useBackingContext } from '@/app/shared/context/BackingContext'
+import { BuilderCardControlProps } from '@/app/shared/components/BuilderCard'
 
 export const Spotlight = ({ isInteractive = true }: { isInteractive?: boolean }) => {
   const router = useRouter()
@@ -99,28 +99,23 @@ export const Spotlight = ({ isInteractive = true }: { isInteractive?: boolean })
     )
   }
 
-  // TODO: type needs to be reviewed
-  let builders: BuilderCardControlProps[] = spotlightBuilders.map(builder => ({
-    builder: {
-      ...builder,
-    },
+  const builders: BuilderCardControlProps[] = spotlightBuilders.map((builder, index) => ({
+    builder,
+    index,
+    isInteractive,
+    // only include these if connected and interactive
+    ...(isConnected && isInteractive
+      ? {
+          estimatedRewards: builder.backerEstimatedRewards,
+          showAnimation: isBuilderSelected(builder.address),
+        }
+      : {}),
   }))
-
-  if (isConnected && isInteractive) {
-    builders = spotlightBuilders.map(builder => ({
-      builder: {
-        ...builder,
-      },
-      estimatedRewards: builder.backerEstimatedRewards,
-      showAnimation: isBuilderSelected(builder.address),
-    }))
-  }
 
   return (
     <>
       <SpotlightBuildersGrid
-        builderCardControls={builders}
-        isInteractive={isInteractive}
+        builders={builders}
         showBackMoreBuildersCard={hasAllocations && spotlightBuilders.length < 4}
       />
       <div className="flex justify-center self-center mt-6">
