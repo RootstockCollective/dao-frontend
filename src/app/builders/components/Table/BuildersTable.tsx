@@ -17,32 +17,9 @@ import { BuilderFilterOptionId } from './BuilderFilterDropdown'
 import { BuilderHeaderRow } from './BuilderHeaderRow'
 import { BuilderCellDataMap, ColumnId, DEFAULT_HEADERS, PAGE_SIZE } from './BuilderTable.config'
 import { Action, ActionCellProps } from './Cell/ActionCell'
-import {
-  isBuilderActive,
-  isBuilderDeactivated,
-  isBuilderInProgress,
-  isBuilderKycRevoked,
-  isBuilderPaused,
-  isBuilderSelfPaused,
-} from '@/app/collective-rewards/utils/isBuilderOperational'
 import { builderFilterMap } from './utils/builderFilters'
 
-// --- Filter builders by state ---
-const filterActive = (builder: Builder) => isBuilderActive(builder.stateFlags)
-const filterDeactivated = (builder: Builder) => isBuilderDeactivated(builder)
-const filterKycRevoked = (builder: Builder) => isBuilderKycRevoked(builder.stateFlags)
-const filterPaused = (builder: Builder) =>
-  isBuilderPaused(builder.stateFlags) || isBuilderSelfPaused(builder.stateFlags)
-const filterInProgress = (builder: Builder) => isBuilderInProgress(builder)
-
-const filterMap: Record<BuilderFilterOptionId, (builder: Builder) => boolean> = {
-  active: filterActive,
-  deactivated: filterDeactivated,
-  kycRevoked: filterKycRevoked,
-  paused: filterPaused,
-  inProgress: filterInProgress,
-  all: () => true,
-}
+// Filter logic is now centralized in builderFilters.ts
 
 // TODO: this is a temporary solution to filter builders by state.
 type PagedFilter = {
@@ -250,9 +227,9 @@ export const BuildersTable = ({ filterOption }: { filterOption: BuilderFilterOpt
 
   return (
     <>
-      <div className="w-full overflow-x-auto bg-v3-bg-accent-80">
-        <table className="w-full min-w-[700px]">
-          <thead>
+      <div className="w-full min-w-full bg-v3-bg-accent-80 md:overflow-x-auto">
+        <table className="w-full min-w-full table-fixed md:min-w-[700px] md:table-auto">
+          <thead className="hidden md:table-header-group">
             <BuilderHeaderRow actions={actions} />
           </thead>
           <Suspense fallback={<div>Loading table data...</div>}>
