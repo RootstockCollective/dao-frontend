@@ -4,8 +4,9 @@ import { DEFAULT_ICON_SIZE } from './constants'
 export function KotoChevronDownIcon({
   'aria-label': ariaLabel = 'Chevron Up Icon',
   size = DEFAULT_ICON_SIZE,
-  color = '#171412',
+  color,
   fill = color,
+  className,
   ...props
 }: IconProps) {
   return (
@@ -16,11 +17,12 @@ export function KotoChevronDownIcon({
       viewBox="0 0 24 24"
       fill="none"
       {...props}
+      className={className}
     >
       <g clipPath="url(#clip0_9188_12473)">
         <path
           d="M19 8L12 16L5 8"
-          stroke={color}
+          stroke={color || 'currentColor'}
           strokeWidth="1.25"
           strokeLinecap="round"
           strokeLinejoin="round"
