@@ -71,6 +71,7 @@ const AllocationBar: React.FC<AllocationBarProps> = ({
   const onHandleMouseDown = (idx: number) => {
     return (e: React.MouseEvent) => {
       e.preventDefault()
+      e.stopPropagation()
       setDragIndex(idx)
     }
   }
@@ -178,49 +179,42 @@ const AllocationBar: React.FC<AllocationBarProps> = ({
             style={{ height }}
           >
             {currentItems.map((item, i) => (
-              <AllocationBarSegment
-                key={item.key}
-                pendingValue={currentValues[i]}
-                onchainValue={item.initialValue ?? 0n}
-                totalBacking={totalBacking}
-                item={item}
-                index={i}
-                isLast={i === currentItems.length - 1}
-                valueDisplay={valueDisplay}
-                isCollapsed={segmentsToCollapse.includes(i)}
-                tooltip={() => (
-                  <AllocationBarTooltipContent
-                    builderAddress={item.key}
-                    displayColor={item.displayColor}
-                    onchainValue={item.initialValue ?? 0n}
-                    pendingValue={currentValues[i]}
-                    percentage={
-                      valueDisplay.showPercent
-                        ? `${valueToPercentage(currentValues[i], totalBacking).toFixed(
-                            valueDisplay.format?.percentDecimals ?? 0,
-                          )}%`
-                        : ''
-                    }
+              <React.Fragment key={item.key}>
+                <AllocationBarSegment
+                  key={item.key}
+                  pendingValue={currentValues[i]}
+                  onchainValue={item.initialValue ?? 0n}
+                  totalBacking={totalBacking}
+                  item={item}
+                  valueDisplay={valueDisplay}
+                  isCollapsed={segmentsToCollapse.includes(i)}
+                  tooltip={() => (
+                    <AllocationBarTooltipContent
+                      builderAddress={item.key}
+                      displayColor={item.displayColor}
+                      onchainValue={item.initialValue ?? 0n}
+                      pendingValue={currentValues[i]}
+                      percentage={
+                        valueDisplay.showPercent
+                          ? `${valueToPercentage(currentValues[i], totalBacking).toFixed(
+                              valueDisplay.format?.percentDecimals ?? 0,
+                            )}%`
+                          : ''
+                      }
+                    />
+                  )}
+                  dragIndex={dragIndex}
+                  isDraggable={isDraggable}
+                />
+                {i < currentItems.length - 1 && (
+                  <AllocationBarResizeHandle
+                    onHandleMouseDown={onHandleMouseDown}
+                    isEditable={item.isEditable && currentItems[i + 1].isEditable}
+                    dragIndex={dragIndex}
+                    index={i}
                   />
                 )}
-                resizeHandle={() => {
-                  const nextIndex = i + 1
-                  if (!isResizable || nextIndex >= currentItems.length) {
-                    return null
-                  }
-
-                  return (
-                    <AllocationBarResizeHandle
-                      onHandleMouseDown={onHandleMouseDown}
-                      isEditable={item.isEditable && currentItems[nextIndex].isEditable}
-                      dragIndex={dragIndex}
-                      index={i}
-                    />
-                  )
-                }}
-                dragIndex={dragIndex}
-                isDraggable={isDraggable}
-              />
+              </React.Fragment>
             ))}
           </div>
         </SortableContext>

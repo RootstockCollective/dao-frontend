@@ -1,3 +1,4 @@
+import { CommonComponentProps } from '@/components/commonProps'
 import { MoreIcon } from '@/components/Icons/MoreIcon'
 import { Tooltip } from '@/components/Tooltip'
 import { cn } from '@/lib/utils'
@@ -43,16 +44,13 @@ const AllocationBarSegmentPercent = ({
   )
 }
 
-interface AllocationBarSegmentProps {
+interface AllocationBarSegmentProps extends CommonComponentProps {
   pendingValue: bigint
   onchainValue: bigint
   totalBacking: bigint
   item: AllocationItem
-  index: number
-  isLast: boolean
   valueDisplay: AllocationBarValueDisplay
   tooltip: () => React.ReactNode
-  resizeHandle?: () => React.ReactNode
   isCollapsed: boolean
   dragIndex: number | null
   isDraggable: boolean
@@ -63,18 +61,15 @@ export const AllocationBarSegment = ({
   onchainValue,
   totalBacking,
   item,
-  index,
-  isLast,
   valueDisplay,
-  tooltip: lazyTooltip,
-  resizeHandle = () => null,
+  tooltip,
   isCollapsed,
   dragIndex,
   isDraggable,
+  className,
 }: AllocationBarSegmentProps) => {
   const { attributes, listeners, setNodeRef, transform, isDragging } = useSortable({ id: item.key })
 
-  const ResizeHandle = resizeHandle()
   // Calculate the percentage width based on the actual value and total value
   const percentageWidth = valueToPercentage(pendingValue, totalBacking)
 
@@ -93,29 +88,34 @@ export const AllocationBarSegment = ({
   const transitionClasses =
     dragIndex !== null ? 'transition-none' : 'transition-transform duration-200 ease-out'
   const dragStateClasses = isDragging ? 'opacity-60 z-[99]' : 'opacity-100'
-  const borderClasses = `${index === 0 ? 'rounded-l-sm' : ''} ${isLast ? 'rounded-r-sm' : ''}`
-  const positionClasses = !isLast ? 'mr-2' : ''
 
   return (
-    <Tooltip hidden={isCollapsed} text={!isCollapsed && lazyTooltip()} side="top" align="center">
+    <Tooltip hidden={isCollapsed} text={!isCollapsed && tooltip()} side="top" align="center">
       {
         <div
           ref={setNodeRef}
           style={style}
-          className={cn(baseClasses, transitionClasses, dragStateClasses, borderClasses, positionClasses)}
+          className={cn(
+            'first:rounded-l-sm last:rounded-r-sm',
+            baseClasses,
+            transitionClasses,
+            dragStateClasses,
+            className,
+          )}
         >
           {/* DRAG HANDLE of the size of the segment */}
           {isDraggable && <AllocationBarDragHandle attributes={attributes} listeners={listeners} />}
 
           <div className="flex-1 flex items-center justify-center">
-            {isCollapsed ? (
-              <Tooltip text={lazyTooltip()} side="top" align="center" className="z-10 text-lg">
+            {isCollapsed && (
+              <Tooltip text={tooltip()} side="top" align="center" className="z-10 text-lg">
                 <MoreIcon
                   size={16}
                   className="absolute -top-7 left-1/2 -translate-x-1/2  cursor-pointer z-10"
                 />
               </Tooltip>
-            ) : (
+            )}
+            {!isCollapsed && (
               <AllocationBarSegmentPercent
                 pendingValue={pendingValue}
                 totalBacking={totalBacking}
@@ -125,7 +125,6 @@ export const AllocationBarSegment = ({
               />
             )}
           </div>
-          {ResizeHandle}
         </div>
       }
     </Tooltip>
