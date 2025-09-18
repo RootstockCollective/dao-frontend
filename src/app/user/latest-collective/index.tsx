@@ -62,10 +62,8 @@ export const LatestCollectiveSection = ({
         </Header>
         <div className="mt-4 md:px-6 pl-6 pr-0">
           <SpotlightBuildersGrid
-            builderCardControls={randomBuilders.map(builder => ({
-              builder: {
-                ...builder,
-              },
+            builders={randomBuilders.map(builder => ({
+              builder,
             }))}
           />
         </div>
