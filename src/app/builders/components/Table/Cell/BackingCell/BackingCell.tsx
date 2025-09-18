@@ -10,6 +10,7 @@ export interface BackingCellProps extends CommonComponentProps {
   formattedAmount: string
   formattedUsdAmount: string
   emptyPlaceholder?: ReactNode
+  showUsd?: boolean
 }
 
 export const BackingCell = ({
@@ -18,13 +19,17 @@ export const BackingCell = ({
   formattedAmount,
   formattedUsdAmount,
   emptyPlaceholder = null,
+  showUsd = true,
 }: BackingCellProps): ReactNode => {
   if (amount === 0n) {
     return emptyPlaceholder
   }
 
   return (
-    <div className={cn('flex justify-end items-end gap-2', className)} data-testid="BackingCell">
+    <div
+      className={cn('flex justify-end gap-2', showUsd ? 'items-end' : 'items-center')}
+      data-testid="BackingCell"
+    >
       <div className="flex flex-col items-end">
         <BaseTypography
           variant="body"
@@ -32,23 +37,27 @@ export const BackingCell = ({
         >
           {formattedAmount}
         </BaseTypography>
-        <BaseTypography
-          variant="body"
-          className="font-rootstock-sans text-xs font-normal leading-[18px] text-right text-v3-bg-accent-40"
-        >
-          {formattedUsdAmount}
-        </BaseTypography>
+        {showUsd && (
+          <BaseTypography
+            variant="body"
+            className="font-rootstock-sans text-xs font-normal leading-[18px] text-right text-v3-bg-accent-40"
+          >
+            {formattedUsdAmount}
+          </BaseTypography>
+        )}
       </div>
       <div className="flex flex-col items-start gap-1">
         <div className="flex justify-center items-center aspect-square">
           <TokenImage symbol={RIF} />
         </div>
-        <BaseTypography
-          variant="body"
-          className="font-rootstock-sans text-xs font-normal leading-[18px] text-v3-bg-accent-40"
-        >
-          USD
-        </BaseTypography>
+        {showUsd && (
+          <BaseTypography
+            variant="body"
+            className="font-rootstock-sans text-xs font-normal leading-[18px] text-v3-bg-accent-40"
+          >
+            USD
+          </BaseTypography>
+        )}
       </div>
     </div>
   )
