@@ -22,27 +22,16 @@ export const formatShort = (n: number) => {
  */
 const filterToLastMonths = <T extends { day?: Date | number | string; start?: Date; end?: Date }>(
   data: T[],
+  getCompareDate: (item: T) => Date | number | string,
   customMinDate?: number,
   monthsInMs: number = FIVE_MONTHS_IN_MS,
 ): T[] => {
   const now = Date.now()
-  const fiveMonthsAgo = now - monthsInMs
-  const minDate = customMinDate || fiveMonthsAgo
-
+  const monthsAgo = now - monthsInMs
+  const minDate = customMinDate || monthsAgo
   return data.filter(item => {
-    // For cycles
-    if (item.start && item.end) {
-      const cycleEnd = convertToTimestamp(item.end)
-      return cycleEnd >= minDate
-    }
-
-    // For backing and rewards
-    if (item.day) {
-      const itemTime = convertToTimestamp(item.day)
-      return itemTime >= minDate
-    }
-
-    return false
+    const itemTime = convertToTimestamp(getCompareDate(item))
+    return itemTime >= minDate
   })
 }
 
@@ -215,11 +204,11 @@ export const transformApiDataToChartData = (
   const rewardsSeries: RewardsPoint[] = transformRewardsData(sortedRewardsData, rifPrice, rbtcPrice)
   const cycles: CycleWindow[] = transformCyclesData(sortedRewardsData)
 
-  const filteredRewardsSeries = filterToLastMonths(rewardsSeries)
-  const filteredCycles = filterToLastMonths(cycles)
+  const filteredRewardsSeries = filterToLastMonths(rewardsSeries, item => item.day)
+  const filteredCycles = filterToLastMonths(cycles, item => item.end)
 
   const minDate = convertToTimestamp(filteredRewardsSeries[0].day)
-  const filteredBackingSeries = filterToLastMonths(backingSeries, minDate)
+  const filteredBackingSeries = filterToLastMonths(backingSeries, item => item.day, minDate)
 
   return {
     backingSeries: filteredBackingSeries,
