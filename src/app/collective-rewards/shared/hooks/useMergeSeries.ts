@@ -1,11 +1,7 @@
 import { BackingPoint, CycleWindow, RewardsPoint } from '@/app/collective-rewards/types'
 import { useMemo } from 'react'
-import {
-  ISO_DATE_LENGTH,
-  ONE_DAY_IN_MS,
-  ONE_DAY_IN_SECONDS,
-} from '@/app/collective-rewards/constants/chartConstants'
-import { convertToTimestamp } from '@/app/collective-rewards/utils/chartUtils'
+import { ONE_DAY_IN_MS, ONE_DAY_IN_SECONDS } from '@/app/collective-rewards/constants/chartConstants'
+import { convertToTimestamp, formatDateKey } from '@/app/collective-rewards/utils/chartUtils'
 
 const calculateCycleDay = (date: Date, cycles: CycleWindow[]) => {
   const targetTime = date.getTime()
@@ -50,7 +46,7 @@ export function useMergedSeries(backing: BackingPoint[], rewards: RewardsPoint[]
 
     for (const b of backing) {
       const date = new Date(b.day)
-      const key = date.toISOString().slice(0, ISO_DATE_LENGTH)
+      const key = formatDateKey(date)
       const entry = map.get(key) ?? { day: new Date(key) }
       const cycleInfo = calculateCycleDay(date, cycles)
 
@@ -63,7 +59,7 @@ export function useMergedSeries(backing: BackingPoint[], rewards: RewardsPoint[]
 
     for (const r of rewards) {
       const date = new Date(r.day)
-      const key = date.toISOString().slice(0, ISO_DATE_LENGTH)
+      const key = formatDateKey(date)
       const entry = map.get(key) ?? { day: new Date(key) }
       const cycleInfo = calculateCycleDay(date, cycles)
 

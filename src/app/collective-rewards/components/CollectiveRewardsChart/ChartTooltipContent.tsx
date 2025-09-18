@@ -26,19 +26,39 @@ export const ChartTooltipContent = ({ active, payload, label }: ChartTooltipProp
   const cycleNumber = payload[0]?.payload?.cycle ?? 'N/A'
   const dayInCycle = payload[0]?.payload?.dayInCycle ?? 'N/A'
 
-  const displayDate = new Date(d.getTime())
+  const currentDate = new Date(d.getTime())
+  const startDate = new Date(
+    Date.UTC(currentDate.getUTCFullYear(), currentDate.getUTCMonth(), currentDate.getUTCDate(), 16, 1, 0),
+  ) // 4pm UTC
+  const endDate = new Date(startDate.getTime() + ONE_DAY_IN_MS) // Next day at 4pm UTC
+
+  const formatDateWithTime = (date: Date) => {
+    const dateStr = date.toLocaleDateString('en-US', {
+      month: 'short',
+      day: 'numeric',
+      year: 'numeric',
+    })
+    const timeStr = date.toLocaleTimeString('en-US', {
+      hour: 'numeric',
+      minute: '2-digit',
+      hour12: true,
+    })
+    return `${dateStr} ${timeStr}`
+  }
 
   return (
     <div className="p-4 bg-text-80 shadow-xl rounded flex flex-col gap-2">
-      <Span variant="body-xs" className="text-bg-100">
-        {displayDate
-          .toLocaleDateString('en-US', {
-            month: 'short',
-            day: 'numeric',
-            year: 'numeric',
-          })
-          .toUpperCase()}
-      </Span>
+      <div className="flex gap-1">
+        <Span variant="body-xs" className="text-bg-100">
+          {formatDateWithTime(startDate).toUpperCase()}
+        </Span>
+        <Span variant="body-xs" className="text-bg-100">
+          -
+        </Span>
+        <Span variant="body-xs" className="text-bg-100">
+          {formatDateWithTime(endDate).toUpperCase()}
+        </Span>
+      </div>
 
       <div className="flex flex-col gap-4">
         <div className="flex items-center gap-6">

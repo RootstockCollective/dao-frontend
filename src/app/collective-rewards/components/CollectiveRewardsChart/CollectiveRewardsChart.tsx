@@ -245,8 +245,8 @@ export function CollectiveRewardsDualAxisChart({
             return (
               <ReferenceArea
                 key={`shade-${i}`}
-                x1={c.start.getTime()}
-                x2={c.end.getTime()}
+                x1={c.start.getTime() - ONE_DAY_IN_MS}
+                x2={c.end.getTime() - ONE_DAY_IN_MS}
                 y1={0}
                 y2={9999999}
                 fill="var(--background-100)"

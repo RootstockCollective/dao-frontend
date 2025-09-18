@@ -18,6 +18,16 @@ export const formatShort = (n: number) => {
 }
 
 /**
+ * Format a date to YYYY-MM-DD format
+ */
+export const formatDateKey = (date: Date): string => {
+  const year = date.getFullYear()
+  const month = String(date.getMonth() + 1).padStart(2, '0')
+  const day = String(date.getDate()).padStart(2, '0')
+  return `${year}-${month}-${day}`
+}
+
+/**
  * Filter data to show only the last n months
  */
 const filterToLastMonths = <T extends { day?: Date | number | string; start?: Date; end?: Date }>(
@@ -43,10 +53,11 @@ const interpolateDataByDay = <T extends { day?: number; currentCycleStart?: stri
   data: T[],
   getTimestamp: (item: T) => number,
   createInterpolatedItem: (day: number, lastKnownItem: T) => T,
+  maxDate?: number,
 ): T[] => {
   const sortedData = [...data].sort((a, b) => getTimestamp(a) - getTimestamp(b))
   const startDate = getTimestamp(sortedData[0])
-  const endDate = Date.now() / 1000 + ONE_DAY_IN_SECONDS
+  const endDate = maxDate ? maxDate + ONE_DAY_IN_SECONDS : Date.now() / 1000
 
   const dataMap = new Map(sortedData.map(item => [getTimestamp(item), item]))
 
@@ -96,7 +107,7 @@ const calculateRewardsUSD = (
 /**
  * Transform backing data to BackingPoint format with interpolation
  */
-const transformBackingData = (backingData: DailyAllocationItem[]): BackingPoint[] => {
+const transformBackingData = (backingData: DailyAllocationItem[], maxDate?: number): BackingPoint[] => {
   const interpolatedData = interpolateDataByDay(
     backingData,
     item => item.day,
@@ -105,6 +116,7 @@ const transformBackingData = (backingData: DailyAllocationItem[]): BackingPoint[
       day,
       totalAllocation: lastKnownItem.totalAllocation,
     }),
+    maxDate,
   )
 
   return interpolatedData.map(item => ({
@@ -200,7 +212,10 @@ export const transformApiDataToChartData = (
     (a, b) => Number(a.currentCycleStart) - Number(b.currentCycleStart),
   )
 
-  const backingSeries: BackingPoint[] = transformBackingData(sortedBackingData)
+  // Find the maximum date from rewards. This for when a new cycle starts for both data dates to be aligned.
+  const maxRewardsDate = Math.max(...sortedRewardsData.map(item => Number(item.currentCycleStart)))
+
+  const backingSeries: BackingPoint[] = transformBackingData(sortedBackingData, maxRewardsDate)
   const rewardsSeries: RewardsPoint[] = transformRewardsData(sortedRewardsData, rifPrice, rbtcPrice)
   const cycles: CycleWindow[] = transformCyclesData(sortedRewardsData)
 
