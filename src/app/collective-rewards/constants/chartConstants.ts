@@ -8,7 +8,5 @@ export const X_DOMAIN_BUFFER = 10 * 24 * 60 * 60 * 1000 // 10 days in millisecon
 
 export const DEFAULT_CHART_HEIGHT = 420
 
-export const ISO_DATE_LENGTH = 10
-
 export const FIRST_CYCLE_START_DATE_ISO = '2024-10-30T00:00:00Z'
 export const FIRST_CYCLE_START_SECONDS = new Date(FIRST_CYCLE_START_DATE_ISO).getTime() / 1000
