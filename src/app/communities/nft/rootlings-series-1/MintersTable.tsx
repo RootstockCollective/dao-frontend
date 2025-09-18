@@ -23,7 +23,7 @@ import { useIsDesktop } from '@/shared/hooks/useIsDesktop'
 
 export function MintersTable() {
   const isDesktop = useIsDesktop()
-  const { hasGuardRole, minters = [], revokeMinterRole, revokePending } = useRootlingsS1()
+  const { hasGuardRole, minters, revokeMinterRole, revokePending } = useRootlingsS1()
   const [pagination, setPagination] = useState<PaginationState>({
     pageIndex: 0,
     pageSize: 20,
@@ -87,7 +87,7 @@ export function MintersTable() {
   return (
     <div>
       <Header variant="h3" className="mb-4 text-brand-rootstock-purple">
-        Whitelisted addresses (Minters)
+        Whitelisted addresses ({minters.length > 0 ? `${minters.length} minters total` : 'No minters found'})
       </Header>
       <GridTable
         stackFirstColumn={!isDesktop}

@@ -35,6 +35,7 @@ const emptyEnrichedData: EnrichedAddresses = {
  * Fetches minters, guards, and role info, and enriches minter data with RNS domains.
  */
 function useRootlingsS1() {
+  const [isQueryingRns, setIsQueryingRns] = useState(false)
   const { address } = useAccount()
   const [enrichedData, setEnrichedData] = useState<EnrichedAddresses>(emptyEnrichedData)
 
@@ -51,13 +52,8 @@ function useRootlingsS1() {
       { ...RootlingsS1, functionName: 'hasRole', args: address ? [whitelistGuardRole, address] : undefined },
     ],
     query: {
-      enabled: true,
       refetchInterval: 30_000, // refetch after 30 seconds
-      staleTime: 30_000,
-      retry: 1,
-      refetchIntervalInBackground: true,
       refetchOnWindowFocus: false,
-      refetchOnReconnect: false,
       select(data) {
         const [guards, minters, hasGuardRole] = data
         return {
@@ -79,24 +75,31 @@ function useRootlingsS1() {
     let isStale = false // Race condition protection: ignore old promise if effect restarts
 
     const enrichWithRns = async () => {
-      // Double map: enrich both minters and guards in a single Promise.all, single pass
-      const [minters, guards] = await Promise.all(
-        [data.minters, data.guards].map(addresses =>
-          Promise.all(
-            addresses.map(async ({ address }) => ({
-              address,
-              rns: await getEnsDomainName(address),
-            })),
+      setIsQueryingRns(true)
+      try {
+        // Double map: enrich both minters and guards in a single Promise.all, single pass
+        const [minters, guards] = await Promise.all(
+          [data.minters, data.guards].map(addresses =>
+            Promise.all(
+              addresses.map(async ({ address }) => ({
+                address,
+                rns: await getEnsDomainName(address),
+              })),
+            ),
           ),
-        ),
-      )
+        )
 
-      // Check if this result is still relevant
-      if (!isStale) {
-        setEnrichedData({
-          minters,
-          guards,
-        })
+        // Check if this result is still relevant
+        if (!isStale) {
+          setEnrichedData({
+            minters,
+            guards,
+          })
+        }
+      } finally {
+        if (!isStale) {
+          setIsQueryingRns(false)
+        }
       }
     }
 
@@ -105,6 +108,7 @@ function useRootlingsS1() {
     // Cleanup: mark result as stale when effect restarts
     return () => {
       isStale = true
+      setIsQueryingRns(false)
     }
   }, [data])
 
@@ -163,7 +167,7 @@ function useRootlingsS1() {
     () => ({
       ...enrichedData,
       hasGuardRole: data?.hasGuardRole,
-      loading: isFetching || isLoading,
+      loading: isFetching || isLoading || isQueryingRns,
       revokeMinterRole,
       revokePending: isRevokePending || isTxPending,
       reloadMinters,
@@ -172,6 +176,7 @@ function useRootlingsS1() {
       enrichedData,
       isFetching,
       isLoading,
+      isQueryingRns,
       revokeMinterRole,
       isRevokePending,
       isTxPending,
