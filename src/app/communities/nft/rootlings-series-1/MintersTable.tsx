@@ -26,13 +26,13 @@ export function MintersTable() {
   const { hasGuardRole, minters = [], revokeMinterRole, revokePending } = useRootlingsS1()
   const [pagination, setPagination] = useState<PaginationState>({
     pageIndex: 0,
-    pageSize: 3,
+    pageSize: 20,
   })
 
   const { accessor, display } = createColumnHelper<(typeof minters)[number]>()
 
   const mintersColumns = [
-    accessor('minter', {
+    accessor('address', {
       header: 'Minter address',
       cell: cell => {
         const address = cell.getValue()
@@ -53,11 +53,11 @@ export function MintersTable() {
           display({
             header: 'Revoke role',
             cell: ({ row }) => {
-              const { minter } = row.original
+              const { address } = row.original
               return (
-                <Tooltip text={`De-whitelist ${truncateMiddle(minter)}`}>
+                <Tooltip text={`De-whitelist ${truncateMiddle(address)}`}>
                   <Button
-                    onClick={() => revokeMinterRole(minter)}
+                    onClick={() => revokeMinterRole(address)}
                     variant="secondary-outline"
                     className="w-fit whitespace-nowrap"
                   >

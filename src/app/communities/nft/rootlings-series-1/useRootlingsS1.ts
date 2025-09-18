@@ -12,25 +12,38 @@ import { truncateMiddle } from '@/lib/utils'
 
 const minterRole = keccak256(stringToBytes('MINTER_ROLE'))
 const whitelistGuardRole = keccak256(stringToBytes('WHITELIST_GUARD_ROLE'))
+/** Rootlings Series 1 smart contract */
 const RootlingsS1 = {
   address: ROOTLINGS_S1_NFT_ADDRESS,
   abi: RootlingsS1ABI,
 }
-
+interface AddressWithRNS {
+  address: Address
+  rns?: string
+}
+interface EnrichedAddresses {
+  guards: AddressWithRNS[]
+  minters: AddressWithRNS[]
+}
+/** Default data for addresses enriched with known RNS domains */
+const emptyEnrichedData: EnrichedAddresses = {
+  guards: [],
+  minters: [],
+}
+/**
+ * Custom React hook for interacting with the Rootlings Series 1 NFT contract.
+ * Fetches minters, guards, and role info, and enriches minter data with RNS domains.
+ */
 function useRootlingsS1() {
   const { address } = useAccount()
-  const [enrichedData, setEnrichedData] = useState<{
-    guards: Array<{ guard: Address }>
-    minters: Array<{ minter: Address; rns?: string }>
-    hasGuardRole: boolean
-  } | null>(null)
+  const [enrichedData, setEnrichedData] = useState<EnrichedAddresses>(emptyEnrichedData)
 
   const {
     data,
     isFetching,
     isLoading,
     error: readError,
-    refetch,
+    refetch: reloadMinters,
   } = useReadContracts({
     contracts: [
       { ...RootlingsS1, functionName: 'getWhitelistGuards' },
@@ -40,14 +53,16 @@ function useRootlingsS1() {
     query: {
       enabled: true,
       refetchInterval: 30_000, // refetch after 30 seconds
+      staleTime: 30_000,
+      retry: 1,
       refetchIntervalInBackground: true,
       refetchOnWindowFocus: false,
       refetchOnReconnect: false,
       select(data) {
         const [guards, minters, hasGuardRole] = data
         return {
-          guards: guards?.result?.map(guard => ({ guard })) ?? [],
-          minters: (minters?.result ?? []).map(minter => ({ minter })),
+          guards: guards?.result?.map(address => ({ address })) ?? [],
+          minters: (minters?.result ?? []).map(address => ({ address })),
           hasGuardRole: hasGuardRole.result ?? false,
         }
       },
@@ -56,21 +71,41 @@ function useRootlingsS1() {
 
   // Enrich data with RNS domains when data changes
   useEffect(() => {
-    if (!data) return setEnrichedData(null)
+    if (!data) {
+      setEnrichedData(emptyEnrichedData)
+      return
+    }
+
+    let isStale = false // Race condition protection: ignore old promise if effect restarts
 
     const enrichWithRns = async () => {
-      const mintersWithRns = await Promise.all(
-        data.minters.map(async ({ minter }) => ({
-          minter,
-          rns: await getEnsDomainName(minter),
-        })),
+      // Double map: enrich both minters and guards in a single Promise.all, single pass
+      const [minters, guards] = await Promise.all(
+        [data.minters, data.guards].map(addresses =>
+          Promise.all(
+            addresses.map(async ({ address }) => ({
+              address,
+              rns: await getEnsDomainName(address),
+            })),
+          ),
+        ),
       )
-      setEnrichedData({
-        ...data,
-        minters: mintersWithRns,
-      })
+
+      // Check if this result is still relevant
+      if (!isStale) {
+        setEnrichedData({
+          minters,
+          guards,
+        })
+      }
     }
+
     void enrichWithRns()
+
+    // Cleanup: mark result as stale when effect restarts
+    return () => {
+      isStale = true
+    }
   }, [data])
 
   const { writeContract, isPending: isRevokePending, error: writeError, data: txHash } = useWriteContract()
@@ -110,6 +145,9 @@ function useRootlingsS1() {
       toast.error(writeError.message, {
         toastId: 'rootlings-write-error',
       })
+    } else {
+      // Dismiss toast when write error is cleared
+      toast.dismiss('rootlings-write-error')
     }
   }, [readError, writeError])
 
@@ -117,18 +155,29 @@ function useRootlingsS1() {
   useEffect(() => {
     if (isTxConfirmed && txHash) {
       toast.success(`Minter role revoked successfully! Tx: ${truncateMiddle(txHash)}`)
-      refetch()
+      reloadMinters()
     }
-  }, [isTxConfirmed, txHash, refetch])
+  }, [isTxConfirmed, txHash, reloadMinters])
 
   return useMemo(
     () => ({
       ...enrichedData,
+      hasGuardRole: data?.hasGuardRole,
       loading: isFetching || isLoading,
       revokeMinterRole,
       revokePending: isRevokePending || isTxPending,
+      reloadMinters,
     }),
-    [enrichedData, isFetching, isLoading, revokeMinterRole, isRevokePending, isTxPending],
+    [
+      enrichedData,
+      isFetching,
+      isLoading,
+      revokeMinterRole,
+      isRevokePending,
+      isTxPending,
+      reloadMinters,
+      data?.hasGuardRole,
+    ],
   )
 }
 
