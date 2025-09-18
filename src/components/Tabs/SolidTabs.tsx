@@ -11,7 +11,7 @@ interface SolidTabsProps extends Tabs.TabsProps {
 }
 
 const BASE_TABS_CLASSES =
-  'relative px-4 py-[2px] rounded-[3px] transition-all duration-200 min-w-[80px] h-[28px] flex items-center justify-center'
+  'relative px-4 py-1 sm:px-2 sm:py-[2px] rounded-[3px] transition-all duration-200 min-w-[80px] h-[28px] flex items-center justify-center flex-1 sm:flex-unset'
 
 /**
  * Accessible tab navigation component with solid styling and smooth transitions between states.
@@ -21,10 +21,10 @@ export function SolidTabs({ tabs, activeTab, onTabChange, children, className, .
   return (
     <div className={className}>
       <div className="flex flex-row items-center">
-        <hr className="w-full bg-bg-60 border-none h-px mr-2" />
-        <Tabs.Root value={activeTab} onValueChange={onTabChange} {...props}>
-          <div className="inline-flex bg-bg-100 rounded-md p-0.5">
-            <Tabs.List className="flex flex-row">
+        <hr className="hidden sm:block w-full bg-bg-60 border-none h-px mr-2" />
+        <Tabs.Root value={activeTab} onValueChange={onTabChange} {...props} className="flex-1 sm:flex-unset">
+          <div className="inline-flex bg-bg-100 rounded-md p-0.5 w-full sm:w-unset">
+            <Tabs.List className="flex flex-row w-full sm:w-unset">
               {tabs.map(tab => (
                 <Tabs.Trigger
                   key={tab}
@@ -42,7 +42,7 @@ export function SolidTabs({ tabs, activeTab, onTabChange, children, className, .
             </Tabs.List>
           </div>
         </Tabs.Root>
-        <hr className="w-full bg-bg-60 border-none h-px ml-2" />
+        <hr className="hidden sm:block w-full bg-bg-60 border-none h-px ml-2" />
       </div>
       <AnimatePresence mode="wait">
         <motion.div
