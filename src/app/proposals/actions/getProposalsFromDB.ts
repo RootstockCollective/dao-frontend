@@ -12,7 +12,7 @@ function transformProposal(proposal: any): ProposalApiResponse {
   })
 }
 
-export async function getProposalsFromDB() {
+export async function getProposalsFromDB(): Promise<ProposalApiResponse[]> {
   const result = await db('Proposal')
     .select(
       'proposalId',

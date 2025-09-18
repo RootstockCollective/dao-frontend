@@ -5,6 +5,9 @@ import {
   serializeBigInts,
 } from '@/app/proposals/shared/utils'
 import { formatEther } from 'viem'
+
+const ONE_ETHER = Big('1e18')
+
 export function buildProposal(
   proposal: any,
   {
@@ -17,10 +20,10 @@ export function buildProposal(
     proposerTransform: (proposer: any) => `0x${string}`
   },
 ) {
-  const againstVotes = Big(proposal.votesAgainst).div(Big('1e18')).round()
-  const forVotes = Big(proposal.votesFor).div(Big('1e18')).round()
-  const abstainVotes = Big(proposal.votesAbstains).div(Big('1e18')).round()
-  const deadlineBlock = Big(proposal.voteEnd)
+  const againstVotes = safeBig(proposal.votesAgainst).div(ONE_ETHER).round()
+  const forVotes = safeBig(proposal.votesFor).div(ONE_ETHER).round()
+  const abstainVotes = safeBig(proposal.votesAbstains).div(ONE_ETHER).round()
+  const deadlineBlock = safeBig(proposal.voteEnd)
   const creationBlock = Number(proposal.createdAtBlock)
 
   const eventArgs = getProposalEventArguments({
@@ -48,7 +51,7 @@ export function buildProposal(
     voteStart: proposal.voteStart,
     voteEnd: proposal.voteEnd,
     votingPeriod: deadlineBlock.minus(creationBlock).toString(),
-    quorumAtSnapshot: Big(formatEther(BigInt(proposal.quorum ?? 0n)))
+    quorumAtSnapshot: safeBig(formatEther(BigInt(proposal.quorum ?? 0n)))
       .round(undefined, Big.roundHalfEven)
       .toString(),
     proposalDeadline: deadlineBlock.toString(),
@@ -61,5 +64,14 @@ export function buildProposal(
     proposalId: eventArgs.proposalId,
     Starts: eventArgs.Starts.toISOString(),
     blockNumber: eventArgs.blockNumber,
+  }
+}
+
+function safeBig(value: any, defaultValue: string | number = '0') {
+  try {
+    if (value === null || value === undefined || value === '') return Big(defaultValue)
+    return Big(value)
+  } catch {
+    return Big(defaultValue)
   }
 }
