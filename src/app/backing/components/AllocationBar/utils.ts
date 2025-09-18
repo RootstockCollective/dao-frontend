@@ -1,3 +1,5 @@
+import Big from "big.js"
+
 // Checkerboard style generator
 export const checkerboardStyle = (): React.CSSProperties => ({
   backgroundImage: `
@@ -15,13 +17,33 @@ export const calculateSegmentPositions = (
   rect: DOMRect,
   values: bigint[],
   totalValue: bigint,
-) => {
-  let cumSum = 0n
-  for (let i = 0; i < dragIndex; ++i) cumSum += values[i]
-  const leftPx = Number((cumSum * BigInt(rect.width)) / totalValue)
-  const rightPx = Number(
-    ((cumSum + values[dragIndex] + values[dragIndex + 1]) * BigInt(rect.width)) / totalValue,
-  )
+  losless?: boolean, // FIXME: remove (and the coresponding calculation) if precision is not needed
+): {
+  leftPx: number
+  rightPx: number
+} => {
+  const valuesUpToDragItem = values.reduce((a, b, i) => a + (i < dragIndex ? b : 0n), 0n)
+
+  const targetItem = values[dragIndex]
+  const adjacentItem = values[dragIndex + 1]
+
+  if (totalValue === 0n) {
+    return { leftPx: 0, rightPx: 0 }
+  }
+
+  if (losless) {
+    const leftPx = Big(valuesUpToDragItem.toString()).mul(rect.width).div(totalValue.toString())
+    const rightPx = Big(valuesUpToDragItem.toString())
+      .add(Big(targetItem.toString()))
+      .add(Big(adjacentItem.toString()))
+      .mul(rect.width)
+      .div(totalValue.toString())
+
+    return { leftPx: Number(leftPx), rightPx: Number(rightPx) }
+  }
+
+  const leftPx = (Number(valuesUpToDragItem) * rect.width / Number(totalValue))
+  const rightPx = ((Number(valuesUpToDragItem) + Number(targetItem) + Number(adjacentItem)) * rect.width / Number(totalValue))
 
   return { leftPx, rightPx }
 }
@@ -33,9 +55,23 @@ export const calculateNewSegmentValues = (
   dragIndex: number,
   values: bigint[],
   minSegmentValue: bigint = 0n,
-) => {
-  const pairSum = values[dragIndex] + values[dragIndex + 1]
+): {
+  leftValue: bigint
+  rightValue: bigint
+} => {
+  const targetItem = values[dragIndex]
+  const adjacentItem = values[dragIndex + 1]
+
+  const pairSum = targetItem + adjacentItem
+  if (pairSum === 0n) {
+    return { leftValue: 0n, rightValue: 0n }
+  }
   const totalPairPx = rightPx - leftPx
+
+  if (totalPairPx === 0) {
+    return { leftValue: targetItem, rightValue: adjacentItem }
+  }
+
   const minLeftPx = pairSum > 0n ? (Number(minSegmentValue) / Number(pairSum)) * totalPairPx : 0
   const maxLeftPx = totalPairPx - minLeftPx
 
