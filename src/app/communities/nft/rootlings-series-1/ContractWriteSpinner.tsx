@@ -7,9 +7,6 @@ import { useRootlingsS1 } from './useRootlingsS1'
 export function ContractWriteSpinner() {
   const { pending } = useRootlingsS1()
 
-  // Debug logging
-  console.log('ContractWriteSpinner - pending:', pending)
-
   if (!pending) return null
   return (
     <div className="fixed inset-0 flex items-center justify-center bg-black/30 z-50">
