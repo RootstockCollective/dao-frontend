@@ -1,6 +1,7 @@
 import { AllocationsContext } from '@/app/collective-rewards/allocations/context'
-import { isBuilderOperational, isBuilderSelfPaused } from '@/app/collective-rewards/utils'
+import { isBuilderRewardable } from '@/app/collective-rewards/utils'
 import { floorToUnit, getBuilderColor } from '@/app/shared/components/utils'
+import { shortAddress } from '@/lib/utils'
 import { useCallback, useContext, useEffect, useMemo, useState } from 'react'
 import { Address, zeroAddress } from 'viem'
 import AllocationBar from '../AllocationBar/AllocationBar'
@@ -105,12 +106,12 @@ const BuilderAllocationBar = ({ barOverrides }: { barOverrides?: Partial<Allocat
 
         return {
           key,
-          label: builder?.builderName || key,
+          label: builder?.builderName || shortAddress(key),
           value,
           initialValue,
           displayColor: getBuilderColor(key),
           isTemporary: initialData.allocations[key] !== allocation,
-          isEditable: isBuilderOperational(builder?.stateFlags) && !isBuilderSelfPaused(builder?.stateFlags),
+          isEditable: isBuilderRewardable(builder?.stateFlags),
         }
       })
       .filter(item => item !== null)

@@ -51,6 +51,7 @@ interface AllocationBarSegmentProps extends CommonComponentProps {
   item: AllocationItem
   valueDisplay: AllocationBarValueDisplay
   tooltip: () => React.ReactNode
+  resizeHandle: () => React.ReactNode
   isCollapsed: boolean
   dragIndex: number | null
   isDraggable: boolean
@@ -63,6 +64,7 @@ export const AllocationBarSegment = ({
   item,
   valueDisplay,
   tooltip,
+  resizeHandle,
   isCollapsed,
   dragIndex,
   isDraggable,
@@ -125,6 +127,7 @@ export const AllocationBarSegment = ({
               />
             )}
           </div>
+          {resizeHandle()}
         </div>
       }
     </Tooltip>
