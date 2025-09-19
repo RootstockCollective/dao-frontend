@@ -39,7 +39,7 @@ export const BalanceInfo: FC<Props> = ({
         )}
       </div>
 
-      <div className="flex items-end flex-row gap-2 mt-4">
+      <div className="flex items-end flex-row gap-2 mt-1.5 sm:mt-4">
         <Header variant="h1" className="flex items-end flex-row gap-2" data-testid={`Amount-${symbol}`}>
           {amount}
         </Header>
