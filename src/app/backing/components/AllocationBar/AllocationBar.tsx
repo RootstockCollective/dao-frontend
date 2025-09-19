@@ -1,11 +1,13 @@
 import { DndContext, DragEndEvent, PointerSensor, pointerWithin, useSensor, useSensors } from '@dnd-kit/core'
 import { restrictToHorizontalAxis } from '@dnd-kit/modifiers'
 import { SortableContext, arrayMove, horizontalListSortingStrategy } from '@dnd-kit/sortable'
-import React, { useEffect, useRef, useState } from 'react'
+import React, { Fragment, useEffect, useRef, useState } from 'react'
 
 import { Legend } from '@/components/Legend'
 import { cn } from '@/lib/utils'
 import { AllocationBarSegment } from './AllocationBarSegment'
+import { AllocationBarTooltip } from './AllocationBarTooltip'
+import { ResizeHandle } from './ResizeHandle'
 import { AllocationBarProps } from './types'
 import {
   calculateMinSegmentValue,
@@ -15,30 +17,26 @@ import {
   valueToPercentage,
 } from './utils'
 
-const getSegmentsToShowDots = (values: bigint[], totalValue: bigint): boolean[] => {
-  const NEIGHBOR_SUM_THRESHOLD = 8 // 8%
-  const segmentsToShowDots = new Array(values.length).fill(false)
+const COLLAPSE_SEGMENT_SIZE_THRESHOLD = 8 // 8%
+const getSegmentsToCollapse = (values: bigint[], totalValue: bigint): number[] =>
+  values
+    .filter((value, i) => {
+      const currentPercentage = valueToPercentage(value, totalValue)
 
-  for (let i = 0; i < values.length; i++) {
-    const currentPercentage = valueToPercentage(values[i], totalValue)
-
-    // Check if current segment has a neighbor and their sum is up to the threshold
-    const hasSmallNeighborSum =
-      (i > 0 && currentPercentage + valueToPercentage(values[i - 1], totalValue) <= NEIGHBOR_SUM_THRESHOLD) ||
-      (i < values.length - 1 &&
-        currentPercentage + valueToPercentage(values[i + 1], totalValue) <= NEIGHBOR_SUM_THRESHOLD)
-
-    segmentsToShowDots[i] = hasSmallNeighborSum
-  }
-
-  return segmentsToShowDots
-}
+      return (
+        (i > 0 &&
+          currentPercentage + valueToPercentage(values[i - 1], totalValue) <=
+            COLLAPSE_SEGMENT_SIZE_THRESHOLD) ||
+        (i < values.length - 1 &&
+          currentPercentage + valueToPercentage(values[i + 1], totalValue) <= COLLAPSE_SEGMENT_SIZE_THRESHOLD)
+      )
+    })
+    .map((_, i) => i)
 
 const AllocationBar: React.FC<AllocationBarProps> = ({
   itemsData,
   height = '96px',
   isDraggable = true,
-  isResizable = true,
   valueDisplay = {
     showPercent: true,
     format: { percentDecimals: 0 },
@@ -58,9 +56,6 @@ const AllocationBar: React.FC<AllocationBarProps> = ({
   const totalBacking = currentValues.reduce((sum, v) => sum + v, 0n)
   const minSegmentValue = calculateMinSegmentValue(totalBacking)
 
-  // Calculate which segments should show dots
-  const segmentsToShowDots = getSegmentsToShowDots(currentValues, totalBacking)
-
   const barRef = useRef<HTMLDivElement>(null)
   const [dragIndex, setDragIndex] = useState<number | null>(null)
 
@@ -72,20 +67,31 @@ const AllocationBar: React.FC<AllocationBarProps> = ({
   )
 
   // Start drag handler
-  const onHandleMouseDown = (idx: number) => (e: React.MouseEvent) => {
-    setDragIndex(idx)
-    e.preventDefault()
+  const onHandleMouseDown = (idx: number) => {
+    return (e: React.MouseEvent) => {
+      e.preventDefault()
+      e.stopPropagation()
+      setDragIndex(idx)
+    }
   }
 
   // Handle resize logic
   const handleResize = ({ clientX }: MouseEvent) => {
     if (dragIndex === null || !barRef.current) return
 
+    const targetSegment = currentItems.at(dragIndex)
+    const adjecentSegment = currentItems.at(dragIndex + 1)
+
+    // Prevent resizing if either of the involved segments is not editable
+    if (!(adjecentSegment?.isEditable && targetSegment?.isEditable)) {
+      return
+    }
+
     const rect = barRef.current.getBoundingClientRect()
     const x = clamp(clientX - rect.left, 0, rect.width)
 
     const { leftPx, rightPx } = calculateSegmentPositions(dragIndex, rect, currentValues, totalBacking)
-    const { leftValue, rightValue } = calculateNewSegmentValues(
+    const { leftValue: targetSegmentValue, rightValue: adjecentSegmentValue } = calculateNewSegmentValues(
       x,
       leftPx,
       rightPx,
@@ -95,10 +101,10 @@ const AllocationBar: React.FC<AllocationBarProps> = ({
     )
 
     const newValues = [...currentValues]
-    newValues[dragIndex] = leftValue
-    newValues[dragIndex + 1] = rightValue
+    newValues[dragIndex] = targetSegmentValue
+    newValues[dragIndex + 1] = adjecentSegmentValue
 
-    const increasedIndex = leftValue > currentValues[dragIndex] ? dragIndex : dragIndex + 1
+    const increasedIndex = targetSegmentValue > currentValues[dragIndex] ? dragIndex : dragIndex + 1
     const decreasedIndex = increasedIndex === dragIndex ? dragIndex + 1 : dragIndex
 
     if (isControlled) {
@@ -155,6 +161,7 @@ const AllocationBar: React.FC<AllocationBarProps> = ({
     }
   }
 
+  const segmentsToCollapse: number[] = getSegmentsToCollapse(currentValues, totalBacking)
   return (
     <div className={cn('w-full p-8 flex flex-col gap-6', className)}>
       <DndContext
@@ -171,21 +178,39 @@ const AllocationBar: React.FC<AllocationBarProps> = ({
             style={{ height }}
           >
             {currentItems.map((item, i) => (
-              <AllocationBarSegment
-                key={item.key}
-                pendingValue={currentValues[i]}
-                onchainValue={item.initialValue ?? 0n}
-                totalBacking={totalBacking}
-                item={item}
-                index={i}
-                isLast={i === currentItems.length - 1}
-                valueDisplay={valueDisplay}
-                onHandleMouseDown={onHandleMouseDown}
-                dragIndex={dragIndex}
-                isDraggable={isDraggable}
-                isResizable={isResizable}
-                showDots={segmentsToShowDots[i]}
-              />
+              <Fragment key={item.key}>
+                <AllocationBarSegment
+                  key={item.key}
+                  pendingValue={currentValues[i]}
+                  onchainValue={item.initialValue ?? 0n}
+                  totalBacking={totalBacking}
+                  item={item}
+                  valueDisplay={valueDisplay}
+                  isCollapsed={segmentsToCollapse.includes(i)}
+                  resizeHandle={() =>
+                    i < currentItems.length - 1 && (
+                      <ResizeHandle
+                        onMouseDown={onHandleMouseDown(i)}
+                        isEditable={
+                          item.isEditable && i + 1 < currentItems.length && currentItems[i + 1].isEditable
+                        }
+                        isHighlighted={dragIndex === i}
+                      />
+                    )
+                  }
+                  tooltip={() => (
+                    <AllocationBarTooltip
+                      item={item}
+                      index={i}
+                      items={currentItems}
+                      values={currentValues}
+                      dragIndex={dragIndex}
+                    />
+                  )}
+                  dragIndex={dragIndex}
+                  isDraggable={isDraggable}
+                />
+              </Fragment>
             ))}
           </div>
         </SortableContext>
