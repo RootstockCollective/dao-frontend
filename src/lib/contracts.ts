@@ -25,10 +25,8 @@ import {
   STRIF,
   RBTC,
   USDRIF,
-  ROOTLINGS_S1_NFT_ADDRESS,
 } from './constants'
 import { GovernorAbi } from './abis/Governor'
-import { RootlingsS1ABI } from './abis/RootlingsS1'
 
 const tokenContracts = {
   [RIF]: RIF_ADDRESS,
@@ -50,7 +48,6 @@ const nftContracts = {
   OG_CONTRIBUTORS: OG_CONTRIBUTORS_NFT_ADDRESS,
   VANGUARD: VANGUARD_NFT_ADDRESS,
   BB: BB_NFT_ADDRESS, // Beta Builders
-  ROOTLINGS_S1: ROOTLINGS_S1_NFT_ADDRESS, // Rootlings series 1 NFT
 }
 
 export const DEFAULT_NFT_CONTRACT_ABI = EarlyAdoptersNFTAbi
@@ -62,7 +59,6 @@ const abiContractsMap = {
   [nftContracts.OG_PARTNERS]: EarlyAdoptersNFTAbi,
   [nftContracts.VANGUARD]: VotingVanguardsNftAbi,
   [nftContracts.BB]: EarlyAdoptersNFTAbi,
-  [nftContracts.ROOTLINGS_S1]: RootlingsS1ABI,
 }
 
 const treasuryContracts = {
