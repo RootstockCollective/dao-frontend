@@ -1,13 +1,13 @@
 import { DndContext, DragEndEvent, PointerSensor, pointerWithin, useSensor, useSensors } from '@dnd-kit/core'
 import { restrictToHorizontalAxis } from '@dnd-kit/modifiers'
 import { SortableContext, arrayMove, horizontalListSortingStrategy } from '@dnd-kit/sortable'
-import React, { useEffect, useRef, useState } from 'react'
+import React, { Fragment, useEffect, useRef, useState } from 'react'
 
 import { Legend } from '@/components/Legend'
 import { cn } from '@/lib/utils'
-import { AllocationBarResizeHandle } from './AllocationBarResizeHandle'
 import { AllocationBarSegment } from './AllocationBarSegment'
-import { AllocationBarTooltipContent } from './AllocationBarTooltipContent'
+import { AllocationBarTooltip } from './AllocationBarTooltip'
+import { ResizeHandle } from './ResizeHandle'
 import { AllocationBarProps } from './types'
 import {
   calculateMinSegmentValue,
@@ -37,7 +37,6 @@ const AllocationBar: React.FC<AllocationBarProps> = ({
   itemsData,
   height = '96px',
   isDraggable = true,
-  isResizable = true,
   valueDisplay = {
     showPercent: true,
     format: { percentDecimals: 0 },
@@ -179,7 +178,7 @@ const AllocationBar: React.FC<AllocationBarProps> = ({
             style={{ height }}
           >
             {currentItems.map((item, i) => (
-              <React.Fragment key={item.key}>
+              <Fragment key={item.key}>
                 <AllocationBarSegment
                   key={item.key}
                   pendingValue={currentValues[i]}
@@ -188,33 +187,30 @@ const AllocationBar: React.FC<AllocationBarProps> = ({
                   item={item}
                   valueDisplay={valueDisplay}
                   isCollapsed={segmentsToCollapse.includes(i)}
+                  resizeHandle={() =>
+                    i < currentItems.length - 1 && (
+                      <ResizeHandle
+                        onMouseDown={onHandleMouseDown(i)}
+                        isEditable={
+                          item.isEditable && i + 1 < currentItems.length && currentItems[i + 1].isEditable
+                        }
+                        isHighlighted={dragIndex === i}
+                      />
+                    )
+                  }
                   tooltip={() => (
-                    <AllocationBarTooltipContent
-                      builderAddress={item.key}
-                      displayColor={item.displayColor}
-                      onchainValue={item.initialValue ?? 0n}
-                      pendingValue={currentValues[i]}
-                      percentage={
-                        valueDisplay.showPercent
-                          ? `${valueToPercentage(currentValues[i], totalBacking).toFixed(
-                              valueDisplay.format?.percentDecimals ?? 0,
-                            )}%`
-                          : ''
-                      }
+                    <AllocationBarTooltip
+                      item={item}
+                      index={i}
+                      items={currentItems}
+                      values={currentValues}
+                      dragIndex={dragIndex}
                     />
                   )}
                   dragIndex={dragIndex}
                   isDraggable={isDraggable}
                 />
-                {i < currentItems.length - 1 && (
-                  <AllocationBarResizeHandle
-                    onHandleMouseDown={onHandleMouseDown}
-                    isEditable={item.isEditable && currentItems[i + 1].isEditable}
-                    dragIndex={dragIndex}
-                    index={i}
-                  />
-                )}
-              </React.Fragment>
+              </Fragment>
             ))}
           </div>
         </SortableContext>

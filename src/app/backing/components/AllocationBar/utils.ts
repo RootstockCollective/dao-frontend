@@ -1,4 +1,4 @@
-import Big from "big.js"
+import Big from 'big.js'
 
 // Checkerboard style generator
 export const checkerboardStyle = (): React.CSSProperties => ({
@@ -42,8 +42,10 @@ export const calculateSegmentPositions = (
     return { leftPx: Number(leftPx), rightPx: Number(rightPx) }
   }
 
-  const leftPx = (Number(valuesUpToDragItem) * rect.width / Number(totalValue))
-  const rightPx = ((Number(valuesUpToDragItem) + Number(targetItem) + Number(adjacentItem)) * rect.width / Number(totalValue))
+  const leftPx = (Number(valuesUpToDragItem) * rect.width) / Number(totalValue)
+  const rightPx =
+    ((Number(valuesUpToDragItem) + Number(targetItem) + Number(adjacentItem)) * rect.width) /
+    Number(totalValue)
 
   return { leftPx, rightPx }
 }
