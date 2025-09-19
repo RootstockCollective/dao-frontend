@@ -3,7 +3,7 @@ import { Button } from '@/components/Button'
 import { Paragraph } from '@/components/Typography'
 import { SelectableItem } from '@/components/SelectableItem'
 import { BuilderFilterOption, BuilderFilterOptionId } from './BuilderFilterDropdown'
-import { ColumnId } from './BuilderTable.config'
+import { ColumnId, SORT_OPTIONS } from './BuilderTable.config'
 import { FC, useState, useEffect } from 'react'
 import { TrashIcon } from '@/components/Icons'
 import { SORT_DIRECTION_ASC, SORT_DIRECTION_DESC } from '@/shared/context/TableContext/constants'
@@ -36,21 +36,22 @@ export const MobileFilterModal: FC<MobileFilterModalProps> = ({
   const [tempSortDirection, setTempSortDirection] = useState<SortDirection | null>(currentSortDirection)
 
   // Sync internal state when modal opens or current values change
+  const resetTempState = () => {
+    setTempFilter(currentFilter)
+    setTempSort(currentSort)
+    setTempSortDirection(currentSortDirection)
+  }
+
   useEffect(() => {
     if (isOpen) {
-      setTempFilter(currentFilter)
-      setTempSort(currentSort)
-      setTempSortDirection(currentSortDirection)
+      resetTempState()
     }
   }, [isOpen, currentFilter, currentSort, currentSortDirection])
 
   if (!isOpen) return null
 
   const handleClose = () => {
-    // Reset temp state to current values on close
-    setTempFilter(currentFilter)
-    setTempSort(currentSort)
-    setTempSortDirection(currentSortDirection)
+    resetTempState()
     onClose()
   }
 
@@ -65,17 +66,8 @@ export const MobileFilterModal: FC<MobileFilterModalProps> = ({
     onReset()
   }
 
-  const sortOptions: { id: ColumnId; label: string }[] = [
-    { id: 'builder', label: 'Builder name' },
-    { id: 'backer_rewards', label: 'Backer Rewards %' },
-    { id: 'rewards_past_cycle', label: 'Rewards - past cycle' },
-    { id: 'rewards_upcoming', label: 'Rewards - upcoming cycle' },
-    { id: 'backing', label: 'Backing amount' },
-    { id: 'backingShare', label: 'Backing share %' },
-  ]
-
   // Map sort options to FilterOption format
-  const sortRadioOptions = sortOptions.map(option => ({
+  const sortRadioOptions = SORT_OPTIONS.map(option => ({
     label: option.label,
     value: option.id,
   }))

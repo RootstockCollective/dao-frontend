@@ -11,7 +11,9 @@ import { ParachuteIcon } from '@/components/Icons/ParachuteIcon'
 import { IconProps } from '@/components/Icons/types'
 import { WarningIcon } from '@/components/Icons/WarningIcon'
 import { Tooltip } from '@/components/Tooltip/Tooltip'
+import { Paragraph } from '@/components/Typography'
 import { cn } from '@/lib/utils'
+import { useIsDesktop } from '@/shared/hooks/useIsDesktop'
 import { FC } from 'react'
 import { BuilderName } from './BuilderName'
 
@@ -81,7 +83,18 @@ interface BuilderDecorationProps {
   className?: string
 }
 
-const BuilderDecoration: FC<BuilderDecorationProps> = ({ decorationId, isHighlighted, className }) => {
+const BuilderDecoration: FC<BuilderDecorationProps & { showTooltip?: boolean }> = ({
+  decorationId,
+  isHighlighted,
+  className,
+  showTooltip = true,
+}) => {
+  const icon = createIcon(decorationId, Boolean(isHighlighted))
+
+  if (!showTooltip) {
+    return icon
+  }
+
   return (
     <Tooltip
       side="top"
@@ -89,7 +102,7 @@ const BuilderDecoration: FC<BuilderDecorationProps> = ({ decorationId, isHighlig
       className={cn('rounded-sm z-50 bg-v3-text-80 text-v3-bg-accent-60 p-6 text-sm', className)}
       text={stateTooltips[decorationId]}
     >
-      {createIcon(decorationId, Boolean(isHighlighted))}
+      {icon}
     </Tooltip>
   )
 }
@@ -119,28 +132,66 @@ export const BuilderNameCell: FC<BuilderNameCellProps> = ({
 }) => {
   const stateDecorationId = getStateDecorationId(builder)
   const builderPageLink = `/proposals/${builder.proposal.id}`
+  const isDesktop = useIsDesktop()
+
+  // Desktop layout - existing behavior with tooltips
+  if (isDesktop) {
+    return (
+      <div className={cn('flex items-center justify-between w-full h-full', className)}>
+        <div className="flex items-center gap-2">
+          <BuilderName builder={builder} isHighlighted={isHighlighted} builderPageLink={builderPageLink} />
+          {hasAirdrop && (
+            <BuilderDecoration
+              decorationId="extraRewards"
+              isHighlighted={isHighlighted}
+              className={className}
+              showTooltip={true}
+            />
+          )}
+        </div>
+        <div className="flex items-center gap-2">
+          {stateDecorationId && (
+            <BuilderDecoration
+              decorationId={stateDecorationId}
+              isHighlighted={isHighlighted}
+              className={className}
+              showTooltip={true}
+            />
+          )}
+        </div>
+      </div>
+    )
+  }
+
+  // Mobile layout - show status text below name, no tooltips
+  const statusText = stateDecorationId ? stateTooltips[stateDecorationId] : ''
+  const statusColor = stateDecorationId
+    ? isHighlighted
+      ? stateConfig[stateDecorationId].highlightColor
+      : stateConfig[stateDecorationId].defaultColor
+    : ''
+  const isInactive = getBuilderInactiveState(builder) != null
 
   return (
-    <div className={cn('flex items-center justify-between w-full h-full', className)}>
+    <div className={cn('flex flex-col items-start w-full', className)}>
       <div className="flex items-center gap-2">
         <BuilderName builder={builder} isHighlighted={isHighlighted} builderPageLink={builderPageLink} />
         {hasAirdrop && (
-          <BuilderDecoration
-            decorationId="extraRewards"
-            isHighlighted={isHighlighted}
-            className={className}
-          />
+          <BuilderDecoration decorationId="extraRewards" isHighlighted={isHighlighted} showTooltip={false} />
         )}
-      </div>
-      <div className="flex items-center gap-2">
         {stateDecorationId && (
           <BuilderDecoration
             decorationId={stateDecorationId}
             isHighlighted={isHighlighted}
-            className={className}
+            showTooltip={false}
           />
         )}
       </div>
+      {statusText && (
+        <Paragraph className={cn('text-sm mt-1', isInactive ? statusColor : 'text-v3-text-100')}>
+          {statusText}
+        </Paragraph>
+      )}
     </div>
   )
 }
