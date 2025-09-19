@@ -104,7 +104,7 @@ const BuildersTableContainer = (): ReactElement => {
           onOpenModal={openFilterModal}
         />
       }
-      className="bg-v3-bg-accent-80"
+      className="bg-v3-bg-accent-80 px-0 md:px-4"
     >
       <CycleContextProvider>
         <BuildersTable filterOption={filterOption} />

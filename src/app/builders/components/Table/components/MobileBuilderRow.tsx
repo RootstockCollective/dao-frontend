@@ -1,34 +1,77 @@
-import { FC, HtmlHTMLAttributes } from 'react'
-import { cn } from '@/lib/utils'
 import { ConditionalTooltip } from '@/app/components'
 import { ConnectTooltipContent } from '@/app/components/Tooltip/ConnectTooltip/ConnectTooltipContent'
-import { DisclaimerFlow } from '@/shared/walletConnection'
+import { Button } from '@/components/Button'
+import { ActionsContainer } from '@/components/containers/ActionsContainer'
 import { Jdenticon } from '@/components/Header/Jdenticon'
-import { BuilderNameCell } from '../Cell/BuilderNameCell'
-import { ActionCell } from '../Cell/ActionCell'
-import { SelectorCell } from '../Cell/SelectorCell'
+import { CogIcon } from '@/components/Icons/v3design'
+import { useLayoutContext } from '@/components/MainContainer/LayoutProvider'
+import { Span } from '@/components/Typography/Span'
+import { cn } from '@/lib/utils'
+import { useLongPressTouch } from '@/shared/hooks/useLongPressTouch'
+import { DisclaimerFlow } from '@/shared/walletConnection'
+import { FC, HtmlHTMLAttributes, useEffect } from 'react'
 import { BuilderTable } from '../BuilderTable.config'
+import { ActionCell } from '../Cell/ActionCell'
+import { BuilderNameCell } from '../Cell/BuilderNameCell'
+import { SelectorCell } from '../Cell/SelectorCell'
 import { useBuilderRowLogic } from '../hooks/useBuilderRowLogic'
 import { MOBILE_ROW_STYLES } from '../utils/builderRowUtils'
 import { ExpandChevron } from './ExpandChevron'
-import { SelectBuildersTooltipContent, NonHoverableBuilderTooltipContent } from './TooltipContents'
 import {
   MobileBackerRewardsSection,
-  MobileRewardsSection,
   MobileBackingSection,
-  MobileTwoColumnWrapper,
   MobileColumnItem,
+  MobileRewardsSection,
+  MobileTwoColumnWrapper,
 } from './MobileSections'
+import { NonHoverableBuilderTooltipContent, SelectBuildersTooltipContent } from './TooltipContents'
+import { RedirectType } from 'next/dist/client/components/redirect-error'
+import { redirect } from 'next/navigation'
 
 interface MobileBuilderRowProps extends HtmlHTMLAttributes<HTMLTableRowElement> {
   row: BuilderTable['Row']
   userBacking: bigint
 }
 
+const AdjustBackingDrawerContent = ({
+  redirectToAdjustBacking,
+  onClose,
+  selectedRows,
+}: {
+  redirectToAdjustBacking: () => void
+  onClose: () => void
+  selectedRows: number
+}) => {
+  return (
+    <ActionsContainer className="bg-v3-bg-accent-100">
+      {/* display: flex;
+justify-content: center;
+align-items: center;
+gap: 1rem;
+align-self: stretch; */}
+      <div className="flex justify-center gap-4 items-center self-stretch w-full border-t-1 border-t-v3-text-60">
+        <Button variant="secondary" onClick={redirectToAdjustBacking}>
+          <CogIcon size={20} className="pr-1" /> Adjust Backing
+        </Button>
+        <Button variant="secondary" onClick={onClose}>
+          Deselect{' '}
+          {selectedRows > 0 && (
+            <Span variant="tag-s" className="text-v3-bg-accent-0 pl-2">
+              {selectedRows}
+            </Span>
+          )}
+        </Button>
+      </div>
+    </ActionsContainer>
+  )
+}
+
 export const MobileBuilderRow: FC<MobileBuilderRowProps> = ({ row, userBacking, ...props }) => {
   const logic = useBuilderRowLogic({ row, userBacking })
+
   const {
     data,
+    selectedRows,
     isExpanded,
     isRowSelected,
     isInProgress,
@@ -41,7 +84,52 @@ export const MobileBuilderRow: FC<MobileBuilderRowProps> = ({ row, userBacking, 
     handleConnectWallet,
     handleCloseIntermediateStep,
     onConnectWalletButtonClick,
+    resetSelectedRows,
   } = logic
+  const { openDrawer, closeDrawer } = useLayoutContext()
+
+  const bind = useLongPressTouch({
+    onLongPress: () => {
+      if (!hasSelections) {
+        handleToggleSelection()
+        openDrawer(
+          <AdjustBackingDrawerContent
+            redirectToAdjustBacking={() => {
+              redirect(`/backing?builders=${Object.keys(selectedRows).join(',')}`, RedirectType.push)
+            }}
+            onClose={() => {
+              resetSelectedRows()
+              closeDrawer()
+            }}
+            selectedRows={Object.keys(selectedRows).length}
+          />,
+        )
+      }
+    },
+  })
+
+  const onRowClick = () => {
+    if (hasSelections) {
+      handleToggleSelection()
+    }
+  }
+
+  useEffect(() => {
+    if (hasSelections) {
+      openDrawer(
+        <AdjustBackingDrawerContent
+          redirectToAdjustBacking={() => {
+            redirect(`/backing?builders=${Object.keys(selectedRows).join(',')}`, RedirectType.push)
+          }}
+          onClose={() => {
+            resetSelectedRows()
+            closeDrawer()
+          }}
+          selectedRows={Object.keys(selectedRows).length}
+        />,
+      )
+    }
+  }, [selectedRows, hasSelections])
 
   const {
     builder,
@@ -84,8 +172,10 @@ export const MobileBuilderRow: FC<MobileBuilderRowProps> = ({ row, userBacking, 
           className={cn(
             MOBILE_ROW_STYLES.base,
             isRowSelected ? MOBILE_ROW_STYLES.selected : MOBILE_ROW_STYLES.unselected,
+            'px-4 md:px-0',
           )}
-          onClick={handleToggleSelection}
+          {...bind}
+          onClick={onRowClick}
         >
           {/* Row 1: BuilderCell + expand/collapse trigger */}
           <div className="flex items-start w-full">

@@ -33,7 +33,7 @@ export const BuildersTableTitle = ({
   const isHighlighted = hasFilterChanges || hasSortChanges
 
   return (
-    <div className="flex items-center justify-between">
+    <div className="flex items-center justify-between px-4 md:px-0">
       <Header variant="h3" caps className="text-nowrap">
         The Collective Builders
       </Header>
