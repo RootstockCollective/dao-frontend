@@ -1,10 +1,11 @@
 import { getProposalsFromNode } from '@/app/proposals/actions/getProposalsFromNode'
 import { getProposalsFromTheGraph } from '@/app/proposals/actions/getProposalsFromTheGraph'
+import { getProposalsFromDB } from '@/app/proposals/actions/getProposalsFromDB'
 
 export const revalidate = 60
 
 export async function GET() {
-  const proposalsSources = [getProposalsFromTheGraph, getProposalsFromNode]
+  const proposalsSources = [getProposalsFromDB, getProposalsFromTheGraph, getProposalsFromNode]
   for (const source of proposalsSources) {
     try {
       const proposals = await source()
