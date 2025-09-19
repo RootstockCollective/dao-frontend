@@ -210,6 +210,7 @@ export const ConnectedSection = () => {
           onClose={() => setIsReclaimModalOpened(false)}
           isLoading={isReclaimPending}
           title={`You are about to reclaim your own voting power of ${votingPower} from`}
+          name={delegateeRns}
           address={delegateeAddress as Address}
           // @TODO fetch since
           since=""

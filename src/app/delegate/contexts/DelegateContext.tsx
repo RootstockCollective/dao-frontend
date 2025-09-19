@@ -51,7 +51,9 @@ export const DelegateContextProvider = ({ children }: Props) => {
   // Find current delegatee's image data efficiently
   const delegateeImageIpfs = useMemo(() => {
     if (!delegateeAddress) return undefined
-    const delegatee = allDelegates.find(delegate => delegate.address === delegateeAddress)
+    const delegatee = allDelegates.find(
+      delegate => delegate.address.toLowerCase() === delegateeAddress.toLowerCase(),
+    )
     return delegatee?.imageIpfs || undefined
   }, [delegateeAddress, allDelegates])
 
