@@ -16,7 +16,7 @@ export const MobileHolderCard = ({ address, rns, amount, className = '' }: Mobil
   const displayAddress = rns?.split('.')[0] || shortAddress(address, 8)
 
   return (
-    <div className={`flex flex-col p-4 bg-bg-60 rounded-lg ${className}`}>
+    <div className={`flex flex-col p-4 bg-bg-80 rounded-lg border-b border-bg-60 ${className}`}>
       {/* First row - Jdenticon and Address */}
       <div className="flex items-center gap-3">
         <Jdenticon className="rounded-full bg-white flex-shrink-0" value={address} size="40" />
