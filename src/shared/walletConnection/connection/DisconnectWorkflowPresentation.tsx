@@ -3,6 +3,8 @@ import { DisconnectButton } from '@/shared/walletConnection'
 import { AccountAddress } from '@/components/Header'
 import { DisconnectWalletModal } from '@/components/Modal/DisconnectWalletModal'
 import { CopyButton } from '@/components/CopyButton'
+import { useAppKit } from '@reown/appkit/react'
+import { Button } from '@/components/Button'
 
 interface DisconnectWorkflowPresentationProps {
   shortAddress: string
@@ -25,8 +27,13 @@ export const DisconnectWorkflowPresentation = ({
   onCloseModal,
   onDisconnect,
 }: DisconnectWorkflowPresentationProps) => {
+  const { open } = useAppKit()
+  const openRamp = () => open({ view: 'OnRampProviders' })
   return (
     <>
+      <Button variant="secondary-outline" onClick={openRamp} className="mr-4">
+        On Ramp
+      </Button>
       <Popover
         contentContainerClassName="w-[233px] max-w-[calc(100vw-1rem)] right-0"
         contentSubContainerClassName="w-full p-[24px] text-center rounded border-[#2D2D2D] cursor-pointer select-none bg-bg-60 mt-2 flex justify-center"
