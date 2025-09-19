@@ -1,14 +1,6 @@
 'use client'
 
-import {
-  ActionsCell,
-  BackerRewardsCell,
-  BuilderBackingCell,
-  BuilderCell,
-  SelectBuildersTooltipContent,
-  selectedRowStyle,
-  unselectedRowStyle,
-} from '@/app/builders/components/Table'
+import { selectedRowStyle, unselectedRowStyle } from '@/app/builders/components/Table'
 import { getActionType } from '@/app/builders/components/Table/Cell/ActionCell'
 import { RewardsCell, RewardsCellProps } from '@/app/builders/components/Table/Cell/RewardsCell'
 import { BackerRewards } from '@/app/collective-rewards/rewards/backers/hooks'
@@ -28,6 +20,13 @@ import {
   COLUMN_TRANSFORMS,
   ColumnId,
 } from './BackerRewardsTable.config'
+import {
+  ActionsCell,
+  BackerRewardsCell,
+  BuilderBackingCell,
+  BuilderCell,
+} from '@/app/builders/components/Table/DesktopCells'
+import { SelectBuildersTooltipContent } from '@/app/builders/components/Table/components/TooltipContents'
 
 // Local TableCellBase for backer rewards table
 const BackerTableCellBase = ({
