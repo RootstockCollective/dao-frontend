@@ -28,7 +28,32 @@ const AddressesSchema = z.object({
           .transform(value => getAddress(value)),
       }),
     )
-    .nonempty('One address is requires'),
+    .nonempty('One address is requires')
+    // Check for duplicate addresses
+    .superRefine((addresses, ctx) => {
+      const addressMap = new Map<string, number[]>()
+
+      addresses.forEach((item, index) => {
+        const normalizedAddress = item.address.toLowerCase()
+        if (!addressMap.has(normalizedAddress)) {
+          addressMap.set(normalizedAddress, [])
+        }
+        addressMap.get(normalizedAddress)?.push(index)
+      })
+
+      // Add errors for all duplicate addresses
+      addressMap.forEach(indices => {
+        if (indices.length > 1) {
+          indices.forEach(index => {
+            ctx.addIssue({
+              code: z.ZodIssueCode.custom,
+              message: 'Duplicate address',
+              path: [index, 'address'],
+            })
+          })
+        }
+      })
+    }),
 })
 
 type AddressesForm = z.infer<typeof AddressesSchema>
@@ -44,7 +69,7 @@ export function AddAddressesForm(props: ComponentProps<'div'>) {
       addresses: [{ address: '' as Address }],
     },
   })
-  const { control, handleSubmit } = form
+  const { control, handleSubmit, trigger, clearErrors } = form
   const { append, remove, fields } = useFieldArray<AddressesForm>({ control, name: 'addresses' })
 
   useEffect(() => {
@@ -56,9 +81,12 @@ export function AddAddressesForm(props: ComponentProps<'div'>) {
     append({ address: '' as Address })
   }
 
-  const handleRemoveAddress = (index: number) => {
+  const handleRemoveAddress = async (index: number) => {
     if (fields.length > 1) {
       remove(index)
+      // Clear all address errors first, then revalidate
+      clearErrors('addresses')
+      await trigger('addresses')
     }
   }
 
@@ -99,7 +127,12 @@ export function AddAddressesForm(props: ComponentProps<'div'>) {
                         {field.value && (
                           <button
                             type="button"
-                            onClick={() => field.onChange('')}
+                            onClick={async () => {
+                              field.onChange('')
+                              // Clear all address errors first, then revalidate
+                              clearErrors('addresses')
+                              await trigger('addresses')
+                            }}
                             className="absolute right-2 top-1/2 -translate-y-1/2 p-1"
                             aria-label="Clear input"
                           >
