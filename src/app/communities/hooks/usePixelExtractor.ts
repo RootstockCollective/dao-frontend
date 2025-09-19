@@ -135,7 +135,7 @@ interface PixelConfigs {
 /**
  * PIXEL_CONFIGS defines various configurations for pixel extraction.
  */
-const PIXEL_CONFIGS: PixelConfigs = {
+export const PIXEL_CONFIGS: PixelConfigs = {
   topRightDiagonal: [
     { coords: (w, h) => ({ x: w - 10, y: 0 }), className: 'absolute top-[10px] -right-[10px]', size: 10 },
     { coords: (w, h) => ({ x: w - 20, y: 10 }), className: 'absolute top-[20px] -right-[20px]', size: 10 },
@@ -143,6 +143,28 @@ const PIXEL_CONFIGS: PixelConfigs = {
     {
       coords: (w, h) => ({ x: w - 20, y: 10 }),
       className: 'absolute top-[10px] right-[0px] opacity-50',
+      size: 10,
+    },
+  ],
+  bottomRightDiagonal: [
+    {
+      coords: (w, h) => ({ x: w - 10, y: h - 10 }),
+      className: 'absolute -bottom-[10px] right-[10px]',
+      size: 10,
+    },
+    {
+      coords: (w, h) => ({ x: w - 20, y: h - 10 }),
+      className: 'absolute -bottom-[20px] right-[0px]',
+      size: 10,
+    },
+    {
+      coords: (w, h) => ({ x: w - 30, y: h - 10 }),
+      className: 'absolute -bottom-[30px] right-[20px]',
+      size: 10,
+    },
+    {
+      coords: (w, h) => ({ x: w - 20, y: h - 10 }),
+      className: 'absolute bottom-[0px] right-[10px] opacity-50',
       size: 10,
     },
   ],

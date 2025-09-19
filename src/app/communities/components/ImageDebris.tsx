@@ -1,22 +1,26 @@
 'use client'
-import { ConfigResult, usePixelExtractor } from '@/app/communities/hooks/usePixelExtractor'
+import { ConfigResult, usePixelExtractor, PIXEL_CONFIGS } from '@/app/communities/hooks/usePixelExtractor'
 import { useEffect, useState } from 'react'
 
 interface Props {
   image: string
+  config?: keyof typeof PIXEL_CONFIGS
 }
 
 /**
  * ImageDebris component is used to display image debris extracted from a given image.
- * @param image
+ * @param image - The image source to extract debris from
+ * @param config - The pixel extraction configuration to use (defaults to 'topRightDiagonal')
  * @constructor
  */
-export const ImageDebris = ({ image }: Props) => {
+export const ImageDebris = ({ image, config = 'topRightDiagonal' }: Props) => {
   const [debris, setDebris] = useState<ConfigResult[]>([])
   const { extractPixelsByConfig } = usePixelExtractor()
+
   useEffect(() => {
-    extractPixelsByConfig(image).then(data => setDebris(data))
-  }, []) // eslint-disable-line react-hooks/exhaustive-deps
+    const configArray = PIXEL_CONFIGS[config]
+    extractPixelsByConfig(image, configArray).then(data => setDebris(data))
+  }, [image, config, extractPixelsByConfig])
 
   return (
     <>
