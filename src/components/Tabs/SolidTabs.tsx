@@ -11,7 +11,7 @@ interface SolidTabsProps extends Tabs.TabsProps {
 }
 
 const BASE_TABS_CLASSES =
-  'relative px-4 py-1 sm:px-2 sm:py-[2px] rounded-[3px] transition-all duration-200 min-w-[80px] h-[28px] flex items-center justify-center flex-1 sm:flex-unset'
+  'relative px-4 py-1 sm:px-2 sm:py-[2px] rounded-[3px] transition-all duration-200 min-w-[108px] h-[36px] sm:min-w-[80px] sm:h-[28px] flex items-center justify-center flex-1 sm:flex-unset'
 
 /**
  * Accessible tab navigation component with solid styling and smooth transitions between states.
