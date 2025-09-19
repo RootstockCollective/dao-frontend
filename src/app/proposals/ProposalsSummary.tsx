@@ -22,7 +22,7 @@ export function ProposalsSummary({ totalProposals, activeProposalsCount }: Props
           <div className={cn('flex', isDesktop ? 'gap-14' : 'gap-4')}>
             {activeProposalsCount && (
               <VotingPowerCard
-                title={isDesktop ? 'Proposals you can vote' : 'Open for voting'}
+                title="Active proposals"
                 tooltipTitle={'This is the number of proposals you can vote on.'}
                 contentValue={
                   !isConnected ? (
