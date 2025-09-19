@@ -14,16 +14,18 @@ import { Button } from '@/components/Button'
 import { CopyButton } from '@/components/CopyButton'
 import { GridTable } from '@/components/Table'
 import { Header } from '@/components/Typography'
-import { LoadingSpinner } from '@/components/LoadingSpinner'
 import { Pagination } from '@/components/Pagination'
 import { Tooltip } from '@/components/Tooltip'
 import { truncateMiddle } from '@/lib/utils'
 import { useRootlingsS1 } from './useRootlingsS1'
 import { useIsDesktop } from '@/shared/hooks/useIsDesktop'
 
+/**
+ * Table component displaying whitelisted minter addresses with ability to revoke minter roles.
+ */
 export function MintersTable() {
   const isDesktop = useIsDesktop()
-  const { hasGuardRole, minters, revokeMinterRole, revokePending } = useRootlingsS1()
+  const { hasGuardRole, minters, revokeMinterRole } = useRootlingsS1()
   const [pagination, setPagination] = useState<PaginationState>({
     pageIndex: 0,
     pageSize: 20,
@@ -47,28 +49,24 @@ export function MintersTable() {
       header: 'RNS domain',
       cell: cell => cell.getValue() ?? <p className="pl-10">—</p>,
     }),
-    // show column only to the guards
-    ...(hasGuardRole
-      ? [
-          display({
-            header: 'Revoke role',
-            cell: ({ row }) => {
-              const { address } = row.original
-              return (
-                <Tooltip text={`De-whitelist ${truncateMiddle(address)}`}>
-                  <Button
-                    onClick={() => revokeMinterRole(address)}
-                    variant="secondary-outline"
-                    className="w-fit whitespace-nowrap"
-                  >
-                    Revoke minter
-                  </Button>
-                </Tooltip>
-              )
-            },
-          }),
-        ]
-      : []),
+    display({
+      header: 'Revoke role',
+      cell: ({ row }) => {
+        const { address } = row.original
+        return (
+          <Tooltip text={hasGuardRole ? `Remove ${truncateMiddle(address)}` : 'You need guard permissions'}>
+            <Button
+              disabled={!hasGuardRole}
+              onClick={() => revokeMinterRole(address)}
+              variant="secondary-outline"
+              className="w-fit whitespace-nowrap"
+            >
+              Revoke minter
+            </Button>
+          </Tooltip>
+        )
+      },
+    }),
   ]
 
   const mintersTable = useReactTable({
@@ -104,12 +102,6 @@ export function MintersTable() {
             table={mintersTable}
             pageSizes={[5, 10, 20, 50]}
           />
-        </div>
-      )}
-
-      {revokePending && (
-        <div className="fixed inset-0 flex items-center justify-center bg-black/30 z-50">
-          <LoadingSpinner />
         </div>
       )}
     </div>

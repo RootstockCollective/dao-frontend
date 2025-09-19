@@ -4,11 +4,21 @@ import { useCallback, useEffect, useMemo, useState } from 'react'
 import { toast } from 'react-toastify'
 import { type Address, keccak256, stringToBytes } from 'viem'
 import { useAccount, useReadContracts, useWaitForTransactionReceipt, useWriteContract } from 'wagmi'
+import { create } from 'zustand'
 
 import { RootlingsS1ABI } from '@/lib/abis/RootlingsS1'
 import { ROOTLINGS_S1_NFT_ADDRESS } from '@/lib/constants'
 import { getEnsDomainName } from '@/lib/rns'
 import { truncateMiddle } from '@/lib/utils'
+
+// Global store for contract pending state (Using Zustand for simplicity - not to create another context)
+const useContractStore = create<{
+  pending: boolean
+  setPending: (pending: boolean) => void
+}>(set => ({
+  pending: false,
+  setPending: pending => set({ pending }),
+}))
 
 const minterRole = keccak256(stringToBytes('MINTER_ROLE'))
 const whitelistGuardRole = keccak256(stringToBytes('WHITELIST_GUARD_ROLE'))
@@ -112,7 +122,7 @@ function useRootlingsS1() {
     }
   }, [data])
 
-  const { writeContract, isPending: isRevokePending, error: writeError, data: txHash } = useWriteContract()
+  const { writeContract, isPending, error: writeError, data: txHash } = useWriteContract()
   const { isSuccess: isTxConfirmed, isLoading: isTxPending } = useWaitForTransactionReceipt({
     hash: txHash,
     query: {
@@ -120,14 +130,34 @@ function useRootlingsS1() {
     },
   })
 
+  const { pending: globalPending, setPending } = useContractStore()
+
+  // Update global state when any local state changes
+  useEffect(() => {
+    setPending(isPending || isTxPending)
+  }, [isPending, isTxPending, setPending])
+
   const revokeMinterRole = useCallback(
     (minter: Address) => {
-      if (!data?.hasGuardRole) return toast.error('You have to be a whitelist guard.')
+      if (!data?.hasGuardRole) return toast.error('You need guard permissions')
 
       writeContract({
         ...RootlingsS1,
         functionName: 'revokeRole',
         args: [minterRole, minter],
+      })
+    },
+    [data?.hasGuardRole, writeContract],
+  )
+
+  const whitelistMinters = useCallback(
+    (minters: Address[]) => {
+      if (!data?.hasGuardRole) return toast.error('You need guard permissions')
+
+      writeContract({
+        ...RootlingsS1,
+        functionName: 'addToWhitelist',
+        args: [minters],
       })
     },
     [data?.hasGuardRole, writeContract],
@@ -158,7 +188,7 @@ function useRootlingsS1() {
   // Show success toast when transaction is confirmed and reload contract data
   useEffect(() => {
     if (isTxConfirmed && txHash) {
-      toast.success(`Minter role revoked successfully! Tx: ${truncateMiddle(txHash)}`)
+      toast.success(`Transaction successful! Hash: ${truncateMiddle(txHash, 5, 5)}`)
       reloadMinters()
     }
   }, [isTxConfirmed, txHash, reloadMinters])
@@ -169,7 +199,8 @@ function useRootlingsS1() {
       hasGuardRole: data?.hasGuardRole,
       loading: isFetching || isLoading || isQueryingRns,
       revokeMinterRole,
-      revokePending: isRevokePending || isTxPending,
+      whitelistMinters,
+      pending: globalPending,
       reloadMinters,
     }),
     [
@@ -178,8 +209,8 @@ function useRootlingsS1() {
       isLoading,
       isQueryingRns,
       revokeMinterRole,
-      isRevokePending,
-      isTxPending,
+      whitelistMinters,
+      globalPending,
       reloadMinters,
       data?.hasGuardRole,
     ],
