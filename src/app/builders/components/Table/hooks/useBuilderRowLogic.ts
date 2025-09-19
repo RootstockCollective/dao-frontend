@@ -45,6 +45,13 @@ export const useBuilderRowLogic = ({ row, userBacking }: UseBuilderRowLogicProps
     })
   }
 
+  const resetSelectedRows = () => {
+    dispatch({
+      type: 'SET_SELECTED_ROWS',
+      payload: {},
+    })
+  }
+
   const handleToggleExpand = () => {
     setIsExpanded(!isExpanded)
   }
@@ -65,6 +72,7 @@ export const useBuilderRowLogic = ({ row, userBacking }: UseBuilderRowLogicProps
     setIsExpanded,
 
     // Computed values
+    selectedRows,
     rowId,
     data,
     hasSelections,
@@ -78,6 +86,7 @@ export const useBuilderRowLogic = ({ row, userBacking }: UseBuilderRowLogicProps
 
     // Event handlers
     handleToggleSelection,
+    resetSelectedRows,
     handleToggleExpand,
     handleMouseEnter,
     handleMouseLeave,
