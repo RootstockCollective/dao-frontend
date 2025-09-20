@@ -1,5 +1,5 @@
 import { Button } from '@/components/Button'
-import { Jdenticon } from '@/components/Header/Jdenticon'
+import { IpfsAvatar } from '@/components/IpfsAvatar'
 import { Modal } from '@/components/Modal'
 import { Header, Paragraph, Span } from '@/components/Typography'
 import { shortAddress } from '@/lib/utils'
@@ -10,10 +10,11 @@ interface Props {
   onDelegate: (address: Address) => void
   title: string
   address: Address
+  actionButtonText: string
   name?: string
+  imageIpfs?: string | null
   since?: string
   isLoading?: boolean
-  actionButtonText: string
   'data-testid'?: string
 }
 
@@ -23,6 +24,7 @@ export const DelegateModal = ({
   title,
   address,
   name,
+  imageIpfs,
   since = 'new delegate',
   isLoading = false,
   actionButtonText,
@@ -41,7 +43,7 @@ export const DelegateModal = ({
         {name ? (
           <>
             <div className="rounded-full bg-text-100">
-              <Jdenticon value={address} size="88" />
+              <IpfsAvatar imageIpfs={imageIpfs} address={address} name={name} size={88} />
             </div>
             <div className="flex flex-col items-center">
               <Paragraph className="text-bg-100">{name}</Paragraph>

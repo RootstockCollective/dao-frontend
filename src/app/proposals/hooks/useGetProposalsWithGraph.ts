@@ -84,7 +84,7 @@ function transformProposalsData(
         ...voteData,
         quorum: Big(quorum || '0'),
       },
-      blocksUntilClosure: Big(proposal.proposalDeadline).minus(Big(latestBlockNumber?.toString() || '')),
+      blocksUntilClosure: Big(proposal.proposalDeadline).minus(Big(latestBlockNumber?.toString() || '0')),
       votingPeriod: Big(proposal.votingPeriod || '0'),
       quorumAtSnapshot: Big(quorum || '0'),
       proposalDeadline: deadlineBlock,

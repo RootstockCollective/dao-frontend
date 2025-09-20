@@ -3,16 +3,11 @@ import { BuilderEstimatedRewards, CompleteBuilder } from '@/app/collective-rewar
 import { filterBuildersByState } from '@/app/collective-rewards/user'
 import { useBuilderContext } from '@/app/collective-rewards/user/context/BuilderContext'
 import { isBuilderRewardable } from '@/app/collective-rewards/utils'
-import { USD, WeiPerEther, RIF, RBTC } from '@/lib/constants'
+import { RBTC, RIF, USD, WeiPerEther } from '@/lib/constants'
 import { TOKENS } from '@/lib/tokens'
 import { usePricesContext } from '@/shared/context/PricesContext'
 import { useReadBackersManager, useReadGauges } from '@/shared/hooks/contracts'
 import { useMemo } from 'react'
-import { Address } from 'viem'
-
-type BuilderEstimatedRewardsWithGauges = Required<BuilderEstimatedRewards> & {
-  gauge: Address
-}
 
 export const useGetBuilderEstimatedRewards = (currency = USD) => {
   const { rif, rbtc } = TOKENS
@@ -44,7 +39,7 @@ export const useGetBuilderEstimatedRewards = (currency = USD) => {
   } = useGetCycleRewards()
 
   const { prices } = usePricesContext()
-  const estimatedRewards: BuilderEstimatedRewardsWithGauges[] = useMemo(() => {
+  const estimatedRewards: BuilderEstimatedRewards[] = useMemo(() => {
     const rifAmount = cycleRewards?.rif ?? 0n
     const rbtcAmount = cycleRewards?.rbtc ?? 0n
     const rifPrice = prices[RIF]?.price ?? 0
@@ -72,6 +67,7 @@ export const useGetBuilderEstimatedRewards = (currency = USD) => {
 
       return {
         ...builder,
+        rewardShares: builderRewardShares,
         builderEstimatedRewardsPct,
         backerEstimatedRewardsPct,
         backerEstimatedRewards: {

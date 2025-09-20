@@ -60,7 +60,7 @@ export const CommunityItem = ({
               fill
               className={variant === 'portrait' ? 'object-contain' : 'object-cover'}
             />
-            {enableDebris && <ImageDebris image={image} />}
+            {enableDebris && <ImageDebris image={image} config={variant === 'landscape' ? 'topRightDiagonal' : 'bottomRightDiagonal'} />}
           </div>
         )}
         <div className="flex gap-[20px] flex-col flex-1">
@@ -80,7 +80,7 @@ export const CommunityItem = ({
           )}
           {boostedPercentage && <BoostedLabelKoto text={`${boostedPercentage}% REWARDS BOOST`} />}
           {/* Description */}
-          <Paragraph>{description}</Paragraph>
+          <Paragraph className="hidden md:block">{description}</Paragraph>
           {/* Learn more */}
           <CommunityItemButtonHandler
             nftAddress={nftAddress}

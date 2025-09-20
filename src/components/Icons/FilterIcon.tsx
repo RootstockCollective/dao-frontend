@@ -7,9 +7,10 @@ export function FilterIcon({
   size = DEFAULT_ICON_SIZE,
   color = DEFAULT_ICON_COLOR,
   stroke = color,
+  highlighted = false,
   fill,
   ...props
-}: IconProps) {
+}: IconProps & { highlighted?: boolean }) {
   return (
     <svg width={size} height={size} viewBox="0 0 24 24" fill="none" aria-label={ariaLabel} {...props}>
       <path
@@ -57,6 +58,7 @@ export function FilterIcon({
         strokeLinecap="round"
         strokeLinejoin="round"
       />
+      {highlighted && <circle cx="20" cy="7" r="4" fill="#F47A2A" />}
     </svg>
   )
 }

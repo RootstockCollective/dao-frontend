@@ -1,8 +1,8 @@
 import { Header } from '@/components/Typography'
 import { cn } from '@/lib/utils'
 import { type HTMLAttributes } from 'react'
-import { FilterRadioItem } from './FilterRadioItem'
 import { FilterItem } from './types'
+import { SelectableItem } from '@/components/SelectableItem'
 
 interface FilterSideBarProps extends HTMLAttributes<HTMLDivElement> {
   filterOptions: Record<string, FilterItem[]>
@@ -46,10 +46,12 @@ export function FilterSideBar({
           <ul className="pl-1 space-y-3" role="group" aria-labelledby="filter-title">
             {(filterOptions[type as keyof typeof filterOptions] as FilterItem[]).map(option => (
               <li key={option.id} data-testid={`FilterOption-${option.label}`}>
-                <FilterRadioItem
+                <SelectableItem
                   selected={activeFilters.some(f => f.id === option.id)}
-                  label={option.label}
+                  option={{ label: option.label, value: option.id }}
                   onClick={() => handleFilterToggle(option)}
+                  data-testid={`FilterOption-${option.label}`}
+                  variant="round"
                 />
               </li>
             ))}

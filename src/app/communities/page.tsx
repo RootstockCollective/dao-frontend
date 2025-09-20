@@ -1,5 +1,6 @@
 import { SectionContainer } from './components/SectionContainer'
 import { CommunityItem } from '@/app/communities/CommunityItem'
+import { ResponsiveCommunityItemHOC } from './components/ResponsiveCommunityItemHOC'
 import {
   betaBuilders,
   earlyAdoptersCommunity,
@@ -9,7 +10,6 @@ import {
   rootstockHacktivator,
   vanguardCommunity,
 } from '@/app/communities/communityUtils'
-import { Header } from '@/components/Typography'
 import { HeroCommunitiesComponent } from '@/app/communities/components'
 
 export const dynamic = 'force-static'
@@ -30,18 +30,18 @@ export default function Communities() {
         >
           <div>
             {/* Communities */}
-            <div className="grid lg:grid-cols-4 gap-2 md:grid-cols-1">
-              <CommunityItem {...earlyAdoptersCommunity} />
+            <div className="grid grid-cols-1 md:grid-cols-4 gap-2">
+              <CommunityItem {...earlyAdoptersCommunity} enableDebris />
               <div className="col-span-2">
                 {/* First */}
-                <CommunityItem {...ogFounders} variant="landscape" enableDebris />
+                <ResponsiveCommunityItemHOC {...ogFounders} variant="landscape" enableDebris />
                 {/* Other 2 next to each other */}
-                <div className="grid lg:grid-cols-2 md:grid-cols-1 gap-2 mt-2">
-                  <CommunityItem {...ogFoundersExternalContributors} />
-                  <CommunityItem {...ogFoundersEcosystemPartners} />
+                <div className="grid grid-cols-1 lg:grid-cols-2 gap-2 mt-2">
+                  <CommunityItem {...ogFoundersExternalContributors} enableDebris />
+                  <CommunityItem {...ogFoundersEcosystemPartners} enableDebris />
                 </div>
               </div>
-              <CommunityItem {...vanguardCommunity} />
+              <CommunityItem {...vanguardCommunity} enableDebris />
             </div>
           </div>
         </SectionContainer>
@@ -51,9 +51,9 @@ export default function Communities() {
         >
           <div>
             {/* Communities */}
-            <div className="grid lg:grid-cols-2 md:grid-cols-1 gap-2">
-              <CommunityItem {...betaBuilders} variant="landscape" enableDebris />
-              <CommunityItem {...rootstockHacktivator} variant="landscape" enableDebris />
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-2">
+              <ResponsiveCommunityItemHOC {...betaBuilders} variant="landscape" enableDebris />
+              <ResponsiveCommunityItemHOC {...rootstockHacktivator} variant="landscape" enableDebris />
             </div>
           </div>
         </SectionContainer>

@@ -14,7 +14,7 @@ interface HolderCardProps {
 }
 
 export const HolderCard = ({ address, rns, amount, price }: HolderCardProps) => (
-  <div className="flex flex-col max-w-[256px] max-h-[284px] py-6 px-4 bg-bg-60 items-center justify-center">
+  <div className="flex flex-col md:max-w-[256px] max-h-[284px] py-6 px-4 bg-bg-60 items-center justify-center">
     <BuilderHeader
       name={rns}
       address={address as Address}
@@ -22,12 +22,14 @@ export const HolderCard = ({ address, rns, amount, price }: HolderCardProps) => 
       builderPageLink={`${EXPLORER_URL}/address/${address}`}
     />
     <div className="flex flex-col border-0.5 border-[1px] border-bg-40 p-3 text-left mt-5 w-full">
-      <div className="flex items-center">
+      <div className="flex items-center justify-between md:justify-start">
         <Header variant="h2">{formatAmount(amount)}</Header>
-        <TokenImage className="ml-1" symbol="RIF" size={16} />
-        <Span variant="tag-s" className="ml-1">
-          stRIF
-        </Span>
+        <div className="flex items-center">
+          <TokenImage className="ml-1" symbol="RIF" size={16} />
+          <Span variant="tag-s" className="ml-1">
+            stRIF
+          </Span>
+        </div>
       </div>
       <Span variant="tag-s" className="text-bg-0 mt-2">
         {!price

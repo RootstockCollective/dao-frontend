@@ -89,7 +89,12 @@ const setHiddenColumns = <TState extends TableState>(
 
 const setDefaultSort = <TState extends TableState>(state: TState, { payload: sort, type }: TableAction) => {
   if (type !== 'SET_DEFAULT_SORT') return state
-  return { ...state, defaultSort: sort }
+  return {
+    ...state,
+    defaultSort: sort,
+    // apply the default sort immediately if no sort is currently active
+    sort: state.sort.columnId === null ? sort : state.sort,
+  }
 }
 
 const setLoading = <TState extends TableState>(state: TState, { payload: loading, type }: TableAction) => {
