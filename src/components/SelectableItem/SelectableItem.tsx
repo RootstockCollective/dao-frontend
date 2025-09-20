@@ -21,11 +21,17 @@ interface Props {
  * - round: for single selection (radio buttons)
  */
 export const SelectableItem = ({ option, selected, onClick, variant = 'square', ...props }: Props) => {
+  const handleClick = () => {
+    if (variant === 'square' || !selected) {
+      onClick(option.value)
+    }
+  }
+
   return (
     <button
       role={variant === 'round' ? 'radio' : 'checkbox'}
       aria-checked={selected}
-      onClick={() => onClick(option.value)}
+      onClick={handleClick}
       className={cn('group focus:outline-none focus-visible:outline-none', 'flex gap-3 items-center')}
       {...props}
     >
