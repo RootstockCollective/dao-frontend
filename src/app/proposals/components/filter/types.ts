@@ -7,19 +7,13 @@ export enum FilterType {
   TIME = 'time',
 }
 
-export interface CategoryFilterItem {
-  label: string
-  value?: string
-  exclusive?: boolean
-}
-
 export interface FilterItem {
   id: string
   type: FilterType
   label: string
-  value?: string
-  isAll?: boolean
-  exclusive?: boolean
+  value: string
+  isAll?: boolean // ex: All categories, All statuses, All proposals, etc.
+  exclusive?: boolean // if true, it cannot be selected with other filters of the same type
   validate(proposal: Proposal): boolean
 }
 

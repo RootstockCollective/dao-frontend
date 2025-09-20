@@ -44,14 +44,14 @@ export function FilterSideBar({
             Filter by {type}
           </Header>
           <ul className="pl-1 space-y-3" role="group" aria-labelledby="filter-title">
-            {(filterOptions[type as keyof typeof filterOptions] as FilterItem[]).map(option => (
+            {(filterOptions[type] as FilterItem[]).map(option => (
               <li key={option.id} data-testid={`FilterOption-${option.label}`}>
                 <SelectableItem
                   selected={activeFilters.some(f => f.id === option.id)}
-                  option={{ label: option.label, value: option.id }}
+                  option={option}
                   onClick={() => handleFilterToggle(option)}
                   data-testid={`FilterOption-${option.label}`}
-                  variant="round"
+                  variant={option.exclusive ? 'round' : 'square'}
                 />
               </li>
             ))}
