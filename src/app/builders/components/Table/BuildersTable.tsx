@@ -22,6 +22,7 @@ import { BuilderHeaderRow } from './BuilderHeaderRow'
 import { BuilderCellDataMap, BuilderTable, ColumnId, DEFAULT_HEADERS, PAGE_SIZE } from './BuilderTable.config'
 import { Action, ActionCellProps } from './Cell/ActionCell'
 import { builderFilterMap } from './utils/builderFilters'
+import { MobileStickyActionBar } from './components/MobileStickyActionBar'
 
 // Filter logic is now centralized in builderFilters.ts
 
@@ -265,6 +266,7 @@ export const BuildersTable = ({ filterOption }: { filterOption: BuilderFilterOpt
         pagedItemName="builders"
         mode="expandable"
       />
+      <MobileStickyActionBar actions={actions} />
     </>
   )
 }
