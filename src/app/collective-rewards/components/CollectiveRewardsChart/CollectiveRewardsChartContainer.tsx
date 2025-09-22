@@ -7,6 +7,7 @@ import { DailyAllocationItem, CycleRewardsItem } from '@/app/collective-rewards/
 import { useGetChartRewardsData } from '../../rewards/hooks/useGetChartRewardsData'
 import { usePricesContext } from '@/shared/context/PricesContext'
 import { TOKENS } from '@/lib/tokens'
+import { useMemo } from 'react'
 
 /**
  * Container component for the collective rewards chart
@@ -54,11 +55,9 @@ const CollectiveRewardsChartContent = ({
   rifPrice,
   rbtcPrice,
 }: CollectiveRewardsChartContentProps) => {
-  const { backingSeries, rewardsSeries, cycles } = transformApiDataToChartData(
-    backingData,
-    rewardsData,
-    rifPrice,
-    rbtcPrice,
+  const { backingSeries, rewardsSeries, cycles } = useMemo(
+    () => transformApiDataToChartData(backingData, rewardsData, rifPrice, rbtcPrice),
+    [backingData, rewardsData, rifPrice, rbtcPrice],
   )
 
   return (

@@ -212,11 +212,10 @@ export const transformApiDataToChartData = (
     (a, b) => Number(a.currentCycleStart) - Number(b.currentCycleStart),
   )
 
-  // Find the maximum date from rewards. This for when a new cycle starts for both data dates to be aligned.
-  const maxRewardsDate = Math.max(...sortedRewardsData.map(item => Number(item.currentCycleStart)))
-
-  const backingSeries: BackingPoint[] = transformBackingData(sortedBackingData, maxRewardsDate)
   const rewardsSeries: RewardsPoint[] = transformRewardsData(sortedRewardsData, rifPrice, rbtcPrice)
+  const lastRewardsDate = Math.floor(new Date(rewardsSeries[rewardsSeries.length - 1].day).getTime() / 1000)
+
+  const backingSeries: BackingPoint[] = transformBackingData(sortedBackingData, lastRewardsDate)
   const cycles: CycleWindow[] = transformCyclesData(sortedRewardsData)
 
   const filteredRewardsSeries = filterToLastMonths(rewardsSeries, item => item.day)

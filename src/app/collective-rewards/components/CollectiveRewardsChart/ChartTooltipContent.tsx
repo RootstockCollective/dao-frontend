@@ -13,10 +13,9 @@ import { USD } from '@/lib/constants'
 interface ChartTooltipProps {
   active?: boolean
   payload?: TooltipPayload[]
-  label?: string | number
 }
 
-export const ChartTooltipContent = ({ active, payload, label }: ChartTooltipProps) => {
+export const ChartTooltipContent = ({ active, payload }: ChartTooltipProps) => {
   if (!active || !payload?.length) return null
 
   const d = payload[0]?.payload?.day as Date
