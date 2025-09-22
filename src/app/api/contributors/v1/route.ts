@@ -1,6 +1,6 @@
 import { daoClient } from '@/shared/components/ApolloClient'
 import { gql as apolloGQL } from '@apollo/client'
-import { Contributor, ContributorGraphResponse, Delegator } from '@/app/api/contributors/v1/types'
+import { Contributor, ContributorGraphResponse } from '@/app/proposals/shared/types'
 
 export const revalidate = 60
 
