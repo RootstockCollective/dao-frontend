@@ -1,12 +1,10 @@
-import { daoClient } from '@/shared/components/ApolloClient'
-import { gql as apolloGQL } from '@apollo/client'
-import { Contributor, ContributorGraphResponse } from '@/app/proposals/shared/types'
+import { Contributor } from '@/app/proposals/shared/types'
+import { fetchContributors } from '@/app/delegate/actions/delegateAction'
 
 export const revalidate = 60
 
 export async function GET() {
-  const { data } = await daoClient.query<ContributorGraphResponse>({ query, fetchPolicy: 'no-cache' })
-  const { contributors } = data
+  const { contributors } = await fetchContributors()
   return Response.json(
     contributors.map(({ id, account, createdAt }: Contributor) => {
       return {
@@ -19,21 +17,3 @@ export async function GET() {
     }),
   )
 }
-
-const query = apolloGQL`
-  query GetContributors {
-    contributors(first: 1000, orderBy: nftId, orderDirection: desc) {
-    id
-    account {
-        delegatedVotes
-        delegators {
-            id
-        }
-        VoteCasts {
-            id
-        }
-    }
-    createdAt
-  }
-}
-`
