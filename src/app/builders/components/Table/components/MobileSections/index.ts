@@ -4,7 +4,6 @@ export {
   MobileTwoColumnWrapper,
   MobileColumnItem,
   MobileSectionWrapper,
-  EmptyPlaceholder,
 } from './MobileDataSection'
 export { MobileBackerRewardsSection } from './MobileBackerRewardsSection'
 export { MobileRewardsSection } from './MobileRewardsSection'

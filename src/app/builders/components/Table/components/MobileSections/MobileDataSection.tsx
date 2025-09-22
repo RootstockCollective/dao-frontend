@@ -1,6 +1,7 @@
 import { FC, ReactNode } from 'react'
 import { cn } from '@/lib/utils'
-import { Paragraph, Span } from '@/components/Typography'
+import { Paragraph } from '@/components/Typography'
+import { EmptyPlaceholder } from '@/components/Table/components'
 
 // Mobile row wrapper component
 const MobileRowWrapper: FC<{ children: ReactNode; className?: string }> = ({ children, className }) => (
@@ -17,10 +18,6 @@ const MobileTwoColumnWrapper: FC<{ children: ReactNode; className?: string }> = 
 const MobileColumnItem: FC<{ children: ReactNode; className?: string }> = ({ children, className }) => (
   <div className={cn('w-[50%] flex flex-col items-start text-left', className)}>{children}</div>
 )
-
-const EmptyPlaceholder = () => {
-  return <Span>-</Span>
-}
 
 // Generic mobile section wrapper with title, subtitle, and content
 const MobileSectionWrapper: FC<{

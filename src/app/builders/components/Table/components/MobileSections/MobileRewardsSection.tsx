@@ -5,8 +5,8 @@ import {
   MobileTwoColumnWrapper,
   MobileColumnItem,
   MobileSectionWrapper,
-  EmptyPlaceholder,
 } from './MobileDataSection'
+import { EmptyPlaceholder } from '@/components/Table/components'
 import { hasValidValue } from '../../utils/builderRowUtils'
 
 export const MobileRewardsSection: FC<{
