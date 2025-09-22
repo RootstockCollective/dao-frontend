@@ -265,7 +265,7 @@ export const CombinedActionsHeaderCell = ({ actions }: CombinedActionsHeaderCell
             onClick={handleActionClick}
             className="flex justify-center items-center gap-1 font-rootstock-sans border-0 text-v3-text-100 font-light p-[inherit] h-[inherit] w-[inherit]"
           />
-          <Span variant="tag-s" className="text-v3-bg-accent-0">
+          <Span variant="tag-s" className="text-v3-bg-accent-0 flex items-center">
             {actions.length}
           </Span>
         </HeaderTitle>
