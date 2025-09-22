@@ -17,21 +17,24 @@ import {
   valueToPercentage,
 } from './utils'
 
-const COLLAPSE_SEGMENT_SIZE_THRESHOLD = 8 // 8%
-const getSegmentsToCollapse = (values: bigint[], totalValue: bigint): number[] =>
-  values
-    .filter((value, i) => {
-      const currentPercentage = valueToPercentage(value, totalValue)
+const getSegmentsCollapsedState = (values: bigint[], totalValue: bigint): boolean[] => {
+  const NEIGHBOR_SUM_THRESHOLD = 8 // 8%
+  const segmentsToShowDots = new Array(values.length).fill(false)
 
-      return (
-        (i > 0 &&
-          currentPercentage + valueToPercentage(values[i - 1], totalValue) <=
-            COLLAPSE_SEGMENT_SIZE_THRESHOLD) ||
-        (i < values.length - 1 &&
-          currentPercentage + valueToPercentage(values[i + 1], totalValue) <= COLLAPSE_SEGMENT_SIZE_THRESHOLD)
-      )
-    })
-    .map((_, i) => i)
+  for (let i = 0; i < values.length; i++) {
+    const currentPercentage = valueToPercentage(values[i], totalValue)
+
+    // Check if current segment has a neighbor and their sum is up to the threshold
+    const hasSmallNeighborSum =
+      (i > 0 && currentPercentage + valueToPercentage(values[i - 1], totalValue) <= NEIGHBOR_SUM_THRESHOLD) ||
+      (i < values.length - 1 &&
+        currentPercentage + valueToPercentage(values[i + 1], totalValue) <= NEIGHBOR_SUM_THRESHOLD)
+
+    segmentsToShowDots[i] = hasSmallNeighborSum
+  }
+
+  return segmentsToShowDots
+}
 
 const AllocationBar: React.FC<AllocationBarProps> = ({
   itemsData,
@@ -161,7 +164,7 @@ const AllocationBar: React.FC<AllocationBarProps> = ({
     }
   }
 
-  const segmentsToCollapse: number[] = getSegmentsToCollapse(currentValues, totalBacking)
+  const collapsedSegments: boolean[] = getSegmentsCollapsedState(currentValues, totalBacking)
   return (
     <div className={cn('w-full p-8 flex flex-col gap-6', className)}>
       <DndContext
@@ -186,7 +189,7 @@ const AllocationBar: React.FC<AllocationBarProps> = ({
                   totalBacking={totalBacking}
                   item={item}
                   valueDisplay={valueDisplay}
-                  isCollapsed={segmentsToCollapse.includes(i)}
+                  isCollapsed={collapsedSegments[i]}
                   resizeHandle={() =>
                     i < currentItems.length - 1 && (
                       <ResizeHandle
