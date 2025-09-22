@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation'
 
 export const BackersAllocations = () => {
   const router = useRouter()
+
   return (
     <div className="flex flex-col pt-5 items-start gap-3 grow">
       <BuilderAllocationBar

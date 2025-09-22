@@ -1,13 +1,13 @@
 import { formatSymbol } from '@/app/collective-rewards/rewards/utils'
 import { BuilderRewardsSummary } from '@/app/collective-rewards/types'
 import { getCombinedFiatAmount, getFiatAmount } from '@/app/collective-rewards/utils'
+import { BackingState } from '@/app/shared/context/BackingContext'
 import { GetPricesResult } from '@/app/user/types'
 import { RIF, STRIF, USD } from '@/lib/constants'
 import { formatCurrency } from '@/lib/utils'
 import { redirect, RedirectType } from 'next/navigation'
 import { BuilderTable } from '../BuilderTable.config'
-import { getActionType, Action } from '../Cell/ActionCell'
-import { Allocations } from '@/app/collective-rewards/allocations/context'
+import { Action, getActionType } from '../Cell/ActionCell'
 
 type RowStyle = 'selected' | 'unselected' | 'base'
 
@@ -32,12 +32,12 @@ export const unselectedRowStyle = MOBILE_ROW_STYLES.unselected
 export const convertDataToRowData = (
   data: BuilderRewardsSummary[],
   prices: GetPricesResult,
-  allocations: Allocations,
+  backings: BackingState['backings'],
 ): BuilderTable['Row'][] => {
   if (!data.length) return []
 
   return data.map<BuilderTable['Row']>(builder => {
-    const backing = allocations[builder.address] ?? 0n
+    const backing = backings[builder.address]?.pending ?? 0n
     const actionType = getActionType(builder, backing > 0n)
 
     const rifPrice = prices[RIF]?.price ?? 0
@@ -56,9 +56,9 @@ export const convertDataToRowData = (
           rifValue: builder.lastCycleRewards?.rif.amount.value ?? 0n,
           usdValue: builder.lastCycleRewards
             ? getCombinedFiatAmount([
-                builder.lastCycleRewards.rif.amount,
-                builder.lastCycleRewards.rbtc.amount,
-              ]).toNumber()
+              builder.lastCycleRewards.rif.amount,
+              builder.lastCycleRewards.rbtc.amount,
+            ]).toNumber()
             : 0,
         },
         rewards_upcoming: {
@@ -66,9 +66,9 @@ export const convertDataToRowData = (
           rifValue: builder.backerEstimatedRewards?.rif.amount.value ?? 0n,
           usdValue: builder.backerEstimatedRewards
             ? getCombinedFiatAmount([
-                builder.backerEstimatedRewards.rif.amount,
-                builder.backerEstimatedRewards.rbtc.amount,
-              ]).toNumber()
+              builder.backerEstimatedRewards.rif.amount,
+              builder.backerEstimatedRewards.rbtc.amount,
+            ]).toNumber()
             : 0,
         },
         backing: {

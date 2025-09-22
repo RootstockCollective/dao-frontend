@@ -1,16 +1,26 @@
 import { useEffect } from 'react'
 import { showToast } from '@/shared/notification'
 
-type ErrorHandler = (params: { error?: Error | null; title: string; content?: string }) => void
-export const useHandleErrors: ErrorHandler = ({ error, title, content }) => {
+const handleError = ({ error, title, content }: ErrorParams) => {
+  if (error && error instanceof Error) {
+    showToast({
+      severity: 'error',
+      title,
+      content: content ?? error?.message,
+    })
+    console.error(`🐛 ${title}:`, error)
+  }
+}
+
+type ErrorParams = { error?: Error | null; title: string; content?: string }
+type ErrorHandler = (params: ErrorParams | ErrorParams[]) => void
+
+export const useHandleErrors: ErrorHandler = params => {
   useEffect(() => {
-    if (error) {
-      showToast({
-        severity: 'error',
-        title,
-        content: content ?? error.message,
-      })
-      console.error(`🐛 ${title}:`, error)
+    if (params instanceof Array) {
+      return params.forEach(handleError)
     }
-  }, [error, title, content])
+
+    return handleError(params)
+  }, [params])
 }

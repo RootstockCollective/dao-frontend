@@ -1,15 +1,13 @@
 import { useContext } from 'react'
-import { AllocationsContext } from '@/app/collective-rewards/allocations/context'
 import { useAccount } from 'wagmi'
 import { BackingInfoTitle } from '@/app/backing/components/BackingInfoTitle/BackingInfoTitle'
+import { useBackingContext } from '@/app/shared/context/BackingContext'
 
 export const BackingInfoTitleControl = () => {
   const { isConnected } = useAccount()
   const {
-    initialState: { backer },
-  } = useContext(AllocationsContext)
+    totalBacking: { pending },
+  } = useBackingContext()
 
-  const hasAllocations = backer.amountToAllocate > 0n
-
-  return <BackingInfoTitle hasAllocations={hasAllocations} isConnected={isConnected} />
+  return <BackingInfoTitle hasAllocations={pending > 0n} isConnected={isConnected} />
 }

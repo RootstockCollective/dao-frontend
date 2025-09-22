@@ -11,6 +11,7 @@ import { ActiveBackers } from '../ActiveBackers'
 import { Banner } from '../Banner'
 import { BackersDecorativeSquares } from '../DecorativeSquares'
 import { RewardsMetrics } from '../RewardsMetrics'
+import { useBackingContext } from '@/app/shared/context/BackingContext'
 
 const BackersBanner = () => (
   <Banner
@@ -32,11 +33,15 @@ const BackersTitle = () => {
 const BackerCTAButton = ({ className }: StylableComponentProps<HTMLButtonElement>) => {
   const router = useRouter()
   const { isConnected } = useAccount()
+  // const {
+  //   state: {
+  //     backer: { balance: votingPower },
+  //   },
+  // } = useContext(AllocationsContext)
+
   const {
-    state: {
-      backer: { balance: votingPower },
-    },
-  } = useContext(AllocationsContext)
+    balance: { onchain: votingPower },
+  } = useBackingContext()
 
   const hasStRIF = votingPower && votingPower > 0n
 

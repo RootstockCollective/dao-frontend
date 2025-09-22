@@ -13,6 +13,7 @@ import { Address, formatEther, parseEther } from 'viem'
 import { PendingAllocation } from '../PendingAllocation/PendingAllocation'
 import { RIFToken } from '../RIFToken/RIFToken'
 import { StickySlider } from '../StickySlider/StickySlider'
+import { useBackingActionsContext, useBackingContext } from '@/app/shared/context/BackingContext'
 
 interface OnchainBackingState {
   builderBacking: bigint
@@ -25,26 +26,14 @@ export interface UpdatedBackingState extends OnchainBackingState {
 
 export interface AllocationInputProps extends CommonComponentProps {
   builderAddress: Address
-  balance: bigint
-  onchainBackingState: OnchainBackingState
-  updatedBackingState: UpdatedBackingState
   allocationTxPending?: boolean
   disabled?: boolean
   prices: GetPricesResult
-  updateBacking: (value: bigint) => void
   onEdit?: (editing: boolean) => void
 }
 
 export const AllocationInput = ({
   builderAddress,
-  balance,
-  onchainBackingState: { builderBacking: onchainBacking, cumulativeBacking: onchainCumulativeBacking },
-  updatedBackingState: {
-    builderBacking: updatedBacking,
-    cumulativeBacking: updatedCumulativeBacking,
-    cumulativeBackingReductions: updatedBackingReductions,
-  },
-  updateBacking,
   allocationTxPending = false,
   disabled = false,
   prices,
@@ -54,11 +43,21 @@ export const AllocationInput = ({
   const [editing, setEditing] = useState(false)
   const [parsingError, setParsingError] = useState<Error | null>(null)
 
-  const onchainAvailableBalance = balance - onchainCumulativeBacking
+  const {
+    balance: {
+      onchain: onchainBalance,
+      pending: pendingBalance,
+    },
+    backings,
+    totalBacking: { pending: updatedCumulativeBacking },
+  } = useBackingContext()
 
-  const totalAvailableBalance = onchainAvailableBalance + updatedBackingReductions
+  const dispatchBackingAction = useBackingActionsContext()
 
-  const availableForBacking = balance - updatedCumulativeBacking
+  const {
+    onchain: onchainBacking,
+    pending: updatedBacking,
+  } = backings[builderAddress] ?? { onchain: 0n, pending: 0n }
 
   const isNegativeBacking = updatedBacking < onchainBacking
   const additionalBacking = isNegativeBacking ? 0n : updatedBacking - onchainBacking
@@ -78,22 +77,34 @@ export const AllocationInput = ({
     },
   })
   const sliderValue =
-    additionalBacking > 0n && totalAvailableBalance > 0n
-      ? Number((additionalBacking * 100n) / totalAvailableBalance)
+    additionalBacking > 0n && pendingBalance > 0n
+      ? Number((additionalBacking * 100n) / pendingBalance)
       : 0
 
   const onSliderChange = (value: number[]) => {
     const [percent] = value
-    const newBacking = onchainBacking + (BigInt(percent ?? 0) * totalAvailableBalance) / 100n
+    const newBacking = onchainBacking + (BigInt(percent ?? 0) * pendingBalance) / 100n
     if (isNegativeBacking) {
       return
     }
 
-    if (isValidBalanceFraction(newBacking, updatedCumulativeBacking, updatedBacking, balance)) {
-      return updateBacking(newBacking)
+    if (isValidBalanceFraction(newBacking, updatedCumulativeBacking, updatedBacking, onchainBalance)) {
+      return dispatchBackingAction({
+        type: 'CHANGE_BACKING',
+        payload: {
+          builderAddress,
+          backing: newBacking,
+        }
+      })
     }
 
-    updateBacking(balance - updatedCumulativeBacking + updatedBacking)
+    dispatchBackingAction({
+      type: 'CHANGE_BACKING',
+      payload: {
+        builderAddress,
+        backing: onchainBalance - updatedCumulativeBacking + updatedBacking,
+      }
+    })
   }
 
   const isAllowed = ({ value }: NumberFormatValues) => {
@@ -107,7 +118,7 @@ export const AllocationInput = ({
       return false
     }
 
-    if (!isValidBalanceFraction(parsedValue, updatedCumulativeBacking, updatedBacking, balance)) {
+    if (!isValidBalanceFraction(parsedValue, updatedCumulativeBacking, updatedBacking, onchainBalance)) {
       return false
     }
 
@@ -118,7 +129,13 @@ export const AllocationInput = ({
     if (!editing) return
 
     try {
-      updateBacking(normaliseBackingValue(onchainBacking, value))
+      dispatchBackingAction({
+        type: 'CHANGE_BACKING',
+        payload: {
+          builderAddress,
+          backing: normaliseBackingValue(onchainBacking, value),
+        }
+      })
     } catch (error) {
       setParsingError(error as Error)
     }
@@ -144,7 +161,7 @@ export const AllocationInput = ({
             name="allocation"
             autoComplete="off"
             decimalScale={0}
-            placeholder={!disabled ? `max ${formatSymbol(availableForBacking, STRIF)}` : '0'}
+            placeholder={!disabled ? `max ${formatSymbol(pendingBalance, STRIF)}` : '0'}
             className="focus:outline-none focus-visible:outline-none text-left p-0 m-0 border-0 bg-transparent w-full text-[24px]"
             value={updatedBacking > 0n ? formatSymbol(updatedBacking, STRIF) : ''}
             onValueChange={onInputValueChange}

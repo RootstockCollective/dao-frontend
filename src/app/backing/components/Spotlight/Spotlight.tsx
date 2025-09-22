@@ -1,13 +1,13 @@
-import { AllocationsContext } from '@/app/collective-rewards/allocations/context/AllocationsContext'
 import { useBuilderContext } from '@/app/collective-rewards/user/context/BuilderContext'
 import { useHandleErrors } from '@/app/collective-rewards/utils'
 import { BuilderCardControl } from '@/app/shared/components/BuilderCard'
 import { SpotlightBuildersGrid } from '@/app/shared/components/SpotlightBuildersGrid'
 import { useBackingContext } from '@/app/shared/context/BackingContext'
+import { useRewardsContext } from '@/app/shared/context/RewardsContext/RewardsContext'
 import { Button } from '@/components/Button'
 import { LoadingSpinner } from '@/components/LoadingSpinner'
 import { useRouter, useSearchParams } from 'next/navigation'
-import { useCallback, useContext, useEffect, useMemo } from 'react'
+import { useCallback, useMemo } from 'react'
 import { Address } from 'viem'
 import { useAccount } from 'wagmi'
 
@@ -17,59 +17,42 @@ export const Spotlight = ({ isInteractive = true }: { isInteractive?: boolean })
   const { isConnected } = useAccount()
 
   const {
-    state: { allocations, selections, getBuilder },
-    initialState: {
-      backer: { amountToAllocate: totalOnchainAllocation },
-    },
-    actions: { toggleSelectedBuilder },
-  } = useContext(AllocationsContext)
-
-  const { randomBuilders } = useBuilderContext()
-
-  const {
-    data: backingData,
-    isLoading: isBackingDataLoading,
-    error: isBackingDataError,
+    backings,
+    totalBacking: { onchain: totalOnchainBacking },
+    isLoading: isBackingLoading,
+    error: backingError,
   } = useBackingContext()
 
-  const isLoading = isBackingDataLoading
-  const error = isBackingDataError
+  const {
+    data: backingRewards,
+    isLoading: isBackingRewardsLoading,
+    error: backingRewardsError,
+  } = useRewardsContext()
 
-  useHandleErrors({ error, title: 'Error loading backing data' })
+  const { randomBuilders, getBuilderByAddress } = useBuilderContext()
+
+  const isLoading = isBackingLoading || isBackingRewardsLoading
+  useHandleErrors([
+    { error: backingError, title: 'Error loading backing data' },
+    { error: backingRewardsError, title: 'Error loading rewards data' },
+  ])
 
   const userSelections = useMemo(() => searchParams.get('builders')?.split(',') as Address[], [searchParams])
-
-  useEffect(() => {
-    if (userSelections) {
-      // include the new user selections into the selections object
-      userSelections.forEach(builder => !selections[builder] && toggleSelectedBuilder(builder))
-      // remove the old user selections if they are not in the new user selections
-      Object.keys(selections).forEach(
-        builder =>
-          !userSelections.includes(builder as Address) &&
-          selections[builder as Address] &&
-          toggleSelectedBuilder(builder as Address),
-      )
-    }
-  }, [userSelections, toggleSelectedBuilder, selections])
-
-  const hasAllocations = useMemo(() => {
-    return isConnected && totalOnchainAllocation > 0n
-  }, [totalOnchainAllocation, isConnected])
+  const hasAllocations = isConnected && totalOnchainBacking > 0n
 
   const spotlightBuilders = useMemo(() => {
     // Get builders based on allocation or selection state
     let builderKeys: Address[] = []
 
     if (hasAllocations) {
-      builderKeys = Object.keys(allocations) as Address[]
+      builderKeys = Object.keys(backings) as Address[]
     } else if (userSelections?.length) {
       builderKeys = userSelections
     }
 
     // Resolve builder objects from keys or fallback to random builders
     const resolvedBuilders = builderKeys.length
-      ? builderKeys.map(key => getBuilder(key)).filter(builder => !!builder)
+      ? builderKeys.map(key => getBuilderByAddress(key)).filter(builder => !!builder)
       : randomBuilders
 
     const resolvedAddresses = resolvedBuilders.map(({ address }) => address)
@@ -79,10 +62,10 @@ export const Spotlight = ({ isInteractive = true }: { isInteractive?: boolean })
     return (
       sortedAddresses
         // this is inefficient, but it's the only way to get the builders in the order we want
-        .map(address => backingData.find(b => b.address === address))
+        .map(address => backingRewards.find(b => b.address === address))
         .filter(builder => !!builder)
     )
-  }, [backingData, hasAllocations, allocations, getBuilder, randomBuilders, userSelections])
+  }, [backingRewards, hasAllocations, backings, getBuilderByAddress, randomBuilders, userSelections])
 
   const isBuilderSelected = useCallback(
     (builderAddress: Address) => {
@@ -107,7 +90,7 @@ export const Spotlight = ({ isInteractive = true }: { isInteractive?: boolean })
             key={builder.address}
             builder={builder}
             index={index}
-            isInteractive
+            isInteractive={isInteractive}
             estimatedRewards={builder.backerEstimatedRewards}
             showAnimation={isBuilderSelected(builder.address)}
           />

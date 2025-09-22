@@ -23,6 +23,7 @@ import { AnimatePresence, motion } from 'motion/react'
 import { useState } from 'react'
 import { getBuilderColor } from '../utils'
 import { WindshieldWiperAnimation } from './WindshieldWiperAnimation'
+import { useBackingActionsContext, useBackingContext } from '../../context/BackingContext'
 
 const Warning = ({
   className,
@@ -61,10 +62,18 @@ export const BuilderCard = ({
   index,
   onConnect,
 }: BuilderCardProps & CommonComponentProps): React.ReactElement => {
+  const { backings } = useBackingContext()
+  const dispatchBackingAction = useBackingActionsContext()
   const [editing, setEditing] = useState(false)
+
   const builderInactiveState = getBuilderInactiveState({ address, builderName, proposal, stateFlags, gauge })
   const isRewardable = isBuilderRewardable(stateFlags)
   const builderPageLink = `/proposals/${proposal.id}`
+
+  const {
+    onchain: onchainBacking,
+    pending: pendingBacking,
+  } = backings[address] ?? { onchian: 0n, pending: 0n }
 
   return (
     <WindshieldWiperAnimation
@@ -84,7 +93,7 @@ export const BuilderCard = ({
           className="absolute top-0 left-0 w-full h-[8px] rounded-t"
           style={{
             backgroundColor:
-              allocationInputProps.updatedBackingState.builderBacking > 0n && !!address
+              pendingBacking > 0n && !!address
                 ? getBuilderColor(address)
                 : 'transparent',
           }}
@@ -128,7 +137,7 @@ export const BuilderCard = ({
                   transition={{ duration: 0.3, ease: 'easeInOut' }}
                 >
                   <CurrentBacking
-                    existentAllocation={allocationInputProps.onchainBackingState.builderBacking}
+                    existentAllocation={onchainBacking}
                   />
                 </motion.div>
               )}
@@ -139,7 +148,13 @@ export const BuilderCard = ({
           {isInteractive && (
             <Button
               variant="secondary-outline"
-              onClick={() => allocationInputProps.updateBacking(0n)}
+              onClick={() => dispatchBackingAction({
+                type: 'CHANGE_BACKING',
+                payload: {
+                  builderAddress: address,
+                  backing: 0n,
+                }
+              })}
               data-testid="removeBackingButton"
             >
               Remove backing

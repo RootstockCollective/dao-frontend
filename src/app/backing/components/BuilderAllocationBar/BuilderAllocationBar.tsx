@@ -1,8 +1,9 @@
-import { AllocationsContext } from '@/app/collective-rewards/allocations/context'
+import { useBuilderContext } from '@/app/collective-rewards/user'
 import { isBuilderRewardable } from '@/app/collective-rewards/utils'
 import { floorToUnit, getBuilderColor } from '@/app/shared/components/utils'
+import { useBackingActionsContext, useBackingContext } from '@/app/shared/context/BackingContext'
 import { shortAddress } from '@/lib/utils'
-import { useCallback, useContext, useEffect, useMemo, useState } from 'react'
+import { useCallback, useEffect, useMemo, useState } from 'react'
 import { Address, zeroAddress } from 'viem'
 import AllocationBar from '../AllocationBar/AllocationBar'
 import { AllocationBarProps, AllocationChangeData, AllocationItem } from '../AllocationBar/types'
@@ -37,26 +38,41 @@ function createUnallocatedItem(
 }
 
 const BuilderAllocationBar = ({ barOverrides }: { barOverrides?: Partial<AllocationBarProps> }) => {
+  const { getBuilderByAddress: getBuilder } = useBuilderContext()
   const {
-    initialState: {
-      allocations: initialAllocations,
-      backer: { balance: initialBalance, cumulativeAllocation: initialCumulativeAllocation },
-    },
-    state: {
-      resetVersion,
-      allocations,
-      backer: { balance, cumulativeAllocation },
-      getBuilder,
-    },
-    actions: { updateAllocation },
-  } = useContext(AllocationsContext)
+    backings,
+    balance: { pending: balance, onchain: initialBalance },
+    totalBacking: { pending: cumulativeAllocation, onchain: initialCumulativeAllocation },
+  } = useBackingContext()
+  const dispatchBackingAction = useBackingActionsContext()
+
+  const [initialAllocations, allocations] = useMemo(() => {
+    // TODO: refactor
+    const allocations: Record<Address, bigint> = Object.entries(backings).reduce(
+      (acc, [address, { pending }]) => ({
+        ...acc,
+        [address as Address]: pending,
+      }),
+      {},
+    )
+
+    const initialAllocations: Record<Address, bigint> = Object.entries(backings).reduce(
+      (acc, [address, { onchain }]) => ({
+        ...acc,
+        [address as Address]: onchain,
+      }),
+      {},
+    )
+
+    return [initialAllocations, allocations]
+  }, [backings])
 
   // Local order state, includes zeroAddress for unallocated
   const [orderedKeys, setOrderedKeys] = useState<Address[]>([])
 
   useEffect(() => {
     setOrderedKeys([...(Object.keys(initialAllocations) as Address[]), zeroAddress])
-  }, [resetVersion, initialAllocations])
+  }, [initialAllocations])
 
   // Sync keys and add new keys to left of zeroAddress
   useEffect(() => {
@@ -136,7 +152,13 @@ const BuilderAllocationBar = ({ barOverrides }: { barOverrides?: Partial<Allocat
         changedItems.forEach(item => {
           const newValue = newValues[itemsData.indexOf(item)]
           if (item.key !== zeroAddress) {
-            updateAllocation(item.key as Address, newValue)
+            dispatchBackingAction({
+              type: 'CHANGE_BACKING',
+              payload: {
+                builderAddress: item.key as Address,
+                backing: newValue,
+              },
+            })
           }
         })
       } else if (change.type === 'reorder') {
@@ -144,7 +166,7 @@ const BuilderAllocationBar = ({ barOverrides }: { barOverrides?: Partial<Allocat
         setOrderedKeys(change.itemsData.map(item => item.key))
       }
     },
-    [updateAllocation],
+    [dispatchBackingAction],
   )
 
   const isEmpty = cumulativeAllocation === 0n && Object.keys(allocations).length === 0

@@ -1,35 +1,32 @@
 import { useReadGauges } from '@/shared/hooks/contracts'
 import { createContext, FC, ReactNode, useContext, useMemo } from 'react'
 
-import { AllocationsContext } from '@/app/collective-rewards/allocations/context'
 import { BackerEstimatedRewards } from '@/app/collective-rewards/types'
 import { useGetBuilderEstimatedRewards } from '@/app/shared/hooks/useGetBuilderEstimatedRewards'
+import { useBackingContext } from '../BackingContext'
 
-type BackingContextValue = {
+type RewardsContextValue = {
   data: BackerEstimatedRewards[]
   isLoading: boolean
   error: Error | null
 }
 
-const BackingContext = createContext<BackingContextValue>({
+const RewardsContext = createContext<RewardsContextValue>({
   data: [],
   isLoading: false,
   error: null,
 })
 
-type BackingProviderProps = {
+type RewardsProviderProps = {
   children: ReactNode
   dynamicAllocations?: boolean
 }
 
-export const BackingContextProvider: FC<BackingProviderProps> = ({
+export const RewardsContextProvider: FC<RewardsProviderProps> = ({
   children,
   dynamicAllocations = false,
 }) => {
-  const {
-    state: { allocations, isContextLoading },
-    initialState: { allocations: initialAllocations },
-  } = useContext(AllocationsContext)
+  const { backings, isLoading: isBackingLoading, error: backingsError } = useBackingContext()
 
   const {
     data: estimatedBuilders,
@@ -51,19 +48,22 @@ export const BackingContextProvider: FC<BackingProviderProps> = ({
     return estimatedBuilders.map((builder, index) => {
       const { address, backerEstimatedRewards: backersEstimatedRewards } = builder
 
-      const allocation = dynamicAllocations
-        ? (allocations[address] ?? 0n)
-        : (initialAllocations[address] ?? 0n)
+      const { onchain: onchainBacking, pending: pendingBacking } = backings[address] ?? {
+        onchain: 0n,
+        pending: 0n,
+      }
+
+      const backing = dynamicAllocations ? pendingBacking : onchainBacking
       const builderAllocation = totalAllocation[index] ?? 0n
 
       const rifBackerEstimatedRewards = backersEstimatedRewards.rif
       const rbtcBackerEstimatedRewards = backersEstimatedRewards.rbtc
 
       const backerRifEstimatedRewards = builderAllocation
-        ? (rifBackerEstimatedRewards.amount.value * allocation) / builderAllocation
+        ? (rifBackerEstimatedRewards.amount.value * backing) / builderAllocation
         : 0n
       const backerRbtcEstimatedRewards = builderAllocation
-        ? (rbtcBackerEstimatedRewards.amount.value * allocation) / builderAllocation
+        ? (rbtcBackerEstimatedRewards.amount.value * backing) / builderAllocation
         : 0n
 
       return {
@@ -86,19 +86,19 @@ export const BackingContextProvider: FC<BackingProviderProps> = ({
         },
       }
     })
-  }, [totalAllocation, allocations, estimatedBuilders, dynamicAllocations, initialAllocations])
+  }, [totalAllocation, backings, estimatedBuilders, dynamicAllocations])
 
-  const isLoading = estimatedBuildersLoading || totalAllocationLoading || isContextLoading
+  const isLoading = estimatedBuildersLoading || totalAllocationLoading || isBackingLoading
 
-  const error = estimatedBuildersError ?? totalAllocationError
+  const error = estimatedBuildersError ?? totalAllocationError ?? backingsError ?? null
 
-  const valueOfContext: BackingContextValue = {
+  const valueOfContext: RewardsContextValue = {
     data,
     isLoading,
     error,
   }
 
-  return <BackingContext.Provider value={valueOfContext}>{children}</BackingContext.Provider>
+  return <RewardsContext.Provider value={valueOfContext}>{children}</RewardsContext.Provider>
 }
 
-export const useBackingContext = () => useContext(BackingContext)
+export const useRewardsContext = () => useContext(RewardsContext)

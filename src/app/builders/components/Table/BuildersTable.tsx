@@ -1,24 +1,29 @@
 'use client'
 
-import { AllocationsContext } from '@/app/collective-rewards/allocations/context/AllocationsContext'
-import { Builder, BuilderRewardsSummary } from '@/app/collective-rewards/types'
+import { BuilderRewardsSummary } from '@/app/collective-rewards/types'
 import { useBuilderContext } from '@/app/collective-rewards/user/context/BuilderContext'
+import { getBuilderInactiveState, isBuilderInProgress } from '@/app/collective-rewards/utils'
 import { getCombinedFiatAmount } from '@/app/collective-rewards/utils/getCombinedFiatAmount'
+import { CommonComponentProps } from '@/components/commonProps'
+import { useLayoutContext } from '@/components/MainContainer/LayoutProvider'
 import { TablePager } from '@/components/TableNew'
 import { usePricesContext, useTableActionsContext, useTableContext } from '@/shared/context'
 import { Sort } from '@/shared/context/TableContext/types'
+import { useIsDesktop } from '@/shared/hooks/useIsDesktop'
 import { Big } from 'big.js'
-import { FC, Suspense, useContext, useEffect, useMemo, useState } from 'react'
+import { FC, Suspense, useEffect, useMemo, useState } from 'react'
 import { Address } from 'viem'
 import { useAccount } from 'wagmi'
 import { useGetBuilderRewardsSummary } from '../../hooks/useGetBuilderRewardsSummary'
-import { convertDataToRowData } from './utils/builderRowUtils'
-import { useIsDesktop } from '@/shared/hooks/useIsDesktop'
-import { CommonComponentProps } from '@/components/commonProps'
-import { DesktopBuilderRow } from './DesktopBuilderRow'
-import { MobileBuilderRow } from './MobileBuilderRow'
 import { BuilderFilterOptionId } from './BuilderFilterDropdown'
 import { BuilderHeaderRow } from './BuilderHeaderRow'
+import { DesktopBuilderRow } from './DesktopBuilderRow'
+import { MobileBuilderRow } from './MobileBuilderRow'
+import { MobileStickyActionBarContent } from './MobileStickyActionBar'
+import { convertDataToRowData } from './utils/builderRowUtils'
+
+// Filter logic is now centralized in builderFilters.ts
+import { useBackingContext } from '@/app/shared/context/BackingContext'
 import {
   BuilderCellDataMap,
   BuilderRowLogic,
@@ -29,11 +34,6 @@ import {
 } from './BuilderTable.config'
 import { Action, ActionCellProps } from './Cell/ActionCell'
 import { builderFilterMap } from './utils/builderFilters'
-import { MobileStickyActionBarContent } from './MobileStickyActionBar'
-import { useLayoutContext } from '@/components/MainContainer/LayoutProvider'
-import { getBuilderInactiveState, isBuilderInProgress } from '@/app/collective-rewards/utils'
-
-// Filter logic is now centralized in builderFilters.ts
 
 // TODO: this is a temporary solution to filter builders by state.
 type PagedFilter = {
@@ -205,36 +205,32 @@ export const BuildersTable = ({ filterOption }: { filterOption: BuilderFilterOpt
 
   const { prices } = usePricesContext()
 
-  const {
-    initialState: { allocations },
-    state: { isContextLoading },
-  } = useContext(AllocationsContext)
+  const { backings, isLoading: isBackingContextLoading } = useBackingContext()
 
   useEffect(() => {
     dispatch({
       type: 'SET_COLUMNS',
       payload: DEFAULT_HEADERS,
     })
-    // Set default sorting to backer_rewards (descending)
     dispatch({
       type: 'SET_DEFAULT_SORT',
       payload: { columnId: 'backer_rewards', direction: 'desc' },
     })
-  }, []) // eslint-disable-line react-hooks/exhaustive-deps
+  }, [dispatch])
 
   useEffect(() => {
     dispatch({
       type: 'SET_ROWS',
-      payload: convertDataToRowData(buildersRewardsData, prices, allocations),
+      payload: convertDataToRowData(buildersRewardsData, prices, backings),
     })
   }, [buildersRewardsData, prices, dispatch])
 
   useEffect(() => {
     dispatch({
       type: 'SET_LOADING',
-      payload: isLoading || isContextLoading,
+      payload: isLoading || isBackingContextLoading,
     })
-  }, [isLoading, isContextLoading, dispatch])
+  }, [isLoading, isBackingContextLoading, dispatch])
 
   useEffect(() => {
     if (!error) return
@@ -336,7 +332,7 @@ export const BuildersTable = ({ filterOption }: { filterOption: BuilderFilterOpt
           <Suspense fallback={<div>Loading table data...</div>}>
             <tbody>
               {rows.map(row => {
-                const userBacking = allocations[row.id as Address] ?? 0n
+                const userBacking = backings[row.id as Address]?.pending ?? 0n
                 const logic = createBuilderRowLogic(row, userBacking)
                 return <BuilderDataRow key={row.id} row={row} userBacking={userBacking} logic={logic} />
               })}

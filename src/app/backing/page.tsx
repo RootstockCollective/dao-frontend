@@ -3,15 +3,17 @@
 import { CycleContextProvider } from '@/app/collective-rewards/metrics'
 import { withFeatureFlag } from '@/shared/context/FeatureFlag'
 import { BackingPage } from './BackingPage'
-import { BackingContextProvider } from '../shared/context/BackingContext'
+import { RewardsContextProvider } from '../shared/context/RewardsContext/RewardsContext'
 
-const BackingPageWithContext = () => (
-  <CycleContextProvider>
-    <BackingContextProvider dynamicAllocations>
-      <BackingPage />
-    </BackingContextProvider>
-  </CycleContextProvider>
-)
+const BackingPageWithContext = () => {
+  return (
+    <CycleContextProvider>
+      <RewardsContextProvider dynamicAllocations>
+        <BackingPage />
+      </RewardsContextProvider>
+    </CycleContextProvider>
+  )
+}
 
 const BackingPageWithFeature = withFeatureFlag(BackingPageWithContext, {
   feature: 'v3_design',
