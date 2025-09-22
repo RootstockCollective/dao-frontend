@@ -108,11 +108,22 @@ export const usePixelExtractor = () => {
     imageSource: string,
     config: ConfigObject[] = PIXEL_CONFIGS.topRightDiagonal,
   ): Promise<ConfigResult[]> => {
+    // Check cache first
+    const cacheKey = `pixel-extract-${imageSource}-${JSON.stringify(config)}`
+    try {
+      const cached = localStorage.getItem(cacheKey)
+      if (cached) {
+        return JSON.parse(cached)
+      }
+    } catch (error) {
+      // Ignore cache errors and continue with extraction
+    }
+
     const image = await loadImage(imageSource)
     const { naturalWidth: w, naturalHeight: h } = image
 
     // Process each extraction
-    const results = config.map(async (configObj): Promise<ConfigResult> => {
+    const extractionPromises = config.map(async (configObj): Promise<ConfigResult> => {
       const coords = configObj.coords(w, h)
 
       const result = await extractPixels(image, coords.x, coords.y, configObj.size, configObj.size)
@@ -122,7 +133,16 @@ export const usePixelExtractor = () => {
       }
     })
 
-    return await Promise.all(results)
+    const results = await Promise.all(extractionPromises)
+
+    // Store results in cache
+    try {
+      localStorage.setItem(cacheKey, JSON.stringify(results))
+    } catch (error) {
+      // Ignore cache storage errors
+    }
+
+    return results
   }
 
   return { extractPixels, extractPixelsByConfig, loadImage }

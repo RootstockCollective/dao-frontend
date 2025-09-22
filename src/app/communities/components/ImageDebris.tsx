@@ -1,6 +1,6 @@
 'use client'
 import { ConfigResult, usePixelExtractor, PIXEL_CONFIGS } from '@/app/communities/hooks/usePixelExtractor'
-import { useEffect, useState } from 'react'
+import { useEffect, useState, useRef } from 'react'
 
 interface Props {
   image: string
@@ -16,10 +16,13 @@ interface Props {
 export const ImageDebris = ({ image, config = 'topRightDiagonal' }: Props) => {
   const [debris, setDebris] = useState<ConfigResult[]>([])
   const { extractPixelsByConfig } = usePixelExtractor()
-
+  const isAlreadyExtracted = useRef(false)
   useEffect(() => {
-    const configArray = PIXEL_CONFIGS[config]
-    extractPixelsByConfig(image, configArray).then(data => setDebris(data))
+    if (!isAlreadyExtracted.current) {
+      const configArray = PIXEL_CONFIGS[config]
+      extractPixelsByConfig(image, configArray).then(data => setDebris(data))
+      isAlreadyExtracted.current = true
+    }
   }, [image, config, extractPixelsByConfig])
 
   return (

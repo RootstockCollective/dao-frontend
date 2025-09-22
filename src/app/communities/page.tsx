@@ -32,7 +32,7 @@ export default function Communities() {
             {/* Communities */}
             <div className="grid grid-cols-1 md:grid-cols-4 gap-2">
               <CommunityItem {...earlyAdoptersCommunity} enableDebris />
-              <div className="col-span-2">
+              <div className="md:col-span-2">
                 {/* First */}
                 <ResponsiveCommunityItemHOC {...ogFounders} variant="landscape" enableDebris />
                 {/* Other 2 next to each other */}
