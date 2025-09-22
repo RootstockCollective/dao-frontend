@@ -124,11 +124,6 @@ interface BuilderDataRowProps extends CommonComponentProps<HTMLTableRowElement> 
   userBacking: bigint
 }
 
-/**
- * Main container component that renders either desktop or mobile builder row
- * based on screen size. This component delegates rendering to specialized
- * row components while maintaining the same external API.
- */
 const BuilderDataRow: FC<BuilderDataRowProps> = ({ ...props }) => {
   const isDesktop = useIsDesktop()
 

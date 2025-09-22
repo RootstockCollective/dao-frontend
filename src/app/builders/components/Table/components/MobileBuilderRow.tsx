@@ -4,6 +4,7 @@ import { ConditionalTooltip } from '@/app/components'
 import { ConnectTooltipContent } from '@/app/components/Tooltip/ConnectTooltip/ConnectTooltipContent'
 import { DisclaimerFlow } from '@/shared/walletConnection'
 import { Jdenticon } from '@/components/Header/Jdenticon'
+import { useLongPressTouch } from '@/shared/hooks/useLongPressTouch'
 import { BuilderNameCell } from '../Cell/BuilderNameCell'
 import { ActionCell } from '../Cell/ActionCell'
 import { SelectorCell } from '../Cell/SelectorCell'
@@ -42,6 +43,17 @@ export const MobileBuilderRow: FC<MobileBuilderRowProps> = ({ row, userBacking, 
     handleCloseIntermediateStep,
     onConnectWalletButtonClick,
   } = logic
+
+  // Long press functionality for selection
+  const longPressHandlers = useLongPressTouch({
+    onLongPress: () => {
+      if (isConnected && canBack) {
+        handleToggleSelection()
+      }
+    },
+    threshold: 500, // 500ms for long press
+    moveTolerance: 10, // 10px movement tolerance
+  })
 
   const {
     builder,
@@ -85,7 +97,10 @@ export const MobileBuilderRow: FC<MobileBuilderRowProps> = ({ row, userBacking, 
             MOBILE_ROW_STYLES.base,
             isRowSelected ? MOBILE_ROW_STYLES.selected : MOBILE_ROW_STYLES.unselected,
           )}
-          onClick={handleToggleSelection}
+          onTouchStart={longPressHandlers.onTouchStart}
+          onTouchMove={longPressHandlers.onTouchMove}
+          onTouchEnd={longPressHandlers.onTouchEnd}
+          onTouchCancel={longPressHandlers.onTouchCancel}
         >
           {/* Row 1: BuilderCell + expand/collapse trigger */}
           <div className="flex items-start w-full">
