@@ -3,13 +3,13 @@ import { useBuilderContext } from '@/app/collective-rewards/user/context/Builder
 import { useHandleErrors } from '@/app/collective-rewards/utils'
 import { BackMoreBuildersCard, BuilderCardControl } from '@/app/shared/components/BuilderCard'
 import { BuildersSpotlight } from '@/app/shared/components/BuildersSpotlight'
+import { useBackingContext } from '@/app/shared/context/BackingContext/BackingContext'
 import { Button } from '@/components/Button'
 import { LoadingSpinner } from '@/components/LoadingSpinner'
 import { useRouter, useSearchParams } from 'next/navigation'
 import { useCallback, useContext, useEffect, useMemo } from 'react'
 import { Address } from 'viem'
 import { useAccount } from 'wagmi'
-import { useBackingContext } from '@/app/shared/context/BackingContext'
 
 export const Spotlight = ({ isInteractive = true }: { isInteractive?: boolean }) => {
   const router = useRouter()
