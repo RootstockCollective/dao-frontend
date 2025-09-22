@@ -5,27 +5,40 @@ import { useTableActionsContext } from '@/shared/context'
 import { FC } from 'react'
 import { Action, ActionCell } from '../Cell/ActionCell'
 import { BuilderCellDataMap, ColumnId } from '../BuilderTable.config'
-import { useSelectedBuildersActions } from '../hooks/useSelectedBuildersActions'
+import {
+  useSelectedBuildersActions,
+  getSelectedBuildersActionState,
+} from '../hooks/useSelectedBuildersActions'
 import { Span } from '@/components/Typography'
 
 interface MobileStickyActionBarProps {
   actions: Action[]
 }
 
-export const MobileStickyActionBar: FC<MobileStickyActionBarProps> = ({ actions }) => {
-  const dispatch = useTableActionsContext<ColumnId, BuilderCellDataMap>()
-  const { selectedCount, showAction, handleActionClick } = useSelectedBuildersActions(actions)
+interface MobileStickyActionBarContentProps {
+  actions: Action[]
+  selectedCount: number
+  selectedBuilderIds: string[]
+  onDeselectAll: () => void
+  onClose?: () => void
+}
 
-  if (selectedCount === 0) {
-    return null
-  }
+export const MobileStickyActionBarContent: FC<MobileStickyActionBarContentProps> = ({
+  actions,
+  selectedCount,
+  selectedBuilderIds,
+  onDeselectAll,
+  onClose,
+}) => {
+  const { showAction, handleActionClick } = getSelectedBuildersActionState(actions, selectedBuilderIds)
 
   const handleDeselectClick = () => {
-    dispatch({ type: 'SET_SELECTED_ROWS', payload: {} })
+    onDeselectAll()
+    onClose?.()
   }
 
   return (
-    <div className="fixed bottom-0 left-0 right-0 z-50 md:hidden bg-v3-bg-accent-100 pt-4 px-4">
+    <div className="md:hidden bg-v3-bg-accent-100 pt-4 px-4">
       <ActionsContainer className="border-t border-v3-bg-accent-60 rounded-none">
         <div className="flex justify-center items-center gap-4 w-full">
           <ActionCell

@@ -22,7 +22,8 @@ import { BuilderHeaderRow } from './BuilderHeaderRow'
 import { BuilderCellDataMap, BuilderTable, ColumnId, DEFAULT_HEADERS, PAGE_SIZE } from './BuilderTable.config'
 import { Action, ActionCellProps } from './Cell/ActionCell'
 import { builderFilterMap } from './utils/builderFilters'
-import { MobileStickyActionBar } from './components/MobileStickyActionBar'
+import { MobileStickyActionBarContent } from './components/MobileStickyActionBar'
+import { useLayoutContext } from '@/components/MainContainer/LayoutProvider'
 
 // Filter logic is now centralized in builderFilters.ts
 
@@ -127,7 +128,6 @@ interface BuilderDataRowProps extends CommonComponentProps<HTMLTableRowElement> 
 
 const BuilderDataRow: FC<BuilderDataRowProps> = ({ ...props }) => {
   const isDesktop = useIsDesktop()
-
   return isDesktop ? <DesktopBuilderRow {...props} /> : <MobileBuilderRow {...props} />
 }
 
@@ -137,6 +137,8 @@ export const BuildersTable = ({ filterOption }: { filterOption: BuilderFilterOpt
   const [pageEnd, setPageEnd] = useState(PAGE_SIZE)
 
   const { isConnected } = useAccount()
+  const { openDrawer, closeDrawer } = useLayoutContext()
+  const isDesktop = useIsDesktop()
 
   const { rows, columns, selectedRows, sort } = useTableContext<ColumnId, BuilderCellDataMap>()
   const [actions, setActions] = useState<Action[]>([])
@@ -241,6 +243,37 @@ export const BuildersTable = ({ filterOption }: { filterOption: BuilderFilterOpt
     })
   }, [isConnected, dispatch])
 
+  // Handle mobile action bar with BottomDrawer
+  useEffect(() => {
+    // Only show mobile action bar on mobile devices
+    if (isDesktop) {
+      closeDrawer()
+      return
+    }
+
+    const selectedBuilderIds = Object.keys(selectedRows).filter(id => selectedRows[id])
+    const selectedCount = selectedBuilderIds.length
+
+    if (selectedCount > 0 && actions.length > 0) {
+      const handleDeselectAll = () => {
+        dispatch({ type: 'SET_SELECTED_ROWS', payload: {} })
+      }
+
+      openDrawer(
+        <MobileStickyActionBarContent
+          actions={actions}
+          selectedCount={selectedCount}
+          selectedBuilderIds={selectedBuilderIds}
+          onDeselectAll={handleDeselectAll}
+          onClose={closeDrawer}
+        />,
+        true, // closeOnRouteChange
+      )
+    } else {
+      closeDrawer()
+    }
+  }, [selectedRows, actions, openDrawer, closeDrawer, dispatch, isDesktop])
+
   return (
     <>
       <div className="w-full min-w-full bg-v3-bg-accent-80 md:overflow-x-auto">
@@ -266,7 +299,6 @@ export const BuildersTable = ({ filterOption }: { filterOption: BuilderFilterOpt
         pagedItemName="builders"
         mode="expandable"
       />
-      <MobileStickyActionBar actions={actions} />
     </>
   )
 }
