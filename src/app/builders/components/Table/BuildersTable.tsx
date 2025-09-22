@@ -8,14 +8,18 @@ import { TablePager } from '@/components/TableNew'
 import { usePricesContext, useTableActionsContext, useTableContext } from '@/shared/context'
 import { Sort } from '@/shared/context/TableContext/types'
 import { Big } from 'big.js'
-import { Suspense, useContext, useEffect, useMemo, useState } from 'react'
+import { FC, Suspense, useContext, useEffect, useMemo, useState } from 'react'
 import { Address } from 'viem'
 import { useAccount } from 'wagmi'
 import { useGetBuilderRewardsSummary } from '../../hooks/useGetBuilderRewardsSummary'
-import { BuilderDataRow, convertDataToRowData } from './BuilderDataRow'
+import { convertDataToRowData } from './utils/builderRowUtils'
+import { useIsDesktop } from '@/shared/hooks/useIsDesktop'
+import { CommonComponentProps } from '@/components/commonProps'
+import { DesktopBuilderRow } from './components/DesktopBuilderRow'
+import { MobileBuilderRow } from './components/MobileBuilderRow'
 import { BuilderFilterOptionId } from './BuilderFilterDropdown'
 import { BuilderHeaderRow } from './BuilderHeaderRow'
-import { BuilderCellDataMap, ColumnId, DEFAULT_HEADERS, PAGE_SIZE } from './BuilderTable.config'
+import { BuilderCellDataMap, BuilderTable, ColumnId, DEFAULT_HEADERS, PAGE_SIZE } from './BuilderTable.config'
 import { Action, ActionCellProps } from './Cell/ActionCell'
 import { builderFilterMap } from './utils/builderFilters'
 
@@ -113,6 +117,26 @@ const usePagedFilteredBuildersRewards = ({
   }, [allBuilders, filterOption, pageOptions, sort])
 
   return { data, isLoading, error }
+}
+
+interface BuilderDataRowProps extends CommonComponentProps<HTMLTableRowElement> {
+  row: BuilderTable['Row']
+  userBacking: bigint
+}
+
+/**
+ * Main container component that renders either desktop or mobile builder row
+ * based on screen size. This component delegates rendering to specialized
+ * row components while maintaining the same external API.
+ */
+const BuilderDataRow: FC<BuilderDataRowProps> = ({ row, userBacking, ...props }) => {
+  const isDesktop = useIsDesktop()
+
+  return isDesktop ? (
+    <DesktopBuilderRow row={row} userBacking={userBacking} {...props} />
+  ) : (
+    <MobileBuilderRow row={row} userBacking={userBacking} {...props} />
+  )
 }
 
 // ---------------- Table ----------------
