@@ -14,12 +14,11 @@ import { Tooltip, TooltipProps } from '@/components/Tooltip'
 import { Label, Paragraph, Span } from '@/components/Typography'
 import { cn } from '@/lib/utils'
 import { SORT_DIRECTION_ASC, SORT_DIRECTIONS } from '@/shared/context/TableContext/constants'
-import { redirect, RedirectType } from 'next/navigation'
 import { Dispatch, FC, ReactNode } from 'react'
-import { Address } from 'viem'
 import { BuilderCellDataMap, BuilderTable, COLUMN_TRANSFORMS, ColumnId, LABELS } from './BuilderTable.config'
 import { Action, ActionCell } from './Cell/ActionCell'
 import { SelectorHeaderCell } from './Cell/SelectorHeaderCell'
+import { useSelectedBuildersActions } from './hooks/useSelectedBuildersActions'
 import { TableColumnDropdown } from './TableColumnDropdown'
 
 const OrderIndicatorContainer: FC<CommonComponentProps> = ({ className, children }) => (
@@ -255,16 +254,7 @@ interface CombinedActionsHeaderCellProps extends CommonComponentProps<HTMLButton
   actions: Action[]
 }
 export const CombinedActionsHeaderCell = ({ actions }: CombinedActionsHeaderCellProps): ReactElement => {
-  const { selectedRows } = useTableContext<ColumnId, BuilderCellDataMap>()
-
-  const isMultipleDifferentActions = actions.some(action => action !== actions[0])
-  const showAction = isMultipleDifferentActions ? 'adjustBacking' : actions[0]
-
-  const handleClick = () => {
-    const selectedBuilderIds = Object.keys(selectedRows) as Address[]
-
-    redirect(`/backing?builders=${selectedBuilderIds.join(',')}`, RedirectType.push)
-  }
+  const { showAction, handleActionClick } = useSelectedBuildersActions(actions)
 
   return (
     <TableHeaderCell>
@@ -272,7 +262,7 @@ export const CombinedActionsHeaderCell = ({ actions }: CombinedActionsHeaderCell
         <HeaderTitle className="flex flex-row gap-2">
           <ActionCell
             actionType={showAction}
-            onClick={handleClick}
+            onClick={handleActionClick}
             className="flex justify-center items-center gap-1 font-rootstock-sans border-0 text-v3-text-100 font-light p-[inherit] h-[inherit] w-[inherit]"
           />
           <Span variant="tag-s" className="text-v3-bg-accent-0">

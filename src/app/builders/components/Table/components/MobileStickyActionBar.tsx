@@ -1,12 +1,11 @@
 import { Button } from '@/components/Button'
 import { ActionsContainer } from '@/components/containers/ActionsContainer'
 import { DeselectIcon } from '@/components/Icons/DeselectIcon'
-import { useTableActionsContext, useTableContext } from '@/shared/context'
-import { redirect, RedirectType } from 'next/navigation'
+import { useTableActionsContext } from '@/shared/context'
 import { FC } from 'react'
-import { Address } from 'viem'
 import { Action, ActionCell } from '../Cell/ActionCell'
 import { BuilderCellDataMap, ColumnId } from '../BuilderTable.config'
+import { useSelectedBuildersActions } from '../hooks/useSelectedBuildersActions'
 import { Span } from '@/components/Typography'
 
 interface MobileStickyActionBarProps {
@@ -14,21 +13,11 @@ interface MobileStickyActionBarProps {
 }
 
 export const MobileStickyActionBar: FC<MobileStickyActionBarProps> = ({ actions }) => {
-  const { selectedRows } = useTableContext<ColumnId, BuilderCellDataMap>()
   const dispatch = useTableActionsContext<ColumnId, BuilderCellDataMap>()
-
-  const selectedBuilderIds = Object.keys(selectedRows).filter(id => selectedRows[id]) as Address[]
-  const selectedCount = selectedBuilderIds.length
+  const { selectedCount, showAction, handleActionClick } = useSelectedBuildersActions(actions)
 
   if (selectedCount === 0) {
     return null
-  }
-
-  const isMultipleDifferentActions = actions.some(action => action !== actions[0])
-  const showAction = isMultipleDifferentActions ? 'adjustBacking' : actions[0]
-
-  const handleActionClick = () => {
-    redirect(`/backing?builders=${selectedBuilderIds.join(',')}`, RedirectType.push)
   }
 
   const handleDeselectClick = () => {
