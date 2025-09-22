@@ -5,7 +5,8 @@ import { Contributor, ContributorGraphResponse, Delegator } from '@/app/api/cont
 export const revalidate = 60
 
 export async function GET() {
-  const { contributors } = await fetchContributors()
+  const { data } = await daoClient.query<ContributorGraphResponse>({ query, fetchPolicy: 'no-cache' })
+  const { contributors } = data
   return Response.json(
     contributors.map(({ id, account, createdAt }: Contributor) => {
       return {
@@ -36,8 +37,3 @@ const query = apolloGQL`
   }
 }
 `
-
-export async function fetchContributors(): Promise<ContributorGraphResponse> {
-  const { data } = await daoClient.query<ContributorGraphResponse>({ query, fetchPolicy: 'no-cache' })
-  return data
-}
