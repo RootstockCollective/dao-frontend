@@ -13,7 +13,8 @@ export const MobileRewardsSection: FC<{
   rewards_past_cycle: RewardsCellProps
   rewards_upcoming: RewardsCellProps
   showBothColumns?: boolean
-}> = ({ rewards_past_cycle, rewards_upcoming, showBothColumns = true }) => {
+  isRowSelected?: boolean
+}> = ({ rewards_past_cycle, rewards_upcoming, showBothColumns = true, isRowSelected = false }) => {
   const hasUpcomingValue =
     hasValidValue(rewards_upcoming.usdValue) ||
     hasValidValue(rewards_upcoming.rbtcValue) ||
@@ -27,7 +28,12 @@ export const MobileRewardsSection: FC<{
     return (
       <MobileTwoColumnWrapper>
         <MobileColumnItem>
-          <MobileSectionWrapper title="Rewards" subtitle="past cycle" hasValue={hasPastValue}>
+          <MobileSectionWrapper
+            title="Rewards"
+            subtitle="past cycle"
+            hasValue={hasPastValue}
+            isRowSelected={isRowSelected}
+          >
             <RewardsCell {...rewards_past_cycle} emptyPlaceholder={<EmptyPlaceholder />} />
           </MobileSectionWrapper>
         </MobileColumnItem>
@@ -36,6 +42,7 @@ export const MobileRewardsSection: FC<{
             title="Rewards"
             subtitle="upcoming cycle, estimated"
             hasValue={hasUpcomingValue}
+            isRowSelected={isRowSelected}
           >
             <RewardsCell {...rewards_upcoming} emptyPlaceholder={<EmptyPlaceholder />} />
           </MobileSectionWrapper>
@@ -45,7 +52,7 @@ export const MobileRewardsSection: FC<{
   }
 
   return (
-    <MobileDataSection title="Rewards - upcoming" hasValue={hasUpcomingValue}>
+    <MobileDataSection title="Rewards - upcoming" hasValue={hasUpcomingValue} isRowSelected={isRowSelected}>
       <RewardsCell {...rewards_upcoming} emptyPlaceholder={<EmptyPlaceholder />} />
     </MobileDataSection>
   )

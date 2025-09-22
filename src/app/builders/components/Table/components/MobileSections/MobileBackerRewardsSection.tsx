@@ -6,7 +6,8 @@ import { hasValidValue } from '../../utils/builderRowUtils'
 export const MobileBackerRewardsSection: FC<{
   backer_rewards: BackersPercentageProps
   showChangeIndicator?: boolean
-}> = ({ backer_rewards, showChangeIndicator = false }) => {
+  isRowSelected?: boolean
+}> = ({ backer_rewards, showChangeIndicator = false, isRowSelected = false }) => {
   const hasValue = hasValidValue(backer_rewards.percentage?.current)
 
   return (
@@ -14,6 +15,7 @@ export const MobileBackerRewardsSection: FC<{
       title="Backer Rewards %"
       subtitle={showChangeIndicator ? 'current % - change' : undefined}
       hasValue={hasValue}
+      isRowSelected={isRowSelected}
     >
       <BackersPercentageCell {...backer_rewards} />
     </MobileDataSection>

@@ -29,13 +29,26 @@ const MobileSectionWrapper: FC<{
   children: ReactNode
   className?: string
   hasValue?: boolean
-}> = ({ title, subtitle, children, className, hasValue = true }) => (
+  isRowSelected?: boolean
+}> = ({ title, subtitle, children, className, hasValue = true, isRowSelected = false }) => (
   <div className={cn('flex flex-col w-full', className)}>
-    <Paragraph variant="body-xs" className="text-v3-bg-accent-0 mb-[0.125rem]">
+    <Paragraph
+      variant="body-xs"
+      className={cn('mb-[0.125rem]', isRowSelected ? 'text-v3-bg-accent-40' : 'text-v3-text-40')}
+    >
       {title}
     </Paragraph>
-    {subtitle && <Paragraph className="text-v3-text-40 text-xs font-normal mb-2">{subtitle}</Paragraph>}
-    <div className="flex flex-col items-start text-v3-text-100 ">
+    {subtitle && (
+      <Paragraph
+        className={cn(
+          'text-xs font-normal mb-2 opacity-90',
+          isRowSelected ? 'text-v3-bg-accent-40' : 'text-v3-text-40',
+        )}
+      >
+        {subtitle}
+      </Paragraph>
+    )}
+    <div className={cn('flex flex-col items-start', isRowSelected ? 'text-v3-text-0' : 'text-v3-text-100')}>
       {hasValue ? children : <EmptyPlaceholder />}
     </div>
   </div>
@@ -49,9 +62,18 @@ export const MobileDataSection: FC<{
   className?: string
   hasValue?: boolean
   layout?: 'single' | 'two-column'
-}> = ({ title, subtitle, children, className, hasValue = true, layout = 'single' }) => {
+  isRowSelected?: boolean
+}> = ({
+  title,
+  subtitle,
+  children,
+  className,
+  hasValue = true,
+  layout = 'single',
+  isRowSelected = false,
+}) => {
   const content = (
-    <MobileSectionWrapper title={title} subtitle={subtitle} hasValue={hasValue}>
+    <MobileSectionWrapper title={title} subtitle={subtitle} hasValue={hasValue} isRowSelected={isRowSelected}>
       {children}
     </MobileSectionWrapper>
   )

@@ -6,11 +6,13 @@ export const ExpandChevron: FC<{
   isExpanded: boolean
   onToggle?: () => void
   className?: string
-}> = ({ isExpanded, onToggle, className }) => (
+  isRowSelected?: boolean
+}> = ({ isExpanded, onToggle, className, isRowSelected = false }) => (
   <KotoChevronDownIcon
     size={16}
     className={cn(
-      'transition-transform duration-100 text-v3-text-100',
+      'transition-transform duration-100',
+      isRowSelected ? 'text-v3-bg-accent-100' : 'text-v3-text-100',
       isExpanded ? 'rotate-180' : 'rotate-0',
       className,
     )}

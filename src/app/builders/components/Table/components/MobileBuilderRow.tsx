@@ -114,20 +114,31 @@ export const MobileBuilderRow: FC<MobileBuilderRowProps> = ({ row, userBacking, 
               </SelectorCell>
               <BuilderNameCell {...builder} isHighlighted={isRowSelected} />
             </div>
-            {!isInProgress && <ExpandChevron isExpanded={isExpanded} onToggle={handleToggleExpand} />}
+            {!isInProgress && (
+              <ExpandChevron
+                isExpanded={isExpanded}
+                onToggle={handleToggleExpand}
+                isRowSelected={isRowSelected}
+              />
+            )}
           </div>
 
           {/* Row 2: BackerRewardsCell + RewardsUpcomingCell (collapsed state only) */}
           {!isInProgress && !isExpanded && (
             <MobileTwoColumnWrapper className="mt-2">
               <MobileColumnItem>
-                <MobileBackerRewardsSection backer_rewards={backer_rewards} showChangeIndicator={false} />
+                <MobileBackerRewardsSection
+                  backer_rewards={backer_rewards}
+                  showChangeIndicator={false}
+                  isRowSelected={isRowSelected}
+                />
               </MobileColumnItem>
               <MobileColumnItem>
                 <MobileRewardsSection
                   rewards_past_cycle={rewards_past_cycle}
                   rewards_upcoming={rewards_upcoming}
                   showBothColumns={false}
+                  isRowSelected={isRowSelected}
                 />
               </MobileColumnItem>
             </MobileTwoColumnWrapper>
@@ -135,7 +146,12 @@ export const MobileBuilderRow: FC<MobileBuilderRowProps> = ({ row, userBacking, 
 
           {/* Row 3: BuilderBackingCell (only in collapsed state) */}
           {!isInProgress && !isExpanded && (
-            <MobileBackingSection backing={backing} showUsd={false} className="mt-4" />
+            <MobileBackingSection
+              backing={backing}
+              showUsd={false}
+              className="mt-4"
+              isRowSelected={isRowSelected}
+            />
           )}
 
           {/* Expanded content */}
@@ -148,13 +164,18 @@ export const MobileBuilderRow: FC<MobileBuilderRowProps> = ({ row, userBacking, 
             >
               <div className="flex flex-col gap-4">
                 {/* Row 2 (expanded): BackerRewardsCell with change indicator */}
-                <MobileBackerRewardsSection backer_rewards={backer_rewards} showChangeIndicator={true} />
+                <MobileBackerRewardsSection
+                  backer_rewards={backer_rewards}
+                  showChangeIndicator={true}
+                  isRowSelected={isRowSelected}
+                />
 
                 {/* Row 3 (expanded): RewardsPastCycleCell + RewardsUpcomingCell */}
                 <MobileRewardsSection
                   rewards_past_cycle={rewards_past_cycle}
                   rewards_upcoming={rewards_upcoming}
                   showBothColumns={true}
+                  isRowSelected={isRowSelected}
                 />
 
                 {/* Row 4 (expanded): BuilderBackingCell + BackingShareCell (always show in expanded) */}
@@ -163,12 +184,17 @@ export const MobileBuilderRow: FC<MobileBuilderRowProps> = ({ row, userBacking, 
                   backingPercentage={backingPercentage}
                   showShare={true}
                   showUsd={true}
+                  isRowSelected={isRowSelected}
                 />
 
                 {/* Row 5 (expanded): ActionCell */}
                 {isConnected && (
                   <div className="w-full min-w-full flex justify-center">
-                    <ActionCell {...actions} hidden={false} className="text-v3-text-100" />
+                    <ActionCell
+                      {...actions}
+                      hidden={false}
+                      className={cn(isRowSelected ? 'text-v3-bg-accent-100' : 'text-v3-text-100')}
+                    />
                   </div>
                 )}
               </div>

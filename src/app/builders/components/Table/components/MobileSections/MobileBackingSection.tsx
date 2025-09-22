@@ -15,7 +15,15 @@ export const MobileBackingSection: FC<{
   showShare?: boolean
   showUsd?: boolean
   className?: string
-}> = ({ backing, backingPercentage, showShare = false, showUsd = true, className }) => {
+  isRowSelected?: boolean
+}> = ({
+  backing,
+  backingPercentage,
+  showShare = false,
+  showUsd = true,
+  className,
+  isRowSelected = false,
+}) => {
   const hasBackingValue = hasValidValue(backing.amount)
   const hasShareValue = hasValidValue(backingPercentage)
 
@@ -23,12 +31,12 @@ export const MobileBackingSection: FC<{
     return (
       <MobileTwoColumnWrapper className={className}>
         <MobileColumnItem>
-          <MobileSectionWrapper title="Backing" hasValue={hasBackingValue}>
+          <MobileSectionWrapper title="Backing" hasValue={hasBackingValue} isRowSelected={isRowSelected}>
             <BackingCell {...backing} showUsd={showUsd} />
           </MobileSectionWrapper>
         </MobileColumnItem>
         <MobileColumnItem>
-          <MobileSectionWrapper title="Backing share" hasValue={hasShareValue}>
+          <MobileSectionWrapper title="Backing share" hasValue={hasShareValue} isRowSelected={isRowSelected}>
             <BackingShareCell backingPercentage={backingPercentage} />
           </MobileSectionWrapper>
         </MobileColumnItem>
@@ -37,7 +45,12 @@ export const MobileBackingSection: FC<{
   }
 
   return (
-    <MobileDataSection title="Backing" hasValue={hasBackingValue} className={className}>
+    <MobileDataSection
+      title="Backing"
+      hasValue={hasBackingValue}
+      className={className}
+      isRowSelected={isRowSelected}
+    >
       <BackingCell {...backing} showUsd={showUsd} />
     </MobileDataSection>
   )
