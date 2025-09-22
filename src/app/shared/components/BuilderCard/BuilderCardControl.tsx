@@ -115,30 +115,32 @@ export const BuilderCardControl: FC<BuilderCardControlProps> = ({
   }, [initialAllocations, allocations])
 
   return (
-    <BuilderCard
-      key={resetVersion}
-      {...props}
-      builder={builder}
-      index={index}
-      showAnimation={showAnimation}
-      onConnect={() => router.push(`/backing?builders=${builder.address}`) /* 🤢 */}
-      allocationInputProps={{
-        builderAddress: builder.address,
-        allocationTxPending: false, // TODO: this is not currently used on main
-        disabled: false,
-        balance,
-        prices,
-        onchainBackingState: {
-          builderBacking: currentBacking,
-          cumulativeBacking: totalOnchainAllocation,
-        },
-        updatedBackingState: {
-          builderBacking: updatedBacking,
-          cumulativeBacking,
-          cumulativeBackingReductions: cumulativeBackingReductions,
-        },
-        updateBacking: (value: bigint) => updateAllocation(builder.address, value),
-      }}
-    />
+    <div key={builder.address} className="max-sm:flex-shrink-0 max-sm:snap-center max-sm:w-64 flex w-full">
+      <BuilderCard
+        key={resetVersion}
+        {...props}
+        builder={builder}
+        index={index}
+        showAnimation={showAnimation}
+        onConnect={() => router.push(`/backing?builders=${builder.address}`) /* 🤢 */}
+        allocationInputProps={{
+          builderAddress: builder.address,
+          allocationTxPending: false, // TODO: this is not currently used on main
+          disabled: false,
+          balance,
+          prices,
+          onchainBackingState: {
+            builderBacking: currentBacking,
+            cumulativeBacking: totalOnchainAllocation,
+          },
+          updatedBackingState: {
+            builderBacking: updatedBacking,
+            cumulativeBacking,
+            cumulativeBackingReductions: cumulativeBackingReductions,
+          },
+          updateBacking: (value: bigint) => updateAllocation(builder.address, value),
+        }}
+      />
+    </div>
   )
 }
