@@ -4,9 +4,9 @@ import { fetchContributors } from '@/app/delegate/actions/delegateAction'
 export const revalidate = 60
 
 export async function GET() {
-  const { contributors } = await fetchContributors()
-  return Response.json(
-    contributors.map(({ id, account, createdAt }: Contributor) => {
+  try {
+    const { contributors } = await fetchContributors()
+    const proposals = contributors.map(({ id, account, createdAt }: Contributor) => {
       return {
         id,
         delegatedVotes: account.delegatedVotes,
@@ -14,6 +14,10 @@ export async function GET() {
         votes: account.VoteCasts.length,
         createdAt,
       }
-    }),
-  )
+    })
+    return Response.json(proposals)
+  } catch (error) {
+    console.error(error)
+  }
+  return Response.json({ error: 'Can not fetch contributors' }, { status: 500 })
 }
