@@ -17,7 +17,7 @@ export const calculateSegmentPositions = (
   rect: DOMRect,
   values: bigint[],
   totalValue: bigint,
-  losless?: boolean, // FIXME: remove (and the coresponding calculation) if precision is not needed
+  lossless?: boolean, // FIXME: remove (and the corresponding calculation) if precision is not needed
 ): {
   leftPx: number
   rightPx: number
@@ -31,7 +31,7 @@ export const calculateSegmentPositions = (
     return { leftPx: 0, rightPx: 0 }
   }
 
-  if (losless) {
+  if (lossless) {
     const leftPx = Big(valuesUpToDragItem.toString()).mul(rect.width).div(totalValue.toString())
     const rightPx = Big(valuesUpToDragItem.toString())
       .add(Big(targetItem.toString()))

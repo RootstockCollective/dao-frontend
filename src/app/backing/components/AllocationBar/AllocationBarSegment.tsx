@@ -5,6 +5,7 @@ import { cn } from '@/lib/utils'
 import { useSortable } from '@dnd-kit/sortable'
 import { CSS } from '@dnd-kit/utilities'
 import { AllocationBarDragHandle } from './AllocationBarDragHandle'
+import { AllocationBarTooltip, AllocationBarTooltipProps } from './AllocationBarTooltip'
 import { AllocationBarValueDisplay, AllocationItem } from './types'
 import { checkerboardStyle, valueToPercentage } from './utils'
 
@@ -50,8 +51,7 @@ interface AllocationBarSegmentProps extends CommonComponentProps {
   totalBacking: bigint
   item: AllocationItem
   valueDisplay: AllocationBarValueDisplay
-  tooltip: () => React.ReactNode
-  resizeHandle: () => React.ReactNode
+  tooltipContentProps: AllocationBarTooltipProps
   isCollapsed: boolean
   dragIndex: number | null
   isDraggable: boolean
@@ -63,14 +63,15 @@ export const AllocationBarSegment = ({
   totalBacking,
   item,
   valueDisplay,
-  tooltip,
-  resizeHandle,
+  tooltipContentProps,
   isCollapsed,
   dragIndex,
   isDraggable,
   className,
 }: AllocationBarSegmentProps) => {
-  const { attributes, listeners, setNodeRef, transform, isDragging } = useSortable({ id: item.key })
+  const { attributes, listeners, setNodeRef, transform, isDragging } = useSortable({
+    id: item.key,
+  })
 
   // Calculate the percentage width based on the actual value and total value
   const percentageWidth = valueToPercentage(pendingValue, totalBacking)
@@ -92,7 +93,12 @@ export const AllocationBarSegment = ({
   const dragStateClasses = isDragging ? 'opacity-60 z-[99]' : 'opacity-100'
 
   return (
-    <Tooltip hidden={isCollapsed} text={!isCollapsed && tooltip()} side="top" align="center">
+    <Tooltip
+      hidden={isCollapsed}
+      text={!isCollapsed && <AllocationBarTooltip {...tooltipContentProps} />}
+      side="top"
+      align="center"
+    >
       {
         <div
           ref={setNodeRef}
@@ -110,7 +116,7 @@ export const AllocationBarSegment = ({
 
           <div className="flex-1 flex items-center justify-center">
             {isCollapsed && (
-              <Tooltip text={tooltip()} side="top" align="center" className="z-10 text-lg">
+              <Tooltip text={<AllocationBarTooltip {...tooltipContentProps} />} side="top" align="center">
                 <MoreIcon
                   size={16}
                   className="absolute -top-7 left-1/2 -translate-x-1/2  cursor-pointer z-10"
@@ -127,7 +133,6 @@ export const AllocationBarSegment = ({
               />
             )}
           </div>
-          {resizeHandle()}
         </div>
       }
     </Tooltip>

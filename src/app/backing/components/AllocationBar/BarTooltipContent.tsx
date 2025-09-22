@@ -3,15 +3,7 @@ import { Label } from '@/components/Typography'
 import { cn } from '@/lib/utils'
 import { ReactElement } from 'react'
 
-export const BarTooltip = ({ children, className }: CommonComponentProps): ReactElement => {
-  return (
-    <div className={cn('flex flex-col gap-2 h-40 items-end self-stretch bg-transparent', className)}>
-      {children}
-    </div>
-  )
-}
-
-export const BarTooltipConent = ({ children, className }: CommonComponentProps): ReactElement => {
+export const BarTooltipContent = ({ children, className }: CommonComponentProps): ReactElement => {
   return (
     <div
       className={cn('w-fit p-4 bg-v3-text-80 rounded flex items-end gap-2 text-v3-bg-accent-100', className)}

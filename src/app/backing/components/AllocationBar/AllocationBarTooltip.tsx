@@ -1,76 +1,66 @@
-import React from 'react'
-
 import { formatSymbol } from '@/app/collective-rewards/rewards'
 import { Circle } from '@/components/Circle'
+import { CommonComponentProps } from '@/components/commonProps'
 import { HourglassIcon } from '@/components/Icons/HourglassIcon'
 import { STRIF } from '@/lib/constants'
 import { truncate } from '@/lib/utils'
+import { ReactElement } from 'react'
 import {
-  BarTooltipConent,
+  BarTooltipContent,
   BarTooltipLabelItem,
   BarTooltipLabels,
   BarTooltipValueItem,
   BarTooltipValues,
-} from './BarTooltipConent'
+} from './BarTooltipContent'
 import { AllocationItem } from './types'
 
-interface AllocationBarTooltipProps {
-  item: AllocationItem
-  index: number
-  items: AllocationItem[]
-  values: bigint[]
-  dragIndex: number | null
+export interface AllocationBarTooltipProps extends CommonComponentProps<HTMLDivElement> {
+  targetItem: AllocationItem
+  adjecentItem?: AllocationItem
+  isResizing?: boolean
 }
 
-export const AllocationBarTooltip: React.FC<AllocationBarTooltipProps> = ({
-  item,
-  index,
-  items,
-  values,
-  dragIndex,
-}) => {
-  const isResizing = dragIndex === index || dragIndex === index - 1 || dragIndex === index + 1
-  const adjecentSegmentResizeIndex = index + (dragIndex === index ? 1 : -1)
-
+export const AllocationBarTooltip = ({
+  targetItem,
+  adjecentItem,
+  isResizing = false,
+  className,
+}: AllocationBarTooltipProps): ReactElement => {
   return (
-    <BarTooltipConent className="">
+    <BarTooltipContent className={className}>
       <BarTooltipLabels>
         <BarTooltipLabelItem>
-          <Circle color={item.displayColor} className="w-2 h-2" /> {truncate(item.label, 25)}
+          <Circle color={targetItem.displayColor} className="w-2 h-2" /> {truncate(targetItem.label, 25)}
         </BarTooltipLabelItem>
-        {isResizing && (
+        {isResizing && adjecentItem && (
           <BarTooltipLabelItem>
-            <Circle color={items[adjecentSegmentResizeIndex].displayColor} className="w-2 h-2" />{' '}
-            {truncate(items[adjecentSegmentResizeIndex].label, 25)}
+            <Circle color={adjecentItem.displayColor} className="w-2 h-2" />{' '}
+            {truncate(adjecentItem.label, 25)}
           </BarTooltipLabelItem>
         )}
       </BarTooltipLabels>
 
-      {item.initialValue !== item.value && (
+      {targetItem.initialValue !== targetItem.value && (
         <BarTooltipValues label="Pending">
           <BarTooltipValueItem>
             <HourglassIcon className="size-4" color="var(--background-40)" />
-            {formatSymbol(item.value, STRIF)}
+            {formatSymbol(targetItem.value, STRIF)}
           </BarTooltipValueItem>
-          {isResizing && (
+          {isResizing && adjecentItem && (
             <BarTooltipValueItem>
               <HourglassIcon className="size-4" color="var(--background-40)" />
-              {formatSymbol(values[adjecentSegmentResizeIndex], STRIF)}
+              {formatSymbol(adjecentItem.value, STRIF)}
             </BarTooltipValueItem>
           )}
         </BarTooltipValues>
       )}
 
       <BarTooltipValues label="Current">
-        <BarTooltipValueItem>{formatSymbol(item.initialValue ?? 0n, STRIF)}</BarTooltipValueItem>
-        {isResizing && (
-          <BarTooltipValueItem>
-            {formatSymbol(items[adjecentSegmentResizeIndex].initialValue ?? 0n, STRIF)}
-          </BarTooltipValueItem>
+        <BarTooltipValueItem>{formatSymbol(targetItem.initialValue ?? 0n, STRIF)}</BarTooltipValueItem>
+        {isResizing && adjecentItem && (
+          <BarTooltipValueItem>{formatSymbol(adjecentItem.initialValue ?? 0n, STRIF)}</BarTooltipValueItem>
         )}
       </BarTooltipValues>
-    </BarTooltipConent>
+    </BarTooltipContent>
   )
 }
-
-export default AllocationBarTooltip

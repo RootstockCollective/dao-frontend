@@ -10,9 +10,19 @@ export const ResizeHandle = ({
   isEditable: boolean
 }) => {
   const cursorClass = isEditable ? 'cursor-ew-resize' : 'cursor-not-allowed'
+
+  // FIXME: This is a temporary hack to allow resizing a 0value segment.
+  // It couples it with the AllocationBarSegment implementation, though,
+  // so it should be removed once we have a better solution.
+  const zIndexHack = 'z-999'
+
   return (
     <div
-      className={cn('w-2 h-full flex items-center justify-center bg-v3-bg-accent-100', cursorClass)}
+      className={cn(
+        'w-2 h-full flex items-center justify-center bg-v3-bg-accent-100',
+        zIndexHack,
+        cursorClass,
+      )}
       {...props}
     >
       <div
