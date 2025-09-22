@@ -3,39 +3,49 @@ import { useBuilderContext } from '@/app/collective-rewards/user/context/Builder
 import { useHandleErrors } from '@/app/collective-rewards/utils'
 import { BackMoreBuildersCard, BuilderCardControl } from '@/app/shared/components/BuilderCard'
 import { BuildersSpotlight } from '@/app/shared/components/BuildersSpotlight'
+import { useBackingActionsContext } from '@/app/shared/context/BackingContext/BackingActionsContext'
+import { useBackingContext } from '@/app/shared/context/BackingContext/BackingContext'
 import { Button } from '@/components/Button'
 import { LoadingSpinner } from '@/components/LoadingSpinner'
 import { useRouter, useSearchParams } from 'next/navigation'
 import { useCallback, useContext, useEffect, useMemo } from 'react'
 import { Address } from 'viem'
 import { useAccount } from 'wagmi'
-import { useBackingContext } from '@/app/shared/context/BackingContext'
 
 export const Spotlight = ({ isInteractive = true }: { isInteractive?: boolean }) => {
   const router = useRouter()
   const searchParams = useSearchParams()
   const { isConnected } = useAccount()
 
+  // const {
+  //   state: { allocations, selections, getBuilder },
+  //   initialState: {
+  //     backer: { amountToAllocate: totalOnchainAllocation },
+  //   },
+  //   actions: { toggleSelectedBuilder },
+  // } = useContext(AllocationsContext)
   const {
-    state: { allocations, selections, getBuilder },
-    initialState: {
-      backer: { amountToAllocate: totalOnchainAllocation },
-    },
-    actions: { toggleSelectedBuilder },
-  } = useContext(AllocationsContext)
+    backings: allocations,
+    selections,
+    totalBacking: {
+      onchain: totalOnchainAllocation,
+    }
+  } = useBackingContext()
+
+  const dispatchBackingAction = useBackingActionsContext()
 
   const { randomBuilders } = useBuilderContext()
 
-  const {
-    data: backingData,
-    isLoading: isBackingDataLoading,
-    error: isBackingDataError,
-  } = useBackingContext()
+  // const {
+  //   data: backingData,
+  //   isLoading: isBackingDataLoading,
+  //   error: isBackingDataError,
+  // } = useBackingContext()
 
-  const isLoading = isBackingDataLoading
-  const error = isBackingDataError
+  // const isLoading = isBackingDataLoading
+  // const error = isBackingDataError
 
-  useHandleErrors({ error, title: 'Error loading backing data' })
+  // useHandleErrors({ error, title: 'Error loading backing data' })
 
   const userSelections = useMemo(() => searchParams.get('builders')?.split(',') as Address[], [searchParams])
 

@@ -29,6 +29,8 @@ import { BackerAnnualBackersIncentives } from './components/Metrics/BackerAnnual
 import { Spotlight } from './components/Spotlight'
 import { useBalancesContext } from '@/app/user/Balances/context/BalancesContext'
 import { currentLinks } from '@/lib/links'
+import { BackingState, useBackingContext } from '../shared/context/BackingContext'
+import { useBackingActionsContext } from '../shared/context/BackingContext/BackingActionsContext'
 
 const NAME = 'Backing'
 
@@ -48,13 +50,13 @@ const StakeButton = () => {
 
   const { onClick, text } = hasRifBalance
     ? {
-        onClick: () => router.push('/user?action=stake'),
-        text: 'Stake RIF',
-      }
+      onClick: () => router.push('/user?action=stake'),
+      text: 'Stake RIF',
+    }
     : {
-        onClick: () => window.open(getRifLink.toString(), '_blank'),
-        text: 'Get RIF',
-      }
+      onClick: () => window.open(getRifLink.toString(), '_blank'),
+      text: 'Get RIF',
+    }
 
   return (
     <>
@@ -99,20 +101,31 @@ export const BackingPage = () => {
   const searchParams = useSearchParams()
   const { isConnected } = useAccount()
   const {
-    state: {
-      backer: { balance, allocationsCount, cumulativeAllocation },
-      allocations,
+    balance: { pending: availableForBacking },
+    backedBuilderCount: {
+      pending: allocationsCount,
     },
-    initialState: {
-      backer: { amountToAllocate: totalOnchainAllocation, balance: totalVotingPower },
+    totalBacking: {
+      onchain: totalOnchainAllocation,
+      pending: cumulativeAllocation,
     },
-    actions: { updateAllocations },
-  } = useContext(AllocationsContext)
-
+    backings: allocations
+  } = useBackingContext()
+  const dispatchBackingAction = useBackingActionsContext()
+  // const {
+  //   state: {
+  //     backer: { balance, allocationsCount, cumulativeAllocation },
+  //     allocations,
+  //   },
+  //   initialState: {
+  //     backer: { amountToAllocate: totalOnchainAllocation, balance: totalVotingPower },
+  //   },
+  //   actions: { updateAllocations },
+  // } = useContext(AllocationsContext)
+  //
   const { randomBuilders } = useBuilderContext()
   const { prices } = usePricesContext()
 
-  const availableForBacking = balance - cumulativeAllocation
   const availableBackingUSD = useMemo(() => {
     const rifPriceUsd = prices[RIF]?.price ?? 0
 
@@ -122,27 +135,51 @@ export const BackingPage = () => {
   }, [availableForBacking, prices])
 
   const distributeBackingEqually = () => {
-    //FIXME: Take into account the inactive builders
-    let newAllocations: Allocations = {}
-    if (allocationsCount) {
-      newAllocations = Object.keys(allocations).reduce((acc, key) => {
-        const builderAddress = key as Address
-        const newAllocation = availableForBacking / BigInt(allocationsCount) + allocations[builderAddress]
-        acc[builderAddress] = newAllocation
-
-        return acc
-      }, {} as Allocations)
-
-      return updateAllocations(newAllocations)
+    if (!allocationsCount) {
+      /* Distribue to random builders if there are no allocations yet */
+      return dispatchBackingAction({
+        type: 'SET_ALL_BACKINGS', payload: {
+          backings: randomBuilders.reduce<BackingState['backings']>((acc, { address }) => ({
+            ...acc,
+            [address]: { onchain: 0n, pending: availableForBacking / BigInt(randomBuilders.length) }
+          }), {})
+        }
+      })
     }
 
-    updateAllocations(
-      randomBuilders.reduce((acc, builder) => {
-        acc[builder.address] = availableForBacking / BigInt(randomBuilders.length)
+    const newAllocations: BackingState['backings'] = Object.entries(allocations)
+      .reduce<BackingState['backings']>((acc, [address, { onchain, pending }]) => ({
+        ...acc,
+        [address]: {
+          onchain,
+          pending: availableForBacking / BigInt(allocationsCount) + pending,
+        }
+      }),
+        {})
 
-        return acc
-      }, {} as Allocations),
-    )
+    dispatchBackingAction({ type: 'SET_ALL_BACKINGS', payload: { backings: newAllocations } })
+
+    //FIXME: Take into account the inactive builders
+    // let newAllocations: BackingState['backings'] = {}
+    // if (allocationsCount) {
+    //   newAllocations = Object.keys(allocations).reduce((acc, key) => {
+    //     const builderAddress = key as Address
+    //     const newAllocation = availableForBacking / BigInt(allocationsCount) + allocations[builderAddress].pending
+    //     acc[builderAddress] = newAllocation
+    //
+    //     return acc
+    //   }, {} as Allocations)
+    //
+    //   return updateAllocations(newAllocations)
+    // }
+    //
+    // updateAllocations(
+    //   randomBuilders.reduce((acc, builder) => {
+    //     acc[builder.address] = availableForBacking / BigInt(randomBuilders.length)
+    //
+    //     return acc
+    //   }, {} as Allocations),
+    // )
   }
 
   const userSelections = useMemo(() => searchParams.get('builders')?.split(',') as Address[], [searchParams])

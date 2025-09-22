@@ -26,6 +26,7 @@ import {
   isBuilderSelfPaused,
 } from '@/app/collective-rewards/utils/isBuilderOperational'
 import { builderFilterMap } from './utils/builderFilters'
+import { useBackingContext } from '@/app/shared/context/BackingContext'
 
 // --- Filter builders by state ---
 const filterActive = (builder: Builder) => isBuilderActive(builder.stateFlags)
@@ -104,15 +105,15 @@ const usePagedFilteredBuildersRewards = ({
       rewards_upcoming: (a, b) => {
         const aValue = a.backerEstimatedRewards
           ? getCombinedFiatAmount([
-              a.backerEstimatedRewards.rif.amount,
-              a.backerEstimatedRewards.rbtc.amount,
-            ]).toNumber()
+            a.backerEstimatedRewards.rif.amount,
+            a.backerEstimatedRewards.rbtc.amount,
+          ]).toNumber()
           : 0
         const bValue = b.backerEstimatedRewards
           ? getCombinedFiatAmount([
-              b.backerEstimatedRewards.rif.amount,
-              b.backerEstimatedRewards.rbtc.amount,
-            ]).toNumber()
+            b.backerEstimatedRewards.rif.amount,
+            b.backerEstimatedRewards.rbtc.amount,
+          ]).toNumber()
           : 0
         return Big(aValue).sub(bValue).toNumber()
       },
@@ -158,10 +159,16 @@ export const BuildersTable = ({ filterOption }: { filterOption: BuilderFilterOpt
 
   const { prices } = usePricesContext()
 
+  // const {
+  //   initialState: { allocations },
+  //   state: { isContextLoading },
+  // } = useContext(AllocationsContext)
+
   const {
-    initialState: { allocations },
-    state: { isContextLoading },
-  } = useContext(AllocationsContext)
+    backings: allocations,
+    isLoading: isContextLoading,
+  } = useBackingContext()
+
 
   useEffect(() => {
     dispatch({
@@ -258,7 +265,7 @@ export const BuildersTable = ({ filterOption }: { filterOption: BuilderFilterOpt
           <Suspense fallback={<div>Loading table data...</div>}>
             <tbody>
               {rows.map(row => (
-                <BuilderDataRow key={row.id} row={row} userBacking={allocations[row.id as Address] ?? 0n} />
+                <BuilderDataRow key={row.id} row={row} userBacking={allocations[row.id as Address]?.pending ?? 0n} />
               ))}
             </tbody>
           </Suspense>
