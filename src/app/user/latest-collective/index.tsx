@@ -1,11 +1,12 @@
+import { useBuilderContext } from '@/app/collective-rewards/user/context/BuilderContext'
 import { ButtonAction } from '@/app/proposals/components/vote-details'
 import { useVotingPower } from '@/app/proposals/hooks/useVotingPower'
 import { Proposal } from '@/app/proposals/shared/types'
+import { BuilderCardControl } from '@/app/shared/components/BuilderCard'
+import { SpotlightBuildersGrid } from '@/app/shared/components/SpotlightBuildersGrid'
 import { Header } from '@/components/Typography'
 import { useRouter } from 'next/navigation'
 import { LatestActiveProposalCard, LatestProposalCard } from './components'
-import { SpotlightBuildersGrid } from '@/app/shared/components/SpotlightBuildersGrid'
-import { useBuilderContext } from '@/app/collective-rewards/user/context/BuilderContext'
 
 interface LatestCollectiveSectionProps {
   latestProposals: Proposal[]
@@ -61,11 +62,11 @@ export const LatestCollectiveSection = ({
           Builders in the spotlight
         </Header>
         <div className="mt-4 md:px-6 pl-6 pr-0">
-          <SpotlightBuildersGrid
-            builders={randomBuilders.map(builder => ({
-              builder,
-            }))}
-          />
+          <SpotlightBuildersGrid>
+            {randomBuilders.map((builder, index) => (
+              <BuilderCardControl key={builder.address} builder={builder} index={index} />
+            ))}
+          </SpotlightBuildersGrid>
         </div>
       </div>
     </div>

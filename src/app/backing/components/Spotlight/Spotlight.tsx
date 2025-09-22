@@ -1,15 +1,15 @@
 import { AllocationsContext } from '@/app/collective-rewards/allocations/context/AllocationsContext'
 import { useBuilderContext } from '@/app/collective-rewards/user/context/BuilderContext'
 import { useHandleErrors } from '@/app/collective-rewards/utils'
+import { BuilderCardControl } from '@/app/shared/components/BuilderCard'
 import { SpotlightBuildersGrid } from '@/app/shared/components/SpotlightBuildersGrid'
+import { useBackingContext } from '@/app/shared/context/BackingContext'
 import { Button } from '@/components/Button'
 import { LoadingSpinner } from '@/components/LoadingSpinner'
 import { useRouter, useSearchParams } from 'next/navigation'
 import { useCallback, useContext, useEffect, useMemo } from 'react'
 import { Address } from 'viem'
 import { useAccount } from 'wagmi'
-import { useBackingContext } from '@/app/shared/context/BackingContext'
-import { BuilderCardControlProps } from '@/app/shared/components/BuilderCard'
 
 export const Spotlight = ({ isInteractive = true }: { isInteractive?: boolean }) => {
   const router = useRouter()
@@ -99,25 +99,20 @@ export const Spotlight = ({ isInteractive = true }: { isInteractive?: boolean })
     )
   }
 
-  const builders: BuilderCardControlProps[] = spotlightBuilders.map((builder, index) => ({
-    builder,
-    index,
-    isInteractive,
-    // only include these if connected and interactive
-    ...(isConnected && isInteractive
-      ? {
-          estimatedRewards: builder.backerEstimatedRewards,
-          showAnimation: isBuilderSelected(builder.address),
-        }
-      : {}),
-  }))
-
   return (
     <>
-      <SpotlightBuildersGrid
-        builders={builders}
-        showBackMoreBuildersCard={hasAllocations && spotlightBuilders.length < 4}
-      />
+      <SpotlightBuildersGrid showBackMoreBuildersCard={hasAllocations && spotlightBuilders.length < 4}>
+        {spotlightBuilders.map((builder, index) => (
+          <BuilderCardControl
+            key={builder.address}
+            builder={builder}
+            index={index}
+            isInteractive
+            estimatedRewards={builder.backerEstimatedRewards}
+            showAnimation={isBuilderSelected(builder.address)}
+          />
+        ))}
+      </SpotlightBuildersGrid>
       <div className="flex justify-center self-center mt-6">
         <Button variant="secondary-outline" onClick={() => router.push('/builders')}>
           See all Builders
