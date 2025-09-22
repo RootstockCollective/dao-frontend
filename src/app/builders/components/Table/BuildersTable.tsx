@@ -129,14 +129,10 @@ interface BuilderDataRowProps extends CommonComponentProps<HTMLTableRowElement> 
  * based on screen size. This component delegates rendering to specialized
  * row components while maintaining the same external API.
  */
-const BuilderDataRow: FC<BuilderDataRowProps> = ({ row, userBacking, ...props }) => {
+const BuilderDataRow: FC<BuilderDataRowProps> = ({ ...props }) => {
   const isDesktop = useIsDesktop()
 
-  return isDesktop ? (
-    <DesktopBuilderRow row={row} userBacking={userBacking} {...props} />
-  ) : (
-    <MobileBuilderRow row={row} userBacking={userBacking} {...props} />
-  )
+  return isDesktop ? <DesktopBuilderRow {...props} /> : <MobileBuilderRow {...props} />
 }
 
 // ---------------- Table ----------------
