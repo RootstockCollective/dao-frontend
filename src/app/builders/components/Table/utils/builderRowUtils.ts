@@ -15,9 +15,10 @@ export const hasValidValue = (value: any): boolean => {
 
 // Style constants
 export const MOBILE_ROW_STYLES = {
-  selected: 'bg-v3-text-80 text-v3-bg-accent-100',
-  unselected: 'bg-v3-bg-accent-80 text-v3-primary-100',
-  base: 'flex flex-col border-b-v3-bg-accent-60 border-b-1 py-5 w-full min-w-full',
+  selected: 'bg-v3-text-80 text-v3-bg-accent-100 border-b-v3-bg-accent-60 border-b-1',
+  unselected:
+    'bg-v3-bg-accent-80 text-v3-primary-100 relative after:absolute after:bottom-0 after:inset-x-4 after:h-px after:bg-v3-bg-accent-60',
+  base: 'flex flex-col py-5 px-4 w-full min-w-full',
 } as const
 
 export const DESKTOP_ROW_STYLES = {
