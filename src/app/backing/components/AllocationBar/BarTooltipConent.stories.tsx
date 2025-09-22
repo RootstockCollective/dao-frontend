@@ -30,7 +30,12 @@ const onchain = [20000n, 10000000000n]
 export const Default: Story = {
   args: {
     className: '',
-    children: (
+  },
+  parameters: {
+    controls: { exclude: ['children'] },
+  },
+  render: args => (
+    <BarTooltip {...args}>
       <BarTooltipConent className="">
         <BarTooltipLabels>
           {builders.map((builder, index) => (
@@ -42,7 +47,7 @@ export const Default: Story = {
 
         <BarTooltipValues label="Pending">
           {pending.map((value, index) => (
-            <BarTooltipValueItem key={`${index}: ${value}`}>
+            <BarTooltipValueItem key={`${index}: ${value.toString()}`}>
               <HourglassIcon className="size-4" color="var(--background-40)" />
               {value.toString()}
             </BarTooltipValueItem>
@@ -51,11 +56,12 @@ export const Default: Story = {
 
         <BarTooltipValues label="Current">
           {onchain.map((value, index) => (
-            <BarTooltipValueItem key={`${index}: ${value}`}>{value.toString()}</BarTooltipValueItem>
+            <BarTooltipValueItem key={`${index}: ${value.toString()}`}>
+              {value.toString()}
+            </BarTooltipValueItem>
           ))}
         </BarTooltipValues>
       </BarTooltipConent>
-    ),
-  },
-  render: args => <BarTooltip {...args} />,
+    </BarTooltip>
+  ),
 }
