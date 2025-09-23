@@ -1,19 +1,10 @@
 import { Button } from '@/components/Button'
 import { ActionsContainer } from '@/components/containers/ActionsContainer'
 import { DeselectIcon } from '@/components/Icons/DeselectIcon'
-import { useTableActionsContext } from '@/shared/context'
 import { FC } from 'react'
 import { Action, ActionCell } from '../Cell/ActionCell'
-import { BuilderCellDataMap, ColumnId } from '../BuilderTable.config'
-import {
-  useSelectedBuildersActions,
-  getSelectedBuildersActionState,
-} from '../hooks/useSelectedBuildersActions'
+import { getSelectedBuildersActionState } from '../hooks/useSelectedBuildersActions'
 import { Span } from '@/components/Typography'
-
-interface MobileStickyActionBarProps {
-  actions: Action[]
-}
 
 interface MobileStickyActionBarContentProps {
   actions: Action[]
