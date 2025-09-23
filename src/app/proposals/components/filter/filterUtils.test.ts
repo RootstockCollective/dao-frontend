@@ -7,7 +7,7 @@ import {
 } from './filterUtils'
 import { Proposal } from '@/app/proposals/shared/types'
 import { ProposalCategory, ProposalState } from '@/shared/types'
-import { FilterItem } from './types'
+import { FilterItem, FilterType } from './types'
 import moment from 'moment'
 import { expect } from 'vitest'
 
@@ -81,13 +81,15 @@ const mockProposals: Proposal[] = [
 describe('Filter Utils', () => {
   describe('applySearchFilters', () => {
     it('should filter proposals by name', () => {
-      const searchFilters: FilterItem[] = [{ id: '1', type: 'search', label: 'Test', value: 'Test' }]
+      const searchFilters: FilterItem[] = [{ id: '1', type: FilterType.SEARCH, label: 'Test', value: 'Test' }]
       const result = applySearchFilters(mockProposals, searchFilters)
       expect(result).toHaveLength(2) // Test Proposal 1 and Test Proposal 2
     })
 
     it('should filter proposals by description', () => {
-      const searchFilters: FilterItem[] = [{ id: '1', type: 'search', label: 'grants', value: 'grants' }]
+      const searchFilters: FilterItem[] = [
+        { id: '1', type: FilterType.SEARCH, label: 'grants', value: 'grants' },
+      ]
       const result = applySearchFilters(mockProposals, searchFilters)
       expect(result).toHaveLength(2) // Test Proposal 1 and Wave 4 Proposal
     })
@@ -100,14 +102,16 @@ describe('Filter Utils', () => {
 
   describe('applyCategoryFilters', () => {
     it('should filter proposals by category', () => {
-      const categoryFilters: FilterItem[] = [{ id: '1', type: 'category', label: 'Grants', value: 'Grants' }]
+      const categoryFilters: FilterItem[] = [
+        { id: '1', type: FilterType.CATEGORY, label: 'Grants', value: 'Grants' },
+      ]
       const result = applyCategoryFilters(mockProposals, categoryFilters)
       expect(result).toHaveLength(2) // Test Proposal 1 and Wave 4 Proposal
     })
 
     it('should filter proposals by builder category', () => {
       const categoryFilters: FilterItem[] = [
-        { id: '1', type: 'category', label: 'Activation', value: 'Activation' },
+        { id: '1', type: FilterType.CATEGORY, label: 'Activation', value: 'Activation' },
       ]
       const result = applyCategoryFilters(mockProposals, categoryFilters)
       expect(result).toHaveLength(1) // Test Proposal 2
@@ -116,13 +120,17 @@ describe('Filter Utils', () => {
 
   describe('applyStatusFilters', () => {
     it('should filter proposals by status', () => {
-      const statusFilters: FilterItem[] = [{ id: '1', type: 'status', label: 'Active', value: 'Active' }]
+      const statusFilters: FilterItem[] = [
+        { id: '1', type: FilterType.STATUS, label: 'Active', value: 'Active' },
+      ]
       const result = applyStatusFilters(mockProposals, statusFilters)
       expect(result).toHaveLength(1) // Test Proposal 1
     })
 
     it('should filter proposals by executed status', () => {
-      const statusFilters: FilterItem[] = [{ id: '1', type: 'status', label: 'Executed', value: 'Executed' }]
+      const statusFilters: FilterItem[] = [
+        { id: '1', type: FilterType.STATUS, label: 'Executed', value: 'Executed' },
+      ]
       const result = applyStatusFilters(mockProposals, statusFilters)
       expect(result).toHaveLength(1) // Test Proposal 2
     })
@@ -130,13 +138,15 @@ describe('Filter Utils', () => {
 
   describe('applyTimeFilters', () => {
     it('should filter proposals by last week', () => {
-      const timeFilters: FilterItem[] = [{ id: '1', type: 'time', label: 'Last week', value: 'last-week' }]
+      const timeFilters: FilterItem[] = [
+        { id: '1', type: FilterType.TIME, label: 'Last week', value: 'last-week' },
+      ]
       const result = applyTimeFilters(mockProposals, timeFilters)
       expect(result).toHaveLength(1) // Test Proposal 1 (5 days ago)
     })
 
     it('should filter proposals by Wave 4', () => {
-      const timeFilters: FilterItem[] = [{ id: '1', type: 'time', label: 'Wave 4', value: 'Wave 4' }]
+      const timeFilters: FilterItem[] = [{ id: '1', type: FilterType.TIME, label: 'Wave 4', value: 'Wave 4' }]
       const result = applyTimeFilters(mockProposals, timeFilters)
       expect(result).toHaveLength(1) // Wave 4 Proposal
     })
@@ -145,9 +155,9 @@ describe('Filter Utils', () => {
   describe('filterProposals', () => {
     it('should apply multiple filter types with AND logic', () => {
       const activeFilters: FilterItem[] = [
-        { id: '1', type: 'search', label: 'Test', value: 'Test' },
-        { id: '2', type: 'category', label: 'Grants', value: 'Grants' },
-        { id: '3', type: 'status', label: 'Active', value: 'Active' },
+        { id: '1', type: FilterType.SEARCH, label: 'Test', value: 'Test' },
+        { id: '2', type: FilterType.CATEGORY, label: 'Grants', value: 'Grants' },
+        { id: '3', type: FilterType.STATUS, label: 'Active', value: 'Active' },
       ]
       const result = filterProposals(mockProposals, activeFilters)
       expect(result).toHaveLength(1) // Only Test Proposal 1 matches all criteria
