@@ -39,6 +39,12 @@ export const MobileBuilderRow: FC<MobileBuilderRowProps> = ({ row, userBacking, 
     setIsExpanded(!isExpanded)
   }
 
+  const handleAvatarTap = () => {
+    if (isConnected && canBack) {
+      handleToggleSelection()
+    }
+  }
+
   const longPressHandlers = useLongPressTouch({
     onLongPress: () => {
       if (isConnected && canBack) {
@@ -91,13 +97,20 @@ export const MobileBuilderRow: FC<MobileBuilderRowProps> = ({ row, userBacking, 
             {/* Row 1: BuilderCell + expand/collapse trigger */}
             <div className="flex items-start w-full">
               <div className="flex items-center gap-4 flex-1">
-                <SelectorCell
-                  isHovered={isRowSelected}
-                  isSelected={isRowSelected}
-                  className="pt-3 pb-3 rounded-full"
+                <div
+                  onClick={(e: React.MouseEvent) => {
+                    e.stopPropagation()
+                    handleAvatarTap()
+                  }}
                 >
-                  <Jdenticon className="rounded-full bg-white w-10" value={builder.builder.address} />
-                </SelectorCell>
+                  <SelectorCell
+                    isHovered={isRowSelected}
+                    isSelected={isRowSelected}
+                    className="pt-3 pb-3 rounded-full"
+                  >
+                    <Jdenticon className="rounded-full bg-white w-10" value={builder.builder.address} />
+                  </SelectorCell>
+                </div>
                 <BuilderNameCell {...builder} isHighlighted={isRowSelected} />
               </div>
               {!isInProgress && (
