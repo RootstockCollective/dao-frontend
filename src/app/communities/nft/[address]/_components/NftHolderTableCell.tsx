@@ -2,7 +2,7 @@ import Image from 'next/image'
 import { Paragraph } from '@/components/Typography/Paragraph'
 import { EXPLORER_URL } from '@/lib/constants'
 import type { Row, Cell } from '@tanstack/react-table'
-import { type NftHolderItem } from '@/app/user/Balances/types'
+import type { NftHolderItem } from '@/app/user/Balances/types'
 
 interface Props {
   icon: string
@@ -16,7 +16,7 @@ export const NftHolderTableCell = ({ icon, row, cell }: Props) => (
       <Image
         unoptimized
         src={icon}
-        alt={row.original.metadata?.name}
+        alt={row.original.metadata?.name ?? 'Community NFT'}
         fill
         className="object-contain"
         crossOrigin="anonymous"
