@@ -229,7 +229,12 @@ export const rootlingsS1: CommunityItem = {
   numberOfMembers: 400,
   activation: 'October 2025',
   requirement: 'Asia Roadshow participation, Self-Claim',
-  detailedDescription: <></>,
+  detailedDescription: (
+    <>
+      Rootlings are part of the on-chain movement to support Bitcoin&apos;s decentralization - not just by
+      showing up, but by contributing during a verified campaign or event.
+    </>
+  ),
 }
 
 export const communitiesToRender = [
