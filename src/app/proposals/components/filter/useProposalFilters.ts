@@ -3,7 +3,7 @@ import { FilterItem, FilterState, FilterActions, FilterType } from './types'
 import { createAllFilters } from './filterOptions'
 import { MILESTONE_SEPARATOR } from '@/app/proposals/shared/utils'
 
-export const useFilters = (): FilterState & FilterActions => {
+export const useProposalFilters = (): FilterState & FilterActions => {
   const [activeFilters, setActiveFilters] = useState<FilterItem[]>(createAllFilters())
   const [searchValue, setSearchValue] = useState('')
 

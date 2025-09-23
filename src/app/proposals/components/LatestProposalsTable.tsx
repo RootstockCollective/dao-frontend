@@ -9,7 +9,7 @@ import { useClickOutside } from '@/shared/hooks/useClickOutside'
 import { SearchButton } from './SearchButton'
 import { Header } from '@/components/Typography'
 import { Proposal } from '@/app/proposals/shared/types'
-import { useFilters } from './filter/useFilters'
+import { useProposalFilters } from './filter/useProposalFilters'
 import { ActiveFiltersDisplay } from './filter/ActiveFiltersDisplay'
 import { useIsDesktop } from '@/shared/hooks/useIsDesktop'
 import { useStickyHeader } from '@/shared/hooks'
@@ -124,7 +124,7 @@ const LatestProposalsTable = ({ proposals }: LatestProposalsTableProps) => {
 
   // Enhanced filtering system
   const { activeFilters, searchValue, addFilter, removeFilter, clearAllFilters, updateSearchValue } =
-    useFilters()
+    useProposalFilters()
 
   // input field filtering
   const [searchVisible, setSearchVisible] = useState(false)
