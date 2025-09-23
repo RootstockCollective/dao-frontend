@@ -74,7 +74,14 @@ const createIcon = (decorationId: DecorationOptionId, isHighlighted: boolean) =>
   const IconComponent = config.icon
   const colorClass = isHighlighted ? config.highlightColor : config.defaultColor
 
-  return <IconComponent useGradient={config.useGradient} className={colorClass} />
+  const iconProps: IconProps & { useGradient?: boolean } = {
+    className: colorClass,
+  }
+  if (config.useGradient) {
+    iconProps.useGradient = true
+  }
+
+  return <IconComponent {...iconProps} />
 }
 
 interface BuilderDecorationProps {
