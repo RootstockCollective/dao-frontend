@@ -2,6 +2,7 @@ import { BackersPercentage } from '@/app/builders/components/Table/Cell/BackersP
 import { BackingCell } from '@/app/builders/components/Table/Cell/BackingCell/BackingCell'
 import { BuilderName } from '@/app/builders/components/Table/Cell/BuilderNameCell/BuilderName'
 import { RewardsCell } from '@/app/builders/components/Table/Cell/RewardsCell/RewardsCell'
+import { EmptyPlaceholder } from '@/components/Table/components'
 import { Button } from '@/components/Button'
 import { Collapsible } from '@/components/Collapsible'
 import { Divider } from '@/components/Divider'
@@ -15,10 +16,6 @@ import { BackerRewardsCellDataMap, ColumnId } from './BackerRewardsTable.config'
 
 const RewardDetailsMetric = ({ children }: { children: ReactNode }) => {
   return <div className="flex flex-1 flex-col align-items-start gap-0.5">{children}</div>
-}
-
-const EmptyPlaceholder = () => {
-  return <>-</>
 }
 
 const RewardDetailsItem = ({

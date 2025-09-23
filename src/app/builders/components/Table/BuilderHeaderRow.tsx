@@ -1,7 +1,8 @@
 'use client'
 
 import { useTableActionsContext, useTableContext } from '@/shared/context'
-import { ReactElement, Suspense } from 'react'
+import { ReactElement, Suspense, useMemo } from 'react'
+import { Address } from 'viem'
 
 import { Button } from '@/components/Button'
 import { CommonComponentProps } from '@/components/commonProps'
@@ -14,13 +15,23 @@ import { Tooltip, TooltipProps } from '@/components/Tooltip'
 import { Label, Paragraph, Span } from '@/components/Typography'
 import { cn } from '@/lib/utils'
 import { SORT_DIRECTION_ASC, SORT_DIRECTIONS } from '@/shared/context/TableContext/constants'
-import { redirect, RedirectType } from 'next/navigation'
 import { Dispatch, FC, ReactNode } from 'react'
-import { Address } from 'viem'
 import { BuilderCellDataMap, BuilderTable, COLUMN_TRANSFORMS, ColumnId, LABELS } from './BuilderTable.config'
 import { Action, ActionCell } from './Cell/ActionCell'
 import { SelectorHeaderCell } from './Cell/SelectorHeaderCell'
+import { getSelectedBuildersActionState } from './utils/builderRowUtils'
 import { TableColumnDropdown } from './TableColumnDropdown'
+
+export const useSelectedBuildersActions = (actions: Action[]) => {
+  const { selectedRows } = useTableContext<ColumnId, BuilderCellDataMap>()
+
+  const selectedBuilderIds = useMemo(
+    () => Object.keys(selectedRows).filter(id => selectedRows[id]) as Address[],
+    [selectedRows],
+  )
+
+  return getSelectedBuildersActionState(actions, selectedBuilderIds)
+}
 
 const OrderIndicatorContainer: FC<CommonComponentProps> = ({ className, children }) => (
   <div className={cn('flex pt-1 justify-center gap-2', className)}>{children}</div>
@@ -255,16 +266,7 @@ interface CombinedActionsHeaderCellProps extends CommonComponentProps<HTMLButton
   actions: Action[]
 }
 export const CombinedActionsHeaderCell = ({ actions }: CombinedActionsHeaderCellProps): ReactElement => {
-  const { selectedRows } = useTableContext<ColumnId, BuilderCellDataMap>()
-
-  const isMultipleDifferentActions = actions.some(action => action !== actions[0])
-  const showAction = isMultipleDifferentActions ? 'adjustBacking' : actions[0]
-
-  const handleClick = () => {
-    const selectedBuilderIds = Object.keys(selectedRows) as Address[]
-
-    redirect(`/backing?builders=${selectedBuilderIds.join(',')}`, RedirectType.push)
-  }
+  const { showAction, handleActionClick } = useSelectedBuildersActions(actions)
 
   return (
     <TableHeaderCell>
@@ -272,10 +274,10 @@ export const CombinedActionsHeaderCell = ({ actions }: CombinedActionsHeaderCell
         <HeaderTitle className="flex flex-row gap-2">
           <ActionCell
             actionType={showAction}
-            onClick={handleClick}
+            onClick={handleActionClick}
             className="flex justify-center items-center gap-1 font-rootstock-sans border-0 text-v3-text-100 font-light p-[inherit] h-[inherit] w-[inherit]"
           />
-          <Span variant="tag-s" className="text-v3-bg-accent-0">
+          <Span variant="tag-s" className="text-v3-bg-accent-0 flex items-center">
             {actions.length}
           </Span>
         </HeaderTitle>

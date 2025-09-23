@@ -26,6 +26,15 @@ export type ColumnId = (typeof COLUMN_IDS)[number]
 
 export const PAGE_SIZE = 20
 
+export const SORT_OPTIONS: { id: ColumnId; label: string }[] = [
+  { id: 'builder', label: 'Builder name' },
+  { id: 'backer_rewards', label: 'Backer Rewards %' },
+  { id: 'rewards_past_cycle', label: 'Rewards - past cycle' },
+  { id: 'rewards_upcoming', label: 'Rewards - upcoming cycle' },
+  { id: 'backing', label: 'Backing amount' },
+  { id: 'backingShare', label: 'Backing share %' },
+]
+
 export const LABELS: TableColumnDropdownLabels<Exclude<ColumnId, 'builder' | 'actions'>> = {
   backer_rewards: {
     label: 'Backer Rewards %',
@@ -114,3 +123,15 @@ export type BuilderCellDataMap = {
 }
 
 export type BuilderTable = TypedTable<ColumnId, BuilderCellDataMap>
+
+// Builder row logic interface - only shared table state
+export interface BuilderRowLogic {
+  data: BuilderCellDataMap
+  hasSelections: boolean
+  isInProgress: boolean
+  hasInactiveState: boolean
+  hasBacking: boolean
+  canBack: boolean
+  isRowSelected: boolean
+  handleToggleSelection: () => void
+}
