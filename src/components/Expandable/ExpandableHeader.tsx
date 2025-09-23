@@ -10,6 +10,10 @@ interface Props {
   triggerColor?: string
 }
 
+/**
+ * Expandable header section.
+ * This component MUST be used inside the Expandable component.
+ */
 export const ExpandableHeader: FC<Props> = ({ children, className, triggerColor }) => {
   return (
     <div className={cn('flex flex-row justify-between items-start gap-4', className)}>

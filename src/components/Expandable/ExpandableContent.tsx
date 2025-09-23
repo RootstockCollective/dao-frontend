@@ -10,9 +10,12 @@ interface Props {
   contentClassName?: string
 }
 
+/**
+ * Expandable content section
+ * This component MUST be used inside the Expandable component.
+ */
 export const ExpandableContent: FC<Props> = ({ children, className, contentClassName }) => {
   const { isExpanded } = useExpandableContext()
-
   return (
     <div
       className={cn(

@@ -4,10 +4,12 @@ import { Proposal } from '../shared/types'
 import { useState } from 'react'
 import { Span } from '@/components/Typography'
 
+// Proposals table component for mobile
 export const ProposalsTableMobile = ({ table }: { table: ReactTable<Proposal> }) => {
   return table.getRowModel().rows.map(row => <ExpandableRow key={row.id} row={row} />)
 }
 
+// Each row is an expandable component
 const ExpandableRow = ({ row }: { row: Row<Proposal> }) => {
   const [isExpanded, setIsExpanded] = useState(false)
   return (
@@ -19,7 +21,6 @@ const ExpandableRow = ({ row }: { row: Row<Proposal> }) => {
           <Divider />
           <div>{isExpanded ? renderCell(row, 'propType') : renderCell(row, 'timeRemaining')}</div>
         </div>
-
         {renderCell(row, 'status')}
       </div>
       <ExpandableContent>
@@ -58,6 +59,7 @@ const ExpandableRow = ({ row }: { row: Row<Proposal> }) => {
   )
 }
 
+// Utility function to render the cell for the given column
 const renderCell = (row: Row<Proposal>, columnId: string) => {
   const cell = row.getVisibleCells().find(cell => cell.column.columnDef.id === columnId)
   if (cell) {
@@ -66,4 +68,5 @@ const renderCell = (row: Row<Proposal>, columnId: string) => {
   return null
 }
 
+// Custom divider component
 const Divider = () => <div className="w-0.5 h-1.5 rounded-full bg-v3-text-40" />
