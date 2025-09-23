@@ -6,7 +6,7 @@ import { RIF, STRIF, USD } from '@/lib/constants'
 import { formatCurrency } from '@/lib/utils'
 import { redirect, RedirectType } from 'next/navigation'
 import { BuilderTable } from '../BuilderTable.config'
-import { getActionType } from '../Cell/ActionCell'
+import { getActionType, Action } from '../Cell/ActionCell'
 
 // Helper function to check if a value exists/is meaningful
 export const hasValidValue = (value: any): boolean => {
@@ -94,4 +94,22 @@ export const convertDataToRowData = (
       },
     }
   })
+}
+
+// Utility function for selected builders action state
+export const getSelectedBuildersActionState = (actions: Action[], selectedBuilderIds: string[]) => {
+  const selectedCount = selectedBuilderIds.length
+  const isMultipleDifferentActions = actions.some(action => action !== actions[0])
+  const showAction = isMultipleDifferentActions ? 'adjustBacking' : actions[0]
+
+  const handleActionClick = () => {
+    redirect(`/backing?builders=${selectedBuilderIds.join(',')}`, RedirectType.push)
+  }
+
+  return {
+    selectedBuilderIds,
+    selectedCount,
+    showAction,
+    handleActionClick,
+  }
 }

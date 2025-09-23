@@ -3,7 +3,7 @@ import { ActionsContainer } from '@/components/containers/ActionsContainer'
 import { DeselectIcon } from '@/components/Icons/DeselectIcon'
 import { FC } from 'react'
 import { Action, ActionCell } from '../Cell/ActionCell'
-import { getSelectedBuildersActionState } from '../hooks/useSelectedBuildersActions'
+import { getSelectedBuildersActionState } from '../utils/builderRowUtils'
 import { Span } from '@/components/Typography'
 
 interface MobileStickyActionBarContentProps {
