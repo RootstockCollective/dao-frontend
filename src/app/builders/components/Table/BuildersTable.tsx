@@ -298,6 +298,7 @@ export const BuildersTable = ({ filterOption }: { filterOption: BuilderFilterOpt
         }}
         pagedItemName="builders"
         mode="expandable"
+        className="px-4 md:px-0"
       />
     </>
   )
