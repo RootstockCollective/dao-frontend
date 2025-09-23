@@ -231,8 +231,10 @@ export const rootlingsS1: CommunityItem = {
   requirement: 'Asia Roadshow participation, Self-Claim',
   detailedDescription: (
     <>
+      RootstockCollective&apos;s guardian of Bitcoin decentralization. <br />
       Rootlings are part of the on-chain movement to support Bitcoin&apos;s decentralization - not just by
-      showing up, but by contributing during a verified campaign or event.
+      showing up, but by contributing during a verified campaign or event. Holders are often recognized as
+      active backers who combine governance with community spirit.
     </>
   ),
 }
