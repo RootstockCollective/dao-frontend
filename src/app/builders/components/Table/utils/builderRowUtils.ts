@@ -8,19 +8,20 @@ import { redirect, RedirectType } from 'next/navigation'
 import { BuilderTable } from '../BuilderTable.config'
 import { getActionType, Action } from '../Cell/ActionCell'
 
-// Style constants
-export const MOBILE_ROW_STYLES = {
+type RowStyle = 'selected' | 'unselected' | 'base'
+
+export const MOBILE_ROW_STYLES: Record<RowStyle, string> = {
   selected: 'bg-v3-text-80 text-v3-bg-accent-100 border-b-v3-bg-accent-60 border-b-1',
   unselected:
     'bg-v3-bg-accent-80 text-v3-primary-100 relative after:absolute after:bottom-0 after:inset-x-4 after:h-px after:bg-v3-bg-accent-60',
   base: 'flex flex-col py-5 px-4 w-full min-w-full',
-} as const
+}
 
-export const DESKTOP_ROW_STYLES = {
+export const DESKTOP_ROW_STYLES: Record<RowStyle, string> = {
   selected: 'bg-v3-text-80 text-v3-bg-accent-100',
   unselected: 'bg-v3-bg-accent-80 text-v3-primary-100',
   base: 'flex border-b-v3-bg-accent-60 border-b-1 gap-4 pl-4',
-} as const
+}
 
 // Export for backward compatibility
 export const selectedRowStyle = MOBILE_ROW_STYLES.selected
