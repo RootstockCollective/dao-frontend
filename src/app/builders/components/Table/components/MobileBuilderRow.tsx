@@ -1,7 +1,5 @@
 import { FC, HtmlHTMLAttributes } from 'react'
 import { cn } from '@/lib/utils'
-import { ConditionalTooltip } from '@/app/components'
-import { ConnectTooltipContent } from '@/app/components/Tooltip/ConnectTooltip/ConnectTooltipContent'
 import { DisclaimerFlow } from '@/shared/walletConnection'
 import { Jdenticon } from '@/components/Header/Jdenticon'
 import { useLongPressTouch } from '@/shared/hooks/useLongPressTouch'
@@ -12,7 +10,7 @@ import { BuilderTable } from '../BuilderTable.config'
 import { useBuilderRowLogic } from '../hooks/useBuilderRowLogic'
 import { MOBILE_ROW_STYLES } from '../utils/builderRowUtils'
 import { ExpandChevron } from './ExpandChevron'
-import { SelectBuildersTooltipContent, NonHoverableBuilderTooltipContent } from './TooltipContents'
+import { BuilderRowConditionalTooltip } from './BuilderRowConditionalTooltip'
 import {
   MobileBackerRewardsSection,
   MobileRewardsSection,
@@ -67,29 +65,12 @@ export const MobileBuilderRow: FC<MobileBuilderRowProps> = ({ row, userBacking, 
 
   return (
     <>
-      <ConditionalTooltip
-        side="top"
-        align="start"
+      <BuilderRowConditionalTooltip
         className="p-0 ml-4"
-        supportMobileTap={true}
-        conditionPairs={[
-          {
-            condition: () => !isConnected,
-            lazyContent: () => (
-              <ConnectTooltipContent onClick={onConnectWalletButtonClick}>
-                Connect your wallet to select Builders, back and adjust their backing.
-              </ConnectTooltipContent>
-            ),
-          },
-          {
-            condition: () => !canBack,
-            lazyContent: () => <NonHoverableBuilderTooltipContent />,
-          },
-          {
-            condition: () => !hasSelections,
-            lazyContent: () => <SelectBuildersTooltipContent />,
-          },
-        ]}
+        isConnected={isConnected}
+        canBack={canBack}
+        hasSelections={hasSelections}
+        onConnectWalletButtonClick={onConnectWalletButtonClick}
       >
         <tr
           {...props}
@@ -201,7 +182,7 @@ export const MobileBuilderRow: FC<MobileBuilderRowProps> = ({ row, userBacking, 
             </div>
           )}
         </tr>
-      </ConditionalTooltip>
+      </BuilderRowConditionalTooltip>
 
       {!!intermediateStep && (
         <DisclaimerFlow onAgree={handleConnectWallet} onClose={handleCloseIntermediateStep} />

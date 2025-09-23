@@ -1,12 +1,10 @@
 import { FC, HtmlHTMLAttributes } from 'react'
 import { cn } from '@/lib/utils'
-import { ConditionalTooltip } from '@/app/components'
-import { ConnectTooltipContent } from '@/app/components/Tooltip/ConnectTooltip/ConnectTooltipContent'
 import { DisclaimerFlow } from '@/shared/walletConnection'
 import { BuilderTable } from '../BuilderTable.config'
 import { useBuilderRowLogic } from '../hooks/useBuilderRowLogic'
 import { DESKTOP_ROW_STYLES } from '../utils/builderRowUtils'
-import { SelectBuildersTooltipContent, NonHoverableBuilderTooltipContent } from './TooltipContents'
+import { BuilderRowConditionalTooltip } from './BuilderRowConditionalTooltip'
 import {
   BuilderCell,
   BackerRewardsCell,
@@ -15,7 +13,7 @@ import {
   BuilderBackingCell,
   BuilderBackingShareCell,
   ActionsCell,
-} from '../DesktopCells'
+} from '@/app/builders/components/Table/DesktopCells'
 
 interface DesktopBuilderRowProps extends HtmlHTMLAttributes<HTMLTableRowElement> {
   row: BuilderTable['Row']
@@ -52,28 +50,12 @@ export const DesktopBuilderRow: FC<DesktopBuilderRowProps> = ({ row, userBacking
 
   return (
     <>
-      <ConditionalTooltip
-        side="top"
-        align="start"
+      <BuilderRowConditionalTooltip
         className="p-0 ml-16"
-        conditionPairs={[
-          {
-            condition: () => !isConnected,
-            lazyContent: () => (
-              <ConnectTooltipContent onClick={onConnectWalletButtonClick}>
-                Connect your wallet to select Builders, back and adjust their backing.
-              </ConnectTooltipContent>
-            ),
-          },
-          {
-            condition: () => !canBack,
-            lazyContent: () => <NonHoverableBuilderTooltipContent />,
-          },
-          {
-            condition: () => !hasSelections,
-            lazyContent: () => <SelectBuildersTooltipContent />,
-          },
-        ]}
+        isConnected={isConnected}
+        canBack={canBack}
+        hasSelections={hasSelections}
+        onConnectWalletButtonClick={onConnectWalletButtonClick}
       >
         <tr
           {...props}
@@ -97,7 +79,7 @@ export const DesktopBuilderRow: FC<DesktopBuilderRowProps> = ({ row, userBacking
           <ActionsCell {...actions} forceShow={isHovered && isConnected} />
           <td className="w-[24px]"></td>
         </tr>
-      </ConditionalTooltip>
+      </BuilderRowConditionalTooltip>
 
       {!!intermediateStep && (
         <DisclaimerFlow onAgree={handleConnectWallet} onClose={handleCloseIntermediateStep} />
