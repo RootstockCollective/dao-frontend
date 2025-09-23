@@ -73,7 +73,15 @@ export const MobileBuilderRow: FC<MobileBuilderRowProps> = ({ row, userBacking, 
           className={cn(
             MOBILE_ROW_STYLES.base,
             isRowSelected ? MOBILE_ROW_STYLES.selected : MOBILE_ROW_STYLES.unselected,
+            'select-none', // Prevent text selection
           )}
+          style={{
+            WebkitUserSelect: 'none',
+            MozUserSelect: 'none',
+            msUserSelect: 'none',
+            userSelect: 'none',
+            WebkitTouchCallout: 'none', // Prevents callout on iOS
+          }}
           onTouchStart={longPressHandlers.onTouchStart}
           onTouchMove={longPressHandlers.onTouchMove}
           onTouchEnd={longPressHandlers.onTouchEnd}
