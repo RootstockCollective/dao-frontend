@@ -1,6 +1,6 @@
 import { Paragraph } from '@/components/Typography'
 import { cn } from '@/lib/utils'
-import { FC, ReactNode } from 'react'
+import { FC, ReactNode, isValidElement } from 'react'
 import { CommonComponentProps } from '../../components/commonProps'
 import { MetricContent } from './MetricContent'
 import { MetricTitle } from '@/components/Metric/MetricTitle'
@@ -23,7 +23,7 @@ export const Metric: FC<MetricProps> = ({
   return (
     <div data-testid={dataTestId} className={cn('flex items-center gap-4 w-full', className)}>
       <div className={cn('w-full flex flex-col gap-0.5 md:gap-2', containerClassName)}>
-        <MetricTitle title={title} />
+        {isValidElement(title) ? title : <MetricTitle title={title} />}
         <MetricContent className={contentClassName}>{children}</MetricContent>
       </div>
     </div>
