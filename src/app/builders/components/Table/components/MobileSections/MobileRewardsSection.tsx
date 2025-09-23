@@ -8,20 +8,17 @@ import {
 } from './MobileDataSection'
 import { EmptyPlaceholder } from '@/components/Table/components'
 
+const hasValidValue = (rewards: RewardsCellProps) =>
+  rewards.usdValue != null || rewards.rbtcValue != null || rewards.rifValue != null
+
 export const MobileRewardsSection: FC<{
   rewards_past_cycle: RewardsCellProps
   rewards_upcoming: RewardsCellProps
   showBothColumns?: boolean
   isRowSelected?: boolean
 }> = ({ rewards_past_cycle, rewards_upcoming, showBothColumns = true, isRowSelected = false }) => {
-  const hasUpcomingValue =
-    rewards_upcoming.usdValue != null ||
-    rewards_upcoming.rbtcValue != null ||
-    rewards_upcoming.rifValue != null
-  const hasPastValue =
-    rewards_past_cycle.usdValue != null ||
-    rewards_past_cycle.rbtcValue != null ||
-    rewards_past_cycle.rifValue != null
+  const hasUpcomingValue = hasValidValue(rewards_upcoming)
+  const hasPastValue = hasValidValue(rewards_past_cycle)
 
   if (showBothColumns) {
     return (
