@@ -1,6 +1,6 @@
 /* eslint-disable quotes */
 import { nftContracts } from '@/lib/contracts'
-import { FC, ReactNode } from 'react'
+import type { FC, ReactNode } from 'react'
 import { Header, Paragraph } from '@/components/Typography'
 import { ipfsGatewayUrl } from '@/lib/ipfs'
 import { ROOTLINGS_S1_NFT_ADDRESS } from '@/lib/constants'
@@ -239,6 +239,7 @@ export const communitiesToRender = [
   ogFoundersExternalContributors,
   vanguardCommunity,
   betaBuilders,
+  rootlingsS1,
 ]
 
 export const communitiesMapByContract = Object.fromEntries(

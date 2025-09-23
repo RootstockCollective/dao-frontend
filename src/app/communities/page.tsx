@@ -1,5 +1,4 @@
 import { SectionContainer } from './components/SectionContainer'
-import { CommunityItem } from '@/app/communities/CommunityItem'
 import { ResponsiveCommunityItemHOC } from './components/ResponsiveCommunityItemHOC'
 import {
   betaBuilders,

@@ -16,7 +16,7 @@ export const NftHolderTableCell = ({ icon, row, cell }: Props) => (
       <Image
         unoptimized
         src={icon}
-        alt={row.original.metadata.name}
+        alt={row.original.metadata?.name}
         fill
         className="object-contain"
         crossOrigin="anonymous"
