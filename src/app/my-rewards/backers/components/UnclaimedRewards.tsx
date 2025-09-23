@@ -6,10 +6,10 @@ import { useHandleErrors } from '@/app/collective-rewards/utils'
 import { useBackerUnclaimedRewards } from '@/app/my-rewards/backers/hooks/useBackerUnclaimedRewards'
 import { ClaimRewardsButton } from '@/app/my-rewards/components/ClaimRewardsButton'
 import { TokenSymbol } from '@/components/TokenImage'
-import { useState } from 'react'
+import { useModal } from '@/shared/hooks/useModal'
 
 export const UnclaimedRewards = () => {
-  const [claimRewardsModalOpen, setClaimRewardsModalOpen] = useState(false)
+  const { isModalOpened, openModal, closeModal } = useModal()
   const { rif: rifData, rbtc: rbtcData } = useBackerUnclaimedRewards()
   useHandleErrors({ error: rifData.error ?? rbtcData.error, title: 'Error loading backer unclaimed rewards' })
 
@@ -33,13 +33,9 @@ export const UnclaimedRewards = () => {
         />
       </div>
       <div className="flex justify-start">
-        <ClaimRewardsButton onClick={() => setClaimRewardsModalOpen(true)} />
+        <ClaimRewardsButton onClick={() => openModal()} />
       </div>
-      <ClaimRewardsModal
-        open={claimRewardsModalOpen}
-        onClose={() => setClaimRewardsModalOpen(false)}
-        isBacker={true}
-      />
+      <ClaimRewardsModal open={isModalOpened} onClose={() => closeModal()} isBacker={true} />
     </RewardCard>
   )
 }

@@ -5,11 +5,11 @@ import { ClaimRewardsButton } from '@/app/my-rewards/components/ClaimRewardsButt
 import { RewardCard } from '@/app/my-rewards/components/RewardCard'
 import { TokenAmount } from '@/components/TokenAmount'
 import { TokenSymbol } from '@/components/TokenImage'
-import { useState } from 'react'
+import { useModal } from '@/shared/hooks/useModal'
 import { Address } from 'viem'
 
 export const UnclaimedRewards = ({ builder, gauge }: { builder: Address; gauge: Address }) => {
-  const [claimRewardsModalOpen, setClaimRewardsModalOpen] = useState(false)
+  const { isModalOpened, openModal, closeModal } = useModal()
   const { rif: rifData, rbtc: rbtcData } = useGetBuilderUnclaimedRewards({
     builder: builder!,
     gauge,
@@ -37,13 +37,9 @@ export const UnclaimedRewards = ({ builder, gauge }: { builder: Address; gauge: 
         />
       </div>
       <div className="flex justify-start">
-        <ClaimRewardsButton onClick={() => setClaimRewardsModalOpen(true)} />
+        <ClaimRewardsButton onClick={() => openModal()} />
       </div>
-      <ClaimRewardsModal
-        open={claimRewardsModalOpen}
-        onClose={() => setClaimRewardsModalOpen(false)}
-        isBacker={false}
-      />
+      <ClaimRewardsModal open={isModalOpened} onClose={() => closeModal()} isBacker={false} />
     </RewardCard>
   )
 }
