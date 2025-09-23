@@ -62,8 +62,8 @@ const abiContractsMap = {
   [nftContracts.OG_PARTNERS]: EarlyAdoptersNFTAbi,
   [nftContracts.VANGUARD]: VotingVanguardsNftAbi,
   [nftContracts.BB]: EarlyAdoptersNFTAbi,
-  [nftContracts.ROOTLINGS_S1]: RootlingsS1ABI,
-} as const
+  [nftContracts.ROOTLINGS_S1]: RootlingsS1ABI as any, // Type assertion to avoid TS deep instantiation error
+}
 
 const treasuryContracts = {
   GRANTS: { name: 'Grants', address: GRANTS_BUCKET_ADDRESS },
