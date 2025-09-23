@@ -1,13 +1,14 @@
-import { FC, HtmlHTMLAttributes } from 'react'
+import { FC, HtmlHTMLAttributes, useState } from 'react'
 import { cn } from '@/lib/utils'
+import { useAccount } from 'wagmi'
 import { DisclaimerFlow } from '@/shared/walletConnection'
+import { useAppKitFlow } from '@/shared/walletConnection/connection/useAppKitFlow'
 import { Jdenticon } from '@/components/Header/Jdenticon'
 import { useLongPressTouch } from '@/shared/hooks/useLongPressTouch'
 import { BuilderNameCell } from './Cell/BuilderNameCell'
 import { ActionCell } from './Cell/ActionCell'
 import { SelectorCell } from './Cell/SelectorCell'
-import { BuilderTable } from './BuilderTable.config'
-import { useBuilderRowLogic } from './hooks/useBuilderRowLogic'
+import { BuilderRowLogic, BuilderTable } from './BuilderTable.config'
 import { MOBILE_ROW_STYLES } from './utils/builderRowUtils'
 import { ExpandChevron } from './ExpandChevron'
 import { BuilderRowConditionalTooltip } from './BuilderRowConditionalTooltip'
@@ -22,27 +23,22 @@ import {
 interface MobileBuilderRowProps extends HtmlHTMLAttributes<HTMLTableRowElement> {
   row: BuilderTable['Row']
   userBacking: bigint
+  logic: BuilderRowLogic
 }
 
-export const MobileBuilderRow: FC<MobileBuilderRowProps> = ({ row, userBacking, ...props }) => {
-  const logic = useBuilderRowLogic({ row, userBacking })
-  const {
-    data,
-    isExpanded,
-    isRowSelected,
-    isInProgress,
-    canBack,
-    hasSelections,
-    isConnected,
-    handleToggleSelection,
-    handleToggleExpand,
-    intermediateStep,
-    handleConnectWallet,
-    handleCloseIntermediateStep,
-    onConnectWalletButtonClick,
-  } = logic
+export const MobileBuilderRow: FC<MobileBuilderRowProps> = ({ row, userBacking, logic, ...props }) => {
+  const { isConnected } = useAccount()
+  const { intermediateStep, handleConnectWallet, handleCloseIntermediateStep, onConnectWalletButtonClick } =
+    useAppKitFlow()
 
-  // Long press functionality for selection
+  const [isExpanded, setIsExpanded] = useState(false)
+
+  const { data, isRowSelected, isInProgress, canBack, hasSelections, handleToggleSelection } = logic
+
+  const handleToggleExpand = () => {
+    setIsExpanded(!isExpanded)
+  }
+
   const longPressHandlers = useLongPressTouch({
     onLongPress: () => {
       if (isConnected && canBack) {

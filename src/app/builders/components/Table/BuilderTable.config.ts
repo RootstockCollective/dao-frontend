@@ -123,3 +123,15 @@ export type BuilderCellDataMap = {
 }
 
 export type BuilderTable = TypedTable<ColumnId, BuilderCellDataMap>
+
+// Builder row logic interface - only shared table state
+export interface BuilderRowLogic {
+  data: BuilderCellDataMap
+  hasSelections: boolean
+  isInProgress: boolean
+  hasInactiveState: boolean
+  hasBacking: boolean
+  canBack: boolean
+  isRowSelected: boolean
+  handleToggleSelection: () => void
+}

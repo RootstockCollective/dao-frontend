@@ -1,8 +1,9 @@
-import { FC, HtmlHTMLAttributes } from 'react'
+import { FC, HtmlHTMLAttributes, useState } from 'react'
 import { cn } from '@/lib/utils'
+import { useAccount } from 'wagmi'
 import { DisclaimerFlow } from '@/shared/walletConnection'
-import { BuilderTable } from './BuilderTable.config'
-import { useBuilderRowLogic } from './hooks/useBuilderRowLogic'
+import { useAppKitFlow } from '@/shared/walletConnection/connection/useAppKitFlow'
+import { BuilderRowLogic, BuilderTable } from './BuilderTable.config'
 import { DESKTOP_ROW_STYLES } from './utils/builderRowUtils'
 import { BuilderRowConditionalTooltip } from './BuilderRowConditionalTooltip'
 import {
@@ -18,25 +19,25 @@ import {
 interface DesktopBuilderRowProps extends HtmlHTMLAttributes<HTMLTableRowElement> {
   row: BuilderTable['Row']
   userBacking: bigint
+  logic: BuilderRowLogic
 }
 
-export const DesktopBuilderRow: FC<DesktopBuilderRowProps> = ({ row, userBacking, ...props }) => {
-  const logic = useBuilderRowLogic({ row, userBacking })
-  const {
-    data,
-    isHovered,
-    isRowSelected,
-    canBack,
-    hasSelections,
-    isConnected,
-    handleToggleSelection,
-    handleMouseEnter,
-    handleMouseLeave,
-    intermediateStep,
-    handleConnectWallet,
-    handleCloseIntermediateStep,
-    onConnectWalletButtonClick,
-  } = logic
+export const DesktopBuilderRow: FC<DesktopBuilderRowProps> = ({ row, userBacking, logic, ...props }) => {
+  const { isConnected } = useAccount()
+  const { intermediateStep, handleConnectWallet, handleCloseIntermediateStep, onConnectWalletButtonClick } =
+    useAppKitFlow()
+
+  const [isHovered, setIsHovered] = useState(false)
+
+  const { data, isRowSelected, canBack, hasSelections, handleToggleSelection } = logic
+
+  const handleMouseEnter = () => {
+    if (canBack) setIsHovered(true)
+  }
+
+  const handleMouseLeave = () => {
+    setIsHovered(false)
+  }
 
   const {
     builder,

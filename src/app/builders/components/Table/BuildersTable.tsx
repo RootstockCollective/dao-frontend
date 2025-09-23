@@ -19,11 +19,19 @@ import { DesktopBuilderRow } from './DesktopBuilderRow'
 import { MobileBuilderRow } from './MobileBuilderRow'
 import { BuilderFilterOptionId } from './BuilderFilterDropdown'
 import { BuilderHeaderRow } from './BuilderHeaderRow'
-import { BuilderCellDataMap, BuilderTable, ColumnId, DEFAULT_HEADERS, PAGE_SIZE } from './BuilderTable.config'
+import {
+  BuilderCellDataMap,
+  BuilderRowLogic,
+  BuilderTable,
+  ColumnId,
+  DEFAULT_HEADERS,
+  PAGE_SIZE,
+} from './BuilderTable.config'
 import { Action, ActionCellProps } from './Cell/ActionCell'
 import { builderFilterMap } from './utils/builderFilters'
 import { MobileStickyActionBarContent } from './MobileStickyActionBar'
 import { useLayoutContext } from '@/components/MainContainer/LayoutProvider'
+import { getBuilderInactiveState, isBuilderInProgress } from '@/app/collective-rewards/utils'
 
 // Filter logic is now centralized in builderFilters.ts
 
@@ -124,6 +132,7 @@ const usePagedFilteredBuildersRewards = ({
 interface BuilderDataRowProps extends CommonComponentProps<HTMLTableRowElement> {
   row: BuilderTable['Row']
   userBacking: bigint
+  logic: BuilderRowLogic
 }
 
 const BuilderDataRow: FC<BuilderDataRowProps> = ({ ...props }) => {
@@ -143,6 +152,49 @@ export const BuildersTable = ({ filterOption }: { filterOption: BuilderFilterOpt
   const { rows, columns, selectedRows, sort } = useTableContext<ColumnId, BuilderCellDataMap>()
   const [actions, setActions] = useState<Action[]>([])
   const dispatch = useTableActionsContext<ColumnId, BuilderCellDataMap>()
+
+  // Helper function to create simplified builder row logic (only shared state)
+  const createBuilderRowLogic = (row: BuilderTable['Row'], userBacking: bigint): BuilderRowLogic => {
+    const { id: rowId, data } = row
+    const { builder } = data as BuilderCellDataMap
+
+    // Computed values (shared across table)
+    const hasSelections = Object.values(selectedRows).some(Boolean)
+    const isInProgress = isBuilderInProgress(builder.builder)
+    const inactiveState = getBuilderInactiveState(builder.builder)
+    const hasInactiveState = inactiveState !== null
+    const hasBacking = userBacking > 0n
+    const canBack = !isInProgress && (!hasInactiveState || hasBacking)
+    const isRowSelected = selectedRows[rowId]
+
+    // Event handlers that require table dispatch
+    const handleToggleSelection = () => {
+      if (!isConnected || !canBack) {
+        return
+      }
+
+      dispatch({
+        type: 'TOGGLE_ROW_SELECTION',
+        payload: rowId,
+      })
+    }
+
+    return {
+      // Row data
+      data,
+
+      // Computed values (derived from table context)
+      hasSelections,
+      isInProgress,
+      hasInactiveState,
+      hasBacking,
+      canBack,
+      isRowSelected,
+
+      // Shared event handlers (require table dispatch)
+      handleToggleSelection,
+    }
+  }
 
   const pageOptions = useMemo(() => ({ start: 0, end: pageEnd }), [pageEnd])
   const {
@@ -283,9 +335,11 @@ export const BuildersTable = ({ filterOption }: { filterOption: BuilderFilterOpt
           </thead>
           <Suspense fallback={<div>Loading table data...</div>}>
             <tbody>
-              {rows.map(row => (
-                <BuilderDataRow key={row.id} row={row} userBacking={allocations[row.id as Address] ?? 0n} />
-              ))}
+              {rows.map(row => {
+                const userBacking = allocations[row.id as Address] ?? 0n
+                const logic = createBuilderRowLogic(row, userBacking)
+                return <BuilderDataRow key={row.id} row={row} userBacking={userBacking} logic={logic} />
+              })}
             </tbody>
           </Suspense>
         </table>
