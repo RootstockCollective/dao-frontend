@@ -1,5 +1,7 @@
 import { useEffect } from 'react'
 
+let scrollLockCount = 0
+
 /**
  * Disables page scrolling while the provided condition is true.
  *
@@ -13,30 +15,33 @@ import { useEffect } from 'react'
  */
 export function useScrollLock(lock: boolean) {
   useEffect(() => {
-    if (typeof document === 'undefined') return
+    if (typeof document === 'undefined') return // ✅ SSR safety
 
-    const preventScroll = (e: TouchEvent) => {
-      e.preventDefault()
-    }
-
-    const preventWheel = (e: WheelEvent) => {
-      e.preventDefault()
-    }
+    const html = document.documentElement
+    const body = document.body
+    const prevHtmlOverflow = html.style.overflow
+    const prevBodyOverflow = body.style.overflow
+    const prevTouchAction = body.style.touchAction
 
     if (lock) {
-      document.addEventListener('touchmove', preventScroll, { passive: false })
-      document.addEventListener('wheel', preventWheel, { passive: false })
-
-      return () => {
-        document.removeEventListener('touchmove', preventScroll)
-        document.removeEventListener('wheel', preventWheel)
+      scrollLockCount++
+      if (scrollLockCount === 1) {
+        // First lock → actually apply styles
+        html.style.overflow = 'hidden'
+        body.style.overflow = 'hidden'
+        body.style.touchAction = 'none' // iOS Safari fix
       }
     }
 
-    // Return cleanup function for non-first locks
     return () => {
-      document.removeEventListener('touchmove', preventScroll)
-      document.removeEventListener('wheel', preventWheel)
+      if (lock) {
+        scrollLockCount--
+        if (scrollLockCount <= 0) {
+          html.style.overflow = prevHtmlOverflow
+          body.style.overflow = prevBodyOverflow
+          body.style.touchAction = prevTouchAction
+        }
+      }
     }
   }, [lock])
 }
