@@ -15,14 +15,14 @@ import { useGetBuilderRewardsSummary } from '../../hooks/useGetBuilderRewardsSum
 import { convertDataToRowData } from './utils/builderRowUtils'
 import { useIsDesktop } from '@/shared/hooks/useIsDesktop'
 import { CommonComponentProps } from '@/components/commonProps'
-import { DesktopBuilderRow } from './components/DesktopBuilderRow'
-import { MobileBuilderRow } from './components/MobileBuilderRow'
+import { DesktopBuilderRow } from './DesktopBuilderRow'
+import { MobileBuilderRow } from './MobileBuilderRow'
 import { BuilderFilterOptionId } from './BuilderFilterDropdown'
 import { BuilderHeaderRow } from './BuilderHeaderRow'
 import { BuilderCellDataMap, BuilderTable, ColumnId, DEFAULT_HEADERS, PAGE_SIZE } from './BuilderTable.config'
 import { Action, ActionCellProps } from './Cell/ActionCell'
 import { builderFilterMap } from './utils/builderFilters'
-import { MobileStickyActionBarContent } from './components/MobileStickyActionBar'
+import { MobileStickyActionBarContent } from './MobileStickyActionBar'
 import { useLayoutContext } from '@/components/MainContainer/LayoutProvider'
 
 // Filter logic is now centralized in builderFilters.ts

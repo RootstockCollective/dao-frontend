@@ -1,5 +1,5 @@
 import { FC } from 'react'
-import { RewardsCell, RewardsCellProps } from '../../Cell/RewardsCell'
+import { RewardsCell, RewardsCellProps } from '../Cell/RewardsCell'
 import {
   MobileDataSection,
   MobileTwoColumnWrapper,

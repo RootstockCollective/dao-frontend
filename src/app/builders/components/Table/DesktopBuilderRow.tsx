@@ -1,9 +1,9 @@
 import { FC, HtmlHTMLAttributes } from 'react'
 import { cn } from '@/lib/utils'
 import { DisclaimerFlow } from '@/shared/walletConnection'
-import { BuilderTable } from '../BuilderTable.config'
-import { useBuilderRowLogic } from '../hooks/useBuilderRowLogic'
-import { DESKTOP_ROW_STYLES } from '../utils/builderRowUtils'
+import { BuilderTable } from './BuilderTable.config'
+import { useBuilderRowLogic } from './hooks/useBuilderRowLogic'
+import { DESKTOP_ROW_STYLES } from './utils/builderRowUtils'
 import { BuilderRowConditionalTooltip } from './BuilderRowConditionalTooltip'
 import {
   BuilderCell,

@@ -26,7 +26,7 @@ import {
   BuilderBackingCell,
   BuilderCell,
 } from '@/app/builders/components/Table/DesktopCells'
-import { SelectBuildersTooltipContent } from '@/app/builders/components/Table/components/TooltipContents'
+import { SelectBuildersTooltipContent } from '@/app/builders/components/Table/TooltipContents'
 
 // Local TableCellBase for backer rewards table
 const BackerTableCellBase = ({

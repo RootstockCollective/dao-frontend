@@ -12,7 +12,7 @@ import { BackingShareCell, BackingShareCellProps } from './Cell/BackingShareCell
 import { BuilderNameCell, BuilderNameCellProps } from './Cell/BuilderNameCell'
 import { RewardsCell, RewardsCellProps } from './Cell/RewardsCell'
 import { SelectorCell } from './Cell/SelectorCell'
-import { ExpandChevron } from './components/ExpandChevron'
+import { ExpandChevron } from './ExpandChevron'
 
 // TODO: @refactor move to app/components/Table/Cell/TableCell.tsx
 export const TableCellBase = ({

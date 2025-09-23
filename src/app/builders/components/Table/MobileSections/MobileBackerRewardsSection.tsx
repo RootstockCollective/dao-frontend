@@ -1,5 +1,5 @@
 import { FC } from 'react'
-import { BackersPercentageCell, BackersPercentageProps } from '../../Cell/BackersPercentageCell'
+import { BackersPercentageCell, BackersPercentageProps } from '../Cell/BackersPercentageCell'
 import { MobileDataSection } from './MobileDataSection'
 
 export const MobileBackerRewardsSection: FC<{
