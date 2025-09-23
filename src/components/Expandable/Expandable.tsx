@@ -9,11 +9,21 @@ interface Props {
   className?: string
   dataTestId?: string
   expanded?: boolean
+  onToggleExpanded?: (isExpanded: boolean) => void
 }
 
-export const Expandable: FC<Props> = ({ children, className, dataTestId, expanded = false }) => {
+export const Expandable: FC<Props> = ({
+  children,
+  className,
+  dataTestId,
+  expanded = false,
+  onToggleExpanded,
+}) => {
   const [isExpanded, setIsExpanded] = useState(expanded)
-  const toggleExpanded = () => setIsExpanded(!isExpanded)
+  const toggleExpanded = () => {
+    setIsExpanded(!isExpanded)
+    onToggleExpanded?.(!isExpanded)
+  }
 
   return (
     <ExpandableContext.Provider value={{ isExpanded, toggleExpanded }}>

@@ -121,5 +121,5 @@ export function Countdown({
 
   const timeRemainingMsg = timeRemainingSec > 0 ? formatTimeRemaining(timeRemainingSec) : '-'
 
-  return <Paragraph className={cn(colorClass, 'w-full text-center', className)}>{timeRemainingMsg}</Paragraph>
+  return <Paragraph className={cn(colorClass, className)}>{timeRemainingMsg}</Paragraph>
 }

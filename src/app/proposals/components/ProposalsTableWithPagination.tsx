@@ -4,7 +4,7 @@ import { Countdown } from '@/components/Countdown'
 import { Pagination } from '@/components/Pagination'
 import { Status } from '@/components/Status'
 import { GridTable } from '@/components/Table'
-import { Paragraph } from '@/components/Typography'
+import { Paragraph, Span } from '@/components/Typography'
 import Big from '@/lib/big'
 import {
   createColumnHelper,
@@ -20,6 +20,8 @@ import { forwardRef, memo, useCallback, useImperativeHandle, useMemo, useState }
 import { Category } from '../components/category'
 import { ProposalNameColumn, ProposerColumn } from './table-columns/ProposalNameColumn'
 import { QuorumColumn, VotesColumn } from './table-columns/VotesColumn'
+import { useIsDesktop } from '@/shared/hooks/useIsDesktop'
+import { ProposalsTableMobile } from './ProposalsTableMobile'
 
 interface ProposalsTableWithPaginationProps {
   proposals: Proposal[]
@@ -33,6 +35,7 @@ export interface ProposalsTableRef {
 const ProposalsTableWithPagination = forwardRef<ProposalsTableRef, ProposalsTableWithPaginationProps>(
   ({ proposals, isFilterSidebarOpen }, ref) => {
     const searchParams = useSearchParams()
+    const isDesktop = useIsDesktop()
 
     // React-table sorting state
     const [sorting, setSorting] = useState<SortingState>([])
@@ -82,14 +85,15 @@ const ProposalsTableWithPagination = forwardRef<ProposalsTableRef, ProposalsTabl
           id: 'timeRemaining',
           header: 'Vote ending in',
           sortDescFirst: false,
-          cell: info => {
-            const { proposalDeadline, blockNumber } = info.row.original
+          cell: ({ row }) => {
+            const { proposalDeadline, blockNumber } = row.original
             return (
               <Countdown
                 end={proposalDeadline}
                 timeSource="blocks"
                 referenceStart={Big(blockNumber)}
                 colorDirection="normal"
+                className={isDesktop ? 'w-full text-center' : ''}
               />
             )
           },
@@ -148,6 +152,7 @@ const ProposalsTableWithPagination = forwardRef<ProposalsTableRef, ProposalsTabl
                 forVotes={forVotes.toNumber()}
                 againstVotes={againstVotes.toNumber()}
                 abstainVotes={abstainVotes.toNumber()}
+                showChart={isDesktop}
               />
             )
           },
@@ -169,23 +174,21 @@ const ProposalsTableWithPagination = forwardRef<ProposalsTableRef, ProposalsTabl
           meta: {
             width: '0.62fr',
           },
-          cell: ({ cell }) => <Category category={cell.getValue()} />,
+          cell: ({ cell }) => <Category category={cell.getValue()} showText={!isDesktop} />,
         }),
         accessor('proposalState', {
           id: 'status',
           header: 'Status',
           sortDescFirst: false,
           cell: ({ cell }) => (
-            <div className="w-full flex justify-center">
-              <Status proposalState={cell.getValue()} />
-            </div>
+            <Status proposalState={cell.getValue()} className="w-full flex justify-center" />
           ),
           meta: {
             width: '0.8fr',
           },
         }),
       ],
-      [accessor, isFilterSidebarOpen],
+      [accessor, isFilterSidebarOpen, isDesktop],
     )
 
     // create table data model which is passed to the Table UI component
@@ -207,13 +210,17 @@ const ProposalsTableWithPagination = forwardRef<ProposalsTableRef, ProposalsTabl
 
     return (
       <>
-        <GridTable
-          className="min-w-[600px]"
-          aria-label="Proposal table"
-          stackFirstColumn
-          table={table}
-          data-testid="TableProposals"
-        />
+        {isDesktop ? (
+          <GridTable
+            className="min-w-[600px]"
+            aria-label="Proposal table"
+            stackFirstColumn
+            table={table}
+            data-testid="TableProposals"
+          />
+        ) : (
+          <ProposalsTableMobile table={table} />
+        )}
         <Pagination pagination={pagination} setPagination={setPagination} data={proposals} table={table} />
       </>
     )
