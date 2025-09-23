@@ -7,7 +7,6 @@ import {
   MobileSectionWrapper,
 } from './MobileDataSection'
 import { EmptyPlaceholder } from '@/components/Table/components'
-import { hasValidValue } from '../../utils/builderRowUtils'
 
 export const MobileRewardsSection: FC<{
   rewards_past_cycle: RewardsCellProps
@@ -16,13 +15,13 @@ export const MobileRewardsSection: FC<{
   isRowSelected?: boolean
 }> = ({ rewards_past_cycle, rewards_upcoming, showBothColumns = true, isRowSelected = false }) => {
   const hasUpcomingValue =
-    hasValidValue(rewards_upcoming.usdValue) ||
-    hasValidValue(rewards_upcoming.rbtcValue) ||
-    hasValidValue(rewards_upcoming.rifValue)
+    rewards_upcoming.usdValue != null ||
+    rewards_upcoming.rbtcValue != null ||
+    rewards_upcoming.rifValue != null
   const hasPastValue =
-    hasValidValue(rewards_past_cycle.usdValue) ||
-    hasValidValue(rewards_past_cycle.rbtcValue) ||
-    hasValidValue(rewards_past_cycle.rifValue)
+    rewards_past_cycle.usdValue != null ||
+    rewards_past_cycle.rbtcValue != null ||
+    rewards_past_cycle.rifValue != null
 
   if (showBothColumns) {
     return (

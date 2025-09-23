@@ -7,7 +7,6 @@ import {
   MobileColumnItem,
   MobileSectionWrapper,
 } from './MobileDataSection'
-import { hasValidValue } from '../../utils/builderRowUtils'
 
 export const MobileBackingSection: FC<{
   backing: BackingCellProps
@@ -24,8 +23,8 @@ export const MobileBackingSection: FC<{
   className,
   isRowSelected = false,
 }) => {
-  const hasBackingValue = hasValidValue(backing.amount)
-  const hasShareValue = hasValidValue(backingPercentage)
+  const hasBackingValue = backing.amount != null
+  const hasShareValue = backingPercentage != null
 
   if (showShare) {
     return (

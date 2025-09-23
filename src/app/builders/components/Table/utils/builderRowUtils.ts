@@ -8,11 +8,6 @@ import { redirect, RedirectType } from 'next/navigation'
 import { BuilderTable } from '../BuilderTable.config'
 import { getActionType, Action } from '../Cell/ActionCell'
 
-// Helper function to check if a value exists/is meaningful
-export const hasValidValue = (value: any): boolean => {
-  return value !== null && value !== undefined
-}
-
 // Style constants
 export const MOBILE_ROW_STYLES = {
   selected: 'bg-v3-text-80 text-v3-bg-accent-100 border-b-v3-bg-accent-60 border-b-1',
