@@ -1,5 +1,5 @@
 export const DEFAULT_PAGE_NUMBER = '1'
-export const DEFAULT_PAGE_SIZE = '10'
+export const DEFAULT_PAGE_SIZE = '100'
 export const SORT_DIRECTION_ASC = 'asc' as const
 export const SORT_DIRECTION_DESC = 'desc' as const
 export const DEFAULT_SORT_DIRECTION = SORT_DIRECTION_ASC

@@ -4,6 +4,25 @@ import { Dispatch, SetStateAction } from 'react'
 import { AbiFunction, Address } from 'viem'
 import { TokenRewards } from './rewards'
 
+// API Response Types
+export interface DailyAllocationItem {
+  id: string
+  day: number
+  totalAllocation: string
+}
+
+export interface CycleRewardsItem {
+  id: string
+  rewardsERC20: string
+  rewardsRBTC: string
+  currentCycleStart: string
+  currentCycleDuration: string
+  previousCycleStart: string
+  previousCycleDuration: string
+  distributionDuration: string
+  onDistributionPeriod: boolean
+}
+
 export type Builder = {
   proposal: BuilderProposal
   stateFlags?: BuilderStateFlags
@@ -73,6 +92,7 @@ export type StateWithUpdate<T> = {
 export type BackingPoint = {
   day: Date | number | string
   backing: bigint
+  backingWei?: bigint
 }
 
 export type RewardsPoint = {
@@ -86,16 +106,18 @@ export type RewardsPoint = {
 
 export type CycleWindow = {
   label: string
-  start: Date | number | string
-  end: Date | number | string
+  start: Date
+  end: Date
+  cycleDuration: number
+  cycleNumber?: number
 }
 
-interface ChartDataPoint {
-  day: Date
-  backing?: bigint
+interface ChartDataPoint extends BackingPoint {
   rewardsUSD?: bigint
   rewardsRif?: bigint
   rewardsRbtc?: bigint
+  cycle?: number | null
+  dayInCycle?: string | null
 }
 
 export interface TooltipPayload {
