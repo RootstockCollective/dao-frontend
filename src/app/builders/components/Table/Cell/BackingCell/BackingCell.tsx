@@ -1,5 +1,6 @@
 import { CommonComponentProps } from '@/components/commonProps'
 import { TokenImage } from '@/components/TokenImage'
+import { Span } from '@/components/Typography/Span'
 import { BaseTypography } from '@/components/Typography/Typography'
 import { RIF } from '@/lib/constants'
 import { cn } from '@/lib/utils'
@@ -11,6 +12,7 @@ export interface BackingCellProps extends CommonComponentProps {
   formattedUsdAmount: string
   emptyPlaceholder?: ReactNode
   showUsd?: boolean
+  showTokenLabel?: boolean
 }
 
 export const BackingCell = ({
@@ -20,6 +22,7 @@ export const BackingCell = ({
   formattedUsdAmount,
   emptyPlaceholder = null,
   showUsd = true,
+  showTokenLabel = false,
 }: BackingCellProps): ReactNode => {
   if (amount === 0n) {
     return emptyPlaceholder
@@ -47,8 +50,11 @@ export const BackingCell = ({
         )}
       </div>
       <div className="flex flex-col items-start gap-1">
-        <div className="flex justify-center items-center aspect-square">
-          <TokenImage symbol={RIF} />
+        <div className="flex items-center gap-1">
+          <div className="flex justify-center items-center aspect-square">
+            <TokenImage symbol={RIF} />
+          </div>
+          {showTokenLabel && <Span variant="body-s">stRIF</Span>}
         </div>
         {showUsd && (
           <BaseTypography

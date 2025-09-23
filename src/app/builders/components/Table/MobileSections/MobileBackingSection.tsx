@@ -31,7 +31,7 @@ export const MobileBackingSection: FC<{
       <MobileTwoColumnWrapper className={className}>
         <MobileColumnItem>
           <MobileSectionWrapper title="Backing" hasValue={hasBackingValue} isRowSelected={isRowSelected}>
-            <BackingCell {...backing} showUsd={showUsd} />
+            <BackingCell {...backing} showUsd={showUsd} showTokenLabel={true} />
           </MobileSectionWrapper>
         </MobileColumnItem>
         <MobileColumnItem>
@@ -50,7 +50,7 @@ export const MobileBackingSection: FC<{
       className={className}
       isRowSelected={isRowSelected}
     >
-      <BackingCell {...backing} showUsd={showUsd} />
+      <BackingCell {...backing} showUsd={showUsd} showTokenLabel={true} />
     </MobileDataSection>
   )
 }
