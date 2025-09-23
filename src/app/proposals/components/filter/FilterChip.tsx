@@ -23,7 +23,7 @@ export const FilterChip = ({ filter, onRemove, className }: FilterChipProps) => 
       <Button
         onClick={handleRemove}
         variant="transparent"
-        className="p-0.5 hover:bg-black/10 rounded-full transition-colors"
+        className="hover:bg-black/10 rounded-full transition-colors p-0"
         aria-label={`Remove ${filter.type} filter: ${filter.label}`}
         data-testid={`RemoveFilter-${filter.id}`}
       >
