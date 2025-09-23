@@ -218,13 +218,13 @@ export const rootstockHacktivator: CommunityItem = {
 }
 
 export const rootlingsS1: CommunityItem = {
-  leftImageSrc: ipfsGatewayUrl('Qmf32XyHW3G15sSkBHBndyrKPUtyLKfhEvHuJLNvYUxf7w'),
+  leftImageSrc: ipfsGatewayUrl('QmbYNH2VAvqdxu79ebXEWzP1P1uMUjiSBuUJN9U4ssvmna'),
   title: 'Rootlings Series 1',
   subtitle: 'Rootlings',
   description: `Rootlings are part of the on-chain movement to support Bitcoin's decentralization - not just by showing up, but by contributing during a verified campaign or event.`,
   specialPower: 'Community badge + perks',
   nftAddress: ROOTLINGS_S1_NFT_ADDRESS,
-  cover: ipfsGatewayUrl('Qmf32XyHW3G15sSkBHBndyrKPUtyLKfhEvHuJLNvYUxf7w'),
+  cover: ipfsGatewayUrl('QmbYNH2VAvqdxu79ebXEWzP1P1uMUjiSBuUJN9U4ssvmna'),
   isMintable: true,
   numberOfMembers: 400,
   activation: 'October 2025',
