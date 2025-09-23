@@ -51,7 +51,6 @@ export const HeroComponentMobile: FC<HeroComponentMobileProps> = ({
             <ul className="list-none mb-4">
               {items.map((item: ReactNode, idx: number) => (
                 <li key={idx} className="flex items-start gap-2 text-sm text-bg-100">
-                  <span className="inline-block mt-2 w-[6px] h-[6px] rounded-[32px] border border-bg-80 bg-transparent flex-shrink-0" />
                   <BulletPoint />
                   {typeof item === 'string' ? <Paragraph className="text-bg-100">{item}</Paragraph> : item}
                 </li>
