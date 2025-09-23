@@ -7,6 +7,7 @@ import { formatCurrency } from '@/lib/utils'
 import { redirect, RedirectType } from 'next/navigation'
 import { BuilderTable } from '../BuilderTable.config'
 import { getActionType, Action } from '../Cell/ActionCell'
+import { Allocations } from '@/app/collective-rewards/allocations/context'
 
 type RowStyle = 'selected' | 'unselected' | 'base'
 
@@ -31,11 +32,12 @@ export const unselectedRowStyle = MOBILE_ROW_STYLES.unselected
 export const convertDataToRowData = (
   data: BuilderRewardsSummary[],
   prices: GetPricesResult,
+  allocations: Allocations,
 ): BuilderTable['Row'][] => {
   if (!data.length) return []
 
   return data.map<BuilderTable['Row']>(builder => {
-    const backing = builder.totalAllocation ?? 0n
+    const backing = allocations[builder.address] ?? 0n
     const actionType = getActionType(builder, backing > 0n)
 
     const rifPrice = prices[RIF]?.price ?? 0
