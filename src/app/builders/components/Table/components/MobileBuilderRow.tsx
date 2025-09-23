@@ -83,104 +83,106 @@ export const MobileBuilderRow: FC<MobileBuilderRowProps> = ({ row, userBacking, 
           onTouchEnd={longPressHandlers.onTouchEnd}
           onTouchCancel={longPressHandlers.onTouchCancel}
         >
-          {/* Row 1: BuilderCell + expand/collapse trigger */}
-          <div className="flex items-start w-full">
-            <div className="flex items-center gap-4 flex-1">
-              <SelectorCell
-                isHovered={isRowSelected}
-                isSelected={isRowSelected}
-                className="pt-3 pb-3 rounded-full"
-              >
-                <Jdenticon className="rounded-full bg-white w-10" value={builder.builder.address} />
-              </SelectorCell>
-              <BuilderNameCell {...builder} isHighlighted={isRowSelected} />
+          <td className="w-full">
+            {/* Row 1: BuilderCell + expand/collapse trigger */}
+            <div className="flex items-start w-full">
+              <div className="flex items-center gap-4 flex-1">
+                <SelectorCell
+                  isHovered={isRowSelected}
+                  isSelected={isRowSelected}
+                  className="pt-3 pb-3 rounded-full"
+                >
+                  <Jdenticon className="rounded-full bg-white w-10" value={builder.builder.address} />
+                </SelectorCell>
+                <BuilderNameCell {...builder} isHighlighted={isRowSelected} />
+              </div>
+              {!isInProgress && (
+                <ExpandChevron
+                  isExpanded={isExpanded}
+                  onToggle={handleToggleExpand}
+                  isRowSelected={isRowSelected}
+                />
+              )}
             </div>
-            {!isInProgress && (
-              <ExpandChevron
-                isExpanded={isExpanded}
-                onToggle={handleToggleExpand}
+
+            {/* Row 2: BackerRewardsCell + RewardsUpcomingCell (collapsed state only) */}
+            {!isInProgress && !isExpanded && (
+              <MobileTwoColumnWrapper className="mt-2">
+                <MobileColumnItem>
+                  <MobileBackerRewardsSection
+                    backer_rewards={backer_rewards}
+                    showChangeIndicator={false}
+                    isRowSelected={isRowSelected}
+                  />
+                </MobileColumnItem>
+                <MobileColumnItem>
+                  <MobileRewardsSection
+                    rewards_past_cycle={rewards_past_cycle}
+                    rewards_upcoming={rewards_upcoming}
+                    showBothColumns={false}
+                    isRowSelected={isRowSelected}
+                  />
+                </MobileColumnItem>
+              </MobileTwoColumnWrapper>
+            )}
+
+            {/* Row 3: BuilderBackingCell (only in collapsed state) */}
+            {!isInProgress && !isExpanded && (
+              <MobileBackingSection
+                backing={backing}
+                showUsd={false}
+                className="mt-4"
                 isRowSelected={isRowSelected}
               />
             )}
-          </div>
 
-          {/* Row 2: BackerRewardsCell + RewardsUpcomingCell (collapsed state only) */}
-          {!isInProgress && !isExpanded && (
-            <MobileTwoColumnWrapper className="mt-2">
-              <MobileColumnItem>
-                <MobileBackerRewardsSection
-                  backer_rewards={backer_rewards}
-                  showChangeIndicator={false}
-                  isRowSelected={isRowSelected}
-                />
-              </MobileColumnItem>
-              <MobileColumnItem>
-                <MobileRewardsSection
-                  rewards_past_cycle={rewards_past_cycle}
-                  rewards_upcoming={rewards_upcoming}
-                  showBothColumns={false}
-                  isRowSelected={isRowSelected}
-                />
-              </MobileColumnItem>
-            </MobileTwoColumnWrapper>
-          )}
-
-          {/* Row 3: BuilderBackingCell (only in collapsed state) */}
-          {!isInProgress && !isExpanded && (
-            <MobileBackingSection
-              backing={backing}
-              showUsd={false}
-              className="mt-4"
-              isRowSelected={isRowSelected}
-            />
-          )}
-
-          {/* Expanded content */}
-          {!isInProgress && isExpanded && (
-            <div
-              className={cn(
-                'overflow-hidden transition-all duration-300 ease-in-out mt-2',
-                isExpanded ? 'max-h-96 opacity-100' : 'max-h-0 opacity-0',
-              )}
-            >
-              <div className="flex flex-col gap-4">
-                {/* Row 2 (expanded): BackerRewardsCell with change indicator */}
-                <MobileBackerRewardsSection
-                  backer_rewards={backer_rewards}
-                  showChangeIndicator={true}
-                  isRowSelected={isRowSelected}
-                />
-
-                {/* Row 3 (expanded): RewardsPastCycleCell + RewardsUpcomingCell */}
-                <MobileRewardsSection
-                  rewards_past_cycle={rewards_past_cycle}
-                  rewards_upcoming={rewards_upcoming}
-                  showBothColumns={true}
-                  isRowSelected={isRowSelected}
-                />
-
-                {/* Row 4 (expanded): BuilderBackingCell + BackingShareCell (always show in expanded) */}
-                <MobileBackingSection
-                  backing={backing}
-                  backingPercentage={backingPercentage}
-                  showShare={true}
-                  showUsd={true}
-                  isRowSelected={isRowSelected}
-                />
-
-                {/* Row 5 (expanded): ActionCell */}
-                {isConnected && (
-                  <div className="w-full min-w-full flex justify-center">
-                    <ActionCell
-                      {...actions}
-                      hidden={false}
-                      className={cn(isRowSelected ? 'text-v3-bg-accent-100' : 'text-v3-text-100')}
-                    />
-                  </div>
+            {/* Expanded content */}
+            {!isInProgress && isExpanded && (
+              <div
+                className={cn(
+                  'overflow-hidden transition-all duration-300 ease-in-out mt-2',
+                  isExpanded ? 'max-h-96 opacity-100' : 'max-h-0 opacity-0',
                 )}
+              >
+                <div className="flex flex-col gap-4">
+                  {/* Row 2 (expanded): BackerRewardsCell with change indicator */}
+                  <MobileBackerRewardsSection
+                    backer_rewards={backer_rewards}
+                    showChangeIndicator={true}
+                    isRowSelected={isRowSelected}
+                  />
+
+                  {/* Row 3 (expanded): RewardsPastCycleCell + RewardsUpcomingCell */}
+                  <MobileRewardsSection
+                    rewards_past_cycle={rewards_past_cycle}
+                    rewards_upcoming={rewards_upcoming}
+                    showBothColumns={true}
+                    isRowSelected={isRowSelected}
+                  />
+
+                  {/* Row 4 (expanded): BuilderBackingCell + BackingShareCell (always show in expanded) */}
+                  <MobileBackingSection
+                    backing={backing}
+                    backingPercentage={backingPercentage}
+                    showShare={true}
+                    showUsd={true}
+                    isRowSelected={isRowSelected}
+                  />
+
+                  {/* Row 5 (expanded): ActionCell */}
+                  {isConnected && (
+                    <div className="w-full min-w-full flex justify-center">
+                      <ActionCell
+                        {...actions}
+                        hidden={false}
+                        className={cn(isRowSelected ? 'text-v3-bg-accent-100' : 'text-v3-text-100')}
+                      />
+                    </div>
+                  )}
+                </div>
               </div>
-            </div>
-          )}
+            )}
+          </td>
         </tr>
       </BuilderRowConditionalTooltip>
 
