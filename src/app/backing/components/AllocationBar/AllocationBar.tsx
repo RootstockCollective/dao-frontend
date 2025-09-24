@@ -230,7 +230,7 @@ const getTooltipProps = (
 
   return {
     targetItem: isDragging ? allItems[dragTargetIndex] : targetItem,
-    adjecentItem: isDragging ? allItems[dragTargetIndex + 1] : undefined,
+    adjacentItem: isDragging ? allItems[dragTargetIndex + 1] : undefined,
     isResizing: isDragging,
   }
 }
