@@ -1,6 +1,6 @@
 import { useState, useCallback } from 'react'
 import { FilterItem, FilterState, FilterActions, FilterType } from './types'
-import { createAllFilters } from './filterOptions'
+import { createAllFilters, createSearchFilter } from './filterOptions'
 import { MILESTONE_SEPARATOR } from '@/app/proposals/shared/utils'
 
 export const useProposalFilters = (): FilterState & FilterActions => {
@@ -84,13 +84,8 @@ export const useProposalFilters = (): FilterState & FilterActions => {
         // Remove any existing search filters first
         const filters = prev.filter(f => f.type !== FilterType.SEARCH)
 
-        // Add new search filter
-        filters.push({
-          id: `search-${value}-${Date.now()}`,
-          type: FilterType.SEARCH,
-          label: value,
-          value,
-        })
+        // Add new search filter using utility function
+        filters.push(createSearchFilter(value))
         return filters
       })
     } else {

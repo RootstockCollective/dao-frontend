@@ -2,7 +2,13 @@ import { Header } from '@/components/Typography'
 import { cn } from '@/lib/utils'
 import { type HTMLAttributes } from 'react'
 import { FilterItem, FilterType } from './types'
-import { FilterOption, categoryFilterOptions, statusFilterOptions, timeFilterOptions } from './filterOptions'
+import {
+  FilterOption,
+  categoryFilterOptions,
+  statusFilterOptions,
+  timeFilterOptions,
+  createFilter,
+} from './filterOptions'
 import { Button } from '@/components/Button'
 import { Modal } from '@/components/Modal'
 import { TrashIcon } from '@/components/Icons'
@@ -40,14 +46,9 @@ export function FilterSideBar({
     if (existingFilter) {
       onRemoveFilter(existingFilter.id)
     } else {
-      // Create appropriate filter based on type
-      const filter: FilterItem = {
-        id: `${type}-${option.value}-${Date.now()}`,
-        type,
-        label: option.label,
-        value: option.value,
-        exclusive: type === FilterType.TIME, // Time filters are exclusive
-      }
+      // Create appropriate filter based on type using unified function
+      // Time filters are exclusive, others are not
+      const filter = createFilter(type, option, false, type === FilterType.TIME)
       onAddFilter(filter)
     }
   }
@@ -97,7 +98,7 @@ export function FilterSideBar({
               activeFilters.filter(f => f.type === type).forEach(f => onRemoveFilter(f.id))
             }}
             data-testid={allTestId}
-            variant="round"
+            variant={type === FilterType.TIME ? 'round' : 'square'}
           />
         </li>
         {options.map((option, i) => (
@@ -107,7 +108,7 @@ export function FilterSideBar({
               option={option}
               onClick={() => handleFilterToggle(option, type)}
               data-testid={`${type}Filter-${option.label}`}
-              variant="round"
+              variant={type === FilterType.TIME ? 'round' : 'square'}
             />
           </li>
         ))}
