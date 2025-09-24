@@ -60,6 +60,7 @@ createAppKit({
     email: false,
     socials: false,
     collapseWallets: true,
+    onramp: true,
   },
 })
 
