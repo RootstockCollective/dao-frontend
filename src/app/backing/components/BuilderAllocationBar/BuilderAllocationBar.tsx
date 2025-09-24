@@ -1,5 +1,7 @@
 import { AllocationsContext } from '@/app/collective-rewards/allocations/context'
+import { isBuilderRewardable } from '@/app/collective-rewards/utils'
 import { floorToUnit, getBuilderColor } from '@/app/shared/components/utils'
+import { shortAddress } from '@/lib/utils'
 import { useCallback, useContext, useEffect, useMemo, useState } from 'react'
 import { Address, zeroAddress } from 'viem'
 import AllocationBar from '../AllocationBar/AllocationBar'
@@ -20,6 +22,7 @@ function createUnallocatedItem(
   value: bigint
   displayColor: 'var(--background-40)'
   isTemporary: boolean
+  isEditable: true
 } {
   const { balance, cumulativeAllocation: initialCumulativeAllocation } = initialData
   return {
@@ -29,6 +32,7 @@ function createUnallocatedItem(
     value: balance > cumulativeAllocation ? floorToUnit(balance - cumulativeAllocation) : 0n,
     displayColor: 'var(--background-40)',
     isTemporary: initialData.cumulativeAllocation != cumulativeAllocation,
+    isEditable: true,
   }
 }
 
@@ -102,11 +106,12 @@ const BuilderAllocationBar = ({ barOverrides }: { barOverrides?: Partial<Allocat
 
         return {
           key,
-          label: builder?.builderName || key,
+          label: builder?.builderName || shortAddress(key),
           value,
           initialValue,
           displayColor: getBuilderColor(key),
           isTemporary: initialData.allocations[key] !== allocation,
+          isEditable: isBuilderRewardable(builder?.stateFlags),
         }
       })
       .filter(item => item !== null)
@@ -155,6 +160,7 @@ const BuilderAllocationBar = ({ barOverrides }: { barOverrides?: Partial<Allocat
             initialValue: 1n,
             displayColor: 'var(--background-60)',
             isTemporary: true,
+            isEditable: false,
           },
         ]}
         valueDisplay={{

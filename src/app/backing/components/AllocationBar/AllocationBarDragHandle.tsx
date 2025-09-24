@@ -14,7 +14,6 @@ export const AllocationBarDragHandle = ({
       {...listeners}
       className="cursor-grab flex items-center px-1 select-none user-select-none h-full w-full"
       aria-label="Drag to reorder"
-      tabIndex={0}
     />
   )
 }

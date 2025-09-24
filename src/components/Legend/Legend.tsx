@@ -1,8 +1,9 @@
 import { Circle } from '@/components/Circle'
 import { cn, truncate } from '@/lib/utils'
+import { Address } from 'viem'
 
-interface LegendItem {
-  key: string
+export interface LegendItem {
+  key: Address
   label: string
   displayColor: string
 }

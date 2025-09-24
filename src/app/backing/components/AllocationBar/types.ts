@@ -1,12 +1,10 @@
-import { Address } from 'viem'
+import { LegendItem } from '@/components/Legend'
 
-export interface AllocationItem {
-  key: Address
-  label: string
-  value: bigint // actual value (not percentage)
-  displayColor: string
-  isTemporary?: boolean // true: it shows a checkerboard pattern on the segment
+export interface AllocationItem extends LegendItem {
+  value: bigint
+  isTemporary?: boolean
   initialValue?: bigint
+  isEditable: boolean
 }
 
 export interface AllocationChangeData {

@@ -1,30 +1,27 @@
+import { CommonComponentProps } from '@/components/commonProps'
 import { MoreIcon } from '@/components/Icons/MoreIcon'
 import { Tooltip } from '@/components/Tooltip'
 import { cn } from '@/lib/utils'
 import { useSortable } from '@dnd-kit/sortable'
 import { CSS } from '@dnd-kit/utilities'
-import { zeroAddress } from 'viem'
 import { AllocationBarDragHandle } from './AllocationBarDragHandle'
-import { AllocationBarResizeHandle } from './AllocationBarResizeHandle'
-import { AllocationBarTooltipContent } from './AllocationBarTooltipContent'
+import { AllocationBarTooltip, AllocationBarTooltipProps } from './AllocationBarTooltip'
 import { AllocationBarValueDisplay, AllocationItem } from './types'
 import { checkerboardStyle, valueToPercentage } from './utils'
+
+type AllocationBarSegmentPercentProps = {
+  pendingValue: bigint
+  totalBacking: bigint
+  valueDisplay: AllocationBarValueDisplay
+  item: AllocationItem
+  onchainValue: bigint
+}
 
 const AllocationBarSegmentPercent = ({
   pendingValue,
   totalBacking,
   valueDisplay,
-  showDots = false,
-  item: { key, isTemporary },
-  onchainValue,
-}: {
-  pendingValue: bigint
-  totalBacking: bigint
-  valueDisplay: AllocationBarValueDisplay
-  showDots?: boolean
-  item: AllocationItem
-  onchainValue: bigint
-}) => {
+}: AllocationBarSegmentPercentProps) => {
   const { percentDecimals, valueDecimals } = valueDisplay.format ?? {}
 
   const percent = valueToPercentage(pendingValue, totalBacking).toLocaleString(undefined, {
@@ -41,26 +38,6 @@ const AllocationBarSegmentPercent = ({
   if (showValue) displayValue += formattedValue
   if (showPercent) displayValue += showValue ? ` (${percent}%)` : `${percent}%`
 
-  if (showDots) {
-    return (
-      <Tooltip
-        text={
-          <AllocationBarTooltipContent
-            builderAddress={key}
-            onchainValue={key === zeroAddress ? pendingValue : onchainValue}
-            pendingValue={isTemporary ? pendingValue : 0n}
-            percentage={displayValue}
-          />
-        }
-        side="top"
-        align="center"
-        className="z-10 text-lg"
-      >
-        <MoreIcon size={16} className="absolute -top-7 left-1/2 -translate-x-1/2  cursor-pointer z-10" />
-      </Tooltip>
-    )
-  }
-
   return (
     <span className="absolute -top-7 left-1/2 -translate-x-1/2 pointer-events-none whitespace-nowrap font-normal leading-5 text-v3-bg-accent-0 font-rootstock-sans">
       {displayValue}
@@ -68,19 +45,16 @@ const AllocationBarSegmentPercent = ({
   )
 }
 
-interface AllocationBarSegmentProps {
+interface AllocationBarSegmentProps extends CommonComponentProps {
   pendingValue: bigint
   onchainValue: bigint
   totalBacking: bigint
   item: AllocationItem
-  index: number
-  isLast: boolean
   valueDisplay: AllocationBarValueDisplay
-  onHandleMouseDown: (idx: number) => (e: React.MouseEvent) => void
+  tooltipContentProps: AllocationBarTooltipProps
+  isCollapsed: boolean
   dragIndex: number | null
   isDraggable: boolean
-  isResizable: boolean
-  showDots?: boolean
 }
 
 export const AllocationBarSegment = ({
@@ -88,16 +62,16 @@ export const AllocationBarSegment = ({
   onchainValue,
   totalBacking,
   item,
-  index,
-  isLast,
   valueDisplay,
-  onHandleMouseDown,
+  tooltipContentProps,
+  isCollapsed,
   dragIndex,
   isDraggable,
-  isResizable,
-  showDots,
+  className,
 }: AllocationBarSegmentProps) => {
-  const { attributes, listeners, setNodeRef, transform, isDragging } = useSortable({ id: item.key })
+  const { attributes, listeners, setNodeRef, transform, isDragging } = useSortable({
+    id: item.key,
+  })
 
   // Calculate the percentage width based on the actual value and total value
   const percentageWidth = valueToPercentage(pendingValue, totalBacking)
@@ -117,82 +91,50 @@ export const AllocationBarSegment = ({
   const transitionClasses =
     dragIndex !== null ? 'transition-none' : 'transition-transform duration-200 ease-out'
   const dragStateClasses = isDragging ? 'opacity-60 z-[99]' : 'opacity-100'
-  const borderClasses = `${index === 0 ? 'rounded-l-sm' : ''} ${isLast ? 'rounded-r-sm' : ''}`
-  const positionClasses = !isLast ? 'mr-2' : ''
-
-  if (showDots) {
-    return (
-      <div
-        ref={setNodeRef}
-        style={style}
-        className={cn(baseClasses, transitionClasses, dragStateClasses, borderClasses, positionClasses)}
-      >
-        {/* DRAG HANDLE of the size of the segment */}
-        {isDraggable && <AllocationBarDragHandle attributes={attributes} listeners={listeners} />}
-
-        <div className="flex-1 flex items-center justify-center">
-          <AllocationBarSegmentPercent
-            pendingValue={pendingValue}
-            totalBacking={totalBacking}
-            valueDisplay={valueDisplay}
-            showDots={showDots}
-            item={item}
-            onchainValue={onchainValue}
-          />
-        </div>
-
-        {/* RESIZE HANDLE (far right, not overlapping drag handle) */}
-        {!isLast && isResizable && (
-          <AllocationBarResizeHandle
-            onHandleMouseDown={onHandleMouseDown}
-            dragIndex={dragIndex}
-            index={index}
-          />
-        )}
-      </div>
-    )
-  }
 
   return (
     <Tooltip
-      text={
-        <AllocationBarTooltipContent
-          builderAddress={item.key}
-          onchainValue={onchainValue}
-          pendingValue={item.isTemporary ? pendingValue : 0n}
-        />
-      }
+      hidden={isCollapsed}
+      text={!isCollapsed && <AllocationBarTooltip {...tooltipContentProps} />}
       side="top"
       align="center"
     >
-      <div
-        ref={setNodeRef}
-        style={style}
-        className={cn(baseClasses, transitionClasses, dragStateClasses, borderClasses, positionClasses)}
-      >
-        {/* DRAG HANDLE of the size of the segment */}
-        {isDraggable && <AllocationBarDragHandle attributes={attributes} listeners={listeners} />}
+      {
+        <div
+          ref={setNodeRef}
+          style={style}
+          className={cn(
+            'first:rounded-l-sm last:rounded-r-sm',
+            baseClasses,
+            transitionClasses,
+            dragStateClasses,
+            className,
+          )}
+        >
+          {/* DRAG HANDLE of the size of the segment */}
+          {isDraggable && <AllocationBarDragHandle attributes={attributes} listeners={listeners} />}
 
-        <div className="flex-1 flex items-center justify-center">
-          <AllocationBarSegmentPercent
-            pendingValue={pendingValue}
-            totalBacking={totalBacking}
-            valueDisplay={valueDisplay}
-            showDots={showDots}
-            item={item}
-            onchainValue={onchainValue}
-          />
+          <div className="flex-1 flex items-center justify-center">
+            {isCollapsed && (
+              <Tooltip text={<AllocationBarTooltip {...tooltipContentProps} />} side="top" align="center">
+                <MoreIcon
+                  size={16}
+                  className="absolute -top-7 left-1/2 -translate-x-1/2  cursor-pointer z-10"
+                />
+              </Tooltip>
+            )}
+            {!isCollapsed && (
+              <AllocationBarSegmentPercent
+                pendingValue={pendingValue}
+                totalBacking={totalBacking}
+                valueDisplay={valueDisplay}
+                item={item}
+                onchainValue={onchainValue}
+              />
+            )}
+          </div>
         </div>
-
-        {/* RESIZE HANDLE (far right, not overlapping drag handle) */}
-        {!isLast && isResizable && (
-          <AllocationBarResizeHandle
-            onHandleMouseDown={onHandleMouseDown}
-            dragIndex={dragIndex}
-            index={index}
-          />
-        )}
-      </div>
+      }
     </Tooltip>
   )
 }

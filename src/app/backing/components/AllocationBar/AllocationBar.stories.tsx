@@ -22,32 +22,36 @@ const addUnallocated = (items: AllocationItem[], totalAllocated: bigint): Alloca
       label: 'available funds',
       value: totalAllocated - allocatedSum,
       displayColor: '#25211E',
+      isEditable: true,
     },
   ]
 }
 
-const defaultItems: AllocationItem[] = [
+const DEFAULT_ITEMS: AllocationItem[] = [
   {
     key: '0xB0bB0000000000000000000000000000000000b0',
     label: 'Boltz',
     value: 20n,
     displayColor: '#9E76FF',
+    isEditable: true,
   },
   {
     key: '0x1D11000000000000000000000000000000002D00',
     label: '0x1D11...2D00',
     value: 10n,
     displayColor: '#08FFD0',
+    isEditable: true,
   },
   {
     key: '0xABu1100000000000000000000000000000000b1d',
     label: 'another builder',
     value: 10n,
     displayColor: '#DEFF1A',
+    isEditable: true,
   },
 ]
 
-const defaultItemsWithUnallocated = addUnallocated(defaultItems, 100n)
+const defaultItemsWithUnallocated = addUnallocated(DEFAULT_ITEMS, 100n)
 
 export const Default: Story = {
   args: {
@@ -70,17 +74,20 @@ export const WithPercentDecimals: Story = {
           label: 'Boltz',
           value: 20n,
           displayColor: '#9E76FF',
+          isEditable: true,
         },
         {
           key: '0x1D11000000000000000000000000000000002D00',
           label: '0x1D11...2D00',
           value: 10n,
           displayColor: '#08FFD0',
+          isEditable: true,
         },
         {
           key: '0xABu1100000000000000000000000000000000b1d',
           label: 'another builder',
           value: 11n,
+          isEditable: true,
           displayColor: '#DEFF1A',
         },
       ],
@@ -104,18 +111,21 @@ export const WithValues: Story = {
           label: 'Boltz',
           value: 20n,
           displayColor: '#9E76FF',
+          isEditable: true,
         },
         {
           key: '0x1D11000000000000000000000000000000002D00',
           label: '0x1D11...2D00',
           value: 10n,
           displayColor: '#08FFD0',
+          isEditable: true,
         },
         {
           key: '0xABu1100000000000000000000000000000000b1d',
           label: 'another builder',
           value: 11n,
           displayColor: '#DEFF1A',
+          isEditable: true,
         },
       ],
       100n,
@@ -135,18 +145,21 @@ export const WithValuesAndPercent: Story = {
           label: 'Boltz',
           value: 20n,
           displayColor: '#9E76FF',
+          isEditable: true,
         },
         {
           key: '0x1D11000000000000000000000000000000002D00',
           label: '0x1D11...2D00',
           value: 10n,
           displayColor: '#08FFD0',
+          isEditable: true,
         },
         {
           key: '0xABu1100000000000000000000000000000000b1d',
           label: 'another builder',
           value: 11n,
           displayColor: '#DEFF1A',
+          isEditable: true,
         },
       ],
       100n,
@@ -185,13 +198,14 @@ export const WithoutLegendAndPercent: Story = {
 }
 
 const dataWithTemp: AllocationItem[] = [
-  ...defaultItems,
+  ...DEFAULT_ITEMS,
   {
     key: '0xM0C0000000000000000000000000000000000c01',
     label: 'MoneyOnChain',
     value: 35n,
     displayColor: '#4ade80',
     isTemporary: true,
+    isEditable: true,
   },
 ]
 
