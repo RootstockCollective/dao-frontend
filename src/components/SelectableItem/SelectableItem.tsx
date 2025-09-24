@@ -22,7 +22,9 @@ interface Props {
  */
 export const SelectableItem = ({ option, selected, onClick, variant = 'square', ...props }: Props) => {
   const handleClick = () => {
-    onClick(option.value)
+    if (variant === 'square' || !selected) {
+      onClick(option.value)
+    }
   }
 
   return (
