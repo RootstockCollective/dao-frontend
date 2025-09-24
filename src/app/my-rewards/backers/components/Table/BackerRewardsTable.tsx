@@ -8,6 +8,7 @@ import { TablePager } from '@/components/TableNew'
 import { TOKENS } from '@/lib/tokens'
 import { usePricesContext, useTableActionsContext, useTableContext } from '@/shared/context'
 import { Row, Sort } from '@/shared/context/TableContext/types'
+import { SORT_DIRECTION_ASC } from '@/shared/context/TableContext/constants'
 import { useIsDesktop } from '@/shared/hooks/useIsDesktop'
 import { Big } from 'big.js'
 import { useEffect, useMemo, useState } from 'react'
@@ -54,7 +55,13 @@ const usePagedFilteredBackerRewards = ({
     const { columnId, direction } = sort
 
     const comparators: Partial<Record<ColumnId, (a: BackerRewards, b: BackerRewards) => number>> = {
-      builder: (a, b) => a.builderName.localeCompare(b.builderName),
+      builder: (a, b) => {
+        const nameA = a.builderName.toLowerCase().trim()
+        const nameB = b.builderName.toLowerCase().trim()
+        if (nameA < nameB) return -1
+        if (nameA > nameB) return 1
+        return 0
+      },
 
       backer_rewards: (a, b) => Number(a.backerRewardPct.current - b.backerRewardPct.current),
 
@@ -123,6 +130,12 @@ export const BackerRewardsTable = () => {
     dispatch({
       type: 'SET_COLUMNS',
       payload: DEFAULT_HEADERS,
+    })
+
+    // Set default sort to unclaimed ascending
+    dispatch({
+      type: 'SET_DEFAULT_SORT',
+      payload: { columnId: 'unclaimed', direction: SORT_DIRECTION_ASC },
     })
   }, []) // eslint-disable-line react-hooks/exhaustive-deps
 
