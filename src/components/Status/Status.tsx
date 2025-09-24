@@ -63,7 +63,7 @@ export const Status: FC<Props> = ({ proposalState, className, ...rest }) => {
       )}
       {...rest}
     >
-      <Paragraph className="whitespace-nowrap text-[clamp(8px,1.1vw,12px)]">{label}</Paragraph>
+      <Paragraph className="whitespace-nowrap text-[clamp(10px,1.1vw,12px)]">{label}</Paragraph>
     </div>
   )
 }

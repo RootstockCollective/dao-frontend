@@ -31,18 +31,16 @@ export const QuorumColumn = ({
       : 'text-st-error' // Red for less than 50%
 
   return (
-    <>
-      <Paragraph className={cn(colorClass, 'w-full text-center', className)}>
-        {quorumAtSnapshot.eq(0) ? (
-          '-'
-        ) : (
-          <>
-            {!hideQuorumTarget && formatNumberWithCommas(quorumAtSnapshot) + ' | '}
-            {formatNumberWithCommas(percentage)}%
-          </>
-        )}
-      </Paragraph>
-    </>
+    <Paragraph className={cn(colorClass, className)}>
+      {quorumAtSnapshot.eq(0) ? (
+        '-'
+      ) : (
+        <>
+          {!hideQuorumTarget && formatNumberWithCommas(quorumAtSnapshot) + ' | '}
+          {formatNumberWithCommas(percentage)}%
+        </>
+      )}
+    </Paragraph>
   )
 }
 interface VotesColumnProps {
@@ -52,6 +50,7 @@ interface VotesColumnProps {
   className?: ClassNameValue
   textClassName?: ClassNameValue
   chartClassName?: ClassNameValue
+  showChart?: boolean
 }
 export const VotesColumn = ({
   forVotes,
@@ -60,16 +59,19 @@ export const VotesColumn = ({
   className,
   textClassName,
   chartClassName,
+  showChart = true,
 }: VotesColumnProps) => (
-  <div className={cn('w-full flex flex-wrap items-center justify-end gap-x-3', className)}>
+  <div className={cn('w-full flex flex-wrap items-center gap-x-3', className)}>
     <Paragraph className={cn(textClassName)}>{forVotes + againstVotes + abstainVotes}</Paragraph>
-    <PizzaChart
-      className={cn(chartClassName)}
-      segments={[
-        { name: 'For', value: forVotes },
-        { name: 'Abstain', value: abstainVotes },
-        { name: 'Against', value: againstVotes },
-      ]}
-    />
+    {showChart && (
+      <PizzaChart
+        className={cn(chartClassName)}
+        segments={[
+          { name: 'For', value: forVotes },
+          { name: 'Abstain', value: abstainVotes },
+          { name: 'Against', value: againstVotes },
+        ]}
+      />
+    )}
   </div>
 )

@@ -8,6 +8,10 @@ interface Props {
   className?: string
 }
 
+/**
+ * Expandable footer section.
+ * This component MUST be used inside the Expandable component.
+ */
 export const ExpandableFooter: FC<Props> = ({ children, className }) => {
   return <div className={cn('flex flex-col', className)}>{children}</div>
 }
